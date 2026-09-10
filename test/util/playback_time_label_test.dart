@@ -195,6 +195,14 @@ void main() {
       );
     });
 
+    testWidgets('time reads the clock rather than the media', (tester) async {
+      final context = await _localizedContext(tester);
+      expect(
+        slot(context, PlaybackTimeSlot.time),
+        matches(RegExp(r'^\d{2}:\d{2}$')),
+      );
+    });
+
     testWidgets('only none renders nothing', (tester) async {
       final context = await _localizedContext(tester);
       for (final value in PlaybackTimeSlot.values) {

@@ -1,15 +1,18 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
 import 'package:playback_core/playback_core.dart';
 
 import '../data/services/log_service.dart';
 import '../preference/preference_constants.dart';
 import '../preference/user_preferences.dart';
+import '../util/loggable_url.dart';
 import '../util/platform_detection.dart';
 
 import 'device_profile_builder.dart';
+import 'engine_trust.dart';
 import 'known_defects.dart';
 import 'server_transcode_capabilities.dart';
 
@@ -56,8 +59,18 @@ class AetherBackend implements PlayerBackend {
   final _tracksChangedController = StreamController<void>.broadcast();
 
   bool _disposed = false;
-  bool? _allowUntrustedTls;
+  EngineTrust? _trust;
   Timer? _audioDelayDebounce;
+
+  // A torn down session stops pushing state, so the last buffering value the
+  // channel sent stays latched and the player keeps its loading overlay with
+  // nothing left to clear it. This does not resume playback, it turns a silent
+  // hang into a failure the manager can surface.
+  static const _stallTimeoutMs = 30000;
+  Timer? _stallTimer;
+  bool _stallSawPlayback = false;
+  int _stallSinceMs = 0;
+  int _stallLastPositionMs = -1;
 
   final _positionStream = StreamController<Duration>.broadcast();
   final _durationStream = StreamController<Duration>.broadcast();
@@ -91,6 +104,7 @@ class AetherBackend implements PlayerBackend {
         _buffer = Duration(milliseconds: _toInt(map['bufferedMs']));
         _isPlaying = _toBool(map['isPlaying']);
         _isBuffering = _toBool(map['isBuffering']);
+        if (_isPlaying) _stallSawPlayback = true;
 
         _positionStream.add(_position);
         _durationStream.add(_duration);
@@ -138,20 +152,22 @@ class AetherBackend implements PlayerBackend {
     _invoke<void>('setEngineLogForwarding', {'enabled': enabled});
   }
 
+  void _log(String message, {LogLevel level = LogLevel.debug, Object? error}) {
+    if (!GetIt.instance.isRegistered<LogService>()) return;
+    GetIt.instance<LogService>().playback(message, level: level, error: error);
+  }
+
   void _logEngineLine(dynamic line) {
     if (line is! String || line.isEmpty) return;
-    if (!GetIt.instance.isRegistered<LogService>()) return;
-    GetIt.instance<LogService>().playback(line);
+    _log(line);
   }
 
   /// A native failure never reaches the server, so without this the report
   /// from a user whose playback didn't start shows only browsing.
   void _logPlaybackError(Map<dynamic, dynamic> map) {
-    if (!GetIt.instance.isRegistered<LogService>()) return;
-    final kind = map['kind'] ?? 'unknown';
-    final recoverable = map['recoverable'];
-    GetIt.instance<LogService>().playback(
-      'Native player error kind=$kind recoverable=$recoverable',
+    _log(
+      'Native player error kind=${map['kind'] ?? 'unknown'} '
+      'recoverable=${map['recoverable']}',
       level: LogLevel.error,
       error: map['message'],
     );
@@ -163,10 +179,12 @@ class AetherBackend implements PlayerBackend {
   /// every playback. The preference notifies on every change, so the guard
   /// keeps anything but a real change off the channel.
   void _syncAllowUntrustedTls() {
-    final enabled = _prefs.get(UserPreferences.allowSelfSignedCerts);
-    if (enabled == _allowUntrustedTls) return;
-    _allowUntrustedTls = enabled;
-    _invoke<void>('setAllowUntrustedTls', {'enabled': enabled});
+    final trust = EngineTrust.current(
+      _prefs.get(UserPreferences.allowSelfSignedCerts),
+    );
+    if (trust.matches(_trust)) return;
+    _trust = trust;
+    _invoke<void>('setAllowUntrustedTls', trust.toChannelArguments());
   }
 
   int _toInt(dynamic value) {
@@ -206,6 +224,7 @@ class AetherBackend implements PlayerBackend {
     _activeSubtitleTrackIndex = null;
     _tracksReadyCompleter = null;
     _embeddedCaptionTracks = const [];
+    _startStallWatchdog();
 
     await _invoke<void>('setSource', {
       'url': url,
@@ -237,10 +256,60 @@ class AetherBackend implements PlayerBackend {
   @override
   Future<void> stop() async {
     await _invoke<void>('stop');
+    _stopStallWatchdog();
     if (_isPlaying) {
       _isPlaying = false;
       _playingStream.add(false);
     }
+    // The state timer dies with the session, so a stop taken while buffering
+    // left this latched with nothing to push it back down.
+    if (_isBuffering) {
+      _isBuffering = false;
+      _bufferingStream.add(false);
+    }
+  }
+
+  void _startStallWatchdog() {
+    _stallSawPlayback = false;
+    _stallSinceMs = 0;
+    _stallLastPositionMs = -1;
+    _stallTimer ??= Timer.periodic(
+      const Duration(seconds: 2),
+      (_) => _checkStall(),
+    );
+  }
+
+  void _stopStallWatchdog() {
+    _stallTimer?.cancel();
+    _stallTimer = null;
+  }
+
+  void _checkStall() {
+    // Only a session that reached playback can stall. A slow open is a slow
+    // server, which this must not fail.
+    if (_disposed || !_stallSawPlayback) return;
+    // A backgrounded session is torn down deliberately and reloaded on return.
+    if (!_isBuffering ||
+        WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed) {
+      _stallSinceMs = 0;
+      return;
+    }
+
+    final nowMs = DateTime.now().millisecondsSinceEpoch;
+    final positionMs = _position.inMilliseconds;
+    if (_stallSinceMs == 0 || positionMs != _stallLastPositionMs) {
+      _stallSinceMs = nowMs;
+      _stallLastPositionMs = positionMs;
+      return;
+    }
+    if (nowMs - _stallSinceMs < _stallTimeoutMs) return;
+
+    _stopStallWatchdog();
+    _handleEvent(<String, dynamic>{
+      'event': 'playerError',
+      'kind': 'playback_stalled',
+      'recoverable': false,
+    });
   }
 
   @override
@@ -375,6 +444,11 @@ class AetherBackend implements PlayerBackend {
     String? externalSubtitleUrl,
   }) async {
     _activeSubtitleTrackIndex = index;
+    _log(
+      'setSubtitleTrack index=$index external=$isExternalSubtitle '
+      'bitmap=$isBitmapSubtitle codec=${subtitleCodec ?? 'none'} '
+      'url=${externalSubtitleUrl == null ? 'none' : loggableUrl(externalSubtitleUrl)}',
+    );
     await _invoke<void>('setSubtitleTrack', {
       'index': index,
       'isBitmapSubtitle': isBitmapSubtitle,
@@ -387,6 +461,7 @@ class AetherBackend implements PlayerBackend {
   @override
   Future<void> disableSubtitleTrack() async {
     _activeSubtitleTrackIndex = -1;
+    _log('disableSubtitleTrack');
     await _invoke<void>('disableSubtitleTrack');
   }
 
@@ -411,14 +486,22 @@ class AetherBackend implements PlayerBackend {
 
   @override
   Future<void> waitForEmbeddedSubtitleCount(int count) async {
-    final deadline = DateTime.now().add(const Duration(seconds: 6));
+    final started = DateTime.now();
+    final deadline = started.add(const Duration(seconds: 6));
+    var satisfied = false;
     while (DateTime.now().isBefore(deadline)) {
       if (_textTrackCount >= count) {
-        return;
+        satisfied = true;
+        break;
       }
       await waitForTracksReady();
       await Future<void>.delayed(const Duration(milliseconds: 100));
     }
+    _log(
+      'waitForEmbeddedSubtitleCount want=$count have=$_textTrackCount '
+      'satisfied=$satisfied '
+      'waited=${DateTime.now().difference(started).inMilliseconds}ms',
+    );
   }
 
   @override
@@ -454,6 +537,10 @@ class AetherBackend implements PlayerBackend {
     String? language,
     String? codec,
   }) async {
+    _log(
+      'addExternalSubtitle ${loggableUrl(url)} title=${title ?? 'none'} '
+      'language=${language ?? 'none'} codec=${codec ?? 'none'}',
+    );
     await _invoke<void>('addExternalSubtitle', {
       'url': url,
       'title': title,
@@ -538,6 +625,7 @@ class AetherBackend implements PlayerBackend {
     _prefs.removeListener(_syncAllowUntrustedTls);
     _prefs.removeListener(_syncEngineLogForwarding);
     _audioDelayDebounce?.cancel();
+    _stopStallWatchdog();
     _eventSub?.cancel();
     _positionStream.close();
     _durationStream.close();

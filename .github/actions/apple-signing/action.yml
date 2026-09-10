@@ -1,0 +1,87 @@
+name: Apple signing
+description: Puts a signing certificate and an App Store Connect API key where xcodebuild will find them.
+
+inputs:
+  certificate-base64:
+    description: A .p12 holding the signing identities, base64 encoded. Leave empty to skip the import.
+    default: ''
+  certificate-password:
+    description: The .p12 export password.
+    default: ''
+  certificate-required:
+    description: Fail rather than skip when no certificate is given.
+    default: 'false'
+  asc-key-base64:
+    description: An App Store Connect API key (.p8), base64 encoded. Leave empty to skip.
+    default: ''
+
+outputs:
+  asc-key-path:
+    description: Where the API key was written, empty when none was given.
+    value: ${{ steps.asc.outputs.path }}
+
+runs:
+  using: composite
+  steps:
+    - name: Import signing certificate
+      shell: bash
+      env:
+        CERTIFICATE_BASE64: ${{ inputs.certificate-base64 }}
+        CERTIFICATE_PASSWORD: ${{ inputs.certificate-password }}
+        CERTIFICATE_REQUIRED: ${{ inputs.certificate-required }}
+      run: |
+        # Without a signing identity in the keychain, automatic signing asks
+        # Apple for a new certificate on every run, and a team can only hold so
+        # many before the build starts failing. Importing the one we already
+        # have leaves xcodebuild managing profiles alone, which it regenerates
+        # freely.
+        if [ -z "$CERTIFICATE_BASE64" ]; then
+          if [ "$CERTIFICATE_REQUIRED" = "true" ]; then
+            echo "::error::a signing certificate is required for this build" && exit 1
+          fi
+          echo "No certificate given, leaving signing to whatever the build falls back to."
+          exit 0
+        fi
+
+        KEYCHAIN_PATH="$RUNNER_TEMP/signing.keychain-db"
+        PASSWORD_FILE="$KEYCHAIN_PATH.password"
+        CERT_PATH="$RUNNER_TEMP/certificate.p12"
+
+        # A job can import more than one .p12 into the same keychain, so the
+        # keychain and its password outlive this step.
+        if [ ! -f "$KEYCHAIN_PATH" ]; then
+          KEYCHAIN_PASSWORD="$(openssl rand -hex 20)"
+          umask 077
+          printf '%s' "$KEYCHAIN_PASSWORD" > "$PASSWORD_FILE"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security list-keychains -d user -s "$KEYCHAIN_PATH" login.keychain-db
+        else
+          KEYCHAIN_PASSWORD="$(cat "$PASSWORD_FILE")"
+        fi
+
+        security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+        echo "$CERTIFICATE_BASE64" | base64 -D -o "$CERT_PATH"
+        security import "$CERT_PATH" -P "$CERTIFICATE_PASSWORD" \
+          -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
+        security set-key-partition-list -S apple-tool:,apple: \
+          -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+        rm -f "$CERT_PATH"
+
+        # Printed so a later signing failure says whether the import worked
+        # rather than surfacing as a confusing profile error.
+        security find-identity -v -p codesigning "$KEYCHAIN_PATH"
+
+    - name: Import App Store Connect API key
+      id: asc
+      shell: bash
+      env:
+        ASC_KEY_BASE64: ${{ inputs.asc-key-base64 }}
+      run: |
+        if [ -z "$ASC_KEY_BASE64" ]; then
+          echo "path=" >> "$GITHUB_OUTPUT"
+          exit 0
+        fi
+        mkdir -p "$RUNNER_TEMP/asc"
+        echo "$ASC_KEY_BASE64" | base64 -d > "$RUNNER_TEMP/asc/AuthKey.p8"
+        echo "path=$RUNNER_TEMP/asc/AuthKey.p8" >> "$GITHUB_OUTPUT"

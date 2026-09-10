@@ -474,6 +474,35 @@ void main() {
     });
   });
 
+  group('Still Watching activity reset', () {
+    test('seeking says the viewer is awake', () async {
+      final h = _Harness(await testPrefs());
+      h.controller.consecutiveEpisodes = 2;
+
+      h.controller.onUserSeeked();
+
+      expect(h.controller.consecutiveEpisodes, 0);
+    });
+
+    test('skipping a segment says the viewer is awake', () async {
+      final h = _Harness(await testPrefs());
+      h.controller.consecutiveEpisodes = 2;
+
+      h.controller.handleSkipSegment();
+
+      expect(h.controller.consecutiveEpisodes, 0);
+    });
+
+    test('an episode that plays itself out still counts', () async {
+      final h = _Harness(await testPrefs());
+
+      h.controller.onQueueChanged();
+      h.controller.onQueueChanged();
+
+      expect(h.controller.consecutiveEpisodes, 2);
+    });
+  });
+
   group('seek suppression', () {
     test('a seek hides the card, clears suppressAutoNext, and blocks a '
         're-show for 1200ms', () async {

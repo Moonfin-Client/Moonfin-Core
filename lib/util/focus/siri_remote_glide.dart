@@ -1,31 +1,22 @@
-import 'dart:async' show unawaited;
-
 import 'package:flutter/foundation.dart' show visibleForTesting;
-import 'package:flutter/services.dart' show MethodChannel;
-import 'package:flutter/widgets.dart'
-    show AppLifecycleState, WidgetsBinding, WidgetsBindingObserver;
 import 'package:flutter_tvos/flutter_tvos.dart'
     show TvRemoteController, TvRemoteTouchEvent, TvRemoteTouchPhase;
 
-import '../platform_detection.dart';
 import 'gamepad/gamepad_key_synthesizer.dart';
 
 /// Turns Siri Remote touchpad gestures into focus navigation. Focus steps one
 /// item at a time as the finger travels and stops when the finger does, so a
 /// drag moves the same number of items however fast it was made.
 ///
-/// The arrow presses tvOS makes out of swipes are held back natively by
-/// SiriRemotePressGate, which is told from here when the pad is touched so it
-/// can tell a swipe apart from a remote that only sends arrows. The engine's
-/// own swipe detectors are switched off by config, since one emits a single
-/// arrow per gesture and the other latches while the finger rests and runs
-/// focus away. Clicks and buttons stay native. Steps go out as real arrow key
-/// events through [GamepadKeySynthesizer], so every existing key handler and
-/// focus widget behaves exactly as it does for a click.
+/// The engine's own swipe detectors are switched off by config, since one
+/// emits a single arrow per gesture and the other latches while the finger
+/// rests and runs focus away. Clicks and buttons stay native. Steps go out as
+/// real arrow key events through [GamepadKeySynthesizer], so every existing
+/// key handler and focus widget behaves exactly as it does for a click.
 ///
 /// While a native view controller covers Flutter the engine stops forwarding
 /// touches, so this layer goes quiet on its own.
-class SiriRemoteGlide with WidgetsBindingObserver {
+class SiriRemoteGlide {
   SiriRemoteGlide._();
 
   static final SiriRemoteGlide instance = SiriRemoteGlide._();
@@ -36,8 +27,6 @@ class SiriRemoteGlide with WidgetsBindingObserver {
 
   /// Travel between steps after the first.
   static const double _stepTravel = 0.36;
-
-  static const MethodChannel _gate = MethodChannel('moonfin/siri_remote_gate');
 
   final GamepadKeySynthesizer _synthesizer = GamepadKeySynthesizer();
 
@@ -53,14 +42,6 @@ class SiriRemoteGlide with WidgetsBindingObserver {
     if (_attached) return;
     _attached = true;
     TvRemoteController.instance.addRawListener(_onTouch);
-    WidgetsBinding.instance.addObserver(this);
-  }
-
-  /// Losing the foreground can swallow the touch ended event, and a finger
-  /// cannot be on the pad while another app has the screen.
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state != AppLifecycleState.resumed) _setTouching(false);
   }
 
   @visibleForTesting
@@ -84,7 +65,7 @@ class SiriRemoteGlide with WidgetsBindingObserver {
         _onMove(event.x, event.y);
       case TvRemoteTouchPhase.ended:
       case TvRemoteTouchPhase.cancelled:
-        _setTouching(false);
+        _touching = false;
       case TvRemoteTouchPhase.loc:
       case TvRemoteTouchPhase.clickStart:
       case TvRemoteTouchPhase.clickEnd:
@@ -93,28 +74,12 @@ class SiriRemoteGlide with WidgetsBindingObserver {
   }
 
   void _beginGesture(double x, double y) {
-    _setTouching(true);
+    _touching = true;
     _lastX = x;
     _lastY = y;
     _accX = 0;
     _accY = 0;
     _steppedThisGesture = false;
-  }
-
-  /// Tells the native press gate whether a finger is on the pad. A repeated
-  /// value still goes out, since the gate clears itself when the app loses the
-  /// foreground or a controller drops and the next gesture has to re-arm it.
-  /// The gate is absent if the engine ever stops putting recognizers on its
-  /// presses, and a report nobody listens for is no reason to break the
-  /// gesture.
-  void _setTouching(bool touching) {
-    _touching = touching;
-    if (!PlatformDetection.isAppleTV) return;
-    unawaited(
-      _gate
-          .invokeMethod<void>('setPadTouched', touching)
-          .catchError((Object _) {}),
-    );
   }
 
   void _onMove(double x, double y) {

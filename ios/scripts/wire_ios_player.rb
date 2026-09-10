@@ -61,11 +61,10 @@ abs_files.each do |abs|
 end
 
 # --- AetherEngine ---
-# The trust hook the engine needs for a self signed origin lives on the
-# fork and has no upstream release yet, so this pins a revision rather than
-# a version. Move it back to an upstream tag once the hook lands there.
-aether_remote_url = 'https://github.com/RadicalMuffinMan/AetherEngine'
-aether_revision = '45e38fe3bbdcd6e97f6cfb2220b5e7ceb95d1e69'
+# Pinned exactly, since an engine bump is a deliberate change rather than
+# something a resolve should pick up on its own.
+aether_remote_url = 'https://github.com/superuser404notfound/AetherEngine'
+aether_version = '6.74.0'
 aether_local_path = File.expand_path(File.join(project_dir, '..', '..', 'AetherEngine'))
 use_local_aether = ENV['AETHER_LOCAL'] == '1'
 
@@ -107,10 +106,22 @@ unless aether_pkg
   else
     aether_pkg = project.new(Xcodeproj::Project::Object::XCRemoteSwiftPackageReference)
     aether_pkg.repositoryURL = aether_remote_url
-    aether_pkg.requirement = { 'kind' => 'revision', 'revision' => aether_revision }
-    puts "added AetherEngine remote package reference (#{aether_revision})"
+    aether_pkg.requirement = { 'kind' => 'exactVersion', 'version' => aether_version }
+    puts "added AetherEngine remote package reference (#{aether_version})"
   end
   project.root_object.package_references << aether_pkg
+end
+
+# A reference that is already there keeps whatever it was written with, so an
+# engine bump would land in this script and nowhere else. Reconcile it, which
+# also makes running this twice a no-op.
+if !use_local_aether &&
+   aether_pkg.is_a?(Xcodeproj::Project::Object::XCRemoteSwiftPackageReference) &&
+   (aether_pkg.repositoryURL != aether_remote_url ||
+    aether_pkg.requirement != { 'kind' => 'exactVersion', 'version' => aether_version })
+  aether_pkg.repositoryURL = aether_remote_url
+  aether_pkg.requirement = { 'kind' => 'exactVersion', 'version' => aether_version }
+  puts "repointed AetherEngine at #{aether_remote_url} #{aether_version}"
 end
 
 unless target.package_product_dependencies.any? { |d| d.product_name == 'AetherEngine' }

@@ -3,18 +3,29 @@ import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../l10n/app_localizations.dart';
 
-/// Small glyph chip identifying a card as a book or an audiobook. Solid
-/// scrim colors (no glass) so rows of cards stay cheap on TV GPUs.
+/// Small glyph chip identifying a card as a book, an audiobook, or a comic.
+/// Solid scrim colors (no glass) so rows of cards stay cheap on TV GPUs.
 class BookFormatBadge extends StatelessWidget {
   final bool isAudiobook;
+  final bool isComic;
 
-  const BookFormatBadge({super.key, required this.isAudiobook});
+  const BookFormatBadge({
+    super.key,
+    this.isAudiobook = false,
+    this.isComic = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final (label, icon) = isComic
+        ? (l10n.bookFormatComic, Icons.auto_stories_rounded)
+        : (isAudiobook
+            ? (l10n.bookFormatAudiobook, Icons.headphones_rounded)
+            : (l10n.bookFormatBook, Icons.menu_book_rounded));
+
     return Semantics(
-      label: isAudiobook ? l10n.bookFormatAudiobook : l10n.bookFormatBook,
+      label: label,
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: AppColorScheme.scrim.withValues(alpha: 0.72),
@@ -23,7 +34,7 @@ class BookFormatBadge extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
           child: Icon(
-            isAudiobook ? Icons.headphones_rounded : Icons.menu_book_rounded,
+            icon,
             size: 12,
             color: AppColorScheme.onBadge,
           ),

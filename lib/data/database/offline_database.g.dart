@@ -274,6 +274,18 @@ class $DownloadedItemsTable extends DownloadedItems
     type: DriftSqlType.int,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _downloadSourceMeta = const VerificationMeta(
+    'downloadSource',
+  );
+  @override
+  late final GeneratedColumn<String> downloadSource = GeneratedColumn<String>(
+    'download_source',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('manual'),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     itemId,
@@ -300,6 +312,7 @@ class $DownloadedItemsTable extends DownloadedItems
     seasonName,
     indexNumber,
     parentIndexNumber,
+    downloadSource,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -508,6 +521,15 @@ class $DownloadedItemsTable extends DownloadedItems
         ),
       );
     }
+    if (data.containsKey('download_source')) {
+      context.handle(
+        _downloadSourceMeta,
+        downloadSource.isAcceptableOrUnknown(
+          data['download_source']!,
+          _downloadSourceMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -613,6 +635,10 @@ class $DownloadedItemsTable extends DownloadedItems
         DriftSqlType.int,
         data['${effectivePrefix}parent_index_number'],
       ),
+      downloadSource: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}download_source'],
+      )!,
     );
   }
 
@@ -647,6 +673,11 @@ class DownloadedItem extends DataClass implements Insertable<DownloadedItem> {
   final String? seasonName;
   final int? indexNumber;
   final int? parentIndexNumber;
+
+  /// Who queued the download: `manual` for the user, `auto` for an
+  /// auto-download subscription. Only auto rows are ever removed by the
+  /// subscription's delete-after-watched rule.
+  final String downloadSource;
   const DownloadedItem({
     required this.itemId,
     required this.serverId,
@@ -672,6 +703,7 @@ class DownloadedItem extends DataClass implements Insertable<DownloadedItem> {
     this.seasonName,
     this.indexNumber,
     this.parentIndexNumber,
+    required this.downloadSource,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -726,6 +758,7 @@ class DownloadedItem extends DataClass implements Insertable<DownloadedItem> {
     if (!nullToAbsent || parentIndexNumber != null) {
       map['parent_index_number'] = Variable<int>(parentIndexNumber);
     }
+    map['download_source'] = Variable<String>(downloadSource);
     return map;
   }
 
@@ -781,6 +814,7 @@ class DownloadedItem extends DataClass implements Insertable<DownloadedItem> {
       parentIndexNumber: parentIndexNumber == null && nullToAbsent
           ? const Value.absent()
           : Value(parentIndexNumber),
+      downloadSource: Value(downloadSource),
     );
   }
 
@@ -816,6 +850,7 @@ class DownloadedItem extends DataClass implements Insertable<DownloadedItem> {
       seasonName: serializer.fromJson<String?>(json['seasonName']),
       indexNumber: serializer.fromJson<int?>(json['indexNumber']),
       parentIndexNumber: serializer.fromJson<int?>(json['parentIndexNumber']),
+      downloadSource: serializer.fromJson<String>(json['downloadSource']),
     );
   }
   @override
@@ -846,6 +881,7 @@ class DownloadedItem extends DataClass implements Insertable<DownloadedItem> {
       'seasonName': serializer.toJson<String?>(seasonName),
       'indexNumber': serializer.toJson<int?>(indexNumber),
       'parentIndexNumber': serializer.toJson<int?>(parentIndexNumber),
+      'downloadSource': serializer.toJson<String>(downloadSource),
     };
   }
 
@@ -874,6 +910,7 @@ class DownloadedItem extends DataClass implements Insertable<DownloadedItem> {
     Value<String?> seasonName = const Value.absent(),
     Value<int?> indexNumber = const Value.absent(),
     Value<int?> parentIndexNumber = const Value.absent(),
+    String? downloadSource,
   }) => DownloadedItem(
     itemId: itemId ?? this.itemId,
     serverId: serverId ?? this.serverId,
@@ -903,6 +940,7 @@ class DownloadedItem extends DataClass implements Insertable<DownloadedItem> {
     parentIndexNumber: parentIndexNumber.present
         ? parentIndexNumber.value
         : this.parentIndexNumber,
+    downloadSource: downloadSource ?? this.downloadSource,
   );
   DownloadedItem copyWithCompanion(DownloadedItemsCompanion data) {
     return DownloadedItem(
@@ -962,6 +1000,9 @@ class DownloadedItem extends DataClass implements Insertable<DownloadedItem> {
       parentIndexNumber: data.parentIndexNumber.present
           ? data.parentIndexNumber.value
           : this.parentIndexNumber,
+      downloadSource: data.downloadSource.present
+          ? data.downloadSource.value
+          : this.downloadSource,
     );
   }
 
@@ -991,7 +1032,8 @@ class DownloadedItem extends DataClass implements Insertable<DownloadedItem> {
           ..write('seriesName: $seriesName, ')
           ..write('seasonName: $seasonName, ')
           ..write('indexNumber: $indexNumber, ')
-          ..write('parentIndexNumber: $parentIndexNumber')
+          ..write('parentIndexNumber: $parentIndexNumber, ')
+          ..write('downloadSource: $downloadSource')
           ..write(')'))
         .toString();
   }
@@ -1022,6 +1064,7 @@ class DownloadedItem extends DataClass implements Insertable<DownloadedItem> {
     seasonName,
     indexNumber,
     parentIndexNumber,
+    downloadSource,
   ]);
   @override
   bool operator ==(Object other) =>
@@ -1050,7 +1093,8 @@ class DownloadedItem extends DataClass implements Insertable<DownloadedItem> {
           other.seriesName == this.seriesName &&
           other.seasonName == this.seasonName &&
           other.indexNumber == this.indexNumber &&
-          other.parentIndexNumber == this.parentIndexNumber);
+          other.parentIndexNumber == this.parentIndexNumber &&
+          other.downloadSource == this.downloadSource);
 }
 
 class DownloadedItemsCompanion extends UpdateCompanion<DownloadedItem> {
@@ -1078,6 +1122,7 @@ class DownloadedItemsCompanion extends UpdateCompanion<DownloadedItem> {
   final Value<String?> seasonName;
   final Value<int?> indexNumber;
   final Value<int?> parentIndexNumber;
+  final Value<String> downloadSource;
   final Value<int> rowid;
   const DownloadedItemsCompanion({
     this.itemId = const Value.absent(),
@@ -1104,6 +1149,7 @@ class DownloadedItemsCompanion extends UpdateCompanion<DownloadedItem> {
     this.seasonName = const Value.absent(),
     this.indexNumber = const Value.absent(),
     this.parentIndexNumber = const Value.absent(),
+    this.downloadSource = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   DownloadedItemsCompanion.insert({
@@ -1131,6 +1177,7 @@ class DownloadedItemsCompanion extends UpdateCompanion<DownloadedItem> {
     this.seasonName = const Value.absent(),
     this.indexNumber = const Value.absent(),
     this.parentIndexNumber = const Value.absent(),
+    this.downloadSource = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : itemId = Value(itemId),
        serverId = Value(serverId),
@@ -1163,6 +1210,7 @@ class DownloadedItemsCompanion extends UpdateCompanion<DownloadedItem> {
     Expression<String>? seasonName,
     Expression<int>? indexNumber,
     Expression<int>? parentIndexNumber,
+    Expression<String>? downloadSource,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -1191,6 +1239,7 @@ class DownloadedItemsCompanion extends UpdateCompanion<DownloadedItem> {
       if (seasonName != null) 'season_name': seasonName,
       if (indexNumber != null) 'index_number': indexNumber,
       if (parentIndexNumber != null) 'parent_index_number': parentIndexNumber,
+      if (downloadSource != null) 'download_source': downloadSource,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -1220,6 +1269,7 @@ class DownloadedItemsCompanion extends UpdateCompanion<DownloadedItem> {
     Value<String?>? seasonName,
     Value<int?>? indexNumber,
     Value<int?>? parentIndexNumber,
+    Value<String>? downloadSource,
     Value<int>? rowid,
   }) {
     return DownloadedItemsCompanion(
@@ -1248,6 +1298,7 @@ class DownloadedItemsCompanion extends UpdateCompanion<DownloadedItem> {
       seasonName: seasonName ?? this.seasonName,
       indexNumber: indexNumber ?? this.indexNumber,
       parentIndexNumber: parentIndexNumber ?? this.parentIndexNumber,
+      downloadSource: downloadSource ?? this.downloadSource,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1329,6 +1380,9 @@ class DownloadedItemsCompanion extends UpdateCompanion<DownloadedItem> {
     if (parentIndexNumber.present) {
       map['parent_index_number'] = Variable<int>(parentIndexNumber.value);
     }
+    if (downloadSource.present) {
+      map['download_source'] = Variable<String>(downloadSource.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -1362,6 +1416,597 @@ class DownloadedItemsCompanion extends UpdateCompanion<DownloadedItem> {
           ..write('seasonName: $seasonName, ')
           ..write('indexNumber: $indexNumber, ')
           ..write('parentIndexNumber: $parentIndexNumber, ')
+          ..write('downloadSource: $downloadSource, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $AutoDownloadSubscriptionsTable extends AutoDownloadSubscriptions
+    with TableInfo<$AutoDownloadSubscriptionsTable, AutoDownloadSubscription> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $AutoDownloadSubscriptionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _seriesIdMeta = const VerificationMeta(
+    'seriesId',
+  );
+  @override
+  late final GeneratedColumn<String> seriesId = GeneratedColumn<String>(
+    'series_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _serverIdMeta = const VerificationMeta(
+    'serverId',
+  );
+  @override
+  late final GeneratedColumn<String> serverId = GeneratedColumn<String>(
+    'server_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+    'user_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _seriesNameMeta = const VerificationMeta(
+    'seriesName',
+  );
+  @override
+  late final GeneratedColumn<String> seriesName = GeneratedColumn<String>(
+    'series_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _qualityPresetMeta = const VerificationMeta(
+    'qualityPreset',
+  );
+  @override
+  late final GeneratedColumn<String> qualityPreset = GeneratedColumn<String>(
+    'quality_preset',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _lastCheckedAtMeta = const VerificationMeta(
+    'lastCheckedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastCheckedAt =
+      GeneratedColumn<DateTime>(
+        'last_checked_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _lastQueuedCountMeta = const VerificationMeta(
+    'lastQueuedCount',
+  );
+  @override
+  late final GeneratedColumn<int> lastQueuedCount = GeneratedColumn<int>(
+    'last_queued_count',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _lastErrorMeta = const VerificationMeta(
+    'lastError',
+  );
+  @override
+  late final GeneratedColumn<String> lastError = GeneratedColumn<String>(
+    'last_error',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    seriesId,
+    serverId,
+    userId,
+    seriesName,
+    qualityPreset,
+    createdAt,
+    lastCheckedAt,
+    lastQueuedCount,
+    lastError,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'auto_download_subscriptions';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<AutoDownloadSubscription> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('series_id')) {
+      context.handle(
+        _seriesIdMeta,
+        seriesId.isAcceptableOrUnknown(data['series_id']!, _seriesIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_seriesIdMeta);
+    }
+    if (data.containsKey('server_id')) {
+      context.handle(
+        _serverIdMeta,
+        serverId.isAcceptableOrUnknown(data['server_id']!, _serverIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_serverIdMeta);
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
+    }
+    if (data.containsKey('series_name')) {
+      context.handle(
+        _seriesNameMeta,
+        seriesName.isAcceptableOrUnknown(data['series_name']!, _seriesNameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_seriesNameMeta);
+    }
+    if (data.containsKey('quality_preset')) {
+      context.handle(
+        _qualityPresetMeta,
+        qualityPreset.isAcceptableOrUnknown(
+          data['quality_preset']!,
+          _qualityPresetMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_qualityPresetMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('last_checked_at')) {
+      context.handle(
+        _lastCheckedAtMeta,
+        lastCheckedAt.isAcceptableOrUnknown(
+          data['last_checked_at']!,
+          _lastCheckedAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_queued_count')) {
+      context.handle(
+        _lastQueuedCountMeta,
+        lastQueuedCount.isAcceptableOrUnknown(
+          data['last_queued_count']!,
+          _lastQueuedCountMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_error')) {
+      context.handle(
+        _lastErrorMeta,
+        lastError.isAcceptableOrUnknown(data['last_error']!, _lastErrorMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {seriesId, serverId, userId};
+  @override
+  AutoDownloadSubscription map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return AutoDownloadSubscription(
+      seriesId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}series_id'],
+      )!,
+      serverId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}server_id'],
+      )!,
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}user_id'],
+      )!,
+      seriesName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}series_name'],
+      )!,
+      qualityPreset: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}quality_preset'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      lastCheckedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_checked_at'],
+      ),
+      lastQueuedCount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}last_queued_count'],
+      )!,
+      lastError: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_error'],
+      ),
+    );
+  }
+
+  @override
+  $AutoDownloadSubscriptionsTable createAlias(String alias) {
+    return $AutoDownloadSubscriptionsTable(attachedDatabase, alias);
+  }
+}
+
+class AutoDownloadSubscription extends DataClass
+    implements Insertable<AutoDownloadSubscription> {
+  final String seriesId;
+  final String serverId;
+  final String userId;
+  final String seriesName;
+  final String qualityPreset;
+  final DateTime createdAt;
+  final DateTime? lastCheckedAt;
+  final int lastQueuedCount;
+  final String? lastError;
+  const AutoDownloadSubscription({
+    required this.seriesId,
+    required this.serverId,
+    required this.userId,
+    required this.seriesName,
+    required this.qualityPreset,
+    required this.createdAt,
+    this.lastCheckedAt,
+    required this.lastQueuedCount,
+    this.lastError,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['series_id'] = Variable<String>(seriesId);
+    map['server_id'] = Variable<String>(serverId);
+    map['user_id'] = Variable<String>(userId);
+    map['series_name'] = Variable<String>(seriesName);
+    map['quality_preset'] = Variable<String>(qualityPreset);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    if (!nullToAbsent || lastCheckedAt != null) {
+      map['last_checked_at'] = Variable<DateTime>(lastCheckedAt);
+    }
+    map['last_queued_count'] = Variable<int>(lastQueuedCount);
+    if (!nullToAbsent || lastError != null) {
+      map['last_error'] = Variable<String>(lastError);
+    }
+    return map;
+  }
+
+  AutoDownloadSubscriptionsCompanion toCompanion(bool nullToAbsent) {
+    return AutoDownloadSubscriptionsCompanion(
+      seriesId: Value(seriesId),
+      serverId: Value(serverId),
+      userId: Value(userId),
+      seriesName: Value(seriesName),
+      qualityPreset: Value(qualityPreset),
+      createdAt: Value(createdAt),
+      lastCheckedAt: lastCheckedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastCheckedAt),
+      lastQueuedCount: Value(lastQueuedCount),
+      lastError: lastError == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastError),
+    );
+  }
+
+  factory AutoDownloadSubscription.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return AutoDownloadSubscription(
+      seriesId: serializer.fromJson<String>(json['seriesId']),
+      serverId: serializer.fromJson<String>(json['serverId']),
+      userId: serializer.fromJson<String>(json['userId']),
+      seriesName: serializer.fromJson<String>(json['seriesName']),
+      qualityPreset: serializer.fromJson<String>(json['qualityPreset']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      lastCheckedAt: serializer.fromJson<DateTime?>(json['lastCheckedAt']),
+      lastQueuedCount: serializer.fromJson<int>(json['lastQueuedCount']),
+      lastError: serializer.fromJson<String?>(json['lastError']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'seriesId': serializer.toJson<String>(seriesId),
+      'serverId': serializer.toJson<String>(serverId),
+      'userId': serializer.toJson<String>(userId),
+      'seriesName': serializer.toJson<String>(seriesName),
+      'qualityPreset': serializer.toJson<String>(qualityPreset),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'lastCheckedAt': serializer.toJson<DateTime?>(lastCheckedAt),
+      'lastQueuedCount': serializer.toJson<int>(lastQueuedCount),
+      'lastError': serializer.toJson<String?>(lastError),
+    };
+  }
+
+  AutoDownloadSubscription copyWith({
+    String? seriesId,
+    String? serverId,
+    String? userId,
+    String? seriesName,
+    String? qualityPreset,
+    DateTime? createdAt,
+    Value<DateTime?> lastCheckedAt = const Value.absent(),
+    int? lastQueuedCount,
+    Value<String?> lastError = const Value.absent(),
+  }) => AutoDownloadSubscription(
+    seriesId: seriesId ?? this.seriesId,
+    serverId: serverId ?? this.serverId,
+    userId: userId ?? this.userId,
+    seriesName: seriesName ?? this.seriesName,
+    qualityPreset: qualityPreset ?? this.qualityPreset,
+    createdAt: createdAt ?? this.createdAt,
+    lastCheckedAt: lastCheckedAt.present
+        ? lastCheckedAt.value
+        : this.lastCheckedAt,
+    lastQueuedCount: lastQueuedCount ?? this.lastQueuedCount,
+    lastError: lastError.present ? lastError.value : this.lastError,
+  );
+  AutoDownloadSubscription copyWithCompanion(
+    AutoDownloadSubscriptionsCompanion data,
+  ) {
+    return AutoDownloadSubscription(
+      seriesId: data.seriesId.present ? data.seriesId.value : this.seriesId,
+      serverId: data.serverId.present ? data.serverId.value : this.serverId,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      seriesName: data.seriesName.present
+          ? data.seriesName.value
+          : this.seriesName,
+      qualityPreset: data.qualityPreset.present
+          ? data.qualityPreset.value
+          : this.qualityPreset,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      lastCheckedAt: data.lastCheckedAt.present
+          ? data.lastCheckedAt.value
+          : this.lastCheckedAt,
+      lastQueuedCount: data.lastQueuedCount.present
+          ? data.lastQueuedCount.value
+          : this.lastQueuedCount,
+      lastError: data.lastError.present ? data.lastError.value : this.lastError,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AutoDownloadSubscription(')
+          ..write('seriesId: $seriesId, ')
+          ..write('serverId: $serverId, ')
+          ..write('userId: $userId, ')
+          ..write('seriesName: $seriesName, ')
+          ..write('qualityPreset: $qualityPreset, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('lastCheckedAt: $lastCheckedAt, ')
+          ..write('lastQueuedCount: $lastQueuedCount, ')
+          ..write('lastError: $lastError')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    seriesId,
+    serverId,
+    userId,
+    seriesName,
+    qualityPreset,
+    createdAt,
+    lastCheckedAt,
+    lastQueuedCount,
+    lastError,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is AutoDownloadSubscription &&
+          other.seriesId == this.seriesId &&
+          other.serverId == this.serverId &&
+          other.userId == this.userId &&
+          other.seriesName == this.seriesName &&
+          other.qualityPreset == this.qualityPreset &&
+          other.createdAt == this.createdAt &&
+          other.lastCheckedAt == this.lastCheckedAt &&
+          other.lastQueuedCount == this.lastQueuedCount &&
+          other.lastError == this.lastError);
+}
+
+class AutoDownloadSubscriptionsCompanion
+    extends UpdateCompanion<AutoDownloadSubscription> {
+  final Value<String> seriesId;
+  final Value<String> serverId;
+  final Value<String> userId;
+  final Value<String> seriesName;
+  final Value<String> qualityPreset;
+  final Value<DateTime> createdAt;
+  final Value<DateTime?> lastCheckedAt;
+  final Value<int> lastQueuedCount;
+  final Value<String?> lastError;
+  final Value<int> rowid;
+  const AutoDownloadSubscriptionsCompanion({
+    this.seriesId = const Value.absent(),
+    this.serverId = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.seriesName = const Value.absent(),
+    this.qualityPreset = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.lastCheckedAt = const Value.absent(),
+    this.lastQueuedCount = const Value.absent(),
+    this.lastError = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  AutoDownloadSubscriptionsCompanion.insert({
+    required String seriesId,
+    required String serverId,
+    required String userId,
+    required String seriesName,
+    required String qualityPreset,
+    required DateTime createdAt,
+    this.lastCheckedAt = const Value.absent(),
+    this.lastQueuedCount = const Value.absent(),
+    this.lastError = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : seriesId = Value(seriesId),
+       serverId = Value(serverId),
+       userId = Value(userId),
+       seriesName = Value(seriesName),
+       qualityPreset = Value(qualityPreset),
+       createdAt = Value(createdAt);
+  static Insertable<AutoDownloadSubscription> custom({
+    Expression<String>? seriesId,
+    Expression<String>? serverId,
+    Expression<String>? userId,
+    Expression<String>? seriesName,
+    Expression<String>? qualityPreset,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? lastCheckedAt,
+    Expression<int>? lastQueuedCount,
+    Expression<String>? lastError,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (seriesId != null) 'series_id': seriesId,
+      if (serverId != null) 'server_id': serverId,
+      if (userId != null) 'user_id': userId,
+      if (seriesName != null) 'series_name': seriesName,
+      if (qualityPreset != null) 'quality_preset': qualityPreset,
+      if (createdAt != null) 'created_at': createdAt,
+      if (lastCheckedAt != null) 'last_checked_at': lastCheckedAt,
+      if (lastQueuedCount != null) 'last_queued_count': lastQueuedCount,
+      if (lastError != null) 'last_error': lastError,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  AutoDownloadSubscriptionsCompanion copyWith({
+    Value<String>? seriesId,
+    Value<String>? serverId,
+    Value<String>? userId,
+    Value<String>? seriesName,
+    Value<String>? qualityPreset,
+    Value<DateTime>? createdAt,
+    Value<DateTime?>? lastCheckedAt,
+    Value<int>? lastQueuedCount,
+    Value<String?>? lastError,
+    Value<int>? rowid,
+  }) {
+    return AutoDownloadSubscriptionsCompanion(
+      seriesId: seriesId ?? this.seriesId,
+      serverId: serverId ?? this.serverId,
+      userId: userId ?? this.userId,
+      seriesName: seriesName ?? this.seriesName,
+      qualityPreset: qualityPreset ?? this.qualityPreset,
+      createdAt: createdAt ?? this.createdAt,
+      lastCheckedAt: lastCheckedAt ?? this.lastCheckedAt,
+      lastQueuedCount: lastQueuedCount ?? this.lastQueuedCount,
+      lastError: lastError ?? this.lastError,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (seriesId.present) {
+      map['series_id'] = Variable<String>(seriesId.value);
+    }
+    if (serverId.present) {
+      map['server_id'] = Variable<String>(serverId.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
+    if (seriesName.present) {
+      map['series_name'] = Variable<String>(seriesName.value);
+    }
+    if (qualityPreset.present) {
+      map['quality_preset'] = Variable<String>(qualityPreset.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (lastCheckedAt.present) {
+      map['last_checked_at'] = Variable<DateTime>(lastCheckedAt.value);
+    }
+    if (lastQueuedCount.present) {
+      map['last_queued_count'] = Variable<int>(lastQueuedCount.value);
+    }
+    if (lastError.present) {
+      map['last_error'] = Variable<String>(lastError.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AutoDownloadSubscriptionsCompanion(')
+          ..write('seriesId: $seriesId, ')
+          ..write('serverId: $serverId, ')
+          ..write('userId: $userId, ')
+          ..write('seriesName: $seriesName, ')
+          ..write('qualityPreset: $qualityPreset, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('lastCheckedAt: $lastCheckedAt, ')
+          ..write('lastQueuedCount: $lastQueuedCount, ')
+          ..write('lastError: $lastError, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -1374,11 +2019,16 @@ abstract class _$OfflineDatabase extends GeneratedDatabase {
   late final $DownloadedItemsTable downloadedItems = $DownloadedItemsTable(
     this,
   );
+  late final $AutoDownloadSubscriptionsTable autoDownloadSubscriptions =
+      $AutoDownloadSubscriptionsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [downloadedItems];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+    downloadedItems,
+    autoDownloadSubscriptions,
+  ];
 }
 
 typedef $$DownloadedItemsTableCreateCompanionBuilder =
@@ -1407,6 +2057,7 @@ typedef $$DownloadedItemsTableCreateCompanionBuilder =
       Value<String?> seasonName,
       Value<int?> indexNumber,
       Value<int?> parentIndexNumber,
+      Value<String> downloadSource,
       Value<int> rowid,
     });
 typedef $$DownloadedItemsTableUpdateCompanionBuilder =
@@ -1435,6 +2086,7 @@ typedef $$DownloadedItemsTableUpdateCompanionBuilder =
       Value<String?> seasonName,
       Value<int?> indexNumber,
       Value<int?> parentIndexNumber,
+      Value<String> downloadSource,
       Value<int> rowid,
     });
 
@@ -1564,6 +2216,11 @@ class $$DownloadedItemsTableFilterComposer
 
   ColumnFilters<int> get parentIndexNumber => $composableBuilder(
     column: $table.parentIndexNumber,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get downloadSource => $composableBuilder(
+    column: $table.downloadSource,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -1696,6 +2353,11 @@ class $$DownloadedItemsTableOrderingComposer
     column: $table.parentIndexNumber,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get downloadSource => $composableBuilder(
+    column: $table.downloadSource,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$DownloadedItemsTableAnnotationComposer
@@ -1810,6 +2472,11 @@ class $$DownloadedItemsTableAnnotationComposer
     column: $table.parentIndexNumber,
     builder: (column) => column,
   );
+
+  GeneratedColumn<String> get downloadSource => $composableBuilder(
+    column: $table.downloadSource,
+    builder: (column) => column,
+  );
 }
 
 class $$DownloadedItemsTableTableManager
@@ -1873,6 +2540,7 @@ class $$DownloadedItemsTableTableManager
                 Value<String?> seasonName = const Value.absent(),
                 Value<int?> indexNumber = const Value.absent(),
                 Value<int?> parentIndexNumber = const Value.absent(),
+                Value<String> downloadSource = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => DownloadedItemsCompanion(
                 itemId: itemId,
@@ -1899,6 +2567,7 @@ class $$DownloadedItemsTableTableManager
                 seasonName: seasonName,
                 indexNumber: indexNumber,
                 parentIndexNumber: parentIndexNumber,
+                downloadSource: downloadSource,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -1927,6 +2596,7 @@ class $$DownloadedItemsTableTableManager
                 Value<String?> seasonName = const Value.absent(),
                 Value<int?> indexNumber = const Value.absent(),
                 Value<int?> parentIndexNumber = const Value.absent(),
+                Value<String> downloadSource = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => DownloadedItemsCompanion.insert(
                 itemId: itemId,
@@ -1953,6 +2623,7 @@ class $$DownloadedItemsTableTableManager
                 seasonName: seasonName,
                 indexNumber: indexNumber,
                 parentIndexNumber: parentIndexNumber,
+                downloadSource: downloadSource,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -1984,10 +2655,318 @@ typedef $$DownloadedItemsTableProcessedTableManager =
       DownloadedItem,
       PrefetchHooks Function()
     >;
+typedef $$AutoDownloadSubscriptionsTableCreateCompanionBuilder =
+    AutoDownloadSubscriptionsCompanion Function({
+      required String seriesId,
+      required String serverId,
+      required String userId,
+      required String seriesName,
+      required String qualityPreset,
+      required DateTime createdAt,
+      Value<DateTime?> lastCheckedAt,
+      Value<int> lastQueuedCount,
+      Value<String?> lastError,
+      Value<int> rowid,
+    });
+typedef $$AutoDownloadSubscriptionsTableUpdateCompanionBuilder =
+    AutoDownloadSubscriptionsCompanion Function({
+      Value<String> seriesId,
+      Value<String> serverId,
+      Value<String> userId,
+      Value<String> seriesName,
+      Value<String> qualityPreset,
+      Value<DateTime> createdAt,
+      Value<DateTime?> lastCheckedAt,
+      Value<int> lastQueuedCount,
+      Value<String?> lastError,
+      Value<int> rowid,
+    });
+
+class $$AutoDownloadSubscriptionsTableFilterComposer
+    extends Composer<_$OfflineDatabase, $AutoDownloadSubscriptionsTable> {
+  $$AutoDownloadSubscriptionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get seriesId => $composableBuilder(
+    column: $table.seriesId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get serverId => $composableBuilder(
+    column: $table.serverId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get seriesName => $composableBuilder(
+    column: $table.seriesName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get qualityPreset => $composableBuilder(
+    column: $table.qualityPreset,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastCheckedAt => $composableBuilder(
+    column: $table.lastCheckedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get lastQueuedCount => $composableBuilder(
+    column: $table.lastQueuedCount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastError => $composableBuilder(
+    column: $table.lastError,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$AutoDownloadSubscriptionsTableOrderingComposer
+    extends Composer<_$OfflineDatabase, $AutoDownloadSubscriptionsTable> {
+  $$AutoDownloadSubscriptionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get seriesId => $composableBuilder(
+    column: $table.seriesId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get serverId => $composableBuilder(
+    column: $table.serverId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get seriesName => $composableBuilder(
+    column: $table.seriesName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get qualityPreset => $composableBuilder(
+    column: $table.qualityPreset,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastCheckedAt => $composableBuilder(
+    column: $table.lastCheckedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get lastQueuedCount => $composableBuilder(
+    column: $table.lastQueuedCount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastError => $composableBuilder(
+    column: $table.lastError,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$AutoDownloadSubscriptionsTableAnnotationComposer
+    extends Composer<_$OfflineDatabase, $AutoDownloadSubscriptionsTable> {
+  $$AutoDownloadSubscriptionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get seriesId =>
+      $composableBuilder(column: $table.seriesId, builder: (column) => column);
+
+  GeneratedColumn<String> get serverId =>
+      $composableBuilder(column: $table.serverId, builder: (column) => column);
+
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get seriesName => $composableBuilder(
+    column: $table.seriesName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get qualityPreset => $composableBuilder(
+    column: $table.qualityPreset,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastCheckedAt => $composableBuilder(
+    column: $table.lastCheckedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get lastQueuedCount => $composableBuilder(
+    column: $table.lastQueuedCount,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastError =>
+      $composableBuilder(column: $table.lastError, builder: (column) => column);
+}
+
+class $$AutoDownloadSubscriptionsTableTableManager
+    extends
+        RootTableManager<
+          _$OfflineDatabase,
+          $AutoDownloadSubscriptionsTable,
+          AutoDownloadSubscription,
+          $$AutoDownloadSubscriptionsTableFilterComposer,
+          $$AutoDownloadSubscriptionsTableOrderingComposer,
+          $$AutoDownloadSubscriptionsTableAnnotationComposer,
+          $$AutoDownloadSubscriptionsTableCreateCompanionBuilder,
+          $$AutoDownloadSubscriptionsTableUpdateCompanionBuilder,
+          (
+            AutoDownloadSubscription,
+            BaseReferences<
+              _$OfflineDatabase,
+              $AutoDownloadSubscriptionsTable,
+              AutoDownloadSubscription
+            >,
+          ),
+          AutoDownloadSubscription,
+          PrefetchHooks Function()
+        > {
+  $$AutoDownloadSubscriptionsTableTableManager(
+    _$OfflineDatabase db,
+    $AutoDownloadSubscriptionsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$AutoDownloadSubscriptionsTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$AutoDownloadSubscriptionsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$AutoDownloadSubscriptionsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> seriesId = const Value.absent(),
+                Value<String> serverId = const Value.absent(),
+                Value<String> userId = const Value.absent(),
+                Value<String> seriesName = const Value.absent(),
+                Value<String> qualityPreset = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime?> lastCheckedAt = const Value.absent(),
+                Value<int> lastQueuedCount = const Value.absent(),
+                Value<String?> lastError = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => AutoDownloadSubscriptionsCompanion(
+                seriesId: seriesId,
+                serverId: serverId,
+                userId: userId,
+                seriesName: seriesName,
+                qualityPreset: qualityPreset,
+                createdAt: createdAt,
+                lastCheckedAt: lastCheckedAt,
+                lastQueuedCount: lastQueuedCount,
+                lastError: lastError,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String seriesId,
+                required String serverId,
+                required String userId,
+                required String seriesName,
+                required String qualityPreset,
+                required DateTime createdAt,
+                Value<DateTime?> lastCheckedAt = const Value.absent(),
+                Value<int> lastQueuedCount = const Value.absent(),
+                Value<String?> lastError = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => AutoDownloadSubscriptionsCompanion.insert(
+                seriesId: seriesId,
+                serverId: serverId,
+                userId: userId,
+                seriesName: seriesName,
+                qualityPreset: qualityPreset,
+                createdAt: createdAt,
+                lastCheckedAt: lastCheckedAt,
+                lastQueuedCount: lastQueuedCount,
+                lastError: lastError,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$AutoDownloadSubscriptionsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$OfflineDatabase,
+      $AutoDownloadSubscriptionsTable,
+      AutoDownloadSubscription,
+      $$AutoDownloadSubscriptionsTableFilterComposer,
+      $$AutoDownloadSubscriptionsTableOrderingComposer,
+      $$AutoDownloadSubscriptionsTableAnnotationComposer,
+      $$AutoDownloadSubscriptionsTableCreateCompanionBuilder,
+      $$AutoDownloadSubscriptionsTableUpdateCompanionBuilder,
+      (
+        AutoDownloadSubscription,
+        BaseReferences<
+          _$OfflineDatabase,
+          $AutoDownloadSubscriptionsTable,
+          AutoDownloadSubscription
+        >,
+      ),
+      AutoDownloadSubscription,
+      PrefetchHooks Function()
+    >;
 
 class $OfflineDatabaseManager {
   final _$OfflineDatabase _db;
   $OfflineDatabaseManager(this._db);
   $$DownloadedItemsTableTableManager get downloadedItems =>
       $$DownloadedItemsTableTableManager(_db, _db.downloadedItems);
+  $$AutoDownloadSubscriptionsTableTableManager get autoDownloadSubscriptions =>
+      $$AutoDownloadSubscriptionsTableTableManager(
+        _db,
+        _db.autoDownloadSubscriptions,
+      );
 }

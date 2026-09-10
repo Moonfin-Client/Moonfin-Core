@@ -4,6 +4,14 @@ import 'package:drift/drift.dart';
 
 import '../database/offline_database.dart';
 
+/// A download row without its metadata. Status: 1 in progress, 2 complete,
+/// 3 failed.
+typedef DownloadRef = ({
+  String itemId,
+  int downloadStatus,
+  String downloadSource,
+});
+
 class OfflineRepository {
   final OfflineDatabase _db;
 
@@ -132,6 +140,140 @@ class OfflineRepository {
           ..where((t) => t.itemId.equals(itemId)))
         .write(DownloadedItemsCompanion(metadataJson: Value(jsonEncode(metadata))));
   }
+
+  // ---------------------------------------------------------------------
+  // Auto-download subscriptions
+
+  Expression<bool> _subscriptionKey(
+    $AutoDownloadSubscriptionsTable t, {
+    required String seriesId,
+    required String serverId,
+    required String userId,
+  }) =>
+      t.seriesId.equals(seriesId) &
+      t.serverId.equals(serverId) &
+      t.userId.equals(userId);
+
+  SimpleSelectStatement<
+    $AutoDownloadSubscriptionsTable,
+    AutoDownloadSubscription
+  >
+  _accountSubscriptions({required String serverId, required String userId}) =>
+      _db.select(_db.autoDownloadSubscriptions)
+        ..where((t) => t.serverId.equals(serverId) & t.userId.equals(userId))
+        ..orderBy([(t) => OrderingTerm.asc(t.seriesName)]);
+
+  Future<List<AutoDownloadSubscription>> getSubscriptions({
+    required String serverId,
+    required String userId,
+  }) => _accountSubscriptions(serverId: serverId, userId: userId).get();
+
+  Stream<List<AutoDownloadSubscription>> watchSubscriptions({
+    required String serverId,
+    required String userId,
+  }) => _accountSubscriptions(serverId: serverId, userId: userId).watch();
+
+  SimpleSelectStatement<
+    $AutoDownloadSubscriptionsTable,
+    AutoDownloadSubscription
+  >
+  _subscription({
+    required String seriesId,
+    required String serverId,
+    required String userId,
+  }) => _db.select(_db.autoDownloadSubscriptions)
+    ..where(
+      (t) => _subscriptionKey(
+        t,
+        seriesId: seriesId,
+        serverId: serverId,
+        userId: userId,
+      ),
+    );
+
+  Future<AutoDownloadSubscription?> getSubscription({
+    required String seriesId,
+    required String serverId,
+    required String userId,
+  }) => _subscription(
+    seriesId: seriesId,
+    serverId: serverId,
+    userId: userId,
+  ).getSingleOrNull();
+
+  Stream<AutoDownloadSubscription?> watchSubscription({
+    required String seriesId,
+    required String serverId,
+    required String userId,
+  }) => _subscription(
+    seriesId: seriesId,
+    serverId: serverId,
+    userId: userId,
+  ).watchSingleOrNull();
+
+  Future<void> upsertSubscription(AutoDownloadSubscriptionsCompanion row) {
+    return _db.into(_db.autoDownloadSubscriptions).insertOnConflictUpdate(row);
+  }
+
+  Future<void> updateSubscriptionCheck({
+    required String seriesId,
+    required String serverId,
+    required String userId,
+    required DateTime checkedAt,
+    required int queuedCount,
+    String? error,
+  }) async {
+    await (_db.update(_db.autoDownloadSubscriptions)..where(
+          (t) => _subscriptionKey(
+            t,
+            seriesId: seriesId,
+            serverId: serverId,
+            userId: userId,
+          ),
+        ))
+        .write(
+          AutoDownloadSubscriptionsCompanion(
+            lastCheckedAt: Value(checkedAt),
+            lastQueuedCount: Value(queuedCount),
+            lastError: Value(error),
+          ),
+        );
+  }
+
+  Future<void> deleteSubscription({
+    required String seriesId,
+    required String serverId,
+    required String userId,
+  }) async {
+    await (_db.delete(_db.autoDownloadSubscriptions)..where(
+          (t) => _subscriptionKey(
+            t,
+            seriesId: seriesId,
+            serverId: serverId,
+            userId: userId,
+          ),
+        ))
+        .go();
+  }
+
+  /// Id, status and source of every download row, without the metadata
+  /// blobs: what batch queueing and the auto-download check need.
+  Future<List<DownloadRef>> getDownloadRefs() async {
+    final t = _db.downloadedItems;
+    final rows = await (_db.selectOnly(
+      t,
+    )..addColumns([t.itemId, t.downloadStatus, t.downloadSource])).get();
+    return [
+      for (final row in rows)
+        (
+          itemId: row.read(t.itemId)!,
+          downloadStatus: row.read(t.downloadStatus)!,
+          downloadSource: row.read(t.downloadSource)!,
+        ),
+    ];
+  }
+
+  // ---------------------------------------------------------------------
 
   Future<void> deleteItem(String itemId) async {
     await (_db.delete(_db.downloadedItems)

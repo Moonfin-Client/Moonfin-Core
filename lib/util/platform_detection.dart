@@ -11,15 +11,6 @@ class PlatformDetection {
 
   static const double _mobileFormFactorBreakpoint = 600;
 
-  /// True when compiled for Tizen (Samsung TV). Set via
-  /// `--dart-define=MOONFIN_TIZEN=true` in build-tizen.sh. Tizen is Linux-based
-  /// and reports as [TargetPlatform.linux] to the framework, so this
-  /// compile-time flag is the source of truth and must take precedence over the
-  /// OS-derived getters below (otherwise Tizen would take the desktop/libmpv
-  /// path). It const-folds to `false` on every other build, so the `!isTizen`
-  /// guards below add no runtime cost elsewhere.
-  static const bool isTizen = bool.fromEnvironment('MOONFIN_TIZEN');
-
   static const bool isAppleTV = bool.fromEnvironment('MOONFIN_TVOS');
 
   /// True for the dedicated Android TV flavor produced by the Android TV
@@ -29,21 +20,20 @@ class PlatformDetection {
   static const bool isForcedTv = bool.fromEnvironment('MOONFIN_FORCE_TV');
 
   static bool get isAndroid =>
-      !kIsWeb && !isTizen && defaultTargetPlatform == TargetPlatform.android;
+      !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
   static bool get isIOS =>
       !kIsWeb &&
-      !isTizen &&
       !isAppleTV &&
       defaultTargetPlatform == TargetPlatform.iOS;
   static int get iosMajorVersion => isIOS ? osMajorVersion() : 0;
   static int? _osMajorCache;
   static int get osMajor => _osMajorCache ??= osMajorVersion();
   static bool get isMacOS =>
-      !kIsWeb && !isTizen && defaultTargetPlatform == TargetPlatform.macOS;
+      !kIsWeb && defaultTargetPlatform == TargetPlatform.macOS;
   static bool get isWindows =>
-      !kIsWeb && !isTizen && defaultTargetPlatform == TargetPlatform.windows;
+      !kIsWeb && defaultTargetPlatform == TargetPlatform.windows;
   static bool get isLinux =>
-      !kIsWeb && !isTizen && defaultTargetPlatform == TargetPlatform.linux;
+      !kIsWeb && defaultTargetPlatform == TargetPlatform.linux;
   static bool get isWeb => kIsWeb;
 
   static String get linuxSessionType => '';
@@ -62,7 +52,7 @@ class PlatformDetection {
   static bool get isApple => isIOS || isMacOS;
 
   static bool get isTV {
-    if (isTizen || isAppleTV || isForcedTv) {
+    if (isAppleTV || isForcedTv) {
       return true;
     }
     return switch (_interfaceLayout) {
@@ -92,10 +82,18 @@ class PlatformDetection {
       <String, dynamic>{};
   static final Map<String, dynamic> _deviceMemory = <String, dynamic>{};
   static final Map<String, dynamic> _audioCapabilities = <String, dynamic>{};
+  static bool _hasDisplayHdrCapabilities = false;
   static bool _hasDolbyVisionCodecCapabilities = false;
   static bool _supportsDoViProfile5 = false;
   static bool _supportsDoViProfile7 = false;
   static bool _supportsDoViProfile8 = false;
+
+  /// Whether the display has ever answered the HDR probe. Without this a
+  /// panel that reported no HDR is indistinguishable from one that was
+  /// never asked.
+  static bool get hasDisplayHdrCapabilities => _hasDisplayHdrCapabilities;
+  static List<String> get displayHdrTypesSnapshot =>
+      List<String>.unmodifiable(_displayHdrTypes);
 
   static bool get supportsAnyHdr => _displayHdrTypes.isNotEmpty;
   static bool get supportsDolbyVision =>
@@ -216,6 +214,7 @@ class PlatformDetection {
   static String? get deviceSocModel => _capabilityString('deviceSocModel');
 
   static void setDisplayHdrTypes(Iterable<String>? values) {
+    _hasDisplayHdrCapabilities = values != null;
     _displayHdrTypes
       ..clear()
       ..addAll(

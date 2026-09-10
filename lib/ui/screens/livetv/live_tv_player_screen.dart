@@ -18,8 +18,6 @@ import '../../../l10n/app_localizations.dart';
 import '../../../playback/html_video_backend.dart';
 import '../../../playback/media_kit_player_backend.dart';
 import '../../../platform/pip_service.dart';
-import '../../../playback/tizen_player_backend.dart';
-import 'package:video_player/video_player.dart';
 import '../../../playback/media3_player_backend.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
@@ -1550,10 +1548,6 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   }
 
   Widget _buildVideoChild() {
-    if (PlatformDetection.isTizen) {
-      return _buildTizenVideoChild();
-    }
-
     if (PlatformDetection.isIOS || PlatformDetection.isMacOS) {
       return const AetherVideoView();
     }
@@ -1596,28 +1590,6 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
       fill: Colors.black,
       pauseUponEnteringBackgroundMode: false,
       subtitleViewConfiguration: _buildSubtitleConfig(),
-    );
-  }
-
-  Widget _buildTizenVideoChild() {
-    final backend = _manager.backend;
-    if (backend is! TizenPlayerBackend) {
-      return const ColoredBox(color: Colors.black);
-    }
-    final controller = backend.controller;
-    if (controller == null || !controller.value.isInitialized) {
-      return const ColoredBox(color: Colors.black);
-    }
-    return ColoredBox(
-      color: Colors.black,
-      child: FittedBox(
-        fit: BoxFit.contain,
-        child: SizedBox(
-          width: controller.value.size.width,
-          height: controller.value.size.height,
-          child: VideoPlayer(controller),
-        ),
-      ),
     );
   }
 

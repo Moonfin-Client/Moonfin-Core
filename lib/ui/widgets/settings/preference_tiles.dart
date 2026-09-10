@@ -1185,10 +1185,33 @@ class _TvFocusHighlightState extends State<TvFocusHighlight> {
                   : AppColorScheme.onSurface.withValues(alpha: 0.7),
               titleTextStyle: _kSettingsTitleTextStyle,
               subtitleTextStyle: _kSettingsSubtitleTextStyle,
-              child: Material(
-                type: MaterialType.transparency,
-                child: Builder(
-                  builder: (ctx) => widget.builder(ctx, focusVisible),
+              child: CheckboxTheme(
+                data: CheckboxThemeData(
+                  side: BorderSide(
+                    color: highlighted
+                        ? AppColors.black.withValues(alpha: 0.8)
+                        : (Theme.of(context).colorScheme.primary),
+                    width: 1.8,
+                  ),
+                  fillColor: WidgetStateProperty.resolveWith((states) {
+                    if (states.contains(WidgetState.selected)) {
+                      return highlighted
+                          ? AppColors.black.withValues(alpha: 0.87)
+                          : Theme.of(context).colorScheme.primary;
+                    }
+                    return Colors.transparent;
+                  }),
+                  checkColor: WidgetStateProperty.all(
+                    highlighted
+                        ? Colors.white
+                        : Theme.of(context).colorScheme.onPrimary,
+                  ),
+                ),
+                child: Material(
+                  type: MaterialType.transparency,
+                  child: Builder(
+                    builder: (ctx) => widget.builder(ctx, focusVisible),
+                  ),
                 ),
               ),
             ),

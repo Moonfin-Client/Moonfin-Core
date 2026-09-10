@@ -30,7 +30,6 @@ body:
         - macOS
         - Windows
         - Linux
-        - Tizen
     validations:
       required: true
 

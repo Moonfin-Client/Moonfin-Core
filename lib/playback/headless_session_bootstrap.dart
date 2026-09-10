@@ -21,8 +21,15 @@ import '../preference/preference_constants.dart';
 class HeadlessSessionBootstrap {
   Future<MediaServerClient?>? _inflight;
 
-  Future<MediaServerClient?> ensureSession() =>
-      _inflight ??= _restore().then((client) {
+  /// [ignoreDisabledLoginBehavior] treats the caller's feature (a followed
+  /// series with background checks on) as consent to use the last account
+  /// even when auto sign-in is off.
+  Future<MediaServerClient?> ensureSession({
+    bool ignoreDisabledLoginBehavior = false,
+  }) => _inflight ??=
+      _restore(ignoreDisabledLoginBehavior: ignoreDisabledLoginBehavior).then((
+        client,
+      ) {
         // A failed restore shouldn't be cached forever: credentials may appear
         // after the user signs in on the phone.
         if (client == null) _inflight = null;
@@ -33,11 +40,15 @@ class HeadlessSessionBootstrap {
     _inflight = null;
   }
 
-  Future<MediaServerClient?> _restore() async {
+  Future<MediaServerClient?> _restore({
+    required bool ignoreDisabledLoginBehavior,
+  }) async {
     try {
       final factory = GetIt.instance<MediaServerClientFactory>();
       final hadClient = factory.clients.isNotEmpty;
-      final client = await restoreClient();
+      final client = await restoreClient(
+        ignoreDisabledLoginBehavior: ignoreDisabledLoginBehavior,
+      );
       if (client == null) return null;
       if (!hadClient) setActiveServerClient(client);
       setActiveStreamResolver(client);
@@ -47,9 +58,13 @@ class HeadlessSessionBootstrap {
     }
   }
 
-  Future<MediaServerClient?> restoreClient() async {
+  Future<MediaServerClient?> restoreClient({
+    bool ignoreDisabledLoginBehavior = false,
+  }) async {
     try {
-      return await restoreClientOrThrow();
+      return await restoreClientOrThrow(
+        ignoreDisabledLoginBehavior: ignoreDisabledLoginBehavior,
+      );
     } catch (_) {
       return null;
     }
@@ -89,8 +104,12 @@ class HeadlessSessionBootstrap {
       throw StateError('no saved sign-in');
     }
 
-    final server =
-        GetIt.instance<ServerRepository>().getServer(serverId);
+    // Only the app's startup screen loads the server list; a headless
+    // engine, or an app launched by the system for a background task,
+    // arrives here with it empty.
+    final serverRepo = GetIt.instance<ServerRepository>();
+    if (serverRepo.servers.isEmpty) await serverRepo.loadStoredServers();
+    final server = serverRepo.getServer(serverId);
     if (server == null) throw StateError('saved server not found');
 
     final users = GetIt.instance<AuthenticationStore>().getUsers(serverId);

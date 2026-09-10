@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:background_downloader/background_downloader.dart' as bgd;
 import 'package:get_it/get_it.dart';
 import 'package:path/path.dart' as p;
@@ -63,19 +65,30 @@ String formatEta(int seconds) {
   return '${seconds}s';
 }
 
+/// Bytes a partly transferred file still needs on disk, or null when its
+/// size was never known.
+int? remainingTransferBytes({
+  required int expectedFileSize,
+  required double progress,
+}) {
+  if (expectedFileSize <= 0) return null;
+  final done = (expectedFileSize * progress.clamp(0.0, 1.0)).round();
+  return expectedFileSize - done;
+}
+
 String formatBytes(int bytes) {
   if (bytes < 1024) return '$bytes B';
   if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
-  if (bytes < 1024 * 1024 * 1024) return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+  if (bytes < 1024 * 1024 * 1024) {
+    return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+  }
   return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
 }
 
 int sourceSizeBytes(AggregatedItem item) {
-  if (item.mediaSources.isEmpty) {
-    return 0;
-  }
-
-  return item.mediaSources.first['Size'] as int? ?? 0;
+  final sources = item.mediaSources;
+  if (sources.isEmpty) return 0;
+  return sources.first['Size'] as int? ?? 0;
 }
 
 Duration? runtimeForEstimate(AggregatedItem item) {
@@ -116,4 +129,58 @@ int estimateDownloadSizeBytes(AggregatedItem item, DownloadQuality quality) {
   }
 
   return estimateTranscodedSizeBytes(item, quality) ?? sourceSizeBytes(item);
+}
+
+/// Rolling transfer-rate estimate for one download. Feeds the remaining-time
+/// row for original-quality transfers, where the server has no ETA to offer.
+///
+/// Samples are kept for the last [window] so a stalled or bursty connection
+/// changes the estimate within seconds rather than being averaged away by the
+/// whole transfer so far.
+class TransferRateTracker {
+  TransferRateTracker({
+    this.window = const Duration(seconds: 15),
+    this.minSampleGap = const Duration(milliseconds: 500),
+  });
+
+  final Duration window;
+  final Duration minSampleGap;
+  final ListQueue<(DateTime, int)> _samples = ListQueue();
+
+  /// Records that [bytes] have been received in total as of [now].
+  void add(int bytes, DateTime now) {
+    if (_samples.isNotEmpty) {
+      final last = _samples.last;
+      if (now.difference(last.$1) < minSampleGap) return;
+      // A retry restarts the byte count; forget the old run.
+      if (bytes < last.$2) _samples.clear();
+    }
+    _samples.add((now, bytes));
+    while (_samples.length > 1 && now.difference(_samples.first.$1) > window) {
+      _samples.removeFirst();
+    }
+  }
+
+  /// When the most recent sample arrived, or null before the first one.
+  DateTime? get lastSampleAt => _samples.isEmpty ? null : _samples.last.$1;
+
+  /// Average rate over the retained window, or null until at least one
+  /// second of samples exists or while nothing is arriving.
+  int? get bytesPerSecond {
+    if (_samples.length < 2) return null;
+    final first = _samples.first;
+    final last = _samples.last;
+    final elapsedMs = last.$1.difference(first.$1).inMilliseconds;
+    if (elapsedMs < 1000) return null;
+    final rate = (last.$2 - first.$2) * 1000 / elapsedMs;
+    return rate > 0 ? rate.round() : null;
+  }
+
+  /// Seconds left to reach [total] at the current rate, or null when the
+  /// rate is unknown or the transfer is already complete.
+  int? etaSeconds(int received, int total) {
+    final rate = bytesPerSecond;
+    if (rate == null || total <= received) return null;
+    return ((total - received) / rate).ceil();
+  }
 }

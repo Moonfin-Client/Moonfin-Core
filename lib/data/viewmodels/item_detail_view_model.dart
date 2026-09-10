@@ -177,22 +177,6 @@ class ItemDetailViewModel extends ChangeNotifier {
   // --- Collection grid pagination state ---
   static const _collectionPageSize = 50;
 
-  /// What a collection is allowed to show once its query walks the tree. A
-  /// recursive read reaches the seasons and episodes inside a series, and those
-  /// belong to the series rather than to the collection, so they stay out.
-  static const _collectionMemberTypes = <String>[
-    'Movie',
-    'Series',
-    'Video',
-    'MusicVideo',
-    'Audio',
-    'MusicAlbum',
-    'Book',
-    'AudioBook',
-    'Photo',
-    'BoxSet',
-  ];
-
   /// Items fetched so far for the grid (startIndex).
   int _collectionFetchedCount = 0;
   int _collectionTotalCount = 0;
@@ -676,7 +660,10 @@ class ItemDetailViewModel extends ChangeNotifier {
 
   Future<void> _loadSeasons() async {
     try {
-      final data = await _client.itemsApi.getSeasons(itemId);
+      final data = await _client.itemsApi.getSeasons(
+        itemId,
+        fields: 'ChildCount',
+      );
       final items = (data['Items'] as List?) ?? [];
       _seasons = _mapItems(items);
       notifyListeners();
@@ -1044,12 +1031,14 @@ class ItemDetailViewModel extends ChangeNotifier {
   /// [_collectionItems]; playlist content is managed by [_buildPlaylistIndex]
   /// and [_fetchPlaylistPage].
   Future<void> _fetchCollectionPage() async {
+    // Deliberately not recursive and not filtered by type. The server returns
+    // exactly the collection's own members this way, episodes included, where
+    // a recursive read either drags in every episode of a member series or,
+    // filtered, drops episode members and leaves the grid blank.
     final data = await _client.itemsApi.getItems(
       parentId: itemId,
       startIndex: _collectionFetchedCount,
       limit: _collectionPageSize,
-      recursive: true,
-      includeItemTypes: _collectionMemberTypes,
       fields: 'PrimaryImageAspectRatio,BasicSyncInfo,People',
     );
     final newItems = _mapItems((data['Items'] as List?) ?? []);
@@ -1302,10 +1291,10 @@ class ItemDetailViewModel extends ChangeNotifier {
         final name = entries[i].value;
 
         fetchFutures.add(() async {
+          // Not recursive and not filtered, same as the collection grid, so a
+          // collection made of episodes still shows its members here.
           final data = await _client.itemsApi.getItems(
             parentId: boxSetId,
-            recursive: true,
-            includeItemTypes: _collectionMemberTypes,
             sortBy: 'PremiereDate,SortName',
             sortOrder: 'Ascending',
             fields: 'PrimaryImageAspectRatio,BasicSyncInfo',

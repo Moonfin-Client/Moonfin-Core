@@ -4285,7 +4285,7 @@
     "@requestMore": {
         "description": "Button to request more seasons"
     },
-    "request": "要求",
+    "request": "請求",
     "@request": {
         "description": "Button to submit a media request"
     },
@@ -4443,7 +4443,7 @@
             }
         }
     },
-    "noRequests": "沒有要求",
+    "noRequests": "沒有請求",
     "@noRequests": {
         "description": "Shown when request list is empty"
     },
@@ -4467,7 +4467,7 @@
     "@approvedStatus": {
         "description": "Request status label"
     },
-    "notRequestedStatus": "未要求",
+    "notRequestedStatus": "未請求",
     "@notRequestedStatus": {
         "description": "Request status label when no request exists"
     },

@@ -111,4 +111,42 @@ void main() {
 
     expect(request?.queryParameters.containsKey('StartIndex'), isFalse);
   });
+
+  test('seasons ask for the child count', () async {
+    RequestOptions? request;
+    final dio = Dio()
+      ..interceptors.add(
+        _FakeServer((options, handler) {
+          request = options;
+          handler.resolve(
+            Response(requestOptions: options, data: <String, dynamic>{}),
+          );
+        }),
+      );
+
+    await JellyfinItemsApi(
+      dio,
+      () => 'user-1',
+    ).getSeasons('series-1', fields: 'ChildCount');
+
+    expect(request?.path, '/Shows/series-1/Seasons');
+    expect(request?.queryParameters['Fields'], 'ChildCount');
+  });
+
+  test('seasons send no Fields when none are asked for', () async {
+    RequestOptions? request;
+    final dio = Dio()
+      ..interceptors.add(
+        _FakeServer((options, handler) {
+          request = options;
+          handler.resolve(
+            Response(requestOptions: options, data: <String, dynamic>{}),
+          );
+        }),
+      );
+
+    await JellyfinItemsApi(dio, () => 'user-1').getSeasons('series-1');
+
+    expect(request?.queryParameters.containsKey('Fields'), isFalse);
+  });
 }

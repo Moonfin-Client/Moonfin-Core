@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/ui/navigation/route_lifecycle_observer.dart';
 import 'package:moonfin/ui/widgets/overlay_sheet.dart';
 import 'package:moonfin/ui/widgets/quick_return_wrapper.dart';
 import 'package:moonfin/util/platform_detection.dart';
+import 'package:moonfin/preference/preference_constants.dart';
+import 'package:moonfin/preference/user_preferences.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:jellyfin_preference/jellyfin_preference.dart';
 
 /// Long enough that there is always somewhere left to scroll.
 Widget _scrollingBody(ScrollController controller, {Axis axis = Axis.vertical}) {
@@ -51,6 +56,14 @@ Future<ScrollController> _pumpWrapper(
 
 void main() {
   tearDown(() => PlatformDetection.setTvMode(false));
+
+  setUp(() async {
+    await GetIt.instance.reset();
+    SharedPreferences.setMockInitialValues({});
+    final store = PreferenceStore();
+    await store.init();
+    GetIt.instance.registerSingleton<UserPreferences>(UserPreferences(store));
+  });
 
   group('on TV', () {
     setUp(() => PlatformDetection.setTvMode(true));

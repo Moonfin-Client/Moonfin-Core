@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart' show AppLifecycleState, WidgetsBinding;
+
 import '../../ui/navigation/app_router.dart';
 import '../../ui/navigation/destinations.dart';
 import '../../ui/navigation/home_refresh_bus.dart';
@@ -504,6 +505,7 @@ class SessionRepository {
       }
       _clientFactory.removeClient(serverId);
       resetActiveStreamResolver();
+      clearAutoDownloadForSignOut();
     }
 
     await _authPrefs.setLastServerId('');

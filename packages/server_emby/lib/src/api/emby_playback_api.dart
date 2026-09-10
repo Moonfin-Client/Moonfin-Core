@@ -51,6 +51,8 @@ class EmbyPlaybackApi implements PlaybackApi {
     Map<String, dynamic>? requestBody,
     String? userId,
     int? startTimeTicks,
+    // Ignored: the Emby client already reads for three minutes on every call.
+    bool waitForMediaProbe = false,
   }) async {
     final body = <String, dynamic>{
       'UserId': ?userId,

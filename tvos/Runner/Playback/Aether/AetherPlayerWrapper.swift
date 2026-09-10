@@ -174,10 +174,13 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             try await engine.reloadAtCurrentPosition()
             engine.pause()
         } catch {
+            // Every recovery downstream re-resolves against the server, which
+            // the manager refuses for local media, so a recoverable failure
+            // here is dropped and the player spins on.
             onPlayerError?([
                 "event": "playerError",
                 "kind": "backgroundReload",
-                "recoverable": true,
+                "recoverable": false,
                 "message": "Reload after background return failed: \(error)",
             ])
         }
@@ -631,6 +634,11 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             case .noAudioStream:
                 return ("unsupported_audio", message)
             case .noVideoStream, .hlsPlaylistOnRawLivePath:
+                return ("unsupported_container", message)
+            // Both come from a reload rather than a load, so neither reaches
+            // this classifier. They are here because the switch has to be
+            // exhaustive.
+            case .loadIdentityNotCorrectable, .sessionNotReloadable:
                 return ("unsupported_container", message)
             }
         }

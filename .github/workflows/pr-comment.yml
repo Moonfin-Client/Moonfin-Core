@@ -31,6 +31,17 @@ jobs:
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
+      # Missing when the tests job died before uploading, the comment still
+      # posts and says the run needs a look.
+      - name: Download test results
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: test-results
+          path: test-results
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Post PR comment
         uses: actions/github-script@v7
         with:
@@ -38,6 +49,20 @@ jobs:
             const fs = require('fs');
 
             const outcomes = JSON.parse(fs.readFileSync('build-results/outcomes.json', 'utf8'));
+
+            let tests = null;
+            try {
+              tests = JSON.parse(fs.readFileSync('test-results/test-results.json', 'utf8'));
+            } catch (_) {}
+
+            // The artifact was produced by the pull request's own code, so
+            // numbers are clamped and names are escaped before they reach a
+            // comment posted with the repository's token.
+            const clamp = (n) => Number.isFinite(Number(n)) ? Math.max(0, Math.floor(Number(n))) : 0;
+            const escapeText = (value) => String(value)
+              .replace(/[`\r\n|]/g, ' ')
+              .replace(/@/g, '@\u200b')
+              .slice(0, 200);
             const owner = context.repo.owner;
             const repo = context.repo.repo;
             const runId = context.payload.workflow_run.id;
@@ -55,6 +80,7 @@ jobs:
               { platform: 'Android',       job: 'android',       artifact: 'android',              files: 'Moonfin_Android_v* + Moonfin_AndroidTV_v*' },
               { platform: 'iOS',           job: 'ios',           artifact: 'ios-ipa',              files: 'Moonfin_iOS_v*_unsigned.ipa' },
               { platform: 'macOS',         job: 'macos',         artifact: 'macos-dmg',            files: 'Moonfin_macOS_v*.dmg' },
+              { platform: 'tvOS',          job: 'tvos',          artifact: 'tvos-ipa',             files: 'Moonfin_tvOS_v*_unsigned.ipa' },
               { platform: 'Windows x64',   job: 'windows',       artifact: 'windows-exe',          files: 'Moonfin_Windows_v*.exe' },
               { platform: 'Windows ARM64', job: 'windows_arm64', artifact: 'windows-arm64-exe',    files: 'Moonfin_WindowsARM64_v*.exe' },
               { platform: 'Linux x64',     job: 'linux',         artifact: 'linux-packages-x64',   files: 'Moonfin_Linux_v* (deb/rpm/AppImage/snap/flatpak/tar.gz)' },
@@ -77,16 +103,57 @@ jobs:
             };
 
             const statuses = rows.map(statusOf);
-            const passed = statuses.every(s => s === 'success');
+            const buildsPassed = statuses.every(s => s === 'success');
+            const testsPassed = outcomes.tests === 'success';
+            const passed = buildsPassed && testsPassed;
+
+            const testLines = [];
+            if (testsPassed && tests) {
+              testLines.push(`**Tests** ✅ ${clamp(tests.passed)} passed, analyzer clean`);
+            } else if (!tests || outcomes.tests === 'skipped') {
+              testLines.push('**Tests** ⚠️ did not run, see the workflow log');
+            } else {
+              const failedCount = clamp(tests.failed);
+              const passedCount = clamp(tests.passed);
+              const analyzerErrors = clamp(tests.analyzer_errors);
+              if (failedCount > 0) {
+                testLines.push(`**Tests** ❌ ${failedCount} failed, ${passedCount} passed`);
+                const listed = (Array.isArray(tests.failures) ? tests.failures : []).slice(0, 20);
+                const more = clamp(tests.more_failures) +
+                  Math.max(0, (Array.isArray(tests.failures) ? tests.failures.length : 0) - listed.length);
+                const names = listed.map(name => `- \`${escapeText(name)}\``);
+                if (more > 0) names.push(`- and ${more} more, see the workflow log`);
+                testLines.push('', '<details><summary>Failing tests</summary>', '', ...names, '', '</details>');
+              } else if (analyzerErrors === 0) {
+                testLines.push('**Tests** ❌ the run crashed before reporting, see the workflow log');
+              } else {
+                testLines.push(`**Tests** ✅ ${passedCount} passed`);
+              }
+              if (analyzerErrors > 0) {
+                testLines.push('');
+                testLines.push(`**Analyzer** ❌ ${analyzerErrors} ${analyzerErrors === 1 ? 'error' : 'errors'}`);
+                const sample = (Array.isArray(tests.analyzer_sample) ? tests.analyzer_sample : [])
+                  .slice(0, 10).map(line => `- \`${escapeText(line)}\``);
+                if (sample.length > 0) {
+                  testLines.push('', '<details><summary>Analyzer errors</summary>', '', ...sample, '', '</details>');
+                }
+              }
+            }
 
             const marker = '<!-- moonfin-build-result -->';
             const body = [
               marker,
-              passed ? '## ✅ Build Successful' : '## ❌ Build Failed',
+              passed
+                ? '## ✅ Build Successful'
+                : buildsPassed ? '## ❌ Checks Failed' : '## ❌ Build Failed',
               '',
               passed
-                ? 'All platform builds passed. You can download the test artifacts below.'
-                : 'One or more platform builds failed. Artifacts are listed for the platforms that did build.',
+                ? 'All platform builds and tests passed. You can download the test artifacts below.'
+                : buildsPassed
+                  ? 'All platform builds passed, but the test run did not.'
+                  : 'One or more platform builds failed. Artifacts are listed for the platforms that did build.',
+              '',
+              ...testLines,
               '',
               '| Platform | Status | Artifact |',
               '|---|---|---|',

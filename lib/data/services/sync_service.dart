@@ -223,6 +223,7 @@ class SyncService extends ChangeNotifier {
             fileSizeBytes: Value(localItem.fileSizeBytes),
             downloadedAt: Value(localItem.downloadedAt),
             qualityPreset: Value(localItem.qualityPreset),
+            downloadSource: Value(localItem.downloadSource),
             seriesId: Value(localItem.seriesId),
             seasonId: Value(localItem.seasonId),
             seriesName: Value(localItem.seriesName),

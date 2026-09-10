@@ -220,6 +220,7 @@ class _VideoPlaybackScreen extends StatelessWidget {
                       l10n.settingsPlaybackEngineMpvLegacy,
                   },
                 ),
+              if (DisplayHdrProbe.isSupported) const _RedetectDisplayTile(),
               if (PlatformDetection.isAndroid && PlatformDetection.isTV)
                 EnumPreferenceTile<DolbyVisionFallbackBehavior>(
                   preference: UserPreferences.dolbyVisionFallbackBehavior,
@@ -340,6 +341,66 @@ class _VideoPlaybackScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Manual override for the display HDR probe.
+///
+/// Detection only records an SDR panel when it can prove one is attached, so a
+/// TV that never identifies itself over EDID keeps whatever was detected
+/// before. That is the safe way to be wrong, but it needs an escape hatch: the
+/// user knows what their TV is, and their answer beats any heuristic.
+class _RedetectDisplayTile extends StatelessWidget {
+  const _RedetectDisplayTile();
+
+  Future<void> _redetect(BuildContext context) async {
+    final l10n = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    // Retried like startup detection, since a one-shot query can land while
+    // the HDMI chain is still negotiating.
+    final snapshot = await DisplayHdrProbe.queryWithRetry();
+    DisplayHdrProbe.apply(snapshot);
+    final formats = PlatformDetection.displayHdrTypesSnapshot;
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(
+          formats.isEmpty
+              ? l10n.settingsDisplayNoHdrDetected
+              : l10n.settingsDisplayRedetected(formats.join(', ')),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _markSdr(BuildContext context) async {
+    final l10n = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    await DisplayHdrProbe.recordUserAssertedSdr();
+    messenger.showSnackBar(
+      SnackBar(content: Text(l10n.settingsDisplayMarkedSdr)),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _TvSettingsListTile(
+          leading: const Icon(Icons.hdr_auto),
+          title: Text(l10n.settingsRedetectDisplay),
+          subtitle: Text(l10n.settingsRedetectDisplayDescription),
+          onTap: () => _redetect(context),
+        ),
+        _TvSettingsListTile(
+          leading: const Icon(Icons.hdr_off),
+          title: Text(l10n.settingsDisplayIsSdr),
+          subtitle: Text(l10n.settingsDisplayIsSdrDescription),
+          onTap: () => _markSdr(context),
+        ),
+      ],
     );
   }
 }

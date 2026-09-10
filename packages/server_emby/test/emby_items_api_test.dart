@@ -148,4 +148,24 @@ void main() {
       expect(request()?.method, 'POST');
     });
   });
+
+  test('seasons ask for the child count', () async {
+    final (dio, request) = _recordingDio();
+
+    await EmbyItemsApi(
+      dio,
+      () => 'user-1',
+    ).getSeasons('series-1', fields: 'ChildCount');
+
+    expect(request()?.path, '/Shows/series-1/Seasons');
+    expect(request()?.queryParameters['Fields'], 'ChildCount');
+  });
+
+  test('seasons send no Fields when none are asked for', () async {
+    final (dio, request) = _recordingDio();
+
+    await EmbyItemsApi(dio, () => 'user-1').getSeasons('series-1');
+
+    expect(request()?.queryParameters.containsKey('Fields'), isFalse);
+  });
 }

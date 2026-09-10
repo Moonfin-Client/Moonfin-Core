@@ -51,6 +51,10 @@ class PlaybackProfileDiagnostics {
       'mediaSourceId': resolution.mediaSourceId,
       'playMethod': resolution.playMethod.name,
       'transcodingReasons': List<String>.from(resolution.transcodingReasons),
+      // Kept out of transcodingReasons on purpose: that list is the server's,
+      // and an empty one beside a transcode is itself the signal that this
+      // client refused.
+      'clientTranscodeReason': context.clientTranscodeReason,
       'directPlayVerdict': <String, dynamic>{
         'requestedByClient': resolution.directPlayRequested,
         'offeredByServer': resolution.serverOfferedDirectPlay,
@@ -64,8 +68,9 @@ class PlaybackProfileDiagnostics {
       'videoProfile': _streamString(videoStream, 'Profile'),
       'videoLevel': _streamLevel(videoStream),
       'videoRange': _streamVideoRange(videoStream, resolution),
-      // A "VideoRangeTypeNotSupported" transcode reason must trace back to one
-      // of these values.
+      // What the decoder can handle, and what a "VideoRangeTypeNotSupported"
+      // transcode reason must trace back to. Not what the TV can display,
+      // which is the block below.
       'videoRangeCapabilities': <String, dynamic>{
         'hdr10': PlatformDetection.supportsHevcHdr10,
         'hdr10Plus': PlatformDetection.supportsHevcHdr10Plus,
@@ -74,6 +79,18 @@ class PlaybackProfileDiagnostics {
         'dvProfile5': PlatformDetection.supportsDoViProfile5,
         'dvProfile7': PlatformDetection.supportsDoViProfile7,
         'dvProfile8': PlatformDetection.supportsDoViProfile8,
+      },
+      // What the panel says it can show, which is a different question from
+      // what the decoder can produce. Sitting next to the decoder block on
+      // purpose: a decoder that does Dolby Vision beside a display that does
+      // not is the shape of a display probe that never got an answer.
+      'displayHdrCapabilities': <String, dynamic>{
+        'probed': PlatformDetection.hasDisplayHdrCapabilities,
+        'hdrTypes': PlatformDetection.displayHdrTypesSnapshot,
+        'anyHdr': PlatformDetection.supportsAnyHdr,
+        'hdr10': PlatformDetection.supportsHdr10,
+        'hdr10Plus': PlatformDetection.supportsHdr10PlusDisplay,
+        'dolbyVision': PlatformDetection.supportsDolbyVision,
       },
       // What the decoder probe claimed, which is what the profile advertises,
       // and so what the server copies a stream through on. A decoder that

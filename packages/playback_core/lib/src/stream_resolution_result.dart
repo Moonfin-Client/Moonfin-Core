@@ -76,12 +76,22 @@ class StreamResolutionResult {
     this.isLocalMedia = false,
   });
 
-  /// Bits per second actually being delivered, when that differs from the
-  /// source. A transcode carries its target in the stream URL, so reporting
-  /// the source bitrate would name a figure that is not on the wire. Null for
-  /// direct play, and null when the URL says nothing, which leaves callers on
-  /// the source value.
-  int? get deliveredBitrate {
+  /// What the server said it would send, read off the transcode URL.
+  ///
+  /// PlaybackInfo describes the file rather than the transcode, so the URL is
+  /// the only place the target is stated. Null for direct play and for a URL
+  /// that carries none of it, which leaves callers on the source values. Each
+  /// field is null on its own too, since which ones the server states depends
+  /// on what the profile constrained.
+  ({
+    String? container,
+    String? videoCodec,
+    String? audioCodec,
+    int? videoBitrate,
+    int? audioBitrate,
+    int? totalBitrate,
+  })?
+  get deliveredFormat {
     if (playMethod != StreamPlayMethod.transcode) return null;
 
     final query = Uri.tryParse(streamUrl)?.queryParameters;
@@ -91,18 +101,33 @@ class StreamResolutionResult {
     final lowered = <String, String>{
       for (final entry in query.entries) entry.key.toLowerCase(): entry.value,
     };
-    int? value(String key) {
+    String? text(String key) {
+      final value = lowered[key]?.trim();
+      return (value == null || value.isEmpty) ? null : value;
+    }
+
+    int? number(String key) {
       final parsed = int.tryParse(lowered[key] ?? '');
       return (parsed != null && parsed > 0) ? parsed : null;
     }
 
-    // The server states the video and audio targets separately, so the pair
-    // adds up to what it sends. Older URLs carry only the overall cap.
-    final video = value('videobitrate');
-    final audio = value('audiobitrate');
-    if (video != null || audio != null) {
-      return (video ?? 0) + (audio ?? 0);
-    }
-    return value('maxstreamingbitrate');
+    final videoBitrate = number('videobitrate');
+    final audioBitrate = number('audiobitrate');
+    return (
+      // HLS names the segment container, everything else names the container.
+      container: text('segmentcontainer') ?? text('container'),
+      videoCodec: text('videocodec'),
+      audioCodec: text('audiocodec'),
+      videoBitrate: videoBitrate,
+      audioBitrate: audioBitrate,
+      // The server states the two targets separately, so the pair adds up to
+      // what it sends. Older URLs carry only the overall cap.
+      totalBitrate: (videoBitrate == null && audioBitrate == null)
+          ? number('maxstreamingbitrate')
+          : (videoBitrate ?? 0) + (audioBitrate ?? 0),
+    );
   }
+
+  /// Bits per second on the wire, or null when that is the source figure.
+  int? get deliveredBitrate => deliveredFormat?.totalBitrate;
 }

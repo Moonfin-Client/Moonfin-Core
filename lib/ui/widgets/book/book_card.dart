@@ -12,6 +12,7 @@ import 'book_format_badge.dart';
 class BookCard extends StatelessWidget {
   final AggregatedItem item;
   final bool isAudiobook;
+  final bool isComic;
   final String? subtitle;
   final String? imageUrl;
   final double width;
@@ -31,6 +32,7 @@ class BookCard extends StatelessWidget {
     super.key,
     required this.item,
     required this.isAudiobook,
+    this.isComic = false,
     this.subtitle,
     this.imageUrl,
     this.width = 132,
@@ -75,7 +77,10 @@ class BookCard extends StatelessWidget {
           Positioned(
             top: 6,
             left: 6,
-            child: BookFormatBadge(isAudiobook: isAudiobook),
+            child: BookFormatBadge(
+              isAudiobook: isAudiobook,
+              isComic: isComic,
+            ),
           ),
         if (chipLabel != null)
           Positioned(

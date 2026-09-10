@@ -98,6 +98,9 @@ String localizeHomeRowTitle({
   if (row.id.startsWith('albumartist_')) return l10n.albumArtists;
   if (row.id.startsWith('musicartist_')) return l10n.artists;
   if (row.id.startsWith('musicalbum_')) return l10n.albums;
+  if (row.id.startsWith('latestBooks_')) return l10n.latestBooks;
+  if (row.id.startsWith('latestAudiobooks_')) return l10n.latestAudiobooks;
+  if (row.id.startsWith('latestComics_')) return l10n.latestComics;
 
   if (row.id.startsWith('latest_')) {
     return _localizeLatestRowTitle(row.title, l10n);

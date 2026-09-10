@@ -147,9 +147,6 @@ void registerAppModule() {
       _getIt<SessionRepository>(),
     ),
   );
-  _getIt.registerLazySingleton<PendingRatingStore>(
-    () => PendingRatingStore(_getIt<PreferenceStore>()),
-  );
   _getIt.registerLazySingleton<SyncService>(
     () => SyncService(_getIt<OfflineRepository>(), _getIt<PendingRatingStore>()),
   );

@@ -1,3 +1,4 @@
+import BackgroundTasks
 import Flutter
 import UIKit
 import AVKit
@@ -149,6 +150,12 @@ private final class NativeAirPlayEventStreamHandler: NSObject, FlutterStreamHand
   private var engineStarted = false
   private var gameChannel: NativeGameChannel?
 
+  /// Auto-download subscription checks while the app is in the background.
+  /// Registered before launch finishes (a BGTaskScheduler rule) and driven
+  /// from Dart over `backgroundRefreshChannel`.
+  private(set) var backgroundRefresh: BackgroundRefreshScheduler?
+  private var backgroundRefreshChannel: FlutterMethodChannel?
+
   func startEngineIfNeeded() {
     guard !engineStarted else { return }
     engineStarted = true
@@ -166,6 +173,7 @@ private final class NativeAirPlayEventStreamHandler: NSObject, FlutterStreamHand
   ) -> Bool {
     configureGoogleCast()
     startEngineIfNeeded()
+    registerBackgroundRefresh()
 
     let launched = super.application(application, didFinishLaunchingWithOptions: launchOptions)
 
@@ -181,7 +189,109 @@ private final class NativeAirPlayEventStreamHandler: NSObject, FlutterStreamHand
     return launched
   }
 
+  private func registerBackgroundRefresh() {
+    guard backgroundRefresh == nil,
+      let bundleId = Bundle.main.bundleIdentifier,
+      let channel = backgroundRefreshChannel
+    else { return }
+    let scheduler = BackgroundRefreshScheduler(
+      bundleIdentifier: bundleId,
+      scheduler: BGTaskScheduler.shared,
+      defaults: .standard,
+      runner: { budgetSeconds, completion in
+        // When the task itself launched the app, Dart's main() may not have
+        // bound the channel yet; retry for a few seconds. Once bound, the Dart
+        // side parks the call until its services are up.
+        Self.performRefresh(
+          on: channel,
+          deadline: Date(timeIntervalSinceNow: TimeInterval(budgetSeconds)),
+          completion: completion
+        )
+      }
+    )
+    scheduler.register()
+    backgroundRefresh = scheduler
+  }
+
+  private static func performRefresh(
+    on channel: FlutterMethodChannel,
+    deadline: Date,
+    completion: @escaping (Bool) -> Void
+  ) {
+    DispatchQueue.main.async {
+      let remaining = Int(deadline.timeIntervalSinceNow.rounded(.down))
+      guard remaining > 2 else {
+        completion(false)
+        return
+      }
+      channel.invokeMethod("performRefresh", arguments: ["budgetSeconds": remaining]) { result in
+        if let flutterResult = result as? NSObject, flutterResult === FlutterMethodNotImplemented {
+          // Dart has not bound the channel yet (cold launch by the task).
+          DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            performRefresh(on: channel, deadline: deadline, completion: completion)
+          }
+          return
+        }
+        completion((result as? Bool) ?? false)
+      }
+    }
+  }
+
+  private func setUpBackgroundRefreshChannel(messenger: FlutterBinaryMessenger) {
+    let channel = FlutterMethodChannel(
+      name: "com.moonfin/background_refresh",
+      binaryMessenger: messenger
+    )
+    backgroundRefreshChannel = channel
+    channel.setMethodCallHandler { [weak self] call, result in
+      switch call.method {
+      case "configure":
+        let args = call.arguments as? [String: Any]
+        let enabled = args?["enabled"] as? Bool ?? false
+        self?.backgroundRefresh?.configure(enabled: enabled)
+        result(nil)
+      case "refreshStatus":
+        switch UIApplication.shared.backgroundRefreshStatus {
+        case .available: result("available")
+        case .denied: result("denied")
+        case .restricted: result("restricted")
+        @unknown default: result("unknown")
+        }
+      default:
+        result(FlutterMethodNotImplemented)
+      }
+    }
+  }
+
+  /// Free space on the volume holding the downloads, for the checks that
+  /// refuse an episode that would not fit.
+  private func setUpDeviceStorageChannel(messenger: FlutterBinaryMessenger) {
+    let channel = FlutterMethodChannel(
+      name: "com.moonfin/device_storage",
+      binaryMessenger: messenger
+    )
+    channel.setMethodCallHandler { call, result in
+      guard call.method == "freeBytes" else {
+        result(FlutterMethodNotImplemented)
+        return
+      }
+      let args = call.arguments as? [String: Any]
+      let path = args?["path"] as? String ?? NSHomeDirectory()
+      let values = try? URL(fileURLWithPath: path).resourceValues(
+        forKeys: [.volumeAvailableCapacityForImportantUsageKey]
+      )
+      if let free = values?.volumeAvailableCapacityForImportantUsage {
+        result(Int(free))
+      } else {
+        result(nil)
+      }
+    }
+  }
+
   private func setUpPlatformChannels(messenger: FlutterBinaryMessenger) {
+    setUpBackgroundRefreshChannel(messenger: messenger)
+    setUpDeviceStorageChannel(messenger: messenger)
+
     let storageChannel = FlutterMethodChannel(
       name: "com.moonfin/ios_storage",
       binaryMessenger: messenger

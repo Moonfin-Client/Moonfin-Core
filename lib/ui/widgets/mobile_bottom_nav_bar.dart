@@ -19,6 +19,7 @@ import '../../util/overlay_color_palette.dart';
 import '../../util/game_library.dart';
 import '../navigation/destinations.dart';
 import '../navigation/home_refresh_bus.dart';
+import '../screens/downloads/downloads_panel.dart';
 import '../screens/settings/settings_side_panel.dart';
 import '../screens/syncplay/syncplay_screen.dart';
 import 'adaptive/adaptive_glass.dart';
@@ -35,6 +36,13 @@ const double _kIconSize = 24.0;
 const double _kFloatingInset = 14.0;
 const double _kFloatingRadius = 22.0;
 class MobileBottomNavBar extends StatefulWidget {
+  /// Room the bar takes along the bottom of the screen, including the system
+  /// inset it pads underneath itself.
+  static double heightFor(BuildContext context) {
+    final inset = MediaQuery.of(context).padding.bottom;
+    return _kBarHeight + (inset > 0 ? inset : _kFloatingInset);
+  }
+
   final String? activeRoute;
 
   const MobileBottomNavBar({super.key, this.activeRoute});
@@ -300,6 +308,19 @@ class _MobileBottomNavBarState extends State<MobileBottomNavBar> {
           isActive: activeRoute.startsWith('/library') ||
               activeRoute.startsWith('/music'),
           onTap: () => _showLibrariesSheet(context),
+        ),
+      );
+    }
+
+    if (_prefs.get(UserPreferences.showDownloadsButton)) {
+      actions.add(
+        _BottomNavAction(
+          icon: Icons.download_for_offline,
+          label: l10n.savedMedia,
+          isActive: true,
+          onTap: () {
+            showDownloadsDialog(context);
+          },
         ),
       );
     }

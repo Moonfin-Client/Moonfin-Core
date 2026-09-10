@@ -28,6 +28,7 @@ import '../navigation/home_refresh_bus.dart';
 import '../navigation/route_lifecycle_observer.dart';
 import 'navigation_layout.dart';
 import 'settings/settings_panel.dart';
+import '../screens/downloads/downloads_panel.dart';
 import '../screens/syncplay/syncplay_screen.dart';
 import '../screens/settings/settings_side_panel.dart';
 import 'seerr_icons.dart';
@@ -148,6 +149,7 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
         NavigationLayout.focusNavbarAvatarNotifier.value;
     NavigationLayout.focusNavbarNotifier.value = _focusNavbarCallback;
     NavigationLayout.focusNavbarAvatarNotifier.value = _focusAvatarCallback;
+    NavigationLayout.chromeFocusRoots.add(_sidebarFocus);
     _updateClock();
     _clockTimer = Timer.periodic(
       const Duration(seconds: 30),
@@ -213,6 +215,7 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
       NavigationLayout.focusNavbarAvatarNotifier.value =
           _previousFocusAvatarCallback;
     }
+    NavigationLayout.chromeFocusRoots.remove(_sidebarFocus);
     FocusManager.instance.removeListener(_trackPreviousFocus);
     if (PlatformDetection.isTV || (PlatformDetection.isDesktop || (PlatformDetection.isWeb && !PlatformDetection.useMobileUi))) {
       _sidebarFocus.removeListener(_onSidebarFocusNodeChanged);
@@ -1098,13 +1101,28 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
                         : const SizedBox.shrink(),
                   ),
                 ],
+                if (_prefs.get(UserPreferences.showDownloadsButton) &&
+                    PlatformDetection.supportsOfflineDownloads &&
+                    !PlatformDetection.isWeb)
+                  _SidebarItem(
+                    key: const ValueKey('sidebar-downloads'),
+                    icon: Icons.download_for_offline,
+                    label: l10n.savedMedia,
+                    baseColor: nextMainSidebarColor(),
+                    showLabel: _showLabels,
+                    onPressed: () {
+                      _onNavigate();
+                      showDownloadsDialog(context);
+                    },
+                  ),
                 // The slot is taken here rather than inside the builder, so the
                 // settings row keeps its colour whether or not there are any
                 // messages to show.
-                _serverMessagesSidebarItem(
-                  navColor: nextMainSidebarColor(),
-                  label: l10n.serverMessages,
-                ),
+                if (_prefs.get(UserPreferences.showServerMessagesButton))
+                  _serverMessagesSidebarItem(
+                    navColor: nextMainSidebarColor(),
+                    label: l10n.serverMessages,
+                  ),
                 _SidebarItem(
                   key: const ValueKey('sidebar-settings'),
                   icon: Icons.settings_rounded,

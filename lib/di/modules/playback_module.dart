@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:playback_core/playback_core.dart';
 import 'package:playback_jellyfin/playback_jellyfin.dart';
@@ -29,7 +30,6 @@ import '../../playback/auto_bitrate_service.dart';
 import '../../playback/aether_backend.dart';
 import '../../playback/media_kit_player_backend.dart';
 import '../../playback/media3_player_backend.dart';
-import '../../playback/tizen_player_backend.dart';
 import '../../playback/offline_stream_resolver.dart';
 import '../../playback/playback_profile_diagnostics.dart';
 import '../../playback/sleep_timer_controller.dart';
@@ -69,6 +69,52 @@ bool _shouldUseHtmlVideoBackend(StreamResolutionResult resolution) {
   }
 
   return true;
+}
+
+/// Why this client refuses to direct play [resolution], or null when it does
+/// not. Named rather than boolean because a client-side refusal leaves the
+/// server's transcodingReasons empty, and a report with no reason at all was
+/// what made a display probe failure so hard to recognize.
+@visibleForTesting
+String? dolbyVisionTranscodeReason(
+  StreamResolutionResult resolution,
+  UserPreferences prefs,
+) {
+  if (!(PlatformDetection.isAndroid && PlatformDetection.isTV)) {
+    return null;
+  }
+
+  // A local resolution is never swapped for a server stream.
+  if (resolution.isLocalMedia) {
+    return null;
+  }
+
+  if (_hasUnsupportedDolbyVisionProfile(resolution)) {
+    return 'dolbyVisionProfileNotDirectPlayable';
+  }
+
+  if (!_needsDolbyVisionFallback(resolution)) {
+    return null;
+  }
+
+  if (PlatformDetection.supportsDolbyVision) {
+    return null;
+  }
+
+  if (!PlatformDetection.supportsAnyHdr) {
+    return 'displayReportsNoHdr';
+  }
+
+  final selected = prefs.get(UserPreferences.dolbyVisionFallbackBehavior);
+  if (selected == DolbyVisionFallbackBehavior.transcode) {
+    return 'dolbyVisionFallbackPreferenceTranscode';
+  }
+  if (selected == DolbyVisionFallbackBehavior.hdr10Fallback &&
+      !PlatformDetection.supportsHdr10) {
+    return 'displayLacksHdr10ForFallback';
+  }
+
+  return null;
 }
 
 bool _hasUnsupportedDolbyVisionProfile(StreamResolutionResult resolution) {
@@ -277,14 +323,10 @@ void registerPlaybackModule() {
 
   MediaKitPlayerBackend? backend;
   Media3PlayerBackend? media3Backend;
-  TizenPlayerBackend? tizenBackend;
   AppleTvBackend? appleTvBackend;
   AetherBackend? iosBackend;
 
-  if (PlatformDetection.isTizen) {
-    tizenBackend = TizenPlayerBackend(prefs);
-    _getIt.registerSingleton<TizenPlayerBackend>(tizenBackend);
-  } else if (PlatformDetection.isAppleTV) {
+  if (PlatformDetection.isAppleTV) {
     appleTvBackend = AppleTvBackend(prefs);
     _getIt.registerSingleton<AppleTvBackend>(appleTvBackend);
   } else if (PlatformDetection.isIOS || PlatformDetection.isMacOS) {
@@ -311,13 +353,10 @@ void registerPlaybackModule() {
   }
 
   final useMedia3ByDefault =
-      !PlatformDetection.isTizen &&
       PlatformDetection.isAndroid &&
       prefs.get(UserPreferences.playbackEnginePreference) ==
           PlaybackEnginePreference.media3;
-  final PlayerBackend initialBackend = PlatformDetection.isTizen
-      ? tizenBackend!
-      : PlatformDetection.isAppleTV
+  final PlayerBackend initialBackend = PlatformDetection.isAppleTV
       ? appleTvBackend!
       : (PlatformDetection.isIOS || PlatformDetection.isMacOS)
       ? iosBackend!
@@ -408,11 +447,6 @@ void registerPlaybackModule() {
 
   manager.setBackend(initialBackend);
   manager.setBackendSelector((resolution, currentBackend) {
-    if (PlatformDetection.isTizen) {
-      if (currentBackend is TizenPlayerBackend) return currentBackend;
-      return _getIt<TizenPlayerBackend>();
-    }
-
     if (PlatformDetection.isAppleTV) {
       if (currentBackend is AppleTvBackend) return currentBackend;
       return _getIt<AppleTvBackend>();
@@ -451,42 +485,9 @@ void registerPlaybackModule() {
     if (currentBackend is MediaKitPlayerBackend) return currentBackend;
     return _getIt<MediaKitPlayerBackend>();
   });
-  manager.setTranscodeSelector((resolution) {
-    if (!(PlatformDetection.isAndroid && PlatformDetection.isTV)) {
-      return false;
-    }
-
-    // A local resolution is never swapped for a server stream.
-    if (resolution.isLocalMedia) {
-      return false;
-    }
-
-    if (_hasUnsupportedDolbyVisionProfile(resolution)) {
-      return true;
-    }
-
-    if (!_needsDolbyVisionFallback(resolution)) {
-      return false;
-    }
-
-    if (PlatformDetection.supportsDolbyVision) {
-      return false;
-    }
-
-    if (!PlatformDetection.supportsAnyHdr) {
-      return true;
-    }
-
-    final selected = prefs.get(UserPreferences.dolbyVisionFallbackBehavior);
-    if (selected == DolbyVisionFallbackBehavior.transcode) {
-      return true;
-    }
-    if (selected == DolbyVisionFallbackBehavior.hdr10Fallback) {
-      return !PlatformDetection.supportsHdr10;
-    }
-
-    return false;
-  });
+  manager.setTranscodeSelector(
+    (resolution) => dolbyVisionTranscodeReason(resolution, prefs),
+  );
   manager.setStartPositionAdjuster((_, startPosition) {
     final prefs = _getIt<UserPreferences>();
     final raw = prefs.get(UserPreferences.resumeSubtractDuration);

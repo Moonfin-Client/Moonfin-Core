@@ -176,7 +176,7 @@
     "@themeMoonfin": {
         "description": "Display name for the Moonfin theme"
     },
-    "themeMoonfinSubtitle": "المظهر الحالي Moonfin الذي أحببته جميعًا",
+    "themeMoonfinSubtitle": "مظهر Moonfin الأصلي والبسيط.",
     "@themeMoonfinSubtitle": {
         "description": "Preview description for the Moonfin theme"
     },
@@ -6605,7 +6605,7 @@
     "settingsPreferServerTranscode": "تفضل تحويل الخادم",
     "settingsDolbyVisionProfile7DirectPlay": "Dolby Vision الملف الشخصي 7 اللعب المباشر",
     "settingsDolbyVisionProfile7DirectPlayDescription": "يتحكم في ما إذا كان Dolby Vision يجب أن يقوم تدفقات طبقة التحسين الخاصة بالملف الشخصي 7 بالتشغيل المباشر.",
-    "settingsAutoAftkrtEnabled": "تلقائي (تمكين AFTKRT)",
+    "settingsAutoAftkrtEnabled": "تلقائي",
     "settingsEnabledOnThisDevice": "تم التفعيل على هذا الجهاز",
     "settingsDisabledPreferTranscode": "معطل (يفضل التحويل)",
     "settingsResumeRewindDescription": "عند استئناف التشغيل (من \"متابعة المشاهدة\" أو من صفحة عنصر الوسائط)، ما هو عدد الثواني التي يجب إرجاعها؟",
@@ -7326,7 +7326,7 @@
     "@empty": {
         "description": "Label indicating a section or category is empty"
     },
-    "detailScreenStyle": "نمط شاشة التفاصيل",
+    "detailScreenStyle": "شكل صفحة التفاصيل",
     "@detailScreenStyle": {
         "description": "Label for the media detail screen layout style setting"
     },
@@ -9001,5 +9001,128 @@
     "imdbMostPopularMovies": "أكثر الأفلام شعبية على IMDb",
     "imdbMostPopularTvShows": "أكثر المسلسلات شعبية على IMDb",
     "imdbLowestRatedMovies": "الأفلام الأقل تقييمًا على IMDb",
-    "imdbTopEnglishMovies": "أفضل الأفلام الإنجليزية تقييمًا على IMDb"
+    "imdbTopEnglishMovies": "أفضل الأفلام الإنجليزية تقييمًا على IMDb",
+    "interfaceLayout": "شكل الواجهة",
+    "@interfaceLayout": {
+        "description": "Setting to override which UI layout the app uses"
+    },
+    "interfaceLayoutSubtitle": "غير شكل الواجهة إذا تم التعرّف على الجهاز بشكل خاطئ. أعد تشغيل Moonfin حتى تظهر التغييرات.",
+    "@interfaceLayoutSubtitle": {
+        "description": "Subtitle for the interface layout setting"
+    },
+    "interfaceLayoutAutomatic": "أوتوماتيك",
+    "@interfaceLayoutAutomatic": {
+        "description": "Interface layout option: detect from the device"
+    },
+    "interfaceLayoutPhone": "واجهة الهاتف",
+    "@interfaceLayoutPhone": {
+        "description": "Interface layout option: phone layout"
+    },
+    "oledMode": "وضع OLED",
+    "@oledMode": {
+        "description": "Label for the setting that deepens blacks and enriches artwork on OLED displays"
+    },
+    "oledModeSubtitle": "خلّي اللون الأسود أغمق والصور أوضح وأجمل. يُفضّل استخدامه على شاشات OLED.",
+    "@oledModeSubtitle": {
+        "description": "Explanation under the OLED Mode setting"
+    },
+    "performanceMode": "الأداء",
+    "@performanceMode": {
+        "description": "Label for the device performance setting"
+    },
+    "performanceModeSubtitle": "يحدد إمكانيات جهازك تلقائيًا ويخفف الإعدادات إذا كانت الذاكرة محدودة، مع الاحتفاظ بعدد أقل من الصور وعرض المقاطع الدعائية كصور ثابتة. أعد تشغيل التطبيق لتطبيق التغييرات.",
+    "@performanceModeSubtitle": {
+        "description": "Explanation under the device performance setting"
+    },
+    "trailerPreviewHeldBack": "متوقف لأن وضع الأداء مضبوط على منخفض لهذا الجهاز.",
+    "@trailerPreviewHeldBack": {
+        "description": "Shown under the trailer preview switch when the device tier suppresses trailers"
+    },
+    "controller": "يد التحكم",
+    "@controller": {
+        "description": "Settings section header for game controller options"
+    },
+    "gamepadNavigation": "التنقل بيد التحكم",
+    "@gamepadNavigation": {
+        "description": "Settings label for the switch that lets a game controller move focus and select items"
+    },
+    "gamepadNavigationDescription": "استخدم يد تحكم متصلة للتنقل بين العناصر واختيارها",
+    "@gamepadNavigationDescription": {
+        "description": "Settings subtitle for the gamepad navigation switch"
+    },
+    "scrollDirection": "اتجاه التمرير",
+    "@scrollDirection": {
+        "description": "Section header for scroll direction selection in library display settings"
+    },
+    "scrollDirectionVertical": "عمودي",
+    "@scrollDirectionVertical": {
+        "description": "Library scroll direction option: vertical grid (default)"
+    },
+    "scrollDirectionHorizontal": "أفقي",
+    "@scrollDirectionHorizontal": {
+        "description": "Library scroll direction option: horizontal grid for ultrawide displays"
+    },
+    "scrollToTop": "التمرير إلى الأعلى",
+    "@scrollToTop": {
+        "description": "Tooltip for the button that returns a scrolled list to the top"
+    },
+    "castMembers": "طاقم التمثيل",
+    "@castMembers": {
+        "description": "Section title for the list of actors and performers in movie and TV metadata. Not the casting-to-a-device action"
+    },
+    "finalizingDownload": "جار الإنهاء…",
+    "@finalizingDownload": {
+        "description": "Status label shown while a finished download is being moved to its final location and validated"
+    },
+    "queuedDownload": "في الانتظار",
+    "@queuedDownload": {
+        "description": "Status label for a download waiting in the queue for a free download slot"
+    },
+    "failedToDeleteItemWithError": "تعذّر حذف العنصر بسبب الخطأ التالي: {error}",
+    "@failedToDeleteItemWithError": {
+        "description": "Error message when item deletion fails, including the specific error details",
+        "placeholders": {
+            "error": {
+                "type": "String",
+                "example": "Permission denied"
+            }
+        }
+    },
+    "searchingSubtitles": "جارٍ البحث عن الترجمة…",
+    "@searchingSubtitles": {
+        "description": "Shown while a remote subtitle search is running"
+    },
+    "downloadingSubtitle": "يتم تحميل الترجمة…",
+    "@downloadingSubtitle": {
+        "description": "Shown while a chosen subtitle is downloaded and the server is picking it up"
+    },
+    "starring": "بطولة",
+    "@starring": {
+        "description": "Metadata label for the leading cast"
+    },
+    "shuffleAll": "الكل عشوائي",
+    "@shuffleAll": {
+        "description": "Action button label for shuffling all tracks of an artist"
+    },
+    "aiTranslated": "مترجمة بالذكاء الإصطناعي",
+    "@aiTranslated": {
+        "description": "Label for a remote subtitle the provider marked as AI translated"
+    },
+    "hearingImpaired": "لضعاف السمع",
+    "@hearingImpaired": {
+        "description": "Label for a remote subtitle marked as hearing impaired"
+    },
+    "framerateFps": "{rate} إطار/ثانية",
+    "@framerateFps": {
+        "description": "Framerate of a remote subtitle, shown in its detail line",
+        "placeholders": {
+            "rate": {
+                "type": "String"
+            }
+        }
+    },
+    "recordSeries": "إقتراحات Moonfin",
+    "@recordSeries": {
+        "description": "Button label to record every showing of a live TV series"
+    }
 }

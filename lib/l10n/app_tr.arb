@@ -10215,5 +10215,78 @@
     "serverMessagesShowButtonSubtitle": "Sunucu yöneticiniz tarafından gönderilen mesajlar için menüye bir düğme ekler",
     "@serverMessagesShowButtonSubtitle": {
         "description": "Explains the setting that shows or hides the messages button"
+    },
+    "performanceMode": "Performans",
+    "@performanceMode": {
+        "description": "Label for the device performance setting"
+    },
+    "performanceModeSubtitle": "Otomatik bu cihazı ölçer ve hafızası yetersiz olanları kısıtlar; bu sayede bellekte daha az görsel tutar ve fragmanları sabit resim olarak bırakır. Bir sonraki başlatmada tamamen geçerli olur.",
+    "@performanceModeSubtitle": {
+        "description": "Explanation under the device performance setting"
+    },
+    "performanceModeAuto": "Otomatik",
+    "@performanceModeAuto": {
+        "description": "Performance option: measure the device"
+    },
+    "performanceModeStandard": "Standart",
+    "@performanceModeStandard": {
+        "description": "Performance option: never hold back"
+    },
+    "performanceModeReduced": "Azaltılmış",
+    "@performanceModeReduced": {
+        "description": "Performance option: always hold back"
+    },
+    "trailerPreviewHeldBack": "Bu cihaz için Performans \"Azaltılmış\" olarak ayarlandığından kapalı",
+    "@trailerPreviewHeldBack": {
+        "description": "Shown under the trailer preview switch when the device tier suppresses trailers"
+    },
+    "showMpvStats": "MPV İstatistiklerini Göster (Shift+I)",
+    "@showMpvStats": {
+        "description": "Button in the stream info sheet that shows mpv's own statistics overlay; Shift+I is the keyboard shortcut"
+    },
+    "hideMpvStats": "MPV İstatistiklerini Gizle (Shift+I)",
+    "@hideMpvStats": {
+        "description": "Button in the stream info sheet that hides mpv's own statistics overlay; Shift+I is the keyboard shortcut"
+    },
+    "hdrOutput": "HDR çıkışı",
+    "@hdrOutput": {
+        "description": "Stream info label for whether HDR is reaching the display untouched"
+    },
+    "hdrOutputActive": "Aktif— {format}",
+    "@hdrOutputActive": {
+        "description": "Stream info value when HDR passthrough is running, e.g. 'Active — HDR10 (PQ, BT.2020)'",
+        "placeholders": {
+            "format": {
+                "type": "String"
+            }
+        }
+    },
+    "hdrOutputActiveTonemapped": "Aktif — bu ekran için SDR'a ton eşlemesi yapıldı",
+    "@hdrOutputActiveTonemapped": {
+        "description": "Stream info value when native output is engaged but the window sits on a display without HDR, so the renderer is tone-mapping"
+    },
+    "hdrOutputDisplayNotHdr": "Devre dışı — ekran HDR modunda değil",
+    "@hdrOutputDisplayNotHdr": {
+        "description": "Stream info value when the display has not been switched into HDR"
+    },
+    "hdrOutputContentSdr": "Devre dışı — içerik SDR",
+    "@hdrOutputContentSdr": {
+        "description": "Stream info value when the title itself is not HDR"
+    },
+    "hdrOutputDisabled": "Devre dışı — ayarlardan kapatıldı",
+    "@hdrOutputDisabled": {
+        "description": "Stream info value when the native HDR output preference is off"
+    },
+    "hdrOutputFailed": "Devre dışı — başlatılamadı, standart yol kullanılıyor",
+    "@hdrOutputFailed": {
+        "description": "Stream info value when the native HDR window could not be created"
+    },
+    "nativeHdrOutput": "Yerel HDR çıkışı",
+    "@nativeHdrOutput": {
+        "description": "Settings label for sending HDR to the display untouched"
+    },
+    "nativeHdrOutputDescription": "HDR videoyu SDR'a dönüştürmek yerine ekrana olduğu gibi gönderir. Yalnızca ekran zaten HDR modundayken ve oynatılan içerik HDR olduğunda kullanılır.",
+    "@nativeHdrOutputDescription": {
+        "description": "Settings description for native HDR output"
     }
 }

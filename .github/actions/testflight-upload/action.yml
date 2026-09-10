@@ -1,0 +1,60 @@
+name: TestFlight upload
+description: Exports an archive straight to App Store Connect.
+
+inputs:
+  archive-path:
+    description: The .xcarchive to upload.
+    required: true
+  team-id:
+    description: The Apple team the archive is signed for.
+    required: true
+  asc-key-path:
+    description: The App Store Connect API key (.p8) on disk.
+    required: true
+  asc-key-id:
+    description: The API key id.
+    required: true
+  asc-issuer-id:
+    description: The API key issuer id.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Export and upload
+      shell: bash
+      env:
+        ARCHIVE_PATH: ${{ inputs.archive-path }}
+        TEAM_ID: ${{ inputs.team-id }}
+        ASC_KEY_PATH: ${{ inputs.asc-key-path }}
+        ASC_KEY_ID: ${{ inputs.asc-key-id }}
+        ASC_ISSUER_ID: ${{ inputs.asc-issuer-id }}
+      run: |
+        test -d "$ARCHIVE_PATH" || { echo "::error::no archive at $ARCHIVE_PATH"; exit 1; }
+        PLIST="$RUNNER_TEMP/ExportOptions.plist"
+        cat > "$PLIST" <<PLIST_EOF
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        <plist version="1.0">
+        <dict>
+          <key>method</key>
+          <string>app-store-connect</string>
+          <key>destination</key>
+          <string>upload</string>
+          <key>teamID</key>
+          <string>$TEAM_ID</string>
+          <key>signingStyle</key>
+          <string>automatic</string>
+          <key>uploadSymbols</key>
+          <true/>
+        </dict>
+        </plist>
+        PLIST_EOF
+        xcodebuild -exportArchive \
+          -archivePath "$ARCHIVE_PATH" \
+          -exportOptionsPlist "$PLIST" \
+          -exportPath "$RUNNER_TEMP/export" \
+          -allowProvisioningUpdates \
+          -authenticationKeyPath "$ASC_KEY_PATH" \
+          -authenticationKeyID "$ASC_KEY_ID" \
+          -authenticationKeyIssuerID "$ASC_ISSUER_ID"

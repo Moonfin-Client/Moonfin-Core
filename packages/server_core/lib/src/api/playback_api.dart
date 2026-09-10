@@ -11,11 +11,17 @@ abstract class PlaybackApi {
     String? playSessionId,
   }) async {}
 
+  /// Set [waitForMediaProbe] when the caller is committed to playing. The server
+  /// may have to probe the media before it can answer, and on a source it has to
+  /// reach across the network for that outlasts the read window the rest of the
+  /// API is sized for. A caller only reporting what a source would do leaves it
+  /// off and keeps the usual window.
   Future<Map<String, dynamic>> getPlaybackInfo(
     String itemId, {
     Map<String, dynamic>? requestBody,
     String? userId,
     int? startTimeTicks,
+    bool waitForMediaProbe = false,
   });
 
   String getStreamUrl(

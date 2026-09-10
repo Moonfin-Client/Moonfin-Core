@@ -322,6 +322,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
     icon: Icons.music_note,
     open: () => push(const _ThemeMusicScreen()),
   );
+  final loadingAnimation = _SearchSection(
+    slug: 'loading-animation',
+    path: [l10n.settingsPersonalization, l10n.loadingAnimation],
+    icon: Icons.motion_photos_on_outlined,
+    open: () => push(const _LoadingAnimationScreen()),
+  );
   final video = _SearchSection(
     slug: 'video',
     path: [
@@ -382,7 +388,7 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
   final downloads = _SearchSection(
     slug: 'downloads',
     path: [l10n.settingsPlaybackSyncplay, l10n.settingsOfflineDownloads],
-    icon: Icons.download,
+    icon: Icons.download_for_offline,
     open: () => push(const DownloadSettingsScreen()),
   );
   final emulatorCores = _SearchSection(
@@ -1068,6 +1074,27 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       subtitle: l10n.loopThemeMusicSubtitle,
       keywords: ['repeat'],
     ),
+    loadingAnimation.screen(keywords: ['spinner', 'runner', 'moon', 'logo', 'loading']),
+    loadingAnimation.leaf(
+      'loadingAnimationImage',
+      l10n.loadingAnimationImage,
+    ),
+    loadingAnimation.leaf(
+      'loadingAnimationSize',
+      l10n.loadingAnimationSize,
+    ),
+    loadingAnimation.leaf(
+      'loadingAnimationPosition',
+      l10n.loadingAnimationPosition,
+    ),
+    loadingAnimation.leaf(
+      'loadingAnimationSpeed',
+      l10n.loadingAnimationSpeed,
+    ),
+    loadingAnimation.leaf(
+      'showLoadingAnimationText',
+      l10n.showLoadingAnimationText,
+    ),
 
     playback.screen(keywords: ['video', 'audio', 'subtitles', 'player']),
     video.screen(keywords: ['player', 'playback']),
@@ -1179,6 +1206,17 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         keywords: ['exoplayer', 'mpv', 'media3', 'engine'],
       ),
     if (PlatformDetection.isAndroid && PlatformDetection.isTV) ...[
+      video.leaf(
+        'redetect_display',
+        l10n.settingsRedetectDisplay,
+        subtitle: l10n.settingsRedetectDisplayDescription,
+        keywords: ['hdr', 'dolby vision', 'detect', 'edid', 'transcode'],
+      ),
+      video.leaf(
+        'display_is_sdr',
+        l10n.settingsDisplayIsSdr,
+        keywords: ['hdr', 'sdr', 'dolby vision'],
+      ),
       video.leaf(
         'dolby_vision_fallback_behavior',
         l10n.settingsDolbyVisionFallback,
@@ -1423,6 +1461,35 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         keywords: ['parallel', 'simultaneous'],
       ),
       downloads.leaf('download_storage_limit_mb', l10n.storageLimit),
+      if (AutoDownloadService.isSupportedPlatform) ...[
+        downloads.leaf(
+          'auto_download_enabled',
+          l10n.autoDownloadEnable,
+          subtitle: l10n.autoDownloadEnableSubtitle,
+          keywords: ['follow', 'series', 'subscription'],
+          header: l10n.autoDownloadSection,
+        ),
+        downloads.leaf(
+          'auto_download_keep_unwatched',
+          l10n.autoDownloadKeepUnwatched,
+          keywords: ['episodes', 'limit'],
+          header: l10n.autoDownloadSection,
+        ),
+        downloads.leaf(
+          'auto_download_delete_after_hours',
+          l10n.autoDownloadDelete,
+          subtitle: l10n.autoDownloadDeleteSubtitle,
+          keywords: ['watched', 'remove'],
+          header: l10n.autoDownloadSection,
+        ),
+        downloads.leaf(
+          'auto_download_background_refresh',
+          l10n.autoDownloadBackgroundRefresh,
+          subtitle: l10n.autoDownloadBackgroundRefreshSubtitle,
+          keywords: ['background', 'periodic'],
+          header: l10n.autoDownloadSection,
+        ),
+      ],
       downloads.leaf('download_custom_path', l10n.downloadLocation, keywords: [
         'folder',
         'path',

@@ -63,7 +63,7 @@ class _PlaybackCategoryScreen extends StatelessWidget {
                   if (PlatformDetection.supportsOfflineDownloads &&
                       !PlatformDetection.isWeb)
                     _TvSettingsListTile(
-                      leading: const Icon(Icons.download),
+                      leading: const Icon(Icons.download_for_offline),
                       title: Text(l10n.settingsOfflineDownloads),
                       subtitle: Text(l10n.settingsOfflineDownloadsSubtitle),
                       onTap: () => context.pushSettingsScreen(

@@ -20,6 +20,7 @@ class DeviceCapabilityCache {
 
   static const audioKey = 'device_capability_audio';
   static const displayHdrKey = 'device_capability_display_hdr';
+  static const displayHdrRecordKey = 'device_capability_display_hdr_v2';
   static const codecKey = 'device_capability_codec';
   static const appleVideoKey = 'device_capability_apple_video';
   static const deviceMemoryKey = 'device_capability_device_memory';

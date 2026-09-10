@@ -189,7 +189,7 @@ class TrackActionDialog extends StatelessWidget {
                           ),
                         if (supportsOffline && !isDownloaded && !isDownloading)
                           FocusableDialogRow(
-                            icon: Icons.download,
+                            icon: Icons.download_for_offline,
                             label: l10n.download,
                             onTap: () {
                               Navigator.pop(context);

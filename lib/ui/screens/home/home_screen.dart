@@ -31,6 +31,7 @@ import '../../widgets/rating_display.dart';
 import '../../../data/services/theme_music_service.dart';
 import '../../../data/services/media_server_client_factory.dart';
 import '../../../data/services/plugin_sync_service.dart';
+import '../../../data/services/connectivity_service.dart';
 import '../../../data/utils/media_type_badges.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../playback/appletv_preview_player.dart';
@@ -61,6 +62,7 @@ import '../../widgets/library_row.dart';
 import '../../widgets/media_bar.dart';
 import '../../widgets/mediabar/banner_media_bar.dart';
 import '../../widgets/media_card.dart';
+import '../../widgets/mobile_bottom_nav_bar.dart';
 import '../../widgets/navigation_layout.dart';
 import '../../widgets/responsive_layout.dart';
 import '../../widgets/seasonal_effects.dart';
@@ -120,6 +122,10 @@ class _HomeShellState extends State<_HomeShell>
   final _userPrefs = GetIt.instance<UserPreferences>();
   final _themeMusicService = GetIt.instance<ThemeMusicService>();
   final _pluginSyncService = GetIt.instance<PluginSyncService>();
+  final _connectivity = GetIt.instance.isRegistered<ConnectivityService>()
+      ? GetIt.instance<ConnectivityService>()
+      : null;
+  bool _lastCanReachServer = true;
   late final HomeViewModel _viewModel;
 
   final ValueNotifier<AggregatedItem?> _selectedItemNotifier = ValueNotifier(null);
@@ -197,6 +203,8 @@ class _HomeShellState extends State<_HomeShell>
 
     _pluginSyncService.addListener(_onPluginSyncChanged);
     _userPrefs.addListener(_onPrefsChanged);
+    _lastCanReachServer = _connectivity?.canReachServer ?? true;
+    _connectivity?.addListener(_onServerReachabilityChanged);
     _maybeRegisterThemeMusic();
     _viewModel.load(preserveExisting: _viewModel.rows.isNotEmpty);
   }
@@ -232,6 +240,7 @@ class _HomeShellState extends State<_HomeShell>
     _isScrolledToTopNotifier.dispose();
     _pluginSyncService.removeListener(_onPluginSyncChanged);
     _userPrefs.removeListener(_onPrefsChanged);
+    _connectivity?.removeListener(_onServerReachabilityChanged);
     if (_themeMusicRegistered) {
       _themeMusicService.unregisterDetailScreen(this);
       _themeMusicRegistered = false;
@@ -263,6 +272,17 @@ class _HomeShellState extends State<_HomeShell>
 
   void _onHomeRefreshRequested() {
     if (!mounted) return;
+    _viewModel.refresh(preserveExisting: true);
+  }
+
+  void _onServerReachabilityChanged() {
+    final canReach = _connectivity?.canReachServer ?? true;
+    final reloads = HomeViewModel.reloadsOnReachability(
+      canReachServer: canReach,
+      couldReachServer: _lastCanReachServer,
+    );
+    _lastCanReachServer = canReach;
+    if (!reloads || !mounted) return;
     _viewModel.refresh(preserveExisting: true);
   }
 
@@ -911,6 +931,15 @@ class _ContentRowsState extends State<_ContentRows>
     final desktopScale = _desktopUiScaleFactor();
     final topPeekSpacing = PlatformDetection.isTV ? (32.0 * desktopScale) : 8.0;
     return (safeTop + navbarHeight + topPeekSpacing).clamp(0.0, viewportHeight * 0.85);
+  }
+
+  /// Height of the navbar the rows scroll behind, or zero when it is not
+  /// along the bottom.
+  double _bottomNavbarInset() {
+    if (!NavigationLayout.allowBottomNavbar) return 0.0;
+    final position = widget.prefs.get(UserPreferences.navbarPosition);
+    if (position != NavbarPosition.bottom) return 0.0;
+    return MobileBottomNavBar.heightFor(context);
   }
 
   List<double> _rowTargetOffsetsForScroll({required bool fullScreenRows}) {
@@ -3998,16 +4027,25 @@ class _ContentRowsState extends State<_ContentRows>
     final rowExtents = _rowExtents;
     final headerCount = (includeMediaBar ? 1 : 0) + 1;
 
-    // Ensure the last row can be scrolled so its top sits just below the info
-    // overlay; otherwise scroll targets clamp to maxScrollExtent and rows drift
-    // higher in the viewport as the user navigates downward.
-    final viewportHeight = MediaQuery.of(context).size.height;
-    final lastRowExtent = rowExtents.isEmpty ? 0.0 : rowExtents.last;
-    final neededBottomPadding =
-        (viewportHeight -
-                (overlayBottom + (_isHomeRowsStyleV2() ? 4.0 : 8.0)) -
-                lastRowExtent)
-            .clamp(_isHomeRowsStyleV2() ? 24.0 : 32.0, double.infinity);
+    final minBottomPadding = _isHomeRowsStyleV2() ? 24.0 : 32.0;
+    final double neededBottomPadding;
+    if (PlatformDetection.useMobileUi) {
+      // Touch moves the list rather than a row at a time, so the room kept
+      // below for that reads as blank space here. It only needs to clear the
+      // navbar the rows scroll behind.
+      neededBottomPadding = minBottomPadding + _bottomNavbarInset();
+    } else {
+      // Ensure the last row can be scrolled so its top sits just below the
+      // info overlay, otherwise scroll targets clamp to maxScrollExtent and
+      // rows drift higher in the viewport as the user navigates downward.
+      final viewportHeight = MediaQuery.of(context).size.height;
+      final lastRowExtent = rowExtents.isEmpty ? 0.0 : rowExtents.last;
+      neededBottomPadding =
+          (viewportHeight -
+                  (overlayBottom + (_isHomeRowsStyleV2() ? 4.0 : 8.0)) -
+                  lastRowExtent)
+              .clamp(minBottomPadding, double.infinity);
+    }
 
     _ensureInitialHomeFocus(rows);
 

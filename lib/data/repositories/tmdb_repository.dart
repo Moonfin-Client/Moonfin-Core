@@ -81,7 +81,7 @@ class TmdbRepository {
   String? _studioImageUrl(int companyId) {
     final token = _client.accessToken;
     if (token == null) return null;
-    return '${_client.baseUrl}/Moonfin/Tmdb/StudioImage/$companyId?api_key=$token';
+    return '${_client.baseUrl}/Moonfin/Tmdb/StudioImage/$companyId?${_client.serverType.tokenQueryParam}=$token';
   }
 
   Future<double?> getEpisodeRating({

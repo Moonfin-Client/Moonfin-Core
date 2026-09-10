@@ -349,6 +349,16 @@ class HomeViewModel extends ChangeNotifier {
     required bool hasVisibleRow,
   }) => (preserveExisting || hydratedFromCache) && hasVisibleRow;
 
+  /// Whether the home has to load again because the server came back.
+  ///
+  /// Rows built while it was unreachable came from the downloads catalog, so
+  /// they hold only what was downloaded. Connectivity reports every probe it
+  /// runs, so only the crossing counts.
+  static bool reloadsOnReachability({
+    required bool canReachServer,
+    required bool couldReachServer,
+  }) => canReachServer && !couldReachServer;
+
   Future<void> load({bool preserveExisting = false, bool forceRefresh = false}) async {
     _checkAndTriggerDailyExternalRowsRefresh();
     if (_isLoading) {

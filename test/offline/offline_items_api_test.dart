@@ -235,6 +235,8 @@ void main() {
     expect(season['Id'], 'sea1');
     expect(season['Type'], 'Season');
     expect(season['IndexNumber'], 1);
+    // The season card falls back to this, so a stub without it reads as empty.
+    expect(season['ChildCount'], 2);
   });
 
   test('getNextUp returns first unplayed after last played', () async {

@@ -5,6 +5,12 @@ class JellyfinPlaybackApi implements PlaybackApi {
   final Dio _dio;
   final String _baseUrl;
 
+  /// A .strm pointing at an IPTV provider sends the server off to that provider
+  /// before it can answer, which routinely outlasts the client's 30 second read
+  /// window. jellyfin-web has no cap at all, so a source that plays there has to
+  /// play here. Three minutes is what the Emby client already reads for.
+  static const _probeTimeout = Duration(minutes: 3);
+
   JellyfinPlaybackApi(this._dio, this._baseUrl);
 
   @override
@@ -51,6 +57,7 @@ class JellyfinPlaybackApi implements PlaybackApi {
     Map<String, dynamic>? requestBody,
     String? userId,
     int? startTimeTicks,
+    bool waitForMediaProbe = false,
   }) async {
     final body = <String, dynamic>{
       'UserId': ?userId,
@@ -71,11 +78,16 @@ class JellyfinPlaybackApi implements PlaybackApi {
       'maxStreamingBitrate': ?maxStreamingBitrate?.toString(),
     };
 
+    final options = waitForMediaProbe
+        ? Options(receiveTimeout: _probeTimeout)
+        : null;
+
     try {
       final response = await _dio.post(
         '/Items/$itemId/PlaybackInfo',
         data: body,
         queryParameters: query,
+        options: options,
       );
       return response.data as Map<String, dynamic>;
     } on DioException catch (e) {
@@ -93,6 +105,7 @@ class JellyfinPlaybackApi implements PlaybackApi {
           '/Items/$itemId/PlaybackInfo',
           data: withoutProfile,
           queryParameters: query,
+          options: options,
         );
         return retry.data as Map<String, dynamic>;
       } on DioException catch (_) {
@@ -104,6 +117,7 @@ class JellyfinPlaybackApi implements PlaybackApi {
               'AutoOpenLiveStream': true,
             },
             queryParameters: query,
+            options: options,
           );
           return minimal.data as Map<String, dynamic>;
         } on DioException catch (e2) {

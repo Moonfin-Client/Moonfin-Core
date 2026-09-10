@@ -99,7 +99,12 @@ class PlaybackManager implements AudioOwnable {
     PlayerBackend currentBackend,
   )?
   _backendSelector;
-  bool Function(StreamResolutionResult resolution)? _transcodeSelector;
+  /// Returns the reason this client refused direct play, or null to let
+  /// the resolution stand. A reason is needed because a client-side
+  /// refusal leaves the server's transcodingReasons empty, so a report
+  /// otherwise shows a transcode nobody admits to asking for.
+  String? Function(StreamResolutionResult resolution)? _transcodeSelector;
+  String? _clientTranscodeReason;
   Duration Function(dynamic item, Duration startPosition)?
   _startPositionAdjuster;
   Future<PlaybackStartupRecoveryDecision> Function(
@@ -211,6 +216,15 @@ class PlaybackManager implements AudioOwnable {
       _bringupStateController.stream;
   Stream<void> get sessionEndedStream => _sessionEndedController.stream;
   StreamResolutionResult? get currentResolution => _currentResolution;
+
+  /// Item that gained a stream on the server after this session resolved. The
+  /// resolution still lists what the item had at play time, so a selector
+  /// reading it would leave the new track out.
+  String? _streamsOutdatedItemId;
+
+  bool streamsOutdatedFor(String itemId) => _streamsOutdatedItemId == itemId;
+
+  void markStreamsOutdated(String itemId) => _streamsOutdatedItemId = itemId;
   int? get audioStreamIndex => _audioStreamIndex;
   int? get subtitleStreamIndex {
     if (_subtitleStreamIndex != null) {
@@ -622,7 +636,7 @@ class PlaybackManager implements AudioOwnable {
   }
 
   void setTranscodeSelector(
-    bool Function(StreamResolutionResult resolution)? selector,
+    String? Function(StreamResolutionResult resolution)? selector,
   ) {
     _transcodeSelector = selector;
   }
@@ -651,6 +665,7 @@ class PlaybackManager implements AudioOwnable {
   void _resetBackendSelectionLock() {
     _backendSelectionLockedForSession = false;
     _sessionLockedBackend = null;
+    _clientTranscodeReason = null;
   }
 
   Future<bool> Function(TransportAction action, {Duration? position})?
@@ -1426,16 +1441,22 @@ class PlaybackManager implements AudioOwnable {
         enableDirectPlay &&
         enableDirectStream &&
         enableTranscoding &&
-        resolution.playMethod != StreamPlayMethod.transcode &&
-        transcodeSelector(resolution)) {
-      await _playCurrentItem(
-        startPosition: startPosition,
-        enableDirectPlay: false,
-        enableDirectStream: false,
-        enableTranscoding: true,
-        allowStartupRecovery: allowStartupRecovery,
-      );
-      return;
+        resolution.playMethod != StreamPlayMethod.transcode) {
+      // Every fresh evaluation overwrites the stash, so a reason recorded
+      // before a mid-session capability change can't outlive it. The forced
+      // second pass skips this whole block, which is what carries the reason
+      // through to the decision logger.
+      _clientTranscodeReason = transcodeSelector(resolution);
+      if (_clientTranscodeReason != null) {
+        await _playCurrentItem(
+          startPosition: startPosition,
+          enableDirectPlay: false,
+          enableDirectStream: false,
+          enableTranscoding: true,
+          allowStartupRecovery: allowStartupRecovery,
+        );
+        return;
+      }
     }
 
     bool needsReResolve = false;
@@ -1525,6 +1546,7 @@ class PlaybackManager implements AudioOwnable {
     }
 
     _currentResolution = resolution;
+    _streamsOutdatedItemId = null;
     _lastPlaybackItem = item;
     _lastPlaybackResolution = resolution;
     _mediaSourceId = resolution.mediaSourceId;
@@ -1606,6 +1628,9 @@ class PlaybackManager implements AudioOwnable {
             maxStreamingBitrate: maxBitrate,
             audioStreamIndex: _audioStreamIndex,
             subtitleStreamIndex: _subtitleStreamIndex,
+            clientTranscodeReason:
+                _clientTranscodeReason ??
+                (_forceTranscodeForQueue ? 'callerDisabledDirectPlay' : null),
           ),
         );
       } catch (_) {}
@@ -2379,16 +2404,25 @@ class PlaybackManager implements AudioOwnable {
 
   /// Pass `userInitiated: false` when reapplying the track already playing, so
   /// it isn't mistaken for the viewer choosing it.
+  ///
+  /// [refreshStreams] is for a subtitle added to the item after this session
+  /// resolved, which the stream list this session carries has never seen.
   Future<void> changeSubtitleTrack(
     int streamIndex, {
     bool userInitiated = true,
+    bool refreshStreams = false,
   }) => _withProgressPaused(
-    () => _changeSubtitleTrackInner(streamIndex, userInitiated: userInitiated),
+    () => _changeSubtitleTrackInner(
+      streamIndex,
+      userInitiated: userInitiated,
+      refreshStreams: refreshStreams,
+    ),
   );
 
   Future<void> _changeSubtitleTrackInner(
     int streamIndex, {
     bool userInitiated = true,
+    bool refreshStreams = false,
   }) async {
     final previousSubtitleStreamIndex = _subtitleStreamIndex;
     final isBitmap = _isSubtitleBitmap(streamIndex);
@@ -2419,6 +2453,15 @@ class PlaybackManager implements AudioOwnable {
     }
 
     await _applySubtitleRendererModeForStream(streamIndex);
+
+    // Every branch below resolves the track through the stream list this
+    // session was built from, so an index the server added since then finds
+    // nothing and the selection quietly does nothing. Re-resolving rebuilds
+    // the list first and carries the index into it.
+    if (refreshStreams && !_isOfflinePlayback) {
+      await _reResolveAtCurrentPosition();
+      return;
+    }
 
     if (!_isOfflinePlayback &&
         !(_backend?.supportsRuntimeTrackSelection ?? true)) {
@@ -3118,6 +3161,10 @@ class PlaybackDecisionContext {
   final int? audioStreamIndex;
   final int? subtitleStreamIndex;
 
+  /// Which client-side gate refused direct play, when one did. Server-side
+  /// refusals arrive in [StreamResolutionResult.transcodingReasons] instead.
+  final String? clientTranscodeReason;
+
   const PlaybackDecisionContext({
     required this.mediaItem,
     required this.resolution,
@@ -3126,6 +3173,7 @@ class PlaybackDecisionContext {
     required this.maxStreamingBitrate,
     this.audioStreamIndex,
     this.subtitleStreamIndex,
+    this.clientTranscodeReason,
   });
 }
 

@@ -123,6 +123,7 @@ class Media3PlayerBackend extends PlayerBackend {
   static const _watchdogStallMs = 6000;
   static const _watchdogBufferingStallMs = 30000;
   static const _watchdogBufferingRepeatMs = 60000;
+  static const _watchdogBufferingRunwayFloorMs = 10000;
   Timer? _watchdogTimer;
   String _watchdogItemLabel = 'item';
   bool _sawFirstFrame = false;
@@ -135,6 +136,8 @@ class Media3PlayerBackend extends PlayerBackend {
   bool _neverStartedWarned = false;
   int _bufferingSinceMs = 0;
   int _bufferingWarnedAtMs = 0;
+  bool _bufferingFailed = false;
+  String? _lastFrameRateLine;
 
   final _positionStream = StreamController<Duration>.broadcast();
   final _durationStream = StreamController<Duration>.broadcast();
@@ -329,6 +332,19 @@ class Media3PlayerBackend extends PlayerBackend {
           level: LogLevel.warning,
         );
         _onAudioSinkError();
+      case 'passthroughSilenceRecovery':
+        _diag(
+          'Media3: bitstream audio went silent (${map['reason']}), '
+          'rebuilding the track in place at ${_toInt(map['positionMs'])}ms',
+          level: LogLevel.warning,
+        );
+      case 'audioClockRecovery':
+        _diag(
+          'Media3: audio clock corrupted by a playback head reset '
+          '(head clock ${_toInt(map['reportedPositionUs'])}us), '
+          'reseeking in place at ${_toInt(map['positionMs'])}ms',
+          level: LogLevel.warning,
+        );
       case 'tunnelingDisabledOnAudioTrackFailure':
         _sessionTunnelingDisabled = true;
         _diag(
@@ -374,6 +390,8 @@ class Media3PlayerBackend extends PlayerBackend {
         _onAudioTrackMapping(map);
       case 'doviCompat':
         _onDoviCompat(map);
+      case 'media3Transfer':
+        _diag(_transferLine(map));
       case 'media3Log':
         final repeats = _toInt(map['repeats']);
         final error = map['error']?.toString();
@@ -387,7 +405,44 @@ class Media3PlayerBackend extends PlayerBackend {
         _diag(
           'Media3: video size ${_toInt(map['width'])}x${_toInt(map['height'])}',
         );
+      case 'frameRate':
+        _onFrameRateEvent(map);
     }
+  }
+
+  void _onFrameRateEvent(Map<String, dynamic> map) {
+    final detected = (map['detectedFrameRate'] as num?)?.toDouble();
+    final applied = (map['appliedFrameRate'] as num?)?.toDouble();
+    final behavior = map['behavior']?.toString() ?? '';
+    final content = detected == null
+        ? 'content of unknown frame rate'
+        : '${detected.toStringAsFixed(3)}fps content';
+
+    final String line;
+    var level = LogLevel.debug;
+    if (map['enabled'] != true) {
+      line = 'Media3: refresh rate switching off for $content';
+    } else if (applied != null) {
+      line =
+          'Media3: refresh rate switch to '
+          '${_toInt(map['appliedWidth'])}x${_toInt(map['appliedHeight'])}'
+          '@${applied.toStringAsFixed(3)} for $content '
+          '($behavior, mode ${_toInt(map['appliedDisplayModeId'])})';
+    } else {
+      final modes = (map['supportedModes'] as List<dynamic>? ?? const [])
+          .join(', ');
+      line =
+          'Media3: no display mode fits $content ($behavior'
+          '${modes.isEmpty ? '' : ', display offers $modes'})';
+      level = LogLevel.warning;
+    }
+    // The native side re-decides on every decoder and size callback, so the
+    // same outcome would otherwise land several times per start.
+    if (line == _lastFrameRateLine) {
+      return;
+    }
+    _lastFrameRateLine = line;
+    _diag(line, level: level);
   }
 
   void _onAudioTrackInitialized(Map<String, dynamic> map) {
@@ -548,6 +603,29 @@ class Media3PlayerBackend extends PlayerBackend {
     unawaited(disableTunnelingFallback(persist: false));
   }
 
+  /// Lines say requesting rather than fetched because the native side logs
+  /// as the request goes out, so one that never returns is still the last
+  /// line for its stream.
+  String _transferLine(Map<String, dynamic> map) {
+    switch (map['reason']?.toString()) {
+      case 'playlist':
+        return 'Media3 HLS: requesting playlist ${map['name'] ?? ''}';
+      case 'outOfOrder':
+        return 'Media3 HLS: requesting segment ${_toInt(map['index'])}, '
+            'previous was ${_toInt(map['previousIndex'])}';
+      case 'progress':
+        return 'Media3 HLS: requesting segment ${_toInt(map['index'])}, '
+            '${_toInt(map['requested'])} asked for, '
+            '${_toInt(map['averageMs'])}ms average';
+      case 'slow':
+        return 'Media3 HLS: segment ${_toInt(map['index'])} took '
+            '${_toInt(map['elapsedMs'])}ms';
+      case 'first':
+      default:
+        return 'Media3 HLS: requesting segment ${_toInt(map['index'])}';
+    }
+  }
+
   void _diag(String message, {LogLevel level = LogLevel.debug}) {
     if (GetIt.instance.isRegistered<LogService>()) {
       GetIt.instance<LogService>().media(message, level: level);
@@ -565,6 +643,7 @@ class Media3PlayerBackend extends PlayerBackend {
     _loadRequestedAtMs = DateTime.now().millisecondsSinceEpoch;
     _neverStartedWarned = false;
     _bufferingSinceMs = 0;
+    _bufferingFailed = false;
     _watchdogTimer ??= Timer.periodic(
       const Duration(seconds: 2),
       (_) => _checkPlaybackWatchdogs(),
@@ -662,10 +741,42 @@ class Media3PlayerBackend extends PlayerBackend {
           level: LogLevel.warning,
         );
       }
+      // A wedge holding runway never resumes on its own, so turn it into
+      // the failure the manager can surface instead of an eternal spinner.
+      if (!_bufferingFailed &&
+          bufferingHasWedged(
+            stuckMs: stuckMs,
+            bufferedAheadMs: _bufferedAheadMs,
+          )) {
+        _bufferingFailed = true;
+        _diag(
+          'Media3 watchdog: "$_watchdogItemLabel" wedged buffering for '
+          '${stuckMs ~/ 1000}s with ${_bufferedAheadMs}ms ahead, '
+          'failing playback',
+          level: LogLevel.warning,
+        );
+        _errorStream.add(<String, dynamic>{
+          'event': 'playerError',
+          'kind': 'playback_stalled',
+          'recoverable': false,
+        });
+        _isBuffering = false;
+        _bufferingStream.add(false);
+      }
     } else {
       _bufferingSinceMs = 0;
     }
   }
+
+  /// Static and pure for tests. A player that sits buffering past the stall
+  /// window while holding this much runway has given up rather than run dry,
+  /// since an ordinary rebuffer resumes after a few seconds of loaded media.
+  static bool bufferingHasWedged({
+    required int stuckMs,
+    required int bufferedAheadMs,
+  }) =>
+      stuckMs > _watchdogBufferingStallMs &&
+      bufferedAheadMs >= _watchdogBufferingRunwayFloorMs;
 
   /// How much play time is loaded past the playhead. The player reports a
   /// buffered position rather than a runway, so the playhead comes off it.
@@ -823,6 +934,7 @@ class Media3PlayerBackend extends PlayerBackend {
           .name,
       ...audioDecoderPreferencesPayload(_prefs),
     });
+    _lastFrameRateLine = null;
     await _invoke<void>('setSource', {
       'url': url,
       'headers': headers,
@@ -832,6 +944,8 @@ class Media3PlayerBackend extends PlayerBackend {
       'videoRangeType': videoRangeType,
       'mediaType': mediaType,
       'videoFrameRate': (payload['videoFrameRate'] as num?)?.toDouble(),
+      'videoWidth': (payload['videoWidth'] as num?)?.toInt(),
+      'videoHeight': (payload['videoHeight'] as num?)?.toInt(),
       'isLive': payload['isLive'] == true,
       'normalizationGainDb': normalizationGainDb,
       'skipSilenceEnabled': _skipSilenceEnabled,

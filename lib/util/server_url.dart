@@ -1,4 +1,5 @@
 import 'package:punycoder/punycoder.dart';
+import 'package:server_core/server_core.dart' show MediaServerClient;
 
 final _schemeRegex = RegExp(r'^[a-zA-Z][a-zA-Z0-9+.-]*://');
 
@@ -85,4 +86,24 @@ String _stripTrailingSlash(String value) {
     return value.substring(0, value.length - 1);
   }
   return value;
+}
+
+/// Appends the access token query parameter so the URL authenticates itself.
+///
+/// For fetches that go out without the app's Authorization header. Emby URLs
+/// already carry api_key while Jellyfin's don't, and Jellyfin 12 only reads
+/// the ApiKey spelling, so the name comes from the server type.
+String? tokenAuthedUrl(MediaServerClient client, String? url) {
+  if (url == null) return null;
+  final token = client.accessToken;
+  if (token == null || token.isEmpty) return url;
+  final lower = url.toLowerCase();
+  if (lower.contains('api_key=') ||
+      lower.contains('apikey=') ||
+      lower.contains('x-emby-token=')) {
+    return url;
+  }
+  final sep = url.contains('?') ? '&' : '?';
+  return '$url$sep${client.serverType.tokenQueryParam}='
+      '${Uri.encodeQueryComponent(token)}';
 }
