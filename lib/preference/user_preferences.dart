@@ -548,6 +548,7 @@ class UserPreferences extends ChangeNotifier {
     'pref_personal_rating_style',
     'tmdbApiKey',
     'seerrBlockNsfw',
+    'seerrShowMissingCollectionItems',
     'enabledRatings',
     'home_sections_config',
     'pref_audio_display_latest',
@@ -2901,6 +2902,11 @@ class UserPreferences extends ChangeNotifier {
   static final seerrBlockNsfw = Preference(
     key: 'seerrBlockNsfw',
     defaultValue: false,
+  );
+
+  static final seerrShowMissingCollectionItems = Preference(
+    key: 'seerrShowMissingCollectionItems',
+    defaultValue: true,
   );
 
   static final defaultDownloadQuality = Preference(

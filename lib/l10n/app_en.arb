@@ -256,6 +256,10 @@
   "@spotlightSimilarSeerr": {
     "description": "Header of the Seerr similar-titles section when it appears beside the library's own similar section"
   },
+  "spotlightRecommendationsSeerr": "Recommendations (Seerr)",
+  "@spotlightRecommendationsSeerr": {
+    "description": "Header of the Seerr recommendations section when it appears in the Spotlight recommendations modal"
+  },
   "spotlightPeopleCount": "{count, plural, =1{1 person} other{{count} people}}",
   "@spotlightPeopleCount": {
     "description": "Count fragment on spotlight summary cards: people",
@@ -5880,6 +5884,14 @@
   "hideAdultContent": "Hide adult content in results",
   "@hideAdultContent": {
     "description": "Description for NSFW filter"
+  },
+  "showMissingCollectionItems": "Show Missing Collection Items",
+  "@showMissingCollectionItems": {
+    "description": "Setting title to show missing items from Seerr on Collection pages"
+  },
+  "showMissingCollectionItemsDesc": "Include missing items on Collection pages",
+  "@showMissingCollectionItemsDesc": {
+    "description": "Setting subtitle explaining that missing items will be included on Collection pages"
   },
   "seerrNotificationsSection": "Notifications",
   "@seerrNotificationsSection": {

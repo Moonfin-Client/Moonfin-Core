@@ -195,6 +195,9 @@ class AppLocalizationsSi extends AppLocalizations {
   String get spotlightSimilarSeerr => 'Similar (Seerr)';
 
   @override
+  String get spotlightRecommendationsSeerr => 'Recommendations (Seerr)';
+
+  @override
   String spotlightPeopleCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -4439,6 +4442,13 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get hideAdultContent => 'ප්‍රතිඵලවල වැඩිහිටි අන්තර්ගතය සඟවන්න';
+
+  @override
+  String get showMissingCollectionItems => 'Show Missing Collection Items';
+
+  @override
+  String get showMissingCollectionItemsDesc =>
+      'Include missing items on Collection pages';
 
   @override
   String get seerrNotificationsSection => 'දැනුම්දීම්';

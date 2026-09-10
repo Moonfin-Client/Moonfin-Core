@@ -562,6 +562,12 @@ abstract class AppLocalizations {
   /// **'Similar (Seerr)'**
   String get spotlightSimilarSeerr;
 
+  /// Header of the Seerr recommendations section when it appears in the Spotlight recommendations modal
+  ///
+  /// In en, this message translates to:
+  /// **'Recommendations (Seerr)'**
+  String get spotlightRecommendationsSeerr;
+
   /// Count fragment on spotlight summary cards: people
   ///
   /// In en, this message translates to:
@@ -7887,6 +7893,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Hide adult content in results'**
   String get hideAdultContent;
+
+  /// Setting title to show missing items from Seerr on Collection pages
+  ///
+  /// In en, this message translates to:
+  /// **'Show Missing Collection Items'**
+  String get showMissingCollectionItems;
+
+  /// Setting subtitle explaining that missing items will be included on Collection pages
+  ///
+  /// In en, this message translates to:
+  /// **'Include missing items on Collection pages'**
+  String get showMissingCollectionItemsDesc;
 
   /// Header for the Seerr notifications settings section
   ///

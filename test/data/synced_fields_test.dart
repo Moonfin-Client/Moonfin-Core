@@ -217,6 +217,7 @@ void main() {
     'seasonalSurprise',
     'seerrBlockNsfw',
     'seerrEnabled',
+    'seerrShowMissingCollectionItems',
     'showDescriptionOnPause',
     'showDownloadsButton',
     'showFavoritesButton',

@@ -1149,6 +1149,7 @@ class ItemDetailViewModel extends ChangeNotifier {
   Future<void> _loadBoxSetSeerrItems() async {
     final item = _item;
     if (item == null || item.type != 'BoxSet') return;
+    if (!GetIt.instance<SeerrPreferences>().showMissingCollectionItems) return;
     if (!GetIt.instance<PluginSyncService>().seerrAvailable) return;
 
     try {
@@ -1492,7 +1493,9 @@ class ItemDetailViewModel extends ChangeNotifier {
 
       final collections = ordered.whereType<ParentCollection>().toList();
 
-      if (GetIt.instance<PluginSyncService>().seerrAvailable) {
+      final showMissing =
+          GetIt.instance<SeerrPreferences>().showMissingCollectionItems;
+      if (showMissing && GetIt.instance<PluginSyncService>().seerrAvailable) {
         try {
           final seerrRepo = await GetIt.instance.getAsync<SeerrRepository>();
           await seerrRepo.ensureInitialized();

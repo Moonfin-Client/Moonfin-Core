@@ -194,6 +194,9 @@ class AppLocalizationsYue extends AppLocalizations {
   String get spotlightSimilarSeerr => 'Similar (Seerr)';
 
   @override
+  String get spotlightRecommendationsSeerr => 'Recommendations (Seerr)';
+
+  @override
   String spotlightPeopleCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -4318,6 +4321,13 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String get hideAdultContent => '在結果中隱藏成人內容';
+
+  @override
+  String get showMissingCollectionItems => 'Show Missing Collection Items';
+
+  @override
+  String get showMissingCollectionItemsDesc =>
+      'Include missing items on Collection pages';
 
   @override
   String get seerrNotificationsSection => '通知';

@@ -658,7 +658,8 @@ class _SpotlightCardsBuilder {
 
   SpotlightCardSpec? _boxSetItemsCard() {
     final libraryItems = vm.collectionItems;
-    final missing = vm.missingCollectionItems;
+    final showMissing = prefs.get(UserPreferences.seerrShowMissingCollectionItems);
+    final missing = showMissing ? vm.missingCollectionItems : const <AggregatedItem>[];
     final items = [...libraryItems, ...missing];
     if (items.isEmpty) return null;
     final movies = items.where((i) => i.type == 'Movie').toList();
