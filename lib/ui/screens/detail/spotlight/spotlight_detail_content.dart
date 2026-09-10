@@ -987,14 +987,27 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
 
     final Widget band;
     if (_landscape) {
-      band = Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          for (var i = 0; i < cards.length; i++) ...[
-            if (i > 0) const SizedBox(width: 16),
-            Expanded(child: SizedBox(height: cardHeight, child: cardAt(i))),
-          ],
-        ],
+      band = LayoutBuilder(
+        builder: (context, constraints) {
+          final maxCardWidth = cardHeight * (16 / 9);
+          final cardWidth = math.min(
+            maxCardWidth,
+            (constraints.maxWidth - (cards.length - 1) * 16) / cards.length,
+          );
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              for (var i = 0; i < cards.length; i++) ...[
+                if (i > 0) const SizedBox(width: 16),
+                SizedBox(
+                  width: cardWidth,
+                  height: cardHeight,
+                  child: cardAt(i),
+                ),
+              ],
+            ],
+          );
+        },
       );
     } else if (cards.length == 1) {
       band = Padding(

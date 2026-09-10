@@ -6,8 +6,8 @@ import '../../../../data/repositories/tmdb_repository.dart';
 import '../../../../data/services/seerr/seerr_api_models.dart';
 import '../../../../data/viewmodels/item_detail_view_model.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../preference/preference_constants.dart';
 import '../../../../preference/user_preferences.dart';
-import '../../../widgets/seerr/seerr_image_urls.dart';
 import '../../../widgets/seerr/seerr_item_status.dart' show seerrItemTabState;
 import '../item_detail_screen.dart' show DetailTrackList;
 import '../modern/modern_detail_content.dart'
@@ -274,7 +274,7 @@ class _SpotlightCardsBuilder {
       id: 'people',
       title: l10n.spotlightCastCrewStudios,
       subtitle: subtitle,
-      imageUrl: _firstPersonImage(cast) ?? fallbackImageUrl,
+      imageUrl: fallbackImageUrl,
       icon: Icons.people_outline,
       sections: [
         if (cast.isNotEmpty) _peopleSection(l10n.castMembers, cast),
@@ -306,7 +306,11 @@ class _SpotlightCardsBuilder {
       imageUrl:
           _firstChapterImage() ??
           (extras.isNotEmpty
-              ? spotlightItemImageUrl(_imageApi, extras.first)
+              ? spotlightLandscapeImageUrl(
+                  _imageApi,
+                  extras.first,
+                  fallbackUrl: fallbackImageUrl,
+                )
               : null) ??
           fallbackImageUrl,
       icon: Icons.video_library_outlined,
@@ -377,29 +381,38 @@ class _SpotlightCardsBuilder {
         seerrSimilar.isEmpty) {
       return null;
     }
-    final hasSeerrSections =
-        seerrRecommendations.isNotEmpty || seerrSimilar.isNotEmpty;
     final imageUrl = similar.isNotEmpty
-        ? spotlightItemImageUrl(_imageApi, similar.first)
-        : _firstSeerrPoster(
-            seerrRecommendations.isNotEmpty
-                ? seerrRecommendations
-                : seerrSimilar,
-          );
+        ? spotlightLandscapeImageUrl(
+            _imageApi,
+            similar.first,
+            fallbackUrl: fallbackImageUrl,
+          )
+        : (_firstSeerrBackdrop(
+                seerrRecommendations.isNotEmpty
+                    ? seerrRecommendations
+                    : seerrSimilar,
+              ) ??
+            fallbackImageUrl);
+    final sourceSetting = prefs.get(UserPreferences.recommendationSystemSource);
+    final librarySectionTitle = switch (sourceSetting) {
+      RecommendationSystemSource.local => l10n.recommendationSystemMoonfin,
+      RecommendationSystemSource.online => l10n.recommendationSystemTmdb,
+    };
     return SpotlightCardSpec(
       id: 'similar',
-      title: hasSeerrSections
-          ? l10n.spotlightSeerrRecommendations
-          : l10n.spotlightSimilarRecommendations,
+      title: l10n.recommendations,
       subtitle: l10n.spotlightTitlesCount(
         similar.length + seerrRecommendations.length + seerrSimilar.length,
       ),
       imageUrl: imageUrl ?? fallbackImageUrl,
       icon: Icons.auto_awesome_outlined,
       sections: [
-        if (similar.isNotEmpty) _mediaSection(l10n.similar, similar),
+        if (similar.isNotEmpty) _mediaSection(librarySectionTitle, similar),
         if (seerrRecommendations.isNotEmpty)
-          _seerrSection(l10n.recommendations, seerrRecommendations),
+          _seerrSection(
+            l10n.spotlightRecommendationsSeerr,
+            seerrRecommendations,
+          ),
         if (seerrSimilar.isNotEmpty)
           _seerrSection(
             similar.isEmpty ? l10n.similar : l10n.spotlightSimilarSeerr,
@@ -412,20 +425,36 @@ class _SpotlightCardsBuilder {
   SpotlightCardSpec? _collectionsCard() {
     final collections = vm.parentCollections;
     if (collections.isEmpty) return null;
-    final firstItem = collections
-        .expand((collection) => collection.items)
-        .firstOrNull;
+    final imageUrl = _firstCollectionImage(collections) ?? fallbackImageUrl;
     return SpotlightCardSpec(
       id: 'collections',
       title: l10n.spotlightCollectionsCard,
       subtitle: l10n.spotlightCollectionsCount(collections.length),
-      imageUrl: firstItem != null
-          ? (spotlightItemImageUrl(_imageApi, firstItem) ?? fallbackImageUrl)
-          : fallbackImageUrl,
+      imageUrl: imageUrl,
       icon: Icons.collections_bookmark_outlined,
       sections: [
         for (final collection in collections)
-          _mediaSection(collection.name, collection.items),
+          _mediaSection(
+            collection.name,
+            [
+              collection.boxSetItem ??
+                  AggregatedItem(
+                    id: collection.id,
+                    serverId: item.serverId,
+                    rawData: {
+                      'Id': collection.id,
+                      'Name': collection.name,
+                      'Type': 'BoxSet',
+                      'IsFolder': true,
+                      if (collection.primaryImageTag != null) ...{
+                        'PrimaryImageTag': collection.primaryImageTag,
+                        'ImageTags': {'Primary': collection.primaryImageTag},
+                      },
+                    },
+                  ),
+              ...collection.items,
+            ],
+          ),
       ],
     );
   }
@@ -646,7 +675,7 @@ class _SpotlightCardsBuilder {
       title: l10n.spotlightMoviesAndShows,
       subtitle: subtitle,
       imageUrl:
-          spotlightItemImageUrl(_imageApi, items.first) ?? fallbackImageUrl,
+          _firstItemLandscape(items) ?? fallbackImageUrl,
       icon: Icons.collections_bookmark_outlined,
       sections: [
         if (movies.isNotEmpty) _mediaSection(l10n.movies, movies),
@@ -687,7 +716,7 @@ class _SpotlightCardsBuilder {
         if (peopleCount > 0) l10n.spotlightPeopleCount(peopleCount),
         if (studios.isNotEmpty) l10n.spotlightStudiosCount(studios.length),
       ].join(' · '),
-      imageUrl: _firstPersonImage(cast.values.toList()) ?? fallbackImageUrl,
+      imageUrl: fallbackImageUrl,
       icon: Icons.people_outline,
       sections: [
         if (cast.isNotEmpty)
@@ -707,7 +736,11 @@ class _SpotlightCardsBuilder {
       title: l10n.spotlightPlaylistOrder,
       subtitle: l10n.spotlightItemsCount(items.length),
       imageUrl:
-          spotlightItemImageUrl(_imageApi, items.first) ?? fallbackImageUrl,
+          spotlightLandscapeImageUrl(
+            _imageApi,
+            items.first,
+            fallbackUrl: fallbackImageUrl,
+          ),
       icon: Icons.format_list_numbered,
       sections: [
         SpotlightModalSection(
@@ -728,17 +761,28 @@ class _SpotlightCardsBuilder {
   // ---------------------------------------------------------------------------
   // Card imagery
 
-  String? _firstPersonImage(List<Map<String, dynamic>> people) {
-    for (final person in people) {
-      final url = spotlightPersonImageUrl(
-        _imageApi,
-        id: person['Id']?.toString(),
-        tag: person['PrimaryImageTag'] as String?,
-        profilePath: person['ProfilePath'] as String?,
-        maxHeight: 400,
-        tmdbProfileBase: seerrProfileLargeBase,
-      );
+  String? _firstItemLandscape(List<AggregatedItem> items) {
+    for (final child in items) {
+      final url = spotlightLandscapeImageUrl(_imageApi, child);
       if (url != null) return url;
+    }
+    return null;
+  }
+
+  String? _firstSeerrBackdrop(List<SeerrDiscoverItem> items) {
+    for (final item in items) {
+      final url = spotlightSeerrBackdropUrl(item.backdropPath);
+      if (url != null) return url;
+    }
+    return null;
+  }
+
+  String? _firstCollectionImage(List<ParentCollection> collections) {
+    for (final col in collections) {
+      for (final child in col.items) {
+        final url = spotlightLandscapeImageUrl(_imageApi, child);
+        if (url != null) return url;
+      }
     }
     return null;
   }

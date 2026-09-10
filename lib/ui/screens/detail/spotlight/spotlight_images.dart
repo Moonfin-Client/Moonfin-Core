@@ -6,9 +6,11 @@ import '../../../widgets/seerr/seerr_image_urls.dart';
 /// The poster or primary image for [item], with the TMDB fallbacks a
 /// Seerr-only item needs.
 String? spotlightItemImageUrl(ImageApi imageApi, AggregatedItem item) {
-  final tag = item.primaryImageTag;
-  if (tag != null && !item.id.startsWith('tmdb:')) {
-    return imageApi.getPrimaryImageUrl(item.id, maxHeight: 360, tag: tag);
+  final tag = item.primaryImageTag ?? item.primaryImageTagField;
+  if (!item.id.startsWith('tmdb:')) {
+    if (tag != null || item.type == 'BoxSet' || item.isFolder) {
+      return imageApi.getPrimaryImageUrl(item.id, maxHeight: 360, tag: tag);
+    }
   }
   return spotlightSeerrPosterUrl(item.rawData['PosterPath'] as String?) ??
       spotlightPersonImageUrl(
@@ -38,8 +40,50 @@ String? spotlightPersonImageUrl(
   return null;
 }
 
+/// A landscape thumbnail or backdrop for [item], prioritizing 16:9 artwork
+/// (Thumb, then Backdrop) over posters.
+String? spotlightLandscapeImageUrl(
+  ImageApi imageApi,
+  AggregatedItem item, {
+  int maxWidth = 640,
+  String? fallbackUrl,
+}) {
+  final thumbTag = item.thumbImageTag;
+  if (thumbTag != null && !item.id.startsWith('tmdb:')) {
+    return imageApi.getThumbImageUrl(item.id, maxWidth: maxWidth, tag: thumbTag);
+  }
+  if (item.backdropImageTags.isNotEmpty && !item.id.startsWith('tmdb:')) {
+    return imageApi.getBackdropImageUrl(
+      item.id,
+      maxWidth: maxWidth,
+      tag: item.backdropImageTags.first,
+    );
+  }
+  final parentBackdropId = item.parentBackdropItemId;
+  if (parentBackdropId != null &&
+      item.parentBackdropImageTags.isNotEmpty &&
+      !parentBackdropId.startsWith('tmdb:')) {
+    return imageApi.getBackdropImageUrl(
+      parentBackdropId,
+      maxWidth: maxWidth,
+      tag: item.parentBackdropImageTags.first,
+    );
+  }
+  final seerrBackdrop =
+      spotlightSeerrBackdropUrl(item.rawData['BackdropPath'] as String?);
+  if (seerrBackdrop != null) return seerrBackdrop;
+
+  return fallbackUrl;
+}
+
 /// A Seerr poster path as a TMDB URL, or null when Seerr sent none.
 String? spotlightSeerrPosterUrl(String? posterPath) =>
     posterPath == null || posterPath.isEmpty
     ? null
     : '$seerrPosterBase$posterPath';
+
+/// A Seerr backdrop path as a TMDB URL, or null when Seerr sent none.
+String? spotlightSeerrBackdropUrl(String? backdropPath) =>
+    backdropPath == null || backdropPath.isEmpty
+    ? null
+    : '$seerrBackdropBase$backdropPath';
