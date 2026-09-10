@@ -97,6 +97,7 @@ void main() {
     when(() => vm.filmographyMovies).thenReturn(const []);
     when(() => vm.filmographySeries).thenReturn(const []);
     when(() => vm.collectionItems).thenReturn(const []);
+    when(() => vm.missingCollectionItems).thenReturn(const []);
     when(() => vm.playlistItems).thenReturn(const []);
     when(() => vm.parentCollections).thenReturn(const []);
     when(() => vm.canManagePlaylistTracks).thenReturn(false);
@@ -253,12 +254,52 @@ void main() {
     final cards = cardsFor(_item('Movie'));
 
     final similarCard = cards.singleWhere((c) => c.id == 'similar');
-    expect(similarCard.title, 'Similar and Seerr Recommendations');
+    expect(similarCard.title, _l10n.recommendations);
     expect(similarCard.sections.map((s) => s.title), [
-      _l10n.similar,
-      _l10n.recommendations,
+      _l10n.recommendationSystemMoonfin,
+      _l10n.spotlightRecommendationsSeerr,
       'Similar (Seerr)',
     ]);
+  });
+
+  test('collections card prepends the collection itself as the first item with artwork', () {
+    when(() => vm.parentCollections).thenReturn([
+      ParentCollection(
+        id: 'box-1',
+        name: 'Alien Anthology',
+        primaryImageTag: 'tag-box-1',
+        items: [_child('m1', 'Movie'), _child('m2', 'Movie')],
+      ),
+    ]);
+    final cards = cardsFor(_item('Movie'));
+
+    final collectionsCard = cards.singleWhere((c) => c.id == 'collections');
+    expect(collectionsCard.title, _l10n.spotlightCollectionsCard);
+    expect(collectionsCard.subtitle, '1 collection');
+    expect(collectionsCard.sections.single.title, 'Alien Anthology');
+    expect(collectionsCard.sections.single.count, 3);
+  });
+
+  test('boxset items card combines library items and missing seerr items', () {
+    when(() => vm.collectionItems).thenReturn([
+      _child('m1', 'Movie'),
+      _child('m2', 'Movie'),
+    ]);
+    when(() => vm.missingCollectionItems).thenReturn([
+      AggregatedItem(
+        id: 'tmdb:movie:999',
+        serverId: 'seerr',
+        rawData: const {
+          'Id': 'tmdb:movie:999',
+          'Name': 'Missing Sequel',
+          'Type': 'Movie',
+        },
+      ),
+    ]);
+    final cards = cardsFor(_item('BoxSet'));
+    final boxSetCard = cards.singleWhere((c) => c.id == 'boxset_items');
+    expect(boxSetCard.title, _l10n.spotlightMoviesAndShows);
+    expect(boxSetCard.sections.first.count, 3);
   });
 
   test('a person keeps their seerr credits sections', () {

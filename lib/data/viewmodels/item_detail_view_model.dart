@@ -81,9 +81,17 @@ class DeleteItemFailure {
 class ParentCollection {
   final String id;
   final String name;
+  final String? primaryImageTag;
+  final AggregatedItem? boxSetItem;
   final List<AggregatedItem> items;
 
-  ParentCollection({required this.id, required this.name, required this.items});
+  ParentCollection({
+    required this.id,
+    required this.name,
+    this.primaryImageTag,
+    this.boxSetItem,
+    required this.items,
+  });
 }
 
 class ItemDetailViewModel extends ChangeNotifier {
@@ -174,6 +182,9 @@ class ItemDetailViewModel extends ChangeNotifier {
 
   List<AggregatedItem> _collectionItems = const [];
   List<AggregatedItem> get collectionItems => _collectionItems;
+
+  List<AggregatedItem> _missingCollectionItems = const [];
+  List<AggregatedItem> get missingCollectionItems => _missingCollectionItems;
 
   // --- Collection grid pagination state ---
   static const _collectionPageSize = 50;
@@ -572,6 +583,7 @@ class ItemDetailViewModel extends ChangeNotifier {
   Future<void> load({String? mediaSourceId}) async {
     _state = ItemDetailState.loading;
     _collectionItems = const [];
+    _missingCollectionItems = const [];
     _parentCollectionItems = const [];
     _parentCollectionName = null;
     _parentCollections = const [];
@@ -716,7 +728,10 @@ class ItemDetailViewModel extends ChangeNotifier {
     } else if (type == 'Audio') {
       futures.add(_loadLyrics());
     } else if (type == 'BoxSet') {
-      futures.add(_loadCollectionItems()); // grid — Phase 2, starts immediately
+      futures.add(() async {
+        await _loadCollectionItems();
+        await _loadBoxSetSeerrItems();
+      }());
       futures.add(_buildPlaylistIndex());  // playlist — Phase 1, runs concurrently
     } else if (type == 'MusicVideo' ||
         type == 'Movie' ||
@@ -1116,7 +1131,7 @@ class ItemDetailViewModel extends ChangeNotifier {
       parentId: itemId,
       startIndex: _collectionFetchedCount,
       limit: _collectionPageSize,
-      fields: 'PrimaryImageAspectRatio,BasicSyncInfo,People',
+      fields: 'PrimaryImageAspectRatio,BasicSyncInfo,People,ProviderIds',
     );
     final newItems = _mapItems((data['Items'] as List?) ?? []);
     final total = data['TotalRecordCount'] as int?;
@@ -1129,6 +1144,69 @@ class ItemDetailViewModel extends ChangeNotifier {
         : newItems.length == _collectionPageSize;
     _collectionItems = [..._collectionItems, ...newItems];
     notifyListeners();
+  }
+
+  Future<void> _loadBoxSetSeerrItems() async {
+    final item = _item;
+    if (item == null || item.type != 'BoxSet') return;
+    if (!GetIt.instance<PluginSyncService>().seerrAvailable) return;
+
+    try {
+      int? collectionTmdbId = int.tryParse(item.tmdbId ?? '');
+      final seerrRepo = await GetIt.instance.getAsync<SeerrRepository>();
+      await seerrRepo.ensureInitialized();
+
+      if (collectionTmdbId == null && _collectionItems.isNotEmpty) {
+        for (final child in _collectionItems) {
+          final childTmdb = int.tryParse(child.tmdbId ?? '');
+          if (childTmdb != null && childTmdb > 0) {
+            try {
+              final movie = await seerrRepo.getMovieDetails(childTmdb);
+              if (movie.collection?.id != null) {
+                collectionTmdbId = movie.collection!.id;
+                break;
+              }
+            } catch (_) {}
+          }
+        }
+      }
+
+      if (collectionTmdbId == null) return;
+
+      final seerrCol = await seerrRepo.getCollectionDetails(collectionTmdbId);
+      final existingTmdbIds = _collectionItems
+          .map((i) => i.tmdbId)
+          .whereType<String>()
+          .toSet();
+
+      final missing = <AggregatedItem>[];
+      for (final part in seerrCol.parts) {
+        if (!existingTmdbIds.contains(part.id.toString())) {
+          missing.add(
+            AggregatedItem(
+              id: 'tmdb:movie:${part.id}',
+              serverId: 'seerr',
+              rawData: {
+                'Id': 'tmdb:movie:${part.id}',
+                'Name': part.title ?? part.name ?? '',
+                'Type': 'Movie',
+                'Overview': part.overview,
+                'PosterPath': part.posterPath,
+                'BackdropPath': part.backdropPath,
+                'PremiereDate': part.releaseDate,
+                'ProductionYear': (part.releaseDate != null && part.releaseDate!.length >= 4)
+                    ? int.tryParse(part.releaseDate!.substring(0, 4))
+                    : null,
+                'ProviderIds': {'Tmdb': part.id.toString()},
+              },
+            ),
+          );
+        }
+      }
+
+      _missingCollectionItems = missing;
+      notifyListeners();
+    } catch (_) {}
   }
 
   /// Puts [_flattenedIds] in place, either from a saved order or by scanning
@@ -1330,7 +1408,7 @@ class ItemDetailViewModel extends ChangeNotifier {
     }
 
     try {
-      final Map<String, String> boxSetIds = {};
+      final Map<String, ({String name, String? primaryImageTag, Map<String, dynamic>? rawData})> boxSetInfo = {};
       final ancestors = await _client.itemsApi.getAncestors(item.id);
       for (final ancestor in ancestors) {
         if (ancestor['Type'] == 'BoxSet') {
@@ -1338,17 +1416,23 @@ class ItemDetailViewModel extends ChangeNotifier {
           final name = ancestor['Name']?.toString();
           if (boxSetId != null && boxSetId.isNotEmpty && name != null) {
             final isMember = await _boxSetContainsItem(boxSetId, item.id);
-            if (isMember && !boxSetIds.containsKey(boxSetId)) {
-              boxSetIds[boxSetId] = name;
+            if (isMember && !boxSetInfo.containsKey(boxSetId)) {
+              final tag = (ancestor['ImageTags'] as Map?)?['Primary'] as String? ??
+                  ancestor['PrimaryImageTag'] as String?;
+              boxSetInfo[boxSetId] = (
+                name: name,
+                primaryImageTag: tag,
+                rawData: Map<String, dynamic>.from(ancestor),
+              );
             }
           }
         }
       }
 
       final scannedCollections = await _findParentCollectionsByScanningBoxSets(item.id);
-      boxSetIds.addAll(scannedCollections);
+      boxSetInfo.addAll(scannedCollections);
 
-      if (boxSetIds.isEmpty) {
+      if (boxSetInfo.isEmpty) {
         _parentCollections = const [];
         _parentCollectionItems = const [];
         _parentCollectionName = null;
@@ -1358,14 +1442,14 @@ class ItemDetailViewModel extends ChangeNotifier {
 
       // Keep collections in a stable order so the rows and the legacy
       // single-collection fields don't shuffle around between opens.
-      final entries = boxSetIds.entries.toList();
+      final entries = boxSetInfo.entries.toList();
       final ordered = List<ParentCollection?>.filled(entries.length, null);
       final fetchFutures = <Future<void>>[];
 
       for (var i = 0; i < entries.length; i++) {
         final index = i;
         final boxSetId = entries[i].key;
-        final name = entries[i].value;
+        final info = entries[i].value;
 
         fetchFutures.add(() async {
           // Not recursive and not filtered, same as the collection grid, so a
@@ -1374,20 +1458,104 @@ class ItemDetailViewModel extends ChangeNotifier {
             parentId: boxSetId,
             sortBy: 'PremiereDate,SortName',
             sortOrder: 'Ascending',
-            fields: 'PrimaryImageAspectRatio,BasicSyncInfo',
+            fields: 'PrimaryImageAspectRatio,BasicSyncInfo,ProviderIds',
           );
 
           final items = (data['Items'] as List?) ?? [];
+          final mappedItems = _sortCollectionByReleaseOrder(_mapItems(items));
+          final tag = info.primaryImageTag;
+          final raw = info.rawData;
+          final boxSetItem = AggregatedItem(
+            id: boxSetId,
+            serverId: item.serverId,
+            rawData: raw ?? {
+              'Id': boxSetId,
+              'Name': info.name,
+              'Type': 'BoxSet',
+              'IsFolder': true,
+              if (tag != null) ...{
+                'PrimaryImageTag': tag,
+                'ImageTags': {'Primary': tag},
+              },
+            },
+          );
           ordered[index] = ParentCollection(
             id: boxSetId,
-            name: name,
-            items: _sortCollectionByReleaseOrder(_mapItems(items)),
+            name: info.name,
+            primaryImageTag: tag,
+            boxSetItem: boxSetItem,
+            items: mappedItems,
           );
         }());
       }
       await Future.wait(fetchFutures);
 
       final collections = ordered.whereType<ParentCollection>().toList();
+
+      if (GetIt.instance<PluginSyncService>().seerrAvailable) {
+        try {
+          final seerrRepo = await GetIt.instance.getAsync<SeerrRepository>();
+          await seerrRepo.ensureInitialized();
+          for (var i = 0; i < collections.length; i++) {
+            final col = collections[i];
+            int? colTmdbId;
+            for (final child in col.items) {
+              final childTmdb = int.tryParse(child.tmdbId ?? '');
+              if (childTmdb != null && childTmdb > 0) {
+                try {
+                  final movie = await seerrRepo.getMovieDetails(childTmdb);
+                  if (movie.collection?.id != null) {
+                    colTmdbId = movie.collection!.id;
+                    break;
+                  }
+                } catch (_) {}
+              }
+            }
+            if (colTmdbId != null) {
+              final seerrCol = await seerrRepo.getCollectionDetails(colTmdbId);
+              final existingTmdbIds = col.items
+                  .map((item) => item.tmdbId)
+                  .whereType<String>()
+                  .toSet();
+              final missing = <AggregatedItem>[];
+              for (final part in seerrCol.parts) {
+                if (!existingTmdbIds.contains(part.id.toString())) {
+                  missing.add(
+                    AggregatedItem(
+                      id: 'tmdb:movie:${part.id}',
+                      serverId: 'seerr',
+                      rawData: {
+                        'Id': 'tmdb:movie:${part.id}',
+                        'Name': part.title ?? part.name ?? '',
+                        'Type': 'Movie',
+                        'Overview': part.overview,
+                        'PosterPath': part.posterPath,
+                        'BackdropPath': part.backdropPath,
+                        'PremiereDate': part.releaseDate,
+                        'ProductionYear': (part.releaseDate != null && part.releaseDate!.length >= 4)
+                            ? int.tryParse(part.releaseDate!.substring(0, 4))
+                            : null,
+                        'ProviderIds': {'Tmdb': part.id.toString()},
+                      },
+                    ),
+                  );
+                }
+              }
+              if (missing.isNotEmpty) {
+                final allItems = _sortCollectionByReleaseOrder([...col.items, ...missing]);
+                collections[i] = ParentCollection(
+                  id: col.id,
+                  name: col.name,
+                  primaryImageTag: col.primaryImageTag,
+                  boxSetItem: col.boxSetItem,
+                  items: allItems,
+                );
+              }
+            }
+          }
+        } catch (_) {}
+      }
+
       _parentCollections = collections;
       if (collections.isNotEmpty) {
         _parentCollectionName = collections.first.name;
@@ -1420,8 +1588,8 @@ class ItemDetailViewModel extends ChangeNotifier {
     }
   }
 
-  Future<Map<String, String>> _findParentCollectionsByScanningBoxSets(String itemId) async {
-    final Map<String, String> result = {};
+  Future<Map<String, ({String name, String? primaryImageTag, Map<String, dynamic>? rawData})>> _findParentCollectionsByScanningBoxSets(String itemId) async {
+    final Map<String, ({String name, String? primaryImageTag, Map<String, dynamic>? rawData})> result = {};
     try {
       const pageSize = 200;
       var startIndex = 0;
@@ -1431,7 +1599,7 @@ class ItemDetailViewModel extends ChangeNotifier {
           includeItemTypes: ['BoxSet'],
           recursive: true,
           sortBy: 'SortName',
-          fields: 'BasicSyncInfo',
+          fields: 'BasicSyncInfo,PrimaryImageAspectRatio,ImageTags',
           startIndex: startIndex,
           limit: pageSize,
           enableTotalRecordCount: true,
@@ -1441,7 +1609,7 @@ class ItemDetailViewModel extends ChangeNotifier {
           break;
         }
 
-        final candidates = <MapEntry<String, String>>[];
+        final candidates = <({String id, String name, String? primaryImageTag, Map<String, dynamic> rawData})>[];
         for (final raw in boxSets.whereType<Map>()) {
           final boxSet = raw.cast<String, dynamic>();
           final boxSetId = boxSet['Id']?.toString();
@@ -1449,7 +1617,14 @@ class ItemDetailViewModel extends ChangeNotifier {
           if (boxSetId == null || boxSetId.isEmpty || boxSetName == null) {
             continue;
           }
-          candidates.add(MapEntry(boxSetId, boxSetName));
+          final tag = (boxSet['ImageTags'] as Map?)?['Primary'] as String? ??
+              boxSet['PrimaryImageTag'] as String?;
+          candidates.add((
+            id: boxSetId,
+            name: boxSetName,
+            primaryImageTag: tag,
+            rawData: boxSet,
+          ));
         }
 
         // Cap how many membership lookups run at once so a large library
@@ -1459,7 +1634,7 @@ class ItemDetailViewModel extends ChangeNotifier {
           final batch = candidates.skip(i).take(maxConcurrent);
           await Future.wait(batch.map((candidate) async {
             final membership = await _client.itemsApi.getItems(
-              parentId: candidate.key,
+              parentId: candidate.id,
               fields: 'BasicSyncInfo',
             );
             final members = (membership['Items'] as List?) ?? const [];
@@ -1468,7 +1643,11 @@ class ItemDetailViewModel extends ChangeNotifier {
               return map['Id'] == itemId;
             });
             if (hasItem) {
-              result[candidate.key] = candidate.value;
+              result[candidate.id] = (
+                name: candidate.name,
+                primaryImageTag: candidate.primaryImageTag,
+                rawData: candidate.rawData,
+              );
             }
           }));
         }

@@ -657,7 +657,9 @@ class _SpotlightCardsBuilder {
   }
 
   SpotlightCardSpec? _boxSetItemsCard() {
-    final items = vm.collectionItems;
+    final libraryItems = vm.collectionItems;
+    final missing = vm.missingCollectionItems;
+    final items = [...libraryItems, ...missing];
     if (items.isEmpty) return null;
     final movies = items.where((i) => i.type == 'Movie').toList();
     final series = items.where((i) => i.type == 'Series').toList();

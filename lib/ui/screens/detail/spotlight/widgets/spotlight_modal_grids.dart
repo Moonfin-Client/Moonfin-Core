@@ -4,6 +4,7 @@ import 'package:server_core/server_core.dart';
 
 import '../../../../../data/models/aggregated_item.dart';
 import '../../../../../data/services/seerr/seerr_api_models.dart';
+import '../../../../../preference/preference_constants.dart';
 import '../../../../../preference/user_preferences.dart';
 import '../../../../../util/focus/dpad_keys.dart';
 import '../../../../mixins/focus_state_mixin.dart';
@@ -12,6 +13,7 @@ import '../../../../widgets/focus/focus_theme.dart';
 import '../../../../widgets/focus/focusable_wrapper.dart';
 import '../../../../widgets/media_card.dart';
 import '../../../../widgets/offline_aware_image.dart';
+import '../../../../widgets/seerr_icons.dart';
 import '../../modern/modern_detail_content.dart'
     show StudioLogoIndex, studioLogoUrlFor;
 import '../spotlight_images.dart';
@@ -130,20 +132,32 @@ class SpotlightMediaGridSection extends StatelessWidget {
                 Builder(
                   builder: (cellContext) {
                     final entry = items[i];
+                    final isSeerrItem =
+                        entry.id.startsWith('tmdb:') || entry.serverId == 'seerr';
                     return MediaCard(
                       title: entry.name,
                       titleColor: titleColor,
                       imageUrl: spotlightItemImageUrl(imageApi, entry),
                       width: metrics.cellWidth,
                       aspectRatio: aspectRatio,
-                      isPlayed: entry.isPlayed,
-                      isFavorite: entry.isFavorite,
+                      isPlayed: isSeerrItem ? false : entry.isPlayed,
+                      isFavorite: isSeerrItem ? false : entry.isFavorite,
                       itemType: entry.type,
                       focusNode: i == 0 ? firstFocusNode : null,
                       focusColor: focusColor,
                       cardFocusExpansion: cardExpansion,
                       suppressFocusGlow: isNeon,
-                      watchedBehavior: watchedBehavior,
+                      watchedBehavior: isSeerrItem
+                          ? WatchedIndicatorBehavior.never
+                          : watchedBehavior,
+                      imageOverlays: [
+                        if (isSeerrItem)
+                          const Positioned(
+                            top: 4,
+                            right: 4,
+                            child: SeerrBadge(size: 18),
+                          ),
+                      ],
                       onFocus: () => spotlightScrollCellIntoView(cellContext),
                       onTap: () => onItemTap(entry),
                     );
@@ -487,8 +501,8 @@ class SpotlightStudiosGridSection extends StatelessWidget {
                         imageBuilder: (context, imageProvider) => Container(
                           color: Colors.white,
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
+                            horizontal: 16,
+                            vertical: 12,
                           ),
                           child: Image(
                             image: imageProvider,

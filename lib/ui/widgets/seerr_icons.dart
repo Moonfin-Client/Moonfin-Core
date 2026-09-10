@@ -4,15 +4,60 @@ import 'package:flutter/widgets.dart';
 class SeerrIcon extends StatelessWidget {
   final double size;
   final Color color;
+  final bool solid;
 
-  const SeerrIcon({super.key, this.size = 24, required this.color});
+  const SeerrIcon({
+    super.key,
+    this.size = 24,
+    required this.color,
+    this.solid = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: size,
       height: size,
-      child: CustomPaint(painter: _SeerrPainter(color)),
+      child: CustomPaint(painter: _SeerrPainter(color, solid: solid)),
+    );
+  }
+}
+
+/// Circular corner badge for items available on Seerr, matching the placement
+/// and presence of the watched/played indicator.
+class SeerrBadge extends StatelessWidget {
+  final double size;
+  final Color? backgroundColor;
+
+  const SeerrBadge({
+    super.key,
+    this.size = 18,
+    this.backgroundColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: backgroundColor ?? const Color(0xFF6366F1),
+        shape: BoxShape.circle,
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x66000000),
+            blurRadius: 3,
+            offset: Offset(0, 1),
+          ),
+        ],
+      ),
+      child: Center(
+        child: SeerrIcon(
+          size: size * 0.82,
+          color: const Color(0xFFFFFFFF),
+          solid: true,
+        ),
+      ),
     );
   }
 }
@@ -36,7 +81,8 @@ class _SeerrPainter extends CustomPainter {
   );
 
   final Color color;
-  _SeerrPainter(this.color);
+  final bool solid;
+  _SeerrPainter(this.color, {this.solid = false});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -48,26 +94,33 @@ class _SeerrPainter extends CustomPainter {
     canvas.scale(s, s);
     final paint = Paint()..style = PaintingStyle.fill;
 
-    paint.color = color.withValues(alpha: 0.15);
-    canvas.drawPath(_outerCircle, paint);
+    if (solid) {
+      paint.color = color;
+      canvas.drawPath(_crescent, paint);
+      canvas.drawPath(_topLeftArc, paint);
+    } else {
+      paint.color = color.withValues(alpha: 0.15);
+      canvas.drawPath(_outerCircle, paint);
 
-    paint.color = color.withValues(alpha: 0.35);
-    canvas.drawCircle(const Offset(52, 52), 28, paint);
+      paint.color = color.withValues(alpha: 0.35);
+      canvas.drawCircle(const Offset(52, 52), 28, paint);
 
-    paint.color = color.withValues(alpha: 0.55);
-    canvas.drawPath(_crescent, paint);
+      paint.color = color.withValues(alpha: 0.55);
+      canvas.drawPath(_crescent, paint);
 
-    paint.color = color.withValues(alpha: 0.25);
-    canvas.drawPath(_topLeftArc, paint);
+      paint.color = color.withValues(alpha: 0.25);
+      canvas.drawPath(_topLeftArc, paint);
 
-    paint.color = color.withValues(alpha: 0.12);
-    canvas.drawPath(_shadowRing, paint);
+      paint.color = color.withValues(alpha: 0.12);
+      canvas.drawPath(_shadowRing, paint);
+    }
 
     canvas.restore();
   }
 
   @override
-  bool shouldRepaint(_SeerrPainter old) => old.color != color;
+  bool shouldRepaint(_SeerrPainter old) =>
+      old.color != color || old.solid != solid;
 }
 
 Path _parsePath(String d) {
