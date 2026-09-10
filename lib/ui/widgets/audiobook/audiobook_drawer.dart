@@ -11,6 +11,142 @@ import '../../../util/platform_detection.dart';
 import 'audiobook_time.dart';
 import 'chapter.dart';
 
+/// The TV drawer shares a column with the player instead of filling a sheet,
+/// so it runs denser: the tab bar fits and more rows show.
+bool get _dense => PlatformDetection.isTV;
+
+/// Every TV drawer row is this tall, so the tabs line up.
+const double _denseRowHeight = 30.0;
+const double _denseRowPitch = _denseRowHeight + 2; // + vertical margins
+
+/// One row of a drawer list on TV.
+///
+/// A ListTile is taller than 30px whatever you pass it, and its text spills
+/// outside the focus rectangle. This is a plain centred Row instead, shared by
+/// every tab so the rows match.
+class _DenseRow extends StatelessWidget {
+  const _DenseRow({
+    required this.focused,
+    required this.title,
+    this.leading,
+    this.trailingText,
+    this.actions = const [],
+    this.titleColor,
+    this.bold = false,
+    this.highlighted = false,
+    this.onTap,
+  });
+
+  final bool focused;
+  final String title;
+  final Widget? leading;
+  final String? trailingText;
+  final List<Widget> actions;
+  final Color? titleColor;
+  final bool bold;
+
+  /// The row holds the sub-focus rather than one of its [actions].
+  final bool highlighted;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final radius = BorderRadius.circular(8);
+    return Container(
+      height: _denseRowHeight,
+      margin: const EdgeInsets.symmetric(vertical: 1, horizontal: 4),
+      decoration: BoxDecoration(
+        color: highlighted
+            ? AppColorScheme.accent.withValues(alpha: 0.12)
+            : null,
+        border: Border.all(
+          color: focused ? AppColorScheme.accent : Colors.transparent,
+          width: 2.0,
+        ),
+        borderRadius: radius,
+      ),
+      child: InkWell(
+        mouseCursor: SystemMouseCursors.click,
+        borderRadius: radius,
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 6),
+          child: Row(
+            children: [
+              if (leading != null) ...[leading!, const SizedBox(width: 6)],
+              Expanded(
+                child: Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: highlighted ? Colors.white : titleColor,
+                    fontWeight: bold || highlighted
+                        ? FontWeight.w700
+                        : FontWeight.w500,
+                  ),
+                ),
+              ),
+              if (trailingText != null) ...[
+                const SizedBox(width: 6),
+                Text(
+                  trailingText!,
+                  style: TextStyle(
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                    fontSize: 11,
+                    color: AppColorScheme.onSurface.withValues(alpha: 0.5),
+                  ),
+                ),
+              ],
+              ...actions,
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Circled icon sized to sit inside a [_DenseRow].
+Widget _denseIcon(IconData icon, Color color, {required bool focused}) {
+  return Container(
+    width: 22,
+    height: 22,
+    decoration: BoxDecoration(
+      color:
+          focused ? AppColorScheme.accent.withValues(alpha: 0.2) : Colors.transparent,
+      shape: BoxShape.circle,
+      border: Border.all(
+        color: focused ? Colors.white : Colors.transparent,
+        width: 1.5,
+      ),
+    ),
+    child: Icon(icon, size: 13, color: focused ? Colors.white : color),
+  );
+}
+
+/// Per-row action. An IconButton is 48px by default and would not fit.
+Widget _denseAction({
+  required IconData icon,
+  required bool focused,
+  required VoidCallback onPressed,
+}) {
+  return Padding(
+    padding: const EdgeInsets.only(left: 4),
+    child: InkWell(
+      mouseCursor: SystemMouseCursors.click,
+      onTap: onPressed,
+      borderRadius: BorderRadius.circular(11),
+      child: _denseIcon(
+        icon,
+        AppColorScheme.onSurface.withValues(alpha: 0.75),
+        focused: focused,
+      ),
+    ),
+  );
+}
+
 enum AudiobookDrawerTab { timeline, chapters, bookmarks, notes, queue }
 
 class AudiobookDrawerTabBar extends StatelessWidget {
@@ -33,27 +169,38 @@ class AudiobookDrawerTabBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bar = Container(
+      padding: const EdgeInsets.all(3),
+      decoration: BoxDecoration(
+        color: AppColorScheme.surface.withValues(alpha: 0.55),
+        borderRadius: AppRadius.circular(12),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (var i = 0; i < tabs.length; i++)
+            AudiobookPillSegment(
+              label: labels[tabs[i]] ?? tabs[i].name,
+              selected: tabs[i] == current,
+              tvFocused: tvFocused && tvIndex == i,
+              onTap: () => onChanged(tabs[i]),
+            ),
+        ],
+      ),
+    );
+
+    // A d-pad cannot drag a scroll view, so on TV the bar scales down to fit
+    // its column. Translations run long here, so a fixed size would not hold.
+    if (_dense) {
+      return FittedBox(
+        fit: BoxFit.scaleDown,
+        alignment: Alignment.centerLeft,
+        child: bar,
+      );
+    }
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      child: Container(
-        padding: const EdgeInsets.all(3),
-        decoration: BoxDecoration(
-          color: AppColorScheme.surface.withValues(alpha: 0.55),
-          borderRadius: AppRadius.circular(12),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            for (var i = 0; i < tabs.length; i++)
-              AudiobookPillSegment(
-                label: labels[tabs[i]] ?? tabs[i].name,
-                selected: tabs[i] == current,
-                tvFocused: tvFocused && tvIndex == i,
-                onTap: () => onChanged(tabs[i]),
-              ),
-          ],
-        ),
-      ),
+      child: bar,
     );
   }
 }
@@ -105,16 +252,20 @@ class AudiobookPillSegment extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
+          mouseCursor: SystemMouseCursors.click,
           borderRadius: radius,
           splashColor: apple ? Colors.transparent : null,
           highlightColor: apple ? Colors.transparent : null,
           onTap: onTap,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+            padding: EdgeInsets.symmetric(
+              horizontal: _dense ? 9 : 15,
+              vertical: _dense ? 6 : 8,
+            ),
             child: Text(
               label,
               style: TextStyle(
-                fontSize: 13,
+                fontSize: _dense ? 11 : 13,
                 fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
                 color: fg,
               ),
@@ -164,7 +315,7 @@ class _AudiobookChaptersListState extends State<AudiobookChaptersList> {
 
   void _scrollToFocused() {
     if (!_scrollController.hasClients) return;
-    const double itemHeight = 44.0; // container height 40 + margin vertical 2*2
+    final double itemHeight = _dense ? _denseRowPitch : 44.0;
     final double target = widget.tvFocusedIndex * itemHeight;
     final double currentScroll = _scrollController.offset;
     
@@ -208,6 +359,33 @@ class _AudiobookChaptersListState extends State<AudiobookChaptersList> {
             final c = widget.chapters[index];
             final isCurrent = index == current;
             final isTvFocused = index == widget.tvFocusedIndex;
+
+            if (_dense) {
+              return _DenseRow(
+                focused: isTvFocused,
+                title: c.title,
+                bold: isCurrent,
+                titleColor: isCurrent ? AppColorScheme.accent : null,
+                trailingText:
+                    formatAudiobookClock(Duration(milliseconds: c.startMs)),
+                onTap: () => widget.onTap(c),
+                leading: SizedBox(
+                  width: 22,
+                  child: Text(
+                    '${index + 1}',
+                    textAlign: TextAlign.right,
+                    style: TextStyle(
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: isCurrent
+                          ? AppColorScheme.accent
+                          : AppColorScheme.onSurface.withValues(alpha: 0.6),
+                    ),
+                  ),
+                ),
+              );
+            }
 
             return Container(
               height: 40.0,
@@ -312,7 +490,7 @@ class _AudiobookBookmarksListState extends State<AudiobookBookmarksList> {
       );
       return;
     }
-    const double itemHeight = 56.0; // container height 52 + margin vertical 2*2
+    final double itemHeight = _dense ? _denseRowPitch : 56.0;
     final double target = widget.tvFocusedIndex * itemHeight;
     final double currentScroll = _scrollController.offset;
     
@@ -377,6 +555,34 @@ class _AudiobookBookmarksListState extends State<AudiobookBookmarksList> {
                       final isTvFocused = index == widget.tvFocusedIndex;
                       final isPlayFocused = isTvFocused && widget.tvSubIndex == 0;
                       final isDeleteFocused = isTvFocused && widget.tvSubIndex == 1;
+                      if (_dense) {
+                        return _DenseRow(
+                          focused: isTvFocused,
+                          highlighted: isPlayFocused,
+                          title: 'Bookmark ${index + 1}: ${b.label}',
+                          trailingText: formatAudiobookClock(
+                              Duration(milliseconds: b.positionMs)),
+                          onTap: () => widget.onJump(b),
+                          leading: _denseIcon(
+                            apple ? CupertinoIcons.bookmark_fill : Icons.bookmark,
+                            AppColorScheme.accent,
+                            focused: isPlayFocused,
+                          ),
+                          actions: [
+                            _denseAction(
+                              icon: apple
+                                  ? CupertinoIcons.delete
+                                  : Icons.delete_outline,
+                              focused: isDeleteFocused,
+                              onPressed: () => widget.service.removeAt(
+                                  widget.item!.serverId,
+                                  widget.item!.id,
+                                  b.positionMs),
+                            ),
+                          ],
+                        );
+                      }
+
                       return Container(
                         height: 52.0,
                         margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
@@ -409,6 +615,8 @@ class _AudiobookBookmarksListState extends State<AudiobookBookmarksList> {
                           ),
                           title: Text(
                             'Bookmark ${index + 1}: ${b.label}',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               color: isPlayFocused ? Colors.white : null,
                               fontWeight: isPlayFocused ? FontWeight.w700 : null,
@@ -507,7 +715,7 @@ class _AudiobookNotesListState extends State<AudiobookNotesList> {
       );
       return;
     }
-    const double itemHeight = 56.0; // container height 52 + margin vertical 2*2
+    final double itemHeight = _dense ? _denseRowPitch : 56.0;
     final double target = widget.tvFocusedIndex * itemHeight;
     final double currentScroll = _scrollController.offset;
     
@@ -574,7 +782,43 @@ class _AudiobookNotesListState extends State<AudiobookNotesList> {
                       final isPlayFocused = isTvFocused && widget.tvSubIndex == 0;
                       final isEditFocused = isTvFocused && widget.tvSubIndex == 1;
                       final isDeleteFocused = isTvFocused && widget.tvSubIndex == 2;
+                      if (_dense) {
+                        return _DenseRow(
+                          focused: isTvFocused,
+                          highlighted: isPlayFocused,
+                          title: n.body,
+                          trailingText: formatAudiobookClock(
+                              Duration(milliseconds: n.positionMs)),
+                          onTap: () => widget.onJump(n),
+                          leading: _denseIcon(
+                            apple
+                                ? CupertinoIcons.chat_bubble_text
+                                : Icons.note_outlined,
+                            AppColorScheme.accent,
+                            focused: isPlayFocused,
+                          ),
+                          actions: [
+                            _denseAction(
+                              icon: apple
+                                  ? CupertinoIcons.pencil
+                                  : Icons.edit_outlined,
+                              focused: isEditFocused,
+                              onPressed: () => widget.onEdit(n),
+                            ),
+                            _denseAction(
+                              icon: apple
+                                  ? CupertinoIcons.delete
+                                  : Icons.delete_outline,
+                              focused: isDeleteFocused,
+                              onPressed: () => widget.service.remove(
+                                  widget.item!.serverId, widget.item!.id, n.id),
+                            ),
+                          ],
+                        );
+                      }
+
                       return InkWell(
+                        mouseCursor: SystemMouseCursors.click,
                         onTap: () => widget.onJump(n),
                         borderRadius: BorderRadius.circular(8),
                         child: Container(
@@ -754,7 +998,7 @@ class _AudiobookTimelineListState extends State<AudiobookTimelineList> {
       );
       return;
     }
-    const double itemHeight = 56.0; // container height 52 + margin vertical 2*2
+    final double itemHeight = _dense ? _denseRowPitch : 56.0;
     final double target = widget.tvFocusedIndex * itemHeight;
     final double currentScroll = _scrollController.offset;
     
@@ -830,6 +1074,45 @@ class _AudiobookTimelineListState extends State<AudiobookTimelineList> {
                   } else if (e.type == TimelineEventType.chapter) {
                     icon = Icons.menu_open;
                     iconColor = Colors.teal;
+                  }
+
+                  if (_dense) {
+                    return _DenseRow(
+                      focused: isTvFocused,
+                      highlighted: isPlayFocused,
+                      title: e.title,
+                      trailingText: formatAudiobookClock(
+                          Duration(milliseconds: e.positionMs)),
+                      onTap: () => widget.onJump(e),
+                      leading: _denseIcon(icon, iconColor, focused: isPlayFocused),
+                      actions: [
+                        if (showEdit)
+                          _denseAction(
+                            icon: apple
+                                ? CupertinoIcons.pencil
+                                : Icons.edit_outlined,
+                            focused: isEditFocused,
+                            onPressed: () => widget
+                                .onEditNote(e.originalObject as AudiobookNote),
+                          ),
+                        if (showDelete)
+                          _denseAction(
+                            icon: apple
+                                ? CupertinoIcons.delete
+                                : Icons.delete_outline,
+                            focused: isDeleteFocused,
+                            onPressed: () {
+                              if (e.type == TimelineEventType.note) {
+                                widget.onDeleteNote(
+                                    e.originalObject as AudiobookNote);
+                              } else {
+                                widget.onDeleteBookmark(
+                                    e.originalObject as AudiobookBookmark);
+                              }
+                            },
+                          ),
+                      ],
+                    );
                   }
 
                   return Container(
@@ -991,7 +1274,7 @@ class _AudiobookQueueListState extends State<AudiobookQueueList> {
       );
       return;
     }
-    const double itemHeight = 34.0; // exact container height
+    final double itemHeight = _dense ? _denseRowPitch : 34.0;
     final double target = widget.tvFocusedIndex * itemHeight;
     final double currentScroll = _scrollController.offset;
     
@@ -1031,17 +1314,43 @@ class _AudiobookQueueListState extends State<AudiobookQueueList> {
             final isTvFocused = index == widget.tvFocusedIndex;
             final titleText = item?.name ?? AppLocalizations.of(context).trackNumber(index + 1);
 
+            // The playing track is marked by its accent title only. A filled
+            // background competes with the focus rectangle.
+            if (_dense) {
+              return _DenseRow(
+                focused: isTvFocused,
+                title: titleText,
+                bold: isCurrent,
+                titleColor: isCurrent ? AppColorScheme.accent : null,
+                onTap: () => widget.onPlay(index),
+                leading: SizedBox(
+                  width: 22,
+                  child: Text(
+                    '${index + 1}.',
+                    textAlign: TextAlign.right,
+                    style: TextStyle(
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                      fontSize: 11,
+                      fontWeight: isCurrent ? FontWeight.bold : null,
+                      color: isCurrent
+                          ? AppColorScheme.accent
+                          : AppColorScheme.onSurface.withValues(alpha: 0.5),
+                    ),
+                  ),
+                ),
+              );
+            }
+
             return InkWell(
+              mouseCursor: SystemMouseCursors.click,
               onTap: () => widget.onPlay(index),
               child: Container(
                 height: 34.0,
                 alignment: Alignment.centerLeft,
                 padding: const EdgeInsets.symmetric(horizontal: 12),
-                color: isTvFocused
-                    ? AppColorScheme.accent.withValues(alpha: 0.22)
-                    : (isCurrent
-                        ? AppColorScheme.accent.withValues(alpha: 0.08)
-                        : Colors.transparent),
+                color: isCurrent
+                    ? AppColorScheme.accent.withValues(alpha: 0.08)
+                    : Colors.transparent,
                 child: Row(
                   children: [
                     SizedBox(
