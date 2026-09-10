@@ -234,13 +234,14 @@ class _LibraryGenresScreenState extends State<LibraryGenresScreen> {
         for (final raw in items) {
           final item = raw as Map<String, dynamic>;
           final imageTags = item['ImageTags'];
-          final hasPrimaryTag =
-              item['PrimaryImageTag'] != null ||
-              (imageTags is Map && imageTags['Primary'] != null);
-          if (hasPrimaryTag) {
+          final primaryTag =
+              item['PrimaryImageTag']?.toString() ??
+              (imageTags is Map ? imageTags['Primary']?.toString() : null);
+          if (primaryTag != null) {
             final primaryUrl = _client.imageApi.getPrimaryImageUrl(
               item['Id']?.toString() ?? '',
               maxWidth: _genreCardRequestMaxWidth(),
+              tag: primaryTag,
             );
             genre.imageUrl = primaryUrl;
             genre.backdropUrl ??= primaryUrl;

@@ -1,0 +1,15 @@
+diff --git a/lib/src/desktop/download_isolate.dart b/lib/src/desktop/download_isolate.dart
+index 7733a12..082acfa 100644
+--- a/lib/src/desktop/download_isolate.dart
++++ b/lib/src/desktop/download_isolate.dart
+@@ -218,8 +218,8 @@ Future<TaskStatus> processOkDownloadResponse(
+     switch (transferBytesResult) {
+       case .complete:
+         // move file to destination, creating dirs if needed. The stream must
+-        // be closed before a rename on Windows; the close in the finally
+-        // block is guarded, so closing here is safe.
++        // be closed before a rename on Windows, and the guarded close in the
++        // finally block makes closing here safe.
+         await outStream.close();
+         final dirPath = p.dirname(filePath);
+         Directory(dirPath).createSync(recursive: true);

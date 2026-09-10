@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -16,6 +17,7 @@ import 'package:screen_brightness_platform_interface/screen_brightness_platform_
 import 'package:volume_controller/volume_controller.dart';
 import 'package:window_manager/window_manager.dart';
 
+import '../../../data/utils/video_range_label.dart';
 import '../../../playback/subtitle_style.dart';
 import '../../../util/fullscreen_helper.dart';
 import '../../../util/scroll_sensitivity_binding.dart';
@@ -62,6 +64,7 @@ import '../../../util/focus/dpad_keys.dart';
 import '../../../util/play_method_label.dart';
 import '../../../util/platform_detection.dart';
 import '../../../util/playback_time_label.dart';
+import '../../../util/server_url.dart';
 import '../../navigation/destinations.dart';
 import '../../widgets/adaptive/sf_symbol.dart';
 import '../../widgets/subtitle_preview.dart';
@@ -69,6 +72,7 @@ import '../../screensaver/screensaver_controller.dart';
 import '../../widgets/remote_play_to_session_dialog.dart';
 import '../../widgets/track_selector_dialog.dart';
 import '../../widgets/playback/player_loading_overlay.dart';
+import '../../widgets/playback/loading_animation_widget.dart';
 import '../../widgets/playback/skip_segment_overlay.dart';
 import '../../widgets/playback/next_up_overlay.dart';
 import '../../widgets/playback/still_watching_dialog.dart';
@@ -80,10 +84,8 @@ import '../../widgets/progress_snack_bar.dart';
 import '../../../util/remote_subtitle_labels.dart';
 import '../../../util/subtitle_appearance_schedule.dart';
 import '../../../playback/media3_player_backend.dart';
-import '../../../playback/tizen_player_backend.dart';
 import 'playback_takeover.dart';
 import 'osd_buttons.dart';
-import 'package:video_player/video_player.dart';
 
 class VideoPlayerScreen extends StatefulWidget {
   const VideoPlayerScreen({super.key});
@@ -609,7 +611,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
           unawaited(
             _runSinglePlayerMutation(
               'downloaded_subtitle_$streamIndex',
-              () => _manager.changeSubtitleTrack(streamIndex),
+              () => _manager.changeSubtitleTrack(
+                streamIndex,
+                refreshStreams: true,
+              ),
             ).then((_) {
               if (mounted) _syncSubtitleActive();
             }),
@@ -1645,13 +1650,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     final fileName = resolveFileName();
     final bitrate = mediaSource?['Bitrate'] as int?;
     final overrideMbps = _manager.maxBitrateOverrideMbps;
+    final delivered = resolution?.deliveredFormat;
 
     String effectiveBitrateText() {
       // The override is the user's cap rather than what the server settled on,
       // so it only stands in when the stream URL is silent.
-      final delivered = _manager.currentResolution?.deliveredBitrate;
-      if (delivered != null) {
-        return _formatBitrate(delivered);
+      final total = delivered?.totalBitrate;
+      if (total != null) {
+        return _formatBitrate(total);
       }
       if (overrideMbps != null) {
         return l10n.bitrateValueMbps(overrideMbps);
@@ -1708,6 +1714,23 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     ];
     addSection(l10n.playback, playbackRows);
 
+    // Its own section rather than overwriting the source rows below, which
+    // are what the transcode reasons above are about.
+    if (delivered != null) {
+      addSection(l10n.transcoding, [
+        if (delivered.container case final container?)
+          row(l10n.container, container.toUpperCase()),
+        if (delivered.videoCodec case final codec?)
+          row(l10n.video, codec.toUpperCase()),
+        if (delivered.videoBitrate case final rate?)
+          row(l10n.videoBitrate, _formatBitrate(rate)),
+        if (delivered.audioCodec case final codec?)
+          row(l10n.audio, codec.toUpperCase()),
+        if (delivered.audioBitrate case final rate?)
+          row(l10n.audioBitrate, _formatBitrate(rate)),
+      ]);
+    }
+
     if (videoStream case final video?) {
       final fps = video['RealFrameRate'] as num?;
       final width = video['Width'];
@@ -1717,7 +1740,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
           l10n.resolution,
           '${width ?? '?'}×${height ?? '?'}${fps != null ? ' @ ${fps.round()}fps' : ''}',
         ),
-        row(l10n.hdr, _getHdrType(video)),
+        row(l10n.hdr, videoRangeLabel(video)),
         if (_hdrOutputRow(l10n, hdrTonemapped: hdrTonemapped)
             case final hdrOutput?)
           row(l10n.hdrOutput, hdrOutput),
@@ -2578,6 +2601,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     });
   }
 
+  /// A viewer reaching for the remote has answered the prompt's question.
+  void _noteViewerActivity() => _consecutiveEpisodes = 0;
+
   /// Returns false when the viewer chose to stop, so the caller can drop the
   /// queue advance it was about to make.
   Future<bool> _checkStillWatching() async {
@@ -2602,6 +2628,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   void _skipCurrentSegment() {
+    _noteViewerActivity();
     final replaceSkipOutroWithNextUp = _prefs.get(
       UserPreferences.replaceSkipOutroWithNextUp,
     );
@@ -2926,6 +2953,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   void _seekRelative(int ms, {bool showControls = true}) {
+    _noteViewerActivity();
     _suppressSeekPrompts();
     final target = _state.position + Duration(milliseconds: ms);
     final clamped = Duration(
@@ -2942,6 +2970,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   void _seekRelativeAccumulate(int ms) {
+    _noteViewerActivity();
     _suppressSeekPrompts();
     // While a released commit is still converging, the pending target is
     // already null but _state.position still reads pre-seek - basing a quick
@@ -2959,16 +2988,19 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       _prefs.get(UserPreferences.trickPlayMode) != TrickplayMode.disabled &&
       (_trickplayInfo?.isValid ?? false);
 
+  bool get _pauseDuringScrub =>
+      _hasTrickplayPreview &&
+      _prefs.get(UserPreferences.trickPlayPauseWhileScrubbing);
+
   // Pauses playback once per scrub session so the trickplay preview has a
-  // stable frozen reference; without a preview, scrubbing leaves playback
-  // untouched. The Slider path resumes after its committed seek converges;
-  // the D-pad path stays paused until the user presses play. Callers gate
-  // this on
-  // _pendingScrubSeekTarget being null (see _accumulateScrub), not on
-  // _isSeeking - _isSeeking can still be true from an OLDER commit that
-  // hasn't finished converging yet when a brand new gesture starts (release,
-  // then press again quickly), and that stale state must not block this new
-  // gesture's own setup.
+  // stable frozen reference, unless the setting is off. Without a preview,
+  // scrubbing leaves playback untouched. The Slider path resumes after its
+  // committed seek converges and the D-pad path stays paused until the user
+  // presses play. Callers gate this on _pendingScrubSeekTarget being null
+  // (see _accumulateScrub), not on _isSeeking - _isSeeking can still be true
+  // from an OLDER commit that hasn't finished converging yet when a brand new
+  // gesture starts (release, then press again quickly), and that stale state
+  // must not block this new gesture's own setup.
   void _beginScrub() {
     // Dragging fires PointerMoveEvents, not hover events, so stale
     // _hoverPosition must be cleared or it flashes the wrong preview on drag end.
@@ -2981,15 +3013,17 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _scrubSeekCommitId++;
     if (_hasTrickplayPreview) {
       _prefetchAllTrickplaySheets(_state.position);
-      _isPausedScrubActive = true;
-      // If an earlier still-resolving commit already paused playback for
-      // this chain of overlapping gestures, _wasPlayingBeforeScrubPause is
-      // already correctly true - re-reading _state.isPlaying now would see
-      // "paused" and wrongly conclude nothing needs resuming later.
-      if (!_wasPlayingBeforeScrubPause) {
-        _wasPlayingBeforeScrubPause = _state.isPlaying;
-        if (_wasPlayingBeforeScrubPause) {
-          _manager.pause();
+      if (_pauseDuringScrub) {
+        _isPausedScrubActive = true;
+        // If an earlier still-resolving commit already paused playback for
+        // this chain of overlapping gestures, _wasPlayingBeforeScrubPause is
+        // already correctly true - re-reading _state.isPlaying now would see
+        // "paused" and wrongly conclude nothing needs resuming later.
+        if (!_wasPlayingBeforeScrubPause) {
+          _wasPlayingBeforeScrubPause = _state.isPlaying;
+          if (_wasPlayingBeforeScrubPause) {
+            _manager.pause();
+          }
         }
       }
     }
@@ -3021,6 +3055,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   /// session. Called on Slider drag-end and on play during a paused D-pad
   /// scrub session - the actual "go" signals, not a timer guess.
   void _commitPendingScrub() {
+    _noteViewerActivity();
     _isPausedScrubActive = false;
     final pendingTarget = _pendingScrubSeekTarget;
     if (pendingTarget == null) return;
@@ -3099,6 +3134,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   void _togglePlayPause() {
+    _noteViewerActivity();
     if (_state.isPlaying) {
       _manager.pause();
       return;
@@ -3433,10 +3469,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       if (event.logicalKey == LogicalKeyboardKey.arrowLeft ||
           event.logicalKey == LogicalKeyboardKey.arrowRight) {
         _resetSeekAcceleration();
-        // With a trickplay preview up, the session survives key-release -
-        // the preview stays on the paused frame and play is what commits
-        // (#1025). With nothing to browse, release commits directly.
-        if (!_hasTrickplayPreview) {
+        // While the preview holds a paused frame the session survives
+        // key-release and play is what commits. Otherwise release commits
+        // directly.
+        if (!_pauseDuringScrub) {
           _commitPendingScrub();
         }
       }
@@ -3739,8 +3775,13 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         _showControls();
         return KeyEventResult.handled;
       case LogicalKeyboardKey.escape:
-        if (PlatformDetection.useDesktopUi && _isDesktopFullscreen) {
-          unawaited(_setDesktopFullscreen(false));
+        // A held Escape would leave fullscreen and then stop playback on the
+        // repeat.
+        if (event is KeyRepeatEvent) {
+          return KeyEventResult.handled;
+        }
+        if (PlatformDetection.useDesktopUi) {
+          unawaited(_leaveFullscreenOrPlayback());
           return KeyEventResult.handled;
         }
         _exitPlayback();
@@ -4028,10 +4069,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   Widget _buildVideoSurface() {
-    if (PlatformDetection.isTizen) {
-      return _buildTizenVideoSurface();
-    }
-
     if (PlatformDetection.isIOS || PlatformDetection.isMacOS) {
       return Positioned.fill(
         child: AetherVideoView(key: _videoSurfaceKey, zoomMode: _zoomMode.name),
@@ -4117,30 +4154,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     );
   }
 
-  Widget _buildTizenVideoSurface() {
-    final backend = _activeBackend;
-    if (backend is! TizenPlayerBackend) {
-      return const Positioned.fill(child: ColoredBox(color: Colors.black));
-    }
-    final controller = backend.controller;
-    if (controller == null || !controller.value.isInitialized) {
-      return const Positioned.fill(child: ColoredBox(color: Colors.black));
-    }
-    return Positioned.fill(
-      child: ColoredBox(
-        color: Colors.black,
-        child: FittedBox(
-          fit: _zoomToFit(_zoomMode),
-          child: SizedBox(
-            width: controller.value.size.width,
-            height: controller.value.size.height,
-            child: VideoPlayer(controller),
-          ),
-        ),
-      ),
-    );
-  }
-
   NativeVideoZoomMode _nativeZoomMode(ZoomMode mode) => switch (mode) {
     ZoomMode.fit => NativeVideoZoomMode.fit,
     ZoomMode.autoCrop => NativeVideoZoomMode.crop,
@@ -4185,13 +4198,30 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       return const SizedBox.shrink();
     }
 
+    final pos = _prefs.get(UserPreferences.loadingAnimationPosition);
+
     return Positioned.fill(
       child: IgnorePointer(
         child: DecoratedBox(
           decoration: BoxDecoration(
             color: Colors.black.withValues(alpha: 0.45),
           ),
-          child: Center(child: PlayerLoadingOverlay(label: _bringupLabel())),
+          child: pos == LoadingAnimationPosition.bouncing
+              ? BouncingPositionWrapper(
+                  speed: _prefs.get(UserPreferences.loadingAnimationSpeed),
+                  safePadding: const EdgeInsets.all(40.0),
+                  builder: (context, movingLeft) => PlayerLoadingOverlay(
+                    label: _bringupLabel(),
+                    flipHorizontal: movingLeft,
+                  ),
+                )
+              : Align(
+                  alignment: pos.alignment,
+                  child: Padding(
+                    padding: pos.safePadding,
+                    child: PlayerLoadingOverlay(label: _bringupLabel()),
+                  ),
+                ),
         ),
       ),
     );
@@ -4213,12 +4243,26 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         if (hasTrickplay && (_isSeeking || recentlySought)) {
           return const SizedBox.shrink();
         }
-        return const Center(
-          child: PlayerLoadingOverlay(
-            label: _streamLoadingLabel,
-            logoSize: 160,
-            labelSpacing: 40,
-          ),
+        final pos = _prefs.get(UserPreferences.loadingAnimationPosition);
+        return Positioned.fill(
+          child: pos == LoadingAnimationPosition.bouncing
+              ? BouncingPositionWrapper(
+                  speed: _prefs.get(UserPreferences.loadingAnimationSpeed),
+                  safePadding: const EdgeInsets.all(40.0),
+                  builder: (context, movingLeft) => PlayerLoadingOverlay(
+                    label: _streamLoadingLabel,
+                    flipHorizontal: movingLeft,
+                  ),
+                )
+              : Align(
+                  alignment: pos.alignment,
+                  child: Padding(
+                    padding: pos.safePadding,
+                    child: PlayerLoadingOverlay(
+                      label: _streamLoadingLabel,
+                    ),
+                  ),
+                ),
         );
       },
     );
@@ -5208,24 +5252,29 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     required MediaServerClient client,
     TrickplayTileResolution? resolution,
   }) {
+    final String? url;
     if (!info.usesIndividualFrames) {
-      return client.imageApi.getTrickplayTileImageUrl(
+      url = client.imageApi.getTrickplayTileImageUrl(
         itemId,
         width: info.width,
         index: imageIndex,
         mediaSourceId: _trickplayMediaSourceId,
       );
+    } else if (imageIndex < 0 || imageIndex >= info.frames.length) {
+      return null;
+    } else {
+      final frame = info.frames[imageIndex];
+      url = client.trickplayApi?.getFrameImageUrl(
+        itemId,
+        width: info.width,
+        positionTicks: resolution?.positionTicks ?? frame.positionTicks,
+        imageTag: resolution?.imageTag ?? frame.imageTag,
+        mediaSourceId: _trickplayMediaSourceId,
+      );
     }
-
-    if (imageIndex < 0 || imageIndex >= info.frames.length) return null;
-    final frame = info.frames[imageIndex];
-    return client.trickplayApi?.getFrameImageUrl(
-      itemId,
-      width: info.width,
-      positionTicks: resolution?.positionTicks ?? frame.positionTicks,
-      imageTag: resolution?.imageTag ?? frame.imageTag,
-      mediaSourceId: _trickplayMediaSourceId,
-    );
+    // The browser loads these through an element that leaves our headers
+    // behind, and the server guards them, so the token travels in the url.
+    return kIsWeb ? tokenAuthedUrl(client, url) : url;
   }
 
   Widget _buildTvTransportRow() {
@@ -5684,6 +5733,25 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       setState(() => _isDesktopFullscreen = full);
       unawaited(_syncAutoHdrSwitching());
     } catch (_) {}
+  }
+
+  /// Asks the window rather than reading [_isDesktopFullscreen], because
+  /// fullscreen can be toggled from outside this screen and the flag only
+  /// catches up when a window event lands. A flag that says "not fullscreen"
+  /// while the window is turns Escape into stopping playback.
+  Future<void> _leaveFullscreenOrPlayback() async {
+    bool fullscreen;
+    try {
+      fullscreen = await FullscreenHelper.isFullscreen();
+    } catch (_) {
+      fullscreen = _isDesktopFullscreen;
+    }
+    if (!mounted) return;
+    if (fullscreen) {
+      await _setDesktopFullscreen(false);
+      return;
+    }
+    await _exitPlayback();
   }
 
   Future<void> _setDesktopFullscreen(bool full) async {
@@ -7497,27 +7565,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       1 => l10n.mono,
       _ => l10n.channelsCount(channels),
     };
-  }
-
-  String _getHdrType(Map<String, dynamic> stream) {
-    final rangeType = stream['VideoRangeType'] as String? ?? '';
-    if (rangeType.contains('DOVI') || rangeType.contains('DoVi')) {
-      return 'Dolby Vision';
-    }
-    if (rangeType.contains('HDR10Plus') || rangeType.contains('HDR10+')) {
-      return 'HDR10+';
-    }
-    if (rangeType.contains('HDR10') || rangeType.contains('HDR')) {
-      return 'HDR10';
-    }
-    if (rangeType.contains('HLG')) {
-      return 'HLG';
-    }
-    final range = stream['VideoRange'] as String?;
-    if (range == 'HDR') {
-      return 'HDR';
-    }
-    return 'SDR';
   }
 
   void _showStreamInfo() {

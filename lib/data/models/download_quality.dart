@@ -74,4 +74,9 @@ enum DownloadQuality {
       : '';
 
   bool get isTranscoded => this != original;
+
+  /// The preset stored under [name], or [original] for anything unknown so
+  /// a renamed or removed preset degrades to the safest choice.
+  static DownloadQuality fromName(String? name) =>
+      values.firstWhere((q) => q.name == name, orElse: () => original);
 }

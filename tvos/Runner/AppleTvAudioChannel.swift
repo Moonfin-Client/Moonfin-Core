@@ -4,11 +4,10 @@ import UIKit
 
 /// Exposes a lightweight audio-capability probe to Dart on tvOS.
 ///
-/// Unlike Android there is no API for a third-party app (which decodes with its
-/// own pipeline, mpv) to learn the receiver's supported codecs, so this probe
-/// reports decode-everything / passthrough-nothing and focuses on the one thing
-/// tvOS *does* expose: the output channel count. That drives multichannel-PCM
-/// vs stereo-downmix automatically via the shared device-profile builder.
+/// Unlike Android there is no API for a third-party app to learn the receiver's
+/// supported codecs, so this probe reports decode-everything and focuses on what
+/// tvOS does expose: the output channel count and the route. That drives
+/// multichannel-PCM vs stereo-downmix through the shared device-profile builder.
 ///
 /// Method channel `moonfin/appletv_audio` (method `audioCapabilities`) +
 /// event channel `moonfin/appletv_audio_events` (pushes on route changes).
@@ -42,21 +41,24 @@ final class AppleTvAudioChannel: NSObject {
     static func currentCapabilities() -> [String: Any] {
         let session = AVAudioSession.sharedInstance()
         let maxChannels = max(2, resolvedMaxOutputChannels(session))
+        let route = resolveRouteType(session)
+        // The engine stream-copies AC3 and EAC3 into the fMP4 it hands AVPlayer, so those
+        // reach HDMI as a bitstream and the system decides what the receiver gets. Every
+        // other codec is decoded to PCM before the player sees it.
+        let bitstreamsToHdmi = route == "hdmi"
         return [
             "maxPcmChannels": maxChannels,
-            "activeRouteType": resolveRouteType(session),
+            "activeRouteType": route,
             "routeSupportsHdAudio": false,
-            // Decoding happens locally and tvOS never bitstreams, so
-            // passthrough is off.
             "canDecodeAc3": true,
             "canDecodeEac3": true,
             "canDecodeDts": true,
             "canDecodeDtsHd": true,
             "canDecodeTrueHd": true,
             "canDecodeFlac": true,
-            "canPassthroughAc3": false,
-            "canPassthroughEac3": false,
-            "canPassthroughEac3Joc": false,
+            "canPassthroughAc3": bitstreamsToHdmi,
+            "canPassthroughEac3": bitstreamsToHdmi,
+            "canPassthroughEac3Joc": bitstreamsToHdmi,
             "canPassthroughDts": false,
             "canPassthroughDtsHd": false,
             "canPassthroughDtsX": false,

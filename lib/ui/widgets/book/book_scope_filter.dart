@@ -18,6 +18,7 @@ import 'book_glass.dart';
 class BookScopeFilter extends StatefulWidget {
   final BookScope value;
   final ValueChanged<BookScope> onChanged;
+  final List<BookScope>? availableScopes;
   final FocusNode? focusNode;
 
   /// Up/down D-pad from the pill; return true when handled.
@@ -27,6 +28,7 @@ class BookScopeFilter extends StatefulWidget {
     super.key,
     required this.value,
     required this.onChanged,
+    this.availableScopes,
     this.focusNode,
     this.onVerticalNavigation,
   });
@@ -36,7 +38,7 @@ class BookScopeFilter extends StatefulWidget {
 }
 
 class _BookScopeFilterState extends State<BookScopeFilter> {
-  static const _scopes = BookScope.values;
+  List<BookScope> get _scopes => widget.availableScopes ?? BookScope.values;
 
   FocusNode? _ownedNode;
   FocusNode get _node =>
@@ -55,13 +57,16 @@ class _BookScopeFilterState extends State<BookScopeFilter> {
       return KeyEventResult.ignored;
     }
     final key = event.logicalKey;
-    final index = _scopes.indexOf(widget.value);
+    final scopes = _scopes;
+    final index = scopes.indexOf(widget.value);
     if (key.isLeftKey) {
-      if (index > 0) widget.onChanged(_scopes[index - 1]);
+      if (index > 0) widget.onChanged(scopes[index - 1]);
       return KeyEventResult.handled;
     }
     if (key.isRightKey) {
-      if (index < _scopes.length - 1) widget.onChanged(_scopes[index + 1]);
+      if (index >= 0 && index < scopes.length - 1) {
+        widget.onChanged(scopes[index + 1]);
+      }
       return KeyEventResult.handled;
     }
     if (event is KeyDownEvent && (key.isUpKey || key.isDownKey)) {
@@ -75,6 +80,7 @@ class _BookScopeFilterState extends State<BookScopeFilter> {
     BookScope.all => l10n.all,
     BookScope.books => l10n.books,
     BookScope.audiobooks => l10n.audiobooks,
+    BookScope.comics => l10n.comics,
   };
 
   @override
@@ -83,7 +89,9 @@ class _BookScopeFilterState extends State<BookScopeFilter> {
     final glass = bookGlassEligible;
     final onSurface = AppColorScheme.onSurface;
     final accent = AppColorScheme.accent;
-    final selectedIndex = _scopes.indexOf(widget.value);
+    final scopes = _scopes;
+    final selectedIndex = scopes.indexOf(widget.value);
+    final effectiveIndex = selectedIndex >= 0 ? selectedIndex : 0;
 
     final thumbColor = glass
         ? onSurface.withValues(alpha: 0.22)
@@ -96,13 +104,13 @@ class _BookScopeFilterState extends State<BookScopeFilter> {
           duration: const Duration(milliseconds: 200),
           curve: Curves.easeOutCubic,
           alignment: Alignment(
-            _scopes.length == 1
+            scopes.length <= 1
                 ? 0
-                : -1 + selectedIndex * (2 / (_scopes.length - 1)),
+                : -1 + effectiveIndex * (2 / (scopes.length - 1)),
             0,
           ),
           child: FractionallySizedBox(
-            widthFactor: 1 / _scopes.length,
+            widthFactor: scopes.isEmpty ? 1 : 1 / scopes.length,
             heightFactor: 1,
             child: Container(
               decoration: BoxDecoration(
@@ -120,7 +128,7 @@ class _BookScopeFilterState extends State<BookScopeFilter> {
         ),
         Row(
           children: [
-            for (final scope in _scopes)
+            for (final scope in scopes)
               Expanded(
                 child: GestureDetector(
                   behavior: HitTestBehavior.opaque,

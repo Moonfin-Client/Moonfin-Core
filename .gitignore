@@ -97,17 +97,13 @@ app.*.map.json
 /Moonfin_Android_v*.aab
 /*.apk
 
-# Tizen TPK artifacts and generated dependency metadata
-/Moonfin_Tizen_v*.tpk
-/*.tpk
-/tizen/.app.deps.json
-
 # iOS IPA artifacts and local signing overrides
 /Moonfin-ios.ipa
 /Moonfin-ios-unsigned.ipa
 /Moonfin_iOS_v*.ipa
 /Moonfin_iOS_v*_unsigned.ipa
 /build-ios.private.env
+/ios/Flutter/Local.xcconfig
 
 # Linux package artifacts
 /Moonfin-linux-*

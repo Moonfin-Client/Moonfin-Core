@@ -310,6 +310,61 @@ void main() {
     },
   );
 
+  testWidgets('a launch whose route was replaced releases the slot', (
+    tester,
+  ) async {
+    // go() drops a pushed route without completing its push future, so the
+    // launch that pushed it waits forever and used to hold the slot for the
+    // rest of the process, swallowing every later play press.
+    final manager = PlaybackManager();
+    final starts = <int>[];
+    var launches = 0;
+
+    final router = _router(
+      onLaunch: (context) {
+        launches++;
+        final launch = launches;
+        unawaited(
+          launchPlayerWhilePreparing(
+            context,
+            manager: manager,
+            destination: Destinations.videoPlayer,
+            startPlayback: (session) async {
+              starts.add(launch);
+              if (launch > 1) return false;
+              await runPlaybackStart(
+                session,
+                () => manager.playItems(const [
+                  <String, dynamic>{'Id': '1'},
+                ]),
+              );
+              return true;
+            },
+          ),
+        );
+      },
+    );
+    await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+
+    await tester.tap(find.byKey(const ValueKey('launch')));
+    await tester.pumpAndSettle();
+    expect(find.text('video'), findsOneWidget);
+    expect(starts, [1]);
+
+    router.go('/');
+    await tester.pumpAndSettle();
+    expect(find.text('home'), findsOneWidget);
+
+    await tester.tap(find.byKey(const ValueKey('launch')));
+    await tester.pumpAndSettle();
+
+    // Reaching the starter at all is the proof: a held slot returns before it.
+    expect(starts, [1, 2]);
+
+    manager.dispose();
+    router.dispose();
+  });
+
   testWidgets('external playback replaces the temporary internal route once', (
     tester,
   ) async {

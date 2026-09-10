@@ -87,7 +87,7 @@ class ModernLandscapeLayout extends StatelessWidget {
                       if (upNext != null)
                         Expanded(
                           child: Align(
-                            alignment: Alignment.topCenter,
+                            alignment: isBoxSet ? Alignment.topRight : Alignment.topCenter,
                             child: Padding(
                               padding: EdgeInsets.only(
                                 top: isBoxSet

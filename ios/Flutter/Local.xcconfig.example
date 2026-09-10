@@ -1,0 +1,15 @@
+// Customize the bundle identifier, so that you can sideload a Moonfin test
+// build on your device alongside the official Moonfin app
+MOONFIN_BUNDLE_IDENTIFIER = org.AltDevTeam.moonfin.app
+
+// Customize the app's display name, so that you can tell which is the
+// sideloaded Moonfin test build and which is the official Moonfin app
+// build on your device alongside the official Moonfin app
+MOONFIN_BUNDLE_DISPLAY_NAME = Sidefin
+
+// Customize the development team, so you can sign the test build for easy
+// installs on your own device(s)
+MOONFIN_DEVELOPMENT_TEAM = AltDevTeam
+
+// You won't be able to sign your own test build if you use the stock entitlements
+MOONFIN_ENTITLEMENTS = Runner/RunnerSideload.entitlements

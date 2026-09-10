@@ -340,13 +340,18 @@ class _FavoritesScreenState extends State<FavoritesScreen> with GridFocusNodeMix
       }
     }
     if (_vm.imageType == ImageType.thumb && item.backdropImageTags.isNotEmpty) {
-      return api.getBackdropImageUrl(item.id, maxWidth: maxWidth);
+      return api.getBackdropImageUrl(
+        item.id,
+        maxWidth: maxWidth,
+        tag: item.backdropImageTags.first,
+      );
     }
     return item.primaryImageTag != null
         ? api.getPrimaryImageUrl(
             item.id,
             maxWidth: maxWidth,
             maxHeight: maxHeight,
+            tag: item.primaryImageTag,
           )
         : null;
   }

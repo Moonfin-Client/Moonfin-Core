@@ -7,8 +7,10 @@ import 'package:get_it/get_it.dart';
 import '../../preference/preference_constants.dart';
 import '../../preference/user_preferences.dart';
 import '../../util/clock_format.dart';
+import '../widgets/playback/loading_animation_widget.dart';
 import 'bouncing_box.dart';
 import 'screensaver_content_service.dart';
+import 'screensaver_gradient_backdrops.dart';
 
 class ScreensaverView extends StatefulWidget {
   const ScreensaverView({super.key});
@@ -33,7 +35,8 @@ class _ScreensaverViewState extends State<ScreensaverView> {
   void initState() {
     super.initState();
     _service = ScreensaverContentService(_prefs);
-    if (_prefs.get(UserPreferences.screensaverMode) == ScreensaverMode.library) {
+    if (_prefs.get(UserPreferences.screensaverBackdrop) ==
+        ScreensaverBackdrop.library) {
       _startSlideshow();
     }
   }
@@ -92,17 +95,24 @@ class _ScreensaverViewState extends State<ScreensaverView> {
 
   @override
   Widget build(BuildContext context) {
-    final mode = _prefs.get(UserPreferences.screensaverMode);
+    final backdrop = _prefs.get(UserPreferences.screensaverBackdrop);
     final dim = _prefs.get(UserPreferences.screensaverDimming).clamp(0, 90);
-    final clockMode = _prefs.get(UserPreferences.screensaverClockMode);
+    final component = _prefs.get(UserPreferences.screensaverComponent);
+    final movement = _prefs.get(UserPreferences.screensaverMovement);
+    final position = _prefs.get(UserPreferences.screensaverPosition);
+    final size = _prefs.get(UserPreferences.screensaverSize);
+
     final showSlides =
-        mode == ScreensaverMode.library && !_libraryEmpty && _index >= 0;
+        backdrop == ScreensaverBackdrop.library &&
+        !_libraryEmpty &&
+        _index >= 0;
 
     return ColoredBox(
       color: Colors.black,
       child: Stack(
         fit: StackFit.expand,
         children: [
+          // Backdrop layer
           if (showSlides)
             AnimatedSwitcher(
               duration: const Duration(seconds: 1),
@@ -111,37 +121,123 @@ class _ScreensaverViewState extends State<ScreensaverView> {
                 item: _items[_index],
               ),
             )
+          else if (backdrop == ScreensaverBackdrop.moonfin ||
+              backdrop == ScreensaverBackdrop.calm ||
+              backdrop == ScreensaverBackdrop.neonPulse ||
+              backdrop == ScreensaverBackdrop.aurora)
+            AnimatedGradientBackdrop(backdrop: backdrop)
           else
-            const _BouncingLogo(),
+            const ColoredBox(color: Colors.black),
+
+          // Dimming layer
           if (dim > 0)
             ColoredBox(color: Colors.black.withValues(alpha: dim / 100)),
-          if (clockMode != ScreensaverClockMode.off)
-            _ScreensaverClock(
-              bouncing: clockMode == ScreensaverClockMode.bouncing,
-              opacity: 1 - (dim / 100) * 0.7,
-              use24Hour: _prefs.get(UserPreferences.use24HourClock),
+
+          // Additional Component layer
+          if (component != ScreensaverComponent.none)
+            _buildAdditionalComponent(
+              component: component,
+              movement: movement,
+              position: position,
+              size: size,
+              dim: dim,
             ),
         ],
       ),
     );
   }
-}
 
-class _BouncingLogo extends StatelessWidget {
-  const _BouncingLogo();
+  Widget _buildAdditionalComponent({
+    required ScreensaverComponent component,
+    required ScreensaverMovement movement,
+    required ScreensaverPosition position,
+    required ScreensaverSize size,
+    required int dim,
+  }) {
+    if (component == ScreensaverComponent.none) {
+      return const SizedBox.shrink();
+    }
 
-  @override
-  Widget build(BuildContext context) {
-    return BouncingBox(
-      childWidth: 400,
-      childHeight: 200,
-      child: Image.asset(
-        'assets/images/logo_and_text.png',
-        fit: BoxFit.contain,
+    final scale = size.scaleFactor;
+    final (double width, double height) = switch (component) {
+      ScreensaverComponent.none => (0.0, 0.0),
+      ScreensaverComponent.moonfinLogo => (320.0 * scale, 140.0 * scale),
+      ScreensaverComponent.clock => (200.0 * scale, 56.0 * scale),
+      ScreensaverComponent.runner => (120.0 * scale, 120.0 * scale),
+    };
+
+    Widget renderContent({required bool movingLeft}) {
+      switch (component) {
+        case ScreensaverComponent.none:
+          return const SizedBox.shrink();
+        case ScreensaverComponent.moonfinLogo:
+          return Image.asset(
+            'assets/images/logo_and_text.png',
+            fit: BoxFit.contain,
+          );
+        case ScreensaverComponent.clock:
+          return ScreensaverClock(
+            opacity: 1 - (dim / 100) * 0.7,
+            use24Hour: _prefs.get(UserPreferences.use24HourClock),
+            fontSize: 32 * scale,
+          );
+        case ScreensaverComponent.runner:
+          return Center(
+            child: RunnerAnimation(
+              size: 96 * scale,
+              flipHorizontal: movingLeft,
+              speed: movement.loadingSpeed,
+            ),
+          );
+      }
+    }
+
+    if (movement.isBouncing) {
+      return BouncingBox(
+        childWidth: width,
+        childHeight: height,
+        speedMultiplier: movement.speedMultiplier,
+        builder: (context, movingLeft) => renderContent(movingLeft: movingLeft),
+      );
+    }
+
+    return Align(
+      alignment: position.alignment,
+      child: Padding(
+        padding: const EdgeInsets.all(48),
+        child: SizedBox(
+          width: width,
+          height: height,
+          child: renderContent(movingLeft: false),
+        ),
       ),
     );
   }
 }
+
+extension ScreensaverPositionX on ScreensaverPosition {
+  Alignment get alignment => switch (this) {
+        ScreensaverPosition.topLeft => Alignment.topLeft,
+        ScreensaverPosition.topCenter => Alignment.topCenter,
+        ScreensaverPosition.topRight => Alignment.topRight,
+        ScreensaverPosition.middleLeft => Alignment.centerLeft,
+        ScreensaverPosition.middle => Alignment.center,
+        ScreensaverPosition.middleRight => Alignment.centerRight,
+        ScreensaverPosition.bottomLeft => Alignment.bottomLeft,
+        ScreensaverPosition.bottomCenter => Alignment.bottomCenter,
+        ScreensaverPosition.bottomRight => Alignment.bottomRight,
+      };
+}
+
+extension ScreensaverSizeX on ScreensaverSize {
+  double get scaleFactor => switch (this) {
+        ScreensaverSize.thumbnail => 0.45,
+        ScreensaverSize.small => 0.70,
+        ScreensaverSize.medium => 1.0,
+        ScreensaverSize.large => 1.5,
+      };
+}
+
 
 class _SlideView extends StatefulWidget {
   const _SlideView({super.key, required this.item});
@@ -234,22 +330,23 @@ class _SlideTitle extends StatelessWidget {
   }
 }
 
-class _ScreensaverClock extends StatefulWidget {
-  const _ScreensaverClock({
-    required this.bouncing,
+class ScreensaverClock extends StatefulWidget {
+  const ScreensaverClock({
+    super.key,
     required this.opacity,
     required this.use24Hour,
+    this.fontSize = 32,
   });
 
-  final bool bouncing;
   final double opacity;
   final bool use24Hour;
+  final double fontSize;
 
   @override
-  State<_ScreensaverClock> createState() => _ScreensaverClockState();
+  State<ScreensaverClock> createState() => _ScreensaverClockState();
 }
 
-class _ScreensaverClockState extends State<_ScreensaverClock> {
+class _ScreensaverClockState extends State<ScreensaverClock> {
   Timer? _timer;
 
   @override
@@ -268,25 +365,16 @@ class _ScreensaverClockState extends State<_ScreensaverClock> {
 
   @override
   Widget build(BuildContext context) {
-    final text = Text(
-      formatClockTime(DateTime.now(), use24Hour: widget.use24Hour),
-      style: TextStyle(
-        color: Colors.white.withValues(alpha: widget.opacity),
-        fontSize: 32,
-        fontWeight: FontWeight.w500,
-        fontFeatures: const [FontFeature.tabularFigures()],
+    return Center(
+      child: Text(
+        formatClockTime(DateTime.now(), use24Hour: widget.use24Hour),
+        style: TextStyle(
+          color: Colors.white.withValues(alpha: widget.opacity),
+          fontSize: widget.fontSize,
+          fontWeight: FontWeight.w500,
+          fontFeatures: const [FontFeature.tabularFigures()],
+        ),
       ),
-    );
-    if (widget.bouncing) {
-      return BouncingBox(
-        childWidth: 200,
-        childHeight: 56,
-        child: Center(child: text),
-      );
-    }
-    return Align(
-      alignment: Alignment.topRight,
-      child: Padding(padding: const EdgeInsets.all(48), child: text),
     );
   }
 }

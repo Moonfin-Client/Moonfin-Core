@@ -20,8 +20,9 @@ import 'gamepad_suppressor.dart';
 /// there as real key events and only the left stick needs bridging.
 ///
 /// Everything here answers to [UserPreferences.gamepadNavigationEnabled], which
-/// is off by default. The stream is only listened to while it's on, and the
-/// platforms that gate the pad natively are told whenever it changes.
+/// is off by default everywhere but Apple TV. The stream is only listened to
+/// while it's on, and the platforms that gate the pad natively are told
+/// whenever it changes.
 ///
 /// This reads the normalized event stream directly rather than using the
 /// companion flutter_gamepads widget layer, which resolves its intents against

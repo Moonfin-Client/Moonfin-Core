@@ -11,6 +11,7 @@ import 'package:server_core/server_core.dart';
 import 'package:screen_brightness_platform_interface/screen_brightness_platform_interface.dart';
 import 'package:volume_controller/volume_controller.dart';
 
+import '../../../data/utils/video_range_label.dart';
 import '../../../playback/subtitle_style.dart';
 import '../../../data/models/aggregated_item.dart';
 import '../../../data/viewmodels/live_tv_guide_view_model.dart';
@@ -18,8 +19,6 @@ import '../../../l10n/app_localizations.dart';
 import '../../../playback/html_video_backend.dart';
 import '../../../playback/media_kit_player_backend.dart';
 import '../../../platform/pip_service.dart';
-import '../../../playback/tizen_player_backend.dart';
-import 'package:video_player/video_player.dart';
 import '../../../playback/media3_player_backend.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
@@ -1147,7 +1146,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
           l10n.resolution,
           '${width ?? '?'}x${height ?? '?'}${fps != null ? ' @ ${fps.round()}fps' : ''}',
         ),
-        row(l10n.hdr, _getHdrType(videoStream)),
+        row(l10n.hdr, videoRangeLabel(videoStream)),
         row(l10n.codec, _formatVideoCodec(videoStream)),
         if (videoStream['BitRate'] != null)
           row(l10n.videoBitrate, _formatBitrate(videoStream['BitRate'] as int?)),
@@ -1237,27 +1236,6 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
       1 => l10n.mono,
       _ => l10n.channelsCount(channels),
     };
-  }
-
-  String _getHdrType(Map<String, dynamic> stream) {
-    final rangeType = stream['VideoRangeType'] as String? ?? '';
-    if (rangeType.contains('DOVI') || rangeType.contains('DoVi')) {
-      return 'Dolby Vision';
-    }
-    if (rangeType.contains('HDR10Plus') || rangeType.contains('HDR10+')) {
-      return 'HDR10+';
-    }
-    if (rangeType.contains('HDR10') || rangeType.contains('HDR')) {
-      return 'HDR10';
-    }
-    if (rangeType.contains('HLG')) {
-      return 'HLG';
-    }
-    final range = stream['VideoRange'] as String?;
-    if (range == 'HDR') {
-      return 'HDR';
-    }
-    return 'SDR';
   }
 
   // Opens the channel guide as an in-player overlay (not a separate route) so
@@ -1550,10 +1528,6 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   }
 
   Widget _buildVideoChild() {
-    if (PlatformDetection.isTizen) {
-      return _buildTizenVideoChild();
-    }
-
     if (PlatformDetection.isIOS || PlatformDetection.isMacOS) {
       return const AetherVideoView();
     }
@@ -1596,28 +1570,6 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
       fill: Colors.black,
       pauseUponEnteringBackgroundMode: false,
       subtitleViewConfiguration: _buildSubtitleConfig(),
-    );
-  }
-
-  Widget _buildTizenVideoChild() {
-    final backend = _manager.backend;
-    if (backend is! TizenPlayerBackend) {
-      return const ColoredBox(color: Colors.black);
-    }
-    final controller = backend.controller;
-    if (controller == null || !controller.value.isInitialized) {
-      return const ColoredBox(color: Colors.black);
-    }
-    return ColoredBox(
-      color: Colors.black,
-      child: FittedBox(
-        fit: BoxFit.contain,
-        child: SizedBox(
-          width: controller.value.size.width,
-          height: controller.value.size.height,
-          child: VideoPlayer(controller),
-        ),
-      ),
     );
   }
 

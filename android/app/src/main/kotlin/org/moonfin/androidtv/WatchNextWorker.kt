@@ -1,6 +1,5 @@
 package org.moonfin.androidtv
 
-import android.app.ActivityManager
 import android.content.Context
 import android.os.Build
 import androidx.work.BackoffPolicy
@@ -143,13 +142,6 @@ class WatchNextWorker(
             }
             ioScope.cancel()
         }
-    }
-
-    private fun isAppInForeground(): Boolean {
-        val state = ActivityManager.RunningAppProcessInfo()
-        ActivityManager.getMyMemoryState(state)
-        return state.importance <=
-            ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
     }
 
     // Gives up after a few attempts so a failing refresh can't retry forever.

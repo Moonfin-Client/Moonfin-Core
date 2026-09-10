@@ -94,6 +94,7 @@ class JellyfinMediaStreamResolver implements MediaStreamResolver {
         requestBody: request.toJson(),
         userId: _client.userId,
         startTimeTicks: startTimeTicks,
+        waitForMediaProbe: true,
       );
       final parsed = PlaybackInfoResult.fromJson(rawInfo);
       if (parsed.errorCode != null) {

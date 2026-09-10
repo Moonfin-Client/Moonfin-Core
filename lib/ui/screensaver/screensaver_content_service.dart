@@ -24,6 +24,16 @@ class ScreensaverContentService {
 
   static const _batchSize = 60;
 
+  List<String> _splitCsv(String value) {
+    return value.split(',').map((s) => s.trim()).where((s) => s.isNotEmpty).toList();
+  }
+
+  bool _hasExcludedGenre(Map<String, dynamic> item, Set<String> excluded) {
+    if (excluded.isEmpty) return false;
+    final genres = (item['Genres'] as List?)?.cast<String>() ?? [];
+    return genres.any((g) => excluded.contains(g));
+  }
+
   Future<List<ScreensaverItem>> loadBatch() async {
     if (!GetIt.instance.isRegistered<MediaServerClient>()) {
       return const [];
@@ -31,16 +41,42 @@ class ScreensaverContentService {
     final client = GetIt.instance<MediaServerClient>();
     final maxAge = _prefs.get(UserPreferences.screensaverMaxAgeRating);
     final requireRating = _prefs.get(UserPreferences.screensaverRequireRating);
+    final contentType = _prefs.get(UserPreferences.screensaverContentType);
+    final libraryIds =
+        _splitCsv(_prefs.get(UserPreferences.screensaverLibraryIds));
+    final collectionIds =
+        _splitCsv(_prefs.get(UserPreferences.screensaverCollectionIds));
+    final excludedGenres =
+        _splitCsv(_prefs.get(UserPreferences.screensaverExcludedGenres)).toSet();
+
+    final includeItemTypes = switch (contentType) {
+      'movies' => const ['Movie'],
+      'tvshows' => const ['Series'],
+      _ => const ['Movie', 'Series'],
+    };
+
     try {
-      final viewsResponse = await client.userViewsApi.getUserViews();
-      final views = (viewsResponse['Items'] as List? ?? [])
-          .cast<Map<String, dynamic>>();
-      // Movie and TV libraries by type, plus mixed-content libraries that
-      // report no CollectionType. Non-media views just return nothing.
-      final targetLibraries = views.where((view) {
-        final type = view['CollectionType'] as String? ?? '';
-        return type == 'movies' || type == 'tvshows' || type.isEmpty;
-      }).toList();
+      final targetParentIds = <String>[];
+      if (libraryIds.isNotEmpty || collectionIds.isNotEmpty) {
+        targetParentIds.addAll(libraryIds);
+        targetParentIds.addAll(collectionIds);
+      } else {
+        final viewsResponse = await client.userViewsApi.getUserViews();
+        final views = (viewsResponse['Items'] as List? ?? [])
+            .cast<Map<String, dynamic>>();
+        for (final view in views) {
+          final type = view['CollectionType'] as String? ?? '';
+          final shouldInclude = switch (contentType) {
+            'movies' => type == 'movies' || type.isEmpty,
+            'tvshows' => type == 'tvshows' || type.isEmpty,
+            _ => type == 'movies' || type == 'tvshows' || type.isEmpty,
+          };
+          final id = view['Id'] as String?;
+          if (shouldInclude && id != null) {
+            targetParentIds.add(id);
+          }
+        }
+      }
 
       final random = Random();
       final sortByOptions = ['DateCreated', 'CommunityRating'];
@@ -51,15 +87,14 @@ class ScreensaverContentService {
       final startIndex = [0, 30, 60, 90][random.nextInt(4)];
 
       final rawItems = <Map<String, dynamic>>[];
-      if (targetLibraries.isNotEmpty) {
+      if (targetParentIds.isNotEmpty) {
         final results = await Future.wait(
-          targetLibraries.map((lib) async {
-            final libId = lib['Id'] as String?;
-            if (libId == null) return <Map<String, dynamic>>[];
+          targetParentIds.map((parentId) async {
             try {
               return await _fetchItems(
                 client,
-                parentId: libId,
+                parentId: parentId,
+                includeItemTypes: includeItemTypes,
                 sortBy: sortBy,
                 sortOrder: sortOrder,
                 startIndex: startIndex,
@@ -78,6 +113,7 @@ class ScreensaverContentService {
         rawItems.addAll(
           await _fetchItems(
             client,
+            includeItemTypes: includeItemTypes,
             sortBy: sortBy,
             sortOrder: sortOrder,
             startIndex: startIndex,
@@ -91,6 +127,7 @@ class ScreensaverContentService {
 
       final items = <ScreensaverItem>[];
       for (final raw in rawItems) {
+        if (_hasExcludedGenre(raw, excludedGenres)) continue;
         final item = _toItem(client, raw, requireRating: requireRating);
         if (item != null) {
           items.add(item);
@@ -106,6 +143,7 @@ class ScreensaverContentService {
   Future<List<Map<String, dynamic>>> _fetchItems(
     MediaServerClient client, {
     String? parentId,
+    required List<String> includeItemTypes,
     required String sortBy,
     required String sortOrder,
     required int startIndex,
@@ -115,13 +153,13 @@ class ScreensaverContentService {
     Future<List<Map<String, dynamic>>> query(int start) async {
       final response = await client.itemsApi.getItems(
         parentId: parentId,
-        includeItemTypes: ['Movie', 'Series'],
+        includeItemTypes: includeItemTypes,
         sortBy: sortBy,
         sortOrder: sortOrder,
         recursive: true,
         startIndex: start,
         limit: _batchSize,
-        fields: 'ImageTags,BackdropImageTags,OfficialRating',
+        fields: 'ImageTags,BackdropImageTags,OfficialRating,Genres',
         enableTotalRecordCount: false,
         enableImageTypes: 'Backdrop,Logo',
         maxOfficialRating: maxAge == 'any' ? null : maxAge,

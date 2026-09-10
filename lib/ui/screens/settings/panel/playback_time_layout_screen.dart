@@ -40,6 +40,7 @@ class _PlaybackTimeLayoutScreenState extends State<_PlaybackTimeLayoutScreen> {
       PlaybackTimeSlot.totalDuration => l10n.playbackTimeTotal,
       PlaybackTimeSlot.timeRemaining => l10n.playbackTimeRemaining,
       PlaybackTimeSlot.endsAt => l10n.playbackTimeEndsAt,
+      PlaybackTimeSlot.time => l10n.currentTime,
     };
   }
 

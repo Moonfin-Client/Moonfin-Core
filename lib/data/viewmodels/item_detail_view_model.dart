@@ -19,6 +19,7 @@ import '../utils/playlist_utils.dart';
 import '../../preference/seerr_preferences.dart';
 import '../../util/episode_playability.dart';
 import '../services/plugin_sync_service.dart';
+import '../services/user_data_sync.dart';
 import 'seerr_media_detail_view_model.dart';
 
 enum CollectionSortOption {
@@ -176,22 +177,6 @@ class ItemDetailViewModel extends ChangeNotifier {
 
   // --- Collection grid pagination state ---
   static const _collectionPageSize = 50;
-
-  /// What a collection is allowed to show once its query walks the tree. A
-  /// recursive read reaches the seasons and episodes inside a series, and those
-  /// belong to the series rather than to the collection, so they stay out.
-  static const _collectionMemberTypes = <String>[
-    'Movie',
-    'Series',
-    'Video',
-    'MusicVideo',
-    'Audio',
-    'MusicAlbum',
-    'Book',
-    'AudioBook',
-    'Photo',
-    'BoxSet',
-  ];
 
   /// Items fetched so far for the grid (startIndex).
   int _collectionFetchedCount = 0;
@@ -401,7 +386,83 @@ class ItemDetailViewModel extends ChangeNotifier {
        _client = client,
        _mutations = mutations,
        _mdbListRepository = mdbListRepository,
-       _tmdbRepository = tmdbRepository;
+       _tmdbRepository = tmdbRepository {
+    userDataSync.addListener(_onUserDataChanged);
+  }
+
+  /// Whether anything this page shows has been watched, favourited or rated
+  /// since it was loaded. [syncUserDataIfStale] clears it, which is what
+  /// catches the series' own state after an episode of it was played.
+  bool _userDataStale = false;
+  bool _syncingUserData = false;
+
+  void _onUserDataChanged() {
+    if (_isDisposed) return;
+    var changed = false;
+
+    final item = userDataSync.applyOrNull(_item);
+    if (!identical(item, _item)) {
+      _item = item;
+      changed = true;
+    }
+    final nextUp = userDataSync.applyOrNull(_nextUp);
+    if (!identical(nextUp, _nextUp)) {
+      _nextUp = nextUp;
+      changed = true;
+    }
+
+    List<AggregatedItem> patch(List<AggregatedItem> list) {
+      final patched = userDataSync.applyAll(list);
+      if (!identical(patched, list)) changed = true;
+      return patched;
+    }
+
+    _episodes = patch(_episodes);
+    _seriesEpisodes = patch(_seriesEpisodes);
+    _seasons = patch(_seasons);
+    _similar = patch(_similar);
+    _filmography = patch(_filmography);
+    _albums = patch(_albums);
+    _tracks = patch(_tracks);
+    _collectionItems = patch(_collectionItems);
+    _playlistItems = patch(_playlistItems);
+    _parentCollectionItems = patch(_parentCollectionItems);
+    _features = patch(_features);
+
+    if (changed) notifyListeners();
+    if (!_syncingUserData) _userDataStale = true;
+  }
+
+  /// Does nothing until a change has actually been recorded, so coming back to
+  /// the page normally costs no request.
+  Future<void> syncUserDataIfStale() async {
+    if (_isDisposed || _syncingUserData || !_userDataStale) return;
+    final ids = <String>{
+      itemId,
+      if (_nextUp != null) _nextUp!.id,
+      for (final list in [
+        _episodes,
+        _seriesEpisodes,
+        _seasons,
+        _similar,
+        _filmography,
+        _albums,
+        _tracks,
+        _collectionItems,
+        _playlistItems,
+        _parentCollectionItems,
+        _features,
+      ])
+        for (final item in list) item.id,
+    };
+    _syncingUserData = true;
+    try {
+      await userDataSync.refreshFromServer(_client, ids);
+    } finally {
+      _syncingUserData = false;
+      _userDataStale = false;
+    }
+  }
 
   /// Builds the screen for a title that is not in the library at all, out of
   /// what Seerr knows about it. The shape is the same, so the layouts, the
@@ -676,7 +737,10 @@ class ItemDetailViewModel extends ChangeNotifier {
 
   Future<void> _loadSeasons() async {
     try {
-      final data = await _client.itemsApi.getSeasons(itemId);
+      final data = await _client.itemsApi.getSeasons(
+        itemId,
+        fields: 'ChildCount',
+      );
       final items = (data['Items'] as List?) ?? [];
       _seasons = _mapItems(items);
       notifyListeners();
@@ -1044,12 +1108,14 @@ class ItemDetailViewModel extends ChangeNotifier {
   /// [_collectionItems]; playlist content is managed by [_buildPlaylistIndex]
   /// and [_fetchPlaylistPage].
   Future<void> _fetchCollectionPage() async {
+    // Deliberately not recursive and not filtered by type. The server returns
+    // exactly the collection's own members this way, episodes included, where
+    // a recursive read either drags in every episode of a member series or,
+    // filtered, drops episode members and leaves the grid blank.
     final data = await _client.itemsApi.getItems(
       parentId: itemId,
       startIndex: _collectionFetchedCount,
       limit: _collectionPageSize,
-      recursive: true,
-      includeItemTypes: _collectionMemberTypes,
       fields: 'PrimaryImageAspectRatio,BasicSyncInfo,People',
     );
     final newItems = _mapItems((data['Items'] as List?) ?? []);
@@ -1302,10 +1368,10 @@ class ItemDetailViewModel extends ChangeNotifier {
         final name = entries[i].value;
 
         fetchFutures.add(() async {
+          // Not recursive and not filtered, same as the collection grid, so a
+          // collection made of episodes still shows its members here.
           final data = await _client.itemsApi.getItems(
             parentId: boxSetId,
-            recursive: true,
-            includeItemTypes: _collectionMemberTypes,
             sortBy: 'PremiereDate,SortName',
             sortOrder: 'Ascending',
             fields: 'PrimaryImageAspectRatio,BasicSyncInfo',
@@ -1757,6 +1823,7 @@ class ItemDetailViewModel extends ChangeNotifier {
   @override
   void dispose() {
     _isDisposed = true;
+    userDataSync.removeListener(_onUserDataChanged);
     // The child owns a download poll timer, so this is what stops it.
     _seerr?.removeListener(notifyListeners);
     _seerr?.dispose();

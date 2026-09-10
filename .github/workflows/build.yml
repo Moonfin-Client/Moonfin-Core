@@ -31,6 +31,17 @@ on:
         description: Run Linux job
         type: boolean
         default: false
+      tvos:
+        description: Run tvOS job
+        type: boolean
+        default: false
+      distribution:
+        description: Where the Apple builds go. release keeps the artifacts, testflight uploads to App Store Connect and skips every other platform
+        type: choice
+        default: release
+        options:
+          - release
+          - testflight
   push:
     tags:
       - '[0-9]+.[0-9]+.[0-9]+*'
@@ -43,12 +54,13 @@ permissions:
   actions: read
 
 env:
-  FLUTTER_VERSION: '3.44.1'
+  FLUTTER_VERSION: '3.47.2'
+  FLUTTER_TVOS_REF: 'v3.47.2-tvos.1.10.0'
 
 jobs:
   # Android APK + AAB
   android:
-    if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_all || inputs.android }}
+    if: ${{ (github.event_name != 'workflow_dispatch' || inputs.run_all || inputs.android) && inputs.distribution != 'testflight' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -107,7 +119,7 @@ jobs:
             Moonfin_Android_v*.*
             Moonfin_AndroidTV_v*.*
 
-  # iOS unsigned IPA
+  # iOS: an unsigned IPA for releases, or a TestFlight upload
   ios:
     if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_all || inputs.ios }}
     runs-on: macos-26
@@ -121,21 +133,25 @@ jobs:
       - name: Select Xcode 26.3
         run: sudo xcode-select -s /Applications/Xcode_26.3.app/Contents/Developer
 
-      - name: Build unsigned IPA
+      - name: Resolve dependencies
         run: |
-          VERSION=$(grep '^version:' pubspec.yaml | sed 's/version:[[:space:]]*//' | cut -d'+' -f1 | tr -d '[:space:]')
           flutter clean
           flutter pub get
 
-          # Provision the bundled libretro cores before the build. pod install
-          # (run by flutter build ipa) resolves moonfin_game_host's
-          # vendored_frameworks glob then, so the frameworks must exist first,
-          # otherwise the IPA ships with no cores. The wrap step's no-JIT gate
-          # keeps the prebuilt cores App Store safe.
+      # pod install, run by the builds below, resolves moonfin_game_host's
+      # vendored_frameworks glob, so the cores have to exist first or the app
+      # ships with none. The wrap step's no-JIT gate keeps the prebuilt cores
+      # App Store safe.
+      - name: Provision the bundled libretro cores
+        run: |
           chmod +x ios/game_host/fetch_cores.sh ios/game_host/wrap_frameworks.sh
           ./ios/game_host/fetch_cores.sh
           ./ios/game_host/wrap_frameworks.sh
 
+      - name: Build unsigned IPA
+        if: ${{ inputs.distribution != 'testflight' }}
+        run: |
+          VERSION=$(grep '^version:' pubspec.yaml | sed 's/version:[[:space:]]*//' | cut -d'+' -f1 | tr -d '[:space:]')
           flutter build ipa --release --no-codesign
 
           APP_PATH=$(find build/ios/archive -type d -path '*/Products/Applications/*.app' | head -1)
@@ -146,11 +162,53 @@ jobs:
           rm -rf "$TMPDIR"
 
       - uses: actions/upload-artifact@v4
+        if: ${{ inputs.distribution != 'testflight' }}
         with:
           name: ios-ipa
           path: Moonfin_iOS_v*_unsigned.ipa
 
-  # macOS signed DMG
+      - name: Set up App Store signing
+        if: ${{ inputs.distribution == 'testflight' }}
+        id: signing
+        uses: ./.github/actions/apple-signing
+        with:
+          certificate-base64: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
+          certificate-password: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          certificate-required: 'true'
+          asc-key-base64: ${{ secrets.APPLE_ASC_API_KEY_BASE64 }}
+
+      # flutter build ipa never hands the API key to xcodebuild, so on a runner
+      # with no Apple ID it cannot fetch a profile. flutter build writes the
+      # project settings and the snapshot, then xcodebuild archives with the key.
+      - name: Archive for App Store
+        if: ${{ inputs.distribution == 'testflight' }}
+        run: |
+          flutter build ios --release --no-codesign --dart-define=DISTRIBUTION_CHANNEL=ios_signed
+          xcodebuild \
+            -workspace ios/Runner.xcworkspace \
+            -scheme Runner \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath "$RUNNER_TEMP/Runner.xcarchive" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "${{ steps.signing.outputs.asc-key-path }}" \
+            -authenticationKeyID "${{ secrets.APPLE_ASC_API_KEY_ID }}" \
+            -authenticationKeyIssuerID "${{ secrets.APPLE_ASC_API_ISSUER_ID }}" \
+            CODE_SIGN_STYLE=Automatic \
+            DEVELOPMENT_TEAM="${{ secrets.APPLE_TEAM_ID }}" \
+            archive
+
+      - name: Upload to TestFlight
+        if: ${{ inputs.distribution == 'testflight' }}
+        uses: ./.github/actions/testflight-upload
+        with:
+          archive-path: ${{ runner.temp }}/Runner.xcarchive
+          team-id: ${{ secrets.APPLE_TEAM_ID }}
+          asc-key-path: ${{ steps.signing.outputs.asc-key-path }}
+          asc-key-id: ${{ secrets.APPLE_ASC_API_KEY_ID }}
+          asc-issuer-id: ${{ secrets.APPLE_ASC_API_ISSUER_ID }}
+
+  # macOS: a signed and notarized DMG for releases, or a TestFlight upload
   macos:
     if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_all || inputs.macos }}
     runs-on: macos-26
@@ -164,35 +222,16 @@ jobs:
       - name: Select Xcode 26.3
         run: sudo xcode-select -s /Applications/Xcode_26.3.app/Contents/Developer
 
-      - name: Import signing certificate
-        env:
-          MACOS_CERTIFICATE_BASE64: ${{ secrets.MACOS_CERTIFICATE_BASE64 }}
-          MACOS_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
-        run: |
-          # On PRs from forks the certificate secret isn't available, so skip
-          # the signing setup. build-macos.sh falls back to an ad-hoc signature
-          # when no identity is present.
-          if [ -z "$MACOS_CERTIFICATE_BASE64" ]; then
-            echo "No macOS certificate secret, skipping signing setup (ad-hoc signed build)."
-            exit 0
-          fi
-
-          CERT_PATH="$RUNNER_TEMP/certificate.p12"
-          KEYCHAIN_PATH="$RUNNER_TEMP/build.keychain-db"
-          KEYCHAIN_PASSWORD="$(openssl rand -hex 20)"
-
-          echo "$MACOS_CERTIFICATE_BASE64" | base64 -D -o "$CERT_PATH"
-
-          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
-          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
-          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
-          security import "$CERT_PATH" -P "$MACOS_CERTIFICATE_PASSWORD" \
-            -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
-          security set-key-partition-list -S apple-tool:,apple: \
-            -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
-          security list-keychains -d user -s "$KEYCHAIN_PATH" login.keychain-db
+      # On PRs from forks the certificate secret is not available, so this
+      # skips and build-macos.sh falls back to an ad-hoc signature.
+      - name: Set up Developer ID signing
+        uses: ./.github/actions/apple-signing
+        with:
+          certificate-base64: ${{ secrets.MACOS_CERTIFICATE_BASE64 }}
+          certificate-password: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
 
       - name: Store notarytool credentials
+        if: ${{ inputs.distribution != 'testflight' }}
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
@@ -208,6 +247,7 @@ jobs:
             --password "$APPLE_APP_PASSWORD"
 
       - name: Build signed DMG
+        if: ${{ inputs.distribution != 'testflight' }}
         env:
           APP_SIGN_ID: ${{ secrets.MACOS_APP_SIGN_ID }}
           INSTALLER_ID: ${{ secrets.MACOS_INSTALLER_ID }}
@@ -219,13 +259,215 @@ jobs:
           ./build-macos.sh
 
       - uses: actions/upload-artifact@v4
+        if: ${{ inputs.distribution != 'testflight' }}
         with:
           name: macos-dmg
           path: Moonfin_macOS_v*.dmg
 
+      # The App Store build signs with the Apple Distribution identity rather
+      # than Developer ID, and needs the API key to fetch a Mac App Store
+      # profile on a runner with no Apple ID.
+      - name: Set up App Store signing
+        if: ${{ inputs.distribution == 'testflight' }}
+        id: signing
+        uses: ./.github/actions/apple-signing
+        with:
+          certificate-base64: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
+          certificate-password: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          certificate-required: 'true'
+          asc-key-base64: ${{ secrets.APPLE_ASC_API_KEY_BASE64 }}
+
+      - name: Archive and upload to TestFlight
+        if: ${{ inputs.distribution == 'testflight' }}
+        env:
+          BUILD_APPSTORE_PKG: '1'
+          BUILD_DMG_GITHUB: '0'
+          EXPORT_DESTINATION: upload
+          TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          ASC_KEY_PATH: ${{ steps.signing.outputs.asc-key-path }}
+          ASC_KEY_ID: ${{ secrets.APPLE_ASC_API_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.APPLE_ASC_API_ISSUER_ID }}
+        run: |
+          chmod +x build-macos.sh
+          ./build-macos.sh
+
+  # tvOS: an unsigned IPA for releases, or a TestFlight upload
+  tvos:
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_all || inputs.tvos }}
+    runs-on: macos-26
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode 26.3
+        run: sudo xcode-select -s /Applications/Xcode_26.3.app/Contents/Developer
+
+      - name: Install tvOS platform
+        run: |
+          sudo xcodebuild -runFirstLaunch || true
+          for i in 1 2 3 4 5 6; do
+            if xcodebuild -downloadPlatform tvOS; then
+              exit 0
+            fi
+            echo "downloadPlatform attempt $i failed, retrying in 25s"
+            sleep 25
+          done
+          echo "::error::tvOS platform install failed after 6 attempts"
+          exit 1
+
+      - name: Cache flutter-tvos toolchain
+        id: cache-fluttertvos
+        uses: actions/cache@v4
+        with:
+          path: ~/flutter-tvos
+          key: flutter-tvos-${{ env.FLUTTER_TVOS_REF }}-${{ runner.os }}-arm64
+
+      - name: Install flutter-tvos
+        if: steps.cache-fluttertvos.outputs.cache-hit != 'true'
+        run: |
+          git clone --depth 1 --branch "$FLUTTER_TVOS_REF" \
+            https://github.com/fluttertv/flutter-tvos.git "$HOME/flutter-tvos"
+
+      - name: Add flutter-tvos to PATH and precache
+        run: |
+          echo "$HOME/flutter-tvos/bin" >> "$GITHUB_PATH"
+          "$HOME/flutter-tvos/bin/flutter-tvos" precache
+
+      - name: Resolve dependencies
+        run: flutter-tvos pub get
+
+      # This runs before the tool builds because the tool embeds the Flutter
+      # engine signed with whatever Apple Distribution identity it finds, and
+      # an unsigned engine is rejected at upload (ITMS-91065). The release path
+      # stays unsigned.
+      - name: Set up App Store signing
+        if: ${{ inputs.distribution == 'testflight' }}
+        id: signing
+        uses: ./.github/actions/apple-signing
+        with:
+          certificate-base64: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
+          certificate-password: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          certificate-required: 'true'
+          asc-key-base64: ${{ secrets.APPLE_ASC_API_KEY_BASE64 }}
+
+      # The tool's own build stops before the app is signed, but by then it
+      # has written the project settings and the assets.
+      - name: Prepare Flutter build settings
+        run: |
+          flutter-tvos build tvos --release --no-tree-shake-icons --dart-define=MOONFIN_TVOS=true || true
+          test -f tvos/Flutter/Generated.xcconfig
+          grep -q '^FLUTTER_ROOT=' tvos/Flutter/Generated.xcconfig \
+            || echo "FLUTTER_ROOT=$HOME/flutter-tvos" >> tvos/Flutter/Generated.xcconfig
+
+      # The flutter tool writes the plugin registry without a tvos section, so
+      # the pods it names have to be put back before CocoaPods reads it, or the
+      # Runner links against nothing.
+      - name: Install pods
+        env:
+          LC_ALL: en_US.UTF-8
+        run: |
+          python3 tvos/scripts/restore_tvos_plugins.py
+          cd tvos && pod install
+
+      - name: Stage flutter_assets for the Xcode copy phase
+        run: |
+          DEST="tvos/Flutter/flutter_assets"
+          rm -rf "$DEST"
+          mkdir -p "$DEST"
+          SRC_APP=$(find build/tvos -maxdepth 3 -type d -path "*Release-appletvos/Runner.app/flutter_assets" | head -1)
+          if [ -n "$SRC_APP" ]; then
+            rsync -a "$SRC_APP/" "$DEST/"
+          else
+            rsync -a \
+              --exclude='*-appletvos' --exclude='*-appletvsimulator' \
+              --exclude='aot' --exclude='.last_build_id' \
+              --exclude='kernel_blob.bin' --exclude='vm_snapshot_data' \
+              --exclude='isolate_snapshot_data' \
+              build/tvos/ "$DEST/"
+          fi
+          test -f "$DEST/fonts/MaterialIcons-Regular.otf" \
+            || { echo "::error::MaterialIcons font missing from staged flutter_assets"; exit 1; }
+          test -f "$DEST/AssetManifest.bin" \
+            || { echo "::error::AssetManifest.bin missing from staged flutter_assets"; exit 1; }
+
+      - name: Build unsigned app
+        if: ${{ inputs.distribution != 'testflight' }}
+        run: |
+          xcodebuild \
+            -workspace tvos/Runner.xcworkspace \
+            -scheme Runner \
+            -configuration Release \
+            -sdk appletvos \
+            -derivedDataPath "$RUNNER_TEMP/dd" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGN_IDENTITY="" \
+            build
+
+      - name: Archive for App Store
+        if: ${{ inputs.distribution == 'testflight' }}
+        run: |
+          xcodebuild \
+            -workspace tvos/Runner.xcworkspace \
+            -scheme Runner \
+            -configuration Release \
+            -destination 'generic/platform=tvOS' \
+            -archivePath "$RUNNER_TEMP/Runner.xcarchive" \
+            -derivedDataPath "$RUNNER_TEMP/dd" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "${{ steps.signing.outputs.asc-key-path }}" \
+            -authenticationKeyID "${{ secrets.APPLE_ASC_API_KEY_ID }}" \
+            -authenticationKeyIssuerID "${{ secrets.APPLE_ASC_API_ISSUER_ID }}" \
+            CODE_SIGN_STYLE=Automatic \
+            DEVELOPMENT_TEAM="${{ secrets.APPLE_TEAM_ID }}" \
+            archive
+
+      # App Store Connect rejects an App.framework whose Info.plist floor
+      # disagrees with the binary (ITMS-90208), and a build that lost the Top
+      # Shelf extension or its fonts is not worth shipping either way.
+      - name: Verify the app bundle
+        env:
+          APP: ${{ inputs.distribution == 'testflight' && format('{0}/Runner.xcarchive/Products/Applications/Runner.app', runner.temp) || format('{0}/dd/Build/Products/Release-appletvos/Runner.app', runner.temp) }}
+        run: |
+          test -d "$APP" || { echo "::error::no app bundle at $APP"; exit 1; }
+          test -f "$APP/flutter_assets/fonts/MaterialIcons-Regular.otf" \
+            || { echo "::error::Built app is missing flutter_assets fonts"; exit 1; }
+          test -e "$APP/PlugIns/MoonfinTopShelf.appex/MoonfinTopShelf" \
+            || { echo "::error::Top Shelf extension missing from PlugIns"; exit 1; }
+          PLIST_MIN=$(plutil -extract MinimumOSVersion raw "$APP/Frameworks/App.framework/Info.plist")
+          BIN_MIN=$(vtool -show-build "$APP/Frameworks/App.framework/App" | awk '/minos/{print $2; exit}')
+          [ "$PLIST_MIN" = "$BIN_MIN" ] \
+            || { echo "::error::App.framework MinimumOSVersion ($PLIST_MIN) != binary minos ($BIN_MIN) (ITMS-90208)"; exit 1; }
+
+      - name: Package unsigned IPA
+        if: ${{ inputs.distribution != 'testflight' }}
+        run: |
+          VERSION=$(grep '^version:' pubspec.yaml | sed 's/version:[[:space:]]*//' | cut -d'+' -f1 | tr -d '[:space:]')
+          APP="$RUNNER_TEMP/dd/Build/Products/Release-appletvos/Runner.app"
+          rm -rf "$RUNNER_TEMP/Payload"
+          mkdir -p "$RUNNER_TEMP/Payload"
+          cp -R "$APP" "$RUNNER_TEMP/Payload/"
+          ( cd "$RUNNER_TEMP" && zip -qry "$GITHUB_WORKSPACE/Moonfin_tvOS_v${VERSION}_unsigned.ipa" Payload )
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ inputs.distribution != 'testflight' }}
+        with:
+          name: tvos-ipa
+          path: Moonfin_tvOS_v*_unsigned.ipa
+          if-no-files-found: error
+
+      - name: Upload to TestFlight
+        if: ${{ inputs.distribution == 'testflight' }}
+        uses: ./.github/actions/testflight-upload
+        with:
+          archive-path: ${{ runner.temp }}/Runner.xcarchive
+          team-id: ${{ secrets.APPLE_TEAM_ID }}
+          asc-key-path: ${{ steps.signing.outputs.asc-key-path }}
+          asc-key-id: ${{ secrets.APPLE_ASC_API_KEY_ID }}
+          asc-issuer-id: ${{ secrets.APPLE_ASC_API_ISSUER_ID }}
+
   # Windows installer EXE
   windows:
-    if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_all || inputs.windows }}
+    if: ${{ (github.event_name != 'workflow_dispatch' || inputs.run_all || inputs.windows) && inputs.distribution != 'testflight' }}
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -288,7 +530,7 @@ jobs:
 
   # Windows ARM64 installer EXE (native build on an ARM64 runner)
   windows-arm64:
-    if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_all || inputs.windows_arm64 }}
+    if: ${{ (github.event_name != 'workflow_dispatch' || inputs.run_all || inputs.windows_arm64) && inputs.distribution != 'testflight' }}
     runs-on: windows-11-arm
     steps:
       - uses: actions/checkout@v4
@@ -376,7 +618,7 @@ jobs:
 
   # Linux packages, built natively for each architecture
   linux:
-    if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_all || inputs.linux }}
+    if: ${{ (github.event_name != 'workflow_dispatch' || inputs.run_all || inputs.linux) && inputs.distribution != 'testflight' }}
     strategy:
       fail-fast: false
       matrix:
@@ -503,12 +745,123 @@ jobs:
             ${{ matrix.artifact_prefix }}_v*.flatpak
           if-no-files-found: error
 
+  # Analyzer and every test suite, the app plus each package that has one.
+  # The platform builds above compile only reachable code, so a broken file
+  # nothing imports and a failing test are invisible to them. This job is
+  # what the PR comment reads its Tests line from.
+  tests:
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_all }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+
+      - name: Run analyzer and tests
+        run: |
+          mkdir -p /tmp/test-results
+          status=0
+          packages="custom_tv_text_field_fork design rar_fork server_core server_emby server_jellyfin"
+
+          flutter pub get
+          for pkg in $packages; do
+            (cd "packages/$pkg" && flutter pub get >/dev/null)
+          done
+
+          # Only error lines gate the job, the tree carries longstanding infos.
+          dart analyze 2>&1 | grep -E " error - " >> /tmp/test-results/analyzer.txt || true
+          for pkg in $packages; do
+            (cd "packages/$pkg" && dart analyze 2>&1 || true) | grep -E " error - " >> /tmp/test-results/analyzer.txt || true
+          done
+
+          flutter test --reporter json > /tmp/test-results/app.jsonl || status=1
+          for pkg in $packages; do
+            (cd "packages/$pkg" && flutter test --reporter json > "/tmp/test-results/pkg-$pkg.jsonl") || status=1
+          done
+
+          echo "$status" > /tmp/test-results/run-status
+
+      - name: Summarize results
+        if: always()
+        run: |
+          python3 - <<'EOF'
+          import glob
+          import json
+          import os
+
+          passed = failed = 0
+          failures = []
+          for path in sorted(glob.glob('/tmp/test-results/*.jsonl')):
+              suite = os.path.basename(path)[:-6]
+              names = {}
+              for line in open(path):
+                  line = line.strip()
+                  if not line.startswith('{'):
+                      continue
+                  try:
+                      event = json.loads(line)
+                  except ValueError:
+                      continue
+                  if event.get('type') == 'testStart':
+                      names[event['test']['id']] = event['test'].get('name', '?')
+                  elif event.get('type') == 'testDone' and not event.get('hidden'):
+                      if event.get('result') == 'success':
+                          passed += 1
+                      else:
+                          failed += 1
+                          failures.append(f"{suite}: {names.get(event.get('testID'), '?')}")
+
+          analyzer = []
+          try:
+              analyzer = [l.rstrip() for l in open('/tmp/test-results/analyzer.txt') if l.strip()]
+          except FileNotFoundError:
+              pass
+
+          try:
+              run_status = int(open('/tmp/test-results/run-status').read().strip())
+          except (FileNotFoundError, ValueError):
+              run_status = 1
+
+          out = {
+              'passed': passed,
+              'failed': failed,
+              'failures': failures[:50],
+              'more_failures': max(0, len(failures) - 50),
+              'analyzer_errors': len(analyzer),
+              'analyzer_sample': analyzer[:10],
+              'run_status': run_status,
+          }
+          with open('/tmp/test-results/test-results.json', 'w') as f:
+              json.dump(out, f)
+          print(json.dumps({k: v for k, v in out.items() if k not in ('failures', 'analyzer_sample')}))
+          EOF
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: /tmp/test-results/test-results.json
+
+      - name: Gate on failures
+        if: always()
+        run: |
+          python3 - <<'EOF'
+          import json
+          import sys
+          results = json.load(open('/tmp/test-results/test-results.json'))
+          bad = results['failed'] or results['analyzer_errors'] or results['run_status']
+          sys.exit(1 if bad else 0)
+          EOF
+
   # What the PR Comment workflow reads to build its comment. always() keeps this
   # running when a platform job fails, which is the case the comment most needs
   # to report.
   save-pr-results:
     if: always() && github.event_name == 'pull_request'
-    needs: [android, ios, macos, windows, windows-arm64, linux]
+    needs: [android, ios, macos, tvos, windows, windows-arm64, linux, tests]
     runs-on: ubuntu-latest
     steps:
       - name: Write outcomes.json
@@ -520,9 +873,11 @@ jobs:
             "android": "${{ needs.android.result }}",
             "ios": "${{ needs.ios.result }}",
             "macos": "${{ needs.macos.result }}",
+            "tvos": "${{ needs.tvos.result }}",
             "windows": "${{ needs.windows.result }}",
             "windows_arm64": "${{ needs.windows-arm64.result }}",
-            "linux": "${{ needs.linux.result }}"
+            "linux": "${{ needs.linux.result }}",
+            "tests": "${{ needs.tests.result }}"
           }
           EOF
 
@@ -534,7 +889,7 @@ jobs:
   # GitHub Release
   release:
     if: startsWith(github.ref, 'refs/tags/')
-    needs: [android, ios, macos, windows, windows-arm64, linux]
+    needs: [android, ios, macos, tvos, windows, windows-arm64, linux]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4

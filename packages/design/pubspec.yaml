@@ -9,8 +9,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  # Glass renderer. Pinned exact because pre-1.0 minor releases can break.
-  liquid_glass_widgets: 0.22.1
+  # Glass renderer. Pinned exact because a bump changes the look and wants
+  # checking on device first.
+  liquid_glass_widgets: 1.4.2
 
 dev_dependencies:
   flutter_test:

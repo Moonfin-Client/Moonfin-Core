@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart' show AppLifecycleState, WidgetsBinding;
+
 import '../../ui/navigation/app_router.dart';
 import '../../ui/navigation/destinations.dart';
 import '../../ui/navigation/home_refresh_bus.dart';
@@ -23,6 +24,7 @@ import '../../data/services/plugin_sync_service.dart';
 import '../../data/services/push_messaging_service.dart';
 import '../../data/services/server_messages_service.dart';
 import '../../data/services/socket_handler.dart';
+import '../../data/services/user_data_sync.dart';
 import '../../di/modules/app_module.dart';
 import '../../di/modules/playback_module.dart';
 import '../../di/modules/server_module.dart';
@@ -259,6 +261,7 @@ class SessionRepository {
     _bindRemoteCommandHandling();
     _bindCapabilityReporting(client);
     _bindPluginEventHandling(client);
+    userDataSync.bindTo(_socketHandler.events, userId: userId);
     _refreshCarBrowseTree(signedIn: true);
 
     _activeServerId = serverId;
@@ -495,6 +498,7 @@ class SessionRepository {
     _pluginEventSubscription = null;
     _socketConnectionSubscription?.cancel();
     _socketConnectionSubscription = null;
+    userDataSync.reset();
     _socketHandler.disconnect();
 
     if (serverId != null) {
@@ -504,6 +508,7 @@ class SessionRepository {
       }
       _clientFactory.removeClient(serverId);
       resetActiveStreamResolver();
+      clearAutoDownloadForSignOut();
     }
 
     await _authPrefs.setLastServerId('');

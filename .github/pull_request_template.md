@@ -29,6 +29,7 @@ List the key changes included in this PR.
 
 ## Platform
 - [ ] Android
+- [ ] Android TV
 - [ ] iOS
 - [ ] tvOS
 - [ ] Web

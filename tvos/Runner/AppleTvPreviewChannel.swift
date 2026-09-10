@@ -10,7 +10,7 @@ protocol PreviewBackend: AnyObject {
     var textureId: Int64 { get }
     func open(
         url: String, headers: [String: String], volume: Float, live: Bool,
-        completion: @escaping (Bool) -> Void)
+        startPositionMs: Int, completion: @escaping (Bool) -> Void)
     func resume()
     func pause()
     func stop()
@@ -71,6 +71,7 @@ final class AppleTvPreviewChannel: NSObject, FlutterStreamHandler {
             let headers = (args["headers"] as? [String: String]) ?? [:]
             let volume = (args["volume"] as? NSNumber)?.floatValue ?? 0
             let live = (args["live"] as? Bool) ?? false
+            let startPositionMs = (args["startPositionMs"] as? NSNumber)?.intValue ?? 0
             disposePlayer(playerId)
             let onEvent: ([String: Any]) -> Void = { [weak self] payload in
                 self?.send(payload)
@@ -78,7 +79,10 @@ final class AppleTvPreviewChannel: NSObject, FlutterStreamHandler {
             let player: PreviewBackend = PreviewPlayer(
                 playerId: playerId, textures: textures, onEvent: onEvent)
             players[playerId] = player
-            player.open(url: url, headers: headers, volume: volume, live: live) { ok in
+            player.open(
+                url: url, headers: headers, volume: volume, live: live,
+                startPositionMs: startPositionMs
+            ) { ok in
                 if ok {
                     result(["textureId": player.textureId])
                 } else {
@@ -131,6 +135,7 @@ private final class PreviewPlayer: NSObject, FlutterTexture, PreviewBackend {
     private var endObserver: NSObjectProtocol?
     private var openCompletion: ((Bool) -> Void)?
     private var isLive = false
+    private var startPositionMs = 0
 
     init(
         playerId: Int, textures: FlutterTextureRegistry,
@@ -145,7 +150,7 @@ private final class PreviewPlayer: NSObject, FlutterTexture, PreviewBackend {
 
     func open(
         url urlString: String, headers: [String: String], volume: Float, live: Bool,
-        completion: @escaping (Bool) -> Void
+        startPositionMs: Int, completion: @escaping (Bool) -> Void
     ) {
         guard let url = URL(string: urlString) else {
             completion(false)
@@ -153,6 +158,7 @@ private final class PreviewPlayer: NSObject, FlutterTexture, PreviewBackend {
         }
         openCompletion = completion
         isLive = live
+        self.startPositionMs = startPositionMs
 
         var options: [String: Any] = [:]
         if !headers.isEmpty {
@@ -185,7 +191,7 @@ private final class PreviewPlayer: NSObject, FlutterTexture, PreviewBackend {
                 guard let self else { return }
                 switch status {
                 case .readyToPlay:
-                    self.finishOpen(success: true)
+                    self.seekToStartThenFinishOpen()
                 case .failed:
                     self.finishOpen(success: false)
                     self.onEvent(["playerId": self.playerId, "event": "error"])
@@ -205,6 +211,22 @@ private final class PreviewPlayer: NSObject, FlutterTexture, PreviewBackend {
         }
 
         startFramePump()
+    }
+
+    /// The server refuses a start offset on an HLS segment request, so the offset arrives
+    /// here instead. Open finishes only once the seek lands, because the caller resumes as
+    /// soon as it returns and would otherwise show a frame from the start of the file.
+    private func seekToStartThenFinishOpen() {
+        guard startPositionMs > 0, let player else {
+            finishOpen(success: true)
+            return
+        }
+        let target = CMTime(value: CMTimeValue(startPositionMs), timescale: 1000)
+        let tolerance = CMTime(seconds: 5, preferredTimescale: 1000)
+        player.seek(to: target, toleranceBefore: tolerance, toleranceAfter: tolerance) {
+            [weak self] _ in
+            Task { @MainActor in self?.finishOpen(success: true) }
+        }
     }
 
     private func finishOpen(success: Bool) {

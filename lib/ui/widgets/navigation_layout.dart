@@ -50,6 +50,12 @@ class NavigationLayout extends StatefulWidget {
     ),
   );
 
+  /// Focus roots of the navigation chrome, registered by the sidebar and
+  /// toolbar while mounted. The route focus observer refuses to land inside
+  /// these, so a fresh route waits for content instead of starting the d-pad
+  /// in the rail and popping it open before anything has loaded.
+  static final Set<FocusNode> chromeFocusRoots = <FocusNode>{};
+
   static final focusNavbarNotifier = ValueNotifier<VoidCallback?>(null);
   static final focusNavbarAvatarNotifier = ValueNotifier<VoidCallback?>(null);
   static final focusContentFromNavbarNotifier = ValueNotifier<VoidCallback?>(
@@ -168,20 +174,29 @@ class _NavigationLayoutState extends State<NavigationLayout> with WidgetsBinding
     );
     return Stack(
       children: [
-        Column(
-          children: [
-            Expanded(child: content),
-            const DownloadProgressBar(),
-            const BottomMusicBar(),
-            AnimatedOpacity(
-              opacity: widget.showNavigationChrome ? 1.0 : 0.0,
-              duration: const Duration(milliseconds: 200),
-              child: IgnorePointer(
-                ignoring: !widget.showNavigationChrome,
-                child: MobileBottomNavBar(activeRoute: widget.activeRoute),
+        Positioned.fill(child: content),
+        // The navbar goes last because it is the one that pads the system
+        // inset underneath itself. Above the bars it pads for an edge it no
+        // longer touches and leaves the music bar under the gesture area.
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 0,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const DownloadProgressBar(),
+              const BottomMusicBar(),
+              AnimatedOpacity(
+                opacity: widget.showNavigationChrome ? 1.0 : 0.0,
+                duration: const Duration(milliseconds: 200),
+                child: IgnorePointer(
+                  ignoring: !widget.showNavigationChrome,
+                  child: MobileBottomNavBar(activeRoute: widget.activeRoute),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         if (widget.showBackButton)
           Positioned(

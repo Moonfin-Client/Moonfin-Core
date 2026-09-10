@@ -1,6 +1,7 @@
 import 'dart:ui' as ui;
 import 'dart:convert';
 import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:server_core/server_core.dart' hide ImageType;
@@ -55,6 +56,7 @@ class UserPreferences extends ChangeNotifier {
     _migrateSeerrRowsVisibility();
     _enforceMediaQueuingAlwaysOn();
     _seedClockFormatFromSystem();
+    _migrateScreensaverPreferences();
     _syncInsecureCertificateFlag();
   }
 
@@ -184,6 +186,43 @@ class UserPreferences extends ChangeNotifier {
     }
   }
 
+  // These are stored per server, and _adoptNewlyScopedPreferences has already
+  // moved them under the active scope and dropped the bare key by the time this
+  // runs. Reading the bare key would find nothing, and writing it would land
+  // where nothing reads.
+  void _migrateScreensaverPreferences() {
+    final mode = getEffectivePreference(screensaverMode);
+    final clockMode = getEffectivePreference(screensaverClockMode);
+    final backdrop = getEffectivePreference(screensaverBackdrop);
+    final component = getEffectivePreference(screensaverComponent);
+    final movement = getEffectivePreference(screensaverMovement);
+
+    if (_store.containsKey(mode.key) && !_store.containsKey(backdrop.key)) {
+      final legacyMode = _store.get(mode);
+      if (legacyMode == ScreensaverMode.logo) {
+        _store.set(backdrop, ScreensaverBackdrop.black);
+        _store.set(component, ScreensaverComponent.moonfinLogo);
+        _store.set(movement, ScreensaverMovement.fast);
+      } else if (legacyMode == ScreensaverMode.library) {
+        _store.set(backdrop, ScreensaverBackdrop.library);
+      }
+    }
+    if (_store.containsKey(clockMode.key) &&
+        !_store.containsKey(movement.key)) {
+      final legacyClock = _store.get(clockMode);
+      if (legacyClock == ScreensaverClockMode.bouncing) {
+        _store.set(component, ScreensaverComponent.clock);
+        _store.set(movement, ScreensaverMovement.fast);
+      } else if (legacyClock == ScreensaverClockMode.staticCorner) {
+        _store.set(component, ScreensaverComponent.clock);
+        _store.set(movement, ScreensaverMovement.staticCorner);
+      } else if (legacyClock == ScreensaverClockMode.off) {
+        _store.set(component, ScreensaverComponent.none);
+        _store.set(movement, ScreensaverMovement.fast);
+      }
+    }
+  }
+
   // On first run, default the 12h/24h clock to the device's locale so users in
   // 24h regions aren't stuck on 12h. Runs once; an explicit choice is kept.
   void _seedClockFormatFromSystem() {
@@ -249,6 +288,11 @@ class UserPreferences extends ChangeNotifier {
   }
 
   static final Set<String> _scopedPreferenceKeys = {
+    // Per account but never synced: the result of this device's last
+    // subscription check, and whether that account has already been told
+    // the device is too full to keep downloading.
+    'auto_download_last_run',
+    'auto_download_storage_notice_shown',
     // Newly synced settings. Anything that goes to the server profile has to be stored
     // per server and user, or one server's value is read back on the next.
     'all_genres_image_type',
@@ -260,6 +304,10 @@ class UserPreferences extends ChangeNotifier {
     'detailButtonOrderMobile',
     'detailButtonOrderTv',
     'download_default_quality',
+    'auto_download_enabled',
+    'auto_download_keep_unwatched',
+    'auto_download_delete_after_hours',
+    'auto_download_background_refresh',
     'download_report_as_activity',
     'download_storage_limit_mb',
     'download_wifi_only',
@@ -308,12 +356,21 @@ class UserPreferences extends ChangeNotifier {
     'pref_playlists_row_sort_order',
     'pref_recommendations_apply_parental_rating_cap',
     'pref_resume_last_queue_on_play',
+    'pref_screensaver_backdrop',
     'pref_screensaver_clock_mode',
+    'pref_screensaver_collection_ids',
+    'pref_screensaver_component',
+    'pref_screensaver_content_type',
     'pref_screensaver_dimming',
     'pref_screensaver_enabled',
+    'pref_screensaver_excluded_genres',
+    'pref_screensaver_library_ids',
     'pref_screensaver_max_age_rating',
     'pref_screensaver_mode',
+    'pref_screensaver_movement',
+    'pref_screensaver_position',
     'pref_screensaver_require_rating',
+    'pref_screensaver_size',
     'pref_screensaver_timeout',
     'pref_studios_row_selected_ids',
     'pref_studios_row_sort_by',
@@ -443,6 +500,7 @@ class UserPreferences extends ChangeNotifier {
     'pref_show_genres_button',
     'pref_show_favorites_button',
     'pref_show_syncplay_button',
+    'pref_show_downloads_button',
     'pref_show_libraries_in_toolbar',
     'pref_navbar_always_expanded',
     'pref_shuffle_content_type',
@@ -527,6 +585,11 @@ class UserPreferences extends ChangeNotifier {
     'last_sonarr_calendar_fetch_time',
     'merge_radarr_sonarr_calendars',
     'recently_released_series_type',
+    'loading_animation_image',
+    'loading_animation_size',
+    'loading_animation_position',
+    'loading_animation_speed',
+    'show_loading_animation_text',
   };
 
   bool _isScopedPreference<T>(Preference<T> pref) {
@@ -1203,13 +1266,16 @@ class UserPreferences extends ChangeNotifier {
         PlatformDetection.isAppleTV,
   );
 
-  /// Whether a game controller drives the app UI. Off by default. Games take
-  /// the pad for themselves either way. Belongs to the device rather than the
-  /// account, like [useExternalPlayer], so it's neither synced nor stored per
-  /// server.
+  /// Whether a game controller drives the app UI. Games take the pad for
+  /// themselves either way. Belongs to the device rather than the account,
+  /// like [useExternalPlayer], so it's neither synced nor stored per server.
+  ///
+  /// On by default on Apple TV. Off there routes controller input to the
+  /// GameController profiles instead of the responder chain, which takes the
+  /// arrow presses third party remotes send along with it.
   static final gamepadNavigationEnabled = Preference(
     key: 'pref_gamepad_navigation_enabled',
-    defaultValue: false,
+    defaultValue: PlatformDetection.isAppleTV,
   );
 
   static final visualTheme = EnumPreference(
@@ -1378,6 +1444,11 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: true,
   );
 
+  static final showDownloadsButton = Preference(
+    key: 'pref_show_downloads_button',
+    defaultValue: true,
+  );
+
   static final showAlphabeticalFilters = Preference(
     key: 'pref_show_alphabetical_filters',
     defaultValue: false,
@@ -1540,6 +1611,56 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: true,
   );
 
+  static final screensaverBackdrop = EnumPreference(
+    key: 'pref_screensaver_backdrop',
+    defaultValue: ScreensaverBackdrop.library,
+    values: ScreensaverBackdrop.values,
+  );
+
+  static final screensaverComponent = EnumPreference(
+    key: 'pref_screensaver_component',
+    defaultValue: ScreensaverComponent.moonfinLogo,
+    values: ScreensaverComponent.values,
+  );
+
+  static final screensaverMovement = EnumPreference(
+    key: 'pref_screensaver_movement',
+    defaultValue: ScreensaverMovement.moderate,
+    values: ScreensaverMovement.values,
+  );
+
+  static final screensaverPosition = EnumPreference(
+    key: 'pref_screensaver_position',
+    defaultValue: ScreensaverPosition.middle,
+    values: ScreensaverPosition.values,
+  );
+
+  static final screensaverSize = EnumPreference(
+    key: 'pref_screensaver_size',
+    defaultValue: ScreensaverSize.medium,
+    values: ScreensaverSize.values,
+  );
+
+  static final screensaverContentType = Preference(
+    key: 'pref_screensaver_content_type',
+    defaultValue: 'both',
+  );
+
+  static final screensaverLibraryIds = Preference(
+    key: 'pref_screensaver_library_ids',
+    defaultValue: '',
+  );
+
+  static final screensaverCollectionIds = Preference(
+    key: 'pref_screensaver_collection_ids',
+    defaultValue: '',
+  );
+
+  static final screensaverExcludedGenres = Preference(
+    key: 'pref_screensaver_excluded_genres',
+    defaultValue: '',
+  );
+
   static final screensaverMode = EnumPreference(
     key: 'pref_screensaver_mode',
     defaultValue: ScreensaverMode.library,
@@ -1554,7 +1675,7 @@ class UserPreferences extends ChangeNotifier {
 
   static final screensaverDimming = Preference(
     key: 'pref_screensaver_dimming',
-    defaultValue: 0,
+    defaultValue: 30,
   );
 
   static final screensaverClockMode = EnumPreference(
@@ -1663,6 +1784,11 @@ class UserPreferences extends ChangeNotifier {
 
   static final trickPlayFollowScrubPosition = Preference<bool>(
     key: 'trickplay_follow_scrub_position',
+    defaultValue: true,
+  );
+
+  static final trickPlayPauseWhileScrubbing = Preference<bool>(
+    key: 'trickplay_pause_while_scrubbing',
     defaultValue: true,
   );
 
@@ -2557,6 +2683,35 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: 'none',
   );
 
+  static final loadingAnimationImage = EnumPreference(
+    key: 'loading_animation_image',
+    defaultValue: LoadingAnimationImage.moonfinLogo,
+    values: LoadingAnimationImage.values,
+  );
+
+  static final loadingAnimationSize = EnumPreference(
+    key: 'loading_animation_size',
+    defaultValue: LoadingAnimationSize.medium,
+    values: LoadingAnimationSize.values,
+  );
+
+  static final loadingAnimationPosition = EnumPreference(
+    key: 'loading_animation_position',
+    defaultValue: LoadingAnimationPosition.middle,
+    values: LoadingAnimationPosition.values,
+  );
+
+  static final loadingAnimationSpeed = EnumPreference(
+    key: 'loading_animation_speed',
+    defaultValue: LoadingAnimationSpeed.fast,
+    values: LoadingAnimationSpeed.values,
+  );
+
+  static final showLoadingAnimationText = Preference(
+    key: 'show_loading_animation_text',
+    defaultValue: true,
+  );
+
   static final autoLoginUserBehavior = EnumPreference(
     key: 'pref_auto_login_behavior',
     defaultValue: UserSelectBehavior.lastUser,
@@ -2755,6 +2910,50 @@ class UserPreferences extends ChangeNotifier {
 
   static final downloadWifiOnly = Preference(
     key: 'download_wifi_only',
+    defaultValue: false,
+  );
+
+  /// Master switch for auto-download subscriptions. Off pauses every
+  /// subscription without forgetting it.
+  static final autoDownloadEnabled = Preference(
+    key: 'auto_download_enabled',
+    defaultValue: true,
+  );
+
+  /// How many unwatched episodes a subscription keeps downloaded or in
+  /// flight at once. 0 means no cap.
+  static final autoDownloadKeepUnwatched = Preference(
+    key: 'auto_download_keep_unwatched',
+    defaultValue: 3,
+  );
+
+  /// Hours after an auto-downloaded episode was watched before it is
+  /// deleted: 0 right away, -1 never.
+  static final autoDownloadDeleteAfterHours = Preference(
+    key: 'auto_download_delete_after_hours',
+    defaultValue: -1,
+  );
+
+  /// Let the OS wake the app in the background to run subscription checks
+  /// (iOS Background App Refresh).
+  static final autoDownloadBackgroundRefresh = Preference(
+    key: 'auto_download_background_refresh',
+    defaultValue: true,
+  );
+
+  /// JSON summary of the most recent subscription check, for the settings
+  /// screen. Written by AutoDownloadService.
+  static final autoDownloadLastRun = Preference(
+    key: 'auto_download_last_run',
+    defaultValue: '',
+  );
+
+  /// Whether the "not enough storage" notice is out: set when a check
+  /// first holds episodes back, cleared by a check that fits everything,
+  /// so a full phone is announced once rather than every few hours.
+  /// Written by AutoDownloadService.
+  static final autoDownloadStorageNoticeShown = Preference(
+    key: 'auto_download_storage_notice_shown',
     defaultValue: false,
   );
 

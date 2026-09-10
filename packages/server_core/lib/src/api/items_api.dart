@@ -119,7 +119,7 @@ abstract class ItemsApi {
     bool recursive = false,
   });
 
-  Future<Map<String, dynamic>> getSeasons(String seriesId);
+  Future<Map<String, dynamic>> getSeasons(String seriesId, {String? fields});
 
   Future<Map<String, dynamic>> getEpisodes(
     String seriesId, {

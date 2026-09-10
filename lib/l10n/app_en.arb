@@ -551,7 +551,7 @@
   },
   "series": "Series",
   "@series": {
-    "description": "Live TV series recordings button label"
+    "description": "Section header for TV series"
   },
   "noItemsFound": "No items found",
   "@noItemsFound": {
@@ -674,7 +674,7 @@
   },
   "type": "Type",
   "@type": {
-    "description": "Section header for type filter"
+    "description": "Stream info label for subtitle type"
   },
   "sortBy": "Sort By",
   "@sortBy": {
@@ -686,11 +686,11 @@
   },
   "imageType": "Image Type",
   "@imageType": {
-    "description": "Section header for image type selection"
+    "description": "Setting for image type"
   },
   "posterSize": "Poster Size",
   "@posterSize": {
-    "description": "Section header for poster size selection"
+    "description": "Setting for poster size"
   },
   "small": "Small",
   "@small": {
@@ -706,7 +706,7 @@
   },
   "extraLarge": "Extra Large",
   "@extraLarge": {
-    "description": "Poster size option"
+    "description": "Size option: extra large"
   },
   "scrollDirection": "Scroll Direction",
   "@scrollDirection": {
@@ -1076,7 +1076,7 @@
   },
   "unread": "Unread",
   "@unread": {
-    "description": "Filter label for unread items"
+    "description": "Status label for an unread book"
   },
   "unwatched": "Unwatched",
   "@unwatched": {
@@ -1088,7 +1088,7 @@
   },
   "allLibraries": "All Libraries",
   "@allLibraries": {
-    "description": "Filter option for all libraries"
+    "description": "Label when all libraries are selected"
   },
   "books": "Books",
   "@books": {
@@ -1101,6 +1101,14 @@
   "latestAudiobooks": "Latest Audiobooks",
   "@latestAudiobooks": {
     "description": "Row title for recently added audiobooks in the book library"
+  },
+  "latestComics": "Latest Comics",
+  "@latestComics": {
+    "description": "Row title for recently added comics in the book library"
+  },
+  "comics": "Comics",
+  "@comics": {
+    "description": "Label for comic media format or section"
   },
   "bookSeriesItemCount": "{count, plural, =1{1 book} other{{count} books}}",
   "@bookSeriesItemCount": {
@@ -1118,6 +1126,18 @@
   "bookFormatAudiobook": "Audiobook",
   "@bookFormatAudiobook": {
     "description": "Semantic label for the audiobook format badge on library cards"
+  },
+  "bookFormatComic": "Comic",
+  "@bookFormatComic": {
+    "description": "Semantic label for the comic format badge on library cards"
+  },
+  "noBooksFound": "No Books Found",
+  "@noBooksFound": {
+    "description": "Title shown when a books library has no items"
+  },
+  "noBooksFoundDescription": "This library does not contain any books, audiobooks, or comics yet.",
+  "@noBooksFoundDescription": {
+    "description": "Description shown when a books library has no items"
   },
   "bookPercentRead": "{percent}% read",
   "@bookPercentRead": {
@@ -1200,7 +1220,7 @@
   },
   "firstPublished": "First published {year}",
   "@firstPublished": {
-    "description": "Label showing first publication year",
+    "description": "Publication year for a book",
     "placeholders": {
       "year": {
         "type": "int"
@@ -1263,6 +1283,7 @@
     "description": "Placeholder text for an empty item list screen"
   },
   "failedToLoad": "Failed to load",
+
   "@failedToLoad": {
     "description": "Error message when item detail fails to load"
   },
@@ -1292,7 +1313,7 @@
   },
   "nextUp": "Next Up",
   "@nextUp": {
-    "description": "Section header for the next episode to watch"
+    "description": "Home section: next up"
   },
   "seasons": "Seasons",
   "@seasons": {
@@ -1313,10 +1334,6 @@
   "musicVideos": "Music Videos",
   "@musicVideos": {
     "description": "Section header for music videos filmography row"
-  },
-  "series": "Series",
-  "@series": {
-    "description": "Section header for TV series"
   },
   "other": "Other",
   "@other": {
@@ -1370,15 +1387,6 @@
   "unableToLoadAuthorDetails": "Unable to load author details right now.",
   "@unableToLoadAuthorDetails": {
     "description": "Error message when author details fail to load"
-  },
-  "firstPublished": "First published {year}",
-  "@firstPublished": {
-    "description": "Publication year for a book",
-    "placeholders": {
-      "year": {
-        "type": "int"
-      }
-    }
   },
   "published": "Published {year}",
   "@published": {
@@ -1534,10 +1542,6 @@
   "@finished": {
     "description": "Status label for a finished book"
   },
-  "unread": "Unread",
-  "@unread": {
-    "description": "Status label for an unread book"
-  },
   "favorited": "Favorited",
   "@favorited": {
     "description": "Status label for a favorited item"
@@ -1559,6 +1563,15 @@
     "description": "Status label shown while a finished download is being moved to its final location and validated"
   },
   "queuedDownload": "Queued",
+  "queuedMoreCount": "{count, plural, =1{1 more queued} other{{count} more queued}}",
+  "@queuedMoreCount": {
+    "description": "Row under the active downloads list standing in for queued items not shown individually",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "@queuedDownload": {
     "description": "Status label for a download waiting in the queue for a free download slot"
   },
@@ -1794,6 +1807,82 @@
   "noEpisodesLoaded": "No episodes loaded",
   "@noEpisodesLoaded": {
     "description": "Message when no episodes are available for download"
+  },
+  "downloadScopeTitle": "What to download",
+  "@downloadScopeTitle": {
+    "description": "Title of the sheet asking whether to download all or only unwatched items"
+  },
+  "downloadAllEpisodes": "All episodes",
+  "@downloadAllEpisodes": {
+    "description": "Download scope option: every episode of a series or season"
+  },
+  "downloadUnwatchedEpisodes": "All unwatched episodes",
+  "@downloadUnwatchedEpisodes": {
+    "description": "Download scope option: only episodes not yet marked as watched"
+  },
+  "downloadAllMovies": "All movies",
+  "@downloadAllMovies": {
+    "description": "Download scope option: every movie in a collection"
+  },
+  "downloadUnwatchedMovies": "All unwatched movies",
+  "@downloadUnwatchedMovies": {
+    "description": "Download scope option: only collection movies not yet marked as watched"
+  },
+  "downloadScopeLoading": "Loading items...",
+  "@downloadScopeLoading": {
+    "description": "Subtitle shown in the download scope sheet while the item list is being fetched"
+  },
+  "downloadScopeLoadFailed": "Could not load items to download",
+  "@downloadScopeLoadFailed": {
+    "description": "Snackbar shown when the item list for a batch download could not be fetched"
+  },
+  "downloadEstimateTotal": "~{size} total",
+  "@downloadEstimateTotal": {
+    "description": "Estimated total download size for a batch, e.g. '~1.2 GB total'",
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadBytesOfTotal": "{received} of {total}",
+  "@downloadBytesOfTotal": {
+    "description": "Transfer status of a running download, e.g. '1.2 GB of 4.6 GB'",
+    "placeholders": {
+      "received": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadSpeed": "{speed}/s",
+  "@downloadSpeed": {
+    "description": "Transfer rate of a running download, e.g. '25.3 MB/s'",
+    "placeholders": {
+      "speed": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadSizeTotal": "{size} total",
+  "@downloadSizeTotal": {
+    "description": "Exact total file size of a batch of original files, e.g. '12.4 GB total'",
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadEstimateUnknownCount": "{count} unknown",
+  "@downloadEstimateUnknownCount": {
+    "description": "Appended to a batch size estimate when some items had no runtime to estimate from",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "downloadingItem": "Downloading {name} ({quality})...",
   "@downloadingItem": {
@@ -2286,7 +2375,7 @@
   },
   "unknown": "Unknown",
   "@unknown": {
-    "description": "Label for unknown or missing values"
+    "description": "Fallback label for unknown items"
   },
   "playbackInformation": "Playback Information",
   "@playbackInformation": {
@@ -2314,7 +2403,7 @@
   },
   "directStream": "Direct Stream",
   "@directStream": {
-    "description": "Play method label"
+    "description": "Audio option: direct stream"
   },
   "transcoding": "Transcoding",
   "@transcoding": {
@@ -2416,10 +2505,6 @@
   "format": "Format",
   "@format": {
     "description": "Stream info label for subtitle format"
-  },
-  "type": "Type",
-  "@type": {
-    "description": "Stream info label for subtitle type"
   },
   "external": "External",
   "@external": {
@@ -2937,8 +3022,9 @@
   },
   "seerr": "Seerr",
   "@seerr": {
-    "description": "Title for the Seerr results section"
+    "description": "Seerr brand name"
   },
+
   "seerrAccountType": "Seerr Account Type",
   "@seerrAccountType": {
     "description": "Header for selecting Seerr authentication account type"
@@ -2952,7 +3038,7 @@
     "description": "Auth option label for Seerr sign in using local Seerr credentials"
   },
 
-  "savedMedia": "Saved Media",
+  "savedMedia": "Downloads",
   "@savedMedia": {
     "description": "Header title for saved/downloaded media screen"
   },
@@ -3153,11 +3239,11 @@
   },
   "storageLimit": "Storage Limit",
   "@storageLimit": {
-    "description": "Section title for storage limit setting"
+    "description": "Setting for storage limit"
   },
   "noLimit": "No limit",
   "@noLimit": {
-    "description": "Label when no storage limit is set"
+    "description": "Option: no limit"
   },
   "deleteAllDownloads": "Delete All Downloads",
   "@deleteAllDownloads": {
@@ -3407,6 +3493,138 @@
   "@seasonalEffectsDescription": {
     "description": "Description for seasonal effects settings"
   },
+  "loadingAnimation": "Loading Animation",
+  "@loadingAnimation": {
+    "description": "Setting title for custom loading animation"
+  },
+  "loadingAnimationDescription": "Customize the loading animations used throughout Moonfin",
+  "@loadingAnimationDescription": {
+    "description": "Description for loading animation customization settings"
+  },
+  "loadingAnimationConfiguration": "Loading Animation Configuration",
+  "@loadingAnimationConfiguration": {
+    "description": "Subtitle header for loading animation settings"
+  },
+  "loadingAnimationImage": "Image",
+  "@loadingAnimationImage": {
+    "description": "Title for loading animation image selection"
+  },
+  "loadingAnimationImageMoonfinLogo": "Moonfin Logo",
+  "@loadingAnimationImageMoonfinLogo": {
+    "description": "Loading animation image option: Moonfin Logo"
+  },
+  "loadingAnimationImageSpinner": "Spinner",
+  "@loadingAnimationImageSpinner": {
+    "description": "Loading animation image option: Spinner"
+  },
+  "loadingAnimationImageRunner": "Runner",
+  "@loadingAnimationImageRunner": {
+    "description": "Loading animation image option: Runner"
+  },
+  "loadingAnimationImageMoonPhases": "Moon Phases",
+  "@loadingAnimationImageMoonPhases": {
+    "description": "Loading animation image option: Moon Phases"
+  },
+  "loadingAnimationImageMoonfinPhases": "Moonfin Phases",
+  "@loadingAnimationImageMoonfinPhases": {
+    "description": "Loading animation image option: Moonfin Phases in brand gradient"
+  },
+  "loadingAnimationImageNeonfinPhases": "Neonfin Phases",
+  "@loadingAnimationImageNeonfinPhases": {
+    "description": "Loading animation image option: Neonfin Phases in neon colors"
+  },
+  "loadingAnimationSize": "Animation Size",
+  "@loadingAnimationSize": {
+    "description": "Title for loading animation size selection"
+  },
+  "loadingAnimationSizeThumbnail": "Thumbnail",
+  "@loadingAnimationSizeThumbnail": {
+    "description": "Loading animation size option: Thumbnail"
+  },
+  "loadingAnimationSizeSmall": "Small",
+  "@loadingAnimationSizeSmall": {
+    "description": "Loading animation size option: Small"
+  },
+  "loadingAnimationSizeMedium": "Medium",
+  "@loadingAnimationSizeMedium": {
+    "description": "Loading animation size option: Medium"
+  },
+  "loadingAnimationSizeLarge": "Large",
+  "@loadingAnimationSizeLarge": {
+    "description": "Loading animation size option: Large"
+  },
+  "loadingAnimationPosition": "Animation Position",
+  "@loadingAnimationPosition": {
+    "description": "Title for loading animation position selection"
+  },
+  "loadingAnimationPositionTopLeft": "Top-Left",
+  "@loadingAnimationPositionTopLeft": {
+    "description": "Loading animation position: Top-Left"
+  },
+  "loadingAnimationPositionTopCenter": "Top-Center",
+  "@loadingAnimationPositionTopCenter": {
+    "description": "Loading animation position: Top-Center"
+  },
+  "loadingAnimationPositionTopRight": "Top-Right",
+  "@loadingAnimationPositionTopRight": {
+    "description": "Loading animation position: Top-Right"
+  },
+  "loadingAnimationPositionMiddleLeft": "Middle-Left",
+  "@loadingAnimationPositionMiddleLeft": {
+    "description": "Loading animation position: Middle-Left"
+  },
+  "loadingAnimationPositionMiddle": "Middle",
+  "@loadingAnimationPositionMiddle": {
+    "description": "Loading animation position: Middle"
+  },
+  "loadingAnimationPositionMiddleRight": "Middle-Right",
+  "@loadingAnimationPositionMiddleRight": {
+    "description": "Loading animation position: Middle-Right"
+  },
+  "loadingAnimationPositionBottomLeft": "Bottom-Left",
+  "@loadingAnimationPositionBottomLeft": {
+    "description": "Loading animation position: Bottom-Left"
+  },
+  "loadingAnimationPositionBottomCenter": "Bottom-Center",
+  "@loadingAnimationPositionBottomCenter": {
+    "description": "Loading animation position: Bottom-Center"
+  },
+  "loadingAnimationPositionBottomRight": "Bottom-Right",
+  "@loadingAnimationPositionBottomRight": {
+    "description": "Loading animation position: Bottom-Right"
+  },
+  "loadingAnimationPositionBouncing": "Bouncing",
+  "@loadingAnimationPositionBouncing": {
+    "description": "Loading animation position: Bouncing DVD screensaver style"
+  },
+  "loadingAnimationSpeed": "Animation Speed",
+  "@loadingAnimationSpeed": {
+    "description": "Title for loading animation speed selection"
+  },
+  "loadingAnimationSpeedSlow": "Slow",
+  "@loadingAnimationSpeedSlow": {
+    "description": "Loading animation speed option: Slow"
+  },
+  "loadingAnimationSpeedModerate": "Moderate",
+  "@loadingAnimationSpeedModerate": {
+    "description": "Loading animation speed option: Moderate"
+  },
+  "loadingAnimationSpeedFast": "Fast",
+  "@loadingAnimationSpeedFast": {
+    "description": "Loading animation speed option: Fast"
+  },
+  "loadingAnimationSpeedUltra": "Ultra",
+  "@loadingAnimationSpeedUltra": {
+    "description": "Loading animation speed option: Ultra"
+  },
+  "showLoadingAnimationText": "Show Text?",
+  "@showLoadingAnimationText": {
+    "description": "Setting toggle for showing loading animation text"
+  },
+  "loadingAnimationPreview": "Preview",
+  "@loadingAnimationPreview": {
+    "description": "Label for loading animation preview window"
+  },
   "snow": "Snow",
   "@snow": {
     "description": "Seasonal effect: snow"
@@ -3597,6 +3815,14 @@
   "@trickplayFollowScrubPositionSubtitle": {
     "description": "Description for the trickplay follow-scrub-position setting"
   },
+  "trickplayPauseWhileScrubbing": "Pause While Scrubbing",
+  "@trickplayPauseWhileScrubbing": {
+    "description": "Setting for whether seeking pauses playback so the trickplay preview holds still"
+  },
+  "trickplayPauseWhileScrubbingSubtitle": "Playback pauses while you seek and resumes when you press play. Turn this off to keep playing and jump straight to the new spot",
+  "@trickplayPauseWhileScrubbingSubtitle": {
+    "description": "Description for the trickplay pause-while-scrubbing setting"
+  },
   "showDescriptionOnPause": "Show Description on Pause",
   "@showDescriptionOnPause": {
     "description": "Setting for showing description on pause"
@@ -3668,10 +3894,6 @@
   "audioBehavior": "Audio Behavior",
   "@audioBehavior": {
     "description": "Setting for audio behavior"
-  },
-  "directStream": "Direct Stream",
-  "@directStream": {
-    "description": "Audio option: direct stream"
   },
   "downmixToStereo": "Downmix to Stereo",
   "@downmixToStereo": {
@@ -4588,6 +4810,10 @@
   "@showFavoritesButton": {
     "description": "Setting for showing favorites button"
   },
+  "showDownloadsButton": "Show Downloads Button",
+  "@showDownloadsButton": {
+    "description": "Setting for showing downloads button"
+  },
   "showLibrariesInToolbar": "Show Libraries in Toolbar",
   "@showLibrariesInToolbar": {
     "description": "Setting for showing libraries in toolbar"
@@ -4655,18 +4881,6 @@
   "libraryDisplay": "Library Display",
   "@libraryDisplay": {
     "description": "Section title for library display settings"
-  },
-  "posterSize": "Poster Size",
-  "@posterSize": {
-    "description": "Setting for poster size"
-  },
-  "extraLarge": "Extra Large",
-  "@extraLarge": {
-    "description": "Size option: extra large"
-  },
-  "imageType": "Image Type",
-  "@imageType": {
-    "description": "Setting for image type"
   },
   "posterLabel": "Poster",
   "@posterLabel": {
@@ -4751,10 +4965,6 @@
   "sourceLibraries": "Source Libraries",
   "@sourceLibraries": {
     "description": "Setting for source libraries"
-  },
-  "unknown": "Unknown",
-  "@unknown": {
-    "description": "Fallback label for unknown items"
   },
   "sourceCollections": "Source Collections",
   "@sourceCollections": {
@@ -4873,10 +5083,6 @@
   "@itemCount": {
     "description": "Setting for item count"
   },
-  "allLibraries": "All libraries",
-  "@allLibraries": {
-    "description": "Label when all libraries are selected"
-  },
   "noneSelected": "None selected",
   "@noneSelected": {
     "description": "Label when nothing is selected"
@@ -4984,10 +5190,6 @@
   "activeRecordings": "Active Recordings",
   "@activeRecordings": {
     "description": "Home section: active recordings"
-  },
-  "nextUp": "Next Up",
-  "@nextUp": {
-    "description": "Home section: next up"
   },
   "playlists": "Playlists",
   "@playlists": {
@@ -5221,6 +5423,70 @@
   "clockModeBouncing": "Bouncing",
   "@clockModeBouncing": {
     "description": "Screensaver clock mode: bounces around the screen"
+  },
+  "screensaverGeneralSettings": "General Settings",
+  "@screensaverGeneralSettings": {
+    "description": "Section header for screensaver general settings"
+  },
+  "screensaverVisualComponents": "Visual Components",
+  "@screensaverVisualComponents": {
+    "description": "Section header for screensaver visual components"
+  },
+  "screensaverLibraryContent": "Library Content",
+  "@screensaverLibraryContent": {
+    "description": "Section header for screensaver library content"
+  },
+  "screensaverBackdrop": "Backdrop",
+  "@screensaverBackdrop": {
+    "description": "Setting for screensaver backdrop"
+  },
+  "screensaverBackdropBlack": "Black",
+  "@screensaverBackdropBlack": {
+    "description": "Screensaver backdrop: Black"
+  },
+  "screensaverBackdropMoonfin": "Moonfin",
+  "@screensaverBackdropMoonfin": {
+    "description": "Screensaver backdrop: Moonfin"
+  },
+  "screensaverBackdropCalm": "Calm",
+  "@screensaverBackdropCalm": {
+    "description": "Screensaver backdrop: Calm"
+  },
+  "screensaverBackdropNeonPulse": "Neon Pulse",
+  "@screensaverBackdropNeonPulse": {
+    "description": "Screensaver backdrop: Neon Pulse"
+  },
+  "screensaverBackdropAurora": "Aurora",
+  "@screensaverBackdropAurora": {
+    "description": "Screensaver backdrop: Aurora"
+  },
+  "screensaverAdditionalComponent": "Additional Component",
+  "@screensaverAdditionalComponent": {
+    "description": "Setting for screensaver additional component"
+  },
+  "screensaverComponentMoonfinLogo": "Moonfin Logo",
+  "@screensaverComponentMoonfinLogo": {
+    "description": "Screensaver component: Moonfin Logo"
+  },
+  "screensaverComponentRunner": "Runner",
+  "@screensaverComponentRunner": {
+    "description": "Screensaver component: Runner"
+  },
+  "screensaverComponentMovement": "Component Movement",
+  "@screensaverComponentMovement": {
+    "description": "Setting for screensaver component movement"
+  },
+  "screensaverComponentPosition": "Component Position",
+  "@screensaverComponentPosition": {
+    "description": "Setting for screensaver component position"
+  },
+  "screensaverComponentSize": "Component Size",
+  "@screensaverComponentSize": {
+    "description": "Setting for screensaver component size"
+  },
+  "screensaverSourceLibrariesDefault": "All (Default)",
+  "@screensaverSourceLibrariesDefault": {
+    "description": "Subtitle when no source libraries are explicitly filtered in screensaver"
   },
   "rottenTomatoesCritics": "Rotten Tomatoes (Critics)",
   "@rottenTomatoesCritics": {
@@ -5650,14 +5916,6 @@
   "@mdbListTmdbRatingSources": {
     "description": "Ratings settings subtitle"
   },
-  "storageLimit": "Storage Limit",
-  "@storageLimit": {
-    "description": "Setting for storage limit"
-  },
-  "noLimit": "No limit",
-  "@noLimit": {
-    "description": "Option: no limit"
-  },
   "gbValue": "{value} GB",
   "@gbValue": {
     "description": "Gigabyte value display",
@@ -5687,11 +5945,6 @@
   "@browse": {
     "description": "Button to browse files"
   },
-  "seerr": "Seerr",
-  "@seerr": {
-    "description": "Seerr brand name"
-  },
-
   "noResults": "No results",
   "@noResults": {
     "description": "Shown when a search or browse returns no items"
@@ -6298,8 +6551,6 @@
   "path": "Path",
   "paused": "Paused",
   "permissions": "Permissions",
-  "play": "Play",
-  "pause": "Pause",
   "processing": "Processing",
   "profile": "Profile",
   "provider": "Provider",
@@ -6383,7 +6634,6 @@
     }
   },
 
-  "allLibraries": "All Libraries",
   "analyticsMediaDistribution": "Media Distribution",
   "analyticsVideoCodecs": "Video Codecs",
   "analyticsAudioCodecs": "Audio Codecs",
@@ -6443,8 +6693,6 @@
   "completion": "Completion",
   "direct": "Direct",
   "adminDisconnect": "Disconnect",
-
-  "failedToLoad": "Failed to load",
 
   "adminClearDates": "Clear dates",
   "adminActivitySeverityAll": "All severities",
@@ -6757,7 +7005,6 @@
   "adminFullAccessWarning": "Administrators have complete access to the server. Grant with caution.",
   "administrator": "Administrator",
   "adminHiddenUser": "Hidden user",
-  "disabled": "Disabled",
   "adminAllowMediaPlayback": "Allow media playback",
   "adminAllowAudioTranscoding": "Allow audio transcoding",
   "adminAllowVideoTranscoding": "Allow video transcoding",
@@ -7230,7 +7477,6 @@
   "adminMaxResumeSubtitle": "Content is considered fully played after this percentage",
   "adminMinResumeDuration": "Minimum resume duration (seconds)",
   "adminMinResumeDurationSubtitle": "Items shorter than this are not resumable",
-  "audiobooks": "Audiobooks",
   "adminMinAudiobookResume": "Minimum audiobook resume percentage",
   "adminMaxAudiobookResume": "Maximum audiobook resume percentage",
 
@@ -8212,7 +8458,7 @@
   "offlineNoInternet": "You are offline. Only downloaded content is available.",
   "offlineFileNotAvailable": "File not available",
   "offlineSwitchServer": "Switch Server",
-  "offlineSavedMedia": "Saved Media",
+  "offlineSavedMedia": "Downloads",
   "offlineBannerTitle": "You're offline",
   "offlineBannerSubtitle": "Showing your downloads",
   "offlineBannerAction": "Downloads",
@@ -8653,7 +8899,6 @@
   "@settingsTimer": {
     "description": "Option label to show only countdown timer on media segment countdown overlay"
   },
-  "settingsBoth": "Both",
   "@settingsBoth": {
     "description": "Option label to show both progress bar and countdown timer on media segment countdown overlay"
   },
@@ -8676,6 +8921,16 @@
   "settingsPlaybackEngineAndroidTvDescription": "Choose the default playback engine on Android TV devices. Changes apply to the next playback session.",
   "settingsPlaybackEngineMedia3Recommended": "Media3 (recommended)",
   "settingsPlaybackEngineMpvLegacy": "mpv (legacy)",
+  "settingsRedetectDisplay": "Re-detect display",
+  "settingsRedetectDisplayDescription": "Ask the TV again what HDR formats it supports. Use this if Dolby Vision or HDR10 titles are being transcoded after the TV or receiver was powered on late.",
+  "settingsDisplayIsSdr": "My TV is not HDR",
+  "settingsDisplayIsSdrDescription": "Stop advertising HDR support for this display. Use this only if detection keeps reporting HDR your TV can't actually show.",
+  "settingsDisplayRedetected": "Display re-detected: {formats}",
+  "@settingsDisplayRedetected": {
+    "placeholders": { "formats": { "type": "String" } }
+  },
+  "settingsDisplayNoHdrDetected": "No HDR formats detected",
+  "settingsDisplayMarkedSdr": "Display saved as SDR",
   "settingsDolbyVisionFallback": "Dolby Vision Fallback",
   "settingsDolbyVisionFallbackDescription": "Behavior for Dolby Vision titles on devices without Dolby Vision decoding.",
   "settingsAskEachTime": "Ask each time",
@@ -9079,7 +9334,6 @@
   "openIosRoutePicker": "Open iOS route picker",
   "airPlayRoutePickerUnavailable": "AirPlay route picker is unavailable on this device.",
   "videos": "Videos",
-  "trailers": "Trailers",
   "programs": "Programs",
   "songs": "Songs",
   "photoAlbums": "Photo Albums",
@@ -9447,12 +9701,16 @@
   "@libraryWriteAccessReactiveBody": {
     "description": "Reactive error warning message when artwork update fails"
   },
-  "externalLists": "External Home Row Lists",
+  "externalLists": "External Lists",
   "replay": "Replay",
   "fileInformation": "File Information",
   "fileSizeFormat": "Size: {size}  •  Format: {format}",
   "@fileSizeFormat": {
     "placeholders": { "size": {}, "format": {} }
+  },
+  "dateCreatedFormat": "Date Added: {date}",
+  "@dateCreatedFormat": {
+    "placeholders": { "date": {} }
   },
   "showAllAudioTracks": "Show All ({count}) Audio Tracks",
   "@showAllAudioTracks": {
@@ -9552,7 +9810,6 @@
   "@adminLibChapterImageResolutionMatchSource": {
     "description": "Chapter image resolution option that matches the source resolution"
   },
-  "externalLists": "External Lists",
   "imdbTop250Movies": "IMDb Top 250 Movies",
   "imdbTop250TvShows": "IMDb Top 250 TV Shows",
   "imdbMostPopularMovies": "IMDb Most Popular Movies",
@@ -9674,6 +9931,10 @@
   "mixedPlaylistsSection": "Mixed Playlists",
   "@mixedPlaylistsSection": {
     "description": "Section header above mixed playlists when Group by Type is enabled"
+  },
+  "currentTime": "Current Time",
+  "@currentTime": {
+    "description": "The current time as it appears on a clock"
   },
   "playbackTimeDisplay": "Progress Bar Time",
   "@playbackTimeDisplay": {
@@ -10044,5 +10305,331 @@
   "serverMessagesShowButtonSubtitle": "Adds a button to the menu for messages sent by your server admin",
   "@serverMessagesShowButtonSubtitle": {
     "description": "Explains the setting that shows or hides the messages button"
+  },
+  "autoDownloadNewEpisodes": "Auto-download new episodes",
+  "@autoDownloadNewEpisodes": {
+    "description": "Row in the download sheet of a series that subscribes it to automatic downloads"
+  },
+  "autoDownloadStop": "Stop auto-download",
+  "@autoDownloadStop": {
+    "description": "Row in the download sheet of a series that is already subscribed; tapping removes the subscription"
+  },
+  "autoDownloadKeepUnwatchedSubtitle": "{count, plural, =0{Downloads every new episode} =1{Downloads new episodes, up to 1 unwatched at a time} other{Downloads new episodes, up to {count} unwatched at a time}}",
+  "@autoDownloadKeepUnwatchedSubtitle": {
+    "description": "Subtitle under the auto-download row explaining the keep-unwatched rule",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "autoDownloadStopSubtitle": "On • {quality}",
+  "@autoDownloadStopSubtitle": {
+    "description": "Subtitle under the stop auto-download row showing the subscription's quality",
+    "placeholders": {
+      "quality": {
+        "type": "String"
+      }
+    }
+  },
+  "autoDownloadTranscodedForegroundNote": "Transcoded qualities only download while Moonfin is open. Original quality also downloads in the background.",
+  "@autoDownloadTranscodedForegroundNote": {
+    "description": "Shown under transcoded options when choosing the quality of an auto-download subscription"
+  },
+  "autoDownloadTranscodedRunningNote": "Transcoded downloads can't resume after an interruption and start over from the beginning. Original quality can resume.",
+  "@autoDownloadTranscodedRunningNote": {
+    "description": "Shown under a running transcoded download that a subscription queued"
+  },
+  "autoDownloadForegroundOnly": "Downloads only while Moonfin is open",
+  "@autoDownloadForegroundOnly": {
+    "description": "Short note next to a followed series in a transcoded quality"
+  },
+  "autoDownloadQualityTitle": "Auto-download quality",
+  "@autoDownloadQualityTitle": {
+    "description": "Title of the quality sheet when it is opened to create an auto-download subscription"
+  },
+  "autoDownloadEnabledFor": "Auto-download enabled for {title}",
+  "@autoDownloadEnabledFor": {
+    "description": "Snackbar after subscribing a series",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "autoDownloadStoppedFor": "Auto-download stopped for {title}",
+  "@autoDownloadStoppedFor": {
+    "description": "Snackbar after unsubscribing a series",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "autoDownloadSection": "Automatic downloads",
+  "@autoDownloadSection": {
+    "description": "Settings section header for auto-download subscriptions"
+  },
+  "autoDownloadEnable": "Enable automatic downloads",
+  "@autoDownloadEnable": {
+    "description": "Master switch for auto-download subscriptions"
+  },
+  "autoDownloadEnableSubtitle": "Downloads new episodes of the series you follow. Existing episodes can still be downloaded manually.",
+  "@autoDownloadEnableSubtitle": {
+    "description": "Explains the master switch"
+  },
+  "autoDownloadKeepUnwatched": "Keep unwatched episodes",
+  "@autoDownloadKeepUnwatched": {
+    "description": "Setting that caps how many unwatched episodes per series stay downloaded"
+  },
+  "autoDownloadKeepAll": "All",
+  "@autoDownloadKeepAll": {
+    "description": "Option meaning no cap on kept unwatched episodes"
+  },
+  "autoDownloadDelete": "Delete downloaded episodes",
+  "@autoDownloadDelete": {
+    "description": "Setting that picks how soon an auto-downloaded episode is removed after it was watched"
+  },
+  "autoDownloadDeleteSubtitle": "When to remove automatically downloaded episodes after you watch them",
+  "@autoDownloadDeleteSubtitle": {
+    "description": "Explains the delete-after-watching setting"
+  },
+  "autoDownloadDeleteNever": "Never",
+  "@autoDownloadDeleteNever": {
+    "description": "Delete-after-watching option: keep episodes"
+  },
+  "autoDownloadDeleteImmediately": "Right after watching",
+  "@autoDownloadDeleteImmediately": {
+    "description": "Delete-after-watching option: remove at the next check once played"
+  },
+  "autoDownloadDeleteAfterDay": "1 day after watching",
+  "@autoDownloadDeleteAfterDay": {
+    "description": "Delete-after-watching option"
+  },
+  "autoDownloadDeleteAfterWeek": "1 week after watching",
+  "@autoDownloadDeleteAfterWeek": {
+    "description": "Delete-after-watching option"
+  },
+  "autoDownloadBackgroundRefresh": "Check in the background",
+  "@autoDownloadBackgroundRefresh": {
+    "description": "Setting that lets the system wake the app to check for new episodes"
+  },
+  "autoDownloadBackgroundRefreshSubtitle": "Allow the system to check for new episodes periodically while Moonfin is closed",
+  "@autoDownloadBackgroundRefreshSubtitle": {
+    "description": "Explains the background refresh setting"
+  },
+  "autoDownloadBackgroundRefreshDenied": "Background App Refresh is disabled for Moonfin. Enable it in iOS Settings.",
+  "@autoDownloadBackgroundRefreshDenied": {
+    "description": "Shown when iOS forbids background refresh for the app"
+  },
+  "autoDownloadBackgroundRestrictedAndroid": "Background usage is restricted for Moonfin in Android Settings.",
+  "@autoDownloadBackgroundRestrictedAndroid": {
+    "description": "Shown when Android restricts the app from running in the background"
+  },
+  "autoDownloadCheckNow": "Check now",
+  "@autoDownloadCheckNow": {
+    "description": "Button that runs a subscription check immediately"
+  },
+  "autoDownloadChecking": "Checking...",
+  "@autoDownloadChecking": {
+    "description": "Subtitle while a subscription check is running"
+  },
+  "autoDownloadNeverChecked": "Not checked yet",
+  "@autoDownloadNeverChecked": {
+    "description": "Subtitle when no subscription check has run"
+  },
+  "autoDownloadLastCheck": "Last check {when}: {queued, plural, =0{nothing new} =1{1 episode queued} other{{queued} episodes queued}}",
+  "@autoDownloadLastCheck": {
+    "description": "Subtitle summarising the last subscription check",
+    "placeholders": {
+      "when": {
+        "type": "String"
+      },
+      "queued": {
+        "type": "int"
+      }
+    }
+  },
+  "autoDownloadLastCheckFailed": "Last check {when} failed: {error}",
+  "@autoDownloadLastCheckFailed": {
+    "description": "Subtitle when the last subscription check hit an error",
+    "placeholders": {
+      "when": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "autoDownloadFollowedSeries": "Followed series",
+  "@autoDownloadFollowedSeries": {
+    "description": "Settings section header listing the series with auto-download on"
+  },
+  "autoDownloadNoSubscriptions": "Open a series and choose \"Auto-download new episodes\" from its download menu",
+  "@autoDownloadNoSubscriptions": {
+    "description": "Shown in settings when no series is followed"
+  },
+  "autoDownloadRemove": "Stop following",
+  "@autoDownloadRemove": {
+    "description": "Tooltip on the button that removes a followed series"
+  },
+  "autoDownloadStorageFull": "Not enough storage",
+  "@autoDownloadStorageFull": {
+    "description": "Appended to the last-check summary when the storage limit stopped queueing"
+  },
+  "autoDownloadWaitingForWifi": "Waiting for WiFi",
+  "@autoDownloadWaitingForWifi": {
+    "description": "Last-check summary when Wi-Fi only is on and the device was on mobile data"
+  },
+  "downloadNotificationRunning": "Downloading",
+  "@downloadNotificationRunning": {
+    "description": "System notification title while a download transfers"
+  },
+  "downloadNotificationRunningBatch": "Downloading ({done}/{total})",
+  "@downloadNotificationRunningBatch": {
+    "description": "System notification title while a batch transfers; done is the 1-based position of the current item",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "downloadNotificationProgress": "{name} — {percent}%",
+  "@downloadNotificationProgress": {
+    "description": "System notification body with the item label (for example Series S1E1) and its percentage",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "downloadNotificationTransfer": "{name} — {progress} · {timeRemaining}",
+  "@downloadNotificationTransfer": {
+    "description": "System notification body for a transfer the native engine reports on. The engine fills in progress (a percentage such as 42%) and timeRemaining (mm:ss) itself.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "progress": {
+        "type": "String"
+      },
+      "timeRemaining": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadNotificationStarting": "{name}...",
+  "@downloadNotificationStarting": {
+    "description": "System notification body before the size of a download is known",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadNotificationCompleteTitle": "{count, plural, =1{Download complete} other{Downloads complete}}",
+  "@downloadNotificationCompleteTitle": {
+    "description": "System notification title once a download or a batch has finished",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "downloadNotificationSaved": "{name} saved for offline",
+  "@downloadNotificationSaved": {
+    "description": "System notification body for one finished download; name is the item label (for example Series S1E1)",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadNotificationSavedCount": "{count, plural, =1{1 item saved for offline} other{{count} items saved for offline}}",
+  "@downloadNotificationSavedCount": {
+    "description": "System notification body for a finished batch of mixed items",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "downloadNotificationSeriesEpisodes": "{series}: {count, plural, =1{1 episode} other{{count} episodes}}",
+  "@downloadNotificationSeriesEpisodes": {
+    "description": "System notification body for a finished batch that all belongs to one series",
+    "placeholders": {
+      "series": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "downloadNotificationFailedTitle": "Download failed",
+  "@downloadNotificationFailedTitle": {
+    "description": "System notification title for a failed download"
+  },
+  "downloadNotificationFailedBody": "{name}: {error}",
+  "@downloadNotificationFailedBody": {
+    "description": "System notification body for a failed download",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "serverMessagesNotificationTitle": "Remote message",
+  "@serverMessagesNotificationTitle": {
+    "description": "System notification title for a message sent by the server when it carries no header"
+  },
+  "serverMessagesNotificationReceived": "Message received",
+  "@serverMessagesNotificationReceived": {
+    "description": "System notification body for a server message with empty text"
+  },
+  "downloadStorageLimitReached": "Storage limit reached. Free up space or increase the limit.",
+  "@downloadStorageLimitReached": {
+    "description": "Error shown when a download would exceed the storage limit set in the download settings"
+  },
+  "downloadNotEnoughStorage": "Not enough storage: {needed} needed, {free} free",
+  "@downloadNotEnoughStorage": {
+    "description": "Error shown when a download would not fit on the device; needed and free are formatted sizes",
+    "placeholders": {
+      "needed": {
+        "type": "String"
+      },
+      "free": {
+        "type": "String"
+      }
+    }
+  },
+  "autoDownloadStorageFullTitle": "Not enough storage for new episodes",
+  "@autoDownloadStorageFullTitle": {
+    "description": "System notification title when the automatic check has to hold new episodes back"
+  },
+  "autoDownloadStorageFullBody": "{count, plural, =1{{name} needs {size}.} other{{count} episodes are waiting for space.}} Free up space or raise the download limit.",
+  "@autoDownloadStorageFullBody": {
+    "description": "System notification body when the automatic check has to hold new episodes back; name is the label of the first one (for example Series S1E1) and size its formatted size",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "name": {
+        "type": "String"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
   }
 }

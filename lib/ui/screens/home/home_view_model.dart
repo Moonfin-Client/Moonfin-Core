@@ -20,6 +20,7 @@ import '../../../data/services/row_data_source.dart';
 import '../../../data/services/topshelf_service.dart';
 import '../../../data/services/tv_channels_service.dart';
 import '../../../data/services/watch_next_service.dart';
+import '../../../data/services/user_data_sync.dart';
 import '../../../data/viewmodels/media_bar_view_model.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../l10n/current_app_localizations.dart';
@@ -300,24 +301,6 @@ class HomeViewModel extends ChangeNotifier {
         _prefs.get(UserPreferences.imdbTopEnglishMoviesEnabled);
   }
 
-  static bool _isSinceYouWatchedSectionType(HomeSectionType type) {
-    return type == HomeSectionType.sinceYouWatched1 ||
-        type == HomeSectionType.sinceYouWatched2 ||
-        type == HomeSectionType.sinceYouWatched3 ||
-        type == HomeSectionType.sinceYouWatched4 ||
-        type == HomeSectionType.sinceYouWatched5;
-  }
-
-  static int _getSinceYouWatchedIndex(HomeSectionType type) {
-    switch (type) {
-      case HomeSectionType.sinceYouWatched1: return 1;
-      case HomeSectionType.sinceYouWatched2: return 2;
-      case HomeSectionType.sinceYouWatched3: return 3;
-      case HomeSectionType.sinceYouWatched4: return 4;
-      case HomeSectionType.sinceYouWatched5: return 5;
-      default: return 0;
-    }
-  }
   ImageApi imageApiForServer(String serverId) {
     if (!_multiServerEnabled) return _dataSource.imageApi;
     return _multiServerRepo.getImageApiForServer(serverId);
@@ -348,6 +331,16 @@ class HomeViewModel extends ChangeNotifier {
     required bool hydratedFromCache,
     required bool hasVisibleRow,
   }) => (preserveExisting || hydratedFromCache) && hasVisibleRow;
+
+  /// Whether the home has to load again because the server came back.
+  ///
+  /// Rows built while it was unreachable came from the downloads catalog, so
+  /// they hold only what was downloaded. Connectivity reports every probe it
+  /// runs, so only the crossing counts.
+  static bool reloadsOnReachability({
+    required bool canReachServer,
+    required bool couldReachServer,
+  }) => canReachServer && !couldReachServer;
 
   Future<void> load({bool preserveExisting = false, bool forceRefresh = false}) async {
     _checkAndTriggerDailyExternalRowsRefresh();
@@ -447,7 +440,7 @@ class HomeViewModel extends ChangeNotifier {
                 (!_isTmdbSectionType(c.type) || (showTmdbRows && _isTmdbSectionEnabled(c.type))) &&
                 (c.type != HomeSectionType.radarrCalendar || _prefs.get(UserPreferences.enableRadarrCalendar)) &&
                 (c.type != HomeSectionType.sonarrCalendar || _prefs.get(UserPreferences.enableSonarrCalendar)) &&
-                (!_isSinceYouWatchedSectionType(c.type) || (showSinceYouWatched && _getSinceYouWatchedIndex(c.type) <= sinceYouWatchedNum)) &&
+                (c.type.sinceYouWatchedRow == 0 || (showSinceYouWatched && c.type.sinceYouWatchedRow <= sinceYouWatchedNum)) &&
                 (c.type != HomeSectionType.rewatch || showRewatch),
           )
           .toList(growable: false);
@@ -632,6 +625,22 @@ class HomeViewModel extends ChangeNotifier {
     }
   }
 
+  /// Repaints the watched ticks on the rows already built, without refetching
+  /// them. The home screen drives this so the listener lives and dies with the
+  /// widget rather than with this singleton.
+  void applyUserDataChanges() {
+    List<HomeRow>? rows;
+    for (var i = 0; i < _rows.length; i++) {
+      final patched = userDataSync.applyAll(_rows[i].items);
+      if (identical(patched, _rows[i].items)) continue;
+      rows ??= List<HomeRow>.of(_rows);
+      rows[i] = _rows[i].copyWith(items: patched);
+    }
+    if (rows == null) return;
+    _rows = rows;
+    notifyListeners();
+  }
+
   List<HomeRow> _reconcilePreservedRows(
     List<HomeSectionConfig> effectiveConfigs,
   ) {
@@ -807,7 +816,7 @@ class HomeViewModel extends ChangeNotifier {
       case HomeSectionType.sinceYouWatched3:
       case HomeSectionType.sinceYouWatched4:
       case HomeSectionType.sinceYouWatched5:
-        final idx = _getSinceYouWatchedIndex(cfg.type);
+        final idx = cfg.type.sinceYouWatchedRow;
         return row.rowType == HomeRowType.latestMedia && row.id == 'sinceYouWatched$idx';
       case HomeSectionType.rewatch:
         return row.rowType == HomeRowType.latestMedia && row.id == 'rewatch';
@@ -1520,7 +1529,7 @@ class HomeViewModel extends ChangeNotifier {
       case HomeSectionType.sinceYouWatched3:
       case HomeSectionType.sinceYouWatched4:
       case HomeSectionType.sinceYouWatched5:
-        final rowIndex = _getSinceYouWatchedIndex(section);
+        final rowIndex = section.sinceYouWatchedRow;
         final row = await _dataSource.loadSinceYouWatchedRow(_serverId, rowIndex);
         return [row];
       case HomeSectionType.rewatch:
@@ -2031,7 +2040,7 @@ class HomeViewModel extends ChangeNotifier {
       case HomeSectionType.sinceYouWatched3:
       case HomeSectionType.sinceYouWatched4:
       case HomeSectionType.sinceYouWatched5:
-        final index = _getSinceYouWatchedIndex(section);
+        final index = section.sinceYouWatchedRow;
         return HomeRow(
           id: 'sinceYouWatched$index',
           title: 'Since you watched',

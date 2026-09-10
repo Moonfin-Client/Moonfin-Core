@@ -8,6 +8,7 @@ import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:moonfin/data/database/offline_database.dart';
 import 'package:moonfin/data/models/aggregated_item.dart';
+import 'package:moonfin/data/models/download_source.dart';
 import 'package:moonfin/data/repositories/offline_repository.dart';
 import 'package:moonfin/data/services/download_notification_service.dart';
 import 'package:moonfin/data/services/download_service.dart';
@@ -158,6 +159,48 @@ class _BlockingItemsApi implements ItemsApi {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
+/// Answers the batch-fetch calls (seasons, episodes, collection children)
+/// and records the `fields` each request asked for.
+class _LibraryItemsApi implements ItemsApi {
+  _LibraryItemsApi({required this.episodesBySeason, required this.boxSetItems});
+
+  final Map<String, List<Map<String, dynamic>>> episodesBySeason;
+  final List<Map<String, dynamic>> boxSetItems;
+  final List<String?> episodeFields = [];
+  String? boxSetFields;
+
+  @override
+  Future<Map<String, dynamic>> getEpisodes(
+    String seriesId, {
+    String? seasonId,
+    String? fields,
+  }) async {
+    episodeFields.add(fields);
+    if (seasonId == null) {
+      return {'Items': episodesBySeason.values.expand((e) => e).toList()};
+    }
+    return {'Items': episodesBySeason[seasonId] ?? const []};
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) {
+    // getItems has dozens of named parameters; intercept it here instead of
+    // spelling out the full override.
+    if (invocation.memberName == #getItems) {
+      boxSetFields = invocation.namedArguments[#fields] as String?;
+      return Future<Map<String, dynamic>>.value({'Items': boxSetItems});
+    }
+    return super.noSuchMethod(invocation);
+  }
+}
+
+Map<String, dynamic> _playableItem(String id, {required bool played}) => {
+  'Id': id,
+  'Type': 'Episode',
+  'Name': 'Item $id',
+  'UserData': {'Played': played},
+};
+
 class _FakeClient implements MediaServerClient {
   _FakeClient(this._itemsApi);
 
@@ -305,6 +348,40 @@ void main() {
     );
   });
 
+  test(
+    'the native handoff wait covers a download still in the queue',
+    () async {
+      final itemsApi = _BlockingItemsApi();
+      service.dispose();
+      service = DownloadService(
+        _FakeClient(itemsApi),
+        DownloadNotificationService(),
+      );
+      final item = AggregatedItem(
+        id: 'movie-0',
+        serverId: 'http://127.0.0.1:1',
+        rawData: {...itemData, 'MediaSources': const []},
+      );
+
+      // A background run queues and then waits; the item is only a queued
+      // placeholder at that instant, so the wait must still hold the engine.
+      final download = service.downloadItem(item);
+      final wait = service.waitForNativeHandoff(
+        timeout: const Duration(seconds: 5),
+      );
+      var waited = false;
+      unawaited(wait.then((_) => waited = true));
+      await _waitForCalls(itemsApi, 1);
+      await Future<void>.delayed(const Duration(milliseconds: 600));
+      expect(waited, isFalse, reason: 'preparation is still in progress');
+
+      itemsApi.releaseNext();
+      await download;
+      await wait;
+      expect(service.activeDownloads['movie-0']?.error, isNotNull);
+    },
+  );
+
   test('queued downloads are listed and cancellable while waiting', () async {
     await prefs.set(UserPreferences.downloadConcurrentCount, 1);
     final itemsApi = _BlockingItemsApi();
@@ -377,9 +454,7 @@ void main() {
     await _waitFor(() => repo.upsertCalls == 1);
     itemsApi.releaseParked.complete();
 
-    await _waitFor(
-      () => service.activeDownloads['storage-b']?.error != null,
-    );
+    await _waitFor(() => service.activeDownloads['storage-b']?.error != null);
     expect(
       service.activeDownloads['storage-b']?.error,
       contains('Storage limit'),
@@ -398,6 +473,28 @@ void main() {
       service.activeDownloads.values.every((p) => p.error != null),
       isTrue,
     );
+  });
+
+  test('queueing a large batch coalesces listener notifications', () async {
+    await prefs.set(UserPreferences.downloadWifiOnly, true);
+    final items = List.generate(
+      200,
+      (index) => AggregatedItem(
+        id: 'movie-$index',
+        serverId: 'http://127.0.0.1:1',
+        rawData: itemData,
+      ),
+    );
+    var notifications = 0;
+    service.addListener(() => notifications++);
+
+    await service.downloadItems(items);
+    await pumpEventQueue();
+
+    // One placeholder per item plus one failure per item used to mean 400
+    // rebuilds of the downloads panel; they now collapse to a handful.
+    expect(notifications, lessThan(10));
+    expect(service.activeDownloads.length, items.length);
   });
 
   test('a batch with an escaping failure resets its state', () async {
@@ -423,6 +520,229 @@ void main() {
       expect(progress?.isQueued, isFalse);
     }
   });
+
+  group('unwatched-only batch downloads', () {
+    late _LibraryItemsApi api;
+    late DownloadService libraryService;
+
+    setUp(() {
+      api = _LibraryItemsApi(
+        episodesBySeason: {
+          'season-1': [
+            _playableItem('ep-1', played: true),
+            _playableItem('ep-2', played: false),
+          ],
+          'season-2': [
+            _playableItem('ep-3', played: false),
+            _playableItem('ep-4', played: true),
+          ],
+        },
+        boxSetItems: [
+          _playableItem('movie-a', played: true),
+          _playableItem('movie-b', played: false),
+        ],
+      );
+      libraryService = DownloadService(
+        _FakeClient(api),
+        DownloadNotificationService(),
+      );
+    });
+
+    tearDown(() => libraryService.dispose());
+
+    test('series fetch is one call and requests user data', () async {
+      final episodes = await libraryService.fetchEpisodes('series-1');
+
+      expect(episodes.map((e) => e.id), ['ep-1', 'ep-2', 'ep-3', 'ep-4']);
+      expect(api.episodeFields.single, contains('UserData'));
+      expect(api.episodeFields.single, contains('RunTimeTicks'));
+    });
+
+    test('season fetch requests media sources and user data', () async {
+      final episodes = await libraryService.fetchEpisodes(
+        'series-1',
+        seasonId: 'season-2',
+      );
+
+      expect(episodes.map((e) => e.id), ['ep-3', 'ep-4']);
+      expect(api.episodeFields.single, contains('MediaSources'));
+      expect(api.episodeFields.single, contains('UserData'));
+    });
+
+    test('collection fetch requests user data', () async {
+      final items = await libraryService.fetchBoxSetPlayableItems('boxset-1');
+
+      expect(items.map((e) => e.id), ['movie-a', 'movie-b']);
+      expect(api.boxSetFields, contains('UserData'));
+    });
+
+    test('downloadItems queues exactly the unwatched list', () async {
+      // wifiOnly makes every item fail fast in tests (no Connectivity
+      // platform), leaving one error entry per queued item.
+      await prefs.set(UserPreferences.downloadWifiOnly, true);
+      final episodes = await libraryService.fetchEpisodes('series-1');
+
+      await libraryService.downloadItems(
+        episodes.where((e) => !e.isPlayed).toList(),
+      );
+
+      expect(libraryService.activeDownloads.keys.toSet(), {'ep-2', 'ep-3'});
+    });
+  });
+
+  group('batch queueing', () {
+    late _BlockingItemsApi api;
+    late _CompletedRowsRepository repo;
+    late DownloadService batchService;
+
+    AggregatedItem movie(String id) => AggregatedItem(
+      id: id,
+      serverId: 'http://127.0.0.1:1',
+      rawData: _sizedItemData(id, 1024),
+    );
+
+    setUp(() {
+      api = _BlockingItemsApi();
+      repo = _CompletedRowsRepository(db);
+      GetIt.instance.unregister<OfflineRepository>();
+      GetIt.instance.registerSingleton<OfflineRepository>(repo);
+      batchService = DownloadService(
+        _FakeClient(api),
+        DownloadNotificationService(),
+      );
+    });
+
+    tearDown(() => batchService.dispose());
+
+    test('queueDownloads skips in-flight and repeated items', () async {
+      await prefs.set(UserPreferences.downloadConcurrentCount, 3);
+      repo.completedIds.add('done');
+      final inFlight = batchService.downloadItem(movie('running'));
+      await _waitForCalls(api, 1);
+
+      final batch = await batchService.queueDownloads([
+        movie('running'),
+        movie('done'),
+        movie('fresh'),
+        movie('fresh'),
+      ]);
+
+      // 'done' is already downloaded, but a manual batch is the user asking
+      // for it, so only the running transfer and the repeat are dropped.
+      expect(batch.queued.map((i) => i.id), ['done', 'fresh']);
+      expect(batchService.totalQueued, 2);
+      expect(batchService.inFlightItemIds, {'running', 'done', 'fresh'});
+
+      await _waitForCalls(api, 3);
+      api.releaseNext();
+      api.releaseNext();
+      api.releaseNext();
+      await inFlight.catchError((_) {});
+      await batch.done;
+      expect(batchService.totalQueued, 0);
+    });
+
+    test('an automatic batch leaves finished downloads alone', () async {
+      repo.completedIds.add('done');
+
+      final batch = await batchService.queueDownloads([
+        movie('done'),
+        movie('fresh'),
+      ], source: DownloadSource.auto);
+
+      expect(batch.queued.map((i) => i.id), ['fresh']);
+      expect(batchService.totalQueued, 1);
+
+      await _waitForCalls(api, 1);
+      api.releaseNext();
+      await batch.done;
+      expect(batchService.totalQueued, 0);
+    });
+
+    test('a batch starts its count from zero', () async {
+      // Every finished download bumps the counter, so leftovers from a
+      // one-off would push a later batch past its total early.
+      final single = batchService.downloadItem(movie('one-off'));
+      await _waitForCalls(api, 1);
+      api.releaseNext();
+      await single.catchError((_) {});
+
+      final batch = await batchService.queueDownloads([
+        movie('a'),
+        movie('b'),
+      ]);
+      expect(batchService.totalQueued, 2);
+      expect(batchService.completedCount, 0);
+      expect(batchService.isBatchDownloading, isTrue);
+
+      await _waitForCalls(api, 3);
+      api.releaseNext();
+      api.releaseNext();
+      await batch.done;
+    });
+
+    test(
+      'concurrent batches share one count until the last finishes',
+      () async {
+        await prefs.set(UserPreferences.downloadConcurrentCount, 3);
+        final first = await batchService.queueDownloads([
+          movie('a'),
+          movie('b'),
+        ]);
+        expect(batchService.totalQueued, 2);
+        expect(batchService.isBatchDownloading, isTrue);
+
+        final second = await batchService.queueDownloads([movie('c')]);
+        expect(batchService.totalQueued, 3, reason: 'counts are additive');
+
+        await _waitForCalls(api, 3);
+        api.releaseNext();
+        api.releaseNext();
+        await first.done;
+        expect(
+          batchService.totalQueued,
+          3,
+          reason: 'the count holds while another batch is still open',
+        );
+
+        api.releaseNext();
+        await second.done;
+        expect(batchService.totalQueued, 0);
+        expect(batchService.completedCount, 0);
+        expect(batchService.isBatchDownloading, isFalse);
+      },
+    );
+
+    test('an auto batch stamps its rows with the auto source', () async {
+      final batch = await batchService.queueDownloads([
+        movie('auto-1'),
+      ], source: DownloadSource.auto);
+      await _waitForCalls(api, 1);
+      api.releaseNext();
+      await batch.done;
+
+      expect(repo.upserts.single.downloadSource.value, 'auto');
+    });
+  });
+}
+
+/// Reports [completedIds] as finished downloads and records every upsert.
+class _CompletedRowsRepository extends _FakeOfflineRepository {
+  _CompletedRowsRepository(super.db);
+
+  final Set<String> completedIds = {};
+  final List<DownloadedItemsCompanion> upserts = [];
+
+  @override
+  Future<void> upsertItem(DownloadedItemsCompanion item) async {
+    upserts.add(item);
+  }
+
+  @override
+  Future<List<DownloadRef>> getDownloadRefs() async => [
+    for (final id in completedIds)
+      (itemId: id, downloadStatus: 2, downloadSource: 'manual'),
+  ];
 }
 
 Future<void> _waitForCalls(_BlockingItemsApi api, int expected) async {

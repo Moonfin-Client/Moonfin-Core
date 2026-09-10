@@ -10077,5 +10077,22 @@
     "runSetupAgain": "Esegui di nuovo la configurazione",
     "@runSetupAgain": {
         "description": "Starts the first-run setup wizard again from settings"
+    },
+    "searchingSubtitles": "Ricerca sottotitoli…",
+    "@searchingSubtitles": {
+        "description": "Shown while a remote subtitle search is running"
+    },
+    "aiTranslated": "Tradotto dall' IA",
+    "@aiTranslated": {
+        "description": "Label for a remote subtitle the provider marked as AI translated"
+    },
+    "framerateFps": "{rate} fps",
+    "@framerateFps": {
+        "description": "Framerate of a remote subtitle, shown in its detail line",
+        "placeholders": {
+            "rate": {
+                "type": "String"
+            }
+        }
     }
 }

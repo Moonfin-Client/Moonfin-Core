@@ -19,10 +19,8 @@ QueryExecutor openConnection() {
     }
     final file = File('${dbDir.path}/offline.db');
 
-    if (PlatformDetection.isTizen || PlatformDetection.isAppleTV) {
-      open.overrideForAll(
-        PlatformDetection.isAppleTV ? _openAppleSqlite : _openSystemSqlite,
-      );
+    if (PlatformDetection.isAppleTV) {
+      open.overrideForAll(_openAppleSqlite);
       return NativeDatabase(file);
     }
 

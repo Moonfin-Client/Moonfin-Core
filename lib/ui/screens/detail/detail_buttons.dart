@@ -86,7 +86,7 @@ enum DetailButton {
     DetailButton.favorite => Icons.favorite_border,
     DetailButton.personalRating => Icons.star_outline,
     DetailButton.playlist => Icons.playlist_add,
-    DetailButton.download => Icons.download,
+    DetailButton.download => Icons.download_for_offline,
     DetailButton.deleteFiles => Icons.delete_outline,
     DetailButton.goToSeries => Icons.tv,
     DetailButton.seerrRequest || DetailButton.seerrRequest4k => Icons.add,

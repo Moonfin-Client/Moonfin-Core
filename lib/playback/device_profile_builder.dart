@@ -84,6 +84,15 @@ class DeviceProfileBuilder {
     'dts',
   ];
 
+  /// Codecs the HLS container can't carry as a stream copy, so a player that
+  /// leans on it has to decode and re-encode them on the way through.
+  static final String _bridgedAudioCodecs = _supportedAudioCodecs
+      .where((codec) => !_hlsFmp4AudioCodecs.contains(codec))
+      .join(',');
+
+  /// The highest rate the EAC3 encoder that bridge uses will open at.
+  static const int _bridgedAudioMaxSampleRate = 48000;
+
   static const List<String> _audioDirectPlayContainers = <String>[
     'aac',
     'ac3',
@@ -125,6 +134,10 @@ class DeviceProfileBuilder {
     // locally. Detection never subtracts from the advertised list.
     bool universalAudioDecode = false,
     bool playerDecodesTrueHd = true,
+    // Whether the player can decode a stereo TrueHD track. One that can't asks
+    // the server for surround TrueHD only, so the rest transcodes instead of
+    // reaching a decoder that stalls on it.
+    bool playerDecodesStereoTrueHd = true,
     MaxVideoResolution maxResolution = MaxVideoResolution.auto,
     bool pgsDirectPlay = true,
     bool assDirectPlay = true,
@@ -422,6 +435,8 @@ class DeviceProfileBuilder {
     final codecProfiles = _codecProfiles(
       maxAudioChannels: advertisedMaxChannels,
       passthroughAudioCodecs: passthroughAudioCodecs,
+      universalAudioDecode: universalAudioDecode,
+      playerDecodesStereoTrueHd: playerDecodesStereoTrueHd,
       forceStereo: limitStereoDirectPlay,
       maxResolution: maxResolution,
       supportsAvc: effectiveSupportsAvc,
@@ -1023,6 +1038,8 @@ class DeviceProfileBuilder {
   static List<Map<String, dynamic>> _codecProfiles({
     required int maxAudioChannels,
     required Set<String> passthroughAudioCodecs,
+    required bool universalAudioDecode,
+    required bool playerDecodesStereoTrueHd,
     required bool forceStereo,
     required MaxVideoResolution maxResolution,
     required bool supportsAvc,
@@ -1496,6 +1513,43 @@ class DeviceProfileBuilder {
         ],
       ),
     );
+
+    // Past the bridge encoder's ceiling it refuses to open and the player has
+    // nothing left to fall back to, so the track direct plays as silence.
+    // Saying so here is what gets the server to re-encode it instead.
+    if (universalAudioDecode) {
+      profiles.add(
+        _codecProfile(
+          type: 'VideoAudio',
+          codec: _bridgedAudioCodecs,
+          conditions: <Map<String, dynamic>>[
+            _condition(
+              condition: 'LessThanEqual',
+              property: 'AudioSampleRate',
+              value: '$_bridgedAudioMaxSampleRate',
+            ),
+          ],
+        ),
+      );
+    }
+
+    // A route that bitstreams TrueHD never decodes it, so it keeps stereo.
+    if (!playerDecodesStereoTrueHd &&
+        !passthroughAudioCodecs.contains('truehd')) {
+      profiles.add(
+        _codecProfile(
+          type: 'VideoAudio',
+          codec: 'truehd',
+          conditions: <Map<String, dynamic>>[
+            _condition(
+              condition: 'GreaterThanEqual',
+              property: 'AudioChannels',
+              value: '3',
+            ),
+          ],
+        ),
+      );
+    }
 
     if (forceStereo) {
       profiles.add(

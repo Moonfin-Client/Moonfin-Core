@@ -35,7 +35,7 @@ class AppUiIdiomResolver {
   }
 
   static AppUiIdiom _appleIdiom() {
-    // Any TV (Apple TV, Android TV/Fire TV, Tizen) gets the leanback idiom;
+    // Any TV (Apple TV, Android TV/Fire TV) gets the leanback idiom;
     // the tvOS visual language is the reference for every 10-foot UI.
     if (PlatformDetection.isTV) return AppUiIdiom.tvosLeanback;
     if (PlatformDetection.isMacOS) return AppUiIdiom.macDesktop;

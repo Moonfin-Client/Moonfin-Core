@@ -18,8 +18,12 @@ import 'data/models/aggregated_item.dart';
 import 'background/watch_next_background.dart' as watch_next_bg;
 import 'data/services/carplay_service.dart';
 import 'data/services/cast/airplay_command_bridge.dart';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 
+import 'background/auto_download_background.dart';
+import 'background/auto_download_background_main.dart' as auto_download_bg;
+import 'data/services/auto_download_service.dart';
 import 'data/services/background_download_coordinator.dart';
 import 'data/services/download_notification_service.dart';
 import 'data/services/push_messaging_service.dart';
@@ -39,9 +43,11 @@ import 'playback/audio_capability_probe.dart';
 import 'playback/audio_handler.dart';
 import 'playback/codec_caps_repair.dart';
 import 'playback/device_capability_cache.dart';
+import 'playback/display_hdr_probe.dart';
 import 'playback/media_browse_service.dart';
 import 'playback/mpris_service.dart';
 import 'playback/playback_lifecycle_handler.dart';
+import 'platform/background_refresh.dart';
 import 'platform/web_runtime_config.dart';
 import 'preference/preference_constants.dart';
 import 'preference/user_preferences.dart';
@@ -320,11 +326,11 @@ Future<void> _seedCapabilitiesFromCache() async {
       PlatformDetection.setDeviceMemory(memory);
     }
   }
-  if (PlatformDetection.isAndroid && PlatformDetection.isTV) {
-    final hdrTypes = await DeviceCapabilityCache.readStringList(
-      DeviceCapabilityCache.displayHdrKey,
-    );
-    if (hdrTypes != null && hdrTypes.isNotEmpty) {
+  if (DisplayHdrProbe.isSupported) {
+    // Null means the display has never answered. An empty list means it
+    // answered and named nothing, which is a real result worth seeding.
+    final hdrTypes = await DisplayHdrProbe.seedFromCache();
+    if (hdrTypes != null) {
       PlatformDetection.setDisplayHdrTypes(hdrTypes);
     }
   }
@@ -344,25 +350,6 @@ Future<bool> _retryOffLaunchPath(Future<bool> Function() attempt) async {
     } catch (_) {}
   }
   return false;
-}
-
-/// One display probe: applies and persists a non-empty answer. Returns false
-/// on an empty one and throws when the channel does.
-Future<bool> _probeDisplayHdrOnce() async {
-  const channel = MethodChannel('org.moonfin.androidtv/platform');
-  final hdrTypes = await channel.invokeMethod<List<dynamic>>('displayHdrTypes');
-  final types = (hdrTypes ?? const [])
-      .map((value) => value.toString())
-      .toList(growable: false);
-  if (types.isEmpty) return false;
-  PlatformDetection.setDisplayHdrTypes(types);
-  unawaited(
-    DeviceCapabilityCache.writeStringList(
-      DeviceCapabilityCache.displayHdrKey,
-      types,
-    ),
-  );
-  return true;
 }
 
 /// How much RAM this device has. Fixed for the life of the device, so one
@@ -390,31 +377,26 @@ Future<void> _detectAndSetDeviceMemory() async {
   } catch (_) {}
 }
 
+/// Runs before the first frame, so only the single attempt is awaited here.
+/// The retries and the listener are deliberately left to run on their own: a
+/// box whose TV is still asleep would otherwise hold the launch for the whole
+/// half-minute retry window.
 Future<void> _detectAndSetDisplayCapabilities() async {
-  if (!(PlatformDetection.isAndroid && PlatformDetection.isTV)) return;
+  if (!DisplayHdrProbe.isSupported) return;
+  // Its own try/catch for the same reason the memory probe has one: this runs
+  // inside a Future.wait, which gives up on every sibling the moment one
+  // throws.
   try {
-    if (await _probeDisplayHdrOnce()) return;
+    final snapshot = await DisplayHdrProbe.query(trigger: 'launch');
+    DisplayHdrProbe.apply(snapshot);
+    if (snapshot == null ||
+        snapshot.verdict == DisplayHdrVerdict.cannotAnswer) {
+      unawaited(DisplayHdrProbe.queryWithRetry().then(DisplayHdrProbe.apply));
+    }
+    // A chain that is still asleep when the retries run out heals from here
+    // instead of waiting for the app to be restarted.
+    DisplayHdrProbe.listenForDisplayChanges();
   } catch (_) {}
-  // An empty list from a TV is a probe that ran before the display was up,
-  // not an SDR panel, so the cached seed stays in place while the retries
-  // run. Only a whole run of empty answers is believed.
-  unawaited(_retryDisplayHdrOffLaunchPath());
-}
-
-/// When every retry still reports nothing, that emptiness is accepted as a
-/// genuinely SDR display and the cache is cleared, which is how a box moved
-/// to an SDR TV stops advertising HDR. A run where the channel only ever
-/// threw proves nothing about the panel, so the seed stays.
-Future<void> _retryDisplayHdrOffLaunchPath() async {
-  var answered = false;
-  final found = await _retryOffLaunchPath(() async {
-    if (await _probeDisplayHdrOnce()) return true;
-    answered = true;
-    return false;
-  });
-  if (found || !answered) return;
-  PlatformDetection.setDisplayHdrTypes(const []);
-  await DeviceCapabilityCache.remove(DeviceCapabilityCache.displayHdrKey);
 }
 
 Future<Map<String, dynamic>?> _queryCodecCaps(MethodChannel channel) async {
@@ -664,6 +646,17 @@ void _sweepImageCache(UserPreferences prefs, {bool throttle = false}) {
   unawaited(enforceGameArtworkCacheBudget(throttle: throttle));
 }
 
+/// Runs an auto-download check when the app comes back to the foreground;
+/// the service throttles resumes that follow a recent check.
+class _AutoDownloadResumeObserver with WidgetsBindingObserver {
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed) return;
+    if (!GetIt.instance.isRegistered<AutoDownloadService>()) return;
+    GetIt.instance<AutoDownloadService>().onAppResumed();
+  }
+}
+
 class _ImageCacheSweepObserver with WidgetsBindingObserver {
   _ImageCacheSweepObserver(this._prefs);
 
@@ -697,10 +690,8 @@ class _CapabilityRefreshObserver with WidgetsBindingObserver {
   }
 
   Future<void> _refresh() async {
-    if (PlatformDetection.isAndroid && PlatformDetection.isTV) {
-      try {
-        await _probeDisplayHdrOnce();
-      } catch (_) {}
+    if (DisplayHdrProbe.isSupported) {
+      DisplayHdrProbe.apply(await DisplayHdrProbe.query(trigger: 'resume'));
     }
     // The launch retries all run inside the first half minute, which covers
     // a slow enumeration but not an engine that had no Activity to answer
@@ -768,6 +759,11 @@ class _PreferenceWriteFlushObserver with WidgetsBindingObserver {
 @pragma('vm:entry-point')
 Future<void> watchNextBackgroundMain() => watch_next_bg.watchNextBackgroundMain();
 
+/// Entry for the Android auto-download worker's headless engine.
+@pragma('vm:entry-point')
+Future<void> autoDownloadBackgroundMain() =>
+    auto_download_bg.autoDownloadBackgroundMain();
+
 void main() async {
   configureHttpOverrides();
   ScrollSensitivityBinding.ensureInitialized();
@@ -819,8 +815,7 @@ void main() async {
 
   // Apple runs entirely on AetherEngine, so media_kit isn't initialized there
   // and its native libs are out of those builds.
-  if (!PlatformDetection.isTizen &&
-      !PlatformDetection.isAppleTV &&
+  if (!PlatformDetection.isAppleTV &&
       !PlatformDetection.isIOS &&
       !PlatformDetection.isMacOS) {
     MediaKit.ensureInitialized();
@@ -852,7 +847,6 @@ void main() async {
   // The issue is intermittent and goes away on re-run once the OS font cache
   // is warm, which confirms the timing root cause.
   if (PlatformDetection.isLinux ||
-      PlatformDetection.isTizen ||
       PlatformDetection.isAppleTV) {
     WidgetsBinding.instance.scheduleWarmUpFrame();
   }
@@ -873,6 +867,11 @@ void main() async {
 
   await configureDependencies();
   _installCrashHandlers();
+  // When the system runs the auto-download refresh task against this
+  // engine, the native side retries its call until this handler is bound.
+  if (AutoDownloadService.isSupportedPlatform) {
+    BackgroundRefresh.instance.bind(runAutoDownloadBackgroundRefresh);
+  }
 
   // Registered before runApp so a CarPlay-only launch (no window scene, no
   // widgets) can browse and start playback.
@@ -891,6 +890,7 @@ void main() async {
   WidgetsBinding.instance.addObserver(_PreferenceWriteFlushObserver(prefs));
   WidgetsBinding.instance.addObserver(_ImageCacheSweepObserver(prefs));
   WidgetsBinding.instance.addObserver(_CapabilityRefreshObserver());
+  WidgetsBinding.instance.addObserver(_AutoDownloadResumeObserver());
   WidgetsBinding.instance.addPostFrameCallback((_) => _sweepImageCache(prefs));
 
   GetIt.instance<PlaybackManager>().queueService.queueChangedStream.listen((_) {

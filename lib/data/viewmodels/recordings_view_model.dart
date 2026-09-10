@@ -68,7 +68,11 @@ class RecordingItem {
       return imageApi.getBackdropImageUrl(id, maxWidth: 400);
     }
     if (imageTags != null && imageTags!.containsKey('Primary')) {
-      return imageApi.getPrimaryImageUrl(id, maxHeight: 300);
+      return imageApi.getPrimaryImageUrl(
+        id,
+        maxHeight: 300,
+        tag: imageTags!['Primary']?.toString(),
+      );
     }
     if (parentThumbItemId != null) {
       return imageApi.getBackdropImageUrl(parentThumbItemId!, maxWidth: 400);

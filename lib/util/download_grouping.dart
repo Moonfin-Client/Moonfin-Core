@@ -98,3 +98,19 @@ String? episodeNumberLabel(DownloadedItem item) {
   if (episode == null) return 'S$season';
   return 'S$season E$episode';
 }
+
+/// What a system notification calls a download: "Series S1E1" for a
+/// numbered episode, otherwise the item's own [name]. An episode title on
+/// its own says nothing about which show just finished.
+String downloadNotificationLabel({
+  required String name,
+  String? seriesName,
+  int? season,
+  int? episode,
+}) {
+  final series = seriesName?.trim();
+  if (series == null || series.isEmpty || season == null || episode == null) {
+    return name;
+  }
+  return '$series S${season}E$episode';
+}

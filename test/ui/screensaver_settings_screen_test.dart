@@ -1,0 +1,626 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
+import 'package:jellyfin_preference/jellyfin_preference.dart';
+import 'package:moonfin/l10n/app_localizations.dart';
+import 'package:moonfin/preference/preference_constants.dart';
+import 'package:moonfin/preference/user_preferences.dart';
+import 'package:moonfin/ui/screens/settings/screensaver_settings_screen.dart';
+import 'package:moonfin/ui/screensaver/bouncing_box.dart';
+import 'package:moonfin/ui/screensaver/screensaver_gradient_backdrops.dart';
+import 'package:moonfin/ui/screensaver/screensaver_view.dart';
+import 'package:moonfin/ui/widgets/playback/loading_animation_widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+void main() {
+  group('Screensaver Enums & Preferences', () {
+    test('Default screensaver preferences have expected values', () async {
+      SharedPreferences.setMockInitialValues({});
+      final store = PreferenceStore();
+      await store.init();
+      final prefs = UserPreferences(store);
+
+      expect(prefs.get(UserPreferences.screensaverEnabled), true);
+      expect(
+        prefs.get(UserPreferences.screensaverBackdrop),
+        ScreensaverBackdrop.library,
+      );
+      expect(
+        prefs.get(UserPreferences.screensaverComponent),
+        ScreensaverComponent.moonfinLogo,
+      );
+      expect(
+        prefs.get(UserPreferences.screensaverMovement),
+        ScreensaverMovement.moderate,
+      );
+      expect(
+        prefs.get(UserPreferences.screensaverSize),
+        ScreensaverSize.medium,
+      );
+      expect(prefs.get(UserPreferences.screensaverContentType), 'both');
+      expect(prefs.get(UserPreferences.screensaverLibraryIds), '');
+      expect(prefs.get(UserPreferences.screensaverCollectionIds), '');
+      expect(prefs.get(UserPreferences.screensaverExcludedGenres), '');
+      expect(prefs.get(UserPreferences.screensaverTimeout), ScreensaverTimeout.m5);
+      expect(prefs.get(UserPreferences.screensaverDimming), 30);
+      expect(prefs.get(UserPreferences.screensaverMaxAgeRating), 'any');
+      expect(prefs.get(UserPreferences.screensaverRequireRating), false);
+    });
+
+    test('Migrates legacy ScreensaverMode.logo to black backdrop and bouncing logo', () async {
+      SharedPreferences.setMockInitialValues({
+        'pref_screensaver_mode': 'logo',
+      });
+      final store = PreferenceStore();
+      await store.init();
+      final prefs = UserPreferences(store);
+
+      expect(
+        prefs.get(UserPreferences.screensaverBackdrop),
+        ScreensaverBackdrop.black,
+      );
+      expect(
+        prefs.get(UserPreferences.screensaverComponent),
+        ScreensaverComponent.moonfinLogo,
+      );
+      expect(
+        prefs.get(UserPreferences.screensaverMovement),
+        ScreensaverMovement.fast,
+      );
+    });
+
+    test('Migrates legacy ScreensaverClockMode.bouncing to clock component and fast movement', () async {
+      SharedPreferences.setMockInitialValues({
+        'pref_screensaver_mode': 'library',
+        'pref_screensaver_clock_mode': 'bouncing',
+      });
+      final store = PreferenceStore();
+      await store.init();
+      final prefs = UserPreferences(store);
+
+      expect(
+        prefs.get(UserPreferences.screensaverBackdrop),
+        ScreensaverBackdrop.library,
+      );
+      expect(
+        prefs.get(UserPreferences.screensaverComponent),
+        ScreensaverComponent.clock,
+      );
+      expect(
+        prefs.get(UserPreferences.screensaverMovement),
+        ScreensaverMovement.fast,
+      );
+    });
+
+    test('Migrates legacy ScreensaverClockMode.staticCorner to clock component and staticCorner movement', () async {
+      SharedPreferences.setMockInitialValues({
+        'pref_screensaver_clock_mode': 'staticCorner',
+      });
+      final store = PreferenceStore();
+      await store.init();
+      final prefs = UserPreferences(store);
+
+      expect(
+        prefs.get(UserPreferences.screensaverComponent),
+        ScreensaverComponent.clock,
+      );
+      expect(
+        prefs.get(UserPreferences.screensaverMovement),
+        ScreensaverMovement.staticCorner,
+      );
+    });
+  });
+
+  group('AnimatedGradientBackdrop Rendering', () {
+    testWidgets('renders Moonfin backdrop with DecoratedBox', (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: AnimatedGradientBackdrop(
+              backdrop: ScreensaverBackdrop.moonfin,
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byType(AnimatedGradientBackdrop), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byType(AnimatedGradientBackdrop),
+          matching: find.byType(CustomPaint),
+        ),
+        findsWidgets,
+      );
+    });
+
+    testWidgets('renders Neon Pulse backdrop with pulsating brightness', (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: AnimatedGradientBackdrop(
+              backdrop: ScreensaverBackdrop.neonPulse,
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byType(AnimatedGradientBackdrop), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byType(AnimatedGradientBackdrop),
+          matching: find.byType(CustomPaint),
+        ),
+        findsWidgets,
+      );
+    });
+
+    testWidgets('renders Calm backdrop', (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: AnimatedGradientBackdrop(
+              backdrop: ScreensaverBackdrop.calm,
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byType(AnimatedGradientBackdrop), findsOneWidget);
+    });
+
+    testWidgets('renders Neon Pulse backdrop', (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: AnimatedGradientBackdrop(
+              backdrop: ScreensaverBackdrop.neonPulse,
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byType(AnimatedGradientBackdrop), findsOneWidget);
+    });
+
+    testWidgets('renders Aurora backdrop', (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: AnimatedGradientBackdrop(
+              backdrop: ScreensaverBackdrop.aurora,
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byType(AnimatedGradientBackdrop), findsOneWidget);
+    });
+  });
+
+  group('ScreensaverSettingsScreen UI Rendering & Conditional Visibility', () {
+    late PreferenceStore store;
+    late UserPreferences prefs;
+
+    setUp(() async {
+      await GetIt.instance.reset();
+      SharedPreferences.setMockInitialValues({});
+      store = PreferenceStore();
+      await store.init();
+      prefs = UserPreferences(store);
+      GetIt.instance.registerSingleton<PreferenceStore>(store);
+      GetIt.instance.registerSingleton<UserPreferences>(prefs);
+    });
+
+    tearDown(() async {
+      await GetIt.instance.reset();
+    });
+
+    testWidgets('renders only General Settings toggle when inAppScreensaver is disabled', (tester) async {
+      tester.view.physicalSize = const Size(1920, 1080);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      prefs.set(UserPreferences.screensaverEnabled, false);
+
+      await tester.pumpWidget(
+        const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: ScreensaverSettingsScreen(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // General settings header and in-app screensaver toggle are present
+      expect(find.text('General Settings'), findsOneWidget);
+      expect(find.text('In-App Screensaver'), findsOneWidget);
+
+      // Everything from timing down should NOT show up
+      expect(find.text('Timeout'), findsNothing);
+      expect(find.text('Dimming Level'), findsNothing);
+      expect(find.text('Visual Components'), findsNothing);
+      expect(find.text('Library Content'), findsNothing);
+    });
+
+    testWidgets('renders General Settings, Visual Components, and Library Content when enabled and backdrop is library', (tester) async {
+      tester.view.physicalSize = const Size(1920, 1080);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      prefs.set(UserPreferences.screensaverEnabled, true);
+      prefs.set(UserPreferences.screensaverBackdrop, ScreensaverBackdrop.library);
+
+      await tester.pumpWidget(
+        const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: ScreensaverSettingsScreen(),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 50));
+
+      await tester.drag(find.byType(ListView), const Offset(0, 500));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 50));
+
+      expect(find.text('General Settings'), findsOneWidget);
+      expect(find.text('In-App Screensaver'), findsOneWidget);
+      expect(find.text('Timeout'), findsOneWidget);
+      expect(find.text('Dimming Level'), findsOneWidget);
+
+      expect(find.text('Visual Components'), findsOneWidget);
+      expect(find.text('Backdrop'), findsOneWidget);
+      expect(find.text('Additional Component'), findsOneWidget);
+
+      expect(find.text('Library Content'), findsOneWidget);
+      expect(find.text('Content Type'), findsOneWidget);
+      expect(find.text('Source Libraries'), findsOneWidget);
+      expect(find.text('Source Collections'), findsOneWidget);
+      expect(find.text('Excluded Genres'), findsOneWidget);
+      expect(find.text('Max Age Rating'), findsOneWidget);
+      expect(find.text('Require Age Rating'), findsOneWidget);
+    });
+
+    testWidgets('hides Library Content section when backdrop is not Library Art', (tester) async {
+      tester.view.physicalSize = const Size(1920, 1080);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      prefs.set(UserPreferences.screensaverEnabled, true);
+      prefs.set(UserPreferences.screensaverBackdrop, ScreensaverBackdrop.moonfin);
+
+      await tester.pumpWidget(
+        const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: ScreensaverSettingsScreen(),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 50));
+
+      expect(find.text('General Settings'), findsOneWidget);
+      expect(find.text('Visual Components'), findsOneWidget);
+
+      // Library Content section should be hidden for moonfin backdrop
+      expect(find.text('Library Content'), findsNothing);
+      expect(find.text('Source Libraries'), findsNothing);
+    });
+
+    testWidgets('renders preview window in Visual Components when screensaver is enabled', (tester) async {
+      tester.view.physicalSize = const Size(1920, 1080);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      prefs.set(UserPreferences.screensaverEnabled, true);
+      prefs.set(UserPreferences.screensaverBackdrop, ScreensaverBackdrop.moonfin);
+
+      await tester.pumpWidget(
+        const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: ScreensaverSettingsScreen(),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 50));
+
+      expect(find.text('PREVIEW'), findsOneWidget);
+      expect(find.byType(AnimatedGradientBackdrop), findsOneWidget);
+    });
+
+    testWidgets('interactive toggle of In-App Screensaver hides and shows settings immediately', (tester) async {
+      tester.view.physicalSize = const Size(1920, 1080);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      prefs.set(UserPreferences.screensaverEnabled, true);
+
+      await tester.pumpWidget(
+        const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: ScreensaverSettingsScreen(),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 50));
+
+      expect(find.text('Visual Components'), findsOneWidget);
+
+      // Toggle the In-App Screensaver switch to false
+      final switchTile = tester.widget<SwitchListTile>(find.byType(SwitchListTile).first);
+      switchTile.onChanged!(false);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 50));
+
+      // Everything below should immediately hide
+      expect(find.text('Visual Components'), findsNothing);
+      expect(find.text('Timeout'), findsNothing);
+      expect(find.text('Dimming Level'), findsNothing);
+    });
+
+    testWidgets('shows Component Position when component is set and movement is Static', (tester) async {
+      tester.view.physicalSize = const Size(1920, 1080);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      prefs.set(UserPreferences.screensaverEnabled, true);
+      prefs.set(UserPreferences.screensaverComponent, ScreensaverComponent.moonfinLogo);
+      prefs.set(UserPreferences.screensaverMovement, ScreensaverMovement.staticCorner);
+
+      await tester.pumpWidget(
+        const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: ScreensaverSettingsScreen(),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 50));
+
+      expect(find.text('Component Position'), findsOneWidget);
+      expect(find.text('Middle'), findsOneWidget);
+    });
+
+    testWidgets('hides Component Position when movement is bouncing', (tester) async {
+      tester.view.physicalSize = const Size(1920, 1080);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      prefs.set(UserPreferences.screensaverEnabled, true);
+      prefs.set(UserPreferences.screensaverComponent, ScreensaverComponent.moonfinLogo);
+      prefs.set(UserPreferences.screensaverMovement, ScreensaverMovement.fast);
+
+      await tester.pumpWidget(
+        const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: ScreensaverSettingsScreen(),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 50));
+
+      expect(find.text('Component Position'), findsNothing);
+    });
+
+    testWidgets('shows Component Size when component is selected', (tester) async {
+      tester.view.physicalSize = const Size(1920, 1080);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      prefs.set(UserPreferences.screensaverEnabled, true);
+      prefs.set(UserPreferences.screensaverComponent, ScreensaverComponent.moonfinLogo);
+
+      await tester.pumpWidget(
+        const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: ScreensaverSettingsScreen(),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 50));
+
+      expect(find.text('Component Size'), findsOneWidget);
+      expect(find.text('Medium'), findsOneWidget);
+    });
+
+    testWidgets('hides Component Size when component is none', (tester) async {
+      tester.view.physicalSize = const Size(1920, 1080);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      prefs.set(UserPreferences.screensaverEnabled, true);
+      prefs.set(UserPreferences.screensaverComponent, ScreensaverComponent.none);
+
+      await tester.pumpWidget(
+        const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: ScreensaverSettingsScreen(),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 50));
+
+      expect(find.text('Component Size'), findsNothing);
+    });
+
+    testWidgets('renders Source Libraries subtitle with All (Default) when empty', (tester) async {
+      tester.view.physicalSize = const Size(1920, 1080);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      prefs.set(UserPreferences.screensaverEnabled, true);
+      prefs.set(UserPreferences.screensaverBackdrop, ScreensaverBackdrop.library);
+      prefs.set(UserPreferences.screensaverLibraryIds, '');
+
+      await tester.pumpWidget(
+        const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: ScreensaverSettingsScreen(),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 50));
+
+      expect(find.text('All (Default)'), findsOneWidget);
+    });
+  });
+
+  group('ScreensaverView Runtime Rendering', () {
+    late PreferenceStore store;
+    late UserPreferences prefs;
+
+    setUp(() async {
+      await GetIt.instance.reset();
+      SharedPreferences.setMockInitialValues({});
+      store = PreferenceStore();
+      await store.init();
+      prefs = UserPreferences(store);
+      GetIt.instance.registerSingleton<PreferenceStore>(store);
+      GetIt.instance.registerSingleton<UserPreferences>(prefs);
+    });
+
+    tearDown(() async {
+      await GetIt.instance.reset();
+    });
+
+    testWidgets('renders AnimatedGradientBackdrop and RunnerAnimation in static position', (tester) async {
+      prefs.set(UserPreferences.screensaverBackdrop, ScreensaverBackdrop.moonfin);
+      prefs.set(UserPreferences.screensaverComponent, ScreensaverComponent.runner);
+      prefs.set(UserPreferences.screensaverMovement, ScreensaverMovement.staticCorner);
+      prefs.set(UserPreferences.screensaverPosition, ScreensaverPosition.middle);
+
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: ScreensaverView(),
+          ),
+        ),
+      );
+
+      expect(find.byType(AnimatedGradientBackdrop), findsOneWidget);
+      expect(find.byType(RunnerAnimation), findsOneWidget);
+      expect(find.byType(BouncingBox), findsNothing);
+
+      // Verify Align widget uses Alignment.center (from ScreensaverPosition.middle)
+      final alignFinder = find.ancestor(
+        of: find.byType(RunnerAnimation),
+        matching: find.byType(Align),
+      );
+      expect(alignFinder, findsWidgets);
+      final alignWidget = tester.widget<Align>(alignFinder.first);
+      expect(alignWidget.alignment, Alignment.center);
+    });
+
+    testWidgets('renders BouncingBox when movement is bouncing (e.g. fast)', (tester) async {
+      prefs.set(UserPreferences.screensaverBackdrop, ScreensaverBackdrop.calm);
+      prefs.set(UserPreferences.screensaverComponent, ScreensaverComponent.moonfinLogo);
+      prefs.set(UserPreferences.screensaverMovement, ScreensaverMovement.fast);
+
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: ScreensaverView(),
+          ),
+        ),
+      );
+
+      expect(find.byType(AnimatedGradientBackdrop), findsOneWidget);
+      expect(find.byType(BouncingBox), findsOneWidget);
+    });
+
+    testWidgets('renders no additional component when component is none', (tester) async {
+      prefs.set(UserPreferences.screensaverBackdrop, ScreensaverBackdrop.black);
+      prefs.set(UserPreferences.screensaverComponent, ScreensaverComponent.none);
+
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: ScreensaverView(),
+          ),
+        ),
+      );
+
+      expect(find.byType(AnimatedGradientBackdrop), findsNothing);
+      expect(find.byType(BouncingBox), findsNothing);
+      expect(find.byType(RunnerAnimation), findsNothing);
+    });
+  });
+
+  group('BouncingBox', () {
+    testWidgets('moves without rebuilding its child on every frame', (
+      tester,
+    ) async {
+      // The child is the whole screensaver component and this runs for hours,
+      // so the position must not drag a rebuild along behind it.
+      var builds = 0;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: BouncingBox(
+              childWidth: 40,
+              childHeight: 20,
+              builder: (context, movingLeft) {
+                builds++;
+                return const Text('COMPONENT');
+              },
+            ),
+          ),
+        ),
+      );
+
+      final finder = find.text('COMPONENT');
+      await tester.pump(const Duration(milliseconds: 16));
+      final startPos = tester.getTopLeft(finder);
+      final buildsAfterStart = builds;
+
+      for (var i = 0; i < 30; i++) {
+        await tester.pump(const Duration(milliseconds: 16));
+      }
+
+      expect(tester.getTopLeft(finder), isNot(equals(startPos)));
+      expect(builds, buildsAfterStart);
+    });
+
+    testWidgets('a plain child still renders and moves', (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: BouncingBox(
+              childWidth: 40,
+              childHeight: 20,
+              child: Text('COMPONENT'),
+            ),
+          ),
+        ),
+      );
+
+      final finder = find.text('COMPONENT');
+      await tester.pump(const Duration(milliseconds: 16));
+      final startPos = tester.getTopLeft(finder);
+
+      for (var i = 0; i < 30; i++) {
+        await tester.pump(const Duration(milliseconds: 16));
+      }
+
+      expect(find.text('COMPONENT'), findsOneWidget);
+      expect(tester.getTopLeft(finder), isNot(equals(startPos)));
+    });
+  });
+}

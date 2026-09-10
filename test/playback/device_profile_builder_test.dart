@@ -359,7 +359,127 @@ AudioCapabilityProfile _capabilityProfile({
   );
 }
 
+// The sample-rate cap as the server reads it, flattened for the assertions.
+Map<String, dynamic>? _sampleRateCap(Map<String, dynamic> profile) {
+  final codecProfiles = profile['CodecProfiles'] as List<dynamic>? ?? const [];
+  for (final rawProfile in codecProfiles) {
+    final codecProfile = rawProfile as Map<dynamic, dynamic>;
+    final conditions = codecProfile['Conditions'] as List<dynamic>? ?? const [];
+    for (final rawCondition in conditions) {
+      final condition = rawCondition as Map<dynamic, dynamic>;
+      if (condition['Property'] == 'AudioSampleRate') {
+        return <String, dynamic>{
+          'type': codecProfile['Type'],
+          'codecs': (codecProfile['Codec'] as String).split(','),
+          'condition': condition['Condition'],
+          'value': condition['Value'],
+        };
+      }
+    }
+  }
+  return null;
+}
+
+// The fewest channels a codec may carry and still direct play, or null when
+// the profile sets no floor for it.
+String? _videoAudioChannelFloor(Map<String, dynamic> profile, String codec) {
+  final codecProfiles = profile['CodecProfiles'] as List<dynamic>? ?? const [];
+
+  for (final rawProfile in codecProfiles) {
+    final codecProfile = rawProfile as Map<dynamic, dynamic>;
+    if (codecProfile['Type'] != 'VideoAudio' ||
+        codecProfile['Codec'] != codec) {
+      continue;
+    }
+
+    final conditions = codecProfile['Conditions'] as List<dynamic>? ?? const [];
+    for (final rawCondition in conditions) {
+      final condition = rawCondition as Map<dynamic, dynamic>;
+      if (condition['Property'] == 'AudioChannels' &&
+          condition['Condition'] == 'GreaterThanEqual') {
+        return condition['Value']?.toString();
+      }
+    }
+  }
+
+  return null;
+}
+
 void main() {
+  group('DeviceProfileBuilder bridged audio sample rate', () {
+    test('a player that bridges audio caps the codecs it has to re-encode', () {
+      final cap = _sampleRateCap(
+        DeviceProfileBuilder.build(universalAudioDecode: true),
+      );
+
+      expect(cap, isNotNull);
+      expect(cap!['type'], 'VideoAudio');
+      expect(cap['condition'], 'LessThanEqual');
+      expect(cap['value'], '48000');
+      expect(cap['codecs'], contains('truehd'));
+      expect(cap['codecs'], contains('mlp'));
+    });
+
+    test('codecs the container carries untouched are left alone', () {
+      final cap = _sampleRateCap(
+        DeviceProfileBuilder.build(universalAudioDecode: true),
+      );
+
+      // These are stream copied, so their rate never reaches an encoder and
+      // capping them would transcode for nothing.
+      for (final codec in ['aac', 'ac3', 'eac3', 'flac', 'alac', 'opus']) {
+        expect(cap!['codecs'], isNot(contains(codec)), reason: codec);
+      }
+    });
+
+    test('a player that decodes natively gets no cap', () {
+      expect(_sampleRateCap(DeviceProfileBuilder.build()), isNull);
+    });
+  });
+
+  group('DeviceProfileBuilder stereo TrueHD', () {
+    test('a player whose decoder stalls on it asks for surround only', () {
+      expect(
+        _videoAudioChannelFloor(
+          DeviceProfileBuilder.build(playerDecodesStereoTrueHd: false),
+          'truehd',
+        ),
+        '3',
+      );
+    });
+
+    test('a bitstreamed route never decodes, so it keeps stereo', () {
+      expect(
+        _videoAudioChannelFloor(
+          DeviceProfileBuilder.build(
+            playerDecodesStereoTrueHd: false,
+            trueHdPassthroughEnabled: true,
+            audioCapabilityProfile: _capabilityProfile(
+              canPassthroughTrueHd: true,
+            ),
+          ),
+          'truehd',
+        ),
+        isNull,
+      );
+    });
+
+    test('a player that decodes it is left alone', () {
+      expect(
+        _videoAudioChannelFloor(DeviceProfileBuilder.build(), 'truehd'),
+        isNull,
+      );
+    });
+
+    test('surround TrueHD still direct plays either way', () {
+      final profile = DeviceProfileBuilder.build(
+        playerDecodesStereoTrueHd: false,
+      );
+
+      expect(_videoDirectPlayAudioCodecs(profile), contains('truehd'));
+    });
+  });
+
   group('DeviceProfileBuilder AVC High 10', () {
     test('a device without a 10 bit AVC decoder transcodes Hi10p, since the '
         'decoder rejects the format once playback has already started', () {

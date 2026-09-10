@@ -267,6 +267,9 @@ class AppleTvPlaybackPromptController {
     unawaited(_commands.exitPlayback());
   }
 
+  /// A viewer reaching for the remote has answered the prompt's question.
+  void _noteViewerActivity() => consecutiveEpisodes = 0;
+
   /// Returns true when the advance may proceed. Playback is paused before the
   /// prompt shows and the queue never advances until the user answers, so the
   /// next episode can never start playing under the modal.
@@ -391,6 +394,7 @@ class AppleTvPlaybackPromptController {
 
   void handleSkipSegment() {
     if (_disposed) return;
+    _noteViewerActivity();
 
     final replaceSkipOutroWithNextUp = _prefs.get(
       UserPreferences.replaceSkipOutroWithNextUp,
@@ -431,6 +435,7 @@ class AppleTvPlaybackPromptController {
   /// through a segment doesn't pop stale prompts.
   void onUserSeeked() {
     if (_disposed) return;
+    _noteViewerActivity();
 
     final until = _now().add(_seekPromptSuppressionDuration);
     final currentUntil = _suppressSeekPromptsUntil;

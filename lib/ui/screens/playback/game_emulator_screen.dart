@@ -18,6 +18,7 @@ import '../../../util/game_cores.dart';
 import '../../../util/platform_detection.dart';
 import '../../../util/focus/gamepad/gamepad_suppressor.dart';
 import '../../../util/focus/gamepad/android_gamepad_channel.dart';
+import '../../../util/desktop_emulator_gamepad.dart';
 import '../../../util/emulator_host_messages.dart';
 import '../../../util/insecure_certificates.dart';
 import '../../../util/webview_environment.dart';
@@ -137,9 +138,11 @@ class _GameEmulatorScreenState extends State<GameEmulatorScreen>
 
   // Android delivers hardware-gamepad events to the focused WebView (hybrid composition), not
   // to Flutter, and the System WebView does not expose the browser Gamepad API, so the native
-  // Activity forwards buttons over the gamepad channel while the screen is active. iOS/desktop
-  // WebViews DO expose the Gamepad API, so player.html forwards those buttons via the
-  // moonfinPlayer handler instead. Both feed `_handleGamepad`.
+  // Activity forwards buttons over the gamepad channel while the screen is active. Desktop
+  // WebViews expose no usable Gamepad API either, so [DesktopEmulatorGamepad] forwards the
+  // pad Flutter can see. iOS is the one platform where player.html's own reading works, and
+  // it forwards those buttons via the moonfinPlayer handler. All three feed `_handleGamepad`.
+  DesktopEmulatorGamepad? _desktopGamepad;
 
   @override
   void initState() {
@@ -160,6 +163,9 @@ class _GameEmulatorScreenState extends State<GameEmulatorScreen>
       AndroidGamepadChannel.ensureInstalled();
       AndroidGamepadChannel.setEmulatorInputHandler(_onNativeGamepad);
       AndroidGamepadChannel.setGameActive(true);
+    } else if (PlatformDetection.isDesktop) {
+      _desktopGamepad = DesktopEmulatorGamepad(onButton: _onPadButton)
+        ..start();
     }
     unawaited(
       _prepare().catchError((Object error, StackTrace stackTrace) {
@@ -225,12 +231,17 @@ class _GameEmulatorScreenState extends State<GameEmulatorScreen>
     final pressed = args['pressed'] as bool;
     final device = (args['device'] as Map?)?.cast<String, dynamic>();
     if (label == null) return null;
+    _onPadButton(label, pressed, device);
+    return null;
+  }
+
+  void _onPadButton(String label, bool pressed, Map<String, dynamic>? device) {
     if (_emulatorControlsOpen) {
       // Do not hold the platform-channel handler open while waiting for a
       // WebView callback. That serialized quick d-pad taps behind each other
       // on Android TV. The player reports an actual menu close separately.
       _sendEmulatorControlInput(label, pressed, device);
-      return null;
+      return;
     }
     _handleGamepad(
       _semanticFromEmulatorLabel(label),
@@ -239,7 +250,6 @@ class _GameEmulatorScreenState extends State<GameEmulatorScreen>
       emulatorDevice: device,
       canInject: true,
     );
-    return null;
   }
 
   Future<void> _prepare() async {
@@ -366,11 +376,13 @@ class _GameEmulatorScreenState extends State<GameEmulatorScreen>
     switch (message['type']) {
       case 'moonfin-ready':
         if (mounted) setState(() => _emulatorReady = true);
-        unawaited(_registerAndroidGamepads());
+        unawaited(_registerGamepads());
         break;
       case 'gamepad':
-        // JS-forwarded (iOS/desktop): standard Gamepad API indices; gameplay is read natively
-        // by EmulatorJS, so this drives only the overlay, never injection.
+        // JS-forwarded (iOS): standard Gamepad API indices. Gameplay is read natively by
+        // EmulatorJS, so this drives only the overlay, never injection. Ignored once a pad
+        // has reached us natively, since both routes would then report the same press.
+        if (_desktopGamepad?.hasReportedInput ?? false) break;
         // dartify() on web can hand back a double for a JS number, so tolerate both.
         final index = (message['index'] as num).toInt();
         final pressed = message['pressed'] as bool;
@@ -729,7 +741,7 @@ class _GameEmulatorScreenState extends State<GameEmulatorScreen>
     // ready (or after a reconnect). Re-query immediately before opening the
     // upstream picker so its device list never depends on the initial page
     // load timing.
-    await _registerAndroidGamepads();
+    await _registerGamepads();
     final controller = _controller;
     if (controller == null) return;
     Object? result;
@@ -810,7 +822,7 @@ class _GameEmulatorScreenState extends State<GameEmulatorScreen>
     await AndroidGamepadChannel.setEmulatorControlsActive(false);
     // A controller may have connected while the picker was open. Re-query it
     // before gameplay resumes instead of requiring a page reload.
-    unawaited(_registerAndroidGamepads());
+    unawaited(_registerGamepads());
     // Back returns to Moonfin's pause menu, which pauses for itself. Any other
     // close returns to the game, so release the pause the picker took.
     if (reason == 'back') {
@@ -885,9 +897,11 @@ class _GameEmulatorScreenState extends State<GameEmulatorScreen>
     );
   }
 
-  Future<void> _registerAndroidGamepads() async {
-    if (!PlatformDetection.isAndroid || _controller == null) return;
-    final devices = await AndroidGamepadChannel.getEmulatorGamepads();
+  Future<void> _registerGamepads() async {
+    if (_controller == null) return;
+    final devices = _desktopGamepad != null
+        ? await _desktopGamepad!.refreshDevices()
+        : await AndroidGamepadChannel.getEmulatorGamepads();
     if (devices.isEmpty || !mounted) return;
     await _invokePlayer(
       'moonfinRegisterGamepads',
@@ -1294,6 +1308,8 @@ class _GameEmulatorScreenState extends State<GameEmulatorScreen>
       AndroidGamepadChannel.setEmulatorControlsActive(false);
       AndroidGamepadChannel.setEmulatorInputHandler(null);
     }
+    _desktopGamepad?.stop();
+    _desktopGamepad = null;
     GamepadSuppressor.pop();
     // Best-effort restore if disposed without going through _exit (e.g. system pop).
     _restoreSystemUi();

@@ -88,4 +88,68 @@ void main() {
       );
     },
   );
+
+  group('transmux engine choice', () {
+    bool chooseTransmux({
+      bool isAndroid = true,
+      required DownloadQuality quality,
+      bool itemSupportsTranscodedDownload = true,
+      bool serverNeedsLegacyTls = false,
+    }) {
+      return downloadUsesTransmuxEngine(
+        isAndroid: isAndroid,
+        qualityTranscoded: quality.isTranscoded,
+        itemSupportsTranscodedDownload: itemSupportsTranscodedDownload,
+        serverNeedsLegacyTls: serverNeedsLegacyTls,
+      );
+    }
+
+    test('every transcoded quality transmuxes on Android', () {
+      for (final quality in DownloadQuality.values.where(
+        (q) => q.isTranscoded,
+      )) {
+        expect(chooseTransmux(quality: quality), isTrue);
+      }
+    });
+
+    test('original quality already carries a seek index and skips it', () {
+      expect(chooseTransmux(quality: DownloadQuality.original), isFalse);
+    });
+
+    test('only Android has the native transmux side', () {
+      expect(
+        chooseTransmux(isAndroid: false, quality: DownloadQuality.high1080p),
+        isFalse,
+      );
+    });
+
+    test('an item type without transcoded downloads skips it', () {
+      expect(
+        chooseTransmux(
+          quality: DownloadQuality.high1080p,
+          itemSupportsTranscodedDownload: false,
+        ),
+        isFalse,
+      );
+    });
+
+    test('a server that refused the native TLS handshake skips it', () {
+      expect(
+        chooseTransmux(
+          quality: DownloadQuality.high1080p,
+          serverNeedsLegacyTls: true,
+        ),
+        isFalse,
+      );
+    });
+
+    test('the plugin engine choice is unaffected', () {
+      expect(
+        choose(isAndroidTv: false, quality: DownloadQuality.high1080p),
+        isTrue,
+      );
+      expect(choose(isAndroidTv: true, quality: DownloadQuality.high1080p),
+          isFalse);
+    });
+  });
 }

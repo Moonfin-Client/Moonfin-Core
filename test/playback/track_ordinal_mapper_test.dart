@@ -254,4 +254,58 @@ void main() {
       );
     });
   });
+
+  group('containerStreamIndex', () {
+    // The #1458 file: the server lists an external subtitle at index 0, which
+    // pushes every stream the container actually holds up by one.
+    final shifted = <Map<String, dynamic>>[
+      _stream(0, 'Subtitle', isExternal: true),
+      _stream(1, 'Video'),
+      _stream(2, 'Audio'),
+      _stream(3, 'Audio'),
+      _stream(4, 'Subtitle'),
+    ];
+
+    test('drops the streams the container never had', () {
+      expect(
+        TrackOrdinalMapper.containerStreamIndex(
+          streamIndex: 3,
+          mediaStreams: shifted,
+        ),
+        2,
+      );
+      expect(
+        TrackOrdinalMapper.containerStreamIndex(
+          streamIndex: 1,
+          mediaStreams: shifted,
+        ),
+        0,
+      );
+    });
+
+    test('passes the index straight through with no externals', () {
+      final plain = <Map<String, dynamic>>[
+        _stream(0, 'Video'),
+        _stream(1, 'Audio'),
+        _stream(2, 'Audio'),
+      ];
+      expect(
+        TrackOrdinalMapper.containerStreamIndex(
+          streamIndex: 2,
+          mediaStreams: plain,
+        ),
+        2,
+      );
+    });
+
+    test('returns null for a stream the container does not carry', () {
+      expect(
+        TrackOrdinalMapper.containerStreamIndex(
+          streamIndex: 0,
+          mediaStreams: shifted,
+        ),
+        isNull,
+      );
+    });
+  });
 }

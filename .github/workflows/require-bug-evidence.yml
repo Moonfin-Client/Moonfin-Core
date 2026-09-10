@@ -15,6 +15,13 @@ on:
 permissions:
   issues: write
 
+# Opening an issue fires "opened" alongside one "labeled" per label the form
+# applies, so several runs used to start at once, all read the comments before
+# any of them had posted, and all of them posted. Queue them per issue instead.
+concurrency:
+  group: require-bug-evidence-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
 jobs:
   check-issue:
     runs-on: ubuntu-latest

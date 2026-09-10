@@ -29,6 +29,7 @@ import 'expandable_icon_button.dart';
 import 'overlay_sheet.dart';
 import 'navigation_layout.dart';
 import 'settings/settings_panel.dart';
+import '../screens/downloads/downloads_panel.dart';
 import '../screens/settings/settings_side_panel.dart';
 import '../screens/syncplay/syncplay_screen.dart';
 import 'seerr_icons.dart';
@@ -161,6 +162,7 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
         NavigationLayout.focusNavbarAvatarNotifier.value;
     NavigationLayout.focusNavbarNotifier.value = _focusNavbarCallback;
     NavigationLayout.focusNavbarAvatarNotifier.value = _focusAvatarCallback;
+    NavigationLayout.chromeFocusRoots.add(_toolbarScopeNode);
     _avatarFocus.addListener(_onAvatarFocusChanged);
     FocusManager.instance.addListener(_trackPreviousFocus);
     _updateClock();
@@ -232,6 +234,7 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
     if (_toolbarHadFocus) {
       TopToolbar.isFocusedNotifier.value = false;
     }
+    NavigationLayout.chromeFocusRoots.remove(_toolbarScopeNode);
     _avatarFocus.removeListener(_onAvatarFocusChanged);
     FocusManager.instance.removeListener(_trackPreviousFocus);
     _toolbarScopeNode.dispose();
@@ -1109,17 +1112,34 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
                 ),
               ],
               _gap(),
-              _orderButton(
-                order: 98,
-                // The slot is taken here rather than inside the builder, so the
-                // settings icon keeps its colour whether or not there are any
-                // messages to show.
-                child: _buildServerMessagesButton(
-                  navColor: nextNavColor(),
-                  alwaysExpanded: alwaysExpanded,
-                  label: l10n.serverMessages,
+              if (_prefs.get(UserPreferences.showDownloadsButton) &&
+                PlatformDetection.supportsOfflineDownloads &&
+                !PlatformDetection.isWeb)
+                _orderButton(
+                  order: 97,
+                  child: ExpandableIconButton(
+                    key: const ValueKey('toolbar-downloads'),
+                    forceExpanded: alwaysExpanded,
+                    icon: Icons.download_for_offline,
+                    label: l10n.savedMedia,
+                    baseColor: nextNavColor(),
+                    onPressed: () {
+                      showDownloadsDialog(context);
+                    },
+                  ),
                 ),
-              ),
+              if (_prefs.get(UserPreferences.showServerMessagesButton))
+                _orderButton(
+                  order: 98,
+                  // The slot is taken here rather than inside the builder, so the
+                  // settings icon keeps its colour whether or not there are any
+                  // messages to show.
+                  child: _buildServerMessagesButton(
+                    navColor: nextNavColor(),
+                    alwaysExpanded: alwaysExpanded,
+                    label: l10n.serverMessages,
+                  ),
+                ),
               _orderButton(
                 order: 99,
                 child: ExpandableIconButton(

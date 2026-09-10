@@ -50,7 +50,19 @@ Future<bool> launchPlayerWhilePreparing(
     return true;
   }
 
-  if (_activeVideoLaunch != null) return false;
+  if (_activeVideoLaunch != null) {
+    // A location change (go/replace) removes the player route without
+    // completing its push future, so a launch whose route is already gone can
+    // hold the slot for the rest of the process and swallow every later play
+    // press. A live launch always has its route on the stack, so a holder
+    // without one is dead and its slot can be taken over.
+    if (_videoPlayerRoutePresent(context)) {
+      return false;
+    }
+    final stale = _activeVideoLaunch!;
+    _activeVideoLaunch = null;
+    stale._cancelled = true;
+  }
 
   final session = PlaybackLaunchSession._();
   _activeVideoLaunch = session;
@@ -149,6 +161,27 @@ Future<bool> launchPlayerWhilePreparing(
     if (identical(_activeVideoLaunch, session)) {
       _activeVideoLaunch = null;
     }
+  }
+}
+
+/// Reads the router that owns [context] rather than the app-wide one, so the
+/// answer describes the stack the launch actually pushed onto.
+bool _videoPlayerRoutePresent(BuildContext context) {
+  try {
+    bool present(List<RouteMatchBase> matches) {
+      for (final match in matches) {
+        if (match.matchedLocation == Destinations.videoPlayer) return true;
+        if (match is ShellRouteMatch && present(match.matches)) return true;
+      }
+      return false;
+    }
+
+    return present(
+      GoRouter.of(context).routerDelegate.currentConfiguration.matches,
+    );
+  } catch (_) {
+    // Router not usable, so treat the slot as held and never steal on doubt.
+    return true;
   }
 }
 

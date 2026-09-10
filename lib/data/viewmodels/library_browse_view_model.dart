@@ -12,6 +12,7 @@ import '../../util/parental_rating_severity.dart';
 import '../models/aggregated_item.dart';
 import '../repositories/mdblist_repository.dart';
 import '../services/plugin_sync_service.dart';
+import '../services/user_data_sync.dart';
 import '../services/user_ratings_api.dart';
 import '../utils/alphabet_bucket.dart';
 import '../utils/bounded_concurrency.dart';
@@ -428,6 +429,41 @@ class LibraryBrowseViewModel extends ChangeNotifier {
       UserPreferences.libraryGroupBy(_imagePrefKey),
     );
     _prefs.addListener(_onPrefsChanged);
+    userDataSync.addListener(_onUserDataChanged);
+  }
+
+  /// Whether anything the grid shows has been watched, favourited or rated
+  /// since the items were fetched. The socket names the changed item and its
+  /// season, never the series holding the unwatched count, so the grid has to
+  /// ask the server about its own rows the next time it is looked at.
+  bool _userDataStale = false;
+  bool _syncingUserData = false;
+
+  void _onUserDataChanged() {
+    if (_disposed) return;
+    final patched = userDataSync.applyAll(_items);
+    if (!identical(patched, _items)) {
+      _items = patched;
+      notifyListeners();
+    }
+    if (!_syncingUserData) _userDataStale = true;
+  }
+
+  /// Does nothing until a change has actually been recorded, so coming back to
+  /// the grid normally costs no request.
+  Future<void> syncUserDataIfStale() async {
+    if (_disposed || _syncingUserData || !_userDataStale || _items.isEmpty) {
+      return;
+    }
+    _syncingUserData = true;
+    try {
+      await userDataSync.refreshFromServer(_client, [
+        for (final item in _items) item.id,
+      ]);
+    } finally {
+      _syncingUserData = false;
+      _userDataStale = false;
+    }
   }
 
   void _onPrefsChanged() {
@@ -1732,6 +1768,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     _searchDebounceTimer?.cancel();
     _pageWalkGeneration++;
     _prefs.removeListener(_onPrefsChanged);
+    userDataSync.removeListener(_onUserDataChanged);
     super.dispose();
   }
 }

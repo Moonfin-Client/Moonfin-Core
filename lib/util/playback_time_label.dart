@@ -70,6 +70,11 @@ String formatPlaybackTimeSlot(
         use24Hour: use24Hour,
         playbackSpeed: playbackSpeed,
       );
+    case PlaybackTimeSlot.time:
+      return formatClockTime(
+        DateTime.now(),
+        use24Hour: use24Hour,
+      );
   }
 }
 

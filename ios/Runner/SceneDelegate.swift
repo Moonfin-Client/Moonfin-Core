@@ -69,6 +69,13 @@ class SceneDelegate: FlutterSceneDelegate {
     super.scene(scene, willConnectTo: session, options: connectionOptions)
   }
 
+  override func sceneDidEnterBackground(_ scene: UIScene) {
+    // Each background is a chance to (re)submit the auto-download refresh
+    // request; a pending one with the same identifier is simply replaced.
+    (UIApplication.shared.delegate as? AppDelegate)?.backgroundRefresh?.scheduleNextIfEnabled()
+    super.sceneDidEnterBackground(scene)
+  }
+
   override func sceneDidDisconnect(_ scene: UIScene) {
     if let engine = registeredEngine {
       unregisterSceneLifeCycle(with: engine)

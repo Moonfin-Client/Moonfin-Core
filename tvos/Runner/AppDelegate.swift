@@ -4,21 +4,22 @@ import UIKit
 
 /// Hosts the Flutter view so a game controller can be kept away from the UI.
 ///
-/// tvOS turns an extended gamepad's d-pad and face buttons into the same
-/// presses the Siri Remote sends, and nothing below the OS can tell the two
-/// apart. The one switch it offers is this view controller's
-/// `controllerUserInteractionEnabled`, honoured for whatever sits in its
+/// The one switch tvOS offers is this view controller's
+/// `controllerUserInteractionEnabled`, honored for whatever sits in its
 /// responder chain, so it has to be an ancestor of the Flutter view rather
-/// than a sibling. The Siri Remote isn't a game controller to it and keeps
-/// working either way. Starts off, matching the preference default, until
-/// Dart sends the stored value.
+/// than a sibling. Off routes controller input to the GameController profiles
+/// instead of the responder chain, and that covers more devices than a
+/// gamepad: the Siri Remote is a microGamepad, a paired keyboard is a
+/// GCKeyboard, and a third party remote reaches tvOS as one or the other. It
+/// therefore starts on, matching the Apple TV preference default, until Dart
+/// sends the stored value.
 final class GamepadNavigationHostViewController: GCEventViewController {
     let flutterViewController: FlutterViewController
 
     init(flutterViewController: FlutterViewController) {
         self.flutterViewController = flutterViewController
         super.init(nibName: nil, bundle: nil)
-        controllerUserInteractionEnabled = false
+        controllerUserInteractionEnabled = true
     }
 
     @available(*, unavailable)
@@ -44,7 +45,6 @@ class AppDelegate: FlutterAppDelegate {
     private var themeMusicChannel: AppleTvThemeMusicChannel?
     private var sfSymbolChannel: AppleTvSfSymbolChannel?
     private var gameChannel: AppleTvGameChannel?
-    private var pressGate: SiriRemotePressGate?
 
     override func application(
         _ application: UIApplication,
@@ -57,11 +57,6 @@ class AppDelegate: FlutterAppDelegate {
         window.rootViewController = gamepadHost
         window.makeKeyAndVisible()
         self.window = window
-        // The engine installs its press recognizers in viewDidLoad, which
-        // reading the view forces before the gate looks for them.
-        pressGate = SiriRemotePressGate.install(
-            on: flutterViewController.view,
-            messenger: flutterViewController.binaryMessenger)
 
         // FlutterAppDelegate only hands out registrars when the window's root
         // is a FlutterViewController, and the host sits there now, so plugins

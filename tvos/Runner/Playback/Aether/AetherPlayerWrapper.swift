@@ -174,10 +174,13 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             try await engine.reloadAtCurrentPosition()
             engine.pause()
         } catch {
+            // Every recovery downstream re-resolves against the server, which
+            // the manager refuses for local media, so a recoverable failure
+            // here is dropped and the player spins on.
             onPlayerError?([
                 "event": "playerError",
                 "kind": "backgroundReload",
-                "recoverable": true,
+                "recoverable": false,
                 "message": "Reload after background return failed: \(error)",
             ])
         }
@@ -632,6 +635,11 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
                 return ("unsupported_audio", message)
             case .noVideoStream, .hlsPlaylistOnRawLivePath:
                 return ("unsupported_container", message)
+            // Both come from a reload rather than a load, so neither reaches
+            // this classifier. They are here because the switch has to be
+            // exhaustive.
+            case .loadIdentityNotCorrectable, .sessionNotReloadable:
+                return ("unsupported_container", message)
             }
         }
         let description = String(describing: error)
@@ -821,6 +829,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         }
         resetAssState()
         if let externalUrl, let id = externalSubIDsByURL[externalUrl] {
+            logSubtitleSelection(requested: trackIndex, route: "urlMap", resolvedID: id)
             engine.selectSubtitleTrack(index: id)
             return
         }
@@ -831,12 +840,38 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
                         URL(string: externalUrl)?.lastPathComponent ?? externalUrl) == true
             })
         {
+            logSubtitleSelection(requested: trackIndex, route: "filename", resolvedID: match.id)
             engine.selectSubtitleTrack(index: match.id)
             return
         }
         let index = Int(trackIndex) - 1
-        guard index >= 0, index < subtitleTable.count else { return }
+        guard index >= 0, index < subtitleTable.count else {
+            logSubtitleSelection(requested: trackIndex, route: "ordinal", resolvedID: nil)
+            return
+        }
+        logSubtitleSelection(
+            requested: trackIndex, route: "ordinal", resolvedID: subtitleTable[index].id)
         engine.selectSubtitleTrack(index: subtitleTable[index].id)
+    }
+
+    private func hostLog(_ line: String) {
+        EngineLog.emit("[AetherPlayerWrapper] \(line)", category: .engine)
+    }
+
+    /// The ordinal route indexes into a table rebuilt from an engine publisher, so a report needs
+    /// the id that actually went out next to the list it came from.
+    private func logSubtitleSelection(requested: Int32, route: String, resolvedID: Int?) {
+        let table = subtitleTable
+            .map { "\($0.id)\($0.isExternal ? "x" : "e")" }
+            .joined(separator: ",")
+        var resolved = "none"
+        if let resolvedID {
+            let external = subtitleTable.first { $0.id == resolvedID }?.isExternal
+            resolved =
+                "id=\(resolvedID) external=\(external.map { $0 ? "true" : "false" } ?? "unknown")"
+        }
+        hostLog(
+            "selectSubtitleTrack requested=\(requested) route=\(route) \(resolved) table=[\(table)]")
     }
 
     /// Turns on one of `closedCaptionTracks` by its 1-based position. Turning
@@ -865,6 +900,9 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         let track = engine.addExternalSubtitleTrack(
             ExternalSubtitleTrack(url: url, name: title, language: language))
         externalSubIDsByURL[url.absoluteString] = track.id
+        hostLog(
+            "addExternalSubtitleTrack id=\(track.id) file=\(url.lastPathComponent) "
+                + "tableCount=\(subtitleTable.count)")
     }
 
     // MARK: - Subtitles (cues, ASS, style)

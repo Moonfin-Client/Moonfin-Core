@@ -44,6 +44,7 @@ class BookShelfRow extends StatelessWidget {
   final String? Function(AggregatedItem item) imageUrlFor;
   final String Function(AggregatedItem item)? subtitleFor;
   final bool Function(AggregatedItem item)? isAudiobookFor;
+  final bool Function(AggregatedItem item)? isComicFor;
   final Duration? Function(AggregatedItem item)? remainingFor;
 
   /// Show the book/headphones glyph on poster cards (mixed rows).
@@ -67,6 +68,7 @@ class BookShelfRow extends StatelessWidget {
     this.onSeeAll,
     this.subtitleFor,
     this.isAudiobookFor,
+    this.isComicFor,
     this.remainingFor,
     this.showFormatBadges = false,
     this.cardWidth = 132,
@@ -77,6 +79,7 @@ class BookShelfRow extends StatelessWidget {
   static const _labelBudget = 48.0;
 
   bool _isAudio(AggregatedItem item) => isAudiobookFor?.call(item) ?? false;
+  bool _isComic(AggregatedItem item) => isComicFor?.call(item) ?? item.isComic;
 
   double get _itemExtent =>
       variant == BookShelfVariant.chip ? _chipWidth : cardWidth;
@@ -171,6 +174,7 @@ class BookShelfRow extends StatelessWidget {
         );
       case BookShelfVariant.poster:
         final isAudio = _isAudio(item);
+        final isComic = _isComic(item);
         final remaining = isAudio ? remainingFor?.call(item) : null;
         final pct = item.playedPercentage;
         return Align(
@@ -178,6 +182,7 @@ class BookShelfRow extends StatelessWidget {
           child: BookCard(
             item: item,
             isAudiobook: isAudio,
+            isComic: isComic,
             subtitle: subtitleFor?.call(item),
             imageUrl: imageUrlFor(item),
             width: cardWidth,

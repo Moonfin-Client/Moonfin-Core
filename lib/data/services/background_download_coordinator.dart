@@ -2,13 +2,16 @@ import 'dart:async';
 
 import 'package:background_downloader/background_downloader.dart';
 import 'package:flutter/foundation.dart';
+import 'package:get_it/get_it.dart';
 
+import '../../l10n/current_app_localizations.dart';
 import '../../preference/user_preferences.dart';
 import '../../util/platform_detection.dart';
+import 'storage_path_service.dart';
 
 /// App-lifetime owner of the background_downloader [FileDownloader] singleton.
 ///
-/// [FileDownloader] is a process singleton whose updates listener must be
+/// [FileDownloader] is a process singleton whose group callbacks must be
 /// registered exactly once, before `start()`, or events delivered while the
 /// app was suspended are lost. DownloadService, by contrast, is torn down and
 /// re-created on every server switch, so it can't own that lifecycle itself.
@@ -24,7 +27,7 @@ class BackgroundDownloadCoordinator {
   static const String mediaGroup = 'moonfinMedia';
 
   static bool get isSupported =>
-      !kIsWeb && !PlatformDetection.isTizen && !PlatformDetection.isAppleTV;
+      !kIsWeb && !PlatformDetection.isAppleTV;
 
   Future<void>? _initFuture;
   int? _configuredMaxConcurrentDownloads;
@@ -61,8 +64,48 @@ class BackgroundDownloadCoordinator {
     _configuredMaxConcurrentDownloads = maxConcurrent;
   }
 
+  /// Whether this platform stages plugin downloads in a directory Moonfin
+  /// chooses. iOS URLSession stages inside the app container and finalizes
+  /// with a same-volume rename, so it needs no override.
+  static bool get _usesConfiguredStaging =>
+      PlatformDetection.isDesktop || PlatformDetection.isAndroid;
+
+  /// Points the plugin's staging directory at
+  /// [StoragePathService.stagingDirName] inside the current offline root, so
+  /// the staged file shares the destination volume and the completing move is
+  /// a rename instead of a cross-volume copy.
+  ///
+  /// Call after the download location changes. No-op before the first
+  /// [ensureInitialized], which applies the current root itself. Tasks
+  /// already running keep the staging path they started with.
+  Future<void> applyStagingDirectory() async {
+    if (_initFuture == null) return;
+    await _initFuture;
+    final stagingPath = await _resolveStagingPath();
+    if (stagingPath == null) return;
+    await FileDownloader().configure(
+      androidConfig: [(Config.tempFilePath, stagingPath)],
+      desktopConfig: [(Config.tempFilePath, stagingPath)],
+    );
+  }
+
+  /// Null when staging can't be resolved (e.g. the root is unwritable), so
+  /// the plugin falls back to its default staging rather than downloads
+  /// breaking outright.
+  Future<String?> _resolveStagingPath() async {
+    if (!_usesConfiguredStaging) return null;
+    try {
+      return (await GetIt.instance<StoragePathService>().getStagingDir()).path;
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<void> _initialize() async {
     final maxConcurrent = _maxConcurrentDownloads;
+    // Staged files must share the destination volume so the completing move
+    // is a rename (see applyStagingDirectory).
+    final stagingPath = await _resolveStagingPath();
     await FileDownloader().configure(
       globalConfig: [
         // Mirrors the app-level scheduler so native tasks cannot exceed the
@@ -73,37 +116,92 @@ class BackgroundDownloadCoordinator {
         // Long downloads (notably server transcodes, which can't pause and
         // resume) must escape WorkManager's 9-minute background work limit.
         (Config.runInForeground, Config.always),
+        // Fallback staging choice. tempFilePath takes precedence when set.
         (Config.useCacheDir, Config.whenAble),
+        if (stagingPath != null) (Config.tempFilePath, stagingPath),
       ],
       iOSConfig: [
         // Transcoded downloads run at server encode speed and can exceed the
         // default 4h background URLSession resource timeout.
         (Config.resourceTimeout, const Duration(hours: 8)),
+        // The documents volume is the download destination on iOS, so the
+        // plugin's own check measures the right filesystem there. Desktop and
+        // Android are covered by the preflight in DownloadService instead.
+        (Config.checkAvailableSpace, 512),
       ],
       desktopConfig: [
         // Matches the legacy engine's accept-any-certificate behavior for
         // dev servers. The plugin refuses this in release mode, where bad-cert
         // servers instead fall back to the legacy engine.
         if (kDebugMode) (Config.bypassTLSCertificateValidation, true),
+        if (stagingPath != null) (Config.tempFilePath, stagingPath),
       ],
     );
     _configuredMaxConcurrentDownloads = maxConcurrent;
 
+    // Read once at start-up: a language change applies to the plugin's
+    // notifications from the next launch.
+    final l10n = currentAppLocalizations();
     FileDownloader().configureNotificationForGroup(
       mediaGroup,
-      running: const TaskNotification('Downloading', '{displayName}'),
+      running: TaskNotification(
+        l10n.downloadNotificationRunning,
+        // The plugin replaces its own tokens when it posts the notification.
+        // iOS posts one banner when the transfer starts and never updates
+        // it, and fills the progress tokens with blanks, so it only gets
+        // the name.
+        PlatformDetection.isIOS
+            ? '{displayName}'
+            : l10n.downloadNotificationTransfer(
+                '{displayName}',
+                '{progress}',
+                '{timeRemaining}',
+              ),
+      ),
       complete: null,
-      error: const TaskNotification('Download failed', '{displayName}'),
+      error: TaskNotification(
+        l10n.downloadNotificationFailedTitle,
+        '{displayName}',
+      ),
+      // One notification per running transfer, capped by the concurrency
+      // limit. A group notification would be a single card, but the plugin
+      // only refreshes it on status changes and its bar counts finished
+      // tasks rather than bytes, so a lone episode sits at 0% until done.
       progressBar: true,
-      groupNotificationId: 'moonfinMediaDownloads',
     );
 
-    FileDownloader().updates.listen(_route);
+    // Group callbacks take precedence over the global updates stream inside
+    // the plugin. 9.6.0's transfer manager registers its own callback for a
+    // group the moment its first task record is written and only chains to
+    // a callback that already exists, so a stream listener stops hearing
+    // from the group after the first update. Registering here, before
+    // start(), makes ours the one it chains to.
+    FileDownloader().registerCallbacks(
+      group: mediaGroup,
+      taskStatusCallback: _route,
+      taskProgressCallback: _route,
+    );
 
     await FileDownloader().start(
-      doRescheduleKilledTasks: true,
+      // The plugin would revive tasks killed with the app five seconds in,
+      // blind to whether the rest of the file still fits. DownloadService
+      // checks first and calls [rescheduleKilledTasks] for the survivors.
+      doRescheduleKilledTasks: false,
       autoCleanDatabase: true,
     );
+  }
+
+  /// Tasks the native engine still holds, across groups.
+  Future<Set<Task>> nativeTasks() async =>
+      (await FileDownloader().allTasks(allGroups: true)).toSet();
+
+  /// Re-enqueues tasks whose records outlived their native task. Records
+  /// deleted beforehand stay dead.
+  Future<void> rescheduleKilledTasks() async {
+    if (!isSupported) return;
+    try {
+      await FileDownloader().rescheduleKilledTasks();
+    } catch (_) {}
   }
 
   void _route(TaskUpdate update) {

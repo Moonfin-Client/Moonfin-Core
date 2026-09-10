@@ -16,6 +16,7 @@ import '../data/services/crash_report_service.dart';
 import '../data/services/log_service.dart';
 import '../data/services/media_server_client_factory.dart';
 import '../data/services/recent_searches_store.dart';
+import '../data/services/pending_rating_store.dart';
 import '../data/services/storage_path_service.dart';
 import '../platform/web_runtime_config.dart';
 import '../preference/preference_constants.dart';
@@ -385,11 +386,31 @@ Future<void> migrateTrickplayPreferenceConsolidation(
   await store.setBool(migrationKey, true);
 }
 
-// Minimal DI for background isolates like the Watch Next worker. This must not
-// call registerPlaybackModule: constructing Media3PlayerBackend subscribes to
-// the process-global moonfin/media3_video_events channel and would hijack the
-// foreground engine's event sink, freezing the player OSD mid-playback.
-Future<void> configureBackgroundDependencies() async {
+/// The offline downloads storage plus what `setActiveServerClient` needs to
+/// wrap a client around it: shared by the app and the Android auto-download
+/// worker's headless engine, so the two cannot drift.
+void registerOfflineStorage() {
+  final storagePath = StoragePathService();
+  getIt.registerSingleton<StoragePathService>(storagePath);
+  getIt.registerSingleton<OfflineDatabase>(OfflineDatabase(openConnection()));
+  final offlineRepo = OfflineRepository(getIt<OfflineDatabase>());
+  getIt.registerSingleton<OfflineRepository>(offlineRepo);
+  getIt.registerSingleton<OfflineCatalog>(OfflineCatalog(offlineRepo));
+  getIt.registerLazySingleton<PendingRatingStore>(
+    () => PendingRatingStore(getIt<PreferenceStore>()),
+  );
+}
+
+/// Minimal DI for background isolates like the Watch Next worker: what a
+/// headless engine needs to restore a session. With [offline] it also brings
+/// up the downloads storage, enough for `setActiveServerClient` to build a
+/// download service.
+///
+/// This must not call registerPlaybackModule: constructing
+/// Media3PlayerBackend subscribes to the process-global
+/// moonfin/media3_video_events channel and would hijack the foreground
+/// engine's event sink, freezing the player OSD mid-playback.
+Future<void> configureBackgroundDependencies({bool offline = false}) async {
   if (getIt.isRegistered<DeviceInfo>()) return;
 
   final preferenceStore = PreferenceStore();
@@ -408,6 +429,7 @@ Future<void> configureBackgroundDependencies() async {
   );
 
   registerPreferenceModule(preferenceStore);
+  if (offline) registerOfflineStorage();
   registerServerModule();
   registerAuthModule();
   await getIt<AuthenticationStore>().init();
@@ -447,16 +469,9 @@ Future<void> configureDependencies() async {
     () => RecentSearchesStore(preferenceStore),
   );
 
-  final storagePath = StoragePathService();
-  getIt.registerSingleton<StoragePathService>(storagePath);
-  getIt.registerSingleton<OfflineDatabase>(OfflineDatabase(openConnection()));
-  final offlineRepo = OfflineRepository(getIt<OfflineDatabase>());
-  getIt.registerSingleton<OfflineRepository>(offlineRepo);
-  await _migrateIosPaths(offlineRepo);
-
-  final offlineCatalog = OfflineCatalog(offlineRepo);
-  getIt.registerSingleton<OfflineCatalog>(offlineCatalog);
-  await offlineCatalog.warm();
+  registerOfflineStorage();
+  await _migrateIosPaths(getIt<OfflineRepository>());
+  await getIt<OfflineCatalog>().warm();
 
   final connectivityService = ConnectivityService();
   connectivityService.initialize();

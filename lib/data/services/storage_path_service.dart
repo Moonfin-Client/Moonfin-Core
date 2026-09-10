@@ -88,6 +88,21 @@ class StoragePathService {
     return dir;
   }
 
+  /// Hidden folder inside the offline root where the download engine stages
+  /// in-flight files. Sharing the root's volume makes the completing move a
+  /// rename instead of a cross-volume copy, and keeps staging off the system
+  /// temp dir, which is RAM-backed tmpfs on most Linux distros. Dot-prefixed
+  /// so Android's media scanner ignores it.
+  static const stagingDirName = '.incoming';
+
+  /// The staging directory under the current offline root, created on demand.
+  Future<Directory> getStagingDir() async {
+    final root = await getOfflineRoot();
+    final dir = Directory('${root.path}/$stagingDirName');
+    if (!await dir.exists()) await dir.create(recursive: true);
+    return dir;
+  }
+
   /// Verify an existing (or creatable) directory is actually writable by
   /// writing and deleting a probe file. Returns false on any failure.
   Future<bool> _canWrite(Directory dir) async {

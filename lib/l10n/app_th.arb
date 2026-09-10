@@ -6605,7 +6605,7 @@
     "settingsPreferServerTranscode": "ต้องการการแปลงรหัสเซิร์ฟเวอร์",
     "settingsDolbyVisionProfile7DirectPlay": "Dolby Vision โปรไฟล์ 7 เล่นโดยตรง",
     "settingsDolbyVisionProfile7DirectPlayDescription": "ควบคุมว่า Dolby Vision สตรีมเลเยอร์การปรับปรุงโปรไฟล์ 7 ควรควบคุมการเล่นหรือไม่",
-    "settingsAutoAftkrtEnabled": "อัตโนมัติ (เปิดใช้งาน AFTKRT)",
+    "settingsAutoAftkrtEnabled": "อัตโนมัติ",
     "settingsEnabledOnThisDevice": "เปิดใช้งานบนอุปกรณ์นี้แล้ว",
     "settingsDisabledPreferTranscode": "ปิดการใช้งาน (ต้องการการแปลง)",
     "settingsResumeRewindDescription": "เมื่อเล่นต่อ (จาก Continue Watching หรือหน้ารายการสื่อ) ควรกรอย้อนกลับกี่วินาที?",

@@ -40,20 +40,48 @@ class DownloadedItems extends Table {
   IntColumn get indexNumber => integer().nullable()();
   IntColumn get parentIndexNumber => integer().nullable()();
 
+  /// Who queued the download: `manual` for the user, `auto` for an
+  /// auto-download subscription. Only auto rows are ever removed by the
+  /// subscription's delete-after-watched rule.
+  TextColumn get downloadSource =>
+      text().withDefault(const Constant('manual'))();
+
   @override
   Set<Column> get primaryKey => {itemId, serverId};
 }
 
-@DriftDatabase(tables: [DownloadedItems])
+/// A series the user asked to keep downloading new episodes for. One row per
+/// series per server account; the keep/delete rules are global preferences.
+class AutoDownloadSubscriptions extends Table {
+  TextColumn get seriesId => text()();
+  TextColumn get serverId => text()();
+  TextColumn get userId => text()();
+  TextColumn get seriesName => text()();
+  TextColumn get qualityPreset => text()();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get lastCheckedAt => dateTime().nullable()();
+  IntColumn get lastQueuedCount => integer().withDefault(const Constant(0))();
+  TextColumn get lastError => text().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {seriesId, serverId, userId};
+}
+
+@DriftDatabase(tables: [DownloadedItems, AutoDownloadSubscriptions])
 class OfflineDatabase extends _$OfflineDatabase {
   OfflineDatabase(super.e);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (m) => m.createAll(),
-    onUpgrade: (m, from, to) async {},
+    onUpgrade: (m, from, to) async {
+      if (from < 2) {
+        await m.addColumn(downloadedItems, downloadedItems.downloadSource);
+        await m.createTable(autoDownloadSubscriptions);
+      }
+    },
   );
 }

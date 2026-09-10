@@ -24,6 +24,7 @@ DownloadedItem _saved(
   playbackPositionTicks: 0,
   progressSynced: true,
   qualityPreset: 'original',
+  downloadSource: 'manual',
   seriesId: seriesId,
   seriesName: seriesName,
   indexNumber: episode,
@@ -142,5 +143,32 @@ void main() {
       'E5',
     );
     expect(episodeNumberLabel(_episode('e', seriesId: 's')), isNull);
+  });
+
+  test('a notification names the show and number, not the episode title', () {
+    expect(
+      downloadNotificationLabel(
+        name: 'Pilot',
+        seriesName: 'Series',
+        season: 1,
+        episode: 1,
+      ),
+      'Series S1E1',
+    );
+    // Without a full number there is nothing better than the title.
+    expect(
+      downloadNotificationLabel(name: 'Pilot', seriesName: 'Series', season: 1),
+      'Pilot',
+    );
+    expect(
+      downloadNotificationLabel(
+        name: 'Pilot',
+        seriesName: ' ',
+        season: 1,
+        episode: 1,
+      ),
+      'Pilot',
+    );
+    expect(downloadNotificationLabel(name: 'A Movie'), 'A Movie');
   });
 }
