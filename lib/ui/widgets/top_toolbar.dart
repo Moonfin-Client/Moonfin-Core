@@ -2502,18 +2502,57 @@ class _TopMusicBarState extends State<TopMusicBar> {
                     ),
                   ),
                   const SizedBox(width: 12),
+                  // Focusable, not just tappable: a remote cannot tap, and
+                  // this title is the only way back to the player. Same focus
+                  // treatment as the transport buttons beside it.
                   Flexible(
-                    child: GestureDetector(
-                      onTap: () => appRouter.push(Destinations.audioPlayer),
-                      child: Text(
-                        displayText,
-                        style: TextStyle(
-                          color: AppColorScheme.onSurface,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                    child: Focus(
+                      onKeyEvent: (node, event) {
+                        if (isActivateKey(event)) {
+                          appRouter.push(Destinations.audioPlayer);
+                          return KeyEventResult.handled;
+                        }
+                        return KeyEventResult.ignored;
+                      },
+                      child: Builder(
+                        builder: (context) {
+                          final focused = InputModeTracker.showFocusVisuals(
+                            context,
+                            Focus.of(context).hasFocus,
+                          );
+                          return MouseRegion(
+                            cursor: SystemMouseCursors.click,
+                            child: GestureDetector(
+                              onTap: () =>
+                                  appRouter.push(Destinations.audioPlayer),
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 90),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 3,
+                                ),
+                                decoration: BoxDecoration(
+                                  borderRadius: AppRadius.circular(12),
+                                  color: focused
+                                      ? AppColorScheme.onSurface.withValues(
+                                          alpha: 0.22,
+                                        )
+                                      : Colors.transparent,
+                                ),
+                                child: Text(
+                                  displayText,
+                                  style: TextStyle(
+                                    color: AppColorScheme.onSurface,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     ),
                   ),
