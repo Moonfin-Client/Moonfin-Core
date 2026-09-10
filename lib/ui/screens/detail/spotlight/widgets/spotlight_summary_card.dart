@@ -121,10 +121,12 @@ class _SpotlightSummaryCardState extends State<SpotlightSummaryCard>
                   child: Stack(
                     fit: StackFit.expand,
                     children: [
-                      // A slow zoom on focus and hover. Skipped under reduce
-                      // motion, where the border and chevron carry the state.
+                      // A slow zoom on focus and hover when card focus expansion
+                      // is enabled. Skipped when disabled or under reduce motion.
                       AnimatedScale(
-                        scale: active && !reduceMotion ? 1.06 : 1.0,
+                        scale: cardFocusExpansion && active && !reduceMotion
+                            ? 1.06
+                            : 1.0,
                         duration: const Duration(milliseconds: 400),
                         curve: curve,
                         child: widget.imageUrl != null
