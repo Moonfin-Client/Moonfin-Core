@@ -161,7 +161,8 @@ class _HomeRowsImageTypeScreenState extends State<HomeRowsImageTypeScreen> {
                   c.type != HomeSectionType.none &&
                   c.type != HomeSectionType.mediaBar &&
                   c.type != HomeSectionType.resumeAudio &&
-                  c.type != HomeSectionType.libraryButtons,
+                  c.type != HomeSectionType.libraryButtons &&
+                  !c.isSeerrSlider,
             )
             .toList()
           ..sort((a, b) => a.order.compareTo(b.order));

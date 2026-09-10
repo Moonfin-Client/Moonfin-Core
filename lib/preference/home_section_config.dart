@@ -7,9 +7,14 @@ import 'preference_constants.dart';
 /// `pluginDynamic` entries are dynamic rows discovered from a third-party
 /// Jellyfin plugin and are scoped to a specific server. The originating
 /// plugin is identified by [HomeSectionPluginSource].
+/// `seerrSlider` entries are Seerr `GET /settings/discover` sliders.
+/// Identity is [HomeSectionConfig.sliderId]. [type] is [HomeSectionType.none],
+/// same as [pluginDynamic]; JSON still writes `seerr_slider` so Plugin can
+/// tell them apart from other `none` rows.
 enum HomeSectionKind {
   builtin('builtin'),
-  pluginDynamic('pluginDynamic');
+  pluginDynamic('pluginDynamic'),
+  seerrSlider('seerrSlider');
 
   const HomeSectionKind(this.serializedName);
   final String serializedName;
@@ -51,11 +56,18 @@ class HomeSectionConfig {
   final int order;
 
   // pluginDynamic-only fields. Always null for builtin entries.
+  // seerrSlider reuses pluginDisplayText for the persisted label.
   final String? serverId;
   final String? pluginSection;
   final String? pluginAdditionalData;
   final String? pluginDisplayText;
   final HomeSectionPluginSource pluginSource;
+
+  /// seerrSlider identity. Null for every other kind.
+  final String? sliderId;
+
+  /// Raw Seerr `DiscoverSliderType`. Null for every other kind.
+  final int? sliderType;
 
   const HomeSectionConfig({
     this.kind = HomeSectionKind.builtin,
@@ -67,6 +79,8 @@ class HomeSectionConfig {
     this.pluginAdditionalData,
     this.pluginDisplayText,
     this.pluginSource = HomeSectionPluginSource.collections,
+    this.sliderId,
+    this.sliderType,
   });
 
   factory HomeSectionConfig.pluginDynamic({
@@ -89,12 +103,44 @@ class HomeSectionConfig {
     pluginSource: pluginSource,
   );
 
+  /// Wire `type` for seerrSlider rows. Not a [HomeSectionType] value.
+  static const seerrSliderSerializedType = 'seerr_slider';
+
+  factory HomeSectionConfig.seerrSlider({
+    required String sliderId,
+    int? sliderType,
+    String? pluginDisplayText,
+    bool enabled = false,
+    int order = 0,
+  }) => HomeSectionConfig(
+    kind: HomeSectionKind.seerrSlider,
+    type: HomeSectionType.none,
+    enabled: enabled,
+    order: order,
+    pluginDisplayText: pluginDisplayText,
+    sliderId: sliderId,
+    sliderType: sliderType,
+  );
+
   factory HomeSectionConfig.fromJson(Map<String, dynamic> json) {
     final kindRaw = json['kind'] as String?;
+    final typeName = json['type'] as String? ?? 'none';
+    if (kindRaw == HomeSectionKind.seerrSlider.serializedName ||
+        typeName == seerrSliderSerializedType) {
+      final id = json['sliderId']?.toString();
+      return HomeSectionConfig(
+        kind: HomeSectionKind.seerrSlider,
+        type: HomeSectionType.none,
+        enabled: json['enabled'] as bool? ?? true,
+        order: json['order'] as int? ?? 0,
+        pluginDisplayText: json['pluginDisplayText'] as String?,
+        sliderId: id,
+        sliderType: _sliderTypeFromJson(json),
+      );
+    }
     final kind = kindRaw == null
         ? HomeSectionKind.builtin
         : HomeSectionKind.fromSerialized(kindRaw);
-    final typeName = json['type'] as String? ?? 'none';
     final pluginSource = HomeSectionPluginSource.fromSerialized(
       json['pluginSource'] as String?,
     );
@@ -117,6 +163,16 @@ class HomeSectionConfig {
       'enabled': enabled,
       'order': order,
     };
+    if (kind == HomeSectionKind.seerrSlider) {
+      json['kind'] = kind.serializedName;
+      json['type'] = seerrSliderSerializedType;
+      if (sliderId != null) json['sliderId'] = sliderId;
+      if (sliderType != null) json['sliderType'] = sliderType;
+      if (pluginDisplayText != null) {
+        json['pluginDisplayText'] = pluginDisplayText;
+      }
+      return json;
+    }
     if (kind != HomeSectionKind.builtin) {
       json['kind'] = kind.serializedName;
       json['pluginSource'] = pluginSource.serializedName;
@@ -142,6 +198,8 @@ class HomeSectionConfig {
     String? pluginAdditionalData,
     String? pluginDisplayText,
     HomeSectionPluginSource? pluginSource,
+    String? sliderId,
+    int? sliderType,
   }) => HomeSectionConfig(
     kind: kind ?? this.kind,
     type: type ?? this.type,
@@ -152,6 +210,8 @@ class HomeSectionConfig {
     pluginAdditionalData: pluginAdditionalData ?? this.pluginAdditionalData,
     pluginDisplayText: pluginDisplayText ?? this.pluginDisplayText,
     pluginSource: pluginSource ?? this.pluginSource,
+    sliderId: sliderId ?? this.sliderId,
+    sliderType: sliderType ?? this.sliderType,
   );
 
   /// Custom rows belong to no server, and an empty serverId coming back from a saved
@@ -169,6 +229,9 @@ class HomeSectionConfig {
   /// entries combine the originating plugin, server, section and additional
   /// data so multiple instances of the same section can coexist.
   String get stableId {
+    if (kind == HomeSectionKind.seerrSlider) {
+      return 'seerrSlider:${sliderId ?? ''}';
+    }
     if (kind == HomeSectionKind.pluginDynamic) {
       final effectiveServerId =
           _normalizedServerId(serverId, pluginSource) ?? '';
@@ -179,6 +242,34 @@ class HomeSectionConfig {
 
   bool get isBuiltin => kind == HomeSectionKind.builtin;
   bool get isPluginDynamic => kind == HomeSectionKind.pluginDynamic;
+  bool get isSeerrSlider => kind == HomeSectionKind.seerrSlider;
+
+  /// False for slider rows with no id, and for builtin [HomeSectionType.none]
+  /// leftovers from legacy `homeRowOrder` pollution.
+  bool get isPersistable {
+    if (isSeerrSlider) {
+      return sliderId != null && sliderId!.isNotEmpty;
+    }
+    if (isBuiltin && type == HomeSectionType.none) {
+      return false;
+    }
+    return true;
+  }
+
+  int? get seerrSliderId => int.tryParse(sliderId ?? '');
+
+  /// Legacy `homeRowOrder` is builtin types only. Plugin JS already filters
+  /// this way; sliders live in `homeSections`.
+  static List<String> homeRowOrderNames(List<HomeSectionConfig> configs) =>
+      configs
+          .where(
+            (c) =>
+                c.enabled &&
+                c.isBuiltin &&
+                c.type != HomeSectionType.none,
+          )
+          .map((c) => c.type.serializedName)
+          .toList();
 
   static List<HomeSectionConfig> defaults() => const [
     HomeSectionConfig(
@@ -386,7 +477,10 @@ class HomeSectionConfig {
   ];
 
   static bool isSupportedJson(Map<String, dynamic> json) {
-    if (json['kind'] != HomeSectionKind.pluginDynamic.serializedName) return true;
+    final kind = json['kind'] as String?;
+    if (kind == HomeSectionKind.seerrSlider.serializedName) return true;
+    if (json['type'] == seerrSliderSerializedType) return true;
+    if (kind != HomeSectionKind.pluginDynamic.serializedName) return true;
     final source = json['pluginSource'] as String?;
     return HomeSectionPluginSource.values.any((s) => s.serializedName == source);
   }
@@ -399,9 +493,7 @@ class HomeSectionConfig {
       for (final e in list) {
         if (e is Map<String, dynamic> && isSupportedJson(e)) {
           final cfg = HomeSectionConfig.fromJson(e);
-          if (cfg.isBuiltin && cfg.type == HomeSectionType.none) {
-            continue;
-          }
+          if (!cfg.isPersistable) continue;
           parsed.add(cfg);
         }
       }
@@ -434,4 +526,11 @@ class HomeSectionConfig {
 
   static String toJsonString(List<HomeSectionConfig> configs) =>
       jsonEncode(configs.map((c) => c.toJson()).toList());
+
+  static int? _sliderTypeFromJson(Map<String, dynamic> json) {
+    final raw = json['sliderType'];
+    if (raw is num) return raw.toInt();
+    if (raw is String) return int.tryParse(raw);
+    return null;
+  }
 }

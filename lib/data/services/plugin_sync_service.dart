@@ -1343,7 +1343,7 @@ class PluginSyncService extends ChangeNotifier {
         for (final e in homeSectionsRaw)
           if (e is Map && HomeSectionConfig.isSupportedJson(Map<String, dynamic>.from(e)))
             HomeSectionConfig.fromJson(Map<String, dynamic>.from(e)),
-      ];
+      ].where((c) => c.isPersistable).toList();
       if (parsed.isNotEmpty) {
         parsed.sort((a, b) => a.order.compareTo(b.order));
         final sections = <HomeSectionConfig>[];
@@ -1375,6 +1375,21 @@ class PluginSyncService extends ChangeNotifier {
         for (final custom in existingCustom) {
           sections.add(custom.copyWith(order: order++));
         }
+        final incomingSliderIds = sections
+            .where((s) => s.isSeerrSlider)
+            .map((s) => s.sliderId)
+            .whereType<String>()
+            .toSet();
+        final existingSliders = _prefs.homeSectionsConfig.where(
+          (c) =>
+              c.isSeerrSlider &&
+              c.sliderId != null &&
+              c.sliderId!.isNotEmpty &&
+              !incomingSliderIds.contains(c.sliderId),
+        );
+        for (final slider in existingSliders) {
+          sections.add(slider.copyWith(order: order++));
+        }
         _appendDisabledBuiltinSections(sections, order);
         await _raiseSinceYouWatchedRowCount(sections);
         await _prefs.setHomeSectionsConfig(sections);
@@ -1385,10 +1400,10 @@ class PluginSyncService extends ChangeNotifier {
 
     if (!appliedHomeSections && resolved['homeRowOrder'] is List) {
       final serverOrder = (resolved['homeRowOrder'] as List).cast<String>();
-      // Preserve any plugin-discovered dynamic sections so they survive a
-      // server-driven preference sync.
+      // Preserve plugin-discovered and Seerr slider rows so they survive a
+      // server-driven preference sync that only sent homeRowOrder.
       final pluginEntries = _prefs.homeSectionsConfig
-          .where((c) => c.isPluginDynamic)
+          .where((c) => c.isPluginDynamic || c.isSeerrSlider)
           .toList(growable: false);
       if (serverOrder.isEmpty) {
         await _applyFallbackHomeRows(preserve: pluginEntries);
@@ -1586,7 +1601,8 @@ class PluginSyncService extends ChangeNotifier {
     List<HomeSectionConfig> sections,
   ) async {
     final enabledByType = {
-      for (final section in sections) section.type: section.enabled,
+      for (final section in sections)
+        if (section.isBuiltin) section.type: section.enabled,
     };
     final updated = _seerrPrefs.homeRowsConfig
         .map(
@@ -1890,10 +1906,9 @@ class PluginSyncService extends ChangeNotifier {
       'mdblistRatingSources': _csvToList(UserPreferences.enabledRatings)
           .map((s) => _clientToServerRatingSource[s] ?? s)
           .toList(),
-      'homeRowOrder': _prefs.homeSectionsConfig
-          .where((c) => c.enabled)
-          .map((c) => c.type.serializedName)
-          .toList(),
+      'homeRowOrder': HomeSectionConfig.homeRowOrderNames(
+        _prefs.homeSectionsConfig,
+      ),
       'homeSections':
           _prefs.homeSectionsConfig.map((c) => c.toJson()).toList(),
       'seerrRows': {

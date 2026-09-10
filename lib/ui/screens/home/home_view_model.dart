@@ -101,7 +101,9 @@ class HomeViewModel extends ChangeNotifier {
   /// address against a public domain never matches however it is spelled. With
   /// one server there is nowhere else the row could belong, so keep it anyway.
   bool _belongsToThisServer(HomeSectionConfig cfg) {
-    if (cfg.isBuiltin || cfg.pluginSource == HomeSectionPluginSource.custom) {
+    if (cfg.isBuiltin ||
+        cfg.isSeerrSlider ||
+        cfg.pluginSource == HomeSectionPluginSource.custom) {
       return true;
     }
     if (!_multiServerEnabled) return true;
@@ -436,6 +438,7 @@ class HomeViewModel extends ChangeNotifier {
                                 HomeSectionPluginSource.playlists))) &&
                 (showAudioRows || !_isAudioSectionType(c.type)) &&
                 (!_isSeerrSectionType(c.type) || (showSeerrRows && seerrPrefs.isSeerrHomeRowEnabled(c.type))) &&
+                (!c.isSeerrSlider || (showSeerrRows && seerrPrefs.enabled)) &&
                 (!_isImdbSectionType(c.type) || (showImdbRows && _isImdbSectionEnabled(c.type))) &&
                 (!_isTmdbSectionType(c.type) || (showTmdbRows && _isTmdbSectionEnabled(c.type))) &&
                 (c.type != HomeSectionType.radarrCalendar || _prefs.get(UserPreferences.enableRadarrCalendar)) &&
@@ -681,6 +684,9 @@ class HomeViewModel extends ChangeNotifier {
   }
 
   bool _rowBelongsToConfig(HomeRow row, HomeSectionConfig cfg) {
+    if (cfg.isSeerrSlider) {
+      return row.id == cfg.stableId;
+    }
     if (cfg.isPluginDynamic) {
       return row.id == cfg.stableId;
     }
@@ -958,6 +964,9 @@ class HomeViewModel extends ChangeNotifier {
   }
 
   Future<List<HomeRow>> _loadConfig(HomeSectionConfig cfg, {bool forceRefresh = false}) async {
+    if (cfg.isSeerrSlider) {
+      return const [];
+    }
     if (cfg.isPluginDynamic) {
       final section = cfg.pluginSection;
       if (section == null || section.isEmpty) return const [];
@@ -976,6 +985,9 @@ class HomeViewModel extends ChangeNotifier {
   }
 
   HomeRow? _placeholderForConfig(HomeSectionConfig cfg) {
+    if (cfg.isSeerrSlider) {
+      return null;
+    }
     if (cfg.isPluginDynamic) {
       final section = cfg.pluginSection;
       if (section == null || section.isEmpty) return null;

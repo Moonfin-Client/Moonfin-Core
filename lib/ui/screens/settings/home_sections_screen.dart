@@ -465,6 +465,9 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
         type == HomeSectionType.seerrNetworks;
   }
 
+  bool _isSeerrLayoutSection(HomeSectionConfig section) =>
+      section.isSeerrSlider || _isSeerrSectionType(section.type);
+
   int _getSectionCategory(HomeSectionConfig section) {
     if (section.isPluginDynamic) {
       if (section.pluginSource == HomeSectionPluginSource.collections) {
@@ -494,7 +497,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
     if (section.type == HomeSectionType.playlists) {
       return 5;
     }
-    if (_isSeerrSectionType(section.type)) {
+    if (_isSeerrLayoutSection(section)) {
       return 6;
     }
     // general builtins (resume, nextUp, etc.)
@@ -662,11 +665,12 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
             (section.isPluginDynamic &&
                 section.pluginSource == HomeSectionPluginSource.playlists));
     final hiddenBySeerr =
-        _isSeerrSectionType(section.type) &&
-        (!showSeerrRows ||
-            !GetIt.instance<SeerrPreferences>().isSeerrHomeRowEnabled(
-              section.type,
-            ));
+        (_isSeerrSectionType(section.type) &&
+            (!showSeerrRows ||
+                !GetIt.instance<SeerrPreferences>().isSeerrHomeRowEnabled(
+                  section.type,
+                ))) ||
+        (section.isSeerrSlider && !showSeerrRows);
     final hiddenByImdb =
         _isImdbSectionType(section.type) &&
         (!showImdbRows || !_isImdbRowEnabled(section.type));
@@ -1600,6 +1604,11 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
   }
 
   String _labelFor(HomeSectionConfig cfg, AppLocalizations l10n) {
+    if (cfg.isSeerrSlider) {
+      return cfg.pluginDisplayText?.isNotEmpty == true
+          ? cfg.pluginDisplayText!
+          : 'Seerr slider';
+    }
     if (cfg.isPluginDynamic) {
       return cfg.pluginDisplayText?.isNotEmpty == true
           ? cfg.pluginDisplayText!
@@ -2368,7 +2377,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
                                     ),
                                   ),
                                 )
-                              : (_isSeerrSectionType(section.type)
+                              : (_isSeerrLayoutSection(section)
                                     ? Text(
                                         'Seerr Discovery Rows',
                                         style: TextStyle(
@@ -2505,7 +2514,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
                   ? _pluginSubtitle(section)
                   : (_isAudioSectionType(section.type)
                         ? 'Audio row'
-                        : (_isSeerrSectionType(section.type)
+                        : (_isSeerrLayoutSection(section)
                               ? 'Seerr Discovery Rows'
                               : (_isImdbSectionType(section.type)
                                     ? 'IMDb List'
@@ -2800,7 +2809,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
                 ? Text(_pluginSubtitle(section))
                 : (_isAudioSectionType(section.type)
                       ? const Text('Audio row')
-                      : (_isSeerrSectionType(section.type)
+                      : (_isSeerrLayoutSection(section)
                             ? const Text('Seerr Discovery Rows')
                             : (_isImdbSectionType(section.type)
                                   ? const Text('IMDb List')
