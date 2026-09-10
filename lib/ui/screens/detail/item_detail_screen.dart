@@ -506,6 +506,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
       _backgroundService.setBackground(
         focusedItem,
         context: BlurContext.details,
+        startIndex: 0,
       );
       final nextUrl = _backgroundService.currentUrl;
       if (nextUrl != _backdropUrl.value) {

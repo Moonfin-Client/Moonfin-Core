@@ -44,7 +44,11 @@ class BackgroundService {
   Stream<String?> get backgroundStream => _backgroundController.stream;
   Stream<BlurContext> get blurContextStream => _blurContextController.stream;
 
-  void setBackground(AggregatedItem? item, {BlurContext context = BlurContext.details}) {
+  void setBackground(
+    AggregatedItem? item, {
+    BlurContext context = BlurContext.details,
+    int? startIndex,
+  }) {
     if (item == null) return clearBackgrounds();
 
     _blurContext = context;
@@ -126,7 +130,9 @@ class BackgroundService {
       }
     }
 
-    _loadBackgrounds(urls);
+    final initialIndex =
+        startIndex ?? (context == BlurContext.details ? 1 : 0);
+    _loadBackgrounds(urls, startIndex: initialIndex);
   }
 
   void setBackgroundUrl(String url, {BlurContext context = BlurContext.browsing}) {
@@ -144,12 +150,13 @@ class BackgroundService {
     _evictBackgrounds(previousUrls);
   }
 
-  void _loadBackgrounds(List<String> urls) {
+  void _loadBackgrounds(List<String> urls, {int startIndex = 0}) {
     final uniqueUrls = urls.where((u) => u.isNotEmpty).toSet().toList();
     if (uniqueUrls.isEmpty) return clearBackgrounds();
     _slideshowTimer?.cancel();
     _backgrounds = uniqueUrls;
-    _currentIndex = 0;
+    _currentIndex =
+        (startIndex > 0 && startIndex < uniqueUrls.length) ? startIndex : 0;
     _update();
   }
 

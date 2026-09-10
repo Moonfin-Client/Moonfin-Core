@@ -375,8 +375,16 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
   Widget _buildBackdrop(bool landscape, String? backdropUrl) {
     final base = AppColorScheme.background;
     final item = _vm.item;
+    final itemBackdrop = item != null && item.backdropImageTags.isNotEmpty
+        ? _vm.imageApi.getBackdropImageUrl(
+            item.id,
+            maxWidth: 1920,
+            tag: item.backdropImageTags.first,
+          )
+        : null;
     final url =
         backdropUrl ??
+        itemBackdrop ??
         (item?.type == 'Person' ? _personProfileUrl(item!) : null);
     final blurAmount = widget.prefs
         .get(UserPreferences.detailsBackgroundBlurAmount)
@@ -927,6 +935,13 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
     BuildContext context,
     AggregatedItem item,
   ) {
+    final itemBackdrop = item.backdropImageTags.isNotEmpty
+        ? _vm.imageApi.getBackdropImageUrl(
+            item.id,
+            maxWidth: 960,
+            tag: item.backdropImageTags.first,
+          )
+        : widget.backdropUrl.value;
     final cards = spotlightCardsFor(
       vm: _vm,
       item: item,
@@ -936,7 +951,7 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
       actions: _cardActions(item),
       seerrAppearances: _seerrAppearances,
       seerrCrewCredits: _seerrCrewCredits,
-      fallbackImageUrl: widget.backdropUrl.value,
+      fallbackImageUrl: itemBackdrop,
     );
     for (final card in cards) {
       _cardFocusNodes.putIfAbsent(
