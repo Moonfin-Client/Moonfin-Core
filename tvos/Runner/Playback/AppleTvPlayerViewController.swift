@@ -18,6 +18,28 @@ struct PromptStrings {
     }
 }
 
+/// Mirrors the Dart PlaybackTimeSlot enum by name.
+enum TimeSlot: String {
+    case none, elapsed, totalDuration, timeRemaining, endsAt, time
+}
+
+/// Defaults match the Dart preferences, so the bar reads the same before the
+/// host has pushed anything.
+struct TimeSlotConfig {
+    var aboveLeft = TimeSlot.none
+    var aboveCenter = TimeSlot.none
+    var aboveRight = TimeSlot.endsAt
+    var belowLeft = TimeSlot.elapsed
+    var belowCenter = TimeSlot.none
+    var belowRight = TimeSlot.totalDuration
+    var use24Hour = false
+    var endsAtTemplate = "Ends at {time}"
+
+    func endsAt(_ time: String) -> String {
+        endsAtTemplate.replacingOccurrences(of: "{time}", with: time)
+    }
+}
+
 final class AppleTvPlayerViewController: UIViewController {
     private let player: AetherPlayerWrapper
     var onExit: (() -> Void)?
@@ -92,6 +114,7 @@ final class AppleTvPlayerViewController: UIViewController {
     private var trickplayScalePercent = 30
     private var trickplayVerticalPercent = 0
     private var trickplayFollowScrub = true
+    private var trickplayPauseWhileScrubbing = true
 
     // The Next Up card, skip button, and Still Watching prompt are pure
     // renderers. The Dart side owns every decision (when to show, the
@@ -182,9 +205,14 @@ final class AppleTvPlayerViewController: UIViewController {
     private let osdContainer = UIView()
     private let gradientLayer = CAGradientLayer()
     private let scrubber = UIProgressView(progressViewStyle: .default)
-    private let currentTimeLabel = UILabel()
-    private let durationLabel = UILabel()
-    private let endsAtLabel = UILabel()
+    private let aboveRow = UIView()
+    private let belowRow = UIView()
+    private let aboveLeftLabel = UILabel()
+    private let aboveCenterLabel = UILabel()
+    private let aboveRightLabel = UILabel()
+    private let belowLeftLabel = UILabel()
+    private let belowCenterLabel = UILabel()
+    private let belowRightLabel = UILabel()
     private let chapterOverlay = UIView()
     private let controlBar = UIView()
     private let controlStack = UIStackView()
@@ -247,12 +275,17 @@ final class AppleTvPlayerViewController: UIViewController {
 
     private var chapters: [(title: String, startMs: Int)] = []
 
-    private static let endTimeFormatter: DateFormatter = {
+    private var timeSlots = TimeSlotConfig()
+    private var clockFormatter = Self.makeClockFormatter(use24Hour: false)
+
+    /// A fixed locale so the label reads the same as the Dart formatter on the
+    /// other platforms instead of following the device region.
+    private static func makeClockFormatter(use24Hour: Bool) -> DateFormatter {
         let formatter = DateFormatter()
-        formatter.timeStyle = .short
-        formatter.dateStyle = .none
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = use24Hour ? "HH:mm" : "h:mm a"
         return formatter
-    }()
+    }
 
     init(player: AetherPlayerWrapper) {
         self.player = player
@@ -305,6 +338,49 @@ final class AppleTvPlayerViewController: UIViewController {
         let g = CGFloat((value >> 8) & 0xFF) / 255.0
         let b = CGFloat(value & 0xFF) / 255.0
         return UIColor(red: r, green: g, blue: b, alpha: a)
+    }
+
+    /// The row keeps the label's line height even when every slot in it is
+    /// empty, so the scrubber does not move when a user hides the times.
+    private func setupTimeRow(
+        _ row: UIView, leading: UILabel, center: UILabel, trailing: UILabel, fontSize: CGFloat
+    ) {
+        let font = UIFont.monospacedDigitSystemFont(ofSize: fontSize, weight: .medium)
+        row.translatesAutoresizingMaskIntoConstraints = false
+        osdContainer.addSubview(row)
+        row.heightAnchor.constraint(equalToConstant: font.lineHeight).isActive = true
+        for label in [leading, center, trailing] {
+            label.translatesAutoresizingMaskIntoConstraints = false
+            label.font = font
+            label.textColor = UIColor(white: 1, alpha: 0.7)
+            row.addSubview(label)
+            label.centerYAnchor.constraint(equalTo: row.centerYAnchor).isActive = true
+        }
+        NSLayoutConstraint.activate([
+            leading.leadingAnchor.constraint(equalTo: row.leadingAnchor),
+            center.centerXAnchor.constraint(equalTo: row.centerXAnchor),
+            trailing.trailingAnchor.constraint(equalTo: row.trailingAnchor),
+        ])
+    }
+
+    func applyTimeSlots(_ args: [String: Any]) {
+        func slot(_ key: String) -> TimeSlot? {
+            (args[key] as? String).flatMap(TimeSlot.init(rawValue:))
+        }
+        if let v = slot("aboveLeft") { timeSlots.aboveLeft = v }
+        if let v = slot("aboveCenter") { timeSlots.aboveCenter = v }
+        if let v = slot("aboveRight") { timeSlots.aboveRight = v }
+        if let v = slot("belowLeft") { timeSlots.belowLeft = v }
+        if let v = slot("belowCenter") { timeSlots.belowCenter = v }
+        if let v = slot("belowRight") { timeSlots.belowRight = v }
+        if let v = args["use24Hour"] as? Bool, v != timeSlots.use24Hour {
+            timeSlots.use24Hour = v
+            clockFormatter = Self.makeClockFormatter(use24Hour: v)
+        }
+        if let v = args["endsAt"] as? String { timeSlots.endsAtTemplate = v }
+        if isViewLoaded {
+            renderProgress()
+        }
     }
 
     func applyPromptStrings(_ args: [String: Any]) {
@@ -424,22 +500,12 @@ final class AppleTvPlayerViewController: UIViewController {
         chapterOverlay.isUserInteractionEnabled = false
         osdContainer.addSubview(chapterOverlay)
 
-        currentTimeLabel.translatesAutoresizingMaskIntoConstraints = false
-        currentTimeLabel.font = .monospacedDigitSystemFont(ofSize: 26, weight: .medium)
-        currentTimeLabel.textColor = UIColor(white: 1, alpha: 0.7)
-        osdContainer.addSubview(currentTimeLabel)
-
-        durationLabel.translatesAutoresizingMaskIntoConstraints = false
-        durationLabel.font = .monospacedDigitSystemFont(ofSize: 26, weight: .medium)
-        durationLabel.textColor = UIColor(white: 1, alpha: 0.7)
-        durationLabel.textAlignment = .right
-        osdContainer.addSubview(durationLabel)
-
-        endsAtLabel.translatesAutoresizingMaskIntoConstraints = false
-        endsAtLabel.font = .monospacedDigitSystemFont(ofSize: 24, weight: .medium)
-        endsAtLabel.textColor = UIColor(white: 1, alpha: 0.7)
-        endsAtLabel.textAlignment = .right
-        osdContainer.addSubview(endsAtLabel)
+        setupTimeRow(
+            aboveRow, leading: aboveLeftLabel, center: aboveCenterLabel, trailing: aboveRightLabel,
+            fontSize: 24)
+        setupTimeRow(
+            belowRow, leading: belowLeftLabel, center: belowCenterLabel, trailing: belowRightLabel,
+            fontSize: 26)
 
         NSLayoutConstraint.activate([
             controlBar.leadingAnchor.constraint(
@@ -455,18 +521,15 @@ final class AppleTvPlayerViewController: UIViewController {
             controlStack.trailingAnchor.constraint(
                 lessThanOrEqualTo: controlBar.trailingAnchor),
 
-            currentTimeLabel.leadingAnchor.constraint(equalTo: controlBar.leadingAnchor),
-            currentTimeLabel.bottomAnchor.constraint(
-                equalTo: controlBar.topAnchor, constant: -16),
-
-            durationLabel.trailingAnchor.constraint(equalTo: controlBar.trailingAnchor),
-            durationLabel.bottomAnchor.constraint(
+            belowRow.leadingAnchor.constraint(equalTo: controlBar.leadingAnchor),
+            belowRow.trailingAnchor.constraint(equalTo: controlBar.trailingAnchor),
+            belowRow.bottomAnchor.constraint(
                 equalTo: controlBar.topAnchor, constant: -16),
 
             scrubber.leadingAnchor.constraint(equalTo: controlBar.leadingAnchor),
             scrubber.trailingAnchor.constraint(equalTo: controlBar.trailingAnchor),
             scrubber.bottomAnchor.constraint(
-                equalTo: currentTimeLabel.topAnchor, constant: -10),
+                equalTo: belowRow.topAnchor, constant: -10),
             scrubber.heightAnchor.constraint(equalToConstant: 6),
 
             chapterOverlay.leadingAnchor.constraint(equalTo: scrubber.leadingAnchor),
@@ -474,8 +537,9 @@ final class AppleTvPlayerViewController: UIViewController {
             chapterOverlay.centerYAnchor.constraint(equalTo: scrubber.centerYAnchor),
             chapterOverlay.heightAnchor.constraint(equalToConstant: 16),
 
-            endsAtLabel.trailingAnchor.constraint(equalTo: controlBar.trailingAnchor),
-            endsAtLabel.bottomAnchor.constraint(
+            aboveRow.leadingAnchor.constraint(equalTo: controlBar.leadingAnchor),
+            aboveRow.trailingAnchor.constraint(equalTo: controlBar.trailingAnchor),
+            aboveRow.bottomAnchor.constraint(
                 equalTo: scrubber.topAnchor, constant: -8),
         ])
 
@@ -1235,6 +1299,7 @@ final class AppleTvPlayerViewController: UIViewController {
         trickplayScalePercent = (dict["scalePercent"] as? NSNumber)?.intValue ?? 30
         trickplayVerticalPercent = (dict["verticalPositionPercent"] as? NSNumber)?.intValue ?? 0
         trickplayFollowScrub = (dict["followScrub"] as? Bool) ?? true
+        trickplayPauseWhileScrubbing = (dict["pauseWhileScrubbing"] as? Bool) ?? true
         if scrubTargetMs != nil || scrubFrozenMs != nil {
             updateTrickplay()
         }
@@ -1703,10 +1768,9 @@ final class AppleTvPlayerViewController: UIViewController {
         guard scrubHoldTimer != nil else { return }
         scrubHoldTimer?.invalidate()
         scrubHoldTimer = nil
-        // With a preview up the session outlives the key: the preview stays on
-        // the paused frame and play is what commits. With nothing to look at,
-        // letting go is the commit.
-        if scrubTargetMs != nil && !hasTrickplayPreview { commitScrub() }
+        // While the preview holds a paused frame the session outlives the key
+        // and play is what commits. Otherwise letting go is the commit.
+        if scrubTargetMs != nil && !pauseDuringScrub { commitScrub() }
     }
 
     private func handleSelect() {
@@ -1937,14 +2001,19 @@ final class AppleTvPlayerViewController: UIViewController {
         trickplayMode != .disabled && trickplay != nil
     }
 
-    // Pauses once per session so the preview has a still frame to sit on.
-    // Without a preview scrubbing leaves playback alone.
+    private var pauseDuringScrub: Bool {
+        hasTrickplayPreview && trickplayPauseWhileScrubbing
+    }
+
+    // Pauses once per session so the preview has a still frame to sit on,
+    // unless the setting is off. Without a preview scrubbing leaves playback
+    // alone.
     private func beginScrub() {
         scrubCommitId += 1
         scrubConvergeTimer?.invalidate()
         scrubConvergeTimer = nil
         scrubFrozenMs = nil
-        guard hasTrickplayPreview else { return }
+        guard pauseDuringScrub else { return }
         if !wasPlayingBeforeScrub {
             wasPlayingBeforeScrub = !isPaused()
             if wasPlayingBeforeScrub { player.pause() }
@@ -2756,39 +2825,64 @@ final class AppleTvPlayerViewController: UIViewController {
         let current =
             (scrubTargetMs ?? scrubFrozenMs).map { Double($0) / 1000.0 } ?? player.currentTime
         scrubber.progress = duration > 0 ? Float(min(1, max(0, current / duration))) : 0
-        currentTimeLabel.text = formatTime(current)
-        durationLabel.text = formatTime(duration)
-
         let rate = max(0.01, Double(player.rate))
-        if duration > 0 {
+        let text = { (slot: TimeSlot) in
+            self.timeSlotText(slot, current: current, duration: duration, rate: rate)
+        }
+        aboveLeftLabel.text = text(timeSlots.aboveLeft)
+        aboveCenterLabel.text = text(timeSlots.aboveCenter)
+        aboveRightLabel.text = text(timeSlots.aboveRight)
+        belowLeftLabel.text = text(timeSlots.belowLeft)
+        belowCenterLabel.text = text(timeSlots.belowCenter)
+        belowRightLabel.text = text(timeSlots.belowRight)
+    }
+
+    /// Same fallbacks as the Dart formatter: a slot that can't be computed
+    /// shows the total duration rather than going blank.
+    private func timeSlotText(
+        _ slot: TimeSlot, current: TimeInterval, duration: TimeInterval, rate: Double
+    ) -> String {
+        switch slot {
+        case .none:
+            return ""
+        case .elapsed:
+            return formatTime(current)
+        case .totalDuration:
+            return formatTime(duration)
+        case .timeRemaining:
+            return duration > 0 ? "-" + formatTime(max(0, duration - current)) : formatTime(duration)
+        case .endsAt:
             let remaining = max(0, duration - current) / rate
-            let endDate = Date().addingTimeInterval(remaining)
-            endsAtLabel.text = "Ends at \(Self.endTimeFormatter.string(from: endDate))"
-            endsAtLabel.isHidden = false
-        } else {
-            endsAtLabel.isHidden = true
+            guard duration > 0, remaining > 0 else { return formatTime(duration) }
+            return timeSlots.endsAt(clockFormatter.string(from: Date().addingTimeInterval(remaining)))
+        case .time:
+            return clockFormatter.string(from: Date())
         }
     }
 
+    /// Live has no runtime to lay out, so the program bounds take the outer
+    /// slots of the lower row and everything else stays clear.
     private func renderLiveProgress() {
-        endsAtLabel.isHidden = true
+        for label in [aboveLeftLabel, aboveCenterLabel, aboveRightLabel, belowCenterLabel] {
+            label.text = ""
+        }
         if let program = liveProgram, program.endMs > program.startMs {
             let nowMs = Date().timeIntervalSince1970 * 1000
             let span = Double(program.endMs - program.startMs)
             let progress = (nowMs - Double(program.startMs)) / span
             scrubber.progress = Float(min(1, max(0, progress)))
-            currentTimeLabel.text = clockString(epochMs: program.startMs)
-            durationLabel.text = clockString(epochMs: program.endMs)
+            belowLeftLabel.text = clockString(epochMs: program.startMs)
+            belowRightLabel.text = clockString(epochMs: program.endMs)
         } else {
             scrubber.progress = 1
-            currentTimeLabel.text = Self.endTimeFormatter.string(from: Date())
-            durationLabel.text = "LIVE"
+            belowLeftLabel.text = clockFormatter.string(from: Date())
+            belowRightLabel.text = "LIVE"
         }
     }
 
     private func clockString(epochMs: Int) -> String {
         let date = Date(timeIntervalSince1970: Double(epochMs) / 1000.0)
-        return Self.endTimeFormatter.string(from: date)
+        return clockFormatter.string(from: date)
     }
 
     private func updateOsd() {

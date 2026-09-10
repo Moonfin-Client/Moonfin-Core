@@ -10077,5 +10077,53 @@
     "openTrailersExternallySubtitle": "Les bandes-annonces s'ouvrent dans l'app YouTube ou le navigateur au lieu du lecteur intégré",
     "@openTrailersExternallySubtitle": {
         "description": "Subtitle for the external trailers setting"
+    },
+    "performanceMode": "Performance",
+    "@performanceMode": {
+        "description": "Label for the device performance setting"
+    },
+    "performanceModeSubtitle": "La fonction « Auto » analyse cet appareil et limite l'utilisation des modèles disposant d'une mémoire insuffisante, ce qui réduit le nombre d'images stockées en mémoire et convertit les bandes-annonces en images fixes. Cette modification prendra pleinement effet lors du prochain démarrage.",
+    "@performanceModeSubtitle": {
+        "description": "Explanation under the device performance setting"
+    },
+    "performanceModeAuto": "Auto",
+    "@performanceModeAuto": {
+        "description": "Performance option: measure the device"
+    },
+    "performanceModeStandard": "Standard",
+    "@performanceModeStandard": {
+        "description": "Performance option: never hold back"
+    },
+    "performanceModeReduced": "Réduit",
+    "@performanceModeReduced": {
+        "description": "Performance option: always hold back"
+    },
+    "trailerPreviewHeldBack": "Désactivé car le paramètre « Performances » est réglé sur « Réduit » pour cet appareil",
+    "@trailerPreviewHeldBack": {
+        "description": "Shown under the trailer preview switch when the device tier suppresses trailers"
+    },
+    "controller": "Contrôleur",
+    "@controller": {
+        "description": "Settings section header for game controller options"
+    },
+    "gamepadNavigation": "Navigation à l'aide d'une manette",
+    "@gamepadNavigation": {
+        "description": "Settings label for the switch that lets a game controller move focus and select items"
+    },
+    "gamepadNavigationDescription": "Permettre à une manette de jeu connectée de déplacer le curseur et de sélectionner des éléments",
+    "@gamepadNavigationDescription": {
+        "description": "Settings subtitle for the gamepad navigation switch"
+    },
+    "latestComics": "Dernières bandes dessinées",
+    "@latestComics": {
+        "description": "Row title for recently added comics in the book library"
+    },
+    "comics": "Bandes dessinées",
+    "@comics": {
+        "description": "Label for comic media format or section"
+    },
+    "bookFormatComic": "Bande dessinée",
+    "@bookFormatComic": {
+        "description": "Semantic label for the comic format badge on library cards"
     }
 }

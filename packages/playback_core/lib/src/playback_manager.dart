@@ -451,6 +451,17 @@ class PlaybackManager implements AudioOwnable {
             embeddedStripped: false,
           );
 
+    // The player opens the chosen track at load from the container's own
+    // numbering. A stripped stream carries the one audio track the server
+    // already picked, so there is nothing to point at.
+    final audioContainerIndex =
+        _embeddedTracksStripped || audioStreamIndex == null
+        ? null
+        : TrackOrdinalMapper.containerStreamIndex(
+            streamIndex: audioStreamIndex,
+            mediaStreams: mediaStreams,
+          );
+
     return <String, dynamic>{
       'url': url,
       'autoPlay': autoPlay,
@@ -461,8 +472,8 @@ class PlaybackManager implements AudioOwnable {
         'audioCodec': (audioStream['Codec'] ?? '').toString(),
         'audioProfile': (audioStream['Profile'] ?? '').toString(),
         if (audioStream['Channels'] is int) 'audioChannels': audioStream['Channels'],
-        if (audioStream['Index'] is int) 'audioStreamIndex': audioStream['Index'],
       },
+      if (audioContainerIndex != null) 'audioStreamIndex': audioContainerIndex,
       if (audioTrackOrdinal != null) 'audioTrackOrdinal': audioTrackOrdinal,
       if (audioStreamLang != null) 'preferredAudioLanguage': audioStreamLang,
       if (subtitleStreamLang != null)

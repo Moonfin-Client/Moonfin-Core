@@ -31,6 +31,7 @@ import '../../widgets/rating_display.dart';
 import '../../../data/services/theme_music_service.dart';
 import '../../../data/services/media_server_client_factory.dart';
 import '../../../data/services/plugin_sync_service.dart';
+import '../../../data/services/user_data_sync.dart';
 import '../../../data/services/connectivity_service.dart';
 import '../../../data/utils/media_type_badges.dart';
 import '../../../l10n/app_localizations.dart';
@@ -170,6 +171,7 @@ class _HomeShellState extends State<_HomeShell>
     appRouter.routerDelegate.addListener(_onRouteChanged);
     _lastObservedPath = appRouter.routerDelegate.currentConfiguration.uri.path;
     homeRefreshBus.addListener(_onHomeRefreshRequested);
+    userDataSync.addListener(_onUserDataChanged);
     if (homeRefreshBus.consumePending()) {
       _viewModel.refresh(preserveExisting: true);
     }
@@ -209,6 +211,13 @@ class _HomeShellState extends State<_HomeShell>
     _viewModel.load(preserveExisting: _viewModel.rows.isNotEmpty);
   }
 
+  /// The rows on screen were built before the watched state changed, so patch
+  /// them rather than refetch.
+  void _onUserDataChanged() {
+    if (!mounted) return;
+    _viewModel.applyUserDataChanges();
+  }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -229,6 +238,7 @@ class _HomeShellState extends State<_HomeShell>
     }
     appRouter.routerDelegate.removeListener(_onRouteChanged);
     homeRefreshBus.removeListener(_onHomeRefreshRequested);
+    userDataSync.removeListener(_onUserDataChanged);
     WidgetsBinding.instance.removeObserver(this);
     _selectionDebounce?.cancel();
     _backdropDebounce?.cancel();
@@ -1690,7 +1700,7 @@ class _ContentRowsState extends State<_ContentRows>
         _previewUsingAppleTv = true;
         final player = _ensureAppleTvSharedPreviewPlayer();
         await player
-            .open(previewUrl, volume: previewVolume)
+            .open(previewUrl, volume: previewVolume, startPosition: seekPosition)
             .timeout(_previewOpenTimeout);
         if (!_isPreviewRequestActive(requestId, previewKey)) {
           await player.stop();
@@ -1901,6 +1911,16 @@ class _ContentRowsState extends State<_ContentRows>
         : null;
     final audioIndex = _getPreferredAudioIndex(item);
     final startTicks = startPosition.inMicroseconds * 10;
+    // AVPlayer never reaches readyToPlay on a growing progressive transcode,
+    // so the preview stays blank until the open times out. HLS is the form
+    // AVFoundation reads natively, so the Apple preview player asks for the
+    // segmented version of the same request.
+    final usesHlsPreview = !kIsWeb && PlatformDetection.useApplePreviewPlayer;
+    final streamPath = kIsWeb
+        ? 'stream.mp4'
+        : usesHlsPreview
+        ? 'master.m3u8'
+        : 'stream';
     final params = <String, String>{
       'Static': 'false',
       // The transcode is registered against these two, and stopping it later
@@ -1918,7 +1938,10 @@ class _ContentRowsState extends State<_ContentRows>
       'subtitleMethod': 'Drop',
       if (kIsWeb) 'container': 'mp4',
       if (kIsWeb) 'TranscodingContainer': 'mp4',
-      if (startTicks > 0) 'StartTimeTicks': '$startTicks',
+      // The server copies this into the segment urls it writes and then refuses
+      // its own segment for carrying it, so every segment fails. The Apple
+      // player seeks to the same offset after it opens instead.
+      if (startTicks > 0 && !usesHlsPreview) 'StartTimeTicks': '$startTicks',
       'MediaSourceId': ?mediaSourceId,
       'AudioStreamIndex': ?audioIndex?.toString(),
       if (client.accessToken != null) 'ApiKey': client.accessToken!,
@@ -1927,15 +1950,6 @@ class _ContentRowsState extends State<_ContentRows>
     final normalizedBasePath = baseUri.path.endsWith('/')
         ? baseUri.path.substring(0, baseUri.path.length - 1)
         : baseUri.path;
-    // AVPlayer never reaches readyToPlay on a growing progressive transcode,
-    // so the preview stays blank until the open times out. HLS is the form
-    // AVFoundation reads natively, so the Apple preview player asks for the
-    // segmented version of the same request.
-    final streamPath = kIsWeb
-        ? 'stream.mp4'
-        : PlatformDetection.useApplePreviewPlayer
-        ? 'master.m3u8'
-        : 'stream';
     final fullPath = '$normalizedBasePath/Videos/${item.id}/$streamPath';
 
     return baseUri.replace(path: fullPath, queryParameters: params).toString();

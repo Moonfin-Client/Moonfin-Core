@@ -190,6 +190,12 @@ class _VideoPlaybackScreen extends StatelessWidget {
                       subtitle: l10n.trickplayFollowScrubPositionSubtitle,
                       icon: Icons.swipe,
                     ),
+                    SwitchPreferenceTile(
+                      preference: UserPreferences.trickPlayPauseWhileScrubbing,
+                      title: l10n.trickplayPauseWhileScrubbing,
+                      subtitle: l10n.trickplayPauseWhileScrubbingSubtitle,
+                      icon: Icons.pause_circle_outline,
+                    ),
                   ],
                 ],
               );

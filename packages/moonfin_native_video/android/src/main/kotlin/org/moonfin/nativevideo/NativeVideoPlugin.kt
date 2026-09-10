@@ -14,12 +14,15 @@ class NativeVideoPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, EventC
     private var media3ControlChannel: MethodChannel? = null
     private var media3EventsChannel: EventChannel? = null
     private var media3ActivityChannel: MethodChannel? = null
+    private var transmuxChannel: MethodChannel? = null
+    private var transmuxEventsChannel: EventChannel? = null
     private var applicationContext: Context? = null
 
     // The sink this plugin instance registered via onListen. Media3Bridge's sink
     // is process-global but each FlutterEngine has its own plugin instance, so we
     // track ownership and only clear the global sink when it is still ours.
     private var registeredSink: EventChannel.EventSink? = null
+    private var registeredTransmuxSink: EventChannel.EventSink? = null
 
     override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         applicationContext = binding.applicationContext
@@ -56,6 +59,32 @@ class NativeVideoPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, EventC
                 handleMedia3ActivityCall(call, result)
             }
         }
+
+        transmuxChannel = MethodChannel(
+            binding.binaryMessenger,
+            "moonfin/media3_transmux",
+        ).also {
+            it.setMethodCallHandler { call, result ->
+                Media3Transmux.handleMethodCall(call, result, applicationContext)
+            }
+        }
+
+        transmuxEventsChannel = EventChannel(
+            binding.binaryMessenger,
+            "moonfin/media3_transmux_events",
+        ).also {
+            it.setStreamHandler(object : EventChannel.StreamHandler {
+                override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
+                    registeredTransmuxSink = events
+                    Media3Transmux.setEventSink(events)
+                }
+
+                override fun onCancel(arguments: Any?) {
+                    Media3Transmux.clearEventSink(registeredTransmuxSink)
+                    registeredTransmuxSink = null
+                }
+            })
+        }
     }
 
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
@@ -68,10 +97,19 @@ class NativeVideoPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, EventC
         media3EventsChannel?.setStreamHandler(null)
         media3EventsChannel = null
 
+        transmuxChannel?.setMethodCallHandler(null)
+        transmuxChannel = null
+
+        transmuxEventsChannel?.setStreamHandler(null)
+        transmuxEventsChannel = null
+
         applicationContext = null
 
         Media3Bridge.clearEventSink(registeredSink)
         registeredSink = null
+
+        Media3Transmux.clearEventSink(registeredTransmuxSink)
+        registeredTransmuxSink = null
     }
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {

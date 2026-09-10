@@ -621,6 +621,10 @@ class AppleTvBackend implements PlayerBackend {
     await _invoke<void>('setPromptStrings', strings);
   }
 
+  Future<void> setTimeSlots(Map<String, Object> slots) async {
+    await _invoke<void>('setTimeSlots', slots);
+  }
+
   @override
   Future<void> setPlaybackSpeed(double speed) async {
     _playbackSpeed = speed;

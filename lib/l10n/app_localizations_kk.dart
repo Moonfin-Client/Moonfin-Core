@@ -2755,6 +2755,13 @@ class AppLocalizationsKk extends AppLocalizations {
       'Preview slides along the seekbar as you scrub, instead of staying centered';
 
   @override
+  String get trickplayPauseWhileScrubbing => 'Pause While Scrubbing';
+
+  @override
+  String get trickplayPauseWhileScrubbingSubtitle =>
+      'Playback pauses while you seek and resumes when you press play. Turn this off to keep playing and jump straight to the new spot';
+
+  @override
   String get showDescriptionOnPause => 'Сипаттаманы кідіртуде көрсету';
 
   @override

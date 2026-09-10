@@ -29,7 +29,7 @@
     "@username": {
         "description": "Username field label"
     },
-    "quickConnectInstruction": "Унесите овај код на веб контролној табли вашег сервера:",
+    "quickConnectInstruction": "Упишите овај кôд на веб-интерфејсу вашег сервера:",
     "@quickConnectInstruction": {
         "description": "Instruction text for Quick Connect code entry"
     },
@@ -70,7 +70,7 @@
             }
         }
     },
-    "whosWatching": "ко гледа?",
+    "whosWatching": "Ко гледа?",
     "@whosWatching": {
         "description": "Server user selection heading"
     },
@@ -164,7 +164,7 @@
     "@ok": {
         "description": "Generic OK button label"
     },
-    "settingsAppearanceTheme": "Апп Тхеме",
+    "settingsAppearanceTheme": "Тема апликације",
     "@settingsAppearanceTheme": {
         "description": "Title for the theme selection screen and theme settings entry"
     },
@@ -172,19 +172,19 @@
     "@settingsAppearanceThemeSubtitle": {
         "description": "Subtitle for the theme selection screen and theme settings entry"
     },
-    "themeMoonfin": "Moonfin",
+    "themeMoonfin": "Мунфин (Moonfin)",
     "@themeMoonfin": {
         "description": "Display name for the Moonfin theme"
     },
-    "themeMoonfinSubtitle": "Оригинални, чист Moonfin изглед.",
+    "themeMoonfinSubtitle": "Аутентично, нетакнуто подразумевано издање Мунфина (Moonfin).",
     "@themeMoonfinSubtitle": {
         "description": "Preview description for the Moonfin theme"
     },
-    "themeNeonPulse": "Неон Пулсе",
+    "themeNeonPulse": "Неонски пулс",
     "@themeNeonPulse": {
         "description": "Display name for the Neon Pulse theme"
     },
-    "themeNeonPulseSubtitle": "Синтхваве стил са магента сјајем, цијан текстом и јачим хромираним контрастом",
+    "themeNeonPulseSubtitle": "Синтвејв стилизација са пурпурним сјајем, тиркизним текстом и израженијим контрастом хрома",
     "@themeNeonPulseSubtitle": {
         "description": "Preview description for the Neon Pulse theme"
     },
@@ -192,7 +192,7 @@
     "@embyConnectSignInSubtitle": {
         "description": "Subtitle on the Emby Connect sign-in screen"
     },
-    "emailOrUsername": "Е-маил или корисничко име",
+    "emailOrUsername": "Имејл или корисничко име",
     "@emailOrUsername": {
         "description": "Label for the Emby Connect username/email field"
     },
@@ -249,7 +249,7 @@
             }
         }
     },
-    "exitApp": "Изаћи из Moonfin-а?",
+    "exitApp": "Изаћи из Мунфина (Moonfin)?",
     "@exitApp": {
         "description": "Title of exit confirmation dialog"
     },
@@ -2312,7 +2312,7 @@
     "@seerr": {
         "description": "Seerr brand name"
     },
-    "savedMedia": "Сачувани медији",
+    "savedMedia": "Преузимања",
     "@savedMedia": {
         "description": "Header title for saved/downloaded media screen"
     },
@@ -7362,23 +7362,23 @@
     "@recommendationSystem": {
         "description": "Label for the Recommendation System setting"
     },
-    "recommendationSystemSubtitle": "Користите алгоритам локалне библиотеке Moonfin Recommends или онлајн TMDb метрике сличности. Напомена: онлајн препоруке захтевају Seerr интеграцију.",
+    "recommendationSystemSubtitle": "Употребите алгоритам локалне библиотеке „Мунфин препоручује” (Moonfin Recommends) или мрежне метрике сличности ТМДБ-а (TMDb). Напомена: Мрежне препоруке изискују интеграцију са Сиром (Seerr).",
     "@recommendationSystemSubtitle": {
         "description": "Explanation under the recommendation system setting"
     },
-    "recommendationSystemMoonfin": "Moonfin Recommends",
+    "recommendationSystemMoonfin": "Мунфин (Moonfin) препоручује",
     "@recommendationSystemMoonfin": {
         "description": "Recommendation system option: Moonfin Recommends"
     },
-    "recommendationSystemTmdb": "TMDb сличност",
+    "recommendationSystemTmdb": "ТМДБ (TMDb) сличност",
     "@recommendationSystemTmdb": {
         "description": "Recommendation system option: TMDb Similarity"
     },
-    "recommendationsApplyParentalRatingCap": "Применити ограничење родитељске оцене?",
+    "recommendationsApplyParentalRatingCap": "Применити ограничење на основу старосне класификације?",
     "@recommendationsApplyParentalRatingCap": {
         "description": "Label for the toggle that controls whether similar suggestions are capped by target media parental rating"
     },
-    "recommendationsApplyParentalRatingCapSubtitle": "Ограничи предлоге функције Moonfin Recommends према родитељској оцени изабраног садржаја",
+    "recommendationsApplyParentalRatingCapSubtitle": "Лимитирај предлоге опције Мунфин препоручује (Moonfin Recommends) у складу са старосном класификацијом циљног медија",
     "@recommendationsApplyParentalRatingCapSubtitle": {
         "description": "Explanation under the parental rating cap setting toggle"
     },
@@ -7394,11 +7394,11 @@
     "@interfaceStyleAutomatic": {
         "description": "Interface style option: follow the platform"
     },
-    "interfaceStyleApple": "Apple",
+    "interfaceStyleApple": "Епл (Apple)",
     "@interfaceStyleApple": {
         "description": "Interface style option: Apple native look"
     },
-    "interfaceStyleMaterial": "Material",
+    "interfaceStyleMaterial": "Материјал (Material)",
     "@interfaceStyleMaterial": {
         "description": "Interface style option: Material look"
     },
@@ -7406,7 +7406,7 @@
     "@glassQuality": {
         "description": "Label for the glass rendering quality setting"
     },
-    "glassQualitySubtitle": "Аутоматски бира најбољи ефекат стакла за овај уређај. Пуни намеће право замућење, а Смањени користи лагано стакло које штеди GPU.",
+    "glassQualitySubtitle": "Аутоматски бира најоптималнији ефекат стакла за овај уређај. Режим „Потпуно” намеће аутентично замућење; „Редуковано” користи ресурсно мање захтеван приказ стакла чиме се штеди снага ГПЈ.",
     "@glassQualitySubtitle": {
         "description": "Explanation under the glass quality setting"
     },
@@ -7434,7 +7434,7 @@
     "@themeGlass": {
         "description": "Display name for the Glass theme"
     },
-    "themeGlassSubtitle": "Стил течног стакла са покретном градијентном позадином, матираним површинама и Apple-плавим акцентом",
+    "themeGlassSubtitle": "Естетика течног стакла коју одликују преливајућа градијентна позадина, замрзнуте површине и детаљи у Епл (Apple) плавој нијанси",
     "@themeGlassSubtitle": {
         "description": "Preview description for the Glass theme"
     },
@@ -7442,7 +7442,7 @@
     "@theme8BitHero": {
         "description": "Display name for the 8-bit Hero theme"
     },
-    "theme8BitHeroSubtitle": "Ретро pixel-art стил са израженом палетом, блоковским ивицама, оштрим сенкама и пиксел фонтом",
+    "theme8BitHeroSubtitle": "Ретро пиксел-арт дизајн са изражајном палетом боја, блокастим ивицама, оштрим падајућим сенкама и пикселним фонтом",
     "@theme8BitHeroSubtitle": {
         "description": "Preview description for the 8-bit Hero theme"
     },
@@ -9678,5 +9678,142 @@
     "adminMetadataPersonKindNarrator": "Приповедач",
     "adminMetadataAirDays": "Дани емитовања",
     "adminMetadataLockItem": "Закључајте ову ставку како бисте спречили будуће измене метаподатака",
-    "adminMetadataEnabledFields": "Омогућена поља"
+    "adminMetadataEnabledFields": "Омогућена поља",
+    "latestComics": "Најновији стрипови",
+    "@latestComics": {
+        "description": "Row title for recently added comics in the book library"
+    },
+    "comics": "Стрипови",
+    "@comics": {
+        "description": "Label for comic media format or section"
+    },
+    "bookFormatComic": "Стрип",
+    "@bookFormatComic": {
+        "description": "Semantic label for the comic format badge on library cards"
+    },
+    "noBooksFoundDescription": "Ова библиотека још увек не садржи књиге, аудио-књиге нити стрипове.",
+    "@noBooksFoundDescription": {
+        "description": "Description shown when a books library has no items"
+    },
+    "queuedMoreCount": "{count, plural, =1{још 1 на чекању} other{још {count} на чекању}}",
+    "@queuedMoreCount": {
+        "description": "Row under the active downloads list standing in for queued items not shown individually",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "downloadScopeTitle": "Шта треба преузети",
+    "@downloadScopeTitle": {
+        "description": "Title of the sheet asking whether to download all or only unwatched items"
+    },
+    "downloadAllEpisodes": "Све епизоде",
+    "@downloadAllEpisodes": {
+        "description": "Download scope option: every episode of a series or season"
+    },
+    "downloadUnwatchedEpisodes": "Све неодгледане епизоде",
+    "@downloadUnwatchedEpisodes": {
+        "description": "Download scope option: only episodes not yet marked as watched"
+    },
+    "downloadAllMovies": "Све филмове",
+    "@downloadAllMovies": {
+        "description": "Download scope option: every movie in a collection"
+    },
+    "downloadUnwatchedMovies": "Све неодгледане филмове",
+    "@downloadUnwatchedMovies": {
+        "description": "Download scope option: only collection movies not yet marked as watched"
+    },
+    "downloadScopeLoading": "Учитавам ставке...",
+    "@downloadScopeLoading": {
+        "description": "Subtitle shown in the download scope sheet while the item list is being fetched"
+    },
+    "downloadScopeLoadFailed": "Није могуће учитати ставке за преузимање",
+    "@downloadScopeLoadFailed": {
+        "description": "Snackbar shown when the item list for a batch download could not be fetched"
+    },
+    "downloadEstimateTotal": "~{size} укупно",
+    "@downloadEstimateTotal": {
+        "description": "Estimated total download size for a batch, e.g. '~1.2 GB total'",
+        "placeholders": {
+            "size": {
+                "type": "String"
+            }
+        }
+    },
+    "downloadBytesOfTotal": "{received} од {total}",
+    "@downloadBytesOfTotal": {
+        "description": "Transfer status of a running download, e.g. '1.2 GB of 4.6 GB'",
+        "placeholders": {
+            "received": {
+                "type": "String"
+            },
+            "total": {
+                "type": "String"
+            }
+        }
+    },
+    "downloadSpeed": "{speed}/с",
+    "@downloadSpeed": {
+        "description": "Transfer rate of a running download, e.g. '25.3 MB/s'",
+        "placeholders": {
+            "speed": {
+                "type": "String"
+            }
+        }
+    },
+    "downloadSizeTotal": "{size} укупно",
+    "@downloadSizeTotal": {
+        "description": "Exact total file size of a batch of original files, e.g. '12.4 GB total'",
+        "placeholders": {
+            "size": {
+                "type": "String"
+            }
+        }
+    },
+    "downloadEstimateUnknownCount": "{count} непознато",
+    "@downloadEstimateUnknownCount": {
+        "description": "Appended to a batch size estimate when some items had no runtime to estimate from",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "trickplayFollowScrubPositionSubtitle": "Приказуј преглед слајдова дуж траке за премотавање приликом превлачења, уместо задржавања у центру",
+    "@trickplayFollowScrubPositionSubtitle": {
+        "description": "Description for the trickplay follow-scrub-position setting"
+    },
+    "playerSwipeGestures": "Превлачења за јачину звука и осветљеност",
+    "@playerSwipeGestures": {
+        "description": "Setting for player swipe gestures"
+    },
+    "playerSwipeGesturesDescription": "Превуците нагоре или надоле по плејеру да бисте променили осветљеност на левој и јачину звука на десној страни",
+    "@playerSwipeGesturesDescription": {
+        "description": "Description for player swipe gestures"
+    },
+    "osdButtons": "Дугмад плејера",
+    "@osdButtons": {
+        "description": "Settings screen for choosing which buttons the player shows"
+    },
+    "osdButtonsDescription": "Одаберите коју дугмад плејер приказује",
+    "@osdButtonsDescription": {
+        "description": "Subtitle for the player buttons settings tile"
+    },
+    "osdButtonsSectionDescription": "Контроле репродукције су увек приказане. Све испод тога можете прилагодити по сопственом нахођењу, при чему сваки тип уређаја памти сопствену листу.",
+    "@osdButtonsSectionDescription": {
+        "description": "Explains that transport controls can't be hidden and that the list is per device kind"
+    },
+    "detailButtons": "Аквиона дугмад",
+    "@detailButtons": {
+        "description": "Settings screen for choosing which buttons the details screen shows"
+    },
+    "detailButtonsDescription": "Одаберите која дугмад ће се приказивати на екрану са детаљима",
+    "@detailButtonsDescription": {
+        "description": "Subtitle for the details action buttons settings tile"
+    },
+    "detailButtonsSectionDescription": "Репродукција је увек на првом месту, док су закључана дугмад увек приказана. Све остало можете организовати по сопственом нахођењу, а сваки тип уређаја задржава своју засебну листу.",
+    "@detailButtonsSectionDescription": {
+        "description": "Explains that the play buttons can't be hidden and that the list is per device kind"
+    }
 }

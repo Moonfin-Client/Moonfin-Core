@@ -18,9 +18,22 @@ class LibraryChangedMessage extends ServerWebSocketMessage {
 
 class UserDataChangedMessage extends ServerWebSocketMessage {
   final String userId;
-  final List<String> itemIds;
 
-  const UserDataChangedMessage({required this.userId, this.itemIds = const []});
+  /// One entry per changed item, holding the item's id under `ItemId` next to
+  /// the user data fields the server sent for it, such as `Played` and
+  /// `UnplayedItemCount`. The values are carried through so a client can patch
+  /// what it already shows instead of refetching the item.
+  final List<Map<String, dynamic>> userDataList;
+
+  const UserDataChangedMessage({
+    required this.userId,
+    this.userDataList = const [],
+  });
+
+  List<String> get itemIds => [
+    for (final entry in userDataList)
+      if (entry['ItemId'] != null) entry['ItemId'].toString(),
+  ];
 }
 
 class PlayMessage extends ServerWebSocketMessage {

@@ -17,6 +17,7 @@ import 'package:screen_brightness_platform_interface/screen_brightness_platform_
 import 'package:volume_controller/volume_controller.dart';
 import 'package:window_manager/window_manager.dart';
 
+import '../../../data/utils/video_range_label.dart';
 import '../../../playback/subtitle_style.dart';
 import '../../../util/fullscreen_helper.dart';
 import '../../../util/scroll_sensitivity_binding.dart';
@@ -1739,7 +1740,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
           l10n.resolution,
           '${width ?? '?'}×${height ?? '?'}${fps != null ? ' @ ${fps.round()}fps' : ''}',
         ),
-        row(l10n.hdr, _getHdrType(video)),
+        row(l10n.hdr, videoRangeLabel(video)),
         if (_hdrOutputRow(l10n, hdrTonemapped: hdrTonemapped)
             case final hdrOutput?)
           row(l10n.hdrOutput, hdrOutput),
@@ -2987,16 +2988,19 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       _prefs.get(UserPreferences.trickPlayMode) != TrickplayMode.disabled &&
       (_trickplayInfo?.isValid ?? false);
 
+  bool get _pauseDuringScrub =>
+      _hasTrickplayPreview &&
+      _prefs.get(UserPreferences.trickPlayPauseWhileScrubbing);
+
   // Pauses playback once per scrub session so the trickplay preview has a
-  // stable frozen reference; without a preview, scrubbing leaves playback
-  // untouched. The Slider path resumes after its committed seek converges;
-  // the D-pad path stays paused until the user presses play. Callers gate
-  // this on
-  // _pendingScrubSeekTarget being null (see _accumulateScrub), not on
-  // _isSeeking - _isSeeking can still be true from an OLDER commit that
-  // hasn't finished converging yet when a brand new gesture starts (release,
-  // then press again quickly), and that stale state must not block this new
-  // gesture's own setup.
+  // stable frozen reference, unless the setting is off. Without a preview,
+  // scrubbing leaves playback untouched. The Slider path resumes after its
+  // committed seek converges and the D-pad path stays paused until the user
+  // presses play. Callers gate this on _pendingScrubSeekTarget being null
+  // (see _accumulateScrub), not on _isSeeking - _isSeeking can still be true
+  // from an OLDER commit that hasn't finished converging yet when a brand new
+  // gesture starts (release, then press again quickly), and that stale state
+  // must not block this new gesture's own setup.
   void _beginScrub() {
     // Dragging fires PointerMoveEvents, not hover events, so stale
     // _hoverPosition must be cleared or it flashes the wrong preview on drag end.
@@ -3009,15 +3013,17 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _scrubSeekCommitId++;
     if (_hasTrickplayPreview) {
       _prefetchAllTrickplaySheets(_state.position);
-      _isPausedScrubActive = true;
-      // If an earlier still-resolving commit already paused playback for
-      // this chain of overlapping gestures, _wasPlayingBeforeScrubPause is
-      // already correctly true - re-reading _state.isPlaying now would see
-      // "paused" and wrongly conclude nothing needs resuming later.
-      if (!_wasPlayingBeforeScrubPause) {
-        _wasPlayingBeforeScrubPause = _state.isPlaying;
-        if (_wasPlayingBeforeScrubPause) {
-          _manager.pause();
+      if (_pauseDuringScrub) {
+        _isPausedScrubActive = true;
+        // If an earlier still-resolving commit already paused playback for
+        // this chain of overlapping gestures, _wasPlayingBeforeScrubPause is
+        // already correctly true - re-reading _state.isPlaying now would see
+        // "paused" and wrongly conclude nothing needs resuming later.
+        if (!_wasPlayingBeforeScrubPause) {
+          _wasPlayingBeforeScrubPause = _state.isPlaying;
+          if (_wasPlayingBeforeScrubPause) {
+            _manager.pause();
+          }
         }
       }
     }
@@ -3463,10 +3469,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       if (event.logicalKey == LogicalKeyboardKey.arrowLeft ||
           event.logicalKey == LogicalKeyboardKey.arrowRight) {
         _resetSeekAcceleration();
-        // With a trickplay preview up, the session survives key-release -
-        // the preview stays on the paused frame and play is what commits
-        // (#1025). With nothing to browse, release commits directly.
-        if (!_hasTrickplayPreview) {
+        // While the preview holds a paused frame the session survives
+        // key-release and play is what commits. Otherwise release commits
+        // directly.
+        if (!_pauseDuringScrub) {
           _commitPendingScrub();
         }
       }
@@ -3769,8 +3775,13 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         _showControls();
         return KeyEventResult.handled;
       case LogicalKeyboardKey.escape:
-        if (PlatformDetection.useDesktopUi && _isDesktopFullscreen) {
-          unawaited(_setDesktopFullscreen(false));
+        // A held Escape would leave fullscreen and then stop playback on the
+        // repeat.
+        if (event is KeyRepeatEvent) {
+          return KeyEventResult.handled;
+        }
+        if (PlatformDetection.useDesktopUi) {
+          unawaited(_leaveFullscreenOrPlayback());
           return KeyEventResult.handled;
         }
         _exitPlayback();
@@ -5724,6 +5735,25 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     } catch (_) {}
   }
 
+  /// Asks the window rather than reading [_isDesktopFullscreen], because
+  /// fullscreen can be toggled from outside this screen and the flag only
+  /// catches up when a window event lands. A flag that says "not fullscreen"
+  /// while the window is turns Escape into stopping playback.
+  Future<void> _leaveFullscreenOrPlayback() async {
+    bool fullscreen;
+    try {
+      fullscreen = await FullscreenHelper.isFullscreen();
+    } catch (_) {
+      fullscreen = _isDesktopFullscreen;
+    }
+    if (!mounted) return;
+    if (fullscreen) {
+      await _setDesktopFullscreen(false);
+      return;
+    }
+    await _exitPlayback();
+  }
+
   Future<void> _setDesktopFullscreen(bool full) async {
     if (!PlatformDetection.useDesktopUi) return;
     try {
@@ -7535,27 +7565,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       1 => l10n.mono,
       _ => l10n.channelsCount(channels),
     };
-  }
-
-  String _getHdrType(Map<String, dynamic> stream) {
-    final rangeType = stream['VideoRangeType'] as String? ?? '';
-    if (rangeType.contains('DOVI') || rangeType.contains('DoVi')) {
-      return 'Dolby Vision';
-    }
-    if (rangeType.contains('HDR10Plus') || rangeType.contains('HDR10+')) {
-      return 'HDR10+';
-    }
-    if (rangeType.contains('HDR10') || rangeType.contains('HDR')) {
-      return 'HDR10';
-    }
-    if (rangeType.contains('HLG')) {
-      return 'HLG';
-    }
-    final range = stream['VideoRange'] as String?;
-    if (range == 'HDR') {
-      return 'HDR';
-    }
-    return 'SDR';
   }
 
   void _showStreamInfo() {

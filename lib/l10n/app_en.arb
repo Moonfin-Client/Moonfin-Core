@@ -3815,6 +3815,14 @@
   "@trickplayFollowScrubPositionSubtitle": {
     "description": "Description for the trickplay follow-scrub-position setting"
   },
+  "trickplayPauseWhileScrubbing": "Pause While Scrubbing",
+  "@trickplayPauseWhileScrubbing": {
+    "description": "Setting for whether seeking pauses playback so the trickplay preview holds still"
+  },
+  "trickplayPauseWhileScrubbingSubtitle": "Playback pauses while you seek and resumes when you press play. Turn this off to keep playing and jump straight to the new spot",
+  "@trickplayPauseWhileScrubbingSubtitle": {
+    "description": "Description for the trickplay pause-while-scrubbing setting"
+  },
   "showDescriptionOnPause": "Show Description on Pause",
   "@showDescriptionOnPause": {
     "description": "Setting for showing description on pause"

@@ -24,6 +24,7 @@ import '../../../util/focus/dpad_keys.dart';
 import '../../../util/focus/grid_focus_node_mixin.dart';
 import '../../../util/platform_detection.dart';
 import '../../navigation/destinations.dart';
+import '../../navigation/route_lifecycle_observer.dart';
 import '../../widgets/fullscreen_backdrop_switcher.dart';
 import '../../widgets/focus/context_menu_sheet.dart';
 import '../../widgets/focus/focusable_toolbar_button.dart';
@@ -117,7 +118,7 @@ class LibraryBrowseScreen extends StatefulWidget {
 }
 
 class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
-    with GridFocusNodeMixin<LibraryBrowseScreen> {
+    with GridFocusNodeMixin<LibraryBrowseScreen>, RouteAware {
   late final LibraryBrowseViewModel _vm;
   final _scrollController = ScrollController();
   final _searchController = TextEditingController();
@@ -157,10 +158,22 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     _prefs.addListener(_onChanged);
   }
 
+  ModalRoute<dynamic>? _observedRoute;
+
   final _allLetterFocusNode = FocusNode(debugLabel: 'alpha_all_letter');
 
   @override
+  void didPopNext() {
+    super.didPopNext();
+    unawaited(_vm.syncUserDataIfStale());
+  }
+
+  @override
   void dispose() {
+    if (_observedRoute != null) {
+      routeLifecycleObserver.unsubscribe(this);
+      _observedRoute = null;
+    }
     _searchController.dispose();
     _searchFocusNode.dispose();
     _homeButtonFocusNode.dispose();
@@ -212,6 +225,13 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
   void didChangeDependencies() {
     super.didChangeDependencies();
     _hasSubtitlesCache = null;
+    final route = ModalRoute.of(context);
+    if (route == null || route == _observedRoute) return;
+    if (_observedRoute != null) {
+      routeLifecycleObserver.unsubscribe(this);
+    }
+    _observedRoute = route;
+    routeLifecycleObserver.subscribe(this, route);
   }
 
   /// Whether the scroll view has settled metrics and is within

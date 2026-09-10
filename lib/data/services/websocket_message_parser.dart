@@ -65,13 +65,12 @@ class WebSocketMessageParser {
     if (data is! Map<String, dynamic>) return null;
     final userId = data['UserId']?.toString();
     if (userId == null) return null;
-    final itemIds =
-        (data['UserDataList'] as List<dynamic>?)
-            ?.map((e) => (e as Map<String, dynamic>)['ItemId']?.toString())
-            .whereType<String>()
-            .toList() ??
-        const [];
-    return UserDataChangedMessage(userId: userId, itemIds: itemIds);
+    final entries = <Map<String, dynamic>>[
+      for (final entry in (data['UserDataList'] as List<dynamic>? ?? const []))
+        if (entry is Map && entry['ItemId'] != null)
+          Map<String, dynamic>.from(entry),
+    ];
+    return UserDataChangedMessage(userId: userId, userDataList: entries);
   }
 
   static PlayMessage? _parsePlay(dynamic data) {

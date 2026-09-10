@@ -12,6 +12,7 @@ import '../../util/focus/dpad_keys.dart';
 import '../../util/focus/input_mode_tracker.dart';
 import '../../util/platform_detection.dart';
 import 'focus/focus_theme.dart';
+import 'focus/glass_press_scale.dart';
 
 const _kExpandDuration = Duration(milliseconds: 150);
 const _kHoverDelay = Duration(milliseconds: 150);
@@ -213,49 +214,51 @@ class _ExpandableIconButtonState extends State<ExpandableIconButton> {
         child: GestureDetector(
           onTap: widget.onPressed,
           onLongPress: widget.onLongPress,
-          child: AnimatedContainer(
-            duration: _kExpandDuration,
-            curve: Curves.easeOut,
-            height: isMobile ? btnSize : null,
-            constraints: BoxConstraints(
-              minWidth: btnSize,
-              maxWidth: isExpanded ? 200 : btnSize,
-            ),
-            decoration: FocusTheme.focusDecoration(
-              isFocused: focusVisible && isMobile,
-              radius: effectiveBorderRadius,
-              color: focusColor,
-              backgroundColor: bgColor,
-            ),
-            padding: EdgeInsets.symmetric(
-              horizontal: isExpanded ? (isMobile ? 18 : 24) : 0,
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                UnreadBadge(
-                  count: widget.badgeCount,
-                  child:
-                      widget.iconBuilder?.call(iconSize, fgColor) ??
-                      Icon(widget.icon, size: iconSize, color: fgColor),
-                ),
-                if (isExpanded) ...[
-                  const SizedBox(width: _kSpacing),
-                  Flexible(
-                    child: Text(
-                      widget.label,
-                      style: TextStyle(
-                        color: fgColor,
-                        fontSize: isMobile ? 14 : (isTV ? 14 : 16),
-                        fontWeight: FontWeight.w600,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                    ),
+          child: GlassPressScale(
+            child: AnimatedContainer(
+              duration: _kExpandDuration,
+              curve: Curves.easeOut,
+              height: isMobile ? btnSize : null,
+              constraints: BoxConstraints(
+                minWidth: btnSize,
+                maxWidth: isExpanded ? 200 : btnSize,
+              ),
+              decoration: FocusTheme.focusDecoration(
+                isFocused: focusVisible && isMobile,
+                radius: effectiveBorderRadius,
+                color: focusColor,
+                backgroundColor: bgColor,
+              ),
+              padding: EdgeInsets.symmetric(
+                horizontal: isExpanded ? (isMobile ? 18 : 24) : 0,
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  UnreadBadge(
+                    count: widget.badgeCount,
+                    child:
+                        widget.iconBuilder?.call(iconSize, fgColor) ??
+                        Icon(widget.icon, size: iconSize, color: fgColor),
                   ),
+                  if (isExpanded) ...[
+                    const SizedBox(width: _kSpacing),
+                    Flexible(
+                      child: Text(
+                        widget.label,
+                        style: TextStyle(
+                          color: fgColor,
+                          fontSize: isMobile ? 14 : (isTV ? 14 : 16),
+                          fontWeight: FontWeight.w600,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
         ),

@@ -2889,6 +2889,13 @@ class AppLocalizationsPl extends AppLocalizations {
       'Podgląd przesuwa się wzdłuż paska postępu podczas przewijania zamiast pozostawać na środku';
 
   @override
+  String get trickplayPauseWhileScrubbing => 'Pause While Scrubbing';
+
+  @override
+  String get trickplayPauseWhileScrubbingSubtitle =>
+      'Playback pauses while you seek and resumes when you press play. Turn this off to keep playing and jump straight to the new spot';
+
+  @override
   String get showDescriptionOnPause => 'Pokazuj opis podczas pauzy';
 
   @override

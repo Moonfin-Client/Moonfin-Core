@@ -19,6 +19,7 @@ import '../utils/playlist_utils.dart';
 import '../../preference/seerr_preferences.dart';
 import '../../util/episode_playability.dart';
 import '../services/plugin_sync_service.dart';
+import '../services/user_data_sync.dart';
 import 'seerr_media_detail_view_model.dart';
 
 enum CollectionSortOption {
@@ -385,7 +386,83 @@ class ItemDetailViewModel extends ChangeNotifier {
        _client = client,
        _mutations = mutations,
        _mdbListRepository = mdbListRepository,
-       _tmdbRepository = tmdbRepository;
+       _tmdbRepository = tmdbRepository {
+    userDataSync.addListener(_onUserDataChanged);
+  }
+
+  /// Whether anything this page shows has been watched, favourited or rated
+  /// since it was loaded. [syncUserDataIfStale] clears it, which is what
+  /// catches the series' own state after an episode of it was played.
+  bool _userDataStale = false;
+  bool _syncingUserData = false;
+
+  void _onUserDataChanged() {
+    if (_isDisposed) return;
+    var changed = false;
+
+    final item = userDataSync.applyOrNull(_item);
+    if (!identical(item, _item)) {
+      _item = item;
+      changed = true;
+    }
+    final nextUp = userDataSync.applyOrNull(_nextUp);
+    if (!identical(nextUp, _nextUp)) {
+      _nextUp = nextUp;
+      changed = true;
+    }
+
+    List<AggregatedItem> patch(List<AggregatedItem> list) {
+      final patched = userDataSync.applyAll(list);
+      if (!identical(patched, list)) changed = true;
+      return patched;
+    }
+
+    _episodes = patch(_episodes);
+    _seriesEpisodes = patch(_seriesEpisodes);
+    _seasons = patch(_seasons);
+    _similar = patch(_similar);
+    _filmography = patch(_filmography);
+    _albums = patch(_albums);
+    _tracks = patch(_tracks);
+    _collectionItems = patch(_collectionItems);
+    _playlistItems = patch(_playlistItems);
+    _parentCollectionItems = patch(_parentCollectionItems);
+    _features = patch(_features);
+
+    if (changed) notifyListeners();
+    if (!_syncingUserData) _userDataStale = true;
+  }
+
+  /// Does nothing until a change has actually been recorded, so coming back to
+  /// the page normally costs no request.
+  Future<void> syncUserDataIfStale() async {
+    if (_isDisposed || _syncingUserData || !_userDataStale) return;
+    final ids = <String>{
+      itemId,
+      if (_nextUp != null) _nextUp!.id,
+      for (final list in [
+        _episodes,
+        _seriesEpisodes,
+        _seasons,
+        _similar,
+        _filmography,
+        _albums,
+        _tracks,
+        _collectionItems,
+        _playlistItems,
+        _parentCollectionItems,
+        _features,
+      ])
+        for (final item in list) item.id,
+    };
+    _syncingUserData = true;
+    try {
+      await userDataSync.refreshFromServer(_client, ids);
+    } finally {
+      _syncingUserData = false;
+      _userDataStale = false;
+    }
+  }
 
   /// Builds the screen for a title that is not in the library at all, out of
   /// what Seerr knows about it. The shape is the same, so the layouts, the
@@ -1746,6 +1823,7 @@ class ItemDetailViewModel extends ChangeNotifier {
   @override
   void dispose() {
     _isDisposed = true;
+    userDataSync.removeListener(_onUserDataChanged);
     // The child owns a download poll timer, so this is what stops it.
     _seerr?.removeListener(notifyListeners);
     _seerr?.dispose();

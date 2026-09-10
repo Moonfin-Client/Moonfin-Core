@@ -43,6 +43,7 @@ class AppleTvPreviewPlayer {
     Map<String, String>? headers,
     double volume = 0,
     bool live = false,
+    Duration startPosition = Duration.zero,
   }) async {
     if (_disposed) return;
     final result = await _control.invokeMethod<Map<dynamic, dynamic>>('open', {
@@ -51,6 +52,8 @@ class AppleTvPreviewPlayer {
       if (headers != null && headers.isNotEmpty) 'headers': headers,
       'volume': volume,
       if (live) 'live': true,
+      if (startPosition > Duration.zero)
+        'startPositionMs': startPosition.inMilliseconds,
     });
     textureId = (result?['textureId'] as num?)?.toInt();
     if (textureId == null) {

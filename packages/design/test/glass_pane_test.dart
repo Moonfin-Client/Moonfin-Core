@@ -69,6 +69,64 @@ void main() {
     });
   });
 
+  group('optical terms on the package path', () {
+    testWidgets('thickness, light and edge absorption reach the shader',
+        (tester) async {
+      GlassSettings.usePackageRenderer = true;
+      await tester.pumpWidget(host(glassPane(
+        tier: GlassTier.frost,
+        fallbackColor: const Color(0xFF101620),
+      )));
+      final settings =
+          tester.widget<GlassContainer>(find.byType(GlassContainer)).settings;
+      expect(settings?.thickness, GlassRecipe.thickness);
+      expect(settings?.lightIntensity, GlassRecipe.lightIntensity);
+      expect(settings?.edgeAbsorption, GlassRecipe.edgeAbsorption);
+    });
+
+    testWidgets('aberration stays off, it triples the backdrop samples',
+        (tester) async {
+      GlassSettings.usePackageRenderer = true;
+      await tester.pumpWidget(host(glassPane(
+        tier: GlassTier.frost,
+        fallbackColor: const Color(0xFF101620),
+      )));
+      final settings =
+          tester.widget<GlassContainer>(find.byType(GlassContainer)).settings;
+      expect(settings?.chromaticAberration, 0);
+    });
+  });
+
+  group('rim ownership', () {
+    Finder hairline() => find.byWidgetPredicate(
+        (w) => w is CustomPaint && w.painter is GlassHairlinePainter);
+
+    testWidgets('package path leaves the rim to the shader', (tester) async {
+      GlassSettings.usePackageRenderer = true;
+      await tester.pumpWidget(host(glassPane(
+        tier: GlassTier.frost,
+        fallbackColor: const Color(0xFF101620),
+      )));
+      expect(hairline(), findsNothing);
+    });
+
+    testWidgets('legacy blur path still paints its own rim', (tester) async {
+      await tester.pumpWidget(host(glassPane(
+        tier: GlassTier.frost,
+        fallbackColor: const Color(0xFF101620),
+      )));
+      expect(hairline(), findsOneWidget);
+    });
+
+    testWidgets('sheen paints its own rim, it has no shader', (tester) async {
+      await tester.pumpWidget(host(glassPane(
+        tier: GlassTier.sheen,
+        fallbackColor: const Color(0xFF101620),
+      )));
+      expect(hairline(), findsOneWidget);
+    });
+  });
+
   group('sigma caps', () {
     test('blur tiers clamp to the shared 18 ceiling', () {
       expect(GlassSettings.capSigmaFor(GlassTier.liquid, 32), 18);

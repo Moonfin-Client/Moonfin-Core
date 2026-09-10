@@ -1347,6 +1347,7 @@ class PluginSyncService extends ChangeNotifier {
           sections.add(custom.copyWith(order: order++));
         }
         _appendDisabledBuiltinSections(sections, order);
+        await _raiseSinceYouWatchedRowCount(sections);
         await _prefs.setHomeSectionsConfig(sections);
         await _syncSeerrHomeRowsWithSections(sections);
         appliedHomeSections = true;
@@ -1695,6 +1696,32 @@ class PluginSyncService extends ChangeNotifier {
       } else {
         _store.set(effective as Preference<int>, value);
       }
+    }
+  }
+
+  /// A layout carries which Since You Watched rows are on but not how many of
+  /// them render, which is a separate count, so three of those rows arrive
+  /// against a count of one and only the first appears.
+  ///
+  /// Raised, never lowered. A row the layout left off is already hidden by its
+  /// own toggle, so lowering would gain nothing and would undo a count set
+  /// higher on purpose.
+  Future<void> _raiseSinceYouWatchedRowCount(
+    List<HomeSectionConfig> sections,
+  ) async {
+    var highest = 0;
+    for (final section in sections) {
+      if (!section.enabled) continue;
+      final row = section.type.sinceYouWatchedRow;
+      if (row > highest) highest = row;
+    }
+    if (highest <= _prefs.get(UserPreferences.sinceYouWatchedNumRows).value) {
+      return;
+    }
+    for (final option in prefs.SinceYouWatchedNumRows.values) {
+      if (option.value != highest) continue;
+      await _prefs.set(UserPreferences.sinceYouWatchedNumRows, option);
+      return;
     }
   }
 

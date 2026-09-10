@@ -2744,6 +2744,13 @@ class AppLocalizationsTr extends AppLocalizations {
       'Ortada sabit kalmak yerine, sarma yaparken arama çubuğu boyunca slaytları önizle';
 
   @override
+  String get trickplayPauseWhileScrubbing => 'Pause While Scrubbing';
+
+  @override
+  String get trickplayPauseWhileScrubbingSubtitle =>
+      'Playback pauses while you seek and resumes when you press play. Turn this off to keep playing and jump straight to the new spot';
+
+  @override
   String get showDescriptionOnPause => 'Duraklatıldığında Açıklamayı Göster';
 
   @override

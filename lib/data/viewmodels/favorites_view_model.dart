@@ -7,6 +7,7 @@ import '../../preference/user_preferences.dart';
 import '../../util/network_errors.dart';
 import '../models/aggregated_item.dart';
 import '../repositories/mdblist_repository.dart';
+import '../services/user_data_sync.dart';
 
 enum FavoritesState { loading, ready, error }
 
@@ -101,6 +102,39 @@ class FavoritesViewModel extends ChangeNotifier {
     _imageType = _prefs.get(UserPreferences.libraryImageType(_prefKey));
     _posterSize = _prefs.resolveLibraryPosterSize();
     _viewStyle = _prefs.get(UserPreferences.favoritesViewStyle);
+    userDataSync.addListener(_onUserDataChanged);
+  }
+
+  /// Repaints the watched ticks in place when something here is played or
+  /// unfavourited, on this device or another one.
+  void _onUserDataChanged() {
+    var changed = false;
+
+    Map<FavoriteTypeFilter, List<AggregatedItem>>? rows;
+    _rowItems.forEach((type, items) {
+      final patched = userDataSync.applyAll(items);
+      if (identical(patched, items)) return;
+      rows ??= Map.of(_rowItems);
+      rows![type] = patched;
+    });
+    if (rows != null) {
+      _rowItems = rows!;
+      changed = true;
+    }
+
+    final grid = userDataSync.applyAll(_gridItems);
+    if (!identical(grid, _gridItems)) {
+      _gridItems = grid;
+      changed = true;
+    }
+
+    if (changed) notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    userDataSync.removeListener(_onUserDataChanged);
+    super.dispose();
   }
 
   void setFocusedItem(AggregatedItem? item) {

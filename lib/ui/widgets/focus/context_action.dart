@@ -122,7 +122,7 @@ List<ItemContextAction> contextActionsFor(
             await prefs.hideFromContinueWatching(item.id);
           }
           try {
-            await client.userLibraryApi.unmarkPlayed(item.id);
+            await mutations.setPlayed(item.id, isPlayed: false);
           } catch (_) {}
           onChanged?.call();
         },
@@ -140,7 +140,7 @@ List<ItemContextAction> contextActionsFor(
           await prefs.hideFromNextUp(item.seriesId!);
           await prefs.hideFromContinueWatching(item.seriesId!);
           try {
-            await client.userLibraryApi.unmarkPlayed(item.id);
+            await mutations.setPlayed(item.id, isPlayed: false);
           } catch (_) {}
           onChanged?.call();
         },

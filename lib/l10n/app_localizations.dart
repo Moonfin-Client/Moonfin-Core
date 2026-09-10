@@ -4960,6 +4960,18 @@ abstract class AppLocalizations {
   /// **'Preview slides along the seekbar as you scrub, instead of staying centered'**
   String get trickplayFollowScrubPositionSubtitle;
 
+  /// Setting for whether seeking pauses playback so the trickplay preview holds still
+  ///
+  /// In en, this message translates to:
+  /// **'Pause While Scrubbing'**
+  String get trickplayPauseWhileScrubbing;
+
+  /// Description for the trickplay pause-while-scrubbing setting
+  ///
+  /// In en, this message translates to:
+  /// **'Playback pauses while you seek and resumes when you press play. Turn this off to keep playing and jump straight to the new spot'**
+  String get trickplayPauseWhileScrubbingSubtitle;
+
   /// Setting for showing description on pause
   ///
   /// In en, this message translates to:

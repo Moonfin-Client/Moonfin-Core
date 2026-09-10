@@ -115,6 +115,55 @@ class _RemoteResolver extends MediaStreamResolver {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  group('the nudge decision', () {
+    test('needs the stall window and the runway together', () {
+      expect(
+        Media3PlayerBackend.bufferingNeedsNudge(
+          stuckMs: 12000,
+          bufferedAheadMs: 50157,
+        ),
+        isTrue,
+      );
+      // A starved buffer is a network problem, which a seek wouldn't help.
+      expect(
+        Media3PlayerBackend.bufferingNeedsNudge(
+          stuckMs: 12000,
+          bufferedAheadMs: 9999,
+        ),
+        isFalse,
+      );
+      // A seek rebuffers for a second or two, which has to stay quiet.
+      expect(
+        Media3PlayerBackend.bufferingNeedsNudge(
+          stuckMs: 2000,
+          bufferedAheadMs: 50157,
+        ),
+        isFalse,
+      );
+    });
+
+    test('opens before the session is given up on', () {
+      // The seek has to land while the session is still recoverable, so the
+      // two windows must not be reordered.
+      const stuckMs = 12000;
+      const bufferedAheadMs = 50157;
+      expect(
+        Media3PlayerBackend.bufferingNeedsNudge(
+          stuckMs: stuckMs,
+          bufferedAheadMs: bufferedAheadMs,
+        ),
+        isTrue,
+      );
+      expect(
+        Media3PlayerBackend.bufferingHasWedged(
+          stuckMs: stuckMs,
+          bufferedAheadMs: bufferedAheadMs,
+        ),
+        isFalse,
+      );
+    });
+  });
+
   group('the wedge decision', () {
     test('needs the stall window and the runway together', () {
       expect(

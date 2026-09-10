@@ -439,7 +439,14 @@ void main() {
       await Future<void>.delayed(const Duration(milliseconds: 80));
       expect(downloader.fetched, isEmpty);
 
-      socket.add(const UserDataChangedMessage(userId: user, itemIds: ['e1']));
+      socket.add(
+        const UserDataChangedMessage(
+          userId: user,
+          userDataList: [
+            {'ItemId': 'e1'},
+          ],
+        ),
+      );
       await Future<void>.delayed(const Duration(milliseconds: 80));
       expect(downloader.fetched, ['series-1']);
       expect(service.lastRun!.trigger, AutoDownloadTrigger.userDataChanged);

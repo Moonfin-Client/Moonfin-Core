@@ -57,6 +57,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   StreamSubscription<Duration>? _positionSub;
   UserPreferences? _prefsListened;
   String _lastTrickplayPrefs = '';
+  String _lastTimeSlots = '';
   TrickplayInfo? _trickplayInfo;
   String? _trickplayKey;
   int _trickplayLoadGeneration = 0;
@@ -130,6 +131,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
       );
       _prefsListened = prefs;
       _lastTrickplayPrefs = _trickplayPrefsSnapshot(prefs);
+      _lastTimeSlots = _timeSlotsSnapshot(prefs);
       prefs.addListener(_onPrefsChanged);
     } catch (_) {}
     _loadSegmentsForCurrentItem();
@@ -142,6 +144,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
       _pushSubtitleStyle();
       _pushThemeConfig();
       _pushPromptStrings();
+      _pushTimeSlots();
     });
   }
 
@@ -197,6 +200,31 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
       }),
     );
   }
+
+  /// The native renderer formats the seekbar times itself every tick, so it
+  /// gets the slot layout and the clock style rather than finished strings.
+  /// The endsAt template keeps its {time} placeholder.
+  void _pushTimeSlots() {
+    final backend = _backend;
+    if (backend == null || !mounted) return;
+    final l10n = AppLocalizations.of(context);
+    unawaited(
+      backend.setTimeSlots({
+        ..._timeSlotArgs(GetIt.instance<UserPreferences>()),
+        'endsAt': l10n.endsAt('{time}'),
+      }),
+    );
+  }
+
+  Map<String, Object> _timeSlotArgs(UserPreferences prefs) => {
+    'aboveLeft': prefs.get(UserPreferences.playbackTimeAboveLeft).name,
+    'aboveCenter': prefs.get(UserPreferences.playbackTimeAboveCenter).name,
+    'aboveRight': prefs.get(UserPreferences.playbackTimeAboveRight).name,
+    'belowLeft': prefs.get(UserPreferences.playbackTimeBelowLeft).name,
+    'belowCenter': prefs.get(UserPreferences.playbackTimeBelowCenter).name,
+    'belowRight': prefs.get(UserPreferences.playbackTimeBelowRight).name,
+    'use24Hour': prefs.get(UserPreferences.use24HourClock),
+  };
 
   void _pushSubtitleStyle() {
     final backend = _backend;
@@ -677,6 +705,9 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
         UserPreferences.trickPlayVerticalPositionPercent,
       ),
       'followScrub': prefs.get(UserPreferences.trickPlayFollowScrubPosition),
+      'pauseWhileScrubbing': prefs.get(
+        UserPreferences.trickPlayPauseWhileScrubbing,
+      ),
     };
   }
 
@@ -687,11 +718,20 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     prefs.get(UserPreferences.trickPlayPreviewScalePercent),
     prefs.get(UserPreferences.trickPlayVerticalPositionPercent),
     prefs.get(UserPreferences.trickPlayFollowScrubPosition),
+    prefs.get(UserPreferences.trickPlayPauseWhileScrubbing),
   ].join('|');
+
+  String _timeSlotsSnapshot(UserPreferences prefs) =>
+      _timeSlotArgs(prefs).values.join('|');
 
   void _onPrefsChanged() {
     final prefs = _prefsListened;
     if (prefs == null) return;
+    final slots = _timeSlotsSnapshot(prefs);
+    if (slots != _lastTimeSlots) {
+      _lastTimeSlots = slots;
+      _pushTimeSlots();
+    }
     final next = _trickplayPrefsSnapshot(prefs);
     if (next == _lastTrickplayPrefs) return;
     _lastTrickplayPrefs = next;

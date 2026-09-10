@@ -121,6 +121,7 @@ class Media3PlayerBackend extends PlayerBackend {
   // Freeze diagnostics: surface decode/render stalls into the in-app report so
   // a frozen-picture playback is visible without adb. See _checkPlaybackWatchdogs.
   static const _watchdogStallMs = 6000;
+  static const _watchdogBufferingNudgeMs = 10000;
   static const _watchdogBufferingStallMs = 30000;
   static const _watchdogBufferingRepeatMs = 60000;
   static const _watchdogBufferingRunwayFloorMs = 10000;
@@ -136,7 +137,9 @@ class Media3PlayerBackend extends PlayerBackend {
   bool _neverStartedWarned = false;
   int _bufferingSinceMs = 0;
   int _bufferingWarnedAtMs = 0;
+  int _bufferingNudgedAtMs = 0;
   bool _bufferingFailed = false;
+  bool _sourceIsLive = false;
   String? _lastFrameRateLine;
 
   final _positionStream = StreamController<Duration>.broadcast();
@@ -643,6 +646,7 @@ class Media3PlayerBackend extends PlayerBackend {
     _loadRequestedAtMs = DateTime.now().millisecondsSinceEpoch;
     _neverStartedWarned = false;
     _bufferingSinceMs = 0;
+    _bufferingNudgedAtMs = 0;
     _bufferingFailed = false;
     _watchdogTimer ??= Timer.periodic(
       const Duration(seconds: 2),
@@ -741,7 +745,32 @@ class Media3PlayerBackend extends PlayerBackend {
           level: LogLevel.warning,
         );
       }
-      // A wedge holding runway never resumes on its own, so turn it into
+      // Runway this deep means the loader is fine and the renderers are the
+      // ones stuck, which a seek in place restarts. Held to one seek per
+      // repeat window, since a player that flickers in and out of buffering
+      // would otherwise be seeked on every pass and stutter far worse. Live
+      // sources are left alone because a seek there can land on the live edge
+      // rather than where the viewer was.
+      final nudgeDue =
+          _bufferingNudgedAtMs == 0 ||
+          nowMs - _bufferingNudgedAtMs > _watchdogBufferingRepeatMs;
+      if (nudgeDue &&
+          !_sourceIsLive &&
+          bufferingNeedsNudge(
+            stuckMs: stuckMs,
+            bufferedAheadMs: _bufferedAheadMs,
+          )) {
+        _bufferingNudgedAtMs = nowMs;
+        _diag(
+          'Media3 watchdog: "$_watchdogItemLabel" reseeking in place at '
+          '${_position.inMilliseconds}ms after buffering ${stuckMs ~/ 1000}s '
+          'with ${_bufferedAheadMs}ms ahead',
+          level: LogLevel.warning,
+        );
+        unawaited(seekTo(_position));
+      }
+
+      // A wedge that outlasts the seek has stopped for good, so turn it into
       // the failure the manager can surface instead of an eternal spinner.
       if (!_bufferingFailed &&
           bufferingHasWedged(
@@ -767,6 +796,15 @@ class Media3PlayerBackend extends PlayerBackend {
       _bufferingSinceMs = 0;
     }
   }
+
+  /// Static and pure for tests. Buffering this long with media already loaded
+  /// is a renderer that stopped consuming rather than a network that ran dry.
+  static bool bufferingNeedsNudge({
+    required int stuckMs,
+    required int bufferedAheadMs,
+  }) =>
+      stuckMs > _watchdogBufferingNudgeMs &&
+      bufferedAheadMs >= _watchdogBufferingRunwayFloorMs;
 
   /// Static and pure for tests. A player that sits buffering past the stall
   /// window while holding this much runway has given up rather than run dry,
@@ -935,6 +973,7 @@ class Media3PlayerBackend extends PlayerBackend {
       ...audioDecoderPreferencesPayload(_prefs),
     });
     _lastFrameRateLine = null;
+    _sourceIsLive = payload['isLive'] == true;
     await _invoke<void>('setSource', {
       'url': url,
       'headers': headers,
@@ -946,7 +985,7 @@ class Media3PlayerBackend extends PlayerBackend {
       'videoFrameRate': (payload['videoFrameRate'] as num?)?.toDouble(),
       'videoWidth': (payload['videoWidth'] as num?)?.toInt(),
       'videoHeight': (payload['videoHeight'] as num?)?.toInt(),
-      'isLive': payload['isLive'] == true,
+      'isLive': _sourceIsLive,
       'normalizationGainDb': normalizationGainDb,
       'skipSilenceEnabled': _skipSilenceEnabled,
       'preferredAudioLanguage': preferredAudioLanguage,
@@ -1079,6 +1118,10 @@ class Media3PlayerBackend extends PlayerBackend {
       eac3PassthroughEnabled: _prefs.resolveEac3PassthroughEnabled(),
       dtsCorePassthroughEnabled: _prefs.resolveDtsCorePassthroughEnabled(),
       trueHdPassthroughEnabled: _prefs.resolveTrueHdPassthroughEnabled(),
+      // The bundled FFmpeg decoder leaves the channel layout unset for stereo
+      // TrueHD, so every packet is rejected and playback sits at 0ms with a
+      // black screen. Surround decodes fine. See androidx/media#1843.
+      playerDecodesStereoTrueHd: false,
       maxAudioChannels: _prefs.resolveMaxAudioChannels(),
       downmixToStereo: _prefs.get(UserPreferences.downmixToStereo),
       // Media3 bundles the FFmpeg audio decoder extension, so every advertised

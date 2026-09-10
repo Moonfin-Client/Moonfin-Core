@@ -1787,6 +1787,11 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: true,
   );
 
+  static final trickPlayPauseWhileScrubbing = Preference<bool>(
+    key: 'trickplay_pause_while_scrubbing',
+    defaultValue: true,
+  );
+
   // Defaults chosen so the overlay looks unchanged for anyone who never opens
   // the setting.
   static final playbackTimeAboveLeft = EnumPreference(

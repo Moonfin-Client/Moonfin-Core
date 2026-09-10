@@ -33,6 +33,7 @@ import 'background_download_coordinator.dart';
 import 'book_reader_service.dart';
 import 'download_notification_service.dart';
 import 'legacy_download_engine.dart';
+import 'media3_transmux_downloader.dart';
 import 'media_store_service.dart';
 import 'storage_path_service.dart';
 import 'web_download_helper.dart';
@@ -169,6 +170,23 @@ bool downloadUsesPluginEngine({
   if (destinationOnRemovableStorage) return false;
   return true;
 }
+
+/// Whether a download runs through the native Media3 transmux engine, which
+/// rewrites the server's fragmented live transcode into a seekable MP4 as it
+/// lands. Only Android has it, and only a transcoded video needs it: an
+/// original-quality file arrives with its own seek index. A server the native
+/// stack already refused over TLS stays on the legacy engine.
+@visibleForTesting
+bool downloadUsesTransmuxEngine({
+  required bool isAndroid,
+  required bool qualityTranscoded,
+  required bool itemSupportsTranscodedDownload,
+  required bool serverNeedsLegacyTls,
+}) =>
+    isAndroid &&
+    qualityTranscoded &&
+    itemSupportsTranscodedDownload &&
+    !serverNeedsLegacyTls;
 
 /// Headroom the free-space preflight keeps beyond the estimated download
 /// size, so a download can't run the volume down to its last bytes.
@@ -1304,6 +1322,68 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
     }
   }
 
+  /// Downloads a transcoded [url] through the native Media3 Transformer,
+  /// which rewrites the fragmented live transcode into a seekable MP4 as the
+  /// bytes land. Resolves with a synthesized dio [Response] like the other
+  /// engines, so validation and finalize stay engine-agnostic.
+  Future<Response> _downloadWithTransmux(
+    String url, {
+    required String itemId,
+    required String savePath,
+    required Map<String, String> headers,
+    required CancelToken cancelToken,
+    required _ProgressCallback onReceiveProgress,
+  }) async {
+    if (cancelToken.isCancelled) {
+      throw cancelToken.cancelError ??
+          DioException(
+            type: DioExceptionType.cancel,
+            requestOptions: RequestOptions(path: url),
+          );
+    }
+    final taskId = _newTaskId(itemId);
+    cancelToken.whenCancel
+        .then((_) => Media3TransmuxDownloader.instance.cancel(taskId))
+        .ignore();
+    try {
+      final result = await Media3TransmuxDownloader.instance.start(
+        taskId: taskId,
+        url: url,
+        headers: headers,
+        outputPath: savePath,
+        allowUntrustedTls: _prefs.get(UserPreferences.allowSelfSignedCerts),
+        onBytesWritten: (bytes) => onReceiveProgress(bytes, -1),
+      );
+      if (result.wasReEncoded) {
+        // The samples should pass straight through, so a device re-encode
+        // means something upstream changed and is worth seeing in a report.
+        debugPrint(
+          'Transmux re-encoded instead of remuxing '
+          '(video=${result.videoConversionProcess} '
+          'audio=${result.audioConversionProcess})',
+        );
+      }
+      // No content-length: the transmuxed file is legitimately a different
+      // size than the stream that fed it.
+      return Response(
+        requestOptions: RequestOptions(path: url, method: 'GET'),
+        statusCode: 200,
+        headers: Headers()..set('content-type', 'video/mp4'),
+      );
+    } on TransmuxCancelledException {
+      throw DioException(
+        type: DioExceptionType.cancel,
+        requestOptions: RequestOptions(path: url),
+      );
+    } on TransmuxFailedException catch (e) {
+      throw DioException(
+        type: DioExceptionType.unknown,
+        requestOptions: RequestOptions(path: url),
+        message: friendlyDownloadFailure(e.message),
+      );
+    }
+  }
+
   /// Hands the download to the legacy engine when the native task never leaves
   /// the queue. The legacy engine is a plain in-process client, so it reaches
   /// the server whenever browsing does.
@@ -2150,6 +2230,16 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
     // temp file on internal storage, so a removable destination stays on the
     // direct-writing legacy engine (see [StoragePathService.isOnRemovableStorage]).
     var destinationOnRemovableStorage = false;
+    // Decided once the full item is known. When the transmux engine runs,
+    // no native side posts notifications, so the local notification path
+    // has to stay on regardless of what the plugin engine would have done.
+    var useTransmuxEngine = false;
+    bool pluginOwnsNotifications() =>
+        !useTransmuxEngine &&
+        _pluginNotificationsFor(
+          quality,
+          destinationOnRemovableStorage: destinationOnRemovableStorage,
+        );
     Timer? activityHeartbeat;
     String? activityPlaySessionId;
     String? activityMediaSourceId;
@@ -2267,6 +2357,14 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
       }
 
       final initialProgress = _initialProgressForQuality(quality);
+      useTransmuxEngine = downloadUsesTransmuxEngine(
+        isAndroid: PlatformDetection.isAndroid,
+        qualityTranscoded: quality.isTranscoded,
+        itemSupportsTranscodedDownload: _supportsTranscodedDownload(
+          fullItem.type,
+        ),
+        serverNeedsLegacyTls: _serverNeedsLegacyTls,
+      );
 
       // Before the first transfer: iOS drops notifications, the plugin's
       // included, until the user has answered the permission prompt.
@@ -2278,10 +2376,7 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
         progress: initialProgress,
         quality: quality,
       );
-      if (!_pluginNotificationsFor(
-        quality,
-        destinationOnRemovableStorage: destinationOnRemovableStorage,
-      )) {
+      if (!pluginOwnsNotifications()) {
         await _notificationService.showProgress(
           itemName: _notificationLabel(item),
           progress: initialProgress,
@@ -2376,10 +2471,7 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
             ),
           );
         }
-        if (!_pluginNotificationsFor(
-              quality,
-              destinationOnRemovableStorage: destinationOnRemovableStorage,
-            ) &&
+        if (!pluginOwnsNotifications() &&
             _shouldUpdateSystemNotification(item.id, progress)) {
           unawaited(
             _notificationService.showProgress(
@@ -2399,6 +2491,24 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
       );
 
       Future<Response> engineDownload(String downloadUrl) async {
+        // Fallback URLs are direct copies with their own seek index, so only
+        // the primary transcode URL goes through the transmux engine.
+        if (useTransmuxEngine && downloadUrl == url) {
+          try {
+            return await _downloadWithTransmux(
+              downloadUrl,
+              itemId: item.id,
+              savePath: savePath!,
+              headers: headers,
+              cancelToken: cancelToken,
+              onReceiveProgress: onReceiveProgress,
+            );
+          } on TransmuxUnavailableException {
+            // The native side refused this one (busy, missing, or an old
+            // device). The regular engines still produce a playable file.
+            useTransmuxEngine = false;
+          }
+        }
         if (usePluginEngine) {
           try {
             return await _downloadWithPlugin(
@@ -2558,10 +2668,7 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
           3,
           error: friendlyError,
         );
-        if (!_pluginNotificationsFor(
-          quality,
-          destinationOnRemovableStorage: destinationOnRemovableStorage,
-        )) {
+        if (!pluginOwnsNotifications()) {
           await _notificationService.showError(
             itemName: item.name,
             error: friendlyError,
@@ -2581,10 +2688,7 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
         quality: quality,
       );
       await _offlineRepo.updateDownloadStatus(item.id, 3, error: friendlyError);
-      if (!_pluginNotificationsFor(
-        quality,
-        destinationOnRemovableStorage: destinationOnRemovableStorage,
-      )) {
+      if (!pluginOwnsNotifications()) {
         await _notificationService.showError(
           itemName: item.name,
           error: friendlyError,
@@ -2607,10 +2711,7 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
         quality: quality,
       );
       await _offlineRepo.updateDownloadStatus(item.id, 3, error: friendlyError);
-      if (!_pluginNotificationsFor(
-        quality,
-        destinationOnRemovableStorage: destinationOnRemovableStorage,
-      )) {
+      if (!pluginOwnsNotifications()) {
         await _notificationService.showError(
           itemName: item.name,
           error: friendlyError,

@@ -21,6 +21,7 @@ final class AppleTvVideoChannel: NSObject, FlutterStreamHandler {
     private var lastSubtitleStyle: [String: Any]?
     private var lastThemeConfig: [String: Any]?
     private var lastPromptStrings: [String: Any]?
+    private var lastTimeSlots: [String: Any]?
     static var lastCommand = "-"
 
     init(messenger: FlutterBinaryMessenger, rootViewController: UIViewController) {
@@ -117,6 +118,9 @@ final class AppleTvVideoChannel: NSObject, FlutterStreamHandler {
         case "setPromptStrings":
             lastPromptStrings = args
             playerVC?.applyPromptStrings(args)
+        case "setTimeSlots":
+            lastTimeSlots = args
+            playerVC?.applyTimeSlots(args)
         case "play":
             player?.resume()
         case "pause":
@@ -310,6 +314,9 @@ final class AppleTvVideoChannel: NSObject, FlutterStreamHandler {
         }
         if let strings = lastPromptStrings {
             vc.applyPromptStrings(strings)
+        }
+        if let slots = lastTimeSlots {
+            vc.applyTimeSlots(slots)
         }
         playerVC = vc
         rootViewController?.present(vc, animated: false) { [weak self] in
