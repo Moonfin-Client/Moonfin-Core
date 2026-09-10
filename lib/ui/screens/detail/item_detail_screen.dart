@@ -558,6 +558,55 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
       child: _buildBody(context),
     );
 
+    if (!PlatformDetection.isTV && !_showNavbar) {
+      final isSidebar =
+          NavigationLayout.positionNotifier.value == NavbarPosition.left;
+      body = Stack(
+        children: [
+          Positioned.fill(child: body),
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 90,
+            child: MouseRegion(
+              opaque: false,
+              onEnter: (_) {
+                if (!_showNavbar && mounted) {
+                  setState(() => _showNavbar = true);
+                }
+              },
+              onHover: (_) {
+                if (!_showNavbar && mounted) {
+                  setState(() => _showNavbar = true);
+                }
+              },
+            ),
+          ),
+          if (isSidebar)
+            Positioned(
+              top: 0,
+              left: 0,
+              bottom: 0,
+              width: 80,
+              child: MouseRegion(
+                opaque: false,
+                onEnter: (_) {
+                  if (!_showNavbar && mounted) {
+                    setState(() => _showNavbar = true);
+                  }
+                },
+                onHover: (_) {
+                  if (!_showNavbar && mounted) {
+                    setState(() => _showNavbar = true);
+                  }
+                },
+              ),
+            ),
+        ],
+      );
+    }
+
     body = PopScope(canPop: !wasCollapsedRecently, child: body);
     return RequestInitialFocus(
       targetNode: node,

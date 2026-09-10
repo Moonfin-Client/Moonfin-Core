@@ -323,6 +323,7 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
   Future<void> _openCard(SpotlightCardSpec spec) async {
     if (_modalOpen) return;
     _modalOpen = true;
+    widget.onToggleNavbar?.call(false);
     try {
       await SpotlightSectionModal.show(
         context,
