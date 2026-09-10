@@ -10955,6 +10955,9 @@ class AppLocalizationsMn extends AppLocalizations {
   String get audiobookFocusedTimeline => 'Төвлөрсөн цагийн шугам';
 
   @override
+  String get audiobookFullTimeline => 'Full Timeline';
+
+  @override
   String get audiobookExportBookmarks => 'Хавчуургыг экспортлох';
 
   @override

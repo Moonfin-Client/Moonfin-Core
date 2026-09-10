@@ -10990,6 +10990,9 @@ class AppLocalizationsLv extends AppLocalizations {
   String get audiobookFocusedTimeline => 'Fokusētā laika josla';
 
   @override
+  String get audiobookFullTimeline => 'Full Timeline';
+
+  @override
   String get audiobookExportBookmarks => 'Eksportēt grāmatzīmes';
 
   @override

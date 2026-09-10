@@ -11012,6 +11012,9 @@ class AppLocalizationsTa extends AppLocalizations {
   String get audiobookFocusedTimeline => 'மையப்படுத்திய காலவரிசை';
 
   @override
+  String get audiobookFullTimeline => 'Full Timeline';
+
+  @override
   String get audiobookExportBookmarks => 'புக்மார்க்குகளை ஏற்றுமதி செய்';
 
   @override

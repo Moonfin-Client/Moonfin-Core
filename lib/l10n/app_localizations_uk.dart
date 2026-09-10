@@ -11019,6 +11019,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get audiobookFocusedTimeline => 'Сфокусована хронологія';
 
   @override
+  String get audiobookFullTimeline => 'Full Timeline';
+
+  @override
   String get audiobookExportBookmarks => 'Експортувати закладки';
 
   @override

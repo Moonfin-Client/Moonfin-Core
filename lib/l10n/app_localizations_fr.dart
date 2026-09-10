@@ -11066,6 +11066,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get audiobookFocusedTimeline => 'Chronologie ciblée';
 
   @override
+  String get audiobookFullTimeline => 'Full Timeline';
+
+  @override
   String get audiobookExportBookmarks => 'Exporter les marque-pages';
 
   @override

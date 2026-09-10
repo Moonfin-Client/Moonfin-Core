@@ -44,6 +44,15 @@ class AudiobookBookOverview extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
+        Text(
+          l10n.audiobookFullTimeline,
+          style: TextStyle(
+            fontSize: 11,
+            fontStyle: FontStyle.italic,
+            color: AppColorScheme.onSurface.withValues(alpha: 0.5),
+          ),
+        ),
+        const SizedBox(height: 4),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4),
           child: SizedBox(
@@ -297,12 +306,17 @@ class AudiobookZoomedProgressBar extends StatelessWidget {
     if (apple) {
       slider = Padding(
         padding: const EdgeInsets.symmetric(horizontal: 4),
-        child: CupertinoSlider(
+        // CupertinoSlider pins itself to 176px unless the parent constrains
+        // it tightly.
+        child: SizedBox(
+          width: double.infinity,
+          child: CupertinoSlider(
           value: sliderValue,
           min: startMs,
           max: endMs,
-          activeColor: AppColorScheme.rangeProgress,
-          onChanged: (v) => onSeek(Duration(milliseconds: v.toInt())),
+            activeColor: AppColorScheme.rangeProgress,
+            onChanged: (v) => onSeek(Duration(milliseconds: v.toInt())),
+          ),
         ),
       );
     } else {
@@ -328,16 +342,56 @@ class AudiobookZoomedProgressBar extends StatelessWidget {
       );
     }
 
+    // The window is clamped at both ends of the book, so the offsets are not
+    // always a round half hour. Offsets rather than clock times: two absolute
+    // times here read as "elapsed / total".
+    final startOffset = Duration(milliseconds: (startMs - posMs).round());
+    final endOffset = Duration(milliseconds: (endMs - posMs).round());
+
     final double horizontalPadding = apple ? 20.0 : 24.0;
     final groupChapters = chapters.length > 40;
     final labelStyle = TextStyle(
-      fontSize: 12,
-      color: AppColorScheme.onSurface.withValues(alpha: 0.85),
+      fontFeatures: const [FontFeature.tabularFigures()],
+      fontSize: 11,
+      color: AppColorScheme.onSurface.withValues(alpha: 0.6),
+    );
+    final captionStyle = TextStyle(
+      fontSize: 11,
+      fontStyle: FontStyle.italic,
+      color: AppColorScheme.onSurface.withValues(alpha: 0.5),
     );
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  '-${formatAudiobookClock(startOffset.abs())}',
+                  style: labelStyle,
+                  textAlign: TextAlign.left,
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  l10n.audiobookFocusedTimeline,
+                  style: captionStyle,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  '+${formatAudiobookClock(endOffset)}',
+                  style: labelStyle,
+                  textAlign: TextAlign.right,
+                ),
+              ),
+            ],
+          ),
+        ),
         SizedBox(
           height: 32,
           child: Stack(
@@ -366,30 +420,6 @@ class AudiobookZoomedProgressBar extends StatelessWidget {
                   ),
                 ),
               slider,
-            ],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                formatAudiobookClock(Duration(milliseconds: startMs.toInt())),
-                style: labelStyle,
-              ),
-              Text(
-                l10n.audiobookFocusedTimeline,
-                style: TextStyle(
-                  fontSize: 11,
-                  fontStyle: FontStyle.italic,
-                  color: AppColorScheme.onSurface.withValues(alpha: 0.5),
-                ),
-              ),
-              Text(
-                formatAudiobookClock(Duration(milliseconds: endMs.toInt())),
-                style: labelStyle,
-              ),
             ],
           ),
         ),

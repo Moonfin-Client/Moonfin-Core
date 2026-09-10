@@ -10943,6 +10943,9 @@ class AppLocalizationsSv extends AppLocalizations {
   String get audiobookFocusedTimeline => 'Fokuserad tidslinje';
 
   @override
+  String get audiobookFullTimeline => 'Full Timeline';
+
+  @override
   String get audiobookExportBookmarks => 'Exportera bokmärken';
 
   @override

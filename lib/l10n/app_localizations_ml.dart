@@ -11050,6 +11050,9 @@ class AppLocalizationsMl extends AppLocalizations {
   String get audiobookFocusedTimeline => 'കേന്ദ്രീകൃത ടൈംലൈൻ';
 
   @override
+  String get audiobookFullTimeline => 'Full Timeline';
+
+  @override
   String get audiobookExportBookmarks => 'ബുക്ക്മാർക്കുകൾ എക്സ്പോർട്ട് ചെയ്യുക';
 
   @override

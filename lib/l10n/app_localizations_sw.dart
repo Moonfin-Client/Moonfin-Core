@@ -11011,6 +11011,9 @@ class AppLocalizationsSw extends AppLocalizations {
   String get audiobookFocusedTimeline => 'Ratiba ya Muda Iliyolengwa';
 
   @override
+  String get audiobookFullTimeline => 'Full Timeline';
+
+  @override
   String get audiobookExportBookmarks => 'Hamisha Alamisho';
 
   @override

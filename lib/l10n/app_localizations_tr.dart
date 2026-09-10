@@ -10942,6 +10942,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get audiobookFocusedTimeline => 'Odaklanmış Zaman Çizelgesi';
 
   @override
+  String get audiobookFullTimeline => 'Full Timeline';
+
+  @override
   String get audiobookExportBookmarks => 'Yer İmlerini Dışarı Aktar';
 
   @override

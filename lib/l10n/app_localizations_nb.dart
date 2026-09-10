@@ -10927,6 +10927,9 @@ class AppLocalizationsNb extends AppLocalizations {
   String get audiobookFocusedTimeline => 'Fokusert tidslinje';
 
   @override
+  String get audiobookFullTimeline => 'Full Timeline';
+
+  @override
   String get audiobookExportBookmarks => 'Eksporter bokmerker';
 
   @override

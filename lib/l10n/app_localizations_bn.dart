@@ -10913,6 +10913,9 @@ class AppLocalizationsBn extends AppLocalizations {
   String get audiobookFocusedTimeline => 'নির্দিষ্ট টাইমলাইন';
 
   @override
+  String get audiobookFullTimeline => 'Full Timeline';
+
+  @override
   String get audiobookExportBookmarks => 'বুকমার্ক এক্সপোর্ট করুন';
 
   @override

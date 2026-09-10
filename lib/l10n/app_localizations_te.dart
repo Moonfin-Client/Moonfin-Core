@@ -11004,6 +11004,9 @@ class AppLocalizationsTe extends AppLocalizations {
   String get audiobookFocusedTimeline => 'కేంద్రీకృత టైమ్‌లైన్';
 
   @override
+  String get audiobookFullTimeline => 'Full Timeline';
+
+  @override
   String get audiobookExportBookmarks => 'బుక్‌మార్క్‌లను ఎగుమతి చేయండి';
 
   @override

@@ -10978,6 +10978,9 @@ class AppLocalizationsKk extends AppLocalizations {
   String get audiobookFocusedTimeline => 'Фокустелген шкала';
 
   @override
+  String get audiobookFullTimeline => 'Full Timeline';
+
+  @override
   String get audiobookExportBookmarks => 'Бетбелгілерді экспорттау';
 
   @override

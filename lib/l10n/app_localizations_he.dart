@@ -10791,6 +10791,9 @@ class AppLocalizationsHe extends AppLocalizations {
   String get audiobookFocusedTimeline => 'ציר זמן ממוקד';
 
   @override
+  String get audiobookFullTimeline => 'Full Timeline';
+
+  @override
   String get audiobookExportBookmarks => 'ייצוא סימניות';
 
   @override

@@ -11071,6 +11071,9 @@ class AppLocalizationsGl extends AppLocalizations {
   String get audiobookFocusedTimeline => 'Cronoloxía enfocada';
 
   @override
+  String get audiobookFullTimeline => 'Full Timeline';
+
+  @override
   String get audiobookExportBookmarks => 'Exportar os marcadores';
 
   @override

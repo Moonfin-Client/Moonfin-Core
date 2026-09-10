@@ -11018,6 +11018,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get audiobookFocusedTimeline => 'Timeline Focalizzata';
 
   @override
+  String get audiobookFullTimeline => 'Full Timeline';
+
+  @override
   String get audiobookExportBookmarks => 'Esporta Segnalibri';
 
   @override

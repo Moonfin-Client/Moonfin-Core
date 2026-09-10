@@ -11010,6 +11010,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get audiobookFocusedTimeline => 'Linha do Tempo Focada';
 
   @override
+  String get audiobookFullTimeline => 'Full Timeline';
+
+  @override
   String get audiobookExportBookmarks => 'Exportar Marcadores';
 
   @override

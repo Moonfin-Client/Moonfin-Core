@@ -11044,6 +11044,9 @@ class AppLocalizationsTl extends AppLocalizations {
   String get audiobookFocusedTimeline => 'Focused Timeline';
 
   @override
+  String get audiobookFullTimeline => 'Full Timeline';
+
+  @override
   String get audiobookExportBookmarks => 'I-export ang Mga Bookmark';
 
   @override

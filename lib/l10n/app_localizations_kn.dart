@@ -11001,6 +11001,9 @@ class AppLocalizationsKn extends AppLocalizations {
   String get audiobookFocusedTimeline => 'ಕೇಂದ್ರೀಕೃತ ಟೈಮ್‌ಲೈನ್';
 
   @override
+  String get audiobookFullTimeline => 'Full Timeline';
+
+  @override
   String get audiobookExportBookmarks => 'ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ರಫ್ತು ಮಾಡಿ';
 
   @override

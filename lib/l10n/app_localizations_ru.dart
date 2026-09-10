@@ -11011,6 +11011,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get audiobookFocusedTimeline => 'Текущий фрагмент';
 
   @override
+  String get audiobookFullTimeline => 'Full Timeline';
+
+  @override
   String get audiobookExportBookmarks => 'Экспорт закладок';
 
   @override

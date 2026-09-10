@@ -19288,6 +19288,12 @@ abstract class AppLocalizations {
   /// **'Focused Timeline'**
   String get audiobookFocusedTimeline;
 
+  /// No description provided for @audiobookFullTimeline.
+  ///
+  /// In en, this message translates to:
+  /// **'Full Timeline'**
+  String get audiobookFullTimeline;
+
   /// No description provided for @audiobookExportBookmarks.
   ///
   /// In en, this message translates to:

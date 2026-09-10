@@ -10544,6 +10544,9 @@ class AppLocalizationsYue extends AppLocalizations {
   String get audiobookFocusedTimeline => '聚焦時間軸';
 
   @override
+  String get audiobookFullTimeline => 'Full Timeline';
+
+  @override
   String get audiobookExportBookmarks => '匯出書籤';
 
   @override

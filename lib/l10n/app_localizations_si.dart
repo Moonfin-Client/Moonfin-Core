@@ -10923,6 +10923,9 @@ class AppLocalizationsSi extends AppLocalizations {
   String get audiobookFocusedTimeline => 'නාභිගත කාල රේඛාව';
 
   @override
+  String get audiobookFullTimeline => 'Full Timeline';
+
+  @override
   String get audiobookExportBookmarks => 'පිටු සලකුණු නිර්යාත කරන්න';
 
   @override

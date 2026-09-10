@@ -11021,6 +11021,9 @@ class AppLocalizationsSq extends AppLocalizations {
   String get audiobookFocusedTimeline => 'Vija kohore e fokusuar';
 
   @override
+  String get audiobookFullTimeline => 'Full Timeline';
+
+  @override
   String get audiobookExportBookmarks => 'Eksporto faqeshënuesit';
 
   @override

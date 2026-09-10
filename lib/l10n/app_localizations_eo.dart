@@ -10920,6 +10920,9 @@ class AppLocalizationsEo extends AppLocalizations {
   String get audiobookFocusedTimeline => 'Fokusita templinio';
 
   @override
+  String get audiobookFullTimeline => 'Full Timeline';
+
+  @override
   String get audiobookExportBookmarks => 'Eksporti legosignojn';
 
   @override

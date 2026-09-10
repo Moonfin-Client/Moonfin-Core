@@ -10971,6 +10971,9 @@ class AppLocalizationsCs extends AppLocalizations {
   String get audiobookFocusedTimeline => 'Přiblížená časová osa';
 
   @override
+  String get audiobookFullTimeline => 'Full Timeline';
+
+  @override
   String get audiobookExportBookmarks => 'Exportovat záložky';
 
   @override

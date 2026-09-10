@@ -10599,6 +10599,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get audiobookFocusedTimeline => '집중 타임라인';
 
   @override
+  String get audiobookFullTimeline => 'Full Timeline';
+
+  @override
   String get audiobookExportBookmarks => '북마크 내보내기';
 
   @override

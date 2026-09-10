@@ -10932,6 +10932,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get audiobookFocusedTimeline => 'Dòng thời gian thu hẹp';
 
   @override
+  String get audiobookFullTimeline => 'Full Timeline';
+
+  @override
   String get audiobookExportBookmarks => 'Xuất dấu trang';
 
   @override

@@ -10999,6 +10999,9 @@ class AppLocalizationsSk extends AppLocalizations {
   String get audiobookFocusedTimeline => 'Zameraná časová os';
 
   @override
+  String get audiobookFullTimeline => 'Full Timeline';
+
+  @override
   String get audiobookExportBookmarks => 'Exportovať záložky';
 
   @override

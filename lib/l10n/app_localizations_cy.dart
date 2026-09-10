@@ -10990,6 +10990,9 @@ class AppLocalizationsCy extends AppLocalizations {
   String get audiobookFocusedTimeline => 'Llinell Amser â Ffocws';
 
   @override
+  String get audiobookFullTimeline => 'Full Timeline';
+
+  @override
   String get audiobookExportBookmarks => 'Allforio\'r Nodau Tudalen';
 
   @override

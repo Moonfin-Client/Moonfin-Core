@@ -10932,6 +10932,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get audiobookFocusedTimeline => 'Lini Masa Terfokus';
 
   @override
+  String get audiobookFullTimeline => 'Full Timeline';
+
+  @override
   String get audiobookExportBookmarks => 'Ekspor Markah';
 
   @override

@@ -10890,6 +10890,9 @@ class AppLocalizationsPa extends AppLocalizations {
   String get audiobookFocusedTimeline => 'ਕੇਂਦਰਿਤ ਟਾਈਮਲਾਈਨ';
 
   @override
+  String get audiobookFullTimeline => 'Full Timeline';
+
+  @override
   String get audiobookExportBookmarks => 'ਬੁੱਕਮਾਰਕ ਨਿਰਯਾਤ ਕਰੋ';
 
   @override

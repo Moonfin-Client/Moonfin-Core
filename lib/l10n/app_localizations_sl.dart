@@ -10999,6 +10999,9 @@ class AppLocalizationsSl extends AppLocalizations {
   String get audiobookFocusedTimeline => 'Osredotočena časovnica';
 
   @override
+  String get audiobookFullTimeline => 'Full Timeline';
+
+  @override
   String get audiobookExportBookmarks => 'Izvozi zaznamke';
 
   @override

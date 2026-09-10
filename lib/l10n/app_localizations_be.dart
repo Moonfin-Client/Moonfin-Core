@@ -10998,6 +10998,9 @@ class AppLocalizationsBe extends AppLocalizations {
   String get audiobookFocusedTimeline => 'Сфакусаваная шкала';
 
   @override
+  String get audiobookFullTimeline => 'Full Timeline';
+
+  @override
   String get audiobookExportBookmarks => 'Экспартаваць закладкі';
 
   @override

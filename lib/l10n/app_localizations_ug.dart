@@ -10965,6 +10965,9 @@ class AppLocalizationsUg extends AppLocalizations {
   String get audiobookFocusedTimeline => 'مەركەزلەشكەن ۋاقىت ئوقى';
 
   @override
+  String get audiobookFullTimeline => 'Full Timeline';
+
+  @override
   String get audiobookExportBookmarks => 'خەتكۈشلەرنى چىقىرىش';
 
   @override

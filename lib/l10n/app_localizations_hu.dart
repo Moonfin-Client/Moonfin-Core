@@ -11027,6 +11027,9 @@ class AppLocalizationsHu extends AppLocalizations {
   String get audiobookFocusedTimeline => 'Fókuszált idővonal';
 
   @override
+  String get audiobookFullTimeline => 'Full Timeline';
+
+  @override
   String get audiobookExportBookmarks => 'Könyvjelzők exportálása';
 
   @override

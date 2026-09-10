@@ -9761,6 +9761,7 @@
   "audiobookTimeline": "Timeline",
   "audiobookTimelineEmpty": "Timeline is empty",
   "audiobookFocusedTimeline": "Focused Timeline",
+  "audiobookFullTimeline": "Full Timeline",
   "audiobookExportBookmarks": "Export Bookmarks",
   "audiobookExportNotes": "Export Notes",
   "audiobookExportAll": "Export All",

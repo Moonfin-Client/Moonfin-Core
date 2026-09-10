@@ -11157,6 +11157,9 @@ class AppLocalizationsHr extends AppLocalizations {
   String get audiobookFocusedTimeline => 'Fokusirana vremenska crta';
 
   @override
+  String get audiobookFullTimeline => 'Full Timeline';
+
+  @override
   String get audiobookExportBookmarks => 'Izvezi oznake';
 
   @override

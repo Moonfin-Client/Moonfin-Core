@@ -10870,6 +10870,9 @@ class AppLocalizationsFa extends AppLocalizations {
   String get audiobookFocusedTimeline => 'خط زمانی متمرکز';
 
   @override
+  String get audiobookFullTimeline => 'Full Timeline';
+
+  @override
   String get audiobookExportBookmarks => 'برون‌بری نشانک‌ها';
 
   @override

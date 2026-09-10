@@ -10911,6 +10911,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get audiobookFocusedTimeline => 'المخطط الزمني المركّز';
 
   @override
+  String get audiobookFullTimeline => 'Full Timeline';
+
+  @override
   String get audiobookExportBookmarks => 'تصدير الإشارات المرجعية';
 
   @override

@@ -11219,6 +11219,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get audiobookFocusedTimeline => 'Aktywna oś czasu';
 
   @override
+  String get audiobookFullTimeline => 'Full Timeline';
+
+  @override
   String get audiobookExportBookmarks => 'Eksportuj zakładki';
 
   @override

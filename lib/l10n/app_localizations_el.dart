@@ -11095,6 +11095,9 @@ class AppLocalizationsEl extends AppLocalizations {
   String get audiobookFocusedTimeline => 'Εστιασμένο χρονολόγιο';
 
   @override
+  String get audiobookFullTimeline => 'Full Timeline';
+
+  @override
   String get audiobookExportBookmarks => 'Εξαγωγή σελιδοδεικτών';
 
   @override

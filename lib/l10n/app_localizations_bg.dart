@@ -11037,6 +11037,9 @@ class AppLocalizationsBg extends AppLocalizations {
   String get audiobookFocusedTimeline => 'Фокусирана хронология';
 
   @override
+  String get audiobookFullTimeline => 'Full Timeline';
+
+  @override
   String get audiobookExportBookmarks => 'Експортиране на отметките';
 
   @override

@@ -10991,6 +10991,9 @@ class AppLocalizationsNl extends AppLocalizations {
   String get audiobookFocusedTimeline => 'Gerichte tijdlijn';
 
   @override
+  String get audiobookFullTimeline => 'Full Timeline';
+
+  @override
   String get audiobookExportBookmarks => 'Bladwijzers exporteren';
 
   @override

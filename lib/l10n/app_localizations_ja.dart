@@ -10626,6 +10626,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get audiobookFocusedTimeline => '注目のタイムライン';
 
   @override
+  String get audiobookFullTimeline => 'Full Timeline';
+
+  @override
   String get audiobookExportBookmarks => 'ブックマークを書き出す';
 
   @override

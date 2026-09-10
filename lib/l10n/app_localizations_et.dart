@@ -10944,6 +10944,9 @@ class AppLocalizationsEt extends AppLocalizations {
   String get audiobookFocusedTimeline => 'Kitsendatud ajajoon';
 
   @override
+  String get audiobookFullTimeline => 'Full Timeline';
+
+  @override
   String get audiobookExportBookmarks => 'Ekspordi järjehoidjad';
 
   @override
