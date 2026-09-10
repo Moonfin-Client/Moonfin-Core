@@ -498,6 +498,11 @@ class PlaybackManager implements AudioOwnable {
         'preferredTextLanguage': subtitleStreamLang,
       if (videoStream != null && videoStream['DvProfile'] is int)
         'videoDvProfile': videoStream['DvProfile'],
+      if (videoStream != null && videoStream['DvBlSignalCompatibilityId'] is int)
+        'videoDvBlCompatId': videoStream['DvBlSignalCompatibilityId'],
+      if (videoStream != null &&
+          (videoStream['Codec']?.toString().isNotEmpty ?? false))
+        'videoCodec': videoStream['Codec'].toString().toLowerCase(),
       if (videoFrameRate != null) 'videoFrameRate': videoFrameRate,
       if (videoStream != null && videoStream['Width'] is int)
         'videoWidth': videoStream['Width'],

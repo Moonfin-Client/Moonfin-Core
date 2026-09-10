@@ -240,7 +240,25 @@ class AetherBackend implements PlayerBackend {
       'forceSubtitlesDisabledOnStart':
           payload['mediaType']?.toString() != 'audio' &&
           _prefs.get(UserPreferences.subtitleMode) == SubtitleMode.none,
+      'preferSoftwareDecode': needsSoftwareDecodeForDolbyVisionAv1(payload),
     });
+  }
+
+  /// Aether engin hase problems with dav1 profile 10.
+  /// This should fix this as it throws dv out and plays only the HDR layer.
+  @visibleForTesting
+  static bool needsSoftwareDecodeForDolbyVisionAv1(
+    Map<dynamic, dynamic> payload,
+  ) {
+    if (payload['videoCodec']?.toString() != 'av1') return false;
+    if (payload['videoDvProfile'] != 10) return false;
+    if (payload['videoDvBlCompatId'] == 1) return true;
+    if (payload['videoDvBlCompatId'] != null) return false;
+    final rangeType = payload['videoRangeType']
+        ?.toString()
+        .toUpperCase()
+        .replaceAll(RegExp(r'[^A-Z0-9]+'), '');
+    return rangeType == 'DOVIWITHHDR10' || rangeType == 'DOVIWITHHDR10PLUS';
   }
 
   @override

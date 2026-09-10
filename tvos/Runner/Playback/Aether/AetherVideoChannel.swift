@@ -183,7 +183,8 @@ final class AetherVideoChannel: NSObject, FlutterStreamHandler {
                 autoPlay: (args["autoPlay"] as? Bool) ?? true,
                 audioStreamIndex: (args["audioStreamIndex"] as? NSNumber).flatMap {
                     $0.intValue >= 0 ? Int32($0.intValue) : nil
-                }))
+                },
+                preferSoftwareDecode: (args["preferSoftwareDecode"] as? Bool) ?? false))
         player.setForceSubtitlesDisabledOnStart(
             (args["forceSubtitlesDisabledOnStart"] as? Bool) ?? false)
         player.setReplayGainDb((args["normalizationGainDb"] as? NSNumber)?.doubleValue)
