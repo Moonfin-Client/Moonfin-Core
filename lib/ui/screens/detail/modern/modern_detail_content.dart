@@ -1131,9 +1131,11 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     final showPosterUrl = _imageUrl(item);
     final watchedBehavior =
         widget.prefs.get(UserPreferences.watchedIndicatorBehavior);
-    final showWatchedIndicator =
-        watchedBehavior != WatchedIndicatorBehavior.never &&
-        watchedBehavior != WatchedIndicatorBehavior.episodesOnly;
+    final showPlayedIndicator =
+        watchedBehavior == WatchedIndicatorBehavior.always ||
+        watchedBehavior == WatchedIndicatorBehavior.hideUnwatched;
+    final showUnwatchedIndicator =
+        watchedBehavior == WatchedIndicatorBehavior.always;
     // Determine which season contains the "next up" episode, mirroring the
     // episode-card logic: prefer _vm.nextUp.seasonId, fall back to the first
     // unplayed episode's seasonId so the cyan border always renders correctly.
@@ -1158,10 +1160,18 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
             (season.indexNumber != null &&
                 e.parentIndexNumber == season.indexNumber),
       );
-      final isPlayed = showWatchedIndicator &&
-          (season.isPlayed ||
-              (seasonEpisodes.isNotEmpty &&
-                  seasonEpisodes.every((e) => e.isPlayed)));
+      final isFullyPlayed = season.isPlayed ||
+          (seasonEpisodes.isNotEmpty &&
+              seasonEpisodes.every((e) => e.isPlayed));
+      final isPlayed = showPlayedIndicator && isFullyPlayed;
+      final int? unplayedCount;
+      if (isFullyPlayed || !showUnwatchedIndicator) {
+        unplayedCount = null;
+      } else if (seasonEpisodes.isNotEmpty) {
+        unplayedCount = seasonEpisodes.where((e) => !e.isPlayed).length;
+      } else {
+        unplayedCount = season.unplayedItemCount;
+      }
 
       return SeasonCard(
         seerrStatus: showAvailabilityBadges
@@ -1176,6 +1186,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
         landscape: _landscape,
         isNextUp: season.id == nextUpSeasonId,
         isPlayed: isPlayed,
+        unplayedCount: unplayedCount,
         onNavigateUp: topRow ? _focusSelectedTab : null,
         focusNode: i == 0 ? _seasonsFirstFocusNode : null,
         width: width,

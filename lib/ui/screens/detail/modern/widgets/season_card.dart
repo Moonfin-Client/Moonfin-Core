@@ -36,6 +36,9 @@ class SeasonCard extends StatelessWidget {
   /// Whether this season is fully watched.
   final bool isPlayed;
 
+  /// Count of unplayed episodes in this season, if partially watched or unwatched.
+  final int? unplayedCount;
+
   const SeasonCard({
     super.key,
     required this.title,
@@ -53,6 +56,7 @@ class SeasonCard extends StatelessWidget {
     this.autoScroll = false,
     this.seerrStatus,
     this.isPlayed = false,
+    this.unplayedCount,
   });
 
   @override
@@ -119,15 +123,38 @@ class SeasonCard extends StatelessWidget {
                   right: 6,
                   child: DecoratedBox(
                     decoration: BoxDecoration(
-                      color: AppColorScheme.accent,
+                      color: AppColorScheme.badgeWatched,
                       shape: BoxShape.circle,
                     ),
-                    child: const Padding(
-                      padding: EdgeInsets.all(3),
+                    child: Padding(
+                      padding: const EdgeInsets.all(3),
                       child: Icon(
                         Icons.check,
-                        color: Colors.white,
-                        size: 14,
+                        color: AppColorScheme.onBadge,
+                        size: 13,
+                      ),
+                    ),
+                  ),
+                )
+              else if (unplayedCount != null && unplayedCount! > 0)
+                Positioned(
+                  top: 6,
+                  right: 6,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 5,
+                      vertical: 1,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColorScheme.badgeUnplayed,
+                      borderRadius: AppRadius.circular(8),
+                    ),
+                    child: Text(
+                      '$unplayedCount',
+                      style: TextStyle(
+                        color: AppColorScheme.onBadge,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
