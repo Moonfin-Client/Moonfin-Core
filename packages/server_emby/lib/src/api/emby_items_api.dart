@@ -364,7 +364,10 @@ class EmbyItemsApi implements ItemsApi {
   }) async {
     final response = await _dio.get(
       '/Shows/$seriesId/Seasons',
-      queryParameters: {'Fields': ?_knownFields(fields)},
+      queryParameters: {
+        'Fields': ?_knownFields(fields),
+        'UserId': _getUserId(),
+      },
     );
     return response.data as Map<String, dynamic>;
   }

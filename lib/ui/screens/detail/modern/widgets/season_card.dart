@@ -33,6 +33,9 @@ class SeasonCard extends StatelessWidget {
   /// Seerr's status for this season, when Seerr has one.
   final int? seerrStatus;
 
+  /// Whether this season is fully watched.
+  final bool isPlayed;
+
   const SeasonCard({
     super.key,
     required this.title,
@@ -49,6 +52,7 @@ class SeasonCard extends StatelessWidget {
     this.height,
     this.autoScroll = false,
     this.seerrStatus,
+    this.isPlayed = false,
   });
 
   @override
@@ -108,6 +112,25 @@ class SeasonCard extends StatelessWidget {
                   top: 6,
                   left: 6,
                   child: SeerrStatusDot(status: seerrStatus, size: 18),
+                ),
+              if (isPlayed)
+                Positioned(
+                  top: 6,
+                  right: 6,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: AppColorScheme.accent,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Padding(
+                      padding: EdgeInsets.all(3),
+                      child: Icon(
+                        Icons.check,
+                        color: Colors.white,
+                        size: 14,
+                      ),
+                    ),
+                  ),
                 ),
               Positioned(
                 left: 8,

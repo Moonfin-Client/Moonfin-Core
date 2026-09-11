@@ -1129,6 +1129,11 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     final textTheme = Theme.of(context).textTheme;
     final counts = _episodeCountsBySeason();
     final showPosterUrl = _imageUrl(item);
+    final watchedBehavior =
+        widget.prefs.get(UserPreferences.watchedIndicatorBehavior);
+    final showWatchedIndicator =
+        watchedBehavior != WatchedIndicatorBehavior.never &&
+        watchedBehavior != WatchedIndicatorBehavior.episodesOnly;
     // Determine which season contains the "next up" episode, mirroring the
     // episode-card logic: prefer _vm.nextUp.seasonId, fall back to the first
     // unplayed episode's seasonId so the cyan border always renders correctly.
@@ -1145,39 +1150,53 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       double? width,
       double? height,
       bool topRow = true,
-    }) =>
-        SeasonCard(
-          seerrStatus: showAvailabilityBadges
-              ? seerrSeasonStatus[_vm.seasons[i].indexNumber]
-              : null,
-          title: _vm.seasons[i].name,
-          subtitle: l10n.episodeCount(
-            counts[_vm.seasons[i].id] ?? _vm.seasons[i].childCount ?? 0,
-          ),
-          imageUrl: _imageUrl(_vm.seasons[i]) ?? showPosterUrl,
-          isFallbackImage: _imageUrl(_vm.seasons[i]) == null,
-          landscape: _landscape,
-          isNextUp: _vm.seasons[i].id == nextUpSeasonId,
-          onNavigateUp: topRow ? _focusSelectedTab : null,
-          focusNode: i == 0 ? _seasonsFirstFocusNode : null,
-          width: width,
-          height: height,
-          autoScroll: true,
-          onTap: () => seerrOnlyVm != null
-              ? showSeerrRequestDialog(
-                  context: context,
-                  vm: seerrOnlyVm,
-                  is4k: false,
-                  qualityToggle: true,
-                  season: _vm.seasons[i].indexNumber,
-                )
-              : context.push(
-                  Destinations.item(
-                    _vm.seasons[i].id,
-                    serverId: _vm.seasons[i].serverId,
-                  ),
+    }) {
+      final season = _vm.seasons[i];
+      final seasonEpisodes = _vm.seriesEpisodes.where(
+        (e) =>
+            e.seasonId == season.id ||
+            (season.indexNumber != null &&
+                e.parentIndexNumber == season.indexNumber),
+      );
+      final isPlayed = showWatchedIndicator &&
+          (season.isPlayed ||
+              (seasonEpisodes.isNotEmpty &&
+                  seasonEpisodes.every((e) => e.isPlayed)));
+
+      return SeasonCard(
+        seerrStatus: showAvailabilityBadges
+            ? seerrSeasonStatus[season.indexNumber]
+            : null,
+        title: season.name,
+        subtitle: l10n.episodeCount(
+          counts[season.id] ?? season.childCount ?? 0,
+        ),
+        imageUrl: _imageUrl(season) ?? showPosterUrl,
+        isFallbackImage: _imageUrl(season) == null,
+        landscape: _landscape,
+        isNextUp: season.id == nextUpSeasonId,
+        isPlayed: isPlayed,
+        onNavigateUp: topRow ? _focusSelectedTab : null,
+        focusNode: i == 0 ? _seasonsFirstFocusNode : null,
+        width: width,
+        height: height,
+        autoScroll: true,
+        onTap: () => seerrOnlyVm != null
+            ? showSeerrRequestDialog(
+                context: context,
+                vm: seerrOnlyVm,
+                is4k: false,
+                qualityToggle: true,
+                season: season.indexNumber,
+              )
+            : context.push(
+                Destinations.item(
+                  season.id,
+                  serverId: season.serverId,
                 ),
-        );
+              ),
+      );
+    }
     final seasonLabelStyle = textTheme.labelMedium?.copyWith(
       color: Colors.white70,
       fontWeight: FontWeight.bold,

@@ -330,7 +330,7 @@ class JellyfinItemsApi implements ItemsApi {
   }) async {
     final response = await _dio.get(
       '/Shows/$seriesId/Seasons',
-      queryParameters: {'Fields': ?fields},
+      queryParameters: {'Fields': ?fields, 'UserId': _getUserId()},
     );
     return response.data as Map<String, dynamic>;
   }

@@ -865,7 +865,7 @@ class ItemDetailViewModel extends ChangeNotifier {
     try {
       final data = await _client.itemsApi.getSeasons(
         itemId,
-        fields: 'ChildCount',
+        fields: 'ChildCount,UserData',
       );
       final items = (data['Items'] as List?) ?? [];
       _seasons = _mapItems(items);

@@ -159,6 +159,7 @@ void main() {
 
     expect(request()?.path, '/Shows/series-1/Seasons');
     expect(request()?.queryParameters['Fields'], 'ChildCount');
+    expect(request()?.queryParameters['UserId'], 'user-1');
   });
 
   test('seasons send no Fields when none are asked for', () async {
@@ -167,5 +168,6 @@ void main() {
     await EmbyItemsApi(dio, () => 'user-1').getSeasons('series-1');
 
     expect(request()?.queryParameters.containsKey('Fields'), isFalse);
+    expect(request()?.queryParameters['UserId'], 'user-1');
   });
 }
