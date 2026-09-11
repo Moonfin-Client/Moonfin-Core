@@ -34,6 +34,7 @@ import 'preference/user_preferences.dart';
 import 'syncplay/syncplay_manager.dart';
 import 'ui/navigation/app_router.dart';
 import 'ui/navigation/deep_link_navigator.dart';
+import 'ui/navigation/destinations.dart';
 import 'ui/navigation/home_refresh_bus.dart';
 import 'ui/theme/app_theme.dart';
 import 'ui/theme/app_theme_controller.dart';
@@ -623,19 +624,20 @@ class _GlobalShortcutScopeState extends State<_GlobalShortcutScope>
     return false;
   }
 
-  bool _isPlayerRoute() {
+  /// A player is pushed over whichever tab launched it, so the router's uri
+  /// stays on that tab. Only the match list names what is actually on screen.
+  String _currentRoutePath() {
     final matches = appRouter.routerDelegate.currentConfiguration.matches;
-    if (matches.isEmpty) return false;
-    final path = matches.last.matchedLocation;
-    return path.startsWith('/player/') ||
-      path == '/live-tv/player' ||
-      path.startsWith('/game-player/');
+    if (matches.isEmpty) return '';
+    return matches.last.matchedLocation;
   }
 
-  bool _isHomeRoute() {
-    final path = appRouter.routerDelegate.currentConfiguration.uri.path;
-    return path == '/home';
-  }
+  bool _isPlayerRoute() => Destinations.isPlayerRoute(_currentRoutePath());
+
+  bool _routeReadsBackKey() =>
+      Destinations.routeReadsBackKey(_currentRoutePath());
+
+  bool _isHomeRoute() => _currentRoutePath() == Destinations.home;
 
   bool _isEditingText() {
     final focusContext = FocusManager.instance.primaryFocus?.context;
@@ -708,7 +710,7 @@ class _GlobalShortcutScopeState extends State<_GlobalShortcutScope>
         }
         return true;
       }
-      if (_isPlayerRoute()) {
+      if (_routeReadsBackKey()) {
         return false;
       }
       if (appRouter.canPop()) {

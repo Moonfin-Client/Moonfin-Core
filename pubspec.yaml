@@ -25,9 +25,7 @@ dependencies:
 
   # State Management & DI
   get_it: ^9.2.1
-  injectable: ^2.5.0
   flutter_riverpod: ^2.6.1
-  riverpod_annotation: ^2.6.1
 
   # Networking
   dio: ^5.11.1
@@ -91,7 +89,6 @@ dependencies:
 
   # Utilities
   device_info_plus: ^11.5.0
-  freezed_annotation: ^2.4.4
   json_annotation: ^4.9.0
   logger: ^2.7.0
   intl: ^0.20.2
@@ -173,10 +170,7 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^6.0.0
   build_runner: ^2.5.4
-  freezed: ^2.5.8
   json_serializable: ^6.9.5
-  injectable_generator: ^2.7.0
-  riverpod_generator: ^2.6.4
   drift_dev: ^2.28.0
   mocktail: ^1.0.5
   msix: ^3.16.12

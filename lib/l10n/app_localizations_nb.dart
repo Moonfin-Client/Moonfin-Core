@@ -206,39 +206,39 @@ class AppLocalizationsNb extends AppLocalizations {
   String get interfaceStyleMaterial => 'Material';
 
   @override
-  String get interfaceLayout => 'Interface Layout';
+  String get interfaceLayout => 'Grensesnittoppsett';
 
   @override
   String get interfaceLayoutSubtitle =>
-      'Override the detected layout when this device is read wrong. Restart Moonfin for changes to take effect.';
+      'Overstyr oppsettet dersom enheten gjenkjennes feil. Start Moonfin på nytt for å ta i bruk endringene.';
 
   @override
-  String get interfaceLayoutAutomatic => 'Automatic';
+  String get interfaceLayoutAutomatic => 'Automatisk';
 
   @override
   String get interfaceLayoutTv => 'TV';
 
   @override
-  String get interfaceLayoutDesktop => 'Desktop';
+  String get interfaceLayoutDesktop => 'Skrivebord';
 
   @override
-  String get interfaceLayoutPhone => 'Phone';
+  String get interfaceLayoutPhone => 'Telefon';
 
   @override
   String get glassQuality => 'Glasskvalitet';
 
   @override
-  String get oledMode => 'OLED Mode';
+  String get oledMode => 'OLED modus';
 
   @override
   String get oledModeSubtitle =>
-      'Deepen blacks and enrich artwork. Best on OLED displays.';
+      'Forsterk sortnivå og farger. Best egnet for OLED skjermer.';
 
   @override
-  String get oledModeSubtle => 'Subtle';
+  String get oledModeSubtle => 'Dempet';
 
   @override
-  String get oledModeVivid => 'Vivid';
+  String get oledModeVivid => 'Livlig';
 
   @override
   String get glassQualitySubtitle =>
@@ -254,11 +254,11 @@ class AppLocalizationsNb extends AppLocalizations {
   String get glassQualityReduced => 'Redusert';
 
   @override
-  String get performanceMode => 'Performance';
+  String get performanceMode => 'Ytelse';
 
   @override
   String get performanceModeSubtitle =>
-      'Auto measures this device and holds back on the ones short on memory, which keeps fewer images in memory and leaves trailers as still images. Takes full effect on the next launch.';
+      'Justerer seg automatisk etter enhetens minne. Færre bilder lagres i minnet, og trailere vises som stillbilder. Trer i kraft ved neste oppstart.';
 
   @override
   String get performanceModeAuto => 'Auto';
@@ -267,11 +267,11 @@ class AppLocalizationsNb extends AppLocalizations {
   String get performanceModeStandard => 'Standard';
 
   @override
-  String get performanceModeReduced => 'Reduced';
+  String get performanceModeReduced => 'Redusert';
 
   @override
   String get trailerPreviewHeldBack =>
-      'Off because Performance is set to Reduced for this device';
+      'Av fordi Ytelse er satt til Redusert for denne enheten';
 
   @override
   String get settingsAppearanceThemeSubtitle =>
@@ -292,14 +292,14 @@ class AppLocalizationsNb extends AppLocalizations {
       'Bruk enhetens inndatametode som standard for tekstinnskriving';
 
   @override
-  String get controller => 'Controller';
+  String get controller => 'Kontroller';
 
   @override
-  String get gamepadNavigation => 'Gamepad navigation';
+  String get gamepadNavigation => 'Navigasjon med spillkontroll';
 
   @override
   String get gamepadNavigationDescription =>
-      'Let a connected game controller move focus and select items';
+      'La tilkoblet spillkontroll flytte markør og velge elementer';
 
   @override
   String get themeMoonfin => 'Moonfin';
@@ -555,13 +555,13 @@ class AppLocalizationsNb extends AppLocalizations {
   String get extraLarge => 'Ekstra stor';
 
   @override
-  String get scrollDirection => 'Scroll Direction';
+  String get scrollDirection => 'Rulleretning';
 
   @override
-  String get scrollDirectionVertical => 'Vertical';
+  String get scrollDirectionVertical => 'Vertikal';
 
   @override
-  String get scrollDirectionHorizontal => 'Horizontal';
+  String get scrollDirectionHorizontal => 'Horisontal';
 
   @override
   String libraryGenresTitle(String name) {
@@ -659,7 +659,7 @@ class AppLocalizationsNb extends AppLocalizations {
   String get scrollRight => 'Rull til høyre';
 
   @override
-  String get scrollToTop => 'Scroll to top';
+  String get scrollToTop => 'Gå til toppen';
 
   @override
   String get couldNotLoadGenre =>
@@ -844,10 +844,10 @@ class AppLocalizationsNb extends AppLocalizations {
   String get latestAudiobooks => 'Nyeste lydbøker';
 
   @override
-  String get latestComics => 'Latest Comics';
+  String get latestComics => 'Siste Tegneserier';
 
   @override
-  String get comics => 'Comics';
+  String get comics => 'Tegneserier';
 
   @override
   String bookSeriesItemCount(int count) {
@@ -867,14 +867,14 @@ class AppLocalizationsNb extends AppLocalizations {
   String get bookFormatAudiobook => 'Lydbok';
 
   @override
-  String get bookFormatComic => 'Comic';
+  String get bookFormatComic => 'Tegneserie';
 
   @override
   String get noBooksFound => 'Fant ingen bøker for denne forfatteren.';
 
   @override
   String get noBooksFoundDescription =>
-      'This library does not contain any books, audiobooks, or comics yet.';
+      'Dette biblioteket inneholder ingen bøker, lydbøker eller tegneserier.';
 
   @override
   String bookPercentRead(int percent) {
@@ -1184,7 +1184,7 @@ class AppLocalizationsNb extends AppLocalizations {
   String get finalizingDownload => 'Fullfører…';
 
   @override
-  String get queuedDownload => 'Queued';
+  String get queuedDownload => 'I Kø';
 
   @override
   String queuedMoreCount(int count) {
@@ -1311,7 +1311,7 @@ class AppLocalizationsNb extends AppLocalizations {
   String get downloadSubtitles => 'Last ned undertekster';
 
   @override
-  String get searchingSubtitles => 'Searching for subtitles…';
+  String get searchingSubtitles => 'Søkker etter undertekster…';
 
   @override
   String get downloadingSubtitle => 'Downloading subtitle…';

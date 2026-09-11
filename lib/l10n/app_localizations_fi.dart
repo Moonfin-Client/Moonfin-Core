@@ -19,10 +19,10 @@ class AppLocalizationsFi extends AppLocalizations {
   String get interfaceLanguage => 'Käyttöliittymän kieli';
 
   @override
-  String get systemLanguageDefault => 'Oletuskieli';
+  String get systemLanguageDefault => 'Järjestelmän Oletus';
 
   @override
-  String get signIn => 'Kirjaudu sisään';
+  String get signIn => 'Kirjaudu Sisään';
 
   @override
   String get empty => 'Tyhjä';
@@ -848,10 +848,10 @@ class AppLocalizationsFi extends AppLocalizations {
   String get latestAudiobooks => 'Uusimmat äänikirjat';
 
   @override
-  String get latestComics => 'Latest Comics';
+  String get latestComics => 'Uusimmat sarjakuvat';
 
   @override
-  String get comics => 'Comics';
+  String get comics => 'Sarjakuvat';
 
   @override
   String bookSeriesItemCount(int count) {
@@ -871,14 +871,14 @@ class AppLocalizationsFi extends AppLocalizations {
   String get bookFormatAudiobook => 'Äänikirja';
 
   @override
-  String get bookFormatComic => 'Comic';
+  String get bookFormatComic => 'Sarjakuva';
 
   @override
   String get noBooksFound => 'Tälle kirjailijalle ei löytynyt kirjoja.';
 
   @override
   String get noBooksFoundDescription =>
-      'This library does not contain any books, audiobooks, or comics yet.';
+      'Tässä kirjastossa ei ole vielä kirjoja, äänikirjoja eikä sarjakuvia.';
 
   @override
   String bookPercentRead(int percent) {
@@ -2560,7 +2560,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get loadingAnimationPosition => 'Animaation Sijainti';
 
   @override
-  String get loadingAnimationPositionTopLeft => 'Ylävasen';
+  String get loadingAnimationPositionTopLeft => 'Ylä-Vasen';
 
   @override
   String get loadingAnimationPositionTopCenter => 'Yläosa keskellä';
@@ -2757,11 +2757,11 @@ class AppLocalizationsFi extends AppLocalizations {
       'Esikatsele hakupalkilla, kun liu’utat, sen sijaan että ne pysyisivät keskellä';
 
   @override
-  String get trickplayPauseWhileScrubbing => 'Pause While Scrubbing';
+  String get trickplayPauseWhileScrubbing => 'Tauko Kelauksen Ajaksi';
 
   @override
   String get trickplayPauseWhileScrubbingSubtitle =>
-      'Playback pauses while you seek and resumes when you press play. Turn this off to keep playing and jump straight to the new spot';
+      'Toisto keskeytyy, kun siirryt kohtaan, ja jatkuu, kun painat toistopainiketta. Poista tämä asetus käytöstä, jotta toisto jatkuu ja siirryt suoraan uuteen kohtaan';
 
   @override
   String get showDescriptionOnPause => 'Näytä kuvaus tauon aikana';
@@ -4776,7 +4776,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get whatsWrong => 'Mikä on vialla?';
 
   @override
-  String get allEpisodes => 'Kaikki jaksot';
+  String get allEpisodes => 'Kaikki Jaksot';
 
   @override
   String get episode => 'Jakso';
@@ -9465,29 +9465,29 @@ class AppLocalizationsFi extends AppLocalizations {
   String get settingsPlaybackEngineMpvLegacy => 'mpv (perintö)';
 
   @override
-  String get settingsRedetectDisplay => 'Re-detect display';
+  String get settingsRedetectDisplay => 'Näytä uudelleen-toiminto';
 
   @override
   String get settingsRedetectDisplayDescription =>
-      'Ask the TV again what HDR formats it supports. Use this if Dolby Vision or HDR10 titles are being transcoded after the TV or receiver was powered on late.';
+      'Kysy televisiolta uudelleen, mitä HDR-formaatteja se tukee. Käytä tätä, jos Dolby Vision- tai HDR10-sisältöjä transkoodataan sen jälkeen, kun televisio tai vastaanotin on kytketty päälle myöhään.';
 
   @override
-  String get settingsDisplayIsSdr => 'My TV is not HDR';
+  String get settingsDisplayIsSdr => 'Televisiossani ei ole HDR-tukea';
 
   @override
   String get settingsDisplayIsSdrDescription =>
-      'Stop advertising HDR support for this display. Use this only if detection keeps reporting HDR your TV can\'t actually show.';
+      'Älä muistuta tämän näytön HDR-tukea. Käytä tätä vain, jos tunnistustoiminto ilmoittaa jatkuvasti HDR:stä, jota televisio ei todellisuudessa pysty näyttämään.';
 
   @override
   String settingsDisplayRedetected(String formats) {
-    return 'Display re-detected: $formats';
+    return 'Näyttö tunnistettu uudelleen: $formats';
   }
 
   @override
-  String get settingsDisplayNoHdrDetected => 'No HDR formats detected';
+  String get settingsDisplayNoHdrDetected => 'HDR-muotoja ei havaittu';
 
   @override
-  String get settingsDisplayMarkedSdr => 'Display saved as SDR';
+  String get settingsDisplayMarkedSdr => 'Näytä tallennettuna SDR-muodossa';
 
   @override
   String get settingsDolbyVisionFallback => 'Dolby Vision Varavaihtoehto';
@@ -10954,7 +10954,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String dateCreatedFormat(Object date) {
-    return 'Date Added: $date';
+    return 'Lisäyspäivä: $date';
   }
 
   @override
@@ -11217,7 +11217,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get mixedPlaylistsSection => 'Sekalaiset soittolistat';
 
   @override
-  String get currentTime => 'Current Time';
+  String get currentTime => 'Nykyinen kellonaika';
 
   @override
   String get playbackTimeDisplay => 'Edistymispalkin aika';
@@ -11520,19 +11520,20 @@ class AppLocalizationsFi extends AppLocalizations {
       'Lisää valikkoon painikkeen, joka koskee palvelimen järjestelmänvalvojan lähettämiä viestejä';
 
   @override
-  String get autoDownloadNewEpisodes => 'Auto-download new episodes';
+  String get autoDownloadNewEpisodes =>
+      'Uusien jaksojen automaattinen lataaminen';
 
   @override
-  String get autoDownloadStop => 'Stop auto-download';
+  String get autoDownloadStop => 'Pysäytä automaattinen lataus';
 
   @override
   String autoDownloadKeepUnwatchedSubtitle(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'Downloads new episodes, up to $count unwatched at a time',
-      one: 'Downloads new episodes, up to 1 unwatched at a time',
-      zero: 'Downloads every new episode',
+      other: 'Lataa uudet jaksot, enintään $count kerralla katsomatta',
+      one: 'Lataa uusia jaksoja, enintään yksi katsomaton kerrallaan',
+      zero: 'Lataa jokainen uusi jakso',
     );
     return '$_temp0';
   }
@@ -11544,87 +11545,88 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get autoDownloadTranscodedForegroundNote =>
-      'Transcoded qualities only download while Moonfin is open. Original quality also downloads in the background.';
+      'Transkoodatut versiot ladataan vain silloin, kun Moonfin on auki. Alkuperäinen versio ladataan myös taustalla.';
 
   @override
   String get autoDownloadTranscodedRunningNote =>
-      'Transcoded downloads can\'t resume after an interruption and start over from the beginning. Original quality can resume.';
+      'Transkoodattujen latausten lataamista ei voi jatkaa keskeytyksen jälkeen, vaan ne alkavat alusta. Alkuperäisellä laadulla olevien latausten lataamista voi jatkaa.';
 
   @override
   String get autoDownloadForegroundOnly =>
-      'Downloads only while Moonfin is open';
+      'Lataaminen on mahdollista vain, kun Moonfin on auki';
 
   @override
-  String get autoDownloadQualityTitle => 'Auto-download quality';
+  String get autoDownloadQualityTitle => 'Automaattisen latauksen laatu';
 
   @override
   String autoDownloadEnabledFor(String title) {
-    return 'Auto-download enabled for $title';
+    return 'Automaattinen lataus on käytössä teokselle $title';
   }
 
   @override
   String autoDownloadStoppedFor(String title) {
-    return 'Auto-download stopped for $title';
+    return 'Automaattinen lataus keskeytettiin $title';
   }
 
   @override
-  String get autoDownloadSection => 'Automatic downloads';
+  String get autoDownloadSection => 'Automaattiset lataukset';
 
   @override
-  String get autoDownloadEnable => 'Enable automatic downloads';
+  String get autoDownloadEnable => 'Ota automaattiset lataukset käyttöön';
 
   @override
   String get autoDownloadEnableSubtitle =>
-      'Downloads new episodes of the series you follow. Existing episodes can still be downloaded manually.';
+      'Lataa seuraamasi sarjan uudet jaksot. Aiemmat jaksot voi edelleen ladata manuaalisesti.';
 
   @override
-  String get autoDownloadKeepUnwatched => 'Keep unwatched episodes';
+  String get autoDownloadKeepUnwatched => 'Säilytä katsomattomat jaksot';
 
   @override
-  String get autoDownloadKeepAll => 'All';
+  String get autoDownloadKeepAll => 'Kaikki';
 
   @override
-  String get autoDownloadDelete => 'Delete downloaded episodes';
+  String get autoDownloadDelete => 'Poista ladatut jaksot';
 
   @override
   String get autoDownloadDeleteSubtitle =>
-      'When to remove automatically downloaded episodes after you watch them';
+      'Milloin automaattisesti ladatut jaksot poistetaan katsomisen jälkeen';
 
   @override
-  String get autoDownloadDeleteNever => 'Never';
+  String get autoDownloadDeleteNever => 'Ei koskaan';
 
   @override
-  String get autoDownloadDeleteImmediately => 'Right after watching';
+  String get autoDownloadDeleteImmediately => 'Heti katsomisen jälkeen';
 
   @override
-  String get autoDownloadDeleteAfterDay => '1 day after watching';
+  String get autoDownloadDeleteAfterDay => '1 päivä katsomisen jälkeen';
 
   @override
-  String get autoDownloadDeleteAfterWeek => '1 week after watching';
+  String get autoDownloadDeleteAfterWeek =>
+      '1 viikko elokuvan katsomisen jälkeen';
 
   @override
-  String get autoDownloadBackgroundRefresh => 'Check in the background';
+  String get autoDownloadBackgroundRefresh => 'Tarkista taustalla';
 
   @override
   String get autoDownloadBackgroundRefreshSubtitle =>
-      'Allow the system to check for new episodes periodically while Moonfin is closed';
+      'Salli järjestelmän tarkistaa säännöllisesti uusien jaksojen saatavuuden, vaikka Moonfin-sovellus olisi suljettuna';
 
   @override
   String get autoDownloadBackgroundRefreshDenied =>
-      'Background App Refresh is disabled for Moonfin. Enable it in iOS Settings.';
+      'Sovelluksen taustapäivitys on poistettu käytöstä Moonfin-sovelluksessa. Ota se käyttöön iOS:n Asetuksissa.';
 
   @override
   String get autoDownloadBackgroundRestrictedAndroid =>
-      'Background usage is restricted for Moonfin in Android Settings.';
+      'Moonfinin taustakäyttö on rajoitettu Androidin asetuksissa.';
 
   @override
-  String get autoDownloadCheckNow => 'Check now';
+  String get autoDownloadCheckNow => 'Tarkista nyt';
 
   @override
-  String get autoDownloadChecking => 'Checking...';
+  String get autoDownloadChecking => 'Tarkistetaan...';
 
   @override
-  String get autoDownloadNeverChecked => 'Not checked yet';
+  String get autoDownloadNeverChecked => 'Ei vielä tarkistettu';
 
   @override
   String autoDownloadLastCheck(String when, int queued) {
@@ -11635,36 +11637,36 @@ class AppLocalizationsFi extends AppLocalizations {
       one: '1 episode queued',
       zero: 'nothing new',
     );
-    return 'Last check $when: $_temp0';
+    return 'Viimeisin tarkistus $when: $_temp0';
   }
 
   @override
   String autoDownloadLastCheckFailed(String when, String error) {
-    return 'Last check $when failed: $error';
+    return 'Viimeisin tarkistus $when epäonnistui: $error';
   }
 
   @override
-  String get autoDownloadFollowedSeries => 'Followed series';
+  String get autoDownloadFollowedSeries => 'Seurattavat sarjat';
 
   @override
   String get autoDownloadNoSubscriptions =>
-      'Open a series and choose \"Auto-download new episodes\" from its download menu';
+      'Avaa sarja ja valitse sen latausvalikosta vaihtoehto ”Lataa uudet jaksot automaattisesti”';
 
   @override
-  String get autoDownloadRemove => 'Stop following';
+  String get autoDownloadRemove => 'Lopeta seuraaminen';
 
   @override
-  String get autoDownloadStorageFull => 'Not enough storage';
+  String get autoDownloadStorageFull => 'Tallennustilaa ei ole tarpeeksi';
 
   @override
-  String get autoDownloadWaitingForWifi => 'Waiting for WiFi';
+  String get autoDownloadWaitingForWifi => 'Odotetaan WiFi-yhteyttä';
 
   @override
-  String get downloadNotificationRunning => 'Downloading';
+  String get downloadNotificationRunning => 'Lataaminen';
 
   @override
   String downloadNotificationRunningBatch(int done, int total) {
-    return 'Downloading ($done/$total)';
+    return 'Lataaminen ($done/$total)';
   }
 
   @override
@@ -11691,15 +11693,15 @@ class AppLocalizationsFi extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'Downloads complete',
-      one: 'Download complete',
+      other: 'Lataukset valmiit',
+      one: 'Lataa kokonaan',
     );
     return '$_temp0';
   }
 
   @override
   String downloadNotificationSaved(String name) {
-    return '$name saved for offline';
+    return '$name tallennettu offline-käyttöä varten';
   }
 
   @override
@@ -11707,8 +11709,8 @@ class AppLocalizationsFi extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count items saved for offline',
-      one: '1 item saved for offline',
+      other: '$count offline-käyttöä varten tallennetut kohteet',
+      one: '1 kohde tallennettu offline-käyttöä varten',
     );
     return '$_temp0';
   }
@@ -11718,14 +11720,14 @@ class AppLocalizationsFi extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count episodes',
-      one: '1 episode',
+      other: '$count jaksot',
+      one: '1 jakso',
     );
     return '$series: $_temp0';
   }
 
   @override
-  String get downloadNotificationFailedTitle => 'Download failed';
+  String get downloadNotificationFailedTitle => 'Lataaminen epäonnistui';
 
   @override
   String downloadNotificationFailedBody(String name, String error) {
@@ -11733,23 +11735,23 @@ class AppLocalizationsFi extends AppLocalizations {
   }
 
   @override
-  String get serverMessagesNotificationTitle => 'Remote message';
+  String get serverMessagesNotificationTitle => 'Etäviesti';
 
   @override
-  String get serverMessagesNotificationReceived => 'Message received';
+  String get serverMessagesNotificationReceived => 'Viesti vastaanotettu';
 
   @override
   String get downloadStorageLimitReached =>
-      'Storage limit reached. Free up space or increase the limit.';
+      'Tallennustilan raja on saavutettu. Vapauta tilaa tai lisää tallennustilan rajaa.';
 
   @override
   String downloadNotEnoughStorage(String needed, String free) {
-    return 'Not enough storage: $needed needed, $free free';
+    return 'Tallennustilaa ei ole tarpeeksi: $needed needed, $free free';
   }
 
   @override
   String get autoDownloadStorageFullTitle =>
-      'Not enough storage for new episodes';
+      'Uusille jaksoille ei ole tarpeeksi tallennustilaa';
 
   @override
   String autoDownloadStorageFullBody(int count, String name, String size) {
@@ -11759,6 +11761,6 @@ class AppLocalizationsFi extends AppLocalizations {
       other: '$count episodes are waiting for space.',
       one: '$name needs $size.',
     );
-    return '$_temp0 Free up space or raise the download limit.';
+    return '$_temp0 Vapauta tilaa tai nosta latausrajaa.';
   }
 }

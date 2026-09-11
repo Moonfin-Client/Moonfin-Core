@@ -371,7 +371,7 @@
             }
         }
     },
-    "failedToLoadFavorites": "Failed to load favorites",
+    "failedToLoadFavorites": "Failed to load favourites",
     "@failedToLoadFavorites": {
         "description": "Error when favorites cannot be loaded"
     },
@@ -379,11 +379,11 @@
     "@retry": {
         "description": "Button label to retry a failed operation"
     },
-    "noFavoritesYet": "No favorites yet",
+    "noFavoritesYet": "No favourites yet",
     "@noFavoritesYet": {
         "description": "Empty state when user has no favorites"
     },
-    "favorites": "Favorites",
+    "favorites": "Favourites",
     "@favorites": {
         "description": "Favorites section heading and filter label"
     },
@@ -625,7 +625,7 @@
     "@pickUpAgain": {
         "description": "Book rail title for in-progress bookmarked items"
     },
-    "bookHighlightsDescription": "Your books with highlights, favorites, or reading progress.",
+    "bookHighlightsDescription": "Your books with highlights, favourites, or reading progress.",
     "@bookHighlightsDescription": {
         "description": "Subtitle for saved highlights section"
     },
@@ -637,7 +637,7 @@
     "@handPickedFromListeningQueue": {
         "description": "Subtitle for primary book rail from audiobooks"
     },
-    "booksWithHighlights": "Books with highlights, favorites, or reading progress.",
+    "booksWithHighlights": "Books with highlights, favourites, or reading progress.",
     "@booksWithHighlights": {
         "description": "Subtitle for bookmarks secondary rail"
     },
@@ -1119,11 +1119,11 @@
     "@finished": {
         "description": "Status label for a finished book"
     },
-    "favorited": "Favorited",
+    "favorited": "Favourited",
     "@favorited": {
         "description": "Status label for a favorited item"
     },
-    "favorite": "Favorite",
+    "favorite": "Favourite",
     "@favorite": {
         "description": "Action button label to favorite an item"
     },
@@ -2167,23 +2167,23 @@
     "@movie": {
         "description": "Movie category chip label"
     },
-    "removedFromFavoriteChannels": "Removed from favorite channels",
+    "removedFromFavoriteChannels": "Removed from favourite channels",
     "@removedFromFavoriteChannels": {
         "description": "Snackbar confirmation after removing a channel from favorites"
     },
-    "addedToFavoriteChannels": "Added to favorite channels",
+    "addedToFavoriteChannels": "Added to favourite channels",
     "@addedToFavoriteChannels": {
         "description": "Snackbar confirmation after adding a channel to favorites"
     },
-    "failedToUpdateFavoriteChannel": "Failed to update favorite channel",
+    "failedToUpdateFavoriteChannel": "Failed to update favourite channel",
     "@failedToUpdateFavoriteChannel": {
         "description": "Error when toggling channel favorite fails"
     },
-    "unfavoriteChannel": "Unfavorite Channel",
+    "unfavoriteChannel": "Unfavourite Channel",
     "@unfavoriteChannel": {
         "description": "Button label to remove a channel from favorites"
     },
-    "favoriteChannel": "Favorite Channel",
+    "favoriteChannel": "Favourite Channel",
     "@favoriteChannel": {
         "description": "Button label to add a channel to favorites"
     },
@@ -2641,7 +2641,7 @@
     "@serverSettingsUsersLibraries": {
         "description": "Administration section description"
     },
-    "customization": "Customization",
+    "customization": "Customisation",
     "@customization": {
         "description": "Customization section title"
     },
@@ -3153,11 +3153,11 @@
     "@textStrokeColor": {
         "description": "Setting for subtitle text stroke color"
     },
-    "subtitleCustomization": "Subtitle Customization",
+    "subtitleCustomization": "Subtitle Customisation",
     "@subtitleCustomization": {
         "description": "Title of the subtitle customization screen"
     },
-    "subtitleCustomizationDescription": "Customize subtitle appearance",
+    "subtitleCustomizationDescription": "Customise subtitle appearance",
     "@subtitleCustomizationDescription": {
         "description": "Subtitle for the subtitle customization tile"
     },
@@ -3260,7 +3260,7 @@
             }
         }
     },
-    "customizationProfile": "Customization Profile",
+    "customizationProfile": "Customisation Profile",
     "@customizationProfile": {
         "description": "Setting for customization profile"
     },
@@ -3408,7 +3408,7 @@
     "@showGenresButton": {
         "description": "Setting for showing genres button"
     },
-    "showFavoritesButton": "Show Favorites Button",
+    "showFavoritesButton": "Show Favourites Button",
     "@showFavoritesButton": {
         "description": "Setting for showing favorites button"
     },
@@ -4007,7 +4007,7 @@
     "@whatSyncControls": {
         "description": "Info title for sync explanation"
     },
-    "syncControlsDescription": "Sync only controls whether plugin-backed settings are pushed to and pulled from the server. Profile selection and profile sync actions are in Customization settings when plugin sync is enabled.",
+    "syncControlsDescription": "Sync only controls whether plugin-backed settings are pushed to and pulled from the server. Profile selection and profile sync actions are in Customisation settings when plugin sync is enabled.",
     "@syncControlsDescription": {
         "description": "Description of what sync controls"
     },
@@ -6377,8 +6377,8 @@
     "trackActionDeleteFromPlaylist": "Delete from Playlist",
     "trackActionMoveUp": "Move Up",
     "trackActionMoveDown": "Move Down",
-    "trackActionRemoveFromFavorites": "Remove from Favorites",
-    "trackActionAddToFavorites": "Add to Favorites",
+    "trackActionRemoveFromFavorites": "Remove from Favourites",
+    "trackActionAddToFavorites": "Add to Favourites",
     "trackActionGoToAlbum": "Go to Album",
     "trackActionGoToArtist": "Go to Artist",
     "trackActionDownloading": "Downloading {name}…",
@@ -6498,11 +6498,11 @@
     "@contextMenuMarkUnwatched": {
         "description": "Context menu action to mark an item as unwatched"
     },
-    "contextMenuAddToFavorites": "Add to Favorites",
+    "contextMenuAddToFavorites": "Add to Favourites",
     "@contextMenuAddToFavorites": {
         "description": "Context menu action to add an item to favorites"
     },
-    "contextMenuRemoveFromFavorites": "Remove from Favorites",
+    "contextMenuRemoveFromFavorites": "Remove from Favourites",
     "@contextMenuRemoveFromFavorites": {
         "description": "Context menu action to remove an item from favorites"
     },
@@ -6513,7 +6513,7 @@
     "settingsAdministrationSubtitle": "Access the server administration panel",
     "settingsAccountSecurity": "Account & Security",
     "settingsAccountSecuritySubtitle": "Authentication, PIN code, and parental controls",
-    "settingsPersonalization": "Personalization",
+    "settingsPersonalization": "Personalisation",
     "settingsPersonalizationSubtitle": "Theme, navigation, home rows, and library visibility",
     "settingsDynamicContent": "Dynamic Content",
     "settingsDynamicContentSubtitle": "Media Bar and visual overlays",
@@ -6536,7 +6536,7 @@
     "settingsTwentyFourHourClockSubtitle": "Use 24-hour time formatting wherever the clock is shown",
     "settingsShowShuffleButtonInNavigation": "Show the shuffle button in the navigation bar",
     "settingsShowGenresButtonInNavigation": "Show the genres button in the navigation bar",
-    "settingsShowFavoritesButtonInNavigation": "Show the favorites button in the navigation bar",
+    "settingsShowFavoritesButtonInNavigation": "Show the favourites button in the navigation bar",
     "settingsShowLibrariesButtonInNavigation": "Show the libraries button in the navigation bar",
     "settingsLibraryVisibilitySubtitle": "Toggle home page visibility per library. Restart Moonfin for changes to take effect.",
     "settingsMediaBarAndLocalPreviews": "Media Bar & Local Previews",
@@ -6585,7 +6585,7 @@
     "settingsAutomationAndQueue": "Automation & Queue",
     "settingsAutomationAndQueueSubtitle": "Automated playback and sequencing",
     "settingsOfflineDownloadsSubtitle": "Download quality, storage limits, and queue size",
-    "settingsSyncplaySubtitle": "Synchronization logic for group sessions",
+    "settingsSyncplaySubtitle": "Synchronisation logic for group sessions",
     "settingsAdvancedOptionsSubtitle": "Specialized player features. Use with caution, as some options may cause playback issues",
     "settingsSkipIntrosAndOutros": "Skip Intros and Outros?",
     "settingsPromptUser": "Prompt User",
@@ -7066,10 +7066,10 @@
     "homeRowsSection": "Home Rows",
     "rowsType": "Row Type",
     "rowsTypeDescription": "Classic keeps per-row image type and info overlay. Modern uses portrait-to-backdrop rows.",
-    "displayFavoritesRows": "Display Favorites Rows",
-    "displayFavoritesRowsSubtitle": "Show Favorite Movies, Series, and other favorite rows in Home Sections.",
-    "favoritesRowSorting": "Favorites Row Sorting",
-    "favoritesRowSortingDescription": "Sort Favorites rows by date added, release date, alphabetically, and more.",
+    "displayFavoritesRows": "Display Favourites Rows",
+    "displayFavoritesRowsSubtitle": "Show Favourite Movies, Series, and other favourite rows in Home Sections.",
+    "favoritesRowSorting": "Favourites Row Sorting",
+    "favoritesRowSortingDescription": "Sort Favourites rows by date added, release date, alphabetically, and more.",
     "displayCollectionsRows": "Display Collections Rows",
     "displayCollectionsRowsSubtitle": "Show Collections rows in Home Sections.",
     "collectionsRowSorting": "Collections Row Sorting",
@@ -7146,7 +7146,7 @@
     "webDiagnosticsNoMixedContentDetected": "No obvious mixed-content configuration detected from current runtime settings.",
     "webDiagnosticsCorsChecklist": "CORS Checklist",
     "webDiagnosticsCorsChecklistItem1": "• Allow the browser origin in Access-Control-Allow-Origin.",
-    "webDiagnosticsCorsChecklistItem2": "• Include Authorization, X-Emby-Authorization, and X-Emby-Token in Access-Control-Allow-Headers.",
+    "webDiagnosticsCorsChecklistItem2": "• Include Authorisation, X-Emby-Authorisation, and X-Emby-Token in Access-Control-Allow-Headers.",
     "webDiagnosticsCorsChecklistItem3": "• Expose Content-Range and Accept-Ranges for streaming and seek behavior.",
     "webDiagnosticsCorsChecklistItem4": "• Return 204 to OPTIONS preflight requests.",
     "webDiagnosticsHeaderSnippetTitle": "Example Header Snippet (nginx-style)",
@@ -8771,7 +8771,7 @@
     "adminLibSaveTrickplayWithMedia": "Save trickplay images into media folders",
     "adminLibAutomaticSeriesGrouping": "Automatically merge series that are spread across multiple folders",
     "adminLibSeasonZeroName": "Season zero display name",
-    "adminLibLufsScan": "Enable LUFS scan for audio normalization",
+    "adminLibLufsScan": "Enable LUFS scan for audio normalisation",
     "adminLibPreferNonstandardArtist": "Prefer non-standard artists tag",
     "adminLibAutoAddToCollection": "Automatically add movies to collections",
     "adminParentalControl": "Parental Control",

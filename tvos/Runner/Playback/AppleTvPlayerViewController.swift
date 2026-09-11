@@ -40,6 +40,18 @@ struct TimeSlotConfig {
     }
 }
 
+/// A fixed locale so the label reads the same as the Dart formatter on the other
+/// platforms instead of following the device region.
+///
+/// It sits outside the view controller because the formatter is built in a stored
+/// property initializer, and those can't reference `Self`.
+private func makeClockFormatter(use24Hour: Bool) -> DateFormatter {
+    let formatter = DateFormatter()
+    formatter.locale = Locale(identifier: "en_US_POSIX")
+    formatter.dateFormat = use24Hour ? "HH:mm" : "h:mm a"
+    return formatter
+}
+
 final class AppleTvPlayerViewController: UIViewController {
     private let player: AetherPlayerWrapper
     var onExit: (() -> Void)?
@@ -276,16 +288,7 @@ final class AppleTvPlayerViewController: UIViewController {
     private var chapters: [(title: String, startMs: Int)] = []
 
     private var timeSlots = TimeSlotConfig()
-    private var clockFormatter = Self.makeClockFormatter(use24Hour: false)
-
-    /// A fixed locale so the label reads the same as the Dart formatter on the
-    /// other platforms instead of following the device region.
-    private static func makeClockFormatter(use24Hour: Bool) -> DateFormatter {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.dateFormat = use24Hour ? "HH:mm" : "h:mm a"
-        return formatter
-    }
+    private var clockFormatter = makeClockFormatter(use24Hour: false)
 
     init(player: AetherPlayerWrapper) {
         self.player = player
@@ -375,7 +378,7 @@ final class AppleTvPlayerViewController: UIViewController {
         if let v = slot("belowRight") { timeSlots.belowRight = v }
         if let v = args["use24Hour"] as? Bool, v != timeSlots.use24Hour {
             timeSlots.use24Hour = v
-            clockFormatter = Self.makeClockFormatter(use24Hour: v)
+            clockFormatter = makeClockFormatter(use24Hour: v)
         }
         if let v = args["endsAt"] as? String { timeSlots.endsAtTemplate = v }
         if isViewLoaded {

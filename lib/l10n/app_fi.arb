@@ -4,7 +4,7 @@
     "@appTitle": {
         "description": "The application title"
     },
-    "signIn": "Kirjaudu sisään",
+    "signIn": "Kirjaudu Sisään",
     "@signIn": {
         "description": "Sign in heading and button label"
     },
@@ -7317,7 +7317,7 @@
     "@interfaceLanguage": {
         "description": "Label for the app interface language setting"
     },
-    "systemLanguageDefault": "Oletuskieli",
+    "systemLanguageDefault": "Järjestelmän Oletus",
     "@systemLanguageDefault": {
         "description": "Label for using the system default language in settings"
     },
@@ -8143,7 +8143,7 @@
     "@whatsWrong": {
         "description": "Label for the issue description field"
     },
-    "allEpisodes": "Kaikki jaksot",
+    "allEpisodes": "Kaikki Jaksot",
     "@allEpisodes": {
         "description": "Episode dropdown option covering the whole season"
     },
@@ -10345,7 +10345,7 @@
     "@loadingAnimationPosition": {
         "description": "Title for loading animation position selection"
     },
-    "loadingAnimationPositionTopLeft": "Ylävasen",
+    "loadingAnimationPositionTopLeft": "Ylä-Vasen",
     "@loadingAnimationPositionTopLeft": {
         "description": "Loading animation position: Top-Left"
     },
@@ -10614,7 +10614,7 @@
     "@autoDownloadStop": {
         "description": "Row in the download sheet of a series that is already subscribed; tapping removes the subscription"
     },
-    "autoDownloadKeepUnwatchedSubtitle": "{count, plural, =0{Downloads every new episode} =1{Downloads new episodes, up to 1 unwatched at a time} other{Downloads new episodes, up to {count} unwatched at a time}}",
+    "autoDownloadKeepUnwatchedSubtitle": "{count, plural, =0{Lataa jokainen uusi jakso} =1{Lataa uusia jaksoja, enintään yksi katsomaton kerrallaan} other{Lataa uudet jaksot, enintään {count} kerralla katsomatta}}",
     "@autoDownloadKeepUnwatchedSubtitle": {
         "description": "Subtitle under the auto-download row explaining the keep-unwatched rule",
         "placeholders": {
@@ -10834,7 +10834,7 @@
             }
         }
     },
-    "downloadNotificationCompleteTitle": "{count, plural, =1{Download complete} other{Downloads complete}}",
+    "downloadNotificationCompleteTitle": "{count, plural, =1{Lataa kokonaan} other{Lataukset valmiit}}",
     "@downloadNotificationCompleteTitle": {
         "description": "System notification title once a download or a batch has finished",
         "placeholders": {
@@ -10852,7 +10852,7 @@
             }
         }
     },
-    "downloadNotificationSavedCount": "{count, plural, =1{1 item saved for offline} other{{count} items saved for offline}}",
+    "downloadNotificationSavedCount": "{count, plural, =1{1 kohde tallennettu offline-käyttöä varten} other{{count} offline-käyttöä varten tallennetut kohteet}}",
     "@downloadNotificationSavedCount": {
         "description": "System notification body for a finished batch of mixed items",
         "placeholders": {
@@ -10861,7 +10861,7 @@
             }
         }
     },
-    "downloadNotificationSeriesEpisodes": "{series}: {count, plural, =1{1 episode} other{{count} episodes}}",
+    "downloadNotificationSeriesEpisodes": "{series}: {count, plural, =1{1 jakso} other{{count} jaksot}}",
     "@downloadNotificationSeriesEpisodes": {
         "description": "System notification body for a finished batch that all belongs to one series",
         "placeholders": {
@@ -10931,5 +10931,13 @@
                 "type": "String"
             }
         }
+    },
+    "trickplayPauseWhileScrubbing": "Tauko Kelauksen Ajaksi",
+    "@trickplayPauseWhileScrubbing": {
+        "description": "Setting for whether seeking pauses playback so the trickplay preview holds still"
+    },
+    "trickplayPauseWhileScrubbingSubtitle": "Toisto keskeytyy, kun siirryt kohtaan, ja jatkuu, kun painat toistopainiketta. Poista tämä asetus käytöstä, jotta toisto jatkuu ja siirryt suoraan uuteen kohtaan",
+    "@trickplayPauseWhileScrubbingSubtitle": {
+        "description": "Description for the trickplay pause-while-scrubbing setting"
     }
 }

@@ -9146,5 +9146,130 @@
     "manageRequests": "Administrer Forespørsler",
     "@manageRequests": {
         "description": "Details screen button opening the pending requests to approve or decline"
+    },
+    "interfaceLayout": "Grensesnittoppsett",
+    "@interfaceLayout": {
+        "description": "Setting to override which UI layout the app uses"
+    },
+    "interfaceLayoutSubtitle": "Overstyr oppsettet dersom enheten gjenkjennes feil. Start Moonfin på nytt for å ta i bruk endringene.",
+    "@interfaceLayoutSubtitle": {
+        "description": "Subtitle for the interface layout setting"
+    },
+    "interfaceLayoutAutomatic": "Automatisk",
+    "@interfaceLayoutAutomatic": {
+        "description": "Interface layout option: detect from the device"
+    },
+    "interfaceLayoutTv": "TV",
+    "@interfaceLayoutTv": {
+        "description": "Interface layout option: 10-foot TV layout"
+    },
+    "interfaceLayoutDesktop": "Skrivebord",
+    "@interfaceLayoutDesktop": {
+        "description": "Interface layout option: desktop layout"
+    },
+    "interfaceLayoutPhone": "Telefon",
+    "@interfaceLayoutPhone": {
+        "description": "Interface layout option: phone layout"
+    },
+    "oledMode": "OLED modus",
+    "@oledMode": {
+        "description": "Label for the setting that deepens blacks and enriches artwork on OLED displays"
+    },
+    "oledModeSubtitle": "Forsterk sortnivå og farger. Best egnet for OLED skjermer.",
+    "@oledModeSubtitle": {
+        "description": "Explanation under the OLED Mode setting"
+    },
+    "oledModeSubtle": "Dempet",
+    "@oledModeSubtle": {
+        "description": "OLED Mode level that darkens surfaces gently and lightly enriches artwork"
+    },
+    "oledModeVivid": "Livlig",
+    "@oledModeVivid": {
+        "description": "OLED Mode level that uses pure black surfaces and the strongest artwork enrichment"
+    },
+    "performanceMode": "Ytelse",
+    "@performanceMode": {
+        "description": "Label for the device performance setting"
+    },
+    "performanceModeSubtitle": "Justerer seg automatisk etter enhetens minne. Færre bilder lagres i minnet, og trailere vises som stillbilder. Trer i kraft ved neste oppstart.",
+    "@performanceModeSubtitle": {
+        "description": "Explanation under the device performance setting"
+    },
+    "performanceModeAuto": "Auto",
+    "@performanceModeAuto": {
+        "description": "Performance option: measure the device"
+    },
+    "performanceModeStandard": "Standard",
+    "@performanceModeStandard": {
+        "description": "Performance option: never hold back"
+    },
+    "performanceModeReduced": "Redusert",
+    "@performanceModeReduced": {
+        "description": "Performance option: always hold back"
+    },
+    "trailerPreviewHeldBack": "Av fordi Ytelse er satt til Redusert for denne enheten",
+    "@trailerPreviewHeldBack": {
+        "description": "Shown under the trailer preview switch when the device tier suppresses trailers"
+    },
+    "controller": "Kontroller",
+    "@controller": {
+        "description": "Settings section header for game controller options"
+    },
+    "gamepadNavigation": "Navigasjon med spillkontroll",
+    "@gamepadNavigation": {
+        "description": "Settings label for the switch that lets a game controller move focus and select items"
+    },
+    "gamepadNavigationDescription": "La tilkoblet spillkontroll flytte markør og velge elementer",
+    "@gamepadNavigationDescription": {
+        "description": "Settings subtitle for the gamepad navigation switch"
+    },
+    "scrollDirection": "Rulleretning",
+    "@scrollDirection": {
+        "description": "Section header for scroll direction selection in library display settings"
+    },
+    "scrollDirectionVertical": "Vertikal",
+    "@scrollDirectionVertical": {
+        "description": "Library scroll direction option: vertical grid (default)"
+    },
+    "scrollDirectionHorizontal": "Horisontal",
+    "@scrollDirectionHorizontal": {
+        "description": "Library scroll direction option: horizontal grid for ultrawide displays"
+    },
+    "scrollToTop": "Gå til toppen",
+    "@scrollToTop": {
+        "description": "Tooltip for the button that returns a scrolled list to the top"
+    },
+    "latestComics": "Siste Tegneserier",
+    "@latestComics": {
+        "description": "Row title for recently added comics in the book library"
+    },
+    "comics": "Tegneserier",
+    "@comics": {
+        "description": "Label for comic media format or section"
+    },
+    "bookFormatComic": "Tegneserie",
+    "@bookFormatComic": {
+        "description": "Semantic label for the comic format badge on library cards"
+    },
+    "noBooksFoundDescription": "Dette biblioteket inneholder ingen bøker, lydbøker eller tegneserier.",
+    "@noBooksFoundDescription": {
+        "description": "Description shown when a books library has no items"
+    },
+    "queuedDownload": "I Kø",
+    "@queuedDownload": {
+        "description": "Status label for a download waiting in the queue for a free download slot"
+    },
+    "queuedMoreCount": "{count, plural, =1{1 more queued} other{{count} more queued}}",
+    "@queuedMoreCount": {
+        "description": "Row under the active downloads list standing in for queued items not shown individually",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "searchingSubtitles": "Søkker etter undertekster…",
+    "@searchingSubtitles": {
+        "description": "Shown while a remote subtitle search is running"
     }
 }

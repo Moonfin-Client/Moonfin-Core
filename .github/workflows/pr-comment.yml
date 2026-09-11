@@ -24,6 +24,8 @@ jobs:
 
     steps:
       - name: Download build results
+        id: results
+        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: build-results
@@ -43,6 +45,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Post PR comment
+        if: steps.results.outcome == 'success'
         uses: actions/github-script@v7
         with:
           script: |

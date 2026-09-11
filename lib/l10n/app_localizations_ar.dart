@@ -216,10 +216,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get interfaceLayoutAutomatic => 'أوتوماتيك';
 
   @override
-  String get interfaceLayoutTv => 'TV';
+  String get interfaceLayoutTv => 'وضع التلفاز';
 
   @override
-  String get interfaceLayoutDesktop => 'Desktop';
+  String get interfaceLayoutDesktop => 'وضع سطح المكتب';
 
   @override
   String get interfaceLayoutPhone => 'واجهة الهاتف';
@@ -235,10 +235,10 @@ class AppLocalizationsAr extends AppLocalizations {
       'خلّي اللون الأسود أغمق والصور أوضح وأجمل. يُفضّل استخدامه على شاشات OLED.';
 
   @override
-  String get oledModeSubtle => 'Subtle';
+  String get oledModeSubtle => 'خفيف';
 
   @override
-  String get oledModeVivid => 'Vivid';
+  String get oledModeVivid => 'ديناميكي';
 
   @override
   String get glassQualitySubtitle =>
@@ -261,13 +261,13 @@ class AppLocalizationsAr extends AppLocalizations {
       'يحدد إمكانيات جهازك تلقائيًا ويخفف الإعدادات إذا كانت الذاكرة محدودة، مع الاحتفاظ بعدد أقل من الصور وعرض المقاطع الدعائية كصور ثابتة. أعد تشغيل التطبيق لتطبيق التغييرات.';
 
   @override
-  String get performanceModeAuto => 'Auto';
+  String get performanceModeAuto => 'اوتوماتيكي';
 
   @override
-  String get performanceModeStandard => 'Standard';
+  String get performanceModeStandard => 'اعتيادي';
 
   @override
-  String get performanceModeReduced => 'Reduced';
+  String get performanceModeReduced => 'منخفض';
 
   @override
   String get trailerPreviewHeldBack =>
@@ -840,7 +840,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get latestAudiobooks => 'أحدث الكتب الصوتية';
 
   @override
-  String get latestComics => 'Latest Comics';
+  String get latestComics => 'أحدث القصص المصورة';
 
   @override
   String get comics => 'Comics';
@@ -874,7 +874,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get noBooksFoundDescription =>
-      'This library does not contain any books, audiobooks, or comics yet.';
+      'لا تحتوي هذه المكتبة على أي كتب أو كتب صوتية أو قصص مصورة حتى الآن.';
 
   @override
   String bookPercentRead(int percent) {
@@ -1365,49 +1365,49 @@ class AppLocalizationsAr extends AppLocalizations {
   String get noEpisodesLoaded => 'لم يتم تحميل أي حلقات';
 
   @override
-  String get downloadScopeTitle => 'What to download';
+  String get downloadScopeTitle => 'ما الذي تريد تنزيله';
 
   @override
-  String get downloadAllEpisodes => 'All episodes';
+  String get downloadAllEpisodes => 'جميع الحلقات';
 
   @override
-  String get downloadUnwatchedEpisodes => 'All unwatched episodes';
+  String get downloadUnwatchedEpisodes => 'كل الحلقات غير المشاهدة';
 
   @override
-  String get downloadAllMovies => 'All movies';
+  String get downloadAllMovies => 'كل الأفلام';
 
   @override
-  String get downloadUnwatchedMovies => 'All unwatched movies';
+  String get downloadUnwatchedMovies => 'كل الأفلام غير المشاهدة';
 
   @override
-  String get downloadScopeLoading => 'Loading items...';
+  String get downloadScopeLoading => 'جاري تحميل المحتوى...';
 
   @override
-  String get downloadScopeLoadFailed => 'Could not load items to download';
+  String get downloadScopeLoadFailed => 'تعذر تحميل الملفات للتنزيل';
 
   @override
   String downloadEstimateTotal(String size) {
-    return '~$size total';
+    return '~$size الإجمالي';
   }
 
   @override
   String downloadBytesOfTotal(String received, String total) {
-    return '$received of $total';
+    return '$received من $total';
   }
 
   @override
   String downloadSpeed(String speed) {
-    return '$speed/s';
+    return '$speed/ث';
   }
 
   @override
   String downloadSizeTotal(String size) {
-    return '$size total';
+    return '$size الإجمالي';
   }
 
   @override
   String downloadEstimateUnknownCount(int count) {
-    return '$count unknown';
+    return '$count غير معروف';
   }
 
   @override
@@ -1420,7 +1420,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String deleteLocalFilesMessage(String typeLabel) {
-    return 'هل تريد حذف الملفات المحلية لـ $typeLabel؟\n\nسيؤدي هذا إلى تحرير مساحة التخزين. يمكنك إعادة التحميل لاحقا.';
+    return 'هل تريد حذف الملفات المحلية لـ $typeLabel؟\n\nسيؤدي هذا إلى إخلاء مساحة التخزين. يمكنك إعادة التنزيل لاحقاً.';
   }
 
   @override
@@ -1797,7 +1797,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get hdrOutputFailed =>
-      'Inactive — could not start, using the standard path';
+      'غير نشط — لم يتمكن من البدء، جاري استخدام المسار الافتراضي';
 
   @override
   String get nativeHdrOutput => 'Native HDR output';
@@ -2491,7 +2491,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get seriesThumbnailsDescription =>
-      'الحلقات فقط: استخدم الأعمال الفنية المتسلسلة التي تتطابق مع كل نوع صورة صف';
+      'للمسلسلات: استخدام بوستر المسلسل بدلاً من صورة الحلقة.';
 
   @override
   String get homeRowInfoOverlay => 'تراكب معلومات الصف الرئيسي';
@@ -11670,7 +11670,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get downloadNotificationFailedTitle => 'Download failed';
+  String get downloadNotificationFailedTitle => 'فشل التنزيل';
 
   @override
   String downloadNotificationFailedBody(String name, String error) {
@@ -11678,7 +11678,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get serverMessagesNotificationTitle => 'Remote message';
+  String get serverMessagesNotificationTitle => 'رسالة من السيرفر';
 
   @override
   String get serverMessagesNotificationReceived => 'Message received';
