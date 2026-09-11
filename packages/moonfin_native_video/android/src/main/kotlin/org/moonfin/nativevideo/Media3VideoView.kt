@@ -71,6 +71,8 @@ import androidx.media3.exoplayer.RendererCapabilities
 import androidx.media3.exoplayer.mediacodec.MediaCodecAdapter
 import androidx.media3.exoplayer.mediacodec.MediaCodecInfo
 import androidx.media3.exoplayer.mediacodec.MediaCodecSelector
+import androidx.media3.exoplayer.hls.DefaultHlsExtractorFactory
+import androidx.media3.exoplayer.hls.HlsMediaSource
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.exoplayer.video.MediaCodecVideoRenderer
@@ -771,6 +773,7 @@ class Media3VideoView(
     private var currentUrl: String? = null
     private var currentHeaders: Map<String, String> = emptyMap()
     private lateinit var httpDataSourceFactory: DefaultHttpDataSource.Factory
+    private lateinit var hlsMediaSourceFactory: HlsMediaSource.Factory
     private var requestedSubtitleRendererMode: SubtitleRendererMode = SubtitleRendererMode.NATIVE
     private var activeSubtitleRendererMode: SubtitleRendererMode = SubtitleRendererMode.NATIVE
     private var selectedSubtitleCodec: String? = null
@@ -1625,6 +1628,15 @@ class Media3VideoView(
             AssSubtitleParserFactory(assHandler),
             assHandler,
         )
+
+        hlsMediaSourceFactory = HlsMediaSource.Factory(bootDataSourceFactory)
+            .setExtractorFactory(
+                DefaultHlsExtractorFactory(
+                    DefaultTsPayloadReaderFactory.FLAG_ALLOW_NON_IDR_KEYFRAMES,
+                    true,
+                ),
+            )
+            .setSubtitleParserFactory(assParserFactory)
         val bootMediaSourceFactory = DefaultMediaSourceFactory(
             bootDataSourceFactory,
             // The DoVi wrapper sits outermost so it sees the extractors every
@@ -3256,6 +3268,20 @@ class Media3VideoView(
         }
     }
 
+    private fun setPlayerMediaItem(
+        mediaItem: MediaItem,
+        startPositionMs: Long,
+    ) {
+        if (mediaItem.localConfiguration?.mimeType == MimeTypes.APPLICATION_M3U8) {
+            player.setMediaSource(
+                hlsMediaSourceFactory.createMediaSource(mediaItem),
+                startPositionMs,
+            )
+        } else {
+            player.setMediaItem(mediaItem, startPositionMs)
+        }
+    }
+
     private fun setMediaItem(startPositionMs: Long, playWhenReady: Boolean) {
         val url = currentUrl ?: return
 
@@ -3269,7 +3295,7 @@ class Media3VideoView(
             mediaItemBuilder.setMimeType(mimeType)
         }
         val mediaItem = mediaItemBuilder.build()
-        player.setMediaItem(mediaItem, startPositionMs)
+        setPlayerMediaItem(mediaItem, startPositionMs)
         player.prepare()
         if (playWhenReady) {
             player.playWhenReady = true
@@ -3484,7 +3510,7 @@ class Media3VideoView(
         Media3Bridge.emitEvent(
             mapOf("event" to "tunnelingDisabledOnAudioTrackFailure"),
         )
-        player.setMediaItem(mediaItem, retryPositionMs)
+        setPlayerMediaItem(mediaItem, retryPositionMs)
         player.prepare()
         player.playWhenReady = playWhenReady
         return true
@@ -3507,7 +3533,7 @@ class Media3VideoView(
 
         audioOffloadDisabled = true
         applyTrackSelectorForCurrentSource()
-        player.setMediaItem(mediaItem, retryPositionMs)
+        setPlayerMediaItem(mediaItem, retryPositionMs)
         player.prepare()
         player.playWhenReady = playWhenReady
         return true
@@ -3538,7 +3564,7 @@ class Media3VideoView(
         // instead of failing the AudioTrack init again.
         deviceRequiresStereoDownmix = true
         applyStereoDownmix(true)
-        player.setMediaItem(mediaItem, retryPositionMs)
+        setPlayerMediaItem(mediaItem, retryPositionMs)
         player.prepare()
         player.playWhenReady = playWhenReady
         return true
@@ -3568,7 +3594,7 @@ class Media3VideoView(
         val retryPositionMs = player.currentPosition.coerceAtLeast(0L)
         val playWhenReady = wasPlayingBeforeDisplayModeSwitch || player.playWhenReady
 
-        player.setMediaItem(mediaItem, retryPositionMs)
+        setPlayerMediaItem(mediaItem, retryPositionMs)
         player.prepare()
         player.playWhenReady = playWhenReady
         return true
