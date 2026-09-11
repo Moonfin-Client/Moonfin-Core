@@ -20,6 +20,10 @@ class NouveauAction {
   final Color? activeColor;
   final double? progress;
 
+  /// Sits beside the label on the primary button, for the time left on a
+  /// part-watched item.
+  final String? trailingLabel;
+
   const NouveauAction({
     required this.label,
     required this.onPressed,
@@ -36,6 +40,7 @@ class NouveauAction {
     this.isActive = false,
     this.activeColor,
     this.progress,
+    this.trailingLabel,
   });
 }
 
@@ -89,6 +94,12 @@ class _NouveauActionButtonsState extends State<NouveauActionButtons> {
         .take(_visibleSecondaryActionsWithOverflow)
         .toList(growable: false);
   }
+
+  /// The More button stands in for the actions it hides, so it takes its
+  /// directions from the last of them. The right-edge hand-off lives on that
+  /// action, and it is always one of the ones folded into the overflow.
+  NouveauAction? get _lastSecondaryAction =>
+      widget.secondaryActions.isEmpty ? null : widget.secondaryActions.last;
 
   List<NouveauAction> get _overflowActions {
     if (!_usesOverflow) {
@@ -257,6 +268,12 @@ class _NouveauActionButtonsState extends State<NouveauActionButtons> {
                     focusNode: _overflowFocusNode,
                     compact: true,
                     onPressed: () => _showOverflowActions(context),
+                    onArrowUp:
+                        _lastSecondaryAction?.onArrowUp ??
+                        primaryAction?.onArrowUp,
+                    onArrowDown:
+                        _lastSecondaryAction?.onArrowDown ??
+                        primaryAction?.onArrowDown,
                     onArrowLeft: visibleSecondaryActions.isNotEmpty
                         ? () => _focusSecondary(
                             visibleSecondaryActions.length - 1,
@@ -264,6 +281,7 @@ class _NouveauActionButtonsState extends State<NouveauActionButtons> {
                         : primaryAction != null
                         ? _focusPrimary
                         : null,
+                    onArrowRight: _lastSecondaryAction?.onArrowRight,
                   ),
                 ],
               ],
@@ -334,11 +352,17 @@ class _NouveauActionButtonsState extends State<NouveauActionButtons> {
             _NouveauMoreButton(
               focusNode: _overflowFocusNode,
               onPressed: () => _showOverflowActions(context),
+              onArrowUp:
+                  _lastSecondaryAction?.onArrowUp ?? primaryAction?.onArrowUp,
+              onArrowDown:
+                  _lastSecondaryAction?.onArrowDown ??
+                  primaryAction?.onArrowDown,
               onArrowLeft: visibleSecondaryActions.isNotEmpty
                   ? () => _focusSecondary(visibleSecondaryActions.length - 1)
                   : primaryAction != null
                   ? _focusPrimary
                   : null,
+              onArrowRight: _lastSecondaryAction?.onArrowRight,
             ),
           ],
         ],
@@ -563,6 +587,23 @@ class _NouveauPrimaryButtonState extends State<_NouveauPrimaryButton> {
                             ),
                           ),
                         ),
+                        // The label truncates before this does, so the time
+                        // left stays readable on a narrow button.
+                        if (action.trailingLabel case final trailing?) ...[
+                          SizedBox(width: phone ? 8 : 9.0 * scale),
+                          Text(
+                            trailing,
+                            maxLines: 1,
+                            style: TextStyle(
+                              color: (_highlighted ? Colors.black : Colors.white)
+                                  .withValues(alpha: 0.62),
+                              fontSize: phone ? 13 : 13.5 * scale,
+                              fontWeight: FontWeight.w600,
+                              height: 1,
+                              letterSpacing: -0.1,
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                   ),
@@ -890,13 +931,19 @@ class _NouveauCircleActionButtonState
 class _NouveauMoreButton extends StatefulWidget {
   final FocusNode focusNode;
   final VoidCallback onPressed;
+  final VoidCallback? onArrowUp;
+  final VoidCallback? onArrowDown;
   final VoidCallback? onArrowLeft;
+  final VoidCallback? onArrowRight;
   final bool compact;
 
   const _NouveauMoreButton({
     required this.focusNode,
     required this.onPressed,
+    this.onArrowUp,
+    this.onArrowDown,
     this.onArrowLeft,
+    this.onArrowRight,
     this.compact = false,
   });
 
@@ -1018,19 +1065,19 @@ class _NouveauMoreButtonState extends State<_NouveauMoreButton> {
                 return KeyEventResult.ignored;
               }
 
-              if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-                final callback = widget.onArrowLeft;
+              // This is the last button in the row once overflow kicks in, so
+              // it carries the same four directions its siblings do.
+              final arrow = switch (event.logicalKey) {
+                LogicalKeyboardKey.arrowUp => widget.onArrowUp,
+                LogicalKeyboardKey.arrowDown => widget.onArrowDown,
+                LogicalKeyboardKey.arrowLeft => widget.onArrowLeft,
+                LogicalKeyboardKey.arrowRight => widget.onArrowRight,
+                _ => null,
+              };
 
-                if (callback == null) {
-                  return KeyEventResult.ignored;
-                }
+              if (arrow != null) {
+                arrow();
 
-                callback();
-
-                return KeyEventResult.handled;
-              }
-
-              if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
                 return KeyEventResult.handled;
               }
 

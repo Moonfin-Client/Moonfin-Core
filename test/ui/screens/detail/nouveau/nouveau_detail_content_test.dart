@@ -190,37 +190,28 @@ void main() {
     }
   });
 
-  testWidgets(
-    'chapters are excluded for media containers and shown for other types',
-    (tester) async {
-      final chapter = {'StartPositionTicks': 1000, 'Name': 'Chapter one'};
-      for (final type in ['Movie', 'Episode', 'Series', 'Season']) {
-        await pumpContent(
-          tester,
-          viewModel(type, data: itemData(type, chapters: [chapter])),
-        );
-        expect(
-          find.byKey(const ValueKey('nouveau-section-chapters')),
-          findsNothing,
-        );
-      }
-
+  // Movie and Episode are the types that actually carry chapters, and every
+  // other detail style shows them on the strength of the list alone.
+  testWidgets('chapters show for any item that has them', (tester) async {
+    final chapter = {'StartPositionTicks': 1000, 'Name': 'Chapter one'};
+    for (final type in ['Movie', 'Episode', 'Video']) {
       await pumpContent(
         tester,
-        viewModel('Video', data: itemData('Video', chapters: [chapter])),
+        viewModel(type, data: itemData(type, chapters: [chapter])),
       );
       expect(
         find.byKey(const ValueKey('nouveau-section-chapters')),
         findsOneWidget,
+        reason: '$type carries chapters, so the section belongs on screen',
       );
+    }
 
-      await pumpContent(tester, viewModel('Video'));
-      expect(
-        find.byKey(const ValueKey('nouveau-section-chapters')),
-        findsNothing,
-      );
-    },
-  );
+    await pumpContent(tester, viewModel('Video'));
+    expect(
+      find.byKey(const ValueKey('nouveau-section-chapters')),
+      findsNothing,
+    );
+  });
 
   testWidgets('collection, extras, discovery and people use their gates', (
     tester,

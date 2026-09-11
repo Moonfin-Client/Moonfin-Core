@@ -125,16 +125,7 @@ class NouveauDetailContentState extends State<NouveauDetailContent> {
     return size.height > size.width && size.width < 600;
   }
 
-  bool _shouldShowChapters(AggregatedItem item) {
-    if (item.chapters.isEmpty) {
-      return false;
-    }
-
-    return switch (item.type) {
-      'Movie' || 'Episode' || 'Series' || 'Season' => false,
-      _ => true,
-    };
-  }
+  bool _shouldShowChapters(AggregatedItem item) => item.chapters.isNotEmpty;
 
   List<GlobalKey> _focusableVerticalSections() {
     final sections = <GlobalKey>[];

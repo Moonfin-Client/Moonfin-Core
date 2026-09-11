@@ -1615,31 +1615,41 @@ class ItemDetailViewModel extends ChangeNotifier {
     }
 
     try {
-      final data = await _client.itemsApi.getItems(
-        ids: ids,
-        fields: 'PrimaryImageAspectRatio,BasicSyncInfo,People,Overview',
-      );
+      final refreshedById = await _refetchItemsById(ids, _collectionPageSize);
 
-      final refreshedItems = _mapItems(
-        (data['Items'] as List?) ?? const [],
-      );
-
-      if (refreshedItems.isEmpty) {
+      if (refreshedById.isEmpty) {
         return;
       }
 
-      final refreshedById = {
-        for (final item in refreshedItems) item.id: item,
-      };
-
       _collectionItems = _collectionItems
-          .map(
-            (item) => refreshedById[item.id] ?? item,
-      )
+          .map((item) => refreshedById[item.id] ?? item)
           .toList(growable: false);
 
       notifyListeners();
     } catch (_) {}
+  }
+
+  /// Re-reads [ids] a page at a time. One request carrying every loaded id
+  /// builds a query string long enough for the server to reject.
+  Future<Map<String, AggregatedItem>> _refetchItemsById(
+    List<String> ids,
+    int pageSize,
+  ) async {
+    final refreshedById = <String, AggregatedItem>{};
+
+    for (var start = 0; start < ids.length; start += pageSize) {
+      final end = start + pageSize;
+      final data = await _client.itemsApi.getItems(
+        ids: ids.sublist(start, end > ids.length ? ids.length : end),
+        fields: 'PrimaryImageAspectRatio,BasicSyncInfo,People,Overview',
+      );
+
+      for (final item in _mapItems((data['Items'] as List?) ?? const [])) {
+        refreshedById[item.id] = item;
+      }
+    }
+
+    return refreshedById;
   }
 
   /// Refreshes the already loaded BoxSet playlist cards without rebuilding the
@@ -1662,27 +1672,14 @@ class ItemDetailViewModel extends ChangeNotifier {
     }
 
     try {
-      final data = await _client.itemsApi.getItems(
-        ids: ids,
-        fields: 'PrimaryImageAspectRatio,BasicSyncInfo,People,Overview',
-      );
+      final refreshedById = await _refetchItemsById(ids, _playlistPageSize);
 
-      final refreshedItems = _mapItems(
-        (data['Items'] as List?) ?? const [],
-      );
-
-      if (refreshedItems.isEmpty) {
+      if (refreshedById.isEmpty) {
         return;
       }
 
-      final refreshedById = {
-        for (final item in refreshedItems) item.id: item,
-      };
-
       _playlistItems = _playlistItems
-          .map(
-            (item) => refreshedById[item.id] ?? item,
-      )
+          .map((item) => refreshedById[item.id] ?? item)
           .toList(growable: false);
 
       _resolveNextUp();

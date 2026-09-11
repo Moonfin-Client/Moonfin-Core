@@ -351,11 +351,12 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
 
     unawaited(_viewModel.syncUserDataIfStale());
 
-    final nouveauState = _nouveauContentKey.currentState;
-    if (nouveauState != null) {
-      _lastFocusedBackdropItemId = null;
-    }
+    // Every style needs this cleared, not just Nouveau. The card focused on the
+    // way out never got its backdrop applied, and _onBackdropItemFocused turns
+    // away a repeat of the same id.
+    _lastFocusedBackdropItemId = null;
 
+    final nouveauState = _nouveauContentKey.currentState;
     final nouveauHandled =
         nouveauState?.restoreBackdropAfterResume() ?? false;
 
@@ -5907,17 +5908,16 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
   }
 
   NouveauAction _toNouveauAction(
-      DetailButton? detailButton,
-      _DetailActionButton button, {
-        FocusNode? focusNode,
-        VoidCallback? onFocused,
-        VoidCallback? onArrowUp,
-        VoidCallback? onArrowDown,
-        VoidCallback? onArrowLeft,
-        VoidCallback? onArrowRight,
-        double? progress,
-        String? trailingLabel,
-      }) {
+    _DetailActionButton button, {
+    FocusNode? focusNode,
+    VoidCallback? onFocused,
+    VoidCallback? onArrowUp,
+    VoidCallback? onArrowDown,
+    VoidCallback? onArrowLeft,
+    VoidCallback? onArrowRight,
+    double? progress,
+    String? trailingLabel,
+  }) {
     return NouveauAction(
       label: button.label,
       icon: button.icon,
@@ -5934,6 +5934,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       isActive: button.isActive,
       activeColor: button.activeColor,
       progress: progress,
+      trailingLabel: trailingLabel,
     );
   }
 
@@ -5948,17 +5949,6 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       return true;
     }
     return FocusScope.of(context).previousFocus();
-  }
-
-  bool focusNouveauSecondaryActionAt(int index) {
-    final focusNode = _primaryFocusNode(index + 1);
-
-    if (!focusNode.canRequestFocus || focusNode.context == null) {
-      return false;
-    }
-
-    focusNode.requestFocus();
-    return true;
   }
 
   void _focusSidebar() {
@@ -7007,26 +6997,26 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     }
 
     if (widget.nouveauStyle) {
-      final orderedSecondaryEntries =
-      <(DetailButton, _DetailActionButton)>[
+      final orderedSecondaryButtons = <_DetailActionButton>[
         for (final detailButton in detailButtonLayout.ordered(
           DetailButton.values,
-              (button) => button.id,
+          (button) => button.id,
           prefs,
         )) ...[
           if (byButton[detailButton] case final _DetailActionButton button)
-            (detailButton, button),
+            button,
           if (cancelByButton[detailButton]
-          case final _DetailActionButton button)
-            (detailButton, button),
+              case final _DetailActionButton button)
+            button,
         ],
       ];
 
-      if (primaryAction is! _DetailActionButton) {
-        return const SizedBox.shrink();
-      }
-
-      final primaryButton = primaryAction;
+      // A null primary only means there is nothing to play, and the secondary
+      // actions still stand on their own. NouveauActionButtons shrinks itself
+      // when every slot is empty.
+      final primaryButton = primaryAction is _DetailActionButton
+          ? primaryAction
+          : null;
 
       final primaryFocusNode =
           widget.tvPlayFocusNode ?? _primaryFocusNode(0);
@@ -7067,58 +7057,55 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         }
       }
 
-      final nouveauPrimaryAction = _toNouveauAction(
-        null,
-        primaryButton,
-        focusNode: primaryFocusNode,
-        progress: playbackProgress,
-        trailingLabel: remainingLabel,
-        onArrowUp:
-        NavigationLayout.focusNavbarNotifier.value != null ||
-            widget.upTarget != null
-            ? _focusUpTarget
-            : null,
-        onArrowDown: widget.downTarget != null
-            ? _focusDownTarget
-            : null,
-        onArrowLeft: _focusSidebar,
-        onArrowRight: orderedSecondaryEntries.isNotEmpty
-            ? () => _primaryFocusNode(1).requestFocus()
-            : (widget.onArrowRightAtEnd ?? () {}),
-      );
+      final nouveauPrimaryAction = primaryButton == null
+          ? null
+          : _toNouveauAction(
+              primaryButton,
+              focusNode: primaryFocusNode,
+              progress: playbackProgress,
+              trailingLabel: remainingLabel,
+              onArrowUp:
+                  NavigationLayout.focusNavbarNotifier.value != null ||
+                      widget.upTarget != null
+                  ? _focusUpTarget
+                  : null,
+              onArrowDown: widget.downTarget != null
+                  ? _focusDownTarget
+                  : null,
+              onArrowLeft: _focusSidebar,
+              onArrowRight: orderedSecondaryButtons.isNotEmpty
+                  ? () => _primaryFocusNode(1).requestFocus()
+                  : widget.onArrowRightAtEnd,
+            );
 
-      final secondaryActions =
-      orderedSecondaryEntries.asMap().entries.map((entry) {
+      final secondaryActions = orderedSecondaryButtons.asMap().entries.map((
+        entry,
+      ) {
         final index = entry.key;
-
-        final detailButton = entry.value.$1;
-        final button = entry.value.$2;
-
+        final button = entry.value;
         final focusIndex = index + 1;
 
         return _toNouveauAction(
-          detailButton,
           button,
           focusNode: _primaryFocusNode(focusIndex),
           onArrowUp:
-          NavigationLayout.focusNavbarNotifier.value != null ||
-              widget.upTarget != null
+              NavigationLayout.focusNavbarNotifier.value != null ||
+                  widget.upTarget != null
               ? _focusUpTarget
               : null,
           onArrowDown: widget.downTarget != null
               ? _focusDownTarget
               : null,
+          // With no primary button there is nothing to the left of the first
+          // secondary, so fall back to the sidebar the primary would have used.
           onArrowLeft: index == 0
-              ? () => primaryFocusNode.requestFocus()
-              : () => _primaryFocusNode(
-            focusIndex - 1,
-          ).requestFocus(),
-          onArrowRight:
-          index == orderedSecondaryEntries.length - 1
-              ? (widget.onArrowRightAtEnd ?? () {})
-              : () => _primaryFocusNode(
-            focusIndex + 1,
-          ).requestFocus(),
+              ? (primaryButton == null
+                    ? _focusSidebar
+                    : () => primaryFocusNode.requestFocus())
+              : () => _primaryFocusNode(focusIndex - 1).requestFocus(),
+          onArrowRight: index == orderedSecondaryButtons.length - 1
+              ? widget.onArrowRightAtEnd
+              : () => _primaryFocusNode(focusIndex + 1).requestFocus(),
         );
       }).toList();
 
