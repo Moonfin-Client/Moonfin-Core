@@ -469,7 +469,7 @@ abstract class AppLocalizations {
   /// Explanation under the detail screen style setting
   ///
   /// In en, this message translates to:
-  /// **'Classic is the original centered moonfin layout. Modern is a responsive cinematic layout. Spotlight is a hero-first layout with pop-up content cards.'**
+  /// **'Classic is the original centered moonfin layout. Modern is a responsive cinematic layout. Spotlight is a hero-first layout with pop-up content cards. Nouveau is a full-screen layout with sections stacked down the page.'**
   String get detailScreenStyleSubtitle;
 
   /// Detail screen style option: the classic centered layout
@@ -20553,6 +20553,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Hero-first, with pop-up cards for cast and extras.'**
   String get setupDetailSpotlightHint;
+
+  /// Name of the full-screen stacked detail layout, offered in the setup wizard
+  ///
+  /// In en, this message translates to:
+  /// **'Nouveau'**
+  String get setupStyleNouveau;
+
+  /// What the nouveau detail screen style gives you
+  ///
+  /// In en, this message translates to:
+  /// **'Full-screen, with sections stacked instead of tabs.'**
+  String get setupDetailNouveauHint;
 
   /// Label above the theme swatches on the final setup screen
   ///

@@ -192,7 +192,7 @@
   "@detailScreenStyle": {
     "description": "Label for the media detail screen layout style setting"
   },
-  "detailScreenStyleSubtitle": "Classic is the original centered moonfin layout. Modern is a responsive cinematic layout. Spotlight is a hero-first layout with pop-up content cards.",
+  "detailScreenStyleSubtitle": "Classic is the original centered moonfin layout. Modern is a responsive cinematic layout. Spotlight is a hero-first layout with pop-up content cards. Nouveau is a full-screen layout with sections stacked down the page.",
   "@detailScreenStyleSubtitle": {
     "description": "Explanation under the detail screen style setting"
   },
@@ -10442,6 +10442,14 @@
   "setupDetailSpotlightHint": "Hero-first, with pop-up cards for cast and extras.",
   "@setupDetailSpotlightHint": {
     "description": "What the spotlight detail screen style gives you"
+  },
+  "setupStyleNouveau": "Nouveau",
+  "@setupStyleNouveau": {
+    "description": "Name of the full-screen stacked detail layout, offered in the setup wizard"
+  },
+  "setupDetailNouveauHint": "Full-screen, with sections stacked instead of tabs.",
+  "@setupDetailNouveauHint": {
+    "description": "What the nouveau detail screen style gives you"
   },
   "setupPickALook": "Pick a look",
   "@setupPickALook": {

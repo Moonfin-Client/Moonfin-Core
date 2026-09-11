@@ -11737,6 +11737,13 @@ class AppLocalizationsIt extends AppLocalizations {
       'Hero-first, with pop-up cards for cast and extras.';
 
   @override
+  String get setupStyleNouveau => 'Nouveau';
+
+  @override
+  String get setupDetailNouveauHint =>
+      'Full-screen, with sections stacked instead of tabs.';
+
+  @override
   String get setupPickALook => 'Scegli uno stile';
 
   @override

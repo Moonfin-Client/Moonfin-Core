@@ -256,7 +256,9 @@ enum VisualThemeId {
 /// cinematic layout (landscape two-pane / portrait stack) and is the default.
 /// [spotlight] is the hero-first layout: Play plus at most three action
 /// buttons with the rest behind an ellipsis menu, and summary cards that open
-/// sectioned grid modals. Stored per server and user.
+/// sectioned grid modals. [nouveau] is the full-screen layout, with every
+/// section stacked down the page rather than behind tabs or cards. Stored per
+/// server and user.
 enum DetailScreenStyle {
   classic,
   modern,
