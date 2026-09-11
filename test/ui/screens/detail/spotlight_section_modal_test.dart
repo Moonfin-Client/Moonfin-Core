@@ -4,9 +4,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:jellyfin_preference/jellyfin_preference.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:moonfin/data/models/aggregated_item.dart';
+import 'package:moonfin/preference/user_preferences.dart';
+import 'package:moonfin/ui/screens/detail/spotlight/widgets/spotlight_modal_grids.dart';
 import 'package:moonfin/ui/screens/detail/spotlight/widgets/spotlight_section_modal.dart';
 import 'package:moonfin/ui/widgets/overlay_sheet.dart';
 import 'package:moonfin/util/platform_detection.dart';
+import 'package:server_core/server_core.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class _ImageApi extends Mock implements ImageApi {}
 
 void main() {
   tearDown(() {
@@ -231,4 +240,79 @@ void main() {
     expect(returnFocus.hasFocus, isTrue);
     expect(DialogBackSuppressor.consume(), isFalse);
   });
+
+  testWidgets('tapping a MediaCard in SpotlightMediaGridSection pops with action', (
+    tester,
+  ) async {
+    PlatformDetection.setTvMode(false);
+    VoidCallback? returnedAction;
+    var actionExecuted = false;
+
+    final item = AggregatedItem(
+      id: 'item-1',
+      serverId: 'server-1',
+      rawData: {
+        'Id': 'item-1',
+        'Name': 'Critters',
+        'Type': 'Movie',
+      },
+    );
+
+    SharedPreferences.setMockInitialValues({});
+    final store = PreferenceStore();
+    await store.init();
+    final prefs = UserPreferences(store);
+    final imageApi = _ImageApi();
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Builder(
+            builder: (context) => ElevatedButton(
+              onPressed: () async {
+                final action = await SpotlightSectionModal.show<VoidCallback>(
+                  context,
+                  title: 'Movies & Shows',
+                  sections: [
+                    SpotlightModalSection(
+                      title: 'Critters Collection',
+                      builder: (modalContext, firstFocusNode) => SpotlightMediaGridSection(
+                        items: [item],
+                        imageApi: imageApi,
+                        prefs: prefs,
+                        firstFocusNode: firstFocusNode,
+                        onItemTap: (tappedItem) {
+                          Navigator.of(context, rootNavigator: true).pop(() {
+                            actionExecuted = true;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                );
+                returnedAction = action;
+                action?.call();
+              },
+              child: const Text('open'),
+            ),
+          ),
+        ),
+      ),
+    );
+
+
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+    expect(find.text('Movies & Shows'), findsOneWidget);
+    expect(find.text('Critters'), findsOneWidget);
+
+    await tester.tap(find.text('Critters'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Movies & Shows'), findsNothing);
+    expect(returnedAction, isNotNull);
+    expect(actionExecuted, isTrue);
+  });
 }
+
+

@@ -130,11 +130,13 @@ class SpotlightMediaGridSection extends StatelessWidget {
             children: [
               for (var i = 0; i < items.length; i++)
                 Builder(
+                  key: ValueKey(items[i].id),
                   builder: (cellContext) {
                     final entry = items[i];
                     final isSeerrItem =
                         entry.id.startsWith('tmdb:') || entry.serverId == 'seerr';
                     return MediaCard(
+                      key: ValueKey(entry.id),
                       title: entry.name,
                       titleColor: titleColor,
                       imageUrl: spotlightItemImageUrl(imageApi, entry),
@@ -221,9 +223,11 @@ class SpotlightSeerrGridSection extends StatelessWidget {
             children: [
               for (var i = 0; i < items.length; i++)
                 Builder(
+                  key: ValueKey(items[i].id),
                   builder: (cellContext) {
                     final entry = items[i];
                     return MediaCard(
+                      key: ValueKey(entry.id),
                       title: entry.displayTitle,
                       subtitle: showCredit
                           ? (entry.character ?? entry.job)
@@ -285,11 +289,17 @@ class SpotlightPeopleGridSection extends StatelessWidget {
           children: [
             for (var i = 0; i < people.length; i++)
               Builder(
+                key: ValueKey(
+                  people[i]['Id']?.toString() ??
+                      people[i]['Name']?.toString() ??
+                      '$i',
+                ),
                 builder: (cellContext) {
                   final person = people[i];
-                  final name = person['Name'] as String? ?? '';
-                  final role = person['Role'] as String?;
                   final personId = person['Id']?.toString();
+                  final name = person['Name']?.toString() ?? '';
+                  final role = (person['Roles'] as Set<String>?)?.join(' · ') ??
+                      person['Role']?.toString();
                   final imageUrl = spotlightPersonImageUrl(
                     imageApi,
                     id: personId,
@@ -298,6 +308,11 @@ class SpotlightPeopleGridSection extends StatelessWidget {
                     maxHeight: 200,
                   );
                   return _SpotlightPersonCell(
+                    key: ValueKey(
+                      person['Id']?.toString() ??
+                          people[i]['Name']?.toString() ??
+                          '$i',
+                    ),
                     width: metrics.cellWidth,
                     name: name,
                     role: role,
@@ -326,6 +341,7 @@ class _SpotlightPersonCell extends StatefulWidget {
   final VoidCallback? onTap;
 
   const _SpotlightPersonCell({
+    super.key,
     required this.width,
     required this.name,
     required this.role,

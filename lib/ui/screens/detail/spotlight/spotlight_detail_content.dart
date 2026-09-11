@@ -247,20 +247,29 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
   /// route, so the back stack stays predictable.
   void _closeModalThen(VoidCallback action) {
     if (_modalOpen) {
-      Navigator.of(context, rootNavigator: true).pop();
+      Navigator.of(context, rootNavigator: true).pop(action);
+    } else {
+      action();
     }
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) action();
-    });
   }
 
   SpotlightCardActions _cardActions(AggregatedItem item) {
     return SpotlightCardActions(
       openItem: (entry) => _closeModalThen(() {
         if (entry.serverId == 'seerr') {
-          final mediaType =
-              entry.seerrMediaType ?? (entry.type == 'Series' ? 'tv' : 'movie');
-          context.push(Destinations.seerrMedia(entry.id, mediaType: mediaType));
+          final mediaType = entry.seerrMediaType ??
+              (entry.type == 'Series' || entry.type == 'tv' ? 'tv' : 'movie');
+          final tmdbId = entry.tmdbId;
+          final targetId = (tmdbId != null && tmdbId.isNotEmpty)
+              ? tmdbId
+              : entry.id.replaceAll(RegExp(r'^tmdb:(?:movie:|tv:)?'), '');
+          context.push(
+            Destinations.seerrMedia(
+              targetId,
+              mediaType: mediaType,
+              title: entry.name,
+            ),
+          );
         } else {
           context.push(Destinations.item(entry.id, serverId: entry.serverId));
         }
@@ -277,6 +286,7 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
           Destinations.seerrMedia(
             entry.id.toString(),
             mediaType: entry.mediaType ?? 'movie',
+            title: entry.displayTitle,
           ),
         );
       }),
@@ -323,9 +333,8 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
   Future<void> _openCard(SpotlightCardSpec spec) async {
     if (_modalOpen) return;
     _modalOpen = true;
-    widget.onToggleNavbar?.call(false);
     try {
-      await SpotlightSectionModal.show(
+      final action = await SpotlightSectionModal.show<VoidCallback>(
         context,
         title: spec.title,
         icon: spec.icon,
@@ -339,6 +348,13 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
         refreshOn: _vm,
         refresh: () => _liveCardContent(spec),
       );
+      if (mounted && action != null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            action();
+          }
+        });
+      }
     } finally {
       _modalOpen = false;
     }

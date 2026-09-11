@@ -478,7 +478,9 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
         tmdbId = match.id;
         resolvedMediaType = match.mediaType ?? mediaType;
       } else {
-        final parsed = int.tryParse(itemId);
+        final cleanId =
+            itemId.replaceAll(RegExp(r'^tmdb:(?:movie:|tv:|person:)?'), '');
+        final parsed = int.tryParse(cleanId);
         if (parsed == null) {
           throw Exception('Invalid media ID');
         }

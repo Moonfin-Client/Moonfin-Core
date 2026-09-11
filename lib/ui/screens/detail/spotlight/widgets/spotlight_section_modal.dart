@@ -38,7 +38,7 @@ typedef SpotlightModalContent = ({
 /// ([TraversalEdgeBehavior.stop]); pressing back closes the modal and returns
 /// focus to [returnFocus] (the summary card that opened it).
 abstract final class SpotlightSectionModal {
-  static Future<void> show(
+  static Future<T?> show<T>(
     BuildContext context, {
     required String title,
     required List<SpotlightModalSection> sections,
@@ -48,7 +48,7 @@ abstract final class SpotlightSectionModal {
     SpotlightModalContent Function()? refresh,
   }) {
     FocusManager.instance.primaryFocus?.unfocus();
-    final future = showGeneralDialog<void>(
+    final future = showGeneralDialog<T>(
       context: context,
       barrierDismissible: true,
       barrierLabel: title,
@@ -124,7 +124,10 @@ class _SpotlightModalShellState extends State<_SpotlightModalShell> {
     if (refresh == null || !mounted) return;
     final next = refresh();
     final signature = _signatureOf(next.title, next.sections);
-    if (signature == _signature) return;
+    if (signature == _signature) {
+      _sections = next.sections;
+      return;
+    }
     setState(() {
       _signature = signature;
       _title = next.title;

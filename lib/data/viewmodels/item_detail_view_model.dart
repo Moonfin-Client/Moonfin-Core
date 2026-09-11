@@ -1185,12 +1185,13 @@ class ItemDetailViewModel extends ChangeNotifier {
         if (!existingTmdbIds.contains(part.id.toString())) {
           missing.add(
             AggregatedItem(
-              id: 'tmdb:movie:${part.id}',
+              id: part.id.toString(),
               serverId: 'seerr',
               rawData: {
-                'Id': 'tmdb:movie:${part.id}',
+                'Id': part.id.toString(),
                 'Name': part.title ?? part.name ?? '',
                 'Type': 'Movie',
+                'SeerrMediaType': 'movie',
                 'Overview': part.overview,
                 'PosterPath': part.posterPath,
                 'BackdropPath': part.backdropPath,
@@ -1525,12 +1526,13 @@ class ItemDetailViewModel extends ChangeNotifier {
                 if (!existingTmdbIds.contains(part.id.toString())) {
                   missing.add(
                     AggregatedItem(
-                      id: 'tmdb:movie:${part.id}',
+                      id: part.id.toString(),
                       serverId: 'seerr',
                       rawData: {
-                        'Id': 'tmdb:movie:${part.id}',
+                        'Id': part.id.toString(),
                         'Name': part.title ?? part.name ?? '',
                         'Type': 'Movie',
+                        'SeerrMediaType': 'movie',
                         'Overview': part.overview,
                         'PosterPath': part.posterPath,
                         'BackdropPath': part.backdropPath,

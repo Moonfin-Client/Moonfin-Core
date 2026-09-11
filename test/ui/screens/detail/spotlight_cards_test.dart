@@ -287,12 +287,13 @@ void main() {
     ]);
     when(() => vm.missingCollectionItems).thenReturn([
       AggregatedItem(
-        id: 'tmdb:movie:999',
+        id: '999',
         serverId: 'seerr',
         rawData: const {
-          'Id': 'tmdb:movie:999',
+          'Id': '999',
           'Name': 'Missing Sequel',
           'Type': 'Movie',
+          'SeerrMediaType': 'movie',
         },
       ),
     ]);
