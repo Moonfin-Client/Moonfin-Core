@@ -441,6 +441,7 @@ class UserPreferences extends ChangeNotifier {
     'poster_size_playlist',
     'pref_home_rows_fullscreen',
     'pref_show_seerr_button',
+    'pref_show_seerr_availability_badges',
     'pref_show_server_messages_button',
     'pref_show_media_details_on_library_page',
     'pref_use_detailed_sub_headings',
@@ -1472,6 +1473,11 @@ class UserPreferences extends ChangeNotifier {
 
   static final showSeerrButton = Preference(
     key: 'pref_show_seerr_button',
+    defaultValue: true,
+  );
+
+  static final showSeerrAvailabilityBadges = Preference(
+    key: 'pref_show_seerr_availability_badges',
     defaultValue: true,
   );
 

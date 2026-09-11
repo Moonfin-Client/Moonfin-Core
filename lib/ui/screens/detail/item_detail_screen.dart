@@ -13342,8 +13342,11 @@ class DetailSeasonsRow extends StatelessWidget {
             SizedBox(width: isMobile ? 8 : 12 * desktopScale),
         itemBuilder: (context, index) {
           final season = seasons[index];
+          final showAvailabilityBadges =
+              prefs.get(UserPreferences.showSeerrAvailabilityBadges);
           final seerrStatus = seerrSeasonStatus?[season.indexNumber];
-          final hasSeerrDot = SeerrMediaStatus.hasDot(seerrStatus);
+          final hasSeerrDot =
+              showAvailabilityBadges && SeerrMediaStatus.hasDot(seerrStatus);
           return MediaCard(
             title: season.name,
             subtitle: _progressText(season),

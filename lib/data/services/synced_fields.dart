@@ -316,6 +316,7 @@ final List<SyncedField> syncedFields = <SyncedField>[
   SyncedField('showDescriptionOnPause', UserPreferences.showDescriptionOnPause, SyncCodec.boolean),
   SyncedField('showLoadingAnimationText', UserPreferences.showLoadingAnimationText, SyncCodec.boolean),
   SyncedField('showMediaDetailsOnLibraryPage', UserPreferences.showMediaDetailsOnLibraryPage, SyncCodec.boolean),
+  SyncedField('showSeerrAvailabilityBadges', UserPreferences.showSeerrAvailabilityBadges, SyncCodec.boolean),
   SyncedField('showSeerrButton', UserPreferences.showSeerrButton, SyncCodec.boolean),
   SyncedField('showServerMessagesButton', UserPreferences.showServerMessagesButton, SyncCodec.boolean),
   SyncedField('sinceYouWatched1Enabled', UserPreferences.sinceYouWatched1Enabled, SyncCodec.boolean),

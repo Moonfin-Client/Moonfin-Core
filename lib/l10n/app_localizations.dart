@@ -7900,6 +7900,18 @@ abstract class AppLocalizations {
   /// **'Include missing items on Collection pages'**
   String get showMissingCollectionItemsDesc;
 
+  /// Setting title for showing Seerr availability badges on media details pages
+  ///
+  /// In en, this message translates to:
+  /// **'Show Seerr Availability Badges'**
+  String get showSeerrAvailabilityBadges;
+
+  /// Setting description for showing Seerr availability badges on media details pages
+  ///
+  /// In en, this message translates to:
+  /// **'Show season availability badges on media details pages'**
+  String get showSeerrAvailabilityBadgesDescription;
+
   /// Header for the Seerr notifications settings section
   ///
   /// In en, this message translates to:

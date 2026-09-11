@@ -1144,6 +1144,8 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     // unplayed episode's seasonId so the cyan border always renders correctly.
     final nextUpSeasonId = _vm.nextUp?.seasonId ??
         _vm.seriesEpisodes.firstWhereOrNull((e) => !e.isPlayed)?.seasonId;
+    final showAvailabilityBadges =
+        widget.prefs.get(UserPreferences.showSeerrAvailabilityBadges);
     final seerrSeasonStatus = seerrItemSeasonStatus(_vm);
     // Set only for a series with no season to open, where the card offers to
     // request that season instead.
@@ -1155,7 +1157,9 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       bool topRow = true,
     }) =>
         SeasonCard(
-          seerrStatus: seerrSeasonStatus[_vm.seasons[i].indexNumber],
+          seerrStatus: showAvailabilityBadges
+              ? seerrSeasonStatus[_vm.seasons[i].indexNumber]
+              : null,
           title: _vm.seasons[i].name,
           subtitle: l10n.episodeCount(
             counts[_vm.seasons[i].id] ?? _vm.seasons[i].childCount ?? 0,

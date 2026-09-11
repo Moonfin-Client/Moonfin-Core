@@ -5889,6 +5889,14 @@
   "@showMissingCollectionItemsDesc": {
     "description": "Setting subtitle explaining that missing items will be included on Collection pages"
   },
+  "showSeerrAvailabilityBadges": "Show Seerr Availability Badges",
+  "@showSeerrAvailabilityBadges": {
+    "description": "Setting title for showing Seerr availability badges on media details pages"
+  },
+  "showSeerrAvailabilityBadgesDescription": "Show season availability badges on media details pages",
+  "@showSeerrAvailabilityBadgesDescription": {
+    "description": "Setting description for showing Seerr availability badges on media details pages"
+  },
   "seerrNotificationsSection": "Notifications",
   "@seerrNotificationsSection": {
     "description": "Header for the Seerr notifications settings section"
