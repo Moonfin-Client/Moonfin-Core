@@ -11,9 +11,11 @@ import '../../../../../data/models/aggregated_item.dart';
 import '../../../../../data/viewmodels/item_detail_view_model.dart';
 import '../../../../../data/viewmodels/seerr_media_detail_view_model.dart';
 import '../../../../../l10n/app_localizations.dart';
+import '../../../../../util/detail_playback_info.dart';
 import '../../../../../util/detail_track_highlight.dart';
 import '../../../../../util/play_method_label.dart';
 import '../../../../navigation/destinations.dart';
+import '../../../../widgets/focus/focusable_wrapper.dart';
 import '../../../../widgets/navigation_layout.dart';
 import '../../../../widgets/seerr/seerr_item_chips.dart';
 import '../../../../widgets/seerr/seerr_item_status.dart';
@@ -78,6 +80,10 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
 
   late final FocusNode _readingFocusNode = FocusNode(
     debugLabel: 'nouveau-details-reader',
+  );
+
+  late final FocusNode _playbackInfoRetryFocusNode = FocusNode(
+    debugLabel: 'nouveau-details-playback-retry',
   );
 
   final Map<String, FocusNode> _studioFocusNodes = {};
@@ -150,6 +156,7 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
   void dispose() {
     _seerrChipsFocusNode.dispose();
     _readingFocusNode.dispose();
+    _playbackInfoRetryFocusNode.dispose();
 
     for (final node in _studioFocusNodes.values) {
       node.dispose();
@@ -894,35 +901,12 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
     }
 
     try {
-      final client = GetIt.instance<MediaServerClient>();
-
-      final manager = GetIt.instance<PlaybackManager>();
-
-      final backend = manager.backend;
-
-      final profile = backend?.getDeviceProfile() ?? {};
-
-      final bitrate = (profile['MaxStreamingBitrate'] as num?)?.toInt();
-
-      final request = PlaybackInfoRequest(
+      final parsed = await fetchDetailPlaybackInfo(
         itemId: requestedItemId,
         mediaSourceId: requestedMediaSourceId,
         audioStreamIndex: requestedAudioIndex,
         subtitleStreamIndex: requestedSubtitleIndex,
-        deviceProfile: profile,
-        maxStreamingBitrate: bitrate,
-        enableDirectPlay: true,
-        enableDirectStream: true,
-        enableTranscoding: true,
       );
-
-      final rawInfo = await client.playbackApi.getPlaybackInfo(
-        requestedItemId,
-        requestBody: request.toJson(),
-        userId: client.userId,
-      );
-
-      final parsed = PlaybackInfoResult.fromJson(rawInfo);
 
       if (!mounted || requestSerial != _playbackInfoRequestSerial) {
         return;
@@ -1876,8 +1860,41 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
       );
     }
 
+    // A blank row reads as still loading, and gives a remote nothing to select.
     if (_playbackInfoFailed) {
-      return const SizedBox.shrink();
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Flexible(
+            child: Text(
+              l10n.failedToLoad,
+              overflow: TextOverflow.ellipsis,
+              style: textTheme.labelSmall?.copyWith(
+                color: foreground.withValues(alpha: 0.42),
+                height: 1.3,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          FocusableWrapper(
+            focusNode: _playbackInfoRetryFocusNode,
+            onSelect: () => setState(() => _playbackInfoFailed = false),
+            borderRadius: 6,
+            suppressFocusGlow: true,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              child: Text(
+                l10n.retry,
+                style: TextStyle(
+                  color: AppColorScheme.accent,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
     }
 
     final playbackInfo = _playbackInfo;

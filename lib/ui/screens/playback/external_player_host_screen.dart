@@ -155,7 +155,7 @@ class _ExternalPlayerHostScreenState extends State<ExternalPlayerHostScreen> {
           profile['MaxStreamingBitrate'] = overrideMbps * 1000000;
         }
 
-        final maxBitrate = profile['MaxStreamingBitrate'] as int?;
+        final maxBitrate = (profile['MaxStreamingBitrate'] as num?)?.toInt();
         final startTicks = startPosition > Duration.zero
             ? startPosition.inMicroseconds * 10
             : null;

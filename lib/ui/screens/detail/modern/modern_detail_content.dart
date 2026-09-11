@@ -20,6 +20,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../../preference/user_preferences.dart';
 import '../../../../preference/preference_constants.dart';
 import '../../../../util/seerr_credits.dart';
+import '../../../../util/detail_playback_info.dart';
 import '../../../../util/detail_track_highlight.dart';
 import '../../../../util/episode_playability.dart';
 import '../../../../util/overview_text.dart';
@@ -293,35 +294,14 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     });
 
     try {
-      final client = GetIt.instance<MediaServerClient>();
-      final manager = GetIt.instance<PlaybackManager>();
-
-      final backend = manager.backend;
-      final profile = backend?.getDeviceProfile() ?? {};
-      final bitrate = profile['MaxStreamingBitrate'] as int?;
-
       final mediaSource = selectedMediaSourceForItem(item, widget.selectedMediaSourceId);
-      final mediaSourceId = mediaSource?['Id']?.toString();
 
-      final request = PlaybackInfoRequest(
+      final parsed = await fetchDetailPlaybackInfo(
         itemId: item.id,
-        mediaSourceId: mediaSourceId,
+        mediaSourceId: mediaSource?['Id']?.toString(),
         audioStreamIndex: _vm.selectedAudioIndex,
         subtitleStreamIndex: _vm.selectedSubtitleIndex,
-        deviceProfile: profile,
-        maxStreamingBitrate: bitrate,
-        enableDirectPlay: true,
-        enableDirectStream: true,
-        enableTranscoding: true,
       );
-
-      final rawInfo = await client.playbackApi.getPlaybackInfo(
-        item.id,
-        requestBody: request.toJson(),
-        userId: client.userId,
-      );
-
-      final parsed = PlaybackInfoResult.fromJson(rawInfo);
       if (mounted) {
         // Drop the result if the track selection changed mid-request.
         final stillCurrent = _loadedAudioIndex == _vm.selectedAudioIndex &&
