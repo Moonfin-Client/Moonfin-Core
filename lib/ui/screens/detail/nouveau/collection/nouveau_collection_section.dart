@@ -9,6 +9,7 @@ import '../../../../../data/viewmodels/item_detail_view_model.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../../preference/preference_constants.dart';
 import '../../../../../preference/user_preferences.dart';
+import '../../../../../util/item_watch_state.dart';
 import '../../../../../util/platform_detection.dart';
 import '../../../../navigation/destinations.dart';
 import '../../../../widgets/focus/context_menu_sheet.dart';
@@ -17,6 +18,7 @@ import '../../../../widgets/focus/hub_focus_memory.dart';
 import '../../../../widgets/focus/locked_focus_row.dart';
 import '../../../../widgets/navigation_layout.dart';
 import '../../../../widgets/overlay_sheet.dart';
+import '../../../../widgets/seerr/seerr_image_urls.dart';
 import '../../item_detail_screen.dart';
 import '../shared/nouveau_landscape_media_card.dart';
 import '../shared/nouveau_poster_card.dart';
@@ -547,14 +549,13 @@ class NouveauCollectionSectionState
       return;
     }
 
-    final playbackPosition = item.playbackPosition?.inMilliseconds ?? 0;
-
-    final percentage = item.playedPercentage ?? 0;
-
-    final hasProgress =
-        playbackPosition > 0 || (percentage.isFinite && percentage > 0);
-
-    unawaited(actionButtons.playItem(context, item, resume: hasProgress));
+    unawaited(
+      actionButtons.playItem(
+        context,
+        item,
+        resume: watchStateOf(item).hasProgress,
+      ),
+    );
   }
 
   void _showItemContextMenu(BuildContext context, AggregatedItem item) {
@@ -780,7 +781,7 @@ class NouveauCollectionSectionState
     final posterPath = item.rawData['PosterPath'] as String?;
 
     if (posterPath != null && posterPath.isNotEmpty) {
-      return 'https://image.tmdb.org/t/p/w500$posterPath';
+      return '$seerrPosterLargeBase$posterPath';
     }
 
     return null;
@@ -796,13 +797,13 @@ class NouveauCollectionSectionState
     final backdropPath = item.rawData['BackdropPath'] as String?;
 
     if (backdropPath != null && backdropPath.isNotEmpty) {
-      return 'https://image.tmdb.org/t/p/w780$backdropPath';
+      return '$seerrBackdropSmallBase$backdropPath';
     }
 
     final posterPath = item.rawData['PosterPath'] as String?;
 
     if (posterPath != null && posterPath.isNotEmpty) {
-      return 'https://image.tmdb.org/t/p/w500$posterPath';
+      return '$seerrPosterLargeBase$posterPath';
     }
 
     return null;

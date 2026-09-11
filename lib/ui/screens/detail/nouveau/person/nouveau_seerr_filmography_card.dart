@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../../data/services/seerr/seerr_api_models.dart';
 import '../../../../navigation/destinations.dart';
+import '../../../../widgets/seerr/seerr_image_urls.dart';
 import '../shared/nouveau_poster_card.dart';
 
 class NouveauSeerrFilmographyCard extends StatelessWidget {
@@ -45,7 +46,7 @@ class NouveauSeerrFilmographyCard extends StatelessWidget {
       return null;
     }
 
-    return 'https://image.tmdb.org/t/p/w500$posterPath';
+    return '$seerrPosterLargeBase$posterPath';
   }
 
   String? get _subtitle {

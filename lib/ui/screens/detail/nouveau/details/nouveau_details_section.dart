@@ -12,6 +12,7 @@ import '../../../../../data/viewmodels/item_detail_view_model.dart';
 import '../../../../../data/viewmodels/seerr_media_detail_view_model.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../../util/detail_track_highlight.dart';
+import '../../../../../util/play_method_label.dart';
 import '../../../../navigation/destinations.dart';
 import '../../../../widgets/navigation_layout.dart';
 import '../../../../widgets/seerr/seerr_item_chips.dart';
@@ -1937,7 +1938,7 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
             padding: const EdgeInsets.only(left: 14),
             child: Text(
               reasons
-                  .map((reason) => _formatTranscodeReason(reason, l10n))
+                  .map((reason) => transcodeReasonLabel(reason, l10n))
                   .join(' · '),
               style: textTheme.labelSmall?.copyWith(
                 color: foreground.withValues(alpha: 0.4),
@@ -2100,25 +2101,4 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
     );
   }
 
-  String _formatTranscodeReason(String reason, AppLocalizations l10n) {
-    return switch (reason) {
-      'ContainerNotSupported' => l10n.transcodeContainerNotSupported,
-      'VideoCodecNotSupported' => l10n.transcodeVideoCodecNotSupported,
-      'AudioCodecNotSupported' => l10n.transcodeAudioCodecNotSupported,
-      'SubtitleCodecNotSupported' => l10n.transcodeSubtitleCodecNotSupported,
-      'AudioProfileNotSupported' => l10n.transcodeAudioProfileNotSupported,
-      'VideoProfileNotSupported' => l10n.transcodeVideoProfileNotSupported,
-      'VideoLevelNotSupported' => l10n.transcodeVideoLevelNotSupported,
-      'VideoResolutionNotSupported' =>
-        l10n.transcodeVideoResolutionNotSupported,
-      'VideoBitDepthNotSupported' => l10n.transcodeVideoBitDepthNotSupported,
-      'VideoFramerateNotSupported' => l10n.transcodeVideoFramerateNotSupported,
-      'ContainerBitrateExceedsLimit' =>
-        l10n.transcodeContainerBitrateExceedsLimit,
-      'VideoBitrateExceedsLimit' => l10n.transcodeVideoBitrateExceedsLimit,
-      'AudioBitrateExceedsLimit' => l10n.transcodeAudioBitrateExceedsLimit,
-      'AudioChannelsNotSupported' => l10n.transcodeAudioChannelsNotSupported,
-      _ => reason,
-    };
-  }
 }

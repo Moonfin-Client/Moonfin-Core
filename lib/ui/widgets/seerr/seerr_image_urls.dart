@@ -7,3 +7,10 @@ const seerrProfileBase = 'https://image.tmdb.org/t/p/w185';
 /// Portrait size for slots that show a person at card size (200 to 355px
 /// wide), where w185 would upscale.
 const seerrProfileLargeBase = 'https://image.tmdb.org/t/p/w500';
+
+/// Poster size for the larger cards, where w342 upscales visibly.
+const seerrPosterLargeBase = 'https://image.tmdb.org/t/p/w500';
+
+/// Backdrop size for slots that show one inside a card rather than behind the
+/// whole page, where w1280 is far more than the space needs.
+const seerrBackdropSmallBase = 'https://image.tmdb.org/t/p/w780';

@@ -3,9 +3,10 @@ import 'package:go_router/go_router.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../../../data/models/aggregated_item.dart';
-import '../../../../../preference/preference_constants.dart';
 import '../../../../../preference/user_preferences.dart';
+import '../../../../../util/item_watch_state.dart';
 import '../../../../navigation/destinations.dart';
+import '../../../../widgets/seerr/seerr_image_urls.dart';
 import '../shared/nouveau_poster_card.dart';
 
 class NouveauFilmographyCard extends StatelessWidget {
@@ -66,14 +67,14 @@ class NouveauFilmographyCard extends StatelessWidget {
       final backdropPath = item.rawData['BackdropPath'] as String?;
 
       if (backdropPath != null && backdropPath.isNotEmpty) {
-        return 'https://image.tmdb.org/t/p/w780$backdropPath';
+        return '$seerrBackdropSmallBase$backdropPath';
       }
     }
 
     final posterPath = item.rawData['PosterPath'] as String?;
 
     if (posterPath != null && posterPath.isNotEmpty) {
-      return 'https://image.tmdb.org/t/p/w500$posterPath';
+      return '$seerrPosterLargeBase$posterPath';
     }
 
     return null;
@@ -89,20 +90,12 @@ class NouveauFilmographyCard extends StatelessWidget {
     return (percentage / 100).clamp(0.0, 1.0).toDouble();
   }
 
-  bool _showPlayedIndicator() {
-    final watchedBehavior = prefs.get(UserPreferences.watchedIndicatorBehavior);
-
-    return switch (watchedBehavior) {
-      WatchedIndicatorBehavior.always => item.isPlayed,
-
-      WatchedIndicatorBehavior.hideUnwatched => item.isPlayed,
-
-      WatchedIndicatorBehavior.episodesOnly =>
-        item.type == 'Episode' && item.isPlayed,
-
-      WatchedIndicatorBehavior.never => false,
-    };
-  }
+  bool _showPlayedIndicator() => showsWatchedIndicator(
+    behavior: prefs.get(UserPreferences.watchedIndicatorBehavior),
+    isPlayed: item.isPlayed,
+    itemType: item.type,
+    unplayedCount: item.unplayedItemCount,
+  );
 
   @override
   Widget build(BuildContext context) {

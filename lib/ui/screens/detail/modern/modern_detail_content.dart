@@ -23,6 +23,8 @@ import '../../../../util/seerr_credits.dart';
 import '../../../../util/detail_track_highlight.dart';
 import '../../../../util/episode_playability.dart';
 import '../../../../util/overview_text.dart';
+import '../../../../util/play_method_label.dart';
+import '../../../../util/playback_time_label.dart';
 import '../../../../util/platform_detection.dart';
 import '../../../../util/focus/dpad_keys.dart';
 import '../../../../util/focus/focus_scroll.dart';
@@ -293,7 +295,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     try {
       final client = GetIt.instance<MediaServerClient>();
       final manager = GetIt.instance<PlaybackManager>();
-      
+
       final backend = manager.backend;
       final profile = backend?.getDeviceProfile() ?? {};
       final bitrate = profile['MaxStreamingBitrate'] as int?;
@@ -427,34 +429,11 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     return groupSeerrCredits(list, isCrew: isCrew);
   }
 
-  List<SeerrDiscoverItem> _sortSeerrItems(List<SeerrDiscoverItem> list) {
-    final sortOpt = widget.prefs.get(UserPreferences.personPageSortOption);
-    final sorted = List<SeerrDiscoverItem>.from(list);
-    if (sortOpt == 'alphabetical') {
-      sorted.sort((a, b) => a.displayTitle.toLowerCase().compareTo(b.displayTitle.toLowerCase()));
-    } else {
-      final asc = sortOpt == 'releaseDateAsc';
-      sorted.sort((a, b) {
-        final dateStrA = a.releaseDate ?? a.firstAirDate;
-        final dateStrB = b.releaseDate ?? b.firstAirDate;
-        if (dateStrA == null && dateStrB == null) {
-          return a.displayTitle.toLowerCase().compareTo(b.displayTitle.toLowerCase());
-        }
-        if (dateStrA == null) return 1;
-        if (dateStrB == null) return -1;
-        final dateA = DateTime.tryParse(dateStrA);
-        final dateB = DateTime.tryParse(dateStrB);
-        if (dateA == null && dateB == null) {
-          return dateStrA.compareTo(dateStrB);
-        }
-        if (dateA == null) return 1;
-        if (dateB == null) return -1;
-        final comp = dateA.compareTo(dateB);
-        return asc ? comp : -comp;
-      });
-    }
-    return sorted;
-  }
+  List<SeerrDiscoverItem> _sortSeerrItems(List<SeerrDiscoverItem> items) =>
+      sortSeerrCredits(
+        items,
+        widget.prefs.get(UserPreferences.personPageSortOption),
+      );
 
   ItemDetailViewModel get _vm => widget.viewModel;
 
@@ -3112,7 +3091,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: reasons.map((r) {
-                final readable = _formatTranscodeReason(r, l10n);
+                final readable = transcodeReasonLabel(r, l10n);
                 return Padding(
                   padding: const EdgeInsets.only(top: 2),
                   child: Text(
@@ -3128,26 +3107,6 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
         ],
       ],
     );
-  }
-
-  String _formatTranscodeReason(String reason, AppLocalizations l10n) {
-    return switch (reason) {
-      'ContainerNotSupported' => l10n.transcodeContainerNotSupported,
-      'VideoCodecNotSupported' => l10n.transcodeVideoCodecNotSupported,
-      'AudioCodecNotSupported' => l10n.transcodeAudioCodecNotSupported,
-      'SubtitleCodecNotSupported' => l10n.transcodeSubtitleCodecNotSupported,
-      'AudioProfileNotSupported' => l10n.transcodeAudioProfileNotSupported,
-      'VideoProfileNotSupported' => l10n.transcodeVideoProfileNotSupported,
-      'VideoLevelNotSupported' => l10n.transcodeVideoLevelNotSupported,
-      'VideoResolutionNotSupported' => l10n.transcodeVideoResolutionNotSupported,
-      'VideoBitDepthNotSupported' => l10n.transcodeVideoBitDepthNotSupported,
-      'VideoFramerateNotSupported' => l10n.transcodeVideoFramerateNotSupported,
-      'ContainerBitrateExceedsLimit' => l10n.transcodeContainerBitrateExceedsLimit,
-      'VideoBitrateExceedsLimit' => l10n.transcodeVideoBitrateExceedsLimit,
-      'AudioBitrateExceedsLimit' => l10n.transcodeAudioBitrateExceedsLimit,
-      'AudioChannelsNotSupported' => l10n.transcodeAudioChannelsNotSupported,
-      _ => reason,
-    };
   }
 
   Widget _itemGrid(List<AggregatedItem> items, {double aspectRatio = 2 / 3, FocusNode? focusNode}) {
@@ -3880,7 +3839,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
               }
               final runtime = item.runtime;
               if (isBookLayout && runtime != null && runtime.inMinutes > 0) {
-                parts.add(_formatDuration(runtime));
+                parts.add(formatRuntimeShort(runtime));
               } else if (!isBookLayout && _vm.tracks.isNotEmpty) {
                 final count = _vm.tracks.length;
                 parts.add(l10n.trackCount(count));
@@ -4258,7 +4217,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           children: [
             Icon(Icons.schedule, size: 14, color: muted),
             const SizedBox(width: 4),
-            Text(_formatDuration(runtime), style: style),
+            Text(formatRuntimeShort(runtime), style: style),
           ],
         ),
       );
@@ -4543,14 +4502,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     final position = episode.playbackPosition ?? Duration.zero;
     final remaining = runtime - position;
     if (remaining.inMinutes <= 0) return null;
-    return l10n.timeRemaining(_formatDuration(remaining));
-  }
-
-  String _formatDuration(Duration d) {
-    final h = d.inHours;
-    final m = d.inMinutes % 60;
-    if (h > 0) return m > 0 ? '${h}h ${m}m' : '${h}h';
-    return '${m}m';
+    return l10n.timeRemaining(formatRuntimeShort(remaining));
   }
 
   /// Full-bleed cinematic backdrop owned by the Modern screen (deliberately

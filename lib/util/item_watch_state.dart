@@ -1,4 +1,5 @@
 import '../data/models/aggregated_item.dart';
+import '../preference/preference_constants.dart';
 
 typedef ItemWatchState = ({
   bool isFullyWatched,
@@ -46,4 +47,23 @@ ItemWatchState watchStateOf(AggregatedItem item) {
     isPartiallyWatched: isPartiallyWatched,
     hasProgress: hasProgress,
   );
+}
+
+/// Whether a card shows its watched tick under [behavior]. Containers count as
+/// watched-ish while they still have unplayed children, which is what puts the
+/// remaining-episode badge on a season or series card.
+bool showsWatchedIndicator({
+  required WatchedIndicatorBehavior behavior,
+  required bool isPlayed,
+  required String? itemType,
+  int? unplayedCount,
+}) {
+  final marked = isPlayed || (unplayedCount ?? 0) > 0;
+
+  return switch (behavior) {
+    WatchedIndicatorBehavior.always => marked,
+    WatchedIndicatorBehavior.hideUnwatched => isPlayed,
+    WatchedIndicatorBehavior.episodesOnly => itemType == 'Episode' && marked,
+    WatchedIndicatorBehavior.never => false,
+  };
 }

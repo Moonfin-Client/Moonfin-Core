@@ -16,6 +16,19 @@ String formatPlaybackDuration(Duration value) {
   return '$m:${s.toString().padLeft(2, '0')}';
 }
 
+/// Formats a runtime the way a detail screen shows it, e.g. `1h 23m` or `45m`.
+String formatRuntimeShort(Duration value) {
+  final total = value.isNegative ? Duration.zero : value;
+  final hours = total.inHours;
+  final minutes = total.inMinutes.remainder(60);
+
+  if (hours == 0) {
+    return '${minutes}m';
+  }
+
+  return minutes > 0 ? '${hours}h ${minutes}m' : '${hours}h';
+}
+
 /// Wall-clock time the item finishes at, e.g. `Ends at 21:45`.
 ///
 /// A faster [playbackSpeed] brings that time forward, so it feeds into the

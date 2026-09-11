@@ -94,3 +94,43 @@ SeerrDiscoverItem _merged(
     department: first.department,
   );
 }
+
+/// Orders a person's credits by the person page sort preference. Entries with
+/// no date at all sink to the bottom whichever way the dates run.
+List<SeerrDiscoverItem> sortSeerrCredits(
+  List<SeerrDiscoverItem> items,
+  String sortOption,
+) {
+  final sorted = List<SeerrDiscoverItem>.from(items);
+
+  int byTitle(SeerrDiscoverItem a, SeerrDiscoverItem b) =>
+      a.displayTitle.toLowerCase().compareTo(b.displayTitle.toLowerCase());
+
+  if (sortOption == 'alphabetical') {
+    return sorted..sort(byTitle);
+  }
+
+  final ascending = sortOption == 'releaseDateAsc';
+
+  sorted.sort((a, b) {
+    final rawA = a.releaseDate ?? a.firstAirDate;
+    final rawB = b.releaseDate ?? b.firstAirDate;
+
+    if (rawA == null && rawB == null) return byTitle(a, b);
+    if (rawA == null) return 1;
+    if (rawB == null) return -1;
+
+    final dateA = DateTime.tryParse(rawA);
+    final dateB = DateTime.tryParse(rawB);
+
+    if (dateA == null && dateB == null) return rawA.compareTo(rawB);
+    if (dateA == null) return 1;
+    if (dateB == null) return -1;
+
+    final comparison = dateA.compareTo(dateB);
+
+    return ascending ? comparison : -comparison;
+  });
+
+  return sorted;
+}

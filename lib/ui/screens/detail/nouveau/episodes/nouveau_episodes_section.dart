@@ -10,11 +10,13 @@ import '../../../../../l10n/app_localizations.dart';
 import '../../../../../preference/preference_constants.dart';
 import '../../../../../preference/user_preferences.dart';
 import '../../../../../util/focus/scroll_utils.dart';
+import '../../../../../util/item_watch_state.dart';
 import '../../../../../util/platform_detection.dart';
 import '../../../../navigation/destinations.dart';
 import '../../../../widgets/focus/context_menu_sheet.dart';
 import '../../../../widgets/focus/hub_focus_memory.dart';
 import '../../../../widgets/focus/locked_focus_row.dart';
+import '../../../../widgets/seerr/seerr_image_urls.dart';
 import '../../../../widgets/seerr/seerr_item_status.dart';
 import '../../item_detail_screen.dart';
 import '../shared/nouveau_landscape_media_card.dart';
@@ -829,14 +831,13 @@ class NouveauEpisodesSectionState extends State<NouveauEpisodesSection> {
       return;
     }
 
-    final playbackPosition = episode.playbackPosition?.inMilliseconds ?? 0;
-
-    final percentage = episode.playedPercentage ?? 0;
-
-    final hasProgress =
-        playbackPosition > 0 || (percentage.isFinite && percentage > 0);
-
-    unawaited(actionButtons.playItem(context, episode, resume: hasProgress));
+    unawaited(
+      actionButtons.playItem(
+        context,
+        episode,
+        resume: watchStateOf(episode).hasProgress,
+      ),
+    );
   }
 
   void _showEpisodeContextMenu(BuildContext context, AggregatedItem episode) {
@@ -1118,13 +1119,13 @@ class NouveauEpisodesSectionState extends State<NouveauEpisodesSection> {
     final posterPath = item.rawData['PosterPath'] as String?;
 
     if (posterPath != null && posterPath.isNotEmpty) {
-      return 'https://image.tmdb.org/t/p/w342$posterPath';
+      return '$seerrPosterBase$posterPath';
     }
 
     final profilePath = item.rawData['ProfilePath'] as String?;
 
     if (profilePath != null && profilePath.isNotEmpty) {
-      return 'https://image.tmdb.org/t/p/w500$profilePath';
+      return '$seerrProfileLargeBase$profilePath';
     }
 
     return null;

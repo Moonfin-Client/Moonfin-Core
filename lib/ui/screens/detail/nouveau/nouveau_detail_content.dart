@@ -13,6 +13,7 @@ import '../../../../data/viewmodels/item_detail_view_model.dart';
 import '../../../../preference/preference_constants.dart';
 import '../../../../preference/user_preferences.dart';
 import '../../../../util/platform_detection.dart';
+import '../../../../util/seerr_credits.dart';
 import '../../../widgets/fullscreen_backdrop_switcher.dart';
 import '../../../widgets/navigation_layout.dart';
 import '../../../widgets/offline_aware_image.dart';
@@ -837,29 +838,15 @@ class NouveauDetailContentState extends State<NouveauDetailContent> {
 
       await repository.ensureInitialized();
 
-      final credits = await repository.getPersonCombinedCredits(personId);
-
-      const excludedJobs = {'thanks', 'special thanks'};
-
-      final appearances = credits.cast
-          .where((credit) => credit.posterPath != null)
-          .toList();
-
-      final crew = credits.crew
-          .where(
-            (credit) =>
-                credit.posterPath != null &&
-                !excludedJobs.contains(credit.job?.toLowerCase()),
-          )
-          .toList();
+      final credits = await loadSeerrPersonCredits(repository, personId);
 
       if (!mounted || _vm.item?.id != itemId) {
         return;
       }
 
       setState(() {
-        _seerrAppearances = appearances;
-        _seerrCrewCredits = crew;
+        _seerrAppearances = credits.cast;
+        _seerrCrewCredits = credits.crew;
         _seerrLoadedForItemId = itemId;
       });
     } catch (error) {
@@ -1261,161 +1248,18 @@ class NouveauDetailContentState extends State<NouveauDetailContent> {
     List<SeerrDiscoverItem> items, {
     required bool isCrew,
   }) {
-    final shouldGroup = widget.prefs.get(UserPreferences.personPageGroupItems);
-
-    if (!shouldGroup) {
+    if (!widget.prefs.get(UserPreferences.personPageGroupItems)) {
       return List<SeerrDiscoverItem>.from(items);
     }
 
-    final grouped = <int, List<SeerrDiscoverItem>>{};
-
-    for (final item in items) {
-      grouped.putIfAbsent(item.id, () => []).add(item);
-    }
-
-    final result = <SeerrDiscoverItem>[];
-
-    for (final entries in grouped.values) {
-      final first = entries.first;
-
-      if (entries.length == 1) {
-        result.add(first);
-        continue;
-      }
-
-      if (isCrew) {
-        final jobs = entries
-            .map((entry) => entry.job ?? entry.department)
-            .where((job) => job != null && job.isNotEmpty)
-            .map((job) => job!)
-            .toSet();
-
-        final combinedJobs = jobs.join(', ');
-
-        result.add(
-          SeerrDiscoverItem(
-            id: first.id,
-            mediaType: first.mediaType,
-            title: first.title,
-            name: first.name,
-            originalTitle: first.originalTitle,
-            originalName: first.originalName,
-            posterPath: first.posterPath,
-            backdropPath: first.backdropPath,
-            overview: first.overview,
-            releaseDate: first.releaseDate,
-            firstAirDate: first.firstAirDate,
-            originalLanguage: first.originalLanguage,
-            genreIds: first.genreIds,
-            voteAverage: first.voteAverage,
-            voteCount: first.voteCount,
-            popularity: first.popularity,
-            adult: first.adult,
-            mediaInfo: first.mediaInfo,
-            character: first.character,
-            job: combinedJobs.isNotEmpty ? combinedJobs : null,
-            department: first.department,
-          ),
-        );
-
-        continue;
-      }
-
-      final characters = entries
-          .map((entry) => entry.character)
-          .where((character) => character != null && character.isNotEmpty)
-          .map((character) => character!)
-          .toSet();
-
-      final combinedCharacters = characters.join(', ');
-
-      result.add(
-        SeerrDiscoverItem(
-          id: first.id,
-          mediaType: first.mediaType,
-          title: first.title,
-          name: first.name,
-          originalTitle: first.originalTitle,
-          originalName: first.originalName,
-          posterPath: first.posterPath,
-          backdropPath: first.backdropPath,
-          overview: first.overview,
-          releaseDate: first.releaseDate,
-          firstAirDate: first.firstAirDate,
-          originalLanguage: first.originalLanguage,
-          genreIds: first.genreIds,
-          voteAverage: first.voteAverage,
-          voteCount: first.voteCount,
-          popularity: first.popularity,
-          adult: first.adult,
-          mediaInfo: first.mediaInfo,
-          character: combinedCharacters.isNotEmpty ? combinedCharacters : null,
-          job: first.job,
-          department: first.department,
-        ),
-      );
-    }
-
-    return result;
+    return groupSeerrCredits(items, isCrew: isCrew);
   }
 
-  List<SeerrDiscoverItem> _sortSeerrItems(List<SeerrDiscoverItem> items) {
-    final sortOption = widget.prefs.get(UserPreferences.personPageSortOption);
-
-    final sorted = List<SeerrDiscoverItem>.from(items);
-
-    if (sortOption == 'alphabetical') {
-      sorted.sort(
-        (a, b) => a.displayTitle.toLowerCase().compareTo(
-          b.displayTitle.toLowerCase(),
-        ),
+  List<SeerrDiscoverItem> _sortSeerrItems(List<SeerrDiscoverItem> items) =>
+      sortSeerrCredits(
+        items,
+        widget.prefs.get(UserPreferences.personPageSortOption),
       );
-
-      return sorted;
-    }
-
-    final ascending = sortOption == 'releaseDateAsc';
-
-    sorted.sort((a, b) {
-      final dateStringA = a.releaseDate ?? a.firstAirDate;
-      final dateStringB = b.releaseDate ?? b.firstAirDate;
-
-      if (dateStringA == null && dateStringB == null) {
-        return a.displayTitle.toLowerCase().compareTo(
-          b.displayTitle.toLowerCase(),
-        );
-      }
-
-      if (dateStringA == null) {
-        return 1;
-      }
-
-      if (dateStringB == null) {
-        return -1;
-      }
-
-      final dateA = DateTime.tryParse(dateStringA);
-      final dateB = DateTime.tryParse(dateStringB);
-
-      if (dateA == null && dateB == null) {
-        return dateStringA.compareTo(dateStringB);
-      }
-
-      if (dateA == null) {
-        return 1;
-      }
-
-      if (dateB == null) {
-        return -1;
-      }
-
-      final comparison = dateA.compareTo(dateB);
-
-      return ascending ? comparison : -comparison;
-    });
-
-    return sorted;
-  }
 
   Widget _buildBackdrop(
     BuildContext context,

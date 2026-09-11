@@ -8,6 +8,7 @@ import '../../../../../data/viewmodels/seerr_media_detail_view_model.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../../preference/user_preferences.dart';
 import '../../../../../util/overview_text.dart';
+import '../../../../../util/playback_time_label.dart';
 import '../../../../widgets/logo_view.dart';
 import '../../../../widgets/navigation_layout.dart';
 import '../../../../widgets/offline_aware_image.dart';
@@ -857,7 +858,7 @@ class NouveauHeroState extends State<NouveauHero> {
     final runtime = _effectiveRuntime(item);
 
     if (runtime != null && runtime > Duration.zero && item.type != 'Series') {
-      addText(_formatDuration(runtime));
+      addText(formatRuntimeShort(runtime));
 
       if (item.type == 'Season') {
         final endTime = _seasonEndTime(context, runtime);
@@ -1043,20 +1044,6 @@ class NouveauHeroState extends State<NouveauHero> {
     );
   }
 
-  String _formatDuration(Duration duration) {
-    final hours = duration.inHours;
-    final minutes = duration.inMinutes.remainder(60);
-
-    if (hours > 0 && minutes > 0) {
-      return '${hours}h ${minutes}m';
-    }
-
-    if (hours > 0) {
-      return '${hours}h';
-    }
-
-    return '${duration.inMinutes}m';
-  }
 }
 
 class _NouveauBadgeEntrance extends StatefulWidget {

@@ -12,6 +12,7 @@ import '../../../../widgets/focus/focusable_wrapper.dart';
 import '../../../../widgets/navigation_layout.dart';
 import '../../../../widgets/offline_aware_image.dart';
 import '../../../../widgets/overlay_sheet.dart';
+import '../../../../widgets/seerr/seerr_image_urls.dart';
 import '../../item_detail_screen.dart';
 
 class NouveauPersonHero extends StatefulWidget {
@@ -163,7 +164,7 @@ class NouveauPersonHeroState extends State<NouveauPersonHero> {
     final profilePath = widget.item.rawData['ProfilePath'] as String?;
 
     if (profilePath != null && profilePath.isNotEmpty) {
-      return 'https://image.tmdb.org/t/p/w500$profilePath';
+      return '$seerrProfileLargeBase$profilePath';
     }
 
     return null;
