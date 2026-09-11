@@ -2428,6 +2428,32 @@ class RowDataSource {
     return 3; // Default intermediate severity level
   }
 
+  /// Applies the row's watched and parental-rating rules. Both server paths
+  /// get their candidates back unfiltered, so the rule lives here rather than
+  /// in each of them.
+  List<AggregatedItem> _filterServerRecommendations(
+    List<AggregatedItem> candidates,
+    AggregatedItem baseItem,
+  ) {
+    final prefs = GetIt.instance<UserPreferences>();
+    final includeWatched = prefs.get(
+      UserPreferences.sinceYouWatchedIncludeWatched,
+    );
+    final applyRatingCap = prefs.get(
+      UserPreferences.recommendationsApplyParentalRatingCap,
+    );
+    final sourceRatingLevel = _getRatingLevel(baseItem.officialRating);
+
+    return candidates.where((item) {
+      if (!includeWatched && item.isPlayed) return false;
+      if (applyRatingCap &&
+          _getRatingLevel(item.officialRating) > sourceRatingLevel) {
+        return false;
+      }
+      return true;
+    }).toList();
+  }
+
   Future<HomeRow> loadSinceYouWatchedRow(String serverId, int rowIndex) async {
     final prefs = GetIt.instance<UserPreferences>();
     final sourceType = prefs.get(UserPreferences.sinceYouWatchedSourceType);
@@ -2584,17 +2610,10 @@ class RowDataSource {
           limit: 100,
           bypass: 'moonfin',
         );
-        final parsed = _parseItems(data, serverId);
-
-        final bool effectiveIncludeWatched = prefs.get(UserPreferences.sinceYouWatchedIncludeWatched);
-        final bool applyRatingCap = prefs.get(UserPreferences.recommendationsApplyParentalRatingCap);
-        final sourceRatingLevel = _getRatingLevel(baseItem.officialRating);
-
-        recommendedItems = parsed.where((item) {
-          if (!effectiveIncludeWatched && item.isPlayed) return false;
-          if (applyRatingCap && _getRatingLevel(item.officialRating) > sourceRatingLevel) return false;
-          return true;
-        }).toList();
+        recommendedItems = _filterServerRecommendations(
+          _parseItems(data, serverId),
+          baseItem,
+        );
       } catch (e) {
         debugPrint('[RowDataSource] Server recommendation failed: $e');
         recommendedItems = const [];
@@ -2611,16 +2630,10 @@ class RowDataSource {
               limit: 100,
             );
             if (data != null) {
-              final parsed = _parseItems(data, serverId);
-              final bool effectiveIncludeWatched = prefs.get(UserPreferences.sinceYouWatchedIncludeWatched);
-              final bool applyRatingCap = prefs.get(UserPreferences.recommendationsApplyParentalRatingCap);
-              final sourceRatingLevel = _getRatingLevel(baseItem.officialRating);
-
-              final filtered = parsed.where((item) {
-                if (!effectiveIncludeWatched && item.isPlayed) return false;
-                if (applyRatingCap && _getRatingLevel(item.officialRating) > sourceRatingLevel) return false;
-                return true;
-              }).toList();
+              final filtered = _filterServerRecommendations(
+                _parseItems(data, serverId),
+                baseItem,
+              );
 
               if (filtered.isNotEmpty) {
                 recommendedItems = filtered;

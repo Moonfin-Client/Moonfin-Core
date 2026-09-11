@@ -79,17 +79,32 @@ class OfflineDatabase extends _$OfflineDatabase {
     onCreate: (m) => m.createAll(),
     onUpgrade: (m, from, to) async {
       if (from < 2) {
-        try {
-          await m.addColumn(downloadedItems, downloadedItems.downloadSource);
-        } catch (_) {
-          // Column may already exist from an unversioned migration or previous partial run
-        }
-        try {
-          await m.createTable(autoDownloadSubscriptions);
-        } catch (_) {
-          // Table may already exist
-        }
+        await _tolerateExisting(
+          () => m.addColumn(downloadedItems, downloadedItems.downloadSource),
+        );
+        await _tolerateExisting(() => m.createTable(autoDownloadSubscriptions));
       }
     },
   );
+
+  /// Runs one migration step, letting through only the failure that says the
+  /// column or table is already there. A database from before the schema was
+  /// versioned can already carry both, and adding them again throws.
+  ///
+  /// Anything else has to surface. Drift marks the upgrade done either way, so
+  /// swallowing a locked file or a full disk would leave the schema half built
+  /// and turn a startup failure into a query that fails much later with
+  /// nothing to point at. The match is on the message because the database
+  /// runs on a background isolate, which wraps whatever sqlite threw.
+  static Future<void> _tolerateExisting(Future<void> Function() step) async {
+    try {
+      await step();
+    } catch (e) {
+      final message = e.toString().toLowerCase();
+      if (!message.contains('duplicate column name') &&
+          !message.contains('already exists')) {
+        rethrow;
+      }
+    }
+  }
 }
