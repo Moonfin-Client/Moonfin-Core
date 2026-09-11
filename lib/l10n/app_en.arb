@@ -11093,5 +11093,77 @@
         "type": "String"
       }
     }
+  },
+  "settingsAnimationSpeed": "Animation Speed",
+  "@settingsAnimationSpeed": {
+    "description": "Section header in General Style settings for configuring motion and transition speeds"
+  },
+  "pageTransitions": "Page Transitions",
+  "@pageTransitions": {
+    "description": "Setting title for adjusting the speed of page navigation transitions"
+  },
+  "pageTransitionsSubtitle": "Adjusts fade time when navigating between pages",
+  "@pageTransitionsSubtitle": {
+    "description": "Description for the page transitions animation speed setting"
+  },
+  "navigationSpeed": "Navigation Speed",
+  "@navigationSpeed": {
+    "description": "Setting title for adjusting the speed of focus movement and row scrolling"
+  },
+  "navigationSpeedSubtitle": "Adjusts how quickly the focus indicator moves between items and rows",
+  "@navigationSpeedSubtitle": {
+    "description": "Description for the navigation animation speed setting"
+  },
+  "modernCardsTransitionSpeed": "Modern Cards Transition Speed",
+  "@modernCardsTransitionSpeed": {
+    "description": "Setting title for adjusting animation speed of modern card expansions"
+  },
+  "modernCardsTransitionSpeedSubtitle": "Adjusts animation speed when expanding focused modern cards",
+  "@modernCardsTransitionSpeedSubtitle": {
+    "description": "Description for modern cards transition speed setting"
+  },
+  "delayCardExpansionOnRapidScroll": "Delay Card Expansion on Rapid Scroll",
+  "@delayCardExpansionOnRapidScroll": {
+    "description": "Setting title for debouncing modern card expansion during rapid D-pad scrolling"
+  },
+  "delayCardExpansionOnRapidScrollSubtitle": "Waits for focus movement to pause before expanding modern cards",
+  "@delayCardExpansionOnRapidScrollSubtitle": {
+    "description": "Description for debouncing modern card expansion setting"
+  },
+  "animationSpeedExtraSlow": "Extra Slow",
+  "@animationSpeedExtraSlow": {
+    "description": "Option label for extra slow animation speed"
+  },
+  "animationSpeedSlow": "Slow",
+  "@animationSpeedSlow": {
+    "description": "Option label for slow animation speed"
+  },
+  "animationSpeedMedium": "Medium",
+  "@animationSpeedMedium": {
+    "description": "Option label for medium/normal animation speed"
+  },
+  "animationSpeedFast": "Fast",
+  "@animationSpeedFast": {
+    "description": "Option label for fast animation speed"
+  },
+  "animationSpeedOff": "Off",
+  "@animationSpeedOff": {
+    "description": "Option label for turning animations off / instant transitions"
+  },
+  "pageTransitionFadeNone": "No Fade",
+  "@pageTransitionFadeNone": {
+    "description": "Option label for instant page transition with no fade"
+  },
+  "pageTransitionFadeShort": "Short Fade",
+  "@pageTransitionFadeShort": {
+    "description": "Option label for short fade page transition"
+  },
+  "pageTransitionFadeMedium": "Medium Fade",
+  "@pageTransitionFadeMedium": {
+    "description": "Option label for medium fade page transition"
+  },
+  "pageTransitionFadeLong": "Long Fade",
+  "@pageTransitionFadeLong": {
+    "description": "Option label for long fade page transition"
   }
 }

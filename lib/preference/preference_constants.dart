@@ -965,3 +965,33 @@ enum LoadingAnimationSpeed {
   ultra,
 }
 
+enum PageTransitionSpeed {
+  slow(Duration(milliseconds: 450)),
+  medium(Duration(milliseconds: 300)),
+  fast(Duration(milliseconds: 150)),
+  off(Duration.zero);
+
+  const PageTransitionSpeed(this.duration);
+  final Duration duration;
+}
+
+enum NavigationAnimationSpeed {
+  extraSlow(Duration(milliseconds: 400)),
+  slow(Duration(milliseconds: 250)),
+  medium(Duration(milliseconds: 150)),
+  fast(Duration(milliseconds: 80));
+
+  const NavigationAnimationSpeed(this.duration);
+  final Duration duration;
+}
+
+enum ModernCardTransitionSpeed {
+  extraSlow(Duration(milliseconds: 450)),
+  slow(Duration(milliseconds: 300)),
+  medium(Duration(milliseconds: 180)),
+  fast(Duration(milliseconds: 90)),
+  off(Duration.zero);
+
+  const ModernCardTransitionSpeed(this.duration);
+  final Duration duration;
+}

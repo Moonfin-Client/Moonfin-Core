@@ -21472,6 +21472,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{{name} needs {size}.} other{{count} episodes are waiting for space.}} Free up space or raise the download limit.'**
   String autoDownloadStorageFullBody(int count, String name, String size);
+
+  /// Section header in General Style settings for configuring motion and transition speeds
+  ///
+  /// In en, this message translates to:
+  /// **'Animation Speed'**
+  String get settingsAnimationSpeed;
+
+  /// Setting title for adjusting the speed of page navigation transitions
+  ///
+  /// In en, this message translates to:
+  /// **'Page Transitions'**
+  String get pageTransitions;
+
+  /// Description for the page transitions animation speed setting
+  ///
+  /// In en, this message translates to:
+  /// **'Adjusts fade time when navigating between pages'**
+  String get pageTransitionsSubtitle;
+
+  /// Setting title for adjusting the speed of focus movement and row scrolling
+  ///
+  /// In en, this message translates to:
+  /// **'Navigation Speed'**
+  String get navigationSpeed;
+
+  /// Description for the navigation animation speed setting
+  ///
+  /// In en, this message translates to:
+  /// **'Adjusts how quickly the focus indicator moves between items and rows'**
+  String get navigationSpeedSubtitle;
+
+  /// Setting title for adjusting animation speed of modern card expansions
+  ///
+  /// In en, this message translates to:
+  /// **'Modern Cards Transition Speed'**
+  String get modernCardsTransitionSpeed;
+
+  /// Description for modern cards transition speed setting
+  ///
+  /// In en, this message translates to:
+  /// **'Adjusts animation speed when expanding focused modern cards'**
+  String get modernCardsTransitionSpeedSubtitle;
+
+  /// Setting title for debouncing modern card expansion during rapid D-pad scrolling
+  ///
+  /// In en, this message translates to:
+  /// **'Delay Card Expansion on Rapid Scroll'**
+  String get delayCardExpansionOnRapidScroll;
+
+  /// Description for debouncing modern card expansion setting
+  ///
+  /// In en, this message translates to:
+  /// **'Waits for focus movement to pause before expanding modern cards'**
+  String get delayCardExpansionOnRapidScrollSubtitle;
+
+  /// Option label for extra slow animation speed
+  ///
+  /// In en, this message translates to:
+  /// **'Extra Slow'**
+  String get animationSpeedExtraSlow;
+
+  /// Option label for slow animation speed
+  ///
+  /// In en, this message translates to:
+  /// **'Slow'**
+  String get animationSpeedSlow;
+
+  /// Option label for medium/normal animation speed
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get animationSpeedMedium;
+
+  /// Option label for fast animation speed
+  ///
+  /// In en, this message translates to:
+  /// **'Fast'**
+  String get animationSpeedFast;
+
+  /// Option label for turning animations off / instant transitions
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get animationSpeedOff;
+
+  /// Option label for instant page transition with no fade
+  ///
+  /// In en, this message translates to:
+  /// **'No Fade'**
+  String get pageTransitionFadeNone;
+
+  /// Option label for short fade page transition
+  ///
+  /// In en, this message translates to:
+  /// **'Short Fade'**
+  String get pageTransitionFadeShort;
+
+  /// Option label for medium fade page transition
+  ///
+  /// In en, this message translates to:
+  /// **'Medium Fade'**
+  String get pageTransitionFadeMedium;
+
+  /// Option label for long fade page transition
+  ///
+  /// In en, this message translates to:
+  /// **'Long Fade'**
+  String get pageTransitionFadeLong;
 }
 
 class _AppLocalizationsDelegate

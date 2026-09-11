@@ -884,6 +884,8 @@ class _ContentRowsState extends State<_ContentRows>
   FocusNode? _lastGlobalPrimaryFocus;
   String? _mobilePressedV2Key;
   String? _mouseHoveredV2Key;
+  String? _settledV2PreviewKey;
+  Timer? _v2ExpansionDwellTimer;
   final Set<String> _v2FocusPrefetchedUrls = <String>{};
   final ValueNotifier<Map<String, Map<String, double>>> _v2AdditionalRatingsNotifier = ValueNotifier({});
   Map<String, Map<String, double>> get _v2AdditionalRatingsByKey => _v2AdditionalRatingsNotifier.value;
@@ -1327,6 +1329,7 @@ class _ContentRowsState extends State<_ContentRows>
           _previousFocusContentFromNavbarCallback;
     }
     _scrollIdleTimer?.cancel();
+    _v2ExpansionDwellTimer?.cancel();
     _activeFocusedRowNotifier.removeListener(_updateIsScrolledToTop);
     _mediaBarFocusNode.removeListener(_updateIsScrolledToTop);
     _mediaBarFocusNode.dispose();
@@ -4768,6 +4771,22 @@ class _ContentRowsState extends State<_ContentRows>
           final forceReveal = _forceRevealOnNextRowFocusFromMediaBar;
           _forceRevealOnNextRowFocusFromMediaBar = false;
           widget.onItemSelected(item);
+          if (isRowsV2) {
+            final previewKey = _previewKeyFor(item, rowIndex);
+            final delayExpansion =
+                prefs.get(UserPreferences.delayCardExpansionOnRapidScroll);
+            if (delayExpansion && !PlatformDetection.useMobileUi) {
+              _v2ExpansionDwellTimer?.cancel();
+              _v2ExpansionDwellTimer =
+                  Timer(const Duration(milliseconds: 70), () {
+                if (mounted && _settledV2PreviewKey != previewKey) {
+                  setState(() => _settledV2PreviewKey = previewKey);
+                }
+              });
+            } else {
+              _settledV2PreviewKey = previewKey;
+            }
+          }
           if (isRowsV2 && !row.isAudio && !isModernMyMediaStatic) {
             _primeV2FocusedRatings(item);
             _prefetchV2FocusNeighbors(
@@ -4834,10 +4853,14 @@ class _ContentRowsState extends State<_ContentRows>
               isV2MobileTouch && _mobilePressedV2Key == previewKey;
           final isHoverFocused =
               isV2MouseHover && _mouseHoveredV2Key == previewKey;
+          final delayExpansion =
+              prefs.get(UserPreferences.delayCardExpansionOnRapidScroll);
+          final isDwellSettled =
+              !delayExpansion || (_settledV2PreviewKey == previewKey);
           final effectiveV2Focused = isRowsV2
               ? (isV2MobileTouch
                     ? isTouchFocused
-                    : (isFocused || isHoverFocused))
+                    : (isHoverFocused || (isFocused && isDwellSettled)))
               : isFocused;
           final canUseExpandedV2Card =
               isRowsV2 && effectiveV2Focused && !row.isAudio && !isModernMyMediaStatic;
@@ -5129,8 +5152,10 @@ class _ContentRowsState extends State<_ContentRows>
                             isAudioRow: row.isAudio,
                           )
                         : null;
+                    final modernSpeed =
+                        prefs.get(UserPreferences.modernCardTransitionSpeed);
                     return AnimatedSize(
-                      duration: const Duration(milliseconds: 150),
+                      duration: modernSpeed.duration,
                       curve: Curves.easeInOutCubic,
                       alignment: Alignment.topLeft,
                       clipBehavior: Clip.none,

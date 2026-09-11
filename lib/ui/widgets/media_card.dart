@@ -12,6 +12,7 @@ import '../../util/platform_detection.dart';
 import '../../util/focus/dpad_keys.dart';
 import '../../util/focus/key_event_utils.dart';
 import '../../util/item_watch_state.dart';
+import '../../util/focus/scroll_utils.dart';
 import 'bounded_network_image.dart';
 import 'focus/glass_focus_halo.dart';
 import 'marquee_text.dart';
@@ -341,7 +342,7 @@ class _MediaCardState extends State<MediaCard> with FocusStateMixin {
           active: cardActive,
           child: AnimatedScale(
             scale: cardActive ? MediaCard.focusScale : 1.0,
-            duration: const Duration(milliseconds: 150),
+            duration: navigationAnimationDuration,
             curve: PlatformDetection.isAppleTV
                 ? Curves.easeOutCubic
                 : Curves.linear,

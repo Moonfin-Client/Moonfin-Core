@@ -1341,6 +1341,33 @@ class UserPreferences extends ChangeNotifier {
     values: GlassSettledQuality.values,
   );
 
+  /// Animation speed for page navigation transitions.
+  static final pageTransitionSpeed = EnumPreference(
+    key: 'pref_page_transition_speed',
+    defaultValue: PageTransitionSpeed.medium,
+    values: PageTransitionSpeed.values,
+  );
+
+  /// Animation speed for focus movement and row scrolling.
+  static final navigationAnimationSpeed = EnumPreference(
+    key: 'pref_navigation_animation_speed',
+    defaultValue: NavigationAnimationSpeed.medium,
+    values: NavigationAnimationSpeed.values,
+  );
+
+  /// Animation speed for Modern card focus expansion transitions.
+  static final modernCardTransitionSpeed = EnumPreference(
+    key: 'pref_modern_card_transition_speed',
+    defaultValue: ModernCardTransitionSpeed.medium,
+    values: ModernCardTransitionSpeed.values,
+  );
+
+  /// When on, delays Modern card expansion during rapid navigation until focus settles.
+  static final delayCardExpansionOnRapidScroll = Preference(
+    key: 'pref_delay_card_expansion_on_rapid_scroll',
+    defaultValue: true,
+  );
+
   /// Structural style for the media detail screen. Stored per server and user,
   /// because it syncs to that server's profile.
   static final detailScreenStyle = EnumPreference(

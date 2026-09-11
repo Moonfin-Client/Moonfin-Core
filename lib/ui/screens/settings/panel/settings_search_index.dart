@@ -626,6 +626,32 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       l10n.watchedIndicators,
       keywords: ['checkmark', 'seen', 'badge'],
     ),
+    if (!PlatformDetection.useMobileUi) ...[
+      style.leaf(
+        'pref_page_transition_speed',
+        l10n.pageTransitions,
+        subtitle: l10n.pageTransitionsSubtitle,
+        keywords: ['animation', 'page', 'transition', 'speed', 'motion'],
+      ),
+      style.leaf(
+        'pref_navigation_animation_speed',
+        l10n.navigationSpeed,
+        subtitle: l10n.navigationSpeedSubtitle,
+        keywords: ['focus', 'scroll', 'speed', 'animation', 'cursor'],
+      ),
+      style.leaf(
+        'pref_modern_card_transition_speed',
+        l10n.modernCardsTransitionSpeed,
+        subtitle: l10n.modernCardsTransitionSpeedSubtitle,
+        keywords: ['cards', 'modern', 'expansion', 'speed', 'animation'],
+      ),
+      style.leaf(
+        'pref_delay_card_expansion_on_rapid_scroll',
+        l10n.delayCardExpansionOnRapidScroll,
+        subtitle: l10n.delayCardExpansionOnRapidScrollSubtitle,
+        keywords: ['debounce', 'rapid scroll', 'modern cards', 'expansion', 'delay'],
+      ),
+    ],
 
     details.screen(keywords: ['movie page', 'show page', 'item page']),
     details.leaf('pref_detail_screen_style', l10n.detailScreenStyle, keywords: [

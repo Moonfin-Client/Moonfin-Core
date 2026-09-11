@@ -1,6 +1,18 @@
 import 'package:flutter/widgets.dart';
+import 'package:get_it/get_it.dart';
 
-const Duration _kListScrollDuration = Duration(milliseconds: 150);
+import '../../preference/preference_constants.dart';
+import '../../preference/user_preferences.dart';
+
+Duration get navigationAnimationDuration {
+  if (GetIt.I.isRegistered<UserPreferences>()) {
+    return GetIt.I<UserPreferences>()
+        .get(UserPreferences.navigationAnimationSpeed)
+        .duration;
+  }
+  return NavigationAnimationSpeed.medium.duration;
+}
+
 const Curve _kScrollCurve = Curves.easeOut;
 
 void scrollListToIndex(
@@ -9,14 +21,15 @@ void scrollListToIndex(
   required double itemExtent,
   double leadingPadding = 0,
   bool animate = true,
-  Duration duration = _kListScrollDuration,
+  Duration? duration,
   Curve curve = _kScrollCurve,
 }) {
   if (!controller.hasClients) return;
+  final effectiveDuration = duration ?? navigationAnimationDuration;
   final maxOffset = controller.position.maxScrollExtent;
   final target = (index * itemExtent + leadingPadding).clamp(0.0, maxOffset);
   if (animate) {
-    controller.animateTo(target, duration: duration, curve: curve);
+    controller.animateTo(target, duration: effectiveDuration, curve: curve);
   } else {
     controller.jumpTo(target);
   }
@@ -37,11 +50,12 @@ void focusItemAndEnsureVisible({
   required List<FocusNode> focusNodes,
   required int index,
   double alignment = 0.2,
-  Duration duration = const Duration(milliseconds: 140),
+  Duration? duration,
   Curve curve = Curves.easeOut,
 }) {
   if (!isMounted() || index < 0 || index >= focusNodes.length) return;
   final node = focusNodes[index];
+  final effectiveDuration = duration ?? navigationAnimationDuration;
 
   WidgetsBinding.instance.addPostFrameCallback((_) {
     if (!isMounted()) return;
@@ -52,7 +66,7 @@ void focusItemAndEnsureVisible({
     if (targetContext == null) return;
     Scrollable.ensureVisible(
       targetContext,
-      duration: duration,
+      duration: effectiveDuration,
       curve: curve,
       alignment: alignment,
       alignmentPolicy: ScrollPositionAlignmentPolicy.explicit,

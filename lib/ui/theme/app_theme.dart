@@ -1,7 +1,10 @@
 import 'package:flutter/cupertino.dart' show CupertinoPageTransitionsBuilder;
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
+import '../../preference/preference_constants.dart';
+import '../../preference/user_preferences.dart';
 import '../../util/idiom/app_ui_idiom.dart';
 
 class AppTheme {
@@ -223,15 +226,79 @@ class _FadeScalePageTransitionsBuilder extends PageTransitionsBuilder {
     Animation<double> secondaryAnimation,
     Widget child,
   ) {
-    final curved = CurvedAnimation(
-      parent: animation,
-      curve: Curves.easeOutCubic,
-      reverseCurve: Curves.easeInCubic,
-    );
+    final speed = GetIt.I.isRegistered<UserPreferences>()
+        ? GetIt.I<UserPreferences>().get(UserPreferences.pageTransitionSpeed)
+        : PageTransitionSpeed.medium;
+
+    if (speed == PageTransitionSpeed.off) {
+      return child;
+    }
+
+    // Safely adjust route controller duration via post-frame callback
+    // to avoid mutating animation state during the widget build phase.
+    // ignore: invalid_use_of_protected_member
+    final controller = route.controller;
+    if (controller != null && controller.duration != speed.duration) {
+      controller.duration = speed.duration;
+      controller.reverseDuration = speed.duration;
+      if (controller.isAnimating) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (controller.isAnimating) {
+            final remaining = (1.0 - controller.value).clamp(0.0, 1.0);
+            if (animation.status == AnimationStatus.forward) {
+              controller.animateTo(
+                1.0,
+                duration: speed.duration * remaining,
+                curve: Curves.linear,
+              );
+            } else if (animation.status == AnimationStatus.reverse) {
+              controller.animateBack(
+                0.0,
+                duration: speed.duration * controller.value,
+                curve: Curves.linear,
+              );
+            }
+          }
+        });
+      }
+    }
+
+    final Animation<double> curved;
+    final Tween<double> scaleTween;
+
+    switch (speed) {
+      case PageTransitionSpeed.off:
+        return child;
+      case PageTransitionSpeed.fast:
+        // Snappy fade (150ms feel) with subtle scale
+        curved = CurvedAnimation(
+          parent: animation,
+          curve: const Interval(0.0, 0.7, curve: Curves.easeOutQuad),
+          reverseCurve: const Interval(0.3, 1.0, curve: Curves.easeInQuad),
+        );
+        scaleTween = Tween<double>(begin: 0.97, end: 1.0);
+      case PageTransitionSpeed.medium:
+        // Balanced fade (300ms) with moderate scale
+        curved = CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeOutCubic,
+          reverseCurve: Curves.easeInCubic,
+        );
+        scaleTween = Tween<double>(begin: 0.94, end: 1.0);
+      case PageTransitionSpeed.slow:
+        // Deliberate cinematic long fade (450ms) with more depth
+        curved = CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeInOutSine,
+          reverseCurve: Curves.easeInOutSine,
+        );
+        scaleTween = Tween<double>(begin: 0.90, end: 1.0);
+    }
+
     return FadeTransition(
       opacity: curved,
       child: ScaleTransition(
-        scale: Tween<double>(begin: 0.97, end: 1.0).animate(curved),
+        scale: scaleTween.animate(curved),
         child: child,
       ),
     );
