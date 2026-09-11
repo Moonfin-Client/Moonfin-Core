@@ -3,6 +3,7 @@ import 'dart:math' show Random;
 import 'dart:ui' show ImageFilter;
 import 'package:collection/collection.dart';
 import '../../../widgets/offline_aware_image.dart';
+import '../../../widgets/anime_marker_badge.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -1156,6 +1157,11 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     }) =>
         SeasonCard(
           seerrStatus: seerrSeasonStatus[_vm.seasons[i].indexNumber],
+          badge: AnimeSeasonAudioBadge(
+            seriesId: _vm.seasons[i].seriesId,
+            seasonId: _vm.seasons[i].id,
+            scale: 0.85,
+          ),
           title: _vm.seasons[i].name,
           subtitle: l10n.episodeCount(
             counts[_vm.seasons[i].id] ?? _vm.seasons[i].childCount ?? 0,

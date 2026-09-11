@@ -2,6 +2,8 @@ import 'dart:async';
 
 import '../offline_aware_image.dart';
 import 'package:flutter/material.dart';
+
+import '../anime_marker_badge.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:moonfin_design/moonfin_design.dart';
@@ -168,6 +170,12 @@ class _NextUpOverlayState extends State<NextUpOverlay>
       children: [
         if (episodePill != null) ...[episodePill, const SizedBox(height: 6)],
         title,
+        AnimeMarkerBadge(
+          seriesId: item.seriesId,
+          episodeId: item.id,
+          scale: widget.isMinimal ? 0.8 : 0.9,
+          padding: const EdgeInsets.only(top: 6),
+        ),
       ],
     );
 

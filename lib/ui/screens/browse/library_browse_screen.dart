@@ -1388,6 +1388,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
 
     Widget card(BuildContext? revealContext) {
       return MediaCard(
+        animeMarkerItemId: item.id,
         title: item.name,
         subtitle: _cardSubtitle(item),
         imageUrl: _imageUrl(item, cellWidth: cellWidth),

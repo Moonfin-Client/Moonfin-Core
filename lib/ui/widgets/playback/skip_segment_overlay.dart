@@ -1,10 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+
+import '../anime_marker_badge.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
+import '../../../data/models/aggregated_item.dart';
 import '../../../data/models/media_segment.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../preference/preference_constants.dart';
@@ -25,6 +28,9 @@ class SkipSegmentOverlay extends StatefulWidget {
   /// stream tick arrives.
   final Duration? initialPosition;
 
+  /// The item that will be played next, if any.
+  final AggregatedItem? nextItem;
+
   const SkipSegmentOverlay({
     super.key,
     required this.segment,
@@ -33,6 +39,7 @@ class SkipSegmentOverlay extends StatefulWidget {
     this.focusNode,
     this.positionStream,
     this.initialPosition,
+    this.nextItem,
   });
 
   @override
@@ -178,6 +185,13 @@ class _SkipSegmentOverlayState extends State<SkipSegmentOverlay> {
                               fontWeight: FontWeight.w600,
                             ),
                           ),
+                          if (widget.nextItem case final next?)
+                            AnimeMarkerBadge(
+                              seriesId: next.seriesId,
+                              episodeId: next.id,
+                              scale: 0.9,
+                              padding: const EdgeInsets.only(left: 8),
+                            ),
                           if (showInlineTimer) ...[
                             const SizedBox(width: 8),
                             Text(

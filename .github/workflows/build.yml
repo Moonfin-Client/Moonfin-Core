@@ -658,8 +658,14 @@ jobs:
       - name: Install system build dependencies
         run: |
           set -euo pipefail
-          sudo apt-get update
-          sudo apt-get install -y \
+
+          # Hash was wrong as i dont really need it for my own release i nuke it.
+          sudo rm -f \
+            /etc/apt/sources.list.d/google-chrome.list \
+            /etc/apt/sources.list.d/microsoft-prod.list \
+            /etc/apt/sources.list.d/microsoft.list
+          sudo apt-get update -o Acquire::Retries=3
+          sudo apt-get install -y -o Acquire::Retries=3 \
             clang cmake ninja-build pkg-config \
             libgtk-3-dev libglib2.0-dev \
             libwebkit2gtk-4.1-dev \

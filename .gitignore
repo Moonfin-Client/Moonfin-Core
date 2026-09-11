@@ -137,3 +137,6 @@ web/drift_worker.js.map
 /scripts/.cache/
 /.arb-work/
 /.arb-work-brand/
+
+tizen/bin/
+tizen/obj/

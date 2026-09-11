@@ -3986,6 +3986,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                           onDismiss: _clearSkipSegment,
                           positionStream: _state.positionStream,
                           initialPosition: _state.position,
+                          nextItem: _nextUpItem,
                         ),
                       if (_showNextUp && _nextUpItem != null)
                         NextUpOverlay(

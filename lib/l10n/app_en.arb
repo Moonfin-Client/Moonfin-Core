@@ -4,6 +4,42 @@
   "@appTitle": {
     "description": "The application title"
   },
+  "animeMarkerFiller": "Filler",
+  "@animeMarkerFiller": {
+    "description": "Badge on an anime episode that is filler, meaning it is not adapted from the source manga"
+  },
+  "animeMarkerMixed": "Mixed",
+  "@animeMarkerMixed": {
+    "description": "Badge on an anime episode that mixes source material with filler, so it still contains story"
+  },
+  "animeMarkerAnimeCanon": "Anime Canon",
+  "@animeMarkerAnimeCanon": {
+    "description": "Badge on an anime episode that is not in the source manga but is part of the anime's own continuity"
+  },
+  "animeMarkerMangaCanon": "Manga Canon",
+  "@animeMarkerMangaCanon": {
+    "description": "Badge on an anime episode adapted from the source manga"
+  },
+  "animeMarkerSubbed": "Subbed",
+  "@animeMarkerSubbed": {
+    "description": "Badge on an anime episode or season whose only audio is Japanese, so it is watched with subtitles"
+  },
+  "animeMarkerDubbed": "Dubbed",
+  "@animeMarkerDubbed": {
+    "description": "Badge on an anime episode or season that has an audio track in a language other than Japanese"
+  },
+  "animeMarkerSubbedAndDubbed": "Subbed/Dubbed",
+  "@animeMarkerSubbedAndDubbed": {
+    "description": "Badge on anime that carries both the original Japanese audio and a dub, so it can be watched either way"
+  },
+  "animeMarkerPending": "Pending",
+  "@animeMarkerPending": {
+    "description": "Badge on an anime episode whose filler information the server has matched but not downloaded yet"
+  },
+  "animeMarkerRecap": "Recap",
+  "@animeMarkerRecap": {
+    "description": "Badge on an anime episode that recaps earlier episodes"
+  },
   "accountPreferences": "ACCOUNT PREFERENCES",
   "@accountPreferences": {
     "description": "Section header for account preferences settings"

@@ -1,6 +1,8 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+
+import 'anime_marker_badge.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_tvos/flutter_tvos.dart'
     show TvRemoteController, TvRemoteTouchEvent, TvRemoteTouchPhase;
@@ -73,6 +75,10 @@ class MediaCard extends StatefulWidget {
   /// card guess from [aspectRatio].
   final bool isBanner;
 
+  /// The item id of the anime marker, for the subbed/dubbed pill. 
+  /// Only set for standalone items such as movies, which have no series to inherit from.
+  final String? animeMarkerItemId;
+
   /// Extra widgets layered over the poster image (inside its clip), e.g.
   /// format badges. Position each with [Positioned].
   final List<Widget> imageOverlays;
@@ -119,6 +125,7 @@ class MediaCard extends StatefulWidget {
     this.overlayOccupiesTopLeft = false,
     this.isGenreFallback = false,
     this.isBanner = false,
+    this.animeMarkerItemId,
   });
 
   /// The genre name grows with the card, so it reads well both on a poster
@@ -371,8 +378,20 @@ class _MediaCardState extends State<MediaCard> with FocusStateMixin {
                       itemType: widget.itemType,
                       seerrMediaType: widget.seerrMediaType,
                       seerrStatus: widget.seerrStatus,
-                      imageOverlays: widget.imageOverlays,
-                      overlayOccupiesTopLeft: widget.overlayOccupiesTopLeft,
+                      imageOverlays: [
+                        ...widget.imageOverlays,
+                        if (widget.animeMarkerItemId != null)
+                          Positioned(
+                            top: 6,
+                            left: 6,
+                            child: AnimeItemAudioBadge(
+                              itemId: widget.animeMarkerItemId!,
+                              scale: 0.85,
+                            ),
+                          ),
+                      ],
+                      overlayOccupiesTopLeft: widget.overlayOccupiesTopLeft ||
+                          widget.animeMarkerItemId != null,
                       isGenreFallback: widget.isGenreFallback,
                     ),
                     if (widget.isBanner) ...[

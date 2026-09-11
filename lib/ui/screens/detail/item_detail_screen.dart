@@ -3,6 +3,8 @@ import 'dart:ui';
 
 import '../../widgets/bounded_network_image.dart';
 import '../../widgets/offline_aware_image.dart';
+import '../../widgets/anime_marker_badge.dart';
+import '../../../data/repositories/anime_marker_repository.dart';
 import '../../widgets/identify_dialog.dart';
 import 'detail_admin_actions.dart';
 
@@ -4044,6 +4046,7 @@ class _HeaderSection extends StatelessWidget {
                       ),
                     ),
                   ),
+                AnimeMarkerBadge(seriesId: item.seriesId, episodeId: item.id),
               ],
             ),
           ),
@@ -13362,6 +13365,17 @@ class DetailSeasonsRow extends StatelessWidget {
                   left: 6,
                   child: SeerrStatusDot(status: seerrStatus, size: 18),
                 ),
+              // Top left, dropped below the Seerr dot when there is one so the two stack
+              // rather than overlap.
+              Positioned(
+                top: hasSeerrDot ? 30 : 6,
+                left: 6,
+                child: AnimeSeasonAudioBadge(
+                  seriesId: season.seriesId,
+                  seasonId: season.id,
+                  scale: 0.85,
+                ),
+              ),
             ],
             focusColor: isNeon
                 ? AppColorScheme.accent
@@ -13722,6 +13736,12 @@ class _EpisodeListCardState extends State<_EpisodeListCard>
                                   ),
                             ),
                           ],
+                          AnimeMarkerBadge(
+                            seriesId: widget.episode.seriesId,
+                            episodeId: widget.episode.id,
+                            scale: 0.9,
+                            padding: const EdgeInsets.only(left: 6),
+                          ),
                         ],
                       ),
                     ),
@@ -13907,6 +13927,13 @@ class DetailNextUpCardState extends State<DetailNextUpCard>
                                   ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
+                            ),
+                            // The next episode is the one someone is about to start, so
+                            // whether it is filler belongs here as much as in the list.
+                            AnimeMarkerBadge(
+                              seriesId: episode.seriesId,
+                              episodeId: episode.id,
+                              padding: const EdgeInsets.only(top: 4),
                             ),
                             if (_showsEpisodeOverview(episode, prefs)) ...[
                               const SizedBox(height: 4),
@@ -14138,6 +14165,19 @@ class DetailEpisodeCardState extends State<DetailEpisodeCard>
                                 _EpisodeProgressBar(
                                   percentage: episode.playedPercentage!,
                                 ),
+                              // Top left, opposite the played tick and above the progress
+                              // bar. Draws only when the server picked this placement.
+                              Positioned(
+                                top: 6,
+                                left: 6,
+                                child: AnimeMarkerBadge(
+                                  seriesId: episode.seriesId,
+                                  episodeId: episode.id,
+                                  scale: 0.8,
+                                  slot: AnimeMarkerPlacement.thumbnail,
+                                  filled: true,
+                                ),
+                              ),
                               if (episode.isPlayed)
                                 Positioned(
                                   top: 6,
@@ -14180,15 +14220,31 @@ class DetailEpisodeCardState extends State<DetailEpisodeCard>
                               ),
                               if (runtimeText != null) ...[
                                 const SizedBox(height: 2),
-                                Text(
-                                  runtimeText,
-                                  style: Theme.of(context).textTheme.bodySmall
-                                      ?.copyWith(
-                                        color: AppColorScheme.onSurface
-                                            .withValues(alpha: 0.8),
-                                      ),
+                                // A bage besides the runtime with when a overlow happens,
+                                // the overlow is returned underneath the runtime.
+                                AnimeMarkerBadge(
+                                  seriesId: episode.seriesId,
+                                  episodeId: episode.id,
+                                  scale: desktopScale,
+                                  slot: AnimeMarkerPlacement.beside,
+                                  leading: Text(
+                                    runtimeText,
+                                    style: Theme.of(context).textTheme.bodySmall
+                                        ?.copyWith(
+                                          color: AppColorScheme.onSurface
+                                              .withValues(alpha: 0.8),
+                                        ),
+                                    maxLines: 1,
+                                  ),
                                 ),
                               ],
+                              AnimeMarkerBadge(
+                                seriesId: episode.seriesId,
+                                episodeId: episode.id,
+                                scale: desktopScale,
+                                slot: AnimeMarkerPlacement.below,
+                                padding: const EdgeInsets.only(top: 4),
+                              ),
                               if (_showsEpisodeOverview(episode, prefs)) ...[
                                 const SizedBox(height: 4),
                                 Text(
