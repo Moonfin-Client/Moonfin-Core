@@ -179,7 +179,7 @@ class _SpotlightSummaryCardState extends State<SpotlightSummaryCard>
                       ),
                       Positioned(
                         left: 14,
-                        right: 40,
+                        right: 32,
                         bottom: 10,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -194,6 +194,7 @@ class _SpotlightSummaryCardState extends State<SpotlightSummaryCard>
                                       ?.copyWith(
                                         color: Colors.white,
                                         fontWeight: FontWeight.w700,
+                                        fontSize: compact ? 12.0 : 13.0,
                                       ) ??
                                   const TextStyle(color: Colors.white),
                             ),
@@ -204,6 +205,7 @@ class _SpotlightSummaryCardState extends State<SpotlightSummaryCard>
                               overflow: TextOverflow.ellipsis,
                               style: textTheme.bodySmall?.copyWith(
                                 color: Colors.white.withValues(alpha: 0.75),
+                                fontSize: compact ? 10.5 : 11.5,
                               ),
                             ),
                           ],

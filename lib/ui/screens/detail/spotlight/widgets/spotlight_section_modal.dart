@@ -303,26 +303,40 @@ class _SpotlightModalShellState extends State<_SpotlightModalShell> {
       ],
     );
 
+    final radius = AppRadius.circular(compact ? 0 : 20);
+    final clippedBody = ClipRRect(
+      borderRadius: radius,
+      child: body,
+    );
+
+    final borderDecoration = compact
+        ? null
+        : BoxDecoration(
+            borderRadius: radius,
+            border: Border.fromBorderSide(
+              ThemeRegistry.active.borders.chipBorder,
+            ),
+          );
+
     final decorated = glass
         ? GlassSurface(
             cornerRadius: compact ? 0 : 20,
             reinforced: true,
             fallbackColor: Colors.transparent,
-            child: body,
+            child: Container(
+              foregroundDecoration: borderDecoration,
+              child: clippedBody,
+            ),
           )
-        : DecoratedBox(
+        : Container(
             decoration: BoxDecoration(
               color: AppColorScheme.surface.withValues(
                 alpha: compact ? 0.98 : 0.94,
               ),
-              borderRadius: AppRadius.circular(compact ? 0 : 20),
-              border: compact
-                  ? null
-                  : Border.fromBorderSide(
-                      ThemeRegistry.active.borders.chipBorder,
-                    ),
+              borderRadius: radius,
             ),
-            child: body,
+            foregroundDecoration: borderDecoration,
+            child: clippedBody,
           );
 
     final panel = compact

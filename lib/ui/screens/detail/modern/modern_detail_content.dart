@@ -72,6 +72,7 @@ import '../../../widgets/seerr/seerr_request_dialog.dart';
 import '../../../widgets/seerr/seerr_item_status.dart';
 import '../../../widgets/seerr/seerr_status_pill.dart';
 import '../../../widgets/seerr/seerr_stats_card.dart';
+import '../../../widgets/seerr_icons.dart';
 
 double _desktopUiScale({UserPreferences? prefs}) {
   final effectivePrefs = prefs ?? GetIt.instance<UserPreferences>();
@@ -998,8 +999,11 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
             _ModernTab(l10n.appearances, (_, _) => _itemGrid(_sortJellyfinItems(_vm.filmography))),
         ];
       case 'BoxSet':
-        final moviesList = _vm.collectionItems.where((i) => i.type == 'Movie').toList();
-        moviesList.sort((a, b) {
+        final showMissing = widget.prefs.get(
+          UserPreferences.seerrShowMissingCollectionItems,
+        );
+        final libraryMovies = _vm.collectionItems.where((i) => i.type == 'Movie').toList();
+        libraryMovies.sort((a, b) {
           final aIndex = _vm.playlistItems.indexWhere((p) => p.id == a.id);
           final bIndex = _vm.playlistItems.indexWhere((p) => p.id == b.id);
           if (aIndex == -1 && bIndex == -1) return 0;
@@ -1007,9 +1011,13 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           if (bIndex == -1) return -1;
           return aIndex.compareTo(bIndex);
         });
+        final missingMovies = _vm.missingCollectionItems.where((i) => i.type == 'Movie').toList();
+        final moviesList = showMissing
+            ? mergeMissingByReleaseOrder(libraryMovies, missingMovies)
+            : libraryMovies;
 
-        final seriesList = _vm.collectionItems.where((i) => i.type == 'Series').toList();
-        seriesList.sort((a, b) {
+        final librarySeries = _vm.collectionItems.where((i) => i.type == 'Series').toList();
+        librarySeries.sort((a, b) {
           final aIndex = _vm.playlistItems.indexWhere((p) => p.seriesId == a.id || p.id == a.id);
           final bIndex = _vm.playlistItems.indexWhere((p) => p.seriesId == b.id || p.id == b.id);
           if (aIndex == -1 && bIndex == -1) return 0;
@@ -1017,6 +1025,10 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           if (bIndex == -1) return -1;
           return aIndex.compareTo(bIndex);
         });
+        final missingSeries = _vm.missingCollectionItems.where((i) => i.type == 'Series').toList();
+        final seriesList = showMissing
+            ? mergeMissingByReleaseOrder(librarySeries, missingSeries)
+            : librarySeries;
 
         return [
           if (moviesList.isNotEmpty)
@@ -3301,6 +3313,8 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                 Builder(
                   builder: (cellContext) {
                     final entry = items[i];
+                    final isSeerrItem =
+                        entry.id.startsWith('tmdb:') || entry.serverId == 'seerr';
                     final topRow = i < columns;
                     return MediaCard(
                       title: entry.name,
@@ -3308,13 +3322,24 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                       imageUrl: _imageUrl(entry),
                       width: cardWidth,
                       aspectRatio: cardRatio,
-                      isPlayed: entry.isPlayed,
-                      isFavorite: entry.isFavorite,
+                      isPlayed: isSeerrItem ? false : entry.isPlayed,
+                      isFavorite: isSeerrItem ? false : entry.isFavorite,
                       itemType: entry.type,
                       focusNode: i == 0 ? firstFocusNode : null,
                       focusColor: focusColor,
                       cardFocusExpansion: cardExpansion,
                       suppressFocusGlow: isNeon,
+                      watchedBehavior: isSeerrItem
+                          ? WatchedIndicatorBehavior.never
+                          : watchedBehavior,
+                      imageOverlays: [
+                        if (isSeerrItem)
+                          const Positioned(
+                            top: 4,
+                            right: 4,
+                            child: SeerrBadge(size: 18),
+                          ),
+                      ],
                       onFocus: () => Scrollable.ensureVisible(
                         cellContext,
                         alignment: 0.5,
@@ -3332,14 +3357,23 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                               return KeyEventResult.ignored;
                             }
                           : null,
-                      watchedBehavior: watchedBehavior,
                       onTap: () {
                         if (entry.serverId == 'seerr') {
                           final mediaType = entry.seerrMediaType ??
                               (entry.type == 'Series' ? 'tv' : 'movie');
+                          final tmdbId = entry.tmdbId;
+                          final targetId = (tmdbId != null && tmdbId.isNotEmpty)
+                              ? tmdbId
+                              : entry.id.replaceAll(
+                                  RegExp(r'^tmdb:(?:movie:|tv:)?'),
+                                  '',
+                                );
                           context.push(
-                            Destinations.seerrMedia(entry.id,
-                                mediaType: mediaType),
+                            Destinations.seerrMedia(
+                              targetId,
+                              mediaType: mediaType,
+                              title: entry.name,
+                            ),
                           );
                         } else {
                           context.push(
