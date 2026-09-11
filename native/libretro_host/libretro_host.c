@@ -378,10 +378,12 @@ struct lh_host {
   atomic_int audio_paced;
 
   // Environment commands this host answered with the default false, recorded
-  // so each is reported once instead of every frame. Best-effort: two threads
-  // racing here can duplicate one line, which is harmless, and the table
-  // filling up costs repeat lines rather than silence.
-  unsigned unhandled_env[LH_UNHANDLED_ENV_SLOTS];
+  // so each is reported once instead of every frame. Atomic because a core
+  // with a worker thread can call environment_cb from it. The dedupe itself
+  // stays best-effort: two threads racing here can duplicate one line, which
+  // is harmless, and the table filling up costs repeat lines rather than
+  // silence.
+  atomic_uint unhandled_env[LH_UNHANDLED_ENV_SLOTS];
   atomic_int unhandled_env_count;
 
   // Run loop. running/paused/fast_forward are shared with the loop thread.
@@ -1274,10 +1276,10 @@ static void note_unhandled_env(struct lh_host *h, unsigned cmd) {
   int count = atomic_load(&h->unhandled_env_count);
   if (count > LH_UNHANDLED_ENV_SLOTS) count = LH_UNHANDLED_ENV_SLOTS;
   for (int i = 0; i < count; i++) {
-    if (h->unhandled_env[i] == cmd) return;
+    if (atomic_load(&h->unhandled_env[i]) == cmd) return;
   }
   if (count < LH_UNHANDLED_ENV_SLOTS) {
-    h->unhandled_env[count] = cmd;
+    atomic_store(&h->unhandled_env[count], cmd);
     atomic_store(&h->unhandled_env_count, count + 1);
   }
   // The 0x800000 bit marks a libretro-common command and the 0x10000 bit an

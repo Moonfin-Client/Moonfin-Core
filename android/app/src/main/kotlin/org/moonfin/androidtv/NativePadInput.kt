@@ -144,10 +144,10 @@ internal class NativePadInput(
     /**
      * Polls [LibretroBridge.analogStickPorts] once and applies its bitmask
      * to every live [PadState] via [setCoreReadsAnalog]. Called from
-     * [setActive] shortly after activation, and thereafter every
-     * ANALOG_POLL_INTERVAL joystick motion events (see [analogPollCounter]),
-     * since this crosses JNI and the rule only needs to react within a handful
-     * of frames.
+     * [setActive] shortly after activation, from [onControllerTypeChanged],
+     * and otherwise every ANALOG_POLL_INTERVAL joystick motion events (see
+     * [analogPollCounter]), since this crosses JNI and the rule only needs to
+     * react within a handful of frames.
      *
      * The host decides which ports are analog and why (see
      * lh_analog_stick_ports); this only applies the answer.
@@ -162,6 +162,26 @@ internal class NativePadInput(
         for (port in 0 until NativeControllerPortRegistry.MAX_PORTS) {
             setCoreReadsAnalog(port, (mask shr port) and 1 != 0)
         }
+    }
+
+    private fun refreshAnalogPortsLater() {
+        handler.postDelayed({ if (active) refreshAnalogPorts() }, ANALOG_POLL_ACTIVATE_DELAY_MS)
+    }
+
+    /**
+     * A controller type change makes the host forget which ports it has seen
+     * a stick read on, so [LibretroBridge.analogStickPorts] answers from the
+     * new layout's descriptors alone until the core has run a couple of
+     * frames under it. Apply that provisional answer now, then re-read once
+     * the core has settled, the same shape as [setActive]. Waiting on the
+     * periodic poll instead would take ANALOG_POLL_INTERVAL motion events,
+     * which is a second of stick movement, or forever if nobody is moving one.
+     */
+    fun onControllerTypeChanged() {
+        if (!active) return
+        analogPollCounter = 0
+        refreshAnalogPorts()
+        refreshAnalogPortsLater()
     }
 
     /**
@@ -204,9 +224,9 @@ internal class NativePadInput(
             // Input descriptors can arrive a few ms after load returns (FBNeo
             // sends them late), so a single refresh shortly after activation
             // catches them instead of waiting for ANALOG_POLL_INTERVAL
-            // publishes, which may not happen for a while if nobody is
+            // motion events, which may not happen for a while if nobody is
             // touching a stick yet.
-            handler.postDelayed({ if (active) refreshAnalogPorts() }, ANALOG_POLL_ACTIVATE_DELAY_MS)
+            refreshAnalogPortsLater()
         } else {
             registry.deactivate(discoverCandidates())
         }
@@ -1002,10 +1022,10 @@ internal class NativePadInput(
         // (an unrelated, much hotter path) while still reacting within a
         // fraction of a second of real stick movement.
         const val ANALOG_POLL_INTERVAL = 64
-        // Delay before the one-shot refresh in setActive(true); the design
-        // doc measured descriptors landing within a comfortable margin of
-        // content load, so this just needs to be comfortably after that, not
-        // tuned tightly.
+        // Delay before the one-shot refresh in setActive(true) and after a
+        // controller type change. Descriptors land within a comfortable
+        // margin of content load, so this only needs to be comfortably after
+        // that, not tuned tightly.
         const val ANALOG_POLL_ACTIVATE_DELAY_MS = 500L
         // ~30Hz, per the design's "Cost" section; button transitions bypass
         // this and are always sent immediately since they are rare.

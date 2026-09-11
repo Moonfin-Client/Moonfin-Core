@@ -30,6 +30,10 @@ class LibretroBridge(
   // Same shape: lets the input layer drop held buttons immediately before the
   // core starts running again. See the "resume" branch below.
   private val onBeforeResume: () -> Unit = {},
+  // Same shape again: retro_set_controller_port_device makes the host forget
+  // which ports it has seen a stick read on, and the input layer polls that
+  // answer rather than being told, so this asks it to poll now.
+  private val onControllerTypeChanged: () -> Unit = {},
 ) {
   private val control = MethodChannel(
     flutterEngine.dartExecutor.binaryMessenger, "moonfin/native_game_control")
@@ -623,6 +627,7 @@ class LibretroBridge(
       // scheme switch); refresh the cache immediately rather than leaving it
       // stale until the next lazy read.
       refreshInputDescriptors()
+      onControllerTypeChanged()
       result.success(null)
     }
   }

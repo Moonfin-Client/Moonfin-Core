@@ -330,6 +330,7 @@ class MainActivity : AudioServiceActivity(), GamepadsCompatibleActivity {
             flutterEngine,
             onActiveChanged = { active -> nativePad?.setActive(active) },
             onBeforeResume = { nativePad?.releaseHeldInput() },
+            onControllerTypeChanged = { nativePad?.onControllerTypeChanged() },
         )
         libretroBridge = bridge
         nativePad = NativePadInput(
