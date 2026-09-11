@@ -4046,6 +4046,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get showFavoritesButton => 'Pokaż przycisk Ulubione';
 
   @override
+  String get showLiveTvButton => 'Show Live TV Button';
+
+  @override
   String get showDownloadsButton => 'Show Downloads Button';
 
   @override
@@ -9757,6 +9760,10 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String get settingsShowFavoritesButtonInNavigation =>
       'Pokaż przycisk ulubionych na pasku nawigacyjnym';
+
+  @override
+  String get settingsShowLiveTvButtonInNavigation =>
+      'Show the Live TV button in the navigation bar when the server has a Live TV library';
 
   @override
   String get settingsShowLibrariesButtonInNavigation =>

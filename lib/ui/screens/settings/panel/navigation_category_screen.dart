@@ -128,6 +128,13 @@ class _NavigationCategoryScreenState extends State<_NavigationCategoryScreen> {
                 onChanged: _pushPersonalizationSync,
               ),
               SwitchPreferenceTile(
+                preference: UserPreferences.showLiveTvButton,
+                title: l10n.showLiveTvButton,
+                subtitle: l10n.settingsShowLiveTvButtonInNavigation,
+                icon: Icons.live_tv,
+                onChanged: _pushPersonalizationSync,
+              ),
+              SwitchPreferenceTile(
                 preference: UserPreferences.showLibrariesInToolbar,
                 title: l10n.showLibrariesInToolbar,
                 subtitle: l10n.settingsShowLibrariesButtonInNavigation,

@@ -245,6 +245,24 @@ class _MobileBottomNavBarState extends State<MobileBottomNavBar> {
       );
     }
 
+    // Only offered on a server that actually has a Live TV library, the same
+    // check the home screen's Live TV row makes. `_libraries` reloads on a
+    // server switch, so the button leaves with the server it belongs to.
+    if (_prefs.get(UserPreferences.showLiveTvButton) &&
+        _libraries.any((lib) => lib.collectionType == 'livetv')) {
+      actions.add(
+        _BottomNavAction(
+          icon: Icons.live_tv_rounded,
+          label: l10n.liveTv,
+          isActive: _isActive(Destinations.liveTvGuide),
+          onTap: () {
+            if (_isActive(Destinations.liveTvGuide)) return;
+            context.navigateTopLevel(Destinations.liveTvGuide);
+          },
+        ),
+      );
+    }
+
     if (_prefs.get(UserPreferences.enableFolderView)) {
       actions.add(
         _BottomNavAction(

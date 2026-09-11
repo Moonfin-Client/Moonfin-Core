@@ -112,6 +112,12 @@ class _NavigationSettingsScreenState extends State<NavigationSettingsScreen> {
                   onChanged: _pushSync,
                 ),
                 SwitchPreferenceTile(
+                  preference: UserPreferences.showLiveTvButton,
+                  title: l10n.showLiveTvButton,
+                  icon: Icons.live_tv,
+                  onChanged: _pushSync,
+                ),
+                SwitchPreferenceTile(
                   preference: UserPreferences.showLibrariesInToolbar,
                   title: l10n.showLibrariesInToolbar,
                   iconBuilder: (size, color) => Image.asset(

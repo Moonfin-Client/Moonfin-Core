@@ -6892,6 +6892,12 @@ abstract class AppLocalizations {
   /// **'Show Favorites Button'**
   String get showFavoritesButton;
 
+  /// Setting for showing live TV button
+  ///
+  /// In en, this message translates to:
+  /// **'Show Live TV Button'**
+  String get showLiveTvButton;
+
   /// Setting for showing downloads button
   ///
   /// In en, this message translates to:
@@ -16833,6 +16839,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Show the favorites button in the navigation bar'**
   String get settingsShowFavoritesButtonInNavigation;
+
+  /// No description provided for @settingsShowLiveTvButtonInNavigation.
+  ///
+  /// In en, this message translates to:
+  /// **'Show the Live TV button in the navigation bar when the server has a Live TV library'**
+  String get settingsShowLiveTvButtonInNavigation;
 
   /// No description provided for @settingsShowLibrariesButtonInNavigation.
   ///

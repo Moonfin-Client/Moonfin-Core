@@ -3881,6 +3881,9 @@ class AppLocalizationsFa extends AppLocalizations {
   String get showFavoritesButton => 'دکمه نمایش موارد دلخواه';
 
   @override
+  String get showLiveTvButton => 'Show Live TV Button';
+
+  @override
   String get showDownloadsButton => 'Show Downloads Button';
 
   @override
@@ -9443,6 +9446,10 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get settingsShowFavoritesButtonInNavigation =>
       'نمایش دکمه علاقه مندی ها در نوار ناوبری';
+
+  @override
+  String get settingsShowLiveTvButtonInNavigation =>
+      'Show the Live TV button in the navigation bar when the server has a Live TV library';
 
   @override
   String get settingsShowLibrariesButtonInNavigation =>

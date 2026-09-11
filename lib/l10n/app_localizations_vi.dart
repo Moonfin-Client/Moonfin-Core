@@ -3904,6 +3904,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get showFavoritesButton => 'Hiển thị nút yêu thích';
 
   @override
+  String get showLiveTvButton => 'Show Live TV Button';
+
+  @override
   String get showDownloadsButton => 'Show Downloads Button';
 
   @override
@@ -9497,6 +9500,10 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get settingsShowFavoritesButtonInNavigation =>
       'Hiển thị nút yêu thích trên thanh điều hướng';
+
+  @override
+  String get settingsShowLiveTvButtonInNavigation =>
+      'Show the Live TV button in the navigation bar when the server has a Live TV library';
 
   @override
   String get settingsShowLibrariesButtonInNavigation =>

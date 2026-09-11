@@ -3810,6 +3810,9 @@ class AppLocalizationsYue extends AppLocalizations {
   String get showFavoritesButton => '顯示收藏夾按鈕';
 
   @override
+  String get showLiveTvButton => 'Show Live TV Button';
+
+  @override
   String get showDownloadsButton => 'Show Downloads Button';
 
   @override
@@ -9202,6 +9205,10 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String get settingsShowFavoritesButtonInNavigation => '在導覽列中顯示收藏夾按鈕';
+
+  @override
+  String get settingsShowLiveTvButtonInNavigation =>
+      'Show the Live TV button in the navigation bar when the server has a Live TV library';
 
   @override
   String get settingsShowLibrariesButtonInNavigation => '在導覽列中顯示庫按鈕';

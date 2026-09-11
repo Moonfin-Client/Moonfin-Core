@@ -3824,6 +3824,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get showFavoritesButton => '즐겨찾기 버튼 표시';
 
   @override
+  String get showLiveTvButton => 'Show Live TV Button';
+
+  @override
   String get showDownloadsButton => 'Show Downloads Button';
 
   @override
@@ -9236,6 +9239,10 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get settingsShowFavoritesButtonInNavigation => '탐색 표시줄에 즐겨찾기 버튼 표시';
+
+  @override
+  String get settingsShowLiveTvButtonInNavigation =>
+      'Show the Live TV button in the navigation bar when the server has a Live TV library';
 
   @override
   String get settingsShowLibrariesButtonInNavigation => '탐색 모음에 라이브러리 버튼 표시';

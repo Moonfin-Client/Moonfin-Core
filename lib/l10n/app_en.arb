@@ -5191,6 +5191,10 @@
   "@showFavoritesButton": {
     "description": "Setting for showing favorites button"
   },
+  "showLiveTvButton": "Show Live TV Button",
+  "@showLiveTvButton": {
+    "description": "Setting for showing live TV button"
+  },
   "showDownloadsButton": "Show Downloads Button",
   "@showDownloadsButton": {
     "description": "Setting for showing downloads button"
@@ -9146,6 +9150,7 @@
   "settingsShowShuffleButtonInNavigation": "Show the shuffle button in the navigation bar",
   "settingsShowGenresButtonInNavigation": "Show the genres button in the navigation bar",
   "settingsShowFavoritesButtonInNavigation": "Show the favorites button in the navigation bar",
+  "settingsShowLiveTvButtonInNavigation": "Show the Live TV button in the navigation bar when the server has a Live TV library",
   "settingsShowLibrariesButtonInNavigation": "Show the libraries button in the navigation bar",
   "settingsShowSeerrButtonInNavigation": "Show the Seerr button in the navigation bar",
   "settingsAlwaysExpandNavbarLabels": "Always show text labels in the top navigation bar",

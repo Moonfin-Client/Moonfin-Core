@@ -3917,6 +3917,9 @@ class AppLocalizationsKn extends AppLocalizations {
   String get showFavoritesButton => 'ಮೆಚ್ಚಿನವುಗಳ ಬಟನ್ ತೋರಿಸಿ';
 
   @override
+  String get showLiveTvButton => 'Show Live TV Button';
+
+  @override
   String get showDownloadsButton => 'Show Downloads Button';
 
   @override
@@ -9559,6 +9562,10 @@ class AppLocalizationsKn extends AppLocalizations {
   @override
   String get settingsShowFavoritesButtonInNavigation =>
       'ನ್ಯಾವಿಗೇಶನ್ ಬಾರ್‌ನಲ್ಲಿ ಮೆಚ್ಚಿನವುಗಳ ಬಟನ್ ಅನ್ನು ತೋರಿಸಿ';
+
+  @override
+  String get settingsShowLiveTvButtonInNavigation =>
+      'Show the Live TV button in the navigation bar when the server has a Live TV library';
 
   @override
   String get settingsShowLibrariesButtonInNavigation =>

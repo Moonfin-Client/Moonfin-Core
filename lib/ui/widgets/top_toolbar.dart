@@ -915,6 +915,12 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
     final showShuffle = _prefs.get(UserPreferences.showShuffleButton);
     final showGenres = _prefs.get(UserPreferences.showGenresButton);
     final showFavorites = _prefs.get(UserPreferences.showFavoritesButton);
+    // Only offered on a server that actually has a Live TV library, the same
+    // check the home screen's Live TV row makes. `_libraries` reloads on a
+    // server switch, so the button leaves with the server it belongs to.
+    final showLiveTv =
+        _prefs.get(UserPreferences.showLiveTvButton) &&
+        _libraries.any((lib) => lib.collectionType == 'livetv');
     final showLibraries = _prefs.get(UserPreferences.showLibrariesInToolbar);
     final alwaysExpanded = _prefs.get(UserPreferences.navbarAlwaysExpanded);
     final showFolders = _prefs.get(UserPreferences.enableFolderView);
@@ -1037,6 +1043,23 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
                     onPressed: () {
                       if (_isActive(Destinations.allFavorites)) return;
                       context.navigateTopLevel(Destinations.allFavorites);
+                    },
+                  ),
+                ),
+              ],
+              if (showLiveTv) ...[
+                _gap(),
+                _orderButton(
+                  order: (order++).toDouble(),
+                  child: ExpandableIconButton(
+                    key: const ValueKey('toolbar_livetv'),
+                    forceExpanded: alwaysExpanded,
+                    icon: Icons.live_tv_rounded,
+                    label: l10n.liveTv,
+                    baseColor: nextNavColor(),
+                    onPressed: () {
+                      if (_isActive(Destinations.liveTvGuide)) return;
+                      context.navigateTopLevel(Destinations.liveTvGuide);
                     },
                   ),
                 ),

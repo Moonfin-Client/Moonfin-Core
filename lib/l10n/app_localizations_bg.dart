@@ -3917,6 +3917,9 @@ class AppLocalizationsBg extends AppLocalizations {
   String get showFavoritesButton => 'Показване на бутона за любими';
 
   @override
+  String get showLiveTvButton => 'Show Live TV Button';
+
+  @override
   String get showDownloadsButton => 'Show Downloads Button';
 
   @override
@@ -9585,6 +9588,10 @@ class AppLocalizationsBg extends AppLocalizations {
   @override
   String get settingsShowFavoritesButtonInNavigation =>
       'Показване на бутона за любими в лентата за навигация';
+
+  @override
+  String get settingsShowLiveTvButtonInNavigation =>
+      'Show the Live TV button in the navigation bar when the server has a Live TV library';
 
   @override
   String get settingsShowLibrariesButtonInNavigation =>

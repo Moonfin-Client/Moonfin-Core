@@ -716,6 +716,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       subtitle: l10n.settingsShowFavoritesButtonInNavigation,
     ),
     navigation.leaf(
+      'pref_show_live_tv_button',
+      l10n.showLiveTvButton,
+      subtitle: l10n.settingsShowLiveTvButtonInNavigation,
+      keywords: ['guide', 'channels'],
+    ),
+    navigation.leaf(
       'pref_show_libraries_in_toolbar',
       l10n.showLibrariesInToolbar,
       subtitle: l10n.settingsShowLibrariesButtonInNavigation,

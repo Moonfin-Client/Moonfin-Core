@@ -3918,6 +3918,9 @@ class AppLocalizationsLt extends AppLocalizations {
   String get showFavoritesButton => 'Rodyti mėgstamiausių mygtuką';
 
   @override
+  String get showLiveTvButton => 'Show Live TV Button';
+
+  @override
   String get showDownloadsButton => 'Show Downloads Button';
 
   @override
@@ -9549,6 +9552,10 @@ class AppLocalizationsLt extends AppLocalizations {
   @override
   String get settingsShowFavoritesButtonInNavigation =>
       'Rodyti parankinių mygtuką naršymo juostoje';
+
+  @override
+  String get settingsShowLiveTvButtonInNavigation =>
+      'Show the Live TV button in the navigation bar when the server has a Live TV library';
 
   @override
   String get settingsShowLibrariesButtonInNavigation =>

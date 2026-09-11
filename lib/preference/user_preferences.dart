@@ -501,6 +501,7 @@ class UserPreferences extends ChangeNotifier {
     'pref_show_shuffle_button',
     'pref_show_genres_button',
     'pref_show_favorites_button',
+    'pref_show_live_tv_button',
     'pref_show_syncplay_button',
     'pref_show_downloads_button',
     'pref_show_libraries_in_toolbar',
@@ -1449,6 +1450,11 @@ class UserPreferences extends ChangeNotifier {
 
   static final showFavoritesButton = Preference(
     key: 'pref_show_favorites_button',
+    defaultValue: true,
+  );
+
+  static final showLiveTvButton = Preference(
+    key: 'pref_show_live_tv_button',
     defaultValue: true,
   );
 

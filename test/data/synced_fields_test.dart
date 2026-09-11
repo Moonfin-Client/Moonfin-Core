@@ -224,6 +224,7 @@ void main() {
     'showFavoritesButton',
     'showGenresButton',
     'showLibrariesInToolbar',
+    'showLiveTvButton',
     'showLoadingAnimationText',
     'showMediaDetailsOnLibraryPage',
     'showSeerrAvailabilityBadges',

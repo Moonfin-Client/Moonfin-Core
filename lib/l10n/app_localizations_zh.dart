@@ -3783,6 +3783,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get showFavoritesButton => '显示收藏按钮';
 
   @override
+  String get showLiveTvButton => 'Show Live TV Button';
+
+  @override
   String get showDownloadsButton => '显示下载按钮';
 
   @override
@@ -9164,6 +9167,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get settingsShowFavoritesButtonInNavigation => '在导航栏中显示收藏按钮';
+
+  @override
+  String get settingsShowLiveTvButtonInNavigation =>
+      'Show the Live TV button in the navigation bar when the server has a Live TV library';
 
   @override
   String get settingsShowLibrariesButtonInNavigation => '在导航栏中显示媒体库按钮';

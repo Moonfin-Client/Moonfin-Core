@@ -839,6 +839,12 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
     final showShuffle = _prefs.get(UserPreferences.showShuffleButton);
     final showGenres = _prefs.get(UserPreferences.showGenresButton);
     final showFavorites = _prefs.get(UserPreferences.showFavoritesButton);
+    // Only offered on a server that actually has a Live TV library, the same
+    // check the home screen's Live TV row makes. `_libraries` reloads on a
+    // server switch, so the button leaves with the server it belongs to.
+    final showLiveTv =
+        _prefs.get(UserPreferences.showLiveTvButton) &&
+        _libraries.any((lib) => lib.collectionType == 'livetv');
     final showLibraries = _prefs.get(UserPreferences.showLibrariesInToolbar);
     final showFolders = _prefs.get(UserPreferences.enableFolderView);
     final showSyncPlay =
@@ -961,6 +967,23 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
                       }
                       _markNavigationAwayFromSidebar();
                       context.navigateTopLevel(Destinations.allFavorites);
+                    },
+                  ),
+                if (showLiveTv)
+                  _SidebarItem(
+                    key: const ValueKey('sidebar-livetv'),
+                    icon: Icons.live_tv_rounded,
+                    label: l10n.liveTv,
+                    baseColor: nextMainSidebarColor(),
+                    showLabel: _showLabels,
+                    onPressed: () {
+                      _onNavigate();
+                      if (_isActive(Destinations.liveTvGuide)) {
+                        _exitSidebarToContent();
+                        return;
+                      }
+                      _markNavigationAwayFromSidebar();
+                      context.navigateTopLevel(Destinations.liveTvGuide);
                     },
                   ),
                 if (showFolders)

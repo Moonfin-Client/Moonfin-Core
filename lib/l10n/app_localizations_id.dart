@@ -3902,6 +3902,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get showFavoritesButton => 'Tampilkan Tombol Favorit';
 
   @override
+  String get showLiveTvButton => 'Show Live TV Button';
+
+  @override
   String get showDownloadsButton => 'Show Downloads Button';
 
   @override
@@ -9506,6 +9509,10 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get settingsShowFavoritesButtonInNavigation =>
       'Tampilkan tombol favorit di bilah navigasi';
+
+  @override
+  String get settingsShowLiveTvButtonInNavigation =>
+      'Show the Live TV button in the navigation bar when the server has a Live TV library';
 
   @override
   String get settingsShowLibrariesButtonInNavigation =>

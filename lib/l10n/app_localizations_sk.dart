@@ -3922,6 +3922,9 @@ class AppLocalizationsSk extends AppLocalizations {
   String get showFavoritesButton => 'Zobraziť tlačidlo Obľúbené';
 
   @override
+  String get showLiveTvButton => 'Show Live TV Button';
+
+  @override
   String get showDownloadsButton => 'Show Downloads Button';
 
   @override
@@ -9555,6 +9558,10 @@ class AppLocalizationsSk extends AppLocalizations {
   @override
   String get settingsShowFavoritesButtonInNavigation =>
       'Zobraziť tlačidlo obľúbených na navigačnom paneli';
+
+  @override
+  String get settingsShowLiveTvButtonInNavigation =>
+      'Show the Live TV button in the navigation bar when the server has a Live TV library';
 
   @override
   String get settingsShowLibrariesButtonInNavigation =>
