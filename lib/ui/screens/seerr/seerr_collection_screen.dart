@@ -22,6 +22,8 @@ import '../../widgets/seerr/seerr_tv_controls.dart';
 import '../../widgets/track_selector_dialog.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../widgets/focus/request_initial_focus.dart';
+import '../../widgets/skeleton/skeleton_home_row.dart';
+import '../../widgets/skeleton/skeleton_shimmer.dart';
 
 const _tmdbPosterBase = 'https://image.tmdb.org/t/p/w342';
 const _tmdbBackdropBase = 'https://image.tmdb.org/t/p/w1280';
@@ -97,14 +99,11 @@ class _SeerrCollectionScreenState extends State<SeerrCollectionScreen> {
   Widget _buildBody() {
     final l10n = AppLocalizations.of(context);
     final vm = _vm;
-    if (_initializing || vm == null) {
-      return const Center(child: CircularProgressIndicator());
+    if (_initializing || vm == null || (vm.state.isLoading && vm.state.collection == null)) {
+      return _buildSkeleton(context);
     }
 
     final s = vm.state;
-    if (s.isLoading && s.collection == null) {
-      return const Center(child: CircularProgressIndicator());
-    }
 
     if (s.error != null && s.collection == null) {
       return Center(
@@ -175,6 +174,62 @@ class _SeerrCollectionScreenState extends State<SeerrCollectionScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildSkeleton(BuildContext context) {
+    final topPad = MediaQuery.of(context).padding.top;
+    return SkeletonShimmer(
+      child: SingleChildScrollView(
+        physics: const NeverScrollableScrollPhysics(),
+        padding: EdgeInsets.only(top: topPad + 56, bottom: 48),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.fromLTRB(_leftInset, 0, 24, 0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SkeletonBox(
+                    width: 120,
+                    height: 180,
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                  ),
+                  const SizedBox(width: 20),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: const [
+                        SkeletonBox(width: 200, height: 26, borderRadius: BorderRadius.all(Radius.circular(4))),
+                        SizedBox(height: 10),
+                        SkeletonBox(width: 120, height: 16, borderRadius: BorderRadius.all(Radius.circular(4))),
+                        SizedBox(height: 14),
+                        SkeletonBox(width: double.infinity, height: 14, borderRadius: BorderRadius.all(Radius.circular(4))),
+                        SizedBox(height: 8),
+                        SkeletonBox(width: double.infinity, height: 14, borderRadius: BorderRadius.all(Radius.circular(4))),
+                        SizedBox(height: 8),
+                        SkeletonBox(width: 260, height: 14, borderRadius: BorderRadius.all(Radius.circular(4))),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 32),
+            Padding(
+              padding: EdgeInsets.fromLTRB(_leftInset, 0, 24, 12),
+              child: const SkeletonBox(width: 160, height: 20, borderRadius: BorderRadius.all(Radius.circular(4))),
+            ),
+            SkeletonHomeRow(
+              cardWidth: 130,
+              imageHeight: 195,
+              leadingPadding: _leftInset,
+              count: 6,
+            ),
+          ],
+        ),
+      ),
     );
   }
 

@@ -33,6 +33,7 @@ import '../../widgets/navigation_layout.dart';
 import '../../widgets/focus/context_menu_sheet.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/sliding_pill_tabs.dart';
+import '../../widgets/skeleton/skeleton_library_grid.dart';
 
 class SearchScreen extends StatefulWidget {
   final String? initialQuery;
@@ -962,7 +963,10 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
         return const SizedBox.shrink();
       case SearchState.loading:
         if (_vm.results.isEmpty) {
-          return const Center(child: CircularProgressIndicator());
+          return const SkeletonLibraryGrid(
+            aspectRatio: 2 / 3,
+            itemCount: 18,
+          );
         }
         return _buildResults();
       case SearchState.ready

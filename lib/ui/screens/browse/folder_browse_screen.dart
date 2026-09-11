@@ -14,6 +14,7 @@ import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/media_card.dart';
 import '../../widgets/navigation_layout.dart';
 import '../../widgets/quick_return_wrapper.dart';
+import '../../widgets/skeleton/skeleton_library_grid.dart';
 import '../../../l10n/app_localizations.dart';
 
 class FolderBrowseScreen extends StatefulWidget {
@@ -298,7 +299,7 @@ class _FolderBrowseScreenState extends State<FolderBrowseScreen> {
   Widget _buildBody() {
     switch (_vm.state) {
       case FolderBrowseState.loading:
-        return const Center(child: CircularProgressIndicator());
+        return const SkeletonLibraryGrid();
       case FolderBrowseState.error:
         return Center(
           child: Text(

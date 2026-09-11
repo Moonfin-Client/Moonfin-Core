@@ -27,6 +27,7 @@ import '../../widgets/overlay_sheet.dart';
 import '../../widgets/quick_return_wrapper.dart';
 import '../../widgets/rating_display.dart';
 import '../../widgets/sliding_pill_tabs.dart';
+import '../../widgets/skeleton/skeleton_library_grid.dart';
 import '../../../l10n/app_localizations.dart';
 
 Color get _navyBackground => AppColorScheme.background;
@@ -417,9 +418,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> with GridFocusNodeMix
 
   Widget _buildBody() {
     return switch (_vm.state) {
-      FavoritesState.loading => Center(
-        child: CircularProgressIndicator(color: AppColorScheme.accent),
-      ),
+      FavoritesState.loading => const SkeletonLibraryGrid(),
       FavoritesState.error => Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,

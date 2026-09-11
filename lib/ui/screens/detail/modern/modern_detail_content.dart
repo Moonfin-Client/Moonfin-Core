@@ -544,6 +544,13 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       });
       NavigationLayout.focusDetailsPlayButtonNotifier.value = widget.initialFocusNode;
     }
+    final initialItem = _vm.item;
+    if (initialItem != null && initialItem.type == 'Episode') {
+      if (initialItem.seriesLogoImageTag != null && initialItem.seriesId != null) {
+        _seriesLogoTag = initialItem.seriesLogoImageTag;
+        _seriesLogoId = initialItem.seriesId;
+      }
+    }
     _loadSeriesLogo();
     _loadStudioLogos();
     _loadSeerrAppearances().then((_) {
@@ -599,6 +606,13 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       if (_vm.item?.type == 'BoxSet' &&
           (_vm.state == ItemDetailState.loading || _vm.playlistItems.isEmpty)) {
         _boxSetLastTriggerMaxExtent = -1;
+      }
+      final currentItem = _vm.item;
+      if (currentItem != null && currentItem.type == 'Episode' && _seriesLogoTag == null) {
+        if (currentItem.seriesLogoImageTag != null && currentItem.seriesId != null) {
+          _seriesLogoTag = currentItem.seriesLogoImageTag;
+          _seriesLogoId = currentItem.seriesId;
+        }
       }
       setState(() {});
       _loadSeriesLogo();
@@ -4075,6 +4089,14 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     final showTech = widget.prefs.get(UserPreferences.detailShowTechnicalDetails);
     final techRow = showTech ? _buildTechnicalDetailsRow(context, item, selectedSource) : null;
 
+    final seriesLogoHeight = (_landscape ? 90.0 : 64.0) * logoScaleFactor;
+    final seriesLogoWidth = (_landscape ? 360.0 : 260.0) * logoScaleFactor;
+    final itemLogoHeight = (_landscape ? 75.0 : 64.0) * logoScaleFactor;
+    final itemLogoWidth = (_landscape ? 300.0 : 260.0) * logoScaleFactor;
+    final effectiveSeriesLogoTag = _seriesLogoTag ?? item.seriesLogoImageTag;
+    final effectiveSeriesLogoId = _seriesLogoId ?? item.seriesId;
+    final hasSeriesLogo = effectiveSeriesLogoTag != null && effectiveSeriesLogoId != null;
+
     final Column childrenCol = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: hasUpNext ? MainAxisSize.max : MainAxisSize.min,
@@ -4101,28 +4123,34 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
               ],
             ),
           ] else if (isEpisode) ...[
-            if (_seriesLogoTag != null && _seriesLogoId != null) ...[
-              Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: LogoView(
-                  imageUrl: _vm.imageApi
-                      .getLogoImageUrl(_seriesLogoId!, maxWidth: 350, tag: _seriesLogoTag),
-                  maxHeight: (_landscape ? 90 : 64) * logoScaleFactor,
-                  maxWidth: (_landscape ? 360 : 260) * logoScaleFactor,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 4),
+              child: SizedBox(
+                height: seriesLogoHeight,
+                child: Align(
+                  alignment: Alignment.bottomLeft,
+                  child: hasSeriesLogo
+                      ? LogoView(
+                          imageUrl: _vm.imageApi.getLogoImageUrl(
+                            effectiveSeriesLogoId,
+                            maxWidth: 350,
+                            tag: effectiveSeriesLogoTag,
+                          ),
+                          maxHeight: seriesLogoHeight,
+                          maxWidth: seriesLogoWidth,
+                        )
+                      : (item.seriesName != null
+                          ? Text(
+                              item.seriesName!,
+                              style: textTheme.labelLarge?.copyWith(
+                                color: AppColorScheme.onSurface.withValues(alpha: 0.7),
+                                letterSpacing: 1.2,
+                              ),
+                            )
+                          : const SizedBox.shrink()),
                 ),
               ),
-            ] else if (item.seriesName != null) ...[
-              Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: Text(
-                  item.seriesName!,
-                  style: textTheme.labelLarge?.copyWith(
-                    color: AppColorScheme.onSurface.withValues(alpha: 0.7),
-                    letterSpacing: 1.2,
-                  ),
-                ),
-              ),
-            ],
+            ),
             Text(
               item.name,
               style: (_landscape
@@ -4133,41 +4161,44 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           ] else if (logoTag != null && logoId != null) ...[
             Padding(
               padding: const EdgeInsets.only(bottom: 4),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  LogoView(
-                    imageUrl: _vm.imageApi
-                        .getLogoImageUrl(logoId, maxWidth: 350, tag: logoTag),
-                    maxHeight: (_landscape ? 75 : 64) * logoScaleFactor,
-                    maxWidth: (_landscape ? 300 : 260) * logoScaleFactor,
-                  ),
-                  if (item.mediaSources.length > 1) ...[
-                    const SizedBox(width: 16),
-                    () {
-                      final versionName = selectedSource?['Name'] as String? ?? 'Default';
-                      return Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: AppColorScheme.accent.withValues(alpha: 0.15),
-                          borderRadius: AppRadius.circular(4),
-                          border: Border.all(
-                            color: AppColorScheme.accent.withValues(alpha: 0.4),
-                            width: 1,
+              child: SizedBox(
+                height: itemLogoHeight,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    LogoView(
+                      imageUrl: _vm.imageApi
+                          .getLogoImageUrl(logoId, maxWidth: 350, tag: logoTag),
+                      maxHeight: itemLogoHeight,
+                      maxWidth: itemLogoWidth,
+                    ),
+                    if (item.mediaSources.length > 1) ...[
+                      const SizedBox(width: 16),
+                      () {
+                        final versionName = selectedSource?['Name'] as String? ?? 'Default';
+                        return Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: AppColorScheme.accent.withValues(alpha: 0.15),
+                            borderRadius: AppRadius.circular(4),
+                            border: Border.all(
+                              color: AppColorScheme.accent.withValues(alpha: 0.4),
+                              width: 1,
+                            ),
                           ),
-                        ),
-                        child: Text(
-                          versionName,
-                          style: textTheme.bodySmall?.copyWith(
-                            color: AppColorScheme.accent,
-                            fontWeight: FontWeight.bold,
+                          child: Text(
+                            versionName,
+                            style: textTheme.bodySmall?.copyWith(
+                              color: AppColorScheme.accent,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                      );
-                    }(),
+                        );
+                      }(),
+                    ],
                   ],
-                ],
+                ),
               ),
             ),
           ] else ...[
@@ -4930,44 +4961,47 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
             children: [
               const SizedBox(height: 24),
               if (logoTag != null && logoId != null) ...[
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    LogoView(
-                      imageUrl: _vm.imageApi
-                          .getLogoImageUrl(logoId, maxWidth: 350, tag: logoTag),
-                      maxHeight: 75 * logoScaleFactor,
-                      maxWidth: 300 * logoScaleFactor,
-                    ),
-                    if (item.mediaSources.length > 1) ...[
-                      const SizedBox(width: 16),
-                      // The logo keeps the width it needs, so a narrow window
-                      // shortens the version name instead of overflowing the row.
-                      Flexible(
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: AppColorScheme.accent.withValues(alpha: 0.15),
-                            borderRadius: AppRadius.circular(4),
-                            border: Border.all(
-                              color: AppColorScheme.accent.withValues(alpha: 0.4),
-                              width: 1,
+                SizedBox(
+                  height: 75 * logoScaleFactor,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      LogoView(
+                        imageUrl: _vm.imageApi
+                            .getLogoImageUrl(logoId, maxWidth: 350, tag: logoTag),
+                        maxHeight: 75 * logoScaleFactor,
+                        maxWidth: 300 * logoScaleFactor,
+                      ),
+                      if (item.mediaSources.length > 1) ...[
+                        const SizedBox(width: 16),
+                        // The logo keeps the width it needs, so a narrow window
+                        // shortens the version name instead of overflowing the row.
+                        Flexible(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: AppColorScheme.accent.withValues(alpha: 0.15),
+                              borderRadius: AppRadius.circular(4),
+                              border: Border.all(
+                                color: AppColorScheme.accent.withValues(alpha: 0.4),
+                                width: 1,
+                              ),
                             ),
-                          ),
-                          child: Text(
-                            selectedSource?['Name'] as String? ?? 'Default',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: textTheme.bodySmall?.copyWith(
-                              color: AppColorScheme.accent,
-                              fontWeight: FontWeight.bold,
+                            child: Text(
+                              selectedSource?['Name'] as String? ?? 'Default',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: textTheme.bodySmall?.copyWith(
+                                color: AppColorScheme.accent,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),
-                      ),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
                 const SizedBox(height: 6),
               ] else ...[

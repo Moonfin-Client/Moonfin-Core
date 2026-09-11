@@ -41,6 +41,8 @@ import 'nouveau/nouveau_detail_content.dart';
 import 'nouveau/hero/nouveau_action_buttons.dart';
 import 'modern/modern_detail_content.dart';
 import 'spotlight/spotlight_detail_content.dart';
+import '../../widgets/skeleton/skeleton_detail_screen.dart';
+import '../../widgets/skeleton/skeleton_shimmer.dart';
 import '../../../data/repositories/seerr_repository.dart';
 import '../../../data/services/seerr/seerr_api_models.dart';
 import '../../../l10n/app_localizations.dart';
@@ -91,7 +93,6 @@ import '../../widgets/focus/dpad_list_tile.dart';
 import '../../widgets/focus/focusable_button.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/overlay_sheet.dart';
-import '../../widgets/playback/player_loading_overlay.dart';
 import '../../../playback/hdr_stream_capability.dart';
 import '../../../playback/known_defects.dart';
 import '../../../syncplay/syncplay_manager.dart';
@@ -658,8 +659,9 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
 
   Widget _buildBody(BuildContext context) {
     return switch (_viewModel.state) {
-      ItemDetailState.loading => const Center(
-        child: PlayerLoadingOverlay(customSize: 120),
+      ItemDetailState.loading => DetailScreenSkeleton(
+        isModern: _prefs.get(UserPreferences.detailScreenStyle) ==
+            DetailScreenStyle.modern,
       ),
       ItemDetailState.error => Center(
         child: Column(
@@ -5253,8 +5255,11 @@ class _BookAuthorDetailScreenState extends State<_BookAuthorDetailScreen> {
       ),
       body: SafeArea(
         child: _loading && data == null
-            ? const Center(
-                child: CircularProgressIndicator(color: Color(0xFF32B9E8)),
+            ? _buildSkeleton(
+                context,
+                horizontalPadding,
+                crossAxisCount,
+                gridSpacing,
               )
             : data == null
             ? Center(
@@ -5339,6 +5344,105 @@ class _BookAuthorDetailScreenState extends State<_BookAuthorDetailScreen> {
                   ],
                 ),
               ),
+      ),
+    );
+  }
+
+  Widget _buildSkeleton(
+    BuildContext context,
+    double horizontalPadding,
+    int crossAxisCount,
+    double gridSpacing,
+  ) {
+    return SkeletonShimmer(
+      child: SingleChildScrollView(
+        padding: EdgeInsets.fromLTRB(
+          horizontalPadding,
+          8,
+          horizontalPadding,
+          24,
+        ),
+        physics: const NeverScrollableScrollPhysics(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                SkeletonBox(
+                  width: 84,
+                  height: 84,
+                  borderRadius: BorderRadius.circular(42),
+                ),
+                const SizedBox(width: 20),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [
+                      SkeletonBox(
+                        width: 200,
+                        height: 24,
+                        borderRadius: BorderRadius.all(Radius.circular(4)),
+                      ),
+                      SizedBox(height: 8),
+                      SkeletonBox(
+                        width: 110,
+                        height: 14,
+                        borderRadius: BorderRadius.all(Radius.circular(4)),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            const SkeletonBox(
+              width: 100,
+              height: 18,
+              borderRadius: BorderRadius.all(Radius.circular(4)),
+            ),
+            const SizedBox(height: 10),
+            const SkeletonBox(
+              width: double.infinity,
+              height: 13,
+              borderRadius: BorderRadius.all(Radius.circular(4)),
+            ),
+            const SizedBox(height: 6),
+            const SkeletonBox(
+              width: double.infinity,
+              height: 13,
+              borderRadius: BorderRadius.all(Radius.circular(4)),
+            ),
+            const SizedBox(height: 6),
+            const SkeletonBox(
+              width: 240,
+              height: 13,
+              borderRadius: BorderRadius.all(Radius.circular(4)),
+            ),
+            const SizedBox(height: 32),
+            const SkeletonBox(
+              width: 80,
+              height: 18,
+              borderRadius: BorderRadius.all(Radius.circular(4)),
+            ),
+            const SizedBox(height: 12),
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: crossAxisCount,
+                crossAxisSpacing: gridSpacing,
+                mainAxisSpacing: gridSpacing,
+                childAspectRatio: 2 / 3,
+              ),
+              itemCount: crossAxisCount * 2,
+              itemBuilder: (_, _) => const SkeletonBox(
+                width: double.infinity,
+                height: double.infinity,
+                borderRadius: BorderRadius.all(Radius.circular(8)),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

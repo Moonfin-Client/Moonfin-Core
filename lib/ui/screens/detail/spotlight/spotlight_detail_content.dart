@@ -559,34 +559,42 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
     );
 
     if (isEpisode) {
+      final seriesLogoHeight = (_landscape ? 90.0 : 64.0) * logoScaleFactor;
+      final seriesLogoWidth = (_landscape ? 360.0 : 260.0) * logoScaleFactor;
+      final hasSeriesLogo = logoTag != null && logoId != null;
+
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (logoTag != null && logoId != null)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 4),
-              child: LogoView(
-                imageUrl: _vm.imageApi.getLogoImageUrl(
-                  logoId,
-                  maxWidth: 350,
-                  tag: logoTag,
-                ),
-                maxHeight: (_landscape ? 90 : 64) * logoScaleFactor,
-                maxWidth: (_landscape ? 360 : 260) * logoScaleFactor,
-              ),
-            )
-          else if (item.seriesName != null)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 4),
-              child: Text(
-                item.seriesName!,
-                style: textTheme.labelLarge?.copyWith(
-                  color: AppColorScheme.onSurface.withValues(alpha: 0.7),
-                  letterSpacing: 1.2,
-                ),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 4),
+            child: SizedBox(
+              height: seriesLogoHeight,
+              child: Align(
+                alignment: Alignment.bottomLeft,
+                child: hasSeriesLogo
+                    ? LogoView(
+                        imageUrl: _vm.imageApi.getLogoImageUrl(
+                          logoId,
+                          maxWidth: 350,
+                          tag: logoTag,
+                        ),
+                        maxHeight: seriesLogoHeight,
+                        maxWidth: seriesLogoWidth,
+                      )
+                    : (item.seriesName != null
+                        ? Text(
+                            item.seriesName!,
+                            style: textTheme.labelLarge?.copyWith(
+                              color: AppColorScheme.onSurface.withValues(alpha: 0.7),
+                              letterSpacing: 1.2,
+                            ),
+                          )
+                        : const SizedBox.shrink()),
               ),
             ),
+          ),
           titleText,
         ],
       );

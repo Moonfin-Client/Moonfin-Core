@@ -28,6 +28,7 @@ import '../../widgets/seerr_download_progress_bar.dart';
 import '../../widgets/seerr/seerr_media_type_badge.dart';
 import '../../widgets/seerr/seerr_request_tile_caption.dart';
 import '../../widgets/seerr/seerr_text_field.dart';
+import '../../widgets/skeleton/skeleton_library_grid.dart';
 import '../../widgets/seerr/seerr_tv_controls.dart';
 import '../../widgets/track_selector_dialog.dart';
 import '../../../l10n/app_localizations.dart';
@@ -219,7 +220,7 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
   Widget _buildBody() {
     final l10n = AppLocalizations.of(context);
     if (_initializing || _requestsVm == null || _issuesVm == null) {
-      return const Center(child: CircularProgressIndicator());
+      return const SkeletonLibraryGrid(aspectRatio: 16 / 9);
     }
 
     final prefs = GetIt.instance<UserPreferences>();

@@ -18,6 +18,7 @@ import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/fullscreen_backdrop_switcher.dart';
 import '../../widgets/genre_grid_card.dart';
 import '../../widgets/focus/context_menu_sheet.dart';
+import '../../widgets/skeleton/skeleton_library_grid.dart';
 import '../../../l10n/app_localizations.dart';
 
 Color get _navyBackground => AppColorScheme.background;
@@ -377,9 +378,7 @@ class _LibraryGenresScreenState extends State<LibraryGenresScreen> {
 
   Widget _buildBody() {
     if (_isLoading) {
-      return Center(
-        child: CircularProgressIndicator(color: AppColorScheme.accent),
-      );
+      return const SkeletonLibraryGrid(aspectRatio: 16 / 9);
     }
 
     if (_genres.isEmpty) {

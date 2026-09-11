@@ -77,6 +77,8 @@ import '../../util/home_row_title_localizer.dart';
 import '../../../util/game_library.dart';
 import 'home_view_model.dart';
 import '../../widgets/seerr/seerr_genre_label.dart';
+import '../../widgets/skeleton/skeleton_home_row.dart';
+import '../../widgets/skeleton/skeleton_shimmer.dart';
 
 Color get _homeBackground => AppColorScheme.background;
 
@@ -3955,6 +3957,70 @@ class _ContentRowsState extends State<_ContentRows>
     return null;
   }
 
+  Widget _buildHomeInitialLoadingSkeleton({
+    required BuildContext context,
+    required UserPreferences prefs,
+    required PosterSize posterSize,
+  }) {
+    final safeTop = MediaQuery.of(context).padding.top;
+    final desktopScale = _desktopUiScaleFactor();
+    final isRowsV2 = _isHomeRowsStyleV2();
+    final navbarIsTop =
+        prefs.get(UserPreferences.navbarPosition) == NavbarPosition.top;
+    final tvTopNavbarInset =
+        navbarIsTop && PlatformDetection.isTV && !PlatformDetection.useMobileUi
+            ? 48.0
+            : 0.0;
+    final navbarLeftInset = navbarIsTop ? 16.0 + tvTopNavbarInset : 56.0;
+    final platformScale = PlatformDetection.isTV
+        ? 1.0
+        : (PlatformDetection.useMobileUi ? 1.0 : desktopScale);
+    final v2ImageHeight =
+        posterSize.portraitHeight.toDouble() * platformScale * 2;
+    final v2PortraitWidth = v2ImageHeight * (2 / 3);
+    final cardWidth = isRowsV2
+        ? v2PortraitWidth
+        : (posterSize.portraitHeight.toDouble() * platformScale * (2 / 3));
+    final imageHeight = isRowsV2
+        ? v2ImageHeight
+        : (posterSize.portraitHeight.toDouble() * platformScale);
+
+    return SkeletonShimmer(
+      child: ListView(
+        physics: const NeverScrollableScrollPhysics(),
+        padding: EdgeInsets.only(
+          top: safeTop + (navbarIsTop ? 70.0 : 24.0),
+          bottom: 48.0,
+        ),
+        children: [
+          for (int i = 0; i < 4; i++) ...[
+            Padding(
+              padding: EdgeInsets.only(
+                left: navbarLeftInset + (isRowsV2 ? _kHomeRowLabelInset : 0),
+                bottom: 8.0,
+                top: i == 0 ? 0 : 24.0,
+              ),
+              child: SkeletonBox(
+                width: 140.0 + (i * 24),
+                height: 18,
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+            SkeletonHomeRow(
+              cardWidth: cardWidth,
+              imageHeight: imageHeight,
+              leadingPadding:
+                  navbarLeftInset + (isRowsV2 ? _kHomeRowLabelInset : 0),
+              itemSpacing: 14.0,
+              isModern: isRowsV2,
+              count: 8,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final rows = widget.viewModel.rows;
@@ -3975,7 +4041,11 @@ class _ContentRowsState extends State<_ContentRows>
     final useSeriesThumbs = prefs.get(UserPreferences.seriesThumbnailsEnabled);
 
     if (widget.viewModel.isLoading && rows.isEmpty) {
-      return const Center(child: CircularProgressIndicator());
+      return _buildHomeInitialLoadingSkeleton(
+        context: context,
+        prefs: prefs,
+        posterSize: posterSize,
+      );
     }
 
     _updateOffsets();
@@ -4646,13 +4716,36 @@ class _ContentRowsState extends State<_ContentRows>
 
     final subtitle = _rowSubtitle(row, l10n);
     final hasSubtitle = subtitle != null && subtitle.isNotEmpty;
+    final rowTotalHeight =
+        maxCardHeight + (10 * metadataScale) + (hasSubtitle ? 18.0 : 0.0);
+
+    if (row.isLoading && row.items.isEmpty) {
+      return _buildTitledRow(
+        key: _rowContainerKey(rowIndex),
+        title: _localizedRowTitle(row, l10n),
+        subtitle: subtitle,
+        rowIndex: rowIndex,
+        hasItems: false,
+        height: rowTotalHeight,
+        child: SkeletonHomeRow(
+          cardWidth: firstCardWidth,
+          imageHeight: isRowsV2
+              ? v2ImageHeight
+              : (posterSize.portraitHeight.toDouble() * platformScale),
+          itemSpacing: _rowItemSpacing(firstCardWidth, cardExpansion),
+          leadingPadding: isRowsV2 ? _kHomeRowLabelInset : 0,
+          isModern: isRowsV2,
+        ),
+      );
+    }
+
     return _buildTitledRow(
       key: _rowContainerKey(rowIndex),
       title: _localizedRowTitle(row, l10n),
       subtitle: subtitle,
       rowIndex: rowIndex,
       hasItems: row.items.isNotEmpty,
-      height: maxCardHeight + (10 * metadataScale) + (hasSubtitle ? 18.0 : 0.0),
+      height: rowTotalHeight,
       child: LockedFocusRow<AggregatedItem>(
         key: _rowKey(rowIndex),
         items: row.items,

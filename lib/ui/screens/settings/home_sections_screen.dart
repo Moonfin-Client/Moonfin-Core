@@ -23,7 +23,7 @@ import '../../../util/platform_detection.dart';
 import '../../navigation/route_lifecycle_observer.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/poster_size_settings_dialog.dart';
-import '../../widgets/playback/player_loading_overlay.dart';
+import '../../widgets/skeleton/skeleton_shimmer.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
 import '../../widgets/settings/preference_tiles.dart';
 import '../../../l10n/app_localizations.dart';
@@ -1715,10 +1715,11 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
 
   Widget _buildLoadingOverlay(BuildContext context) {
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     return Positioned.fill(
       child: AnimatedOpacity(
         opacity: _isLoading ? 1.0 : 0.0,
-        duration: const Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 250),
         curve: Curves.easeInOut,
         onEnd: () {
           if (!_isLoading && mounted) {
@@ -1728,9 +1729,111 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
           }
         },
         child: Container(
-          color: theme.colorScheme.surface,
-          alignment: Alignment.center,
-          child: const PlayerLoadingOverlay(customSize: 80, labelSpacing: 20),
+          color: theme.scaffoldBackgroundColor,
+          child: SkeletonShimmer(
+            child: ListView(
+              physics: const NeverScrollableScrollPhysics(),
+              padding: const EdgeInsets.only(top: 8, bottom: 32),
+              children: [
+                if (widget.showGeneralOptions)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: colorScheme.surfaceContainerLow.withValues(alpha: 0.5),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Column(
+                        children: const [
+                          Row(
+                            children: [
+                              SkeletonBox(width: 24, height: 24, borderRadius: BorderRadius.all(Radius.circular(6))),
+                              SizedBox(width: 16),
+                              Expanded(
+                                child: SkeletonBox(width: 180, height: 16, borderRadius: BorderRadius.all(Radius.circular(4))),
+                              ),
+                              SkeletonBox(width: 44, height: 24, borderRadius: BorderRadius.all(Radius.circular(12))),
+                            ],
+                          ),
+                          SizedBox(height: 16),
+                          Row(
+                            children: [
+                              SkeletonBox(width: 24, height: 24, borderRadius: BorderRadius.all(Radius.circular(6))),
+                              SizedBox(width: 16),
+                              Expanded(
+                                child: SkeletonBox(width: 160, height: 16, borderRadius: BorderRadius.all(Radius.circular(4))),
+                              ),
+                              SkeletonBox(width: 44, height: 24, borderRadius: BorderRadius.all(Radius.circular(12))),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                for (int i = 0; i < 9; i++)
+                  Padding(
+                    padding: _kHomeSectionTileOuterPadding,
+                    child: Container(
+                      height: 64,
+                      padding: _kHomeSectionTileContentPadding,
+                      decoration: _homeSectionTileDecoration(
+                        context,
+                        focused: false,
+                      ),
+                      child: Row(
+                        children: [
+                          const SkeletonBox(
+                            width: 32,
+                            height: 32,
+                            borderRadius: BorderRadius.all(Radius.circular(8)),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SkeletonBox(
+                                  width: 120.0 + ((i * 17) % 80),
+                                  height: 15,
+                                  borderRadius: const BorderRadius.all(Radius.circular(4)),
+                                ),
+                                if (i % 3 != 0) ...[
+                                  const SizedBox(height: 6),
+                                  SkeletonBox(
+                                    width: 80.0 + ((i * 13) % 50),
+                                    height: 11,
+                                    borderRadius: const BorderRadius.all(Radius.circular(4)),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                          const SkeletonBox(
+                            width: 28,
+                            height: 28,
+                            borderRadius: BorderRadius.all(Radius.circular(14)),
+                          ),
+                          const SizedBox(width: 8),
+                          const SkeletonBox(
+                            width: 28,
+                            height: 28,
+                            borderRadius: BorderRadius.all(Radius.circular(14)),
+                          ),
+                          const SizedBox(width: 12),
+                          const SkeletonBox(
+                            width: 44,
+                            height: 24,
+                            borderRadius: BorderRadius.all(Radius.circular(12)),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
         ),
       ),
     );

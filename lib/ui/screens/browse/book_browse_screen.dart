@@ -24,6 +24,7 @@ import '../../widgets/book/book_stats_band.dart';
 import '../../widgets/book/discover/book_discover_tab.dart';
 import '../../widgets/focus/context_menu_sheet.dart';
 import '../../widgets/focus/focusable_wrapper.dart';
+import '../../widgets/skeleton/skeleton_library_grid.dart';
 import '../../widgets/focus/locked_focus_row.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/navigation_layout.dart';
@@ -211,8 +212,9 @@ class _BookBrowseScreenState extends State<BookBrowseScreen> {
       body: NavigationLayout(
         showBackButton: true,
         child: _vm.isLoading
-            ? Center(
-                child: CircularProgressIndicator(color: AppColorScheme.accent),
+            ? const SkeletonLibraryGrid(
+                cardWidth: 160,
+                aspectRatio: 2 / 3,
               )
             : RefreshIndicator(
                 onRefresh: _vm.refresh,

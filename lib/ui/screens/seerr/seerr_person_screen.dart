@@ -19,6 +19,8 @@ import '../../../l10n/app_localizations.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/focus/step_scroll.dart';
 import '../../widgets/quick_return_wrapper.dart';
+import '../../widgets/skeleton/skeleton_home_row.dart';
+import '../../widgets/skeleton/skeleton_shimmer.dart';
 
 const _tmdbPosterBase = 'https://image.tmdb.org/t/p/w342';
 const _tmdbProfileLarge = 'https://image.tmdb.org/t/p/w500';
@@ -103,15 +105,11 @@ class _SeerrPersonScreenState extends State<SeerrPersonScreen> {
   Widget _buildBody() {
     final l10n = AppLocalizations.of(context);
     final vm = _vm;
-    if (_initializing || vm == null) {
-      return const Center(child: CircularProgressIndicator());
+    if (_initializing || vm == null || vm.state.isLoading) {
+      return _buildSkeleton(context);
     }
 
     final s = vm.state;
-
-    if (s.isLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
 
     if (s.error != null) {
       return Center(
@@ -135,6 +133,60 @@ class _SeerrPersonScreenState extends State<SeerrPersonScreen> {
     if (person == null) return const SizedBox.shrink();
 
     return _buildContent(person, s);
+  }
+
+  Widget _buildSkeleton(BuildContext context) {
+    final topPad = MediaQuery.of(context).padding.top;
+    return SkeletonShimmer(
+      child: SingleChildScrollView(
+        physics: const NeverScrollableScrollPhysics(),
+        padding: EdgeInsets.fromLTRB(32, topPad + 16, 32, 80),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SkeletonBox(
+                  width: 120,
+                  height: 120,
+                  borderRadius: BorderRadius.circular(60),
+                ),
+                const SizedBox(width: 20),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [
+                      SizedBox(height: 8),
+                      SkeletonBox(width: 220, height: 26, borderRadius: BorderRadius.all(Radius.circular(4))),
+                      SizedBox(height: 8),
+                      SkeletonBox(width: 120, height: 16, borderRadius: BorderRadius.all(Radius.circular(4))),
+                      SizedBox(height: 10),
+                      SkeletonBox(width: 180, height: 14, borderRadius: BorderRadius.all(Radius.circular(4))),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            const SkeletonBox(width: double.infinity, height: 14, borderRadius: BorderRadius.all(Radius.circular(4))),
+            const SizedBox(height: 8),
+            const SkeletonBox(width: double.infinity, height: 14, borderRadius: BorderRadius.all(Radius.circular(4))),
+            const SizedBox(height: 8),
+            const SkeletonBox(width: 240, height: 14, borderRadius: BorderRadius.all(Radius.circular(4))),
+            const SizedBox(height: 32),
+            const SkeletonBox(width: 140, height: 20, borderRadius: BorderRadius.all(Radius.circular(4))),
+            const SizedBox(height: 16),
+            const SkeletonHomeRow(
+              cardWidth: 120,
+              imageHeight: 180,
+              leadingPadding: 0,
+              count: 6,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildContent(SeerrPersonDetails person, SeerrPersonState s) {

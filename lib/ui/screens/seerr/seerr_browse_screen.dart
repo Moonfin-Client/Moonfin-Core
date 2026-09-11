@@ -20,6 +20,7 @@ import '../../widgets/overlay_sheet.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/quick_return_wrapper.dart';
+import '../../widgets/skeleton/skeleton_library_grid.dart';
 
 const _tmdbPosterBase = 'https://image.tmdb.org/t/p/w342';
 Color get _navyBackground => AppColorScheme.background;
@@ -171,9 +172,12 @@ class _SeerrBrowseScreenState extends State<SeerrBrowseScreen> {
   Widget _buildBody() {
     final l10n = AppLocalizations.of(context);
     final vm = _vm;
-    if (_initializing || vm == null || vm.state.isLoading) {
-      return Center(
-        child: CircularProgressIndicator(color: _seerrAccent),
+    if (_initializing || vm == null || (vm.state.isLoading && vm.state.items.isEmpty)) {
+      final cardWidth =
+          _prefs.resolveLibraryPosterSize().portraitHeight * (2 / 3);
+      return SkeletonLibraryGrid(
+        cardWidth: cardWidth,
+        aspectRatio: 2 / 3,
       );
     }
 

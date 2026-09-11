@@ -30,6 +30,8 @@ import '../../widgets/horizontal_scroll_section.dart';
 import '../../widgets/quick_return_wrapper.dart';
 import '../../../util/seerr_genre_art.dart';
 import '../../widgets/seerr/seerr_genre_label.dart';
+import '../../widgets/skeleton/skeleton_home_row.dart';
+import '../../widgets/skeleton/skeleton_shimmer.dart';
 
 const _tmdbPosterBase = 'https://image.tmdb.org/t/p/w300';
 const _tmdbBackdropBase = 'https://image.tmdb.org/t/p/w1280';
@@ -380,11 +382,44 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
     );
   }
 
+  Widget _buildSkeleton({double rowLeftInset = 0.0}) {
+    final desktopScale = GetIt.instance<UserPreferences>()
+        .get(UserPreferences.desktopUiScale)
+        .scaleFactor;
+    final cardWidth = 130.0 * desktopScale;
+    final imageHeight = 195.0 * desktopScale;
+    return SkeletonShimmer(
+      child: ListView(
+        physics: const NeverScrollableScrollPhysics(),
+        padding: EdgeInsets.only(left: rowLeftInset, top: 16, bottom: 32),
+        children: [
+          for (int i = 0; i < 4; i++) ...[
+            Padding(
+              padding: EdgeInsets.fromLTRB(20 * desktopScale, 16, 20 * desktopScale, 8),
+              child: SkeletonBox(
+                width: 140.0 + (i * 25),
+                height: 18,
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+            SkeletonHomeRow(
+              cardWidth: cardWidth,
+              imageHeight: imageHeight,
+              leadingPadding: 20 * desktopScale,
+              itemSpacing: 12 * desktopScale,
+            ),
+            const SizedBox(height: 16),
+          ],
+        ],
+      ),
+    );
+  }
+
   Widget _buildContent({double rowLeftInset = 0.0}) {
     final l10n = AppLocalizations.of(context);
     final vm = _viewModel;
     if (vm == null) {
-      return const Center(child: CircularProgressIndicator());
+      return _buildSkeleton(rowLeftInset: rowLeftInset);
     }
 
     if (vm.error != null && vm.rows.isEmpty) {
@@ -410,7 +445,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
 
     final rows = vm.rows;
     if (rows.isEmpty && vm.isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return _buildSkeleton(rowLeftInset: rowLeftInset);
     }
 
     _firstFocusableVisibleIndex = -1;

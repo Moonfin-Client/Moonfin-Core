@@ -23,6 +23,7 @@ import '../../widgets/overlay_sheet.dart';
 import '../../widgets/poster_size_settings_dialog.dart';
 import '../../widgets/focus/context_menu_sheet.dart';
 import '../../widgets/quick_return_wrapper.dart';
+import '../../widgets/skeleton/skeleton_library_grid.dart';
 import '../../../l10n/app_localizations.dart';
 
 Color get _navyBackground => AppColorScheme.background;
@@ -401,9 +402,7 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
 
   Widget _buildBody() {
     if (_isLoading) {
-      return Center(
-        child: CircularProgressIndicator(color: AppColorScheme.accent),
-      );
+      return const SkeletonLibraryGrid(aspectRatio: 16 / 9);
     }
 
     if (_genres.isEmpty) {

@@ -35,6 +35,7 @@ import '../../widgets/quick_return_wrapper.dart';
 import '../../widgets/rating_display.dart';
 import '../detail/item_detail_screen.dart';
 import '../../widgets/local_search_field.dart';
+import '../../widgets/skeleton/skeleton_library_grid.dart';
 import '../../../l10n/app_localizations.dart';
 
 Color get _navyBackground => AppColorScheme.background;
@@ -1001,7 +1002,6 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
   }
 
   Widget _buildBody() {
-    final spinnerColor = _vm.isBookLibrary ? const Color(0xFFD97706) : _jellyfinBlue;
     final showHorizChevrons =
         _horizontalGridIsScrollable &&
         _vm.state == LibraryBrowseState.ready &&
@@ -1040,8 +1040,11 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
           ),
         Expanded(
           child: switch (_vm.state) {
-            LibraryBrowseState.loading => Center(
-                child: CircularProgressIndicator(color: spinnerColor),
+            LibraryBrowseState.loading => SkeletonLibraryGrid(
+                cardWidth: _cardWidth(),
+                aspectRatio: _gridBaseAspectRatio(),
+                isSongs: _isSongsBrowse,
+                isHorizontal: _vm.scrollDirection == LibraryScrollDirection.horizontal,
               ),
             LibraryBrowseState.error => Center(
                 child: Column(
