@@ -42,6 +42,7 @@ import '../../../widgets/focus/focusable_toolbar_button.dart';
 import '../../../widgets/navigation_layout.dart';
 import '../../../widgets/quick_return_wrapper.dart';
 import '../../../widgets/top_toolbar.dart';
+import '../../../widgets/skeleton/skeleton_home_row.dart';
 import '../../../../data/repositories/seerr_repository.dart';
 import '../../../../data/repositories/tmdb_repository.dart';
 import '../../../../data/services/seerr/seerr_api_models.dart';
@@ -184,6 +185,8 @@ class ModernDetailContent extends StatefulWidget {
 
 class _ModernDetailContentState extends State<ModernDetailContent> {
   int _selectedTab = 0;
+  String? _selectedTabId;
+  String? _lastItemId;
   bool _landscape = true;
 
   /// Expanded Tabs preference: when on, tabs behave like the search pill, with
@@ -778,67 +781,81 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       final l10n = AppLocalizations.of(context);
       final tabs = _tabsFor(_vm.item!, l10n);
       if (tabIndex >= 0 && tabIndex < tabs.length) {
-        final label = tabs[tabIndex].label;
-        String? extraCat;
-        for (final cat in extraCategoriesOrder) {
-          if (label == getExtraCategoryLabel(cat, l10n)) {
-            extraCat = cat;
-            break;
-          }
-        }
-        if (extraCat != null) {
-          _featuresFirstFocusNodes[extraCat]?.requestFocus();
-        } else if (label == l10n.castMembers) {
-          _castFirstFocusNode.requestFocus();
-        } else if (label == l10n.crewSection) {
-          _crewFirstFocusNode.requestFocus();
-        } else if (label == l10n.studios) {
-          _studiosFirstFocusNode.requestFocus();
-        } else if (label == l10n.chapters) {
-          _chaptersFirstFocusNode.requestFocus();
-        } else if (label == l10n.details) {
-          _detailsTabFocusNode.requestFocus();
-        } else if (label == l10n.similar) {
-          _similarFirstFocusNode.requestFocus();
-        } else if (label == l10n.collections) {
-          if (_vm.parentCollections.length == 1) {
-            _collectionFirstFocusNode.requestFocus();
-          } else if (_vm.parentCollections.isNotEmpty) {
-            _collectionRowFocusNodeFor(_vm.parentCollections.first.id).requestFocus();
-          }
-        } else if (label == l10n.seasons) {
-          _seasonsFirstFocusNode.requestFocus();
-        } else if (label == l10n.episodes) {
-          _episodesFirstFocusNode.requestFocus();
-        } else if (label == l10n.movies) {
-          if (_vm.item?.type == 'BoxSet') {
-            _moviesFirstFocusNode.requestFocus();
-          } else {
-            _personMoviesFirstFocusNode.requestFocus();
-          }
-        } else if (label == l10n.series) {
-          if (_vm.item?.type == 'BoxSet') {
-            _seriesFirstFocusNode.requestFocus();
-          } else {
-            _personSeriesFirstFocusNode.requestFocus();
-          }
-        } else if (label ==
-            GetIt.instance<SeerrPreferences>().labelOrDefault(l10n.seerr)) {
-          final state = seerrItemTabState(_vm);
-          if (state != null) _seerrTabChain(state).firstOrNull?.requestFocus();
-        } else if (label == l10n.appearancesSeerr) {
-          _personSeerrAppearancesFirstFocusNode.requestFocus();
-        } else if (label == l10n.crewContributionsSeerr) {
-          _personSeerrCrewCreditsFirstFocusNode.requestFocus();
-        } else if (label == l10n.albums || label == l10n.items || label == l10n.appearances) {
-          _gridFirstFocusNode.requestFocus();
-        } else if (label == l10n.trackList) {
-          _focusFirstTrack();
-        } else if (label == l10n.playlist) {
-          if (_vm.item?.type == 'BoxSet' && _vm.playlistItems.isNotEmpty) {
-            _collectionSortFocusNode.requestFocus();
-          } else {
-            _focusFirstTrack();
+        final tab = tabs[tabIndex];
+        if (tab.id.startsWith('extra_')) {
+          final cat = tab.id.substring('extra_'.length);
+          _featuresFirstFocusNodes[cat]?.requestFocus();
+        } else {
+          switch (tab.id) {
+            case 'cast':
+              _castFirstFocusNode.requestFocus();
+              break;
+            case 'crew':
+              _crewFirstFocusNode.requestFocus();
+              break;
+            case 'studios':
+              _studiosFirstFocusNode.requestFocus();
+              break;
+            case 'chapters':
+              _chaptersFirstFocusNode.requestFocus();
+              break;
+            case 'details':
+              _detailsTabFocusNode.requestFocus();
+              break;
+            case 'similar':
+              _similarFirstFocusNode.requestFocus();
+              break;
+            case 'collections':
+              if (_vm.parentCollections.length == 1) {
+                _collectionFirstFocusNode.requestFocus();
+              } else if (_vm.parentCollections.isNotEmpty) {
+                _collectionRowFocusNodeFor(_vm.parentCollections.first.id).requestFocus();
+              }
+              break;
+            case 'seasons':
+              _seasonsFirstFocusNode.requestFocus();
+              break;
+            case 'episodes':
+              _episodesFirstFocusNode.requestFocus();
+              break;
+            case 'movies':
+              if (_vm.item?.type == 'BoxSet') {
+                _moviesFirstFocusNode.requestFocus();
+              } else {
+                _personMoviesFirstFocusNode.requestFocus();
+              }
+              break;
+            case 'series':
+              if (_vm.item?.type == 'BoxSet') {
+                _seriesFirstFocusNode.requestFocus();
+              } else {
+                _personSeriesFirstFocusNode.requestFocus();
+              }
+              break;
+            case 'seerr':
+              final state = seerrItemTabState(_vm);
+              if (state != null) _seerrTabChain(state).firstOrNull?.requestFocus();
+              break;
+            case 'seerrAppearances':
+              _personSeerrAppearancesFirstFocusNode.requestFocus();
+              break;
+            case 'seerrCrewContributions':
+              _personSeerrCrewCreditsFirstFocusNode.requestFocus();
+              break;
+            case 'albums':
+            case 'appearances':
+              _gridFirstFocusNode.requestFocus();
+              break;
+            case 'tracks':
+              _focusFirstTrack();
+              break;
+            case 'playlist':
+              if (_vm.item?.type == 'BoxSet' && _vm.playlistItems.isNotEmpty) {
+                _collectionSortFocusNode.requestFocus();
+              } else {
+                _focusFirstTrack();
+              }
+              break;
           }
         }
       }
@@ -887,11 +904,12 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
 
   List<_ModernTab> _tabsFor(AggregatedItem item, AppLocalizations l10n) {
     final hasCast = _vm.actors.isNotEmpty;
-    final cast = _ModernTab(l10n.castMembers, _castTab);
+    final cast = _ModernTab('cast', l10n.castMembers, _castTab);
     final seerrState = seerrItemTabState(_vm);
     final seerrTab = seerrState == null
         ? null
         : _ModernTab(
+            'seerr',
             GetIt.instance<SeerrPreferences>().labelOrDefault(l10n.seerr),
             (context, item) => _seerrTab(context, seerrState),
           );
@@ -917,23 +935,24 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       final items = groupedFeatures[cat];
       if (items != null && items.isNotEmpty) {
         extraTabs.add(_ModernTab(
+          'extra_$cat',
           getExtraCategoryLabel(cat, l10n),
           (context, item) => _extrasTab(context, item, items, _featuresFirstFocusNodes[cat]),
         ));
       }
     }
 
-    final crew = _ModernTab(l10n.crewSection, _crewTab);
-    final studios = _ModernTab(l10n.studios, _studiosTab);
-    final chapters = _ModernTab(l10n.chapters, _chaptersTab);
-    final details = _ModernTab(l10n.details, _detailsTab);
-    final similar = _ModernTab(l10n.similar, (_, _) => _similarTab(context, _vm.similar));
+    final crew = _ModernTab('crew', l10n.crewSection, _crewTab);
+    final studios = _ModernTab('studios', l10n.studios, _studiosTab);
+    final chapters = _ModernTab('chapters', l10n.chapters, _chaptersTab);
+    final details = _ModernTab('details', l10n.details, _detailsTab);
+    final similar = _ModernTab('similar', l10n.similar, (_, _) => _similarTab(context, _vm.similar));
 
     switch (item.type) {
       case 'Series':
         return [
-          if (_vm.seasons.isNotEmpty) _ModernTab(l10n.seasons, _seasonsTab),
-          _ModernTab(l10n.episodes, _seriesEpisodesTab),
+          _ModernTab('seasons', l10n.seasons, _seasonsTab),
+          _ModernTab('episodes', l10n.episodes, _seriesEpisodesTab),
           if (hasCast) cast,
           if (hasCrew) crew,
           if (hasStudios) studios,
@@ -941,6 +960,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           ...extraTabs,
           if (_vm.parentCollections.isNotEmpty)
             _ModernTab(
+              'collections',
               l10n.collections,
               (context, item) => _collectionsTab(context, item),
             ),
@@ -949,8 +969,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
         ];
       case 'Season':
         return [
-          if (_vm.episodes.isNotEmpty)
-            _ModernTab(l10n.episodes, _episodeListTab),
+          _ModernTab('episodes', l10n.episodes, _episodeListTab),
           if (hasCast) cast,
           if (hasCrew) crew,
           if (hasStudios) studios,
@@ -959,8 +978,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
         ];
       case 'Episode':
         return [
-          if (_vm.episodes.isNotEmpty)
-            _ModernTab(l10n.episodes, _episodeListTab),
+          _ModernTab('episodes', l10n.episodes, _episodeListTab),
           if (hasCast) cast,
           if (hasCrew) crew,
           if (hasStudios) studios,
@@ -973,14 +991,14 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       case 'Playlist':
       case 'AudioBook':
         return [
-          if (_vm.tracks.isNotEmpty) _ModernTab(l10n.trackList, _tracksTab),
+          if (_vm.tracks.isNotEmpty) _ModernTab('tracks', l10n.trackList, _tracksTab),
           details,
           if (hasSimilar) similar,
         ];
       case 'MusicArtist':
         return [
           if (_vm.albums.isNotEmpty)
-            _ModernTab(l10n.albums, (_, _) => _itemGrid(_vm.albums, aspectRatio: 1.0)),
+            _ModernTab('albums', l10n.albums, (_, _) => _itemGrid(_vm.albums, aspectRatio: 1.0)),
           if (hasSimilar) similar,
         ];
       case 'Person':
@@ -993,15 +1011,15 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
 
         return [
           if (movies.isNotEmpty)
-            _ModernTab(l10n.movies, (context, item) => _moviesTab(context, movies)),
+            _ModernTab('movies', l10n.movies, (context, item) => _moviesTab(context, movies)),
           if (series.isNotEmpty)
-            _ModernTab(l10n.series, (context, item) => _seriesTab(context, series)),
+            _ModernTab('series', l10n.series, (context, item) => _seriesTab(context, series)),
           if (sortedSeerrAppearances.isNotEmpty)
-            _ModernTab(l10n.appearancesSeerr, (context, item) => _seerrAppearancesTab(context, sortedSeerrAppearances)),
+            _ModernTab('seerrAppearances', l10n.appearancesSeerr, (context, item) => _seerrAppearancesTab(context, sortedSeerrAppearances)),
           if (sortedSeerrCrewCredits.isNotEmpty)
-            _ModernTab(l10n.crewContributionsSeerr, (context, item) => _seerrCrewCreditsTab(context, sortedSeerrCrewCredits)),
+            _ModernTab('seerrCrewContributions', l10n.crewContributionsSeerr, (context, item) => _seerrCrewCreditsTab(context, sortedSeerrCrewCredits)),
           if (movies.isEmpty && series.isEmpty && sortedSeerrAppearances.isEmpty && sortedSeerrCrewCredits.isEmpty && _vm.filmography.isNotEmpty)
-            _ModernTab(l10n.appearances, (_, _) => _itemGrid(_sortJellyfinItems(_vm.filmography))),
+            _ModernTab('appearances', l10n.appearances, (_, _) => _itemGrid(_sortJellyfinItems(_vm.filmography))),
         ];
       case 'BoxSet':
         final showMissing = widget.prefs.get(
@@ -1037,17 +1055,18 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
 
         return [
           if (moviesList.isNotEmpty)
-            _ModernTab(l10n.movies, (context, item) => _mediaGrid(context, moviesList, firstFocusNode: _moviesFirstFocusNode)),
+            _ModernTab('movies', l10n.movies, (context, item) => _mediaGrid(context, moviesList, firstFocusNode: _moviesFirstFocusNode)),
           if (seriesList.isNotEmpty)
-            _ModernTab(l10n.series, (context, item) => _mediaGrid(context, seriesList, firstFocusNode: _seriesFirstFocusNode)),
-          if (hasCast) _ModernTab(l10n.castMembers, _boxSetCastTab),
-          if (hasCrew) _ModernTab(l10n.crewSection, _boxSetCrewTab),
+            _ModernTab('series', l10n.series, (context, item) => _mediaGrid(context, seriesList, firstFocusNode: _seriesFirstFocusNode)),
+          if (hasCast) _ModernTab('cast', l10n.castMembers, _boxSetCastTab),
+          if (hasCrew) _ModernTab('crew', l10n.crewSection, _boxSetCrewTab),
           if (hasStudios) studios,
           // Show the Playlist tab while the index is building (spinner) OR
           // once items are available (the list). Placed last so simple
           // movie-only collections land on Movies by default.
           if (_vm.playlistItems.isNotEmpty || _vm.playlistIndexBuilding)
             _ModernTab(
+              'playlist',
               l10n.playlist,
               (context, item) {
                 // Phase 1: flat ID index still building — show full spinner.
@@ -1142,6 +1161,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           ...extraTabs,
           if (_vm.parentCollections.isNotEmpty)
             _ModernTab(
+              'collections',
               l10n.collections,
               (context, item) => _collectionsTab(context, item),
             ),
@@ -1152,6 +1172,26 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   }
 
   Widget _seasonsTab(BuildContext context, AggregatedItem item) {
+    if (_vm.seasons.isEmpty) {
+      return Focus(
+        focusNode: _seasonsFirstFocusNode,
+        onKeyEvent: (node, event) {
+          if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.arrowUp) {
+            _focusSelectedTab();
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
+        child: Padding(
+          padding: const EdgeInsets.only(top: 8, bottom: 24),
+          child: SkeletonHomeRow(
+            cardWidth: _landscape ? 150.0 : 120.0,
+            imageHeight: (_landscape ? 150.0 : 120.0) * 1.5,
+            isModern: true,
+          ),
+        ),
+      );
+    }
     final l10n = AppLocalizations.of(context);
     final textTheme = Theme.of(context).textTheme;
     final counts = _episodeCountsBySeason();
@@ -1308,6 +1348,26 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   }
 
   Widget _episodeListTab(BuildContext context, AggregatedItem item) {
+    if (_vm.episodes.isEmpty) {
+      return Focus(
+        focusNode: _episodesFirstFocusNode,
+        onKeyEvent: (node, event) {
+          if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.arrowUp) {
+            _focusSelectedTab();
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
+        child: Padding(
+          padding: const EdgeInsets.only(top: 8, bottom: 24),
+          child: SkeletonHomeRow(
+            cardWidth: _landscape ? 240.0 : 180.0,
+            imageHeight: (_landscape ? 240.0 : 180.0) * (9 / 16),
+            isModern: true,
+          ),
+        ),
+      );
+    }
     // For Season pages _vm.nextUp is null (the API call uses seriesId which
     // on a Season item resolves to nothing). Fall back to the first unplayed
     // episode so the cyan "next up" border still renders correctly.
@@ -1370,9 +1430,23 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     final l10n = AppLocalizations.of(context);
     final episodes = _vm.seriesEpisodes;
     if (episodes.isEmpty) {
-      return const Padding(
-        padding: EdgeInsets.symmetric(vertical: 32),
-        child: Center(child: CircularProgressIndicator()),
+      return Focus(
+        focusNode: _episodesFirstFocusNode,
+        onKeyEvent: (node, event) {
+          if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.arrowUp) {
+            _focusSelectedTab();
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
+        child: Padding(
+          padding: const EdgeInsets.only(top: 8, bottom: 24),
+          child: SkeletonHomeRow(
+            cardWidth: _landscape ? 240.0 : 180.0,
+            imageHeight: (_landscape ? 240.0 : 180.0) * (9 / 16),
+            isModern: true,
+          ),
+        ),
       );
     }
     final sorted = [...episodes]..sort((a, b) {
@@ -4819,7 +4893,10 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     if (index == _selectedTab) {
       // With Expanded Tabs on, reselecting the current tab never collapses.
       if (!_expandedTabs) {
-        setState(() => _selectedTab = -1);
+        setState(() {
+          _selectedTab = -1;
+          _selectedTabId = null;
+        });
         if (_scrollController.hasClients) {
           _scrollController.animateTo(
             0.0,
@@ -4832,6 +4909,14 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     }
 
     final wasCollapsed = _selectedTab < 0;
+    final item = _vm.item;
+    if (item != null) {
+      final l10n = AppLocalizations.of(context);
+      final tabs = _tabsFor(item, l10n);
+      if (index >= 0 && index < tabs.length) {
+        _selectedTabId = tabs[index].id;
+      }
+    }
     setState(() => _selectedTab = index);
     if (index >= 0 && !_expandedTabs && wasCollapsed) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -4868,13 +4953,41 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
 
     final tabs = _tabsFor(item, l10n);
     final isMusicAlbumOrPlaylist = item.type == 'Playlist' || item.type == 'MusicAlbum';
-    if (isMusicAlbumOrPlaylist) {
-      _selectedTab = 0;
-    } else if (_selectedTab >= tabs.length) {
-      _selectedTab = _expandedTabs ? 0 : -1;
+
+    // Reset tab selection if the item changed completely.
+    if (_lastItemId != item.id) {
+      _lastItemId = item.id;
+      _selectedTab = (isMusicAlbumOrPlaylist || _expandedTabs || item.type == 'Season') ? 0 : -1;
+      _selectedTabId = (_selectedTab == 0 && tabs.isNotEmpty) ? tabs[0].id : null;
     }
 
-    if (tabs.isNotEmpty && _selectedTab >= 0 && _selectedTab < tabs.length && tabs[_selectedTab].label == l10n.details) {
+    if (isMusicAlbumOrPlaylist) {
+      _selectedTab = 0;
+      _selectedTabId = tabs.isNotEmpty ? tabs[0].id : null;
+    } else if (tabs.isEmpty) {
+      _selectedTab = -1;
+      _selectedTabId = null;
+    } else {
+      // Identity-aware resolution: anchor to _selectedTabId across dynamic tab insertions/prepending
+      if (_selectedTabId != null) {
+        final foundIndex = tabs.indexWhere((t) => t.id == _selectedTabId);
+        if (foundIndex != -1) {
+          _selectedTab = foundIndex;
+        } else if (_selectedTab >= tabs.length) {
+          _selectedTab = _expandedTabs ? 0 : -1;
+          _selectedTabId = _selectedTab >= 0 ? tabs[_selectedTab].id : null;
+        }
+      } else if (_selectedTab >= 0 && _selectedTab < tabs.length) {
+        _selectedTabId = tabs[_selectedTab].id;
+      } else if (_expandedTabs || item.type == 'Season') {
+        _selectedTab = 0;
+        _selectedTabId = tabs[0].id;
+      } else {
+        _selectedTab = -1;
+      }
+    }
+
+    if (tabs.isNotEmpty && _selectedTab >= 0 && _selectedTab < tabs.length && tabs[_selectedTab].id == 'details') {
       final targetItem = _getRelevantEpisode(item) ?? item;
       final isPlayable = targetItem.type != 'Series' && targetItem.type != 'Season' && targetItem.type != 'Person';
       if (isPlayable) {
@@ -5095,9 +5208,10 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
 }
 
 class _ModernTab {
+  final String id;
   final String label;
   final Widget Function(BuildContext, AggregatedItem) builder;
-  const _ModernTab(this.label, this.builder);
+  const _ModernTab(this.id, this.label, this.builder);
 }
 
 class _DetailsContainer extends StatefulWidget {
