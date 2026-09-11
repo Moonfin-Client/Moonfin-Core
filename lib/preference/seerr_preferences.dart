@@ -83,11 +83,6 @@ class SeerrPreferences {
   bool get blockNsfw => _store.getBool(_userKey('block_nsfw')) ?? true;
   Future<void> setBlockNsfw(bool value) => _store.setBool(_userKey('block_nsfw'), value);
 
-  bool get showMissingCollectionItems =>
-      _store.getBool(_userKey('show_missing_collection_items')) ?? true;
-  Future<void> setShowMissingCollectionItems(bool value) =>
-      _store.setBool(_userKey('show_missing_collection_items'), value);
-
   bool get notifyOnNewRequests => _store.getBool(_userKey('notify_new_requests')) ?? true;
   Future<void> setNotifyOnNewRequests(bool value) =>
       _store.setBool(_userKey('notify_new_requests'), value);

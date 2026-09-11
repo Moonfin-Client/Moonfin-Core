@@ -514,12 +514,6 @@ abstract class AppLocalizations {
   /// **'Similar and Recommendations'**
   String get spotlightSimilarRecommendations;
 
-  /// Title of the spotlight similar card when Seerr recommendations are available
-  ///
-  /// In en, this message translates to:
-  /// **'Similar and Seerr Recommendations'**
-  String get spotlightSeerrRecommendations;
-
   /// Title of the spotlight summary card that opens the seasons grid modal for a series
   ///
   /// In en, this message translates to:

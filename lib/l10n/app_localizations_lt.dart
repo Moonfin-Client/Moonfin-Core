@@ -170,10 +170,6 @@ class AppLocalizationsLt extends AppLocalizations {
   String get spotlightSimilarRecommendations => 'Similar and Recommendations';
 
   @override
-  String get spotlightSeerrRecommendations =>
-      'Similar and Seerr Recommendations';
-
-  @override
   String get spotlightSeasonsEpisodes => 'Seasons and Episodes';
 
   @override

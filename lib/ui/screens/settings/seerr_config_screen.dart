@@ -255,14 +255,17 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
     setState(() {});
   }
 
+  /// Kept in [UserPreferences] alone. That is the store the profile sync
+  /// carries, and a second copy in [SeerrPreferences] would never hear about
+  /// a change made on another device.
   Future<void> _setShowMissingCollectionItems(bool value) async {
-    await _seerrPrefs.setShowMissingCollectionItems(value);
     await GetIt.instance<UserPreferences>().set(
       UserPreferences.seerrShowMissingCollectionItems,
       value,
     );
-    if (!mounted) return;
-    setState(() {});
+    if (mounted) setState(() {});
+    // Pushed even after a quick back-navigation, or the next pull would
+    // quietly undo the change.
     await _pushSync();
   }
 
@@ -554,7 +557,9 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
                       : AppColorScheme.onSurface.withValues(alpha: 0.7),
                 ),
               ),
-              value: _seerrPrefs.showMissingCollectionItems,
+              value: GetIt.instance<UserPreferences>().get(
+                UserPreferences.seerrShowMissingCollectionItems,
+              ),
               onChanged: _setShowMissingCollectionItems,
             ),
           ),

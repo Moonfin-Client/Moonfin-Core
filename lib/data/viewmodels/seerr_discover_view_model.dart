@@ -505,7 +505,12 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
     }).toList();
   }
 
-  bool _isNsfw(SeerrDiscoverItem item) {
+  bool _isNsfw(SeerrDiscoverItem item) => isNsfw(item);
+
+  /// Whether [item] is adult content, by TMDB's flag or by a title or
+  /// overview that trips the keyword list. Shared with the other Seerr
+  /// ingestion paths so "hide adult content" means one thing everywhere.
+  static bool isNsfw(SeerrDiscoverItem item) {
     if (item.adult) return true;
     final text = '${item.displayTitle} ${item.overview ?? ''}';
     return nsfwPatterns.any((p) => p.hasMatch(text));

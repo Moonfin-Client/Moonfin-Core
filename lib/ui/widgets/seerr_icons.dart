@@ -23,8 +23,11 @@ class SeerrIcon extends StatelessWidget {
   }
 }
 
-/// Circular corner badge for items available on Seerr, matching the placement
-/// and presence of the watched/played indicator.
+/// Seerr's indigo, as its own UI paints it.
+const seerrBrandColor = Color(0xFF6366F1);
+
+/// Circular corner badge marking a title that stands in from Seerr rather
+/// than the library. Sized to sit where a card's favourite mark would.
 class SeerrBadge extends StatelessWidget {
   final double size;
   final Color? backgroundColor;
@@ -41,7 +44,7 @@ class SeerrBadge extends StatelessWidget {
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: backgroundColor ?? const Color(0xFF6366F1),
+        color: backgroundColor ?? seerrBrandColor,
         shape: BoxShape.circle,
         boxShadow: const [
           BoxShadow(

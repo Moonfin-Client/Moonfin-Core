@@ -330,6 +330,15 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
     );
   }
 
+  /// Whether the cards band drives the navbar through focus. That is the TV
+  /// and keyboard model, where a focused card means the navbar steps aside
+  /// and focus leaving brings it back. Touch has no such focus traffic, and
+  /// closing a modal refocuses the card, so letting it hide the navbar there
+  /// would strand the viewer with no back button.
+  bool get _navbarFollowsFocus =>
+      PlatformDetection.isTV ||
+      FocusManager.instance.highlightMode == FocusHighlightMode.traditional;
+
   Future<void> _openCard(SpotlightCardSpec spec) async {
     if (_modalOpen) return;
     _modalOpen = true;
@@ -1051,7 +1060,9 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
       canRequestFocus: false,
       skipTraversal: true,
       onFocusChange: (focused) {
-        if (mounted) widget.onToggleNavbar?.call(!focused);
+        if (mounted && _navbarFollowsFocus) {
+          widget.onToggleNavbar?.call(!focused);
+        }
       },
       child: band,
     );

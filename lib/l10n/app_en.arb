@@ -224,10 +224,6 @@
   "@spotlightSimilarRecommendations": {
     "description": "Title of the spotlight summary card that opens the similar titles and recommendations modal"
   },
-  "spotlightSeerrRecommendations": "Similar and Seerr Recommendations",
-  "@spotlightSeerrRecommendations": {
-    "description": "Title of the spotlight similar card when Seerr recommendations are available"
-  },
   "spotlightSeasonsEpisodes": "Seasons and Episodes",
   "@spotlightSeasonsEpisodes": {
     "description": "Title of the spotlight summary card that opens the seasons grid modal for a series"

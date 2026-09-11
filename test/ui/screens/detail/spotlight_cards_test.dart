@@ -37,6 +37,20 @@ AggregatedItem _child(String id, String type) => AggregatedItem(
   rawData: {'Id': id, 'Type': type, 'Name': id},
 );
 
+/// Shaped like the view model's real missing items: a bare TMDB id with the
+/// Seerr media type, the way every other Seerr item in the app is built.
+AggregatedItem _seerrMissing(String tmdbId, String name) => AggregatedItem(
+  id: tmdbId,
+  serverId: 'seerr',
+  rawData: {
+    'Id': tmdbId,
+    'Name': name,
+    'Type': 'Movie',
+    'SeerrMediaType': 'movie',
+    'ProviderIds': {'Tmdb': tmdbId},
+  },
+);
+
 SpotlightCardActions _actions() => SpotlightCardActions(
   openItem: (_) {},
   openSeerrItem: (_) {},
@@ -87,6 +101,7 @@ void main() {
     when(() => vm.writers).thenReturn(const []);
     when(() => vm.features).thenReturn(const []);
     when(() => vm.similar).thenReturn(const []);
+    when(() => vm.similarSource).thenReturn(SimilarSource.jellyfin);
     when(() => vm.seasons).thenReturn(const []);
     when(() => vm.episodes).thenReturn(const []);
     when(() => vm.seriesEpisodes).thenReturn(const []);
@@ -250,6 +265,7 @@ void main() {
     );
     when(() => vm.seerr).thenReturn(seerrVm);
     when(() => vm.similar).thenReturn([_child('s1', 'Movie')]);
+    when(() => vm.similarSource).thenReturn(SimilarSource.moonfin);
 
     final cards = cardsFor(_item('Movie'));
 
@@ -262,12 +278,22 @@ void main() {
     ]);
   });
 
+  test('the library similar list keeps the Similar label when Jellyfin made it', () {
+    when(() => vm.similar).thenReturn([_child('s1', 'Movie')]);
+    // The default recommendation source is Moonfin, but the view model fell
+    // back to Jellyfin's own similar items, so that is what the section says.
+    final cards = cardsFor(_item('Movie'));
+
+    final similarCard = cards.singleWhere((c) => c.id == 'similar');
+    expect(similarCard.sections.single.title, _l10n.similar);
+  });
+
   test('collections card prepends the collection itself as the first item with artwork', () {
     when(() => vm.parentCollections).thenReturn([
       ParentCollection(
         id: 'box-1',
         name: 'Alien Anthology',
-        primaryImageTag: 'tag-box-1',
+        boxSetItem: _child('box-1', 'BoxSet'),
         items: [_child('m1', 'Movie'), _child('m2', 'Movie')],
       ),
     ]);
@@ -280,22 +306,39 @@ void main() {
     expect(collectionsCard.sections.single.count, 3);
   });
 
+  test('collections card slots in the titles the library is missing', () async {
+    when(() => vm.parentCollections).thenReturn([
+      ParentCollection(
+        id: 'box-1',
+        name: 'Alien Anthology',
+        boxSetItem: _child('box-1', 'BoxSet'),
+        items: [_child('m1', 'Movie'), _child('m2', 'Movie')],
+        missingItems: [_seerrMissing('999', 'Missing Sequel')],
+      ),
+    ]);
+
+    var section = cardsFor(_item('Movie'))
+        .singleWhere((c) => c.id == 'collections')
+        .sections
+        .single;
+    expect(section.count, 4);
+
+    // The toggle hides them again without a reload.
+    await prefs.set(UserPreferences.seerrShowMissingCollectionItems, false);
+    section = cardsFor(_item('Movie'))
+        .singleWhere((c) => c.id == 'collections')
+        .sections
+        .single;
+    expect(section.count, 3);
+  });
+
   test('boxset items card combines library items and missing seerr items', () {
     when(() => vm.collectionItems).thenReturn([
       _child('m1', 'Movie'),
       _child('m2', 'Movie'),
     ]);
     when(() => vm.missingCollectionItems).thenReturn([
-      AggregatedItem(
-        id: '999',
-        serverId: 'seerr',
-        rawData: const {
-          'Id': '999',
-          'Name': 'Missing Sequel',
-          'Type': 'Movie',
-          'SeerrMediaType': 'movie',
-        },
-      ),
+      _seerrMissing('999', 'Missing Sequel'),
     ]);
     final cards = cardsFor(_item('BoxSet'));
     final boxSetCard = cards.singleWhere((c) => c.id == 'boxset_items');

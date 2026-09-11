@@ -280,6 +280,14 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
   bool _seerrRedirectDone = false;
   String? _selectedMediaSourceId;
   bool _showNavbar = true;
+
+  /// Spotlight's summary cards fall back to the item's first backdrop, so its
+  /// slideshow opens on the second one and the hero doesn't repeat the cards.
+  int get _detailBackdropStartIndex =>
+      _prefs.get(UserPreferences.detailScreenStyle) ==
+          DetailScreenStyle.spotlight
+      ? 1
+      : 0;
   bool _actionsExpanded = false;
   Timer? _focusedBackdropDebounce;
   String? _lastFocusedBackdropItemId;
@@ -346,7 +354,11 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
     unawaited(_viewModel.syncUserDataIfStale());
     final item = _viewModel.item;
     if (item != null) {
-      _backgroundService.setBackground(item, context: BlurContext.details);
+      _backgroundService.setBackground(
+        item,
+        context: BlurContext.details,
+        startIndex: _detailBackdropStartIndex,
+      );
       final nextUrl = _backgroundService.currentUrl;
       // Keep the last good backdrop if the service has none to give (e.g. after
       // returning from a child with no backdrop that cleared the shared service).
@@ -443,7 +455,11 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
         final target = (item.type == 'Playlist' && _viewModel.tracks.isNotEmpty)
             ? _viewModel.tracks.first
             : item;
-        _backgroundService.setBackground(target, context: BlurContext.details);
+        _backgroundService.setBackground(
+          target,
+          context: BlurContext.details,
+          startIndex: _detailBackdropStartIndex,
+        );
         _backdropUrl.value = _backgroundService.currentUrl;
 
         if (item.type == 'Playlist' && _viewModel.tracks.isNotEmpty) {

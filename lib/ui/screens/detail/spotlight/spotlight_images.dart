@@ -6,19 +6,30 @@ import '../../../widgets/seerr/seerr_image_urls.dart';
 /// The poster or primary image for [item], with the TMDB fallbacks a
 /// Seerr-only item needs.
 String? spotlightItemImageUrl(ImageApi imageApi, AggregatedItem item) {
+  final isLibraryItem =
+      item.serverId != 'seerr' && !item.id.startsWith('tmdb:');
   final tag = item.primaryImageTag ?? item.primaryImageTagField;
-  if (!item.id.startsWith('tmdb:')) {
-    if (tag != null || item.type == 'BoxSet' || item.isFolder) {
-      return imageApi.getPrimaryImageUrl(item.id, maxHeight: 360, tag: tag);
-    }
+  if (isLibraryItem && tag != null) {
+    return imageApi.getPrimaryImageUrl(item.id, maxHeight: 360, tag: tag);
   }
-  return spotlightSeerrPosterUrl(item.rawData['PosterPath'] as String?) ??
+  final seerrArt =
+      spotlightSeerrPosterUrl(item.rawData['PosterPath'] as String?) ??
       spotlightPersonImageUrl(
         imageApi,
         profilePath: item.rawData['ProfilePath'] as String?,
         maxHeight: 360,
         tmdbProfileBase: seerrProfileLargeBase,
       );
+  if (seerrArt != null) return seerrArt;
+  // A collection built from an ancestor record can arrive without its image
+  // tag while the server still holds a primary image for it. Only box sets
+  // get the tagless request: any folder with children would qualify
+  // otherwise, and one with no image at all would fetch a 404 in place of
+  // its placeholder.
+  if (isLibraryItem && item.type == 'BoxSet') {
+    return imageApi.getPrimaryImageUrl(item.id, maxHeight: 360);
+  }
+  return null;
 }
 
 /// A person's portrait: the server image when [id] and [tag] name a library

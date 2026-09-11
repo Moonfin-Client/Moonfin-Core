@@ -6,7 +6,6 @@ import '../../../../data/repositories/tmdb_repository.dart';
 import '../../../../data/services/seerr/seerr_api_models.dart';
 import '../../../../data/viewmodels/item_detail_view_model.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../../preference/preference_constants.dart';
 import '../../../../preference/user_preferences.dart';
 import '../../../widgets/seerr/seerr_item_status.dart' show seerrItemTabState;
 import '../item_detail_screen.dart' show DetailTrackList;
@@ -393,10 +392,14 @@ class _SpotlightCardsBuilder {
                     : seerrSimilar,
               ) ??
             fallbackImageUrl);
-    final sourceSetting = prefs.get(UserPreferences.recommendationSystemSource);
-    final librarySectionTitle = switch (sourceSetting) {
-      RecommendationSystemSource.local => l10n.recommendationSystemMoonfin,
-      RecommendationSystemSource.online => l10n.recommendationSystemTmdb,
+    // Named for where the list actually came from. The recommendation source
+    // preference only applies to movies and series, and even then the view
+    // model falls back to Jellyfin's own similar items when the chosen
+    // source has nothing, so the preference alone would mislabel those.
+    final librarySectionTitle = switch (vm.similarSource) {
+      SimilarSource.jellyfin => l10n.similar,
+      SimilarSource.moonfin => l10n.recommendationSystemMoonfin,
+      SimilarSource.tmdb => l10n.recommendationSystemTmdb,
     };
     return SpotlightCardSpec(
       id: 'similar',
@@ -426,6 +429,9 @@ class _SpotlightCardsBuilder {
     final collections = vm.parentCollections;
     if (collections.isEmpty) return null;
     final imageUrl = _firstCollectionImage(collections) ?? fallbackImageUrl;
+    final showMissing = prefs.get(
+      UserPreferences.seerrShowMissingCollectionItems,
+    );
     return SpotlightCardSpec(
       id: 'collections',
       title: l10n.spotlightCollectionsCard,
@@ -434,27 +440,10 @@ class _SpotlightCardsBuilder {
       icon: Icons.collections_bookmark_outlined,
       sections: [
         for (final collection in collections)
-          _mediaSection(
-            collection.name,
-            [
-              collection.boxSetItem ??
-                  AggregatedItem(
-                    id: collection.id,
-                    serverId: item.serverId,
-                    rawData: {
-                      'Id': collection.id,
-                      'Name': collection.name,
-                      'Type': 'BoxSet',
-                      'IsFolder': true,
-                      if (collection.primaryImageTag != null) ...{
-                        'PrimaryImageTag': collection.primaryImageTag,
-                        'ImageTags': {'Primary': collection.primaryImageTag},
-                      },
-                    },
-                  ),
-              ...collection.items,
-            ],
-          ),
+          _mediaSection(collection.name, [
+            collection.boxSetItem,
+            ...(showMissing ? collection.itemsWithMissing : collection.items),
+          ]),
       ],
     );
   }
@@ -658,9 +647,14 @@ class _SpotlightCardsBuilder {
 
   SpotlightCardSpec? _boxSetItemsCard() {
     final libraryItems = vm.collectionItems;
-    final showMissing = prefs.get(UserPreferences.seerrShowMissingCollectionItems);
-    final missing = showMissing ? vm.missingCollectionItems : const <AggregatedItem>[];
-    final items = [...libraryItems, ...missing];
+    final showMissing = prefs.get(
+      UserPreferences.seerrShowMissingCollectionItems,
+    );
+    // Slotted in by release date, the same way the parent-collection card
+    // orders its own missing titles.
+    final items = showMissing
+        ? mergeMissingByReleaseOrder(libraryItems, vm.missingCollectionItems)
+        : libraryItems;
     if (items.isEmpty) return null;
     final movies = items.where((i) => i.type == 'Movie').toList();
     final series = items.where((i) => i.type == 'Series').toList();

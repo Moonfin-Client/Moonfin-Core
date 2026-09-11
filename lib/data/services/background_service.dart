@@ -130,9 +130,7 @@ class BackgroundService {
       }
     }
 
-    final initialIndex =
-        startIndex ?? (context == BlurContext.details ? 1 : 0);
-    _loadBackgrounds(urls, startIndex: initialIndex);
+    _loadBackgrounds(urls, startIndex: startIndex ?? 0);
   }
 
   void setBackgroundUrl(String url, {BlurContext context = BlurContext.browsing}) {

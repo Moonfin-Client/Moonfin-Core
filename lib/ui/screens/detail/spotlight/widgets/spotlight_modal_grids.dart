@@ -133,8 +133,13 @@ class SpotlightMediaGridSection extends StatelessWidget {
                   key: ValueKey(items[i].id),
                   builder: (cellContext) {
                     final entry = items[i];
+                    // A title the library lacks, standing in from Seerr. It
+                    // has no play state, so the watched slot goes to
+                    // MediaCard's own request-status dot and the Seerr mark
+                    // takes the corner a favourite would otherwise use.
                     final isSeerrItem =
-                        entry.id.startsWith('tmdb:') || entry.serverId == 'seerr';
+                        entry.serverId == 'seerr' ||
+                        entry.id.startsWith('tmdb:');
                     return MediaCard(
                       key: ValueKey(entry.id),
                       title: entry.name,
@@ -142,8 +147,8 @@ class SpotlightMediaGridSection extends StatelessWidget {
                       imageUrl: spotlightItemImageUrl(imageApi, entry),
                       width: metrics.cellWidth,
                       aspectRatio: aspectRatio,
-                      isPlayed: isSeerrItem ? false : entry.isPlayed,
-                      isFavorite: isSeerrItem ? false : entry.isFavorite,
+                      isPlayed: entry.isPlayed,
+                      isFavorite: entry.isFavorite,
                       itemType: entry.type,
                       focusNode: i == 0 ? firstFocusNode : null,
                       focusColor: focusColor,
@@ -152,11 +157,13 @@ class SpotlightMediaGridSection extends StatelessWidget {
                       watchedBehavior: isSeerrItem
                           ? WatchedIndicatorBehavior.never
                           : watchedBehavior,
+                      seerrStatus: isSeerrItem ? entry.seerrStatus : null,
+                      overlayOccupiesTopLeft: isSeerrItem,
                       imageOverlays: [
                         if (isSeerrItem)
                           const Positioned(
-                            top: 4,
-                            right: 4,
+                            top: 6,
+                            left: 6,
                             child: SeerrBadge(size: 18),
                           ),
                       ],
