@@ -15,8 +15,9 @@ class NouveauSeerrFilmographySection extends StatefulWidget {
   final List<SeerrDiscoverItem> items;
   final bool isCrew;
 
-  final VoidCallback? onNavigateUp;
-  final VoidCallback? onNavigateDown;
+  /// Return false when nothing moved, so the key bubbles.
+  final bool Function()? onNavigateUp;
+  final bool Function()? onNavigateDown;
 
   const NouveauSeerrFilmographySection({
     super.key,
@@ -216,13 +217,7 @@ class NouveauSeerrFilmographySectionState
                   ? widget.onNavigateUp
                   : widget.onNavigateDown;
 
-              if (callback == null) {
-                return false;
-              }
-
-              callback();
-
-              return true;
+              return callback?.call() ?? false;
             },
             itemBuilder: (context, item, index, isFocused) {
               final hasNext = index < widget.items.length - 1;

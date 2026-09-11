@@ -16,6 +16,7 @@ import '../../../../widgets/focus/focusable_wrapper.dart';
 import '../../../../widgets/focus/hub_focus_memory.dart';
 import '../../../../widgets/focus/locked_focus_row.dart';
 import '../../../../widgets/navigation_layout.dart';
+import '../../../../widgets/overlay_sheet.dart';
 import '../../item_detail_screen.dart';
 import '../shared/nouveau_landscape_media_card.dart';
 import '../shared/nouveau_poster_card.dart';
@@ -606,7 +607,7 @@ class NouveauCollectionSectionState
       return;
     }
 
-    final option = await showDialog<CollectionSortOption>(
+    final option = await showFocusRestoringDialog<CollectionSortOption>(
       context: context,
       builder: (dialogContext) {
         return _NouveauCollectionSortDialog(selected: _vm.collectionSort);
@@ -1083,11 +1084,12 @@ class NouveauCollectionSectionState
               },
               onNavigateLeft: _navbarIsLeft ? _handleSortLeftEdge : null,
               onNavigateRight: () {},
+              // The rail refuses focus when it is empty or not laid out yet, so
+              // fall through to the section's own callbacks.
               onNavigateUp: () {
-                if (_collectionItems.isNotEmpty) {
-                  if (_focusCollectionFromMemory()) {
-                    _revealCollectionRail();
-                  }
+                if (_collectionItems.isNotEmpty &&
+                    _focusCollectionFromMemory()) {
+                  _revealCollectionRail();
 
                   return;
                 }
@@ -1097,7 +1099,11 @@ class NouveauCollectionSectionState
               onNavigateDown: () {
                 if (_focusPlaylistArtworkFromMemory()) {
                   _revealPlaylistSection();
+
+                  return;
                 }
+
+                widget.onNavigateDown?.call();
               },
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 160),

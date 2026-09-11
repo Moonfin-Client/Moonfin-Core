@@ -186,6 +186,57 @@ void main() {
     await tester.pump();
     expect(find.text('Favorite'), findsNothing);
   });
+
+  // Past three secondaries the row collapses into a More button, and the
+  // action carrying the right-edge hand-off is always one of the ones it
+  // hides. The More button has to carry those directions or they are lost.
+  testWidgets('the More button carries the hidden actions directions', (
+    tester,
+  ) async {
+    final calls = <String>[];
+
+    NouveauAction secondary(String label, {bool last = false}) => NouveauAction(
+      label: label,
+      icon: Icons.star,
+      onPressed: () {},
+      onArrowUp: () => calls.add('up'),
+      onArrowDown: () => calls.add('down'),
+      onArrowRight: last ? () => calls.add('rightAtEnd') : null,
+    );
+
+    await tester.pumpWidget(
+      _TestApp(
+        child: NouveauActionButtons(
+          primaryAction: NouveauAction(label: 'Play', onPressed: () {}),
+          secondaryActions: [
+            secondary('One'),
+            secondary('Two'),
+            secondary('Three'),
+            secondary('Four', last: true),
+          ],
+        ),
+      ),
+    );
+
+    // The More button owns focus once overflow kicks in, so drive it directly.
+    final moreFocus = tester
+        .widgetList<Focus>(find.byType(Focus))
+        .firstWhere((f) => f.focusNode?.debugLabel == 'nouveau-actions-overflow')
+        .focusNode!;
+
+    moreFocus.requestFocus();
+    await tester.pump();
+
+    for (final key in [
+      LogicalKeyboardKey.arrowUp,
+      LogicalKeyboardKey.arrowDown,
+      LogicalKeyboardKey.arrowRight,
+    ]) {
+      await tester.sendKeyEvent(key);
+    }
+
+    expect(calls, ['up', 'down', 'rightAtEnd']);
+  });
 }
 
 class _TestApp extends StatelessWidget {

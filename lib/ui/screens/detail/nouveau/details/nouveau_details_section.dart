@@ -13,6 +13,7 @@ import '../../../../../data/viewmodels/seerr_media_detail_view_model.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../../util/detail_track_highlight.dart';
 import '../../../../navigation/destinations.dart';
+import '../../../../widgets/navigation_layout.dart';
 import '../../../../widgets/seerr/seerr_item_chips.dart';
 import '../../../../widgets/seerr/seerr_item_status.dart';
 import '../../../../widgets/seerr/seerr_stats_card.dart';
@@ -329,21 +330,27 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
       }
 
       if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-        _focusStudioHorizontal(
+        final moved = _focusStudioHorizontal(
           currentNode: node,
           direction: AxisDirection.left,
         );
 
-        return KeyEventResult.handled;
+        if (moved) {
+          return KeyEventResult.handled;
+        }
+
+        return NavigationLayout.focusNavbar()
+            ? KeyEventResult.handled
+            : KeyEventResult.ignored;
       }
 
       if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
-        _focusStudioHorizontal(
+        final moved = _focusStudioHorizontal(
           currentNode: node,
           direction: AxisDirection.right,
         );
 
-        return KeyEventResult.handled;
+        return moved ? KeyEventResult.handled : KeyEventResult.ignored;
       }
 
       if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
@@ -1362,6 +1369,14 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
                           final moved = widget.onNavigateUp?.call() ?? false;
 
                           return moved
+                              ? KeyEventResult.handled
+                              : KeyEventResult.ignored;
+                        }
+
+                        // Nothing sits to the left of this, so give it the
+                        // same way out to the navbar the chips above have.
+                        if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+                          return NavigationLayout.focusNavbar()
                               ? KeyEventResult.handled
                               : KeyEventResult.ignored;
                         }

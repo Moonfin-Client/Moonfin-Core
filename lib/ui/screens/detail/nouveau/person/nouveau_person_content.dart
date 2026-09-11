@@ -31,8 +31,8 @@ class NouveauPersonContent extends StatefulWidget {
 
   final bool Function()? onNavigateUp;
   final bool Function()? onNavigateDown;
-  final VoidCallback? onRailNavigateUp;
-  final VoidCallback? onRailNavigateDown;
+  final bool Function()? onRailNavigateUp;
+  final bool Function()? onRailNavigateDown;
 
   const NouveauPersonContent({
     super.key,
@@ -335,15 +335,13 @@ class NouveauPersonContentState extends State<NouveauPersonContent> {
     }
   }
 
-  void _navigateRailUp() {
+  bool _navigateRailUp() {
     _scheduleReveal(_tabsKey, alignment: 0.5);
 
-    widget.onRailNavigateUp?.call();
+    return widget.onRailNavigateUp?.call() ?? false;
   }
 
-  void _navigateRailDown() {
-    widget.onRailNavigateDown?.call();
-  }
+  bool _navigateRailDown() => widget.onRailNavigateDown?.call() ?? false;
 
   Widget _buildTabs(BuildContext context) {
     final available = _availableTabs;

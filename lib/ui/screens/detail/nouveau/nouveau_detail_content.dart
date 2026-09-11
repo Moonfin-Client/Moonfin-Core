@@ -351,8 +351,11 @@ class NouveauDetailContentState extends State<NouveauDetailContent> {
       return false;
     }
 
+    // Nothing above the first section, so hand off to the navbar. The hero is
+    // not always focusable, which leaves a rail sitting at the top with no
+    // other way back out of the page.
     if (index == 0) {
-      return true;
+      return NavigationLayout.focusNavbar();
     }
 
     final target = sections[index - 1];
@@ -1071,7 +1074,6 @@ class NouveauDetailContentState extends State<NouveauDetailContent> {
           onNavigateUp: _focusPersonHero,
           onNavigateDown: _focusPersonRail,
           onRailNavigateUp: _focusPersonTabs,
-          onRailNavigateDown: () {},
         ),
       ),
     ];

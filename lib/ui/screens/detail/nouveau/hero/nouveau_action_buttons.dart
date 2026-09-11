@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../../../widgets/overlay_sheet.dart';
+
 class NouveauAction {
   final String label;
   final IconData? icon;
@@ -153,7 +155,7 @@ class _NouveauActionButtonsState extends State<NouveauActionButtons> {
       return;
     }
 
-    final selectedAction = await showDialog<NouveauAction>(
+    final selectedAction = await showFocusRestoringDialog<NouveauAction>(
       context: context,
       barrierColor: Colors.black.withValues(alpha: 0.56),
       builder: (context) {
@@ -165,12 +167,7 @@ class _NouveauActionButtonsState extends State<NouveauActionButtons> {
       return;
     }
 
-    if (selectedAction == null) {
-      _focusOverflow();
-      return;
-    }
-
-    selectedAction.onPressed();
+    selectedAction?.onPressed();
   }
 
   @override
@@ -1319,6 +1316,25 @@ class _NouveauOverflowActionTileState
             event.logicalKey == LogicalKeyboardKey.space) {
           Navigator.of(context).pop(action);
 
+          return KeyEventResult.handled;
+        }
+
+        // The tiles are a single column, so Up and Down walk it and the
+        // horizontal keys stay inside rather than escaping to the barrier.
+        if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+          return FocusScope.of(context).focusInDirection(TraversalDirection.up)
+              ? KeyEventResult.handled
+              : KeyEventResult.ignored;
+        }
+
+        if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+          return FocusScope.of(context).focusInDirection(TraversalDirection.down)
+              ? KeyEventResult.handled
+              : KeyEventResult.ignored;
+        }
+
+        if (event.logicalKey == LogicalKeyboardKey.arrowLeft ||
+            event.logicalKey == LogicalKeyboardKey.arrowRight) {
           return KeyEventResult.handled;
         }
 

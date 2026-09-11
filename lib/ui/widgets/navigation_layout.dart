@@ -67,6 +67,21 @@ class NavigationLayout extends StatefulWidget {
   /// out on TV. Focusing chrome cancels the trailer, which fades them back in.
   static final trailerImmersiveNotifier = ValueNotifier<bool>(false);
 
+  /// Hands focus to the navbar and reports whether there was one to take it.
+  /// Callers need the answer so they only report a key as handled when focus
+  /// really moved.
+  static bool focusNavbar() {
+    final callback = focusNavbarNotifier.value;
+
+    if (callback == null) {
+      return false;
+    }
+
+    callback();
+
+    return true;
+  }
+
   const NavigationLayout({
     super.key,
     this.activeRoute,

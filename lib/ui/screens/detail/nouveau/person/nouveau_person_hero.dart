@@ -9,6 +9,7 @@ import '../../../../../l10n/app_localizations.dart';
 import '../../../../../preference/user_preferences.dart';
 import '../../../../../util/platform_detection.dart';
 import '../../../../widgets/focus/focusable_wrapper.dart';
+import '../../../../widgets/navigation_layout.dart';
 import '../../../../widgets/offline_aware_image.dart';
 import '../../../../widgets/overlay_sheet.dart';
 import '../../item_detail_screen.dart';
@@ -102,14 +103,18 @@ class NouveauPersonHeroState extends State<NouveauPersonHero> {
     });
   }
 
-  void _focusOverviewIfAvailable() {
-    if (!_overviewFocusable ||
-        !_overviewFocusNode.canRequestFocus ||
-        _overviewFocusNode.context == null) {
+  /// The biography only takes focus when it overflows, so on a short one the
+  /// actions are the top of the page and Up belongs to the navbar.
+  void _focusAbove() {
+    if (_overviewFocusable &&
+        _overviewFocusNode.canRequestFocus &&
+        _overviewFocusNode.context != null) {
+      _overviewFocusNode.requestFocus();
+
       return;
     }
 
-    _overviewFocusNode.requestFocus();
+    NavigationLayout.focusNavbar();
   }
 
   void _trackExternalFocusEntry() {
@@ -363,9 +368,8 @@ class NouveauPersonHeroState extends State<NouveauPersonHero> {
               compact: compact,
               compactLandscape: compactLandscape,
               onPressed: widget.viewModel.toggleFavorite,
-              onNavigateUp: _overviewFocusable
-                  ? _focusOverviewIfAvailable
-                  : null,
+              onNavigateUp: _focusAbove,
+              onNavigateLeft: NavigationLayout.focusNavbar,
               onNavigateRight: () {
                 _displayFocusNode.requestFocus();
               },
@@ -381,9 +385,7 @@ class NouveauPersonHeroState extends State<NouveauPersonHero> {
               onPressed: () {
                 _showDisplaySettings(context);
               },
-              onNavigateUp: _overviewFocusable
-                  ? _focusOverviewIfAvailable
-                  : null,
+              onNavigateUp: _focusAbove,
               onNavigateLeft: () {
                 _favoriteFocusNode.requestFocus();
               },
@@ -832,8 +834,16 @@ class _NouveauPersonOverviewState extends State<_NouveauPersonOverview> {
 
             final key = event.logicalKey;
 
+            // This sits at the top of the page, so Up and Left are the only
+            // ways back to the navbar. Right stays put, nothing is beside it.
             if (key == LogicalKeyboardKey.arrowLeft ||
-                key == LogicalKeyboardKey.arrowRight) {
+                key == LogicalKeyboardKey.arrowUp) {
+              return NavigationLayout.focusNavbar()
+                  ? KeyEventResult.handled
+                  : KeyEventResult.ignored;
+            }
+
+            if (key == LogicalKeyboardKey.arrowRight) {
               return KeyEventResult.handled;
             }
 

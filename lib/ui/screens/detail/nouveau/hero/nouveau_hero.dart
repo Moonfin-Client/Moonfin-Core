@@ -1269,8 +1269,16 @@ class _NouveauOverviewState extends State<_NouveauOverview> {
 
             final key = event.logicalKey;
 
-            if (key == LogicalKeyboardKey.arrowLeft ||
-                key == LogicalKeyboardKey.arrowRight) {
+            // Left leaves the page the same way the action buttons below do.
+            // Right stays put, because the overview spans the column and there
+            // is nothing to its right.
+            if (key == LogicalKeyboardKey.arrowLeft) {
+              return NavigationLayout.focusNavbar()
+                  ? KeyEventResult.handled
+                  : KeyEventResult.ignored;
+            }
+
+            if (key == LogicalKeyboardKey.arrowRight) {
               return KeyEventResult.handled;
             }
 

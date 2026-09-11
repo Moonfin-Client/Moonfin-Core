@@ -20,8 +20,9 @@ class NouveauFilmographySection extends StatefulWidget {
   final ValueChanged<AggregatedItem>? onBackdropItemFocused;
   final ValueChanged<AggregatedItem>? onLongPress;
 
-  final VoidCallback? onNavigateUp;
-  final VoidCallback? onNavigateDown;
+  /// Return false when nothing moved, so the key bubbles.
+  final bool Function()? onNavigateUp;
+  final bool Function()? onNavigateDown;
 
   const NouveauFilmographySection({
     super.key,
@@ -237,13 +238,7 @@ class NouveauFilmographySectionState
                   ? widget.onNavigateUp
                   : widget.onNavigateDown;
 
-              if (callback == null) {
-                return false;
-              }
-
-              callback();
-
-              return true;
+              return callback?.call() ?? false;
             },
             itemBuilder: (context, item, index, isFocused) {
               final hasNext = index < widget.items.length - 1;
