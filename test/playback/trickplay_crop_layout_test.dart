@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
@@ -33,6 +34,20 @@ class _FakeSheet extends ImageProvider<_FakeSheet> {
   }
 }
 
+class _DelayedSheet extends ImageProvider<_DelayedSheet> {
+  final frame = Completer<ImageInfo>();
+
+  @override
+  Future<_DelayedSheet> obtainKey(ImageConfiguration configuration) =>
+      SynchronousFuture(this);
+
+  @override
+  ImageStreamCompleter loadImage(
+    _DelayedSheet key,
+    ImageDecoderCallback decode,
+  ) => OneFrameImageStreamCompleter(frame.future);
+}
+
 void main() {
   // A stock Jellyfin sheet of 320x180 thumbnails in a 10x10 grid.
   const thumbWidth = 320.0;
@@ -50,6 +65,68 @@ void main() {
     2 * thumbHeight,
     thumbWidth,
     thumbHeight,
+  );
+
+  testWidgets(
+    'retains the previous image and crop until the next sheet loads',
+    (tester) async {
+      Widget preview(ImageProvider sheet, Rect crop) => Center(
+        child: SizedBox(
+          width: displayWidth,
+          height: displayHeight,
+          child: ClipRect(
+            child: TrickplayTileImage(
+              sheet: sheet,
+              sourceRect: crop,
+              thumbWidth: thumbWidth,
+              thumbHeight: thumbHeight,
+              tileWidth: tileWidth,
+              tileHeight: tileHeight,
+            ),
+          ),
+        ),
+      );
+      final first = _DelayedSheet();
+      final next = _DelayedSheet();
+      late ImageInfo firstFrame;
+      late ImageInfo nextFrame;
+      await tester.runAsync(() async {
+        firstFrame = await _FakeSheet(3200, 1800)._frame();
+        nextFrame = await _FakeSheet(3200, 1800)._frame();
+      });
+      await tester.pumpWidget(preview(first, sourceRect));
+    first.frame.complete(firstFrame);
+    await tester.pump();
+    await tester.pump();
+      final oldImage = tester.widget<RawImage>(find.byType(RawImage)).image!;
+      final oldAlignment = tester
+          .widget<OverflowBox>(find.byType(OverflowBox))
+          .alignment;
+      const nextCrop = Rect.fromLTWH(0, 0, thumbWidth, thumbHeight);
+      await tester.pumpWidget(preview(next, nextCrop));
+      expect(tester.widget<RawImage>(find.byType(RawImage)).image, oldImage);
+      expect(
+        tester.widget<OverflowBox>(find.byType(OverflowBox)).alignment,
+        oldAlignment,
+      );
+    next.frame.complete(nextFrame);
+    await tester.pump();
+    await tester.pump();
+      expect(
+        tester.widget<RawImage>(find.byType(RawImage)).image,
+        isNot(oldImage),
+      );
+      expect(
+        tester.widget<OverflowBox>(find.byType(OverflowBox)).alignment,
+        const Alignment(-1, -1),
+      );
+      // Moving within an already decoded sheet updates its crop immediately.
+      await tester.pumpWidget(preview(next, sourceRect));
+      expect(
+        tester.widget<OverflowBox>(find.byType(OverflowBox)).alignment,
+        oldAlignment,
+      );
+    },
   );
 
   testWidgets('scales the sheet so one tile fills the preview box', (
