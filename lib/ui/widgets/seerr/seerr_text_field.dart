@@ -41,25 +41,39 @@ class _SeerrTextFieldState extends State<SeerrTextField> {
   void initState() {
     super.initState();
     _effectiveFocusNode.addListener(_onFocusChanged);
+    CustomTVTextField.isKeyboardVisibleNotifier.addListener(_onKeyboardVisibilityChanged);
+  }
+
+  void _onKeyboardVisibilityChanged() {
+    if (_effectiveFocusNode.hasFocus && CustomTVTextField.isKeyboardVisibleNotifier.value) {
+      _scrollToVisible();
+    }
   }
 
   void _onFocusChanged() {
     if (_effectiveFocusNode.hasFocus) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted) return;
+      _scrollToVisible();
+    }
+  }
+
+  void _scrollToVisible() {
+    Future.delayed(const Duration(milliseconds: 150), () {
+      if (!mounted) return;
+      try {
         Scrollable.ensureVisible(
           context,
-          alignment: 0.2,
-          duration: const Duration(milliseconds: 180),
+          alignment: 0.5,
+          duration: const Duration(milliseconds: 200),
           curve: Curves.easeOut,
         );
-      });
-    }
+      } catch (_) {}
+    });
   }
 
   @override
   void dispose() {
     _effectiveFocusNode.removeListener(_onFocusChanged);
+    CustomTVTextField.isKeyboardVisibleNotifier.removeListener(_onKeyboardVisibilityChanged);
     _internalFocusNode?.dispose();
     super.dispose();
   }

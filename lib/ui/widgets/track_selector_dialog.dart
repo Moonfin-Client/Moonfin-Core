@@ -1,3 +1,6 @@
+import 'dart:math' as math;
+
+import 'package:custom_tv_text_field/custom_tv_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
@@ -5,6 +8,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../../preference/user_preferences.dart';
+import '../../util/platform_detection.dart';
 import 'marquee_text.dart';
 import 'overlay_sheet.dart';
 
@@ -24,85 +28,106 @@ Future<T?> showStyledPlayerDialog<T>(
     barrierDismissible: barrierDismissible,
     builder: (dialogContext) {
       final mediaQuery = MediaQuery.of(dialogContext);
-      final maxDialogHeight = mediaQuery.size.height -
-          mediaQuery.padding.vertical -
-          mediaQuery.viewInsets.vertical -
-          24;
       final glass = AppColorScheme.isGlass;
-      final inner = Container(
-          constraints: BoxConstraints(
-            minWidth: 340,
-            maxWidth: maxWidth,
-            maxHeight: maxDialogHeight,
-          ),
-          decoration: glass
-              ? null
-              : BoxDecoration(
-                  color: AppColorScheme.surface.withValues(alpha: 0.9),
-                  borderRadius: AppRadius.circular(20),
-                  border: Border.fromBorderSide(
-                    ThemeRegistry.active.borders.chipBorder,
-                  ),
-                ),
-          padding: const EdgeInsets.symmetric(vertical: 20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: EdgeInsets.fromLTRB(24, 0, 24, subtitle != null ? 4 : 12),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
+
+      return ValueListenableBuilder<bool>(
+        valueListenable: CustomTVTextField.isKeyboardVisibleNotifier,
+        builder: (context, isKeyboardVisible, _) {
+          final isTv = PlatformDetection.isTV;
+          final shiftUp = isKeyboardVisible && isTv;
+          final keyboardSpace = shiftUp ? 360.0 : 0.0;
+          final effectiveBottomInset = math.max(
+            mediaQuery.viewInsets.bottom,
+            keyboardSpace,
+          );
+          final maxDialogHeight = mediaQuery.size.height -
+              mediaQuery.padding.vertical -
+              effectiveBottomInset -
+              24;
+
+          final inner = Container(
+            constraints: BoxConstraints(
+              minWidth: 340,
+              maxWidth: maxWidth,
+              maxHeight: maxDialogHeight,
+            ),
+            decoration: glass
+                ? null
+                : BoxDecoration(
+                    color: AppColorScheme.surface.withValues(alpha: 0.9),
+                    borderRadius: AppRadius.circular(20),
+                    border: Border.fromBorderSide(
+                      ThemeRegistry.active.borders.chipBorder,
                     ),
                   ),
-                ),
-              ),
-              if (subtitle != null)
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
+                  padding: EdgeInsets.fromLTRB(24, 0, 24, subtitle != null ? 4 : 12),
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      subtitle,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.white.withValues(alpha: 0.54),
+                      title,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
                       ),
                     ),
                   ),
                 ),
-              Container(height: 1, color: Colors.white.withValues(alpha: 0.08)),
-              const SizedBox(height: 8),
-              Flexible(child: builder(dialogContext)),
-              if (showCancel) ...[
-                const SizedBox(height: 4),
+                if (subtitle != null)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        subtitle,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.white.withValues(alpha: 0.54),
+                        ),
+                      ),
+                    ),
+                  ),
                 Container(height: 1, color: Colors.white.withValues(alpha: 0.08)),
-                const SizedBox(height: 4),
-                _TrackRow(
-                  option: TrackOption(label: AppLocalizations.of(dialogContext).cancel),
-                  isSelected: false,
-                  onTap: () => Navigator.pop(dialogContext),
-                  dimmed: true,
-                ),
+                const SizedBox(height: 8),
+                Flexible(child: builder(dialogContext)),
+                if (showCancel) ...[
+                  const SizedBox(height: 4),
+                  Container(height: 1, color: Colors.white.withValues(alpha: 0.08)),
+                  const SizedBox(height: 4),
+                  _TrackRow(
+                    option: TrackOption(label: AppLocalizations.of(dialogContext).cancel),
+                    isSelected: false,
+                    onTap: () => Navigator.pop(dialogContext),
+                    dimmed: true,
+                  ),
+                ],
               ],
-            ],
-          ),
-        );
-      return Dialog(
-        backgroundColor: Colors.transparent,
-        child: glass
-            ? GlassSurface(
-                cornerRadius: 20,
-                reinforced: true,
-                fallbackColor: Colors.transparent,
-                child: inner,
-              )
-            : inner,
+            ),
+          );
+
+          return Dialog(
+            alignment: shiftUp ? const Alignment(0, -0.85) : Alignment.center,
+            insetAnimationDuration: const Duration(milliseconds: 200),
+            insetAnimationCurve: Curves.easeOutCubic,
+            insetPadding: shiftUp
+                ? const EdgeInsets.fromLTRB(40, 20, 40, 360)
+                : const EdgeInsets.symmetric(horizontal: 40, vertical: 24),
+            backgroundColor: Colors.transparent,
+            child: glass
+                ? GlassSurface(
+                    cornerRadius: 20,
+                    reinforced: true,
+                    fallbackColor: Colors.transparent,
+                    child: inner,
+                  )
+                : inner,
+          );
+        },
       );
     },
   );
