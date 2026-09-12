@@ -771,8 +771,25 @@ void main() {
   });
 
   group('DeviceProfileBuilder AV1 Dolby Vision range filtering', () {
-    test('an AV1 HDR10 client without an AV1 DoVi decoder direct plays '
-        'profile 10.1, including its HDR10+ variant, via the base layer', () {
+    test('a base-layer renderer direct plays profile 10.1, including its '
+        'HDR10+ variant, on AV1 HDR10 alone', () {
+      final profile = DeviceProfileBuilder.build(
+        supportsAv1: true,
+        supportsAv1Main10: true,
+        supportsAv1Hdr10: true,
+        supportsAv1Hdr10Plus: false,
+        supportsAv1DolbyVision: false,
+        rendersAv1DoviViaHdr10BaseLayer: true,
+      );
+
+      final unsupportedRanges = _codecUnsupportedRangeTypes(profile, 'av1');
+
+      expect(unsupportedRanges, isNot(contains('DOVI_WITH_HDR10')));
+      expect(unsupportedRanges, isNot(contains('DOVI_WITH_HDR10_PLUS')));
+    });
+
+    test('every other backend keeps the HDR10+ gate on DoVi HDR10+, so an '
+        'HDR10-only client is never offered it', () {
       final profile = DeviceProfileBuilder.build(
         supportsAv1: true,
         supportsAv1Main10: true,
@@ -783,17 +800,33 @@ void main() {
 
       final unsupportedRanges = _codecUnsupportedRangeTypes(profile, 'av1');
 
+      expect(unsupportedRanges, contains('DOVI_WITH_HDR10_PLUS'));
+      // The plain HDR10 variant is unaffected: it never depended on HDR10+.
       expect(unsupportedRanges, isNot(contains('DOVI_WITH_HDR10')));
+    });
+
+    test('HDR10+ support alone still lifts the gate without the opt-in', () {
+      final profile = DeviceProfileBuilder.build(
+        supportsAv1: true,
+        supportsAv1Main10: true,
+        supportsAv1Hdr10: true,
+        supportsAv1Hdr10Plus: true,
+        supportsAv1DolbyVision: false,
+      );
+
+      final unsupportedRanges = _codecUnsupportedRangeTypes(profile, 'av1');
+
       expect(unsupportedRanges, isNot(contains('DOVI_WITH_HDR10_PLUS')));
     });
 
     test('a client that renders neither AV1 DoVi nor AV1 HDR10 excludes both '
-        'profile 10 range types', () {
+        'profile 10 range types, opt-in or not', () {
       final profile = DeviceProfileBuilder.build(
         supportsAv1: true,
         supportsAv1Main10: true,
         supportsAv1Hdr10: false,
         supportsAv1DolbyVision: false,
+        rendersAv1DoviViaHdr10BaseLayer: true,
       );
 
       final unsupportedRanges = _codecUnsupportedRangeTypes(profile, 'av1');

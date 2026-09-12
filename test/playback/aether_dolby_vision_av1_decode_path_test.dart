@@ -1,11 +1,15 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:moonfin/playback/aether_backend.dart';
 
-/// AetherEngine cannot mux a Dolby Vision AV1 stream: it tags the sample entry
-/// `dav1` whenever the display reports Dolby Vision, and FFmpeg's MP4 muxer has
-/// no `dav1` entry, so `avformat_write_header` fails with EINVAL before the
-/// first segment. These sources are routed to SoftwarePlaybackHost instead,
-/// which never builds an fMP4 segment.
+/// AetherEngine tags the sample entry `dav1` for a Dolby Vision AV1 stream
+/// whenever the display reports Dolby Vision. movenc resolves an mp4 tag
+/// through `validate_codec_tag`, which needs the exact (tag, codec_id) pair in
+/// `ff_codec_movvideo_tags`; that table has `av01` for AV1 and no `dav1`, so
+/// the header fails with EINVAL before segment 0 and playback dies two packets
+/// in. These sources take `preferredDecodePath: .software` instead, which
+/// never builds an fMP4 segment and renders the profile 10.1 HDR10 base layer.
+/// That is a CPU decode, not a hardware one — see the doc comment on
+/// `needsSoftwareDecodeForDolbyVisionAv1`.
 void main() {
   bool decides(Map<String, dynamic> payload) =>
       AetherBackend.needsSoftwareDecodeForDolbyVisionAv1(payload);

@@ -176,6 +176,7 @@ class DeviceProfileBuilder {
     bool supportsAv1DolbyVision = false,
     bool supportsAv1Hdr10 = false,
     bool supportsAv1Hdr10Plus = false,
+    bool rendersAv1DoviViaHdr10BaseLayer = false,
     bool supportsVc1 = false,
     bool supportsMpeg4 = false,
     int maxResolutionAvcWidth = 0,
@@ -455,6 +456,7 @@ class DeviceProfileBuilder {
       supportsAv1DolbyVision: effectiveSupportsAv1DolbyVision,
       supportsAv1Hdr10: effectiveSupportsAv1Hdr10,
       supportsAv1Hdr10Plus: effectiveSupportsAv1Hdr10Plus,
+      rendersAv1DoviViaHdr10BaseLayer: rendersAv1DoviViaHdr10BaseLayer,
       supportsVc1: effectiveSupportsVc1,
       // Passed straight through, since the browser capability probe has nothing to say
       // about MPEG-4 Part 2 for the web build to override this with.
@@ -1058,6 +1060,7 @@ class DeviceProfileBuilder {
     required bool supportsAv1DolbyVision,
     required bool supportsAv1Hdr10,
     required bool supportsAv1Hdr10Plus,
+    required bool rendersAv1DoviViaHdr10BaseLayer,
     required bool supportsVc1,
     required bool supportsMpeg4,
     required int maxResolutionAvcWidth,
@@ -1369,6 +1372,16 @@ class DeviceProfileBuilder {
         // transcode when the client can't render AV1 HDR10, so gate it the
         // same way as DOVIWithHDR10 rather than always rejecting it.
         unsupportedRangeTypesAv1.add('DOVI_INVALID');
+      }
+      // The HDR10+ dynamic metadata degrades to HDR10 on its own, so a player
+      // that renders the profile 10 base layer needs AV1 HDR10 and nothing
+      // more. That is only true where the backend says so: a decoder that
+      // engages Dolby Vision on this stream instead has to keep the stricter
+      // gate, which is what every non-AetherEngine backend still gets.
+      final av1DoviHdr10PlusDirectPlayable =
+          supportsAv1Hdr10Plus ||
+          (rendersAv1DoviViaHdr10BaseLayer && supportsAv1Hdr10);
+      if (!av1DoviHdr10PlusDirectPlayable) {
         unsupportedRangeTypesAv1.add('DOVI_WITH_HDR10_PLUS');
       }
     }
