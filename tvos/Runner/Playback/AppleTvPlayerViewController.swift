@@ -2458,8 +2458,19 @@ final class AppleTvPlayerViewController: UIViewController {
     /// as the press having been ignored.
     func showSubtitleProgress(_ message: String) {
         let alert = UIAlertController(title: message, message: nil, preferredStyle: .alert)
+        let previous = subtitleProgressAlert
         subtitleProgressAlert = alert
-        present(alert, animated: true)
+        let show = { [weak self] in
+            // A hide or a newer message may have come in while the old alert
+            // was going down; then this one is stale.
+            guard let self, self.subtitleProgressAlert === alert else { return }
+            self.present(alert, animated: true)
+        }
+        if let previous, previous.presentingViewController != nil {
+            previous.dismiss(animated: true, completion: show)
+        } else {
+            show()
+        }
     }
 
     /// Take the progress alert down. A message turns it into an alert the viewer
@@ -2482,6 +2493,10 @@ final class AppleTvPlayerViewController: UIViewController {
             return
         }
         subtitleProgressAlert = nil
+        guard existing.presentingViewController != nil else {
+            next()
+            return
+        }
         existing.dismiss(animated: true) { next() }
     }
 

@@ -21580,6 +21580,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Long Fade'**
   String get pageTransitionFadeLong;
+
+  /// Live TV player status while a channel is being tuned
+  ///
+  /// In en, this message translates to:
+  /// **'Connecting to channel…'**
+  String get liveTvConnecting;
+
+  /// Live TV player status when the server has kept a channel request open for several seconds, meaning the tuner is retrying its source
+  ///
+  /// In en, this message translates to:
+  /// **'The tuner is still trying to get this channel…'**
+  String get liveTvTunerStillTrying;
+
+  /// Live TV player status when a playing channel stops receiving data
+  ///
+  /// In en, this message translates to:
+  /// **'Signal lost. The tuner is reconnecting…'**
+  String get liveTvReconnecting;
+
+  /// Title shown when a live TV channel could not be started
+  ///
+  /// In en, this message translates to:
+  /// **'Channel unavailable'**
+  String get liveTvChannelUnavailableTitle;
+
+  /// Explanation shown when a live TV channel could not be started
+  ///
+  /// In en, this message translates to:
+  /// **'The server could not get this channel from the tuner. The source may be down, or the tuner gave up after retrying.'**
+  String get liveTvChannelUnavailableBody;
+
+  /// Title shown when a playing live TV channel stopped and did not recover
+  ///
+  /// In en, this message translates to:
+  /// **'Channel lost'**
+  String get liveTvChannelLostTitle;
+
+  /// Explanation shown when a playing live TV channel stopped and did not recover
+  ///
+  /// In en, this message translates to:
+  /// **'The stream stopped and the tuner did not bring it back. Try again or pick another channel.'**
+  String get liveTvChannelLostBody;
 }
 
 class _AppLocalizationsDelegate

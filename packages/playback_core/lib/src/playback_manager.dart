@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'live_source_probe.dart';
 import 'media_stream_resolver.dart';
 import 'playback_arbiter.dart';
 import 'player_backend.dart';
@@ -1325,20 +1326,28 @@ class PlaybackManager implements AudioOwnable {
     );
   }
 
-  bool _isPreroll(dynamic item) {
-    if (item == null) return false;
+  /// The server item behind a queue entry, whichever shape it arrived in:
+  /// a raw map, or anything carrying one as `rawData`.
+  Map? _rawDataOf(dynamic item) {
+    if (item == null) return null;
+    if (item is Map) return item;
     try {
-      if (item is Map) {
-        return item['__moonfinIsPreroll'] == true;
-      }
       final dynamic dynItem = item;
       final rawData = dynItem.rawData;
-      if (rawData is Map) {
-        return rawData['__moonfinIsPreroll'] == true;
-      }
-    } catch (_) {}
-    return false;
+      return rawData is Map ? rawData : null;
+    } catch (_) {
+      return null;
+    }
   }
+
+  /// Whether a queue item is a live TV channel.
+  bool _isLiveTvItem(dynamic item) {
+    final type = _rawDataOf(item)?['Type']?.toString();
+    return type == 'TvChannel' || type == 'LiveTvChannel';
+  }
+
+  bool _isPreroll(dynamic item) =>
+      _rawDataOf(item)?['__moonfinIsPreroll'] == true;
 
   Future<void> _playCurrentItem({
     Duration startPosition = Duration.zero,
@@ -1439,21 +1448,63 @@ class PlaybackManager implements AudioOwnable {
       }
     }
 
-    final resolution = await _resolver!.resolve(
-      item,
-      deviceProfile: profile,
-      maxStreamingBitrate: maxBitrate,
-      audioStreamIndex: _audioStreamIndex,
-      subtitleStreamIndex: _subtitleStreamIndex,
-      startTimeTicks: startTicks,
-      mediaSourceId: _mediaSourceId,
-      enableDirectPlay: enableDirectPlay,
-      enableDirectStream: enableDirectStream,
-      enableTranscoding: enableTranscoding,
-    );
+    final StreamResolutionResult resolution;
+    try {
+      resolution = await _resolver!.resolve(
+        item,
+        deviceProfile: profile,
+        maxStreamingBitrate: maxBitrate,
+        audioStreamIndex: _audioStreamIndex,
+        subtitleStreamIndex: _subtitleStreamIndex,
+        startTimeTicks: startTicks,
+        mediaSourceId: _mediaSourceId,
+        enableDirectPlay: enableDirectPlay,
+        enableDirectStream: enableDirectStream,
+        enableTranscoding: enableTranscoding,
+      );
+    } catch (_) {
+      // A channel the server refuses outright (no tuner has it, every tuner
+      // slot is busy, the tuner host is down) fails here with a server error.
+      // The exception still reaches the caller, but the bringup state names
+      // the failure so the live player can say the channel is unavailable
+      // instead of showing the raw exception text.
+      if (sessionToken == _playbackSessionToken && _isLiveTvItem(item)) {
+        _setBringupState(
+          PlaybackBringupState(
+            phase: PlaybackBringupPhase.failed,
+            sessionToken: sessionToken,
+            itemId: itemId,
+            backend: _traceBackendName(_backend),
+            error: liveChannelUnavailableError,
+          ),
+        );
+      }
+      rethrow;
+    }
 
     if (sessionToken != _playbackSessionToken) {
       _cleanupPreemptedSession(item, resolution);
+      return;
+    }
+
+    // The server opened the tuner stream but its probe found nothing in it,
+    // and it answered with a placeholder source anyway. The tuner has already
+    // given up on the channel by then, so the player is not started on a
+    // manifest that can only fail. The live session the server opened for the
+    // probe is released the same way a stopped stream would release it.
+    if (resolution.liveStreamId != null &&
+        liveSourceProbeFailed(resolution.mediaStreams)) {
+      unawaited(_service?.closeLiveStream(resolution.liveStreamId!));
+      _setBringupState(
+        PlaybackBringupState(
+          phase: PlaybackBringupPhase.failed,
+          sessionToken: sessionToken,
+          itemId: itemId,
+          backend: _traceBackendName(_backend),
+          playMethod: resolution.playMethod.name,
+          error: liveChannelUnavailableError,
+        ),
+      );
       return;
     }
 

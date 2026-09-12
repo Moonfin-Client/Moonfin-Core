@@ -30,6 +30,8 @@ import '../../../util/playback_time_label.dart';
 import '../../../util/system_ui.dart';
 import '../../widgets/adaptive/sf_symbol.dart';
 import '../../widgets/aether_video_view.dart';
+import '../../../playback/live_tv_stream_status.dart';
+import '../../widgets/playback/live_tv_stream_status_overlay.dart';
 import '../../widgets/playback/stream_info_dialog.dart';
 import '../../widgets/subtitle_preview.dart';
 import '../../widgets/track_selector_dialog.dart';
@@ -142,6 +144,13 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   int _focusedControlIndex = 0;
   PlayerState get _state => _manager.state;
 
+  // Tells the viewer what the tuner is doing: tuning, still retrying, the
+  // feed dropped, or gone for good. Replaces the bare buffering spinner.
+  late final LiveTvStreamStatusMonitor _streamStatus;
+  bool get _streamFailed => _streamStatus.value.isFailure;
+  bool _wasStreamFailed = false;
+  final _retryFocus = FocusNode(debugLabel: 'LiveTvRetry');
+
   @override
   void initState() {
     super.initState();
@@ -150,6 +159,8 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
       _screensaverController.setPlaybackActive,
     );
     _currentIndex = widget.startIndex;
+    _streamStatus = LiveTvStreamStatusMonitor(_manager);
+    _streamStatus.addListener(_onStreamStatusChanged);
     _applyPlayerDisplayMode();
     _applySubtitleStyle();
     _backendSub = _manager.backendChangedStream.listen((backend) {
@@ -188,6 +199,8 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   void dispose() {
     _screensaverPlayingSub?.cancel();
     _screensaverController.setPlaybackActive(false);
+    _streamStatus.removeListener(_onStreamStatusChanged);
+    _streamStatus.dispose();
     _hideTimer?.cancel();
     _programRefreshTimer?.cancel();
     _backendSub?.cancel();
@@ -224,6 +237,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     _tvBitrateFocus.removeListener(_onControlFocusChanged);
     _tvPlaybackInfoFocus.removeListener(_onControlFocusChanged);
     _overlayFocus.dispose();
+    _retryFocus.dispose();
     _tvPlayPauseFocus.dispose();
     _tvChannelsFocus.dispose();
     _tvAudioFocus.dispose();
@@ -631,7 +645,10 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
         enableTranscoding: true,
       );
     } catch (e) {
-      if (mounted) {
+      // A channel the server refused is already on screen as "channel
+      // unavailable" with Retry and Back; a snackbar on top would just repeat
+      // it in vaguer words.
+      if (mounted && !_manager.bringupState.isLiveChannelUnavailable) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -643,6 +660,39 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
       return;
     }
     _fetchCurrentProgram();
+  }
+
+  /// Only the focus hand-off lives here; the overlay itself listens to the
+  /// monitor directly, so a status tick does not rebuild the whole player.
+  void _onStreamStatusChanged() {
+    // On the way out the manager's stop still reaches the tracker; nothing
+    // it says then is for this screen.
+    if (!mounted || _isStopping) return;
+    final failed = _streamFailed;
+    if (failed != _wasStreamFailed) {
+      _wasStreamFailed = failed;
+      // The card's Retry button has to be given focus by hand: the player's
+      // own focus node already owns the scope, so autofocus would lose. When
+      // the card goes away the player takes the remote back.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        if (_streamFailed) {
+          _retryFocus.requestFocus();
+        } else if (!_isGuidePickerOpen) {
+          _overlayFocus.requestFocus();
+        }
+      });
+    }
+  }
+
+  Future<void> _retryCurrentChannel() async {
+    if (_isSwitching) return;
+    _isSwitching = true;
+    try {
+      await _playCurrentChannel();
+    } finally {
+      _isSwitching = false;
+    }
   }
 
   Future<void> _switchChannel(int newIndex) async {
@@ -1365,6 +1415,12 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
       return KeyEventResult.ignored;
     }
 
+    // The channel failure card owns the remote too: its Retry and Back
+    // buttons take select and the arrows, and nothing behind it is usable.
+    if (_streamFailed) {
+      return KeyEventResult.ignored;
+    }
+
     switch (event.logicalKey) {
       case LogicalKeyboardKey.arrowUp:
       case LogicalKeyboardKey.arrowDown:
@@ -1439,6 +1495,12 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
           return;
         }
         if (_isBackNavigationSuppressed) return;
+        // With the channel failure card up there is nothing to watch, so Back
+        // leaves the player instead of just hiding the controls.
+        if (_streamFailed) {
+          _exitPlayback();
+          return;
+        }
         // Back dismisses the on-screen controls first; only exit the player once
         // the OSD is already hidden (e.g. after returning from the EPG overlay,
         // where a focused control otherwise keeps the OSD pinned open).
@@ -1478,7 +1540,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
                 fit: StackFit.expand,
                 children: [
                   _buildVideoSurface(),
-                  _buildBufferingIndicator(),
+                  _buildStreamStatusOverlay(),
                   if (PlatformDetection.isMobile) _buildBrightnessOverlay(),
                   if (PlatformDetection.isMobile) _buildVolumeOverlay(),
                   if (_isGuidePickerOpen) _buildGuideOverlay(),
@@ -1578,20 +1640,20 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     );
   }
 
-  Widget _buildBufferingIndicator() {
+  Widget _buildStreamStatusOverlay() {
     return AnimatedPositioned.fromRect(
       rect: _videoRect(MediaQuery.sizeOf(context)),
       duration: _kGuideResizeDuration,
       curve: Curves.easeInOut,
-      child: StreamBuilder<bool>(
-        stream: _state.bufferingStream,
-        initialData: _state.isBuffering,
-        builder: (context, snap) {
-          if (snap.data != true) return const SizedBox.shrink();
-          return Center(
-            child: CircularProgressIndicator(color: AppColorScheme.accent),
-          );
-        },
+      child: ValueListenableBuilder<LiveTvStreamStatus>(
+        valueListenable: _streamStatus,
+        builder: (context, status, _) => LiveTvStreamStatusOverlay(
+          status: status,
+          compact: _isGuidePickerOpen,
+          retryFocusNode: _retryFocus,
+          onRetry: _retryCurrentChannel,
+          onExit: _exitPlayback,
+        ),
       ),
     );
   }

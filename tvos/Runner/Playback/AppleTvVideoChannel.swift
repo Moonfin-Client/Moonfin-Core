@@ -337,7 +337,18 @@ final class AppleTvVideoChannel: NSObject, FlutterStreamHandler {
         lastClosedCaptionCount = -1
         didComplete = false
         if let vc {
-            vc.dismiss(animated: false) { [weak self] in
+            // The controller reports an exit from viewDidDisappear, which a
+            // dismissal ordered from Dart also triggers. That exit is the
+            // viewer's own Menu press, so it must not fire here: the live
+            // host takes the player down to show its own card, and a
+            // reported exit would pop that route as well.
+            vc.onExit = nil
+            // UIKit dismisses the topmost presentation of whatever this is
+            // called on. With a progress alert up, `vc.dismiss` would take
+            // down the alert and leave the player on screen; asking the
+            // presenter takes down the player and anything over it.
+            let presenter = vc.presentingViewController ?? vc
+            presenter.dismiss(animated: false) { [weak self] in
                 Task { @MainActor in self?.send(["event": "dismissed"]) }
             }
         } else {

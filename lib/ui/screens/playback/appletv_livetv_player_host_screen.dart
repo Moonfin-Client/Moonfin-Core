@@ -13,9 +13,11 @@ import '../../../data/models/aggregated_item.dart';
 import '../../../data/viewmodels/live_tv_guide_view_model.dart';
 import '../../../playback/appletv_backend.dart';
 import '../../../playback/appletv_preview_player.dart';
+import '../../../playback/live_tv_stream_status.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../util/play_method_label.dart';
+import '../../widgets/playback/live_tv_stream_status_overlay.dart';
 import '../livetv/live_tv_guide_screen.dart';
 import '../../theme/app_theme_controller.dart';
 import 'osd_buttons.dart';
@@ -67,6 +69,14 @@ class _AppleTvLiveTvPlayerHostScreenState
   bool _sweepInFlight = false;
   AppThemeController? _themeController;
 
+  // The native player has no place for a status line, so while it is up
+  // tuner trouble is reported through its alert. Once the tuner has given
+  // up the native player comes down altogether: it would only sit there
+  // black, and this route's own surface has the Retry / Back card.
+  late final LiveTvStreamStatusMonitor _streamStatus;
+  LiveTvStreamStatus _shownStatus = LiveTvStreamStatus.idle;
+  final _retryFocus = FocusNode(debugLabel: 'LiveTvRetry');
+
   AppleTvBackend? get _backend {
     try {
       return GetIt.instance<AppleTvBackend>();
@@ -87,6 +97,8 @@ class _AppleTvLiveTvPlayerHostScreenState
       (_) => _onPlayerTracksChanged(),
     );
     _bringupSub = _manager.bringupStateStream.listen((_) => _pushMetadata());
+    _streamStatus = LiveTvStreamStatusMonitor(_manager);
+    _streamStatus.addListener(_onStreamStatusChanged);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _pushSubtitleStyle();
       _pushThemeConfig();
@@ -134,6 +146,9 @@ class _AppleTvLiveTvPlayerHostScreenState
     _exitSub?.cancel();
     _actionSub?.cancel();
     _bringupSub?.cancel();
+    _streamStatus.removeListener(_onStreamStatusChanged);
+    _streamStatus.dispose();
+    _retryFocus.dispose();
     _tracksChangedSub?.cancel();
     _programRefreshTimer?.cancel();
     _themeController?.removeListener(_onThemeChanged);
@@ -185,7 +200,9 @@ class _AppleTvLiveTvPlayerHostScreenState
         enableTranscoding: true,
       );
     } catch (_) {
-      if (mounted) {
+      // A channel the server refused is already reported by the status card
+      // as "channel unavailable"; a snackbar would only repeat it.
+      if (mounted && !_manager.bringupState.isLiveChannelUnavailable) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -198,6 +215,54 @@ class _AppleTvLiveTvPlayerHostScreenState
     }
     _pushMetadata();
     _fetchCurrentProgram();
+  }
+
+  /// Maps the tuner status onto the native player. Waiting states put up a
+  /// plain alert and take it down once the channel plays. The two failures
+  /// dismiss the native player, which leaves this route's card on screen
+  /// with Retry focused; a Retry then presents the player again.
+  void _onStreamStatusChanged() {
+    if (!mounted || _inGuide || _exiting) return;
+    final status = _streamStatus.value;
+    if (status == _shownStatus) return;
+    final backend = _backend;
+    if (backend == null) return;
+    final previous = _shownStatus;
+    _shownStatus = status;
+    if (status.isFailure) {
+      unawaited(_showFailureCard(backend));
+      return;
+    }
+    final message = _waitingMessage(status);
+    if (message != null) {
+      // The native side swaps an alert already up for the new one.
+      unawaited(backend.showSubtitleProgress(message));
+    } else if (_waitingMessage(previous) != null) {
+      unawaited(backend.hideSubtitleProgress());
+    }
+  }
+
+  String? _waitingMessage(LiveTvStreamStatus status) {
+    final l10n = AppLocalizations.of(context);
+    return switch (status) {
+      LiveTvStreamStatus.stillTrying => l10n.liveTvTunerStillTrying,
+      LiveTvStreamStatus.reconnecting => l10n.liveTvReconnecting,
+      _ => null,
+    };
+  }
+
+  /// Takes the native player down so the card behind it is what the viewer
+  /// sees. The native side only reports a user exit for its own Menu press,
+  /// so this dismissal leaves the route in place. Focus is put on Retry once
+  /// the card has had a frame to build.
+  Future<void> _showFailureCard(AppleTvBackend backend) async {
+    await backend.dismissPlayer();
+    if (!mounted || _exiting || !_streamStatus.value.isFailure) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && _streamStatus.value.isFailure) {
+        _retryFocus.requestFocus();
+      }
+    });
   }
 
   Future<void> _switchChannel(String channelId) async {
@@ -758,11 +823,37 @@ class _AppleTvLiveTvPlayerHostScreenState
     }
   }
 
+  Future<void> _retryCurrentChannel() async {
+    if (_switching || _exiting) return;
+    _switching = true;
+    try {
+      await _playCurrentChannel();
+    } finally {
+      _switching = false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    // The native player is presented over this route only once a stream has
+    // opened. Until then, and again once a failed stream has been torn down,
+    // this Flutter surface is what is on screen, so the tuner status is
+    // drawn here: the spinner while connecting, and the Retry / Back card
+    // once the tuner has given up. While the native player is up this sits
+    // unseen behind it.
+    return Scaffold(
       backgroundColor: Colors.black,
-      body: SizedBox.expand(),
+      body: ValueListenableBuilder<LiveTvStreamStatus>(
+        valueListenable: _streamStatus,
+        builder: (context, status, _) {
+          return LiveTvStreamStatusOverlay(
+            status: status,
+            retryFocusNode: _retryFocus,
+            onRetry: _retryCurrentChannel,
+            onExit: _handleExit,
+          );
+        },
+      ),
     );
   }
 }
