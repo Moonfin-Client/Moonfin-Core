@@ -25,6 +25,11 @@ class _RecordingItemsApi implements ItemsApi {
   bool? isHd;
   bool? is4K;
   bool? is3D;
+  List<String>? includeItemTypes;
+  List<String>? excludeItemTypes;
+  List<String>? genreIds;
+  bool? collapseBoxSetItems;
+  String? collectionType;
 
   QueryFilterValues facets = QueryFilterValues.empty;
   int facetRequests = 0;
@@ -91,6 +96,10 @@ class _RecordingItemsApi implements ItemsApi {
     this.isHd = isHd;
     this.is4K = is4K;
     this.is3D = is3D;
+    this.includeItemTypes = includeItemTypes;
+    this.excludeItemTypes = excludeItemTypes;
+    this.genreIds = genreIds;
+    this.collapseBoxSetItems = collapseBoxSetItems;
     return <String, dynamic>{'TotalRecordCount': 0, 'Items': const []};
   }
 
@@ -108,7 +117,10 @@ class _RecordingItemsApi implements ItemsApi {
     String itemId, {
     String? mediaSourceId,
     String? fields,
-  }) async => <String, dynamic>{'Name': 'Movies', 'CollectionType': 'movies'};
+  }) async => <String, dynamic>{
+    'Name': 'Media',
+    'CollectionType': collectionType ?? 'movies',
+  };
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -141,16 +153,24 @@ class _FakeMdbListRepository implements MdbListRepository {
 Future<LibraryBrowseViewModel> _viewModel(
   _RecordingItemsApi api, {
   ServerType serverType = ServerType.jellyfin,
+  String libraryId = 'movies',
+  String? genreId,
   List<String>? includeItemTypes,
+  bool groupCollections = false,
 }) async {
   SharedPreferences.setMockInitialValues(<String, Object>{});
   final store = PreferenceStore();
   await store.init();
+  final prefs = UserPreferences(store);
+  if (groupCollections) {
+    prefs.set(UserPreferences.groupItemsIntoCollections, true);
+  }
   return LibraryBrowseViewModel(
-    libraryId: 'movies',
+    libraryId: libraryId,
     client: _FakeClient(api, serverType: serverType),
-    prefs: UserPreferences(store),
+    prefs: prefs,
     mdbListRepository: _FakeMdbListRepository(),
+    genreId: genreId,
     includeItemTypes: includeItemTypes,
   );
 }
@@ -285,5 +305,56 @@ void main() {
     addTearDown(emby.dispose);
     expect(emby.supportsUhdFilter, isFalse);
     expect(emby.supportsUnreleasedSeriesFilter, isFalse);
+  });
+
+  test('global genre browse includes only movies and series and excludes non-root types', () async {
+    final api = _RecordingItemsApi();
+    final vm = await _viewModel(
+      api,
+      libraryId: '',
+      genreId: 'anime-genre-id',
+    );
+    addTearDown(vm.dispose);
+
+    await vm.load();
+
+    expect(api.genreIds, ['anime-genre-id']);
+    expect(api.includeItemTypes, ['Movie', 'Series']);
+    expect(api.excludeItemTypes, ['Playlist', 'Episode', 'Season', 'Folder']);
+    expect(api.collapseBoxSetItems, isFalse);
+  });
+
+  test('global genre browse with groupCollections includes BoxSet and sets collapseBoxSetItems', () async {
+    final api = _RecordingItemsApi();
+    final vm = await _viewModel(
+      api,
+      libraryId: '',
+      genreId: 'anime-genre-id',
+      groupCollections: true,
+    );
+    addTearDown(vm.dispose);
+
+    await vm.load();
+
+    expect(api.genreIds, ['anime-genre-id']);
+    expect(api.includeItemTypes, ['Movie', 'Series', 'BoxSet']);
+    expect(api.excludeItemTypes, ['Playlist', 'Episode', 'Season', 'Folder']);
+    expect(api.collapseBoxSetItems, isTrue);
+  });
+
+  test('genre browse in music library asks for MusicAlbum', () async {
+    final api = _RecordingItemsApi()..collectionType = 'music';
+    final vm = await _viewModel(
+      api,
+      libraryId: 'music-library-id',
+      genreId: 'rock-genre-id',
+    );
+    addTearDown(vm.dispose);
+
+    await vm.load();
+
+    expect(api.genreIds, ['rock-genre-id']);
+    expect(api.includeItemTypes, ['MusicAlbum']);
+    expect(api.excludeItemTypes, ['Playlist', 'Episode', 'Season', 'Folder']);
   });
 }

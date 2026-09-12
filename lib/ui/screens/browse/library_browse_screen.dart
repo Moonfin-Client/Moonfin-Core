@@ -1171,7 +1171,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
             crossAxisCount;
         final ar = _gridBaseAspectRatio();
         final desktopTextScale = MediaQuery.textScalerOf(context).scale(1.0);
-        final textHeight = (_hasSubtitles ? 42.0 : 24.0) * desktopTextScale;
+        final textHeight = (_hasSubtitles ? 46.0 : 26.0) * desktopTextScale;
         final cellHeight = cellWidth / ar + textHeight;
         final childAspectRatio = cellWidth / cellHeight;
         // A focused card grows about its center and paints past its cell, so

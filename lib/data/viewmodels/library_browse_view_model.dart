@@ -376,8 +376,11 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     this.overrideName,
     this.includeItemTypes,
     this.favoritesOnly = false,
+  // ignore: prefer_initializing_formals
   }) : _client = client,
+       // ignore: prefer_initializing_formals
        _prefs = prefs,
+       // ignore: prefer_initializing_formals
        _mdbListRepository = mdbListRepository {
     _sortBy = _prefs.get(UserPreferences.librarySortBy(_prefKey));
     _sortDirection = _prefs.get(UserPreferences.librarySortDirection(_prefKey));
@@ -749,10 +752,35 @@ class LibraryBrowseViewModel extends ChangeNotifier {
       sortBy = 'IsFolder,$sortBy';
     }
 
-    if (genreId != null &&
-        _collectionType == 'music' &&
-        includeItemTypes == null) {
-      includeTypes = ['MusicAlbum'];
+    if (isGenreBrowse && includeItemTypes == null) {
+      if (_collectionType == 'music') {
+        includeTypes = ['MusicAlbum'];
+      } else if (_collectionType == 'movies') {
+        if (groupCollections) {
+          includeTypes = ['Movie', 'BoxSet'];
+          collapseBoxSets = true;
+        } else {
+          includeTypes = ['Movie'];
+          collapseBoxSets = false;
+        }
+      } else if (_collectionType == 'tvshows') {
+        if (groupCollections) {
+          includeTypes = ['Series', 'BoxSet'];
+          collapseBoxSets = true;
+        } else {
+          includeTypes = ['Series'];
+          collapseBoxSets = false;
+        }
+      } else {
+        if (groupCollections) {
+          includeTypes = ['Movie', 'Series', 'BoxSet'];
+          collapseBoxSets = true;
+        } else {
+          includeTypes = ['Movie', 'Series'];
+          collapseBoxSets = false;
+        }
+      }
+      excludeTypes = ['Playlist', 'Episode', 'Season', 'Folder'];
     }
 
     if (isStudioBrowse && includeItemTypes == null) {
@@ -763,7 +791,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
         includeTypes = ['Movie', 'Series'];
         collapseBoxSets = false;
       }
-      excludeTypes = ['Playlist', 'Episode', 'Season'];
+      excludeTypes = ['Playlist', 'Episode', 'Season', 'Folder'];
     }
 
     if (isFilterBrowse && includeItemTypes == null) {

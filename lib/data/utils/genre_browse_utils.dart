@@ -1,6 +1,6 @@
 import 'package:server_core/server_core.dart';
 
-const List<String> kBrowsableGenreItemTypes = ['Movie', 'Series', 'Audio', 'MusicAlbum'];
+const List<String> kBrowsableGenreItemTypes = ['Movie', 'Series'];
 
 List<String> normalizeBrowsableGenreItemTypes(List<String>? includeItemTypes) {
   final requested =
@@ -41,8 +41,6 @@ int browsableGenreCount(
     final countField = switch (type) {
       'Movie' => 'MovieCount',
       'Series' => 'SeriesCount',
-      'Audio' => 'SongCount',
-      'MusicAlbum' => 'AlbumCount',
       _ => null,
     };
 
