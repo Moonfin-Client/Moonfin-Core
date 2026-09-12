@@ -5039,6 +5039,10 @@ class _ContentRowsState extends State<_ContentRows>
               cardSubtitle = episodeInfo ?? item.name;
               cardSubtitleWidget = null;
             }
+          } else if (isRowsV2 && item.type == 'Season') {
+            cardTitle = item.seriesName ?? item.name;
+            cardSubtitle = item.name;
+            cardSubtitleWidget = null;
           } else {
             cardTitle = item.name;
             final showUserRatings = item.rawData['ShowUserRatings'] == true;
