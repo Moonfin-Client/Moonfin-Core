@@ -19,6 +19,11 @@ class HomeRowCacheStore {
 
   static const _maxAge = Duration(days: 3);
 
+  /// Rows whose items are only true for the minutes they describe. Replaying
+  /// them from disk paints programmes that already ended.
+  static bool _isTimeBound(HomeRowType rowType) =>
+      rowType == HomeRowType.liveTvOnNow;
+
   Future<File> _file() async {
     final dir = PlatformDetection.isAppleTV
         ? await getApplicationCacheDirectory()
@@ -48,7 +53,8 @@ class HomeRowCacheStore {
       for (final raw in rawRows) {
         if (raw is! Map) continue;
         final row = _rowFromJson(raw.cast<String, dynamic>());
-        if (row != null) rows.add(row);
+        // Drop time-bound rows a build before this one may have written.
+        if (row != null && !_isTimeBound(row.rowType)) rows.add(row);
       }
       return rows.isEmpty ? null : rows;
     } catch (_) {
@@ -60,7 +66,10 @@ class HomeRowCacheStore {
   Future<void> write(String cacheKey, List<HomeRow> rows) async {
     try {
       final serializable = rows
-          .where((r) => !r.isLoading && r.items.isNotEmpty)
+          .where(
+            (r) =>
+                !r.isLoading && r.items.isNotEmpty && !_isTimeBound(r.rowType),
+          )
           .map(_rowToJson)
           .toList(growable: false);
       if (serializable.isEmpty) return;
