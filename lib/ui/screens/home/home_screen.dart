@@ -4581,12 +4581,21 @@ class _ContentRowsState extends State<_ContentRows>
               .clamp(v2PortraitWidth, double.infinity)
               .toDouble()
         : v2PortraitWidth;
+    // A phone caps a focused card at the row width, so the static My Media
+    // card has to use the capped number or it ends up wider than any focused
+    // card ever gets.
+    final v2FocusedWidthForCurrentViewport =
+        isRowsV2 && PlatformDetection.useMobileUi
+        ? v2FocusedWidth.clamp(v2PortraitWidth, v2ExtendedWidth).toDouble()
+        : v2FocusedWidth;
 
     double maxCardHeight = 0;
     double firstCardWidth = 0;
     if (isRowsV2) {
       maxCardHeight = v2ImageHeight + (v2MetadataHeightBudget * metadataScale);
-      firstCardWidth = isModernMyMediaStatic ? v2FocusedWidth : v2PortraitWidth;
+      firstCardWidth = isModernMyMediaStatic
+          ? v2FocusedWidthForCurrentViewport
+          : v2PortraitWidth;
       if (!isModernMyMediaStatic) {
         _prefetchV2RowLeadImage(
           row: row,
@@ -4723,19 +4732,13 @@ class _ContentRowsState extends State<_ContentRows>
                     ? isTouchFocused
                     : (isFocused || isHoverFocused))
               : isFocused;
-          final v2FocusedWidthForCurrentViewport =
-              isRowsV2 && PlatformDetection.useMobileUi
-              ? v2FocusedWidth
-                    .clamp(v2PortraitWidth, v2ExtendedWidth)
-                    .toDouble()
-              : v2FocusedWidth;
           final canUseExpandedV2Card =
               isRowsV2 && effectiveV2Focused && !row.isAudio && !isModernMyMediaStatic;
 
           if (isRowsV2) {
             if (isModernMyMediaStatic) {
               ar = v2FocusedAspect;
-              width = v2FocusedWidth;
+              width = v2FocusedWidthForCurrentViewport;
               imageUrl = _cachedRowImageUrl(
                 item,
                 imageApi,
@@ -5635,11 +5638,6 @@ class _ContentRowsState extends State<_ContentRows>
     }
     if (row.rowType == HomeRowType.latestMedia && _isLatestMusicRow(row)) {
       return ImageType.poster;
-    }
-    if ((row.rowType == HomeRowType.libraryTiles ||
-            row.rowType == HomeRowType.libraryTilesSmall) &&
-        !prefs.get(UserPreferences.modernCardsOnMyMediaRow)) {
-      return ImageType.thumb;
     }
 
     if (prefs.get(UserPreferences.homeRowsUniversalOverride)) {
