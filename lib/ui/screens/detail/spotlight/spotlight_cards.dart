@@ -8,7 +8,8 @@ import '../../../../data/viewmodels/item_detail_view_model.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../preference/user_preferences.dart';
 import '../../../widgets/seerr/seerr_item_chips.dart';
-import '../../../widgets/seerr/seerr_item_status.dart' show seerrItemTabState;
+import '../../../widgets/seerr/seerr_item_status.dart'
+    show seerrItemSeasonStatus, seerrItemTabState;
 import '../../../widgets/seerr/seerr_stats_card.dart';
 import '../item_detail_screen.dart' show DetailTrackList;
 import '../modern/modern_detail_content.dart'
@@ -244,6 +245,7 @@ class _SpotlightCardsBuilder {
     double aspectRatio = 2 / 3,
     bool landscapeCells = false,
     ValueChanged<AggregatedItem>? onTap,
+    Map<int, int>? seerrSeasonStatus,
   }) {
     return SpotlightModalSection(
       title: title,
@@ -256,6 +258,7 @@ class _SpotlightCardsBuilder {
         landscapeCells: landscapeCells,
         firstFocusNode: firstFocusNode,
         onItemTap: onTap ?? actions.openItem,
+        seerrSeasonStatus: seerrSeasonStatus,
       ),
     );
   }
@@ -525,7 +528,13 @@ class _SpotlightCardsBuilder {
           ]) ??
           fallbackImageUrl,
       icon: Icons.video_collection_outlined,
-      sections: [_mediaSection(l10n.seasons, seasons)],
+      sections: [
+        _mediaSection(
+          l10n.seasons,
+          seasons,
+          seerrSeasonStatus: seerrItemSeasonStatus(vm),
+        ),
+      ],
     );
   }
 
