@@ -3161,7 +3161,7 @@
     "@subtitleCustomizationDescription": {
         "description": "Subtitle for the subtitle customization tile"
     },
-    "subtitlePreviewText": "Rychlá hnědá liška přeskakuje líného psa",
+    "subtitlePreviewText": "Příliš žluťoučký kůň úpěl ďábelské ódy",
     "@subtitlePreviewText": {
         "description": "Sample text shown in the subtitle live preview"
     },
@@ -9001,5 +9001,182 @@
     "imdbMostPopularMovies": "Nejpopulárnější filmy podle IMDb",
     "imdbMostPopularTvShows": "Nejpopulárnější seriály podle IMDb",
     "imdbLowestRatedMovies": "Nejhůře hodnocené filmy podle IMDb",
-    "imdbTopEnglishMovies": "Nejlépe hodnocené anglické filmy podle IMDb"
+    "imdbTopEnglishMovies": "Nejlépe hodnocené anglické filmy podle IMDb",
+    "spotlightFilmography": "Filmografie",
+    "@spotlightFilmography": {
+        "description": "Title of the spotlight summary card that opens a person's filmography modal"
+    },
+    "spotlightCollectionsCard": "Kolekce",
+    "@spotlightCollectionsCard": {
+        "description": "Title of the spotlight summary card that opens the parent collections modal"
+    },
+    "spotlightSimilarSeerr": "Podobné (Seerr)",
+    "@spotlightSimilarSeerr": {
+        "description": "Header of the Seerr similar-titles section when it appears beside the library's own similar section"
+    },
+    "spotlightRecommendationsSeerr": "Doporučené (Seerr)",
+    "@spotlightRecommendationsSeerr": {
+        "description": "Header of the Seerr recommendations section when it appears in the Spotlight recommendations modal"
+    },
+    "interfaceLayoutAutomatic": "Automaticky",
+    "@interfaceLayoutAutomatic": {
+        "description": "Interface layout option: detect from the device"
+    },
+    "interfaceLayoutTv": "TV",
+    "@interfaceLayoutTv": {
+        "description": "Interface layout option: 10-foot TV layout"
+    },
+    "interfaceLayoutDesktop": "Desktop",
+    "@interfaceLayoutDesktop": {
+        "description": "Interface layout option: desktop layout"
+    },
+    "interfaceLayoutPhone": "Telefon",
+    "@interfaceLayoutPhone": {
+        "description": "Interface layout option: phone layout"
+    },
+    "oledMode": "OLED mód",
+    "@oledMode": {
+        "description": "Label for the setting that deepens blacks and enriches artwork on OLED displays"
+    },
+    "controller": "Herní ovladač",
+    "@controller": {
+        "description": "Settings section header for game controller options"
+    },
+    "gamepadNavigation": "Ovládání herním ovladačem",
+    "@gamepadNavigation": {
+        "description": "Settings label for the switch that lets a game controller move focus and select items"
+    },
+    "gamepadNavigationDescription": "Měnit zaměření a vybírat položky připojeným herním ovladačem",
+    "@gamepadNavigationDescription": {
+        "description": "Settings subtitle for the gamepad navigation switch"
+    },
+    "latestComics": "Nejnovější komiksy",
+    "@latestComics": {
+        "description": "Row title for recently added comics in the book library"
+    },
+    "comics": "Komiksy",
+    "@comics": {
+        "description": "Label for comic media format or section"
+    },
+    "bookFormatComic": "Komiks",
+    "@bookFormatComic": {
+        "description": "Semantic label for the comic format badge on library cards"
+    },
+    "noBooksFoundDescription": "Tato knihovna zatím neobsahuje žádné knihy, audioknihy ani komiksy.",
+    "@noBooksFoundDescription": {
+        "description": "Description shown when a books library has no items"
+    },
+    "castMembers": "Obsazení",
+    "@castMembers": {
+        "description": "Section title for the list of actors and performers in movie and TV metadata. Not the casting-to-a-device action"
+    },
+    "finalizingDownload": "Dokončování…",
+    "@finalizingDownload": {
+        "description": "Status label shown while a finished download is being moved to its final location and validated"
+    },
+    "failedToDeleteItemWithError": "Mazání selhalo s následující chybou: {error}",
+    "@failedToDeleteItemWithError": {
+        "description": "Error message when item deletion fails, including the specific error details",
+        "placeholders": {
+            "error": {
+                "type": "String",
+                "example": "Permission denied"
+            }
+        }
+    },
+    "searchingSubtitles": "Hledání titulků…",
+    "@searchingSubtitles": {
+        "description": "Shown while a remote subtitle search is running"
+    },
+    "downloadingSubtitle": "Stahování titulků…",
+    "@downloadingSubtitle": {
+        "description": "Shown while a chosen subtitle is downloaded and the server is picking it up"
+    },
+    "downloadScopeTitle": "Ke stažení",
+    "@downloadScopeTitle": {
+        "description": "Title of the sheet asking whether to download all or only unwatched items"
+    },
+    "downloadAllEpisodes": "Všechny epizody",
+    "@downloadAllEpisodes": {
+        "description": "Download scope option: every episode of a series or season"
+    },
+    "downloadUnwatchedEpisodes": "Všechny nezhlédnuté epizody",
+    "@downloadUnwatchedEpisodes": {
+        "description": "Download scope option: only episodes not yet marked as watched"
+    },
+    "downloadAllMovies": "Všechny filmy",
+    "@downloadAllMovies": {
+        "description": "Download scope option: every movie in a collection"
+    },
+    "downloadUnwatchedMovies": "Všechny nezhlédnuté filmy",
+    "@downloadUnwatchedMovies": {
+        "description": "Download scope option: only collection movies not yet marked as watched"
+    },
+    "downloadScopeLoading": "Načítání položek...",
+    "@downloadScopeLoading": {
+        "description": "Subtitle shown in the download scope sheet while the item list is being fetched"
+    },
+    "downloadScopeLoadFailed": "Nezdařilo se načíst položky ke stažení",
+    "@downloadScopeLoadFailed": {
+        "description": "Snackbar shown when the item list for a batch download could not be fetched"
+    },
+    "downloadEstimateTotal": "~{size} celkem",
+    "@downloadEstimateTotal": {
+        "description": "Estimated total download size for a batch, e.g. '~1.2 GB total'",
+        "placeholders": {
+            "size": {
+                "type": "String"
+            }
+        }
+    },
+    "downloadBytesOfTotal": "{received} z {total}",
+    "@downloadBytesOfTotal": {
+        "description": "Transfer status of a running download, e.g. '1.2 GB of 4.6 GB'",
+        "placeholders": {
+            "received": {
+                "type": "String"
+            },
+            "total": {
+                "type": "String"
+            }
+        }
+    },
+    "downloadSpeed": "{speed}/s",
+    "@downloadSpeed": {
+        "description": "Transfer rate of a running download, e.g. '25.3 MB/s'",
+        "placeholders": {
+            "speed": {
+                "type": "String"
+            }
+        }
+    },
+    "downloadSizeTotal": "{size} celkem",
+    "@downloadSizeTotal": {
+        "description": "Exact total file size of a batch of original files, e.g. '12.4 GB total'",
+        "placeholders": {
+            "size": {
+                "type": "String"
+            }
+        }
+    },
+    "aiTranslated": "Přeloženo pomocí AI",
+    "@aiTranslated": {
+        "description": "Label for a remote subtitle the provider marked as AI translated"
+    },
+    "machineTranslated": "Strojově přeloženo",
+    "@machineTranslated": {
+        "description": "Label for a remote subtitle the provider marked as machine translated"
+    },
+    "showMpvStats": "Zobrazit mpv statistiky (Shift+I)",
+    "@showMpvStats": {
+        "description": "Button in the stream info sheet that shows mpv's own statistics overlay; Shift+I is the keyboard shortcut"
+    },
+    "hideMpvStats": "Skrýt mpv statistiky (Shift+I)",
+    "@hideMpvStats": {
+        "description": "Button in the stream info sheet that hides mpv's own statistics overlay; Shift+I is the keyboard shortcut"
+    },
+    "keyboardShortcutsTitle": "Klávesové zkratky",
+    "@keyboardShortcutsTitle": {
+        "description": "Title of the screen and dialog that list every keyboard shortcut"
+    }
 }
