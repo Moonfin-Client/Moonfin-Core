@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
 
+import '../../theme/focus_foreground.dart';
 import '../../widgets/bounded_network_image.dart';
 import '../../widgets/offline_aware_image.dart';
 import '../../widgets/identify_dialog.dart';
@@ -11536,32 +11537,28 @@ class _PersonalRatingActionIcon extends StatelessWidget {
     return switch (style) {
       PersonalRatingStyle.thumbs =>
         likes == null
-            ? (size <= 24
-                ? Icon(
-                    Icons.thumb_up_outlined,
-                    color: color,
-                    size: size * 0.85,
-                  )
-                : Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.thumb_up_outlined,
-                        color: color,
-                        size: size * 0.5,
-                      ),
-                      SizedBox(width: size * 0.08),
-                      Icon(
-                        Icons.thumb_down_outlined,
-                        color: color,
-                        size: size * 0.5,
-                      ),
-                    ],
-                  ))
+            ? Center(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.thumb_up_outlined,
+                      color: color,
+                      size: size * 0.5,
+                    ),
+                    SizedBox(width: size * 0.08),
+                    Icon(
+                      Icons.thumb_down_outlined,
+                      color: color,
+                      size: size * 0.5,
+                    ),
+                  ],
+                ),
+              )
             : Icon(
                 likes! ? Icons.thumb_up : Icons.thumb_down,
                 color: color,
-                size: size * 0.85,
+                size: size * 0.72,
               ),
       PersonalRatingStyle.stars => _StarFillIcon(
         fill: ((rating ?? 0).clamp(0, 10) / 10).toDouble(),
@@ -12275,11 +12272,7 @@ class _SpotlightOverflowTileState extends State<_SpotlightOverflowTile> {
     final showHighlight = _isFocused || _isHovered;
 
     final focusBg = AppColorScheme.buttonFocused;
-    final focusedFg = focusBg.computeLuminance() > 0.5
-        ? (AppColorScheme.onButtonFocused != focusBg
-            ? AppColorScheme.onButtonFocused
-            : Colors.black87)
-        : Colors.white;
+    final focusedFg = readableOnFocusFill(focusBg);
 
     final textColor = showHighlight
         ? (isTv ? focusedFg : Colors.white)
@@ -12291,11 +12284,14 @@ class _SpotlightOverflowTileState extends State<_SpotlightOverflowTile> {
             ? (action.activeColor ?? AppColorScheme.accent)
             : Colors.white.withValues(alpha: 0.85));
 
+    // The plain icon first. The builders draw for the button row, where the
+    // rating one pairs a thumb up and down and the star one part fills, and
+    // both come out a smudge at 22. The label carries the rating anyway.
     final Widget? leadingWidget;
-    if (action.iconBuilder != null) {
-      leadingWidget = action.iconBuilder!(22, iconColor);
-    } else if (action.icon != null) {
+    if (action.icon != null) {
       leadingWidget = AdaptiveIcon(action.icon!, color: iconColor, size: 22);
+    } else if (action.iconBuilder != null) {
+      leadingWidget = action.iconBuilder!(22, iconColor);
     } else {
       leadingWidget = null;
     }

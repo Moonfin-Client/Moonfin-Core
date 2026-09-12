@@ -845,9 +845,6 @@ class ItemDetailViewModel extends ChangeNotifier {
       futures.add(_loadEpisodes());
       futures.add(_loadSimilar());
       futures.add(_loadFeatures());
-      if (_item?.seriesId != null) {
-        futures.add(loadAllSeriesEpisodes());
-      }
     } else if (type == 'MusicArtist') {
       futures.add(_loadAlbums());
       futures.add(_loadTracks(artistId: itemId));
