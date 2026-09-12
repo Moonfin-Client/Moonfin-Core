@@ -24,6 +24,7 @@ import '../../../../util/detail_playback_info.dart';
 import '../../../../util/detail_track_highlight.dart';
 import '../../../../util/direct_play_reasons_formatter.dart';
 import '../../../../util/episode_playability.dart';
+import '../../../../util/item_watch_state.dart';
 import '../../../../util/overview_text.dart';
 import '../../../../util/playback_time_label.dart';
 import '../../../../util/platform_detection.dart';
@@ -1131,11 +1132,6 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     final showPosterUrl = _imageUrl(item);
     final watchedBehavior =
         widget.prefs.get(UserPreferences.watchedIndicatorBehavior);
-    final showPlayedIndicator =
-        watchedBehavior == WatchedIndicatorBehavior.always ||
-        watchedBehavior == WatchedIndicatorBehavior.hideUnwatched;
-    final showUnwatchedIndicator =
-        watchedBehavior == WatchedIndicatorBehavior.always;
     // Determine which season contains the "next up" episode, mirroring the
     // episode-card logic: prefer _vm.nextUp.seasonId, fall back to the first
     // unplayed episode's seasonId so the cyan border always renders correctly.
@@ -1154,24 +1150,28 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       bool topRow = true,
     }) {
       final season = _vm.seasons[i];
-      final seasonEpisodes = _vm.seriesEpisodes.where(
-        (e) =>
-            e.seasonId == season.id ||
-            (season.indexNumber != null &&
-                e.parentIndexNumber == season.indexNumber),
+      final seasonEpisodes = _vm.seriesEpisodes
+          .where(
+            (e) =>
+                e.seasonId == season.id ||
+                (season.indexNumber != null &&
+                    e.parentIndexNumber == season.indexNumber),
+          )
+          .toList(growable: false);
+      final unplayed = seasonEpisodes.where((e) => !e.isPlayed).length;
+      final isFullyPlayed =
+          season.isPlayed || (seasonEpisodes.isNotEmpty && unplayed == 0);
+      final remaining = isFullyPlayed
+          ? 0
+          : (seasonEpisodes.isNotEmpty
+              ? unplayed
+              : (season.unplayedItemCount ?? 0));
+      final showsIndicator = showsWatchedIndicator(
+        behavior: watchedBehavior,
+        isPlayed: isFullyPlayed,
+        itemType: 'Season',
+        unplayedCount: remaining,
       );
-      final isFullyPlayed = season.isPlayed ||
-          (seasonEpisodes.isNotEmpty &&
-              seasonEpisodes.every((e) => e.isPlayed));
-      final isPlayed = showPlayedIndicator && isFullyPlayed;
-      final int? unplayedCount;
-      if (isFullyPlayed || !showUnwatchedIndicator) {
-        unplayedCount = null;
-      } else if (seasonEpisodes.isNotEmpty) {
-        unplayedCount = seasonEpisodes.where((e) => !e.isPlayed).length;
-      } else {
-        unplayedCount = season.unplayedItemCount;
-      }
 
       return SeasonCard(
         seerrStatus: showAvailabilityBadges
@@ -1185,8 +1185,8 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
         isFallbackImage: _imageUrl(season) == null,
         landscape: _landscape,
         isNextUp: season.id == nextUpSeasonId,
-        isPlayed: isPlayed,
-        unplayedCount: unplayedCount,
+        isPlayed: showsIndicator && isFullyPlayed,
+        unplayedCount: showsIndicator && !isFullyPlayed ? remaining : null,
         onNavigateUp: topRow ? _focusSelectedTab : null,
         focusNode: i == 0 ? _seasonsFirstFocusNode : null,
         width: width,
