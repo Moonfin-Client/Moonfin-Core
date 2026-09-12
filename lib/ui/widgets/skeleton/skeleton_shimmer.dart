@@ -1,8 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
+class _ShimmerScope extends InheritedWidget {
+  const _ShimmerScope({required super.child});
+
+  @override
+  bool updateShouldNotify(_ShimmerScope oldWidget) => false;
+}
+
 /// Shimmer / breathing opacity wrapper for skeleton placeholder UI elements.
-class SkeletonShimmer extends StatefulWidget {
+///
+/// A screen usually wraps its whole skeleton, and the pieces it is built from
+/// wrap themselves so they still breathe when used alone. Nesting two of these
+/// multiplies their opacities and lets the two animations drift apart, so the
+/// inner one passes its child straight through.
+class SkeletonShimmer extends StatelessWidget {
   final Widget child;
 
   const SkeletonShimmer({
@@ -11,10 +23,24 @@ class SkeletonShimmer extends StatefulWidget {
   });
 
   @override
-  State<SkeletonShimmer> createState() => _SkeletonShimmerState();
+  Widget build(BuildContext context) {
+    if (context.getInheritedWidgetOfExactType<_ShimmerScope>() != null) {
+      return child;
+    }
+    return _ShimmerScope(child: _ShimmerAnimation(child: child));
+  }
 }
 
-class _SkeletonShimmerState extends State<SkeletonShimmer>
+class _ShimmerAnimation extends StatefulWidget {
+  final Widget child;
+
+  const _ShimmerAnimation({required this.child});
+
+  @override
+  State<_ShimmerAnimation> createState() => _ShimmerAnimationState();
+}
+
+class _ShimmerAnimationState extends State<_ShimmerAnimation>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final Animation<double> _animation;

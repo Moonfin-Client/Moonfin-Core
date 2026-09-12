@@ -160,5 +160,41 @@ void main() {
       expect(find.byType(SkeletonMusicBrowse), findsOneWidget);
       expect(find.byType(SkeletonBox), findsWidgets);
     });
+
+    // MaterialApp draws fade transitions of its own for the route, so these
+    // count only the ones inside the shimmer.
+    Finder shimmerFades() => find.descendant(
+      of: find.byType(SkeletonShimmer).first,
+      matching: find.byType(FadeTransition),
+    );
+
+    testWidgets('a shimmer on its own breathes', (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: SkeletonShimmer(child: SkeletonBox(width: 10, height: 10)),
+          ),
+        ),
+      );
+
+      expect(shimmerFades(), findsOneWidget);
+    });
+
+    testWidgets('a nested shimmer stands aside', (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: SkeletonShimmer(
+              child: SkeletonShimmer(
+                child: SkeletonBox(width: 10, height: 10),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(shimmerFades(), findsOneWidget);
+      expect(find.byType(SkeletonBox), findsOneWidget);
+    });
   });
 }
