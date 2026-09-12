@@ -230,12 +230,10 @@ class _FadeScalePageTransitionsBuilder extends PageTransitionsBuilder {
         ? GetIt.I<UserPreferences>().get(UserPreferences.pageTransitionSpeed)
         : PageTransitionSpeed.medium;
 
-    if (speed == PageTransitionSpeed.off) {
-      return child;
-    }
-
-    // Safely adjust route controller duration via post-frame callback
-    // to avoid mutating animation state during the widget build phase.
+    // The route owns this controller and there is no public way to retime it,
+    // so without this a speed change would only take hold on the next route.
+    // No Fade comes through here too. Handing back the child early would skip
+    // the fade but leave the route running for Flutter's 450ms default.
     // ignore: invalid_use_of_protected_member
     final controller = route.controller;
     if (controller != null && controller.duration != speed.duration) {

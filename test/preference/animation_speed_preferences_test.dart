@@ -129,6 +129,8 @@ void main() {
       expect(fade2.opacity.value, lessThan(0.5));
       expect(find.text('Destination'), findsOneWidget);
 
+      await tester.pumpAndSettle();
+
       // Now set to OFF
       await prefs.set(UserPreferences.pageTransitionSpeed, PageTransitionSpeed.off);
       key.currentState!.push(
@@ -139,6 +141,10 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 16));
       expect(find.text('DestinationOff'), findsOneWidget);
+      // The page showing is not enough on its own. Handing back the child skips
+      // the fade whatever the route is timed at, so this checks the route has
+      // actually finished rather than still running behind a visible page.
+      expect(tester.hasRunningAnimations, isFalse);
     });
   });
 }
