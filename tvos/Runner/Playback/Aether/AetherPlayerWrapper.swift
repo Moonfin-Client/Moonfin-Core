@@ -389,7 +389,13 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
     // MARK: - Surface
 
     func attachVideoView(_ view: PlatformView) {
+        // Hold the outgoing view until the store is done: its deinit calls
+        // detachVideoView, which reads videoView, and releasing it inside the
+        // assignment would overlap that read with the write (a Swift
+        // exclusivity violation, fatal at runtime).
+        let previous = videoView
         videoView = view
+        withExtendedLifetime(previous) {}
         playerView.frame = view.bounds
         subtitleOverlay.frame = view.bounds
         #if canImport(UIKit)
