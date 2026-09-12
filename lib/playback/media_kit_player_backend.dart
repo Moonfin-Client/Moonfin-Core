@@ -16,6 +16,7 @@ import '../util/platform_detection.dart';
 import 'device_profile_builder.dart';
 import 'hdr_output_controller.dart';
 import 'known_defects.dart';
+import 'letterbox_croppers.dart';
 import 'mpv_letterbox_crop.dart';
 import 'server_transcode_capabilities.dart';
 
@@ -192,11 +193,7 @@ class MediaKitPlayerBackend extends PlayerBackend {
   bool _audioPassthroughApplyInProgress = false;
   bool _audioPassthroughApplyQueued = false;
   bool _isDisposed = false;
-  int _letterboxCropGeneration = 0;
-  String? _letterboxHwdecBackup;
-  bool? _lastLetterboxCropEnabled;
-  String? _letterboxCropDoneUrl;
-  bool _letterboxCropInFlight = false;
+  late final MpvLetterboxCropper _letterboxCropper;
   String? _appliedCustomMpvConfPath;
   DateTime? _appliedCustomMpvConfMtime;
   static final Map<String, _ParsedMpvConfCacheEntry> _parsedMpvConfCache =
@@ -425,6 +422,10 @@ class MediaKitPlayerBackend extends PlayerBackend {
     this._onNativeHandleReady,
     this._hwDecodingEnabled,
   ) {
+    _letterboxCropper = MpvLetterboxCropper(
+      _MediaKitLetterboxHost(this),
+      supported: letterboxCropAvailable(),
+    );
     _prefs.addListener(_onPreferencesChanged);
     _ccTracksSub = _player.stream.tracks.listen(
       (_) => unawaited(_refreshEmbeddedCaptionTracks()),
@@ -550,6 +551,9 @@ class MediaKitPlayerBackend extends PlayerBackend {
   bool get supportsRuntimeTrackSelection => true;
 
   @override
+  LetterboxCropper get letterboxCropper => _letterboxCropper;
+
+  @override
   bool get requiresStartupMediaReadyCheck => true;
 
   @override
@@ -653,9 +657,6 @@ class MediaKitPlayerBackend extends PlayerBackend {
         : payload['url']?.toString() ?? '';
     if (url.isEmpty) return;
 
-    if (url != _currentUrl) {
-      _letterboxCropDoneUrl = null;
-    }
     _currentUrl = url;
     _isStale = true;
     _embeddedCaptionTracks = const [];
@@ -690,7 +691,12 @@ class MediaKitPlayerBackend extends PlayerBackend {
       _enableNativeSubtitleRendering();
     }
     await _maybeEngageNativeHdr();
-    unawaited(_startLetterboxCropIfEnabled());
+    unawaited(() async {
+      await _letterboxCropper.setEnabled(
+        _prefs.get(UserPreferences.cropBlackBars),
+      );
+      await _letterboxCropper.onSourceOpened(url);
+    }());
   }
 
   /// Gives mpv its own D3D11 window when the content is HDR and the display is
@@ -1355,7 +1361,9 @@ class MediaKitPlayerBackend extends PlayerBackend {
       return;
     }
 
-    _syncLetterboxCropWithPref();
+    unawaited(
+      _letterboxCropper.setEnabled(_prefs.get(UserPreferences.cropBlackBars)),
+    );
 
     if (_audioPassthroughApplyInProgress) {
       _audioPassthroughApplyQueued = true;
@@ -2416,246 +2424,67 @@ class MediaKitPlayerBackend extends PlayerBackend {
     return controller.stream;
   }
 
-  void _syncLetterboxCropWithPref() {
-    final enabled = _prefs.get(UserPreferences.cropBlackBars);
-    if (enabled == _lastLetterboxCropEnabled) return;
-    if (_currentUrl == null || _currentUrl!.isEmpty) {
-      _lastLetterboxCropEnabled = enabled;
-      return;
-    }
-    unawaited(_startLetterboxCropIfEnabled());
-  }
-
-  Future<void> _startLetterboxCropIfEnabled() async {
-    final enabled = _prefs.get(UserPreferences.cropBlackBars);
-    _lastLetterboxCropEnabled = enabled;
-    if (enabled != true) {
-      ++_letterboxCropGeneration;
-      await _cleanupLetterboxCrop(restoreHwdec: true);
-      _letterboxCropDoneUrl = null;
-      return;
-    }
-    if (_player.platform is! NativePlayer) return;
-    if (_currentUrl != null && _letterboxCropDoneUrl == _currentUrl) return;
-    if (_letterboxCropInFlight) return;
-
-    final generation = ++_letterboxCropGeneration;
-    await _cleanupLetterboxCrop(restoreHwdec: true);
-    if (!_isCurrentLetterbox(generation)) return;
-    _letterboxCropInFlight = true;
-    unawaited(_runLetterboxCrop(generation));
-  }
-
-  Future<void> _runLetterboxCrop(int generation) async {
-    final native = _player.platform;
-    if (native is! NativePlayer) {
-      if (generation == _letterboxCropGeneration) {
-        _letterboxCropInFlight = false;
-      }
-      return;
-    }
-
-    LetterboxCropRect? rect;
-    try {
-      try {
-        if (!await _waitWhileCurrent(generation, untilPlaying: true)) return;
-        if (_player.state.position < MpvLetterboxCrop.autoDelay) {
-          if (!await _delayLetterbox(generation, MpvLetterboxCrop.autoDelay)) {
-            return;
-          }
-        }
-        if (_player.state.playing != true) {
-          if (!await _waitWhileCurrent(generation, untilPlaying: true)) return;
-        }
-
-        final remaining = _player.state.duration - _player.state.position;
-        if (_player.state.duration > Duration.zero &&
-            remaining <
-                MpvLetterboxCrop.detectDuration + const Duration(seconds: 1)) {
-          debugPrint('[letterbox_crop] skip: not enough time left');
-          return;
-        }
-        if (!_isCurrentLetterbox(generation)) return;
-
-        final hwdecCurrent = await _tryNativeGetProperty(
-          native,
-          'hwdec-current',
-        );
-        final detectHwdec = MpvLetterboxCrop.hwdecForCropdetect(hwdecCurrent);
-        if (detectHwdec != null) {
-          _letterboxHwdecBackup = await _tryNativeGetProperty(native, 'hwdec');
-          debugPrint(
-            '[letterbox_crop] hwdec $hwdecCurrent -> $detectHwdec '
-            '(was $_letterboxHwdecBackup)',
-          );
-          await _nativeSetProperty(native, 'hwdec', detectHwdec);
-          if (!await _delayLetterbox(
-            generation,
-            const Duration(milliseconds: 400),
-          )) {
-            return;
-          }
-        }
-
-        final inserted = await _tryNativeCommand(native, [
-          'vf',
-          'pre',
-          MpvLetterboxCrop.filterSpec,
-        ]);
-        debugPrint(
-          '[letterbox_crop] vf insert=$inserted spec=${MpvLetterboxCrop.filterSpec}',
-        );
-        if (!inserted || !_isCurrentLetterbox(generation)) return;
-
-        if (!await _delayLetterbox(
-          generation,
-          MpvLetterboxCrop.detectDuration,
-        )) {
-          return;
-        }
-
-        final lavfi = <String, String>{};
-        for (final key in const ['w', 'h', 'x', 'y']) {
-          final value = await _tryNativeGetProperty(
-            native,
-            MpvLetterboxCrop.metadataProperty(key),
-          );
-          if (value != null) lavfi[key] = value;
-        }
-        if (lavfi.length < 4) {
-          final blob = await _tryNativeGetProperty(
-            native,
-            'vf-metadata/${MpvLetterboxCrop.filterLabel}',
-          );
-          debugPrint('[letterbox_crop] vf-metadata blob=$blob');
-          lavfi.addAll(MpvLetterboxCrop.parseVfMetadata(blob));
-        }
-
-        final width =
-            int.tryParse(await _tryNativeGetProperty(native, 'width') ?? '') ??
-            0;
-        final height =
-            int.tryParse(await _tryNativeGetProperty(native, 'height') ?? '') ??
-            0;
-        rect = MpvLetterboxCrop.decide(
-          lavfi: lavfi,
-          sourceWidth: width,
-          sourceHeight: height,
-        );
-        debugPrint(
-          '[letterbox_crop] lavfi=$lavfi ${width}x$height -> ${rect?.videoCrop}',
-        );
-      } finally {
-        await _removeLetterboxFilter(native);
-        if (rect == null) {
-          await _restoreLetterboxHwdec(native);
-        }
-      }
-
-      if (rect == null || !_isCurrentLetterbox(generation)) return;
-      if (!await _delayLetterbox(
-        generation,
-        const Duration(milliseconds: 200),
-      )) {
-        await _restoreLetterboxHwdec(native);
-        return;
-      }
-      await _applyVideoCrop(native, rect);
-      final hwdecNow = await _tryNativeGetProperty(native, 'hwdec-current');
-      debugPrint('[letterbox_crop] applied ${rect.videoCrop} hwdec=$hwdecNow');
-      _letterboxCropDoneUrl = _currentUrl;
-    } finally {
-      if (generation == _letterboxCropGeneration) {
-        _letterboxCropInFlight = false;
-      }
-    }
-  }
-
-  bool _isCurrentLetterbox(int generation) {
-    return !_isDisposed && generation == _letterboxCropGeneration;
-  }
-
-  Future<bool> _delayLetterbox(int generation, Duration duration) async {
-    await Future<void>.delayed(duration);
-    return _isCurrentLetterbox(generation);
-  }
-
-  Future<bool> _waitWhileCurrent(
-    int generation, {
-    required bool untilPlaying,
-  }) async {
-    if (_player.state.playing == untilPlaying) {
-      return _isCurrentLetterbox(generation);
-    }
-    try {
-      await _player.stream.playing
-          .firstWhere((playing) => playing == untilPlaying)
-          .timeout(const Duration(seconds: 30));
-    } catch (_) {
-      return false;
-    }
-    return _isCurrentLetterbox(generation);
-  }
-
-  Future<void> _cleanupLetterboxCrop({required bool restoreHwdec}) async {
-    final native = _player.platform;
-    if (native is! NativePlayer) return;
-    await _removeLetterboxFilter(native);
-    await _clearVideoCrop(native);
-    if (restoreHwdec) {
-      await _restoreLetterboxHwdec(native);
-    }
-  }
-
-  Future<void> _applyVideoCrop(
-    NativePlayer native,
-    LetterboxCropRect rect,
-  ) async {
-    await _tryNativeCommand(native, [
-      'vf',
-      'add',
-      MpvLetterboxCrop.appliedFilterSpec(rect),
-    ]);
-    debugPrint('[letterbox_crop] vf crop ${rect.videoCrop}');
-  }
-
-  Future<void> _clearVideoCrop(NativePlayer native) async {
-    await _tryNativeCommand(native, [
-      'vf',
-      'remove',
-      '@${MpvLetterboxCrop.appliedFilterLabel}',
-    ]);
-    await _tryNativeCommand(native, ['set', 'video-crop', '']);
-    await _tryNativeCommand(native, [
-      'set',
-      'file-local-options/video-crop',
-      '',
-    ]);
-  }
-
-  Future<void> _removeLetterboxFilter(NativePlayer native) async {
-    await _tryNativeCommand(native, [
-      'vf',
-      'remove',
-      '@${MpvLetterboxCrop.filterLabel}',
-    ]);
-  }
-
-  Future<void> _restoreLetterboxHwdec(NativePlayer native) async {
-    final backup = _letterboxHwdecBackup;
-    _letterboxHwdecBackup = null;
-    if (backup == null || backup.isEmpty) return;
-    await _nativeSetProperty(native, 'hwdec', backup);
-  }
-
   @override
   void dispose() {
     _isDisposed = true;
-    _letterboxCropGeneration++;
+    _letterboxCropper.cancel();
     _prefs.removeListener(_onPreferencesChanged);
     _ccTracksSub?.cancel();
     _videoParamsSub?.cancel();
     _tracksChangedController.close();
     _player.dispose();
   }
+}
+
+class _MediaKitLetterboxHost implements MpvLetterboxHost {
+  _MediaKitLetterboxHost(this._backend);
+
+  final MediaKitPlayerBackend _backend;
+
+  NativePlayer? get _native {
+    final platform = _backend._player.platform;
+    return platform is NativePlayer ? platform : null;
+  }
+
+  @override
+  bool get hasNativePlayer => _native != null;
+
+  @override
+  Future<String?> getProperty(String key) async {
+    final native = _native;
+    if (native == null) return null;
+    return _backend._tryNativeGetProperty(native, key);
+  }
+
+  @override
+  Future<void> setProperty(String key, String value) async {
+    final native = _native;
+    if (native == null) return;
+    await MediaKitPlayerBackend._nativeSetProperty(native, key, value);
+  }
+
+  @override
+  Future<bool> command(List<String> args) async {
+    final native = _native;
+    if (native == null) return false;
+    return MediaKitPlayerBackend._tryNativeCommand(native, args);
+  }
+
+  @override
+  bool get isPlaying => _backend._player.state.playing;
+
+  @override
+  Duration get position => _backend._player.state.position;
+
+  @override
+  Duration get duration => _backend._player.state.duration;
+
+  @override
+  Stream<bool> get playingStream => _backend._player.stream.playing;
+
+  @override
+  String? get currentUrl => _backend._currentUrl;
+
+  @override
+  bool get isDisposed => _backend._isDisposed;
 }

@@ -1,3 +1,5 @@
+import 'letterbox_crop.dart';
+
 enum SubtitleRendererMode { native, assOverlay }
 
 /// A caption track the player found inside the video itself, like the CEA-608
@@ -174,6 +176,14 @@ abstract class PlayerBackend {
   /// nudges the rate where this is true, and holds the player instead where
   /// it is not.
   bool get supportsSmoothRateChange => true;
+
+  /// Detect encoded letterbox and crop it. Cover-zoom is not this.
+  ///
+  /// Desktop libmpv ships a cropper. Media3 / Aether / Tizen / HTML return
+  /// [UnsupportedLetterboxCropper] until they implement [LetterboxCropper].
+  LetterboxCropper get letterboxCropper => const UnsupportedLetterboxCropper();
+
+  bool get supportsLetterboxCrop => letterboxCropper.isSupported;
 
   void dispose();
 }

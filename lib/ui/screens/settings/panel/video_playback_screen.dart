@@ -26,9 +26,8 @@ class _VideoPlaybackScreen extends StatelessWidget {
               ListenableBuilder(
                 listenable: prefs,
                 builder: (context, _) {
-                  final cropLocksZoom = prefs.get(
-                    UserPreferences.cropBlackBars,
-                  );
+                  final cropLocksZoom = letterboxCropSettingVisible() &&
+                      prefs.get(UserPreferences.cropBlackBars);
                   return EnumPreferenceTile<ZoomMode>(
                     preference: UserPreferences.playerZoomMode,
                     title: l10n.playerZoomMode,
@@ -43,7 +42,7 @@ class _VideoPlaybackScreen extends StatelessWidget {
                   );
                 },
               ),
-              if (PlatformDetection.isLinux || PlatformDetection.isWindows)
+              if (letterboxCropSettingVisible())
                 SwitchPreferenceTile(
                   preference: UserPreferences.cropBlackBars,
                   title: l10n.cropBlackBars,

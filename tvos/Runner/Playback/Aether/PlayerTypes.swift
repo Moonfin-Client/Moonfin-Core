@@ -93,13 +93,7 @@ enum ZoomMode: String, StringRepresentableEnum, CaseIterable {
     case autoCrop = "Auto Crop"
     case stretch = "Stretch"
 
-    var displayName: String {
-        switch self {
-        case .fit: return "Fit"
-        case .autoCrop: return "Fill"
-        case .stretch: return "Stretch"
-        }
-    }
+    var displayName: String { rawValue }
 
     var next: ZoomMode {
         let all = ZoomMode.allCases

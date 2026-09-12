@@ -1806,7 +1806,8 @@ class UserPreferences extends ChangeNotifier {
     values: ZoomMode.values,
   );
 
-  /// One-shot libmpv cropdetect → `video-crop`. Desktop mpv only.
+  /// One-shot encoded-letterbox crop. libmpv on Linux/Windows; Media3
+  /// (and libmpv if selected) on Android TV. Hidden elsewhere.
   static final cropBlackBars = Preference(
     key: 'crop_black_bars',
     defaultValue: false,

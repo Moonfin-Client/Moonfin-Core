@@ -15,6 +15,7 @@ import 'device_profile_builder.dart';
 import 'dolby_vision_av1.dart';
 import 'engine_trust.dart';
 import 'known_defects.dart';
+import 'letterbox_croppers.dart';
 import 'server_transcode_capabilities.dart';
 
 /// Playback backend driving the native AetherEngine wrapper over a method
@@ -581,6 +582,12 @@ class AetherBackend implements PlayerBackend {
 
   @override
   bool get supportsRuntimeTrackSelection => true;
+
+  @override
+  LetterboxCropper get letterboxCropper => const AetherLetterboxCropper();
+
+  @override
+  bool get supportsLetterboxCrop => letterboxCropper.isSupported;
 
   @override
   bool get supportsDirectPlayAudioSwitch => false;
