@@ -311,9 +311,9 @@ class AudiobookZoomedProgressBar extends StatelessWidget {
         child: SizedBox(
           width: double.infinity,
           child: CupertinoSlider(
-          value: sliderValue,
-          min: startMs,
-          max: endMs,
+            value: sliderValue,
+            min: startMs,
+            max: endMs,
             activeColor: AppColorScheme.rangeProgress,
             onChanged: (v) => onSeek(Duration(milliseconds: v.toInt())),
           ),
