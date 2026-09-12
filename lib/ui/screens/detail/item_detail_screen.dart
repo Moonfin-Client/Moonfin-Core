@@ -5,6 +5,7 @@ import '../../theme/focus_foreground.dart';
 import '../../widgets/bounded_network_image.dart';
 import '../../widgets/offline_aware_image.dart';
 import '../../widgets/identify_dialog.dart';
+import '../../widgets/media_badge.dart';
 import 'detail_admin_actions.dart';
 
 import 'package:flutter/foundation.dart';
@@ -4440,37 +4441,13 @@ class DetailPosterImage extends StatelessWidget {
             Positioned(
               top: 6,
               left: 6,
-              child: Container(
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.6),
-                  shape: BoxShape.circle,
-                ),
-                child: const AdaptiveIcon(
-                  Icons.favorite,
-                  color: Color(0xFFFF4757),
-                  size: 16,
-                ),
-              ),
+              child: MediaFavoriteBadge(size: 26),
             ),
           if (item.isPlayed)
             Positioned(
               top: 6,
               right: 6,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: AppColorScheme.accent,
-                  shape: BoxShape.circle,
-                ),
-                child: const Padding(
-                  padding: EdgeInsets.all(3),
-                  child: AdaptiveIcon(
-                    Icons.check,
-                    color: Colors.white,
-                    size: 12,
-                  ),
-                ),
-              ),
+              child: MediaWatchedBadge(size: 26),
             ),
           if ((item.playedPercentage ?? 0) > 0)
             Positioned(
@@ -4592,37 +4569,13 @@ class _EpisodeThumbnail extends StatelessWidget {
             Positioned(
               top: 6,
               left: 6,
-              child: Container(
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.6),
-                  shape: BoxShape.circle,
-                ),
-                child: const AdaptiveIcon(
-                  Icons.favorite,
-                  color: Color(0xFFFF4757),
-                  size: 14,
-                ),
-              ),
+              child: MediaFavoriteBadge(size: 24),
             ),
           if (item.isPlayed)
             Positioned(
               top: 6,
               right: 6,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: AppColorScheme.accent,
-                  shape: BoxShape.circle,
-                ),
-                child: const Padding(
-                  padding: EdgeInsets.all(3),
-                  child: AdaptiveIcon(
-                    Icons.check,
-                    color: Colors.white,
-                    size: 10,
-                  ),
-                ),
-              ),
+              child: MediaWatchedBadge(size: 24),
             ),
           if ((item.playedPercentage ?? 0) > 0)
             Positioned(

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../../widgets/focus/focusable_wrapper.dart';
+import '../../../../widgets/media_badge.dart';
 import '../../../../widgets/seerr/seerr_status_dot.dart';
 
 /// Glassy season card with a subtle background image, title, episode count and a
@@ -121,43 +122,13 @@ class SeasonCard extends StatelessWidget {
                 Positioned(
                   top: 6,
                   right: 6,
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: AppColorScheme.badgeWatched,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(3),
-                      child: Icon(
-                        Icons.check,
-                        color: AppColorScheme.onBadge,
-                        size: 13,
-                      ),
-                    ),
-                  ),
+                  child: MediaWatchedBadge(size: 22),
                 )
               else if (unplayedCount != null && unplayedCount! > 0)
                 Positioned(
                   top: 6,
                   right: 6,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 5,
-                      vertical: 1,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColorScheme.badgeUnplayed,
-                      borderRadius: AppRadius.circular(8),
-                    ),
-                    child: Text(
-                      '$unplayedCount',
-                      style: TextStyle(
-                        color: AppColorScheme.onBadge,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
+                  child: MediaUnplayedBadge(count: unplayedCount!),
                 ),
               Positioned(
                 left: 8,
