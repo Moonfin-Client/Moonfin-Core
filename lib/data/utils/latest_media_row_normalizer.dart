@@ -8,7 +8,7 @@ int latestMediaFetchLimitForCollection(
   required int maxLimit,
 }) {
   final normalizedType = collectionType?.toLowerCase();
-  if (normalizedType == 'tvshows') {
+  if (normalizedType == 'tvshows' || normalizedType == 'shows') {
     final expandedLimit = defaultLimit * 4;
     if (expandedLimit > maxLimit) {
       return maxLimit;
@@ -75,10 +75,15 @@ List<AggregatedItem> normalizeLatestMediaItems(
   required int limit,
 }) {
   final normalizedType = collectionType?.toLowerCase();
-  final normalized = switch (normalizedType) {
-    'tvshows' => _collapseLatestTvItems(items),
-    _ => items,
-  };
+  final isTvCollection =
+      normalizedType == 'tvshows' || normalizedType == 'shows';
+  final hasTvItems =
+      items.any((i) => i.type == 'Episode' || i.type == 'Season');
+  final shouldCollapse =
+      isTvCollection || (normalizedType == null && hasTvItems);
+
+  final normalized =
+      shouldCollapse ? _collapseLatestTvItems(items) : items;
 
   if (normalized.length <= limit) {
     return normalized;
@@ -129,7 +134,8 @@ AggregatedItem? _seriesCardForLatestTvItem(AggregatedItem item) {
         item.primaryImageTag ?? item.primaryImageTagField;
   }
 
-  final seriesPrimaryImageTag = item.seriesPrimaryImageTag;
+  final seriesPrimaryImageTag =
+      item.seriesPrimaryImageTag ?? item.parentPrimaryImageTag;
   if (seriesPrimaryImageTag != null && seriesPrimaryImageTag.isNotEmpty) {
     final imageTags = Map<String, dynamic>.from(
       rawData['ImageTags'] as Map? ?? const {},
