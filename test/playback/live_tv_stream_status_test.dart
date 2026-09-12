@@ -116,6 +116,68 @@ void main() {
       );
     });
 
+    test('a bringup that never lands runs out rather than waiting for ever', () {
+      tracker.onBringup(phase(PlaybackBringupPhase.resolving, token: 1), t0);
+      expect(
+        tracker.statusAt(t0.add(const Duration(seconds: 29))),
+        LiveTvStreamStatus.stillTrying,
+      );
+      expect(
+        tracker.statusAt(t0.add(const Duration(seconds: 30))),
+        LiveTvStreamStatus.unavailable,
+      );
+      expect(
+        tracker.statusAt(t0.add(const Duration(minutes: 20))),
+        LiveTvStreamStatus.unavailable,
+      );
+    });
+
+    test('a run too short to prove a channel played leaves it unavailable', () {
+      tuneIn(t0);
+      // Short of the run that proves a channel played, so the failure that
+      // follows is one that never came up rather than one that was lost.
+      showFrames(t0, span: const Duration(milliseconds: 1500));
+      tracker.onBringup(
+        phase(PlaybackBringupPhase.failed),
+        t0.add(const Duration(seconds: 2)),
+      );
+      expect(
+        tracker.statusAt(t0.add(const Duration(seconds: 4))),
+        LiveTvStreamStatus.unavailable,
+      );
+    });
+
+    test('a clock that stops stepping is no longer frames on the way', () {
+      tuneIn(t0);
+      showFrames(t0, span: const Duration(seconds: 1));
+      expect(
+        tracker.statusAt(t0.add(const Duration(milliseconds: 1500))),
+        LiveTvStreamStatus.playing,
+      );
+      // Two seconds on from the last step is past the gap one step may leave,
+      // so this is a clock that stopped rather than one still going.
+      expect(
+        tracker.statusAt(t0.add(const Duration(seconds: 3))),
+        LiveTvStreamStatus.connecting,
+      );
+    });
+
+    test('a step longer than a decode gap is a leap, not a step', () {
+      tuneIn(t0);
+      tracker.onPlaying(true, t0);
+      tracker.onPosition(Duration.zero, t0);
+      // Six seconds of content in a quarter second is the tuner jumping to a
+      // new live edge, not frames arriving.
+      tracker.onPosition(
+        const Duration(seconds: 6),
+        t0.add(const Duration(milliseconds: 250)),
+      );
+      expect(
+        tracker.statusAt(t0.add(const Duration(milliseconds: 300))),
+        LiveTvStreamStatus.connecting,
+      );
+    });
+
     test('a failure before ready is unavailable, not lost', () {
       tracker.onBringup(phase(PlaybackBringupPhase.resolving, token: 1), t0);
       tracker.onBringup(

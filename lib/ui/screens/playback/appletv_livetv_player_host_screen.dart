@@ -333,6 +333,10 @@ class _AppleTvLiveTvPlayerHostScreenState
       await pip.dispose();
       _pipPlayer = null;
       _inGuide = false;
+      // A status that changed while the guide was up was turned away, and a
+      // notifier does not repeat itself, so it is read again here. Otherwise
+      // a channel that died behind the guide is never acted on.
+      _onStreamStatusChanged();
     }
 
     if (!mounted) return;
@@ -847,7 +851,10 @@ class _AppleTvLiveTvPlayerHostScreenState
         valueListenable: _streamStatus,
         builder: (context, status, _) {
           return LiveTvStreamStatusOverlay(
-            status: status,
+            // Leaving stops the stream before the route goes, and a channel
+            // stopped before it came up reads as unavailable, so the card
+            // would show itself on the way out.
+            status: _exiting ? LiveTvStreamStatus.idle : status,
             retryFocusNode: _retryFocus,
             onRetry: _retryCurrentChannel,
             onExit: _handleExit,

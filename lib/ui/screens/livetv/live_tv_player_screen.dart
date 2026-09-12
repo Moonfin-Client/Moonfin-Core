@@ -1544,7 +1544,10 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
                   if (PlatformDetection.isMobile) _buildBrightnessOverlay(),
                   if (PlatformDetection.isMobile) _buildVolumeOverlay(),
                   if (_isGuidePickerOpen) _buildGuideOverlay(),
-                  if (_infoVisible && !_isGuidePickerOpen) ...[
+                  // The failure card takes the screen the way the guide does.
+                  // Controls left up would paint over it and give the arrows
+                  // somewhere else to land.
+                  if (_infoVisible && !_isGuidePickerOpen && !_streamFailed) ...[
                     _buildTopOverlay(),
                     _buildBottomOverlay(),
                   ],
@@ -1647,8 +1650,11 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
       curve: Curves.easeInOut,
       child: ValueListenableBuilder<LiveTvStreamStatus>(
         valueListenable: _streamStatus,
+        // Leaving stops the stream before the route goes, and a channel
+        // stopped before it came up reads as unavailable, so the card would
+        // show itself on the way out.
         builder: (context, status, _) => LiveTvStreamStatusOverlay(
-          status: status,
+          status: _isStopping ? LiveTvStreamStatus.idle : status,
           compact: _isGuidePickerOpen,
           retryFocusNode: _retryFocus,
           onRetry: _retryCurrentChannel,

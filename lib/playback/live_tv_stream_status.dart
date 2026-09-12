@@ -350,6 +350,10 @@ class LiveTvStreamStatusTracker {
       return LiveTvStreamStatus.idle;
     }
     if (_bringupInProgress) {
+      // A bringup that never lands is the same wait as one that lands and
+      // never shows a frame. Without this a phase that hangs sits on still
+      // trying for as long as the screen is open.
+      if (sinceStart >= startTimeout) return LiveTvStreamStatus.unavailable;
       return sinceStart >= stillTryingAfter
           ? LiveTvStreamStatus.stillTrying
           : LiveTvStreamStatus.connecting;
