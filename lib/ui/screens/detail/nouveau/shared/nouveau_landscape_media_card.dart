@@ -8,6 +8,7 @@ import '../../../../../data/models/aggregated_item.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../../util/focus/dpad_keys.dart';
 import '../../../../widgets/focus/focusable_wrapper.dart';
+import '../../../../widgets/media_badge.dart';
 import '../../../../widgets/offline_aware_image.dart';
 
 class NouveauLandscapeMediaCard extends StatefulWidget {
@@ -899,13 +900,11 @@ class _NouveauFavoriteIndicator extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColorScheme.recordingActive,
         shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.28),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
-          ),
-        ],
+        border: Border.all(
+          color: Colors.white,
+          width: 1.5,
+        ),
+        boxShadow: kMediaBadgeShadow,
       ),
       alignment: Alignment.center,
       child: const Icon(Icons.favorite_rounded, color: Colors.white, size: 17),

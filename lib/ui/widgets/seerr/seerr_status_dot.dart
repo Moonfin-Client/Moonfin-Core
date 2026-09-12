@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
+import '../media_badge.dart';
+
 /// Seerr media status codes, as the server reports them on `mediaInfo.status`
 /// and `mediaInfo.status4k`.
 abstract final class SeerrMediaStatus {
@@ -97,6 +99,7 @@ class SeerrStatusDot extends StatelessWidget {
             width: 1.5,
           ),
         ),
+        boxShadow: kMediaBadgeShadow,
       ),
       alignment: Alignment.center,
       child: icon,
