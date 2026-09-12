@@ -661,6 +661,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
     return switch (_viewModel.state) {
       ItemDetailState.loading => DetailScreenSkeleton(
         style: _prefs.get(UserPreferences.detailScreenStyle),
+        prefs: _prefs,
       ),
       ItemDetailState.error => Center(
         child: Column(

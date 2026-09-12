@@ -75,7 +75,10 @@ class SkeletonLibraryGrid extends StatelessWidget {
             : null;
         final hasLeftSidebar = prefs?.get(UserPreferences.navbarPosition) == NavbarPosition.left;
         final horizontalPadding = hasLeftSidebar ? 120.0 : 40.0;
-        final targetWidth = cardWidth ?? 150.0;
+        final scale = (prefs?.get(UserPreferences.desktopUiScale) ?? DesktopUiScale.medium).scaleFactor;
+        final posterSize = prefs?.get(UserPreferences.posterSize) ?? PosterSize.medium;
+        final defaultWidth = (posterSize.portraitHeight * aspectRatio) * scale;
+        final targetWidth = cardWidth ?? defaultWidth;
         const spacing = 16.0;
 
         final crossAxisCount = ((constraints.maxWidth - horizontalPadding * 2 + spacing) /
@@ -141,7 +144,10 @@ class SkeletonLibraryGrid extends StatelessWidget {
             : null;
         final hasLeftSidebar = prefs?.get(UserPreferences.navbarPosition) == NavbarPosition.left;
         final horizontalPadding = hasLeftSidebar ? 120.0 : 40.0;
-        final targetWidth = cardWidth ?? 150.0;
+        final scale = (prefs?.get(UserPreferences.desktopUiScale) ?? DesktopUiScale.medium).scaleFactor;
+        final posterSize = prefs?.get(UserPreferences.posterSize) ?? PosterSize.medium;
+        final defaultWidth = (posterSize.portraitHeight * aspectRatio) * scale;
+        final targetWidth = cardWidth ?? defaultWidth;
         final imageHeight = targetWidth / aspectRatio;
 
         return ListView.builder(

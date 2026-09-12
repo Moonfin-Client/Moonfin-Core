@@ -418,7 +418,10 @@ class _FavoritesScreenState extends State<FavoritesScreen> with GridFocusNodeMix
 
   Widget _buildBody() {
     return switch (_vm.state) {
-      FavoritesState.loading => const SkeletonLibraryGrid(),
+      FavoritesState.loading => SkeletonLibraryGrid(
+        cardWidth: _cardWidth(),
+        aspectRatio: _gridBaseAspectRatio(),
+      ),
       FavoritesState.error => Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
