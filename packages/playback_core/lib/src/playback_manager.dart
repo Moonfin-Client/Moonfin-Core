@@ -1054,6 +1054,11 @@ class PlaybackManager implements AudioOwnable {
 
     Future<void> recoverViaTranscode() async {
       _unsupportedAudioRecoveryInFlight = true;
+      // The stop below lets a startup still inside play() return, and the
+      // next token is only taken after that stop. Retire the startup here or
+      // it finishes as a normal start and reports a start for a session whose
+      // stop already went out.
+      ++_playbackSessionToken;
       try {
         await _reResolveAtCurrentPosition(
           forceTranscode: true,
@@ -1746,7 +1751,9 @@ class PlaybackManager implements AudioOwnable {
       startupError = e;
       startupStackTrace = st;
     } finally {
-      _waitingForMedia = false;
+      if (sessionToken == _playbackSessionToken) {
+        _waitingForMedia = false;
+      }
     }
 
     if (sessionToken != _playbackSessionToken) {
