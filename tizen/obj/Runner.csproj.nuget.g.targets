@@ -1,7 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <ImportGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
-    <Import Project="$(NuGetPackageRoot)tizen.net.api8\8.0.0.15631\build\tizen80\Tizen.NET.API8.targets" Condition="Exists('$(NuGetPackageRoot)tizen.net.api8\8.0.0.15631\build\tizen80\Tizen.NET.API8.targets')" />
-    <Import Project="$(NuGetPackageRoot)tizen.net\9.0.0.16760\build\tizen40\Tizen.NET.targets" Condition="Exists('$(NuGetPackageRoot)tizen.net\9.0.0.16760\build\tizen40\Tizen.NET.targets')" />
-  </ImportGroup>
-</Project>
