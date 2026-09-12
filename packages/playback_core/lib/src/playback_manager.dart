@@ -1042,6 +1042,11 @@ class PlaybackManager implements AudioOwnable {
       return;
     }
 
+    // Deliberately not gated on _waitingForMedia. A stream the player can't
+    // parse gives up before it ever reaches a ready state, so gating on that
+    // left the sources this recovery exists for sitting on a spinner. The
+    // re-resolve takes the next session token, and the startup still running
+    // behind it compares tokens and hands off to _cleanupPreemptedSession.
     bool canReResolve() =>
         resolution != null &&
         resolution.playMethod != StreamPlayMethod.transcode &&
@@ -1374,7 +1379,9 @@ class PlaybackManager implements AudioOwnable {
     _lastKnownPosition = startPosition;
     final sessionToken = ++_playbackSessionToken;
     final itemId = _traceItemId(item);
-    if (_lastItemId != itemId) {
+    // Every start gets the one recovery back, bar the recovery's own
+    // re-resolve, which arrives here mid flight on the same item.
+    if (!_unsupportedAudioRecoveryInFlight) {
       _audioTranscodeRecoveryAttempted = false;
     }
     final appliedOverrides = _applyPendingItemOverridesIfNeeded(itemId);

@@ -96,7 +96,6 @@ app.*.map.json
 /Moonfin_Android_v*.apk
 /Moonfin_Android_v*.aab
 /*.apk
-/*.aab
 
 # iOS IPA artifacts and local signing overrides
 /Moonfin-ios.ipa

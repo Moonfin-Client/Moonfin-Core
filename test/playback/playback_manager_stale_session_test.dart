@@ -5,6 +5,7 @@ import 'package:playback_core/playback_core.dart';
 
 class _TestBackend extends Fake implements PlayerBackend {
   final _errors = StreamController<Map<String, dynamic>>.broadcast();
+  Completer<void>? playGate;
   final List<String> playedUrls = <String>[];
   final List<Duration> startPositions = <Duration>[];
   int stopCalls = 0;
@@ -79,6 +80,13 @@ class _TestBackend extends Fake implements PlayerBackend {
     startPositions.add(startPosition);
     currentPosition = startPosition;
     playing = true;
+    // Holds the first play open so a test can land an error while the manager
+    // is still waiting for media. Later plays run straight through.
+    final gate = playGate;
+    if (gate != null) {
+      playGate = null;
+      await gate.future;
+    }
   }
 
   @override
@@ -480,6 +488,82 @@ void main() {
       await manager.playItems(<dynamic>[
         <String, dynamic>{'Id': 'second', 'Type': 'Movie'},
       ]);
+      backend.emitError(<String, dynamic>{
+        'event': 'playerError',
+        'recoverable': true,
+        'kind': 'unsupported_audio',
+      });
+      await pumpEventQueue(times: 10);
+
+      expect(resolver.calls, 4);
+      expect(resolver.requestedDirectPlay, <bool>[true, false, true, false]);
+    } finally {
+      manager.dispose();
+    }
+  });
+
+  test('unsupported audio recovers when it lands during startup', () async {
+    final backend = _TestBackend();
+    final resolver = _TestResolver();
+    final service = _TestService();
+    final manager = _manager(backend, resolver, service);
+
+    final gate = Completer<void>();
+    backend.playGate = gate;
+
+    try {
+      final started = manager.playItems(<dynamic>[
+        <String, dynamic>{'Id': 'startup', 'Type': 'Movie'},
+      ]);
+      await pumpEventQueue(times: 5);
+
+      // A stream the player can't parse errors before it ever reaches a ready
+      // state, so the recovery has to survive this window rather than wait on
+      // a startup that is never going to finish.
+      backend.emitError(<String, dynamic>{
+        'event': 'playerError',
+        'recoverable': true,
+        'kind': 'unsupported_audio',
+      });
+      await pumpEventQueue(times: 10);
+
+      expect(resolver.calls, 2);
+      expect(resolver.requestedDirectPlay, <bool>[true, false]);
+
+      // Lets the preempted startup unwind so the handoff runs too.
+      gate.complete();
+      await started;
+      await pumpEventQueue(times: 10);
+    } finally {
+      if (!gate.isCompleted) {
+        gate.complete();
+      }
+      manager.dispose();
+    }
+  });
+
+  test('playing the same item again gets the recovery back', () async {
+    final backend = _TestBackend();
+    final resolver = _TestResolver();
+    final service = _TestService();
+    final manager = _manager(backend, resolver, service);
+
+    try {
+      await manager.playItems(<dynamic>[
+        <String, dynamic>{'Id': 'repeat', 'Type': 'Movie'},
+      ]);
+      backend.emitError(<String, dynamic>{
+        'event': 'playerError',
+        'recoverable': true,
+        'kind': 'unsupported_audio',
+      });
+      await pumpEventQueue(times: 10);
+      expect(resolver.calls, 2);
+
+      // Replays the item the queue is already on, which is the path repeat and
+      // a retry from the player take. It does not go back through playItems.
+      await manager.startQueuedPlayback();
+      await pumpEventQueue(times: 10);
       backend.emitError(<String, dynamic>{
         'event': 'playerError',
         'recoverable': true,
