@@ -337,7 +337,7 @@
     "@library": {
         "description": "Library label used in navigation and fallback subtitle"
     },
-    "displaySettings": "Дисплаи Сеттингс",
+    "displaySettings": "Подешавање приказа",
     "@displaySettings": {
         "description": "Tooltip for display settings button"
     },
@@ -416,7 +416,7 @@
     "@sortBy": {
         "description": "Section header for sort options"
     },
-    "display": "Дисплаи",
+    "display": "Приказ",
     "@display": {
         "description": "Dialog title for display settings"
     },
@@ -782,7 +782,7 @@
     "@readingStatus": {
         "description": "Section header for book reading status filter"
     },
-    "playedStatus": "Плаиед Статус",
+    "playedStatus": "Статус репродукције",
     "@playedStatus": {
         "description": "Section header for played status filter"
     },
@@ -1127,7 +1127,7 @@
     "@favorite": {
         "description": "Action button label to favorite an item"
     },
-    "playlist": "Плаилист",
+    "playlist": "Плејлиста",
     "@playlist": {
         "description": "Action button label for adding to a playlist"
     },
@@ -1267,7 +1267,7 @@
             }
         }
     },
-    "audioTrack": "Аудио Трацк",
+    "audioTrack": "Аудио-запис",
     "@audioTrack": {
         "description": "Dialog title for audio track selection"
     },
@@ -1698,7 +1698,7 @@
             }
         }
     },
-    "remotePlayback": "Ремоте Плаибацк",
+    "remotePlayback": "Даљинска репродукција",
     "@remotePlayback": {
         "description": "Label for Jellyfin session remote playback"
     },
@@ -1802,11 +1802,11 @@
     "@playback": {
         "description": "Section header in stream info"
     },
-    "playMethod": "Плаи Метход",
+    "playMethod": "Начин репродукције",
     "@playMethod": {
         "description": "Stream info label for play method"
     },
-    "directPlay": "Дирецт Плаи",
+    "directPlay": "Директна репродукција (DirectPlay)",
     "@directPlay": {
         "description": "Play method label"
     },
@@ -1900,7 +1900,7 @@
             }
         }
     },
-    "epubUnavailableOnPlatform": "ЕПУБ приказивање у апликацији још увек није доступно на овој платформи.",
+    "epubUnavailableOnPlatform": "Могућност читања ЕПУБ (EPUB) формата кроз саму апликацију за сада није омогућена на овој платформи.",
     "@epubUnavailableOnPlatform": {
         "description": "Fallback message when EPUB cannot render on current platform"
     },
@@ -2102,7 +2102,7 @@
             }
         }
     },
-    "reloadReaderPlatformHint": "Користите Релоад Реадер након преласка на подржану циљну платформу (Андроид, иОС, мацОС).",
+    "reloadReaderPlatformHint": "Употребите Рилоуд ридер (Reload Reader) након преласка на подржану циљну платформу (Андроид, иОС, МекОС).",
     "@reloadReaderPlatformHint": {
         "description": "Hint text in fallback reader mode"
     },
@@ -2852,7 +2852,7 @@
     "@scaleOnDevice": {
         "description": "Refresh rate option: scale on device"
     },
-    "trickPlay": "Трицк Плаи",
+    "trickPlay": "Трик-плеј",
     "@trickPlay": {
         "description": "Setting for trick play thumbnails"
     },
@@ -3121,7 +3121,7 @@
     "@pathToMpvConf": {
         "description": "Hint text for mpv.conf path input"
     },
-    "subtitleStyleDescription": "Подешавања стила (величина, боја, офсет) примењују се на текстуалне титлове (СРТ, ВТТ, ТТМЛ). АСС/ССА титлови користе сопствени уграђени стил осим ако је „АСС/ССА Дирецт Плаи“ искључено. Битмап титлови (ПГС, ДВБ, ВобСуб) не могу да се мењају.",
+    "subtitleStyleDescription": "Подешавања стила (величина, боја, померај) примењују се на текстуалне титлове (СРТ (SRT), ВТТ (VTT), ТТМЛ (TTML)). АСС/ССА (ASS/SSA) титлови користе сопствени уграђени стил, осим уколико опција „АСС/ССА директна репродукција” („ASS/SSA Direct Play”) није искључена. Битмапирани титлови (ПГС (PGS), ДВБ (DVB), ВобСаб (VobSub)) не подлежу промени стила.",
     "@subtitleStyleDescription": {
         "description": "Info text about subtitle styling"
     },
@@ -4430,7 +4430,7 @@
     "@appearances": {
         "description": "Section title for cast appearances"
     },
-    "crewSection": "Посада",
+    "crewSection": "Екипа",
     "@crewSection": {
         "description": "Section title for crew credits"
     },
@@ -6559,7 +6559,7 @@
     "settingsJoinDiscordSubtitle": "Разговарајте са заједницом",
     "settingsJoinTheDiscord": "Придружите се Discord серверу",
     "settingsSupportMoonfin": "Подржите Moonfin",
-    "settingsLegal": "ЛЕГАЛ",
+    "settingsLegal": "ПРАВНЕ ИНФОРМАЦИЈЕ",
     "settingsLicenses": "Лиценце",
     "settingsOpenSourceLicenseNotices": "Обавештења о лиценци отвореног кода",
     "settingsPrivacyPolicy": "Политика приватности",
@@ -6632,7 +6632,7 @@
             }
         }
     },
-    "settingsLiveTvDirect": "Ливе ТВ Дирецт",
+    "settingsLiveTvDirect": "Уживо ТВ",
     "settingsLiveTvDirectSubtitle": "Омогућите директну репродукцију за ТВ уживо",
     "settingsOpenGroups": "Отворите групе",
     "settingsOpenGroupsSubtitle": "Направите SyncPlay групе, придружите им се или управљајте њима",
@@ -6690,7 +6690,7 @@
     "@desktopUiScale": {
         "description": "Setting for desktop UI scale"
     },
-    "nextUpDisplay": "Нект Уп Дисплаи",
+    "nextUpDisplay": "Преглед предстојећег садржаја",
     "@nextUpDisplay": {
         "description": "Setting for next up behavior"
     },
@@ -7330,7 +7330,7 @@
     "@detailScreenStyle": {
         "description": "Label for the media detail screen layout style setting"
     },
-    "detailScreenStyleSubtitle": "Класични је оригинални центрирани Moonfin распоред. Модерни је прилагодљив биоскопски распоред.",
+    "detailScreenStyleSubtitle": "Класик (Classic) је оригинални центрирани мунфин (moonfin) распоред. Модерн (Modern) је респонзивни синематични распоред. Спотлајт (Spotlight) је распоред усредсређен на главни приказ (hero-first) са искачућим картицама садржаја. Нуво (Nouveau) је распоред преко целог екрана са одељцима који се нижу низ страницу.",
     "@detailScreenStyleSubtitle": {
         "description": "Explanation under the detail screen style setting"
     },
@@ -9815,5 +9815,156 @@
     "detailButtonsSectionDescription": "Репродукција је увек на првом месту, док су закључана дугмад увек приказана. Све остало можете организовати по сопственом нахођењу, а сваки тип уређаја задржава своју засебну листу.",
     "@detailButtonsSectionDescription": {
         "description": "Explains that the play buttons can't be hidden and that the list is per device kind"
+    },
+    "spotlightPlaylistOrder": "Редослед плејлисте",
+    "@spotlightPlaylistOrder": {
+        "description": "Title of the spotlight summary card that opens the ordered box set playlist modal"
+    },
+    "detailScreenStyleSpotlight": "Спотлајт (Spotlight)",
+    "@detailScreenStyleSpotlight": {
+        "description": "Detail screen style option: the hero-first layout with summary cards that open grid modals"
+    },
+    "spotlightMoreActions": "Додатне радње",
+    "@spotlightMoreActions": {
+        "description": "Tooltip/semantics of the spotlight ellipsis button and the title of the overflow actions menu it opens"
+    },
+    "spotlightCastCrewStudios": "Глумачка постава, екипа и студији",
+    "@spotlightCastCrewStudios": {
+        "description": "Title of the spotlight summary card that opens the people and studios modal"
+    },
+    "spotlightChaptersExtras": "Поглавља и додатни садржај",
+    "@spotlightChaptersExtras": {
+        "description": "Title of the spotlight summary card that opens the chapters and special features modal"
+    },
+    "spotlightSimilarRecommendations": "Слично и препоруке",
+    "@spotlightSimilarRecommendations": {
+        "description": "Title of the spotlight summary card that opens the similar titles and recommendations modal"
+    },
+    "spotlightSeasonsEpisodes": "Сезоне и епизоде",
+    "@spotlightSeasonsEpisodes": {
+        "description": "Title of the spotlight summary card that opens the seasons grid modal for a series"
+    },
+    "spotlightMoreEpisodes": "Још епизода",
+    "@spotlightMoreEpisodes": {
+        "description": "Title of the spotlight summary card listing the other episodes of the season"
+    },
+    "spotlightFilmography": "Филмографија",
+    "@spotlightFilmography": {
+        "description": "Title of the spotlight summary card that opens a person's filmography modal"
+    },
+    "spotlightCollectionsCard": "Колекције",
+    "@spotlightCollectionsCard": {
+        "description": "Title of the spotlight summary card that opens the parent collections modal"
+    },
+    "spotlightMoviesAndShows": "Филмови и серије",
+    "@spotlightMoviesAndShows": {
+        "description": "Subtitle of the spotlight similar and recommendations card"
+    },
+    "spotlightSimilarSeerr": "Слично (Сиер (Seerr))",
+    "@spotlightSimilarSeerr": {
+        "description": "Header of the Seerr similar-titles section when it appears beside the library's own similar section"
+    },
+    "spotlightRecommendationsSeerr": "Препоруке (Сиер (Seerr))",
+    "@spotlightRecommendationsSeerr": {
+        "description": "Header of the Seerr recommendations section when it appears in the Spotlight recommendations modal"
+    },
+    "spotlightPeopleCount": "{count, plural, =1{1 особа} one{{count} особа} few{{count} особе} other{{count} особа}}",
+    "@spotlightPeopleCount": {
+        "description": "Count fragment on spotlight summary cards: people",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightStudiosCount": "{count, plural, one{1 студио} few{{count} студија} other{{count} студија}}",
+    "@spotlightStudiosCount": {
+        "description": "Count fragment on spotlight summary cards: studios",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightChaptersCount": "{count, plural, =1{1 поглавље} other{{count} поглавља}}",
+    "@spotlightChaptersCount": {
+        "description": "Count fragment on spotlight summary cards: chapters",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightExtrasCount": "{count, plural, =1{1 додатак} one{{count} додатак} few{{count} додатка} other{{count} додатака}}",
+    "@spotlightExtrasCount": {
+        "description": "Count fragment on spotlight summary cards: extras/special features",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightSeasonsCount": "{count, plural, one{1 сезона} few{{count} сезоне} other{{count} сезона}}",
+    "@spotlightSeasonsCount": {
+        "description": "Count fragment on spotlight summary cards: seasons",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightEpisodesCount": "{count, plural, one{1 епизода} few{{count} епизоде} other{{count} епизода}}",
+    "@spotlightEpisodesCount": {
+        "description": "Count fragment on spotlight summary cards: episodes",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightMoviesCount": "{count, plural, one{1 филм} few{{count} филма} other{{count} филмова}}",
+    "@spotlightMoviesCount": {
+        "description": "Count fragment on spotlight summary cards: movies",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightShowsCount": "{count, plural, =1{1 емисија} one{{count} емисија} few{{count} емисије} other{{count} емисија}}",
+    "@spotlightShowsCount": {
+        "description": "Count fragment on spotlight summary cards: series/shows",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightTracksCount": "{count, plural, =1{1 запис} few{{count} записа} other{{count} записа}}",
+    "@spotlightTracksCount": {
+        "description": "Count fragment on spotlight summary cards: audio tracks",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightItemsCount": "{count, plural, one{{count} ставка} few{{count} ставке} other{{count} ставки}}",
+    "@spotlightItemsCount": {
+        "description": "Count fragment on spotlight summary cards: generic items",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightAlbumsCount": "{count, plural, =1{1 албум} one{{count} албум} few{{count} албума} other{{count} албума}}",
+    "@spotlightAlbumsCount": {
+        "description": "Count fragment on spotlight summary cards: albums",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
     }
 }
