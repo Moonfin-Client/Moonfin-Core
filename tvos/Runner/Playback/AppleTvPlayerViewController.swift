@@ -159,6 +159,10 @@ final class AppleTvPlayerViewController: UIViewController {
 
     private let loadingOverlay = UIView()
     private let loadingSpinner = UIActivityIndicatorView(style: .large)
+    // A line of status over the picture, such as the live tuner still
+    // trying. Not an alert on purpose: an alert takes the Menu press, and
+    // the viewer must be able to leave a channel that is not coming.
+    private let statusLabel = PaddedLabel()
     private var loadingDismissed = false
 
     private var isLive = false
@@ -552,6 +556,36 @@ final class AppleTvPlayerViewController: UIViewController {
         setupLiveOverlays()
         setupSkipSegment()
         setupLoadingOverlay()
+        setupStatusMessage()
+    }
+
+    private func setupStatusMessage() {
+        statusLabel.translatesAutoresizingMaskIntoConstraints = false
+        statusLabel.insets = UIEdgeInsets(top: 14, left: 28, bottom: 14, right: 28)
+        statusLabel.backgroundColor = UIColor(white: 0, alpha: 0.6)
+        statusLabel.layer.cornerRadius = 14
+        statusLabel.clipsToBounds = true
+        statusLabel.textColor = .white
+        statusLabel.font = .systemFont(ofSize: 31, weight: .semibold)
+        statusLabel.textAlignment = .center
+        statusLabel.numberOfLines = 2
+        statusLabel.isHidden = true
+        statusLabel.isUserInteractionEnabled = false
+        view.addSubview(statusLabel)
+        NSLayoutConstraint.activate([
+            statusLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            statusLabel.topAnchor.constraint(equalTo: view.centerYAnchor, constant: 60),
+            statusLabel.widthAnchor.constraint(lessThanOrEqualTo: view.widthAnchor, multiplier: 0.6),
+        ])
+    }
+
+    func showStatusMessage(_ message: String) {
+        statusLabel.text = message
+        statusLabel.isHidden = false
+    }
+
+    func hideStatusMessage() {
+        statusLabel.isHidden = true
     }
 
     private func setupLoadingOverlay() {
@@ -2458,19 +2492,8 @@ final class AppleTvPlayerViewController: UIViewController {
     /// as the press having been ignored.
     func showSubtitleProgress(_ message: String) {
         let alert = UIAlertController(title: message, message: nil, preferredStyle: .alert)
-        let previous = subtitleProgressAlert
         subtitleProgressAlert = alert
-        let show = { [weak self] in
-            // A hide or a newer message may have come in while the old alert
-            // was going down; then this one is stale.
-            guard let self, self.subtitleProgressAlert === alert else { return }
-            self.present(alert, animated: true)
-        }
-        if let previous, previous.presentingViewController != nil {
-            previous.dismiss(animated: true, completion: show)
-        } else {
-            show()
-        }
+        present(alert, animated: true)
     }
 
     /// Take the progress alert down. A message turns it into an alert the viewer

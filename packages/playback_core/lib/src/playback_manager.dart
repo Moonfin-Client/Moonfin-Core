@@ -185,6 +185,9 @@ class PlaybackManager implements AudioOwnable {
   final _bringupStateController =
       StreamController<PlaybackBringupState>.broadcast();
   final _sessionEndedController = StreamController<void>.broadcast();
+  final _pictureShownController = StreamController<bool>.broadcast();
+  bool _pictureShown = true;
+  bool _backendPictureShown = false;
   PlaybackBringupState _bringupState = const PlaybackBringupState.idle();
 
   PlayerBackend? get backend => _backend;
@@ -217,6 +220,19 @@ class PlaybackManager implements AudioOwnable {
   Stream<PlaybackBringupState> get bringupStateStream =>
       _bringupStateController.stream;
   Stream<void> get sessionEndedStream => _sessionEndedController.stream;
+
+  /// Whether there is a picture to see. False from the start of a bringup
+  /// until the backend has drawn a frame with something in it, on the
+  /// backends that can tell ([PlayerBackend.pictureShownStream]); true from
+  /// ready on the others, and for a source without video.
+  bool get pictureShown => _pictureShown;
+  Stream<bool> get pictureShownStream => _pictureShownController.stream;
+
+  void _setPictureShown(bool shown, {bool force = false}) {
+    if (!force && shown == _pictureShown) return;
+    _pictureShown = shown;
+    _pictureShownController.add(shown);
+  }
   StreamResolutionResult? get currentResolution => _currentResolution;
 
   /// Item that gained a stream on the server after this session resolved. The
@@ -743,6 +759,17 @@ class PlaybackManager implements AudioOwnable {
         errorStream.listen(_onBackendErrorEvent, onError: (_) {}),
       );
     }
+    final pictureShownStream = backend.pictureShownStream;
+    if (pictureShownStream != null) {
+      _streamSubs.add(
+        pictureShownStream.listen((shown) {
+          _backendPictureShown = shown;
+          if (_bringupState.phase == PlaybackBringupPhase.ready) {
+            _setPictureShown(shown);
+          }
+        }),
+      );
+    }
   }
 
   void _disposeStreamSubs() {
@@ -1266,6 +1293,8 @@ class PlaybackManager implements AudioOwnable {
         backend: _traceBackendName(_backend),
       ),
     );
+    _backendPictureShown = false;
+    _setPictureShown(false);
     await _stopAndReportCurrent();
     _resetBackendSelectionLock();
     _audioStreamIndex = audioStreamIndex;
@@ -1994,6 +2023,14 @@ class PlaybackManager implements AudioOwnable {
         backend: _traceBackendName(_backend),
         playMethod: resolution.playMethod.name,
       ),
+    );
+    // Said again after ready even when unchanged, so a listener that starts
+    // a session on ready hears the picture that belongs to it.
+    _setPictureShown(
+      _backend?.pictureShownStream == null || !resolution.hasVideoStream
+          ? true
+          : _backendPictureShown,
+      force: true,
     );
   }
 
@@ -3175,6 +3212,7 @@ class PlaybackManager implements AudioOwnable {
     _backendChangedController.close();
     _bringupStateController.close();
     _sessionEndedController.close();
+    _pictureShownController.close();
     for (final backend in _retainedBackends.toList()) {
       backend.dispose();
     }

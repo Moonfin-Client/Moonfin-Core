@@ -38,6 +38,9 @@ class StreamResolutionResult {
   final List<String> transcodingReasons;
   final String? hybridAudioUrl;
 
+  /// Whether the source carries video at all; a radio channel does not.
+  bool get hasVideoStream => mediaStreams.any((s) => s['Type'] == 'Video');
+
   /// Whether the server offered this source for direct play, and whether this
   /// resolve asked for it. A transcode that names no reason was declined by
   /// one of these two, and without them a report can't say which. Null where

@@ -233,22 +233,22 @@ class _AppleTvLiveTvPlayerHostScreenState
       unawaited(_showFailureCard(backend));
       return;
     }
-    final message = _waitingMessage(status);
-    if (message != null) {
-      // The native side swaps an alert already up for the new one.
-      unawaited(backend.showSubtitleProgress(message));
-    } else if (_waitingMessage(previous) != null) {
-      unawaited(backend.hideSubtitleProgress());
+    if (_hasWaitingMessage(status)) {
+      unawaited(backend.showStatusMessage(_waitingMessage(status)));
+    } else if (_hasWaitingMessage(previous)) {
+      unawaited(backend.hideStatusMessage());
     }
   }
 
-  String? _waitingMessage(LiveTvStreamStatus status) {
+  static bool _hasWaitingMessage(LiveTvStreamStatus status) =>
+      status == LiveTvStreamStatus.stillTrying ||
+      status == LiveTvStreamStatus.reconnecting;
+
+  String _waitingMessage(LiveTvStreamStatus status) {
     final l10n = AppLocalizations.of(context);
-    return switch (status) {
-      LiveTvStreamStatus.stillTrying => l10n.liveTvTunerStillTrying,
-      LiveTvStreamStatus.reconnecting => l10n.liveTvReconnecting,
-      _ => null,
-    };
+    return status == LiveTvStreamStatus.stillTrying
+        ? l10n.liveTvTunerStillTrying
+        : l10n.liveTvReconnecting;
   }
 
   /// Takes the native player down so the card behind it is what the viewer

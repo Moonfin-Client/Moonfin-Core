@@ -402,6 +402,9 @@ class AppleTvBackend implements PlayerBackend {
   Stream<bool> get bufferingStream => _bufferingStream.stream;
 
   @override
+  Stream<bool>? get pictureShownStream => null;
+
+  @override
   Stream<bool> get completedStream => _completedStream.stream;
 
   @override
@@ -597,6 +600,16 @@ class AppleTvBackend implements PlayerBackend {
   /// when the subtitle arrived and the progress alert can just go away.
   Future<void> hideSubtitleProgress({String? message}) async {
     await _invoke<void>('hideSubtitleProgress', {'message': message});
+  }
+
+  /// A line of status over the picture. Unlike the progress alert it takes
+  /// no focus, so the remote's Menu press still leaves the player.
+  Future<void> showStatusMessage(String message) async {
+    await _invoke<void>('showStatusMessage', {'message': message});
+  }
+
+  Future<void> hideStatusMessage() async {
+    await _invoke<void>('hideStatusMessage');
   }
 
   Future<void> setThemeConfig({

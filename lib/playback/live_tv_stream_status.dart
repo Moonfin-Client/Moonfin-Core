@@ -1,7 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:get_it/get_it.dart';
 import 'package:playback_core/playback_core.dart';
+
+import '../data/services/log_service.dart';
 
 /// What the viewer should be told about a live channel right now.
 ///
@@ -111,7 +114,6 @@ class LiveTvStreamStatusTracker {
   DateTime? _readyAt;
   int? _sessionToken;
   bool _stopped = false;
-  bool _reachedReady = false;
   bool _everPlayed = false;
   bool _failed = false;
   bool _buffering = false;
@@ -120,6 +122,10 @@ class LiveTvStreamStatusTracker {
   DateTime? _lastAdvanceAt;
   DateTime? _cleanSince;
   DateTime? _troubleSince;
+  String? _lastBreakKind;
+  DateTime? _lastBreakAt;
+  bool _clockBroke = false;
+  bool _pictureShown = true;
 
   /// A single sample moving further than this is a jump to the live edge or
   /// a seek, not frames being shown.
@@ -127,7 +133,6 @@ class LiveTvStreamStatusTracker {
 
   void _resetPlayback() {
     _stopped = false;
-    _reachedReady = false;
     _readyAt = null;
     _everPlayed = false;
     _failed = false;
@@ -137,6 +142,22 @@ class LiveTvStreamStatusTracker {
     _lastAdvanceAt = null;
     _cleanSince = null;
     _troubleSince = null;
+    _lastBreakKind = null;
+    _lastBreakAt = null;
+    _clockBroke = false;
+    _pictureShown = true;
+  }
+
+  /// Whether there is a picture to see, from the manager: false while a
+  /// backend that can see its own picture reports none, or a black one.
+  /// ExoPlayer runs its clock on audio alone, and a tuner's failover
+  /// placeholder is a black video that decodes and renders like any
+  /// channel, so on such a backend the clock only counts once there is a
+  /// picture, and losing it is trouble like buffering is.
+  void onPictureShown(bool shown, DateTime now) {
+    if (shown == _pictureShown) return;
+    _pictureShown = shown;
+    if (!shown) _break(now, kind: 'picture black');
   }
 
   void onBringup(PlaybackBringupState state, DateTime now) {
@@ -162,7 +183,6 @@ class LiveTvStreamStatusTracker {
         // than unavailable. The next channel change starts clean.
         _stopped = true;
       case PlaybackBringupPhase.ready:
-        _reachedReady = true;
         _readyAt ??= now;
         _failed = false;
         if (token != null) _sessionToken = token;
@@ -183,7 +203,7 @@ class LiveTvStreamStatusTracker {
   /// what it still holds as a finished asset once the tuner stops feeding
   /// it, and the player runs that out and reports completion.
   void onEnded(DateTime now) {
-    if (_bringupStartedAt == null && !_reachedReady) return;
+    if (_bringupStartedAt == null && _readyAt == null) return;
     _bringupInProgress = false;
     _failed = true;
   }
@@ -191,18 +211,19 @@ class LiveTvStreamStatusTracker {
   void onBuffering(bool buffering, DateTime now) {
     if (buffering == _buffering) return;
     _buffering = buffering;
-    if (buffering) _break(now);
+    if (buffering) _break(now, kind: 'buffering');
   }
 
   /// Neither ready nor playing proves frames are moving. The tvOS player
   /// reports ready as soon as it is on screen, and playing as soon as its
   /// clock is told to run, both while still black. Playing only arms the
   /// clock check below. A pause is not trouble: the clock is meant to stand
-  /// still, so the run simply starts over on resume.
+  /// still, so the run simply starts over on resume. The last position is
+  /// kept across the change, so a clock that leaps while the player flaps
+  /// between buffering and playing is still seen to leap.
   void onPlaying(bool playing, DateTime now) {
     if (playing == _playing) return;
     _playing = playing;
-    _lastPosition = null;
     _lastAdvanceAt = null;
     _cleanSince = null;
   }
@@ -215,17 +236,24 @@ class LiveTvStreamStatusTracker {
   void onPosition(Duration position, DateTime now) {
     final last = _lastPosition;
     _lastPosition = position;
-    if (!_reachedReady || !_playing || last == null) return;
+    if (_readyAt == null || !_playing || last == null) return;
     final moved = position - last;
     final lastAdvance = _lastAdvanceAt;
     _lastAdvanceAt = now;
     if (moved <= Duration.zero || moved > _maxAdvance) {
-      _break(now);
+      _clockBroke = true;
+      _break(now, kind: moved <= Duration.zero ? 'clock stood still' : 'jump');
       return;
     }
     if (lastAdvance != null && now.difference(lastAdvance) > advanceGap) {
       // The clock stood still until this step: a freeze that just ended.
-      _break(now, since: lastAdvance);
+      _clockBroke = true;
+      _break(now, since: lastAdvance, kind: 'freeze');
+    }
+    // Steps over no picture prove nothing; the run starts with the picture.
+    if (!_pictureShown) {
+      _cleanSince = null;
+      return;
     }
     final cleanSince = _cleanSince ??= now;
     if (now.difference(cleanSince) >= playedAfter) {
@@ -236,9 +264,44 @@ class LiveTvStreamStatusTracker {
 
   /// Ends the current clean run and starts the trouble clock if it is not
   /// already running.
-  void _break(DateTime now, {DateTime? since}) {
+  void _break(DateTime now, {DateTime? since, required String kind}) {
     _cleanSince = null;
     _troubleSince ??= since ?? now;
+    _lastBreakKind = kind;
+    _lastBreakAt = now;
+  }
+
+  static String _seconds(Duration d) =>
+      '${(d.inMilliseconds / 1000).toStringAsFixed(1)}s';
+
+  /// One line of everything the verdict rests on, for the log when the
+  /// status changes: it says why playing came late or never came.
+  String describe(DateTime now) {
+    String ago(DateTime? t) =>
+        t == null ? 'never' : '${_seconds(now.difference(t))} ago';
+    final clock = _lastPosition;
+    final breakAt = _lastBreakAt;
+    final startedAt = _bringupStartedAt;
+    return [
+      'bringup ${_bringupInProgress ? 'in progress' : 'done'}',
+      'started ${ago(startedAt)}',
+      'ready ${ago(_readyAt)}',
+      'playing=$_playing',
+      'buffering=$_buffering',
+      'clock=${clock == null ? 'none' : _seconds(clock)}',
+      'last step ${ago(_lastAdvanceAt)}',
+      'clean since ${ago(_cleanSince)}',
+      'played=$_everPlayed',
+      'clock broke=$_clockBroke',
+      'picture ${_pictureShown ? 'shown' : 'none'}',
+      'trouble since ${ago(_troubleSince)}',
+      if (_lastBreakKind == null)
+        'last break: none'
+      else if (breakAt != null && startedAt != null)
+        'last break: $_lastBreakKind at +${_seconds(breakAt.difference(startedAt))}'
+      else
+        'last break: $_lastBreakKind',
+    ].join(', ');
   }
 
   /// When the stream stopped looking healthy, or null while it does. A clock
@@ -276,7 +339,8 @@ class LiveTvStreamStatusTracker {
           ? LiveTvStreamStatus.stillTrying
           : LiveTvStreamStatus.connecting;
     }
-    if (!_reachedReady) {
+    final readyAt = _readyAt;
+    if (readyAt == null) {
       return LiveTvStreamStatus.idle;
     }
     // On screen but no frame yet: still part of the channel change, and a
@@ -287,14 +351,15 @@ class LiveTvStreamStatusTracker {
       // the wait stops where the stepping began. A clock that leaps starts
       // over each time and still runs the wait out; one that froze after a
       // few steps is not stepping any more.
-      final lastStep = _lastAdvanceAt;
+      final cleanSince = _cleanSince;
       final stepping =
-          _cleanSince != null &&
-          lastStep != null &&
-          now.difference(lastStep) <= advanceGap;
-      final waited = (stepping ? _cleanSince! : now).difference(
-        _readyAt ?? startedAt ?? now,
-      );
+          cleanSince != null && now.difference(_lastAdvanceAt!) <= advanceGap;
+      // A clock that steps and has never misbehaved is frames on screen,
+      // and the viewer should not look at a spinner over them while the
+      // run is proven. A clock that has jumped or frozen once has to earn
+      // it: a tuner feeding broken timestamps creeps between leaps too.
+      if (stepping && !_clockBroke) return LiveTvStreamStatus.playing;
+      final waited = (stepping ? cleanSince : now).difference(readyAt);
       return waited >= stillTryingAfterReady
           ? LiveTvStreamStatus.stillTrying
           : LiveTvStreamStatus.connecting;
@@ -323,36 +388,30 @@ class LiveTvStreamStatusMonitor extends ValueNotifier<LiveTvStreamStatus> {
     final initial = _manager.bringupState;
     if (initial.phase != PlaybackBringupPhase.failed) {
       _tracker.onBringup(initial, now);
+      _tracker.onPictureShown(_manager.pictureShown, now);
       _tracker.onBuffering(_manager.state.isBuffering, now);
       _tracker.onPlaying(_manager.state.isPlaying, now);
       _tracker.onPosition(_manager.state.position, now);
     }
     _subs.addAll([
-      _manager.bringupStateStream.listen((state) {
-        final now = DateTime.now();
-        _tracker.onBringup(state, now);
-        _refresh(now);
-      }),
-      _manager.state.bufferingStream.listen((buffering) {
-        final now = DateTime.now();
-        _tracker.onBuffering(buffering, now);
-        _refresh(now);
-      }),
-      _manager.state.playingStream.listen((playing) {
-        final now = DateTime.now();
-        _tracker.onPlaying(playing, now);
-        _refresh(now);
-      }),
-      _manager.state.positionStream.listen((position) {
-        final now = DateTime.now();
-        _tracker.onPosition(position, now);
-        _refresh(now);
-      }),
-      _manager.sessionEndedStream.listen((_) {
-        final now = DateTime.now();
-        _tracker.onEnded(now);
-        _refresh(now);
-      }),
+      _manager.bringupStateStream.listen(
+        (state) => _feed((now) => _tracker.onBringup(state, now)),
+      ),
+      _manager.pictureShownStream.listen(
+        (shown) => _feed((now) => _tracker.onPictureShown(shown, now)),
+      ),
+      _manager.state.bufferingStream.listen(
+        (buffering) => _feed((now) => _tracker.onBuffering(buffering, now)),
+      ),
+      _manager.state.playingStream.listen(
+        (playing) => _feed((now) => _tracker.onPlaying(playing, now)),
+      ),
+      _manager.state.positionStream.listen(
+        (position) => _feed((now) => _tracker.onPosition(position, now)),
+      ),
+      _manager.sessionEndedStream.listen(
+        (_) => _feed((now) => _tracker.onEnded(now)),
+      ),
     ]);
     _refresh(now);
   }
@@ -362,9 +421,17 @@ class LiveTvStreamStatusMonitor extends ValueNotifier<LiveTvStreamStatus> {
   final _subs = <StreamSubscription<Object?>>[];
   Timer? _ticker;
 
+  void _feed(void Function(DateTime now) event) {
+    final now = DateTime.now();
+    event(now);
+    _refresh(now);
+  }
+
   void _refresh(DateTime now) {
     final status = _tracker.statusAt(now);
+    final previous = value;
     value = status;
+    if (status != previous) _log(previous, status, now);
     // Idle and the two failures only change on an event; everything else
     // has a threshold that time alone can cross.
     final needsClock = status != LiveTvStreamStatus.idle && !status.isFailure;
@@ -376,6 +443,18 @@ class LiveTvStreamStatusMonitor extends ValueNotifier<LiveTvStreamStatus> {
     } else {
       _ticker?.cancel();
       _ticker = null;
+    }
+  }
+
+  void _log(LiveTvStreamStatus from, LiveTvStreamStatus to, DateTime now) {
+    final line =
+        'Live TV status ${from.name} -> ${to.name}: ${_tracker.describe(now)}';
+    assert(() {
+      debugPrint(line);
+      return true;
+    }());
+    if (GetIt.instance.isRegistered<LogService>()) {
+      GetIt.instance<LogService>().playback(line, level: LogLevel.info);
     }
   }
 

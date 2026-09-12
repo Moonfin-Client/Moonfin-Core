@@ -109,6 +109,10 @@ final class AppleTvVideoChannel: NSObject, FlutterStreamHandler {
             playerVC?.showSubtitleProgress((args["message"] as? String) ?? "Working\u{2026}")
         case "hideSubtitleProgress":
             playerVC?.hideSubtitleProgress(message: args["message"] as? String)
+        case "showStatusMessage":
+            playerVC?.showStatusMessage((args["message"] as? String) ?? "")
+        case "hideStatusMessage":
+            playerVC?.hideStatusMessage()
         case "configureSubtitleStyle":
             lastSubtitleStyle = args
             applySubtitleStyle(args)

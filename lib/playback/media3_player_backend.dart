@@ -149,11 +149,16 @@ class Media3PlayerBackend extends PlayerBackend {
   final _bufferingStream = StreamController<bool>.broadcast();
   final _completedStream = StreamController<bool>.broadcast();
   final _errorStream = StreamController<Map<String, dynamic>>.broadcast();
+  final _pictureShownStream = StreamController<bool>.broadcast();
+  bool _pictureShown = false;
 
   int get volumeBoostLevel => _volumeBoostLevel;
 
   @override
   Stream<Map<String, dynamic>> get errorStream => _errorStream.stream;
+
+  @override
+  Stream<bool> get pictureShownStream => _pictureShownStream.stream;
 
   Future<T?> _invoke<T>(String method, [dynamic arguments]) async {
     if (_disposed) return null;
@@ -210,6 +215,16 @@ class Media3PlayerBackend extends PlayerBackend {
         if (completedNow != _completed) {
           _completed = completedNow;
           _completedStream.add(_completed);
+        }
+
+        // The view reads its own pixels once a frame is drawn: true while
+        // the picture is black, null where it cannot look, so a drawn frame
+        // is then taken on trust.
+        final pictureShown = _sawFirstFrame && map['pictureBlack'] != true;
+        if (pictureShown != _pictureShown) {
+          _pictureShown = pictureShown;
+          _diag('Media3: picture ${pictureShown ? 'shown' : 'none'}');
+          _pictureShownStream.add(pictureShown);
         }
 
         _positionStream.add(_position);
@@ -650,6 +665,7 @@ class Media3PlayerBackend extends PlayerBackend {
   void _resetPlaybackWatchdogs(String itemLabel) {
     _watchdogItemLabel = itemLabel;
     _sawFirstFrame = false;
+    _pictureShown = false;
     _firstFrameWarned = false;
     _stallWarned = false;
     _playStartedAtMs = 0;
@@ -1441,6 +1457,7 @@ class Media3PlayerBackend extends PlayerBackend {
     _bufferingStream.close();
     _completedStream.close();
     _errorStream.close();
+    _pictureShownStream.close();
     _tracksChangedController.close();
   }
 }

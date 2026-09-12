@@ -323,17 +323,15 @@ void main() {
         tracker.statusAt(t0.add(const Duration(seconds: 7))),
         LiveTvStreamStatus.connecting,
       );
-      tracker.onPlaying(true, t0.add(const Duration(seconds: 7)));
-      for (var i = 0; i < 3; i++) {
-        tracker.onPosition(
-          Duration(milliseconds: 250 * i),
-          t0.add(Duration(seconds: 7, milliseconds: 250 * i)),
-        );
-      }
-      // Past eight seconds, but the clock has been stepping since seven.
+      showFrames(
+        t0.add(const Duration(seconds: 7)),
+        span: const Duration(milliseconds: 500),
+      );
+      // Past eight seconds, but the clock has been stepping since seven:
+      // frames are on screen, and the spinner is already gone.
       expect(
         tracker.statusAt(t0.add(const Duration(milliseconds: 8200))),
-        LiveTvStreamStatus.connecting,
+        LiveTvStreamStatus.playing,
       );
       showFrames(
         t0.add(const Duration(milliseconds: 7750)),
@@ -345,15 +343,87 @@ void main() {
       );
     });
 
+    test('the first clean steps show as playing before the run is proven', () {
+      // Taken from a macOS log: the stream opened at 1.2s, the clock
+      // started at 3.0s, and the viewer looked at a spinner over the
+      // picture until the two-second proof was in at 5.0s.
+      tuneIn(t0);
+      tracker.onBuffering(true, t0.add(const Duration(milliseconds: 300)));
+      tracker.onBuffering(false, t0.add(const Duration(seconds: 2)));
+      showFrames(
+        t0.add(const Duration(seconds: 2)),
+        span: const Duration(milliseconds: 500),
+      );
+      expect(
+        tracker.statusAt(t0.add(const Duration(milliseconds: 2600))),
+        LiveTvStreamStatus.playing,
+      );
+      // A leap takes that away again until a run is proven.
+      showFrames(
+        t0.add(const Duration(milliseconds: 2750)),
+        from: const Duration(seconds: 100),
+        span: const Duration(milliseconds: 750),
+      );
+      expect(
+        tracker.statusAt(t0.add(const Duration(milliseconds: 3600))),
+        LiveTvStreamStatus.connecting,
+      );
+    });
+
+    test('where frames are reported, a running clock alone is no picture', () {
+      // Taken from an Android TV emulator: ExoPlayer ran its clock on the
+      // dead channel's sound track for minutes over a black screen, and
+      // never drew a frame.
+      tuneIn(t0);
+      tracker.onPictureShown(false, t0);
+      showFrames(
+        t0.add(const Duration(seconds: 1)),
+        span: const Duration(seconds: 40),
+      );
+      expect(
+        tracker.statusAt(t0.add(const Duration(seconds: 4))),
+        LiveTvStreamStatus.connecting,
+      );
+      expect(
+        tracker.statusAt(t0.add(const Duration(seconds: 12))),
+        LiveTvStreamStatus.stillTrying,
+      );
+      expect(
+        tracker.statusAt(t0.add(const Duration(seconds: 30))),
+        LiveTvStreamStatus.unavailable,
+      );
+    });
+
+    test('where frames are reported, the first frame makes it playing', () {
+      tuneIn(t0);
+      tracker.onPictureShown(false, t0);
+      showFrames(
+        t0.add(const Duration(seconds: 1)),
+        span: const Duration(seconds: 1),
+      );
+      // A second of clock over no picture proved nothing.
+      expect(
+        tracker.statusAt(t0.add(const Duration(seconds: 2))),
+        LiveTvStreamStatus.connecting,
+      );
+      tracker.onPictureShown(true, t0.add(const Duration(seconds: 2)));
+      showFrames(
+        t0.add(const Duration(milliseconds: 2250)),
+        from: const Duration(milliseconds: 1250),
+        span: const Duration(seconds: 2),
+      );
+      expect(
+        tracker.statusAt(t0.add(const Duration(seconds: 4))),
+        LiveTvStreamStatus.playing,
+      );
+    });
+
     test('a clock that froze after a few steps runs the wait out', () {
       tuneIn(t0);
-      tracker.onPlaying(true, t0.add(const Duration(seconds: 5)));
-      for (var i = 0; i < 3; i++) {
-        tracker.onPosition(
-          Duration(milliseconds: 250 * i),
-          t0.add(Duration(seconds: 5, milliseconds: 250 * i)),
-        );
-      }
+      showFrames(
+        t0.add(const Duration(seconds: 5)),
+        span: const Duration(milliseconds: 500),
+      );
       expect(
         tracker.statusAt(t0.add(const Duration(seconds: 10))),
         LiveTvStreamStatus.stillTrying,
