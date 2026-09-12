@@ -5326,7 +5326,7 @@ abstract class AppLocalizations {
   /// **'Fit'**
   String get fit;
 
-  /// Zoom mode: cover the screen, clipping overflow. Not black-bar detection.
+  /// Zoom mode: auto crop
   ///
   /// In en, this message translates to:
   /// **'Auto Crop'**
@@ -17317,7 +17317,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsPlayerZoomDescription.
   ///
   /// In en, this message translates to:
-  /// **'Fit shows the whole picture. Auto Crop covers the screen and clips overflow. Stretch ignores aspect ratio.'**
+  /// **'How video should be scaled to fit the screen.'**
   String get settingsPlayerZoomDescription;
 
   /// No description provided for @settingsPlaybackEngineAndroidTv.

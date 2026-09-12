@@ -1,12 +1,11 @@
 /// Encoded-letterbox crop. Not cover-zoom.
 ///
-/// Cover-zoom (Auto Crop / aspect-fill / `BoxFit.cover`) scales the whole coded
-/// picture to fill the window, so black bars baked into a 16:9 file stay. A
-/// [LetterboxCropper] finds those bars and removes them; the player can then
-/// fill the cropped picture.
+/// Cover-zoom scales the whole coded picture to fill the window, so black bars
+/// baked into a 16:9 file stay. A [LetterboxCropper] finds those bars and
+/// removes them; the player can then fill the cropped picture.
 ///
 /// Shipping implementations: desktop libmpv (`cropdetect` → `vf crop`) and
-/// Android TV Media3 (PixelCopy scan → layout zoom into the crop).
+/// Android Media3 (PixelCopy scan → layout zoom into the crop).
 /// Other engines return [UnsupportedLetterboxCropper] until they grow a
 /// detector and a crop path.
 library;
@@ -71,7 +70,7 @@ abstract final class LetterboxCrop {
 /// Per-engine letterbox crop. Backends own detection and applying the crop.
 ///
 /// Implement this on a new player; do not special-case platforms in the UI.
-/// Settings and the Auto Crop zoom lock after detect both key off [isSupported].
+/// Settings and the zoom lock after detect both key off [isSupported].
 abstract class LetterboxCropper {
   const LetterboxCropper();
 

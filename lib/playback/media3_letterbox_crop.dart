@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:playback_core/playback_core.dart';
 
-/// Android TV Media3 letterbox crop. Sample via PixelCopy, apply as layout
+/// Android Media3 letterbox crop. Sample via PixelCopy, apply as layout
 /// zoom into the crop rectangle (SurfaceView / tunneling cannot use Effects).
 class Media3LetterboxCrop {
   static const lumaLimit = 24;
@@ -73,7 +73,7 @@ class Media3LetterboxCropper extends LetterboxCropper {
 
   @override
   String? get unimplementedReason =>
-      _supported ? null : 'Letterbox crop on Media3 ships on Android TV only.';
+      _supported ? null : 'Letterbox crop on Media3 ships on Android only.';
 
   @override
   Future<void> setEnabled(bool enabled) async {

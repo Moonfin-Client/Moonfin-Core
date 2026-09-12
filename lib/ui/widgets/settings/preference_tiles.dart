@@ -412,12 +412,7 @@ class _SwitchPreferenceTileState extends State<SwitchPreferenceTile> {
             secondary: secondary,
             title: Text(widget.title, style: _kSettingsTitleTextStyle),
             subtitle: widget.subtitle != null
-                ? Text(
-                    widget.subtitle!,
-                    style: _kSettingsSubtitleTextStyle,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  )
+                ? Text(widget.subtitle!, style: _kSettingsSubtitleTextStyle)
                 : null,
             isThreeLine: widget.isThreeLine,
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -531,19 +526,12 @@ class _EnumPreferenceTileState<T extends Enum>
                   ? Text(
                       widget.description!,
                       style: _kSettingsDescriptionTextStyle,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
                     )
                   : null,
               isThreeLine: widget.description != null,
               titleAlignment: ListTileTitleAlignment.center,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 4,
-              ),
-              onTap: widget.enabled
-                  ? () => _showPicker(context, current)
-                  : null,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              onTap: widget.enabled ? () => _showPicker(context, current) : null,
             ),
           );
         },

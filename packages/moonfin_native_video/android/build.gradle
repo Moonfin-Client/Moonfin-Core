@@ -112,6 +112,4 @@ dependencies {
     // ass-media declares this at runtime scope, but its public API hands back
     // AssRender and AssFrame, so driving libass here needs it at compile time.
     implementation("io.github.peerless2012:ass-kt:0.4.0")
-
-    testImplementation("junit:junit:4.13.2")
 }
