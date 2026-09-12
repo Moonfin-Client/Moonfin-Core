@@ -53,6 +53,7 @@ class SpotlightCardActions {
 class SpotlightCardSpec {
   final String id;
   final String title;
+  final String? modalTitle;
   final String subtitle;
   final String? imageUrl;
   final IconData icon;
@@ -61,11 +62,14 @@ class SpotlightCardSpec {
   const SpotlightCardSpec({
     required this.id,
     required this.title,
+    this.modalTitle,
     required this.subtitle,
     required this.imageUrl,
     required this.icon,
     required this.sections,
   });
+
+  String get effectiveModalTitle => modalTitle ?? title;
 }
 
 /// A runtime for a card subtitle or the hero's metadata row: "1h 32m", "2h",
@@ -175,13 +179,13 @@ class _SpotlightCardsBuilder {
         'collections': _collectionsCard,
       },
       'Season' => {
-        'episodes': () => _episodesCard(l10n.episodes),
+        'episodes': _seasonEpisodesCard,
         'people': _peopleCard,
         'chapters_extras': _chaptersExtrasCard,
         'similar': _similarCard,
       },
       'Episode' => {
-        'episodes': () => _episodesCard(l10n.spotlightMoreEpisodes),
+        'episodes': _episodeMoreEpisodesCard,
         'people': _peopleCard,
         'chapters_extras': _chaptersExtrasCard,
         'similar': _similarCard,
@@ -507,9 +511,12 @@ class _SpotlightCardsBuilder {
       l10n.spotlightSeasonsCount(seasons.length),
       if (episodeCount > 0) l10n.spotlightEpisodesCount(episodeCount),
     ].join(' · ');
+    final modalTitle =
+        item.name.trim().isNotEmpty ? item.name.trim() : l10n.seasons;
     return SpotlightCardSpec(
       id: 'seasons',
       title: l10n.seasons,
+      modalTitle: modalTitle,
       subtitle: subtitle,
       imageUrl:
           _firstEpisodeThumb([
@@ -522,12 +529,17 @@ class _SpotlightCardsBuilder {
     );
   }
 
-  SpotlightCardSpec? _episodesCard(String title) {
+  SpotlightCardSpec? _seasonEpisodesCard() {
     final episodes = vm.episodes;
     if (episodes.isEmpty) return null;
+    final series = item.seriesName?.trim();
+    final modalTitle = (series != null && series.isNotEmpty)
+        ? '$series - ${item.name}'
+        : item.name;
     return SpotlightCardSpec(
       id: 'episodes',
-      title: title,
+      title: l10n.episodes,
+      modalTitle: modalTitle,
       subtitle: l10n.spotlightEpisodesCount(episodes.length),
       imageUrl: _firstEpisodeThumb(episodes) ?? fallbackImageUrl,
       icon: Icons.video_collection_outlined,
@@ -539,6 +551,81 @@ class _SpotlightCardsBuilder {
           landscapeCells: true,
         ),
       ],
+    );
+  }
+
+  SpotlightCardSpec? _episodeMoreEpisodesCard() {
+    if (item.seriesId != null && !vm.seriesEpisodesLoaded) {
+      vm.loadAllSeriesEpisodes();
+    }
+    final allEpisodes = vm.seriesEpisodes;
+    final episodes = allEpisodes.isNotEmpty ? allEpisodes : vm.episodes;
+    if (episodes.isEmpty) return null;
+
+    final defaultSeason = item.parentIndexNumber ?? 1;
+    final sorted = [...episodes]..sort((a, b) {
+      final sa = a.parentIndexNumber ?? defaultSeason;
+      final sb = b.parentIndexNumber ?? defaultSeason;
+      if (sa != sb) return sa.compareTo(sb);
+      return (a.indexNumber ?? 0).compareTo(b.indexNumber ?? 0);
+    });
+
+    final Map<int, List<AggregatedItem>> seasonGroups = {};
+    for (final ep in sorted) {
+      final s = ep.parentIndexNumber ?? defaultSeason;
+      seasonGroups.putIfAbsent(s, () => []).add(ep);
+    }
+
+    final currentSeasonNumber = item.parentIndexNumber;
+    final sections = <SpotlightModalSection>[];
+    for (final entry in seasonGroups.entries) {
+      final seasonNum = entry.key;
+      final seasonEpisodes = entry.value;
+      final isCurrent = currentSeasonNumber != null
+          ? seasonNum == currentSeasonNumber
+          : seasonEpisodes.any(
+              (e) =>
+                  e.id == item.id ||
+                  (item.seasonId != null && e.seasonId == item.seasonId),
+            );
+      final seasonTitle = seasonNum == 0
+          ? l10n.specials
+          : l10n.seasonNumber(seasonNum);
+      sections.add(
+        SpotlightModalSection(
+          id: 'season_$seasonNum',
+          title: seasonTitle,
+          count: seasonEpisodes.length,
+          collapsible: true,
+          initiallyExpanded: isCurrent,
+          builder: (context, firstFocusNode) => SpotlightMediaGridSection(
+            items: seasonEpisodes,
+            imageApi: _imageApi,
+            prefs: prefs,
+            aspectRatio: 16 / 9,
+            landscapeCells: true,
+            firstFocusNode: firstFocusNode,
+            onItemTap: actions.openItem,
+          ),
+        ),
+      );
+    }
+
+    final subtitle = seasonGroups.length > 1
+        ? [
+            l10n.spotlightSeasonsCount(seasonGroups.length),
+            l10n.spotlightEpisodesCount(episodes.length),
+          ].join(' · ')
+        : l10n.spotlightEpisodesCount(episodes.length);
+
+    return SpotlightCardSpec(
+      id: 'episodes',
+      title: l10n.spotlightMoreEpisodes,
+      modalTitle: l10n.spotlightMoreEpisodes,
+      subtitle: subtitle,
+      imageUrl: _firstEpisodeThumb(episodes) ?? fallbackImageUrl,
+      icon: Icons.video_collection_outlined,
+      sections: sections,
     );
   }
 

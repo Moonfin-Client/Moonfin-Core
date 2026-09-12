@@ -845,6 +845,9 @@ class ItemDetailViewModel extends ChangeNotifier {
       futures.add(_loadEpisodes());
       futures.add(_loadSimilar());
       futures.add(_loadFeatures());
+      if (_item?.seriesId != null) {
+        futures.add(loadAllSeriesEpisodes());
+      }
     } else if (type == 'MusicArtist') {
       futures.add(_loadAlbums());
       futures.add(_loadTracks(artistId: itemId));
@@ -938,16 +941,18 @@ class ItemDetailViewModel extends ChangeNotifier {
   }
 
   /// Loads every episode of the current Series (all seasons) on demand. Used by
-  /// the Modern and Nouveau detail layout's Episodes tab and accurate season counts. No-op
-  /// for non-Series items or once already loaded.
+  /// the Modern and Nouveau detail layout's Episodes tab, accurate season counts,
+  /// and the Spotlight More Episodes modal. No-op once already loaded.
   Future<void> loadAllSeriesEpisodes() async {
     final item = _item;
-    if (item == null || item.type != 'Series') return;
+    if (item == null) return;
+    final seriesId = item.type == 'Series' ? itemId : item.seriesId;
+    if (seriesId == null || seriesId.isEmpty) return;
     if (_seriesEpisodesRequested) return;
     _seriesEpisodesRequested = true;
     try {
       final data = await _client.itemsApi.getEpisodes(
-        itemId,
+        seriesId,
         fields: _episodeOverviewFields,
       );
       final items = (data['Items'] as List?) ?? [];

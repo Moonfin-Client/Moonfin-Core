@@ -337,7 +337,7 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
     try {
       final action = await SpotlightSectionModal.show<VoidCallback>(
         context,
-        title: spec.title,
+        title: spec.effectiveModalTitle,
         icon: spec.icon,
         sections: spec.sections,
         returnFocus: _cardFocusNodes[spec.id],
@@ -388,7 +388,11 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
           )
         : null;
     final card = current ?? opened;
-    return (title: card.title, icon: card.icon, sections: card.sections);
+    return (
+      title: card.effectiveModalTitle,
+      icon: card.icon,
+      sections: card.sections,
+    );
   }
 
   // ---------------------------------------------------------------------------
