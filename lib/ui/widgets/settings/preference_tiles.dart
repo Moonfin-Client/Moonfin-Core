@@ -331,7 +331,6 @@ class SwitchPreferenceTile extends StatefulWidget {
 
   final bool inverted;
   final bool enabled;
-  final bool isThreeLine;
   final FocusNode? focusNode;
 
   const SwitchPreferenceTile({
@@ -345,7 +344,6 @@ class SwitchPreferenceTile extends StatefulWidget {
     this.onChangedValue,
     this.inverted = false,
     this.enabled = true,
-    this.isThreeLine = false,
     this.focusNode,
   });
 
@@ -414,7 +412,6 @@ class _SwitchPreferenceTileState extends State<SwitchPreferenceTile> {
             subtitle: widget.subtitle != null
                 ? Text(widget.subtitle!, style: _kSettingsSubtitleTextStyle)
                 : null,
-            isThreeLine: widget.isThreeLine,
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             value: widget.inverted ? !value : value,
             onChanged: widget.enabled
@@ -444,7 +441,6 @@ class EnumPreferenceTile<T extends Enum> extends StatefulWidget {
   final ValueChanged<T>? onChangedValue;
   final List<T>? values;
   final bool autofocus;
-  final bool enabled;
 
   const EnumPreferenceTile({
     super.key,
@@ -459,7 +455,6 @@ class EnumPreferenceTile<T extends Enum> extends StatefulWidget {
     this.onChangedValue,
     this.values,
     this.autofocus = false,
-    this.enabled = true,
   });
 
   @override
@@ -505,34 +500,30 @@ class _EnumPreferenceTileState<T extends Enum>
         builder: (context, value, _) {
           final current = values.contains(value) ? value : values.first;
           final label = widget.labelOf(current);
-          return Opacity(
-            opacity: widget.enabled ? 1.0 : 0.45,
-            child: ListTile(
-              autofocus: widget.autofocus && widget.enabled,
-              enabled: widget.enabled,
-              leading: widget.icon != null
-                  ? buildSettingsLeadingIconShell(
-                      context,
-                      icon: Icon(widget.icon),
-                      focused: focused,
-                      iconColor: focused && settingsTileInvertsOnFocus
-                          ? AppColors.black.withValues(alpha: 0.54)
-                          : AppColorScheme.onSurface.withValues(alpha: 0.78),
-                    )
-                  : null,
-              title: Text(widget.title, style: _kSettingsTitleTextStyle),
-              trailing: buildSettingsSelectionBubble(context, label, focused),
-              subtitle: widget.description != null
-                  ? Text(
-                      widget.description!,
-                      style: _kSettingsDescriptionTextStyle,
-                    )
-                  : null,
-              isThreeLine: widget.description != null,
-              titleAlignment: ListTileTitleAlignment.center,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              onTap: widget.enabled ? () => _showPicker(context, current) : null,
-            ),
+          return ListTile(
+            autofocus: widget.autofocus,
+            leading: widget.icon != null
+                ? buildSettingsLeadingIconShell(
+                    context,
+                    icon: Icon(widget.icon),
+                    focused: focused,
+                    iconColor: focused && settingsTileInvertsOnFocus
+                        ? AppColors.black.withValues(alpha: 0.54)
+                        : AppColorScheme.onSurface.withValues(alpha: 0.78),
+                  )
+                : null,
+            title: Text(widget.title, style: _kSettingsTitleTextStyle),
+            trailing: buildSettingsSelectionBubble(context, label, focused),
+            subtitle: widget.description != null
+                ? Text(
+                    widget.description!,
+                    style: _kSettingsDescriptionTextStyle,
+                  )
+                : null,
+            isThreeLine: widget.description != null,
+            titleAlignment: ListTileTitleAlignment.center,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            onTap: () => _showPicker(context, current),
           );
         },
       ),
@@ -540,7 +531,6 @@ class _EnumPreferenceTileState<T extends Enum>
   }
 
   void _showPicker(BuildContext context, T current) async {
-    if (!widget.enabled) return;
     if (_pickerOpen) return;
     _pickerOpen = true;
     final values = widget.values ?? widget.preference.values.toList();
