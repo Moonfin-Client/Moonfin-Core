@@ -60,14 +60,26 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
 
   List<GenreCardData> _genres = [];
   bool _isLoading = true;
+  bool _lastGroupCollections = false;
+  final Set<String> _usedArtworkIds = {};
 
   void _onChanged() {
-    if (mounted) setState(() {});
+    if (!mounted) return;
+    final currentGroup =
+        _prefs.get(UserPreferences.groupItemsIntoCollections);
+    if (_lastGroupCollections != currentGroup) {
+      _lastGroupCollections = currentGroup;
+      _load();
+    } else {
+      setState(() {});
+    }
   }
 
   @override
   void initState() {
     super.initState();
+    _lastGroupCollections =
+        _prefs.get(UserPreferences.groupItemsIntoCollections);
     _backgroundSub = _backgroundService.backgroundStream.listen((url) {
       if (mounted) setState(() => _backdropUrl = url);
     });
@@ -87,6 +99,7 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
 
   Future<void> _load() async {
     try {
+      _usedArtworkIds.clear();
       final items = <dynamic>[];
       var startIndex = 0;
       int? total;
@@ -194,12 +207,25 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
   }
 
   Future<void> _loadGenreArtwork() async {
-    final toLoad = _genres.take(_initialArtworkBatch).toList();
+    final groupCollections = _lastGroupCollections;
+
+    // When collections are not grouped, genres with custom artwork already have
+    // their exact MovieCount + SeriesCount from getGenres and do not need extra
+    // queries. Only genres requiring a fallback collage or collection-collapsed
+    // counts need to be queried.
+    final needsWork = _genres.where((genre) {
+      if (genre.isGenreFallback) return true;
+      return groupCollections;
+    }).toList();
+
+    if (needsWork.isEmpty) return;
+
+    final toLoad = needsWork.take(_initialArtworkBatch).toList();
     await Future.wait(toLoad.map(_loadGenreItems));
 
-    if (!_disposed && _genres.length > _initialArtworkBatch) {
+    if (!_disposed && needsWork.length > _initialArtworkBatch) {
       unawaited(
-        _loadGenreArtworkAsync(_genres.skip(_initialArtworkBatch).toList()),
+        _loadGenreArtworkAsync(needsWork.skip(_initialArtworkBatch).toList()),
       );
     }
   }
@@ -218,12 +244,50 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
   Future<void> _loadGenreItems(GenreCardData genre) async {
     if (_disposed) return;
     try {
+      final groupCollections = _lastGroupCollections;
+      final includeItemTypes = groupCollections
+          ? const ['Movie', 'Series', 'BoxSet']
+          : kBrowsableGenreItemTypes;
+
+      // When the genre already has custom artwork, we only need the total count
+      // under collection grouping. Asking for limit 0 avoids fetching items,
+      // image tags, and random sorting overhead.
+      if (!genre.isGenreFallback) {
+        final response = await _client.itemsApi.getItems(
+          genreIds: [genre.id],
+          includeItemTypes: includeItemTypes,
+          excludeItemTypes: const ['Playlist', 'Episode', 'Season', 'Folder'],
+          collapseBoxSetItems: groupCollections,
+          recursive: true,
+          limit: 0,
+          enableTotalRecordCount: true,
+        );
+
+        final rawTotalCount = response['TotalRecordCount'];
+        final totalCount = rawTotalCount is num
+            ? rawTotalCount.toInt()
+            : 0;
+        if (totalCount <= 0) {
+          if (_genres.remove(genre) && !_disposed && mounted) {
+            setState(() {});
+          }
+          return;
+        }
+
+        genre.itemCount = totalCount;
+        if (!_disposed && mounted) setState(() {});
+        return;
+      }
+
+      // For fallback artwork, query random items so each genre displays a
+      // unique, representative thumbnail and avoids duplicates across cards.
       final response = await _client.itemsApi.getItems(
         genreIds: [genre.id],
-        includeItemTypes: kBrowsableGenreItemTypes,
-        excludeItemTypes: ['Episode'],
+        includeItemTypes: includeItemTypes,
+        excludeItemTypes: const ['Playlist', 'Episode', 'Season', 'Folder'],
         sortBy: 'Random',
         sortOrder: 'Ascending',
+        collapseBoxSetItems: groupCollections,
         recursive: true,
         limit: 4,
         fields: 'PrimaryImageTag,ImageTags,BackdropImageTags,PrimaryImageAspectRatio',
@@ -245,20 +309,43 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
 
       genre.itemCount = totalCount;
 
-      if (genre.isGenreFallback) {
-        final maps = List<Map<String, dynamic>>.from(
-          items.whereType<Map>().map((item) => item.cast<String, dynamic>()),
-        );
-        maps.shuffle();
+      final maps = List<Map<String, dynamic>>.from(
+        items.whereType<Map>().map((item) => item.cast<String, dynamic>()),
+      );
+      maps.shuffle();
 
-        final (imageUrl, backdropUrl) = resolveGenreFallbackArtwork(
-          items: maps,
-          imageApi: _client.imageApi,
-          maxWidth: _genreCardRequestMaxWidth(),
-        );
+      // Deprioritize items that have already been chosen for another genre card
+      // to avoid duplicate artwork appearing across tiles.
+      if (_usedArtworkIds.isNotEmpty) {
+        maps.sort((a, b) {
+          final aUsed = _usedArtworkIds.contains(a['Id']?.toString());
+          final bUsed = _usedArtworkIds.contains(b['Id']?.toString());
+          if (aUsed == bUsed) return 0;
+          return aUsed ? 1 : -1;
+        });
+      }
 
-        genre.imageUrl = imageUrl;
-        genre.backdropUrl = backdropUrl;
+      final (imageUrl, backdropUrl) = resolveGenreFallbackArtwork(
+        items: maps,
+        imageApi: _client.imageApi,
+        maxWidth: _genreCardRequestMaxWidth(),
+      );
+
+      genre.imageUrl = imageUrl;
+      genre.backdropUrl = backdropUrl;
+
+      // Track the selected item's ID
+      for (final item in maps) {
+        final id = item['Id']?.toString();
+        if (id != null) {
+          final bTags = item['BackdropImageTags'] as List?;
+          final pTag = item['PrimaryImageTag'] as String?;
+          if ((bTags != null && bTags.isNotEmpty) ||
+              (pTag != null && pTag.isNotEmpty)) {
+            _usedArtworkIds.add(id);
+            break;
+          }
+        }
       }
 
       if (!_disposed && mounted) setState(() {});
