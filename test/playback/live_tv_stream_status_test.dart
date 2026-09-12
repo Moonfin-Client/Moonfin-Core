@@ -132,6 +132,42 @@ void main() {
       );
     });
 
+    test('a channel stopped before it ever had a picture is unavailable', () {
+      // The tuner answered and the player was started, but no frame ever
+      // arrived and the manager stopped it. Reporting idle here left the
+      // viewer on a black screen with nothing on it.
+      tracker.onBringup(phase(PlaybackBringupPhase.resolving, token: 1), t0);
+      tracker.onBringup(
+        phase(PlaybackBringupPhase.idle, token: 1),
+        t0.add(const Duration(seconds: 3)),
+      );
+      expect(
+        tracker.statusAt(t0.add(const Duration(seconds: 3))),
+        LiveTvStreamStatus.unavailable,
+      );
+    });
+
+    test('a channel that never came up says connecting for a moment first', () {
+      // So a Retry press is seen to do something before the card returns.
+      tracker.onBringup(phase(PlaybackBringupPhase.resolving, token: 1), t0);
+      tracker.onBringup(phase(PlaybackBringupPhase.idle, token: 1), t0);
+      expect(tracker.statusAt(t0), LiveTvStreamStatus.connecting);
+    });
+
+    test('stopping a channel that did play is idle, not a failure card', () {
+      // The viewer leaving a working channel has nothing to report.
+      tuneIn(t0);
+      showFrames(t0);
+      tracker.onBringup(
+        phase(PlaybackBringupPhase.idle, token: 1),
+        t0.add(const Duration(seconds: 30)),
+      );
+      expect(
+        tracker.statusAt(t0.add(const Duration(seconds: 30))),
+        LiveTvStreamStatus.idle,
+      );
+    });
+
     test('a failure after ready is lost', () {
       tuneIn(t0);
       showFrames(t0);

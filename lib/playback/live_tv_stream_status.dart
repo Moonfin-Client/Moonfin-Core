@@ -317,6 +317,14 @@ class LiveTvStreamStatusTracker {
     return null;
   }
 
+  /// The verdict for a channel change that ended without ever showing a
+  /// picture. The moment of "connecting" first is the same courtesy a refusal
+  /// gets: a Retry press is seen to do something before the card comes back.
+  LiveTvStreamStatus _neverCameUp(Duration sinceStart) =>
+      sinceStart < minimumConnecting
+      ? LiveTvStreamStatus.connecting
+      : LiveTvStreamStatus.unavailable;
+
   LiveTvStreamStatus statusAt(DateTime now) {
     final startedAt = _bringupStartedAt;
     final sinceStart = startedAt == null
@@ -332,6 +340,13 @@ class LiveTvStreamStatusTracker {
       return LiveTvStreamStatus.unavailable;
     }
     if (_stopped) {
+      // A channel stopped before it ever had a picture is one the tuner could
+      // not serve, and the viewer is owed the card rather than a black screen
+      // with nothing on it. One that did come up and was then stopped is the
+      // viewer leaving, which has nothing to report.
+      if (startedAt != null && _readyAt == null) {
+        return _neverCameUp(sinceStart);
+      }
       return LiveTvStreamStatus.idle;
     }
     if (_bringupInProgress) {
