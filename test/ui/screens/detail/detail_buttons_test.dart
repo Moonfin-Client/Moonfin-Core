@@ -111,8 +111,20 @@ void main() {
     test('non-TV platforms offer downloads unconditionally', () async {
       PlatformDetection.setTvMode(false);
       final prefs = await _prefs();
-
       expect(showsTvDownloadActions(prefs), isTrue);
+    });
+
+    test('TV offers downloads if explicitly ordered and not hidden in action buttons', () async {
+      PlatformDetection.setTvMode(true);
+      final prefs = await _prefs();
+
+      expect(showsTvDownloadActions(prefs), isFalse);
+
+      await prefs.set(UserPreferences.detailButtonOrderTv, 'play,download,subtitles');
+      expect(showsTvDownloadActions(prefs), isTrue);
+
+      await prefs.set(UserPreferences.hiddenDetailButtonsTv, 'download');
+      expect(showsTvDownloadActions(prefs), isFalse);
     });
   });
 }

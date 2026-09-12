@@ -110,7 +110,7 @@ enum DetailButton {
     DetailButton.personalRating => l10n.rate,
     DetailButton.playlist => l10n.playlist,
     DetailButton.download => l10n.download,
-    DetailButton.deleteFiles => l10n.deleteFiles,
+    DetailButton.deleteFiles => l10n.deleteDownloadedFiles,
     DetailButton.goToSeries => l10n.goToSeries,
     DetailButton.seerrRequest => l10n.request,
     DetailButton.seerrRequest4k => l10n.request4k,

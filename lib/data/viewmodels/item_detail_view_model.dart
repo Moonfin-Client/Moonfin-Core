@@ -473,22 +473,57 @@ class ItemDetailViewModel extends ChangeNotifier {
   Future<void> _loadSeerrOverlay() async {
     final item = _item;
     if (item == null) return;
-    if (item.type != 'Movie' && item.type != 'Series') return;
+    final isMedia = item.type == 'Movie' || item.type == 'Series';
+    final isTvPart = item.type == 'Season' || item.type == 'Episode';
+    if (!isMedia && !isTvPart) return;
     if (!GetIt.instance<PluginSyncService>().seerrAvailable) return;
 
-    // TMDB is the id Seerr speaks. IMDb goes through its search fallback.
-    final tmdbId = item.tmdbId;
-    final lookupId = (tmdbId != null && tmdbId.isNotEmpty)
-        ? tmdbId
-        : item.imdbId;
+    String? lookupId;
+    String mediaType = 'movie';
+    String title = item.name;
+
+    if (item.type == 'Movie') {
+      lookupId = (item.tmdbId != null && item.tmdbId!.isNotEmpty)
+          ? item.tmdbId
+          : item.imdbId;
+      mediaType = 'movie';
+      title = item.name;
+    } else if (item.type == 'Series') {
+      lookupId = (item.tmdbId != null && item.tmdbId!.isNotEmpty)
+          ? item.tmdbId
+          : item.imdbId;
+      mediaType = 'tv';
+      title = item.name;
+    } else if (isTvPart) {
+      final seriesId = item.seriesId;
+      if (seriesId != null && seriesId.isNotEmpty) {
+        try {
+          final seriesData = await _client.itemsApi.getItem(seriesId);
+          if (_isDisposed) return;
+          final seriesItem = AggregatedItem(
+            id: seriesId,
+            serverId: _serverId ?? _client.baseUrl,
+            rawData: seriesData,
+          );
+          lookupId =
+              (seriesItem.tmdbId != null && seriesItem.tmdbId!.isNotEmpty)
+                  ? seriesItem.tmdbId
+                  : seriesItem.imdbId;
+          mediaType = 'tv';
+          title = seriesItem.name;
+        } catch (_) {}
+      }
+    }
+
     if (lookupId == null || lookupId.isEmpty) return;
 
     try {
       final vm = await _ensureSeerr();
+      if (_isDisposed) return;
       await vm.load(
         lookupId,
-        item.type == 'Series' ? 'tv' : 'movie',
-        title: item.name,
+        mediaType,
+        title: title,
       );
     } catch (_) {}
   }
@@ -697,7 +732,7 @@ class ItemDetailViewModel extends ChangeNotifier {
         for (final season in s.tv?.seasons ?? const [])
           if (season.seasonNumber > 0)
             AggregatedItem(
-              id: '${itemId}:s${season.seasonNumber}',
+              id: '$itemId:s${season.seasonNumber}',
               serverId: 'seerr',
               rawData: {
                 'Name': season.name ?? '',

@@ -6271,7 +6271,10 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     List<Widget> extraButtons,
   ) async {
     final l10n = AppLocalizations.of(context);
-    final actions = extraButtons.whereType<_DetailActionButton>().toList();
+    final actions = <_DetailActionButton>[
+      for (final btn in extraButtons)
+        ?_actionForOverflow(context, btn),
+    ];
     if (actions.isEmpty) return;
     final selected = await showStyledPlayerDialog<VoidCallback>(
       context,
@@ -6297,6 +6300,121 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       // immediately open a dialog of their own.
       WidgetsBinding.instance.addPostFrameCallback((_) => selected());
     }
+  }
+
+  _DetailActionButton? _actionForOverflow(
+    BuildContext context,
+    Widget button,
+  ) {
+    if (button is _DetailActionButton) {
+      return button;
+    }
+    if (button is _DownloadButton) {
+      return _buildDownloadDetailAction(context, button.item);
+    }
+    if (button is _DeleteDownloadButton) {
+      return _buildDeleteDetailAction(context, button.item);
+    }
+    return null;
+  }
+
+  _DetailActionButton _buildDownloadDetailAction(
+    BuildContext context,
+    AggregatedItem item,
+  ) {
+    final l10n = AppLocalizations.of(context);
+    final downloadService = GetIt.instance.isRegistered<DownloadService>()
+        ? GetIt.instance<DownloadService>()
+        : null;
+    final progress = downloadService?.activeDownloads[item.id];
+    final isMulti = _DownloadButtonState._isBatchType(item.type);
+    final isBatch = downloadService?.isBatchDownloading ?? false;
+
+    if (progress != null && !progress.isComplete && progress.error == null) {
+      final label = progress.isFinalizing
+          ? l10n.finalizingDownload
+          : progress.isQueued
+          ? l10n.queuedDownload
+          : progress.progress >= 0
+          ? '${(progress.progress * 100).toInt()}%'
+          : progress.bytesReceived > 0
+          ? '${(progress.bytesReceived / 1048576).toStringAsFixed(1)} MB'
+          : '…';
+      return _DetailActionButton(
+        label: label,
+        icon: Icons.close,
+        onPressed: () => downloadService?.cancelDownload(item.id),
+        isActive: true,
+        activeColor: AppColorScheme.accent,
+      );
+    }
+
+    if (isBatch && isMulti && downloadService != null) {
+      final done = downloadService.completedCount;
+      final total = downloadService.totalQueued;
+      var pct = '';
+      for (final p in downloadService.activeDownloads.values) {
+        if (!p.isComplete && p.error == null) {
+          if (p.progress >= 0) {
+            pct = '${(p.progress * 100).toInt()}%';
+          }
+          break;
+        }
+      }
+      return _DetailActionButton(
+        label: '${done + 1}/$total${pct.isNotEmpty ? ' · $pct' : ''}',
+        icon: Icons.close,
+        onPressed: () => downloadService.cancelAll(),
+        isActive: true,
+        activeColor: AppColorScheme.accent,
+      );
+    }
+
+    if (_availableOffline || (progress != null && progress.isComplete)) {
+      return _DetailActionButton(
+        label: l10n.downloaded,
+        icon: Icons.download_done,
+        isActive: true,
+        activeColor: const Color(0xFF4CAF50),
+        onPressed: () {
+          if (downloadService != null) {
+            _DownloadButton.showDownloadOptions(context, item, downloadService);
+          }
+        },
+      );
+    }
+
+    return _DetailActionButton(
+      label: l10n.download,
+      icon: Icons.download_for_offline,
+      onPressed: () {
+        if (downloadService != null) {
+          _DownloadButton.showDownloadOptions(context, item, downloadService);
+        }
+      },
+    );
+  }
+
+  _DetailActionButton _buildDeleteDetailAction(
+    BuildContext context,
+    AggregatedItem item,
+  ) {
+    final l10n = AppLocalizations.of(context);
+    return _DetailActionButton(
+      label: l10n.deleteDownloadedFiles,
+      icon: Icons.delete_outline,
+      onPressed: () => _DeleteDownloadButton.confirmDelete(
+        context,
+        item,
+        onDeleted: () {
+          if (mounted) {
+            setState(() => _availableOffline = false);
+          }
+        },
+      ),
+      isActive: true,
+      activeColor: const Color(0xFFFF4757),
+    );
   }
 
   /// The count-based overflow decision, extracted pure so the Spotlight cap
@@ -6908,7 +7026,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           shows(DetailButton.deleteFiles) &&
           _availableOffline)
         DetailButton.deleteFiles: _DeleteDownloadButton(item: item),
-      if (item.type == 'Episode' &&
+      if ((item.type == 'Episode' || item.type == 'Season') &&
           item.seriesId != null &&
           shows(DetailButton.goToSeries))
         DetailButton.goToSeries: _DetailActionButton(
@@ -6946,8 +7064,14 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         DetailButton.seerrReportIssue: _DetailActionButton(
           label: l10n.reportIssue,
           icon: Icons.report_problem_outlined,
-          onPressed: () =>
-              showSeerrReportIssueDialog(context: context, vm: seerr),
+          onPressed: () => showSeerrReportIssueDialog(
+            context: context,
+            vm: seerr,
+            initialSeason: item.type == 'Episode'
+                ? item.parentIndexNumber
+                : (item.type == 'Season' ? item.indexNumber : null),
+            initialEpisode: item.type == 'Episode' ? item.indexNumber : null,
+          ),
         ),
       if (seerr != null &&
           seerr.canManageRequests &&
@@ -7090,11 +7214,10 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           (button) => button.id,
           prefs,
         )) ...[
-          if (byButton[detailButton] case final _DetailActionButton button)
-            button,
-          if (cancelByButton[detailButton]
-              case final _DetailActionButton button)
-            button,
+          if (byButton[detailButton] case final btn?)
+            ?_actionForOverflow(context, btn),
+          if (cancelByButton[detailButton] case final btn?)
+            ?_actionForOverflow(context, btn),
         ],
       ];
 
@@ -10626,6 +10749,12 @@ class _DownloadButton extends StatefulWidget {
     this.suppressAutoScrollToTop = false,
   });
 
+  static void showDownloadOptions(
+    BuildContext context,
+    AggregatedItem item,
+    DownloadService service,
+  ) => _DownloadButtonState._showDownloadOptionsFor(context, item, service);
+
   @override
   State<_DownloadButton> createState() => _DownloadButtonState();
 }
@@ -10634,7 +10763,8 @@ class _DownloadButtonState extends State<_DownloadButton> {
   bool _isOffline = false;
   DownloadService? _downloadService;
 
-  String _originalQualitySubtitle(
+  static String _originalQualitySubtitle(
+    BuildContext context,
     AggregatedItem item, {
     required bool isMulti,
     List<AggregatedItem> batchItems = const [],
@@ -10642,6 +10772,7 @@ class _DownloadButtonState extends State<_DownloadButton> {
     final l10n = AppLocalizations.of(context);
     if (isMulti) {
       final sizeLabel = _batchSizeLabel(
+        context,
         batchItems,
         sourceSizeBytes,
         l10n.downloadSizeTotal,
@@ -10681,7 +10812,8 @@ class _DownloadButtonState extends State<_DownloadButton> {
     return details.join(' • ');
   }
 
-  String _qualitySubtitle(
+  static String _qualitySubtitle(
+    BuildContext context,
     AggregatedItem item,
     DownloadQuality quality, {
     required bool supportsTranscoding,
@@ -10690,6 +10822,7 @@ class _DownloadButtonState extends State<_DownloadButton> {
   }) {
     if (!quality.isTranscoded || !supportsTranscoding) {
       return _originalQualitySubtitle(
+        context,
         item,
         isMulti: isMulti,
         batchItems: batchItems,
@@ -10698,6 +10831,7 @@ class _DownloadButtonState extends State<_DownloadButton> {
 
     final estimate = isMulti
         ? _batchSizeLabel(
+            context,
             batchItems,
             (batchItem) => estimateTranscodedSizeBytes(batchItem, quality),
             AppLocalizations.of(context).downloadEstimateTotal,
@@ -10712,7 +10846,8 @@ class _DownloadButtonState extends State<_DownloadButton> {
   /// Sums [bytesOf] over [items], skipping items whose size is unknown, and
   /// formats the total with [label]. Notes how many items were skipped.
   /// Null when no item had a size.
-  String? _batchSizeLabel(
+  static String? _batchSizeLabel(
+    BuildContext context,
     List<AggregatedItem> items,
     int? Function(AggregatedItem item) bytesOf,
     String Function(String size) label,
@@ -10884,7 +11019,7 @@ class _DownloadButtonState extends State<_DownloadButton> {
       type == 'Season' || type == 'Series' || type == 'BoxSet';
 
   /// One line of context under a sheet title.
-  Widget _sheetNote(BuildContext sheetContext, String text) => Padding(
+  static Widget _sheetNote(BuildContext sheetContext, String text) => Padding(
     padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
     child: Text(
       text,
@@ -10897,7 +11032,7 @@ class _DownloadButtonState extends State<_DownloadButton> {
     ),
   );
 
-  Widget _sheetTitle(BuildContext sheetContext, String text) => Padding(
+  static Widget _sheetTitle(BuildContext sheetContext, String text) => Padding(
     padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
     child: Text(
       text,
@@ -10908,25 +11043,33 @@ class _DownloadButtonState extends State<_DownloadButton> {
     ),
   );
 
+  void _showDownloadOptions(BuildContext context, DownloadService service) {
+    _showDownloadOptionsFor(context, widget.item, service);
+  }
+
   /// Entry point for the download button. Series, seasons and collections
   /// first ask whether to download everything or only unwatched items; single
   /// items go straight to the quality picker.
-  void _showDownloadOptions(BuildContext context, DownloadService service) {
-    if (_isBatchType(widget.item.type)) {
-      _showScopePicker(context, service);
+  static void _showDownloadOptionsFor(
+    BuildContext context,
+    AggregatedItem item,
+    DownloadService service,
+  ) {
+    if (_isBatchType(item.type)) {
+      _showScopePicker(context, item, service);
     } else {
-      _showQualityPicker(context, service);
+      _showQualityPicker(context, item, service);
     }
   }
 
   /// Asks whether to download all items or only unwatched ones, then opens
   /// the quality picker for the chosen list. The list is resolved once here
   /// so the counts, the size estimates and the queued downloads all agree.
-  Future<void> _showScopePicker(
+  static Future<void> _showScopePicker(
     BuildContext context,
+    AggregatedItem item,
     DownloadService service,
   ) async {
-    final item = widget.item;
     final isCollection = item.type == 'BoxSet';
     final seriesId = item.seriesId;
 
@@ -11013,6 +11156,7 @@ class _DownloadButtonState extends State<_DownloadButton> {
                         children: [
                           _scopeRow(
                             sheetContext,
+                            item: item,
                             autofocus: true,
                             icon: Icons.download_for_offline,
                             label: isCollection
@@ -11023,6 +11167,7 @@ class _DownloadButtonState extends State<_DownloadButton> {
                           ),
                           _scopeRow(
                             sheetContext,
+                            item: item,
                             autofocus: false,
                             icon: Icons.visibility_off_outlined,
                             label: isCollection
@@ -11038,6 +11183,7 @@ class _DownloadButtonState extends State<_DownloadButton> {
                   if (autoDownloads != null)
                     _autoDownloadRow(
                       sheetContext,
+                      item,
                       autoDownloads,
                       initial: subscription,
                       onSubscription: (current) => subscription = current,
@@ -11054,26 +11200,27 @@ class _DownloadButtonState extends State<_DownloadButton> {
         );
     // Opened only after the scope sheet is gone, so the quality picker
     // restores focus to the Download button rather than to a disposed row.
-    if (!mounted) return;
+    if (!context.mounted) return;
     if (autoChosen) {
-      await _toggleAutoDownload(autoDownloads!, existing: subscription);
+      await _toggleAutoDownload(context, item, autoDownloads!, existing: subscription);
       return;
     }
     if (chosen == null) return;
-    _showQualityPicker(this.context, service, items: chosen);
+    _showQualityPicker(context, item, service, items: chosen);
   }
 
   /// Follows or unfollows the series. Following asks for a quality first so
   /// the subscription records one.
-  Future<void> _toggleAutoDownload(
+  static Future<void> _toggleAutoDownload(
+    BuildContext context,
+    AggregatedItem item,
     AutoDownloadService autoDownloads, {
     required AutoDownloadSubscription? existing,
   }) async {
-    final item = widget.item;
     final l10n = AppLocalizations.of(context);
     if (existing != null) {
       await autoDownloads.unsubscribe(item.id);
-      if (!mounted) return;
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.autoDownloadStoppedFor(item.name))),
       );
@@ -11081,10 +11228,11 @@ class _DownloadButtonState extends State<_DownloadButton> {
     }
     final quality = await _pickQuality(
       context,
+      item,
       title: l10n.autoDownloadQualityTitle,
       note: l10n.autoDownloadTranscodedForegroundNote,
     );
-    if (quality == null || !mounted) return;
+    if (quality == null || !context.mounted) return;
     unawaited(autoDownloads.subscribe(item, quality: quality));
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(l10n.autoDownloadEnabledFor(item.name))),
@@ -11094,8 +11242,9 @@ class _DownloadButtonState extends State<_DownloadButton> {
   /// Third row of a series' scope sheet: subscribe to new episodes, or stop.
   /// Reports the current subscription through [onSubscription] so the
   /// caller knows which of the two [onTap] meant.
-  Widget _autoDownloadRow(
+  static Widget _autoDownloadRow(
     BuildContext sheetContext,
+    AggregatedItem item,
     AutoDownloadService autoDownloads, {
     required AutoDownloadSubscription? initial,
     required void Function(AutoDownloadSubscription?) onSubscription,
@@ -11108,7 +11257,7 @@ class _DownloadButtonState extends State<_DownloadButton> {
     );
     return StreamBuilder<AutoDownloadSubscription?>(
       initialData: initial,
-      stream: autoDownloads.watchSubscription(widget.item.id),
+      stream: autoDownloads.watchSubscription(item.id),
       builder: (_, snapshot) {
         final subscription = snapshot.data;
         onSubscription(subscription);
@@ -11143,8 +11292,9 @@ class _DownloadButtonState extends State<_DownloadButton> {
     );
   }
 
-  Widget _scopeRow(
+  static Widget _scopeRow(
     BuildContext sheetContext, {
+    required AggregatedItem item,
     required bool autofocus,
     required IconData icon,
     required String label,
@@ -11156,7 +11306,7 @@ class _DownloadButtonState extends State<_DownloadButton> {
     final enabled = loading || items.isNotEmpty;
     final subtitle = loading
         ? l10n.downloadScopeLoading
-        : widget.item.type == 'BoxSet'
+        : item.type == 'BoxSet'
         ? l10n.itemCountLabel(items.length)
         : l10n.episodeCount(items.length);
     return DpadListTile(
@@ -11187,26 +11337,27 @@ class _DownloadButtonState extends State<_DownloadButton> {
   /// Shows the quality picker and queues the download. For series, seasons
   /// and collections [items] is the list resolved by the scope picker and
   /// drives both the size estimate and what gets queued.
-  Future<void> _showQualityPicker(
+  static Future<void> _showQualityPicker(
     BuildContext context,
+    AggregatedItem item,
     DownloadService service, {
     List<AggregatedItem>? items,
   }) async {
-    final item = widget.item;
     final isMulti = _isBatchType(item.type);
     if (!isMulti && !_supportsTranscoding(item.type)) {
-      _startDownload(context, service, DownloadQuality.original);
+      _startDownload(context, item, service, DownloadQuality.original);
       return;
     }
     final quality = await _pickQuality(
       context,
+      item,
       title: isMulti
           ? AppLocalizations.of(context).downloadAllQuality
           : AppLocalizations.of(context).downloadQuality,
       items: items ?? const [],
     );
-    if (quality == null || !mounted) return;
-    _startDownload(this.context, service, quality, items: items);
+    if (quality == null || !context.mounted) return;
+    _startDownload(context, item, service, quality, items: items);
   }
 
   static bool _supportsTranscoding(String? type) =>
@@ -11219,13 +11370,13 @@ class _DownloadButtonState extends State<_DownloadButton> {
   /// [items] for batches. Null when the sheet is dismissed.
   /// [note] is shown once under the title, for callers where the choice has
   /// a consequence worth stating.
-  Future<DownloadQuality?> _pickQuality(
-    BuildContext context, {
+  static Future<DownloadQuality?> _pickQuality(
+    BuildContext context,
+    AggregatedItem item, {
     required String title,
     List<AggregatedItem> items = const [],
     String? note,
   }) {
-    final item = widget.item;
     final isMulti = _isBatchType(item.type);
     final supportsTranscoding = isMulti || _supportsTranscoding(item.type);
     final batchItems = items;
@@ -11253,6 +11404,7 @@ class _DownloadButtonState extends State<_DownloadButton> {
     final subtitles = {
       for (final quality in availableQualities)
         quality: _qualitySubtitle(
+          context,
           item,
           quality,
           supportsTranscoding: supportsTranscoding,
@@ -11348,13 +11500,13 @@ class _DownloadButtonState extends State<_DownloadButton> {
 
   /// Queues the download. [items] is the list chosen in the scope sheet for
   /// series, seasons and collections; single items leave it null.
-  void _startDownload(
+  static void _startDownload(
     BuildContext context,
+    AggregatedItem item,
     DownloadService service,
     DownloadQuality quality, {
     List<AggregatedItem>? items,
   }) {
-    final item = widget.item;
     final l10n = AppLocalizations.of(context);
     final String message;
     if (items != null) {
@@ -11402,6 +11554,16 @@ class _DeleteDownloadButton extends StatefulWidget {
     this.suppressAutoScrollToTop = false,
   });
 
+  static Future<void> confirmDelete(
+    BuildContext context,
+    AggregatedItem item, {
+    VoidCallback? onDeleted,
+  }) => _DeleteDownloadButtonState._confirmDelete(
+    context,
+    item,
+    onDeleted: onDeleted,
+  );
+
   @override
   State<_DeleteDownloadButton> createState() => _DeleteDownloadButtonState();
 }
@@ -11445,9 +11607,17 @@ class _DeleteDownloadButtonState extends State<_DeleteDownloadButton> {
     if (_checking || !_hasFiles) return const SizedBox.shrink();
 
     return _DetailActionButton(
-      label: AppLocalizations.of(context).deleteFiles,
+      label: AppLocalizations.of(context).deleteDownloadedFiles,
       icon: Icons.delete_outline,
-      onPressed: () => _confirmDelete(context),
+      onPressed: () => _confirmDelete(
+        context,
+        widget.item,
+        onDeleted: () {
+          if (mounted) {
+            setState(() => _hasFiles = false);
+          }
+        },
+      ),
       isActive: true,
       activeColor: const Color(0xFFFF4757),
       focusNode: widget.focusNode,
@@ -11460,8 +11630,11 @@ class _DeleteDownloadButtonState extends State<_DeleteDownloadButton> {
     );
   }
 
-  Future<void> _confirmDelete(BuildContext context) async {
-    final item = widget.item;
+  static Future<void> _confirmDelete(
+    BuildContext context,
+    AggregatedItem item, {
+    VoidCallback? onDeleted,
+  }) async {
     final l10n = AppLocalizations.of(context);
     final typeLabel = switch (item.type) {
       'Series' => l10n.deleteSeriesFiles(item.seriesName ?? item.name),
@@ -11510,7 +11683,7 @@ class _DeleteDownloadButtonState extends State<_DeleteDownloadButton> {
           ),
         );
         if (success) {
-          setState(() => _hasFiles = false);
+          onDeleted?.call();
         }
       }
     }
@@ -11535,31 +11708,13 @@ class _PersonalRatingActionIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return switch (style) {
-      PersonalRatingStyle.thumbs =>
+      PersonalRatingStyle.thumbs => Icon(
         likes == null
-            ? Center(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.thumb_up_outlined,
-                      color: color,
-                      size: size * 0.5,
-                    ),
-                    SizedBox(width: size * 0.08),
-                    Icon(
-                      Icons.thumb_down_outlined,
-                      color: color,
-                      size: size * 0.5,
-                    ),
-                  ],
-                ),
-              )
-            : Icon(
-                likes! ? Icons.thumb_up : Icons.thumb_down,
-                color: color,
-                size: size * 0.72,
-              ),
+            ? Icons.thumb_up_outlined
+            : (likes! ? Icons.thumb_up : Icons.thumb_down),
+        color: color,
+        size: size * 0.85,
+      ),
       PersonalRatingStyle.stars => _StarFillIcon(
         fill: ((rating ?? 0).clamp(0, 10) / 10).toDouble(),
         size: size * 0.82,
