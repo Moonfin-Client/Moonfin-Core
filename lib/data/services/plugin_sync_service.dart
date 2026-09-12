@@ -1341,9 +1341,11 @@ class PluginSyncService extends ChangeNotifier {
     if (homeSectionsRaw is List) {
       final parsed = <HomeSectionConfig>[
         for (final e in homeSectionsRaw)
-          if (e is Map && HomeSectionConfig.isSupportedJson(Map<String, dynamic>.from(e)))
-            HomeSectionConfig.fromJson(Map<String, dynamic>.from(e)),
-      ].where((c) => c.isPersistable).toList();
+          if (e is Map)
+            if (HomeSectionConfig.tryFromJson(Map<String, dynamic>.from(e))
+                case final HomeSectionConfig cfg)
+              cfg,
+      ];
       if (parsed.isNotEmpty) {
         parsed.sort((a, b) => a.order.compareTo(b.order));
         final sections = <HomeSectionConfig>[];
@@ -1375,17 +1377,12 @@ class PluginSyncService extends ChangeNotifier {
         for (final custom in existingCustom) {
           sections.add(custom.copyWith(order: order++));
         }
-        final incomingSliderIds = sections
+        final incomingSliderKeys = sections
             .where((s) => s.isSeerrSlider)
-            .map((s) => s.sliderId)
-            .whereType<String>()
+            .map((s) => s.stableId)
             .toSet();
         final existingSliders = _prefs.homeSectionsConfig.where(
-          (c) =>
-              c.isSeerrSlider &&
-              c.sliderId != null &&
-              c.sliderId!.isNotEmpty &&
-              !incomingSliderIds.contains(c.sliderId),
+          (c) => c.isSeerrSlider && !incomingSliderKeys.contains(c.stableId),
         );
         for (final slider in existingSliders) {
           sections.add(slider.copyWith(order: order++));
@@ -1393,7 +1390,6 @@ class PluginSyncService extends ChangeNotifier {
         _appendDisabledBuiltinSections(sections, order);
         await _raiseSinceYouWatchedRowCount(sections);
         await _prefs.setHomeSectionsConfig(sections);
-        await _syncSeerrHomeRowsWithSections(sections);
         appliedHomeSections = true;
       }
     }
@@ -1411,11 +1407,13 @@ class PluginSyncService extends ChangeNotifier {
         final sections = <HomeSectionConfig>[];
         var order = 0;
         for (final name in serverOrder) {
-          final type = prefs.HomeSectionType.fromSerialized(name);
-          if (type == prefs.HomeSectionType.none) continue;
-          sections.add(
-            HomeSectionConfig(type: type, enabled: true, order: order++),
+          final cfg = HomeSectionConfig.tryFromTypeName(
+            name,
+            enabled: true,
+            order: order,
           );
+          if (cfg == null) continue;
+          sections.add(cfg.copyWith(order: order++));
         }
         if (sections.isEmpty) {
           await _applyFallbackHomeRows(preserve: pluginEntries);
@@ -1469,7 +1467,6 @@ class PluginSyncService extends ChangeNotifier {
             sections.add(entry.copyWith(order: order++));
           }
           await _prefs.setHomeSectionsConfig(sections);
-          await _syncSeerrHomeRowsWithSections(sections);
         }
       }
     }
@@ -1568,7 +1565,6 @@ class PluginSyncService extends ChangeNotifier {
     }
 
     await _prefs.setHomeSectionsConfig(sections);
-    await _syncSeerrHomeRowsWithSections(sections);
   }
 
   /// Appends a disabled entry for every built-in HomeSectionType not already in
@@ -1592,26 +1588,6 @@ class PluginSyncService extends ChangeNotifier {
       );
     }
     return order;
-  }
-
-  /// Seerr home rows keep their own copy of the enabled state that the settings
-  /// screens write alongside the section layout, so mirror it here too. Without
-  /// this the home view gates Seerr rows on stale values after a sync.
-  Future<void> _syncSeerrHomeRowsWithSections(
-    List<HomeSectionConfig> sections,
-  ) async {
-    final enabledByType = {
-      for (final section in sections)
-        if (section.isBuiltin) section.type: section.enabled,
-    };
-    final updated = _seerrPrefs.homeRowsConfig
-        .map(
-          (row) => row.copyWith(
-            enabled: enabledByType[row.type.homeSectionType] ?? false,
-          ),
-        )
-        .toList();
-    await _seerrPrefs.setHomeRowsConfig(updated);
   }
 
   /// Applies one table-driven field from an incoming profile.

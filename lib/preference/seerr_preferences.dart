@@ -1,7 +1,6 @@
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 
 import '../auth/repositories/session_repository.dart';
-import 'home_section_config.dart';
 import 'preference_constants.dart';
 import 'seerr_row_config.dart';
 
@@ -125,35 +124,12 @@ class SeerrPreferences {
     if (raw != null && raw.isNotEmpty) {
       return SeerrRowConfig.fromJsonString(raw);
     }
-    // Fall back to the old home_sections_config state when this has never been
-    // saved, so upgrades keep the rows the user already chose.
-    return _homeRowsConfigFromSections();
+    // Home layout owns Home Seerr rows now. This store is Discover-adjacent leftover.
+    return SeerrRowConfig.defaults();
   }
 
   Future<void> setHomeRowsConfig(List<SeerrRowConfig> value) =>
       _store.setString(_userKey('home_rows_config'), SeerrRowConfig.toJsonString(value));
-
-  List<SeerrRowConfig> _homeRowsConfigFromSections() {
-    final sectionsJson = _store.getString('home_sections_config');
-    if (sectionsJson == null || sectionsJson.isEmpty) {
-      return SeerrRowConfig.defaults();
-    }
-    final sections = HomeSectionConfig.fromJsonString(sectionsJson);
-    return SeerrRowConfig.defaults().map((row) {
-      final idx = sections.indexWhere((s) => s.type == row.type.homeSectionType);
-      return idx >= 0 ? row.copyWith(enabled: sections[idx].enabled) : row;
-    }).toList();
-  }
-
-  bool isSeerrHomeRowEnabled(HomeSectionType type) {
-    final seerrType = type.seerrRowType;
-    if (seerrType == null || !enabled) return false;
-    final config = homeRowsConfig.firstWhere(
-      (c) => c.type == seerrType,
-      orElse: () => SeerrRowConfig(type: seerrType, enabled: false, order: 0),
-    );
-    return config.enabled;
-  }
 
   List<SeerrRowType> get activeRows {
     final configs = rowsConfig.where((c) => c.enabled).toList()

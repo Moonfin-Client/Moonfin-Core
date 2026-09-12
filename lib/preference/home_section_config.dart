@@ -1,4 +1,5 @@
 import 'dart:convert';
+import '../data/services/seerr/seerr_slider_catalog.dart';
 import 'preference_constants.dart';
 
 /// Categorizes a [HomeSectionConfig].
@@ -106,8 +107,25 @@ class HomeSectionConfig {
   /// Wire `type` for seerrSlider rows. Not a [HomeSectionType] value.
   static const seerrSliderSerializedType = 'seerr_slider';
 
+  /// A `homeRowOrder` / JSON `type` string. Old Seerr names become sliders.
+  /// Unknown names are dropped.
+  static HomeSectionConfig? tryFromTypeName(
+    String typeName, {
+    required bool enabled,
+    required int order,
+  }) {
+    final cfg = tryFromJson({
+      'type': typeName,
+      'enabled': enabled,
+      'order': order,
+    });
+    if (cfg == null) return null;
+    if (cfg.isBuiltin && cfg.type == HomeSectionType.none) return null;
+    return cfg;
+  }
+
   factory HomeSectionConfig.seerrSlider({
-    required String sliderId,
+    String? sliderId,
     int? sliderType,
     String? pluginDisplayText,
     bool enabled = false,
@@ -138,6 +156,8 @@ class HomeSectionConfig {
         sliderType: _sliderTypeFromJson(json),
       );
     }
+    final enabled = json['enabled'] as bool? ?? true;
+    final order = json['order'] as int? ?? 0;
     final kind = kindRaw == null
         ? HomeSectionKind.builtin
         : HomeSectionKind.fromSerialized(kindRaw);
@@ -147,8 +167,8 @@ class HomeSectionConfig {
     return HomeSectionConfig(
       kind: kind,
       type: HomeSectionType.fromSerialized(typeName),
-      enabled: json['enabled'] as bool? ?? true,
-      order: json['order'] as int? ?? 0,
+      enabled: enabled,
+      order: order,
       serverId: _normalizedServerId(json['serverId']?.toString(), pluginSource),
       pluginSection: json['pluginSection'] as String?,
       pluginAdditionalData: json['pluginAdditionalData'] as String?,
@@ -166,7 +186,9 @@ class HomeSectionConfig {
     if (kind == HomeSectionKind.seerrSlider) {
       json['kind'] = kind.serializedName;
       json['type'] = seerrSliderSerializedType;
-      if (sliderId != null) json['sliderId'] = sliderId;
+      if (sliderId != null && sliderId!.isNotEmpty) {
+        json['sliderId'] = sliderId;
+      }
       if (sliderType != null) json['sliderType'] = sliderType;
       if (pluginDisplayText != null) {
         json['pluginDisplayText'] = pluginDisplayText;
@@ -230,7 +252,11 @@ class HomeSectionConfig {
   /// data so multiple instances of the same section can coexist.
   String get stableId {
     if (kind == HomeSectionKind.seerrSlider) {
-      return 'seerrSlider:${sliderId ?? ''}';
+      if (sliderId != null && sliderId!.isNotEmpty) {
+        return 'seerrSlider:$sliderId';
+      }
+      if (sliderType != null) return 'seerrSlider:type:$sliderType';
+      return 'seerrSlider:';
     }
     if (kind == HomeSectionKind.pluginDynamic) {
       final effectiveServerId =
@@ -244,17 +270,8 @@ class HomeSectionConfig {
   bool get isPluginDynamic => kind == HomeSectionKind.pluginDynamic;
   bool get isSeerrSlider => kind == HomeSectionKind.seerrSlider;
 
-  /// False for slider rows with no id, and for builtin [HomeSectionType.none]
-  /// leftovers from legacy `homeRowOrder` pollution.
-  bool get isPersistable {
-    if (isSeerrSlider) {
-      return sliderId != null && sliderId!.isNotEmpty;
-    }
-    if (isBuiltin && type == HomeSectionType.none) {
-      return false;
-    }
-    return true;
-  }
+  bool get isSeerrShortcutsSlider =>
+      isSeerrSlider && isSeerrShortcutsSliderId(sliderId);
 
   int? get seerrSliderId => int.tryParse(sliderId ?? '');
 
@@ -367,71 +384,6 @@ class HomeSectionConfig {
       order: 21,
     ),
     HomeSectionConfig(
-      type: HomeSectionType.seerrShortcuts,
-      enabled: false,
-      order: 22,
-    ),
-    HomeSectionConfig(
-      type: HomeSectionType.seerrRecentRequests,
-      enabled: false,
-      order: 21,
-    ),
-    HomeSectionConfig(
-      type: HomeSectionType.seerrWatchlist,
-      enabled: false,
-      order: 22,
-    ),
-    HomeSectionConfig(
-      type: HomeSectionType.seerrRecentlyAdded,
-      enabled: false,
-      order: 23,
-    ),
-    HomeSectionConfig(
-      type: HomeSectionType.seerrPopularMovies,
-      enabled: false,
-      order: 24,
-    ),
-    HomeSectionConfig(
-      type: HomeSectionType.seerrUpcomingMovies,
-      enabled: false,
-      order: 25,
-    ),
-    HomeSectionConfig(
-      type: HomeSectionType.seerrPopularSeries,
-      enabled: false,
-      order: 26,
-    ),
-    HomeSectionConfig(
-      type: HomeSectionType.seerrUpcomingSeries,
-      enabled: false,
-      order: 27,
-    ),
-    HomeSectionConfig(
-      type: HomeSectionType.seerrTrending,
-      enabled: false,
-      order: 28,
-    ),
-    HomeSectionConfig(
-      type: HomeSectionType.seerrMovieGenres,
-      enabled: false,
-      order: 29,
-    ),
-    HomeSectionConfig(
-      type: HomeSectionType.seerrStudios,
-      enabled: false,
-      order: 30,
-    ),
-    HomeSectionConfig(
-      type: HomeSectionType.seerrSeriesGenres,
-      enabled: false,
-      order: 31,
-    ),
-    HomeSectionConfig(
-      type: HomeSectionType.seerrNetworks,
-      enabled: false,
-      order: 32,
-    ),
-    HomeSectionConfig(
       type: HomeSectionType.radarrCalendar,
       enabled: false,
       order: 38,
@@ -476,7 +428,22 @@ class HomeSectionConfig {
     ),
   ];
 
-  static bool isSupportedJson(Map<String, dynamic> json) {
+  /// Ingest entry. Null for unknown plugin sources, builtin [HomeSectionType.none],
+  /// and sliders with no identity (id or type).
+  static HomeSectionConfig? tryFromJson(Map<String, dynamic> json) {
+    if (!_isKnownJsonKind(json)) return null;
+    final cfg = HomeSectionConfig.fromJson(json);
+    if (cfg.isBuiltin && cfg.type == HomeSectionType.none) return null;
+    if (cfg.isSeerrSlider) {
+      final id = cfg.sliderId;
+      final hasId = id != null && id.isNotEmpty;
+      if (!hasId && cfg.sliderType == null) return null;
+    }
+    return cfg;
+  }
+
+  /// Known kinds/sources only. Instance fields are validated in [tryFromJson].
+  static bool _isKnownJsonKind(Map<String, dynamic> json) {
     final kind = json['kind'] as String?;
     if (kind == HomeSectionKind.seerrSlider.serializedName) return true;
     if (json['type'] == seerrSliderSerializedType) return true;
@@ -491,11 +458,9 @@ class HomeSectionConfig {
       final list = jsonDecode(jsonString) as List;
       final parsed = <HomeSectionConfig>[];
       for (final e in list) {
-        if (e is Map<String, dynamic> && isSupportedJson(e)) {
-          final cfg = HomeSectionConfig.fromJson(e);
-          if (!cfg.isPersistable) continue;
-          parsed.add(cfg);
-        }
+        if (e is! Map) continue;
+        final cfg = tryFromJson(Map<String, dynamic>.from(e));
+        if (cfg != null) parsed.add(cfg);
       }
       return _appendMissingBuiltins(parsed);
     } catch (_) {
@@ -503,10 +468,9 @@ class HomeSectionConfig {
     }
   }
 
-  /// Adds any built-in sections missing from a user's saved config, like the
-  /// Seerr watchlist, so they show up without needing a reset. New sections
-  /// keep their default enabled state and go at the end to keep the user's
-  /// existing order.
+  /// Adds any built-in sections missing from a user's saved config so they
+  /// show up without needing a reset. New sections keep their default enabled
+  /// state and go at the end to keep the user's existing order.
   static List<HomeSectionConfig> _appendMissingBuiltins(
     List<HomeSectionConfig> parsed,
   ) {
@@ -522,6 +486,157 @@ class HomeSectionConfig {
       }
     }
     return merged;
+  }
+
+  /// One-shot rewrite of stored home JSON. Old `seerr_trending` types become
+  /// sliders, leftover `legacy:` ids unbind, [seerrHomeRowEnabledBySliderType]
+  /// ANDs onto pending rows, and a pending row plus a live slider of the same
+  /// type collapse. Live ingest does not call this.
+  static String migrateLegacySeerrHomeJson(
+    String jsonString, {
+    Map<int, bool>? seerrHomeRowEnabledBySliderType,
+    bool? seerrShortcutsHomeRowEnabled,
+  }) {
+    if (jsonString.isEmpty) return jsonString;
+    try {
+      final list = jsonDecode(jsonString) as List;
+      final parsed = <HomeSectionConfig>[];
+      for (final e in list) {
+        if (e is! Map) continue;
+        final cfg = tryFromJson(
+          _rewriteLegacySeerrHomeJson(Map<String, dynamic>.from(e)),
+        );
+        if (cfg != null) parsed.add(cfg);
+      }
+      final unbound = [
+        for (final section in parsed) _unbindOldPlaceholderSliderId(section),
+      ];
+      final gated = [
+        for (final section in unbound)
+          _applyMigratedSeerrHomeRowEnabled(
+            section,
+            seerrHomeRowEnabledBySliderType,
+            seerrShortcutsHomeRowEnabled,
+          ),
+      ];
+      return toJsonString(
+        _appendMissingBuiltins(_collapseDuplicateSeerrDiscoverTypes(gated)),
+      );
+    } catch (_) {
+      return jsonString;
+    }
+  }
+
+  static Map<String, dynamic> _rewriteLegacySeerrHomeJson(
+    Map<String, dynamic> json,
+  ) {
+    if (json['kind'] == HomeSectionKind.seerrSlider.serializedName ||
+        json['type'] == seerrSliderSerializedType) {
+      return json;
+    }
+    final typeName = json['type'] as String? ?? '';
+    const prefix = 'seerr_';
+    if (!typeName.startsWith(prefix)) return json;
+    final row = SeerrRowType.tryFromSerialized(typeName.substring(prefix.length));
+    if (row == null) return json;
+    final enabled = json['enabled'] as bool? ?? true;
+    final order = json['order'] as int? ?? 0;
+    if (row == SeerrRowType.shortcuts) {
+      return HomeSectionConfig.seerrSlider(
+        sliderId: seerrShortcutsSliderId,
+        pluginDisplayText:
+            json['pluginDisplayText'] as String? ?? 'Seerr Browse',
+        enabled: enabled,
+        order: order,
+      ).toJson();
+    }
+    return HomeSectionConfig.seerrSlider(
+      sliderType: row.discoverSliderType,
+      pluginDisplayText: json['pluginDisplayText'] as String?,
+      enabled: enabled,
+      order: order,
+    ).toJson();
+  }
+
+  static const _oldPlaceholderPrefix = 'legacy:';
+
+  /// One-shot: persisted `legacy:<n>` becomes sliderType-only.
+  static HomeSectionConfig _unbindOldPlaceholderSliderId(
+    HomeSectionConfig section,
+  ) {
+    final id = section.sliderId;
+    if (id == null || !id.startsWith(_oldPlaceholderPrefix)) return section;
+    final fromId = int.tryParse(id.substring(_oldPlaceholderPrefix.length));
+    final type = section.sliderType ?? fromId;
+    return HomeSectionConfig.seerrSlider(
+      sliderType: type,
+      pluginDisplayText: section.pluginDisplayText,
+      enabled: section.enabled,
+      order: section.order,
+    );
+  }
+
+  static HomeSectionConfig _applyMigratedSeerrHomeRowEnabled(
+    HomeSectionConfig section,
+    Map<int, bool>? seerrHomeRowEnabledBySliderType,
+    bool? seerrShortcutsHomeRowEnabled,
+  ) {
+    if (section.isSeerrShortcutsSlider) {
+      if (seerrShortcutsHomeRowEnabled == false) {
+        return section.copyWith(enabled: false);
+      }
+      return section;
+    }
+    if (!section.isSeerrSlider || seerrHomeRowEnabledBySliderType == null) {
+      return section;
+    }
+    if (section.seerrSliderId != null) return section;
+    final type = section.sliderType;
+    if (type == null) return section;
+    if (seerrHomeRowEnabledBySliderType[type] == false) {
+      return section.copyWith(enabled: false);
+    }
+    return section;
+  }
+
+  static List<HomeSectionConfig> _collapseDuplicateSeerrDiscoverTypes(
+    List<HomeSectionConfig> sections,
+  ) {
+    final numericByType = <int, int>{};
+    for (var i = 0; i < sections.length; i++) {
+      final section = sections[i];
+      if (!section.isSeerrSlider) continue;
+      final type = section.sliderType;
+      if (type == null) continue;
+      if (section.seerrSliderId == null) continue;
+      numericByType.putIfAbsent(type, () => i);
+    }
+
+    final drop = <int>{};
+    final overlay = <int, HomeSectionConfig>{};
+    for (var i = 0; i < sections.length; i++) {
+      final section = sections[i];
+      if (!section.isSeerrSlider || section.isSeerrShortcutsSlider) continue;
+      if (section.seerrSliderId != null) continue;
+      final type = section.sliderType;
+      if (type == null) continue;
+      final numericIndex = numericByType[type];
+      if (numericIndex == null) continue;
+      drop.add(i);
+      final numeric = overlay[numericIndex] ?? sections[numericIndex];
+      overlay[numericIndex] = numeric.copyWith(
+        enabled: section.enabled,
+        order: section.order,
+      );
+    }
+    if (drop.isEmpty && overlay.isEmpty) return sections;
+
+    final collapsed = <HomeSectionConfig>[];
+    for (var i = 0; i < sections.length; i++) {
+      if (drop.contains(i)) continue;
+      collapsed.add(overlay[i] ?? sections[i]);
+    }
+    return collapsed;
   }
 
   static String toJsonString(List<HomeSectionConfig> configs) =>

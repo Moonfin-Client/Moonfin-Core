@@ -161,16 +161,32 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
         return;
       }
 
-      final activeRows = _prefs.activeRows;
-      await _refreshRecentlyAddedGate(activeRows);
-      _rows = _visibleRows(activeRows).map((type) => SeerrDiscoverRow(
-        type: type,
-        isLoading: true,
-      )).toList();
+      final showShortcuts = _prefs.activeRows.contains(SeerrRowType.shortcuts);
+      final resolved = resolveSeerrSliders(await _repo.getDiscoverSliders());
+      await _refreshRecentlyAddedGate(
+        resolved.any((e) => e.$2.type == SeerrSliderType.recentlyAdded),
+      );
+
+      _rows = [
+        if (showShortcuts)
+          const SeerrDiscoverRow(
+            type: SeerrRowType.shortcuts,
+            isLoading: true,
+          ),
+        for (final (slider, catalog) in resolved)
+          if (catalog.type != SeerrSliderType.recentlyAdded ||
+              _canViewRecentlyAdded)
+            SeerrDiscoverRow(
+              type: seerrRowTypeForSliderType(catalog.type),
+              slider: slider,
+              catalog: catalog,
+              isLoading: true,
+            ),
+      ];
       notifyListeners();
 
       await _loadAllRows();
-      await _appendSeerrSliders();
+      _rows = _rows.where(_keepDiscoverRow).toList();
     } catch (e) {
       _error = e.toString();
       debugPrint('[SeerrDiscover] Failed to load: $e');
@@ -191,8 +207,8 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
   // at the API layer; its own frontend hides the section. We are that frontend
   // here, so replicate the gate and drop the Recently Added row for users who
   // lack the permission. Owners and admins bypass via hasPermission.
-  Future<void> _refreshRecentlyAddedGate(List<SeerrRowType> requested) async {
-    if (!requested.contains(SeerrRowType.recentlyAdded)) {
+  Future<void> _refreshRecentlyAddedGate(bool requested) async {
+    if (!requested) {
       _canViewRecentlyAdded = true;
       return;
     }
@@ -205,34 +221,25 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
     }
   }
 
-  List<SeerrRowType> _visibleRows(List<SeerrRowType> rows) =>
-      _canViewRecentlyAdded
-          ? rows
-          : rows.where((t) => t != SeerrRowType.recentlyAdded).toList();
+  bool _keepDiscoverRow(SeerrDiscoverRow row) {
+    if (!row.isSeerrSlider) return true;
+    if (row.slider?.isBuiltIn == true) return true;
+    return row.items.isNotEmpty ||
+        row.genres.isNotEmpty ||
+        row.networks.isNotEmpty ||
+        row.studios.isNotEmpty;
+  }
 
   Future<void> applyRowConfig() async {
     if (_isLoading || _rows.isEmpty) return;
-    final activeTypes = _visibleRows(_prefs.activeRows);
-    final currentLocal = [
-      for (final row in _rows)
-        if (row.type != null) row.type!,
-    ];
-    if (listEquals(currentLocal, activeTypes)) return;
-
-    final rowMap = {
-      for (final r in _rows) ?r.type: r,
-    };
-    final custom = [for (final r in _rows) if (r.isSeerrSlider) r];
-    final local = <SeerrDiscoverRow>[];
-    for (final type in activeTypes) {
-      final existing = rowMap[type];
-      if (existing == null) {
-        await refresh();
-        return;
-      }
-      local.add(existing);
+    final wantShortcuts = _prefs.activeRows.contains(SeerrRowType.shortcuts);
+    final hasShortcuts = _rows.any((row) => row.isShortcutsRow);
+    if (wantShortcuts == hasShortcuts) return;
+    if (wantShortcuts) {
+      await refresh();
+      return;
     }
-    _rows = [...local, ...custom];
+    _rows = _rows.where((row) => !row.isShortcutsRow).toList();
     notifyListeners();
   }
 
@@ -281,52 +288,52 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
   Future<void> _loadRow(int index) async {
     final row = _rows[index];
     try {
+      final type = row.type;
+      if (type != null) {
+        switch (type) {
+          case SeerrRowType.shortcuts:
+            await _loadShortcutArtwork(index);
+          case SeerrRowType.recentRequests:
+            await _loadRecentRequests(index);
+          case SeerrRowType.yourWatchlist:
+            await _loadWatchlist(index);
+          case SeerrRowType.recentlyAdded:
+            await _loadRecentlyAdded(index);
+          case SeerrRowType.movieGenres:
+            await _loadGenres(index, isMovie: true);
+          case SeerrRowType.seriesGenres:
+            await _loadGenres(index, isMovie: false);
+          case SeerrRowType.networks:
+            _updateRow(index, row.copyWith(
+              networks: popularNetworks,
+              isLoading: false,
+            ));
+          case SeerrRowType.studios:
+            _updateRow(index, row.copyWith(
+              studios: popularStudios,
+              isLoading: false,
+            ));
+          default:
+            final page = await _loadPage(row, 1);
+            if (page != null) {
+              final filtered = _filterItems(page.results);
+              _updateRow(index, row.copyWith(
+                items: filtered,
+                page: page.page,
+                totalPages: page.totalPages,
+                isLoading: false,
+              ));
+            } else {
+              _updateRow(index, row.copyWith(isLoading: false));
+            }
+        }
+        return;
+      }
       if (row.isSeerrSlider) {
         await _loadCatalogRow(index);
         return;
       }
-      final type = row.type;
-      if (type == null) {
-        _updateRow(index, row.copyWith(isLoading: false));
-        return;
-      }
-      switch (type) {
-        case SeerrRowType.shortcuts:
-          await _loadShortcutArtwork(index);
-        case SeerrRowType.recentRequests:
-          await _loadRecentRequests(index);
-        case SeerrRowType.yourWatchlist:
-          await _loadWatchlist(index);
-        case SeerrRowType.recentlyAdded:
-          await _loadRecentlyAdded(index);
-        case SeerrRowType.movieGenres:
-          await _loadGenres(index, isMovie: true);
-        case SeerrRowType.seriesGenres:
-          await _loadGenres(index, isMovie: false);
-        case SeerrRowType.networks:
-          _updateRow(index, row.copyWith(
-            networks: popularNetworks,
-            isLoading: false,
-          ));
-        case SeerrRowType.studios:
-          _updateRow(index, row.copyWith(
-            studios: popularStudios,
-            isLoading: false,
-          ));
-        default:
-          final page = await _loadPage(row, 1);
-          if (page != null) {
-            final filtered = _filterItems(page.results);
-            _updateRow(index, row.copyWith(
-              items: filtered,
-              page: page.page,
-              totalPages: page.totalPages,
-              isLoading: false,
-            ));
-          } else {
-            _updateRow(index, row.copyWith(isLoading: false));
-          }
-      }
+      _updateRow(index, row.copyWith(isLoading: false));
     } catch (e) {
       debugPrint('[SeerrDiscover] Failed to load row ${row.debugLabel}: $e');
       _updateRow(index, row.copyWith(isLoading: false));
@@ -556,39 +563,6 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
         return _repo.getWatchlist(page: page);
       default:
         return null;
-    }
-  }
-
-  Future<void> _appendSeerrSliders() async {
-    try {
-      final resolved = resolveSeerrSliders(await _repo.getDiscoverSliders());
-      _rows = _rows.where((row) => !row.isSeerrSlider).toList();
-      if (resolved.isEmpty) {
-        notifyListeners();
-        return;
-      }
-
-      final start = _rows.length;
-      _rows = [
-        ..._rows,
-        for (final (slider, catalog) in resolved)
-          SeerrDiscoverRow(
-            slider: slider,
-            catalog: catalog,
-            isLoading: true,
-          ),
-      ];
-      notifyListeners();
-
-      final indices = List.generate(resolved.length, (i) => start + i);
-      await mapBounded<int, void>(indices, 2, (index) => _loadRow(index));
-
-      _rows = _rows
-          .where((row) => !row.isSeerrSlider || row.items.isNotEmpty)
-          .toList();
-      notifyListeners();
-    } catch (e) {
-      debugPrint('[SeerrDiscover] Failed to load custom sliders: $e');
     }
   }
 

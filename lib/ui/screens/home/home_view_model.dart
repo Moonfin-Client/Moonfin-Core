@@ -183,25 +183,9 @@ class HomeViewModel extends ChangeNotifier {
       HomeSectionType.radarrCalendar ||
       HomeSectionType.sonarrCalendar =>
         false,
-      final t when _isSeerrSectionType(t) || _isTmdbSectionType(t) => false,
+      final t when _isTmdbSectionType(t) => false,
       _ => true,
     };
-  }
-
-  static bool _isSeerrSectionType(HomeSectionType type) {
-    return type == HomeSectionType.seerrShortcuts ||
-        type == HomeSectionType.seerrRecentRequests ||
-        type == HomeSectionType.seerrWatchlist ||
-        type == HomeSectionType.seerrRecentlyAdded ||
-        type == HomeSectionType.seerrPopularMovies ||
-        type == HomeSectionType.seerrUpcomingMovies ||
-        type == HomeSectionType.seerrPopularSeries ||
-        type == HomeSectionType.seerrUpcomingSeries ||
-        type == HomeSectionType.seerrTrending ||
-        type == HomeSectionType.seerrMovieGenres ||
-        type == HomeSectionType.seerrStudios ||
-        type == HomeSectionType.seerrSeriesGenres ||
-        type == HomeSectionType.seerrNetworks;
   }
 
   static bool _isTmdbSectionType(HomeSectionType type) {
@@ -447,7 +431,6 @@ class HomeViewModel extends ChangeNotifier {
                             c.pluginSource ==
                                 HomeSectionPluginSource.playlists))) &&
                 (showAudioRows || !_isAudioSectionType(c.type)) &&
-                (!_isSeerrSectionType(c.type) || (showSeerrRows && seerrPrefs.isSeerrHomeRowEnabled(c.type))) &&
                 (!c.isSeerrSlider || (showSeerrRows && seerrPrefs.enabled)) &&
                 (!_isImdbSectionType(c.type) || (showImdbRows && _isImdbSectionEnabled(c.type))) &&
                 (!_isTmdbSectionType(c.type) || (showTmdbRows && _isTmdbSectionEnabled(c.type))) &&
@@ -756,32 +739,6 @@ class HomeViewModel extends ChangeNotifier {
             row.rowType == HomeRowType.liveTvOnNow;
       case HomeSectionType.activeRecordings:
         return row.rowType == HomeRowType.activeRecordings;
-      case HomeSectionType.seerrShortcuts:
-        return row.id == 'seerr_shortcuts';
-      case HomeSectionType.seerrRecentRequests:
-        return row.id == 'seerr_recent_requests';
-      case HomeSectionType.seerrWatchlist:
-        return row.id == 'seerr_watchlist';
-      case HomeSectionType.seerrRecentlyAdded:
-        return row.id == 'seerr_recently_added';
-      case HomeSectionType.seerrPopularMovies:
-        return row.id == 'seerr_popular_movies';
-      case HomeSectionType.seerrUpcomingMovies:
-        return row.id == 'seerr_upcoming_movies';
-      case HomeSectionType.seerrPopularSeries:
-        return row.id == 'seerr_popular_series';
-      case HomeSectionType.seerrUpcomingSeries:
-        return row.id == 'seerr_upcoming_series';
-      case HomeSectionType.seerrTrending:
-        return row.id == 'seerr_trending';
-      case HomeSectionType.seerrMovieGenres:
-        return row.id == 'seerr_movie_genres';
-      case HomeSectionType.seerrStudios:
-        return row.id == 'seerr_studios';
-      case HomeSectionType.seerrSeriesGenres:
-        return row.id == 'seerr_series_genres';
-      case HomeSectionType.seerrNetworks:
-        return row.id == 'seerr_networks';
       case HomeSectionType.imdbTop250Movies:
         return row.id == 'imdb_top_250_movies';
       case HomeSectionType.imdbTop250TvShows:
@@ -934,9 +891,8 @@ class HomeViewModel extends ChangeNotifier {
         await _loadMoreSeerrRow(rowIndex, seerrType);
         return;
       }
-      final sliderId = seerrSliderIdFromStableId(row.id);
-      if (sliderId != null) {
-        await _loadMoreSeerrCatalogRow(rowIndex, sliderId);
+      if (row.id.startsWith('seerrSlider:')) {
+        await _loadMoreSeerrSliderRow(rowIndex, row.id);
         return;
       }
 
@@ -1001,9 +957,12 @@ class HomeViewModel extends ChangeNotifier {
 
   HomeRow? _placeholderForConfig(HomeSectionConfig cfg) {
     if (cfg.isSeerrSlider) {
+      final l10n = currentAppLocalizations();
       return HomeRow(
         id: cfg.stableId,
-        title: localizeSeerrSliderConfigTitle(cfg),
+        title: cfg.isSeerrShortcutsSlider
+            ? l10n.seerrShortcutsRow
+            : localizeSeerrSliderConfigTitle(cfg),
         rowType: HomeRowType.seerr,
         isLoading: true,
       );
@@ -1074,32 +1033,6 @@ class HomeViewModel extends ChangeNotifier {
         return const {'studios'};
       case HomeSectionType.activeRecordings:
         return const {'activeRecordings'};
-      case HomeSectionType.seerrShortcuts:
-        return const {'seerrShortcuts'};
-      case HomeSectionType.seerrRecentRequests:
-        return const {'seerrRecentRequests'};
-      case HomeSectionType.seerrWatchlist:
-        return const {'seerrWatchlist'};
-      case HomeSectionType.seerrRecentlyAdded:
-        return const {'seerrRecentlyAdded'};
-      case HomeSectionType.seerrPopularMovies:
-        return const {'seerrPopularMovies'};
-      case HomeSectionType.seerrUpcomingMovies:
-        return const {'seerrUpcomingMovies'};
-      case HomeSectionType.seerrPopularSeries:
-        return const {'seerrPopularSeries'};
-      case HomeSectionType.seerrUpcomingSeries:
-        return const {'seerrUpcomingSeries'};
-      case HomeSectionType.seerrTrending:
-        return const {'seerrTrending'};
-      case HomeSectionType.seerrMovieGenres:
-        return const {'seerrMovieGenres'};
-      case HomeSectionType.seerrStudios:
-        return const {'seerrStudios'};
-      case HomeSectionType.seerrSeriesGenres:
-        return const {'seerrSeriesGenres'};
-      case HomeSectionType.seerrNetworks:
-        return const {'seerrNetworks'};
       case HomeSectionType.audioArtists:
         return const {'audioArtists'};
       case HomeSectionType.audioAlbums:
@@ -1414,80 +1347,6 @@ class HomeViewModel extends ChangeNotifier {
       case HomeSectionType.mediaBar:
         _mediaBarViewModel.load();
         return [];
-      case HomeSectionType.seerrShortcuts:
-        return [await _loadSeerrShortcutsRow(l10n)];
-      case HomeSectionType.seerrRecentRequests:
-        return _loadSeerrRow(
-          SeerrRowType.recentRequests,
-          l10n.recentRequests,
-          'seerr_recent_requests',
-        );
-      case HomeSectionType.seerrWatchlist:
-        return _loadSeerrRow(
-          SeerrRowType.yourWatchlist,
-          l10n.yourWatchlist,
-          'seerr_watchlist',
-        );
-      case HomeSectionType.seerrRecentlyAdded:
-        return _loadSeerrRow(
-          SeerrRowType.recentlyAdded,
-          l10n.recentlyAdded,
-          'seerr_recently_added',
-        );
-      case HomeSectionType.seerrPopularMovies:
-        return _loadSeerrRow(
-          SeerrRowType.popularMovies,
-          l10n.popularMovies,
-          'seerr_popular_movies',
-        );
-      case HomeSectionType.seerrUpcomingMovies:
-        return _loadSeerrRow(
-          SeerrRowType.upcomingMovies,
-          l10n.upcomingMovies,
-          'seerr_upcoming_movies',
-        );
-      case HomeSectionType.seerrPopularSeries:
-        return _loadSeerrRow(
-          SeerrRowType.popularSeries,
-          l10n.popularSeries,
-          'seerr_popular_series',
-        );
-      case HomeSectionType.seerrUpcomingSeries:
-        return _loadSeerrRow(
-          SeerrRowType.upcomingSeries,
-          l10n.upcomingSeries,
-          'seerr_upcoming_series',
-        );
-      case HomeSectionType.seerrTrending:
-        return _loadSeerrRow(
-          SeerrRowType.trending,
-          l10n.trending,
-          'seerr_trending',
-        );
-      case HomeSectionType.seerrMovieGenres:
-        return _loadSeerrRow(
-          SeerrRowType.movieGenres,
-          l10n.movieGenres,
-          'seerr_movie_genres',
-        );
-      case HomeSectionType.seerrStudios:
-        return _loadSeerrRow(
-          SeerrRowType.studios,
-          l10n.studios,
-          'seerr_studios',
-        );
-      case HomeSectionType.seerrSeriesGenres:
-        return _loadSeerrRow(
-          SeerrRowType.seriesGenres,
-          l10n.seriesGenres,
-          'seerr_series_genres',
-        );
-      case HomeSectionType.seerrNetworks:
-        return _loadSeerrRow(
-          SeerrRowType.networks,
-          l10n.networks,
-          'seerr_networks',
-        );
       case HomeSectionType.radarrCalendar:
         return _loadRadarrCalendarRow(forceRefresh: forceRefresh);
       case HomeSectionType.sonarrCalendar:
@@ -1822,92 +1681,6 @@ class HomeViewModel extends ChangeNotifier {
           id: 'libraryTilesSmall',
           title: l10n.myMedia,
           rowType: HomeRowType.libraryTilesSmall,
-          isLoading: true,
-        );
-      case HomeSectionType.seerrRecentRequests:
-        return HomeRow(
-          id: 'seerr_recent_requests',
-          title: l10n.recentRequests,
-          rowType: HomeRowType.pluginDynamic,
-          isLoading: true,
-        );
-      case HomeSectionType.seerrWatchlist:
-        return HomeRow(
-          id: 'seerr_watchlist',
-          title: l10n.yourWatchlist,
-          rowType: HomeRowType.pluginDynamic,
-          isLoading: true,
-        );
-      case HomeSectionType.seerrRecentlyAdded:
-        return HomeRow(
-          id: 'seerr_recently_added',
-          title: l10n.recentlyAdded,
-          rowType: HomeRowType.pluginDynamic,
-          isLoading: true,
-        );
-      case HomeSectionType.seerrPopularMovies:
-        return HomeRow(
-          id: 'seerr_popular_movies',
-          title: l10n.popularMovies,
-          rowType: HomeRowType.pluginDynamic,
-          isLoading: true,
-        );
-      case HomeSectionType.seerrUpcomingMovies:
-        return HomeRow(
-          id: 'seerr_upcoming_movies',
-          title: l10n.upcomingMovies,
-          rowType: HomeRowType.pluginDynamic,
-          isLoading: true,
-        );
-      case HomeSectionType.seerrPopularSeries:
-        return HomeRow(
-          id: 'seerr_popular_series',
-          title: l10n.popularSeries,
-          rowType: HomeRowType.pluginDynamic,
-          isLoading: true,
-        );
-      case HomeSectionType.seerrUpcomingSeries:
-        return HomeRow(
-          id: 'seerr_upcoming_series',
-          title: l10n.upcomingSeries,
-          rowType: HomeRowType.pluginDynamic,
-          isLoading: true,
-        );
-      case HomeSectionType.seerrShortcuts:
-        return _seerrShortcutsRow(l10n);
-      case HomeSectionType.seerrTrending:
-        return HomeRow(
-          id: 'seerr_trending',
-          title: l10n.trending,
-          rowType: HomeRowType.pluginDynamic,
-          isLoading: true,
-        );
-      case HomeSectionType.seerrMovieGenres:
-        return HomeRow(
-          id: 'seerr_movie_genres',
-          title: l10n.movieGenres,
-          rowType: HomeRowType.pluginDynamic,
-          isLoading: true,
-        );
-      case HomeSectionType.seerrStudios:
-        return HomeRow(
-          id: 'seerr_studios',
-          title: l10n.studios,
-          rowType: HomeRowType.pluginDynamic,
-          isLoading: true,
-        );
-      case HomeSectionType.seerrSeriesGenres:
-        return HomeRow(
-          id: 'seerr_series_genres',
-          title: l10n.seriesGenres,
-          rowType: HomeRowType.pluginDynamic,
-          isLoading: true,
-        );
-      case HomeSectionType.seerrNetworks:
-        return HomeRow(
-          id: 'seerr_networks',
-          title: l10n.networks,
-          rowType: HomeRowType.pluginDynamic,
           isLoading: true,
         );
       case HomeSectionType.radarrCalendar:
@@ -2294,6 +2067,20 @@ class HomeViewModel extends ChangeNotifier {
   }
 
   Future<List<HomeRow>> _loadSeerrCatalogRow(HomeSectionConfig cfg) async {
+    if (cfg.isSeerrShortcutsSlider) {
+      return [await _loadSeerrShortcutsRow(cfg.stableId)];
+    }
+    final sliderType = cfg.sliderType ?? 0;
+    final rowType = seerrRowTypeForSliderType(sliderType);
+    if (rowType != null) {
+      final l10n = currentAppLocalizations();
+      return _loadSeerrRow(
+        rowType,
+        localizeSeerrRowTitle(rowType, l10n),
+        cfg.stableId,
+      );
+    }
+
     final sliderId = cfg.seerrSliderId;
     final catalog = sliderId == null ? null : _seerrSliderCatalogs[sliderId];
     if (sliderId == null || catalog == null) return const [];
@@ -2330,6 +2117,21 @@ class HomeViewModel extends ChangeNotifier {
     } catch (e) {
       debugPrint('[SeerrHomeRow] Failed to load slider $sliderId: $e');
       return const [];
+    }
+  }
+
+  Future<void> _loadMoreSeerrSliderRow(int rowIndex, String rowId) async {
+    final sliderId = seerrSliderIdFromStableId(rowId);
+    final catalogType = sliderId != null
+        ? _seerrSliderCatalogs[sliderId]?.type
+        : seerrSliderTypeFromStableId(rowId);
+    final rowType = seerrRowTypeForSliderType(catalogType ?? 0);
+    if (rowType != null) {
+      await _loadMoreSeerrRow(rowIndex, rowType);
+      return;
+    }
+    if (sliderId != null) {
+      await _loadMoreSeerrCatalogRow(rowIndex, sliderId);
     }
   }
 
@@ -2688,10 +2490,11 @@ class HomeViewModel extends ChangeNotifier {
   /// Jump tiles with no fetch behind them, so the row renders complete on the
   /// first frame while the artwork catches up.
   HomeRow _seerrShortcutsRow(
+    String rowId,
     AppLocalizations l10n, {
     Map<SeerrShortcut, String> backdrops = const {},
   }) => _seerrRow(
-    'seerr_shortcuts',
+    rowId,
     l10n.seerrShortcutsRow,
     [
       for (final shortcut in SeerrShortcut.values)
@@ -2711,11 +2514,12 @@ class HomeViewModel extends ChangeNotifier {
 
   /// One trending read dresses every tile. Artwork is the only thing it adds,
   /// so a failure still leaves a usable row.
-  Future<HomeRow> _loadSeerrShortcutsRow(AppLocalizations l10n) async {
+  Future<HomeRow> _loadSeerrShortcutsRow(String rowId) async {
+    final l10n = currentAppLocalizations();
     try {
       final repo = await GetIt.instance.getAsync<SeerrRepository>();
       await repo.ensureInitialized();
-      if (!repo.isAvailable) return _seerrShortcutsRow(l10n);
+      if (!repo.isAvailable) return _seerrShortcutsRow(rowId, l10n);
 
       final page = await repo.getTrending(
         limit: GetIt.instance<SeerrPreferences>().fetchLimit.limit,
@@ -2729,6 +2533,7 @@ class HomeViewModel extends ChangeNotifier {
       ];
 
       return _seerrShortcutsRow(
+        rowId,
         l10n,
         backdrops: pickShortcutBackdrops(
           shortcuts: SeerrShortcut.values,
@@ -2737,7 +2542,7 @@ class HomeViewModel extends ChangeNotifier {
         ),
       );
     } catch (_) {
-      return _seerrShortcutsRow(l10n);
+      return _seerrShortcutsRow(rowId, l10n);
     }
   }
 

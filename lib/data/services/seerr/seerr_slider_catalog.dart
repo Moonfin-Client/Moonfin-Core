@@ -25,11 +25,14 @@ abstract final class SeerrSliderType {
   static const tmdbTvStreaming = 21;
 }
 
-/// Moonfin already renders types 1–12 as [SeerrRowType] rows.
-bool seerrSliderIsLocalBuiltin(int type) => type >= 1 && type <= 12;
+/// Moonfin jump-tile row. Not a Seerr DiscoverSliderType; merge must not drop it.
+const seerrShortcutsSliderId = 'shortcuts';
+
+bool isSeerrShortcutsSliderId(String? sliderId) =>
+    sliderId == seerrShortcutsSliderId;
 
 /// Admin-named keyword/genre/studio/search/streaming sliders keep the
-/// server title. Unknown types also keep it when present.
+/// server title. Stock types 1–12 use localized/fallback titles.
 bool seerrSliderUsesServerTitle(int type) {
   switch (type) {
     case SeerrSliderType.tmdbMovieKeyword:
@@ -43,12 +46,24 @@ bool seerrSliderUsesServerTitle(int type) {
     case SeerrSliderType.tmdbTvStreaming:
       return true;
     default:
-      return !seerrSliderIsLocalBuiltin(type);
+      return false;
   }
 }
 
 /// English titles for known slider types that are not admin-named.
 String seerrSliderFallbackTitle(int type) => switch (type) {
+      SeerrSliderType.recentlyAdded => 'Recently Added',
+      SeerrSliderType.recentRequests => 'Recent Requests',
+      SeerrSliderType.plexWatchlist => 'Your Watchlist',
+      SeerrSliderType.trending => 'Trending',
+      SeerrSliderType.popularMovies => 'Popular Movies',
+      SeerrSliderType.movieGenres => 'Movie Genres',
+      SeerrSliderType.upcomingMovies => 'Upcoming Movies',
+      SeerrSliderType.studios => 'Studios',
+      SeerrSliderType.popularTv => 'Popular Series',
+      SeerrSliderType.tvGenres => 'Series Genres',
+      SeerrSliderType.upcomingTv => 'Upcoming Series',
+      SeerrSliderType.networks => 'Networks',
       _ => '',
     };
 
@@ -107,7 +122,6 @@ class SeerrSliderCatalog {
 /// client should skip the row.
 SeerrSliderCatalog? resolveSeerrSliderCatalog(SeerrDiscoverSlider slider) {
   if (slider.id <= 0 || !slider.enabled) return null;
-  if (seerrSliderIsLocalBuiltin(slider.type)) return null;
 
   final serverTitle = slider.title?.trim() ?? '';
   final data = slider.data?.trim() ?? '';
@@ -162,6 +176,30 @@ SeerrSliderCatalog? _catalogForType(int type, String data, String title) {
       );
 
   switch (type) {
+    case SeerrSliderType.recentlyAdded:
+      return row('media', query: const {'filter': 'allavailable'});
+    case SeerrSliderType.recentRequests:
+      return row('request');
+    case SeerrSliderType.plexWatchlist:
+      return row('discover/watchlist');
+    case SeerrSliderType.trending:
+      return row('discover/trending');
+    case SeerrSliderType.popularMovies:
+      return row('discover/movies', mediaTypeHint: 'movie');
+    case SeerrSliderType.movieGenres:
+      return row('discover/genreslider/movie', mediaTypeHint: 'movie');
+    case SeerrSliderType.upcomingMovies:
+      return row('discover/movies/upcoming', mediaTypeHint: 'movie');
+    case SeerrSliderType.studios:
+      return row('discover/movies', mediaTypeHint: 'movie');
+    case SeerrSliderType.popularTv:
+      return row('discover/tv', mediaTypeHint: 'tv');
+    case SeerrSliderType.tvGenres:
+      return row('discover/genreslider/tv', mediaTypeHint: 'tv');
+    case SeerrSliderType.upcomingTv:
+      return row('discover/tv/upcoming', mediaTypeHint: 'tv');
+    case SeerrSliderType.networks:
+      return row('discover/tv', mediaTypeHint: 'tv');
     case SeerrSliderType.tmdbMovieKeyword:
       return row(
         'discover/movies',

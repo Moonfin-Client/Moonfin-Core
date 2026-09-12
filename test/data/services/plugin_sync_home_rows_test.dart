@@ -250,4 +250,46 @@ void main() {
     expect(slider.sliderType, 17);
     expect(slider.type, HomeSectionType.none);
   });
+
+  test('omitted unbound seerr sliders survive a homeSections sync', () async {
+    await prefs.setHomeSectionsConfig([
+      const HomeSectionConfig(
+        type: HomeSectionType.resume,
+        enabled: true,
+        order: 0,
+      ),
+      HomeSectionConfig.seerrSlider(
+        sliderType: 4,
+        pluginDisplayText: 'Trending',
+        enabled: true,
+        order: 1,
+      ),
+    ]);
+
+    await pushLayout([_section(HomeSectionType.resume, order: 0)]);
+
+    expect(
+      prefs.homeSectionsConfig.where(
+        (c) => c.isSeerrSlider && c.sliderType == 4 && c.enabled,
+      ),
+      hasLength(1),
+    );
+  });
+
+  test('incoming unbound seerrSlider rows round-trip sliderType', () async {
+    await pushLayout([
+      _section(HomeSectionType.resume, order: 0),
+      {
+        'kind': 'seerrSlider',
+        'type': 'seerr_slider',
+        'enabled': true,
+        'order': 1,
+        'sliderType': 4,
+      },
+    ]);
+
+    final slider = prefs.homeSectionsConfig.singleWhere((c) => c.isSeerrSlider);
+    expect(slider.sliderId, isNull);
+    expect(slider.sliderType, 4);
+  });
 }

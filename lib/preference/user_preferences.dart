@@ -54,6 +54,7 @@ class UserPreferences extends ChangeNotifier {
     _migrateDefaultAudioLanguagePreference();
     _migrateSeerrPreferenceKeys();
     _migrateSeerrRowsVisibility();
+    _migrateLegacySeerrHomeSections();
     _enforceMediaQueuingAlwaysOn();
     _seedClockFormatFromSystem();
     _migrateScreensaverPreferences();
@@ -99,6 +100,46 @@ class UserPreferences extends ChangeNotifier {
     }
 
     _store.remove(legacyKey);
+  }
+
+  void _migrateLegacySeerrHomeSections() {
+    final prefix = homeSectionsJson.key;
+    final flags = _legacySeerrHomeRowEnabledBySliderType();
+    final shortcuts = _legacySeerrShortcutsHomeRowEnabled();
+    for (final key in _store.keys.toList()) {
+      if (key != prefix && !key.startsWith('${prefix}_')) continue;
+      final json = _store.getString(key);
+      if (json == null || json.isEmpty) continue;
+      final migrated = HomeSectionConfig.migrateLegacySeerrHomeJson(
+        json,
+        seerrHomeRowEnabledBySliderType: flags,
+        seerrShortcutsHomeRowEnabled: shortcuts,
+      );
+      if (migrated == json) continue;
+      _store.setString(key, migrated);
+    }
+  }
+
+  Map<int, bool>? _legacySeerrHomeRowEnabledBySliderType() {
+    final userId = (_store.getString(_lastUserIdPreferenceKey) ?? '').trim();
+    if (userId.isEmpty) return null;
+    final raw = _store.getString('seerr_home_rows_config_$userId');
+    if (raw == null || raw.isEmpty) return null;
+    return {
+      for (final row in SeerrRowConfig.fromJsonString(raw))
+        ?row.type.discoverSliderType: row.enabled,
+    };
+  }
+
+  bool? _legacySeerrShortcutsHomeRowEnabled() {
+    final userId = (_store.getString(_lastUserIdPreferenceKey) ?? '').trim();
+    if (userId.isEmpty) return null;
+    final raw = _store.getString('seerr_home_rows_config_$userId');
+    if (raw == null || raw.isEmpty) return null;
+    for (final row in SeerrRowConfig.fromJsonString(raw)) {
+      if (row.type == SeerrRowType.shortcuts) return row.enabled;
+    }
+    return null;
   }
 
   // Navbar colour and opacity once inherited their values from the media bar overlay

@@ -141,13 +141,13 @@ void main() {
       );
     });
 
-    test('skips stock built-in trending that Moonfin already renders locally', () {
-      expect(
-        resolveSeerrSliderCatalog(
-          _slider(type: 4, title: 'Trending', data: '', isBuiltIn: true),
-        ),
-        isNull,
+    test('maps stock trending instead of skipping it', () {
+      final catalog = resolveSeerrSliderCatalog(
+        _slider(type: 4, title: 'Trending', data: '', isBuiltIn: true),
       );
+      expect(catalog?.path, 'discover/trending');
+      expect(catalog?.title, 'Trending');
+      expect(catalog?.type, SeerrSliderType.trending);
     });
 
     test('skips disabled sliders', () {
@@ -201,12 +201,13 @@ void main() {
         data: 'x',
       ),
     ]);
-    expect(resolved.map((e) => e.$1.id), [3, 2]);
+    expect(resolved.map((e) => e.$1.id), [1, 3, 2]);
     expect(resolved.map((e) => e.$2.type), [
+      SeerrSliderType.trending,
       SeerrSliderType.tmdbMovieKeyword,
       SeerrSliderType.tmdbTvGenre,
     ]);
-    expect(resolved.map((e) => e.$2.title), ['Christmas', 'Drama']);
+    expect(resolved.map((e) => e.$2.title), ['Trending', 'Christmas', 'Drama']);
   });
 
   group('SeerrDiscoverSlider.fromJson', () {
@@ -243,14 +244,14 @@ void main() {
       expect(slider.sort, isNull);
     });
 
-    test('does not treat a built-in trending row as custom', () {
+    test('treats a built-in trending row as a discover slider', () {
       final slider = SeerrDiscoverSlider.fromJson({
         'id': 1,
         'type': 4,
         'isBuiltIn': true,
         'enabled': true,
       });
-      expect(resolveSeerrSliderCatalog(slider), isNull);
+      expect(resolveSeerrSliderCatalog(slider)?.path, 'discover/trending');
     });
   });
 

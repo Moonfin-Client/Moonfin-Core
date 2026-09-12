@@ -383,19 +383,6 @@ enum HomeSectionType {
   genres('genres'),
   studios('studios'),
   liveTv('livetv'),
-  seerrShortcuts('seerr_shortcuts'),
-  seerrRecentRequests('seerr_recent_requests'),
-  seerrWatchlist('seerr_watchlist'),
-  seerrRecentlyAdded('seerr_recently_added'),
-  seerrPopularMovies('seerr_popular_movies'),
-  seerrUpcomingMovies('seerr_upcoming_movies'),
-  seerrPopularSeries('seerr_popular_series'),
-  seerrUpcomingSeries('seerr_upcoming_series'),
-  seerrTrending('seerr_trending'),
-  seerrMovieGenres('seerr_movie_genres'),
-  seerrStudios('seerr_studios'),
-  seerrSeriesGenres('seerr_series_genres'),
-  seerrNetworks('seerr_networks'),
   imdbTop250Movies('imdb_top_250_movies'),
   imdbTop250TvShows('imdb_top_250_tv_shows'),
   imdbMostPopularMovies('imdb_most_popular_movies'),
@@ -735,48 +722,41 @@ enum SeerrRowType {
   const SeerrRowType(this.serializedName);
   final String serializedName;
 
+  static SeerrRowType? tryFromSerialized(String name) {
+    for (final e in values) {
+      if (e.serializedName == name) return e;
+    }
+    return null;
+  }
+
   static SeerrRowType fromSerialized(String name) =>
-      SeerrRowType.values.firstWhere(
-        (e) => e.serializedName == name,
-        orElse: () => SeerrRowType.trending,
-      );
+      tryFromSerialized(name) ?? SeerrRowType.trending;
 }
 
 extension SeerrRowTypeHomeSection on SeerrRowType {
-  HomeSectionType get homeSectionType => switch (this) {
-        SeerrRowType.shortcuts => HomeSectionType.seerrShortcuts,
-        SeerrRowType.recentRequests => HomeSectionType.seerrRecentRequests,
-        SeerrRowType.yourWatchlist => HomeSectionType.seerrWatchlist,
-        SeerrRowType.recentlyAdded => HomeSectionType.seerrRecentlyAdded,
-        SeerrRowType.trending => HomeSectionType.seerrTrending,
-        SeerrRowType.popularMovies => HomeSectionType.seerrPopularMovies,
-        SeerrRowType.movieGenres => HomeSectionType.seerrMovieGenres,
-        SeerrRowType.upcomingMovies => HomeSectionType.seerrUpcomingMovies,
-        SeerrRowType.studios => HomeSectionType.seerrStudios,
-        SeerrRowType.popularSeries => HomeSectionType.seerrPopularSeries,
-        SeerrRowType.seriesGenres => HomeSectionType.seerrSeriesGenres,
-        SeerrRowType.upcomingSeries => HomeSectionType.seerrUpcomingSeries,
-        SeerrRowType.networks => HomeSectionType.seerrNetworks,
+  /// Seerr `DiscoverSliderType`. Null for Moonfin-only shortcuts.
+  int? get discoverSliderType => switch (this) {
+        SeerrRowType.shortcuts => null,
+        SeerrRowType.recentlyAdded => 1,
+        SeerrRowType.recentRequests => 2,
+        SeerrRowType.yourWatchlist => 3,
+        SeerrRowType.trending => 4,
+        SeerrRowType.popularMovies => 5,
+        SeerrRowType.movieGenres => 6,
+        SeerrRowType.upcomingMovies => 7,
+        SeerrRowType.studios => 8,
+        SeerrRowType.popularSeries => 9,
+        SeerrRowType.seriesGenres => 10,
+        SeerrRowType.upcomingSeries => 11,
+        SeerrRowType.networks => 12,
       };
 }
 
-extension HomeSectionTypeSeerrRow on HomeSectionType {
-  SeerrRowType? get seerrRowType => switch (this) {
-        HomeSectionType.seerrShortcuts => SeerrRowType.shortcuts,
-        HomeSectionType.seerrRecentRequests => SeerrRowType.recentRequests,
-        HomeSectionType.seerrWatchlist => SeerrRowType.yourWatchlist,
-        HomeSectionType.seerrRecentlyAdded => SeerrRowType.recentlyAdded,
-        HomeSectionType.seerrTrending => SeerrRowType.trending,
-        HomeSectionType.seerrPopularMovies => SeerrRowType.popularMovies,
-        HomeSectionType.seerrMovieGenres => SeerrRowType.movieGenres,
-        HomeSectionType.seerrUpcomingMovies => SeerrRowType.upcomingMovies,
-        HomeSectionType.seerrStudios => SeerrRowType.studios,
-        HomeSectionType.seerrPopularSeries => SeerrRowType.popularSeries,
-        HomeSectionType.seerrSeriesGenres => SeerrRowType.seriesGenres,
-        HomeSectionType.seerrUpcomingSeries => SeerrRowType.upcomingSeries,
-        HomeSectionType.seerrNetworks => SeerrRowType.networks,
-        _ => null,
-      };
+SeerrRowType? seerrRowTypeForSliderType(int type) {
+  for (final row in SeerrRowType.values) {
+    if (row.discoverSliderType == type) return row;
+  }
+  return null;
 }
 
 enum ScreensaverMode { library, logo }
