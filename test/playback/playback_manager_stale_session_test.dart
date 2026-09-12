@@ -429,7 +429,7 @@ void main() {
   });
 
   test(
-    'unsupported audio retries once with transcoding and fails thereafter',
+    'a second failure with nothing new to veto does not resolve again',
     () async {
       final backend = _TestBackend();
       final resolver = _TestResolver();
@@ -439,6 +439,8 @@ void main() {
 
       try {
         await manager.playItems(<dynamic>[item]);
+        // The recovery asks for a transcode, so that is what comes back.
+        resolver.playMethod = StreamPlayMethod.transcode;
         backend.emitError(<String, dynamic>{
           'event': 'playerError',
           'recoverable': true,
@@ -449,6 +451,8 @@ void main() {
         expect(resolver.calls, 2);
         expect(resolver.requestedDirectPlay, <bool>[true, false]);
 
+        // No codec on the stream means nothing to veto, so there is no new
+        // information a third resolve could act on.
         backend.emitError(<String, dynamic>{
           'event': 'playerError',
           'recoverable': true,
@@ -457,50 +461,11 @@ void main() {
         await pumpEventQueue(times: 10);
 
         expect(resolver.calls, 2);
-        expect(manager.bringupState.phase, PlaybackBringupPhase.failed);
-        expect(
-          manager.bringupState.error,
-          'Playback failed after audio transcode recovery.',
-        );
       } finally {
         manager.dispose();
       }
     },
   );
-
-  test('audio transcode recovery is available again for a new item', () async {
-    final backend = _TestBackend();
-    final resolver = _TestResolver();
-    final service = _TestService();
-    final manager = _manager(backend, resolver, service);
-
-    try {
-      await manager.playItems(<dynamic>[
-        <String, dynamic>{'Id': 'first', 'Type': 'Movie'},
-      ]);
-      backend.emitError(<String, dynamic>{
-        'event': 'playerError',
-        'recoverable': true,
-        'kind': 'unsupported_audio',
-      });
-      await pumpEventQueue(times: 10);
-
-      await manager.playItems(<dynamic>[
-        <String, dynamic>{'Id': 'second', 'Type': 'Movie'},
-      ]);
-      backend.emitError(<String, dynamic>{
-        'event': 'playerError',
-        'recoverable': true,
-        'kind': 'unsupported_audio',
-      });
-      await pumpEventQueue(times: 10);
-
-      expect(resolver.calls, 4);
-      expect(resolver.requestedDirectPlay, <bool>[true, false, true, false]);
-    } finally {
-      manager.dispose();
-    }
-  });
 
   test('unsupported audio recovers when it lands during startup', () async {
     final backend = _TestBackend();
@@ -517,9 +482,9 @@ void main() {
       ]);
       await pumpEventQueue(times: 5);
 
-      // A stream the player can't parse errors before it ever reaches a ready
-      // state, so the recovery has to survive this window rather than wait on
-      // a startup that is never going to finish.
+      // An audio failure can land before the first play returns, a format the
+      // decoder turns down on sight for one, so the recovery has to fire in
+      // this window rather than wait on a startup that never finishes.
       backend.emitError(<String, dynamic>{
         'event': 'playerError',
         'recoverable': true,
@@ -542,16 +507,76 @@ void main() {
     }
   });
 
-  test('playing the same item again gets the recovery back', () async {
+  test('a container error during startup recovers once', () async {
     final backend = _TestBackend();
     final resolver = _TestResolver();
     final service = _TestService();
     final manager = _manager(backend, resolver, service);
 
+    final gate = Completer<void>();
+    backend.playGate = gate;
+
+    try {
+      final started = manager.playItems(<dynamic>[
+        <String, dynamic>{'Id': 'padded', 'Type': 'Movie'},
+      ]);
+      await pumpEventQueue(times: 5);
+
+      // A malformed container fails in the extractor, before the first play
+      // has returned, so the recovery has to fire inside that window.
+      resolver.playMethod = StreamPlayMethod.transcode;
+      backend.emitError(<String, dynamic>{
+        'event': 'playerError',
+        'recoverable': true,
+        'kind': 'unsupported_container',
+      });
+      await pumpEventQueue(times: 10);
+
+      expect(resolver.calls, 2);
+      expect(resolver.requestedDirectPlay, <bool>[true, false]);
+
+      // Already transcoding, so a repeat has nowhere further to go.
+      backend.emitError(<String, dynamic>{
+        'event': 'playerError',
+        'recoverable': true,
+        'kind': 'unsupported_container',
+      });
+      await pumpEventQueue(times: 10);
+
+      expect(resolver.calls, 2);
+
+      gate.complete();
+      await started;
+      await pumpEventQueue(times: 10);
+    } finally {
+      if (!gate.isCompleted) {
+        gate.complete();
+      }
+      manager.dispose();
+    }
+  });
+
+  test('the veto chain runs after a transcode recovery', () async {
+    final backend = _TestBackend();
+    final resolver = _TestResolver()
+      ..mediaStreams = <Map<String, dynamic>>[
+        <String, dynamic>{'Type': 'Audio', 'Codec': 'eac3', 'IsDefault': true},
+      ];
+    final service = _TestService();
+    final manager = _manager(backend, resolver, service);
+
     try {
       await manager.playItems(<dynamic>[
-        <String, dynamic>{'Id': 'repeat', 'Type': 'Movie'},
+        <String, dynamic>{'Id': 'chain', 'Type': 'Movie'},
       ]);
+
+      // The server answers the transcode request with a different codec the
+      // device turns out not to decode either.
+      resolver
+        ..playMethod = StreamPlayMethod.transcode
+        ..mediaStreams = <Map<String, dynamic>>[
+          <String, dynamic>{'Type': 'Audio', 'Codec': 'ac3', 'IsDefault': true},
+        ];
       backend.emitError(<String, dynamic>{
         'event': 'playerError',
         'recoverable': true,
@@ -559,11 +584,10 @@ void main() {
       });
       await pumpEventQueue(times: 10);
       expect(resolver.calls, 2);
+      expect(resolver.requestedDirectPlay, <bool>[true, false]);
 
-      // Replays the item the queue is already on, which is the path repeat and
-      // a retry from the player take. It does not go back through playItems.
-      await manager.startQueuedPlayback();
-      await pumpEventQueue(times: 10);
+      // A second codec vetoed is new information, so it earns one more
+      // resolve rather than a dead stop.
       backend.emitError(<String, dynamic>{
         'event': 'playerError',
         'recoverable': true,
@@ -571,8 +595,7 @@ void main() {
       });
       await pumpEventQueue(times: 10);
 
-      expect(resolver.calls, 4);
-      expect(resolver.requestedDirectPlay, <bool>[true, false, true, false]);
+      expect(resolver.calls, 3);
     } finally {
       manager.dispose();
     }

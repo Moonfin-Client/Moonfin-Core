@@ -778,7 +778,6 @@ class Media3VideoView(
         }
     // Guards the container/source-error transcode fallback against re-emitting.
     private var containerFallbackAttempted = false
-    private var audioFallbackAttempted = false
 
     // Last audio track mapping reported, so an unchanged one stays quiet.
     private var lastAudioTrackMapping: List<Map<String, Any?>>? = null
@@ -2323,7 +2322,6 @@ class Media3VideoView(
         stereoDownmixRetryAttemptedForCurrentSource = false
         tunnelingRetryAttemptedForCurrentSource = false
         containerFallbackAttempted = false
-        audioFallbackAttempted = false
         Media3TransferLog.reset()
         // Start each source with the downmix the user asked for or the state
         // the device has proven it needs (sticky once an AudioTrack init
@@ -3881,15 +3879,16 @@ class Media3VideoView(
             PlaybackException.ERROR_CODE_DECODING_FAILED ->
                 if (errorIsFromAudioRenderer(error)) "unsupported_audio" else null
 
-            // Some MKVs contain trailing zero padding after the last real
-            // cluster while the Segment size extends to EOF. Media3 then reads
-            // 0x00 as an EBML length byte, but it has no leading 1-bit and is
-            // therefore not a valid varint length mask. A server audio
-            // transcode rewrites the stream without that malformed tail, so
-            // allow one retry for this specific parser failure.
+            // Some MKVs carry zero padding after the last real cluster while
+            // the Segment size runs to EOF. Media3 reads a 0x00 there as an
+            // EBML length byte, which has no leading 1-bit and so no valid
+            // varint length mask. The container is the malformed part, and any
+            // server transcode rewrites it without the tail.
             PlaybackException.ERROR_CODE_IO_UNSPECIFIED ->
-                if (errorIsNoValidVarintLengthMaskFound(error)) {
-                    if (audioFallbackAttempted) null else "unsupported_audio"
+                if (!containerFallbackAttempted &&
+                    errorIsNoValidVarintLengthMaskFound(error)
+                ) {
+                    "unsupported_container"
                 } else {
                     null
                 }
@@ -3901,12 +3900,10 @@ class Media3VideoView(
             return
         }
 
-        // Guard against re-emitting for the same source; the Dart side also
-        // refuses to re-resolve when already transcoding, so this cannot loop.
         if (recoverableKind == "unsupported_container") {
+            // Guard against re-emitting for the same source; the Dart side also
+            // refuses to re-resolve when already transcoding, so this cannot loop.
             containerFallbackAttempted = true
-        } else if (recoverableKind == "unsupported_audio") {
-            audioFallbackAttempted = true
         }
 
         Media3Bridge.emitEvent(
