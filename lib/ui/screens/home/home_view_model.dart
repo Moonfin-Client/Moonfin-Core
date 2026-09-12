@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
+import 'package:collection/collection.dart';
 
 import '../../../data/models/aggregated_item.dart';
 import '../../../data/models/aggregated_library.dart';
@@ -543,11 +544,24 @@ class HomeViewModel extends ChangeNotifier {
         // Cleanup runs even when the load failed, so the section's loading
         // placeholder is cleared instead of spinning forever.
         final loadedRows = sectionRows
-            .map((r) => r.copyWith(items: _filterEmptyElements(r.items)))
-            .where(
-              (r) => r.items.isNotEmpty || r.rowType == HomeRowType.liveTv,
-            )
-            .toList();
+          .map((r) => r.copyWith(items: _filterEmptyElements(r.items)))
+          .where(
+            (r) => r.items.isNotEmpty || r.rowType == HomeRowType.liveTv,
+          )
+          .map((freshRow) {
+            final existing = _rows.firstWhereOrNull((r) => r.id == freshRow.id);
+            // If pagination already advanced this row past the freshly-fetched
+            // first page (e.g. a background full refresh landing after the user
+            // scrolled or the viewport auto-loaded more), keep the paginated
+            // version rather than regressing it.
+            if (existing != null &&
+                !existing.isLoading &&
+                existing.items.length > freshRow.items.length) {
+              return existing;
+            }
+            return freshRow;
+          })
+          .toList();
         final placeholder = _placeholderForConfig(cfg);
         final loadedIds = loadedRows.map((r) => r.id).toSet();
         // Find the row that immediately follows this section's placeholder /
@@ -594,6 +608,7 @@ class HomeViewModel extends ChangeNotifier {
           }
         }
         _rows = newRows;
+        print('[loadConfigItem] cfg=${cfg.stableId} replaced rowIds=${loadedIds} at ${DateTime.now()}');
         notifyListeners();
       }
 

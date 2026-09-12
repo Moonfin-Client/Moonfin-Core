@@ -52,7 +52,7 @@ class FavoritesScreen extends StatefulWidget {
   State<FavoritesScreen> createState() => _FavoritesScreenState();
 }
 
-class _FavoritesScreenState extends State<FavoritesScreen> with GridFocusNodeMixin<FavoritesScreen> {
+class _FavoritesScreenState extends State<FavoritesScreen> with GridFocusNodeMixin<FavoritesScreen>, WidgetsBindingObserver{
   late final FavoritesViewModel _vm;
   final _scrollController = ScrollController();
   final _prefs = GetIt.instance<UserPreferences>();
@@ -77,6 +77,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> with GridFocusNodeMix
     _vm.addListener(_onChanged);
     _vm.load();
     _scrollController.addListener(_onScroll);
+    WidgetsBinding.instance.addObserver(this);
     _backgroundSub = _backgroundService.backgroundStream.listen((url) {
       if (mounted) setState(() => _backdropUrl = url);
     });
@@ -86,6 +87,8 @@ class _FavoritesScreenState extends State<FavoritesScreen> with GridFocusNodeMix
 
   @override
   void dispose() {
+    _resizeCheckDebounce?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
     _backgroundSub?.cancel();
     _scrollController.dispose();
     _vm.removeListener(_onChanged);
@@ -94,6 +97,20 @@ class _FavoritesScreenState extends State<FavoritesScreen> with GridFocusNodeMix
     _tabsFocusNode.dispose();
     disposeGridFocusNodes();
     super.dispose();
+  }
+
+  Timer? _resizeCheckDebounce;
+
+  @override
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+    _resizeCheckDebounce?.cancel();
+    _resizeCheckDebounce = Timer(const Duration(milliseconds: 150), () {
+      if (!mounted) return;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _onScroll();
+      });
+    });
   }
 
   int _lastGridItemsLength = 0;
@@ -136,6 +153,9 @@ class _FavoritesScreenState extends State<FavoritesScreen> with GridFocusNodeMix
   void _onChanged() {
     if (mounted) setState(() {});
     _maybeBumpGridVersion();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _onScroll();
+    });
   }
 
   void _onItemFocused(AggregatedItem item) {
@@ -156,6 +176,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> with GridFocusNodeMix
       }
     }
   }
+
 
   double _cardWidth() {
     final desktopScale = _desktopUiScaleFactor();
