@@ -5,6 +5,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:server_core/server_core.dart';
 import 'package:dio/dio.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'dart:convert';
 import 'dart:io';
 
@@ -13,7 +14,6 @@ import '../admin_plugin_version_utils.dart';
 import '../../../widgets/adaptive/adaptive_dialog.dart';
 import '../providers/admin_user_providers.dart';
 import '../widgets/admin_form_styles.dart';
-import 'plugin_web_settings_screen.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../util/platform_detection.dart';
 
@@ -199,12 +199,8 @@ class _AdminPluginDetailScreenState
   }
 
   Uri _pluginHtmlSettingsUri(String configPageName) {
-    // Load the config page through the jellyfin-web app (legacy hash route) so
-    // it renders inside the styled shell. The explicit index.html keeps the
-    // path distinct from the bootstrap page (/web/) so the credential-priming
-    // location.replace performs a real navigation instead of a hash-only change.
     final encoded = Uri.encodeComponent(configPageName);
-    return Uri.parse('$_webBaseUrl/web/index.html#!/configurationpage?name=$encoded');
+    return Uri.parse('$_webBaseUrl/web/#/configurationpage?name=$encoded');
   }
 
   Future<String?> _resolveConfigurationPageName(PluginInfo plugin) async {
@@ -260,9 +256,11 @@ class _AdminPluginDetailScreenState
     }
   }
 
+  /// A plugin's settings page is the server's own web client, written for a
+  /// desktop browser and signed in by its own session, so it opens in the
+  /// browser rather than a web view the app would have to sign into itself.
   Future<void> _openHtmlSettings(PluginInfo plugin) async {
-    final client = GetIt.instance<MediaServerClient>();
-    final token = client.accessToken;
+    final token = GetIt.instance<MediaServerClient>().accessToken;
     if (token == null || token.isEmpty) {
       if (!mounted) {
         return;
@@ -276,23 +274,6 @@ class _AdminPluginDetailScreenState
       return;
     }
 
-    PublicSystemInfo? systemInfo;
-    try {
-      final publicInfoJson = await client.systemApi.getPublicSystemInfo();
-      systemInfo = PublicSystemInfo.fromJson(publicInfoJson);
-    } catch (_) {
-      systemInfo = null;
-    }
-
-    final parsedBaseUri = Uri.tryParse(client.baseUrl);
-    final fallbackServerLabel = parsedBaseUri?.host ?? 'Jellyfin';
-    final serverId = (systemInfo?.id.trim().isNotEmpty ?? false)
-        ? systemInfo!.id.trim()
-        : fallbackServerLabel;
-    final serverName = (systemInfo?.serverName.trim().isNotEmpty ?? false)
-        ? systemInfo!.serverName.trim()
-        : fallbackServerLabel;
-
     final configPageName =
         await _resolveConfigurationPageName(plugin) ?? plugin.name;
     if (!mounted) {
@@ -300,21 +281,16 @@ class _AdminPluginDetailScreenState
     }
 
     final uri = _pluginHtmlSettingsUri(configPageName);
-    await Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (context) => PluginWebSettingsScreen(
-          configurationPageUri: uri,
-          serverBaseUrl: client.baseUrl,
-          accessToken: token,
-          userId: client.userId,
-          serverId: serverId,
-          serverName: serverName,
-          title: AppLocalizations.of(
-            context,
-          ).adminPluginDetailSettingsTitle(plugin.name),
+    final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!opened && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context).adminCouldNotOpenUrl(uri.toString()),
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
 
   Widget _backButton(BuildContext context) {
