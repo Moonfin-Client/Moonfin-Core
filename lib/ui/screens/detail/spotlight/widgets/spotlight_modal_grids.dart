@@ -13,6 +13,7 @@ import '../../../../widgets/focus/focus_theme.dart';
 import '../../../../widgets/focus/focusable_wrapper.dart';
 import '../../../../widgets/media_card.dart';
 import '../../../../widgets/offline_aware_image.dart';
+import '../../../../widgets/seerr/seerr_status_dot.dart';
 import '../../../../widgets/seerr_icons.dart';
 import '../../modern/modern_detail_content.dart'
     show StudioLogoIndex, studioLogoUrlFor;
@@ -130,6 +131,7 @@ class SpotlightMediaGridSection extends StatelessWidget {
   final bool landscapeCells;
   final FocusNode? firstFocusNode;
   final ValueChanged<AggregatedItem> onItemTap;
+  final Map<int, int>? seerrSeasonStatus;
 
   const SpotlightMediaGridSection({
     super.key,
@@ -140,6 +142,7 @@ class SpotlightMediaGridSection extends StatelessWidget {
     this.aspectRatio = 2 / 3,
     this.landscapeCells = false,
     this.firstFocusNode,
+    this.seerrSeasonStatus,
   });
 
   @override
@@ -152,6 +155,8 @@ class SpotlightMediaGridSection extends StatelessWidget {
         : Color(prefs.get(UserPreferences.focusColor).colorValue);
     final titleColor = isNeon ? AppColorScheme.accent : null;
     final watchedBehavior = prefs.get(UserPreferences.watchedIndicatorBehavior);
+    final showAvailabilityBadges =
+        prefs.get(UserPreferences.showSeerrAvailabilityBadges);
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -185,6 +190,15 @@ class SpotlightMediaGridSection extends StatelessWidget {
                     final isSeerrItem =
                         entry.serverId == 'seerr' ||
                         entry.id.startsWith('tmdb:');
+                    final isSeason = entry.type == 'Season';
+                    final seasonSeerrStatus =
+                        isSeason && entry.indexNumber != null
+                            ? (seerrSeasonStatus?[entry.indexNumber])
+                            : null;
+                    final hasSeasonSeerrDot =
+                        showAvailabilityBadges &&
+                        SeerrMediaStatus.hasDot(seasonSeerrStatus);
+
                     return MediaCard(
                       key: ValueKey(cellKeys[i]),
                       title: entry.name,
@@ -203,13 +217,22 @@ class SpotlightMediaGridSection extends StatelessWidget {
                           ? WatchedIndicatorBehavior.never
                           : watchedBehavior,
                       seerrStatus: isSeerrItem ? entry.seerrStatus : null,
-                      overlayOccupiesTopLeft: isSeerrItem,
+                      overlayOccupiesTopLeft: isSeerrItem || hasSeasonSeerrDot,
                       imageOverlays: [
                         if (isSeerrItem)
                           const Positioned(
                             top: 6,
                             left: 6,
                             child: SeerrBadge(size: 18),
+                          ),
+                        if (hasSeasonSeerrDot)
+                          Positioned(
+                            top: 6,
+                            left: 6,
+                            child: SeerrStatusDot(
+                              status: seasonSeerrStatus,
+                              size: 18,
+                            ),
                           ),
                       ],
                       onFocus: () => spotlightScrollCellIntoView(cellContext),
