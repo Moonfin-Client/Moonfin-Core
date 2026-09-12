@@ -9,12 +9,16 @@ import '../../../util/idiom/app_ui_idiom.dart';
 /// TV need to see which action they are on, and [backgroundColor] to get a
 /// filled button instead of a text one. Callers that pass neither keep the
 /// plain [TextButton], so existing dialogs look the same as before.
+///
+/// [focusNode] lets a caller reach the button's focus after the dialog is up;
+/// the Apple idiom has no equivalent and ignores it.
 Widget adaptiveDialogAction({
   required VoidCallback? onPressed,
   required Widget child,
   bool isDefault = false,
   bool isDestructive = false,
   bool autofocus = false,
+  FocusNode? focusNode,
   Color? focusRingColor,
   Color? backgroundColor,
   Color? focusedBackgroundColor,
@@ -29,7 +33,12 @@ Widget adaptiveDialogAction({
   }
 
   if (focusRingColor == null && backgroundColor == null) {
-    return TextButton(onPressed: onPressed, autofocus: autofocus, child: child);
+    return TextButton(
+      onPressed: onPressed,
+      autofocus: autofocus,
+      focusNode: focusNode,
+      child: child,
+    );
   }
 
   final ring = focusRingColor ?? Colors.white;
@@ -54,6 +63,7 @@ Widget adaptiveDialogAction({
     return TextButton(
       onPressed: onPressed,
       autofocus: autofocus,
+      focusNode: focusNode,
       style: style,
       child: child,
     );
@@ -62,6 +72,7 @@ Widget adaptiveDialogAction({
   return FilledButton(
     onPressed: onPressed,
     autofocus: autofocus,
+    focusNode: focusNode,
     style: style.copyWith(
       backgroundColor: WidgetStateProperty.resolveWith(
         (states) => focused(states)

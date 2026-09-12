@@ -3173,6 +3173,10 @@
   "@noChannelsFound": {
     "description": "Empty state when no TV channels match the filter"
   },
+  "noProgramData": "No program data",
+  "@noProgramData": {
+    "description": "Guide cell label for a real EPG schedule gap, not a genre-filtered program"
+  },
   "liveBadge": "LIVE",
   "@liveBadge": {
     "description": "Badge label shown on currently airing programs"
@@ -3282,6 +3286,10 @@
   "watch": "Watch",
   "@watch": {
     "description": "Button label to start watching a channel"
+  },
+  "watchChannelLive": "Watch channel live",
+  "@watchChannelLive": {
+    "description": "Button label to tune a channel live when the selected program is not the one that will play (ended or upcoming)"
   },
   "close": "Close",
   "@close": {
