@@ -25,7 +25,6 @@ import '../../../../util/detail_track_highlight.dart';
 import '../../../../util/direct_play_reasons_formatter.dart';
 import '../../../../util/episode_playability.dart';
 import '../../../../util/overview_text.dart';
-import '../../../../util/play_method_label.dart';
 import '../../../../util/playback_time_label.dart';
 import '../../../../util/platform_detection.dart';
 import '../../../../util/focus/dpad_keys.dart';
@@ -3088,7 +3087,9 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
         ? GetIt.instance<PlaybackManager>()
         : null;
     final profile = manager?.backend?.getDeviceProfile() ?? <String, dynamic>{};
-    final bitrate = profile['MaxStreamingBitrate'] as int?;
+    // Cast receiver profiles can carry this as a double, so read it as a
+    // number rather than an int.
+    final bitrate = (profile['MaxStreamingBitrate'] as num?)?.toInt();
 
     final selectedSource = selectedMediaSourceForItem(item, widget.selectedMediaSourceId);
     final mediaStreams = source.mediaStreams.isNotEmpty

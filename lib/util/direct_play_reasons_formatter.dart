@@ -288,7 +288,7 @@ List<DirectPlayReasonItem> buildDirectPlayReasonItems({
     serverReasons: serverReasons,
     mediaStreams: mediaStreams,
     container: mediaSource?['Container'] as String?,
-    sourceBitrate: mediaSource?['Bitrate'] as int?,
+    sourceBitrate: (mediaSource?['Bitrate'] as num?)?.toInt(),
     deviceProfile: deviceProfile,
     audioStreamIndex: selectedAudioIndex,
     subtitleStreamIndex: selectedSubtitleIndex,

@@ -187,6 +187,14 @@ List<Map<String, dynamic>> _streamsOfType(
     .where((s) => s['Type']?.toString().toLowerCase() == type)
     .toList(growable: false);
 
+/// Reads a stream field that should be a whole number. Servers send these as
+/// an int, but a double or a quoted string both turn up, and a plain cast
+/// throws on either rather than falling through.
+int? _wholeNumber(Object? value) {
+  if (value is num) return value.toInt();
+  return int.tryParse(value?.toString() ?? '');
+}
+
 String? _codecOf(Map<String, dynamic>? stream) {
   final codec = stream?['Codec']?.toString().toLowerCase().trim();
   return (codec == null || codec.isEmpty) ? null : codec;
@@ -316,8 +324,7 @@ List<DirectPlayFailureDetail> resolveDirectPlayFailureDetails({
       ));
     } else if (rLower == 'audiochannelsnotsupported') {
       final channels = audioStream != null
-          ? (audioStream['Channels'] as int? ??
-              int.tryParse(audioStream['Channels']?.toString() ?? ''))
+          ? _wholeNumber(audioStream['Channels'])
           : null;
       details.add(DirectPlayFailureDetail(
         reason: r,
@@ -436,8 +443,7 @@ List<DirectPlayFailureDetail> resolveDirectPlayFailureDetails({
     }
 
     // 7. Check video bit depth
-    final bitDepth = videoStream['BitDepth'] as int? ??
-        int.tryParse(videoStream['BitDepth']?.toString() ?? '');
+    final bitDepth = _wholeNumber(videoStream['BitDepth']);
     if (bitDepth != null) {
       final videoCodecProfiles = _codecProfiles(deviceProfile, 'Video', videoCodec);
       for (final cp in videoCodecProfiles) {
@@ -470,8 +476,7 @@ List<DirectPlayFailureDetail> resolveDirectPlayFailureDetails({
 
   // 9. Check audio channels cap
   if (audioStream != null) {
-    final channels = audioStream['Channels'] as int? ??
-        int.tryParse(audioStream['Channels']?.toString() ?? '');
+    final channels = _wholeNumber(audioStream['Channels']);
     if (channels != null && audioCodec != null) {
       final audioCodecProfiles = _codecProfiles(deviceProfile, 'VideoAudio', audioCodec);
       for (final cp in audioCodecProfiles) {
@@ -502,8 +507,7 @@ List<DirectPlayFailureDetail> resolveDirectPlayFailureDetails({
     if (targetSubtitleIndex == null) {
       for (final s in _streamsOfType(mediaStreams, 'subtitle')) {
         if (s['IsDefault'] == true || s['IsForced'] == true) {
-          targetSubtitleIndex = s['Index'] as int? ??
-              int.tryParse(s['Index']?.toString() ?? '');
+          targetSubtitleIndex = _wholeNumber(s['Index']);
           break;
         }
       }
