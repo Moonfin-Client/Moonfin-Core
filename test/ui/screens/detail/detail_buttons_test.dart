@@ -118,16 +118,12 @@ void main() {
       expect(showsTvDownloadActions(prefs), isTrue);
     });
 
-    test('TV offers downloads if explicitly ordered and not hidden in action buttons', () async {
+    test('a saved button order does not opt TV in on its own', () async {
       PlatformDetection.setTvMode(true);
-      final prefs = await _prefs();
+      // Moving any row writes the whole arrangement back, download included,
+      // so the order says nothing about whether downloads were asked for.
+      final prefs = await _prefs(order: 'play,download,subtitles');
 
-      expect(showsTvDownloadActions(prefs), isFalse);
-
-      await prefs.set(UserPreferences.detailButtonOrderTv, 'play,download,subtitles');
-      expect(showsTvDownloadActions(prefs), isTrue);
-
-      await prefs.set(UserPreferences.hiddenDetailButtonsTv, 'download');
       expect(showsTvDownloadActions(prefs), isFalse);
     });
   });

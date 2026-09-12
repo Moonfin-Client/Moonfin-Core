@@ -8,25 +8,19 @@ import '../auth/repositories/user_repository.dart';
 import '../data/models/aggregated_item.dart';
 import '../data/models/download_quality.dart';
 import '../preference/user_preferences.dart';
-import '../ui/screens/detail/detail_buttons.dart';
 import 'platform_detection.dart';
 
 /// Whether download actions may be offered on this device at all.
 ///
 /// Android TV keeps them hidden until the user enables offline downloads in
-/// Settings -> Playback -> Offline Downloads or explicitly includes them in
-/// their Action Buttons layout. Every other platform that supports downloads
-/// offers them unconditionally. Existing downloads and the management screens
-/// are never affected by this gate.
-bool showsTvDownloadActions(UserPreferences prefs) {
-  if (!PlatformDetection.isTV) return true;
-  if (prefs.get(UserPreferences.tvOfflineDownloads)) return true;
-  final order = prefs.get(UserPreferences.detailButtonOrderTv);
-  if (order.isNotEmpty && order.split(',').contains(DetailButton.download.id)) {
-    return !detailButtonLayout.hidden(prefs).contains(DetailButton.download.id);
-  }
-  return false;
-}
+/// Settings -> Playback -> Offline Downloads. Every other platform that
+/// supports downloads offers them unconditionally. Existing downloads and the
+/// management screens are never affected by this gate.
+///
+/// Showing or hiding the Download action button writes that same setting, so
+/// the two places a user can reach this stay in step.
+bool showsTvDownloadActions(UserPreferences prefs) =>
+    !PlatformDetection.isTV || prefs.get(UserPreferences.tvOfflineDownloads);
 
 /// Whether the signed in user may start a download here.
 ///
