@@ -12,6 +12,9 @@ import 'package:server_core/server_core.dart';
 import '../../../data/models/aggregated_item.dart';
 import '../../../data/utils/playlist_utils.dart';
 import '../../../data/services/plugin_sync_service.dart';
+import '../../../data/repositories/seerr_repository.dart';
+import '../../../data/services/seerr/seerr_slider_catalog.dart';
+import '../../../data/services/seerr/seerr_slider_home_sections.dart';
 import '../../../preference/home_section_config.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
@@ -20,6 +23,7 @@ import '../../../preference/seerr_row_config.dart';
 import '../../../util/extensions.dart';
 import '../../../util/focus/scroll_utils.dart';
 import '../../../util/platform_detection.dart';
+import '../../util/home_row_title_localizer.dart';
 import '../../navigation/route_lifecycle_observer.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/poster_size_settings_dialog.dart';
@@ -670,7 +674,9 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
                 !GetIt.instance<SeerrPreferences>().isSeerrHomeRowEnabled(
                   section.type,
                 ))) ||
-        (section.isSeerrSlider && !showSeerrRows);
+        (section.isSeerrSlider &&
+            (!showSeerrRows ||
+                !GetIt.instance<SeerrPreferences>().enabled));
     final hiddenByImdb =
         _isImdbSectionType(section.type) &&
         (!showImdbRows || !_isImdbRowEnabled(section.type));
@@ -842,6 +848,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
       final collectionsFuture = _fetchCollectionsForHomeSections();
       final genresFuture = _fetchGenresForHomeSections();
       final playlistsFuture = _fetchPlaylistsForHomeSections();
+      final seerrChanged = await _mergeSeerrSliderSections();
       final discoveredCollections = await collectionsFuture;
       final discoveredGenres = await genresFuture;
       final discoveredPlaylists = await playlistsFuture;
@@ -868,6 +875,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
         }
 
         changed =
+            seerrChanged ||
             mergedPluginSections ||
             mergedCollectionSections ||
             mergedGenreSections ||
@@ -895,6 +903,37 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
           });
         }
       }
+    }
+  }
+
+  Future<bool> _mergeSeerrSliderSections() async {
+    try {
+      if (!GetIt.instance<SeerrPreferences>().enabled) return false;
+      if (!GetIt.instance<PluginSyncService>().seerrAvailable) return false;
+      final repo = await GetIt.instance.getAsync<SeerrRepository>();
+      await repo.ensureInitialized();
+      if (!repo.isAvailable) return false;
+      final resolved = resolveSeerrSliders(await repo.getDiscoverSliders());
+      final current = [
+        ?_mediaBarConfig,
+        ..._sections,
+      ];
+      final merged = mergeSeerrSliderHomeSections(current, resolved);
+      if (HomeSectionConfig.toJsonString(merged) ==
+          HomeSectionConfig.toJsonString(current)) {
+        return false;
+      }
+      _mediaBarConfig = merged
+          .where((s) => s.type == HomeSectionType.mediaBar)
+          .firstOrNull;
+      _sections = merged
+          .where((s) => s.type != HomeSectionType.mediaBar)
+          .toList()
+        ..sort((a, b) => a.order.compareTo(b.order));
+      return true;
+    } catch (e) {
+      debugPrint('[HomeSections] Failed to merge Seerr sliders: $e');
+      return false;
     }
   }
 
@@ -1605,9 +1644,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
 
   String _labelFor(HomeSectionConfig cfg, AppLocalizations l10n) {
     if (cfg.isSeerrSlider) {
-      return cfg.pluginDisplayText?.isNotEmpty == true
-          ? cfg.pluginDisplayText!
-          : 'Seerr slider';
+      return localizeSeerrSliderConfigTitle(cfg);
     }
     if (cfg.isPluginDynamic) {
       return cfg.pluginDisplayText?.isNotEmpty == true

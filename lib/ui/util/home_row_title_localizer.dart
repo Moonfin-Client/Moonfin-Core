@@ -1,5 +1,7 @@
 import '../../data/models/home_row.dart';
+import '../../data/services/seerr/seerr_slider_catalog.dart';
 import '../../l10n/app_localizations.dart';
+import '../../preference/home_section_config.dart';
 import '../../preference/preference_constants.dart';
 
 /// The Seerr page builds its rows from the type alone, so it localizes the
@@ -20,6 +22,22 @@ String localizeSeerrRowTitle(SeerrRowType type, AppLocalizations l10n) =>
       SeerrRowType.upcomingSeries => l10n.upcomingSeries,
       SeerrRowType.networks => l10n.networks,
     };
+
+/// Admin-named custom sliders keep [serverTitle]. Known types can supply a
+/// fallback. Unknown types keep the server title when present.
+String localizeSeerrSliderTitle(int type, {String? serverTitle}) {
+  final server = serverTitle?.trim() ?? '';
+  if (server.isNotEmpty && seerrSliderUsesServerTitle(type)) return server;
+  final fallback = seerrSliderFallbackTitle(type);
+  if (fallback.isNotEmpty) return fallback;
+  return server;
+}
+
+String localizeSeerrSliderConfigTitle(HomeSectionConfig config) =>
+    localizeSeerrSliderTitle(
+      config.sliderType ?? 0,
+      serverTitle: config.pluginDisplayText,
+    );
 
 String localizeHomeRowTitle({
   required HomeRow row,

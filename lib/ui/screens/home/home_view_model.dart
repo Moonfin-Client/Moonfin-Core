@@ -34,7 +34,10 @@ import '../../../data/utils/bounded_concurrency.dart';
 import '../../../util/platform_detection.dart';
 import '../../../util/server_url.dart';
 import '../../../preference/seerr_preferences.dart';
+import '../../../data/services/seerr/seerr_slider_catalog.dart';
+import '../../../data/services/seerr/seerr_slider_home_sections.dart';
 import '../../../data/viewmodels/seerr_discover_view_model.dart';
+import '../../util/home_row_title_localizer.dart';
 import '../../widgets/seerr/seerr_shortcuts.dart';
 import '../../../data/services/custom_external_lists_service.dart';
 import '../../../util/seerr_genre_art.dart';
@@ -368,6 +371,13 @@ class HomeViewModel extends ChangeNotifier {
           hydratedFromCache = true;
           notifyListeners();
         }
+      }
+
+      final showSeerrRowsEarly =
+          GetIt.instance<PluginSyncService>().seerrAvailable;
+      final seerrPrefsEarly = GetIt.instance<SeerrPreferences>();
+      if (showSeerrRowsEarly && seerrPrefsEarly.enabled) {
+        await _cacheSeerrSliderCatalogs();
       }
 
       final activeConfigs = _prefs.activeHomeSectionConfigs;
@@ -924,6 +934,11 @@ class HomeViewModel extends ChangeNotifier {
         await _loadMoreSeerrRow(rowIndex, seerrType);
         return;
       }
+      final sliderId = seerrSliderIdFromStableId(row.id);
+      if (sliderId != null) {
+        await _loadMoreSeerrCatalogRow(rowIndex, sliderId);
+        return;
+      }
 
       // The aggregated multi-server rows take no offset, so they keep the
       // paging they already had.
@@ -965,7 +980,7 @@ class HomeViewModel extends ChangeNotifier {
 
   Future<List<HomeRow>> _loadConfig(HomeSectionConfig cfg, {bool forceRefresh = false}) async {
     if (cfg.isSeerrSlider) {
-      return const [];
+      return _loadSeerrCatalogRow(cfg);
     }
     if (cfg.isPluginDynamic) {
       final section = cfg.pluginSection;
@@ -986,7 +1001,12 @@ class HomeViewModel extends ChangeNotifier {
 
   HomeRow? _placeholderForConfig(HomeSectionConfig cfg) {
     if (cfg.isSeerrSlider) {
-      return null;
+      return HomeRow(
+        id: cfg.stableId,
+        title: localizeSeerrSliderConfigTitle(cfg),
+        rowType: HomeRowType.seerr,
+        isLoading: true,
+      );
     }
     if (cfg.isPluginDynamic) {
       final section = cfg.pluginSection;
@@ -2255,6 +2275,100 @@ class HomeViewModel extends ChangeNotifier {
   /// Last page fetched per Seerr row. Seerr counts in pages where the rest of
   /// the home rows count in items, so this can't share `_rowOffsets`.
   final Map<String, int> _seerrRowPages = {};
+  Map<int, SeerrSliderCatalog> _seerrSliderCatalogs = {};
+
+  Future<void> _cacheSeerrSliderCatalogs() async {
+    try {
+      final repo = await GetIt.instance.getAsync<SeerrRepository>();
+      await repo.ensureInitialized();
+      if (!repo.isAvailable) return;
+      final resolved = resolveSeerrSliders(
+        await repo.getDiscoverSliders(),
+      );
+      _seerrSliderCatalogs = {
+        for (final (slider, catalog) in resolved) slider.id: catalog,
+      };
+    } catch (e) {
+      debugPrint('[SeerrHomeRow] Failed to load sliders: $e');
+    }
+  }
+
+  Future<List<HomeRow>> _loadSeerrCatalogRow(HomeSectionConfig cfg) async {
+    final sliderId = cfg.seerrSliderId;
+    final catalog = sliderId == null ? null : _seerrSliderCatalogs[sliderId];
+    if (sliderId == null || catalog == null) return const [];
+    try {
+      final repo = await GetIt.instance.getAsync<SeerrRepository>();
+      final seerrPrefs = GetIt.instance<SeerrPreferences>();
+      await repo.ensureInitialized();
+      if (!repo.isAvailable) return const [];
+
+      final page = await repo.getCatalog(
+        catalog.path,
+        query: catalog.query,
+        page: 1,
+        mediaTypeHint: catalog.mediaTypeHint,
+      );
+      final items = _seerrAggregatedItems(
+        page.results,
+        SeerrRowType.trending,
+        seerrPrefs.blockNsfw,
+      );
+      _seerrRowPages[cfg.stableId] = 1;
+      return [
+        HomeRow(
+          id: cfg.stableId,
+          title: localizeSeerrSliderTitle(
+            catalog.type,
+            serverTitle: catalog.title,
+          ),
+          rowType: HomeRowType.seerr,
+          items: items,
+          totalCount: page.totalPages > 1 ? items.length + 1 : items.length,
+        ),
+      ];
+    } catch (e) {
+      debugPrint('[SeerrHomeRow] Failed to load slider $sliderId: $e');
+      return const [];
+    }
+  }
+
+  Future<void> _loadMoreSeerrCatalogRow(int rowIndex, int sliderId) async {
+    final catalog = _seerrSliderCatalogs[sliderId];
+    if (catalog == null) return;
+    final row = _rows[rowIndex];
+    final repo = await GetIt.instance.getAsync<SeerrRepository>();
+    final seerrPrefs = GetIt.instance<SeerrPreferences>();
+    await repo.ensureInitialized();
+    if (!repo.isAvailable) return;
+
+    final nextPage = (_seerrRowPages[row.id] ?? 1) + 1;
+    final page = await repo.getCatalog(
+      catalog.path,
+      query: catalog.query,
+      page: nextPage,
+      mediaTypeHint: catalog.mediaTypeHint,
+    );
+    _seerrRowPages[row.id] = nextPage;
+    final existingIds = row.items.map(_seerrCatalogItemIdentity).toSet();
+    final items = [
+      ...row.items,
+      ..._seerrAggregatedItems(
+        page.results,
+        SeerrRowType.trending,
+        seerrPrefs.blockNsfw,
+      ).where((item) => !existingIds.contains(_seerrCatalogItemIdentity(item))),
+    ];
+    _rows = List.of(_rows);
+    _rows[rowIndex] = row.copyWith(
+      items: items,
+      totalCount: nextPage >= page.totalPages ? items.length : items.length + 1,
+    );
+    notifyListeners();
+  }
+
+  static String _seerrCatalogItemIdentity(AggregatedItem item) =>
+      '${item.seerrMediaType ?? item.type ?? ''}:${item.id}';
 
   Future<List<HomeRow>> _loadSeerrRow(
     SeerrRowType type,
