@@ -206,6 +206,16 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
     icon: Icons.smart_button,
     open: () => push(const _DetailButtonsScreen()),
   );
+  final detailMetadata = _SearchSection(
+    slug: 'detail-metadata',
+    path: [
+      l10n.settingsPersonalization,
+      l10n.settingsDetailsScreen,
+      l10n.detailMetadata,
+    ],
+    icon: Icons.view_headline_outlined,
+    open: () => push(const _DetailMetadataScreen()),
+  );
   final navigation = _SearchSection(
     slug: 'navigation',
     path: [l10n.settingsPersonalization, l10n.navigation],
@@ -707,6 +717,20 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       'trailer',
       'favorite',
       'playlist',
+    ]),
+    detailMetadata.screen(keywords: [
+      'metadata',
+      'release date',
+      'upcoming',
+      'air date',
+      'year',
+      'parental rating',
+      'runtime',
+      'seasons',
+      'status',
+      'genres',
+      'seerr',
+      'reorder',
     ]),
 
     navigation.screen(keywords: ['navbar', 'toolbar', 'sidebar']),

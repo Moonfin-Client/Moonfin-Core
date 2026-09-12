@@ -6,6 +6,7 @@ import '../../../../../data/models/aggregated_item.dart';
 import '../../../../../data/viewmodels/item_detail_view_model.dart';
 import '../../../../../data/viewmodels/seerr_media_detail_view_model.dart';
 import '../../../../../l10n/app_localizations.dart';
+import '../../../../../preference/detail_metadata_layout.dart';
 import '../../../../../preference/user_preferences.dart';
 import '../../../../../util/overview_text.dart';
 import '../../../../../util/playback_time_label.dart';
@@ -244,12 +245,17 @@ class NouveauHeroState extends State<NouveauHero> {
       ),
     );
 
-    final genres = item.genres
-        .take(3)
-        .map((genre) => genre.trim())
-        .where((genre) => genre.isNotEmpty)
-        .join('  •  ')
-        .toUpperCase();
+    final hiddenMetadata = detailMetadataLayout.hidden(widget.prefs);
+
+    final showGenres = !hiddenMetadata.contains(DetailMetadataItem.genres.id);
+    final genres = showGenres
+        ? item.genres
+            .take(3)
+            .map((genre) => genre.trim())
+            .where((genre) => genre.isNotEmpty)
+            .join('  •  ')
+            .toUpperCase()
+        : '';
 
     final genreRowHeight = isPhonePortrait
         ? 13.5
@@ -266,9 +272,11 @@ class NouveauHeroState extends State<NouveauHero> {
 
     final technicalDetails = _technicalDetailsContent(item, scale);
 
-    final status = _normalizedSeriesStatus(item);
+    final showStatus = !hiddenMetadata.contains(DetailMetadataItem.status.id);
+    final status = showStatus ? _normalizedSeriesStatus(item) : null;
 
-    final seerrStatus = seerrItemStatus(viewModel);
+    final showSeerr = !hiddenMetadata.contains(DetailMetadataItem.seerrAvailability.id);
+    final seerrStatus = showSeerr ? seerrItemStatus(viewModel) : null;
 
     final l10n = AppLocalizations.of(context);
 
@@ -283,7 +291,14 @@ class NouveauHeroState extends State<NouveauHero> {
         ? _nouveauSeerrPills(context, seerrStatus, scale)
         : const <Widget>[];
 
-    final hasBadges = status != null || seerrPills.isNotEmpty;
+    final showUpcoming = !hiddenMetadata.contains(DetailMetadataItem.upcomingEpisodeDate.id);
+    final upcomingText = showUpcoming &&
+            item.type == 'Series' &&
+            viewModel.upcomingEpisode != null
+        ? viewModel.upcomingEpisode!.format(context)
+        : null;
+
+    final hasBadges = status != null || seerrPills.isNotEmpty || upcomingText != null;
 
     final heroMaxWidth = isPhonePortrait
         ? size.width
@@ -407,6 +422,7 @@ class NouveauHeroState extends State<NouveauHero> {
                   branding: branding,
                   metadata: metadata,
                   status: status,
+                  upcomingText: upcomingText,
                   seerrPills: seerrPills,
                   hasBadges: hasBadges,
                   genres: genres,
@@ -425,6 +441,7 @@ class NouveauHeroState extends State<NouveauHero> {
                   branding: branding,
                   metadata: metadata,
                   status: status,
+                  upcomingText: upcomingText,
                   seerrPills: seerrPills,
                   hasBadges: hasBadges,
                   genres: genres,
@@ -449,6 +466,7 @@ class NouveauHeroState extends State<NouveauHero> {
     required Widget branding,
     required List<Widget> metadata,
     required String? status,
+    required String? upcomingText,
     required List<Widget> seerrPills,
     required bool hasBadges,
     required String genres,
@@ -495,6 +513,7 @@ class NouveauHeroState extends State<NouveauHero> {
           _badgeRow(
             context,
             status: status,
+            upcomingText: upcomingText,
             seerrPills: seerrPills,
             scale: 0.92,
           ),
@@ -545,6 +564,7 @@ class NouveauHeroState extends State<NouveauHero> {
     required Widget branding,
     required List<Widget> metadata,
     required String? status,
+    required String? upcomingText,
     required List<Widget> seerrPills,
     required bool hasBadges,
     required String genres,
@@ -592,6 +612,7 @@ class NouveauHeroState extends State<NouveauHero> {
           _badgeRow(
             context,
             status: status,
+            upcomingText: upcomingText,
             seerrPills: seerrPills,
             scale: scale,
           ),
@@ -818,52 +839,53 @@ class NouveauHeroState extends State<NouveauHero> {
       values.add(Text(value, style: style));
     }
 
-    void addFirstText(String? value) {
-      if (value == null || value.trim().isEmpty) {
-        return;
-      }
+    final hidden = detailMetadataLayout.hidden(widget.prefs);
+    final showYear = !hidden.contains(DetailMetadataItem.year.id);
+    final showRating = !hidden.contains(DetailMetadataItem.parentalRating.id);
+    final showRuntime = !hidden.contains(DetailMetadataItem.runtimeAndSeasons.id);
 
-      values.add(Text(value, style: style));
+    if (showYear) {
+      addText(item.productionYear?.toString());
     }
 
-    addFirstText(item.productionYear?.toString());
-
-    if (item.officialRating?.trim().isNotEmpty ?? false) {
+    if (showRating && (item.officialRating?.trim().isNotEmpty ?? false)) {
       addText(item.officialRating);
     }
 
-    if (item.type == 'Series' && item.childCount != null) {
-      addText(l10n.seasonCount(item.childCount!));
-    }
-
-    if (item.type == 'Season') {
-      final episodeCount = widget.viewModel.episodes.isNotEmpty
-          ? widget.viewModel.episodes.length
-          : (item.childCount ?? 0);
-
-      if (episodeCount > 0) {
-        addText(l10n.episodeCount(episodeCount));
+    if (showRuntime) {
+      if (item.type == 'Series' && item.childCount != null) {
+        addText(l10n.seasonCount(item.childCount!));
       }
-    }
-
-    if (item.type == 'Episode') {
-      final season = item.parentIndexNumber;
-      final episode = item.indexNumber;
-
-      if (season != null && episode != null) {
-        addText(l10n.seasonEpisodeLabel(season, episode));
-      }
-    }
-
-    final runtime = _effectiveRuntime(item);
-
-    if (runtime != null && runtime > Duration.zero && item.type != 'Series') {
-      addText(formatRuntimeShort(runtime));
 
       if (item.type == 'Season') {
-        final endTime = _seasonEndTime(context, runtime);
+        final episodeCount = widget.viewModel.episodes.isNotEmpty
+            ? widget.viewModel.episodes.length
+            : (item.childCount ?? 0);
 
-        addText(l10n.endsAt(endTime));
+        if (episodeCount > 0) {
+          addText(l10n.episodeCount(episodeCount));
+        }
+      }
+
+      if (item.type == 'Episode') {
+        final season = item.parentIndexNumber;
+        final episode = item.indexNumber;
+
+        if (season != null && episode != null) {
+          addText(l10n.seasonEpisodeLabel(season, episode));
+        }
+      }
+
+      final runtime = _effectiveRuntime(item);
+
+      if (runtime != null && runtime > Duration.zero && item.type != 'Series') {
+        addText(formatRuntimeShort(runtime));
+
+        if (item.type == 'Season') {
+          final endTime = _seasonEndTime(context, runtime);
+
+          addText(l10n.endsAt(endTime));
+        }
       }
     }
 
@@ -889,27 +911,74 @@ class NouveauHeroState extends State<NouveauHero> {
   Widget _badgeRow(
     BuildContext context, {
     required String? status,
+    required String? upcomingText,
     required List<Widget> seerrPills,
     required double scale,
   }) {
+    final badges = <Widget>[];
+    if (status != null) {
+      badges.add(_statusBadge(context, status, scale));
+    }
+    if (upcomingText != null) {
+      badges.add(_upcomingEpisodeBadge(context, upcomingText, scale));
+    }
+    for (var index = 0; index < seerrPills.length; index++) {
+      badges.add(
+        _NouveauBadgeEntrance(
+          key: ValueKey<String>('nouveau-seerr-badge-$index'),
+          child: seerrPills[index],
+        ),
+      );
+    }
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (status != null) _statusBadge(context, status, scale),
-
-          if (status != null && seerrPills.isNotEmpty)
-            SizedBox(width: (9.0 * scale).clamp(8.0, 10.0)),
-
-          for (var index = 0; index < seerrPills.length; index++) ...[
-            if (index > 0) SizedBox(width: (9.0 * scale).clamp(8.0, 10.0)),
-            _NouveauBadgeEntrance(
-              key: ValueKey<String>('nouveau-seerr-badge-$index'),
-              child: seerrPills[index],
-            ),
+          for (var i = 0; i < badges.length; i++) ...[
+            if (i > 0) SizedBox(width: (9.0 * scale).clamp(8.0, 10.0)),
+            badges[i],
           ],
         ],
+      ),
+    );
+  }
+
+  Widget _upcomingEpisodeBadge(BuildContext context, String text, double scale) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: AppColorScheme.accent.withValues(alpha: 0.15),
+        borderRadius: AppRadius.circular((6.0 * scale).clamp(5.0, 7.0)),
+        border: Border.all(color: AppColorScheme.accent.withValues(alpha: 0.40)),
+      ),
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: (10.0 * scale).clamp(9.0, 11.0),
+          vertical: (5.0 * scale).clamp(4.5, 6.0),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.event_available,
+              size: (13.0 * scale).clamp(12.0, 14.0),
+              color: AppColorScheme.accent,
+            ),
+            SizedBox(width: (4.0 * scale).clamp(3.0, 5.0)),
+            Text(
+              text,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: AppColorScheme.accent,
+                fontSize: (12.5 * scale).clamp(11.5, 13.5),
+                fontWeight: FontWeight.w600,
+                height: 1.0,
+                letterSpacing: 0.1,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

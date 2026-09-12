@@ -16,6 +16,7 @@ import '../../../../data/services/plugin_sync_service.dart';
 import '../../../../data/services/seerr/seerr_api_models.dart';
 import '../../../../data/viewmodels/item_detail_view_model.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../preference/detail_metadata_layout.dart';
 import '../../../../preference/preference_constants.dart';
 import '../../../../preference/user_preferences.dart';
 import '../../../../util/overview_text.dart';
@@ -628,83 +629,131 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
     final muted = AppColorScheme.onBackground.withValues(alpha: 0.75);
     final style = textTheme.bodyMedium?.copyWith(color: muted);
 
+    final hidden = detailMetadataLayout.hidden(widget.prefs);
+    final ordered = detailMetadataLayout.ordered(
+      DetailMetadataItem.values,
+      (entry) => entry.id,
+      widget.prefs,
+    );
+
     final pieces = <Widget>[];
     void addText(String? value) {
       if (value == null || value.isEmpty) return;
       pieces.add(Text(value, style: style));
     }
 
-    addText(item.productionYear?.toString());
-    addText(item.officialRating);
-    if (item.type == 'Series' && item.childCount != null) {
-      addText(l10n.seasonCount(item.childCount!));
+    for (final entry in ordered) {
+      if (hidden.contains(entry.id)) continue;
+      switch (entry) {
+        case DetailMetadataItem.year:
+          addText(item.productionYear?.toString());
+        case DetailMetadataItem.parentalRating:
+          addText(item.officialRating);
+        case DetailMetadataItem.runtimeAndSeasons:
+          if (item.type == 'Series' && item.childCount != null) {
+            addText(l10n.seasonCount(item.childCount!));
+          }
+          if (item.type == 'Season') {
+            final epCount = _vm.episodes.isNotEmpty
+                ? _vm.episodes.length
+                : (item.childCount ?? 0);
+            if (epCount > 0) addText(l10n.episodeCount(epCount));
+          }
+          if (item.type == 'Episode') {
+            final s = item.parentIndexNumber;
+            final e = item.indexNumber;
+            if (s != null && e != null) addText('S$s:E$e');
+          }
+          final runtime = item.runtime;
+          if (runtime != null && runtime > Duration.zero && item.type != 'Series') {
+            pieces.add(
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.schedule, size: 14, color: muted),
+                  const SizedBox(width: 4),
+                  Text(spotlightRuntimeLabel(runtime), style: style),
+                ],
+              ),
+            );
+          }
+        case DetailMetadataItem.status:
+          final status = item.status;
+          if (item.type == 'Series' && status != null && status.isNotEmpty) {
+            final isEnded = status.toLowerCase() == 'ended';
+            pieces.add(
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: isEnded ? const Color(0xFFB71C1C) : const Color(0xFF2E7D32),
+                  borderRadius: JellyfinTokens.shapes.smallRadius,
+                ),
+                child: Text(
+                  status,
+                  style: textTheme.labelSmall?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            );
+          }
+        case DetailMetadataItem.upcomingEpisodeDate:
+          if (item.type == 'Series' && _vm.upcomingEpisode != null) {
+            pieces.add(_upcomingEpisodeBadge(context, _vm.upcomingEpisode!.format(context)));
+          }
+        case DetailMetadataItem.genres:
+          if (item.genres.isNotEmpty) {
+            addText(item.genres.take(3).join(' · '));
+          }
+        case DetailMetadataItem.seerrAvailability:
+          final seerrStatus = seerrItemStatus(_vm);
+          if (seerrStatus != null) {
+            pieces.add(SeerrStatusPills(state: seerrStatus, onlyNoteworthy: true));
+          }
+      }
     }
-    if (item.type == 'Season') {
-      final epCount = _vm.episodes.isNotEmpty
-          ? _vm.episodes.length
-          : (item.childCount ?? 0);
-      if (epCount > 0) addText(l10n.episodeCount(epCount));
-    }
-    if (item.type == 'Episode') {
-      final s = item.parentIndexNumber;
-      final e = item.indexNumber;
-      if (s != null && e != null) addText('S$s:E$e');
-    }
-    final status = item.status;
-    if (item.type == 'Series' && status != null && status.isNotEmpty) {
-      final isEnded = status.toLowerCase() == 'ended';
-      pieces.add(
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-          decoration: BoxDecoration(
-            color: isEnded ? const Color(0xFFB71C1C) : const Color(0xFF2E7D32),
-            borderRadius: JellyfinTokens.shapes.smallRadius,
-          ),
-          child: Text(
-            status,
-            style: textTheme.labelSmall?.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
-      );
-    }
-    final runtime = item.runtime;
-    if (runtime != null && runtime > Duration.zero && item.type != 'Series') {
-      pieces.add(
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.schedule, size: 14, color: muted),
-            const SizedBox(width: 4),
-            Text(spotlightRuntimeLabel(runtime), style: style),
-          ],
-        ),
-      );
-    }
-    if (item.genres.isNotEmpty) {
-      addText(item.genres.take(3).join(' · '));
-    }
-    // A badge rather than another word in the line, so it sits outside the
-    // dot separators.
-    final seerrStatus = seerrItemStatus(_vm);
-    final seerrPills = seerrStatus == null
-        ? null
-        : SeerrStatusPills(state: seerrStatus, onlyNoteworthy: true);
-    if (pieces.isEmpty) return seerrPills ?? const SizedBox.shrink();
+
+    if (pieces.isEmpty) return const SizedBox.shrink();
 
     final separated = <Widget>[];
     for (var i = 0; i < pieces.length; i++) {
       if (i > 0) separated.add(Text('·', style: style));
       separated.add(pieces[i]);
     }
-    if (seerrPills != null) separated.add(seerrPills);
     return Wrap(
       crossAxisAlignment: WrapCrossAlignment.center,
       spacing: 8,
       runSpacing: 6,
       children: separated,
+    );
+  }
+
+  Widget _upcomingEpisodeBadge(BuildContext context, String text) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: AppColorScheme.accent.withValues(alpha: 0.2),
+        borderRadius: JellyfinTokens.shapes.smallRadius,
+        border: Border.all(
+          color: AppColorScheme.accent.withValues(alpha: 0.5),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.event_available, size: 12, color: AppColorScheme.accent),
+          const SizedBox(width: 4),
+          Text(
+            text,
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: AppColorScheme.accent,
+                  fontWeight: FontWeight.w600,
+                ),
+          ),
+        ],
+      ),
     );
   }
 

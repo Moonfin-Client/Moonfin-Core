@@ -4260,6 +4260,75 @@
   "@detailButtonsSectionDescription": {
     "description": "Explains that the play buttons can't be hidden and that the list is per device kind"
   },
+  "detailMetadata": "Metadata Row",
+  "@detailMetadata": {
+    "description": "Settings screen for choosing and reordering details screen metadata items"
+  },
+  "detailMetadataDescription": "Choose and reorder what metadata the details screen shows",
+  "@detailMetadataDescription": {
+    "description": "Subtitle for the details metadata settings tile"
+  },
+  "detailMetadataSectionDescription": "Turn metadata items on or off, and arrange the order they appear on the details screen. Each kind of device keeps its own list.",
+  "@detailMetadataSectionDescription": {
+    "description": "Explains how to customize and reorder details screen metadata items"
+  },
+  "detailMetadataYear": "Release Year",
+  "@detailMetadataYear": {
+    "description": "Item label for release or production year in metadata row"
+  },
+  "detailMetadataParentalRating": "Parental Rating",
+  "@detailMetadataParentalRating": {
+    "description": "Item label for parental content rating in metadata row"
+  },
+  "detailMetadataRuntimeAndSeasons": "Runtime & Seasons",
+  "@detailMetadataRuntimeAndSeasons": {
+    "description": "Item label for runtime or season/episode counts in metadata row"
+  },
+  "detailMetadataStatus": "Series Status",
+  "@detailMetadataStatus": {
+    "description": "Item label for series status badge in metadata row"
+  },
+  "detailMetadataStatusSubtitle": "Shows whether the series is continuing, ended, or returning",
+  "@detailMetadataStatusSubtitle": {
+    "description": "Subtitle explaining the series status metadata badge"
+  },
+  "detailMetadataGenres": "Genres",
+  "@detailMetadataGenres": {
+    "description": "Item label for genre tags in metadata row"
+  },
+  "detailMetadataSeerrAvailability": "Seerr Availability",
+  "@detailMetadataSeerrAvailability": {
+    "description": "Item label for Seerr request and availability badge in metadata row"
+  },
+  "detailMetadataSeerrAvailabilitySubtitle": "Shows request and media availability status from Seerr",
+  "@detailMetadataSeerrAvailabilitySubtitle": {
+    "description": "Subtitle explaining the Seerr availability metadata badge"
+  },
+  "detailMetadataUpcomingEpisodeDate": "Upcoming Episodes",
+  "@detailMetadataUpcomingEpisodeDate": {
+    "description": "Item label for upcoming episode air date badge in metadata row"
+  },
+  "detailMetadataUpcomingEpisodeDateSubtitle": "Uses Sonarr and TMDB to show upcoming release dates",
+  "@detailMetadataUpcomingEpisodeDateSubtitle": {
+    "description": "Subtitle describing data sources for upcoming episode air dates in metadata row"
+  },
+  "upcomingEpisodeNext": "Next: {date} (S{season}:E{episode})",
+  "@upcomingEpisodeNext": {
+    "description": "Formatted badge text for an upcoming episode release date",
+    "placeholders": {
+      "date": {"type": "String"},
+      "season": {"type": "int"},
+      "episode": {"type": "int"}
+    }
+  },
+  "upcomingEpisodeToday": "Today",
+  "@upcomingEpisodeToday": {
+    "description": "Upcoming episode airs today"
+  },
+  "upcomingEpisodeTomorrow": "Tomorrow",
+  "@upcomingEpisodeTomorrow": {
+    "description": "Upcoming episode airs tomorrow"
+  },
   "moveUp": "Move Up",
   "@moveUp": {
     "description": "Moves a button one place earlier in its row"

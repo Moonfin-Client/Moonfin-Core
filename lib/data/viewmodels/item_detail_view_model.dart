@@ -23,6 +23,8 @@ import '../services/user_data_sync.dart';
 import '../services/seerr/seerr_api_models.dart';
 import 'seerr_discover_view_model.dart';
 import 'seerr_media_detail_view_model.dart';
+import '../models/upcoming_episode_info.dart';
+import '../services/upcoming_episode_service.dart';
 
 enum CollectionSortOption {
   alphabetical,
@@ -463,6 +465,9 @@ class ItemDetailViewModel extends ChangeNotifier {
   String? _seerrResolvedLibraryId;
   String? get seerrResolvedLibraryId => _seerrResolvedLibraryId;
 
+  UpcomingEpisodeInfo? _upcomingEpisode;
+  UpcomingEpisodeInfo? get upcomingEpisode => _upcomingEpisode;
+
   /// Only used to resolve an IMDb-keyed id by searching for it.
   String? _seerrOnlyTitle;
   set seerrOnlyTitle(String? value) => _seerrOnlyTitle = value;
@@ -681,6 +686,9 @@ class ItemDetailViewModel extends ChangeNotifier {
     // Everything else in _loadSecondary needs a library id, but ratings are
     // keyed by TMDB id, which this does have.
     unawaited(_loadRatings());
+    if (state.isTv) {
+      unawaited(_loadUpcomingEpisode());
+    }
   }
 
   Map<String, dynamic> _seerrRawData(SeerrMediaDetailState s) {
@@ -871,6 +879,7 @@ class ItemDetailViewModel extends ChangeNotifier {
       futures.add(_loadSimilar());
       futures.add(_loadFeatures());
       futures.add(_loadParentCollection());
+      unawaited(_loadUpcomingEpisode());
     } else if (type == 'Season') {
       futures.add(_loadRatings());
       futures.add(_loadEpisodes());
@@ -2134,6 +2143,33 @@ class ItemDetailViewModel extends ChangeNotifier {
         notifyListeners();
       }
     } catch (_) {}
+  }
+
+  Future<void> _loadUpcomingEpisode() async {
+    final item = _item;
+    if (item == null || item.type != 'Series') return;
+    try {
+      if (!GetIt.instance.isRegistered<UpcomingEpisodeService>()) return;
+      final service = GetIt.instance<UpcomingEpisodeService>();
+      final cached = service.getCached(item.id);
+      if (cached != null) {
+        _upcomingEpisode = cached;
+        notifyListeners();
+        return;
+      }
+      final episode = await service.resolveUpcomingEpisode(
+        seriesId: item.id,
+        providerIds: item.providerIds,
+        seriesName: item.name,
+      );
+      if (_isDisposed) return;
+      if (episode != null) {
+        _upcomingEpisode = episode;
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint('[ItemDetailViewModel] Upcoming episode resolution failed: $e');
+    }
   }
 
   Future<void> toggleFavorite() async {
