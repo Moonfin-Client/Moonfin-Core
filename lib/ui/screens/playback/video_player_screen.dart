@@ -233,6 +233,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   bool _isPausedScrubActive = false;
   final Set<int> _prefetchedTrickplayIndexes = {};
   bool _touchTrickplayPrefetchStarted = false;
+  Duration? _lastTrickplayPreviewPosition;
   Duration? _hoverPosition;
   double? _topOverlayHeight;
   double? _bottomOverlayHeight;
@@ -2176,6 +2177,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     final mediaSourceId = _manager.currentResolution?.mediaSourceId;
     _prefetchedTrickplayIndexes.clear();
     _touchTrickplayPrefetchStarted = false;
+    _lastTrickplayPreviewPosition = null;
     if (mounted) {
       setState(() {
         _trickplayInfo = null;
@@ -2218,6 +2220,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       _trickplayInfo = info?.isValid == true ? info : null;
       _trickplayMediaSourceId = mediaSourceId;
     });
+    if (_controlsVisible) {
+      _prefetchTrickplayDirectional(_state.position, forward: true);
+    }
   }
 
   void _refreshTrickplayIfNeeded() {
@@ -2231,6 +2236,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   void _handleTrickplayAmbientPrefetch(Duration position) {
+    if (_controlsVisible) {
+      _prefetchTrickplayDirectional(position, forward: true);
+    }
     if (_prefs.get(UserPreferences.trickPlayMode) == TrickplayMode.disabled) {
       return;
     }
@@ -2273,11 +2281,25 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     );
   }
 
+  // Called by both the strip/single preview and the full-screen preview, so
+  // hover, dragging and keyboard/remote scrubbing all warm upcoming images.
+  void _prefetchVisibleTrickplayPreview(Duration position) {
+    if (_state.duration <= Duration.zero) return;
+    final previous = _lastTrickplayPreviewPosition ?? _state.position;
+    if (_lastTrickplayPreviewPosition == position) return;
+    _lastTrickplayPreviewPosition = position;
+    final generation = _trickplayLoadGeneration;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || generation != _trickplayLoadGeneration) return;
+      if (_lastTrickplayPreviewPosition != position) return;
+      _prefetchTrickplayDirectional(position, forward: position >= previous);
+    });
+  }
+
   void _prefetchTrickplayDirectional(
     Duration position, {
     required bool forward,
   }) {
-    if (!PlatformDetection.isTV) return;
     if (_prefs.get(UserPreferences.trickPlayMode) == TrickplayMode.disabled) {
       return;
     }
@@ -2285,12 +2307,13 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     final duration = _state.duration;
     if (info == null || !info.isValid || duration <= Duration.zero) return;
     _precacheTrickplayIndexes(
-      TrickplayPrefetchPlanner.planImageIndexes(
+      TrickplayPrefetchPlanner.planSeekImageIndexes(
         info: info,
         position: position,
         totalDuration: duration,
         directionForward: forward,
-        sheetsAhead: 2,
+        forwardStepMs: _prefs.get(UserPreferences.skipForwardLength),
+        backwardStepMs: _prefs.get(UserPreferences.skipBackLength),
       ),
     );
   }
@@ -2308,6 +2331,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       if (token != null && token.isNotEmpty)
         'Authorization': 'MediaBrowser Token="$token"',
     };
+    final generation = _trickplayLoadGeneration;
     for (final index in indexes) {
       if (!_prefetchedTrickplayIndexes.add(index)) continue;
       if (!mounted) return;
@@ -2317,7 +2341,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         itemId: itemId,
         client: client,
       );
-      if (url == null) continue;
+      if (url == null) {
+        _prefetchedTrickplayIndexes.remove(index);
+        continue;
+      }
       unawaited(
         precacheImage(
           CachedNetworkImageProvider(
@@ -2325,6 +2352,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
             headers: headers.isEmpty ? null : headers,
           ),
           context,
+          onError: (_, _) {
+            if (generation == _trickplayLoadGeneration) {
+              _prefetchedTrickplayIndexes.remove(index);
+            }
+          },
         ).catchError((_) {}),
       );
     }
@@ -2927,7 +2959,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       _syncPrerollOsdState();
       return;
     }
+    final wasVisible = _controlsVisible;
     setState(() => _controlsVisible = true);
+    if (!wasVisible) {
+      _prefetchTrickplayDirectional(_state.position, forward: true);
+    }
     _scheduleHide();
     if (focusSeekbar) {
       _focusPreferredTvOverlayTarget();
@@ -2992,6 +3028,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         _state.duration.inMilliseconds,
       ),
     );
+    _prefetchTrickplayDirectional(clamped, forward: ms > 0);
     _seekDirect(clamped);
     _lastSeekTime = DateTime.now();
     if (showControls) {
@@ -3010,7 +3047,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         (_isSeeking ? _lastScrubCommitTarget : null) ??
         _state.position;
     final target = basePosition + Duration(milliseconds: ms);
-    _prefetchTrickplayDirectional(basePosition, forward: ms > 0);
+    _prefetchTrickplayDirectional(target, forward: ms > 0);
     _accumulateScrub(target);
   }
 
@@ -4062,6 +4099,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     final seekPosition = Duration(milliseconds: _seekValue.round());
     final tile = _getTrickplayTile(seekPosition);
     if (tile == null) return const SizedBox.shrink();
+    _prefetchVisibleTrickplayPreview(seekPosition);
     return Positioned.fill(
       child: Trickplay(
         fillFrame: true,
@@ -5091,13 +5129,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
             ? _getTrickplayTile(previewPosition)
             : null;
         if (previewTile == null) return const SizedBox.shrink();
+        _prefetchVisibleTrickplayPreview(previewPosition!);
 
         return LayoutBuilder(
           builder: (context, constraints) {
             return _buildTrickplayPreviewArea(
               referenceTile: previewTile,
               isStrip: trickplayMode == TrickplayMode.strip,
-              seekPosition: previewPosition!,
+              seekPosition: previewPosition,
               totalDuration: duration,
               positionMs: previewPosition.inMilliseconds.toDouble(),
               durationMs: durationMs,
