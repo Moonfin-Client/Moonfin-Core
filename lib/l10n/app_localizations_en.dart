@@ -9715,7 +9715,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsPlayerZoomDescription =>
-      'Fit shows the whole picture. Auto Crop covers the screen and clips overflow. Stretch ignores aspect ratio.';
+      'How video should be scaled to fit the screen.';
 
   @override
   String get settingsPlaybackEngineAndroidTv => 'Playback Engine (Android TV)';
@@ -21343,7 +21343,7 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
 
   @override
   String get settingsPlayerZoomDescription =>
-      'Fit shows the whole picture. Auto Crop covers the screen and clips overflow. Stretch ignores aspect ratio.';
+      'How video should be scaled to fit the screen.';
 
   @override
   String get settingsPlaybackEngineAndroidTv => 'Playback Engine (Android TV)';

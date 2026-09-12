@@ -23,7 +23,7 @@ class Media3PlayerBackend extends PlayerBackend {
   Media3PlayerBackend(this._prefs) {
     _letterboxCropper = Media3LetterboxCropper(
       _Media3LetterboxHost(this),
-      supported: PlatformDetection.isAndroid && PlatformDetection.isTV,
+      supported: PlatformDetection.isAndroid,
     );
     _prefs.addListener(_onPreferencesChanged);
     _eventSub = _events.receiveBroadcastStream().listen(

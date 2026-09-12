@@ -2830,7 +2830,7 @@
     },
     "autoCrop": "Auto Crop",
     "@autoCrop": {
-        "description": "Zoom mode: cover the screen, clipping overflow. Not black-bar detection."
+        "description": "Zoom mode: auto crop"
     },
     "stretch": "Stretch",
     "@stretch": {
@@ -6593,7 +6593,7 @@
     "settingsDoNothing": "Do Nothing",
     "settingsMaxBitrateDescription": "Cap the streaming bitrate. Content above this threshold will be transcoded to fit.",
     "settingsMaxResolutionDescription": "Limit the maximum resolution the player will request. Higher-resolution content will be transcoded down.",
-    "settingsPlayerZoomDescription": "Fit shows the whole picture. Auto Crop covers the screen and clips overflow. Stretch ignores aspect ratio.",
+    "settingsPlayerZoomDescription": "How video should be scaled to fit the screen.",
     "settingsPlaybackEngineAndroidTv": "Playback Engine (Android TV)",
     "settingsPlaybackEngineAndroidTvDescription": "Choose the default playback engine on Android TV devices. Changes apply to the next playback session.",
     "settingsPlaybackEngineMedia3Recommended": "Media3 (recommended)",

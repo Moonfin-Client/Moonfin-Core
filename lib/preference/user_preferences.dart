@@ -1807,7 +1807,8 @@ class UserPreferences extends ChangeNotifier {
   );
 
   /// One-shot encoded-letterbox crop. libmpv on Linux/Windows; Media3
-  /// (and libmpv if selected) on Android TV. Hidden elsewhere.
+  /// (and libmpv if selected) on Android phone and TV. Hidden on iOS,
+  /// macOS, web, and tvOS.
   static final cropBlackBars = Preference(
     key: 'crop_black_bars',
     defaultValue: false,

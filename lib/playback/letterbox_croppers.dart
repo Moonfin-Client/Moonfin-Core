@@ -2,14 +2,14 @@ import 'package:playback_core/playback_core.dart';
 
 import '../util/platform_detection.dart';
 
-/// True where a cropper actually runs: Linux/Windows libmpv, Android TV
-/// Media3 (and libmpv if that engine is selected).
+/// True where a cropper actually runs: Linux/Windows libmpv, Android Media3
+/// (and libmpv if that engine is selected).
 ///
-/// Hidden on Android phone, iOS, macOS, web, and tvOS.
+/// Hidden on iOS, macOS, web, and tvOS.
 bool letterboxCropAvailable() =>
     PlatformDetection.isLinux ||
     PlatformDetection.isWindows ||
-    (PlatformDetection.isAndroid && PlatformDetection.isTV);
+    PlatformDetection.isAndroid;
 
 /// Settings / search-index gate. Same as [letterboxCropAvailable].
 bool letterboxCropSettingVisible() => letterboxCropAvailable();

@@ -147,7 +147,7 @@ class MpvLetterboxCropper extends LetterboxCropper {
   @override
   String? get unimplementedReason => _supported
       ? null
-      : 'Letterbox crop on libmpv ships on desktop and Android TV.';
+      : 'Letterbox crop on libmpv ships on desktop and Android.';
 
   @override
   Future<void> setEnabled(bool enabled) async {

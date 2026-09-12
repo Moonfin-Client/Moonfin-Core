@@ -1152,9 +1152,8 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         'letterbox',
         'cropdetect',
         'black bars',
-        'autocrop',
         'mpv',
-        'android tv',
+        'android',
       ]),
     playbackTime.screen(keywords: [
       'time left',
