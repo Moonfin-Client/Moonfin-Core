@@ -13,6 +13,15 @@ const List<BoxShadow> kMediaBadgeShadow = [
   ),
 ];
 
+/// Subscribes the caller to theme changes.
+///
+/// Badge colours come from [AppColorScheme], which reads the active theme off
+/// the registry rather than from anything handed down the tree, so without
+/// this a badge keeps its old colours until something else rebuilds it.
+void _watchTheme(BuildContext context) {
+  context.dependOnInheritedWidgetOfExactType<AppThemeScope>();
+}
+
 /// The circular checkmark badge indicating an item has been watched/finished.
 class MediaWatchedBadge extends StatelessWidget {
   final double size;
@@ -28,8 +37,7 @@ class MediaWatchedBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    context.dependOnInheritedWidgetOfExactType<AppThemeScope>();
-    Theme.of(context);
+    _watchTheme(context);
     final bg = color ?? AppColorScheme.badgeWatched;
     final fg = iconColor ?? AppColorScheme.onBadge;
     final iconSize = (size * 0.62).clamp(12.0, 24.0);
@@ -73,8 +81,7 @@ class MediaUnplayedBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    context.dependOnInheritedWidgetOfExactType<AppThemeScope>();
-    Theme.of(context);
+    _watchTheme(context);
     final bg = color ?? AppColorScheme.badgeUnplayed;
     final fg = textColor ?? AppColorScheme.onBadge;
     final text = count > 99 ? '99+' : '$count';
@@ -85,7 +92,8 @@ class MediaUnplayedBadge extends StatelessWidget {
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: bg,
-        borderRadius: BorderRadius.circular(height / 2),
+        // Through AppRadius so the pixel theme keeps its square corners.
+        borderRadius: AppRadius.circular(height / 2),
         border: Border.all(
           color: fg,
           width: 1.5,
@@ -121,8 +129,7 @@ class MediaFavoriteBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    context.dependOnInheritedWidgetOfExactType<AppThemeScope>();
-    Theme.of(context);
+    _watchTheme(context);
     final bg = color ?? AppColorScheme.recordingActive;
     final fg = heartColor ?? Colors.white;
     final iconSize = (size * 0.58).clamp(12.0, 22.0);
