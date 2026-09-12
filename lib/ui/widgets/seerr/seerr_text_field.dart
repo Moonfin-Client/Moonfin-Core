@@ -1,9 +1,11 @@
 import 'package:custom_tv_text_field/custom_tv_text_field.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../preference/user_preferences.dart';
+import '../../../util/focus/dpad_keys.dart';
 import '../../../util/platform_detection.dart';
 
 /// Text input for seerr dialogs that uses the TV keyboard (honoring the
@@ -13,6 +15,7 @@ class SeerrTextField extends StatefulWidget {
   final String hint;
   final int maxLines;
   final ValueChanged<String>? onSubmitted;
+  final FocusNode? focusNode;
 
   const SeerrTextField({
     super.key,
@@ -20,6 +23,7 @@ class SeerrTextField extends StatefulWidget {
     required this.hint,
     this.maxLines = 1,
     this.onSubmitted,
+    this.focusNode,
   });
 
   @override
@@ -28,11 +32,35 @@ class SeerrTextField extends StatefulWidget {
 
 class _SeerrTextFieldState extends State<SeerrTextField> {
   final _tvFieldKey = GlobalKey<CustomTVTextFieldState>();
-  final _focusNode = FocusNode(debugLabel: 'seerr-text-field');
+  FocusNode? _internalFocusNode;
+
+  FocusNode get _effectiveFocusNode =>
+      widget.focusNode ?? (_internalFocusNode ??= FocusNode(debugLabel: 'seerr-text-field'));
+
+  @override
+  void initState() {
+    super.initState();
+    _effectiveFocusNode.addListener(_onFocusChanged);
+  }
+
+  void _onFocusChanged() {
+    if (_effectiveFocusNode.hasFocus) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        Scrollable.ensureVisible(
+          context,
+          alignment: 0.2,
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOut,
+        );
+      });
+    }
+  }
 
   @override
   void dispose() {
-    _focusNode.dispose();
+    _effectiveFocusNode.removeListener(_onFocusChanged);
+    _internalFocusNode?.dispose();
     super.dispose();
   }
 
@@ -42,6 +70,7 @@ class _SeerrTextFieldState extends State<SeerrTextField> {
     if (!PlatformDetection.isTV) {
       return TextField(
         controller: widget.controller,
+        focusNode: widget.focusNode,
         maxLines: widget.maxLines,
         onSubmitted: widget.onSubmitted,
         style: TextStyle(color: onSurface),
@@ -67,26 +96,50 @@ class _SeerrTextFieldState extends State<SeerrTextField> {
     }
 
     final prefs = GetIt.instance<UserPreferences>();
+    final focusNode = _effectiveFocusNode;
     return Focus(
-      focusNode: _focusNode,
-      child: ListenableBuilder(
-        listenable: _focusNode,
-        builder: (_, _) => CustomTVTextField(
-          key: _tvFieldKey,
-          controller: widget.controller,
-          isFocused: _focusNode.hasFocus,
-          inputPurpose: InputPurpose.text,
-          keyboardType: KeyboardType.alphabetic,
-          preferSystemIme: prefs.get(UserPreferences.preferSystemImeKeyboard),
-          hint: widget.hint,
-          filled: true,
-          fillColor: AppColorScheme.inputBackground,
-          borderColor: ThemeRegistry.active.borders.chipBorder.color,
-          focusedBorderColor: AppColorScheme.accent,
-          hintStyle: TextStyle(color: onSurface.withValues(alpha: 0.54)),
-          textStyle: TextStyle(color: onSurface),
-          popParentOnKeyboardClose: false,
-          onFieldSubmitted: (v) => widget.onSubmitted?.call(v),
+      focusNode: focusNode,
+      onKeyEvent: (node, event) {
+        if (event.logicalKey.isBackKey) {
+          if (event is KeyDownEvent &&
+              (_tvFieldKey.currentState?.isKeyboardVisible ?? false)) {
+            _tvFieldKey.currentState?.closeKeyboard();
+            node.requestFocus();
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        }
+        if (event.isActionable && event.logicalKey.isSelectKey) {
+          if (!node.hasFocus) node.requestFocus();
+          _tvFieldKey.currentState?.openKeyboard();
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.ignored;
+      },
+      child: GestureDetector(
+        onTap: () {
+          if (!focusNode.hasFocus) focusNode.requestFocus();
+          _tvFieldKey.currentState?.openKeyboard();
+        },
+        child: ListenableBuilder(
+          listenable: focusNode,
+          builder: (_, _) => CustomTVTextField(
+            key: _tvFieldKey,
+            controller: widget.controller,
+            isFocused: focusNode.hasFocus,
+            inputPurpose: InputPurpose.text,
+            keyboardType: KeyboardType.alphabetic,
+            preferSystemIme: prefs.get(UserPreferences.preferSystemImeKeyboard),
+            hint: widget.hint,
+            filled: true,
+            fillColor: AppColorScheme.inputBackground,
+            borderColor: ThemeRegistry.active.borders.chipBorder.color,
+            focusedBorderColor: AppColorScheme.accent,
+            hintStyle: TextStyle(color: onSurface.withValues(alpha: 0.54)),
+            textStyle: TextStyle(color: onSurface),
+            popParentOnKeyboardClose: false,
+            onFieldSubmitted: (v) => widget.onSubmitted?.call(v),
+          ),
         ),
       ),
     );
