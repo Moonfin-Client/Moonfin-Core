@@ -3048,7 +3048,7 @@ class AppLocalizationsUg extends AppLocalizations {
 
   @override
   String get settingsCropBlackBarsDescription =>
-      'Detect encoded letterbox, crop it, then fill the screen (mpv).';
+      'Detect encoded letterbox bars, crop them, then fill the screen.';
 
   @override
   String get stretch => 'سوزۇش';

@@ -6,6 +6,7 @@ library;
 
 export 'src/playback_manager.dart';
 export 'src/playback_arbiter.dart';
+export 'src/letterbox_crop.dart';
 export 'src/player_backend.dart';
 export 'src/player_service.dart';
 export 'src/queue_service.dart';

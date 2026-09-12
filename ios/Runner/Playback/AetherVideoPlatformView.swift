@@ -91,7 +91,7 @@ final class AetherVideoPlatformView: NSObject, FlutterPlatformView {
     private static func zoomMode(fromWire value: String) -> ZoomMode? {
         switch value {
         case "fit", "Fit": return .fit
-        case "autoCrop", "Auto Crop", "Fill": return .autoCrop
+        case "autoCrop", "Auto Crop": return .autoCrop
         case "stretch", "Stretch": return .stretch
         default: return nil
         }

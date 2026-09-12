@@ -814,7 +814,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _themeMusicService.setExternalAudioActive(true);
     _segmentService = _createSegmentService();
     _zoomMode = _prefs.get(UserPreferences.playerZoomMode);
-    _cropLocksZoom = _prefs.get(UserPreferences.cropBlackBars);
+    _cropLocksZoom = _computeCropLocksZoom();
     // Media3 only takes the zoom mode from this call, and the backend change it
     // listens for never fires when it was already the one playing.
     unawaited(_syncMedia3ZoomMode());
@@ -871,7 +871,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         unawaited(backend.setVolume(_playerVolume));
       }
       if (!mounted) return;
-      setState(() {});
+      final cropLocks = _computeCropLocksZoom();
+      setState(() {
+        _cropLocksZoom = cropLocks;
+      });
     });
     _syncMedia3VolumeBoostLevel(resetWhenUnavailable: true);
     if (PlatformDetection.isTV) {
@@ -2378,11 +2381,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _syncMediaQueuingPreference();
     if (!mounted) return;
     final zoom = _prefs.get(UserPreferences.playerZoomMode);
-    final crop = _prefs.get(UserPreferences.cropBlackBars);
-    if (zoom == _zoomMode && crop == _cropLocksZoom) return;
+    final cropLocks = _computeCropLocksZoom();
+    if (zoom == _zoomMode && cropLocks == _cropLocksZoom) return;
     setState(() {
       _zoomMode = zoom;
-      _cropLocksZoom = crop;
+      _cropLocksZoom = cropLocks;
     });
     unawaited(_syncMedia3ZoomMode());
   }
@@ -2395,6 +2398,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   ZoomMode get _activeZoomMode =>
       _cropLocksZoom ? ZoomMode.autoCrop : _zoomMode;
+
+  bool _computeCropLocksZoom() {
+    return _prefs.get(UserPreferences.cropBlackBars) &&
+        (_activeBackend?.supportsLetterboxCrop ?? false);
+  }
 
   void _onSyncPlayChanged() {
     if (mounted) setState(() {});

@@ -5326,13 +5326,13 @@ abstract class AppLocalizations {
   /// **'Fit'**
   String get fit;
 
-  /// Zoom mode: fill the screen (cover), clipping overflow. Not black-bar detection.
+  /// Zoom mode: cover the screen, clipping overflow. Not black-bar detection.
   ///
   /// In en, this message translates to:
-  /// **'Fill'**
+  /// **'Auto Crop'**
   String get autoCrop;
 
-  /// Setting to detect and crop letterbox/pillarbox bars via libmpv cropdetect
+  /// Setting to detect and crop encoded letterbox/pillarbox bars
   ///
   /// In en, this message translates to:
   /// **'Crop black bars'**
@@ -5341,7 +5341,7 @@ abstract class AppLocalizations {
   /// Description for the crop black bars playback setting
   ///
   /// In en, this message translates to:
-  /// **'Detect encoded letterbox, crop it, then fill the screen (mpv).'**
+  /// **'Detect encoded letterbox bars, crop them, then fill the screen.'**
   String get settingsCropBlackBarsDescription;
 
   /// Zoom mode: stretch
@@ -17317,7 +17317,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsPlayerZoomDescription.
   ///
   /// In en, this message translates to:
-  /// **'Fit shows the whole picture. Fill covers the screen and clips overflow. Stretch ignores aspect ratio.'**
+  /// **'Fit shows the whole picture. Auto Crop covers the screen and clips overflow. Stretch ignores aspect ratio.'**
   String get settingsPlayerZoomDescription;
 
   /// No description provided for @settingsPlaybackEngineAndroidTv.

@@ -12,6 +12,7 @@ import '../util/platform_detection.dart';
 
 import 'device_profile_builder.dart';
 import 'known_defects.dart';
+import 'media3_letterbox_crop.dart';
 import 'server_transcode_capabilities.dart';
 
 class Media3PlayerBackend extends PlayerBackend {
@@ -20,6 +21,11 @@ class Media3PlayerBackend extends PlayerBackend {
   static const _audioSinkErrorThreshold = 2;
 
   Media3PlayerBackend(this._prefs) {
+    _letterboxCropper = Media3LetterboxCropper(
+      _Media3LetterboxHost(this),
+      supported: PlatformDetection.isAndroid && PlatformDetection.isTV,
+    );
+    _prefs.addListener(_onPreferencesChanged);
     _eventSub = _events.receiveBroadcastStream().listen(
       _handleEvent,
       onError: (_) {},
@@ -85,6 +91,8 @@ class Media3PlayerBackend extends PlayerBackend {
   }
 
   final UserPreferences _prefs;
+  late final Media3LetterboxCropper _letterboxCropper;
+  String? _currentUrl;
 
   StreamSubscription<dynamic>? _eventSub;
 
@@ -923,6 +931,7 @@ class Media3PlayerBackend extends PlayerBackend {
         : payload['url']?.toString() ?? '';
     if (_disposed || url.isEmpty) return;
 
+    _currentUrl = url;
     final mediaType = payload['mediaType']?.toString() ?? 'video';
     final container = payload['container']?.toString();
     final videoRangeType = payload['videoRangeType']?.toString();
@@ -1049,6 +1058,16 @@ class Media3PlayerBackend extends PlayerBackend {
     if (autoPlay) {
       await _invoke<void>('play');
     }
+    if (isPreview || mediaType == 'audio') {
+      unawaited(_letterboxCropper.reset());
+    } else {
+      unawaited(() async {
+        await _letterboxCropper.setEnabled(
+          _prefs.get(UserPreferences.cropBlackBars),
+        );
+        await _letterboxCropper.onSourceOpened(url);
+      }());
+    }
   }
 
   @override
@@ -1156,7 +1175,8 @@ class Media3PlayerBackend extends PlayerBackend {
       // codec has a software decoder behind it.
       universalAudioDecode: true,
       maxResolution: maxResolution,
-      pgsDirectPlay: _prefs.get(UserPreferences.pgsDirectPlay) && canRenderBitmapSubtitles,
+      pgsDirectPlay:
+          _prefs.get(UserPreferences.pgsDirectPlay) && canRenderBitmapSubtitles,
       assDirectPlay: _prefs.get(UserPreferences.assDirectPlay),
       supportsAvc: PlatformDetection.supportsAvc,
       supportsAvcHigh10: PlatformDetection.supportsAvcHigh10,
@@ -1257,7 +1277,6 @@ class Media3PlayerBackend extends PlayerBackend {
     await _invoke<void>('setAudioTrack', {'index': index});
   }
 
-
   @override
   Future<void> setSubtitleTrack(
     int index, {
@@ -1276,7 +1295,8 @@ class Media3PlayerBackend extends PlayerBackend {
   }
 
   @override
-  List<EmbeddedCaptionTrack> get embeddedCaptionTracks => _embeddedCaptionTracks;
+  List<EmbeddedCaptionTrack> get embeddedCaptionTracks =>
+      _embeddedCaptionTracks;
 
   @override
   Stream<void> get tracksChangedStream => _tracksChangedController.stream;
@@ -1334,10 +1354,12 @@ class Media3PlayerBackend extends PlayerBackend {
     _audioDelayDebounce = Timer(const Duration(milliseconds: 350), () {
       _audioDelayDebounce = null;
       if (_disposed) return;
-      unawaited(_invoke<void>('setAudioDelay', {
-        'seconds': _audioDelaySeconds,
-        'delayMs': (_audioDelaySeconds * 1000).round(),
-      }));
+      unawaited(
+        _invoke<void>('setAudioDelay', {
+          'seconds': _audioDelaySeconds,
+          'delayMs': (_audioDelaySeconds * 1000).round(),
+        }),
+      );
     });
   }
 
@@ -1424,6 +1446,9 @@ class Media3PlayerBackend extends PlayerBackend {
   bool get supportsRuntimeTrackSelection => true;
 
   @override
+  LetterboxCropper get letterboxCropper => _letterboxCropper;
+
+  @override
   bool get supportsDirectPlayAudioSwitch => true;
 
   @override
@@ -1440,10 +1465,19 @@ class Media3PlayerBackend extends PlayerBackend {
   @override
   bool get canRenderBitmapSubtitles => true;
 
+  void _onPreferencesChanged() {
+    if (_disposed) return;
+    unawaited(
+      _letterboxCropper.setEnabled(_prefs.get(UserPreferences.cropBlackBars)),
+    );
+  }
+
   @override
   void dispose() {
     if (_disposed) return;
     _disposed = true;
+    _letterboxCropper.cancel();
+    _prefs.removeListener(_onPreferencesChanged);
     _audioDelayDebounce?.cancel();
     _audioDelayDebounce = null;
     _watchdogTimer?.cancel();
@@ -1460,6 +1494,79 @@ class Media3PlayerBackend extends PlayerBackend {
     _pictureShownStream.close();
     _tracksChangedController.close();
   }
+}
+
+class _Media3LetterboxHost implements Media3LetterboxHost {
+  _Media3LetterboxHost(this._backend);
+
+  final Media3PlayerBackend _backend;
+
+  @override
+  Future<Map<String, int>?> detectLetterbox() async {
+    final raw = await _backend._invoke<dynamic>('detectLetterbox');
+    if (raw is! Map) return null;
+    int? n(String key) {
+      final value = raw[key];
+      if (value is int) return value;
+      if (value is num) return value.round();
+      return int.tryParse(value?.toString() ?? '');
+    }
+
+    final w = n('w');
+    final h = n('h');
+    final x = n('x');
+    final y = n('y');
+    final sourceWidth = n('sourceWidth');
+    final sourceHeight = n('sourceHeight');
+    if (w == null ||
+        h == null ||
+        x == null ||
+        y == null ||
+        sourceWidth == null ||
+        sourceHeight == null) {
+      return null;
+    }
+    return <String, int>{
+      'w': w,
+      'h': h,
+      'x': x,
+      'y': y,
+      'sourceWidth': sourceWidth,
+      'sourceHeight': sourceHeight,
+    };
+  }
+
+  @override
+  Future<void> setLetterboxCrop(LetterboxCropRect? rect) async {
+    if (rect == null) {
+      await _backend._invoke<void>('setLetterboxCrop', {'clear': true});
+      return;
+    }
+    await _backend._invoke<void>('setLetterboxCrop', {
+      'w': rect.w,
+      'h': rect.h,
+      'x': rect.x,
+      'y': rect.y,
+    });
+  }
+
+  @override
+  bool get isPlaying => _backend._isPlaying;
+
+  @override
+  Duration get position => _backend._position;
+
+  @override
+  Duration get duration => _backend._duration;
+
+  @override
+  Stream<bool> get playingStream => _backend._playingStream.stream;
+
+  @override
+  String? get currentUrl => _backend._currentUrl;
+
+  @override
+  bool get isDisposed => _backend._disposed;
 }
 
 /// What the native side does with a Dolby Vision profile 7 stream. Names

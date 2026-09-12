@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:convert';
 
-/// One-shot letterbox crop, matching stock mpv `autocrop.lua` without Lua.
-///
-/// Insert lavfi `cropdetect`, read `vf-metadata`, then set `video-crop`.
+import 'package:flutter/foundation.dart';
+import 'package:playback_core/playback_core.dart';
+
+/// libmpv cropdetect helpers. Matching stock mpv `autocrop.lua` without Lua.
 class MpvLetterboxCrop {
   /// Persistent lavfi crop applied after detect. Label must differ from detect.
   static const appliedFilterLabel = 'moonfin-letterbox-applied';
@@ -10,7 +12,7 @@ class MpvLetterboxCrop {
   static const filterLabel = 'moonfin-letterbox';
   static const detectLimit = '24/255';
   static const detectRound = 2;
-  static const minRatio = 0.5;
+  static const minRatio = LetterboxCrop.minRatio;
   static const autoDelay = Duration(seconds: 4);
   static const detectDuration = Duration(seconds: 1);
 
@@ -76,22 +78,20 @@ class MpvLetterboxCrop {
     required int sourceWidth,
     required int sourceHeight,
   }) {
-    if (sourceWidth <= 0 || sourceHeight <= 0) return null;
     final w = int.tryParse(lavfi['w'] ?? '');
     final h = int.tryParse(lavfi['h'] ?? '');
     final x = int.tryParse(lavfi['x'] ?? '');
     final y = int.tryParse(lavfi['y'] ?? '');
     if (w == null || h == null || x == null || y == null) return null;
-    if (w <= 0 || h <= 0) return null;
-
-    final effective = x > 0 || y > 0 || w < sourceWidth || h < sourceHeight;
-    if (!effective) return null;
-
-    final minW = sourceWidth * minRatio;
-    final minH = sourceHeight * minRatio;
-    if (w < minW || h < minH) return null;
-
-    return LetterboxCropRect(w: w, h: h, x: x, y: y);
+    return LetterboxCrop.decide(
+      width: w,
+      height: h,
+      x: x,
+      y: y,
+      sourceWidth: sourceWidth,
+      sourceHeight: sourceHeight,
+      minRatio: minRatio,
+    );
   }
 
   static String? _stripLavfiPrefix(String key) {
@@ -113,29 +113,254 @@ class MpvLetterboxCrop {
   }
 }
 
-class LetterboxCropRect {
-  const LetterboxCropRect({
-    required this.w,
-    required this.h,
-    required this.x,
-    required this.y,
-  });
+/// libmpv property/command surface the desktop cropper needs.
+abstract class MpvLetterboxHost {
+  bool get hasNativePlayer;
+  Future<String?> getProperty(String key);
+  Future<void> setProperty(String key, String value);
+  Future<bool> command(List<String> args);
+  bool get isPlaying;
+  Duration get position;
+  Duration get duration;
+  Stream<bool> get playingStream;
+  String? get currentUrl;
+  bool get isDisposed;
+}
 
-  final int w;
-  final int h;
-  final int x;
-  final int y;
+/// Desktop libmpv [LetterboxCropper]. The only shipping implementation.
+class MpvLetterboxCropper extends LetterboxCropper {
+  MpvLetterboxCropper(this._host, {required bool supported})
+    : _supported = supported;
 
-  String get videoCrop => '${w}x$h+$x+$y';
+  final MpvLetterboxHost _host;
+  final bool _supported;
+
+  int _generation = 0;
+  String? _hwdecBackup;
+  bool _enabled = false;
+  String? _doneUrl;
+  bool _inFlight = false;
 
   @override
-  bool operator ==(Object other) =>
-      other is LetterboxCropRect &&
-      other.w == w &&
-      other.h == h &&
-      other.x == x &&
-      other.y == y;
+  bool get isSupported => _supported;
 
   @override
-  int get hashCode => Object.hash(w, h, x, y);
+  String? get unimplementedReason => _supported
+      ? null
+      : 'Letterbox crop on libmpv ships on desktop and Android TV.';
+
+  @override
+  Future<void> setEnabled(bool enabled) async {
+    final changed = enabled != _enabled;
+    _enabled = enabled;
+    if (!isSupported || !changed) return;
+    final url = _host.currentUrl;
+    if (url == null || url.isEmpty) return;
+    await _sync();
+  }
+
+  @override
+  Future<void> onSourceOpened(String url) async {
+    if (_doneUrl != url) _doneUrl = null;
+    if (!isSupported) return;
+    await _sync();
+  }
+
+  Future<void> _sync() async {
+    if (!_enabled) {
+      _generation++;
+      await reset();
+      _doneUrl = null;
+      return;
+    }
+    if (!_host.hasNativePlayer) return;
+    final url = _host.currentUrl;
+    if (url == null || url.isEmpty) return;
+    if (_doneUrl == url) return;
+    if (_inFlight) return;
+
+    _inFlight = true;
+    final generation = ++_generation;
+    await reset();
+    if (!_isCurrent(generation)) {
+      if (generation == _generation) _inFlight = false;
+      return;
+    }
+    unawaited(_run(generation));
+  }
+
+  @override
+  Future<void> reset() async {
+    if (!_host.hasNativePlayer) return;
+    await _removeDetectFilter();
+    await _clearVideoCrop();
+    await _restoreHwdec();
+  }
+
+  /// Stale in-flight detect without touching filters during player teardown.
+  void cancel() {
+    _generation++;
+    _inFlight = false;
+  }
+
+  Future<void> _run(int generation) async {
+    if (!_host.hasNativePlayer) {
+      if (generation == _generation) _inFlight = false;
+      return;
+    }
+
+    LetterboxCropRect? rect;
+    try {
+      try {
+        if (!await _waitWhileCurrent(generation, untilPlaying: true)) return;
+        if (_host.position < MpvLetterboxCrop.autoDelay) {
+          if (!await _delay(generation, MpvLetterboxCrop.autoDelay)) {
+            return;
+          }
+        }
+        if (_host.isPlaying != true) {
+          if (!await _waitWhileCurrent(generation, untilPlaying: true)) return;
+        }
+
+        final remaining = _host.duration - _host.position;
+        if (_host.duration > Duration.zero &&
+            remaining <
+                MpvLetterboxCrop.detectDuration + const Duration(seconds: 1)) {
+          debugPrint('[letterbox_crop] skip: not enough time left');
+          return;
+        }
+        if (!_isCurrent(generation)) return;
+
+        final hwdecCurrent = await _host.getProperty('hwdec-current');
+        final detectHwdec = MpvLetterboxCrop.hwdecForCropdetect(hwdecCurrent);
+        if (detectHwdec != null) {
+          _hwdecBackup = await _host.getProperty('hwdec');
+          debugPrint(
+            '[letterbox_crop] hwdec $hwdecCurrent -> $detectHwdec '
+            '(was $_hwdecBackup)',
+          );
+          await _host.setProperty('hwdec', detectHwdec);
+          if (!await _delay(generation, const Duration(milliseconds: 400))) {
+            return;
+          }
+        }
+
+        final inserted = await _host.command([
+          'vf',
+          'pre',
+          MpvLetterboxCrop.filterSpec,
+        ]);
+        debugPrint(
+          '[letterbox_crop] vf insert=$inserted spec=${MpvLetterboxCrop.filterSpec}',
+        );
+        if (!inserted || !_isCurrent(generation)) return;
+
+        if (!await _delay(generation, MpvLetterboxCrop.detectDuration)) {
+          return;
+        }
+
+        final lavfi = <String, String>{};
+        for (final key in const ['w', 'h', 'x', 'y']) {
+          final value = await _host.getProperty(
+            MpvLetterboxCrop.metadataProperty(key),
+          );
+          if (value != null) lavfi[key] = value;
+        }
+        if (lavfi.length < 4) {
+          final blob = await _host.getProperty(
+            'vf-metadata/${MpvLetterboxCrop.filterLabel}',
+          );
+          debugPrint('[letterbox_crop] vf-metadata blob=$blob');
+          lavfi.addAll(MpvLetterboxCrop.parseVfMetadata(blob));
+        }
+
+        final width = int.tryParse(await _host.getProperty('width') ?? '') ?? 0;
+        final height =
+            int.tryParse(await _host.getProperty('height') ?? '') ?? 0;
+        rect = MpvLetterboxCrop.decide(
+          lavfi: lavfi,
+          sourceWidth: width,
+          sourceHeight: height,
+        );
+        debugPrint(
+          '[letterbox_crop] lavfi=$lavfi ${width}x$height -> ${rect?.videoCrop}',
+        );
+      } finally {
+        await _removeDetectFilter();
+        if (rect == null) {
+          await _restoreHwdec();
+        }
+      }
+
+      if (rect == null || !_isCurrent(generation)) return;
+      if (!await _delay(generation, const Duration(milliseconds: 200))) {
+        await _restoreHwdec();
+        return;
+      }
+      await _applyVideoCrop(rect);
+      final hwdecNow = await _host.getProperty('hwdec-current');
+      debugPrint('[letterbox_crop] applied ${rect.videoCrop} hwdec=$hwdecNow');
+      _doneUrl = _host.currentUrl;
+    } finally {
+      if (generation == _generation) {
+        _inFlight = false;
+      }
+    }
+  }
+
+  bool _isCurrent(int generation) {
+    return !_host.isDisposed && generation == _generation;
+  }
+
+  Future<bool> _delay(int generation, Duration duration) async {
+    await Future<void>.delayed(duration);
+    return _isCurrent(generation);
+  }
+
+  Future<bool> _waitWhileCurrent(
+    int generation, {
+    required bool untilPlaying,
+  }) async {
+    if (_host.isPlaying == untilPlaying) {
+      return _isCurrent(generation);
+    }
+    try {
+      await _host.playingStream
+          .firstWhere((playing) => playing == untilPlaying)
+          .timeout(const Duration(seconds: 30));
+    } catch (_) {
+      return false;
+    }
+    return _isCurrent(generation);
+  }
+
+  Future<void> _applyVideoCrop(LetterboxCropRect rect) async {
+    await _host.command([
+      'vf',
+      'add',
+      MpvLetterboxCrop.appliedFilterSpec(rect),
+    ]);
+    debugPrint('[letterbox_crop] vf crop ${rect.videoCrop}');
+  }
+
+  Future<void> _clearVideoCrop() async {
+    await _host.command([
+      'vf',
+      'remove',
+      '@${MpvLetterboxCrop.appliedFilterLabel}',
+    ]);
+    await _host.command(['set', 'video-crop', '']);
+    await _host.command(['set', 'file-local-options/video-crop', '']);
+  }
+
+  Future<void> _removeDetectFilter() async {
+    await _host.command(['vf', 'remove', '@${MpvLetterboxCrop.filterLabel}']);
+  }
+
+  Future<void> _restoreHwdec() async {
+    final backup = _hwdecBackup;
+    _hwdecBackup = null;
+    if (backup == null || backup.isEmpty) return;
+    await _host.setProperty('hwdec', backup);
+  }
 }

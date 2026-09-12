@@ -316,6 +316,7 @@ object Media3Bridge {
             "setVolume",
             "setSpeed",
             "setZoomMode",
+            "setLetterboxCrop",
             "setAudioTrack",
             "setSubtitleTrack",
             "setClosedCaptionTrack",
