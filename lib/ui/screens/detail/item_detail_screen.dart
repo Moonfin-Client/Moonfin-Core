@@ -7009,7 +7009,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         ),
       if (!isBook && shows(DetailButton.playlist))
         DetailButton.playlist: _DetailActionButton(
-          label: l10n.playlist,
+          label: l10n.addToPlaylist,
           icon: Icons.playlist_add,
           onPressed: () => AddToPlaylistDialog.show(
             context,
@@ -7052,7 +7052,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         ),
       if (seerr != null && shows(DetailButton.seerrWatchlist))
         DetailButton.seerrWatchlist: _DetailActionButton(
-          label: onWatchlist ? l10n.onWatchlist : l10n.watchlist,
+          label: onWatchlist ? l10n.removeFromWatchlist : l10n.addToWatchlist,
           icon: onWatchlist ? Icons.bookmark : Icons.bookmark_border,
           onPressed: () => seerr.toggleWatchlist(),
           isActive: onWatchlist,

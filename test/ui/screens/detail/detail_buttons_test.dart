@@ -95,6 +95,10 @@ void main() {
       expect(DetailButton.deleteFiles.isOffered, isTrue);
       expect(DetailButton.cast.isOffered, isFalse);
     });
+
+    test('watchWithGroup is hidden from offered buttons when SyncPlay is not enabled', () {
+      expect(DetailButton.watchWithGroup.isOffered, isFalse);
+    });
   });
 
   group('showsTvDownloadActions', () {
