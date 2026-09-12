@@ -9148,7 +9148,7 @@
     "@nextUpMaxDays": {
         "description": "Setting for how far back the Next Up row reaches"
     },
-    "nextUpMaxDaysDescription": "Quant de temps un programa roman a \"A continuació\" després de l'última vegada que el vas veure",
+    "nextUpMaxDaysDescription": "Quant de temps una sèrie roman a «Següent» després de l'última vegada que la vas veure",
     "@nextUpMaxDaysDescription": {
         "description": "Description for the Next Up window setting"
     },
