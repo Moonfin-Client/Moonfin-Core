@@ -4097,10 +4097,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   Widget _buildVideoSurface() {
     if (PlatformDetection.isIOS || PlatformDetection.isMacOS) {
       return Positioned.fill(
-        child: AetherVideoView(
-          key: _videoSurfaceKey,
-          zoomMode: _activeZoomMode.name,
-        ),
+        child: AetherVideoView(key: _videoSurfaceKey, zoomMode: _activeZoomMode.name),
       );
     }
 
@@ -5675,11 +5672,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
             (button) => button.id,
             _prefs,
           ))
-            if (byButton[button] != null)
-              KeyedSubtree(
-                key: ValueKey(button.id),
-                child: byButton[button]!,
-              ),
+            ?byButton[button],
         ]);
 
         final orderedSecondaryButtons = PlatformDetection.isTV
@@ -5701,26 +5694,31 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                 isLandscape && estimatedWidth <= constraints.maxWidth;
 
             if (canFitLandscapeRow) {
-              return Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: PlatformDetection.isTV
-                    ? MainAxisAlignment.start
-                    : MainAxisAlignment.spaceEvenly,
-                children: orderedSecondaryButtons,
+              return SizedBox(
+                height: secondaryExtent,
+                child: Row(
+                  mainAxisAlignment: PlatformDetection.isTV
+                      ? MainAxisAlignment.start
+                      : MainAxisAlignment.spaceEvenly,
+                  children: orderedSecondaryButtons,
+                ),
               );
             }
 
-            return SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  for (final button in orderedSecondaryButtons)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 2),
-                      child: button,
-                    ),
-                ],
+            return SizedBox(
+              height: secondaryExtent,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    for (final button in orderedSecondaryButtons)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 2),
+                        child: button,
+                      ),
+                  ],
+                ),
               ),
             );
           },
@@ -6601,14 +6599,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         tooltip: PlatformDetection.useDesktopUi ? tooltip : null,
         icon: AdaptiveIcon(icon, color: iconColor, size: size),
         padding: EdgeInsets.zero,
-        constraints: BoxConstraints.tightFor(width: extent, height: extent),
-        style: IconButton.styleFrom(
-          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          visualDensity: VisualDensity.compact,
-          padding: EdgeInsets.zero,
-          minimumSize: Size(extent, extent),
-          maximumSize: Size(extent, extent),
-        ),
+        constraints: const BoxConstraints(),
       ),
     );
   }
@@ -7156,12 +7147,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   String _zoomModeLabel(ZoomMode mode) {
-    final l10n = AppLocalizations.of(context);
-    return switch (mode) {
-      ZoomMode.fit => l10n.fit,
-      ZoomMode.autoCrop => l10n.autoCrop,
-      ZoomMode.stretch => l10n.stretch,
-    };
+    final spaced = mode.name.replaceAllMapped(_camelCaseSpaceRe, (_) => ' ');
+    return spaced.isEmpty
+        ? mode.name
+        : '${spaced[0].toUpperCase()}${spaced.substring(1)}';
   }
 
   String _tooltipMessage(String label, {String? shortcut}) {
