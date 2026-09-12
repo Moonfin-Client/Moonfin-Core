@@ -1171,28 +1171,61 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     }
   }
 
+  /// Body for a reserved tab with nothing in it yet: the placeholder row while
+  /// the fetch is out, then the message once it has come back empty, since a
+  /// shimmer that outlives the fetch reads as a row still on its way. Up goes
+  /// back to the tab bar so neither one is a focus dead end.
+  Widget _reservedTabBody({
+    required FocusNode focusNode,
+    required bool loaded,
+    required String emptyMessage,
+    required double cardWidth,
+    required double heightRatio,
+  }) {
+    return Focus(
+      focusNode: focusNode,
+      onKeyEvent: (node, event) {
+        if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.arrowUp) {
+          _focusSelectedTab();
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.ignored;
+      },
+      child: loaded
+          ? Padding(
+              padding: const EdgeInsets.symmetric(vertical: 32),
+              child: Center(
+                child: Text(
+                  emptyMessage,
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(color: Colors.white70),
+                ),
+              ),
+            )
+          : Padding(
+              padding: const EdgeInsets.only(top: 8, bottom: 24),
+              child: SkeletonHomeRow(
+                cardWidth: cardWidth,
+                imageHeight: cardWidth * heightRatio,
+                isModern: true,
+              ),
+            ),
+    );
+  }
+
   Widget _seasonsTab(BuildContext context, AggregatedItem item) {
+    final l10n = AppLocalizations.of(context);
     if (_vm.seasons.isEmpty) {
-      return Focus(
+      return _reservedTabBody(
         focusNode: _seasonsFirstFocusNode,
-        onKeyEvent: (node, event) {
-          if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.arrowUp) {
-            _focusSelectedTab();
-            return KeyEventResult.handled;
-          }
-          return KeyEventResult.ignored;
-        },
-        child: Padding(
-          padding: const EdgeInsets.only(top: 8, bottom: 24),
-          child: SkeletonHomeRow(
-            cardWidth: _landscape ? 150.0 : 120.0,
-            imageHeight: (_landscape ? 150.0 : 120.0) * 1.5,
-            isModern: true,
-          ),
-        ),
+        loaded: _vm.seasonsLoaded,
+        emptyMessage: l10n.noItemsLoaded(l10n.seasons),
+        cardWidth: _landscape ? 150.0 : 120.0,
+        heightRatio: 1.5,
       );
     }
-    final l10n = AppLocalizations.of(context);
     final textTheme = Theme.of(context).textTheme;
     final counts = _episodeCountsBySeason();
     final showPosterUrl = _imageUrl(item);
@@ -1348,24 +1381,14 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   }
 
   Widget _episodeListTab(BuildContext context, AggregatedItem item) {
+    final l10n = AppLocalizations.of(context);
     if (_vm.episodes.isEmpty) {
-      return Focus(
+      return _reservedTabBody(
         focusNode: _episodesFirstFocusNode,
-        onKeyEvent: (node, event) {
-          if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.arrowUp) {
-            _focusSelectedTab();
-            return KeyEventResult.handled;
-          }
-          return KeyEventResult.ignored;
-        },
-        child: Padding(
-          padding: const EdgeInsets.only(top: 8, bottom: 24),
-          child: SkeletonHomeRow(
-            cardWidth: _landscape ? 240.0 : 180.0,
-            imageHeight: (_landscape ? 240.0 : 180.0) * (9 / 16),
-            isModern: true,
-          ),
-        ),
+        loaded: _vm.episodesLoaded,
+        emptyMessage: l10n.noEpisodesLoaded,
+        cardWidth: _landscape ? 240.0 : 180.0,
+        heightRatio: 9 / 16,
       );
     }
     // For Season pages _vm.nextUp is null (the API call uses seriesId which
@@ -1430,23 +1453,12 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     final l10n = AppLocalizations.of(context);
     final episodes = _vm.seriesEpisodes;
     if (episodes.isEmpty) {
-      return Focus(
+      return _reservedTabBody(
         focusNode: _episodesFirstFocusNode,
-        onKeyEvent: (node, event) {
-          if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.arrowUp) {
-            _focusSelectedTab();
-            return KeyEventResult.handled;
-          }
-          return KeyEventResult.ignored;
-        },
-        child: Padding(
-          padding: const EdgeInsets.only(top: 8, bottom: 24),
-          child: SkeletonHomeRow(
-            cardWidth: _landscape ? 240.0 : 180.0,
-            imageHeight: (_landscape ? 240.0 : 180.0) * (9 / 16),
-            isModern: true,
-          ),
-        ),
+        loaded: _vm.seriesEpisodesLoaded,
+        emptyMessage: l10n.noEpisodesLoaded,
+        cardWidth: _landscape ? 240.0 : 180.0,
+        heightRatio: 9 / 16,
       );
     }
     final sorted = [...episodes]..sort((a, b) {

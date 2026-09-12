@@ -13,6 +13,7 @@ import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/preference/seerr_preferences.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/screens/detail/modern/modern_detail_content.dart';
+import 'package:moonfin/ui/screens/detail/modern/widgets/details_tab_bar.dart';
 import 'package:moonfin/ui/widgets/skeleton/skeleton_home_row.dart';
 import 'package:moonfin/util/platform_detection.dart';
 import 'package:server_core/server_core.dart';
@@ -101,6 +102,9 @@ void main() {
     when(() => vm.seasons).thenReturn([]);
     when(() => vm.episodes).thenReturn([]);
     when(() => vm.seriesEpisodes).thenReturn([]);
+    when(() => vm.seasonsLoaded).thenReturn(false);
+    when(() => vm.episodesLoaded).thenReturn(false);
+    when(() => vm.seriesEpisodesLoaded).thenReturn(false);
     when(() => vm.similar).thenReturn([]);
     when(() => vm.collectionItems).thenReturn([]);
     when(() => vm.missingCollectionItems).thenReturn([]);
@@ -144,6 +148,17 @@ void main() {
     return GetIt.instance.reset();
   });
 
+  String selectedTabLabel(WidgetTester tester) {
+    final bar = tester.widget<DetailsTabBar>(find.byType(DetailsTabBar));
+    return bar.labels[bar.selectedIndex];
+  }
+
+  AggregatedItem seriesItem() => AggregatedItem(
+        id: 'series-1',
+        serverId: 'server-1',
+        rawData: const {'Id': 'series-1', 'Name': 'Arcane', 'Type': 'Series'},
+      );
+
   Widget buildTestWidget() {
     return MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -162,17 +177,7 @@ void main() {
   }
 
   testWidgets('Series reserves Seasons tab at index 0 and renders SkeletonHomeRow while seasons are empty', (tester) async {
-    final seriesItem = AggregatedItem(
-      id: 'series-1',
-      serverId: 'server-1',
-      rawData: const {
-        'Id': 'series-1',
-        'Name': 'Arcane',
-        'Type': 'Series',
-      },
-    );
-
-    when(() => vm.item).thenReturn(seriesItem);
+    when(() => vm.item).thenReturn(seriesItem());
     when(() => vm.seasons).thenReturn([]);
 
     await tester.pumpWidget(buildTestWidget());
@@ -186,53 +191,64 @@ void main() {
     expect(find.byType(SkeletonHomeRow), findsOneWidget);
   });
 
-  testWidgets('Selecting a tab anchors by ID so subsequent content loading preserves selection', (tester) async {
-    final seriesItem = AggregatedItem(
-      id: 'series-1',
-      serverId: 'server-1',
-      rawData: const {
-        'Id': 'series-1',
-        'Name': 'Arcane',
-        'Type': 'Series',
-      },
-    );
+  testWidgets('a tab arriving ahead of the selected one leaves the selection where it was', (tester) async {
+    when(() => vm.item).thenReturn(seriesItem());
+    when(() => vm.similar).thenReturn([
+      AggregatedItem(
+        id: 'similar-1',
+        serverId: 'server-1',
+        rawData: const {'Id': 'similar-1', 'Name': 'Vi', 'Type': 'Series'},
+      ),
+    ]);
 
-    when(() => vm.item).thenReturn(seriesItem);
+    await tester.pumpWidget(buildTestWidget());
+    await tester.pump(const Duration(milliseconds: 100));
+
+    // Seasons, Episodes, Similar. No Cast tab yet, the server has not sent one.
+    expect(selectedTabLabel(tester), 'Seasons');
+    await tester.tap(find.text('Similar'));
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(selectedTabLabel(tester), 'Similar');
+
+    // The cast lands, which puts a new tab in front of the selected one.
+    when(() => vm.actors).thenReturn([
+      <String, dynamic>{'Id': 'p1', 'Name': 'Hailee Steinfeld', 'Type': 'Actor'},
+    ]);
+    await tester.pumpWidget(buildTestWidget());
+    await tester.pump(const Duration(milliseconds: 100));
+
+    expect(find.text('Cast'), findsOneWidget);
+    expect(selectedTabLabel(tester), 'Similar');
+  });
+
+  testWidgets('a Series with no seasons says so once the fetch is done', (tester) async {
+    when(() => vm.item).thenReturn(seriesItem());
     when(() => vm.seasons).thenReturn([]);
+    when(() => vm.seasonsLoaded).thenReturn(true);
 
     await tester.pumpWidget(buildTestWidget());
-    await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
 
-    // Both Seasons and Episodes tabs are present
-    expect(find.text('Seasons'), findsOneWidget);
-    expect(find.text('Episodes'), findsOneWidget);
+    expect(find.byType(SkeletonHomeRow), findsNothing);
+    expect(find.text('No Seasons loaded'), findsOneWidget);
+  });
 
-    // Click on the Episodes tab
-    await tester.tap(find.text('Episodes'));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 100));
-
-    // Now simulate similar items or seasons loading in
-    final season1 = AggregatedItem(
-      id: 'season-1',
-      serverId: 'server-1',
-      rawData: const {
-        'Id': 'season-1',
-        'Name': 'Season 1',
-        'Type': 'Season',
-        'IndexNumber': 1,
-      },
+  testWidgets('a Season with no episodes says so once the fetch is done', (tester) async {
+    when(() => vm.item).thenReturn(
+      AggregatedItem(
+        id: 'season-1',
+        serverId: 'server-1',
+        rawData: const {'Id': 'season-1', 'Name': 'Season 1', 'Type': 'Season'},
+      ),
     );
-    when(() => vm.seasons).thenReturn([season1]);
+    when(() => vm.episodes).thenReturn([]);
+    when(() => vm.episodesLoaded).thenReturn(true);
 
-    // Rebuild widget
     await tester.pumpWidget(buildTestWidget());
-    await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
 
-    // Episodes tab should still be present and actively selected
-    expect(find.text('Episodes'), findsOneWidget);
+    expect(find.byType(SkeletonHomeRow), findsNothing);
+    expect(find.text('No episodes loaded'), findsOneWidget);
   });
 
   testWidgets('Season reserves Episodes tab at index 0 and renders SkeletonHomeRow while episodes are empty', (tester) async {

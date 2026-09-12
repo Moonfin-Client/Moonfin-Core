@@ -264,11 +264,28 @@ class ItemDetailViewModel extends ChangeNotifier {
   List<AggregatedItem> _seasons = const [];
   List<AggregatedItem> get seasons => _seasons;
 
+  bool _seasonsLoaded = false;
+
+  /// Whether the seasons fetch has finished, however it went. An empty
+  /// [seasons] says nothing on its own until this is true, so callers can tell
+  /// a load still in flight from a series that really has none.
+  bool get seasonsLoaded => _seasonsLoaded;
+
   List<AggregatedItem> _episodes = const [];
   List<AggregatedItem> get episodes => _episodes;
 
+  bool _episodesLoaded = false;
+
+  /// The [seasonsLoaded] contract, for [episodes].
+  bool get episodesLoaded => _episodesLoaded;
+
   List<AggregatedItem> _seriesEpisodes = const [];
   bool _seriesEpisodesRequested = false;
+  bool _seriesEpisodesLoaded = false;
+
+  /// Whether [seriesEpisodes] has arrived. Unlike [seasonsLoaded] this only
+  /// turns true on a fetch that worked, because a failed one is tried again.
+  bool get seriesEpisodesLoaded => _seriesEpisodesLoaded;
 
   /// All episodes of a Series across every season, in the server's
   /// season/episode order. Empty until [loadAllSeriesEpisodes] completes.
@@ -622,6 +639,7 @@ class ItemDetailViewModel extends ChangeNotifier {
     // Seerr owns the seasons here, so nothing goes looking for them on a server
     // that has never heard of this title.
     _seasons = _seerrSeasons(state);
+    _seasonsLoaded = true;
     _state = ItemDetailState.ready;
     notifyListeners();
 
@@ -869,8 +887,11 @@ class ItemDetailViewModel extends ChangeNotifier {
       );
       final items = (data['Items'] as List?) ?? [];
       _seasons = _mapItems(items);
+    } catch (_) {
+    } finally {
+      _seasonsLoaded = true;
       notifyListeners();
-    } catch (_) {}
+    }
   }
 
   Future<void> _loadEpisodes() async {
@@ -909,8 +930,11 @@ class ItemDetailViewModel extends ChangeNotifier {
 
       _resolvedEpisodesSeasonId = seasonId;
       _episodes = episodes;
+    } catch (_) {
+    } finally {
+      _episodesLoaded = true;
       notifyListeners();
-    } catch (_) {}
+    }
   }
 
   /// Loads every episode of the current Series (all seasons) on demand. Used by
@@ -928,14 +952,19 @@ class ItemDetailViewModel extends ChangeNotifier {
       );
       final items = (data['Items'] as List?) ?? [];
       _seriesEpisodes = _mapItems(items);
+      _seriesEpisodesLoaded = true;
       notifyListeners();
     } catch (_) {
+      // Left unloaded and silent on purpose. The Modern layout calls this from
+      // build, so the next rebuild gets another go, and notifying here would
+      // turn that into a loop against a server that is down.
       _seriesEpisodesRequested = false;
     }
   }
 
   Future<void> refreshSeriesEpisodes() {
     _seriesEpisodesRequested = false;
+    _seriesEpisodesLoaded = false;
     return loadAllSeriesEpisodes();
   }
 
