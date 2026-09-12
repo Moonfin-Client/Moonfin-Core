@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/ui/widgets/skeleton/skeleton_detail_screen.dart';
 import 'package:moonfin/ui/widgets/skeleton/skeleton_home_row.dart';
 import 'package:moonfin/ui/widgets/skeleton/skeleton_library_grid.dart';
@@ -50,15 +51,59 @@ void main() {
       expect(find.byType(SkeletonBox), findsWidgets);
     });
 
-    testWidgets('DetailScreenSkeleton renders without overflow', (tester) async {
+    testWidgets('DetailScreenSkeleton renders all variants without overflow', (tester) async {
+      // 1. Classic layout
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
-            body: DetailScreenSkeleton(isModern: true),
+            body: DetailScreenSkeleton(style: DetailScreenStyle.classic),
           ),
         ),
       );
+      expect(find.byType(DetailScreenSkeleton), findsOneWidget);
+      expect(find.byType(SkeletonBox), findsWidgets);
 
+      // 2. Modern layout
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: DetailScreenSkeleton(style: DetailScreenStyle.modern),
+          ),
+        ),
+      );
+      expect(find.byType(DetailScreenSkeleton), findsOneWidget);
+      expect(find.byType(SkeletonBox), findsWidgets);
+
+      // 3. Spotlight layout
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: DetailScreenSkeleton(style: DetailScreenStyle.spotlight),
+          ),
+        ),
+      );
+      expect(find.byType(DetailScreenSkeleton), findsOneWidget);
+      expect(find.byType(SkeletonBox), findsWidgets);
+
+      // 4. Nouveau layout
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: DetailScreenSkeleton(style: DetailScreenStyle.nouveau),
+          ),
+        ),
+      );
+      expect(find.byType(DetailScreenSkeleton), findsOneWidget);
+      expect(find.byType(SkeletonBox), findsWidgets);
+
+      // 5. Legacy backward compatibility (isModern flag)
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: DetailScreenSkeleton(isModern: false),
+          ),
+        ),
+      );
       expect(find.byType(DetailScreenSkeleton), findsOneWidget);
       expect(find.byType(SkeletonBox), findsWidgets);
     });

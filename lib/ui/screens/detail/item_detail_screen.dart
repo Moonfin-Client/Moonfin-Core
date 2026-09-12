@@ -660,8 +660,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
   Widget _buildBody(BuildContext context) {
     return switch (_viewModel.state) {
       ItemDetailState.loading => DetailScreenSkeleton(
-        isModern: _prefs.get(UserPreferences.detailScreenStyle) ==
-            DetailScreenStyle.modern,
+        style: _prefs.get(UserPreferences.detailScreenStyle),
       ),
       ItemDetailState.error => Center(
         child: Column(
