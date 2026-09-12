@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 class MarqueeText extends StatefulWidget {
@@ -17,6 +20,8 @@ class MarqueeText extends StatefulWidget {
   final int pauseDurationMs;
   final bool showDotSeparator;
   final double dotSize;
+  final TextAlign textAlign;
+  final bool startAtEnd;
 
   const MarqueeText({
     super.key,
@@ -30,6 +35,8 @@ class MarqueeText extends StatefulWidget {
     this.pauseDurationMs = 1500,
     this.showDotSeparator = true,
     this.dotSize = 4.0,
+    this.textAlign = TextAlign.start,
+    this.startAtEnd = false,
   });
 
   @override
@@ -40,7 +47,15 @@ class _MarqueeTextState extends State<MarqueeText>
     with SingleTickerProviderStateMixin {
   late final ScrollController _controller;
   late final AnimationController _anim;
+  Timer? _pauseTimer;
   double _lastTextWidth = 0.0;
+  double _lastParentWidth = 0.0;
+  bool _overflows = false;
+
+  double get _startOffset =>
+      widget.startAtEnd ? math.max(0, _lastTextWidth - _lastParentWidth) : 0;
+
+  double get _endOffset => widget.startAtEnd ? 0 : _lastTextWidth + widget.gap;
 
   /// What gets painted and measured, the spans when given, otherwise [text].
   TextSpan get _span => widget.spans != null
@@ -53,11 +68,14 @@ class _MarqueeTextState extends State<MarqueeText>
     _controller = ScrollController();
     _anim = AnimationController(vsync: this);
     _anim.addListener(_onTick);
+    _anim.addStatusListener(_onAnimationStatus);
   }
 
   @override
   void dispose() {
+    _pauseTimer?.cancel();
     _anim.removeListener(_onTick);
+    _anim.removeStatusListener(_onAnimationStatus);
     _anim.dispose();
     _controller.dispose();
     super.dispose();
@@ -70,35 +88,45 @@ class _MarqueeTextState extends State<MarqueeText>
       if (_controller.hasClients) {
         _controller.jumpTo(0);
       }
+      _pauseTimer?.cancel();
+      _pauseTimer = null;
       _anim.stop();
       _anim.value = 0.0;
     }
   }
 
   void _onTick() {
-    if (_controller.hasClients && _anim.duration != null) {
-      final scrollDistance = _lastTextWidth + widget.gap;
-      final totalMs = _anim.duration!.inMilliseconds.toDouble();
-      if (totalMs > 0) {
-        final pauseFraction = widget.pauseDurationMs / totalMs;
-        final v = _anim.value;
-        if (v < pauseFraction) {
-          _controller.jumpTo(0.0);
-        } else {
-          final t = (v - pauseFraction) / (1.0 - pauseFraction);
-          _controller.jumpTo(t * scrollDistance);
-        }
-      }
+    if (_controller.hasClients) {
+      final offset = _startOffset + _anim.value * (_endOffset - _startOffset);
+      _controller.jumpTo(offset);
     }
+  }
+
+  void _onAnimationStatus(AnimationStatus status) {
+    if (status != AnimationStatus.completed) return;
+    if (_controller.hasClients) _controller.jumpTo(_startOffset);
+    _anim.value = 0;
+    _scheduleScroll();
+  }
+
+  void _scheduleScroll() {
+    if (!_overflows || _pauseTimer != null || _anim.isAnimating) return;
+    _pauseTimer = Timer(Duration(milliseconds: widget.pauseDurationMs), () {
+      _pauseTimer = null;
+      if (mounted && _overflows) _anim.forward(from: 0);
+    });
   }
 
   void _updateAnimation(double textWidth, double parentWidth) {
     if (!mounted) return;
 
     _lastTextWidth = textWidth;
+    _lastParentWidth = parentWidth;
 
-    final overflows = textWidth > parentWidth;
-    if (!overflows) {
+    _overflows = textWidth > parentWidth;
+    if (!_overflows) {
+      _pauseTimer?.cancel();
+      _pauseTimer = null;
       if (_anim.isAnimating) {
         _anim.stop();
       }
@@ -108,21 +136,17 @@ class _MarqueeTextState extends State<MarqueeText>
       return;
     }
 
-    final scrollDistance = textWidth + widget.gap;
+    if (!_anim.isAnimating && _controller.hasClients) {
+      _controller.jumpTo(_startOffset);
+    }
+    final scrollDistance = (_endOffset - _startOffset).abs();
     final scrollDurationMs = (scrollDistance * widget.millisPerPixel).toInt();
-    final totalDurationMs = scrollDurationMs + widget.pauseDurationMs;
-    final newDuration = Duration(milliseconds: totalDurationMs);
+    final newDuration = Duration(milliseconds: scrollDurationMs);
 
     if (_anim.duration != newDuration) {
       _anim.duration = newDuration;
-      if (_anim.isAnimating) {
-        _anim.repeat();
-      }
     }
-
-    if (!_anim.isAnimating) {
-      _anim.repeat();
-    }
+    _scheduleScroll();
   }
 
   @override
@@ -147,13 +171,23 @@ class _MarqueeTextState extends State<MarqueeText>
         final overflows = textWidth > parentWidth;
 
         if (!overflows) {
-          return Text.rich(span, maxLines: 1, overflow: TextOverflow.ellipsis);
+          return SizedBox(
+            width: parentWidth.isFinite ? parentWidth : null,
+            child: Text.rich(
+              span,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: widget.textAlign,
+            ),
+          );
         }
 
         final Widget separatorWidget;
         if (widget.showDotSeparator) {
-          final pad =
-              ((widget.gap - widget.dotSize) / 2).clamp(0.0, widget.gap);
+          final pad = ((widget.gap - widget.dotSize) / 2).clamp(
+            0.0,
+            widget.gap,
+          );
           final dotColor =
               widget.style.color?.withValues(alpha: 0.7) ?? Colors.white70;
           separatorWidget = Row(
@@ -193,4 +227,3 @@ class _MarqueeTextState extends State<MarqueeText>
     );
   }
 }
-
