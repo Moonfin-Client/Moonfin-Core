@@ -4,6 +4,7 @@
 // are omitted.
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:moonfin/data/models/aggregated_item.dart';
@@ -11,6 +12,7 @@ import 'package:moonfin/data/services/seerr/seerr_api_models.dart';
 import 'package:moonfin/data/viewmodels/item_detail_view_model.dart';
 import 'package:moonfin/data/viewmodels/seerr_media_detail_view_model.dart';
 import 'package:moonfin/l10n/app_localizations_en.dart';
+import 'package:moonfin/preference/seerr_preferences.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/screens/detail/spotlight/spotlight_cards.dart';
 import 'package:server_core/server_core.dart';
@@ -21,6 +23,8 @@ class _Vm extends Mock implements ItemDetailViewModel {}
 class _SeerrVm extends Mock implements SeerrMediaDetailViewModel {}
 
 class _ImageApi extends Mock implements ImageApi {}
+
+class _SeerrPrefs extends Mock implements SeerrPreferences {}
 
 final _l10n = AppLocalizationsEn();
 
@@ -75,6 +79,12 @@ void main() {
     await store.init();
     prefs = UserPreferences(store);
 
+    // The seasons card reads Seerr's per-season status, and the app always has
+    // these preferences registered.
+    final seerrPrefs = _SeerrPrefs();
+    when(() => seerrPrefs.showRequestStatus).thenReturn(false);
+    GetIt.instance.registerSingleton<SeerrPreferences>(seerrPrefs);
+
     final imageApi = _ImageApi();
     when(
       () => imageApi.getPrimaryImageUrl(
@@ -120,6 +130,8 @@ void main() {
     when(() => vm.canManagePlaylistTracks).thenReturn(false);
     when(() => vm.seerr).thenReturn(null);
   });
+
+  tearDown(() => GetIt.instance.reset());
 
   List<SpotlightCardSpec> cardsFor(AggregatedItem item) => spotlightCardsFor(
     vm: vm,

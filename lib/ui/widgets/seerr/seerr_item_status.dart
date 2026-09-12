@@ -83,10 +83,7 @@ class SeerrItemDownloadBars extends StatelessWidget {
 /// The item's Seerr state once the lookup has landed and found something, and
 /// only while the viewer wants request status shown at all.
 SeerrMediaDetailState? _resolved(ItemDetailViewModel viewModel) {
-  if (!GetIt.instance.isRegistered<SeerrPreferences>() ||
-      !GetIt.instance<SeerrPreferences>().showRequestStatus) {
-    return null;
-  }
+  if (!GetIt.instance<SeerrPreferences>().showRequestStatus) return null;
   final state = viewModel.seerr?.state;
   if (state == null || state.tmdbId == 0) return null;
   return state;
