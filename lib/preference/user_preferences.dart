@@ -303,6 +303,9 @@ class UserPreferences extends ChangeNotifier {
     'detailButtonOrderDesktop',
     'detailButtonOrderMobile',
     'detailButtonOrderTv',
+    'detailMetadataOrderDesktop',
+    'detailMetadataOrderMobile',
+    'detailMetadataOrderTv',
     'download_default_quality',
     'auto_download_enabled',
     'auto_download_keep_unwatched',
@@ -314,6 +317,9 @@ class UserPreferences extends ChangeNotifier {
     'hiddenDetailButtonsDesktop',
     'hiddenDetailButtonsMobile',
     'hiddenDetailButtonsTv',
+    'hiddenDetailMetadataDesktop',
+    'hiddenDetailMetadataMobile',
+    'hiddenDetailMetadataTv',
     'hiddenOsdButtonsDesktop',
     'hiddenOsdButtonsMobile',
     'hiddenOsdButtonsTv',
@@ -2240,6 +2246,30 @@ class UserPreferences extends ChangeNotifier {
   );
   static final hiddenDetailButtonsDesktop = Preference(
     key: 'hiddenDetailButtonsDesktop',
+    defaultValue: '',
+  );
+  static final detailMetadataOrderTv = Preference(
+    key: 'detailMetadataOrderTv',
+    defaultValue: '',
+  );
+  static final detailMetadataOrderMobile = Preference(
+    key: 'detailMetadataOrderMobile',
+    defaultValue: '',
+  );
+  static final detailMetadataOrderDesktop = Preference(
+    key: 'detailMetadataOrderDesktop',
+    defaultValue: '',
+  );
+  static final hiddenDetailMetadataTv = Preference(
+    key: 'hiddenDetailMetadataTv',
+    defaultValue: '',
+  );
+  static final hiddenDetailMetadataMobile = Preference(
+    key: 'hiddenDetailMetadataMobile',
+    defaultValue: '',
+  );
+  static final hiddenDetailMetadataDesktop = Preference(
+    key: 'hiddenDetailMetadataDesktop',
     defaultValue: '',
   );
   static final hiddenOsdButtonsTv = Preference(

@@ -3163,6 +3163,61 @@ class AppLocalizationsIt extends AppLocalizations {
       'Riproduci è sempre il primo e i pulsanti bloccati sono sempre visibili. Tutto il resto dipende da te e ogni tipo di dispositivo mantiene il proprio elenco.';
 
   @override
+  String get detailMetadata => 'Metadata Row';
+
+  @override
+  String get detailMetadataDescription =>
+      'Choose and reorder what metadata the details screen shows';
+
+  @override
+  String get detailMetadataSectionDescription =>
+      'Turn metadata items on or off, and arrange the order they appear on the details screen. Each kind of device keeps its own list.';
+
+  @override
+  String get detailMetadataYear => 'Release Year';
+
+  @override
+  String get detailMetadataParentalRating => 'Parental Rating';
+
+  @override
+  String get detailMetadataRuntimeAndSeasons => 'Runtime & Seasons';
+
+  @override
+  String get detailMetadataStatus => 'Series Status';
+
+  @override
+  String get detailMetadataStatusSubtitle =>
+      'Shows whether the series is continuing, ended, or returning';
+
+  @override
+  String get detailMetadataGenres => 'Genres';
+
+  @override
+  String get detailMetadataSeerrAvailability => 'Seerr Availability';
+
+  @override
+  String get detailMetadataSeerrAvailabilitySubtitle =>
+      'Shows request and media availability status from Seerr';
+
+  @override
+  String get detailMetadataUpcomingEpisodeDate => 'Upcoming Episodes';
+
+  @override
+  String get detailMetadataUpcomingEpisodeDateSubtitle =>
+      'Uses Sonarr and TMDB to show upcoming release dates';
+
+  @override
+  String upcomingEpisodeNext(String date, int season, int episode) {
+    return 'Next: $date (S$season:E$episode)';
+  }
+
+  @override
+  String get upcomingEpisodeToday => 'Today';
+
+  @override
+  String get upcomingEpisodeTomorrow => 'Tomorrow';
+
+  @override
   String get moveUp => 'Sposta Su';
 
   @override

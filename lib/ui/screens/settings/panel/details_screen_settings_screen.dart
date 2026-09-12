@@ -105,6 +105,14 @@ class _DetailsScreenSettingsScreenState
               _SectionHeader(l10n.mediaDetailsAndSpoilers),
               adaptiveListSection(
                 children: [
+                  _TvSettingsListTile(
+                    leading: const Icon(Icons.view_headline_outlined),
+                    title: Text(l10n.detailMetadata),
+                    subtitle: Text(l10n.detailMetadataDescription),
+                    onTap: () => context.pushSettingsScreen(
+                      const _DetailMetadataScreen(),
+                    ),
+                  ),
                   if (prefs.get(UserPreferences.detailScreenStyle) == DetailScreenStyle.modern)
                     SwitchPreferenceTile(
                       preference: UserPreferences.detailExpandedTabs,
