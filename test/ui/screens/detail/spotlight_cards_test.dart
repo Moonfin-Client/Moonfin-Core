@@ -196,9 +196,23 @@ void main() {
 
     final seasons = cards.first;
     expect(seasons.id, 'seasons');
-    expect(seasons.title, 'Seasons and Episodes');
+    expect(seasons.title, _l10n.seasons);
     expect(seasons.subtitle, '2 seasons · 20 episodes');
     expect(seasons.sections.single.title, _l10n.seasons);
+  });
+
+  test('a season leads with the episodes card', () {
+    when(() => vm.episodes).thenReturn([
+      _child('ep-1', 'Episode'),
+      _child('ep-2', 'Episode'),
+    ]);
+    final cards = cardsFor(_item('Season'));
+
+    final episodes = cards.first;
+    expect(episodes.id, 'episodes');
+    expect(episodes.title, _l10n.episodes);
+    expect(episodes.subtitle, '2 episodes');
+    expect(episodes.sections.single.title, _l10n.episodes);
   });
 
   test('an episode offers the rest of its season', () {

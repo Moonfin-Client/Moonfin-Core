@@ -493,7 +493,7 @@ abstract class AppLocalizations {
   /// Tooltip/semantics of the spotlight ellipsis button and the title of the overflow actions menu it opens
   ///
   /// In en, this message translates to:
-  /// **'More actions'**
+  /// **'More Actions'**
   String get spotlightMoreActions;
 
   /// Title of the spotlight summary card that opens the people and studios modal

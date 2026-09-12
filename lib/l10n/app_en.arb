@@ -208,7 +208,7 @@
   "@detailScreenStyleSpotlight": {
     "description": "Detail screen style option: the hero-first layout with summary cards that open grid modals"
   },
-  "spotlightMoreActions": "More actions",
+  "spotlightMoreActions": "More Actions",
   "@spotlightMoreActions": {
     "description": "Tooltip/semantics of the spotlight ellipsis button and the title of the overflow actions menu it opens"
   },

@@ -175,7 +175,7 @@ class _SpotlightCardsBuilder {
         'collections': _collectionsCard,
       },
       'Season' => {
-        'episodes': () => _episodesCard(l10n.spotlightSeasonsEpisodes),
+        'episodes': () => _episodesCard(l10n.episodes),
         'people': _peopleCard,
         'chapters_extras': _chaptersExtrasCard,
         'similar': _similarCard,
@@ -509,7 +509,7 @@ class _SpotlightCardsBuilder {
     ].join(' · ');
     return SpotlightCardSpec(
       id: 'seasons',
-      title: l10n.spotlightSeasonsEpisodes,
+      title: l10n.seasons,
       subtitle: subtitle,
       imageUrl:
           _firstEpisodeThumb([

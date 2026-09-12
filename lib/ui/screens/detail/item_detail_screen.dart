@@ -6280,27 +6280,9 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         itemCount: actions.length,
         itemBuilder: (rowContext, index) {
           final action = actions[index];
-          final tint = action.isActive
-              ? (action.activeColor ?? AppColorScheme.accent)
-              : Colors.white;
-          return DpadListTile(
+          return _SpotlightOverflowTile(
+            action: action,
             autofocus: index == 0,
-            leading: action.iconBuilder != null
-                ? action.iconBuilder!(22, tint)
-                : (action.icon != null
-                      ? AdaptiveIcon(action.icon!, color: tint, size: 22)
-                      : null),
-            title: Text(
-              action.label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                color: tint,
-                fontWeight: action.isActive
-                    ? FontWeight.w600
-                    : FontWeight.w400,
-              ),
-            ),
             onTap: () => Navigator.pop(rowContext, action.onPressed),
             onLongPress: action.onLongPress == null
                 ? null
@@ -11554,28 +11536,32 @@ class _PersonalRatingActionIcon extends StatelessWidget {
     return switch (style) {
       PersonalRatingStyle.thumbs =>
         likes == null
-            ? Center(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.thumb_up_outlined,
-                      color: color,
-                      size: size * 0.5,
-                    ),
-                    SizedBox(width: size * 0.08),
-                    Icon(
-                      Icons.thumb_down_outlined,
-                      color: color,
-                      size: size * 0.5,
-                    ),
-                  ],
-                ),
-              )
+            ? (size <= 24
+                ? Icon(
+                    Icons.thumb_up_outlined,
+                    color: color,
+                    size: size * 0.85,
+                  )
+                : Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.thumb_up_outlined,
+                        color: color,
+                        size: size * 0.5,
+                      ),
+                      SizedBox(width: size * 0.08),
+                      Icon(
+                        Icons.thumb_down_outlined,
+                        color: color,
+                        size: size * 0.5,
+                      ),
+                    ],
+                  ))
             : Icon(
                 likes! ? Icons.thumb_up : Icons.thumb_down,
                 color: color,
-                size: size * 0.72,
+                size: size * 0.85,
               ),
       PersonalRatingStyle.stars => _StarFillIcon(
         fill: ((rating ?? 0).clamp(0, 10) / 10).toDouble(),
@@ -12225,6 +12211,168 @@ class _DetailActionButtonState extends State<_DetailActionButton>
                     ],
                   ),
                 ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SpotlightOverflowTile extends StatefulWidget {
+  final _DetailActionButton action;
+  final bool autofocus;
+  final VoidCallback onTap;
+  final VoidCallback? onLongPress;
+
+  const _SpotlightOverflowTile({
+    required this.action,
+    this.autofocus = false,
+    required this.onTap,
+    this.onLongPress,
+  });
+
+  @override
+  State<_SpotlightOverflowTile> createState() => _SpotlightOverflowTileState();
+}
+
+class _SpotlightOverflowTileState extends State<_SpotlightOverflowTile> {
+  final _focusNode = FocusNode();
+  bool _isFocused = false;
+  bool _isHovered = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(() {
+      if (mounted) {
+        final hasFocus = _focusNode.hasFocus;
+        setState(() => _isFocused = hasFocus);
+        if (hasFocus) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              Scrollable.ensureVisible(
+                context,
+                alignment: 0.5,
+                duration: const Duration(milliseconds: 150),
+                curve: Curves.easeOut,
+              );
+            }
+          });
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final action = widget.action;
+    final isTv = PlatformDetection.isTV;
+    final showHighlight = _isFocused || _isHovered;
+
+    final focusBg = AppColorScheme.buttonFocused;
+    final focusedFg = focusBg.computeLuminance() > 0.5
+        ? (AppColorScheme.onButtonFocused != focusBg
+            ? AppColorScheme.onButtonFocused
+            : Colors.black87)
+        : Colors.white;
+
+    final textColor = showHighlight
+        ? (isTv ? focusedFg : Colors.white)
+        : Colors.white;
+
+    final iconColor = showHighlight
+        ? (isTv ? focusedFg : AppColorScheme.accent)
+        : (action.isActive
+            ? (action.activeColor ?? AppColorScheme.accent)
+            : Colors.white.withValues(alpha: 0.85));
+
+    final Widget? leadingWidget;
+    if (action.iconBuilder != null) {
+      leadingWidget = action.iconBuilder!(22, iconColor);
+    } else if (action.icon != null) {
+      leadingWidget = AdaptiveIcon(action.icon!, color: iconColor, size: 22);
+    } else {
+      leadingWidget = null;
+    }
+
+    final focusColor = Color(
+      GetIt.instance<UserPreferences>()
+          .get(UserPreferences.focusColor)
+          .colorValue,
+    );
+
+    return Focus(
+      focusNode: _focusNode,
+      autofocus: widget.autofocus,
+      onKeyEvent: (_, event) {
+        if (!event.logicalKey.isSelectKey) return KeyEventResult.ignored;
+        if (event is KeyDownEvent) {
+          widget.onTap();
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.ignored;
+      },
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        onEnter: (_) => setState(() => _isHovered = true),
+        onExit: (_) => setState(() => _isHovered = false),
+        child: GestureDetector(
+          onTap: widget.onTap,
+          onLongPress: widget.onLongPress,
+          behavior: HitTestBehavior.opaque,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 3),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 90),
+              curve: Curves.easeOut,
+              decoration: BoxDecoration(
+                color: showHighlight
+                    ? (isTv
+                        ? focusBg
+                        : AppColorScheme.accent.withValues(alpha: 0.16))
+                    : Colors.transparent,
+                borderRadius: AppRadius.circular(10),
+                border: Border.all(
+                  color: showHighlight
+                      ? (isTv
+                          ? focusColor
+                          : AppColorScheme.accent.withValues(alpha: 0.6))
+                      : Colors.white.withValues(alpha: 0.15),
+                  width: showHighlight ? 1.5 : 1.0,
+                ),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Row(
+                children: [
+                  if (leadingWidget != null) ...[
+                    SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: Center(child: leadingWidget),
+                    ),
+                    const SizedBox(width: 14),
+                  ],
+                  Expanded(
+                    child: Text(
+                      action.label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: textColor,
+                        fontWeight: action.isActive ? FontWeight.w600 : FontWeight.w500,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );

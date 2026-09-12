@@ -158,7 +158,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get detailScreenStyleSpotlight => 'Spotlight';
 
   @override
-  String get spotlightMoreActions => 'More actions';
+  String get spotlightMoreActions => 'More Actions';
 
   @override
   String get spotlightCastCrewStudios => 'Cast, Crew, and Studios';
