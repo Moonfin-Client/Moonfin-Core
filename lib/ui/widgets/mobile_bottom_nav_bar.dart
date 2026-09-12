@@ -17,6 +17,7 @@ import '../../preference/seerr_preferences.dart';
 import '../../preference/user_preferences.dart';
 import '../../util/overlay_color_palette.dart';
 import '../../util/game_library.dart';
+import '../../util/live_tv_library.dart';
 import '../navigation/destinations.dart';
 import '../navigation/home_refresh_bus.dart';
 import '../screens/downloads/downloads_panel.dart';
@@ -169,6 +170,13 @@ class _MobileBottomNavBarState extends State<MobileBottomNavBar> {
     return true;
   }
 
+  bool get _showLiveTvButton =>
+      _prefs.get(UserPreferences.showLiveTvButton) &&
+      _libraries.any(isLiveTvLibrary);
+
+  List<AggregatedLibrary> get _navLibraries =>
+      librariesForNav(_libraries, _showLiveTvButton);
+
   bool _isActive(String route) => widget.activeRoute == route;
 
   List<_BottomNavAction> _contentActions(
@@ -245,11 +253,7 @@ class _MobileBottomNavBarState extends State<MobileBottomNavBar> {
       );
     }
 
-    // Only offered on a server that actually has a Live TV library, the same
-    // check the home screen's Live TV row makes. `_libraries` reloads on a
-    // server switch, so the button leaves with the server it belongs to.
-    if (_prefs.get(UserPreferences.showLiveTvButton) &&
-        _libraries.any((lib) => lib.collectionType == 'livetv')) {
+    if (_showLiveTvButton) {
       actions.add(
         _BottomNavAction(
           icon: Icons.live_tv_rounded,
@@ -312,7 +316,7 @@ class _MobileBottomNavBarState extends State<MobileBottomNavBar> {
 
     final activeRoute = widget.activeRoute ?? '';
     if (_prefs.get(UserPreferences.showLibrariesInToolbar) &&
-        _libraries.isNotEmpty) {
+        _navLibraries.isNotEmpty) {
       actions.add(
         _BottomNavAction(
           iconBuilder: (size, color) => Image.asset(
@@ -510,7 +514,7 @@ class _MobileBottomNavBarState extends State<MobileBottomNavBar> {
                     shrinkWrap: true,
                     padding: const EdgeInsets.only(bottom: 8),
                     children: [
-                      for (final lib in _libraries)
+                      for (final lib in _navLibraries)
                         ListTile(
                           leading: Image.asset(
                             'assets/icons/clapperboard.png',
