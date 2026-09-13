@@ -35,6 +35,7 @@ typedef struct {
   int has_render_thread;
   atomic_int render_running;
   atomic_int frame_dirty;
+  int egl_backend_installed;
 } native_ctx;
 
 // libretro allows one session per process.
@@ -207,7 +208,10 @@ static void teardown(JNIEnv *env) {
     g_ctx.host = NULL;
   }
   pthread_mutex_lock(&g_window_lock);
-  egl_backend_shutdown();
+  if (g_ctx.egl_backend_installed) {
+    egl_backend_shutdown();
+    g_ctx.egl_backend_installed = 0;
+  }
   if (g_ctx.window) {
     ANativeWindow_release(g_ctx.window);
     g_ctx.window = NULL;
@@ -251,7 +255,7 @@ static void release_options(JNIEnv *env, int count, const char **keys,
 JNI(jdoubleArray, nativeLoad)(
     JNIEnv *env, jobject thiz, jstring core, jstring corePath, jstring romPath,
     jstring systemDir, jstring saveDir, jstring gameId, jobjectArray optKeys,
-    jobjectArray optVals) {
+    jobjectArray optVals, jboolean hardware_rendering_enabled) {
   (void)core;
   teardown(env);
 
@@ -279,13 +283,18 @@ JNI(jdoubleArray, nativeLoad)(
     LOGE("Could not allocate libretro host");
     return NULL;
   }
-  // The core negotiates hardware rendering during retro_load_game.
-  if (egl_backend_install(g_ctx.host) != 0) {
-    LOGE("EGL backend failed to register; hardware cores will be refused");
+  if (hardware_rendering_enabled) {
+    // The core negotiates hardware rendering during retro_load_game.
+    if (egl_backend_install(g_ctx.host) != 0) {
+      LOGE("EGL backend failed to register; hardware cores will be refused");
+    } else {
+      g_ctx.egl_backend_installed = 1;
+      pthread_mutex_lock(&g_window_lock);
+      egl_backend_set_window(g_ctx.window);
+      pthread_mutex_unlock(&g_window_lock);
+    }
   } else {
-    pthread_mutex_lock(&g_window_lock);
-    egl_backend_set_window(g_ctx.window);
-    pthread_mutex_unlock(&g_window_lock);
+    LOGI("Hardware rendering disabled for this session");
   }
   g_ctx.bridge = (*env)->NewGlobalRef(env, thiz);
   if (!g_ctx.bridge) {

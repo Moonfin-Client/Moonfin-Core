@@ -305,6 +305,52 @@ void main() {
     expect(playButton.focusNode?.hasFocus, isTrue);
   });
 
+  testWidgets(
+    'Android native games expose a clear persisted rendering switch',
+    (tester) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      tester.view.physicalSize = const Size(1600, 900);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      await _registerInstalledCores(['mupen64plus_next']);
+      when(() => gamesApi.getGame('library', 'game')).thenAnswer(
+        (_) async => _gameDetail(
+          system: 'Nintendo 64',
+          core: 'n64',
+          recommendedCore: 'n64',
+          availableCores: const ['n64'],
+        ),
+      );
+
+      await pumpDetailScreen(tester);
+
+      expect(find.text('Hardware rendering'), findsOneWidget);
+      expect(find.text('ON'), findsOneWidget);
+      final labelBounds = tester.getRect(find.text('Hardware rendering'));
+      final switchBounds = tester.getRect(find.byType(Switch));
+      expect(switchBounds.left - labelBounds.right, lessThanOrEqualTo(12));
+      expect(
+        find.text(
+          'EXPERIMENTAL · OFF disables the EGL hardware path. Hardware-only cores may not start.',
+        ),
+        findsOneWidget,
+      );
+
+      await tester.tap(find.text('ON'));
+      await tester.pump();
+
+      expect(find.text('OFF'), findsOneWidget);
+      expect(
+        GetIt.instance<UserPreferences>().get(
+          UserPreferences.useHardwareRendering,
+        ),
+        isFalse,
+      );
+      debugDefaultTargetPlatformOverride = null;
+    },
+  );
+
   testWidgets('Down from the app bar focuses the primary play action', (
     tester,
   ) async {

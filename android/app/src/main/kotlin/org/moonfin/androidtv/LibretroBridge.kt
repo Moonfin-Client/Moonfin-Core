@@ -226,6 +226,7 @@ class LibretroBridge(
 
     @Suppress("UNCHECKED_CAST")
     val options = (args["options"] as? Map<String, String>) ?: emptyMap()
+    val hardwareRenderingEnabled = args["hardwareRenderingEnabled"] as? Boolean ?: true
     val keys = options.keys.toTypedArray()
     val values = keys.map { options[it]!! }.toTypedArray()
 
@@ -247,7 +248,9 @@ class LibretroBridge(
       }
     })
 
-    val av = nativeLoad(core, corePath, romPath, systemDir, saveDir, gameId, keys, values)
+    val av = nativeLoad(
+      core, corePath, romPath, systemDir, saveDir, gameId, keys, values,
+      hardwareRenderingEnabled)
     if (av == null) {
       // Materialize the surface before release so older producers do not mask
       // the load failure with a null-surface crash.
@@ -718,7 +721,7 @@ class LibretroBridge(
   private external fun nativeLoad(
     core: String, corePath: String, romPath: String, systemDir: String,
     saveDir: String, gameId: String, optKeys: Array<String>,
-    optVals: Array<String>): DoubleArray?
+    optVals: Array<String>, hardwareRenderingEnabled: Boolean): DoubleArray?
 
   private external fun nativeSetSurface(surface: Surface?)
   private external fun nativeHwRenderSize(): IntArray?

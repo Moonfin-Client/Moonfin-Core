@@ -95,6 +95,7 @@ abstract class NativeGamePlayer {
     required String saveDir,
     required String gameId,
     Map<String, String>? options,
+    bool hardwareRenderingEnabled = true,
   });
 
   Future<void> start();
@@ -166,6 +167,7 @@ class MethodChannelGamePlayer implements NativeGamePlayer {
     required String saveDir,
     required String gameId,
     Map<String, String>? options,
+    bool hardwareRenderingEnabled = true,
   }) async {
     final result = await _control.invokeMethod<Map<dynamic, dynamic>>('load', {
       'core': core,
@@ -175,6 +177,7 @@ class MethodChannelGamePlayer implements NativeGamePlayer {
       'saveDir': saveDir,
       'gameId': gameId,
       if (options != null && options.isNotEmpty) 'options': options,
+      'hardwareRenderingEnabled': hardwareRenderingEnabled,
     });
     if (result == null) {
       throw PlatformException(code: GameLoadError.loadFailed.code);

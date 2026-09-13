@@ -196,6 +196,7 @@ class _FakeNativeGamePlayer implements NativeGamePlayer {
 
   /// The settings the screen resolved for this game and handed to the core.
   Map<String, String>? loadOptions;
+  bool? hardwareRenderingEnabled;
 
   @override
   Future<GameLoadInfo> load({
@@ -206,8 +207,10 @@ class _FakeNativeGamePlayer implements NativeGamePlayer {
     required String saveDir,
     required String gameId,
     Map<String, String>? options,
+    bool hardwareRenderingEnabled = true,
   }) async {
     loadOptions = options;
+    this.hardwareRenderingEnabled = hardwareRenderingEnabled;
     return const GameLoadInfo(
       textureId: 7,
       width: 256,
@@ -581,6 +584,7 @@ void main() {
                 gameId: 'game1',
                 core: 'snes',
                 startFresh: true,
+                hardwareRenderingEnabled: false,
                 player: player,
               ),
             ),
@@ -621,6 +625,7 @@ void main() {
         // (backed by the fake GamesApi/player above). Now fail the session
         // the way a core crash does.
         expect(find.byType(Texture), findsOneWidget);
+        expect(player.hardwareRenderingEnabled, isFalse);
 
         player.emitError('core crashed');
         await tester.pump();

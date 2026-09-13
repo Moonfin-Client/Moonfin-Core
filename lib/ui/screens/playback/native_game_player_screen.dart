@@ -138,6 +138,7 @@ class NativeGamePlayerScreen extends StatefulWidget {
     required this.core,
     this.gameName,
     this.startFresh = false,
+    this.hardwareRenderingEnabled = true,
     @visibleForTesting this.player,
   });
 
@@ -146,6 +147,9 @@ class NativeGamePlayerScreen extends StatefulWidget {
   final String core;
   final String? gameName;
   final bool startFresh;
+
+  /// Whether Android should register its experimental EGL backend.
+  final bool hardwareRenderingEnabled;
 
   /// Test-only seam: a fake [NativeGamePlayer] widget tests can drive
   /// through load/event lifecycles without a native runner. Always null in
@@ -983,6 +987,7 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
         saveDir: saveDir.path,
         gameId: widget.gameId,
         options: settingsJson,
+        hardwareRenderingEnabled: widget.hardwareRenderingEnabled,
       );
       if (!mounted) {
         await _player.stop();

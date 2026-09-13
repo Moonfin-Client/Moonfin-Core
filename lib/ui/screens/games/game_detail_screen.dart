@@ -14,6 +14,7 @@ import 'package:server_core/server_core.dart';
 import '../../navigation/destinations.dart';
 import '../../navigation/route_lifecycle_observer.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../preference/user_preferences.dart';
 import '../../widgets/adaptive/adaptive_glass.dart';
 import '../../widgets/bounded_network_image.dart';
 import '../../widgets/focus/focus_theme.dart';
@@ -74,6 +75,7 @@ class _GameDetailScreenState extends State<GameDetailScreen> with RouteAware {
   String? _error;
   GameDetail? _game;
   bool _hasSave = false;
+  bool _hardwareRenderingEnabled = true;
   List<GameSummary> _related = const [];
   String? _artworkScope;
   RetroArtworkActivityGate? _retroArtworkActivityGate;
@@ -92,6 +94,11 @@ class _GameDetailScreenState extends State<GameDetailScreen> with RouteAware {
   @override
   void initState() {
     super.initState();
+    if (GetIt.instance.isRegistered<UserPreferences>()) {
+      _hardwareRenderingEnabled = GetIt.instance<UserPreferences>().get(
+        UserPreferences.useHardwareRendering,
+      );
+    }
     _load();
   }
 
@@ -343,8 +350,27 @@ class _GameDetailScreenState extends State<GameDetailScreen> with RouteAware {
         name: game.title,
         startFresh: fresh,
         forceEmulatorJs: _usesEmulatorJsOverride(game),
+        hardwareRenderingEnabled: _hardwareRenderingEnabled,
       ),
     );
+  }
+
+  Future<void> _toggleHardwareRendering() async {
+    if (!GetIt.instance.isRegistered<UserPreferences>()) return;
+    final next = !_hardwareRenderingEnabled;
+    setState(() => _hardwareRenderingEnabled = next);
+    try {
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.useHardwareRendering,
+        next,
+      );
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _hardwareRenderingEnabled = !next);
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Could not save hardware rendering setting.'),
+      ));
+    }
   }
 
   Future<void> _selectCore() async {
@@ -466,6 +492,8 @@ class _GameDetailScreenState extends State<GameDetailScreen> with RouteAware {
                 onPlay: () => _play(fresh: false),
                 onRestart: () => _play(fresh: true),
                 onSelectCore: _selectCore,
+                hardwareRenderingEnabled: _hardwareRenderingEnabled,
+                onToggleHardwareRendering: _toggleHardwareRendering,
                 onOpenGame: _openGame,
               )
             : _PortraitBody(
@@ -486,6 +514,8 @@ class _GameDetailScreenState extends State<GameDetailScreen> with RouteAware {
                 onPlay: () => _play(fresh: false),
                 onRestart: () => _play(fresh: true),
                 onSelectCore: _selectCore,
+                hardwareRenderingEnabled: _hardwareRenderingEnabled,
+                onToggleHardwareRendering: _toggleHardwareRendering,
                 onOpenGame: _openGame,
               );
       },
@@ -506,6 +536,8 @@ class _PortraitBody extends StatelessWidget {
     required this.onPlay,
     required this.onRestart,
     required this.onSelectCore,
+    required this.hardwareRenderingEnabled,
+    required this.onToggleHardwareRendering,
     required this.onOpenGame,
   });
 
@@ -520,6 +552,8 @@ class _PortraitBody extends StatelessWidget {
   final VoidCallback onPlay;
   final VoidCallback onRestart;
   final VoidCallback onSelectCore;
+  final bool hardwareRenderingEnabled;
+  final VoidCallback onToggleHardwareRendering;
   final ValueChanged<GameSummary> onOpenGame;
 
   @override
@@ -584,6 +618,14 @@ class _PortraitBody extends StatelessWidget {
               onSelectCore: onSelectCore,
             ),
           ),
+          if (PlatformDetection.isAndroid && _usesNativeBackend(game))
+            Padding(
+              padding: const EdgeInsets.fromLTRB(18, 12, 18, 0),
+              child: _HardwareRenderingToggle(
+                enabled: hardwareRenderingEnabled,
+                onToggle: onToggleHardwareRendering,
+              ),
+            ),
           if (game.overview != null && game.overview!.isNotEmpty)
             Padding(
               padding: const EdgeInsets.fromLTRB(18, 18, 18, 0),
@@ -632,6 +674,8 @@ class _LandscapeBody extends StatelessWidget {
     required this.onPlay,
     required this.onRestart,
     required this.onSelectCore,
+    required this.hardwareRenderingEnabled,
+    required this.onToggleHardwareRendering,
     required this.onOpenGame,
   });
 
@@ -647,6 +691,8 @@ class _LandscapeBody extends StatelessWidget {
   final VoidCallback onPlay;
   final VoidCallback onRestart;
   final VoidCallback onSelectCore;
+  final bool hardwareRenderingEnabled;
+  final VoidCallback onToggleHardwareRendering;
   final ValueChanged<GameSummary> onOpenGame;
 
   @override
@@ -700,7 +746,17 @@ class _LandscapeBody extends StatelessWidget {
                               onRestart: onRestart,
                               onSelectCore: onSelectCore,
                             ),
-                            if (game.overview != null && game.overview!.isNotEmpty) ...[
+                            if (PlatformDetection.isAndroid &&
+                                _usesNativeBackend(game))
+                              Padding(
+                                padding: const EdgeInsets.only(top: 12),
+                                child: _HardwareRenderingToggle(
+                                  enabled: hardwareRenderingEnabled,
+                                  onToggle: onToggleHardwareRendering,
+                                ),
+                              ),
+                            if (game.overview != null &&
+                                game.overview!.isNotEmpty) ...[
                               const SizedBox(height: 22),
                               _OverviewBlock(text: game.overview!),
                             ],
@@ -1296,6 +1352,77 @@ class _ActionRow extends StatelessWidget {
         if (hasSave) ...[const SizedBox(width: 10), restart],
         if (_canSelectCore(game)) ...[const SizedBox(width: 10), core],
       ],
+    );
+  }
+}
+
+class _HardwareRenderingToggle extends StatelessWidget {
+  const _HardwareRenderingToggle({
+    required this.enabled,
+    required this.onToggle,
+  });
+
+  final bool enabled;
+  final VoidCallback onToggle;
+
+  @override
+  Widget build(BuildContext context) {
+    final status = enabled ? 'ON' : 'OFF';
+    final statusColor = enabled
+        ? const Color(0xFFA9F0CC)
+        : const Color(0xFFFFC47A);
+    return FocusableButton(
+      semanticLabel: 'Experimental hardware rendering: $status',
+      autoScroll: true,
+      onPressed: onToggle,
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.memory_rounded, color: statusColor, size: 20),
+              const SizedBox(width: 9),
+              const Text(
+                'Hardware rendering',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(width: 10),
+              ExcludeSemantics(
+                child: IgnorePointer(
+                  child: Switch(
+                    value: enabled,
+                    onChanged: (_) {},
+                    activeThumbColor: const Color(0xFFA9F0CC),
+                    activeTrackColor: const Color(0x667FE0B0),
+                    inactiveThumbColor: const Color(0xFFFFC47A),
+                    inactiveTrackColor: const Color(0x66FF9F43),
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 6),
+              Text(
+                status,
+                style: TextStyle(
+                  color: statusColor,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          const Text(
+            'EXPERIMENTAL · OFF disables the EGL hardware path. Hardware-only cores may not start.',
+            style: TextStyle(color: Colors.white70, fontSize: 12, height: 1.25),
+          ),
+        ],
+      ),
     );
   }
 }
