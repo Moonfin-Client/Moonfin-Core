@@ -883,6 +883,10 @@ class Media3VideoView(
     private var pictureSamplingUnavailable = false
     private var pictureSampleInFlight = false
     private var lastPictureSampleMs = 0L
+    private var firstBlackSampleAtMs = 0L
+    // Not cleared with the source: a surface that has shown one picture can
+    // be read, and that holds for every channel after it.
+    private var pictureSamplingProven = false
     private val pictureSampleBitmap: Bitmap by lazy {
         Bitmap.createBitmap(PICTURE_SAMPLE_W, PICTURE_SAMPLE_H, Bitmap.Config.ARGB_8888)
     }
@@ -895,17 +899,24 @@ class Media3VideoView(
         pictureBlack = null
         pictureSamplingUnavailable = false
         lastPictureSampleMs = 0L
+        firstBlackSampleAtMs = 0L
     }
 
     /** True while the picture is black, null before a frame or where the pixels cannot be read. */
     private fun pictureBlackWire(): Boolean? = when {
         !firstFrameRendered || pictureSamplingUnavailable -> null
-        else -> pictureBlack ?: true
+        else -> pictureBlack
     }
 
     private fun samplePicture() {
         if (!firstFrameRendered || !currentIsLive || isDisposed || pictureSamplingUnavailable) return
         val now = SystemClock.elapsedRealtime()
+        // Settled here rather than in the callback below, so a request that
+        // never answers can't hold the reading at black for good.
+        if (pictureSamplingCannotSeeSurface(pictureSamplingProven, firstBlackSampleAtMs, now)) {
+            pictureSamplingUnavailable = true
+            return
+        }
         val interval =
             if (pictureBlack == false) PICTURE_SAMPLE_SHOWN_INTERVAL_MS else PICTURE_SAMPLE_INTERVAL_MS
         if (pictureSampleInFlight || now - lastPictureSampleMs < interval) return
@@ -934,7 +945,16 @@ class Media3VideoView(
                     val m = maxOf(Color.red(p), Color.green(p), Color.blue(p))
                     if (m > brightest) brightest = m
                 }
-                pictureBlack = brightest < PICTURE_BLACK_LEVEL
+                val black = brightest < PICTURE_BLACK_LEVEL
+                pictureBlack = black
+                if (black) {
+                    if (firstBlackSampleAtMs == 0L) {
+                        firstBlackSampleAtMs = now
+                    }
+                } else {
+                    pictureSamplingProven = true
+                    firstBlackSampleAtMs = 0L
+                }
             }, mainHandler)
         } catch (e: Exception) {
             pictureSampleInFlight = false
