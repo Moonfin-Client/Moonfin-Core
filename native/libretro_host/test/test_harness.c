@@ -2144,7 +2144,14 @@ int main(int argc, char **argv) {
     lh_destroy(sw);
   }
 
-  // Verify that the optional thread-waits callback out-parameter is written.
+  // bug-175. mupen64plus-next asks for this in retro_set_environment, stores
+  // it in a variable initialised to NULL, and - whenever its threaded renderer
+  // is enabled - calls it with no null check from retro_unload_game,
+  // retro_serialize and retro_unserialize. This host used to fall through to
+  // the default false and never touch the out-param, so the core jumped to
+  // address 0 a few seconds into a save-state load on the Shield. The contract
+  // is that the pointer is written and callable, not merely that we say no
+  // politely.
   {
     printf("GET_CLEAR_ALL_THREAD_WAITS_CB:\n");
     lh_host *tw = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
@@ -2173,7 +2180,10 @@ int main(int argc, char **argv) {
     lh_destroy(tw);
   }
 
-  // Unserved environment commands are recorded once per distinct command.
+  // The other half of bug-175: an unserved command must be visible, not
+  // silent. The diagnostic itself lands on stderr or in logcat, neither of
+  // which this harness reads, so what is asserted here is the record behind
+  // it - one entry per distinct command, however many times it is asked.
   {
     printf("unhandled environment commands are recorded once each:\n");
     lh_host *ue = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
@@ -2191,8 +2201,10 @@ int main(int argc, char **argv) {
     lh_destroy(ue);
   }
 
-  // A published transition remains until read, so a transient press survives
-  // frontend frames and is delivered exactly once.
+  // bug-177, the delivery contract. A published transition remains blocked
+  // until the core reads it, so a transient press survives frontend frames,
+  // is delivered exactly once, and cannot wedge a button if the core never
+  // reads that id. Test hooks keep the frame boundaries deterministic.
   {
     printf("a transient press is delivered exactly once:\n");
     lh_host *ed = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
@@ -2219,8 +2231,21 @@ int main(int argc, char **argv) {
     lh_destroy(ed);
   }
 
-  // A core may read input without calling input_poll. Assert on the value
-  // observed through input_state_cb, not the host's published frame.
+  // bug-177, the actual fault. libretro REQUIRES a core to poll ("During
+  // retro_run(), the retro_input_poll_t callback must be called at least
+  // once", libretro.h), but mupen64plus-next does not always honour it: with
+  // its threaded renderer enabled nothing called poll_cb at all. latch_input
+  // is the only writer of input_frame, so such a core received NO input
+  // whatsoever. Device evidence is the poll heartbeat in
+  // input_poll_cb staying silent for an entire session while presses were
+  // provably reaching lh_set_input - and that heartbeat alone; the edge trace
+  // captured at the same time was itself broken and proves nothing.
+  //
+  // The assertion is on what the CORE observed, not on the host's own frame:
+  // the stub reads RETRO_DEVICE_ID_JOYPAD_MASK through input_state_cb and
+  // paints it into the green channel, so a green byte carrying the bit is
+  // proof the core saw it. Peeking input_frame instead would pass even if
+  // input_state_cb had returned zero every time.
   {
     printf("input reaches a core that never calls input_poll:\n");
     lh_host *np = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
@@ -2381,7 +2406,12 @@ int main(int argc, char **argv) {
     lh_destroy(hb);
   }
 
-  // Detect input reads that occur on a different thread from input polling.
+  // bug-177. latch_input publishes the polled frame into plain, non-atomic
+  // arrays and documents that polling and reading share the emulation thread.
+  // mupen64plus-next with ThreadedRenderer breaks that, and the symptom is
+  // that a synthesised two-frame Start pulse vanishes while held buttons are
+  // fine. The host cannot stop a core doing this, so it detects and reports
+  // it instead of leaving the hazard silent.
   {
     printf("cross-thread input reads are detected:\n");
     lh_host *nt = lh_create(LH_FORMAT_RGBA8888, make_callbacks());

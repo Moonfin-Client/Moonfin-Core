@@ -252,8 +252,9 @@ class LibretroBridge(
       core, corePath, romPath, systemDir, saveDir, gameId, keys, values,
       hardwareRenderingEnabled)
     if (av == null) {
-      // Materialize the surface before release so older producers do not mask
-      // the load failure with a null-surface crash.
+      // SurfaceTextureSurfaceProducer.release() unconditionally calls
+      // surface.release() with no null check, masking the real
+      // "load_failed" cause result with a crash. This "touches" it to avoid that.
       producer.surface
       producer.release()
       surfaceProducer = null
@@ -289,7 +290,6 @@ class LibretroBridge(
       ))
   }
 
-  // Stop audio before destroying the native host.
   /// Return a uniformly scaled hardware surface size, capped to the display.
   private fun hardwarePresentSize(): Pair<Int, Int>? {
     val hw = nativeHwRenderSize() ?: return null
@@ -329,6 +329,15 @@ class LibretroBridge(
     if (!userPaused) nativeResume()
   }
 
+  // Reachable from three places: the "stop" method call, load() (which calls
+  // it before nativeLoad() to tear down any prior session), and MainActivity's
+  // onDestroy() (a running session must not be abandoned if the activity is
+  // destroyed while the process survives - see the comment there). All three
+  // routes destroy the native host, so stopAudio() must stay ahead of
+  // nativeStop(): it is what guarantees no thread is inside nativeReadAudio
+  // when the host, its ring buffer, and its audio mutex are freed. Safe to
+  // call repeatedly - isActive/audioTrack/audioThread/surfaceProducer are all
+  // null-guarded, and nativeStop()'s teardown() no-ops once g_ctx.host is NULL.
   fun stop() {
     val hadActiveSession = isActive
     isActive = false

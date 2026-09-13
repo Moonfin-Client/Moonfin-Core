@@ -921,8 +921,7 @@ class MainActivity : AudioServiceActivity(), GamepadsCompatibleActivity {
         // physically held as the app goes away, so they cannot fire on resume.
         // onHostPause pauses the core and drops the surface while the consumer
         // is still alive, rather than after it has gone away - see
-        // LibretroBridge.onHostPause. A rebase briefly left these as two
-        // separate onPause overrides, which does not compile.
+        // LibretroBridge.onHostPause.
         nativePad?.releaseHeldInput()
         libretroBridge?.onHostPause()
         super.onPause()

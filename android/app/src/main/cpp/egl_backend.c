@@ -322,6 +322,8 @@ static void egl_release_current(void *user) {
   }
 }
 
+static void egl_context_destroy(void *user);
+
 static int egl_context_create(void *user, const lh_hw_request *req) {
   egl_state *s = (egl_state *)user;
   if (s->created) return 0;
@@ -341,6 +343,7 @@ static int egl_context_create(void *user, const lh_hw_request *req) {
   s->config = choose_config(s->display, s->gles_major, &ok);
   if (!ok) {
     LOGE("no EGL config for GLES%d", s->gles_major);
+    egl_context_destroy(s);
     return -1;
   }
   const EGLint ctx_attrs[] = {EGL_CONTEXT_CLIENT_VERSION, s->gles_major,
@@ -349,6 +352,7 @@ static int egl_context_create(void *user, const lh_hw_request *req) {
       eglCreateContext(s->display, s->config, EGL_NO_CONTEXT, ctx_attrs);
   if (s->context == EGL_NO_CONTEXT) {
     LOGE("eglCreateContext(GLES%d) failed: 0x%x", s->gles_major, eglGetError());
+    egl_context_destroy(s);
     return -1;
   }
 
@@ -363,14 +367,23 @@ static int egl_context_create(void *user, const lh_hw_request *req) {
   pthread_mutex_unlock(&s->window_lock);
   rebuild_surface(s);
 
-  if (egl_make_current(s) != 0) return -1;
+  if (egl_make_current(s) != 0) {
+    egl_context_destroy(s);
+    return -1;
+  }
 
   // Audio pacing owns the emulation clock; avoid adding a vsync clock here.
   // Device presentation still needs visual verification.
   eglSwapInterval(s->display, 0);
 
-  if (create_fbo(s, req) != 0) return -1;
-  if (build_present_program(s) != 0) return -1;
+  if (create_fbo(s, req) != 0) {
+    egl_context_destroy(s);
+    return -1;
+  }
+  if (build_present_program(s) != 0) {
+    egl_context_destroy(s);
+    return -1;
+  }
 
   const char *ver = (const char *)glGetString(GL_VERSION);
   const char *rend = (const char *)glGetString(GL_RENDERER);
@@ -379,9 +392,9 @@ static int egl_context_create(void *user, const lh_hw_request *req) {
   return 0;
 }
 
+// Releases whatever was built, so a half-finished create can share it.
 static void egl_context_destroy(void *user) {
   egl_state *s = (egl_state *)user;
-  if (!s->created) return;
   if (s->display != EGL_NO_DISPLAY && s->context != EGL_NO_CONTEXT) {
     eglMakeCurrent(s->display, active_surface(s), active_surface(s),
                    s->context);
@@ -560,6 +573,7 @@ static int egl_present(void *user, int width, int height, int rotation) {
       eglDestroySurface(s->display, s->surface);
       s->surface = EGL_NO_SURFACE;
     }
+    glBindFramebuffer(GL_FRAMEBUFFER, s->fbo);
     return -1;
   }
 

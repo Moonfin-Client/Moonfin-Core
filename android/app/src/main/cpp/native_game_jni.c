@@ -1,4 +1,7 @@
-// JNI bridge between LibretroBridge and the shared libretro host.
+// JNI bridge between the Kotlin LibretroBridge and the shared libretro host.
+// The host owns the run loop. This wires its callbacks to an ANativeWindow for
+// video, an atomic mask for input, and a Kotlin callback for geometry. Audio is
+// pulled by a Kotlin AudioTrack through nativeReadAudio.
 
 #include <android/log.h>
 #include <android/native_window.h>
@@ -38,13 +41,20 @@ typedef struct {
   int egl_backend_installed;
 } native_ctx;
 
-// libretro allows one session per process.
+// libretro allows one session per process, so the context is a single global.
 static native_ctx g_ctx;
 
-// Protects the window while the render thread blits into it.
+// Guards the window against swaps: Flutter recreates the Surface around
+// backgrounding, so the render thread must never blit into a window that
+// nativeSetSurface is releasing. Held across the whole blit, which makes
+// nativeSetSurface(NULL) a barrier: once it returns, no blit touches the old
+// window.
 static pthread_mutex_t g_window_lock = PTHREAD_MUTEX_INITIALIZER;
 
-// Detach threads attached by get_thread_env when they exit.
+// Detaches the calling native thread from the JVM when that thread exits.
+// Registered as the destructor for g_thread_env_key below, so a thread that
+// attached via get_thread_env never has to detach explicitly, since pthread
+// runs this automatically as part of thread teardown.
 static void detach_on_thread_exit(void *value) {
   (void)value;
   if (g_ctx.vm) (*g_ctx.vm)->DetachCurrentThread(g_ctx.vm);
@@ -57,7 +67,14 @@ static void make_thread_env_key(void) {
   pthread_key_create(&g_thread_env_key, detach_on_thread_exit);
 }
 
-// Return a JNIEnv for this thread, attaching it once when necessary.
+// Returns a JNIEnv* for the calling thread, attaching as a daemon thread at
+// most once per native thread rather than once per call. Cores can call
+// SET_GEOMETRY every frame and the render thread posts a frame at the same
+// rate, so attaching and detaching a java.lang.Thread on every one of those
+// (up to 60x/second) is wasted work the JVM has to do and undo. The thread
+// stays attached until it exits, at which point detach_on_thread_exit runs
+// via the pthread key destructor. [name] labels the java.lang.Thread the
+// attach creates, NULL takes the JVM's default.
 static JNIEnv *get_thread_env(const char *name) {
   if (!g_ctx.vm) return NULL;
   JNIEnv *env = NULL;
@@ -74,11 +91,15 @@ static JNIEnv *get_thread_env(const char *name) {
   if ((*g_ctx.vm)->AttachCurrentThreadAsDaemon(g_ctx.vm, &env, &args) != JNI_OK) {
     return NULL;
   }
+  // Any non-NULL value marks this thread as attached for the key's
+  // destructor. The value itself is never read back.
   pthread_setspecific(g_thread_env_key, (void *)1);
   return env;
 }
 
-// Copy the latest software frame to the output surface.
+// Copies the host's latest frame into the output surface. ANativeWindow_lock
+// blocks while the compositor holds the buffers, so this runs on its own thread
+// rather than the emulation thread, which stays paced by audio.
 static void blit_frame(native_ctx *c) {
   pthread_mutex_lock(&g_window_lock);
   ANativeWindow *window = c->window;
@@ -94,7 +115,8 @@ static void blit_frame(native_ctx *c) {
     return;
   }
 
-  // Avoid renegotiating the buffer queue when the size is unchanged.
+  // Renegotiating the buffer queue every frame stalls rendering, so only set
+  // the geometry when the frame size changes.
   if (width != c->window_width || height != c->window_height) {
     ANativeWindow_setBuffersGeometry(window, width, height,
                                      WINDOW_FORMAT_RGBA_8888);
@@ -121,6 +143,13 @@ static void blit_frame(native_ctx *c) {
 
 static void *render_loop(void *arg) {
   native_ctx *c = (native_ctx *)arg;
+  // Attached for the life of the loop even though nothing here calls into
+  // Java. The Surface comes from Flutter's texture registry, whose consumer
+  // lives in this process and delivers its frame-available callback through
+  // JNI on the thread that queued the buffer. When that thread isn't
+  // attached, the glue attaches and detaches a fresh java.lang.Thread around
+  // every post, once per frame for the whole session. Staying attached lets
+  // it find this thread instead.
   if (!get_thread_env("moonfin.retro")) {
     LOGE("Could not attach the render thread to the JVM");
   }
@@ -134,7 +163,7 @@ static void *render_loop(void *arg) {
   return NULL;
 }
 
-// Notify the render thread that a frame is ready.
+// Signals the render thread from the emulation thread without blocking it.
 static void frame_ready(void *user) {
   native_ctx *c = (native_ctx *)user;
   atomic_store(&c->frame_dirty, 1);
@@ -236,7 +265,12 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
   return JNI_VERSION_1_6;
 }
 
-// Release option-array resources after a partial nativeLoad attempt.
+// Releases everything nativeLoad may have partially collected for the option
+// arrays and clears any pending exception, so every early-return path below
+// can share one cleanup instead of duplicating it. Safe to call with any
+// prefix of the arrays populated: unfilled slots are NULL/zero because keys/
+// vals/key_refs/val_refs are all calloc'd, and ReleaseStringUTFChars/
+// DeleteLocalRef on a NULL jstring/pointer is a no-op per the JNI spec.
 static void release_options(JNIEnv *env, int count, const char **keys,
                             const char **vals, jstring *key_refs,
                             jstring *val_refs) {
@@ -259,7 +293,13 @@ JNI(jdoubleArray, nativeLoad)(
   (void)core;
   teardown(env);
 
-  // Both arrays must have the same length before indexing them together.
+  // optVals is indexed below with the same loop bound derived from optKeys.
+  // A caller passing arrays of different lengths would make
+  // GetObjectArrayElement throw ArrayIndexOutOfBoundsException partway
+  // through that loop and return NULL; the old code went on to call
+  // GetStringUTFChars on that NULL jstring anyway, which is illegal with an
+  // exception already pending. Reject the mismatch up front so the loop
+  // below never has to discover it mid-iteration.
   jsize opt_count = optKeys ? (*env)->GetArrayLength(env, optKeys) : 0;
   jsize val_count = optVals ? (*env)->GetArrayLength(env, optVals) : 0;
   if (opt_count != val_count) {
@@ -298,7 +338,9 @@ JNI(jdoubleArray, nativeLoad)(
   }
   g_ctx.bridge = (*env)->NewGlobalRef(env, thiz);
   if (!g_ctx.bridge) {
-    // Callbacks require a valid global reference.
+    // NewGlobalRef returns NULL (and throws OutOfMemoryError) rather than
+    // failing loudly; every callback below dereferences g_ctx.bridge, so
+    // bail out before any further JNI call runs with that exception pending.
     LOGE("nativeLoad: NewGlobalRef(thiz) failed");
     (*env)->ExceptionClear(env);
     teardown(env);
@@ -307,6 +349,8 @@ JNI(jdoubleArray, nativeLoad)(
   jclass cls = (*env)->GetObjectClass(env, thiz);
   g_ctx.on_geometry = (*env)->GetMethodID(env, cls, "onGeometry", "(IID)V");
   if ((*env)->ExceptionCheck(env)) {
+    // GetMethodID throws NoSuchMethodError on failure; clear it before the
+    // next JNI call rather than letting it ride into GetStringUTFChars below.
     (*env)->ExceptionClear(env);
     LOGE("nativeLoad: GetMethodID(onGeometry) failed");
     (*env)->DeleteLocalRef(env, cls);
@@ -333,7 +377,12 @@ JNI(jdoubleArray, nativeLoad)(
   const char *c_sys = (*env)->GetStringUTFChars(env, systemDir, NULL);
   const char *c_save = (*env)->GetStringUTFChars(env, saveDir, NULL);
   const char *c_id = (*env)->GetStringUTFChars(env, gameId, NULL);
-  // Do not continue while a path conversion has a pending JNI exception.
+  // GetStringUTFChars returns NULL and throws OutOfMemoryError if the JVM
+  // can't allocate the UTF-8 copy. Walking into lh_load with a NULL path
+  // would segfault inside strlen/lh_strdup, and making any further JNI call
+  // (including the option-array loop below) with the exception still
+  // pending is illegal per the JNI spec, so check and clear it here, before
+  // anything else touches env.
   if ((*env)->ExceptionCheck(env)) {
     (*env)->ExceptionClear(env);
     LOGE("nativeLoad: GetStringUTFChars failed for one of the load paths");
@@ -361,7 +410,15 @@ JNI(jdoubleArray, nativeLoad)(
     teardown(env);
     return NULL;
   }
-  // Check each JNI conversion before making the next JNI call.
+  // Each JNI call below is checked individually, not batched at the end of
+  // the iteration: GetObjectArrayElement/GetStringUTFChars can each throw
+  // (GetObjectArrayElement can throw ArrayIndexOutOfBoundsException,
+  // GetStringUTFChars can throw OutOfMemoryError), and making the *next* JNI
+  // call while an earlier one left an exception pending is itself illegal
+  // per the JNI spec - so the check has to happen before that next call, not
+  // after the whole group. A legitimately-null string element (no exception,
+  // just a null array entry) is also rejected here, since passing NULL to
+  // GetStringUTFChars is undefined behavior rather than a documented no-op.
   int opts_ok = 1;
   for (int i = 0; i < opt_count && opts_ok; i++) {
     key_refs[i] = (jstring)(*env)->GetObjectArrayElement(env, optKeys, i);
@@ -464,12 +521,13 @@ JNI(void, nativeSetSurface)(JNIEnv *env, jobject thiz, jobject surface) {
   pthread_mutex_unlock(&g_window_lock);
 }
 
-// Start the render and emulation threads.
+// 0 on success, -1 when the render thread could not be created.
+// Reported rather than ignored
 JNI(jint, nativeStart)(JNIEnv *env, jobject thiz) {
   (void)env;
   (void)thiz;
   if (!g_ctx.host) return -1;
-  if (g_ctx.has_render_thread) return 0;
+  if (g_ctx.has_render_thread) return 0;  // already started; see lh_start's guard
   lh_set_audio_paced(g_ctx.host, 1);
   atomic_store(&g_ctx.frame_dirty, 0);
   atomic_store(&g_ctx.render_running, 1);
@@ -538,7 +596,10 @@ JNI(void, nativeSetPadState)(JNIEnv *env, jobject thiz, jint port, jint mask,
                    (uint16_t)l2, (uint16_t)r2);
 }
 
-// Return ports whose sticks are currently passed through as analog input.
+// Bitmask of ports whose stick is passed through as analog instead of being
+// converted to d-pad bits. This is the AND of the game's analog-stick
+// descriptors and the core actually reading a stick - see
+// lh_analog_stick_ports's doc comment for why both are required.
 JNI(jint, nativeAnalogStickPorts)(JNIEnv *env, jobject thiz) {
   (void)env;
   (void)thiz;
@@ -549,8 +610,22 @@ JNI(jint, nativeAnalogStickPorts)(JNIEnv *env, jobject thiz) {
 JNI(jint, nativeReadAudio)(JNIEnv *env, jobject thiz, jshortArray buffer,
                            jint frames) {
   (void)thiz;
+  // The g_ctx.host read here is NOT synchronized against teardown's
+  // lh_destroy, so it cannot by itself make a concurrent teardown safe. What
+  // makes it safe is the caller: LibretroBridge.stopAudio() stops the
+  // AudioTrack (unblocking any in-flight write), then joins the audio thread
+  // unbounded, and only then does stop() call nativeStop(). Keep that
+  // ordering - a bounded join would put this function back in a race with
+  // lh_destroy over a freed ring buffer and a destroyed mutex.
   if (!g_ctx.host || !buffer) return 0;
-  // Audio is stereo, so the Java buffer holds two samples per frame.
+  // lh_read_audio always writes frame_count*2 shorts to dst, including its
+  // silence fill for any shortfall (see libretro_host.h) - it has no way to
+  // know how big the caller's buffer actually is. The current Kotlin caller
+  // (LibretroBridge.kt) always sizes buffer correctly and passes a matching
+  // frames, so this is defense in depth against a future or buggy caller
+  // rather than a fix for an observed bug: clamp frames to what buffer can
+  // actually hold (2 shorts per frame, interleaved stereo) so a mismatched
+  // call can't write past the end of a JNI-pinned array.
   jsize buffer_len = (*env)->GetArrayLength(env, buffer);
   jint max_frames = (jint)(buffer_len / 2);
   if (frames > max_frames) frames = max_frames;

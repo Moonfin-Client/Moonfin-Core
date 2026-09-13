@@ -295,7 +295,10 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
   @override
   void initState() {
     super.initState();
-    // Pause the native session when the system Home button is used.
+    // Without this the emulation thread keeps running after the system Home
+    // button. The native side has a pause hook on SurfaceProducer.Callback,
+    // but setCallback is a documented no-op for SurfaceTextureSurfaceProducer
+    // (see buglog), so that hook never fires and nothing else was listening.
     WidgetsBinding.instance.addObserver(this);
     _player = widget.player ?? NativeGamePlayer.create();
     _acquireGameplayArtworkBlock();

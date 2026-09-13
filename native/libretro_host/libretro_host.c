@@ -439,8 +439,21 @@ struct lh_host {
   lh_mutex jobs_lock;
   lh_cond jobs_cond;
 
-  // Input latch. Writers record transitions; latch_input publishes them once
-  // per frontend frame. The published word is safe for threaded core reads.
+  // Input latch. Writers (any thread, any platform) call lh_set_input, which
+  // records rising and falling transitions and replaces input_level. Once per
+  // frontend frame, latch_input exposes at most one transition per button to
+  // input_frame - the value the core reads for the rest of that frame via
+  // input_state_cb. See lh_set_input's comment for why this, rather than a
+  // plain instantaneous read, is required.
+  // input_frame WAS a plain array, on the documented assumption that polling
+  // and reading both happen on the emulation thread. bug-177 measured that
+  // assumption false: mupen64plus-next with its threaded renderer reads input
+  // from a thread the host never latched on, and the detector below fired on
+  // the first game load. Pending transitions make a short pulse survive until
+  // a frame latch drains it; the atomic published word then makes that frame
+  // safe for a core reading on another thread. The hot steady-state read is a
+  // single acquire load; no lock or atomic write is needed unless a transition
+  // is actually being acknowledged.
   atomic_uint input_level[LH_MAX_PORTS];
   // Queued transitions: low 16 bits pending DOWNs, high 16 pending UPs, in one
   // word so the latch drains both in a single exchange. As two words it could
@@ -463,7 +476,12 @@ struct lh_host {
   // immediately after polling - which is every single-threaded core -
   // acknowledges within the same frame and sees no behaviour change at all.
   unsigned char unacked_age[LH_MAX_PORTS][16];  // latch thread only
-  // Diagnostics for cores that poll and read input on different threads.
+  // The thread input_poll_cb last latched on, and how many times a core has
+  // read input from a DIFFERENT one. Kept after the frames were made atomic:
+  // the publication is now safe, so this is no longer a defect report, but a
+  // core reading input off the polling thread is still worth knowing about -
+  // it is the condition under which any future non-atomic addition to the
+  // frame state would silently rot, and it is how bug-177 was proven.
   atomic_ullong input_poll_thread;
   atomic_int input_poll_thread_known;
   atomic_int input_thread_mismatch;
@@ -1876,7 +1894,11 @@ static void RETRO_CALLCONV video_refresh_cb(const void *data, unsigned width,
                                             unsigned height, size_t pitch) {
   struct lh_host *h = g_session;
   if (!h || width == 0 || height == 0) return;
-  // Validate dimensions before conversion or allocation.
+  // Reject an out-of-bounds frame here, before it ever reaches convert_frame's
+  // allocation math. width/height come straight from the core on every frame
+  // (unlike notify_geometry's SET_SYSTEM_AV_INFO/SET_GEOMETRY, this path has
+  // no separate announcement step to reject first), so the same
+  // LH_MAX_FRAME_DIMENSION bound has to be enforced here too.
   if (width > LH_MAX_FRAME_DIMENSION || height > LH_MAX_FRAME_DIMENSION) {
     diagnostic_log("Rejected frame %ux%u (out of bounds)", width, height);
     return;
@@ -1893,6 +1915,10 @@ static void RETRO_CALLCONV video_refresh_cb(const void *data, unsigned width,
     return;
   }
   mutex_lock(&h->video_lock);
+  // pitch stays a size_t end to end (see convert_frame): truncating it to int
+  // here would let a core report a huge real pitch that wraps to something
+  // small and passes convert_frame's `pitch < width*bpp` rejection check by
+  // accident, defeating FIX 3 instead of enforcing it.
   int converted = convert_frame(h, data, (int)width, (int)height, pitch);
   if (converted) h->back_ready = 1;
   mutex_unlock(&h->video_lock);
@@ -2915,7 +2941,16 @@ int lh_load(lh_host *h, const char *core_path, const char *rom_path,
   reset_analog_queries(h);
   reset_analog_state(h);
 
-  // game_id becomes the SRAM filename; reject path separators and traversal.
+  // FIX 5: game_id names the SRAM file below and ultimately originates from a
+  // route parameter seeded by server data (app_router.dart ->
+  // LibretroBridge.kt -> nativeLoad here), which is not a trusted boundary. A
+  // hostile or compromised server could hand this an id containing "../" to
+  // make sram_path point outside save_dir - an arbitrary file write/overwrite
+  // once combined with the core's own read/write of that path. Reject it
+  // outright rather than stripping or rewriting the offending characters:
+  // silently sanitizing would silently change which save file a legitimate
+  // game_id maps to, which is a worse, quieter failure mode than refusing the
+  // load with a clear error.
   if (!game_id || strchr(game_id, '/') || strchr(game_id, '\\') ||
       strstr(game_id, "..")) {
     return LH_ERR_BAD_GAME_ID;
@@ -2927,7 +2962,14 @@ int lh_load(lh_host *h, const char *core_path, const char *rom_path,
   h->rom_path = lh_strdup(rom_path);
   size_t sram_len = strlen(save_dir) + strlen(game_id) + 6;
   h->sram_path = malloc(sram_len);
-  // Reject incomplete path allocation before formatting or opening the core.
+  // FIX 4: lh_strdup/malloc can all return NULL under memory pressure. The
+  // old code walked straight into snprintf-ing through h->sram_path (a
+  // guaranteed NULL-pointer write if that malloc failed) and later into
+  // open_core, which hands system_dir/core_path/rom_path to dlopen/fopen
+  // without ever having checked them. -7 is a new code (existing ones are all
+  // core/content specific: -2/-3 core load, -4/-5 rom/game, -6 audio ring),
+  // reserved for "the host itself couldn't allocate what it needed to attempt
+  // the load" so a caller can tell this apart from a bad core or ROM.
   if (!h->system_dir || !h->save_dir || !h->core_path || !h->rom_path ||
       !h->sram_path) {
     free_load_paths(h);
