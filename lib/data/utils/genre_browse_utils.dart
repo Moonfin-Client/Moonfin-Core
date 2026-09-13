@@ -1,6 +1,24 @@
 import 'package:server_core/server_core.dart';
 
-const List<String> kBrowsableGenreItemTypes = ['Movie', 'Series'];
+/// Every item type a genre row can be built from, across all the libraries
+/// that have one. Callers that only want part of this pass their own list,
+/// which [normalizeBrowsableGenreItemTypes] narrows against this.
+const List<String> kBrowsableGenreItemTypes = [
+  'Movie',
+  'Series',
+  'Audio',
+  'MusicAlbum',
+];
+
+/// Types that carry a genre or studio tag from their parent rather than
+/// standing on their own. Leaving them in a browse is what makes the page
+/// disagree with the count on the tile that opened it.
+const List<String> kNonRootBrowseItemTypes = [
+  'Playlist',
+  'Episode',
+  'Season',
+  'Folder',
+];
 
 List<String> normalizeBrowsableGenreItemTypes(List<String>? includeItemTypes) {
   final requested =
@@ -41,6 +59,8 @@ int browsableGenreCount(
     final countField = switch (type) {
       'Movie' => 'MovieCount',
       'Series' => 'SeriesCount',
+      'Audio' => 'SongCount',
+      'MusicAlbum' => 'AlbumCount',
       _ => null,
     };
 
@@ -123,20 +143,36 @@ int _asInt(dynamic value) {
   return 0;
 }
 
-(String? imageUrl, String? backdropUrl) resolveGenreFallbackArtwork({
+/// Picks the tile and backdrop art for a genre with no art of its own.
+///
+/// [selectedId] is the item the tile art came from, so a screen drawing a whole
+/// grid of genres can pass it back as [avoidIds] and get a different picture on
+/// the next tile.
+(String? imageUrl, String? backdropUrl, String? selectedId)
+resolveGenreFallbackArtwork({
   required List<Map<String, dynamic>> items,
   required ImageApi imageApi,
   required int maxWidth,
+  Set<String> avoidIds = const {},
 }) {
   if (items.isEmpty) {
-    return (null, null);
+    return (null, null, null);
   }
+
+  // Art another tile already took drops to the back rather than out, so a
+  // genre whose every item is spoken for still gets a picture.
+  final candidates = avoidIds.isEmpty
+      ? items
+      : [
+          ...items.where((i) => !avoidIds.contains(i['Id']?.toString())),
+          ...items.where((i) => avoidIds.contains(i['Id']?.toString())),
+        ];
 
   String? tileUrl;
   Map<String, dynamic>? selectedItem;
 
   // 1. Try Backdrop (always landscape)
-  for (final item in items) {
+  for (final item in candidates) {
     final bTags = item['BackdropImageTags'] as List?;
     if (bTags != null && bTags.isNotEmpty) {
       tileUrl = imageApi.getBackdropImageUrl(
@@ -151,7 +187,7 @@ int _asInt(dynamic value) {
 
   // 2. Try Primary if it is landscape/square
   if (tileUrl == null) {
-    for (final item in items) {
+    for (final item in candidates) {
       final pTag = item['PrimaryImageTag'] as String?;
       final pAr = item['PrimaryImageAspectRatio'] as num?;
       if (pTag != null && pAr != null && pAr >= 1.0) {
@@ -168,7 +204,7 @@ int _asInt(dynamic value) {
 
   // 3. Fall back to any Primary (even portrait) if nothing else is available
   if (tileUrl == null) {
-    for (final item in items) {
+    for (final item in candidates) {
       final pTag = item['PrimaryImageTag'] as String?;
       if (pTag != null) {
         tileUrl = imageApi.getPrimaryImageUrl(
@@ -183,8 +219,8 @@ int _asInt(dynamic value) {
   }
 
   String? backdropUrl;
-  for (final item in items) {
-    if (item == selectedItem && items.length > 1) continue;
+  for (final item in candidates) {
+    if (item == selectedItem && candidates.length > 1) continue;
     final bTags = item['BackdropImageTags'] as List?;
     if (bTags != null && bTags.isNotEmpty) {
       backdropUrl = imageApi.getBackdropImageUrl(
@@ -207,5 +243,5 @@ int _asInt(dynamic value) {
     }
   }
 
-  return (tileUrl, backdropUrl ?? tileUrl);
+  return (tileUrl, backdropUrl ?? tileUrl, selectedItem?['Id']?.toString());
 }
