@@ -194,6 +194,72 @@ void main() {
     });
   });
 
+  group('Media3LetterboxCrop.widest', () {
+    test('a dark frame does not win over a lit one', () {
+      final merged = Media3LetterboxCrop.widest([
+        {
+          'w': 1920,
+          'h': 804,
+          'x': 0,
+          'y': 138,
+          'sourceWidth': 1920,
+          'sourceHeight': 1080,
+        },
+        {
+          'w': 1000,
+          'h': 400,
+          'x': 400,
+          'y': 300,
+          'sourceWidth': 1920,
+          'sourceHeight': 1080,
+        },
+      ]);
+      expect(merged, {
+        'w': 1920,
+        'h': 804,
+        'x': 0,
+        'y': 138,
+        'sourceWidth': 1920,
+        'sourceHeight': 1080,
+      });
+    });
+
+    test('grows to cover every sample', () {
+      final merged = Media3LetterboxCrop.widest([
+        {
+          'w': 800,
+          'h': 400,
+          'x': 100,
+          'y': 200,
+          'sourceWidth': 1920,
+          'sourceHeight': 1080,
+        },
+        {
+          'w': 800,
+          'h': 400,
+          'x': 300,
+          'y': 100,
+          'sourceWidth': 1920,
+          'sourceHeight': 1080,
+        },
+      ]);
+      expect(merged?['x'], 100);
+      expect(merged?['y'], 100);
+      expect(merged?['w'], 1000);
+      expect(merged?['h'], 500);
+    });
+
+    test('nothing usable is null', () {
+      expect(Media3LetterboxCrop.widest(const []), isNull);
+      expect(
+        Media3LetterboxCrop.widest([
+          {'sourceWidth': 1920, 'sourceHeight': 1080},
+        ]),
+        isNull,
+      );
+    });
+  });
+
   group('Media3LetterboxCropper', () {
     test('unsupported never talks to native', () async {
       final host = _Media3RecordingHost();
@@ -211,10 +277,29 @@ void main() {
         host,
         supported: true,
         autoDelay: Duration.zero,
+        sampleCount: 1,
+        sampleGap: Duration.zero,
       );
       await cropper.setEnabled(true);
       await Future<void>.delayed(Duration.zero);
       expect(host.detectCalls, 1);
+      expect(
+        host.applied.last,
+        const LetterboxCropRect(w: 1920, h: 804, x: 0, y: 138),
+      );
+    });
+
+    test('samples more than one frame before deciding', () async {
+      final host = _Media3RecordingHost();
+      final cropper = Media3LetterboxCropper(
+        host,
+        supported: true,
+        autoDelay: Duration.zero,
+        sampleGap: Duration.zero,
+      );
+      await cropper.setEnabled(true);
+      await Future<void>.delayed(const Duration(milliseconds: 20));
+      expect(host.detectCalls, Media3LetterboxCrop.sampleCount);
       expect(
         host.applied.last,
         const LetterboxCropRect(w: 1920, h: 804, x: 0, y: 138),
@@ -235,6 +320,8 @@ void main() {
         host,
         supported: true,
         autoDelay: Duration.zero,
+        sampleCount: 1,
+        sampleGap: Duration.zero,
       );
       await cropper.setEnabled(true);
       await Future<void>.delayed(Duration.zero);

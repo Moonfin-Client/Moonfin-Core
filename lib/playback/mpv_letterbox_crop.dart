@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:playback_core/playback_core.dart';
 
 /// libmpv cropdetect helpers. Matching stock mpv `autocrop.lua` without Lua.
@@ -138,6 +137,7 @@ class MpvLetterboxCropper extends LetterboxCropper {
   int _generation = 0;
   String? _hwdecBackup;
   bool _enabled = false;
+  bool _applied = false;
   String? _doneUrl;
   bool _inFlight = false;
 
@@ -169,7 +169,9 @@ class MpvLetterboxCropper extends LetterboxCropper {
   Future<void> _sync() async {
     if (!_enabled) {
       _generation++;
-      await reset();
+      // Clearing video-crop with nothing of ours applied would wipe it for
+      // anyone who set it in their own mpv.conf.
+      if (_applied || _hwdecBackup != null) await reset();
       _doneUrl = null;
       return;
     }
@@ -192,6 +194,7 @@ class MpvLetterboxCropper extends LetterboxCropper {
   @override
   Future<void> reset() async {
     if (!_host.hasNativePlayer) return;
+    _applied = false;
     await _removeDetectFilter();
     await _clearVideoCrop();
     await _restoreHwdec();
@@ -226,7 +229,6 @@ class MpvLetterboxCropper extends LetterboxCropper {
         if (_host.duration > Duration.zero &&
             remaining <
                 MpvLetterboxCrop.detectDuration + const Duration(seconds: 1)) {
-          debugPrint('[letterbox_crop] skip: not enough time left');
           return;
         }
         if (!_isCurrent(generation)) return;
@@ -235,10 +237,6 @@ class MpvLetterboxCropper extends LetterboxCropper {
         final detectHwdec = MpvLetterboxCrop.hwdecForCropdetect(hwdecCurrent);
         if (detectHwdec != null) {
           _hwdecBackup = await _host.getProperty('hwdec');
-          debugPrint(
-            '[letterbox_crop] hwdec $hwdecCurrent -> $detectHwdec '
-            '(was $_hwdecBackup)',
-          );
           await _host.setProperty('hwdec', detectHwdec);
           if (!await _delay(generation, const Duration(milliseconds: 400))) {
             return;
@@ -250,9 +248,6 @@ class MpvLetterboxCropper extends LetterboxCropper {
           'pre',
           MpvLetterboxCrop.filterSpec,
         ]);
-        debugPrint(
-          '[letterbox_crop] vf insert=$inserted spec=${MpvLetterboxCrop.filterSpec}',
-        );
         if (!inserted || !_isCurrent(generation)) return;
 
         if (!await _delay(generation, MpvLetterboxCrop.detectDuration)) {
@@ -270,7 +265,6 @@ class MpvLetterboxCropper extends LetterboxCropper {
           final blob = await _host.getProperty(
             'vf-metadata/${MpvLetterboxCrop.filterLabel}',
           );
-          debugPrint('[letterbox_crop] vf-metadata blob=$blob');
           lavfi.addAll(MpvLetterboxCrop.parseVfMetadata(blob));
         }
 
@@ -281,9 +275,6 @@ class MpvLetterboxCropper extends LetterboxCropper {
           lavfi: lavfi,
           sourceWidth: width,
           sourceHeight: height,
-        );
-        debugPrint(
-          '[letterbox_crop] lavfi=$lavfi ${width}x$height -> ${rect?.videoCrop}',
         );
       } finally {
         await _removeDetectFilter();
@@ -298,8 +289,6 @@ class MpvLetterboxCropper extends LetterboxCropper {
         return;
       }
       await _applyVideoCrop(rect);
-      final hwdecNow = await _host.getProperty('hwdec-current');
-      debugPrint('[letterbox_crop] applied ${rect.videoCrop} hwdec=$hwdecNow');
       _doneUrl = _host.currentUrl;
     } finally {
       if (generation == _generation) {
@@ -340,7 +329,7 @@ class MpvLetterboxCropper extends LetterboxCropper {
       'add',
       MpvLetterboxCrop.appliedFilterSpec(rect),
     ]);
-    debugPrint('[letterbox_crop] vf crop ${rect.videoCrop}');
+    _applied = true;
   }
 
   Future<void> _clearVideoCrop() async {
