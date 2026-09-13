@@ -414,10 +414,10 @@ class NouveauHeroState extends State<NouveauHero> {
       },
       child: Align(
         alignment: Alignment.topLeft,
-        child: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: heroMaxWidth),
-          child: isPhonePortrait
-              ? _buildPhoneContent(
+        child: isPhonePortrait
+            ? ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: heroMaxWidth),
+                child: _buildPhoneContent(
                   context: context,
                   branding: branding,
                   metadata: metadata,
@@ -435,28 +435,29 @@ class NouveauHeroState extends State<NouveauHero> {
                   overviewStyle: overviewStyle,
                   technicalDetails: technicalDetails,
                   actions: actions,
-                )
-              : _buildStandardContent(
-                  context: context,
-                  branding: branding,
-                  metadata: metadata,
-                  status: status,
-                  upcomingText: upcomingText,
-                  seerrPills: seerrPills,
-                  hasBadges: hasBadges,
-                  genres: genres,
-                  genreRowHeight: genreRowHeight,
-                  genreBottomSpacing: genreBottomSpacing,
-                  reserveGenreRow: reserveGenreRow,
-                  overview: overview,
-                  hideOverview: hideOverview,
-                  descriptionMaxWidth: descriptionMaxWidth,
-                  overviewStyle: overviewStyle,
-                  technicalDetails: technicalDetails,
-                  actions: actions,
-                  scale: scale,
                 ),
-        ),
+              )
+            : _buildStandardContent(
+                context: context,
+                branding: branding,
+                metadata: metadata,
+                status: status,
+                upcomingText: upcomingText,
+                seerrPills: seerrPills,
+                hasBadges: hasBadges,
+                genres: genres,
+                genreRowHeight: genreRowHeight,
+                genreBottomSpacing: genreBottomSpacing,
+                reserveGenreRow: reserveGenreRow,
+                overview: overview,
+                hideOverview: hideOverview,
+                descriptionMaxWidth: descriptionMaxWidth,
+                heroMaxWidth: heroMaxWidth,
+                overviewStyle: overviewStyle,
+                technicalDetails: technicalDetails,
+                actions: actions,
+                scale: scale,
+              ),
       ),
     );
   }
@@ -574,6 +575,7 @@ class NouveauHeroState extends State<NouveauHero> {
     required String overview,
     required bool hideOverview,
     required double descriptionMaxWidth,
+    required double heroMaxWidth,
     required TextStyle overviewStyle,
     required List<Widget> technicalDetails,
     required Widget actions,
@@ -581,78 +583,87 @@ class NouveauHeroState extends State<NouveauHero> {
   }) {
     final foreground = AppColorScheme.onSurface;
 
+    final textContent = ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: heroMaxWidth),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (genres.isNotEmpty) ...[
+            Text(
+              genres,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: foreground.withValues(alpha: 0.64),
+                fontSize: genreRowHeight,
+                fontWeight: FontWeight.w700,
+                letterSpacing: (1.7 * scale).clamp(1.4, 1.9),
+                height: 1.0,
+              ),
+            ),
+            SizedBox(height: genreBottomSpacing),
+          ],
+
+          if (reserveGenreRow)
+            SizedBox(height: genreRowHeight + genreBottomSpacing),
+
+          branding,
+
+          SizedBox(height: (28.0 * scale).clamp(24.0, 30.0)),
+
+          if (hasBadges) ...[
+            _badgeRow(
+              context,
+              status: status,
+              upcomingText: upcomingText,
+              seerrPills: seerrPills,
+              scale: scale,
+            ),
+            SizedBox(height: (14.0 * scale).clamp(12.0, 15.0)),
+          ],
+
+          if (metadata.isNotEmpty)
+            Wrap(
+              spacing: (7.0 * scale).clamp(6.0, 8.0),
+              runSpacing: (6.0 * scale).clamp(5.0, 7.0),
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: metadata,
+            ),
+
+          if (technicalDetails.isNotEmpty) ...[
+            SizedBox(height: (15.0 * scale).clamp(13.0, 17.0)),
+            Wrap(
+              spacing: (7.0 * scale).clamp(6.0, 8.0),
+              runSpacing: (7.0 * scale).clamp(6.0, 8.0),
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: technicalDetails,
+            ),
+          ],
+
+          if (overview.isNotEmpty && !hideOverview) ...[
+            SizedBox(height: (22.0 * scale).clamp(19.0, 24.0)),
+            ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: descriptionMaxWidth),
+              child: _NouveauOverview(
+                text: overview,
+                maxLines: 3,
+                style: overviewStyle,
+                focusNode: _overviewFocusNode,
+                onFocusableChanged: _handleOverviewFocusableChanged,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (genres.isNotEmpty) ...[
-          Text(
-            genres,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              color: foreground.withValues(alpha: 0.64),
-              fontSize: genreRowHeight,
-              fontWeight: FontWeight.w700,
-              letterSpacing: (1.7 * scale).clamp(1.4, 1.9),
-              height: 1.0,
-            ),
-          ),
-          SizedBox(height: genreBottomSpacing),
-        ],
-
-        if (reserveGenreRow)
-          SizedBox(height: genreRowHeight + genreBottomSpacing),
-
-        branding,
-
-        SizedBox(height: (28.0 * scale).clamp(24.0, 30.0)),
-
-        if (hasBadges) ...[
-          _badgeRow(
-            context,
-            status: status,
-            upcomingText: upcomingText,
-            seerrPills: seerrPills,
-            scale: scale,
-          ),
-          SizedBox(height: (14.0 * scale).clamp(12.0, 15.0)),
-        ],
-
-        if (metadata.isNotEmpty)
-          Wrap(
-            spacing: (7.0 * scale).clamp(6.0, 8.0),
-            runSpacing: (6.0 * scale).clamp(5.0, 7.0),
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: metadata,
-          ),
-
-        if (technicalDetails.isNotEmpty) ...[
-          SizedBox(height: (15.0 * scale).clamp(13.0, 17.0)),
-          Wrap(
-            spacing: (7.0 * scale).clamp(6.0, 8.0),
-            runSpacing: (7.0 * scale).clamp(6.0, 8.0),
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: technicalDetails,
-          ),
-        ],
-
-        if (overview.isNotEmpty && !hideOverview) ...[
-          SizedBox(height: (22.0 * scale).clamp(19.0, 24.0)),
-          ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: descriptionMaxWidth),
-            child: _NouveauOverview(
-              text: overview,
-              maxLines: 3,
-              style: overviewStyle,
-              focusNode: _overviewFocusNode,
-              onFocusableChanged: _handleOverviewFocusableChanged,
-            ),
-          ),
-        ],
-
+        textContent,
         SizedBox(height: (36.0 * scale).clamp(30.0, 38.0)),
-
         actions,
       ],
     );

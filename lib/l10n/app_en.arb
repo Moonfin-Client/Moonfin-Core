@@ -4260,6 +4260,26 @@
   "@detailButtonsSectionDescription": {
     "description": "Explains that the play buttons can't be hidden and that the list is per device kind"
   },
+  "actionButtonsOnScreen": "Action Buttons on Screen",
+  "@actionButtonsOnScreen": {
+    "description": "Setting title for choosing how many action buttons are visible before overflowing into More Actions"
+  },
+  "actionButtonsOnScreenDescription": "Customize how many action buttons appear before folding into the More Actions menu.",
+  "@actionButtonsOnScreenDescription": {
+    "description": "Subtitle explaining how action buttons overflow into More Actions"
+  },
+  "actionButtonsOnScreenAuto": "Auto (Theme Default)",
+  "@actionButtonsOnScreenAuto": {
+    "description": "Option showing theme default number of action buttons"
+  },
+  "actionButtonsOnScreenPlayOnly": "1 (Play only)",
+  "@actionButtonsOnScreenPlayOnly": {
+    "description": "Option showing only the play action button on screen"
+  },
+  "actionButtonsOnScreenAll": "All (Horizontal Scroll)",
+  "@actionButtonsOnScreenAll": {
+    "description": "Option showing all action buttons in a horizontal scrollable row"
+  },
   "detailMetadata": "Metadata Row",
   "@detailMetadata": {
     "description": "Settings screen for choosing and reordering details screen metadata items"

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../../../../util/platform_detection.dart';
 import '../../../../widgets/overlay_sheet.dart';
 
 class NouveauAction {
@@ -47,12 +48,18 @@ class NouveauAction {
 }
 
 bool _nouveauActionsUsePhoneLayout(BuildContext context) {
+  if (PlatformDetection.useDesktopUi || PlatformDetection.isTV) {
+    return false;
+  }
   final size = MediaQuery.sizeOf(context);
 
   return size.height > size.width && size.width < 600;
 }
 
 double _nouveauActionScale(BuildContext context) {
+  if (PlatformDetection.useDesktopUi) {
+    return 1.0;
+  }
   final width = MediaQuery.sizeOf(context).width;
 
   if (width < 700) {
@@ -62,14 +69,17 @@ double _nouveauActionScale(BuildContext context) {
   return (width / 1920.0).clamp(0.90, 1.08);
 }
 
+
 class NouveauActionButtons extends StatefulWidget {
   final NouveauAction? primaryAction;
   final List<NouveauAction> secondaryActions;
+  final int maxVisibleButtons;
 
   const NouveauActionButtons({
     super.key,
     required this.primaryAction,
     required this.secondaryActions,
+    this.maxVisibleButtons = 0,
   });
 
   @override
@@ -84,14 +94,81 @@ class _NouveauActionButtonsState extends State<NouveauActionButtons> {
     debugLabel: 'nouveau-actions-overflow',
   );
 
-  bool get _usesOverflow =>
-      widget.secondaryActions.length > _maxSecondaryActionsWithoutOverflow;
+  final ScrollController _scrollController = ScrollController();
+  bool _canScrollLeft = false;
+  bool _canScrollRight = false;
+  bool _hasOverflow = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_updateScrollMetrics);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _updateScrollMetrics());
+  }
+
+  @override
+  void didUpdateWidget(covariant NouveauActionButtons oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _updateScrollMetrics());
+  }
+
+  void _updateScrollMetrics() {
+    if (!mounted || !_scrollController.hasClients) return;
+    final position = _scrollController.position;
+    if (!position.hasContentDimensions) return;
+    final maxScroll = position.maxScrollExtent;
+    final hasOverflow = maxScroll > 0;
+    final canLeft = position.pixels > 0;
+    final canRight = position.pixels < maxScroll;
+    if (hasOverflow != _hasOverflow ||
+        canLeft != _canScrollLeft ||
+        canRight != _canScrollRight) {
+      setState(() {
+        _hasOverflow = hasOverflow;
+        _canScrollLeft = canLeft;
+        _canScrollRight = canRight;
+      });
+    }
+  }
+
+  void _scrollBy(double delta) {
+    if (!_scrollController.hasClients) return;
+    final target = (_scrollController.offset + delta).clamp(
+      0.0,
+      _scrollController.position.maxScrollExtent,
+    );
+    _scrollController.animateTo(
+      target,
+      duration: const Duration(milliseconds: 240),
+      curve: Curves.easeOutCubic,
+    );
+  }
+
+  bool get _usesOverflow {
+    if (widget.maxVisibleButtons == -1) {
+      return false;
+    }
+    if (widget.maxVisibleButtons == 1) {
+      return widget.secondaryActions.isNotEmpty;
+    }
+    if (widget.maxVisibleButtons > 1) {
+      final maxSecondary = widget.maxVisibleButtons - 1;
+      return widget.secondaryActions.length > maxSecondary;
+    }
+    return widget.secondaryActions.length > _maxSecondaryActionsWithoutOverflow;
+  }
 
   List<NouveauAction> get _visibleSecondaryActions {
     if (!_usesOverflow) {
       return widget.secondaryActions;
     }
-
+    if (widget.maxVisibleButtons == 1) {
+      return const <NouveauAction>[];
+    }
+    if (widget.maxVisibleButtons > 1) {
+      final visibleCount = widget.maxVisibleButtons - 1;
+      return widget.secondaryActions.take(visibleCount).toList(growable: false);
+    }
     return widget.secondaryActions
         .take(_visibleSecondaryActionsWithOverflow)
         .toList(growable: false);
@@ -107,7 +184,13 @@ class _NouveauActionButtonsState extends State<NouveauActionButtons> {
     if (!_usesOverflow) {
       return const <NouveauAction>[];
     }
-
+    if (widget.maxVisibleButtons == 1) {
+      return widget.secondaryActions;
+    }
+    if (widget.maxVisibleButtons > 1) {
+      final visibleCount = widget.maxVisibleButtons - 1;
+      return widget.secondaryActions.skip(visibleCount).toList(growable: false);
+    }
     return widget.secondaryActions
         .skip(_visibleSecondaryActionsWithOverflow)
         .toList(growable: false);
@@ -115,9 +198,48 @@ class _NouveauActionButtonsState extends State<NouveauActionButtons> {
 
   @override
   void dispose() {
+    _scrollController.removeListener(_updateScrollMetrics);
+    _scrollController.dispose();
     _overflowFocusNode.dispose();
 
     super.dispose();
+  }
+
+  void _scrollToStart() {
+    if (!mounted || !_scrollController.hasClients) return;
+    if (_scrollController.offset > 0) {
+      _scrollController.animateTo(
+        0.0,
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOutCubic,
+      );
+    }
+  }
+
+  void _scrollToItem(BuildContext itemContext) {
+    if (!mounted || !_scrollController.hasClients) return;
+    final itemBox = itemContext.findRenderObject() as RenderBox?;
+    final viewportBox = context.findRenderObject() as RenderBox?;
+    if (itemBox == null || !itemBox.hasSize || viewportBox == null || !viewportBox.hasSize) return;
+
+    final itemGlobalX = itemBox.localToGlobal(Offset.zero).dx;
+    final viewportGlobalX = viewportBox.localToGlobal(Offset.zero).dx;
+    final offsetInViewport = itemGlobalX - viewportGlobalX;
+    final contentX = _scrollController.offset + offsetInViewport;
+    final itemWidth = itemBox.size.width;
+    final viewportWidth = viewportBox.size.width;
+
+    double targetOffset = contentX + (itemWidth / 2.0) - (viewportWidth / 2.0);
+    final maxOffset = _scrollController.position.maxScrollExtent;
+    targetOffset = targetOffset.clamp(0.0, maxOffset);
+
+    if ((targetOffset - _scrollController.offset).abs() > 1.0) {
+      _scrollController.animateTo(
+        targetOffset,
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOutCubic,
+      );
+    }
   }
 
   void _focusPrimary() {
@@ -126,6 +248,7 @@ class _NouveauActionButtonsState extends State<NouveauActionButtons> {
     if (node != null && node.canRequestFocus) {
       node.requestFocus();
     }
+    _scrollToStart();
   }
 
   void _focusSecondary(int index) {
@@ -231,62 +354,75 @@ class _NouveauActionButtonsState extends State<NouveauActionButtons> {
           if (primaryAction != null && hasSecondary) const SizedBox(height: 14),
 
           if (hasSecondary)
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                for (
-                  var index = 0;
-                  index < visibleSecondaryActions.length;
-                  index++
-                ) ...[
-                  if (index > 0) const SizedBox(width: 14),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              physics: const BouncingScrollPhysics(),
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  left: 4.0,
+                  right: 32.0,
+                  top: 4.0,
+                  bottom: 24.0,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    for (
+                      var index = 0;
+                      index < visibleSecondaryActions.length;
+                      index++
+                    ) ...[
+                      if (index > 0) const SizedBox(width: 14),
 
-                  _NouveauCircleActionButton(
-                    action: visibleSecondaryActions[index],
-                    compact: true,
-                    onArrowLeft: index == 0
-                        ? primaryAction != null
-                              ? _focusPrimary
-                              : visibleSecondaryActions[index].onArrowLeft
-                        : () => _focusSecondary(index - 1),
-                    onArrowRight: index < visibleSecondaryActions.length - 1
-                        ? () => _focusSecondary(index + 1)
-                        : overflowActions.isNotEmpty
-                        ? _focusOverflow
-                        : visibleSecondaryActions[index].onArrowRight,
-                  ),
-                ],
+                      _NouveauCircleActionButton(
+                        action: visibleSecondaryActions[index],
+                        compact: true,
+                        onArrowLeft: index == 0
+                            ? primaryAction != null
+                                  ? _focusPrimary
+                                  : visibleSecondaryActions[index].onArrowLeft
+                            : () => _focusSecondary(index - 1),
+                        onArrowRight: index < visibleSecondaryActions.length - 1
+                            ? () => _focusSecondary(index + 1)
+                            : overflowActions.isNotEmpty
+                            ? _focusOverflow
+                            : visibleSecondaryActions[index].onArrowRight,
+                      ),
+                    ],
 
-                if (overflowActions.isNotEmpty) ...[
-                  if (visibleSecondaryActions.isNotEmpty)
-                    const SizedBox(width: 14),
+                    if (overflowActions.isNotEmpty) ...[
+                      if (visibleSecondaryActions.isNotEmpty)
+                        const SizedBox(width: 14),
 
-                  _NouveauMoreButton(
-                    focusNode: _overflowFocusNode,
-                    compact: true,
-                    onPressed: () => _showOverflowActions(context),
-                    onArrowUp:
-                        _lastSecondaryAction?.onArrowUp ??
-                        primaryAction?.onArrowUp,
-                    onArrowDown:
-                        _lastSecondaryAction?.onArrowDown ??
-                        primaryAction?.onArrowDown,
-                    onArrowLeft: visibleSecondaryActions.isNotEmpty
-                        ? () => _focusSecondary(
-                            visibleSecondaryActions.length - 1,
-                          )
-                        : primaryAction != null
-                        ? _focusPrimary
-                        : null,
-                    onArrowRight: _lastSecondaryAction?.onArrowRight,
-                  ),
-                ],
-              ],
+                      _NouveauMoreButton(
+                        focusNode: _overflowFocusNode,
+                        compact: true,
+                        onPressed: () => _showOverflowActions(context),
+                        onArrowUp:
+                            _lastSecondaryAction?.onArrowUp ??
+                            primaryAction?.onArrowUp,
+                        onArrowDown:
+                            _lastSecondaryAction?.onArrowDown ??
+                            primaryAction?.onArrowDown,
+                        onArrowLeft: visibleSecondaryActions.isNotEmpty
+                            ? () => _focusSecondary(
+                                visibleSecondaryActions.length - 1,
+                              )
+                            : primaryAction != null
+                            ? _focusPrimary
+                            : null,
+                        onArrowRight: _lastSecondaryAction?.onArrowRight,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
             ),
         ],
       ),
     );
   }
+
 
   Widget _buildStandardLayout(
     BuildContext context,
@@ -295,86 +431,171 @@ class _NouveauActionButtonsState extends State<NouveauActionButtons> {
     List<NouveauAction> overflowActions,
   ) {
     final scale = _nouveauActionScale(context);
-
     final primaryGap = 18.0 * scale;
     final secondaryGap = 12.0 * scale;
 
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          if (primaryAction != null)
-            _NouveauPrimaryButton(
-              action: primaryAction,
-              onArrowRight: visibleSecondaryActions.isNotEmpty
-                  ? () => _focusSecondary(0)
-                  : overflowActions.isNotEmpty
-                  ? _focusOverflow
-                  : primaryAction.onArrowRight,
+    final showDesktopChevrons =
+        _hasOverflow && PlatformDetection.useDesktopUi && !PlatformDetection.isTV;
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        WidgetsBinding.instance.addPostFrameCallback((_) => _updateScrollMetrics());
+
+        final availableWidth = constraints.maxWidth.isFinite
+            ? constraints.maxWidth
+            : MediaQuery.sizeOf(context).width;
+
+        final scrollRow = NotificationListener<ScrollNotification>(
+          onNotification: (notification) {
+            _updateScrollMetrics();
+            return false;
+          },
+          child: SizedBox(
+            width: availableWidth,
+            child: SingleChildScrollView(
+              controller: _scrollController,
+              scrollDirection: Axis.horizontal,
+              clipBehavior: Clip.hardEdge,
+              physics: PlatformDetection.isTV
+                  ? const NeverScrollableScrollPhysics()
+                  : const BouncingScrollPhysics(),
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  left: 12.0,
+                  right: 80.0,
+                  top: 10.0,
+                  bottom: 38.0,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    if (primaryAction != null)
+                      _NouveauPrimaryButton(
+                        action: primaryAction,
+                        onFocused: _scrollToStart,
+                        onArrowRight: visibleSecondaryActions.isNotEmpty
+                            ? () => _focusSecondary(0)
+                            : overflowActions.isNotEmpty
+                            ? _focusOverflow
+                            : primaryAction.onArrowRight,
+                      ),
+
+                    if (primaryAction != null &&
+                        (visibleSecondaryActions.isNotEmpty ||
+                            overflowActions.isNotEmpty))
+                      SizedBox(width: primaryGap),
+
+                    for (
+                      var index = 0;
+                      index < visibleSecondaryActions.length;
+                      index++
+                    ) ...[
+                      if (index > 0) SizedBox(width: secondaryGap),
+
+                      _NouveauCircleActionButton(
+                        action: visibleSecondaryActions[index],
+                        onFocused: _scrollToItem,
+                        onArrowLeft: index == 0
+                            ? primaryAction != null
+                                  ? _focusPrimary
+                                  : visibleSecondaryActions[index].onArrowLeft
+                            : () => _focusSecondary(index - 1),
+                        onArrowRight: index < visibleSecondaryActions.length - 1
+                            ? () => _focusSecondary(index + 1)
+                            : overflowActions.isNotEmpty
+                            ? _focusOverflow
+                            : visibleSecondaryActions[index].onArrowRight,
+                      ),
+                    ],
+
+                    if (overflowActions.isNotEmpty) ...[
+                      if (visibleSecondaryActions.isNotEmpty)
+                        SizedBox(width: secondaryGap),
+
+                      _NouveauMoreButton(
+                        focusNode: _overflowFocusNode,
+                        onPressed: () => _showOverflowActions(context),
+                        onFocused: _scrollToItem,
+                        onArrowUp:
+                            _lastSecondaryAction?.onArrowUp ?? primaryAction?.onArrowUp,
+                        onArrowDown:
+                            _lastSecondaryAction?.onArrowDown ??
+                            primaryAction?.onArrowDown,
+                        onArrowLeft: visibleSecondaryActions.isNotEmpty
+                            ? () => _focusSecondary(visibleSecondaryActions.length - 1)
+                            : primaryAction != null
+                            ? _focusPrimary
+                            : null,
+                        onArrowRight: _lastSecondaryAction?.onArrowRight,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
             ),
+          ),
+        );
 
-          if (primaryAction != null &&
-              (visibleSecondaryActions.isNotEmpty ||
-                  overflowActions.isNotEmpty))
-            SizedBox(width: primaryGap),
+        if (!showDesktopChevrons) {
+          return scrollRow;
+        }
 
-          for (
-            var index = 0;
-            index < visibleSecondaryActions.length;
-            index++
-          ) ...[
-            if (index > 0) SizedBox(width: secondaryGap),
+        const double chevronStep = 180.0;
 
-            _NouveauCircleActionButton(
-              action: visibleSecondaryActions[index],
-              onArrowLeft: index == 0
-                  ? primaryAction != null
-                        ? _focusPrimary
-                        : visibleSecondaryActions[index].onArrowLeft
-                  : () => _focusSecondary(index - 1),
-              onArrowRight: index < visibleSecondaryActions.length - 1
-                  ? () => _focusSecondary(index + 1)
-                  : overflowActions.isNotEmpty
-                  ? _focusOverflow
-                  : visibleSecondaryActions[index].onArrowRight,
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              width: availableWidth,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Focus(
+                    canRequestFocus: false,
+                    skipTraversal: true,
+                    descendantsAreFocusable: false,
+                    child: IconButton(
+                      icon: const Icon(Icons.chevron_left),
+                      onPressed: _canScrollLeft ? () => _scrollBy(-chevronStep) : null,
+                      visualDensity: VisualDensity.compact,
+                    ),
+                  ),
+                  Focus(
+                    canRequestFocus: false,
+                    skipTraversal: true,
+                    descendantsAreFocusable: false,
+                    child: IconButton(
+                      icon: const Icon(Icons.chevron_right),
+                      onPressed: _canScrollRight ? () => _scrollBy(chevronStep) : null,
+                      visualDensity: VisualDensity.compact,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                ],
+              ),
             ),
+            const SizedBox(height: 6),
+            scrollRow,
           ],
-
-          if (overflowActions.isNotEmpty) ...[
-            if (visibleSecondaryActions.isNotEmpty)
-              SizedBox(width: secondaryGap),
-
-            _NouveauMoreButton(
-              focusNode: _overflowFocusNode,
-              onPressed: () => _showOverflowActions(context),
-              onArrowUp:
-                  _lastSecondaryAction?.onArrowUp ?? primaryAction?.onArrowUp,
-              onArrowDown:
-                  _lastSecondaryAction?.onArrowDown ??
-                  primaryAction?.onArrowDown,
-              onArrowLeft: visibleSecondaryActions.isNotEmpty
-                  ? () => _focusSecondary(visibleSecondaryActions.length - 1)
-                  : primaryAction != null
-                  ? _focusPrimary
-                  : null,
-              onArrowRight: _lastSecondaryAction?.onArrowRight,
-            ),
-          ],
-        ],
-      ),
+        );
+      },
     );
   }
+
+
 }
 
 class _NouveauPrimaryButton extends StatefulWidget {
   final NouveauAction action;
+  final VoidCallback? onFocused;
   final VoidCallback? onArrowRight;
   final bool fullWidth;
 
   const _NouveauPrimaryButton({
     required this.action,
+    this.onFocused,
     this.onArrowRight,
     this.fullWidth = false,
   });
@@ -417,6 +638,7 @@ class _NouveauPrimaryButtonState extends State<_NouveauPrimaryButton> {
 
         if (focused) {
           action.onFocused?.call();
+          widget.onFocused?.call();
         }
       },
       onKeyEvent: (_, event) {
@@ -657,12 +879,14 @@ class _NouveauCircleActionButton extends StatefulWidget {
   final NouveauAction action;
   final VoidCallback? onArrowLeft;
   final VoidCallback? onArrowRight;
+  final void Function(BuildContext context)? onFocused;
   final bool compact;
 
   const _NouveauCircleActionButton({
     required this.action,
     this.onArrowLeft,
     this.onArrowRight,
+    this.onFocused,
     this.compact = false,
   });
 
@@ -725,6 +949,11 @@ class _NouveauCircleActionButtonState
       widget.action.onFocused?.call();
 
       _scheduleTooltip(delay: const Duration(milliseconds: 80));
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted || !_focused) return;
+        widget.onFocused?.call(context);
+      });
 
       return;
     }
@@ -928,6 +1157,7 @@ class _NouveauCircleActionButtonState
 class _NouveauMoreButton extends StatefulWidget {
   final FocusNode focusNode;
   final VoidCallback onPressed;
+  final void Function(BuildContext context)? onFocused;
   final VoidCallback? onArrowUp;
   final VoidCallback? onArrowDown;
   final VoidCallback? onArrowLeft;
@@ -937,6 +1167,7 @@ class _NouveauMoreButton extends StatefulWidget {
   const _NouveauMoreButton({
     required this.focusNode,
     required this.onPressed,
+    this.onFocused,
     this.onArrowUp,
     this.onArrowDown,
     this.onArrowLeft,
@@ -999,6 +1230,11 @@ class _NouveauMoreButtonState extends State<_NouveauMoreButton> {
 
     if (focused) {
       _scheduleTooltip(delay: const Duration(milliseconds: 80));
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted || !_focused) return;
+        widget.onFocused?.call(context);
+      });
 
       return;
     }

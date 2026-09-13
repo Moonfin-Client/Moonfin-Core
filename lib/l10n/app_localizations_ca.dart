@@ -3187,6 +3187,22 @@ class AppLocalizationsCa extends AppLocalizations {
       'El boto de reproduir sempre és el primer i els botons bloquejats sempre es mostren. La resta depèn de tu, i cada tipus de dispositiu manté la seva pròpia llista.';
 
   @override
+  String get actionButtonsOnScreen => 'Action Buttons on Screen';
+
+  @override
+  String get actionButtonsOnScreenDescription =>
+      'Customize how many action buttons appear before folding into the More Actions menu.';
+
+  @override
+  String get actionButtonsOnScreenAuto => 'Auto (Theme Default)';
+
+  @override
+  String get actionButtonsOnScreenPlayOnly => '1 (Play only)';
+
+  @override
+  String get actionButtonsOnScreenAll => 'All (Horizontal Scroll)';
+
+  @override
   String get detailMetadata => 'Metadata Row';
 
   @override
@@ -4355,7 +4371,7 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get nextUpMaxDaysDescription =>
-      'Quant de temps un programa roman a \"A continuació\" després de l\'última vegada que el vas veure';
+      'Quant de temps una sèrie roman a «Següent» després de l\'última vegada que la vas veure';
 
   @override
   String daysValue(int days) {

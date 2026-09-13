@@ -3181,6 +3181,22 @@ class AppLocalizationsEl extends AppLocalizations {
       'Η αναπαραγωγή είναι πάντα στην πρώτη θέση και τα κλειδωμένα κουμπιά εμφανίζονται πάντα. Όλα τα υπόλοιπα εξαρτώνται από εσάς, και κάθε τύπος συσκευής διατηρεί τη δική της λίστα.';
 
   @override
+  String get actionButtonsOnScreen => 'Action Buttons on Screen';
+
+  @override
+  String get actionButtonsOnScreenDescription =>
+      'Customize how many action buttons appear before folding into the More Actions menu.';
+
+  @override
+  String get actionButtonsOnScreenAuto => 'Auto (Theme Default)';
+
+  @override
+  String get actionButtonsOnScreenPlayOnly => '1 (Play only)';
+
+  @override
+  String get actionButtonsOnScreenAll => 'All (Horizontal Scroll)';
+
+  @override
   String get detailMetadata => 'Metadata Row';
 
   @override

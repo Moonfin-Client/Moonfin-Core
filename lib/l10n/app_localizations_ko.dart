@@ -3097,6 +3097,22 @@ class AppLocalizationsKo extends AppLocalizations {
       '재생 버튼은 항상 첫 번째로 표시되며 잠긴 버튼은 항상 표시됩니다. 그 외의 항목은 원하는 대로 설정할 수 있으며, 기기 종류별로 목록이 각각 저장됩니다.';
 
   @override
+  String get actionButtonsOnScreen => 'Action Buttons on Screen';
+
+  @override
+  String get actionButtonsOnScreenDescription =>
+      'Customize how many action buttons appear before folding into the More Actions menu.';
+
+  @override
+  String get actionButtonsOnScreenAuto => 'Auto (Theme Default)';
+
+  @override
+  String get actionButtonsOnScreenPlayOnly => '1 (Play only)';
+
+  @override
+  String get actionButtonsOnScreenAll => 'All (Horizontal Scroll)';
+
+  @override
   String get detailMetadata => 'Metadata Row';
 
   @override

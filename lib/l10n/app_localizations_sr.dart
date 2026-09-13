@@ -146,7 +146,7 @@ class AppLocalizationsSr extends AppLocalizations {
 
   @override
   String get detailScreenStyleSubtitle =>
-      'Класични је оригинални центрирани Moonfin распоред. Модерни је прилагодљив биоскопски распоред.';
+      'Класик (Classic) је оригинални центрирани мунфин (moonfin) распоред. Модерн (Modern) је респонзивни синематични распоред. Спотлајт (Spotlight) је распоред усредсређен на главни приказ (hero-first) са искачућим картицама садржаја. Нуво (Nouveau) је распоред преко целог екрана са одељцима који се нижу низ страницу.';
 
   @override
   String get detailScreenStyleMoonfin => 'Класични';
@@ -155,51 +155,52 @@ class AppLocalizationsSr extends AppLocalizations {
   String get detailScreenStyleModern => 'Модерни';
 
   @override
-  String get detailScreenStyleSpotlight => 'Spotlight';
+  String get detailScreenStyleSpotlight => 'Спотлајт (Spotlight)';
 
   @override
-  String get spotlightMoreActions => 'More Actions';
+  String get spotlightMoreActions => 'Додатне радње';
 
   @override
-  String get spotlightCastCrewStudios => 'Cast, Crew, and Studios';
+  String get spotlightCastCrewStudios => 'Глумачка постава, екипа и студији';
 
   @override
-  String get spotlightChaptersExtras => 'Chapters and Extras';
+  String get spotlightChaptersExtras => 'Поглавља и додатни садржај';
 
   @override
-  String get spotlightSimilarRecommendations => 'Similar and Recommendations';
+  String get spotlightSimilarRecommendations => 'Слично и препоруке';
 
   @override
-  String get spotlightSeasonsEpisodes => 'Seasons and Episodes';
+  String get spotlightSeasonsEpisodes => 'Сезоне и епизоде';
 
   @override
-  String get spotlightMoreEpisodes => 'More Episodes';
+  String get spotlightMoreEpisodes => 'Још епизода';
 
   @override
-  String get spotlightFilmography => 'Filmography';
+  String get spotlightFilmography => 'Филмографија';
 
   @override
-  String get spotlightCollectionsCard => 'Collections';
+  String get spotlightCollectionsCard => 'Колекције';
 
   @override
-  String get spotlightPlaylistOrder => 'Playlist Order';
+  String get spotlightPlaylistOrder => 'Редослед плејлисте';
 
   @override
-  String get spotlightMoviesAndShows => 'Movies & Shows';
+  String get spotlightMoviesAndShows => 'Филмови и серије';
 
   @override
-  String get spotlightSimilarSeerr => 'Similar (Seerr)';
+  String get spotlightSimilarSeerr => 'Слично (Сиер (Seerr))';
 
   @override
-  String get spotlightRecommendationsSeerr => 'Recommendations (Seerr)';
+  String get spotlightRecommendationsSeerr => 'Препоруке (Сиер (Seerr))';
 
   @override
   String spotlightPeopleCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count people',
-      one: '1 person',
+      other: '$count особа',
+      few: '$count особе',
+      one: '$count особа',
     );
     return '$_temp0';
   }
@@ -209,8 +210,9 @@ class AppLocalizationsSr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count studios',
-      one: '1 studio',
+      other: '$count студија',
+      few: '$count студија',
+      one: '1 студио',
     );
     return '$_temp0';
   }
@@ -220,8 +222,8 @@ class AppLocalizationsSr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count chapters',
-      one: '1 chapter',
+      other: '$count поглавља',
+      one: '1 поглавље',
     );
     return '$_temp0';
   }
@@ -231,8 +233,9 @@ class AppLocalizationsSr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count extras',
-      one: '1 extra',
+      other: '$count додатака',
+      few: '$count додатка',
+      one: '$count додатак',
     );
     return '$_temp0';
   }
@@ -242,8 +245,9 @@ class AppLocalizationsSr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count seasons',
-      one: '1 season',
+      other: '$count сезона',
+      few: '$count сезоне',
+      one: '1 сезона',
     );
     return '$_temp0';
   }
@@ -253,8 +257,9 @@ class AppLocalizationsSr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count episodes',
-      one: '1 episode',
+      other: '$count епизода',
+      few: '$count епизоде',
+      one: '1 епизода',
     );
     return '$_temp0';
   }
@@ -264,8 +269,9 @@ class AppLocalizationsSr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count movies',
-      one: '1 movie',
+      other: '$count филмова',
+      few: '$count филма',
+      one: '1 филм',
     );
     return '$_temp0';
   }
@@ -275,8 +281,9 @@ class AppLocalizationsSr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count shows',
-      one: '1 show',
+      other: '$count емисија',
+      few: '$count емисије',
+      one: '$count емисија',
     );
     return '$_temp0';
   }
@@ -286,8 +293,9 @@ class AppLocalizationsSr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count tracks',
-      one: '1 track',
+      other: '$count записа',
+      few: '$count записа',
+      one: '1 запис',
     );
     return '$_temp0';
   }
@@ -297,8 +305,9 @@ class AppLocalizationsSr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count items',
-      one: '1 item',
+      other: '$count ставки',
+      few: '$count ставке',
+      one: '$count ставка',
     );
     return '$_temp0';
   }
@@ -308,8 +317,9 @@ class AppLocalizationsSr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count albums',
-      one: '1 album',
+      other: '$count албума',
+      few: '$count албума',
+      one: '$count албум',
     );
     return '$_temp0';
   }
@@ -668,7 +678,7 @@ class AppLocalizationsSr extends AppLocalizations {
   String get library => 'Библиотека';
 
   @override
-  String get displaySettings => 'Дисплаи Сеттингс';
+  String get displaySettings => 'Подешавање приказа';
 
   @override
   String get allGenres => 'Сви жанрови';
@@ -736,7 +746,7 @@ class AppLocalizationsSr extends AppLocalizations {
   String get sortBy => 'Сорт Би';
 
   @override
-  String get display => 'Дисплаи';
+  String get display => 'Приказ';
 
   @override
   String get imageType => 'Тип слике';
@@ -1045,7 +1055,7 @@ class AppLocalizationsSr extends AppLocalizations {
   String get readingStatus => 'Статус читања';
 
   @override
-  String get playedStatus => 'Плаиед Статус';
+  String get playedStatus => 'Статус репродукције';
 
   @override
   String get readStatus => 'Читај';
@@ -1428,7 +1438,7 @@ class AppLocalizationsSr extends AppLocalizations {
   String get favorite => 'Фаворите';
 
   @override
-  String get playlist => 'Плаилист';
+  String get playlist => 'Плејлиста';
 
   @override
   String get downloaded => 'Преузето';
@@ -1548,7 +1558,7 @@ class AppLocalizationsSr extends AppLocalizations {
   }
 
   @override
-  String get audioTrack => 'Аудио Трацк';
+  String get audioTrack => 'Аудио-запис';
 
   @override
   String get subtitleTrack => 'Субтитле Трацк';
@@ -1929,7 +1939,7 @@ class AppLocalizationsSr extends AppLocalizations {
   }
 
   @override
-  String get remotePlayback => 'Ремоте Плаибацк';
+  String get remotePlayback => 'Даљинска репродукција';
 
   @override
   String get castingToGoogleCast => 'Пребацивање на Google Cast';
@@ -2168,10 +2178,10 @@ class AppLocalizationsSr extends AppLocalizations {
   String get playback => 'Репродукција';
 
   @override
-  String get playMethod => 'Плаи Метход';
+  String get playMethod => 'Начин репродукције';
 
   @override
-  String get directPlay => 'Дирецт Плаи';
+  String get directPlay => 'Директна репродукција (DirectPlay)';
 
   @override
   String get directStream => 'Директан стрим';
@@ -2271,7 +2281,7 @@ class AppLocalizationsSr extends AppLocalizations {
 
   @override
   String get epubUnavailableOnPlatform =>
-      'ЕПУБ приказивање у апликацији још увек није доступно на овој платформи.';
+      'Могућност читања ЕПУБ (EPUB) формата кроз саму апликацију за сада није омогућена на овој платформи.';
 
   @override
   String formatCannotRenderInApp(String extension) {
@@ -2410,7 +2420,7 @@ class AppLocalizationsSr extends AppLocalizations {
 
   @override
   String get reloadReaderPlatformHint =>
-      'Користите Релоад Реадер након преласка на подржану циљну платформу (Андроид, иОС, мацОС).';
+      'Употребите Рилоуд ридер (Reload Reader) након преласка на подржану циљну платформу (Андроид, иОС, МекОС).';
 
   @override
   String get openExternally => 'Отворите споља';
@@ -3188,7 +3198,7 @@ class AppLocalizationsSr extends AppLocalizations {
   String get scaleOnDevice => 'Скала на уређају';
 
   @override
-  String get trickPlay => 'Трицк Плаи';
+  String get trickPlay => 'Трик-плеј';
 
   @override
   String get showPreviewThumbnailsWhenSeeking =>
@@ -3268,6 +3278,22 @@ class AppLocalizationsSr extends AppLocalizations {
   @override
   String get detailButtonsSectionDescription =>
       'Репродукција је увек на првом месту, док су закључана дугмад увек приказана. Све остало можете организовати по сопственом нахођењу, а сваки тип уређаја задржава своју засебну листу.';
+
+  @override
+  String get actionButtonsOnScreen => 'Action Buttons on Screen';
+
+  @override
+  String get actionButtonsOnScreenDescription =>
+      'Customize how many action buttons appear before folding into the More Actions menu.';
+
+  @override
+  String get actionButtonsOnScreenAuto => 'Auto (Theme Default)';
+
+  @override
+  String get actionButtonsOnScreenPlayOnly => '1 (Play only)';
+
+  @override
+  String get actionButtonsOnScreenAll => 'All (Horizontal Scroll)';
 
   @override
   String get detailMetadata => 'Metadata Row';
@@ -3684,7 +3710,7 @@ class AppLocalizationsSr extends AppLocalizations {
   String get nextUpAndQueuing => 'Следећи корак и чекање у реду';
 
   @override
-  String get nextUpDisplay => 'Нект Уп Дисплаи';
+  String get nextUpDisplay => 'Преглед предстојећег садржаја';
 
   @override
   String get extended => 'Проширено';
@@ -3757,7 +3783,7 @@ class AppLocalizationsSr extends AppLocalizations {
 
   @override
   String get subtitleStyleDescription =>
-      'Подешавања стила (величина, боја, офсет) примењују се на текстуалне титлове (СРТ, ВТТ, ТТМЛ). АСС/ССА титлови користе сопствени уграђени стил осим ако је „АСС/ССА Дирецт Плаи“ искључено. Битмап титлови (ПГС, ДВБ, ВобСуб) не могу да се мењају.';
+      'Подешавања стила (величина, боја, померај) примењују се на текстуалне титлове (СРТ (SRT), ВТТ (VTT), ТТМЛ (TTML)). АСС/ССА (ASS/SSA) титлови користе сопствени уграђени стил, осим уколико опција „АСС/ССА директна репродукција” („ASS/SSA Direct Play”) није искључена. Битмапирани титлови (ПГС (PGS), ДВБ (DVB), ВобСаб (VobSub)) не подлежу промени стила.';
 
   @override
   String get defaultSubtitleLanguage => 'Подразумевани језик титлова';
@@ -5179,7 +5205,7 @@ class AppLocalizationsSr extends AppLocalizations {
   String get appearances => 'Појављивања';
 
   @override
-  String get crewSection => 'Посада';
+  String get crewSection => 'Екипа';
 
   @override
   String ageValue(int age) {
@@ -9932,7 +9958,7 @@ class AppLocalizationsSr extends AppLocalizations {
   String get settingsSupportMoonfinSubtitle => 'Частите програмера кафом';
 
   @override
-  String get settingsLegal => 'ЛЕГАЛ';
+  String get settingsLegal => 'ПРАВНЕ ИНФОРМАЦИЈЕ';
 
   @override
   String get settingsLicenses => 'Лиценце';
@@ -10201,7 +10227,7 @@ class AppLocalizationsSr extends AppLocalizations {
   }
 
   @override
-  String get settingsLiveTvDirect => 'Ливе ТВ Дирецт';
+  String get settingsLiveTvDirect => 'Уживо ТВ';
 
   @override
   String get settingsLiveTvDirectSubtitle =>

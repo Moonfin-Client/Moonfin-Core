@@ -303,6 +303,7 @@ class UserPreferences extends ChangeNotifier {
     'detailButtonOrderDesktop',
     'detailButtonOrderMobile',
     'detailButtonOrderTv',
+    'detailButtonsMaxVisible',
     'detailMetadataOrderDesktop',
     'detailMetadataOrderMobile',
     'detailMetadataOrderTv',
@@ -2247,6 +2248,10 @@ class UserPreferences extends ChangeNotifier {
   static final hiddenDetailButtonsDesktop = Preference(
     key: 'hiddenDetailButtonsDesktop',
     defaultValue: '',
+  );
+  static final detailButtonsMaxVisible = Preference(
+    key: 'detailButtonsMaxVisible',
+    defaultValue: 0,
   );
   static final detailMetadataOrderTv = Preference(
     key: 'detailMetadataOrderTv',

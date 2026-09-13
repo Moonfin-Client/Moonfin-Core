@@ -100,4 +100,65 @@ void main() {
     );
     expect(result.needsOverflow, isFalse);
   });
+
+  group('user preference limit overrides', () {
+    test('prefLimit = 1 (Play only) folds secondary buttons into More menu', () {
+      // prefLimit == 1 sets maxVisible: 2, countCapped: true
+      final result = DetailActionButtonsState.countSplit(
+        totalButtons: 5,
+        maxVisible: 2,
+        isModernMobile: false,
+        overflowAsMenu: true,
+        countCapped: true,
+      );
+      expect(result.needsOverflow, isTrue);
+      // visibleCount = maxVisible - 1 = 1 (only Play is shown inline before '...')
+      expect(result.visibleCount, 1);
+    });
+
+    test('prefLimit = 1 with only Play button does not overflow', () {
+      final result = DetailActionButtonsState.countSplit(
+        totalButtons: 1,
+        maxVisible: 2,
+        isModernMobile: false,
+        overflowAsMenu: true,
+        countCapped: true,
+      );
+      expect(result.needsOverflow, isFalse);
+    });
+
+    test('prefLimit = 8 allows 8 inline buttons before overflowing', () {
+      // prefLimit == 8 sets maxVisible: 9, countCapped: true
+      final inline = DetailActionButtonsState.countSplit(
+        totalButtons: 8,
+        maxVisible: 9,
+        isModernMobile: false,
+        overflowAsMenu: true,
+        countCapped: true,
+      );
+      expect(inline.needsOverflow, isFalse);
+
+      final overflow = DetailActionButtonsState.countSplit(
+        totalButtons: 9,
+        maxVisible: 9,
+        isModernMobile: false,
+        overflowAsMenu: true,
+        countCapped: true,
+      );
+      expect(overflow.needsOverflow, isTrue);
+      expect(overflow.visibleCount, 8);
+    });
+
+    test('prefLimit = -1 (All/unlimited) disables count cap', () {
+      final result = DetailActionButtonsState.countSplit(
+        totalButtons: 15,
+        maxVisible: 5,
+        isModernMobile: false,
+        overflowAsMenu: true,
+        countCapped: false,
+      );
+      expect(result.needsOverflow, isFalse);
+    });
+  });
 }
+

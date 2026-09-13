@@ -5756,6 +5756,274 @@ class _DolbyVisionPlayDecision {
   });
 }
 
+class _HorizontalActionRow extends StatefulWidget {
+  final List<Widget> children;
+  final double spacing;
+  final double? buttonWidth;
+  final AlignmentGeometry alignment;
+
+  const _HorizontalActionRow({
+    required this.children,
+    required this.spacing,
+    this.buttonWidth,
+    this.alignment = AlignmentDirectional.centerStart,
+  });
+
+  @override
+  State<_HorizontalActionRow> createState() => _HorizontalActionRowState();
+}
+
+class _HorizontalActionRowState extends State<_HorizontalActionRow> {
+  final ScrollController _scrollController = ScrollController();
+  bool _canScrollLeft = false;
+  bool _canScrollRight = false;
+  bool _hasOverflow = false;
+  int _fitCount = 1;
+  double _effectiveButtonWidth = 108.0;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_updateScrollMetrics);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _updateScrollMetrics());
+  }
+
+  @override
+  void didUpdateWidget(covariant _HorizontalActionRow oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _updateScrollMetrics());
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_updateScrollMetrics);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _updateScrollMetrics() {
+    if (!mounted || !_scrollController.hasClients) return;
+    final position = _scrollController.position;
+    if (!position.hasContentDimensions) return;
+    final maxScroll = position.maxScrollExtent;
+    final hasOverflow = maxScroll > 0;
+    final canLeft = position.pixels > 0;
+    final canRight = position.pixels < maxScroll;
+    if (hasOverflow != _hasOverflow ||
+        canLeft != _canScrollLeft ||
+        canRight != _canScrollRight) {
+      setState(() {
+        _hasOverflow = hasOverflow;
+        _canScrollLeft = canLeft;
+        _canScrollRight = canRight;
+      });
+    }
+  }
+
+  void _scrollToIndex(int index) {
+    if (!mounted || !_scrollController.hasClients) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && _scrollController.hasClients) _scrollToIndex(index);
+      });
+      return;
+    }
+    final stride = _effectiveButtonWidth + widget.spacing;
+    final visibleContentWidth =
+        _fitCount * _effectiveButtonWidth + (_fitCount - 1) * widget.spacing;
+    final currentOffset = _scrollController.offset;
+    final bStart = index * stride;
+    final bEnd = bStart + _effectiveButtonWidth;
+
+    if (bStart >= currentOffset - 1.0 &&
+        bEnd <= currentOffset + visibleContentWidth + 1.0) {
+      return;
+    }
+
+    double targetOffset;
+    if (bEnd > currentOffset + visibleContentWidth) {
+      targetOffset = (index - _fitCount + 1) * stride;
+    } else {
+      targetOffset = index * stride;
+    }
+
+    final maxOffset = _scrollController.position.maxScrollExtent;
+    targetOffset = targetOffset.clamp(0.0, maxOffset);
+
+    _scrollController.animateTo(
+      targetOffset,
+      duration: const Duration(milliseconds: 220),
+      curve: Curves.easeOutCubic,
+    );
+  }
+
+  void _scrollByButtons(int count) {
+    if (!_scrollController.hasClients) return;
+    final stride = _effectiveButtonWidth + widget.spacing;
+    final current = _scrollController.offset;
+    final targetIndex = ((current + count * stride) / stride).round();
+    final maxOffset = _scrollController.position.maxScrollExtent;
+    final maxIndex = (maxOffset / stride).ceil();
+    final clampedIndex = targetIndex.clamp(0, maxIndex);
+    final target = (clampedIndex * stride).clamp(0.0, maxOffset);
+    _scrollController.animateTo(
+      target,
+      duration: const Duration(milliseconds: 240),
+      curve: Curves.easeOutCubic,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final showDesktopChevrons =
+        _hasOverflow && PlatformDetection.useDesktopUi && !PlatformDetection.isTV;
+
+    final scrollRow = NotificationListener<ScrollNotification>(
+      onNotification: (notification) {
+        _updateScrollMetrics();
+        return false;
+      },
+      child: SingleChildScrollView(
+        controller: _scrollController,
+        scrollDirection: Axis.horizontal,
+        clipBehavior: Clip.none,
+        physics: PlatformDetection.isTV
+            ? const NeverScrollableScrollPhysics()
+            : const BouncingScrollPhysics(),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              for (var i = 0; i < widget.children.length; i++) ...[
+                if (i > 0) SizedBox(width: widget.spacing),
+                Focus(
+                  canRequestFocus: false,
+                  skipTraversal: true,
+                  onFocusChange: (focused) {
+                    if (focused) {
+                      _scrollToIndex(i);
+                    }
+                  },
+                  child: widget.children[i],
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        WidgetsBinding.instance.addPostFrameCallback((_) => _updateScrollMetrics());
+
+        final isMobile = _isCompact(context);
+        final desktopScale = _desktopUiScale();
+        final double bWidth = widget.buttonWidth ??
+            (isMobile ? 80.0 : 108.0 * desktopScale);
+        final double spacing = widget.spacing;
+        _effectiveButtonWidth = bWidth;
+
+        const double horizontalPadding = 14.0;
+        const double totalPadding = horizontalPadding * 2;
+
+        final double availableWidth = constraints.maxWidth - totalPadding;
+        final double stride = bWidth + spacing;
+        int fitCount = ((availableWidth + spacing) / stride).floor();
+        fitCount = fitCount.clamp(1, widget.children.length);
+        _fitCount = fitCount;
+
+        final double snappedInnerWidth =
+            fitCount * bWidth + (fitCount - 1) * spacing;
+        final double pillWidth = snappedInnerWidth + totalPadding;
+
+        Widget pillRow = scrollRow;
+        if (_hasOverflow) {
+          pillRow = Container(
+            width: pillWidth,
+            clipBehavior: Clip.antiAlias,
+            padding: const EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.black.withValues(alpha: 0.32),
+              borderRadius: BorderRadius.circular(999),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.15),
+                width: 1.0,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.25),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: scrollRow,
+          );
+        }
+
+        if (!showDesktopChevrons) {
+          return Align(
+            alignment: widget.alignment,
+            child: pillRow,
+          );
+        }
+
+        final int chevronStep = fitCount >= 5 ? 3 : (fitCount >= 3 ? 2 : 1);
+
+        return Align(
+          alignment: widget.alignment,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                width: pillWidth,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Focus(
+                      canRequestFocus: false,
+                      skipTraversal: true,
+                      descendantsAreFocusable: false,
+                      child: IconButton(
+                        icon: const Icon(Icons.chevron_left),
+                        onPressed: _canScrollLeft
+                            ? () => _scrollByButtons(-chevronStep)
+                            : null,
+                        visualDensity: VisualDensity.compact,
+                      ),
+                    ),
+                    Focus(
+                      canRequestFocus: false,
+                      skipTraversal: true,
+                      descendantsAreFocusable: false,
+                      child: IconButton(
+                        icon: const Icon(Icons.chevron_right),
+                        onPressed: _canScrollRight
+                            ? () => _scrollByButtons(chevronStep)
+                            : null,
+                        visualDensity: VisualDensity.compact,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 6),
+              pillRow,
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+
+
+}
+
 class DetailActionButtonsState extends State<DetailActionButtons> {
   int? get _selectedAudioIndex => viewModel.selectedAudioIndex;
   set _selectedAudioIndex(int? value) => viewModel.selectedAudioIndex = value;
@@ -6428,6 +6696,12 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
   int _calculateMaxVisibleButtons(BuildContext context) {
     final override = widget.maxVisibleButtonsOverride;
     if (override != null) return override > 2 ? override : 2;
+    final prefs = GetIt.instance<UserPreferences>();
+    final prefLimit = prefs.get(UserPreferences.detailButtonsMaxVisible);
+    if (prefLimit > 0) {
+      final target = prefLimit + 1;
+      return target > 2 ? target : 2;
+    }
     if (PlatformDetection.isTV) {
       final maxItems = widget.modernStyle ? 11 : 7;
       final desktopScale = _desktopUiScale();
@@ -7301,6 +7575,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       final rowContent = NouveauActionButtons(
         primaryAction: nouveauPrimaryAction,
         secondaryActions: secondaryActions,
+        maxVisibleButtons: prefs.get(UserPreferences.detailButtonsMaxVisible),
       );
 
       final downloads = seerrItemDownloads(viewModel);
@@ -7360,14 +7635,17 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         .where((button) => button.isPrimary)
         .map((button) => button.label)
         .firstOrNull;
-    final fitsOneLine = widget.modernStyle && rowBudget != null
-        ? modernRowWorstWidth(
-                allButtons.length,
-                buttonSpacing,
-                _modernPlayFocusedWidth(playLabel),
-              ) <=
-              rowBudget
-        : allButtons.length <= maxVisible;
+    final prefLimit = prefs.get(UserPreferences.detailButtonsMaxVisible);
+    final fitsOneLine = prefLimit == -1
+        ? true
+        : (widget.modernStyle && rowBudget != null
+            ? modernRowWorstWidth(
+                    allButtons.length,
+                    buttonSpacing,
+                    _modernPlayFocusedWidth(playLabel),
+                  ) <=
+                  rowBudget
+            : allButtons.length <= maxVisible);
 
     if (isTwoColumnLayout && fitsOneLine) {
       primaryButtons = allButtons;
@@ -7403,10 +7681,13 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         maxVisible: maxVisible,
         isModernMobile: isModernMobile,
         overflowAsMenu: widget.overflowAsMenu,
-        countCapped:
-            compact ||
-            PlatformDetection.isTV ||
-            widget.maxVisibleButtonsOverride != null,
+        countCapped: prefLimit == -1
+            ? false
+            : (prefLimit > 0
+                ? true
+                : (compact ||
+                    PlatformDetection.isTV ||
+                    widget.maxVisibleButtonsOverride != null)),
       );
       final int visibleCount = split.visibleCount;
       needsOverflow = split.needsOverflow;
@@ -7465,19 +7746,13 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           },
         );
       }).toList();
-      rowContent = Align(
+      rowContent = _HorizontalActionRow(
+        spacing: buttonSpacing,
+        buttonWidth: compact ? 80.0 : 108.0 * desktopScale,
         alignment: widget.modernStyle
             ? AlignmentDirectional.centerStart
             : Alignment.center,
-        child: Wrap(
-          spacing: buttonSpacing,
-          runSpacing: buttonRunSpacing,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          alignment: widget.modernStyle
-              ? WrapAlignment.start
-              : WrapAlignment.center,
-          children: normalizedButtons,
-        ),
+        children: normalizedButtons,
       );
     } else {
       final normalizedPrimaryButtons = primaryButtons.asMap().entries.map((
@@ -12103,9 +12378,19 @@ class _DetailActionButtonState extends State<_DetailActionButton>
   void _scrollToTopOnFocus() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      final scrollable = Scrollable.maybeOf(context);
-      if (scrollable == null) return;
-      final position = scrollable.position;
+      ScrollableState? verticalScrollable;
+      context.visitAncestorElements((element) {
+        if (element is StatefulElement && element.state is ScrollableState) {
+          final state = element.state as ScrollableState;
+          if (state.position.axis == Axis.vertical) {
+            verticalScrollable = state;
+            return false;
+          }
+        }
+        return true;
+      });
+      if (verticalScrollable == null) return;
+      final position = verticalScrollable!.position;
       if (position.pixels <= position.minScrollExtent) return;
       position.animateTo(
         position.minScrollExtent,
