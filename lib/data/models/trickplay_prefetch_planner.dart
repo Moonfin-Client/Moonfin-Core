@@ -3,6 +3,10 @@ import 'trickplay_info.dart';
 class TrickplayPrefetchPlanner {
   const TrickplayPrefetchPlanner._();
 
+  /// Scrubbing carries on the way it started, so the run ahead is the longer.
+  static const _stepsAhead = 6;
+  static const _stepsBehind = 2;
+
   /// Resolve actual seek destinations, including irregular timestamped frames.
   /// A set keeps sprite sheets shared by multiple destinations from repeating.
   static List<int> planSeekImageIndexes({
@@ -21,13 +25,13 @@ class TrickplayPrefetchPlanner {
       indexes.add(info.resolveTile(Duration(milliseconds: target)).imageIndex);
     }
 
-    final forward = forwardStepMs.clamp(1, 1 << 31);
-    final backward = backwardStepMs.clamp(1, 1 << 31);
+    final forward = forwardStepMs < 1 ? 1 : forwardStepMs;
+    final backward = backwardStepMs < 1 ? 1 : backwardStepMs;
     addPosition(0);
-    for (var step = 1; step <= 6; step++) {
+    for (var step = 1; step <= _stepsAhead; step++) {
       addPosition(step * (directionForward ? forward : -backward));
     }
-    for (var step = 1; step <= 2; step++) {
+    for (var step = 1; step <= _stepsBehind; step++) {
       addPosition(step * (directionForward ? -backward : forward));
     }
     return indexes.toList();
