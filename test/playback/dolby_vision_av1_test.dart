@@ -3,10 +3,10 @@ import 'package:moonfin/playback/dolby_vision_av1.dart';
 
 void main() {
   bool decides(Map<String, dynamic> payload) =>
-      needsSoftwareDecodeForDolbyVisionAv1(payload);
+      needsBaseLayerOnlyForDolbyVisionAv1(payload);
 
-  group('Dolby Vision AV1 decode path', () {
-    test('profile 10.1 by compatibility id takes the software path', () {
+  group('Dolby Vision AV1 base layer', () {
+    test('profile 10.1 by compatibility id is served as its base layer', () {
       expect(
         decides(<String, dynamic>{
           'videoCodec': 'av1',
@@ -38,7 +38,7 @@ void main() {
 
     test('a present compatibility id wins over the range type', () {
       // 10.4 carries an HLG base and muxes as av01 already, so it must keep the
-      // hardware path even if the range type string were misleading.
+      // Dolby Vision route even if the range type string were misleading.
       expect(
         decides(<String, dynamic>{
           'videoCodec': 'av1',
@@ -50,7 +50,7 @@ void main() {
       );
     });
 
-    test('profile 10.0 keeps the hardware path: no base layer to render', () {
+    test('profile 10.0 keeps Dolby Vision: no base layer to present', () {
       expect(
         decides(<String, dynamic>{
           'videoCodec': 'av1',
@@ -82,7 +82,7 @@ void main() {
       );
     });
 
-    test('an empty payload never forces the software path', () {
+    test('an empty payload never asks for the base layer', () {
       expect(decides(<String, dynamic>{}), isFalse);
     });
   });

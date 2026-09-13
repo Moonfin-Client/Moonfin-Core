@@ -505,7 +505,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         var autoPlay = true
         var audioStreamIndex: Int32?
         var audioBridgeLossless = false
-        var preferSoftwareDecode = false
+        var dolbyVisionBaseLayerOnly = false
     }
 
     private var sourceConfiguration = SourceConfiguration()
@@ -572,6 +572,8 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         #endif
         let options = LoadOptions(
             httpHeaders: sourceConfiguration.headers,
+            dolbyVisionHandling: sourceConfiguration.dolbyVisionBaseLayerOnly
+                ? .baseLayerOnly : .automatic,
             matchContentEnabled: displayCriteriaMatchingEnabled(),
             panelIsInHDRMode: panelIsInHDRMode(),
             audioBridgeMode: sourceConfiguration.audioBridgeLossless ? .lossless : .surroundCompat,
@@ -581,9 +583,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             liveJoinProfile: .fastZap,
             nativeRemoteHLS: isLiveSession && isRemotePlaylist,
             preserveASSMarkup: preserveASS,
-            autoplay: sourceConfiguration.autoPlay,
-            preferredDecodePath: sourceConfiguration.preferSoftwareDecode
-                ? .software : .automatic
+            autoplay: sourceConfiguration.autoPlay
         )
 
         // Nothing else bounds the open. A load wedged on the network keeps

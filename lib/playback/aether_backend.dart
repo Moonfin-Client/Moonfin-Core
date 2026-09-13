@@ -241,7 +241,7 @@ class AetherBackend implements PlayerBackend {
       'forceSubtitlesDisabledOnStart':
           payload['mediaType']?.toString() != 'audio' &&
           _prefs.get(UserPreferences.subtitleMode) == SubtitleMode.none,
-      'preferSoftwareDecode': needsSoftwareDecodeForDolbyVisionAv1(payload),
+      'dolbyVisionBaseLayerOnly': needsBaseLayerOnlyForDolbyVisionAv1(payload),
     });
   }
 

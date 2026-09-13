@@ -314,7 +314,7 @@ class AppleTvBackend implements PlayerBackend {
       'videoRangeType': payload['videoRangeType']?.toString(),
       'videoCodec': payload['videoCodec']?.toString(),
       'videoDvProfile': payload['videoDvProfile'],
-      'preferSoftwareDecode': needsSoftwareDecodeForDolbyVisionAv1(payload),
+      'dolbyVisionBaseLayerOnly': needsBaseLayerOnlyForDolbyVisionAv1(payload),
       'videoFrameRate': payload['videoFrameRate'],
       'videoWidth': payload['videoWidth'],
       'videoHeight': payload['videoHeight'],
