@@ -8,6 +8,7 @@ import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:moonfin/auth/repositories/session_repository.dart';
 import 'package:moonfin/data/services/plugin_sync_service.dart';
+import 'package:moonfin/preference/home_section_config.dart';
 import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/preference/seerr_preferences.dart';
 import 'package:moonfin/preference/user_preferences.dart';
@@ -63,6 +64,21 @@ Map<String, dynamic> _section(
   'type': type.serializedName,
   'enabled': enabled,
   'order': order,
+};
+
+Map<String, dynamic> _sliderSection({
+  required String sliderId,
+  int sliderType = 17,
+  required int order,
+  bool enabled = true,
+}) => {
+  'kind': 'seerrSlider',
+  'type': 'seerr_slider',
+  'enabled': enabled,
+  'order': order,
+  'sliderId': sliderId,
+  'sliderType': sliderType,
+  'pluginDisplayText': 'Anime',
 };
 
 void main() {
@@ -181,5 +197,99 @@ void main() {
 
     expect(prefs.get(UserPreferences.sinceYouWatched2Enabled), isTrue);
     expect(prefs.get(UserPreferences.sinceYouWatched3Enabled), isFalse);
+  });
+
+  test('omitted seerr sliders survive a homeSections sync', () async {
+    await prefs.setHomeSectionsConfig([
+      const HomeSectionConfig(
+        type: HomeSectionType.resume,
+        enabled: true,
+        order: 0,
+      ),
+      HomeSectionConfig.seerrSlider(
+        sliderId: '9',
+        sliderType: 17,
+        pluginDisplayText: 'Anime',
+        enabled: true,
+        order: 1,
+      ),
+    ]);
+
+    await pushLayout([_section(HomeSectionType.resume, order: 0)]);
+
+    expect(
+      prefs.homeSectionsConfig.where(
+        (c) => c.isSeerrSlider && c.sliderId == '9' && c.enabled,
+      ),
+      hasLength(1),
+    );
+  });
+
+  test('incoming sliderId-less seerr_slider rows are dropped', () async {
+    await pushLayout([
+      _section(HomeSectionType.resume, order: 0),
+      {
+        'kind': 'seerrSlider',
+        'type': 'seerr_slider',
+        'enabled': true,
+        'order': 1,
+      },
+    ]);
+
+    expect(prefs.homeSectionsConfig.where((c) => c.isSeerrSlider), isEmpty);
+  });
+
+  test('incoming seerrSlider rows round-trip sliderId', () async {
+    await pushLayout([
+      _section(HomeSectionType.resume, order: 0),
+      _sliderSection(sliderId: '12', order: 1),
+    ]);
+
+    final slider = prefs.homeSectionsConfig.singleWhere((c) => c.isSeerrSlider);
+    expect(slider.sliderId, '12');
+    expect(slider.sliderType, 17);
+    expect(slider.type, HomeSectionType.none);
+  });
+
+  test('omitted unbound seerr sliders survive a homeSections sync', () async {
+    await prefs.setHomeSectionsConfig([
+      const HomeSectionConfig(
+        type: HomeSectionType.resume,
+        enabled: true,
+        order: 0,
+      ),
+      HomeSectionConfig.seerrSlider(
+        sliderType: 4,
+        pluginDisplayText: 'Trending',
+        enabled: true,
+        order: 1,
+      ),
+    ]);
+
+    await pushLayout([_section(HomeSectionType.resume, order: 0)]);
+
+    expect(
+      prefs.homeSectionsConfig.where(
+        (c) => c.isSeerrSlider && c.sliderType == 4 && c.enabled,
+      ),
+      hasLength(1),
+    );
+  });
+
+  test('incoming unbound seerrSlider rows round-trip sliderType', () async {
+    await pushLayout([
+      _section(HomeSectionType.resume, order: 0),
+      {
+        'kind': 'seerrSlider',
+        'type': 'seerr_slider',
+        'enabled': true,
+        'order': 1,
+        'sliderType': 4,
+      },
+    ]);
+
+    final slider = prefs.homeSectionsConfig.singleWhere((c) => c.isSeerrSlider);
+    expect(slider.sliderId, isNull);
+    expect(slider.sliderType, 4);
   });
 }

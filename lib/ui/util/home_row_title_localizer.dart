@@ -1,5 +1,7 @@
 import '../../data/models/home_row.dart';
+import '../../data/services/seerr/seerr_slider_catalog.dart';
 import '../../l10n/app_localizations.dart';
+import '../../preference/home_section_config.dart';
 import '../../preference/preference_constants.dart';
 
 /// The Seerr page builds its rows from the type alone, so it localizes the
@@ -20,6 +22,28 @@ String localizeSeerrRowTitle(SeerrRowType type, AppLocalizations l10n) =>
       SeerrRowType.upcomingSeries => l10n.upcomingSeries,
       SeerrRowType.networks => l10n.networks,
     };
+
+/// Admin-named custom sliders keep [serverTitle]. Stock types use the
+/// English catalog names (same strings Seerr shows).
+String localizeSeerrSliderTitle(int type, {String? serverTitle}) {
+  final server = serverTitle?.trim() ?? '';
+  if (server.isNotEmpty && seerrSliderUsesServerTitle(type)) return server;
+  final fallback = seerrSliderFallbackTitle(type);
+  if (fallback.isNotEmpty) return fallback;
+  return server;
+}
+
+String localizeSeerrSliderConfigTitle(HomeSectionConfig config) {
+  if (config.isSeerrShortcutsSlider) {
+    return config.pluginDisplayText?.trim().isNotEmpty == true
+        ? config.pluginDisplayText!
+        : 'Seerr Browse';
+  }
+  return localizeSeerrSliderTitle(
+    config.sliderType ?? 0,
+    serverTitle: config.pluginDisplayText,
+  );
+}
 
 String localizeHomeRowTitle({
   required HomeRow row,
@@ -64,30 +88,6 @@ String localizeHomeRowTitle({
       return 'Upcoming Movies (Radarr)';
     case 'sonarr_calendar':
       return 'Upcoming TV Shows (Sonarr)';
-    case 'seerr_recent_requests':
-      return l10n.recentRequests;
-    case 'seerr_recently_added':
-      return l10n.recentlyAdded;
-    case 'seerr_popular_movies':
-      return l10n.popularMovies;
-    case 'seerr_upcoming_movies':
-      return l10n.upcomingMovies;
-    case 'seerr_popular_series':
-      return l10n.popularSeries;
-    case 'seerr_upcoming_series':
-      return l10n.upcomingSeries;
-    case 'seerr_shortcuts':
-      return l10n.seerrShortcutsRow;
-    case 'seerr_trending':
-      return l10n.trending;
-    case 'seerr_movie_genres':
-      return l10n.movieGenres;
-    case 'seerr_studios':
-      return l10n.studios;
-    case 'seerr_series_genres':
-      return l10n.seriesGenres;
-    case 'seerr_networks':
-      return l10n.networks;
     case 'rewatch':
       return 'Rewatch';
   }
