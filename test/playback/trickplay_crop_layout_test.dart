@@ -95,9 +95,9 @@ void main() {
         nextFrame = await _FakeSheet(3200, 1800)._frame();
       });
       await tester.pumpWidget(preview(first, sourceRect));
-    first.frame.complete(firstFrame);
-    await tester.pump();
-    await tester.pump();
+      first.frame.complete(firstFrame);
+      await tester.pump();
+      await tester.pump();
       final oldImage = tester.widget<RawImage>(find.byType(RawImage)).image!;
       final oldAlignment = tester
           .widget<OverflowBox>(find.byType(OverflowBox))
@@ -109,9 +109,9 @@ void main() {
         tester.widget<OverflowBox>(find.byType(OverflowBox)).alignment,
         oldAlignment,
       );
-    next.frame.complete(nextFrame);
-    await tester.pump();
-    await tester.pump();
+      next.frame.complete(nextFrame);
+      await tester.pump();
+      await tester.pump();
       expect(
         tester.widget<RawImage>(find.byType(RawImage)).image,
         isNot(oldImage),

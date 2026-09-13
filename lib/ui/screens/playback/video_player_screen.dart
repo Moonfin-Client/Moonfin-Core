@@ -2281,8 +2281,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     );
   }
 
-  // Called by both the strip/single preview and the full-screen preview, so
-  // hover, dragging and keyboard/remote scrubbing all warm upcoming images.
+  // Waiting for the frame collapses a burst of drag events into one prefetch.
   void _prefetchVisibleTrickplayPreview(Duration position) {
     if (_state.duration <= Duration.zero) return;
     final previous = _lastTrickplayPreviewPosition ?? _state.position;
@@ -4099,7 +4098,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     final seekPosition = Duration(milliseconds: _seekValue.round());
     final tile = _getTrickplayTile(seekPosition);
     if (tile == null) return const SizedBox.shrink();
-    _prefetchVisibleTrickplayPreview(seekPosition);
     return Positioned.fill(
       child: Trickplay(
         fillFrame: true,
@@ -5030,6 +5028,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                                       dismissVisiblePrompts: false,
                                     );
                                     setState(() => _seekValue = v);
+                                    _prefetchVisibleTrickplayPreview(
+                                      Duration(milliseconds: v.round()),
+                                    );
                                   },
                                   onChangeEnd: (v) {
                                     _suppressSeekPrompts();
@@ -5128,8 +5129,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         final previewTile = previewPosition != null && !coverActive
             ? _getTrickplayTile(previewPosition)
             : null;
-        if (previewTile == null) return const SizedBox.shrink();
-        _prefetchVisibleTrickplayPreview(previewPosition!);
+        if (previewTile == null || previewPosition == null) {
+          return const SizedBox.shrink();
+        }
 
         return LayoutBuilder(
           builder: (context, constraints) {
