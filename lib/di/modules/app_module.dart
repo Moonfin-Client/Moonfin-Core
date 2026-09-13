@@ -179,7 +179,10 @@ void _registerUserScopedSingletons() {
   _getIt.registerLazySingleton(
     () => RowDataSource(_getIt<MediaServerClient>()),
   );
-  _getIt.registerLazySingleton(() => UpcomingEpisodeService());
+  _getIt.registerLazySingleton(
+    () => UpcomingEpisodeService(),
+    dispose: (service) => service.dispose(),
+  );
   _getIt.registerLazySingleton(
     () => MdbListRepository(
       _getIt<MediaServerClient>(),

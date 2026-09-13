@@ -20,26 +20,51 @@ class UpcomingEpisodeService {
     ),
   );
 
-  // Series ID -> UpcomingEpisodeInfo? (cached for the session)
-  final Map<String, UpcomingEpisodeInfo?> _seriesCache = {};
+  final Map<String, ({UpcomingEpisodeInfo? info, DateTime at})> _seriesCache =
+      {};
+
+  // Two screens can ask at once, and they should share one answer rather than
+  // both going to the network.
+  final Map<String, Future<UpcomingEpisodeInfo?>> _inFlight = {};
 
   // TvdbId -> Earliest UpcomingEpisodeInfo
   final Map<int, UpcomingEpisodeInfo> _sonarrByTvdb = {};
   DateTime? _lastSonarrFetch;
-  static const _sonarrCacheDuration = Duration(minutes: 30);
+  static const _cacheDuration = Duration(minutes: 30);
 
-  UpcomingEpisodeInfo? getCached(String seriesId) => _seriesCache[seriesId];
+  UpcomingEpisodeInfo? getCached(String seriesId) {
+    final entry = _seriesCache[seriesId];
+    return _stillHolds(entry) ? entry!.info : null;
+  }
+
+  /// An answer holds until it ages out, and an episode that has since aired
+  /// stops counting as one so the badge gives up on it.
+  bool _stillHolds(({UpcomingEpisodeInfo? info, DateTime at})? entry) {
+    if (entry == null) return false;
+    if (DateTime.now().difference(entry.at) >= _cacheDuration) return false;
+    return !(entry.info?.hasAired ?? false);
+  }
 
   /// Resolves the upcoming episode for the given series.
   Future<UpcomingEpisodeInfo?> resolveUpcomingEpisode({
     required String seriesId,
     required Map<String, String?> providerIds,
-    String? seriesName,
-  }) async {
-    if (_seriesCache.containsKey(seriesId)) {
-      return _seriesCache[seriesId];
-    }
+  }) {
+    final entry = _seriesCache[seriesId];
+    if (_stillHolds(entry)) return Future.value(entry!.info);
 
+    final running = _inFlight[seriesId];
+    if (running != null) return running;
+
+    final future = _resolve(seriesId, providerIds);
+    _inFlight[seriesId] = future;
+    return future.whenComplete(() => _inFlight.remove(seriesId));
+  }
+
+  Future<UpcomingEpisodeInfo?> _resolve(
+    String seriesId,
+    Map<String, String?> providerIds,
+  ) async {
     final now = DateTime.now();
 
     // 1. Try Sonarr Calendar if Seerr / Sonarr is available
@@ -54,7 +79,7 @@ class UpcomingEpisodeService {
         final tvdbId = tvdbIdStr != null ? int.tryParse(tvdbIdStr) : null;
         if (tvdbId != null && _sonarrByTvdb.containsKey(tvdbId)) {
           final info = _sonarrByTvdb[tvdbId];
-          _seriesCache[seriesId] = info;
+          _seriesCache[seriesId] = (info: info, at: now);
           return info;
         }
       } catch (e) {
@@ -70,7 +95,7 @@ class UpcomingEpisodeService {
       try {
         final info = await _fetchTmdbNextEpisode(tmdbIdStr);
         if (info != null) {
-          _seriesCache[seriesId] = info;
+          _seriesCache[seriesId] = (info: info, at: now);
           return info;
         }
       } catch (e) {
@@ -79,14 +104,15 @@ class UpcomingEpisodeService {
     }
 
     // Cache negative result to avoid hammering APIs repeatedly
-    _seriesCache[seriesId] = null;
+    _seriesCache[seriesId] = (info: null, at: now);
     return null;
   }
 
   Future<void> _ensureSonarrCalendar(DateTime now) async {
+    // A calendar with nothing airing is still an answer. Asking again for
+    // every series opened would refetch ninety days each time.
     if (_lastSonarrFetch != null &&
-        now.difference(_lastSonarrFetch!) < _sonarrCacheDuration &&
-        _sonarrByTvdb.isNotEmpty) {
+        now.difference(_lastSonarrFetch!) < _cacheDuration) {
       return;
     }
 
@@ -212,5 +238,11 @@ class UpcomingEpisodeService {
     _seriesCache.clear();
     _sonarrByTvdb.clear();
     _lastSonarrFetch = null;
+  }
+
+  void dispose() {
+    clearCache();
+    _inFlight.clear();
+    _dio.close(force: true);
   }
 }

@@ -122,4 +122,22 @@ void main() {
       );
     });
   });
+
+  group('UpcomingEpisodeInfo.hasAired', () {
+    UpcomingEpisodeInfo airingIn(Duration offset) => UpcomingEpisodeInfo(
+      seasonNumber: 1,
+      episodeNumber: 1,
+      airDate: DateTime.now().add(offset),
+    );
+
+    test('yesterday has aired', () {
+      expect(airingIn(const Duration(days: -1)).hasAired, isTrue);
+      expect(airingIn(const Duration(days: -30)).hasAired, isTrue);
+    });
+
+    test('today and later have not', () {
+      expect(airingIn(Duration.zero).hasAired, isFalse);
+      expect(airingIn(const Duration(days: 1)).hasAired, isFalse);
+    });
+  });
 }

@@ -2160,10 +2160,9 @@ class ItemDetailViewModel extends ChangeNotifier {
       final episode = await service.resolveUpcomingEpisode(
         seriesId: item.id,
         providerIds: item.providerIds,
-        seriesName: item.name,
       );
       if (_isDisposed) return;
-      if (episode != null) {
+      if (episode != null && !episode.hasAired) {
         _upcomingEpisode = episode;
         notifyListeners();
       }

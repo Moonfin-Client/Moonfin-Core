@@ -19,6 +19,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../../preference/detail_metadata_layout.dart';
 import '../../../../preference/preference_constants.dart';
 import '../../../../preference/user_preferences.dart';
+import '../upcoming_episode_badge.dart';
 import '../../../../util/overview_text.dart';
 import '../../../../util/seerr_credits.dart';
 import '../../../../util/platform_detection.dart';
@@ -700,7 +701,12 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
           }
         case DetailMetadataItem.upcomingEpisodeDate:
           if (item.type == 'Series' && _vm.upcomingEpisode != null) {
-            pieces.add(_upcomingEpisodeBadge(context, _vm.upcomingEpisode!.format(context)));
+            pieces.add(
+              UpcomingEpisodeBadge(
+                text: _vm.upcomingEpisode!.format(context),
+                borderRadius: JellyfinTokens.shapes.smallRadius,
+              ),
+            );
           }
         case DetailMetadataItem.genres:
           if (item.genres.isNotEmpty) {
@@ -726,34 +732,6 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
       spacing: 8,
       runSpacing: 6,
       children: separated,
-    );
-  }
-
-  Widget _upcomingEpisodeBadge(BuildContext context, String text) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-      decoration: BoxDecoration(
-        color: AppColorScheme.accent.withValues(alpha: 0.2),
-        borderRadius: JellyfinTokens.shapes.smallRadius,
-        border: Border.all(
-          color: AppColorScheme.accent.withValues(alpha: 0.5),
-          width: 1,
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.event_available, size: 12, color: AppColorScheme.accent),
-          const SizedBox(width: 4),
-          Text(
-            text,
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: AppColorScheme.accent,
-                  fontWeight: FontWeight.w600,
-                ),
-          ),
-        ],
-      ),
     );
   }
 
