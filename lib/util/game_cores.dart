@@ -399,6 +399,25 @@ Future<List<int>?> loadGameStateWithMigration(
   return legacy;
 }
 
+/// Evidence-backed defaults applied below stored user settings.
+const Map<String, Map<String, String>> coreOptionDefaults = {
+  'mupen64plus_next': {
+    // 8000 caused unbounded GPU-memory growth on Shield and Fire TV Cube;
+    // 1500 reached a stable plateau in the measured N64 runs.
+    'mupen64plus-MaxTxCacheSize': '1500',
+  },
+};
+
+/// Apply app defaults without overriding stored user settings.
+Map<String, String>? withCoreOptionDefaults(
+  String coreId,
+  Map<String, String>? settings,
+) {
+  final defaults = coreOptionDefaults[coreId];
+  if (defaults == null || defaults.isEmpty) return settings;
+  return {...defaults, ...?settings};
+}
+
 /// The saved-settings key for [coreId], shared by every place that reads or
 /// writes a core's persisted emulator options.
 String coreSettingsKey(String coreId) => 'moonfin-native-$coreId';

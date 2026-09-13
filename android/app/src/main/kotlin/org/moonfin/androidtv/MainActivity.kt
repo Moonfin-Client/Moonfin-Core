@@ -917,7 +917,14 @@ class MainActivity : AudioServiceActivity(), GamepadsCompatibleActivity {
     }
 
     override fun onPause() {
+        // Both before super, and both required. releaseHeldInput drops buttons
+        // physically held as the app goes away, so they cannot fire on resume.
+        // onHostPause pauses the core and drops the surface while the consumer
+        // is still alive, rather than after it has gone away - see
+        // LibretroBridge.onHostPause. A rebase briefly left these as two
+        // separate onPause overrides, which does not compile.
         nativePad?.releaseHeldInput()
+        libretroBridge?.onHostPause()
         super.onPause()
     }
 
@@ -1023,6 +1030,10 @@ class MainActivity : AudioServiceActivity(), GamepadsCompatibleActivity {
 
     override fun onResume() {
         super.onResume()
+        // Re-attach the emulator's output surface on devices where Flutter's
+        // SurfaceProducer callbacks never fire (API 24-28). A no-op everywhere
+        // else - the bridge stands down as soon as it sees a real callback.
+        libretroBridge?.onHostResume()
         if (isInPictureInPictureMode) return
         dismissRunnable?.let {
             handler.removeCallbacks(it)

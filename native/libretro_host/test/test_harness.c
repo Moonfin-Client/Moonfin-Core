@@ -38,7 +38,14 @@ static atomic_int g_frames_ready;
 #define SRC_H 48
 static atomic_int g_shutdowns;
 static atomic_int g_late_runs;
-static char g_last_message[128];
+// Sized well past any plausible path length, NOT to the message content. The
+// host formats diagnostics into a 1024-byte buffer (host_log) and several of
+// them embed a full filesystem path before the part a test actually asserts
+// on - e.g. "retro_load_game rejected '<work_dir>/rejected.rom': <core reason>",
+// where work_dir is CMAKE_CURRENT_BINARY_DIR. At 128 bytes a deep build tree
+// truncated the core's reason away and the assertion below failed for reasons
+// that had nothing to do with the host.
+static char g_last_message[8192];
 
 #define CHECK(cond, msg)                            \
   do {                                              \
@@ -1081,10 +1088,10 @@ static void test_format(const char *core_path, const char *rom_path,
 
   if (fmt == LH_FORMAT_RGBA8888) {
     // stub_speed, stub_pattern, stub_rotation, stub_format, stub_huge_frame,
-    // stub_bad_pitch, stub_vfs_dir_check, stub_analog_check,
+    // stub_bad_pitch, stub_vfs_dir_check, stub_analog_check, stub_hw,
     // stub_analog_query, stub_repeat_geometry, stub_unserved,
     // stub_input_thread, stub_no_poll, stub_waits_report.
-    CHECK(lh_option_count(host) == 14, "fourteen core options");
+    CHECK(lh_option_count(host) == 15, "fifteen core options");
     lh_option opt;
     int opt_rc = lh_get_option(host, 0, &opt);
     CHECK(opt_rc == 0 && strcmp(opt.id, "stub_speed") == 0, "option id");
@@ -1112,7 +1119,7 @@ static void test_format(const char *core_path, const char *rom_path,
     uint8_t blob_a[64], blob_b[64], blob_c[64];
     CHECK(size > 0, "serialize size");
     CHECK(lh_serialize(host, blob_a, size) == 0, "serialize after restart");
-    CHECK(lh_option_count(host) == 14, "restart replaces option definitions");
+    CHECK(lh_option_count(host) == 15, "restart replaces option definitions");
     lh_get_option(host, 0, &opt);
     CHECK(strcmp(opt.current, "fast") == 0, "restart retains option value");
     int32_t restart_marker;
@@ -1729,6 +1736,89 @@ static void test_truncated_sram_warns(const char *core_path,
   lh_destroy(host2);
 }
 
+// Hardware-render backend stubs.
+static atomic_int g_hw_calls;
+static atomic_int g_hw_presents;
+static atomic_int g_hw_creates;
+static atomic_int g_hw_destroys;
+// current_target must return a stable handle.
+static int g_hw_target_stable = 1;
+static uint64_t g_hw_last_target;
+static int g_hw_saw_target;
+
+// supports() is a capability query, not rendering work.
+static atomic_int g_hw_supports_calls;
+static int hw_supports(void *user, const lh_hw_request *req) {
+  (void)user;
+  (void)req;
+  g_hw_supports_calls++;
+  return 1;
+}
+static int hw_context_create(void *user, const lh_hw_request *req) {
+  (void)user;
+  (void)req;
+  g_hw_calls++;
+  g_hw_creates++;
+  return 0;
+}
+static void hw_context_destroy(void *user) {
+  (void)user;
+  g_hw_calls++;
+  g_hw_destroys++;
+}
+static int hw_make_current(void *user) {
+  (void)user;
+  g_hw_calls++;
+  return 0;
+}
+static void hw_release_current(void *user) {
+  (void)user;
+  g_hw_calls++;
+}
+static lh_hw_target hw_current_target(void *user) {
+  (void)user;
+  g_hw_calls++;
+  lh_hw_target t;
+  t.kind = LH_HW_TARGET_GL_FBO;
+  t.u.gl_fbo_name = 7;
+  if (g_hw_saw_target && g_hw_last_target != t.u.gl_fbo_name) {
+    g_hw_target_stable = 0;
+  }
+  g_hw_last_target = t.u.gl_fbo_name;
+  g_hw_saw_target = 1;
+  return t;
+}
+static void *hw_get_proc_address(void *user, const char *sym) {
+  (void)user;
+  (void)sym;
+  g_hw_calls++;
+  return NULL;
+}
+static int hw_present(void *user, int width, int height, int rotation) {
+  (void)user;
+  (void)width;
+  (void)height;
+  (void)rotation;
+  g_hw_calls++;
+  g_hw_presents++;
+  return 0;
+}
+
+static lh_hw_backend make_hw_backend(void) {
+  lh_hw_backend b;
+  memset(&b, 0, sizeof(b));
+  b.struct_version = LH_HW_BACKEND_VERSION;
+  b.supports = hw_supports;
+  b.context_create = hw_context_create;
+  b.context_destroy = hw_context_destroy;
+  b.make_current = hw_make_current;
+  b.release_current = hw_release_current;
+  b.current_target = hw_current_target;
+  b.get_proc_address = hw_get_proc_address;
+  b.present = hw_present;
+  return b;
+}
+
 int main(int argc, char **argv) {
   if (argc < 3) {
     printf("usage: %s <stub_core> <work_dir>\n", argv[0]);
@@ -1740,14 +1830,321 @@ int main(int argc, char **argv) {
   snprintf(rom_path, sizeof(rom_path), "%s/dummy.rom", work_dir);
   write_rom(rom_path, "stub-rom");
 
-  // bug-175. mupen64plus-next asks for this in retro_set_environment, stores
-  // it in a variable initialised to NULL, and - whenever its threaded renderer
-  // is enabled - calls it with no null check from retro_unload_game,
-  // retro_serialize and retro_unserialize. This host used to fall through to
-  // the default false and never touch the out-param, so the core jumped to
-  // address 0 a few seconds into a save-state load on the Shield. The contract
-  // is that the pointer is written and callable, not merely that we say no
-  // politely.
+  // Validate backend registration and the software-path no-op contract.
+  {
+    printf("hw backend registration:\n");
+    lh_hw_backend good = make_hw_backend();
+    lh_host *hw = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
+
+    CHECK(lh_set_hw_backend(NULL, &good, NULL) == -1,
+          "a NULL host is rejected");
+
+    lh_hw_backend bad_version = make_hw_backend();
+    bad_version.struct_version = LH_HW_BACKEND_VERSION + 1;
+    CHECK(lh_set_hw_backend(hw, &bad_version, NULL) == -1,
+          "an unrecognised struct_version is rejected");
+
+    lh_hw_backend no_present = make_hw_backend();
+    no_present.present = NULL;
+    CHECK(lh_set_hw_backend(hw, &no_present, NULL) == -1,
+          "a table missing present is rejected");
+
+    lh_hw_backend no_supports = make_hw_backend();
+    no_supports.supports = NULL;
+    CHECK(lh_set_hw_backend(hw, &no_supports, NULL) == -1,
+          "a table missing supports is rejected");
+
+    lh_hw_backend no_target = make_hw_backend();
+    no_target.current_target = NULL;
+    CHECK(lh_set_hw_backend(hw, &no_target, NULL) == -1,
+          "a table missing current_target is rejected");
+
+    CHECK(lh_set_hw_backend(hw, &good, NULL) == 0,
+          "a complete, current-version table is accepted");
+    CHECK(lh_set_hw_backend(hw, NULL, NULL) == 0,
+          "a NULL backend clears the registration");
+
+    CHECK(lh_hw_active(NULL) == 0, "lh_hw_active is 0 for a NULL host");
+    CHECK(lh_hw_active(hw) == 0, "lh_hw_active is 0 with no core loaded");
+
+    // Must not crash or require a backend/core to be present.
+    lh_notify_hw_context_lost(NULL);
+    lh_notify_hw_context_lost(hw);
+    CHECK(1, "lh_notify_hw_context_lost tolerates a NULL host and no core");
+
+    lh_destroy(hw);
+  }
+
+  // Exercise the hardware path end to end without a GPU.
+  {
+    printf("hardware render path:\n");
+    lh_hw_backend good = make_hw_backend();
+    lh_host *hw = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
+    CHECK(lh_set_hw_backend(hw, &good, NULL) == 0, "backend registers");
+
+    g_hw_calls = 0;
+    g_hw_presents = 0;
+    g_hw_creates = 0;
+    g_hw_destroys = 0;
+    g_frames_ready = 0;
+    g_last_message[0] = '\0';
+
+    const char *keys[] = {"stub_hw"};
+    const char *vals[] = {"gles3"};
+    lh_av_info av;
+    CHECK(lh_load(hw, core_path, rom_path, work_dir, work_dir, "hwpath", keys,
+                  vals, 1, &av) == 0,
+          "a core requesting a GLES3 context loads");
+
+    CHECK(atomic_load(&g_hw_creates) == 0,
+          "no context is created on the loading thread");
+    CHECK(lh_hw_active(hw) == 0, "lh_hw_active is 0 before the loop starts");
+
+    lh_start(hw);
+    msleep(200);
+    CHECK(atomic_load(&g_hw_creates) == 1,
+          "the run loop creates exactly one context");
+    CHECK(lh_hw_active(hw) == 1, "lh_hw_active reports the hardware path");
+    CHECK(atomic_load(&g_hw_presents) > 0, "frames are presented");
+
+    const void *px = NULL;
+    int fw = 0, fh = 0, fs = 0;
+    CHECK(lh_get_frame(hw, &px, &fw, &fh, &fs) == 0,
+          "no software frame is produced on the hardware path");
+    CHECK(atomic_load(&g_frames_ready) == 0,
+          "frame_ready is never fired on the hardware path");
+
+    CHECK(g_hw_target_stable, "current_target returned a stable handle");
+
+    // The platform receives the fixed render-target size.
+    int rw = 0, rh = 0;
+    CHECK(lh_hw_render_size(hw, &rw, &rh) == 1 && rw > 0 && rh > 0,
+          "the hardware render size is reported");
+
+    lh_stop(hw);
+    CHECK(atomic_load(&g_hw_destroys) == 1, "the context is destroyed once");
+    CHECK(strstr(g_last_message, "mode=1") != NULL &&
+              strstr(g_last_message, "reset=1") != NULL &&
+              strstr(g_last_message, "destroy=1") != NULL,
+          "core saw context_reset once and context_destroy before unload");
+    lh_destroy(hw);
+  }
+
+  // GLES2 requests are supported as well as GLES3 requests.
+  {
+    printf("a GLES2 request is served:\n");
+    lh_hw_backend good = make_hw_backend();
+    lh_host *g2 = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
+    lh_set_hw_backend(g2, &good, NULL);
+    g_hw_creates = 0;
+    g_hw_presents = 0;
+    g_frames_ready = 0;
+    const char *keys[] = {"stub_hw"};
+    const char *vals[] = {"gles2"};
+    lh_av_info av;
+    CHECK(lh_load(g2, core_path, rom_path, work_dir, work_dir, "gles2", keys,
+                  vals, 1, &av) == 0,
+          "a core requesting GLES2 loads");
+    lh_start(g2);
+    msleep(200);
+    CHECK(atomic_load(&g_hw_creates) == 1, "a GLES2 context is created");
+    CHECK(lh_hw_active(g2) == 1, "GLES2 runs on the hardware path");
+    CHECK(atomic_load(&g_hw_presents) > 0, "GLES2 frames are presented");
+    CHECK(atomic_load(&g_frames_ready) == 0,
+          "no software frames on the GLES2 hardware path");
+    lh_stop(g2);
+    lh_destroy(g2);
+  }
+
+  {
+    printf("GET_PREFERRED_HW_RENDER:\n");
+    lh_hw_backend good = make_hw_backend();
+
+    lh_host *pw = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
+    lh_set_hw_backend(pw, &good, NULL);
+    g_last_message[0] = '\0';
+    const char *keys[] = {"stub_hw"};
+    const char *vals[] = {"gles3"};
+    lh_av_info av;
+    lh_load(pw, core_path, rom_path, work_dir, work_dir, "pref", keys, vals, 1,
+            &av);
+    lh_start(pw);
+    msleep(120);
+    lh_stop(pw);
+    CHECK(strstr(g_last_message, "pref=4") != NULL,
+          "with a backend, the preferred type is written as GLES3");
+    CHECK(strstr(g_last_message, "pref=999") == NULL,
+          "the out-param is not left untouched");
+    CHECK(strstr(g_last_message, "prefrc=0") != NULL,
+          "and it returns false, meaning GLES is all we serve");
+    lh_destroy(pw);
+
+    lh_host *pn = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
+    g_last_message[0] = '\0';
+    lh_load(pn, core_path, rom_path, work_dir, work_dir, "pref2", keys, vals, 1,
+            &av);
+    lh_start(pn);
+    msleep(120);
+    lh_stop(pn);
+    CHECK(strstr(g_last_message, "pref=0") != NULL,
+          "with no backend the preferred type is written as NONE");
+    lh_destroy(pn);
+  }
+
+  // A restart replaces the hardware context and reinitializes the core.
+  {
+    printf("restart rebuilds the hardware context:\n");
+    lh_hw_backend good = make_hw_backend();
+    lh_host *rs = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
+    lh_set_hw_backend(rs, &good, NULL);
+    g_hw_creates = 0;
+    g_hw_destroys = 0;
+    g_hw_presents = 0;
+    const char *keys[] = {"stub_hw"};
+    const char *vals[] = {"gles3"};
+    lh_av_info av;
+    CHECK(lh_load(rs, core_path, rom_path, work_dir, work_dir, "hwrestart",
+                  keys, vals, 1, &av) == 0,
+          "hardware core loads before the restart");
+    lh_start(rs);
+    msleep(200);
+    CHECK(atomic_load(&g_hw_creates) == 1, "one context before the restart");
+
+    unsigned gen = lh_restart_generation(rs);
+    CHECK(lh_restart(rs) == 0, "restart succeeds with a live context");
+    for (int i = 0; i < 100 && lh_restart_generation(rs) == gen; i++) {
+      msleep(20);
+    }
+    CHECK(lh_restart_generation(rs) != gen, "the restart landed");
+
+    CHECK(atomic_load(&g_hw_destroys) == 1,
+          "the pre-restart context was destroyed");
+    CHECK(atomic_load(&g_hw_creates) == 2,
+          "a fresh context was created for the new core instance");
+    CHECK(lh_hw_active(rs) == 1, "still on the hardware path after a restart");
+
+    g_hw_presents = 0;
+    msleep(200);
+    CHECK(atomic_load(&g_hw_presents) > 0, "frames present after the restart");
+
+    lh_stop(rs);
+    CHECK(atomic_load(&g_hw_destroys) == 2,
+          "the post-restart context is destroyed on stop");
+    lh_destroy(rs);
+  }
+
+  // An uncontrolled loss re-resets the core without context_destroy.
+  {
+    printf("context loss re-resets without a destroy:\n");
+    lh_hw_backend good = make_hw_backend();
+    lh_host *cl = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
+    lh_set_hw_backend(cl, &good, NULL);
+    g_hw_creates = 0;
+    g_hw_destroys = 0;
+    const char *keys[] = {"stub_hw"};
+    const char *vals[] = {"gles3"};
+    lh_av_info av;
+    lh_load(cl, core_path, rom_path, work_dir, work_dir, "hwlost", keys, vals,
+            1, &av);
+    lh_start(cl);
+    msleep(150);
+    CHECK(atomic_load(&g_hw_creates) == 1, "context is up");
+
+    lh_notify_hw_context_lost(cl);
+    msleep(200);
+    CHECK(atomic_load(&g_hw_destroys) == 0,
+          "a lost context is NOT torn down through context_destroy");
+    CHECK(atomic_load(&g_hw_creates) == 1,
+          "and is not re-created behind the core's back");
+    CHECK(lh_hw_active(cl) == 1, "the session stays on the hardware path");
+    lh_stop(cl);
+    lh_destroy(cl);
+  }
+
+  // Unsupported context types are refused cleanly.
+  {
+    printf("vulkan is refused:\n");
+    lh_hw_backend good = make_hw_backend();
+    lh_host *vk = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
+    lh_set_hw_backend(vk, &good, NULL);
+    g_hw_creates = 0;
+    const char *keys[] = {"stub_hw"};
+    const char *vals[] = {"vulkan"};
+    lh_av_info av;
+    CHECK(lh_load(vk, core_path, rom_path, work_dir, work_dir, "vk", keys, vals,
+                  1, &av) == 0,
+          "the stub still loads after its Vulkan request is refused");
+    lh_start(vk);
+    msleep(150);
+    CHECK(lh_hw_active(vk) == 0, "a refused Vulkan request leaves the software path");
+    CHECK(atomic_load(&g_hw_creates) == 0, "no context is created for Vulkan");
+    CHECK(atomic_load(&g_frames_ready) > 0,
+          "the core keeps rendering in software after the refusal");
+    lh_stop(vk);
+    lh_destroy(vk);
+  }
+
+  // A hardware request without a backend keeps the software path.
+  {
+    printf("no backend registered:\n");
+    lh_host *nb = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
+    g_frames_ready = 0;
+    const char *keys[] = {"stub_hw"};
+    const char *vals[] = {"gles3"};
+    lh_av_info av;
+    CHECK(lh_load(nb, core_path, rom_path, work_dir, work_dir, "nb", keys, vals,
+                  1, &av) == 0,
+          "load succeeds with no backend registered");
+    lh_start(nb);
+    msleep(150);
+    CHECK(lh_hw_active(nb) == 0, "lh_hw_active stays 0 with no backend");
+    CHECK(atomic_load(&g_frames_ready) > 0, "software frames still arrive");
+    lh_stop(nb);
+    lh_destroy(nb);
+  }
+
+  // Registering a backend must not change a software core's behavior.
+  {
+    printf("a registered hw backend leaves the software path alone:\n");
+    lh_hw_backend good = make_hw_backend();
+    lh_host *sw = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
+    CHECK(lh_set_hw_backend(sw, &good, NULL) == 0,
+          "backend registers before load");
+
+    g_hw_calls = 0;
+    g_hw_supports_calls = 0;
+    g_frames_ready = 0;
+    lh_av_info sw_av;
+    CHECK(lh_load(sw, core_path, rom_path, work_dir, work_dir, "hwsw", NULL,
+                  NULL, 0, &sw_av) == 0,
+          "a software core still loads with a backend registered");
+    CHECK(lh_hw_active(sw) == 0,
+          "lh_hw_active stays 0 for a software core");
+
+    lh_start(sw);
+    msleep(120);
+    CHECK(g_frames_ready > 0, "frames still arrive on the software path");
+    CHECK(lh_hw_active(sw) == 0, "lh_hw_active stays 0 while running");
+
+    const void *px = NULL;
+    int fw = 0, fh = 0, fstride = 0;
+    CHECK(lh_get_frame(sw, &px, &fw, &fh, &fstride) == 1 && fw == SRC_W &&
+              fh == SRC_H && fstride == SRC_W * 4,
+          "lh_get_frame still returns a correctly shaped software frame");
+
+    CHECK(atomic_load(&g_hw_calls) == 0,
+          "no rendering entry point was called during a software session");
+    int swrw = -1, swrh = -1;
+    CHECK(lh_hw_render_size(sw, &swrw, &swrh) == 0 && swrw == -1 && swrh == -1,
+          "no hardware render size is reported for a software core");
+    CHECK(atomic_load(&g_hw_supports_calls) <= 2,
+          "the capability probe is cached, not repeated per query");
+
+    lh_stop(sw);
+    lh_destroy(sw);
+  }
+
+  // Verify that the optional thread-waits callback out-parameter is written.
   {
     printf("GET_CLEAR_ALL_THREAD_WAITS_CB:\n");
     lh_host *tw = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
@@ -1776,10 +2173,7 @@ int main(int argc, char **argv) {
     lh_destroy(tw);
   }
 
-  // The other half of bug-175: an unserved command must be visible, not
-  // silent. The diagnostic itself lands on stderr or in logcat, neither of
-  // which this harness reads, so what is asserted here is the record behind
-  // it - one entry per distinct command, however many times it is asked.
+  // Unserved environment commands are recorded once per distinct command.
   {
     printf("unhandled environment commands are recorded once each:\n");
     lh_host *ue = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
@@ -1797,10 +2191,8 @@ int main(int argc, char **argv) {
     lh_destroy(ue);
   }
 
-  // bug-177, the delivery contract. A published transition remains blocked
-  // until the core reads it, so a transient press survives frontend frames,
-  // is delivered exactly once, and cannot wedge a button if the core never
-  // reads that id. Test hooks keep the frame boundaries deterministic.
+  // A published transition remains until read, so a transient press survives
+  // frontend frames and is delivered exactly once.
   {
     printf("a transient press is delivered exactly once:\n");
     lh_host *ed = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
@@ -1827,21 +2219,8 @@ int main(int argc, char **argv) {
     lh_destroy(ed);
   }
 
-  // bug-177, the actual fault. libretro REQUIRES a core to poll ("During
-  // retro_run(), the retro_input_poll_t callback must be called at least
-  // once", libretro.h), but mupen64plus-next does not always honour it: with
-  // its threaded renderer enabled nothing called poll_cb at all. latch_input
-  // is the only writer of input_frame, so such a core received NO input
-  // whatsoever. Device evidence is the poll heartbeat in
-  // input_poll_cb staying silent for an entire session while presses were
-  // provably reaching lh_set_input - and that heartbeat alone; the edge trace
-  // captured at the same time was itself broken and proves nothing.
-  //
-  // The assertion is on what the CORE observed, not on the host's own frame:
-  // the stub reads RETRO_DEVICE_ID_JOYPAD_MASK through input_state_cb and
-  // paints it into the green channel, so a green byte carrying the bit is
-  // proof the core saw it. Peeking input_frame instead would pass even if
-  // input_state_cb had returned zero every time.
+  // A core may read input without calling input_poll. Assert on the value
+  // observed through input_state_cb, not the host's published frame.
   {
     printf("input reaches a core that never calls input_poll:\n");
     lh_host *np = lh_create(LH_FORMAT_RGBA8888, make_callbacks());
@@ -2002,12 +2381,7 @@ int main(int argc, char **argv) {
     lh_destroy(hb);
   }
 
-  // bug-177. latch_input publishes the polled frame into plain, non-atomic
-  // arrays and documents that polling and reading share the emulation thread.
-  // mupen64plus-next with ThreadedRenderer breaks that, and the symptom is
-  // that a synthesised two-frame Start pulse vanishes while held buttons are
-  // fine. The host cannot stop a core doing this, so it detects and reports
-  // it instead of leaving the hazard silent.
+  // Detect input reads that occur on a different thread from input polling.
   {
     printf("cross-thread input reads are detected:\n");
     lh_host *nt = lh_create(LH_FORMAT_RGBA8888, make_callbacks());

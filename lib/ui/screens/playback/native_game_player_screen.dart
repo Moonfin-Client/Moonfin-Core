@@ -965,6 +965,12 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
         // managed to read is not, so writes stay disabled for this session.
         _coreOptionsReadable = false;
       }
+      // App-chosen defaults go UNDERNEATH whatever the user has stored, so an
+      // explicit setting always wins. This is also what a settings reset falls
+      // back to: clearing the document leaves these rather than the core's own
+      // defaults, which for N64 ship a texture-cache size that OOM-kills the
+      // app on TV hardware. See coreOptionDefaults.
+      settingsJson = withCoreOptionDefaults(coreId, settingsJson);
       // Last check before starting the one-per-process native session: if the
       // screen was unmounted while settings were loading, starting it now
       // would leave a session running with nothing left to tear it down.

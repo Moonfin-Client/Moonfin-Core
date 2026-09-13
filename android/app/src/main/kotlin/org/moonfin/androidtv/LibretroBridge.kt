@@ -86,6 +86,21 @@ class LibretroBridge(
   // not resume a game the user left paused.
   @Volatile private var userPaused = false
 
+  // Whether Flutter's SurfaceProducer callbacks have ever actually fired.
+  //
+  // They do not fire on every device. Flutter picks the producer implementation
+  // on Build.VERSION.SDK_INT >= 29, and the pre-29 one -
+  // SurfaceTextureSurfaceProducer - has a setCallback that compiles to a bare
+  // `return`. So on API 24-28 (the Fire TV Cube is API 28) onSurfaceAvailable
+  // and onSurfaceCleanup NEVER arrive, and nothing pauses the core or drops the
+  // surface when the app is backgrounded.
+  //
+  // This is detected EMPIRICALLY rather than by re-deriving Flutter's own
+  // SDK_INT rule: that rule has an extra device-specific exclusion, and it is
+  // Flutter's to change. If a callback ever arrives we trust the callbacks and
+  // the Activity-driven path below stands down.
+  @Volatile private var producerCallbacksObserved = false
+
   // The most recent message from the core, used as the reason if it then quits.
   @Volatile private var lastCoreMessage: String? = null
 
@@ -220,11 +235,13 @@ class LibretroBridge(
     // backgrounding, so swap it out of the native side in lockstep.
     producer.setCallback(object : TextureRegistry.SurfaceProducer.Callback {
       override fun onSurfaceAvailable() {
+        producerCallbacksObserved = true
         nativeSetSurface(producer.surface)
         if (isActive && !userPaused) nativeResume()
       }
 
       override fun onSurfaceCleanup() {
+        producerCallbacksObserved = true
         nativePause()
         nativeSetSurface(null)
       }
@@ -232,10 +249,8 @@ class LibretroBridge(
 
     val av = nativeLoad(core, corePath, romPath, systemDir, saveDir, gameId, keys, values)
     if (av == null) {
-      // Handle load failures more gracefully.
-      // SurfaceTextureSurfaceProducer.release() unconditionally calls
-      // surface.release() with no null check, masking the real
-      // "load_failed" cause result with a crash. This "touches" it to avoid that.
+      // Materialize the surface before release so older producers do not mask
+      // the load failure with a null-surface crash.
       producer.surface
       producer.release()
       surfaceProducer = null
@@ -252,7 +267,8 @@ class LibretroBridge(
 
     val width = av[0].toInt()
     val height = av[1].toInt()
-    producer.setSize(width, height)
+    val presentSize = hardwarePresentSize() ?: Pair(width, height)
+    producer.setSize(presentSize.first, presentSize.second)
     nativeSetSurface(producer.surface)
 
     startAudio(av[4].toInt())
@@ -270,15 +286,46 @@ class LibretroBridge(
       ))
   }
 
-  // Reachable from three places: the "stop" method call, load() (which calls
-  // it before nativeLoad() to tear down any prior session), and MainActivity's
-  // onDestroy() (a running session must not be abandoned if the activity is
-  // destroyed while the process survives - see the comment there). All three
-  // routes destroy the native host, so stopAudio() must stay ahead of
-  // nativeStop(): it is what guarantees no thread is inside nativeReadAudio
-  // when the host, its ring buffer, and its audio mutex are freed. Safe to
-  // call repeatedly - isActive/audioTrack/audioThread/surfaceProducer are all
-  // null-guarded, and nativeStop()'s teardown() no-ops once g_ctx.host is NULL.
+  // Stop audio before destroying the native host.
+  /// Return a uniformly scaled hardware surface size, capped to the display.
+  private fun hardwarePresentSize(): Pair<Int, Int>? {
+    val hw = nativeHwRenderSize() ?: return null
+    val coreW = hw.getOrNull(0) ?: return null
+    val coreH = hw.getOrNull(1) ?: return null
+    if (coreW <= 0 || coreH <= 0) return null
+
+    val metrics = android.content.res.Resources.getSystem().displayMetrics
+    val displayW = metrics.widthPixels
+    val displayH = metrics.heightPixels
+    if (displayW <= 0 || displayH <= 0) return Pair(coreW, coreH)
+
+    val scale = minOf(
+      displayW.toDouble() / coreW,
+      displayH.toDouble() / coreH,
+      1.0,
+    )
+    val w = Math.max(1, Math.round(coreW * scale).toInt())
+    val h = Math.max(1, Math.round(coreH * scale).toInt())
+    return Pair(w, h)
+  }
+
+  /// Pause when the platform does not deliver surface lifecycle callbacks.
+  fun onHostPause() {
+    if (producerCallbacksObserved) return
+    if (!isActive) return
+    nativePause()
+    nativeSetSurface(null)
+  }
+
+  /// Resume after a platform-driven pause.
+  fun onHostResume() {
+    if (producerCallbacksObserved) return
+    if (!isActive) return
+    val producer = surfaceProducer ?: return
+    nativeSetSurface(producer.surface)
+    if (!userPaused) nativeResume()
+  }
+
   fun stop() {
     val hadActiveSession = isActive
     isActive = false
@@ -568,7 +615,11 @@ class LibretroBridge(
   // Called from JNI on the host run-loop thread when the core geometry changes.
   fun onGeometry(width: Int, height: Int, aspect: Double) {
     mainHandler.post {
-      surfaceProducer?.setSize(width, height)
+      val producer = surfaceProducer
+      // Hardware restarts can change the render target without re-entering load.
+      val size = hardwarePresentSize() ?: Pair(width, height)
+      producer?.setSize(size.first, size.second)
+      if (producer != null) nativeSetSurface(producer.surface)
       eventSink?.success(
         mapOf("event" to "videoGeometry", "width" to width, "height" to height,
           "aspect" to aspect))
@@ -670,6 +721,7 @@ class LibretroBridge(
     optVals: Array<String>): DoubleArray?
 
   private external fun nativeSetSurface(surface: Surface?)
+  private external fun nativeHwRenderSize(): IntArray?
   private external fun nativeStart(): Int
   private external fun nativePause()
   private external fun nativeResume()
