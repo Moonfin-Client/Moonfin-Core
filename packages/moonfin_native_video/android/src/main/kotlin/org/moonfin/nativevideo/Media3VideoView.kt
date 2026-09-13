@@ -19,7 +19,6 @@ import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
 import android.view.Gravity
-import android.view.PixelCopy
 import android.view.Display
 import android.view.PixelCopy
 import android.view.Surface
@@ -3197,7 +3196,13 @@ class Media3VideoView(
             return
         }
         when (val view = videoView) {
-            is SurfaceView -> copySurfaceForLetterbox(view, sourceW, sourceH, result)
+            // Tunneled output never lands in a buffer this side can read.
+            is SurfaceView ->
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && !tunnelingActive) {
+                    copySurfaceForLetterbox(view, sourceW, sourceH, result)
+                } else {
+                    result.success(null)
+                }
             is TextureView -> copyTextureForLetterbox(view, sourceW, sourceH, result)
             else -> result.success(null)
         }
@@ -3230,10 +3235,6 @@ class Media3VideoView(
         sourceHeight: Int,
         result: MethodChannel.Result,
     ) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            result.success(null)
-            return
-        }
         val surface = view.holder.surface
         if (surface == null || !surface.isValid || view.width <= 0 || view.height <= 0) {
             result.success(null)

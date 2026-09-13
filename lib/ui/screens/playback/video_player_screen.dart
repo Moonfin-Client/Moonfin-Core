@@ -239,7 +239,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   final GlobalKey _topOverlayKey = GlobalKey();
   final GlobalKey _bottomOverlayKey = GlobalKey();
   late ZoomMode _zoomMode;
-  late bool _cropLocksZoom;
   double _audioDelay = 0.0;
   double _subtitleDelay = 0.0;
   bool _subtitleActive = false;
@@ -814,7 +813,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _themeMusicService.setExternalAudioActive(true);
     _segmentService = _createSegmentService();
     _zoomMode = _prefs.get(UserPreferences.playerZoomMode);
-    _cropLocksZoom = _computeCropLocksZoom();
     // Media3 only takes the zoom mode from this call, and the backend change it
     // listens for never fires when it was already the one playing.
     unawaited(_syncMedia3ZoomMode());
@@ -871,10 +869,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         unawaited(backend.setVolume(_playerVolume));
       }
       if (!mounted) return;
-      final cropLocks = _computeCropLocksZoom();
-      setState(() {
-        _cropLocksZoom = cropLocks;
-      });
+      setState(() {});
     });
     _syncMedia3VolumeBoostLevel(resetWhenUnavailable: true);
     if (PlatformDetection.isTV) {
@@ -2093,7 +2088,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       topSubtitle: topSubtitle,
       artworkUrl: artworkUrl,
       showClock: false,
-      zoomModeLabel: _zoomModeLabel(_activeZoomMode),
+      zoomModeLabel: _zoomModeLabel(_zoomMode),
       streamInfoSections: streamInfoSections,
       hasCastCrew: hasCastCrew,
       castPeople: castPeople,
@@ -2381,12 +2376,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _syncMediaQueuingPreference();
     if (!mounted) return;
     final zoom = _prefs.get(UserPreferences.playerZoomMode);
-    final cropLocks = _computeCropLocksZoom();
-    if (zoom == _zoomMode && cropLocks == _cropLocksZoom) return;
-    setState(() {
-      _zoomMode = zoom;
-      _cropLocksZoom = cropLocks;
-    });
+    if (zoom == _zoomMode) return;
+    setState(() => _zoomMode = zoom);
     unawaited(_syncMedia3ZoomMode());
   }
 
@@ -2394,14 +2385,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _manager.autoAdvanceEnabled = _prefs.get(
       UserPreferences.autoplayNextEpisode,
     );
-  }
-
-  ZoomMode get _activeZoomMode =>
-      _cropLocksZoom ? ZoomMode.autoCrop : _zoomMode;
-
-  bool _computeCropLocksZoom() {
-    return _prefs.get(UserPreferences.cropBlackBars) &&
-        (_activeBackend?.supportsLetterboxCrop ?? false);
   }
 
   void _onSyncPlayChanged() {
@@ -4083,7 +4066,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       child: Trickplay(
         fillFrame: true,
         content: (_) => FittedBox(
-          fit: _zoomToFit(_activeZoomMode),
+          fit: _zoomToFit(_zoomMode),
           child: SizedBox(
             width: tile.thumbWidth,
             height: tile.thumbHeight,
@@ -4097,7 +4080,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   Widget _buildVideoSurface() {
     if (PlatformDetection.isIOS || PlatformDetection.isMacOS) {
       return Positioned.fill(
-        child: AetherVideoView(key: _videoSurfaceKey, zoomMode: _activeZoomMode.name),
+        child: AetherVideoView(key: _videoSurfaceKey, zoomMode: _zoomMode.name),
       );
     }
 
@@ -4114,7 +4097,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     final htmlBackend = _activeHtmlVideoBackend;
     if (htmlBackend != null) {
       return Positioned.fill(
-        child: htmlBackend.buildView(fit: _zoomToFit(_activeZoomMode)),
+        child: htmlBackend.buildView(fit: _zoomToFit(_zoomMode)),
       );
     }
 
@@ -4147,7 +4130,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       return Positioned.fill(
         child: NativeVideoView(
           player: mediaKitBackend.player,
-          zoomMode: _nativeZoomMode(_activeZoomMode),
+          zoomMode: _nativeZoomMode(_zoomMode),
           fill: Colors.black,
           videoOutput: selectedVo,
           hardwareDecodingEnabled: hwDecodingEnabled,
@@ -4169,7 +4152,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
             controls: NoVideoControls,
             width: constraints.maxWidth,
             height: constraints.maxHeight,
-            fit: _zoomToFit(_activeZoomMode),
+            fit: _zoomToFit(_zoomMode),
             fill: Colors.black,
             pauseUponEnteringBackgroundMode:
                 !PlatformDetection.isIOS && !PlatformDetection.isAndroid,
@@ -4195,7 +4178,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   Future<void> _syncMedia3ZoomMode() async {
     final backend = _activeMedia3Backend;
     if (backend == null) return;
-    await backend.setZoomMode(_media3ZoomModeWire(_activeZoomMode));
+    await backend.setZoomMode(_media3ZoomModeWire(_zoomMode));
   }
 
   bool _isBringupInProgress(PlaybackBringupPhase phase) {
@@ -5607,7 +5590,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
               iconSize: secondaryIconSize,
               tooltip: l10n.playerTooltipPlaybackQuality,
             ),
-          if (shows(OsdButton.zoom) && !_cropLocksZoom)
+          if (shows(OsdButton.zoom))
             OsdButton.zoom: _buildZoomButton(
               size: secondaryIconSize,
               extent: secondaryExtent,
@@ -7051,7 +7034,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   void _cyclePlayerZoom() {
-    if (_cropLocksZoom) return;
     final modes = ZoomMode.values;
     final next = modes[(_zoomMode.index + 1) % modes.length];
     setState(() => _zoomMode = next);
@@ -7068,7 +7050,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     FocusNode? focusNode,
     VoidCallback? onRightBoundary,
   }) {
-    final icon = switch (_activeZoomMode) {
+    final icon = switch (_zoomMode) {
       ZoomMode.fit => Icons.fit_screen_rounded,
       ZoomMode.autoCrop => Icons.crop_rounded,
       ZoomMode.stretch => Icons.open_in_full_rounded,
