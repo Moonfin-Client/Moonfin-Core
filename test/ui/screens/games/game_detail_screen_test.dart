@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -303,6 +305,51 @@ void main() {
       find.widgetWithText(FilledButton, 'Play'),
     );
     expect(playButton.focusNode?.hasFocus, isTrue);
+  });
+
+  testWidgets('launch stays disabled until the save check completes', (
+    tester,
+  ) async {
+    final save = Completer<List<int>?>();
+    when(() => gamesApi.getSave(any())).thenAnswer((_) => save.future);
+    await _registerInstalledCores(const []);
+
+    await pumpDetailScreen(tester);
+
+    final checkingButton = tester.widget<FilledButton>(
+      find.widgetWithText(FilledButton, 'Checking for save…'),
+    );
+    expect(checkingButton.onPressed, isNull);
+    expect(find.text('Play'), findsNothing);
+
+    save.complete([1, 2, 3]);
+    await tester.pump();
+    await tester.pump();
+
+    expect(find.text('Continue'), findsOneWidget);
+  });
+
+  testWidgets('a failed save check offers a retry before launch', (
+    tester,
+  ) async {
+    var calls = 0;
+    when(() => gamesApi.getSave(any())).thenAnswer((_) async {
+      calls++;
+      if (calls == 1) throw StateError('offline');
+      return null;
+    });
+    await _registerInstalledCores(const []);
+
+    await pumpDetailScreen(tester);
+
+    expect(find.text('Retry save check'), findsOneWidget);
+    expect(find.text('Play'), findsNothing);
+
+    await tester.tap(find.text('Retry save check'));
+    await tester.pump();
+    await tester.pump();
+
+    expect(find.text('Play'), findsOneWidget);
   });
 
   testWidgets(

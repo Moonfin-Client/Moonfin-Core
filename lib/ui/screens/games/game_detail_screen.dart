@@ -65,6 +65,8 @@ class GameDetailScreen extends StatefulWidget {
   State<GameDetailScreen> createState() => _GameDetailScreenState();
 }
 
+enum _SaveReadiness { checking, absent, available, failed }
+
 class _GameDetailScreenState extends State<GameDetailScreen> with RouteAware {
   final MediaServerClient _client = GetIt.instance<MediaServerClient>();
   final FocusNode _primaryActionFocusNode = FocusNode(
@@ -74,7 +76,8 @@ class _GameDetailScreenState extends State<GameDetailScreen> with RouteAware {
   bool _loading = true;
   String? _error;
   GameDetail? _game;
-  bool _hasSave = false;
+  _SaveReadiness _saveReadiness = _SaveReadiness.checking;
+  int _saveCheckGeneration = 0;
   bool _hardwareRenderingEnabled = true;
   List<GameSummary> _related = const [];
   String? _artworkScope;
@@ -275,6 +278,7 @@ class _GameDetailScreenState extends State<GameDetailScreen> with RouteAware {
       unawaited(retainGameArtworkCacheScope(artworkScope));
       setState(() {
         _game = game;
+        _saveReadiness = _SaveReadiness.checking;
         _loading = false;
       });
 
@@ -290,7 +294,7 @@ class _GameDetailScreenState extends State<GameDetailScreen> with RouteAware {
 
       // Save state and related games are enrichments; a failure here must not block the
       // screen that already has its core data.
-      _loadSave(games, game);
+      unawaited(_loadSave(games, game));
       _loadRelated(games, game);
     } catch (e) {
       if (!mounted) return;
@@ -302,6 +306,10 @@ class _GameDetailScreenState extends State<GameDetailScreen> with RouteAware {
   }
 
   Future<void> _loadSave(GamesApi games, GameDetail game) async {
+    final generation = ++_saveCheckGeneration;
+    if (mounted && _saveReadiness != _SaveReadiness.checking) {
+      setState(() => _saveReadiness = _SaveReadiness.checking);
+    }
     try {
       final save = await loadGameStateWithMigration(
         games,
@@ -309,9 +317,22 @@ class _GameDetailScreenState extends State<GameDetailScreen> with RouteAware {
         game.core,
         forceEmulatorJs: _usesEmulatorJsOverride(game),
       );
-      if (!mounted) return;
-      setState(() => _hasSave = save != null && save.isNotEmpty);
-    } catch (_) {}
+      if (!mounted || generation != _saveCheckGeneration) return;
+      setState(() {
+        _saveReadiness = save != null && save.isNotEmpty
+            ? _SaveReadiness.available
+            : _SaveReadiness.absent;
+      });
+    } catch (_) {
+      if (!mounted || generation != _saveCheckGeneration) return;
+      setState(() => _saveReadiness = _SaveReadiness.failed);
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || generation != _saveCheckGeneration || _routeIsCovered) {
+        return;
+      }
+      _primaryActionFocusNode.requestFocus();
+    });
   }
 
   Future<void> _loadRelated(GamesApi games, GameDetail game) async {
@@ -327,9 +348,20 @@ class _GameDetailScreenState extends State<GameDetailScreen> with RouteAware {
     } catch (_) {}
   }
 
+  void _retrySaveCheck() {
+    final games = _client.gamesApi;
+    final game = _game;
+    if (games == null || game == null) return;
+    unawaited(_loadSave(games, game));
+  }
+
   void _play({required bool fresh}) {
     final game = _game;
-    if (game == null) return;
+    if (game == null ||
+        (_saveReadiness != _SaveReadiness.absent &&
+            _saveReadiness != _SaveReadiness.available)) {
+      return;
+    }
     if (!PlatformDetection.gamesPlaybackSupported ||
         !gameCoreSupported(game.core)) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -399,7 +431,8 @@ class _GameDetailScreenState extends State<GameDetailScreen> with RouteAware {
       if (!mounted) return;
       setState(() {
         _game = detail;
-        _hasSave = false;
+        _saveCheckGeneration++;
+        _saveReadiness = _SaveReadiness.checking;
       });
     }
 
@@ -426,7 +459,7 @@ class _GameDetailScreenState extends State<GameDetailScreen> with RouteAware {
         context,
       ).showSnackBar(SnackBar(content: Text('Could not change player: $e')));
     } finally {
-      if (didUpdate && mounted) _loadSave(games, updated);
+      if (didUpdate && mounted) unawaited(_loadSave(games, updated));
     }
   }
 
@@ -485,12 +518,13 @@ class _GameDetailScreenState extends State<GameDetailScreen> with RouteAware {
                 retroArtworkActivityGate: _routeIsCovered
                     ? null
                     : _retroArtworkActivityGate,
-                hasSave: _hasSave,
+                saveReadiness: _saveReadiness,
                 related: _related,
                 tv: tv,
                 primaryActionFocusNode: _primaryActionFocusNode,
                 onPlay: () => _play(fresh: false),
                 onRestart: () => _play(fresh: true),
+                onRetrySave: _retrySaveCheck,
                 onSelectCore: _selectCore,
                 hardwareRenderingEnabled: _hardwareRenderingEnabled,
                 onToggleHardwareRendering: _toggleHardwareRendering,
@@ -508,11 +542,12 @@ class _GameDetailScreenState extends State<GameDetailScreen> with RouteAware {
                 retroArtworkActivityGate: _routeIsCovered
                     ? null
                     : _retroArtworkActivityGate,
-                hasSave: _hasSave,
+                saveReadiness: _saveReadiness,
                 related: _related,
                 primaryActionFocusNode: _primaryActionFocusNode,
                 onPlay: () => _play(fresh: false),
                 onRestart: () => _play(fresh: true),
+                onRetrySave: _retrySaveCheck,
                 onSelectCore: _selectCore,
                 hardwareRenderingEnabled: _hardwareRenderingEnabled,
                 onToggleHardwareRendering: _toggleHardwareRendering,
@@ -530,11 +565,12 @@ class _PortraitBody extends StatelessWidget {
     required this.artworkDataSource,
     required this.retroArtworkTransport,
     required this.retroArtworkActivityGate,
-    required this.hasSave,
+    required this.saveReadiness,
     required this.related,
     required this.primaryActionFocusNode,
     required this.onPlay,
     required this.onRestart,
+    required this.onRetrySave,
     required this.onSelectCore,
     required this.hardwareRenderingEnabled,
     required this.onToggleHardwareRendering,
@@ -546,11 +582,12 @@ class _PortraitBody extends StatelessWidget {
   final RetroArtworkDataSource? artworkDataSource;
   final RetroArtworkTransport? retroArtworkTransport;
   final RetroArtworkActivityGate? retroArtworkActivityGate;
-  final bool hasSave;
+  final _SaveReadiness saveReadiness;
   final List<GameSummary> related;
   final FocusNode primaryActionFocusNode;
   final VoidCallback onPlay;
   final VoidCallback onRestart;
+  final VoidCallback onRetrySave;
   final VoidCallback onSelectCore;
   final bool hardwareRenderingEnabled;
   final VoidCallback onToggleHardwareRendering;
@@ -603,18 +640,22 @@ class _PortraitBody extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(18, 14, 18, 0),
-            child: _MetaPills(game: game, hasSave: hasSave),
+            child: _MetaPills(
+              game: game,
+              hasSave: saveReadiness == _SaveReadiness.available,
+            ),
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(18, 16, 18, 0),
             child: _ActionRow(
               game: game,
-              hasSave: hasSave,
+              saveReadiness: saveReadiness,
               tv: false,
               fullWidthPrimary: true,
               primaryFocusNode: primaryActionFocusNode,
               onPlay: onPlay,
               onRestart: onRestart,
+              onRetrySave: onRetrySave,
               onSelectCore: onSelectCore,
             ),
           ),
@@ -635,7 +676,7 @@ class _PortraitBody extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(18, 18, 18, 0),
             child: _DetailsPanel(
               game: game,
-              hasSave: hasSave,
+              hasSave: saveReadiness == _SaveReadiness.available,
               onSelectCore: onSelectCore,
             ),
           ),
@@ -667,12 +708,13 @@ class _LandscapeBody extends StatelessWidget {
     required this.artworkDataSource,
     required this.retroArtworkTransport,
     required this.retroArtworkActivityGate,
-    required this.hasSave,
+    required this.saveReadiness,
     required this.related,
     required this.tv,
     required this.primaryActionFocusNode,
     required this.onPlay,
     required this.onRestart,
+    required this.onRetrySave,
     required this.onSelectCore,
     required this.hardwareRenderingEnabled,
     required this.onToggleHardwareRendering,
@@ -684,12 +726,13 @@ class _LandscapeBody extends StatelessWidget {
   final RetroArtworkDataSource? artworkDataSource;
   final RetroArtworkTransport? retroArtworkTransport;
   final RetroArtworkActivityGate? retroArtworkActivityGate;
-  final bool hasSave;
+  final _SaveReadiness saveReadiness;
   final List<GameSummary> related;
   final bool tv;
   final FocusNode primaryActionFocusNode;
   final VoidCallback onPlay;
   final VoidCallback onRestart;
+  final VoidCallback onRetrySave;
   final VoidCallback onSelectCore;
   final bool hardwareRenderingEnabled;
   final VoidCallback onToggleHardwareRendering;
@@ -734,16 +777,21 @@ class _LandscapeBody extends StatelessWidget {
                           children: [
                             _HeroTitle(game: game, large: true),
                             const SizedBox(height: 16),
-                            _MetaPills(game: game, hasSave: hasSave),
+                            _MetaPills(
+                              game: game,
+                              hasSave:
+                                  saveReadiness == _SaveReadiness.available,
+                            ),
                             const SizedBox(height: 20),
                             _ActionRow(
                               game: game,
-                              hasSave: hasSave,
+                              saveReadiness: saveReadiness,
                               tv: tv,
                               fullWidthPrimary: false,
                               primaryFocusNode: primaryActionFocusNode,
                               onPlay: onPlay,
                               onRestart: onRestart,
+                              onRetrySave: onRetrySave,
                               onSelectCore: onSelectCore,
                             ),
                             if (PlatformDetection.isAndroid &&
@@ -763,7 +811,8 @@ class _LandscapeBody extends StatelessWidget {
                             const SizedBox(height: 22),
                             _DetailsPanel(
                               game: game,
-                              hasSave: hasSave,
+                              hasSave:
+                                  saveReadiness == _SaveReadiness.available,
                               onSelectCore: onSelectCore,
                             ),
                           ],
@@ -1232,27 +1281,47 @@ class _Pill extends StatelessWidget {
 class _ActionRow extends StatelessWidget {
   const _ActionRow({
     required this.game,
-    required this.hasSave,
+    required this.saveReadiness,
     required this.tv,
     required this.fullWidthPrimary,
     required this.primaryFocusNode,
     required this.onPlay,
     required this.onRestart,
+    required this.onRetrySave,
     required this.onSelectCore,
   });
 
   final GameDetail game;
-  final bool hasSave;
+  final _SaveReadiness saveReadiness;
   final bool tv;
   final bool fullWidthPrimary;
   final FocusNode primaryFocusNode;
   final VoidCallback onPlay;
   final VoidCallback onRestart;
+  final VoidCallback onRetrySave;
   final VoidCallback onSelectCore;
 
   @override
   Widget build(BuildContext context) {
-    final primaryLabel = hasSave ? 'Continue' : 'Play';
+    final hasSave = saveReadiness == _SaveReadiness.available;
+    final checking = saveReadiness == _SaveReadiness.checking;
+    final failed = saveReadiness == _SaveReadiness.failed;
+    final primaryLabel = switch (saveReadiness) {
+      _SaveReadiness.checking => 'Checking for save…',
+      _SaveReadiness.failed => 'Retry save check',
+      _SaveReadiness.available => 'Continue',
+      _SaveReadiness.absent => 'Play',
+    };
+    final primaryIcon = checking
+        ? Icons.hourglass_top
+        : failed
+        ? Icons.refresh
+        : Icons.play_arrow;
+    final VoidCallback? primaryAction = checking
+        ? null
+        : failed
+        ? onRetrySave
+        : onPlay;
     final accent = Theme.of(context).colorScheme.primary;
     final native = _usesNativeBackend(game);
     final coreFill = _coreButtonFillColor(native);
@@ -1267,9 +1336,9 @@ class _ActionRow extends StatelessWidget {
             focusColor: accent,
             autoScroll: true,
             padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
-            onPressed: onPlay,
+            onPressed: primaryAction,
             child: _ActionLabel(
-              icon: Icons.play_arrow,
+              icon: primaryIcon,
               label: primaryLabel,
               color: Colors.white,
             ),
@@ -1317,8 +1386,8 @@ class _ActionRow extends StatelessWidget {
 
     final primary = FilledButton.icon(
       focusNode: primaryFocusNode,
-      onPressed: onPlay,
-      icon: const Icon(Icons.play_arrow),
+      onPressed: primaryAction,
+      icon: Icon(primaryIcon),
       label: Text(primaryLabel),
     );
     final restart = OutlinedButton.icon(

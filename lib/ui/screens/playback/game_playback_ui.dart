@@ -39,6 +39,27 @@ void ensureGamePlaybackMenuSelectionVisible(
   );
 }
 
+/// Centers an index-driven menu row after returning from a nested editor.
+void centerGamePlaybackMenuSelection(
+  ScrollController controller,
+  int index, {
+  required double rowExtent,
+}) {
+  if (!controller.hasClients) return;
+  final position = controller.position;
+  final target = (index * rowExtent) -
+      (position.viewportDimension - rowExtent) / 2;
+  final clampedTarget = target
+      .clamp(position.minScrollExtent, position.maxScrollExtent)
+      .toDouble();
+  if ((clampedTarget - position.pixels).abs() < 0.5) return;
+  controller.animateTo(
+    clampedTarget,
+    duration: const Duration(milliseconds: 150),
+    curve: Curves.easeOut,
+  );
+}
+
 /// Displays a short non-blocking playback failure message.
 void showGamePlaybackMessage(BuildContext context, String message) {
   ScaffoldMessenger.of(context).showSnackBar(
