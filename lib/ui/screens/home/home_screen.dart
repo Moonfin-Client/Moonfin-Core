@@ -1304,6 +1304,7 @@ class _ContentRowsState extends State<_ContentRows>
     HardwareKeyboard.instance.removeHandler(_handleGlobalHardwareKey);
     _audioArbiter.unregister(this);
     appRouter.routerDelegate.removeListener(_onRouteChanged);
+    _resizeCheckDebounce?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     if (PlatformDetection.isDesktop) {
       windowManager.removeListener(this);
@@ -2538,7 +2539,10 @@ class _ContentRowsState extends State<_ContentRows>
     });
   }
 
+  static const double _loadMoreTriggerDistance = 600.0;
+
   Timer? _resizeCheckDebounce;
+
   @override
   void didChangeMetrics() {
     super.didChangeMetrics();
@@ -2550,7 +2554,6 @@ class _ContentRowsState extends State<_ContentRows>
       });
     });
   }
-  static double _loadMoreTriggerDistance = 600.0;
 
   void _onRowScrolled(String rowId, ScrollController controller) {
     if (!controller.hasClients) return;
@@ -2571,9 +2574,7 @@ class _ContentRowsState extends State<_ContentRows>
 
   void _checkAllRowsFillViewport() {
     for (final entry in _rowHorizontalControllers.entries) {
-      final controller = entry.value;
-      if (!controller.hasClients) continue;
-      _maybeLoadMoreForRow(entry.key, controller);
+      _maybeLoadMoreForRow(entry.key, entry.value);
     }
   }
 
