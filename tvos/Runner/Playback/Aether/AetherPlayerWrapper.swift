@@ -82,6 +82,20 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
     /// that started them, so neither acts after a newer load has taken over.
     private var loadGeneration: UInt64 = 0
     private static let loadWatchdogNanoseconds: UInt64 = 30_000_000_000
+
+    /// The engine probes a live source for up to 50 MB or 60 s of it, spent at
+    /// the wire rate on a tuner, so a channel carrying a stream FFmpeg can
+    /// never identify (a DVB data carousel, say) outlives the watchdog above
+    /// and fails every time instead of ever starting. These bound the probe to
+    /// land well inside it, whichever is reached first.
+    ///
+    /// Deliberately not tighter. A transport stream declares its video, audio
+    /// and teletext in the PMT so those resolve almost at once, but an
+    /// over-tight budget drops whatever resolves late rather than failing, and
+    /// a channel quietly missing a subtitle track is worse than a slow start.
+    private static let liveProbeBytes: Int64 = 8 * 1024 * 1024
+    private static let liveProbeMicroseconds: Int64 = 10 * 1_000_000
+
     private var baseSubtitlePosition: Int = 100
 
     // Track mapping: Dart speaks 1-based per-type ordinals while the engine
@@ -583,6 +597,8 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             liveJoinProfile: .fastZap,
             nativeRemoteHLS: isLiveSession && isRemotePlaylist,
             preserveASSMarkup: preserveASS,
+            probesize: isLiveSession ? Self.liveProbeBytes : nil,
+            maxAnalyzeDuration: isLiveSession ? Self.liveProbeMicroseconds : nil,
             autoplay: sourceConfiguration.autoPlay
         )
 
