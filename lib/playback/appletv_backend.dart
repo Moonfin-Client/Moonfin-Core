@@ -11,6 +11,7 @@ import '../util/loggable_url.dart';
 import '../util/platform_detection.dart';
 
 import 'device_profile_builder.dart';
+import 'dolby_vision_av1.dart';
 import 'engine_trust.dart';
 import 'known_defects.dart';
 import 'server_transcode_capabilities.dart';
@@ -313,6 +314,7 @@ class AppleTvBackend implements PlayerBackend {
       'videoRangeType': payload['videoRangeType']?.toString(),
       'videoCodec': payload['videoCodec']?.toString(),
       'videoDvProfile': payload['videoDvProfile'],
+      'preferSoftwareDecode': needsSoftwareDecodeForDolbyVisionAv1(payload),
       'videoFrameRate': payload['videoFrameRate'],
       'videoWidth': payload['videoWidth'],
       'videoHeight': payload['videoHeight'],

@@ -1,20 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:moonfin/playback/aether_backend.dart';
+import 'package:moonfin/playback/dolby_vision_av1.dart';
 
-/// AetherEngine tags the sample entry `dav1` for a Dolby Vision AV1 stream
-/// whenever the display reports Dolby Vision. movenc resolves an mp4 tag
-/// through `validate_codec_tag`, which needs the exact (tag, codec_id) pair in
-/// `ff_codec_movvideo_tags`; that table has `av01` for AV1 and no `dav1`, so
-/// the header fails with EINVAL before segment 0 and playback dies two packets
-/// in. These sources take `preferredDecodePath: .software` instead, which
-/// never builds an fMP4 segment and renders the profile 10.1 HDR10 base layer.
-/// That is a CPU decode, not a hardware one — see the doc comment on
-/// `needsSoftwareDecodeForDolbyVisionAv1`.
 void main() {
   bool decides(Map<String, dynamic> payload) =>
-      AetherBackend.needsSoftwareDecodeForDolbyVisionAv1(payload);
+      needsSoftwareDecodeForDolbyVisionAv1(payload);
 
-  group('AetherBackend Dolby Vision AV1 decode path', () {
+  group('Dolby Vision AV1 decode path', () {
     test('profile 10.1 by compatibility id takes the software path', () {
       expect(
         decides(<String, dynamic>{
