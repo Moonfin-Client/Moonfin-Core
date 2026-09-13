@@ -46,6 +46,141 @@ static void my_application_set_window_icon(GtkWindow* window) {
   gtk_window_set_icon(window, icon);
 }
 
+// The opening of the entry we write. Generating from this is what lets a later
+// run tell its own entry apart from somebody else's, so both sides stay in
+// step.
+#define MOONFIN_ENTRY_HEADER \
+  "[Desktop Entry]\n"        \
+  "Type=Application\n"       \
+  "Name=Moonfin\n"           \
+  "Comment=Jellyfin & Emby media client\n"
+
+// Asks the desktop to reread the directory. Best effort, desktops without the
+// tool pick the change up on their own.
+static void my_application_refresh_desktop_database(
+    const gchar* applications_dir) {
+  const gchar* argv[] = {"update-desktop-database", applications_dir, nullptr};
+  g_spawn_async(nullptr, const_cast<gchar**>(argv), nullptr,
+                G_SPAWN_SEARCH_PATH, nullptr, nullptr, nullptr, nullptr);
+}
+
+// A desktop environment or an AppImage manager drops one of these to say it
+// handles integration itself and that bundles should keep out of it.
+static gboolean my_application_desktop_integration_opted_out() {
+  g_autofree gchar* user_marker = g_build_filename(
+      g_get_user_data_dir(), "appimagekit", "no_desktopintegration", nullptr);
+  return g_file_test(user_marker, G_FILE_TEST_EXISTS) ||
+         g_file_test("/usr/share/appimagekit/no_desktopintegration",
+                     G_FILE_TEST_EXISTS) ||
+         g_file_test("/etc/appimagekit/no_desktopintegration",
+                     G_FILE_TEST_EXISTS);
+}
+
+// True when an entry other than ours already launches this same image.
+//
+// A manager such as Gear Lever or AppImageLauncher writes one under a name of
+// its own once it takes an image on, and an entry of ours beside it is what
+// puts Moonfin in the menu twice.
+static gboolean my_application_appimage_is_integrated(
+    const gchar* applications_dir, const gchar* appimage) {
+  GDir* dir = g_dir_open(applications_dir, 0, nullptr);
+  if (dir == nullptr) {
+    return FALSE;
+  }
+
+  gboolean integrated = FALSE;
+  const gchar* name;
+  while ((name = g_dir_read_name(dir)) != nullptr) {
+    if (!g_str_has_suffix(name, ".desktop") ||
+        g_strcmp0(name, APPLICATION_ID ".desktop") == 0) {
+      continue;
+    }
+
+    g_autofree gchar* path = g_build_filename(applications_dir, name, nullptr);
+    g_autofree gchar* contents = nullptr;
+    if (!g_file_get_contents(path, &contents, nullptr, nullptr)) {
+      continue;
+    }
+
+    // An entry of ours saved under some other name still names the image, so
+    // without this it would read as somebody else's integration.
+    if (g_str_has_prefix(contents, MOONFIN_ENTRY_HEADER)) {
+      continue;
+    }
+
+    if (g_strstr_len(contents, -1, appimage) != nullptr) {
+      integrated = TRUE;
+      break;
+    }
+  }
+
+  g_dir_close(dir);
+  return integrated;
+}
+
+// Takes away an entry an earlier run wrote, now that something else offers one
+// for the same image. Only ever clears a file this app produced.
+static void my_application_remove_desktop_entry(const gchar* applications_dir,
+                                                const gchar* entry_path) {
+  g_autofree gchar* existing = nullptr;
+  if (!g_file_get_contents(entry_path, &existing, nullptr, nullptr)) {
+    return;
+  }
+
+  if (!g_str_has_prefix(existing, MOONFIN_ENTRY_HEADER)) {
+    return;
+  }
+
+  g_autoptr(GFile) entry = g_file_new_for_path(entry_path);
+  if (g_file_delete(entry, nullptr, nullptr)) {
+    my_application_refresh_desktop_database(applications_dir);
+  }
+}
+
+// Puts the bundle icon where the icon theme looks for it.
+//
+// This happens even when the menu entry belongs to a manager, because the
+// window and the taskbar resolve artwork by name and an AppImage installs
+// nothing for that lookup to find.
+static void my_application_install_icon() {
+  g_autofree gchar* icons_dir =
+      g_build_filename(g_get_user_data_dir(), "icons", "hicolor", "512x512",
+                       "apps", nullptr);
+  if (g_mkdir_with_parents(icons_dir, 0755) != 0) {
+    return;
+  }
+
+  g_autofree gchar* executable = g_file_read_link("/proc/self/exe", nullptr);
+  if (executable == nullptr) {
+    return;
+  }
+  g_autofree gchar* bundle_dir = g_path_get_dirname(executable);
+  g_autofree gchar* source_path =
+      g_build_filename(bundle_dir, "data", "flutter_assets", "assets", "icons",
+                       "moonfin.png", nullptr);
+  g_autofree gchar* icon_path =
+      g_build_filename(icons_dir, APPLICATION_ID ".png", nullptr);
+
+  g_autoptr(GFile) source = g_file_new_for_path(source_path);
+  g_autoptr(GFile) target = g_file_new_for_path(icon_path);
+
+  // Leave the same artwork alone, so an ordinary launch does no work here.
+  g_autoptr(GFileInfo) source_info =
+      g_file_query_info(source, G_FILE_ATTRIBUTE_STANDARD_SIZE,
+                        G_FILE_QUERY_INFO_NONE, nullptr, nullptr);
+  g_autoptr(GFileInfo) target_info =
+      g_file_query_info(target, G_FILE_ATTRIBUTE_STANDARD_SIZE,
+                        G_FILE_QUERY_INFO_NONE, nullptr, nullptr);
+  if (source_info != nullptr && target_info != nullptr &&
+      g_file_info_get_size(source_info) == g_file_info_get_size(target_info)) {
+    return;
+  }
+
+  g_autoptr(GError) copy_error = nullptr;
+  g_file_copy(source, target, G_FILE_COPY_OVERWRITE, nullptr, nullptr, nullptr,
+              &copy_error);
+}
+
 // Gives a Wayland compositor something to find when it looks up this window.
 //
 // A Wayland window carries no icon of its own, so the desktop resolves one by
@@ -56,22 +191,34 @@ static void my_application_set_window_icon(GtkWindow* window) {
 // answers that lookup.
 //
 // This runs for AppImage only. Every other package installs its own entry, and
-// a second copy here would shadow it and go stale.
+// a second copy here would shadow it and go stale. An AppImage under a manager
+// already has an entry too, so that case steps aside the same way.
 static void my_application_install_desktop_entry() {
   const gchar* appimage = g_getenv("APPIMAGE");
   if (appimage == nullptr || *appimage == '\0') {
     return;
   }
 
+  my_application_install_icon();
+
   g_autofree gchar* applications_dir =
       g_build_filename(g_get_user_data_dir(), "applications", nullptr);
   g_autofree gchar* entry_path = g_build_filename(
       applications_dir, APPLICATION_ID ".desktop", nullptr);
+
+  // The manager owns the menu entry, so stand down and clear the one an
+  // earlier run put next to it rather than keep the duplicate alive.
+  if (my_application_appimage_is_integrated(applications_dir, appimage)) {
+    my_application_remove_desktop_entry(applications_dir, entry_path);
+    return;
+  }
+
+  if (my_application_desktop_integration_opted_out()) {
+    return;
+  }
+
   g_autofree gchar* entry = g_strdup_printf(
-      "[Desktop Entry]\n"
-      "Type=Application\n"
-      "Name=Moonfin\n"
-      "Comment=Jellyfin & Emby media client\n"
+      MOONFIN_ENTRY_HEADER
       "Exec=\"%s\" %%U\n"
       "Icon=%s\n"
       "Categories=AudioVideo;Video;\n"
@@ -99,36 +246,8 @@ static void my_application_install_desktop_entry() {
     return;
   }
 
-  // Index the scheme handler so moonfin:// links resolve right away. Best
-  // effort, desktops without the tool pick the entry up on their own.
-  const gchar* update_argv[] = {"update-desktop-database", applications_dir,
-                                nullptr};
-  g_spawn_async(nullptr, const_cast<gchar**>(update_argv), nullptr,
-                G_SPAWN_SEARCH_PATH, nullptr, nullptr, nullptr, nullptr);
-
-  g_autofree gchar* icons_dir =
-      g_build_filename(g_get_user_data_dir(), "icons", "hicolor", "512x512",
-                       "apps", nullptr);
-  if (g_mkdir_with_parents(icons_dir, 0755) != 0) {
-    return;
-  }
-
-  g_autofree gchar* executable = g_file_read_link("/proc/self/exe", nullptr);
-  if (executable == nullptr) {
-    return;
-  }
-  g_autofree gchar* bundle_dir = g_path_get_dirname(executable);
-  g_autofree gchar* source_path =
-      g_build_filename(bundle_dir, "data", "flutter_assets", "assets", "icons",
-                       "moonfin.png", nullptr);
-  g_autofree gchar* icon_path =
-      g_build_filename(icons_dir, APPLICATION_ID ".png", nullptr);
-
-  g_autoptr(GFile) source = g_file_new_for_path(source_path);
-  g_autoptr(GFile) target = g_file_new_for_path(icon_path);
-  g_autoptr(GError) copy_error = nullptr;
-  g_file_copy(source, target, G_FILE_COPY_OVERWRITE, nullptr, nullptr, nullptr,
-              &copy_error);
+  // Index the scheme handler so moonfin:// links resolve right away.
+  my_application_refresh_desktop_database(applications_dir);
 }
 
 // Implements GApplication::activate.
