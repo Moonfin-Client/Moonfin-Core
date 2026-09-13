@@ -840,52 +840,64 @@ class NouveauHeroState extends State<NouveauHero> {
     }
 
     final hidden = detailMetadataLayout.hidden(widget.prefs);
-    final showYear = !hidden.contains(DetailMetadataItem.year.id);
-    final showRating = !hidden.contains(DetailMetadataItem.parentalRating.id);
-    final showRuntime = !hidden.contains(DetailMetadataItem.runtimeAndSeasons.id);
+    final runtime = _effectiveRuntime(item);
 
-    if (showYear) {
-      addText(item.productionYear?.toString());
-    }
+    // Status, upcoming and Seerr have their own badge row on this hero, so
+    // only the items that share this line take part in the ordering.
+    final ordered = detailMetadataLayout.ordered(
+      const [
+        DetailMetadataItem.year,
+        DetailMetadataItem.parentalRating,
+        DetailMetadataItem.runtimeAndSeasons,
+      ],
+      (entry) => entry.id,
+      widget.prefs,
+    );
 
-    if (showRating && (item.officialRating?.trim().isNotEmpty ?? false)) {
-      addText(item.officialRating);
-    }
+    for (final entry in ordered) {
+      if (hidden.contains(entry.id)) continue;
+      switch (entry) {
+        case DetailMetadataItem.year:
+          addText(item.productionYear?.toString());
+        case DetailMetadataItem.parentalRating:
+          if (item.officialRating?.trim().isNotEmpty ?? false) {
+            addText(item.officialRating);
+          }
+        case DetailMetadataItem.runtimeAndSeasons:
+          if (item.type == 'Series' && item.childCount != null) {
+            addText(l10n.seasonCount(item.childCount!));
+          }
 
-    if (showRuntime) {
-      if (item.type == 'Series' && item.childCount != null) {
-        addText(l10n.seasonCount(item.childCount!));
-      }
+          if (item.type == 'Season') {
+            final episodeCount = widget.viewModel.episodes.isNotEmpty
+                ? widget.viewModel.episodes.length
+                : (item.childCount ?? 0);
 
-      if (item.type == 'Season') {
-        final episodeCount = widget.viewModel.episodes.isNotEmpty
-            ? widget.viewModel.episodes.length
-            : (item.childCount ?? 0);
+            if (episodeCount > 0) {
+              addText(l10n.episodeCount(episodeCount));
+            }
+          }
 
-        if (episodeCount > 0) {
-          addText(l10n.episodeCount(episodeCount));
-        }
-      }
+          if (item.type == 'Episode') {
+            final season = item.parentIndexNumber;
+            final episode = item.indexNumber;
 
-      if (item.type == 'Episode') {
-        final season = item.parentIndexNumber;
-        final episode = item.indexNumber;
+            if (season != null && episode != null) {
+              addText(l10n.seasonEpisodeLabel(season, episode));
+            }
+          }
 
-        if (season != null && episode != null) {
-          addText(l10n.seasonEpisodeLabel(season, episode));
-        }
-      }
+          if (runtime != null &&
+              runtime > Duration.zero &&
+              item.type != 'Series') {
+            addText(formatRuntimeShort(runtime));
 
-      final runtime = _effectiveRuntime(item);
-
-      if (runtime != null && runtime > Duration.zero && item.type != 'Series') {
-        addText(formatRuntimeShort(runtime));
-
-        if (item.type == 'Season') {
-          final endTime = _seasonEndTime(context, runtime);
-
-          addText(l10n.endsAt(endTime));
-        }
+            if (item.type == 'Season') {
+              addText(l10n.endsAt(_seasonEndTime(context, runtime)));
+            }
+          }
+        default:
+          break;
       }
     }
 

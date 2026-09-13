@@ -17,6 +17,18 @@ class UpcomingEpisodeInfo {
     this.title,
   });
 
+  /// The answer is cached and a details screen can stay open, so an episode
+  /// that was upcoming when it was fetched is not upcoming forever.
+  bool get hasAired {
+    final local = airDate.toLocal();
+    final now = DateTime.now();
+    return DateTime(
+      local.year,
+      local.month,
+      local.day,
+    ).isBefore(DateTime(now.year, now.month, now.day));
+  }
+
   /// Formats the upcoming episode string according to relative date rules:
   /// - Today -> "Next: Today (S2:E1)"
   /// - Tomorrow -> "Next: Tomorrow (S2:E1)"

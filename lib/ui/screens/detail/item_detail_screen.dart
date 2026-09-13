@@ -41,6 +41,7 @@ import '../../navigation/playback_launcher.dart';
 import 'detail_buttons.dart';
 import '../../../data/models/upcoming_episode_info.dart';
 import '../../../preference/detail_metadata_layout.dart';
+import 'upcoming_episode_badge.dart';
 import 'nouveau/nouveau_detail_content.dart';
 import 'nouveau/hero/nouveau_action_buttons.dart';
 import 'modern/modern_detail_content.dart';
@@ -4680,11 +4681,7 @@ class DetailMetadataRow extends StatelessWidget {
           case DetailMetadataItem.upcomingEpisodeDate:
             if (item.type == 'Series' && upcomingEpisode != null) {
               parts.add(
-                _upcomingEpisodeBadge(
-                  context,
-                  theme,
-                  upcomingEpisode!.format(context),
-                ),
+                UpcomingEpisodeBadge(text: upcomingEpisode!.format(context)),
               );
             }
           case DetailMetadataItem.genres:
@@ -4791,38 +4788,6 @@ class DetailMetadataRow extends StatelessWidget {
           color: AppColorScheme.onSurface,
           shadows: _textShadows,
         ),
-      ),
-    );
-  }
-
-  Widget _upcomingEpisodeBadge(
-    BuildContext context,
-    ThemeData theme,
-    String text,
-  ) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-      decoration: BoxDecoration(
-        color: AppColorScheme.accent.withValues(alpha: 0.2),
-        borderRadius: AppRadius.circular(4),
-        border: Border.all(
-          color: AppColorScheme.accent.withValues(alpha: 0.5),
-          width: 1,
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.event_available, size: 12, color: AppColorScheme.accent),
-          const SizedBox(width: 4),
-          Text(
-            text,
-            style: theme.textTheme.labelSmall?.copyWith(
-              color: AppColorScheme.accent,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
       ),
     );
   }
