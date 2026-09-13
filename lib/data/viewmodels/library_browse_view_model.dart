@@ -16,6 +16,7 @@ import '../services/user_data_sync.dart';
 import '../services/user_ratings_api.dart';
 import '../utils/alphabet_bucket.dart';
 import '../utils/bounded_concurrency.dart';
+import '../utils/genre_browse_utils.dart';
 import '../utils/playlist_utils.dart';
 
 enum LibraryBrowseState { loading, ready, error }
@@ -376,11 +377,8 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     this.overrideName,
     this.includeItemTypes,
     this.favoritesOnly = false,
-  // ignore: prefer_initializing_formals
   }) : _client = client,
-       // ignore: prefer_initializing_formals
        _prefs = prefs,
-       // ignore: prefer_initializing_formals
        _mdbListRepository = mdbListRepository {
     _sortBy = _prefs.get(UserPreferences.librarySortBy(_prefKey));
     _sortDirection = _prefs.get(UserPreferences.librarySortDirection(_prefKey));
@@ -752,35 +750,25 @@ class LibraryBrowseViewModel extends ChangeNotifier {
       sortBy = 'IsFolder,$sortBy';
     }
 
+    // A genre tag sits on anything the tree holds, so an unscoped browse comes
+    // back with the seasons, episodes, playlists and folder rows that the genre
+    // tile never counted. Libraries whose genres aren't browsable this way keep
+    // whatever their own branch above chose.
     if (isGenreBrowse && includeItemTypes == null) {
-      if (_collectionType == 'music') {
-        includeTypes = ['MusicAlbum'];
-      } else if (_collectionType == 'movies') {
-        if (groupCollections) {
-          includeTypes = ['Movie', 'BoxSet'];
-          collapseBoxSets = true;
-        } else {
-          includeTypes = ['Movie'];
-          collapseBoxSets = false;
-        }
-      } else if (_collectionType == 'tvshows') {
-        if (groupCollections) {
-          includeTypes = ['Series', 'BoxSet'];
-          collapseBoxSets = true;
-        } else {
-          includeTypes = ['Series'];
-          collapseBoxSets = false;
-        }
-      } else {
-        if (groupCollections) {
-          includeTypes = ['Movie', 'Series', 'BoxSet'];
-          collapseBoxSets = true;
-        } else {
-          includeTypes = ['Movie', 'Series'];
-          collapseBoxSets = false;
-        }
+      final genreTypes = switch (_collectionType) {
+        'music' => const ['MusicAlbum'],
+        'movies' => const ['Movie'],
+        'tvshows' => const ['Series'],
+        null || '' => const ['Movie', 'Series'],
+        _ => null,
+      };
+
+      if (genreTypes != null) {
+        final collapses = groupCollections && _collectionType != 'music';
+        includeTypes = collapses ? [...genreTypes, 'BoxSet'] : [...genreTypes];
+        collapseBoxSets = collapses;
+        excludeTypes = kNonRootBrowseItemTypes;
       }
-      excludeTypes = ['Playlist', 'Episode', 'Season', 'Folder'];
     }
 
     if (isStudioBrowse && includeItemTypes == null) {
@@ -791,7 +779,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
         includeTypes = ['Movie', 'Series'];
         collapseBoxSets = false;
       }
-      excludeTypes = ['Playlist', 'Episode', 'Season', 'Folder'];
+      excludeTypes = kNonRootBrowseItemTypes;
     }
 
     if (isFilterBrowse && includeItemTypes == null) {

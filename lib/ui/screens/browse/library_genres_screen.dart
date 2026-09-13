@@ -56,6 +56,9 @@ class _LibraryGenresScreenState extends State<LibraryGenresScreen> {
   bool _lastGroupCollections = false;
   final Set<String> _usedArtworkIds = {};
 
+  /// A grouping toggle starts a second load, so the first stops writing.
+  int _loadToken = 0;
+
   bool _disposed = false;
 
   ImageType get _imageType =>
@@ -97,6 +100,7 @@ class _LibraryGenresScreenState extends State<LibraryGenresScreen> {
   }
 
   Future<void> _load() async {
+    final token = ++_loadToken;
     try {
       _usedArtworkIds.clear();
       final parentData = await _client.itemsApi.getItem(widget.libraryId);
@@ -181,41 +185,53 @@ class _LibraryGenresScreenState extends State<LibraryGenresScreen> {
       }).toList();
     } catch (_) {}
 
+    if (token != _loadToken) return;
     _isLoading = false;
     if (!_disposed && mounted) setState(() {});
 
-    _loadArtwork();
+    _loadArtwork(token);
   }
 
-  Future<void> _loadArtwork() async {
+  Future<void> _loadArtwork(int token) async {
     final includeType = _includeType;
     final groupCollections = _lastGroupCollections;
+    final isVideo = includeType == 'Movie' || includeType == 'Series';
 
-    // For movies/tv without fallback artwork needed, skip if uncollapsed
-    final needsWork = _genres.where((genre) {
-      if (_collectionType == 'music') return true;
-      if (genre.isGenreFallback) return true;
-      return groupCollections &&
-          (includeType == 'Movie' || includeType == 'Series');
-    }).toList();
+    // A genre with its own artwork already has an exact count, so it only needs
+    // a query when grouping changes what that count means. Music tiles always
+    // need one, since they take their picture from the first album.
+    final needsWork = _genres
+        .where(
+          (genre) =>
+              _collectionType == 'music' ||
+              genre.isGenreFallback ||
+              (groupCollections && isVideo),
+        )
+        .toList();
 
     if (needsWork.isEmpty) return;
 
     final toLoad = needsWork.take(_initialArtworkBatch).toList();
     await Future.wait(
-      toLoad.map((genre) => _loadGenreArtwork(genre, includeType, groupCollections)),
+      toLoad.map(
+        (genre) =>
+            _loadGenreArtwork(genre, includeType, groupCollections, token),
+      ),
     );
 
     if (!_disposed && needsWork.length > _initialArtworkBatch) {
       final remaining = needsWork.skip(_initialArtworkBatch).toList();
       for (
         var i = 0;
-        i < remaining.length && !_disposed;
+        i < remaining.length && !_disposed && token == _loadToken;
         i += _backgroundArtworkConcurrency
       ) {
         final batch = remaining.skip(i).take(_backgroundArtworkConcurrency);
         await Future.wait(
-          batch.map((genre) => _loadGenreArtwork(genre, includeType, groupCollections)),
+          batch.map(
+            (genre) =>
+                _loadGenreArtwork(genre, includeType, groupCollections, token),
+          ),
         );
       }
     }
@@ -225,21 +241,22 @@ class _LibraryGenresScreenState extends State<LibraryGenresScreen> {
     GenreCardData genre,
     String? includeType,
     bool groupCollections,
+    int token,
   ) async {
-    if (_disposed) return;
+    if (_disposed || token != _loadToken) return;
     try {
       final isVideo = includeType == 'Movie' || includeType == 'Series';
       final includeItemTypes = isVideo && groupCollections
           ? [includeType!, 'BoxSet']
           : (includeType != null ? [includeType] : const ['Movie', 'Series']);
 
-      // Fast path for non-fallback video genres under collection grouping
+      // This genre has art of its own, so the count is all that is missing.
       if (!genre.isGenreFallback && _collectionType != 'music') {
         final response = await _client.itemsApi.getItems(
           parentId: widget.libraryId,
           genreIds: [genre.id],
           includeItemTypes: includeItemTypes,
-          excludeItemTypes: const ['Playlist', 'Episode', 'Season', 'Folder'],
+          excludeItemTypes: kNonRootBrowseItemTypes,
           collapseBoxSetItems: groupCollections,
           recursive: true,
           limit: 0,
@@ -264,7 +281,7 @@ class _LibraryGenresScreenState extends State<LibraryGenresScreen> {
         parentId: widget.libraryId,
         genreIds: [genre.id],
         includeItemTypes: includeItemTypes,
-        excludeItemTypes: const ['Playlist', 'Episode', 'Season', 'Folder'],
+        excludeItemTypes: kNonRootBrowseItemTypes,
         sortBy: 'Random',
         sortOrder: 'Ascending',
         collapseBoxSetItems: isVideo ? groupCollections : null,
@@ -326,39 +343,16 @@ class _LibraryGenresScreenState extends State<LibraryGenresScreen> {
           );
           maps.shuffle();
 
-          // Deprioritize items that have already been chosen for another genre card
-          // to avoid duplicate artwork appearing across tiles.
-          if (_usedArtworkIds.isNotEmpty) {
-            maps.sort((a, b) {
-              final aUsed = _usedArtworkIds.contains(a['Id']?.toString());
-              final bUsed = _usedArtworkIds.contains(b['Id']?.toString());
-              if (aUsed == bUsed) return 0;
-              return aUsed ? 1 : -1;
-            });
-          }
-
-          final (imageUrl, backdropUrl) = resolveGenreFallbackArtwork(
+          final (imageUrl, backdropUrl, usedId) = resolveGenreFallbackArtwork(
             items: maps,
             imageApi: _client.imageApi,
             maxWidth: _genreCardRequestMaxWidth(),
+            avoidIds: _usedArtworkIds,
           );
 
           genre.imageUrl = imageUrl;
           genre.backdropUrl = backdropUrl;
-
-          // Track the selected item's ID
-          for (final item in maps) {
-            final id = item['Id']?.toString();
-            if (id != null) {
-              final bTags = item['BackdropImageTags'] as List?;
-              final pTag = item['PrimaryImageTag'] as String?;
-              if ((bTags != null && bTags.isNotEmpty) ||
-                  (pTag != null && pTag.isNotEmpty)) {
-                _usedArtworkIds.add(id);
-                break;
-              }
-            }
-          }
+          if (usedId != null) _usedArtworkIds.add(usedId);
         }
       }
       if (!_disposed && mounted) setState(() {});

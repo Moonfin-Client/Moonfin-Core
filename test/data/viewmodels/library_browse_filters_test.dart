@@ -357,4 +357,36 @@ void main() {
     expect(api.includeItemTypes, ['MusicAlbum']);
     expect(api.excludeItemTypes, ['Playlist', 'Episode', 'Season', 'Folder']);
   });
+
+  // A book library already picked its own types, so narrowing a genre to
+  // movies and series there leaves the page with nothing to show.
+  test('genre browse in a book library keeps the book types', () async {
+    final api = _RecordingItemsApi()..collectionType = 'books';
+    final vm = await _viewModel(
+      api,
+      libraryId: 'book-library-id',
+      genreId: 'scifi-genre-id',
+    );
+    addTearDown(vm.dispose);
+
+    await vm.load();
+
+    expect(api.includeItemTypes, ['Book', 'Audio', 'AudioBook']);
+  });
+
+  test('genre browse outside the video libraries is left unscoped', () async {
+    for (final collectionType in ['audiobooks', 'musicvideos', 'homevideos']) {
+      final api = _RecordingItemsApi()..collectionType = collectionType;
+      final vm = await _viewModel(
+        api,
+        libraryId: 'lib-$collectionType',
+        genreId: 'g1',
+      );
+
+      await vm.load();
+
+      expect(api.includeItemTypes, isNull, reason: collectionType);
+      vm.dispose();
+    }
+  });
 }
