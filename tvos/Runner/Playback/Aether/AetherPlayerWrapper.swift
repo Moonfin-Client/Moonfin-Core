@@ -688,7 +688,9 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
     }
 
     func resume() {
-        Self.sharedEngine()?.play()
+        guard let engine = Self.sharedEngine() else { return }
+        engine.play()
+        engine.setRate(rate)
     }
 
     /// Stops playback but keeps the panel's display mode: queue advance and
