@@ -53,6 +53,7 @@ class HomeViewModel extends ChangeNotifier {
   final HomeRowCacheStore _cacheStore = HomeRowCacheStore();
   final Set<String> _inFlightPagingRowIds = {};
   final Map<String, int> _rowOffsets = {};
+  final Set<String> _rowsPagedThisLoad = {};
 
   /// How many items a row asks for per page, matching what RowDataSource
   /// requests so the offsets tracked here stay in step with it.
@@ -333,6 +334,19 @@ class HomeViewModel extends ChangeNotifier {
     required bool hasVisibleRow,
   }) => (preserveExisting || hydratedFromCache) && hasVisibleRow;
 
+  /// Whether a freshly fetched row gives way to the one already on screen.
+  ///
+  /// A section fetch only brings back the first page, so a row that paged while
+  /// it was out would lose those pages and be handed straight back to the
+  /// viewport to page in again. A row nobody paged takes the shorter answer,
+  /// since that is how an item leaving a row reaches the screen.
+  @visibleForTesting
+  static bool keepsPagedRow({
+    required bool pagedDuringLoad,
+    required int existingItemCount,
+    required int freshItemCount,
+  }) => pagedDuringLoad && existingItemCount > freshItemCount;
+
   /// Whether the home has to load again because the server came back.
   ///
   /// Rows built while it was unreachable came from the downloads catalog, so
@@ -358,6 +372,7 @@ class HomeViewModel extends ChangeNotifier {
     notifyListeners();
     _rowOffsets.clear();
     _multiServerRepo.clearOffsets();
+    _rowsPagedThisLoad.clear();
     try {
       var hydratedFromCache = false;
       if (_rows.isEmpty) {
@@ -544,24 +559,25 @@ class HomeViewModel extends ChangeNotifier {
         // Cleanup runs even when the load failed, so the section's loading
         // placeholder is cleared instead of spinning forever.
         final loadedRows = sectionRows
-          .map((r) => r.copyWith(items: _filterEmptyElements(r.items)))
-          .where(
-            (r) => r.items.isNotEmpty || r.rowType == HomeRowType.liveTv,
-          )
-          .map((freshRow) {
-            final existing = _rows.firstWhereOrNull((r) => r.id == freshRow.id);
-            // If pagination already advanced this row past the freshly-fetched
-            // first page (e.g. a background full refresh landing after the user
-            // scrolled or the viewport auto-loaded more), keep the paginated
-            // version rather than regressing it.
-            if (existing != null &&
-                !existing.isLoading &&
-                existing.items.length > freshRow.items.length) {
-              return existing;
-            }
-            return freshRow;
-          })
-          .toList();
+            .map((r) => r.copyWith(items: _filterEmptyElements(r.items)))
+            .where(
+              (r) => r.items.isNotEmpty || r.rowType == HomeRowType.liveTv,
+            )
+            .map((freshRow) {
+              final existing = _rows.firstWhereOrNull(
+                (r) => r.id == freshRow.id,
+              );
+              if (existing == null) return freshRow;
+              if (keepsPagedRow(
+                pagedDuringLoad: _rowsPagedThisLoad.contains(freshRow.id),
+                existingItemCount: existing.items.length,
+                freshItemCount: freshRow.items.length,
+              )) {
+                return existing;
+              }
+              return freshRow;
+            })
+            .toList();
         final placeholder = _placeholderForConfig(cfg);
         final loadedIds = loadedRows.map((r) => r.id).toSet();
         // Find the row that immediately follows this section's placeholder /
@@ -608,7 +624,6 @@ class HomeViewModel extends ChangeNotifier {
           }
         }
         _rows = newRows;
-        print('[loadConfigItem] cfg=${cfg.stableId} replaced rowIds=${loadedIds} at ${DateTime.now()}');
         notifyListeners();
       }
 
@@ -927,6 +942,7 @@ class HomeViewModel extends ChangeNotifier {
     if (!row.hasMore || _inFlightPagingRowIds.contains(row.id)) return;
 
     _inFlightPagingRowIds.add(row.id);
+    _rowsPagedThisLoad.add(row.id);
     try {
       final seerrType = _seerrRowTypeForId(row.id);
       if (seerrType != null) {

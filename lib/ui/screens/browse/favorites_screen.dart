@@ -52,7 +52,8 @@ class FavoritesScreen extends StatefulWidget {
   State<FavoritesScreen> createState() => _FavoritesScreenState();
 }
 
-class _FavoritesScreenState extends State<FavoritesScreen> with GridFocusNodeMixin<FavoritesScreen>, WidgetsBindingObserver{
+class _FavoritesScreenState extends State<FavoritesScreen>
+    with GridFocusNodeMixin<FavoritesScreen>, WidgetsBindingObserver {
   late final FavoritesViewModel _vm;
   final _scrollController = ScrollController();
   final _prefs = GetIt.instance<UserPreferences>();
@@ -176,7 +177,6 @@ class _FavoritesScreenState extends State<FavoritesScreen> with GridFocusNodeMix
       }
     }
   }
-
 
   double _cardWidth() {
     final desktopScale = _desktopUiScaleFactor();
