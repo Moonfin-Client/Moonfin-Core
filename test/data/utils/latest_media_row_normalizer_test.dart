@@ -74,7 +74,7 @@ void main() {
       type: 'Episode',
       seriesId: 'series-misfits',
       seriesName: 'Misfits',
-      parentPrimaryImageTag: 'parentTag456',
+      seriesPrimaryImageTag: 'seriesTag456',
     );
 
     final seriesItem = _createItem(
@@ -106,7 +106,7 @@ void main() {
       expect(result[1].id, equals('series-misfits'));
       expect(result[1].name, equals('Misfits'));
       expect(result[1].type, equals('Series'));
-      expect(result[1].primaryImageTagField, equals('parentTag456'));
+      expect(result[1].primaryImageTagField, equals('seriesTag456'));
 
       expect(result[2].id, equals('series-firefly'));
       expect(result[2].name, equals('Firefly'));
@@ -188,6 +188,59 @@ void main() {
       expect(result[0].id, equals('movie-the-matrix'));
       expect(result[0].name, equals('The Matrix'));
       expect(result[0].type, equals('Movie'));
+    });
+
+    test('leaves a movie alone in a mixed list with no collectionType', () {
+      final result = normalizeLatestMediaItems(
+        [movieItem, episodeItem],
+        collectionType: null,
+        limit: 10,
+      );
+
+      expect(result.length, equals(2));
+      expect(result[0].id, equals('movie-the-matrix'));
+      expect(result[0].type, equals('Movie'));
+      expect(result[1].id, equals('series-misfits'));
+      expect(result[1].type, equals('Series'));
+    });
+
+    test('a season with no series tag takes its parent tag', () {
+      final season = _createItem(
+        id: 'season-fleabag-1',
+        name: 'Season 1',
+        type: 'Season',
+        seriesId: 'series-fleabag',
+        seriesName: 'Fleabag',
+        parentPrimaryImageTag: 'seriesArt',
+      );
+
+      final result = normalizeLatestMediaItems(
+        [season],
+        collectionType: 'tvshows',
+        limit: 10,
+      );
+
+      expect(result.single.primaryImageTagField, equals('seriesArt'));
+    });
+
+    test('an episode does not take its season tag', () {
+      final episode = _createItem(
+        id: 'ep-fleabag-1',
+        name: 'Episode 1',
+        type: 'Episode',
+        seriesId: 'series-fleabag',
+        seriesName: 'Fleabag',
+        parentPrimaryImageTag: 'seasonArt',
+      );
+
+      final result = normalizeLatestMediaItems(
+        [episode],
+        collectionType: 'tvshows',
+        limit: 10,
+      );
+
+      expect(result.single.id, equals('series-fleabag'));
+      expect(result.single.primaryImageTagField, isNull);
     });
   });
 }
