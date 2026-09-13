@@ -2,13 +2,18 @@ import '../../l10n/app_localizations.dart';
 import '../../preference/preference_constants.dart';
 import '../models/aggregated_item.dart';
 
+/// A server names a TV library 'tvshows' or 'shows', so both count.
+bool _isTvCollectionType(String? collectionType) {
+  final normalized = collectionType?.toLowerCase();
+  return normalized == 'tvshows' || normalized == 'shows';
+}
+
 int latestMediaFetchLimitForCollection(
   String? collectionType, {
   required int defaultLimit,
   required int maxLimit,
 }) {
-  final normalizedType = collectionType?.toLowerCase();
-  if (normalizedType == 'tvshows' || normalizedType == 'shows') {
+  if (_isTvCollectionType(collectionType)) {
     final expandedLimit = defaultLimit * 4;
     if (expandedLimit > maxLimit) {
       return maxLimit;
@@ -74,16 +79,14 @@ List<AggregatedItem> normalizeLatestMediaItems(
   String? collectionType,
   required int limit,
 }) {
-  final normalizedType = collectionType?.toLowerCase();
-  final isTvCollection =
-      normalizedType == 'tvshows' || normalizedType == 'shows';
-  final hasTvItems =
-      items.any((i) => i.type == 'Episode' || i.type == 'Season');
+  // Paging asks without a collection type, so a row that opened with series
+  // cards would start handing back seasons part way along.
   final shouldCollapse =
-      isTvCollection || (normalizedType == null && hasTvItems);
+      _isTvCollectionType(collectionType) ||
+      (collectionType == null &&
+          items.any((i) => i.type == 'Episode' || i.type == 'Season'));
 
-  final normalized =
-      shouldCollapse ? _collapseLatestTvItems(items) : items;
+  final normalized = shouldCollapse ? _collapseLatestTvItems(items) : items;
 
   if (normalized.length <= limit) {
     return normalized;
@@ -134,8 +137,11 @@ AggregatedItem? _seriesCardForLatestTvItem(AggregatedItem item) {
         item.primaryImageTag ?? item.primaryImageTagField;
   }
 
+  // A season's parent is the series so its tag fits the id set below, but an
+  // episode's parent is the season and that tag would not match the series.
   final seriesPrimaryImageTag =
-      item.seriesPrimaryImageTag ?? item.parentPrimaryImageTag;
+      item.seriesPrimaryImageTag ??
+      (item.type == 'Season' ? item.parentPrimaryImageTag : null);
   if (seriesPrimaryImageTag != null && seriesPrimaryImageTag.isNotEmpty) {
     final imageTags = Map<String, dynamic>.from(
       rawData['ImageTags'] as Map? ?? const {},
