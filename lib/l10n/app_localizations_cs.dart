@@ -177,10 +177,10 @@ class AppLocalizationsCs extends AppLocalizations {
   String get spotlightMoreEpisodes => 'More Episodes';
 
   @override
-  String get spotlightFilmography => 'Filmografie';
+  String get spotlightFilmography => 'Filmography';
 
   @override
-  String get spotlightCollectionsCard => 'Kolekce';
+  String get spotlightCollectionsCard => 'Collections';
 
   @override
   String get spotlightPlaylistOrder => 'Playlist Order';
@@ -189,10 +189,10 @@ class AppLocalizationsCs extends AppLocalizations {
   String get spotlightMoviesAndShows => 'Movies & Shows';
 
   @override
-  String get spotlightSimilarSeerr => 'Podobné (Seerr)';
+  String get spotlightSimilarSeerr => 'Similar (Seerr)';
 
   @override
-  String get spotlightRecommendationsSeerr => 'Doporučené (Seerr)';
+  String get spotlightRecommendationsSeerr => 'Recommendations (Seerr)';
 
   @override
   String spotlightPeopleCount(int count) {
@@ -402,7 +402,7 @@ class AppLocalizationsCs extends AppLocalizations {
       'Override the detected layout when this device is read wrong. Restart Moonfin for changes to take effect.';
 
   @override
-  String get interfaceLayoutAutomatic => 'Automaticky';
+  String get interfaceLayoutAutomatic => 'Automatic';
 
   @override
   String get interfaceLayoutTv => 'TV';
@@ -411,13 +411,13 @@ class AppLocalizationsCs extends AppLocalizations {
   String get interfaceLayoutDesktop => 'Desktop';
 
   @override
-  String get interfaceLayoutPhone => 'Telefon';
+  String get interfaceLayoutPhone => 'Phone';
 
   @override
   String get glassQuality => 'Kvalita skla';
 
   @override
-  String get oledMode => 'OLED mód';
+  String get oledMode => 'OLED Mode';
 
   @override
   String get oledModeSubtitle =>
@@ -481,14 +481,14 @@ class AppLocalizationsCs extends AppLocalizations {
       'Pro zadávání textu použijte ve výchozím nastavení metodu zadávání vašeho zařízení';
 
   @override
-  String get controller => 'Herní ovladač';
+  String get controller => 'Controller';
 
   @override
-  String get gamepadNavigation => 'Ovládání herním ovladačem';
+  String get gamepadNavigation => 'Gamepad navigation';
 
   @override
   String get gamepadNavigationDescription =>
-      'Měnit zaměření a vybírat položky připojeným herním ovladačem';
+      'Let a connected game controller move focus and select items';
 
   @override
   String get themeMoonfin => 'Moonfin';
@@ -1035,10 +1035,10 @@ class AppLocalizationsCs extends AppLocalizations {
   String get latestAudiobooks => 'Nejnovější audioknihy';
 
   @override
-  String get latestComics => 'Nejnovější komiksy';
+  String get latestComics => 'Latest Comics';
 
   @override
-  String get comics => 'Komiksy';
+  String get comics => 'Comics';
 
   @override
   String bookSeriesItemCount(int count) {
@@ -1060,14 +1060,14 @@ class AppLocalizationsCs extends AppLocalizations {
   String get bookFormatAudiobook => 'Audiokniha';
 
   @override
-  String get bookFormatComic => 'Komiks';
+  String get bookFormatComic => 'Comic';
 
   @override
   String get noBooksFound => 'Pro tohoto autora nebyly nalezeny žádné knihy.';
 
   @override
   String get noBooksFoundDescription =>
-      'Tato knihovna zatím neobsahuje žádné knihy, audioknihy ani komiksy.';
+      'This library does not contain any books, audiobooks, or comics yet.';
 
   @override
   String bookPercentRead(int percent) {
@@ -1356,7 +1356,7 @@ class AppLocalizationsCs extends AppLocalizations {
   String get cast => 'Odeslat';
 
   @override
-  String get castMembers => 'Obsazení';
+  String get castMembers => 'Cast';
 
   @override
   String get trailer => 'Upoutávka';
@@ -1377,7 +1377,7 @@ class AppLocalizationsCs extends AppLocalizations {
   String get downloaded => 'Staženo';
 
   @override
-  String get finalizingDownload => 'Dokončování…';
+  String get finalizingDownload => 'Finalizing…';
 
   @override
   String get queuedDownload => 'Queued';
@@ -1434,7 +1434,7 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String failedToDeleteItemWithError(String error) {
-    return 'Mazání selhalo s následující chybou: $error';
+    return 'Deletion operation failed with the following error: $error';
   }
 
   @override
@@ -1507,10 +1507,10 @@ class AppLocalizationsCs extends AppLocalizations {
   String get downloadSubtitles => 'Stáhnout titulky';
 
   @override
-  String get searchingSubtitles => 'Hledání titulků…';
+  String get searchingSubtitles => 'Searching for subtitles…';
 
   @override
-  String get downloadingSubtitle => 'Stahování titulků…';
+  String get downloadingSubtitle => 'Downloading subtitle…';
 
   @override
   String get selectedSubtitleInvalid => 'Vybrané titulky jsou neplatné.';
@@ -1553,35 +1553,34 @@ class AppLocalizationsCs extends AppLocalizations {
   String get noEpisodesLoaded => 'Nebyly načteny žádné epizody';
 
   @override
-  String get downloadScopeTitle => 'Ke stažení';
+  String get downloadScopeTitle => 'What to download';
 
   @override
-  String get downloadAllEpisodes => 'Všechny epizody';
+  String get downloadAllEpisodes => 'All episodes';
 
   @override
-  String get downloadUnwatchedEpisodes => 'Všechny nezhlédnuté epizody';
+  String get downloadUnwatchedEpisodes => 'All unwatched episodes';
 
   @override
-  String get downloadAllMovies => 'Všechny filmy';
+  String get downloadAllMovies => 'All movies';
 
   @override
-  String get downloadUnwatchedMovies => 'Všechny nezhlédnuté filmy';
+  String get downloadUnwatchedMovies => 'All unwatched movies';
 
   @override
-  String get downloadScopeLoading => 'Načítání položek...';
+  String get downloadScopeLoading => 'Loading items...';
 
   @override
-  String get downloadScopeLoadFailed =>
-      'Nezdařilo se načíst položky ke stažení';
+  String get downloadScopeLoadFailed => 'Could not load items to download';
 
   @override
   String downloadEstimateTotal(String size) {
-    return '~$size celkem';
+    return '~$size total';
   }
 
   @override
   String downloadBytesOfTotal(String received, String total) {
-    return '$received z $total';
+    return '$received of $total';
   }
 
   @override
@@ -1591,7 +1590,7 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String downloadSizeTotal(String size) {
-    return '$size celkem';
+    return '$size total';
   }
 
   @override
@@ -1735,10 +1734,10 @@ class AppLocalizationsCs extends AppLocalizations {
   String get perfectMatch => 'Perfektní shoda';
 
   @override
-  String get aiTranslated => 'Přeloženo pomocí AI';
+  String get aiTranslated => 'AI Translated';
 
   @override
-  String get machineTranslated => 'Strojově přeloženo';
+  String get machineTranslated => 'Machine Translated';
 
   @override
   String get hearingImpaired => 'SDH';
@@ -1919,13 +1918,13 @@ class AppLocalizationsCs extends AppLocalizations {
   String get playbackInformation => 'Informace o přehrávání';
 
   @override
-  String get showMpvStats => 'Zobrazit mpv statistiky (Shift+I)';
+  String get showMpvStats => 'Show mpv Statistics (Shift+I)';
 
   @override
-  String get hideMpvStats => 'Skrýt mpv statistiky (Shift+I)';
+  String get hideMpvStats => 'Hide mpv Statistics (Shift+I)';
 
   @override
-  String get keyboardShortcutsTitle => 'Klávesové zkratky';
+  String get keyboardShortcutsTitle => 'Keyboard shortcuts';
 
   @override
   String get keyboardShortcutsSubtitle =>
@@ -3741,7 +3740,7 @@ class AppLocalizationsCs extends AppLocalizations {
   String get subtitleStream => 'Stream titulků';
 
   @override
-  String get subtitlePreviewText => 'Příliš žluťoučký kůň úpěl ďábelské ódy';
+  String get subtitlePreviewText => 'Rychlá hnědá liška přeskakuje líného psa';
 
   @override
   String get verticalOffset => 'Vertikální posun';

@@ -6019,9 +6019,6 @@ class _HorizontalActionRowState extends State<_HorizontalActionRow> {
       },
     );
   }
-
-
-
 }
 
 class DetailActionButtonsState extends State<DetailActionButtons> {
@@ -7746,14 +7743,28 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           },
         );
       }).toList();
-      rowContent = _HorizontalActionRow(
-        spacing: buttonSpacing,
-        buttonWidth: compact ? 80.0 : 108.0 * desktopScale,
-        alignment: widget.modernStyle
-            ? AlignmentDirectional.centerStart
-            : Alignment.center,
-        children: normalizedButtons,
-      );
+      final rowAlignment = widget.modernStyle
+          ? AlignmentDirectional.centerStart
+          : Alignment.center;
+      rowContent = prefLimit == -1
+          ? _HorizontalActionRow(
+              spacing: buttonSpacing,
+              buttonWidth: compact ? 80.0 : 108.0 * desktopScale,
+              alignment: rowAlignment,
+              children: normalizedButtons,
+            )
+          : Align(
+              alignment: rowAlignment,
+              child: Wrap(
+                spacing: buttonSpacing,
+                runSpacing: buttonRunSpacing,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                alignment: widget.modernStyle
+                    ? WrapAlignment.start
+                    : WrapAlignment.center,
+                children: normalizedButtons,
+              ),
+            );
     } else {
       final normalizedPrimaryButtons = primaryButtons.asMap().entries.map((
         entry,

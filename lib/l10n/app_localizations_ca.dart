@@ -4371,7 +4371,7 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get nextUpMaxDaysDescription =>
-      'Quant de temps una sèrie roman a «Següent» després de l\'última vegada que la vas veure';
+      'Quant de temps un programa roman a \"A continuació\" després de l\'última vegada que el vas veure';
 
   @override
   String daysValue(int days) {
