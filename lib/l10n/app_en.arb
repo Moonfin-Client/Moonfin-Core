@@ -4,6 +4,42 @@
   "@appTitle": {
     "description": "The application title"
   },
+  "animeMarkerFiller": "Filler",
+  "@animeMarkerFiller": {
+    "description": "Badge on an anime episode that is filler, meaning it is not adapted from the source manga"
+  },
+  "animeMarkerMixed": "Mixed",
+  "@animeMarkerMixed": {
+    "description": "Badge on an anime episode that mixes source material with filler, so it still contains story"
+  },
+  "animeMarkerAnimeCanon": "Anime Canon",
+  "@animeMarkerAnimeCanon": {
+    "description": "Badge on an anime episode that is not in the source manga but is part of the anime's own continuity"
+  },
+  "animeMarkerMangaCanon": "Manga Canon",
+  "@animeMarkerMangaCanon": {
+    "description": "Badge on an anime episode adapted from the source manga"
+  },
+  "animeMarkerSubbed": "Subbed",
+  "@animeMarkerSubbed": {
+    "description": "Badge on an anime episode or season whose only audio is Japanese, so it is watched with subtitles"
+  },
+  "animeMarkerDubbed": "Dubbed",
+  "@animeMarkerDubbed": {
+    "description": "Badge on an anime episode or season that has an audio track in a language other than Japanese"
+  },
+  "animeMarkerSubbedAndDubbed": "Subbed/Dubbed",
+  "@animeMarkerSubbedAndDubbed": {
+    "description": "Badge on anime that carries both the original Japanese audio and a dub, so it can be watched either way"
+  },
+  "animeMarkerPending": "Pending",
+  "@animeMarkerPending": {
+    "description": "Badge on an anime episode whose filler information the server has matched but not downloaded yet"
+  },
+  "animeMarkerRecap": "Recap",
+  "@animeMarkerRecap": {
+    "description": "Badge on an anime episode that recaps earlier episodes"
+  },
   "accountPreferences": "ACCOUNT PREFERENCES",
   "@accountPreferences": {
     "description": "Section header for account preferences settings"
@@ -2546,6 +2582,15 @@
   "@subtitleDelay": {
     "description": "Title for subtitle delay adjuster"
   },
+  "subtitleDelayAuto": "Auto {value}",
+  "@subtitleDelayAuto": {
+    "description": "Read-only line under the subtitle delay showing a correction the player applied on its own, value is a formatted delay like +2000 ms",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
   "reset": "Reset",
   "@reset": {
     "description": "Button label to reset a value"
@@ -3173,6 +3218,10 @@
   "@noChannelsFound": {
     "description": "Empty state when no TV channels match the filter"
   },
+  "noProgramData": "No program data",
+  "@noProgramData": {
+    "description": "Guide cell label for a real EPG schedule gap, not a genre-filtered program"
+  },
   "liveBadge": "LIVE",
   "@liveBadge": {
     "description": "Badge label shown on currently airing programs"
@@ -3282,6 +3331,10 @@
   "watch": "Watch",
   "@watch": {
     "description": "Button label to start watching a channel"
+  },
+  "watchChannelLive": "Watch channel live",
+  "@watchChannelLive": {
+    "description": "Button label to tune a channel live when the selected program is not the one that will play (ended or upcoming)"
   },
   "close": "Close",
   "@close": {
@@ -4260,6 +4313,26 @@
   "@detailButtonsSectionDescription": {
     "description": "Explains that the play buttons can't be hidden and that the list is per device kind"
   },
+  "actionButtonsOnScreen": "Action Buttons on Screen",
+  "@actionButtonsOnScreen": {
+    "description": "Setting title for choosing how many action buttons are visible before overflowing into More Actions"
+  },
+  "actionButtonsOnScreenDescription": "Customize how many action buttons appear before folding into the More Actions menu.",
+  "@actionButtonsOnScreenDescription": {
+    "description": "Subtitle explaining how action buttons overflow into More Actions"
+  },
+  "actionButtonsOnScreenAuto": "Auto (Theme Default)",
+  "@actionButtonsOnScreenAuto": {
+    "description": "Option showing theme default number of action buttons"
+  },
+  "actionButtonsOnScreenPlayOnly": "1 (Play only)",
+  "@actionButtonsOnScreenPlayOnly": {
+    "description": "Option showing only the play action button on screen"
+  },
+  "actionButtonsOnScreenAll": "All (Horizontal Scroll)",
+  "@actionButtonsOnScreenAll": {
+    "description": "Option showing all action buttons in a horizontal scrollable row"
+  },
   "detailMetadata": "Metadata Row",
   "@detailMetadata": {
     "description": "Settings screen for choosing and reordering details screen metadata items"
@@ -4605,6 +4678,14 @@
   "settingsAudioPassthroughModeDisabled": "Disabled (always decode on this device)",
   "settingsAudioPassthroughModeAuto": "Auto (match detected device support)",
   "settingsAudioPassthroughModeManual": "Manual (choose formats below)",
+  "settingsAudioPassthroughOutput": "Passthrough output",
+  "@settingsAudioPassthroughOutput": {
+    "description": "Title of the RAW-vs-IEC passthrough packer selector (Android TV, Media3 engine)"
+  },
+  "settingsAudioPassthroughOutputDescription": "Who packs bitstreams for the HDMI link. Try the app packer if passthrough is silent or glitchy on this device.",
+  "settingsAudioPassthroughOutputPlatform": "Automatic, system packer (AudioTrack RAW)",
+  "settingsAudioPassthroughOutputIec": "App packer (AudioTrack IEC)",
+  "settingsAudioPassthroughOutputIecLabel": "App (IEC)",
   "settingsDownmixToStereoDescription": "Mix all decoded audio down to two channels.",
   "settingsAudioEac3IncludesAtmos": "Bitstream E-AC-3, including Dolby Atmos (JOC).",
   "settingsAudioDtsHdIncludesDtsX": "Bitstream DTS-HD, including DTS:X.",

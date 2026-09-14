@@ -3,6 +3,22 @@ import 'package:moonfin/ui/navigation/destinations.dart';
 
 void main() {
   group('a player route', () {
+    test('records an explicit hardware-rendering opt-out', () {
+      expect(
+        Destinations.gamePlayerOf(
+          'library',
+          'game',
+          core: 'n64',
+          hardwareRenderingEnabled: false,
+        ),
+        contains('hw=0'),
+      );
+      expect(
+        Destinations.gamePlayerOf('library', 'game', core: 'n64'),
+        isNot(contains('hw=0')),
+      );
+    });
+
     test('covers every fullscreen playback screen', () {
       for (final path in [
         Destinations.videoPlayer,

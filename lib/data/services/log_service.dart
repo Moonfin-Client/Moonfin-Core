@@ -3,10 +3,12 @@ import 'dart:collection';
 import 'dart:developer' as developer;
 
 import 'package:flutter/foundation.dart';
+import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../preference/user_preferences.dart';
 import 'media_server_client_factory.dart';
+import 'plugin_sync_service.dart';
 
 enum LogLevel { debug, info, warning, error }
 
@@ -255,10 +257,44 @@ class LogService extends ChangeNotifier {
     return buffer.toString();
   }
 
+  /// Whether the active server will take a report right now. Jellyfin has an
+  /// endpoint for this, Emby only gets one from the Moonfin plugin.
+  bool get canUploadToServer {
+    try {
+      return _acceptsReports(_clientFactory.getActiveClient());
+    } on StateError {
+      return false;
+    }
+  }
+
+  bool _acceptsReports(MediaServerClient client) {
+    if (client.clientLogApi == null) return false;
+    if (client.serverType != ServerType.emby) return true;
+    // Tests and background isolates never register the sync service, and the
+    // ping never runs there, so treat it as allowed.
+    if (!GetIt.instance.isRegistered<PluginSyncService>()) return true;
+    return GetIt.instance<PluginSyncService>().clientLogSupported;
+  }
+
+  /// Why [canUploadToServer] is false, worded for the diagnostics screen.
+  String get uploadUnavailableReason {
+    final MediaServerClient client;
+    try {
+      client = _clientFactory.getActiveClient();
+    } on StateError {
+      return 'Sign in to a server to send reports.';
+    }
+    if (client.serverType == ServerType.emby) {
+      return 'This Emby server needs the Moonfin plugin, with client log '
+          'upload turned on.';
+    }
+    return 'The active server does not support report uploads.';
+  }
+
   /// Uploads the current report to the active server.
   ///
   /// Returns the server-assigned file name on success. Throws [StateError] if
-  /// no server is active or the server does not support client log upload.
+  /// no server is active or the server will not take a report.
   Future<String?> uploadToServer() async {
     final MediaServerClient client;
     try {
@@ -267,10 +303,8 @@ class LogService extends ChangeNotifier {
       throw StateError('No active server to send the report to.');
     }
     final api = client.clientLogApi;
-    if (api == null) {
-      throw StateError(
-        'This server does not support diagnostic report uploads.',
-      );
+    if (api == null || !_acceptsReports(client)) {
+      throw StateError(uploadUnavailableReason);
     }
     log(
       LogCategory.general,

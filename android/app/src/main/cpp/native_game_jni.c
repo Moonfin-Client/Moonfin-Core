@@ -16,6 +16,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "egl_backend.h"
 #include "libretro_host.h"
 
 #define LOG_TAG "moonfin_libretro"
@@ -37,6 +38,7 @@ typedef struct {
   int has_render_thread;
   atomic_int render_running;
   atomic_int frame_dirty;
+  int egl_backend_installed;
 } native_ctx;
 
 // libretro allows one session per process, so the context is a single global.
@@ -235,6 +237,10 @@ static void teardown(JNIEnv *env) {
     g_ctx.host = NULL;
   }
   pthread_mutex_lock(&g_window_lock);
+  if (g_ctx.egl_backend_installed) {
+    egl_backend_shutdown();
+    g_ctx.egl_backend_installed = 0;
+  }
   if (g_ctx.window) {
     ANativeWindow_release(g_ctx.window);
     g_ctx.window = NULL;
@@ -283,7 +289,7 @@ static void release_options(JNIEnv *env, int count, const char **keys,
 JNI(jdoubleArray, nativeLoad)(
     JNIEnv *env, jobject thiz, jstring core, jstring corePath, jstring romPath,
     jstring systemDir, jstring saveDir, jstring gameId, jobjectArray optKeys,
-    jobjectArray optVals) {
+    jobjectArray optVals, jboolean hardware_rendering_enabled) {
   (void)core;
   teardown(env);
 
@@ -316,6 +322,19 @@ JNI(jdoubleArray, nativeLoad)(
   if (!g_ctx.host) {
     LOGE("Could not allocate libretro host");
     return NULL;
+  }
+  if (hardware_rendering_enabled) {
+    // The core negotiates hardware rendering during retro_load_game.
+    if (egl_backend_install(g_ctx.host) != 0) {
+      LOGE("EGL backend failed to register; hardware cores will be refused");
+    } else {
+      g_ctx.egl_backend_installed = 1;
+      pthread_mutex_lock(&g_window_lock);
+      egl_backend_set_window(g_ctx.window);
+      pthread_mutex_unlock(&g_window_lock);
+    }
+  } else {
+    LOGI("Hardware rendering disabled for this session");
   }
   g_ctx.bridge = (*env)->NewGlobalRef(env, thiz);
   if (!g_ctx.bridge) {
@@ -473,6 +492,19 @@ JNI(jdoubleArray, nativeLoad)(
   return result;
 }
 
+// Return the hardware render-target size, or NULL for software rendering.
+JNI(jintArray, nativeHwRenderSize)(JNIEnv *env, jobject thiz) {
+  (void)thiz;
+  if (!g_ctx.host) return NULL;
+  int w = 0, h = 0;
+  if (!lh_hw_render_size(g_ctx.host, &w, &h) || w <= 0 || h <= 0) return NULL;
+  jintArray out = (*env)->NewIntArray(env, 2);
+  if (!out) return NULL;
+  jint values[2] = {(jint)w, (jint)h};
+  (*env)->SetIntArrayRegion(env, out, 0, 2, values);
+  return out;
+}
+
 JNI(void, nativeSetSurface)(JNIEnv *env, jobject thiz, jobject surface) {
   (void)thiz;
   pthread_mutex_lock(&g_window_lock);
@@ -485,6 +517,7 @@ JNI(void, nativeSetSurface)(JNIEnv *env, jobject thiz, jobject surface) {
   if (surface) {
     g_ctx.window = ANativeWindow_fromSurface(env, surface);
   }
+  egl_backend_set_window(g_ctx.window);
   pthread_mutex_unlock(&g_window_lock);
 }
 

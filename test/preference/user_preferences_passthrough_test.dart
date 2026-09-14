@@ -1,8 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:moonfin/playback/audio_capability_profile.dart';
 import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/preference/user_preferences.dart';
+import 'package:moonfin/util/platform_detection.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 AudioCapabilityProfile _profile({
@@ -11,6 +13,9 @@ AudioCapabilityProfile _profile({
   bool canPassthroughDts = false,
   bool canPassthroughDtsHd = false,
   bool canPassthroughTrueHd = false,
+  bool canIecLow = false,
+  bool canIecMid = false,
+  bool canIecHbr = false,
   int maxPcmChannels = 8,
   AudioRouteType activeRouteType = AudioRouteType.earc,
   bool routeSupportsHdAudio = true,
@@ -27,6 +32,9 @@ AudioCapabilityProfile _profile({
     canPassthroughDts: canPassthroughDts,
     canPassthroughDtsHd: canPassthroughDtsHd,
     canPassthroughTrueHd: canPassthroughTrueHd,
+    canIecLow: canIecLow,
+    canIecMid: canIecMid,
+    canIecHbr: canIecHbr,
     maxPcmChannels: maxPcmChannels,
     activeRouteType: activeRouteType,
     routeSupportsHdAudio: routeSupportsHdAudio,
@@ -218,6 +226,108 @@ void main() {
       for (final pref in UserPreferences.passthroughTogglePreferences) {
         expect(prefs.containsPreference(pref), isFalse, reason: pref.key);
       }
+    });
+  });
+
+  group('AudioTrack (IEC) output mode', () {
+    // media3IecPackerSelected requires Android TV + the Media3 engine, so the
+    // group simulates that platform and restores it after every test.
+    setUp(() {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      PlatformDetection.setTvMode(true);
+    });
+
+    tearDown(() {
+      debugDefaultTargetPlatformOverride = null;
+      PlatformDetection.setTvMode(false);
+    });
+
+    Future<UserPreferences> iecPrefs() async {
+      final prefs = await _prefs();
+      await prefs.set(
+        UserPreferences.playbackEnginePreference,
+        PlaybackEnginePreference.media3,
+      );
+      await prefs.set(
+        UserPreferences.audioPassthroughOutput,
+        AudioPassthroughOutput.iecPacker,
+      );
+      return prefs;
+    }
+
+    test('the choke point requires pref, engine, and Android TV', () async {
+      final prefs = await iecPrefs();
+      expect(prefs.media3IecPackerSelected, isTrue);
+
+      await prefs.set(
+        UserPreferences.playbackEnginePreference,
+        PlaybackEnginePreference.mpv,
+      );
+      expect(prefs.media3IecPackerSelected, isFalse);
+
+      await prefs.set(
+        UserPreferences.playbackEnginePreference,
+        PlaybackEnginePreference.media3,
+      );
+      PlatformDetection.setTvMode(false);
+      expect(prefs.media3IecPackerSelected, isFalse);
+    });
+
+    test('auto follows IEC carrier eligibility instead of raw support', () async {
+      final prefs = await iecPrefs();
+      // Raw passthrough support present, IEC carriers absent: nothing may
+      // bitstream through the IEC path.
+      final rawOnly = _profile(
+        canPassthroughAc3: true,
+        canPassthroughEac3: true,
+        canPassthroughTrueHd: true,
+      );
+      expect(prefs.resolveAc3PassthroughEnabled(rawOnly), isFalse);
+      expect(prefs.resolveEac3PassthroughEnabled(rawOnly), isFalse);
+      expect(prefs.resolveTrueHdPassthroughEnabled(rawOnly), isFalse);
+
+      // IEC carriers present without raw encodings: the IEC path carries them.
+      final iecOnly = _profile(
+        canIecLow: true,
+        canIecMid: true,
+        canIecHbr: true,
+      );
+      expect(prefs.resolveAc3PassthroughEnabled(iecOnly), isTrue);
+      expect(prefs.resolveEac3PassthroughEnabled(iecOnly), isTrue);
+      expect(prefs.resolveDtsCorePassthroughEnabled(iecOnly), isTrue);
+      expect(prefs.resolveDtsHdPassthroughEnabled(iecOnly), isTrue);
+      expect(prefs.resolveTrueHdPassthroughEnabled(iecOnly), isTrue);
+    });
+
+    test('the HBR carrier is gated to HDMI and eARC routes', () async {
+      final prefs = await iecPrefs();
+      final arcRoute = _profile(
+        canIecLow: true,
+        canIecMid: true,
+        canIecHbr: true,
+        activeRouteType: AudioRouteType.arc,
+      );
+
+      expect(prefs.resolveAc3PassthroughEnabled(arcRoute), isTrue);
+      expect(prefs.resolveTrueHdPassthroughEnabled(arcRoute), isFalse);
+      expect(prefs.resolveDtsHdPassthroughEnabled(arcRoute), isFalse);
+    });
+
+    test('the default platform output keeps raw resolution untouched', () async {
+      final prefs = await _prefs();
+      await prefs.set(
+        UserPreferences.playbackEnginePreference,
+        PlaybackEnginePreference.media3,
+      );
+      final rawCapable = _profile(
+        canPassthroughAc3: true,
+        canPassthroughEac3: true,
+      );
+
+      expect(prefs.media3IecPackerSelected, isFalse);
+      expect(prefs.resolveAc3PassthroughEnabled(rawCapable), isTrue);
+      expect(prefs.resolveEac3PassthroughEnabled(rawCapable), isTrue);
+      expect(prefs.resolveTrueHdPassthroughEnabled(rawCapable), isFalse);
     });
   });
 }

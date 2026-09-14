@@ -303,6 +303,7 @@ class UserPreferences extends ChangeNotifier {
     'detailButtonOrderDesktop',
     'detailButtonOrderMobile',
     'detailButtonOrderTv',
+    'detailButtonsMaxVisible',
     'detailMetadataOrderDesktop',
     'detailMetadataOrderMobile',
     'detailMetadataOrderTv',
@@ -330,6 +331,7 @@ class UserPreferences extends ChangeNotifier {
     'imdb_top_250_tv_shows_enabled',
     'imdb_top_english_movies_enabled',
     'live_tv_channel_sort_by',
+    'live_tv_last_channel_id',
     'music_playback_time_display',
     'osdButtonOrderDesktop',
     'osdButtonOrderMobile',
@@ -757,20 +759,36 @@ class UserPreferences extends ChangeNotifier {
         )
       : const AudioCapabilityProfile.optimistic();
 
+  /// Whether the IEC app packer is the active output path: the preference is
+  /// set, the engine is Media3, and this is Android TV. The single choke
+  /// point that keeps every other engine and platform untouched.
+  bool get media3IecPackerSelected =>
+      get(audioPassthroughOutput) == AudioPassthroughOutput.iecPacker &&
+      get(playbackEnginePreference) == PlaybackEnginePreference.media3 &&
+      PlatformDetection.isAndroid &&
+      PlatformDetection.isTV;
+
   // Mode-aware passthrough resolution. Disabled bitstreams nothing, auto
   // follows the detected hardware capability, and manual follows the stored
   // toggles. Callers may pass a profile they already built, and when omitted
-  // the live detected profile is used.
+  // the live detected profile is used. Under the IEC packer the capability
+  // predicate is the codec's IEC carrier eligibility instead of the raw
+  // passthrough encoding, so auto mode and the advertised server profile
+  // follow what the IEC path can actually carry.
   bool _resolvePassthrough(
     Preference<bool> pref,
     bool Function(AudioCapabilityProfile) capabilityOf,
+    bool Function(AudioCapabilityProfile) iecCapabilityOf,
     AudioCapabilityProfile? profile,
   ) {
     switch (get(audioPassthroughMode)) {
       case AudioPassthroughMode.disabled:
         return false;
       case AudioPassthroughMode.auto:
-        return capabilityOf(profile ?? detectedAudioCapabilities);
+        final capabilities = profile ?? detectedAudioCapabilities;
+        return media3IecPackerSelected
+            ? iecCapabilityOf(capabilities)
+            : capabilityOf(capabilities);
       case AudioPassthroughMode.manual:
         return get(pref);
     }
@@ -780,6 +798,7 @@ class UserPreferences extends ChangeNotifier {
       _resolvePassthrough(
         ac3PassthroughEnabled,
         (p) => p.canPassthroughAc3,
+        (p) => p.canIecAc3,
         profile,
       );
 
@@ -787,6 +806,7 @@ class UserPreferences extends ChangeNotifier {
       _resolvePassthrough(
         eac3PassthroughEnabled,
         (p) => p.canPassthroughEac3,
+        (p) => p.canIecEac3,
         profile,
       );
 
@@ -794,6 +814,7 @@ class UserPreferences extends ChangeNotifier {
       _resolvePassthrough(
         dtsCorePassthroughEnabled,
         (p) => p.canPassthroughDts,
+        (p) => p.canIecDts,
         profile,
       );
 
@@ -804,6 +825,7 @@ class UserPreferences extends ChangeNotifier {
       _resolvePassthrough(
         dtsHdPassthroughEnabled,
         (p) => p.canPassthroughDtsHd,
+        (p) => p.canIecDtsHd,
         profile,
       );
 
@@ -811,6 +833,7 @@ class UserPreferences extends ChangeNotifier {
       _resolvePassthrough(
         trueHdPassthroughEnabled,
         (p) => p.canPassthroughTrueHd,
+        (p) => p.canIecTrueHd,
         profile,
       );
 
@@ -1017,6 +1040,12 @@ class UserPreferences extends ChangeNotifier {
   /// the right backend is a per-device choice.
   static final useNativeEmulator = Preference(
     key: 'pref_use_native_emulator',
+    defaultValue: true,
+  );
+
+  /// Enables Android's experimental libretro hardware-rendering path.
+  static final useHardwareRendering = Preference(
+    key: 'pref_use_hardware_rendering',
     defaultValue: true,
   );
 
@@ -1923,6 +1952,14 @@ class UserPreferences extends ChangeNotifier {
     values: AudioPassthroughMode.values,
   );
 
+  /// How bitstreams reach the AudioTrack on the Media3 engine, see
+  /// [AudioPassthroughOutput].
+  static final audioPassthroughOutput = EnumPreference(
+    key: 'pref_audio_passthrough_output',
+    defaultValue: AudioPassthroughOutput.platform,
+    values: AudioPassthroughOutput.values,
+  );
+
   static final downmixToStereo = Preference(
     key: 'pref_downmix_to_stereo',
     defaultValue: false,
@@ -2247,6 +2284,10 @@ class UserPreferences extends ChangeNotifier {
   static final hiddenDetailButtonsDesktop = Preference(
     key: 'hiddenDetailButtonsDesktop',
     defaultValue: '',
+  );
+  static final detailButtonsMaxVisible = Preference(
+    key: 'detailButtonsMaxVisible',
+    defaultValue: 0,
   );
   static final detailMetadataOrderTv = Preference(
     key: 'detailMetadataOrderTv',
@@ -2837,6 +2878,13 @@ class UserPreferences extends ChangeNotifier {
     key: 'live_tv_channel_sort_by',
     defaultValue: ChannelSortBy.number,
     values: ChannelSortBy.values,
+  );
+
+  /// Last Live TV channel watched on this server/account. Channel IDs are
+  /// scoped to the active server and user, so this preference is scoped too.
+  static final liveTvLastChannelId = Preference(
+    key: 'live_tv_last_channel_id',
+    defaultValue: '',
   );
 
   static EnumPreference<LibrarySortBy> librarySortBy(String libraryId) =>

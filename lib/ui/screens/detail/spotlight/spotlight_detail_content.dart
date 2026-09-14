@@ -974,6 +974,20 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
     final firstCardNode = cards.isNotEmpty
         ? _cardFocusNodes[cards.first.id]
         : null;
+    final prefLimit = widget.prefs.get(UserPreferences.detailButtonsMaxVisible);
+    final int? maxVisibleOverride;
+    final bool overflowAsMenu;
+    if (prefLimit == -1) {
+      maxVisibleOverride = null;
+      overflowAsMenu = false;
+    } else if (prefLimit > 0) {
+      maxVisibleOverride = prefLimit + 1;
+      overflowAsMenu = true;
+    } else {
+      maxVisibleOverride = _landscape ? 5 : 4;
+      overflowAsMenu = true;
+    }
+
     return DetailActionButtons(
       viewModel: _vm,
       itemId: item.id,
@@ -985,8 +999,8 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
       autoPlay: widget.autoPlay,
       modernStyle: true,
       fullWidthPrimary: !_landscape,
-      overflowAsMenu: true,
-      maxVisibleButtonsOverride: _landscape ? 5 : 4,
+      overflowAsMenu: overflowAsMenu,
+      maxVisibleButtonsOverride: maxVisibleOverride,
       rowMaxWidth: _landscape
           ? SpotlightLandscapeLayout.heroWidthFor(MediaQuery.sizeOf(context))
           : null,

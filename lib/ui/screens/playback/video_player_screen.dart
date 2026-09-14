@@ -82,9 +82,11 @@ import '../../../playback/player_key_bindings.dart';
 import '../../widgets/syncplay/syncplay_player_button.dart';
 import '../../../syncplay/syncplay_manager.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../widgets/playback/delay_footer.dart';
 import '../../widgets/progress_snack_bar.dart';
 import '../../../util/remote_subtitle_labels.dart';
 import '../../../util/subtitle_appearance_schedule.dart';
+import '../../../playback/delay_limits.dart';
 import '../../../playback/media3_player_backend.dart';
 import '../../../util/system_ui.dart';
 import 'playback_takeover.dart';
@@ -4008,6 +4010,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                           onDismiss: _clearSkipSegment,
                           positionStream: _state.positionStream,
                           initialPosition: _state.position,
+                          nextItem: _nextUpItem,
                         ),
                       if (_showNextUp && _nextUpItem != null)
                         NextUpOverlay(
@@ -7018,7 +7021,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
       if (!mounted) return;
 
-      final delayLimits = _delayLimits(audio: audio);
+      final delayLimits = delayLimitsFor(_activeBackend, audio: audio);
       final result = await TrackSelectorDialog.show(
         context,
         title: audio ? l10n.audioTrack : l10n.subtitleTrack,
@@ -7027,11 +7030,16 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         useRootNavigator: false,
         footer: delayLimits == null
             ? null
-            : _DelayFooter(
+            : DelayFooter(
                 initialDelay: audio ? _audioDelay : _subtitleDelay,
                 label: audio ? l10n.audioDelay : l10n.subtitleDelay,
                 minDelay: delayLimits.$1,
                 maxDelay: delayLimits.$2,
+                autoOffset: audio
+                    ? 0.0
+                    : (_activeBackend?.subtitleAutoOffsetSeconds ?? 0.0),
+                autoOffsetStream:
+                    audio ? null : _activeBackend?.subtitleAutoOffsetStream,
                 onDelayChanged: (d) => _applyDelay(audio: audio, delay: d),
                 formatDelay: _formatDelay,
               ),
@@ -7537,23 +7545,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     }
   }
 
-  /// The range the active backend honors, or null when it cant offset this
-  /// track at all. Either bound being null means it takes anything.
-  ///
-  /// Media3 clamps audio to two seconds either way, and it can only hold a cue
-  /// back once ExoPlayer surfaces it, never show one early, so its subtitle
-  /// offset starts at zero. Aether has its own subtitle overlay to shift but no
-  /// say over AVFoundation audio timing.
-  (double?, double?)? _delayLimits({required bool audio}) {
-    final backend = _activeBackend;
-    if (backend is MediaKitPlayerBackend) return (null, null);
-    if (backend is Media3PlayerBackend) {
-      return audio ? (-2.0, 2.0) : (0.0, 5.0);
-    }
-    if (backend is AetherBackend) return audio ? null : (null, null);
-    return null;
-  }
-
   void _applyDelay({required bool audio, required double delay}) {
     if (audio) {
       _audioDelay = delay;
@@ -7962,138 +7953,6 @@ class _CastPersonTileState extends State<_CastPersonTile> {
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _DelayFooter extends StatefulWidget {
-  final double initialDelay;
-  final String label;
-  final double? minDelay;
-  final double? maxDelay;
-  final void Function(double delay) onDelayChanged;
-  final String Function(double seconds) formatDelay;
-
-  const _DelayFooter({
-    required this.initialDelay,
-    required this.label,
-    this.minDelay,
-    this.maxDelay,
-    required this.onDelayChanged,
-    required this.formatDelay,
-  });
-
-  @override
-  State<_DelayFooter> createState() => _DelayFooterState();
-}
-
-class _DelayFooterState extends State<_DelayFooter> {
-  late double _delay;
-
-  @override
-  void initState() {
-    super.initState();
-    _delay = widget.initialDelay;
-  }
-
-  void _adjust(double delta) {
-    var next = ((_delay + delta) * 10).roundToDouble() / 10;
-    final min = widget.minDelay;
-    final max = widget.maxDelay;
-    if (min != null && next < min) next = min;
-    if (max != null && next > max) next = max;
-    if (next == _delay) return;
-    setState(() => _delay = next);
-    widget.onDelayChanged(next);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 8, 24, 4),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(height: 1, color: Colors.white.withValues(alpha: 0.08)),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              Text(
-                widget.label,
-                style: const TextStyle(
-                  color: Colors.white70,
-                  fontSize: AppTypography.fontSizeSm,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const Spacer(),
-              Text(
-                widget.formatDelay(_delay),
-                style: TextStyle(
-                  color: AppColorScheme.accent,
-                  fontSize: AppTypography.fontSizeSm,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 6),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              IconButton(
-                onPressed: () => _adjust(-0.1),
-                icon: const AdaptiveIcon(
-                  Icons.remove_circle_outline,
-                  color: Colors.white,
-                  size: 28,
-                ),
-                tooltip: l10n.delayMinusMs(100),
-              ),
-              Text(
-                l10n.delayMinusMs(100),
-                style: const TextStyle(
-                  color: Colors.white54,
-                  fontSize: AppTypography.fontSizeXs,
-                ),
-              ),
-              const Spacer(),
-              OutlinedButton(
-                onPressed: () {
-                  setState(() => _delay = 0.0);
-                  widget.onDelayChanged(0.0);
-                },
-                style: OutlinedButton.styleFrom(
-                  side: ThemeRegistry.active.borders.chipBorder,
-                ),
-                child: Text(
-                  l10n.reset,
-                  style: const TextStyle(color: Colors.white),
-                ),
-              ),
-              const Spacer(),
-              Text(
-                l10n.delayPlusMs(100),
-                style: const TextStyle(
-                  color: Colors.white54,
-                  fontSize: AppTypography.fontSizeXs,
-                ),
-              ),
-              IconButton(
-                onPressed: () => _adjust(0.1),
-                icon: const AdaptiveIcon(
-                  Icons.add_circle_outline,
-                  color: Colors.white,
-                  size: 28,
-                ),
-                tooltip: l10n.delayPlusMs(100),
-              ),
-            ],
-          ),
-        ],
       ),
     );
   }

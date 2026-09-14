@@ -10,6 +10,7 @@ import '../../../util/core_input_descriptors.dart';
 import '../../../util/native_controller_mapping.dart';
 import '../../../util/native_controller_player_assignments.dart';
 import 'controller_test_panel.dart';
+import 'game_playback_ui.dart';
 
 /// A privacy-safe physical controller identifier. On Android it comes from the
 /// gamepad channel and is stable across reconnects and never a raw descriptor;
@@ -454,7 +455,7 @@ class NativeControllerMappingScreenState
     _revealRow(next);
   }
 
-  /// Brings a cursor row into view after the current list has attached.
+  /// Centers a cursor row after the current list has attached.
   ///
   /// Every list shares [_scroll], so a sub-list can inherit an offset that made
   /// sense for the main list (and vice versa). Scheduling this after [setState]
@@ -462,24 +463,11 @@ class NativeControllerMappingScreenState
   /// it replaced.
   void _revealRow(int index) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || !_scroll.hasClients) return;
-      final position = _scroll.position;
-      final rowStart = index * _rowExtent;
-      final rowEnd = rowStart + _rowExtent;
-      final viewportEnd = position.pixels + position.viewportDimension;
-      final target = rowStart < position.pixels
-          ? rowStart
-          : rowEnd > viewportEnd
-          ? rowEnd - position.viewportDimension
-          : position.pixels;
-      final clampedTarget = target
-          .clamp(0.0, position.maxScrollExtent)
-          .toDouble();
-      if ((clampedTarget - position.pixels).abs() < 0.5) return;
-      _scroll.animateTo(
-        clampedTarget,
-        duration: const Duration(milliseconds: 150),
-        curve: Curves.easeOut,
+      if (!mounted) return;
+      centerGamePlaybackMenuSelection(
+        _scroll,
+        index,
+        rowExtent: _rowExtent,
       );
     });
   }

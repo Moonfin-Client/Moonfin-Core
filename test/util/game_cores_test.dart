@@ -13,6 +13,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 class _MockGamesApi extends Mock implements GamesApi {}
 
 void main() {
+  _coreOptionDefaultsTests();
+
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('resolveNativeGameBackend', () {
@@ -437,4 +439,44 @@ Set<String> _defaultFetchCores(String relativePath) {
   }
 
   throw StateError('No default core declaration found in $relativePath.');
+}
+
+void _coreOptionDefaultsTests() {
+  group('withCoreOptionDefaults', () {
+    const n64 = 'mupen64plus_next';
+    const cacheKey = 'mupen64plus-MaxTxCacheSize';
+
+    test('applies the app default when the user has no settings', () {
+      // This is the reset case: clearing the stored document must land on our
+      // value, not the core's 8000, which OOM-kills the app on TV hardware.
+      final merged = withCoreOptionDefaults(n64, null);
+      expect(merged, isNotNull);
+      expect(merged![cacheKey], '1500');
+    });
+
+    test('a user value always wins over the app default', () {
+      final merged = withCoreOptionDefaults(n64, {cacheKey: '8000'});
+      expect(merged![cacheKey], '8000');
+    });
+
+    test('fills gaps without disturbing unrelated user settings', () {
+      final merged = withCoreOptionDefaults(n64, {'some-other-option': 'x'});
+      expect(merged!['some-other-option'], 'x');
+      expect(merged[cacheKey], '1500');
+    });
+
+    test('passes settings through untouched for a core with no defaults', () {
+      final settings = {'a': 'b'};
+      expect(withCoreOptionDefaults('snes9x', settings), settings);
+      expect(withCoreOptionDefaults('snes9x', null), isNull);
+    });
+
+    test('every defaulted core is actually in the catalog', () {
+      // A typo in a core id would silently never apply.
+      final ids = gameCoreCatalog.map((c) => c.coreId).toSet();
+      for (final coreId in coreOptionDefaults.keys) {
+        expect(ids, contains(coreId), reason: '$coreId is not a known core');
+      }
+    });
+  });
 }

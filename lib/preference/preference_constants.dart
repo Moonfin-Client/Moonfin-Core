@@ -29,6 +29,23 @@ enum AudioPassthroughMode {
   manual,
 }
 
+/// How a bitstream reaches the AudioTrack on the Media3 engine, while
+/// [AudioPassthroughMode] decides whether a codec may bitstream at all.
+/// - [platform]: raw codec encodings, the Android HAL packs the IEC frames.
+///   The default.
+/// - [iecPacker]: the app packs IEC 61937 itself and plays through an
+///   ENCODING_IEC61937 track, bypassing buggy vendor packers. Under this mode
+///   an eligible codec either rides the IEC path or decodes locally.
+enum AudioPassthroughOutput {
+  platform('platform'),
+  iecPacker('iec');
+
+  const AudioPassthroughOutput(this.wireName);
+
+  /// The token shared with the native Media3 bridge.
+  final String wireName;
+}
+
 /// Passthrough-controllable base codecs. Variants ride inside the base
 /// bitstream: Atmos (JOC) in eac3, DTS:X in dtsHd, Atmos in trueHd.
 enum PassthroughCodec {

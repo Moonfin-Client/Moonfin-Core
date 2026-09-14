@@ -37,6 +37,14 @@ class _AudioPreferencesScreenState extends State<_AudioPreferencesScreen> {
         PlatformDetection.isDesktop;
   }
 
+  /// The packer choice only exists on the Media3 engine on Android TV.
+  /// Everywhere else the tile is hidden and the preference is inert.
+  bool get _showPassthroughOutputTile =>
+      PlatformDetection.isAndroid &&
+      PlatformDetection.isTV &&
+      _prefs.get(UserPreferences.playbackEnginePreference) ==
+          PlaybackEnginePreference.media3;
+
   AudioCapabilityProfile get _audioCapabilityProfile =>
       AudioCapabilityProfile.fromMap(
         PlatformDetection.hasAudioCapabilities
@@ -299,6 +307,32 @@ class _AudioPreferencesScreenState extends State<_AudioPreferencesScreen> {
                   onChangedValue: (mode) =>
                       _prefs.setAudioPassthroughMode(mode),
                 ),
+                // The IEC option packs IEC 61937 in the app instead of
+                // trusting the platform packer, which is broken on some
+                // devices.
+                if (_showPassthroughOutputTile)
+                  EnumPreferenceTile<AudioPassthroughOutput>(
+                    preference: UserPreferences.audioPassthroughOutput,
+                    title: l10n.settingsAudioPassthroughOutput,
+                    description: _capabilitySubtitle(
+                      l10n,
+                      baseSubtitle:
+                          l10n.settingsAudioPassthroughOutputDescription,
+                      isSupported: capabilities.canIecLow,
+                    ),
+                    icon: Icons.settings_input_hdmi,
+                    labelOf: (output) => switch (output) {
+                      AudioPassthroughOutput.platform => l10n.auto,
+                      AudioPassthroughOutput.iecPacker =>
+                        l10n.settingsAudioPassthroughOutputIecLabel,
+                    },
+                    dialogLabelOf: (output) => switch (output) {
+                      AudioPassthroughOutput.platform =>
+                        l10n.settingsAudioPassthroughOutputPlatform,
+                      AudioPassthroughOutput.iecPacker =>
+                        l10n.settingsAudioPassthroughOutputIec,
+                    },
+                  ),
                 SwitchPreferenceTile(
                   preference: UserPreferences.downmixToStereo,
                   title: l10n.downmixToStereo,

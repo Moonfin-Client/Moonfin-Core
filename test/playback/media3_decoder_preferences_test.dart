@@ -1,8 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:moonfin/playback/media3_player_backend.dart';
 import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/preference/user_preferences.dart';
+import 'package:moonfin/util/platform_detection.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<UserPreferences> _prefs([Map<String, Object> initial = const {}]) async {
@@ -86,6 +88,78 @@ void main() {
       final payload = Media3PlayerBackend.audioDecoderPreferencesPayload(prefs);
 
       expect(payload['downmixToStereo'], isTrue);
+    });
+
+    test('the payload carries exactly the keys the bridge parses', () async {
+      final prefs = await _prefs();
+
+      final payload = Media3PlayerBackend.audioDecoderPreferencesPayload(prefs);
+
+      expect(
+        payload.keys.toSet(),
+        equals(<String>{
+          'passthroughMode',
+          'passthroughCodecs',
+          'passthroughOutput',
+          'downmixToStereo',
+        }),
+      );
+    });
+
+    test('passthroughOutput defaults to platform', () async {
+      final prefs = await _prefs();
+
+      final payload = Media3PlayerBackend.audioDecoderPreferencesPayload(prefs);
+
+      expect(payload['passthroughOutput'], 'platform');
+    });
+
+    test(
+      'passthroughOutput stays platform off Android TV even with the pref set',
+      () async {
+        // Host tests run off-Android, so the choke point must refuse.
+        final prefs = await _prefs();
+        await prefs.set(
+          UserPreferences.audioPassthroughOutput,
+          AudioPassthroughOutput.iecPacker,
+        );
+
+        final payload = Media3PlayerBackend.audioDecoderPreferencesPayload(
+          prefs,
+        );
+
+        expect(payload['passthroughOutput'], 'platform');
+      },
+    );
+
+    test('passthroughOutput sends iec on Android TV with Media3', () async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      PlatformDetection.setTvMode(true);
+      addTearDown(() {
+        debugDefaultTargetPlatformOverride = null;
+        PlatformDetection.setTvMode(false);
+      });
+
+      final prefs = await _prefs();
+      await prefs.set(
+        UserPreferences.playbackEnginePreference,
+        PlaybackEnginePreference.media3,
+      );
+      await prefs.set(
+        UserPreferences.audioPassthroughOutput,
+        AudioPassthroughOutput.iecPacker,
+      );
+
+      final payload = Media3PlayerBackend.audioDecoderPreferencesPayload(prefs);
+
+      expect(payload['passthroughOutput'], 'iec');
+    });
+
+    test('AudioPassthroughOutput wire names match the Kotlin bridge', () {
+      expect(
+        AudioPassthroughOutput.values.map((o) => o.wireName).toList(),
+        ['platform', 'iec'],
+      );
     });
   });
 

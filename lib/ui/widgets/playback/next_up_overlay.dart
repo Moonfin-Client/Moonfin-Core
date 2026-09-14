@@ -11,6 +11,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../adaptive/adaptive_glass.dart';
+import '../anime_marker_badge.dart';
 
 class NextUpOverlay extends StatefulWidget {
   final AggregatedItem nextItem;
@@ -168,6 +169,12 @@ class _NextUpOverlayState extends State<NextUpOverlay>
       children: [
         if (episodePill != null) ...[episodePill, const SizedBox(height: 6)],
         title,
+        AnimeMarkerBadge(
+          seriesId: item.seriesId,
+          episodeId: item.id,
+          scale: widget.isMinimal ? 0.8 : 0.9,
+          padding: const EdgeInsets.only(top: 6),
+        ),
       ],
     );
 

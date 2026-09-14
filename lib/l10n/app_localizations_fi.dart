@@ -13,6 +13,33 @@ class AppLocalizationsFi extends AppLocalizations {
   String get appTitle => 'Moonfin';
 
   @override
+  String get animeMarkerFiller => 'Filler';
+
+  @override
+  String get animeMarkerMixed => 'Mixed';
+
+  @override
+  String get animeMarkerAnimeCanon => 'Anime Canon';
+
+  @override
+  String get animeMarkerMangaCanon => 'Manga Canon';
+
+  @override
+  String get animeMarkerSubbed => 'Subbed';
+
+  @override
+  String get animeMarkerDubbed => 'Dubbed';
+
+  @override
+  String get animeMarkerSubbedAndDubbed => 'Subbed/Dubbed';
+
+  @override
+  String get animeMarkerPending => 'Pending';
+
+  @override
+  String get animeMarkerRecap => 'Recap';
+
+  @override
   String get accountPreferences => 'TILIN ASETUKSET';
 
   @override
@@ -148,7 +175,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get detailScreenStyleSubtitle =>
-      'Klassinen on alkuperäinen keskitetty Moonfin-asettelu. Moderni on mukautuva, elokuvamainen asettelu.';
+      'Classic on alkuperäinen, keskitetyn Moonfin-asettelun malli. Modern on responsiivinen, elokuvamainen asettelu. Spotlight on pääkuvaa korostava asettelu, jossa on ponnahdusikkunoina avautuvia sisältökortteja. Nouveau on koko näytön kattava asettelu, jossa osiot on pinottu sivun alaspäin.';
 
   @override
   String get detailScreenStyleMoonfin => 'Klassinen';
@@ -157,43 +184,44 @@ class AppLocalizationsFi extends AppLocalizations {
   String get detailScreenStyleModern => 'Moderni';
 
   @override
-  String get detailScreenStyleSpotlight => 'Spotlight';
+  String get detailScreenStyleSpotlight => 'Esittelyssä';
 
   @override
-  String get spotlightMoreActions => 'More Actions';
+  String get spotlightMoreActions => 'Lisää toimintoja';
 
   @override
-  String get spotlightCastCrewStudios => 'Cast, Crew, and Studios';
+  String get spotlightCastCrewStudios =>
+      'Näyttelijät, Tuotantoryhmä ja Studiot';
 
   @override
-  String get spotlightChaptersExtras => 'Chapters and Extras';
+  String get spotlightChaptersExtras => 'Kappaleet  ja lisämateriaali';
 
   @override
-  String get spotlightSimilarRecommendations => 'Similar and Recommendations';
+  String get spotlightSimilarRecommendations => 'Samankaltaiset ja Suositukset';
 
   @override
-  String get spotlightSeasonsEpisodes => 'Seasons and Episodes';
+  String get spotlightSeasonsEpisodes => 'Kaudet ja Jaksot';
 
   @override
-  String get spotlightMoreEpisodes => 'More Episodes';
+  String get spotlightMoreEpisodes => 'Lisää Jaksoja';
 
   @override
-  String get spotlightFilmography => 'Filmography';
+  String get spotlightFilmography => 'Filmografia';
 
   @override
-  String get spotlightCollectionsCard => 'Collections';
+  String get spotlightCollectionsCard => 'Kokoelmat';
 
   @override
-  String get spotlightPlaylistOrder => 'Playlist Order';
+  String get spotlightPlaylistOrder => 'Soittolistan Järjestys';
 
   @override
-  String get spotlightMoviesAndShows => 'Movies & Shows';
+  String get spotlightMoviesAndShows => 'Elokuvat & Sarjat';
 
   @override
-  String get spotlightSimilarSeerr => 'Similar (Seerr)';
+  String get spotlightSimilarSeerr => 'Samankaltainen (Seerr)';
 
   @override
-  String get spotlightRecommendationsSeerr => 'Recommendations (Seerr)';
+  String get spotlightRecommendationsSeerr => 'Suositukset (Seerr)';
 
   @override
   String spotlightPeopleCount(int count) {
@@ -360,13 +388,13 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get recommendationSystemSubtitle =>
-      'Käytä paikalliseen kirjastoon perustuvaa Moonfin suosittelee -algoritmia tai TMDb:n verkossa toimivia samankaltaisuusmittareita. Huomaa: verkkosuositukset vaativat Seerr-integraation.';
+      'Käytä Moonfin Recommends -sovelluksen paikalliskirjastoalgoritmia, Jellyfin Recommends -palvelinmoottoria tai TMDb:n verkkopalvelun samankaltaisuusmittareita. Huomautus: Verkkosuositukset edellyttävät Seerr-integraatiota.';
 
   @override
   String get recommendationSystemMoonfin => 'Moonfin Suositukset';
 
   @override
-  String get recommendationSystemJellyfin => 'Jellyfin Recommends';
+  String get recommendationSystemJellyfin => 'Jellyfin Suosittelee';
 
   @override
   String get recommendationSystemTmdb => 'TMDb Samankaltaisuus';
@@ -1902,6 +1930,11 @@ class AppLocalizationsFi extends AppLocalizations {
   String get subtitleDelay => 'Tekstityksen viive';
 
   @override
+  String subtitleDelayAuto(String value) {
+    return 'Auto $value';
+  }
+
+  @override
   String get reset => 'Nollaa';
 
   @override
@@ -1917,41 +1950,40 @@ class AppLocalizationsFi extends AppLocalizations {
   String get hideMpvStats => 'Piilota mpv-tilastot (Shift+I)';
 
   @override
-  String get keyboardShortcutsTitle => 'Keyboard shortcuts';
+  String get keyboardShortcutsTitle => 'Pikanäppäimet';
 
   @override
-  String get keyboardShortcutsSubtitle =>
-      'Keys for the app, video player and reader';
+  String get keyboardShortcutsSubtitle => 'Videosoittimen ja lukijan näppäimet';
 
   @override
   String get keyboardShortcutsPlayerHint =>
-      'Press ? or F1 while a video plays to see this list without leaving the player.';
+      'Paina ? tai F1 videon toiston aikana, niin näet tämän luettelon poistumatta soittimesta.';
 
   @override
-  String get keyboardShortcutsSectionApp => 'Everywhere';
+  String get keyboardShortcutsSectionApp => 'Kaikkialla';
 
   @override
-  String get keyboardShortcutsSectionAppScope => 'On any screen';
+  String get keyboardShortcutsSectionAppScope => 'Millä tahansa näytöllä';
 
   @override
-  String get keyboardShortcutsSectionPlayer => 'Video player';
+  String get keyboardShortcutsSectionPlayer => 'Videosoitin';
 
   @override
   String get keyboardShortcutsSectionPlayerScope =>
-      'While a video is open, playing or paused';
+      'Kun video on auki, toistuu tai on keskeytetty';
 
   @override
-  String get keyboardShortcutsSectionReader => 'Book and comic reader';
+  String get keyboardShortcutsSectionReader => 'Kirja- ja sarjakuvien lukija';
 
   @override
   String get keyboardShortcutsSectionReaderScope =>
-      'While reading a book or comic';
+      'Kun luen kirjaa tai sarjakuvia';
 
   @override
-  String get keyNameArrowKeys => 'Arrow keys';
+  String get keyNameArrowKeys => 'Nuolinäppäimet';
 
   @override
-  String get keyNameSpace => 'Space';
+  String get keyNameSpace => 'Väli';
 
   @override
   String get keyNameEnter => 'Enter';
@@ -1984,96 +2016,101 @@ class AppLocalizationsFi extends AppLocalizations {
   String get keyNameAlt => 'Alt';
 
   @override
-  String get keyNameScrollWheel => 'Scroll wheel';
+  String get keyNameScrollWheel => 'Vierityspyörä';
 
   @override
-  String get shortcutMoveFocus => 'Move between items';
+  String get shortcutMoveFocus => 'Siirry kohteiden välillä';
 
   @override
-  String get shortcutActivate => 'Open the selected item';
+  String get shortcutActivate => 'Avaa valittu kohde';
 
   @override
-  String get shortcutGoBack => 'Go back';
+  String get shortcutGoBack => 'Palaa takaisin';
 
   @override
-  String get shortcutToggleFullscreen => 'Fullscreen on or off';
+  String get shortcutToggleFullscreen =>
+      'Koko näytön tila päällä tai pois päältä';
 
   @override
-  String get shortcutQuit => 'Quit Moonfin';
+  String get shortcutQuit => 'Poistu Moonfinistä';
 
   @override
-  String get shortcutPlayPause => 'Play or pause';
+  String get shortcutPlayPause => 'Toista tai keskeytä';
 
   @override
   String get shortcutShowControlsOrPlayPause =>
-      'Show controls, or play/pause if shown';
+      'Näytä säätimet tai toisto-/taukopainike, jos ne näkyvät';
 
   @override
-  String get shortcutSeekBack => 'Seek back (hold for bigger jumps)';
+  String get shortcutSeekBack =>
+      'Siirry taaksepäin (pidä painettuna, jos haluat hypätä pidemmälle)';
 
   @override
-  String get shortcutSeekForward => 'Seek forward (hold for bigger jumps)';
+  String get shortcutSeekForward =>
+      'Siirry eteenpäin (pidä painettuna, jos haluat siirtyä pidemmälle)';
 
   @override
-  String get shortcutVolumeUp => 'Volume up';
+  String get shortcutVolumeUp => 'Äänenvoimakkuus ylös';
 
   @override
-  String get shortcutVolumeDown => 'Volume down';
+  String get shortcutVolumeDown => 'Äänenvoimakkuus alas';
 
   @override
-  String get shortcutMute => 'Mute or unmute';
+  String get shortcutMute => 'Mykistä tai poista mykistys';
 
   @override
-  String get shortcutToggleSubtitles => 'Subtitles on or off';
+  String get shortcutToggleSubtitles =>
+      'Tekstityksen käyttö tai poistaminen käytöstä';
 
   @override
-  String get shortcutSlower => 'Slow down';
+  String get shortcutSlower => 'Hidasta toistoa';
 
   @override
-  String get shortcutFaster => 'Speed up';
+  String get shortcutFaster => 'Nopeuta toistoa';
 
   @override
-  String get shortcutPlaybackInfo => 'Show playback information';
+  String get shortcutPlaybackInfo => 'Näytä toistotiedot';
 
   @override
-  String get shortcutMpvStats => 'mpv statistics on or off';
+  String get shortcutMpvStats =>
+      'mpv-tilastojen käyttöönotto tai poistaminen käytöstä';
 
   @override
   String get shortcutLeaveFullscreenOrStop =>
-      'Exit fullscreen, or stop if not fullscreen';
+      'Poistu koko näytön tilasta tai lopeta, jos koko näytön tila ei ole käytössä';
 
   @override
-  String get shortcutStopPlayback => 'Stop playback';
+  String get shortcutStopPlayback => 'Pysäytä toisto';
 
   @override
-  String get shortcutNextItem => 'Next item';
+  String get shortcutNextItem => 'Seuraava kappale';
 
   @override
-  String get shortcutPreviousItem => 'Previous item';
+  String get shortcutPreviousItem => 'Edellinen kappale';
 
   @override
-  String get shortcutShowShortcuts => 'Show this list';
+  String get shortcutShowShortcuts => 'Näytä tämä lista';
 
   @override
-  String get shortcutNextPage => 'Next page';
+  String get shortcutNextPage => 'Seuraava sivu';
 
   @override
-  String get shortcutPreviousPage => 'Previous page';
+  String get shortcutPreviousPage => 'Edellinen sivu';
 
   @override
-  String get shortcutScrollPage => 'Scroll the page (ebooks)';
+  String get shortcutScrollPage => 'Selaa sivua (e-kirjat)';
 
   @override
-  String get shortcutFirstPage => 'First page, or start of chapter';
+  String get shortcutFirstPage => 'Ensimmäinen sivu tai luvun alku';
 
   @override
-  String get shortcutLastPage => 'Last page, or end of chapter';
+  String get shortcutLastPage => 'Viimeinen sivu tai luvun loppu';
 
   @override
-  String get shortcutZoom => 'Zoom in or out (comics)';
+  String get shortcutZoom => 'Lähentäminen tai loitontaminen (sarjakuvat)';
 
   @override
-  String get shortcutResetZoom => 'Reset zoom (comics)';
+  String get shortcutResetZoom => 'Nollaa zoomaus (sarjakuvat)';
 
   @override
   String get playback => 'Toisto';
@@ -2365,6 +2402,9 @@ class AppLocalizationsFi extends AppLocalizations {
   String get noChannelsFound => 'Kanavia ei löytynyt';
 
   @override
+  String get noProgramData => 'No program data';
+
+  @override
   String get liveBadge => 'LIVE';
 
   @override
@@ -2435,6 +2475,9 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get watch => 'Katso';
+
+  @override
+  String get watchChannelLive => 'Watch channel live';
 
   @override
   String get close => 'Sulje';
@@ -3162,6 +3205,22 @@ class AppLocalizationsFi extends AppLocalizations {
       'Toisto on aina etusijalla, ja lukitut painikkeet näkyvät aina. Kaikki muu on sinun päätettävissäsi, ja jokaisella laitteella on oma luettelonsa.';
 
   @override
+  String get actionButtonsOnScreen => 'Action Buttons on Screen';
+
+  @override
+  String get actionButtonsOnScreenDescription =>
+      'Customize how many action buttons appear before folding into the More Actions menu.';
+
+  @override
+  String get actionButtonsOnScreenAuto => 'Auto (Theme Default)';
+
+  @override
+  String get actionButtonsOnScreenPlayOnly => '1 (Play only)';
+
+  @override
+  String get actionButtonsOnScreenAll => 'All (Horizontal Scroll)';
+
+  @override
   String get detailMetadata => 'Metadata Row';
 
   @override
@@ -3445,6 +3504,23 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String get settingsAudioPassthroughModeManual =>
       'Käyttöopas (valitse alla olevista tiedostomuodoista)';
+
+  @override
+  String get settingsAudioPassthroughOutput => 'Passthrough output';
+
+  @override
+  String get settingsAudioPassthroughOutputDescription =>
+      'Who packs bitstreams for the HDMI link. Try the app packer if passthrough is silent or glitchy on this device.';
+
+  @override
+  String get settingsAudioPassthroughOutputPlatform =>
+      'Automatic, system packer (AudioTrack RAW)';
+
+  @override
+  String get settingsAudioPassthroughOutputIec => 'App packer (AudioTrack IEC)';
+
+  @override
+  String get settingsAudioPassthroughOutputIecLabel => 'App (IEC)';
 
   @override
   String get settingsDownmixToStereoDescription =>
@@ -3978,7 +4054,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get showFavoritesButton => 'Näytä suosikit-painike';
 
   @override
-  String get showLiveTvButton => 'Show Live TV Button';
+  String get showLiveTvButton => 'Näytä Live TV -painike';
 
   @override
   String get showDownloadsButton => 'Näytä latauspainike';
@@ -4689,18 +4765,18 @@ class AppLocalizationsFi extends AppLocalizations {
       'Piilota vain aikuisille suunnattu sisältö tuloksissa';
 
   @override
-  String get showMissingCollectionItems => 'Show Missing Collection Items';
+  String get showMissingCollectionItems => 'Näytä puuttuvat kokoelman kohteet';
 
   @override
   String get showMissingCollectionItemsDesc =>
-      'Include missing items on Collection pages';
+      'Lisää puuttuvat kohteet Kokoelma-sivuille';
 
   @override
-  String get showSeerrAvailabilityBadges => 'Show Seerr Availability Badges';
+  String get showSeerrAvailabilityBadges => 'Näytä Seer:n saatavuusmerkit';
 
   @override
   String get showSeerrAvailabilityBadgesDescription =>
-      'Show season availability badges on media details pages';
+      'Näytä kauden saatavuustiedot mediatietosivuilla';
 
   @override
   String get seerrNotificationsSection => 'Ilmoitukset';
@@ -9600,7 +9676,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get settingsShowLiveTvButtonInNavigation =>
-      'Show the Live TV button in the navigation bar when the server has a Live TV library';
+      'Näytä ”Live TV” -painike navigointipalkissa, kun palvelimella on Live TV -kirjasto';
 
   @override
   String get settingsShowLibrariesButtonInNavigation =>
@@ -10311,11 +10387,12 @@ class AppLocalizationsFi extends AppLocalizations {
       'Classic säilyttää rivikohtaisen kuvatyypin ja tietopeittokuvan. Moderni käyttää muotokuvasta taustaan -rivejä.';
 
   @override
-  String get modernCardsOnMyMediaRow => 'Modern cards on My Media row';
+  String get modernCardsOnMyMediaRow =>
+      'Modernit kortit ”Omat mediat” -rivillä';
 
   @override
   String get modernCardsOnMyMediaRowDescription =>
-      'Display customizable posters that expand on focus. Disable to always show landscape thumbnail.';
+      'Näytä muokattavia julisteita, jotka syventävät aihepiiriä. Poista tämä asetus käytöstä, jos haluat, että pikkukuvat näytetään aina vaakasuunnassa.';
 
   @override
   String get sortOrder => 'Lajittelujärjestys';
@@ -11202,7 +11279,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get audiobookFocusedTimeline => 'Rajattu aikajana';
 
   @override
-  String get audiobookFullTimeline => 'Full Timeline';
+  String get audiobookFullTimeline => 'Koko Aikajana';
 
   @override
   String get audiobookExportBookmarks => 'Vie kirjanmerkit';
@@ -11468,42 +11545,42 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String transcodeAudioCodecWithCodec(String codec) {
-    return 'Audio codec ($codec) is not supported directly.';
+    return 'Äänikoodekkia ($codec) ei tueta suoraan.';
   }
 
   @override
   String transcodeAudioCodecHintPassthrough(String codec) {
-    return 'Tip: If your audio receiver or soundbar supports $codec, enable Audio Passthrough in Audio settings.';
+    return 'Vinkki: Jos äänivastaanotin tai soundbar tukee $codec-koodekkia, ota ”Audio Passthrough” käyttöön Ääniasetuksissa.';
   }
 
   @override
   String transcodeAudioChannelsExceeded(int channels) {
-    return 'Audio channel count (${channels}ch) exceeds the player limit.';
+    return 'Äänikanavien määrä (${channels}ch) ylittää soittimen rajan.';
   }
 
   @override
   String get transcodeAudioChannelsHint =>
-      'Tip: Adjust \'Max Audio Channels\' or multichannel downmixing in Audio settings.';
+      'Vinkki: Säädä ”Äänen kanavien enimmäismäärä” -asetusta tai monikanavaisen äänen alasekoitusta Ääni-asetuksissa.';
 
   @override
   String get transcodeSubtitleBurnInAssDisabled =>
-      'ASS/SSA subtitles require transcoding because direct play is turned off.';
+      'ASS/SSA-tekstitykset vaativat transkoodausta, koska suora toisto on poistettu käytöstä.';
 
   @override
   String get transcodeSubtitleBurnInAssHint =>
-      'Tip: Enable \'ASS/SSA Direct Play\' in Playback settings to play directly without transcoding.';
+      'Vinkki: Ota ”ASS/SSA Direct Play” käyttöön toistoasetuksissa, jotta voit toistaa tiedostoja suoraan ilman transkoodausta.';
 
   @override
   String get transcodeSubtitleBurnInPgsDisabled =>
-      'PGS subtitles require transcoding because direct play is turned off.';
+      'PGS-tekstitykset vaativat transkoodausta, koska suora toisto on poistettu käytöstä.';
 
   @override
   String get transcodeSubtitleBurnInPgsHint =>
-      'Tip: Enable \'PGS Direct Play\' in Playback settings to play directly without transcoding.';
+      'Vinkki: Ota ”PGS Direct Play” käyttöön toistoasetuksissa, jotta voit toistaa tiedostoja suoraan ilman transkoodausta.';
 
   @override
   String transcodeSubtitleNotSupportedWithCodec(String codec) {
-    return 'Subtitle format ($codec) is not supported directly and must be burned in.';
+    return 'Tekstitysmuotoa ($codec) ei tueta suoraan, vaan se on poltettava osaksi videota.';
   }
 
   @override
@@ -11511,72 +11588,72 @@ class AppLocalizationsFi extends AppLocalizations {
     String fileBitrate,
     String maxBitrate,
   ) {
-    return 'File bitrate ($fileBitrate) exceeds the configured streaming limit ($maxBitrate).';
+    return 'Tiedoston bittinopeus ($fileBitrate) ylittää määritetyn suoratoistorajan ($maxBitrate).';
   }
 
   @override
   String get transcodeBitrateHint =>
-      'Tip: Increase \'Maximum Bitrate\' in Playback settings to allow direct streaming.';
+      'Vinkki: Nosta ”Maksimibittinopeus” -arvoa Toisto-asetuksissa, jotta suoratoisto on mahdollista.';
 
   @override
   String get transcodeResolutionHint =>
-      'Tip: Increase \'Maximum Resolution\' in Playback settings to allow direct streaming.';
+      'Vinkki: Nosta toistomäärityksissä ”Maksimiresoluutio”-arvoa, jotta suoratoisto on mahdollista.';
 
   @override
   String get transcodeVideoRangeNotSupported =>
-      'Video dynamic range (e.g. Dolby Vision / HDR) is not supported by this display.';
+      'Tämä näyttö ei tue videon dynaamista aluetta (esim. Dolby Vision / HDR).';
 
   @override
   String get transcodeDolbyVisionProfile7ElDisabled =>
-      'Dolby Vision Profile 7 enhancement layer direct play is disabled.';
+      'Dolby Vision Profile 7 - tehostuskerros suoratoistossa on pois käytöstä.';
 
   @override
   String get transcodeDolbyVisionProfile7ElHint =>
-      'Tip: Enable \'Dolby Vision Profile 7 Direct Play\' in Playback settings if your display supports it.';
+      'Vinkki: Ota ”Dolby Vision Profile 7 Direct Play” käyttöön toistoasetuksissa, jos näyttösi tukee tätä ominaisuutta.';
 
   @override
   String get transcodeDolbyVisionFallbackPreferenceTranscode =>
-      'Transcoding is preferred for Dolby Vision fallback per user settings.';
+      'Transkoodaus on suositeltava vaihtoehto Dolby Vision -varajärjestelmänä käyttäjän asetusten mukaisesti.';
 
   @override
   String get transcodeDolbyVisionFallbackHint =>
-      'Tip: Set \'Dolby Vision Fallback\' to \'Play as HDR10\' in Playback settings to avoid transcoding.';
+      'Vinkki: Aseta toistoasetuksissa ”Dolby Vision Fallback” -asetukseksi ”Toista HDR10-muodossa”, jotta vältät transkoodauksen.';
 
   @override
   String get transcodeDisplayReportsNoHdr =>
-      'Connected display does not report support for HDR or Dolby Vision.';
+      'Liitetty näyttö ei ilmoita tukevansa HDR:ää tai Dolby Visionia.';
 
   @override
   String get transcodeDisplayLacksHdr10ForFallback =>
-      'Connected display lacks HDR10 support needed for Dolby Vision fallback.';
+      'Yhdistetyssä näytössä ei ole HDR10-tukea, jota tarvitaan Dolby Visionin varajärjestelmänä.';
 
   @override
   String get transcodeAudioSampleRateNotSupported =>
-      'Audio sample rate is not supported.';
+      'Äänen näytetaajuutta ei tueta.';
 
   @override
   String get transcodeAudioBitDepthNotSupported =>
-      'Audio bit depth is not supported.';
+      'Äänen bittisyvyyttä ei tueta.';
 
   @override
   String get transcodeRefFramesNotSupported =>
-      'Video reference frames exceed player limits.';
+      'Videon viitekehysten määrä ylittää soittimen rajan.';
 
   @override
   String get transcodeAnamorphicVideoNotSupported =>
-      'Anamorphic video is not supported.';
+      'Anamorfista videota ei tueta.';
 
   @override
   String get transcodeInterlacedVideoNotSupported =>
-      'Interlaced video is not supported.';
+      'Lomitetun videon toistoa ei tueta.';
 
   @override
   String get transcodeSecondaryAudioNotSupported =>
-      'Secondary audio stream requires transcoding.';
+      'Toissijainen äänikanava vaatii transkoodauksen.';
 
   @override
   String get transcodeDirectPlayError =>
-      'Direct play is not supported for this media format.';
+      'Tämän mediaformaatin suoraa toistoa ei tueta.';
 
   @override
   String get sortAlphabetical => 'Aakkosjärjestys';
@@ -12032,18 +12109,18 @@ class AppLocalizationsFi extends AppLocalizations {
       'Elokuvamainen, ja siinä on välilehdet näyttelijöille ja avustajille.';
 
   @override
-  String get setupStyleSpotlight => 'Spotlight';
+  String get setupStyleSpotlight => 'Esittelyssä';
 
   @override
   String get setupDetailSpotlightHint =>
-      'Hero-first, with pop-up cards for cast and extras.';
+      'Pääosassa ja mukana ponnahduskortissa näyttelijät ja avustajat';
 
   @override
   String get setupStyleNouveau => 'Nouveau';
 
   @override
   String get setupDetailNouveauHint =>
-      'Full-screen, with sections stacked instead of tabs.';
+      'Koko näytön tila, jossa osiot on järjestetty päällekkäin välilehtien sijaan.';
 
   @override
   String get setupPickALook => 'Valitse tyyli';
@@ -12331,63 +12408,63 @@ class AppLocalizationsFi extends AppLocalizations {
   }
 
   @override
-  String get settingsAnimationSpeed => 'Animation Speed';
+  String get settingsAnimationSpeed => 'Animaation nopeus';
 
   @override
-  String get pageTransitions => 'Page Transitions';
+  String get pageTransitions => 'Sivun Siirtymät';
 
   @override
   String get pageTransitionsSubtitle =>
-      'Adjusts fade time when navigating between pages';
+      'Säätää siirtymäaikaa sivuja selattaessa';
 
   @override
-  String get navigationSpeed => 'Navigation Speed';
+  String get navigationSpeed => 'Navigointinopeus';
 
   @override
   String get navigationSpeedSubtitle =>
-      'Adjusts how quickly the focus indicator moves between items and rows';
+      'Säätää, kuinka nopeasti kohdistusilmaisin liikkuu kohteiden ja rivien välillä';
 
   @override
-  String get modernCardsTransitionSpeed => 'Modern Cards Transition Speed';
+  String get modernCardsTransitionSpeed => 'Modernien korttien siirtymänopeus';
 
   @override
   String get modernCardsTransitionSpeedSubtitle =>
-      'Adjusts animation speed when expanding focused modern cards';
+      'Säätää animaationopeutta, kun valittuna olevia moderneja kortteja avataan';
 
   @override
   String get delayCardExpansionOnRapidScroll =>
-      'Delay Card Expansion on Rapid Scroll';
+      'Viive Card Expansion on Rapid Scroll';
 
   @override
   String get delayCardExpansionOnRapidScrollSubtitle =>
-      'Waits for focus movement to pause before expanding modern cards';
+      'Odottaa, että  liike pysähtyy, ennen kuin modernit-kortit avautuvat';
 
   @override
-  String get animationSpeedExtraSlow => 'Extra Slow';
+  String get animationSpeedExtraSlow => 'Erittäin Hidas';
 
   @override
-  String get animationSpeedSlow => 'Slow';
+  String get animationSpeedSlow => 'Hidas';
 
   @override
   String get animationSpeedMedium => 'Medium';
 
   @override
-  String get animationSpeedFast => 'Fast';
+  String get animationSpeedFast => 'Nopea';
 
   @override
-  String get animationSpeedOff => 'Off';
+  String get animationSpeedOff => 'Pois';
 
   @override
-  String get pageTransitionFadeNone => 'No Fade';
+  String get pageTransitionFadeNone => 'Ei Häivytystä';
 
   @override
-  String get pageTransitionFadeShort => 'Short Fade';
+  String get pageTransitionFadeShort => 'Nopea Häivytys';
 
   @override
-  String get pageTransitionFadeMedium => 'Medium Fade';
+  String get pageTransitionFadeMedium => 'Medium Häivytys';
 
   @override
-  String get pageTransitionFadeLong => 'Long Fade';
+  String get pageTransitionFadeLong => 'Hidas Häivytys';
 
   @override
   String get liveTvConnecting => 'Connecting to channel…';

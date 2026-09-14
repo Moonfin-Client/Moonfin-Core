@@ -180,7 +180,25 @@ void main() {
     expect(
       await _storedSignatures(),
       ['sig'],
-      reason: 'an Emby session leaves the report for a later Jellyfin one',
+      reason: 'a server without the endpoint leaves the report for one that has it',
+    );
+  });
+
+  test('flushPending uploads to a server that has the endpoint', () async {
+    final api = _RecordingClientLogApi();
+    final service = CrashReportService(
+      await _prefs(),
+      _TestFactory(client: _TestClient(api)),
+    );
+    await service.record('sig', 'the report');
+
+    await service.flushPending();
+
+    expect(api.uploaded, ['the report']);
+    expect(
+      await _storedSignatures(),
+      isEmpty,
+      reason: 'an uploaded report is not kept for a second send',
     );
   });
 

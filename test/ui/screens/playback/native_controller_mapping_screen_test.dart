@@ -966,7 +966,7 @@ void main() {
     expect(highlightedRowLabel(tester), 'Player 2');
   });
 
-  testWidgets('entering and leaving player assignment reveals its cursor', (
+  testWidgets('entering and leaving player assignment centers its cursor', (
     tester,
   ) async {
     final key = GlobalKey<NativeControllerMappingScreenState>();
@@ -1017,10 +1017,13 @@ void main() {
 
     expect(key.currentState!.handleBack(), isTrue);
     await tester.pumpAndSettle();
-    expect(position().pixels, lessThanOrEqualTo(58));
+    final expected = (1 * 58 - (position().viewportDimension - 58) / 2)
+        .clamp(position().minScrollExtent, position().maxScrollExtent)
+        .toDouble();
+    expect(position().pixels, closeTo(expected, 1));
   });
 
-  testWidgets('controller type selection reveals its cursor after list swaps', (
+  testWidgets('controller type selection centers its cursor after list swaps', (
     tester,
   ) async {
     final key = GlobalKey<NativeControllerMappingScreenState>();
@@ -1078,6 +1081,9 @@ void main() {
 
     expect(key.currentState!.handleBack(), isTrue);
     await tester.pumpAndSettle();
-    expect(position().pixels, lessThanOrEqualTo(58));
+    final expected = (1 * 58 - (position().viewportDimension - 58) / 2)
+        .clamp(position().minScrollExtent, position().maxScrollExtent)
+        .toDouble();
+    expect(position().pixels, closeTo(expected, 1));
   });
 }

@@ -34,6 +34,10 @@ class SeasonCard extends StatelessWidget {
   /// Seerr's status for this season, when Seerr has one.
   final int? seerrStatus;
 
+  /// Optional pill drawn over the top-left of the poster, used for the season's
+  /// subbed/dubbed.
+  final Widget? badge;
+
   /// Whether this season is fully watched.
   final bool isPlayed;
 
@@ -56,6 +60,7 @@ class SeasonCard extends StatelessWidget {
     this.height,
     this.autoScroll = false,
     this.seerrStatus,
+    this.badge,
     this.isPlayed = false,
     this.unplayedCount,
   });
@@ -117,6 +122,15 @@ class SeasonCard extends StatelessWidget {
                   top: 6,
                   left: 6,
                   child: SeerrStatusDot(status: seerrStatus, size: 18),
+                ),
+              // Top left, dropped below the Seerr dot when there is one so the two stack
+              // rather than overlap. The watched badges sit top right, so the two
+              // never collide.
+              if (badge != null)
+                Positioned(
+                  top: SeerrMediaStatus.hasDot(seerrStatus) ? 30 : 6,
+                  left: 6,
+                  child: badge!,
                 ),
               if (isPlayed)
                 Positioned(

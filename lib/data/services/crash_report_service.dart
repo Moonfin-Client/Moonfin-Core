@@ -1,9 +1,11 @@
 import 'dart:convert';
 
+import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../preference/user_preferences.dart';
+import 'log_service.dart';
 import 'media_server_client_factory.dart';
 
 /// Holds crash reports captured by the global error handlers until a server
@@ -90,7 +92,7 @@ class CrashReportService {
       } on StateError {
         return;
       }
-      if (api == null) return;
+      if (api == null || !_serverAcceptsReports()) return;
 
       while (reports.isNotEmpty) {
         try {
@@ -105,6 +107,13 @@ class CrashReportService {
     } finally {
       _flushing = false;
     }
+  }
+
+  /// An Emby server without the Moonfin plugin has nothing to post to, so the
+  /// reports wait for a server that does rather than spending a 404 per launch.
+  bool _serverAcceptsReports() {
+    if (!GetIt.instance.isRegistered<LogService>()) return true;
+    return GetIt.instance<LogService>().canUploadToServer;
   }
 
   Future<void> clearPending() async {

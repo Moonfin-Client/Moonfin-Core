@@ -76,12 +76,13 @@ class _EmulatorCoreSettingsScreenState
       final saved = games == null
           ? const <String, String>{}
           : await readCoreSettings(games, widget.coreId);
+      final effective = withCoreOptionDefaults(widget.coreId, saved) ?? saved;
 
       if (!mounted) return;
       setState(() {
         _options = probed;
         _values = {
-          for (final o in probed) o.id: saved[o.id] ?? o.current,
+          for (final o in probed) o.id: effective[o.id] ?? o.current,
         };
         _loadTimeOnly = {
           for (final e in saved.entries)
@@ -176,8 +177,12 @@ class _EmulatorCoreSettingsScreenState
       await resetCoreSettings(games, widget.coreId);
       if (!mounted) return;
       // Show what the next load will actually use.
+      final defaults =
+          withCoreOptionDefaults(widget.coreId, const {}) ?? const {};
       setState(() {
-        _values = {for (final o in _options) o.id: o.current};
+        _values = {
+          for (final o in _options) o.id: defaults[o.id] ?? o.current,
+        };
         _loadTimeOnly = {};
         _saving = false;
       });

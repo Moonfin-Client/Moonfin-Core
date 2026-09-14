@@ -58,6 +58,12 @@ class Media3PlayerBackend extends PlayerBackend {
           .resolvedPassthroughCodecs()
           .map((codec) => codec.wireName)
           .toList(growable: false),
+      // 'platform' has the HAL pack raw encodings, 'iec' packs IEC 61937 in
+      // the app. Only sent as 'iec' when the choke-point getter says the
+      // mode is actually live here.
+      'passthroughOutput': prefs.media3IecPackerSelected
+          ? AudioPassthroughOutput.iecPacker.wireName
+          : AudioPassthroughOutput.platform.wireName,
       'downmixToStereo': prefs.get(UserPreferences.downmixToStereo),
     };
   }
@@ -105,6 +111,7 @@ class Media3PlayerBackend extends PlayerBackend {
   double _volume = 100.0;
   double _audioDelaySeconds = 0.0;
   double _subtitleDelaySeconds = 0.0;
+  double _subtitleAutoOffsetSeconds = 0.0;
   int _volumeBoostLevel = 0;
   bool _skipSilenceEnabled = false;
   RepeatMode _repeatMode = RepeatMode.none;
@@ -158,6 +165,7 @@ class Media3PlayerBackend extends PlayerBackend {
   final _completedStream = StreamController<bool>.broadcast();
   final _errorStream = StreamController<Map<String, dynamic>>.broadcast();
   final _pictureShownStream = StreamController<bool>.broadcast();
+  final _subtitleAutoOffsetStream = StreamController<double>.broadcast();
   bool _pictureShown = false;
 
   int get volumeBoostLevel => _volumeBoostLevel;
@@ -167,6 +175,12 @@ class Media3PlayerBackend extends PlayerBackend {
 
   @override
   Stream<bool> get pictureShownStream => _pictureShownStream.stream;
+
+  @override
+  double get subtitleAutoOffsetSeconds => _subtitleAutoOffsetSeconds;
+
+  @override
+  Stream<double> get subtitleAutoOffsetStream => _subtitleAutoOffsetStream.stream;
 
   Future<T?> _invoke<T>(String method, [dynamic arguments]) async {
     if (_disposed) return null;
@@ -312,6 +326,7 @@ class Media3PlayerBackend extends PlayerBackend {
       case 'syncDelays':
         _audioDelaySeconds = _toInt(map['audioDelayMs']) / 1000.0;
         _subtitleDelaySeconds = _toInt(map['subtitleDelayMs']) / 1000.0;
+        _setSubtitleAutoOffset(_toInt(map['subtitleAutoOffsetMs']));
       case 'volumeBoost':
         _volumeBoostLevel = (_toInt(map['level']).clamp(0, 10)).toInt();
       case 'repeatModeChanged':
@@ -664,6 +679,21 @@ class Media3PlayerBackend extends PlayerBackend {
     }
   }
 
+  void _setSubtitleAutoOffset(int offsetMs) {
+    final seconds = offsetMs / 1000.0;
+    if (seconds == _subtitleAutoOffsetSeconds) return;
+    _subtitleAutoOffsetSeconds = seconds;
+    if (offsetMs == 0) {
+      _diag('Media3: subtitle auto offset cleared');
+    } else {
+      final sign = offsetMs > 0 ? '+' : '';
+      _diag(
+        'Media3: subtitle auto offset $sign${offsetMs}ms (HLS timestamp adjuster)',
+      );
+    }
+    _subtitleAutoOffsetStream.add(seconds);
+  }
+
   void _diag(String message, {LogLevel level = LogLevel.debug}) {
     if (GetIt.instance.isRegistered<LogService>()) {
       GetIt.instance<LogService>().media(message, level: level);
@@ -1011,6 +1041,7 @@ class Media3PlayerBackend extends PlayerBackend {
     });
     _lastFrameRateLine = null;
     _sourceIsLive = payload['isLive'] == true;
+    _setSubtitleAutoOffset(0);
     await _invoke<void>('setSource', {
       'url': url,
       'headers': headers,
@@ -1195,6 +1226,10 @@ class Media3PlayerBackend extends PlayerBackend {
       supportsAv1DolbyVision: PlatformDetection.supportsAv1DolbyVision,
       supportsAv1Hdr10: PlatformDetection.supportsAv1Hdr10,
       supportsAv1Hdr10Plus: PlatformDetection.supportsAv1Hdr10Plus,
+      // Media3 hands a Dolby Vision profile 10 track to a plain AV1 decoder
+      // when it has no Dolby Vision decoder for it, so the base layer plays as
+      // HDR10 and the HDR10+ gate has nothing left to protect here.
+      rendersAv1DoviViaHdr10BaseLayer: true,
       supportsVc1: PlatformDetection.supportsVc1,
       supportsMpeg4: PlatformDetection.supportsMpeg4,
       maxResolutionAvcWidth: PlatformDetection.maxResolutionAvcWidth,
@@ -1492,6 +1527,7 @@ class Media3PlayerBackend extends PlayerBackend {
     _completedStream.close();
     _errorStream.close();
     _pictureShownStream.close();
+    _subtitleAutoOffsetStream.close();
     _tracksChangedController.close();
   }
 }

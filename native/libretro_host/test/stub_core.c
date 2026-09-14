@@ -50,6 +50,34 @@ static int32_t bad_pitch_mode;
 // and id mapping, derivation from the digital mask), which the frame-snapshot
 // test hooks (lh_test_read_analog/lh_test_read_trigger) intentionally bypass.
 static int32_t analog_check_mode;
+// stub_hw drives RETRO_ENVIRONMENT_SET_HW_RENDER so the host's hardware path
+// can be exercised end to end with no GPU: when the host accepts, retro_run
+// passes RETRO_HW_FRAME_BUFFER_VALID instead of a pixel pointer, exactly as a
+// real GPU core does. hw_reset_count/hw_destroy_count are published through
+// SET_MESSAGE so the harness can see the frontend honoured the call order.
+static int32_t hw_mode;            // 0 off, 1 accepted, -1 asked and refused
+static int32_t hw_reset_count;
+static int32_t hw_destroy_count;
+static int32_t hw_fb_queries;
+static struct retro_hw_render_callback hw_cb;
+// GET_PREFERRED_HW_RENDER: PPSSPP uses this to pick which backend to try, and
+// libretro says the frontend writes the out-param even when it returns false.
+// Seeded with a sentinel so "the host never touched it" is distinguishable
+// from "the host wrote NONE".
+#define STUB_PREF_SENTINEL 999u
+static unsigned hw_pref_value;
+static int hw_pref_rc;
+
+static void stub_context_reset(void) {
+  hw_reset_count++;
+  // A real core creates its GL objects here. All we need is proof that the
+  // frontend handed us a usable framebuffer name at the right moment.
+  if (hw_cb.get_current_framebuffer) {
+    hw_cb.get_current_framebuffer();
+    hw_fb_queries++;
+  }
+}
+static void stub_context_destroy(void) { hw_destroy_count++; }
 // Drives the "core actually read a stick" half of lh_analog_stick_ports per
 // port. 0 off, 1 p0, 2 p1, 3 p0p1, 4 p1btn, 5 p2.
 static int32_t analog_query_mode;
@@ -235,6 +263,7 @@ void retro_set_environment(retro_environment_t cb) {
       {"stub_bad_pitch", "Bad pitch; off|on"},
       {"stub_vfs_dir_check", "VFS dir check; off|on"},
       {"stub_analog_check", "Analog check; off|on"},
+      {"stub_hw", "Hardware render; off|gles3|gles2|vulkan"},
       {"stub_analog_query", "Analog query ports; off|p0|p1|p0p1|p1btn|p2"},
       {"stub_repeat_geometry", "Repeat geometry; off|on"},
       {"stub_unserved", "Probe unserved env commands; off|on"},
@@ -532,6 +561,17 @@ static void write_pixel(uint8_t *dst, enum retro_pixel_format fmt, unsigned r,
 bool retro_load_game(const struct retro_game_info *game) {
   shutdown_frame = 0;
   did_shutdown = 0;
+  // Before any early return: the stub stays mapped between loads, so these
+  // statics would otherwise carry a previous session's hardware state into a
+  // load that fails early - and retro_unload_game would then report on it.
+  hw_mode = 0;
+  hw_reset_count = 0;
+  hw_destroy_count = 0;
+  hw_fb_queries = 0;
+  hw_pref_value = STUB_PREF_SENTINEL;
+  hw_pref_rc = env_cb(RETRO_ENVIRONMENT_GET_PREFERRED_HW_RENDER, &hw_pref_value)
+                   ? 1
+                   : 0;
   // No null check, deliberately. This is what mupen64plus-next does at four
   // sites when its threaded renderer is on; a host that left the pointer
   // unwritten faults right here, which is the regression under test.
@@ -557,6 +597,29 @@ bool retro_load_game(const struct retro_game_info *game) {
       memcmp(game->data, "shutdown", 8) == 0) {
     shutdown_frame = 3;
   }
+  // SET_HW_RENDER belongs in retro_load_game, per libretro, and a real core
+  // aborts the load when it is refused and it has no software path. This stub
+  // records the refusal instead so both branches stay testable.
+  struct retro_variable hw_var = {"stub_hw", NULL};
+  env_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &hw_var);
+  if (hw_var.value && strcmp(hw_var.value, "off") != 0) {
+    memset(&hw_cb, 0, sizeof(hw_cb));
+    if (strcmp(hw_var.value, "gles2") == 0) {
+      hw_cb.context_type = RETRO_HW_CONTEXT_OPENGLES2;
+    } else if (strcmp(hw_var.value, "vulkan") == 0) {
+      hw_cb.context_type = RETRO_HW_CONTEXT_VULKAN;
+    } else {
+      hw_cb.context_type = RETRO_HW_CONTEXT_OPENGLES3;
+      hw_cb.version_major = 3;
+    }
+    hw_cb.context_reset = stub_context_reset;
+    hw_cb.context_destroy = stub_context_destroy;
+    hw_cb.depth = true;
+    hw_cb.stencil = true;
+    hw_cb.bottom_left_origin = true;
+    hw_mode = env_cb(RETRO_ENVIRONMENT_SET_HW_RENDER, &hw_cb) ? 1 : -1;
+  }
+
   enum retro_pixel_format fmt = RETRO_PIXEL_FORMAT_XRGB8888;
   env_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt);
 
@@ -670,7 +733,20 @@ bool retro_load_game(const struct retro_game_info *game) {
   return true;
 }
 
-void retro_unload_game(void) {}
+void retro_unload_game(void) {
+  // context_destroy must already have run by now: libretro requires the
+  // frontend to tear the context down BEFORE unloading the game. Reporting
+  // the counts here is how the harness sees that ordering was honoured.
+  if (hw_mode != 0) {
+    char buf[128];
+    snprintf(buf, sizeof(buf),
+             "stub hw mode=%d reset=%d destroy=%d fb=%d pref=%u prefrc=%d",
+             (int)hw_mode, (int)hw_reset_count, (int)hw_destroy_count,
+             (int)hw_fb_queries, hw_pref_value, hw_pref_rc);
+    struct retro_message msg = {buf, 180};
+    env_cb(RETRO_ENVIRONMENT_SET_MESSAGE, &msg);
+  }
+}
 
 // Reads one button through input_state_cb. Run on a thread the frontend never
 // polled on, so the host sees a read from somewhere other than its latch.
@@ -781,6 +857,17 @@ void retro_run(void) {
                    pixel_fmt, r, g, b);
       }
     }
+  }
+  if (hw_mode == 1) {
+    // The whole point: a hardware core hands back the sentinel, never a
+    // pointer. Querying the framebuffer every frame is what a real core does
+    // and what pins the host's "stable handle" promise.
+    if (hw_cb.get_current_framebuffer) {
+      hw_cb.get_current_framebuffer();
+      hw_fb_queries++;
+    }
+    video_cb(RETRO_HW_FRAME_BUFFER_VALID, STUB_WIDTH, STUB_HEIGHT, 0);
+    return;
   }
   video_cb(framebuffer, STUB_WIDTH, STUB_HEIGHT, pitch);
 

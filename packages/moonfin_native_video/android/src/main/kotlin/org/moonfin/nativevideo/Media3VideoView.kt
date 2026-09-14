@@ -68,10 +68,14 @@ import androidx.media3.exoplayer.audio.DefaultAudioSink
 import androidx.media3.exoplayer.audio.MediaCodecAudioRenderer
 import androidx.media3.exoplayer.Renderer
 import androidx.media3.exoplayer.RendererCapabilities
+import androidx.media3.exoplayer.hls.DefaultHlsExtractorFactory
+import androidx.media3.exoplayer.hls.HlsMediaSource
 import androidx.media3.exoplayer.mediacodec.MediaCodecAdapter
 import androidx.media3.exoplayer.mediacodec.MediaCodecInfo
 import androidx.media3.exoplayer.mediacodec.MediaCodecSelector
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import androidx.media3.exoplayer.source.MediaSource
+import androidx.media3.exoplayer.source.MergingMediaSource
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.exoplayer.video.MediaCodecVideoRenderer
 import androidx.media3.exoplayer.video.VideoRendererEventListener
@@ -96,6 +100,18 @@ import java.io.File
 import java.nio.ByteBuffer
 import java.util.Locale
 import kotlin.math.roundToInt
+import org.moonfin.nativevideo.iec.Iec61937AudioOutputProvider
+import org.moonfin.nativevideo.subtitle.HlsTimestampOffsetObserver
+import org.moonfin.nativevideo.subtitle.SidecarSourceFactory
+import org.moonfin.nativevideo.subtitle.SourceTree
+import org.moonfin.nativevideo.subtitle.TextStreamOffsetMediaSource
+import org.moonfin.nativevideo.subtitle.TimeOffsetMediaSource
+import org.moonfin.nativevideo.subtitle.clampManualDelayMs
+import org.moonfin.nativevideo.subtitle.effectiveOffsetUs
+import org.moonfin.nativevideo.subtitle.externalFormatIdMatches
+import org.moonfin.nativevideo.subtitle.shouldRetime
+import org.moonfin.nativevideo.subtitle.sourceTreeFor
+import org.moonfin.nativevideo.subtitle.syncDelaysPayload
 
 @OptIn(ExperimentalApi::class)
 private class MoonfinRenderersFactory(
@@ -106,6 +122,7 @@ private class MoonfinRenderersFactory(
     private val passthroughPolicy: AudioPassthroughPolicy,
     private val stereoDownmixRequested: () -> Boolean,
     private val onPassthroughRecoveryNeeded: (String) -> Unit,
+    private val iecOutputProvider: Iec61937AudioOutputProvider?,
 ) : DefaultRenderersFactory(context) {
     override fun buildVideoRenderers(
         context: Context,
@@ -204,7 +221,7 @@ private class MoonfinRenderersFactory(
         // Float output must stay disabled: DefaultAudioSink skips the
         // processor chain on the float path, which would silently drop both
         // the downmix mixer and the audio delay processor.
-        val sink = DefaultAudioSink.Builder(context)
+        val sinkBuilder = DefaultAudioSink.Builder(context)
             .setAudioProcessorChain(
                 DefaultAudioSink.DefaultAudioProcessorChain(
                     // Downmix runs first (on decoded multichannel PCM), then the
@@ -221,7 +238,13 @@ private class MoonfinRenderersFactory(
             )
             .setEnableFloatOutput(enableFloatOutput)
             .setEnableAudioOutputPlaybackParameters(enableAudioOutputPlaybackParams)
-            .build()
+        if (iecOutputProvider != null) {
+            // App-side IEC 61937 packing for eligible bitstreams. Everything
+            // else routes to the stock provider inside, and when the provider
+            // is absent (the default) the builder chain above is untouched.
+            sinkBuilder.setAudioOutputProvider(iecOutputProvider)
+        }
+        val sink = sinkBuilder.build()
         // Some TV HALs never resume a paused bitstream track and hand back a
         // dead replacement when one is rebuilt too quickly. The recovery
         // wrapper watches for that and rebuilds with a short write hold, and
@@ -496,6 +519,8 @@ private fun encodingName(encoding: Int): String = when (encoding) {
     C.ENCODING_DTS -> "dts"
     C.ENCODING_DTS_HD -> "dtshd"
     C.ENCODING_DOLBY_TRUEHD -> "truehd"
+    // AudioFormat.ENCODING_IEC61937: media3's C has no constant for it.
+    13 -> "iec61937"
     else -> "encoding $encoding"
 }
 
@@ -539,6 +564,7 @@ class Media3VideoView(
         private const val TS_SEARCH_BYTES_LOW_RAM = TsExtractor.TS_PACKET_SIZE * 1800
         private const val TS_SEARCH_BYTES_DEFAULT = TsExtractor.DEFAULT_TIMESTAMP_SEARCH_BYTES
         private const val EXTERNAL_SUBTITLE_ID_BASE = 10000
+        private const val RETIME_DEBOUNCE_MS = 300L
         private const val STREAMING_MAX_BUFFER_MS = 120_000
         // How long a television gets to blank, renegotiate the link and come
         // back before a failure stops counting as part of the mode switch.
@@ -742,6 +768,12 @@ class Media3VideoView(
     private var frameRateSwitchingBehavior = Media3Bridge.frameRateSwitchingBehavior()
     private var passthroughMode = Media3Bridge.passthroughMode()
     private var passthroughCodecs = Media3Bridge.passthroughCodecs()
+    private var passthroughOutput = Media3Bridge.passthroughOutput()
+    // Present only while the IEC output mode is active. The provider is
+    // chosen at buildAudioSink time, so changes ride the rebuild-on-dirty
+    // path like the other passthrough preferences.
+    private var iecOutputProvider: Iec61937AudioOutputProvider? = null
+    private var iecRetryAttemptedForCurrentSource = false
     private var downmixToStereoPreference = Media3Bridge.downmixToStereoEnabled()
     private var decoderPreferenceDirty = false
     private val audioDelayProcessor = AdjustableAudioDelayProcessor()
@@ -783,10 +815,18 @@ class Media3VideoView(
     // Guards the container/source-error transcode fallback against re-emitting.
     private var containerFallbackAttempted = false
 
+    private var unsupportedVideoReported = false
+
     // Last audio track mapping reported, so an unchanged one stays quiet.
     private var lastAudioTrackMapping: List<Map<String, Any?>>? = null
 
     private var player: ExoPlayer
+
+    // The pieces createPlayer hands the player, kept so a source tree built
+    // later loads and parses exactly the way the player's own factory would.
+    private lateinit var bootDataSourceFactory: DefaultDataSource.Factory
+    private lateinit var bootMediaSourceFactory: DefaultMediaSourceFactory
+    private lateinit var assParserFactory: MoonfinAssParserFactory
 
     // Renders the ASS overlay for the current player and owns the thread that
     // calls libass. Torn down before the player, so an in-flight render never
@@ -827,6 +867,7 @@ class Media3VideoView(
     private var currentNormalizationGainDb: Float? = null
     private var currentContainer: String? = null
     private var currentIsLive = false
+    private var currentIsPreview = false
     private var currentMediaType: String = "video"
     private var currentAudioSessionId = C.AUDIO_SESSION_ID_UNSET
     private var openedAudioEffectSessionId = C.AUDIO_SESSION_ID_UNSET
@@ -849,7 +890,16 @@ class Media3VideoView(
     private var audioRekickRunnable: Runnable? = null
     private var suppressStateEmissionsForRekick = false
     private var skipSilenceEnabled = false
-    private var subtitleDelayMs = 0L
+    // The delay the user set. Positive shows subtitles later.
+    private var manualSubtitleDelayMs = 0L
+    // What the HLS timestamp adjuster moved the timeline by, so sideloaded
+    // subtitles can be moved with it. Only ever non zero on an HLS transcode.
+    private var autoSubtitleOffsetUs = 0L
+    private var sidecarOffsetSources: List<TimeOffsetMediaSource> = emptyList()
+    private var embeddedOffsetSource: TextStreamOffsetMediaSource? = null
+    private var retimeRunnable: Runnable? = null
+    // Bumped per player so a retime posted before a rebuild is dropped.
+    private var playerGeneration = 0
     private var audioDelayMs = 0L
     private var userVolumeBoostLevel = 0
     private var preferredAudioLanguage: String? = null
@@ -858,9 +908,6 @@ class Media3VideoView(
     private var subtitleEmbeddedStylesEnabled = true
     private var subtitleEmbeddedFontSizesEnabled = true
     private var assFallbackFontBytes: ByteArray? = null
-    // Single pending runnable for delayed cue rendering (positive subtitle delay).
-    // Replaced on every new cue group; cancelled on seek, source change, and dispose.
-    private var pendingCueRunnable: Runnable? = null
     private var isDisposed = false
     private var isDisposedByFlutter = false
     private var lastAudioClockRecoveryAtMs = 0L
@@ -940,17 +987,9 @@ class Media3VideoView(
     }
     private val externalSubtitleConfigurations = mutableListOf<MediaItem.SubtitleConfiguration>()
 
-    /**
-     * Cancel any pending delayed cue and clear the current subtitle view.
-     * Called on seek, source change, and dispose so stale cues never appear
-     * after the player position has jumped.
-     */
-    private fun cancelPendingSubtitleCue(clearView: Boolean = true) {
-        pendingCueRunnable?.let { mainHandler.removeCallbacks(it) }
-        pendingCueRunnable = null
-        if (clearView) {
-            subtitleView.setCues(emptyList())
-        }
+    /** So a stale cue never lingers after the position has jumped. */
+    private fun clearSubtitleCues() {
+        subtitleView.setCues(emptyList())
     }
 
     /**
@@ -1010,43 +1049,14 @@ class Media3VideoView(
         }
     }
 
-    /**
-     * Schedule (or immediately show) a cue group, respecting [subtitleDelayMs].
-     *
-     * Positive delay: display cues [subtitleDelayMs] ms after they arrive.
-     * Zero / negative delay: display immediately (negative delay for embedded
-     * subtitles is not supported without deep ExoPlayer hooks; clamp to 0).
-     *
-     * Each call replaces any previously scheduled cue so the view always
-     * reflects the most-recently-received group at the adjusted time.
-     */
-    private fun renderCuesWithDelay(cues: List<Cue>) {
-        // Cancel whatever was queued before; the incoming group supersedes it.
-        pendingCueRunnable?.let { mainHandler.removeCallbacks(it) }
-        pendingCueRunnable = null
-
-        val delayMs = subtitleDelayMs.coerceAtLeast(0L) // negative not supported natively
-        if (delayMs <= 0L) {
-            subtitleView.setCues(cues)
-            return
-        }
-
-        val runnable = Runnable {
-            pendingCueRunnable = null
-            if (!isDisposed) subtitleView.setCues(cues)
-        }
-        pendingCueRunnable = runnable
-        mainHandler.postDelayed(runnable, delayMs)
-    }
-
     private val listener = object : Player.Listener {
         @Suppress("DEPRECATION")
         override fun onCues(cues: List<Cue>) {
-            renderCuesWithDelay(cues)
+            subtitleView.setCues(cues)
         }
 
         override fun onCues(cueGroup: CueGroup) {
-            renderCuesWithDelay(cueGroup.cues)
+            subtitleView.setCues(cueGroup.cues)
         }
 
         override fun onPlaybackStateChanged(playbackState: Int) {
@@ -1109,12 +1119,15 @@ class Media3VideoView(
             // in flight is most likely the dropped surface, so that retry gets
             // the first look. An init failure under tunneling is retried
             // untunneled before any downmix so a tunnel failure can't stick
-            // the whole session to stereo. The downmix retry stays last and
+            // the whole session to stereo. A failure on an IEC-packed track is
+            // retried with IEC disabled (raw/decode return) before anything
+            // condemns the session to stereo. The downmix retry stays last and
             // handles 7.1 PCM that the device can't open as an 8-channel
             // AudioTrack.
             val nativeRetryTriggered = retryPlaybackOnDisplayModeSwitchErrorIfNeeded(error) ||
                 retryAudioWithoutOffloadIfNeeded(error) ||
                 retryAudioWithoutTunnelingIfNeeded(error) ||
+                retryAudioWithoutIecIfNeeded(error) ||
                 retryAudioWithStereoDownmixIfNeeded(error)
             if (nativeRetryTriggered) {
                 Media3Bridge.emitEvent(
@@ -1184,6 +1197,7 @@ class Media3VideoView(
                 }
             }
             emitTracksChanged()
+            reportUnsupportedVideoIfNeeded()
             emitState()
         }
 
@@ -1228,12 +1242,10 @@ class Media3VideoView(
             newPosition: Player.PositionInfo,
             reason: Int,
         ) {
-            // On any seek, cancel pending delayed subtitle cues so a cue
-            // scheduled for the previous position never fires at the new one.
             if (reason == Player.DISCONTINUITY_REASON_SEEK ||
                 reason == Player.DISCONTINUITY_REASON_SEEK_ADJUSTMENT
             ) {
-                cancelPendingSubtitleCue(clearView = true)
+                clearSubtitleCues()
                 scheduleAudioRekickAfterSeek()
                 // Otherwise Dart only learns the seek landed from the next
                 // 250ms ticker tick, which can still report the pre-seek
@@ -1387,7 +1399,12 @@ class Media3VideoView(
             audioTrackConfig: AudioSink.AudioTrackConfig,
         ) {
             // Ground truth for whether bitstreaming engaged: a non-PCM
-            // encoding on the AudioTrack is passthrough by definition.
+            // encoding on the AudioTrack is passthrough by definition. Under
+            // the IEC packer the reported encoding is the media truth (ac3,
+            // truehd, ...) while the platform track is ENCODING_IEC61937, and
+            // the iec* fields carry that transport truth.
+            val iecEngaged = iecOutputProvider?.lastOutputWasIec == true
+            val iecCarrier = if (iecEngaged) iecOutputProvider?.lastIecCarrier else null
             Media3Bridge.emitEvent(
                 mapOf(
                     "event" to "audioTrackInitialized",
@@ -1402,6 +1419,9 @@ class Media3VideoView(
                     "tunneling" to audioTrackConfig.tunneling,
                     "offload" to audioTrackConfig.offload,
                     "bufferSize" to audioTrackConfig.bufferSize,
+                    "iecPacker" to iecEngaged,
+                    "iecCarrierRate" to (iecCarrier?.sampleRate ?: 0),
+                    "iecCarrierChannels" to (iecCarrier?.channelCount ?: 0),
                 ),
             )
         }
@@ -1498,7 +1518,7 @@ class Media3VideoView(
         lastPlaybackPositionMs = player.currentPosition
         isPlayerReleased = true
         isDisposed = true
-        cancelPendingSubtitleCue(clearView = false)
+        cancelPendingRetime()
         cancelPendingAudioRekick()
         stopTicker()
         closeExternalAudioEffectSessionIfOpen()
@@ -1761,6 +1781,8 @@ class Media3VideoView(
 
     private fun createPlayer(): ExoPlayer {
         Media3LogRelay.install()
+        playerGeneration++
+        cancelPendingRetime()
         playerCreatedAtMs = SystemClock.elapsedRealtime()
         if (role == "main") {
             Media3LogRelay.spuriousAudioPositionListener = audioClockListener
@@ -1773,6 +1795,11 @@ class Media3VideoView(
             passthroughMode,
             passthroughCodecs,
         )
+        iecOutputProvider = if (passthroughOutput == "iec" && Build.VERSION.SDK_INT >= 24) {
+            Iec61937AudioOutputProvider(context)
+        } else {
+            null
+        }
         val renderersFactory = MoonfinRenderersFactory(
             context = context,
             audioDelayProcessor = audioDelayProcessor,
@@ -1781,6 +1808,7 @@ class Media3VideoView(
             passthroughPolicy = passthroughPolicy,
             stereoDownmixRequested = ::effectiveStereoDownmix,
             onPassthroughRecoveryNeeded = ::recoverPassthroughSilence,
+            iecOutputProvider = iecOutputProvider,
         ).apply {
             setEnableDecoderFallback(true)
             setExtensionRendererMode(extensionRendererModeFor(passthroughPolicy))
@@ -1800,7 +1828,7 @@ class Media3VideoView(
             .setAllowCrossProtocolRedirects(true)
             .setConnectTimeoutMs(120_000)
             .setReadTimeoutMs(120_000)
-        val bootDataSourceFactory = DefaultDataSource.Factory(context, httpDataSourceFactory)
+        bootDataSourceFactory = DefaultDataSource.Factory(context, httpDataSourceFactory)
             .setTransferListener(Media3TransferLog)
         val assHandler = AssHandler(
             AssRenderType.OVERLAY_CANVAS,
@@ -1809,11 +1837,11 @@ class Media3VideoView(
         registerAssFonts(assHandler)
         // Serializes track creation and dialogue reads against the overlay's
         // render thread.
-        val assParserFactory = MoonfinAssParserFactory(
+        assParserFactory = MoonfinAssParserFactory(
             AssSubtitleParserFactory(assHandler),
             assHandler,
         )
-        val bootMediaSourceFactory = DefaultMediaSourceFactory(
+        bootMediaSourceFactory = DefaultMediaSourceFactory(
             bootDataSourceFactory,
             // The DoVi wrapper sits outermost so it sees the extractors every
             // inner layer ends up producing.
@@ -1985,7 +2013,8 @@ class Media3VideoView(
     // path that works around decoder-reuse hangs on some TVs.
     private fun releaseActivePlayer() {
         if (isDisposed) return
-        cancelPendingSubtitleCue(clearView = true)
+        clearSubtitleCues()
+        cancelPendingRetime()
         cancelPendingAudioRekick()
         closeExternalAudioEffectSessionIfOpen()
         currentAudioSessionId = C.AUDIO_SESSION_ID_UNSET
@@ -2405,10 +2434,13 @@ class Media3VideoView(
             ?.lowercase()
             ?.takeIf { it.isNotEmpty() }
         currentIsLive = args["isLive"] as? Boolean ?: false
+        currentIsPreview = isPreview
         audioOffloadRetryAttemptedForCurrentSource = false
         stereoDownmixRetryAttemptedForCurrentSource = false
         tunnelingRetryAttemptedForCurrentSource = false
+        iecRetryAttemptedForCurrentSource = false
         containerFallbackAttempted = false
+        unsupportedVideoReported = false
         Media3TransferLog.reset()
         // Start each source with the downmix the user asked for or the state
         // the device has proven it needs (sticky once an AudioTrack init
@@ -2416,7 +2448,11 @@ class Media3VideoView(
         applyStereoDownmix(effectiveStereoDownmix())
         currentNormalizationGainDb = (args["normalizationGainDb"] as? Number)?.toFloat()
         skipSilenceEnabled = args["skipSilenceEnabled"] as? Boolean ?: false
-        subtitleDelayMs = ((args["subtitleDelayMs"] as? Number)?.toLong() ?: 0L).coerceIn(-5000L, 5000L)
+        manualSubtitleDelayMs = clampManualDelayMs((args["subtitleDelayMs"] as? Number)?.toLong() ?: 0L)
+        autoSubtitleOffsetUs = 0L
+        sidecarOffsetSources = emptyList()
+        embeddedOffsetSource = null
+        cancelPendingRetime()
         audioDelayMs = ((args["audioDelayMs"] as? Number)?.toLong() ?: 0L).coerceIn(-5000L, 5000L)
         userVolumeBoostLevel = ((args["volumeBoostLevel"] as? Number)?.toInt() ?: 0).coerceIn(0, 10)
         preferredAudioLanguage = normalizeLanguageCode(args["preferredAudioLanguage"]?.toString())
@@ -2463,7 +2499,7 @@ class Media3VideoView(
             letterboxCrop = null
             applyVideoLayout()
         }
-        cancelPendingSubtitleCue(clearView = true)
+        clearSubtitleCues()
         clearAssSubtitleScript()
         applyTrackSelectorForCurrentSource()
         refreshSubtitleRendererMode()
@@ -2475,7 +2511,7 @@ class Media3VideoView(
         player.skipSilenceEnabled = skipSilenceEnabled
         emitSyncDelayState()
         emitVolumeBoostState()
-        setMediaItem(startPositionMs, playWhenReady = autoPlay)
+        prepareCurrentSource(startPositionMs, playWhenReady = autoPlay)
         playerHasLoadedSource = true
     }
 
@@ -2838,7 +2874,12 @@ class Media3VideoView(
                 // Tunneled TrueHD/MLP passthrough can be silent with no sink
                 // exception on some AVR chains. Tunneling is only a latency
                 // optimization, so drop it whenever a lossless track is active.
-                !currentAudioIsLossless
+                !currentAudioIsLossless &&
+                // App-side IEC packing writes PCM-shaped bursts that must
+                // never get HW_AV_SYNC headers, so tunneling stays off while
+                // the IEC output mode is live (it returns after the session
+                // fallback disables IEC).
+                (iecOutputProvider?.sessionIecDisabled != false)
 
         tunnelingActive = shouldEnableTunneling
 
@@ -2908,6 +2949,13 @@ class Media3VideoView(
         val nextPassthroughCodecs = Media3Bridge.passthroughCodecs()
         if (args.containsKey("passthroughCodecs") && passthroughCodecs != nextPassthroughCodecs) {
             passthroughCodecs = nextPassthroughCodecs
+            decoderPreferenceDirty = true
+        }
+        // The audio output provider is chosen at buildAudioSink time, so the
+        // RAW-vs-IEC packer choice also rides the rebuild-on-dirty path.
+        val nextPassthroughOutput = Media3Bridge.passthroughOutput()
+        if (args.containsKey("passthroughOutput") && passthroughOutput != nextPassthroughOutput) {
+            passthroughOutput = nextPassthroughOutput
             decoderPreferenceDirty = true
         }
 
@@ -2994,13 +3042,13 @@ class Media3VideoView(
     }
 
     private fun updateSubtitleDelay(arguments: Any?) {
-        val nextDelayMs = parseDelayMs(arguments).coerceIn(-5000L, 5000L)
-        if (subtitleDelayMs == nextDelayMs) {
+        val nextDelayMs = clampManualDelayMs(parseDelayMs(arguments))
+        if (manualSubtitleDelayMs == nextDelayMs) {
             return
         }
-        subtitleDelayMs = nextDelayMs
-        // Cancel any pending cue so the adjusted delay takes effect cleanly.
-        cancelPendingSubtitleCue(clearView = true)
+        manualSubtitleDelayMs = nextDelayMs
+        clearSubtitleCues()
+        applyEffectiveOffset(manualChanged = true)
         emitSyncDelayState()
         emitState()
     }
@@ -3101,10 +3149,10 @@ class Media3VideoView(
 
     private fun emitSyncDelayState() {
         Media3Bridge.emitEvent(
-            mapOf(
-                "event" to "syncDelays",
-                "audioDelayMs" to audioDelayMs,
-                "subtitleDelayMs" to subtitleDelayMs,
+            syncDelaysPayload(
+                audioDelayMs = audioDelayMs,
+                subtitleDelayMs = manualSubtitleDelayMs,
+                subtitleAutoOffsetMs = autoSubtitleOffsetUs / 1000L,
             ),
         )
     }
@@ -3511,6 +3559,9 @@ class Media3VideoView(
         activeSubtitleRendererMode = resolvedMode
 
         applySubtitleRendererMode(activeSubtitleRendererMode)
+        // A sideloaded and an embedded track can carry different shifts, so
+        // the overlay follows whichever one is on screen now.
+        assOverlayView?.timeOffsetUs = selectedTrackOffsetUs()
 
         if (previousActive != activeSubtitleRendererMode || desiredMode != previousActive) {
             emitSubtitleRendererModeChanged(desiredMode)
@@ -3589,7 +3640,7 @@ class Media3VideoView(
 
         val playWhenReady = player.playWhenReady
         val currentPosition = player.currentPosition
-        setMediaItem(currentPosition, playWhenReady = playWhenReady)
+        prepareCurrentSource(currentPosition, playWhenReady = playWhenReady)
     }
 
     private fun configureSubtitleStyle(args: Map<*, *>?) {
@@ -3648,20 +3699,42 @@ class Media3VideoView(
         }
     }
 
-    private fun setMediaItem(startPositionMs: Long, playWhenReady: Boolean) {
+    /**
+     * The one place the current source is handed to the player, for the first
+     * prepare and every re-prepare after it. Playback with no subtitle timing
+     * to shift keeps the player's own media item path, the rest gets a source
+     * tree the app builds.
+     */
+    private fun prepareCurrentSource(startPositionMs: Long, playWhenReady: Boolean) {
         val url = currentUrl ?: return
 
-        val subtitleConfigurations = externalSubtitleConfigurations.toList()
         val mediaItemBuilder = MediaItem.Builder()
             .setUri(parseUri(url))
-            .setSubtitleConfigurations(subtitleConfigurations)
+            .setSubtitleConfigurations(externalSubtitleConfigurations.toList())
             .setMediaMetadata(buildNowPlayingMetadata())
         val inferredMimeType = inferStreamMimeType(url, currentContainer, currentMediaType)
         inferredMimeType?.let { mimeType ->
             mediaItemBuilder.setMimeType(mimeType)
         }
         val mediaItem = mediaItemBuilder.build()
-        player.setMediaItem(mediaItem, startPositionMs)
+        val tree = sourceTreeFor(
+            isLive = currentIsLive,
+            isPreview = currentIsPreview,
+            mediaType = currentMediaType,
+            externalCount = externalSubtitleConfigurations.size,
+            manualDelayMs = manualSubtitleDelayMs,
+            hasEmbeddedWrapper = embeddedOffsetSource != null,
+        )
+        when (tree) {
+            SourceTree.PLAYER_ITEM -> {
+                sidecarOffsetSources = emptyList()
+                embeddedOffsetSource = null
+                player.setMediaItem(mediaItem, startPositionMs)
+            }
+            SourceTree.CUSTOM_TREE -> {
+                player.setMediaSource(buildSourceTree(mediaItem, inferredMimeType), startPositionMs)
+            }
+        }
         player.prepare()
         if (playWhenReady) {
             player.playWhenReady = true
@@ -3670,6 +3743,148 @@ class Media3VideoView(
             player.playWhenReady = false
         }
         emitState()
+    }
+
+    /**
+     * Content first, then the sideloaded subtitles in the order they were
+     * added, so track positions match what the player's own factory builds.
+     * The content item drops its subtitle configurations because each one
+     * becomes a child of its own here, wrapped so its timeline can slide.
+     */
+    @Suppress("DEPRECATION")
+    private fun buildSourceTree(mediaItem: MediaItem, mimeType: String?): MediaSource {
+        val contentItem = mediaItem.buildUpon()
+            .setSubtitleConfigurations(emptyList())
+            .build()
+        val content = if (mimeType == MimeTypes.APPLICATION_M3U8) {
+            // What the player's own factory sets up for HLS, plus a watch on
+            // the timestamp adjuster. Parsing during extraction defaults off
+            // here and on there, so it is set to match.
+            HlsMediaSource.Factory(bootDataSourceFactory)
+                .setSubtitleParserFactory(assParserFactory)
+                .experimentalParseSubtitlesDuringExtraction(true)
+                .setExtractorFactory(
+                    HlsTimestampOffsetObserver(DefaultHlsExtractorFactory(), ::onHlsTimestampOffset),
+                )
+                .createMediaSource(contentItem)
+        } else {
+            bootMediaSourceFactory.createMediaSource(contentItem)
+        }
+        val manualUs = effectiveOffsetUs(0L, manualSubtitleDelayMs)
+        val embedded = TextStreamOffsetMediaSource(content, manualUs)
+        val sidecars = externalSubtitleConfigurations.map { configuration ->
+            TimeOffsetMediaSource(
+                SidecarSourceFactory.create(configuration, bootDataSourceFactory, assParserFactory),
+                sidecarOffsetUs(),
+            )
+        }
+        embeddedOffsetSource = embedded
+        sidecarOffsetSources = sidecars
+        assOverlayView?.timeOffsetUs = selectedTrackOffsetUs()
+        if (sidecars.isEmpty()) return embedded
+        return MergingMediaSource(embedded, *sidecars.toTypedArray())
+    }
+
+    private fun sidecarOffsetUs(): Long = effectiveOffsetUs(autoSubtitleOffsetUs, manualSubtitleDelayMs)
+
+    /** The ASS overlay shows one track, so it follows that track's shift. */
+    private fun selectedTrackOffsetUs(): Long = when {
+        embeddedOffsetSource == null -> 0L
+        selectedSubtitleIsExternal -> sidecarOffsetUs()
+        else -> effectiveOffsetUs(0L, manualSubtitleDelayMs)
+    }
+
+    /**
+     * Pushes the current offsets into the source tree. The first non zero
+     * delay on a source that has no tree yet needs one, which is the same
+     * re-prepare at the current position that adding a sidecar costs. After
+     * that the wrappers take the new value live, and the text track is
+     * re-selected so cues the renderer already holds pick it up.
+     */
+    private fun applyEffectiveOffset(manualChanged: Boolean) {
+        if (isPlayerReleased || currentUrl == null) return
+        val embedded = embeddedOffsetSource
+        if (embedded == null) {
+            val tree = sourceTreeFor(
+                isLive = currentIsLive,
+                isPreview = currentIsPreview,
+                mediaType = currentMediaType,
+                externalCount = externalSubtitleConfigurations.size,
+                manualDelayMs = manualSubtitleDelayMs,
+                hasEmbeddedWrapper = false,
+            )
+            if (tree == SourceTree.CUSTOM_TREE && playerHasLoadedSource) {
+                prepareCurrentSource(player.currentPosition, player.playWhenReady)
+            }
+            return
+        }
+        val sidecars = sidecarOffsetSources
+        val sidecarUs = sidecarOffsetUs()
+        val embeddedUs = effectiveOffsetUs(0L, manualSubtitleDelayMs)
+        // Only the track on screen decides whether a re-select is worth it.
+        val previousUs = if (selectedSubtitleIsExternal) {
+            sidecars.firstOrNull()?.timeOffsetUs ?: embedded.timeOffsetUs
+        } else {
+            embedded.timeOffsetUs
+        }
+        val nextUs = if (selectedSubtitleIsExternal) sidecarUs else embeddedUs
+        Handler(player.playbackLooper).post {
+            embedded.setTimeOffsetUs(embeddedUs)
+            for (source in sidecars) source.setTimeOffsetUs(sidecarUs)
+        }
+        assOverlayView?.timeOffsetUs = selectedTrackOffsetUs()
+        if (shouldRetime(previousUs, nextUs, manualChanged)) {
+            scheduleRetime()
+        }
+    }
+
+    private fun scheduleRetime() {
+        cancelPendingRetime()
+        val generation = playerGeneration
+        val runnable = Runnable {
+            retimeRunnable = null
+            if (generation == playerGeneration) retimeTextTrack()
+        }
+        retimeRunnable = runnable
+        mainHandler.postDelayed(runnable, RETIME_DEBOUNCE_MS)
+    }
+
+    private fun cancelPendingRetime() {
+        retimeRunnable?.let { mainHandler.removeCallbacks(it) }
+        retimeRunnable = null
+    }
+
+    /**
+     * The text renderer takes the whole parsed file within seconds, so a new
+     * offset only reaches the screen once the track is selected again. The
+     * disable and enable are two separate parameter updates on purpose, one
+     * combined update would be a no op. Overrides stay as they are, so the
+     * user's pick survives.
+     */
+    private fun retimeTextTrack() {
+        if (isPlayerReleased || !subtitleTrackEnabled) return
+        if (pendingSubtitleIndex != null || pendingClosedCaptionId != null) return
+        val parameters = trackSelector.parameters
+        trackSelector.parameters = parameters.buildUpon()
+            .setTrackTypeDisabled(C.TRACK_TYPE_TEXT, true)
+            .build()
+        trackSelector.parameters = parameters.buildUpon()
+            .setTrackTypeDisabled(C.TRACK_TYPE_TEXT, false)
+            .build()
+    }
+
+    /**
+     * Runs on the loader thread. The adjuster settles again after any seek
+     * that leaves the buffer, so this also carries the new segment's value.
+     */
+    private fun onHlsTimestampOffset(offsetUs: Long) {
+        mainHandler.post {
+            if (isPlayerReleased || embeddedOffsetSource == null) return@post
+            if (autoSubtitleOffsetUs == offsetUs) return@post
+            autoSubtitleOffsetUs = offsetUs
+            applyEffectiveOffset(manualChanged = false)
+            emitSyncDelayState()
+        }
     }
 
     fun refreshNowPlayingMetadata() {
@@ -3907,7 +4122,7 @@ class Media3VideoView(
             return false
         }
 
-        val mediaItem = player.currentMediaItem ?: return false
+        if (currentUrl == null) return false
         tunnelingRetryAttemptedForCurrentSource = true
         val retryPositionMs = player.currentPosition.coerceAtLeast(0L)
         val playWhenReady = player.playWhenReady
@@ -3916,9 +4131,42 @@ class Media3VideoView(
         Media3Bridge.emitEvent(
             mapOf("event" to "tunnelingDisabledOnAudioTrackFailure"),
         )
-        player.setMediaItem(mediaItem, retryPositionMs)
-        player.prepare()
-        player.playWhenReady = playWhenReady
+        prepareCurrentSource(retryPositionMs, playWhenReady)
+        return true
+    }
+
+    /**
+     * A track failure while the app-side IEC 61937 packer owned the output is
+     * most likely a device that advertises IEC61937 but can't actually play
+     * it, or a bitstream the packer can't carry. Disable IEC for the session
+     * and re-prepare: eligible codecs then take the device's normal raw
+     * passthrough or local decode path, and tunneling may return.
+     */
+    private fun retryAudioWithoutIecIfNeeded(error: PlaybackException): Boolean {
+        val provider = iecOutputProvider ?: return false
+        val isRetryableError =
+            error.errorCode == PlaybackException.ERROR_CODE_AUDIO_TRACK_INIT_FAILED ||
+                error.errorCode == PlaybackException.ERROR_CODE_AUDIO_TRACK_WRITE_FAILED
+
+        if (!isRetryableError ||
+            provider.sessionIecDisabled ||
+            !provider.lastOutputWasIec ||
+            iecRetryAttemptedForCurrentSource
+        ) {
+            return false
+        }
+
+        if (currentUrl == null) return false
+        iecRetryAttemptedForCurrentSource = true
+        val retryPositionMs = player.currentPosition.coerceAtLeast(0L)
+        val playWhenReady = player.playWhenReady
+
+        provider.disableForSession()
+        applyTrackSelectorForCurrentSource()
+        Media3Bridge.emitEvent(
+            mapOf("event" to "iecDisabledOnAudioTrackFailure"),
+        )
+        prepareCurrentSource(retryPositionMs, playWhenReady)
         return true
     }
 
@@ -3933,15 +4181,13 @@ class Media3VideoView(
         }
 
         audioOffloadRetryAttemptedForCurrentSource = true
-        val mediaItem = player.currentMediaItem ?: return false
+        if (currentUrl == null) return false
         val retryPositionMs = player.currentPosition.coerceAtLeast(0L)
         val playWhenReady = player.playWhenReady
 
         audioOffloadDisabled = true
         applyTrackSelectorForCurrentSource()
-        player.setMediaItem(mediaItem, retryPositionMs)
-        player.prepare()
-        player.playWhenReady = playWhenReady
+        prepareCurrentSource(retryPositionMs, playWhenReady)
         return true
     }
 
@@ -3961,7 +4207,7 @@ class Media3VideoView(
             return false
         }
 
-        val mediaItem = player.currentMediaItem ?: return false
+        if (currentUrl == null) return false
         stereoDownmixRetryAttemptedForCurrentSource = true
         val retryPositionMs = player.currentPosition.coerceAtLeast(0L)
         val playWhenReady = player.playWhenReady
@@ -3970,9 +4216,7 @@ class Media3VideoView(
         // instead of failing the AudioTrack init again.
         deviceRequiresStereoDownmix = true
         applyStereoDownmix(true)
-        player.setMediaItem(mediaItem, retryPositionMs)
-        player.prepare()
-        player.playWhenReady = playWhenReady
+        prepareCurrentSource(retryPositionMs, playWhenReady)
         return true
     }
 
@@ -3995,14 +4239,12 @@ class Media3VideoView(
         ) {
             return false
         }
-        val mediaItem = player.currentMediaItem ?: return false
+        if (currentUrl == null) return false
         displayModeSwitchRetriesForCurrentSource++
         val retryPositionMs = player.currentPosition.coerceAtLeast(0L)
         val playWhenReady = wasPlayingBeforeDisplayModeSwitch || player.playWhenReady
 
-        player.setMediaItem(mediaItem, retryPositionMs)
-        player.prepare()
-        player.playWhenReady = playWhenReady
+        prepareCurrentSource(retryPositionMs, playWhenReady)
         return true
     }
 
@@ -4349,7 +4591,7 @@ class Media3VideoView(
             if (group.type != C.TRACK_TYPE_TEXT) continue
             val mediaTrackGroup = group.mediaTrackGroup
             for (index in 0 until group.length) {
-                if (group.getTrackFormat(index).id != targetId) continue
+                if (!externalFormatIdMatches(group.getTrackFormat(index).id, targetId)) continue
                 if (!group.isTrackSupported(index)) return false
                 return applyTrackOverride(
                     C.TRACK_TYPE_TEXT,
@@ -4543,6 +4785,33 @@ class Media3VideoView(
         emitAudioTrackMapping()
     }
 
+    // Media3 raises nothing when no renderer takes the video, it just leaves
+    // the track unselected and plays the audio over a black screen. Reporting
+    // it here lets the Dart side try the item again as a transcode.
+    private fun reportUnsupportedVideoIfNeeded() {
+        val tracks = player.currentTracks
+        val report = shouldReportUnsupportedVideo(
+            mediaType = currentMediaType,
+            isPreview = currentIsPreview,
+            alreadyReported = unsupportedVideoReported,
+            hasVideoTrack = tracks.containsType(C.TRACK_TYPE_VIDEO),
+            videoSelected = tracks.isTypeSelected(C.TRACK_TYPE_VIDEO),
+        )
+        if (!report) {
+            return
+        }
+
+        unsupportedVideoReported = true
+        Media3Bridge.emitEvent(
+            mapOf(
+                "event" to "playerError",
+                "recoverable" to true,
+                "kind" to "unsupported_video",
+                "message" to "No renderer took the video track",
+            ),
+        )
+    }
+
     /**
      * Reports which renderer every audio track was mapped to, in the order the
      * app numbers them. A file whose tracks span more than one renderer is the
@@ -4620,7 +4889,7 @@ class Media3VideoView(
             "repeatMode" to repeatModeToWire(player.repeatMode),
             "skipSilenceEnabled" to skipSilenceEnabled,
             "audioDelayMs" to audioDelayMs,
-            "subtitleDelayMs" to subtitleDelayMs,
+            "subtitleDelayMs" to manualSubtitleDelayMs,
             "volumeBoostLevel" to userVolumeBoostLevel,
             "subtitleRendererMode" to activeSubtitleRendererMode.wireValue,
             "subtitleRendererModeRequested" to requestedSubtitleRendererMode.wireValue,

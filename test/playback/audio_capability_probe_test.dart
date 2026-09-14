@@ -291,4 +291,60 @@ void main() {
       expect(await DeviceCapabilityCache.readStringList('hdr'), isNull);
     });
   });
+
+  group('IEC carrier capability keys', () {
+    test('parse from the platform map and round-trip through toMap', () {
+      final profile = AudioCapabilityProfile.fromMap({
+        'activeRouteType': 'hdmi',
+        'canIecLow': true,
+        'canIecMid': true,
+        'canIecHbr': true,
+      });
+
+      expect(profile.canIecLow, isTrue);
+      expect(profile.canIecMid, isTrue);
+      expect(profile.canIecHbr, isTrue);
+      expect(profile.canIecAc3, isTrue);
+      expect(profile.canIecEac3, isTrue);
+      expect(profile.canIecDts, isTrue);
+      expect(profile.canIecDtsHd, isTrue);
+      expect(profile.canIecTrueHd, isTrue);
+
+      final roundTrip = AudioCapabilityProfile.fromMap(profile.toMap());
+      expect(roundTrip.canIecLow, isTrue);
+      expect(roundTrip.canIecMid, isTrue);
+      expect(roundTrip.canIecHbr, isTrue);
+    });
+
+    test('absent keys default to false (stale cache safety)', () {
+      final profile = AudioCapabilityProfile.fromMap({
+        'activeRouteType': 'hdmi',
+        'canPassthroughAc3': true,
+      });
+
+      expect(profile.canIecLow, isFalse);
+      expect(profile.canIecMid, isFalse);
+      expect(profile.canIecHbr, isFalse);
+      expect(profile.canIecAc3, isFalse);
+    });
+
+    test('the HBR carrier only counts on HDMI or eARC routes', () {
+      final arc = AudioCapabilityProfile.fromMap({
+        'activeRouteType': 'arc',
+        'canIecLow': true,
+        'canIecHbr': true,
+      });
+      expect(arc.canIecHbr, isTrue);
+      expect(arc.canIecTrueHd, isFalse);
+      expect(arc.canIecDtsHd, isFalse);
+      expect(arc.canIecAc3, isTrue);
+
+      final earc = AudioCapabilityProfile.fromMap({
+        'activeRouteType': 'earc',
+        'canIecHbr': true,
+      });
+      expect(earc.canIecTrueHd, isTrue);
+      expect(earc.canIecDtsHd, isTrue);
+    });
+  });
 }

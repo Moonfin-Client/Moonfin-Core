@@ -1367,6 +1367,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         l10n.settingsAudioPassthroughMode,
         keywords: ['passthrough', 'bitstream', 'receiver', 'output'],
       ),
+      if (PlatformDetection.isAndroid && PlatformDetection.isTV)
+        audio.leaf(
+          'pref_audio_passthrough_output',
+          l10n.settingsAudioPassthroughOutput,
+          keywords: ['iec', 'audiotrack', 'bitstream', 'packer', 'kodi', 'raw'],
+        ),
       audio.leaf(
         'pref_downmix_to_stereo',
         l10n.downmixToStereo,

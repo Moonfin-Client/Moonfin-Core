@@ -226,6 +226,60 @@ abstract class AppLocalizations {
   /// **'Moonfin'**
   String get appTitle;
 
+  /// Badge on an anime episode that is filler, meaning it is not adapted from the source manga
+  ///
+  /// In en, this message translates to:
+  /// **'Filler'**
+  String get animeMarkerFiller;
+
+  /// Badge on an anime episode that mixes source material with filler, so it still contains story
+  ///
+  /// In en, this message translates to:
+  /// **'Mixed'**
+  String get animeMarkerMixed;
+
+  /// Badge on an anime episode that is not in the source manga but is part of the anime's own continuity
+  ///
+  /// In en, this message translates to:
+  /// **'Anime Canon'**
+  String get animeMarkerAnimeCanon;
+
+  /// Badge on an anime episode adapted from the source manga
+  ///
+  /// In en, this message translates to:
+  /// **'Manga Canon'**
+  String get animeMarkerMangaCanon;
+
+  /// Badge on an anime episode or season whose only audio is Japanese, so it is watched with subtitles
+  ///
+  /// In en, this message translates to:
+  /// **'Subbed'**
+  String get animeMarkerSubbed;
+
+  /// Badge on an anime episode or season that has an audio track in a language other than Japanese
+  ///
+  /// In en, this message translates to:
+  /// **'Dubbed'**
+  String get animeMarkerDubbed;
+
+  /// Badge on anime that carries both the original Japanese audio and a dub, so it can be watched either way
+  ///
+  /// In en, this message translates to:
+  /// **'Subbed/Dubbed'**
+  String get animeMarkerSubbedAndDubbed;
+
+  /// Badge on an anime episode whose filler information the server has matched but not downloaded yet
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get animeMarkerPending;
+
+  /// Badge on an anime episode that recaps earlier episodes
+  ///
+  /// In en, this message translates to:
+  /// **'Recap'**
+  String get animeMarkerRecap;
+
   /// Section header for account preferences settings
   ///
   /// In en, this message translates to:
@@ -3280,6 +3334,12 @@ abstract class AppLocalizations {
   /// **'Subtitle Delay'**
   String get subtitleDelay;
 
+  /// Read-only line under the subtitle delay showing a correction the player applied on its own, value is a formatted delay like +2000 ms
+  ///
+  /// In en, this message translates to:
+  /// **'Auto {value}'**
+  String subtitleDelayAuto(String value);
+
   /// Button label to reset a value
   ///
   /// In en, this message translates to:
@@ -4114,6 +4174,12 @@ abstract class AppLocalizations {
   /// **'No channels found'**
   String get noChannelsFound;
 
+  /// Guide cell label for a real EPG schedule gap, not a genre-filtered program
+  ///
+  /// In en, this message translates to:
+  /// **'No program data'**
+  String get noProgramData;
+
   /// Badge label shown on currently airing programs
   ///
   /// In en, this message translates to:
@@ -4239,6 +4305,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Watch'**
   String get watch;
+
+  /// Button label to tune a channel live when the selected program is not the one that will play (ended or upcoming)
+  ///
+  /// In en, this message translates to:
+  /// **'Watch channel live'**
+  String get watchChannelLive;
 
   /// Button label to close a dialog
   ///
@@ -5530,6 +5602,36 @@ abstract class AppLocalizations {
   /// **'Play is always first and the locked buttons are always shown. Everything else is up to you, and each kind of device keeps its own list.'**
   String get detailButtonsSectionDescription;
 
+  /// Setting title for choosing how many action buttons are visible before overflowing into More Actions
+  ///
+  /// In en, this message translates to:
+  /// **'Action Buttons on Screen'**
+  String get actionButtonsOnScreen;
+
+  /// Subtitle explaining how action buttons overflow into More Actions
+  ///
+  /// In en, this message translates to:
+  /// **'Customize how many action buttons appear before folding into the More Actions menu.'**
+  String get actionButtonsOnScreenDescription;
+
+  /// Option showing theme default number of action buttons
+  ///
+  /// In en, this message translates to:
+  /// **'Auto (Theme Default)'**
+  String get actionButtonsOnScreenAuto;
+
+  /// Option showing only the play action button on screen
+  ///
+  /// In en, this message translates to:
+  /// **'1 (Play only)'**
+  String get actionButtonsOnScreenPlayOnly;
+
+  /// Option showing all action buttons in a horizontal scrollable row
+  ///
+  /// In en, this message translates to:
+  /// **'All (Horizontal Scroll)'**
+  String get actionButtonsOnScreenAll;
+
   /// Settings screen for choosing and reordering details screen metadata items
   ///
   /// In en, this message translates to:
@@ -6057,6 +6159,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Manual (choose formats below)'**
   String get settingsAudioPassthroughModeManual;
+
+  /// Title of the RAW-vs-IEC passthrough packer selector (Android TV, Media3 engine)
+  ///
+  /// In en, this message translates to:
+  /// **'Passthrough output'**
+  String get settingsAudioPassthroughOutput;
+
+  /// No description provided for @settingsAudioPassthroughOutputDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Who packs bitstreams for the HDMI link. Try the app packer if passthrough is silent or glitchy on this device.'**
+  String get settingsAudioPassthroughOutputDescription;
+
+  /// No description provided for @settingsAudioPassthroughOutputPlatform.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic, system packer (AudioTrack RAW)'**
+  String get settingsAudioPassthroughOutputPlatform;
+
+  /// No description provided for @settingsAudioPassthroughOutputIec.
+  ///
+  /// In en, this message translates to:
+  /// **'App packer (AudioTrack IEC)'**
+  String get settingsAudioPassthroughOutputIec;
+
+  /// No description provided for @settingsAudioPassthroughOutputIecLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'App (IEC)'**
+  String get settingsAudioPassthroughOutputIecLabel;
 
   /// No description provided for @settingsDownmixToStereoDescription.
   ///

@@ -90,6 +90,77 @@ typedef struct {
   void (*fatal_error)(void *user, const char *message);
 } lh_callbacks;
 
+// ---------------------------------------------------------------------------
+// Platform-supplied hardware-rendering backend. The interface is graphics-API
+// neutral; registering it does not enable hardware rendering by itself.
+
+// Bump when the backend layout changes.
+#define LH_HW_BACKEND_VERSION 1
+
+// Graphics APIs understood by the host.
+typedef enum {
+  LH_HW_API_NONE = 0,
+  LH_HW_API_GLES2 = 1,
+  LH_HW_API_GLES = 2,
+  LH_HW_API_GL = 3,
+  LH_HW_API_GL_CORE = 4,
+  // Reserved; no backend currently implements Vulkan.
+  LH_HW_API_VULKAN = 5,
+} lh_hw_api;
+
+// Normalized hardware-render request.
+typedef struct {
+  lh_hw_api api;
+  int version_major;
+  int version_minor;
+  int depth;
+  int stencil;
+  // Non-zero when the core uses a bottom-left origin.
+  int bottom_left_origin;
+  int debug_context;
+  // Maximum render-target dimensions. The target is fixed for the session.
+  int max_width;
+  int max_height;
+} lh_hw_request;
+
+// Opaque render-target handle.
+#define LH_HW_TARGET_NONE 0
+#define LH_HW_TARGET_GL_FBO 1
+typedef struct {
+  uint32_t kind;
+  union {
+    uint64_t gl_fbo_name;
+    void *opaque;
+  } u;
+} lh_hw_target;
+
+// Backend callbacks. All callbacks except supports run on the emulation thread.
+typedef struct {
+  uint32_t struct_version;
+
+  // Returns non-zero when the requested context can be created.
+  int (*supports)(void *user, const lh_hw_request *req);
+
+  // Create the context and fixed-size render target.
+  int (*context_create)(void *user, const lh_hw_request *req);
+
+  // Tear down the context before unloading the core.
+  void (*context_destroy)(void *user);
+
+  // Bind/unbind the context on the emulation thread.
+  int (*make_current)(void *user);
+  void (*release_current)(void *user);
+
+  // Return the render target. It must remain stable for the session.
+  lh_hw_target (*current_target)(void *user);
+
+  // Resolve a graphics entry point for the core.
+  void *(*get_proc_address)(void *user, const char *sym);
+
+  // Present the current sub-rectangle with the requested rotation.
+  int (*present)(void *user, int width, int height, int rotation);
+} lh_hw_backend;
+
 // Bounds for the option snapshot below. The host only speaks the legacy
 // SET_VARIABLES form ("Label; a|b|c" - GET_CORE_OPTIONS_VERSION is answered
 // with 0), where ids, labels, and values are all short, so these caps are
@@ -201,9 +272,24 @@ void lh_set_fast_forward(lh_host *host, int factor);
 void lh_stop(lh_host *host);
 void lh_destroy(lh_host *host);
 
+// Register or clear a backend before lh_load. The table is copied; user must
+// remain valid for the host lifetime. Returns 0 on success.
+int lh_set_hw_backend(lh_host *host, const lh_hw_backend *backend, void *user);
+
+// Return the fixed hardware render-target size, or 0 for software rendering.
+int lh_hw_render_size(lh_host *host, int *width, int *height);
+
+// Return whether the current load uses the backend.
+int lh_hw_active(lh_host *host);
+
+// Notify the host that the graphics context was lost externally.
+void lh_notify_hw_context_lost(lh_host *host);
+
 // Copies the latest frame under the host's lock. Returns 1 and fills the out
 // params when a frame exists, 0 otherwise. The pointer stays valid until the
 // next lh_get_frame call.
+//
+// Software path only. See lh_hw_active.
 int lh_get_frame(lh_host *host, const void **data, int *width, int *height,
                  int *stride);
 

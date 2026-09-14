@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:server_core/server_core.dart';
 
 import 'api/emby_auth_api.dart';
+import 'api/emby_client_log_api.dart';
 import 'api/emby_items_api.dart';
 import 'api/emby_playback_api.dart';
 import 'api/emby_image_api.dart';
@@ -41,6 +42,20 @@ class EmbyMediaServerClient extends MediaServerClient {
   String? _accessToken;
   String? _userId;
 
+  // Progress goes out every five seconds and would fill the report inside an
+  // hour, so only one answer a minute is kept. A ping that fails still goes
+  // through onError.
+  static const _progressPingLogInterval = 12;
+  int _progressPings = 0;
+
+  bool _isProgressPing(Uri uri) =>
+      uri.path.endsWith('/Sessions/Playing/Progress');
+
+  bool _progressPingIsDue() {
+    _progressPings++;
+    return _progressPings % _progressPingLogInterval == 1;
+  }
+
   void _setupInterceptors() {
     _dio.interceptors.add(redirectInterceptor(_dio));
     _dio.interceptors.add(InterceptorsWrapper(
@@ -50,7 +65,28 @@ class EmbyMediaServerClient extends MediaServerClient {
           deviceInfo: deviceInfo,
           accessToken: _accessToken,
         );
+        if (!_isProgressPing(options.uri)) {
+          ServerLog.network('→ ${options.method} ${options.uri}');
+        }
         handler.next(options);
+      },
+      onResponse: (response, handler) {
+        final uri = response.requestOptions.uri;
+        if (!_isProgressPing(uri) || _progressPingIsDue()) {
+          ServerLog.network(
+            '← ${response.statusCode} ${response.requestOptions.method} $uri',
+          );
+        }
+        handler.next(response);
+      },
+      onError: (error, handler) {
+        ServerLog.network(
+          '✗ ${error.requestOptions.method} ${error.requestOptions.uri} '
+          '(${error.response?.statusCode ?? error.type.name})',
+          level: ServerLogLevel.error,
+          error: error.message ?? error.toString(),
+        );
+        handler.next(error);
       },
     ));
   }
@@ -129,6 +165,9 @@ class EmbyMediaServerClient extends MediaServerClient {
 
   @override
   late final UsersApi usersApi = EmbyUsersApi(_dio, _requireUserId);
+
+  @override
+  late final ClientLogApi clientLogApi = EmbyClientLogApi(_dio);
 
   @override
   AdminSystemApi get adminSystemApi =>

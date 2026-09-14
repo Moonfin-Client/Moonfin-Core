@@ -4,7 +4,6 @@ import 'package:get_it/get_it.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../data/services/log_service.dart';
-import '../../../data/services/media_server_client_factory.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/focus/dpad_keys.dart';
 import '../../widgets/focus/request_initial_focus.dart';
@@ -67,17 +66,7 @@ class _DiagnosticsSettingsScreenState extends State<DiagnosticsSettingsScreen> {
       ..showSnackBar(SnackBar(content: Text(message)));
   }
 
-  bool get _supportsUpload {
-    if (!GetIt.instance.isRegistered<MediaServerClientFactory>()) return false;
-    try {
-      return GetIt.instance<MediaServerClientFactory>()
-              .getActiveClient()
-              .clientLogApi !=
-          null;
-    } catch (_) {
-      return false;
-    }
-  }
+  bool get _supportsUpload => _log.canUploadToServer;
 
   Future<void> _pickFilter() async {
     final selected = await showFocusRestoringModalBottomSheet<_FilterChoice>(
@@ -234,9 +223,7 @@ class _DiagnosticsSettingsScreenState extends State<DiagnosticsSettingsScreen> {
 
   String _sendSubtitle(bool enabled) {
     if (!enabled) return 'Enable diagnostic logging first.';
-    if (!_supportsUpload) {
-      return 'The active server does not support report uploads.';
-    }
+    if (!_supportsUpload) return _log.uploadUnavailableReason;
     if (_log.entryCount == 0) return 'No entries captured yet.';
     return 'Upload the captured logs to the active server.';
   }

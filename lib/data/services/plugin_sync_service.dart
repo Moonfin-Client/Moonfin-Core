@@ -83,6 +83,11 @@ class PluginSyncService extends ChangeNotifier {
   bool _recommendationsSupported = false;
   bool get recommendationsSupported =>
       _pluginAvailable && _recommendationsSupported;
+
+  /// Whether the server will take an uploaded diagnostic report. An older
+  /// plugin, or none at all, leaves it false.
+  bool _clientLogSupported = false;
+  bool get clientLogSupported => _pluginAvailable && _clientLogSupported;
   String? _activeThemeCacheServerId;
   void Function(
     String title,
@@ -209,6 +214,7 @@ class PluginSyncService extends ChangeNotifier {
     _mdblistAvailable = false;
     _tmdbAvailable = false;
     _recommendationsSupported = false;
+    _clientLogSupported = false;
     _activeThemeCacheServerId = null;
     if (notify) {
       _setLocalSeerrEnabled(false);
@@ -271,6 +277,7 @@ class PluginSyncService extends ChangeNotifier {
       _messages?.setSupported(
         _readBool(pingResult, 'messagesSupported') ?? false,
       );
+      _clientLogSupported = _readBool(pingResult, 'clientLogSupported') ?? false;
 
       final seerrConfig = await _fetchSeerrConfig(client);
       if (seerrConfig != null) {
