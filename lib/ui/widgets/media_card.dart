@@ -42,6 +42,10 @@ class MediaCard extends StatefulWidget {
   final String? subtitle;
   final Widget? subtitleWidget;
   final String? imageUrl;
+
+  /// Optional artwork renderer inside the usual clip, indicators and focus
+  /// border. It displays the supplied placeholder only while needed.
+  final Widget Function(Widget placeholder)? artworkBuilder;
   final double width;
   final double aspectRatio;
   final VoidCallback? onTap;
@@ -95,6 +99,7 @@ class MediaCard extends StatefulWidget {
     this.subtitle,
     this.subtitleWidget,
     this.imageUrl,
+    this.artworkBuilder,
     this.width = 150,
     this.aspectRatio = 2 / 3,
     this.onTap,
@@ -364,6 +369,7 @@ class _MediaCardState extends State<MediaCard> with FocusStateMixin {
                   children: [
                     _CardImage(
                       imageUrl: widget.imageUrl,
+                      artworkBuilder: widget.artworkBuilder,
                       title: widget.title,
                       aspectRatio: widget.aspectRatio,
                       isFavorite: widget.isFavorite,
@@ -629,6 +635,7 @@ class _TvFocusParallaxState extends State<_TvFocusParallax>
 
 class _CardImage extends StatelessWidget {
   final String? imageUrl;
+  final Widget Function(Widget placeholder)? artworkBuilder;
   final String? title;
   final double aspectRatio;
   final bool isFavorite;
@@ -651,6 +658,7 @@ class _CardImage extends StatelessWidget {
 
   const _CardImage({
     this.imageUrl,
+    this.artworkBuilder,
     this.title,
     required this.aspectRatio,
     required this.isFavorite,
@@ -734,24 +742,33 @@ class _CardImage extends StatelessWidget {
                   padding: (itemType == 'Network' || itemType == 'Studio')
                       ? const EdgeInsets.all(8.0)
                       : EdgeInsets.zero,
-                  child: imageUrl != null
+                  child: artworkBuilder != null || imageUrl != null
                       ? Stack(
                           fit: StackFit.expand,
                           children: [
-                            BoundedNetworkImage(
-                              imageUrl: imageUrl!,
-                              fit:
-                                  (itemType == 'Network' ||
-                                      itemType == 'Studio')
-                                  ? BoxFit.contain
-                                  : BoxFit.cover,
-                              fadeInDuration: Duration.zero,
-                              maxWidth: aspectRatio > 1.2 ? 960 : 640,
-                              errorBuilder: (_, _, _) => _PlaceholderIcon(
-                                itemType: itemType,
-                                title: title,
-                              ),
-                            ),
+                            artworkBuilder?.call(
+                                  ExcludeSemantics(
+                                    // The visible card title already names it.
+                                    child: _PlaceholderIcon(
+                                      itemType: itemType,
+                                      title: title,
+                                    ),
+                                  ),
+                                ) ??
+                                BoundedNetworkImage(
+                                  imageUrl: imageUrl!,
+                                  fit:
+                                      (itemType == 'Network' ||
+                                          itemType == 'Studio')
+                                      ? BoxFit.contain
+                                      : BoxFit.cover,
+                                  fadeInDuration: Duration.zero,
+                                  maxWidth: aspectRatio > 1.2 ? 960 : 640,
+                                  errorBuilder: (_, _, _) => _PlaceholderIcon(
+                                    itemType: itemType,
+                                    title: title,
+                                  ),
+                                ),
                             if (isGenreFallback) ...[
                               Container(
                                 color: Colors.black.withValues(alpha: 0.45),
@@ -927,9 +944,8 @@ class _PlaceholderIcon extends StatelessWidget {
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 2.5,
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.onSurface.withValues(alpha: 0.5),
+                        color: Theme.of(context).colorScheme.onSurface
+                            .withValues(alpha: 0.5),
                       ),
                     ),
                   ),
