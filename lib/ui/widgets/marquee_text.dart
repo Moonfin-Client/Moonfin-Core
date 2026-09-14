@@ -3,6 +3,9 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+/// Shared speed for the long-form program descriptions in Live TV.
+const double kLiveTvDescriptionMarqueeMillisPerPixel = 55.0;
+
 class MarqueeText extends StatefulWidget {
   final String text;
   final TextStyle style;

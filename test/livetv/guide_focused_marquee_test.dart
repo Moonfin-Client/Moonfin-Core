@@ -39,6 +39,12 @@ void main() {
     );
     expect(
       tester.state<ScrollableState>(channelScroller).position.pixels,
+      closeTo(0, 0.01),
+    );
+    await tester.pump(const Duration(milliseconds: 1500));
+    await tester.pump(const Duration(milliseconds: 500));
+    expect(
+      tester.state<ScrollableState>(channelScroller).position.pixels,
       greaterThan(0),
     );
   });
@@ -141,6 +147,10 @@ void main() {
       tester.state<ScrollableState>(scroller).position.pixels,
       greaterThan(0),
     );
+  });
+
+  test('Live TV description marquees use the shared slowed speed', () {
+    expect(kLiveTvDescriptionMarqueeMillisPerPixel, 55.0);
   });
 
   testWidgets('guide channel logo uses the zero-fade bounded image', (
