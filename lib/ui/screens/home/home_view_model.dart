@@ -2167,6 +2167,26 @@ class HomeViewModel extends ChangeNotifier {
     return bDate.compareTo(aDate);
   }
 
+  /// [existing] with the unseen items of [incoming] appended. The first id
+  /// wins, so Continue Watching keeps an episode Next Up also offers.
+  ///
+  /// The row is never sorted as a whole. A Next Up episode carries the last
+  /// played date of its series, so it would sort in among items the viewer
+  /// has already scrolled past and slide the row under them.
+  @visibleForTesting
+  static List<AggregatedItem> appendNewArrivals(
+    List<AggregatedItem> existing,
+    List<AggregatedItem> incoming,
+  ) {
+    final seen = {for (final item in existing) item.id};
+    final added = <AggregatedItem>[];
+    for (final item in incoming) {
+      if (seen.add(item.id)) added.add(item);
+    }
+    added.sort(_byLastPlayedDate);
+    return [...existing, ...added];
+  }
+
   /// Returns null rather than throwing, so a caller merging several sources
   /// can keep the ones that answered.
   static Future<HomeRow?> _loadRowOrNull(
@@ -2193,6 +2213,15 @@ class HomeViewModel extends ChangeNotifier {
       merged.putIfAbsent(item.id, () => item);
     }
     final sorted = merged.values.toList()..sort(_byLastPlayedDate);
+    final existing = _rows.firstWhereOrNull((r) => r.id == 'resume');
+    if (existing != null &&
+        keepsPagedRow(
+          pagedDuringLoad: _rowsPagedThisLoad.contains('resume'),
+          existingItemCount: existing.items.length,
+          freshItemCount: sorted.length,
+        )) {
+      return;
+    }
     // Each source contributed its first page, and the merged item count can't
     // stand in for a per source offset, so the paging cursor starts at one
     // page no matter how many unique items the merge kept.
@@ -2225,7 +2254,7 @@ class HomeViewModel extends ChangeNotifier {
   }
 
   /// The merged row draws on two endpoints, so it pages both at the same offset
-  /// and merges the results in. Each source is walked in full and the dedupe
+  /// and appends what comes back. Each source is walked in full and the dedupe
   /// only drops what is already on screen, so nothing gets skipped. The counts
   /// the two report overlap, so a page that adds nothing new closes the row.
   Future<void> _loadMoreMergedResume(int rowIndex) async {
@@ -2243,27 +2272,19 @@ class HomeViewModel extends ChangeNotifier {
     if (resumeRow == null && nextUpRow == null) return;
     _rowOffsets[row.id] = offset + _rowPageSize;
 
-    final merged = <String, AggregatedItem>{
-      for (final item in row.items) item.id: item,
-    };
-    final countBefore = merged.length;
-    for (final item in _prefs.filterContinueWatching(
-      resumeRow?.items ?? const [],
-    )) {
-      merged.putIfAbsent(item.id, () => item);
-    }
-    for (final item in _prefs.filterNextUp(nextUpRow?.items ?? const [])) {
-      merged.putIfAbsent(item.id, () => item);
-    }
+    final appended = appendNewArrivals(row.items, [
+      ..._prefs.filterContinueWatching(resumeRow?.items ?? const []),
+      ..._prefs.filterNextUp(nextUpRow?.items ?? const []),
+    ]);
+    final addedNothing = appended.length == row.items.length;
 
-    final items = _filterEmptyElements(merged.values.toList())
-      ..sort(_byLastPlayedDate);
+    final items = _filterEmptyElements(appended);
     final index = _rows.indexWhere((r) => r.id == row.id);
     if (index < 0) return;
     _rows = List.of(_rows);
     _rows[index] = _rows[index].copyWith(
       items: items,
-      totalCount: merged.length == countBefore ? items.length : null,
+      totalCount: addedNothing ? items.length : null,
     );
     notifyListeners();
   }
