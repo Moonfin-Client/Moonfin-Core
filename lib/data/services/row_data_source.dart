@@ -43,13 +43,13 @@ class RowDataSource {
       'ParentIndexNumber,IndexNumber,Status,ImageTags,BackdropImageTags,'
       'ParentBackdropItemId,ParentBackdropImageTags,ParentThumbItemId,'
       'ParentThumbImageTag,SeriesId,SeriesPrimaryImageTag,'
-      'ParentLogoItemId,ParentLogoImageTag,PrimaryImageTag,PrimaryImageAspectRatio,People,Artists';
+      'ParentLogoItemId,ParentLogoImageTag,PrimaryImageTag,PrimaryImageAspectRatio';
   static const _fallbackFields =
       'DateCreated,Type,UserData,OfficialRating,RunTimeTicks,ProductionYear,SeriesName,'
       'ParentIndexNumber,IndexNumber,ImageTags,BackdropImageTags,'
       'ParentBackdropItemId,ParentBackdropImageTags,ParentThumbItemId,'
       'ParentThumbImageTag,SeriesId,SeriesPrimaryImageTag,'
-      'ParentLogoItemId,ParentLogoImageTag,People,Artists';
+      'ParentLogoItemId,ParentLogoImageTag';
   static const _minimalFields =
       'Type,UserData,RunTimeTicks,ProductionYear,ImageTags,BackdropImageTags,'
       'ParentBackdropItemId,ParentBackdropImageTags,SeriesId';
