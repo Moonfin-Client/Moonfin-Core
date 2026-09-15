@@ -23,11 +23,24 @@ class LockedFocusRow<T> extends StatefulWidget {
   final List<T> items;
   final String hubKey;
   final double itemExtent;
+
+  /// The current card width, excluding [itemSpacing], for exact list geometry.
+  /// [itemExtent] remains the resting stride used by locked focus scrolling.
+  final double Function(int index)? itemExtentBuilder;
+
+  /// Relayouts exact item extents without rebuilding the existing card widgets.
+  final Listenable? itemExtentListenable;
   final double leadingPadding;
   final double itemSpacing;
   final ScrollController? controller;
   final FocusNode? focusNode;
   final LockedFocusItemBuilder<T> itemBuilder;
+
+  /// A stable, unique identity for each item, preserving its state on reorder.
+  /// Without a builder, state stays associated with each item index.
+  final Object Function(T item)? itemKeyBuilder;
+  final Duration? scrollDuration;
+  final Curve scrollCurve;
   final void Function(int index, T item)? onTap;
   final void Function(int index, T item)? onLongPress;
   final void Function(int index, T item)? onIndexChanged;
@@ -48,6 +61,11 @@ class LockedFocusRow<T> extends StatefulWidget {
     required this.itemExtent,
     required this.itemBuilder,
     required this.height,
+    this.itemExtentBuilder,
+    this.itemExtentListenable,
+    this.itemKeyBuilder,
+    this.scrollDuration,
+    this.scrollCurve = Curves.easeOut,
     this.leadingPadding = 0,
     this.itemSpacing = 0,
     this.controller,
@@ -74,7 +92,8 @@ class LockedFocusRowState<T> extends State<LockedFocusRow<T>> {
   bool _ownsFocusNode = false;
   late ScrollController _scrollController;
   bool _ownsScrollController = false;
-  List<GlobalKey> _itemKeys = const [];
+  List<LocalKey> _itemKeys = const [];
+  Map<Key, int> _itemIndices = const {};
   int _focusedIndex = 0;
   bool _hasRowFocus = false;
   Timer? _selectHoldTimer;
@@ -84,12 +103,16 @@ class LockedFocusRowState<T> extends State<LockedFocusRow<T>> {
   @override
   void initState() {
     super.initState();
-    _focusNode = widget.focusNode ??
+    _focusNode =
+        widget.focusNode ??
         FocusNode(debugLabel: 'LockedFocusRow:${widget.hubKey}');
     _ownsFocusNode = widget.focusNode == null;
     _scrollController = widget.controller ?? ScrollController();
     _ownsScrollController = widget.controller == null;
-    _focusedIndex = HubFocusMemory.getForHub(widget.hubKey, widget.items.length);
+    _focusedIndex = HubFocusMemory.getForHub(
+      widget.hubKey,
+      widget.items.length,
+    );
     _syncItemKeys();
     _focusNode.addListener(_onRowFocusChange);
   }
@@ -97,27 +120,44 @@ class LockedFocusRowState<T> extends State<LockedFocusRow<T>> {
   @override
   void didUpdateWidget(covariant LockedFocusRow<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
+    final oldIndex = _focusedIndex;
+    final oldItem = oldIndex < oldWidget.items.length
+        ? oldWidget.items[oldIndex]
+        : null;
+    final oldFocusedKey = oldIndex < _itemKeys.length
+        ? _itemKeys[oldIndex]
+        : null;
     if (oldWidget.focusNode != widget.focusNode) {
       _focusNode.removeListener(_onRowFocusChange);
       if (_ownsFocusNode) {
         _focusNode.dispose();
       }
-      _focusNode = widget.focusNode ??
+      _focusNode =
+          widget.focusNode ??
           FocusNode(debugLabel: 'LockedFocusRow:${widget.hubKey}');
       _ownsFocusNode = widget.focusNode == null;
       _focusNode.addListener(_onRowFocusChange);
     }
-    if (widget.items.length != oldWidget.items.length) {
-      _focusedIndex =
-          _focusedIndex.clamp(0, widget.items.isEmpty ? 0 : widget.items.length - 1);
-      _syncItemKeys();
+    _syncItemKeys();
+    _focusedIndex =
+        (widget.itemKeyBuilder != null ? _itemIndices[oldFocusedKey] : null) ??
+        _focusedIndex.clamp(
+          0,
+          widget.items.isEmpty ? 0 : widget.items.length - 1,
+        );
+    if (oldIndex != _focusedIndex) {
+      HubFocusMemory.set(widget.hubKey, _focusedIndex);
+      if (_hasRowFocus) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) _scrollToIndex(_focusedIndex);
+        });
+      }
     }
-    if (_hasRowFocus && widget.items.isNotEmpty && _focusedIndex < widget.items.length) {
-      final oldItem = (oldWidget.items.length > _focusedIndex)
-          ? oldWidget.items[_focusedIndex]
-          : null;
+    if (_hasRowFocus &&
+        widget.items.isNotEmpty &&
+        _focusedIndex < widget.items.length) {
       final newItem = widget.items[_focusedIndex];
-      if (oldItem != newItem) {
+      if (oldIndex != _focusedIndex || oldItem != newItem) {
         widget.onIndexChanged?.call(_focusedIndex, newItem);
       }
     }
@@ -136,7 +176,23 @@ class LockedFocusRowState<T> extends State<LockedFocusRow<T>> {
   int get focusedIndex => _focusedIndex;
 
   void _syncItemKeys() {
-    _itemKeys = List<GlobalKey>.generate(widget.items.length, (_) => GlobalKey());
+    final keyBuilder = widget.itemKeyBuilder;
+    _itemKeys = List<LocalKey>.generate(widget.items.length, (index) {
+      if (keyBuilder != null) {
+        return ValueKey<Object>(keyBuilder(widget.items[index]));
+      }
+      return index < _itemKeys.length && _itemKeys[index] is UniqueKey
+          ? _itemKeys[index]
+          : UniqueKey();
+    });
+    _itemIndices = {
+      for (var index = 0; index < _itemKeys.length; index++)
+        _itemKeys[index]: index,
+    };
+    assert(
+      _itemIndices.length == _itemKeys.length,
+      'LockedFocusRow.itemKeyBuilder must return a unique identity per item.',
+    );
   }
 
   void requestFocusAt(int index) {
@@ -186,6 +242,9 @@ class LockedFocusRowState<T> extends State<LockedFocusRow<T>> {
       index,
       itemExtent: widget.itemExtent + widget.itemSpacing,
       leadingPadding: widget.leadingPadding,
+      duration: widget.scrollDuration,
+      curve: widget.scrollCurve,
+      animate: widget.scrollDuration != Duration.zero,
     );
   }
 
@@ -298,26 +357,68 @@ class LockedFocusRowState<T> extends State<LockedFocusRow<T>> {
       onKeyEvent: _onKeyEvent,
       child: SizedBox(
         height: widget.height,
-        child: ListView.separated(
-          controller: _scrollController,
-          scrollDirection: Axis.horizontal,
-          clipBehavior: widget.clipBehavior,
-          padding: widget.padding,
-          itemCount: widget.items.length,
-          separatorBuilder: (_, _) => SizedBox(width: widget.itemSpacing),
-          itemBuilder: (context, index) {
-            final isFocused = _hasRowFocus && index == _focusedIndex;
-            return KeyedSubtree(
-              key: _itemKeys[index],
-              child: widget.itemBuilder(
-                context,
-                widget.items[index],
-                index,
-                isFocused,
+        child: widget.itemExtentBuilder != null
+            ? _buildExactExtentList()
+            : ListView.separated(
+                controller: _scrollController,
+                scrollDirection: Axis.horizontal,
+                clipBehavior: widget.clipBehavior,
+                padding: widget.padding,
+                itemCount: widget.items.length,
+                findItemIndexCallback: (key) => _itemIndices[key],
+                separatorBuilder: (_, _) => SizedBox(width: widget.itemSpacing),
+                itemBuilder: _buildCard,
               ),
-            );
-          },
-        ),
+      ),
+    );
+  }
+
+  Widget _buildCard(BuildContext context, int index) {
+    return KeyedSubtree(
+      key: _itemKeys[index],
+      child: widget.itemBuilder(
+        context,
+        widget.items[index],
+        index,
+        _hasRowFocus && index == _focusedIndex,
+      ),
+    );
+  }
+
+  Widget _buildExactExtentList() {
+    final childCount = widget.items.isEmpty ? 0 : widget.items.length * 2 - 1;
+    final delegate = SliverChildBuilderDelegate(
+      (context, childIndex) => childIndex.isEven
+          ? _buildCard(context, childIndex ~/ 2)
+          : SizedBox(width: widget.itemSpacing),
+      childCount: childCount,
+      findChildIndexCallback: (key) {
+        final itemIndex = _itemIndices[key];
+        return itemIndex == null ? null : itemIndex * 2;
+      },
+      semanticIndexCallback: (_, childIndex) =>
+          childIndex.isEven ? childIndex ~/ 2 : null,
+    );
+    return AnimatedBuilder(
+      animation:
+          widget.itemExtentListenable ??
+          const AlwaysStoppedAnimation<double>(0),
+      builder: (context, child) => ListView.custom(
+        controller: _scrollController,
+        scrollDirection: Axis.horizontal,
+        clipBehavior: widget.clipBehavior,
+        padding: widget.padding,
+        semanticChildCount: widget.items.length,
+        // Keep the delegate identical on geometry ticks, so the sliver only
+        // lays out existing cards. A fresh extent callback invalidates layout
+        // and reads live widths, including cards outside the visible cache.
+        childrenDelegate: delegate,
+        itemExtentBuilder: (childIndex, _) {
+          if (childIndex >= childCount) return null;
+          return childIndex.isEven
+              ? widget.itemExtentBuilder!(childIndex ~/ 2)
+              : widget.itemSpacing;
+        },
       ),
     );
   }
