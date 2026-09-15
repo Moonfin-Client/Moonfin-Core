@@ -33,7 +33,7 @@ void main() {
       expect(prefs.get(UserPreferences.pageTransitionSpeed), PageTransitionSpeed.medium);
       expect(prefs.get(UserPreferences.navigationAnimationSpeed), NavigationAnimationSpeed.medium);
       expect(prefs.get(UserPreferences.modernCardTransitionSpeed), ModernCardTransitionSpeed.medium);
-      expect(prefs.get(UserPreferences.delayCardExpansionOnRapidScroll), isTrue);
+      expect(prefs.get(UserPreferences.delayCardExpansionOnRapidScroll), isFalse);
     });
 
     test('enum duration mappings match spec', () {
@@ -72,8 +72,8 @@ void main() {
       prefs.set(UserPreferences.modernCardTransitionSpeed, ModernCardTransitionSpeed.off);
       expect(prefs.get(UserPreferences.modernCardTransitionSpeed), ModernCardTransitionSpeed.off);
 
-      prefs.set(UserPreferences.delayCardExpansionOnRapidScroll, false);
-      expect(prefs.get(UserPreferences.delayCardExpansionOnRapidScroll), isFalse);
+      prefs.set(UserPreferences.delayCardExpansionOnRapidScroll, true);
+      expect(prefs.get(UserPreferences.delayCardExpansionOnRapidScroll), isTrue);
     });
 
     test('navigationAnimationDuration helper resolves from preferences', () async {
