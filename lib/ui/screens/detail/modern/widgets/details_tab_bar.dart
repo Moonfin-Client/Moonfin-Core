@@ -577,11 +577,11 @@ class _PillTabBarState extends State<_PillTabBar> {
     return LayoutBuilder(
       builder: (context, constraints) {
         // Hug the content when it fits, cap at the available width and let the
-        // segments scroll inside when they overflow. The 16px covers the pane's
-        // all(3) padding plus a small buffer so the last segment is not clipped.
+        // segments scroll inside when they overflow. The 6px covers the pane's
+        // all(3) padding (3px start + 3px end) so the pill hugs the content symmetrically.
         final available = constraints.maxWidth;
         if (_widths.isEmpty || !available.isFinite) return pane;
-        final content = _widths.fold<double>(0, (sum, w) => sum + w) + 16.0;
+        final content = _widths.fold<double>(0, (sum, w) => sum + w) + 6.0;
         final pillWidth = content < available ? content : available;
         return Align(
           alignment: AlignmentDirectional.centerStart,
