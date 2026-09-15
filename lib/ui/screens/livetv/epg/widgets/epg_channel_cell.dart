@@ -95,7 +95,6 @@ class EpgChannelCell extends StatelessWidget {
                         style: nameStyle ?? const TextStyle(),
                         showDotSeparator: false,
                         textAlign: TextAlign.right,
-                        startAtEnd: false,
                       ),
                     )
                   : Text(

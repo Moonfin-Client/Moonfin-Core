@@ -127,6 +127,10 @@ void main() {
     expect(marquee, findsOneWidget);
     expect(tester.getSize(marquee).height, greaterThan(45));
     expect(
+      tester.widget<MarqueeText>(marquee).millisPerPixel,
+      kLiveTvDescriptionMarqueeMillisPerPixel,
+    );
+    expect(
       find.descendant(of: marquee, matching: find.byType(Scrollable)),
       findsOneWidget,
     );
@@ -147,10 +151,6 @@ void main() {
       tester.state<ScrollableState>(scroller).position.pixels,
       greaterThan(0),
     );
-  });
-
-  test('Live TV description marquees use the shared slowed speed', () {
-    expect(kLiveTvDescriptionMarqueeMillisPerPixel, 55.0);
   });
 
   testWidgets('guide channel logo uses the zero-fade bounded image', (
