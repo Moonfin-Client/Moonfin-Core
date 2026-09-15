@@ -1201,31 +1201,6 @@ class _SeerrListsScreenState extends State<_SeerrListsScreen> {
 
   void _saveRows() {
     _seerrPrefs.setHomeRowsConfig(_rows);
-
-    final prefs = GetIt.instance<UserPreferences>();
-    final configs = List<HomeSectionConfig>.from(prefs.homeSectionsConfig);
-    var changed = false;
-    for (final row in _rows) {
-      final type = row.type.homeSectionType;
-      final idx = configs.indexWhere((c) => c.type == type);
-      if (idx >= 0) {
-        if (configs[idx].enabled != row.enabled) {
-          configs[idx] = configs[idx].copyWith(enabled: row.enabled);
-          changed = true;
-        }
-      } else {
-        configs.add(HomeSectionConfig(
-          type: type,
-          enabled: row.enabled,
-          order: configs.length,
-        ));
-        changed = true;
-      }
-    }
-    if (changed) {
-      prefs.setHomeSectionsConfig(configs);
-    }
-
     _pushPersonalizationSync();
     if (mounted) setState(() {});
   }

@@ -294,8 +294,8 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
     });
   }
 
-  void _onItemTap(SeerrDiscoverItem item) {
-    final mediaType = item.mediaType ?? 'movie';
+  void _onItemTap(SeerrDiscoverItem item, {String? mediaTypeHint}) {
+    final mediaType = item.mediaType ?? mediaTypeHint ?? 'movie';
     context.push(
       Destinations.seerrMedia(item.id.toString(), mediaType: mediaType),
     );
@@ -545,7 +545,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
   }
 
   Widget _buildRowContainer({
-    required SeerrRowType type,
+    required SeerrDiscoverRow row,
     required double rowHeight,
     required bool isLoading,
     required bool hasItems,
@@ -553,7 +553,12 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
     required Widget child,
   }) {
     final l10n = AppLocalizations.of(context);
-    final title = localizeSeerrRowTitle(type, l10n);
+    final title = row.isSeerrSlider
+        ? localizeSeerrSliderTitle(
+            row.slider!.type,
+            serverTitle: row.slider?.title,
+          )
+        : localizeSeerrRowTitle(row.type!, l10n);
     final desktopScale = GetIt.instance<UserPreferences>()
         .get(UserPreferences.desktopUiScale)
         .scaleFactor;
@@ -633,7 +638,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
       child: LockedFocusRow<SeerrDiscoverItem>(
         key: focusKey,
         items: row.items,
-        hubKey: 'seerr_discover_media_${rowIndex}_${row.type.name}',
+        hubKey: row.focusHubKey,
         controller: _getRowScroll(rowIndex),
         itemExtent: 130,
         itemSpacing: 12 * desktopScale,
@@ -647,7 +652,10 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
         ),
         onLeftEdge: _onRowLeftEdge,
         onVerticalNavigation: (isUp) => _onRowVerticalNavigation(rowIndex, isUp),
-        onTap: (index, item) => _onItemTap(item),
+        onTap: (index, item) => _onItemTap(
+          item,
+          mediaTypeHint: row.catalog?.mediaTypeHint,
+        ),
         onIndexChanged: (index, item) {
           _onItemSelected(item);
           if (rowIndex == 0) {
@@ -677,7 +685,10 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
             cardFocusExpansion: cardExpansion,
             suppressFocusGlow: suppressFocusGlow,
             externalIsFocused: isFocused,
-            onTap: () => _onItemTap(item),
+            onTap: () => _onItemTap(
+              item,
+              mediaTypeHint: row.catalog?.mediaTypeHint,
+            ),
             onHoverStart: () => _onItemSelected(item),
           );
         },
@@ -685,7 +696,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
     );
 
     return _buildRowContainer(
-      type: row.type,
+      row: row,
       rowHeight: 260,
       isLoading: row.isLoading && row.items.isEmpty,
       hasItems: row.items.isNotEmpty,
@@ -715,7 +726,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
     final child = LockedFocusRow<SeerrShortcut>(
       key: focusKey,
       items: shortcuts,
-      hubKey: 'seerr_discover_shortcuts_$rowIndex',
+      hubKey: row.focusHubKey,
       controller: _getRowScroll(rowIndex),
       itemExtent: 180,
       itemSpacing: 12 * desktopScale,
@@ -756,7 +767,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
     );
 
     return _buildRowContainer(
-      type: row.type,
+      row: row,
       rowHeight: 100 * desktopScale,
       isLoading: false,
       hasItems: true,
@@ -790,7 +801,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
     final child = LockedFocusRow<SeerrGenre>(
       key: focusKey,
       items: row.genres,
-      hubKey: 'seerr_discover_genres_${rowIndex}_${row.type.name}',
+      hubKey: row.focusHubKey,
       controller: _getRowScroll(rowIndex),
       itemExtent: 180,
       itemSpacing: 12 * desktopScale,
@@ -852,7 +863,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
     );
 
     return _buildRowContainer(
-      type: row.type,
+      row: row,
       rowHeight: 90,
       isLoading: row.isLoading && row.genres.isEmpty,
       hasItems: row.genres.isNotEmpty,
@@ -876,7 +887,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
     final child = LockedFocusRow<SeerrNetwork>(
       key: focusKey,
       items: row.networks,
-      hubKey: 'seerr_discover_networks_${rowIndex}_${row.type.name}',
+      hubKey: row.focusHubKey,
       controller: _getRowScroll(rowIndex),
       itemExtent: 180,
       itemSpacing: 12 * desktopScale,
@@ -937,7 +948,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
     );
 
     return _buildRowContainer(
-      type: row.type,
+      row: row,
       rowHeight: 90,
       isLoading: row.isLoading && row.networks.isEmpty,
       hasItems: row.networks.isNotEmpty,
@@ -961,7 +972,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
     final child = LockedFocusRow<SeerrStudio>(
       key: focusKey,
       items: row.studios,
-      hubKey: 'seerr_discover_studios_${rowIndex}_${row.type.name}',
+      hubKey: row.focusHubKey,
       controller: _getRowScroll(rowIndex),
       itemExtent: 180,
       itemSpacing: 12 * desktopScale,
@@ -1022,7 +1033,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
     );
 
     return _buildRowContainer(
-      type: row.type,
+      row: row,
       rowHeight: 90,
       isLoading: row.isLoading && row.studios.isEmpty,
       hasItems: row.studios.isNotEmpty,

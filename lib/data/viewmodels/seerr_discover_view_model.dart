@@ -6,10 +6,13 @@ import '../../preference/preference_constants.dart';
 import '../../preference/seerr_preferences.dart';
 import '../repositories/seerr_repository.dart';
 import '../services/seerr/seerr_api_models.dart';
+import '../services/seerr/seerr_slider_catalog.dart';
 import '../utils/bounded_concurrency.dart';
 
 class SeerrDiscoverRow {
-  final SeerrRowType type;
+  final SeerrRowType? type;
+  final SeerrDiscoverSlider? slider;
+  final SeerrSliderCatalog? catalog;
   final List<SeerrDiscoverItem> items;
   final List<SeerrGenre> genres;
   final List<SeerrNetwork> networks;
@@ -19,7 +22,9 @@ class SeerrDiscoverRow {
   final int totalPages;
 
   const SeerrDiscoverRow({
-    required this.type,
+    this.type,
+    this.slider,
+    this.catalog,
     this.items = const [],
     this.genres = const [],
     this.networks = const [],
@@ -40,6 +45,8 @@ class SeerrDiscoverRow {
   }) =>
       SeerrDiscoverRow(
         type: type,
+        slider: slider,
+        catalog: catalog,
         items: items ?? this.items,
         genres: genres ?? this.genres,
         networks: networks ?? this.networks,
@@ -50,12 +57,23 @@ class SeerrDiscoverRow {
       );
 
   bool get hasMore => page < totalPages;
-  bool get isGenreRow => type == SeerrRowType.movieGenres || type == SeerrRowType.seriesGenres;
+  bool get isSeerrSlider => catalog != null;
+  String get debugLabel => catalog?.path ?? type?.name ?? 'unknown';
+  bool get isGenreRow =>
+      type == SeerrRowType.movieGenres || type == SeerrRowType.seriesGenres;
   bool get isNetworkRow => type == SeerrRowType.networks;
   bool get isStudioRow => type == SeerrRowType.studios;
   bool get isShortcutsRow => type == SeerrRowType.shortcuts;
   bool get isMediaRow =>
       !isGenreRow && !isNetworkRow && !isStudioRow && !isShortcutsRow;
+  String? get title => slider?.title;
+
+  /// Stable D-pad column id. Index is not part of this: custom rows
+  /// appearing or vanishing would otherwise reuse another row's memory.
+  String get focusHubKey => seerrDiscoverFocusHubKey(
+        sliderId: slider?.id,
+        typeName: type?.name,
+      );
 }
 
 class SeerrDiscoverViewModel extends ChangeNotifier {
@@ -143,15 +161,32 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
         return;
       }
 
-      final activeRows = _prefs.activeRows;
-      await _refreshRecentlyAddedGate(activeRows);
-      _rows = _visibleRows(activeRows).map((type) => SeerrDiscoverRow(
-        type: type,
-        isLoading: true,
-      )).toList();
+      final showShortcuts = _prefs.activeRows.contains(SeerrRowType.shortcuts);
+      final resolved = resolveSeerrSliders(await _repo.getDiscoverSliders());
+      await _refreshRecentlyAddedGate(
+        resolved.any((e) => e.$2.type == SeerrSliderType.recentlyAdded),
+      );
+
+      _rows = [
+        if (showShortcuts)
+          const SeerrDiscoverRow(
+            type: SeerrRowType.shortcuts,
+            isLoading: true,
+          ),
+        for (final (slider, catalog) in resolved)
+          if (catalog.type != SeerrSliderType.recentlyAdded ||
+              _canViewRecentlyAdded)
+            SeerrDiscoverRow(
+              type: seerrRowTypeForSliderType(catalog.type),
+              slider: slider,
+              catalog: catalog,
+              isLoading: true,
+            ),
+      ];
       notifyListeners();
 
       await _loadAllRows();
+      _rows = _rows.where(_keepDiscoverRow).toList();
     } catch (e) {
       _error = e.toString();
       debugPrint('[SeerrDiscover] Failed to load: $e');
@@ -159,6 +194,7 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+    await applyRowConfig();
   }
 
   Future<void> refresh() async {
@@ -171,8 +207,8 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
   // at the API layer; its own frontend hides the section. We are that frontend
   // here, so replicate the gate and drop the Recently Added row for users who
   // lack the permission. Owners and admins bypass via hasPermission.
-  Future<void> _refreshRecentlyAddedGate(List<SeerrRowType> requested) async {
-    if (!requested.contains(SeerrRowType.recentlyAdded)) {
+  Future<void> _refreshRecentlyAddedGate(bool requested) async {
+    if (!requested) {
       _canViewRecentlyAdded = true;
       return;
     }
@@ -185,26 +221,25 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
     }
   }
 
-  List<SeerrRowType> _visibleRows(List<SeerrRowType> rows) =>
-      _canViewRecentlyAdded
-          ? rows
-          : rows.where((t) => t != SeerrRowType.recentlyAdded).toList();
+  bool _keepDiscoverRow(SeerrDiscoverRow row) {
+    if (!row.isSeerrSlider) return true;
+    if (row.slider?.isBuiltIn == true) return true;
+    return row.items.isNotEmpty ||
+        row.genres.isNotEmpty ||
+        row.networks.isNotEmpty ||
+        row.studios.isNotEmpty;
+  }
 
   Future<void> applyRowConfig() async {
-    if (_rows.isEmpty) return;
-    final activeTypes = _visibleRows(_prefs.activeRows);
-    final rowMap = {for (final r in _rows) r.type: r};
-    final newRows = <SeerrDiscoverRow>[];
-    for (final type in activeTypes) {
-      final existing = rowMap[type];
-      if (existing != null) {
-        newRows.add(existing);
-      } else {
-        await refresh();
-        return;
-      }
+    if (_isLoading || _rows.isEmpty) return;
+    final wantShortcuts = _prefs.activeRows.contains(SeerrRowType.shortcuts);
+    final hasShortcuts = _rows.any((row) => row.isShortcutsRow);
+    if (wantShortcuts == hasShortcuts) return;
+    if (wantShortcuts) {
+      await refresh();
+      return;
     }
-    _rows = newRows;
+    _rows = _rows.where((row) => !row.isShortcutsRow).toList();
     notifyListeners();
   }
 
@@ -218,7 +253,7 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final page = await _loadPage(row.type, row.page + 1);
+      final page = await _loadPage(row, row.page + 1);
       if (page != null) {
         List<SeerrDiscoverItem> newItems;
         if (row.type == SeerrRowType.yourWatchlist) {
@@ -238,7 +273,7 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
         _rows[rowIndex] = row.copyWith(isLoading: false);
       }
     } catch (e) {
-      debugPrint('[SeerrDiscover] Failed to load more for ${row.type}: $e');
+      debugPrint('[SeerrDiscover] Failed to load more for ${row.debugLabel}: $e');
       _rows = List.of(_rows);
       _rows[rowIndex] = row.copyWith(isLoading: false);
     }
@@ -253,47 +288,72 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
   Future<void> _loadRow(int index) async {
     final row = _rows[index];
     try {
-      switch (row.type) {
-        case SeerrRowType.shortcuts:
-          await _loadShortcutArtwork(index);
-        case SeerrRowType.recentRequests:
-          await _loadRecentRequests(index);
-        case SeerrRowType.yourWatchlist:
-          await _loadWatchlist(index);
-        case SeerrRowType.recentlyAdded:
-          await _loadRecentlyAdded(index);
-        case SeerrRowType.movieGenres:
-          await _loadGenres(index, isMovie: true);
-        case SeerrRowType.seriesGenres:
-          await _loadGenres(index, isMovie: false);
-        case SeerrRowType.networks:
-          _updateRow(index, row.copyWith(
-            networks: popularNetworks,
-            isLoading: false,
-          ));
-        case SeerrRowType.studios:
-          _updateRow(index, row.copyWith(
-            studios: popularStudios,
-            isLoading: false,
-          ));
-        default:
-          final page = await _loadPage(row.type, 1);
-          if (page != null) {
-            final filtered = _filterItems(page.results);
+      final type = row.type;
+      if (type != null) {
+        switch (type) {
+          case SeerrRowType.shortcuts:
+            await _loadShortcutArtwork(index);
+          case SeerrRowType.recentRequests:
+            await _loadRecentRequests(index);
+          case SeerrRowType.yourWatchlist:
+            await _loadWatchlist(index);
+          case SeerrRowType.recentlyAdded:
+            await _loadRecentlyAdded(index);
+          case SeerrRowType.movieGenres:
+            await _loadGenres(index, isMovie: true);
+          case SeerrRowType.seriesGenres:
+            await _loadGenres(index, isMovie: false);
+          case SeerrRowType.networks:
             _updateRow(index, row.copyWith(
-              items: filtered,
-              page: page.page,
-              totalPages: page.totalPages,
+              networks: popularNetworks,
               isLoading: false,
             ));
-          } else {
-            _updateRow(index, row.copyWith(isLoading: false));
-          }
+          case SeerrRowType.studios:
+            _updateRow(index, row.copyWith(
+              studios: popularStudios,
+              isLoading: false,
+            ));
+          default:
+            final page = await _loadPage(row, 1);
+            if (page != null) {
+              final filtered = _filterItems(page.results);
+              _updateRow(index, row.copyWith(
+                items: filtered,
+                page: page.page,
+                totalPages: page.totalPages,
+                isLoading: false,
+              ));
+            } else {
+              _updateRow(index, row.copyWith(isLoading: false));
+            }
+        }
+        return;
       }
+      if (row.isSeerrSlider) {
+        await _loadCatalogRow(index);
+        return;
+      }
+      _updateRow(index, row.copyWith(isLoading: false));
     } catch (e) {
-      debugPrint('[SeerrDiscover] Failed to load row ${row.type}: $e');
+      debugPrint('[SeerrDiscover] Failed to load row ${row.debugLabel}: $e');
       _updateRow(index, row.copyWith(isLoading: false));
     }
+  }
+
+  Future<void> _loadCatalogRow(int index) async {
+    final row = _rows[index];
+    final page = await _loadPage(row, 1);
+    if (page == null) {
+      _updateRow(index, row.copyWith(isLoading: false));
+      return;
+    }
+    final filtered = _filterItems(page.results);
+    _updateRow(index, row.copyWith(
+      items: filtered,
+      page: page.page,
+      totalPages: page.totalPages,
+      isLoading: false,
+    ));
   }
 
   /// Artwork for the shortcut tiles. One trending read covers every tile, and
@@ -475,7 +535,17 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
     }
   }
 
-  Future<SeerrDiscoverPage?> _loadPage(SeerrRowType type, int page) async {
+  Future<SeerrDiscoverPage?> _loadPage(SeerrDiscoverRow row, int page) async {
+    final catalog = row.catalog;
+    if (catalog != null) {
+      return _repo.getCatalog(
+        catalog.path,
+        query: catalog.query,
+        page: page,
+        mediaTypeHint: catalog.mediaTypeHint,
+      );
+    }
+    final type = row.type;
     final limit = _prefs.fetchLimit.limit;
     final offset = (page - 1) * limit;
     switch (type) {

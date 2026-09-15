@@ -5,8 +5,33 @@ import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 
 import '../log_service.dart';
+import 'seerr_catalog_item.dart';
 import 'seerr_error.dart';
 import 'seerr_models.dart';
+
+/// Percent-encode a Seerr/TMDB query value with `%20` for spaces.
+///
+/// Dio `queryParameters` uses `Uri.encodeQueryComponent`, which turns spaces
+/// into `+`. Seerr/TMDB treat that as a literal plus and return empty search
+/// results for multi-word queries.
+String encodeSeerrQueryComponent(String value) {
+  return Uri.encodeComponent(value)
+      .replaceAll("'", '%27')
+      .replaceAll('!', '%21')
+      .replaceAll('*', '%2A')
+      .replaceAll('(', '%28')
+      .replaceAll(')', '%29');
+}
+
+String seerrEncodedQueryString(Map<String, String> params) {
+  return params.entries
+      .map(
+        (e) =>
+            '${encodeSeerrQueryComponent(e.key)}='
+            '${encodeSeerrQueryComponent(e.value)}',
+      )
+      .join('&');
+}
 
 class SeerrHttpClient {
   final MoonfinProxyConfig proxyConfig;
@@ -473,6 +498,82 @@ class SeerrHttpClient {
       return item;
     }).toList();
     return {...body, 'results': results};
+  }
+
+  Future<List<Map<String, dynamic>>> getDiscoverSliders() async {
+    final response = await _dio.get(
+      _apiUrl('settings/discover'),
+      options: _authOptions(),
+    );
+    _requireSuccess(response, 'getDiscoverSliders');
+    final data = response.data;
+    if (data is! List) {
+      throw const FormatException('getDiscoverSliders: expected a list');
+    }
+    return data.map((raw) {
+      if (raw is! Map) {
+        throw const FormatException(
+          'getDiscoverSliders: expected slider objects',
+        );
+      }
+      return Map<String, dynamic>.from(raw);
+    }).toList();
+  }
+
+  Future<Map<String, dynamic>> getCatalog(
+    String path, {
+    Map<String, String> query = const {},
+    int page = 1,
+    String? mediaTypeHint,
+  }) async {
+    final qs = seerrEncodedQueryString({...query, 'page': '$page'});
+    final response = await _dio.get(
+      '${_apiUrl(path)}?$qs',
+      options: _authOptions(),
+    );
+    _requireSuccess(response, 'getCatalog');
+    final data = response.data;
+    if (data is! Map) {
+      return {
+        'page': page,
+        'totalPages': 1,
+        'totalResults': 0,
+        'results': <Map<String, dynamic>>[],
+      };
+    }
+    return _normalizeCatalogBody(
+      Map<String, dynamic>.from(data),
+      page: page,
+      mediaTypeHint: mediaTypeHint,
+    );
+  }
+
+  Map<String, dynamic> _normalizeCatalogBody(
+    Map<String, dynamic> body, {
+    required int page,
+    String? mediaTypeHint,
+  }) {
+    final results = (body['results'] as List? ?? []).map((raw) {
+      if (raw is! Map) return null;
+      return normalizeSeerrCatalogItem(
+        Map<String, dynamic>.from(raw),
+        mediaTypeHint: mediaTypeHint,
+      );
+    }).whereType<Map<String, dynamic>>().toList();
+
+    final currentPage = (body['page'] as num?)?.toInt() ?? page;
+    var totalPages = (body['totalPages'] as num?)?.toInt() ?? 0;
+    if (totalPages <= 0) {
+      totalPages = body['hasMore'] == true ? currentPage + 1 : currentPage;
+    }
+
+    return {
+      ...body,
+      'page': currentPage,
+      'totalPages': totalPages,
+      'totalResults': (body['totalResults'] as num?)?.toInt() ?? results.length,
+      'results': results,
+    };
   }
 
   // Seerr hands the language parameter on both discover endpoints to TMDB as
