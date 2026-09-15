@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/ui/widgets/skeleton/skeleton_detail_screen.dart';
 import 'package:moonfin/ui/widgets/skeleton/skeleton_home_row.dart';
 import 'package:moonfin/ui/widgets/skeleton/skeleton_library_grid.dart';
@@ -51,61 +50,18 @@ void main() {
       expect(find.byType(SkeletonBox), findsWidgets);
     });
 
-    testWidgets('DetailScreenSkeleton renders all variants without overflow', (tester) async {
-      // 1. Classic layout
+    testWidgets('detail loading keeps legacy style support without skeletons', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: Scaffold(
-            body: DetailScreenSkeleton(style: DetailScreenStyle.classic),
-          ),
+          home: Scaffold(body: DetailScreenSkeleton(isModern: false)),
         ),
       );
-      expect(find.byType(DetailScreenSkeleton), findsOneWidget);
-      expect(find.byType(SkeletonBox), findsWidgets);
-
-      // 2. Modern layout
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: DetailScreenSkeleton(style: DetailScreenStyle.modern),
-          ),
-        ),
-      );
-      expect(find.byType(DetailScreenSkeleton), findsOneWidget);
-      expect(find.byType(SkeletonBox), findsWidgets);
-
-      // 3. Spotlight layout
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: DetailScreenSkeleton(style: DetailScreenStyle.spotlight),
-          ),
-        ),
-      );
-      expect(find.byType(DetailScreenSkeleton), findsOneWidget);
-      expect(find.byType(SkeletonBox), findsWidgets);
-
-      // 4. Nouveau layout
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: DetailScreenSkeleton(style: DetailScreenStyle.nouveau),
-          ),
-        ),
-      );
-      expect(find.byType(DetailScreenSkeleton), findsOneWidget);
-      expect(find.byType(SkeletonBox), findsWidgets);
-
-      // 5. Legacy backward compatibility (isModern flag)
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: DetailScreenSkeleton(isModern: false),
-          ),
-        ),
-      );
-      expect(find.byType(DetailScreenSkeleton), findsOneWidget);
-      expect(find.byType(SkeletonBox), findsWidgets);
+      expect(tester.widget<DetailScreenSkeleton>(find.byType(DetailScreenSkeleton)).isModern, isFalse);
+      expect(find.byType(SkeletonBox), findsNothing);
+      await tester.pump(const Duration(milliseconds: 600));
+      expect(find.byType(SkeletonBox), findsNothing);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox.shrink());
     });
 
     testWidgets('SkeletonLibraryGrid renders vertical, horizontal, and song layouts without overflow', (tester) async {
