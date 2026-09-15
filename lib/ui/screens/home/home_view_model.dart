@@ -334,19 +334,6 @@ class HomeViewModel extends ChangeNotifier {
     required bool hasVisibleRow,
   }) => (preserveExisting || hydratedFromCache) && hasVisibleRow;
 
-  /// Whether a freshly fetched row gives way to the one already on screen.
-  ///
-  /// A section fetch only brings back the first page, so a row that paged while
-  /// it was out would lose those pages and be handed straight back to the
-  /// viewport to page in again. A row nobody paged takes the shorter answer,
-  /// since that is how an item leaving a row reaches the screen.
-  @visibleForTesting
-  static bool keepsPagedRow({
-    required bool pagedDuringLoad,
-    required int existingItemCount,
-    required int freshItemCount,
-  }) => pagedDuringLoad && existingItemCount > freshItemCount;
-
   /// Whether the home has to load again because the server came back.
   ///
   /// Rows built while it was unreachable came from the downloads catalog, so
@@ -372,7 +359,6 @@ class HomeViewModel extends ChangeNotifier {
     notifyListeners();
     _rowOffsets.clear();
     _multiServerRepo.clearOffsets();
-    _rowsPagedThisLoad.clear();
     try {
       var hydratedFromCache = false;
       if (_rows.isEmpty) {
@@ -534,6 +520,31 @@ class HomeViewModel extends ChangeNotifier {
         }
       }
 
+      HomeRow _reconcileWithExistingRow(HomeRow freshRow) {
+        final existing = _rows.firstWhereOrNull((r) => r.id == freshRow.id);
+        if (existing == null || existing.isLoading) return freshRow;
+        if (existing.items.length <= freshRow.items.length) {
+          // Nothing paginated beyond the fresh page; the fresh data is a
+          // strict update, so just use it as-is.
+          return freshRow;
+        }
+        final freshIds = freshRow.items
+            .map((i) => '${i.serverId}_${i.id}')
+            .toSet();
+        final remainder = existing.items
+            .where((i) => !freshIds.contains('${i.serverId}_${i.id}'))
+            .toList();
+        var merged = [...freshRow.items, ...remainder];
+        final totalDecreased =
+            existing.totalCount > 0 &&
+            freshRow.totalCount > 0 &&
+            freshRow.totalCount < existing.totalCount;
+        if (totalDecreased && merged.length > freshRow.totalCount) {
+          merged = merged.sublist(0, freshRow.totalCount);
+        }
+        return freshRow.copyWith(items: merged);
+      }
+
       Future<void> loadConfigItem(HomeSectionConfig cfg) async {
         List<HomeRow> sectionRows;
         try {
@@ -563,20 +574,7 @@ class HomeViewModel extends ChangeNotifier {
             .where(
               (r) => r.items.isNotEmpty || r.rowType == HomeRowType.liveTv,
             )
-            .map((freshRow) {
-              final existing = _rows.firstWhereOrNull(
-                (r) => r.id == freshRow.id,
-              );
-              if (existing == null) return freshRow;
-              if (keepsPagedRow(
-                pagedDuringLoad: _rowsPagedThisLoad.contains(freshRow.id),
-                existingItemCount: existing.items.length,
-                freshItemCount: freshRow.items.length,
-              )) {
-                return existing;
-              }
-              return freshRow;
-            })
+            .map(_reconcileWithExistingRow)
             .toList();
         final placeholder = _placeholderForConfig(cfg);
         final loadedIds = loadedRows.map((r) => r.id).toSet();
@@ -942,7 +940,6 @@ class HomeViewModel extends ChangeNotifier {
     if (!row.hasMore || _inFlightPagingRowIds.contains(row.id)) return;
 
     _inFlightPagingRowIds.add(row.id);
-    _rowsPagedThisLoad.add(row.id);
     try {
       final seerrType = _seerrRowTypeForId(row.id);
       if (seerrType != null) {
@@ -2167,26 +2164,6 @@ class HomeViewModel extends ChangeNotifier {
     return bDate.compareTo(aDate);
   }
 
-  /// [existing] with the unseen items of [incoming] appended. The first id
-  /// wins, so Continue Watching keeps an episode Next Up also offers.
-  ///
-  /// The row is never sorted as a whole. A Next Up episode carries the last
-  /// played date of its series, so it would sort in among items the viewer
-  /// has already scrolled past and slide the row under them.
-  @visibleForTesting
-  static List<AggregatedItem> appendNewArrivals(
-    List<AggregatedItem> existing,
-    List<AggregatedItem> incoming,
-  ) {
-    final seen = {for (final item in existing) item.id};
-    final added = <AggregatedItem>[];
-    for (final item in incoming) {
-      if (seen.add(item.id)) added.add(item);
-    }
-    added.sort(_byLastPlayedDate);
-    return [...existing, ...added];
-  }
-
   /// Returns null rather than throwing, so a caller merging several sources
   /// can keep the ones that answered.
   static Future<HomeRow?> _loadRowOrNull(
@@ -2213,15 +2190,6 @@ class HomeViewModel extends ChangeNotifier {
       merged.putIfAbsent(item.id, () => item);
     }
     final sorted = merged.values.toList()..sort(_byLastPlayedDate);
-    final existing = _rows.firstWhereOrNull((r) => r.id == 'resume');
-    if (existing != null &&
-        keepsPagedRow(
-          pagedDuringLoad: _rowsPagedThisLoad.contains('resume'),
-          existingItemCount: existing.items.length,
-          freshItemCount: sorted.length,
-        )) {
-      return;
-    }
     // Each source contributed its first page, and the merged item count can't
     // stand in for a per source offset, so the paging cursor starts at one
     // page no matter how many unique items the merge kept.
@@ -2254,7 +2222,7 @@ class HomeViewModel extends ChangeNotifier {
   }
 
   /// The merged row draws on two endpoints, so it pages both at the same offset
-  /// and appends what comes back. Each source is walked in full and the dedupe
+  /// and merges the results in. Each source is walked in full and the dedupe
   /// only drops what is already on screen, so nothing gets skipped. The counts
   /// the two report overlap, so a page that adds nothing new closes the row.
   Future<void> _loadMoreMergedResume(int rowIndex) async {
@@ -2272,19 +2240,27 @@ class HomeViewModel extends ChangeNotifier {
     if (resumeRow == null && nextUpRow == null) return;
     _rowOffsets[row.id] = offset + _rowPageSize;
 
-    final appended = appendNewArrivals(row.items, [
-      ..._prefs.filterContinueWatching(resumeRow?.items ?? const []),
-      ..._prefs.filterNextUp(nextUpRow?.items ?? const []),
-    ]);
-    final addedNothing = appended.length == row.items.length;
+    final merged = <String, AggregatedItem>{
+      for (final item in row.items) item.id: item,
+    };
+    final countBefore = merged.length;
+    for (final item in _prefs.filterContinueWatching(
+      resumeRow?.items ?? const [],
+    )) {
+      merged.putIfAbsent(item.id, () => item);
+    }
+    for (final item in _prefs.filterNextUp(nextUpRow?.items ?? const [])) {
+      merged.putIfAbsent(item.id, () => item);
+    }
 
-    final items = _filterEmptyElements(appended);
+    final items = _filterEmptyElements(merged.values.toList())
+      ..sort(_byLastPlayedDate);
     final index = _rows.indexWhere((r) => r.id == row.id);
     if (index < 0) return;
     _rows = List.of(_rows);
     _rows[index] = _rows[index].copyWith(
       items: items,
-      totalCount: addedNothing ? items.length : null,
+      totalCount: merged.length == countBefore ? items.length : null,
     );
     notifyListeners();
   }
