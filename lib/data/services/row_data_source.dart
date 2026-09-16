@@ -54,6 +54,21 @@ class RowDataSource {
       'Type,UserData,RunTimeTicks,ProductionYear,ImageTags,BackdropImageTags,'
       'ParentBackdropItemId,ParentBackdropImageTags,SeriesId';
 
+  /// An album or track card names its artist under the title. An artist card
+  /// has the name as its title, so those rows read neither of these.
+  static const _musicFields = '$_fields,Artists,AlbumArtist';
+  static const _musicFallbackFields = '$_fallbackFields,Artists,AlbumArtist';
+
+  /// Picks the field list off what the query asks for, so a music row added
+  /// later can't quietly lose its artist line.
+  static bool _wantsMusicFields({
+    List<String>? includeItemTypes,
+    String? mediaTypes,
+  }) =>
+      mediaTypes == 'Audio' ||
+      (includeItemTypes?.any((t) => t == 'Audio' || t == 'MusicAlbum') ??
+          false);
+
   // Cache for local recommendations to make them practically instantaneous
   static const int _recommendationCacheMaxEntries = 64;
   static final Map<String, List<Map<String, dynamic>>> _recommendationCache = {};
@@ -1707,6 +1722,7 @@ class RowDataSource {
     if (_isAccessDenied(parentId)) {
       return const <String, dynamic>{'Items': <dynamic>[], 'TotalRecordCount': 0};
     }
+    final isMusic = _wantsMusicFields(includeItemTypes: includeItemTypes);
     try {
       final response = await _client.itemsApi.getItems(
         parentId: parentId,
@@ -1720,7 +1736,7 @@ class RowDataSource {
         startIndex: startIndex,
         limit: limit,
         isFavorite: isFavorite,
-        fields: fields ?? _fields,
+        fields: fields ?? (isMusic ? _musicFields : _fields),
         enableImageTypes: _imageTypes,
         imageTypeLimit: _imageTypeLimit,
       );
@@ -1746,7 +1762,7 @@ class RowDataSource {
         startIndex: startIndex,
         limit: limit,
         isFavorite: isFavorite,
-        fields: fields ?? _fallbackFields,
+        fields: fields ?? (isMusic ? _musicFallbackFields : _fallbackFields),
         enableImageTypes: _imageTypes,
         imageTypeLimit: _imageTypeLimit,
         enableTotalRecordCount: false,
@@ -1762,6 +1778,10 @@ class RowDataSource {
     int? startIndex,
     required int limit,
   }) async {
+    final isMusic = _wantsMusicFields(
+      includeItemTypes: includeItemTypes,
+      mediaTypes: mediaTypes,
+    );
     try {
       final response = await _client.itemsApi
           .getResumeItems(
@@ -1770,7 +1790,7 @@ class RowDataSource {
             mediaTypes: mediaTypes,
             startIndex: startIndex,
             limit: limit,
-            fields: _fields,
+            fields: isMusic ? _musicFields : _fields,
             enableImageTypes: _imageTypes,
             imageTypeLimit: _imageTypeLimit,
           )
@@ -1784,7 +1804,7 @@ class RowDataSource {
             mediaTypes: mediaTypes,
             startIndex: startIndex,
             limit: limit,
-            fields: _fallbackFields,
+            fields: isMusic ? _musicFallbackFields : _fallbackFields,
             enableImageTypes: _imageTypes,
             imageTypeLimit: _imageTypeLimit,
           )
@@ -1799,7 +1819,7 @@ class RowDataSource {
         mediaTypes: mediaTypes,
         startIndex: startIndex,
         limit: limit,
-        fields: _fallbackFields,
+        fields: isMusic ? _musicFallbackFields : _fallbackFields,
         enableImageTypes: _imageTypes,
         imageTypeLimit: _imageTypeLimit,
       );

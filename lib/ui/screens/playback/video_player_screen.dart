@@ -316,6 +316,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   TrickplayInfo? _trickplayInfo;
   String? _trickplayMediaSourceId;
+  String? _castPeopleItemId;
+  List<Map<String, dynamic>> _castPeople = const [];
   int _trickplayLoadGeneration = 0;
   static const int _trickplayFrameWidth = 320;
 
@@ -2370,6 +2372,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       _syncSubtitleActive();
     }
     _refreshTrickplayIfNeeded();
+    _refreshCastPeopleIfNeeded();
     _handleTrickplayAmbientPrefetch(position);
     _syncAirPlayPlaybackState(position: position);
     if (PlatformDetection.isIOS) {
@@ -7244,9 +7247,25 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   bool _hasCastCrew(dynamic item) {
     if (item is! AggregatedItem) return false;
     if (item.people.isNotEmpty) return true;
-    return item.type == 'Episode' &&
-        item.seriesId != null &&
-        item.seriesId!.isNotEmpty;
+    return item.id == _castPeopleItemId && _castPeople.isNotEmpty;
+  }
+
+  /// Settles the cast list for whatever is playing, since a row hands over an
+  /// item with no people on it. The id guard means it runs once per item.
+  void _refreshCastPeopleIfNeeded() {
+    final item = _queue.currentItem;
+    if (item is! AggregatedItem || item.id.isEmpty) return;
+    if (item.id == _castPeopleItemId) return;
+    _castPeopleItemId = item.id;
+    _castPeople = const [];
+    unawaited(_prefetchCastPeople(item));
+  }
+
+  Future<void> _prefetchCastPeople(AggregatedItem item) async {
+    final people = await _resolveCastPeople(item);
+    // Set an empty answer too, or the button carries over from the last item.
+    if (!mounted || _castPeopleItemId != item.id) return;
+    setState(() => _castPeople = people);
   }
 
   Future<List<Map<String, dynamic>>> _resolveCastPeople(
@@ -7255,17 +7274,20 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     if (item.people.isNotEmpty) {
       return item.people;
     }
+    if (item.id == _castPeopleItemId && _castPeople.isNotEmpty) {
+      return _castPeople;
+    }
 
-    if (item.type != 'Episode' ||
-        item.seriesId == null ||
-        item.seriesId!.isEmpty) {
+    // An episode keeps its cast on the series, everything else on itself.
+    final id = item.type == 'Episode' ? (item.seriesId ?? '') : item.id;
+    if (id.isEmpty) {
       return const <Map<String, dynamic>>[];
     }
 
     try {
       final client = _clientForItem(item);
-      final seriesData = await client.itemsApi.getItem(item.seriesId!);
-      final people = (seriesData['People'] as List?)
+      final data = await client.itemsApi.getItem(id);
+      final people = (data['People'] as List?)
           ?.cast<Map<String, dynamic>>()
           .toList(growable: false);
       return people ?? const <Map<String, dynamic>>[];
