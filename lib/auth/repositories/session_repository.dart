@@ -70,7 +70,6 @@ class SessionRepository {
     'GoHome',
     'VolumeUp',
     'VolumeDown',
-    'ToggleFullscreen',
   ];
 
   static const List<String> _tvNavigationRemoteCommands = [
@@ -85,6 +84,9 @@ class SessionRepository {
   List<String> get _supportedRemoteCommands => [
     ..._baseSupportedRemoteCommands,
     if (PlatformDetection.isTV) ..._tvNavigationRemoteCommands,
+    // Nothing but a desktop has a window to resize, so anywhere else would be
+    // offering a button that does nothing.
+    if (PlatformDetection.isDesktop) 'ToggleFullscreen',
   ];
 
   static const double _volumeStep = 10;

@@ -187,6 +187,8 @@ class _TestService implements PlayerService {
     bool isPaused = false,
     int? audioStreamIndex,
     int? subtitleStreamIndex,
+    int? volumeLevel,
+    bool? isMuted,
   }) {
     if (!stallProgress) {
       events.add('progress:${resolution.playSessionId}:immediate');

@@ -5946,6 +5946,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _playerVolume = next;
     await backend.setVolume(next);
     _persistPlayerVolume();
+    _reportVolumeToManager();
     _showVolumeIndicator();
   }
 
@@ -6047,6 +6048,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _volumeListenerSub = vc.addListener((value) {
       if (mounted && (value - _systemVolume).abs() > 0.01) {
         setState(() => _systemVolume = value);
+        _reportVolumeToManager();
       }
 
       if (value < 0.99 &&
@@ -6063,6 +6065,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         .clamp(0.0, 100.0)
         .toDouble();
     unawaited(_manager.backend?.setVolume(_playerVolume));
+    _reportVolumeToManager();
   }
 
   void _persistPlayerVolume() {
@@ -6073,6 +6076,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     });
   }
 
+  /// Puts the volume where the progress report can carry it to a remote
+  /// controller. Reads [_osdVolume] because a phone's volume is the system one
+  /// and a desktop's is the player's.
+  void _reportVolumeToManager() {
+    final level = (_osdVolume * 100).clamp(0.0, 100.0).toDouble();
+    _manager.reportVolumeState(volume: level, isMuted: level <= 0);
+  }
+
   Future<void> _setMobileSystemVolume(
     double value, {
     bool syncFromSystem = false,
@@ -6081,6 +6092,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
     if (mounted && (clamped - _systemVolume).abs() > 0.01) {
       setState(() => _systemVolume = clamped);
+      _reportVolumeToManager();
     }
 
     _pendingMobileSystemVolume = clamped;
@@ -6259,6 +6271,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         _playerVolume = newVolume * 100.0;
         _manager.backend?.setVolume(_playerVolume);
         _persistPlayerVolume();
+        _reportVolumeToManager();
       }
       _showVolumeIndicator();
     } else {
@@ -6647,6 +6660,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       setState(() => _playerVolume = clamped * 100.0);
       _manager.backend?.setVolume(_playerVolume);
       _persistPlayerVolume();
+      _reportVolumeToManager();
     }
     _showControls();
   }

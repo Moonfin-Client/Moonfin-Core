@@ -50,11 +50,23 @@ class _RecordingManager extends Fake implements PlaybackManager {
   final List<String> calls = [];
   final List<Duration> seeks = [];
 
+  double trackedVolume = 100;
+  bool trackedMuted = false;
+
   @override
   final PlayerState state = PlayerState();
 
   @override
   PlayerBackend? get backend => null;
+
+  @override
+  double get volume => trackedVolume;
+
+  @override
+  void reportVolumeState({required double volume, required bool isMuted}) {
+    trackedVolume = volume.clamp(0, 100).toDouble();
+    trackedMuted = isMuted;
+  }
 
   @override
   Future<void> pause() async => calls.add('pause');
@@ -116,6 +128,11 @@ void main() {
   Future<void> send(String command, {int? seekTicks}) =>
       repository.handleRemoteCommandForTest(
         PlaystateMessage(command: command, seekPositionTicks: seekTicks),
+      );
+
+  Future<void> sendGeneral(String name, {Map<String, String> args = const {}}) =>
+      repository.handleRemoteCommandForTest(
+        GeneralCommandMessage(name: name, arguments: args),
       );
 
   group('play and pause', () {
@@ -196,24 +213,55 @@ void main() {
     expect(manager.calls, ['resume', 'resume']);
   });
 
+  group('stepped volume', () {
+    test('VolumeUp steps up from what the device last reported', () async {
+      manager.reportVolumeState(volume: 40, isMuted: false);
+
+      await sendGeneral('VolumeUp');
+
+      expect(manager.trackedVolume, 50);
+    });
+
+    test('VolumeDown steps down from what the device last reported', () async {
+      manager.reportVolumeState(volume: 40, isMuted: false);
+
+      await sendGeneral('VolumeDown');
+
+      expect(manager.trackedVolume, 30);
+    });
+
+    test('a step up stops at full', () async {
+      manager.reportVolumeState(volume: 95, isMuted: false);
+
+      await sendGeneral('VolumeUp');
+
+      expect(manager.trackedVolume, 100);
+    });
+
+    test('a step down stops at silence and reads as muted', () async {
+      manager.reportVolumeState(volume: 5, isMuted: false);
+
+      await sendGeneral('VolumeDown');
+
+      expect(manager.trackedVolume, 0);
+      expect(manager.trackedMuted, isTrue);
+    });
+
+    test('SetVolume takes the level it was given', () async {
+      await sendGeneral('SetVolume', args: {'Volume': '25'});
+
+      expect(manager.trackedVolume, 25);
+    });
+  });
+
   test('a message from another client is shown', () async {
-    await repository.handleRemoteCommandForTest(
-      const GeneralCommandMessage(
-        name: 'DisplayMessage',
-        arguments: {'Text': 'dinner is ready'},
-      ),
-    );
+    await sendGeneral('DisplayMessage', args: {'Text': 'dinner is ready'});
 
     expect(notifications.messages, ['dinner is ready']);
   });
 
-  test('an empty message is not shown at all', () async {
-    await repository.handleRemoteCommandForTest(
-      const GeneralCommandMessage(
-        name: 'DisplayMessage',
-        arguments: {'Text': '   '},
-      ),
-    );
+  test("an empty message isn't shown at all", () async {
+    await sendGeneral('DisplayMessage', args: {'Text': '   '});
 
     expect(notifications.messages, isEmpty);
   });
