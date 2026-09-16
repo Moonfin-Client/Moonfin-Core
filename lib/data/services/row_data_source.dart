@@ -3562,9 +3562,9 @@ class RowDataSource {
     // shared between "Dark Knight" and "Dark Waters" is not enough.
     if (setA.containsAll(setB) || setB.containsAll(setA)) return true;
 
-    // A single subject word that only differs by a short suffix, so pluralized
-    // sequels like "Alien" and "Aliens" or "Predator" and "Predators" still
-    // count without matching something unrelated like "Alien" and "Alienist".
+    // A single subject word differing only by a short suffix (<= 2 chars), so pluralized
+    // sequels like "Alien" and "Aliens" match, while unrelated titles sharing a common
+    // prefix (such as matching "Alien" to "The Alienist") are excluded.
     if (setA.length == 1 && setB.length == 1) {
       final short = a.first.length <= b.first.length ? a.first : b.first;
       final long = a.first.length <= b.first.length ? b.first : a.first;
