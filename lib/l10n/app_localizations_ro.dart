@@ -1563,6 +1563,9 @@ class AppLocalizationsRo extends AppLocalizations {
   }
 
   @override
+  String get noAlternateVersions => 'No alternate versions for this channel';
+
+  @override
   String get downloadAllQuality => 'Descărcați toate — Calitate';
 
   @override

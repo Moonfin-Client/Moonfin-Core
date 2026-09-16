@@ -1553,6 +1553,9 @@ class AppLocalizationsBn extends AppLocalizations {
   }
 
   @override
+  String get noAlternateVersions => 'No alternate versions for this channel';
+
+  @override
   String get downloadAllQuality => 'সব ডাউনলোড করুন — গুণমান';
 
   @override

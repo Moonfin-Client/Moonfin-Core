@@ -550,16 +550,19 @@ final appRouter = GoRouter(
                 : const <String, dynamic>{};
             final channels = extra['channels'] as List<GuideChannel>?;
             final startIndex = extra['startIndex'] as int? ?? 0;
+            final mediaSourceId = extra['mediaSourceId'] as String?;
             final Widget child;
             if (channels != null) {
               child = PlatformDetection.isAppleTV
                   ? AppleTvLiveTvPlayerHostScreen(
                       channels: channels,
                       startIndex: startIndex,
+                      initialMediaSourceId: mediaSourceId,
                     )
                   : LiveTvPlayerScreen(
                       channels: channels,
                       startIndex: startIndex,
+                      initialMediaSourceId: mediaSourceId,
                     );
             } else {
               // Entered by channel id (favorites, search, deep links). The

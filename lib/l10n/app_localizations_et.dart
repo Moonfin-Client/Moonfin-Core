@@ -1560,6 +1560,9 @@ class AppLocalizationsEt extends AppLocalizations {
   }
 
   @override
+  String get noAlternateVersions => 'No alternate versions for this channel';
+
+  @override
   String get downloadAllQuality => 'Laadige kõik alla – kvaliteet';
 
   @override

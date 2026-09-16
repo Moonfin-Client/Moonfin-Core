@@ -1552,6 +1552,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get noAlternateVersions => 'No alternate versions for this channel';
+
+  @override
   String get downloadAllQuality => 'Download All — Quality';
 
   @override

@@ -23,11 +23,15 @@ import 'osd_buttons.dart';
 class AppleTvLiveTvPlayerHostScreen extends StatefulWidget {
   final List<GuideChannel> channels;
   final int startIndex;
+  // Only honored for the very first channel this screen plays; zapping to a
+  // different channel afterwards always resolves the server-default source.
+  final String? initialMediaSourceId;
 
   const AppleTvLiveTvPlayerHostScreen({
     super.key,
     required this.channels,
     required this.startIndex,
+    this.initialMediaSourceId,
   });
 
   @override
@@ -46,6 +50,7 @@ class _AppleTvLiveTvPlayerHostScreenState
   StreamSubscription<PlaybackBringupState>? _bringupSub;
 
   late int _currentIndex;
+  String? _pendingInitialMediaSourceId;
   bool _exiting = false;
   bool _switching = false;
   bool _inGuide = false;
@@ -81,6 +86,7 @@ class _AppleTvLiveTvPlayerHostScreenState
   void initState() {
     super.initState();
     _currentIndex = widget.startIndex;
+    _pendingInitialMediaSourceId = widget.initialMediaSourceId;
     _exitSub = _backend?.userExitStream.listen((_) => _handleExit());
     _actionSub = _backend?.uiActionStream.listen(_handleUiAction);
     _tracksChangedSub = _backend?.tracksChangedStream.listen(
@@ -176,9 +182,12 @@ class _AppleTvLiveTvPlayerHostScreenState
       rawData: channel.rawData,
     );
     final allowDirect = _prefs.get(UserPreferences.liveTvDirectPlayEnabled);
+    final mediaSourceId = _pendingInitialMediaSourceId;
+    _pendingInitialMediaSourceId = null;
     try {
       await _manager.playItems(
         [item],
+        mediaSourceId: mediaSourceId,
         enableDirectPlay: allowDirect,
         enableDirectStream: allowDirect,
         // Keep transcoding available as a fallback so a failed direct-play of
