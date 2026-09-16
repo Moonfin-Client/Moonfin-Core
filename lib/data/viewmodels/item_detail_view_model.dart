@@ -2117,7 +2117,7 @@ class ItemDetailViewModel extends ChangeNotifier {
               bypass: 'moonfin',
             );
             final items = (data['Items'] as List?) ?? [];
-            _similar = _mapItems(items);
+            _similar = _mapItems(items).take(20).toList();
             _similarSource = SimilarSource.jellyfin;
             return;
           }
@@ -2133,11 +2133,11 @@ class ItemDetailViewModel extends ChangeNotifier {
                 final data = await pluginSync.fetchSimilarItems(
                   _client,
                   itemId,
-                  limit: 100,
+                  limit: 20,
                 );
                 final items = (data?['Items'] as List?) ?? [];
                 if (items.isNotEmpty) {
-                  _similar = _mapItems(items);
+                  _similar = _mapItems(items).take(20).toList();
                   _similarSource = SimilarSource.moonfin;
                   return;
                 }
@@ -2154,7 +2154,7 @@ class ItemDetailViewModel extends ChangeNotifier {
             serverId: serverId,
             baseItem: item,
             isLocal: isLocal,
-            limit: 15,
+            limit: 20,
             includeWatched: true,
           );
           // Only short-circuit when we actually have results. An empty list (e.g.
@@ -2173,7 +2173,7 @@ class ItemDetailViewModel extends ChangeNotifier {
       try {
         final data = await _client.itemsApi.getSimilarItems(itemId, limit: 100);
         final items = (data['Items'] as List?) ?? [];
-        _similar = _mapItems(items);
+        _similar = _mapItems(items).take(20).toList();
         _similarSource = SimilarSource.jellyfin;
       } catch (_) {}
     } finally {

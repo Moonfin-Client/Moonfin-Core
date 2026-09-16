@@ -2688,6 +2688,7 @@ class RowDataSource {
       final people = (itemDetail['People'] as List?)?.map((e) => e is Map ? Map<String, dynamic>.from(e) : null).whereType<Map<String, dynamic>>().toList() ?? const <Map<String, dynamic>>[];
       final baseStudios = (itemDetail['Studios'] as List?)?.map((e) => e is Map ? e['Name']?.toString() : e?.toString()).whereType<String>().toList() ?? const <String>[];
       final baseYear = itemDetail['ProductionYear'] as int?;
+      final baseRating = (itemDetail['CommunityRating'] as num?)?.toDouble();
 
       final actorNames = people
           .where((p) => p['Type'] == 'Actor')
@@ -2876,13 +2877,14 @@ class RowDataSource {
           writerNames: writerNames,
           baseStudios: baseStudios,
           baseYear: baseYear,
+          baseRating: baseRating,
           baseName: baseItem.name,
         );
         scoredCandidates.add(MapEntry(candidate, score));
       }
 
-      // If we have fewer than 15 items after candidate scoring and filtering, fetch filler items
-      if (scoredCandidates.length < 15) {
+      // If we have fewer than limit items after candidate scoring and filtering, fetch filler items
+      if (scoredCandidates.length < limit) {
         try {
           final fallbackCacheKey = '$serverId:fallback:${types.join(",")}:${genres.join(",")}';
           final List<Map<String, dynamic>> items;
@@ -2925,6 +2927,7 @@ class RowDataSource {
                 writerNames: writerNames,
                 baseStudios: baseStudios,
                 baseYear: baseYear,
+                baseRating: baseRating,
                 baseName: baseItem.name,
               );
 
@@ -3420,6 +3423,39 @@ class RowDataSource {
     );
   }
 
+  static double _scoreDiminishing(int count, double first, double second, [double third = 0.0]) {
+    if (count <= 0) return 0.0;
+    if (count == 1) return first;
+    if (count == 2) return first + second;
+    return first + second + third;
+  }
+
+  @visibleForTesting
+  double scoreCandidateForTesting(
+    Map<String, dynamic> candidate, {
+    required List<String> genres,
+    required List<String> tags,
+    required List<String> actorNames,
+    required List<String> directorNames,
+    required List<String> writerNames,
+    required List<String> baseStudios,
+    required int? baseYear,
+    required double? baseRating,
+    required String baseName,
+  }) =>
+      _scoreCandidate(
+        candidate,
+        genres: genres,
+        tags: tags,
+        actorNames: actorNames,
+        directorNames: directorNames,
+        writerNames: writerNames,
+        baseStudios: baseStudios,
+        baseYear: baseYear,
+        baseRating: baseRating,
+        baseName: baseName,
+      );
+
   double _scoreCandidate(
     Map<String, dynamic> candidate, {
     required List<String> genres,
@@ -3429,55 +3465,75 @@ class RowDataSource {
     required List<String> writerNames,
     required List<String> baseStudios,
     required int? baseYear,
+    required double? baseRating,
     required String baseName,
   }) {
     double score = 0.0;
 
     final cGenres = (candidate['Genres'] as List?)?.map((e) => e?.toString()).whereType<String>().toList() ?? const <String>[];
+    var genreMatches = 0;
     for (final g in genres) {
-      if (cGenres.contains(g)) score += 3.0;
+      if (cGenres.contains(g)) genreMatches++;
     }
+    score += (genreMatches * 7.0).clamp(0.0, 35.0);
 
     final cTags = (candidate['Tags'] as List?)?.map((e) => e?.toString()).whereType<String>().toList() ?? const <String>[];
+    var tagMatches = 0;
     for (final t in tags) {
-      if (cTags.contains(t)) score += 3.0;
+      if (cTags.contains(t)) tagMatches++;
     }
+    score += (tagMatches * 4.0).clamp(0.0, 20.0);
 
     final cPeople = (candidate['People'] as List?)?.map((e) => e is Map ? Map<String, dynamic>.from(e) : null).whereType<Map<String, dynamic>>().toList() ?? const <Map<String, dynamic>>[];
     final cActors = cPeople.where((p) => p['Type'] == 'Actor').map((p) => p['Name']?.toString()).whereType<String>().toSet();
     final cDirectors = cPeople.where((p) => p['Type'] == 'Director').map((p) => p['Name']?.toString()).whereType<String>().toSet();
     final cWriters = cPeople.where((p) => p['Type'] == 'Writer').map((p) => p['Name']?.toString()).whereType<String>().toSet();
     for (final a in actorNames) {
-      if (cActors.contains(a)) score += 5.0;
+      if (cActors.contains(a)) {
+        score += _scoreDiminishing(cActors.intersection(actorNames.toSet()).length, 10.0, 6.0, 4.0);
+        break;
+      }
     }
     for (final d in directorNames) {
-      if (cDirectors.contains(d)) score += 6.0;
+      if (cDirectors.contains(d)) {
+        score += _scoreDiminishing(cDirectors.intersection(directorNames.toSet()).length, 15.0, 10.0, 5.0);
+        break;
+      }
     }
     for (final w in writerNames) {
-      if (cWriters.contains(w)) score += 6.0;
+      if (cWriters.contains(w)) {
+        score += _scoreDiminishing(cWriters.intersection(writerNames.toSet()).length, 15.0, 10.0, 5.0);
+        break;
+      }
     }
 
     final cStudios = (candidate['Studios'] as List?)?.map((e) => e is Map ? e['Name']?.toString() : e?.toString()).whereType<String>().toSet() ?? const <String>{};
+    var studioMatches = 0;
     for (final s in baseStudios) {
-      if (cStudios.contains(s)) score += 3.0;
+      if (cStudios.contains(s)) studioMatches++;
     }
+    score += _scoreDiminishing(studioMatches, 12.0, 8.0);
 
     final candYear = candidate['ProductionYear'] as int?;
     if (candYear != null && baseYear != null) {
-      if (candYear == baseYear) {
-        score += 2.0;
-      } else if ((candYear - baseYear).abs() <= 3) {
-        score += 1.0;
+      final diff = (candYear - baseYear).abs();
+      if (diff < 15) {
+        score += 10.0 * (1.0 - (diff / 15.0));
       }
     }
 
     if (_isSequelOrSimilarTitle(baseName, candidate['Name']?.toString() ?? '')) {
-      score += 10.0;
+      score += 25.0;
     }
 
     final candCommRating = (candidate['CommunityRating'] as num?)?.toDouble();
     if (candCommRating != null) {
-      score += candCommRating / 10.0;
+      if (baseRating != null) {
+        final diff = (candCommRating - baseRating).abs();
+        score += 10.0 * (1.0 - (diff / 10.0)).clamp(0.0, 1.0);
+      } else {
+        score += 10.0 * (candCommRating / 10.0);
+      }
     }
 
     return score;
