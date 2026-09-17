@@ -149,6 +149,7 @@ class MpvLetterboxCropper extends LetterboxCropper {
 
   int _generation = 0;
   String? _hwdecBackup;
+  String? _subtitlePositionBackup;
   bool _enabled = false;
   Duration _recropInterval = Duration.zero;
   bool _skipStartDelay = false;
@@ -488,6 +489,7 @@ class MpvLetterboxCropper extends LetterboxCropper {
   }
 
   Future<void> _applyVideoCrop(LetterboxCropRect rect) async {
+    await _moveSubtitlesIntoCrop(rect);
     if (_applied) {
       await _host.command([
         'vf',
@@ -511,6 +513,35 @@ class MpvLetterboxCropper extends LetterboxCropper {
     ]);
     await _host.command(['set', 'video-crop', '']);
     await _host.command(['set', 'file-local-options/video-crop', '']);
+    await _restoreSubtitlePosition();
+  }
+
+  /// libmpv positions its native subtitles against the uncropped frame. A
+  /// bottom-aligned subtitle can therefore land in a letterbox bar that this
+  /// filter removes. Map the original requested position into the retained
+  /// rectangle before applying the crop, then restore it when crop is off.
+  Future<void> _moveSubtitlesIntoCrop(LetterboxCropRect rect) async {
+    final sourceHeight =
+        int.tryParse(await _host.getProperty('height') ?? '') ?? 0;
+    if (sourceHeight <= 0) return;
+
+    final backup =
+        _subtitlePositionBackup ?? await _host.getProperty('sub-pos') ?? '100';
+    _subtitlePositionBackup ??= backup;
+    final originalPosition = double.tryParse(backup) ?? 100;
+    final position =
+        (rect.y + rect.h * (originalPosition / 100)) / sourceHeight * 100;
+    await _host.setProperty(
+      'sub-pos',
+      position.clamp(0, 150).toStringAsFixed(3),
+    );
+  }
+
+  Future<void> _restoreSubtitlePosition() async {
+    final backup = _subtitlePositionBackup;
+    _subtitlePositionBackup = null;
+    if (backup == null || backup.isEmpty) return;
+    await _host.setProperty('sub-pos', backup);
   }
 
   Future<void> _removeDetectFilter() async {
