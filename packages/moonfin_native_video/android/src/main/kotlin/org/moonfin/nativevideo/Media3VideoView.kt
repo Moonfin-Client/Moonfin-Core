@@ -893,8 +893,12 @@ class Media3VideoView(
     private var sidecarOffsetSources: List<TimeOffsetMediaSource> = emptyList()
     private var embeddedOffsetSource: TextStreamOffsetMediaSource? = null
     private var retimeRunnable: Runnable? = null
-    // Bumped per player so a retime posted before a rebuild is dropped.
-    private var playerGeneration = 0
+    @Volatile private var subtitleRetime: SubtitleRetime? = null
+
+    private class SubtitleRetime(var reselect: Boolean) {
+        var disabling = false
+        var writing = false
+    }
     private var audioDelayMs = 0L
     private var userVolumeBoostLevel = 0
     private var preferredAudioLanguage: String? = null
@@ -1080,22 +1084,11 @@ class Media3VideoView(
         }
 
         override fun onTracksChanged(tracks: androidx.media3.common.Tracks) {
+            retimeTextTrack()
             pendingSubtitleIndex?.let { index ->
-                if (selectTextTrack(index, pendingExternalSubtitleUrl)) {
-                    selectedSubtitleCodec = pendingSubtitleCodec?.trim()?.lowercase()
-                    selectedSubtitleIsExternal = pendingSubtitleIsExternal ?: false
-                    selectedSubtitleIsBitmap = pendingSubtitleIsBitmap ?: false
-                    selectedExternalSubtitleUrl = pendingExternalSubtitleUrl?.takeIf { it.isNotBlank() }
-                    subtitleTrackEnabled = true
-                    applyTrackSelectorForCurrentSource()
-                    refreshSubtitleRendererMode()
-
-                    pendingSubtitleIndex = null
-                    pendingSubtitleCodec = null
-                    pendingSubtitleIsExternal = null
-                    pendingSubtitleIsBitmap = null
-                    pendingExternalSubtitleUrl = null
-                } else if (index in 1..trackCount(C.TRACK_TYPE_TEXT)) {
+                if (!applyPendingSubtitle() && subtitleRetime == null &&
+                    index in 1..trackCount(C.TRACK_TYPE_TEXT)
+                ) {
                     // The target track exists but can't be selected (for
                     // example an unsupported codec), so retrying on the next
                     // tracks change won't help.
@@ -1106,7 +1099,7 @@ class Media3VideoView(
                     pendingExternalSubtitleUrl = null
                 }
             }
-            pendingClosedCaptionId?.let { id ->
+            pendingClosedCaptionId?.takeIf { subtitleRetime == null }?.let { id ->
                 if (selectClosedCaptionTrack(id)) {
                     applyClosedCaptionSelection()
                 } else if (id in 1..collectClosedCaptionTracks().size) {
@@ -1736,7 +1729,6 @@ class Media3VideoView(
 
     private fun createPlayer(): ExoPlayer {
         Media3LogRelay.install()
-        playerGeneration++
         cancelPendingRetime()
         playerCreatedAtMs = SystemClock.elapsedRealtime()
         if (role == "main") {
@@ -1919,6 +1911,7 @@ class Media3VideoView(
     }
 
     private fun rebuildPlayerForDecoderPreference() {
+        cancelPendingRetime()
         closeExternalAudioEffectSessionIfOpen()
         currentAudioSessionId = C.AUDIO_SESSION_ID_UNSET
         restorePreferredDisplayMode()
@@ -2306,6 +2299,11 @@ class Media3VideoView(
                     selectedSubtitleIsBitmap = false
                     selectedExternalSubtitleUrl = null
                     subtitleTrackEnabled = false
+                    pendingSubtitleIndex = null
+                    pendingSubtitleCodec = null
+                    pendingSubtitleIsExternal = null
+                    pendingSubtitleIsBitmap = null
+                    pendingExternalSubtitleUrl = null
                     pendingClosedCaptionId = null
                     applyTrackSelectorForCurrentSource()
                     clearAssSubtitleScript()
@@ -2636,6 +2634,7 @@ class Media3VideoView(
     }
 
     private fun stopPlaybackAndRestoreDisplayMode() {
+        cancelPendingRetime()
         // A canonical stop ends ownership of this source. Clear it before
         // touching the player because appPaused may already have released it,
         // and an immediately queued appResumed must not restore stale media.
@@ -2856,7 +2855,7 @@ class Media3VideoView(
             .setPreferredTextLanguage(preferredTextLanguage)
             .setSelectUndeterminedTextLanguage(selectUndeterminedTextLanguage)
             .setTunnelingEnabled(shouldEnableTunneling)
-            .setTrackTypeDisabled(C.TRACK_TYPE_TEXT, !subtitleTrackEnabled)
+            .setTrackTypeDisabled(C.TRACK_TYPE_TEXT, !subtitleTrackEnabled || subtitleRetime?.disabling == true)
 
         trackSelector.setParameters(parametersBuilder)
     }
@@ -3662,6 +3661,7 @@ class Media3VideoView(
      */
     private fun prepareCurrentSource(startPositionMs: Long, playWhenReady: Boolean) {
         val url = currentUrl ?: return
+        cancelPendingRetime()
 
         val mediaItemBuilder = MediaItem.Builder()
             .setUri(parseUri(url))
@@ -3781,22 +3781,22 @@ class Media3VideoView(
             embedded.timeOffsetUs
         }
         val nextUs = if (selectedSubtitleIsExternal) sidecarUs else embeddedUs
-        Handler(player.playbackLooper).post {
-            embedded.setTimeOffsetUs(embeddedUs)
-            for (source in sidecars) source.setTimeOffsetUs(sidecarUs)
-        }
-        assOverlayView?.timeOffsetUs = selectedTrackOffsetUs()
-        if (shouldRetime(previousUs, nextUs, manualChanged)) {
+        val reselect = shouldRetime(previousUs, nextUs, manualChanged)
+        val request = subtitleRetime ?: SubtitleRetime(reselect).also { subtitleRetime = it }
+        request.reselect = request.reselect || reselect
+        if (reselect && !request.disabling && !request.writing) {
             scheduleRetime()
+        } else if (retimeRunnable == null) {
+            retimeTextTrack()
         }
     }
 
     private fun scheduleRetime() {
-        cancelPendingRetime()
-        val generation = playerGeneration
+        retimeRunnable?.let { mainHandler.removeCallbacks(it) }
+        val request = subtitleRetime ?: return
         val runnable = Runnable {
             retimeRunnable = null
-            if (generation == playerGeneration) retimeTextTrack()
+            if (subtitleRetime === request) retimeTextTrack()
         }
         retimeRunnable = runnable
         mainHandler.postDelayed(runnable, RETIME_DEBOUNCE_MS)
@@ -3805,25 +3805,64 @@ class Media3VideoView(
     private fun cancelPendingRetime() {
         retimeRunnable?.let { mainHandler.removeCallbacks(it) }
         retimeRunnable = null
+        val request = subtitleRetime
+        subtitleRetime = null
+        if (request?.disabling == true && !isDisposed && !isPlayerReleased) {
+            trackSelector.parameters = trackSelector.parameters.buildUpon()
+                .setTrackTypeDisabled(C.TRACK_TYPE_TEXT, !subtitleTrackEnabled)
+                .build()
+        }
     }
 
-    /**
-     * The text renderer takes the whole parsed file within seconds, so a new
-     * offset only reaches the screen once the track is selected again. The
-     * disable and enable are two separate parameter updates on purpose, one
-     * combined update would be a no op. Overrides stay as they are, so the
-     * user's pick survives.
-     */
+    // Wait for actual deselection, then acknowledge the playback-thread offset
+    // write before enabling text. Immediate toggles can collapse into one update.
     private fun retimeTextTrack() {
-        if (isPlayerReleased || !subtitleTrackEnabled) return
-        if (pendingSubtitleIndex != null || pendingClosedCaptionId != null) return
-        val parameters = trackSelector.parameters
-        trackSelector.parameters = parameters.buildUpon()
-            .setTrackTypeDisabled(C.TRACK_TYPE_TEXT, true)
-            .build()
-        trackSelector.parameters = parameters.buildUpon()
-            .setTrackTypeDisabled(C.TRACK_TYPE_TEXT, false)
-            .build()
+        val request = subtitleRetime ?: return
+        if (isDisposed || isPlayerReleased || retimeRunnable != null || request.writing) return
+        if (request.reselect && !request.disabling) {
+            request.disabling = true
+            trackSelector.parameters = trackSelector.parameters.buildUpon()
+                .setTrackTypeDisabled(C.TRACK_TYPE_TEXT, true)
+                .build()
+        }
+        if (request.disabling && player.currentTracks.isTypeSelected(C.TRACK_TYPE_TEXT)) return
+
+        val owner = player
+        val embedded = embeddedOffsetSource ?: return
+        val sidecars = sidecarOffsetSources
+        val embeddedUs = effectiveOffsetUs(0L, manualSubtitleDelayMs)
+        val sidecarUs = sidecarOffsetUs()
+        request.writing = true
+        // This also orders writes after queued selection invalidations when
+        // text was already Off and no track-change callback will be delivered.
+        val posted = Handler(owner.playbackLooper).post playback@{
+            if (subtitleRetime !== request) return@playback
+            embedded.setTimeOffsetUs(embeddedUs)
+            for (source in sidecars) source.setTimeOffsetUs(sidecarUs)
+            mainHandler.post completion@{
+                if (subtitleRetime !== request || player !== owner || isDisposed || isPlayerReleased) {
+                    return@completion
+                }
+                request.writing = false
+                if (embeddedUs != effectiveOffsetUs(0L, manualSubtitleDelayMs) ||
+                    sidecarUs != sidecarOffsetUs() || (request.reselect && !request.disabling)
+                ) {
+                    retimeTextTrack()
+                    return@completion
+                }
+                subtitleRetime = null
+                assOverlayView?.timeOffsetUs = selectedTrackOffsetUs()
+                // Keep accepted overrides rather than restoring a snapshot of
+                // possibly stale Tracks. New pending choices and Off take priority.
+                if (!applyPendingSubtitle()) {
+                    pendingClosedCaptionId?.let { id ->
+                        if (selectClosedCaptionTrack(id)) applyClosedCaptionSelection()
+                    }
+                    applyTrackSelectorForCurrentSource()
+                }
+            }
+        }
+        if (!posted) cancelPendingRetime()
     }
 
     fun refreshNowPlayingMetadata() {
@@ -4399,6 +4438,7 @@ class Media3VideoView(
     }
 
     private fun applyTrackOverride(trackType: Int, entry: TrackEntry): Boolean {
+        if (trackType == C.TRACK_TYPE_TEXT && subtitleRetime != null) return false
         return try {
             val override = TrackSelectionOverride(entry.group, listOf(entry.trackIndex))
 
@@ -4444,12 +4484,17 @@ class Media3VideoView(
         pendingSubtitleIsBitmap = isBitmap
         pendingExternalSubtitleUrl = externalUrl
 
-        val selected = selectTextTrack(index, externalUrl)
-        if (selected) {
-            selectedSubtitleCodec = codec?.trim()?.lowercase()
-            selectedSubtitleIsExternal = isExternal
-            selectedSubtitleIsBitmap = isBitmap
-            selectedExternalSubtitleUrl = externalUrl?.takeIf { it.isNotBlank() }
+        applyPendingSubtitle()
+    }
+
+    private fun applyPendingSubtitle(): Boolean {
+        if (subtitleRetime != null) return false
+        val index = pendingSubtitleIndex ?: return false
+        if (selectTextTrack(index, pendingExternalSubtitleUrl)) {
+            selectedSubtitleCodec = pendingSubtitleCodec?.trim()?.lowercase()
+            selectedSubtitleIsExternal = pendingSubtitleIsExternal ?: false
+            selectedSubtitleIsBitmap = pendingSubtitleIsBitmap ?: false
+            selectedExternalSubtitleUrl = pendingExternalSubtitleUrl?.takeIf { it.isNotBlank() }
             subtitleTrackEnabled = true
             applyTrackSelectorForCurrentSource()
             refreshSubtitleRendererMode()
@@ -4459,7 +4504,9 @@ class Media3VideoView(
             pendingSubtitleIsExternal = null
             pendingSubtitleIsBitmap = null
             pendingExternalSubtitleUrl = null
+            return true
         }
+        return false
     }
 
     // Live TV joins a stream part way through, so the captions are often not
