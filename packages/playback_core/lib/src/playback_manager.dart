@@ -169,6 +169,8 @@ class PlaybackManager implements AudioOwnable {
   Map<String, Map<String, dynamic>> _offlineMetadataByUrl = {};
   Future<bool>? _stopInFlight;
   int _playbackSessionToken = 0;
+  // Unlike the request token, this survives stream and player rebuilds.
+  int _subtitleDelaySessionId = 0;
   Future<void>? _externalSubsLoaded;
   Duration _deferredStartPosition = Duration.zero;
   bool _deferPlaybackToExternalPlayer = false;
@@ -477,6 +479,7 @@ class PlaybackManager implements AudioOwnable {
     return <String, dynamic>{
       'url': url,
       'autoPlay': autoPlay,
+      'subtitleDelaySessionId': _subtitleDelaySessionId,
       if (container != null && container.isNotEmpty) 'container': container,
       if (videoRangeType != null && videoRangeType.isNotEmpty)
         'videoRangeType': videoRangeType,
@@ -2136,6 +2139,7 @@ class PlaybackManager implements AudioOwnable {
       skipQueueChange: true,
       expectedItem: expectedItem,
       releaseServerResources: true,
+      preserveSubtitleDelay: true,
     );
   }
 
@@ -3021,10 +3025,12 @@ class PlaybackManager implements AudioOwnable {
     bool skipQueueChange = false,
     dynamic expectedItem,
     bool releaseServerResources = false,
+    bool preserveSubtitleDelay = false,
   }) async {
     final existingStop = _stopInFlight;
     if (existingStop != null) {
       await existingStop;
+      if (!preserveSubtitleDelay) _subtitleDelaySessionId++;
       return false;
     }
 
@@ -3033,6 +3039,7 @@ class PlaybackManager implements AudioOwnable {
           !identical(queueService.currentItem, expectedItem)) {
         return false;
       }
+      if (!preserveSubtitleDelay) _subtitleDelaySessionId++;
       _deferredStartPosition = Duration.zero;
       _deferPlaybackToExternalPlayer = false;
       _playbackSessionToken++;
