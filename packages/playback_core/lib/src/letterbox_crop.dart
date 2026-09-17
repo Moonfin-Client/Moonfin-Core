@@ -10,6 +10,8 @@
 /// detector and a crop path.
 library;
 
+import 'dart:async';
+
 class LetterboxCropRect {
   const LetterboxCropRect({
     required this.w,
@@ -372,6 +374,12 @@ abstract class LetterboxCropper {
   /// Detector + crop path exist on this engine.
   bool get isSupported;
 
+  /// Whether a detected crop is currently applied.
+  bool get isApplied;
+
+  /// Emits whenever [isApplied] changes.
+  Stream<bool> get appliedStream;
+
   /// Why this engine cannot crop yet. Null when [isSupported] is true.
   String? get unimplementedReason =>
       isSupported ? null : 'Letterbox crop is not implemented on this player.';
@@ -402,6 +410,12 @@ class UnsupportedLetterboxCropper extends LetterboxCropper {
 
   @override
   bool get isSupported => false;
+
+  @override
+  bool get isApplied => false;
+
+  @override
+  Stream<bool> get appliedStream => const Stream<bool>.empty();
 
   @override
   Future<void> setEnabled(bool enabled) async {}

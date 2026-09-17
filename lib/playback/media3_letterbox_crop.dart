@@ -115,6 +115,7 @@ class Media3LetterboxCropper extends LetterboxCropper {
   final Media3LetterboxHost _host;
   final bool _supported;
   final LetterboxCropStabilizer _stabilizer;
+  final _appliedController = StreamController<bool>.broadcast();
 
   @visibleForTesting
   final Duration autoDelay;
@@ -137,6 +138,12 @@ class Media3LetterboxCropper extends LetterboxCropper {
   bool _inFlight = false;
 
   bool get _continuous => _recropInterval > Duration.zero;
+
+  @override
+  bool get isApplied => _applied;
+
+  @override
+  Stream<bool> get appliedStream => _appliedController.stream;
 
   @override
   bool get isSupported => _supported;
@@ -240,7 +247,7 @@ class Media3LetterboxCropper extends LetterboxCropper {
   @override
   Future<void> reset() async {
     if (!isSupported) return;
-    _applied = false;
+    _setApplied(false);
     await _host.setLetterboxCrop(null);
   }
 
@@ -307,7 +314,7 @@ class Media3LetterboxCropper extends LetterboxCropper {
       return;
     }
     await _host.setLetterboxCrop(rect);
-    _applied = true;
+    _setApplied(true);
     _doneUrl = _host.currentUrl;
   }
 
@@ -344,12 +351,18 @@ class Media3LetterboxCropper extends LetterboxCropper {
       );
       if (!decision.changed || !_isCurrent(generation)) continue;
       await _host.setLetterboxCrop(decision.rect);
-      _applied = decision.rect != null;
+      _setApplied(decision.rect != null);
     }
   }
 
   bool _isCurrent(int generation) {
     return !_host.isDisposed && generation == _generation;
+  }
+
+  void _setApplied(bool value) {
+    if (_applied == value) return;
+    _applied = value;
+    _appliedController.add(value);
   }
 
   Future<bool> _delay(int generation, Duration duration) async {

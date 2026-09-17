@@ -318,6 +318,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   StreamSubscription? _positionSub;
   StreamSubscription? _queueSub;
   StreamSubscription<PlayerBackend>? _backendSub;
+  StreamSubscription<bool>? _letterboxCropAppliedSub;
+  bool _letterboxCropApplied = false;
   StreamSubscription<PlaybackBringupState>? _bringupSub;
   StreamSubscription? _pipChangedSub;
   StreamSubscription? _pipActionSub;
@@ -883,7 +885,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       if (!mounted || _isStopping) return;
       unawaited(_exitPlayback());
     });
+    _listenToLetterboxCropState(_activeBackend);
     _backendSub = _manager.backendChangedStream.listen((backend) {
+      _listenToLetterboxCropState(backend);
       if (backend is Media3PlayerBackend) {
         unawaited(_syncMedia3ZoomMode());
         _syncMedia3VolumeBoostLevel();
@@ -1075,6 +1079,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _positionSub?.cancel();
     _queueSub?.cancel();
     _backendSub?.cancel();
+    _letterboxCropAppliedSub?.cancel();
     _bringupSub?.cancel();
     _pipChangedSub?.cancel();
     _userLeftAppSub?.cancel();
@@ -7230,11 +7235,23 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       _prefs.get(UserPreferences.cropBlackBars) &&
       (_activeBackend?.supportsLetterboxCrop ?? false);
 
+  void _listenToLetterboxCropState(PlayerBackend? backend) {
+    _letterboxCropAppliedSub?.cancel();
+    final cropper = backend?.letterboxCropper;
+    _letterboxCropApplied = cropper?.isApplied ?? false;
+    if (cropper == null) return;
+    _letterboxCropAppliedSub = cropper.appliedStream.listen((applied) {
+      if (!mounted) return;
+      setState(() => _letterboxCropApplied = applied);
+      unawaited(_syncMedia3ZoomMode());
+    });
+  }
+
   /// A cropped widescreen frame must use cover to fill fullscreen. In a
   /// window, cover would discard left/right picture (and can cut subtitles),
   /// so retain the user's regular fit there.
   ZoomMode get _effectiveZoomMode =>
-      _letterboxCropOsd &&
+      _letterboxCropApplied &&
           (!PlatformDetection.useDesktopUi || _isDesktopFullscreen)
       ? ZoomMode.autoCrop
       : _zoomMode;

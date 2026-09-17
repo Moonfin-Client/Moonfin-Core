@@ -143,6 +143,7 @@ class MpvLetterboxCropper extends LetterboxCropper {
   final MpvLetterboxHost _host;
   final bool _supported;
   final LetterboxCropStabilizer _stabilizer;
+  final _appliedController = StreamController<bool>.broadcast();
 
   final Duration autoDelay;
   final Duration detectDuration;
@@ -161,6 +162,12 @@ class MpvLetterboxCropper extends LetterboxCropper {
   bool _inFlight = false;
 
   bool get _continuous => _recropInterval > Duration.zero;
+
+  @override
+  bool get isApplied => _applied;
+
+  @override
+  Stream<bool> get appliedStream => _appliedController.stream;
 
   @override
   bool get isSupported => _supported;
@@ -261,7 +268,7 @@ class MpvLetterboxCropper extends LetterboxCropper {
     if (!keepCrop) {
       if (_applied || _hwdecBackup != null) {
         if (_applied) await _clearVideoCrop();
-        _applied = false;
+        _setApplied(false);
         await _restoreHwdec();
       }
     }
@@ -278,7 +285,7 @@ class MpvLetterboxCropper extends LetterboxCropper {
     await _removeDetectFilter();
     if (_applied || _hwdecBackup != null) {
       if (_applied) await _clearVideoCrop();
-      _applied = false;
+      _setApplied(false);
       await _restoreHwdec();
     }
   }
@@ -431,7 +438,7 @@ class MpvLetterboxCropper extends LetterboxCropper {
     if (decision.rect == null) {
       if (_applied) {
         await _clearVideoCrop();
-        _applied = false;
+        _setApplied(false);
       }
       return;
     }
@@ -502,7 +509,7 @@ class MpvLetterboxCropper extends LetterboxCropper {
       'add',
       MpvLetterboxCrop.appliedFilterSpec(rect),
     ]);
-    _applied = true;
+    _setApplied(true);
   }
 
   Future<void> _clearVideoCrop() async {
@@ -542,6 +549,12 @@ class MpvLetterboxCropper extends LetterboxCropper {
     _subtitlePositionBackup = null;
     if (backup == null || backup.isEmpty) return;
     await _host.setProperty('sub-pos', backup);
+  }
+
+  void _setApplied(bool value) {
+    if (_applied == value) return;
+    _applied = value;
+    _appliedController.add(value);
   }
 
   Future<void> _removeDetectFilter() async {
