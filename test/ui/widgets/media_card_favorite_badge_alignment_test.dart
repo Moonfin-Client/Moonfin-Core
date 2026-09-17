@@ -4,8 +4,10 @@ import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:moonfin/data/repositories/anime_marker_repository.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
+import 'package:moonfin/ui/widgets/anime_marker_badge.dart';
 import 'package:moonfin/ui/widgets/media_badge.dart';
 import 'package:moonfin/ui/widgets/media_card.dart';
+import 'package:moonfin/ui/widgets/seerr/seerr_media_type_badge.dart';
 
 class _MockAnimeMarkerRepository extends Mock
     implements AnimeMarkerRepository {}
@@ -14,6 +16,7 @@ void main() {
   Widget testCard({
     required bool isFavorite,
     String? animeMarkerItemId,
+    String? seerrMediaType,
     bool overlayOccupiesTopLeft = false,
   }) => MaterialApp(
     localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -26,56 +29,53 @@ void main() {
         itemType: 'Movie',
         isFavorite: isFavorite,
         animeMarkerItemId: animeMarkerItemId,
+        seerrMediaType: seerrMediaType,
         overlayOccupiesTopLeft: overlayOccupiesTopLeft,
         onTap: () {},
       ),
     ),
   );
 
+  /// A null [audio] is an item the server has no verdict for, which is the
+  /// state a card without an audio pill is in.
+  void useAnimeRepository(String itemId, AnimeAudioKind? audio) {
+    final repository = _MockAnimeMarkerRepository();
+    when(() => repository.isItemResolved(itemId)).thenReturn(audio != null);
+    when(() => repository.peekItem(itemId)).thenReturn(audio);
+    when(() => repository.getForItem(itemId)).thenAnswer((_) async => audio);
+    GetIt.instance.registerSingleton<AnimeMarkerRepository>(repository);
+    addTearDown(() => GetIt.instance.reset());
+  }
+
+  Offset offsetFromCard(WidgetTester tester, Finder finder) {
+    expect(finder, findsOneWidget);
+    return tester.getTopLeft(finder) - tester.getTopLeft(find.byType(MediaCard));
+  }
+
   testWidgets(
-    'favorite badge sits at top 6 when animeMarkerItemId is present but has no audio badge',
+    'favorite badge sits at top 6 when the anime marker resolves to nothing',
     (tester) async {
+      useAnimeRepository('item-123', null);
+
       await tester.pumpWidget(
-        testCard(
-          isFavorite: true,
-          animeMarkerItemId: 'item-123',
-        ),
+        testCard(isFavorite: true, animeMarkerItemId: 'item-123'),
       );
+      await tester.pumpAndSettle();
 
-      final cardFinder = find.byType(MediaCard);
-      final badgeFinder = find.byType(MediaFavoriteBadge);
-
-      expect(badgeFinder, findsOneWidget);
-
-      final cardTopLeft = tester.getTopLeft(cardFinder);
-      final badgeTopLeft = tester.getTopLeft(badgeFinder);
-
-      // Relative offset from card top-left: 6px from top, 6px from left
-      expect(badgeTopLeft.dx - cardTopLeft.dx, closeTo(6.0, 0.1));
-      expect(badgeTopLeft.dy - cardTopLeft.dy, closeTo(6.0, 0.1));
+      final favorite = offsetFromCard(tester, find.byType(MediaFavoriteBadge));
+      expect(favorite.dx, closeTo(6.0, 0.1));
+      expect(favorite.dy, closeTo(6.0, 0.1));
     },
   );
 
   testWidgets(
     'favorite badge sits at top 6 when animeMarkerItemId is null',
     (tester) async {
-      await tester.pumpWidget(
-        testCard(
-          isFavorite: true,
-          animeMarkerItemId: null,
-        ),
-      );
+      await tester.pumpWidget(testCard(isFavorite: true));
 
-      final cardFinder = find.byType(MediaCard);
-      final badgeFinder = find.byType(MediaFavoriteBadge);
-
-      expect(badgeFinder, findsOneWidget);
-
-      final cardTopLeft = tester.getTopLeft(cardFinder);
-      final badgeTopLeft = tester.getTopLeft(badgeFinder);
-
-      expect(badgeTopLeft.dx - cardTopLeft.dx, closeTo(6.0, 0.1));
-      expect(badgeTopLeft.dy - cardTopLeft.dy, closeTo(6.0, 0.1));
+      final favorite = offsetFromCard(tester, find.byType(MediaFavoriteBadge));
+      expect(favorite.dx, closeTo(6.0, 0.1));
+      expect(favorite.dy, closeTo(6.0, 0.1));
     },
   );
 
@@ -83,52 +83,77 @@ void main() {
     'favorite badge sits at top 32 when overlayOccupiesTopLeft is explicitly true',
     (tester) async {
       await tester.pumpWidget(
-        testCard(
-          isFavorite: true,
-          overlayOccupiesTopLeft: true,
-        ),
+        testCard(isFavorite: true, overlayOccupiesTopLeft: true),
       );
 
-      final cardFinder = find.byType(MediaCard);
-      final badgeFinder = find.byType(MediaFavoriteBadge);
-
-      expect(badgeFinder, findsOneWidget);
-
-      final cardTopLeft = tester.getTopLeft(cardFinder);
-      final badgeTopLeft = tester.getTopLeft(badgeFinder);
-
-      expect(badgeTopLeft.dx - cardTopLeft.dx, closeTo(6.0, 0.1));
-      expect(badgeTopLeft.dy - cardTopLeft.dy, closeTo(32.0, 0.1));
+      final favorite = offsetFromCard(tester, find.byType(MediaFavoriteBadge));
+      expect(favorite.dx, closeTo(6.0, 0.1));
+      expect(favorite.dy, closeTo(32.0, 0.1));
     },
   );
 
   testWidgets(
     'favorite badge sits below anime audio badge when audio is resolved',
     (tester) async {
-      final repository = _MockAnimeMarkerRepository();
-      when(() => repository.isItemResolved('anime-1')).thenReturn(true);
-      when(() => repository.peekItem('anime-1')).thenReturn(AnimeAudioKind.subbed);
-      GetIt.instance.registerSingleton<AnimeMarkerRepository>(repository);
-      addTearDown(() => GetIt.instance.reset());
+      useAnimeRepository('anime-1', AnimeAudioKind.subbed);
 
+      await tester.pumpWidget(
+        testCard(isFavorite: true, animeMarkerItemId: 'anime-1'),
+      );
+
+      expect(
+        offsetFromCard(tester, find.byType(MediaFavoriteBadge)).dx,
+        closeTo(6.0, 0.1),
+      );
+      // The pill carries its own bottom gap, so the heart starts where it ends.
+      expect(
+        tester.getRect(find.byType(MediaFavoriteBadge)).top,
+        closeTo(tester.getRect(find.byType(AnimeItemAudioBadge)).bottom, 0.1),
+      );
+    },
+  );
+
+  testWidgets(
+    'favorite badge sits under the media type badge',
+    (tester) async {
+      await tester.pumpWidget(
+        testCard(isFavorite: true, seerrMediaType: 'movie'),
+      );
+
+      final typeBadge = tester.getRect(find.byType(SeerrMediaTypeBadge));
+      final favorite = tester.getRect(find.byType(MediaFavoriteBadge));
+
+      expect(
+        offsetFromCard(tester, find.byType(SeerrMediaTypeBadge)).dy,
+        closeTo(6.0, 0.1),
+      );
+      expect(
+        offsetFromCard(tester, find.byType(MediaFavoriteBadge)).dx,
+        closeTo(6.0, 0.1),
+      );
+      expect(favorite.top - typeBadge.bottom, closeTo(4.0, 0.1));
+    },
+  );
+
+  testWidgets(
+    'an occupied corner moves the media type badge down with the stack',
+    (tester) async {
       await tester.pumpWidget(
         testCard(
           isFavorite: true,
-          animeMarkerItemId: 'anime-1',
+          seerrMediaType: 'movie',
+          overlayOccupiesTopLeft: true,
         ),
       );
 
-      final cardFinder = find.byType(MediaCard);
-      final badgeFinder = find.byType(MediaFavoriteBadge);
+      final typeBadge = tester.getRect(find.byType(SeerrMediaTypeBadge));
+      final favorite = tester.getRect(find.byType(MediaFavoriteBadge));
 
-      expect(badgeFinder, findsOneWidget);
-
-      final cardTopLeft = tester.getTopLeft(cardFinder);
-      final badgeTopLeft = tester.getTopLeft(badgeFinder);
-
-      expect(badgeTopLeft.dx - cardTopLeft.dx, closeTo(6.0, 0.1));
-      // Sits below the anime pill (which is ~18px + 4px padding + top: 6)
-      expect(badgeTopLeft.dy - cardTopLeft.dy, greaterThan(22.0));
+      expect(
+        offsetFromCard(tester, find.byType(SeerrMediaTypeBadge)).dy,
+        closeTo(32.0, 0.1),
+      );
+      expect(favorite.top - typeBadge.bottom, closeTo(4.0, 0.1));
     },
   );
 }

@@ -800,6 +800,9 @@ class _CardImage extends StatelessWidget {
                           if (animeMarkerItemId != null || isFavorite)
                             const SizedBox(height: 4),
                         ],
+                        // The gap sits inside the pill rather than in a sibling
+                        // box, because the pill draws nothing until an audio
+                        // verdict resolves and an empty one must take no space.
                         if (animeMarkerItemId != null)
                           AnimeItemAudioBadge(
                             itemId: animeMarkerItemId!,
