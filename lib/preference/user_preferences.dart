@@ -1931,12 +1931,20 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: false,
   );
 
-  /// One-shot encoded-letterbox crop. libmpv on Linux/Windows; Media3
-  /// (and libmpv if selected) on Android phone and TV. Hidden on iOS,
-  /// macOS, web, and tvOS.
+  /// One-shot encoded-letterbox crop at start. libmpv on Linux/Windows;
+  /// Media3 (and libmpv if selected) on Android phone and TV. Hidden on
+  /// iOS, macOS, web, and tvOS. [cropBlackBarsIntervalSeconds] keeps scanning.
   static final cropBlackBars = Preference(
     key: 'crop_black_bars',
     defaultValue: false,
+  );
+
+  /// Seconds between recrops while [cropBlackBars] is on. `0` is once at
+  /// start. `1` / `5` / `10` keep scanning; libmpv pays copy-back decode
+  /// for the whole title while that is on.
+  static final cropBlackBarsIntervalSeconds = Preference<int>(
+    key: 'crop_black_bars_interval_seconds',
+    defaultValue: 0,
   );
 
   static final desktopScrollWheelAction = EnumPreference(
@@ -2951,10 +2959,7 @@ class UserPreferences extends ChangeNotifier {
   /// kept out of the synced fields so a new device asks rather than inheriting
   /// somebody else's answer.
   static Preference<int> setupWizardVersionForServer(String serverKey) =>
-      Preference(
-        key: 'pref_setup_wizard_version_$serverKey',
-        defaultValue: 0,
-      );
+      Preference(key: 'pref_setup_wizard_version_$serverKey', defaultValue: 0);
 
   /// Bumped only when a release adds a step that earns its place. Everything
   /// already answered stays answered.
@@ -3160,13 +3165,12 @@ class UserPreferences extends ChangeNotifier {
     values: LibraryScrollDirection.values,
   );
 
-  static EnumPreference<LibraryGroupBy> libraryGroupBy(
-    String libraryId,
-  ) => EnumPreference(
-    key: 'library_group_by_$libraryId',
-    defaultValue: LibraryGroupBy.none,
-    values: LibraryGroupBy.values,
-  );
+  static EnumPreference<LibraryGroupBy> libraryGroupBy(String libraryId) =>
+      EnumPreference(
+        key: 'library_group_by_$libraryId',
+        defaultValue: LibraryGroupBy.none,
+        values: LibraryGroupBy.values,
+      );
 
   static final allGenresImageType = EnumPreference(
     key: 'all_genres_image_type',
@@ -3418,7 +3422,10 @@ class UserPreferences extends ChangeNotifier {
     return SeriesTrackPreference.fromRawString(raw);
   }
 
-  Future<void> setSeriesAudioPreference(String seriesId, SeriesTrackPreference pref) async {
+  Future<void> setSeriesAudioPreference(
+    String seriesId,
+    SeriesTrackPreference pref,
+  ) async {
     final key = Preference(
       key: 'pref_series_audio_lang_$seriesId',
       defaultValue: '',

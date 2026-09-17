@@ -43,6 +43,7 @@ void main() {
     expect(of(LogicalKeyboardKey.keyC), PlayerAction.toggleSubtitles);
     expect(of(LogicalKeyboardKey.keyF), PlayerAction.toggleFullscreen);
     expect(of(LogicalKeyboardKey.keyH), PlayerAction.stop);
+    expect(of(LogicalKeyboardKey.keyB), PlayerAction.recropBlackBars);
     expect(of(LogicalKeyboardKey.escape), PlayerAction.escape);
     expect(of(LogicalKeyboardKey.mediaStop), PlayerAction.stop);
     expect(of(LogicalKeyboardKey.mediaTrackNext), PlayerAction.next);

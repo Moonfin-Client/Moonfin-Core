@@ -3628,6 +3628,12 @@ abstract class AppLocalizations {
   /// **'mpv statistics on or off'**
   String get shortcutMpvStats;
 
+  /// Player shortcut to run letterbox crop detection now
+  ///
+  /// In en, this message translates to:
+  /// **'Recrop black bars'**
+  String get shortcutRecropBlackBars;
+
   /// What Esc does in the player
   ///
   /// In en, this message translates to:
@@ -5563,8 +5569,38 @@ abstract class AppLocalizations {
   /// Description for the crop black bars playback setting
   ///
   /// In en, this message translates to:
-  /// **'Detect encoded letterbox bars, crop them, then fill the screen.'**
+  /// **'Detect encoded letterbox bars after playback starts, crop them, then fill the screen. Recrop from the player zoom button.'**
   String get settingsCropBlackBarsDescription;
+
+  /// Setting for how often to re-detect encoded letterbox bars
+  ///
+  /// In en, this message translates to:
+  /// **'Recrop interval'**
+  String get cropBlackBarsRecropInterval;
+
+  /// Letterbox recrop interval: detect once after playback starts
+  ///
+  /// In en, this message translates to:
+  /// **'Once at start'**
+  String get cropBlackBarsOnce;
+
+  /// Letterbox recrop interval: scan about once a second
+  ///
+  /// In en, this message translates to:
+  /// **'Every second'**
+  String get cropBlackBarsEverySecond;
+
+  /// Description for the letterbox recrop-interval setting
+  ///
+  /// In en, this message translates to:
+  /// **'Follow aspect-ratio changes during playback. Uses a copy-back decoder while scanning.'**
+  String get settingsCropBlackBarsIntervalDescription;
+
+  /// Toast when the player re-runs letterbox crop detection
+  ///
+  /// In en, this message translates to:
+  /// **'Recropping black bars'**
+  String get playerRecroppingBlackBars;
 
   /// Zoom mode: stretch
   ///

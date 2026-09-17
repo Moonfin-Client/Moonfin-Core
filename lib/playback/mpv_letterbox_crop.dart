@@ -3,7 +3,8 @@ import 'dart:convert';
 
 import 'package:playback_core/playback_core.dart';
 
-/// libmpv cropdetect helpers. Matching stock mpv `autocrop.lua` without Lua.
+/// libmpv cropdetect helpers. One-shot matches stock mpv `autocrop.lua`.
+/// Continuous matches `dynamic-crop.lua` without Lua.
 class MpvLetterboxCrop {
   /// Persistent lavfi crop applied after detect. Label must differ from detect.
   static const appliedFilterLabel = 'moonfin-letterbox-applied';
@@ -14,12 +15,14 @@ class MpvLetterboxCrop {
   static const minRatio = LetterboxCrop.minRatio;
   static const autoDelay = Duration(seconds: 4);
   static const detectDuration = Duration(seconds: 1);
+  static const pollInterval = Duration(seconds: 1);
 
   static const _lavfiPrefix = 'lavfi.cropdetect.';
 
-  /// `vf pre @label:cropdetect=...`
-  static String get filterSpec =>
-      '@$filterLabel:cropdetect=limit=$detectLimit:round=$detectRound:reset=0';
+  /// `vf pre @label:cropdetect=...`. [resetEachFrame] (`reset=1`) lets a later
+  /// IMAX/1.85 scene expand; the stabilizer rejects a single dark frame.
+  static String filterSpec({bool resetEachFrame = false}) =>
+      '@$filterLabel:cropdetect=limit=$detectLimit:round=$detectRound:reset=${resetEachFrame ? 1 : 0}';
 
   static String metadataProperty(String key) =>
       'vf-metadata/$filterLabel/$_lavfiPrefix$key';
@@ -128,18 +131,35 @@ abstract class MpvLetterboxHost {
 
 /// Desktop libmpv [LetterboxCropper]. The only shipping implementation.
 class MpvLetterboxCropper extends LetterboxCropper {
-  MpvLetterboxCropper(this._host, {required bool supported})
-    : _supported = supported;
+  MpvLetterboxCropper(
+    this._host, {
+    required bool supported,
+    this.autoDelay = MpvLetterboxCrop.autoDelay,
+    this.detectDuration = MpvLetterboxCrop.detectDuration,
+    LetterboxCropStabilizer? stabilizer,
+  }) : _supported = supported,
+       _stabilizer = stabilizer ?? LetterboxCropStabilizer();
 
   final MpvLetterboxHost _host;
   final bool _supported;
+  final LetterboxCropStabilizer _stabilizer;
+
+  final Duration autoDelay;
+  final Duration detectDuration;
 
   int _generation = 0;
   String? _hwdecBackup;
   bool _enabled = false;
+  Duration _recropInterval = Duration.zero;
+  bool _skipStartDelay = false;
+  bool _forceRestart = false;
+  bool _keepAppliedCrop = false;
   bool _applied = false;
   String? _doneUrl;
+  String? _loopUrl;
   bool _inFlight = false;
+
+  bool get _continuous => _recropInterval > Duration.zero;
 
   @override
   bool get isSupported => _supported;
@@ -160,30 +180,90 @@ class MpvLetterboxCropper extends LetterboxCropper {
   }
 
   @override
+  Future<void> setRecropInterval(Duration interval) async {
+    if (interval.isNegative) interval = Duration.zero;
+    if (_recropInterval == interval) return;
+    final wasContinuous = _continuous;
+    _recropInterval = interval;
+    if (!isSupported || !_enabled) return;
+    final url = _host.currentUrl;
+    if (url == null || url.isEmpty) return;
+    if (_continuous && !wasContinuous) {
+      _skipStartDelay = true;
+      _forceRestart = true;
+      _keepAppliedCrop = _applied;
+      await _sync();
+    } else if (!_continuous && wasContinuous) {
+      _generation++;
+      _inFlight = false;
+      _loopUrl = null;
+      _doneUrl = url;
+      await _removeDetectFilter();
+      if (!_applied) await _restoreHwdec();
+    }
+  }
+
+  @override
   Future<void> onSourceOpened(String url) async {
-    if (_doneUrl != url) _doneUrl = null;
+    if (_doneUrl != url && _loopUrl != url) {
+      _doneUrl = null;
+      _loopUrl = null;
+      _stabilizer.reset();
+    }
     if (!isSupported) return;
+    await _sync();
+  }
+
+  @override
+  Future<void> recrop() async {
+    if (!isSupported || !_enabled) return;
+    _skipStartDelay = true;
+    _forceRestart = true;
+    _keepAppliedCrop = _applied;
     await _sync();
   }
 
   Future<void> _sync() async {
     if (!_enabled) {
       _generation++;
-      // Clearing video-crop with nothing of ours applied would wipe it for
-      // anyone who set it in their own mpv.conf.
-      if (_applied || _hwdecBackup != null) await reset();
       _doneUrl = null;
+      _loopUrl = null;
+      _stabilizer.reset();
+      await reset();
       return;
     }
     if (!_host.hasNativePlayer) return;
     final url = _host.currentUrl;
     if (url == null || url.isEmpty) return;
-    if (_doneUrl == url) return;
-    if (_inFlight) return;
+
+    if (!_forceRestart) {
+      if (_continuous) {
+        if (_inFlight && _loopUrl == url) return;
+      } else if (_doneUrl == url || _inFlight) {
+        return;
+      }
+    }
+    final keepCrop = _keepAppliedCrop;
+    _forceRestart = false;
+    _keepAppliedCrop = false;
 
     _inFlight = true;
+    _loopUrl = url;
+    _doneUrl = null;
+    if (keepCrop) {
+      _stabilizer.resetCandidate();
+    } else {
+      _stabilizer.reset();
+    }
     final generation = ++_generation;
-    await reset();
+    await _removeDetectFilter();
+    if (!keepCrop) {
+      if (_applied || _hwdecBackup != null) {
+        if (_applied) await _clearVideoCrop();
+        _applied = false;
+        await _restoreHwdec();
+      }
+    }
     if (!_isCurrent(generation)) {
       if (generation == _generation) _inFlight = false;
       return;
@@ -194,10 +274,12 @@ class MpvLetterboxCropper extends LetterboxCropper {
   @override
   Future<void> reset() async {
     if (!_host.hasNativePlayer) return;
-    _applied = false;
     await _removeDetectFilter();
-    await _clearVideoCrop();
-    await _restoreHwdec();
+    if (_applied || _hwdecBackup != null) {
+      if (_applied) await _clearVideoCrop();
+      _applied = false;
+      await _restoreHwdec();
+    }
   }
 
   /// Stale in-flight detect without touching filters during player teardown.
@@ -212,89 +294,170 @@ class MpvLetterboxCropper extends LetterboxCropper {
       return;
     }
 
-    LetterboxCropRect? rect;
     try {
-      try {
-        if (!await _waitWhileCurrent(generation, untilPlaying: true)) return;
-        if (_host.position < MpvLetterboxCrop.autoDelay) {
-          if (!await _delay(generation, MpvLetterboxCrop.autoDelay)) {
-            return;
-          }
-        }
-        if (_host.isPlaying != true) {
-          if (!await _waitWhileCurrent(generation, untilPlaying: true)) return;
-        }
-
-        final remaining = _host.duration - _host.position;
-        if (_host.duration > Duration.zero &&
-            remaining <
-                MpvLetterboxCrop.detectDuration + const Duration(seconds: 1)) {
+      if (!await _waitWhileCurrent(generation, untilPlaying: true)) return;
+      if (!_skipStartDelay && _host.position < autoDelay) {
+        if (!await _delay(generation, autoDelay)) {
           return;
-        }
-        if (!_isCurrent(generation)) return;
-
-        final hwdecCurrent = await _host.getProperty('hwdec-current');
-        final detectHwdec = MpvLetterboxCrop.hwdecForCropdetect(hwdecCurrent);
-        if (detectHwdec != null) {
-          _hwdecBackup = await _host.getProperty('hwdec');
-          await _host.setProperty('hwdec', detectHwdec);
-          if (!await _delay(generation, const Duration(milliseconds: 400))) {
-            return;
-          }
-        }
-
-        final inserted = await _host.command([
-          'vf',
-          'pre',
-          MpvLetterboxCrop.filterSpec,
-        ]);
-        if (!inserted || !_isCurrent(generation)) return;
-
-        if (!await _delay(generation, MpvLetterboxCrop.detectDuration)) {
-          return;
-        }
-
-        final lavfi = <String, String>{};
-        for (final key in const ['w', 'h', 'x', 'y']) {
-          final value = await _host.getProperty(
-            MpvLetterboxCrop.metadataProperty(key),
-          );
-          if (value != null) lavfi[key] = value;
-        }
-        if (lavfi.length < 4) {
-          final blob = await _host.getProperty(
-            'vf-metadata/${MpvLetterboxCrop.filterLabel}',
-          );
-          lavfi.addAll(MpvLetterboxCrop.parseVfMetadata(blob));
-        }
-
-        final width = int.tryParse(await _host.getProperty('width') ?? '') ?? 0;
-        final height =
-            int.tryParse(await _host.getProperty('height') ?? '') ?? 0;
-        rect = MpvLetterboxCrop.decide(
-          lavfi: lavfi,
-          sourceWidth: width,
-          sourceHeight: height,
-        );
-      } finally {
-        await _removeDetectFilter();
-        if (rect == null) {
-          await _restoreHwdec();
         }
       }
+      _skipStartDelay = false;
+      if (_host.isPlaying != true) {
+        if (!await _waitWhileCurrent(generation, untilPlaying: true)) return;
+      }
 
-      if (rect == null || !_isCurrent(generation)) return;
-      if (!await _delay(generation, const Duration(milliseconds: 200))) {
-        await _restoreHwdec();
+      final remaining = _host.duration - _host.position;
+      final need = _continuous ? _recropInterval : detectDuration;
+      if (_host.duration > Duration.zero &&
+          remaining < need + const Duration(seconds: 1)) {
         return;
       }
-      await _applyVideoCrop(rect);
-      _doneUrl = _host.currentUrl;
+      if (!_isCurrent(generation)) return;
+
+      final hwdecCurrent = await _host.getProperty('hwdec-current');
+      final detectHwdec = MpvLetterboxCrop.hwdecForCropdetect(hwdecCurrent);
+      if (detectHwdec != null && _hwdecBackup == null) {
+        _hwdecBackup = await _host.getProperty('hwdec');
+        await _host.setProperty('hwdec', detectHwdec);
+        if (!await _delay(generation, const Duration(milliseconds: 400))) {
+          return;
+        }
+      }
+
+      if (_continuous) {
+        await _runContinuous(generation);
+      } else {
+        await _runOnce(generation);
+      }
     } finally {
       if (generation == _generation) {
         _inFlight = false;
+        if (!_applied && !_continuous) {
+          await _removeDetectFilter();
+          await _restoreHwdec();
+        }
       }
     }
+  }
+
+  Future<void> _runOnce(int generation) async {
+    LetterboxCropRect? rect;
+    try {
+      final inserted = await _host.command([
+        'vf',
+        'pre',
+        MpvLetterboxCrop.filterSpec(),
+      ]);
+      if (!inserted || !_isCurrent(generation)) return;
+      if (!await _delay(generation, detectDuration)) return;
+      rect = await _readDetect();
+    } finally {
+      await _removeDetectFilter();
+      if (rect == null && !_applied) {
+        await _restoreHwdec();
+      }
+    }
+    if (!_isCurrent(generation)) return;
+    if (rect == null) {
+      _doneUrl = _host.currentUrl;
+      return;
+    }
+    await _applyVideoCrop(rect);
+    _doneUrl = _host.currentUrl;
+  }
+
+  Future<void> _runContinuous(int generation) async {
+    final inserted = await _host.command([
+      'vf',
+      'pre',
+      MpvLetterboxCrop.filterSpec(resetEachFrame: true),
+    ]);
+    if (!inserted || !_isCurrent(generation)) return;
+
+    try {
+      while (_isCurrent(generation) && _enabled && _continuous) {
+        if (_host.isPlaying != true) {
+          if (!await _waitWhileCurrent(generation, untilPlaying: true)) {
+            return;
+          }
+        }
+        final before = _host.position;
+        if (!await _delay(generation, _recropInterval)) return;
+        if (!_enabled || !_continuous || !_isCurrent(generation)) {
+          return;
+        }
+        if (_host.isPlaying != true) continue;
+
+        final jumped = _host.position - before - _recropInterval;
+        if (jumped.abs() > const Duration(seconds: 2)) {
+          _stabilizer.resetCandidate();
+        }
+
+        await _pollContinuous(generation);
+      }
+    } finally {
+      if (generation == _generation) {
+        await _removeDetectFilter();
+        if (!_applied) await _restoreHwdec();
+      }
+    }
+  }
+
+  Future<LetterboxCropRect?> _readDetect() async {
+    final lavfi = await _readLavfi();
+    final size = await _sourceSize();
+    return MpvLetterboxCrop.decide(
+      lavfi: lavfi,
+      sourceWidth: size.$1,
+      sourceHeight: size.$2,
+    );
+  }
+
+  Future<void> _pollContinuous(int generation) async {
+    final lavfi = await _readLavfi();
+    if (!_isCurrent(generation)) return;
+    final size = await _sourceSize();
+    final decision = _stabilizer.observe(
+      width: int.tryParse(lavfi['w'] ?? ''),
+      height: int.tryParse(lavfi['h'] ?? ''),
+      x: int.tryParse(lavfi['x'] ?? ''),
+      y: int.tryParse(lavfi['y'] ?? ''),
+      sourceWidth: size.$1,
+      sourceHeight: size.$2,
+    );
+    if (!decision.changed || !_isCurrent(generation)) return;
+
+    if (decision.rect == null) {
+      if (_applied) {
+        await _clearVideoCrop();
+        _applied = false;
+      }
+      return;
+    }
+    await _applyVideoCrop(decision.rect!);
+  }
+
+  Future<Map<String, String>> _readLavfi() async {
+    final lavfi = <String, String>{};
+    for (final key in const ['w', 'h', 'x', 'y']) {
+      final value = await _host.getProperty(
+        MpvLetterboxCrop.metadataProperty(key),
+      );
+      if (value != null) lavfi[key] = value;
+    }
+    if (lavfi.length < 4) {
+      final blob = await _host.getProperty(
+        'vf-metadata/${MpvLetterboxCrop.filterLabel}',
+      );
+      lavfi.addAll(MpvLetterboxCrop.parseVfMetadata(blob));
+    }
+    return lavfi;
+  }
+
+  Future<(int, int)> _sourceSize() async {
+    final width = int.tryParse(await _host.getProperty('width') ?? '') ?? 0;
+    final height = int.tryParse(await _host.getProperty('height') ?? '') ?? 0;
+    return (width, height);
   }
 
   bool _isCurrent(int generation) {
@@ -302,6 +465,7 @@ class MpvLetterboxCropper extends LetterboxCropper {
   }
 
   Future<bool> _delay(int generation, Duration duration) async {
+    if (duration <= Duration.zero) return _isCurrent(generation);
     await Future<void>.delayed(duration);
     return _isCurrent(generation);
   }
@@ -324,6 +488,13 @@ class MpvLetterboxCropper extends LetterboxCropper {
   }
 
   Future<void> _applyVideoCrop(LetterboxCropRect rect) async {
+    if (_applied) {
+      await _host.command([
+        'vf',
+        'remove',
+        '@${MpvLetterboxCrop.appliedFilterLabel}',
+      ]);
+    }
     await _host.command([
       'vf',
       'add',

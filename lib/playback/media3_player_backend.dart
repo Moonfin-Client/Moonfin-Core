@@ -178,7 +178,8 @@ class Media3PlayerBackend extends PlayerBackend {
   double get subtitleAutoOffsetSeconds => _subtitleAutoOffsetSeconds;
 
   @override
-  Stream<double> get subtitleAutoOffsetStream => _subtitleAutoOffsetStream.stream;
+  Stream<double> get subtitleAutoOffsetStream =>
+      _subtitleAutoOffsetStream.stream;
 
   Future<T?> _invoke<T>(String method, [dynamic arguments]) async {
     if (_disposed) return null;
@@ -476,8 +477,9 @@ class Media3PlayerBackend extends PlayerBackend {
           '@${applied.toStringAsFixed(3)} for $content '
           '($behavior, mode ${_toInt(map['appliedDisplayModeId'])})';
     } else {
-      final modes = (map['supportedModes'] as List<dynamic>? ?? const [])
-          .join(', ');
+      final modes = (map['supportedModes'] as List<dynamic>? ?? const []).join(
+        ', ',
+      );
       line =
           'Media3: no display mode fits $content ($behavior'
           '${modes.isEmpty ? '' : ', display offers $modes'})';
@@ -1092,9 +1094,7 @@ class Media3PlayerBackend extends PlayerBackend {
       unawaited(_letterboxCropper.reset());
     } else {
       unawaited(() async {
-        await _letterboxCropper.setEnabled(
-          _prefs.get(UserPreferences.cropBlackBars),
-        );
+        await _configureLetterboxCropper();
         await _letterboxCropper.onSourceOpened(url);
       }());
     }
@@ -1499,11 +1499,17 @@ class Media3PlayerBackend extends PlayerBackend {
   @override
   bool get canRenderBitmapSubtitles => true;
 
+  Future<void> _configureLetterboxCropper() async {
+    final seconds = _prefs.get(UserPreferences.cropBlackBarsIntervalSeconds);
+    await _letterboxCropper.setRecropInterval(Duration(seconds: seconds));
+    await _letterboxCropper.setEnabled(
+      _prefs.get(UserPreferences.cropBlackBars),
+    );
+  }
+
   void _onPreferencesChanged() {
     if (_disposed) return;
-    unawaited(
-      _letterboxCropper.setEnabled(_prefs.get(UserPreferences.cropBlackBars)),
-    );
+    unawaited(_configureLetterboxCropper());
   }
 
   @override

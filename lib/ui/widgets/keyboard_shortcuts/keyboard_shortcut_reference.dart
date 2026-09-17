@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../l10n/app_localizations.dart';
+import '../../../playback/letterbox_croppers.dart';
 import '../../../playback/player_key_bindings.dart';
 import '../../../util/focus/key_event_utils.dart';
 import '../../../util/platform_detection.dart';
@@ -164,6 +165,10 @@ List<KeyboardShortcutSection> keyboardShortcutSections(
             player([PlayerAction.playbackInfo], l10n.shortcutPlaybackInfo),
             if (PlatformDetection.isWindows)
               player([PlayerAction.mpvStats], l10n.shortcutMpvStats),
+            if (letterboxCropAvailable())
+              player([
+                PlayerAction.recropBlackBars,
+              ], l10n.shortcutRecropBlackBars),
           ],
         ],
       ),
