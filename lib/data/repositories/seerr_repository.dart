@@ -5,6 +5,7 @@ import '../../auth/repositories/session_repository.dart';
 import '../services/seerr/seerr_api_models.dart';
 import '../services/seerr/seerr_http_client.dart';
 import '../services/seerr/seerr_models.dart';
+import '../services/seerr/seerr_slider_catalog.dart';
 
 class SeerrRepository {
   final PreferenceStore _store;
@@ -431,6 +432,28 @@ class SeerrRepository {
 
   Future<void> removeFromWatchlist({required int tmdbId, required String mediaType}) =>
       _withClient((c) => c.removeFromWatchlist(tmdbId: tmdbId, mediaType: mediaType));
+
+  Future<List<SeerrDiscoverSlider>> getDiscoverSliders() => _withClient(
+    (c) async => (await c.getDiscoverSliders())
+        .map(SeerrDiscoverSlider.fromJson)
+        .toList(),
+  );
+
+  Future<SeerrDiscoverPage> getCatalog(
+    String path, {
+    Map<String, String> query = const {},
+    int page = 1,
+    String? mediaTypeHint,
+  }) => _withClient(
+    (c) async => SeerrDiscoverPage.fromJson(
+      await c.getCatalog(
+        path,
+        query: query,
+        page: page,
+        mediaTypeHint: mediaTypeHint,
+      ),
+    ),
+  );
 
   Future<SeerrDiscoverPage> discoverMovies({
     int page = 1,

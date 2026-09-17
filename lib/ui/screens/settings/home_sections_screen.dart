@@ -12,14 +12,17 @@ import 'package:server_core/server_core.dart';
 import '../../../data/models/aggregated_item.dart';
 import '../../../data/utils/playlist_utils.dart';
 import '../../../data/services/plugin_sync_service.dart';
+import '../../../data/repositories/seerr_repository.dart';
+import '../../../data/services/seerr/seerr_slider_catalog.dart';
+import '../../../data/services/seerr/seerr_slider_home_sections.dart';
 import '../../../preference/home_section_config.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../preference/seerr_preferences.dart';
-import '../../../preference/seerr_row_config.dart';
 import '../../../util/extensions.dart';
 import '../../../util/focus/scroll_utils.dart';
 import '../../../util/platform_detection.dart';
+import '../../util/home_row_title_localizer.dart';
 import '../../navigation/route_lifecycle_observer.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/poster_size_settings_dialog.dart';
@@ -450,20 +453,8 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
     return type == HomeSectionType.playlists;
   }
 
-  bool _isSeerrSectionType(HomeSectionType type) {
-    return type == HomeSectionType.seerrRecentRequests ||
-        type == HomeSectionType.seerrWatchlist ||
-        type == HomeSectionType.seerrRecentlyAdded ||
-        type == HomeSectionType.seerrPopularMovies ||
-        type == HomeSectionType.seerrUpcomingMovies ||
-        type == HomeSectionType.seerrPopularSeries ||
-        type == HomeSectionType.seerrUpcomingSeries ||
-        type == HomeSectionType.seerrTrending ||
-        type == HomeSectionType.seerrMovieGenres ||
-        type == HomeSectionType.seerrStudios ||
-        type == HomeSectionType.seerrSeriesGenres ||
-        type == HomeSectionType.seerrNetworks;
-  }
+  bool _isSeerrLayoutSection(HomeSectionConfig section) =>
+      section.isSeerrSlider;
 
   int _getSectionCategory(HomeSectionConfig section) {
     if (section.isPluginDynamic) {
@@ -494,7 +485,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
     if (section.type == HomeSectionType.playlists) {
       return 5;
     }
-    if (_isSeerrSectionType(section.type)) {
+    if (_isSeerrLayoutSection(section)) {
       return 6;
     }
     // general builtins (resume, nextUp, etc.)
@@ -561,23 +552,6 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
     };
     if (prefKey == null) return false;
     return _prefs.get(prefKey);
-  }
-
-  void _disableSeerrHomeRow(HomeSectionType type) {
-    final seerrType = type.seerrRowType;
-    if (seerrType == null) return;
-    final seerrPrefs = GetIt.instance<SeerrPreferences>();
-    final configs = List<SeerrRowConfig>.from(seerrPrefs.homeRowsConfig);
-    final idx = configs.indexWhere((c) => c.type == seerrType);
-    if (idx >= 0) {
-      configs[idx] = configs[idx].copyWith(enabled: false);
-      seerrPrefs.setHomeRowsConfig(configs);
-    } else {
-      configs.add(
-        SeerrRowConfig(type: seerrType, enabled: false, order: configs.length),
-      );
-      seerrPrefs.setHomeRowsConfig(configs);
-    }
   }
 
   bool _isAnyImdbSectionEnabled() {
@@ -662,11 +636,9 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
             (section.isPluginDynamic &&
                 section.pluginSource == HomeSectionPluginSource.playlists));
     final hiddenBySeerr =
-        _isSeerrSectionType(section.type) &&
-        (!showSeerrRows ||
-            !GetIt.instance<SeerrPreferences>().isSeerrHomeRowEnabled(
-              section.type,
-            ));
+        section.isSeerrSlider &&
+            (!showSeerrRows ||
+                !GetIt.instance<SeerrPreferences>().enabled);
     final hiddenByImdb =
         _isImdbSectionType(section.type) &&
         (!showImdbRows || !_isImdbRowEnabled(section.type));
@@ -838,6 +810,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
       final collectionsFuture = _fetchCollectionsForHomeSections();
       final genresFuture = _fetchGenresForHomeSections();
       final playlistsFuture = _fetchPlaylistsForHomeSections();
+      final seerrChanged = await _mergeSeerrSliderSections();
       final discoveredCollections = await collectionsFuture;
       final discoveredGenres = await genresFuture;
       final discoveredPlaylists = await playlistsFuture;
@@ -864,6 +837,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
         }
 
         changed =
+            seerrChanged ||
             mergedPluginSections ||
             mergedCollectionSections ||
             mergedGenreSections ||
@@ -891,6 +865,37 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
           });
         }
       }
+    }
+  }
+
+  Future<bool> _mergeSeerrSliderSections() async {
+    try {
+      if (!GetIt.instance<SeerrPreferences>().enabled) return false;
+      if (!GetIt.instance<PluginSyncService>().seerrAvailable) return false;
+      final repo = await GetIt.instance.getAsync<SeerrRepository>();
+      await repo.ensureInitialized();
+      if (!repo.isAvailable) return false;
+      final resolved = resolveSeerrSliders(await repo.getDiscoverSliders());
+      final current = [
+        ?_mediaBarConfig,
+        ..._sections,
+      ];
+      final merged = mergeSeerrSliderHomeSections(current, resolved);
+      if (HomeSectionConfig.toJsonString(merged) ==
+          HomeSectionConfig.toJsonString(current)) {
+        return false;
+      }
+      _mediaBarConfig = merged
+          .where((s) => s.type == HomeSectionType.mediaBar)
+          .firstOrNull;
+      _sections = merged
+          .where((s) => s.type != HomeSectionType.mediaBar)
+          .toList()
+        ..sort((a, b) => a.order.compareTo(b.order));
+      return true;
+    } catch (e) {
+      debugPrint('[HomeSections] Failed to merge Seerr sliders: $e');
+      return false;
     }
   }
 
@@ -1379,9 +1384,6 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
   }
 
   void _toggleSection(int index, bool enabled) {
-    if (!enabled && _isSeerrSectionType(_sections[index].type)) {
-      _disableSeerrHomeRow(_sections[index].type);
-    }
     final visibleIndicesBefore = _visibleSectionIndices();
     final visibleIndex = visibleIndicesBefore.indexOf(index);
     final toggledStableId = _sections[index].stableId;
@@ -1600,6 +1602,9 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
   }
 
   String _labelFor(HomeSectionConfig cfg, AppLocalizations l10n) {
+    if (cfg.isSeerrSlider) {
+      return localizeSeerrSliderConfigTitle(cfg);
+    }
     if (cfg.isPluginDynamic) {
       return cfg.pluginDisplayText?.isNotEmpty == true
           ? cfg.pluginDisplayText!
@@ -1644,19 +1649,6 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
         HomeSectionType.genres => l10n.genres,
         HomeSectionType.studios => l10n.studios,
         HomeSectionType.liveTv => l10n.liveTV,
-        HomeSectionType.seerrShortcuts => l10n.seerrShortcutsRow,
-        HomeSectionType.seerrRecentRequests => l10n.recentRequests,
-        HomeSectionType.seerrWatchlist => l10n.yourWatchlist,
-        HomeSectionType.seerrRecentlyAdded => l10n.recentlyAdded,
-        HomeSectionType.seerrPopularMovies => l10n.popularMovies,
-        HomeSectionType.seerrUpcomingMovies => l10n.upcomingMovies,
-        HomeSectionType.seerrPopularSeries => l10n.popularSeries,
-        HomeSectionType.seerrUpcomingSeries => l10n.upcomingSeries,
-        HomeSectionType.seerrTrending => l10n.trending,
-        HomeSectionType.seerrMovieGenres => l10n.movieGenres,
-        HomeSectionType.seerrStudios => l10n.studios,
-        HomeSectionType.seerrSeriesGenres => l10n.seriesGenres,
-        HomeSectionType.seerrNetworks => l10n.networks,
         HomeSectionType.radarrCalendar => 'Upcoming Movies (Radarr)',
         HomeSectionType.sonarrCalendar => 'Upcoming TV Shows (Sonarr)',
         HomeSectionType.imdbTop250Movies => l10n.imdbTop250Movies,
@@ -2368,7 +2360,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
                                     ),
                                   ),
                                 )
-                              : (_isSeerrSectionType(section.type)
+                              : (_isSeerrLayoutSection(section)
                                     ? Text(
                                         'Seerr Discovery Rows',
                                         style: TextStyle(
@@ -2505,7 +2497,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
                   ? _pluginSubtitle(section)
                   : (_isAudioSectionType(section.type)
                         ? 'Audio row'
-                        : (_isSeerrSectionType(section.type)
+                        : (_isSeerrLayoutSection(section)
                               ? 'Seerr Discovery Rows'
                               : (_isImdbSectionType(section.type)
                                     ? 'IMDb List'
@@ -2800,7 +2792,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
                 ? Text(_pluginSubtitle(section))
                 : (_isAudioSectionType(section.type)
                       ? const Text('Audio row')
-                      : (_isSeerrSectionType(section.type)
+                      : (_isSeerrLayoutSection(section)
                             ? const Text('Seerr Discovery Rows')
                             : (_isImdbSectionType(section.type)
                                   ? const Text('IMDb List')
