@@ -123,6 +123,10 @@ class ParentCollection {
 /// named for the source that produced it.
 enum SimilarSource { jellyfin, moonfin, tmdb }
 
+// How many cards the More Like This row draws, so every source is asked for
+// the same count.
+const int _similarLimit = 20;
+
 /// Slots [missing] into [library] by release date without reordering the
 /// library entries, so a collection keeps whatever order the server gave it
 /// and each absent title lands where it belongs in the run.
@@ -2113,11 +2117,11 @@ class ItemDetailViewModel extends ChangeNotifier {
           if (sourceSetting == RecommendationSystemSource.server) {
             final data = await _client.itemsApi.getSimilarItems(
               itemId,
-              limit: 100,
+              limit: _similarLimit,
               bypass: 'moonfin',
             );
             final items = (data['Items'] as List?) ?? [];
-            _similar = _mapItems(items).take(20).toList();
+            _similar = _mapItems(items);
             _similarSource = SimilarSource.jellyfin;
             return;
           }
@@ -2133,11 +2137,11 @@ class ItemDetailViewModel extends ChangeNotifier {
                 final data = await pluginSync.fetchSimilarItems(
                   _client,
                   itemId,
-                  limit: 20,
+                  limit: _similarLimit,
                 );
                 final items = (data?['Items'] as List?) ?? [];
                 if (items.isNotEmpty) {
-                  _similar = _mapItems(items).take(20).toList();
+                  _similar = _mapItems(items);
                   _similarSource = SimilarSource.moonfin;
                   return;
                 }
@@ -2154,7 +2158,7 @@ class ItemDetailViewModel extends ChangeNotifier {
             serverId: serverId,
             baseItem: item,
             isLocal: isLocal,
-            limit: 20,
+            limit: _similarLimit,
             includeWatched: true,
           );
           // Only short-circuit when we actually have results. An empty list (e.g.
@@ -2171,9 +2175,9 @@ class ItemDetailViewModel extends ChangeNotifier {
       }
 
       try {
-        final data = await _client.itemsApi.getSimilarItems(itemId, limit: 100);
+        final data = await _client.itemsApi.getSimilarItems(itemId, limit: _similarLimit);
         final items = (data['Items'] as List?) ?? [];
-        _similar = _mapItems(items).take(20).toList();
+        _similar = _mapItems(items);
         _similarSource = SimilarSource.jellyfin;
       } catch (_) {}
     } finally {
