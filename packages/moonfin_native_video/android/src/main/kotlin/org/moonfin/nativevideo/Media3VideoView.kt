@@ -68,7 +68,6 @@ import androidx.media3.exoplayer.audio.DefaultAudioSink
 import androidx.media3.exoplayer.audio.MediaCodecAudioRenderer
 import androidx.media3.exoplayer.Renderer
 import androidx.media3.exoplayer.RendererCapabilities
-import androidx.media3.exoplayer.hls.DefaultHlsExtractorFactory
 import androidx.media3.exoplayer.hls.HlsMediaSource
 import androidx.media3.exoplayer.mediacodec.MediaCodecAdapter
 import androidx.media3.exoplayer.mediacodec.MediaCodecInfo
@@ -101,7 +100,6 @@ import java.nio.ByteBuffer
 import java.util.Locale
 import kotlin.math.roundToInt
 import org.moonfin.nativevideo.iec.Iec61937AudioOutputProvider
-import org.moonfin.nativevideo.subtitle.HlsTimestampOffsetObserver
 import org.moonfin.nativevideo.subtitle.SidecarSourceFactory
 import org.moonfin.nativevideo.subtitle.SourceTree
 import org.moonfin.nativevideo.subtitle.TextStreamOffsetMediaSource
@@ -892,9 +890,6 @@ class Media3VideoView(
     private var skipSilenceEnabled = false
     // The delay the user set. Positive shows subtitles later.
     private var manualSubtitleDelayMs = 0L
-    // What the HLS timestamp adjuster moved the timeline by, so sideloaded
-    // subtitles can be moved with it. Only ever non zero on an HLS transcode.
-    private var autoSubtitleOffsetUs = 0L
     private var sidecarOffsetSources: List<TimeOffsetMediaSource> = emptyList()
     private var embeddedOffsetSource: TextStreamOffsetMediaSource? = null
     private var retimeRunnable: Runnable? = null
@@ -2409,7 +2404,6 @@ class Media3VideoView(
         currentNormalizationGainDb = (args["normalizationGainDb"] as? Number)?.toFloat()
         skipSilenceEnabled = args["skipSilenceEnabled"] as? Boolean ?: false
         manualSubtitleDelayMs = clampManualDelayMs((args["subtitleDelayMs"] as? Number)?.toLong() ?: 0L)
-        autoSubtitleOffsetUs = 0L
         sidecarOffsetSources = emptyList()
         embeddedOffsetSource = null
         cancelPendingRetime()
@@ -3113,7 +3107,7 @@ class Media3VideoView(
             syncDelaysPayload(
                 audioDelayMs = audioDelayMs,
                 subtitleDelayMs = manualSubtitleDelayMs,
-                subtitleAutoOffsetMs = autoSubtitleOffsetUs / 1000L,
+                subtitleAutoOffsetMs = 0L,
             ),
         )
     }
@@ -3718,15 +3712,10 @@ class Media3VideoView(
             .setSubtitleConfigurations(emptyList())
             .build()
         val content = if (mimeType == MimeTypes.APPLICATION_M3U8) {
-            // What the player's own factory sets up for HLS, plus a watch on
-            // the timestamp adjuster. Parsing during extraction defaults off
-            // here and on there, so it is set to match.
+            // Match the player's own HLS factory's subtitle parsing behavior.
             HlsMediaSource.Factory(bootDataSourceFactory)
                 .setSubtitleParserFactory(assParserFactory)
                 .experimentalParseSubtitlesDuringExtraction(true)
-                .setExtractorFactory(
-                    HlsTimestampOffsetObserver(DefaultHlsExtractorFactory(), ::onHlsTimestampOffset),
-                )
                 .createMediaSource(contentItem)
         } else {
             bootMediaSourceFactory.createMediaSource(contentItem)
@@ -3746,7 +3735,10 @@ class Media3VideoView(
         return MergingMediaSource(embedded, *sidecars.toTypedArray())
     }
 
-    private fun sidecarOffsetUs(): Long = effectiveOffsetUs(autoSubtitleOffsetUs, manualSubtitleDelayMs)
+    // Extracted subtitles use source-file timestamps. The HLS adjuster can
+    // also remove transport padding, so its raw offset is not a subtitle
+    // correction without a verified source-to-transport mapping.
+    private fun sidecarOffsetUs(): Long = effectiveOffsetUs(0L, manualSubtitleDelayMs)
 
     /** The ASS overlay shows one track, so it follows that track's shift. */
     private fun selectedTrackOffsetUs(): Long = when {
@@ -3832,20 +3824,6 @@ class Media3VideoView(
         trackSelector.parameters = parameters.buildUpon()
             .setTrackTypeDisabled(C.TRACK_TYPE_TEXT, false)
             .build()
-    }
-
-    /**
-     * Runs on the loader thread. The adjuster settles again after any seek
-     * that leaves the buffer, so this also carries the new segment's value.
-     */
-    private fun onHlsTimestampOffset(offsetUs: Long) {
-        mainHandler.post {
-            if (isPlayerReleased || embeddedOffsetSource == null) return@post
-            if (autoSubtitleOffsetUs == offsetUs) return@post
-            autoSubtitleOffsetUs = offsetUs
-            applyEffectiveOffset(manualChanged = false)
-            emitSyncDelayState()
-        }
     }
 
     fun refreshNowPlayingMetadata() {
