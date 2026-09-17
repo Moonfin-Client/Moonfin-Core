@@ -4128,7 +4128,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       child: Trickplay(
         fillFrame: true,
         content: (_) => FittedBox(
-          fit: _zoomToFit(_zoomMode),
+          fit: _zoomToFit(_effectiveZoomMode),
           child: SizedBox(
             width: tile.thumbWidth,
             height: tile.thumbHeight,
@@ -4142,7 +4142,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   Widget _buildVideoSurface() {
     if (PlatformDetection.isIOS || PlatformDetection.isMacOS) {
       return Positioned.fill(
-        child: AetherVideoView(key: _videoSurfaceKey, zoomMode: _zoomMode.name),
+        child: AetherVideoView(
+          key: _videoSurfaceKey,
+          zoomMode: _effectiveZoomMode.name,
+        ),
       );
     }
 
@@ -4159,7 +4162,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     final htmlBackend = _activeHtmlVideoBackend;
     if (htmlBackend != null) {
       return Positioned.fill(
-        child: htmlBackend.buildView(fit: _zoomToFit(_zoomMode)),
+        child: htmlBackend.buildView(fit: _zoomToFit(_effectiveZoomMode)),
       );
     }
 
@@ -4192,7 +4195,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       return Positioned.fill(
         child: NativeVideoView(
           player: mediaKitBackend.player,
-          zoomMode: _nativeZoomMode(_zoomMode),
+          zoomMode: _nativeZoomMode(_effectiveZoomMode),
           fill: Colors.black,
           videoOutput: selectedVo,
           hardwareDecodingEnabled: hwDecodingEnabled,
@@ -4214,7 +4217,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
             controls: NoVideoControls,
             width: constraints.maxWidth,
             height: constraints.maxHeight,
-            fit: _zoomToFit(_zoomMode),
+            fit: _zoomToFit(_effectiveZoomMode),
             fill: Colors.black,
             pauseUponEnteringBackgroundMode:
                 !PlatformDetection.isIOS && !PlatformDetection.isAndroid,
@@ -4240,7 +4243,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   Future<void> _syncMedia3ZoomMode() async {
     final backend = _activeMedia3Backend;
     if (backend == null) return;
-    await backend.setZoomMode(_media3ZoomModeWire(_zoomMode));
+    await backend.setZoomMode(_media3ZoomModeWire(_effectiveZoomMode));
   }
 
   bool _isBringupInProgress(PlaybackBringupPhase phase) {
@@ -7122,6 +7125,15 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   bool get _letterboxCropOsd =>
       _prefs.get(UserPreferences.cropBlackBars) &&
       (_activeBackend?.supportsLetterboxCrop ?? false);
+
+  /// A cropped widescreen frame must use cover to fill fullscreen. In a
+  /// window, cover would discard left/right picture (and can cut subtitles),
+  /// so retain the user's regular fit there.
+  ZoomMode get _effectiveZoomMode =>
+      _letterboxCropOsd &&
+          (!PlatformDetection.useDesktopUi || _isDesktopFullscreen)
+      ? ZoomMode.autoCrop
+      : _zoomMode;
 
   String? _recropShortcutLabel(AppLocalizations l10n) {
     final keys = _keyBindings.keysFor(PlayerAction.recropBlackBars);

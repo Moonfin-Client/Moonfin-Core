@@ -17,6 +17,7 @@ class _MpvDetectHost extends _RecordingHost {
   Future<String?> getProperty(String key) async {
     if (key == 'width') return '1920';
     if (key == 'height') return '1080';
+    if (key == 'sub-pos') return subtitlePosition;
     for (final entry in lavfi.entries) {
       if (key == MpvLetterboxCrop.metadataProperty(entry.key)) {
         return entry.value;
@@ -28,6 +29,8 @@ class _MpvDetectHost extends _RecordingHost {
 
 class _RecordingHost implements MpvLetterboxHost {
   final commands = <List<String>>[];
+  final setProperties = <String, String>{};
+  String subtitlePosition = '100';
 
   @override
   bool hasNativePlayer = true;
@@ -54,7 +57,10 @@ class _RecordingHost implements MpvLetterboxHost {
   Future<String?> getProperty(String key) async => null;
 
   @override
-  Future<void> setProperty(String key, String value) async {}
+  Future<void> setProperty(String key, String value) async {
+    setProperties[key] = value;
+    if (key == 'sub-pos') subtitlePosition = value;
+  }
 
   @override
   Future<bool> command(List<String> args) async {
@@ -378,6 +384,26 @@ void main() {
         );
         cropper.cancel();
         async.flushMicrotasks();
+      });
+    });
+
+    test('moves native subtitles inside the crop and restores them', () {
+      fakeAsync((async) {
+        final host = _MpvDetectHost();
+        final cropper = MpvLetterboxCropper(
+          host,
+          supported: true,
+          autoDelay: Duration.zero,
+          detectDuration: Duration.zero,
+        );
+        cropper.setEnabled(true);
+        async.flushMicrotasks();
+        expect(host.subtitlePosition, '87.222');
+
+        cropper.setEnabled(false);
+        async.flushMicrotasks();
+        expect(host.subtitlePosition, '100');
+        cropper.cancel();
       });
     });
 
