@@ -380,20 +380,9 @@ class _MediaCardState extends State<MediaCard> with FocusStateMixin {
                       itemType: widget.itemType,
                       seerrMediaType: widget.seerrMediaType,
                       seerrStatus: widget.seerrStatus,
-                      imageOverlays: [
-                        ...widget.imageOverlays,
-                        if (widget.animeMarkerItemId != null)
-                          Positioned(
-                            top: 6,
-                            left: 6,
-                            child: AnimeItemAudioBadge(
-                              itemId: widget.animeMarkerItemId!,
-                              scale: 0.85,
-                            ),
-                          ),
-                      ],
-                      overlayOccupiesTopLeft: widget.overlayOccupiesTopLeft ||
-                          widget.animeMarkerItemId != null,
+                      imageOverlays: widget.imageOverlays,
+                      overlayOccupiesTopLeft: widget.overlayOccupiesTopLeft,
+                      animeMarkerItemId: widget.animeMarkerItemId,
                       isGenreFallback: widget.isGenreFallback,
                     ),
                     if (widget.isBanner) ...[
@@ -648,6 +637,7 @@ class _CardImage extends StatelessWidget {
   final List<Widget> imageOverlays;
   final bool overlayOccupiesTopLeft;
   final bool isGenreFallback;
+  final String? animeMarkerItemId;
 
   const _CardImage({
     this.imageUrl,
@@ -670,6 +660,7 @@ class _CardImage extends StatelessWidget {
     this.imageOverlays = const [],
     this.overlayOccupiesTopLeft = false,
     this.isGenreFallback = false,
+    this.animeMarkerItemId,
   });
 
   /// How far the focus ring sits outside the artwork. The ring is 3px thick
@@ -794,19 +785,33 @@ class _CardImage extends StatelessWidget {
                         )
                       : _PlaceholderIcon(itemType: itemType, title: title),
                 ),
-                if (isFavorite)
+                if (isFavorite ||
+                    _showSeerrMediaTypeBadge ||
+                    animeMarkerItemId != null)
                   Positioned(
-                    top: (_showSeerrMediaTypeBadge || overlayOccupiesTopLeft)
-                        ? 32
-                        : 6,
+                    top: overlayOccupiesTopLeft ? 32 : 6,
                     left: 6,
-                    child: MediaFavoriteBadge(size: 22),
-                  ),
-                if (_showSeerrMediaTypeBadge)
-                  Positioned(
-                    top: 6,
-                    left: 6,
-                    child: SeerrMediaTypeBadge(mediaType: seerrMediaType),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (_showSeerrMediaTypeBadge) ...[
+                          SeerrMediaTypeBadge(mediaType: seerrMediaType),
+                          if (animeMarkerItemId != null || isFavorite)
+                            const SizedBox(height: 4),
+                        ],
+                        if (animeMarkerItemId != null)
+                          AnimeItemAudioBadge(
+                            itemId: animeMarkerItemId!,
+                            scale: 0.85,
+                            padding: isFavorite
+                                ? const EdgeInsets.only(bottom: 4)
+                                : EdgeInsets.zero,
+                          ),
+                        if (isFavorite)
+                          const MediaFavoriteBadge(size: 22),
+                      ],
+                    ),
                   ),
                 if (_showSeerrStatusIndicator)
                   Positioned(

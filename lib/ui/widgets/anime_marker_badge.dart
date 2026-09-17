@@ -306,6 +306,7 @@ class _AnimeSeasonAudioBadgeState extends State<AnimeSeasonAudioBadge> {
 class AnimeItemAudioBadge extends StatefulWidget {
   final String itemId;
   final double scale;
+  final EdgeInsetsGeometry padding;
 
   /// Solid fill, for when the pill sits on top of artwork.
   final bool filled;
@@ -314,6 +315,7 @@ class AnimeItemAudioBadge extends StatefulWidget {
     super.key,
     required this.itemId,
     this.scale = 1.0,
+    this.padding = EdgeInsets.zero,
     this.filled = true,
   });
 
@@ -361,11 +363,14 @@ class _AnimeItemAudioBadgeState extends State<AnimeItemAudioBadge> {
     final audio = _audio;
     if (audio == null) return const SizedBox.shrink();
 
-    return animeAudioPill(
-      AppLocalizations.of(context),
-      audio,
-      widget.scale,
-      filled: widget.filled,
+    return Padding(
+      padding: widget.padding,
+      child: animeAudioPill(
+        AppLocalizations.of(context),
+        audio,
+        widget.scale,
+        filled: widget.filled,
+      ),
     );
   }
 }
