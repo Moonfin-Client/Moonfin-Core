@@ -5571,32 +5571,14 @@ class _ContentRowsState extends State<_ContentRows>
   }
 
   static void _navigateToLibrary(BuildContext context, AggregatedItem item) {
-    final collectionType = (item.rawData['CollectionType'] as String? ?? '')
-        .toLowerCase();
-    switch (collectionType) {
-      case 'music':
-        context.push(Destinations.musicLibrary(item.id));
-        return;
-      case 'books':
-      case 'audiobooks':
-        context.push(
-          Destinations.bookLibrary(item.id, collectionType: collectionType),
-        );
-        return;
-      case 'livetv':
-        context.push(Destinations.liveTvGuide);
-        return;
-      default:
-        // Game libraries route to the EmulatorJS browser; everything else to the
-        // normal library view. Shared with the sidebar and bottom nav.
-        context.push(gameOrLibraryRoute(
-          item.id,
-          collectionType,
-          item.name,
-          serverId: item.serverId,
-        ));
-        return;
-    }
+    // Game libraries route to the EmulatorJS browser, everything else by its
+    // collection type. Shared with the sidebar, toolbar and bottom nav.
+    context.push(libraryRoute(
+      item.id,
+      item.rawData['CollectionType'] as String?,
+      item.name,
+      serverId: item.serverId,
+    ));
   }
 
   static String? _resolveImageUrl(

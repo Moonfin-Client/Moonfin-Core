@@ -1092,34 +1092,14 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
                                     onPressed: () {
                                       _onNavigate();
                                       _markNavigationAwayFromSidebar();
-                                      if (lib.collectionType == 'music') {
-                                        context.navigateTopLevel(
-                                          '/music/${lib.id}',
-                                        );
-                                      } else if (lib.collectionType ==
-                                              'books' ||
-                                          lib.collectionType == 'audiobooks') {
-                                        context.navigateTopLevel(
-                                          Destinations.bookLibrary(
-                                            lib.id,
-                                            collectionType: lib.collectionType,
-                                          ),
-                                        );
-                                      } else if (lib.collectionType ==
-                                          'livetv') {
-                                        context.navigateTopLevel(
-                                          Destinations.liveTvGuide,
-                                        );
-                                      } else {
-                                        context.navigateTopLevel(
-                                          gameOrLibraryRoute(
-                                            lib.id,
-                                            lib.collectionType,
-                                            lib.name,
-                                            serverId: lib.serverId,
-                                          ),
-                                        );
-                                      }
+                                      context.navigateTopLevel(
+                                        libraryRoute(
+                                          lib.id,
+                                          lib.collectionType,
+                                          lib.name,
+                                          serverId: lib.serverId,
+                                        ),
+                                      );
                                     },
                                   ),
                                 )
