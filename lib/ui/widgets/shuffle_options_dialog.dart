@@ -20,8 +20,6 @@ const _kShuffleUnscopedOverallTimeout = Duration(seconds: 20);
 const _kShuffleUserViewsTimeout = Duration(seconds: 6);
 const _kShuffleHydrationTimeout = Duration(seconds: 3);
 
-final _shuffleRandom = math.Random();
-
 const List<String> _kShuffleExcludeItemTypes = <String>[
   'BoxSet',
   'CollectionFolder',
@@ -78,73 +76,6 @@ Future<List<AggregatedItem>> _collectRandomItems({
   String? parentId,
   String? genreName,
 }) async {
-  if (fields == _kShuffleCandidateItemFields) {
-    Future<Map<String, dynamic>> candidateQuery({
-      required int queryLimit,
-      int? startIndex,
-      required bool withCount,
-    }) {
-      return client.itemsApi.getItems(
-        includeItemTypes: _shuffleIncludeItemTypes(contentType),
-        excludeItemTypes: _kShuffleExcludeItemTypes,
-        collapseBoxSetItems: false,
-        recursive: true,
-        parentId: parentId,
-        genres: genreName != null ? <String>[genreName] : null,
-        fields: fields,
-        startIndex: startIndex,
-        limit: queryLimit,
-        enableTotalRecordCount: withCount,
-      );
-    }
-
-    List<AggregatedItem> parseCandidates(Map<String, dynamic> response) {
-      final rawItems = (response['Items'] as List?) ?? const <dynamic>[];
-      return rawItems
-          .whereType<Map>()
-          .map(
-            (raw) => AggregatedItem(
-              id: raw['Id']?.toString() ?? '',
-              serverId: serverId,
-              rawData: raw.cast<String, dynamic>(),
-            ),
-          )
-          .where((item) => !_isExcludedShuffleItemType(item.type))
-          .toList();
-    }
-
-    try {
-      // Sorting randomly on the server makes SQLite scan the whole library and
-      // pulling every row back to shuffle here costs just as much, so read one
-      // random window instead.
-      final firstPage = await candidateQuery(
-        queryLimit: requestLimit,
-        withCount: true,
-      );
-      final total = firstPage['TotalRecordCount'] as int? ?? 0;
-      if (total > 0) {
-        // A small library fits in that first page, so only go back to the
-        // server when there is more of it to reach.
-        final items = total <= requestLimit
-            ? parseCandidates(firstPage)
-            : parseCandidates(
-                await candidateQuery(
-                  queryLimit: requestLimit,
-                  startIndex: _shuffleRandom.nextInt(total - requestLimit + 1),
-                  withCount: false,
-                ),
-              );
-        items.shuffle();
-        return items.take(limit).toList();
-      }
-    } catch (e, stack) {
-      _shuffleLogError(
-        '_collectRandomItems windowed random failed parentId=$parentId',
-        e,
-        stack,
-      );
-    }
-  }
 
   final collected = <AggregatedItem>[];
   final seenIds = <String>{};
