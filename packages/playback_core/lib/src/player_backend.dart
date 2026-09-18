@@ -180,8 +180,8 @@ abstract class PlayerBackend {
 
   /// Detect encoded letterbox and crop it. Cover-zoom is not this.
   ///
-  /// Desktop libmpv ships a cropper. Media3 / Aether / Tizen / HTML return
-  /// [UnsupportedLetterboxCropper] until they implement [LetterboxCropper].
+  /// Desktop libmpv and Android Media3 ship a cropper. Aether / Tizen / HTML
+  /// return [UnsupportedLetterboxCropper] until they implement [LetterboxCropper].
   LetterboxCropper get letterboxCropper => const UnsupportedLetterboxCropper();
 
   bool get supportsLetterboxCrop => letterboxCropper.isSupported;

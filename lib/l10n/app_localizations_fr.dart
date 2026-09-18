@@ -2108,6 +2108,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get shortcutMpvStats => 'Activer ou désactiver les statistiques mpv';
 
   @override
+  String get shortcutRecropBlackBars => 'Recrop black bars';
+
+  @override
   String get shortcutLeaveFullscreenOrStop =>
       'Quitter le plein écran, ou arrêter la lecture si déjà quitté';
 
@@ -3219,7 +3222,23 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get settingsCropBlackBarsDescription =>
-      'Détecte les bandes noires encodées dans l\'image, les rogne, puis remplit l\'écran.';
+      'Détecte les bandes noires encodées dans l\'image, les rogne, puis remplit l\'écran. Recadrez à nouveau depuis le bouton de zoom du lecteur.';
+
+  @override
+  String get cropBlackBarsRecropInterval => 'Intervalle de recadrage';
+
+  @override
+  String get cropBlackBarsOnce => 'Une fois au début';
+
+  @override
+  String get cropBlackBarsEverySecond => 'Chaque seconde';
+
+  @override
+  String get settingsCropBlackBarsIntervalDescription =>
+      'Suit les changements de format pendant la lecture. Utilise un décodeur en copie arrière-plan pendant l\'analyse.';
+
+  @override
+  String get playerRecroppingBlackBars => 'Recadrage des bandes noires';
 
   @override
   String get stretch => 'Étirer';

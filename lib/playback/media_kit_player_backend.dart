@@ -692,9 +692,7 @@ class MediaKitPlayerBackend extends PlayerBackend {
     }
     await _maybeEngageNativeHdr();
     unawaited(() async {
-      await _letterboxCropper.setEnabled(
-        _prefs.get(UserPreferences.cropBlackBars),
-      );
+      await _configureLetterboxCropper();
       await _letterboxCropper.onSourceOpened(url);
     }());
   }
@@ -1356,14 +1354,20 @@ class MediaKitPlayerBackend extends PlayerBackend {
     } catch (_) {}
   }
 
+  Future<void> _configureLetterboxCropper() async {
+    final seconds = _prefs.get(UserPreferences.cropBlackBarsIntervalSeconds);
+    await _letterboxCropper.setRecropInterval(Duration(seconds: seconds));
+    await _letterboxCropper.setEnabled(
+      _prefs.get(UserPreferences.cropBlackBars),
+    );
+  }
+
   void _onPreferencesChanged() {
     if (_isDisposed) {
       return;
     }
 
-    unawaited(
-      _letterboxCropper.setEnabled(_prefs.get(UserPreferences.cropBlackBars)),
-    );
+    unawaited(_configureLetterboxCropper());
 
     if (_audioPassthroughApplyInProgress) {
       _audioPassthroughApplyQueued = true;
@@ -1774,9 +1778,9 @@ class MediaKitPlayerBackend extends PlayerBackend {
     if (_player.platform is! NativePlayer) return;
     try {
       final native = _player.platform as NativePlayer;
-      final fontsDirPath =
-          ((await (native as dynamic).getProperty('sub-fonts-dir')) as String)
-              .trim();
+      final fontsDirPath = ((await (native as dynamic).getProperty(
+        'sub-fonts-dir',
+      )) as String).trim();
       if (fontsDirPath.isEmpty) return;
       final fontsDir = Directory(fontsDirPath);
       if (!await fontsDir.exists()) return;
