@@ -76,7 +76,6 @@ Future<List<AggregatedItem>> _collectRandomItems({
   String? parentId,
   String? genreName,
 }) async {
-
   final collected = <AggregatedItem>[];
   final seenIds = <String>{};
 
