@@ -2584,6 +2584,11 @@ class AppLocalizationsCy extends AppLocalizations {
   String get searchThisLibrary => 'Chwiliwch y llyfrgell hon…';
 
   @override
+  String searchFacetValues(String facet) {
+    return 'Search $facet';
+  }
+
+  @override
   String get searchEllipsis => 'Chwilio…';
 
   @override

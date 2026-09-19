@@ -2515,6 +2515,11 @@ class AppLocalizationsYue extends AppLocalizations {
   String get searchThisLibrary => '搜尋這個圖書館...';
 
   @override
+  String searchFacetValues(String facet) {
+    return 'Search $facet';
+  }
+
+  @override
   String get searchEllipsis => '搜尋...';
 
   @override

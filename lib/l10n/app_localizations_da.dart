@@ -2563,6 +2563,11 @@ class AppLocalizationsDa extends AppLocalizations {
   String get searchThisLibrary => 'Søg i dette bibliotek...';
 
   @override
+  String searchFacetValues(String facet) {
+    return 'Search $facet';
+  }
+
+  @override
   String get searchEllipsis => 'Søge...';
 
   @override

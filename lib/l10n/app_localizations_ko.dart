@@ -2524,6 +2524,11 @@ class AppLocalizationsKo extends AppLocalizations {
   String get searchThisLibrary => '이 라이브러리를 검색해 보세요...';
 
   @override
+  String searchFacetValues(String facet) {
+    return 'Search $facet';
+  }
+
+  @override
   String get searchEllipsis => '찾다...';
 
   @override

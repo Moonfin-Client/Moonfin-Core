@@ -2574,6 +2574,11 @@ class AppLocalizationsBe extends AppLocalizations {
   String get searchThisLibrary => 'Пошук у гэтай бібліятэцы...';
 
   @override
+  String searchFacetValues(String facet) {
+    return 'Search $facet';
+  }
+
+  @override
   String get searchEllipsis => 'Пошук...';
 
   @override

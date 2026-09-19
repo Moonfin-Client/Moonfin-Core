@@ -2558,6 +2558,11 @@ class AppLocalizationsBn extends AppLocalizations {
   String get searchThisLibrary => 'এই লাইব্রেরিতে অনুসন্ধান করুন...';
 
   @override
+  String searchFacetValues(String facet) {
+    return 'Search $facet';
+  }
+
+  @override
   String get searchEllipsis => 'অনুসন্ধান করুন...';
 
   @override

@@ -21,11 +21,16 @@ class LocalSearchField extends StatefulWidget {
     this.tvFieldKey,
     this.onChanged,
     this.onTvKeyEvent,
+    this.hint,
   });
 
   final TextEditingController controller;
   final FocusNode focusNode;
   final GlobalKey<CustomTVTextFieldState>? tvFieldKey;
+
+  /// What the empty box reads. Defaults to the library header's wording, so a
+  /// box narrowing something else says what it narrows.
+  final String? hint;
   final ValueChanged<String>? onChanged;
   final FocusOnKeyEventCallback? onTvKeyEvent;
 
@@ -81,7 +86,7 @@ class _LocalSearchFieldState extends State<LocalSearchField> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final effectiveHint = l10n.searchThisLibrary;
+    final effectiveHint = widget.hint ?? l10n.searchThisLibrary;
     final focusColor = Color(_prefs.get(UserPreferences.focusColor).colorValue);
 
     final fillColor = AppColorScheme.surface.withValues(alpha: 0.72);

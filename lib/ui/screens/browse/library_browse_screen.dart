@@ -40,6 +40,7 @@ import '../../widgets/local_search_field.dart';
 import '../../widgets/skeleton/skeleton_library_grid.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../util/error_message.dart';
+import '../../util/facet_search.dart';
 
 Color get _navyBackground => AppColorScheme.background;
 Color get _jellyfinBlue => AppColorScheme.accent;
@@ -2399,6 +2400,13 @@ class _FilterSortDialogState extends State<_FilterSortDialog> {
   /// closed and only the ones opened take up the dialog.
   final _expandedFacets = <String>{};
 
+  /// What has been typed into a long facet's box, keyed the same way. A list
+  /// short enough to read at a glance never gets one, so most stay absent.
+  final _facetQueries = <String, String>{};
+  final _facetSearchControllers = <String, TextEditingController>{};
+  final _facetSearchFocusNodes = <String, FocusNode>{};
+
+
   @override
   void initState() {
     super.initState();
@@ -2409,6 +2417,12 @@ class _FilterSortDialogState extends State<_FilterSortDialog> {
   @override
   void dispose() {
     widget.vm.removeListener(_rebuild);
+    for (final controller in _facetSearchControllers.values) {
+      controller.dispose();
+    }
+    for (final node in _facetSearchFocusNodes.values) {
+      node.dispose();
+    }
     super.dispose();
   }
 
@@ -2752,6 +2766,12 @@ class _FilterSortDialogState extends State<_FilterSortDialog> {
     if (values.isEmpty) return const [];
     final expanded = _expandedFacets.contains(key);
     final chosen = values.where(selected.contains).length;
+    // Hundreds of tags are quicker to type at than to scroll through, but a
+    // handful are quicker to just read, so the box only turns up where it
+    // earns its space.
+    final searchable = facetIsSearchable(values);
+    final query = searchable ? (_facetQueries[key] ?? '') : '';
+    final shown = facetValuesMatching(values, query, labels: labels);
     return [
       Divider(color: dividerColor),
       _DialogExpanderTile(
@@ -2764,8 +2784,24 @@ class _FilterSortDialogState extends State<_FilterSortDialog> {
         sectionColor: sectionColor,
         accent: accent,
       ),
+      // The same field the library header uses, which is the one that knows to
+      // put a CustomTVTextField up on a set so the remote can reach it and the
+      // on screen keyboard opens. A bare TextField cannot be typed into there.
+      if (expanded && searchable)
+        Padding(
+          padding: const EdgeInsets.fromLTRB(24, 4, 24, 8),
+          child: LocalSearchField(
+            controller: _facetSearchControllers.putIfAbsent(
+              key,
+              TextEditingController.new,
+            ),
+            focusNode: _facetSearchFocusNodes.putIfAbsent(key, FocusNode.new),
+            hint: AppLocalizations.of(context).searchFacetValues(title),
+            onChanged: (text) => setState(() => _facetQueries[key] = text),
+          ),
+        ),
       if (expanded)
-        for (final value in values)
+        for (final value in shown)
           _DialogCheckboxTile(
             label: labels[value] ?? value,
             checked: selected.contains(value),
@@ -2773,6 +2809,15 @@ class _FilterSortDialogState extends State<_FilterSortDialog> {
             accent: accent,
             onSurface: onSurface,
           ),
+      // Without this the box looks broken rather than simply unmatched.
+      if (expanded && shown.isEmpty)
+        Padding(
+          padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
+          child: Text(
+            AppLocalizations.of(context).noLabelFound(title),
+            style: TextStyle(fontSize: 13, color: sectionColor),
+          ),
+        ),
     ];
   }
 

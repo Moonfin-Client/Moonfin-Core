@@ -2565,6 +2565,11 @@ class AppLocalizationsId extends AppLocalizations {
   String get searchThisLibrary => 'Cari di pustaka ini...';
 
   @override
+  String searchFacetValues(String facet) {
+    return 'Search $facet';
+  }
+
+  @override
   String get searchEllipsis => 'Cari...';
 
   @override

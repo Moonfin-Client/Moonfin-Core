@@ -2593,6 +2593,11 @@ class AppLocalizationsCa extends AppLocalizations {
   String get searchThisLibrary => 'Cerca en aquesta biblioteca...';
 
   @override
+  String searchFacetValues(String facet) {
+    return 'Search $facet';
+  }
+
+  @override
   String get searchEllipsis => 'Cerca...';
 
   @override

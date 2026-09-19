@@ -2567,6 +2567,11 @@ class AppLocalizationsKk extends AppLocalizations {
   String get searchThisLibrary => 'Осы кітапхананы іздеу...';
 
   @override
+  String searchFacetValues(String facet) {
+    return 'Search $facet';
+  }
+
+  @override
   String get searchEllipsis => 'Іздеу...';
 
   @override

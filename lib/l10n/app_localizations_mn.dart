@@ -2562,6 +2562,11 @@ class AppLocalizationsMn extends AppLocalizations {
   String get searchThisLibrary => 'Энэ номын сангаас хайх...';
 
   @override
+  String searchFacetValues(String facet) {
+    return 'Search $facet';
+  }
+
+  @override
   String get searchEllipsis => 'Хайх...';
 
   @override
