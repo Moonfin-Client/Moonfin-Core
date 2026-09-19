@@ -111,6 +111,7 @@ class Media3PlayerBackend extends PlayerBackend {
   double _volume = 100.0;
   double _audioDelaySeconds = 0.0;
   double _subtitleDelaySeconds = 0.0;
+  int? _subtitleDelaySessionId;
   double _subtitleAutoOffsetSeconds = 0.0;
   int _volumeBoostLevel = 0;
   bool _skipSilenceEnabled = false;
@@ -173,6 +174,8 @@ class Media3PlayerBackend extends PlayerBackend {
 
   @override
   double get subtitleAutoOffsetSeconds => _subtitleAutoOffsetSeconds;
+
+  double get subtitleDelaySeconds => _subtitleDelaySeconds;
 
   @override
   Stream<double> get subtitleAutoOffsetStream => _subtitleAutoOffsetStream.stream;
@@ -1034,6 +1037,14 @@ class Media3PlayerBackend extends PlayerBackend {
     _lastFrameRateLine = null;
     _sourceIsLive = payload['isLive'] == true;
     _setSubtitleAutoOffset(0);
+    // Reset for a new viewing session, but keep the adjustment when the
+    // same session changes quality or restores playback after backgrounding.
+    final subtitleDelaySessionId = payload['subtitleDelaySessionId'] as int?;
+    if (subtitleDelaySessionId == null ||
+        subtitleDelaySessionId != _subtitleDelaySessionId) {
+      _subtitleDelaySeconds = 0.0;
+    }
+    _subtitleDelaySessionId = subtitleDelaySessionId;
     await _invoke<void>('setSource', {
       'url': url,
       'headers': headers,
@@ -1070,10 +1081,6 @@ class Media3PlayerBackend extends PlayerBackend {
     await _invoke<void>('setAudioDelay', {
       'seconds': _audioDelaySeconds,
       'delayMs': (_audioDelaySeconds * 1000).round(),
-    });
-    await _invoke<void>('setSubtitleDelay', {
-      'seconds': _subtitleDelaySeconds,
-      'delayMs': (_subtitleDelaySeconds * 1000).round(),
     });
     await _invoke<void>('setSubtitleRendererMode', {
       'mode': _modeToWire(_requestedSubtitleRendererMode),
