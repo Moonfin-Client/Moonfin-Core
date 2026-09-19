@@ -1589,6 +1589,9 @@ class AppLocalizationsTa extends AppLocalizations {
   }
 
   @override
+  String get noAlternateVersions => 'No alternate versions for this channel';
+
+  @override
   String get downloadAllQuality => 'அனைத்தையும் பதிவிறக்கவும் - தரம்';
 
   @override

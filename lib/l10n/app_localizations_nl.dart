@@ -1586,6 +1586,9 @@ class AppLocalizationsNl extends AppLocalizations {
   }
 
   @override
+  String get noAlternateVersions => 'No alternate versions for this channel';
+
+  @override
   String get downloadAllQuality => 'Alles downloaden - Kwaliteit';
 
   @override

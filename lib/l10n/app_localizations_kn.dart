@@ -1584,6 +1584,9 @@ class AppLocalizationsKn extends AppLocalizations {
   }
 
   @override
+  String get noAlternateVersions => 'No alternate versions for this channel';
+
+  @override
   String get downloadAllQuality => 'ಎಲ್ಲವನ್ನೂ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ - ಗುಣಮಟ್ಟ';
 
   @override

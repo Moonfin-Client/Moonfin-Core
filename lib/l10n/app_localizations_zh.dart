@@ -1537,6 +1537,9 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String get noAlternateVersions => 'No alternate versions for this channel';
+
+  @override
   String get downloadAllQuality => '全部下载 - 画质';
 
   @override

@@ -48,11 +48,15 @@ const _kChannelTuneTimeout = Duration(seconds: 35);
 class LiveTvPlayerScreen extends StatefulWidget {
   final List<GuideChannel> channels;
   final int startIndex;
+  // Only honored for the very first channel this screen plays; zapping to a
+  // different channel afterwards always resolves the server-default source.
+  final String? initialMediaSourceId;
 
   const LiveTvPlayerScreen({
     super.key,
     required this.channels,
     required this.startIndex,
+    this.initialMediaSourceId,
   });
 
   @override
@@ -103,6 +107,11 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   FocusNode? _carouselPriorFocus;
   bool _carouselPriorInfoVisible = true;
   int _carouselPriorControlIndex = 0;
+  // Alternate MediaSources for the current channel (e.g. duplicate provider
+  // streams), fetched lazily since GuideChannel data doesn't carry them.
+  List<Map<String, dynamic>> _channelMediaSources = const [];
+  String? _channelMediaSourcesFor;
+  String? _pendingInitialMediaSourceId;
   DateTime? _suppressBackUntil;
   bool _forcedLandscape = true;
 
@@ -156,6 +165,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   final _tvAudioFocus = FocusNode(debugLabel: 'LiveTvAudio');
   final _tvSubtitleFocus = FocusNode(debugLabel: 'LiveTvSubtitle');
   final _tvBitrateFocus = FocusNode(debugLabel: 'LiveTvBitrate');
+  final _tvVersionFocus = FocusNode(debugLabel: 'LiveTvVersion');
   final _tvPlaybackInfoFocus = FocusNode(debugLabel: 'LiveTvPlaybackInfo');
   // Index of the currently focused OSD control within _osdFocusOrder. Tracked
   // explicitly so arrow navigation never depends on FocusManager.primaryFocus
@@ -171,6 +181,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
       _screensaverController.setPlaybackActive,
     );
     _currentIndex = widget.startIndex;
+    _pendingInitialMediaSourceId = widget.initialMediaSourceId;
     _applyPlayerDisplayMode();
     _applySubtitleStyle();
     _backendSub = _manager.backendChangedStream.listen((backend) {
@@ -186,6 +197,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     _tvAudioFocus.addListener(_onControlFocusChanged);
     _tvSubtitleFocus.addListener(_onControlFocusChanged);
     _tvBitrateFocus.addListener(_onControlFocusChanged);
+    _tvVersionFocus.addListener(_onControlFocusChanged);
     _tvPlaybackInfoFocus.addListener(_onControlFocusChanged);
     _playCurrentChannel();
     _scheduleHide();
@@ -248,6 +260,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     _tvAudioFocus.removeListener(_onControlFocusChanged);
     _tvSubtitleFocus.removeListener(_onControlFocusChanged);
     _tvBitrateFocus.removeListener(_onControlFocusChanged);
+    _tvVersionFocus.removeListener(_onControlFocusChanged);
     _tvPlaybackInfoFocus.removeListener(_onControlFocusChanged);
     _overlayFocus.dispose();
     _tvPlayPauseFocus.dispose();
@@ -256,6 +269,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     _tvAudioFocus.dispose();
     _tvSubtitleFocus.dispose();
     _tvBitrateFocus.dispose();
+    _tvVersionFocus.dispose();
     _tvPlaybackInfoFocus.dispose();
     if (!_isStopping) {
       _manager.stop(userInitiated: false);
@@ -652,12 +666,19 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
       rawData: channel.rawData,
     );
     final allowDirect = _prefs.get(UserPreferences.liveTvDirectPlayEnabled);
+    // Only the channel this screen was opened on ever gets an explicit
+    // source; every later zap (including back to this same channel) resolves
+    // the server-default source again.
+    final mediaSourceId = _pendingInitialMediaSourceId;
+    _pendingInitialMediaSourceId = null;
+    unawaited(_loadChannelMediaSources(channel.id));
     final terminalState = await observeChannelTune(
       channelId: channel.id,
       states: _manager.bringupStateStream,
       timeout: _kChannelTuneTimeout,
       start: () => _manager.playItems(
         [item],
+        mediaSourceId: mediaSourceId,
         enableDirectPlay: allowDirect,
         enableDirectStream: allowDirect,
         // Keep transcoding available as a fallback so a failed direct-play
@@ -745,6 +766,29 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
       _scheduleHide();
     } finally {
       _isSwitching = false;
+    }
+  }
+
+  /// Fetches the channel's full MediaSources list for the OSD version
+  /// button. GuideChannel/EPG data doesn't carry it, and the resolver
+  /// collapses to a single source before playback, so this is a separate
+  /// call — same one the item detail screen uses for VOD versions.
+  Future<void> _loadChannelMediaSources(String channelId) async {
+    try {
+      final data = await _client.itemsApi.getItem(channelId);
+      if (!mounted || _currentChannel.id != channelId) return;
+      final sources = AggregatedItem(
+        id: channelId,
+        serverId: _client.baseUrl,
+        rawData: data,
+      ).mediaSources;
+      setState(() {
+        _channelMediaSources = sources;
+        _channelMediaSourcesFor = channelId;
+      });
+    } catch (_) {
+      // Leave whatever was loaded before (or the empty default) — the
+      // version button simply won't offer anything for this channel.
     }
   }
 
@@ -853,6 +897,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     _tvGuideFocus,
     if (_streamsOfType('Audio').length > 1) _tvAudioFocus,
     if (_hasSubtitleChoices) _tvSubtitleFocus,
+    if (_hasVersionChoices) _tvVersionFocus,
     _tvBitrateFocus,
     _tvPlaybackInfoFocus,
   ];
@@ -1251,6 +1296,50 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
       _suppressBackNavigation();
       if (result == null || !mounted) return;
       unawaited(_manager.changeBitrate(options[result]));
+    }());
+    _showInfo();
+  }
+
+  /// True once this channel's alternate MediaSources (if any) have loaded
+  /// and there's actually more than one to choose between.
+  bool get _hasVersionChoices =>
+      _channelMediaSourcesFor == _currentChannel.id &&
+      _channelMediaSources.length > 1;
+
+  void _showVersionSelector() {
+    final l10n = AppLocalizations.of(context);
+    final sources = _channelMediaSources;
+    final currentId = _manager.pendingMediaSourceId;
+    final currentIdx = currentId != null
+        ? sources.indexWhere((s) => s['Id'] == currentId)
+        : 0;
+
+    unawaited(() async {
+      final result = await TrackSelectorDialog.show(
+        context,
+        title: l10n.selectVersion,
+        options: sources.asMap().entries.map((entry) {
+          final s = entry.value;
+          final name =
+              s['Name'] as String? ?? l10n.versionNumber(entry.key + 1);
+          final bitrate = s['Bitrate'] as int?;
+          final container = s['Container'] as String?;
+          final subtitle = [
+            if (container != null) container.toUpperCase(),
+            if (bitrate != null)
+              '${(bitrate / 1000000).toStringAsFixed(1)} Mbps',
+          ].join(' | ');
+          return TrackOption(
+            label: name,
+            subtitle: subtitle.isNotEmpty ? subtitle : null,
+            labelMaxLines: null,
+          );
+        }).toList(),
+        selectedIndex: currentIdx >= 0 ? currentIdx : 0,
+      );
+      _suppressBackNavigation();
+      if (result == null || result >= sources.length || !mounted) return;
+      unawaited(_manager.changeMediaSource(sources[result]['Id']?.toString()));
     }());
     _showInfo();
   }
@@ -2071,6 +2160,15 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
               icon: Icons.subtitles_rounded,
               tooltip: l10n.subtitleTrack,
               onPressed: _showSubtitleSelector,
+            ),
+          ],
+          if (_hasVersionChoices) ...[
+            const SizedBox(width: AppSpacing.spaceSm),
+            _buildOverlayControlButton(
+              focusNode: PlatformDetection.isTV ? _tvVersionFocus : null,
+              icon: Icons.video_file,
+              tooltip: l10n.version,
+              onPressed: _showVersionSelector,
             ),
           ],
           const SizedBox(width: AppSpacing.spaceSm),

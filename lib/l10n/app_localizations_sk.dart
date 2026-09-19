@@ -1594,6 +1594,9 @@ class AppLocalizationsSk extends AppLocalizations {
   }
 
   @override
+  String get noAlternateVersions => 'No alternate versions for this channel';
+
+  @override
   String get downloadAllQuality => 'Stiahnuť všetko – kvalita';
 
   @override

@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
 
+import '../../../data/models/aggregated_item.dart';
 import '../../../data/viewmodels/live_tv_guide_view_model.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../util/error_message.dart';
@@ -19,6 +20,7 @@ import '../../widgets/bounded_network_image.dart';
 import '../../widgets/horizontal_scroll_section.dart';
 import '../../widgets/live_tv/live_tv_mini_player.dart';
 import '../../widgets/overlay_sheet.dart';
+import '../../widgets/track_selector_dialog.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../../util/focus/dpad_keys.dart';
 import '../../../util/focus/key_event_utils.dart';
@@ -165,6 +167,7 @@ class _PendingVerticalMove {
 class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
     with WidgetsBindingObserver {
   late final LiveTvGuideViewModel _vm;
+  final _client = GetIt.instance<MediaServerClient>();
   final _prefs = GetIt.instance<UserPreferences>();
   final _channelScrollController = ScrollController();
   final _programScrollController = ScrollController();
@@ -2400,7 +2403,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
     );
   }
 
-  Future<void> _watchChannel(String channelId) async {
+  Future<void> _watchChannel(String channelId, {String? mediaSourceId}) async {
     unawaited(_prefs.set(UserPreferences.liveTvLastChannelId, channelId));
     if (widget.embedded && widget.onChannelSelected != null) {
       widget.onChannelSelected!(channelId);
@@ -2417,7 +2420,11 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
     _vm.resetWindowOnExit(windowStart: guideLeftEdge(DateTime.now()));
     await context.push(
       Destinations.liveTvPlayer,
-      extra: {'channels': channels, 'startIndex': index},
+      extra: {
+        'channels': channels,
+        'startIndex': index,
+        if (mediaSourceId != null) 'mediaSourceId': mediaSourceId,
+      },
     );
     if (!mounted) return;
     await _vm.reloadIfStale(
@@ -2439,6 +2446,54 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
       );
     }
     if (restoredIndex >= 0) _focusChannelRow(restoredIndex);
+  }
+
+  /// Fetches the channel's MediaSources on demand (guide rows don't carry
+  /// them) and, if there's more than one, lets the user pick before tuning
+  /// in. Falls back to a normal watch when there's nothing to choose from.
+  Future<void> _pickVersionAndWatch(String channelId) async {
+    List<Map<String, dynamic>> sources;
+    try {
+      final data = await _client.itemsApi.getItem(channelId);
+      sources = AggregatedItem(
+        id: channelId,
+        serverId: _client.baseUrl,
+        rawData: data,
+      ).mediaSources;
+    } catch (_) {
+      sources = const [];
+    }
+    if (!mounted) return;
+    final l10n = AppLocalizations.of(context);
+    if (sources.length <= 1) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.noAlternateVersions)),
+      );
+      return;
+    }
+    final result = await TrackSelectorDialog.show(
+      context,
+      title: l10n.selectVersion,
+      options: sources.asMap().entries.map((entry) {
+        final s = entry.value;
+        final name =
+            s['Name'] as String? ?? l10n.versionNumber(entry.key + 1);
+        final bitrate = s['Bitrate'] as int?;
+        final container = s['Container'] as String?;
+        final subtitle = [
+          if (container != null) container.toUpperCase(),
+          if (bitrate != null) '${(bitrate / 1000000).toStringAsFixed(1)} Mbps',
+        ].join(' | ');
+        return TrackOption(
+          label: name,
+          subtitle: subtitle.isNotEmpty ? subtitle : null,
+          labelMaxLines: null,
+        );
+      }).toList(),
+      selectedIndex: 0,
+    );
+    if (result == null || result >= sources.length || !mounted) return;
+    _watchChannel(channelId, mediaSourceId: sources[result]['Id']?.toString());
   }
 
   void _showProgramDetails(GuideProgram program) {
@@ -2660,6 +2715,15 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
                     ? l10n.unfavoriteChannel
                     : l10n.favoriteChannel,
               ),
+            ),
+            adaptiveDialogAction(
+              onPressed: () {
+                if (dialogActionInProgress) return;
+                dialogActionInProgress = true;
+                Navigator.of(dialogContext).pop();
+                unawaited(_pickVersionAndWatch(program.channelId));
+              },
+              child: Text(l10n.version),
             ),
             adaptiveDialogAction(
               autofocus: !isRecordingNow,

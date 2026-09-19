@@ -1587,6 +1587,9 @@ class AppLocalizationsBe extends AppLocalizations {
   }
 
   @override
+  String get noAlternateVersions => 'No alternate versions for this channel';
+
+  @override
   String get downloadAllQuality => 'Спампаваць усё — якасць';
 
   @override

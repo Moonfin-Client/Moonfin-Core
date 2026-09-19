@@ -1574,6 +1574,9 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
+  String get noAlternateVersions => 'No alternate versions for this channel';
+
+  @override
   String get downloadAllQuality => 'ดาวน์โหลดทั้งหมด — คุณภาพ';
 
   @override

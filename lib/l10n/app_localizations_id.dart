@@ -1586,6 +1586,9 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
+  String get noAlternateVersions => 'No alternate versions for this channel';
+
+  @override
   String get downloadAllQuality => 'Unduh Semua — Kualitas';
 
   @override

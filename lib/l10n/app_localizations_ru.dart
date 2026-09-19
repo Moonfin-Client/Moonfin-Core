@@ -1590,6 +1590,9 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get noAlternateVersions => 'No alternate versions for this channel';
+
+  @override
   String get downloadAllQuality => 'Скачать все — Качество';
 
   @override

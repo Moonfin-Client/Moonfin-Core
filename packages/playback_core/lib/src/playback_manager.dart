@@ -2674,6 +2674,14 @@ class PlaybackManager implements AudioOwnable {
     await _reResolveAtCurrentPosition(forceTranscode: mbps != null);
   }
 
+  /// Switches the current item to a different server-reported MediaSource
+  /// (e.g. a duplicate provider stream for the same live channel), replaying
+  /// the same position-preserving re-resolve used by [changeBitrate].
+  Future<void> changeMediaSource(String? mediaSourceId) async {
+    _mediaSourceId = mediaSourceId;
+    await _reResolveAtCurrentPosition();
+  }
+
   /// Serializes re-resolves so rapid track switches can't tear down the same
   /// session twice or race two restarts.
   Future<void> _reResolveAtCurrentPosition({

@@ -1586,6 +1586,9 @@ class AppLocalizationsTe extends AppLocalizations {
   }
 
   @override
+  String get noAlternateVersions => 'No alternate versions for this channel';
+
+  @override
   String get downloadAllQuality => 'అన్నీ డౌన్‌లోడ్ చేసుకోండి — నాణ్యత';
 
   @override
