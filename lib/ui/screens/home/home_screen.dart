@@ -1111,32 +1111,6 @@ class _ContentRowsState extends State<_ContentRows>
     if (chromePreviewActive && (chromeChanged || _activePreviewKey != null)) {
       _finishSharedPreview(releaseResources: true);
     }
-
-    if (_infoRevealed) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) _collapsePinnedInfoIfMediaBarOwnsHero();
-      });
-    }
-  }
-
-  /// The pinned info band belongs to the rows, so collapse it once focus has
-  /// left them and the media bar owns the hero again. Otherwise a row item
-  /// revealed during start-up stays drawn over the bar's own slide.
-  void _collapsePinnedInfoIfMediaBarOwnsHero() {
-    if (!_infoRevealed) return;
-    if (!_showHomeRowInfoOverlay()) return;
-    if (!_isMediaBarIncluded() || _isBannerMode()) return;
-    if (_activeFocusedRowIndex != null || _isSidebarFocus) return;
-    if (_verticalNavInFlight) return;
-    if (OverlaySheetController.hasOpenSheet ||
-        SettingsPanel.isOpenNotifier.value) {
-      return;
-    }
-    if (_scrollController.hasClients &&
-        _scrollController.offset >= _pinnedInfoCollapseOffset()) {
-      return;
-    }
-    _infoRevealed = false;
   }
 
   void _onSettingsPanelOpenChanged() {
@@ -1381,6 +1355,10 @@ class _ContentRowsState extends State<_ContentRows>
     _audioArbiter.unregister(this);
     appRouter.routerDelegate.removeListener(_onRouteChanged);
     _resizeCheckDebounce?.cancel();
+    for (final timer in _rowSettleTimers.values) {
+      timer.cancel();
+    }
+    _rowSettleTimers.clear();
     WidgetsBinding.instance.removeObserver(this);
     if (PlatformDetection.isDesktop) {
       windowManager.removeListener(this);
@@ -2332,12 +2310,8 @@ class _ContentRowsState extends State<_ContentRows>
       return;
     }
 
-    // The hero belongs to the media bar until the user deliberately moves
-    // down into the rows. A tile that takes focus on its own at startup must
-    // not paint the info band over it.
-    if ((fromMouseHover || !_verticalNavInFlight) &&
+    if (fromMouseHover &&
         _isMediaBarIncluded() &&
-        !_isBannerMode() &&
         _scrollController.hasClients &&
         _scrollController.offset < _pinnedInfoCollapseOffset()) {
       return;
@@ -2626,7 +2600,7 @@ class _ContentRowsState extends State<_ContentRows>
       );
       controller.addListener(() => _onRowScrolled(rowId, controller));
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) _maybeLoadMoreForRow(rowId, controller);
+        if (mounted) _scheduleRowSettleCheck(rowId, controller);
       });
       return controller;
     });
@@ -2667,8 +2641,35 @@ class _ContentRowsState extends State<_ContentRows>
 
   void _checkAllRowsFillViewport() {
     for (final entry in _rowHorizontalControllers.entries) {
-      _maybeLoadMoreForRow(entry.key, entry.value);
+      _scheduleRowSettleCheck(entry.key, entry.value);
     }
+  }
+
+  // Rather than waiting for the whole app's load to finish before any row
+  // may paginate (which makes a fast row wait on a slow/unrelated one), each
+  // row waits only for its own item count to stop changing. A row whose data
+  // just changed (e.g. its section's background fetch just landed) gets a
+  // short window to see if it changes again before pagination touches it;
+  // a row that's already stable is checked almost immediately.
+  static const Duration _rowSettleDelay = Duration(milliseconds: 250);
+  final Map<String, int> _rowItemCountAtLastCheck = {};
+  final Map<String, Timer> _rowSettleTimers = {};
+
+  void _scheduleRowSettleCheck(String rowId, ScrollController controller) {
+    final rowIndex = widget.viewModel.rows.indexWhere((r) => r.id == rowId);
+    if (rowIndex < 0) return;
+    final currentCount = widget.viewModel.rows[rowIndex].items.length;
+    if (_rowItemCountAtLastCheck[rowId] == currentCount &&
+        _rowSettleTimers[rowId] == null) {
+      // Already settled at this count with no check pending; nothing to do.
+      return;
+    }
+    _rowItemCountAtLastCheck[rowId] = currentCount;
+    _rowSettleTimers[rowId]?.cancel();
+    _rowSettleTimers[rowId] = Timer(_rowSettleDelay, () {
+      _rowSettleTimers.remove(rowId);
+      if (mounted) _maybeLoadMoreForRow(rowId, controller);
+    });
   }
 
   void _scrollHomeRowHorizontal(int rowIndex, double delta) {
@@ -5101,7 +5102,6 @@ class _ContentRowsState extends State<_ContentRows>
                   final isSeerrGenreCard =
                       _isSeerrFilterRow(row) && item.type == 'Genre';
                   final card = MediaCard(
-                    animeMarkerItemId: isSeerrGenreCard ? null : item.id,
                     title: cardTitle,
                     imageOverlays: isSeerrGenreCard
                         ? [Positioned.fill(child: SeerrGenreLabel(name: item.name))]
