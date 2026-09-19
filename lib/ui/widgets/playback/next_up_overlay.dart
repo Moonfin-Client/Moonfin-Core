@@ -178,14 +178,19 @@ class _NextUpOverlayState extends State<NextUpOverlay>
       ],
     );
 
+    final cardRadius = AppColorScheme.isPixel ? 0.0 : 18.0;
+    final cardBorder = ThemeRegistry.active.borders.cardBorder;
+    final hasCardBorder = cardBorder.style != BorderStyle.none &&
+        cardBorder.color != Colors.transparent &&
+        cardBorder.width > 0;
+
     return Positioned(
       right: 24,
       bottom: 120,
       child: Container(
         width: widget.isMinimal ? 300 : 340,
-        clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
-          borderRadius: AppRadius.circular(18),
+          borderRadius: AppRadius.circular(cardRadius),
           boxShadow: const [
             BoxShadow(
               color: Colors.black54,
@@ -194,18 +199,22 @@ class _NextUpOverlayState extends State<NextUpOverlay>
             ),
           ],
         ),
-        child: adaptiveGlass(
-          context: context,
-          cornerRadius: 18,
-          blur: 18,
-          fallbackColor: AppColorScheme.surface.withValues(alpha: 0.55),
-          tint: AppColorScheme.surface.withValues(alpha: 0.22),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              if (hasThumb)
-                Stack(
+        child: Stack(
+          clipBehavior: Clip.none,
+          fit: StackFit.passthrough,
+          children: [
+            adaptiveGlass(
+              context: context,
+              cornerRadius: cardRadius,
+              blur: 18,
+              fallbackColor: AppColorScheme.surface.withValues(alpha: 0.55),
+              tint: AppColorScheme.surface.withValues(alpha: 0.22),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (hasThumb)
+                    Stack(
                   children: [
                     OfflineAwareImage(
                       imageUrl: widget.imageUrl!,
@@ -293,6 +302,9 @@ class _NextUpOverlayState extends State<NextUpOverlay>
                                         : AppColorScheme.surfaceVariant.scaleAlpha(0.9))
                                     : AppColorScheme.accent,
                                 foregroundColor: Colors.white,
+                                side: _playFocused
+                                    ? ThemeRegistry.active.borders.focusBorder
+                                    : BorderSide.none,
                                 padding: EdgeInsets.symmetric(
                                   vertical: widget.isMinimal ? 8 : 11,
                                   horizontal: widget.isMinimal ? 10 : 16,
@@ -367,6 +379,19 @@ class _NextUpOverlayState extends State<NextUpOverlay>
               ),
             ],
           ),
+            ),
+            if (hasCardBorder)
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: AppRadius.circular(cardRadius),
+                      border: Border.fromBorderSide(cardBorder),
+                    ),
+                  ),
+                ),
+              ),
+          ],
         ),
       ),
     );
