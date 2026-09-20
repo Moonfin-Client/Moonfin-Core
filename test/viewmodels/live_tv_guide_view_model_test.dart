@@ -1550,6 +1550,59 @@ void main() {
     });
   });
 
+  group('episodeLine', () {
+    GuideProgram program({String? episodeTitle, int? season, int? episode}) =>
+        GuideProgram(
+          id: 'p1',
+          channelId: 'c1',
+          name: 'Show',
+          startDate: DateTime.now(),
+          endDate: DateTime.now(),
+          episodeTitle: episodeTitle,
+          rawData: <String, dynamic>{
+            'ParentIndexNumber': ?season,
+            'IndexNumber': ?episode,
+          },
+        );
+
+    test('carries the title and the numbering together', () {
+      final line = program(
+        episodeTitle: 'The Reckoning',
+        season: 1,
+        episode: 5,
+      ).episodeLine;
+
+      expect(line, 'The Reckoning (S1:E5)');
+    });
+
+    // Listings often name an episode without numbering it.
+    test('keeps the title when there is no numbering', () {
+      expect(
+        program(episodeTitle: 'The Reckoning').episodeLine,
+        'The Reckoning',
+      );
+    });
+
+    test('keeps the numbering when there is no title', () {
+      expect(program(season: 2, episode: 9).episodeLine, '(S2:E9)');
+    });
+
+    test('is empty when the program carries neither', () {
+      expect(program().episodeLine, isEmpty);
+      expect(program(episodeTitle: '   ').episodeLine, isEmpty);
+    });
+
+    test('never renders a null into the line', () {
+      for (final line in [
+        program(episodeTitle: 'Name').episodeLine,
+        program(season: 3, episode: 1).episodeLine,
+        program().episodeLine,
+      ]) {
+        expect(line, isNot(contains('null')));
+      }
+    });
+  });
+
   group('artwork source picks the right image endpoint', () {
     GuideProgram withRaw(Map<String, dynamic> raw) => GuideProgram(
       id: 'p1',
