@@ -139,7 +139,6 @@ class _SkipSegmentOverlayState extends State<SkipSegmentOverlay> {
 
     final effectiveRadius = AppColorScheme.isPixel ? 0.0 : _capsuleRadius;
     final borders = ThemeRegistry.active.borders;
-    final borderWidth = FocusTheme.borderWidth;
 
     return Positioned(
       right: 24,
@@ -188,7 +187,9 @@ class _SkipSegmentOverlayState extends State<SkipSegmentOverlay> {
                         context: context,
                         cornerRadius: effectiveRadius,
                         blur: 24,
-                        fallbackColor: AppColorScheme.surface.withValues(alpha: 0.55),
+                        fallbackColor: AppColorScheme.surface.withValues(
+                          alpha: 0.55,
+                        ),
                         tint: AppColorScheme.surface.withValues(alpha: 0.18),
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(20, 10, 16, 10),
@@ -202,7 +203,9 @@ class _SkipSegmentOverlayState extends State<SkipSegmentOverlay> {
                               ),
                               const SizedBox(width: 9),
                               Text(
-                                l10n.skipSegment(widget.segment.type.displayName),
+                                l10n.skipSegment(
+                                  widget.segment.type.displayName,
+                                ),
                                 style: TextStyle(
                                   color: AppColorScheme.onSurface,
                                   fontSize: 15,
@@ -221,10 +224,14 @@ class _SkipSegmentOverlayState extends State<SkipSegmentOverlay> {
                                 Text(
                                   l10n.endsIn(timerText),
                                   style: TextStyle(
-                                    color: AppColorScheme.onSurface.withValues(alpha: 0.5),
+                                    color: AppColorScheme.onSurface.withValues(
+                                      alpha: 0.5,
+                                    ),
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
-                                    fontFeatures: const [FontFeature.tabularFigures()],
+                                    fontFeatures: const [
+                                      FontFeature.tabularFigures(),
+                                    ],
                                   ),
                                 ),
                               ],
@@ -240,7 +247,7 @@ class _SkipSegmentOverlayState extends State<SkipSegmentOverlay> {
                                             fontSize: 14,
                                             fontWeight: FontWeight.w600,
                                             fontFeatures: const [
-                                              FontFeature.tabularFigures()
+                                              FontFeature.tabularFigures(),
                                             ],
                                           ),
                                         )
@@ -263,7 +270,6 @@ class _SkipSegmentOverlayState extends State<SkipSegmentOverlay> {
                               border: Border.fromBorderSide(
                                 borders.focusBorder.copyWith(
                                   color: AppColorScheme.accent,
-                                  width: borderWidth,
                                 ),
                               ),
                             ),
