@@ -309,14 +309,31 @@ class RowDataSource {
     List<String> includeItemTypes, {
     int limit = _defaultLimit,
   }) async {
+    final isTv = includeItemTypes.contains('Series') ||
+        includeItemTypes.contains('Episode');
+    final fetchLimit = isTv
+        ? latestMediaFetchLimitForCollection(
+            'tvshows',
+            defaultLimit: limit,
+            maxLimit: limit * 4,
+          )
+        : limit;
     final response = await _client.itemsApi.getLatestItems(
       includeItemTypes: includeItemTypes,
-      limit: limit,
+      limit: fetchLimit,
       fields: _fields,
       enableImageTypes: _imageTypes,
       imageTypeLimit: _imageTypeLimit,
     );
-    return _parseItems(response, serverId);
+    final items = _parseItems(response, serverId);
+    if (isTv) {
+      return normalizeLatestMediaItems(
+        items,
+        collectionType: 'tvshows',
+        limit: limit,
+      );
+    }
+    return items;
   }
 
   /// Recently released items of [includeItemTypes] across every library, the

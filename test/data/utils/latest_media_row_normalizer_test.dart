@@ -10,6 +10,8 @@ AggregatedItem _createItem({
   String? seriesName,
   String? seriesPrimaryImageTag,
   String? parentPrimaryImageTag,
+  String? seriesThumbImageTag,
+  String? parentThumbImageTag,
 }) {
   return AggregatedItem(
     id: id,
@@ -22,6 +24,8 @@ AggregatedItem _createItem({
       'SeriesName': ?seriesName,
       'SeriesPrimaryImageTag': ?seriesPrimaryImageTag,
       'ParentPrimaryImageTag': ?parentPrimaryImageTag,
+      'SeriesThumbImageTag': ?seriesThumbImageTag,
+      'ParentThumbImageTag': ?parentThumbImageTag,
     },
   );
 }
@@ -241,6 +245,26 @@ void main() {
 
       expect(result.single.id, equals('series-fleabag'));
       expect(result.single.primaryImageTagField, isNull);
+    });
+
+    test('an episode preserves parent thumb tag onto ImageTags Thumb', () {
+      final episode = _createItem(
+        id: 'ep-dark-1',
+        name: 'Secrets',
+        type: 'Episode',
+        seriesId: 'series-dark',
+        seriesName: 'Dark',
+        parentThumbImageTag: 'darkThumb123',
+      );
+
+      final result = normalizeLatestMediaItems(
+        [episode],
+        collectionType: 'tvshows',
+        limit: 10,
+      );
+
+      expect(result.single.id, equals('series-dark'));
+      expect(result.single.thumbImageTag, equals('darkThumb123'));
     });
   });
 }

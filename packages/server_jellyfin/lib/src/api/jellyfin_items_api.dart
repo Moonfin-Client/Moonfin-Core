@@ -273,8 +273,10 @@ class JellyfinItemsApi implements ItemsApi {
     String? enableImageTypes,
     int? imageTypeLimit,
   }) async {
+    final userId = _getUserId();
+    final path = userId.isNotEmpty ? '/Users/$userId/Items/Latest' : '/Items/Latest';
     final response = await _dio.get(
-      '/Items/Latest',
+      path,
       queryParameters: {
         'ParentId': ?parentId,
         if (includeItemTypes != null)

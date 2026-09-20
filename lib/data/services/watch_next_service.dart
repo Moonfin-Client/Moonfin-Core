@@ -132,7 +132,14 @@ class WatchNextService {
     final imageApi = client.imageApi;
 
     final poster = CarArtwork.instance
-        .wrap(carAuthedImageUrl(client, isEpisode ? _episodePoster(item, imageApi) : _moviePoster(item, imageApi)))
+        .wrap(carAuthedImageUrl(
+          client,
+          isEpisode
+              ? _episodePoster(item, imageApi)
+              : (isSeries
+                  ? _seriesPoster(item, imageApi)
+                  : _moviePoster(item, imageApi)),
+        ))
         ?.toString();
 
     final resumeMs = item.playbackPositionTicks != null
@@ -161,6 +168,34 @@ class WatchNextService {
       'durationMs': ?durationMs,
       'lastEngagementMs': lastEngagementMs,
     };
+  }
+
+  /// TV shows use thumbnails (wide 16:9 graphics with show title/logo) first.
+  /// If no thumbnail exists, the series poster is preferred over unbranded
+  /// fanart backdrops that poorly represent the show.
+  static String? _seriesPoster(AggregatedItem item, ImageApi imageApi) {
+    final thumb = item.thumbImageTag ??
+        item.parentThumbImageTag ??
+        item.seriesThumbImageTag;
+    final thumbId = item.parentThumbItemId ?? item.seriesId ?? item.id;
+    if (thumb != null && thumb.isNotEmpty) {
+      return imageApi.getThumbImageUrl(thumbId, maxWidth: 960, tag: thumb);
+    }
+    final primary = item.primaryImageTag ??
+        item.seriesPrimaryImageTag ??
+        item.parentPrimaryImageTag;
+    final primaryId = item.seriesId ?? item.parentPrimaryImageItemId ?? item.id;
+    if (primary != null && primary.isNotEmpty) {
+      return imageApi.getPrimaryImageUrl(primaryId, maxHeight: 720, tag: primary);
+    }
+    final backdrops = item.backdropImageTags.isNotEmpty
+        ? item.backdropImageTags
+        : item.parentBackdropImageTags;
+    if (backdrops.isNotEmpty) {
+      final backdropId = item.parentBackdropItemId ?? item.id;
+      return imageApi.getBackdropImageUrl(backdropId, maxWidth: 960, tag: backdrops.first);
+    }
+    return null;
   }
 
   /// The launcher card is 16:9, so a wide image is asked for first and the

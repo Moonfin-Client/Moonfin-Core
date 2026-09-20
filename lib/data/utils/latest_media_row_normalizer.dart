@@ -142,14 +142,28 @@ AggregatedItem? _seriesCardForLatestTvItem(AggregatedItem item) {
   final seriesPrimaryImageTag =
       item.seriesPrimaryImageTag ??
       (item.type == 'Season' ? item.parentPrimaryImageTag : null);
+  final seriesThumbImageTag =
+      item.seriesThumbImageTag ?? item.parentThumbImageTag;
+
+  final imageTags = Map<String, dynamic>.from(
+    rawData['ImageTags'] as Map? ?? const {},
+  );
+  var tagsChanged = false;
+
   if (seriesPrimaryImageTag != null && seriesPrimaryImageTag.isNotEmpty) {
-    final imageTags = Map<String, dynamic>.from(
-      rawData['ImageTags'] as Map? ?? const {},
-    );
     imageTags['Primary'] ??= seriesPrimaryImageTag;
-    rawData['ImageTags'] = imageTags;
     rawData['PrimaryImageTag'] ??= seriesPrimaryImageTag;
     rawData['PrimaryImageItemId'] ??= seriesId;
+    tagsChanged = true;
+  }
+
+  if (seriesThumbImageTag != null && seriesThumbImageTag.isNotEmpty) {
+    imageTags['Thumb'] ??= seriesThumbImageTag;
+    tagsChanged = true;
+  }
+
+  if (tagsChanged) {
+    rawData['ImageTags'] = imageTags;
   }
 
   return AggregatedItem(

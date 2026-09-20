@@ -45,6 +45,17 @@ AggregatedItem _movie(Map<String, dynamic> images) => AggregatedItem(
       },
     );
 
+AggregatedItem _series(Map<String, dynamic> images) => AggregatedItem(
+      id: 's1',
+      serverId: 's1',
+      rawData: <String, dynamic>{
+        'Id': 's1',
+        'Name': 'A Show',
+        'Type': 'Series',
+        ...images,
+      },
+    );
+
 void main() {
   final client = _FakeClient();
 
@@ -73,5 +84,38 @@ void main() {
       'ImageTags': {'Primary': 'p'},
     }));
     expect(art, contains('/Primary'));
+  });
+
+  test('series card uses thumbnail when available', () {
+    final art = artFor(_series({
+      'ImageTags': {'Thumb': 't', 'Primary': 'p'},
+      'BackdropImageTags': ['b'],
+    }));
+    expect(art, contains('/Thumb'));
+  });
+
+  test('series card uses parent thumb tag if ImageTags Thumb is missing', () {
+    final art = artFor(_series({
+      'ParentThumbImageTag': 'pt',
+      'ParentThumbItemId': 'p1',
+      'ImageTags': {'Primary': 'p'},
+      'BackdropImageTags': ['b'],
+    }));
+    expect(art, contains('/p1/Thumb'));
+  });
+
+  test('series card prefers primary poster over backdrop when thumb is missing', () {
+    final art = artFor(_series({
+      'ImageTags': {'Primary': 'p'},
+      'BackdropImageTags': ['b'],
+    }));
+    expect(art, contains('/Primary'));
+  });
+
+  test('series card falls back to backdrop only when neither thumb nor poster exists', () {
+    final art = artFor(_series({
+      'BackdropImageTags': ['b'],
+    }));
+    expect(art, contains('/Backdrop'));
   });
 }
