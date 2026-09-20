@@ -1386,6 +1386,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
     final l10n = AppLocalizations.of(context);
     final title = program?.name ?? channel?.name ?? l10n.guideTimeline;
     final episodeTitle = program?.episodeTitle;
+    final seasonEpisodeSuffix = program?.seasonEpisodeLabel;
     final timeRange = program == null
         ? null
         : '${_formatTime(program.startDate)} - ${_formatTime(program.endDate)}';
@@ -1445,10 +1446,10 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
                         overflow: TextOverflow.ellipsis,
                       ),
                     ],
-                    if (episodeTitle != null && episodeTitle.isNotEmpty) ...[
+                    if (episodeTitle != null && episodeTitle.isNotEmpty && seasonEpisodeSuffix != null && seasonEpisodeSuffix.isNotEmpty) ...[
                       const SizedBox(height: 4),
                       Text(
-                        episodeTitle,
+                        '$episodeTitle ($seasonEpisodeSuffix)',
                         style: const TextStyle(
                           color: Colors.white70,
                           fontSize: AppTypography.fontSizeSm,
@@ -2461,6 +2462,8 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
       debugLabel: 'GuideProgramDialogDefaultAction',
     );
     var defaultActionFocusRequested = false;
+    final episodeTitle = program?.episodeTitle;
+    final seasonEpisodeSuffix = program?.seasonEpisodeLabel;
 
     showFocusRestoringDialog(
       context: context,
@@ -2492,10 +2495,10 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
                   '${_formatTime(program.startDate)} – ${_formatTime(program.endDate)}',
                   style: const TextStyle(color: Colors.white70),
                 ),
-                if (program.episodeTitle != null) ...[
+                if (episodeTitle != null) ...[
                   const SizedBox(height: 8),
                   Text(
-                    program.episodeTitle!,
+                    '$episodeTitle ($seasonEpisodeSuffix)',
                     style: const TextStyle(color: Colors.white70),
                   ),
                 ],

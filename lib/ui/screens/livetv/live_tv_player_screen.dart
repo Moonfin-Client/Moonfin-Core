@@ -1959,6 +1959,8 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   Widget _buildBottomOverlay() {
     final padding = MediaQuery.of(context).padding;
     final program = _currentProgram;
+    final episodeTitle = program?.episodeTitle;
+    final seasonEpisodeSuffix = program?.seasonEpisodeLabel;
 
     return Positioned(
       bottom: 0,
@@ -1982,11 +1984,11 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (program?.episodeTitle != null)
+            if (episodeTitle != null && seasonEpisodeSuffix != null)
               Padding(
                 padding: const EdgeInsets.only(bottom: AppSpacing.spaceXs),
                 child: Text(
-                  program!.episodeTitle!,
+                  '$episodeTitle ($seasonEpisodeSuffix)',
                   style: const TextStyle(
                     color: Colors.white70,
                     fontSize: AppTypography.fontSizeSm,
