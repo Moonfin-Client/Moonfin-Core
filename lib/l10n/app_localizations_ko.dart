@@ -3860,6 +3860,21 @@ class AppLocalizationsKo extends AppLocalizations {
   String get semiTransparentBlack => '반투명 검정색';
 
   @override
+  String get semiTransparentWhite => 'Semi-transparent White';
+
+  @override
+  String get lightGray => 'Light Gray';
+
+  @override
+  String get darkGray => 'Dark Gray';
+
+  @override
+  String get blue => 'Blue';
+
+  @override
+  String get magenta => 'Magenta';
+
+  @override
   String get global => '글로벌';
 
   @override

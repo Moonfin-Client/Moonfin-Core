@@ -5205,6 +5205,26 @@
   "@semiTransparentBlack": {
     "description": "Color: semi-transparent black"
   },
+  "semiTransparentWhite": "Semi-transparent White",
+  "@semiTransparentWhite": {
+    "description": "Color: semi-transparent white"
+  },
+  "lightGray": "Light Gray",
+  "@lightGray": {
+    "description": "Color: light gray"
+  },
+  "darkGray": "Dark Gray",
+  "@darkGray": {
+    "description": "Color: dark gray"
+  },
+  "blue": "Blue",
+  "@blue": {
+    "description": "Color: blue"
+  },
+  "magenta": "Magenta",
+  "@magenta": {
+    "description": "Color: magenta"
+  },
   "global": "Global",
   "@global": {
     "description": "Profile: global"

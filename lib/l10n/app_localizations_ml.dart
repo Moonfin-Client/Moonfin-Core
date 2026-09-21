@@ -3950,6 +3950,21 @@ class AppLocalizationsMl extends AppLocalizations {
   String get semiTransparentBlack => 'അർദ്ധ സുതാര്യമായ കറുപ്പ്';
 
   @override
+  String get semiTransparentWhite => 'Semi-transparent White';
+
+  @override
+  String get lightGray => 'Light Gray';
+
+  @override
+  String get darkGray => 'Dark Gray';
+
+  @override
+  String get blue => 'Blue';
+
+  @override
+  String get magenta => 'Magenta';
+
+  @override
   String get global => 'ആഗോള';
 
   @override

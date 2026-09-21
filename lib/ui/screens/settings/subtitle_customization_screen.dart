@@ -427,6 +427,27 @@ const subtitlePresetColors = <String, int>{
   'Semi-transparent White': 0x80FFFFFF,
 };
 
+String subtitleColorLabel(String key, AppLocalizations l10n) {
+  return switch (key) {
+    'White' => l10n.white,
+    'Light Grey' => l10n.lightGray,
+    'Grey' => l10n.gray,
+    'Dark Grey' => l10n.darkGray,
+    'Black' => l10n.black,
+    'Yellow' => l10n.yellow,
+    'Green' => l10n.green,
+    'Cyan' => l10n.cyan,
+    'Blue' => l10n.blue,
+    'Magenta' => l10n.magenta,
+    'Red' => l10n.red,
+    'Navy' => l10n.navy,
+    'Transparent' => l10n.transparent,
+    'Semi-transparent Black' => l10n.semiTransparentBlack,
+    'Semi-transparent White' => l10n.semiTransparentWhite,
+    _ => key,
+  };
+}
+
 class _ColorPickerTileState extends State<_ColorPickerTile> {
   late final PreferenceBinding<int> _binding;
   bool _pickerOpen = false;
@@ -478,6 +499,7 @@ class _ColorPickerTileState extends State<_ColorPickerTile> {
   void _showPicker(BuildContext context) async {
     if (_pickerOpen) return;
     _pickerOpen = true;
+    final l10n = AppLocalizations.of(context);
     final current = _binding.value;
     final isTV = PlatformDetection.isTV;
     final entries = widget.allowTransparent
@@ -505,7 +527,7 @@ class _ColorPickerTileState extends State<_ColorPickerTile> {
                   ),
                 ),
               ),
-              title: Text(e.key),
+              title: Text(subtitleColorLabel(e.key, l10n)),
               trailing: selected ? const Icon(Icons.check) : null,
               onTap: () {
                 if (picked) return;

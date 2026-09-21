@@ -3951,6 +3951,21 @@ class AppLocalizationsHu extends AppLocalizations {
   String get semiTransparentBlack => 'Félig átlátszó fekete';
 
   @override
+  String get semiTransparentWhite => 'Semi-transparent White';
+
+  @override
+  String get lightGray => 'Light Gray';
+
+  @override
+  String get darkGray => 'Dark Gray';
+
+  @override
+  String get blue => 'Blue';
+
+  @override
+  String get magenta => 'Magenta';
+
+  @override
   String get global => 'Globális';
 
   @override

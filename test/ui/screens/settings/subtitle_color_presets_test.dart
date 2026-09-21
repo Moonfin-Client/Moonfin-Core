@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:moonfin/l10n/app_localizations_en.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/screens/settings/subtitle_customization_screen.dart';
 
@@ -47,5 +48,20 @@ void main() {
       expect(nonTransparent.contains('Grey'), isTrue);
       expect(nonTransparent.contains('Dark Grey'), isTrue);
     });
+
+    test('subtitleColorLabel resolves all preset color keys to localized strings', () {
+      final l10n = AppLocalizationsEn();
+      for (final key in subtitlePresetColors.keys) {
+        final label = subtitleColorLabel(key, l10n);
+        expect(label, isNotEmpty);
+      }
+      expect(subtitleColorLabel('Light Grey', l10n), 'Light Gray');
+      expect(subtitleColorLabel('Grey', l10n), 'Gray');
+      expect(subtitleColorLabel('Dark Grey', l10n), 'Dark Gray');
+      expect(subtitleColorLabel('Blue', l10n), 'Blue');
+      expect(subtitleColorLabel('Magenta', l10n), 'Magenta');
+      expect(subtitleColorLabel('Semi-transparent White', l10n), 'Semi-transparent White');
+    });
   });
 }
+

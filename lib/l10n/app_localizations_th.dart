@@ -3913,6 +3913,21 @@ class AppLocalizationsTh extends AppLocalizations {
   String get semiTransparentBlack => 'สีดำกึ่งโปร่งใส';
 
   @override
+  String get semiTransparentWhite => 'Semi-transparent White';
+
+  @override
+  String get lightGray => 'Light Gray';
+
+  @override
+  String get darkGray => 'Dark Gray';
+
+  @override
+  String get blue => 'Blue';
+
+  @override
+  String get magenta => 'Magenta';
+
+  @override
   String get global => 'ทั่วโลก';
 
   @override

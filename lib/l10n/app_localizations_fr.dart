@@ -2762,7 +2762,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String savedMediaOfLimit(String used, String limit) {
-    return '$used of $limit';
+    return '$used sur $limit';
   }
 
   @override
@@ -3971,6 +3971,21 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get semiTransparentBlack => 'Noir semi-transparent';
+
+  @override
+  String get semiTransparentWhite => 'Semi-transparent White';
+
+  @override
+  String get lightGray => 'Light Gray';
+
+  @override
+  String get darkGray => 'Dark Gray';
+
+  @override
+  String get blue => 'Blue';
+
+  @override
+  String get magenta => 'Magenta';
 
   @override
   String get global => 'Global';
