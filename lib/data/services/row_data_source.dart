@@ -309,13 +309,14 @@ class RowDataSource {
     List<String> includeItemTypes, {
     int limit = _defaultLimit,
   }) async {
-    final isTv = includeItemTypes.contains('Series') ||
+    final isTv =
+        includeItemTypes.contains('Series') ||
         includeItemTypes.contains('Episode');
     final fetchLimit = isTv
         ? latestMediaFetchLimitForCollection(
             'tvshows',
             defaultLimit: limit,
-            maxLimit: limit * 4,
+            maxLimit: _maxItems,
           )
         : limit;
     final response = await _client.itemsApi.getLatestItems(
