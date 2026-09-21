@@ -190,6 +190,24 @@ class _AutomationQueueScreenState extends State<_AutomationQueueScreen> {
                   StillWatchingBehavior.disabled => 'Off',
                 },
               ),
+              SwitchPreferenceTile(
+                preference: UserPreferences.autoCompleteSkippedEpisodeEndings,
+                title: l10n.autoCompleteSkippedEpisodeEndings,
+                subtitle: l10n.autoCompleteSkippedEpisodeEndingsSubtitle,
+                icon: Icons.done_all,
+              ),
+              if (_prefs.get(UserPreferences.autoCompleteSkippedEpisodeEndings))
+                SliderPreferenceTile(
+                  preference:
+                      UserPreferences.autoCompleteSkippedEpisodeThreshold,
+                  title: l10n.autoCompleteSkippedEpisodeThreshold,
+                  description: l10n.autoCompleteSkippedEpisodeThresholdSubtitle,
+                  icon: Icons.percent,
+                  min: 1,
+                  max: 100,
+                  divisions: 99,
+                  labelOf: (v) => '$v%',
+                ),
             ],
           ),
         ],

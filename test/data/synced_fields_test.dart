@@ -24,6 +24,8 @@ void main() {
     'autoDownloadDeleteAfterHours',
     'autoDownloadEnabled',
     'autoDownloadKeepUnwatched',
+    'autoCompleteSkippedEpisodeEndings',
+    'autoCompleteSkippedEpisodeThreshold',
     'autoplayNextEpisode',
     'backdropEnabled',
     'browsingBlur',
