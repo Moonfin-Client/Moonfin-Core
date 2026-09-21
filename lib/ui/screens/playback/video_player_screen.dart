@@ -833,6 +833,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       _showBringupFailureIfAny(state);
       unawaited(_syncAutoHdrSwitching());
       unawaited(_syncMedia3ZoomMode());
+      _applySubtitleStyle();
     });
     _syncPlayManager?.addListener(_onSyncPlayChanged);
     _prefs.addListener(_onPlaybackPrefsChanged);
@@ -876,6 +877,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       if (PlatformDetection.isDesktop) {
         unawaited(backend.setVolume(_playerVolume));
       }
+      _applySubtitleStyle();
       if (!mounted) return;
       setState(() {});
     });
@@ -2415,10 +2417,13 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   void _onPlaybackPrefsChanged() {
     _syncMediaQueuingPreference();
     if (!mounted) return;
+    _applySubtitleStyle();
     final zoom = _prefs.get(UserPreferences.playerZoomMode);
-    if (zoom == _zoomMode) return;
-    setState(() => _zoomMode = zoom);
-    unawaited(_syncMedia3ZoomMode());
+    if (zoom != _zoomMode) {
+      _zoomMode = zoom;
+      unawaited(_syncMedia3ZoomMode());
+    }
+    setState(() {});
   }
 
   void _syncMediaQueuingPreference() {

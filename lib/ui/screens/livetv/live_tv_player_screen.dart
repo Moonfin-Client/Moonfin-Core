@@ -175,6 +175,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     _applySubtitleStyle();
     _backendSub = _manager.backendChangedStream.listen((backend) {
       if (!mounted) return;
+      _applySubtitleStyle();
       _listenForPlayerTrackChanges();
       setState(() {});
     });

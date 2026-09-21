@@ -2319,6 +2319,13 @@ class MediaKitPlayerBackend extends PlayerBackend {
     );
   }
 
+  int? _lastTextColor;
+  int? _lastBackgroundColor;
+  int? _lastStrokeColor;
+  double? _lastFontSize;
+  int? _lastFontWeight;
+  double? _lastVerticalOffset;
+
   @override
   Future<void> configureSubtitleStyle({
     int? textColor,
@@ -2328,6 +2335,13 @@ class MediaKitPlayerBackend extends PlayerBackend {
     int? fontWeight,
     double? verticalOffset,
   }) async {
+    if (textColor != null) _lastTextColor = textColor;
+    if (backgroundColor != null) _lastBackgroundColor = backgroundColor;
+    if (strokeColor != null) _lastStrokeColor = strokeColor;
+    if (fontSize != null) _lastFontSize = fontSize;
+    if (fontWeight != null) _lastFontWeight = fontWeight;
+    if (verticalOffset != null) _lastVerticalOffset = verticalOffset;
+
     try {
       final native = _player.platform as NativePlayer;
       if (textColor != null) {
@@ -2381,6 +2395,40 @@ class MediaKitPlayerBackend extends PlayerBackend {
         await _nativeSetProperty(native, 'sub-ass', 'yes');
         await _nativeSetProperty(native, 'sub-ass-override', 'yes');
         await _nativeSetProperty(native, 'sub-forced-events-only', 'no');
+        if (_lastTextColor != null) {
+          await _nativeSetProperty(
+            native,
+            'sub-color',
+            _argbToMpvColor(_lastTextColor!),
+          );
+        }
+        if (_lastBackgroundColor != null) {
+          await _nativeSetProperty(
+            native,
+            'sub-back-color',
+            _argbToMpvColor(_lastBackgroundColor!),
+          );
+        }
+        if (_lastStrokeColor != null) {
+          await _nativeSetProperty(
+            native,
+            'sub-border-color',
+            _argbToMpvColor(_lastStrokeColor!),
+          );
+          await _nativeSetProperty(native, 'sub-border-size', '2');
+        }
+        if (_lastFontSize != null) {
+          final mpvSize =
+              ((_lastFontSize! / 24.0) * 55.0).round().clamp(24, 120);
+          await _nativeSetProperty(native, 'sub-font-size', mpvSize.toString());
+        }
+        if (_lastFontWeight != null && _lastFontWeight! >= 700) {
+          await _nativeSetProperty(native, 'sub-bold', 'yes');
+        }
+        if (_lastVerticalOffset != null) {
+          final marginY = (_lastVerticalOffset! * 720).round();
+          await _nativeSetProperty(native, 'sub-margin-y', marginY.toString());
+        }
       } catch (_) {}
     });
   }

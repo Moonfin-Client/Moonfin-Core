@@ -409,20 +409,29 @@ class _ColorPickerTile extends StatefulWidget {
   State<_ColorPickerTile> createState() => _ColorPickerTileState();
 }
 
+const subtitlePresetColors = <String, int>{
+  'White': 0xFFFFFFFF,
+  'Light Grey': 0xFFCCCCCC,
+  'Grey': 0xFF808080,
+  'Dark Grey': 0xFF404040,
+  'Black': 0xFF000000,
+  'Yellow': 0xFFFFFF00,
+  'Green': 0xFF00FF00,
+  'Cyan': 0xFF00FFFF,
+  'Blue': 0xFF0000FF,
+  'Magenta': 0xFFFF00FF,
+  'Red': 0xFFFF0000,
+  'Navy': 0xFF000080,
+  'Transparent': 0x00000000,
+  'Semi-transparent Black': 0x80000000,
+  'Semi-transparent White': 0x80FFFFFF,
+};
+
 class _ColorPickerTileState extends State<_ColorPickerTile> {
   late final PreferenceBinding<int> _binding;
   bool _pickerOpen = false;
 
-  static const _presetColors = {
-    'White': 0xFFFFFFFF,
-    'Black': 0xFF000000,
-    'Yellow': 0xFFFFFF00,
-    'Green': 0xFF00FF00,
-    'Cyan': 0xFF00FFFF,
-    'Red': 0xFFFF0000,
-    'Transparent': 0x00000000,
-    'Semi-transparent Black': 0x80000000,
-  };
+  static const _presetColors = subtitlePresetColors;
 
   @override
   void initState() {
