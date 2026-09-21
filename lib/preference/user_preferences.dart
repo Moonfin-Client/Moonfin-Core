@@ -440,6 +440,8 @@ class UserPreferences extends ChangeNotifier {
     'next_up_timeout',
     'replace_skip_outro_with_next_up',
     'enable_still_watching',
+    'pref_auto_complete_skipped_episode_endings',
+    'pref_auto_complete_skipped_episode_threshold',
     'pref_language_override',
     'pref_media_segment_countdown',
     'pref_media_segment_auto_hide',
@@ -1763,6 +1765,19 @@ class UserPreferences extends ChangeNotifier {
     key: 'enable_still_watching',
     defaultValue: StillWatchingBehavior.disabled,
     values: StillWatchingBehavior.values,
+  );
+
+  /// When enabled, Continue Watching leftovers at/above
+  /// [autoCompleteSkippedEpisodeThreshold] are marked watched if a later
+  /// episode in the series was started after them.
+  static final autoCompleteSkippedEpisodeEndings = Preference(
+    key: 'pref_auto_complete_skipped_episode_endings',
+    defaultValue: false,
+  );
+
+  static final autoCompleteSkippedEpisodeThreshold = Preference(
+    key: 'pref_auto_complete_skipped_episode_threshold',
+    defaultValue: 50,
   );
 
   static final screensaverEnabled = Preference(

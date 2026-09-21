@@ -201,6 +201,8 @@ final List<SyncedField> syncedFields = <SyncedField>[
   SyncedField('autoDownloadDeleteAfterHours', UserPreferences.autoDownloadDeleteAfterHours, SyncCodec.integer),
   SyncedField('autoDownloadEnabled', UserPreferences.autoDownloadEnabled, SyncCodec.boolean),
   SyncedField('autoDownloadKeepUnwatched', UserPreferences.autoDownloadKeepUnwatched, SyncCodec.integer),
+  SyncedField('autoCompleteSkippedEpisodeEndings', UserPreferences.autoCompleteSkippedEpisodeEndings, SyncCodec.boolean),
+  SyncedField('autoCompleteSkippedEpisodeThreshold', UserPreferences.autoCompleteSkippedEpisodeThreshold, SyncCodec.integer),
   SyncedField('autoplayNextEpisode', UserPreferences.autoplayNextEpisode, SyncCodec.boolean),
   SyncedField('cinemaModeEnabled', UserPreferences.cinemaModeEnabled, SyncCodec.boolean),
   SyncedField('cinemaModeEpisodesEnabled', UserPreferences.cinemaModeEpisodesEnabled, SyncCodec.boolean),

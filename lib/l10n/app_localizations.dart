@@ -6610,6 +6610,30 @@ abstract class AppLocalizations {
   /// **'Still Watching Prompt'**
   String get stillWatchingPrompt;
 
+  /// Mark leftover in-progress episodes watched when a later episode was started
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-complete skipped episode endings'**
+  String get autoCompleteSkippedEpisodeEndings;
+
+  /// Subtitle for auto-complete skipped episode endings
+  ///
+  /// In en, this message translates to:
+  /// **'When you have started a later episode, leftover paused episodes at or above the minimum progress are marked watched the next time Continue Watching loads.'**
+  String get autoCompleteSkippedEpisodeEndingsSubtitle;
+
+  /// Minimum played percentage before a leftover episode is auto-completed
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum leftover progress'**
+  String get autoCompleteSkippedEpisodeThreshold;
+
+  /// Subtitle for leftover progress threshold
+  ///
+  /// In en, this message translates to:
+  /// **'Only leftovers at this percentage or higher are auto-completed.'**
+  String get autoCompleteSkippedEpisodeThresholdSubtitle;
+
   /// Still watching prompt interval
   ///
   /// In en, this message translates to:

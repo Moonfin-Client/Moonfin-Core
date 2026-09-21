@@ -1547,6 +1547,23 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       subtitle: 'Prompt to Continue Watching after X consecutive episodes.',
       keywords: ['are you still watching'],
     ),
+    automation.leaf(
+      'pref_auto_complete_skipped_episode_endings',
+      l10n.autoCompleteSkippedEpisodeEndings,
+      subtitle: l10n.autoCompleteSkippedEpisodeEndingsSubtitle,
+      keywords: [
+        'skipped episode',
+        'auto complete',
+        'mark watched',
+        'leftover progress',
+      ],
+    ),
+    automation.leaf(
+      'pref_auto_complete_skipped_episode_threshold',
+      l10n.autoCompleteSkippedEpisodeThreshold,
+      subtitle: l10n.autoCompleteSkippedEpisodeThresholdSubtitle,
+      keywords: ['progress percent', 'minimum progress'],
+    ),
 
     if (PlatformDetection.supportsOfflineDownloads &&
         !PlatformDetection.isWeb) ...[

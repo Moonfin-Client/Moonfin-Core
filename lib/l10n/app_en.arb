@@ -4997,6 +4997,22 @@
   "@stillWatchingPrompt": {
     "description": "Setting for still watching prompt"
   },
+  "autoCompleteSkippedEpisodeEndings": "Auto-complete skipped episode endings",
+  "@autoCompleteSkippedEpisodeEndings": {
+    "description": "Mark leftover in-progress episodes watched when a later episode was started"
+  },
+  "autoCompleteSkippedEpisodeEndingsSubtitle": "When you have started a later episode, leftover paused episodes at or above the minimum progress are marked watched the next time Continue Watching loads.",
+  "@autoCompleteSkippedEpisodeEndingsSubtitle": {
+    "description": "Subtitle for auto-complete skipped episode endings"
+  },
+  "autoCompleteSkippedEpisodeThreshold": "Minimum leftover progress",
+  "@autoCompleteSkippedEpisodeThreshold": {
+    "description": "Minimum played percentage before a leftover episode is auto-completed"
+  },
+  "autoCompleteSkippedEpisodeThresholdSubtitle": "Only leftovers at this percentage or higher are auto-completed.",
+  "@autoCompleteSkippedEpisodeThresholdSubtitle": {
+    "description": "Subtitle for leftover progress threshold"
+  },
   "afterEpisodesAndHours": "After {episodes} episodes / {hours}h",
   "@afterEpisodesAndHours": {
     "description": "Still watching prompt interval",
