@@ -79,4 +79,24 @@ class SubtitleStyle {
       ),
     );
   }
+
+  @override
+  bool operator ==(Object other) =>
+      other is SubtitleStyle &&
+      other.textColor == textColor &&
+      other.backgroundColor == backgroundColor &&
+      other.strokeColor == strokeColor &&
+      other.fontSize == fontSize &&
+      other.fontWeight == fontWeight &&
+      other.verticalOffset == verticalOffset;
+
+  @override
+  int get hashCode => Object.hash(
+    textColor,
+    backgroundColor,
+    strokeColor,
+    fontSize,
+    fontWeight,
+    verticalOffset,
+  );
 }

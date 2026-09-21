@@ -47,6 +47,8 @@ class _AppleTvLiveTvPlayerHostScreenState
   StreamSubscription<Map<String, dynamic>>? _actionSub;
   StreamSubscription<PlaybackBringupState>? _bringupSub;
 
+  SubtitleStyle? _lastSubtitleStyle;
+
   late int _currentIndex;
   bool _exiting = false;
   bool _switching = false;
@@ -95,7 +97,13 @@ class _AppleTvLiveTvPlayerHostScreenState
     _tracksChangedSub = _backend?.tracksChangedStream.listen(
       (_) => _onPlayerTracksChanged(),
     );
-    _bringupSub = _manager.bringupStateStream.listen((_) => _pushMetadata());
+    _bringupSub = _manager.bringupStateStream.listen((state) {
+      _pushMetadata();
+      if (state.phase == PlaybackBringupPhase.ready) {
+        _pushSubtitleStyle(force: true);
+      }
+    });
+    _prefs.addListener(_pushSubtitleStyle);
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _pushSubtitleStyle();
@@ -155,6 +163,7 @@ class _AppleTvLiveTvPlayerHostScreenState
     _carouselPrewarm?.dispose();
     _screensaverController?.setNativePlayerPresented(false);
     _themeController?.removeListener(_onThemeChanged);
+    _prefs.removeListener(_pushSubtitleStyle);
     unawaited(_pipPlayer?.dispose());
     unawaited(_backend?.dismissPlayer() ?? Future<void>.value());
     try {
@@ -163,7 +172,8 @@ class _AppleTvLiveTvPlayerHostScreenState
     super.dispose();
   }
 
-  void _pushSubtitleStyle() {
+  /// [force] pushes even when nothing changed, for a new stream or backend.
+  void _pushSubtitleStyle({bool force = false}) {
     final backend = _backend;
     if (backend == null) return;
     try {
@@ -171,6 +181,8 @@ class _AppleTvLiveTvPlayerHostScreenState
         _prefs,
         _manager.currentResolution,
       );
+      if (!force && style == _lastSubtitleStyle) return;
+      _lastSubtitleStyle = style;
       backend.configureSubtitleStyle(
         textColor: style.textColor,
         backgroundColor: style.backgroundColor,

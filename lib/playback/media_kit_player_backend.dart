@@ -2343,42 +2343,57 @@ class MediaKitPlayerBackend extends PlayerBackend {
     if (verticalOffset != null) _lastVerticalOffset = verticalOffset;
 
     try {
-      final native = _player.platform as NativePlayer;
-      if (textColor != null) {
-        await _nativeSetProperty(
-          native,
-          'sub-color',
-          _argbToMpvColor(textColor),
-        );
-      }
-      if (backgroundColor != null) {
-        await _nativeSetProperty(
-          native,
-          'sub-back-color',
-          _argbToMpvColor(backgroundColor),
-        );
-      }
-      if (strokeColor != null) {
-        await _nativeSetProperty(
-          native,
-          'sub-border-color',
-          _argbToMpvColor(strokeColor),
-        );
-        await _nativeSetProperty(native, 'sub-border-size', '2');
-      }
-      if (fontSize != null) {
-        final mpvSize = ((fontSize / 24.0) * 55.0).round().clamp(24, 120);
-        await _nativeSetProperty(native, 'sub-font-size', mpvSize.toString());
-      }
-      if (fontWeight != null && fontWeight >= 700) {
-        await _nativeSetProperty(native, 'sub-bold', 'yes');
-      }
-      if (verticalOffset != null) {
-        final marginY = (verticalOffset * 720).round();
-        await _nativeSetProperty(native, 'sub-margin-y', marginY.toString());
-      }
-      await _applyAssOverrideMode();
+      await _writeSubtitleStyle(_player.platform as NativePlayer);
     } catch (_) {}
+  }
+
+  /// Writes the cached style rather than any arguments, so the replay after a
+  /// stream opens runs the same code as the original write.
+  Future<void> _writeSubtitleStyle(NativePlayer native) async {
+    final textColor = _lastTextColor;
+    if (textColor != null) {
+      await _nativeSetProperty(native, 'sub-color', _argbToMpvColor(textColor));
+    }
+    final backgroundColor = _lastBackgroundColor;
+    if (backgroundColor != null) {
+      await _nativeSetProperty(
+        native,
+        'sub-back-color',
+        _argbToMpvColor(backgroundColor),
+      );
+    }
+    final strokeColor = _lastStrokeColor;
+    if (strokeColor != null) {
+      await _nativeSetProperty(
+        native,
+        'sub-border-color',
+        _argbToMpvColor(strokeColor),
+      );
+      await _nativeSetProperty(native, 'sub-border-size', '2');
+    }
+    final fontSize = _lastFontSize;
+    if (fontSize != null) {
+      final mpvSize = ((fontSize / 24.0) * 55.0).round().clamp(24, 120);
+      await _nativeSetProperty(native, 'sub-font-size', mpvSize.toString());
+    }
+    final fontWeight = _lastFontWeight;
+    if (fontWeight != null) {
+      // mpv holds this across titles, so it has to be written either way or a
+      // title that was bold once stays bold.
+      await _nativeSetProperty(
+        native,
+        'sub-bold',
+        fontWeight >= 700 ? 'yes' : 'no',
+      );
+    }
+    final verticalOffset = _lastVerticalOffset;
+    if (verticalOffset != null) {
+      final marginY = (verticalOffset * 720).round();
+      await _nativeSetProperty(native, 'sub-margin-y', marginY.toString());
+    }
+    // Last, because it decides whether the colors above reach an ASS subtitle
+    // at all.
+    await _applyAssOverrideMode();
   }
 
   @override
@@ -2387,48 +2402,15 @@ class MediaKitPlayerBackend extends PlayerBackend {
   void _enableNativeSubtitleRendering() {
     Future.delayed(const Duration(milliseconds: 500), () async {
       // Read on the way out rather than on the way in, since the viewer can
-      // turn subtitles off while this is still pending.
-      if (_subtitlesDisabled) return;
+      // turn subtitles off, or leave the player, while this is still pending.
+      if (_isDisposed || _subtitlesDisabled) return;
       try {
         final native = _player.platform as NativePlayer;
         await _nativeSetProperty(native, 'sub-visibility', 'yes');
         await _nativeSetProperty(native, 'sub-ass', 'yes');
-        await _nativeSetProperty(native, 'sub-ass-override', 'yes');
         await _nativeSetProperty(native, 'sub-forced-events-only', 'no');
-        if (_lastTextColor != null) {
-          await _nativeSetProperty(
-            native,
-            'sub-color',
-            _argbToMpvColor(_lastTextColor!),
-          );
-        }
-        if (_lastBackgroundColor != null) {
-          await _nativeSetProperty(
-            native,
-            'sub-back-color',
-            _argbToMpvColor(_lastBackgroundColor!),
-          );
-        }
-        if (_lastStrokeColor != null) {
-          await _nativeSetProperty(
-            native,
-            'sub-border-color',
-            _argbToMpvColor(_lastStrokeColor!),
-          );
-          await _nativeSetProperty(native, 'sub-border-size', '2');
-        }
-        if (_lastFontSize != null) {
-          final mpvSize =
-              ((_lastFontSize! / 24.0) * 55.0).round().clamp(24, 120);
-          await _nativeSetProperty(native, 'sub-font-size', mpvSize.toString());
-        }
-        if (_lastFontWeight != null && _lastFontWeight! >= 700) {
-          await _nativeSetProperty(native, 'sub-bold', 'yes');
-        }
-        if (_lastVerticalOffset != null) {
-          final marginY = (_lastVerticalOffset! * 720).round();
-          await _nativeSetProperty(native, 'sub-margin-y', marginY.toString());
-        }
+        // Opening a stream resets the style mpv was holding.
+        await _writeSubtitleStyle(native);
       } catch (_) {}
     });
   }

@@ -71,6 +71,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   final _client = GetIt.instance<MediaServerClient>();
   final _prefs = GetIt.instance<UserPreferences>();
   final _screensaverController = GetIt.instance<ScreensaverController>();
+  SubtitleStyle? _lastSubtitleStyle;
 
   MediaKitPlayerBackend? get _activeMediaKitBackend {
     final backend = _manager.backend;
@@ -173,9 +174,10 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     _currentIndex = widget.startIndex;
     _applyPlayerDisplayMode();
     _applySubtitleStyle();
+    _prefs.addListener(_applySubtitleStyle);
     _backendSub = _manager.backendChangedStream.listen((backend) {
       if (!mounted) return;
-      _applySubtitleStyle();
+      _applySubtitleStyle(force: true);
       _listenForPlayerTrackChanges();
       setState(() {});
     });
@@ -216,6 +218,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     _hideTimer?.cancel();
     _programRefreshTimer?.cancel();
     _backendSub?.cancel();
+    _prefs.removeListener(_applySubtitleStyle);
     FocusManager.instance.removeListener(_onGlobalFocusChanged);
     _tracksChangedSub?.cancel();
     WidgetsBinding.instance.removeObserver(this);
@@ -683,6 +686,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
       }
       return false;
     }
+    _applySubtitleStyle(force: true);
     unawaited(_fetchCurrentProgram());
     _warmChannelCarousel();
     return true;
@@ -1503,13 +1507,16 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     if (mounted) Navigator.of(context).pop();
   }
 
-  void _applySubtitleStyle() {
+  /// [force] pushes even when nothing changed, for a new stream or backend.
+  void _applySubtitleStyle({bool force = false}) {
     final backend = _manager.backend;
     if (backend == null) return;
     final style = SubtitleStyle.forResolution(
       _prefs,
       _manager.currentResolution,
     );
+    if (!force && style == _lastSubtitleStyle) return;
+    _lastSubtitleStyle = style;
     unawaited(
       backend.configureSubtitleStyle(
         textColor: style.textColor,

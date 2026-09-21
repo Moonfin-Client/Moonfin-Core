@@ -409,50 +409,52 @@ class _ColorPickerTile extends StatefulWidget {
   State<_ColorPickerTile> createState() => _ColorPickerTileState();
 }
 
+/// Keyed by slug rather than by English display text, so a translated label
+/// cannot fall out of step with the color it names.
 const subtitlePresetColors = <String, int>{
-  'White': 0xFFFFFFFF,
-  'Light Grey': 0xFFCCCCCC,
-  'Grey': 0xFF808080,
-  'Dark Grey': 0xFF404040,
-  'Black': 0xFF000000,
-  'Yellow': 0xFFFFFF00,
-  'Green': 0xFF00FF00,
-  'Cyan': 0xFF00FFFF,
-  'Blue': 0xFF0000FF,
-  'Magenta': 0xFFFF00FF,
-  'Red': 0xFFFF0000,
-  'Navy': 0xFF000080,
-  'Transparent': 0x00000000,
-  'Semi-transparent Black': 0x80000000,
-  'Semi-transparent White': 0x80FFFFFF,
+  'white': 0xFFFFFFFF,
+  'light_gray': 0xFFCCCCCC,
+  'gray': 0xFF808080,
+  'dark_gray': 0xFF404040,
+  'black': 0xFF000000,
+  'yellow': 0xFFFFFF00,
+  'green': 0xFF00FF00,
+  'cyan': 0xFF00FFFF,
+  'blue': 0xFF0000FF,
+  'magenta': 0xFFFF00FF,
+  'red': 0xFFFF0000,
+  'navy': 0xFF000080,
+  'transparent': 0x00000000,
+  'semi_transparent_black': 0x80000000,
+  'semi_transparent_white': 0x80FFFFFF,
 };
 
-String subtitleColorLabel(String key, AppLocalizations l10n) {
+/// Null for a key with no translation, so a missing one shows up rather than
+/// reading back as the slug.
+String? subtitleColorLabel(String key, AppLocalizations l10n) {
   return switch (key) {
-    'White' => l10n.white,
-    'Light Grey' => l10n.lightGray,
-    'Grey' => l10n.gray,
-    'Dark Grey' => l10n.darkGray,
-    'Black' => l10n.black,
-    'Yellow' => l10n.yellow,
-    'Green' => l10n.green,
-    'Cyan' => l10n.cyan,
-    'Blue' => l10n.blue,
-    'Magenta' => l10n.magenta,
-    'Red' => l10n.red,
-    'Navy' => l10n.navy,
-    'Transparent' => l10n.transparent,
-    'Semi-transparent Black' => l10n.semiTransparentBlack,
-    'Semi-transparent White' => l10n.semiTransparentWhite,
-    _ => key,
+    'white' => l10n.white,
+    'light_gray' => l10n.lightGray,
+    'gray' => l10n.gray,
+    'dark_gray' => l10n.darkGray,
+    'black' => l10n.black,
+    'yellow' => l10n.yellow,
+    'green' => l10n.green,
+    'cyan' => l10n.cyan,
+    'blue' => l10n.blue,
+    'magenta' => l10n.magenta,
+    'red' => l10n.red,
+    'navy' => l10n.navy,
+    'transparent' => l10n.transparent,
+    'semi_transparent_black' => l10n.semiTransparentBlack,
+    'semi_transparent_white' => l10n.semiTransparentWhite,
+    _ => null,
   };
 }
 
 class _ColorPickerTileState extends State<_ColorPickerTile> {
   late final PreferenceBinding<int> _binding;
   bool _pickerOpen = false;
-
-  static const _presetColors = subtitlePresetColors;
 
   @override
   void initState() {
@@ -503,8 +505,8 @@ class _ColorPickerTileState extends State<_ColorPickerTile> {
     final current = _binding.value;
     final isTV = PlatformDetection.isTV;
     final entries = widget.allowTransparent
-        ? _presetColors.entries
-        : _presetColors.entries.where((e) => (e.value >> 24) & 0xFF != 0);
+        ? subtitlePresetColors.entries
+        : subtitlePresetColors.entries.where((e) => Color(e.value).a > 0);
     var picked = false;
     final result = await showFocusRestoringDialog<int>(
       context: context,
@@ -527,7 +529,7 @@ class _ColorPickerTileState extends State<_ColorPickerTile> {
                   ),
                 ),
               ),
-              title: Text(subtitleColorLabel(e.key, l10n)),
+              title: Text(subtitleColorLabel(e.key, l10n) ?? e.key),
               trailing: selected ? const Icon(Icons.check) : null,
               onTap: () {
                 if (picked) return;

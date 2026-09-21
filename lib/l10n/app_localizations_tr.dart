@@ -1970,38 +1970,38 @@ class AppLocalizationsTr extends AppLocalizations {
   String get hideMpvStats => 'MPV İstatistiklerini Gizle (Shift+I)';
 
   @override
-  String get keyboardShortcutsTitle => 'Keyboard shortcuts';
+  String get keyboardShortcutsTitle => 'Klavye kısayolları';
 
   @override
   String get keyboardShortcutsSubtitle =>
-      'Keys for the app, video player and reader';
+      'Uygulama, video oynatıcı ve okuyucu için kısayollar';
 
   @override
   String get keyboardShortcutsPlayerHint =>
-      'Press ? or F1 while a video plays to see this list without leaving the player.';
+      'Video oynatılırken oynatıcıdan çıkmadan bu listeyi görmek için ? veya F1 tuşuna basın.';
 
   @override
-  String get keyboardShortcutsSectionApp => 'Everywhere';
+  String get keyboardShortcutsSectionApp => 'Her Yerde';
 
   @override
-  String get keyboardShortcutsSectionAppScope => 'On any screen';
+  String get keyboardShortcutsSectionAppScope => 'Herhangi bir ekranda';
 
   @override
-  String get keyboardShortcutsSectionPlayer => 'Video player';
+  String get keyboardShortcutsSectionPlayer => 'Video Oynatıcı';
 
   @override
   String get keyboardShortcutsSectionPlayerScope =>
-      'While a video is open, playing or paused';
+      'Bir video açık, oynatılıyor veya duraklatılmışken';
 
   @override
-  String get keyboardShortcutsSectionReader => 'Book and comic reader';
+  String get keyboardShortcutsSectionReader => 'Kitap ve çizgi roman okuyucusu';
 
   @override
   String get keyboardShortcutsSectionReaderScope =>
-      'While reading a book or comic';
+      'Kitap ve çizgi roman okuyucusundayken';
 
   @override
-  String get keyNameArrowKeys => 'Arrow keys';
+  String get keyNameArrowKeys => 'Yön tuşları';
 
   @override
   String get keyNameSpace => 'Space';
@@ -2037,69 +2037,70 @@ class AppLocalizationsTr extends AppLocalizations {
   String get keyNameAlt => 'Alt';
 
   @override
-  String get keyNameScrollWheel => 'Scroll wheel';
+  String get keyNameScrollWheel => 'Fare tekerleği';
 
   @override
-  String get shortcutMoveFocus => 'Move between items';
+  String get shortcutMoveFocus => 'Öğeler arasında gezin';
 
   @override
-  String get shortcutActivate => 'Open the selected item';
+  String get shortcutActivate => 'Seçili öğeyi aç';
 
   @override
-  String get shortcutGoBack => 'Go back';
+  String get shortcutGoBack => 'Geri git';
 
   @override
-  String get shortcutToggleFullscreen => 'Fullscreen on or off';
+  String get shortcutToggleFullscreen => 'Tam ekranı aç yada kapat';
 
   @override
-  String get shortcutQuit => 'Quit Moonfin';
+  String get shortcutQuit => 'Moonfin\'den çık';
 
   @override
-  String get shortcutPlayPause => 'Play or pause';
+  String get shortcutPlayPause => 'Oynat veya duraklat';
 
   @override
   String get shortcutShowControlsOrPlayPause =>
-      'Show controls, or play/pause if shown';
+      'Kontrolleri göster veya açıksa oynat/duraklat';
 
   @override
-  String get shortcutSeekBack => 'Seek back (hold for bigger jumps)';
+  String get shortcutSeekBack => 'Geri sar (büyük atlamalar için basılı tut)';
 
   @override
-  String get shortcutSeekForward => 'Seek forward (hold for bigger jumps)';
+  String get shortcutSeekForward =>
+      'İleri sar (büyük atlamalar için basılı tut)';
 
   @override
-  String get shortcutVolumeUp => 'Volume up';
+  String get shortcutVolumeUp => 'Sesi yükselt';
 
   @override
-  String get shortcutVolumeDown => 'Volume down';
+  String get shortcutVolumeDown => 'Sesi alçalt';
 
   @override
-  String get shortcutMute => 'Mute or unmute';
+  String get shortcutMute => 'Sesi kapat yada sesi aç';
 
   @override
-  String get shortcutToggleSubtitles => 'Subtitles on or off';
+  String get shortcutToggleSubtitles => 'Altyazıyı aç yada kapat';
 
   @override
-  String get shortcutSlower => 'Slow down';
+  String get shortcutSlower => 'Yavaşlat';
 
   @override
-  String get shortcutFaster => 'Speed up';
+  String get shortcutFaster => 'Hızlandır';
 
   @override
-  String get shortcutPlaybackInfo => 'Show playback information';
+  String get shortcutPlaybackInfo => 'Oynatma bilgilerini göster';
 
   @override
-  String get shortcutMpvStats => 'mpv statistics on or off';
+  String get shortcutMpvStats => 'mpv istatistiklerini aç yada kapat';
 
   @override
   String get shortcutLeaveFullscreenOrStop =>
-      'Exit fullscreen, or stop if not fullscreen';
+      'Tam ekrandan çık veya tam ekranda değilse durdur';
 
   @override
-  String get shortcutStopPlayback => 'Stop playback';
+  String get shortcutStopPlayback => 'Oynatmayı durdur';
 
   @override
-  String get shortcutNextItem => 'Next item';
+  String get shortcutNextItem => 'Sonraki öğe';
 
   @override
   String get shortcutPreviousItem => 'Previous item';

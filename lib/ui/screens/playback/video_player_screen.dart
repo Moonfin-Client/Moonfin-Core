@@ -833,7 +833,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       _showBringupFailureIfAny(state);
       unawaited(_syncAutoHdrSwitching());
       unawaited(_syncMedia3ZoomMode());
-      _applySubtitleStyle();
+      // Anything earlier still reports the outgoing item's resolution, which
+      // would put the HDR palette on an SDR title.
+      if (state.phase == PlaybackBringupPhase.ready) {
+        _applySubtitleStyle(force: true);
+      }
     });
     _syncPlayManager?.addListener(_onSyncPlayChanged);
     _prefs.addListener(_onPlaybackPrefsChanged);
@@ -877,8 +881,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       if (PlatformDetection.isDesktop) {
         unawaited(backend.setVolume(_playerVolume));
       }
-      _applySubtitleStyle();
       if (!mounted) return;
+      _applySubtitleStyle(force: true);
       setState(() {});
     });
     _syncMedia3VolumeBoostLevel(resetWhenUnavailable: true);
@@ -2419,11 +2423,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     if (!mounted) return;
     _applySubtitleStyle();
     final zoom = _prefs.get(UserPreferences.playerZoomMode);
-    if (zoom != _zoomMode) {
-      _zoomMode = zoom;
-      unawaited(_syncMedia3ZoomMode());
-    }
-    setState(() {});
+    if (zoom == _zoomMode) return;
+    setState(() => _zoomMode = zoom);
+    unawaited(_syncMedia3ZoomMode());
   }
 
   void _syncMediaQueuingPreference() {
@@ -3408,7 +3410,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     );
   }
 
-  void _applySubtitleStyle() {
+  (SubtitleStyle, bool, bool)? _lastSubtitleStyle;
+
+  /// [force] pushes even when nothing changed, for a new stream or backend.
+  void _applySubtitleStyle({bool force = false}) {
     final backend = _activeBackend;
     if (backend == null) return;
 
@@ -3416,41 +3421,42 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       _prefs,
       _manager.currentResolution,
     );
-    final textColor = style.textColor;
-    final backgroundColor = style.backgroundColor;
-    final strokeColor = style.strokeColor;
-    final fontSize = style.fontSize;
-    final fontWeight = style.fontWeight;
-    final verticalOffset = style.verticalOffset;
+    final embeddedStyles = _prefs.get(
+      UserPreferences.subtitlesUseEmbeddedStyles,
+    );
+    final embeddedFontSizes = _prefs.get(
+      UserPreferences.subtitlesUseEmbeddedFontSizes,
+    );
+    // Every preference write lands here and a push costs several native round
+    // trips, so most calls have nothing to do.
+    final next = (style, embeddedStyles, embeddedFontSizes);
+    if (!force && next == _lastSubtitleStyle) return;
+    _lastSubtitleStyle = next;
 
     // Embedded-style overrides are Media3-specific (Android only) and live on
     // the Media3PlayerBackend's wider signature, not the base PlayerBackend.
     if (backend is Media3PlayerBackend) {
       unawaited(
         backend.configureSubtitleStyle(
-          textColor: textColor,
-          backgroundColor: backgroundColor,
-          strokeColor: strokeColor,
-          fontSize: fontSize,
-          fontWeight: fontWeight,
-          verticalOffset: verticalOffset,
-          applyEmbeddedStyles: _prefs.get(
-            UserPreferences.subtitlesUseEmbeddedStyles,
-          ),
-          applyEmbeddedFontSizes: _prefs.get(
-            UserPreferences.subtitlesUseEmbeddedFontSizes,
-          ),
+          textColor: style.textColor,
+          backgroundColor: style.backgroundColor,
+          strokeColor: style.strokeColor,
+          fontSize: style.fontSize,
+          fontWeight: style.fontWeight,
+          verticalOffset: style.verticalOffset,
+          applyEmbeddedStyles: embeddedStyles,
+          applyEmbeddedFontSizes: embeddedFontSizes,
         ),
       );
     } else {
       unawaited(
         backend.configureSubtitleStyle(
-          textColor: textColor,
-          backgroundColor: backgroundColor,
-          strokeColor: strokeColor,
-          fontSize: fontSize,
-          fontWeight: fontWeight,
-          verticalOffset: verticalOffset,
+          textColor: style.textColor,
+          backgroundColor: style.backgroundColor,
+          strokeColor: style.strokeColor,
+          fontSize: style.fontSize,
+          fontWeight: style.fontWeight,
+          verticalOffset: style.verticalOffset,
         ),
       );
     }

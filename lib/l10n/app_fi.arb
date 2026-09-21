@@ -12453,5 +12453,17 @@
     "setupDetailMinimalistHint": "Kuvitus, yksi toistopainike ja jaksot.",
     "@setupDetailMinimalistHint": {
         "description": "What the minimalist detail screen style gives you"
+    },
+    "guideRepeatBadge": "Toista",
+    "@guideRepeatBadge": {
+        "description": "Short badge label shown on a rerun in the guide hero band"
+    },
+    "keepVideoClearOfDynamicIsland": "Varmista, että video ei peitä Dynamic Islandia",
+    "@keepVideoClearOfDynamicIsland": {
+        "description": "iPhone playback setting that holds the picture back from the camera housing in landscape"
+    },
+    "keepVideoClearOfDynamicIslandDescription": "Vaakakuvausasennossa kamerakotelo peittää näytön yhden reunan. Tämä rajoittaa kuvan ulottuvuutta, mikä vaikuttaa ainoastaan videoihin, jotka ovat riittävän leveitä ulottuakseen sinne asti.",
+    "@keepVideoClearOfDynamicIslandDescription": {
+        "description": "Description for the iPhone setting that keeps video clear of the Dynamic Island"
     }
 }

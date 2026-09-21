@@ -56,6 +56,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   String? _segmentsLoadedForItemId;
   StreamSubscription<Duration>? _positionSub;
   UserPreferences? _prefsListened;
+  SubtitleStyle? _lastSubtitleStyle;
   String _lastTrickplayPrefs = '';
   String _lastTimeSlots = '';
   TrickplayInfo? _trickplayInfo;
@@ -108,6 +109,9 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
           setState(() => _bringupState = state);
         }
         _pushMetadata();
+        if (state.phase == PlaybackBringupPhase.ready) {
+          _pushSubtitleStyle(force: true);
+        }
         // The initState load can run before the queue item resolves, so retry
         // here. The per-item guard makes repeat events a no-op.
         _loadSegmentsForCurrentItem();
@@ -228,7 +232,8 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     'use24Hour': prefs.get(UserPreferences.use24HourClock),
   };
 
-  void _pushSubtitleStyle() {
+  /// [force] pushes even when nothing changed, for a new stream or backend.
+  void _pushSubtitleStyle({bool force = false}) {
     final backend = _backend;
     if (backend == null) return;
     try {
@@ -236,6 +241,8 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
         GetIt.instance<UserPreferences>(),
         _manager?.currentResolution,
       );
+      if (!force && style == _lastSubtitleStyle) return;
+      _lastSubtitleStyle = style;
       backend.configureSubtitleStyle(
         textColor: style.textColor,
         backgroundColor: style.backgroundColor,
@@ -729,6 +736,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   void _onPrefsChanged() {
     final prefs = _prefsListened;
     if (prefs == null) return;
+    _pushSubtitleStyle();
     final slots = _timeSlotsSnapshot(prefs);
     if (slots != _lastTimeSlots) {
       _lastTimeSlots = slots;

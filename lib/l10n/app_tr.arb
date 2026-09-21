@@ -10633,5 +10633,173 @@
                 "type": "String"
             }
         }
+    },
+    "keyboardShortcutsTitle": "Klavye kısayolları",
+    "@keyboardShortcutsTitle": {
+        "description": "Title of the screen and dialog that list every keyboard shortcut"
+    },
+    "keyboardShortcutsSubtitle": "Uygulama, video oynatıcı ve okuyucu için kısayollar",
+    "@keyboardShortcutsSubtitle": {
+        "description": "Subtitle of the About tile that opens the keyboard shortcut list"
+    },
+    "keyboardShortcutsPlayerHint": "Video oynatılırken oynatıcıdan çıkmadan bu listeyi görmek için ? veya F1 tuşuna basın.",
+    "@keyboardShortcutsPlayerHint": {
+        "description": "Footnote on the keyboard shortcuts settings screen"
+    },
+    "keyboardShortcutsSectionApp": "Her Yerde",
+    "@keyboardShortcutsSectionApp": {
+        "description": "Keyboard shortcut section for keys that work on every screen"
+    },
+    "keyboardShortcutsSectionAppScope": "Herhangi bir ekranda",
+    "@keyboardShortcutsSectionAppScope": {
+        "description": "Under the Everywhere section title: when those keys apply"
+    },
+    "keyboardShortcutsSectionPlayer": "Video Oynatıcı",
+    "@keyboardShortcutsSectionPlayer": {
+        "description": "Keyboard shortcut section for the video player"
+    },
+    "keyboardShortcutsSectionPlayerScope": "Bir video açık, oynatılıyor veya duraklatılmışken",
+    "@keyboardShortcutsSectionPlayerScope": {
+        "description": "Under the Video player section title: when those keys apply"
+    },
+    "keyboardShortcutsSectionReader": "Kitap ve çizgi roman okuyucusu",
+    "@keyboardShortcutsSectionReader": {
+        "description": "Keyboard shortcut section for the ebook and comic reader"
+    },
+    "keyboardShortcutsSectionReaderScope": "Kitap ve çizgi roman okuyucusundayken",
+    "@keyboardShortcutsSectionReaderScope": {
+        "description": "Under the reader section title: when those keys apply"
+    },
+    "keyNameArrowKeys": "Yön tuşları",
+    "@keyNameArrowKeys": {
+        "description": "Key cap label standing for the four arrow keys"
+    },
+    "keyNameSpace": "Space",
+    "@keyNameSpace": {
+        "description": "Key cap label for the space bar"
+    },
+    "keyNameEnter": "Enter",
+    "@keyNameEnter": {
+        "description": "Key cap label for the Enter key"
+    },
+    "keyNameEsc": "Esc",
+    "@keyNameEsc": {
+        "description": "Key cap label for the Escape key"
+    },
+    "keyNameAlt": "Alt",
+    "@keyNameAlt": {
+        "description": "Key cap label for the Alt modifier"
+    },
+    "keyNameBackspace": "Backspace",
+    "@keyNameBackspace": {
+        "description": "Key cap label for the Backspace key"
+    },
+    "keyNamePageUp": "Page Up",
+    "@keyNamePageUp": {
+        "description": "Key cap label for the Page Up key"
+    },
+    "keyNamePageDown": "Page Down",
+    "@keyNamePageDown": {
+        "description": "Key cap label for the Page Down key"
+    },
+    "keyNameHome": "Home",
+    "@keyNameHome": {
+        "description": "Key cap label for the Home key"
+    },
+    "keyNameEnd": "End",
+    "@keyNameEnd": {
+        "description": "Key cap label for the End key"
+    },
+    "keyNameShift": "Shift",
+    "@keyNameShift": {
+        "description": "Key cap label for the Shift modifier"
+    },
+    "keyNameCtrl": "Ctrl",
+    "@keyNameCtrl": {
+        "description": "Key cap label for the Control modifier"
+    },
+    "keyNameScrollWheel": "Fare tekerleği",
+    "@keyNameScrollWheel": {
+        "description": "Key cap label standing for the mouse scroll wheel"
+    },
+    "shortcutMoveFocus": "Öğeler arasında gezin",
+    "@shortcutMoveFocus": {
+        "description": "What the arrow keys do outside the player"
+    },
+    "shortcutActivate": "Seçili öğeyi aç",
+    "@shortcutActivate": {
+        "description": "What Enter does outside the player"
+    },
+    "shortcutGoBack": "Geri git",
+    "@shortcutGoBack": {
+        "description": "What Esc and Backspace do outside the player"
+    },
+    "shortcutToggleFullscreen": "Tam ekranı aç yada kapat",
+    "@shortcutToggleFullscreen": {
+        "description": "F11 and Alt+Enter anywhere, F in the player"
+    },
+    "shortcutQuit": "Moonfin'den çık",
+    "@shortcutQuit": {
+        "description": "What Ctrl+Q does on desktop"
+    },
+    "shortcutPlayPause": "Oynat veya duraklat",
+    "@shortcutPlayPause": {
+        "description": "Player shortcut action"
+    },
+    "shortcutShowControlsOrPlayPause": "Kontrolleri göster veya açıksa oynat/duraklat",
+    "@shortcutShowControlsOrPlayPause": {
+        "description": "What Enter does in the player"
+    },
+    "shortcutSeekBack": "Geri sar (büyük atlamalar için basılı tut)",
+    "@shortcutSeekBack": {
+        "description": "Player shortcut action. The step is the skip back length from settings"
+    },
+    "shortcutSeekForward": "İleri sar (büyük atlamalar için basılı tut)",
+    "@shortcutSeekForward": {
+        "description": "Player shortcut action. The step is the skip forward length from settings"
+    },
+    "shortcutVolumeUp": "Sesi yükselt",
+    "@shortcutVolumeUp": {
+        "description": "Player shortcut action"
+    },
+    "shortcutVolumeDown": "Sesi alçalt",
+    "@shortcutVolumeDown": {
+        "description": "Player shortcut action"
+    },
+    "shortcutMute": "Sesi kapat yada sesi aç",
+    "@shortcutMute": {
+        "description": "Player shortcut action"
+    },
+    "shortcutToggleSubtitles": "Altyazıyı aç yada kapat",
+    "@shortcutToggleSubtitles": {
+        "description": "Player shortcut action"
+    },
+    "shortcutSlower": "Yavaşlat",
+    "@shortcutSlower": {
+        "description": "Player shortcut action"
+    },
+    "shortcutFaster": "Hızlandır",
+    "@shortcutFaster": {
+        "description": "Player shortcut action"
+    },
+    "shortcutPlaybackInfo": "Oynatma bilgilerini göster",
+    "@shortcutPlaybackInfo": {
+        "description": "Player shortcut action"
+    },
+    "shortcutMpvStats": "mpv istatistiklerini aç yada kapat",
+    "@shortcutMpvStats": {
+        "description": "Player shortcut action, Windows only"
+    },
+    "shortcutLeaveFullscreenOrStop": "Tam ekrandan çık veya tam ekranda değilse durdur",
+    "@shortcutLeaveFullscreenOrStop": {
+        "description": "What Esc does in the player"
+    },
+    "shortcutStopPlayback": "Oynatmayı durdur",
+    "@shortcutStopPlayback": {
+        "description": "Player shortcut action"
+    },
+    "shortcutNextItem": "Sonraki öğe",
+    "@shortcutNextItem": {
+        "description": "Player shortcut action for the next-track media key"
     }
 }

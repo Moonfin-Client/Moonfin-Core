@@ -12944,6 +12944,33 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
   String get appTitle => 'Moonfin';
 
   @override
+  String get animeMarkerFiller => 'Filler';
+
+  @override
+  String get animeMarkerMixed => 'Mixed';
+
+  @override
+  String get animeMarkerAnimeCanon => 'Anime Canon';
+
+  @override
+  String get animeMarkerMangaCanon => 'Manga Canon';
+
+  @override
+  String get animeMarkerSubbed => 'Subbed';
+
+  @override
+  String get animeMarkerDubbed => 'Dubbed';
+
+  @override
+  String get animeMarkerSubbedAndDubbed => 'Subbed/Dubbed';
+
+  @override
+  String get animeMarkerPending => 'Pending';
+
+  @override
+  String get animeMarkerRecap => 'Recap';
+
+  @override
   String get accountPreferences => 'ACCOUNT PREFERENCES';
 
   @override
@@ -13077,7 +13104,7 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
 
   @override
   String get detailScreenStyleSubtitle =>
-      'Classic is the original centred Moonfin layout. Modern is a responsive cinematic layout. Spotlight is a hero-first layout with pop-up content cards. Nouveau is a full-screen layout with sections stacked down the page.';
+      'Classic is the original centred Moonfin layout. Modern is a responsive cinematic layout. Spotlight is a hero-first layout with pop-up content cards. Nouveau is a full-screen layout with sections stacked down the page. Minimalist is artwork, one play button and the episodes.';
 
   @override
   String get detailScreenStyleMoonfin => 'Classic';
@@ -13090,6 +13117,160 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
 
   @override
   String get spotlightMoreActions => 'More Actions';
+
+  @override
+  String get spotlightCastCrewStudios => 'Cast, Crew, and Studios';
+
+  @override
+  String get spotlightChaptersExtras => 'Chapters and Extras';
+
+  @override
+  String get spotlightSimilarRecommendations => 'Similar and Recommendations';
+
+  @override
+  String get spotlightSeasonsEpisodes => 'Seasons and Episodes';
+
+  @override
+  String get spotlightMoreEpisodes => 'More Episodes';
+
+  @override
+  String get spotlightFilmography => 'Filmography';
+
+  @override
+  String get spotlightCollectionsCard => 'Collections';
+
+  @override
+  String get spotlightPlaylistOrder => 'Playlist Order';
+
+  @override
+  String get spotlightMoviesAndShows => 'Movies & Shows';
+
+  @override
+  String get spotlightSimilarSeerr => 'Similar (Seerr)';
+
+  @override
+  String get spotlightRecommendationsSeerr => 'Recommendations (Seerr)';
+
+  @override
+  String spotlightPeopleCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count people',
+      one: '1 person',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String spotlightFactsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count facts',
+      one: '1 fact',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String spotlightTagsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count tags',
+      one: '1 tag',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String spotlightStudiosCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count studios',
+      one: '1 studio',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String spotlightChaptersCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count chapters',
+      one: '1 chapter',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String spotlightExtrasCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count extras',
+      one: '1 extra',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String spotlightSeasonsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count seasons',
+      one: '1 season',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String spotlightEpisodesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count episodes',
+      one: '1 episode',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String spotlightMoviesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count movies',
+      one: '1 movie',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String spotlightShowsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count shows',
+      one: '1 show',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String spotlightTracksCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count tracks',
+      one: '1 track',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get expandedTabs => 'Expanded Tabs';
