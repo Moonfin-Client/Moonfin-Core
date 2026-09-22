@@ -63,15 +63,23 @@ void main() {
       when(() => client.itemsApi).thenReturn(itemsApi);
     });
 
+    void stubItems(String id, List<Map<String, dynamic>> items) {
+      when(
+        () => itemsApi.getPlaylistItems(id, limit: any(named: 'limit')),
+      ).thenAnswer((_) async => {'Items': items});
+    }
+
+    void verifyRead(String id) {
+      verify(
+        () => itemsApi.getPlaylistItems(id, limit: any(named: 'limit')),
+      ).called(1);
+    }
+
     test('classifies a playlist with only MusicVideo items as MusicVideo', () async {
-      when(() => itemsApi.getPlaylistItems('pl-1')).thenAnswer(
-        (_) async => {
-          'Items': [
-            {'Type': 'MusicVideo', 'MediaType': 'Video'},
-            {'Type': 'MusicVideo', 'MediaType': 'Video'},
-          ],
-        },
-      );
+      stubItems('pl-1', [
+        {'Type': 'MusicVideo', 'MediaType': 'Video'},
+        {'Type': 'MusicVideo', 'MediaType': 'Video'},
+      ]);
 
       final category = await resolvePlaylistCategory(
         client,
@@ -81,14 +89,10 @@ void main() {
     });
 
     test('classifies a playlist with MusicVideo and Audio tracks as MusicVideo', () async {
-      when(() => itemsApi.getPlaylistItems('pl-2')).thenAnswer(
-        (_) async => {
-          'Items': [
-            {'Type': 'MusicVideo', 'MediaType': 'Video'},
-            {'Type': 'Audio', 'MediaType': 'Audio'},
-          ],
-        },
-      );
+      stubItems('pl-2', [
+        {'Type': 'MusicVideo', 'MediaType': 'Video'},
+        {'Type': 'Audio', 'MediaType': 'Audio'},
+      ]);
 
       final category = await resolvePlaylistCategory(
         client,
@@ -98,48 +102,40 @@ void main() {
     });
 
     test('classifies a playlist with only Audio tracks as Audio', () async {
-      when(() => itemsApi.getPlaylistItems('pl-3')).thenAnswer(
-        (_) async => {
-          'Items': [
-            {'Type': 'Audio', 'MediaType': 'Audio'},
-            {'Type': 'Audio', 'MediaType': 'Audio'},
-          ],
-        },
-      );
+      stubItems('pl-3', [
+        {'Type': 'Audio', 'MediaType': 'Audio'},
+        {'Type': 'Audio', 'MediaType': 'Audio'},
+      ]);
 
       final category = await resolvePlaylistCategory(
         client,
         _playlistItem('pl-3', mediaType: 'Audio'),
       );
       expect(category, 'Audio');
+      // The catch falls back to the summary, which says Audio here too, so
+      // check the read actually happened.
+      verifyRead('pl-3');
     });
 
     test('classifies a playlist with movies/shows as Video', () async {
-      when(() => itemsApi.getPlaylistItems('pl-4')).thenAnswer(
-        (_) async => {
-          'Items': [
-            {'Type': 'Movie', 'MediaType': 'Video'},
-            {'Type': 'Episode', 'MediaType': 'Video'},
-          ],
-        },
-      );
+      stubItems('pl-4', [
+        {'Type': 'Movie', 'MediaType': 'Video'},
+        {'Type': 'Episode', 'MediaType': 'Video'},
+      ]);
 
       final category = await resolvePlaylistCategory(
         client,
         _playlistItem('pl-4', mediaType: 'Video'),
       );
       expect(category, 'Video');
+      verifyRead('pl-4');
     });
 
     test('classifies a playlist with movies and music videos as Mixed', () async {
-      when(() => itemsApi.getPlaylistItems('pl-5')).thenAnswer(
-        (_) async => {
-          'Items': [
-            {'Type': 'Movie', 'MediaType': 'Video'},
-            {'Type': 'MusicVideo', 'MediaType': 'Video'},
-          ],
-        },
-      );
+      stubItems('pl-5', [
+        {'Type': 'Movie', 'MediaType': 'Video'},
+        {'Type': 'MusicVideo', 'MediaType': 'Video'},
+      ]);
 
       final category = await resolvePlaylistCategory(
         client,
@@ -149,19 +145,37 @@ void main() {
     });
 
     test('MusicVideo playlists are considered browsable in video rows', () async {
-      when(() => itemsApi.getPlaylistItems('pl-6')).thenAnswer(
-        (_) async => {
-          'Items': [
-            {'Type': 'MusicVideo', 'MediaType': 'Video'},
-          ],
-        },
-      );
+      stubItems('pl-6', [
+        {'Type': 'MusicVideo', 'MediaType': 'Video'},
+      ]);
 
       final browsable = await playlistHasBrowsableItems(
         client,
         _playlistItem('pl-6', mediaType: 'Video'),
       );
       expect(browsable, isTrue);
+    });
+    test('reads a bounded page rather than the whole playlist', () async {
+      stubItems('pl-7', [
+        {'Type': 'Audio', 'MediaType': 'Audio'},
+      ]);
+
+      await resolvePlaylistCategory(
+        client,
+        _playlistItem('pl-7', mediaType: 'Audio'),
+      );
+
+      final limit = verify(
+        () => itemsApi.getPlaylistItems(
+          'pl-7',
+          limit: captureAny(named: 'limit'),
+        ),
+      ).captured.single;
+      expect(
+        limit,
+        isPositive,
+        reason: 'an unbounded read pulls every item of a long playlist',
+      );
     });
   });
 }

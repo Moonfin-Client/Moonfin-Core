@@ -50,8 +50,15 @@ String _categoryForMediaType(String? mediaType) {
   };
 }
 
-/// The category a playlist belongs to, one of Video, MusicVideo, Audio, AudioBook,
-/// Book, Photo or Mixed. Mixed also covers a playlist that's empty or unreadable.
+/// How many of a playlist's items are read to classify it. The request sits on
+/// the path that paints the playlists page and every item comes back with its
+/// full row, so a long playlist is classified from its first page. One whose
+/// types only diverge past this many items is binned by that sample.
+const _classificationSampleSize = 200;
+
+/// The category a playlist belongs to, one of Video, MusicVideo, Audio,
+/// AudioBook, Book, Photo or Mixed. Mixed also covers a playlist that's empty
+/// or unreadable.
 Future<String> resolvePlaylistCategory(
   MediaServerClient client,
   AggregatedItem item, {
@@ -68,10 +75,10 @@ Future<String> resolvePlaylistCategory(
     return 'Mixed';
   }
 
-  // Book and Photo summaries are specific enough to take at face value.
-  // Video and Audio aren't, since the server calls both music and audiobooks
-  // Audio, tags a playlist of music videos Audio or Video, and can't tell
-  // music video playlists apart from movie or TV playlists without checking items.
+  // Book and Photo summaries are specific enough to take at face value. Video
+  // and Audio aren't: the server calls both music and audiobooks Audio, tags a
+  // playlist of music videos either Audio or Video, and gives a music video
+  // playlist the same summary as a movie one.
   final summaryCategory = _categoryForMediaType(
     item.rawData['MediaType'] as String?,
   );
@@ -80,7 +87,10 @@ Future<String> resolvePlaylistCategory(
   }
 
   try {
-    final response = await client.itemsApi.getPlaylistItems(item.id);
+    final response = await client.itemsApi.getPlaylistItems(
+      item.id,
+      limit: _classificationSampleSize,
+    );
     final rawItems = ((response['Items'] as List?) ?? const [])
         .cast<Map<String, dynamic>>();
     if (rawItems.isEmpty) {

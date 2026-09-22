@@ -24,6 +24,7 @@ import '../../../util/artwork_request_size.dart';
 import '../home/home_row_prefetch.dart';
 import '../../../util/focus/dpad_keys.dart';
 import '../../../util/focus/grid_focus_node_mixin.dart';
+import '../../../util/focus/grid_section_target.dart';
 import '../../../util/platform_detection.dart';
 import '../../navigation/destinations.dart';
 import '../../navigation/route_lifecycle_observer.dart';
@@ -1232,13 +1233,14 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
         if (_vm.isPlaylistBrowse && _vm.groupByType) {
           final groupedMap = _vm.groupedPlaylists;
           final groupEntries = groupedMap.entries.toList();
+          final sectionLengths = [
+            for (final entry in groupEntries) entry.value.length,
+          ];
           final slivers = <Widget>[];
 
           for (var s = 0; s < groupEntries.length; s++) {
             final categoryKey = groupEntries[s].key;
             final categoryItems = groupEntries[s].value;
-            final isFirstSection = s == 0;
-            final isLastSection = s == groupEntries.length - 1;
 
             final categoryTitle = switch (categoryKey) {
               'Video' => l10n.videoPlaylistsSection,
@@ -1280,67 +1282,30 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
                     (context, index) {
                       final item = categoryItems[index];
                       final itemAspectRatio = _itemAspectRatio(item);
-                      final col = index % crossAxisCount;
-                      final row = index ~/ crossAxisCount;
-                      final rowCount =
-                          (categoryItems.length + crossAxisCount - 1) ~/
-                          crossAxisCount;
-                      final isFirstRow = row == 0;
-                      final isLastRow = row == rowCount - 1;
 
-                      VoidCallback? onTvUp;
-                      if (!isFirstRow) {
-                        final targetIdx = index - crossAxisCount;
-                        final targetId = categoryItems[targetIdx].id;
-                        onTvUp = () {
-                          getGridItemFocusNode(indexInItems[targetId] ?? targetIdx)
-                              .requestFocus();
-                        };
-                      } else if (isFirstSection) {
-                        onTvUp = () {
-                          if (_allLetterFocusNode.context != null) {
-                            _allLetterFocusNode.requestFocus();
-                          } else {
-                            _homeButtonFocusNode.requestFocus();
-                          }
-                        };
-                      } else {
-                        final prevItems = groupEntries[s - 1].value;
-                        final prevCount = prevItems.length;
-                        final prevRowCount =
-                            (prevCount + crossAxisCount - 1) ~/ crossAxisCount;
-                        final prevLastRowStart =
-                            (prevRowCount - 1) * crossAxisCount;
-                        final targetCol =
-                            math.min(col, prevCount - 1 - prevLastRowStart);
-                        final targetIdx = prevLastRowStart + targetCol;
-                        final targetId = prevItems[targetIdx].id;
-                        onTvUp = () {
-                          getGridItemFocusNode(indexInItems[targetId] ?? targetIdx)
-                              .requestFocus();
-                        };
+                      GridSectionCell? cell({required bool down}) =>
+                          gridSectionTarget(
+                            sectionLengths: sectionLengths,
+                            crossAxisCount: crossAxisCount,
+                            section: s,
+                            index: index,
+                            down: down,
+                          );
+                      VoidCallback? focusCell(GridSectionCell? target) {
+                        if (target == null) return null;
+                        final cards = groupEntries[target.section].value;
+                        final node = indexInItems[cards[target.index].id];
+                        if (node == null) return null;
+                        return () => getGridItemFocusNode(node).requestFocus();
                       }
 
-                      VoidCallback? onTvDown;
-                      if (!isLastRow) {
-                        final nextIdx = index + crossAxisCount;
-                        final targetIdx = nextIdx < categoryItems.length
-                            ? nextIdx
-                            : categoryItems.length - 1;
-                        final targetId = categoryItems[targetIdx].id;
-                        onTvDown = () {
-                          getGridItemFocusNode(indexInItems[targetId] ?? targetIdx)
-                              .requestFocus();
-                        };
-                      } else if (!isLastSection) {
-                        final nextItems = groupEntries[s + 1].value;
-                        final targetCol = math.min(col, nextItems.length - 1);
-                        final targetId = nextItems[targetCol].id;
-                        onTvDown = () {
-                          getGridItemFocusNode(indexInItems[targetId] ?? targetCol)
-                              .requestFocus();
-                        };
-                      }
+                      final upCell = cell(down: false);
+                      final onTvUp = upCell == null
+                          ? _focusAboveGrid
+                          : focusCell(upCell);
+                      // Nothing below leaves the bottom edge to the pagination
+                      // the card falls through to.
+                      final onTvDown = focusCell(cell(down: true));
 
                       return _buildGridCard(
                         item: item,
@@ -1461,6 +1426,16 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     );
   }
 
+  /// The alphabet bar sits directly above the grid, so it takes focus from the
+  /// top row, and the header button covers a page that shows no bar.
+  void _focusAboveGrid() {
+    if (_allLetterFocusNode.context != null) {
+      _allLetterFocusNode.requestFocus();
+    } else {
+      _homeButtonFocusNode.requestFocus();
+    }
+  }
+
   /// [index] keys the focus node and is the card's place in the full item list,
   /// so it stays put as more pages arrive. [positionInSection] and
   /// [sectionCount] describe the grid it's drawn in, which is one category once
@@ -1540,11 +1515,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
               onTvUp();
               return KeyEventResult.handled;
             } else if (positionInSection < crossAxisCount) {
-              if (_allLetterFocusNode.context != null) {
-                _allLetterFocusNode.requestFocus();
-              } else {
-                _homeButtonFocusNode.requestFocus();
-              }
+              _homeButtonFocusNode.requestFocus();
               return KeyEventResult.handled;
             }
           }
