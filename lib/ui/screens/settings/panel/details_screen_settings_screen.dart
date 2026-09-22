@@ -39,6 +39,7 @@ class _DetailsScreenSettingsScreenState
               adaptiveListSection(
                 children: [
                   EnumPreferenceTile<DetailScreenStyle>(
+                    key: const ValueKey('pref_detail_screen_style'),
                     autofocus: true,
                     preference: UserPreferences.detailScreenStyle,
                     title: l10n.detailScreenStyle,

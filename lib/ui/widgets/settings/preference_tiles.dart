@@ -464,11 +464,13 @@ class EnumPreferenceTile<T extends Enum> extends StatefulWidget {
 class _EnumPreferenceTileState<T extends Enum>
     extends State<EnumPreferenceTile<T>> {
   late PreferenceBinding<T> _binding;
+  late final FocusNode _focusNode;
   bool _pickerOpen = false;
 
   @override
   void initState() {
     super.initState();
+    _focusNode = FocusNode(debugLabel: 'EnumPreferenceTile_${widget.preference.key}');
     _binding = PreferenceBinding(
       GetIt.instance<PreferenceStore>(),
       widget.preference,
@@ -487,6 +489,7 @@ class _EnumPreferenceTileState<T extends Enum>
 
   @override
   void dispose() {
+    _focusNode.dispose();
     _binding.dispose();
     super.dispose();
   }
@@ -501,6 +504,7 @@ class _EnumPreferenceTileState<T extends Enum>
           final current = values.contains(value) ? value : values.first;
           final label = widget.labelOf(current);
           return ListTile(
+            focusNode: _focusNode,
             autofocus: widget.autofocus,
             leading: widget.icon != null
                 ? buildSettingsLeadingIconShell(
@@ -606,6 +610,13 @@ class _EnumPreferenceTileState<T extends Enum>
     _binding.value = result;
     widget.onChanged?.call();
     widget.onChangedValue?.call(result);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted &&
+          !_focusNode.hasFocus &&
+          (ModalRoute.of(context)?.isCurrent ?? true)) {
+        _focusNode.requestFocus();
+      }
+    });
   }
 }
 
