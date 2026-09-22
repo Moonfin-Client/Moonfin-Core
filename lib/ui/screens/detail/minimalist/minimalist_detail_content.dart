@@ -13,13 +13,14 @@ import '../../../widgets/offline_aware_image.dart';
 import '../../../widgets/rating_display.dart';
 import '../detail_layout_metrics.dart';
 import '../item_detail_screen.dart';
+import '../modern/modern_detail_content.dart';
 import '../spotlight/spotlight_detail_content.dart';
 import 'minimalist_landscape_layout.dart';
 import 'minimalist_portrait_layout.dart';
 import 'widgets/minimalist_episodes_section.dart';
 
-/// The item types Minimalist draws. Everything else falls through to Spotlight,
-/// which already knows how to render a person, an album or a playlist.
+/// The item types Minimalist draws. Everything else falls through to Spotlight
+/// (or Modern for playlists), which already knows how to render a person or an album.
 const _minimalistTypes = {
   'Movie',
   'Series',
@@ -80,6 +81,19 @@ class _MinimalistDetailContentState extends State<MinimalistDetailContent> {
     if (item == null) return const SizedBox.shrink();
 
     if (!_minimalistTypes.contains(item.type)) {
+      if (item.type == 'Playlist') {
+        return ModernDetailContent(
+          viewModel: _vm,
+          prefs: widget.prefs,
+          backdropUrl: widget.backdropUrl,
+          selectedMediaSourceId: widget.selectedMediaSourceId,
+          onSelectedMediaSourceChanged: widget.onSelectedMediaSourceChanged,
+          initialFocusNode: widget.initialFocusNode,
+          autoPlay: widget.autoPlay,
+          actionsExpanded: widget.actionsExpanded,
+          onActionsExpandedChanged: widget.onActionsExpandedChanged,
+        );
+      }
       return SpotlightDetailContent(
         viewModel: _vm,
         prefs: widget.prefs,

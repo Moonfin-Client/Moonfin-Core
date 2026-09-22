@@ -18,6 +18,7 @@ import 'package:moonfin/preference/preference_constants.dart'
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/auth/repositories/session_repository.dart';
 import 'package:moonfin/ui/screens/detail/minimalist/minimalist_detail_content.dart';
+import 'package:moonfin/ui/screens/detail/modern/modern_detail_content.dart';
 import 'package:moonfin/data/models/aggregated_item.dart';
 import 'package:moonfin/ui/widgets/focus/locked_focus_row.dart';
 import 'package:moonfin/ui/widgets/rating_display.dart';
@@ -496,5 +497,14 @@ void main() {
 
     expect(rail.itemExtent, lessThan(266));
     expect(visible, greaterThan(4.0));
+  });
+
+  testWidgets('falls back to Modern for playlists', (tester) async {
+    when(() => itemsApi.getPlaylistItems('item-1')).thenAnswer(
+      (_) async => {'Items': []},
+    );
+    await pumpContent(tester, viewModel('Playlist'));
+    await tester.pumpAndSettle();
+    expect(find.byType(ModernDetailContent), findsOneWidget);
   });
 }
