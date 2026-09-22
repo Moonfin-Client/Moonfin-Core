@@ -19,8 +19,9 @@ import 'minimalist_landscape_layout.dart';
 import 'minimalist_portrait_layout.dart';
 import 'widgets/minimalist_episodes_section.dart';
 
-/// The item types Minimalist draws. Everything else falls through to Spotlight
-/// (or Modern for playlists), which already knows how to render a person or an album.
+/// The item types Minimalist draws. A playlist goes to Modern, and everything
+/// else falls through to Spotlight, which already knows how to render a person
+/// or an album.
 const _minimalistTypes = {
   'Movie',
   'Series',
@@ -81,7 +82,7 @@ class _MinimalistDetailContentState extends State<MinimalistDetailContent> {
     if (item == null) return const SizedBox.shrink();
 
     if (!_minimalistTypes.contains(item.type)) {
-      if (item.type == 'Playlist') {
+      if (detailFallsBackToModern(item.type)) {
         return ModernDetailContent(
           viewModel: _vm,
           prefs: widget.prefs,

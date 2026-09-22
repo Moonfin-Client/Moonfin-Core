@@ -690,6 +690,35 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
     );
   }
 
+  Widget _buildSpotlightContent() {
+    return SpotlightDetailContent(
+      viewModel: _viewModel,
+      prefs: _prefs,
+      backdropUrl: _backdropUrl,
+      selectedMediaSourceId: _selectedMediaSourceId,
+      initialFocusNode: _ensureInitialFocusNode(),
+      onSelectedMediaSourceChanged: (id) {
+        setState(() => _selectedMediaSourceId = id);
+        _viewModel.load(mediaSourceId: id);
+      },
+      onBackdropItemFocused: _onBackdropItemFocused,
+      autoPlay: widget.autoPlay,
+      onPlayFromChapter: (position) => unawaited(
+        _playFromChapter(
+          context,
+          _viewModel.item!,
+          position,
+          _selectedMediaSourceId,
+        ),
+      ),
+      onToggleNavbar: (show) => setState(() => _showNavbar = show),
+      actionsExpanded: _actionsExpanded,
+      onActionsExpandedChanged: (val) =>
+          setState(() => _actionsExpanded = val),
+      onCollapseBiography: () => setState(() {}),
+    );
+  }
+
   Widget _buildBody(BuildContext context) {
     return switch (_viewModel.state) {
       ItemDetailState.loading => DetailScreenSkeleton(
@@ -754,34 +783,10 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
 
         DetailScreenStyle.modern => _buildModernContent(),
 
-        DetailScreenStyle.spotlight => _viewModel.item?.type == 'Playlist'
+        DetailScreenStyle.spotlight =>
+          detailFallsBackToModern(_viewModel.item?.type)
             ? _buildModernContent()
-            : SpotlightDetailContent(
-                viewModel: _viewModel,
-                prefs: _prefs,
-                backdropUrl: _backdropUrl,
-                selectedMediaSourceId: _selectedMediaSourceId,
-                initialFocusNode: _ensureInitialFocusNode(),
-                onSelectedMediaSourceChanged: (id) {
-                  setState(() => _selectedMediaSourceId = id);
-                  _viewModel.load(mediaSourceId: id);
-                },
-                onBackdropItemFocused: _onBackdropItemFocused,
-                autoPlay: widget.autoPlay,
-                onPlayFromChapter: (position) => unawaited(
-                  _playFromChapter(
-                    context,
-                    _viewModel.item!,
-                    position,
-                    _selectedMediaSourceId,
-                  ),
-                ),
-                onToggleNavbar: (show) => setState(() => _showNavbar = show),
-                actionsExpanded: _actionsExpanded,
-                onActionsExpandedChanged: (val) =>
-                    setState(() => _actionsExpanded = val),
-                onCollapseBiography: () => setState(() {}),
-              ),
+            : _buildSpotlightContent(),
 
         DetailScreenStyle.nouveau => NouveauDetailContent(
           key: _nouveauContentKey,
