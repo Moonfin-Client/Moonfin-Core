@@ -37,6 +37,7 @@ import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/game/game_alpha_picker_bar.dart';
 import '../../widgets/game/game_poster_card.dart';
 import '../../widgets/game/retro_artwork_image.dart';
+import '../../widgets/media_card.dart';
 
 import '../../widgets/local_search_field.dart';
 
@@ -922,7 +923,6 @@ class _GameSystemScreenState extends State<GameSystemScreen>
   }) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        const spacing = 12.0;
         const imageHeightRatio = 1.34;
         const captionGap = 6.0;
         const captionHeight = 42.0;
@@ -932,12 +932,26 @@ class _GameSystemScreenState extends State<GameSystemScreen>
             _prefs.resolveLibraryPosterSize().portraitHeight *
             (2 / 3) *
             desktopScale;
+        final cardFocusExpansion = _prefs.get(
+          UserPreferences.cardFocusExpansion,
+        );
+        final isMobile = PlatformDetection.useMobileUi;
+        final expansionFactor = (cardFocusExpansion && !isMobile)
+            ? (MediaCard.focusScale - 1.0)
+            : 0.0;
+        final preferredSpacing = (cardFocusExpansion && !isMobile)
+            ? MediaCard.focusGap(preferredCardWidth, minimum: 12.0)
+            : 12.0;
+
         final columnCount =
-            ((availableWidth + spacing) / (preferredCardWidth + spacing))
+            ((availableWidth + preferredSpacing) / (preferredCardWidth + preferredSpacing))
                 .floor()
                 .clamp(2, 20);
         final cardWidth =
-            (availableWidth - spacing * (columnCount - 1)) / columnCount;
+            (availableWidth - preferredSpacing * (columnCount - 1)) / columnCount;
+        final gridSpacing = (cardFocusExpansion && !isMobile)
+            ? MediaCard.focusGap(cardWidth, minimum: 12.0)
+            : 12.0;
         final textScale = MediaQuery.textScalerOf(context).scale(1.0);
         final isRtl = Directionality.of(context) == TextDirection.rtl;
         final cardHeight =
@@ -945,7 +959,10 @@ class _GameSystemScreenState extends State<GameSystemScreen>
             captionGap +
             captionHeight * textScale;
         final childAspectRatio = cardWidth / cardHeight;
-        final rowStride = cardHeight + 14;
+        final upwardGrowth = (cardWidth * imageHeightRatio) * expansionFactor;
+        final gridMainAxisSpacing = 14.0 + upwardGrowth;
+        final topPadding = _gridTopPadding + upwardGrowth;
+        final rowStride = cardHeight + gridMainAxisSpacing;
         final layout = _ArtworkGridLayout(
           games: games,
           crossAxisCount: columnCount,
@@ -962,9 +979,6 @@ class _GameSystemScreenState extends State<GameSystemScreen>
         final focusColor = isNeon
             ? ThemeRegistry.active.borders.focusBorder.color
             : Color(_prefs.get(UserPreferences.focusColor).colorValue);
-        final cardFocusExpansion = _prefs.get(
-          UserPreferences.cardFocusExpansion,
-        );
         return NotificationListener<ScrollNotification>(
           onNotification: (notification) {
             if (notification is ScrollUpdateNotification) {
@@ -988,14 +1002,15 @@ class _GameSystemScreenState extends State<GameSystemScreen>
               scrollCacheExtent: const ScrollCacheExtent.viewport(1),
               padding: EdgeInsets.fromLTRB(
                 horizontalPadding,
-                _gridTopPadding,
+                topPadding,
                 horizontalPadding,
                 32,
               ),
+              clipBehavior: Clip.none,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: columnCount,
-                mainAxisSpacing: 14,
-                crossAxisSpacing: spacing,
+                mainAxisSpacing: gridMainAxisSpacing,
+                crossAxisSpacing: gridSpacing,
                 childAspectRatio: childAspectRatio,
               ),
               itemCount: games.length,

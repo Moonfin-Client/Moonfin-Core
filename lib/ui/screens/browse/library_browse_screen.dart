@@ -1194,23 +1194,25 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
             crossAxisCount;
         final ar = _gridBaseAspectRatio();
         final desktopTextScale = MediaQuery.textScalerOf(context).scale(1.0);
-        final textHeight = (_hasSubtitles ? 46.0 : 26.0) * desktopTextScale;
-        final cellHeight = cellWidth / ar + textHeight;
+        final textHeight = (_hasSubtitles ? 50.0 : 26.0) * desktopTextScale;
+        final imageHeight = cellWidth / ar;
+        final cellHeight = imageHeight + textHeight;
         final childAspectRatio = cellWidth / cellHeight;
-        // A focused card grows about its center and paints past its cell, so
-        // the viewport clips the top row and the row below covers the title
-        // under the row above it. The grid reserves that much room instead.
-        // Mobile keeps its layout, since a touch press only scales while the
-        // finger is down.
-        final focusOverhang = isMobile
-            ? 0.0
-            : MediaCard.focusGap(cellHeight, minimum: 0.0);
-        final rowSpacing = math.max(8.0, focusOverhang);
+        // Artwork scales upward from the bottomCenter anchor, so reserve the full
+        // upward growth in top padding and row spacing so focused cards clear
+        // the filter header and previous row metadata lines.
+        final upwardGrowth = cardFocusExpansion && !isMobile
+            ? (imageHeight * (MediaCard.focusScale - 1))
+            : 0.0;
+        final baseRowSpacing = 16.0;
+        final rowSpacing = baseRowSpacing + upwardGrowth;
+        final baseTopPadding = 18.0;
+        final topPadding = baseTopPadding + upwardGrowth;
         _gridGeometry = (
           perLine: crossAxisCount,
           lineExtent: cellHeight,
           lineSpacing: rowSpacing,
-          leadingPad: 8 + focusOverhang,
+          leadingPad: topPadding,
         );
 
         final focusColor = _vm.isFilterBrowse
@@ -1270,7 +1272,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
 
             slivers.add(
               SliverPadding(
-                padding: EdgeInsets.fromLTRB(gridPadding, 0, gridPadding, 16),
+                padding: EdgeInsets.fromLTRB(gridPadding, topPadding, gridPadding, 16),
                 sliver: SliverGrid(
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: crossAxisCount,
@@ -1366,9 +1368,9 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
             SliverPadding(
               padding: EdgeInsets.fromLTRB(
                 gridPadding,
-                8 + focusOverhang,
+                topPadding,
                 gridPadding,
-                math.max(16.0, focusOverhang),
+                math.max(16.0, upwardGrowth),
               ),
               sliver: SliverGrid(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

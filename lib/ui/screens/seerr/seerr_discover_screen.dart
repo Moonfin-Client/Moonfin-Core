@@ -620,6 +620,15 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
         .get(UserPreferences.desktopUiScale)
         .scaleFactor;
 
+    final upwardGrowth = cardExpansion && !PlatformDetection.useMobileUi
+        ? (195.0 * (MediaCard.focusScale - 1.0))
+        : 0.0;
+    final itemSpacing = cardExpansion && !PlatformDetection.useMobileUi
+        ? MediaCard.focusGap(130.0, minimum: 12.0 * desktopScale)
+        : 12.0 * desktopScale;
+    final rowHeight = (260.0 * desktopScale) + upwardGrowth;
+    final topPadding = (5.0 * desktopScale) + upwardGrowth;
+
     final focusKey = _getRowKey(rowIndex);
     final child = NotificationListener<ScrollNotification>(
       onNotification: (notification) {
@@ -637,12 +646,12 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
         hubKey: 'seerr_discover_media_${rowIndex}_${row.type.name}',
         controller: _getRowScroll(rowIndex),
         itemExtent: 130,
-        itemSpacing: 12 * desktopScale,
-        height: 260 * desktopScale,
+        itemSpacing: itemSpacing,
+        height: rowHeight,
         clipBehavior: Clip.none,
         padding: EdgeInsets.fromLTRB(
           20 * desktopScale,
-          5 * desktopScale,
+          topPadding,
           20 * desktopScale,
           5 * desktopScale,
         ),
@@ -687,7 +696,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
 
     return _buildRowContainer(
       type: row.type,
-      rowHeight: 260,
+      rowHeight: 260.0 + (upwardGrowth / desktopScale),
       isLoading: row.isLoading && row.items.isEmpty,
       hasItems: row.items.isNotEmpty,
       scrollController: _getRowScroll(rowIndex),

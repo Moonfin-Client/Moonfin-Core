@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:moonfin/ui/widgets/game/game_poster_card.dart';
 import 'package:moonfin/ui/widgets/media_card.dart';
 
 void main() {
@@ -43,7 +44,7 @@ void main() {
     find
         .descendant(
           of: find.byType(MediaCard).at(index),
-          matching: find.byType(Column),
+          matching: find.byType(AspectRatio),
         )
         .first,
   );
@@ -106,10 +107,55 @@ void main() {
       );
     });
 
-    test('the floor holds until the card outgrows it', () {
-      expect(MediaCard.focusGap(80), 12.0);
-      expect(MediaCard.focusGap(80, minimum: 8), 8.0);
+    test('preserves the minimum clearance plus expansion growth', () {
+      expect(MediaCard.focusGap(80), closeTo(14.0, 0.0001));
+      expect(MediaCard.focusGap(80, minimum: 8), closeTo(10.0, 0.0001));
       expect(MediaCard.focusGap(600), greaterThan(12.0));
+    });
+
+    testWidgets('keeps a focused GamePosterCard off the card next to it with focusGap', (
+      tester,
+    ) async {
+      await tester.binding.setSurfaceSize(const Size(2000, 1200));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      const cardWidth = 120.0;
+      final gap = MediaCard.focusGap(cardWidth);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                GamePosterCard(
+                  title: 'Focused Game',
+                  fileName: 'game1.iso',
+                  seed: 'seed1',
+                  width: cardWidth,
+                  autofocus: true,
+                  onTap: () {},
+                ),
+                SizedBox(width: gap),
+                GamePosterCard(
+                  title: 'Neighbor Game',
+                  fileName: 'game2.iso',
+                  seed: 'seed2',
+                  width: cardWidth,
+                  onTap: () {},
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final firstCardRect = tester.getRect(find.byType(GamePosterCard).at(0));
+      final secondCardRect = tester.getRect(find.byType(GamePosterCard).at(1));
+      // Base layout boxes are separated by gap
+      expect(secondCardRect.left - firstCardRect.right, closeTo(gap, 0.001));
     });
   });
 }

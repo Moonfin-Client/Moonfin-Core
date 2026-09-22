@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_tvos/flutter_tvos.dart'
@@ -40,7 +38,7 @@ class MediaCard extends StatefulWidget {
   /// by the same fraction of a much larger number, so a gap that suits a
   /// poster does not suit a banner.
   static double focusGap(double extent, {double minimum = 12.0}) =>
-      math.max(minimum, extent * (focusScale - 1) / 2);
+      minimum + (extent * (focusScale - 1) / 2);
 
   /// The widest decode a card of this shape ever holds, in physical pixels.
   ///
@@ -357,24 +355,27 @@ class _MediaCardState extends State<MediaCard> with FocusStateMixin {
           ? null
           : () => widget.onLongPress!(),
       child: RepaintBoundary(
-        child: _withTvParallax(
-          active: cardActive,
-          child: AnimatedScale(
-            scale: cardActive ? MediaCard.focusScale : 1.0,
-            duration: navigationAnimationDuration,
-            curve: PlatformDetection.isAppleTV
-                ? Curves.easeOutCubic
-                : Curves.linear,
-            child: LayoutBuilder(
-              builder: (context, cardConstraints) {
-                final cardWidth = cardConstraints.maxWidth.isFinite
-                    ? cardConstraints.maxWidth
-                    : (widget.width.isFinite ? widget.width : 150.0);
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _CardImage(
+        child: LayoutBuilder(
+          builder: (context, cardConstraints) {
+            final cardWidth = cardConstraints.maxWidth.isFinite
+                ? cardConstraints.maxWidth
+                : (widget.width.isFinite ? widget.width : 150.0);
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _withTvParallax(
+                  active: cardActive,
+                  child: AnimatedScale(
+                    scale: cardActive ? MediaCard.focusScale : 1.0,
+                    duration: navigationAnimationDuration,
+                    curve: PlatformDetection.isAppleTV
+                        ? Curves.easeOutCubic
+                        : Curves.linear,
+                    alignment: widget.title != null
+                        ? Alignment.bottomCenter
+                        : Alignment.center,
+                    child: _CardImage(
                       imageUrl: widget.imageUrl,
                       title: widget.title,
                       aspectRatio: widget.aspectRatio,
@@ -397,68 +398,68 @@ class _MediaCardState extends State<MediaCard> with FocusStateMixin {
                       animeMarkerItemId: widget.animeMarkerItemId,
                       isGenreFallback: widget.isGenreFallback,
                     ),
-                    if (widget.isBanner) ...[
-                      if (widget.title != null) ...[
-                        const SizedBox(height: 6),
-                        SizedBox(
-                          height: titleLineHeight,
-                          width: cardWidth,
-                          child: _bannerLabel(
-                            titleStyle: titleStyle,
-                            subtitleStyle: subtitleStyle,
-                            showMarquee: showMarquee,
-                          ),
-                        ),
-                      ],
-                      if (widget.subtitleWidget != null) ...[
-                        SizedBox(height: widget.title != null ? 2 : 6),
-                        widget.subtitleWidget!,
-                      ],
-                    ] else ...[
-                      if (widget.title != null) ...[
-                        const SizedBox(height: 6),
-                        SizedBox(
-                          height: titleLineHeight,
-                          width: cardWidth,
-                          child: showMarquee
-                              ? MarqueeText(
-                                  text: widget.title!,
-                                  style: titleStyle,
-                                )
-                              : Text(
-                                  widget.title!,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: titleStyle,
-                                ),
-                        ),
-                      ],
-                      if (widget.subtitleWidget != null) ...[
-                        SizedBox(height: widget.title != null ? 2 : 6),
-                        widget.subtitleWidget!,
-                      ] else if (widget.subtitle != null &&
-                          widget.subtitle!.isNotEmpty)
-                        SizedBox(
-                          height: subtitleLineHeight,
-                          width: cardWidth,
-                          child: showMarquee
-                              ? MarqueeText(
-                                  text: widget.subtitle!,
-                                  style: subtitleStyle,
-                                )
-                              : Text(
-                                  widget.subtitle!,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: subtitleStyle,
-                                ),
-                        ),
-                    ],
+                  ),
+                ),
+                if (widget.isBanner) ...[
+                  if (widget.title != null) ...[
+                    const SizedBox(height: 6),
+                    SizedBox(
+                      height: titleLineHeight,
+                      width: cardWidth,
+                      child: _bannerLabel(
+                        titleStyle: titleStyle,
+                        subtitleStyle: subtitleStyle,
+                        showMarquee: showMarquee,
+                      ),
+                    ),
                   ],
-                );
-              },
-            ),
-          ),
+                  if (widget.subtitleWidget != null) ...[
+                    SizedBox(height: widget.title != null ? 2 : 6),
+                    widget.subtitleWidget!,
+                  ],
+                ] else ...[
+                  if (widget.title != null) ...[
+                    const SizedBox(height: 6),
+                    SizedBox(
+                      height: titleLineHeight,
+                      width: cardWidth,
+                      child: showMarquee
+                          ? MarqueeText(
+                              text: widget.title!,
+                              style: titleStyle,
+                            )
+                          : Text(
+                              widget.title!,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: titleStyle,
+                            ),
+                    ),
+                  ],
+                  if (widget.subtitleWidget != null) ...[
+                    SizedBox(height: widget.title != null ? 2 : 6),
+                    widget.subtitleWidget!,
+                  ] else if (widget.subtitle != null &&
+                      widget.subtitle!.isNotEmpty)
+                    SizedBox(
+                      height: subtitleLineHeight,
+                      width: cardWidth,
+                      child: showMarquee
+                          ? MarqueeText(
+                              text: widget.subtitle!,
+                              style: subtitleStyle,
+                            )
+                          : Text(
+                              widget.subtitle!,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: subtitleStyle,
+                            ),
+                    ),
+                ],
+              ],
+            );
+          },
         ),
       ),
     );
