@@ -1467,28 +1467,6 @@ class _DetailContentState extends State<_DetailContent> {
       hideNavbar: true,
       child: Focus(
         focusNode: _contentFocusNode,
-        onKeyEvent: (node, event) {
-          final primaryFocus = FocusManager.instance.primaryFocus;
-          if (!identical(primaryFocus, _contentFocusNode)) {
-            return KeyEventResult.ignored;
-          }
-          if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
-              event.logicalKey == LogicalKeyboardKey.arrowUp) {
-            final navbarPos = prefs.get(UserPreferences.navbarPosition);
-            if (navbarPos == NavbarPosition.top) {
-              _scrollMainToTop();
-              NavigationLayout.focusNavbarNotifier.value?.call();
-              return KeyEventResult.handled;
-            }
-            final isAtTop =
-                !_scrollController.hasClients || _scrollController.offset <= 0;
-            if (isAtTop) {
-              NavigationLayout.focusNavbarNotifier.value?.call();
-              return KeyEventResult.handled;
-            }
-          }
-          return KeyEventResult.ignored;
-        },
         child: Stack(
           fit: StackFit.expand,
           children: [

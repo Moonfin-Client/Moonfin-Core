@@ -470,7 +470,9 @@ class _EnumPreferenceTileState<T extends Enum>
   @override
   void initState() {
     super.initState();
-    _focusNode = FocusNode(debugLabel: 'EnumPreferenceTile_${widget.preference.key}');
+    _focusNode = FocusNode(
+      debugLabel: 'EnumPreferenceTile_${widget.preference.key}',
+    );
     _binding = PreferenceBinding(
       GetIt.instance<PreferenceStore>(),
       widget.preference,

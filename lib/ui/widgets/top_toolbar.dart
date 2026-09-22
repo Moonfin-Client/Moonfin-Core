@@ -406,13 +406,7 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
   }
 
   void _restoreFocusBelowToolbar() {
-    final playBtnNode = NavigationLayout.focusDetailsPlayButtonNotifier.value;
-    if (playBtnNode != null &&
-        playBtnNode.context != null &&
-        playBtnNode.canRequestFocus) {
-      playBtnNode.requestFocus();
-      return;
-    }
+    if (NavigationLayout.focusDetailsPlayButton()) return;
     final focusContent = NavigationLayout.focusContentFromNavbarNotifier.value;
     if (focusContent != null && widget.activeRoute == Destinations.home) {
       focusContent();
