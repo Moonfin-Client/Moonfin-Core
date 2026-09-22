@@ -832,41 +832,17 @@ class _SpotlightCardsBuilder {
     );
   }
 
+  /// The page picks these once and passes them down so they hold still, and
+  /// picking here covers a build that runs before it has an item to pick from.
   late final Map<String, String?> _personCardBackdrops =
-      _computePersonCardBackdrops();
-
-  Map<String, String?> _computePersonCardBackdrops() {
-    if (personCardBackdrops != null && personCardBackdrops!.isNotEmpty) {
-      return personCardBackdrops!;
-    }
-    final local = collectPersonLocalBackdrops(vm);
-    final appearances = collectPersonSeerrBackdrops(seerrAppearances);
-    final crew = collectPersonSeerrBackdrops(seerrCrewCredits);
-    final all = [...local, ...appearances, ...crew];
-
-    final usedKeys = <String>{};
-    if (mainBackdropKey != null) {
-      usedKeys.add(mainBackdropKey!);
-    }
-
-    return {
-      'filmography': randomPickBackdrop(
-        preferred: local,
-        all: all,
-        usedKeys: usedKeys,
-      ),
-      'appearances': randomPickBackdrop(
-        preferred: appearances,
-        all: all,
-        usedKeys: usedKeys,
-      ),
-      'crew': randomPickBackdrop(
-        preferred: crew,
-        all: all,
-        usedKeys: usedKeys,
-      ),
-    };
-  }
+      personCardBackdrops?.isNotEmpty == true
+      ? personCardBackdrops!
+      : personCardBackdropsFor(
+          local: collectPersonLocalBackdrops(vm),
+          appearances: collectPersonSeerrBackdrops(seerrAppearances),
+          crew: collectPersonSeerrBackdrops(seerrCrewCredits),
+          mainBackdropKey: mainBackdropKey,
+        );
 
   SpotlightCardSpec? _personFilmographyCard() {
     final movies = vm.filmographyMovies;
@@ -905,7 +881,7 @@ class _SpotlightCardsBuilder {
   }
 
   SpotlightCardSpec? _personAppearancesCard() {
-    if (!seerrAvailable || seerrAppearances.isEmpty) return null;
+    if (seerrAppearances.isEmpty) return null;
 
     final imageUrl = _personCardBackdrops['appearances'] ??
         _firstSeerrPoster(seerrAppearances) ??
@@ -928,7 +904,7 @@ class _SpotlightCardsBuilder {
   }
 
   SpotlightCardSpec? _personCrewCard() {
-    if (!seerrAvailable || seerrCrewCredits.isEmpty) return null;
+    if (seerrCrewCredits.isEmpty) return null;
 
     final imageUrl = _personCardBackdrops['crew'] ??
         _firstSeerrPoster(seerrCrewCredits) ??

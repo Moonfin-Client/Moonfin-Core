@@ -103,16 +103,16 @@ String? spotlightSeerrBackdropUrl(String? backdropPath) =>
     ? null
     : '$seerrBackdropBase$backdropPath';
 
-/// A candidate backdrop image for a person's page or summary card, extracted
-/// from their filmography (local library or Seerr).
+/// A backdrop a person's page could use, taken from their filmography.
 class PersonBackdropCandidate {
-  /// Unique key for deduplication (e.g. 'local:<id>:<tag>' or 'tmdb:<path>').
+  /// What marks this backdrop as already taken, in the form `local:id:tag` or
+  /// `tmdb:path`.
   final String key;
 
-  /// High-resolution backdrop URL (e.g. 1920 width) for the full-screen hero.
+  /// The wide copy the full screen hero draws.
   final String fullUrl;
 
-  /// Medium-resolution backdrop URL (e.g. 960 width) for card artwork.
+  /// The narrower copy a summary card draws.
   final String cardUrl;
 
   const PersonBackdropCandidate({
@@ -122,50 +122,38 @@ class PersonBackdropCandidate {
   });
 }
 
-/// Collects distinct backdrop candidates from a person's local library filmography.
+/// The backdrops a person's library filmography can offer.
 List<PersonBackdropCandidate> collectPersonLocalBackdrops(
   ItemDetailViewModel vm,
 ) {
   final results = <PersonBackdropCandidate>[];
   final seen = <String>{};
-
-  void add(AggregatedItem item) {
-    if (item.backdropImageTags.isNotEmpty) {
-      final tag = item.backdropImageTags.first;
-      final key = 'local:${item.id}:$tag';
-      if (seen.add(key)) {
-        results.add(
-          PersonBackdropCandidate(
-            key: key,
-            fullUrl: vm.imageApi.getBackdropImageUrl(
-              item.id,
-              tag: tag,
-              maxWidth: 1920,
-            ),
-            cardUrl: vm.imageApi.getBackdropImageUrl(
-              item.id,
-              tag: tag,
-              maxWidth: 960,
-            ),
-          ),
-        );
-      }
-    }
-  }
-
-  for (final m in vm.filmographyMovies) {
-    add(m);
-  }
-  for (final s in vm.filmographySeries) {
-    add(s);
-  }
-  for (final o in vm.filmography) {
-    add(o);
+  // filmographyMovies and filmographySeries are filters over this same list.
+  for (final item in vm.filmography) {
+    if (item.backdropImageTags.isEmpty) continue;
+    final tag = item.backdropImageTags.first;
+    final key = 'local:${item.id}:$tag';
+    if (!seen.add(key)) continue;
+    results.add(
+      PersonBackdropCandidate(
+        key: key,
+        fullUrl: vm.imageApi.getBackdropImageUrl(
+          item.id,
+          tag: tag,
+          maxWidth: 1920,
+        ),
+        cardUrl: vm.imageApi.getBackdropImageUrl(
+          item.id,
+          tag: tag,
+          maxWidth: 960,
+        ),
+      ),
+    );
   }
   return results;
 }
 
-/// Collects distinct backdrop candidates from a person's Seerr credits.
+/// The backdrops a person's Seerr credits can offer.
 List<PersonBackdropCandidate> collectPersonSeerrBackdrops(
   List<SeerrDiscoverItem> items,
 ) {
@@ -193,8 +181,11 @@ List<PersonBackdropCandidate> collectPersonSeerrBackdrops(
   return results;
 }
 
-/// Randomly selects a candidate backdrop from [preferred] (or [all]), ensuring
-/// the chosen candidate's key has not already been used in [usedKeys].
+/// A backdrop for one card, taken from [preferred] where it can be and from
+/// [all] otherwise, and marked in [usedKeys] so the next card picks another.
+///
+/// Once every candidate is spoken for it repeats one rather than leaving the
+/// card bare, which is why a person with a single backdrop still gets cards.
 String? randomPickBackdrop({
   required List<PersonBackdropCandidate> preferred,
   required List<PersonBackdropCandidate> all,
@@ -202,27 +193,39 @@ String? randomPickBackdrop({
   math.Random? random,
 }) {
   final rng = random ?? math.Random();
-  final availableInPreferred =
-      preferred.where((c) => !usedKeys.contains(c.key)).toList();
-  if (availableInPreferred.isNotEmpty) {
-    final chosen =
-        availableInPreferred[rng.nextInt(availableInPreferred.length)];
+  for (final pool in [preferred, all]) {
+    final free = pool.where((c) => !usedKeys.contains(c.key)).toList();
+    if (free.isEmpty) continue;
+    final chosen = free[rng.nextInt(free.length)];
     usedKeys.add(chosen.key);
     return chosen.cardUrl;
   }
-  final availableInAll =
-      all.where((c) => !usedKeys.contains(c.key)).toList();
-  if (availableInAll.isNotEmpty) {
-    final chosen = availableInAll[rng.nextInt(availableInAll.length)];
-    usedKeys.add(chosen.key);
-    return chosen.cardUrl;
-  }
-  if (preferred.isNotEmpty) {
-    return preferred[rng.nextInt(preferred.length)].cardUrl;
-  }
-  if (all.isNotEmpty) {
-    return all[rng.nextInt(all.length)].cardUrl;
+  for (final pool in [preferred, all]) {
+    if (pool.isNotEmpty) return pool[rng.nextInt(pool.length)].cardUrl;
   }
   return null;
 }
 
+/// The backdrop for each of a person's cards, keyed by card id, with
+/// [mainBackdropKey] held back so the hero keeps a picture of its own.
+Map<String, String?> personCardBackdropsFor({
+  required List<PersonBackdropCandidate> local,
+  required List<PersonBackdropCandidate> appearances,
+  required List<PersonBackdropCandidate> crew,
+  String? mainBackdropKey,
+  math.Random? random,
+}) {
+  final all = [...local, ...appearances, ...crew];
+  final usedKeys = <String>{?mainBackdropKey};
+  String? pick(List<PersonBackdropCandidate> preferred) => randomPickBackdrop(
+    preferred: preferred,
+    all: all,
+    usedKeys: usedKeys,
+    random: random,
+  );
+  return {
+    'filmography': pick(local),
+    'appearances': pick(appearances),
+    'crew': pick(crew),
+  };
+}
