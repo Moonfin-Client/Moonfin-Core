@@ -6,7 +6,6 @@ import 'package:moonfin/ui/navigation/route_lifecycle_observer.dart';
 import 'package:moonfin/ui/widgets/overlay_sheet.dart';
 import 'package:moonfin/ui/widgets/quick_return_wrapper.dart';
 import 'package:moonfin/util/platform_detection.dart';
-import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
@@ -274,6 +273,62 @@ void main() {
 
       expect(InlineBackInterceptor.handleBack(), isTrue);
       expect(returned, 1);
+    });
+
+    testWidgets('does not take the back key on TV when mounted under a modal route', (
+      tester,
+    ) async {
+      PlatformDetection.setTvMode(true);
+      final navKey = GlobalKey<NavigatorState>();
+      final isAtStart = ValueNotifier<bool>(false);
+      addTearDown(isAtStart.dispose);
+      var returned = 0;
+
+      // Pump an app where a dialog is pushed over the home screen.
+      await tester.pumpWidget(
+        _app(
+          Builder(
+            builder: (context) {
+              return Scaffold(
+                body: ElevatedButton(
+                  onPressed: () {
+                    showDialog<void>(
+                      context: context,
+                      builder: (_) => const Text('Dialog'),
+                    );
+                  },
+                  child: const Text('Open'),
+                ),
+              );
+            },
+          ),
+          navigatorKey: navKey,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Open the dialog so route.isCurrent becomes false for the base route.
+      await tester.tap(find.text('Open'));
+      await tester.pumpAndSettle();
+
+      // Mount QuickReturnWrapper into the base route underneath the open dialog.
+      await tester.pumpWidget(
+        _app(
+          Scaffold(
+            body: QuickReturnWrapper(
+              isAtStart: isAtStart,
+              onReturn: () => returned++,
+              child: const SizedBox.expand(),
+            ),
+          ),
+          navigatorKey: navKey,
+        ),
+      );
+      await tester.pump();
+
+      // Since a dialog is on top, QuickReturnWrapper should not register its interceptor.
+      expect(InlineBackInterceptor.handleBack(), isFalse);
+      expect(returned, 0);
     });
   });
 }

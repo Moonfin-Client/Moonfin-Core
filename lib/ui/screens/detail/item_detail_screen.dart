@@ -1232,7 +1232,11 @@ class _DetailContentState extends State<_DetailContent> {
   void initState() {
     super.initState();
     _scrollController = ScrollController();
-    _contentFocusNode = FocusNode(debugLabel: 'detailContent');
+    _contentFocusNode = FocusNode(
+      debugLabel: 'detailContent',
+      canRequestFocus: false,
+      skipTraversal: true,
+    );
     widget.prefs.addListener(_onPrefsChanged);
     _loadSeerrAppearances();
   }

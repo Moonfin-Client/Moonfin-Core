@@ -98,6 +98,7 @@ class NavigationLayout extends StatefulWidget {
 class _NavigationLayoutState extends State<NavigationLayout> with WidgetsBindingObserver {
   final _prefs = GetIt.instance<UserPreferences>();
   final _contentFocusNode = FocusNode(debugLabel: 'NavigationContent');
+  final GlobalKey _contentKey = GlobalKey(debugLabel: 'navigationLayoutContent');
   final ValueNotifier<double> _toolbarScrollOffset = ValueNotifier<double>(0.0);
   late NavbarPosition _position;
   final _playbackManager = GetIt.instance<PlaybackManager>();
@@ -182,10 +183,13 @@ class _NavigationLayoutState extends State<NavigationLayout> with WidgetsBinding
   }
 
   Widget _buildBottomBar() {
-    final content = Focus(
-      focusNode: _contentFocusNode,
-      skipTraversal: true,
-      child: widget.child,
+    final content = KeyedSubtree(
+      key: _contentKey,
+      child: Focus(
+        focusNode: _contentFocusNode,
+        skipTraversal: true,
+        child: widget.child,
+      ),
     );
     return Stack(
       children: [
@@ -227,10 +231,13 @@ class _NavigationLayoutState extends State<NavigationLayout> with WidgetsBinding
 
   Widget _buildToolbar() {
     final translateWithScroll = PlatformDetection.isTV && !widget.pinTopToolbar;
-    final content = Focus(
-      focusNode: _contentFocusNode,
-      skipTraversal: true,
-      child: widget.child,
+    final content = KeyedSubtree(
+      key: _contentKey,
+      child: Focus(
+        focusNode: _contentFocusNode,
+        skipTraversal: true,
+        child: widget.child,
+      ),
     );
     final toolbar = ValueListenableBuilder<bool>(
       valueListenable: NavigationLayout.trailerImmersiveNotifier,
@@ -330,10 +337,13 @@ class _NavigationLayoutState extends State<NavigationLayout> with WidgetsBinding
   }
 
   Widget _buildSidebar() {
-    final content = Focus(
-      focusNode: _contentFocusNode,
-      skipTraversal: true,
-      child: widget.child,
+    final content = KeyedSubtree(
+      key: _contentKey,
+      child: Focus(
+        focusNode: _contentFocusNode,
+        skipTraversal: true,
+        child: widget.child,
+      ),
     );
 
     final sidebar = ValueListenableBuilder<bool>(

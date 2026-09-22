@@ -502,6 +502,13 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
   }
 
   void _restoreFocusOutsideSidebar() {
+    final playBtnNode = NavigationLayout.focusDetailsPlayButtonNotifier.value;
+    if (playBtnNode != null &&
+        playBtnNode.context != null &&
+        playBtnNode.canRequestFocus) {
+      playBtnNode.requestFocus();
+      return;
+    }
     final previous = _previousFocus;
     if (previous != null && _isLaidOutFocusNode(previous)) {
       previous.requestFocus();
