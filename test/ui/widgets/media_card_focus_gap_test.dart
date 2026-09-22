@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:moonfin/ui/widgets/game/game_card_focus_frame.dart';
 import 'package:moonfin/ui/widgets/game/game_poster_card.dart';
 import 'package:moonfin/ui/widgets/media_card.dart';
 
@@ -113,49 +114,58 @@ void main() {
       expect(MediaCard.focusGap(600), greaterThan(12.0));
     });
 
-    testWidgets('keeps a focused GamePosterCard off the card next to it with focusGap', (
+    testWidgets('keeps a focused game poster off the card next to it', (
       tester,
     ) async {
       await tester.binding.setSurfaceSize(const Size(2000, 1200));
       addTearDown(() => tester.binding.setSurfaceSize(null));
 
       const cardWidth = 120.0;
-      final gap = MediaCard.focusGap(cardWidth);
 
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: Row(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                GamePosterCard(
-                  title: 'Focused Game',
-                  fileName: 'game1.iso',
-                  seed: 'seed1',
-                  width: cardWidth,
-                  autofocus: true,
-                  onTap: () {},
-                ),
-                SizedBox(width: gap),
-                GamePosterCard(
-                  title: 'Neighbor Game',
-                  fileName: 'game2.iso',
-                  seed: 'seed2',
-                  width: cardWidth,
-                  onTap: () {},
-                ),
-              ],
+      Future<double> gameOverlap(double gap) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  GamePosterCard(
+                    title: 'Focused',
+                    fileName: 'game1.iso',
+                    seed: 'seed1',
+                    width: cardWidth,
+                    autofocus: true,
+                    onTap: () {},
+                  ),
+                  SizedBox(width: gap),
+                  GamePosterCard(
+                    title: 'Beside it',
+                    fileName: 'game2.iso',
+                    seed: 'seed2',
+                    width: cardWidth,
+                    onTap: () {},
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-      );
-      await tester.pumpAndSettle();
+        );
+        await tester.pumpAndSettle();
+        // The frame is the part under the scale, so the box the card was laid
+        // out in is the wrong thing to measure here.
+        Rect frame(int index) =>
+            tester.getRect(find.byType(GameCardFocusFrame).at(index));
+        return frame(0).right - frame(1).left;
+      }
 
-      final firstCardRect = tester.getRect(find.byType(GamePosterCard).at(0));
-      final secondCardRect = tester.getRect(find.byType(GamePosterCard).at(1));
-      // Base layout boxes are separated by gap
-      expect(secondCardRect.left - firstCardRect.right, closeTo(gap, 0.001));
+      expect(
+        await gameOverlap(MediaCard.focusGap(cardWidth)),
+        lessThanOrEqualTo(0.0),
+      );
+      // Packed together the cards do overlap, so the measurement above is
+      // reading what the card paints and not where it was laid out.
+      expect(await gameOverlap(0.0), greaterThan(0.0));
     });
   });
 }

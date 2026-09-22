@@ -209,7 +209,7 @@ class _GamePosterCardState extends State<GamePosterCard> {
                 child:
                     !widget.loadArtwork || (url == null && widget.artwork == null)
                     ? _Fallback(seed: widget.seed, iconSize: widget.width * 0.3)
-                  : Stack(
+                    : Stack(
                       fit: StackFit.expand,
                       children: [
                         // Keep the seeded game fallback visible while artwork
@@ -236,9 +236,9 @@ class _GamePosterCardState extends State<GamePosterCard> {
                           ),
                       ],
                     ),
+              ),
             ),
           ),
-        ),
         ),
         const SizedBox(height: 6),
         SizedBox(

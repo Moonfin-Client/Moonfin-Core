@@ -20,10 +20,11 @@ import 'seerr/seerr_status_dot.dart';
 import '../mixins/focus_state_mixin.dart';
 
 class MediaCard extends StatefulWidget {
-  /// How much a focused card grows. The scale is centered, so a card paints
-  /// half the extra size past each edge of its cell, and a layout that packs
-  /// cards against a clip boundary or each other has to leave that much room
-  /// or the focused card loses its edges.
+  /// How much a focused card grows. A card with a title grows from the bottom
+  /// of its artwork, so all of the extra height lands above it and half the
+  /// extra width past each side. One without a title grows about its center.
+  /// A layout that packs cards against a clip boundary or each other has to
+  /// leave that much room or the focused card loses its edges.
   ///
   /// A television gets the larger pop because it's read from across a room.
   /// Every television lays out on the same canvas, so which television it is

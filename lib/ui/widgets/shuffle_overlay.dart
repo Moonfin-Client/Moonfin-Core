@@ -940,14 +940,15 @@ class _ShuffleOverlayState extends State<_ShuffleOverlay> {
       builder: (context, constraints) {
         const posterAspectRatio = 2 / 3;
         final centerScale = isTv ? 1.34 : 1.18;
-        final selectedScale = centerScale;
         final textBlockHeight = isTv ? 8.0 : 6.0;
 
         final baseSpacing = isTv ? 18.0 : 14.0;
         final minCardWidth = isTv ? 130.0 : 112.0;
         final maxCardWidth = isTv ? 250.0 : 220.0;
 
-        final expansionFactor = (centerScale - 0.9) / 2;
+        // The center card grows both ways, so each neighbouring gap absorbs
+        // half of it, plus a little more so the two never quite touch.
+        final expansionFactor = ((centerScale - 1) / 2) + 0.05;
         final cardsAvailableWidth = math.max(0, constraints.maxWidth - 4);
         final count = _items.length;
         final gapCount = math.max(0, count - 1);
@@ -964,7 +965,7 @@ class _ShuffleOverlayState extends State<_ShuffleOverlay> {
         final maxStripHeight = constraints.maxHeight - (isTv ? 64 : 26);
         final maxImageHeight = math.max(
           0,
-          (maxStripHeight - textBlockHeight) / selectedScale,
+          (maxStripHeight - textBlockHeight) / centerScale,
         );
         final heightBased = maxImageHeight * posterAspectRatio;
         final cardWidth = math
