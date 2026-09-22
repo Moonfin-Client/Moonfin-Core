@@ -113,10 +113,86 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
   List<SeerrDiscoverItem> _seerrCrewCredits = const [];
   String? _seerrLoadedForItemId;
 
+  String? _personBackdropUrl;
+  String? _personBackdropKey;
+  String? _personBackdropForItemId;
+  Map<String, String?> _personCardBackdrops = const {};
+
   ItemDetailViewModel get _vm => widget.viewModel;
 
   double get _desktopScale =>
       widget.prefs.get(UserPreferences.desktopUiScale).scaleFactor;
+
+  void _selectPersonBackdrop() {
+    final item = _vm.item;
+    if (item == null || item.type != 'Person') return;
+    final isNewPerson = _personBackdropForItemId != item.id;
+    if (!isNewPerson &&
+        _personBackdropUrl != null &&
+        (_seerrAppearances.isEmpty || _personCardBackdrops['appearances'] != null)) {
+      return;
+    }
+
+    final localCandidates = collectPersonLocalBackdrops(_vm);
+    final appearancesCandidates =
+        collectPersonSeerrBackdrops(_seerrAppearances);
+    final crewCandidates = collectPersonSeerrBackdrops(_seerrCrewCredits);
+    final allCandidates = [
+      ...localCandidates,
+      ...appearancesCandidates,
+      ...crewCandidates,
+    ];
+
+    if (allCandidates.isEmpty) return;
+
+    final rng = math.Random();
+    final String? mainUrl;
+    final String? mainKey;
+    if (!isNewPerson && _personBackdropUrl != null && _personBackdropKey != null) {
+      mainUrl = _personBackdropUrl;
+      mainKey = _personBackdropKey;
+    } else {
+      final chosen = allCandidates[rng.nextInt(allCandidates.length)];
+      mainUrl = chosen.fullUrl;
+      mainKey = chosen.key;
+    }
+
+    final usedKeys = <String>{if (mainKey != null) mainKey};
+
+    final cardBackdrops = <String, String?>{
+      'filmography': (!isNewPerson && _personCardBackdrops['filmography'] != null)
+          ? _personCardBackdrops['filmography']
+          : randomPickBackdrop(
+              preferred: localCandidates,
+              all: allCandidates,
+              usedKeys: usedKeys,
+              random: rng,
+            ),
+      'appearances': (!isNewPerson && _personCardBackdrops['appearances'] != null)
+          ? _personCardBackdrops['appearances']
+          : randomPickBackdrop(
+              preferred: appearancesCandidates,
+              all: allCandidates,
+              usedKeys: usedKeys,
+              random: rng,
+            ),
+      'crew': (!isNewPerson && _personCardBackdrops['crew'] != null)
+          ? _personCardBackdrops['crew']
+          : randomPickBackdrop(
+              preferred: crewCandidates,
+              all: allCandidates,
+              usedKeys: usedKeys,
+              random: rng,
+            ),
+    };
+
+    setState(() {
+      _personBackdropUrl = mainUrl;
+      _personBackdropKey = mainKey;
+      _personBackdropForItemId = item.id;
+      _personCardBackdrops = cardBackdrops;
+    });
+  }
 
   @override
   void initState() {
@@ -129,7 +205,12 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
           widget.initialFocusNode;
     }
     unawaited(_loadStudioLogos());
-    unawaited(_loadSeerrAppearances());
+    unawaited(
+      _loadSeerrAppearances().then((_) {
+        if (mounted) _selectPersonBackdrop();
+      }),
+    );
+    _selectPersonBackdrop();
   }
 
   @override
@@ -138,6 +219,11 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
     if (widget.viewModel != oldWidget.viewModel) {
       oldWidget.viewModel.removeListener(_onViewModelChanged);
       _vm.addListener(_onViewModelChanged);
+      _personBackdropForItemId = null;
+      _personBackdropUrl = null;
+      _personBackdropKey = null;
+      _personCardBackdrops = const {};
+      _selectPersonBackdrop();
     }
     if (widget.initialFocusNode != oldWidget.initialFocusNode &&
         PlatformDetection.isTV) {
@@ -154,8 +240,22 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
   /// or fills it in. Rebuilds come from the ListenableBuilder in build.
   void _onViewModelChanged() {
     if (!mounted) return;
+    final item = _vm.item;
+    if (item != null &&
+        item.type == 'Person' &&
+        item.id != _personBackdropForItemId) {
+      _personBackdropForItemId = null;
+      _personBackdropUrl = null;
+      _personBackdropKey = null;
+      _personCardBackdrops = const {};
+    }
+    _selectPersonBackdrop();
     unawaited(_loadStudioLogos());
-    unawaited(_loadSeerrAppearances());
+    unawaited(
+      _loadSeerrAppearances().then((_) {
+        if (mounted) _selectPersonBackdrop();
+      }),
+    );
   }
 
   @override
@@ -227,6 +327,7 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
         _seerrAppearances = groupSeerrCredits(credits.cast, isCrew: false);
         _seerrCrewCredits = groupSeerrCredits(credits.crew, isCrew: true);
       });
+      _selectPersonBackdrop();
     } catch (_) {
       // Seerr credits are an extra. The filmography card falls back to the
       // library lists when the lookup fails.
@@ -386,6 +487,9 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
   /// with when the item is gone or the card no longer applies.
   SpotlightModalContent _liveCardContent(SpotlightCardSpec opened) {
     final item = _vm.item;
+    final seerrAvailable =
+        GetIt.instance.isRegistered<PluginSyncService>() &&
+        GetIt.instance<PluginSyncService>().seerrAvailable;
     // Only the open card is rebuilt. The host notifies on every lazy load and
     // user-data sync, and rebuilding the whole set to read one of them would
     // redo the crew merge and the collection aggregation each time.
@@ -401,6 +505,9 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
             seerrAppearances: _seerrAppearances,
             seerrCrewCredits: _seerrCrewCredits,
             fallbackImageUrl: _cardFallbackImageUrl(item),
+            mainBackdropKey: _personBackdropKey,
+            seerrAvailable: seerrAvailable,
+            personCardBackdrops: _personCardBackdrops,
           )
         : null;
     final card = current ?? opened;
@@ -427,15 +534,14 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
             tag: item.backdropImageTags.first,
           )
         : null;
-    final url =
-        backdropUrl ??
-        itemBackdrop ??
-        (item?.type == 'Person' ? _personProfileUrl(item!) : null);
+    final url = item?.type == 'Person'
+        ? _personBackdropUrl
+        : (backdropUrl ?? itemBackdrop);
     final blurAmount = widget.prefs
         .get(UserPreferences.detailsBackgroundBlurAmount)
         .toDouble();
     final opacityFactor = blurAmount / 25.0;
-    final maxAlpha = item?.type == 'Person' ? 0.40 : 0.80;
+    const maxAlpha = 0.80;
     final alpha = opacityFactor * maxAlpha;
     final gradientScale = 0.3 + 0.7 * opacityFactor;
 
@@ -454,20 +560,6 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
             priority: ImageFetchPriority.high,
             errorWidget: (context, url, error) => const SizedBox.shrink(),
           ),
-          if (item?.type == 'Person')
-            Positioned.fill(
-              child: GlassSettings.blursBackdrop
-                  ? BackdropFilter(
-                      filter: ImageFilter.blur(
-                        sigmaX: GlassSettings.capSigma(12),
-                        sigmaY: GlassSettings.capSigma(12),
-                      ),
-                      child: Container(
-                        color: Colors.black.withValues(alpha: 0.2),
-                      ),
-                    )
-                  : Container(color: Colors.black.withValues(alpha: 0.35)),
-            ),
           ColoredBox(color: Colors.black.withValues(alpha: alpha)),
         ],
         if (landscape) ...[
@@ -1007,6 +1099,9 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
     BuildContext context,
     AggregatedItem item,
   ) {
+    final seerrAvailable =
+        GetIt.instance.isRegistered<PluginSyncService>() &&
+        GetIt.instance<PluginSyncService>().seerrAvailable;
     final cards = spotlightCardsFor(
       vm: _vm,
       item: item,
@@ -1017,6 +1112,9 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
       seerrAppearances: _seerrAppearances,
       seerrCrewCredits: _seerrCrewCredits,
       fallbackImageUrl: _cardFallbackImageUrl(item),
+      mainBackdropKey: _personBackdropKey,
+      seerrAvailable: seerrAvailable,
+      personCardBackdrops: _personCardBackdrops,
     );
     for (final card in cards) {
       _cardFocusNodes.putIfAbsent(

@@ -104,6 +104,13 @@ void main() {
         tag: any(named: 'tag'),
       ),
     ).thenReturn('http://img/chapter');
+    when(
+      () => imageApi.getBackdropImageUrl(
+        any(),
+        maxWidth: any(named: 'maxWidth'),
+        tag: any(named: 'tag'),
+      ),
+    ).thenReturn('http://img/backdrop');
 
     vm = _Vm();
     when(() => vm.imageApi).thenReturn(imageApi);
@@ -135,13 +142,23 @@ void main() {
 
   tearDown(() => GetIt.instance.reset());
 
-  List<SpotlightCardSpec> cardsFor(AggregatedItem item) => spotlightCardsFor(
+  List<SpotlightCardSpec> cardsFor(
+    AggregatedItem item, {
+    List<SeerrDiscoverItem> seerrAppearances = const [],
+    List<SeerrDiscoverItem> seerrCrewCredits = const [],
+    String? mainBackdropKey,
+    bool seerrAvailable = false,
+  }) => spotlightCardsFor(
     vm: vm,
     item: item,
     prefs: prefs,
     l10n: _l10n,
     tmdbStudios: const [],
     actions: _actions(),
+    seerrAppearances: seerrAppearances,
+    seerrCrewCredits: seerrCrewCredits,
+    mainBackdropKey: mainBackdropKey,
+    seerrAvailable: seerrAvailable,
   );
 
   test('an item with no loaded content gets no cards', () {
@@ -317,7 +334,7 @@ void main() {
     expect(cards.single.subtitle, '1 track · 30m');
   });
 
-  test('a person maps to the filmography card', () {
+  test('a person maps to the filmography card with local items only', () {
     when(() => vm.filmographyMovies).thenReturn([_child('m1', 'Movie')]);
     when(
       () => vm.filmographySeries,
@@ -331,6 +348,115 @@ void main() {
       _l10n.movies,
       _l10n.series,
     ]);
+  });
+
+  test('a person does not include seerr cards when seerr is disabled', () {
+    when(() => vm.filmographyMovies).thenReturn([_child('m1', 'Movie')]);
+    final cards = cardsFor(
+      _item('Person'),
+      seerrAppearances: const [
+        SeerrDiscoverItem(id: 101, title: 'Appearance', backdropPath: '/app.jpg'),
+      ],
+      seerrCrewCredits: const [
+        SeerrDiscoverItem(id: 102, title: 'Crew Credit', backdropPath: '/crew.jpg'),
+      ],
+      seerrAvailable: false,
+    );
+
+    expect(cards.map((c) => c.id), ['filmography']);
+    expect(cards.single.sections.map((s) => s.title), [_l10n.movies]);
+  });
+
+  test('a person splits into filmography, appearances, and crew cards when seerr is enabled', () {
+    when(() => vm.filmographyMovies).thenReturn([
+      AggregatedItem(
+        id: 'm1',
+        serverId: 'server-1',
+        rawData: const {
+          'Id': 'm1',
+          'Type': 'Movie',
+          'Name': 'Local Movie',
+          'BackdropImageTags': ['tag1'],
+        },
+      ),
+    ]);
+    final cards = cardsFor(
+      _item('Person'),
+      seerrAppearances: const [
+        SeerrDiscoverItem(id: 101, title: 'Cast Item', backdropPath: '/cast_bg.jpg'),
+      ],
+      seerrCrewCredits: const [
+        SeerrDiscoverItem(id: 102, title: 'Crew Item', backdropPath: '/crew_bg.jpg'),
+      ],
+      seerrAvailable: true,
+    );
+
+    expect(cards.map((c) => c.id), ['filmography', 'appearances', 'crew']);
+
+    final filmography = cards[0];
+    expect(filmography.title, _l10n.spotlightFilmography);
+    expect(filmography.subtitle, '1 movie');
+    expect(filmography.sections.map((s) => s.title), [_l10n.movies]);
+
+    final appearances = cards[1];
+    expect(appearances.title, _l10n.appearancesSeerr);
+    expect(appearances.subtitle, _l10n.spotlightItemsCount(1));
+    expect(appearances.sections.single.title, _l10n.appearancesSeerr);
+
+    final crew = cards[2];
+    expect(crew.title, _l10n.crewContributionsSeerr);
+    expect(crew.subtitle, _l10n.spotlightItemsCount(1));
+    expect(crew.sections.single.title, _l10n.crewContributionsSeerr);
+  });
+
+  test('a person assigns unique backdrops across main backdrop and cards', () {
+    final imageApi = vm.imageApi;
+    when(
+      () => imageApi.getBackdropImageUrl(
+        'm1',
+        maxWidth: any(named: 'maxWidth'),
+        tag: any(named: 'tag'),
+      ),
+    ).thenReturn('http://img/local_m1_backdrop');
+
+    when(() => vm.filmographyMovies).thenReturn([
+      AggregatedItem(
+        id: 'm1',
+        serverId: 'server-1',
+        rawData: const {
+          'Id': 'm1',
+          'Type': 'Movie',
+          'Name': 'Movie One',
+          'BackdropImageTags': ['tag-m1'],
+        },
+      ),
+    ]);
+
+    final cards = cardsFor(
+      _item('Person'),
+      seerrAppearances: const [
+        SeerrDiscoverItem(id: 101, title: 'Cast 1', backdropPath: '/cast1.jpg'),
+        SeerrDiscoverItem(id: 102, title: 'Cast 2', backdropPath: '/cast2.jpg'),
+      ],
+      seerrCrewCredits: const [
+        SeerrDiscoverItem(id: 201, title: 'Crew 1', backdropPath: '/crew1.jpg'),
+      ],
+      mainBackdropKey: 'local:m1:tag-m1',
+      seerrAvailable: true,
+    );
+
+    expect(cards.map((c) => c.id), ['filmography', 'appearances', 'crew']);
+    final filmographyBg = cards[0].imageUrl;
+    final appearancesBg = cards[1].imageUrl;
+    final crewBg = cards[2].imageUrl;
+
+    expect(filmographyBg, isNotNull);
+    expect(appearancesBg, isNotNull);
+    expect(crewBg, isNotNull);
+
+    expect(filmographyBg, isNot(equals(appearancesBg)));
+    expect(appearancesBg, isNot(equals(crewBg)));
+    expect(filmographyBg, isNot(equals(crewBg)));
   });
 
   test('seerr recommendations join the similar card with a seerr title', () {
@@ -455,7 +581,7 @@ void main() {
     expect(boxSetCard.sections.first.count, 3);
   });
 
-  test('a person keeps their seerr credits sections', () {
+  test('a person separates seerr credits into appearances and crew cards when library has no items', () {
     final cards = spotlightCardsFor(
       vm: vm,
       item: _item('Person'),
@@ -469,14 +595,12 @@ void main() {
       seerrCrewCredits: const [
         SeerrDiscoverItem(id: 2, title: 'Wrote', posterPath: '/b.jpg'),
       ],
+      seerrAvailable: true,
     );
 
-    final filmography = cards.single;
-    expect(filmography.id, 'filmography');
-    expect(filmography.sections.map((s) => s.title), [
-      _l10n.appearancesSeerr,
-      _l10n.crewContributionsSeerr,
-    ]);
+    expect(cards.map((c) => c.id), ['appearances', 'crew']);
+    expect(cards[0].sections.single.title, _l10n.appearancesSeerr);
+    expect(cards[1].sections.single.title, _l10n.crewContributionsSeerr);
   });
 
   test('a seerr-only title only offers what seerr can fill', () {
