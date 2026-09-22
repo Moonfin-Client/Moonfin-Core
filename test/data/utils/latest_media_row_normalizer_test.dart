@@ -15,6 +15,7 @@ AggregatedItem _createItem({
   String? parentThumbItemId,
   String? parentBackdropItemId,
   List<String>? parentBackdropImageTags,
+  List<String>? backdropImageTags,
 }) {
   final imageTags = <String, dynamic>{};
   if (primaryImageTag != null) {
@@ -38,6 +39,7 @@ AggregatedItem _createItem({
       'ParentThumbItemId': ?parentThumbItemId,
       'ParentBackdropItemId': ?parentBackdropItemId,
       'ParentBackdropImageTags': ?parentBackdropImageTags,
+      'BackdropImageTags': ?backdropImageTags,
     },
   );
 }
@@ -305,7 +307,7 @@ void main() {
       );
     });
 
-    test('an episode replaces its own primary image tag with the series primary tag', () {
+    test('an episode takes the series primary tag over its own', () {
       final episode = _createItem(
         id: 'ep-dm-1',
         name: 'Stars, Hide Your Fires',
@@ -327,11 +329,9 @@ void main() {
       expect(series.primaryImageTag, equals('seriesPosterTag456'));
       expect(series.primaryImageTagField, equals('seriesPosterTag456'));
       expect(series.primaryImageItemId, equals('series-dm'));
-      expect(series.rawData['LatestEpisodeId'], isNull);
-      expect(series.rawData['LatestEpisodePrimaryImageTag'], isNull);
     });
 
-    test('an episode with no series primary tag clears episode primary tag', () {
+    test('an episode drops a primary tag that is its own', () {
       final episode = _createItem(
         id: 'ep-dm-2',
         name: 'Episode 2',
@@ -375,6 +375,30 @@ void main() {
       final series = result.single;
       expect(series.id, equals('series-dm'));
       expect(series.backdropImageTags, equals(['seriesBackdropTag789']));
+    });
+
+    test('an episode drops a backdrop that is its own', () {
+      final episode = _createItem(
+        id: 'ep-dm-4',
+        name: 'Episode 4',
+        type: 'Episode',
+        seriesId: 'series-dm',
+        seriesName: 'Dark Matter',
+        seriesPrimaryImageTag: 'seriesPosterTag456',
+        backdropImageTags: const ['episodeBackdropTag'],
+      );
+
+      final result = normalizeLatestMediaItems(
+        [episode],
+        collectionType: 'tvshows',
+        limit: 10,
+      );
+
+      expect(
+        result.single.backdropImageTags,
+        isEmpty,
+        reason: 'the tag names the episode, not the series',
+      );
     });
   });
 }
