@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'chapter_steps.dart';
 import 'media_stream_resolver.dart';
 import 'playback_arbiter.dart';
 import 'player_backend.dart';
@@ -88,6 +89,14 @@ class PlaybackManager implements AudioOwnable {
   PlayerService? _service;
   Future<void> Function(dynamic item)? _resolverConfigurator;
   bool Function(List<dynamic> items)? _externalPlaybackDecider;
+
+  /// Host veto on what may play. [_queueContentFilter] is cheap and free of
+  /// side effects, so a whole queue can be strained through it as it's set.
+  /// [_playContentRefusal] may go to the network, so it's asked only about the
+  /// one item about to open. A host that registers neither keeps the old
+  /// behaviour.
+  bool Function(dynamic item)? _queueContentFilter;
+  Future<bool> Function(dynamic item)? _playContentRefusal;
   Future<List<dynamic>> Function(
     dynamic completedItem,
     List<dynamic> queueItems,
@@ -107,6 +116,18 @@ class PlaybackManager implements AudioOwnable {
   String? _clientTranscodeReason;
   Duration Function(dynamic item, Duration startPosition)?
   _startPositionAdjuster;
+
+  /// Chapter starts, and the item they were set for, so previous and next
+  /// step through chapters before they step through the queue.
+  ///
+  /// Keyed to the item rather than cleared when a stream starts, because the
+  /// same item restarts for a track switch, a transcode retry or a resume,
+  /// and clearing would drop its chapters for the rest of its playback.
+  /// Compared by identity, since the queue holds bare paths offline and
+  /// asking those for an id throws.
+  List<Duration> _chapterStarts = const [];
+  Object? _chapterStartsItem;
+
   Future<PlaybackStartupRecoveryDecision> Function(
     PlaybackStartupFailureContext context,
   )?
@@ -134,6 +155,8 @@ class PlaybackManager implements AudioOwnable {
   String? _mediaSourceId;
   String? _pendingItemOverrideId;
   int? _pendingItemAudioStreamIndex;
+  double _volume = 100;
+  bool _isMuted = false;
   int? _pendingItemSubtitleStreamIndex;
   String? _pendingItemMediaSourceId;
   String? _lastItemId;
@@ -187,6 +210,15 @@ class PlaybackManager implements AudioOwnable {
   PlaybackBringupState _bringupState = const PlaybackBringupState.idle();
 
   PlayerBackend? get backend => _backend;
+
+  double get volume => _volume;
+  bool get isMuted => _isMuted;
+
+  void reportVolumeState({required double volume, required bool isMuted}) {
+    _volume = volume.clamp(0, 100);
+    _isMuted = isMuted;
+  }
+
   Duration get currentPlaybackPosition {
     final backendPos = _backend?.position ?? Duration.zero;
     return Duration(
@@ -392,6 +424,7 @@ class PlaybackManager implements AudioOwnable {
     String? hybridAudioUrl,
     bool isLive = false,
     bool autoPlay = true,
+    List<ExternalSubtitle> externalSubtitles = const [],
   }) {
     final resolvedMediaType = mediaType?.trim().toLowerCase();
 
@@ -463,6 +496,11 @@ class PlaybackManager implements AudioOwnable {
             mediaStreams: mediaStreams,
           );
 
+    final declaredSubtitles = _declarableSubtitles(
+      mediaStreams,
+      externalSubtitles,
+    );
+
     return <String, dynamic>{
       'url': url,
       'autoPlay': autoPlay,
@@ -481,6 +519,11 @@ class PlaybackManager implements AudioOwnable {
         'preferredTextLanguage': subtitleStreamLang,
       if (videoStream != null && videoStream['DvProfile'] is int)
         'videoDvProfile': videoStream['DvProfile'],
+      if (videoStream != null && videoStream['DvBlSignalCompatibilityId'] is int)
+        'videoDvBlCompatId': videoStream['DvBlSignalCompatibilityId'],
+      if (videoStream != null &&
+          (videoStream['Codec']?.toString().isNotEmpty ?? false))
+        'videoCodec': videoStream['Codec'].toString().toLowerCase(),
       if (videoFrameRate != null) 'videoFrameRate': videoFrameRate,
       if (videoStream != null && videoStream['Width'] is int)
         'videoWidth': videoStream['Width'],
@@ -497,8 +540,48 @@ class PlaybackManager implements AudioOwnable {
       'normalizationGainDb':
           normalizationGainDb ??
           MediaStreamResolver.extractNormalizationGainDb(mediaStreams),
+      if (declaredSubtitles.isNotEmpty) 'externalSubtitles': declaredSubtitles,
     };
   }
+
+  /// Sidecars a backend can register while it opens the source, in the order
+  /// [TrackOrdinalMapper] counts them, so an ordinal derived from that list
+  /// still lands on the same track.
+  ///
+  /// Only text formats go out. A bitmap sidecar has no text equivalent, so a
+  /// player asked to read one as text fails the decode instead of falling back.
+  List<Map<String, dynamic>> _declarableSubtitles(
+    List<Map<String, dynamic>> mediaStreams,
+    List<ExternalSubtitle> externalSubtitles,
+  ) {
+    if (externalSubtitles.isEmpty) return const [];
+    final effective = TrackOrdinalMapper.effectiveExternalSubtitles(
+      mediaStreams: mediaStreams,
+      externalSubtitles: externalSubtitles,
+      embeddedStripped: _embeddedSubtitlesUnavailable,
+    );
+    return [
+      for (final sub in effective)
+        if (_isDeclarableSubtitleCodec(sub.codec))
+          {
+            'url': _ensureSubtitleApiKey(sub.deliveryUrl),
+            if (sub.title != null) 'title': sub.title,
+            if (sub.language != null) 'language': sub.language,
+            'codec': sub.codec,
+            'isDefault': sub.isDefault,
+            'isForced': sub.isForced,
+          },
+    ];
+  }
+
+  static bool _isDeclarableSubtitleCodec(String codec) => const {
+    'srt',
+    'subrip',
+    'ass',
+    'ssa',
+    'vtt',
+    'webvtt',
+  }.contains(codec.trim().toLowerCase());
 
   String _traceItemId(dynamic item) {
     try {
@@ -586,6 +669,14 @@ class PlaybackManager implements AudioOwnable {
     _externalPlaybackDecider = decider;
   }
 
+  void setContentRefusal({
+    bool Function(dynamic item)? queueFilter,
+    Future<bool> Function(dynamic item)? playRefusal,
+  }) {
+    _queueContentFilter = queueFilter;
+    _playContentRefusal = playRefusal;
+  }
+
   void setNextSeasonItemsProvider(
     Future<List<dynamic>> Function(
       dynamic completedItem,
@@ -658,6 +749,21 @@ class PlaybackManager implements AudioOwnable {
   ) {
     _startPositionAdjuster = adjuster;
   }
+
+  /// Set per item by whoever loaded its chapters, after playback of that
+  /// item has started.
+  void setChapterStarts(List<Duration> starts) {
+    _chapterStarts = starts;
+    _chapterStartsItem = queueService.currentItem;
+  }
+
+  /// Empty unless the starts belong to the item playing now. This manager is
+  /// one instance shared with the audio screens, which never set chapters, so
+  /// a song must not inherit a film's.
+  List<Duration> get _currentChapterStarts =>
+      identical(queueService.currentItem, _chapterStartsItem)
+      ? _chapterStarts
+      : const [];
 
   void setStartupRecoveryDecider(
     Future<PlaybackStartupRecoveryDecision> Function(
@@ -1041,15 +1147,24 @@ class PlaybackManager implements AudioOwnable {
       return;
     }
 
+    // Deliberately not gated on _waitingForMedia. A container the player can't
+    // parse fails before it ever reaches a ready state, so that gate left the
+    // sources this recovery exists for sitting on a spinner. The re-resolve
+    // takes the next session token, and the startup still running behind it
+    // compares tokens and hands off to _cleanupPreemptedSession.
     bool canReResolve() =>
         resolution != null &&
         resolution.playMethod != StreamPlayMethod.transcode &&
         !_isOfflinePlayback &&
-        !_waitingForMedia &&
         !_unsupportedAudioRecoveryInFlight;
 
     Future<void> recoverViaTranscode() async {
       _unsupportedAudioRecoveryInFlight = true;
+      // The stop below lets a startup still inside play() return, and the
+      // next token is only taken after that stop. Retire the startup here or
+      // it finishes as a normal start and reports a start for a session whose
+      // stop already went out.
+      ++_playbackSessionToken;
       try {
         await _reResolveAtCurrentPosition(
           forceTranscode: true,
@@ -1249,6 +1364,22 @@ class PlaybackManager implements AudioOwnable {
     if (items.isNotEmpty) {
       pendingItem = items[startIndex.clamp(0, items.length - 1)];
     }
+
+    final queueFilter = _queueContentFilter;
+    if (queueFilter != null && pendingItem != null) {
+      if (queueFilter(pendingItem)) {
+        // Return before the bringup phase moves off `preparing`. A launcher
+        // holding a player route reads that as "nothing started" and closes
+        // it, which is exactly the refusal we want and costs no new UI.
+        return;
+      }
+      final allowed = items.where((i) => !queueFilter(i)).toList();
+      if (allowed.length != items.length) {
+        startIndex = allowed.indexOf(pendingItem);
+        items = allowed;
+      }
+    }
+
     _setBringupState(
       PlaybackBringupState(
         phase: PlaybackBringupPhase.stoppingPrevious,
@@ -1351,6 +1482,19 @@ class PlaybackManager implements AudioOwnable {
     final item = queueService.currentItem;
     if (item == null || _backend == null) {
       _setBringupState(const PlaybackBringupState.idle());
+      return;
+    }
+
+    // The backstop for everything the queue filter couldn't answer without a
+    // lookup. Prerolls carry no rating of their own and are skipped.
+    final refusal = _playContentRefusal;
+    if (refusal != null && !_isPreroll(item) && await refusal(item)) {
+      suppressAutoNext = true;
+      queueService.clear();
+      state.reset();
+      // Closes a player that's already open, rather than leaving it frozen on
+      // the last frame.
+      _notifySessionEnded();
       return;
     }
 
@@ -1697,6 +1841,7 @@ class PlaybackManager implements AudioOwnable {
         hybridAudioUrl: resolution.hybridAudioUrl,
         isLive: resolution.liveStreamId != null,
         autoPlay: autoPlay,
+        externalSubtitles: resolution.externalSubtitles,
       );
       await _arbiter?.acquire(AudioProducer.mainPlayback);
       if (sessionToken != _playbackSessionToken) {
@@ -1742,7 +1887,9 @@ class PlaybackManager implements AudioOwnable {
       startupError = e;
       startupStackTrace = st;
     } finally {
-      _waitingForMedia = false;
+      if (sessionToken == _playbackSessionToken) {
+        _waitingForMedia = false;
+      }
     }
 
     if (sessionToken != _playbackSessionToken) {
@@ -1973,6 +2120,8 @@ class PlaybackManager implements AudioOwnable {
           isPaused: !state.isPlaying,
           audioStreamIndex: _audioStreamIndex,
           subtitleStreamIndex: _subtitleStreamIndex,
+          volumeLevel: _volume.round(),
+          isMuted: _isMuted,
         );
       } catch (_) {
         return;
@@ -2132,6 +2281,30 @@ class PlaybackManager implements AudioOwnable {
 
   Future<void> next() async {
     if (await _maybeIntercept(TransportAction.next)) return;
+    final chapter = nextChapterStart(_currentChapterStarts, state.position);
+    if (chapter != null) {
+      await seekTo(chapter);
+      return;
+    }
+    await _advanceQueue();
+  }
+
+  /// Straight to the next item, without stepping chapters first. What Play
+  /// Next and the media session's next action want, since both mean the next
+  /// item however far into this one the position is.
+  Future<void> nextInQueue() async {
+    if (await _maybeIntercept(TransportAction.next)) return;
+    await _advanceQueue();
+  }
+
+  Future<void> _advanceQueue() async {
+    // Nothing queued after this, so run it to the end and let the ordinary
+    // finish handle watched state and whatever follows, rather than stopping
+    // on a dead player.
+    if (!queueService.hasNext && state.duration > Duration.zero) {
+      await seekTo(state.duration);
+      return;
+    }
     if (_isManualNexting || _isAutoNexting) return;
     _isManualNexting = true;
     _mediaSourceId = null;
@@ -2149,6 +2322,12 @@ class PlaybackManager implements AudioOwnable {
 
   Future<void> previous() async {
     if (await _maybeIntercept(TransportAction.previous)) return;
+    final chapter =
+        previousChapterStart(_currentChapterStarts, state.position);
+    if (chapter != null) {
+      await seekTo(chapter);
+      return;
+    }
     // A press this far in restarts the item, and so does one with nothing to
     // step back to.
     if (state.position.inSeconds > 3 || !queueService.hasPrevious) {

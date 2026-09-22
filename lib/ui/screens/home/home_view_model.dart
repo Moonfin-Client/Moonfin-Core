@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
+import 'package:collection/collection.dart';
 
 import '../../../data/models/aggregated_item.dart';
 import '../../../data/models/aggregated_library.dart';
@@ -55,6 +56,7 @@ class HomeViewModel extends ChangeNotifier {
   final HomeRowCacheStore _cacheStore = HomeRowCacheStore();
   final Set<String> _inFlightPagingRowIds = {};
   final Map<String, int> _rowOffsets = {};
+  final Set<String> _rowsPagedThisLoad = {};
 
   /// How many items a row asks for per page, matching what RowDataSource
   /// requests so the offsets tracked here stay in step with it.
@@ -127,12 +129,13 @@ class HomeViewModel extends ChangeNotifier {
     final userId = _ownerUserId;
     final sections = _prefs.get(UserPreferences.homeSectionsJson);
     final multiServer = _prefs.get(UserPreferences.enableMultiServerLibraries);
-    final merge = _prefs.get(UserPreferences.mergeContinueWatchingNextUp);
+    final merge = _prefs.effectiveMergeContinueWatchingNextUp;
     final blocked = _prefs.get(UserPreferences.blockedParentalRatings);
     // Offline rows are cached separately so cached online rows never hydrate
     // an offline home (and vice versa).
     final offline = _isOffline;
-    return '$_serverId|$userId|$sections|$multiServer|$merge|$blocked|offline:$offline';
+    final shape = RowDataSource.fieldShapeToken;
+    return '$_serverId|$userId|$sections|$multiServer|$merge|$blocked|offline:$offline|fields:$shape';
   }
 
   static bool _isFavoriteSectionType(HomeSectionType type) {
@@ -321,6 +324,19 @@ class HomeViewModel extends ChangeNotifier {
     required bool hasVisibleRow,
   }) => (preserveExisting || hydratedFromCache) && hasVisibleRow;
 
+  /// Whether a freshly fetched row gives way to the one already on screen.
+  ///
+  /// A section fetch only brings back the first page, so a row that paged while
+  /// it was out would lose those pages and be handed straight back to the
+  /// viewport to page in again. A row nobody paged takes the shorter answer,
+  /// since that is how an item leaving a row reaches the screen.
+  @visibleForTesting
+  static bool keepsPagedRow({
+    required bool pagedDuringLoad,
+    required int existingItemCount,
+    required int freshItemCount,
+  }) => pagedDuringLoad && existingItemCount > freshItemCount;
+
   /// Whether the home has to load again because the server came back.
   ///
   /// Rows built while it was unreachable came from the downloads catalog, so
@@ -346,6 +362,7 @@ class HomeViewModel extends ChangeNotifier {
     notifyListeners();
     _rowOffsets.clear();
     _multiServerRepo.clearOffsets();
+    _rowsPagedThisLoad.clear();
     try {
       var hydratedFromCache = false;
       if (_rows.isEmpty) {
@@ -475,7 +492,7 @@ class HomeViewModel extends ChangeNotifier {
         _mediaBarViewModel.load(force: forceRefresh);
       }
 
-      final merge = _prefs.get(UserPreferences.mergeContinueWatchingNextUp);
+      final merge = _prefs.effectiveMergeContinueWatchingNextUp;
       final effectiveConfigs = visibleConfigs
           .where(
             (c) => !(c.isBuiltin && merge && c.type == HomeSectionType.nextUp),
@@ -543,6 +560,20 @@ class HomeViewModel extends ChangeNotifier {
             .where(
               (r) => r.items.isNotEmpty || r.rowType == HomeRowType.liveTv,
             )
+            .map((freshRow) {
+              final existing = _rows.firstWhereOrNull(
+                (r) => r.id == freshRow.id,
+              );
+              if (existing == null) return freshRow;
+              if (keepsPagedRow(
+                pagedDuringLoad: _rowsPagedThisLoad.contains(freshRow.id),
+                existingItemCount: existing.items.length,
+                freshItemCount: freshRow.items.length,
+              )) {
+                return existing;
+              }
+              return freshRow;
+            })
             .toList();
         final placeholder = _placeholderForConfig(cfg);
         final loadedIds = loadedRows.map((r) => r.id).toSet();
@@ -812,7 +843,7 @@ class HomeViewModel extends ChangeNotifier {
     // A full load already covers these rows, so don't compete with it.
     if (_isLoading) return;
 
-    if (_prefs.get(UserPreferences.mergeContinueWatchingNextUp)) {
+    if (_prefs.effectiveMergeContinueWatchingNextUp) {
       await _loadResumeAndNextUpInBackground();
       return;
     }
@@ -885,6 +916,7 @@ class HomeViewModel extends ChangeNotifier {
     if (!row.hasMore || _inFlightPagingRowIds.contains(row.id)) return;
 
     _inFlightPagingRowIds.add(row.id);
+    _rowsPagedThisLoad.add(row.id);
     try {
       final seerrType = _seerrRowTypeForId(row.id);
       if (seerrType != null) {
@@ -900,7 +932,7 @@ class HomeViewModel extends ChangeNotifier {
       // paging they already had.
       if (row.id == 'resume' &&
           !_multiServerEnabled &&
-          _prefs.get(UserPreferences.mergeContinueWatchingNextUp)) {
+          _prefs.effectiveMergeContinueWatchingNextUp) {
         await _loadMoreMergedResume(rowIndex);
         return;
       }
@@ -1912,22 +1944,27 @@ class HomeViewModel extends ChangeNotifier {
         // screen.
         if (_multiServerEnabled) {
           final resumeFuture = _loadRowOrNull(
+            'resume',
             () => _multiServerRepo.getAggregatedResume(),
           );
           final nextUpFuture = _loadRowOrNull(
+            'next up',
             () => _multiServerRepo.getAggregatedNextUp(),
           );
           _applyMergedResumeRows(await resumeFuture, await nextUpFuture);
         } else {
           final resumeFuture = _loadRowOrNull(
+            'resume',
             () => _dataSource.loadResume(_serverId),
           );
           final nextUpFuture = _loadRowOrNull(
+            'next up',
             () => _dataSource.loadNextUp(_serverId),
           );
           _applyMergedResumeRows(await resumeFuture, await nextUpFuture);
         }
-      } catch (_) {
+      } catch (e) {
+        debugPrint('[Home] Merged resume and next up load failed: $e');
       } finally {
         _bgMergeInFlight = false;
       }
@@ -1941,14 +1978,38 @@ class HomeViewModel extends ChangeNotifier {
     return bDate.compareTo(aDate);
   }
 
+  /// [existing] with the unseen items of [incoming] appended. The first id
+  /// wins, so Continue Watching keeps an episode Next Up also offers.
+  ///
+  /// The row is never sorted as a whole. A Next Up episode carries the last
+  /// played date of its series, so it would sort in among items the viewer
+  /// has already scrolled past and slide the row under them.
+  @visibleForTesting
+  static List<AggregatedItem> appendNewArrivals(
+    List<AggregatedItem> existing,
+    List<AggregatedItem> incoming,
+  ) {
+    final seen = {for (final item in existing) item.id};
+    final added = <AggregatedItem>[];
+    for (final item in incoming) {
+      if (seen.add(item.id)) added.add(item);
+    }
+    added.sort(_byLastPlayedDate);
+    return [...existing, ...added];
+  }
+
   /// Returns null rather than throwing, so a caller merging several sources
-  /// can keep the ones that answered.
+  /// can keep the ones that answered. The failure is logged because a merged
+  /// row that quietly loses one of its sources looks the same as a server with
+  /// nothing to offer, which makes the difference impossible to report.
   static Future<HomeRow?> _loadRowOrNull(
+    String label,
     Future<HomeRow> Function() load,
   ) async {
     try {
       return await load();
-    } catch (_) {
+    } catch (e) {
+      debugPrint('[Home] Failed to load $label for the merged row: $e');
       return null;
     }
   }
@@ -1967,6 +2028,15 @@ class HomeViewModel extends ChangeNotifier {
       merged.putIfAbsent(item.id, () => item);
     }
     final sorted = merged.values.toList()..sort(_byLastPlayedDate);
+    final existing = _rows.firstWhereOrNull((r) => r.id == 'resume');
+    if (existing != null &&
+        keepsPagedRow(
+          pagedDuringLoad: _rowsPagedThisLoad.contains('resume'),
+          existingItemCount: existing.items.length,
+          freshItemCount: sorted.length,
+        )) {
+      return;
+    }
     // Each source contributed its first page, and the merged item count can't
     // stand in for a per source offset, so the paging cursor starts at one
     // page no matter how many unique items the merge kept.
@@ -1999,7 +2069,7 @@ class HomeViewModel extends ChangeNotifier {
   }
 
   /// The merged row draws on two endpoints, so it pages both at the same offset
-  /// and merges the results in. Each source is walked in full and the dedupe
+  /// and appends what comes back. Each source is walked in full and the dedupe
   /// only drops what is already on screen, so nothing gets skipped. The counts
   /// the two report overlap, so a page that adds nothing new closes the row.
   Future<void> _loadMoreMergedResume(int rowIndex) async {
@@ -2007,9 +2077,11 @@ class HomeViewModel extends ChangeNotifier {
     final offset = _rowOffsets[row.id] ?? row.items.length;
 
     final resumeFuture = _loadRowOrNull(
+      'resume',
       () => _dataSource.loadResume(_serverId, startIndex: offset),
     );
     final nextUpFuture = _loadRowOrNull(
+      'next up',
       () => _dataSource.loadNextUp(_serverId, startIndex: offset),
     );
     final resumeRow = await resumeFuture;
@@ -2017,27 +2089,19 @@ class HomeViewModel extends ChangeNotifier {
     if (resumeRow == null && nextUpRow == null) return;
     _rowOffsets[row.id] = offset + _rowPageSize;
 
-    final merged = <String, AggregatedItem>{
-      for (final item in row.items) item.id: item,
-    };
-    final countBefore = merged.length;
-    for (final item in _prefs.filterContinueWatching(
-      resumeRow?.items ?? const [],
-    )) {
-      merged.putIfAbsent(item.id, () => item);
-    }
-    for (final item in _prefs.filterNextUp(nextUpRow?.items ?? const [])) {
-      merged.putIfAbsent(item.id, () => item);
-    }
+    final appended = appendNewArrivals(row.items, [
+      ..._prefs.filterContinueWatching(resumeRow?.items ?? const []),
+      ..._prefs.filterNextUp(nextUpRow?.items ?? const []),
+    ]);
+    final addedNothing = appended.length == row.items.length;
 
-    final items = _filterEmptyElements(merged.values.toList())
-      ..sort(_byLastPlayedDate);
+    final items = _filterEmptyElements(appended);
     final index = _rows.indexWhere((r) => r.id == row.id);
     if (index < 0) return;
     _rows = List.of(_rows);
     _rows[index] = _rows[index].copyWith(
       items: items,
-      totalCount: merged.length == countBefore ? items.length : null,
+      totalCount: addedNothing ? items.length : null,
     );
     notifyListeners();
   }
@@ -2100,6 +2164,7 @@ class HomeViewModel extends ChangeNotifier {
         page.results,
         SeerrRowType.trending,
         seerrPrefs.blockNsfw,
+        mediaTypeHint: catalog.mediaTypeHint,
       );
       _seerrRowPages[cfg.stableId] = 1;
       return [
@@ -2159,6 +2224,7 @@ class HomeViewModel extends ChangeNotifier {
         page.results,
         SeerrRowType.trending,
         seerrPrefs.blockNsfw,
+        mediaTypeHint: catalog.mediaTypeHint,
       ).where((item) => !existingIds.contains(_seerrCatalogItemIdentity(item))),
     ];
     _rows = List.of(_rows);
@@ -2426,8 +2492,9 @@ class HomeViewModel extends ChangeNotifier {
   List<AggregatedItem> _seerrAggregatedItems(
     List<SeerrDiscoverItem> rawItems,
     SeerrRowType type,
-    bool blockNsfw,
-  ) {
+    bool blockNsfw, {
+    String? mediaTypeHint,
+  }) {
     // The request, watchlist and recently added rows are meant to show media the
     // user already has, so only the discovery rows hide what is available.
     final hidesAvailable =
@@ -2457,14 +2524,16 @@ class HomeViewModel extends ChangeNotifier {
             serverId: 'seerr',
             rawData: {
               'Name': item.displayTitle,
-              'Type': item.mediaType == 'tv' ? 'Series' : 'Movie',
+              'Type': (item.mediaType ?? mediaTypeHint) == 'tv'
+                  ? 'Series'
+                  : 'Movie',
               'Overview': item.overview ?? '',
               'PosterPath': item.posterPath ?? '',
               'BackdropPath': item.backdropPath ?? '',
               'ProductionYear': _extractYear(
                 item.releaseDate ?? item.firstAirDate,
               ),
-              'SeerrMediaType': item.mediaType,
+              'SeerrMediaType': item.mediaType ?? mediaTypeHint,
               'SeerrStatus': item.mediaInfo?.status,
             },
           ),

@@ -21,7 +21,7 @@ class SeerrRequestsState {
   final bool isRefreshing;
   final bool isLoadingMore;
   final bool hasMore;
-  final String? error;
+  final Object? error;
   final List<SeerrRequest> requests;
   final SeerrUser? currentUser;
   final int? actioningRequestId;
@@ -59,7 +59,7 @@ class SeerrRequestsState {
     bool? isRefreshing,
     bool? isLoadingMore,
     bool? hasMore,
-    String? error,
+    Object? error,
     List<SeerrRequest>? requests,
     SeerrUser? currentUser,
     Object? actioningRequestId = _sentinel,
@@ -209,7 +209,7 @@ class SeerrRequestsViewModel extends ChangeNotifier {
       _state = _state.copyWith(
         isLoading: false,
         isRefreshing: false,
-        error: e.toString(),
+        error: e,
       );
       notifyListeners();
       _syncDownloadPolling();

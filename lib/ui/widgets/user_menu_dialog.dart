@@ -24,6 +24,7 @@ import 'overlay_sheet.dart';
 import 'pin_entry_dialog.dart';
 import 'remote_control_dialog.dart';
 import 'settings/settings_panel.dart';
+import 'image_source.dart';
 
 enum _AccountDialogAction { quickConnect }
 
@@ -822,6 +823,10 @@ class _AccountCardState extends State<_AccountCard> {
                             widget.avatarUrl!,
                             headers: serverImageHeaders,
                             fit: BoxFit.cover,
+                            cacheWidth: ArtworkDecode.widthFor(
+                              68,
+                              MediaQuery.devicePixelRatioOf(context),
+                            ),
                             errorBuilder: (_, _, _) {
                               if (!_avatarFailed) {
                                 WidgetsBinding.instance

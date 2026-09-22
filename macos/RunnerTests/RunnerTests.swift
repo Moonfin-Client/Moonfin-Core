@@ -132,3 +132,135 @@ final class SubtitleOverlayTests: XCTestCase {
         XCTAssertEqual(canvas(forVideoRect: nil), overlayBounds)
     }
 }
+
+/// How a reader stall reaches the player UI. The spinner belongs to a picture
+/// that has stopped, not to a connection that dropped while AVPlayer still has
+/// frames to play.
+final class StalledStateTests: XCTestCase {
+
+    private func state(
+        isNativePath: Bool = true,
+        sawPlayback: Bool = true,
+        isSeeking: Bool = false,
+        isPlaying: Bool = true,
+        isPaused: Bool = false,
+        isBuffering: Bool = false,
+        secondsSinceClockAdvanced: Double = 0.1
+    ) -> PlayerState {
+        AetherPlayerWrapper.stalledState(
+            isNativePath: isNativePath,
+            sawPlayback: sawPlayback,
+            isSeeking: isSeeking,
+            isPlaying: isPlaying,
+            isPaused: isPaused,
+            isBuffering: isBuffering,
+            secondsSinceClockAdvanced: secondsSinceClockAdvanced,
+            bufferProgress: 0.4)
+    }
+
+    func testReconnectWhileThePictureMovesKeepsPlaying() {
+        XCTAssertEqual(state(), .playing)
+    }
+
+    func testAVPlayerWaitingShowsBuffering() {
+        XCTAssertEqual(state(isBuffering: true), .buffering(0.4))
+    }
+
+    func testAFrozenClockShowsBufferingEvenIfAVPlayerNeverWaits() {
+        XCTAssertEqual(state(secondsSinceClockAdvanced: 1), .buffering(0.4))
+    }
+
+    func testAClockJustUnderTheFreezeLimitKeepsPlaying() {
+        XCTAssertEqual(state(secondsSinceClockAdvanced: 0.99), .playing)
+    }
+
+    func testPausingDuringAStallStaysPaused() {
+        XCTAssertEqual(state(isPlaying: false, isPaused: true), .paused)
+    }
+
+    func testAStallBeforeTheFirstFrameStaysBuffering() {
+        XCTAssertEqual(state(sawPlayback: false), .buffering(0.4))
+    }
+
+    func testAPausedMountThatStallsStaysBuffering() {
+        XCTAssertEqual(
+            state(sawPlayback: false, isPlaying: false, isPaused: true), .buffering(0.4))
+    }
+
+    func testASeekDuringAStallStaysBuffering() {
+        XCTAssertEqual(state(isSeeking: true), .buffering(0.4))
+    }
+
+    func testTheSoftwareAndAudioPathsStayBuffering() {
+        XCTAssertEqual(state(isNativePath: false), .buffering(0.4))
+        XCTAssertEqual(
+            state(isNativePath: false, isPlaying: false, isPaused: true), .buffering(0.4))
+    }
+
+    func testAnEngineLeavingPlaybackStaysBuffering() {
+        XCTAssertEqual(state(isPlaying: false, isPaused: false), .buffering(0.4))
+    }
+}
+
+/// Reading the sidecars out of a setSource payload. They are declared with the
+/// load because the engine clears its external registry when a load begins, so
+/// a file handed over afterwards is dropped.
+final class ExternalSubtitleTrackParsingTests: XCTestCase {
+
+    func testBareFilesystemPathBecomesAFileURL() {
+        let tracks = AetherPlayerWrapper.externalSubtitleTracks(from: [
+            ["url": "/Downloads/Movie_sub_3.ass", "codec": "ass", "language": "eng"]
+        ])
+        XCTAssertEqual(tracks.count, 1)
+        XCTAssertEqual(tracks.first?.url.isFileURL, true)
+        XCTAssertEqual(tracks.first?.url.path, "/Downloads/Movie_sub_3.ass")
+        XCTAssertEqual(tracks.first?.language, "eng")
+        XCTAssertEqual(tracks.first?.formatHint, "ass")
+    }
+
+    func testRemoteUrlIsKeptAsIs() {
+        let tracks = AetherPlayerWrapper.externalSubtitleTracks(from: [
+            ["url": "https://host.test/Stream.srt", "codec": "srt"]
+        ])
+        XCTAssertEqual(tracks.first?.url.absoluteString, "https://host.test/Stream.srt")
+    }
+
+    func testOrderIsPreserved() {
+        let tracks = AetherPlayerWrapper.externalSubtitleTracks(from: [
+            ["url": "/a_sub_3.ass"], ["url": "/b_sub_4.ass"], ["url": "/c_sub_5.ass"],
+        ])
+        XCTAssertEqual(tracks.map { $0.url.lastPathComponent },
+                       ["a_sub_3.ass", "b_sub_4.ass", "c_sub_5.ass"])
+    }
+
+    func testEntriesWithNoUsableUrlAreDropped() {
+        let tracks = AetherPlayerWrapper.externalSubtitleTracks(from: [
+            ["url": ""], ["codec": "srt"], ["url": "/good_sub_3.srt"],
+        ])
+        XCTAssertEqual(tracks.count, 1)
+        XCTAssertEqual(tracks.first?.url.lastPathComponent, "good_sub_3.srt")
+    }
+
+    func testEmptyStringsDoNotBecomeTrackMetadata() {
+        let tracks = AetherPlayerWrapper.externalSubtitleTracks(from: [
+            ["url": "/x_sub_3.srt", "title": "", "language": "", "codec": ""]
+        ])
+        XCTAssertNil(tracks.first?.name)
+        XCTAssertNil(tracks.first?.language)
+        XCTAssertNil(tracks.first?.formatHint)
+    }
+
+    func testFlagsRideAlong() {
+        let tracks = AetherPlayerWrapper.externalSubtitleTracks(from: [
+            ["url": "/x_sub_3.srt", "isForced": true, "isDefault": true]
+        ])
+        XCTAssertEqual(tracks.first?.isForced, true)
+        XCTAssertEqual(tracks.first?.isDefault, true)
+    }
+
+    func testAMissingOrMalformedPayloadYieldsNothing() {
+        XCTAssertTrue(AetherPlayerWrapper.externalSubtitleTracks(from: nil).isEmpty)
+        XCTAssertTrue(AetherPlayerWrapper.externalSubtitleTracks(from: "nonsense").isEmpty)
+        XCTAssertTrue(AetherPlayerWrapper.externalSubtitleTracks(from: []).isEmpty)
+    }
+}

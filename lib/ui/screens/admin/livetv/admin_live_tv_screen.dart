@@ -7,6 +7,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../util/error_message.dart';
 import '../../../widgets/adaptive/adaptive_dialog.dart';
 import '../widgets/admin_form_styles.dart';
 
@@ -38,26 +39,14 @@ class _AdminLiveTvScreenState extends State<AdminLiveTvScreen> {
   }
 
   String _friendlyError(Object error) {
+    final l10n = AppLocalizations.of(context);
     if (error is DioException) {
       final status = error.response?.statusCode;
       if (status == 404 || status == 405 || status == 501) {
-        return AppLocalizations.of(context).adminLiveTvNotAvailable;
-      }
-      final data = error.response?.data;
-      if (data is Map) {
-        final message =
-            data['message'] ?? data['Message'] ?? data['error'] ?? data['title'];
-        if (message != null && message.toString().trim().isNotEmpty) {
-          return message.toString();
-        }
-      } else if (data is String && data.trim().isNotEmpty) {
-        return data;
-      }
-      if (status != null) {
-        return AppLocalizations.of(context).adminServerReturnedHttp(status);
+        return l10n.adminLiveTvNotAvailable;
       }
     }
-    return error.toString();
+    return describeError(error, l10n);
   }
 
   Future<void> _loadAll() async {
@@ -152,7 +141,7 @@ class _AdminLiveTvScreenState extends State<AdminLiveTvScreen> {
       if (!mounted) return;
       setState(() => _discovering = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context).adminTunerDiscoveryFailed(e.toString()))),
+        SnackBar(content: Text(AppLocalizations.of(context).adminTunerDiscoveryFailed(_friendlyError(e)))),
       );
     }
   }
@@ -385,7 +374,7 @@ class _AdminLiveTvScreenState extends State<AdminLiveTvScreen> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context).adminTunerAddFailed(e.toString()))),
+        SnackBar(content: Text(AppLocalizations.of(context).adminTunerAddFailed(_friendlyError(e)))),
       );
     }
   }
@@ -722,7 +711,7 @@ class _AdminLiveTvScreenState extends State<AdminLiveTvScreen> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context).adminProviderAddFailed(e.toString()))),
+        SnackBar(content: Text(AppLocalizations.of(context).adminProviderAddFailed(_friendlyError(e)))),
       );
     }
   }
@@ -736,7 +725,7 @@ class _AdminLiveTvScreenState extends State<AdminLiveTvScreen> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context).adminTunerRemoveFailed(e.toString()))),
+        SnackBar(content: Text(AppLocalizations.of(context).adminTunerRemoveFailed(_friendlyError(e)))),
       );
     }
   }
@@ -805,7 +794,7 @@ class _AdminLiveTvScreenState extends State<AdminLiveTvScreen> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context).adminProviderRemoveFailed(e.toString()))),
+        SnackBar(content: Text(AppLocalizations.of(context).adminProviderRemoveFailed(_friendlyError(e)))),
       );
     }
   }
@@ -1012,7 +1001,7 @@ class _AdminLiveTvScreenState extends State<AdminLiveTvScreen> {
       if (!mounted) return;
       setState(() => _savingConfig = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context).adminSettingsSaveFailed(e.toString()))),
+        SnackBar(content: Text(AppLocalizations.of(context).adminSettingsSaveFailed(_friendlyError(e)))),
       );
     }
   }
@@ -1074,7 +1063,7 @@ class _AdminLiveTvScreenState extends State<AdminLiveTvScreen> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context).adminChannelMappingsUpdateFailed(e.toString()))),
+        SnackBar(content: Text(AppLocalizations.of(context).adminChannelMappingsUpdateFailed(_friendlyError(e)))),
       );
     }
   }

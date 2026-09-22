@@ -134,6 +134,8 @@ class _TestService implements PlayerService {
     bool isPaused = false,
     int? audioStreamIndex,
     int? subtitleStreamIndex,
+    int? volumeLevel,
+    bool? isMuted,
   }) async {}
 
   @override

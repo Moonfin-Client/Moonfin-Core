@@ -137,3 +137,7 @@ web/drift_worker.js.map
 /scripts/.cache/
 /.arb-work/
 /.arb-work-brand/
+
+# Tizen build output. Tizen was removed upstream; these are generated
+# NuGet/MSBuild artifacts.
+tizen/obj/

@@ -7635,7 +7635,7 @@
     "@detailScreenStyle": {
         "description": "Label for the media detail screen layout style setting"
     },
-    "detailScreenStyleSubtitle": "Classic is the original centered moonfin layout. Modern is a responsive cinematic layout.",
+    "detailScreenStyleSubtitle": "Classic is the original centred Moonfin layout. Modern is a responsive cinematic layout. Spotlight is a hero-first layout with pop-up content cards. Nouveau is a full-screen layout with sections stacked down the page. Minimalist is artwork, one play button and the episodes.",
     "@detailScreenStyleSubtitle": {
         "description": "Explanation under the detail screen style setting"
     },
@@ -10271,5 +10271,192 @@
     "nativeHdrOutputDescription": "Sends HDR video to the display untouched instead of converting it to SDR. Used only when the display is already in HDR mode and the title is HDR.",
     "@nativeHdrOutputDescription": {
         "description": "Settings description for native HDR output"
+    },
+    "detailScreenStyleSpotlight": "Spotlight",
+    "@detailScreenStyleSpotlight": {
+        "description": "Detail screen style option: the hero-first layout with summary cards that open grid modals"
+    },
+    "spotlightMoreActions": "More Actions",
+    "@spotlightMoreActions": {
+        "description": "Tooltip/semantics of the spotlight ellipsis button and the title of the overflow actions menu it opens"
+    },
+    "animeMarkerFiller": "Filler",
+    "@animeMarkerFiller": {
+        "description": "Badge on an anime episode that is filler, meaning it is not adapted from the source manga"
+    },
+    "animeMarkerMixed": "Mixed",
+    "@animeMarkerMixed": {
+        "description": "Badge on an anime episode that mixes source material with filler, so it still contains story"
+    },
+    "animeMarkerMangaCanon": "Manga Canon",
+    "@animeMarkerMangaCanon": {
+        "description": "Badge on an anime episode adapted from the source manga"
+    },
+    "animeMarkerSubbed": "Subbed",
+    "@animeMarkerSubbed": {
+        "description": "Badge on an anime episode or season whose only audio is Japanese, so it is watched with subtitles"
+    },
+    "animeMarkerDubbed": "Dubbed",
+    "@animeMarkerDubbed": {
+        "description": "Badge on an anime episode or season that has an audio track in a language other than Japanese"
+    },
+    "animeMarkerSubbedAndDubbed": "Subbed/Dubbed",
+    "@animeMarkerSubbedAndDubbed": {
+        "description": "Badge on anime that carries both the original Japanese audio and a dub, so it can be watched either way"
+    },
+    "animeMarkerPending": "Pending",
+    "@animeMarkerPending": {
+        "description": "Badge on an anime episode whose filler information the server has matched but not downloaded yet"
+    },
+    "animeMarkerRecap": "Recap",
+    "@animeMarkerRecap": {
+        "description": "Badge on an anime episode that recaps earlier episodes"
+    },
+    "spotlightCastCrewStudios": "Cast, Crew, and Studios",
+    "@spotlightCastCrewStudios": {
+        "description": "Title of the spotlight summary card that opens the people and studios modal"
+    },
+    "spotlightChaptersExtras": "Chapters and Extras",
+    "@spotlightChaptersExtras": {
+        "description": "Title of the spotlight summary card that opens the chapters and special features modal"
+    },
+    "spotlightSimilarRecommendations": "Similar and Recommendations",
+    "@spotlightSimilarRecommendations": {
+        "description": "Title of the spotlight summary card that opens the similar titles and recommendations modal"
+    },
+    "spotlightSeasonsEpisodes": "Seasons and Episodes",
+    "@spotlightSeasonsEpisodes": {
+        "description": "Title of the spotlight summary card that opens the seasons grid modal for a series"
+    },
+    "spotlightMoreEpisodes": "More Episodes",
+    "@spotlightMoreEpisodes": {
+        "description": "Title of the spotlight summary card listing the other episodes of the season"
+    },
+    "spotlightFilmography": "Filmography",
+    "@spotlightFilmography": {
+        "description": "Title of the spotlight summary card that opens a person's filmography modal"
+    },
+    "spotlightCollectionsCard": "Collections",
+    "@spotlightCollectionsCard": {
+        "description": "Title of the spotlight summary card that opens the parent collections modal"
+    },
+    "spotlightPlaylistOrder": "Playlist Order",
+    "@spotlightPlaylistOrder": {
+        "description": "Title of the spotlight summary card that opens the ordered box set playlist modal"
+    },
+    "spotlightMoviesAndShows": "Movies & Shows",
+    "@spotlightMoviesAndShows": {
+        "description": "Subtitle of the spotlight similar and recommendations card"
+    },
+    "spotlightSimilarSeerr": "Similar (Seerr)",
+    "@spotlightSimilarSeerr": {
+        "description": "Header of the Seerr similar-titles section when it appears beside the library's own similar section"
+    },
+    "spotlightRecommendationsSeerr": "Recommendations (Seerr)",
+    "@spotlightRecommendationsSeerr": {
+        "description": "Header of the Seerr recommendations section when it appears in the Spotlight recommendations modal"
+    },
+    "spotlightPeopleCount": "{count, plural, =1{1 person} other{{count} people}}",
+    "@spotlightPeopleCount": {
+        "description": "Count fragment on spotlight summary cards: people",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightFactsCount": "{count, plural, =1{1 fact} other{{count} facts}}",
+    "@spotlightFactsCount": {
+        "description": "Count fragment on spotlight summary cards: Seerr facts",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightTagsCount": "{count, plural, =1{1 tag} other{{count} tags}}",
+    "@spotlightTagsCount": {
+        "description": "Count fragment on spotlight summary cards: genres, networks and keywords",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightStudiosCount": "{count, plural, =1{1 studio} other{{count} studios}}",
+    "@spotlightStudiosCount": {
+        "description": "Count fragment on spotlight summary cards: studios",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightChaptersCount": "{count, plural, =1{1 chapter} other{{count} chapters}}",
+    "@spotlightChaptersCount": {
+        "description": "Count fragment on spotlight summary cards: chapters",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightExtrasCount": "{count, plural, =1{1 extra} other{{count} extras}}",
+    "@spotlightExtrasCount": {
+        "description": "Count fragment on spotlight summary cards: extras/special features",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightSeasonsCount": "{count, plural, =1{1 season} other{{count} seasons}}",
+    "@spotlightSeasonsCount": {
+        "description": "Count fragment on spotlight summary cards: seasons",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightEpisodesCount": "{count, plural, =1{1 episode} other{{count} episodes}}",
+    "@spotlightEpisodesCount": {
+        "description": "Count fragment on spotlight summary cards: episodes",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "animeMarkerAnimeCanon": "Anime Canon",
+    "@animeMarkerAnimeCanon": {
+        "description": "Badge on an anime episode that is not in the source manga but is part of the anime's own continuity"
+    },
+    "spotlightMoviesCount": "{count, plural, =1{1 movie} other{{count} movies}}",
+    "@spotlightMoviesCount": {
+        "description": "Count fragment on spotlight summary cards: movies",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightShowsCount": "{count, plural, =1{1 show} other{{count} shows}}",
+    "@spotlightShowsCount": {
+        "description": "Count fragment on spotlight summary cards: series/shows",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightTracksCount": "{count, plural, =1{1 track} other{{count} tracks}}",
+    "@spotlightTracksCount": {
+        "description": "Count fragment on spotlight summary cards: audio tracks",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
     }
 }

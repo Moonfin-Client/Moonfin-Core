@@ -1,10 +1,10 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../util/platform_detection.dart';
 import '../../../widgets/book/discover/book_discovery_models.dart';
 import 'librivox_book_detail_screen.dart';
+import '../../../widgets/offline_aware_image.dart';
 
 class LibrivoxAuthorBooksScreen extends StatelessWidget {
   final String author;
@@ -70,7 +70,7 @@ class LibrivoxAuthorBooksScreen extends StatelessWidget {
                       width: 60,
                       height: 90,
                       child: coverUrl != null
-                          ? CachedNetworkImage(
+                          ? OfflineAwareImage(
                               imageUrl: coverUrl,
                               fit: BoxFit.cover,
                               errorWidget: (_, _, _) => Container(

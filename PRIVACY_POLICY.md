@@ -30,12 +30,15 @@ This data never leaves your device except when communicating directly with your 
 
 ### Crash Reports (Optional)
 
-Moonfin can send crash reports to **your own Jellyfin server** when the app encounters an error. This feature:
+Moonfin can send crash reports to **your own server** when the app encounters an error. This feature:
 
-- Is **opt-in** and can be disabled in Settings > Telemetry
+- Is **on by default** and can be turned off in Settings > About > Diagnostics & Logging
 - Sends crash data **only to your own server**, never to us or any third party
-- May include: stack traces, app version, device model, operating system version, and optionally system logs
+- May include: stack traces, app version, device model, and operating system version
 - Does not include personal information, media content, or browsing history
+- Has server addresses, IP addresses and access tokens stripped out before anything is sent
+
+Capture always stays on the device. The setting controls only whether a captured report is uploaded. Reports go to the server you are signed in to: on Jellyfin through its own client log endpoint, and on Emby through the Moonfin server plugin, which is the only way an Emby server can accept one.
 
 ### Network Communication
 

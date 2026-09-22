@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../util/error_message.dart';
 import '../../../navigation/destinations.dart';
 import '../providers/admin_user_providers.dart';
 import '../widgets/admin_form_styles.dart';
@@ -76,7 +77,10 @@ class AdminLibrariesScreen extends ConsumerWidget {
             Text(l10n.adminLibrariesLoadFailed,
                 style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 8),
-            Text('$e', style: Theme.of(context).textTheme.bodySmall),
+            Text(
+              describeError(e, l10n),
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
             const SizedBox(height: 16),
             FilledButton.tonal(
               onPressed: () => ref.invalidate(adminLibrariesProvider),
@@ -278,7 +282,7 @@ class AdminLibrariesScreen extends ConsumerWidget {
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.adminScanFailed(e.toString()))),
+          SnackBar(content: Text(l10n.adminScanFailed(describeError(e, l10n)))),
         );
       }
     }
@@ -298,7 +302,7 @@ class AdminLibrariesScreen extends ConsumerWidget {
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.adminScanFailed(e.toString()))),
+          SnackBar(content: Text(l10n.adminScanFailed(describeError(e, l10n)))),
         );
       }
     }

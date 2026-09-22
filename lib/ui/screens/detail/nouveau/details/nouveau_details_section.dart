@@ -11,6 +11,8 @@ import '../../../../../data/models/aggregated_item.dart';
 import '../../../../../data/viewmodels/item_detail_view_model.dart';
 import '../../../../../data/viewmodels/seerr_media_detail_view_model.dart';
 import '../../../../../l10n/app_localizations.dart';
+import '../../../../../preference/preference_constants.dart';
+import '../../../../../preference/user_preferences.dart';
 import '../../../../../util/detail_playback_info.dart';
 import '../../../../../util/detail_track_highlight.dart';
 import '../../../../../util/play_method_label.dart';
@@ -90,6 +92,10 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
 
   String? _focusedStudioKey;
   String? _lastFocusedStudioKey;
+
+  bool get _navbarIsLeft =>
+      GetIt.instance<UserPreferences>().get(UserPreferences.navbarPosition) ==
+      NavbarPosition.left;
 
   ItemDetailViewModel get _vm => widget.viewModel;
 
@@ -346,6 +352,8 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
         if (moved) {
           return KeyEventResult.handled;
         }
+
+        if (!_navbarIsLeft) return KeyEventResult.ignored;
 
         return NavigationLayout.focusNavbar()
             ? KeyEventResult.handled
@@ -1358,9 +1366,10 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
                               : KeyEventResult.ignored;
                         }
 
-                        // Nothing sits to the left of this, so give it the
-                        // same way out to the navbar the chips above have.
-                        if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+                        // Nothing sits to the left of this, so a left press
+                        // can only be a way out to a navbar on that side.
+                        if (event.logicalKey == LogicalKeyboardKey.arrowLeft &&
+                            _navbarIsLeft) {
                           return NavigationLayout.focusNavbar()
                               ? KeyEventResult.handled
                               : KeyEventResult.ignored;

@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../util/error_message.dart';
 import '../providers/admin_user_providers.dart';
 import '../widgets/admin_form_styles.dart';
 import '../widgets/filesystem_browser.dart';
@@ -113,7 +114,7 @@ class _AdminLibraryAddScreenState
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.adminLibraryCreateFailed(e.toString()))),
+          SnackBar(content: Text(l10n.adminLibraryCreateFailed(describeError(e, l10n)))),
         );
       }
     } finally {

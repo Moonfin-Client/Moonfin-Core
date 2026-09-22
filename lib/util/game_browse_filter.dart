@@ -1,3 +1,5 @@
+import 'accent_folding.dart';
+
 /// Returns whether [title] matches the active game-library search and alphabet
 /// filters. [alternateText] lets callers include the ROM filename without
 /// changing the title used for alphabetical bucketing. Search terms match word
@@ -22,7 +24,7 @@ class GameBrowseTextIndex {
   GameBrowseTextIndex(String title, {String alternateText = ''})
     : searchWords = {..._searchWords(title), ..._searchWords(alternateText)},
       alphabeticalBucket = _alphabeticalBucket(title),
-      sortKey = _foldForBrowse(title.trim()).toLowerCase();
+      sortKey = foldForSearch(title.trim());
 
   final Set<String> searchWords;
   final String alphabeticalBucket;
@@ -45,8 +47,7 @@ List<String> gameBrowseQueryWords(String query) => _searchWords(query.trim());
 /// Breaks search text into words while retaining non-ASCII letters. Search
 /// terms match word prefixes rather than arbitrary text inside another word.
 List<String> _searchWords(String value) {
-  return _foldForBrowse(value)
-      .toLowerCase()
+  return foldForSearch(value)
       .split(_wordSeparators)
       .where((word) => word.isNotEmpty)
       .toList(growable: false);
@@ -61,79 +62,9 @@ String _alphabeticalBucket(String value) {
   if (trimmed.isEmpty) return '#';
 
   final initial = String.fromCharCode(trimmed.runes.first).toUpperCase();
-  final folded = _accentFolds[initial] ?? initial;
+  final folded = foldAccents(initial);
   if (folded.length != 1) return '#';
 
   final unit = folded.codeUnitAt(0);
   return unit >= 0x41 && unit <= 0x5A ? folded : '#';
 }
-
-String _foldForBrowse(String value) {
-  final result = StringBuffer();
-  for (final rune in value.runes) {
-    final character = String.fromCharCode(rune);
-    result.write(_accentFolds[character.toUpperCase()] ?? character);
-  }
-  return result.toString();
-}
-
-const Map<String, String> _accentFolds = {
-  'À': 'A',
-  'Á': 'A',
-  'Â': 'A',
-  'Ã': 'A',
-  'Ä': 'A',
-  'Å': 'A',
-  'Ā': 'A',
-  'Ă': 'A',
-  'Ą': 'A',
-  'Æ': 'A',
-  'Ç': 'C',
-  'Ć': 'C',
-  'Č': 'C',
-  'Ð': 'D',
-  'Ď': 'D',
-  'Đ': 'D',
-  'È': 'E',
-  'É': 'E',
-  'Ê': 'E',
-  'Ë': 'E',
-  'Ē': 'E',
-  'Ė': 'E',
-  'Ę': 'E',
-  'Ě': 'E',
-  'Ì': 'I',
-  'Í': 'I',
-  'Î': 'I',
-  'Ï': 'I',
-  'Ī': 'I',
-  'Į': 'I',
-  'Ł': 'L',
-  'Ñ': 'N',
-  'Ń': 'N',
-  'Ň': 'N',
-  'Ò': 'O',
-  'Ó': 'O',
-  'Ô': 'O',
-  'Õ': 'O',
-  'Ö': 'O',
-  'Ø': 'O',
-  'Ō': 'O',
-  'Ő': 'O',
-  'Ś': 'S',
-  'Š': 'S',
-  'Ş': 'S',
-  'Þ': 'T',
-  'Ù': 'U',
-  'Ú': 'U',
-  'Û': 'U',
-  'Ü': 'U',
-  'Ū': 'U',
-  'Ů': 'U',
-  'Ű': 'U',
-  'Ý': 'Y',
-  'Ÿ': 'Y',
-  'Ź': 'Z',
-  'Ž': 'Z',
-  'Ż': 'Z',
-};

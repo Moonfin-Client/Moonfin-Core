@@ -3,6 +3,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../util/error_message.dart';
 import '../../../widgets/adaptive/adaptive_dialog.dart';
 import 'admin_form_styles.dart';
 
@@ -80,7 +81,7 @@ class ServerActionsCard extends StatelessWidget {
                     } catch (e) {
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(l10n.errorGeneric(e.toString()))),
+                          SnackBar(content: Text(l10n.errorGeneric(describeError(e, l10n)))),
                         );
                       }
                     }
@@ -146,7 +147,7 @@ class ServerActionsCard extends StatelessWidget {
       } catch (e) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.errorGeneric(e.toString()))),
+            SnackBar(content: Text(l10n.errorGeneric(describeError(e, l10n)))),
           );
         }
       }

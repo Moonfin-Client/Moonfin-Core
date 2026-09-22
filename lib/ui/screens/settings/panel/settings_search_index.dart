@@ -148,6 +148,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
     icon: Icons.pin,
     open: () => push(const PinCodeSettingsScreen()),
   );
+  final kidsMode = _SearchSection(
+    slug: 'kids-mode',
+    path: [l10n.settingsAccountSecurity, l10n.kidsMode],
+    icon: Icons.child_care,
+    open: () => push(const _AuthenticationCategoryScreen()),
+  );
   final parental = _SearchSection(
     slug: 'parental',
     path: [l10n.settingsAccountSecurity, l10n.settingsBlockedRatings],
@@ -205,6 +211,16 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
     ],
     icon: Icons.smart_button,
     open: () => push(const _DetailButtonsScreen()),
+  );
+  final detailMetadata = _SearchSection(
+    slug: 'detail-metadata',
+    path: [
+      l10n.settingsPersonalization,
+      l10n.settingsDetailsScreen,
+      l10n.detailMetadata,
+    ],
+    icon: Icons.view_headline_outlined,
+    open: () => push(const _DetailMetadataScreen()),
   );
   final navigation = _SearchSection(
     slug: 'navigation',
@@ -525,6 +541,9 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
     ),
     pin.leaf('change', l10n.changePin, subtitle: l10n.setNewPinCode),
     pin.leaf('remove', l10n.removePin, subtitle: l10n.removePinProtection),
+    kidsMode.screen(
+      keywords: ['kids', 'child', 'children', 'simple', 'lock', 'pin'],
+    ),
     parental.screen(keywords: [
       'parental controls',
       'age',
@@ -570,6 +589,13 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         l10n.gamepadNavigation,
         subtitle: l10n.gamepadNavigationDescription,
         keywords: ['gamepad', 'controller', 'input'],
+      ),
+    if (PlatformDetection.isAppleTV)
+      style.leaf(
+        'pref_siri_remote_swipe_sensitivity',
+        l10n.siriRemoteSwipeSensitivity,
+        subtitle: l10n.siriRemoteSwipeSensitivityDescription,
+        keywords: ['siri remote', 'touchpad', 'swipe', 'scroll speed'],
       ),
     style.leaf('pref_clock_behavior', l10n.clockDisplay, keywords: ['time']),
     style.leaf(
@@ -658,6 +684,8 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       'classic',
       'modern',
       'spotlight',
+      'nouveau',
+      'minimalist',
     ]),
     details.leaf('detailsBackgroundBlurAmount', l10n.detailsBackgroundBlur),
     details.leaf(
@@ -707,6 +735,20 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       'trailer',
       'favorite',
       'playlist',
+    ]),
+    detailMetadata.screen(keywords: [
+      'metadata',
+      'release date',
+      'upcoming',
+      'air date',
+      'year',
+      'parental rating',
+      'runtime',
+      'seasons',
+      'status',
+      'genres',
+      'seerr',
+      'reorder',
     ]),
 
     navigation.screen(keywords: ['navbar', 'toolbar', 'sidebar']),
@@ -1012,6 +1054,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       subtitle: l10n.showLibrariesFromAllServers,
     ),
     libraries.leaf(
+      'pref_show_book_discover_tab',
+      l10n.showBookDiscoverTab,
+      subtitle: l10n.showBookDiscoverTabDescription,
+      keywords: ['books', 'audiobooks', 'open library', 'librivox'],
+    ),
+    libraries.leaf(
       'pref_merge_recent_rows_by_type',
       l10n.mergeRecentRowsByType,
       subtitle: l10n.mergeRecentRowsByTypeDescription,
@@ -1147,6 +1195,21 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       'crop',
       'stretch',
     ]),
+    if (PlatformDetection.isIOS)
+      video.leaf(
+        'pref_video_clear_of_dynamic_island',
+        l10n.keepVideoClearOfDynamicIsland,
+        subtitle: l10n.keepVideoClearOfDynamicIslandDescription,
+        keywords: ['notch', 'dynamic island', 'camera', 'safe area'],
+      ),
+    if (letterboxCropSettingVisible())
+      video.leaf('crop_black_bars', l10n.cropBlackBars, keywords: [
+        'letterbox',
+        'cropdetect',
+        'black bars',
+        'mpv',
+        'android',
+      ]),
     playbackTime.screen(keywords: [
       'time left',
       'time remaining',
@@ -1216,6 +1279,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
     video.leaf('skipForwardLength', l10n.skipForwardLength, keywords: [
       'seek forward',
     ]),
+    video.leaf(
+      'showChapterMarkers',
+      l10n.showChapterMarkers,
+      subtitle: l10n.showChapterMarkersDescription,
+      keywords: ['seek bar', 'seekbar', 'progress bar', 'chapters', 'marks'],
+    ),
     if (PlatformDetection.useMobileUi) ...[
       video.leaf(
         'osdLockEnabled',
@@ -1335,6 +1404,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         l10n.settingsAudioPassthroughMode,
         keywords: ['passthrough', 'bitstream', 'receiver', 'output'],
       ),
+      if (PlatformDetection.isAndroid && PlatformDetection.isTV)
+        audio.leaf(
+          'pref_audio_passthrough_output',
+          l10n.settingsAudioPassthroughOutput,
+          keywords: ['iec', 'audiotrack', 'bitstream', 'packer', 'kodi', 'raw'],
+        ),
       audio.leaf(
         'pref_downmix_to_stereo',
         l10n.downmixToStereo,

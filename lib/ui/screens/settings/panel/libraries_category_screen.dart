@@ -34,6 +34,13 @@ class _LibrariesCategoryScreen extends StatelessWidget {
                 icon: Icons.library_books,
                 onChanged: _pushPersonalizationSync,
               ),
+              SwitchPreferenceTile(
+                preference: UserPreferences.showBookDiscoverTab,
+                title: l10n.showBookDiscoverTab,
+                subtitle: l10n.showBookDiscoverTabDescription,
+                icon: Icons.explore,
+                onChanged: _pushPersonalizationSync,
+              ),
               EnumPreferenceTile<RecentlyReleasedSeriesType>(
                 preference: UserPreferences.recentlyReleasedSeriesType,
                 title: l10n.recentlyReleasedSeriesType,

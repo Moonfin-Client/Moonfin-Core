@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:server_core/server_core.dart';
-import 'jellyfin_item_fields.dart';
 
 class JellyfinItemsApi implements ItemsApi {
   final Dio _dio;
@@ -172,7 +171,7 @@ class JellyfinItemsApi implements ItemsApi {
     final response = await _dio.get(
       '/Users/$userId/Items/$itemId',
       queryParameters: {
-        'Fields': fields ?? kItemFields,
+        'Fields': fields ?? kDetailItemFields,
         if (mediaSourceId != null) 'mediaSourceId': mediaSourceId,
       },
     );
@@ -274,8 +273,12 @@ class JellyfinItemsApi implements ItemsApi {
     String? enableImageTypes,
     int? imageTypeLimit,
   }) async {
+    final userId = _getUserId();
+    final path = userId.isNotEmpty
+        ? '/Users/$userId/Items/Latest'
+        : '/Items/Latest';
     final response = await _dio.get(
-      '/Items/Latest',
+      path,
       queryParameters: {
         'ParentId': ?parentId,
         if (includeItemTypes != null)
@@ -362,8 +365,9 @@ class JellyfinItemsApi implements ItemsApi {
 
   @override
   Future<Map<String, dynamic>> getPlaylists() async {
+    final userId = _getUserId();
     final response = await _dio.get(
-      '/Items',
+      '/Users/$userId/Items',
       queryParameters: {
         'IncludeItemTypes': 'Playlist',
         'Recursive': true,
@@ -563,6 +567,17 @@ class JellyfinItemsApi implements ItemsApi {
   }
 
   @override
+  Future<void> removeFromCollection(
+    String collectionId,
+    List<String> itemIds,
+  ) async {
+    await _dio.delete(
+      '/Collections/$collectionId/Items',
+      queryParameters: {'Ids': itemIds.join(',')},
+    );
+  }
+
+  @override
   Future<void> removeFromPlaylist(
     String playlistId,
     List<String> entryIds,
@@ -615,7 +630,9 @@ class JellyfinItemsApi implements ItemsApi {
       '/Genres',
       queryParameters: {
         'ParentId': ?parentId,
-        'UserId': ?userId,
+        // Defaulted rather than left to callers. Without a user the server
+        // answers across every library, including ones this account can't see.
+        'UserId': userId ?? _getUserId(),
         'SortBy': ?sortBy,
         'SortOrder': ?sortOrder,
         'StartIndex': ?startIndex,

@@ -25,9 +25,8 @@ bool hasTrailer(AggregatedItem item, List<AggregatedItem> features) {
 
 /// Whether the details screen hands remote trailers to the system instead of
 /// the in-app player, the way the official Jellyfin TV app does.
-bool opensTrailersExternally() => GetIt.instance<UserPreferences>().get(
-  UserPreferences.detailTrailersExternal,
-);
+bool opensTrailersExternally() =>
+    GetIt.instance<UserPreferences>().effectiveDetailTrailersExternal;
 
 /// Hands [url] to whatever the system offers, the YouTube app on TV, the
 /// browser on desktop, a new tab on web. Returns false when nothing accepted

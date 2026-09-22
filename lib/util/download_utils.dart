@@ -16,6 +16,9 @@ import 'platform_detection.dart';
 /// Settings -> Playback -> Offline Downloads. Every other platform that
 /// supports downloads offers them unconditionally. Existing downloads and the
 /// management screens are never affected by this gate.
+///
+/// Showing or hiding the Download action button writes that same setting, so
+/// the two places a user can reach this stay in step.
 bool showsTvDownloadActions(UserPreferences prefs) =>
     !PlatformDetection.isTV || prefs.get(UserPreferences.tvOfflineDownloads);
 

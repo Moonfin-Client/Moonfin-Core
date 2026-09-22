@@ -7,9 +7,12 @@ import '../../../../data/services/seerr/seerr_api_models.dart';
 import '../../../../data/viewmodels/item_detail_view_model.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../preference/user_preferences.dart';
+import '../../../widgets/seerr/seerr_collection_banner.dart';
 import '../../../widgets/seerr/seerr_item_chips.dart';
-import '../../../widgets/seerr/seerr_item_status.dart' show seerrItemTabState;
+import '../../../widgets/seerr/seerr_item_status.dart'
+    show seerrItemSeasonStatus, seerrItemTabState;
 import '../../../widgets/seerr/seerr_stats_card.dart';
+import '../../../widgets/seerr/seerr_tags_dialog.dart' show SeerrTagsContent;
 import '../item_detail_screen.dart' show DetailTrackList;
 import '../modern/modern_detail_content.dart'
     show
@@ -27,6 +30,16 @@ import 'widgets/spotlight_section_modal.dart';
 class SpotlightCardActions {
   final void Function(AggregatedItem item) openItem;
   final void Function(SeerrDiscoverItem item) openSeerrItem;
+
+  /// Seerr browse, filtered by one genre, network or keyword.
+  final void Function(
+    String filterId,
+    String filterName,
+    String filterType,
+    String mediaType,
+  )
+  openSeerrBrowse;
+  final void Function(String collectionId) openSeerrCollection;
   final void Function(String personId) openPerson;
   final void Function(String studioName) openStudio;
   final void Function(Duration position) playFromChapter;
@@ -38,6 +51,8 @@ class SpotlightCardActions {
   const SpotlightCardActions({
     required this.openItem,
     required this.openSeerrItem,
+    required this.openSeerrBrowse,
+    required this.openSeerrCollection,
     required this.openPerson,
     required this.openStudio,
     required this.playFromChapter,
@@ -53,6 +68,7 @@ class SpotlightCardActions {
 class SpotlightCardSpec {
   final String id;
   final String title;
+  final String? modalTitle;
   final String subtitle;
   final String? imageUrl;
   final IconData icon;
@@ -61,11 +77,14 @@ class SpotlightCardSpec {
   const SpotlightCardSpec({
     required this.id,
     required this.title,
+    this.modalTitle,
     required this.subtitle,
     required this.imageUrl,
     required this.icon,
     required this.sections,
   });
+
+  String get effectiveModalTitle => modalTitle ?? title;
 }
 
 /// A runtime for a card subtitle or the hero's metadata row: "1h 32m", "2h",
@@ -91,6 +110,9 @@ List<SpotlightCardSpec> spotlightCardsFor({
   List<SeerrDiscoverItem> seerrAppearances = const [],
   List<SeerrDiscoverItem> seerrCrewCredits = const [],
   String? fallbackImageUrl,
+  String? mainBackdropKey,
+  bool seerrAvailable = false,
+  Map<String, String?>? personCardBackdrops,
 }) {
   final builder = _SpotlightCardsBuilder(
     vm: vm,
@@ -102,6 +124,9 @@ List<SpotlightCardSpec> spotlightCardsFor({
     seerrAppearances: seerrAppearances,
     seerrCrewCredits: seerrCrewCredits,
     fallbackImageUrl: fallbackImageUrl,
+    mainBackdropKey: mainBackdropKey,
+    seerrAvailable: seerrAvailable,
+    personCardBackdrops: personCardBackdrops,
   );
   return builder.build();
 }
@@ -120,6 +145,9 @@ SpotlightCardSpec? spotlightCardFor({
   List<SeerrDiscoverItem> seerrAppearances = const [],
   List<SeerrDiscoverItem> seerrCrewCredits = const [],
   String? fallbackImageUrl,
+  String? mainBackdropKey,
+  bool seerrAvailable = false,
+  Map<String, String?>? personCardBackdrops,
 }) {
   final builder = _SpotlightCardsBuilder(
     vm: vm,
@@ -131,6 +159,9 @@ SpotlightCardSpec? spotlightCardFor({
     seerrAppearances: seerrAppearances,
     seerrCrewCredits: seerrCrewCredits,
     fallbackImageUrl: fallbackImageUrl,
+    mainBackdropKey: mainBackdropKey,
+    seerrAvailable: seerrAvailable,
+    personCardBackdrops: personCardBackdrops,
   );
   return builder.buildOne(id);
 }
@@ -145,6 +176,9 @@ class _SpotlightCardsBuilder {
   final List<SeerrDiscoverItem> seerrAppearances;
   final List<SeerrDiscoverItem> seerrCrewCredits;
   final String? fallbackImageUrl;
+  final String? mainBackdropKey;
+  final bool seerrAvailable;
+  final Map<String, String?>? personCardBackdrops;
 
   _SpotlightCardsBuilder({
     required this.vm,
@@ -156,6 +190,9 @@ class _SpotlightCardsBuilder {
     required this.seerrAppearances,
     required this.seerrCrewCredits,
     required this.fallbackImageUrl,
+    this.mainBackdropKey,
+    this.seerrAvailable = false,
+    this.personCardBackdrops,
   });
 
   ImageApi get _imageApi => vm.imageApi;
@@ -164,7 +201,11 @@ class _SpotlightCardsBuilder {
   /// caller after one card doesn't pay for the rest.
   Map<String, SpotlightCardSpec? Function()> _cardFactories() {
     if (vm.isSeerrOnly) {
-      return {'people': _peopleCard, 'similar': _similarCard};
+      return {
+        'seerr_details': _seerrDetailsCard,
+        'people': _peopleCard,
+        'similar': _similarCard,
+      };
     }
     return switch (item.type) {
       'Series' => {
@@ -175,13 +216,13 @@ class _SpotlightCardsBuilder {
         'collections': _collectionsCard,
       },
       'Season' => {
-        'episodes': () => _episodesCard(l10n.spotlightSeasonsEpisodes),
+        'episodes': _seasonEpisodesCard,
         'people': _peopleCard,
         'chapters_extras': _chaptersExtrasCard,
         'similar': _similarCard,
       },
       'Episode' => {
-        'episodes': () => _episodesCard(l10n.spotlightMoreEpisodes),
+        'episodes': _episodeMoreEpisodesCard,
         'people': _peopleCard,
         'chapters_extras': _chaptersExtrasCard,
         'similar': _similarCard,
@@ -192,7 +233,13 @@ class _SpotlightCardsBuilder {
       },
       'Playlist' => {'playlist': _playlistCard},
       'MusicArtist' => {'albums': _albumsCard, 'similar': _similarCard},
-      'Person' => {'filmography': _filmographyCard},
+      'Person' => {
+        'filmography': _personFilmographyCard,
+        if (seerrAvailable) ...{
+          'appearances': _personAppearancesCard,
+          'crew': _personCrewCard,
+        },
+      },
       'BoxSet' => {
         'boxset_items': _boxSetItemsCard,
         'people': _boxSetPeopleCard,
@@ -240,6 +287,7 @@ class _SpotlightCardsBuilder {
     double aspectRatio = 2 / 3,
     bool landscapeCells = false,
     ValueChanged<AggregatedItem>? onTap,
+    Map<int, int>? seerrSeasonStatus,
   }) {
     return SpotlightModalSection(
       title: title,
@@ -252,6 +300,7 @@ class _SpotlightCardsBuilder {
         landscapeCells: landscapeCells,
         firstFocusNode: firstFocusNode,
         onItemTap: onTap ?? actions.openItem,
+        seerrSeasonStatus: seerrSeasonStatus,
       ),
     );
   }
@@ -406,6 +455,60 @@ class _SpotlightCardsBuilder {
     );
   }
 
+  /// What Seerr knows about a title the library doesn't have: what it is filed
+  /// under, the facts behind it, and the collection it belongs to.
+  ///
+  /// It gets a card rather than a place in the hero because inline content
+  /// above the action row has no d-pad path into it.
+  SpotlightCardSpec? _seerrDetailsCard() {
+    final state = seerrItemTabState(vm);
+    if (state == null) return null;
+
+    final tagCount = SeerrTagsContent.chipCount(state);
+    final factCount = SeerrStatsCard.factCount(state, l10n);
+    final collection = state.movie?.collection;
+    if (tagCount == 0 && factCount == 0 && collection == null) return null;
+
+    final subtitle = [
+      if (factCount > 0) l10n.spotlightFactsCount(factCount),
+      if (tagCount > 0) l10n.spotlightTagsCount(tagCount),
+    ].join(' · ');
+
+    return SpotlightCardSpec(
+      id: 'seerr_details',
+      title: l10n.details,
+      subtitle: subtitle,
+      imageUrl: fallbackImageUrl,
+      icon: Icons.info_outline,
+      sections: [
+        // The modal hands its opening d-pad focus to the first section, and
+        // only the chips take the node, so they go first.
+        if (tagCount > 0)
+          SpotlightModalSection(
+            title: l10n.genresAndTags,
+            count: tagCount,
+            builder: (context, firstFocusNode) => SeerrTagsContent(
+              state: state,
+              firstFocusNode: firstFocusNode,
+              onTagTap: actions.openSeerrBrowse,
+            ),
+          ),
+        if (factCount > 0)
+          SpotlightModalSection(
+            builder: (context, _) => SeerrStatsCard(state: state),
+          ),
+        if (collection != null)
+          SpotlightModalSection(
+            builder: (context, _) => SeerrCollectionBanner(
+              collection: collection,
+              onOpen: () =>
+                  actions.openSeerrCollection(collection.id.toString()),
+            ),
+          ),
+      ],
+    );
+  }
+
   SpotlightCardSpec? _similarCard() {
     final similar = vm.similar;
     final seerrState = seerrItemTabState(vm);
@@ -447,18 +550,22 @@ class _SpotlightCardsBuilder {
       imageUrl: imageUrl ?? fallbackImageUrl,
       icon: Icons.auto_awesome_outlined,
       sections: [
-        // What Seerr knows about the title itself, ahead of the lists.
-        if (seerrState != null && SeerrItemChips.hasContent(seerrState))
-          SpotlightModalSection(
-            builder: (context, firstFocusNode) => SeerrItemChips(
-              state: seerrState,
-              firstFocusNode: firstFocusNode,
+        // What Seerr knows about the title itself, ahead of the lists. A
+        // Seerr-only title carries these on its own Details card, so folding
+        // them in here too would show them twice.
+        if (!vm.isSeerrOnly) ...[
+          if (seerrState != null && SeerrItemChips.hasContent(seerrState))
+            SpotlightModalSection(
+              builder: (context, firstFocusNode) => SeerrItemChips(
+                state: seerrState,
+                firstFocusNode: firstFocusNode,
+              ),
             ),
-          ),
-        if (seerrState != null && SeerrStatsCard.hasContent(seerrState, l10n))
-          SpotlightModalSection(
-            builder: (context, _) => SeerrStatsCard(state: seerrState),
-          ),
+          if (seerrState != null && SeerrStatsCard.hasContent(seerrState, l10n))
+            SpotlightModalSection(
+              builder: (context, _) => SeerrStatsCard(state: seerrState),
+            ),
+        ],
         if (similar.isNotEmpty) _mediaSection(librarySectionTitle, similar),
         if (seerrRecommendations.isNotEmpty)
           _seerrSection(
@@ -507,9 +614,12 @@ class _SpotlightCardsBuilder {
       l10n.spotlightSeasonsCount(seasons.length),
       if (episodeCount > 0) l10n.spotlightEpisodesCount(episodeCount),
     ].join(' · ');
+    final modalTitle =
+        item.name.trim().isNotEmpty ? item.name.trim() : l10n.seasons;
     return SpotlightCardSpec(
       id: 'seasons',
-      title: l10n.spotlightSeasonsEpisodes,
+      title: l10n.seasons,
+      modalTitle: modalTitle,
       subtitle: subtitle,
       imageUrl:
           _firstEpisodeThumb([
@@ -518,16 +628,27 @@ class _SpotlightCardsBuilder {
           ]) ??
           fallbackImageUrl,
       icon: Icons.video_collection_outlined,
-      sections: [_mediaSection(l10n.seasons, seasons)],
+      sections: [
+        _mediaSection(
+          l10n.seasons,
+          seasons,
+          seerrSeasonStatus: seerrItemSeasonStatus(vm),
+        ),
+      ],
     );
   }
 
-  SpotlightCardSpec? _episodesCard(String title) {
+  SpotlightCardSpec? _seasonEpisodesCard() {
     final episodes = vm.episodes;
     if (episodes.isEmpty) return null;
+    final series = item.seriesName?.trim();
+    final modalTitle = (series != null && series.isNotEmpty)
+        ? '$series - ${item.name}'
+        : item.name;
     return SpotlightCardSpec(
       id: 'episodes',
-      title: title,
+      title: l10n.episodes,
+      modalTitle: modalTitle,
       subtitle: l10n.spotlightEpisodesCount(episodes.length),
       imageUrl: _firstEpisodeThumb(episodes) ?? fallbackImageUrl,
       icon: Icons.video_collection_outlined,
@@ -539,6 +660,81 @@ class _SpotlightCardsBuilder {
           landscapeCells: true,
         ),
       ],
+    );
+  }
+
+  SpotlightCardSpec? _episodeMoreEpisodesCard() {
+    if (item.seriesId != null && !vm.seriesEpisodesLoaded) {
+      vm.loadAllSeriesEpisodes();
+    }
+    final allEpisodes = vm.seriesEpisodes;
+    final episodes = allEpisodes.isNotEmpty ? allEpisodes : vm.episodes;
+    if (episodes.isEmpty) return null;
+
+    final defaultSeason = item.parentIndexNumber ?? 1;
+    final sorted = [...episodes]..sort((a, b) {
+      final sa = a.parentIndexNumber ?? defaultSeason;
+      final sb = b.parentIndexNumber ?? defaultSeason;
+      if (sa != sb) return sa.compareTo(sb);
+      return (a.indexNumber ?? 0).compareTo(b.indexNumber ?? 0);
+    });
+
+    final Map<int, List<AggregatedItem>> seasonGroups = {};
+    for (final ep in sorted) {
+      final s = ep.parentIndexNumber ?? defaultSeason;
+      seasonGroups.putIfAbsent(s, () => []).add(ep);
+    }
+
+    final currentSeasonNumber = item.parentIndexNumber;
+    final sections = <SpotlightModalSection>[];
+    for (final entry in seasonGroups.entries) {
+      final seasonNum = entry.key;
+      final seasonEpisodes = entry.value;
+      final isCurrent = currentSeasonNumber != null
+          ? seasonNum == currentSeasonNumber
+          : seasonEpisodes.any(
+              (e) =>
+                  e.id == item.id ||
+                  (item.seasonId != null && e.seasonId == item.seasonId),
+            );
+      final seasonTitle = seasonNum == 0
+          ? l10n.specials
+          : l10n.seasonNumber(seasonNum);
+      sections.add(
+        SpotlightModalSection(
+          id: 'season_$seasonNum',
+          title: seasonTitle,
+          count: seasonEpisodes.length,
+          collapsible: true,
+          initiallyExpanded: isCurrent,
+          builder: (context, firstFocusNode) => SpotlightMediaGridSection(
+            items: seasonEpisodes,
+            imageApi: _imageApi,
+            prefs: prefs,
+            aspectRatio: 16 / 9,
+            landscapeCells: true,
+            firstFocusNode: firstFocusNode,
+            onItemTap: actions.openItem,
+          ),
+        ),
+      );
+    }
+
+    final subtitle = seasonGroups.length > 1
+        ? [
+            l10n.spotlightSeasonsCount(seasonGroups.length),
+            l10n.spotlightEpisodesCount(episodes.length),
+          ].join(' · ')
+        : l10n.spotlightEpisodesCount(episodes.length);
+
+    return SpotlightCardSpec(
+      id: 'episodes',
+      title: l10n.spotlightMoreEpisodes,
+      modalTitle: l10n.spotlightMoreEpisodes,
+      subtitle: subtitle,
+      imageUrl: _firstEpisodeThumb(episodes) ?? fallbackImageUrl,
+      icon: Icons.video_collection_outlined,
+      sections: sections,
     );
   }
 
@@ -636,15 +832,24 @@ class _SpotlightCardsBuilder {
     );
   }
 
-  SpotlightCardSpec? _filmographyCard() {
+  /// The page picks these once and passes them down so they hold still, and
+  /// picking here covers a build that runs before it has an item to pick from.
+  late final Map<String, String?> _personCardBackdrops =
+      personCardBackdrops?.isNotEmpty == true
+      ? personCardBackdrops!
+      : personCardBackdropsFor(
+          local: collectPersonLocalBackdrops(vm),
+          appearances: collectPersonSeerrBackdrops(seerrAppearances),
+          crew: collectPersonSeerrBackdrops(seerrCrewCredits),
+          mainBackdropKey: mainBackdropKey,
+        );
+
+  SpotlightCardSpec? _personFilmographyCard() {
     final movies = vm.filmographyMovies;
     final series = vm.filmographySeries;
     final other = vm.filmography;
     final hasLibrary = movies.isNotEmpty || series.isNotEmpty;
-    if (!hasLibrary &&
-        other.isEmpty &&
-        seerrAppearances.isEmpty &&
-        seerrCrewCredits.isEmpty) {
+    if (!hasLibrary && other.isEmpty) {
       return null;
     }
     final subtitle = [
@@ -652,43 +857,71 @@ class _SpotlightCardsBuilder {
       if (series.isNotEmpty) l10n.spotlightShowsCount(series.length),
       if (!hasLibrary && other.isNotEmpty)
         l10n.spotlightItemsCount(other.length),
-      if (!hasLibrary && other.isEmpty && seerrAppearances.isNotEmpty)
-        l10n.spotlightItemsCount(seerrAppearances.length),
     ].join(' · ');
-    final imageSource = movies.isNotEmpty
-        ? movies.first
-        : (series.isNotEmpty
-              ? series.first
-              : (other.isNotEmpty ? other.first : null));
-    final imageUrl = imageSource != null
-        ? spotlightItemImageUrl(_imageApi, imageSource)
-        : _firstSeerrPoster(seerrAppearances);
+
+    final imageUrl = _personCardBackdrops['filmography'] ??
+        _firstItemLandscape(movies) ??
+        _firstItemLandscape(series) ??
+        (other.isNotEmpty ? _firstItemLandscape(other) : null) ??
+        fallbackImageUrl;
+
     return SpotlightCardSpec(
       id: 'filmography',
       title: l10n.spotlightFilmography,
       subtitle: subtitle,
-      imageUrl: imageUrl ?? fallbackImageUrl,
+      imageUrl: imageUrl,
       icon: Icons.movie_outlined,
       sections: [
         if (movies.isNotEmpty) _mediaSection(l10n.movies, movies),
         if (series.isNotEmpty) _mediaSection(l10n.series, series),
-        if (seerrAppearances.isNotEmpty)
-          _seerrSection(
-            l10n.appearancesSeerr,
-            seerrAppearances,
-            showCredit: true,
-          ),
-        if (seerrCrewCredits.isNotEmpty)
-          _seerrSection(
-            l10n.crewContributionsSeerr,
-            seerrCrewCredits,
-            showCredit: true,
-          ),
-        if (!hasLibrary &&
-            seerrAppearances.isEmpty &&
-            seerrCrewCredits.isEmpty &&
-            other.isNotEmpty)
-          _mediaSection(l10n.appearances, other),
+        if (!hasLibrary && other.isNotEmpty)
+          _mediaSection(l10n.spotlightFilmography, other),
+      ],
+    );
+  }
+
+  SpotlightCardSpec? _personAppearancesCard() {
+    if (seerrAppearances.isEmpty) return null;
+
+    final imageUrl = _personCardBackdrops['appearances'] ??
+        _firstSeerrPoster(seerrAppearances) ??
+        fallbackImageUrl;
+
+    return SpotlightCardSpec(
+      id: 'appearances',
+      title: l10n.appearancesSeerr,
+      subtitle: l10n.spotlightItemsCount(seerrAppearances.length),
+      imageUrl: imageUrl,
+      icon: Icons.star_outline,
+      sections: [
+        _seerrSection(
+          l10n.appearancesSeerr,
+          seerrAppearances,
+          showCredit: true,
+        ),
+      ],
+    );
+  }
+
+  SpotlightCardSpec? _personCrewCard() {
+    if (seerrCrewCredits.isEmpty) return null;
+
+    final imageUrl = _personCardBackdrops['crew'] ??
+        _firstSeerrPoster(seerrCrewCredits) ??
+        fallbackImageUrl;
+
+    return SpotlightCardSpec(
+      id: 'crew',
+      title: l10n.crewContributionsSeerr,
+      subtitle: l10n.spotlightItemsCount(seerrCrewCredits.length),
+      imageUrl: imageUrl,
+      icon: Icons.movie_creation_outlined,
+      sections: [
+        _seerrSection(
+          l10n.crewContributionsSeerr,
+          seerrCrewCredits,
+          showCredit: true,
+        ),
       ],
     );
   }

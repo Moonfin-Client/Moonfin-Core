@@ -47,6 +47,9 @@ void main() {
     'detailButtonOrderMobile',
     'detailButtonOrderTv',
     'detailExpandedTabs',
+    'detailMetadataOrderDesktop',
+    'detailMetadataOrderMobile',
+    'detailMetadataOrderTv',
     'detailScreenStyle',
     'detailShowTechnicalDetails',
     'detailTrailersExternal',
@@ -92,6 +95,9 @@ void main() {
     'hiddenDetailButtonsDesktop',
     'hiddenDetailButtonsMobile',
     'hiddenDetailButtonsTv',
+    'hiddenDetailMetadataDesktop',
+    'hiddenDetailMetadataMobile',
+    'hiddenDetailMetadataTv',
     'hiddenNextUpSeries',
     'hiddenOsdButtonsDesktop',
     'hiddenOsdButtonsMobile',
@@ -219,6 +225,8 @@ void main() {
     'seerrBlockNsfw',
     'seerrEnabled',
     'seerrShowMissingCollectionItems',
+    'showBookDiscoverTab',
+    'showChapterMarkers',
     'showDescriptionOnPause',
     'showDownloadsButton',
     'showFavoritesButton',
@@ -359,6 +367,8 @@ void main() {
           reason: 'these would leak across servers: \$unscoped');
     });
   });
+
+  scopeAdoptionTests();
 }
 
 // Moving a preference to per-server storage changes which key reads consult, so an existing

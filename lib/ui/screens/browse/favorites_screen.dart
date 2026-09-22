@@ -29,6 +29,7 @@ import '../../widgets/rating_display.dart';
 import '../../widgets/sliding_pill_tabs.dart';
 import '../../widgets/skeleton/skeleton_library_grid.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../util/error_message.dart';
 
 Color get _navyBackground => AppColorScheme.background;
 const _horizontalPadding = 60.0;
@@ -52,7 +53,8 @@ class FavoritesScreen extends StatefulWidget {
   State<FavoritesScreen> createState() => _FavoritesScreenState();
 }
 
-class _FavoritesScreenState extends State<FavoritesScreen> with GridFocusNodeMixin<FavoritesScreen> {
+class _FavoritesScreenState extends State<FavoritesScreen>
+    with GridFocusNodeMixin<FavoritesScreen>, WidgetsBindingObserver {
   late final FavoritesViewModel _vm;
   final _scrollController = ScrollController();
   final _prefs = GetIt.instance<UserPreferences>();
@@ -77,6 +79,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> with GridFocusNodeMix
     _vm.addListener(_onChanged);
     _vm.load();
     _scrollController.addListener(_onScroll);
+    WidgetsBinding.instance.addObserver(this);
     _backgroundSub = _backgroundService.backgroundStream.listen((url) {
       if (mounted) setState(() => _backdropUrl = url);
     });
@@ -86,6 +89,8 @@ class _FavoritesScreenState extends State<FavoritesScreen> with GridFocusNodeMix
 
   @override
   void dispose() {
+    _resizeCheckDebounce?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
     _backgroundSub?.cancel();
     _scrollController.dispose();
     _vm.removeListener(_onChanged);
@@ -94,6 +99,20 @@ class _FavoritesScreenState extends State<FavoritesScreen> with GridFocusNodeMix
     _tabsFocusNode.dispose();
     disposeGridFocusNodes();
     super.dispose();
+  }
+
+  Timer? _resizeCheckDebounce;
+
+  @override
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+    _resizeCheckDebounce?.cancel();
+    _resizeCheckDebounce = Timer(const Duration(milliseconds: 150), () {
+      if (!mounted) return;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _onScroll();
+      });
+    });
   }
 
   int _lastGridItemsLength = 0;
@@ -136,6 +155,9 @@ class _FavoritesScreenState extends State<FavoritesScreen> with GridFocusNodeMix
   void _onChanged() {
     if (mounted) setState(() {});
     _maybeBumpGridVersion();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _onScroll();
+    });
   }
 
   void _onItemFocused(AggregatedItem item) {
@@ -429,7 +451,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> with GridFocusNodeMix
             Text(
               _vm.isNetworkError
                   ? AppLocalizations.of(context).unableToConnectToServer
-                  : _vm.errorMessage ?? AppLocalizations.of(context).failedToLoadFavorites,
+                  : describeError(_vm.error!, AppLocalizations.of(context)),
               style: const TextStyle(color: Colors.white),
             ),
             const SizedBox(height: 16),
@@ -539,19 +561,27 @@ class _FavoritesScreenState extends State<FavoritesScreen> with GridFocusNodeMix
         );
         final desktopTextScale = MediaQuery.textScalerOf(context).scale(1.0);
         final textHeight = (hasSubtitles ? 42.0 : 24.0) * desktopTextScale;
-        final childAspectRatio = cellWidth / (cellWidth / ar + textHeight);
+        final imageHeight = cellWidth / ar;
+        final upwardGrowth = focusExpansion && !isMobile
+            ? (imageHeight * (MediaCard.focusScale - 1))
+            : 0.0;
+        final baseRowSpacing = 16.0;
+        final rowSpacing = baseRowSpacing + upwardGrowth;
+        final baseTopPadding = 18.0;
+        final topPadding = baseTopPadding + upwardGrowth;
+        final childAspectRatio = cellWidth / (imageHeight + textHeight);
 
         return GridView.builder(
           controller: _scrollController,
           padding: EdgeInsets.fromLTRB(
             horizontalPadding,
-            12,
+            topPadding,
             horizontalPadding,
             32,
           ),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: columns,
-            mainAxisSpacing: 8,
+            mainAxisSpacing: rowSpacing,
             crossAxisSpacing: spacing,
             childAspectRatio: childAspectRatio,
           ),
@@ -588,6 +618,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> with GridFocusNodeMix
     final item = items[index];
     final itemAspectRatio = _itemAspectRatio(item);
     return MediaCard(
+      animeMarkerItemId: item.id,
       title: item.name,
       subtitle: _cardSubtitle(item),
       imageUrl: _imageUrl(
@@ -676,22 +707,30 @@ class _FavoritesScreenState extends State<FavoritesScreen> with GridFocusNodeMix
         );
         final desktopTextScale = MediaQuery.textScalerOf(context).scale(1.0);
         final textHeight = (hasSubtitles ? 42.0 : 24.0) * desktopTextScale;
-        final childAspectRatio = cellWidth / (cellWidth / ar + textHeight);
+        final imageHeight = cellWidth / ar;
         final focusColor = Color(
           _prefs.get(UserPreferences.focusColor).colorValue,
         );
         final focusExpansion = _prefs.get(UserPreferences.cardFocusExpansion);
+        final upwardGrowth = focusExpansion && !isMobile
+            ? (imageHeight * (MediaCard.focusScale - 1))
+            : 0.0;
+        final baseRowSpacing = 16.0;
+        final rowSpacing = baseRowSpacing + upwardGrowth;
+        final baseTopPadding = 18.0;
+        final topPadding = baseTopPadding + upwardGrowth;
+        final childAspectRatio = cellWidth / (imageHeight + textHeight);
         final suppressFocusGlow = ThemeRegistry.active.borders.focusGlow.isNotEmpty;
 
         return CustomScrollView(
           controller: _scrollController,
           slivers: [
             SliverPadding(
-              padding: EdgeInsets.fromLTRB(gridPadding, 8, gridPadding, 16),
+              padding: EdgeInsets.fromLTRB(gridPadding, topPadding, gridPadding, 16),
               sliver: SliverGrid(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: crossAxisCount,
-                  mainAxisSpacing: 8,
+                  mainAxisSpacing: rowSpacing,
                   crossAxisSpacing: spacing,
                   childAspectRatio: childAspectRatio,
                 ),

@@ -11,6 +11,7 @@ import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/screens/detail/spotlight/widgets/spotlight_modal_grids.dart';
 import 'package:moonfin/ui/screens/detail/spotlight/widgets/spotlight_section_modal.dart';
 import 'package:moonfin/ui/widgets/overlay_sheet.dart';
+import 'package:moonfin/ui/widgets/seerr/seerr_status_dot.dart';
 import 'package:moonfin/util/platform_detection.dart';
 import 'package:server_core/server_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -313,6 +314,84 @@ void main() {
     expect(returnedAction, isNotNull);
     expect(actionExecuted, isTrue);
   });
+
+  testWidgets(
+    'SpotlightMediaGridSection displays SeerrStatusDot on season cards when showSeerrAvailabilityBadges is true',
+    (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final store = PreferenceStore();
+      await store.init();
+      final prefs = UserPreferences(store);
+      await prefs.set(UserPreferences.showSeerrAvailabilityBadges, true);
+
+      final season = AggregatedItem(
+        id: 's1',
+        serverId: 'server-1',
+        rawData: const {
+          'Id': 's1',
+          'Type': 'Season',
+          'Name': 'Season 1',
+          'IndexNumber': 1,
+        },
+      );
+      final imageApi = _ImageApi();
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SpotlightMediaGridSection(
+              items: [season],
+              imageApi: imageApi,
+              prefs: prefs,
+              seerrSeasonStatus: const {1: SeerrMediaStatus.available},
+              onItemTap: (_) {},
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byType(SeerrStatusDot), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'SpotlightMediaGridSection hides SeerrStatusDot on season cards when showSeerrAvailabilityBadges is false',
+    (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final store = PreferenceStore();
+      await store.init();
+      final prefs = UserPreferences(store);
+      await prefs.set(UserPreferences.showSeerrAvailabilityBadges, false);
+
+      final season = AggregatedItem(
+        id: 's1',
+        serverId: 'server-1',
+        rawData: const {
+          'Id': 's1',
+          'Type': 'Season',
+          'Name': 'Season 1',
+          'IndexNumber': 1,
+        },
+      );
+      final imageApi = _ImageApi();
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SpotlightMediaGridSection(
+              items: [season],
+              imageApi: imageApi,
+              prefs: prefs,
+              seerrSeasonStatus: const {1: SeerrMediaStatus.available},
+              onItemTap: (_) {},
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byType(SeerrStatusDot), findsNothing);
+    },
+  );
 }
 
 

@@ -20,15 +20,25 @@ class SettingsPanel extends StatelessWidget {
   /// otherwise rebuild the navigator and drop the user back to the root.
   final GlobalKey navigatorKey;
 
+  /// A settings list reads fine in a narrow column, but a panel that browses
+  /// media needs room for artwork, tabs and a metadata line. [wide] gives it
+  /// that on desktop and TV. A phone is full width either way.
+  final bool wide;
+
   static final isOpenNotifier = ValueNotifier<bool>(false);
 
   const SettingsPanel({
     super.key,
     required this.child,
     required this.navigatorKey,
+    this.wide = false,
   });
 
-  static Future<void> open(BuildContext context, Widget content) {
+  static Future<void> open(
+    BuildContext context,
+    Widget content, {
+    bool wide = false,
+  }) {
     FocusManager.instance.primaryFocus?.unfocus();
     final l10n = AppLocalizations.of(context);
     isOpenNotifier.value = true;
@@ -37,10 +47,10 @@ class SettingsPanel extends StatelessWidget {
       context: context,
       barrierDismissible: true,
       barrierLabel: l10n.settings,
-      barrierColor: AppColorScheme.scrim.withValues(alpha: 0.54),
+      barrierColor: AppColorScheme.scrim.withValues(alpha: wide ? 0.72 : 0.54),
       transitionDuration: const Duration(milliseconds: 220),
       pageBuilder: (_, anim, _) =>
-          SettingsPanel(navigatorKey: navigatorKey, child: content),
+          SettingsPanel(navigatorKey: navigatorKey, wide: wide, child: content),
       transitionBuilder: (context, anim, secondAnim, child) {
         final slide = Tween<Offset>(
           begin: const Offset(1.0, 0.0),
@@ -62,12 +72,17 @@ class SettingsPanel extends StatelessWidget {
     final screenWidth = MediaQuery.sizeOf(context).width;
     final appleTv = AppUiIdiomResolver.appleTvStyle;
     final isMobile = PlatformDetection.useMobileUi;
+    // A wide panel takes the whole window when there isn't enough of it to
+    // leave a useful strip of the app showing behind.
+    final fullWidth = isMobile || (wide && screenWidth < 720);
     final panelWidth = PlatformDetection.isAppleTV
         ? (screenWidth * 0.42).clamp(560.0, screenWidth)
-        : isMobile
+        : fullWidth
         ? screenWidth
+        : wide
+        ? (screenWidth - 48).clamp(480.0, 560.0)
         : (screenWidth - 16).clamp(320.0, 420.0);
-    final panelCorner = isMobile ? 0.0 : 16.0;
+    final panelCorner = fullWidth ? 0.0 : 16.0;
     final glass = AppColorScheme.isGlass;
     final frostedForTv = appleTv && !glass;
     final surface = Theme.of(context).colorScheme.surface;

@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:moonfin_design/moonfin_design.dart';
@@ -13,6 +12,7 @@ import '../../../screens/book/discover/librivox_authors_screen.dart';
 import '../../../screens/book/discover/librivox_book_detail_screen.dart';
 import '../../adaptive/sf_symbol.dart';
 import 'book_discovery_models.dart';
+import '../../offline_aware_image.dart';
 
 const _bookAccent = bookDiscoverAccent;
 
@@ -966,7 +966,7 @@ class _BookDiscoverTabState extends State<BookDiscoverTab> {
                         size: 30,
                       ),
                     )
-                  : CachedNetworkImage(
+                  : OfflineAwareImage(
                       imageUrl: item.coverUrl!,
                       fit: BoxFit.cover,
                       errorWidget: (_, _, _) => Container(
@@ -1312,7 +1312,7 @@ class _BookDiscoverTabState extends State<BookDiscoverTab> {
             child: ClipRRect(
               borderRadius: AppRadius.circular(18),
               child: hasCover
-                  ? CachedNetworkImage(
+                  ? OfflineAwareImage(
                       imageUrl: resolvedCover ?? '',
                       fit: BoxFit.cover,
                       errorWidget: (_, _, _) => _buildAudiobookCoverPlaceholder(

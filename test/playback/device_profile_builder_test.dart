@@ -406,6 +406,63 @@ String? _videoAudioChannelFloor(Map<String, dynamic> profile, String codec) {
 }
 
 void main() {
+  group('DeviceProfileBuilder transcode target audio codecs', () {
+    List<String> targets({
+      AudioFallbackCodec fallbackCodec = AudioFallbackCodec.auto,
+      bool forAvFoundation = false,
+    }) => DeviceProfileBuilder.transcodeTargetAudioCodecs(
+      fallbackCodec: fallbackCodec,
+      forAvFoundation: forAvFoundation,
+    );
+
+    test("never offers a codec the server can't encode to", () {
+      for (final forAvFoundation in [false, true]) {
+        final codecs = targets(forAvFoundation: forAvFoundation);
+        for (final codec in ['truehd', 'mlp', 'dca']) {
+          expect(codecs, isNot(contains(codec)), reason: codec);
+        }
+      }
+    });
+
+    test("AVFoundation drops the codecs it can't play out of HLS", () {
+      expect(targets(), containsAll(<String>['dts', 'mp2', 'mp3']));
+      final apple = targets(forAvFoundation: true);
+      for (final codec in ['dts', 'mp2', 'mp3']) {
+        expect(apple, isNot(contains(codec)), reason: codec);
+      }
+    });
+
+    test('the fallback preference leads the list', () {
+      expect(targets(fallbackCodec: AudioFallbackCodec.flac).first, 'flac');
+      expect(targets().first, 'aac');
+    });
+
+    test('lists each codec once', () {
+      final codecs = targets(fallbackCodec: AudioFallbackCodec.eac3);
+      expect(codecs.toSet().length, codecs.length);
+    });
+
+    test('matches what the device profile offers the server', () {
+      for (final forAvFoundation in [false, true]) {
+        final profile = DeviceProfileBuilder.build(
+          universalAudioDecode: true,
+          hlsAudioForAvFoundation: forAvFoundation,
+        );
+        final offered = <String>{
+          for (final entry
+              in (profile['TranscodingProfiles'] as List<dynamic>)
+                  .cast<Map<String, dynamic>>())
+            ...(entry['AudioCodec'] as String).split(','),
+        };
+        expect(
+          targets(forAvFoundation: forAvFoundation).toSet(),
+          offered,
+          reason: 'forAvFoundation=$forAvFoundation',
+        );
+      }
+    });
+  });
+
   group('DeviceProfileBuilder bridged audio sample rate', () {
     test('a player that bridges audio caps the codecs it has to re-encode', () {
       final cap = _sampleRateCap(
@@ -767,6 +824,86 @@ void main() {
       final unsupportedRanges = _codecUnsupportedRangeTypes(profile, 'hevc');
 
       expect(unsupportedRanges, contains('DOVI_INVALID'));
+    });
+  });
+
+  group('DeviceProfileBuilder AV1 Dolby Vision range filtering', () {
+    test('a base-layer renderer direct plays profile 10.1, including its '
+        'HDR10+ variant, on AV1 HDR10 alone', () {
+      final profile = DeviceProfileBuilder.build(
+        supportsAv1: true,
+        supportsAv1Main10: true,
+        supportsAv1Hdr10: true,
+        supportsAv1Hdr10Plus: false,
+        supportsAv1DolbyVision: false,
+        rendersAv1DoviViaHdr10BaseLayer: true,
+      );
+
+      final unsupportedRanges = _codecUnsupportedRangeTypes(profile, 'av1');
+
+      expect(unsupportedRanges, isNot(contains('DOVI_WITH_HDR10')));
+      expect(unsupportedRanges, isNot(contains('DOVI_WITH_HDR10_PLUS')));
+    });
+
+    test('every other backend keeps the HDR10+ gate on DoVi HDR10+, so an '
+        'HDR10-only client is never offered it', () {
+      final profile = DeviceProfileBuilder.build(
+        supportsAv1: true,
+        supportsAv1Main10: true,
+        supportsAv1Hdr10: true,
+        supportsAv1Hdr10Plus: false,
+        supportsAv1DolbyVision: false,
+      );
+
+      final unsupportedRanges = _codecUnsupportedRangeTypes(profile, 'av1');
+
+      expect(unsupportedRanges, contains('DOVI_WITH_HDR10_PLUS'));
+      // The plain HDR10 variant is unaffected: it never depended on HDR10+.
+      expect(unsupportedRanges, isNot(contains('DOVI_WITH_HDR10')));
+    });
+
+    test('HDR10+ support alone still lifts the gate without the opt-in', () {
+      final profile = DeviceProfileBuilder.build(
+        supportsAv1: true,
+        supportsAv1Main10: true,
+        supportsAv1Hdr10: true,
+        supportsAv1Hdr10Plus: true,
+        supportsAv1DolbyVision: false,
+      );
+
+      final unsupportedRanges = _codecUnsupportedRangeTypes(profile, 'av1');
+
+      expect(unsupportedRanges, isNot(contains('DOVI_WITH_HDR10_PLUS')));
+    });
+
+    test('a client that renders neither AV1 DoVi nor AV1 HDR10 excludes both '
+        'profile 10 range types, opt-in or not', () {
+      final profile = DeviceProfileBuilder.build(
+        supportsAv1: true,
+        supportsAv1Main10: true,
+        supportsAv1Hdr10: false,
+        supportsAv1DolbyVision: false,
+        rendersAv1DoviViaHdr10BaseLayer: true,
+      );
+
+      final unsupportedRanges = _codecUnsupportedRangeTypes(profile, 'av1');
+
+      expect(unsupportedRanges, contains('DOVI_WITH_HDR10'));
+      expect(unsupportedRanges, contains('DOVI_WITH_HDR10_PLUS'));
+    });
+
+    test('an AV1 DoVi decoder keeps every profile 10 range type direct '
+        'playable', () {
+      final profile = DeviceProfileBuilder.build(
+        supportsAv1: true,
+        supportsAv1Main10: true,
+        supportsAv1Hdr10: true,
+        supportsAv1DolbyVision: true,
+      );
+
+      final unsupportedRanges = _codecUnsupportedRangeTypes(profile, 'av1');
+
+      expect(unsupportedRanges, isEmpty);
     });
   });
 

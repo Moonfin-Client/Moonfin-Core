@@ -1,10 +1,10 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../widgets/book/discover/book_discovery_models.dart';
+import '../../../widgets/offline_aware_image.dart';
 
 class DiscoverBookDetailScreen extends StatefulWidget {
   final DiscoverBook book;
@@ -195,7 +195,7 @@ class _DiscoverBookDetailScreenState extends State<DiscoverBookDetailScreen> {
                                       size: 32,
                                     ),
                                   )
-                                : CachedNetworkImage(
+                                : OfflineAwareImage(
                                     imageUrl: book.coverUrl!,
                                     fit: BoxFit.cover,
                                     errorWidget: (_, _, _) => Container(

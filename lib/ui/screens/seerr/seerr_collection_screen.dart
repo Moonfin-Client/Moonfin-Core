@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -21,9 +20,11 @@ import '../../widgets/seerr/seerr_quota_row.dart';
 import '../../widgets/seerr/seerr_tv_controls.dart';
 import '../../widgets/track_selector_dialog.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../util/error_message.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/skeleton/skeleton_home_row.dart';
 import '../../widgets/skeleton/skeleton_shimmer.dart';
+import '../../widgets/offline_aware_image.dart';
 
 const _tmdbPosterBase = 'https://image.tmdb.org/t/p/w342';
 const _tmdbBackdropBase = 'https://image.tmdb.org/t/p/w1280';
@@ -111,7 +112,7 @@ class _SeerrCollectionScreenState extends State<SeerrCollectionScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              s.error!,
+              describeError(s.error!, AppLocalizations.of(context)),
               style: TextStyle(
                 color: AppColorScheme.onSurface.withValues(alpha: 0.7),
               ),
@@ -141,7 +142,7 @@ class _SeerrCollectionScreenState extends State<SeerrCollectionScreen> {
         if (collection.backdropPath != null)
           Opacity(
             opacity: 0.25,
-            child: CachedNetworkImage(
+            child: OfflineAwareImage(
               imageUrl: '$_tmdbBackdropBase${collection.backdropPath}',
               fit: BoxFit.cover,
             ),
@@ -254,7 +255,7 @@ class _SeerrCollectionScreenState extends State<SeerrCollectionScreen> {
           if (collection.posterPath != null) ...[
             ClipRRect(
               borderRadius: AppRadius.circular(10),
-              child: CachedNetworkImage(
+              child: OfflineAwareImage(
                 imageUrl: '$_tmdbPosterBase${collection.posterPath}',
                 width: 120,
                 height: 180,
@@ -648,7 +649,9 @@ class _CollectionRequestSheetState extends State<_CollectionRequestSheet> {
           ? Text(
               statusLabel,
               style: TextStyle(
-                color: status >= 4 ? Colors.green[300] : Colors.blue[200],
+                color: SeerrMediaStatus.isAvailable(status)
+                    ? Colors.green[300]
+                    : Colors.blue[200],
                 fontSize: 11.5,
               ),
             )

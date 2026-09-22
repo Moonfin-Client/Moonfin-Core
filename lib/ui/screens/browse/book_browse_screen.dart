@@ -68,11 +68,13 @@ class _BookBrowseScreenState extends State<BookBrowseScreen> {
       collectionType: widget.collectionType,
     );
     _vm.addListener(_onChanged);
+    _prefs.addListener(_onChanged);
     _vm.load();
   }
 
   @override
   void dispose() {
+    _prefs.removeListener(_onChanged);
     _vm.removeListener(_onChanged);
     _vm.dispose();
     _heroCtaFocusNode.dispose();
@@ -231,8 +233,12 @@ class _BookBrowseScreenState extends State<BookBrowseScreen> {
     final l10n = AppLocalizations.of(context);
     final topReserve = MediaQuery.paddingOf(context).top + 56;
     final featured = _vm.featuredItem;
-    final showScope = _vm.isMixedLibrary && _tab == 0;
-    final rows = _tab == 0 ? _vm.rows : const <HomeRow>[];
+    // _tab can still hold the Discover index after the setting is turned off,
+    // so the rest of this method reads the clamped value.
+    final showDiscover = _prefs.get(UserPreferences.showBookDiscoverTab);
+    final tab = showDiscover ? _tab : 0;
+    final showScope = _vm.isMixedLibrary && tab == 0;
+    final rows = tab == 0 ? _vm.rows : const <HomeRow>[];
 
     // Rebuild the vertical focus chain to match this build's composition.
     final entries = <RowFocusEntry>[
@@ -240,7 +246,8 @@ class _BookBrowseScreenState extends State<BookBrowseScreen> {
         RowFocusEntry.node(_heroCtaFocusNode, containerKey: _heroContainerKey),
       if (showScope)
         RowFocusEntry.node(_scopeFocusNode, containerKey: _scopeContainerKey),
-      RowFocusEntry.node(_tabsFocusNode, containerKey: _tabsContainerKey),
+      if (showDiscover)
+        RowFocusEntry.node(_tabsFocusNode, containerKey: _tabsContainerKey),
       for (final row in rows)
         RowFocusEntry.row(
           _rowKey(row.id),
@@ -251,7 +258,7 @@ class _BookBrowseScreenState extends State<BookBrowseScreen> {
     var entryIndex = 0;
     final heroIndex = featured != null ? entryIndex++ : -1;
     final scopeIndex = showScope ? entryIndex++ : -1;
-    final tabsIndex = entryIndex++;
+    final tabsIndex = showDiscover ? entryIndex++ : -1;
     final firstRowIndex = entryIndex;
 
     return [
@@ -281,40 +288,42 @@ class _BookBrowseScreenState extends State<BookBrowseScreen> {
             ),
           ),
         ),
-      Padding(
-        key: _tabsContainerKey,
-        padding: const EdgeInsets.fromLTRB(16, 6, 16, 10),
-        child: FocusableWrapper(
-          focusNode: _tabsFocusNode,
-          borderRadius: 22,
-          descendantsAreFocusable: false,
-          onSelect: () => setState(() => _tab = _tab == 0 ? 1 : 0),
-          onNavigateLeft: () {
-            if (_tab != 0) setState(() => _tab = 0);
-          },
-          onNavigateRight: () {
-            if (_tab != 1) setState(() => _tab = 1);
-          },
-          onNavigateUp: () => _moveVertical(tabsIndex, true),
-          onNavigateDown: () => _moveVertical(tabsIndex, false),
-          child: BookSegmentedControl(
-            labels: [l10n.library, l10n.discover],
-            selectedIndex: _tab,
-            onChanged: (v) => setState(() => _tab = v),
+      if (showDiscover)
+        Padding(
+          key: _tabsContainerKey,
+          padding: const EdgeInsets.fromLTRB(16, 6, 16, 10),
+          child: FocusableWrapper(
+            focusNode: _tabsFocusNode,
+            borderRadius: 22,
+            descendantsAreFocusable: false,
+            onSelect: () => setState(() => _tab = _tab == 0 ? 1 : 0),
+            onNavigateLeft: () {
+              if (_tab != 0) setState(() => _tab = 0);
+            },
+            onNavigateRight: () {
+              if (_tab != 1) setState(() => _tab = 1);
+            },
+            onNavigateUp: () => _moveVertical(tabsIndex, true),
+            onNavigateDown: () => _moveVertical(tabsIndex, false),
+            child: BookSegmentedControl(
+              labels: [l10n.library, l10n.discover],
+              selectedIndex: tab,
+              onChanged: (v) => setState(() => _tab = v),
+            ),
           ),
         ),
-      ),
-      if (_tab == 0) ...[
+      if (tab == 1)
+        BookDiscoverTab(
+          libraryId: widget.libraryId,
+          isAudiobook: _vm.isAudiobookLibrary,
+        )
+      else ...[
         if (rows.isNotEmpty)
           for (var i = 0; i < rows.length; i++)
             _buildShelf(rows[i], l10n, firstRowIndex + i)
         else
           _buildEmptyState(l10n),
-      ] else
-        BookDiscoverTab(
-          libraryId: widget.libraryId,
-          isAudiobook: _vm.isAudiobookLibrary,
-        ),
+      ],
     ];
   }
 

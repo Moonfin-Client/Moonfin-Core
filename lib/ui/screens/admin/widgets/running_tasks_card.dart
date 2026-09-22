@@ -6,6 +6,7 @@ import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../util/error_message.dart';
 import '../providers/admin_user_providers.dart';
 import 'admin_form_styles.dart';
 
@@ -44,7 +45,7 @@ class _RunningTasksCardState extends ConsumerState<RunningTasksCard> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.adminTaskStopFailed(e.toString()))),
+          SnackBar(content: Text(l10n.adminTaskStopFailed(describeError(e, l10n)))),
         );
       }
     }

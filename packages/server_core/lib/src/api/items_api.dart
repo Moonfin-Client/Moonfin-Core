@@ -186,6 +186,8 @@ abstract class ItemsApi {
 
   Future<void> addToCollection(String collectionId, List<String> itemIds);
 
+  Future<void> removeFromCollection(String collectionId, List<String> itemIds);
+
   Future<void> removeFromPlaylist(String playlistId, List<String> entryIds);
 
   Future<void> movePlaylistItem(

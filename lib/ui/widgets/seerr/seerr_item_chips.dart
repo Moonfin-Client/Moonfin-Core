@@ -31,7 +31,7 @@ class SeerrItemChips extends StatelessWidget {
   /// Whether there is anything to file this title under, so a caller can drop
   /// the heading and spacing around it too.
   static bool hasContent(SeerrMediaDetailState s) =>
-      s.genres.isNotEmpty || s.networks.isNotEmpty || s.keywords.isNotEmpty;
+      SeerrTagsContent.hasContent(s);
 
   @override
   Widget build(BuildContext context) {

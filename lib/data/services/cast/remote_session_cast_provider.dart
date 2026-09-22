@@ -7,11 +7,17 @@ import 'cast_provider.dart';
 import 'cast_target.dart';
 import 'cast_transport_controls.dart';
 
-class RemoteSessionCastProvider implements CastProvider, CastTransportControls {
+class RemoteSessionCastProvider
+    implements CastProvider, CastTransportControls, PollableRemoteState {
   final MediaServerClientFactory _clientFactory;
 
   String? _activeSessionId;
   String? _activeServerId;
+
+  /// The last level we asked for, as a fraction. A receiver that reports no
+  /// volume of its own still takes SetVolume, so this keeps the slider on a
+  /// number rather than marking a working control unavailable.
+  double? _lastSentVolume;
 
   RemoteSessionCastProvider(this._clientFactory);
 
@@ -141,11 +147,71 @@ class RemoteSessionCastProvider implements CastProvider, CastTransportControls {
     await _activeClient.sessionApi.sendPlayStateCommand(sessionId, 'Stop');
     _activeSessionId = null;
     _activeServerId = null;
+    _lastSentVolume = null;
+  }
+
+  /// The server's current record of the session being cast to, or null when
+  /// nothing is active or the server could not be reached.
+  Future<Map<String, dynamic>?> _fetchActiveSession() async {
+    final sessionId = _activeSessionId;
+    if (sessionId == null) return null;
+    try {
+      final sessions = await _activeClient.sessionApi.getSessions();
+      return sessions.cast<Map<String, dynamic>?>().firstWhere(
+        (entry) => entry?['Id']?.toString() == sessionId,
+        orElse: () => null,
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
+  double? _volumeFrom(Map<String, dynamic>? session) {
+    final playState = session?['PlayState'] as Map<String, dynamic>?;
+    final level = (playState?['VolumeLevel'] as num?)?.toDouble();
+    if (level == null) return null;
+    return (level / 100).clamp(0.0, 1.0);
   }
 
   @override
-  Future<double?> getVolume(CastTargetKind kind) async => null;
+  Future<RemotePlaybackSnapshot?> fetchRemoteSnapshot(
+    CastTargetKind kind,
+  ) async {
+    final session = await _fetchActiveSession();
+    if (session == null) return null;
+
+    final playState = session['PlayState'] as Map<String, dynamic>?;
+    final nowPlaying = session['NowPlayingItem'] as Map<String, dynamic>?;
+    return RemotePlaybackSnapshot(
+      // Nothing playing reads as no state at all rather than as paused, which
+      // is what the mini player shows an idle receiver.
+      state: nowPlaying == null
+          ? null
+          : (playState?['IsPaused'] as bool? ?? false)
+                ? 'paused'
+                : 'playing',
+      positionTicks: (playState?['PositionTicks'] as num?)?.toInt() ?? 0,
+      volume: _volumeFrom(session) ?? _lastSentVolume,
+    );
+  }
 
   @override
-  Future<void> setVolume(CastTargetKind kind, {required double volume}) async {}
+  Future<double?> getVolume(CastTargetKind kind) async {
+    if (_activeSessionId == null) return null;
+    return _volumeFrom(await _fetchActiveSession()) ?? _lastSentVolume;
+  }
+
+  @override
+  Future<void> setVolume(CastTargetKind kind, {required double volume}) async {
+    final sessionId = _activeSessionId;
+    if (sessionId == null) return;
+    // The slider works in fractions and the server in whole percent.
+    final fraction = volume.clamp(0.0, 1.0);
+    await _activeClient.sessionApi.sendGeneralCommand(
+      sessionId,
+      'SetVolume',
+      arguments: {'Volume': (fraction * 100).round().toString()},
+    );
+    _lastSentVolume = fraction;
+  }
 }

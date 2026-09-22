@@ -5,6 +5,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../util/error_message.dart';
 import '../../../../util/platform_detection.dart';
 import '../../../widgets/adaptive/adaptive_dialog.dart';
 import '../../detail/modern/widgets/details_tab_bar.dart';
@@ -97,7 +98,7 @@ class _AdminLibraryEditScreenState
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _error = e.toString();
+        _error = describeError(e, AppLocalizations.of(context));
         _loading = false;
       });
     }
@@ -114,7 +115,7 @@ class _AdminLibraryEditScreenState
       if (mounted) {
         final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.adminAddPathFailed(e.toString()))),
+          SnackBar(content: Text(l10n.adminAddPathFailed(describeError(e, l10n)))),
         );
       }
     } finally {
@@ -156,7 +157,7 @@ class _AdminLibraryEditScreenState
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.adminRemovePathFailed(e.toString()))),
+          SnackBar(content: Text(l10n.adminRemovePathFailed(describeError(e, l10n)))),
         );
       }
     } finally {
@@ -180,7 +181,7 @@ class _AdminLibraryEditScreenState
       if (mounted) {
         final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.adminLibraryOptionsSaveFailed(e.toString()))),
+          SnackBar(content: Text(l10n.adminLibraryOptionsSaveFailed(describeError(e, l10n)))),
         );
       }
     } finally {

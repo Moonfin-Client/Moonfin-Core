@@ -16,6 +16,8 @@ import '../util/platform_detection.dart';
 import 'device_profile_builder.dart';
 import 'hdr_output_controller.dart';
 import 'known_defects.dart';
+import 'letterbox_croppers.dart';
+import 'mpv_letterbox_crop.dart';
 import 'server_transcode_capabilities.dart';
 
 class _ParsedMpvConfCacheEntry {
@@ -191,6 +193,7 @@ class MediaKitPlayerBackend extends PlayerBackend {
   bool _audioPassthroughApplyInProgress = false;
   bool _audioPassthroughApplyQueued = false;
   bool _isDisposed = false;
+  late final MpvLetterboxCropper _letterboxCropper;
   String? _appliedCustomMpvConfPath;
   DateTime? _appliedCustomMpvConfMtime;
   static final Map<String, _ParsedMpvConfCacheEntry> _parsedMpvConfCache =
@@ -419,6 +422,10 @@ class MediaKitPlayerBackend extends PlayerBackend {
     this._onNativeHandleReady,
     this._hwDecodingEnabled,
   ) {
+    _letterboxCropper = MpvLetterboxCropper(
+      _MediaKitLetterboxHost(this),
+      supported: letterboxCropAvailable(),
+    );
     _prefs.addListener(_onPreferencesChanged);
     _ccTracksSub = _player.stream.tracks.listen(
       (_) => unawaited(_refreshEmbeddedCaptionTracks()),
@@ -542,6 +549,9 @@ class MediaKitPlayerBackend extends PlayerBackend {
 
   @override
   bool get supportsRuntimeTrackSelection => true;
+
+  @override
+  LetterboxCropper get letterboxCropper => _letterboxCropper;
 
   @override
   bool get requiresStartupMediaReadyCheck => true;
@@ -681,6 +691,12 @@ class MediaKitPlayerBackend extends PlayerBackend {
       _enableNativeSubtitleRendering();
     }
     await _maybeEngageNativeHdr();
+    unawaited(() async {
+      await _letterboxCropper.setEnabled(
+        _prefs.get(UserPreferences.cropBlackBars),
+      );
+      await _letterboxCropper.onSourceOpened(url);
+    }());
   }
 
   /// Gives mpv its own D3D11 window when the content is HDR and the display is
@@ -1344,6 +1360,10 @@ class MediaKitPlayerBackend extends PlayerBackend {
     if (_isDisposed) {
       return;
     }
+
+    unawaited(
+      _letterboxCropper.setEnabled(_prefs.get(UserPreferences.cropBlackBars)),
+    );
 
     if (_audioPassthroughApplyInProgress) {
       _audioPassthroughApplyQueued = true;
@@ -2299,6 +2319,13 @@ class MediaKitPlayerBackend extends PlayerBackend {
     );
   }
 
+  int? _lastTextColor;
+  int? _lastBackgroundColor;
+  int? _lastStrokeColor;
+  double? _lastFontSize;
+  int? _lastFontWeight;
+  double? _lastVerticalOffset;
+
   @override
   Future<void> configureSubtitleStyle({
     int? textColor,
@@ -2308,43 +2335,65 @@ class MediaKitPlayerBackend extends PlayerBackend {
     int? fontWeight,
     double? verticalOffset,
   }) async {
+    if (textColor != null) _lastTextColor = textColor;
+    if (backgroundColor != null) _lastBackgroundColor = backgroundColor;
+    if (strokeColor != null) _lastStrokeColor = strokeColor;
+    if (fontSize != null) _lastFontSize = fontSize;
+    if (fontWeight != null) _lastFontWeight = fontWeight;
+    if (verticalOffset != null) _lastVerticalOffset = verticalOffset;
+
     try {
-      final native = _player.platform as NativePlayer;
-      if (textColor != null) {
-        await _nativeSetProperty(
-          native,
-          'sub-color',
-          _argbToMpvColor(textColor),
-        );
-      }
-      if (backgroundColor != null) {
-        await _nativeSetProperty(
-          native,
-          'sub-back-color',
-          _argbToMpvColor(backgroundColor),
-        );
-      }
-      if (strokeColor != null) {
-        await _nativeSetProperty(
-          native,
-          'sub-border-color',
-          _argbToMpvColor(strokeColor),
-        );
-        await _nativeSetProperty(native, 'sub-border-size', '2');
-      }
-      if (fontSize != null) {
-        final mpvSize = ((fontSize / 24.0) * 55.0).round().clamp(24, 120);
-        await _nativeSetProperty(native, 'sub-font-size', mpvSize.toString());
-      }
-      if (fontWeight != null && fontWeight >= 700) {
-        await _nativeSetProperty(native, 'sub-bold', 'yes');
-      }
-      if (verticalOffset != null) {
-        final marginY = (verticalOffset * 720).round();
-        await _nativeSetProperty(native, 'sub-margin-y', marginY.toString());
-      }
-      await _applyAssOverrideMode();
+      await _writeSubtitleStyle(_player.platform as NativePlayer);
     } catch (_) {}
+  }
+
+  /// Writes the cached style rather than any arguments, so the replay after a
+  /// stream opens runs the same code as the original write.
+  Future<void> _writeSubtitleStyle(NativePlayer native) async {
+    final textColor = _lastTextColor;
+    if (textColor != null) {
+      await _nativeSetProperty(native, 'sub-color', _argbToMpvColor(textColor));
+    }
+    final backgroundColor = _lastBackgroundColor;
+    if (backgroundColor != null) {
+      await _nativeSetProperty(
+        native,
+        'sub-back-color',
+        _argbToMpvColor(backgroundColor),
+      );
+    }
+    final strokeColor = _lastStrokeColor;
+    if (strokeColor != null) {
+      await _nativeSetProperty(
+        native,
+        'sub-border-color',
+        _argbToMpvColor(strokeColor),
+      );
+      await _nativeSetProperty(native, 'sub-border-size', '2');
+    }
+    final fontSize = _lastFontSize;
+    if (fontSize != null) {
+      final mpvSize = ((fontSize / 24.0) * 55.0).round().clamp(24, 120);
+      await _nativeSetProperty(native, 'sub-font-size', mpvSize.toString());
+    }
+    final fontWeight = _lastFontWeight;
+    if (fontWeight != null) {
+      // mpv holds this across titles, so it has to be written either way or a
+      // title that was bold once stays bold.
+      await _nativeSetProperty(
+        native,
+        'sub-bold',
+        fontWeight >= 700 ? 'yes' : 'no',
+      );
+    }
+    final verticalOffset = _lastVerticalOffset;
+    if (verticalOffset != null) {
+      final marginY = (verticalOffset * 720).round();
+      await _nativeSetProperty(native, 'sub-margin-y', marginY.toString());
+    }
+    // Last, because it decides whether the colors above reach an ASS subtitle
+    // at all.
+    await _applyAssOverrideMode();
   }
 
   @override
@@ -2353,14 +2402,15 @@ class MediaKitPlayerBackend extends PlayerBackend {
   void _enableNativeSubtitleRendering() {
     Future.delayed(const Duration(milliseconds: 500), () async {
       // Read on the way out rather than on the way in, since the viewer can
-      // turn subtitles off while this is still pending.
-      if (_subtitlesDisabled) return;
+      // turn subtitles off, or leave the player, while this is still pending.
+      if (_isDisposed || _subtitlesDisabled) return;
       try {
         final native = _player.platform as NativePlayer;
         await _nativeSetProperty(native, 'sub-visibility', 'yes');
         await _nativeSetProperty(native, 'sub-ass', 'yes');
-        await _nativeSetProperty(native, 'sub-ass-override', 'yes');
         await _nativeSetProperty(native, 'sub-forced-events-only', 'no');
+        // Opening a stream resets the style mpv was holding.
+        await _writeSubtitleStyle(native);
       } catch (_) {}
     });
   }
@@ -2407,10 +2457,64 @@ class MediaKitPlayerBackend extends PlayerBackend {
   @override
   void dispose() {
     _isDisposed = true;
+    _letterboxCropper.cancel();
     _prefs.removeListener(_onPreferencesChanged);
     _ccTracksSub?.cancel();
     _videoParamsSub?.cancel();
     _tracksChangedController.close();
     _player.dispose();
   }
+}
+
+class _MediaKitLetterboxHost implements MpvLetterboxHost {
+  _MediaKitLetterboxHost(this._backend);
+
+  final MediaKitPlayerBackend _backend;
+
+  NativePlayer? get _native {
+    final platform = _backend._player.platform;
+    return platform is NativePlayer ? platform : null;
+  }
+
+  @override
+  bool get hasNativePlayer => _native != null;
+
+  @override
+  Future<String?> getProperty(String key) async {
+    final native = _native;
+    if (native == null) return null;
+    return _backend._tryNativeGetProperty(native, key);
+  }
+
+  @override
+  Future<void> setProperty(String key, String value) async {
+    final native = _native;
+    if (native == null) return;
+    await MediaKitPlayerBackend._nativeSetProperty(native, key, value);
+  }
+
+  @override
+  Future<bool> command(List<String> args) async {
+    final native = _native;
+    if (native == null) return false;
+    return MediaKitPlayerBackend._tryNativeCommand(native, args);
+  }
+
+  @override
+  bool get isPlaying => _backend._player.state.playing;
+
+  @override
+  Duration get position => _backend._player.state.position;
+
+  @override
+  Duration get duration => _backend._player.state.duration;
+
+  @override
+  Stream<bool> get playingStream => _backend._player.stream.playing;
+
+  @override
+  String? get currentUrl => _backend._currentUrl;
+
+  @override
+  bool get isDisposed => _backend._isDisposed;
 }

@@ -488,7 +488,7 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
     final selected =
         _detailStyle ?? _prefs.get(UserPreferences.detailScreenStyle);
     return _OptionLayout(
-      columns: 4,
+      columns: 5,
       children: [
         _OptionCard(
           order: 0,
@@ -537,6 +537,18 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
           ),
           onPressed: () =>
               setState(() => _detailStyle = DetailScreenStyle.nouveau),
+        ),
+        _OptionCard(
+          order: 4,
+          label: l10n.setupStyleMinimalist,
+          hint: l10n.setupDetailMinimalistHint,
+          selected: selected == DetailScreenStyle.minimalist,
+          autofocus: selected == DetailScreenStyle.minimalist,
+          preview: SetupPreview(
+            child: detailStylePreview(DetailScreenStyle.minimalist),
+          ),
+          onPressed: () =>
+              setState(() => _detailStyle = DetailScreenStyle.minimalist),
         ),
       ],
     );

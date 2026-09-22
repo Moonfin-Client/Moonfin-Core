@@ -1,3 +1,5 @@
+import 'letterbox_crop.dart';
+
 enum SubtitleRendererMode { native, assOverlay }
 
 /// A caption track the player found inside the video itself, like the CEA-608
@@ -71,6 +73,13 @@ abstract class PlayerBackend {
   Stream<bool> get bufferingStream;
   Stream<bool> get completedStream;
   Stream<Map<String, dynamic>>? get errorStream => null;
+
+  /// A correction the backend applies to sideloaded subtitles on its own,
+  /// in seconds, positive meaning later. It sits on top of the delay the
+  /// user set and is shown next to it, never added into it. Only a backend
+  /// that measures one provides it.
+  double get subtitleAutoOffsetSeconds => 0.0;
+  Stream<double>? get subtitleAutoOffsetStream => null;
 
   Map<String, dynamic> getDeviceProfile({bool useProgressiveTranscode = false});
 
@@ -168,6 +177,14 @@ abstract class PlayerBackend {
   /// nudges the rate where this is true, and holds the player instead where
   /// it is not.
   bool get supportsSmoothRateChange => true;
+
+  /// Detect encoded letterbox and crop it. Cover-zoom is not this.
+  ///
+  /// Desktop libmpv ships a cropper. Media3 / Aether / Tizen / HTML return
+  /// [UnsupportedLetterboxCropper] until they implement [LetterboxCropper].
+  LetterboxCropper get letterboxCropper => const UnsupportedLetterboxCropper();
+
+  bool get supportsLetterboxCrop => letterboxCropper.isSupported;
 
   void dispose();
 }

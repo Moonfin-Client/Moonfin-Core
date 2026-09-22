@@ -107,7 +107,7 @@
     "@unableToConnectToServer": {
         "description": "Error when a server connection attempt fails"
     },
-    "addServer": "Lisää palvelin",
+    "addServer": "Lisää Palvelin",
     "@addServer": {
         "description": "Button to manually add a server address"
     },
@@ -115,11 +115,11 @@
     "@embyConnect": {
         "description": "Emby Connect sign-in option label"
     },
-    "removeServer": "Poista palvelin",
+    "removeServer": "Poista Palvelin",
     "@removeServer": {
         "description": "Dialog title for removing a saved server"
     },
-    "removeServerConfirmation": "Poistetaanko \"{serverName}\" palvelimiltasi?",
+    "removeServerConfirmation": "Poistetaanko \"{serverName}\" palvelinlistalta?",
     "@removeServerConfirmation": {
         "description": "Confirmation message when removing a saved server",
         "placeholders": {
@@ -309,7 +309,7 @@
     "@collectionPlaceholder": {
         "description": "Placeholder text for empty collection screen"
     },
-    "browseByLetter": "Selaa kirjeen mukaan",
+    "browseByLetter": "Selaa Aakkosjärjestyksessä",
     "@browseByLetter": {
         "description": "Title for alphabetical browse screen"
     },
@@ -317,7 +317,7 @@
     "@alphabeticalBrowsePlaceholder": {
         "description": "Placeholder text for alphabetical browse screen"
     },
-    "suggestions": "ehdotuksia",
+    "suggestions": "Ehdotuksia",
     "@suggestions": {
         "description": "Title for suggestions screen"
     },
@@ -325,7 +325,7 @@
     "@suggestionsPlaceholder": {
         "description": "Placeholder text for suggestions screen"
     },
-    "failedToLoadLibraries": "Kirjastojen lataaminen epäonnistui",
+    "failedToLoadLibraries": "Kirjastoja ei voitu ladata",
     "@failedToLoadLibraries": {
         "description": "Error when library list cannot be loaded"
     },
@@ -341,11 +341,11 @@
     "@displaySettings": {
         "description": "Tooltip for display settings button"
     },
-    "allGenres": "Kaikki genret",
+    "allGenres": "Kaikki Genret",
     "@allGenres": {
         "description": "Title for the all genres screen"
     },
-    "noGenresFound": "Genrejä ei löytynyt",
+    "noGenresFound": "Mitään genrejä ei löytynyt",
     "@noGenresFound": {
         "description": "Empty state when no genres are available"
     },
@@ -6397,7 +6397,7 @@
     "shuffleLibrary": "Kirjasto",
     "shuffleGenre": "Genre",
     "shuffleNoLibraries": "Yhteensopivia kirjastoja ei ole saatavilla.",
-    "shuffleNoGenres": "Tälle sekoitustilalle ei löytynyt genrejä.",
+    "shuffleNoGenres": "Tälle shuffle-tilalle ei löytynyt yhtään tyylilajia.",
     "posterDisplayTitle": "Näyttö",
     "posterImageType": "Kuvatyyppi",
     "imageTypePoster": "Juliste",
@@ -6718,7 +6718,7 @@
     "@localAccount": {
         "description": "Auth option label for Seerr sign in using local Seerr credentials"
     },
-    "seasonalEffectsDescription": "Visuaalisia tehosteita ja vuodenaikojen koristeita",
+    "seasonalEffectsDescription": "Visuaaliset tehosteet ja kausittaiset efektit",
     "@seasonalEffectsDescription": {
         "description": "Description for seasonal effects settings"
     },
@@ -7313,7 +7313,7 @@
     "@accountPreferences": {
         "description": "Section header for account preferences settings"
     },
-    "interfaceLanguage": "Käyttöliittymän kieli",
+    "interfaceLanguage": "Käyttöliittymän Kieli",
     "@interfaceLanguage": {
         "description": "Label for the app interface language setting"
     },
@@ -7329,7 +7329,7 @@
     "@detailScreenStyle": {
         "description": "Label for the media detail screen layout style setting"
     },
-    "detailScreenStyleSubtitle": "Klassinen on alkuperäinen keskitetty Moonfin-asettelu. Moderni on mukautuva, elokuvamainen asettelu.",
+    "detailScreenStyleSubtitle": "Classic on alkuperäinen, keskitetyn moonfin-asettelun versio. Modern on responsiivinen, elokuvamainen asettelu. Spotlight on hero-first-asettelu, jossa on ponnahdusikkunoina avautuvia sisältökortteja. Nouveau on koko näytön asettelu, jossa osiot on pinottu sivun alaspäin. Minimalist koostuu kuvamateriaalista, yhdestä toistopainikkeesta ja jaksoista.",
     "@detailScreenStyleSubtitle": {
         "description": "Explanation under the detail screen style setting"
     },
@@ -7361,7 +7361,7 @@
     "@recommendationSystem": {
         "description": "Label for the Recommendation System setting"
     },
-    "recommendationSystemSubtitle": "Käytä paikalliseen kirjastoon perustuvaa Moonfin suosittelee -algoritmia tai TMDb:n verkossa toimivia samankaltaisuusmittareita. Huomaa: verkkosuositukset vaativat Seerr-integraation.",
+    "recommendationSystemSubtitle": "Käytä Moonfin Recommends -sovelluksen paikalliskirjastoalgoritmia, Jellyfin Recommends -palvelinmoottoria tai TMDb:n verkkopalvelun samankaltaisuusmittareita. Huomautus: Verkkosuositukset edellyttävät Seerr-integraatiota.",
     "@recommendationSystemSubtitle": {
         "description": "Explanation under the recommendation system setting"
     },
@@ -10281,7 +10281,7 @@
     "@nativeHdrOutputDescription": {
         "description": "Settings description for native HDR output"
     },
-    "loadingAnimation": "Animaatio latautuu",
+    "loadingAnimation": "Ladataan Animaatiota",
     "@loadingAnimation": {
         "description": "Setting title for custom loading animation"
     },
@@ -10939,5 +10939,1531 @@
     "trickplayPauseWhileScrubbingSubtitle": "Toisto keskeytyy, kun siirryt kohtaan, ja jatkuu, kun painat toistopainiketta. Poista tämä asetus käytöstä, jotta toisto jatkuu ja siirryt suoraan uuteen kohtaan",
     "@trickplayPauseWhileScrubbingSubtitle": {
         "description": "Description for the trickplay pause-while-scrubbing setting"
+    },
+    "detailScreenStyleSpotlight": "Esittelyssä",
+    "@detailScreenStyleSpotlight": {
+        "description": "Detail screen style option: the hero-first layout with summary cards that open grid modals"
+    },
+    "spotlightMoreActions": "Lisää Toimintoja",
+    "@spotlightMoreActions": {
+        "description": "Tooltip/semantics of the spotlight ellipsis button and the title of the overflow actions menu it opens"
+    },
+    "spotlightCastCrewStudios": "Näyttelijät, Tuotantoryhmä ja Studiot",
+    "@spotlightCastCrewStudios": {
+        "description": "Title of the spotlight summary card that opens the people and studios modal"
+    },
+    "spotlightChaptersExtras": "Kappaleet ja Lisämateriaalit",
+    "@spotlightChaptersExtras": {
+        "description": "Title of the spotlight summary card that opens the chapters and special features modal"
+    },
+    "spotlightSimilarRecommendations": "Samankaltaiset ja Suositukset",
+    "@spotlightSimilarRecommendations": {
+        "description": "Title of the spotlight summary card that opens the similar titles and recommendations modal"
+    },
+    "spotlightSeasonsEpisodes": "Kaudet ja Jaksot",
+    "@spotlightSeasonsEpisodes": {
+        "description": "Title of the spotlight summary card that opens the seasons grid modal for a series"
+    },
+    "spotlightMoreEpisodes": "Lisää Jaksoja",
+    "@spotlightMoreEpisodes": {
+        "description": "Title of the spotlight summary card listing the other episodes of the season"
+    },
+    "spotlightFilmography": "Filmografia",
+    "@spotlightFilmography": {
+        "description": "Title of the spotlight summary card that opens a person's filmography modal"
+    },
+    "spotlightCollectionsCard": "Kokoelmat",
+    "@spotlightCollectionsCard": {
+        "description": "Title of the spotlight summary card that opens the parent collections modal"
+    },
+    "spotlightPlaylistOrder": "Soittolistan Järjestys",
+    "@spotlightPlaylistOrder": {
+        "description": "Title of the spotlight summary card that opens the ordered box set playlist modal"
+    },
+    "spotlightMoviesAndShows": "Elokuvat & Sarjat",
+    "@spotlightMoviesAndShows": {
+        "description": "Subtitle of the spotlight similar and recommendations card"
+    },
+    "spotlightSimilarSeerr": "Samankaltainen (Seerr)",
+    "@spotlightSimilarSeerr": {
+        "description": "Header of the Seerr similar-titles section when it appears beside the library's own similar section"
+    },
+    "spotlightRecommendationsSeerr": "Suositukset (Seerr)",
+    "@spotlightRecommendationsSeerr": {
+        "description": "Header of the Seerr recommendations section when it appears in the Spotlight recommendations modal"
+    },
+    "spotlightPeopleCount": "{count, plural, =1{1 person} other{{count} people}}",
+    "@spotlightPeopleCount": {
+        "description": "Count fragment on spotlight summary cards: people",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightStudiosCount": "{count, plural, =1{1 studio} other{{count} studios}}",
+    "@spotlightStudiosCount": {
+        "description": "Count fragment on spotlight summary cards: studios",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightChaptersCount": "{count, plural, =1{1 chapter} other{{count} chapters}}",
+    "@spotlightChaptersCount": {
+        "description": "Count fragment on spotlight summary cards: chapters",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightExtrasCount": "{count, plural, =1{1 extra} other{{count} extras}}",
+    "@spotlightExtrasCount": {
+        "description": "Count fragment on spotlight summary cards: extras/special features",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightSeasonsCount": "{count, plural, =1{1 season} other{{count} seasons}}",
+    "@spotlightSeasonsCount": {
+        "description": "Count fragment on spotlight summary cards: seasons",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightEpisodesCount": "{count, plural, =1{1 episode} other{{count} episodes}}",
+    "@spotlightEpisodesCount": {
+        "description": "Count fragment on spotlight summary cards: episodes",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightMoviesCount": "{count, plural, =1{1 movie} other{{count} movies}}",
+    "@spotlightMoviesCount": {
+        "description": "Count fragment on spotlight summary cards: movies",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightShowsCount": "{count, plural, =1{1 show} other{{count} shows}}",
+    "@spotlightShowsCount": {
+        "description": "Count fragment on spotlight summary cards: series/shows",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightTracksCount": "{count, plural, =1{1 track} other{{count} tracks}}",
+    "@spotlightTracksCount": {
+        "description": "Count fragment on spotlight summary cards: audio tracks",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightItemsCount": "{count, plural, =1{1 item} other{{count} items}}",
+    "@spotlightItemsCount": {
+        "description": "Count fragment on spotlight summary cards: generic items",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightAlbumsCount": "{count, plural, =1{1 album} other{{count} albums}}",
+    "@spotlightAlbumsCount": {
+        "description": "Count fragment on spotlight summary cards: albums",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightCollectionsCount": "{count, plural, =1{1 collection} other{{count} collections}}",
+    "@spotlightCollectionsCount": {
+        "description": "Count fragment on spotlight summary cards: collections",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightTitlesCount": "{count, plural, =1{1 title} other{{count} titles}}",
+    "@spotlightTitlesCount": {
+        "description": "Count fragment on the spotlight similar card: titles across the library and Seerr sections",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "detailScreenStyleNouveau": "Nouveau",
+    "@detailScreenStyleNouveau": {
+        "description": "Detail screen style option: nouveau full-screen layout with integrated sections"
+    },
+    "recommendationSystemJellyfin": "Jellyfin Suosittelee",
+    "@recommendationSystemJellyfin": {
+        "description": "Recommendation system option: Jellyfin Recommends"
+    },
+    "keyboardShortcutsTitle": "Pikanäppäimet",
+    "@keyboardShortcutsTitle": {
+        "description": "Title of the screen and dialog that list every keyboard shortcut"
+    },
+    "keyboardShortcutsSubtitle": "Videosoittimen ja lukijan näppäimet",
+    "@keyboardShortcutsSubtitle": {
+        "description": "Subtitle of the About tile that opens the keyboard shortcut list"
+    },
+    "keyboardShortcutsPlayerHint": "Paina ? tai F1 videon toiston aikana, niin näet tämän luettelon poistumatta soittimesta.",
+    "@keyboardShortcutsPlayerHint": {
+        "description": "Footnote on the keyboard shortcuts settings screen"
+    },
+    "keyboardShortcutsSectionApp": "Kaikkialla",
+    "@keyboardShortcutsSectionApp": {
+        "description": "Keyboard shortcut section for keys that work on every screen"
+    },
+    "keyboardShortcutsSectionAppScope": "Millä tahansa näytöllä",
+    "@keyboardShortcutsSectionAppScope": {
+        "description": "Under the Everywhere section title: when those keys apply"
+    },
+    "keyboardShortcutsSectionPlayer": "Videosoitin",
+    "@keyboardShortcutsSectionPlayer": {
+        "description": "Keyboard shortcut section for the video player"
+    },
+    "keyboardShortcutsSectionPlayerScope": "Kun video on auki, toistuu tai on keskeytetty",
+    "@keyboardShortcutsSectionPlayerScope": {
+        "description": "Under the Video player section title: when those keys apply"
+    },
+    "keyboardShortcutsSectionReader": "Kirja- ja sarjakuvien lukija",
+    "@keyboardShortcutsSectionReader": {
+        "description": "Keyboard shortcut section for the ebook and comic reader"
+    },
+    "keyboardShortcutsSectionReaderScope": "Kun luen kirjaa tai sarjakuvia",
+    "@keyboardShortcutsSectionReaderScope": {
+        "description": "Under the reader section title: when those keys apply"
+    },
+    "keyNameArrowKeys": "Nuolinäppäimet",
+    "@keyNameArrowKeys": {
+        "description": "Key cap label standing for the four arrow keys"
+    },
+    "keyNameSpace": "Väli",
+    "@keyNameSpace": {
+        "description": "Key cap label for the space bar"
+    },
+    "keyNameEnter": "Enter",
+    "@keyNameEnter": {
+        "description": "Key cap label for the Enter key"
+    },
+    "keyNameEsc": "Esc",
+    "@keyNameEsc": {
+        "description": "Key cap label for the Escape key"
+    },
+    "keyNameBackspace": "Backspace",
+    "@keyNameBackspace": {
+        "description": "Key cap label for the Backspace key"
+    },
+    "keyNamePageUp": "Page Up",
+    "@keyNamePageUp": {
+        "description": "Key cap label for the Page Up key"
+    },
+    "keyNamePageDown": "Page Down",
+    "@keyNamePageDown": {
+        "description": "Key cap label for the Page Down key"
+    },
+    "keyNameHome": "Home",
+    "@keyNameHome": {
+        "description": "Key cap label for the Home key"
+    },
+    "keyNameEnd": "End",
+    "@keyNameEnd": {
+        "description": "Key cap label for the End key"
+    },
+    "keyNameShift": "Shift",
+    "@keyNameShift": {
+        "description": "Key cap label for the Shift modifier"
+    },
+    "keyNameCtrl": "Ctrl",
+    "@keyNameCtrl": {
+        "description": "Key cap label for the Control modifier"
+    },
+    "keyNameAlt": "Alt",
+    "@keyNameAlt": {
+        "description": "Key cap label for the Alt modifier"
+    },
+    "keyNameScrollWheel": "Vierityspyörä",
+    "@keyNameScrollWheel": {
+        "description": "Key cap label standing for the mouse scroll wheel"
+    },
+    "shortcutMoveFocus": "Siirry kohteiden välillä",
+    "@shortcutMoveFocus": {
+        "description": "What the arrow keys do outside the player"
+    },
+    "shortcutActivate": "Avaa valittu kohde",
+    "@shortcutActivate": {
+        "description": "What Enter does outside the player"
+    },
+    "shortcutGoBack": "Palaa takaisin",
+    "@shortcutGoBack": {
+        "description": "What Esc and Backspace do outside the player"
+    },
+    "shortcutToggleFullscreen": "Koko näytön tila päällä tai pois päältä",
+    "@shortcutToggleFullscreen": {
+        "description": "F11 and Alt+Enter anywhere, F in the player"
+    },
+    "shortcutQuit": "Poistu Moonfinistä",
+    "@shortcutQuit": {
+        "description": "What Ctrl+Q does on desktop"
+    },
+    "shortcutPlayPause": "Toista tai keskeytä",
+    "@shortcutPlayPause": {
+        "description": "Player shortcut action"
+    },
+    "shortcutShowControlsOrPlayPause": "Näytä säätimet tai toisto-/taukopainike, jos ne näkyvät",
+    "@shortcutShowControlsOrPlayPause": {
+        "description": "What Enter does in the player"
+    },
+    "shortcutSeekBack": "Siirry taaksepäin (pidä painettuna, jos haluat hypätä pidemmälle)",
+    "@shortcutSeekBack": {
+        "description": "Player shortcut action. The step is the skip back length from settings"
+    },
+    "shortcutSeekForward": "Siirry eteenpäin (pidä painettuna, jos haluat siirtyä pidemmälle)",
+    "@shortcutSeekForward": {
+        "description": "Player shortcut action. The step is the skip forward length from settings"
+    },
+    "shortcutVolumeUp": "Äänenvoimakkuus ylös",
+    "@shortcutVolumeUp": {
+        "description": "Player shortcut action"
+    },
+    "shortcutVolumeDown": "Äänenvoimakkuus alas",
+    "@shortcutVolumeDown": {
+        "description": "Player shortcut action"
+    },
+    "shortcutMute": "Mykistä tai poista mykistys",
+    "@shortcutMute": {
+        "description": "Player shortcut action"
+    },
+    "shortcutToggleSubtitles": "Tekstityksen käyttö tai poistaminen käytöstä",
+    "@shortcutToggleSubtitles": {
+        "description": "Player shortcut action"
+    },
+    "shortcutSlower": "Hidasta toistoa",
+    "@shortcutSlower": {
+        "description": "Player shortcut action"
+    },
+    "shortcutFaster": "Nopeuta toistoa",
+    "@shortcutFaster": {
+        "description": "Player shortcut action"
+    },
+    "shortcutPlaybackInfo": "Näytä toistotiedot",
+    "@shortcutPlaybackInfo": {
+        "description": "Player shortcut action"
+    },
+    "shortcutMpvStats": "mpv-tilastojen käyttöönotto tai poistaminen käytöstä",
+    "@shortcutMpvStats": {
+        "description": "Player shortcut action, Windows only"
+    },
+    "shortcutLeaveFullscreenOrStop": "Poistu koko näytön tilasta tai lopeta, jos koko näytön tila ei ole käytössä",
+    "@shortcutLeaveFullscreenOrStop": {
+        "description": "What Esc does in the player"
+    },
+    "shortcutStopPlayback": "Pysäytä toisto",
+    "@shortcutStopPlayback": {
+        "description": "Player shortcut action"
+    },
+    "shortcutNextItem": "Seuraava kappale",
+    "@shortcutNextItem": {
+        "description": "Player shortcut action for the next-track media key"
+    },
+    "shortcutPreviousItem": "Edellinen kappale",
+    "@shortcutPreviousItem": {
+        "description": "Player shortcut action for the previous-track media key"
+    },
+    "shortcutShowShortcuts": "Näytä tämä lista",
+    "@shortcutShowShortcuts": {
+        "description": "What ? and F1 do in the player"
+    },
+    "shortcutNextPage": "Seuraava sivu",
+    "@shortcutNextPage": {
+        "description": "Reader shortcut action"
+    },
+    "shortcutPreviousPage": "Edellinen sivu",
+    "@shortcutPreviousPage": {
+        "description": "Reader shortcut action"
+    },
+    "shortcutScrollPage": "Selaa sivua (e-kirjat)",
+    "@shortcutScrollPage": {
+        "description": "What the up and down arrows do in the ebook reader"
+    },
+    "shortcutFirstPage": "Ensimmäinen sivu tai luvun alku",
+    "@shortcutFirstPage": {
+        "description": "Reader shortcut action"
+    },
+    "shortcutLastPage": "Viimeinen sivu tai luvun loppu",
+    "@shortcutLastPage": {
+        "description": "Reader shortcut action"
+    },
+    "shortcutZoom": "Lähentäminen tai loitontaminen (sarjakuvat)",
+    "@shortcutZoom": {
+        "description": "Reader shortcut action"
+    },
+    "shortcutResetZoom": "Nollaa zoomaus (sarjakuvat)",
+    "@shortcutResetZoom": {
+        "description": "Reader shortcut action"
+    },
+    "showLiveTvButton": "Näytä Live TV -painike",
+    "@showLiveTvButton": {
+        "description": "Setting for showing live TV button"
+    },
+    "showMissingCollectionItems": "Näytä puuttuvat kokoelman kohteet",
+    "@showMissingCollectionItems": {
+        "description": "Setting title to show missing items from Seerr on Collection pages"
+    },
+    "showMissingCollectionItemsDesc": "Lisää puuttuvat kohteet Kokoelma-sivuille",
+    "@showMissingCollectionItemsDesc": {
+        "description": "Setting subtitle explaining that missing items will be included on Collection pages"
+    },
+    "showSeerrAvailabilityBadges": "Näytä Seer:n saatavuusmerkit",
+    "@showSeerrAvailabilityBadges": {
+        "description": "Setting title for showing Seerr availability badges on media details pages"
+    },
+    "showSeerrAvailabilityBadgesDescription": "Näytä kauden saatavuustiedot mediatietosivuilla",
+    "@showSeerrAvailabilityBadgesDescription": {
+        "description": "Setting description for showing Seerr availability badges on media details pages"
+    },
+    "settingsShowLiveTvButtonInNavigation": "Näytä ”Live TV” -painike navigointipalkissa, kun palvelimella on Live TV -kirjasto",
+    "modernCardsOnMyMediaRow": "Modernit kortit ”Omat mediat” -rivillä",
+    "modernCardsOnMyMediaRowDescription": "Näytä muokattavia julisteita, jotka syventävät aihepiiriä. Poista tämä asetus käytöstä, jos haluat, että pikkukuvat näytetään aina vaakasuunnassa.",
+    "audiobookFullTimeline": "Koko Aikajana",
+    "transcodeAudioCodecWithCodec": "Äänikoodekkia ({codec}) ei tueta suoraan.",
+    "@transcodeAudioCodecWithCodec": {
+        "placeholders": {
+            "codec": {
+                "type": "String"
+            }
+        }
+    },
+    "transcodeAudioCodecHintPassthrough": "Vinkki: Jos äänivastaanotin tai soundbar tukee {codec}-koodekkia, ota ”Audio Passthrough” käyttöön Ääniasetuksissa.",
+    "@transcodeAudioCodecHintPassthrough": {
+        "placeholders": {
+            "codec": {
+                "type": "String"
+            }
+        }
+    },
+    "transcodeAudioChannelsExceeded": "Äänikanavien määrä ({channels}ch) ylittää soittimen rajan.",
+    "@transcodeAudioChannelsExceeded": {
+        "placeholders": {
+            "channels": {
+                "type": "int"
+            }
+        }
+    },
+    "transcodeAudioChannelsHint": "Vinkki: Säädä ”Äänen kanavien enimmäismäärä” -asetusta tai monikanavaisen äänen alasekoitusta Ääni-asetuksissa.",
+    "transcodeSubtitleBurnInAssDisabled": "ASS/SSA-tekstitykset vaativat transkoodausta, koska suora toisto on poistettu käytöstä.",
+    "transcodeSubtitleBurnInAssHint": "Vinkki: Ota ”ASS/SSA Direct Play” käyttöön toistoasetuksissa, jotta voit toistaa tiedostoja suoraan ilman transkoodausta.",
+    "transcodeSubtitleBurnInPgsDisabled": "PGS-tekstitykset vaativat transkoodausta, koska suora toisto on poistettu käytöstä.",
+    "transcodeSubtitleBurnInPgsHint": "Vinkki: Ota ”PGS Direct Play” käyttöön toistoasetuksissa, jotta voit toistaa tiedostoja suoraan ilman transkoodausta.",
+    "transcodeSubtitleNotSupportedWithCodec": "Tekstitysmuotoa ({codec}) ei tueta suoraan, vaan se on poltettava osaksi videota.",
+    "@transcodeSubtitleNotSupportedWithCodec": {
+        "placeholders": {
+            "codec": {
+                "type": "String"
+            }
+        }
+    },
+    "transcodeBitrateExceededWithValues": "Tiedoston bittinopeus ({fileBitrate}) ylittää määritetyn suoratoistorajan ({maxBitrate}).",
+    "@transcodeBitrateExceededWithValues": {
+        "placeholders": {
+            "fileBitrate": {
+                "type": "String"
+            },
+            "maxBitrate": {
+                "type": "String"
+            }
+        }
+    },
+    "transcodeBitrateHint": "Vinkki: Nosta ”Maksimibittinopeus” -arvoa Toisto-asetuksissa, jotta suoratoisto on mahdollista.",
+    "transcodeResolutionHint": "Vinkki: Nosta toistomäärityksissä ”Maksimiresoluutio”-arvoa, jotta suoratoisto on mahdollista.",
+    "transcodeVideoRangeNotSupported": "Tämä näyttö ei tue videon dynaamista aluetta (esim. Dolby Vision / HDR).",
+    "transcodeDolbyVisionProfile7ElDisabled": "Dolby Vision Profile 7 - tehostuskerros suoratoistossa on pois käytöstä.",
+    "transcodeDolbyVisionProfile7ElHint": "Vinkki: Ota ”Dolby Vision Profile 7 Direct Play” käyttöön toistoasetuksissa, jos näyttösi tukee tätä ominaisuutta.",
+    "transcodeDolbyVisionFallbackPreferenceTranscode": "Transkoodaus on suositeltava vaihtoehto Dolby Vision -varajärjestelmänä käyttäjän asetusten mukaisesti.",
+    "transcodeDolbyVisionFallbackHint": "Vinkki: Aseta toistoasetuksissa ”Dolby Vision Fallback” -asetukseksi ”Toista HDR10-muodossa”, jotta vältät transkoodauksen.",
+    "transcodeDisplayReportsNoHdr": "Liitetty näyttö ei ilmoita tukevansa HDR:ää tai Dolby Visionia.",
+    "transcodeDisplayLacksHdr10ForFallback": "Yhdistetyssä näytössä ei ole HDR10-tukea, jota tarvitaan Dolby Visionin varajärjestelmänä.",
+    "transcodeAudioSampleRateNotSupported": "Äänen näytetaajuutta ei tueta.",
+    "transcodeAudioBitDepthNotSupported": "Äänen bittisyvyyttä ei tueta.",
+    "transcodeRefFramesNotSupported": "Videon viitekehysten määrä ylittää soittimen rajan.",
+    "transcodeAnamorphicVideoNotSupported": "Anamorfista videota ei tueta.",
+    "transcodeInterlacedVideoNotSupported": "Lomitetun videon toistoa ei tueta.",
+    "transcodeSecondaryAudioNotSupported": "Toissijainen äänikanava vaatii transkoodauksen.",
+    "transcodeDirectPlayError": "Tämän mediaformaatin suoraa toistoa ei tueta.",
+    "setupStyleSpotlight": "Esittelyssä",
+    "@setupStyleSpotlight": {
+        "description": "Name of the hero-first detail layout, offered in the setup wizard"
+    },
+    "setupDetailSpotlightHint": "Pääosassa ja mukana ponnahduskortissa näyttelijät ja avustajat.",
+    "@setupDetailSpotlightHint": {
+        "description": "What the spotlight detail screen style gives you"
+    },
+    "setupStyleNouveau": "Nouveau",
+    "@setupStyleNouveau": {
+        "description": "Name of the full-screen stacked detail layout, offered in the setup wizard"
+    },
+    "setupDetailNouveauHint": "Koko näytön tila, jossa osiot on järjestetty päällekkäin välilehtien sijaan.",
+    "@setupDetailNouveauHint": {
+        "description": "What the nouveau detail screen style gives you"
+    },
+    "settingsAnimationSpeed": "Animaation nopeus",
+    "@settingsAnimationSpeed": {
+        "description": "Section header in General Style settings for configuring motion and transition speeds"
+    },
+    "pageTransitions": "Sivun Siirtymät",
+    "@pageTransitions": {
+        "description": "Setting title for adjusting the speed of page navigation transitions"
+    },
+    "pageTransitionsSubtitle": "Säätää siirtymäaikaa sivuja selattaessa",
+    "@pageTransitionsSubtitle": {
+        "description": "Description for the page transitions animation speed setting"
+    },
+    "navigationSpeed": "Navigointinopeus",
+    "@navigationSpeed": {
+        "description": "Setting title for adjusting the speed of focus movement and row scrolling"
+    },
+    "navigationSpeedSubtitle": "Säätää, kuinka nopeasti kohdistusilmaisin liikkuu kohteiden ja rivien välillä",
+    "@navigationSpeedSubtitle": {
+        "description": "Description for the navigation animation speed setting"
+    },
+    "modernCardsTransitionSpeed": "Modernien korttien siirtymänopeus",
+    "@modernCardsTransitionSpeed": {
+        "description": "Setting title for adjusting animation speed of modern card expansions"
+    },
+    "modernCardsTransitionSpeedSubtitle": "Säätää animaationopeutta, kun valittuna olevia moderneja kortteja avataan",
+    "@modernCardsTransitionSpeedSubtitle": {
+        "description": "Description for modern cards transition speed setting"
+    },
+    "delayCardExpansionOnRapidScroll": "Viive laajennuskortin vierityksessä",
+    "@delayCardExpansionOnRapidScroll": {
+        "description": "Setting title for debouncing modern card expansion during rapid D-pad scrolling"
+    },
+    "delayCardExpansionOnRapidScrollSubtitle": "Odottaa, että liike pysähtyy, ennen kuin modernit kortit avataan",
+    "@delayCardExpansionOnRapidScrollSubtitle": {
+        "description": "Description for debouncing modern card expansion setting"
+    },
+    "animationSpeedExtraSlow": "Erittäin Hidas",
+    "@animationSpeedExtraSlow": {
+        "description": "Option label for extra slow animation speed"
+    },
+    "animationSpeedSlow": "Hidas",
+    "@animationSpeedSlow": {
+        "description": "Option label for slow animation speed"
+    },
+    "animationSpeedMedium": "Medium",
+    "@animationSpeedMedium": {
+        "description": "Option label for medium/normal animation speed"
+    },
+    "animationSpeedFast": "Nopea",
+    "@animationSpeedFast": {
+        "description": "Option label for fast animation speed"
+    },
+    "animationSpeedOff": "Pois",
+    "@animationSpeedOff": {
+        "description": "Option label for turning animations off / instant transitions"
+    },
+    "pageTransitionFadeNone": "Ei Häivytystä",
+    "@pageTransitionFadeNone": {
+        "description": "Option label for instant page transition with no fade"
+    },
+    "pageTransitionFadeShort": "Nopea Häivytys",
+    "@pageTransitionFadeShort": {
+        "description": "Option label for short fade page transition"
+    },
+    "pageTransitionFadeMedium": "Medium Häivytys",
+    "@pageTransitionFadeMedium": {
+        "description": "Option label for medium fade page transition"
+    },
+    "pageTransitionFadeLong": "Hidas Häivytys",
+    "@pageTransitionFadeLong": {
+        "description": "Option label for long fade page transition"
+    },
+    "cropBlackBars": "Leikkaa mustat palkit pois",
+    "@cropBlackBars": {
+        "description": "Setting to detect and crop encoded letterbox/pillarbox bars"
+    },
+    "settingsCropBlackBarsDescription": "Tunnista koodatut letterbox-palkit, rajaa ne pois ja täytä sitten näyttö.",
+    "@settingsCropBlackBarsDescription": {
+        "description": "Description for the crop black bars playback setting"
+    },
+    "detailMetadata": "Metatietorivi",
+    "@detailMetadata": {
+        "description": "Settings screen for choosing and reordering details screen metadata items"
+    },
+    "detailMetadataDescription": "Valitse ja järjestä uudelleen, mitä metatietoja tietonäkymässä näytetään",
+    "@detailMetadataDescription": {
+        "description": "Subtitle for the details metadata settings tile"
+    },
+    "detailMetadataSectionDescription": "Voit ottaa metatietokohteet käyttöön tai poistaa ne käytöstä sekä määrittää niiden näkyvän järjestyksen tietonäytöllä. Jokaisella laitetyypillä on oma luettelonsa.",
+    "@detailMetadataSectionDescription": {
+        "description": "Explains how to customize and reorder details screen metadata items"
+    },
+    "detailMetadataYear": "Julkaisuvuosi",
+    "@detailMetadataYear": {
+        "description": "Item label for release or production year in metadata row"
+    },
+    "detailMetadataParentalRating": "Ikäraja Luokitus",
+    "@detailMetadataParentalRating": {
+        "description": "Item label for parental content rating in metadata row"
+    },
+    "detailMetadataRuntimeAndSeasons": "Kesto ja Esityskaudet",
+    "@detailMetadataRuntimeAndSeasons": {
+        "description": "Item label for runtime or season/episode counts in metadata row"
+    },
+    "detailMetadataStatus": "Sarjan Tila",
+    "@detailMetadataStatus": {
+        "description": "Item label for series status badge in metadata row"
+    },
+    "detailMetadataStatusSubtitle": "Ilmaisee, onko sarja vielä tuotannossa, päättynyt vai palaako se ruutuun",
+    "@detailMetadataStatusSubtitle": {
+        "description": "Subtitle explaining the series status metadata badge"
+    },
+    "detailMetadataGenres": "Genret",
+    "@detailMetadataGenres": {
+        "description": "Item label for genre tags in metadata row"
+    },
+    "detailMetadataSeerrAvailability": "Seerr Saatavuus",
+    "@detailMetadataSeerrAvailability": {
+        "description": "Item label for Seerr request and availability badge in metadata row"
+    },
+    "detailMetadataSeerrAvailabilitySubtitle": "Näyttää Seerr pyyntöjen ja median saatavuustilan",
+    "@detailMetadataSeerrAvailabilitySubtitle": {
+        "description": "Subtitle explaining the Seerr availability metadata badge"
+    },
+    "detailMetadataUpcomingEpisodeDate": "Tulevat Jaksot",
+    "@detailMetadataUpcomingEpisodeDate": {
+        "description": "Item label for upcoming episode air date badge in metadata row"
+    },
+    "detailMetadataUpcomingEpisodeDateSubtitle": "Käyttää Sonarr- ja TMDB-palveluita tulevien julkaisupäivien näyttämiseen",
+    "@detailMetadataUpcomingEpisodeDateSubtitle": {
+        "description": "Subtitle describing data sources for upcoming episode air dates in metadata row"
+    },
+    "upcomingEpisodeNext": "Seuraava: {date} (S{season}:E{episode})",
+    "@upcomingEpisodeNext": {
+        "description": "Formatted badge text for an upcoming episode release date",
+        "placeholders": {
+            "date": {
+                "type": "String"
+            },
+            "season": {
+                "type": "int"
+            },
+            "episode": {
+                "type": "int"
+            }
+        }
+    },
+    "upcomingEpisodeToday": "Tänään",
+    "@upcomingEpisodeToday": {
+        "description": "Upcoming episode airs today"
+    },
+    "upcomingEpisodeTomorrow": "Huomenna",
+    "@upcomingEpisodeTomorrow": {
+        "description": "Upcoming episode airs tomorrow"
+    },
+    "liveTvConnecting": "Yhdistetään Kanavalle…",
+    "@liveTvConnecting": {
+        "description": "Live TV player status while a channel is being tuned"
+    },
+    "liveTvTunerStillTrying": "Viritin yrittää edelleen löytää tätä kanavaa…",
+    "@liveTvTunerStillTrying": {
+        "description": "Live TV player status when the server has kept a channel request open for several seconds, meaning the tuner is retrying its source"
+    },
+    "liveTvReconnecting": "Signaali katosi. Viritin muodostaa yhteyden uudelleen…",
+    "@liveTvReconnecting": {
+        "description": "Live TV player status when a playing channel stops receiving data"
+    },
+    "liveTvChannelUnavailableTitle": "Kanava ei ole käytettävissä",
+    "@liveTvChannelUnavailableTitle": {
+        "description": "Title shown when a live TV channel could not be started"
+    },
+    "liveTvChannelUnavailableBody": "Palvelin ei onnistunut hakemaan tätä kanavaa virittimestä. Lähde saattaa olla poissa käytöstä, tai viritin luopui yrityksestä uudelleenyrittämisen jälkeen.",
+    "@liveTvChannelUnavailableBody": {
+        "description": "Explanation shown when a live TV channel could not be started"
+    },
+    "liveTvChannelLostTitle": "Kanava kadoksissa",
+    "@liveTvChannelLostTitle": {
+        "description": "Title shown when a playing live TV channel stopped and did not recover"
+    },
+    "liveTvChannelLostBody": "Lähetys keskeytyi, eikä viritin saanut sitä takaisin. Yritä uudelleen tai valitse toinen kanava.",
+    "@liveTvChannelLostBody": {
+        "description": "Explanation shown when a playing live TV channel stopped and did not recover"
+    },
+    "animeMarkerFiller": "Täytejakso",
+    "@animeMarkerFiller": {
+        "description": "Badge on an anime episode that is filler, meaning it is not adapted from the source manga"
+    },
+    "animeMarkerMixed": "Mixed",
+    "@animeMarkerMixed": {
+        "description": "Badge on an anime episode that mixes source material with filler, so it still contains story"
+    },
+    "animeMarkerAnimeCanon": "Anime Canon",
+    "@animeMarkerAnimeCanon": {
+        "description": "Badge on an anime episode that is not in the source manga but is part of the anime's own continuity"
+    },
+    "animeMarkerMangaCanon": "Manga Canon",
+    "@animeMarkerMangaCanon": {
+        "description": "Badge on an anime episode adapted from the source manga"
+    },
+    "animeMarkerSubbed": "Tekstitetty",
+    "@animeMarkerSubbed": {
+        "description": "Badge on an anime episode or season whose only audio is Japanese, so it is watched with subtitles"
+    },
+    "animeMarkerDubbed": "Dubattu",
+    "@animeMarkerDubbed": {
+        "description": "Badge on an anime episode or season that has an audio track in a language other than Japanese"
+    },
+    "animeMarkerSubbedAndDubbed": "Tekstitetty/Dubattu",
+    "@animeMarkerSubbedAndDubbed": {
+        "description": "Badge on anime that carries both the original Japanese audio and a dub, so it can be watched either way"
+    },
+    "animeMarkerPending": "Käsiteltävänä",
+    "@animeMarkerPending": {
+        "description": "Badge on an anime episode whose filler information the server has matched but not downloaded yet"
+    },
+    "animeMarkerRecap": "Yhteenveto",
+    "@animeMarkerRecap": {
+        "description": "Badge on an anime episode that recaps earlier episodes"
+    },
+    "subtitleDelayAuto": "Auto {value}",
+    "@subtitleDelayAuto": {
+        "description": "Read-only line under the subtitle delay showing a correction the player applied on its own, value is a formatted delay like +2000 ms",
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "noProgramData": "Ohjelmatietoja ei ole",
+    "@noProgramData": {
+        "description": "Guide cell label for a real EPG schedule gap, not a genre-filtered program"
+    },
+    "watchChannelLive": "Katso kanavaa suorana",
+    "@watchChannelLive": {
+        "description": "Button label to tune a channel live when the selected program is not the one that will play (ended or upcoming)"
+    },
+    "actionButtonsOnScreen": "Näytön Toimintopainikkeet",
+    "@actionButtonsOnScreen": {
+        "description": "Setting title for choosing how many action buttons are visible before overflowing into More Actions"
+    },
+    "actionButtonsOnScreenDescription": "Määritä, kuinka monta toimintopainiketta näkyy ennen kuin ne piilotetaan Lisää toimintoja -valikkoon.",
+    "@actionButtonsOnScreenDescription": {
+        "description": "Subtitle explaining how action buttons overflow into More Actions"
+    },
+    "actionButtonsOnScreenAuto": "Auto (Oletusasetus)",
+    "@actionButtonsOnScreenAuto": {
+        "description": "Option showing theme default number of action buttons"
+    },
+    "actionButtonsOnScreenPlayOnly": "1 (Play only)",
+    "@actionButtonsOnScreenPlayOnly": {
+        "description": "Option showing only the play action button on screen"
+    },
+    "actionButtonsOnScreenAll": "Kaikki (Vaakasuora Vieritys)",
+    "@actionButtonsOnScreenAll": {
+        "description": "Option showing all action buttons in a horizontal scrollable row"
+    },
+    "settingsAudioPassthroughOutput": "Passthrough-lähtö",
+    "@settingsAudioPassthroughOutput": {
+        "description": "Title of the RAW-vs-IEC passthrough packer selector (Android TV, Media3 engine)"
+    },
+    "settingsAudioPassthroughOutputDescription": "Pakkaa bittivirrat HDMI-yhteyttä varten. Kokeile App Packer -sovellusta, jos signaalin läpivienti ei toimi tai toimii epävakaasti tällä laitteella.",
+    "settingsAudioPassthroughOutputPlatform": "Automaattinen järjestelmäpakkaaja (AudioTrack RAW)",
+    "settingsAudioPassthroughOutputIec": "Sovelluspakkaaja (AudioTrack IEC)",
+    "settingsAudioPassthroughOutputIecLabel": "App (IEC)",
+    "siriRemoteSwipeSensitivity": "Kosketuslevyn pyyhkäisyherkkyys",
+    "@siriRemoteSwipeSensitivity": {
+        "description": "Apple TV settings label for how far a swipe on the Siri Remote touchpad moves the focus highlight"
+    },
+    "siriRemoteSwipeSensitivityDescription": "Kuinka paljon tarkennus siirtyy jokaisen Siri Remote -kaukosäätimen kosketuslevyllä tehdyn pyyhkäisyn yhteydessä",
+    "@siriRemoteSwipeSensitivityDescription": {
+        "description": "Apple TV settings subtitle for the Siri Remote touchpad swipe sensitivity option"
+    },
+    "contextMenuRemoveFromCollection": "Poista Kokoelmasta",
+    "@contextMenuRemoveFromCollection": {
+        "description": "Context menu action to remove an item from the collection whose page it is shown on"
+    },
+    "removeFromCollectionConfirm": "Poistatko {item} kohteen {collection} kokoelmasta? Kohde säilyy kirjastossasi.",
+    "@removeFromCollectionConfirm": {
+        "description": "Confirmation shown before removing an item from a collection",
+        "placeholders": {
+            "item": {
+                "type": "String"
+            },
+            "collection": {
+                "type": "String"
+            }
+        }
+    },
+    "removeFromCollectionFailed": "Poistaminen kokoelmasta epäonnistui",
+    "@removeFromCollectionFailed": {
+        "description": "Error shown when removing an item from a collection fails"
+    },
+    "showBookDiscoverTab": "Näytä Kirjasto Kirjastohakutoiminto",
+    "@showBookDiscoverTab": {
+        "description": "Setting that shows or hides the discovery tab in book and audiobook libraries"
+    },
+    "showBookDiscoverTabDescription": "Selaa Open Libraryn ja LibriVoxin teoksia kirja- ja äänikirjastoissasi",
+    "@showBookDiscoverTabDescription": {
+        "description": "Explains the setting that shows or hides the discovery tab in book libraries"
+    },
+    "spotlightFactsCount": "{count, plural, =1{1 fact} other{{count} facts}}",
+    "@spotlightFactsCount": {
+        "description": "Count fragment on spotlight summary cards: Seerr facts",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightTagsCount": "{count, plural, =1{1 tag} other{{count} tags}}",
+    "@spotlightTagsCount": {
+        "description": "Count fragment on spotlight summary cards: genres, networks and keywords",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "activeDownloads": "Aktiiviset Lataukset",
+    "@activeDownloads": {
+        "description": "Tab title for downloads that are transferring or queued"
+    },
+    "savedMediaCount": "{count, plural, =1{1 item} other{{count} items}}",
+    "@savedMediaCount": {
+        "description": "How many downloads the saved media list holds, shown beside the total size",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "savedMediaOfLimit": "{used} of {limit}",
+    "@savedMediaOfLimit": {
+        "description": "Storage used against the configured limit, for example '56.4 GB of 80 GB'",
+        "placeholders": {
+            "used": {
+                "type": "String"
+            },
+            "limit": {
+                "type": "String"
+            }
+        }
+    },
+    "savedMediaSelectItems": "Valitse kohteet",
+    "@savedMediaSelectItems": {
+        "description": "Overflow menu entry that turns on multi-select in the saved media list"
+    },
+    "savedMediaNoDownloads": "Mitään ei ole vielä tallennettu",
+    "@savedMediaNoDownloads": {
+        "description": "Empty state title when no downloads are on the device"
+    },
+    "savedMediaNoDownloadsDetail": "Täältä näkyvät aloittamasi lataukset, ja niitä voi toistaa ilman verkkoyhteyttä.",
+    "@savedMediaNoDownloadsDetail": {
+        "description": "Empty state body when no downloads are on the device"
+    },
+    "savedMediaNoActiveDownloads": "Tällä hetkellä ei ole käynnissä yhtään latausta",
+    "@savedMediaNoActiveDownloads": {
+        "description": "Empty state for the active downloads tab"
+    },
+    "savedMediaNoResults": "Hakutuloksia ei löytynyt",
+    "@savedMediaNoResults": {
+        "description": "Empty state when a search over saved media matches nothing"
+    },
+    "savedMediaPlayFromStart": "Toista alusta alkaen",
+    "@savedMediaPlayFromStart": {
+        "description": "Row menu action that restarts a partly watched download from the beginning"
+    },
+    "savedMediaGoToDetails": "Siirry yksityiskohtiin",
+    "@savedMediaGoToDetails": {
+        "description": "Row menu action that opens the item's detail screen"
+    },
+    "savedMediaDeleteDownload": "Poista lataus",
+    "@savedMediaDeleteDownload": {
+        "description": "Row menu action that removes one downloaded file from the device"
+    },
+    "savedMediaDeleteSeason": "Poista {season}",
+    "@savedMediaDeleteSeason": {
+        "description": "Menu action that removes every saved episode of one season",
+        "placeholders": {
+            "season": {
+                "type": "String"
+            }
+        }
+    },
+    "savedMediaDeleteEpisodes": "{count, plural, =1{Delete 1 episode} other{Delete {count} episodes}}",
+    "@savedMediaDeleteEpisodes": {
+        "description": "Menu action that removes every saved episode of one series",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "savedMediaOpenShow": "Avaa esitys",
+    "@savedMediaOpenShow": {
+        "description": "Row menu action that opens a saved show's seasons and episodes"
+    },
+    "savedMediaPlayNextUnwatched": "Toista seuraava katsomaton",
+    "@savedMediaPlayNextUnwatched": {
+        "description": "Row menu action that plays the earliest unwatched saved episode of a show"
+    },
+    "savedMediaRead": "Lue",
+    "@savedMediaRead": {
+        "description": "Row menu action that opens a downloaded book in the reader"
+    },
+    "savedMediaCancelDownload": "Peruuta lataus",
+    "@savedMediaCancelDownload": {
+        "description": "Row menu action that stops a running or queued transfer"
+    },
+    "sortBySize": "Koko",
+    "@sortBySize": {
+        "description": "Sort option: largest download first"
+    },
+    "sortByName": "Nimi",
+    "@sortByName": {
+        "description": "Sort option: alphabetical by title"
+    },
+    "sortByDateAdded": "Lisäyspäivä",
+    "@sortByDateAdded": {
+        "description": "Sort option: most recently downloaded first"
+    },
+    "locallyDecodedCodecs": "Paikallisesti dekoodatut koodekit",
+    "transcodeTargetCodecs": "Transkoodauksen kohdekoodekit",
+    "detailScreenStyleMinimalist": "Minimalistinen",
+    "@detailScreenStyleMinimalist": {
+        "description": "Detail screen style option: artwork, one play button and the episodes, and the style Kids Mode always shows"
+    },
+    "kidsMode": "Lastentila",
+    "@kidsMode": {
+        "description": "Label for the setting that strips the app back to what a child needs"
+    },
+    "kidsModeSubtitle": "Yksinkertaista sovellusta ja suojaa uloskirjautuminen PIN-koodilla",
+    "@kidsModeSubtitle": {
+        "description": "Explanation under the Kids Mode setting"
+    },
+    "kidsModeExit": "Poistu Lastentilasta",
+    "@kidsModeExit": {
+        "description": "Settings entry that turns Kids Mode off, shown while Kids Mode is on"
+    },
+    "kidsModeExitSubtitle": "Syötä PIN-koodisi, jotta voit palauttaa sovelluksen täysversio",
+    "@kidsModeExitSubtitle": {
+        "description": "Explanation under the Exit Kids Mode entry"
+    },
+    "pinTryAgainIn": "Yritit liian monta kertaa. Yritä uudelleen {wait}.",
+    "@pinTryAgainIn": {
+        "description": "Shown when PIN entry is locked after repeated wrong guesses",
+        "placeholders": {
+            "wait": {
+                "type": "String",
+                "example": "30s"
+            }
+        }
+    },
+    "itemBlockedByParentalControls": "Tätä ei ole saatavilla",
+    "@itemBlockedByParentalControls": {
+        "description": "Shown instead of a title whose rating the viewer has blocked. Deliberately says nothing about what the title is."
+    },
+    "blockedRatingsCeilingHint": "Arvostelun estäminen estää myös kaikki sitä korkeammat arvostelut.",
+    "@blockedRatingsCeilingHint": {
+        "description": "Explains that the blocked ratings list works as a ceiling"
+    },
+    "blockedRatingsUnrankedSection": "Estää vain sen",
+    "@blockedRatingsUnrankedSection": {
+        "description": "Heading for ratings the app can't rank, which block only the exact rating rather than everything above it"
+    },
+    "achievementBadges": "Saavutusmerkit",
+    "@achievementBadges": {
+        "description": "Title of the Achievement Badges plugin panel"
+    },
+    "achievementBadgesSubtitle": "Katsomastasi sisällöstä ansaitut merkit, tasot ja tehtävät",
+    "@achievementBadgesSubtitle": {
+        "description": "Subtitle of the Achievement Badges entry in Integrations"
+    },
+    "achievementsBadges": "Merkit",
+    "@achievementsBadges": {
+        "description": "Badges section title"
+    },
+    "achievementsBadgeCount": "{unlocked} :n {total} merkit",
+    "@achievementsBadgeCount": {
+        "description": "How many badges are unlocked out of the total",
+        "placeholders": {
+            "unlocked": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsQuests": "Vierailijat",
+    "@achievementsQuests": {
+        "description": "Quests section title"
+    },
+    "achievementsQuestCount": "{count} valmiina",
+    "@achievementsQuestCount": {
+        "description": "How many quests are completed",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsLeaderboard": "Tulostaulukko",
+    "@achievementsLeaderboard": {
+        "description": "Leaderboard section title"
+    },
+    "achievementsLeaderboardSubtitle": "Miten sijoitut muihin tämän palvelimen käyttäjiin verrattuna",
+    "@achievementsLeaderboardSubtitle": {
+        "description": "Leaderboard section subtitle"
+    },
+    "achievementsRecap": "Yhteenveto",
+    "@achievementsRecap": {
+        "description": "Recap section title"
+    },
+    "achievementsRecapSubtitle": "Mitä olet katsellut viime aikoina",
+    "@achievementsRecapSubtitle": {
+        "description": "Recap section subtitle"
+    },
+    "achievementsLibraryCompletion": "Kirjaston valmistuminen",
+    "@achievementsLibraryCompletion": {
+        "description": "Library completion section title"
+    },
+    "achievementsLibraryCount": "{count} kirjastot",
+    "@achievementsLibraryCount": {
+        "description": "How many libraries have a completion percentage",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsScore": "{score} pisteet",
+    "@achievementsScore": {
+        "description": "The score a user has earned",
+        "placeholders": {
+            "score": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsScoreLabel": "Pistemäärä",
+    "@achievementsScoreLabel": {
+        "description": "Leaderboard category: overall score"
+    },
+    "achievementsTopRank": "Saavutettu korkein sijoitus",
+    "@achievementsTopRank": {
+        "description": "Shown instead of progress when the user is at the highest rank"
+    },
+    "achievementsPointsToNextRank": "{points} viittaa {tier}",
+    "@achievementsPointsToNextRank": {
+        "description": "Points needed to reach the next rank tier",
+        "placeholders": {
+            "points": {
+                "type": "int"
+            },
+            "tier": {
+                "type": "String"
+            }
+        }
+    },
+    "achievementsCurrentStreak": "{days} peräkkäisten päivien putki",
+    "@achievementsCurrentStreak": {
+        "description": "The current watch streak",
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsBestStreak": "Parhaat: {days} päivät",
+    "@achievementsBestStreak": {
+        "description": "The best watch streak",
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsShowcase": "Esittely",
+    "@achievementsShowcase": {
+        "description": "The badges a user pinned to their profile"
+    },
+    "achievementsUnlocked": "Avattu",
+    "@achievementsUnlocked": {
+        "description": "Badge filter: unlocked only"
+    },
+    "achievementsLocked": "Lukittu",
+    "@achievementsLocked": {
+        "description": "Badge filter: locked only"
+    },
+    "achievementsNothingHere": "Täällä ei ole vielä mitään.",
+    "@achievementsNothingHere": {
+        "description": "Empty state for an achievements list"
+    },
+    "achievementsHiddenBadge": "Piilotettu saavutus",
+    "@achievementsHiddenBadge": {
+        "description": "Placeholder name for a secret badge that is still locked"
+    },
+    "achievementsUnlockedOn": "Avattu {date}",
+    "@achievementsUnlockedOn": {
+        "description": "When a badge was unlocked",
+        "placeholders": {
+            "date": {
+                "type": "String"
+            }
+        }
+    },
+    "achievementsPoints": "{points} pisteet",
+    "@achievementsPoints": {
+        "description": "Points a badge is worth",
+        "placeholders": {
+            "points": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsDailyQuests": "Päivittäin",
+    "@achievementsDailyQuests": {
+        "description": "Daily quests section"
+    },
+    "achievementsWeeklyQuests": "Viikoittain",
+    "@achievementsWeeklyQuests": {
+        "description": "Weekly quests section"
+    },
+    "achievementsQuestReward": "+{points}",
+    "@achievementsQuestReward": {
+        "description": "Points a quest pays out",
+        "placeholders": {
+            "points": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsRerollDaily": "Päivittäisten tehtävien uusiminen",
+    "@achievementsRerollDaily": {
+        "description": "Action that swaps the daily quest set for a new one"
+    },
+    "achievementsRerollWeekly": "Viikoittaisten tehtävien uusiminen",
+    "@achievementsRerollWeekly": {
+        "description": "Action that swaps the weekly quest set for a new one"
+    },
+    "achievementsRerollOffer": "Vaihda tämä sarja toiseen",
+    "@achievementsRerollOffer": {
+        "description": "Subtitle on the reroll row while a reroll is still available"
+    },
+    "achievementsRerollSpentDaily": "Käytetään tänään, palautetaan keskiyöllä UTC-aikaa",
+    "@achievementsRerollSpentDaily": {
+        "description": "Subtitle on the reroll row once the daily reroll is spent"
+    },
+    "achievementsRerollSpentWeekly": "Käytetty tällä viikolla, palautetaan maanantaina (UTC)",
+    "@achievementsRerollSpentWeekly": {
+        "description": "Subtitle on the reroll row once the weekly reroll is spent"
+    },
+    "achievementsRerollConfirm": "Haluatko suorittaa nämä tehtävät uudelleen?",
+    "@achievementsRerollConfirm": {
+        "description": "Title of the dialog confirming a quest reroll"
+    },
+    "achievementsRerollConfirmBody": "Saat yhden päivittäisen ja yhden viikoittaisen uudelleenkierroksen, ja tämä kuluttaa ne.",
+    "@achievementsRerollConfirmBody": {
+        "description": "Body of the dialog confirming a quest reroll"
+    },
+    "achievementsRerollFailed": "Tehtäviä ei voitu suorittaa uudelleen.",
+    "@achievementsRerollFailed": {
+        "description": "Message shown when a quest reroll did not go through"
+    },
+    "achievementsSuggested": "Suositeltavia katsottavia kohteita",
+    "@achievementsSuggested": {
+        "description": "Header above the items the plugin suggests for a badge"
+    },
+    "achievementsNoSuggestions": "Tähän merkkiin ei ole mitään ehdotuksia.",
+    "@achievementsNoSuggestions": {
+        "description": "Shown when the plugin has no items to recommend for a badge"
+    },
+    "achievementsProgressLabel": "Edistyminen",
+    "@achievementsProgressLabel": {
+        "description": "Label above a badge's current progress figure"
+    },
+    "achievementsLoadout": "Varustus",
+    "@achievementsLoadout": {
+        "description": "Screen holding the score bank and the power-ups a user owns"
+    },
+    "achievementsLoadoutSubtitle": "Käytettävissä oleva pistemäärä ja hallussasi olevat tehostukset",
+    "@achievementsLoadoutSubtitle": {
+        "description": "Subtitle on the row that opens the loadout"
+    },
+    "achievementsAppearance": "Ulkonäkö",
+    "@achievementsAppearance": {
+        "description": "Row that opens the avatars and rank titles a profile can wear"
+    },
+    "achievementsAppearanceSubtitle": "Profiilisi avatar ja otsikko",
+    "@achievementsAppearanceSubtitle": {
+        "description": "Subtitle on the row that opens the appearance screen"
+    },
+    "achievementsAvatars": "Avatarit",
+    "@achievementsAvatars": {
+        "description": "Tab of the icons that can sit on a profile"
+    },
+    "achievementsTitles": "Nimikkeet",
+    "@achievementsTitles": {
+        "description": "Tab of the titles that can replace a rank name"
+    },
+    "achievementsEquipped": "Varustettu",
+    "@achievementsEquipped": {
+        "description": "State of the avatar or title a profile is wearing"
+    },
+    "achievementsOwned": "Omistettu",
+    "@achievementsOwned": {
+        "description": "State of an avatar or title that is held but not worn"
+    },
+    "achievementsEarnedAt": "Elinikäinen pistemäärä: {score}",
+    "@achievementsEarnedAt": {
+        "description": "What a user has to reach to unlock a cosmetic without paying",
+        "placeholders": {
+            "score": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsAppearanceEmpty": "Tällä palvelimella ei ole avatareita eikä titteleitä, joita voisi käyttää.",
+    "@achievementsAppearanceEmpty": {
+        "description": "Shown when the plugin carries no cosmetics this panel can draw"
+    },
+    "achievementsAppearanceFailed": "Profiilin ulkoasua ei voitu muuttaa.",
+    "@achievementsAppearanceFailed": {
+        "description": "Shown when equipping or removing an avatar or title fails"
+    },
+    "achievementsPowerUps": "Teho-lisäykset",
+    "@achievementsPowerUps": {
+        "description": "Section header above the consumable boosts a user holds"
+    },
+    "achievementsStats": "Tilastot",
+    "@achievementsStats": {
+        "description": "Screen of watch counters and server figures"
+    },
+    "achievementsStatsSubtitle": "Tietosi ja palvelimen tilanne",
+    "@achievementsStatsSubtitle": {
+        "description": "Subtitle on the row that opens stats"
+    },
+    "achievementsStatsWatched": "Katsottu",
+    "@achievementsStatsWatched": {
+        "description": "Section of counters for what a user has watched"
+    },
+    "achievementsStatsBests": "Parhaat",
+    "@achievementsStatsBests": {
+        "description": "Section of a user's highest counters"
+    },
+    "achievementsStatsHabits": "Tottumukset",
+    "@achievementsStatsHabits": {
+        "description": "Section of counters for when a user watches"
+    },
+    "achievementsStatsVariety": "Monipuolisuus",
+    "@achievementsStatsVariety": {
+        "description": "Section of counters for how widely a user watches"
+    },
+    "achievementsStatsServer": "Tämä palvelin",
+    "@achievementsStatsServer": {
+        "description": "Section of figures covering every user"
+    },
+    "achievementsStatsClock": "Koska katsoit",
+    "@achievementsStatsClock": {
+        "description": "Header above the hour of day chart"
+    },
+    "achievementsStatItems": "Seuratut kohteet",
+    "@achievementsStatItems": {
+        "description": "Counter label"
+    },
+    "achievementsStatMovies": "Katsotut elokuvat",
+    "@achievementsStatMovies": {
+        "description": "Counter label"
+    },
+    "achievementsStatSeries": "Sarja on päättynyt",
+    "@achievementsStatSeries": {
+        "description": "Counter label"
+    },
+    "achievementsStatHours": "Katselutunnit",
+    "@achievementsStatHours": {
+        "description": "Counter label"
+    },
+    "achievementsStatDays": "Katsellut päivät",
+    "@achievementsStatDays": {
+        "description": "Counter label"
+    },
+    "achievementsStatRewatches": "Uudelleenkatselut",
+    "@achievementsStatRewatches": {
+        "description": "Counter label"
+    },
+    "achievementsStatBestWatchStreak": "Pisin peräkkäisten katselukertojen putki",
+    "@achievementsStatBestWatchStreak": {
+        "description": "Counter label"
+    },
+    "achievementsStatBestLoginStreak": "Pisin kirjautumisputki",
+    "@achievementsStatBestLoginStreak": {
+        "description": "Counter label"
+    },
+    "achievementsStatMostEpisodes": "Eniten jaksoja päivässä",
+    "@achievementsStatMostEpisodes": {
+        "description": "Counter label"
+    },
+    "achievementsStatMostMovies": "Eniten elokuvia päivässä",
+    "@achievementsStatMostMovies": {
+        "description": "Counter label"
+    },
+    "achievementsStatLongestItem": "Pisin yksittäinen kohde",
+    "@achievementsStatLongestItem": {
+        "description": "Counter label, a run time in minutes"
+    },
+    "achievementsStatBestCombo": "Paras yhdistelmä",
+    "@achievementsStatBestCombo": {
+        "description": "Counter label"
+    },
+    "achievementsStatLateNight": "Myöhäisillan sessiot",
+    "@achievementsStatLateNight": {
+        "description": "Counter label"
+    },
+    "achievementsStatEarlyMorning": "Aikaiset aamusessiot",
+    "@achievementsStatEarlyMorning": {
+        "description": "Counter label"
+    },
+    "achievementsStatWeekend": "Viikonlopun sessiot",
+    "@achievementsStatWeekend": {
+        "description": "Counter label"
+    },
+    "achievementsStatDaysSignedIn": "Kirjautuneena sisään päivät",
+    "@achievementsStatDaysSignedIn": {
+        "description": "Counter label"
+    },
+    "achievementsStatLibraries": "Vieraillut kirjastot",
+    "@achievementsStatLibraries": {
+        "description": "Counter label"
+    },
+    "achievementsStatGenres": "Genret katsotut",
+    "@achievementsStatGenres": {
+        "description": "Counter label"
+    },
+    "achievementsStatDecades": "Vuosikymmen katsotut",
+    "@achievementsStatDecades": {
+        "description": "Counter label"
+    },
+    "achievementsStatCountries": "Maat katsotut",
+    "@achievementsStatCountries": {
+        "description": "Counter label"
+    },
+    "achievementsStatLanguages": "Kielet katsotut",
+    "@achievementsStatLanguages": {
+        "description": "Counter label"
+    },
+    "achievementsStatUsers": "Käyttäjät",
+    "@achievementsStatUsers": {
+        "description": "Counter label for how many people use the server"
+    },
+    "achievementsStatBadgesUnlocked": "Avatut merkit",
+    "@achievementsStatBadgesUnlocked": {
+        "description": "Counter label"
+    },
+    "achievementsStatScoreEarned": "Saavutettu pistemäärä",
+    "@achievementsStatScoreEarned": {
+        "description": "Counter label"
+    },
+    "achievementsStatCommonBadge": "Yleisin merkki",
+    "@achievementsStatCommonBadge": {
+        "description": "Label for the badge the most users hold"
+    },
+    "achievementsActivity": "Toiminta",
+    "@achievementsActivity": {
+        "description": "Screen listing badges unlocked across the server"
+    },
+    "achievementsActivitySubtitle": "Mitä palvelin on avannut viime aikoina",
+    "@achievementsActivitySubtitle": {
+        "description": "Subtitle on the row that opens the activity feed"
+    },
+    "achievementsActivityUnlocked": "{user} avatut {badge}",
+    "@achievementsActivityUnlocked": {
+        "description": "One line of the activity feed",
+        "placeholders": {
+            "user": {
+                "type": "String"
+            },
+            "badge": {
+                "type": "String"
+            }
+        }
+    },
+    "achievementsShop": "Kauppa",
+    "@achievementsShop": {
+        "description": "Screen selling power-ups for score"
+    },
+    "achievementsShopSubtitle": "Käytä pisteitä lisävoimien hankkimiseen",
+    "@achievementsShopSubtitle": {
+        "description": "Subtitle on the row that opens the shop"
+    },
+    "achievementsShopPack": "{name} ×{count}",
+    "@achievementsShopPack": {
+        "description": "A shop item that grants more than one of a power-up",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsShopEmpty": "Tällä hetkellä ei ole mitään hankittavaa.",
+    "@achievementsShopEmpty": {
+        "description": "Shown when the shop catalogue came back with nothing"
+    },
+    "achievementsBuyConfirm": "Hanki tämä?",
+    "@achievementsBuyConfirm": {
+        "description": "Title of the dialog confirming a purchase"
+    },
+    "achievementsBuyConfirmBody": "Se vähennetään suoraan pistepankistasi.",
+    "@achievementsBuyConfirmBody": {
+        "description": "Body of the dialog confirming a purchase"
+    },
+    "achievementsBuyFailed": "En voinut hankkia sitä.",
+    "@achievementsBuyFailed": {
+        "description": "Message shown when a purchase did not go through"
+    },
+    "achievementsScoreBank": "Pistepankki",
+    "@achievementsScoreBank": {
+        "description": "Label for the score a user still has to spend"
+    },
+    "achievementsBoost": "XP Boost",
+    "@achievementsBoost": {
+        "description": "Power-up that doubles score for an hour"
+    },
+    "achievementsBoostBody": "Tuplaa pistemäärän tunnin ajan. Kun käytät sitä uudelleen, tunti alkaa alusta.",
+    "@achievementsBoostBody": {
+        "description": "What the XP Boost power-up does"
+    },
+    "achievementsDoubleCredit": "Kaksinkertaiset Pisteet",
+    "@achievementsDoubleCredit": {
+        "description": "Power-up that makes the next item count twice"
+    },
+    "achievementsDoubleCreditBody": "Seuraava suorittamasi tehtävä lasketaan kaksinkertaisesti merkeissä.",
+    "@achievementsDoubleCreditBody": {
+        "description": "What the Double Credit power-up does"
+    },
+    "achievementsStreakFreeze": "Streak Freeze",
+    "@achievementsStreakFreeze": {
+        "description": "Power-up that protects a watch streak"
+    },
+    "achievementsStreakFreezeBody": "Korvaa yhden poissaolopäivän. Vain yksi päivä voidaan siirtää myöhemmäksi.",
+    "@achievementsStreakFreezeBody": {
+        "description": "What the Streak Freeze power-up does"
+    },
+    "achievementsPowerUpHeld": "{count, plural, =0{None held} =1{1 held} other{{count} held}}",
+    "@achievementsPowerUpHeld": {
+        "description": "How many of a power-up the user owns",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsPowerUpActive": "Käynnissä nyt",
+    "@achievementsPowerUpActive": {
+        "description": "Marker on a power-up that is currently in effect"
+    },
+    "achievementsUsePowerUp": "Käytetäänkö tätä tehostetta?",
+    "@achievementsUsePowerUp": {
+        "description": "Title of the dialog confirming a power-up is spent"
+    },
+    "achievementsUsePowerUpBody": "Se käytetään heti, kun vahvistat.",
+    "@achievementsUsePowerUpBody": {
+        "description": "Body of the dialog confirming a power-up is spent"
+    },
+    "achievementsPowerUpFailed": "Tätä tehostetta ei voitu käyttää.",
+    "@achievementsPowerUpFailed": {
+        "description": "Message shown when using a power-up did not go through"
+    },
+    "achievementsHours": "Tunnit",
+    "@achievementsHours": {
+        "description": "Leaderboard category: hours watched"
+    },
+    "achievementsStreak": "Putki",
+    "@achievementsStreak": {
+        "description": "Leaderboard category: best watch streak"
+    },
+    "achievementsPeriodWeek": "Viikko",
+    "@achievementsPeriodWeek": {
+        "description": "Recap period: the last week"
+    },
+    "achievementsPeriodMonth": "Kuukausi",
+    "@achievementsPeriodMonth": {
+        "description": "Recap period: the last month"
+    },
+    "achievementsPeriodYear": "Vuosi",
+    "@achievementsPeriodYear": {
+        "description": "Recap period: the last year"
+    },
+    "achievementsDaysWatched": "{count} katsottujen päivien määrä",
+    "@achievementsDaysWatched": {
+        "description": "How many days the user watched something",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsBadgesEarned": "{count} ansaitut merkit",
+    "@achievementsBadgesEarned": {
+        "description": "How many badges were earned in the recap period",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsTopDirectors": "Huippuohjaajat",
+    "@achievementsTopDirectors": {
+        "description": "Recap list of most-watched directors"
+    },
+    "achievementsTopActors": "Huippunäyttelijät",
+    "@achievementsTopActors": {
+        "description": "Recap list of most-watched actors"
+    },
+    "achievementsLoadFailed": "Saavutuksiasi ei voitu ladata.",
+    "@achievementsLoadFailed": {
+        "description": "Shown when the Achievement Badges plugin data fails to load"
+    },
+    "setupStyleMinimalist": "Minimalistinen",
+    "@setupStyleMinimalist": {
+        "description": "Name of the stripped-back detail layout, offered in the setup wizard"
+    },
+    "setupDetailMinimalistHint": "Kuvitus, yksi toistopainike ja jaksot.",
+    "@setupDetailMinimalistHint": {
+        "description": "What the minimalist detail screen style gives you"
+    },
+    "guideRepeatBadge": "Toista",
+    "@guideRepeatBadge": {
+        "description": "Short badge label shown on a rerun in the guide hero band"
+    },
+    "keepVideoClearOfDynamicIsland": "Varmista, että video ei peitä Dynamic Islandia",
+    "@keepVideoClearOfDynamicIsland": {
+        "description": "iPhone playback setting that holds the picture back from the camera housing in landscape"
+    },
+    "keepVideoClearOfDynamicIslandDescription": "Vaakakuvausasennossa kamerakotelo peittää näytön yhden reunan. Tämä rajoittaa kuvan ulottuvuutta, mikä vaikuttaa ainoastaan videoihin, jotka ovat riittävän leveitä ulottuakseen sinne asti.",
+    "@keepVideoClearOfDynamicIslandDescription": {
+        "description": "Description for the iPhone setting that keeps video clear of the Dynamic Island"
     }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
+import '../../data/models/aggregated_item.dart';
 import '../../data/services/rating_icon_provider.dart';
 import '../../preference/preference_constants.dart';
 import '../../preference/user_preferences.dart';
@@ -45,6 +46,48 @@ class RatingsRow extends StatelessWidget {
     this.showLabels = true,
     this.showBadges = true,
   });
+
+  /// Null when there is nothing to draw, so the caller skips its spacing too.
+  ///
+  /// Drops scores outside their scale, since the server returns a zero for an
+  /// unrated item, and draws nothing at all in Kids Mode.
+  static Widget? forDetailScreen({
+    required AggregatedItem item,
+    required Map<String, double> extraRatings,
+    required UserPreferences prefs,
+  }) {
+    if (!prefs.effectiveShowDetailRatings) return null;
+
+    final community = _inScale(item.communityRating, 10);
+    final critic = _inScale(item.criticRating?.toDouble(), 100);
+
+    if (extraRatings.isEmpty &&
+        community == null &&
+        critic == null &&
+        item.personalRating == null) {
+      return null;
+    }
+
+    return RatingsRow(
+      ratings: extraRatings,
+      communityRating: community,
+      criticRating: critic?.round(),
+      personalRating: item.personalRating,
+      enableAdditionalRatings: prefs.get(
+        UserPreferences.enableAdditionalRatings,
+      ),
+      enabledRatings: prefs.get(UserPreferences.enabledRatings),
+      showLabels: prefs.get(UserPreferences.showRatingLabels),
+      showBadges: prefs.get(UserPreferences.showRatingBadges),
+    );
+  }
+
+  static double? _inScale(double? rating, double max) {
+    if (rating == null || !rating.isFinite || rating <= 0 || rating > max) {
+      return null;
+    }
+    return rating;
+  }
 
   /// The viewer picked how ratings read on the detail screen, so the row
   /// speaks the same dialect: five-star users see their score out of five.

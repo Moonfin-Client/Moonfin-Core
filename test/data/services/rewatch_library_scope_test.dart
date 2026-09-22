@@ -4,6 +4,7 @@ import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:moonfin/data/models/aggregated_library.dart';
 import 'package:moonfin/data/repositories/user_views_repository.dart';
+import 'package:moonfin/data/services/library_scope_service.dart';
 import 'package:moonfin/data/services/row_data_source.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:server_core/server_core.dart';
@@ -78,6 +79,9 @@ void main() {
     GetIt.instance.registerSingleton<UserPreferences>(await _prefs());
     GetIt.instance.registerSingleton<UserViewsRepository>(views);
     GetIt.instance.registerSingleton<MediaServerClient>(client);
+    GetIt.instance.registerSingleton<LibraryScopeService>(
+      LibraryScopeService(client, views),
+    );
   });
 
   tearDown(() => GetIt.instance.reset());

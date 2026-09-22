@@ -84,6 +84,11 @@ class _QuickReturnWrapperState extends State<QuickReturnWrapper>
     if (_observedRoute != null) routeLifecycleObserver.unsubscribe(this);
     _observedRoute = route;
     routeLifecycleObserver.subscribe(this, route);
+    final isCurrent = route.isCurrent;
+    if (isCurrent != _routeIsOnTop) {
+      _routeIsOnTop = isCurrent;
+      _syncInterceptor();
+    }
   }
 
   @override

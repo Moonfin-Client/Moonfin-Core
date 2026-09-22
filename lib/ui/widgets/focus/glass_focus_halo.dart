@@ -13,6 +13,8 @@ import 'glass_press_scale.dart';
 /// Under non-glass looks the ring falls back to the accent color so existing
 /// themes keep their identity.
 class GlassFocusHalo extends StatelessWidget {
+  static const double _borderWidth = 2;
+
   const GlassFocusHalo({
     super.key,
     required this.focused,
@@ -21,6 +23,7 @@ class GlassFocusHalo extends StatelessWidget {
     this.scale = 1.05,
     this.pressGrowth = 17.0,
     this.padding,
+    this.ringOverPaints = false,
     this.ringColor,
     this.backgroundColor,
     this.duration = const Duration(milliseconds: 120),
@@ -38,6 +41,13 @@ class GlassFocusHalo extends StatelessWidget {
   /// disables it, for surfaces that carry their own press response.
   final double pressGrowth;
   final EdgeInsetsGeometry? padding;
+
+  /// Paint the ring over the child rather than around it.
+  ///
+  /// The ring is laid out whether or not the halo has focus, so drawn around
+  /// it widens the child on every side for a state it may never reach. A
+  /// surface that hugs its contents wants it painted over instead.
+  final bool ringOverPaints;
   final Color? ringColor;
   final Color? backgroundColor;
   final Duration duration;
@@ -57,16 +67,21 @@ class GlassFocusHalo extends StatelessWidget {
             ? Colors.white.withValues(alpha: 0.10)
             : AppColorScheme.accent.withValues(alpha: 0.18));
 
+    final border = Border.all(
+      color: focused ? ring : Colors.transparent,
+      width: _borderWidth,
+    );
+
     final content = AnimatedContainer(
       duration: duration,
       curve: Curves.easeOut,
       padding: padding ?? EdgeInsets.zero,
+      foregroundDecoration: ringOverPaints
+          ? BoxDecoration(borderRadius: radius, border: border)
+          : null,
       decoration: BoxDecoration(
         borderRadius: radius,
-        border: Border.all(
-          color: focused ? ring : Colors.transparent,
-          width: 2,
-        ),
+        border: ringOverPaints ? null : border,
         color: focused ? bg : Colors.transparent,
         boxShadow: focused && apple
             ? const [

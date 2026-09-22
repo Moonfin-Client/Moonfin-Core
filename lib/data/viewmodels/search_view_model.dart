@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../l10n/current_app_localizations.dart';
+import '../../util/accent_folding.dart';
 import '../models/aggregated_item.dart';
 import '../repositories/search_repository.dart';
 import '../repositories/seerr_repository.dart';
@@ -78,8 +79,8 @@ class SearchViewModel extends ChangeNotifier {
   // client-side since the plugin exposes no search endpoint.
   Future<List<GameSearchResult>>? _allGamesFuture;
 
-  String _errorMessage = '';
-  String get errorMessage => _errorMessage;
+  Object? _error;
+  Object? get error => _error;
 
   Timer? _debounceTimer;
 
@@ -198,7 +199,7 @@ class SearchViewModel extends ChangeNotifier {
       _state = SearchState.ready;
     } catch (e) {
       if (query != _query) return;
-      _errorMessage = e.toString();
+      _error = e;
       _state = SearchState.error;
     }
     notifyListeners();
@@ -245,13 +246,15 @@ class SearchViewModel extends ChangeNotifier {
   Future<List<AggregatedItem>>? _channelsFuture;
 
   Future<List<AggregatedItem>> _channelMatches(String query) async {
-    final q = query.trim().toLowerCase();
+    // Channels come back wholesale rather than through a search the server
+    // answers, so the folding it would have done has to happen here.
+    final q = foldForSearch(query.trim());
     if (q.isEmpty || q.startsWith('studio:')) return const [];
     _channelsFuture ??= _searchRepository.fetchLiveTvChannels();
     try {
       final all = await _channelsFuture!;
       return all
-          .where((c) => c.name.toLowerCase().contains(q))
+          .where((c) => foldForSearch(c.name).contains(q))
           .take(_resultLimit)
           .toList();
     } catch (_) {
@@ -278,7 +281,9 @@ class SearchViewModel extends ChangeNotifier {
   }
 
   Future<List<GameSearchResult>> _fetchGameResults(String query) async {
-    final q = query.trim().toLowerCase();
+    // Games have no search endpoint, so the whole set is matched here and the
+    // folding is this side's to do.
+    final q = foldForSearch(query.trim());
     if (q.isEmpty || q.startsWith('studio:')) return const [];
     final gamesApi = _client.gamesApi;
     if (gamesApi == null) return const [];
@@ -288,8 +293,8 @@ class SearchViewModel extends ChangeNotifier {
       return all
           .where(
             (r) =>
-                r.game.title.toLowerCase().contains(q) ||
-                r.game.fileName.toLowerCase().contains(q),
+                foldForSearch(r.game.title).contains(q) ||
+                foldForSearch(r.game.fileName).contains(q),
           )
           .take(_resultLimit)
           .toList();

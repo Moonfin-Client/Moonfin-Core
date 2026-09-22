@@ -906,7 +906,7 @@
             }
         }
     },
-    "audiobookCountLabel": "{count, plural, =0{0 livre audio} =1{1 livre audio} other{{count} livres audio}}",
+    "audiobookCountLabel": "{count, plural, one{{count} livre audio} other{{count} livres audio}}",
     "@audiobookCountLabel": {
         "description": "Subtitle showing number of audiobooks by an author",
         "placeholders": {
@@ -1037,7 +1037,7 @@
     "@publicationDateUnknown": {
         "description": "Placeholder when publication date is unknown"
     },
-    "seasonCount": "{count, plural, =0{0 Saison} =1{1 Saison} other{{count} Saisons}}",
+    "seasonCount": "{count, plural, one{{count} saison} other{{count} saisons}}",
     "@seasonCount": {
         "description": "Number of seasons for a series",
         "placeholders": {
@@ -1400,7 +1400,7 @@
     "@studio": {
         "description": "Metadata label for studio"
     },
-    "studioMoreCount": "{count, plural, =1{+ 1 autre} other{+ {count} autres}}",
+    "studioMoreCount": "{count, plural, one{+{count} autre} other{+{count} autres}}",
     "@studioMoreCount": {
         "description": "Label showing additional studio count",
         "placeholders": {
@@ -1448,7 +1448,7 @@
             }
         }
     },
-    "trackCount": "{count, plural, =0{0 piste} =1{1 piste} other{{count} pistes}}",
+    "trackCount": "{count, plural, one{{count} piste} other{{count} pistes}}",
     "@trackCount": {
         "description": "Label showing number of tracks in an album",
         "placeholders": {
@@ -1457,7 +1457,7 @@
             }
         }
     },
-    "chapterCount": "{count, plural, =0{0 chapitre} =1{1 chapitre} other{{count} chapitres}}",
+    "chapterCount": "{count, plural, one{{count} chapitre} other{{count} chapitres}}",
     "@chapterCount": {
         "description": "Label showing number of chapters in an audiobook",
         "placeholders": {
@@ -2295,7 +2295,7 @@
     "@seerr": {
         "description": "Seerr brand name"
     },
-    "savedMedia": "Médias enregistrés",
+    "savedMedia": "Téléchargements",
     "@savedMedia": {
         "description": "Header title for saved/downloaded media screen"
     },
@@ -2464,7 +2464,7 @@
             }
         }
     },
-    "episodeCount": "{count, plural, =0{0 épisode} =1{1 épisode} other{{count} épisodes}}",
+    "episodeCount": "{count, plural, one{{count} épisode} other{{count} épisodes}}",
     "@episodeCount": {
         "description": "Number of episodes with pluralization",
         "placeholders": {
@@ -6007,7 +6007,7 @@
     "offlineServerUnavailable": "Connecté à Internet, mais le serveur actuel est indisponible.",
     "offlineNoInternet": "Vous êtes hors ligne. Seul le contenu téléchargé est disponible.",
     "offlineSwitchServer": "Changer de serveur",
-    "offlineSavedMedia": "Médias enregistrés",
+    "offlineSavedMedia": "Téléchargements",
     "castGoogleCast": "Google Cast",
     "castAirPlay": "AirPlay",
     "castDlna": "DLNA",
@@ -8068,7 +8068,7 @@
     "@detailScreenStyle": {
         "description": "Label for the media detail screen layout style setting"
     },
-    "detailScreenStyleSubtitle": "Classique correspond à la mise en page centrée d'origine de Moonfin. Moderne propose une mise en page cinématographique et adaptative.",
+    "detailScreenStyleSubtitle": "Classique correspond à la mise en page centrée d'origine de Moonfin. Moderne propose une mise en page cinématographique et adaptative. Spotlight met en avant un grand visuel, avec des fenêtres surgissantes pour le contenu. Nouveau occupe tout l'écran, avec des sections empilées les unes sous les autres.",
     "@detailScreenStyleSubtitle": {
         "description": "Explanation under the detail screen style setting"
     },
@@ -8088,7 +8088,7 @@
     "@showTechnicalDetailsSubtitle": {
         "description": "Explanation under the show technical details setting"
     },
-    "recommendationSystemSubtitle": "Utilisez l'algorithme local « Moonfin recommande » ou les mesures de similarité TMDb en ligne. Remarque : les recommandations en ligne nécessitent l'intégration Seerr.",
+    "recommendationSystemSubtitle": "Utilisez l'algorithme local « Moonfin recommande », le serveur « Jellyfin recommande » ou les mesures de similarité TMDb en ligne. Remarque : les recommandations en ligne nécessitent l'intégration Seerr.",
     "@recommendationSystemSubtitle": {
         "description": "Explanation under the recommendation system setting"
     },
@@ -8140,7 +8140,7 @@
     "@latestAudiobooks": {
         "description": "Row title for recently added audiobooks in the book library"
     },
-    "bookSeriesItemCount": "{count, plural, =1{1 livre} other{{count} livres}}",
+    "bookSeriesItemCount": "{count, plural, one{{count} livre} other{{count} livres}}",
     "@bookSeriesItemCount": {
         "description": "Subtitle for a book series shelf entry showing how many books it contains",
         "placeholders": {
@@ -10125,5 +10125,1584 @@
     "bookFormatComic": "Bande dessinée",
     "@bookFormatComic": {
         "description": "Semantic label for the comic format badge on library cards"
+    },
+    "animeMarkerFiller": "Filler",
+    "@animeMarkerFiller": {
+        "description": "Badge on an anime episode that is filler, meaning it is not adapted from the source manga"
+    },
+    "animeMarkerMixed": "Mixte",
+    "@animeMarkerMixed": {
+        "description": "Badge on an anime episode that mixes source material with filler, so it still contains story"
+    },
+    "animeMarkerAnimeCanon": "Canon anime",
+    "@animeMarkerAnimeCanon": {
+        "description": "Badge on an anime episode that is not in the source manga but is part of the anime's own continuity"
+    },
+    "animeMarkerMangaCanon": "Canon manga",
+    "@animeMarkerMangaCanon": {
+        "description": "Badge on an anime episode adapted from the source manga"
+    },
+    "animeMarkerSubbed": "Sous-titré",
+    "@animeMarkerSubbed": {
+        "description": "Badge on an anime episode or season whose only audio is Japanese, so it is watched with subtitles"
+    },
+    "animeMarkerDubbed": "Doublé",
+    "@animeMarkerDubbed": {
+        "description": "Badge on an anime episode or season that has an audio track in a language other than Japanese"
+    },
+    "animeMarkerSubbedAndDubbed": "Sous-titré/doublé",
+    "@animeMarkerSubbedAndDubbed": {
+        "description": "Badge on anime that carries both the original Japanese audio and a dub, so it can be watched either way"
+    },
+    "animeMarkerPending": "En attente",
+    "@animeMarkerPending": {
+        "description": "Badge on an anime episode whose filler information the server has matched but not downloaded yet"
+    },
+    "animeMarkerRecap": "Récap",
+    "@animeMarkerRecap": {
+        "description": "Badge on an anime episode that recaps earlier episodes"
+    },
+    "detailScreenStyleSpotlight": "Spotlight",
+    "@detailScreenStyleSpotlight": {
+        "description": "Detail screen style option: the hero-first layout with summary cards that open grid modals"
+    },
+    "spotlightMoreActions": "Plus d'actions",
+    "@spotlightMoreActions": {
+        "description": "Tooltip/semantics of the spotlight ellipsis button and the title of the overflow actions menu it opens"
+    },
+    "spotlightCastCrewStudios": "Distribution, équipe technique et studios",
+    "@spotlightCastCrewStudios": {
+        "description": "Title of the spotlight summary card that opens the people and studios modal"
+    },
+    "spotlightChaptersExtras": "Chapitres et bonus",
+    "@spotlightChaptersExtras": {
+        "description": "Title of the spotlight summary card that opens the chapters and special features modal"
+    },
+    "spotlightSimilarRecommendations": "Titres similaires et recommandations",
+    "@spotlightSimilarRecommendations": {
+        "description": "Title of the spotlight summary card that opens the similar titles and recommendations modal"
+    },
+    "spotlightSeasonsEpisodes": "Saisons et épisodes",
+    "@spotlightSeasonsEpisodes": {
+        "description": "Title of the spotlight summary card that opens the seasons grid modal for a series"
+    },
+    "spotlightMoreEpisodes": "Plus d'épisodes",
+    "@spotlightMoreEpisodes": {
+        "description": "Title of the spotlight summary card listing the other episodes of the season"
+    },
+    "spotlightFilmography": "Filmographie",
+    "@spotlightFilmography": {
+        "description": "Title of the spotlight summary card that opens a person's filmography modal"
+    },
+    "spotlightCollectionsCard": "Collections",
+    "@spotlightCollectionsCard": {
+        "description": "Title of the spotlight summary card that opens the parent collections modal"
+    },
+    "spotlightPlaylistOrder": "Ordre de visionnage",
+    "@spotlightPlaylistOrder": {
+        "description": "Title of the spotlight summary card that opens the ordered box set playlist modal"
+    },
+    "spotlightMoviesAndShows": "Films et séries",
+    "@spotlightMoviesAndShows": {
+        "description": "Subtitle of the spotlight similar and recommendations card"
+    },
+    "spotlightSimilarSeerr": "Titres similaires (Seerr)",
+    "@spotlightSimilarSeerr": {
+        "description": "Header of the Seerr similar-titles section when it appears beside the library's own similar section"
+    },
+    "spotlightRecommendationsSeerr": "Recommandations (Seerr)",
+    "@spotlightRecommendationsSeerr": {
+        "description": "Header of the Seerr recommendations section when it appears in the Spotlight recommendations modal"
+    },
+    "noBooksFoundDescription": "Cette bibliothèque ne contient encore aucun livre, livre audio ni bande dessinée.",
+    "@noBooksFoundDescription": {
+        "description": "Description shown when a books library has no items"
+    },
+    "recommendationSystemJellyfin": "Recommandé par Jellyfin",
+    "@recommendationSystemJellyfin": {
+        "description": "Recommendation system option: Jellyfin Recommends"
+    },
+    "detailScreenStyleNouveau": "Nouveau",
+    "@detailScreenStyleNouveau": {
+        "description": "Detail screen style option: nouveau full-screen layout with integrated sections"
+    },
+    "spotlightPeopleCount": "{count, plural, one{{count} personne} other{{count} personnes}}",
+    "@spotlightPeopleCount": {
+        "description": "Count fragment on spotlight summary cards: people",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightStudiosCount": "{count, plural, one{{count} studio} other{{count} studios}}",
+    "@spotlightStudiosCount": {
+        "description": "Count fragment on spotlight summary cards: studios",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightChaptersCount": "{count, plural, one{{count} chapitre} other{{count} chapitres}}",
+    "@spotlightChaptersCount": {
+        "description": "Count fragment on spotlight summary cards: chapters",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightExtrasCount": "{count, plural, one{{count} bonus} other{{count} bonus}}",
+    "@spotlightExtrasCount": {
+        "description": "Count fragment on spotlight summary cards: extras/special features",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightSeasonsCount": "{count, plural, one{{count} saison} other{{count} saisons}}",
+    "@spotlightSeasonsCount": {
+        "description": "Count fragment on spotlight summary cards: seasons",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightEpisodesCount": "{count, plural, one{{count} épisode} other{{count} épisodes}}",
+    "@spotlightEpisodesCount": {
+        "description": "Count fragment on spotlight summary cards: episodes",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightMoviesCount": "{count, plural, one{{count} film} other{{count} films}}",
+    "@spotlightMoviesCount": {
+        "description": "Count fragment on spotlight summary cards: movies",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightShowsCount": "{count, plural, one{{count} série} other{{count} séries}}",
+    "@spotlightShowsCount": {
+        "description": "Count fragment on spotlight summary cards: series/shows",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightTracksCount": "{count, plural, one{{count} piste} other{{count} pistes}}",
+    "@spotlightTracksCount": {
+        "description": "Count fragment on spotlight summary cards: audio tracks",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightItemsCount": "{count, plural, one{{count} élément} other{{count} éléments}}",
+    "@spotlightItemsCount": {
+        "description": "Count fragment on spotlight summary cards: generic items",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightAlbumsCount": "{count, plural, one{{count} album} other{{count} albums}}",
+    "@spotlightAlbumsCount": {
+        "description": "Count fragment on spotlight summary cards: albums",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightCollectionsCount": "{count, plural, one{{count} collection} other{{count} collections}}",
+    "@spotlightCollectionsCount": {
+        "description": "Count fragment on spotlight summary cards: collections",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightTitlesCount": "{count, plural, one{{count} titre} other{{count} titres}}",
+    "@spotlightTitlesCount": {
+        "description": "Count fragment on the spotlight similar card: titles across the library and Seerr sections",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "queuedMoreCount": "{count, plural, one{{count} autre en file d'attente} other{{count} autres en file d'attente}}",
+    "@queuedMoreCount": {
+        "description": "Row under the active downloads list standing in for queued items not shown individually",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "searchingSubtitles": "Recherche de sous-titres…",
+    "@searchingSubtitles": {
+        "description": "Shown while a remote subtitle search is running"
+    },
+    "downloadingSubtitle": "Téléchargement du sous-titre…",
+    "@downloadingSubtitle": {
+        "description": "Shown while a chosen subtitle is downloaded and the server is picking it up"
+    },
+    "downloadAllEpisodes": "Tous les épisodes",
+    "@downloadAllEpisodes": {
+        "description": "Download scope option: every episode of a series or season"
+    },
+    "downloadUnwatchedEpisodes": "Tous les épisodes non vus",
+    "@downloadUnwatchedEpisodes": {
+        "description": "Download scope option: only episodes not yet marked as watched"
+    },
+    "downloadAllMovies": "Tous les films",
+    "@downloadAllMovies": {
+        "description": "Download scope option: every movie in a collection"
+    },
+    "downloadUnwatchedMovies": "Tous les films non vus",
+    "@downloadUnwatchedMovies": {
+        "description": "Download scope option: only collection movies not yet marked as watched"
+    },
+    "downloadScopeLoading": "Chargement des éléments…",
+    "@downloadScopeLoading": {
+        "description": "Subtitle shown in the download scope sheet while the item list is being fetched"
+    },
+    "downloadScopeLoadFailed": "Impossible de charger les éléments à télécharger",
+    "@downloadScopeLoadFailed": {
+        "description": "Snackbar shown when the item list for a batch download could not be fetched"
+    },
+    "downloadEstimateTotal": "~{size} au total",
+    "@downloadEstimateTotal": {
+        "description": "Estimated total download size for a batch, e.g. '~1.2 GB total'",
+        "placeholders": {
+            "size": {
+                "type": "String"
+            }
+        }
+    },
+    "downloadBytesOfTotal": "{received} sur {total}",
+    "@downloadBytesOfTotal": {
+        "description": "Transfer status of a running download, e.g. '1.2 GB of 4.6 GB'",
+        "placeholders": {
+            "received": {
+                "type": "String"
+            },
+            "total": {
+                "type": "String"
+            }
+        }
+    },
+    "downloadSpeed": "{speed}/s",
+    "@downloadSpeed": {
+        "description": "Transfer rate of a running download, e.g. '25.3 MB/s'",
+        "placeholders": {
+            "speed": {
+                "type": "String"
+            }
+        }
+    },
+    "downloadSizeTotal": "{size} au total",
+    "@downloadSizeTotal": {
+        "description": "Exact total file size of a batch of original files, e.g. '12.4 GB total'",
+        "placeholders": {
+            "size": {
+                "type": "String"
+            }
+        }
+    },
+    "downloadEstimateUnknownCount": "{count} de taille inconnue",
+    "@downloadEstimateUnknownCount": {
+        "description": "Appended to a batch size estimate when some items had no runtime to estimate from",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "aiTranslated": "Traduit par IA",
+    "@aiTranslated": {
+        "description": "Label for a remote subtitle the provider marked as AI translated"
+    },
+    "machineTranslated": "Traduit automatiquement",
+    "@machineTranslated": {
+        "description": "Label for a remote subtitle the provider marked as machine translated"
+    },
+    "hearingImpaired": "SME",
+    "@hearingImpaired": {
+        "description": "Label for a remote subtitle marked as hearing impaired"
+    },
+    "framerateFps": "{rate} fps",
+    "@framerateFps": {
+        "description": "Framerate of a remote subtitle, shown in its detail line",
+        "placeholders": {
+            "rate": {
+                "type": "String"
+            }
+        }
+    },
+    "subtitleDelayAuto": "Auto {value}",
+    "@subtitleDelayAuto": {
+        "description": "Read-only line under the subtitle delay showing a correction the player applied on its own, value is a formatted delay like +2000 ms",
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "downloadScopeTitle": "Éléments à télécharger",
+    "@downloadScopeTitle": {
+        "description": "Title of the sheet asking whether to download all or only unwatched items"
+    },
+    "showMpvStats": "Afficher les statistiques mpv (Maj+I)",
+    "@showMpvStats": {
+        "description": "Button in the stream info sheet that shows mpv's own statistics overlay; Shift+I is the keyboard shortcut"
+    },
+    "hideMpvStats": "Masquer les statistiques mpv (Maj+I)",
+    "@hideMpvStats": {
+        "description": "Button in the stream info sheet that hides mpv's own statistics overlay; Shift+I is the keyboard shortcut"
+    },
+    "keyboardShortcutsTitle": "Raccourcis clavier",
+    "@keyboardShortcutsTitle": {
+        "description": "Title of the screen and dialog that list every keyboard shortcut"
+    },
+    "keyboardShortcutsSubtitle": "Application, lecteur vidéo et liseuse",
+    "@keyboardShortcutsSubtitle": {
+        "description": "Subtitle of the About tile that opens the keyboard shortcut list"
+    },
+    "keyboardShortcutsPlayerHint": "Appuyez sur ? ou F1 pendant la lecture pour consulter cette liste sans quitter le lecteur.",
+    "@keyboardShortcutsPlayerHint": {
+        "description": "Footnote on the keyboard shortcuts settings screen"
+    },
+    "keyboardShortcutsSectionApp": "Partout",
+    "@keyboardShortcutsSectionApp": {
+        "description": "Keyboard shortcut section for keys that work on every screen"
+    },
+    "keyboardShortcutsSectionAppScope": "Sur tous les écrans",
+    "@keyboardShortcutsSectionAppScope": {
+        "description": "Under the Everywhere section title: when those keys apply"
+    },
+    "keyboardShortcutsSectionPlayer": "Lecteur vidéo",
+    "@keyboardShortcutsSectionPlayer": {
+        "description": "Keyboard shortcut section for the video player"
+    },
+    "keyboardShortcutsSectionPlayerScope": "Quand une vidéo est ouverte, en lecture ou en pause",
+    "@keyboardShortcutsSectionPlayerScope": {
+        "description": "Under the Video player section title: when those keys apply"
+    },
+    "keyboardShortcutsSectionReader": "Liseuse de livres et de BD",
+    "@keyboardShortcutsSectionReader": {
+        "description": "Keyboard shortcut section for the ebook and comic reader"
+    },
+    "keyboardShortcutsSectionReaderScope": "Pendant la lecture d'un livre ou d'une BD",
+    "@keyboardShortcutsSectionReaderScope": {
+        "description": "Under the reader section title: when those keys apply"
+    },
+    "keyNameArrowKeys": "Les flèches",
+    "@keyNameArrowKeys": {
+        "description": "Key cap label standing for the four arrow keys"
+    },
+    "keyNameSpace": "Espace",
+    "@keyNameSpace": {
+        "description": "Key cap label for the space bar"
+    },
+    "keyNameEnter": "Entrée",
+    "@keyNameEnter": {
+        "description": "Key cap label for the Enter key"
+    },
+    "keyNameEsc": "Échap",
+    "@keyNameEsc": {
+        "description": "Key cap label for the Escape key"
+    },
+    "keyNameBackspace": "Retour arrière",
+    "@keyNameBackspace": {
+        "description": "Key cap label for the Backspace key"
+    },
+    "keyNamePageUp": "Page Up",
+    "@keyNamePageUp": {
+        "description": "Key cap label for the Page Up key"
+    },
+    "keyNamePageDown": "Page Down",
+    "@keyNamePageDown": {
+        "description": "Key cap label for the Page Down key"
+    },
+    "keyNameHome": "Home",
+    "@keyNameHome": {
+        "description": "Key cap label for the Home key"
+    },
+    "keyNameEnd": "End",
+    "@keyNameEnd": {
+        "description": "Key cap label for the End key"
+    },
+    "keyNameShift": "Maj",
+    "@keyNameShift": {
+        "description": "Key cap label for the Shift modifier"
+    },
+    "keyNameCtrl": "Ctrl",
+    "@keyNameCtrl": {
+        "description": "Key cap label for the Control modifier"
+    },
+    "keyNameAlt": "Alt",
+    "@keyNameAlt": {
+        "description": "Key cap label for the Alt modifier"
+    },
+    "keyNameScrollWheel": "Molette",
+    "@keyNameScrollWheel": {
+        "description": "Key cap label standing for the mouse scroll wheel"
+    },
+    "shortcutMoveFocus": "Se déplacer entre les éléments",
+    "@shortcutMoveFocus": {
+        "description": "What the arrow keys do outside the player"
+    },
+    "shortcutActivate": "Ouvrir l'élément sélectionné",
+    "@shortcutActivate": {
+        "description": "What Enter does outside the player"
+    },
+    "shortcutGoBack": "Revenir en arrière",
+    "@shortcutGoBack": {
+        "description": "What Esc and Backspace do outside the player"
+    },
+    "shortcutToggleFullscreen": "Activer ou quitter le plein écran",
+    "@shortcutToggleFullscreen": {
+        "description": "F11 and Alt+Enter anywhere, F in the player"
+    },
+    "shortcutQuit": "Quitter Moonfin",
+    "@shortcutQuit": {
+        "description": "What Ctrl+Q does on desktop"
+    },
+    "shortcutPlayPause": "Lecture ou pause",
+    "@shortcutPlayPause": {
+        "description": "Player shortcut action"
+    },
+    "shortcutShowControlsOrPlayPause": "Afficher les commandes, ou lecture/pause si elles sont déjà visibles",
+    "@shortcutShowControlsOrPlayPause": {
+        "description": "What Enter does in the player"
+    },
+    "shortcutSeekBack": "Reculer (maintenir pour des sauts plus longs)",
+    "@shortcutSeekBack": {
+        "description": "Player shortcut action. The step is the skip back length from settings"
+    },
+    "shortcutSeekForward": "Avancer (maintenir pour des sauts plus longs)",
+    "@shortcutSeekForward": {
+        "description": "Player shortcut action. The step is the skip forward length from settings"
+    },
+    "shortcutVolumeUp": "Augmenter le volume",
+    "@shortcutVolumeUp": {
+        "description": "Player shortcut action"
+    },
+    "shortcutVolumeDown": "Baisser le volume",
+    "@shortcutVolumeDown": {
+        "description": "Player shortcut action"
+    },
+    "shortcutMute": "Couper ou rétablir le son",
+    "@shortcutMute": {
+        "description": "Player shortcut action"
+    },
+    "shortcutToggleSubtitles": "Activer ou désactiver les sous-titres",
+    "@shortcutToggleSubtitles": {
+        "description": "Player shortcut action"
+    },
+    "shortcutSlower": "Ralentir",
+    "@shortcutSlower": {
+        "description": "Player shortcut action"
+    },
+    "shortcutFaster": "Accélérer",
+    "@shortcutFaster": {
+        "description": "Player shortcut action"
+    },
+    "shortcutPlaybackInfo": "Afficher les informations de lecture",
+    "@shortcutPlaybackInfo": {
+        "description": "Player shortcut action"
+    },
+    "shortcutMpvStats": "Activer ou désactiver les statistiques mpv",
+    "@shortcutMpvStats": {
+        "description": "Player shortcut action, Windows only"
+    },
+    "shortcutLeaveFullscreenOrStop": "Quitter le plein écran, ou arrêter la lecture si déjà quitté",
+    "@shortcutLeaveFullscreenOrStop": {
+        "description": "What Esc does in the player"
+    },
+    "shortcutStopPlayback": "Arrêter la lecture",
+    "@shortcutStopPlayback": {
+        "description": "Player shortcut action"
+    },
+    "shortcutNextItem": "Élément suivant",
+    "@shortcutNextItem": {
+        "description": "Player shortcut action for the next-track media key"
+    },
+    "shortcutPreviousItem": "Élément précédent",
+    "@shortcutPreviousItem": {
+        "description": "Player shortcut action for the previous-track media key"
+    },
+    "shortcutShowShortcuts": "Afficher cette liste",
+    "@shortcutShowShortcuts": {
+        "description": "What ? and F1 do in the player"
+    },
+    "shortcutNextPage": "Page suivante",
+    "@shortcutNextPage": {
+        "description": "Reader shortcut action"
+    },
+    "shortcutPreviousPage": "Page précédente",
+    "@shortcutPreviousPage": {
+        "description": "Reader shortcut action"
+    },
+    "shortcutScrollPage": "Faire défiler la page (livres numériques)",
+    "@shortcutScrollPage": {
+        "description": "What the up and down arrows do in the ebook reader"
+    },
+    "shortcutFirstPage": "Première page, ou début du chapitre",
+    "@shortcutFirstPage": {
+        "description": "Reader shortcut action"
+    },
+    "shortcutLastPage": "Dernière page, ou fin du chapitre",
+    "@shortcutLastPage": {
+        "description": "Reader shortcut action"
+    },
+    "shortcutZoom": "Zoomer ou dézoomer (BD)",
+    "@shortcutZoom": {
+        "description": "Reader shortcut action"
+    },
+    "shortcutResetZoom": "Réinitialiser le zoom (BD)",
+    "@shortcutResetZoom": {
+        "description": "Reader shortcut action"
+    },
+    "hdrOutput": "Sortie HDR",
+    "@hdrOutput": {
+        "description": "Stream info label for whether HDR is reaching the display untouched"
+    },
+    "hdrOutputActive": "Active : {format}",
+    "@hdrOutputActive": {
+        "description": "Stream info value when HDR passthrough is running, e.g. 'Active — HDR10 (PQ, BT.2020)'",
+        "placeholders": {
+            "format": {
+                "type": "String"
+            }
+        }
+    },
+    "hdrOutputActiveTonemapped": "Active : conversion en SDR pour cet écran",
+    "@hdrOutputActiveTonemapped": {
+        "description": "Stream info value when native output is engaged but the window sits on a display without HDR, so the renderer is tone-mapping"
+    },
+    "hdrOutputDisplayNotHdr": "Inactive : l'écran n'est pas en mode HDR",
+    "@hdrOutputDisplayNotHdr": {
+        "description": "Stream info value when the display has not been switched into HDR"
+    },
+    "hdrOutputContentSdr": "Inactive : le contenu est en SDR",
+    "@hdrOutputContentSdr": {
+        "description": "Stream info value when the title itself is not HDR"
+    },
+    "hdrOutputDisabled": "Inactive : désactivée dans les paramètres",
+    "@hdrOutputDisabled": {
+        "description": "Stream info value when the native HDR output preference is off"
+    },
+    "hdrOutputFailed": "Inactive : fenêtre HDR indisponible, retour au rendu standard",
+    "@hdrOutputFailed": {
+        "description": "Stream info value when the native HDR window could not be created"
+    },
+    "nativeHdrOutput": "Sortie HDR native",
+    "@nativeHdrOutput": {
+        "description": "Settings label for sending HDR to the display untouched"
+    },
+    "nativeHdrOutputDescription": "Transmet la vidéo HDR à l'écran sans la modifier, au lieu de la convertir en SDR. Utilisée uniquement si l'écran est déjà en mode HDR et si le titre est en HDR.",
+    "@nativeHdrOutputDescription": {
+        "description": "Settings description for native HDR output"
+    },
+    "noProgramData": "Aucune info de programme",
+    "@noProgramData": {
+        "description": "Guide cell label for a real EPG schedule gap, not a genre-filtered program"
+    },
+    "watchChannelLive": "Regarder la chaîne en direct",
+    "@watchChannelLive": {
+        "description": "Button label to tune a channel live when the selected program is not the one that will play (ended or upcoming)"
+    },
+    "loadingAnimation": "Animation de chargement",
+    "@loadingAnimation": {
+        "description": "Setting title for custom loading animation"
+    },
+    "loadingAnimationDescription": "Personnalisez les animations de chargement utilisées dans Moonfin",
+    "@loadingAnimationDescription": {
+        "description": "Description for loading animation customization settings"
+    },
+    "loadingAnimationConfiguration": "Configuration de l'animation de chargement",
+    "@loadingAnimationConfiguration": {
+        "description": "Subtitle header for loading animation settings"
+    },
+    "loadingAnimationImage": "Image",
+    "@loadingAnimationImage": {
+        "description": "Title for loading animation image selection"
+    },
+    "loadingAnimationImageMoonfinLogo": "Logo Moonfin",
+    "@loadingAnimationImageMoonfinLogo": {
+        "description": "Loading animation image option: Moonfin Logo"
+    },
+    "loadingAnimationImageSpinner": "Roue de chargement",
+    "@loadingAnimationImageSpinner": {
+        "description": "Loading animation image option: Spinner"
+    },
+    "loadingAnimationImageRunner": "Runner",
+    "@loadingAnimationImageRunner": {
+        "description": "Loading animation image option: Runner"
+    },
+    "loadingAnimationImageMoonPhases": "Phases Moon",
+    "@loadingAnimationImageMoonPhases": {
+        "description": "Loading animation image option: Moon Phases"
+    },
+    "loadingAnimationImageMoonfinPhases": "Phases Moonfin",
+    "@loadingAnimationImageMoonfinPhases": {
+        "description": "Loading animation image option: Moonfin Phases in brand gradient"
+    },
+    "loadingAnimationImageNeonfinPhases": "Phases Neonfin",
+    "@loadingAnimationImageNeonfinPhases": {
+        "description": "Loading animation image option: Neonfin Phases in neon colors"
+    },
+    "loadingAnimationSize": "Taille de l'animation",
+    "@loadingAnimationSize": {
+        "description": "Title for loading animation size selection"
+    },
+    "loadingAnimationSizeThumbnail": "Miniature",
+    "@loadingAnimationSizeThumbnail": {
+        "description": "Loading animation size option: Thumbnail"
+    },
+    "loadingAnimationSizeSmall": "Petite",
+    "@loadingAnimationSizeSmall": {
+        "description": "Loading animation size option: Small"
+    },
+    "loadingAnimationSizeMedium": "Moyenne",
+    "@loadingAnimationSizeMedium": {
+        "description": "Loading animation size option: Medium"
+    },
+    "loadingAnimationSizeLarge": "Grande",
+    "@loadingAnimationSizeLarge": {
+        "description": "Loading animation size option: Large"
+    },
+    "loadingAnimationPosition": "Position de l'animation",
+    "@loadingAnimationPosition": {
+        "description": "Title for loading animation position selection"
+    },
+    "loadingAnimationPositionTopLeft": "En haut à gauche",
+    "@loadingAnimationPositionTopLeft": {
+        "description": "Loading animation position: Top-Left"
+    },
+    "loadingAnimationPositionTopCenter": "En haut au centre",
+    "@loadingAnimationPositionTopCenter": {
+        "description": "Loading animation position: Top-Center"
+    },
+    "loadingAnimationPositionTopRight": "En haut à droite",
+    "@loadingAnimationPositionTopRight": {
+        "description": "Loading animation position: Top-Right"
+    },
+    "loadingAnimationPositionMiddleLeft": "Au milieu à gauche",
+    "@loadingAnimationPositionMiddleLeft": {
+        "description": "Loading animation position: Middle-Left"
+    },
+    "loadingAnimationPositionMiddle": "Au centre",
+    "@loadingAnimationPositionMiddle": {
+        "description": "Loading animation position: Middle"
+    },
+    "loadingAnimationPositionMiddleRight": "Au milieu à droite",
+    "@loadingAnimationPositionMiddleRight": {
+        "description": "Loading animation position: Middle-Right"
+    },
+    "loadingAnimationPositionBottomLeft": "En bas à gauche",
+    "@loadingAnimationPositionBottomLeft": {
+        "description": "Loading animation position: Bottom-Left"
+    },
+    "loadingAnimationPositionBottomCenter": "En bas au centre",
+    "@loadingAnimationPositionBottomCenter": {
+        "description": "Loading animation position: Bottom-Center"
+    },
+    "loadingAnimationPositionBottomRight": "En bas à droite",
+    "@loadingAnimationPositionBottomRight": {
+        "description": "Loading animation position: Bottom-Right"
+    },
+    "loadingAnimationPositionBouncing": "Rebondissante",
+    "@loadingAnimationPositionBouncing": {
+        "description": "Loading animation position: Bouncing DVD screensaver style"
+    },
+    "loadingAnimationSpeed": "Vitesse de l'animation",
+    "@loadingAnimationSpeed": {
+        "description": "Title for loading animation speed selection"
+    },
+    "loadingAnimationSpeedSlow": "Lente",
+    "@loadingAnimationSpeedSlow": {
+        "description": "Loading animation speed option: Slow"
+    },
+    "loadingAnimationSpeedModerate": "Modérée",
+    "@loadingAnimationSpeedModerate": {
+        "description": "Loading animation speed option: Moderate"
+    },
+    "loadingAnimationSpeedFast": "Rapide",
+    "@loadingAnimationSpeedFast": {
+        "description": "Loading animation speed option: Fast"
+    },
+    "loadingAnimationSpeedUltra": "Ultra",
+    "@loadingAnimationSpeedUltra": {
+        "description": "Loading animation speed option: Ultra"
+    },
+    "showLoadingAnimationText": "Afficher le texte ?",
+    "@showLoadingAnimationText": {
+        "description": "Setting toggle for showing loading animation text"
+    },
+    "loadingAnimationPreview": "Aperçu",
+    "@loadingAnimationPreview": {
+        "description": "Label for loading animation preview window"
+    },
+    "cropBlackBars": "Rogner les bandes noires",
+    "@cropBlackBars": {
+        "description": "Setting to detect and crop encoded letterbox/pillarbox bars"
+    },
+    "settingsCropBlackBarsDescription": "Détecte les bandes noires encodées dans l'image, les rogne, puis remplit l'écran.",
+    "@settingsCropBlackBarsDescription": {
+        "description": "Description for the crop black bars playback setting"
+    },
+    "trickplayDisplayStyleSingle": "Miniature unique",
+    "@trickplayDisplayStyleSingle": {
+        "description": "Trickplay display style option: one thumbnail at the scrub position"
+    },
+    "trickplayDisplayStyleStrip": "Pellicule",
+    "@trickplayDisplayStyleStrip": {
+        "description": "Trickplay display style option: a row of 5 thumbnails around the scrub position"
+    },
+    "trickplayModeFull": "Plein écran",
+    "@trickplayModeFull": {
+        "description": "Trickplay mode option: temporarily replaces the video with the trickplay image while scrubbing"
+    },
+    "trickplaySettingsPreviewHint": "Faites glisser le curseur pour prévisualiser le défilement",
+    "@trickplaySettingsPreviewHint": {
+        "description": "Hint shown below the live trickplay settings preview"
+    },
+    "trickplayPreviewScale": "Taille de l'aperçu",
+    "@trickplayPreviewScale": {
+        "description": "Setting for the size of the trickplay seek preview"
+    },
+    "trickplayVerticalOffset": "Distance à la barre de progression",
+    "@trickplayVerticalOffset": {
+        "description": "Setting for the vertical position of the trickplay seek preview relative to the seekbar"
+    },
+    "trickplayFollowScrubPosition": "Suivre la position du curseur",
+    "@trickplayFollowScrubPosition": {
+        "description": "Setting for whether the trickplay preview horizontally tracks the scrub handle"
+    },
+    "trickplayFollowScrubPositionSubtitle": "L'aperçu se déplace le long de la barre de progression au lieu de rester centré",
+    "@trickplayFollowScrubPositionSubtitle": {
+        "description": "Description for the trickplay follow-scrub-position setting"
+    },
+    "trickplayPauseWhileScrubbing": "Mettre en pause pendant le défilement",
+    "@trickplayPauseWhileScrubbing": {
+        "description": "Setting for whether seeking pauses playback so the trickplay preview holds still"
+    },
+    "trickplayPauseWhileScrubbingSubtitle": "La lecture se met en pause pendant la recherche et reprend quand vous appuyez sur lecture. Désactivez pour continuer la lecture et sauter directement au nouvel emplacement",
+    "@trickplayPauseWhileScrubbingSubtitle": {
+        "description": "Description for the trickplay pause-while-scrubbing setting"
+    },
+    "actionButtonsOnScreen": "Boutons d'action affichés",
+    "@actionButtonsOnScreen": {
+        "description": "Setting title for choosing how many action buttons are visible before overflowing into More Actions"
+    },
+    "actionButtonsOnScreenDescription": "Choisissez combien de boutons d'action restent visibles avant d'être regroupés dans le menu Plus d'actions.",
+    "@actionButtonsOnScreenDescription": {
+        "description": "Subtitle explaining how action buttons overflow into More Actions"
+    },
+    "actionButtonsOnScreenAuto": "Auto (thème par défaut)",
+    "@actionButtonsOnScreenAuto": {
+        "description": "Option showing theme default number of action buttons"
+    },
+    "actionButtonsOnScreenPlayOnly": "1 (lecture uniquement)",
+    "@actionButtonsOnScreenPlayOnly": {
+        "description": "Option showing only the play action button on screen"
+    },
+    "actionButtonsOnScreenAll": "Tous (défilement horizontal)",
+    "@actionButtonsOnScreenAll": {
+        "description": "Option showing all action buttons in a horizontal scrollable row"
+    },
+    "detailMetadata": "Affichage des métadonnées",
+    "@detailMetadata": {
+        "description": "Settings screen for choosing and reordering details screen metadata items"
+    },
+    "detailMetadataDescription": "Choisissez les métadonnées affichées sur la fiche et leur ordre",
+    "@detailMetadataDescription": {
+        "description": "Subtitle for the details metadata settings tile"
+    },
+    "detailMetadataSectionDescription": "Activez ou désactivez les métadonnées et organisez leur ordre d'affichage sur la fiche. Chaque type d'appareil conserve sa propre liste.",
+    "@detailMetadataSectionDescription": {
+        "description": "Explains how to customize and reorder details screen metadata items"
+    },
+    "detailMetadataYear": "Année de sortie",
+    "@detailMetadataYear": {
+        "description": "Item label for release or production year in metadata row"
+    },
+    "detailMetadataParentalRating": "Classification parentale",
+    "@detailMetadataParentalRating": {
+        "description": "Item label for parental content rating in metadata row"
+    },
+    "detailMetadataRuntimeAndSeasons": "Durée et saisons",
+    "@detailMetadataRuntimeAndSeasons": {
+        "description": "Item label for runtime or season/episode counts in metadata row"
+    },
+    "detailMetadataStatus": "Statut de la série",
+    "@detailMetadataStatus": {
+        "description": "Item label for series status badge in metadata row"
+    },
+    "detailMetadataStatusSubtitle": "Indique si la série est en cours, terminée ou en attente d'une nouvelle saison",
+    "@detailMetadataStatusSubtitle": {
+        "description": "Subtitle explaining the series status metadata badge"
+    },
+    "detailMetadataGenres": "Genres",
+    "@detailMetadataGenres": {
+        "description": "Item label for genre tags in metadata row"
+    },
+    "detailMetadataSeerrAvailability": "Disponibilité Seerr",
+    "@detailMetadataSeerrAvailability": {
+        "description": "Item label for Seerr request and availability badge in metadata row"
+    },
+    "detailMetadataSeerrAvailabilitySubtitle": "Indique l'état des demandes et la disponibilité des médias d'après Seerr",
+    "@detailMetadataSeerrAvailabilitySubtitle": {
+        "description": "Subtitle explaining the Seerr availability metadata badge"
+    },
+    "detailMetadataUpcomingEpisodeDate": "Prochains épisodes",
+    "@detailMetadataUpcomingEpisodeDate": {
+        "description": "Item label for upcoming episode air date badge in metadata row"
+    },
+    "detailMetadataUpcomingEpisodeDateSubtitle": "Utilise Sonarr et TMDB pour afficher les dates de sortie à venir",
+    "@detailMetadataUpcomingEpisodeDateSubtitle": {
+        "description": "Subtitle describing data sources for upcoming episode air dates in metadata row"
+    },
+    "upcomingEpisodeNext": "Prochainement : {date} (S{season}:E{episode})",
+    "@upcomingEpisodeNext": {
+        "description": "Formatted badge text for an upcoming episode release date",
+        "placeholders": {
+            "date": {
+                "type": "String"
+            },
+            "season": {
+                "type": "int"
+            },
+            "episode": {
+                "type": "int"
+            }
+        }
+    },
+    "upcomingEpisodeToday": "Aujourd'hui",
+    "@upcomingEpisodeToday": {
+        "description": "Upcoming episode airs today"
+    },
+    "upcomingEpisodeTomorrow": "Demain",
+    "@upcomingEpisodeTomorrow": {
+        "description": "Upcoming episode airs tomorrow"
+    },
+    "settingsAudioPassthroughOutput": "Sortie Passthrough",
+    "@settingsAudioPassthroughOutput": {
+        "description": "Title of the RAW-vs-IEC passthrough packer selector (Android TV, Media3 engine)"
+    },
+    "settingsAudioPassthroughOutputDescription": "Détermine quel composant encapsule le flux binaire envoyé en HDMI. Essayez l'encapsulation par l'application si le Passthrough reste muet ou produit des artefacts sur cet appareil.",
+    "settingsAudioPassthroughOutputPlatform": "Automatique, encapsulation système (AudioTrack RAW)",
+    "settingsAudioPassthroughOutputIec": "Encapsulation par l'app (AudioTrack IEC)",
+    "settingsAudioPassthroughOutputIecLabel": "App (IEC)",
+    "showLiveTvButton": "Afficher le bouton TV en direct",
+    "@showLiveTvButton": {
+        "description": "Setting for showing live TV button"
+    },
+    "showDownloadsButton": "Afficher le bouton Téléchargements",
+    "@showDownloadsButton": {
+        "description": "Setting for showing downloads button"
+    },
+    "screensaverGeneralSettings": "Paramètres généraux",
+    "@screensaverGeneralSettings": {
+        "description": "Section header for screensaver general settings"
+    },
+    "screensaverVisualComponents": "Composants visuels",
+    "@screensaverVisualComponents": {
+        "description": "Section header for screensaver visual components"
+    },
+    "screensaverLibraryContent": "Contenu de la bibliothèque",
+    "@screensaverLibraryContent": {
+        "description": "Section header for screensaver library content"
+    },
+    "screensaverBackdrop": "Vignette",
+    "@screensaverBackdrop": {
+        "description": "Setting for screensaver backdrop"
+    },
+    "screensaverBackdropBlack": "Noir",
+    "@screensaverBackdropBlack": {
+        "description": "Screensaver backdrop: Black"
+    },
+    "screensaverBackdropMoonfin": "Moonfin",
+    "@screensaverBackdropMoonfin": {
+        "description": "Screensaver backdrop: Moonfin"
+    },
+    "screensaverBackdropCalm": "Apaisé",
+    "@screensaverBackdropCalm": {
+        "description": "Screensaver backdrop: Calm"
+    },
+    "screensaverBackdropNeonPulse": "Neon Pulse",
+    "@screensaverBackdropNeonPulse": {
+        "description": "Screensaver backdrop: Neon Pulse"
+    },
+    "screensaverBackdropAurora": "Aurora",
+    "@screensaverBackdropAurora": {
+        "description": "Screensaver backdrop: Aurora"
+    },
+    "screensaverAdditionalComponent": "Composant supplémentaire",
+    "@screensaverAdditionalComponent": {
+        "description": "Setting for screensaver additional component"
+    },
+    "screensaverComponentMoonfinLogo": "Logo Moonfin",
+    "@screensaverComponentMoonfinLogo": {
+        "description": "Screensaver component: Moonfin Logo"
+    },
+    "screensaverComponentRunner": "Runner",
+    "@screensaverComponentRunner": {
+        "description": "Screensaver component: Runner"
+    },
+    "screensaverComponentMovement": "Mouvement du composant",
+    "@screensaverComponentMovement": {
+        "description": "Setting for screensaver component movement"
+    },
+    "screensaverComponentPosition": "Position du composant",
+    "@screensaverComponentPosition": {
+        "description": "Setting for screensaver component position"
+    },
+    "screensaverComponentSize": "Taille du composant",
+    "@screensaverComponentSize": {
+        "description": "Setting for screensaver component size"
+    },
+    "screensaverSourceLibrariesDefault": "Toutes (par défaut)",
+    "@screensaverSourceLibrariesDefault": {
+        "description": "Subtitle when no source libraries are explicitly filtered in screensaver"
+    },
+    "showMissingCollectionItems": "Afficher les éléments manquants des collections",
+    "@showMissingCollectionItems": {
+        "description": "Setting title to show missing items from Seerr on Collection pages"
+    },
+    "showMissingCollectionItemsDesc": "Inclut les éléments manquants sur les pages de collection",
+    "@showMissingCollectionItemsDesc": {
+        "description": "Setting subtitle explaining that missing items will be included on Collection pages"
+    },
+    "showSeerrAvailabilityBadges": "Afficher les badges de disponibilité Seerr",
+    "@showSeerrAvailabilityBadges": {
+        "description": "Setting title for showing Seerr availability badges on media details pages"
+    },
+    "showSeerrAvailabilityBadgesDescription": "Affiche les badges de disponibilité des saisons sur les fiches des médias",
+    "@showSeerrAvailabilityBadgesDescription": {
+        "description": "Setting description for showing Seerr availability badges on media details pages"
+    },
+    "seerrDownloading": "Téléchargement en cours",
+    "@seerrDownloading": {
+        "description": "Seerr download bar label when the server reports no usable file sizes"
+    },
+    "seerrDownloadingSize": "Téléchargement · {done} / {total}",
+    "@seerrDownloadingSize": {
+        "description": "Label above the Seerr download progress bar when byte counts are known",
+        "placeholders": {
+            "done": {
+                "type": "String"
+            },
+            "total": {
+                "type": "String"
+            }
+        }
+    },
+    "seerrDownloadedOfTotal": "{done} / {total}",
+    "@seerrDownloadedOfTotal": {
+        "description": "Short form of the Seerr download label, used when the card is too narrow for the verb",
+        "placeholders": {
+            "done": {
+                "type": "String"
+            },
+            "total": {
+                "type": "String"
+            }
+        }
+    },
+    "seerrPercentValue": "{percent} %",
+    "@seerrPercentValue": {
+        "description": "Standalone percentage shown at the end of the Seerr download bar label",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "settingsShowLiveTvButtonInNavigation": "Affiche le bouton TV en direct dans la barre de navigation si le serveur dispose d'une bibliothèque TV en direct",
+    "settingsRedetectDisplay": "Redétecter l'écran",
+    "settingsRedetectDisplayDescription": "Redemande au téléviseur les formats HDR qu'il gère. Utile si vos titres HDR sont transcodés après un allumage tardif du téléviseur ou de l'ampli AV.",
+    "settingsDisplayIsSdr": "Ma TV n'est pas compatible HDR",
+    "settingsDisplayIsSdrDescription": "Cesse d'annoncer la prise en charge du HDR pour cet écran. À n'utiliser que si la détection signale un HDR que votre TV ne sait pas afficher.",
+    "settingsDisplayRedetected": "Écran redétecté : {formats}",
+    "@settingsDisplayRedetected": {
+        "placeholders": {
+            "formats": {
+                "type": "String"
+            }
+        }
+    },
+    "settingsDisplayNoHdrDetected": "Aucun format HDR détecté",
+    "settingsDisplayMarkedSdr": "Écran enregistré comme SDR",
+    "modernCardsOnMyMediaRow": "Visuels modernes dans la rangée Mes médias",
+    "modernCardsOnMyMediaRowDescription": "Affiche des affiches personnalisables qui s'agrandissent à la sélection. Désactivez pour toujours afficher la miniature au format paysage.",
+    "audiobookFullTimeline": "Timeline complète",
+    "dateCreatedFormat": "Ajouté le {date}",
+    "@dateCreatedFormat": {
+        "placeholders": {
+            "date": {}
+        }
+    },
+    "transcodeAudioCodecWithCodec": "Le codec audio ({codec}) n'est pas pris en charge directement.",
+    "@transcodeAudioCodecWithCodec": {
+        "placeholders": {
+            "codec": {
+                "type": "String"
+            }
+        }
+    },
+    "transcodeAudioCodecHintPassthrough": "Astuce : si votre ampli AV ou votre barre de son gère le {codec}, activez le Passthrough audio dans les paramètres audio.",
+    "@transcodeAudioCodecHintPassthrough": {
+        "placeholders": {
+            "codec": {
+                "type": "String"
+            }
+        }
+    },
+    "transcodeAudioChannelsExceeded": "Le nombre de canaux audio ({channels} canaux) dépasse la limite du lecteur.",
+    "@transcodeAudioChannelsExceeded": {
+        "placeholders": {
+            "channels": {
+                "type": "int"
+            }
+        }
+    },
+    "transcodeAudioChannelsHint": "Astuce : ajustez « Canaux audio maximum » ou le mixage multicanal dans les paramètres audio.",
+    "transcodeSubtitleBurnInAssDisabled": "Les sous-titres ASS/SSA nécessitent un transcodage, car la lecture directe est désactivée.",
+    "transcodeSubtitleBurnInAssHint": "Astuce : activez « Lecture directe ASS/SSA » dans les paramètres de lecture pour lire sans transcodage.",
+    "transcodeSubtitleBurnInPgsDisabled": "Les sous-titres PGS nécessitent un transcodage, car la lecture directe est désactivée.",
+    "transcodeSubtitleBurnInPgsHint": "Astuce : activez « Lecture directe PGS » dans les paramètres de lecture pour lire sans transcodage.",
+    "transcodeSubtitleNotSupportedWithCodec": "Le format de sous-titres ({codec}) n'est pas pris en charge directement et doit être incrusté.",
+    "@transcodeSubtitleNotSupportedWithCodec": {
+        "placeholders": {
+            "codec": {
+                "type": "String"
+            }
+        }
+    },
+    "transcodeBitrateExceededWithValues": "Le débit du fichier ({fileBitrate}) dépasse la limite de streaming configurée ({maxBitrate}).",
+    "@transcodeBitrateExceededWithValues": {
+        "placeholders": {
+            "fileBitrate": {
+                "type": "String"
+            },
+            "maxBitrate": {
+                "type": "String"
+            }
+        }
+    },
+    "transcodeBitrateHint": "Astuce : augmentez « Débit maximum » dans les paramètres de lecture pour autoriser la diffusion directe.",
+    "transcodeResolutionHint": "Astuce : augmentez « Résolution maximum » dans les paramètres de lecture pour autoriser la diffusion directe.",
+    "transcodeVideoRangeNotSupported": "La plage dynamique de la vidéo (Dolby Vision, HDR…) n'est pas prise en charge par cet écran.",
+    "transcodeDolbyVisionProfile7ElDisabled": "La lecture directe de la couche d'amélioration Dolby Vision Profil 7 est désactivée.",
+    "transcodeDolbyVisionProfile7ElHint": "Astuce : activez « Lecture directe Dolby Vision Profil 7 » dans les paramètres de lecture si votre écran le permet.",
+    "transcodeDolbyVisionFallbackPreferenceTranscode": "Vos paramètres privilégient le transcodage comme solution secondaire pour le Dolby Vision.",
+    "transcodeDolbyVisionFallbackHint": "Astuce : réglez « Dolby Vision secondaire » sur « Lire en HDR10 » dans les paramètres de lecture pour éviter le transcodage.",
+    "transcodeDisplayReportsNoHdr": "L'écran ne déclare aucune prise en charge du HDR ni du Dolby Vision.",
+    "transcodeDisplayLacksHdr10ForFallback": "L'écran ne gère pas le HDR10, nécessaire au repli Dolby Vision.",
+    "transcodeAudioSampleRateNotSupported": "La fréquence d'échantillonnage audio n'est pas prise en charge.",
+    "transcodeAudioBitDepthNotSupported": "La profondeur de bits audio n'est pas prise en charge.",
+    "transcodeRefFramesNotSupported": "Le nombre d'images de référence dépasse les limites du lecteur.",
+    "transcodeAnamorphicVideoNotSupported": "La vidéo anamorphique n'est pas prise en charge.",
+    "transcodeInterlacedVideoNotSupported": "La vidéo entrelacée n'est pas prise en charge.",
+    "transcodeSecondaryAudioNotSupported": "La piste audio secondaire nécessite un transcodage.",
+    "transcodeDirectPlayError": "La lecture directe n'est pas prise en charge pour ce format de média.",
+    "currentTime": "Heure actuelle",
+    "@currentTime": {
+        "description": "The current time as it appears on a clock"
+    },
+    "setupStyleSpotlight": "Spotlight",
+    "@setupStyleSpotlight": {
+        "description": "Name of the hero-first detail layout, offered in the setup wizard"
+    },
+    "setupDetailSpotlightHint": "Grand visuel mise en avant, avec des fenêtres pour la distribution et les bonus.",
+    "@setupDetailSpotlightHint": {
+        "description": "What the spotlight detail screen style gives you"
+    },
+    "setupStyleNouveau": "Nouveau",
+    "@setupStyleNouveau": {
+        "description": "Name of the full-screen stacked detail layout, offered in the setup wizard"
+    },
+    "setupDetailNouveauHint": "Plein écran, avec des sections empilées au lieu d'onglets.",
+    "@setupDetailNouveauHint": {
+        "description": "What the nouveau detail screen style gives you"
+    },
+    "serverMessages": "Messages",
+    "@serverMessages": {
+        "description": "Menu button and window title for messages sent by the server admin"
+    },
+    "serverMessagesEmpty": "Aucun message de votre serveur pour l'instant",
+    "@serverMessagesEmpty": {
+        "description": "Shown in the messages window when the server has sent nothing"
+    },
+    "serverMessagesMarkAllRead": "Tout marquer comme lu",
+    "@serverMessagesMarkAllRead": {
+        "description": "Button in the messages window that marks every message as read"
+    },
+    "serverMessagesShowButton": "Afficher le bouton Messages",
+    "@serverMessagesShowButton": {
+        "description": "Setting that shows or hides the messages button in the menu"
+    },
+    "serverMessagesShowButtonSubtitle": "Ajoute au menu un bouton pour les messages envoyés par l'admin du serveur",
+    "@serverMessagesShowButtonSubtitle": {
+        "description": "Explains the setting that shows or hides the messages button"
+    },
+    "autoDownloadNewEpisodes": "Télécharger automatiquement les nouveaux épisodes",
+    "@autoDownloadNewEpisodes": {
+        "description": "Row in the download sheet of a series that subscribes it to automatic downloads"
+    },
+    "autoDownloadStop": "Arrêter le téléchargement automatique",
+    "@autoDownloadStop": {
+        "description": "Row in the download sheet of a series that is already subscribed; tapping removes the subscription"
+    },
+    "autoDownloadKeepUnwatchedSubtitle": "{count, plural, =0{Télécharge chaque nouvel épisode} one{Télécharge les nouveaux épisodes, en conservant {count} épisode non vu à la fois} other{Télécharge les nouveaux épisodes, en conservant {count} épisodes non vus à la fois}}",
+    "@autoDownloadKeepUnwatchedSubtitle": {
+        "description": "Subtitle under the auto-download row explaining the keep-unwatched rule",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "autoDownloadStopSubtitle": "Activé · {quality}",
+    "@autoDownloadStopSubtitle": {
+        "description": "Subtitle under the stop auto-download row showing the subscription's quality",
+        "placeholders": {
+            "quality": {
+                "type": "String"
+            }
+        }
+    },
+    "autoDownloadTranscodedForegroundNote": "Les qualités transcodées ne se téléchargent que lorsque Moonfin est ouvert. La qualité d'origine se télécharge aussi en arrière-plan.",
+    "@autoDownloadTranscodedForegroundNote": {
+        "description": "Shown under transcoded options when choosing the quality of an auto-download subscription"
+    },
+    "autoDownloadTranscodedRunningNote": "Les téléchargements transcodés ne reprennent pas après une interruption et redémarrent depuis le début. La qualité d'origine, elle, peut reprendre.",
+    "@autoDownloadTranscodedRunningNote": {
+        "description": "Shown under a running transcoded download that a subscription queued"
+    },
+    "autoDownloadForegroundOnly": "Télécharge uniquement lorsque Moonfin est ouvert",
+    "@autoDownloadForegroundOnly": {
+        "description": "Short note next to a followed series in a transcoded quality"
+    },
+    "autoDownloadQualityTitle": "Qualité des téléchargements automatiques",
+    "@autoDownloadQualityTitle": {
+        "description": "Title of the quality sheet when it is opened to create an auto-download subscription"
+    },
+    "autoDownloadEnabledFor": "Téléchargement automatique activé : {title}",
+    "@autoDownloadEnabledFor": {
+        "description": "Snackbar after subscribing a series",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "autoDownloadStoppedFor": "Téléchargement automatique arrêté : {title}",
+    "@autoDownloadStoppedFor": {
+        "description": "Snackbar after unsubscribing a series",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "autoDownloadSection": "Téléchargements automatiques",
+    "@autoDownloadSection": {
+        "description": "Settings section header for auto-download subscriptions"
+    },
+    "autoDownloadEnable": "Activer les téléchargements automatiques",
+    "@autoDownloadEnable": {
+        "description": "Master switch for auto-download subscriptions"
+    },
+    "autoDownloadEnableSubtitle": "Télécharge les nouveaux épisodes des séries que vous suivez. Les épisodes déjà parus restent téléchargeables manuellement.",
+    "@autoDownloadEnableSubtitle": {
+        "description": "Explains the master switch"
+    },
+    "autoDownloadKeepUnwatched": "Épisodes non vus à conserver",
+    "@autoDownloadKeepUnwatched": {
+        "description": "Setting that caps how many unwatched episodes per series stay downloaded"
+    },
+    "autoDownloadKeepAll": "Tous",
+    "@autoDownloadKeepAll": {
+        "description": "Option meaning no cap on kept unwatched episodes"
+    },
+    "autoDownloadDelete": "Supprimer les épisodes téléchargés",
+    "@autoDownloadDelete": {
+        "description": "Setting that picks how soon an auto-downloaded episode is removed after it was watched"
+    },
+    "autoDownloadDeleteSubtitle": "Quand supprimer les épisodes téléchargés automatiquement une fois que vous les avez vus",
+    "@autoDownloadDeleteSubtitle": {
+        "description": "Explains the delete-after-watching setting"
+    },
+    "autoDownloadDeleteNever": "Jamais",
+    "@autoDownloadDeleteNever": {
+        "description": "Delete-after-watching option: keep episodes"
+    },
+    "autoDownloadDeleteImmediately": "Juste après le visionnage",
+    "@autoDownloadDeleteImmediately": {
+        "description": "Delete-after-watching option: remove at the next check once played"
+    },
+    "autoDownloadDeleteAfterDay": "1 jour après le visionnage",
+    "@autoDownloadDeleteAfterDay": {
+        "description": "Delete-after-watching option"
+    },
+    "autoDownloadDeleteAfterWeek": "1 semaine après le visionnage",
+    "@autoDownloadDeleteAfterWeek": {
+        "description": "Delete-after-watching option"
+    },
+    "autoDownloadBackgroundRefresh": "Vérifier en arrière-plan",
+    "@autoDownloadBackgroundRefresh": {
+        "description": "Setting that lets the system wake the app to check for new episodes"
+    },
+    "autoDownloadBackgroundRefreshSubtitle": "Autorise le système à rechercher périodiquement de nouveaux épisodes lorsque Moonfin est fermé",
+    "@autoDownloadBackgroundRefreshSubtitle": {
+        "description": "Explains the background refresh setting"
+    },
+    "autoDownloadBackgroundRefreshDenied": "L'actualisation en arrière-plan est désactivée pour Moonfin. Activez-la dans les réglages iOS.",
+    "@autoDownloadBackgroundRefreshDenied": {
+        "description": "Shown when iOS forbids background refresh for the app"
+    },
+    "autoDownloadBackgroundRestrictedAndroid": "L'utilisation en arrière-plan est restreinte pour Moonfin dans les paramètres Android.",
+    "@autoDownloadBackgroundRestrictedAndroid": {
+        "description": "Shown when Android restricts the app from running in the background"
+    },
+    "autoDownloadCheckNow": "Vérifier maintenant",
+    "@autoDownloadCheckNow": {
+        "description": "Button that runs a subscription check immediately"
+    },
+    "autoDownloadChecking": "Vérification…",
+    "@autoDownloadChecking": {
+        "description": "Subtitle while a subscription check is running"
+    },
+    "autoDownloadNeverChecked": "Aucune vérification effectuée",
+    "@autoDownloadNeverChecked": {
+        "description": "Subtitle when no subscription check has run"
+    },
+    "autoDownloadLastCheck": "Dernière vérification {when} : {queued, plural, =0{rien de nouveau} one{{queued} épisode en file d'attente} other{{queued} épisodes en file d'attente}}",
+    "@autoDownloadLastCheck": {
+        "description": "Subtitle summarising the last subscription check",
+        "placeholders": {
+            "when": {
+                "type": "String"
+            },
+            "queued": {
+                "type": "int"
+            }
+        }
+    },
+    "autoDownloadLastCheckFailed": "Échec de la dernière vérification {when} : {error}",
+    "@autoDownloadLastCheckFailed": {
+        "description": "Subtitle when the last subscription check hit an error",
+        "placeholders": {
+            "when": {
+                "type": "String"
+            },
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "autoDownloadFollowedSeries": "Séries suivies",
+    "@autoDownloadFollowedSeries": {
+        "description": "Settings section header listing the series with auto-download on"
+    },
+    "autoDownloadNoSubscriptions": "Ouvrez une série et choisissez « Télécharger automatiquement les nouveaux épisodes » dans son menu de téléchargement",
+    "@autoDownloadNoSubscriptions": {
+        "description": "Shown in settings when no series is followed"
+    },
+    "autoDownloadRemove": "Ne plus suivre",
+    "@autoDownloadRemove": {
+        "description": "Tooltip on the button that removes a followed series"
+    },
+    "autoDownloadStorageFull": "Espace de stockage insuffisant",
+    "@autoDownloadStorageFull": {
+        "description": "Appended to the last-check summary when the storage limit stopped queueing"
+    },
+    "autoDownloadWaitingForWifi": "En attente du Wi-Fi",
+    "@autoDownloadWaitingForWifi": {
+        "description": "Last-check summary when Wi-Fi only is on and the device was on mobile data"
+    },
+    "downloadNotificationRunning": "Téléchargement en cours",
+    "@downloadNotificationRunning": {
+        "description": "System notification title while a download transfers"
+    },
+    "downloadNotificationRunningBatch": "Téléchargement ({done} / {total})",
+    "@downloadNotificationRunningBatch": {
+        "description": "System notification title while a batch transfers; done is the 1-based position of the current item",
+        "placeholders": {
+            "done": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "downloadNotificationProgress": "{name} · {percent} %",
+    "@downloadNotificationProgress": {
+        "description": "System notification body with the item label (for example Series S1E1) and its percentage",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "downloadNotificationTransfer": "{name} · {progress} · {timeRemaining}",
+    "@downloadNotificationTransfer": {
+        "description": "System notification body for a transfer the native engine reports on. The engine fills in progress (a percentage such as 42%) and timeRemaining (mm:ss) itself.",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "progress": {
+                "type": "String"
+            },
+            "timeRemaining": {
+                "type": "String"
+            }
+        }
+    },
+    "downloadNotificationStarting": "{name}…",
+    "@downloadNotificationStarting": {
+        "description": "System notification body before the size of a download is known",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "downloadNotificationCompleteTitle": "{count, plural, one{Téléchargement terminé} other{Téléchargements terminés}}",
+    "@downloadNotificationCompleteTitle": {
+        "description": "System notification title once a download or a batch has finished",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "downloadNotificationSaved": "{name} enregistré hors ligne",
+    "@downloadNotificationSaved": {
+        "description": "System notification body for one finished download; name is the item label (for example Series S1E1)",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "downloadNotificationSavedCount": "{count, plural, one{{count} élément enregistré hors ligne} other{{count} éléments enregistrés hors ligne}}",
+    "@downloadNotificationSavedCount": {
+        "description": "System notification body for a finished batch of mixed items",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "downloadNotificationSeriesEpisodes": "{series} : {count, plural, one{{count} épisode} other{{count} épisodes}}",
+    "@downloadNotificationSeriesEpisodes": {
+        "description": "System notification body for a finished batch that all belongs to one series",
+        "placeholders": {
+            "series": {
+                "type": "String"
+            },
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "downloadNotificationFailedTitle": "Échec du téléchargement",
+    "@downloadNotificationFailedTitle": {
+        "description": "System notification title for a failed download"
+    },
+    "downloadNotificationFailedBody": "{name} : {error}",
+    "@downloadNotificationFailedBody": {
+        "description": "System notification body for a failed download",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "serverMessagesNotificationTitle": "Message distant",
+    "@serverMessagesNotificationTitle": {
+        "description": "System notification title for a message sent by the server when it carries no header"
+    },
+    "serverMessagesNotificationReceived": "Message reçu",
+    "@serverMessagesNotificationReceived": {
+        "description": "System notification body for a server message with empty text"
+    },
+    "downloadStorageLimitReached": "Limite de stockage atteinte. Libérez de l'espace ou augmentez la limite.",
+    "@downloadStorageLimitReached": {
+        "description": "Error shown when a download would exceed the storage limit set in the download settings"
+    },
+    "downloadNotEnoughStorage": "Espace insuffisant : {needed} nécessaires, {free} disponibles",
+    "@downloadNotEnoughStorage": {
+        "description": "Error shown when a download would not fit on the device; needed and free are formatted sizes",
+        "placeholders": {
+            "needed": {
+                "type": "String"
+            },
+            "free": {
+                "type": "String"
+            }
+        }
+    },
+    "autoDownloadStorageFullTitle": "Espace insuffisant pour les nouveaux épisodes",
+    "@autoDownloadStorageFullTitle": {
+        "description": "System notification title when the automatic check has to hold new episodes back"
+    },
+    "autoDownloadStorageFullBody": "{count, plural, one{{name} nécessite {size}.} other{{count} épisodes attendent de la place.}} Libérez de l'espace ou augmentez la limite de téléchargement.",
+    "@autoDownloadStorageFullBody": {
+        "description": "System notification body when the automatic check has to hold new episodes back; name is the label of the first one (for example Series S1E1) and size its formatted size",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            },
+            "name": {
+                "type": "String"
+            },
+            "size": {
+                "type": "String"
+            }
+        }
+    },
+    "settingsAnimationSpeed": "Vitesse des animations",
+    "@settingsAnimationSpeed": {
+        "description": "Section header in General Style settings for configuring motion and transition speeds"
+    },
+    "pageTransitions": "Transitions de page",
+    "@pageTransitions": {
+        "description": "Setting title for adjusting the speed of page navigation transitions"
+    },
+    "pageTransitionsSubtitle": "Ajuste la durée du fondu lors du passage d'une page à l'autre",
+    "@pageTransitionsSubtitle": {
+        "description": "Description for the page transitions animation speed setting"
+    },
+    "navigationSpeed": "Vitesse de navigation",
+    "@navigationSpeed": {
+        "description": "Setting title for adjusting the speed of focus movement and row scrolling"
+    },
+    "navigationSpeedSubtitle": "Ajuste la vitesse de déplacement de l'indicateur de sélection entre les éléments et les rangées",
+    "@navigationSpeedSubtitle": {
+        "description": "Description for the navigation animation speed setting"
+    },
+    "modernCardsTransitionSpeed": "Vitesse de transition des visuels modernes",
+    "@modernCardsTransitionSpeed": {
+        "description": "Setting title for adjusting animation speed of modern card expansions"
+    },
+    "modernCardsTransitionSpeedSubtitle": "Ajuste la vitesse d'agrandissement des visuels modernes sélectionnés",
+    "@modernCardsTransitionSpeedSubtitle": {
+        "description": "Description for modern cards transition speed setting"
+    },
+    "delayCardExpansionOnRapidScroll": "Retarder l'agrandissement lors d'un défilement rapide",
+    "@delayCardExpansionOnRapidScroll": {
+        "description": "Setting title for debouncing modern card expansion during rapid D-pad scrolling"
+    },
+    "delayCardExpansionOnRapidScrollSubtitle": "Attend une pause dans le déplacement avant d'agrandir les visuels modernes",
+    "@delayCardExpansionOnRapidScrollSubtitle": {
+        "description": "Description for debouncing modern card expansion setting"
+    },
+    "animationSpeedExtraSlow": "Très lente",
+    "@animationSpeedExtraSlow": {
+        "description": "Option label for extra slow animation speed"
+    },
+    "animationSpeedSlow": "Lente",
+    "@animationSpeedSlow": {
+        "description": "Option label for slow animation speed"
+    },
+    "animationSpeedMedium": "Moyenne",
+    "@animationSpeedMedium": {
+        "description": "Option label for medium/normal animation speed"
+    },
+    "animationSpeedFast": "Rapide",
+    "@animationSpeedFast": {
+        "description": "Option label for fast animation speed"
+    },
+    "animationSpeedOff": "Désactivée",
+    "@animationSpeedOff": {
+        "description": "Option label for turning animations off / instant transitions"
+    },
+    "pageTransitionFadeNone": "Aucun fondu",
+    "@pageTransitionFadeNone": {
+        "description": "Option label for instant page transition with no fade"
+    },
+    "pageTransitionFadeShort": "Fondu court",
+    "@pageTransitionFadeShort": {
+        "description": "Option label for short fade page transition"
+    },
+    "pageTransitionFadeMedium": "Fondu moyen",
+    "@pageTransitionFadeMedium": {
+        "description": "Option label for medium fade page transition"
+    },
+    "pageTransitionFadeLong": "Fondu long",
+    "@pageTransitionFadeLong": {
+        "description": "Option label for long fade page transition"
+    },
+    "liveTvConnecting": "Connexion à la chaîne…",
+    "@liveTvConnecting": {
+        "description": "Live TV player status while a channel is being tuned"
+    },
+    "liveTvTunerStillTrying": "Le tuner tente toujours d'accéder à cette chaîne…",
+    "@liveTvTunerStillTrying": {
+        "description": "Live TV player status when the server has kept a channel request open for several seconds, meaning the tuner is retrying its source"
+    },
+    "liveTvReconnecting": "Signal perdu. Le tuner se reconnecte…",
+    "@liveTvReconnecting": {
+        "description": "Live TV player status when a playing channel stops receiving data"
+    },
+    "liveTvChannelUnavailableTitle": "Chaîne indisponible",
+    "@liveTvChannelUnavailableTitle": {
+        "description": "Title shown when a live TV channel could not be started"
+    },
+    "liveTvChannelUnavailableBody": "Le serveur n'a pas pu obtenir cette chaîne auprès du tuner. La source est peut-être hors service, ou le tuner a abandonné après plusieurs tentatives.",
+    "@liveTvChannelUnavailableBody": {
+        "description": "Explanation shown when a live TV channel could not be started"
+    },
+    "liveTvChannelLostTitle": "Chaîne perdue",
+    "@liveTvChannelLostTitle": {
+        "description": "Title shown when a playing live TV channel stopped and did not recover"
+    },
+    "liveTvChannelLostBody": "Le flux s'est interrompu et le tuner ne l'a pas rétabli. Réessayez ou choisissez une autre chaîne.",
+    "@liveTvChannelLostBody": {
+        "description": "Explanation shown when a playing live TV channel stopped and did not recover"
+    },
+    "siriRemoteSwipeSensitivity": "Sensibilité du glissé sur le pavé tactile",
+    "@siriRemoteSwipeSensitivity": {
+        "description": "Apple TV settings label for how far a swipe on the Siri Remote touchpad moves the focus highlight"
+    },
+    "savedMediaOfLimit": "{used} sur {limit}",
+    "@savedMediaOfLimit": {
+        "description": "Storage used against the configured limit, for example '56.4 GB of 80 GB'",
+        "placeholders": {
+            "used": {
+                "type": "String"
+            },
+            "limit": {
+                "type": "String"
+            }
+        }
     }
 }

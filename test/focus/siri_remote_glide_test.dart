@@ -2,6 +2,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_tvos/flutter_tvos.dart'
     show TvRemoteTouchEvent, TvRemoteTouchPhase;
+import 'package:moonfin/preference/preference_constants.dart';
+import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/util/focus/siri_remote_glide.dart';
 
 void main() {
@@ -20,12 +22,42 @@ void main() {
 
   setUp(() {
     pressed.clear();
+    // The step counts below are written against the high thresholds.
+    glide.sensitivity = SiriRemoteSwipeSensitivity.high;
     HardwareKeyboard.instance.addHandler(capture);
   });
 
   tearDown(() {
     glide.debugReset();
     HardwareKeyboard.instance.removeHandler(capture);
+  });
+
+  test('medium is the default and lower sensitivity steps less per drag', () {
+    expect(
+      UserPreferences.siriRemoteSwipeSensitivity.defaultValue,
+      SiriRemoteSwipeSensitivity.medium,
+    );
+
+    int stepsFor(SiriRemoteSwipeSensitivity sensitivity) {
+      glide.sensitivity = sensitivity;
+      pressed.clear();
+      var x = -0.9;
+      touch(TvRemoteTouchPhase.started, x, 0);
+      // A full edge-to-edge slow drag.
+      for (var i = 0; i < 18; i++) {
+        x += 0.1;
+        touch(TvRemoteTouchPhase.move, x, 0);
+      }
+      touch(TvRemoteTouchPhase.ended, x, 0);
+      return pressed.length;
+    }
+
+    final high = stepsFor(SiriRemoteSwipeSensitivity.high);
+    final medium = stepsFor(SiriRemoteSwipeSensitivity.medium);
+    final low = stepsFor(SiriRemoteSwipeSensitivity.low);
+    expect(high, 5);
+    expect(medium, 3);
+    expect(low, 2);
   });
 
   testWidgets('slow drag steps focus per distance and stops on release', (

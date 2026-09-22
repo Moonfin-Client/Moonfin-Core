@@ -541,8 +541,11 @@ Future<void> _detectAndSetAetherCapabilities() async {
           'supportsDvP5': true,
           'supportsDvP7': true,
           'supportsDvP8': true,
+          'supportsAv1': true,
+          'supportsAv1Main10': true,
           'maxResolutionAvc': {'width': 3840, 'height': 2160},
           'maxResolutionHevc': {'width': 3840, 'height': 2160},
+          'maxResolutionAv1': {'width': 1920, 'height': 1080},
         },
   );
 }
@@ -665,8 +668,18 @@ class _ImageCacheSweepObserver with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state != AppLifecycleState.resumed) return;
-    _sweepImageCache(_prefs, throttle: true);
+    switch (state) {
+      case AppLifecycleState.resumed:
+        _sweepImageCache(_prefs, throttle: true);
+      case AppLifecycleState.paused:
+      case AppLifecycleState.detached:
+        // The index is written on a timer. A process killed in the
+        // background never reaches it, so write on the way out.
+        unawaited(flushImageCacheIndex());
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.hidden:
+        break;
+    }
   }
 }
 

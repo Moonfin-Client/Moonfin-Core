@@ -12,6 +12,7 @@ import '../../../../../preference/user_preferences.dart';
 import '../../../../../util/item_watch_state.dart';
 import '../../../../../util/platform_detection.dart';
 import '../../../../navigation/destinations.dart';
+import '../../../../widgets/focus/context_action.dart';
 import '../../../../widgets/focus/context_menu_sheet.dart';
 import '../../../../widgets/focus/focusable_wrapper.dart';
 import '../../../../widgets/focus/hub_focus_memory.dart';
@@ -562,6 +563,10 @@ class NouveauCollectionSectionState
     showContextMenu(
       context,
       item,
+      collectionRemoval: CollectionRemovalContext(
+        collectionName: _vm.item?.name ?? '',
+        remove: _vm.removeFromCollection,
+      ),
       onChanged: () {
         unawaited(_refreshCollectionAfterMutation());
       },

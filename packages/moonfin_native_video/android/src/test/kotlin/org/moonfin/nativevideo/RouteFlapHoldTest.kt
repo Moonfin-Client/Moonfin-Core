@@ -20,10 +20,42 @@ class RouteFlapHoldTest {
     }
 
     @Test
-    fun `a dead pcm track is not held`() {
+    fun `a dead offloaded track is not held`() {
         val hold = RouteFlapHold().also { it.onConfigure(bitstream = false) }
         assertFalse(hold.onDeadTrack(0))
         assertEquals(Write.WRITE, hold.writeDecision(supportedNow = false, nowMs = 100))
+    }
+
+    @Test
+    fun `a dead decoded pcm track is rebuilt instead of reported`() {
+        val hold = RouteFlapHold().also {
+            it.onConfigure(bitstream = false, rebuildOnDeadTrack = true)
+        }
+        assertTrue(hold.onDeadTrack(0))
+        // The sink answers yes for raw PCM even on a dead track, so the next
+        // write rebuilds instead of waiting the route out.
+        assertEquals(Write.REBUILD, hold.writeDecision(supportedNow = true, nowMs = 100))
+        hold.onRebuilt()
+        assertEquals(Write.WRITE, hold.writeDecision(supportedNow = true, nowMs = 200))
+    }
+
+    @Test
+    fun `a decoded pcm rebuild that never takes still rethrows`() {
+        val hold = RouteFlapHold().also {
+            it.onConfigure(bitstream = false, rebuildOnDeadTrack = true)
+        }
+        hold.onDeadTrack(0)
+        assertEquals(Write.REBUILD, hold.writeDecision(supportedNow = true, nowMs = 1_000))
+        assertEquals(Write.RETHROW, hold.writeDecision(supportedNow = true, nowMs = 5_000))
+    }
+
+    @Test
+    fun `decoded pcm still forwards every capability change`() {
+        val hold = RouteFlapHold().also {
+            it.onConfigure(bitstream = false, rebuildOnDeadTrack = true)
+        }
+        assertEquals(Notify.FORWARD, hold.onCapabilitiesChanged(supportedNow = false, nowMs = 0))
+        assertEquals(Notify.FORWARD, hold.onCapabilitiesChanged(supportedNow = true, nowMs = 1))
     }
 
     @Test

@@ -7,6 +7,7 @@ import 'package:server_core/server_core.dart';
 import '../providers/admin_user_providers.dart';
 import '../widgets/admin_form_styles.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../util/error_message.dart';
 
 class AdminUserAddScreen extends ConsumerStatefulWidget {
   const AdminUserAddScreen({super.key});
@@ -43,7 +44,7 @@ class _AdminUserAddScreenState extends ConsumerState<AdminUserAddScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.adminUserCreateFailed(e.toString()))),
+          SnackBar(content: Text(l10n.adminUserCreateFailed(describeError(e, l10n)))),
         );
       }
     } finally {

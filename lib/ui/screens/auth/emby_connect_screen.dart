@@ -9,6 +9,7 @@ import 'package:server_core/server_core.dart';
 import '../../../auth/repositories/emby_connect_repository.dart';
 import '../../../data/services/emby_connect_service.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../util/error_message.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/platform_detection.dart';
 import '../../../util/focus/dpad_keys.dart';
@@ -94,7 +95,7 @@ class _EmbyConnectScreenState extends State<EmbyConnectScreen> {
       if (!mounted) return;
       setState(() {
         _phase = _EmbyConnectPhase.credentials;
-        _errorMessage = e.toString();
+        _errorMessage = describeError(e, AppLocalizations.of(context));
       });
     }
   }

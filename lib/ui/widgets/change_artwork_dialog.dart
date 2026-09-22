@@ -8,6 +8,7 @@ import 'package:server_core/server_core.dart';
 
 import '../../data/models/aggregated_item.dart';
 import '../../l10n/app_localizations.dart';
+import '../util/error_message.dart';
 import '../../util/focus/key_event_utils.dart';
 import '../../util/home_refresh_helper.dart';
 import '../../util/platform_detection.dart';
@@ -17,6 +18,7 @@ import 'package:dio/dio.dart';
 import 'adaptive/adaptive_dialog.dart';
 import 'focus/focusable_wrapper.dart';
 import 'overlay_sheet.dart';
+import 'offline_aware_image.dart';
 
 class ImageDimensions {
   final double width;
@@ -574,12 +576,13 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
       await _showWriteAccessWarningDialog(l10n.libraryWriteAccessReactiveBody);
     } else {
       final l10n = AppLocalizations.of(context);
+      final detail = describeError(error, l10n);
       final message = switch (actionName) {
-        'download' => l10n.imageDownloadFailed(error.toString()),
-        'delete' => l10n.imageDeleteFailed(error.toString()),
-        'clear' => l10n.clearAllArtworkFailed(error.toString()),
-        'upload' => l10n.imageUploadFailed(error.toString()),
-        _ => error.toString(),
+        'download' => l10n.imageDownloadFailed(detail),
+        'delete' => l10n.imageDeleteFailed(detail),
+        'clear' => l10n.clearAllArtworkFailed(detail),
+        'upload' => l10n.imageUploadFailed(detail),
+        _ => detail,
       };
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(message)),
@@ -2122,7 +2125,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
         child: Stack(
           children: [
             Positioned.fill(
-              child: CachedNetworkImage(
+              child: OfflineAwareImage(
                 imageUrl: imageUrl,
                 fit: BoxFit.cover,
                 memCacheWidth:
@@ -2428,7 +2431,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
                           ),
                           child: ClipRRect(
                             borderRadius: AppRadius.circular(8),
-                            child: CachedNetworkImage(
+                            child: OfflineAwareImage(
                               imageUrl: previewUrl,
                               fit: BoxFit.contain,
                               memCacheWidth:
@@ -2591,7 +2594,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
         child: Stack(
           children: [
             Positioned.fill(
-              child: CachedNetworkImage(
+              child: OfflineAwareImage(
                 imageUrl: thumbUrl,
                 fit: BoxFit.cover,
                 memCacheWidth:

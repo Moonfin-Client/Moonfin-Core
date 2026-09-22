@@ -25,6 +25,8 @@ class CastService {
   final ValueNotifier<String?> remoteStateNotifier = ValueNotifier(null);
   final ValueNotifier<int> remotePositionNotifier = ValueNotifier(0);
   final ValueNotifier<double?> remoteVolumeNotifier = ValueNotifier(null);
+  Timer? _remotePollTimer;
+  static const _remotePollInterval = Duration(seconds: 5);
 
   /// Latest receiver-side failure. A load request reports success as soon as
   /// it is issued, so a receiver that cant play the stream has no other way to
@@ -115,6 +117,50 @@ class CastService {
     } catch (_) {
       remoteVolumeNotifier.value = null;
     }
+  }
+
+  /// Keeps the notifiers current for a receiver that reports nothing on its
+  /// own. Without this the mini player never learns the receiver is playing,
+  /// so its pause button stays a play button and its seek bar stays at zero.
+  void _startRemotePolling(CastTargetKind kind) {
+    _stopRemotePolling();
+    final pollable = _pollableForKind(kind);
+    if (pollable == null) return;
+    unawaited(_pollRemoteState(kind, pollable));
+    _remotePollTimer = Timer.periodic(
+      _remotePollInterval,
+      (_) => unawaited(_pollRemoteState(kind, pollable)),
+    );
+  }
+
+  PollableRemoteState? _pollableForKind(CastTargetKind kind) {
+    try {
+      final Object provider = _controlProviderForKind(kind);
+      return provider is PollableRemoteState ? provider : null;
+    } on UnsupportedError {
+      return null;
+    }
+  }
+
+  Future<void> _pollRemoteState(
+    CastTargetKind kind,
+    PollableRemoteState pollable,
+  ) async {
+    if (activeKindNotifier.value != kind) return;
+    try {
+      final snapshot = await pollable.fetchRemoteSnapshot(kind);
+      // The target can be dropped while the request is out, and writing then
+      // would light the mini player back up for a session nobody is on.
+      if (snapshot == null || activeKindNotifier.value != kind) return;
+      remoteStateNotifier.value = snapshot.state;
+      remotePositionNotifier.value = snapshot.positionTicks;
+      remoteVolumeNotifier.value = snapshot.volume;
+    } catch (_) {}
+  }
+
+  void _stopRemotePolling() {
+    _remotePollTimer?.cancel();
+    _remotePollTimer = null;
   }
 
   CastTargetKind? get activeKind => activeKindNotifier.value;
@@ -220,7 +266,9 @@ class CastService {
     activeKindNotifier.value = target.kind;
     remoteStateNotifier.value = null;
     remotePositionNotifier.value = startPositionTicks ?? 0;
+    remoteVolumeNotifier.value = null;
     remoteErrorNotifier.value = null;
+    _startRemotePolling(target.kind);
   }
 
   Future<void> play(CastTargetKind kind) async {
@@ -242,6 +290,7 @@ class CastService {
     final provider = _controlProviderForKind(kind);
     await provider.stop(kind);
     if (activeKindNotifier.value == kind) {
+      _stopRemotePolling();
       activeKindNotifier.value = null;
       activeTargetNotifier.value = null;
       castItemNotifier.value = null;
@@ -271,6 +320,7 @@ class CastService {
   }
 
   Future<void> dispose() async {
+    _stopRemotePolling();
     for (final subscription in _nativeEventSubscriptions) {
       await subscription.cancel();
     }

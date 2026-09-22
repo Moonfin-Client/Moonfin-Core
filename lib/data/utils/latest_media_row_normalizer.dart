@@ -2,13 +2,18 @@ import '../../l10n/app_localizations.dart';
 import '../../preference/preference_constants.dart';
 import '../models/aggregated_item.dart';
 
+/// A server names a TV library 'tvshows' or 'shows', so both count.
+bool _isTvCollectionType(String? collectionType) {
+  final normalized = collectionType?.toLowerCase();
+  return normalized == 'tvshows' || normalized == 'shows';
+}
+
 int latestMediaFetchLimitForCollection(
   String? collectionType, {
   required int defaultLimit,
   required int maxLimit,
 }) {
-  final normalizedType = collectionType?.toLowerCase();
-  if (normalizedType == 'tvshows') {
+  if (_isTvCollectionType(collectionType)) {
     final expandedLimit = defaultLimit * 4;
     if (expandedLimit > maxLimit) {
       return maxLimit;
@@ -74,11 +79,14 @@ List<AggregatedItem> normalizeLatestMediaItems(
   String? collectionType,
   required int limit,
 }) {
-  final normalizedType = collectionType?.toLowerCase();
-  final normalized = switch (normalizedType) {
-    'tvshows' => _collapseLatestTvItems(items),
-    _ => items,
-  };
+  // Paging asks without a collection type, so a row that opened with series
+  // cards would start handing back seasons part way along.
+  final shouldCollapse =
+      _isTvCollectionType(collectionType) ||
+      (collectionType == null &&
+          items.any((i) => i.type == 'Episode' || i.type == 'Season'));
+
+  final normalized = shouldCollapse ? _collapseLatestTvItems(items) : items;
 
   if (normalized.length <= limit) {
     return normalized;
@@ -123,22 +131,49 @@ AggregatedItem? _seriesCardForLatestTvItem(AggregatedItem item) {
   rawData.remove('IndexNumber');
   rawData.remove('ParentIndexNumber');
 
-  if (item.type == 'Episode') {
-    rawData['LatestEpisodeId'] = item.id;
-    rawData['LatestEpisodePrimaryImageTag'] =
-        item.primaryImageTag ?? item.primaryImageTagField;
+  // A season's parent is the series so its tag fits the id set below, but an
+  // episode's parent is the season and that tag would not match the series.
+  final seriesPrimaryImageTag =
+      item.seriesPrimaryImageTag ??
+      (item.type == 'Season' ? item.parentPrimaryImageTag : null);
+  // The parent tag only fits the id below when the parent really is the
+  // series. An episode whose season has a thumb of its own would otherwise
+  // stamp the season's tag onto the series card, the mismatch the primary
+  // tag above already guards against.
+  final seriesThumbImageTag = item.parentThumbItemId == seriesId
+      ? item.parentThumbImageTag
+      : null;
+
+  // A tag the episode or season brought along points at one scene, so the card
+  // drops it rather than letting it stand in for the show.
+  if (item.parentBackdropItemId == seriesId &&
+      item.parentBackdropImageTags.isNotEmpty) {
+    rawData['BackdropImageTags'] = List<String>.from(
+      item.parentBackdropImageTags,
+    );
+  } else {
+    rawData.remove('BackdropImageTags');
   }
 
-  final seriesPrimaryImageTag = item.seriesPrimaryImageTag;
+  final imageTags = Map<String, dynamic>.from(
+    rawData['ImageTags'] as Map? ?? const {},
+  );
   if (seriesPrimaryImageTag != null && seriesPrimaryImageTag.isNotEmpty) {
-    final imageTags = Map<String, dynamic>.from(
-      rawData['ImageTags'] as Map? ?? const {},
-    );
-    imageTags['Primary'] ??= seriesPrimaryImageTag;
-    rawData['ImageTags'] = imageTags;
-    rawData['PrimaryImageTag'] ??= seriesPrimaryImageTag;
-    rawData['PrimaryImageItemId'] ??= seriesId;
+    imageTags['Primary'] = seriesPrimaryImageTag;
+    rawData['PrimaryImageTag'] = seriesPrimaryImageTag;
+  } else {
+    imageTags.remove('Primary');
+    rawData.remove('PrimaryImageTag');
   }
+  rawData['PrimaryImageItemId'] = seriesId;
+
+  if (seriesThumbImageTag != null && seriesThumbImageTag.isNotEmpty) {
+    imageTags['Thumb'] = seriesThumbImageTag;
+  } else {
+    imageTags.remove('Thumb');
+  }
+
+  rawData['ImageTags'] = imageTags;
 
   return AggregatedItem(
     id: seriesId,

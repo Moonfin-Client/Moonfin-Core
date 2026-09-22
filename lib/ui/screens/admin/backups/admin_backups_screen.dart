@@ -6,6 +6,7 @@ import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../util/error_message.dart';
 import '../../../../util/download_utils.dart';
 import '../../../widgets/adaptive/adaptive_dialog.dart';
 
@@ -31,13 +32,14 @@ class _AdminBackupsScreenState extends State<AdminBackupsScreen> {
   }
 
   String _friendlyError(Object error) {
+    final l10n = AppLocalizations.of(context);
     if (error is DioException) {
       final status = error.response?.statusCode;
       if (status == 404 || status == 405 || status == 501) {
-        return AppLocalizations.of(context).adminBackupsNotAvailable;
+        return l10n.adminBackupsNotAvailable;
       }
     }
-    return error.toString();
+    return describeError(error, l10n);
   }
 
   Future<void> _loadBackups() async {
@@ -202,7 +204,7 @@ class _AdminBackupsScreenState extends State<AdminBackupsScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context).adminBackupCreateFailed(e.toString()))));
+      ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context).adminBackupCreateFailed(_friendlyError(e)))));
     } finally {
       if (mounted) {
         setState(() => _creating = false);
@@ -252,7 +254,7 @@ class _AdminBackupsScreenState extends State<AdminBackupsScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context).adminManifestLoadFailed(e.toString()))));
+      ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context).adminManifestLoadFailed(_friendlyError(e)))));
     }
   }
 
@@ -346,7 +348,7 @@ class _AdminBackupsScreenState extends State<AdminBackupsScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context).adminRestoreFailed(e.toString()))));
+      ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context).adminRestoreFailed(_friendlyError(e)))));
     }
   }
 

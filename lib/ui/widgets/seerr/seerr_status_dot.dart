@@ -1,25 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
-/// Seerr media status codes, as the server reports them on `mediaInfo.status`
-/// and `mediaInfo.status4k`.
-abstract final class SeerrMediaStatus {
-  static const unknown = 1;
-  static const pending = 2;
-  static const processing = 3;
-  static const partiallyAvailable = 4;
-  static const available = 5;
-  static const blocklisted = 6;
-  static const deleted = 7;
+import '../../../data/services/seerr/seerr_api_models.dart';
+import '../media_badge.dart';
 
-  /// The statuses [SeerrStatusDot] draws. Anything else has nothing useful to
-  /// say on a card corner.
-  static bool hasDot(int? status) =>
-      status == pending ||
-      status == processing ||
-      status == partiallyAvailable ||
-      status == available;
-}
+export '../../../data/services/seerr/seerr_api_models.dart'
+    show SeerrMediaStatus;
 
 /// The colour a Seerr status carries wherever it is shown, so a card corner, a
 /// season marker and a header pill never disagree about what a status means.
@@ -97,6 +83,7 @@ class SeerrStatusDot extends StatelessWidget {
             width: 1.5,
           ),
         ),
+        boxShadow: kMediaBadgeShadow,
       ),
       alignment: Alignment.center,
       child: icon,

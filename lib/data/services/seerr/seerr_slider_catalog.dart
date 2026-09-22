@@ -118,6 +118,30 @@ class SeerrSliderCatalog {
   });
 }
 
+/// The media type a catalog type is built for, so a tapped tile opens the
+/// matching detail screen even when the item carries no type of its own.
+String? seerrCatalogMediaTypeHint(int type) => switch (type) {
+      SeerrSliderType.popularMovies ||
+      SeerrSliderType.movieGenres ||
+      SeerrSliderType.upcomingMovies ||
+      SeerrSliderType.studios ||
+      SeerrSliderType.tmdbMovieKeyword ||
+      SeerrSliderType.tmdbMovieGenre ||
+      SeerrSliderType.tmdbStudio ||
+      SeerrSliderType.tmdbMovieStreaming =>
+        'movie',
+      SeerrSliderType.popularTv ||
+      SeerrSliderType.tvGenres ||
+      SeerrSliderType.upcomingTv ||
+      SeerrSliderType.networks ||
+      SeerrSliderType.tmdbTvKeyword ||
+      SeerrSliderType.tmdbTvGenre ||
+      SeerrSliderType.tmdbNetwork ||
+      SeerrSliderType.tmdbTvStreaming =>
+        'tv',
+      _ => null,
+    };
+
 /// Turns a discover slider into a catalog request, or `null` when this
 /// client should skip the row.
 SeerrSliderCatalog? resolveSeerrSliderCatalog(SeerrDiscoverSlider slider) {
@@ -165,14 +189,13 @@ SeerrSliderCatalog? _catalogForType(int type, String data, String title) {
   SeerrSliderCatalog row(
     String path, {
     Map<String, String> query = const {},
-    String? mediaTypeHint,
   }) =>
       SeerrSliderCatalog(
         type: type,
         path: path,
         query: query,
         title: title,
-        mediaTypeHint: mediaTypeHint,
+        mediaTypeHint: seerrCatalogMediaTypeHint(type),
       );
 
   switch (type) {
@@ -185,64 +208,41 @@ SeerrSliderCatalog? _catalogForType(int type, String data, String title) {
     case SeerrSliderType.trending:
       return row('discover/trending');
     case SeerrSliderType.popularMovies:
-      return row('discover/movies', mediaTypeHint: 'movie');
+      return row('discover/movies');
     case SeerrSliderType.movieGenres:
-      return row('discover/genreslider/movie', mediaTypeHint: 'movie');
+      return row('discover/genreslider/movie');
     case SeerrSliderType.upcomingMovies:
-      return row('discover/movies/upcoming', mediaTypeHint: 'movie');
+      return row('discover/movies/upcoming');
     case SeerrSliderType.studios:
-      return row('discover/movies', mediaTypeHint: 'movie');
+      return row('discover/movies');
     case SeerrSliderType.popularTv:
-      return row('discover/tv', mediaTypeHint: 'tv');
+      return row('discover/tv');
     case SeerrSliderType.tvGenres:
-      return row('discover/genreslider/tv', mediaTypeHint: 'tv');
+      return row('discover/genreslider/tv');
     case SeerrSliderType.upcomingTv:
-      return row('discover/tv/upcoming', mediaTypeHint: 'tv');
+      return row('discover/tv/upcoming');
     case SeerrSliderType.networks:
-      return row('discover/tv', mediaTypeHint: 'tv');
+      return row('discover/tv');
     case SeerrSliderType.tmdbMovieKeyword:
-      return row(
-        'discover/movies',
-        query: {'keywords': data},
-        mediaTypeHint: 'movie',
-      );
+      return row('discover/movies', query: {'keywords': data});
     case SeerrSliderType.tmdbTvKeyword:
-      return row(
-        'discover/tv',
-        query: {'keywords': data},
-        mediaTypeHint: 'tv',
-      );
+      return row('discover/tv', query: {'keywords': data});
     case SeerrSliderType.tmdbMovieGenre:
-      return row(
-        'discover/movies',
-        query: {'genre': data},
-        mediaTypeHint: 'movie',
-      );
+      return row('discover/movies', query: {'genre': data});
     case SeerrSliderType.tmdbTvGenre:
-      return row(
-        'discover/tv',
-        query: {'genre': data},
-        mediaTypeHint: 'tv',
-      );
+      return row('discover/tv', query: {'genre': data});
     case SeerrSliderType.tmdbSearch:
       return row('search', query: {'query': data});
     case SeerrSliderType.tmdbStudio:
-      return row(
-        'discover/movies/studio/$data',
-        mediaTypeHint: 'movie',
-      );
+      return row('discover/movies/studio/$data');
     case SeerrSliderType.tmdbNetwork:
-      return row(
-        'discover/tv/network/$data',
-        mediaTypeHint: 'tv',
-      );
+      return row('discover/tv/network/$data');
     case SeerrSliderType.tmdbMovieStreaming:
       return _streamingCatalog(
         type: type,
         path: 'discover/movies',
         data: data,
         title: title,
-        mediaTypeHint: 'movie',
       );
     case SeerrSliderType.tmdbTvStreaming:
       return _streamingCatalog(
@@ -250,7 +250,6 @@ SeerrSliderCatalog? _catalogForType(int type, String data, String title) {
         path: 'discover/tv',
         data: data,
         title: title,
-        mediaTypeHint: 'tv',
       );
     default:
       return null;
@@ -262,7 +261,6 @@ SeerrSliderCatalog? _streamingCatalog({
   required String path,
   required String data,
   required String title,
-  required String mediaTypeHint,
 }) {
   final parts = data.split(',');
   if (parts.length < 2) return null;
@@ -274,7 +272,7 @@ SeerrSliderCatalog? _streamingCatalog({
     path: path,
     query: {'watchRegion': region, 'watchProviders': provider},
     title: title,
-    mediaTypeHint: mediaTypeHint,
+    mediaTypeHint: seerrCatalogMediaTypeHint(type),
   );
 }
 

@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../util/error_message.dart';
 import '../../../widgets/adaptive/adaptive_dialog.dart';
 import '../widgets/admin_form_styles.dart';
 
@@ -57,7 +58,7 @@ Future<void> showRenameLibraryDialog(
   } catch (e) {
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.adminRenameFailed(e.toString()))),
+        SnackBar(content: Text(l10n.adminRenameFailed(describeError(e, l10n)))),
       );
     }
   }
@@ -120,7 +121,7 @@ Future<void> showDeleteLibraryDialog(
   } catch (e) {
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.adminLibraryDeleteFailed(e.toString()))),
+        SnackBar(content: Text(l10n.adminLibraryDeleteFailed(describeError(e, l10n)))),
       );
     }
   }

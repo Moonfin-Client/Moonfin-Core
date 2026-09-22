@@ -36,9 +36,53 @@ final class AetherVideoViewFactory: NSObject, FlutterPlatformViewFactory {
     }
 }
 
+/// Holds the engine's views back from the camera housing.
+///
+/// The inset is read from UIKit, where the video actually sits, rather than
+/// from the metrics Flutter hands the widget. Only the left and right sides
+/// are held back, which is where the housing sits in landscape.
+@MainActor
+final class AetherVideoContainerView: UIView {
+    var keepsClearOfHousing = false {
+        didSet {
+            guard keepsClearOfHousing != oldValue else { return }
+            setNeedsLayout()
+        }
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        let housing = housingInsets
+        let content = keepsClearOfHousing
+            ? bounds.inset(
+                by: UIEdgeInsets(
+                    top: 0, left: housing.left, bottom: 0, right: housing.right))
+            : bounds
+        for view in subviews where view.frame != content {
+            view.frame = content
+        }
+    }
+
+    /// The widest housing this view can see. A platform view sits inside
+    /// Flutter's own container hierarchy, which does not always carry the
+    /// insets down, so the window and its root are asked as well.
+    private var housingInsets: UIEdgeInsets {
+        let candidates = [
+            safeAreaInsets,
+            window?.safeAreaInsets ?? .zero,
+            window?.rootViewController?.view.safeAreaInsets ?? .zero,
+        ]
+        return UIEdgeInsets(
+            top: 0,
+            left: candidates.map(\.left).max() ?? 0,
+            bottom: 0,
+            right: candidates.map(\.right).max() ?? 0)
+    }
+}
+
 @MainActor
 final class AetherVideoPlatformView: NSObject, FlutterPlatformView {
-    private let container: UIView
+    private let container: AetherVideoContainerView
     private let channel: FlutterMethodChannel
     private weak var wrapper: AetherPlayerWrapper?
 
@@ -46,8 +90,10 @@ final class AetherVideoPlatformView: NSObject, FlutterPlatformView {
         frame: CGRect, viewId: Int64, arguments: [String: Any],
         messenger: FlutterBinaryMessenger, wrapper: AetherPlayerWrapper
     ) {
-        container = UIView(frame: frame)
+        container = AetherVideoContainerView(frame: frame)
         container.backgroundColor = .black
+        container.keepsClearOfHousing =
+            (arguments["keepClearOfHousing"] as? Bool) ?? false
         // Gestures belong to the Flutter OSD stacked above this surface.
         container.isUserInteractionEnabled = false
         channel = FlutterMethodChannel(
@@ -75,6 +121,8 @@ final class AetherVideoPlatformView: NSObject, FlutterPlatformView {
     private func handle(_ call: FlutterMethodCall) {
         let args = call.arguments as? [String: Any] ?? [:]
         switch call.method {
+        case "setKeepClearOfHousing":
+            container.keepsClearOfHousing = (args["value"] as? Bool) ?? false
         case "setZoomMode":
             if let zoom = args["mode"] as? String,
                 let mode = Self.zoomMode(fromWire: zoom)

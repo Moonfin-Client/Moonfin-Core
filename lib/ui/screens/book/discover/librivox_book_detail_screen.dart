@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -7,6 +6,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../../util/platform_detection.dart';
 import '../../../widgets/book/discover/book_discovery_models.dart';
 import 'librivox_author_books_screen.dart';
+import '../../../widgets/offline_aware_image.dart';
 
 class LibrivoxBookDetailScreen extends StatelessWidget {
   final LibrivoxBook book;
@@ -55,7 +55,7 @@ class LibrivoxBookDetailScreen extends StatelessWidget {
                       width: 120,
                       height: 180,
                       child: coverUrl != null
-                          ? CachedNetworkImage(
+                          ? OfflineAwareImage(
                               imageUrl: coverUrl!,
                               fit: BoxFit.cover,
                               errorWidget: (_, _, _) =>

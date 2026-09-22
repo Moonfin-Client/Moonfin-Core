@@ -1005,6 +1005,7 @@ class NouveauEpisodesSectionState extends State<NouveauEpisodesSection> {
           child: LockedFocusRow<AggregatedItem>(
             key: _episodeRowKey,
             items: episodes,
+            itemKey: (item, _) => '${item.serverId}|${item.id}',
             hubKey: _episodeHubKey,
             controller: scrollController,
             height: layout.railHeight,

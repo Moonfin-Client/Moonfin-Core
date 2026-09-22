@@ -3,6 +3,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../l10n/app_localizations.dart';
+import '../../util/error_message.dart';
 import 'libraries/admin_libraries_screen.dart';
 import 'providers/admin_media_analytics_provider.dart';
 import 'widgets/admin_form_styles.dart';
@@ -36,7 +37,10 @@ class _AdminContentAnalyticsScreenState
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
-            Text('$error', style: Theme.of(context).textTheme.bodySmall),
+            Text(
+              describeError(error, l10n),
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
             const SizedBox(height: 16),
             FilledButton.tonal(
               onPressed: () => ref.invalidate(adminMediaAnalyticsProvider),

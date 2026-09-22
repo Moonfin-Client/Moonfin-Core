@@ -8,6 +8,7 @@ import 'package:server_core/server_core.dart';
 
 import '../providers/admin_user_providers.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../util/error_message.dart';
 import '../../../widgets/adaptive/adaptive_dialog.dart';
 import '../widgets/admin_form_styles.dart';
 
@@ -52,7 +53,7 @@ class _AdminTaskDetailScreenState
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(l10n.adminTaskLoadFailed(error.toString())),
+            Text(l10n.adminTaskLoadFailed(describeError(error, l10n))),
             const SizedBox(height: 8),
             ElevatedButton(
               onPressed: () =>
@@ -169,7 +170,7 @@ class _AdminTaskDetailScreenState
       if (mounted) {
         final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(l10n.adminTaskStartFailed(e.toString()))));
+            .showSnackBar(SnackBar(content: Text(l10n.adminTaskStartFailed(describeError(e, l10n)))));
       }
     }
   }
@@ -182,7 +183,7 @@ class _AdminTaskDetailScreenState
       if (mounted) {
         final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(l10n.adminTaskStopFailed(e.toString()))));
+            .showSnackBar(SnackBar(content: Text(l10n.adminTaskStopFailed(describeError(e, l10n)))));
       }
     }
   }
@@ -200,7 +201,7 @@ class _AdminTaskDetailScreenState
       if (mounted) {
         final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.adminTriggerRemoveFailed(e.toString()))));
+            SnackBar(content: Text(l10n.adminTriggerRemoveFailed(describeError(e, l10n)))));
       }
     }
   }
@@ -223,7 +224,7 @@ class _AdminTaskDetailScreenState
       if (mounted) {
         final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.adminTriggerAddFailed(e.toString()))));
+            SnackBar(content: Text(l10n.adminTriggerAddFailed(describeError(e, l10n)))));
       }
     }
   }

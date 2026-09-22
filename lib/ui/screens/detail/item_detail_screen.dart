@@ -1,9 +1,13 @@
 import 'dart:async';
 import 'dart:ui';
 
+import '../../theme/focus_foreground.dart';
 import '../../widgets/bounded_network_image.dart';
 import '../../widgets/offline_aware_image.dart';
+import '../../widgets/anime_marker_badge.dart';
+import '../../../data/repositories/anime_marker_repository.dart';
 import '../../widgets/identify_dialog.dart';
+import '../../widgets/media_badge.dart';
 import 'detail_admin_actions.dart';
 
 import 'package:flutter/foundation.dart';
@@ -37,6 +41,11 @@ import '../../navigation/home_refresh_bus.dart';
 import '../../navigation/app_router.dart';
 import '../../navigation/playback_launcher.dart';
 import 'detail_buttons.dart';
+import '../../../data/models/upcoming_episode_info.dart';
+import '../../../preference/detail_metadata_layout.dart';
+import 'upcoming_episode_badge.dart';
+import 'detail_episode_images.dart';
+import 'minimalist/minimalist_detail_content.dart';
 import 'nouveau/nouveau_detail_content.dart';
 import 'nouveau/hero/nouveau_action_buttons.dart';
 import 'modern/modern_detail_content.dart';
@@ -46,6 +55,7 @@ import '../../widgets/skeleton/skeleton_shimmer.dart';
 import '../../../data/repositories/seerr_repository.dart';
 import '../../../data/services/seerr/seerr_api_models.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../util/error_message.dart';
 import '../../widgets/quick_return_wrapper.dart';
 import '../../widgets/progress_snack_bar.dart';
 import '../../../util/remote_subtitle_labels.dart';
@@ -88,6 +98,8 @@ import '../../widgets/track_selector_dialog.dart';
 import '../../widgets/remote_play_to_session_dialog.dart';
 import '../../widgets/fullscreen_backdrop_switcher.dart';
 import '../../widgets/seerr_icons.dart';
+import '../../widgets/focus/can_claim_initial_focus.dart';
+import '../../widgets/focus/context_action.dart';
 import '../../widgets/focus/context_menu_sheet.dart';
 import '../../widgets/focus/dpad_list_tile.dart';
 import '../../widgets/focus/focusable_button.dart';
@@ -106,27 +118,19 @@ import '../../../util/focus/dpad_keys.dart';
 import '../../../util/language_matching.dart';
 import '../../../util/subtitle_track_logic.dart';
 import '../../../util/audio_track_logic.dart';
+import '../../../util/artwork_request_size.dart';
 import '../../../util/platform_detection.dart';
+import 'detail_layout_metrics.dart';
 
 const _textShadows = [Shadow(blurRadius: 4, color: Colors.black54)];
-const _kCompactBreakpoint = 600.0;
 
-bool _isCompact(BuildContext context) =>
-    !PlatformDetection.isTV &&
-    (PlatformDetection.useMobileUi ||
-        MediaQuery.sizeOf(context).width < _kCompactBreakpoint);
+bool _isCompact(BuildContext context) => detailIsCompact(context);
 
-bool _useDesktopDetailLayout(BuildContext context) {
-  final size = MediaQuery.sizeOf(context);
-  final isLandscape = size.width > size.height;
-  return !(_isCompact(context)) ||
-      (PlatformDetection.useMobileUi && isLandscape && size.width >= 700);
-}
+bool _useDesktopDetailLayout(BuildContext context) =>
+    useDesktopDetailLayout(context);
 
-double _desktopUiScale({UserPreferences? prefs}) {
-  final effectivePrefs = prefs ?? GetIt.instance<UserPreferences>();
-  return effectivePrefs.get(UserPreferences.desktopUiScale).scaleFactor;
-}
+double _desktopUiScale({UserPreferences? prefs}) =>
+    detailDesktopScale(prefs: prefs);
 
 /// Smoothly scrolls a position back to the top. Ignore if already there.
 void _animateScrollToTop(ScrollPosition position) {
@@ -657,11 +661,88 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
     );
   }
 
+  Widget _buildModernContent() {
+    return ModernDetailContent(
+      viewModel: _viewModel,
+      prefs: _prefs,
+      backdropUrl: _backdropUrl,
+      selectedMediaSourceId: _selectedMediaSourceId,
+      initialFocusNode: _ensureInitialFocusNode(),
+      onSelectedMediaSourceChanged: (id) {
+        setState(() => _selectedMediaSourceId = id);
+        _viewModel.load(mediaSourceId: id);
+      },
+      onBackdropItemFocused: _onBackdropItemFocused,
+      autoPlay: widget.autoPlay,
+      onPlayFromChapter: (position) => unawaited(
+        _playFromChapter(
+          context,
+          _viewModel.item!,
+          position,
+          _selectedMediaSourceId,
+        ),
+      ),
+      onToggleNavbar: (show) => setState(() => _showNavbar = show),
+      actionsExpanded: _actionsExpanded,
+      onActionsExpandedChanged: (val) =>
+          setState(() => _actionsExpanded = val),
+      onCollapseBiography: () => setState(() {}),
+    );
+  }
+
+  Widget _buildSpotlightContent() {
+    return SpotlightDetailContent(
+      viewModel: _viewModel,
+      prefs: _prefs,
+      backdropUrl: _backdropUrl,
+      selectedMediaSourceId: _selectedMediaSourceId,
+      initialFocusNode: _ensureInitialFocusNode(),
+      onSelectedMediaSourceChanged: (id) {
+        setState(() => _selectedMediaSourceId = id);
+        _viewModel.load(mediaSourceId: id);
+      },
+      onBackdropItemFocused: _onBackdropItemFocused,
+      autoPlay: widget.autoPlay,
+      onPlayFromChapter: (position) => unawaited(
+        _playFromChapter(
+          context,
+          _viewModel.item!,
+          position,
+          _selectedMediaSourceId,
+        ),
+      ),
+      onToggleNavbar: (show) => setState(() => _showNavbar = show),
+      actionsExpanded: _actionsExpanded,
+      onActionsExpandedChanged: (val) =>
+          setState(() => _actionsExpanded = val),
+      onCollapseBiography: () => setState(() {}),
+    );
+  }
+
   Widget _buildBody(BuildContext context) {
     return switch (_viewModel.state) {
       ItemDetailState.loading => DetailScreenSkeleton(
-        style: _prefs.get(UserPreferences.detailScreenStyle),
+        style: _prefs.effectiveDetailScreenStyle,
         prefs: _prefs,
+      ),
+      // Nothing about the title, deliberately. No artwork, no name, and no
+      // retry, which would read as an invitation.
+      ItemDetailState.blocked => Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const AdaptiveIcon(
+              Icons.lock_outline,
+              color: Colors.white54,
+              size: 48,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              AppLocalizations.of(context).itemBlockedByParentalControls,
+              style: const TextStyle(color: Colors.white54),
+            ),
+          ],
+        ),
       ),
       ItemDetailState.error => Center(
         child: Column(
@@ -674,8 +755,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
             ),
             const SizedBox(height: 16),
             Text(
-              _viewModel.errorMessage ??
-                  AppLocalizations.of(context).failedToLoad,
+              describeError(_viewModel.error!, AppLocalizations.of(context)),
               style: const TextStyle(color: Colors.white54),
             ),
             const SizedBox(height: 16),
@@ -686,9 +766,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
           ],
         ),
       ),
-      ItemDetailState.ready => switch (
-      _prefs.get(UserPreferences.detailScreenStyle)
-      ) {
+      ItemDetailState.ready => switch (_prefs.effectiveDetailScreenStyle) {
         DetailScreenStyle.classic => _DetailContent(
           viewModel: _viewModel,
           prefs: _prefs,
@@ -703,59 +781,12 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
           autoPlay: widget.autoPlay,
         ),
 
-        DetailScreenStyle.modern => ModernDetailContent(
-          viewModel: _viewModel,
-          prefs: _prefs,
-          backdropUrl: _backdropUrl,
-          selectedMediaSourceId: _selectedMediaSourceId,
-          initialFocusNode: _ensureInitialFocusNode(),
-          onSelectedMediaSourceChanged: (id) {
-            setState(() => _selectedMediaSourceId = id);
-            _viewModel.load(mediaSourceId: id);
-          },
-          onBackdropItemFocused: _onBackdropItemFocused,
-          autoPlay: widget.autoPlay,
-          onPlayFromChapter: (position) => unawaited(
-            _playFromChapter(
-              context,
-              _viewModel.item!,
-              position,
-              _selectedMediaSourceId,
-            ),
-          ),
-          onToggleNavbar: (show) => setState(() => _showNavbar = show),
-          actionsExpanded: _actionsExpanded,
-          onActionsExpandedChanged: (val) =>
-              setState(() => _actionsExpanded = val),
-          onCollapseBiography: () => setState(() {}),
-        ),
+        DetailScreenStyle.modern => _buildModernContent(),
 
-        DetailScreenStyle.spotlight => SpotlightDetailContent(
-          viewModel: _viewModel,
-          prefs: _prefs,
-          backdropUrl: _backdropUrl,
-          selectedMediaSourceId: _selectedMediaSourceId,
-          initialFocusNode: _ensureInitialFocusNode(),
-          onSelectedMediaSourceChanged: (id) {
-            setState(() => _selectedMediaSourceId = id);
-            _viewModel.load(mediaSourceId: id);
-          },
-          onBackdropItemFocused: _onBackdropItemFocused,
-          autoPlay: widget.autoPlay,
-          onPlayFromChapter: (position) => unawaited(
-            _playFromChapter(
-              context,
-              _viewModel.item!,
-              position,
-              _selectedMediaSourceId,
-            ),
-          ),
-          onToggleNavbar: (show) => setState(() => _showNavbar = show),
-          actionsExpanded: _actionsExpanded,
-          onActionsExpandedChanged: (val) =>
-              setState(() => _actionsExpanded = val),
-          onCollapseBiography: () => setState(() {}),
-        ),
+        DetailScreenStyle.spotlight =>
+          detailFallsBackToModern(_viewModel.item?.type)
+            ? _buildModernContent()
+            : _buildSpotlightContent(),
 
         DetailScreenStyle.nouveau => NouveauDetailContent(
           key: _nouveauContentKey,
@@ -778,6 +809,22 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
               _selectedMediaSourceId,
             ),
           ),
+          actionsExpanded: _actionsExpanded,
+          onActionsExpandedChanged: (val) =>
+              setState(() => _actionsExpanded = val),
+        ),
+
+        DetailScreenStyle.minimalist => MinimalistDetailContent(
+          viewModel: _viewModel,
+          prefs: _prefs,
+          backdropUrl: _backdropUrl,
+          selectedMediaSourceId: _selectedMediaSourceId,
+          initialFocusNode: _ensureInitialFocusNode(),
+          onSelectedMediaSourceChanged: (id) {
+            setState(() => _selectedMediaSourceId = id);
+            _viewModel.load(mediaSourceId: id);
+          },
+          autoPlay: widget.autoPlay,
           actionsExpanded: _actionsExpanded,
           onActionsExpandedChanged: (val) =>
               setState(() => _actionsExpanded = val),
@@ -1196,7 +1243,11 @@ class _DetailContentState extends State<_DetailContent> {
   void initState() {
     super.initState();
     _scrollController = ScrollController();
-    _contentFocusNode = FocusNode(debugLabel: 'detailContent');
+    _contentFocusNode = FocusNode(
+      debugLabel: 'detailContent',
+      canRequestFocus: false,
+      skipTraversal: true,
+    );
     widget.prefs.addListener(_onPrefsChanged);
     _loadSeerrAppearances();
   }
@@ -1228,6 +1279,7 @@ class _DetailContentState extends State<_DetailContent> {
   void _tryRequestTvAlbumPlayFocus(String itemId, int attempt) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
+      if (!canClaimInitialFocus(context)) return;
       if (_tvAlbumPlayFocusAppliedForItemId == itemId) return;
       final node = _albumPlayFocusNode;
       if (node.context != null && node.canRequestFocus) {
@@ -1426,28 +1478,6 @@ class _DetailContentState extends State<_DetailContent> {
       hideNavbar: true,
       child: Focus(
         focusNode: _contentFocusNode,
-        onKeyEvent: (node, event) {
-          final primaryFocus = FocusManager.instance.primaryFocus;
-          if (!identical(primaryFocus, _contentFocusNode)) {
-            return KeyEventResult.ignored;
-          }
-          if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
-              event.logicalKey == LogicalKeyboardKey.arrowUp) {
-            final navbarPos = prefs.get(UserPreferences.navbarPosition);
-            if (navbarPos == NavbarPosition.top) {
-              _scrollMainToTop();
-              NavigationLayout.focusNavbarNotifier.value?.call();
-              return KeyEventResult.handled;
-            }
-            final isAtTop =
-                !_scrollController.hasClients || _scrollController.offset <= 0;
-            if (isAtTop) {
-              NavigationLayout.focusNavbarNotifier.value?.call();
-              return KeyEventResult.handled;
-            }
-          }
-          return KeyEventResult.ignored;
-        },
         child: Stack(
           fit: StackFit.expand,
           children: [
@@ -1729,9 +1759,10 @@ class _DetailContentState extends State<_DetailContent> {
         ? null
         : viewModel.imageApi.getPrimaryImageUrl(
             item.id,
-            maxHeight: BoundedNetworkImage.physicalPixels(
+            maxHeight: artworkRequestWidth(
               coverWidth * 3 / 2,
               dpr,
+              ArtworkShape.poster,
             ),
             tag: coverTag,
           );
@@ -3760,6 +3791,24 @@ class _DetailContentState extends State<_DetailContent> {
     );
   }
 
+  /// The same menu, plus the entry that pulls the card out of this collection.
+  void _showBoxSetItemContextMenu(AggregatedItem item) {
+    unawaited(
+      showContextMenu(
+        context,
+        item,
+        onChanged: () {
+          if (!mounted) return;
+          setState(() {});
+        },
+        collectionRemoval: CollectionRemovalContext(
+          collectionName: viewModel.item?.name ?? '',
+          remove: viewModel.removeFromCollection,
+        ),
+      ),
+    );
+  }
+
   List<Widget> _buildBoxSetContent(BuildContext context, AggregatedItem item) {
     final l10n = AppLocalizations.of(context);
     int releaseSort(AggregatedItem a, AggregatedItem b) {
@@ -3844,7 +3893,7 @@ class _DetailContentState extends State<_DetailContent> {
             items: movies,
             imageApi: viewModel.imageApi,
             prefs: prefs,
-            onItemLongPress: _showItemContextMenu,
+            onItemLongPress: _showBoxSetItemContextMenu,
             scrollController: _trackSectionScrollController(
               moviesFocusNode,
               ctrl,
@@ -3867,7 +3916,7 @@ class _DetailContentState extends State<_DetailContent> {
             items: series,
             imageApi: viewModel.imageApi,
             prefs: prefs,
-            onItemLongPress: _showItemContextMenu,
+            onItemLongPress: _showBoxSetItemContextMenu,
             scrollController: _trackSectionScrollController(
               seriesFocusNode,
               ctrl,
@@ -3893,7 +3942,7 @@ class _DetailContentState extends State<_DetailContent> {
             items: other,
             imageApi: viewModel.imageApi,
             prefs: prefs,
-            onItemLongPress: _showItemContextMenu,
+            onItemLongPress: _showBoxSetItemContextMenu,
             scrollController: _trackSectionScrollController(
               otherFocusNode,
               ctrl,
@@ -3979,6 +4028,7 @@ class _Backdrop extends StatelessWidget {
       memCacheWidth: blurred
           ? BackgroundService.backdropBlurredDecodeWidth
           : BackgroundService.backdropMaxWidth,
+      priority: ImageFetchPriority.high,
       errorWidget: (_, _, _) => const SizedBox.shrink(),
     );
     if (!blurred) return image;
@@ -4095,6 +4145,7 @@ class _HeaderSection extends StatelessWidget {
                       ),
                     ),
                   ),
+                AnimeMarkerBadge(seriesId: item.seriesId, episodeId: item.id),
               ],
             ),
           ),
@@ -4142,10 +4193,8 @@ class _HeaderSection extends StatelessWidget {
         DetailMetadataRow(
           item: item,
           selectedMediaSource: selectedMediaSource,
-          extraBadges: [
-            if (seerrStatus != null)
-              SeerrStatusPills(state: seerrStatus, onlyNoteworthy: true),
-          ],
+          upcomingEpisode: viewModel.upcomingEpisode,
+          seerrStatus: seerrStatus,
         ),
         if (viewModel.ratings.isNotEmpty ||
             item.communityRating != null ||
@@ -4401,10 +4450,9 @@ class DetailPosterImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isMobile = !_useDesktopDetailLayout(context);
-    final desktopScale = _desktopUiScale();
-    final w = isMobile ? 120.0 : 165.0 * desktopScale;
-    final h = isMobile ? 180.0 : 248.0 * desktopScale;
+    final posterSize = classicDetailPosterSize(context);
+    final w = posterSize.width;
+    final h = posterSize.height;
     final dpr = MediaQuery.devicePixelRatioOf(context);
 
     final posterPath = item.rawData['PosterPath'] as String?;
@@ -4425,7 +4473,11 @@ class DetailPosterImage extends StatelessWidget {
                   ? '$seerrPosterBase$posterPath'
                   : imageApi.getPrimaryImageUrl(
                       item.id,
-                      maxHeight: BoundedNetworkImage.physicalPixels(h, dpr),
+                      maxHeight: artworkRequestWidth(
+                        h,
+                        dpr,
+                        ArtworkShape.poster,
+                      ),
                       tag: item.primaryImageTag,
                     ),
               width: w,
@@ -4439,37 +4491,13 @@ class DetailPosterImage extends StatelessWidget {
             Positioned(
               top: 6,
               left: 6,
-              child: Container(
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.6),
-                  shape: BoxShape.circle,
-                ),
-                child: const AdaptiveIcon(
-                  Icons.favorite,
-                  color: Color(0xFFFF4757),
-                  size: 16,
-                ),
-              ),
+              child: MediaFavoriteBadge(size: 26),
             ),
           if (item.isPlayed)
             Positioned(
               top: 6,
               right: 6,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: AppColorScheme.accent,
-                  shape: BoxShape.circle,
-                ),
-                child: const Padding(
-                  padding: EdgeInsets.all(3),
-                  child: AdaptiveIcon(
-                    Icons.check,
-                    color: Colors.white,
-                    size: 12,
-                  ),
-                ),
-              ),
+              child: MediaWatchedBadge(size: 26),
             ),
           if ((item.playedPercentage ?? 0) > 0)
             Positioned(
@@ -4495,48 +4523,6 @@ class DetailPosterImage extends StatelessWidget {
   }
 }
 
-/// The thumb endpoint only takes a width, so a card that reserves its space by
-/// height asks for the 16:9 width that fills it.
-int _landscapeWidthFor(int height) => (height * 16 / 9).round();
-
-/// The parent series artwork, for standing in where an episode still or a
-/// chapter frame would give something away. Null when the series offers nothing
-/// to show, which leaves the caller on the picture it would have used.
-String? _resolveSeriesLandscapeThumbnailUrl(
-  AggregatedItem item,
-  ImageApi imageApi, {
-  required int maxWidth,
-}) {
-  final thumbId = item.parentThumbItemId ?? item.seriesId;
-  final thumbTag = item.parentThumbImageTag ?? item.seriesThumbImageTag;
-  if (thumbId != null &&
-      thumbId.isNotEmpty &&
-      thumbTag != null &&
-      thumbTag.isNotEmpty) {
-    return imageApi.getThumbImageUrl(
-      thumbId,
-      maxWidth: maxWidth,
-      tag: thumbTag,
-    );
-  }
-
-  final seriesId = item.seriesId ?? item.parentPrimaryImageItemId;
-  final seriesPrimaryTag =
-      item.seriesPrimaryImageTag ?? item.parentPrimaryImageTag;
-  if (seriesId != null &&
-      seriesId.isNotEmpty &&
-      seriesPrimaryTag != null &&
-      seriesPrimaryTag.isNotEmpty) {
-    return imageApi.getPrimaryImageUrl(
-      seriesId,
-      maxWidth: maxWidth,
-      tag: seriesPrimaryTag,
-    );
-  }
-
-  return null;
-}
-
 class _EpisodeThumbnail extends StatelessWidget {
   final AggregatedItem item;
   final ImageApi imageApi;
@@ -4550,13 +4536,13 @@ class _EpisodeThumbnail extends StatelessWidget {
     final w = isMobile ? 200.0 : 280.0 * desktopScale;
     final h = isMobile ? 113.0 : 158.0 * desktopScale;
     final dpr = MediaQuery.devicePixelRatioOf(context);
-    final maxW = BoundedNetworkImage.physicalPixels(w, dpr);
+    final maxW = artworkRequestWidth(w, dpr, ArtworkShape.landscape);
 
     final seriesThumbUrl =
         GetIt.instance<UserPreferences>().get(
           UserPreferences.detailUseSeriesThumbnails,
         )
-        ? _resolveSeriesLandscapeThumbnailUrl(item, imageApi, maxWidth: maxW)
+        ? resolveSeriesLandscapeThumbnailUrl(item, imageApi, maxWidth: maxW)
         : null;
 
     final imageUrl =
@@ -4591,37 +4577,13 @@ class _EpisodeThumbnail extends StatelessWidget {
             Positioned(
               top: 6,
               left: 6,
-              child: Container(
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.6),
-                  shape: BoxShape.circle,
-                ),
-                child: const AdaptiveIcon(
-                  Icons.favorite,
-                  color: Color(0xFFFF4757),
-                  size: 14,
-                ),
-              ),
+              child: MediaFavoriteBadge(size: 24),
             ),
           if (item.isPlayed)
             Positioned(
               top: 6,
               right: 6,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: AppColorScheme.accent,
-                  shape: BoxShape.circle,
-                ),
-                child: const Padding(
-                  padding: EdgeInsets.all(3),
-                  child: AdaptiveIcon(
-                    Icons.check,
-                    color: Colors.white,
-                    size: 10,
-                  ),
-                ),
-              ),
+              child: MediaWatchedBadge(size: 24),
             ),
           if ((item.playedPercentage ?? 0) > 0)
             Positioned(
@@ -4649,6 +4611,8 @@ class _EpisodeThumbnail extends StatelessWidget {
 class DetailMetadataRow extends StatelessWidget {
   final AggregatedItem item;
   final Map<String, dynamic>? selectedMediaSource;
+  final UpcomingEpisodeInfo? upcomingEpisode;
+  final SeerrMediaDetailState? seerrStatus;
 
   /// When true, render only the file size and technical badges (no year, rating,
   /// runtime, seasons, status, ends-at or genres). Used by the Modern Details
@@ -4661,6 +4625,8 @@ class DetailMetadataRow extends StatelessWidget {
   const DetailMetadataRow({
     required this.item,
     this.selectedMediaSource,
+    this.upcomingEpisode,
+    this.seerrStatus,
     this.technicalOnly = false,
     this.extraBadges = const [],
   });
@@ -4670,56 +4636,77 @@ class DetailMetadataRow extends StatelessWidget {
     final parts = <Widget>[];
     final theme = Theme.of(context);
     final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
+    final l10n = AppLocalizations.of(context);
+    final prefs = GetIt.instance<UserPreferences>();
 
-    if (!technicalOnly && item.productionYear != null) {
-      parts.add(_text(theme, item.productionYear.toString()));
-    }
-
-    if (!technicalOnly && item.officialRating != null) {
-      parts.add(_badge(theme, item.officialRating!));
-    }
-
-    final showTech = GetIt.instance<UserPreferences>().get(
-      UserPreferences.detailShowTechnicalDetails,
-    );
+    final showTech = prefs.get(UserPreferences.detailShowTechnicalDetails);
     final tech = showTech
         ? technicalDetailsFor(item, selectedMediaSource)
         : null;
 
+    if (!technicalOnly) {
+      final hidden = detailMetadataLayout.hidden(prefs);
+      final ordered = detailMetadataLayout.ordered(
+        DetailMetadataItem.values,
+        (entry) => entry.id,
+        prefs,
+      );
+
+      final runtime = _runtimeForItem(item, selectedMediaSource);
+
+      for (final entry in ordered) {
+        if (hidden.contains(entry.id)) continue;
+        switch (entry) {
+          case DetailMetadataItem.year:
+            if (item.productionYear != null) {
+              parts.add(_text(theme, item.productionYear.toString()));
+            }
+          case DetailMetadataItem.parentalRating:
+            if (item.officialRating != null) {
+              parts.add(_badge(theme, item.officialRating!));
+            }
+          case DetailMetadataItem.runtimeAndSeasons:
+            if (item.type == 'Series') {
+              final count = item.childCount;
+              if (count != null) {
+                parts.add(_text(theme, l10n.seasonCount(count)));
+              }
+            } else if (runtime != null) {
+              final h = runtime.inHours;
+              final m = runtime.inMinutes.remainder(60);
+              parts.add(_text(theme, h > 0 ? '${h}h ${m}m' : '${m}m'));
+              final use24 = prefs.get(UserPreferences.use24HourClock);
+              final endsAt = _endsAt(item, runtime, use24Hour: use24);
+              if (endsAt != null) {
+                parts.add(_text(theme, l10n.endsAt(endsAt)));
+              }
+            }
+          case DetailMetadataItem.status:
+            if (item.type == 'Series' && item.status != null) {
+              parts.add(_statusBadge(context, theme, item.status!));
+            }
+          case DetailMetadataItem.upcomingEpisodeDate:
+            if (item.type == 'Series' && upcomingEpisode != null) {
+              parts.add(
+                UpcomingEpisodeBadge(text: upcomingEpisode!.format(context)),
+              );
+            }
+          case DetailMetadataItem.genres:
+            if (item.genres.isNotEmpty) {
+              parts.add(_text(theme, item.genres.take(3).join(' \u2022 ')));
+            }
+          case DetailMetadataItem.seerrAvailability:
+            if (seerrStatus != null) {
+              parts.add(
+                SeerrStatusPills(state: seerrStatus!, onlyNoteworthy: true),
+              );
+            }
+        }
+      }
+    }
+
     if (tech?.formattedSize != null) {
       parts.add(_text(theme, tech!.formattedSize!));
-    }
-
-    final runtime = _runtimeForItem(item, selectedMediaSource);
-    if (!technicalOnly && runtime != null && item.type != 'Series') {
-      final h = runtime.inHours;
-      final m = runtime.inMinutes.remainder(60);
-      parts.add(_text(theme, h > 0 ? '${h}h ${m}m' : '${m}m'));
-    }
-
-    if (!technicalOnly && item.type == 'Series') {
-      final count = item.childCount;
-      if (count != null) {
-        parts.add(
-          _text(theme, AppLocalizations.of(context).seasonCount(count)),
-        );
-      }
-      final status = item.status;
-      if (status != null) {
-        parts.add(_statusBadge(context, theme, status));
-      }
-    }
-
-    final use24 = GetIt.instance<UserPreferences>().get(
-      UserPreferences.use24HourClock,
-    );
-    final endsAt = _endsAt(item, runtime, use24Hour: use24);
-    if (!technicalOnly && endsAt != null && item.type != 'Series') {
-      parts.add(_text(theme, AppLocalizations.of(context).endsAt(endsAt)));
-    }
-
-    if (!technicalOnly && item.genres.isNotEmpty) {
-      parts.add(_text(theme, item.genres.take(3).join(' \u2022 ')));
     }
 
     if (parts.isEmpty) return const SizedBox.shrink();
@@ -5776,6 +5763,271 @@ class _DolbyVisionPlayDecision {
   });
 }
 
+class _HorizontalActionRow extends StatefulWidget {
+  final List<Widget> children;
+  final double spacing;
+  final double? buttonWidth;
+  final AlignmentGeometry alignment;
+
+  const _HorizontalActionRow({
+    required this.children,
+    required this.spacing,
+    this.buttonWidth,
+    this.alignment = AlignmentDirectional.centerStart,
+  });
+
+  @override
+  State<_HorizontalActionRow> createState() => _HorizontalActionRowState();
+}
+
+class _HorizontalActionRowState extends State<_HorizontalActionRow> {
+  final ScrollController _scrollController = ScrollController();
+  bool _canScrollLeft = false;
+  bool _canScrollRight = false;
+  bool _hasOverflow = false;
+  int _fitCount = 1;
+  double _effectiveButtonWidth = 108.0;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_updateScrollMetrics);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _updateScrollMetrics());
+  }
+
+  @override
+  void didUpdateWidget(covariant _HorizontalActionRow oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _updateScrollMetrics());
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_updateScrollMetrics);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _updateScrollMetrics() {
+    if (!mounted || !_scrollController.hasClients) return;
+    final position = _scrollController.position;
+    if (!position.hasContentDimensions) return;
+    final maxScroll = position.maxScrollExtent;
+    final hasOverflow = maxScroll > 0;
+    final canLeft = position.pixels > 0;
+    final canRight = position.pixels < maxScroll;
+    if (hasOverflow != _hasOverflow ||
+        canLeft != _canScrollLeft ||
+        canRight != _canScrollRight) {
+      setState(() {
+        _hasOverflow = hasOverflow;
+        _canScrollLeft = canLeft;
+        _canScrollRight = canRight;
+      });
+    }
+  }
+
+  void _scrollToIndex(int index) {
+    if (!mounted || !_scrollController.hasClients) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && _scrollController.hasClients) _scrollToIndex(index);
+      });
+      return;
+    }
+    final stride = _effectiveButtonWidth + widget.spacing;
+    final visibleContentWidth =
+        _fitCount * _effectiveButtonWidth + (_fitCount - 1) * widget.spacing;
+    final currentOffset = _scrollController.offset;
+    final bStart = index * stride;
+    final bEnd = bStart + _effectiveButtonWidth;
+
+    if (bStart >= currentOffset - 1.0 &&
+        bEnd <= currentOffset + visibleContentWidth + 1.0) {
+      return;
+    }
+
+    double targetOffset;
+    if (bEnd > currentOffset + visibleContentWidth) {
+      targetOffset = (index - _fitCount + 1) * stride;
+    } else {
+      targetOffset = index * stride;
+    }
+
+    final maxOffset = _scrollController.position.maxScrollExtent;
+    targetOffset = targetOffset.clamp(0.0, maxOffset);
+
+    _scrollController.animateTo(
+      targetOffset,
+      duration: const Duration(milliseconds: 220),
+      curve: Curves.easeOutCubic,
+    );
+  }
+
+  void _scrollByButtons(int count) {
+    if (!_scrollController.hasClients) return;
+    final stride = _effectiveButtonWidth + widget.spacing;
+    final current = _scrollController.offset;
+    final targetIndex = ((current + count * stride) / stride).round();
+    final maxOffset = _scrollController.position.maxScrollExtent;
+    final maxIndex = (maxOffset / stride).ceil();
+    final clampedIndex = targetIndex.clamp(0, maxIndex);
+    final target = (clampedIndex * stride).clamp(0.0, maxOffset);
+    _scrollController.animateTo(
+      target,
+      duration: const Duration(milliseconds: 240),
+      curve: Curves.easeOutCubic,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final showDesktopChevrons =
+        _hasOverflow && PlatformDetection.useDesktopUi && !PlatformDetection.isTV;
+
+    final scrollRow = NotificationListener<ScrollNotification>(
+      onNotification: (notification) {
+        _updateScrollMetrics();
+        return false;
+      },
+      child: SingleChildScrollView(
+        controller: _scrollController,
+        scrollDirection: Axis.horizontal,
+        clipBehavior: Clip.none,
+        physics: PlatformDetection.isTV
+            ? const NeverScrollableScrollPhysics()
+            : const BouncingScrollPhysics(),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              for (var i = 0; i < widget.children.length; i++) ...[
+                if (i > 0) SizedBox(width: widget.spacing),
+                Focus(
+                  canRequestFocus: false,
+                  skipTraversal: true,
+                  onFocusChange: (focused) {
+                    if (focused) {
+                      _scrollToIndex(i);
+                    }
+                  },
+                  child: widget.children[i],
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        WidgetsBinding.instance.addPostFrameCallback((_) => _updateScrollMetrics());
+
+        final isMobile = _isCompact(context);
+        final desktopScale = _desktopUiScale();
+        final double bWidth = widget.buttonWidth ??
+            (isMobile ? 80.0 : 108.0 * desktopScale);
+        final double spacing = widget.spacing;
+        _effectiveButtonWidth = bWidth;
+
+        const double horizontalPadding = 14.0;
+        const double totalPadding = horizontalPadding * 2;
+
+        final double availableWidth = constraints.maxWidth - totalPadding;
+        final double stride = bWidth + spacing;
+        int fitCount = ((availableWidth + spacing) / stride).floor();
+        fitCount = fitCount.clamp(1, widget.children.length);
+        _fitCount = fitCount;
+
+        final double snappedInnerWidth =
+            fitCount * bWidth + (fitCount - 1) * spacing;
+        final double pillWidth = snappedInnerWidth + totalPadding;
+
+        Widget pillRow = scrollRow;
+        if (_hasOverflow) {
+          pillRow = Container(
+            width: pillWidth,
+            clipBehavior: Clip.antiAlias,
+            padding: const EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.black.withValues(alpha: 0.32),
+              borderRadius: BorderRadius.circular(999),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.15),
+                width: 1.0,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.25),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: scrollRow,
+          );
+        }
+
+        if (!showDesktopChevrons) {
+          return Align(
+            alignment: widget.alignment,
+            child: pillRow,
+          );
+        }
+
+        final int chevronStep = fitCount >= 5 ? 3 : (fitCount >= 3 ? 2 : 1);
+
+        return Align(
+          alignment: widget.alignment,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                width: pillWidth,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Focus(
+                      canRequestFocus: false,
+                      skipTraversal: true,
+                      descendantsAreFocusable: false,
+                      child: IconButton(
+                        icon: const Icon(Icons.chevron_left),
+                        onPressed: _canScrollLeft
+                            ? () => _scrollByButtons(-chevronStep)
+                            : null,
+                        visualDensity: VisualDensity.compact,
+                      ),
+                    ),
+                    Focus(
+                      canRequestFocus: false,
+                      skipTraversal: true,
+                      descendantsAreFocusable: false,
+                      child: IconButton(
+                        icon: const Icon(Icons.chevron_right),
+                        onPressed: _canScrollRight
+                            ? () => _scrollByButtons(chevronStep)
+                            : null,
+                        visualDensity: VisualDensity.compact,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 6),
+              pillRow,
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
 class DetailActionButtonsState extends State<DetailActionButtons> {
   int? get _selectedAudioIndex => viewModel.selectedAudioIndex;
   set _selectedAudioIndex(int? value) => viewModel.selectedAudioIndex = value;
@@ -6218,6 +6470,9 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
   void _tryRequestPlayFocus(String itemId, int attempt) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
+      // Inside the retry rather than on the way in, since it runs for
+      // seconds and a panel can open partway through it.
+      if (!canClaimInitialFocus(context)) return;
       final node = _tvPlayFocusNode;
       if (node.context != null && node.canRequestFocus) {
         node.requestFocus();
@@ -6270,7 +6525,10 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     List<Widget> extraButtons,
   ) async {
     final l10n = AppLocalizations.of(context);
-    final actions = extraButtons.whereType<_DetailActionButton>().toList();
+    final actions = <_DetailActionButton>[
+      for (final btn in extraButtons)
+        ?_actionForOverflow(context, btn),
+    ];
     if (actions.isEmpty) return;
     final selected = await showStyledPlayerDialog<VoidCallback>(
       context,
@@ -6280,27 +6538,9 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         itemCount: actions.length,
         itemBuilder: (rowContext, index) {
           final action = actions[index];
-          final tint = action.isActive
-              ? (action.activeColor ?? AppColorScheme.accent)
-              : Colors.white;
-          return DpadListTile(
+          return _SpotlightOverflowTile(
+            action: action,
             autofocus: index == 0,
-            leading: action.iconBuilder != null
-                ? action.iconBuilder!(22, tint)
-                : (action.icon != null
-                      ? AdaptiveIcon(action.icon!, color: tint, size: 22)
-                      : null),
-            title: Text(
-              action.label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                color: tint,
-                fontWeight: action.isActive
-                    ? FontWeight.w600
-                    : FontWeight.w400,
-              ),
-            ),
             onTap: () => Navigator.pop(rowContext, action.onPressed),
             onLongPress: action.onLongPress == null
                 ? null
@@ -6314,6 +6554,121 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       // immediately open a dialog of their own.
       WidgetsBinding.instance.addPostFrameCallback((_) => selected());
     }
+  }
+
+  _DetailActionButton? _actionForOverflow(
+    BuildContext context,
+    Widget button,
+  ) {
+    if (button is _DetailActionButton) {
+      return button;
+    }
+    if (button is _DownloadButton) {
+      return _buildDownloadDetailAction(context, button.item);
+    }
+    if (button is _DeleteDownloadButton) {
+      return _buildDeleteDetailAction(context, button.item);
+    }
+    return null;
+  }
+
+  _DetailActionButton _buildDownloadDetailAction(
+    BuildContext context,
+    AggregatedItem item,
+  ) {
+    final l10n = AppLocalizations.of(context);
+    final downloadService = GetIt.instance.isRegistered<DownloadService>()
+        ? GetIt.instance<DownloadService>()
+        : null;
+    final progress = downloadService?.activeDownloads[item.id];
+    final isMulti = _DownloadButtonState._isBatchType(item.type);
+    final isBatch = downloadService?.isBatchDownloading ?? false;
+
+    if (progress != null && !progress.isComplete && progress.error == null) {
+      final label = progress.isFinalizing
+          ? l10n.finalizingDownload
+          : progress.isQueued
+          ? l10n.queuedDownload
+          : progress.progress >= 0
+          ? '${(progress.progress * 100).toInt()}%'
+          : progress.bytesReceived > 0
+          ? '${(progress.bytesReceived / 1048576).toStringAsFixed(1)} MB'
+          : '…';
+      return _DetailActionButton(
+        label: label,
+        icon: Icons.close,
+        onPressed: () => downloadService?.cancelDownload(item.id),
+        isActive: true,
+        activeColor: AppColorScheme.accent,
+      );
+    }
+
+    if (isBatch && isMulti && downloadService != null) {
+      final done = downloadService.completedCount;
+      final total = downloadService.totalQueued;
+      var pct = '';
+      for (final p in downloadService.activeDownloads.values) {
+        if (!p.isComplete && p.error == null) {
+          if (p.progress >= 0) {
+            pct = '${(p.progress * 100).toInt()}%';
+          }
+          break;
+        }
+      }
+      return _DetailActionButton(
+        label: '${done + 1}/$total${pct.isNotEmpty ? ' · $pct' : ''}',
+        icon: Icons.close,
+        onPressed: () => downloadService.cancelAll(),
+        isActive: true,
+        activeColor: AppColorScheme.accent,
+      );
+    }
+
+    if (_availableOffline || (progress != null && progress.isComplete)) {
+      return _DetailActionButton(
+        label: l10n.downloaded,
+        icon: Icons.download_done,
+        isActive: true,
+        activeColor: const Color(0xFF4CAF50),
+        onPressed: () {
+          if (downloadService != null) {
+            _DownloadButton.showDownloadOptions(context, item, downloadService);
+          }
+        },
+      );
+    }
+
+    return _DetailActionButton(
+      label: l10n.download,
+      icon: Icons.download_for_offline,
+      onPressed: () {
+        if (downloadService != null) {
+          _DownloadButton.showDownloadOptions(context, item, downloadService);
+        }
+      },
+    );
+  }
+
+  _DetailActionButton _buildDeleteDetailAction(
+    BuildContext context,
+    AggregatedItem item,
+  ) {
+    final l10n = AppLocalizations.of(context);
+    return _DetailActionButton(
+      label: l10n.deleteDownloadedFiles,
+      icon: Icons.delete_outline,
+      onPressed: () => _DeleteDownloadButton.confirmDelete(
+        context,
+        item,
+        onDeleted: () {
+          if (mounted) {
+            setState(() => _availableOffline = false);
+          }
+        },
+      ),
+      isActive: true,
+      activeColor: const Color(0xFFFF4757),
+    );
   }
 
   /// The count-based overflow decision, extracted pure so the Spotlight cap
@@ -6348,6 +6703,12 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
   int _calculateMaxVisibleButtons(BuildContext context) {
     final override = widget.maxVisibleButtonsOverride;
     if (override != null) return override > 2 ? override : 2;
+    final prefs = GetIt.instance<UserPreferences>();
+    final prefLimit = prefs.get(UserPreferences.detailButtonsMaxVisible);
+    if (prefLimit > 0) {
+      final target = prefLimit + 1;
+      return target > 2 ? target : 2;
+    }
     if (PlatformDetection.isTV) {
       final maxItems = widget.modernStyle ? 11 : 7;
       final desktopScale = _desktopUiScale();
@@ -6539,6 +6900,19 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         button.icon == Icons.movie_outlined;
   }
 
+  /// The buttons in the order they should be laid out.
+  ///
+  /// Kids Mode uses its own order rather than the saved arrangement, which
+  /// belongs to the parent.
+  List<DetailButton> _orderedButtons(UserPreferences prefs) =>
+      prefs.get(UserPreferences.kidsModeEnabled)
+      ? DetailButton.kidsModeOrder
+      : detailButtonLayout.ordered(
+          DetailButton.values,
+          (button) => button.id,
+          prefs,
+        );
+
   @override
   Widget build(BuildContext context) {
     final item = viewModel.item!;
@@ -6613,9 +6987,15 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     }
 
     final prefs = GetIt.instance<UserPreferences>();
-    final hidden = detailButtonLayout.hidden(prefs);
+    // The arrangement is the user's own, and it can't speak for what this
+    // device allows, which is what isOffered is for. Kids Mode hands the
+    // screen to someone else entirely, so it offers its own fixed set rather
+    // than whatever the parent switched off for themselves.
+    final hidden = prefs.get(UserPreferences.kidsModeEnabled)
+        ? const <String>{}
+        : detailButtonLayout.hidden(prefs);
     bool shows(DetailButton button) =>
-        !button.canHide || !hidden.contains(button.id);
+        button.isOffered && (!button.canHide || !hidden.contains(button.id));
 
     final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
     final isPhoto = item.type == 'Photo';
@@ -6908,7 +7288,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         ),
       if (!isBook && shows(DetailButton.playlist))
         DetailButton.playlist: _DetailActionButton(
-          label: l10n.playlist,
+          label: l10n.addToPlaylist,
           icon: Icons.playlist_add,
           onPressed: () => AddToPlaylistDialog.show(
             context,
@@ -6925,7 +7305,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           shows(DetailButton.deleteFiles) &&
           _availableOffline)
         DetailButton.deleteFiles: _DeleteDownloadButton(item: item),
-      if (item.type == 'Episode' &&
+      if ((item.type == 'Episode' || item.type == 'Season') &&
           item.seriesId != null &&
           shows(DetailButton.goToSeries))
         DetailButton.goToSeries: _DetailActionButton(
@@ -6951,7 +7331,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         ),
       if (seerr != null && shows(DetailButton.seerrWatchlist))
         DetailButton.seerrWatchlist: _DetailActionButton(
-          label: onWatchlist ? l10n.onWatchlist : l10n.watchlist,
+          label: onWatchlist ? l10n.removeFromWatchlist : l10n.addToWatchlist,
           icon: onWatchlist ? Icons.bookmark : Icons.bookmark_border,
           onPressed: () => seerr.toggleWatchlist(),
           isActive: onWatchlist,
@@ -6963,8 +7343,14 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         DetailButton.seerrReportIssue: _DetailActionButton(
           label: l10n.reportIssue,
           icon: Icons.report_problem_outlined,
-          onPressed: () =>
-              showSeerrReportIssueDialog(context: context, vm: seerr),
+          onPressed: () => showSeerrReportIssueDialog(
+            context: context,
+            vm: seerr,
+            initialSeason: item.type == 'Episode'
+                ? item.parentIndexNumber
+                : (item.type == 'Season' ? item.indexNumber : null),
+            initialEpisode: item.type == 'Episode' ? item.indexNumber : null,
+          ),
         ),
       if (seerr != null &&
           seerr.canManageRequests &&
@@ -7061,11 +7447,10 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
 
     var allButtons = <Widget>[
       ?primaryAction,
-      for (final button in detailButtonLayout.ordered(
-        DetailButton.values,
-        (button) => button.id,
-        prefs,
-      )) ...[?byButton[button], ?cancelByButton[button]],
+      for (final button in _orderedButtons(prefs)) ...[
+        ?byButton[button],
+        ?cancelByButton[button],
+      ],
     ];
 
     if (isNeon) {
@@ -7102,16 +7487,11 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
 
     if (widget.nouveauStyle) {
       final orderedSecondaryButtons = <_DetailActionButton>[
-        for (final detailButton in detailButtonLayout.ordered(
-          DetailButton.values,
-          (button) => button.id,
-          prefs,
-        )) ...[
-          if (byButton[detailButton] case final _DetailActionButton button)
-            button,
-          if (cancelByButton[detailButton]
-              case final _DetailActionButton button)
-            button,
+        for (final detailButton in _orderedButtons(prefs)) ...[
+          if (byButton[detailButton] case final btn?)
+            ?_actionForOverflow(context, btn),
+          if (cancelByButton[detailButton] case final btn?)
+            ?_actionForOverflow(context, btn),
         ],
       ];
 
@@ -7216,6 +7596,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       final rowContent = NouveauActionButtons(
         primaryAction: nouveauPrimaryAction,
         secondaryActions: secondaryActions,
+        maxVisibleButtons: prefs.get(UserPreferences.detailButtonsMaxVisible),
       );
 
       final downloads = seerrItemDownloads(viewModel);
@@ -7275,14 +7656,17 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         .where((button) => button.isPrimary)
         .map((button) => button.label)
         .firstOrNull;
-    final fitsOneLine = widget.modernStyle && rowBudget != null
-        ? modernRowWorstWidth(
-                allButtons.length,
-                buttonSpacing,
-                _modernPlayFocusedWidth(playLabel),
-              ) <=
-              rowBudget
-        : allButtons.length <= maxVisible;
+    final prefLimit = prefs.get(UserPreferences.detailButtonsMaxVisible);
+    final fitsOneLine = prefLimit == -1
+        ? true
+        : (widget.modernStyle && rowBudget != null
+            ? modernRowWorstWidth(
+                    allButtons.length,
+                    buttonSpacing,
+                    _modernPlayFocusedWidth(playLabel),
+                  ) <=
+                  rowBudget
+            : allButtons.length <= maxVisible);
 
     if (isTwoColumnLayout && fitsOneLine) {
       primaryButtons = allButtons;
@@ -7318,10 +7702,13 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         maxVisible: maxVisible,
         isModernMobile: isModernMobile,
         overflowAsMenu: widget.overflowAsMenu,
-        countCapped:
-            compact ||
-            PlatformDetection.isTV ||
-            widget.maxVisibleButtonsOverride != null,
+        countCapped: prefLimit == -1
+            ? false
+            : (prefLimit > 0
+                ? true
+                : (compact ||
+                    PlatformDetection.isTV ||
+                    widget.maxVisibleButtonsOverride != null)),
       );
       final int visibleCount = split.visibleCount;
       needsOverflow = split.needsOverflow;
@@ -7380,20 +7767,28 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           },
         );
       }).toList();
-      rowContent = Align(
-        alignment: widget.modernStyle
-            ? AlignmentDirectional.centerStart
-            : Alignment.center,
-        child: Wrap(
-          spacing: buttonSpacing,
-          runSpacing: buttonRunSpacing,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          alignment: widget.modernStyle
-              ? WrapAlignment.start
-              : WrapAlignment.center,
-          children: normalizedButtons,
-        ),
-      );
+      final rowAlignment = widget.modernStyle
+          ? AlignmentDirectional.centerStart
+          : Alignment.center;
+      rowContent = prefLimit == -1
+          ? _HorizontalActionRow(
+              spacing: buttonSpacing,
+              buttonWidth: compact ? 80.0 : 108.0 * desktopScale,
+              alignment: rowAlignment,
+              children: normalizedButtons,
+            )
+          : Align(
+              alignment: rowAlignment,
+              child: Wrap(
+                spacing: buttonSpacing,
+                runSpacing: buttonRunSpacing,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                alignment: widget.modernStyle
+                    ? WrapAlignment.start
+                    : WrapAlignment.center,
+                children: normalizedButtons,
+              ),
+            );
     } else {
       final normalizedPrimaryButtons = primaryButtons.asMap().entries.map((
         entry,
@@ -8124,6 +8519,13 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     AggregatedItem item, {
     bool forceStartOver = false,
   }) async {
+    // Transcode overrides and the external player handoff shouldn't be a
+    // long press away in Kids Mode. Gated here to cover every entry point.
+    if (GetIt.instance<UserPreferences>().get(
+      UserPreferences.kidsModeEnabled,
+    )) {
+      return;
+    }
     final l10n = AppLocalizations.of(context);
     final resume =
         !forceStartOver && (item.playbackPosition?.inMilliseconds ?? 0) > 0;
@@ -10643,6 +11045,12 @@ class _DownloadButton extends StatefulWidget {
     this.suppressAutoScrollToTop = false,
   });
 
+  static void showDownloadOptions(
+    BuildContext context,
+    AggregatedItem item,
+    DownloadService service,
+  ) => _DownloadButtonState._showDownloadOptionsFor(context, item, service);
+
   @override
   State<_DownloadButton> createState() => _DownloadButtonState();
 }
@@ -10651,7 +11059,8 @@ class _DownloadButtonState extends State<_DownloadButton> {
   bool _isOffline = false;
   DownloadService? _downloadService;
 
-  String _originalQualitySubtitle(
+  static String _originalQualitySubtitle(
+    BuildContext context,
     AggregatedItem item, {
     required bool isMulti,
     List<AggregatedItem> batchItems = const [],
@@ -10659,6 +11068,7 @@ class _DownloadButtonState extends State<_DownloadButton> {
     final l10n = AppLocalizations.of(context);
     if (isMulti) {
       final sizeLabel = _batchSizeLabel(
+        context,
         batchItems,
         sourceSizeBytes,
         l10n.downloadSizeTotal,
@@ -10698,7 +11108,8 @@ class _DownloadButtonState extends State<_DownloadButton> {
     return details.join(' • ');
   }
 
-  String _qualitySubtitle(
+  static String _qualitySubtitle(
+    BuildContext context,
     AggregatedItem item,
     DownloadQuality quality, {
     required bool supportsTranscoding,
@@ -10707,6 +11118,7 @@ class _DownloadButtonState extends State<_DownloadButton> {
   }) {
     if (!quality.isTranscoded || !supportsTranscoding) {
       return _originalQualitySubtitle(
+        context,
         item,
         isMulti: isMulti,
         batchItems: batchItems,
@@ -10715,6 +11127,7 @@ class _DownloadButtonState extends State<_DownloadButton> {
 
     final estimate = isMulti
         ? _batchSizeLabel(
+            context,
             batchItems,
             (batchItem) => estimateTranscodedSizeBytes(batchItem, quality),
             AppLocalizations.of(context).downloadEstimateTotal,
@@ -10729,7 +11142,8 @@ class _DownloadButtonState extends State<_DownloadButton> {
   /// Sums [bytesOf] over [items], skipping items whose size is unknown, and
   /// formats the total with [label]. Notes how many items were skipped.
   /// Null when no item had a size.
-  String? _batchSizeLabel(
+  static String? _batchSizeLabel(
+    BuildContext context,
     List<AggregatedItem> items,
     int? Function(AggregatedItem item) bytesOf,
     String Function(String size) label,
@@ -10901,7 +11315,7 @@ class _DownloadButtonState extends State<_DownloadButton> {
       type == 'Season' || type == 'Series' || type == 'BoxSet';
 
   /// One line of context under a sheet title.
-  Widget _sheetNote(BuildContext sheetContext, String text) => Padding(
+  static Widget _sheetNote(BuildContext sheetContext, String text) => Padding(
     padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
     child: Text(
       text,
@@ -10914,7 +11328,7 @@ class _DownloadButtonState extends State<_DownloadButton> {
     ),
   );
 
-  Widget _sheetTitle(BuildContext sheetContext, String text) => Padding(
+  static Widget _sheetTitle(BuildContext sheetContext, String text) => Padding(
     padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
     child: Text(
       text,
@@ -10925,25 +11339,33 @@ class _DownloadButtonState extends State<_DownloadButton> {
     ),
   );
 
+  void _showDownloadOptions(BuildContext context, DownloadService service) {
+    _showDownloadOptionsFor(context, widget.item, service);
+  }
+
   /// Entry point for the download button. Series, seasons and collections
   /// first ask whether to download everything or only unwatched items; single
   /// items go straight to the quality picker.
-  void _showDownloadOptions(BuildContext context, DownloadService service) {
-    if (_isBatchType(widget.item.type)) {
-      _showScopePicker(context, service);
+  static void _showDownloadOptionsFor(
+    BuildContext context,
+    AggregatedItem item,
+    DownloadService service,
+  ) {
+    if (_isBatchType(item.type)) {
+      _showScopePicker(context, item, service);
     } else {
-      _showQualityPicker(context, service);
+      _showQualityPicker(context, item, service);
     }
   }
 
   /// Asks whether to download all items or only unwatched ones, then opens
   /// the quality picker for the chosen list. The list is resolved once here
   /// so the counts, the size estimates and the queued downloads all agree.
-  Future<void> _showScopePicker(
+  static Future<void> _showScopePicker(
     BuildContext context,
+    AggregatedItem item,
     DownloadService service,
   ) async {
-    final item = widget.item;
     final isCollection = item.type == 'BoxSet';
     final seriesId = item.seriesId;
 
@@ -11030,6 +11452,7 @@ class _DownloadButtonState extends State<_DownloadButton> {
                         children: [
                           _scopeRow(
                             sheetContext,
+                            item: item,
                             autofocus: true,
                             icon: Icons.download_for_offline,
                             label: isCollection
@@ -11040,6 +11463,7 @@ class _DownloadButtonState extends State<_DownloadButton> {
                           ),
                           _scopeRow(
                             sheetContext,
+                            item: item,
                             autofocus: false,
                             icon: Icons.visibility_off_outlined,
                             label: isCollection
@@ -11055,6 +11479,7 @@ class _DownloadButtonState extends State<_DownloadButton> {
                   if (autoDownloads != null)
                     _autoDownloadRow(
                       sheetContext,
+                      item,
                       autoDownloads,
                       initial: subscription,
                       onSubscription: (current) => subscription = current,
@@ -11071,26 +11496,27 @@ class _DownloadButtonState extends State<_DownloadButton> {
         );
     // Opened only after the scope sheet is gone, so the quality picker
     // restores focus to the Download button rather than to a disposed row.
-    if (!mounted) return;
+    if (!context.mounted) return;
     if (autoChosen) {
-      await _toggleAutoDownload(autoDownloads!, existing: subscription);
+      await _toggleAutoDownload(context, item, autoDownloads!, existing: subscription);
       return;
     }
     if (chosen == null) return;
-    _showQualityPicker(this.context, service, items: chosen);
+    _showQualityPicker(context, item, service, items: chosen);
   }
 
   /// Follows or unfollows the series. Following asks for a quality first so
   /// the subscription records one.
-  Future<void> _toggleAutoDownload(
+  static Future<void> _toggleAutoDownload(
+    BuildContext context,
+    AggregatedItem item,
     AutoDownloadService autoDownloads, {
     required AutoDownloadSubscription? existing,
   }) async {
-    final item = widget.item;
     final l10n = AppLocalizations.of(context);
     if (existing != null) {
       await autoDownloads.unsubscribe(item.id);
-      if (!mounted) return;
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.autoDownloadStoppedFor(item.name))),
       );
@@ -11098,10 +11524,11 @@ class _DownloadButtonState extends State<_DownloadButton> {
     }
     final quality = await _pickQuality(
       context,
+      item,
       title: l10n.autoDownloadQualityTitle,
       note: l10n.autoDownloadTranscodedForegroundNote,
     );
-    if (quality == null || !mounted) return;
+    if (quality == null || !context.mounted) return;
     unawaited(autoDownloads.subscribe(item, quality: quality));
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(l10n.autoDownloadEnabledFor(item.name))),
@@ -11111,8 +11538,9 @@ class _DownloadButtonState extends State<_DownloadButton> {
   /// Third row of a series' scope sheet: subscribe to new episodes, or stop.
   /// Reports the current subscription through [onSubscription] so the
   /// caller knows which of the two [onTap] meant.
-  Widget _autoDownloadRow(
+  static Widget _autoDownloadRow(
     BuildContext sheetContext,
+    AggregatedItem item,
     AutoDownloadService autoDownloads, {
     required AutoDownloadSubscription? initial,
     required void Function(AutoDownloadSubscription?) onSubscription,
@@ -11125,7 +11553,7 @@ class _DownloadButtonState extends State<_DownloadButton> {
     );
     return StreamBuilder<AutoDownloadSubscription?>(
       initialData: initial,
-      stream: autoDownloads.watchSubscription(widget.item.id),
+      stream: autoDownloads.watchSubscription(item.id),
       builder: (_, snapshot) {
         final subscription = snapshot.data;
         onSubscription(subscription);
@@ -11160,8 +11588,9 @@ class _DownloadButtonState extends State<_DownloadButton> {
     );
   }
 
-  Widget _scopeRow(
+  static Widget _scopeRow(
     BuildContext sheetContext, {
+    required AggregatedItem item,
     required bool autofocus,
     required IconData icon,
     required String label,
@@ -11173,7 +11602,7 @@ class _DownloadButtonState extends State<_DownloadButton> {
     final enabled = loading || items.isNotEmpty;
     final subtitle = loading
         ? l10n.downloadScopeLoading
-        : widget.item.type == 'BoxSet'
+        : item.type == 'BoxSet'
         ? l10n.itemCountLabel(items.length)
         : l10n.episodeCount(items.length);
     return DpadListTile(
@@ -11204,26 +11633,27 @@ class _DownloadButtonState extends State<_DownloadButton> {
   /// Shows the quality picker and queues the download. For series, seasons
   /// and collections [items] is the list resolved by the scope picker and
   /// drives both the size estimate and what gets queued.
-  Future<void> _showQualityPicker(
+  static Future<void> _showQualityPicker(
     BuildContext context,
+    AggregatedItem item,
     DownloadService service, {
     List<AggregatedItem>? items,
   }) async {
-    final item = widget.item;
     final isMulti = _isBatchType(item.type);
     if (!isMulti && !_supportsTranscoding(item.type)) {
-      _startDownload(context, service, DownloadQuality.original);
+      _startDownload(context, item, service, DownloadQuality.original);
       return;
     }
     final quality = await _pickQuality(
       context,
+      item,
       title: isMulti
           ? AppLocalizations.of(context).downloadAllQuality
           : AppLocalizations.of(context).downloadQuality,
       items: items ?? const [],
     );
-    if (quality == null || !mounted) return;
-    _startDownload(this.context, service, quality, items: items);
+    if (quality == null || !context.mounted) return;
+    _startDownload(context, item, service, quality, items: items);
   }
 
   static bool _supportsTranscoding(String? type) =>
@@ -11236,13 +11666,13 @@ class _DownloadButtonState extends State<_DownloadButton> {
   /// [items] for batches. Null when the sheet is dismissed.
   /// [note] is shown once under the title, for callers where the choice has
   /// a consequence worth stating.
-  Future<DownloadQuality?> _pickQuality(
-    BuildContext context, {
+  static Future<DownloadQuality?> _pickQuality(
+    BuildContext context,
+    AggregatedItem item, {
     required String title,
     List<AggregatedItem> items = const [],
     String? note,
   }) {
-    final item = widget.item;
     final isMulti = _isBatchType(item.type);
     final supportsTranscoding = isMulti || _supportsTranscoding(item.type);
     final batchItems = items;
@@ -11270,6 +11700,7 @@ class _DownloadButtonState extends State<_DownloadButton> {
     final subtitles = {
       for (final quality in availableQualities)
         quality: _qualitySubtitle(
+          context,
           item,
           quality,
           supportsTranscoding: supportsTranscoding,
@@ -11365,13 +11796,13 @@ class _DownloadButtonState extends State<_DownloadButton> {
 
   /// Queues the download. [items] is the list chosen in the scope sheet for
   /// series, seasons and collections; single items leave it null.
-  void _startDownload(
+  static void _startDownload(
     BuildContext context,
+    AggregatedItem item,
     DownloadService service,
     DownloadQuality quality, {
     List<AggregatedItem>? items,
   }) {
-    final item = widget.item;
     final l10n = AppLocalizations.of(context);
     final String message;
     if (items != null) {
@@ -11419,6 +11850,16 @@ class _DeleteDownloadButton extends StatefulWidget {
     this.suppressAutoScrollToTop = false,
   });
 
+  static Future<void> confirmDelete(
+    BuildContext context,
+    AggregatedItem item, {
+    VoidCallback? onDeleted,
+  }) => _DeleteDownloadButtonState._confirmDelete(
+    context,
+    item,
+    onDeleted: onDeleted,
+  );
+
   @override
   State<_DeleteDownloadButton> createState() => _DeleteDownloadButtonState();
 }
@@ -11462,9 +11903,17 @@ class _DeleteDownloadButtonState extends State<_DeleteDownloadButton> {
     if (_checking || !_hasFiles) return const SizedBox.shrink();
 
     return _DetailActionButton(
-      label: AppLocalizations.of(context).deleteFiles,
+      label: AppLocalizations.of(context).deleteDownloadedFiles,
       icon: Icons.delete_outline,
-      onPressed: () => _confirmDelete(context),
+      onPressed: () => _confirmDelete(
+        context,
+        widget.item,
+        onDeleted: () {
+          if (mounted) {
+            setState(() => _hasFiles = false);
+          }
+        },
+      ),
       isActive: true,
       activeColor: const Color(0xFFFF4757),
       focusNode: widget.focusNode,
@@ -11477,8 +11926,11 @@ class _DeleteDownloadButtonState extends State<_DeleteDownloadButton> {
     );
   }
 
-  Future<void> _confirmDelete(BuildContext context) async {
-    final item = widget.item;
+  static Future<void> _confirmDelete(
+    BuildContext context,
+    AggregatedItem item, {
+    VoidCallback? onDeleted,
+  }) async {
     final l10n = AppLocalizations.of(context);
     final typeLabel = switch (item.type) {
       'Series' => l10n.deleteSeriesFiles(item.seriesName ?? item.name),
@@ -11527,7 +11979,7 @@ class _DeleteDownloadButtonState extends State<_DeleteDownloadButton> {
           ),
         );
         if (success) {
-          setState(() => _hasFiles = false);
+          onDeleted?.call();
         }
       }
     }
@@ -11552,31 +12004,13 @@ class _PersonalRatingActionIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return switch (style) {
-      PersonalRatingStyle.thumbs =>
+      PersonalRatingStyle.thumbs => Icon(
         likes == null
-            ? Center(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.thumb_up_outlined,
-                      color: color,
-                      size: size * 0.5,
-                    ),
-                    SizedBox(width: size * 0.08),
-                    Icon(
-                      Icons.thumb_down_outlined,
-                      color: color,
-                      size: size * 0.5,
-                    ),
-                  ],
-                ),
-              )
-            : Icon(
-                likes! ? Icons.thumb_up : Icons.thumb_down,
-                color: color,
-                size: size * 0.72,
-              ),
+            ? Icons.thumb_up_outlined
+            : (likes! ? Icons.thumb_up : Icons.thumb_down),
+        color: color,
+        size: size * 0.85,
+      ),
       PersonalRatingStyle.stars => _StarFillIcon(
         fill: ((rating ?? 0).clamp(0, 10) / 10).toDouble(),
         size: size * 0.82,
@@ -11986,9 +12420,19 @@ class _DetailActionButtonState extends State<_DetailActionButton>
   void _scrollToTopOnFocus() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      final scrollable = Scrollable.maybeOf(context);
-      if (scrollable == null) return;
-      final position = scrollable.position;
+      ScrollableState? verticalScrollable;
+      context.visitAncestorElements((element) {
+        if (element is StatefulElement && element.state is ScrollableState) {
+          final state = element.state as ScrollableState;
+          if (state.position.axis == Axis.vertical) {
+            verticalScrollable = state;
+            return false;
+          }
+        }
+        return true;
+      });
+      if (verticalScrollable == null) return;
+      final position = verticalScrollable!.position;
       if (position.pixels <= position.minScrollExtent) return;
       position.animateTo(
         position.minScrollExtent,
@@ -12225,6 +12669,167 @@ class _DetailActionButtonState extends State<_DetailActionButton>
                     ],
                   ),
                 ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SpotlightOverflowTile extends StatefulWidget {
+  final _DetailActionButton action;
+  final bool autofocus;
+  final VoidCallback onTap;
+  final VoidCallback? onLongPress;
+
+  const _SpotlightOverflowTile({
+    required this.action,
+    this.autofocus = false,
+    required this.onTap,
+    this.onLongPress,
+  });
+
+  @override
+  State<_SpotlightOverflowTile> createState() => _SpotlightOverflowTileState();
+}
+
+class _SpotlightOverflowTileState extends State<_SpotlightOverflowTile> {
+  final _focusNode = FocusNode();
+  bool _isFocused = false;
+  bool _isHovered = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(() {
+      if (mounted) {
+        final hasFocus = _focusNode.hasFocus;
+        setState(() => _isFocused = hasFocus);
+        if (hasFocus) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              Scrollable.ensureVisible(
+                context,
+                alignment: 0.5,
+                duration: const Duration(milliseconds: 150),
+                curve: Curves.easeOut,
+              );
+            }
+          });
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final action = widget.action;
+    final isTv = PlatformDetection.isTV;
+    final showHighlight = _isFocused || _isHovered;
+
+    final focusBg = AppColorScheme.buttonFocused;
+    final focusedFg = readableOnFocusFill(focusBg);
+
+    final textColor = showHighlight
+        ? (isTv ? focusedFg : Colors.white)
+        : Colors.white;
+
+    final iconColor = showHighlight
+        ? (isTv ? focusedFg : AppColorScheme.accent)
+        : (action.isActive
+            ? (action.activeColor ?? AppColorScheme.accent)
+            : Colors.white.withValues(alpha: 0.85));
+
+    // The plain icon first. The builders draw for the button row, where the
+    // rating one pairs a thumb up and down and the star one part fills, and
+    // both come out a smudge at 22. The label carries the rating anyway.
+    final Widget? leadingWidget;
+    if (action.icon != null) {
+      leadingWidget = AdaptiveIcon(action.icon!, color: iconColor, size: 22);
+    } else if (action.iconBuilder != null) {
+      leadingWidget = action.iconBuilder!(22, iconColor);
+    } else {
+      leadingWidget = null;
+    }
+
+    final focusColor = Color(
+      GetIt.instance<UserPreferences>()
+          .get(UserPreferences.focusColor)
+          .colorValue,
+    );
+
+    return Focus(
+      focusNode: _focusNode,
+      autofocus: widget.autofocus,
+      onKeyEvent: (_, event) {
+        if (!event.logicalKey.isSelectKey) return KeyEventResult.ignored;
+        if (event is KeyDownEvent) {
+          widget.onTap();
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.ignored;
+      },
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        onEnter: (_) => setState(() => _isHovered = true),
+        onExit: (_) => setState(() => _isHovered = false),
+        child: GestureDetector(
+          onTap: widget.onTap,
+          onLongPress: widget.onLongPress,
+          behavior: HitTestBehavior.opaque,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 3),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 90),
+              curve: Curves.easeOut,
+              decoration: BoxDecoration(
+                color: showHighlight
+                    ? (isTv
+                        ? focusBg
+                        : AppColorScheme.accent.withValues(alpha: 0.16))
+                    : Colors.transparent,
+                borderRadius: AppRadius.circular(10),
+                border: Border.all(
+                  color: showHighlight
+                      ? (isTv
+                          ? focusColor
+                          : AppColorScheme.accent.withValues(alpha: 0.6))
+                      : Colors.white.withValues(alpha: 0.15),
+                  width: showHighlight ? 1.5 : 1.0,
+                ),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Row(
+                children: [
+                  if (leadingWidget != null) ...[
+                    SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: Center(child: leadingWidget),
+                    ),
+                    const SizedBox(width: 14),
+                  ],
+                  Expanded(
+                    child: Text(
+                      action.label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: textColor,
+                        fontWeight: action.isActive ? FontWeight.w600 : FontWeight.w500,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );
@@ -12691,7 +13296,7 @@ class DetailChaptersRow extends StatelessWidget {
         GetIt.instance<UserPreferences>().get(
           UserPreferences.detailUseSeriesThumbnails,
         )
-        ? _resolveSeriesLandscapeThumbnailUrl(
+        ? resolveSeriesLandscapeThumbnailUrl(
             item,
             imageApi,
             maxWidth: chapterImageWidth,
@@ -13707,6 +14312,17 @@ class DetailSeasonsRow extends StatelessWidget {
                   left: 6,
                   child: SeerrStatusDot(status: seerrStatus, size: 18),
                 ),
+              // Top left, dropped below the Seerr dot when there is one so the two stack
+              // rather than overlap.
+              Positioned(
+                top: hasSeerrDot ? 30 : 6,
+                left: 6,
+                child: AnimeSeasonAudioBadge(
+                  seriesId: season.seriesId,
+                  seasonId: season.id,
+                  scale: 0.85,
+                ),
+              ),
             ],
             focusColor: isNeon
                 ? AppColorScheme.accent
@@ -13928,10 +14544,10 @@ class _EpisodeListCardState extends State<_EpisodeListCard>
     final focusColor = Color(prefs.get(UserPreferences.focusColor).colorValue);
     final maxH = widget.isMobile ? 250 : (250 * desktopScale).round();
     final seriesThumbUrl = prefs.get(UserPreferences.detailUseSeriesThumbnails)
-        ? _resolveSeriesLandscapeThumbnailUrl(
+        ? resolveSeriesLandscapeThumbnailUrl(
             ep,
             widget.imageApi,
-            maxWidth: _landscapeWidthFor(maxH),
+            maxWidth: landscapeWidthFor(maxH),
           )
         : null;
 
@@ -14067,6 +14683,12 @@ class _EpisodeListCardState extends State<_EpisodeListCard>
                                   ),
                             ),
                           ],
+                          AnimeMarkerBadge(
+                            seriesId: widget.episode.seriesId,
+                            episodeId: widget.episode.id,
+                            scale: 0.9,
+                            padding: const EdgeInsets.only(left: 6),
+                          ),
                         ],
                       ),
                     ),
@@ -14161,10 +14783,10 @@ class DetailNextUpCardState extends State<DetailNextUpCard>
     final cardExpansion = prefs.get(UserPreferences.cardFocusExpansion);
     final maxH = isMobile ? 240 : (240 * desktopScale).round();
     final seriesThumbUrl = prefs.get(UserPreferences.detailUseSeriesThumbnails)
-        ? _resolveSeriesLandscapeThumbnailUrl(
+        ? resolveSeriesLandscapeThumbnailUrl(
             episode,
             widget.imageApi,
-            maxWidth: _landscapeWidthFor(maxH),
+            maxWidth: landscapeWidthFor(maxH),
           )
         : null;
 
@@ -14252,6 +14874,13 @@ class DetailNextUpCardState extends State<DetailNextUpCard>
                                   ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
+                            ),
+                            // The next episode is the one someone is about to start, so
+                            // whether it is filler belongs here as much as in the list.
+                            AnimeMarkerBadge(
+                              seriesId: episode.seriesId,
+                              episodeId: episode.id,
+                              padding: const EdgeInsets.only(top: 4),
                             ),
                             if (_showsEpisodeOverview(episode, prefs)) ...[
                               const SizedBox(height: 4),
@@ -14397,10 +15026,10 @@ class DetailEpisodeCardState extends State<DetailEpisodeCard>
     final isMobile = _isCompact(context);
     final maxH = isMobile ? 220 : (220 * desktopScale).round();
     final seriesThumbUrl = prefs.get(UserPreferences.detailUseSeriesThumbnails)
-        ? _resolveSeriesLandscapeThumbnailUrl(
+        ? resolveSeriesLandscapeThumbnailUrl(
             episode,
             widget.imageApi,
-            maxWidth: _landscapeWidthFor(maxH),
+            maxWidth: landscapeWidthFor(maxH),
           )
         : null;
 
@@ -14483,6 +15112,19 @@ class DetailEpisodeCardState extends State<DetailEpisodeCard>
                                 _EpisodeProgressBar(
                                   percentage: episode.playedPercentage!,
                                 ),
+                              // Top left, opposite the played tick and above the progress
+                              // bar. Draws only when the server picked this placement.
+                              Positioned(
+                                top: 6,
+                                left: 6,
+                                child: AnimeMarkerBadge(
+                                  seriesId: episode.seriesId,
+                                  episodeId: episode.id,
+                                  scale: 0.8,
+                                  slot: AnimeMarkerPlacement.thumbnail,
+                                  filled: true,
+                                ),
+                              ),
                               if (episode.isPlayed)
                                 Positioned(
                                   top: 6,
@@ -14525,15 +15167,31 @@ class DetailEpisodeCardState extends State<DetailEpisodeCard>
                               ),
                               if (runtimeText != null) ...[
                                 const SizedBox(height: 2),
-                                Text(
-                                  runtimeText,
-                                  style: Theme.of(context).textTheme.bodySmall
-                                      ?.copyWith(
-                                        color: AppColorScheme.onSurface
-                                            .withValues(alpha: 0.8),
-                                      ),
+                                // The runtime and the pills share a line, and the pills
+                                // wrap underneath it when the row runs out of room.
+                                AnimeMarkerBadge(
+                                  seriesId: episode.seriesId,
+                                  episodeId: episode.id,
+                                  scale: desktopScale,
+                                  slot: AnimeMarkerPlacement.beside,
+                                  leading: Text(
+                                    runtimeText,
+                                    style: Theme.of(context).textTheme.bodySmall
+                                        ?.copyWith(
+                                          color: AppColorScheme.onSurface
+                                              .withValues(alpha: 0.8),
+                                        ),
+                                    maxLines: 1,
+                                  ),
                                 ),
                               ],
+                              AnimeMarkerBadge(
+                                seriesId: episode.seriesId,
+                                episodeId: episode.id,
+                                scale: desktopScale,
+                                slot: AnimeMarkerPlacement.below,
+                                padding: const EdgeInsets.only(top: 4),
+                              ),
                               if (_showsEpisodeOverview(episode, prefs)) ...[
                                 const SizedBox(height: 4),
                                 Text(
@@ -15241,7 +15899,6 @@ class FilmographyRow extends StatelessWidget {
             playedPercentage: item.playedPercentage,
             watchedBehavior: watchedBehavior,
             itemType: item.type,
-            autofocus: index == 0 && firstFocusNode != null,
             focusNode: index == 0 ? firstFocusNode : null,
             onKeyEvent: onItemKeyEvent == null
                 ? null
@@ -15326,7 +15983,6 @@ class SeerrAppearancesRow extends StatelessWidget {
             suppressFocusGlow: suppressFocusGlow,
             seerrMediaType: item.mediaType,
             seerrStatus: item.mediaInfo?.status,
-            autofocus: index == 0 && firstFocusNode != null,
             focusNode: index == 0 ? firstFocusNode : null,
             onKeyEvent: onItemKeyEvent == null
                 ? null
@@ -15410,7 +16066,6 @@ class SeerrCrewCreditsRow extends StatelessWidget {
             suppressFocusGlow: suppressFocusGlow,
             seerrMediaType: item.mediaType,
             seerrStatus: item.mediaInfo?.status,
-            autofocus: index == 0 && firstFocusNode != null,
             focusNode: index == 0 ? firstFocusNode : null,
             onKeyEvent: onItemKeyEvent == null
                 ? null

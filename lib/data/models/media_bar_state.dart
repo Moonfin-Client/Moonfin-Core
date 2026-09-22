@@ -14,8 +14,8 @@ class MediaBarReady extends MediaBarState {
 }
 
 class MediaBarError extends MediaBarState {
-  final String message;
-  const MediaBarError(this.message);
+  final Object error;
+  const MediaBarError(this.error);
 }
 
 class MediaBarDisabled extends MediaBarState {

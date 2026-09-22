@@ -4,6 +4,42 @@
   "@appTitle": {
     "description": "The application title"
   },
+  "animeMarkerFiller": "Filler",
+  "@animeMarkerFiller": {
+    "description": "Badge on an anime episode that is filler, meaning it is not adapted from the source manga"
+  },
+  "animeMarkerMixed": "Mixed",
+  "@animeMarkerMixed": {
+    "description": "Badge on an anime episode that mixes source material with filler, so it still contains story"
+  },
+  "animeMarkerAnimeCanon": "Anime Canon",
+  "@animeMarkerAnimeCanon": {
+    "description": "Badge on an anime episode that is not in the source manga but is part of the anime's own continuity"
+  },
+  "animeMarkerMangaCanon": "Manga Canon",
+  "@animeMarkerMangaCanon": {
+    "description": "Badge on an anime episode adapted from the source manga"
+  },
+  "animeMarkerSubbed": "Subbed",
+  "@animeMarkerSubbed": {
+    "description": "Badge on an anime episode or season whose only audio is Japanese, so it is watched with subtitles"
+  },
+  "animeMarkerDubbed": "Dubbed",
+  "@animeMarkerDubbed": {
+    "description": "Badge on an anime episode or season that has an audio track in a language other than Japanese"
+  },
+  "animeMarkerSubbedAndDubbed": "Subbed/Dubbed",
+  "@animeMarkerSubbedAndDubbed": {
+    "description": "Badge on anime that carries both the original Japanese audio and a dub, so it can be watched either way"
+  },
+  "animeMarkerPending": "Pending",
+  "@animeMarkerPending": {
+    "description": "Badge on an anime episode whose filler information the server has matched but not downloaded yet"
+  },
+  "animeMarkerRecap": "Recap",
+  "@animeMarkerRecap": {
+    "description": "Badge on an anime episode that recaps earlier episodes"
+  },
   "accountPreferences": "ACCOUNT PREFERENCES",
   "@accountPreferences": {
     "description": "Section header for account preferences settings"
@@ -192,7 +228,7 @@
   "@detailScreenStyle": {
     "description": "Label for the media detail screen layout style setting"
   },
-  "detailScreenStyleSubtitle": "Classic is the original centered moonfin layout. Modern is a responsive cinematic layout. Spotlight is a hero-first layout with pop-up content cards. Nouveau is a full-screen layout with sections stacked down the page.",
+  "detailScreenStyleSubtitle": "Classic is the original centered moonfin layout. Modern is a responsive cinematic layout. Spotlight is a hero-first layout with pop-up content cards. Nouveau is a full-screen layout with sections stacked down the page. Minimalist is artwork, one play button and the episodes.",
   "@detailScreenStyleSubtitle": {
     "description": "Explanation under the detail screen style setting"
   },
@@ -208,7 +244,7 @@
   "@detailScreenStyleSpotlight": {
     "description": "Detail screen style option: the hero-first layout with summary cards that open grid modals"
   },
-  "spotlightMoreActions": "More actions",
+  "spotlightMoreActions": "More Actions",
   "@spotlightMoreActions": {
     "description": "Tooltip/semantics of the spotlight ellipsis button and the title of the overflow actions menu it opens"
   },
@@ -259,6 +295,24 @@
   "spotlightPeopleCount": "{count, plural, =1{1 person} other{{count} people}}",
   "@spotlightPeopleCount": {
     "description": "Count fragment on spotlight summary cards: people",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "spotlightFactsCount": "{count, plural, =1{1 fact} other{{count} facts}}",
+  "@spotlightFactsCount": {
+    "description": "Count fragment on spotlight summary cards: Seerr facts",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "spotlightTagsCount": "{count, plural, =1{1 tag} other{{count} tags}}",
+  "@spotlightTagsCount": {
+    "description": "Count fragment on spotlight summary cards: genres, networks and keywords",
     "placeholders": {
       "count": {
         "type": "int"
@@ -376,6 +430,10 @@
   "detailScreenStyleNouveau": "Nouveau",
   "@detailScreenStyleNouveau": {
     "description": "Detail screen style option: nouveau full-screen layout with integrated sections"
+  },
+  "detailScreenStyleMinimalist": "Minimalist",
+  "@detailScreenStyleMinimalist": {
+    "description": "Detail screen style option: artwork, one play button and the episodes, and the style Kids Mode always shows"
   },
   "expandedTabs": "Expanded Tabs",
   "@expandedTabs": {
@@ -884,6 +942,10 @@
   "extraLarge": "Extra Large",
   "@extraLarge": {
     "description": "Size option: extra large"
+  },
+  "uiScaleGrandfather": "Grandfather",
+  "@uiScaleGrandfather": {
+    "description": "UI scaling option above extra large"
   },
   "scrollDirection": "Scroll Direction",
   "@scrollDirection": {
@@ -2546,6 +2608,15 @@
   "@subtitleDelay": {
     "description": "Title for subtitle delay adjuster"
   },
+  "subtitleDelayAuto": "Auto {value}",
+  "@subtitleDelayAuto": {
+    "description": "Read-only line under the subtitle delay showing a correction the player applied on its own, value is a formatted delay like +2000 ms",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
   "reset": "Reset",
   "@reset": {
     "description": "Button label to reset a value"
@@ -3156,6 +3227,10 @@
   "@premiere": {
     "description": "Premiere category filter label"
   },
+  "guideRepeatBadge": "Repeat",
+  "@guideRepeatBadge": {
+    "description": "Short badge label shown on a rerun in the guide hero band"
+  },
   "guideTimeline": "Guide Timeline",
   "@guideTimeline": {
     "description": "Section title for the TV guide timeline"
@@ -3172,6 +3247,10 @@
   "noChannelsFound": "No channels found",
   "@noChannelsFound": {
     "description": "Empty state when no TV channels match the filter"
+  },
+  "noProgramData": "No program data",
+  "@noProgramData": {
+    "description": "Guide cell label for a real EPG schedule gap, not a genre-filtered program"
   },
   "liveBadge": "LIVE",
   "@liveBadge": {
@@ -3282,6 +3361,10 @@
   "watch": "Watch",
   "@watch": {
     "description": "Button label to start watching a channel"
+  },
+  "watchChannelLive": "Watch channel live",
+  "@watchChannelLive": {
+    "description": "Button label to tune a channel live when the selected program is not the one that will play (ended or upcoming)"
   },
   "close": "Close",
   "@close": {
@@ -3617,6 +3700,109 @@
   "downloadedItems": "Downloaded Items",
   "@downloadedItems": {
     "description": "Section title for downloaded items list"
+  },
+  "activeDownloads": "Active Downloads",
+  "@activeDownloads": {
+    "description": "Tab title for downloads that are transferring or queued"
+  },
+  "savedMediaCount": "{count, plural, =1{1 item} other{{count} items}}",
+  "@savedMediaCount": {
+    "description": "How many downloads the saved media list holds, shown beside the total size",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "savedMediaOfLimit": "{used} of {limit}",
+  "@savedMediaOfLimit": {
+    "description": "Storage used against the configured limit, for example '56.4 GB of 80 GB'",
+    "placeholders": {
+      "used": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "savedMediaSelectItems": "Select items",
+  "@savedMediaSelectItems": {
+    "description": "Overflow menu entry that turns on multi-select in the saved media list"
+  },
+  "savedMediaNoDownloads": "Nothing saved yet",
+  "@savedMediaNoDownloads": {
+    "description": "Empty state title when no downloads are on the device"
+  },
+  "savedMediaNoDownloadsDetail": "Downloads you start appear here and play without a connection.",
+  "@savedMediaNoDownloadsDetail": {
+    "description": "Empty state body when no downloads are on the device"
+  },
+  "savedMediaNoActiveDownloads": "Nothing downloading right now",
+  "@savedMediaNoActiveDownloads": {
+    "description": "Empty state for the active downloads tab"
+  },
+  "savedMediaNoResults": "No downloads match that search",
+  "@savedMediaNoResults": {
+    "description": "Empty state when a search over saved media matches nothing"
+  },
+  "savedMediaPlayFromStart": "Play from start",
+  "@savedMediaPlayFromStart": {
+    "description": "Row menu action that restarts a partly watched download from the beginning"
+  },
+  "savedMediaGoToDetails": "Go to details",
+  "@savedMediaGoToDetails": {
+    "description": "Row menu action that opens the item's detail screen"
+  },
+  "savedMediaDeleteDownload": "Delete download",
+  "@savedMediaDeleteDownload": {
+    "description": "Row menu action that removes one downloaded file from the device"
+  },
+  "savedMediaDeleteSeason": "Delete {season}",
+  "@savedMediaDeleteSeason": {
+    "description": "Menu action that removes every saved episode of one season",
+    "placeholders": {
+      "season": {
+        "type": "String"
+      }
+    }
+  },
+  "savedMediaDeleteEpisodes": "{count, plural, =1{Delete 1 episode} other{Delete {count} episodes}}",
+  "@savedMediaDeleteEpisodes": {
+    "description": "Menu action that removes every saved episode of one series",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "savedMediaOpenShow": "Open show",
+  "@savedMediaOpenShow": {
+    "description": "Row menu action that opens a saved show's seasons and episodes"
+  },
+  "savedMediaPlayNextUnwatched": "Play next unwatched",
+  "@savedMediaPlayNextUnwatched": {
+    "description": "Row menu action that plays the earliest unwatched saved episode of a show"
+  },
+  "savedMediaRead": "Read",
+  "@savedMediaRead": {
+    "description": "Row menu action that opens a downloaded book in the reader"
+  },
+  "savedMediaCancelDownload": "Cancel download",
+  "@savedMediaCancelDownload": {
+    "description": "Row menu action that stops a running or queued transfer"
+  },
+  "sortBySize": "Size",
+  "@sortBySize": {
+    "description": "Sort option: largest download first"
+  },
+  "sortByName": "Name",
+  "@sortByName": {
+    "description": "Sort option: alphabetical by title"
+  },
+  "sortByDateAdded": "Date added",
+  "@sortByDateAdded": {
+    "description": "Sort option: most recently downloaded first"
   },
   "storageLimit": "Storage Limit",
   "@storageLimit": {
@@ -4128,6 +4314,14 @@
   "@autoCrop": {
     "description": "Zoom mode: auto crop"
   },
+  "cropBlackBars": "Crop black bars",
+  "@cropBlackBars": {
+    "description": "Setting to detect and crop encoded letterbox/pillarbox bars"
+  },
+  "settingsCropBlackBarsDescription": "Detect encoded letterbox bars, crop them, then fill the screen.",
+  "@settingsCropBlackBarsDescription": {
+    "description": "Description for the crop black bars playback setting"
+  },
   "stretch": "Stretch",
   "@stretch": {
     "description": "Zoom mode: stretch"
@@ -4212,6 +4406,14 @@
   "@dimVideoShowOverview": {
     "description": "Description for show description on pause"
   },
+  "showChapterMarkers": "Chapter Marks",
+  "@showChapterMarkers": {
+    "description": "Setting label for drawing a mark per chapter on the player seek bar"
+  },
+  "showChapterMarkersDescription": "Mark where each chapter starts on the seek bar",
+  "@showChapterMarkersDescription": {
+    "description": "Description for the chapter marks setting"
+  },
   "osdLockButton": "OSD Lock Button",
   "@osdLockButton": {
     "description": "Setting for OSD lock button"
@@ -4251,6 +4453,95 @@
   "detailButtonsSectionDescription": "Play is always first and the locked buttons are always shown. Everything else is up to you, and each kind of device keeps its own list.",
   "@detailButtonsSectionDescription": {
     "description": "Explains that the play buttons can't be hidden and that the list is per device kind"
+  },
+  "actionButtonsOnScreen": "Action Buttons on Screen",
+  "@actionButtonsOnScreen": {
+    "description": "Setting title for choosing how many action buttons are visible before overflowing into More Actions"
+  },
+  "actionButtonsOnScreenDescription": "Customize how many action buttons appear before folding into the More Actions menu.",
+  "@actionButtonsOnScreenDescription": {
+    "description": "Subtitle explaining how action buttons overflow into More Actions"
+  },
+  "actionButtonsOnScreenAuto": "Auto (Theme Default)",
+  "@actionButtonsOnScreenAuto": {
+    "description": "Option showing theme default number of action buttons"
+  },
+  "actionButtonsOnScreenPlayOnly": "1 (Play only)",
+  "@actionButtonsOnScreenPlayOnly": {
+    "description": "Option showing only the play action button on screen"
+  },
+  "actionButtonsOnScreenAll": "All (Horizontal Scroll)",
+  "@actionButtonsOnScreenAll": {
+    "description": "Option showing all action buttons in a horizontal scrollable row"
+  },
+  "detailMetadata": "Metadata Row",
+  "@detailMetadata": {
+    "description": "Settings screen for choosing and reordering details screen metadata items"
+  },
+  "detailMetadataDescription": "Choose and reorder what metadata the details screen shows",
+  "@detailMetadataDescription": {
+    "description": "Subtitle for the details metadata settings tile"
+  },
+  "detailMetadataSectionDescription": "Turn metadata items on or off, and arrange the order they appear on the details screen. Each kind of device keeps its own list.",
+  "@detailMetadataSectionDescription": {
+    "description": "Explains how to customize and reorder details screen metadata items"
+  },
+  "detailMetadataYear": "Release Year",
+  "@detailMetadataYear": {
+    "description": "Item label for release or production year in metadata row"
+  },
+  "detailMetadataParentalRating": "Parental Rating",
+  "@detailMetadataParentalRating": {
+    "description": "Item label for parental content rating in metadata row"
+  },
+  "detailMetadataRuntimeAndSeasons": "Runtime & Seasons",
+  "@detailMetadataRuntimeAndSeasons": {
+    "description": "Item label for runtime or season/episode counts in metadata row"
+  },
+  "detailMetadataStatus": "Series Status",
+  "@detailMetadataStatus": {
+    "description": "Item label for series status badge in metadata row"
+  },
+  "detailMetadataStatusSubtitle": "Shows whether the series is continuing, ended, or returning",
+  "@detailMetadataStatusSubtitle": {
+    "description": "Subtitle explaining the series status metadata badge"
+  },
+  "detailMetadataGenres": "Genres",
+  "@detailMetadataGenres": {
+    "description": "Item label for genre tags in metadata row"
+  },
+  "detailMetadataSeerrAvailability": "Seerr Availability",
+  "@detailMetadataSeerrAvailability": {
+    "description": "Item label for Seerr request and availability badge in metadata row"
+  },
+  "detailMetadataSeerrAvailabilitySubtitle": "Shows request and media availability status from Seerr",
+  "@detailMetadataSeerrAvailabilitySubtitle": {
+    "description": "Subtitle explaining the Seerr availability metadata badge"
+  },
+  "detailMetadataUpcomingEpisodeDate": "Upcoming Episodes",
+  "@detailMetadataUpcomingEpisodeDate": {
+    "description": "Item label for upcoming episode air date badge in metadata row"
+  },
+  "detailMetadataUpcomingEpisodeDateSubtitle": "Uses Sonarr and TMDB to show upcoming release dates",
+  "@detailMetadataUpcomingEpisodeDateSubtitle": {
+    "description": "Subtitle describing data sources for upcoming episode air dates in metadata row"
+  },
+  "upcomingEpisodeNext": "Next: {date} (S{season}:E{episode})",
+  "@upcomingEpisodeNext": {
+    "description": "Formatted badge text for an upcoming episode release date",
+    "placeholders": {
+      "date": {"type": "String"},
+      "season": {"type": "int"},
+      "episode": {"type": "int"}
+    }
+  },
+  "upcomingEpisodeToday": "Today",
+  "@upcomingEpisodeToday": {
+    "description": "Upcoming episode airs today"
+  },
+  "upcomingEpisodeTomorrow": "Tomorrow",
+  "@upcomingEpisodeTomorrow": {
+    "description": "Upcoming episode airs tomorrow"
   },
   "moveUp": "Move Up",
   "@moveUp": {
@@ -4528,6 +4819,14 @@
   "settingsAudioPassthroughModeDisabled": "Disabled (always decode on this device)",
   "settingsAudioPassthroughModeAuto": "Auto (match detected device support)",
   "settingsAudioPassthroughModeManual": "Manual (choose formats below)",
+  "settingsAudioPassthroughOutput": "Passthrough output",
+  "@settingsAudioPassthroughOutput": {
+    "description": "Title of the RAW-vs-IEC passthrough packer selector (Android TV, Media3 engine)"
+  },
+  "settingsAudioPassthroughOutputDescription": "Who packs bitstreams for the HDMI link. Try the app packer if passthrough is silent or glitchy on this device.",
+  "settingsAudioPassthroughOutputPlatform": "Automatic, system packer (AudioTrack RAW)",
+  "settingsAudioPassthroughOutputIec": "App packer (AudioTrack IEC)",
+  "settingsAudioPassthroughOutputIecLabel": "App (IEC)",
   "settingsDownmixToStereoDescription": "Mix all decoded audio down to two channels.",
   "settingsAudioEac3IncludesAtmos": "Bitstream E-AC-3, including Dolby Atmos (JOC).",
   "settingsAudioDtsHdIncludesDtsX": "Bitstream DTS-HD, including DTS:X.",
@@ -4917,6 +5216,26 @@
   "semiTransparentBlack": "Semi-transparent Black",
   "@semiTransparentBlack": {
     "description": "Color: semi-transparent black"
+  },
+  "semiTransparentWhite": "Semi-transparent White",
+  "@semiTransparentWhite": {
+    "description": "Color: semi-transparent white"
+  },
+  "lightGray": "Light Gray",
+  "@lightGray": {
+    "description": "Color: light gray"
+  },
+  "darkGray": "Dark Gray",
+  "@darkGray": {
+    "description": "Color: dark gray"
+  },
+  "blue": "Blue",
+  "@blue": {
+    "description": "Color: blue"
+  },
+  "magenta": "Magenta",
+  "@magenta": {
+    "description": "Color: magenta"
   },
   "global": "Global",
   "@global": {
@@ -6452,6 +6771,10 @@
   "playInMoonfin": "Play in Moonfin",
   "@playInMoonfin": {
     "description": "Button to play available media in Moonfin"
+  },
+  "requestedByLabel": "Requested by",
+  "@requestedByLabel": {
+    "description": "Label above the name of whoever requested media, where the name sits on its own line"
   },
   "requestedByName": "Requested by {name}",
   "@requestedByName": {
@@ -8909,7 +9232,33 @@
       "length": {"type": "int"}
     }
   },
+  "kidsMode": "Kids Mode",
+  "@kidsMode": {
+    "description": "Label for the setting that strips the app back to what a child needs"
+  },
+  "kidsModeSubtitle": "Simplify the app and lock the way out with a PIN",
+  "@kidsModeSubtitle": {
+    "description": "Explanation under the Kids Mode setting"
+  },
+  "kidsModeExit": "Exit Kids Mode",
+  "@kidsModeExit": {
+    "description": "Settings entry that turns Kids Mode off, shown while Kids Mode is on"
+  },
+  "kidsModeExitSubtitle": "Enter your PIN to restore the full app",
+  "@kidsModeExitSubtitle": {
+    "description": "Explanation under the Exit Kids Mode entry"
+  },
   "pinIncorrect": "Incorrect PIN",
+  "pinTryAgainIn": "Too many attempts. Try again in {wait}.",
+  "@pinTryAgainIn": {
+    "description": "Shown when PIN entry is locked after repeated wrong guesses",
+    "placeholders": {
+      "wait": {
+        "type": "String",
+        "example": "30s"
+      }
+    }
+  },
   "pinMismatch": "PINs do not match",
   "pinForgot": "Forgot PIN?",
   "pinClear": "Clear",
@@ -9109,6 +9458,22 @@
   "@contextMenuAddToCollection": {
     "description": "Context menu action to add an item to a collection"
   },
+  "contextMenuRemoveFromCollection": "Remove from Collection",
+  "@contextMenuRemoveFromCollection": {
+    "description": "Context menu action to remove an item from the collection whose page it is shown on"
+  },
+  "removeFromCollectionConfirm": "Remove {item} from {collection}? The item stays in your library.",
+  "@removeFromCollectionConfirm": {
+    "description": "Confirmation shown before removing an item from a collection",
+    "placeholders": {
+      "item": {"type": "String"},
+      "collection": {"type": "String"}
+    }
+  },
+  "removeFromCollectionFailed": "Failed to remove from collection",
+  "@removeFromCollectionFailed": {
+    "description": "Error shown when removing an item from a collection fails"
+  },
   "settingsAdministrationSubtitle": "Access the server administration panel",
   "settingsAccountSecurity": "Account & Security",
   "settingsAccountSecuritySubtitle": "Authentication, PIN code, and parental controls",
@@ -9137,6 +9502,18 @@
     "description": "Description for the allow self-signed certificates setting"
   },
   "settingsPrivacyAndSafetySection": "PRIVACY & SAFETY",
+  "itemBlockedByParentalControls": "This isn't available",
+  "@itemBlockedByParentalControls": {
+    "description": "Shown instead of a title whose rating the viewer has blocked. Deliberately says nothing about what the title is."
+  },
+  "blockedRatingsCeilingHint": "Blocking a rating also blocks everything stronger than it.",
+  "@blockedRatingsCeilingHint": {
+    "description": "Explains that the blocked ratings list works as a ceiling"
+  },
+  "blockedRatingsUnrankedSection": "Only blocks itself",
+  "@blockedRatingsUnrankedSection": {
+    "description": "Heading for ratings the app can't rank, which block only the exact rating rather than everything above it"
+  },
   "settingsBlockedRatings": "Blocked Ratings",
   "settingsGeneralStyle": "General Style",
   "settingsGeneralStyleSubtitle": "Theme accents, backdrops, and watched indicators",
@@ -9660,7 +10037,8 @@
   "externalPlayerAskEachTimeSubtitle": "Show app chooser when playback starts.",
   "loadingInstalledPlayers": "Loading installed players...",
   "connection": "Connection",
-  "audioTranscodeTarget": "Audio Transcode Target",
+  "locallyDecodedCodecs": "Locally Decoded Codecs",
+  "transcodeTargetCodecs": "Transcode Target Codecs",
   "passthrough": "Passthrough",
   "supportedOnThisDevice": "Supported on this device",
   "notSupportedOnThisDevice": "Not Supported on this device",
@@ -9753,6 +10131,562 @@
   "warnings": "Warnings",
   "disk": "Disk",
   "openInBrowser": "Open in Browser",
+  "achievementBadges": "Achievement Badges",
+  "@achievementBadges": {
+    "description": "Title of the Achievement Badges plugin panel"
+  },
+  "achievementBadgesSubtitle": "Badges, ranks and quests earned from what you watch",
+  "@achievementBadgesSubtitle": {
+    "description": "Subtitle of the Achievement Badges entry in Integrations"
+  },
+  "achievementsBadges": "Badges",
+  "@achievementsBadges": {
+    "description": "Badges section title"
+  },
+  "achievementsBadgeCount": "{unlocked} of {total} badges",
+  "@achievementsBadgeCount": {
+    "description": "How many badges are unlocked out of the total",
+    "placeholders": {
+      "unlocked": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementsQuests": "Quests",
+  "@achievementsQuests": {
+    "description": "Quests section title"
+  },
+  "achievementsQuestCount": "{count} completed",
+  "@achievementsQuestCount": {
+    "description": "How many quests are completed",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementsLeaderboard": "Leaderboard",
+  "@achievementsLeaderboard": {
+    "description": "Leaderboard section title"
+  },
+  "achievementsLeaderboardSubtitle": "How you compare with other users on this server",
+  "@achievementsLeaderboardSubtitle": {
+    "description": "Leaderboard section subtitle"
+  },
+  "achievementsRecap": "Recap",
+  "@achievementsRecap": {
+    "description": "Recap section title"
+  },
+  "achievementsRecapSubtitle": "What you watched recently",
+  "@achievementsRecapSubtitle": {
+    "description": "Recap section subtitle"
+  },
+  "achievementsLibraryCompletion": "Library completion",
+  "@achievementsLibraryCompletion": {
+    "description": "Library completion section title"
+  },
+  "achievementsLibraryCount": "{count} libraries",
+  "@achievementsLibraryCount": {
+    "description": "How many libraries have a completion percentage",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementsScore": "{score} points",
+  "@achievementsScore": {
+    "description": "The score a user has earned",
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementsScoreLabel": "Score",
+  "@achievementsScoreLabel": {
+    "description": "Leaderboard category: overall score"
+  },
+  "achievementsTopRank": "Top rank reached",
+  "@achievementsTopRank": {
+    "description": "Shown instead of progress when the user is at the highest rank"
+  },
+  "achievementsPointsToNextRank": "{points} points to {tier}",
+  "@achievementsPointsToNextRank": {
+    "description": "Points needed to reach the next rank tier",
+    "placeholders": {
+      "points": {
+        "type": "int"
+      },
+      "tier": {
+        "type": "String"
+      }
+    }
+  },
+  "achievementsCurrentStreak": "{days} day streak",
+  "@achievementsCurrentStreak": {
+    "description": "The current watch streak",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementsBestStreak": "Best: {days} days",
+  "@achievementsBestStreak": {
+    "description": "The best watch streak",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementsShowcase": "Showcase",
+  "@achievementsShowcase": {
+    "description": "The badges a user pinned to their profile"
+  },
+  "achievementsUnlocked": "Unlocked",
+  "@achievementsUnlocked": {
+    "description": "Badge filter: unlocked only"
+  },
+  "achievementsLocked": "Locked",
+  "@achievementsLocked": {
+    "description": "Badge filter: locked only"
+  },
+  "achievementsNothingHere": "Nothing here yet.",
+  "@achievementsNothingHere": {
+    "description": "Empty state for an achievements list"
+  },
+  "achievementsHiddenBadge": "Hidden achievement",
+  "@achievementsHiddenBadge": {
+    "description": "Placeholder name for a secret badge that is still locked"
+  },
+  "achievementsUnlockedOn": "Unlocked {date}",
+  "@achievementsUnlockedOn": {
+    "description": "When a badge was unlocked",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "achievementsPoints": "{points} pts",
+  "@achievementsPoints": {
+    "description": "Points a badge is worth",
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementsDailyQuests": "Daily",
+  "@achievementsDailyQuests": {
+    "description": "Daily quests section"
+  },
+  "achievementsWeeklyQuests": "Weekly",
+  "@achievementsWeeklyQuests": {
+    "description": "Weekly quests section"
+  },
+  "achievementsQuestReward": "+{points}",
+  "@achievementsQuestReward": {
+    "description": "Points a quest pays out",
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementsRerollDaily": "Reroll daily quests",
+  "@achievementsRerollDaily": {
+    "description": "Action that swaps the daily quest set for a new one"
+  },
+  "achievementsRerollWeekly": "Reroll weekly quests",
+  "@achievementsRerollWeekly": {
+    "description": "Action that swaps the weekly quest set for a new one"
+  },
+  "achievementsRerollOffer": "Swap this set for a different one",
+  "@achievementsRerollOffer": {
+    "description": "Subtitle on the reroll row while a reroll is still available"
+  },
+  "achievementsRerollSpentDaily": "Used today, comes back at midnight UTC",
+  "@achievementsRerollSpentDaily": {
+    "description": "Subtitle on the reroll row once the daily reroll is spent"
+  },
+  "achievementsRerollSpentWeekly": "Used this week, comes back Monday UTC",
+  "@achievementsRerollSpentWeekly": {
+    "description": "Subtitle on the reroll row once the weekly reroll is spent"
+  },
+  "achievementsRerollConfirm": "Reroll these quests?",
+  "@achievementsRerollConfirm": {
+    "description": "Title of the dialog confirming a quest reroll"
+  },
+  "achievementsRerollConfirmBody": "You get one daily and one weekly reroll, and this spends it.",
+  "@achievementsRerollConfirmBody": {
+    "description": "Body of the dialog confirming a quest reroll"
+  },
+  "achievementsRerollFailed": "Could not reroll those quests.",
+  "@achievementsRerollFailed": {
+    "description": "Message shown when a quest reroll did not go through"
+  },
+  "achievementsSuggested": "Suggested items to watch",
+  "@achievementsSuggested": {
+    "description": "Header above the items the plugin suggests for a badge"
+  },
+  "achievementsNoSuggestions": "Nothing to suggest for this badge.",
+  "@achievementsNoSuggestions": {
+    "description": "Shown when the plugin has no items to recommend for a badge"
+  },
+  "achievementsProgressLabel": "Progress",
+  "@achievementsProgressLabel": {
+    "description": "Label above a badge's current progress figure"
+  },
+  "achievementsLoadout": "Loadout",
+  "@achievementsLoadout": {
+    "description": "Screen holding the score bank and the power-ups a user owns"
+  },
+  "achievementsLoadoutSubtitle": "Score to spend and the boosts you hold",
+  "@achievementsLoadoutSubtitle": {
+    "description": "Subtitle on the row that opens the loadout"
+  },
+  "achievementsAppearance": "Appearance",
+  "@achievementsAppearance": {
+    "description": "Row that opens the avatars and rank titles a profile can wear"
+  },
+  "achievementsAppearanceSubtitle": "The avatar and title on your profile",
+  "@achievementsAppearanceSubtitle": {
+    "description": "Subtitle on the row that opens the appearance screen"
+  },
+  "achievementsAvatars": "Avatars",
+  "@achievementsAvatars": {
+    "description": "Tab of the icons that can sit on a profile"
+  },
+  "achievementsTitles": "Titles",
+  "@achievementsTitles": {
+    "description": "Tab of the titles that can replace a rank name"
+  },
+  "achievementsEquipped": "Equipped",
+  "@achievementsEquipped": {
+    "description": "State of the avatar or title a profile is wearing"
+  },
+  "achievementsOwned": "Owned",
+  "@achievementsOwned": {
+    "description": "State of an avatar or title that is held but not worn"
+  },
+  "achievementsEarnedAt": "Earned at {score} lifetime score",
+  "@achievementsEarnedAt": {
+    "description": "What a user has to reach to unlock a cosmetic without paying",
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementsAppearanceEmpty": "This server has no avatars or titles to wear.",
+  "@achievementsAppearanceEmpty": {
+    "description": "Shown when the plugin carries no cosmetics this panel can draw"
+  },
+  "achievementsAppearanceFailed": "Could not change how the profile looks.",
+  "@achievementsAppearanceFailed": {
+    "description": "Shown when equipping or removing an avatar or title fails"
+  },
+  "achievementsPowerUps": "Power-ups",
+  "@achievementsPowerUps": {
+    "description": "Section header above the consumable boosts a user holds"
+  },
+  "achievementsStats": "Stats",
+  "@achievementsStats": {
+    "description": "Screen of watch counters and server figures"
+  },
+  "achievementsStatsSubtitle": "Your records and how the server is doing",
+  "@achievementsStatsSubtitle": {
+    "description": "Subtitle on the row that opens stats"
+  },
+  "achievementsStatsWatched": "Watched",
+  "@achievementsStatsWatched": {
+    "description": "Section of counters for what a user has watched"
+  },
+  "achievementsStatsBests": "Bests",
+  "@achievementsStatsBests": {
+    "description": "Section of a user's highest counters"
+  },
+  "achievementsStatsHabits": "Habits",
+  "@achievementsStatsHabits": {
+    "description": "Section of counters for when a user watches"
+  },
+  "achievementsStatsVariety": "Variety",
+  "@achievementsStatsVariety": {
+    "description": "Section of counters for how widely a user watches"
+  },
+  "achievementsStatsServer": "This server",
+  "@achievementsStatsServer": {
+    "description": "Section of figures covering every user"
+  },
+  "achievementsStatsClock": "When you watch",
+  "@achievementsStatsClock": {
+    "description": "Header above the hour of day chart"
+  },
+  "achievementsStatItems": "Items watched",
+  "@achievementsStatItems": {
+    "description": "Counter label"
+  },
+  "achievementsStatMovies": "Films watched",
+  "@achievementsStatMovies": {
+    "description": "Counter label"
+  },
+  "achievementsStatSeries": "Series finished",
+  "@achievementsStatSeries": {
+    "description": "Counter label"
+  },
+  "achievementsStatHours": "Hours watched",
+  "@achievementsStatHours": {
+    "description": "Counter label"
+  },
+  "achievementsStatDays": "Days watched",
+  "@achievementsStatDays": {
+    "description": "Counter label"
+  },
+  "achievementsStatRewatches": "Rewatches",
+  "@achievementsStatRewatches": {
+    "description": "Counter label"
+  },
+  "achievementsStatBestWatchStreak": "Best watch streak",
+  "@achievementsStatBestWatchStreak": {
+    "description": "Counter label"
+  },
+  "achievementsStatBestLoginStreak": "Best login streak",
+  "@achievementsStatBestLoginStreak": {
+    "description": "Counter label"
+  },
+  "achievementsStatMostEpisodes": "Most episodes in a day",
+  "@achievementsStatMostEpisodes": {
+    "description": "Counter label"
+  },
+  "achievementsStatMostMovies": "Most films in a day",
+  "@achievementsStatMostMovies": {
+    "description": "Counter label"
+  },
+  "achievementsStatLongestItem": "Longest single item",
+  "@achievementsStatLongestItem": {
+    "description": "Counter label, a run time in minutes"
+  },
+  "achievementsStatBestCombo": "Best combo",
+  "@achievementsStatBestCombo": {
+    "description": "Counter label"
+  },
+  "achievementsStatLateNight": "Late night sessions",
+  "@achievementsStatLateNight": {
+    "description": "Counter label"
+  },
+  "achievementsStatEarlyMorning": "Early morning sessions",
+  "@achievementsStatEarlyMorning": {
+    "description": "Counter label"
+  },
+  "achievementsStatWeekend": "Weekend sessions",
+  "@achievementsStatWeekend": {
+    "description": "Counter label"
+  },
+  "achievementsStatDaysSignedIn": "Days signed in",
+  "@achievementsStatDaysSignedIn": {
+    "description": "Counter label"
+  },
+  "achievementsStatLibraries": "Libraries visited",
+  "@achievementsStatLibraries": {
+    "description": "Counter label"
+  },
+  "achievementsStatGenres": "Genres watched",
+  "@achievementsStatGenres": {
+    "description": "Counter label"
+  },
+  "achievementsStatDecades": "Decades watched",
+  "@achievementsStatDecades": {
+    "description": "Counter label"
+  },
+  "achievementsStatCountries": "Countries watched",
+  "@achievementsStatCountries": {
+    "description": "Counter label"
+  },
+  "achievementsStatLanguages": "Languages watched",
+  "@achievementsStatLanguages": {
+    "description": "Counter label"
+  },
+  "achievementsStatUsers": "Users",
+  "@achievementsStatUsers": {
+    "description": "Counter label for how many people use the server"
+  },
+  "achievementsStatBadgesUnlocked": "Badges unlocked",
+  "@achievementsStatBadgesUnlocked": {
+    "description": "Counter label"
+  },
+  "achievementsStatScoreEarned": "Score earned",
+  "@achievementsStatScoreEarned": {
+    "description": "Counter label"
+  },
+  "achievementsStatCommonBadge": "Most common badge",
+  "@achievementsStatCommonBadge": {
+    "description": "Label for the badge the most users hold"
+  },
+  "achievementsActivity": "Activity",
+  "@achievementsActivity": {
+    "description": "Screen listing badges unlocked across the server"
+  },
+  "achievementsActivitySubtitle": "What the server has unlocked lately",
+  "@achievementsActivitySubtitle": {
+    "description": "Subtitle on the row that opens the activity feed"
+  },
+  "achievementsActivityUnlocked": "{user} unlocked {badge}",
+  "@achievementsActivityUnlocked": {
+    "description": "One line of the activity feed",
+    "placeholders": {
+      "user": {
+        "type": "String"
+      },
+      "badge": {
+        "type": "String"
+      }
+    }
+  },
+  "achievementsShop": "Shop",
+  "@achievementsShop": {
+    "description": "Screen selling power-ups for score"
+  },
+  "achievementsShopSubtitle": "Spend score on more boosts",
+  "@achievementsShopSubtitle": {
+    "description": "Subtitle on the row that opens the shop"
+  },
+  "achievementsShopPack": "{name} \u00d7{count}",
+  "@achievementsShopPack": {
+    "description": "A shop item that grants more than one of a power-up",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementsShopEmpty": "Nothing for sale right now.",
+  "@achievementsShopEmpty": {
+    "description": "Shown when the shop catalogue came back with nothing"
+  },
+  "achievementsBuyConfirm": "Buy this?",
+  "@achievementsBuyConfirm": {
+    "description": "Title of the dialog confirming a purchase"
+  },
+  "achievementsBuyConfirmBody": "It comes straight out of your score bank.",
+  "@achievementsBuyConfirmBody": {
+    "description": "Body of the dialog confirming a purchase"
+  },
+  "achievementsBuyFailed": "Could not buy that.",
+  "@achievementsBuyFailed": {
+    "description": "Message shown when a purchase did not go through"
+  },
+  "achievementsScoreBank": "Score bank",
+  "@achievementsScoreBank": {
+    "description": "Label for the score a user still has to spend"
+  },
+  "achievementsBoost": "XP Boost",
+  "@achievementsBoost": {
+    "description": "Power-up that doubles score for an hour"
+  },
+  "achievementsBoostBody": "Doubles score for an hour. Using it again restarts the hour.",
+  "@achievementsBoostBody": {
+    "description": "What the XP Boost power-up does"
+  },
+  "achievementsDoubleCredit": "Double Credit",
+  "@achievementsDoubleCredit": {
+    "description": "Power-up that makes the next item count twice"
+  },
+  "achievementsDoubleCreditBody": "The next thing you finish counts twice towards badges.",
+  "@achievementsDoubleCreditBody": {
+    "description": "What the Double Credit power-up does"
+  },
+  "achievementsStreakFreeze": "Streak Freeze",
+  "@achievementsStreakFreeze": {
+    "description": "Power-up that protects a watch streak"
+  },
+  "achievementsStreakFreezeBody": "Covers one missed day. Only one can be banked.",
+  "@achievementsStreakFreezeBody": {
+    "description": "What the Streak Freeze power-up does"
+  },
+  "achievementsPowerUpHeld": "{count, plural, =0{None held} =1{1 held} other{{count} held}}",
+  "@achievementsPowerUpHeld": {
+    "description": "How many of a power-up the user owns",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementsPowerUpActive": "Running now",
+  "@achievementsPowerUpActive": {
+    "description": "Marker on a power-up that is currently in effect"
+  },
+  "achievementsUsePowerUp": "Use this power-up?",
+  "@achievementsUsePowerUp": {
+    "description": "Title of the dialog confirming a power-up is spent"
+  },
+  "achievementsUsePowerUpBody": "It's spent as soon as you confirm.",
+  "@achievementsUsePowerUpBody": {
+    "description": "Body of the dialog confirming a power-up is spent"
+  },
+  "achievementsPowerUpFailed": "Could not use that power-up.",
+  "@achievementsPowerUpFailed": {
+    "description": "Message shown when using a power-up did not go through"
+  },
+  "achievementsHours": "Hours",
+  "@achievementsHours": {
+    "description": "Leaderboard category: hours watched"
+  },
+  "achievementsStreak": "Streak",
+  "@achievementsStreak": {
+    "description": "Leaderboard category: best watch streak"
+  },
+  "achievementsPeriodWeek": "Week",
+  "@achievementsPeriodWeek": {
+    "description": "Recap period: the last week"
+  },
+  "achievementsPeriodMonth": "Month",
+  "@achievementsPeriodMonth": {
+    "description": "Recap period: the last month"
+  },
+  "achievementsPeriodYear": "Year",
+  "@achievementsPeriodYear": {
+    "description": "Recap period: the last year"
+  },
+  "achievementsDaysWatched": "{count} days watched",
+  "@achievementsDaysWatched": {
+    "description": "How many days the user watched something",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementsBadgesEarned": "{count} badges earned",
+  "@achievementsBadgesEarned": {
+    "description": "How many badges were earned in the recap period",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementsTopDirectors": "Top directors",
+  "@achievementsTopDirectors": {
+    "description": "Recap list of most-watched directors"
+  },
+  "achievementsTopActors": "Top actors",
+  "@achievementsTopActors": {
+    "description": "Recap list of most-watched actors"
+  },
+  "achievementsLoadFailed": "Could not load your achievements.",
+  "@achievementsLoadFailed": {
+    "description": "Shown when the Achievement Badges plugin data fails to load"
+  },
   "embeddedBrowserNotAvailable": "Embedded browser is not available on this platform.",
   "adminRestartServerConfirmation": "Are you sure you want to restart the server?",
   "adminShutdownServerConfirmation": "Are you sure you want to shut down the server? You will need to restart it manually.",
@@ -10334,6 +11268,10 @@
   "@playlistTypeVideo": {
     "description": "Filter checkbox label for video playlists"
   },
+  "playlistTypeMusicVideo": "Music Video",
+  "@playlistTypeMusicVideo": {
+    "description": "Filter checkbox label for music video playlists"
+  },
   "playlistTypeAudio": "Audio (Music)",
   "@playlistTypeAudio": {
     "description": "Filter checkbox label for audio/music playlists"
@@ -10357,6 +11295,10 @@
   "videoPlaylistsSection": "Video Playlists",
   "@videoPlaylistsSection": {
     "description": "Section header above video playlists when Group by Type is enabled"
+  },
+  "musicVideoPlaylistsSection": "Music Video Playlists",
+  "@musicVideoPlaylistsSection": {
+    "description": "Section header above music video playlists when Group by Type is enabled"
   },
   "audioPlaylistsSection": "Audio Playlists",
   "@audioPlaylistsSection": {
@@ -10716,6 +11658,14 @@
   "@setupDetailNouveauHint": {
     "description": "What the nouveau detail screen style gives you"
   },
+  "setupStyleMinimalist": "Minimalist",
+  "@setupStyleMinimalist": {
+    "description": "Name of the stripped-back detail layout, offered in the setup wizard"
+  },
+  "setupDetailMinimalistHint": "Artwork, one play button and the episodes.",
+  "@setupDetailMinimalistHint": {
+    "description": "What the minimalist detail screen style gives you"
+  },
   "setupPickALook": "Pick a look",
   "@setupPickALook": {
     "description": "Label above the theme swatches on the final setup screen"
@@ -10767,6 +11717,14 @@
   "serverMessagesShowButtonSubtitle": "Adds a button to the menu for messages sent by your server admin",
   "@serverMessagesShowButtonSubtitle": {
     "description": "Explains the setting that shows or hides the messages button"
+  },
+  "showBookDiscoverTab": "Show Book Library Discovery",
+  "@showBookDiscoverTab": {
+    "description": "Setting that shows or hides the discovery tab in book and audiobook libraries"
+  },
+  "showBookDiscoverTabDescription": "Browse titles from Open Library and LibriVox in your book and audiobook libraries",
+  "@showBookDiscoverTabDescription": {
+    "description": "Explains the setting that shows or hides the discovery tab in book libraries"
   },
   "autoDownloadNewEpisodes": "Auto-download new episodes",
   "@autoDownloadNewEpisodes": {
@@ -11165,5 +12123,21 @@
   "pageTransitionFadeLong": "Long Fade",
   "@pageTransitionFadeLong": {
     "description": "Option label for long fade page transition"
+  },
+  "siriRemoteSwipeSensitivity": "Touchpad swipe sensitivity",
+  "@siriRemoteSwipeSensitivity": {
+    "description": "Apple TV settings label for how far a swipe on the Siri Remote touchpad moves the focus highlight"
+  },
+  "siriRemoteSwipeSensitivityDescription": "How far focus moves for each swipe on the Siri Remote touchpad",
+  "@siriRemoteSwipeSensitivityDescription": {
+    "description": "Apple TV settings subtitle for the Siri Remote touchpad swipe sensitivity option"
+  },
+  "keepVideoClearOfDynamicIsland": "Keep video clear of the Dynamic Island",
+  "@keepVideoClearOfDynamicIsland": {
+    "description": "iPhone playback setting that holds the picture back from the camera housing in landscape"
+  },
+  "keepVideoClearOfDynamicIslandDescription": "In landscape the camera housing covers one edge of the screen. This holds the picture back from it, which only changes anything for video wide enough to reach that far.",
+  "@keepVideoClearOfDynamicIslandDescription": {
+    "description": "Description for the iPhone setting that keeps video clear of the Dynamic Island"
   }
 }

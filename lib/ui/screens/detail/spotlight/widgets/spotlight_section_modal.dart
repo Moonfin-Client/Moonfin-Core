@@ -5,6 +5,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 import '../../../../../util/focus/dpad_keys.dart';
 import '../../../../../util/platform_detection.dart';
 import '../../../../widgets/adaptive/sf_symbol.dart';
+import '../../../../widgets/focus/focusable_wrapper.dart';
 import '../../../../widgets/overlay_sheet.dart';
 
 /// One section inside a [SpotlightSectionModal]: an optional header plus a
@@ -13,15 +14,21 @@ import '../../../../widgets/overlay_sheet.dart';
 /// as a pill next to the title. Leave [title] off for content that stands on
 /// its own, like the Seerr chips and stats.
 class SpotlightModalSection {
+  final String? id;
   final String? title;
   final int? count;
+  final bool collapsible;
+  final bool initiallyExpanded;
   final Widget Function(BuildContext context, FocusNode? firstFocusNode)
   builder;
 
   const SpotlightModalSection({
+    this.id,
     this.title,
     required this.builder,
     this.count,
+    this.collapsible = false,
+    this.initiallyExpanded = true,
   });
 }
 
@@ -117,6 +124,24 @@ class _SpotlightModalShellState extends State<_SpotlightModalShell> {
   late String _title = widget.title;
   late IconData? _icon = widget.icon;
   late List<SpotlightModalSection> _sections = widget.sections;
+  final Map<String, bool> _expandedSections = {};
+
+  String _sectionKey(SpotlightModalSection section, int index) =>
+      section.id ?? section.title ?? '$index';
+
+  bool _isSectionExpanded(SpotlightModalSection section, int index) {
+    if (!section.collapsible) return true;
+    final key = _sectionKey(section, index);
+    return _expandedSections[key] ?? section.initiallyExpanded;
+  }
+
+  void _toggleSection(SpotlightModalSection section, int index) {
+    final key = _sectionKey(section, index);
+    final current = _isSectionExpanded(section, index);
+    setState(() {
+      _expandedSections[key] = !current;
+    });
+  }
 
   /// Takes the latest content whenever the host notifies. Every cell carries
   /// a stable key, so a rebuild reuses the elements already on screen rather
@@ -190,10 +215,21 @@ class _SpotlightModalShellState extends State<_SpotlightModalShell> {
     TextTheme textTheme,
     SpotlightModalSection section,
     String title,
+    int index,
+    bool isExpanded,
   ) {
     final count = section.count;
-    return Row(
+    final row = Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
+        if (section.collapsible) ...[
+          AdaptiveIcon(
+            isExpanded ? Icons.expand_more : Icons.chevron_right,
+            size: 20,
+            color: AppColorScheme.onSurface.withValues(alpha: 0.7),
+          ),
+          const SizedBox(width: 6),
+        ],
         Flexible(
           child: Text(
             title,
@@ -223,6 +259,26 @@ class _SpotlightModalShellState extends State<_SpotlightModalShell> {
         ],
       ],
     );
+
+    if (!section.collapsible) {
+      return row;
+    }
+
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: FocusableWrapper(
+        onSelect: () => _toggleSection(section, index),
+        borderRadius: 8,
+        disableScale: true,
+        useBackgroundFocus: true,
+        autoScroll: true,
+        suppressFocusGlow: true,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+          child: row,
+        ),
+      ),
+    );
   }
 
   @override
@@ -232,6 +288,14 @@ class _SpotlightModalShellState extends State<_SpotlightModalShell> {
     final glass = AppColorScheme.isGlass;
     final textTheme = Theme.of(context).textTheme;
 
+    int? firstExpandedIndex;
+    for (var i = 0; i < _sections.length; i++) {
+      if (_isSectionExpanded(_sections[i], i)) {
+        firstExpandedIndex = i;
+        break;
+      }
+    }
+
     final scrollView = SingleChildScrollView(
       controller: _scrollController,
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
@@ -239,16 +303,31 @@ class _SpotlightModalShellState extends State<_SpotlightModalShell> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           for (var i = 0; i < _sections.length; i++) ...[
-            if (i > 0) const SizedBox(height: 24),
+            if (i > 0)
+              SizedBox(
+                height: _sections[i - 1].collapsible &&
+                        !_isSectionExpanded(_sections[i - 1], i - 1)
+                    ? 8
+                    : 24,
+              ),
             if (_sections[i].title case final title?)
               Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: _sectionHeader(textTheme, _sections[i], title),
+                padding: EdgeInsets.only(
+                  bottom: _isSectionExpanded(_sections[i], i) ? 10 : 0,
+                ),
+                child: _sectionHeader(
+                  textTheme,
+                  _sections[i],
+                  title,
+                  i,
+                  _isSectionExpanded(_sections[i], i),
+                ),
               ),
-            _sections[i].builder(
-              context,
-              i == 0 ? _firstCellFocusNode : null,
-            ),
+            if (_isSectionExpanded(_sections[i], i))
+              _sections[i].builder(
+                context,
+                i == firstExpandedIndex ? _firstCellFocusNode : null,
+              ),
           ],
         ],
       ),

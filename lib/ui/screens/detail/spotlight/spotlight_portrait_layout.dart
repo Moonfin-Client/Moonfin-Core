@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../detail_layout_metrics.dart';
+
 /// Arranges the Spotlight detail pieces for portrait phones and tablets: a
 /// full-bleed backdrop fading into the content, then a vertical stack of hero
 /// (ending in the action row) and the summary cards. The cards band carries
@@ -35,7 +37,7 @@ class SpotlightPortraitLayout extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: size.height * 0.26 + topInset),
+                SizedBox(height: detailPortraitBackdropGap(size, topInset)),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: hero,

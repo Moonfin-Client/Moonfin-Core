@@ -31,6 +31,7 @@ import '../../widgets/remote_play_to_session_dialog.dart';
 import '../../widgets/playback/audio_quality_badge.dart';
 import '../../widgets/playback/lyrics_view.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../util/error_message.dart';
 import 'audiobook_player_view.dart';
 
 /// First queue index the Up Next panel lists. Tracks that have played drop off
@@ -714,9 +715,10 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
       }
     } catch (e) {
       if (mounted) {
+        final detail = describeError(e, AppLocalizations.of(context));
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Could not save playlist: $e')));
+        ).showSnackBar(SnackBar(content: Text('Could not save playlist: $detail')));
       }
     }
   }
@@ -1249,7 +1251,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
         CastTargetKind.jellyfinSession => l10n.remotePlayback,
       };
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.castActionFailed(label, '$e'))),
+        SnackBar(content: Text(l10n.castActionFailed(label, describeError(e, l10n)))),
       );
     }
   }
@@ -1275,9 +1277,11 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
     } catch (e) {
       if (!mounted) return;
       final l10n = AppLocalizations.of(context);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(l10n.failedToSetCastVolume('$e'))));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.failedToSetCastVolume(describeError(e, l10n))),
+        ),
+      );
     }
   }
 

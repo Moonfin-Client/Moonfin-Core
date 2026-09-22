@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../../../util/platform_detection.dart';
+import '../../../../widgets/media_badge.dart';
 import '../../../../widgets/offline_aware_image.dart';
 import 'nouveau_overflow_text.dart';
 
@@ -338,13 +339,11 @@ class _NouveauPosterCardState extends State<NouveauPosterCard> {
                             decoration: BoxDecoration(
                               color: theme.colorScheme.primary,
                               shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.28),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 3),
-                                ),
-                              ],
+                              border: Border.all(
+                                color: theme.colorScheme.onPrimary,
+                                width: 1.5,
+                              ),
+                              boxShadow: kMediaBadgeShadow,
                             ),
                             alignment: Alignment.center,
                             child: Icon(
@@ -594,13 +593,11 @@ class _NouveauFavoriteIndicator extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColorScheme.recordingActive,
         shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.28),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
-          ),
-        ],
+        border: Border.all(
+          color: Colors.white,
+          width: 1.5,
+        ),
+        boxShadow: kMediaBadgeShadow,
       ),
       alignment: Alignment.center,
       child: const Icon(Icons.favorite_rounded, color: Colors.white, size: 17),

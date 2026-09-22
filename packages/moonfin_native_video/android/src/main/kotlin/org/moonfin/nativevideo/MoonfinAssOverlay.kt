@@ -69,6 +69,12 @@ class MoonfinAssOverlayView(
     @Volatile
     private var pendingTimeUs = 0L
 
+    // The subtitle delay for the track on screen. libass keeps event times
+    // from the script itself, so a later cue means asking it for an earlier
+    // moment of the script.
+    @Volatile
+    var timeOffsetUs = 0L
+
     // Bounds the executor queue to one task. Cleared by the task itself.
     private val renderScheduled = AtomicBoolean(false)
 
@@ -164,7 +170,7 @@ class MoonfinAssOverlayView(
         // The renderer only exists once a track has been created, so this keeps
         // content without ASS from waking the render thread on every frame.
         if (assHandler.render == null) return
-        pendingTimeUs = presentationTimeUs
+        pendingTimeUs = presentationTimeUs - timeOffsetUs
         if (!renderScheduled.compareAndSet(false, true)) return
         val executor = this.executor
         if (executor == null) {

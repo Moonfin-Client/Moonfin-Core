@@ -164,11 +164,14 @@ class DownloadNotificationService {
     );
   }
 
-  Future<void> showRemoteMessage({
+  /// Says whether the message actually reached a notification. A device with
+  /// notifications switched off or never initialized answers false, and the
+  /// caller then has to put the message somewhere the user will still see it.
+  Future<bool> showRemoteMessage({
     required String text,
     String? header,
   }) async {
-    if (!_initialized) return;
+    if (!_initialized) return false;
     final l10n = currentAppLocalizations();
     final title = (header != null && header.trim().isNotEmpty)
         ? header.trim()
@@ -177,6 +180,7 @@ class DownloadNotificationService {
         ? text.trim()
         : l10n.serverMessagesNotificationReceived;
     await _showSimple(_remoteMessageNotificationId, title, body);
+    return true;
   }
 
   Future<void> dismiss() async {

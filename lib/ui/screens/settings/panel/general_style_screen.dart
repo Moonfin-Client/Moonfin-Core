@@ -137,6 +137,19 @@ class _GeneralStyleScreenState extends State<_GeneralStyleScreen> {
                       subtitle: l10n.gamepadNavigationDescription,
                       icon: Icons.sports_esports_outlined,
                     ),
+                    if (PlatformDetection.isAppleTV)
+                      EnumPreferenceTile<SiriRemoteSwipeSensitivity>(
+                        preference: UserPreferences.siriRemoteSwipeSensitivity,
+                        title: l10n.siriRemoteSwipeSensitivity,
+                        description:
+                            l10n.siriRemoteSwipeSensitivityDescription,
+                        icon: Icons.swipe,
+                        labelOf: (v) => switch (v) {
+                          SiriRemoteSwipeSensitivity.low => l10n.settingsLow,
+                          SiriRemoteSwipeSensitivity.medium => l10n.medium,
+                          SiriRemoteSwipeSensitivity.high => l10n.settingsHigh,
+                        },
+                      ),
                   ],
                 ),
               ],
@@ -184,6 +197,7 @@ class _GeneralStyleScreenState extends State<_GeneralStyleScreen> {
                       DesktopUiScale.medium => l10n.medium,
                       DesktopUiScale.large => l10n.large,
                       DesktopUiScale.extraLarge => l10n.extraLarge,
+                      DesktopUiScale.grandfather => l10n.uiScaleGrandfather,
                     },
                     onChanged: _pushPersonalizationSync,
                   ),

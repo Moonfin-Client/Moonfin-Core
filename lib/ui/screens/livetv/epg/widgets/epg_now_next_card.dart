@@ -1,9 +1,9 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../../widgets/adaptive/adaptive_glass.dart';
 import '../../../../widgets/focus/focusable_wrapper.dart';
+import '../../../../widgets/offline_aware_image.dart';
 
 /// Premium mobile guide card: channel logo + number chip + name on the left,
 /// the current program with a live progress bar and remaining time, and the
@@ -162,7 +162,7 @@ class EpgNowNextCard extends StatelessWidget {
           ClipRRect(
             borderRadius: AppRadius.circular(radius),
             child: (logoUrl != null && logoUrl!.isNotEmpty)
-                ? CachedNetworkImage(
+                ? OfflineAwareImage(
                     imageUrl: logoUrl!,
                     fit: BoxFit.contain,
                     errorWidget: (context, url, error) => _logoFallback(),

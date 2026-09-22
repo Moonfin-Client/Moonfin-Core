@@ -15,7 +15,6 @@ import 'focus/focus_theme.dart';
 import 'focus/glass_press_scale.dart';
 
 const _kExpandDuration = Duration(milliseconds: 150);
-const _kHoverDelay = Duration(milliseconds: 150);
 const _kSpacing = 10.0;
 
 class ExpandableIconButton extends StatefulWidget {
@@ -61,7 +60,6 @@ class _ExpandableIconButtonState extends State<ExpandableIconButton> {
   late final FocusNode _focusNode;
   bool _isFocused = false;
   bool _isHovered = false;
-  Timer? _hoverTimer;
   Timer? _longPressTimer;
   bool _longPressTriggered = false;
 
@@ -74,7 +72,6 @@ class _ExpandableIconButtonState extends State<ExpandableIconButton> {
 
   @override
   void dispose() {
-    _hoverTimer?.cancel();
     _longPressTimer?.cancel();
     _focusNode.removeListener(_onFocusChange);
     if (widget.focusNode == null) _focusNode.dispose();
@@ -84,12 +81,8 @@ class _ExpandableIconButtonState extends State<ExpandableIconButton> {
   void _onFocusChange() {
     if (!mounted) return;
     final hasFocus = _focusNode.hasFocus;
-    final hoverChanged = !hasFocus && _isHovered;
-    if (hasFocus == _isFocused && !hoverChanged) return;
-    setState(() {
-      _isFocused = hasFocus;
-      if (hoverChanged) _isHovered = false;
-    });
+    if (hasFocus == _isFocused) return;
+    setState(() => _isFocused = hasFocus);
     if (hasFocus) _ensureVisible();
     widget.onFocusChanged?.call(hasFocus);
   }
@@ -194,20 +187,9 @@ class _ExpandableIconButtonState extends State<ExpandableIconButton> {
 
     final hoverEnabled = !isTV;
     return MouseRegion(
-      onEnter: hoverEnabled
-          ? (_) {
-              _hoverTimer?.cancel();
-              _hoverTimer = Timer(_kHoverDelay, () {
-                if (mounted) setState(() => _isHovered = true);
-              });
-            }
-          : null,
-      onExit: hoverEnabled
-          ? (_) {
-              _hoverTimer?.cancel();
-              if (mounted && _isHovered) setState(() => _isHovered = false);
-            }
-          : null,
+      cursor: hoverEnabled ? SystemMouseCursors.click : MouseCursor.defer,
+      onEnter: hoverEnabled ? (_) => setState(() => _isHovered = true) : null,
+      onExit: hoverEnabled ? (_) => setState(() => _isHovered = false) : null,
       child: Focus(
         focusNode: _focusNode,
         onKeyEvent: _onKeyEvent,

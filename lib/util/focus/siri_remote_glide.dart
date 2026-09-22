@@ -2,6 +2,8 @@ import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:flutter_tvos/flutter_tvos.dart'
     show TvRemoteController, TvRemoteTouchEvent, TvRemoteTouchPhase;
 
+import '../../preference/preference_constants.dart'
+    show SiriRemoteSwipeSensitivity;
 import 'gamepad/gamepad_key_synthesizer.dart';
 
 /// Turns Siri Remote touchpad gestures into focus navigation. Focus steps one
@@ -21,12 +23,7 @@ class SiriRemoteGlide {
 
   static final SiriRemoteGlide instance = SiriRemoteGlide._();
 
-  /// Finger travel in normalized pad units before the first focus step. The
-  /// pad is 2.0 units across, so a full slow drag moves about five items.
-  static const double _firstStepTravel = 0.28;
-
-  /// Travel between steps after the first.
-  static const double _stepTravel = 0.36;
+  SiriRemoteSwipeSensitivity sensitivity = SiriRemoteSwipeSensitivity.medium;
 
   final GamepadKeySynthesizer _synthesizer = GamepadKeySynthesizer();
 
@@ -93,7 +90,9 @@ class SiriRemoteGlide {
     _accX = dx.sign != 0 && dx.sign != _accX.sign ? dx : _accX + dx;
     _accY = dy.sign != 0 && dy.sign != _accY.sign ? dy : _accY + dy;
 
-    final threshold = _steppedThisGesture ? _stepTravel : _firstStepTravel;
+    final threshold = _steppedThisGesture
+        ? sensitivity.stepTravel
+        : sensitivity.firstStepTravel;
     final horizontal = _accX.abs() >= _accY.abs();
     final travel = horizontal ? _accX : _accY;
     if (travel.abs() < threshold) return;

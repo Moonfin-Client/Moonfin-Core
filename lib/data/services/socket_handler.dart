@@ -246,8 +246,12 @@ class JellyfinWebSocketClient extends _ReconnectingWebSocketClient {
 
   @override
   void handleMessage(dynamic data) {
-    final msg = WebSocketMessageParser.parse(data.toString());
-    if (msg != null) emit(msg);
+    try {
+      final msg = WebSocketMessageParser.parse(data.toString());
+      if (msg != null) emit(msg);
+    } catch (e) {
+      warn('Jellyfin WebSocket message could not be parsed', e);
+    }
   }
 }
 

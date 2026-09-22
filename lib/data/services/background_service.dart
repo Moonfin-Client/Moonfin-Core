@@ -1,10 +1,9 @@
 import 'dart:async';
 
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/painting.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../data/models/aggregated_item.dart';
+import '../../ui/widgets/image_source.dart';
 import 'connectivity_service.dart';
 import 'media_server_client_factory.dart';
 
@@ -23,9 +22,9 @@ class BackgroundService {
     'AlbumArtist',
   };
 
-  // Decode width for a blurred backdrop. Kept here, alongside backdropMaxWidth
-  // for the unblurred case, so _evictBackgrounds can rebuild the same cache
-  // keys the backdrop widgets insert.
+  // Decode width for a blurred backdrop, alongside backdropMaxWidth for the
+  // unblurred case. The classic detail and library screens decode at these
+  // explicit widths.
   static const backdropBlurredDecodeWidth = 640;
   static const slideshowDuration = Duration(seconds: 30);
   static const transitionDuration = Duration(milliseconds: 800);
@@ -177,16 +176,14 @@ class BackgroundService {
   }
 
   void _evictBackgrounds(Iterable<String> urls) {
-    final imageCache = PaintingBinding.instance.imageCache;
+    // Every backdrop widget builds its provider through ArtworkDecode, which
+    // remembers the sizes each URL was decoded at, so this drops the entries
+    // that were actually inserted rather than guessing at widths. Handing a
+    // ResizeImage straight to imageCache.evict never matched anything: the
+    // cache is keyed by what obtainKey returns, and for a ResizeImage that is
+    // a ResizeImageKey, not the ResizeImage itself.
     for (final url in urls) {
-      final provider = CachedNetworkImageProvider(url);
-      // memCacheWidth wraps the provider in a ResizeImage, so evicting the bare
-      // provider alone would miss the key the backdrop actually inserted.
-      imageCache.evict(provider);
-      imageCache.evict(ResizeImage(provider, width: backdropMaxWidth));
-      imageCache.evict(
-        ResizeImage(provider, width: backdropBlurredDecodeWidth),
-      );
+      unawaited(ArtworkDecode.evict(url));
     }
   }
 }

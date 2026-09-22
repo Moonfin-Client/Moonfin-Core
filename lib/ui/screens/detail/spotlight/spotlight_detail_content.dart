@@ -1,6 +1,5 @@
 import 'dart:async' show unawaited;
 import 'dart:math' as math;
-import 'dart:ui' show ImageFilter;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -16,25 +15,26 @@ import '../../../../data/services/plugin_sync_service.dart';
 import '../../../../data/services/seerr/seerr_api_models.dart';
 import '../../../../data/viewmodels/item_detail_view_model.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../preference/detail_metadata_layout.dart';
 import '../../../../preference/preference_constants.dart';
 import '../../../../preference/user_preferences.dart';
+import '../upcoming_episode_badge.dart';
 import '../../../../util/overview_text.dart';
 import '../../../../util/seerr_credits.dart';
 import '../../../../util/platform_detection.dart';
 import '../../../navigation/destinations.dart';
 import '../../../navigation/playback_launcher.dart';
+import '../../../widgets/focus/can_claim_initial_focus.dart';
 import '../../../widgets/logo_view.dart';
 import '../../../widgets/navigation_layout.dart';
 import '../../../widgets/offline_aware_image.dart';
 import '../../../widgets/quick_return_wrapper.dart';
 import '../../../widgets/rating_display.dart';
-import '../../../widgets/seerr/seerr_collection_banner.dart';
 import '../../../widgets/seerr/seerr_image_urls.dart';
-import '../../../widgets/seerr/seerr_item_chips.dart';
 import '../../../widgets/seerr/seerr_item_status.dart';
-import '../../../widgets/seerr/seerr_stats_card.dart';
 import '../../../widgets/seerr/seerr_status_pill.dart';
 import '../../../widgets/top_toolbar.dart';
+import '../detail_layout_metrics.dart';
 import '../item_detail_screen.dart'
     show
         DetailActionButtons,
@@ -112,10 +112,94 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
   List<SeerrDiscoverItem> _seerrCrewCredits = const [];
   String? _seerrLoadedForItemId;
 
+  String? _personBackdropUrl;
+  String? _personBackdropKey;
+  String? _personBackdropForItemId;
+  int _personBackdropCreditCount = -1;
+  Map<String, String?> _personCardBackdrops = const {};
+
   ItemDetailViewModel get _vm => widget.viewModel;
+
+  bool get _seerrAvailable =>
+      GetIt.instance.isRegistered<PluginSyncService>() &&
+      GetIt.instance<PluginSyncService>().seerrAvailable;
 
   double get _desktopScale =>
       widget.prefs.get(UserPreferences.desktopUiScale).scaleFactor;
+
+  void _resetPersonBackdrop() {
+    _personBackdropForItemId = null;
+    _personBackdropUrl = null;
+    _personBackdropKey = null;
+    _personBackdropCreditCount = -1;
+    _personCardBackdrops = const {};
+  }
+
+  void _selectPersonBackdrop({bool notify = true}) {
+    final item = _vm.item;
+    if (item == null || item.type != 'Person') return;
+    final isNewPerson = _personBackdropForItemId != item.id;
+    final creditCount = _seerrAppearances.length + _seerrCrewCredits.length;
+    if (!isNewPerson &&
+        _personBackdropUrl != null &&
+        _personBackdropCreditCount == creditCount) {
+      return;
+    }
+
+    final localCandidates = collectPersonLocalBackdrops(_vm);
+    final appearancesCandidates =
+        collectPersonSeerrBackdrops(_seerrAppearances);
+    final crewCandidates = collectPersonSeerrBackdrops(_seerrCrewCredits);
+    final allCandidates = [
+      ...localCandidates,
+      ...appearancesCandidates,
+      ...crewCandidates,
+    ];
+
+    if (allCandidates.isEmpty) return;
+
+    final rng = math.Random();
+    final String? mainUrl;
+    final String? mainKey;
+    if (!isNewPerson && _personBackdropUrl != null && _personBackdropKey != null) {
+      mainUrl = _personBackdropUrl;
+      mainKey = _personBackdropKey;
+    } else {
+      final chosen = allCandidates[rng.nextInt(allCandidates.length)];
+      mainUrl = chosen.fullUrl;
+      mainKey = chosen.key;
+    }
+
+    final picked = personCardBackdropsFor(
+      local: localCandidates,
+      appearances: appearancesCandidates,
+      crew: crewCandidates,
+      mainBackdropKey: mainKey,
+      random: rng,
+    );
+    // A card that already has a picture keeps it, or it would change under
+    // the viewer when the credits land.
+    final cardBackdrops = <String, String?>{
+      for (final entry in picked.entries)
+        entry.key: isNewPerson
+            ? entry.value
+            : (_personCardBackdrops[entry.key] ?? entry.value),
+    };
+
+    void apply() {
+      _personBackdropUrl = mainUrl;
+      _personBackdropKey = mainKey;
+      _personBackdropForItemId = item.id;
+      _personBackdropCreditCount = creditCount;
+      _personCardBackdrops = cardBackdrops;
+    }
+
+    if (notify) {
+      setState(apply);
+    } else {
+      apply();
+    }
+  }
 
   @override
   void initState() {
@@ -128,7 +212,12 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
           widget.initialFocusNode;
     }
     unawaited(_loadStudioLogos());
-    unawaited(_loadSeerrAppearances());
+    unawaited(
+      _loadSeerrAppearances().then((_) {
+        if (mounted) _selectPersonBackdrop();
+      }),
+    );
+    _selectPersonBackdrop(notify: false);
   }
 
   @override
@@ -137,11 +226,14 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
     if (widget.viewModel != oldWidget.viewModel) {
       oldWidget.viewModel.removeListener(_onViewModelChanged);
       _vm.addListener(_onViewModelChanged);
+      _resetPersonBackdrop();
+      _selectPersonBackdrop();
     }
     if (widget.initialFocusNode != oldWidget.initialFocusNode &&
         PlatformDetection.isTV) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) widget.initialFocusNode?.requestFocus();
+        if (!mounted || !canClaimInitialFocus(context)) return;
+        widget.initialFocusNode?.requestFocus();
       });
       NavigationLayout.focusDetailsPlayButtonNotifier.value =
           widget.initialFocusNode;
@@ -152,8 +244,19 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
   /// or fills it in. Rebuilds come from the ListenableBuilder in build.
   void _onViewModelChanged() {
     if (!mounted) return;
+    final item = _vm.item;
+    if (item != null &&
+        item.type == 'Person' &&
+        item.id != _personBackdropForItemId) {
+      _resetPersonBackdrop();
+    }
+    _selectPersonBackdrop();
     unawaited(_loadStudioLogos());
-    unawaited(_loadSeerrAppearances());
+    unawaited(
+      _loadSeerrAppearances().then((_) {
+        if (mounted) _selectPersonBackdrop();
+      }),
+    );
   }
 
   @override
@@ -225,6 +328,7 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
         _seerrAppearances = groupSeerrCredits(credits.cast, isCrew: false);
         _seerrCrewCredits = groupSeerrCredits(credits.crew, isCrew: true);
       });
+      _selectPersonBackdrop();
     } catch (_) {
       // Seerr credits are an extra. The filmography card falls back to the
       // library lists when the lookup fails.
@@ -282,6 +386,20 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
           ),
         );
       }),
+      openSeerrBrowse: (filterId, filterName, filterType, mediaType) =>
+          _closeModalThen(() {
+            context.push(
+              Destinations.seerrBrowseWith(
+                filterId: filterId,
+                filterName: filterName,
+                mediaType: mediaType,
+                filterType: filterType,
+              ),
+            );
+          }),
+      openSeerrCollection: (collectionId) => _closeModalThen(
+        () => context.push(Destinations.seerrCollection(collectionId)),
+      ),
       openStudio: (name) =>
           _closeModalThen(() => context.push(Destinations.studio(name))),
       playFromChapter: (position) =>
@@ -337,7 +455,7 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
     try {
       final action = await SpotlightSectionModal.show<VoidCallback>(
         context,
-        title: spec.title,
+        title: spec.effectiveModalTitle,
         icon: spec.icon,
         sections: spec.sections,
         returnFocus: _cardFocusNodes[spec.id],
@@ -385,10 +503,17 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
             seerrAppearances: _seerrAppearances,
             seerrCrewCredits: _seerrCrewCredits,
             fallbackImageUrl: _cardFallbackImageUrl(item),
+            mainBackdropKey: _personBackdropKey,
+            seerrAvailable: _seerrAvailable,
+            personCardBackdrops: _personCardBackdrops,
           )
         : null;
     final card = current ?? opened;
-    return (title: card.title, icon: card.icon, sections: card.sections);
+    return (
+      title: card.effectiveModalTitle,
+      icon: card.icon,
+      sections: card.sections,
+    );
   }
 
   // ---------------------------------------------------------------------------
@@ -407,15 +532,14 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
             tag: item.backdropImageTags.first,
           )
         : null;
-    final url =
-        backdropUrl ??
-        itemBackdrop ??
-        (item?.type == 'Person' ? _personProfileUrl(item!) : null);
+    final url = item?.type == 'Person'
+        ? _personBackdropUrl
+        : (backdropUrl ?? itemBackdrop);
     final blurAmount = widget.prefs
         .get(UserPreferences.detailsBackgroundBlurAmount)
         .toDouble();
     final opacityFactor = blurAmount / 25.0;
-    final maxAlpha = item?.type == 'Person' ? 0.40 : 0.80;
+    const maxAlpha = 0.80;
     final alpha = opacityFactor * maxAlpha;
     final gradientScale = 0.3 + 0.7 * opacityFactor;
 
@@ -428,23 +552,12 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
             imageUrl: url,
             fit: BoxFit.cover,
             alignment: landscape ? Alignment.centerRight : Alignment.topCenter,
-            fadeInDuration: const Duration(milliseconds: 250),
+            fadeInDuration: Duration.zero,
+            sourceAspectRatio: 16 / 9,
+            maxDecodeWidth: ArtworkDecode.maxSourceWidth,
+            priority: ImageFetchPriority.high,
             errorWidget: (context, url, error) => const SizedBox.shrink(),
           ),
-          if (item?.type == 'Person')
-            Positioned.fill(
-              child: GlassSettings.blursBackdrop
-                  ? BackdropFilter(
-                      filter: ImageFilter.blur(
-                        sigmaX: GlassSettings.capSigma(12),
-                        sigmaY: GlassSettings.capSigma(12),
-                      ),
-                      child: Container(
-                        color: Colors.black.withValues(alpha: 0.2),
-                      ),
-                    )
-                  : Container(color: Colors.black.withValues(alpha: 0.35)),
-            ),
           ColoredBox(color: Colors.black.withValues(alpha: alpha)),
         ],
         if (landscape) ...[
@@ -624,78 +737,103 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
     final muted = AppColorScheme.onBackground.withValues(alpha: 0.75);
     final style = textTheme.bodyMedium?.copyWith(color: muted);
 
+    final hidden = detailMetadataLayout.hidden(widget.prefs);
+    final ordered = detailMetadataLayout.ordered(
+      DetailMetadataItem.values,
+      (entry) => entry.id,
+      widget.prefs,
+    );
+
     final pieces = <Widget>[];
     void addText(String? value) {
       if (value == null || value.isEmpty) return;
       pieces.add(Text(value, style: style));
     }
 
-    addText(item.productionYear?.toString());
-    addText(item.officialRating);
-    if (item.type == 'Series' && item.childCount != null) {
-      addText(l10n.seasonCount(item.childCount!));
+    for (final entry in ordered) {
+      if (hidden.contains(entry.id)) continue;
+      switch (entry) {
+        case DetailMetadataItem.year:
+          addText(item.productionYear?.toString());
+        case DetailMetadataItem.parentalRating:
+          addText(item.officialRating);
+        case DetailMetadataItem.runtimeAndSeasons:
+          if (item.type == 'Series' && item.childCount != null) {
+            addText(l10n.seasonCount(item.childCount!));
+          }
+          if (item.type == 'Season') {
+            final epCount = _vm.episodes.isNotEmpty
+                ? _vm.episodes.length
+                : (item.childCount ?? 0);
+            if (epCount > 0) addText(l10n.episodeCount(epCount));
+          }
+          if (item.type == 'Episode') {
+            final s = item.parentIndexNumber;
+            final e = item.indexNumber;
+            if (s != null && e != null) addText('S$s:E$e');
+          }
+          final runtime = item.runtime;
+          if (runtime != null && runtime > Duration.zero && item.type != 'Series') {
+            pieces.add(
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.schedule, size: 14, color: muted),
+                  const SizedBox(width: 4),
+                  Text(spotlightRuntimeLabel(runtime), style: style),
+                ],
+              ),
+            );
+          }
+        case DetailMetadataItem.status:
+          final status = item.status;
+          if (item.type == 'Series' && status != null && status.isNotEmpty) {
+            final isEnded = status.toLowerCase() == 'ended';
+            pieces.add(
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: isEnded ? const Color(0xFFB71C1C) : const Color(0xFF2E7D32),
+                  borderRadius: JellyfinTokens.shapes.smallRadius,
+                ),
+                child: Text(
+                  status,
+                  style: textTheme.labelSmall?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            );
+          }
+        case DetailMetadataItem.upcomingEpisodeDate:
+          if (item.type == 'Series' && _vm.upcomingEpisode != null) {
+            pieces.add(
+              UpcomingEpisodeBadge(
+                text: _vm.upcomingEpisode!.format(context),
+                borderRadius: JellyfinTokens.shapes.smallRadius,
+              ),
+            );
+          }
+        case DetailMetadataItem.genres:
+          if (item.genres.isNotEmpty) {
+            addText(item.genres.take(3).join(' · '));
+          }
+        case DetailMetadataItem.seerrAvailability:
+          final seerrStatus = seerrItemStatus(_vm);
+          if (seerrStatus != null) {
+            pieces.add(SeerrStatusPills(state: seerrStatus, onlyNoteworthy: true));
+          }
+      }
     }
-    if (item.type == 'Season') {
-      final epCount = _vm.episodes.isNotEmpty
-          ? _vm.episodes.length
-          : (item.childCount ?? 0);
-      if (epCount > 0) addText(l10n.episodeCount(epCount));
-    }
-    if (item.type == 'Episode') {
-      final s = item.parentIndexNumber;
-      final e = item.indexNumber;
-      if (s != null && e != null) addText('S$s:E$e');
-    }
-    final status = item.status;
-    if (item.type == 'Series' && status != null && status.isNotEmpty) {
-      final isEnded = status.toLowerCase() == 'ended';
-      pieces.add(
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-          decoration: BoxDecoration(
-            color: isEnded ? const Color(0xFFB71C1C) : const Color(0xFF2E7D32),
-            borderRadius: JellyfinTokens.shapes.smallRadius,
-          ),
-          child: Text(
-            status,
-            style: textTheme.labelSmall?.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
-      );
-    }
-    final runtime = item.runtime;
-    if (runtime != null && runtime > Duration.zero && item.type != 'Series') {
-      pieces.add(
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.schedule, size: 14, color: muted),
-            const SizedBox(width: 4),
-            Text(spotlightRuntimeLabel(runtime), style: style),
-          ],
-        ),
-      );
-    }
-    if (item.genres.isNotEmpty) {
-      addText(item.genres.take(3).join(' · '));
-    }
-    // A badge rather than another word in the line, so it sits outside the
-    // dot separators.
-    final seerrStatus = seerrItemStatus(_vm);
-    final seerrPills = seerrStatus == null
-        ? null
-        : SeerrStatusPills(state: seerrStatus, onlyNoteworthy: true);
-    if (pieces.isEmpty) return seerrPills ?? const SizedBox.shrink();
+
+    if (pieces.isEmpty) return const SizedBox.shrink();
 
     final separated = <Widget>[];
     for (var i = 0; i < pieces.length; i++) {
       if (i > 0) separated.add(Text('·', style: style));
       separated.add(pieces[i]);
     }
-    if (seerrPills != null) separated.add(seerrPills);
     return Wrap(
       crossAxisAlignment: WrapCrossAlignment.center,
       spacing: 8,
@@ -863,7 +1001,8 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
         !isPerson &&
         (_vm.ratings.isNotEmpty ||
             item.communityRating != null ||
-            item.criticRating != null);
+            item.criticRating != null ||
+            item.personalRating != null);
     final showOverview =
         overview.isNotEmpty &&
         !hidesMediaDescription(
@@ -873,21 +1012,6 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
           ),
         );
     final tagline = isPerson ? null : _buildTagline(context, item);
-
-    // A Seerr-only title's page is otherwise sparse, so its Seerr facts
-    // render inline: chips and stats in the hero, the collection banner under
-    // the action row. Library titles keep their Seerr data behind the status
-    // pills and the similar card.
-    final seerrState = _vm.isSeerrOnly ? seerrItemTabState(_vm) : null;
-    final l10n = AppLocalizations.of(context);
-    final seerrChips = seerrState != null && SeerrItemChips.hasContent(seerrState)
-        ? SeerrItemChips(state: seerrState)
-        : null;
-    final seerrStats =
-        seerrState != null && SeerrStatsCard.hasContent(seerrState, l10n)
-        ? SeerrStatsCard(state: seerrState)
-        : null;
-    final seerrCollection = seerrState?.movie?.collection;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -916,21 +1040,12 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
             showBadges: widget.prefs.get(UserPreferences.showRatingBadges),
           ),
         ],
-        if (seerrChips != null) ...[const SizedBox(height: 10), seerrChips],
-        if (seerrStats != null) ...[const SizedBox(height: 10), seerrStats],
         if (showOverview) ...[
           const SizedBox(height: 10),
           _buildOverview(context, overview),
         ],
         const SizedBox(height: 16),
         _buildActions(context, item, cards),
-        if (seerrCollection != null) ...[
-          const SizedBox(height: 16),
-          SeerrCollectionBanner(
-            collection: seerrCollection,
-            onNavigateUp: () => widget.initialFocusNode?.requestFocus(),
-          ),
-        ],
       ],
     );
   }
@@ -943,6 +1058,20 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
     final firstCardNode = cards.isNotEmpty
         ? _cardFocusNodes[cards.first.id]
         : null;
+    final prefLimit = widget.prefs.get(UserPreferences.detailButtonsMaxVisible);
+    final int? maxVisibleOverride;
+    final bool overflowAsMenu;
+    if (prefLimit == -1) {
+      maxVisibleOverride = null;
+      overflowAsMenu = false;
+    } else if (prefLimit > 0) {
+      maxVisibleOverride = prefLimit + 1;
+      overflowAsMenu = true;
+    } else {
+      maxVisibleOverride = _landscape ? 5 : 4;
+      overflowAsMenu = true;
+    }
+
     return DetailActionButtons(
       viewModel: _vm,
       itemId: item.id,
@@ -954,8 +1083,8 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
       autoPlay: widget.autoPlay,
       modernStyle: true,
       fullWidthPrimary: !_landscape,
-      overflowAsMenu: true,
-      maxVisibleButtonsOverride: _landscape ? 5 : 4,
+      overflowAsMenu: overflowAsMenu,
+      maxVisibleButtonsOverride: maxVisibleOverride,
       rowMaxWidth: _landscape
           ? SpotlightLandscapeLayout.heroWidthFor(MediaQuery.sizeOf(context))
           : null,
@@ -978,6 +1107,9 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
       seerrAppearances: _seerrAppearances,
       seerrCrewCredits: _seerrCrewCredits,
       fallbackImageUrl: _cardFallbackImageUrl(item),
+      mainBackdropKey: _personBackdropKey,
+      seerrAvailable: _seerrAvailable,
+      personCardBackdrops: _personCardBackdrops,
     );
     for (final card in cards) {
       _cardFocusNodes.putIfAbsent(
@@ -1090,10 +1222,7 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
     final item = _vm.item;
     if (item == null) return const SizedBox.shrink();
 
-    _landscape =
-        PlatformDetection.isTV ||
-        PlatformDetection.useDesktopUi ||
-        MediaQuery.orientationOf(context) == Orientation.landscape;
+    _landscape = detailUsesLandscapeLayout(context);
 
     return ListenableBuilder(
       listenable: _vm,

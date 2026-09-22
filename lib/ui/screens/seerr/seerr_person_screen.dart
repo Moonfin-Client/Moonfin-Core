@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
@@ -16,11 +15,13 @@ import '../../widgets/library_row.dart';
 import '../../widgets/media_card.dart';
 import '../../widgets/navigation_layout.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../util/error_message.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/focus/step_scroll.dart';
 import '../../widgets/quick_return_wrapper.dart';
 import '../../widgets/skeleton/skeleton_home_row.dart';
 import '../../widgets/skeleton/skeleton_shimmer.dart';
+import '../../widgets/offline_aware_image.dart';
 
 const _tmdbPosterBase = 'https://image.tmdb.org/t/p/w342';
 const _tmdbProfileLarge = 'https://image.tmdb.org/t/p/w500';
@@ -117,7 +118,7 @@ class _SeerrPersonScreenState extends State<SeerrPersonScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              s.error!,
+              describeError(s.error!, AppLocalizations.of(context)),
               style: TextStyle(
                 color: AppColorScheme.onSurface.withValues(alpha: 0.7),
               ),
@@ -205,7 +206,7 @@ class _SeerrPersonScreenState extends State<SeerrPersonScreen> {
               children: [
                 ClipOval(
                   child: person.profilePath != null
-                      ? CachedNetworkImage(
+                      ? OfflineAwareImage(
                           imageUrl: '$_tmdbProfileLarge${person.profilePath}',
                           width: 120,
                           height: 120,

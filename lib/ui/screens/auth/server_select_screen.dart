@@ -21,6 +21,7 @@ import '../../../auth/services/server_discovery_service.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../platform/web_runtime_config.dart';
 import '../../../preference/user_preferences.dart';
+import '../../../util/app_beta.dart';
 import '../../../util/focus/dpad_keys.dart';
 import '../../../util/platform_detection.dart';
 import '../../../util/server_url.dart';
@@ -470,7 +471,7 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
       footer: Padding(
         padding: const EdgeInsets.only(top: 16),
         child: Text(
-          l10n.appVersionFooter(_deviceInfo.appVersion),
+          l10n.appVersionFooter(AppBeta.label(_deviceInfo.appVersion)),
           style: Theme.of(
             context,
           ).textTheme.bodySmall?.copyWith(color: _loginForeground(0.4)),

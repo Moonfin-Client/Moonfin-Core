@@ -156,8 +156,9 @@ class _ExternalListsScreenState extends State<_ExternalListsScreen> {
         Navigator.of(context, rootNavigator: true).pop();
       }
       if (mounted) {
+        final detail = describeError(e, AppLocalizations.of(context));
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to refresh lists: $e')),
+          SnackBar(content: Text('Failed to refresh lists: $detail')),
         );
       }
     }
@@ -371,7 +372,12 @@ class _ImdbListsScreenState extends State<_ImdbListsScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to fetch $title from Moonbase: $e')),
+          SnackBar(
+            content: Text(
+              'Failed to fetch $title from Moonbase: '
+              '${describeError(e, AppLocalizations.of(context))}',
+            ),
+          ),
         );
       }
       return false;
@@ -1833,8 +1839,7 @@ class _AddEditCustomRowDialogState extends State<_AddEditCustomRowDialog> {
       final url = customService.constructSourceUrl(_source, _type, params);
       setState(() => _isValidating = false);
 
-      final errorString = e.toString()
-          .replaceAll('Exception: ', '')
+      final errorString = describeError(e, AppLocalizations.of(context))
           .replaceAll('Constructed URL: $url. ', '')
           .replaceAll('Constructed URL: $url', '');
 

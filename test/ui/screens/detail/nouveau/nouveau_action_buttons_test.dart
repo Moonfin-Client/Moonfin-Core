@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:moonfin/ui/screens/detail/nouveau/hero/nouveau_action_buttons.dart';
 import 'package:moonfin/ui/theme/app_theme.dart';
+import 'package:moonfin/ui/widgets/marquee_text.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
 void main() {
@@ -236,6 +237,79 @@ void main() {
     }
 
     expect(calls, ['up', 'down', 'rightAtEnd']);
+  });
+
+  testWidgets('a long primary label scrolls once the button is focused', (
+    tester,
+  ) async {
+    final node = FocusNode();
+    addTearDown(node.dispose);
+
+    await tester.pumpWidget(
+      _TestApp(
+        child: NouveauActionButtons(
+          primaryAction: NouveauAction(
+            label: 'Resume from 21m',
+            icon: Icons.play_arrow,
+            focusNode: node,
+            trailingLabel: '21m remaining',
+            onPressed: () {},
+          ),
+          secondaryActions: const [],
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(MarqueeText), findsNothing);
+
+    node.requestFocus();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+
+    final marquee = find.byType(MarqueeText);
+    expect(marquee, findsOneWidget);
+    // MarqueeText only builds its scroller when the text overflows, which is
+    // what makes the whole label readable.
+    expect(
+      find.descendant(
+        of: marquee,
+        matching: find.byType(SingleChildScrollView),
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('a short primary label never scrolls', (tester) async {
+    final node = FocusNode();
+    addTearDown(node.dispose);
+
+    await tester.pumpWidget(
+      _TestApp(
+        child: NouveauActionButtons(
+          primaryAction: NouveauAction(
+            label: 'Play',
+            icon: Icons.play_arrow,
+            focusNode: node,
+            onPressed: () {},
+          ),
+          secondaryActions: const [],
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    node.requestFocus();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+
+    expect(
+      find.descendant(
+        of: find.byType(MarqueeText),
+        matching: find.byType(SingleChildScrollView),
+      ),
+      findsNothing,
+    );
   });
 }
 

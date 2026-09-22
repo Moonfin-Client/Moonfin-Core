@@ -424,7 +424,7 @@
     "@imageType": {
         "description": "Setting for image type"
     },
-    "posterSize": "Mida del cartell",
+    "posterSize": "Mida del pòster",
     "@posterSize": {
         "description": "Setting for poster size"
     },
@@ -3472,7 +3472,7 @@
     "@libraryDisplay": {
         "description": "Section title for library display settings"
     },
-    "posterLabel": "Cartell",
+    "posterLabel": "Pòster",
     "@posterLabel": {
         "description": "Image type: poster"
     },
@@ -3830,7 +3830,7 @@
     "@dimmingLevel": {
         "description": "Setting for dimming level"
     },
-    "maxAgeRating": "Classificació d'edat màxima",
+    "maxAgeRating": "Classificació per edats màxima",
     "@maxAgeRating": {
         "description": "Setting for max age rating"
     },
@@ -3847,7 +3847,7 @@
             }
         }
     },
-    "requireAgeRating": "Requereix classificació d'edat",
+    "requireAgeRating": "Requereix classificació per edats",
     "@requireAgeRating": {
         "description": "Setting for requiring age rating"
     },
@@ -6401,7 +6401,7 @@
     "shuffleNoGenres": "No s'han trobat gèneres per a aquest mode aleatori.",
     "posterDisplayTitle": "Mostra",
     "posterImageType": "Tipus d'imatge",
-    "imageTypePoster": "Cartell",
+    "imageTypePoster": "Pòster",
     "imageTypeThumbnail": "Miniatura",
     "imageTypeBanner": "Bandera",
     "playlistAddFailed": "No s'ha pogut afegir a la llista de reproducció",
@@ -7233,7 +7233,7 @@
     "homeVideos": "Vídeos de la llar",
     "mixedContent": "Contingut mixt",
     "homeVideosAndPhotos": "Vídeos i fotos d'inici",
-    "mixedMoviesAndShows": "Pel·lícules i sèries barrejades",
+    "mixedMoviesAndShows": "Pel·lícules i Sèries barrejades",
     "intelQuickSync": "Intel Quick Sync",
     "rockchipMpp": "Rockchip MPP",
     "dolbyVision": "Dolby Vision",
@@ -7560,7 +7560,7 @@
     "@detailScreenStyle": {
         "description": "Label for the media detail screen layout style setting"
     },
-    "detailScreenStyleSubtitle": "Clàssic es el disseny original de moonfin centrat. Modern es el disseny cinemàtic interactiu.",
+    "detailScreenStyleSubtitle": "Clàssic és la disposició original centrada de Moonfin. Modern és una disposició cinematogràfica adaptativa. Spotlight és una disposició centrada en la imatge principal amb targetes de contingut emergents. Nouveau és una disposició a pantalla completa amb les seccions apilades al llarg de la pàgina.",
     "@detailScreenStyleSubtitle": {
         "description": "Explanation under the detail screen style setting"
     },
@@ -7572,7 +7572,7 @@
     "@recommendationSystem": {
         "description": "Label for the Recommendation System setting"
     },
-    "recommendationSystemSubtitle": "Utilitza l'algorisme local de recomanacions de Moonfin (Moonfin Recommends) o les mètriques de similitud en línia de TMDb. Nota: Les recomanacions en línia requereixen la integració amb Seerr.",
+    "recommendationSystemSubtitle": "Fes servir l'algorisme de biblioteca local Recomanacions Moonfin, el motor del servidor Recomanacions Jellyfin o les mètriques de similitud en línia de TMDb. Nota: les recomanacions en línia requereixen la integració amb Seerr.",
     "@recommendationSystemSubtitle": {
         "description": "Explanation under the recommendation system setting"
     },
@@ -7584,7 +7584,7 @@
     "@gameMenu": {
         "description": "Tooltip for the in-game menu button"
     },
-    "sortReleaseDescending": "Ordre d'estrena (Descendent)",
+    "sortReleaseDescending": "Ordre d'estrena (descendent)",
     "adminLibExtraThumbs": "Copia les imatges d'extrafanart a una carpeta extrathumbs",
     "latestBooks": "Llibres afegits recentment",
     "@latestBooks": {
@@ -7655,11 +7655,11 @@
     "@recommendationSystemTmdb": {
         "description": "Recommendation system option: TMDb Similarity"
     },
-    "recommendationsApplyParentalRatingCap": "Aplicar el límit de classificació parental?",
+    "recommendationsApplyParentalRatingCap": "Aplicar el límit de classificació per edats?",
     "@recommendationsApplyParentalRatingCap": {
         "description": "Label for the toggle that controls whether similar suggestions are capped by target media parental rating"
     },
-    "recommendationsApplyParentalRatingCapSubtitle": "Limita els suggeriments de Recomanacions Moonfin segons la classificació parental del contingut de destinació",
+    "recommendationsApplyParentalRatingCapSubtitle": "Limita els suggeriments de Recomanacions Moonfin segons la classificació per edats del contingut de destinació",
     "@recommendationsApplyParentalRatingCapSubtitle": {
         "description": "Explanation under the parental rating cap setting toggle"
     },
@@ -8398,7 +8398,7 @@
     "adminLibPreferNonstandardArtist": "Prefereix l'etiqueta d'artistes no estàndard",
     "adminLibAutoAddToCollection": "Afegeix automàticament les pel·lícules a les col·leccions",
     "adminParentalControl": "Control parental",
-    "adminMaxParentalRating": "Classificació parental màxima permesa",
+    "adminMaxParentalRating": "Classificació per edats màxima permesa",
     "adminMaxParentalRatingHint": "El contingut amb una classificació superior s'amagarà a aquest usuari.",
     "adminParentalRatingNone": "Cap",
     "adminBlockUnratedItems": "Bloqueja els elements sense classificació o amb classificació no reconeguda",
@@ -9148,7 +9148,7 @@
     "@nextUpMaxDays": {
         "description": "Setting for how far back the Next Up row reaches"
     },
-    "nextUpMaxDaysDescription": "Quant de temps un programa roman a \"A continuació\" després de l'última vegada que el vas veure",
+    "nextUpMaxDaysDescription": "Quant de temps una sèrie roman a «Següent» després de l'última vegada que la vas veure",
     "@nextUpMaxDaysDescription": {
         "description": "Description for the Next Up window setting"
     },
@@ -9611,7 +9611,7 @@
     "@setupTourQuestion": {
         "description": "Heading of the final setup wizard screen"
     },
-    "setupStyleClassic": "Clàsic",
+    "setupStyleClassic": "Clàssic",
     "@setupStyleClassic": {
         "description": "Name of the original layout, offered in the setup wizard"
     },
@@ -9952,7 +9952,7 @@
     "@playbackTimeAboveBarLeft": {
         "description": "Progress bar time slot above the bar on the left"
     },
-    "groupByParentalRating": "Qualificació parental",
+    "groupByParentalRating": "Classificació per edats",
     "@groupByParentalRating": {
         "description": "Option to group library items by parental rating"
     },
@@ -9999,7 +9999,7 @@
     "adminMetadataPersonKindNarrator": "Narrador",
     "adminMetadataLockFieldName": "Nom",
     "adminMetadataLockFieldGenres": "Gèneres",
-    "adminMetadataLockFieldOfficialRating": "Qualificació parental",
+    "adminMetadataLockFieldOfficialRating": "Classificació per edats",
     "adminMetadataLockFieldBirthLocation": "Lloc de naixement",
     "adminMetadataLockFieldRuntime": "Duració",
     "adminMetadataLockFieldStudios": "Estudis",
@@ -10939,5 +10939,913 @@
     "trickplayPauseWhileScrubbingSubtitle": "La reproducció es posa en pausa mentre cerques i es reprèn quan prems reproduir. Desactiva-ho per continuar reproduint i saltar directament al punt nou",
     "@trickplayPauseWhileScrubbingSubtitle": {
         "description": "Description for the trickplay pause-while-scrubbing setting"
-    }
+    },
+    "detailScreenStyleSpotlight": "Spotlight",
+    "@detailScreenStyleSpotlight": {
+        "description": "Detail screen style option: the hero-first layout with summary cards that open grid modals"
+    },
+    "spotlightMoreActions": "Més accions",
+    "@spotlightMoreActions": {
+        "description": "Tooltip/semantics of the spotlight ellipsis button and the title of the overflow actions menu it opens"
+    },
+    "spotlightCastCrewStudios": "Repartiment, equip i estudis",
+    "@spotlightCastCrewStudios": {
+        "description": "Title of the spotlight summary card that opens the people and studios modal"
+    },
+    "spotlightChaptersExtras": "Capítols i extres",
+    "@spotlightChaptersExtras": {
+        "description": "Title of the spotlight summary card that opens the chapters and special features modal"
+    },
+    "spotlightSimilarRecommendations": "Similars i recomanacions",
+    "@spotlightSimilarRecommendations": {
+        "description": "Title of the spotlight summary card that opens the similar titles and recommendations modal"
+    },
+    "spotlightSeasonsEpisodes": "Temporades i episodis",
+    "@spotlightSeasonsEpisodes": {
+        "description": "Title of the spotlight summary card that opens the seasons grid modal for a series"
+    },
+    "spotlightMoreEpisodes": "Més episodis",
+    "@spotlightMoreEpisodes": {
+        "description": "Title of the spotlight summary card listing the other episodes of the season"
+    },
+    "spotlightFilmography": "Filmografia",
+    "@spotlightFilmography": {
+        "description": "Title of the spotlight summary card that opens a person's filmography modal"
+    },
+    "spotlightCollectionsCard": "Col·leccions",
+    "@spotlightCollectionsCard": {
+        "description": "Title of the spotlight summary card that opens the parent collections modal"
+    },
+    "spotlightPlaylistOrder": "Ordre de la llista de reproducció",
+    "@spotlightPlaylistOrder": {
+        "description": "Title of the spotlight summary card that opens the ordered box set playlist modal"
+    },
+    "spotlightMoviesAndShows": "Pel·lícules i Sèries",
+    "@spotlightMoviesAndShows": {
+        "description": "Subtitle of the spotlight similar and recommendations card"
+    },
+    "spotlightSimilarSeerr": "Similars (Seerr)",
+    "@spotlightSimilarSeerr": {
+        "description": "Header of the Seerr similar-titles section when it appears beside the library's own similar section"
+    },
+    "spotlightRecommendationsSeerr": "Recomanacions (Seerr)",
+    "@spotlightRecommendationsSeerr": {
+        "description": "Header of the Seerr recommendations section when it appears in the Spotlight recommendations modal"
+    },
+    "spotlightPeopleCount": "{count, plural, =1{1 persona} other{{count} persones}}",
+    "@spotlightPeopleCount": {
+        "description": "Count fragment on spotlight summary cards: people",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightStudiosCount": "{count, plural, =1{1 estudi} other{{count} estudis}}",
+    "@spotlightStudiosCount": {
+        "description": "Count fragment on spotlight summary cards: studios",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightChaptersCount": "{count, plural, =1{1 capítol} other{{count} capítols}}",
+    "@spotlightChaptersCount": {
+        "description": "Count fragment on spotlight summary cards: chapters",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightExtrasCount": "{count, plural, =1{1 extra} other{{count} extres}}",
+    "@spotlightExtrasCount": {
+        "description": "Count fragment on spotlight summary cards: extras/special features",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightSeasonsCount": "{count, plural, =1{1 temporada} other{{count} temporades}}",
+    "@spotlightSeasonsCount": {
+        "description": "Count fragment on spotlight summary cards: seasons",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightEpisodesCount": "{count, plural, =1{1 episodi} other{{count} episodis}}",
+    "@spotlightEpisodesCount": {
+        "description": "Count fragment on spotlight summary cards: episodes",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightMoviesCount": "{count, plural, =1{1 pel·lícula} other{{count} pel·lícules}}",
+    "@spotlightMoviesCount": {
+        "description": "Count fragment on spotlight summary cards: movies",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightShowsCount": "{count, plural, =1{1 sèrie} other{{count} sèries}}",
+    "@spotlightShowsCount": {
+        "description": "Count fragment on spotlight summary cards: series/shows",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightTracksCount": "{count, plural, =1{1 pista} other{{count} pistes}}",
+    "@spotlightTracksCount": {
+        "description": "Count fragment on spotlight summary cards: audio tracks",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightItemsCount": "{count, plural, =1{1 element} other{{count} elements}}",
+    "@spotlightItemsCount": {
+        "description": "Count fragment on spotlight summary cards: generic items",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightAlbumsCount": "{count, plural, =1{1 àlbum} other{{count} àlbums}}",
+    "@spotlightAlbumsCount": {
+        "description": "Count fragment on spotlight summary cards: albums",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightCollectionsCount": "{count, plural, =1{1 col·lecció} other{{count} col·leccions}}",
+    "@spotlightCollectionsCount": {
+        "description": "Count fragment on spotlight summary cards: collections",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightTitlesCount": "{count, plural, =1{1 títol} other{{count} títols}}",
+    "@spotlightTitlesCount": {
+        "description": "Count fragment on the spotlight similar card: titles across the library and Seerr sections",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "detailScreenStyleNouveau": "Nouveau",
+    "@detailScreenStyleNouveau": {
+        "description": "Detail screen style option: nouveau full-screen layout with integrated sections"
+    },
+    "recommendationSystemJellyfin": "Recomanacions Jellyfin",
+    "@recommendationSystemJellyfin": {
+        "description": "Recommendation system option: Jellyfin Recommends"
+    },
+    "keyboardShortcutsTitle": "Dreceres de teclat",
+    "@keyboardShortcutsTitle": {
+        "description": "Title of the screen and dialog that list every keyboard shortcut"
+    },
+    "keyboardShortcutsSubtitle": "Tecles per a l'aplicació, el reproductor de vídeo i el lector",
+    "@keyboardShortcutsSubtitle": {
+        "description": "Subtitle of the About tile that opens the keyboard shortcut list"
+    },
+    "keyboardShortcutsPlayerHint": "Prem ? o F1 mentre es reprodueix un vídeo per veure aquesta llista sense sortir del reproductor.",
+    "@keyboardShortcutsPlayerHint": {
+        "description": "Footnote on the keyboard shortcuts settings screen"
+    },
+    "keyboardShortcutsSectionApp": "A tot arreu",
+    "@keyboardShortcutsSectionApp": {
+        "description": "Keyboard shortcut section for keys that work on every screen"
+    },
+    "keyboardShortcutsSectionAppScope": "A qualsevol pantalla",
+    "@keyboardShortcutsSectionAppScope": {
+        "description": "Under the Everywhere section title: when those keys apply"
+    },
+    "keyboardShortcutsSectionPlayer": "Reproductor de vídeo",
+    "@keyboardShortcutsSectionPlayer": {
+        "description": "Keyboard shortcut section for the video player"
+    },
+    "keyboardShortcutsSectionPlayerScope": "Mentre hi ha un vídeo obert, reproduint-se o en pausa",
+    "@keyboardShortcutsSectionPlayerScope": {
+        "description": "Under the Video player section title: when those keys apply"
+    },
+    "keyboardShortcutsSectionReader": "Lector de llibres i còmics",
+    "@keyboardShortcutsSectionReader": {
+        "description": "Keyboard shortcut section for the ebook and comic reader"
+    },
+    "keyboardShortcutsSectionReaderScope": "Mentre llegeixes un llibre o un còmic",
+    "@keyboardShortcutsSectionReaderScope": {
+        "description": "Under the reader section title: when those keys apply"
+    },
+    "keyNameArrowKeys": "Tecles de fletxa",
+    "@keyNameArrowKeys": {
+        "description": "Key cap label standing for the four arrow keys"
+    },
+    "keyNameSpace": "Espai",
+    "@keyNameSpace": {
+        "description": "Key cap label for the space bar"
+    },
+    "keyNameEnter": "Enter",
+    "@keyNameEnter": {
+        "description": "Key cap label for the Enter key"
+    },
+    "keyNameEsc": "Esc",
+    "@keyNameEsc": {
+        "description": "Key cap label for the Escape key"
+    },
+    "keyNameBackspace": "Backspace",
+    "@keyNameBackspace": {
+        "description": "Key cap label for the Backspace key"
+    },
+    "keyNamePageUp": "Page Up",
+    "@keyNamePageUp": {
+        "description": "Key cap label for the Page Up key"
+    },
+    "keyNamePageDown": "Page Down",
+    "@keyNamePageDown": {
+        "description": "Key cap label for the Page Down key"
+    },
+    "keyNameHome": "Home",
+    "@keyNameHome": {
+        "description": "Key cap label for the Home key"
+    },
+    "keyNameEnd": "End",
+    "@keyNameEnd": {
+        "description": "Key cap label for the End key"
+    },
+    "keyNameShift": "Shift",
+    "@keyNameShift": {
+        "description": "Key cap label for the Shift modifier"
+    },
+    "keyNameCtrl": "Ctrl",
+    "@keyNameCtrl": {
+        "description": "Key cap label for the Control modifier"
+    },
+    "keyNameAlt": "Alt",
+    "@keyNameAlt": {
+        "description": "Key cap label for the Alt modifier"
+    },
+    "keyNameScrollWheel": "Roda del ratolí",
+    "@keyNameScrollWheel": {
+        "description": "Key cap label standing for the mouse scroll wheel"
+    },
+    "shortcutMoveFocus": "Mou-te entre els elements",
+    "@shortcutMoveFocus": {
+        "description": "What the arrow keys do outside the player"
+    },
+    "shortcutActivate": "Obre l'element seleccionat",
+    "@shortcutActivate": {
+        "description": "What Enter does outside the player"
+    },
+    "shortcutGoBack": "Torna enrere",
+    "@shortcutGoBack": {
+        "description": "What Esc and Backspace do outside the player"
+    },
+    "shortcutToggleFullscreen": "Activa o desactiva la pantalla completa",
+    "@shortcutToggleFullscreen": {
+        "description": "F11 and Alt+Enter anywhere, F in the player"
+    },
+    "shortcutQuit": "Surt de Moonfin",
+    "@shortcutQuit": {
+        "description": "What Ctrl+Q does on desktop"
+    },
+    "shortcutPlayPause": "Reprodueix o posa en pausa",
+    "@shortcutPlayPause": {
+        "description": "Player shortcut action"
+    },
+    "shortcutShowControlsOrPlayPause": "Mostra els controls, o reprodueix/pausa si ja es veuen",
+    "@shortcutShowControlsOrPlayPause": {
+        "description": "What Enter does in the player"
+    },
+    "shortcutSeekBack": "Busca enrere (mantén premut per fer salts més grans)",
+    "@shortcutSeekBack": {
+        "description": "Player shortcut action. The step is the skip back length from settings"
+    },
+    "shortcutSeekForward": "Busca endavant (mantén premut per fer salts més grans)",
+    "@shortcutSeekForward": {
+        "description": "Player shortcut action. The step is the skip forward length from settings"
+    },
+    "shortcutVolumeUp": "Puja el volum",
+    "@shortcutVolumeUp": {
+        "description": "Player shortcut action"
+    },
+    "shortcutVolumeDown": "Baixa el volum",
+    "@shortcutVolumeDown": {
+        "description": "Player shortcut action"
+    },
+    "shortcutMute": "Silencia o activa el so",
+    "@shortcutMute": {
+        "description": "Player shortcut action"
+    },
+    "shortcutToggleSubtitles": "Activa o desactiva els subtítols",
+    "@shortcutToggleSubtitles": {
+        "description": "Player shortcut action"
+    },
+    "shortcutSlower": "Redueix la velocitat",
+    "@shortcutSlower": {
+        "description": "Player shortcut action"
+    },
+    "shortcutFaster": "Augmenta la velocitat",
+    "@shortcutFaster": {
+        "description": "Player shortcut action"
+    },
+    "shortcutPlaybackInfo": "Mostra la informació de reproducció",
+    "@shortcutPlaybackInfo": {
+        "description": "Player shortcut action"
+    },
+    "shortcutMpvStats": "Activa o desactiva les estadístiques de mpv",
+    "@shortcutMpvStats": {
+        "description": "Player shortcut action, Windows only"
+    },
+    "shortcutLeaveFullscreenOrStop": "Surt de la pantalla completa; si no hi ets, atura la reproducció",
+    "@shortcutLeaveFullscreenOrStop": {
+        "description": "What Esc does in the player"
+    },
+    "shortcutStopPlayback": "Atura la reproducció",
+    "@shortcutStopPlayback": {
+        "description": "Player shortcut action"
+    },
+    "shortcutNextItem": "Element següent",
+    "@shortcutNextItem": {
+        "description": "Player shortcut action for the next-track media key"
+    },
+    "shortcutPreviousItem": "Element anterior",
+    "@shortcutPreviousItem": {
+        "description": "Player shortcut action for the previous-track media key"
+    },
+    "shortcutShowShortcuts": "Mostra aquesta llista",
+    "@shortcutShowShortcuts": {
+        "description": "What ? and F1 do in the player"
+    },
+    "shortcutNextPage": "Pàgina següent",
+    "@shortcutNextPage": {
+        "description": "Reader shortcut action"
+    },
+    "shortcutPreviousPage": "Pàgina anterior",
+    "@shortcutPreviousPage": {
+        "description": "Reader shortcut action"
+    },
+    "shortcutScrollPage": "Desplaça la pàgina (llibres electrònics)",
+    "@shortcutScrollPage": {
+        "description": "What the up and down arrows do in the ebook reader"
+    },
+    "shortcutFirstPage": "Primera pàgina, o inici del capítol",
+    "@shortcutFirstPage": {
+        "description": "Reader shortcut action"
+    },
+    "shortcutLastPage": "Última pàgina, o final del capítol",
+    "@shortcutLastPage": {
+        "description": "Reader shortcut action"
+    },
+    "shortcutZoom": "Amplia o redueix el zoom (còmics)",
+    "@shortcutZoom": {
+        "description": "Reader shortcut action"
+    },
+    "shortcutResetZoom": "Restableix el zoom (còmics)",
+    "@shortcutResetZoom": {
+        "description": "Reader shortcut action"
+    },
+    "showLiveTvButton": "Mostra el botó de TV en directe",
+    "@showLiveTvButton": {
+        "description": "Setting for showing live TV button"
+    },
+    "showMissingCollectionItems": "Mostra els elements que falten a les col·leccions",
+    "@showMissingCollectionItems": {
+        "description": "Setting title to show missing items from Seerr on Collection pages"
+    },
+    "showMissingCollectionItemsDesc": "Inclou els elements que falten a les pàgines de col·leccions",
+    "@showMissingCollectionItemsDesc": {
+        "description": "Setting subtitle explaining that missing items will be included on Collection pages"
+    },
+    "showSeerrAvailabilityBadges": "Mostra les insígnies de disponibilitat de Seerr",
+    "@showSeerrAvailabilityBadges": {
+        "description": "Setting title for showing Seerr availability badges on media details pages"
+    },
+    "showSeerrAvailabilityBadgesDescription": "Mostra les insígnies de disponibilitat de temporades a les pàgines de detalls dels mitjans",
+    "@showSeerrAvailabilityBadgesDescription": {
+        "description": "Setting description for showing Seerr availability badges on media details pages"
+    },
+    "settingsShowLiveTvButtonInNavigation": "Mostra el botó de TV en directe a la barra de navegació quan el servidor tingui una biblioteca de TV en directe",
+    "modernCardsOnMyMediaRow": "Targetes modernes a la fila «La meva biblioteca»",
+    "modernCardsOnMyMediaRowDescription": "Mostra pòsters personalitzables que s'amplien en enfocar-los. Desactiva-ho per mostrar sempre la miniatura apaïsada.",
+    "audiobookFullTimeline": "Cronologia completa",
+    "transcodeAudioCodecWithCodec": "El còdec d'àudio ({codec}) no s'admet de manera nativa.",
+    "@transcodeAudioCodecWithCodec": {
+        "placeholders": {
+            "codec": {
+                "type": "String"
+            }
+        }
+    },
+    "transcodeAudioCodecHintPassthrough": "Consell: si el teu receptor d'àudio o barra de so admet {codec}, activa Passthrough d'àudio a la configuració d'Àudio.",
+    "@transcodeAudioCodecHintPassthrough": {
+        "placeholders": {
+            "codec": {
+                "type": "String"
+            }
+        }
+    },
+    "transcodeAudioChannelsExceeded": "El nombre de canals d'àudio ({channels}ch) supera el límit del reproductor.",
+    "@transcodeAudioChannelsExceeded": {
+        "placeholders": {
+            "channels": {
+                "type": "int"
+            }
+        }
+    },
+    "transcodeAudioChannelsHint": "Consell: ajusta «Màxim de canals d'àudio» o la mescla a menys canals a la configuració d'Àudio.",
+    "transcodeSubtitleBurnInAssDisabled": "Els subtítols ASS/SSA requereixen transcodificació perquè la reproducció nativa està desactivada.",
+    "transcodeSubtitleBurnInAssHint": "Consell: activa «Reproducció nativa d'ASS/SSA» a la configuració de Reproducció per reproduir-los sense transcodificar.",
+    "transcodeSubtitleBurnInPgsDisabled": "Els subtítols PGS requereixen transcodificació perquè la reproducció nativa està desactivada.",
+    "transcodeSubtitleBurnInPgsHint": "Consell: activa «Reproducció nativa de PGS» a la configuració de Reproducció per reproduir-los sense transcodificar.",
+    "transcodeSubtitleNotSupportedWithCodec": "El format de subtítols ({codec}) no s'admet de manera nativa i s'ha d'incrustar a la imatge.",
+    "@transcodeSubtitleNotSupportedWithCodec": {
+        "placeholders": {
+            "codec": {
+                "type": "String"
+            }
+        }
+    },
+    "transcodeBitrateExceededWithValues": "La taxa de bits del fitxer ({fileBitrate}) supera el límit de reproducció en línia configurat ({maxBitrate}).",
+    "@transcodeBitrateExceededWithValues": {
+        "placeholders": {
+            "fileBitrate": {
+                "type": "String"
+            },
+            "maxBitrate": {
+                "type": "String"
+            }
+        }
+    },
+    "transcodeBitrateHint": "Consell: augmenta «Taxa de bits màxima» a la configuració de Reproducció per permetre la reproducció directa en línia.",
+    "transcodeResolutionHint": "Consell: augmenta «Resolució màxima» a la configuració de Reproducció per permetre la reproducció directa en línia.",
+    "transcodeVideoRangeNotSupported": "Aquesta pantalla no admet el rang dinàmic del vídeo (per exemple, Dolby Vision / HDR).",
+    "transcodeDolbyVisionProfile7ElDisabled": "La reproducció nativa de la capa de millora del Dolby Vision Perfil 7 està desactivada.",
+    "transcodeDolbyVisionProfile7ElHint": "Consell: activa «Dolby Vision Perfil 7 Direct Play» a la configuració de Reproducció si la teva pantalla ho admet.",
+    "transcodeDolbyVisionFallbackPreferenceTranscode": "Segons la configuració de l'usuari, es prefereix la transcodificació com a alternativa per al Dolby Vision.",
+    "transcodeDolbyVisionFallbackHint": "Consell: estableix «Dolby Vision Alternativa» a «Reprodueix com a HDR10» a la configuració de Reproducció per evitar la transcodificació.",
+    "transcodeDisplayReportsNoHdr": "La pantalla connectada no informa que admeti HDR ni Dolby Vision.",
+    "transcodeDisplayLacksHdr10ForFallback": "La pantalla connectada no admet HDR10, que cal per a l'alternativa del Dolby Vision.",
+    "transcodeAudioSampleRateNotSupported": "La freqüència de mostreig de l'àudio no s'admet.",
+    "transcodeAudioBitDepthNotSupported": "La profunditat de bits de l'àudio no s'admet.",
+    "transcodeRefFramesNotSupported": "Els fotogrames de referència del vídeo superen els límits del reproductor.",
+    "transcodeAnamorphicVideoNotSupported": "El vídeo anamòrfic no s'admet.",
+    "transcodeInterlacedVideoNotSupported": "El vídeo entrellaçat no s'admet.",
+    "transcodeSecondaryAudioNotSupported": "La pista d'àudio secundària requereix transcodificació.",
+    "transcodeDirectPlayError": "La reproducció nativa no s'admet per a aquest format multimèdia.",
+    "setupStyleSpotlight": "Spotlight",
+    "@setupStyleSpotlight": {
+        "description": "Name of the hero-first detail layout, offered in the setup wizard"
+    },
+    "setupDetailSpotlightHint": "Centrat en la imatge principal, amb targetes emergents per al repartiment i els extres.",
+    "@setupDetailSpotlightHint": {
+        "description": "What the spotlight detail screen style gives you"
+    },
+    "setupStyleNouveau": "Nouveau",
+    "@setupStyleNouveau": {
+        "description": "Name of the full-screen stacked detail layout, offered in the setup wizard"
+    },
+    "setupDetailNouveauHint": "A pantalla completa, amb les seccions apilades en lloc de pestanyes.",
+    "@setupDetailNouveauHint": {
+        "description": "What the nouveau detail screen style gives you"
+    },
+    "settingsAnimationSpeed": "Velocitat de l'animació",
+    "@settingsAnimationSpeed": {
+        "description": "Section header in General Style settings for configuring motion and transition speeds"
+    },
+    "pageTransitions": "Transicions de pàgina",
+    "@pageTransitions": {
+        "description": "Setting title for adjusting the speed of page navigation transitions"
+    },
+    "pageTransitionsSubtitle": "Ajusta el temps d'esvaïment en navegar entre pàgines",
+    "@pageTransitionsSubtitle": {
+        "description": "Description for the page transitions animation speed setting"
+    },
+    "navigationSpeed": "Velocitat de navegació",
+    "@navigationSpeed": {
+        "description": "Setting title for adjusting the speed of focus movement and row scrolling"
+    },
+    "navigationSpeedSubtitle": "Ajusta la rapidesa amb què l'indicador d'enfocament es mou entre elements i files",
+    "@navigationSpeedSubtitle": {
+        "description": "Description for the navigation animation speed setting"
+    },
+    "modernCardsTransitionSpeed": "Velocitat de transició de les targetes modernes",
+    "@modernCardsTransitionSpeed": {
+        "description": "Setting title for adjusting animation speed of modern card expansions"
+    },
+    "modernCardsTransitionSpeedSubtitle": "Ajusta la velocitat de l'animació en ampliar les targetes modernes enfocades",
+    "@modernCardsTransitionSpeedSubtitle": {
+        "description": "Description for modern cards transition speed setting"
+    },
+    "delayCardExpansionOnRapidScroll": "Retarda l'ampliació de les targetes en desplaçament ràpid",
+    "@delayCardExpansionOnRapidScroll": {
+        "description": "Setting title for debouncing modern card expansion during rapid D-pad scrolling"
+    },
+    "delayCardExpansionOnRapidScrollSubtitle": "Espera que el moviment de l'enfocament s'aturi abans d'ampliar les targetes modernes",
+    "@delayCardExpansionOnRapidScrollSubtitle": {
+        "description": "Description for debouncing modern card expansion setting"
+    },
+    "animationSpeedExtraSlow": "Molt lenta",
+    "@animationSpeedExtraSlow": {
+        "description": "Option label for extra slow animation speed"
+    },
+    "animationSpeedSlow": "Lenta",
+    "@animationSpeedSlow": {
+        "description": "Option label for slow animation speed"
+    },
+    "animationSpeedMedium": "Mitjana",
+    "@animationSpeedMedium": {
+        "description": "Option label for medium/normal animation speed"
+    },
+    "animationSpeedFast": "Ràpida",
+    "@animationSpeedFast": {
+        "description": "Option label for fast animation speed"
+    },
+    "animationSpeedOff": "Desactivat",
+    "@animationSpeedOff": {
+        "description": "Option label for turning animations off / instant transitions"
+    },
+    "pageTransitionFadeNone": "Sense esvaïment",
+    "@pageTransitionFadeNone": {
+        "description": "Option label for instant page transition with no fade"
+    },
+    "pageTransitionFadeShort": "Esvaïment curt",
+    "@pageTransitionFadeShort": {
+        "description": "Option label for short fade page transition"
+    },
+    "pageTransitionFadeMedium": "Esvaïment mitjà",
+    "@pageTransitionFadeMedium": {
+        "description": "Option label for medium fade page transition"
+    },
+    "pageTransitionFadeLong": "Esvaïment llarg",
+    "@pageTransitionFadeLong": {
+        "description": "Option label for long fade page transition"
+    },
+    "cropBlackBars": "Retalla les bandes negres",
+    "@cropBlackBars": {
+        "description": "Setting to detect and crop encoded letterbox/pillarbox bars"
+    },
+    "settingsCropBlackBarsDescription": "Detecta les bandes negres codificades, retalla-les i omple la pantalla.",
+    "@settingsCropBlackBarsDescription": {
+        "description": "Description for the crop black bars playback setting"
+    },
+    "detailMetadata": "Fila de metadades",
+    "@detailMetadata": {
+        "description": "Settings screen for choosing and reordering details screen metadata items"
+    },
+    "detailMetadataDescription": "Tria i reordena quines metadades mostra la pantalla de detalls",
+    "@detailMetadataDescription": {
+        "description": "Subtitle for the details metadata settings tile"
+    },
+    "detailMetadataSectionDescription": "Activa o desactiva els elements de metadades i organitza l'ordre en què apareixen a la pantalla de detalls. Cada tipus de dispositiu manté la seva pròpia llista.",
+    "@detailMetadataSectionDescription": {
+        "description": "Explains how to customize and reorder details screen metadata items"
+    },
+    "detailMetadataYear": "Any de llançament",
+    "@detailMetadataYear": {
+        "description": "Item label for release or production year in metadata row"
+    },
+    "detailMetadataParentalRating": "Classificació per edats",
+    "@detailMetadataParentalRating": {
+        "description": "Item label for parental content rating in metadata row"
+    },
+    "detailMetadataRuntimeAndSeasons": "Durada i temporades",
+    "@detailMetadataRuntimeAndSeasons": {
+        "description": "Item label for runtime or season/episode counts in metadata row"
+    },
+    "detailMetadataStatus": "Estat de la sèrie",
+    "@detailMetadataStatus": {
+        "description": "Item label for series status badge in metadata row"
+    },
+    "detailMetadataStatusSubtitle": "Mostra si la sèrie continua, ha acabat o torna",
+    "@detailMetadataStatusSubtitle": {
+        "description": "Subtitle explaining the series status metadata badge"
+    },
+    "detailMetadataGenres": "Gèneres",
+    "@detailMetadataGenres": {
+        "description": "Item label for genre tags in metadata row"
+    },
+    "detailMetadataSeerrAvailability": "Disponibilitat a Seerr",
+    "@detailMetadataSeerrAvailability": {
+        "description": "Item label for Seerr request and availability badge in metadata row"
+    },
+    "detailMetadataSeerrAvailabilitySubtitle": "Mostra l'estat de la sol·licitud i la disponibilitat dels mitjans segons Seerr",
+    "@detailMetadataSeerrAvailabilitySubtitle": {
+        "description": "Subtitle explaining the Seerr availability metadata badge"
+    },
+    "detailMetadataUpcomingEpisodeDate": "Pròxims episodis",
+    "@detailMetadataUpcomingEpisodeDate": {
+        "description": "Item label for upcoming episode air date badge in metadata row"
+    },
+    "detailMetadataUpcomingEpisodeDateSubtitle": "Fa servir Sonarr i TMDB per mostrar les pròximes dates d'estrena",
+    "@detailMetadataUpcomingEpisodeDateSubtitle": {
+        "description": "Subtitle describing data sources for upcoming episode air dates in metadata row"
+    },
+    "upcomingEpisodeNext": "Següent: {date} (T{season}:E{episode})",
+    "@upcomingEpisodeNext": {
+        "description": "Formatted badge text for an upcoming episode release date",
+        "placeholders": {
+            "date": {
+                "type": "String"
+            },
+            "season": {
+                "type": "int"
+            },
+            "episode": {
+                "type": "int"
+            }
+        }
+    },
+    "upcomingEpisodeToday": "Avui",
+    "@upcomingEpisodeToday": {
+        "description": "Upcoming episode airs today"
+    },
+    "upcomingEpisodeTomorrow": "Demà",
+    "@upcomingEpisodeTomorrow": {
+        "description": "Upcoming episode airs tomorrow"
+    },
+    "liveTvConnecting": "S'està connectant al canal…",
+    "@liveTvConnecting": {
+        "description": "Live TV player status while a channel is being tuned"
+    },
+    "liveTvTunerStillTrying": "El sintonitzador encara intenta obtenir aquest canal…",
+    "@liveTvTunerStillTrying": {
+        "description": "Live TV player status when the server has kept a channel request open for several seconds, meaning the tuner is retrying its source"
+    },
+    "liveTvReconnecting": "S'ha perdut el senyal. El sintonitzador s'està reconnectant…",
+    "@liveTvReconnecting": {
+        "description": "Live TV player status when a playing channel stops receiving data"
+    },
+    "liveTvChannelUnavailableTitle": "Canal no disponible",
+    "@liveTvChannelUnavailableTitle": {
+        "description": "Title shown when a live TV channel could not be started"
+    },
+    "liveTvChannelUnavailableBody": "El servidor no ha pogut obtenir aquest canal del sintonitzador. Pot ser que la font estigui caiguda o que el sintonitzador hagi desistit després de diversos intents.",
+    "@liveTvChannelUnavailableBody": {
+        "description": "Explanation shown when a live TV channel could not be started"
+    },
+    "liveTvChannelLostTitle": "S'ha perdut el canal",
+    "@liveTvChannelLostTitle": {
+        "description": "Title shown when a playing live TV channel stopped and did not recover"
+    },
+    "liveTvChannelLostBody": "La reproducció s'ha aturat i el sintonitzador no l'ha recuperada. Torna-ho a provar o tria un altre canal.",
+    "@liveTvChannelLostBody": {
+        "description": "Explanation shown when a playing live TV channel stopped and did not recover"
+    },
+    "animeMarkerFiller": "Filler",
+    "@animeMarkerFiller": {
+        "description": "Badge on an anime episode that is filler, meaning it is not adapted from the source manga"
+    },
+    "animeMarkerAnimeCanon": "Cànon anime",
+    "@animeMarkerAnimeCanon": {
+        "description": "Badge on an anime episode that is not in the source manga but is part of the anime's own continuity"
+    },
+    "animeMarkerMixed": "Mixt",
+    "@animeMarkerMixed": {
+        "description": "Badge on an anime episode that mixes source material with filler, so it still contains story"
+    },
+    "animeMarkerMangaCanon": "Cànon manga",
+    "@animeMarkerMangaCanon": {
+        "description": "Badge on an anime episode adapted from the source manga"
+    },
+    "animeMarkerSubbed": "Subtitulat",
+    "@animeMarkerSubbed": {
+        "description": "Badge on an anime episode or season whose only audio is Japanese, so it is watched with subtitles"
+    },
+    "animeMarkerDubbed": "Doblat",
+    "@animeMarkerDubbed": {
+        "description": "Badge on an anime episode or season that has an audio track in a language other than Japanese"
+    },
+    "animeMarkerSubbedAndDubbed": "Subtitulat/Doblat",
+    "@animeMarkerSubbedAndDubbed": {
+        "description": "Badge on anime that carries both the original Japanese audio and a dub, so it can be watched either way"
+    },
+    "animeMarkerPending": "Pendent",
+    "@animeMarkerPending": {
+        "description": "Badge on an anime episode whose filler information the server has matched but not downloaded yet"
+    },
+    "animeMarkerRecap": "Resum",
+    "@animeMarkerRecap": {
+        "description": "Badge on an anime episode that recaps earlier episodes"
+    },
+    "subtitleDelayAuto": "Auto {value}",
+    "@subtitleDelayAuto": {
+        "description": "Read-only line under the subtitle delay showing a correction the player applied on its own, value is a formatted delay like +2000 ms",
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "noProgramData": "No hi ha dades del programa",
+    "@noProgramData": {
+        "description": "Guide cell label for a real EPG schedule gap, not a genre-filtered program"
+    },
+    "watchChannelLive": "Mira el canal en directe",
+    "@watchChannelLive": {
+        "description": "Button label to tune a channel live when the selected program is not the one that will play (ended or upcoming)"
+    },
+    "actionButtonsOnScreen": "Botons d'acció a la pantalla",
+    "@actionButtonsOnScreen": {
+        "description": "Setting title for choosing how many action buttons are visible before overflowing into More Actions"
+    },
+    "actionButtonsOnScreenDescription": "Personalitza quants botons d'acció apareixen abans de plegar-se al menú Més accions.",
+    "@actionButtonsOnScreenDescription": {
+        "description": "Subtitle explaining how action buttons overflow into More Actions"
+    },
+    "actionButtonsOnScreenAuto": "Auto (predeterminat del tema)",
+    "@actionButtonsOnScreenAuto": {
+        "description": "Option showing theme default number of action buttons"
+    },
+    "actionButtonsOnScreenPlayOnly": "1 (només Reprodueix)",
+    "@actionButtonsOnScreenPlayOnly": {
+        "description": "Option showing only the play action button on screen"
+    },
+    "actionButtonsOnScreenAll": "Tots (desplaçament horitzontal)",
+    "@actionButtonsOnScreenAll": {
+        "description": "Option showing all action buttons in a horizontal scrollable row"
+    },
+    "settingsAudioPassthroughOutput": "Sortida del passthrough",
+    "@settingsAudioPassthroughOutput": {
+        "description": "Title of the RAW-vs-IEC passthrough packer selector (Android TV, Media3 engine)"
+    },
+    "settingsAudioPassthroughOutputDescription": "Qui empaqueta els fluxos de bits per a l'enllaç HDMI. Prova l'empaquetador de l'aplicació si el passthrough no té so o falla en aquest dispositiu.",
+    "settingsAudioPassthroughOutputPlatform": "Automàtic, empaquetador del sistema (AudioTrack RAW)",
+    "settingsAudioPassthroughOutputIec": "Empaquetador de l'aplicació (AudioTrack IEC)",
+    "settingsAudioPassthroughOutputIecLabel": "Aplicació (IEC)",
+    "siriRemoteSwipeSensitivity": "Sensibilitat del lliscament al panell tàctil",
+    "@siriRemoteSwipeSensitivity": {
+        "description": "Apple TV settings label for how far a swipe on the Siri Remote touchpad moves the focus highlight"
+    },
+    "contextMenuRemoveFromCollection": "Elimina de la col·lecció",
+    "@contextMenuRemoveFromCollection": {
+        "description": "Context menu action to remove an item from the collection whose page it is shown on"
+    },
+    "siriRemoteSwipeSensitivityDescription": "Fins on es mou el focus amb cada lliscament al panell tàctil del Siri Remote",
+    "@siriRemoteSwipeSensitivityDescription": {
+        "description": "Apple TV settings subtitle for the Siri Remote touchpad swipe sensitivity option"
+    },
+    "removeFromCollectionConfirm": "Vols eliminar {item} de {collection}? L'element es manté a la teva biblioteca.",
+    "@removeFromCollectionConfirm": {
+        "description": "Confirmation shown before removing an item from a collection",
+        "placeholders": {
+            "item": {
+                "type": "String"
+            },
+            "collection": {
+                "type": "String"
+            }
+        }
+    },
+    "removeFromCollectionFailed": "No s'ha pogut eliminar de la col·lecció",
+    "@removeFromCollectionFailed": {
+        "description": "Error shown when removing an item from a collection fails"
+    },
+    "showBookDiscoverTab": "Mostra la pestanya Descobreix a les biblioteques de llibres",
+    "@showBookDiscoverTab": {
+        "description": "Setting that shows or hides the discovery tab in book and audiobook libraries"
+    },
+    "showBookDiscoverTabDescription": "Explora títols d'Open Library i LibriVox a les teves biblioteques de llibres i audiollibres",
+    "@showBookDiscoverTabDescription": {
+        "description": "Explains the setting that shows or hides the discovery tab in book libraries"
+    },
+    "spotlightFactsCount": "{count, plural, =1{1 dada} other{{count} dades}}",
+    "@spotlightFactsCount": {
+        "description": "Count fragment on spotlight summary cards: Seerr facts",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightTagsCount": "{count, plural, =1{1 etiqueta} other{{count} etiquetes}}",
+    "@spotlightTagsCount": {
+        "description": "Count fragment on spotlight summary cards: genres, networks and keywords",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "activeDownloads": "Baixades actives",
+    "@activeDownloads": {
+        "description": "Tab title for downloads that are transferring or queued"
+    },
+    "savedMediaCount": "{count, plural, =1{1 element} other{{count} elements}}",
+    "@savedMediaCount": {
+        "description": "How many downloads the saved media list holds, shown beside the total size",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "savedMediaOfLimit": "{used} de {limit}",
+    "@savedMediaOfLimit": {
+        "description": "Storage used against the configured limit, for example '56.4 GB of 80 GB'",
+        "placeholders": {
+            "used": {
+                "type": "String"
+            },
+            "limit": {
+                "type": "String"
+            }
+        }
+    },
+    "savedMediaSelectItems": "Selecciona elements",
+    "@savedMediaSelectItems": {
+        "description": "Overflow menu entry that turns on multi-select in the saved media list"
+    },
+    "savedMediaNoDownloads": "Encara no hi ha res desat",
+    "@savedMediaNoDownloads": {
+        "description": "Empty state title when no downloads are on the device"
+    },
+    "savedMediaNoDownloadsDetail": "Les baixades que iniciïs apareixen aquí i es reprodueixen sense connexió.",
+    "@savedMediaNoDownloadsDetail": {
+        "description": "Empty state body when no downloads are on the device"
+    },
+    "savedMediaNoActiveDownloads": "Ara mateix no s'està baixant res",
+    "@savedMediaNoActiveDownloads": {
+        "description": "Empty state for the active downloads tab"
+    },
+    "savedMediaNoResults": "Cap baixada coincideix amb aquesta cerca",
+    "@savedMediaNoResults": {
+        "description": "Empty state when a search over saved media matches nothing"
+    },
+    "savedMediaPlayFromStart": "Reprodueix des del principi",
+    "@savedMediaPlayFromStart": {
+        "description": "Row menu action that restarts a partly watched download from the beginning"
+    },
+    "savedMediaGoToDetails": "Ves als detalls",
+    "@savedMediaGoToDetails": {
+        "description": "Row menu action that opens the item's detail screen"
+    },
+    "savedMediaDeleteDownload": "Suprimeix la baixada",
+    "@savedMediaDeleteDownload": {
+        "description": "Row menu action that removes one downloaded file from the device"
+    },
+    "savedMediaDeleteEpisodes": "{count, plural, =1{Suprimeix 1 episodi} other{Suprimeix {count} episodis}}",
+    "@savedMediaDeleteEpisodes": {
+        "description": "Menu action that removes every saved episode of one series",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "savedMediaDeleteSeason": "Suprimeix {season}",
+    "@savedMediaDeleteSeason": {
+        "description": "Menu action that removes every saved episode of one season",
+        "placeholders": {
+            "season": {
+                "type": "String"
+            }
+        }
+    },
+    "savedMediaOpenShow": "Obre la sèrie",
+    "@savedMediaOpenShow": {
+        "description": "Row menu action that opens a saved show's seasons and episodes"
+    },
+    "savedMediaPlayNextUnwatched": "Reprodueix el següent no vist",
+    "@savedMediaPlayNextUnwatched": {
+        "description": "Row menu action that plays the earliest unwatched saved episode of a show"
+    },
+    "savedMediaRead": "Llegeix",
+    "@savedMediaRead": {
+        "description": "Row menu action that opens a downloaded book in the reader"
+    },
+    "savedMediaCancelDownload": "Cancel·la la baixada",
+    "@savedMediaCancelDownload": {
+        "description": "Row menu action that stops a running or queued transfer"
+    },
+    "sortBySize": "Mida",
+    "@sortBySize": {
+        "description": "Sort option: largest download first"
+    },
+    "sortByName": "Nom",
+    "@sortByName": {
+        "description": "Sort option: alphabetical by title"
+    },
+    "sortByDateAdded": "Data d'afegiment",
+    "@sortByDateAdded": {
+        "description": "Sort option: most recently downloaded first"
+    },
+    "transcodeTargetCodecs": "Còdecs de destinació de la transcodificació",
+    "locallyDecodedCodecs": "Còdecs descodificats localment"
 }

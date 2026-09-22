@@ -33,6 +33,12 @@ class PipService {
   final _screenLockController = StreamController<bool>.broadcast();
   Stream<bool> get onScreenLock => _screenLockController.stream;
 
+  final _userLeftAppController = StreamController<void>.broadcast();
+
+  /// Fires when the viewer chose to leave, through home, recents or another
+  /// app. A screensaver or a call taking the foreground does not raise this.
+  Stream<void> get onUserLeftApp => _userLeftAppController.stream;
+
   bool _disposed = false;
 
   PipService() {
@@ -60,6 +66,11 @@ class PipService {
         _isScreenLocked = call.arguments as bool;
         if (!_screenLockController.isClosed) {
           _screenLockController.add(_isScreenLocked);
+        }
+        return null;
+      case 'onUserLeftApp':
+        if (!_userLeftAppController.isClosed) {
+          _userLeftAppController.add(null);
         }
         return null;
       case 'onPipReady':
@@ -138,5 +149,6 @@ class PipService {
     _pipChangedController.close();
     _actionController.close();
     _screenLockController.close();
+    _userLeftAppController.close();
   }
 }

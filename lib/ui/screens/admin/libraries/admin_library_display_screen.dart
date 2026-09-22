@@ -4,6 +4,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../util/error_message.dart';
 import '../widgets/admin_form_styles.dart';
 
 /// Server-wide library display settings (folder view, collection grouping,
@@ -51,7 +52,7 @@ class _AdminLibraryDisplayScreenState extends State<AdminLibraryDisplayScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _error = e.toString();
+        _error = describeError(e, AppLocalizations.of(context));
         _loading = false;
       });
     }
@@ -70,10 +71,11 @@ class _AdminLibraryDisplayScreenState extends State<AdminLibraryDisplayScreen> {
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-              content: Text(AppLocalizations.of(context)
-                  .adminSettingsSaveFailed(e.toString()))),
+            content: Text(l10n.adminSettingsSaveFailed(describeError(e, l10n))),
+          ),
         );
       }
     } finally {

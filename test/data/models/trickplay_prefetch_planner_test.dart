@@ -13,6 +13,52 @@ void main() {
   );
   const totalDuration = Duration(minutes: 20);
 
+  group('seek destinations', () {
+    const frames = TrickplayInfo(
+      width: 100,
+      height: 60,
+      tileWidth: 1,
+      tileHeight: 1,
+      interval: 1000,
+    );
+    List<int> plan(TrickplayInfo source, int seconds, bool forward) =>
+        TrickplayPrefetchPlanner.planSeekImageIndexes(
+          info: source,
+          position: Duration(seconds: seconds),
+          totalDuration: const Duration(seconds: 100),
+          forwardStepMs: 10000,
+          backwardStepMs: 5000,
+          directionForward: forward,
+        );
+
+    test('uses configured seek steps instead of adjacent frame indexes', () {
+      expect(plan(frames, 20, true), [20, 30, 40, 50, 60, 70, 80, 15, 10]);
+      expect(plan(frames, 40, false), [40, 35, 30, 25, 20, 15, 10, 50, 60]);
+    });
+    test('clamps at both ends and deduplicates sprite sheets', () {
+      expect(plan(frames, 0, false), [0, 10, 20]);
+      expect(plan(frames, 95, true), [95, 99, 90, 85]);
+      expect(plan(info, 20, true), [0]);
+    });
+    test('resolves irregular timestamped frames at seek destinations', () {
+      final irregular = TrickplayInfo.fromThumbnailSet(
+        TrickplayThumbnailSet(
+          aspectRatio: 16 / 9,
+          thumbnails: [0, 3, 19, 28, 46, 65, 90]
+              .map(
+                (seconds) => TrickplayThumbnail(
+                  positionTicks: seconds * 10000000,
+                  imageTag: 'frame-$seconds',
+                ),
+              )
+              .toList(),
+        ),
+        width: 320,
+      );
+      expect(plan(irregular, 20, true), [2, 3, 4, 5, 1]);
+    });
+  });
+
   group('TrickplayPrefetchPlanner.planImageIndexes (directional, D-pad)', () {
     test('forward returns only sheets ahead of the current one', () {
       final indexes = TrickplayPrefetchPlanner.planImageIndexes(

@@ -1,11 +1,21 @@
 import 'dart:async';
 
 import 'package:dio/dio.dart';
-import 'package:flutter/widgets.dart' show AppLifecycleState, WidgetsBinding;
+import 'package:flutter/foundation.dart' show visibleForTesting;
+import 'package:flutter/widgets.dart'
+    show
+        ActivateIntent,
+        Actions,
+        AppLifecycleState,
+        FocusManager,
+        TraversalDirection,
+        WidgetsBinding;
 
+import '../../l10n/current_app_localizations.dart';
 import '../../ui/navigation/app_router.dart';
 import '../../ui/navigation/destinations.dart';
 import '../../ui/navigation/home_refresh_bus.dart';
+import '../../ui/widgets/floating_notification.dart';
 
 import 'package:get_it/get_it.dart';
 import 'package:logger/logger.dart';
@@ -20,6 +30,7 @@ import '../../data/services/download_notification_service.dart';
 import '../../data/services/tv_channels_service.dart';
 import '../../data/services/watch_next_service.dart';
 import '../../data/services/media_server_client_factory.dart';
+import '../../data/services/achievements_service.dart';
 import '../../data/services/plugin_sync_service.dart';
 import '../../data/services/push_messaging_service.dart';
 import '../../data/services/server_messages_service.dart';
@@ -35,6 +46,7 @@ import '../../playback/media_browse_service.dart';
 import '../../preference/preference_constants.dart';
 import '../../preference/user_preferences.dart';
 import '../../syncplay/syncplay_manager.dart';
+import '../../util/fullscreen_helper.dart';
 import '../../util/platform_detection.dart';
 import '../store/authentication_preferences.dart';
 import '../store/authentication_store.dart';
@@ -46,7 +58,7 @@ import 'user_repository.dart';
 enum SessionState { ready, restoring, switching }
 
 class SessionRepository {
-  static const List<String> _supportedRemoteCommands = [
+  static const List<String> _baseSupportedRemoteCommands = [
     'DisplayMessage',
     'SetVolume',
     'Mute',
@@ -56,7 +68,29 @@ class SessionRepository {
     'SetSubtitleStreamIndex',
     'SetRepeatMode',
     'SetShuffleQueue',
+    'GoHome',
+    'VolumeUp',
+    'VolumeDown',
   ];
+
+  static const List<String> _tvNavigationRemoteCommands = [
+    'MoveUp',
+    'MoveDown',
+    'MoveLeft',
+    'MoveRight',
+    'Select',
+    'Back',
+  ];
+
+  List<String> get _supportedRemoteCommands => [
+    ..._baseSupportedRemoteCommands,
+    if (PlatformDetection.isTV) ..._tvNavigationRemoteCommands,
+    // Nothing but a desktop has a window to resize, so anywhere else would be
+    // offering a button that does nothing.
+    if (PlatformDetection.isDesktop) 'ToggleFullscreen',
+  ];
+
+  static const double _volumeStep = 10;
   static const Duration _initialLoginSyncWait = Duration(seconds: 3);
 
   final AuthenticationStore _authStore;
@@ -182,6 +216,9 @@ class SessionRepository {
   }) async {
     _setState(SessionState.switching);
     _pluginSyncService.resetState();
+    if (GetIt.instance.isRegistered<AchievementsService>()) {
+      GetIt.instance<AchievementsService>().reset();
+    }
     if (GetIt.instance.isRegistered<ServerMessagesService>()) {
       GetIt.instance<ServerMessagesService>().clear();
     }
@@ -356,6 +393,13 @@ class SessionRepository {
 
     await _pluginSyncService.syncOnLogin(client, serverId: serverId);
 
+    // The settings entry stays hidden until this answers.
+    if (GetIt.instance.isRegistered<AchievementsService>()) {
+      unawaited(
+        GetIt.instance<AchievementsService>().refreshAvailability(client),
+      );
+    }
+
     // Register the FCM token now that a session exists, and push the current
     // notification prefs so defaults reach the plugin. Startup registration
     // bails before login, so this is where closed-app push actually enrolls.
@@ -481,6 +525,9 @@ class SessionRepository {
     }
 
     _pluginSyncService.resetState();
+    if (GetIt.instance.isRegistered<AchievementsService>()) {
+      GetIt.instance<AchievementsService>().reset();
+    }
     if (GetIt.instance.isRegistered<ServerMessagesService>()) {
       GetIt.instance<ServerMessagesService>().clear();
     }
@@ -614,6 +661,12 @@ class SessionRepository {
     }
   }
 
+  /// Lets a test drive a command straight in, so every name a control surface
+  /// sends can be checked against what the receiver does with it.
+  @visibleForTesting
+  Future<void> handleRemoteCommandForTest(ServerWebSocketMessage event) =>
+      _handleRemoteCommand(event);
+
   int? _parseIntArg(Map<String, String> args, String key) {
     final value = args[key];
     if (value == null) {
@@ -623,11 +676,26 @@ class SessionRepository {
   }
 
   Future<void> _setLocalVolume(PlaybackManager manager, double volume) async {
+    final clamped = volume.clamp(0, 100).toDouble();
+    manager.reportVolumeState(volume: clamped, isMuted: clamped <= 0);
     final backend = manager.backend;
     if (backend == null) {
       return;
     }
-    await backend.setVolume(volume.clamp(0, 100));
+    await backend.setVolume(clamped);
+  }
+
+  void _moveFocus(TraversalDirection direction) {
+    if (!PlatformDetection.isTV) return;
+    FocusManager.instance.primaryFocus?.focusInDirection(direction);
+  }
+
+  void _activateFocused() {
+    if (!PlatformDetection.isTV) return;
+    final focusContext = FocusManager.instance.primaryFocus?.context;
+    if (focusContext != null) {
+      Actions.maybeInvoke<ActivateIntent>(focusContext, const ActivateIntent());
+    }
   }
 
   double _normalizeVolume(String raw) {
@@ -796,9 +864,51 @@ class SessionRepository {
         await manager.next();
       case 'previoustrack':
         await manager.previous();
+      case 'playpause':
+        // The backend knows before the state does, so a track still being
+        // brought up reads as paused rather than as already playing.
+        if (manager.backend?.isPlaying ?? manager.state.isPlaying) {
+          await manager.pause();
+        } else {
+          await manager.resume();
+        }
+      case 'rewind':
+        await _remoteSkip(manager, forward: false);
+      case 'fastforward':
+        await _remoteSkip(manager, forward: true);
       default:
         break;
     }
+  }
+
+  /// Moves playback by the same amount this device's own skip buttons use, so
+  /// a jump from a remote lands where a local one would.
+  Future<void> _remoteSkip(
+    PlaybackManager manager, {
+    required bool forward,
+  }) async {
+    final prefs = GetIt.instance<UserPreferences>();
+    final length = Duration(
+      milliseconds: prefs.get(
+        forward
+            ? UserPreferences.skipForwardLength
+            : UserPreferences.skipBackLength,
+      ),
+    );
+    final position = manager.state.position;
+    final target = forward ? position + length : position - length;
+    if (target < Duration.zero) {
+      await manager.seekTo(Duration.zero);
+      return;
+    }
+    // A duration of zero means nothing has reported one yet, and clamping to
+    // it would send every skip back to the start.
+    final duration = manager.state.duration;
+    if (duration > Duration.zero && target > duration) {
+      await manager.seekTo(duration);
+      return;
+    }
+    await manager.seekTo(target);
   }
 
   Future<void> _handleGeneralCommandMessage(
@@ -809,10 +919,7 @@ class SessionRepository {
       case 'displaymessage':
         final text = message.arguments['Text'];
         if (text != null && text.trim().isNotEmpty) {
-          await GetIt.instance<DownloadNotificationService>().showRemoteMessage(
-            text: text,
-            header: message.arguments['Header'],
-          );
+          await _showRemoteMessage(text, message.arguments['Header']);
         }
       case 'setvolume':
         final raw = message.arguments['Volume'];
@@ -837,6 +944,40 @@ class SessionRepository {
       case 'togglemute':
         _remoteMuted = !_remoteMuted;
         await _setLocalVolume(manager, _remoteMuted ? 0 : _lastUnmutedVolume);
+      case 'volumeup':
+        final raised = manager.volume + _volumeStep;
+        await _setLocalVolume(manager, raised);
+        _remoteMuted = raised <= 0;
+        if (!_remoteMuted) {
+          _lastUnmutedVolume = raised.clamp(0, 100).toDouble();
+        }
+      case 'volumedown':
+        final lowered = manager.volume - _volumeStep;
+        await _setLocalVolume(manager, lowered);
+        _remoteMuted = lowered <= 0;
+        if (!_remoteMuted) {
+          _lastUnmutedVolume = lowered.clamp(0, 100).toDouble();
+        }
+      case 'togglefullscreen':
+        await FullscreenHelper.toggle();
+      case 'moveup':
+        _moveFocus(TraversalDirection.up);
+      case 'movedown':
+        _moveFocus(TraversalDirection.down);
+      case 'moveleft':
+        _moveFocus(TraversalDirection.left);
+      case 'moveright':
+        _moveFocus(TraversalDirection.right);
+      case 'select':
+        _activateFocused();
+      case 'back':
+        if (PlatformDetection.isTV) {
+          if (appRouter.canPop()) {
+            appRouter.pop();
+          } else {
+            appRouter.go(Destinations.home);
+          }
+        }
       case 'setaudiostreamindex':
         final index = _parseIntArg(message.arguments, 'Index');
         if (index != null) {
@@ -862,9 +1003,33 @@ class SessionRepository {
         if (mode != null) {
           await _setShuffleMode(manager, mode);
         }
+      case 'gohome':
+        await manager.stop(userInitiated: false);
+        appRouter.go(Destinations.home);
       default:
         break;
     }
+  }
+
+  /// Shows a message another client sent to this one. It takes the system
+  /// notification where the device has them and an in-app banner where it
+  /// doesn't, so a message the sender saw go through always lands somewhere.
+  Future<void> _showRemoteMessage(String text, String? header) async {
+    final delivered = await GetIt.instance<DownloadNotificationService>()
+        .showRemoteMessage(text: text, header: header);
+    if (delivered) return;
+
+    final context = appRouter.routerDelegate.navigatorKey.currentContext;
+    if (context == null || !context.mounted) return;
+    final l10n = currentAppLocalizations();
+    FloatingNotification.show(
+      context,
+      (header != null && header.trim().isNotEmpty)
+          ? header.trim()
+          : l10n.serverMessagesNotificationTitle,
+      text.trim(),
+      null,
+    );
   }
 
   void dispose() {

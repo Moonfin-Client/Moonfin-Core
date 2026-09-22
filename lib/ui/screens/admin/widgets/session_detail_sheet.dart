@@ -6,6 +6,7 @@ import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../util/error_message.dart';
 import '../../../widgets/adaptive/adaptive_dialog.dart';
 import '../../../widgets/adaptive/adaptive_slider.dart';
 
@@ -64,7 +65,7 @@ class _SessionDetailSheetState extends State<SessionDetailSheet> {
         final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(l10n.adminCommandFailed(e.toString())),
+            content: Text(l10n.adminCommandFailed(describeError(e, l10n))),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -133,7 +134,7 @@ class _SessionDetailSheetState extends State<SessionDetailSheet> {
   }
 
   void _showVolumeDialog() {
-    final volumeData = _session['PlayState']?['VolumeLevel'] as int?;
+    final volumeData = _session['PlayState']?['VolumeLevel'] as num?;
     var volume = volumeData?.toDouble() ?? 50.0;
     final l10n = AppLocalizations.of(context);
     showDialog<void>(
@@ -189,8 +190,8 @@ class _SessionDetailSheetState extends State<SessionDetailSheet> {
 
     final isPaused = playState?['IsPaused'] as bool? ?? false;
     final isMuted = playState?['IsMuted'] as bool? ?? false;
-    final positionTicks = playState?['PositionTicks'] as int?;
-    final runtimeTicks = nowPlaying?['RunTimeTicks'] as int?;
+    final positionTicks = (playState?['PositionTicks'] as num?)?.toInt();
+    final runtimeTicks = (nowPlaying?['RunTimeTicks'] as num?)?.toInt();
 
     String ticksToTime(int ticks) {
       final duration = Duration(microseconds: ticks ~/ 10);

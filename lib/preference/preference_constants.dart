@@ -29,6 +29,23 @@ enum AudioPassthroughMode {
   manual,
 }
 
+/// How a bitstream reaches the AudioTrack on the Media3 engine, while
+/// [AudioPassthroughMode] decides whether a codec may bitstream at all.
+/// - [platform]: raw codec encodings, the Android HAL packs the IEC frames.
+///   The default.
+/// - [iecPacker]: the app packs IEC 61937 itself and plays through an
+///   ENCODING_IEC61937 track, bypassing buggy vendor packers. Under this mode
+///   an eligible codec either rides the IEC path or decodes locally.
+enum AudioPassthroughOutput {
+  platform('platform'),
+  iecPacker('iec');
+
+  const AudioPassthroughOutput(this.wireName);
+
+  /// The token shared with the native Media3 bridge.
+  final String wireName;
+}
+
 /// Passthrough-controllable base codecs. Variants ride inside the base
 /// bitstream: Atmos (JOC) in eac3, DTS:X in dtsHd, Atmos in trueHd.
 enum PassthroughCodec {
@@ -118,10 +135,25 @@ enum DesktopUiScale {
   small(0.9),
   medium(1.0),
   large(1.15),
-  extraLarge(1.3);
+  extraLarge(1.3),
+  grandfather(1.45);
 
   const DesktopUiScale(this.scaleFactor);
   final double scaleFactor;
+}
+
+/// How much finger travel on the Siri Remote touchpad moves focus one item,
+/// in normalized pad units where the pad is 2.0 across. A full slow drag moves
+/// about two items on low, three on medium and five on high.
+enum SiriRemoteSwipeSensitivity {
+  low(0.6, 0.9),
+  medium(0.45, 0.6),
+  high(0.28, 0.36);
+
+  const SiriRemoteSwipeSensitivity(this.firstStepTravel, this.stepTravel);
+
+  final double firstStepTravel;
+  final double stepTravel;
 }
 
 enum RefreshRateSwitchingBehavior {
@@ -257,13 +289,15 @@ enum VisualThemeId {
 /// [spotlight] is the hero-first layout: Play plus at most three action
 /// buttons with the rest behind an ellipsis menu, and summary cards that open
 /// sectioned grid modals. [nouveau] is the full-screen layout, with every
-/// section stacked down the page rather than behind tabs or cards. Stored per
-/// server and user.
+/// section stacked down the page rather than behind tabs or cards.
+/// [minimalist] strips the screen back to artwork, one play button and the
+/// episodes, and is what Kids Mode always shows. Stored per server and user.
 enum DetailScreenStyle {
   classic,
   modern,
   spotlight,
-  nouveau;
+  nouveau,
+  minimalist;
 }
 
 /// Selectable algorithm source for similarity recommendation system.

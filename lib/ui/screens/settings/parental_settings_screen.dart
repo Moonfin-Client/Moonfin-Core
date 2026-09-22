@@ -5,8 +5,10 @@ import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../l10n/app_localizations.dart';
+import '../../util/error_message.dart';
 import '../../widgets/settings/settings_section_header.dart';
 import '../../../preference/user_preferences.dart';
+import '../../../util/parental_rating_severity.dart';
 import '../../../util/platform_detection.dart';
 import '../../widgets/adaptive/adaptive_list_section.dart';
 import '../../widgets/settings/preference_binding.dart';
@@ -48,15 +50,31 @@ class _ParentalSettingsScreenState extends State<ParentalSettingsScreen> {
     super.dispose();
   }
 
-  Set<String> get _blocked => _blockedRatings.value.isEmpty
-      ? {}
-      : _blockedRatings.value.split(',').toSet();
+  Set<String> get _blocked => _parseStored(_blockedRatings.value);
 
+  static Set<String> _parseStored(String csv) => csv
+      .split(',')
+      .map((e) => e.trim().toUpperCase())
+      .where((e) => e.isNotEmpty)
+      .toSet();
+
+  /// Mildest first, so blocking reads down the list as "everything from here".
   List<String> get _effectiveRatings {
     final merged = <String>{..._serverRatings, ..._blocked};
-    final sorted = merged.toList()..sort((a, b) => a.compareTo(b));
+    final sorted = merged.toList()
+      ..sort((a, b) {
+        final bySeverity = parentalRatingSeverity(
+          a,
+        ).compareTo(parentalRatingSeverity(b));
+        return bySeverity != 0 ? bySeverity : a.compareTo(b);
+      });
     return sorted;
   }
+
+  /// Ratings the ladder can place, which block everything above them, and the
+  /// ones it can't, which only ever block themselves.
+  bool _ranks(String rating) =>
+      isRankedRatingSeverity(parentalRatingSeverity(rating));
 
   Future<void> _loadServerRatings() async {
     try {
@@ -130,13 +148,17 @@ class _ParentalSettingsScreenState extends State<ParentalSettingsScreen> {
 
       setState(() {
         _loadingRatings = false;
-        _ratingsError = '$error';
+        _ratingsError = describeError(error, AppLocalizations.of(context));
       });
     }
   }
 
   void _toggle(String rating) {
-    final current = _blocked;
+    final current = _parseStored(
+      GetIt.instance<UserPreferences>().get(
+        UserPreferences.blockedParentalRatings,
+      ),
+    );
     if (current.contains(rating)) {
       current.remove(rating);
     } else {
@@ -144,6 +166,46 @@ class _ParentalSettingsScreenState extends State<ParentalSettingsScreen> {
     }
     _blockedRatings.value = current.join(',');
     setState(() {});
+  }
+
+  Widget _ratingTile(
+    BuildContext context, {
+    required String rating,
+    required bool isBlocked,
+    required bool isFirst,
+  }) {
+    return TvFocusHighlight(
+        builder: (_, focused) => ListTile(
+          focusNode: isFirst ? _firstRatingFocusNode : null,
+          autofocus: PlatformDetection.isTV && isFirst,
+          focusColor: Colors.transparent,
+          hoverColor: Colors.transparent,
+          leading: IconTheme(
+            data: IconThemeData(
+              color: focused
+                  ? AppColors.black.withValues(alpha: 0.54)
+                  : AppColorScheme.onSurface.withValues(
+                      alpha: 0.7,
+                    ),
+              size: 24,
+            ),
+            child: Icon(
+              isBlocked
+                  ? Icons.check_box
+                  : Icons.check_box_outline_blank,
+            ),
+          ),
+          title: DefaultTextStyle.merge(
+            style: TextStyle(
+              color: focused
+                  ? AppColors.black.withValues(alpha: 0.87)
+                  : AppColorScheme.onSurface,
+            ),
+            child: Text(rating),
+          ),
+          onTap: () => _toggle(rating),
+        ),
+      );
   }
 
   @override
@@ -162,6 +224,8 @@ class _ParentalSettingsScreenState extends State<ParentalSettingsScreen> {
   Widget _buildContent(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final ratings = _effectiveRatings;
+    final ranked = ratings.where(_ranks).toList();
+    final unranked = ratings.where((r) => !_ranks(r)).toList();
 
     return withCleanSettingsTypography(
       context,
@@ -170,15 +234,20 @@ class _ParentalSettingsScreenState extends State<ParentalSettingsScreen> {
         body: ValueListenableBuilder<String>(
           valueListenable: _blockedRatings,
           builder: (context, blockedValue, _) {
-            final blocked = blockedValue.isEmpty
-                ? <String>{}
-                : blockedValue.split(',').toSet();
+            final blocked = _parseStored(blockedValue);
 
             return ListView(
               children: [
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                   child: Text(l10n.blockContentWithRatings),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                  child: Text(
+                    l10n.blockedRatingsCeilingHint,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
                 ),
                 if (_loadingRatings)
                   Padding(
@@ -209,47 +278,31 @@ class _ParentalSettingsScreenState extends State<ParentalSettingsScreen> {
                   SettingsSectionHeader(l10n.ratings),
                   adaptiveListSection(
                     children: [
-                      ...ratings.asMap().entries.map((entry) {
-                        final index = entry.key;
-                        final rating = entry.value;
-                        final isBlocked = blocked.contains(rating);
-                        return TvFocusHighlight(
-                          builder: (_, focused) => ListTile(
-                            focusNode: index == 0
-                                ? _firstRatingFocusNode
-                                : null,
-                            autofocus: PlatformDetection.isTV && index == 0,
-                            focusColor: Colors.transparent,
-                            hoverColor: Colors.transparent,
-                            leading: IconTheme(
-                              data: IconThemeData(
-                                color: focused
-                                    ? AppColors.black.withValues(alpha: 0.54)
-                                    : AppColorScheme.onSurface.withValues(
-                                        alpha: 0.7,
-                                      ),
-                                size: 24,
-                              ),
-                              child: Icon(
-                                isBlocked
-                                    ? Icons.check_box
-                                    : Icons.check_box_outline_blank,
-                              ),
-                            ),
-                            title: DefaultTextStyle.merge(
-                              style: TextStyle(
-                                color: focused
-                                    ? AppColors.black.withValues(alpha: 0.87)
-                                    : AppColorScheme.onSurface,
-                              ),
-                              child: Text(rating),
-                            ),
-                            onTap: () => _toggle(rating),
-                          ),
-                        );
-                      }),
+                      for (final (index, rating) in ranked.indexed)
+                        _ratingTile(
+                          context,
+                          rating: rating,
+                          isBlocked: blocked.contains(rating),
+                          isFirst: index == 0,
+                        ),
                     ],
                   ),
+                  // These can't be placed on the ladder, so they can't say
+                  // anything about what else to hide.
+                  if (unranked.isNotEmpty) ...[
+                    SettingsSectionHeader(l10n.blockedRatingsUnrankedSection),
+                    adaptiveListSection(
+                      children: [
+                        for (final rating in unranked)
+                          _ratingTile(
+                            context,
+                            rating: rating,
+                            isBlocked: blocked.contains(rating),
+                            isFirst: false,
+                          ),
+                      ],
+                    ),
+                  ],
                 ],
               ],
             );

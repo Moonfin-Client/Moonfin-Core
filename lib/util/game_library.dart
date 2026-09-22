@@ -31,6 +31,16 @@ class GameLibraryRegistry {
         () => _inFlightRefresh = null,
       );
 
+  /// Populates the registry directly. Tests have no [MediaServerClient] to
+  /// refresh from, and both `_ids` and `_loaded` are private.
+  @visibleForTesting
+  void seed(Iterable<String> ids) {
+    _ids
+      ..clear()
+      ..addAll(ids);
+    _loaded = true;
+  }
+
   Future<void> _refreshNow() async {
     if (!GetIt.instance.isRegistered<MediaServerClient>()) return;
     final gamesApi = GetIt.instance<MediaServerClient>().gamesApi;
@@ -60,9 +70,16 @@ bool isGameLibrary(String id, String? collectionType, String? name) {
   return _gameLibraryName.hasMatch(name);
 }
 
-/// The route a library tile should open: the games browser for game libraries,
-/// otherwise the normal library view.
-String gameOrLibraryRoute(
+/// The route a library tile should open, for every entry point: home tiles, the
+/// sidebar, the top toolbar and the mobile bottom nav.
+///
+/// The game check runs **before** the collection-type switch on purpose. Moonbase
+/// lets an admin mark any library as a game library, so one can carry a
+/// `books`, `music` or `audiobooks` type and still be a games library. Switching
+/// on the type first sent those to the book reader or the music browser and the
+/// games browser became unreachable, even though [GameLibraryRegistry] listed
+/// the library and the tile already drew a gamepad icon for it.
+String libraryRoute(
   String id,
   String? collectionType,
   String name, {
@@ -71,7 +88,20 @@ String gameOrLibraryRoute(
   if (isGameLibrary(id, collectionType, name)) {
     return '${Destinations.gamesLibrary(id)}?title=${Uri.encodeQueryComponent(name)}';
   }
-  return Destinations.library(id, serverId: serverId);
+  switch ((collectionType ?? '').toLowerCase()) {
+    case 'music':
+      return Destinations.musicLibrary(id);
+    case 'books':
+    case 'audiobooks':
+      return Destinations.bookLibrary(
+        id,
+        collectionType: (collectionType ?? '').toLowerCase(),
+      );
+    case 'livetv':
+      return Destinations.liveTvGuide;
+    default:
+      return Destinations.library(id, serverId: serverId);
+  }
 }
 
 const IconData gameLibraryIcon = Icons.sports_esports;

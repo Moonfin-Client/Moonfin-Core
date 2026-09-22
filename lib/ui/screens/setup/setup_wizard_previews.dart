@@ -2319,6 +2319,7 @@ Widget detailStylePreview(DetailScreenStyle style) => _liveOrFallback(
     DetailScreenStyle.modern => _modernDetail(context, items.first),
     DetailScreenStyle.spotlight => _spotlightDetail(context, items.first),
     DetailScreenStyle.nouveau => _nouveauDetail(context, items),
+    DetailScreenStyle.minimalist => _minimalistDetail(context, items.first),
   },
   fallback: _fallbackDetail(style),
 );
@@ -2951,6 +2952,79 @@ Widget _modernDetail(BuildContext context, MediaBarSlideItem item) {
 /// An all-caps genre line above an oversized title, then a section rail
 /// stacked under the actions where Modern puts tabs and Spotlight puts
 /// summary cards. Takes the whole list so the rail has real artwork.
+
+/// Artwork, the title, one play button and the episodes. The preview leaves
+/// out everything the real screen does, which is the point of it.
+Widget _minimalistDetail(BuildContext context, MediaBarSlideItem item) {
+  final landscape = !_phone;
+  final cardWidth = landscape ? 96.0 : 74.0;
+
+  return Stack(
+    fit: StackFit.expand,
+    children: [
+      _artwork(item.backdropUrl),
+      ColoredBox(color: AppColors.black.withValues(alpha: 0.55)),
+      Padding(
+        padding: EdgeInsets.fromLTRB(landscape ? 22 : 14, 0, 14, landscape ? 18 : 14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Text(
+              item.title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: landscape ? 26 : 20,
+                fontWeight: FontWeight.w700,
+                color: AppColorScheme.onSurface,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              spacing: 8,
+              children: [
+                Container(
+                  width: landscape ? 84 : 70,
+                  height: landscape ? 30 : 26,
+                  decoration: BoxDecoration(
+                    color: AppColorScheme.accent,
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                ),
+                for (var i = 0; i < 2; i++)
+                  Container(
+                    width: landscape ? 30 : 26,
+                    height: landscape ? 30 : 26,
+                    decoration: BoxDecoration(
+                      color: AppColorScheme.onSurface.withValues(alpha: 0.18),
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              spacing: 8,
+              children: [
+                for (var i = 0; i < 3; i++)
+                  Container(
+                    width: cardWidth,
+                    height: cardWidth * 9 / 16,
+                    decoration: BoxDecoration(
+                      color: AppColorScheme.onSurface.withValues(alpha: 0.16),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
 Widget _nouveauDetail(BuildContext context, List<MediaBarSlideItem> items) {
   final l10n = AppLocalizations.of(context);
   final item = items.first;
@@ -3477,6 +3551,41 @@ Widget _fallbackHomeRows({required bool modern}) => Padding(
 );
 
 Widget _fallbackDetail(DetailScreenStyle style) {
+  if (style == DetailScreenStyle.minimalist) {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        _backdrop(),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.end,
+            spacing: 6,
+            children: [
+              _bar(58, 9, _strong),
+              Row(
+                spacing: 5,
+                children: [
+                  _bar(40, 11, _strong),
+                  _bar(11, 11, _weak),
+                  _bar(11, 11, _weak),
+                ],
+              ),
+              const SizedBox(height: 2),
+              Row(
+                spacing: 5,
+                children: [
+                  for (var i = 0; i < 3; i++) _bar(34, 20, _weak),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   if (style == DetailScreenStyle.nouveau) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

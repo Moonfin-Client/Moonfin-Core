@@ -7,6 +7,7 @@ import 'package:server_core/server_core.dart';
 
 import '../../../../data/services/socket_handler.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../util/error_message.dart';
 import 'admin_form_styles.dart';
 import 'session_detail_sheet.dart';
 
@@ -69,7 +70,7 @@ class _ActiveSessionsCardState extends State<ActiveSessionsCard> {
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _error = e.toString();
+        _error = describeError(e, AppLocalizations.of(context));
         _loading = false;
       });
     } finally {

@@ -7,6 +7,7 @@ import 'package:server_core/server_core.dart';
 
 import '../../data/services/socket_handler.dart';
 import '../../l10n/app_localizations.dart';
+import '../util/error_message.dart';
 import 'bounded_network_image.dart';
 import 'overlay_sheet.dart';
 
@@ -36,6 +37,7 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet> {
   bool _busy = false;
   double? _seekPosition;
   double? _volume;
+  String? _volumeSessionId;
   Timer? _refreshTimer;
   StreamSubscription<ServerWebSocketMessage>? _socketSub;
 
@@ -114,11 +116,12 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet> {
               .cast<Map<String, dynamic>?>()
               .firstWhere((s) => s?['Id'] == id, orElse: () => null);
         }
+        _reconcileVolume();
       });
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _error = e.toString();
+        _error = describeError(e, AppLocalizations.of(context));
         _loading = false;
       });
     } finally {
@@ -178,7 +181,7 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet> {
         final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(l10n.remoteCommandFailed(e.toString())),
+            content: Text(l10n.remoteCommandFailed(describeError(e, l10n))),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -206,6 +209,28 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet> {
     return _run(
       () => _sessionApi.sendGeneralCommand(id, commandName, arguments: args),
     );
+  }
+
+  /// Hands the slider back to the session once it reports a volume close to
+  /// the one we asked for. A session that reports none keeps our value, since
+  /// it is the only number either side knows. Called inside a setState.
+  void _reconcileVolume() {
+    final held = _volume;
+    if (held == null) return;
+
+    final currentId = _selectedSession?['Id']?.toString();
+    if (currentId == null || currentId != _volumeSessionId) {
+      _volume = null;
+      _volumeSessionId = null;
+      return;
+    }
+
+    final playState = _selectedSession?['PlayState'] as Map<String, dynamic>?;
+    final reported = (playState?['VolumeLevel'] as num?)?.toDouble();
+    if (reported != null && (reported - held).abs() <= 2) {
+      _volume = null;
+      _volumeSessionId = null;
+    }
   }
 
   @override
@@ -346,8 +371,14 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet> {
         borderRadius: AppRadius.circular(14),
         child: InkWell(
           borderRadius: AppRadius.circular(14),
-          onTap: () =>
-              setState(() => _selectedSession = isSelected ? null : session),
+          onTap: () => setState(() {
+            _selectedSession = isSelected ? null : session;
+            // Another device has its own volume and position, so what was held
+            // for the last one doesn't carry over.
+            _volume = null;
+            _volumeSessionId = null;
+            _seekPosition = null;
+          }),
           child: Container(
             decoration: BoxDecoration(
               borderRadius: AppRadius.circular(14),
@@ -719,7 +750,13 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet> {
                 value: value,
                 onChanged: (v) => setState(() => _volume = v),
                 onChangeEnd: (v) {
-                  _volume = null;
+                  // The value has to stay put until the session reports one of
+                  // its own. Most never report a volume at all, so dropping it
+                  // here leaves the slider on its fallback of 100.
+                  setState(() {
+                    _volume = v;
+                    _volumeSessionId = _selectedSession?['Id']?.toString();
+                  });
                   _sendGeneral(
                     'SetVolume',
                     args: {'Volume': v.round().toString()},

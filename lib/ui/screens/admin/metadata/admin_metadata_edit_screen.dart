@@ -7,6 +7,7 @@ import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../util/error_message.dart';
 import '../../../../util/image_mime.dart';
 import '../../../../util/platform_detection.dart';
 import '../../../widgets/adaptive/adaptive_dialog.dart';
@@ -127,7 +128,7 @@ class _AdminMetadataEditScreenState extends State<AdminMetadataEditScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _error = e.toString();
+        _error = describeError(e, AppLocalizations.of(context));
         _loading = false;
       });
     }
@@ -722,7 +723,7 @@ class _AdminMetadataEditScreenState extends State<AdminMetadataEditScreen> {
       setState(() => _saving = false);
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(l10n.adminMetadataSaveFailed(e.toString()))));
+      ).showSnackBar(SnackBar(content: Text(l10n.adminMetadataSaveFailed(describeError(e, l10n)))));
     }
   }
 
@@ -805,7 +806,7 @@ class _AdminMetadataEditScreenState extends State<AdminMetadataEditScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(l10n.adminMetadataRefreshFailed(e.toString()))));
+      ).showSnackBar(SnackBar(content: Text(l10n.adminMetadataRefreshFailed(describeError(e, l10n)))));
     }
   }
 
@@ -1019,7 +1020,7 @@ class _AdminMetadataEditScreenState extends State<AdminMetadataEditScreen> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.adminMetadataContentTypeFailed(e.toString()))),
+        SnackBar(content: Text(l10n.adminMetadataContentTypeFailed(describeError(e, l10n)))),
       );
     }
   }
@@ -1573,7 +1574,7 @@ class _AdminMetadataEditScreenState extends State<AdminMetadataEditScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(l10n.adminMetadataImageDownloadFailed(e.toString()))));
+      ).showSnackBar(SnackBar(content: Text(l10n.adminMetadataImageDownloadFailed(describeError(e, l10n)))));
     }
   }
 
@@ -1629,7 +1630,7 @@ class _AdminMetadataEditScreenState extends State<AdminMetadataEditScreen> {
     } catch (e) {
       if (!mounted) return;
       messenger.showSnackBar(
-        SnackBar(content: Text(l10n.adminMetadataImageUploadFailed(e.toString()))),
+        SnackBar(content: Text(l10n.adminMetadataImageUploadFailed(describeError(e, l10n)))),
       );
     }
   }
@@ -1673,7 +1674,7 @@ class _AdminMetadataEditScreenState extends State<AdminMetadataEditScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(l10n.adminMetadataImageDeleteFailed(e.toString()))));
+      ).showSnackBar(SnackBar(content: Text(l10n.adminMetadataImageDeleteFailed(describeError(e, l10n)))));
     }
   }
 
@@ -1850,7 +1851,7 @@ class _RemoteImagePickerDialogState extends State<_RemoteImagePickerDialog> {
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _error = e.toString();
+        _error = describeError(e, AppLocalizations.of(context));
         _loading = false;
       });
     }

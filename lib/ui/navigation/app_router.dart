@@ -219,6 +219,15 @@ final appRouter = GoRouter(
       }
     }
 
+    // The hard gate for Kids Mode. Hiding a nav entry is presentation, but a
+    // deep link reaches these screens without one.
+    if (getIt<UserPreferences>().get(UserPreferences.kidsModeEnabled) &&
+        (path.startsWith('/admin') ||
+            path.startsWith('/seerr') ||
+            path.startsWith('/live-tv'))) {
+      return Destinations.home;
+    }
+
     final connectivity = GetIt.instance<ConnectivityService>();
     if (!connectivity.canReachServer && _isOfflineBlocked(path)) {
       return Destinations.home;
@@ -483,6 +492,7 @@ final appRouter = GoRouter(
         final startFresh = state.uri.queryParameters['fresh'] == '1';
         final forceEmulatorJs =
             state.uri.queryParameters['backend'] == 'emulatorjs';
+        final hardwareRenderingEnabled = state.uri.queryParameters['hw'] != '0';
         return _opaqueFullScreenPage<void>(
           state: state,
           // Native libretro or the EmulatorJS WebView: forced where only one
@@ -496,6 +506,7 @@ final appRouter = GoRouter(
                   core: core,
                   gameName: state.uri.queryParameters['name'],
                   startFresh: startFresh,
+                  hardwareRenderingEnabled: hardwareRenderingEnabled,
                 )
               : GameEmulatorScreen(
                   libraryId: libraryId,

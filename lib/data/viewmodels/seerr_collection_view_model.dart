@@ -20,7 +20,7 @@ class SeerrCollectionRequestResult {
 
 class SeerrCollectionState {
   final bool isLoading;
-  final String? error;
+  final Object? error;
   final SeerrCollection? collection;
   final SeerrUser? currentUser;
   final SeerrQuota? quota;
@@ -41,7 +41,7 @@ class SeerrCollectionState {
 
   SeerrCollectionState copyWith({
     bool? isLoading,
-    String? error,
+    Object? error,
     SeerrCollection? collection,
     SeerrUser? currentUser,
     SeerrQuota? quota,
@@ -63,28 +63,34 @@ class SeerrCollectionState {
   /// Parts the user could still request for the given flavor. Blocklisted
   /// parts are excluded entirely, and anything pending, processing, or
   /// available for that flavor isn't requestable again.
+  ///
+  /// Deleted counts as requestable. The files are gone, which is the whole
+  /// reason to ask for it a second time.
   List<SeerrDiscoverItem> requestableParts({required bool is4k}) {
     final parts = collection?.parts ?? const [];
     return parts.where((p) {
       final info = p.mediaInfo;
       if (info == null) return true;
-      if (info.status == 6) return false;
-      final status = (is4k ? info.status4k : info.status) ?? 1;
-      return status <= 1;
+      if (info.status == SeerrMediaStatus.blocklisted) return false;
+      final status =
+          (is4k ? info.status4k : info.status) ?? SeerrMediaStatus.unknown;
+      return status == SeerrMediaStatus.unknown ||
+          status == SeerrMediaStatus.deleted;
     }).toList();
   }
 
   List<SeerrDiscoverItem> get visibleParts {
     final parts = collection?.parts ?? const [];
-    return parts.where((p) => p.mediaInfo?.status != 6).toList();
+    return parts
+        .where((p) => p.mediaInfo?.status != SeerrMediaStatus.blocklisted)
+        .toList();
   }
 
   int get availableCount {
     final parts = collection?.parts ?? const [];
-    return parts.where((p) {
-      final status = p.mediaInfo?.status ?? 1;
-      return status == 4 || status == 5;
-    }).length;
+    return parts
+        .where((p) => SeerrMediaStatus.isAvailable(p.mediaInfo?.status))
+        .length;
   }
 }
 
@@ -133,7 +139,7 @@ class SeerrCollectionViewModel extends ChangeNotifier {
 
       _loadQuota(user);
     } catch (e) {
-      _state = SeerrCollectionState(error: e.toString());
+      _state = SeerrCollectionState(error: e);
       notifyListeners();
     }
   }

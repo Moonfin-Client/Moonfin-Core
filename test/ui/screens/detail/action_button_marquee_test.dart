@@ -44,6 +44,10 @@ void main() {
       of: find.byType(MarqueeText),
       matching: find.byType(SingleChildScrollView),
     ), findsNothing);
+
+    // MarqueeText hugs its content rather than forcing parent width when not overflowing
+    final marqueeSize = tester.getSize(find.byType(MarqueeText));
+    expect(marqueeSize.width, lessThan(maxLabelWidth));
   });
 
   testWidgets('long button label triggers marquee scrolling within constrained bounds', (tester) async {

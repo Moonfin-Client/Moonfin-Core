@@ -12,6 +12,7 @@ import '../util/platform_detection.dart';
 
 import 'device_profile_builder.dart';
 import 'known_defects.dart';
+import 'media3_letterbox_crop.dart';
 import 'server_transcode_capabilities.dart';
 
 class Media3PlayerBackend extends PlayerBackend {
@@ -20,6 +21,11 @@ class Media3PlayerBackend extends PlayerBackend {
   static const _audioSinkErrorThreshold = 2;
 
   Media3PlayerBackend(this._prefs) {
+    _letterboxCropper = Media3LetterboxCropper(
+      _Media3LetterboxHost(this),
+      supported: PlatformDetection.isAndroid,
+    );
+    _prefs.addListener(_onPreferencesChanged);
     _eventSub = _events.receiveBroadcastStream().listen(
       _handleEvent,
       onError: (_) {},
@@ -52,6 +58,12 @@ class Media3PlayerBackend extends PlayerBackend {
           .resolvedPassthroughCodecs()
           .map((codec) => codec.wireName)
           .toList(growable: false),
+      // 'platform' has the HAL pack raw encodings, 'iec' packs IEC 61937 in
+      // the app. Only sent as 'iec' when the choke-point getter says the
+      // mode is actually live here.
+      'passthroughOutput': prefs.media3IecPackerSelected
+          ? AudioPassthroughOutput.iecPacker.wireName
+          : AudioPassthroughOutput.platform.wireName,
       'downmixToStereo': prefs.get(UserPreferences.downmixToStereo),
     };
   }
@@ -85,6 +97,8 @@ class Media3PlayerBackend extends PlayerBackend {
   }
 
   final UserPreferences _prefs;
+  late final Media3LetterboxCropper _letterboxCropper;
+  String? _currentUrl;
 
   StreamSubscription<dynamic>? _eventSub;
 
@@ -97,6 +111,7 @@ class Media3PlayerBackend extends PlayerBackend {
   double _volume = 100.0;
   double _audioDelaySeconds = 0.0;
   double _subtitleDelaySeconds = 0.0;
+  double _subtitleAutoOffsetSeconds = 0.0;
   int _volumeBoostLevel = 0;
   bool _skipSilenceEnabled = false;
   RepeatMode _repeatMode = RepeatMode.none;
@@ -149,11 +164,18 @@ class Media3PlayerBackend extends PlayerBackend {
   final _bufferingStream = StreamController<bool>.broadcast();
   final _completedStream = StreamController<bool>.broadcast();
   final _errorStream = StreamController<Map<String, dynamic>>.broadcast();
+  final _subtitleAutoOffsetStream = StreamController<double>.broadcast();
 
   int get volumeBoostLevel => _volumeBoostLevel;
 
   @override
   Stream<Map<String, dynamic>> get errorStream => _errorStream.stream;
+
+  @override
+  double get subtitleAutoOffsetSeconds => _subtitleAutoOffsetSeconds;
+
+  @override
+  Stream<double> get subtitleAutoOffsetStream => _subtitleAutoOffsetStream.stream;
 
   Future<T?> _invoke<T>(String method, [dynamic arguments]) async {
     if (_disposed) return null;
@@ -264,8 +286,10 @@ class Media3PlayerBackend extends PlayerBackend {
       case 'activityAction':
         _activityActionController.add(map.cast<String, dynamic>());
       case 'playerError':
+        final cause = map['cause']?.toString();
         _diag(
-          'Media3 player error: ${map['errorCode'] ?? ''} ${map['message'] ?? ''}',
+          'Media3 player error: ${map['errorCode'] ?? ''} ${map['message'] ?? ''}'
+          '${cause == null || cause.isEmpty ? '' : ' caused by $cause'}',
           level: LogLevel.error,
         );
         _errorStream.add(map.cast<String, dynamic>());
@@ -287,6 +311,7 @@ class Media3PlayerBackend extends PlayerBackend {
       case 'syncDelays':
         _audioDelaySeconds = _toInt(map['audioDelayMs']) / 1000.0;
         _subtitleDelaySeconds = _toInt(map['subtitleDelayMs']) / 1000.0;
+        _setSubtitleAutoOffset(_toInt(map['subtitleAutoOffsetMs']));
       case 'volumeBoost':
         _volumeBoostLevel = (_toInt(map['level']).clamp(0, 10)).toInt();
       case 'repeatModeChanged':
@@ -369,6 +394,12 @@ class Media3PlayerBackend extends PlayerBackend {
         _diag(
           'Media3: sticky stereo downmix cleared '
           '(${map['reason'] ?? 'route change'})',
+        );
+      case 'stereoDownmixLatched':
+        _diag(
+          'Media3: AudioTrack failure read as a device limit, '
+          'stereo downmix now sticky for this session',
+          level: LogLevel.warning,
         );
       case 'ffmpegDecoderDiagnostics':
         ffmpegDecoderDiagnostics = <String, dynamic>{
@@ -467,7 +498,9 @@ class Media3PlayerBackend extends PlayerBackend {
       'Media3: audio track opened $encodingName ${channels}ch '
       '@${_toInt(map['sampleRate'])}Hz '
       '(passthrough=$passthrough tunneling=${map['tunneling'] == true} '
-      'offload=${map['offload'] == true} buffer=${_toInt(map['bufferSize'])}B)',
+      'offload=${map['offload'] == true} '
+      'buffer=${_toInt(map['bufferSize'])}B '
+      'downmix=${map['stereoDownmix'] ?? 'off'})',
     );
   }
 
@@ -637,6 +670,21 @@ class Media3PlayerBackend extends PlayerBackend {
       default:
         return 'Media3 HLS: requesting segment ${_toInt(map['index'])}';
     }
+  }
+
+  void _setSubtitleAutoOffset(int offsetMs) {
+    final seconds = offsetMs / 1000.0;
+    if (seconds == _subtitleAutoOffsetSeconds) return;
+    _subtitleAutoOffsetSeconds = seconds;
+    if (offsetMs == 0) {
+      _diag('Media3: subtitle auto offset cleared');
+    } else {
+      final sign = offsetMs > 0 ? '+' : '';
+      _diag(
+        'Media3: subtitle auto offset $sign${offsetMs}ms (HLS timestamp adjuster)',
+      );
+    }
+    _subtitleAutoOffsetStream.add(seconds);
   }
 
   void _diag(String message, {LogLevel level = LogLevel.debug}) {
@@ -905,6 +953,7 @@ class Media3PlayerBackend extends PlayerBackend {
         : payload['url']?.toString() ?? '';
     if (_disposed || url.isEmpty) return;
 
+    _currentUrl = url;
     final mediaType = payload['mediaType']?.toString() ?? 'video';
     final container = payload['container']?.toString();
     final videoRangeType = payload['videoRangeType']?.toString();
@@ -984,6 +1033,7 @@ class Media3PlayerBackend extends PlayerBackend {
     });
     _lastFrameRateLine = null;
     _sourceIsLive = payload['isLive'] == true;
+    _setSubtitleAutoOffset(0);
     await _invoke<void>('setSource', {
       'url': url,
       'headers': headers,
@@ -1030,6 +1080,16 @@ class Media3PlayerBackend extends PlayerBackend {
     });
     if (autoPlay) {
       await _invoke<void>('play');
+    }
+    if (isPreview || mediaType == 'audio') {
+      unawaited(_letterboxCropper.reset());
+    } else {
+      unawaited(() async {
+        await _letterboxCropper.setEnabled(
+          _prefs.get(UserPreferences.cropBlackBars),
+        );
+        await _letterboxCropper.onSourceOpened(url);
+      }());
     }
   }
 
@@ -1138,7 +1198,8 @@ class Media3PlayerBackend extends PlayerBackend {
       // codec has a software decoder behind it.
       universalAudioDecode: true,
       maxResolution: maxResolution,
-      pgsDirectPlay: _prefs.get(UserPreferences.pgsDirectPlay) && canRenderBitmapSubtitles,
+      pgsDirectPlay:
+          _prefs.get(UserPreferences.pgsDirectPlay) && canRenderBitmapSubtitles,
       assDirectPlay: _prefs.get(UserPreferences.assDirectPlay),
       supportsAvc: PlatformDetection.supportsAvc,
       supportsAvcHigh10: PlatformDetection.supportsAvcHigh10,
@@ -1157,6 +1218,10 @@ class Media3PlayerBackend extends PlayerBackend {
       supportsAv1DolbyVision: PlatformDetection.supportsAv1DolbyVision,
       supportsAv1Hdr10: PlatformDetection.supportsAv1Hdr10,
       supportsAv1Hdr10Plus: PlatformDetection.supportsAv1Hdr10Plus,
+      // Media3 hands a Dolby Vision profile 10 track to a plain AV1 decoder
+      // when it has no Dolby Vision decoder for it, so the base layer plays as
+      // HDR10 and the HDR10+ gate has nothing left to protect here.
+      rendersAv1DoviViaHdr10BaseLayer: true,
       supportsVc1: PlatformDetection.supportsVc1,
       supportsMpeg4: PlatformDetection.supportsMpeg4,
       maxResolutionAvcWidth: PlatformDetection.maxResolutionAvcWidth,
@@ -1239,7 +1304,6 @@ class Media3PlayerBackend extends PlayerBackend {
     await _invoke<void>('setAudioTrack', {'index': index});
   }
 
-
   @override
   Future<void> setSubtitleTrack(
     int index, {
@@ -1258,7 +1322,8 @@ class Media3PlayerBackend extends PlayerBackend {
   }
 
   @override
-  List<EmbeddedCaptionTrack> get embeddedCaptionTracks => _embeddedCaptionTracks;
+  List<EmbeddedCaptionTrack> get embeddedCaptionTracks =>
+      _embeddedCaptionTracks;
 
   @override
   Stream<void> get tracksChangedStream => _tracksChangedController.stream;
@@ -1316,10 +1381,12 @@ class Media3PlayerBackend extends PlayerBackend {
     _audioDelayDebounce = Timer(const Duration(milliseconds: 350), () {
       _audioDelayDebounce = null;
       if (_disposed) return;
-      unawaited(_invoke<void>('setAudioDelay', {
-        'seconds': _audioDelaySeconds,
-        'delayMs': (_audioDelaySeconds * 1000).round(),
-      }));
+      unawaited(
+        _invoke<void>('setAudioDelay', {
+          'seconds': _audioDelaySeconds,
+          'delayMs': (_audioDelaySeconds * 1000).round(),
+        }),
+      );
     });
   }
 
@@ -1406,6 +1473,9 @@ class Media3PlayerBackend extends PlayerBackend {
   bool get supportsRuntimeTrackSelection => true;
 
   @override
+  LetterboxCropper get letterboxCropper => _letterboxCropper;
+
+  @override
   bool get supportsDirectPlayAudioSwitch => true;
 
   @override
@@ -1422,10 +1492,19 @@ class Media3PlayerBackend extends PlayerBackend {
   @override
   bool get canRenderBitmapSubtitles => true;
 
+  void _onPreferencesChanged() {
+    if (_disposed) return;
+    unawaited(
+      _letterboxCropper.setEnabled(_prefs.get(UserPreferences.cropBlackBars)),
+    );
+  }
+
   @override
   void dispose() {
     if (_disposed) return;
     _disposed = true;
+    _letterboxCropper.cancel();
+    _prefs.removeListener(_onPreferencesChanged);
     _audioDelayDebounce?.cancel();
     _audioDelayDebounce = null;
     _watchdogTimer?.cancel();
@@ -1439,8 +1518,82 @@ class Media3PlayerBackend extends PlayerBackend {
     _bufferingStream.close();
     _completedStream.close();
     _errorStream.close();
+    _subtitleAutoOffsetStream.close();
     _tracksChangedController.close();
   }
+}
+
+class _Media3LetterboxHost implements Media3LetterboxHost {
+  _Media3LetterboxHost(this._backend);
+
+  final Media3PlayerBackend _backend;
+
+  @override
+  Future<Map<String, int>?> detectLetterbox() async {
+    final raw = await _backend._invoke<dynamic>('detectLetterbox');
+    if (raw is! Map) return null;
+    int? n(String key) {
+      final value = raw[key];
+      if (value is int) return value;
+      if (value is num) return value.round();
+      return int.tryParse(value?.toString() ?? '');
+    }
+
+    final w = n('w');
+    final h = n('h');
+    final x = n('x');
+    final y = n('y');
+    final sourceWidth = n('sourceWidth');
+    final sourceHeight = n('sourceHeight');
+    if (w == null ||
+        h == null ||
+        x == null ||
+        y == null ||
+        sourceWidth == null ||
+        sourceHeight == null) {
+      return null;
+    }
+    return <String, int>{
+      'w': w,
+      'h': h,
+      'x': x,
+      'y': y,
+      'sourceWidth': sourceWidth,
+      'sourceHeight': sourceHeight,
+    };
+  }
+
+  @override
+  Future<void> setLetterboxCrop(LetterboxCropRect? rect) async {
+    if (rect == null) {
+      await _backend._invoke<void>('setLetterboxCrop', {'clear': true});
+      return;
+    }
+    await _backend._invoke<void>('setLetterboxCrop', {
+      'w': rect.w,
+      'h': rect.h,
+      'x': rect.x,
+      'y': rect.y,
+    });
+  }
+
+  @override
+  bool get isPlaying => _backend._isPlaying;
+
+  @override
+  Duration get position => _backend._position;
+
+  @override
+  Duration get duration => _backend._duration;
+
+  @override
+  Stream<bool> get playingStream => _backend._playingStream.stream;
+
+  @override
+  String? get currentUrl => _backend._currentUrl;
+
+  @override
+  bool get isDisposed => _backend._disposed;
 }
 
 /// What the native side does with a Dolby Vision profile 7 stream. Names

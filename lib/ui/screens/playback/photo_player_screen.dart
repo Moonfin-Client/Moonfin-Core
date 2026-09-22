@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -11,6 +10,7 @@ import '../../../data/models/aggregated_item.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../util/system_ui.dart';
 import '../../widgets/adaptive/sf_symbol.dart';
+import '../../widgets/offline_aware_image.dart';
 
 class PhotoPlayerScreen extends StatefulWidget {
   final String itemId;
@@ -197,9 +197,11 @@ class _PhotoPlayerScreenState extends State<PhotoPlayerScreen>
         minScale: 1.0,
         maxScale: 5.0,
         child: Center(
-          child: CachedNetworkImage(
+          child: OfflineAwareImage(
             imageUrl: url,
             fit: BoxFit.contain,
+            // The viewer zooms to 5x, so the photo keeps its source pixels.
+            decodeBound: DecodeBound.none,
             placeholder: (_, _) => Center(
               child: CircularProgressIndicator(color: AppColorScheme.accent),
             ),

@@ -6,9 +6,11 @@ library;
 
 export 'src/playback_manager.dart';
 export 'src/playback_arbiter.dart';
+export 'src/letterbox_crop.dart';
 export 'src/player_backend.dart';
 export 'src/player_service.dart';
 export 'src/queue_service.dart';
+export 'src/chapter_steps.dart';
 export 'src/player_state.dart';
 export 'src/media_stream_resolver.dart';
 export 'src/track_ordinal_mapper.dart';

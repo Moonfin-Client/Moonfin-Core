@@ -11,6 +11,7 @@ import 'package:server_core/server_core.dart';
 
 import '../../../playback/subtitle_style.dart';
 import '../../../data/models/aggregated_item.dart';
+import '../../../data/utils/chapter_markers.dart';
 import '../../../data/models/trickplay_info.dart';
 import '../../../data/services/log_service.dart';
 import '../../../data/services/media_segment_service.dart';
@@ -54,8 +55,10 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   AppleTvPlaybackPromptController? _prompts;
   MediaSegmentService? _segmentService;
   String? _segmentsLoadedForItemId;
+  final _chaptersFetchedItemIds = <String>{};
   StreamSubscription<Duration>? _positionSub;
   UserPreferences? _prefsListened;
+  SubtitleStyle? _lastSubtitleStyle;
   String _lastTrickplayPrefs = '';
   String _lastTimeSlots = '';
   TrickplayInfo? _trickplayInfo;
@@ -91,6 +94,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
       _screensaverController = GetIt.instance<ScreensaverController>();
     } catch (_) {}
     _screensaverController?.setPlaybackActive(true);
+    _screensaverController?.setNativePlayerPresented(true);
     _exitSub = _backend?.userExitStream.listen((_) => _handleExit());
     _actionSub = _backend?.uiActionStream.listen(_handleUiAction);
     final manager = _manager;
@@ -107,6 +111,9 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
           setState(() => _bringupState = state);
         }
         _pushMetadata();
+        if (state.phase == PlaybackBringupPhase.ready) {
+          _pushSubtitleStyle(force: true);
+        }
         // The initState load can run before the queue item resolves, so retry
         // here. The per-item guard makes repeat events a no-op.
         _loadSegmentsForCurrentItem();
@@ -174,6 +181,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
         isGlass: AppColorScheme.isGlass,
         accentARGB: AppColorScheme.accent.toARGB32(),
         surfaceARGB: AppColorScheme.surface.toARGB32(),
+        surfaceVariantARGB: AppColorScheme.surfaceVariant.toARGB32(),
         onSurfaceARGB: AppColorScheme.onSurface.toARGB32(),
         rangeProgressARGB: AppColorScheme.rangeProgress.toARGB32(),
         rangeTrackARGB: AppColorScheme.rangeTrack.toARGB32(),
@@ -226,7 +234,8 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     'use24Hour': prefs.get(UserPreferences.use24HourClock),
   };
 
-  void _pushSubtitleStyle() {
+  /// [force] pushes even when nothing changed, for a new stream or backend.
+  void _pushSubtitleStyle({bool force = false}) {
     final backend = _backend;
     if (backend == null) return;
     try {
@@ -234,6 +243,8 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
         GetIt.instance<UserPreferences>(),
         _manager?.currentResolution,
       );
+      if (!force && style == _lastSubtitleStyle) return;
+      _lastSubtitleStyle = style;
       backend.configureSubtitleStyle(
         textColor: style.textColor,
         backgroundColor: style.backgroundColor,
@@ -727,6 +738,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   void _onPrefsChanged() {
     final prefs = _prefsListened;
     if (prefs == null) return;
+    _pushSubtitleStyle();
     final slots = _timeSlotsSnapshot(prefs);
     if (slots != _lastTimeSlots) {
       _lastTimeSlots = slots;
@@ -1031,12 +1043,48 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     }();
   }
 
+  List<Map<String, dynamic>> _currentChapters() => chaptersForItem(
+    _manager?.queueService.currentItem,
+    _manager?.currentOfflineMetadata,
+  );
+
+  /// Hands the current item's chapter starts to the manager, which steps
+  /// previous and next through them before it steps through the queue. Runs
+  /// per item, so one with none clears the last.
+  void _applyChapters() {
+    _manager?.setChapterStarts([
+      for (final ms in chapterStartsMs(_currentChapters()))
+        Duration(milliseconds: ms),
+    ]);
+  }
+
+  /// Fills in chapters the current item arrived without. A row query leaves
+  /// Chapters off, so playing from a library grid would otherwise lose the
+  /// chapter button, its menu and the marks.
+  Future<void> _ensureChaptersForCurrentItem() async {
+    final item = _manager?.queueService.currentItem;
+    if (item is! AggregatedItem) return;
+    if (item.chapters.isNotEmpty) return;
+    // A title with none would otherwise be asked for every time the queue
+    // comes back to it, so each item is tried once.
+    if (!_chaptersFetchedItemIds.add(item.id)) return;
+    final client = _clientForQueueItem(item);
+    if (client == null) return;
+    final fetched = await fetchChapters(client, item.id);
+    if (fetched.isEmpty) return;
+    item.rawData['Chapters'] = fetched;
+    _applyChapters();
+    _pushMetadata();
+  }
+
   /// Recreates the per-item segment service the prompt controller reads, the
   /// same way the Flutter player reloads segments on every episode change.
   void _loadSegmentsForCurrentItem() {
     final manager = _manager;
     if (manager == null) return;
     final item = manager.queueService.currentItem;
+    _applyChapters();
+    unawaited(_ensureChaptersForCurrentItem());
     unawaited(_loadTrickplayForCurrentItem(item, manager));
     final id = _itemIdForQueueItem(item);
     if (id == null || id.isEmpty || id == _segmentsLoadedForItemId) return;
@@ -1258,30 +1306,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     if (manager == null || backend == null) return;
 
     final item = manager.queueService.currentItem;
-    final chapters = <Map<String, dynamic>>[];
-
-    List<Map<String, dynamic>>? rawChapters;
-    if (item is AggregatedItem) {
-      rawChapters = item.chapters;
-    } else if (item is String) {
-      rawChapters = (manager.currentOfflineMetadata?['Chapters'] as List?)
-          ?.cast<Map<String, dynamic>>();
-    }
-
-    if (rawChapters != null) {
-      for (var i = 0; i < rawChapters.length; i++) {
-        final chapter = rawChapters[i];
-        final ticks = (chapter['StartPositionTicks'] as int?) ?? 0;
-        final startMs = ticks ~/ 10000;
-        final title = (chapter['Name'] as String?)?.trim();
-        chapters.add({
-          'title': (title != null && title.isNotEmpty)
-              ? title
-              : 'Chapter ${i + 1}',
-          'startMs': startMs,
-        });
-      }
-    }
+    final chapters = _currentChapters();
 
     String topTitle = '';
     String topSubtitle = '';
@@ -1362,6 +1387,10 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
       topTitle: topTitle,
       topSubtitle: topSubtitle,
       chapters: chapters,
+      showChapterMarkers: _prefBool(
+        UserPreferences.showChapterMarkers,
+        defaultValue: false,
+      ),
       hasPrevious: true,
       hasNext: manager.queueService.hasNext,
       skipForwardMs: skipForwardMs,
@@ -1405,6 +1434,14 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   }
 
   int _prefInt(Preference<int> pref, {required int defaultValue}) {
+    try {
+      return GetIt.instance<UserPreferences>().get(pref);
+    } catch (_) {
+      return defaultValue;
+    }
+  }
+
+  bool _prefBool(Preference<bool> pref, {required bool defaultValue}) {
     try {
       return GetIt.instance<UserPreferences>().get(pref);
     } catch (_) {
@@ -1558,6 +1595,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     _positionSub?.cancel();
     _prompts?.dispose();
     _screensaverController?.setPlaybackActive(false);
+    _screensaverController?.setNativePlayerPresented(false);
     _syncPlay?.removeListener(_onSyncPlayChanged);
     _themeController?.removeListener(_onThemeChanged);
     _prefsListened?.removeListener(_onPrefsChanged);
@@ -1673,7 +1711,10 @@ class _HostPromptCommands implements AppleTvPromptCommands {
   void resume() => unawaited(_host._manager?.resume() ?? Future<void>.value());
 
   @override
-  Future<void> advanceNext() => _host._manager?.next() ?? Future<void>.value();
+  // The next item, not the next chapter, even when the card came up during
+  // one.
+  Future<void> advanceNext() =>
+      _host._manager?.nextInQueue() ?? Future<void>.value();
 
   @override
   Future<void> exitPlayback() async => _host._handleExit();

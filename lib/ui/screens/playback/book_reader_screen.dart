@@ -33,6 +33,7 @@ import '../../../data/services/reader_settings_store.dart';
 import '../../../util/platform_detection.dart';
 import '../../../util/insecure_certificates.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../util/error_message.dart';
 import '../../../l10n/current_app_localizations.dart';
 import '../../../util/system_ui.dart';
 import '../../widgets/adaptive/sf_symbol.dart';
@@ -394,7 +395,7 @@ class _BookReaderScreenState extends State<BookReaderScreen>
       final l10n = AppLocalizations.of(context);
       setState(() {
         _loading = false;
-        _error = l10n.failedToLoadBookDetails('$e');
+        _error = l10n.failedToLoadBookDetails(describeError(e, l10n));
       });
     }
   }
@@ -586,9 +587,9 @@ class _BookReaderScreenState extends State<BookReaderScreen>
       final l10n = AppLocalizations.of(context);
       setState(() {
         _mode = _ReaderMode.fallback;
-        _fallbackMessage = l10n.failedToOpenInAppReader('$e');
+        _fallbackMessage = l10n.failedToOpenInAppReader(describeError(e, l10n));
         _fallbackExternalUri = fallbackUriCandidate;
-        _error = l10n.failedToOpenInAppReader('$e');
+        _error = l10n.failedToOpenInAppReader(describeError(e, l10n));
       });
     } finally {
       if (mounted) {
@@ -1956,7 +1957,7 @@ class _BookReaderScreenState extends State<BookReaderScreen>
       }
 
       setState(() {
-        _error = l10n.failedToUpdateReadState('$e');
+        _error = l10n.failedToUpdateReadState(describeError(e, l10n));
       });
     } finally {
       if (mounted) {

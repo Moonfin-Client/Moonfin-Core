@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../util/error_message.dart';
 import '../../../navigation/destinations.dart';
 import '../../../widgets/adaptive/adaptive_dialog.dart';
 import '../admin_plugin_version_utils.dart';
@@ -116,8 +117,9 @@ class _AdminPluginsScreenState extends ConsumerState<AdminPluginsScreen>
       ref.invalidate(adminInstalledPluginsProvider);
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(AppLocalizations.of(context).adminPluginToggleFailed(e.toString()))));
+            SnackBar(content: Text(l10n.adminPluginToggleFailed(describeError(e, l10n)))));
       }
     }
   }
@@ -152,8 +154,9 @@ class _AdminPluginsScreenState extends ConsumerState<AdminPluginsScreen>
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(AppLocalizations.of(context).adminPluginUninstallFailed(e.toString()))));
+            SnackBar(content: Text(l10n.adminPluginUninstallFailed(describeError(e, l10n)))));
       }
     }
   }
@@ -176,8 +179,9 @@ class _AdminPluginsScreenState extends ConsumerState<AdminPluginsScreen>
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(AppLocalizations.of(context).adminPackageInstallFailed(e.toString()))));
+            SnackBar(content: Text(l10n.adminPackageInstallFailed(describeError(e, l10n)))));
       }
     }
   }
@@ -208,8 +212,9 @@ class _AdminPluginsScreenState extends ConsumerState<AdminPluginsScreen>
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context).adminPluginUpdateFailed(e.toString()))),
+          SnackBar(content: Text(l10n.adminPluginUpdateFailed(describeError(e, l10n)))),
         );
       }
     }
@@ -238,6 +243,7 @@ class _InstalledTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final pluginsAsync = ref.watch(adminInstalledPluginsProvider);
     final packagesAsync = ref.watch(adminAvailablePackagesProvider);
 
@@ -247,7 +253,7 @@ class _InstalledTab extends ConsumerWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(AppLocalizations.of(context).adminPluginsLoadFailed(error.toString())),
+            Text(l10n.adminPluginsLoadFailed(describeError(error, l10n))),
             const SizedBox(height: 8),
             ElevatedButton(
               onPressed: () => ref.invalidate(adminInstalledPluginsProvider),
@@ -656,6 +662,7 @@ class _CatalogTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final packagesAsync = ref.watch(adminAvailablePackagesProvider);
 
     return packagesAsync.when(
@@ -664,7 +671,7 @@ class _CatalogTab extends ConsumerWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(AppLocalizations.of(context).adminPluginsLoadFailed(error.toString())),
+            Text(l10n.adminPluginsLoadFailed(describeError(error, l10n))),
             const SizedBox(height: 8),
             ElevatedButton(
               onPressed: () => ref.invalidate(adminAvailablePackagesProvider),

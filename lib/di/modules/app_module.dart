@@ -6,10 +6,13 @@ import 'package:server_core/server_core.dart';
 import '../../auth/repositories/session_repository.dart';
 import '../../auth/store/authentication_store.dart';
 import '../../auth/store/credential_store.dart';
+import '../../data/repositories/anime_marker_repository.dart';
 import '../../data/repositories/mdblist_repository.dart';
 import '../../data/repositories/multi_server_repository.dart';
 import '../../data/repositories/media_bar_repository.dart';
 import '../../data/repositories/offline_repository.dart';
+import '../../data/services/blocked_content_gate.dart';
+import '../../data/services/library_scope_service.dart';
 import '../../data/services/media_server_client_factory.dart';
 import '../../data/repositories/seerr_repository.dart';
 import '../../data/repositories/tmdb_repository.dart';
@@ -19,6 +22,7 @@ import '../../data/repositories/item_mutation_repository.dart';
 import '../../util/game_library.dart';
 import '../../data/services/background_service.dart';
 import '../../data/services/app_update_service.dart';
+import '../../data/services/upcoming_episode_service.dart';
 import '../../data/services/cast/airplay_provider.dart';
 import '../../data/services/cast/airplay_command_bridge.dart';
 import '../../data/services/cast/cast_service.dart';
@@ -28,6 +32,7 @@ import '../../data/services/cast/native_dlna_channel.dart';
 import '../../data/services/cast/google_cast_provider.dart';
 import '../../data/services/cast/native_cast_channel.dart';
 import '../../data/services/cast/remote_session_cast_provider.dart';
+import '../../data/services/achievements_service.dart';
 import '../../data/services/plugin_sync_service.dart';
 import '../../data/services/server_messages_service.dart';
 import '../../data/services/retro_artwork/retro_artwork_activity_gate.dart';
@@ -67,12 +72,16 @@ void resetUserScopedSingletons() {
   unregister<MediaBarRepository>();
   unregister<TmdbRepository>();
   unregister<MdbListRepository>();
+  unregister<AnimeMarkerRepository>();
   unregister<RowDataSource>();
   RowDataSource.clearRecommendationCache();
   unregister<ItemMutationRepository>();
   unregister<SearchRepository>();
   unregister<UserViewsRepository>();
+  unregister<LibraryScopeService>();
+  unregister<BlockedContentGate>();
   unregister<GameLibraryRegistry>();
+  unregister<UpcomingEpisodeService>();
   // Watched state is per user, so the next account must not inherit it.
   userDataSync.reset();
 
@@ -141,6 +150,10 @@ void registerAppModule() {
     () => PluginSyncService(_getIt<UserPreferences>(), _getIt()),
   );
   _getIt.registerLazySingleton(
+    () => AchievementsService(),
+    dispose: (service) => service.dispose(),
+  );
+  _getIt.registerLazySingleton(
     () => ServerMessagesService(_getIt<PreferenceStore>()),
     dispose: (service) => service.dispose(),
   );
@@ -171,11 +184,21 @@ void _registerUserScopedSingletons() {
     () => UserViewsRepository(_getIt()),
     dispose: (repository) => repository.dispose(),
   );
+  _getIt.registerLazySingleton(
+    () => LibraryScopeService(_getIt(), _getIt<UserViewsRepository>()),
+  );
+  _getIt.registerLazySingleton(
+    () => BlockedContentGate(_getIt(), _getIt<UserPreferences>()),
+  );
   _getIt.registerLazySingleton(() => GameLibraryRegistry());
   _getIt.registerLazySingleton(() => SearchRepository(_getIt()));
   _getIt.registerLazySingleton(() => ItemMutationRepository(_getIt()));
   _getIt.registerLazySingleton(
     () => RowDataSource(_getIt<MediaServerClient>()),
+  );
+  _getIt.registerLazySingleton(
+    () => UpcomingEpisodeService(),
+    dispose: (service) => service.dispose(),
   );
   _getIt.registerLazySingleton(
     () => MdbListRepository(
@@ -186,6 +209,10 @@ void _registerUserScopedSingletons() {
   );
   _getIt.registerLazySingleton(
     () => TmdbRepository(_getIt<MediaServerClient>()),
+    dispose: (repository) => repository.dispose(),
+  );
+  _getIt.registerLazySingleton(
+    () => AnimeMarkerRepository(_getIt<MediaServerClient>()),
     dispose: (repository) => repository.dispose(),
   );
   _getIt.registerLazySingleton(

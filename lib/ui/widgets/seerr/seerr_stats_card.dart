@@ -29,6 +29,9 @@ class SeerrStatsCard extends StatelessWidget {
   static bool hasContent(SeerrMediaDetailState state, AppLocalizations l10n) =>
       _facts(state, l10n).isNotEmpty;
 
+  static int factCount(SeerrMediaDetailState state, AppLocalizations l10n) =>
+      _facts(state, l10n).length;
+
   static List<_StatRow> _facts(
     SeerrMediaDetailState s,
     AppLocalizations l10n,

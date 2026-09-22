@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:moonfin/util/game_artwork_cache.dart';
+import 'package:moonfin/util/image_cache_index.dart';
 import 'package:moonfin/util/tv_image_cache_io.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
@@ -161,4 +162,31 @@ void main() {
       );
     },
   );
+
+  test('the artwork size sweep leaves the index file alone', () async {
+    final originalPathProvider = PathProviderPlatform.instance;
+    PathProviderPlatform.instance = _FakePathProvider(root);
+    addTearDown(() => PathProviderPlatform.instance = originalPathProvider);
+
+    final dir = Directory('${root.path}/libCachedImageData')..createSync();
+    final old = DateTime(2020);
+    for (var i = 0; i < 4; i++) {
+      final file = File('${dir.path}/$i.jpg')
+        ..writeAsBytesSync(List.filled(1000, 1));
+      file.setLastModifiedSync(old.add(Duration(days: i)));
+    }
+    final index = File('${dir.path}/${ImageCacheIndex.indexFileName}')
+      ..writeAsStringSync('{"v":1,"next":1,"e":[]}');
+    index.setLastModifiedSync(old);
+
+    // Budget of 1500 bytes against 4000 of artwork: the oldest go first,
+    // and the index, oldest of all by timestamp, isn't artwork.
+    await enforceImageCacheBudget(1500);
+
+    expect(index.existsSync(), isTrue);
+    final artwork = dir.listSync().whereType<File>().where(
+      (f) => f.path.endsWith('.jpg'),
+    );
+    expect(artwork.length, lessThan(4));
+  });
 }

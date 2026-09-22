@@ -7,6 +7,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../l10n/app_localizations.dart';
+import '../../util/error_message.dart';
 import '../../navigation/destinations.dart';
 import 'providers/admin_media_analytics_provider.dart';
 import 'providers/admin_status_providers.dart';
@@ -103,7 +104,7 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _error = e.toString();
+        _error = describeError(e, AppLocalizations.of(context));
         _loading = false;
       });
     }

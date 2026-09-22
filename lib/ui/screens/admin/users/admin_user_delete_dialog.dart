@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../util/error_message.dart';
 import '../../../widgets/adaptive/adaptive_dialog.dart';
 
 Future<void> showAdminUserDeleteDialog(
@@ -46,7 +47,7 @@ Future<void> showAdminUserDeleteDialog(
   } catch (e) {
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.adminUserDeleteFailed(e.toString()))),
+        SnackBar(content: Text(l10n.adminUserDeleteFailed(describeError(e, l10n)))),
       );
     }
   }

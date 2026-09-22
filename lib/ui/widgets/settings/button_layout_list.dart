@@ -18,12 +18,14 @@ class ButtonLayoutEntry {
   const ButtonLayoutEntry({
     required this.id,
     required this.title,
+    this.subtitle,
     required this.icon,
     this.canHide = true,
   });
 
   final String id;
   final String title;
+  final String? subtitle;
   final IconData icon;
 
   /// A button the row always keeps. It still moves, it just has no switch.
@@ -82,6 +84,9 @@ class _ButtonLayoutListState extends State<ButtonLayoutList> {
       ids.remove(entry.id);
     } else if (!ids.contains(entry.id)) {
       ids.add(entry.id);
+    }
+    if (entry.id == 'download' && PlatformDetection.isTV) {
+      unawaited(_prefs.set(UserPreferences.tvOfflineDownloads, shown));
     }
     unawaited(
       _prefs
@@ -248,6 +253,8 @@ class _ButtonLayoutRow extends StatelessWidget {
               iconColor: iconColor,
             ),
             title: Text(entry.title),
+            subtitle: entry.subtitle != null ? Text(entry.subtitle!) : null,
+            titleAlignment: ListTileTitleAlignment.center,
             onTap: !isTv && entry.canHide ? _toggle : null,
             // A remote works the whole row from the outside, so nothing in
             // here should collect a highlight of its own.

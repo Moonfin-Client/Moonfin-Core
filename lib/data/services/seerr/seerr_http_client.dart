@@ -140,6 +140,28 @@ class SeerrHttpClient {
     return ' - $detail';
   }
 
+  /// Treats an empty or non-JSON success body as an empty page, so the list
+  /// shows its empty state instead of an error.
+  Map<String, dynamic> _pageBody(Response response, String context) {
+    final data = response.data;
+    if (data is Map<String, dynamic>) return data;
+    if (data is Map) return Map<String, dynamic>.from(data);
+    if (data == null) return const {};
+    if (data is String) {
+      final trimmed = data.trim();
+      if (trimmed.isEmpty) return const {};
+      try {
+        final decoded = jsonDecode(trimmed);
+        if (decoded is Map) return Map<String, dynamic>.from(decoded);
+      } on FormatException catch (_) {}
+    }
+    throw DioException(
+      requestOptions: response.requestOptions,
+      response: response,
+      message: '$context: unexpected response body',
+    );
+  }
+
   Future<Map<String, dynamic>> getCurrentUser() async {
     final response = await _dio.get(
       _apiUrl('auth/me'),
@@ -168,7 +190,7 @@ class SeerrHttpClient {
       options: _authOptions(),
     );
     _requireSuccess(response, 'getRequests');
-    return response.data as Map<String, dynamic>;
+    return _pageBody(response, 'getRequests');
   }
 
   Future<Map<String, dynamic>> getRequestCount() async {
@@ -220,10 +242,13 @@ class SeerrHttpClient {
     return response.data as Map<String, dynamic>;
   }
 
+  /// No creator parameter. Seerr validates against a spec that declares only
+  /// take, skip, sort, filter and requestedBy here, so anything else comes
+  /// back a 400, and it already scopes a user who can't view all issues to
+  /// their own.
   Future<Map<String, dynamic>> getIssues({
     String? filter,
     String? sort,
-    int? createdBy,
     int limit = 20,
     int offset = 0,
   }) async {
@@ -234,12 +259,11 @@ class SeerrHttpClient {
         'take': limit,
         'filter': ?filter,
         'sort': ?sort,
-        'createdBy': ?createdBy,
       },
       options: _authOptions(),
     );
     _requireSuccess(response, 'getIssues');
-    return response.data as Map<String, dynamic>;
+    return _pageBody(response, 'getIssues');
   }
 
   Future<Map<String, dynamic>> getIssueCount() async {

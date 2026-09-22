@@ -77,11 +77,29 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
     private var forceSubtitlesDisabledOnStart = false
     private var didEmitLoadError = false
     private var lastErrorMessage: String?
+    private var lastPhase: PlaybackPhase = .idle
+    private var sawPlaybackThisLoad = false
+    private var lastClockAdvanceAt = CACurrentMediaTime()
+    private var stallCheckTimer: Timer?
 
     /// Ties the load watchdog and the load's own continuation to the load
     /// that started them, so neither acts after a newer load has taken over.
     private var loadGeneration: UInt64 = 0
     private static let loadWatchdogNanoseconds: UInt64 = 30_000_000_000
+
+    /// The engine probes a live source for up to 50 MB or 60 s of it, spent at
+    /// the wire rate on a tuner, so a channel carrying a stream FFmpeg can
+    /// never identify (a DVB data carousel, say) outlives the watchdog above
+    /// and fails every time instead of ever starting. These bound the probe to
+    /// land well inside it, whichever is reached first.
+    ///
+    /// Deliberately not tighter. A transport stream declares its video, audio
+    /// and teletext in the PMT so those resolve almost at once, but an
+    /// over-tight budget drops whatever resolves late rather than failing, and
+    /// a channel quietly missing a subtitle track is worse than a slow start.
+    private static let liveProbeBytes: Int64 = 8 * 1024 * 1024
+    private static let liveProbeMicroseconds: Int64 = 10 * 1_000_000
+
     private var baseSubtitlePosition: Int = 100
 
     // Track mapping: Dart speaks 1-based per-type ordinals while the engine
@@ -196,6 +214,13 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             .sink { [weak self] phase in self?.applyPhase(phase) }
             .store(in: &cancellables)
 
+        // A stall reports nothing new while the buffer drains under it, so
+        // buffering changes re-check it.
+        engine.$isBuffering
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in self?.applyStalledState() }
+            .store(in: &cancellables)
+
         engine.$duration
             .receive(on: DispatchQueue.main)
             .sink { [weak self] value in
@@ -208,6 +233,9 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] value in
                 guard let self else { return }
+                if value != self.currentTime {
+                    self.lastClockAdvanceAt = CACurrentMediaTime()
+                }
                 self.currentTime = value
                 self.position =
                     self.duration > 0 ? Float(value / self.duration) : 0
@@ -287,13 +315,23 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
     }
 
     private func applyPhase(_ phase: PlaybackPhase) {
+        lastPhase = phase
         switch phase {
-        case .idle: state = .idle
-        case .loading: state = .opening
-        case .playing: state = .playing
+        case .idle:
+            state = .idle
+            sawPlaybackThisLoad = false
+        case .loading:
+            state = .opening
+            sawPlaybackThisLoad = false
+        case .playing:
+            state = .playing
+            sawPlaybackThisLoad = true
         case .paused: state = .paused
-        case .seeking, .rebuffering: state = .buffering(bufferProgress)
-        case .stalled: state = .buffering(bufferProgress)
+        case .seeking: state = .buffering(bufferProgress)
+        case .rebuffering:
+            state = .buffering(bufferProgress)
+            sawPlaybackThisLoad = true
+        case .stalled: applyStalledState()
         case .ended: state = .ended
         case .error(let message):
             state = .error
@@ -304,10 +342,73 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
                 emitError(kind: "unsupported_container", recoverable: true, message: message)
             }
         }
+        updateStallCheckTimer()
         if Self.drivesNowPlaying, isPlaying || state == .paused {
             nowPlaying.updatePlaybackState(
                 isPlaying: isPlaying, elapsed: currentTime, duration: duration, rate: rate)
         }
+    }
+
+    /// A stall means the engine lost its connection to the server, not that
+    /// the picture stopped. On the native path AVPlayer keeps playing what it
+    /// already has, so the stall only counts as buffering once AVPlayer waits
+    /// or the clock stops moving. The software and audio paths report no
+    /// buffering of their own, and nothing is playing before the first frame,
+    /// so both still treat the stall itself as buffering.
+    nonisolated static func stalledState(
+        isNativePath: Bool,
+        sawPlayback: Bool,
+        isSeeking: Bool,
+        isPlaying: Bool,
+        isPaused: Bool,
+        isBuffering: Bool,
+        secondsSinceClockAdvanced: Double,
+        bufferProgress: Float
+    ) -> PlayerState {
+        let buffering = PlayerState.buffering(bufferProgress)
+        guard isNativePath, sawPlayback, !isSeeking else { return buffering }
+        if isPaused { return .paused }
+        guard isPlaying else { return buffering }
+        let frozen = secondsSinceClockAdvanced >= stalledClockFreezeSeconds
+        return isBuffering || frozen ? buffering : .playing
+    }
+
+    /// Ten times the native clock's tick, so a moving picture never trips it.
+    private nonisolated static let stalledClockFreezeSeconds: Double = 1
+
+    private func applyStalledState() {
+        guard case .stalled = lastPhase, let engine = Self.sharedEngine() else { return }
+        let next = Self.stalledState(
+            isNativePath: engine.playbackBackend == .native,
+            sawPlayback: sawPlaybackThisLoad,
+            isSeeking: engine.isSeeking || engine.state == .seeking,
+            isPlaying: engine.state == .playing,
+            isPaused: engine.state == .paused,
+            isBuffering: engine.isBuffering,
+            secondsSinceClockAdvanced: CACurrentMediaTime() - lastClockAdvanceAt,
+            bufferProgress: bufferProgress)
+        if next != state { state = next }
+    }
+
+    /// A frozen clock publishes nothing, so a native stall re-checks it.
+    private func updateStallCheckTimer() {
+        guard case .stalled = lastPhase, Self.sharedEngine()?.playbackBackend == .native else {
+            stallCheckTimer?.invalidate()
+            stallCheckTimer = nil
+            return
+        }
+        guard stallCheckTimer == nil else { return }
+        stallCheckTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) {
+            [weak self] _ in
+            Task { @MainActor in self?.applyStalledState() }
+        }
+    }
+
+    private func resetStallTracking() {
+        lastPhase = .idle
+        sawPlaybackThisLoad = false
+        stallCheckTimer?.invalidate()
+        stallCheckTimer = nil
     }
 
     // MARK: - Now Playing
@@ -389,7 +490,13 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
     // MARK: - Surface
 
     func attachVideoView(_ view: PlatformView) {
+        // Hold the outgoing view until the store is done: its deinit calls
+        // detachVideoView, which reads videoView, and releasing it inside the
+        // assignment would overlap that read with the write (a Swift
+        // exclusivity violation, fatal at runtime).
+        let previous = videoView
         videoView = view
+        withExtendedLifetime(previous) {}
         playerView.frame = view.bounds
         subtitleOverlay.frame = view.bounds
         #if canImport(UIKit)
@@ -499,9 +606,42 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         var autoPlay = true
         var audioStreamIndex: Int32?
         var audioBridgeLossless = false
+        var dolbyVisionBaseLayerOnly = false
+
+        /// Sidecars the host wants listed. They ride the load rather than
+        /// arriving after it, because the engine clears its external registry
+        /// when a load begins and only re-seats what the load itself declared.
+        var externalSubtitles: [ExternalSubtitleTrack] = []
+    }
+
+    /// Reads the sidecars out of a `setSource` payload. Anything without a
+    /// usable url is dropped rather than sent on as a track that can't open.
+    nonisolated static func externalSubtitleTracks(from raw: Any?) -> [ExternalSubtitleTrack] {
+        guard let entries = raw as? [[String: Any]] else { return [] }
+        return entries.compactMap { entry in
+            func text(_ key: String) -> String? {
+                guard let value = entry[key] as? String, !value.isEmpty else { return nil }
+                return value
+            }
+            guard let urlString = text("url"),
+                let url = urlString.hasPrefix("/")
+                    ? URL(fileURLWithPath: urlString) : URL(string: urlString)
+            else { return nil }
+            return ExternalSubtitleTrack(
+                url: url,
+                name: text("title"),
+                language: text("language"),
+                isForced: (entry["isForced"] as? Bool) ?? false,
+                isDefault: (entry["isDefault"] as? Bool) ?? false,
+                formatHint: text("codec"))
+        }
     }
 
     private var sourceConfiguration = SourceConfiguration()
+
+    /// Urls handed to the engine with the load. A later add of the same file
+    /// would list it a second time and shift every ordinal after it.
+    private var declaredSubtitleURLs: Set<String> = []
 
     func configureSource(_ configuration: SourceConfiguration) {
         sourceConfiguration = configuration
@@ -546,8 +686,12 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         isAudioOnlySession = audioOnly
         isLiveSession = sourceConfiguration.isLive
         didEmitLoadError = false
+        resetStallTracking()
         resetAssState()
         subtitleOverlay.clear()
+        externalSubIDsByURL.removeAll()
+        declaredSubtitleURLs = Set(
+            sourceConfiguration.externalSubtitles.map { $0.url.absoluteString })
         state = .opening
         loadGeneration &+= 1
         let generation = loadGeneration
@@ -565,6 +709,8 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         #endif
         let options = LoadOptions(
             httpHeaders: sourceConfiguration.headers,
+            dolbyVisionHandling: sourceConfiguration.dolbyVisionBaseLayerOnly
+                ? .baseLayerOnly : .automatic,
             matchContentEnabled: displayCriteriaMatchingEnabled(),
             panelIsInHDRMode: panelIsInHDRMode(),
             audioBridgeMode: sourceConfiguration.audioBridgeLossless ? .lossless : .surroundCompat,
@@ -574,6 +720,9 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             liveJoinProfile: .fastZap,
             nativeRemoteHLS: isLiveSession && isRemotePlaylist,
             preserveASSMarkup: preserveASS,
+            probesize: isLiveSession ? Self.liveProbeBytes : nil,
+            maxAnalyzeDuration: isLiveSession ? Self.liveProbeMicroseconds : nil,
+            externalSubtitles: sourceConfiguration.externalSubtitles,
             autoplay: sourceConfiguration.autoPlay
         )
 
@@ -603,11 +752,13 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             // A load that outlived its watchdog or was superseded finished
             // against an engine that has already been stopped or reloaded.
             guard loadGeneration == generation, !didEmitLoadError else { return }
+            seatDeclaredSubtitles(engine)
             if forceSubtitlesDisabledOnStart {
                 engine.clearSubtitle()
             }
         } catch {
             guard loadGeneration == generation, !didEmitLoadError else { return }
+            declaredSubtitleURLs.removeAll()
             didEmitLoadError = true
             state = .error
             let (kind, message) = Self.classifyLoadError(error)
@@ -671,6 +822,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
     /// through SDR.
     func stop() {
         Self.sharedEngine()?.stop(resetDisplayCriteria: false)
+        resetStallTracking()
         state = .stopped
         subtitleOverlay.clear()
         resetAssState()
@@ -683,6 +835,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         guard let engine = Self.sharedEngine() else { return }
         engine.stop(resetDisplayCriteria: true)
         cancellables.removeAll()
+        resetStallTracking()
         engine.unbind(view: playerView)
         subtitleOverlay.clear()
         resetAssState()
@@ -891,12 +1044,39 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         resetAssState()
     }
 
+    /// Learns the ids the engine gave the declared sidecars. Reading them back
+    /// beats deriving them, because the id space is the engine's to assign.
+    private func seatDeclaredSubtitles(_ engine: AetherEngine) {
+        let declared = sourceConfiguration.externalSubtitles
+        guard !declared.isEmpty else { return }
+        let seated = engine.subtitleTracks.filter { $0.isExternal }
+        guard seated.count == declared.count else {
+            hostLog(
+                "declared subtitles not seated (declared=\(declared.count) "
+                    + "seated=\(seated.count))")
+            declaredSubtitleURLs.removeAll()
+            // With none seated the runtime path is the only way back to a
+            // subtitle. A partial listing can't be paired to its urls, and adding
+            // everything again would list the seated ones twice.
+            if seated.isEmpty {
+                for track in declared {
+                    addSubtitle(url: track.url, title: track.name, language: track.language)
+                }
+            }
+            return
+        }
+        for (track, info) in zip(declared, seated) {
+            externalSubIDsByURL[track.url.absoluteString] = info.id
+        }
+    }
+
     func addSubtitle(url: URL) {
         addSubtitle(url: url, title: nil, language: nil)
     }
 
     func addSubtitle(url: URL, title: String?, language: String?) {
         guard let engine = Self.sharedEngine() else { return }
+        guard !declaredSubtitleURLs.contains(url.absoluteString) else { return }
         let track = engine.addExternalSubtitleTrack(
             ExternalSubtitleTrack(url: url, name: title, language: language))
         externalSubIDsByURL[url.absoluteString] = track.id

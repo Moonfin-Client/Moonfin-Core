@@ -117,7 +117,7 @@ List<SeerrSortOption> getSortOptionsFor(String mediaType) {
 class SeerrBrowseState {
   final bool isLoading;
   final bool isLoadingMore;
-  final String? error;
+  final Object? error;
   final List<SeerrDiscoverItem> items;
   final int currentPage;
   final int totalPages;
@@ -165,7 +165,7 @@ class SeerrBrowseState {
   SeerrBrowseState copyWith({
     bool? isLoading,
     bool? isLoadingMore,
-    String? error,
+    Object? error,
     List<SeerrDiscoverItem>? items,
     int? currentPage,
     int? totalPages,
@@ -274,7 +274,7 @@ class SeerrBrowseViewModel extends ChangeNotifier {
         totalPages: lastPage.totalPages,
       );
     } catch (e) {
-      _state = _state.copyWith(isLoading: false, error: e.toString());
+      _state = _state.copyWith(isLoading: false, error: e);
     }
     notifyListeners();
   }

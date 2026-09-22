@@ -17,6 +17,7 @@ export 'src/models/syncplay_models.dart';
 export 'src/models/query_filter_models.dart';
 export 'src/api/auth_api.dart';
 export 'src/api/syncplay_api.dart';
+export 'src/api/item_fields.dart';
 export 'src/api/items_api.dart';
 export 'src/api/playback_api.dart';
 export 'src/api/image_api.dart';

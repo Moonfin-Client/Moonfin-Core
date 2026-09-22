@@ -45,6 +45,20 @@ class ConnectivityService extends ChangeNotifier {
 
   bool get canReachServer => _isOnline && _serverReachable;
 
+  /// Whether the only link is mobile data. Read by prefetchers that should
+  /// not spend a metered connection on artwork the user may never scroll to.
+  /// False until the first probe answers, and false on a link the platform
+  /// can't classify, since holding back on a healthy Wi-Fi costs more than
+  /// warming a few posters on a plan.
+  bool get isCellularOnly => _isCellularOnly;
+  bool _isCellularOnly = false;
+
+  static bool _cellularOnly(List<ConnectivityResult> results) {
+    final live = results.where((r) => r != ConnectivityResult.none).toList();
+    return live.isNotEmpty &&
+        live.every((r) => r == ConnectivityResult.mobile);
+  }
+
   /// Whether the initial connectivity check has completed.
   /// Stream events are ignored until this is true to prevent
   /// a false "offline" flash at boot.
@@ -83,6 +97,7 @@ class ConnectivityService extends ChangeNotifier {
     }
     final results = await _connectivity.checkConnectivity();
     _isOnline = results.any((r) => r != ConnectivityResult.none);
+    _isCellularOnly = _cellularOnly(results);
     if (_isOnline) {
       await _checkServerReachability();
       if (_serverReachable) {
@@ -101,6 +116,7 @@ class ConnectivityService extends ChangeNotifier {
     final wasOnline = _isOnline;
     final wasReachable = _serverReachable;
     _isOnline = results.any((r) => r != ConnectivityResult.none);
+    _isCellularOnly = _cellularOnly(results);
 
     if (!_isOnline) {
       _retryTimer?.cancel();
@@ -265,6 +281,7 @@ class ConnectivityService extends ChangeNotifier {
   Future<void> recheckNow() async {
     final results = await _connectivity.checkConnectivity();
     _isOnline = results.any((r) => r != ConnectivityResult.none);
+    _isCellularOnly = _cellularOnly(results);
     if (_isOnline) {
       await _checkServerReachability();
     } else {

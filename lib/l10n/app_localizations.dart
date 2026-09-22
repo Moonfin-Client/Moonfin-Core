@@ -226,6 +226,60 @@ abstract class AppLocalizations {
   /// **'Moonfin'**
   String get appTitle;
 
+  /// Badge on an anime episode that is filler, meaning it is not adapted from the source manga
+  ///
+  /// In en, this message translates to:
+  /// **'Filler'**
+  String get animeMarkerFiller;
+
+  /// Badge on an anime episode that mixes source material with filler, so it still contains story
+  ///
+  /// In en, this message translates to:
+  /// **'Mixed'**
+  String get animeMarkerMixed;
+
+  /// Badge on an anime episode that is not in the source manga but is part of the anime's own continuity
+  ///
+  /// In en, this message translates to:
+  /// **'Anime Canon'**
+  String get animeMarkerAnimeCanon;
+
+  /// Badge on an anime episode adapted from the source manga
+  ///
+  /// In en, this message translates to:
+  /// **'Manga Canon'**
+  String get animeMarkerMangaCanon;
+
+  /// Badge on an anime episode or season whose only audio is Japanese, so it is watched with subtitles
+  ///
+  /// In en, this message translates to:
+  /// **'Subbed'**
+  String get animeMarkerSubbed;
+
+  /// Badge on an anime episode or season that has an audio track in a language other than Japanese
+  ///
+  /// In en, this message translates to:
+  /// **'Dubbed'**
+  String get animeMarkerDubbed;
+
+  /// Badge on anime that carries both the original Japanese audio and a dub, so it can be watched either way
+  ///
+  /// In en, this message translates to:
+  /// **'Subbed/Dubbed'**
+  String get animeMarkerSubbedAndDubbed;
+
+  /// Badge on an anime episode whose filler information the server has matched but not downloaded yet
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get animeMarkerPending;
+
+  /// Badge on an anime episode that recaps earlier episodes
+  ///
+  /// In en, this message translates to:
+  /// **'Recap'**
+  String get animeMarkerRecap;
+
   /// Section header for account preferences settings
   ///
   /// In en, this message translates to:
@@ -469,7 +523,7 @@ abstract class AppLocalizations {
   /// Explanation under the detail screen style setting
   ///
   /// In en, this message translates to:
-  /// **'Classic is the original centered moonfin layout. Modern is a responsive cinematic layout. Spotlight is a hero-first layout with pop-up content cards. Nouveau is a full-screen layout with sections stacked down the page.'**
+  /// **'Classic is the original centered moonfin layout. Modern is a responsive cinematic layout. Spotlight is a hero-first layout with pop-up content cards. Nouveau is a full-screen layout with sections stacked down the page. Minimalist is artwork, one play button and the episodes.'**
   String get detailScreenStyleSubtitle;
 
   /// Detail screen style option: the classic centered layout
@@ -493,7 +547,7 @@ abstract class AppLocalizations {
   /// Tooltip/semantics of the spotlight ellipsis button and the title of the overflow actions menu it opens
   ///
   /// In en, this message translates to:
-  /// **'More actions'**
+  /// **'More Actions'**
   String get spotlightMoreActions;
 
   /// Title of the spotlight summary card that opens the people and studios modal
@@ -567,6 +621,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 person} other{{count} people}}'**
   String spotlightPeopleCount(int count);
+
+  /// Count fragment on spotlight summary cards: Seerr facts
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 fact} other{{count} facts}}'**
+  String spotlightFactsCount(int count);
+
+  /// Count fragment on spotlight summary cards: genres, networks and keywords
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 tag} other{{count} tags}}'**
+  String spotlightTagsCount(int count);
 
   /// Count fragment on spotlight summary cards: studios
   ///
@@ -645,6 +711,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Nouveau'**
   String get detailScreenStyleNouveau;
+
+  /// Detail screen style option: artwork, one play button and the episodes, and the style Kids Mode always shows
+  ///
+  /// In en, this message translates to:
+  /// **'Minimalist'**
+  String get detailScreenStyleMinimalist;
 
   /// Label for the detail screen expanded tabs setting
   ///
@@ -1377,6 +1449,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Extra Large'**
   String get extraLarge;
+
+  /// UI scaling option above extra large
+  ///
+  /// In en, this message translates to:
+  /// **'Grandfather'**
+  String get uiScaleGrandfather;
 
   /// Section header for scroll direction selection in library display settings
   ///
@@ -3280,6 +3358,12 @@ abstract class AppLocalizations {
   /// **'Subtitle Delay'**
   String get subtitleDelay;
 
+  /// Read-only line under the subtitle delay showing a correction the player applied on its own, value is a formatted delay like +2000 ms
+  ///
+  /// In en, this message translates to:
+  /// **'Auto {value}'**
+  String subtitleDelayAuto(String value);
+
   /// Button label to reset a value
   ///
   /// In en, this message translates to:
@@ -4096,6 +4180,12 @@ abstract class AppLocalizations {
   /// **'Premiere'**
   String get premiere;
 
+  /// Short badge label shown on a rerun in the guide hero band
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat'**
+  String get guideRepeatBadge;
+
   /// Section title for the TV guide timeline
   ///
   /// In en, this message translates to:
@@ -4113,6 +4203,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No channels found'**
   String get noChannelsFound;
+
+  /// Guide cell label for a real EPG schedule gap, not a genre-filtered program
+  ///
+  /// In en, this message translates to:
+  /// **'No program data'**
+  String get noProgramData;
 
   /// Badge label shown on currently airing programs
   ///
@@ -4239,6 +4335,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Watch'**
   String get watch;
+
+  /// Button label to tune a channel live when the selected program is not the one that will play (ended or upcoming)
+  ///
+  /// In en, this message translates to:
+  /// **'Watch channel live'**
+  String get watchChannelLive;
 
   /// Button label to close a dialog
   ///
@@ -4605,6 +4707,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Downloaded Items'**
   String get downloadedItems;
+
+  /// Tab title for downloads that are transferring or queued
+  ///
+  /// In en, this message translates to:
+  /// **'Active Downloads'**
+  String get activeDownloads;
+
+  /// How many downloads the saved media list holds, shown beside the total size
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 item} other{{count} items}}'**
+  String savedMediaCount(int count);
+
+  /// Storage used against the configured limit, for example '56.4 GB of 80 GB'
+  ///
+  /// In en, this message translates to:
+  /// **'{used} of {limit}'**
+  String savedMediaOfLimit(String used, String limit);
+
+  /// Overflow menu entry that turns on multi-select in the saved media list
+  ///
+  /// In en, this message translates to:
+  /// **'Select items'**
+  String get savedMediaSelectItems;
+
+  /// Empty state title when no downloads are on the device
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing saved yet'**
+  String get savedMediaNoDownloads;
+
+  /// Empty state body when no downloads are on the device
+  ///
+  /// In en, this message translates to:
+  /// **'Downloads you start appear here and play without a connection.'**
+  String get savedMediaNoDownloadsDetail;
+
+  /// Empty state for the active downloads tab
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing downloading right now'**
+  String get savedMediaNoActiveDownloads;
+
+  /// Empty state when a search over saved media matches nothing
+  ///
+  /// In en, this message translates to:
+  /// **'No downloads match that search'**
+  String get savedMediaNoResults;
+
+  /// Row menu action that restarts a partly watched download from the beginning
+  ///
+  /// In en, this message translates to:
+  /// **'Play from start'**
+  String get savedMediaPlayFromStart;
+
+  /// Row menu action that opens the item's detail screen
+  ///
+  /// In en, this message translates to:
+  /// **'Go to details'**
+  String get savedMediaGoToDetails;
+
+  /// Row menu action that removes one downloaded file from the device
+  ///
+  /// In en, this message translates to:
+  /// **'Delete download'**
+  String get savedMediaDeleteDownload;
+
+  /// Menu action that removes every saved episode of one season
+  ///
+  /// In en, this message translates to:
+  /// **'Delete {season}'**
+  String savedMediaDeleteSeason(String season);
+
+  /// Menu action that removes every saved episode of one series
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Delete 1 episode} other{Delete {count} episodes}}'**
+  String savedMediaDeleteEpisodes(int count);
+
+  /// Row menu action that opens a saved show's seasons and episodes
+  ///
+  /// In en, this message translates to:
+  /// **'Open show'**
+  String get savedMediaOpenShow;
+
+  /// Row menu action that plays the earliest unwatched saved episode of a show
+  ///
+  /// In en, this message translates to:
+  /// **'Play next unwatched'**
+  String get savedMediaPlayNextUnwatched;
+
+  /// Row menu action that opens a downloaded book in the reader
+  ///
+  /// In en, this message translates to:
+  /// **'Read'**
+  String get savedMediaRead;
+
+  /// Row menu action that stops a running or queued transfer
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel download'**
+  String get savedMediaCancelDownload;
+
+  /// Sort option: largest download first
+  ///
+  /// In en, this message translates to:
+  /// **'Size'**
+  String get sortBySize;
+
+  /// Sort option: alphabetical by title
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get sortByName;
+
+  /// Sort option: most recently downloaded first
+  ///
+  /// In en, this message translates to:
+  /// **'Date added'**
+  String get sortByDateAdded;
 
   /// Setting for storage limit
   ///
@@ -5332,6 +5554,18 @@ abstract class AppLocalizations {
   /// **'Auto Crop'**
   String get autoCrop;
 
+  /// Setting to detect and crop encoded letterbox/pillarbox bars
+  ///
+  /// In en, this message translates to:
+  /// **'Crop black bars'**
+  String get cropBlackBars;
+
+  /// Description for the crop black bars playback setting
+  ///
+  /// In en, this message translates to:
+  /// **'Detect encoded letterbox bars, crop them, then fill the screen.'**
+  String get settingsCropBlackBarsDescription;
+
   /// Zoom mode: stretch
   ///
   /// In en, this message translates to:
@@ -5458,6 +5692,18 @@ abstract class AppLocalizations {
   /// **'Dim video and show overview text while paused'**
   String get dimVideoShowOverview;
 
+  /// Setting label for drawing a mark per chapter on the player seek bar
+  ///
+  /// In en, this message translates to:
+  /// **'Chapter Marks'**
+  String get showChapterMarkers;
+
+  /// Description for the chapter marks setting
+  ///
+  /// In en, this message translates to:
+  /// **'Mark where each chapter starts on the seek bar'**
+  String get showChapterMarkersDescription;
+
   /// Setting for OSD lock button
   ///
   /// In en, this message translates to:
@@ -5517,6 +5763,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Play is always first and the locked buttons are always shown. Everything else is up to you, and each kind of device keeps its own list.'**
   String get detailButtonsSectionDescription;
+
+  /// Setting title for choosing how many action buttons are visible before overflowing into More Actions
+  ///
+  /// In en, this message translates to:
+  /// **'Action Buttons on Screen'**
+  String get actionButtonsOnScreen;
+
+  /// Subtitle explaining how action buttons overflow into More Actions
+  ///
+  /// In en, this message translates to:
+  /// **'Customize how many action buttons appear before folding into the More Actions menu.'**
+  String get actionButtonsOnScreenDescription;
+
+  /// Option showing theme default number of action buttons
+  ///
+  /// In en, this message translates to:
+  /// **'Auto (Theme Default)'**
+  String get actionButtonsOnScreenAuto;
+
+  /// Option showing only the play action button on screen
+  ///
+  /// In en, this message translates to:
+  /// **'1 (Play only)'**
+  String get actionButtonsOnScreenPlayOnly;
+
+  /// Option showing all action buttons in a horizontal scrollable row
+  ///
+  /// In en, this message translates to:
+  /// **'All (Horizontal Scroll)'**
+  String get actionButtonsOnScreenAll;
+
+  /// Settings screen for choosing and reordering details screen metadata items
+  ///
+  /// In en, this message translates to:
+  /// **'Metadata Row'**
+  String get detailMetadata;
+
+  /// Subtitle for the details metadata settings tile
+  ///
+  /// In en, this message translates to:
+  /// **'Choose and reorder what metadata the details screen shows'**
+  String get detailMetadataDescription;
+
+  /// Explains how to customize and reorder details screen metadata items
+  ///
+  /// In en, this message translates to:
+  /// **'Turn metadata items on or off, and arrange the order they appear on the details screen. Each kind of device keeps its own list.'**
+  String get detailMetadataSectionDescription;
+
+  /// Item label for release or production year in metadata row
+  ///
+  /// In en, this message translates to:
+  /// **'Release Year'**
+  String get detailMetadataYear;
+
+  /// Item label for parental content rating in metadata row
+  ///
+  /// In en, this message translates to:
+  /// **'Parental Rating'**
+  String get detailMetadataParentalRating;
+
+  /// Item label for runtime or season/episode counts in metadata row
+  ///
+  /// In en, this message translates to:
+  /// **'Runtime & Seasons'**
+  String get detailMetadataRuntimeAndSeasons;
+
+  /// Item label for series status badge in metadata row
+  ///
+  /// In en, this message translates to:
+  /// **'Series Status'**
+  String get detailMetadataStatus;
+
+  /// Subtitle explaining the series status metadata badge
+  ///
+  /// In en, this message translates to:
+  /// **'Shows whether the series is continuing, ended, or returning'**
+  String get detailMetadataStatusSubtitle;
+
+  /// Item label for genre tags in metadata row
+  ///
+  /// In en, this message translates to:
+  /// **'Genres'**
+  String get detailMetadataGenres;
+
+  /// Item label for Seerr request and availability badge in metadata row
+  ///
+  /// In en, this message translates to:
+  /// **'Seerr Availability'**
+  String get detailMetadataSeerrAvailability;
+
+  /// Subtitle explaining the Seerr availability metadata badge
+  ///
+  /// In en, this message translates to:
+  /// **'Shows request and media availability status from Seerr'**
+  String get detailMetadataSeerrAvailabilitySubtitle;
+
+  /// Item label for upcoming episode air date badge in metadata row
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming Episodes'**
+  String get detailMetadataUpcomingEpisodeDate;
+
+  /// Subtitle describing data sources for upcoming episode air dates in metadata row
+  ///
+  /// In en, this message translates to:
+  /// **'Uses Sonarr and TMDB to show upcoming release dates'**
+  String get detailMetadataUpcomingEpisodeDateSubtitle;
+
+  /// Formatted badge text for an upcoming episode release date
+  ///
+  /// In en, this message translates to:
+  /// **'Next: {date} (S{season}:E{episode})'**
+  String upcomingEpisodeNext(String date, int season, int episode);
+
+  /// Upcoming episode airs today
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get upcomingEpisodeToday;
+
+  /// Upcoming episode airs tomorrow
+  ///
+  /// In en, this message translates to:
+  /// **'Tomorrow'**
+  String get upcomingEpisodeTomorrow;
 
   /// Moves a button one place earlier in its row
   ///
@@ -5949,6 +6321,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Manual (choose formats below)'**
   String get settingsAudioPassthroughModeManual;
+
+  /// Title of the RAW-vs-IEC passthrough packer selector (Android TV, Media3 engine)
+  ///
+  /// In en, this message translates to:
+  /// **'Passthrough output'**
+  String get settingsAudioPassthroughOutput;
+
+  /// No description provided for @settingsAudioPassthroughOutputDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Who packs bitstreams for the HDMI link. Try the app packer if passthrough is silent or glitchy on this device.'**
+  String get settingsAudioPassthroughOutputDescription;
+
+  /// No description provided for @settingsAudioPassthroughOutputPlatform.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic, system packer (AudioTrack RAW)'**
+  String get settingsAudioPassthroughOutputPlatform;
+
+  /// No description provided for @settingsAudioPassthroughOutputIec.
+  ///
+  /// In en, this message translates to:
+  /// **'App packer (AudioTrack IEC)'**
+  String get settingsAudioPassthroughOutputIec;
+
+  /// No description provided for @settingsAudioPassthroughOutputIecLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'App (IEC)'**
+  String get settingsAudioPassthroughOutputIecLabel;
 
   /// No description provided for @settingsDownmixToStereoDescription.
   ///
@@ -6525,6 +6927,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Semi-transparent Black'**
   String get semiTransparentBlack;
+
+  /// Color: semi-transparent white
+  ///
+  /// In en, this message translates to:
+  /// **'Semi-transparent White'**
+  String get semiTransparentWhite;
+
+  /// Color: light gray
+  ///
+  /// In en, this message translates to:
+  /// **'Light Gray'**
+  String get lightGray;
+
+  /// Color: dark gray
+  ///
+  /// In en, this message translates to:
+  /// **'Dark Gray'**
+  String get darkGray;
+
+  /// Color: blue
+  ///
+  /// In en, this message translates to:
+  /// **'Blue'**
+  String get blue;
+
+  /// Color: magenta
+  ///
+  /// In en, this message translates to:
+  /// **'Magenta'**
+  String get magenta;
 
   /// Profile: global
   ///
@@ -8667,6 +9099,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Play in Moonfin'**
   String get playInMoonfin;
+
+  /// Label above the name of whoever requested media, where the name sits on its own line
+  ///
+  /// In en, this message translates to:
+  /// **'Requested by'**
+  String get requestedByLabel;
 
   /// Label showing who requested media
   ///
@@ -16090,11 +16528,41 @@ abstract class AppLocalizations {
   /// **'Enter your {length}-digit PIN'**
   String pinEnterYourNDigit(int length);
 
+  /// Label for the setting that strips the app back to what a child needs
+  ///
+  /// In en, this message translates to:
+  /// **'Kids Mode'**
+  String get kidsMode;
+
+  /// Explanation under the Kids Mode setting
+  ///
+  /// In en, this message translates to:
+  /// **'Simplify the app and lock the way out with a PIN'**
+  String get kidsModeSubtitle;
+
+  /// Settings entry that turns Kids Mode off, shown while Kids Mode is on
+  ///
+  /// In en, this message translates to:
+  /// **'Exit Kids Mode'**
+  String get kidsModeExit;
+
+  /// Explanation under the Exit Kids Mode entry
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your PIN to restore the full app'**
+  String get kidsModeExitSubtitle;
+
   /// No description provided for @pinIncorrect.
   ///
   /// In en, this message translates to:
   /// **'Incorrect PIN'**
   String get pinIncorrect;
+
+  /// Shown when PIN entry is locked after repeated wrong guesses
+  ///
+  /// In en, this message translates to:
+  /// **'Too many attempts. Try again in {wait}.'**
+  String pinTryAgainIn(String wait);
 
   /// No description provided for @pinMismatch.
   ///
@@ -16648,6 +17116,24 @@ abstract class AppLocalizations {
   /// **'Add to Collection'**
   String get contextMenuAddToCollection;
 
+  /// Context menu action to remove an item from the collection whose page it is shown on
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from Collection'**
+  String get contextMenuRemoveFromCollection;
+
+  /// Confirmation shown before removing an item from a collection
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {item} from {collection}? The item stays in your library.'**
+  String removeFromCollectionConfirm(String item, String collection);
+
+  /// Error shown when removing an item from a collection fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to remove from collection'**
+  String get removeFromCollectionFailed;
+
   /// No description provided for @settingsAdministrationSubtitle.
   ///
   /// In en, this message translates to:
@@ -16761,6 +17247,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'PRIVACY & SAFETY'**
   String get settingsPrivacyAndSafetySection;
+
+  /// Shown instead of a title whose rating the viewer has blocked. Deliberately says nothing about what the title is.
+  ///
+  /// In en, this message translates to:
+  /// **'This isn\'t available'**
+  String get itemBlockedByParentalControls;
+
+  /// Explains that the blocked ratings list works as a ceiling
+  ///
+  /// In en, this message translates to:
+  /// **'Blocking a rating also blocks everything stronger than it.'**
+  String get blockedRatingsCeilingHint;
+
+  /// Heading for ratings the app can't rank, which block only the exact rating rather than everything above it
+  ///
+  /// In en, this message translates to:
+  /// **'Only blocks itself'**
+  String get blockedRatingsUnrankedSection;
 
   /// No description provided for @settingsBlockedRatings.
   ///
@@ -18430,11 +18934,17 @@ abstract class AppLocalizations {
   /// **'Connection'**
   String get connection;
 
-  /// No description provided for @audioTranscodeTarget.
+  /// No description provided for @locallyDecodedCodecs.
   ///
   /// In en, this message translates to:
-  /// **'Audio Transcode Target'**
-  String get audioTranscodeTarget;
+  /// **'Locally Decoded Codecs'**
+  String get locallyDecodedCodecs;
+
+  /// No description provided for @transcodeTargetCodecs.
+  ///
+  /// In en, this message translates to:
+  /// **'Transcode Target Codecs'**
+  String get transcodeTargetCodecs;
 
   /// No description provided for @passthrough.
   ///
@@ -18891,6 +19401,702 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open in Browser'**
   String get openInBrowser;
+
+  /// Title of the Achievement Badges plugin panel
+  ///
+  /// In en, this message translates to:
+  /// **'Achievement Badges'**
+  String get achievementBadges;
+
+  /// Subtitle of the Achievement Badges entry in Integrations
+  ///
+  /// In en, this message translates to:
+  /// **'Badges, ranks and quests earned from what you watch'**
+  String get achievementBadgesSubtitle;
+
+  /// Badges section title
+  ///
+  /// In en, this message translates to:
+  /// **'Badges'**
+  String get achievementsBadges;
+
+  /// How many badges are unlocked out of the total
+  ///
+  /// In en, this message translates to:
+  /// **'{unlocked} of {total} badges'**
+  String achievementsBadgeCount(int unlocked, int total);
+
+  /// Quests section title
+  ///
+  /// In en, this message translates to:
+  /// **'Quests'**
+  String get achievementsQuests;
+
+  /// How many quests are completed
+  ///
+  /// In en, this message translates to:
+  /// **'{count} completed'**
+  String achievementsQuestCount(int count);
+
+  /// Leaderboard section title
+  ///
+  /// In en, this message translates to:
+  /// **'Leaderboard'**
+  String get achievementsLeaderboard;
+
+  /// Leaderboard section subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'How you compare with other users on this server'**
+  String get achievementsLeaderboardSubtitle;
+
+  /// Recap section title
+  ///
+  /// In en, this message translates to:
+  /// **'Recap'**
+  String get achievementsRecap;
+
+  /// Recap section subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'What you watched recently'**
+  String get achievementsRecapSubtitle;
+
+  /// Library completion section title
+  ///
+  /// In en, this message translates to:
+  /// **'Library completion'**
+  String get achievementsLibraryCompletion;
+
+  /// How many libraries have a completion percentage
+  ///
+  /// In en, this message translates to:
+  /// **'{count} libraries'**
+  String achievementsLibraryCount(int count);
+
+  /// The score a user has earned
+  ///
+  /// In en, this message translates to:
+  /// **'{score} points'**
+  String achievementsScore(int score);
+
+  /// Leaderboard category: overall score
+  ///
+  /// In en, this message translates to:
+  /// **'Score'**
+  String get achievementsScoreLabel;
+
+  /// Shown instead of progress when the user is at the highest rank
+  ///
+  /// In en, this message translates to:
+  /// **'Top rank reached'**
+  String get achievementsTopRank;
+
+  /// Points needed to reach the next rank tier
+  ///
+  /// In en, this message translates to:
+  /// **'{points} points to {tier}'**
+  String achievementsPointsToNextRank(int points, String tier);
+
+  /// The current watch streak
+  ///
+  /// In en, this message translates to:
+  /// **'{days} day streak'**
+  String achievementsCurrentStreak(int days);
+
+  /// The best watch streak
+  ///
+  /// In en, this message translates to:
+  /// **'Best: {days} days'**
+  String achievementsBestStreak(int days);
+
+  /// The badges a user pinned to their profile
+  ///
+  /// In en, this message translates to:
+  /// **'Showcase'**
+  String get achievementsShowcase;
+
+  /// Badge filter: unlocked only
+  ///
+  /// In en, this message translates to:
+  /// **'Unlocked'**
+  String get achievementsUnlocked;
+
+  /// Badge filter: locked only
+  ///
+  /// In en, this message translates to:
+  /// **'Locked'**
+  String get achievementsLocked;
+
+  /// Empty state for an achievements list
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing here yet.'**
+  String get achievementsNothingHere;
+
+  /// Placeholder name for a secret badge that is still locked
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden achievement'**
+  String get achievementsHiddenBadge;
+
+  /// When a badge was unlocked
+  ///
+  /// In en, this message translates to:
+  /// **'Unlocked {date}'**
+  String achievementsUnlockedOn(String date);
+
+  /// Points a badge is worth
+  ///
+  /// In en, this message translates to:
+  /// **'{points} pts'**
+  String achievementsPoints(int points);
+
+  /// Daily quests section
+  ///
+  /// In en, this message translates to:
+  /// **'Daily'**
+  String get achievementsDailyQuests;
+
+  /// Weekly quests section
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly'**
+  String get achievementsWeeklyQuests;
+
+  /// Points a quest pays out
+  ///
+  /// In en, this message translates to:
+  /// **'+{points}'**
+  String achievementsQuestReward(int points);
+
+  /// Action that swaps the daily quest set for a new one
+  ///
+  /// In en, this message translates to:
+  /// **'Reroll daily quests'**
+  String get achievementsRerollDaily;
+
+  /// Action that swaps the weekly quest set for a new one
+  ///
+  /// In en, this message translates to:
+  /// **'Reroll weekly quests'**
+  String get achievementsRerollWeekly;
+
+  /// Subtitle on the reroll row while a reroll is still available
+  ///
+  /// In en, this message translates to:
+  /// **'Swap this set for a different one'**
+  String get achievementsRerollOffer;
+
+  /// Subtitle on the reroll row once the daily reroll is spent
+  ///
+  /// In en, this message translates to:
+  /// **'Used today, comes back at midnight UTC'**
+  String get achievementsRerollSpentDaily;
+
+  /// Subtitle on the reroll row once the weekly reroll is spent
+  ///
+  /// In en, this message translates to:
+  /// **'Used this week, comes back Monday UTC'**
+  String get achievementsRerollSpentWeekly;
+
+  /// Title of the dialog confirming a quest reroll
+  ///
+  /// In en, this message translates to:
+  /// **'Reroll these quests?'**
+  String get achievementsRerollConfirm;
+
+  /// Body of the dialog confirming a quest reroll
+  ///
+  /// In en, this message translates to:
+  /// **'You get one daily and one weekly reroll, and this spends it.'**
+  String get achievementsRerollConfirmBody;
+
+  /// Message shown when a quest reroll did not go through
+  ///
+  /// In en, this message translates to:
+  /// **'Could not reroll those quests.'**
+  String get achievementsRerollFailed;
+
+  /// Header above the items the plugin suggests for a badge
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested items to watch'**
+  String get achievementsSuggested;
+
+  /// Shown when the plugin has no items to recommend for a badge
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing to suggest for this badge.'**
+  String get achievementsNoSuggestions;
+
+  /// Label above a badge's current progress figure
+  ///
+  /// In en, this message translates to:
+  /// **'Progress'**
+  String get achievementsProgressLabel;
+
+  /// Screen holding the score bank and the power-ups a user owns
+  ///
+  /// In en, this message translates to:
+  /// **'Loadout'**
+  String get achievementsLoadout;
+
+  /// Subtitle on the row that opens the loadout
+  ///
+  /// In en, this message translates to:
+  /// **'Score to spend and the boosts you hold'**
+  String get achievementsLoadoutSubtitle;
+
+  /// Row that opens the avatars and rank titles a profile can wear
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get achievementsAppearance;
+
+  /// Subtitle on the row that opens the appearance screen
+  ///
+  /// In en, this message translates to:
+  /// **'The avatar and title on your profile'**
+  String get achievementsAppearanceSubtitle;
+
+  /// Tab of the icons that can sit on a profile
+  ///
+  /// In en, this message translates to:
+  /// **'Avatars'**
+  String get achievementsAvatars;
+
+  /// Tab of the titles that can replace a rank name
+  ///
+  /// In en, this message translates to:
+  /// **'Titles'**
+  String get achievementsTitles;
+
+  /// State of the avatar or title a profile is wearing
+  ///
+  /// In en, this message translates to:
+  /// **'Equipped'**
+  String get achievementsEquipped;
+
+  /// State of an avatar or title that is held but not worn
+  ///
+  /// In en, this message translates to:
+  /// **'Owned'**
+  String get achievementsOwned;
+
+  /// What a user has to reach to unlock a cosmetic without paying
+  ///
+  /// In en, this message translates to:
+  /// **'Earned at {score} lifetime score'**
+  String achievementsEarnedAt(int score);
+
+  /// Shown when the plugin carries no cosmetics this panel can draw
+  ///
+  /// In en, this message translates to:
+  /// **'This server has no avatars or titles to wear.'**
+  String get achievementsAppearanceEmpty;
+
+  /// Shown when equipping or removing an avatar or title fails
+  ///
+  /// In en, this message translates to:
+  /// **'Could not change how the profile looks.'**
+  String get achievementsAppearanceFailed;
+
+  /// Section header above the consumable boosts a user holds
+  ///
+  /// In en, this message translates to:
+  /// **'Power-ups'**
+  String get achievementsPowerUps;
+
+  /// Screen of watch counters and server figures
+  ///
+  /// In en, this message translates to:
+  /// **'Stats'**
+  String get achievementsStats;
+
+  /// Subtitle on the row that opens stats
+  ///
+  /// In en, this message translates to:
+  /// **'Your records and how the server is doing'**
+  String get achievementsStatsSubtitle;
+
+  /// Section of counters for what a user has watched
+  ///
+  /// In en, this message translates to:
+  /// **'Watched'**
+  String get achievementsStatsWatched;
+
+  /// Section of a user's highest counters
+  ///
+  /// In en, this message translates to:
+  /// **'Bests'**
+  String get achievementsStatsBests;
+
+  /// Section of counters for when a user watches
+  ///
+  /// In en, this message translates to:
+  /// **'Habits'**
+  String get achievementsStatsHabits;
+
+  /// Section of counters for how widely a user watches
+  ///
+  /// In en, this message translates to:
+  /// **'Variety'**
+  String get achievementsStatsVariety;
+
+  /// Section of figures covering every user
+  ///
+  /// In en, this message translates to:
+  /// **'This server'**
+  String get achievementsStatsServer;
+
+  /// Header above the hour of day chart
+  ///
+  /// In en, this message translates to:
+  /// **'When you watch'**
+  String get achievementsStatsClock;
+
+  /// Counter label
+  ///
+  /// In en, this message translates to:
+  /// **'Items watched'**
+  String get achievementsStatItems;
+
+  /// Counter label
+  ///
+  /// In en, this message translates to:
+  /// **'Films watched'**
+  String get achievementsStatMovies;
+
+  /// Counter label
+  ///
+  /// In en, this message translates to:
+  /// **'Series finished'**
+  String get achievementsStatSeries;
+
+  /// Counter label
+  ///
+  /// In en, this message translates to:
+  /// **'Hours watched'**
+  String get achievementsStatHours;
+
+  /// Counter label
+  ///
+  /// In en, this message translates to:
+  /// **'Days watched'**
+  String get achievementsStatDays;
+
+  /// Counter label
+  ///
+  /// In en, this message translates to:
+  /// **'Rewatches'**
+  String get achievementsStatRewatches;
+
+  /// Counter label
+  ///
+  /// In en, this message translates to:
+  /// **'Best watch streak'**
+  String get achievementsStatBestWatchStreak;
+
+  /// Counter label
+  ///
+  /// In en, this message translates to:
+  /// **'Best login streak'**
+  String get achievementsStatBestLoginStreak;
+
+  /// Counter label
+  ///
+  /// In en, this message translates to:
+  /// **'Most episodes in a day'**
+  String get achievementsStatMostEpisodes;
+
+  /// Counter label
+  ///
+  /// In en, this message translates to:
+  /// **'Most films in a day'**
+  String get achievementsStatMostMovies;
+
+  /// Counter label, a run time in minutes
+  ///
+  /// In en, this message translates to:
+  /// **'Longest single item'**
+  String get achievementsStatLongestItem;
+
+  /// Counter label
+  ///
+  /// In en, this message translates to:
+  /// **'Best combo'**
+  String get achievementsStatBestCombo;
+
+  /// Counter label
+  ///
+  /// In en, this message translates to:
+  /// **'Late night sessions'**
+  String get achievementsStatLateNight;
+
+  /// Counter label
+  ///
+  /// In en, this message translates to:
+  /// **'Early morning sessions'**
+  String get achievementsStatEarlyMorning;
+
+  /// Counter label
+  ///
+  /// In en, this message translates to:
+  /// **'Weekend sessions'**
+  String get achievementsStatWeekend;
+
+  /// Counter label
+  ///
+  /// In en, this message translates to:
+  /// **'Days signed in'**
+  String get achievementsStatDaysSignedIn;
+
+  /// Counter label
+  ///
+  /// In en, this message translates to:
+  /// **'Libraries visited'**
+  String get achievementsStatLibraries;
+
+  /// Counter label
+  ///
+  /// In en, this message translates to:
+  /// **'Genres watched'**
+  String get achievementsStatGenres;
+
+  /// Counter label
+  ///
+  /// In en, this message translates to:
+  /// **'Decades watched'**
+  String get achievementsStatDecades;
+
+  /// Counter label
+  ///
+  /// In en, this message translates to:
+  /// **'Countries watched'**
+  String get achievementsStatCountries;
+
+  /// Counter label
+  ///
+  /// In en, this message translates to:
+  /// **'Languages watched'**
+  String get achievementsStatLanguages;
+
+  /// Counter label for how many people use the server
+  ///
+  /// In en, this message translates to:
+  /// **'Users'**
+  String get achievementsStatUsers;
+
+  /// Counter label
+  ///
+  /// In en, this message translates to:
+  /// **'Badges unlocked'**
+  String get achievementsStatBadgesUnlocked;
+
+  /// Counter label
+  ///
+  /// In en, this message translates to:
+  /// **'Score earned'**
+  String get achievementsStatScoreEarned;
+
+  /// Label for the badge the most users hold
+  ///
+  /// In en, this message translates to:
+  /// **'Most common badge'**
+  String get achievementsStatCommonBadge;
+
+  /// Screen listing badges unlocked across the server
+  ///
+  /// In en, this message translates to:
+  /// **'Activity'**
+  String get achievementsActivity;
+
+  /// Subtitle on the row that opens the activity feed
+  ///
+  /// In en, this message translates to:
+  /// **'What the server has unlocked lately'**
+  String get achievementsActivitySubtitle;
+
+  /// One line of the activity feed
+  ///
+  /// In en, this message translates to:
+  /// **'{user} unlocked {badge}'**
+  String achievementsActivityUnlocked(String user, String badge);
+
+  /// Screen selling power-ups for score
+  ///
+  /// In en, this message translates to:
+  /// **'Shop'**
+  String get achievementsShop;
+
+  /// Subtitle on the row that opens the shop
+  ///
+  /// In en, this message translates to:
+  /// **'Spend score on more boosts'**
+  String get achievementsShopSubtitle;
+
+  /// A shop item that grants more than one of a power-up
+  ///
+  /// In en, this message translates to:
+  /// **'{name} ×{count}'**
+  String achievementsShopPack(String name, int count);
+
+  /// Shown when the shop catalogue came back with nothing
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing for sale right now.'**
+  String get achievementsShopEmpty;
+
+  /// Title of the dialog confirming a purchase
+  ///
+  /// In en, this message translates to:
+  /// **'Buy this?'**
+  String get achievementsBuyConfirm;
+
+  /// Body of the dialog confirming a purchase
+  ///
+  /// In en, this message translates to:
+  /// **'It comes straight out of your score bank.'**
+  String get achievementsBuyConfirmBody;
+
+  /// Message shown when a purchase did not go through
+  ///
+  /// In en, this message translates to:
+  /// **'Could not buy that.'**
+  String get achievementsBuyFailed;
+
+  /// Label for the score a user still has to spend
+  ///
+  /// In en, this message translates to:
+  /// **'Score bank'**
+  String get achievementsScoreBank;
+
+  /// Power-up that doubles score for an hour
+  ///
+  /// In en, this message translates to:
+  /// **'XP Boost'**
+  String get achievementsBoost;
+
+  /// What the XP Boost power-up does
+  ///
+  /// In en, this message translates to:
+  /// **'Doubles score for an hour. Using it again restarts the hour.'**
+  String get achievementsBoostBody;
+
+  /// Power-up that makes the next item count twice
+  ///
+  /// In en, this message translates to:
+  /// **'Double Credit'**
+  String get achievementsDoubleCredit;
+
+  /// What the Double Credit power-up does
+  ///
+  /// In en, this message translates to:
+  /// **'The next thing you finish counts twice towards badges.'**
+  String get achievementsDoubleCreditBody;
+
+  /// Power-up that protects a watch streak
+  ///
+  /// In en, this message translates to:
+  /// **'Streak Freeze'**
+  String get achievementsStreakFreeze;
+
+  /// What the Streak Freeze power-up does
+  ///
+  /// In en, this message translates to:
+  /// **'Covers one missed day. Only one can be banked.'**
+  String get achievementsStreakFreezeBody;
+
+  /// How many of a power-up the user owns
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{None held} =1{1 held} other{{count} held}}'**
+  String achievementsPowerUpHeld(int count);
+
+  /// Marker on a power-up that is currently in effect
+  ///
+  /// In en, this message translates to:
+  /// **'Running now'**
+  String get achievementsPowerUpActive;
+
+  /// Title of the dialog confirming a power-up is spent
+  ///
+  /// In en, this message translates to:
+  /// **'Use this power-up?'**
+  String get achievementsUsePowerUp;
+
+  /// Body of the dialog confirming a power-up is spent
+  ///
+  /// In en, this message translates to:
+  /// **'It\'s spent as soon as you confirm.'**
+  String get achievementsUsePowerUpBody;
+
+  /// Message shown when using a power-up did not go through
+  ///
+  /// In en, this message translates to:
+  /// **'Could not use that power-up.'**
+  String get achievementsPowerUpFailed;
+
+  /// Leaderboard category: hours watched
+  ///
+  /// In en, this message translates to:
+  /// **'Hours'**
+  String get achievementsHours;
+
+  /// Leaderboard category: best watch streak
+  ///
+  /// In en, this message translates to:
+  /// **'Streak'**
+  String get achievementsStreak;
+
+  /// Recap period: the last week
+  ///
+  /// In en, this message translates to:
+  /// **'Week'**
+  String get achievementsPeriodWeek;
+
+  /// Recap period: the last month
+  ///
+  /// In en, this message translates to:
+  /// **'Month'**
+  String get achievementsPeriodMonth;
+
+  /// Recap period: the last year
+  ///
+  /// In en, this message translates to:
+  /// **'Year'**
+  String get achievementsPeriodYear;
+
+  /// How many days the user watched something
+  ///
+  /// In en, this message translates to:
+  /// **'{count} days watched'**
+  String achievementsDaysWatched(int count);
+
+  /// How many badges were earned in the recap period
+  ///
+  /// In en, this message translates to:
+  /// **'{count} badges earned'**
+  String achievementsBadgesEarned(int count);
+
+  /// Recap list of most-watched directors
+  ///
+  /// In en, this message translates to:
+  /// **'Top directors'**
+  String get achievementsTopDirectors;
+
+  /// Recap list of most-watched actors
+  ///
+  /// In en, this message translates to:
+  /// **'Top actors'**
+  String get achievementsTopActors;
+
+  /// Shown when the Achievement Badges plugin data fails to load
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load your achievements.'**
+  String get achievementsLoadFailed;
 
   /// No description provided for @embeddedBrowserNotAvailable.
   ///
@@ -20509,6 +21715,12 @@ abstract class AppLocalizations {
   /// **'Video'**
   String get playlistTypeVideo;
 
+  /// Filter checkbox label for music video playlists
+  ///
+  /// In en, this message translates to:
+  /// **'Music Video'**
+  String get playlistTypeMusicVideo;
+
   /// Filter checkbox label for audio/music playlists
   ///
   /// In en, this message translates to:
@@ -20544,6 +21756,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Video Playlists'**
   String get videoPlaylistsSection;
+
+  /// Section header above music video playlists when Group by Type is enabled
+  ///
+  /// In en, this message translates to:
+  /// **'Music Video Playlists'**
+  String get musicVideoPlaylistsSection;
 
   /// Section header above audio playlists when Group by Type is enabled
   ///
@@ -21079,6 +22297,18 @@ abstract class AppLocalizations {
   /// **'Full-screen, with sections stacked instead of tabs.'**
   String get setupDetailNouveauHint;
 
+  /// Name of the stripped-back detail layout, offered in the setup wizard
+  ///
+  /// In en, this message translates to:
+  /// **'Minimalist'**
+  String get setupStyleMinimalist;
+
+  /// What the minimalist detail screen style gives you
+  ///
+  /// In en, this message translates to:
+  /// **'Artwork, one play button and the episodes.'**
+  String get setupDetailMinimalistHint;
+
   /// Label above the theme swatches on the final setup screen
   ///
   /// In en, this message translates to:
@@ -21156,6 +22386,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Adds a button to the menu for messages sent by your server admin'**
   String get serverMessagesShowButtonSubtitle;
+
+  /// Setting that shows or hides the discovery tab in book and audiobook libraries
+  ///
+  /// In en, this message translates to:
+  /// **'Show Book Library Discovery'**
+  String get showBookDiscoverTab;
+
+  /// Explains the setting that shows or hides the discovery tab in book libraries
+  ///
+  /// In en, this message translates to:
+  /// **'Browse titles from Open Library and LibriVox in your book and audiobook libraries'**
+  String get showBookDiscoverTabDescription;
 
   /// Row in the download sheet of a series that subscribes it to automatic downloads
   ///
@@ -21580,6 +22822,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Long Fade'**
   String get pageTransitionFadeLong;
+
+  /// Apple TV settings label for how far a swipe on the Siri Remote touchpad moves the focus highlight
+  ///
+  /// In en, this message translates to:
+  /// **'Touchpad swipe sensitivity'**
+  String get siriRemoteSwipeSensitivity;
+
+  /// Apple TV settings subtitle for the Siri Remote touchpad swipe sensitivity option
+  ///
+  /// In en, this message translates to:
+  /// **'How far focus moves for each swipe on the Siri Remote touchpad'**
+  String get siriRemoteSwipeSensitivityDescription;
+
+  /// iPhone playback setting that holds the picture back from the camera housing in landscape
+  ///
+  /// In en, this message translates to:
+  /// **'Keep video clear of the Dynamic Island'**
+  String get keepVideoClearOfDynamicIsland;
+
+  /// Description for the iPhone setting that keeps video clear of the Dynamic Island
+  ///
+  /// In en, this message translates to:
+  /// **'In landscape the camera housing covers one edge of the screen. This holds the picture back from it, which only changes anything for video wide enough to reach that far.'**
+  String get keepVideoClearOfDynamicIslandDescription;
 }
 
 class _AppLocalizationsDelegate

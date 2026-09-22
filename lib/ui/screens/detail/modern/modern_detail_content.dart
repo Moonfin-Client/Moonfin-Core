@@ -3,6 +3,7 @@ import 'dart:math' show Random;
 import 'dart:ui' show ImageFilter;
 import 'package:collection/collection.dart';
 import '../../../widgets/offline_aware_image.dart';
+import '../../../widgets/anime_marker_badge.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -17,8 +18,10 @@ import '../../../mixins/focus_state_mixin.dart';
 import '../../../../data/models/aggregated_item.dart';
 import '../../../../data/viewmodels/item_detail_view_model.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../preference/detail_metadata_layout.dart';
 import '../../../../preference/user_preferences.dart';
 import '../../../../preference/preference_constants.dart';
+import '../upcoming_episode_badge.dart';
 import '../../../../util/seerr_credits.dart';
 import '../../../../util/detail_playback_info.dart';
 import '../../../../util/detail_track_highlight.dart';
@@ -37,6 +40,9 @@ import '../../../widgets/logo_view.dart';
 import '../../../widgets/marquee_text.dart';
 import '../../../widgets/media_card.dart';
 import '../../../widgets/rating_display.dart';
+import '../../../widgets/focus/can_claim_initial_focus.dart';
+import '../../../widgets/focus/context_action.dart';
+import '../../../widgets/focus/context_menu_sheet.dart';
 import '../../../widgets/focus/focusable_wrapper.dart';
 import '../../../widgets/focus/focusable_toolbar_button.dart';
 import '../../../widgets/navigation_layout.dart';
@@ -47,6 +53,7 @@ import '../../../../data/repositories/seerr_repository.dart';
 import '../../../../data/repositories/tmdb_repository.dart';
 import '../../../../data/services/seerr/seerr_api_models.dart';
 import '../../../../data/services/plugin_sync_service.dart';
+import '../detail_layout_metrics.dart';
 import '../item_detail_screen.dart'
     show
         DetailActionButtons,
@@ -543,7 +550,8 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     _selectedTab = (_expandedTabs || _vm.item?.type == 'Season') ? 0 : -1;
     if (PlatformDetection.isTV) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) widget.initialFocusNode?.requestFocus();
+        if (!mounted || !canClaimInitialFocus(context)) return;
+        widget.initialFocusNode?.requestFocus();
       });
       NavigationLayout.focusDetailsPlayButtonNotifier.value = widget.initialFocusNode;
     }
@@ -566,7 +574,8 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     super.didUpdateWidget(oldWidget);
     if (widget.initialFocusNode != oldWidget.initialFocusNode && PlatformDetection.isTV) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) widget.initialFocusNode?.requestFocus();
+        if (!mounted || !canClaimInitialFocus(context)) return;
+        widget.initialFocusNode?.requestFocus();
       });
       NavigationLayout.focusDetailsPlayButtonNotifier.value = widget.initialFocusNode;
     }
@@ -1055,9 +1064,9 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
 
         return [
           if (moviesList.isNotEmpty)
-            _ModernTab('movies', l10n.movies, (context, item) => _mediaGrid(context, moviesList, firstFocusNode: _moviesFirstFocusNode)),
+            _ModernTab('movies', l10n.movies, (context, item) => _mediaGrid(context, moviesList, firstFocusNode: _moviesFirstFocusNode, onItemLongPress: _showCollectionItemMenu)),
           if (seriesList.isNotEmpty)
-            _ModernTab('series', l10n.series, (context, item) => _mediaGrid(context, seriesList, firstFocusNode: _seriesFirstFocusNode)),
+            _ModernTab('series', l10n.series, (context, item) => _mediaGrid(context, seriesList, firstFocusNode: _seriesFirstFocusNode, onItemLongPress: _showCollectionItemMenu)),
           if (hasCast) _ModernTab('cast', l10n.castMembers, _boxSetCastTab),
           if (hasCrew) _ModernTab('crew', l10n.crewSection, _boxSetCrewTab),
           if (hasStudios) studios,
@@ -1276,6 +1285,11 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
         seerrStatus: showAvailabilityBadges
             ? seerrSeasonStatus[season.indexNumber]
             : null,
+        badge: AnimeSeasonAudioBadge(
+          seriesId: season.seriesId,
+          seasonId: season.id,
+          scale: 0.85,
+        ),
         title: season.name,
         subtitle: l10n.episodeCount(
           counts[season.id] ?? season.childCount ?? 0,
@@ -3435,6 +3449,24 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   Widget _similarTab(BuildContext context, List<AggregatedItem> items) =>
       _mediaGrid(context, items, firstFocusNode: _similarFirstFocusNode);
 
+  /// The shared menu for a card in a collection's own grid, plus the entry
+  /// that pulls the card out of this collection.
+  void _showCollectionItemMenu(AggregatedItem entry) {
+    unawaited(
+      showContextMenu(
+        context,
+        entry,
+        collectionRemoval: CollectionRemovalContext(
+          collectionName: _vm.item?.name ?? '',
+          remove: _vm.removeFromCollection,
+        ),
+        onChanged: () {
+          if (mounted) setState(() {});
+        },
+      ),
+    );
+  }
+
   /// Responsive poster grid shared by the Similar tab and the collection
   /// Movies/Shows tabs. Columns scale to width; d-pad uses default geometric
   /// traversal, the top row escapes up to the tab bar, and cards scroll into
@@ -3443,6 +3475,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     BuildContext context,
     List<AggregatedItem> items, {
     FocusNode? firstFocusNode,
+    void Function(AggregatedItem item)? onItemLongPress,
   }) {
     if (items.isEmpty) return const SizedBox.shrink();
     const cardRatio = 2 / 3;
@@ -3512,6 +3545,9 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                             child: SeerrBadge(size: 18),
                           ),
                       ],
+                      onLongPress: isSeerrItem || onItemLongPress == null
+                          ? null
+                          : () => onItemLongPress(entry),
                       onFocus: () => Scrollable.ensureVisible(
                         cellContext,
                         alignment: 0.5,
@@ -3834,7 +3870,8 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     final hasUpNext = _landscape && _buildUpNext(context, item) != null;
     final showRatings = _vm.ratings.isNotEmpty ||
         item.communityRating != null ||
-        item.criticRating != null;
+        item.criticRating != null ||
+        item.personalRating != null;
 
     final desktopScale = _desktopUiScale(prefs: widget.prefs);
     final logoScaleFactor = desktopScale > 1.1 ? 0.70 : 1.0;
@@ -4436,78 +4473,103 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     final muted = AppColorScheme.onBackground.withValues(alpha: 0.75);
     final style = textTheme.bodyMedium?.copyWith(color: muted);
 
+    final prefs = GetIt.instance<UserPreferences>();
+    final hidden = detailMetadataLayout.hidden(prefs);
+    final ordered = detailMetadataLayout.ordered(
+      DetailMetadataItem.values,
+      (entry) => entry.id,
+      prefs,
+    );
+
     final pieces = <Widget>[];
     void addText(String? value) {
       if (value == null || value.isEmpty) return;
       pieces.add(Text(value, style: style));
     }
 
-    addText(item.productionYear?.toString());
-    addText(item.officialRating);
-    if (item.type == 'Series' && item.childCount != null) {
-      addText(l10n.seasonCount(item.childCount!));
-    }
-    if (item.type == 'Season') {
-      final epCount = _vm.episodes.isNotEmpty ? _vm.episodes.length : (item.childCount ?? 0);
-      if (epCount > 0) {
-        addText(l10n.episodeCount(epCount));
+    for (final entry in ordered) {
+      if (hidden.contains(entry.id)) continue;
+      switch (entry) {
+        case DetailMetadataItem.year:
+          addText(item.productionYear?.toString());
+        case DetailMetadataItem.parentalRating:
+          addText(item.officialRating);
+        case DetailMetadataItem.runtimeAndSeasons:
+          if (item.type == 'Series' && item.childCount != null) {
+            addText(l10n.seasonCount(item.childCount!));
+          }
+          if (item.type == 'Season') {
+            final epCount = _vm.episodes.isNotEmpty ? _vm.episodes.length : (item.childCount ?? 0);
+            if (epCount > 0) {
+              addText(l10n.episodeCount(epCount));
+            }
+          }
+          if (item.type == 'Episode') {
+            final s = item.parentIndexNumber;
+            final e = item.indexNumber;
+            if (s != null && e != null) {
+              addText('S$s:E$e');
+            }
+          }
+          var runtime = _runtimeForItem(item, selectedMediaSource);
+          if (runtime == null && item.type == 'Season' && _vm.episodes.isNotEmpty) {
+            var totalMs = 0;
+            for (final ep in _vm.episodes) {
+              totalMs += ep.runtime?.inMilliseconds ?? 0;
+            }
+            if (totalMs > 0) {
+              runtime = Duration(milliseconds: totalMs);
+            }
+          }
+          if (runtime != null && item.type != 'Series') {
+            pieces.add(
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.schedule, size: 14, color: muted),
+                  const SizedBox(width: 4),
+                  Text(formatRuntimeShort(runtime), style: style),
+                ],
+              ),
+            );
+            final position = item.playbackPosition ?? Duration.zero;
+            var remaining = runtime - position;
+            if (remaining.isNegative || remaining == Duration.zero) {
+              remaining = runtime;
+            }
+            final use24 = prefs.get(UserPreferences.use24HourClock);
+            final end = _endsAt(item, runtime, use24Hour: use24);
+            if (end != null && item.type != 'Series') {
+              addText(l10n.endsAt(end));
+            }
+          }
+        case DetailMetadataItem.status:
+          final status = item.status;
+          if (item.type == 'Series' && status != null && status.isNotEmpty) {
+            pieces.add(_statusBadge(context, status));
+          }
+        case DetailMetadataItem.upcomingEpisodeDate:
+          if (item.type == 'Series' && _vm.upcomingEpisode != null) {
+            pieces.add(
+              UpcomingEpisodeBadge(
+                text: _vm.upcomingEpisode!.format(context),
+                borderRadius: JellyfinTokens.shapes.smallRadius,
+              ),
+            );
+          }
+        case DetailMetadataItem.genres:
+          if (item.genres.isNotEmpty) {
+            addText(item.genres.take(3).join(' · '));
+          }
+        case DetailMetadataItem.seerrAvailability:
+          final seerrStatus = seerrItemStatus(_vm);
+          if (seerrStatus != null) {
+            pieces.add(SeerrStatusPills(state: seerrStatus, onlyNoteworthy: true));
+          }
       }
     }
-    if (item.type == 'Episode') {
-      final s = item.parentIndexNumber;
-      final e = item.indexNumber;
-      if (s != null && e != null) {
-        addText('S$s:E$e');
-      }
-    }
-    final status = item.status;
-    if (item.type == 'Series' && status != null && status.isNotEmpty) {
-      pieces.add(_statusBadge(context, status));
-    }
-    var runtime = _runtimeForItem(item, selectedMediaSource);
-    if (runtime == null && item.type == 'Season' && _vm.episodes.isNotEmpty) {
-      var totalMs = 0;
-      for (final ep in _vm.episodes) {
-        totalMs += ep.runtime?.inMilliseconds ?? 0;
-      }
-      if (totalMs > 0) {
-        runtime = Duration(milliseconds: totalMs);
-      }
-    }
-    if (runtime != null && item.type != 'Series') {
-      pieces.add(
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.schedule, size: 14, color: muted),
-            const SizedBox(width: 4),
-            Text(formatRuntimeShort(runtime), style: style),
-          ],
-        ),
-      );
-      final position = item.playbackPosition ?? Duration.zero;
-      var remaining = runtime - position;
-      if (remaining.isNegative || remaining == Duration.zero) {
-        remaining = runtime;
-      }
-      final use24 = GetIt.instance<UserPreferences>().get(
-        UserPreferences.use24HourClock,
-      );
-      final end = _endsAt(item, runtime, use24Hour: use24);
-      if (end != null && item.type != 'Series') {
-        addText(l10n.endsAt(end));
-      }
-    }
-    if (item.genres.isNotEmpty) {
-      addText(item.genres.take(3).join(' · '));
-    }
-    // A badge rather than another word in the line, so it sits outside the
-    // dot separators.
-    final seerrStatus = seerrItemStatus(_vm);
-    final seerrPills = seerrStatus == null
-        ? null
-        : SeerrStatusPills(state: seerrStatus, onlyNoteworthy: true);
-    if (pieces.isEmpty) return seerrPills ?? const SizedBox.shrink();
+
+    if (pieces.isEmpty) return const SizedBox.shrink();
 
     final separated = <Widget>[];
     for (var i = 0; i < pieces.length; i++) {
@@ -4516,7 +4578,6 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       }
       separated.add(pieces[i]);
     }
-    if (seerrPills != null) separated.add(seerrPills);
     return Wrap(
       crossAxisAlignment: WrapCrossAlignment.center,
       spacing: 8,
@@ -4795,9 +4856,11 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           OfflineAwareImage(
             imageUrl: url,
             fit: BoxFit.cover,
-            alignment:
-                landscape ? Alignment.centerRight : Alignment.topCenter,
-            fadeInDuration: const Duration(milliseconds: 250),
+            alignment: landscape ? Alignment.centerRight : Alignment.topCenter,
+            fadeInDuration: Duration.zero,
+            sourceAspectRatio: 16 / 9,
+            maxDecodeWidth: ArtworkDecode.maxSourceWidth,
+            priority: ImageFetchPriority.high,
             errorWidget: (context, url, error) => const SizedBox.shrink(),
           ),
           if (item?.type == 'Person' && _randomBackdropUrl == null)
@@ -4959,9 +5022,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     final desktopScale = _desktopUiScale(prefs: widget.prefs);
     final logoScaleFactor = desktopScale > 1.1 ? 0.70 : 1.0;
 
-    _landscape = PlatformDetection.isTV ||
-        PlatformDetection.useDesktopUi ||
-        MediaQuery.orientationOf(context) == Orientation.landscape;
+    _landscape = detailUsesLandscapeLayout(context);
 
     final tabs = _tabsFor(item, l10n);
     final isMusicAlbumOrPlaylist = item.type == 'Playlist' || item.type == 'MusicAlbum';
@@ -5075,7 +5136,8 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
 
     final showRatings = _vm.ratings.isNotEmpty ||
         item.communityRating != null ||
-        item.criticRating != null;
+        item.criticRating != null ||
+        item.personalRating != null;
 
     final selectedSource = selectedMediaSourceForItem(item, widget.selectedMediaSourceId);
 

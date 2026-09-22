@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../util/error_message.dart';
 import '../../../widgets/adaptive/adaptive_dialog.dart';
 import '../widgets/admin_form_styles.dart';
 
@@ -44,7 +45,7 @@ class _AdminApiKeysScreenState extends State<AdminApiKeysScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _error = e.toString();
+        _error = describeError(e, AppLocalizations.of(context));
         _loading = false;
       });
     }
@@ -164,7 +165,7 @@ class _AdminApiKeysScreenState extends State<AdminApiKeysScreen> {
       if (!mounted) return;
       setState(() => _creating = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.adminApiKeyCreateFailed(e.toString()))),
+        SnackBar(content: Text(l10n.adminApiKeyCreateFailed(describeError(e, l10n)))),
       );
     }
   }
@@ -209,7 +210,7 @@ class _AdminApiKeysScreenState extends State<AdminApiKeysScreen> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.adminApiKeyRevokeFailed(e.toString()))),
+        SnackBar(content: Text(l10n.adminApiKeyRevokeFailed(describeError(e, l10n)))),
       );
     }
   }

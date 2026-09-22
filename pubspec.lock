@@ -266,7 +266,7 @@ packages:
     source: hosted
     version: "0.4.2"
   clock:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: clock
       sha256: fddb70d9b5277016c77a80201021d40a2247104d9f4aa7bab7157b7e3f05b84b
@@ -457,7 +457,7 @@ packages:
     source: hosted
     version: "2.2.0"
   file:
-    dependency: transitive
+    dependency: "direct dev"
     description:
       name: file
       sha256: a3b4f84adafef897088c160faf7dfffb7696046cb13ae90b508c2cbc95d3b8d4
@@ -709,10 +709,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_secure_storage_tvos
-      sha256: "4cfe447be180b66b81c79a9182512a88ef3b6a860fe710937ae992de3148d0e0"
+      sha256: "4a6a82255d5068ea7e548aecf85da7a2a80d88db8be9032b4983469925736bf8"
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.1"
+    version: "0.0.2"
   flutter_secure_storage_web:
     dependency: transitive
     description:
@@ -1088,6 +1088,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.13.0"
+  material_symbols_icons:
+    dependency: "direct main"
+    description:
+      name: material_symbols_icons
+      sha256: bd513edc2bc9b034108d5518c48cf5cebbb67d0653728cc452368cb27ca80bb0
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.2960.0"
   material_ui:
     dependency: transitive
     description:
@@ -1291,10 +1299,10 @@ packages:
     dependency: "direct main"
     description:
       name: path_provider_tvos
-      sha256: a15a82d71b4c80f4cc13618c6a21ae27fdb7e559084bdc8aeb2a563ec7f9d0b9
+      sha256: "5c530b18f0cc9ebc63249b29fb48455eb9bd9ee9f1608dd2086847f75ff02ea0"
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.1"
+    version: "0.0.2"
   path_provider_windows:
     dependency: transitive
     description:
@@ -1692,10 +1700,10 @@ packages:
     dependency: "direct main"
     description:
       name: shared_preferences_tvos
-      sha256: "7a7e4ad4fc1c0716d1d7eeb9434c13cd06c9b9cae9f9d8e9781fee8017960cbe"
+      sha256: a7890624e9321fbc4a2567107eeda84fd40235be2521342257f3ed4ff5c769a7
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.1"
+    version: "0.0.2"
   shared_preferences_web:
     dependency: transitive
     description:

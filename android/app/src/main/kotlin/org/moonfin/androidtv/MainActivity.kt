@@ -917,7 +917,13 @@ class MainActivity : AudioServiceActivity(), GamepadsCompatibleActivity {
     }
 
     override fun onPause() {
+        // Both before super, and both required. releaseHeldInput drops buttons
+        // physically held as the app goes away, so they cannot fire on resume.
+        // onHostPause pauses the core and drops the surface while the consumer
+        // is still alive, rather than after it has gone away - see
+        // LibretroBridge.onHostPause.
         nativePad?.releaseHeldInput()
+        libretroBridge?.onHostPause()
         super.onPause()
     }
 
@@ -977,7 +983,12 @@ class MainActivity : AudioServiceActivity(), GamepadsCompatibleActivity {
 
     override fun onUserLeaveHint() {
         super.onUserLeaveHint()
-        requestEnterPiPIfEligible()
+        // A dream or a call taking the foreground never reaches here, which
+        // is what separates walking away from the screensaver coming on. PiP
+        // keeps the player on screen, so that is not walking away either.
+        if (!requestEnterPiPIfEligible()) {
+            methodChannel?.invokeMethod("onUserLeftApp", null)
+        }
     }
 
     override fun onPictureInPictureRequested(): Boolean {
@@ -1023,6 +1034,10 @@ class MainActivity : AudioServiceActivity(), GamepadsCompatibleActivity {
 
     override fun onResume() {
         super.onResume()
+        // Re-attach the emulator's output surface on devices where Flutter's
+        // SurfaceProducer callbacks never fire (API 24-28). A no-op everywhere
+        // else - the bridge stands down as soon as it sees a real callback.
+        libretroBridge?.onHostResume()
         if (isInPictureInPictureMode) return
         dismissRunnable?.let {
             handler.removeCallbacks(it)

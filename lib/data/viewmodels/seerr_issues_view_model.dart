@@ -17,7 +17,7 @@ class SeerrIssuesState {
   final bool isRefreshing;
   final bool isLoadingMore;
   final bool hasMore;
-  final String? error;
+  final Object? error;
   final List<SeerrIssue> issues;
   final SeerrUser? currentUser;
   final int? actioningIssueId;
@@ -52,7 +52,7 @@ class SeerrIssuesState {
     bool? isRefreshing,
     bool? isLoadingMore,
     bool? hasMore,
-    String? error,
+    Object? error,
     List<SeerrIssue>? issues,
     SeerrUser? currentUser,
     Object? actioningIssueId = _sentinel,
@@ -111,7 +111,6 @@ class SeerrIssuesViewModel extends ChangeNotifier {
 
       final response = await _repo.getIssues(
         filter: _state.filter.apiValue,
-        createdBy: user.canViewAllIssues ? null : user.id,
         limit: _pageSize,
         offset: 0,
       );
@@ -132,7 +131,7 @@ class SeerrIssuesViewModel extends ChangeNotifier {
       _state = _state.copyWith(
         isLoading: false,
         isRefreshing: false,
-        error: e.toString(),
+        error: e,
       );
       notifyListeners();
     }
@@ -150,10 +149,8 @@ class SeerrIssuesViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final user = _state.currentUser!;
       final response = await _repo.getIssues(
         filter: _state.filter.apiValue,
-        createdBy: user.canViewAllIssues ? null : user.id,
         limit: _pageSize,
         offset: _state.issues.length,
       );

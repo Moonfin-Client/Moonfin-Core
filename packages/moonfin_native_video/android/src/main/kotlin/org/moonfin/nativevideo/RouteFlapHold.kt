@@ -1,7 +1,7 @@
 package org.moonfin.nativevideo
 
 /**
- * Decides what a bitstream sink does while its HDMI route flaps.
+ * Decides what an audio sink does while its HDMI route flaps.
  *
  * A link renegotiating at playback start reports the audio sink gone for a
  * few seconds and then back. Media3 answers that two ways and both end with
@@ -10,12 +10,12 @@ package org.moonfin.nativevideo
  * its capabilities, and a paused player hears the capabilities change and
  * reselects on its own.
  *
- * So a dead bitstream track is held rather than reported, and a capabilities
- * loss is deferred rather than forwarded, both for at most [maxHoldMs] from
- * whichever came first. The route coming back inside that window ends it with
- * nothing forwarded, since the renderer never learned anything changed. Past
- * it the error is rethrown or the loss forwarded, which is what the player
- * did before any of this existed.
+ * So a dead track is held rather than reported, and a capabilities loss on a
+ * bitstream is deferred rather than forwarded, both for at most [maxHoldMs]
+ * from whichever came first. The route coming back inside that window ends it
+ * with nothing forwarded, since the renderer never learned anything changed.
+ * Past it the error is rethrown or the loss forwarded, which is what the
+ * player did before any of this existed.
  *
  * The caller owns the clock, so the logic stays a plain object a JVM test can
  * drive.
@@ -30,6 +30,7 @@ class RouteFlapHold(
     enum class Notify { FORWARD, DEFER, SWALLOW }
 
     private var bitstream = false
+    private var rebuildOnDeadTrack = false
     private var windowStartedMs: Long? = null
     private var deadTrackPending = false
     private var notifyDeferred = false
@@ -39,15 +40,21 @@ class RouteFlapHold(
     // changes that.
     private var rendererBelievesSupported = true
 
-    fun onConfigure(bitstream: Boolean) {
+    /**
+     * [bitstream] gates the capability deferral. [rebuildOnDeadTrack] gates
+     * the dead track rebuild, which the caller widens past bitstream for the
+     * inputs whose surfaced write error would be misread further up.
+     */
+    fun onConfigure(bitstream: Boolean, rebuildOnDeadTrack: Boolean = bitstream) {
         this.bitstream = bitstream
+        this.rebuildOnDeadTrack = rebuildOnDeadTrack
         rendererBelievesSupported = true
         clear()
     }
 
-    /** True when the dead track should be swallowed and its writes held. */
+    /** True when the dead track should be swallowed rather than reported. */
     fun onDeadTrack(nowMs: Long): Boolean {
-        if (!bitstream) return false
+        if (!rebuildOnDeadTrack) return false
         openWindow(nowMs)
         deadTrackPending = true
         return true
@@ -111,6 +118,7 @@ class RouteFlapHold(
 
     fun onReset() {
         bitstream = false
+        rebuildOnDeadTrack = false
         rendererBelievesSupported = true
         clear()
     }

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
-import 'package:dio/dio.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../navigation/destinations.dart';
@@ -12,6 +11,7 @@ import '../widgets/admin_form_styles.dart';
 import '../providers/admin_user_providers.dart';
 import 'admin_user_delete_dialog.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../util/error_message.dart';
 import '../../../../util/platform_detection.dart';
 
 class AdminUserEditScreen extends ConsumerStatefulWidget {
@@ -126,7 +126,7 @@ class _AdminUserEditScreenState extends ConsumerState<AdminUserEditScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _error = e.toString();
+        _error = describeError(e, AppLocalizations.of(context));
         _loading = false;
       });
     }
@@ -166,35 +166,12 @@ class _AdminUserEditScreenState extends ConsumerState<AdminUserEditScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.adminSaveFailed(_formatError(e, l10n)))),
+          SnackBar(content: Text(l10n.adminSaveFailed(describeError(e, l10n)))),
         );
       }
     } finally {
       if (mounted) setState(() => _saving = false);
     }
-  }
-
-  String _formatError(Object error, AppLocalizations l10n) {
-    if (error is DioException) {
-      final responseData = error.response?.data;
-      if (responseData is Map<String, dynamic>) {
-        final detail = responseData['message'] ??
-            responseData['Message'] ??
-            responseData['error'] ??
-            responseData['title'];
-        if (detail != null && detail.toString().trim().isNotEmpty) {
-          return detail.toString();
-        }
-      } else if (responseData is String && responseData.trim().isNotEmpty) {
-        return responseData;
-      }
-
-      final status = error.response?.statusCode;
-      if (status != null) {
-        return l10n.adminServerReturnedHttp(status);
-      }
-    }
-    return error.toString();
   }
 
   Future<void> _savePolicy() async {
@@ -222,7 +199,7 @@ class _AdminUserEditScreenState extends ConsumerState<AdminUserEditScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.adminSaveFailed(_formatError(e, l10n)))),
+          SnackBar(content: Text(l10n.adminSaveFailed(describeError(e, l10n)))),
         );
       }
     } finally {
@@ -262,7 +239,7 @@ class _AdminUserEditScreenState extends ConsumerState<AdminUserEditScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.adminFailed(_formatError(e, l10n)))),
+          SnackBar(content: Text(l10n.adminFailed(describeError(e, l10n)))),
         );
       }
     } finally {

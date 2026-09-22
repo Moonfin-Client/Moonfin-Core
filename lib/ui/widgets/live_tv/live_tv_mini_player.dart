@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -16,6 +15,7 @@ import '../aether_video_view.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/platform_detection.dart';
+import '../offline_aware_image.dart';
 
 class LiveTvMiniPlayer extends StatefulWidget {
   final String? imageUrl;
@@ -325,7 +325,7 @@ class _LiveTvMiniPlayerState extends State<LiveTvMiniPlayer> {
       );
     }
 
-    return CachedNetworkImage(
+    return OfflineAwareImage(
       imageUrl: widget.imageUrl!,
       fit: BoxFit.cover,
       errorWidget: (_, _, _) => Container(

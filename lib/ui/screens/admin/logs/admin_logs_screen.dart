@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../util/error_message.dart';
 import '../../../../util/download_utils.dart';
 import '../../../navigation/destinations.dart';
 
@@ -45,7 +46,7 @@ class _AdminLogsScreenState extends State<AdminLogsScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _error = e.toString();
+        _error = describeError(e, AppLocalizations.of(context));
         _loading = false;
       });
     }

@@ -37,6 +37,14 @@ class _AudioPreferencesScreenState extends State<_AudioPreferencesScreen> {
         PlatformDetection.isDesktop;
   }
 
+  /// The packer choice only exists on the Media3 engine on Android TV.
+  /// Everywhere else the tile is hidden and the preference is inert.
+  bool get _showPassthroughOutputTile =>
+      PlatformDetection.isAndroid &&
+      PlatformDetection.isTV &&
+      _prefs.get(UserPreferences.playbackEnginePreference) ==
+          PlaybackEnginePreference.media3;
+
   AudioCapabilityProfile get _audioCapabilityProfile =>
       AudioCapabilityProfile.fromMap(
         PlatformDetection.hasAudioCapabilities
@@ -63,28 +71,47 @@ class _AudioPreferencesScreenState extends State<_AudioPreferencesScreen> {
     return values.join(', ');
   }
 
+  // Media3 on Android, AetherEngine on Apple and mpv on Linux and Windows all
+  // decode these on the device, so the list doesn't depend on the engine.
+  static const _locallyDecodedCodecs =
+      'AAC, AC3, EAC3, DTS, DTS-HD, TrueHD, FLAC';
+
+  List<Widget> _buildCodecRows(AppLocalizations l10n) {
+    final transcodeCodecs = DeviceProfileBuilder.transcodeTargetAudioCodecs(
+      fallbackCodec: _prefs.get(UserPreferences.audioFallbackCodec),
+      forAvFoundation: PlatformDetection.isApple || PlatformDetection.isAppleTV,
+    ).map((codec) => codec == 'opus' ? 'Opus' : codec.toUpperCase());
+
+    return <Widget>[
+      _TvSettingsListTile(
+        leading: const Icon(Icons.memory),
+        title: Text(l10n.locallyDecodedCodecs),
+        subtitle: const Text(_locallyDecodedCodecs),
+      ),
+      _TvSettingsListTile(
+        leading: const Icon(Icons.swap_horiz),
+        title: Text(l10n.transcodeTargetCodecs),
+        subtitle: Text(transcodeCodecs.join(', ')),
+      ),
+    ];
+  }
+
   List<Widget> _buildDetectedCapabilities(AppLocalizations l10n) {
-    final hasSnapshot = PlatformDetection.hasAudioCapabilities;
-    if (!hasSnapshot) {
+    if (!AudioCapabilityProbe.isSupported) {
+      return _buildCodecRows(l10n);
+    }
+
+    if (!PlatformDetection.hasAudioCapabilities) {
       return <Widget>[
         _TvSettingsListTile(
           leading: const Icon(Icons.hearing_disabled),
           title: Text(l10n.settingsDetectedAudioCapabilitiesUnavailable),
         ),
+        ..._buildCodecRows(l10n),
       ];
     }
 
     final profile = _audioCapabilityProfile;
-    final decodeCodecs = <String>[
-      'AAC',
-      if (profile.canDecodeAc3) 'AC3',
-      if (profile.canDecodeEac3) 'EAC3',
-      if (profile.canDecodeDts) 'DTS',
-      if (profile.canDecodeDtsHd) 'DTS-HD',
-      if (profile.canDecodeTrueHd) 'TrueHD',
-      if (profile.canDecodeFlac) 'FLAC',
-    ];
-
     final passthroughCodecs = <String>[
       if (profile.canPassthroughAc3) 'AC3',
       if (profile.canPassthroughEac3) 'EAC3',
@@ -105,11 +132,7 @@ class _AudioPreferencesScreenState extends State<_AudioPreferencesScreen> {
         title: Text(l10n.connection),
         subtitle: Text(routeSubtitleParts.join(' • ')),
       ),
-      _TvSettingsListTile(
-        leading: const Icon(Icons.memory),
-        title: Text(l10n.audioTranscodeTarget),
-        subtitle: Text(_joinedOrUnknown(l10n, decodeCodecs)),
-      ),
+      ..._buildCodecRows(l10n),
       _TvSettingsListTile(
         leading: const Icon(Icons.settings_input_hdmi),
         title: Text(l10n.passthrough),
@@ -299,6 +322,32 @@ class _AudioPreferencesScreenState extends State<_AudioPreferencesScreen> {
                   onChangedValue: (mode) =>
                       _prefs.setAudioPassthroughMode(mode),
                 ),
+                // The IEC option packs IEC 61937 in the app instead of
+                // trusting the platform packer, which is broken on some
+                // devices.
+                if (_showPassthroughOutputTile)
+                  EnumPreferenceTile<AudioPassthroughOutput>(
+                    preference: UserPreferences.audioPassthroughOutput,
+                    title: l10n.settingsAudioPassthroughOutput,
+                    description: _capabilitySubtitle(
+                      l10n,
+                      baseSubtitle:
+                          l10n.settingsAudioPassthroughOutputDescription,
+                      isSupported: capabilities.canIecLow,
+                    ),
+                    icon: Icons.settings_input_hdmi,
+                    labelOf: (output) => switch (output) {
+                      AudioPassthroughOutput.platform => l10n.auto,
+                      AudioPassthroughOutput.iecPacker =>
+                        l10n.settingsAudioPassthroughOutputIecLabel,
+                    },
+                    dialogLabelOf: (output) => switch (output) {
+                      AudioPassthroughOutput.platform =>
+                        l10n.settingsAudioPassthroughOutputPlatform,
+                      AudioPassthroughOutput.iecPacker =>
+                        l10n.settingsAudioPassthroughOutputIec,
+                    },
+                  ),
                 SwitchPreferenceTile(
                   preference: UserPreferences.downmixToStereo,
                   title: l10n.downmixToStereo,
@@ -403,12 +452,12 @@ class _AudioPreferencesScreenState extends State<_AudioPreferencesScreen> {
             ),
           ],
 
-          if (AudioCapabilityProbe.isSupported) ...[
+          if (!PlatformDetection.isWeb) ...[
             _SectionHeader(l10n.settingsDetectedAudioCapabilities),
             adaptiveListSection(
               children: [
                 ..._buildDetectedCapabilities(l10n),
-                _buildRedetectTile(),
+                if (AudioCapabilityProbe.isSupported) _buildRedetectTile(),
               ],
             ),
           ],

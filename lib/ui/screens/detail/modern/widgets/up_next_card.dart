@@ -291,8 +291,9 @@ class _UpNextCardState extends State<UpNextCard> {
   );
 
   Widget _thumbnail({bool isMinimal = false, bool isFullWidth = false}) {
+    final fixedWidth = (isMinimal || isFullWidth) ? null : 150.0;
     return SizedBox(
-      width: (isMinimal || isFullWidth) ? null : 150,
+      width: fixedWidth,
       child: Stack(
         fit: StackFit.expand,
         children: [
@@ -300,6 +301,12 @@ class _UpNextCardState extends State<UpNextCard> {
             OfflineAwareImage(
               imageUrl: widget.imageUrl!,
               fit: BoxFit.cover,
+              // The side-by-side layout sits in an IntrinsicHeight row, which
+              // a layout-derived decode bound can't answer. Stating the width
+              // keeps the bound off the layout, and the thumb is a 16:9 frame
+              // cover-fit into whatever height the text needs.
+              width: fixedWidth,
+              sourceAspectRatio: isMinimal ? null : 16 / 9,
               errorWidget: (context, url, error) => const SizedBox.shrink(),
             )
           else

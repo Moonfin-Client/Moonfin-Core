@@ -94,7 +94,7 @@ class WebSocketMessageParser {
     if (command == null) return null;
     return PlaystateMessage(
       command: command,
-      seekPositionTicks: data['SeekPositionTicks'] as int?,
+      seekPositionTicks: _intValue(data['SeekPositionTicks']),
     );
   }
 

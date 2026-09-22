@@ -41,34 +41,11 @@ class _SeerrTagsDialogState extends State<SeerrTagsDialog> {
 
   /// Whichever section comes first owns the node, so Down off the close button
   /// always lands somewhere.
-  bool get _hasFirstChip =>
-      widget.state.genres.isNotEmpty ||
-      widget.state.networks.isNotEmpty ||
-      widget.state.keywords.isNotEmpty;
+  bool get _hasFirstChip => SeerrTagsContent.hasContent(widget.state);
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final mediaType = widget.state.isTv ? 'tv' : 'movie';
-
-    void open(String id, String name, String filterType) {
-      Navigator.of(context).pop();
-      context.push(
-        Destinations.seerrBrowseWith(
-          filterId: id,
-          filterName: name,
-          mediaType: mediaType,
-          filterType: filterType,
-        ),
-      );
-    }
-
-    var claimed = false;
-    FocusNode? claimFirstChip() {
-      if (claimed) return null;
-      claimed = true;
-      return _firstChipFocusNode;
-    }
 
     return Dialog(
       backgroundColor: Colors.transparent,
@@ -118,67 +95,127 @@ class _SeerrTagsDialogState extends State<SeerrTagsDialog> {
             const SizedBox(height: 16),
             Flexible(
               child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _section(
-                      title: l10n.genres,
-                      spacing: 8,
-                      chips: [
-                        for (final genre in widget.state.genres)
-                          SeerrBrowseChip(
-                            label: genre.name,
-                            focusNode: claimFirstChip(),
-                            onTap: () =>
-                                open(genre.id.toString(), genre.name, 'genre'),
-                          ),
-                      ],
-                    ),
-                    _section(
-                      title: l10n.networks,
-                      spacing: 8,
-                      chips: [
-                        for (final network in widget.state.networks)
-                          SeerrBrowseChip(
-                            label: network.name,
-                            color: Colors.transparent,
-                            borderColor: Colors.white24,
-                            labelColor: Colors.white70,
-                            focusNode: claimFirstChip(),
-                            onTap: () => open(
-                              network.id.toString(),
-                              network.name,
-                              'network',
-                            ),
-                          ),
-                      ],
-                    ),
-                    _section(
-                      title: l10n.tags,
-                      spacing: 6,
-                      chips: [
-                        for (final keyword in widget.state.keywords)
-                          SeerrBrowseChip(
-                            label: keyword.name,
-                            color: Colors.white.withValues(alpha: 0.08),
-                            labelColor: Colors.white70,
-                            dense: true,
-                            focusNode: claimFirstChip(),
-                            onTap: () => open(
-                              keyword.id.toString(),
-                              keyword.name,
-                              'keyword',
-                            ),
-                          ),
-                      ],
-                    ),
-                  ],
+                child: SeerrTagsContent(
+                  state: widget.state,
+                  firstFocusNode: _firstChipFocusNode,
+                  onTagTap: (id, name, filterType, mediaType) {
+                    Navigator.of(context).pop();
+                    context.push(
+                      Destinations.seerrBrowseWith(
+                        filterId: id,
+                        filterName: name,
+                        mediaType: mediaType,
+                        filterType: filterType,
+                      ),
+                    );
+                  },
                 ),
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+/// The chip sections on their own, for a host that already has a shell around
+/// them and would otherwise stack a second pop-up on top of the first.
+///
+/// [onTagTap] takes the filter's id and name, which of genre, network or
+/// keyword it is, and the media type to browse. It has to dismiss whatever is
+/// hosting the chips before it navigates.
+class SeerrTagsContent extends StatelessWidget {
+  final SeerrMediaDetailState state;
+
+  /// Claimed by whichever section comes first, so a host can hand d-pad focus
+  /// into the chips without knowing which of the three has content.
+  final FocusNode? firstFocusNode;
+
+  final void Function(
+    String id,
+    String name,
+    String filterType,
+    String mediaType,
+  )
+  onTagTap;
+
+  const SeerrTagsContent({
+    super.key,
+    required this.state,
+    required this.onTagTap,
+    this.firstFocusNode,
+  });
+
+  static bool hasContent(SeerrMediaDetailState s) => chipCount(s) > 0;
+
+  static int chipCount(SeerrMediaDetailState s) =>
+      s.genres.length + s.networks.length + s.keywords.length;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final mediaType = state.isTv ? 'tv' : 'movie';
+
+    var claimed = false;
+    FocusNode? claimFirstChip() {
+      if (claimed) return null;
+      claimed = true;
+      return firstFocusNode;
+    }
+
+    void open(String id, String name, String filterType) =>
+        onTagTap(id, name, filterType, mediaType);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _section(
+          title: l10n.genres,
+          spacing: 8,
+          chips: [
+            for (final genre in state.genres)
+              SeerrBrowseChip(
+                label: genre.name,
+                focusNode: claimFirstChip(),
+                onTap: () => open(genre.id.toString(), genre.name, 'genre'),
+              ),
+          ],
+        ),
+        _section(
+          title: l10n.networks,
+          spacing: 8,
+          chips: [
+            for (final network in state.networks)
+              SeerrBrowseChip(
+                label: network.name,
+                color: Colors.transparent,
+                borderColor: Colors.white24,
+                labelColor: Colors.white70,
+                focusNode: claimFirstChip(),
+                onTap: () =>
+                    open(network.id.toString(), network.name, 'network'),
+              ),
+          ],
+        ),
+        _section(
+          title: l10n.tags,
+          spacing: 6,
+          chips: [
+            for (final keyword in state.keywords)
+              SeerrBrowseChip(
+                label: keyword.name,
+                color: Colors.white.withValues(alpha: 0.08),
+                labelColor: Colors.white70,
+                dense: true,
+                focusNode: claimFirstChip(),
+                onTap: () =>
+                    open(keyword.id.toString(), keyword.name, 'keyword'),
+              ),
+          ],
+        ),
+      ],
     );
   }
 

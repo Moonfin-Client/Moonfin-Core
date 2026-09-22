@@ -9,46 +9,108 @@ import 'package:path_provider/path_provider.dart';
 import 'package:server_core/server_core.dart';
 
 import '../data/services/retro_artwork/retro_artwork_disk_cache_io.dart';
+import 'artwork_request_scheduler.dart';
 import 'device_performance.dart';
 import 'game_artwork_cache.dart';
+import 'image_cache_index.dart';
+import 'image_fetch_priority.dart';
 import 'image_file_service.dart';
 import 'platform_detection.dart';
 
 final Set<String> _sweepingCacheKeys = <String>{};
 final Map<String, DateTime> _lastSweepByCacheKey = <String, DateTime>{};
 
-// Point cached_network_image at a cache manager with a shorter stale period and
-// a higher object count than the library default. Files stay in the library's
-// default directory so an existing cache is never orphaned on update.
+/// The index of the artwork cache, once configured. Null on web and before
+/// startup reaches the cache.
+ImageCacheIndex? _imageCacheIndex;
+
+/// How many files the artwork cache keeps before it evicts by age.
+///
+/// Was 600, which a single library screen fills, so nothing older than a
+/// couple of browses ever survived. The megabyte budget the user sets is the
+/// limit that should bind, and at the sizes served (posters 40 to 70 KB,
+/// backdrops a few hundred) these counts sit above every budget below one
+/// gigabyte. The index costs about half a kilobyte of memory per row.
+const imageCacheMaxObjects = 8000;
+const reducedImageCacheMaxObjects = 4000;
+
+int imageCacheMaxObjectsFor(DevicePerformanceTier tier) => switch (tier) {
+  DevicePerformanceTier.standard => imageCacheMaxObjects,
+  DevicePerformanceTier.reduced => reducedImageCacheMaxObjects,
+};
+
+// Point cached_network_image at a cache manager with a shorter stale period
+// and a higher object count than the library default, indexed in memory.
+// Files stay in the library's default directory so an existing cache is never
+// orphaned on update, and the index the library kept before is read once and
+// left in place so an older build still finds it.
 Future<void> configureImageDiskCache({
   DevicePerformanceTier tier = DevicePerformanceTier.standard,
 }) async {
   try {
     final key = DefaultCacheManager.key;
     const stalePeriod = Duration(days: 14);
-    const maxObjects = 600;
     final fileService = buildImageFileService(tier: tier);
-    Config config;
+    final index = ImageCacheIndex(
+      directory: await _imageCacheDirectory(key),
+      // Resolved inside the index's own budget. Finding the old index means
+      // asking path_provider, and that ask must never hold the launch.
+      legacy: () => _legacyImageCacheRepository(key),
+    );
+    _imageCacheIndex = index;
+    CachedNetworkImageProvider.defaultCacheManager = CacheManager(
+      Config(
+        key,
+        stalePeriod: stalePeriod,
+        maxNrOfCacheObjects: imageCacheMaxObjectsFor(tier),
+        fileService: fileService,
+        repo: index,
+      ),
+    );
+  } catch (_) {}
+}
+
+/// Where the index lives, or null when the platform didn't say in time.
+///
+/// Waits as long as the launch waits on any other platform channel. Null
+/// rather than a throw: a throw here would leave the image provider on the
+/// library's default manager, which is sqflite on Apple platforms.
+Future<Directory?> _imageCacheDirectory(String key) async {
+  try {
+    final temp = await getTemporaryDirectory().timeout(
+      const Duration(seconds: 2),
+    );
+    return Directory('${temp.path}/$key');
+  } catch (_) {
+    return null;
+  }
+}
+
+/// Where the library kept the index before this app owned it: sqflite on the
+/// platforms it shipped that on, a JSON file elsewhere, and on Apple TV the
+/// JSON file this app pointed it at, since sqflite isn't built for it.
+Future<CacheInfoRepository?> _legacyImageCacheRepository(String key) async {
+  try {
     if (PlatformDetection.isAppleTV) {
       final cacheDir = await getApplicationCacheDirectory();
-      config = Config(
-        key,
-        stalePeriod: stalePeriod,
-        maxNrOfCacheObjects: maxObjects,
-        fileService: fileService,
-        repo: JsonCacheInfoRepository.withFile(
-          File('${cacheDir.path}/$key.json'),
-        ),
-      );
-    } else {
-      config = Config(
-        key,
-        stalePeriod: stalePeriod,
-        maxNrOfCacheObjects: maxObjects,
-        fileService: fileService,
+      return JsonCacheInfoRepository.withFile(
+        File('${cacheDir.path}/$key.json'),
       );
     }
-    CachedNetworkImageProvider.defaultCacheManager = CacheManager(config);
+    if (Platform.isAndroid || Platform.isIOS || Platform.isMacOS) {
+      return CacheObjectProvider(databaseName: key);
+    }
+    return JsonCacheInfoRepository(databaseName: key);
+  } catch (_) {
+    return null;
+  }
+}
+
+/// Writes the artwork index if it has changed. Called when the app pauses,
+/// since a killed process never reaches the timed flush.
+Future<void> flushImageCacheIndex() async {
+  try {
+    await _imageCacheIndex?.flush();
   } catch (_) {}
 }
 
@@ -242,6 +304,12 @@ String _directoryName(Directory directory) {
   return separatorIndex == -1 ? path : path.substring(separatorIndex + 1);
 }
 
+String _fileName(File file) {
+  final path = file.path;
+  final separatorIndex = path.lastIndexOf(Platform.pathSeparator);
+  return separatorIndex == -1 ? path : path.substring(separatorIndex + 1);
+}
+
 // A missing file is a cache miss the manager re-downloads, so deleting it
 // directly is safe. Best effort only, so a failure never blocks the UI.
 Future<void> _enforceCacheDirectoryBudget(
@@ -267,6 +335,7 @@ Future<void> _enforceCacheDirectoryBudget(
     if (!await dir.exists()) return;
     await for (final entity in dir.list(followLinks: false)) {
       if (entity is! File) continue;
+      if (ImageCacheIndex.isIndexFileName(_fileName(entity))) continue;
       try {
         final stat = await entity.stat();
         total += stat.size;
@@ -296,6 +365,9 @@ Future<void> _enforceCacheDirectoryBudget(
 Future<void> clearImageDiskCache() async {
   try {
     await CachedNetworkImageProvider.defaultCacheManager.emptyCache();
+    // Durable at once, or a kill before the timed flush brings the rows back
+    // for files that are gone.
+    await _imageCacheIndex?.flush();
     final temp = await getTemporaryDirectory();
     await for (final entity in temp.list(followLinks: false)) {
       if (entity is Directory &&
@@ -343,6 +415,11 @@ int imageRequestSlotsFor(DevicePerformanceTier tier) => switch (tier) {
   DevicePerformanceTier.reduced => reducedImageRequestSlots,
 };
 
+/// What the cache manager's own gate is set to once the scheduler holds the
+/// real one. Wide enough that it never queues a request the scheduler would
+/// have sent first, and still a number so a runaway can't grow unbounded.
+const _schedulerBypassFetches = 4096;
+
 /// The service every artwork request goes through.
 ///
 /// Images fetch through the cache manager's own client rather than Dio, so
@@ -350,16 +427,22 @@ int imageRequestSlotsFor(DevicePerformanceTier tier) => switch (tier) {
 /// proxy that filters on the agent blocks every image while API calls still
 /// succeed.
 ///
-/// It admits no more at once than [buildImageHttpClient] will connect. Letting
-/// more through leaves the rest in a queue inside dart:io that nothing times
-/// out, where the cache manager's own queue is drained every time a fetch
-/// finishes.
+/// The scheduler admits no more at once than [buildImageHttpClient] will
+/// connect. Letting more through leaves the rest in a queue inside dart:io
+/// that nothing times out, where a request waiting in the scheduler holds no
+/// connection and no timer. The cache manager's own gate is opened wide so
+/// the order is the scheduler's, not first come first served.
 BoundedImageFileService buildImageFileService({
   DevicePerformanceTier tier = DevicePerformanceTier.standard,
-}) => BoundedImageFileService(
-  _ServerUserAgentHttpClient(IOClient(buildImageHttpClient())),
-  concurrentFetches: imageRequestSlotsFor(tier),
-);
+}) {
+  final scheduler = ArtworkRequestScheduler(slots: imageRequestSlotsFor(tier));
+  artworkRequestPromoter = scheduler.promote;
+  return BoundedImageFileService(
+    _ServerUserAgentHttpClient(IOClient(buildImageHttpClient())),
+    concurrentFetches: _schedulerBypassFetches,
+    scheduler: scheduler,
+  );
+}
 
 class _ServerUserAgentHttpClient extends http.BaseClient {
   _ServerUserAgentHttpClient(this._inner);

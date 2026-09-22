@@ -109,11 +109,17 @@ class SeerrQualityStatus {
         .toList();
   }
 
+  /// Seasons an open request already covers.
+  ///
+  /// A completed request isn't one of them. It says the season arrived once,
+  /// not that it is still there, so a season that has since been removed can
+  /// be requested again.
   Set<int> get requestedSeasons {
     final seasons = <int>{};
     for (final r in requests) {
       if (r.status == SeerrRequest.statusDeclined ||
-          r.status == SeerrRequest.statusFailed) {
+          r.status == SeerrRequest.statusFailed ||
+          r.status == SeerrRequest.statusCompleted) {
         continue;
       }
       if (r.seasons != null) {
@@ -128,7 +134,8 @@ class SeerrQualityStatus {
   /// Seasons the library already holds for this track, fully or partially.
   Set<int> get availableSeasons => {
         for (final s in seasonAvailability)
-          if (((is4k ? s.status4k : s.status) ?? 0) >= 4) s.seasonNumber,
+          if (SeerrMediaStatus.isAvailable(is4k ? s.status4k : s.status))
+            s.seasonNumber,
       };
 
   /// Seasons the request sheet may not offer: already in the library or
@@ -174,7 +181,7 @@ class SeerrQualityStatus {
 
 class SeerrMediaDetailState {
   final bool isLoading;
-  final String? error;
+  final Object? error;
   final SeerrMovieDetails? movie;
   final SeerrTvDetails? tv;
   final List<SeerrDiscoverItem> similar;
@@ -300,7 +307,7 @@ class SeerrMediaDetailState {
 
   SeerrMediaDetailState copyWith({
     bool? isLoading,
-    String? error,
+    Object? error,
     SeerrMovieDetails? movie,
     SeerrTvDetails? tv,
     List<SeerrDiscoverItem>? similar,
@@ -546,7 +553,7 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
         }
       }
     } catch (e) {
-      _state = SeerrMediaDetailState(error: e.toString());
+      _state = SeerrMediaDetailState(error: e);
     }
     notifyListeners();
     _syncDownloadPolling();

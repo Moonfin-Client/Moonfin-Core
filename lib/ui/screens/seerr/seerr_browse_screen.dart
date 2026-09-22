@@ -18,6 +18,7 @@ import '../../navigation/destinations.dart';
 import '../../widgets/media_card.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../util/error_message.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/quick_return_wrapper.dart';
 import '../../widgets/skeleton/skeleton_library_grid.dart';
@@ -189,7 +190,7 @@ class _SeerrBrowseScreenState extends State<SeerrBrowseScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              s.error!,
+              describeError(s.error!, AppLocalizations.of(context)),
               style: TextStyle(
                 color: AppColorScheme.onSurface.withValues(alpha: 0.7),
               ),
@@ -222,12 +223,16 @@ class _SeerrBrowseScreenState extends State<SeerrBrowseScreen> {
 
     final cardWidth =
       _prefs.resolveLibraryPosterSize().portraitHeight * (2 / 3);
-    const spacing = 12.0;
+    final cardExpansion = GetIt.instance<UserPreferences>()
+        .get(UserPreferences.cardFocusExpansion);
 
     return LayoutBuilder(
       builder: (context, constraints) {
         final isMobile = _isCompact(context);
         final gridPadding = isMobile ? 16.0 : _horizontalPadding;
+        final spacing = cardExpansion && !isMobile
+            ? MediaCard.focusGap(cardWidth)
+            : 12.0;
         final crossAxisCount = ((constraints.maxWidth -
                     gridPadding * 2 +
                     spacing) /
@@ -245,17 +250,23 @@ class _SeerrBrowseScreenState extends State<SeerrBrowseScreen> {
         );
         final textScaler = MediaQuery.textScalerOf(context);
         final textHeight = (hasSubtitles ? 42.0 : 24.0) * textScaler.scale(1.0);
-        final childAspectRatio = cellWidth / (cellWidth / (2 / 3) + textHeight);
+        final imageHeight = cellWidth / (2 / 3);
+        final childAspectRatio = cellWidth / (imageHeight + textHeight);
+        final upwardGrowth = cardExpansion && !isMobile
+            ? (imageHeight * (MediaCard.focusScale - 1))
+            : 0.0;
+        final rowSpacing = 16.0 + upwardGrowth;
+        final topPadding = 20.0 + upwardGrowth;
 
         return CustomScrollView(
           controller: _scrollController,
           slivers: [
             SliverPadding(
-              padding: EdgeInsets.fromLTRB(gridPadding, 20, gridPadding, 16),
+              padding: EdgeInsets.fromLTRB(gridPadding, topPadding, gridPadding, 16),
               sliver: SliverGrid(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: crossAxisCount,
-                  mainAxisSpacing: 16,
+                  mainAxisSpacing: rowSpacing,
                   crossAxisSpacing: spacing,
                   childAspectRatio: childAspectRatio,
                 ),

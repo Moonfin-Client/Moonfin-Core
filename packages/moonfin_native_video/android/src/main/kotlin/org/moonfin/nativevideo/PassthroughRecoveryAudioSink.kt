@@ -58,14 +58,21 @@ class PassthroughRecoveryAudioSink(
         if (playbackHandler == null) {
             playbackHandler = Looper.myLooper()?.let { Handler(it) }
         }
-        // Only a real bitstream counts for the flap hold. Compressed music
-        // rides through the sink too when it is offloaded, and a dead offload
-        // track has to keep reaching the player's own offload fallback.
+        // Only a real bitstream counts for the capability deferral. Compressed
+        // music rides through the sink too when it is offloaded, and a dead
+        // offload track has to keep reaching the player's own offload fallback.
+        // Decoded PCM opts into the rebuild anyway: it dies in a route
+        // renegotiation just like a bitstream track, and the write error it
+        // would otherwise surface reads upstream as proof the device can only
+        // open a stereo track.
+        val bitstream = AudioPassthroughPolicy.codecKeyForMime(inputFormat.sampleMimeType) != null
+        val decodedPcm = inputFormat.sampleMimeType == MimeTypes.AUDIO_RAW
         flap.onConfigure(
-            bitstream = AudioPassthroughPolicy.codecKeyForMime(inputFormat.sampleMimeType) != null,
+            bitstream = bitstream,
+            rebuildOnDeadTrack = bitstream || decodedPcm,
         )
         recovery.onConfigure(
-            passthrough = inputFormat.sampleMimeType != MimeTypes.AUDIO_RAW,
+            passthrough = !decodedPcm,
             nowMs = clock(),
         )
         super.configure(inputFormat, specifiedBufferSize, outputChannels)

@@ -49,9 +49,8 @@ enum _MyMediaSummaryLabel {
 
 class InfoArea extends StatelessWidget {
   final AggregatedItem? item;
-  final double headerLeftInset;
 
-  const InfoArea({super.key, this.item, this.headerLeftInset = 0});
+  const InfoArea({super.key, this.item});
 
   static double fixedHeight({
     required bool isMobile,
@@ -88,7 +87,6 @@ class InfoArea extends StatelessWidget {
         child: _InfoAreaContent(
           key: ValueKey('${item.serverId}:${item.id}'),
           item: item,
-          headerLeftInset: headerLeftInset,
         ),
       ),
     );
@@ -97,13 +95,8 @@ class InfoArea extends StatelessWidget {
 
 class _InfoAreaContent extends StatefulWidget {
   final AggregatedItem item;
-  final double headerLeftInset;
 
-  const _InfoAreaContent({
-    super.key,
-    required this.item,
-    this.headerLeftInset = 0,
-  });
+  const _InfoAreaContent({super.key, required this.item});
 
   @override
   State<_InfoAreaContent> createState() => _InfoAreaContentState();
@@ -547,34 +540,31 @@ class _InfoAreaContentState extends State<_InfoAreaContent> {
         children: [
           SizedBox(
             height: logoHeight,
-            child: Padding(
-              padding: EdgeInsets.only(left: widget.headerLeftInset),
-              child: hasLogo
-                  ? Image(
-                      image: offlineAwareImageProvider(
-                        imageApi.getLogoImageUrl(
-                          logoItemId,
-                          maxWidth: isMobile ? 300 : 400,
-                          tag: logoTag,
-                        ),
+            child: hasLogo
+                ? Image(
+                    image: offlineAwareImageProvider(
+                      imageApi.getLogoImageUrl(
+                        logoItemId,
+                        maxWidth: isMobile ? 300 : 400,
+                        tag: logoTag,
                       ),
-                      fit: BoxFit.contain,
-                      height: logoHeight,
-                      alignment: Alignment.centerLeft,
-                      errorBuilder: (_, _, _) => Text(
-                        title,
-                        style: titleStyle,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    )
-                  : Text(
+                    ),
+                    fit: BoxFit.contain,
+                    height: logoHeight,
+                    alignment: Alignment.centerLeft,
+                    errorBuilder: (_, _, _) => Text(
                       title,
                       style: titleStyle,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-            ),
+                  )
+                : Text(
+                    title,
+                    style: titleStyle,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
           ),
           SizedBox(height: titleToMetaSpacing),
           SizedBox(

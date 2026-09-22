@@ -105,6 +105,12 @@ class _AuthenticationCategoryScreen extends StatelessWidget {
           adaptiveListSection(
             children: [
               _TvSettingsListTile(
+                leading: const Icon(Icons.child_care),
+                title: Text(l10n.kidsMode),
+                subtitle: Text(l10n.kidsModeSubtitle),
+                onTap: () => unawaited(_enableKidsMode(context)),
+              ),
+              _TvSettingsListTile(
                 leading: const Icon(Icons.family_restroom),
                 title: Text(l10n.settingsBlockedRatings),
                 subtitle: Text(l10n.contentRatingRestrictions),
@@ -140,4 +146,31 @@ class _AuthenticationCategoryScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Turns Kids Mode on behind a PIN, asked for every time the mode goes on.
+///
+/// There is nowhere else to change this PIN, so carrying an old one over would
+/// hand the mode a code the parent turning it on never chose and may not know.
+Future<void> _enableKidsMode(BuildContext context) async {
+  final userId = GetIt.instance<SessionRepository>().activeUserId ?? '';
+  final pin = PinCodeUtil.kidsMode(GetIt.instance<PreferenceStore>(), userId);
+  final navigator = Navigator.of(context);
+
+  final ready = await PinEntryDialog.show(
+    context,
+    mode: PinEntryMode.set,
+    onPinSet: pin.setPin,
+  );
+  if (!ready) return;
+
+  await GetIt.instance<UserPreferences>().set(
+    UserPreferences.kidsModeEnabled,
+    true,
+  );
+
+  // Settings are sitting on whichever screen turned the mode on, which is one
+  // the mode has just taken away. Drop back to the panel, where the only entry
+  // left is the way out.
+  navigator.popUntil((route) => route.isFirst);
 }

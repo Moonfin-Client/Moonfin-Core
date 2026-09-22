@@ -7,6 +7,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 import '../../../data/services/plugin_sync_service.dart';
 import '../home/home_view_model.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../util/error_message.dart';
 import '../../../preference/home_section_config.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
@@ -1000,7 +1001,7 @@ class _StudioSelectionDialogState extends State<StudioSelectionDialog> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          _error = e.toString();
+          _error = describeError(e, AppLocalizations.of(context));
           _loading = false;
         });
       }

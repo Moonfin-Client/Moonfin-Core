@@ -28,8 +28,8 @@ bool hasPlaylistEntryId(AggregatedItem item) {
 /// from a song.
 String resolveItemMediaType(Map<String, dynamic> raw) {
   return switch (raw['Type'] as String?) {
-    'Movie' || 'Episode' || 'Video' || 'MusicVideo' || 'Trailer' || 'Clip' =>
-      'Video',
+    'MusicVideo' => 'MusicVideo',
+    'Movie' || 'Episode' || 'Video' || 'Trailer' || 'Clip' => 'Video',
     'AudioBook' => 'AudioBook',
     'Audio' => 'Audio',
     'Book' => 'Book',
@@ -50,8 +50,15 @@ String _categoryForMediaType(String? mediaType) {
   };
 }
 
-/// The category a playlist belongs to, one of Video, Audio, AudioBook, Book,
-/// Photo or Mixed. Mixed also covers a playlist that's empty or unreadable.
+/// How many of a playlist's items are read to classify it. The request sits on
+/// the path that paints the playlists page and every item comes back with its
+/// full row, so a long playlist is classified from its first page. One whose
+/// types only diverge past this many items is binned by that sample.
+const _classificationSampleSize = 200;
+
+/// The category a playlist belongs to, one of Video, MusicVideo, Audio,
+/// AudioBook, Book, Photo or Mixed. Mixed also covers a playlist that's empty
+/// or unreadable.
 Future<String> resolvePlaylistCategory(
   MediaServerClient client,
   AggregatedItem item, {
@@ -68,18 +75,22 @@ Future<String> resolvePlaylistCategory(
     return 'Mixed';
   }
 
-  // Video, Book and Photo summaries are specific enough to take at face value.
-  // Audio isn't, since the server calls both music and audiobooks Audio, and
-  // tags a playlist of music videos Audio too.
+  // Book and Photo summaries are specific enough to take at face value. Video
+  // and Audio aren't: the server calls both music and audiobooks Audio, tags a
+  // playlist of music videos either Audio or Video, and gives a music video
+  // playlist the same summary as a movie one.
   final summaryCategory = _categoryForMediaType(
     item.rawData['MediaType'] as String?,
   );
-  if (summaryCategory != 'Audio' && summaryCategory != 'Unknown') {
+  if (summaryCategory == 'Book' || summaryCategory == 'Photo') {
     return summaryCategory;
   }
 
   try {
-    final response = await client.itemsApi.getPlaylistItems(item.id);
+    final response = await client.itemsApi.getPlaylistItems(
+      item.id,
+      limit: _classificationSampleSize,
+    );
     final rawItems = ((response['Items'] as List?) ?? const [])
         .cast<Map<String, dynamic>>();
     if (rawItems.isEmpty) {
@@ -87,12 +98,16 @@ Future<String> resolvePlaylistCategory(
     }
 
     final categories = rawItems.map(resolveItemMediaType).toSet();
+    if (categories.contains('MusicVideo') &&
+        categories.every((c) => c == 'MusicVideo' || c == 'Audio')) {
+      return 'MusicVideo';
+    }
     if (categories.length == 1) {
       return categories.first != 'Unknown' ? categories.first : 'Mixed';
     }
     return 'Mixed';
   } catch (_) {
-    return 'Mixed';
+    return summaryCategory != 'Unknown' ? summaryCategory : 'Mixed';
   }
 }
 

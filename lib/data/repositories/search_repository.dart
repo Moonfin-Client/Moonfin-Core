@@ -1,6 +1,7 @@
 import 'package:server_core/server_core.dart';
 
 import '../models/aggregated_item.dart';
+import '../utils/blocked_ratings.dart';
 
 class SearchRepository {
   final MediaServerClient _client;
@@ -8,7 +9,7 @@ class SearchRepository {
   static const _searchFields =
       'Type,UserData,ProductionYear,SeriesName,ParentIndexNumber,IndexNumber,'
       'AlbumArtist,Album,ImageTags,BackdropImageTags,ParentBackdropItemId,'
-      'ParentBackdropImageTags,SeriesId,SeriesPrimaryImageTag';
+      'ParentBackdropImageTags,SeriesId,SeriesPrimaryImageTag,OfficialRating';
 
   SearchRepository(this._client);
 
@@ -22,13 +23,16 @@ class SearchRepository {
     if (trimmed.toLowerCase().startsWith('studio:')) return const [];
     final normalizedQuery = trimmed.toLowerCase();
 
+    final filter = activeParentalFilter;
     final response = await _client.itemsApi.getItems(
       searchTerm: trimmed,
       parentId: parentId,
       includeItemTypes: const ['Movie', 'Series', 'Person'],
-      limit: limit,
+      // Dropping blocked titles costs suggestion slots, so ask for more of
+      // them when anything is blocked.
+      limit: filter.isActive ? limit * 4 : limit,
       recursive: true,
-      fields: 'Type',
+      fields: 'Type,OfficialRating',
     );
 
     final items = response['Items'] as List? ?? const [];
@@ -36,6 +40,7 @@ class SearchRepository {
     final suggestions = <String>[];
     for (final item in items) {
       final data = item as Map<String, dynamic>;
+      if (filter.isBlockedRaw(data)) continue;
       final name = (data['Name'] as String?)?.trim();
       if (name == null || name.isEmpty) continue;
       final key = name.toLowerCase();
@@ -121,13 +126,15 @@ class SearchRepository {
     );
 
     final items = response['Items'] as List? ?? [];
-    return items.map((item) {
-      final data = item as Map<String, dynamic>;
-      return AggregatedItem(
-        id: data['Id']?.toString() ?? '',
-        serverId: data['ServerId']?.toString() ?? '',
-        rawData: data,
-      );
-    }).toList();
+    return withoutBlockedItems(
+      items.map((item) {
+        final data = item as Map<String, dynamic>;
+        return AggregatedItem(
+          id: data['Id']?.toString() ?? '',
+          serverId: data['ServerId']?.toString() ?? '',
+          rawData: data,
+        );
+      }).toList(),
+    );
   }
 }

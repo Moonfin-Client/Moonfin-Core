@@ -71,6 +71,11 @@ object Media3Bridge {
     @Volatile
     private var passthroughCodecs: Set<String> = emptySet()
 
+    // How bitstreams reach the AudioTrack: "platform" (raw codec encodings,
+    // the Android HAL packs) or "iec" (app-side IEC 61937 packing).
+    @Volatile
+    private var passthroughOutput = "platform"
+
     @Volatile
     private var downmixToStereo = false
 
@@ -192,6 +197,8 @@ object Media3Bridge {
 
     fun passthroughCodecs(): Set<String> = passthroughCodecs
 
+    fun passthroughOutput(): String = passthroughOutput
+
     fun downmixToStereoEnabled(): Boolean = downmixToStereo
 
     fun setSessionTunnelingDisabledEnabled(value: Boolean) {
@@ -253,6 +260,10 @@ object Media3Bridge {
                     ?.filter { it in AudioPassthroughPolicy.KNOWN_CODECS }
                     ?.toSet()
                     ?: emptySet()
+            passthroughOutput =
+                (args?.get("passthroughOutput")?.toString()?.trim()?.lowercase())
+                    .takeIf { it == "platform" || it == "iec" }
+                    ?: "platform"
             (args?.get("downmixToStereo") as? Boolean)?.let {
                 downmixToStereo = it
             }
@@ -316,6 +327,7 @@ object Media3Bridge {
             "setVolume",
             "setSpeed",
             "setZoomMode",
+            "setLetterboxCrop",
             "setAudioTrack",
             "setSubtitleTrack",
             "setClosedCaptionTrack",

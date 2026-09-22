@@ -257,7 +257,7 @@
     "@exitAppConfirmation": {
         "description": "Body text of exit confirmation dialog"
     },
-    "exit": "Utgång",
+    "exit": "Avsluta",
     "@exit": {
         "description": "Exit button label"
     },
@@ -1744,7 +1744,7 @@
             }
         }
     },
-    "auto": "Bil",
+    "auto": "Auto",
     "@auto": {
         "description": "Label for automatic bitrate selection"
     },

@@ -20,10 +20,12 @@ import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../preference/seerr_preferences.dart';
 import '../../navigation/destinations.dart';
+import '../../../util/artwork_request_size.dart';
 import '../../../util/platform_detection.dart';
 import '../../../util/game_library.dart';
 import '../../../util/focus/dpad_keys.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../util/error_message.dart';
 import '../../util/search_group_title_localizer.dart';
 import '../../../util/focus/grid_focus_node_mixin.dart';
 import '../../../util/focus/row_focus_coordinator.dart';
@@ -255,7 +257,11 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
 
   // Seerr and Games are leading special tabs (when they have results), then the
   // All tab, then the group tabs.
-  bool get _hasSeerr => _vm.seerrResults.isNotEmpty;
+  // Gated here rather than at the render, because _leadingTabCount and every
+  // tab index predicate are derived from this.
+  bool get _hasSeerr =>
+      _vm.seerrResults.isNotEmpty &&
+      !GetIt.instance<UserPreferences>().get(UserPreferences.kidsModeEnabled);
   bool get _hasGames => _vm.gameResults.isNotEmpty;
 
   int get _tabCount {
@@ -983,9 +989,10 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
       case SearchState.ready:
         return _buildResults();
       case SearchState.error:
+        final l10n = AppLocalizations.of(context);
         return Center(
           child: Text(
-            AppLocalizations.of(context).searchFailedError(_vm.errorMessage),
+            l10n.searchFailedError(describeError(_vm.error!, l10n)),
             style: const TextStyle(color: Colors.redAccent),
           ),
         );
@@ -1355,18 +1362,17 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
     required FocusNode? focusNode,
     required KeyEventResult Function(FocusNode, KeyEvent)? onNavKey,
   }) {
-    // Card widths are logical pixels, so asking the server for that many
-    // leaves the screen stretching the image two or three times over. These
-    // are the widths library browse asks for at this card size.
-    final requestWidth = ar < 1 ? 420 : 720;
+    // The same stepped width library browse asks for at this card size, so a
+    // poster seen there is the file already on disk here.
+    final requestWidth = artworkRequestWidth(
+      width,
+      MediaQuery.devicePixelRatioOf(context),
+      ArtworkShape.forAspectRatio(ar),
+    );
     return MediaCard(
       title: item.name,
       subtitle: _subtitle(item),
-      imageUrl: _imageUrl(
-        item,
-        maxWidth: requestWidth,
-        maxHeight: (requestWidth / ar).round(),
-      ),
+      imageUrl: _imageUrl(item, maxWidth: requestWidth),
       width: width,
       aspectRatio: ar,
       isFavorite: item.isFavorite,

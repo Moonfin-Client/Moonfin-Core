@@ -5,6 +5,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../util/error_message.dart';
 import '../../../widgets/adaptive/adaptive_dialog.dart';
 import '../providers/admin_user_providers.dart';
 import '../widgets/admin_form_styles.dart';
@@ -71,7 +72,7 @@ class _AdminDevicesScreenState extends ConsumerState<AdminDevicesScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.adminDeviceUpdateFailed(e.toString()))),
+          SnackBar(content: Text(l10n.adminDeviceUpdateFailed(describeError(e, l10n)))),
         );
       }
     }
@@ -112,7 +113,7 @@ class _AdminDevicesScreenState extends ConsumerState<AdminDevicesScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.adminDeviceDeleteFailed(e.toString()))),
+          SnackBar(content: Text(l10n.adminDeviceDeleteFailed(describeError(e, l10n)))),
         );
       }
     }
@@ -197,7 +198,7 @@ class _AdminDevicesScreenState extends ConsumerState<AdminDevicesScreen> {
           children: [
             Text(l10n.adminDevicesLoadFailed, style: theme.textTheme.titleMedium),
             const SizedBox(height: 8),
-            Text('$e', style: theme.textTheme.bodySmall),
+            Text(describeError(e, l10n), style: theme.textTheme.bodySmall),
             const SizedBox(height: 16),
             FilledButton.tonal(
               onPressed: () => ref.invalidate(adminDevicesProvider),

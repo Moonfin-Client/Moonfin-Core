@@ -4,6 +4,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../util/error_message.dart';
 import '../../../widgets/adaptive/adaptive_slider.dart';
 import '../widgets/admin_form_styles.dart';
 
@@ -60,7 +61,7 @@ class _AdminTrickplayScreenState extends State<AdminTrickplayScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _error = e.toString();
+        _error = describeError(e, AppLocalizations.of(context));
         _loading = false;
       });
     }
@@ -81,7 +82,7 @@ class _AdminTrickplayScreenState extends State<AdminTrickplayScreen> {
       if (mounted) {
         final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.adminSettingsSaveFailed(e.toString()))),
+          SnackBar(content: Text(l10n.adminSettingsSaveFailed(describeError(e, l10n)))),
         );
       }
     } finally {

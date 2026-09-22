@@ -6,6 +6,8 @@ version: 2.5.1+30000149
 moonfin:
   android_tv_version: 2.5.1
   android_tv_build_number: 2000016
+  beta: false
+  beta_number: 1
 
 environment:
   sdk: ">=3.13.0 <4.0.0"
@@ -58,6 +60,10 @@ dependencies:
   # Image Loading
   cached_network_image: ^3.4.1
   flutter_cache_manager: ^3.4.1
+  # Direct because the image cache index stamps its entries with clock.now(),
+  # the same clock the cache manager reads, so a test can drive both. Keep in
+  # step with what flutter_cache_manager resolves.
+  clock: ^1.1.2
   # Direct because the image cache wraps the cache manager's file service in a
   # client of its own. Keep in step with what flutter_cache_manager resolves.
   http: ^1.6.0
@@ -97,6 +103,10 @@ dependencies:
   package_info_plus: ^8.3.1
   uuid: ^4.5.3
   cupertino_icons: ^1.0.9
+  # Flutter bundles the older Material Icons font, which has no crown or owl
+  # for the achievement avatars to wear. Tree shaking keeps only the glyphs
+  # actually named.
+  material_symbols_icons: ^4.2960.0
   # Direct because restoring a window needs the work areas of the attached
   # displays to keep it on screen. Keep in step with what window_manager, which
   # already pulls it in, resolves.
@@ -155,9 +165,9 @@ dependencies:
   # 1.1.1 fixed a startup race where the configure call could be silently
   # lost, leaving the engine's aggressive default remote tuning active.
   flutter_tvos: ^1.1.2
-  path_provider_tvos: any
-  shared_preferences_tvos: any
-  flutter_secure_storage_tvos: any
+  path_provider_tvos: 0.0.2
+  shared_preferences_tvos: 0.0.2
+  flutter_secure_storage_tvos: 0.0.2
   sqflite_tvos: any
   firebase_core: ^4.11.0
   firebase_messaging: ^16.4.1
@@ -173,6 +183,10 @@ dev_dependencies:
   json_serializable: ^6.9.5
   drift_dev: ^2.28.0
   mocktail: ^1.0.5
+  # flutter_cache_manager hands widgets package:file handles, so a test that
+  # stands in for a disk hit has to build one. Keep in step with what the
+  # cache manager resolves.
+  file: ^7.0.1
   msix: ^3.16.12
   wakelock_plus_platform_interface: ^1.5.1
   # Lets a test stand in for the Android side of path_provider.
@@ -247,6 +261,9 @@ flutter:
   uses-material-design: true
 
   assets:
+    # Bundled so AppBeta can read the beta flag back at runtime, which keeps
+    # pubspec the one place the beta number is written.
+    - pubspec.yaml
     - assets/images/
     - assets/icons/
     - assets/icons/ratings/
@@ -255,6 +272,16 @@ flutter:
     - assets/licenses/cores/
 
   fonts:
+    # The web engine fetches Roboto from fonts.gstatic.com unless it finds a
+    # family of that name here. Material typography asks for Roboto, so this
+    # is the font nearly all of the UI renders in.
+    - family: Roboto
+      fonts:
+        - asset: assets/fonts/Roboto-Regular.ttf
+        - asset: assets/fonts/Roboto-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Roboto-Bold.ttf
+          weight: 700
     - family: NeonPulseDisplay
       fonts:
         - asset: assets/fonts/Orbitron-Regular.ttf

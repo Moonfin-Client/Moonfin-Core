@@ -5,6 +5,7 @@ import '../../../data/services/plugin_sync_service.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../preference/button_layout.dart';
 import '../../../preference/user_preferences.dart';
+import '../../../syncplay/syncplay_manager.dart';
 import '../../../util/platform_detection.dart';
 
 /// The details screen action buttons a user can arrange. Play is absent on
@@ -60,18 +61,66 @@ enum DetailButton {
 
   /// Whether this device can put the button on screen at all. A button that
   /// never gets drawn here isn't worth offering a switch for.
-  bool get isOffered => switch (this) {
-    DetailButton.cast => !PlatformDetection.isTV,
-    DetailButton.download ||
-    DetailButton.deleteFiles => PlatformDetection.supportsOfflineDownloads,
-    DetailButton.seerrRequest ||
-    DetailButton.seerrRequest4k ||
-    DetailButton.seerrWatchlist ||
-    DetailButton.seerrReportIssue ||
-    DetailButton.seerrManage =>
-      GetIt.instance<PluginSyncService>().seerrAvailable,
-    _ => true,
+  bool get isOffered {
+    if (_kidsModeOn && !_kidsModeAllowed.contains(this)) {
+      return false;
+    }
+    return switch (this) {
+      DetailButton.cast => !PlatformDetection.isTV,
+      DetailButton.download ||
+      DetailButton.deleteFiles => PlatformDetection.supportsOfflineDownloads,
+      DetailButton.seerrRequest ||
+      DetailButton.seerrRequest4k ||
+      DetailButton.seerrWatchlist ||
+      DetailButton.seerrReportIssue ||
+      DetailButton.seerrManage =>
+        GetIt.instance<PluginSyncService>().seerrAvailable,
+      DetailButton.watchWithGroup => _syncPlayAvailable,
+      _ => true,
+    };
+  }
+
+  /// The only buttons Kids Mode offers, alongside Play.
+  ///
+  /// An allow list rather than a block list, so a button added later stays out
+  /// until someone decides a child should have it. Keeping the row short is
+  /// half the point: anything that doesn't fit folds into an overflow menu,
+  /// which hands back everything the mode meant to put away.
+  static const _kidsModeAllowed = <DetailButton>{
+    DetailButton.restart,
+    DetailButton.shuffle,
+    DetailButton.favorite,
   };
+
+  /// The order Kids Mode puts them in. The saved arrangement belongs to the
+  /// parent and is one of the things the mode sets aside, so the allow list's
+  /// own order is the order.
+  static List<DetailButton> get kidsModeOrder => _kidsModeAllowed.toList();
+
+  /// Defensive like [_syncPlayAvailable], because [isOffered] is reached from
+  /// widgets that can build before the preferences are registered. No
+  /// preferences means no Kids Mode to be in.
+  static bool get _kidsModeOn {
+    try {
+      if (!GetIt.instance.isRegistered<UserPreferences>()) return false;
+      return GetIt.instance<UserPreferences>().get(
+        UserPreferences.kidsModeEnabled,
+      );
+    } catch (_) {
+      return false;
+    }
+  }
+
+  static bool get _syncPlayAvailable {
+    try {
+      if (GetIt.instance.isRegistered<SyncPlayManager>()) {
+        return GetIt.instance<SyncPlayManager>().syncPlayEnabled;
+      }
+      return GetIt.instance<UserPreferences>().get(UserPreferences.syncPlayEnabled);
+    } catch (_) {
+      return false;
+    }
+  }
 
   IconData get icon => switch (this) {
     DetailButton.shuffle => Icons.shuffle_rounded,
@@ -108,9 +157,9 @@ enum DetailButton {
     DetailButton.watched => l10n.watched,
     DetailButton.favorite => l10n.favorite,
     DetailButton.personalRating => l10n.rate,
-    DetailButton.playlist => l10n.playlist,
+    DetailButton.playlist => l10n.addToPlaylist,
     DetailButton.download => l10n.download,
-    DetailButton.deleteFiles => l10n.deleteFiles,
+    DetailButton.deleteFiles => l10n.deleteDownloadedFiles,
     DetailButton.goToSeries => l10n.goToSeries,
     DetailButton.seerrRequest => l10n.request,
     DetailButton.seerrRequest4k => l10n.request4k,

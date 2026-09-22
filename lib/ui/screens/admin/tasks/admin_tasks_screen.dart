@@ -10,6 +10,7 @@ import 'package:server_core/server_core.dart';
 import '../../../navigation/destinations.dart';
 import '../providers/admin_user_providers.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../util/error_message.dart';
 
 class AdminTasksScreen extends ConsumerStatefulWidget {
   const AdminTasksScreen({super.key});
@@ -50,7 +51,7 @@ class _AdminTasksScreenState extends ConsumerState<AdminTasksScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(l10n.adminTasksLoadFailed(error.toString())),
+            Text(l10n.adminTasksLoadFailed(describeError(error, l10n))),
             const SizedBox(height: 8),
             ElevatedButton(
               onPressed: () => ref.invalidate(adminTasksProvider),
@@ -136,7 +137,7 @@ class _AdminTasksScreenState extends ConsumerState<AdminTasksScreen> {
       if (mounted) {
         final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(l10n.adminTaskStartFailed(e.toString()))));
+            .showSnackBar(SnackBar(content: Text(l10n.adminTaskStartFailed(describeError(e, l10n)))));
       }
     }
   }
@@ -149,7 +150,7 @@ class _AdminTasksScreenState extends ConsumerState<AdminTasksScreen> {
       if (mounted) {
         final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(l10n.adminTaskStopFailed(e.toString()))));
+            .showSnackBar(SnackBar(content: Text(l10n.adminTaskStopFailed(describeError(e, l10n)))));
       }
     }
   }

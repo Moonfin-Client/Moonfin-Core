@@ -9,11 +9,13 @@ import '../../../data/models/media_bar_slide_item.dart';
 import 'media_bar_title.dart';
 import '../../../data/models/media_bar_state.dart';
 import '../../../data/viewmodels/media_bar_view_model.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/platform_detection.dart';
 import '../bounded_network_image.dart';
 import '../rating_display.dart';
+import '../../util/error_message.dart';
 import 'media_bar_status_focus.dart';
 
 class BannerMediaBar extends StatefulWidget {
@@ -205,7 +207,10 @@ class _BannerMediaBarState extends State<BannerMediaBar> {
           ),
         );
       }
-      final message = (state as MediaBarError).message;
+      final message = describeError(
+        (state as MediaBarError).error,
+        AppLocalizations.of(context),
+      );
       return Padding(
         padding: EdgeInsets.fromLTRB(16, topInset, 16, 8),
         child: _wrapStatusFocus(

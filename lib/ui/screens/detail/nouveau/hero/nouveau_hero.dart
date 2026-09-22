@@ -6,15 +6,18 @@ import '../../../../../data/models/aggregated_item.dart';
 import '../../../../../data/viewmodels/item_detail_view_model.dart';
 import '../../../../../data/viewmodels/seerr_media_detail_view_model.dart';
 import '../../../../../l10n/app_localizations.dart';
+import '../../../../../preference/detail_metadata_layout.dart';
 import '../../../../../preference/user_preferences.dart';
 import '../../../../../util/overview_text.dart';
 import '../../../../../util/playback_time_label.dart';
 import '../../../../widgets/logo_view.dart';
 import '../../../../widgets/navigation_layout.dart';
 import '../../../../widgets/offline_aware_image.dart';
+import '../../../../widgets/rating_display.dart';
 import '../../../../widgets/seerr/seerr_item_status.dart';
 import '../../../../widgets/seerr/seerr_status_dot.dart';
 import '../../../../widgets/seerr/seerr_status_pill.dart';
+import '../../detail_layout_metrics.dart';
 import '../../item_detail_screen.dart';
 
 class NouveauHero extends StatefulWidget {
@@ -244,12 +247,17 @@ class NouveauHeroState extends State<NouveauHero> {
       ),
     );
 
-    final genres = item.genres
-        .take(3)
-        .map((genre) => genre.trim())
-        .where((genre) => genre.isNotEmpty)
-        .join('  •  ')
-        .toUpperCase();
+    final hiddenMetadata = detailMetadataLayout.hidden(widget.prefs);
+
+    final showGenres = !hiddenMetadata.contains(DetailMetadataItem.genres.id);
+    final genres = showGenres
+        ? item.genres
+            .take(3)
+            .map((genre) => genre.trim())
+            .where((genre) => genre.isNotEmpty)
+            .join('  •  ')
+            .toUpperCase()
+        : '';
 
     final genreRowHeight = isPhonePortrait
         ? 13.5
@@ -264,11 +272,19 @@ class NouveauHeroState extends State<NouveauHero> {
 
     final metadata = _metadataContent(context, item, scale);
 
+    final ratingsRow = RatingsRow.forDetailScreen(
+      item: item,
+      extraRatings: widget.viewModel.ratings,
+      prefs: widget.prefs,
+    );
+
     final technicalDetails = _technicalDetailsContent(item, scale);
 
-    final status = _normalizedSeriesStatus(item);
+    final showStatus = !hiddenMetadata.contains(DetailMetadataItem.status.id);
+    final status = showStatus ? _normalizedSeriesStatus(item) : null;
 
-    final seerrStatus = seerrItemStatus(viewModel);
+    final showSeerr = !hiddenMetadata.contains(DetailMetadataItem.seerrAvailability.id);
+    final seerrStatus = showSeerr ? seerrItemStatus(viewModel) : null;
 
     final l10n = AppLocalizations.of(context);
 
@@ -283,7 +299,14 @@ class NouveauHeroState extends State<NouveauHero> {
         ? _nouveauSeerrPills(context, seerrStatus, scale)
         : const <Widget>[];
 
-    final hasBadges = status != null || seerrPills.isNotEmpty;
+    final showUpcoming = !hiddenMetadata.contains(DetailMetadataItem.upcomingEpisodeDate.id);
+    final upcomingText = showUpcoming &&
+            item.type == 'Series' &&
+            viewModel.upcomingEpisode != null
+        ? viewModel.upcomingEpisode!.format(context)
+        : null;
+
+    final hasBadges = status != null || seerrPills.isNotEmpty || upcomingText != null;
 
     final heroMaxWidth = isPhonePortrait
         ? size.width
@@ -296,6 +319,16 @@ class NouveauHeroState extends State<NouveauHero> {
         : isCompact
         ? heroMaxWidth
         : (heroMaxWidth * 0.90).clamp(490.0, 590.0);
+
+    // Badges are not prose, so they run past the reading measure. The
+    // landscape hero owns the full width, with the backdrop behind it rather
+    // than artwork beside it.
+    final ratingsMaxWidth = isPhonePortrait
+        ? size.width
+        : (size.width - nouveauHorizontalInset(size) * 2).clamp(
+            heroMaxWidth,
+            double.infinity,
+          );
 
     final logoMaxWidth = isPhonePortrait
         ? (size.width - 40) * 0.72
@@ -399,14 +432,16 @@ class NouveauHeroState extends State<NouveauHero> {
       },
       child: Align(
         alignment: Alignment.topLeft,
-        child: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: heroMaxWidth),
-          child: isPhonePortrait
-              ? _buildPhoneContent(
+        child: isPhonePortrait
+            ? ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: heroMaxWidth),
+                child: _buildPhoneContent(
                   context: context,
                   branding: branding,
                   metadata: metadata,
+                  ratingsRow: ratingsRow,
                   status: status,
+                  upcomingText: upcomingText,
                   seerrPills: seerrPills,
                   hasBadges: hasBadges,
                   genres: genres,
@@ -419,27 +454,31 @@ class NouveauHeroState extends State<NouveauHero> {
                   overviewStyle: overviewStyle,
                   technicalDetails: technicalDetails,
                   actions: actions,
-                )
-              : _buildStandardContent(
-                  context: context,
-                  branding: branding,
-                  metadata: metadata,
-                  status: status,
-                  seerrPills: seerrPills,
-                  hasBadges: hasBadges,
-                  genres: genres,
-                  genreRowHeight: genreRowHeight,
-                  genreBottomSpacing: genreBottomSpacing,
-                  reserveGenreRow: reserveGenreRow,
-                  overview: overview,
-                  hideOverview: hideOverview,
-                  descriptionMaxWidth: descriptionMaxWidth,
-                  overviewStyle: overviewStyle,
-                  technicalDetails: technicalDetails,
-                  actions: actions,
-                  scale: scale,
                 ),
-        ),
+              )
+            : _buildStandardContent(
+                context: context,
+                branding: branding,
+                metadata: metadata,
+                ratingsRow: ratingsRow,
+                status: status,
+                upcomingText: upcomingText,
+                seerrPills: seerrPills,
+                hasBadges: hasBadges,
+                genres: genres,
+                genreRowHeight: genreRowHeight,
+                genreBottomSpacing: genreBottomSpacing,
+                reserveGenreRow: reserveGenreRow,
+                overview: overview,
+                hideOverview: hideOverview,
+                descriptionMaxWidth: descriptionMaxWidth,
+                heroMaxWidth: heroMaxWidth,
+                ratingsMaxWidth: ratingsMaxWidth,
+                overviewStyle: overviewStyle,
+                technicalDetails: technicalDetails,
+                actions: actions,
+                scale: scale,
+              ),
       ),
     );
   }
@@ -448,7 +487,9 @@ class NouveauHeroState extends State<NouveauHero> {
     required BuildContext context,
     required Widget branding,
     required List<Widget> metadata,
+    required Widget? ratingsRow,
     required String? status,
+    required String? upcomingText,
     required List<Widget> seerrPills,
     required bool hasBadges,
     required String genres,
@@ -495,6 +536,7 @@ class NouveauHeroState extends State<NouveauHero> {
           _badgeRow(
             context,
             status: status,
+            upcomingText: upcomingText,
             seerrPills: seerrPills,
             scale: 0.92,
           ),
@@ -508,6 +550,11 @@ class NouveauHeroState extends State<NouveauHero> {
             crossAxisAlignment: WrapCrossAlignment.center,
             children: metadata,
           ),
+
+        if (ratingsRow != null) ...[
+          const SizedBox(height: 12),
+          ratingsRow,
+        ],
 
         if (technicalDetails.isNotEmpty) ...[
           const SizedBox(height: 14),
@@ -544,7 +591,9 @@ class NouveauHeroState extends State<NouveauHero> {
     required BuildContext context,
     required Widget branding,
     required List<Widget> metadata,
+    required Widget? ratingsRow,
     required String? status,
+    required String? upcomingText,
     required List<Widget> seerrPills,
     required bool hasBadges,
     required String genres,
@@ -554,6 +603,8 @@ class NouveauHeroState extends State<NouveauHero> {
     required String overview,
     required bool hideOverview,
     required double descriptionMaxWidth,
+    required double heroMaxWidth,
+    required double ratingsMaxWidth,
     required TextStyle overviewStyle,
     required List<Widget> technicalDetails,
     required Widget actions,
@@ -561,77 +612,105 @@ class NouveauHeroState extends State<NouveauHero> {
   }) {
     final foreground = AppColorScheme.onSurface;
 
+    final textContent = ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: heroMaxWidth),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (genres.isNotEmpty) ...[
+            Text(
+              genres,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: foreground.withValues(alpha: 0.64),
+                fontSize: genreRowHeight,
+                fontWeight: FontWeight.w700,
+                letterSpacing: (1.7 * scale).clamp(1.4, 1.9),
+                height: 1.0,
+              ),
+            ),
+            SizedBox(height: genreBottomSpacing),
+          ],
+
+          if (reserveGenreRow)
+            SizedBox(height: genreRowHeight + genreBottomSpacing),
+
+          branding,
+
+          SizedBox(height: (28.0 * scale).clamp(24.0, 30.0)),
+
+          if (hasBadges) ...[
+            _badgeRow(
+              context,
+              status: status,
+              upcomingText: upcomingText,
+              seerrPills: seerrPills,
+              scale: scale,
+            ),
+            SizedBox(height: (14.0 * scale).clamp(12.0, 15.0)),
+          ],
+
+          if (metadata.isNotEmpty)
+            Wrap(
+              spacing: (7.0 * scale).clamp(6.0, 8.0),
+              runSpacing: (6.0 * scale).clamp(5.0, 7.0),
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: metadata,
+            ),
+
+        ],
+      ),
+    );
+
+    final belowRatings = ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: heroMaxWidth),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (technicalDetails.isNotEmpty) ...[
+            SizedBox(height: (15.0 * scale).clamp(13.0, 17.0)),
+            Wrap(
+              spacing: (7.0 * scale).clamp(6.0, 8.0),
+              runSpacing: (7.0 * scale).clamp(6.0, 8.0),
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: technicalDetails,
+            ),
+          ],
+
+          if (overview.isNotEmpty && !hideOverview) ...[
+            SizedBox(height: (22.0 * scale).clamp(19.0, 24.0)),
+            ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: descriptionMaxWidth),
+              child: _NouveauOverview(
+                text: overview,
+                maxLines: 3,
+                style: overviewStyle,
+                focusNode: _overviewFocusNode,
+                onFocusableChanged: _handleOverviewFocusableChanged,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (genres.isNotEmpty) ...[
-          Text(
-            genres,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              color: foreground.withValues(alpha: 0.64),
-              fontSize: genreRowHeight,
-              fontWeight: FontWeight.w700,
-              letterSpacing: (1.7 * scale).clamp(1.4, 1.9),
-              height: 1.0,
-            ),
-          ),
-          SizedBox(height: genreBottomSpacing),
-        ],
-
-        if (reserveGenreRow)
-          SizedBox(height: genreRowHeight + genreBottomSpacing),
-
-        branding,
-
-        SizedBox(height: (28.0 * scale).clamp(24.0, 30.0)),
-
-        if (hasBadges) ...[
-          _badgeRow(
-            context,
-            status: status,
-            seerrPills: seerrPills,
-            scale: scale,
-          ),
-          SizedBox(height: (14.0 * scale).clamp(12.0, 15.0)),
-        ],
-
-        if (metadata.isNotEmpty)
-          Wrap(
-            spacing: (7.0 * scale).clamp(6.0, 8.0),
-            runSpacing: (6.0 * scale).clamp(5.0, 7.0),
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: metadata,
-          ),
-
-        if (technicalDetails.isNotEmpty) ...[
-          SizedBox(height: (15.0 * scale).clamp(13.0, 17.0)),
-          Wrap(
-            spacing: (7.0 * scale).clamp(6.0, 8.0),
-            runSpacing: (7.0 * scale).clamp(6.0, 8.0),
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: technicalDetails,
-          ),
-        ],
-
-        if (overview.isNotEmpty && !hideOverview) ...[
-          SizedBox(height: (22.0 * scale).clamp(19.0, 24.0)),
+        textContent,
+        if (ratingsRow != null) ...[
+          SizedBox(height: (13.0 * scale).clamp(11.0, 15.0)),
           ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: descriptionMaxWidth),
-            child: _NouveauOverview(
-              text: overview,
-              maxLines: 3,
-              style: overviewStyle,
-              focusNode: _overviewFocusNode,
-              onFocusableChanged: _handleOverviewFocusableChanged,
-            ),
+            constraints: BoxConstraints(maxWidth: ratingsMaxWidth),
+            child: ratingsRow,
           ),
         ],
-
+        belowRatings,
         SizedBox(height: (36.0 * scale).clamp(30.0, 38.0)),
-
         actions,
       ],
     );
@@ -722,22 +801,6 @@ class NouveauHeroState extends State<NouveauHero> {
     };
   }
 
-  double? _validCommunityRating(double? rating) {
-    if (rating == null || !rating.isFinite || rating <= 0 || rating > 10) {
-      return null;
-    }
-
-    return rating;
-  }
-
-  double? _validCriticRating(num? rating) {
-    if (rating == null || !rating.isFinite || rating <= 0 || rating > 100) {
-      return null;
-    }
-
-    return rating.toDouble();
-  }
-
   Duration? _seasonRuntime() {
     final episodes = widget.viewModel.episodes;
 
@@ -818,69 +881,66 @@ class NouveauHeroState extends State<NouveauHero> {
       values.add(Text(value, style: style));
     }
 
-    void addFirstText(String? value) {
-      if (value == null || value.trim().isEmpty) {
-        return;
-      }
-
-      values.add(Text(value, style: style));
-    }
-
-    addFirstText(item.productionYear?.toString());
-
-    if (item.officialRating?.trim().isNotEmpty ?? false) {
-      addText(item.officialRating);
-    }
-
-    if (item.type == 'Series' && item.childCount != null) {
-      addText(l10n.seasonCount(item.childCount!));
-    }
-
-    if (item.type == 'Season') {
-      final episodeCount = widget.viewModel.episodes.isNotEmpty
-          ? widget.viewModel.episodes.length
-          : (item.childCount ?? 0);
-
-      if (episodeCount > 0) {
-        addText(l10n.episodeCount(episodeCount));
-      }
-    }
-
-    if (item.type == 'Episode') {
-      final season = item.parentIndexNumber;
-      final episode = item.indexNumber;
-
-      if (season != null && episode != null) {
-        addText(l10n.seasonEpisodeLabel(season, episode));
-      }
-    }
-
+    final hidden = detailMetadataLayout.hidden(widget.prefs);
     final runtime = _effectiveRuntime(item);
 
-    if (runtime != null && runtime > Duration.zero && item.type != 'Series') {
-      addText(formatRuntimeShort(runtime));
+    // Status, upcoming and Seerr have their own badge row on this hero, so
+    // only the items that share this line take part in the ordering.
+    final ordered = detailMetadataLayout.ordered(
+      const [
+        DetailMetadataItem.year,
+        DetailMetadataItem.parentalRating,
+        DetailMetadataItem.runtimeAndSeasons,
+      ],
+      (entry) => entry.id,
+      widget.prefs,
+    );
 
-      if (item.type == 'Season') {
-        final endTime = _seasonEndTime(context, runtime);
+    for (final entry in ordered) {
+      if (hidden.contains(entry.id)) continue;
+      switch (entry) {
+        case DetailMetadataItem.year:
+          addText(item.productionYear?.toString());
+        case DetailMetadataItem.parentalRating:
+          if (item.officialRating?.trim().isNotEmpty ?? false) {
+            addText(item.officialRating);
+          }
+        case DetailMetadataItem.runtimeAndSeasons:
+          if (item.type == 'Series' && item.childCount != null) {
+            addText(l10n.seasonCount(item.childCount!));
+          }
 
-        addText(l10n.endsAt(endTime));
+          if (item.type == 'Season') {
+            final episodeCount = widget.viewModel.episodes.isNotEmpty
+                ? widget.viewModel.episodes.length
+                : (item.childCount ?? 0);
+
+            if (episodeCount > 0) {
+              addText(l10n.episodeCount(episodeCount));
+            }
+          }
+
+          if (item.type == 'Episode') {
+            final season = item.parentIndexNumber;
+            final episode = item.indexNumber;
+
+            if (season != null && episode != null) {
+              addText(l10n.seasonEpisodeLabel(season, episode));
+            }
+          }
+
+          if (runtime != null &&
+              runtime > Duration.zero &&
+              item.type != 'Series') {
+            addText(formatRuntimeShort(runtime));
+
+            if (item.type == 'Season') {
+              addText(l10n.endsAt(_seasonEndTime(context, runtime)));
+            }
+          }
+        default:
+          break;
       }
-    }
-
-    final communityRating = _validCommunityRating(item.communityRating);
-
-    if (communityRating != null) {
-      addSeparator();
-
-      values.add(_inlineCommunityRating(communityRating, style, scale));
-    }
-
-    final criticRating = _validCriticRating(item.criticRating);
-
-    if (criticRating != null) {
-      addSeparator();
-
-      values.add(_inlineCriticRating(criticRating, style, scale));
     }
 
     return values;
@@ -889,58 +949,75 @@ class NouveauHeroState extends State<NouveauHero> {
   Widget _badgeRow(
     BuildContext context, {
     required String? status,
+    required String? upcomingText,
     required List<Widget> seerrPills,
     required double scale,
   }) {
+    final badges = <Widget>[];
+    if (status != null) {
+      badges.add(_statusBadge(context, status, scale));
+    }
+    if (upcomingText != null) {
+      badges.add(_upcomingEpisodeBadge(context, upcomingText, scale));
+    }
+    for (var index = 0; index < seerrPills.length; index++) {
+      badges.add(
+        _NouveauBadgeEntrance(
+          key: ValueKey<String>('nouveau-seerr-badge-$index'),
+          child: seerrPills[index],
+        ),
+      );
+    }
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (status != null) _statusBadge(context, status, scale),
-
-          if (status != null && seerrPills.isNotEmpty)
-            SizedBox(width: (9.0 * scale).clamp(8.0, 10.0)),
-
-          for (var index = 0; index < seerrPills.length; index++) ...[
-            if (index > 0) SizedBox(width: (9.0 * scale).clamp(8.0, 10.0)),
-            _NouveauBadgeEntrance(
-              key: ValueKey<String>('nouveau-seerr-badge-$index'),
-              child: seerrPills[index],
-            ),
+          for (var i = 0; i < badges.length; i++) ...[
+            if (i > 0) SizedBox(width: (9.0 * scale).clamp(8.0, 10.0)),
+            badges[i],
           ],
         ],
       ),
     );
   }
 
-  Widget _inlineCommunityRating(double rating, TextStyle style, double scale) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          Icons.star_rounded,
-          size: (17.0 * scale).clamp(15.0, 18.0),
-          color: Colors.amber,
+  Widget _upcomingEpisodeBadge(BuildContext context, String text, double scale) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: AppColorScheme.accent.withValues(alpha: 0.15),
+        borderRadius: AppRadius.circular((6.0 * scale).clamp(5.0, 7.0)),
+        border: Border.all(color: AppColorScheme.accent.withValues(alpha: 0.40)),
+      ),
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: (10.0 * scale).clamp(9.0, 11.0),
+          vertical: (5.0 * scale).clamp(4.5, 6.0),
         ),
-        SizedBox(width: (3.0 * scale).clamp(2.5, 3.5)),
-        Text(rating.toStringAsFixed(1), style: style),
-      ],
-    );
-  }
-
-  Widget _inlineCriticRating(double rating, TextStyle style, double scale) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          Icons.reviews_rounded,
-          size: (16.0 * scale).clamp(14.0, 17.0),
-          color: AppColorScheme.onSurface.withValues(alpha: 0.72),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.event_available,
+              size: (13.0 * scale).clamp(12.0, 14.0),
+              color: AppColorScheme.accent,
+            ),
+            SizedBox(width: (4.0 * scale).clamp(3.0, 5.0)),
+            Text(
+              text,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: AppColorScheme.accent,
+                fontSize: (12.5 * scale).clamp(11.5, 13.5),
+                fontWeight: FontWeight.w600,
+                height: 1.0,
+                letterSpacing: 0.1,
+              ),
+            ),
+          ],
         ),
-        SizedBox(width: (3.0 * scale).clamp(2.5, 3.5)),
-        Text('${rating.round()}%', style: style),
-      ],
+      ),
     );
   }
 

@@ -10,6 +10,7 @@ import '../../data/models/aggregated_item.dart';
 import '../../data/services/cast/cast_service.dart';
 import '../../data/services/cast/cast_target.dart';
 import '../../l10n/app_localizations.dart';
+import '../util/error_message.dart';
 import 'overlay_sheet.dart';
 
 /// Hands playback to the remote session once a target has accepted the item.
@@ -71,8 +72,9 @@ Future<void> showRemotePlayToSessionDialog(
     }
   } catch (e) {
     if (!context.mounted) return;
+    final l10n = AppLocalizations.of(context);
     messenger.showSnackBar(
-      SnackBar(content: Text(AppLocalizations.of(context).castingFailed(e.toString()))),
+      SnackBar(content: Text(l10n.castingFailed(describeError(e, l10n)))),
     );
   }
 }

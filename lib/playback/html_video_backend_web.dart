@@ -9,6 +9,7 @@ import 'package:web/web.dart' as web;
 
 import '../preference/user_preferences.dart';
 import 'html_video_backend_profile.dart';
+import 'letterbox_croppers.dart';
 import 'web_subtitle_overlay_web.dart';
 
 extension type _MoonfinHlsBridge._(JSObject _) implements JSObject {
@@ -791,6 +792,9 @@ class HtmlVideoBackend extends PlayerBackend {
 
   @override
   bool get supportsRuntimeTrackSelection => false;
+
+  @override
+  LetterboxCropper get letterboxCropper => const HtmlLetterboxCropper();
 
   @override
   bool get requiresStartupMediaReadyCheck => false;

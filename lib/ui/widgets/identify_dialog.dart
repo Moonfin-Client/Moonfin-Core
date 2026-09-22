@@ -5,6 +5,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../l10n/app_localizations.dart';
+import '../util/error_message.dart';
 import '../../preference/user_preferences.dart';
 import '../../util/focus/dpad_keys.dart';
 import '../../util/home_refresh_helper.dart';
@@ -321,7 +322,7 @@ class _IdentifyDialogState extends State<IdentifyDialog> {
       // Searching by hand still works without reference values, so say what
       // went wrong instead of leaving the current metadata column blank.
       if (mounted) {
-        setState(() => _loadError = '$e');
+        setState(() => _loadError = describeError(e, AppLocalizations.of(context)));
       }
     } finally {
       if (mounted) {
@@ -445,7 +446,7 @@ class _IdentifyDialogState extends State<IdentifyDialog> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.adminRemoteSearchFailed('$e'))),
+        SnackBar(content: Text(l10n.adminRemoteSearchFailed(describeError(e, l10n)))),
       );
       setState(() => _searching = false);
     }
@@ -532,7 +533,7 @@ class _IdentifyDialogState extends State<IdentifyDialog> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.adminRemoteSearchFailed('$e'))),
+        SnackBar(content: Text(l10n.adminRemoteSearchFailed(describeError(e, l10n)))),
       );
     } finally {
       if (mounted) {

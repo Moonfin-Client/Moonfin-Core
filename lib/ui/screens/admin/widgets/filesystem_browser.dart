@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../util/error_message.dart';
 
 class FilesystemBrowser extends StatefulWidget {
   final String? initialPath;
@@ -83,7 +84,7 @@ class _FilesystemBrowserState extends State<FilesystemBrowser> {
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _error = e.toString();
+        _error = describeError(e, AppLocalizations.of(context));
         _loading = false;
       });
     }
@@ -112,7 +113,7 @@ class _FilesystemBrowserState extends State<FilesystemBrowser> {
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _error = e.toString();
+        _error = describeError(e, AppLocalizations.of(context));
         _loading = false;
       });
     }
@@ -139,7 +140,8 @@ class _FilesystemBrowserState extends State<FilesystemBrowser> {
       widget.onPathSelected(path);
     } catch (e) {
       if (!mounted) return;
-      setState(() => _validationError = 'Invalid path: $e');
+      setState(() => _validationError =
+          'Invalid path: ${describeError(e, AppLocalizations.of(context))}');
     }
   }
 

@@ -5,6 +5,7 @@ import 'package:playback_core/playback_core.dart';
 
 import '../preference/user_preferences.dart';
 import 'html_video_backend_profile.dart';
+import 'letterbox_croppers.dart';
 
 class HtmlVideoBackend extends PlayerBackend {
   HtmlVideoBackend(this._prefs);
@@ -136,6 +137,9 @@ class HtmlVideoBackend extends PlayerBackend {
 
   @override
   bool get supportsRuntimeTrackSelection => false;
+
+  @override
+  LetterboxCropper get letterboxCropper => const HtmlLetterboxCropper();
 
   @override
   bool get requiresStartupMediaReadyCheck => false;

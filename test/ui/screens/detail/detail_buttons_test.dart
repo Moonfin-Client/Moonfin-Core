@@ -95,6 +95,10 @@ void main() {
       expect(DetailButton.deleteFiles.isOffered, isTrue);
       expect(DetailButton.cast.isOffered, isFalse);
     });
+
+    test('watchWithGroup is hidden from offered buttons when SyncPlay is not enabled', () {
+      expect(DetailButton.watchWithGroup.isOffered, isFalse);
+    });
   });
 
   group('showsTvDownloadActions', () {
@@ -111,8 +115,16 @@ void main() {
     test('non-TV platforms offer downloads unconditionally', () async {
       PlatformDetection.setTvMode(false);
       final prefs = await _prefs();
-
       expect(showsTvDownloadActions(prefs), isTrue);
+    });
+
+    test('a saved button order does not opt TV in on its own', () async {
+      PlatformDetection.setTvMode(true);
+      // Moving any row writes the whole arrangement back, download included,
+      // so the order says nothing about whether downloads were asked for.
+      final prefs = await _prefs(order: 'play,download,subtitles');
+
+      expect(showsTvDownloadActions(prefs), isFalse);
     });
   });
 }

@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -22,6 +21,7 @@ import '../../widgets/media_card.dart';
 import '../../widgets/navigation_layout.dart';
 import '../../widgets/fullscreen_backdrop_switcher.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../util/error_message.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/focus/locked_focus_row.dart';
 import '../../widgets/seerr/seerr_shortcuts.dart';
@@ -32,6 +32,7 @@ import '../../../util/seerr_genre_art.dart';
 import '../../widgets/seerr/seerr_genre_label.dart';
 import '../../widgets/skeleton/skeleton_home_row.dart';
 import '../../widgets/skeleton/skeleton_shimmer.dart';
+import '../../widgets/offline_aware_image.dart';
 
 const _tmdbPosterBase = 'https://image.tmdb.org/t/p/w300';
 const _tmdbBackdropBase = 'https://image.tmdb.org/t/p/w1280';
@@ -428,7 +429,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              vm.error!,
+              describeError(vm.error!, AppLocalizations.of(context)),
               style: TextStyle(
                 color: AppColorScheme.onSurface.withValues(alpha: 0.7),
               ),
@@ -624,6 +625,15 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
         .get(UserPreferences.desktopUiScale)
         .scaleFactor;
 
+    final upwardGrowth = cardExpansion && !PlatformDetection.useMobileUi
+        ? (195.0 * (MediaCard.focusScale - 1.0))
+        : 0.0;
+    final itemSpacing = cardExpansion && !PlatformDetection.useMobileUi
+        ? MediaCard.focusGap(130.0, minimum: 12.0 * desktopScale)
+        : 12.0 * desktopScale;
+    final rowHeight = (260.0 * desktopScale) + upwardGrowth;
+    final topPadding = (5.0 * desktopScale) + upwardGrowth;
+
     final focusKey = _getRowKey(rowIndex);
     final child = NotificationListener<ScrollNotification>(
       onNotification: (notification) {
@@ -641,12 +651,12 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
         hubKey: row.focusHubKey,
         controller: _getRowScroll(rowIndex),
         itemExtent: 130,
-        itemSpacing: 12 * desktopScale,
-        height: 260 * desktopScale,
+        itemSpacing: itemSpacing,
+        height: rowHeight,
         clipBehavior: Clip.none,
         padding: EdgeInsets.fromLTRB(
           20 * desktopScale,
-          5 * desktopScale,
+          topPadding,
           20 * desktopScale,
           5 * desktopScale,
         ),
@@ -697,7 +707,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
 
     return _buildRowContainer(
       row: row,
-      rowHeight: 260,
+      rowHeight: 260.0 + (upwardGrowth / desktopScale),
       isLoading: row.isLoading && row.items.isEmpty,
       hasItems: row.items.isNotEmpty,
       scrollController: _getRowScroll(rowIndex),
@@ -1252,7 +1262,7 @@ class _GenreCardState extends State<_GenreCard> with FocusStateMixin {
                 fit: StackFit.expand,
                 children: [
                   if (widget.imageUrl != null)
-                    CachedNetworkImage(
+                    OfflineAwareImage(
                       imageUrl: widget.imageUrl!,
                       fit: BoxFit.cover,
                       errorWidget: (_, _, _) => Container(
@@ -1415,7 +1425,7 @@ class _LogoCardState extends State<_LogoCard> with FocusStateMixin {
               child: widget.logoUrl != null
                   ? Padding(
                       padding: const EdgeInsets.all(16),
-                      child: CachedNetworkImage(
+                      child: OfflineAwareImage(
                         imageUrl: widget.logoUrl!,
                         fit: BoxFit.contain,
                         errorWidget: (_, _, _) => Center(

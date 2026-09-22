@@ -51,6 +51,11 @@ final isAdminProvider = Provider<bool>((ref) {
   return userAsync.valueOrNull?.isAdministrator ?? false;
 });
 
+final kidsModeProvider = Provider<bool>((ref) {
+  final prefs = ref.watch(userPreferencesProvider);
+  return prefs.get(UserPreferences.kidsModeEnabled);
+});
+
 final connectivityServiceProvider = ChangeNotifierProvider<ConnectivityService>(
   (_) => getIt<ConnectivityService>(),
 );

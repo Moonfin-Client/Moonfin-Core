@@ -6,6 +6,8 @@ import 'package:get_it/get_it.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/platform_detection.dart';
+import '../../screens/detail/detail_layout_metrics.dart';
+import '../../screens/detail/spotlight/spotlight_landscape_layout.dart';
 import '../top_toolbar.dart';
 import 'skeleton_shimmer.dart';
 
@@ -42,6 +44,7 @@ class DetailScreenSkeleton extends StatelessWidget {
         DetailScreenStyle.modern => _buildModern(context),
         DetailScreenStyle.spotlight => _buildSpotlight(context),
         DetailScreenStyle.nouveau => _buildNouveau(context),
+        DetailScreenStyle.minimalist => _buildMinimalist(context),
       },
     );
   }
@@ -52,9 +55,17 @@ class DetailScreenSkeleton extends StatelessWidget {
     final scale = userPrefs?.get(UserPreferences.desktopUiScale).scaleFactor ?? 1.0;
     final hasLeftSidebar =
         userPrefs?.get(UserPreferences.navbarPosition) == NavbarPosition.left;
-    final leftPadding = hasLeftSidebar ? 120.0 : 40.0;
     final baseTopInset = TopToolbar.baseHeightFor(context);
-    final topInset = (baseTopInset - 12) / scale + (10 / scale);
+    final isLandscape = detailUsesLandscapeLayout(context);
+
+    // Portrait keeps the top of the page clear so the backdrop shows through,
+    // where landscape starts the hero just under the toolbar.
+    final leftPadding = isLandscape ? (hasLeftSidebar ? 120.0 : 40.0) : 20.0;
+    final rightPadding = isLandscape ? 40.0 : 20.0;
+    final topPadding =
+        isLandscape ? (baseTopInset - 12) / scale + (10 / scale) : 0.0;
+    final backdropGap =
+        isLandscape ? 0.0 : detailPortraitBackdropGap(size, baseTopInset);
 
     return Stack(
       children: [
@@ -81,10 +92,16 @@ class DetailScreenSkeleton extends StatelessWidget {
         Positioned.fill(
           child: SingleChildScrollView(
             physics: const ClampingScrollPhysics(),
-            padding: EdgeInsets.fromLTRB(leftPadding, topInset, 40, 20),
+            padding: EdgeInsets.fromLTRB(
+              leftPadding,
+              topPadding,
+              rightPadding,
+              20,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                if (backdropGap > 0) SizedBox(height: backdropGap),
                 // Logo placeholder (reserved space to eliminate layout shift)
                 SkeletonBox(
                   width: 240 * scale,
@@ -124,18 +141,22 @@ class DetailScreenSkeleton extends StatelessWidget {
                 ),
                 SizedBox(height: 18 * scale),
                 // Action buttons row (Play button pill + circular action buttons)
-                Row(
-                  children: [
-                    SkeletonBox(width: 120 * scale, height: 46 * scale, borderRadius: BorderRadius.circular(23 * scale)),
-                    SizedBox(width: 14 * scale),
-                    SkeletonBox(width: 46 * scale, height: 46 * scale, borderRadius: BorderRadius.circular(23 * scale)),
-                    SizedBox(width: 14 * scale),
-                    SkeletonBox(width: 46 * scale, height: 46 * scale, borderRadius: BorderRadius.circular(23 * scale)),
-                    SizedBox(width: 14 * scale),
-                    SkeletonBox(width: 46 * scale, height: 46 * scale, borderRadius: BorderRadius.circular(23 * scale)),
-                    SizedBox(width: 14 * scale),
-                    SkeletonBox(width: 46 * scale, height: 46 * scale, borderRadius: BorderRadius.circular(23 * scale)),
-                  ],
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  physics: const ClampingScrollPhysics(),
+                  child: Row(
+                    children: [
+                      SkeletonBox(width: 120 * scale, height: 46 * scale, borderRadius: BorderRadius.circular(23 * scale)),
+                      SizedBox(width: 14 * scale),
+                      SkeletonBox(width: 46 * scale, height: 46 * scale, borderRadius: BorderRadius.circular(23 * scale)),
+                      SizedBox(width: 14 * scale),
+                      SkeletonBox(width: 46 * scale, height: 46 * scale, borderRadius: BorderRadius.circular(23 * scale)),
+                      SizedBox(width: 14 * scale),
+                      SkeletonBox(width: 46 * scale, height: 46 * scale, borderRadius: BorderRadius.circular(23 * scale)),
+                      SizedBox(width: 14 * scale),
+                      SkeletonBox(width: 46 * scale, height: 46 * scale, borderRadius: BorderRadius.circular(23 * scale)),
+                    ],
+                  ),
                 ),
                 SizedBox(height: 28 * scale),
                 // Bottom tabs row
@@ -166,7 +187,7 @@ class DetailScreenSkeleton extends StatelessWidget {
 
   Widget _buildSpotlight(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
-    final isLandscape = size.width >= size.height;
+    final isLandscape = detailUsesLandscapeLayout(context);
     final userPrefs = _effectivePrefs;
     final scale = userPrefs?.get(UserPreferences.desktopUiScale).scaleFactor ?? 1.0;
     final hasLeftSidebar =
@@ -176,10 +197,10 @@ class DetailScreenSkeleton extends StatelessWidget {
     // Matches SpotlightLandscapeLayout padding calculations
     final topInset = isLandscape
         ? (baseTopInset - 12) / scale + (10 / scale)
-        : (size.height * 0.26 + baseTopInset);
+        : detailPortraitBackdropGap(size, baseTopInset);
 
     final heroWidth = isLandscape
-        ? (size.width * 0.85).clamp(450.0, 1100.0)
+        ? SpotlightLandscapeLayout.heroWidthFor(size)
         : double.infinity;
     final cardHeight = isLandscape
         ? math.min(
@@ -383,24 +404,91 @@ class DetailScreenSkeleton extends StatelessWidget {
     );
   }
 
+
+
+  Widget _clippedRow({required List<Widget> children}) => SingleChildScrollView(
+    scrollDirection: Axis.horizontal,
+    physics: const NeverScrollableScrollPhysics(),
+    child: Row(children: children),
+  );
+
+  /// Minimalist is anchored to the bottom, so its skeleton is too. Landing on
+  /// a top-aligned placeholder and then snapping down reads as a glitch.
+  Widget _buildMinimalist(BuildContext context) {
+    final size = MediaQuery.sizeOf(context);
+    final isLandscape = size.width >= size.height;
+    final inset = isLandscape ? 56.0 : 20.0;
+    // The same helper the real rail uses, so the placeholder keeps landing
+    // where the content lands.
+    final cardWidth = minimalistEpisodeCardWidth(
+      size.width - inset * 2,
+      landscape: isLandscape,
+    );
+    final cardGap = minimalistEpisodeRailGap(landscape: isLandscape);
+
+    return Padding(
+      padding: EdgeInsets.fromLTRB(inset, 40, inset, isLandscape ? 44 : 28),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Spacer(),
+          SkeletonBox(
+            width: isLandscape ? 300 : 210,
+            height: isLandscape ? 96 : 68,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          const SizedBox(height: 26),
+          // Both rows run off the side of a narrow screen, the same way the
+          // real ones do. A scroll view clips them instead of overflowing.
+          _clippedRow(
+            children: [
+              SkeletonBox(
+                width: isLandscape ? 210 : size.width - inset * 2,
+                height: isLandscape ? 92 : 76,
+                borderRadius: BorderRadius.circular(46),
+              ),
+              if (isLandscape) ...[
+                const SizedBox(width: 22),
+                for (var i = 0; i < 3; i++) ...[
+                  const SkeletonBox(
+                    width: 92,
+                    height: 92,
+                    borderRadius: BorderRadius.all(Radius.circular(46)),
+                  ),
+                  const SizedBox(width: 22),
+                ],
+              ],
+            ],
+          ),
+          const SizedBox(height: 34),
+          _clippedRow(
+            children: [
+              for (var i = 0; i < 4; i++) ...[
+                SkeletonBox(
+                  width: cardWidth,
+                  height: cardWidth * 9 / 16,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                SizedBox(width: cardGap),
+              ],
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildNouveau(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
     final isLandscape = size.width >= size.height;
     final userPrefs = _effectivePrefs;
-    final navbarIsTop =
-        userPrefs?.get(UserPreferences.navbarPosition) != NavbarPosition.left;
 
     final safePadding = MediaQuery.paddingOf(context);
-    final scale = (size.width / 1920.0).clamp(0.90, 1.08);
+    final scale = nouveauHeroScale(size);
 
-    // Exact formula from NouveauDetailContent._nouveauLandscapeContentInsets()
-    final heroTop = navbarIsTop
-        ? (212.0 * scale).clamp(190.0, 232.0)
-        : (152.0 * scale).clamp(136.0, 166.0);
+    final heroTop = nouveauHeroTop(context, prefs: userPrefs);
 
-    final horizontalInset = PlatformDetection.isTV
-        ? 56.0
-        : (size.width * 0.046).clamp(56.0, 96.0);
+    final horizontalInset = nouveauHorizontalInset(size);
 
     final horizontalSafePadding = PlatformDetection.isTV
         ? EdgeInsets.zero
@@ -411,7 +499,58 @@ class DetailScreenSkeleton extends StatelessWidget {
         : 20.0;
     final topPadding = isLandscape
         ? (heroTop + safePadding.top)
-        : (safePadding.top + 80);
+        : safePadding.top;
+
+    // The hero block is the same either way. Only where it sits differs.
+    final heroChildren = <Widget>[
+      // Top genres text placeholder (e.g. THRILLER · ACTION & ADVENTURE · HORROR)
+      SkeletonBox(
+        width: 200 * scale,
+        height: 12 * scale,
+        borderRadius: BorderRadius.circular(3),
+      ),
+      SizedBox(height: 16 * scale),
+      // Title / Logo (e.g. GRINDHOUSE)
+      SkeletonBox(
+        width: isLandscape ? 280 * scale : size.width * 0.7,
+        height: isLandscape ? 48 * scale : 40 * scale,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      SizedBox(height: 14 * scale),
+      // Metadata row (e.g. 2007 · R · 3h 11m · 7.0 · 84%)
+      SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        physics: const ClampingScrollPhysics(),
+        child: Row(
+          children: [
+            SkeletonBox(width: 42 * scale, height: 16 * scale, borderRadius: BorderRadius.circular(4)),
+            SizedBox(width: 8 * scale),
+            SkeletonBox(width: 24 * scale, height: 16 * scale, borderRadius: BorderRadius.circular(4)),
+            SizedBox(width: 8 * scale),
+            SkeletonBox(width: 56 * scale, height: 16 * scale, borderRadius: BorderRadius.circular(4)),
+            SizedBox(width: 8 * scale),
+            SkeletonBox(width: 48 * scale, height: 16 * scale, borderRadius: BorderRadius.circular(4)),
+            SizedBox(width: 8 * scale),
+            SkeletonBox(width: 42 * scale, height: 16 * scale, borderRadius: BorderRadius.circular(4)),
+          ],
+        ),
+      ),
+      SizedBox(height: 20 * scale),
+      // Action buttons row: Play button pill + circular buttons
+      Row(
+        children: [
+          SkeletonBox(width: 110 * scale, height: 48 * scale, borderRadius: BorderRadius.circular(24 * scale)),
+          SizedBox(width: 14 * scale),
+          SkeletonBox(width: 48 * scale, height: 48 * scale, borderRadius: BorderRadius.circular(24 * scale)),
+          SizedBox(width: 14 * scale),
+          SkeletonBox(width: 48 * scale, height: 48 * scale, borderRadius: BorderRadius.circular(24 * scale)),
+          SizedBox(width: 14 * scale),
+          SkeletonBox(width: 48 * scale, height: 48 * scale, borderRadius: BorderRadius.circular(24 * scale)),
+          SizedBox(width: 14 * scale),
+          SkeletonBox(width: 48 * scale, height: 48 * scale, borderRadius: BorderRadius.circular(24 * scale)),
+        ],
+      ),
+    ];
 
     return Stack(
       children: [
@@ -447,53 +586,24 @@ class DetailScreenSkeleton extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Top genres text placeholder (e.g. THRILLER · ACTION & ADVENTURE · HORROR)
-                SkeletonBox(
-                  width: 200 * scale,
-                  height: 12 * scale,
-                  borderRadius: BorderRadius.circular(3),
-                ),
-                SizedBox(height: 16 * scale),
-                // Title / Logo (e.g. GRINDHOUSE)
-                SkeletonBox(
-                  width: isLandscape ? 280 * scale : size.width * 0.7,
-                  height: isLandscape ? 48 * scale : 40 * scale,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                SizedBox(height: 14 * scale),
-                // Metadata row (e.g. 2007 · R · 3h 11m · 7.0 · 84%)
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  physics: const ClampingScrollPhysics(),
-                  child: Row(
-                    children: [
-                      SkeletonBox(width: 42 * scale, height: 16 * scale, borderRadius: BorderRadius.circular(4)),
-                      SizedBox(width: 8 * scale),
-                      SkeletonBox(width: 24 * scale, height: 16 * scale, borderRadius: BorderRadius.circular(4)),
-                      SizedBox(width: 8 * scale),
-                      SkeletonBox(width: 56 * scale, height: 16 * scale, borderRadius: BorderRadius.circular(4)),
-                      SizedBox(width: 8 * scale),
-                      SkeletonBox(width: 48 * scale, height: 16 * scale, borderRadius: BorderRadius.circular(4)),
-                      SizedBox(width: 8 * scale),
-                      SkeletonBox(width: 42 * scale, height: 16 * scale, borderRadius: BorderRadius.circular(4)),
-                    ],
+                // Portrait pins the hero to the bottom of a tall box so the
+                // backdrop fills everything above it.
+                if (isLandscape)
+                  ...heroChildren
+                else
+                  ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: nouveauHeroMinHeight(size),
+                    ),
+                    child: Align(
+                      alignment: Alignment.bottomLeft,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: heroChildren,
+                      ),
+                    ),
                   ),
-                ),
-                SizedBox(height: 20 * scale),
-                // Action buttons row: Play button pill + circular buttons
-                Row(
-                  children: [
-                    SkeletonBox(width: 110 * scale, height: 48 * scale, borderRadius: BorderRadius.circular(24 * scale)),
-                    SizedBox(width: 14 * scale),
-                    SkeletonBox(width: 48 * scale, height: 48 * scale, borderRadius: BorderRadius.circular(24 * scale)),
-                    SizedBox(width: 14 * scale),
-                    SkeletonBox(width: 48 * scale, height: 48 * scale, borderRadius: BorderRadius.circular(24 * scale)),
-                    SizedBox(width: 14 * scale),
-                    SkeletonBox(width: 48 * scale, height: 48 * scale, borderRadius: BorderRadius.circular(24 * scale)),
-                    SizedBox(width: 14 * scale),
-                    SkeletonBox(width: 48 * scale, height: 48 * scale, borderRadius: BorderRadius.circular(24 * scale)),
-                  ],
-                ),
                 SizedBox(height: 36 * scale),
                 // Stacked Section: Section header (e.g. "Chapters" / "Episodes")
                 SkeletonBox(
@@ -539,72 +649,173 @@ class DetailScreenSkeleton extends StatelessWidget {
   Widget _buildClassic(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
     final userPrefs = _effectivePrefs;
-    final hasLeftSidebar =
-        userPrefs?.get(UserPreferences.navbarPosition) == NavbarPosition.left;
-    final leftPadding = hasLeftSidebar ? 120.0 : 48.0;
+    final safeTop = MediaQuery.paddingOf(context).top;
+    final desktop = useDesktopDetailLayout(context);
+    final scale = detailDesktopScale(prefs: userPrefs);
+    final poster = classicDetailPosterSize(context, prefs: userPrefs);
+    final horizontalInset = desktop ? 48.0 : 16.0;
 
-    return SingleChildScrollView(
-      physics: const ClampingScrollPhysics(),
-      padding: EdgeInsets.symmetric(horizontal: leftPadding, vertical: 40.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    // Classic buttons are icon tiles with the label underneath, all the same
+    // size, rather than a wide play pill next to round icons.
+    final tileWidth = desktop ? 108.0 * scale : 80.0;
+    final iconSide = desktop ? 58.0 * scale : 44.0;
+    final actionTile = SizedBox(
+      width: tileWidth,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          // Left Poster card
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SkeletonBox(
-                width: 240,
-                height: 360,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              const SizedBox(height: 20),
-              SkeletonBox(
-                width: 240,
-                height: 48,
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ],
+          SkeletonBox(
+            width: iconSide,
+            height: iconSide,
+            borderRadius: BorderRadius.circular(desktop ? 15.0 * scale : 14.0),
           ),
-          const SizedBox(width: 48),
-          // Right metadata
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          SizedBox(height: desktop ? 8.0 * scale : 6.0),
+          SkeletonBox(
+            width: tileWidth * 0.6,
+            height: 11,
+            borderRadius: BorderRadius.circular(4),
+          ),
+        ],
+      ),
+    );
+
+    final posterBox = SkeletonBox(
+      width: poster.width,
+      height: poster.height,
+      borderRadius: BorderRadius.circular(12),
+    );
+
+    // The overview sits in the header beside the poster, not below the
+    // buttons, and a phone centres the whole column under the poster.
+    final info = Column(
+      crossAxisAlignment: desktop
+          ? CrossAxisAlignment.start
+          : CrossAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SkeletonBox(
+          width: size.width * (desktop ? 0.32 : 0.62),
+          height: 34,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        const SizedBox(height: 14),
+        Wrap(
+          alignment: desktop ? WrapAlignment.start : WrapAlignment.center,
+          spacing: 12,
+          runSpacing: 8,
+          children: [
+            SkeletonBox(
+              width: 60,
+              height: 20,
+              borderRadius: BorderRadius.circular(4),
+            ),
+            SkeletonBox(
+              width: 80,
+              height: 20,
+              borderRadius: BorderRadius.circular(4),
+            ),
+            SkeletonBox(
+              width: 50,
+              height: 20,
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ],
+        ),
+        const SizedBox(height: 18),
+        SkeletonBox(
+          width: double.infinity,
+          height: 14,
+          borderRadius: BorderRadius.circular(4),
+        ),
+        const SizedBox(height: 10),
+        SkeletonBox(
+          width: double.infinity,
+          height: 14,
+          borderRadius: BorderRadius.circular(4),
+        ),
+        const SizedBox(height: 10),
+        SkeletonBox(
+          width: size.width * (desktop ? 0.2 : 0.4),
+          height: 14,
+          borderRadius: BorderRadius.circular(4),
+        ),
+      ],
+    );
+
+    final header = desktop
+        ? Padding(
+            padding: EdgeInsets.fromLTRB(48, safeTop + 80, 48, 16),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                const SizedBox(height: 16),
-                // Title
-                SkeletonBox(
-                  width: size.width * 0.45,
-                  height: 40,
-                  borderRadius: BorderRadius.circular(8),
+                Expanded(child: info),
+                const SizedBox(width: 32),
+                posterBox,
+              ],
+            ),
+          )
+        : Padding(
+            padding: EdgeInsets.fromLTRB(16, safeTop + 60, 16, 12),
+            child: SizedBox(
+              width: double.infinity,
+              child: Column(
+                children: [posterBox, const SizedBox(height: 16), info],
+              ),
+            ),
+          );
+
+    return Stack(
+      children: [
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          height: size.height * 0.45,
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Colors.white.withAlpha(20), Colors.transparent],
+              ),
+            ),
+          ),
+        ),
+        Positioned.fill(
+          child: SingleChildScrollView(
+            physics: const ClampingScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                header,
+                // The buttons come after the header, centred as a group and
+                // wrapping onto another line when they run out of room.
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: horizontalInset),
+                  child: Wrap(
+                    alignment: WrapAlignment.center,
+                    spacing: 8,
+                    runSpacing: 12,
+                    children: List.generate(5, (_) => actionTile),
+                  ),
                 ),
-                const SizedBox(height: 16),
-                // Subtitle / tags
-                Row(
-                  children: [
-                    SkeletonBox(width: 60, height: 20, borderRadius: BorderRadius.circular(4)),
-                    const SizedBox(width: 12),
-                    SkeletonBox(width: 80, height: 20, borderRadius: BorderRadius.circular(4)),
-                    const SizedBox(width: 12),
-                    SkeletonBox(width: 50, height: 20, borderRadius: BorderRadius.circular(4)),
-                  ],
+                const SizedBox(height: 32),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: horizontalInset),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: SkeletonBox(
+                      width: 120,
+                      height: 24,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                  ),
                 ),
-                const SizedBox(height: 28),
-                // Overview paragraph
-                SkeletonBox(width: double.infinity, height: 14, borderRadius: BorderRadius.circular(4)),
-                const SizedBox(height: 10),
-                SkeletonBox(width: double.infinity, height: 14, borderRadius: BorderRadius.circular(4)),
-                const SizedBox(height: 10),
-                SkeletonBox(width: size.width * 0.4, height: 14, borderRadius: BorderRadius.circular(4)),
-                const SizedBox(height: 40),
-                // People / Cast row placeholder
-                SkeletonBox(width: 120, height: 24, borderRadius: BorderRadius.circular(6)),
                 const SizedBox(height: 16),
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   physics: const ClampingScrollPhysics(),
+                  padding: EdgeInsets.symmetric(horizontal: horizontalInset),
                   child: Row(
                     children: List.generate(
                       6,
@@ -630,11 +841,12 @@ class DetailScreenSkeleton extends StatelessWidget {
                     ),
                   ),
                 ),
+                const SizedBox(height: 32),
               ],
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

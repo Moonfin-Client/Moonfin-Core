@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:server_core/server_core.dart';
-import 'jellyfin_item_fields.dart';
 
 class JellyfinUserLibraryApi implements UserLibraryApi {
   final Dio _dio;
@@ -53,7 +52,7 @@ class JellyfinUserLibraryApi implements UserLibraryApi {
   @override
   Future<Map<String, dynamic>> getItem(String itemId) async {
     final response = await _dio.get('/Items/$itemId', queryParameters: {
-      'Fields': kItemFields,
+      'Fields': kDetailItemFields,
     });
     return response.data as Map<String, dynamic>;
   }

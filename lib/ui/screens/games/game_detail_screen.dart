@@ -14,6 +14,8 @@ import 'package:server_core/server_core.dart';
 import '../../navigation/destinations.dart';
 import '../../navigation/route_lifecycle_observer.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../util/error_message.dart';
+import '../../../preference/user_preferences.dart';
 import '../../widgets/adaptive/adaptive_glass.dart';
 import '../../widgets/bounded_network_image.dart';
 import '../../widgets/focus/focus_theme.dart';
@@ -64,6 +66,8 @@ class GameDetailScreen extends StatefulWidget {
   State<GameDetailScreen> createState() => _GameDetailScreenState();
 }
 
+enum _SaveReadiness { checking, absent, available, failed }
+
 class _GameDetailScreenState extends State<GameDetailScreen> with RouteAware {
   final MediaServerClient _client = GetIt.instance<MediaServerClient>();
   final FocusNode _primaryActionFocusNode = FocusNode(
@@ -73,7 +77,9 @@ class _GameDetailScreenState extends State<GameDetailScreen> with RouteAware {
   bool _loading = true;
   String? _error;
   GameDetail? _game;
-  bool _hasSave = false;
+  _SaveReadiness _saveReadiness = _SaveReadiness.checking;
+  int _saveCheckGeneration = 0;
+  bool _hardwareRenderingEnabled = true;
   List<GameSummary> _related = const [];
   String? _artworkScope;
   RetroArtworkActivityGate? _retroArtworkActivityGate;
@@ -92,6 +98,11 @@ class _GameDetailScreenState extends State<GameDetailScreen> with RouteAware {
   @override
   void initState() {
     super.initState();
+    if (GetIt.instance.isRegistered<UserPreferences>()) {
+      _hardwareRenderingEnabled = GetIt.instance<UserPreferences>().get(
+        UserPreferences.useHardwareRendering,
+      );
+    }
     _load();
   }
 
@@ -268,6 +279,7 @@ class _GameDetailScreenState extends State<GameDetailScreen> with RouteAware {
       unawaited(retainGameArtworkCacheScope(artworkScope));
       setState(() {
         _game = game;
+        _saveReadiness = _SaveReadiness.checking;
         _loading = false;
       });
 
@@ -283,18 +295,23 @@ class _GameDetailScreenState extends State<GameDetailScreen> with RouteAware {
 
       // Save state and related games are enrichments; a failure here must not block the
       // screen that already has its core data.
-      _loadSave(games, game);
+      unawaited(_loadSave(games, game));
       _loadRelated(games, game);
     } catch (e) {
       if (!mounted) return;
+      final detail = describeError(e, AppLocalizations.of(context));
       setState(() {
         _loading = false;
-        _error = 'Failed to load game: $e';
+        _error = 'Failed to load game: $detail';
       });
     }
   }
 
   Future<void> _loadSave(GamesApi games, GameDetail game) async {
+    final generation = ++_saveCheckGeneration;
+    if (mounted && _saveReadiness != _SaveReadiness.checking) {
+      setState(() => _saveReadiness = _SaveReadiness.checking);
+    }
     try {
       final save = await loadGameStateWithMigration(
         games,
@@ -302,9 +319,22 @@ class _GameDetailScreenState extends State<GameDetailScreen> with RouteAware {
         game.core,
         forceEmulatorJs: _usesEmulatorJsOverride(game),
       );
-      if (!mounted) return;
-      setState(() => _hasSave = save != null && save.isNotEmpty);
-    } catch (_) {}
+      if (!mounted || generation != _saveCheckGeneration) return;
+      setState(() {
+        _saveReadiness = save != null && save.isNotEmpty
+            ? _SaveReadiness.available
+            : _SaveReadiness.absent;
+      });
+    } catch (_) {
+      if (!mounted || generation != _saveCheckGeneration) return;
+      setState(() => _saveReadiness = _SaveReadiness.failed);
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || generation != _saveCheckGeneration || _routeIsCovered) {
+        return;
+      }
+      _primaryActionFocusNode.requestFocus();
+    });
   }
 
   Future<void> _loadRelated(GamesApi games, GameDetail game) async {
@@ -320,9 +350,20 @@ class _GameDetailScreenState extends State<GameDetailScreen> with RouteAware {
     } catch (_) {}
   }
 
+  void _retrySaveCheck() {
+    final games = _client.gamesApi;
+    final game = _game;
+    if (games == null || game == null) return;
+    unawaited(_loadSave(games, game));
+  }
+
   void _play({required bool fresh}) {
     final game = _game;
-    if (game == null) return;
+    if (game == null ||
+        (_saveReadiness != _SaveReadiness.absent &&
+            _saveReadiness != _SaveReadiness.available)) {
+      return;
+    }
     if (!PlatformDetection.gamesPlaybackSupported ||
         !gameCoreSupported(game.core)) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -343,8 +384,27 @@ class _GameDetailScreenState extends State<GameDetailScreen> with RouteAware {
         name: game.title,
         startFresh: fresh,
         forceEmulatorJs: _usesEmulatorJsOverride(game),
+        hardwareRenderingEnabled: _hardwareRenderingEnabled,
       ),
     );
+  }
+
+  Future<void> _toggleHardwareRendering() async {
+    if (!GetIt.instance.isRegistered<UserPreferences>()) return;
+    final next = !_hardwareRenderingEnabled;
+    setState(() => _hardwareRenderingEnabled = next);
+    try {
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.useHardwareRendering,
+        next,
+      );
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _hardwareRenderingEnabled = !next);
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Could not save hardware rendering setting.'),
+      ));
+    }
   }
 
   Future<void> _selectCore() async {
@@ -373,7 +433,8 @@ class _GameDetailScreenState extends State<GameDetailScreen> with RouteAware {
       if (!mounted) return;
       setState(() {
         _game = detail;
-        _hasSave = false;
+        _saveCheckGeneration++;
+        _saveReadiness = _SaveReadiness.checking;
       });
     }
 
@@ -396,11 +457,12 @@ class _GameDetailScreenState extends State<GameDetailScreen> with RouteAware {
       }
     } catch (e) {
       if (!mounted) return;
+      final detail = describeError(e, AppLocalizations.of(context));
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Could not change player: $e')));
+      ).showSnackBar(SnackBar(content: Text('Could not change player: $detail')));
     } finally {
-      if (didUpdate && mounted) _loadSave(games, updated);
+      if (didUpdate && mounted) unawaited(_loadSave(games, updated));
     }
   }
 
@@ -459,13 +521,16 @@ class _GameDetailScreenState extends State<GameDetailScreen> with RouteAware {
                 retroArtworkActivityGate: _routeIsCovered
                     ? null
                     : _retroArtworkActivityGate,
-                hasSave: _hasSave,
+                saveReadiness: _saveReadiness,
                 related: _related,
                 tv: tv,
                 primaryActionFocusNode: _primaryActionFocusNode,
                 onPlay: () => _play(fresh: false),
                 onRestart: () => _play(fresh: true),
+                onRetrySave: _retrySaveCheck,
                 onSelectCore: _selectCore,
+                hardwareRenderingEnabled: _hardwareRenderingEnabled,
+                onToggleHardwareRendering: _toggleHardwareRendering,
                 onOpenGame: _openGame,
               )
             : _PortraitBody(
@@ -480,12 +545,15 @@ class _GameDetailScreenState extends State<GameDetailScreen> with RouteAware {
                 retroArtworkActivityGate: _routeIsCovered
                     ? null
                     : _retroArtworkActivityGate,
-                hasSave: _hasSave,
+                saveReadiness: _saveReadiness,
                 related: _related,
                 primaryActionFocusNode: _primaryActionFocusNode,
                 onPlay: () => _play(fresh: false),
                 onRestart: () => _play(fresh: true),
+                onRetrySave: _retrySaveCheck,
                 onSelectCore: _selectCore,
+                hardwareRenderingEnabled: _hardwareRenderingEnabled,
+                onToggleHardwareRendering: _toggleHardwareRendering,
                 onOpenGame: _openGame,
               );
       },
@@ -500,12 +568,15 @@ class _PortraitBody extends StatelessWidget {
     required this.artworkDataSource,
     required this.retroArtworkTransport,
     required this.retroArtworkActivityGate,
-    required this.hasSave,
+    required this.saveReadiness,
     required this.related,
     required this.primaryActionFocusNode,
     required this.onPlay,
     required this.onRestart,
+    required this.onRetrySave,
     required this.onSelectCore,
+    required this.hardwareRenderingEnabled,
+    required this.onToggleHardwareRendering,
     required this.onOpenGame,
   });
 
@@ -514,12 +585,15 @@ class _PortraitBody extends StatelessWidget {
   final RetroArtworkDataSource? artworkDataSource;
   final RetroArtworkTransport? retroArtworkTransport;
   final RetroArtworkActivityGate? retroArtworkActivityGate;
-  final bool hasSave;
+  final _SaveReadiness saveReadiness;
   final List<GameSummary> related;
   final FocusNode primaryActionFocusNode;
   final VoidCallback onPlay;
   final VoidCallback onRestart;
+  final VoidCallback onRetrySave;
   final VoidCallback onSelectCore;
+  final bool hardwareRenderingEnabled;
+  final VoidCallback onToggleHardwareRendering;
   final ValueChanged<GameSummary> onOpenGame;
 
   @override
@@ -569,21 +643,33 @@ class _PortraitBody extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(18, 14, 18, 0),
-            child: _MetaPills(game: game, hasSave: hasSave),
+            child: _MetaPills(
+              game: game,
+              hasSave: saveReadiness == _SaveReadiness.available,
+            ),
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(18, 16, 18, 0),
             child: _ActionRow(
               game: game,
-              hasSave: hasSave,
+              saveReadiness: saveReadiness,
               tv: false,
               fullWidthPrimary: true,
               primaryFocusNode: primaryActionFocusNode,
               onPlay: onPlay,
               onRestart: onRestart,
+              onRetrySave: onRetrySave,
               onSelectCore: onSelectCore,
             ),
           ),
+          if (PlatformDetection.isAndroid && _usesNativeBackend(game))
+            Padding(
+              padding: const EdgeInsets.fromLTRB(18, 12, 18, 0),
+              child: _HardwareRenderingToggle(
+                enabled: hardwareRenderingEnabled,
+                onToggle: onToggleHardwareRendering,
+              ),
+            ),
           if (game.overview != null && game.overview!.isNotEmpty)
             Padding(
               padding: const EdgeInsets.fromLTRB(18, 18, 18, 0),
@@ -593,7 +679,7 @@ class _PortraitBody extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(18, 18, 18, 0),
             child: _DetailsPanel(
               game: game,
-              hasSave: hasSave,
+              hasSave: saveReadiness == _SaveReadiness.available,
               onSelectCore: onSelectCore,
             ),
           ),
@@ -625,13 +711,16 @@ class _LandscapeBody extends StatelessWidget {
     required this.artworkDataSource,
     required this.retroArtworkTransport,
     required this.retroArtworkActivityGate,
-    required this.hasSave,
+    required this.saveReadiness,
     required this.related,
     required this.tv,
     required this.primaryActionFocusNode,
     required this.onPlay,
     required this.onRestart,
+    required this.onRetrySave,
     required this.onSelectCore,
+    required this.hardwareRenderingEnabled,
+    required this.onToggleHardwareRendering,
     required this.onOpenGame,
   });
 
@@ -640,13 +729,16 @@ class _LandscapeBody extends StatelessWidget {
   final RetroArtworkDataSource? artworkDataSource;
   final RetroArtworkTransport? retroArtworkTransport;
   final RetroArtworkActivityGate? retroArtworkActivityGate;
-  final bool hasSave;
+  final _SaveReadiness saveReadiness;
   final List<GameSummary> related;
   final bool tv;
   final FocusNode primaryActionFocusNode;
   final VoidCallback onPlay;
   final VoidCallback onRestart;
+  final VoidCallback onRetrySave;
   final VoidCallback onSelectCore;
+  final bool hardwareRenderingEnabled;
+  final VoidCallback onToggleHardwareRendering;
   final ValueChanged<GameSummary> onOpenGame;
 
   @override
@@ -688,26 +780,42 @@ class _LandscapeBody extends StatelessWidget {
                           children: [
                             _HeroTitle(game: game, large: true),
                             const SizedBox(height: 16),
-                            _MetaPills(game: game, hasSave: hasSave),
+                            _MetaPills(
+                              game: game,
+                              hasSave:
+                                  saveReadiness == _SaveReadiness.available,
+                            ),
                             const SizedBox(height: 20),
                             _ActionRow(
                               game: game,
-                              hasSave: hasSave,
+                              saveReadiness: saveReadiness,
                               tv: tv,
                               fullWidthPrimary: false,
                               primaryFocusNode: primaryActionFocusNode,
                               onPlay: onPlay,
                               onRestart: onRestart,
+                              onRetrySave: onRetrySave,
                               onSelectCore: onSelectCore,
                             ),
-                            if (game.overview != null && game.overview!.isNotEmpty) ...[
+                            if (PlatformDetection.isAndroid &&
+                                _usesNativeBackend(game))
+                              Padding(
+                                padding: const EdgeInsets.only(top: 12),
+                                child: _HardwareRenderingToggle(
+                                  enabled: hardwareRenderingEnabled,
+                                  onToggle: onToggleHardwareRendering,
+                                ),
+                              ),
+                            if (game.overview != null &&
+                                game.overview!.isNotEmpty) ...[
                               const SizedBox(height: 22),
                               _OverviewBlock(text: game.overview!),
                             ],
                             const SizedBox(height: 22),
                             _DetailsPanel(
                               game: game,
-                              hasSave: hasSave,
+                              hasSave:
+                                  saveReadiness == _SaveReadiness.available,
                               onSelectCore: onSelectCore,
                             ),
                           ],
@@ -888,7 +996,7 @@ class _BackdropImage extends StatelessWidget {
             cacheManager: gameArtworkCacheManagerForScope(artworkScope),
             fit: BoxFit.cover,
             alignment: Alignment.center,
-            fadeInDuration: const Duration(milliseconds: 250),
+            fadeInDuration: Duration.zero,
             maxWidth: 1920,
             onLoadFinished: () =>
                 artworkDataSource?.reportImageLoaded(gameId, role: step.role),
@@ -1176,27 +1284,47 @@ class _Pill extends StatelessWidget {
 class _ActionRow extends StatelessWidget {
   const _ActionRow({
     required this.game,
-    required this.hasSave,
+    required this.saveReadiness,
     required this.tv,
     required this.fullWidthPrimary,
     required this.primaryFocusNode,
     required this.onPlay,
     required this.onRestart,
+    required this.onRetrySave,
     required this.onSelectCore,
   });
 
   final GameDetail game;
-  final bool hasSave;
+  final _SaveReadiness saveReadiness;
   final bool tv;
   final bool fullWidthPrimary;
   final FocusNode primaryFocusNode;
   final VoidCallback onPlay;
   final VoidCallback onRestart;
+  final VoidCallback onRetrySave;
   final VoidCallback onSelectCore;
 
   @override
   Widget build(BuildContext context) {
-    final primaryLabel = hasSave ? 'Continue' : 'Play';
+    final hasSave = saveReadiness == _SaveReadiness.available;
+    final checking = saveReadiness == _SaveReadiness.checking;
+    final failed = saveReadiness == _SaveReadiness.failed;
+    final primaryLabel = switch (saveReadiness) {
+      _SaveReadiness.checking => 'Checking for save…',
+      _SaveReadiness.failed => 'Retry save check',
+      _SaveReadiness.available => 'Continue',
+      _SaveReadiness.absent => 'Play',
+    };
+    final primaryIcon = checking
+        ? Icons.hourglass_top
+        : failed
+        ? Icons.refresh
+        : Icons.play_arrow;
+    final VoidCallback? primaryAction = checking
+        ? null
+        : failed
+        ? onRetrySave
+        : onPlay;
     final accent = Theme.of(context).colorScheme.primary;
     final native = _usesNativeBackend(game);
     final coreFill = _coreButtonFillColor(native);
@@ -1211,9 +1339,9 @@ class _ActionRow extends StatelessWidget {
             focusColor: accent,
             autoScroll: true,
             padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
-            onPressed: onPlay,
+            onPressed: primaryAction,
             child: _ActionLabel(
-              icon: Icons.play_arrow,
+              icon: primaryIcon,
               label: primaryLabel,
               color: Colors.white,
             ),
@@ -1261,8 +1389,8 @@ class _ActionRow extends StatelessWidget {
 
     final primary = FilledButton.icon(
       focusNode: primaryFocusNode,
-      onPressed: onPlay,
-      icon: const Icon(Icons.play_arrow),
+      onPressed: primaryAction,
+      icon: Icon(primaryIcon),
       label: Text(primaryLabel),
     );
     final restart = OutlinedButton.icon(
@@ -1296,6 +1424,77 @@ class _ActionRow extends StatelessWidget {
         if (hasSave) ...[const SizedBox(width: 10), restart],
         if (_canSelectCore(game)) ...[const SizedBox(width: 10), core],
       ],
+    );
+  }
+}
+
+class _HardwareRenderingToggle extends StatelessWidget {
+  const _HardwareRenderingToggle({
+    required this.enabled,
+    required this.onToggle,
+  });
+
+  final bool enabled;
+  final VoidCallback onToggle;
+
+  @override
+  Widget build(BuildContext context) {
+    final status = enabled ? 'ON' : 'OFF';
+    final statusColor = enabled
+        ? const Color(0xFFA9F0CC)
+        : const Color(0xFFFFC47A);
+    return FocusableButton(
+      semanticLabel: 'Experimental hardware rendering: $status',
+      autoScroll: true,
+      onPressed: onToggle,
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.memory_rounded, color: statusColor, size: 20),
+              const SizedBox(width: 9),
+              const Text(
+                'Hardware rendering',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(width: 10),
+              ExcludeSemantics(
+                child: IgnorePointer(
+                  child: Switch(
+                    value: enabled,
+                    onChanged: (_) {},
+                    activeThumbColor: const Color(0xFFA9F0CC),
+                    activeTrackColor: const Color(0x667FE0B0),
+                    inactiveThumbColor: const Color(0xFFFFC47A),
+                    inactiveTrackColor: const Color(0x66FF9F43),
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 6),
+              Text(
+                status,
+                style: TextStyle(
+                  color: statusColor,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          const Text(
+            'EXPERIMENTAL · OFF disables the EGL hardware path. Hardware-only cores may not start.',
+            style: TextStyle(color: Colors.white70, fontSize: 12, height: 1.25),
+          ),
+        ],
+      ),
     );
   }
 }

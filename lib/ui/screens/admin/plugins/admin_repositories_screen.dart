@@ -5,6 +5,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../util/error_message.dart';
 import '../../../widgets/adaptive/adaptive_dialog.dart';
 import '../providers/admin_user_providers.dart';
 import '../widgets/admin_form_styles.dart';
@@ -110,8 +111,9 @@ class _AdminRepositoriesScreenState
       ref.invalidate(adminAvailablePackagesProvider);
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context).adminRepositoriesSaveFailed(e.toString()))),
+          SnackBar(content: Text(l10n.adminRepositoriesSaveFailed(describeError(e, l10n)))),
         );
       }
     } finally {
@@ -121,6 +123,7 @@ class _AdminRepositoriesScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final reposAsync = ref.watch(adminRepositoriesProvider);
 
     return reposAsync.when(
@@ -130,7 +133,7 @@ class _AdminRepositoriesScreenState
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(AppLocalizations.of(context).adminRepositoriesLoadFailed(error.toString())),
+                Text(l10n.adminRepositoriesLoadFailed(describeError(error, l10n))),
                 const SizedBox(height: 8),
                 ElevatedButton(
                   onPressed: () => ref.invalidate(adminRepositoriesProvider),

@@ -16,6 +16,8 @@ import '../track_selector_dialog.dart';
 void showSeerrReportIssueDialog({
   required BuildContext context,
   required SeerrMediaDetailViewModel vm,
+  int? initialSeason,
+  int? initialEpisode,
 }) {
   final s = vm.state;
   showStyledPlayerDialog<void>(
@@ -26,6 +28,8 @@ void showSeerrReportIssueDialog({
       isTv: s.isTv,
       seasons: s.tv?.seasons ?? const [],
       numberOfSeasons: s.numberOfSeasons ?? 0,
+      initialSeason: initialSeason,
+      initialEpisode: initialEpisode,
     ),
   );
 }
@@ -37,6 +41,8 @@ class SeerrReportIssueDialog extends StatefulWidget {
   final bool isTv;
   final List<SeerrSeason> seasons;
   final int numberOfSeasons;
+  final int? initialSeason;
+  final int? initialEpisode;
 
   const SeerrReportIssueDialog({
     super.key,
@@ -44,6 +50,8 @@ class SeerrReportIssueDialog extends StatefulWidget {
     required this.isTv,
     required this.seasons,
     required this.numberOfSeasons,
+    this.initialSeason,
+    this.initialEpisode,
   });
 
   @override
@@ -71,8 +79,15 @@ class _SeerrReportIssueDialogState extends State<SeerrReportIssueDialog> {
   @override
   void initState() {
     super.initState();
-    if (widget.isTv && _seasonNumbers.length == 1) {
-      _season = _seasonNumbers.first;
+    if (widget.isTv) {
+      if (widget.initialSeason != null && widget.initialSeason! > 0) {
+        _season = widget.initialSeason!;
+        if (widget.initialEpisode != null && widget.initialEpisode! > 0) {
+          _episode = widget.initialEpisode!;
+        }
+      } else if (_seasonNumbers.length == 1) {
+        _season = _seasonNumbers.first;
+      }
     }
   }
 

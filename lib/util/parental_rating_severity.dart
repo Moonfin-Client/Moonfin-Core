@@ -112,3 +112,13 @@ int parentalRatingSeverity(String rating) {
 
   return kRatingUnrecognized;
 }
+
+/// Whether [severity] names a rung on the ladder rather than one of the two
+/// buckets that sit off it.
+///
+/// [kRatingUnrecognized] is a tiebreak so an unplaceable label still sorts
+/// somewhere stable. It isn't a claim that the label is stronger than NC-17.
+/// Anything comparing two severities to make a decision has to leave both
+/// buckets out, or it reads a sorting convenience as a severity judgement.
+bool isRankedRatingSeverity(int severity) =>
+    severity != kRatingUnrecognized && severity != kRatingUnrated;

@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:moonfin_design/moonfin_design.dart';
@@ -10,6 +9,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../mixins/focus_state_mixin.dart';
 import '../../navigation/destinations.dart';
 import 'seerr_image_urls.dart';
+import '../offline_aware_image.dart';
 
 /// The "part of a collection" strip under a movie's actions, which leads into
 /// the collection it belongs to.
@@ -21,11 +21,17 @@ class SeerrCollectionBanner extends StatefulWidget {
   /// block, so there is nothing below it to reach.
   final VoidCallback? onNavigateUp;
 
+  /// Replaces the push to the collection page. A host that shows the banner
+  /// inside a dialog sets this so it can close itself first, rather than
+  /// leaving the dialog orphaned over the pushed route.
+  final VoidCallback? onOpen;
+
   const SeerrCollectionBanner({
     super.key,
     required this.collection,
     this.focusNode,
     this.onNavigateUp,
+    this.onOpen,
   });
 
   @override
@@ -39,9 +45,14 @@ class _SeerrCollectionBannerState extends State<SeerrCollectionBanner>
     final l10n = AppLocalizations.of(context);
     final collection = widget.collection;
     final backdrop = collection.backdropPath;
-    void open() => context.push(
-          Destinations.seerrCollection(collection.id.toString()),
-        );
+    void open() {
+      final onOpen = widget.onOpen;
+      if (onOpen != null) {
+        onOpen();
+        return;
+      }
+      context.push(Destinations.seerrCollection(collection.id.toString()));
+    }
     return Focus(
       focusNode: widget.focusNode,
       onFocusChange: setFocused,
@@ -87,7 +98,7 @@ class _SeerrCollectionBannerState extends State<SeerrCollectionBanner>
                 children: [
                   if (backdrop != null)
                     Positioned.fill(
-                      child: CachedNetworkImage(
+                      child: OfflineAwareImage(
                         imageUrl: '$seerrBackdropBase$backdrop',
                         fit: BoxFit.cover,
                       ),

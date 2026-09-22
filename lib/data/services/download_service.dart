@@ -2123,9 +2123,14 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
 
   Future<AggregatedItem> _ensureFullItem(AggregatedItem item) async {
     // Items from row queries are missing fields like Overview and Chapters,
-    // so always fetch the full item before persisting its metadata.
+    // so always fetch the full item before persisting its metadata. This copy
+    // names trickplay because once the item is offline there's no route left
+    // to ask for it.
     try {
-      final data = await _client.itemsApi.getItem(item.id);
+      final data = await _client.itemsApi.getItem(
+        item.id,
+        fields: kOfflineItemFields,
+      );
       return AggregatedItem(
         id: item.id,
         serverId: item.serverId,
@@ -2951,7 +2956,7 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
       parentId: boxSetId,
       recursive: true,
       includeItemTypes: const ['Episode', 'Movie', 'Video', 'Audio'],
-      fields: '$_batchFetchFields,Trickplay',
+      fields: _batchFetchFields,
     );
     return _toItems(data['Items'] as List?);
   }

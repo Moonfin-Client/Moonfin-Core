@@ -26,7 +26,6 @@ import '../../../util/relative_time_label.dart';
 import '../../../util/tv_image_cache_stub.dart'
     if (dart.library.io) '../../../util/tv_image_cache_io.dart';
 import '../../../l10n/app_localizations.dart';
-import '../downloads/downloads_panel.dart';
 import 'settings_app_bar.dart';
 import '../../widgets/adaptive/adaptive_dialog.dart';
 import '../../widgets/adaptive/adaptive_list_section.dart';
@@ -139,27 +138,14 @@ class DownloadSettingsScreen extends ConsumerWidget {
             adaptiveListSection(
               children: [
                 storage.when(
+                  // Reporting only. Managing storage means the downloads list,
+                  // which is where this screen is reached from, so offering a
+                  // way back to it just walks in a circle.
                   data: (bytes) => DpadListTile(
                     useSettingsIconShell: true,
                     leading: const Icon(Icons.storage),
                     title: Text(l10n.storageUsed),
                     subtitle: Text(formatBytes(bytes)),
-                    trailing: PlatformDetection.isTV
-                        ? Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(l10n.manage),
-                              const SizedBox(width: 4),
-                              const Icon(Icons.chevron_right),
-                            ],
-                          )
-                        : TextButton(
-                            onPressed: () => showDownloadsDialog(context),
-                            child: Text(l10n.manage),
-                          ),
-                    onTap: PlatformDetection.isTV
-                        ? () => showDownloadsDialog(context)
-                        : null,
                   ),
                   loading: () => PlatformDetection.isTV
                       ? DpadListTile(

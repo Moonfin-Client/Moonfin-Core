@@ -22,6 +22,15 @@ class PinEntryDialog extends StatefulWidget {
   final VoidCallback? onForgotPin;
   final int pinLength;
 
+  /// Called after a wrong guess, returning how long the next one has to wait.
+  /// Without it guessing stays free, which is fine for a convenience lock and
+  /// not for one holding a child out.
+  final Future<Duration> Function()? onFailedAttempt;
+
+  /// How long the caller is already making the user wait when the dialog
+  /// opens, so a reopen doesn't hand back a fresh set of free guesses.
+  final Duration Function()? lockoutRemaining;
+
   const PinEntryDialog({
     super.key,
     required this.mode,
@@ -29,6 +38,8 @@ class PinEntryDialog extends StatefulWidget {
     this.onPinSet,
     this.onForgotPin,
     this.pinLength = 4,
+    this.onFailedAttempt,
+    this.lockoutRemaining,
   });
 
   /// Show the PIN dialog and return true if verified/set, false otherwise.
@@ -39,6 +50,8 @@ class PinEntryDialog extends StatefulWidget {
     Future<void> Function(String pin)? onPinSet,
     VoidCallback? onForgotPin,
     int pinLength = 4,
+    Future<Duration> Function()? onFailedAttempt,
+    Duration Function()? lockoutRemaining,
   }) async {
     final result = await showFocusRestoringDialog<bool>(
       context: context,
@@ -49,6 +62,8 @@ class PinEntryDialog extends StatefulWidget {
         onPinSet: onPinSet,
         onForgotPin: onForgotPin,
         pinLength: pinLength,
+        onFailedAttempt: onFailedAttempt,
+        lockoutRemaining: lockoutRemaining,
       ),
     );
     return result ?? false;
@@ -118,14 +133,33 @@ class _PinEntryDialogState extends State<PinEntryDialog> {
     });
   }
 
+  static String _formatWait(Duration wait) {
+    if (wait.inSeconds < 60) return '${wait.inSeconds}s';
+    return '${wait.inMinutes}m';
+  }
+
   Future<void> _onPinComplete() async {
     if (widget.mode == PinEntryMode.verify) {
+      // Reopening the dialog must not hand back a fresh set of free guesses.
+      final locked = widget.lockoutRemaining?.call() ?? Duration.zero;
+      if (locked > Duration.zero) {
+        final l10n = AppLocalizations.of(context);
+        setState(() {
+          _errorText = l10n.pinTryAgainIn(_formatWait(locked));
+          _enteredPin = '';
+        });
+        return;
+      }
       if (widget.onVerify?.call(_enteredPin) ?? false) {
         Navigator.of(context).pop(true);
       } else {
+        final wait = await widget.onFailedAttempt?.call() ?? Duration.zero;
+        if (!mounted) return;
         final l10n = AppLocalizations.of(context);
         setState(() {
-          _errorText = l10n.pinIncorrect;
+          _errorText = wait > Duration.zero
+              ? l10n.pinTryAgainIn(_formatWait(wait))
+              : l10n.pinIncorrect;
           _enteredPin = '';
         });
       }

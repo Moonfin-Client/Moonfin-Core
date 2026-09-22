@@ -6,6 +6,7 @@ import 'package:server_core/server_core.dart';
 import '../widgets/admin_form_styles.dart';
 import '../widgets/filesystem_browser.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../util/error_message.dart';
 
 class AdminPlaybackSettingsScreen extends StatefulWidget {
   const AdminPlaybackSettingsScreen({super.key});
@@ -115,7 +116,7 @@ class _AdminPlaybackSettingsScreenState
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _error = e.toString();
+        _error = describeError(e, AppLocalizations.of(context));
         _loading = false;
       });
     }
@@ -133,8 +134,9 @@ class _AdminPlaybackSettingsScreenState
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context).adminSettingsSaveFailed(e.toString()))),
+          SnackBar(content: Text(l10n.adminSettingsSaveFailed(describeError(e, l10n)))),
         );
       }
     } finally {

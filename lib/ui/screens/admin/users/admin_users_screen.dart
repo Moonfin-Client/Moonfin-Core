@@ -11,6 +11,7 @@ import '../providers/admin_user_providers.dart';
 import '../widgets/admin_form_styles.dart';
 import 'admin_user_delete_dialog.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../util/error_message.dart';
 
 class AdminUsersScreen extends ConsumerStatefulWidget {
   const AdminUsersScreen({super.key});
@@ -80,7 +81,7 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
         return;
       }
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.adminUserPolicyUpdateFailed(e.toString()))),
+        SnackBar(content: Text(l10n.adminUserPolicyUpdateFailed(describeError(e, l10n)))),
       );
     }
   }
@@ -106,7 +107,10 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
             Text(l10n.adminUsersLoadFailed,
                 style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 8),
-            Text('$e', style: Theme.of(context).textTheme.bodySmall),
+            Text(
+              describeError(e, l10n),
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
             const SizedBox(height: 16),
             FilledButton.tonal(
               onPressed: () => ref.invalidate(adminUsersListProvider),

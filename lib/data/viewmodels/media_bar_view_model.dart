@@ -178,10 +178,6 @@ class MediaBarViewModel extends ChangeNotifier {
 
       notifyListeners();
 
-      if (context != null && context.mounted && _state is MediaBarReady) {
-        _repository.precacheImages(context, (_state as MediaBarReady).items);
-      }
-
       if (_state is MediaBarReady) {
         _loadRatings((_state as MediaBarReady).items);
       }

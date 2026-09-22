@@ -13,8 +13,14 @@ Future<void> showContextMenu(
   BuildContext context,
   AggregatedItem item, {
   VoidCallback? onChanged,
+  CollectionRemovalContext? collectionRemoval,
 }) {
-  final actions = contextActionsFor(context, item, onChanged: onChanged);
+  final actions = contextActionsFor(
+    context,
+    item,
+    onChanged: onChanged,
+    collectionRemoval: collectionRemoval,
+  );
   if (actions.isEmpty) return Future<void>.value();
   // A pointer opened this from a spot on screen, so put it there. A remote or
   // a touch has no such spot and keeps the centered menu.
