@@ -536,14 +536,16 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
   }
 
   Future<SeerrDiscoverPage?> _loadPage(SeerrDiscoverRow row, int page) async {
+    final type = row.type;
     final catalog = row.catalog;
-    if (catalog != null) {
-      final type = row.type;
-      if (type == SeerrRowType.recentRequests ||
-          type == SeerrRowType.yourWatchlist ||
-          type == SeerrRowType.recentlyAdded) {
-        return null;
-      }
+    // Requests, watchlist and recently added are not served by the catalog
+    // endpoint, so they keep using their dedicated loaders even as sliders.
+    final usesCatalog =
+        catalog != null &&
+        type != SeerrRowType.recentRequests &&
+        type != SeerrRowType.yourWatchlist &&
+        type != SeerrRowType.recentlyAdded;
+    if (usesCatalog) {
       return _repo.getCatalog(
         catalog.path,
         query: catalog.query,
@@ -551,7 +553,6 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
         mediaTypeHint: catalog.mediaTypeHint,
       );
     }
-    final type = row.type;
     final limit = _prefs.fetchLimit.limit;
     final offset = (page - 1) * limit;
     switch (type) {

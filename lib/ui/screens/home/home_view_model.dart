@@ -989,12 +989,9 @@ class HomeViewModel extends ChangeNotifier {
 
   HomeRow? _placeholderForConfig(HomeSectionConfig cfg) {
     if (cfg.isSeerrSlider) {
-      final l10n = currentAppLocalizations();
       return HomeRow(
         id: cfg.stableId,
-        title: cfg.isSeerrShortcutsSlider
-            ? l10n.seerrShortcutsRow
-            : localizeSeerrSliderConfigTitle(cfg),
+        title: localizeSeerrSliderConfigTitle(cfg, currentAppLocalizations()),
         rowType: HomeRowType.seerr,
         isLoading: true,
       );
@@ -2172,6 +2169,7 @@ class HomeViewModel extends ChangeNotifier {
           id: cfg.stableId,
           title: localizeSeerrSliderTitle(
             catalog.type,
+            currentAppLocalizations(),
             serverTitle: catalog.title,
           ),
           rowType: HomeRowType.seerr,

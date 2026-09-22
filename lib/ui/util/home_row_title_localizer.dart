@@ -23,24 +23,32 @@ String localizeSeerrRowTitle(SeerrRowType type, AppLocalizations l10n) =>
       SeerrRowType.networks => l10n.networks,
     };
 
-/// Admin-named custom sliders keep [serverTitle]. Stock types use the
-/// English catalog names (same strings Seerr shows).
-String localizeSeerrSliderTitle(int type, {String? serverTitle}) {
+/// Admin-named custom sliders keep [serverTitle]. Stock types 1-12 map back
+/// onto [SeerrRowType] so they keep the translations those rows already have,
+/// and only types with no Moonfin equivalent fall back to the English catalog
+/// name (the same string Seerr shows).
+String localizeSeerrSliderTitle(
+  int type,
+  AppLocalizations l10n, {
+  String? serverTitle,
+}) {
   final server = serverTitle?.trim() ?? '';
   if (server.isNotEmpty && seerrSliderUsesServerTitle(type)) return server;
+  final rowType = seerrRowTypeForSliderType(type);
+  if (rowType != null) return localizeSeerrRowTitle(rowType, l10n);
   final fallback = seerrSliderFallbackTitle(type);
   if (fallback.isNotEmpty) return fallback;
   return server;
 }
 
-String localizeSeerrSliderConfigTitle(HomeSectionConfig config) {
-  if (config.isSeerrShortcutsSlider) {
-    return config.pluginDisplayText?.trim().isNotEmpty == true
-        ? config.pluginDisplayText!
-        : 'Seerr Browse';
-  }
+String localizeSeerrSliderConfigTitle(
+  HomeSectionConfig config,
+  AppLocalizations l10n,
+) {
+  if (config.isSeerrShortcutsSlider) return l10n.seerrShortcutsRow;
   return localizeSeerrSliderTitle(
     config.sliderType ?? 0,
+    l10n,
     serverTitle: config.pluginDisplayText,
   );
 }

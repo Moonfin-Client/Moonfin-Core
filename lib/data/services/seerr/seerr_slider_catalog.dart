@@ -234,9 +234,9 @@ SeerrSliderCatalog? _catalogForType(int type, String data, String title) {
     case SeerrSliderType.tmdbSearch:
       return row('search', query: {'query': data});
     case SeerrSliderType.tmdbStudio:
-      return row('discover/movies/studio/$data');
+      return row('discover/movies/studio/${Uri.encodeComponent(data)}');
     case SeerrSliderType.tmdbNetwork:
-      return row('discover/tv/network/$data');
+      return row('discover/tv/network/${Uri.encodeComponent(data)}');
     case SeerrSliderType.tmdbMovieStreaming:
       return _streamingCatalog(
         type: type,

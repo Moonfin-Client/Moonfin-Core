@@ -1603,7 +1603,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
 
   String _labelFor(HomeSectionConfig cfg, AppLocalizations l10n) {
     if (cfg.isSeerrSlider) {
-      return localizeSeerrSliderConfigTitle(cfg);
+      return localizeSeerrSliderConfigTitle(cfg, l10n);
     }
     if (cfg.isPluginDynamic) {
       return cfg.pluginDisplayText?.isNotEmpty == true

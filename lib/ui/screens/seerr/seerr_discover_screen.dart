@@ -557,6 +557,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
     final title = row.isSeerrSlider
         ? localizeSeerrSliderTitle(
             row.slider!.type,
+            l10n,
             serverTitle: row.slider?.title,
           )
         : localizeSeerrRowTitle(row.type!, l10n);

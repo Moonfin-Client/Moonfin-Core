@@ -102,41 +102,48 @@ class UserPreferences extends ChangeNotifier {
     _store.remove(legacyKey);
   }
 
+  // The legacy seerr_home_rows_config store stays behind for the Discover page,
+  // so without this marker the rewrite would re-read it every launch and keep
+  // forcing a slider row back off after the user turned it on.
+  static const _legacySeerrHomeSectionsMigratedKey =
+      'seerr_home_sections_slider_migrated';
+
   void _migrateLegacySeerrHomeSections() {
+    if (_store.getBool(_legacySeerrHomeSectionsMigratedKey) == true) return;
     final prefix = homeSectionsJson.key;
-    final flags = _legacySeerrHomeRowEnabledBySliderType();
-    final shortcuts = _legacySeerrShortcutsHomeRowEnabled();
+    final legacyRows = _legacySeerrHomeRowConfigs();
+    final enabledBySliderType = legacyRows == null
+        ? null
+        : {
+            for (final row in legacyRows)
+              ?row.type.discoverSliderType: row.enabled,
+          };
+    final shortcuts = _legacySeerrShortcutsHomeRowEnabled(legacyRows);
     for (final key in _store.keys.toList()) {
       if (key != prefix && !key.startsWith('${prefix}_')) continue;
       final json = _store.getString(key);
       if (json == null || json.isEmpty) continue;
       final migrated = HomeSectionConfig.migrateLegacySeerrHomeJson(
         json,
-        seerrHomeRowEnabledBySliderType: flags,
+        seerrHomeRowEnabledBySliderType: enabledBySliderType,
         seerrShortcutsHomeRowEnabled: shortcuts,
       );
       if (migrated == json) continue;
       _store.setString(key, migrated);
     }
+    _store.setBool(_legacySeerrHomeSectionsMigratedKey, true);
   }
 
-  Map<int, bool>? _legacySeerrHomeRowEnabledBySliderType() {
+  List<SeerrRowConfig>? _legacySeerrHomeRowConfigs() {
     final userId = (_store.getString(_lastUserIdPreferenceKey) ?? '').trim();
     if (userId.isEmpty) return null;
     final raw = _store.getString('seerr_home_rows_config_$userId');
     if (raw == null || raw.isEmpty) return null;
-    return {
-      for (final row in SeerrRowConfig.fromJsonString(raw))
-        ?row.type.discoverSliderType: row.enabled,
-    };
+    return SeerrRowConfig.fromJsonString(raw);
   }
 
-  bool? _legacySeerrShortcutsHomeRowEnabled() {
-    final userId = (_store.getString(_lastUserIdPreferenceKey) ?? '').trim();
-    if (userId.isEmpty) return null;
-    final raw = _store.getString('seerr_home_rows_config_$userId');
-    if (raw == null || raw.isEmpty) return null;
-    final rows = SeerrRowConfig.fromJsonString(raw);
+  bool? _legacySeerrShortcutsHomeRowEnabled(List<SeerrRowConfig>? rows) {
+    if (rows == null) return null;
     for (final row in rows) {
       if (row.type == SeerrRowType.shortcuts) return row.enabled;
     }

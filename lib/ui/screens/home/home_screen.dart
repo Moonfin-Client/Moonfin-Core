@@ -4036,7 +4036,7 @@ class _ContentRowsState extends State<_ContentRows>
     final config = widget.prefs.homeSectionsConfig
         .firstWhereOrNull((c) => c.stableId == row.id);
     if (config != null && config.isSeerrSlider) {
-      return localizeSeerrSliderConfigTitle(config);
+      return localizeSeerrSliderConfigTitle(config, l10n);
     }
     final merge = widget.prefs.effectiveMergeContinueWatchingNextUp;
     return localizeHomeRowTitle(
