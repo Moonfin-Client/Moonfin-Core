@@ -10,9 +10,17 @@ AggregatedItem _createItem({
   String? seriesName,
   String? seriesPrimaryImageTag,
   String? parentPrimaryImageTag,
+  String? primaryImageTag,
   String? parentThumbImageTag,
   String? parentThumbItemId,
+  String? parentBackdropItemId,
+  List<String>? parentBackdropImageTags,
 }) {
+  final imageTags = <String, dynamic>{};
+  if (primaryImageTag != null) {
+    imageTags['Primary'] = primaryImageTag;
+  }
+
   return AggregatedItem(
     id: id,
     serverId: 'server1',
@@ -24,8 +32,12 @@ AggregatedItem _createItem({
       'SeriesName': ?seriesName,
       'SeriesPrimaryImageTag': ?seriesPrimaryImageTag,
       'ParentPrimaryImageTag': ?parentPrimaryImageTag,
+      'PrimaryImageTag': ?primaryImageTag,
+      if (imageTags.isNotEmpty) 'ImageTags': imageTags,
       'ParentThumbImageTag': ?parentThumbImageTag,
       'ParentThumbItemId': ?parentThumbItemId,
+      'ParentBackdropItemId': ?parentBackdropItemId,
+      'ParentBackdropImageTags': ?parentBackdropImageTags,
     },
   );
 }
@@ -291,6 +303,78 @@ void main() {
         isNull,
         reason: "the tag names the season, so it wouldn't load for the series",
       );
+    });
+
+    test('an episode replaces its own primary image tag with the series primary tag', () {
+      final episode = _createItem(
+        id: 'ep-dm-1',
+        name: 'Stars, Hide Your Fires',
+        type: 'Episode',
+        seriesId: 'series-dm',
+        seriesName: 'Dark Matter',
+        primaryImageTag: 'episodeStillTag123',
+        seriesPrimaryImageTag: 'seriesPosterTag456',
+      );
+
+      final result = normalizeLatestMediaItems(
+        [episode],
+        collectionType: 'tvshows',
+        limit: 10,
+      );
+
+      final series = result.single;
+      expect(series.id, equals('series-dm'));
+      expect(series.primaryImageTag, equals('seriesPosterTag456'));
+      expect(series.primaryImageTagField, equals('seriesPosterTag456'));
+      expect(series.primaryImageItemId, equals('series-dm'));
+      expect(series.rawData['LatestEpisodeId'], isNull);
+      expect(series.rawData['LatestEpisodePrimaryImageTag'], isNull);
+    });
+
+    test('an episode with no series primary tag clears episode primary tag', () {
+      final episode = _createItem(
+        id: 'ep-dm-2',
+        name: 'Episode 2',
+        type: 'Episode',
+        seriesId: 'series-dm',
+        seriesName: 'Dark Matter',
+        primaryImageTag: 'episodeStillTag123',
+        seriesPrimaryImageTag: null,
+      );
+
+      final result = normalizeLatestMediaItems(
+        [episode],
+        collectionType: 'tvshows',
+        limit: 10,
+      );
+
+      final series = result.single;
+      expect(series.id, equals('series-dm'));
+      expect(series.primaryImageTag, isNull);
+      expect(series.primaryImageTagField, isNull);
+      expect(series.primaryImageItemId, equals('series-dm'));
+    });
+
+    test('an episode maps parent backdrop tags to BackdropImageTags', () {
+      final episode = _createItem(
+        id: 'ep-dm-3',
+        name: 'Episode 3',
+        type: 'Episode',
+        seriesId: 'series-dm',
+        seriesName: 'Dark Matter',
+        parentBackdropItemId: 'series-dm',
+        parentBackdropImageTags: ['seriesBackdropTag789'],
+      );
+
+      final result = normalizeLatestMediaItems(
+        [episode],
+        collectionType: 'tvshows',
+        limit: 10,
+      );
+
+      final series = result.single;
+      expect(series.id, equals('series-dm'));
+      expect(series.backdropImageTags, equals(['seriesBackdropTag789']));
     });
   });
 }

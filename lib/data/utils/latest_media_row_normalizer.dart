@@ -130,12 +130,8 @@ AggregatedItem? _seriesCardForLatestTvItem(AggregatedItem item) {
   rawData['Name'] = seriesName;
   rawData.remove('IndexNumber');
   rawData.remove('ParentIndexNumber');
-
-  if (item.type == 'Episode') {
-    rawData['LatestEpisodeId'] = item.id;
-    rawData['LatestEpisodePrimaryImageTag'] =
-        item.primaryImageTag ?? item.primaryImageTagField;
-  }
+  rawData.remove('LatestEpisodeId');
+  rawData.remove('LatestEpisodePrimaryImageTag');
 
   // A season's parent is the series so its tag fits the id set below, but an
   // episode's parent is the season and that tag would not match the series.
@@ -150,20 +146,36 @@ AggregatedItem? _seriesCardForLatestTvItem(AggregatedItem item) {
       ? item.parentThumbImageTag
       : null;
 
+  if (item.parentBackdropItemId == seriesId &&
+      item.parentBackdropImageTags.isNotEmpty) {
+    rawData['BackdropImageTags'] =
+        List<String>.from(item.parentBackdropImageTags);
+  }
+
   final imageTags = Map<String, dynamic>.from(
     rawData['ImageTags'] as Map? ?? const {},
   );
   var tagsChanged = false;
 
   if (seriesPrimaryImageTag != null && seriesPrimaryImageTag.isNotEmpty) {
-    imageTags['Primary'] ??= seriesPrimaryImageTag;
-    rawData['PrimaryImageTag'] ??= seriesPrimaryImageTag;
-    rawData['PrimaryImageItemId'] ??= seriesId;
+    imageTags['Primary'] = seriesPrimaryImageTag;
+    rawData['PrimaryImageTag'] = seriesPrimaryImageTag;
+    rawData['PrimaryImageItemId'] = seriesId;
+    tagsChanged = true;
+  } else {
+    // When no series primary image tag is present, clear the episode or season
+    // primary tag so the series card does not display the episode still.
+    imageTags.remove('Primary');
+    rawData.remove('PrimaryImageTag');
+    rawData['PrimaryImageItemId'] = seriesId;
     tagsChanged = true;
   }
 
   if (seriesThumbImageTag != null && seriesThumbImageTag.isNotEmpty) {
-    imageTags['Thumb'] ??= seriesThumbImageTag;
+    imageTags['Thumb'] = seriesThumbImageTag;
+    tagsChanged = true;
+  } else if (imageTags.containsKey('Thumb')) {
+    imageTags.remove('Thumb');
     tagsChanged = true;
   }
 
