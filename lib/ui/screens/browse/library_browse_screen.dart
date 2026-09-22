@@ -1231,11 +1231,18 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
 
         if (_vm.isPlaylistBrowse && _vm.groupByType) {
           final groupedMap = _vm.groupedPlaylists;
+          final groupEntries = groupedMap.entries.toList();
           final slivers = <Widget>[];
 
-          groupedMap.forEach((categoryKey, categoryItems) {
+          for (var s = 0; s < groupEntries.length; s++) {
+            final categoryKey = groupEntries[s].key;
+            final categoryItems = groupEntries[s].value;
+            final isFirstSection = s == 0;
+            final isLastSection = s == groupEntries.length - 1;
+
             final categoryTitle = switch (categoryKey) {
               'Video' => l10n.videoPlaylistsSection,
+              'MusicVideo' => l10n.musicVideoPlaylistsSection,
               'Audio' => l10n.audioPlaylistsSection,
               'AudioBook' => l10n.audiobookPlaylistsSection,
               'Book' => l10n.bookPlaylistsSection,
@@ -1273,6 +1280,68 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
                     (context, index) {
                       final item = categoryItems[index];
                       final itemAspectRatio = _itemAspectRatio(item);
+                      final col = index % crossAxisCount;
+                      final row = index ~/ crossAxisCount;
+                      final rowCount =
+                          (categoryItems.length + crossAxisCount - 1) ~/
+                          crossAxisCount;
+                      final isFirstRow = row == 0;
+                      final isLastRow = row == rowCount - 1;
+
+                      VoidCallback? onTvUp;
+                      if (!isFirstRow) {
+                        final targetIdx = index - crossAxisCount;
+                        final targetId = categoryItems[targetIdx].id;
+                        onTvUp = () {
+                          getGridItemFocusNode(indexInItems[targetId] ?? targetIdx)
+                              .requestFocus();
+                        };
+                      } else if (isFirstSection) {
+                        onTvUp = () {
+                          if (_allLetterFocusNode.context != null) {
+                            _allLetterFocusNode.requestFocus();
+                          } else {
+                            _homeButtonFocusNode.requestFocus();
+                          }
+                        };
+                      } else {
+                        final prevItems = groupEntries[s - 1].value;
+                        final prevCount = prevItems.length;
+                        final prevRowCount =
+                            (prevCount + crossAxisCount - 1) ~/ crossAxisCount;
+                        final prevLastRowStart =
+                            (prevRowCount - 1) * crossAxisCount;
+                        final targetCol =
+                            math.min(col, prevCount - 1 - prevLastRowStart);
+                        final targetIdx = prevLastRowStart + targetCol;
+                        final targetId = prevItems[targetIdx].id;
+                        onTvUp = () {
+                          getGridItemFocusNode(indexInItems[targetId] ?? targetIdx)
+                              .requestFocus();
+                        };
+                      }
+
+                      VoidCallback? onTvDown;
+                      if (!isLastRow) {
+                        final nextIdx = index + crossAxisCount;
+                        final targetIdx = nextIdx < categoryItems.length
+                            ? nextIdx
+                            : categoryItems.length - 1;
+                        final targetId = categoryItems[targetIdx].id;
+                        onTvDown = () {
+                          getGridItemFocusNode(indexInItems[targetId] ?? targetIdx)
+                              .requestFocus();
+                        };
+                      } else if (!isLastSection) {
+                        final nextItems = groupEntries[s + 1].value;
+                        final targetCol = math.min(col, nextItems.length - 1);
+                        final targetId = nextItems[targetCol].id;
+                        onTvDown = () {
+                          getGridItemFocusNode(indexInItems[targetId] ?? targetCol)
+                              .requestFocus();
+                        };
+                      }
+
                       return _buildGridCard(
                         item: item,
                         index: indexInItems[item.id] ?? index,
@@ -1285,6 +1354,8 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
                         isNeon: isNeon,
                         watchedBehavior: watchedBehavior,
                         isMobile: isMobile,
+                        onTvUp: onTvUp,
+                        onTvDown: onTvDown,
                       );
                     },
                     childCount: categoryItems.length,
@@ -1292,7 +1363,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
                 ),
               ),
             );
-          });
+          }
 
           if (_vm.loadingMore) {
             slivers.add(
@@ -1309,6 +1380,10 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
 
           return CustomScrollView(
             controller: _scrollController,
+            scrollCacheExtent: _gridScrollCacheExtent(
+              cellExtent: cellHeight,
+              spacing: rowSpacing,
+            ),
             slivers: slivers,
           );
         }
@@ -1408,6 +1483,8 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     required bool isMobile,
     VoidCallback? onCardFocused,
     bool paginateOnEdge = true,
+    VoidCallback? onTvUp,
+    VoidCallback? onTvDown,
   }) {
     // Section headers throw off the uniform row maths in _scrollToGridRow, so a
     // grouped card asks the viewport to reveal it and needs its own context.
@@ -1458,9 +1535,24 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
         onKeyEvent: (_, event) {
           if (PlatformDetection.isTV &&
               event.isActionable &&
-              event.logicalKey.isUpKey &&
-              positionInSection < crossAxisCount) {
-            _homeButtonFocusNode.requestFocus();
+              event.logicalKey.isUpKey) {
+            if (onTvUp != null) {
+              onTvUp();
+              return KeyEventResult.handled;
+            } else if (positionInSection < crossAxisCount) {
+              if (_allLetterFocusNode.context != null) {
+                _allLetterFocusNode.requestFocus();
+              } else {
+                _homeButtonFocusNode.requestFocus();
+              }
+              return KeyEventResult.handled;
+            }
+          }
+          if (PlatformDetection.isTV &&
+              event.isActionable &&
+              event.logicalKey.isDownKey &&
+              onTvDown != null) {
+            onTvDown();
             return KeyEventResult.handled;
           }
           if (PlatformDetection.isTV &&
@@ -3334,6 +3426,7 @@ class _SettingsDialogState extends State<_SettingsDialog> {
               ),
               for (final typeOption in [
                 ('Video', l10n.playlistTypeVideo),
+                ('MusicVideo', l10n.playlistTypeMusicVideo),
                 ('Audio', l10n.playlistTypeAudio),
                 ('AudioBook', l10n.playlistTypeAudiobook),
                 ('Book', l10n.playlistTypeBook),

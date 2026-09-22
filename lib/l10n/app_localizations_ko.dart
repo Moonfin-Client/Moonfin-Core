@@ -12004,6 +12004,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get playlistTypeVideo => '비디오';
 
   @override
+  String get playlistTypeMusicVideo => 'Music Video';
+
+  @override
   String get playlistTypeAudio => '오디오(음악)';
 
   @override
@@ -12020,6 +12023,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get videoPlaylistsSection => '비디오 재생목록';
+
+  @override
+  String get musicVideoPlaylistsSection => 'Music Video Playlists';
 
   @override
   String get audioPlaylistsSection => '오디오 재생목록';

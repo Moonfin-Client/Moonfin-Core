@@ -28,8 +28,8 @@ bool hasPlaylistEntryId(AggregatedItem item) {
 /// from a song.
 String resolveItemMediaType(Map<String, dynamic> raw) {
   return switch (raw['Type'] as String?) {
-    'Movie' || 'Episode' || 'Video' || 'MusicVideo' || 'Trailer' || 'Clip' =>
-      'Video',
+    'MusicVideo' => 'MusicVideo',
+    'Movie' || 'Episode' || 'Video' || 'Trailer' || 'Clip' => 'Video',
     'AudioBook' => 'AudioBook',
     'Audio' => 'Audio',
     'Book' => 'Book',
@@ -50,8 +50,8 @@ String _categoryForMediaType(String? mediaType) {
   };
 }
 
-/// The category a playlist belongs to, one of Video, Audio, AudioBook, Book,
-/// Photo or Mixed. Mixed also covers a playlist that's empty or unreadable.
+/// The category a playlist belongs to, one of Video, MusicVideo, Audio, AudioBook,
+/// Book, Photo or Mixed. Mixed also covers a playlist that's empty or unreadable.
 Future<String> resolvePlaylistCategory(
   MediaServerClient client,
   AggregatedItem item, {
@@ -68,13 +68,14 @@ Future<String> resolvePlaylistCategory(
     return 'Mixed';
   }
 
-  // Video, Book and Photo summaries are specific enough to take at face value.
-  // Audio isn't, since the server calls both music and audiobooks Audio, and
-  // tags a playlist of music videos Audio too.
+  // Book and Photo summaries are specific enough to take at face value.
+  // Video and Audio aren't, since the server calls both music and audiobooks
+  // Audio, tags a playlist of music videos Audio or Video, and can't tell
+  // music video playlists apart from movie or TV playlists without checking items.
   final summaryCategory = _categoryForMediaType(
     item.rawData['MediaType'] as String?,
   );
-  if (summaryCategory != 'Audio' && summaryCategory != 'Unknown') {
+  if (summaryCategory == 'Book' || summaryCategory == 'Photo') {
     return summaryCategory;
   }
 
@@ -87,12 +88,16 @@ Future<String> resolvePlaylistCategory(
     }
 
     final categories = rawItems.map(resolveItemMediaType).toSet();
+    if (categories.contains('MusicVideo') &&
+        categories.every((c) => c == 'MusicVideo' || c == 'Audio')) {
+      return 'MusicVideo';
+    }
     if (categories.length == 1) {
       return categories.first != 'Unknown' ? categories.first : 'Mixed';
     }
     return 'Mixed';
   } catch (_) {
-    return 'Mixed';
+    return summaryCategory != 'Unknown' ? summaryCategory : 'Mixed';
   }
 }
 

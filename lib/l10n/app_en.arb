@@ -11256,6 +11256,10 @@
   "@playlistTypeVideo": {
     "description": "Filter checkbox label for video playlists"
   },
+  "playlistTypeMusicVideo": "Music Video",
+  "@playlistTypeMusicVideo": {
+    "description": "Filter checkbox label for music video playlists"
+  },
   "playlistTypeAudio": "Audio (Music)",
   "@playlistTypeAudio": {
     "description": "Filter checkbox label for audio/music playlists"
@@ -11279,6 +11283,10 @@
   "videoPlaylistsSection": "Video Playlists",
   "@videoPlaylistsSection": {
     "description": "Section header above video playlists when Group by Type is enabled"
+  },
+  "musicVideoPlaylistsSection": "Music Video Playlists",
+  "@musicVideoPlaylistsSection": {
+    "description": "Section header above music video playlists when Group by Type is enabled"
   },
   "audioPlaylistsSection": "Audio Playlists",
   "@audioPlaylistsSection": {

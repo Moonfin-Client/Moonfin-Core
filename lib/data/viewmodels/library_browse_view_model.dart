@@ -274,6 +274,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
 
   final Set<String> _playlistTypeFilters = {
     'Video',
+    'MusicVideo',
     'Audio',
     'AudioBook',
     'Book',
@@ -306,6 +307,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   Map<String, List<AggregatedItem>> get groupedPlaylists {
     final Map<String, List<AggregatedItem>> groups = {
       'Video': [],
+      'MusicVideo': [],
       'Audio': [],
       'AudioBook': [],
       'Book': [],

@@ -21697,6 +21697,12 @@ abstract class AppLocalizations {
   /// **'Video'**
   String get playlistTypeVideo;
 
+  /// Filter checkbox label for music video playlists
+  ///
+  /// In en, this message translates to:
+  /// **'Music Video'**
+  String get playlistTypeMusicVideo;
+
   /// Filter checkbox label for audio/music playlists
   ///
   /// In en, this message translates to:
@@ -21732,6 +21738,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Video Playlists'**
   String get videoPlaylistsSection;
+
+  /// Section header above music video playlists when Group by Type is enabled
+  ///
+  /// In en, this message translates to:
+  /// **'Music Video Playlists'**
+  String get musicVideoPlaylistsSection;
 
   /// Section header above audio playlists when Group by Type is enabled
   ///
