@@ -181,9 +181,11 @@ class ConnectivityService extends ChangeNotifier {
     // pulls back items that already carry them.
     syncService
         .syncPendingRatings(client, serverId: serverId)
-        .then((_) => syncService.syncPlaybackProgress(client))
+        .then(
+          (_) => syncService.syncPlaybackProgress(client, serverId: serverId),
+        )
         .then((_) {
-          syncService.refreshMetadata(client);
+          syncService.refreshMetadata(client, serverId: serverId);
         });
   }
 
