@@ -67,6 +67,11 @@ class ConnectivityService extends ChangeNotifier {
   /// Set when a sync was skipped because the app was backgrounded.
   bool _pendingSync = false;
 
+  /// The app server id of the registered client, handed over with it by
+  /// [onServerClientReady] so the sync never pairs one server's rows with
+  /// another server's client.
+  String? _serverId;
+
   ConnectivityService({
     @visibleForTesting Connectivity? connectivity,
     @visibleForTesting Duration retryBase = const Duration(seconds: 5),
@@ -157,6 +162,19 @@ class ConnectivityService extends ChangeNotifier {
     getIt<SessionRepository>().onNetworkRegained();
   }
 
+  /// A server client was just registered for [serverId] (session restore,
+  /// sign-in, account or server switch). The boot-time check runs before any
+  /// client exists and a sign-in brings no reachability edge, so this is the
+  /// moment that reconciles progress recorded offline.
+  Future<void> onServerClientReady(String serverId) async {
+    _serverId = serverId;
+    if (!_isOnline) return;
+    // Straight to the probe rather than recheckNow, which would add a
+    // connectivity_plus call on Apple TV, where the service never makes one.
+    await _checkServerReachability();
+    if (_serverReachable) _triggerSync();
+  }
+
   void _triggerSync() {
     _nudgeSocket();
     // Every network flip lands here, and the full progress and metadata sync
@@ -168,15 +186,14 @@ class ConnectivityService extends ChangeNotifier {
       return;
     }
     final getIt = GetIt.instance;
-    if (!getIt.isRegistered<SyncService>() ||
+    final serverId = _serverId;
+    if (serverId == null ||
+        !getIt.isRegistered<SyncService>() ||
         !getIt.isRegistered<MediaServerClient>()) {
       return;
     }
     final syncService = getIt<SyncService>();
     final client = getIt<MediaServerClient>();
-    final serverId = getIt.isRegistered<SessionRepository>()
-        ? getIt<SessionRepository>().activeServerId
-        : null;
     // Ratings push first, so the metadata refresh at the end of the chain
     // pulls back items that already carry them.
     syncService

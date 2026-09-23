@@ -1,13 +1,19 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:drift/drift.dart' hide isNull;
 import 'package:drift/native.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart' show AppLifecycleState;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:moonfin/data/database/offline_database.dart';
 import 'package:moonfin/data/repositories/offline_repository.dart';
+import 'package:moonfin/data/services/connectivity_service.dart';
 import 'package:moonfin/data/services/pending_rating_store.dart';
 import 'package:moonfin/data/services/sync_service.dart';
 import 'package:server_core/server_core.dart';
@@ -20,6 +26,8 @@ class _MockItemsApi extends Mock implements ItemsApi {}
 class _MockPlaybackApi extends Mock implements PlaybackApi {}
 
 class _MockUserLibraryApi extends Mock implements UserLibraryApi {}
+
+class _MockConnectivity extends Mock implements Connectivity {}
 
 const _min = 60 * 10000000;
 const _runtime = 100 * _min;
@@ -38,9 +46,6 @@ class _FakeServer {
   final List<String> markedPlayed = [];
   final List<String> itemFetches = [];
   final playback = _MockPlaybackApi();
-
-  /// Holds the user-data batch until completed, to keep a sync in flight.
-  Completer<void>? gate;
 
   void set(String id, {int ticks = 0, bool played = false}) {
     userData[id] = {'PlaybackPositionTicks': ticks, 'Played': played};
@@ -65,7 +70,6 @@ class _FakeServer {
         fields: any(named: 'fields'),
       ),
     ).thenAnswer((inv) async {
-      await gate?.future;
       final ids = inv.namedArguments[#ids] as List<String>;
       return {
         'Items': [
@@ -330,5 +334,160 @@ void main() {
       expect(serverA.itemFetches, isEmpty);
       expect(await localSynced('a-movie'), isFalse);
     });
+  });
+
+  // #1603: the only sync trigger used to be the server becoming reachable, so
+  // a cold start on a live network never pushed what was watched offline.
+  group('when the sync runs', () {
+    late HttpServer ping;
+    late _MockConnectivity connectivity;
+    var probes = 0;
+
+    setUp(() async {
+      // The reporter is on iOS. flutter_test reports Android, where a null
+      // lifecycle counts as a headless engine and parks the sync.
+      debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+      // The test binding answers every request with a 400, and the probe has
+      // to reach the loopback server.
+      HttpOverrides.global = null;
+      await GetIt.instance.reset();
+      probes = 0;
+      ping = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+      ping.listen((request) async {
+        probes++;
+        request.response.statusCode = HttpStatus.ok;
+        await request.response.close();
+      });
+      connectivity = _MockConnectivity();
+      when(() => connectivity.onConnectivityChanged)
+          .thenAnswer((_) => const Stream.empty());
+      when(() => connectivity.checkConnectivity())
+          .thenAnswer((_) async => [ConnectivityResult.wifi]);
+      GetIt.instance.registerSingleton<SyncService>(sync);
+    });
+
+    tearDown(() async {
+      debugDefaultTargetPlatformOverride = null;
+      await ping.close(force: true);
+      await GetIt.instance.reset();
+    });
+
+    String pingUrl() => 'http://${ping.address.address}:${ping.port}';
+
+    ConnectivityService startService() {
+      final service = ConnectivityService(connectivity: connectivity);
+      addTearDown(service.dispose);
+      service.initialize();
+      return service;
+    }
+
+    /// What setActiveServerClient does for the app engine.
+    Future<void> signIn(
+      ConnectivityService service,
+      _FakeServer server,
+      String serverId,
+    ) {
+      if (GetIt.instance.isRegistered<MediaServerClient>()) {
+        GetIt.instance.unregister<MediaServerClient>();
+      }
+      GetIt.instance.registerSingleton<MediaServerClient>(server.client);
+      return service.onServerClientReady(serverId);
+    }
+
+    Future<void> until(
+      FutureOr<bool> Function() done, {
+      Duration timeout = const Duration(seconds: 5),
+    }) async {
+      final deadline = DateTime.now().add(timeout);
+      while (!await done()) {
+        if (DateTime.now().isAfter(deadline)) return;
+        await Future<void>.delayed(const Duration(milliseconds: 20));
+      }
+    }
+
+    test('cold start online: progress watched offline reaches the server, '
+        'with one probe shared with the startup screen', () async {
+      final server = _FakeServer(pingUrl());
+      await watchedOffline(
+        'm',
+        server,
+        serverTicks: 10 * _min,
+        ticks: 40 * _min,
+      );
+
+      // Boot: the connectivity service starts long before any client exists.
+      final service = startService();
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+      expect(server.stopReports, isEmpty);
+
+      // Session restore registers the client, and the startup screen's
+      // recheck lands while the sign-in probe is in flight.
+      await Future.wait([
+        signIn(service, server, 'server-a'),
+        service.recheckNow(),
+      ]);
+      await until(() async => await localSynced('m'));
+
+      expect(probes, 1);
+      expect(server.stopReports, hasLength(1));
+      expect(server.ticks('m'), 40 * _min);
+      expect(await localTicks('m'), 40 * _min);
+      expect(await localSynced('m'), isTrue);
+    });
+
+    test('the network coming back while the app is open still syncs', () async {
+      final server = _FakeServer(pingUrl());
+      await download('m', ticksAtDownload: 10 * _min);
+      server.set('m', ticks: 10 * _min);
+      final flips = StreamController<List<ConnectivityResult>>();
+      addTearDown(flips.close);
+      when(() => connectivity.onConnectivityChanged)
+          .thenAnswer((_) => flips.stream);
+
+      final service = startService();
+      await signIn(service, server, 'server-a');
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+
+      flips.add([ConnectivityResult.none]);
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      expect(service.canReachServer, isFalse);
+      await repo.updatePlaybackPosition('m', 40 * _min);
+      flips.add([ConnectivityResult.wifi]);
+      await until(() async => await localSynced('m'));
+
+      expect(server.ticks('m'), 40 * _min);
+      expect(await localTicks('m'), 40 * _min);
+      expect(await localSynced('m'), isTrue);
+    });
+
+    test(
+      'a headless Android engine parks the sync until the app is opened',
+      () async {
+        debugDefaultTargetPlatformOverride = TargetPlatform.android;
+        final server = _FakeServer(pingUrl());
+        await watchedOffline(
+          'm',
+          server,
+          serverTicks: 10 * _min,
+          ticks: 40 * _min,
+        );
+        final service = startService();
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+
+        await signIn(service, server, 'server-a');
+        await Future<void>.delayed(const Duration(milliseconds: 200));
+        expect(server.stopReports, isEmpty);
+
+        // app.dart forwards the first resumed event to the service.
+        TestWidgetsFlutterBinding.instance.handleAppLifecycleStateChanged(
+          AppLifecycleState.resumed,
+        );
+        service.onAppResumed();
+        await until(() async => await localSynced('m'));
+
+        expect(server.ticks('m'), 40 * _min);
+        expect(await localSynced('m'), isTrue);
+      },
+    );
   });
 }

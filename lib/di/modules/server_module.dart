@@ -11,6 +11,7 @@ import '../../data/repositories/offline_repository.dart';
 import '../../data/services/pending_rating_store.dart';
 import '../../data/services/auto_download_service.dart';
 import '../../data/services/background_download_coordinator.dart';
+import '../../data/services/connectivity_service.dart';
 import '../../data/services/download_notification_service.dart';
 import '../../data/services/download_service.dart';
 import '../../data/services/media_server_client_factory.dart';
@@ -132,6 +133,17 @@ void setActiveServerClient(
   // Fire and forget: device profiles read the cached result and fall back to
   // the H264-only transcode offer until the probe lands.
   _getIt<ServerTranscodeCapabilities>().refresh(rawClient);
+
+  // Absent on the background isolates, which never sync progress. On the app
+  // engine a new client is the moment to push progress recorded offline, as
+  // no reachability edge follows a sign-in or a restore on a live network.
+  if (!background && _getIt.isRegistered<ConnectivityService>()) {
+    unawaited(
+      _getIt<ConnectivityService>().onServerClientReady(
+        _getIt<MediaServerClientFactory>().serverIdOf(rawClient),
+      ),
+    );
+  }
 }
 
 /// Sign-out: nobody is left to check for, so the auto-download service goes
