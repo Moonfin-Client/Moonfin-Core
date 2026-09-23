@@ -1,51 +1,51 @@
 {
-  "originHash" : "5a8e87d5fb84781496cb81f74d4e004cc40f3ce65c13b15f4a538084ebe3abb2",
-  "pins" : [
+  "originHash": "5a8e87d5fb84781496cb81f74d4e004cc40f3ce65c13b15f4a538084ebe3abb2",
+  "pins": [
     {
-      "identity" : "aetherengine",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/superuser404notfound/AetherEngine",
-      "state" : {
-        "revision" : "72b0cec29007dfdffbedbb34d0527369d21c77e8",
-        "version" : "6.89.1"
+      "identity": "aetherengine",
+      "kind": "remoteSourceControl",
+      "location": "https://github.com/superuser404notfound/AetherEngine",
+      "state": {
+        "revision": "565f5ec9cdc5033d085d6cb556faf16875efb4f0",
+        "version": "6.84.0"
       }
     },
     {
-      "identity" : "ffmpegbuild",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/superuser404notfound/FFmpegBuild",
-      "state" : {
-        "revision" : "4e58942403d37cceff3a3212e3e026f4205146a2",
-        "version" : "3.3.0"
+      "identity": "ffmpegbuild",
+      "kind": "remoteSourceControl",
+      "location": "https://github.com/superuser404notfound/FFmpegBuild",
+      "state": {
+        "revision": "4e58942403d37cceff3a3212e3e026f4205146a2",
+        "version": "3.3.0"
       }
     },
     {
-      "identity" : "libass-build",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/mpvkit/libass-build",
-      "state" : {
-        "revision" : "e08eb5bb3be5137e845f781dc9477d1843f23261",
-        "version" : "0.17.5"
+      "identity": "libass-build",
+      "kind": "remoteSourceControl",
+      "location": "https://github.com/mpvkit/libass-build",
+      "state": {
+        "revision": "e08eb5bb3be5137e845f781dc9477d1843f23261",
+        "version": "0.17.5"
       }
     },
     {
-      "identity" : "libdovi",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/superuser404notfound/LibDovi",
-      "state" : {
-        "revision" : "0d7cce1d6836a30d13a3a2326e50a153af53f014",
-        "version" : "2.1.0"
+      "identity": "libdovi",
+      "kind": "remoteSourceControl",
+      "location": "https://github.com/superuser404notfound/LibDovi",
+      "state": {
+        "revision": "0d7cce1d6836a30d13a3a2326e50a153af53f014",
+        "version": "2.1.0"
       }
     },
     {
-      "identity" : "smbclient",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/kishikawakatsumi/SMBClient",
-      "state" : {
-        "revision" : "e636c2b2458930770932a36d311ec9d478575b90",
-        "version" : "0.3.1"
+      "identity": "smbclient",
+      "kind": "remoteSourceControl",
+      "location": "https://github.com/kishikawakatsumi/SMBClient",
+      "state": {
+        "revision": "e636c2b2458930770932a36d311ec9d478575b90",
+        "version": "0.3.1"
       }
     }
   ],
-  "version" : 3
+  "version": 3
 }
