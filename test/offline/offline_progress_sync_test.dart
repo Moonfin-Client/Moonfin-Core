@@ -47,6 +47,9 @@ class _FakeServer {
   final List<String> itemFetches = [];
   final playback = _MockPlaybackApi();
 
+  /// Holds the user-data batch until completed, to keep a sync in flight.
+  Completer<void>? gate;
+
   void set(String id, {int ticks = 0, bool played = false}) {
     userData[id] = {'PlaybackPositionTicks': ticks, 'Played': played};
   }
@@ -70,6 +73,7 @@ class _FakeServer {
         fields: any(named: 'fields'),
       ),
     ).thenAnswer((inv) async {
+      await gate?.future;
       final ids = inv.namedArguments[#ids] as List<String>;
       return {
         'Items': [
@@ -459,6 +463,67 @@ void main() {
       expect(await localTicks('m'), 40 * _min);
       expect(await localSynced('m'), isTrue);
     });
+
+    test('sign-ins asking together run the chain once', () async {
+      final server = _FakeServer(pingUrl());
+      await watchedOffline(
+        'm',
+        server,
+        serverTicks: 10 * _min,
+        ticks: 40 * _min,
+      );
+      final service = startService();
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+
+      GetIt.instance.registerSingleton<MediaServerClient>(server.client);
+      await Future.wait([
+        service.onServerClientReady('server-a'),
+        service.onServerClientReady('server-a'),
+      ]);
+      await until(() => server.itemFetches.isNotEmpty);
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+
+      expect(server.stopReports, hasLength(1));
+      expect(server.itemFetches, ['m']);
+    });
+
+    test(
+      'switching server mid-sync syncs each server with its own rows',
+      () async {
+        final serverA = _FakeServer(pingUrl());
+        final serverB = _FakeServer(pingUrl());
+        await watchedOffline(
+          'a-movie',
+          serverA,
+          serverTicks: 10 * _min,
+          ticks: 40 * _min,
+        );
+        await watchedOffline(
+          'b-movie',
+          serverB,
+          serverId: 'server-b',
+          serverTicks: 5 * _min,
+          ticks: 30 * _min,
+        );
+        serverA.gate = Completer<void>();
+        final service = startService();
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+
+        await signIn(service, serverA, 'server-a');
+        // Server A's chain is now held in its user-data fetch.
+        await signIn(service, serverB, 'server-b');
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+        expect(serverB.stopReports, isEmpty);
+
+        serverA.gate!.complete();
+        await until(() async => await localSynced('b-movie'));
+
+        expect(serverA.stopReports.map((r) => r['ItemId']), ['a-movie']);
+        expect(serverB.stopReports.map((r) => r['ItemId']), ['b-movie']);
+        expect(serverA.ticks('a-movie'), 40 * _min);
+        expect(serverB.ticks('b-movie'), 30 * _min);
+      },
+    );
 
     test(
       'a headless Android engine parks the sync until the app is opened',

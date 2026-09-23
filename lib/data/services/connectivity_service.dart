@@ -72,6 +72,15 @@ class ConnectivityService extends ChangeNotifier {
   /// another server's client.
   String? _serverId;
 
+  /// The boot-time check, a sign-in and a network flip can all ask for the
+  /// sync within a second of each other, and only the progress step guards
+  /// itself, so a second chain would repeat the ratings push and the whole
+  /// metadata sweep. A request for a client that registered since the running
+  /// chain started waits for it and then runs once.
+  Future<void>? _inFlightSync;
+  MediaServerClient? _inFlightSyncClient;
+  bool _syncQueued = false;
+
   ConnectivityService({
     @visibleForTesting Connectivity? connectivity,
     @visibleForTesting Duration retryBase = const Duration(seconds: 5),
@@ -185,24 +194,47 @@ class ConnectivityService extends ChangeNotifier {
       _pendingSync = true;
       return;
     }
+    _startSyncChain();
+  }
+
+  void _startSyncChain() {
     final getIt = GetIt.instance;
     final serverId = _serverId;
     if (serverId == null ||
         !getIt.isRegistered<SyncService>() ||
         !getIt.isRegistered<MediaServerClient>()) {
+      ServerLog.network('Progress sync skipped: no server client yet');
       return;
     }
     final syncService = getIt<SyncService>();
     final client = getIt<MediaServerClient>();
+    if (_inFlightSync != null) {
+      if (!identical(client, _inFlightSyncClient)) _syncQueued = true;
+      return;
+    }
+    _inFlightSyncClient = client;
     // Ratings push first, so the metadata refresh at the end of the chain
     // pulls back items that already carry them.
-    syncService
+    _inFlightSync = syncService
         .syncPendingRatings(client, serverId: serverId)
         .then(
           (_) => syncService.syncPlaybackProgress(client, serverId: serverId),
         )
-        .then((_) {
-          syncService.refreshMetadata(client, serverId: serverId);
+        .then((_) => syncService.refreshMetadata(client, serverId: serverId))
+        .catchError((Object e) {
+          ServerLog.network(
+            'Progress sync failed',
+            level: ServerLogLevel.warning,
+            error: e,
+          );
+        })
+        .whenComplete(() {
+          _inFlightSync = null;
+          _inFlightSyncClient = null;
+          if (_syncQueued) {
+            _syncQueued = false;
+            _startSyncChain();
+          }
         });
   }
 
