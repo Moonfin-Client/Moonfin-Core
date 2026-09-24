@@ -384,6 +384,7 @@ class UserPreferences extends ChangeNotifier {
     'pref_studios_row_sort_by',
     'pref_studios_row_sort_order',
     'pref_syncplay_enabled',
+    'showChapterMarkers',
     'showDescriptionOnPause',
     'since_you_watched_1_enabled',
     'since_you_watched_2_enabled',
@@ -487,6 +488,11 @@ class UserPreferences extends ChangeNotifier {
     'pref_custom_theme_id',
     'pref_glass_quality',
     'pref_oled_mode',
+    'pref_kids_mode',
+    // The other half of parental controls, kept beside Kids Mode because the
+    // two get set together and have the same reason to be scoped.
+    'blocked_ratings',
+    'blocked_series_ids',
     'pref_navbar_position',
     'focus_color',
     'pref_watched_indicator_behavior',
@@ -1376,6 +1382,14 @@ class UserPreferences extends ChangeNotifier {
     values: OledMode.values,
   );
 
+  /// Strips the app back to what a child needs and locks the way out behind a
+  /// PIN. Scoped but deliberately not synced, so a parent handing over the TV
+  /// doesn't put their phone in Kids Mode too.
+  static final kidsModeEnabled = Preference(
+    key: 'pref_kids_mode',
+    defaultValue: false,
+  );
+
   /// Settled quality of the adaptive glass renderer from the last session.
   /// Seeds GlassAdaptiveScope's initialQuality so repeat launches skip the
   /// warm-up benchmark. [GlassSettledQuality.unset] means benchmark again.
@@ -1477,6 +1491,59 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: true,
   );
 
+  /// The style to build, once Kids Mode has had its say. Read this and the
+  /// other effective getters rather than the preferences above anywhere the
+  /// details screen is being put together.
+  ///
+  /// Applied on read rather than by rewriting the saved values, so turning
+  /// Kids Mode off gives the user their own screen back untouched. That also
+  /// keeps the mode out of the sync payload, since the profile push reads the
+  /// raw preference and would otherwise carry a forced value to the parent's
+  /// other devices.
+  DetailScreenStyle get effectiveDetailScreenStyle => get(kidsModeEnabled)
+      ? DetailScreenStyle.minimalist
+      : get(detailScreenStyle);
+
+  bool get effectiveDetailExpandedTabs =>
+      get(kidsModeEnabled) ? false : get(detailExpandedTabs);
+
+  bool get effectiveDetailShowTechnicalDetails =>
+      get(kidsModeEnabled) ? false : get(detailShowTechnicalDetails);
+
+  /// Handing a trailer to the browser or the YouTube app is a way out of the
+  /// app, which is the one thing Kids Mode exists to close.
+  bool get effectiveDetailTrailersExternal =>
+      get(kidsModeEnabled) ? false : get(detailTrailersExternal);
+
+  /// True means hidden. The preference is named for hiding, so Kids Mode
+  /// forces it on rather than off to leave the description out.
+  bool get effectiveHideDetailsMediaDescription =>
+      get(kidsModeEnabled) ? true : get(hideDetailsMediaDescription);
+
+  bool get effectiveDetailUseSeriesThumbnails =>
+      get(kidsModeEnabled) ? false : get(detailUseSeriesThumbnails);
+
+  /// Kids Mode lands on the Minimalist screen, where a score means little
+  /// to a child and the row carries outside branding.
+  bool get effectiveShowDetailRatings => !get(kidsModeEnabled);
+
+  /// Kids Mode shows the two as one row whatever the account chose for itself.
+  /// Apart they read as two separate places to carry on from, which is a
+  /// distinction that means nothing to a child.
+  bool get effectiveMergeContinueWatchingNextUp =>
+      get(kidsModeEnabled) || get(mergeContinueWatchingNextUp);
+
+  /// The online source is an outside catalog no parental rating reaches, so
+  /// Kids Mode keeps recommendations inside the server's own library.
+  RecommendationSystemSource get effectiveRecommendationSystemSource =>
+      get(kidsModeEnabled)
+      ? RecommendationSystemSource.local
+      : get(recommendationSystemSource);
+
+  bool get effectiveRecommendationsApplyParentalRatingCap => get(kidsModeEnabled)
+      ? true
+      : get(recommendationsApplyParentalRatingCap);
+
   /// Default mobile view for the Live TV guide (Now/Next list vs compact grid).
   static final epgMobileView = EnumPreference(
     key: 'pref_epg_mobile_view',
@@ -1526,7 +1593,7 @@ class UserPreferences extends ChangeNotifier {
 
   static final showLiveTvButton = Preference(
     key: 'pref_show_live_tv_button',
-    defaultValue: true,
+    defaultValue: false,
   );
 
   static final showDownloadsButton = Preference(
@@ -1855,6 +1922,13 @@ class UserPreferences extends ChangeNotifier {
     key: 'player_zoom_mode',
     defaultValue: ZoomMode.fit,
     values: ZoomMode.values,
+  );
+
+  /// Off by default: it costs picture width, and only video wide enough to
+  /// reach the housing gains anything.
+  static final keepVideoClearOfDynamicIsland = Preference(
+    key: 'pref_video_clear_of_dynamic_island',
+    defaultValue: false,
   );
 
   /// One-shot encoded-letterbox crop. libmpv on Linux/Windows; Media3
@@ -2261,6 +2335,10 @@ class UserPreferences extends ChangeNotifier {
     key: 'osdLockEnabled',
     defaultValue: false,
   );
+  static final showChapterMarkers = Preference(
+    key: 'showChapterMarkers',
+    defaultValue: false,
+  );
   static final playerSwipeGestures = Preference(
     key: 'playerSwipeGestures',
     defaultValue: true,
@@ -2510,8 +2588,24 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: 'stars,imdb,tmdb,tomatoes,metacritic',
   );
 
+  /// Content ratings the viewer has blocked, as an upper cased CSV. Blocked
+  /// means hidden from every list and refused on open and on play, not just
+  /// filtered out of the home rows. Scoped but deliberately not synced: a
+  /// parent locking down the child's TV hasn't asked for their own phone to be
+  /// locked down too.
   static final blockedParentalRatings = Preference(
     key: 'blocked_ratings',
+    defaultValue: '',
+  );
+
+  /// Series last seen carrying a blocked rating, as a CSV of ids.
+  ///
+  /// An episode usually carries no rating while its series does, so the gate
+  /// looks the series up. A refusal a dropped connection can undo isn't a
+  /// refusal, so a series that was once blocked stays blocked until a lookup
+  /// succeeds and says otherwise.
+  static final blockedSeriesIds = Preference(
+    key: 'blocked_series_ids',
     defaultValue: '',
   );
 
@@ -2689,23 +2783,80 @@ class UserPreferences extends ChangeNotifier {
   Future<void> setHomeSectionsConfig(List<HomeSectionConfig> configs) =>
       set(homeSectionsJson, HomeSectionConfig.toJsonString(configs));
 
-  List<HomeSectionType> get activeHomeSections {
-    final enabled = homeSectionsConfig.where((c) => c.enabled).toList()
-      ..sort((a, b) => a.order.compareTo(b.order));
-    return enabled
-        .where((c) => c.isBuiltin && c.type != HomeSectionType.none)
-        .map((c) => c.type)
-        .toList();
-  }
+  List<HomeSectionType> get activeHomeSections => activeHomeSectionConfigs
+      .where((c) => c.isBuiltin && c.type != HomeSectionType.none)
+      .map((c) => c.type)
+      .toList();
 
   /// Ordered list of all enabled section configs (builtin + plugin dynamic).
   /// Built-in `none` entries are filtered out.
   List<HomeSectionConfig> get activeHomeSectionConfigs {
     final enabled = homeSectionsConfig.where((c) => c.enabled).toList()
       ..sort((a, b) => a.order.compareTo(b.order));
-    return enabled
-        .where((c) => c.isPluginDynamic || c.type != HomeSectionType.none)
+    return _forKidsMode(
+      enabled
+          .where((c) => c.isPluginDynamic || c.type != HomeSectionType.none)
+          .toList(),
+    );
+  }
+
+  /// The only rows Kids Mode leaves standing: the way into the libraries, what
+  /// arrived in them lately, and what is part way through being watched.
+  ///
+  /// My Media rather than its small variant, since artwork is what a child
+  /// picks a library by.
+  ///
+  /// An allow list rather than a block list, so a row added later stays hidden
+  /// until someone decides a child should see it. Everything else pulls from
+  /// somewhere this mode can't vouch for, whether that's a request queue or an
+  /// outside catalog no parental rating reaches.
+  ///
+  /// Carrying on with something is worth the caveat it brings: these two read
+  /// the account's own history, so anything an adult started on the same
+  /// account turns up here too. Blocked ratings are what hold that back, and
+  /// they're set apart from this mode.
+  static const _kidsModeAllowedSections = <HomeSectionType>{
+    HomeSectionType.libraryTilesSmall,
+    HomeSectionType.latestMedia,
+    HomeSectionType.resume,
+    HomeSectionType.nextUp,
+  };
+
+  /// Applied on read rather than by rewriting the saved config, so turning
+  /// Kids Mode off gives the user their own layout back untouched.
+  List<HomeSectionConfig> _forKidsMode(List<HomeSectionConfig> configs) {
+    if (!get(kidsModeEnabled)) return configs;
+
+    // Plugin rows go too. A plugin renders whatever it was handed, which is
+    // not something this mode is in any position to vouch for.
+    final kept = configs
+        .where(
+          (c) =>
+              !c.isPluginDynamic && _kidsModeAllowedSections.contains(c.type),
+        )
         .toList();
+
+    // Kids Mode drops the libraries entry from the navbar, so My Media has to
+    // be on the home screen or there's no way into a library at all. It leads
+    // rather than sitting wherever the account had it, since everything else
+    // here is something to carry on with and the way in belongs above those.
+    final libraries = kept
+        .where((c) => c.type == HomeSectionType.libraryTilesSmall)
+        .toList();
+    final rest = kept
+        .where((c) => c.type != HomeSectionType.libraryTilesSmall)
+        .toList();
+    return [
+      if (libraries.isEmpty)
+        const HomeSectionConfig(
+          type: HomeSectionType.libraryTilesSmall,
+          enabled: true,
+          order: -1,
+        )
+      else
+        ...libraries,
+      ...rest,
+    ];
   }
 
   static final themeMusicEnabled = Preference(
@@ -2883,13 +3034,6 @@ class UserPreferences extends ChangeNotifier {
     key: 'pref_always_authenticate',
     defaultValue: false,
   );
-  static final userPinHash = Preference(key: 'user_pin_hash', defaultValue: '');
-
-  static final userPinEnabled = Preference(
-    key: 'user_pin_enabled',
-    defaultValue: false,
-  );
-
   static final liveTvChannelSortBy = EnumPreference(
     key: 'live_tv_channel_sort_by',
     defaultValue: ChannelSortBy.number,

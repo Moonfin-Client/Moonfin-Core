@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:convert';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -90,22 +90,46 @@ class _AdminLogViewerScreenState extends State<AdminLogViewerScreen> {
     );
   }
 
+  /// The name to save under, always as .txt. Android's MimeTypeMap has no
+  /// entry for .log, so a log saved under its own name ends up a type nothing
+  /// offers to open, and the web picker rejects a name with no extension.
+  String _saveFileName() {
+    final name = widget.fileName.trim();
+    if (name.isEmpty) return 'log.txt';
+    final lower = name.toLowerCase();
+    if (lower.endsWith('.txt')) return name;
+    if (lower.endsWith('.log')) {
+      return '${name.substring(0, name.length - 4)}.txt';
+    }
+    return '$name.txt';
+  }
+
   Future<void> _saveToFile() async {
-    final path = await FilePicker.saveFile(
-      dialogTitle: AppLocalizations.of(context).adminSaveLogFile,
-      fileName: widget.fileName,
-    );
-    if (path == null) return;
+    final l10n = AppLocalizations.of(context);
+    final fileName = _saveFileName();
 
     try {
-      await File(path).writeAsString(_content);
+      // The picker writes the file itself on every platform, so the content
+      // goes out with the call. Android and iOS refuse it without the bytes.
+      final path = await FilePicker.saveFile(
+        dialogTitle: l10n.adminSaveLogFile,
+        fileName: fileName,
+        bytes: Uint8List.fromList(utf8.encode(_content)),
+      );
       if (!mounted) return;
+      // Web hands the blob to the browser and always answers null, so null
+      // only means cancelled everywhere else.
+      if (path == null && !PlatformDetection.isWeb) return;
+      // Only desktop answers a path worth showing. Android gives back the
+      // document uri it wrote to and web gives back nothing.
+      final saved = PlatformDetection.isDesktop && path != null
+          ? path
+          : fileName;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context).adminSavedTo(path))),
+        SnackBar(content: Text(l10n.adminSavedTo(saved))),
       );
     } catch (e) {
       if (!mounted) return;
-      final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.adminSaveFailed(describeError(e, l10n)))),
       );

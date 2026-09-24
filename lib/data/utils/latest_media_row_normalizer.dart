@@ -131,26 +131,49 @@ AggregatedItem? _seriesCardForLatestTvItem(AggregatedItem item) {
   rawData.remove('IndexNumber');
   rawData.remove('ParentIndexNumber');
 
-  if (item.type == 'Episode') {
-    rawData['LatestEpisodeId'] = item.id;
-    rawData['LatestEpisodePrimaryImageTag'] =
-        item.primaryImageTag ?? item.primaryImageTagField;
-  }
-
   // A season's parent is the series so its tag fits the id set below, but an
   // episode's parent is the season and that tag would not match the series.
   final seriesPrimaryImageTag =
       item.seriesPrimaryImageTag ??
       (item.type == 'Season' ? item.parentPrimaryImageTag : null);
-  if (seriesPrimaryImageTag != null && seriesPrimaryImageTag.isNotEmpty) {
-    final imageTags = Map<String, dynamic>.from(
-      rawData['ImageTags'] as Map? ?? const {},
+  // The parent tag only fits the id below when the parent really is the
+  // series. An episode whose season has a thumb of its own would otherwise
+  // stamp the season's tag onto the series card, the mismatch the primary
+  // tag above already guards against.
+  final seriesThumbImageTag = item.parentThumbItemId == seriesId
+      ? item.parentThumbImageTag
+      : null;
+
+  // A tag the episode or season brought along points at one scene, so the card
+  // drops it rather than letting it stand in for the show.
+  if (item.parentBackdropItemId == seriesId &&
+      item.parentBackdropImageTags.isNotEmpty) {
+    rawData['BackdropImageTags'] = List<String>.from(
+      item.parentBackdropImageTags,
     );
-    imageTags['Primary'] ??= seriesPrimaryImageTag;
-    rawData['ImageTags'] = imageTags;
-    rawData['PrimaryImageTag'] ??= seriesPrimaryImageTag;
-    rawData['PrimaryImageItemId'] ??= seriesId;
+  } else {
+    rawData.remove('BackdropImageTags');
   }
+
+  final imageTags = Map<String, dynamic>.from(
+    rawData['ImageTags'] as Map? ?? const {},
+  );
+  if (seriesPrimaryImageTag != null && seriesPrimaryImageTag.isNotEmpty) {
+    imageTags['Primary'] = seriesPrimaryImageTag;
+    rawData['PrimaryImageTag'] = seriesPrimaryImageTag;
+  } else {
+    imageTags.remove('Primary');
+    rawData.remove('PrimaryImageTag');
+  }
+  rawData['PrimaryImageItemId'] = seriesId;
+
+  if (seriesThumbImageTag != null && seriesThumbImageTag.isNotEmpty) {
+    imageTags['Thumb'] = seriesThumbImageTag;
+  } else {
+    imageTags.remove('Thumb');
+  }
+
+  rawData['ImageTags'] = imageTags;
 
   return AggregatedItem(
     id: seriesId,

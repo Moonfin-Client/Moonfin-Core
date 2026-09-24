@@ -21,6 +21,7 @@ import '../data/services/storage_path_service.dart';
 import '../platform/web_runtime_config.dart';
 import '../preference/preference_constants.dart';
 import '../preference/user_preferences.dart';
+import '../util/app_beta.dart';
 import '../util/platform_detection.dart';
 import 'modules/app_module.dart';
 import 'modules/auth_module.dart';
@@ -438,6 +439,7 @@ Future<void> configureBackgroundDependencies({bool offline = false}) async {
 Future<void> configureDependencies() async {
   final preferenceStore = PreferenceStore();
   await preferenceStore.init();
+  await AppBeta.load();
   final appVersion = await _resolveAppVersion();
   setServerUserAgentVersion(appVersion);
   await _migrateLegacyBitrateCap(preferenceStore);

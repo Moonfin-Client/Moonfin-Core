@@ -1168,9 +1168,6 @@ class _MusicSquareCardState extends State<_MusicSquareCard>
                                 ? OfflineAwareImage(
                                     imageUrl: widget.imageUrl!,
                                     fit: BoxFit.cover,
-                                    fadeInDuration: const Duration(
-                                      milliseconds: 200,
-                                    ),
                                     errorWidget: (_, _, _) => _albumPlaceholder(),
                                   )
                                 : _albumPlaceholder(),

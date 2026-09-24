@@ -9,6 +9,7 @@ import '../../../../../preference/preference_constants.dart';
 import '../../../../../util/platform_detection.dart';
 import '../../../../widgets/navigation_layout.dart';
 import '../../../../widgets/focus/locked_focus_row.dart';
+import '../../detail_episode_images.dart';
 import '../shared/nouveau_media_rail_card.dart';
 import '../shared/nouveau_spacing.dart';
 
@@ -248,7 +249,7 @@ class NouveauChaptersSectionState extends State<NouveauChaptersSection> {
         .ceil();
 
     if (useSeriesThumbs) {
-      final seriesThumbnail = _resolveSeriesLandscapeThumbnailUrl(
+      final seriesThumbnail = resolveSeriesLandscapeThumbnailUrl(
         widget.item,
         widget.imageApi,
         maxWidth: maxWidth,
@@ -353,43 +354,4 @@ class _ChaptersLayout {
   });
 
   double get itemExtent => cardWidth + cardGap;
-}
-
-String? _resolveSeriesLandscapeThumbnailUrl(
-  AggregatedItem item,
-  ImageApi imageApi, {
-  required int maxWidth,
-}) {
-  final thumbId = item.parentThumbItemId ?? item.seriesId;
-
-  final thumbTag = item.parentThumbImageTag ?? item.seriesThumbImageTag;
-
-  if (thumbId != null &&
-      thumbId.isNotEmpty &&
-      thumbTag != null &&
-      thumbTag.isNotEmpty) {
-    return imageApi.getThumbImageUrl(
-      thumbId,
-      maxWidth: maxWidth,
-      tag: thumbTag,
-    );
-  }
-
-  final seriesId = item.seriesId ?? item.parentPrimaryImageItemId;
-
-  final seriesPrimaryTag =
-      item.seriesPrimaryImageTag ?? item.parentPrimaryImageTag;
-
-  if (seriesId != null &&
-      seriesId.isNotEmpty &&
-      seriesPrimaryTag != null &&
-      seriesPrimaryTag.isNotEmpty) {
-    return imageApi.getPrimaryImageUrl(
-      seriesId,
-      maxWidth: maxWidth,
-      tag: seriesPrimaryTag,
-    );
-  }
-
-  return null;
 }

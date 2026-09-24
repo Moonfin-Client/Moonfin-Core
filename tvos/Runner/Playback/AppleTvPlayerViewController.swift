@@ -89,8 +89,6 @@ final class AppleTvPlayerViewController: UIViewController {
 
     private var skipForwardMs = 30000
     private var skipBackMs = 10000
-    private var hasNext = false
-    private var hasPrevious = false
     private var audioTracks: [(index: Int, label: String, subtitle: String, selected: Bool)] = []
     private var subtitleTracks: [(index: Int, label: String, subtitle: String, selected: Bool)] = []
     private var streamInfoSections: [[String: Any]] = []
@@ -165,9 +163,9 @@ final class AppleTvPlayerViewController: UIViewController {
     private var liveProgram:
         (name: String, episodeTitle: String, startMs: Int, endMs: Int, hasTimer: Bool)?
     private var liveChannelNumber = ""
-    private var channelList:
-        [(id: String, number: String, name: String, logoUrl: String, programName: String,
-            selected: Bool)] = []
+    private var channelList: [ChannelCarouselEntry] = []
+    private var selectedChannelIndex = 0
+    private weak var channelCarousel: ChannelCarouselOverlayViewController?
     private var streamStats: [(label: String, value: String)] = []
 
     private var scrubTargetMs: Int?
@@ -206,7 +204,7 @@ final class AppleTvPlayerViewController: UIViewController {
     private enum ControlId {
         case prev, skipBack, playPause, skipForward, next
         case speed, chapters, subtitles, audio, cast, quality, zoom, info, channels, favorite
-        case syncplay
+        case guide, syncplay
     }
     private var focusedZone: Zone = .buttons
     private var focusedControlIndex = 0
@@ -259,6 +257,7 @@ final class AppleTvPlayerViewController: UIViewController {
     private var glassRangeProgress = UIColor(red: 0.04, green: 0.52, blue: 1.0, alpha: 1)
     private var glassRangeTrack = UIColor(white: 1, alpha: 0.2)
     private var glassSurface = UIColor(white: 1, alpha: 0.12)
+    private var glassSurfaceVariant = UIColor(red: 0.145, green: 0.145, blue: 0.145, alpha: 1)
     private var glassOnSurface = UIColor.white
     // Dart pushes the accent for every theme, not only glass ones, so this is
     // the accent every prompt surface renders with. The pink constant only
@@ -286,6 +285,7 @@ final class AppleTvPlayerViewController: UIViewController {
     private let pauseTextLabel = UILabel()
 
     private var chapters: [(title: String, startMs: Int)] = []
+    private var showChapterMarkers = false
 
     private var timeSlots = TimeSlotConfig()
     private var clockFormatter = makeClockFormatter(use24Hour: false)
@@ -320,6 +320,9 @@ final class AppleTvPlayerViewController: UIViewController {
         }
         if let v = (args["surface"] as? NSNumber)?.intValue {
             glassSurface = Self.color(fromARGB: v)
+        }
+        if let v = (args["surfaceVariant"] as? NSNumber)?.intValue {
+            glassSurfaceVariant = Self.color(fromARGB: v)
         }
         if let v = (args["onSurface"] as? NSNumber)?.intValue {
             glassOnSurface = Self.color(fromARGB: v)
@@ -1035,7 +1038,8 @@ final class AppleTvPlayerViewController: UIViewController {
         case .quality: return "line.3.horizontal.decrease"
         case .zoom: return player.zoomMode.iconName
         case .info: return "info.circle"
-        case .channels: return "list.bullet.rectangle"
+        case .channels: return "square.grid.3x2"
+        case .guide: return "list.bullet.rectangle"
         case .favorite: return isFavorite ? "heart.fill" : "heart"
         case .syncplay: return "person.2.wave.2"
         }
@@ -1080,7 +1084,7 @@ final class AppleTvPlayerViewController: UIViewController {
         case .info: return "info"
         case .favorite: return "favorite"
         case .syncplay: return "syncPlay"
-        case .prev, .skipBack, .playPause, .skipForward, .next, .channels:
+        case .prev, .skipBack, .playPause, .skipForward, .next, .channels, .guide:
             return nil
         }
     }
@@ -1114,13 +1118,16 @@ final class AppleTvPlayerViewController: UIViewController {
         if isLive {
             ids.append(.playPause)
             if !channelList.isEmpty { ids.append(.channels) }
+            ids.append(.guide)
             if !streamInfoSections.isEmpty, osdShows(.info) { ids.append(.info) }
         } else {
-            if hasPrevious { ids.append(.prev) }
+            // Both always present, because they step chapters before they
+            // step the queue, so they have something to do on a lone movie.
+            ids.append(.prev)
             ids.append(.skipBack)
             ids.append(.playPause)
             ids.append(.skipForward)
-            if hasNext { ids.append(.next) }
+            ids.append(.next)
 
             // Everything past the transport answers to the player button
             // settings, both for whether it appears and where it sits.
@@ -1164,8 +1171,6 @@ final class AppleTvPlayerViewController: UIViewController {
         headerPrimary = (args["topTitle"] as? String) ?? ""
         headerSecondary = (args["topSubtitle"] as? String) ?? ""
 
-        hasNext = (args["hasNext"] as? Bool) ?? false
-        hasPrevious = (args["hasPrevious"] as? Bool) ?? false
         skipForwardMs = (args["skipForwardMs"] as? NSNumber)?.intValue ?? 30000
         skipBackMs = (args["skipBackMs"] as? NSNumber)?.intValue ?? 10000
         // A fast forward or rewind key on a remote reaches the transport
@@ -1212,6 +1217,14 @@ final class AppleTvPlayerViewController: UIViewController {
             return (title: title, startMs: startMs)
         }
 
+        // Gates the scrubber marks alone. The chapters array still arrives in
+        // full, because the chapters button and its menu read it too.
+        let showMarkers = (args["showChapterMarkers"] as? NSNumber)?.boolValue ?? false
+        if showMarkers != showChapterMarkers {
+            showChapterMarkers = showMarkers
+            layoutChapters()
+        }
+
         parseTrickplay(args["trickplay"])
         parsePauseMeta(args["pauseMeta"])
         parseLive(args)
@@ -1244,18 +1257,21 @@ final class AppleTvPlayerViewController: UIViewController {
             liveProgram = nil
         }
 
-        channelList = ((args["channelList"] as? [[String: Any]]) ?? []).compactMap {
-            entry in
+        let accent = themeAccent
+        let rawChannels = (args["channelList"] as? [[String: Any]]) ?? []
+        channelList = rawChannels.compactMap { entry in
             guard let id = entry["id"] as? String, !id.isEmpty else { return nil }
-            return (
-                id: id,
-                number: (entry["number"] as? String) ?? "",
-                name: (entry["name"] as? String) ?? "",
-                logoUrl: (entry["logoUrl"] as? String) ?? "",
-                programName: (entry["programName"] as? String) ?? "",
-                selected: (entry["selected"] as? Bool) ?? false
-            )
+            return ChannelCarouselEntry(dictionary: entry, accent: accent)
         }
+        // Resolved by id rather than by position, because an entry with no id
+        // is dropped and would otherwise shift the index.
+        if let tuned = rawChannels.first(where: { ($0["selected"] as? Bool) == true }),
+            let id = tuned["id"] as? String,
+            let index = channelList.firstIndex(where: { $0.channelId == id })
+        {
+            selectedChannelIndex = index
+        }
+        channelCarousel?.update(entries: channelList, theme: carouselTheme)
 
         streamStats = ((args["streamStats"] as? [[String: Any]]) ?? []).compactMap {
             entry in
@@ -1438,6 +1454,7 @@ final class AppleTvPlayerViewController: UIViewController {
 
     private func layoutChapters() {
         chapterOverlay.subviews.forEach { $0.removeFromSuperview() }
+        guard showChapterMarkers else { return }
         let width = chapterOverlay.bounds.width
         let durationMs = player.duration * 1000
         guard width > 0, durationMs > 0, chapters.count > 1 else { return }
@@ -1543,10 +1560,12 @@ final class AppleTvPlayerViewController: UIViewController {
         guard presentedViewController == nil, !nextUpVisible else { return }
         switch recognizer.direction {
         case .up:
-            if !isLive {
-                focusedZone = .scrubber
-                updateFocusHighlight()
+            if isLive {
+                presentChannelCarousel()
+                return
             }
+            focusedZone = .scrubber
+            updateFocusHighlight()
             showOsd()
         case .down:
             focusedZone = .buttons
@@ -1676,7 +1695,7 @@ final class AppleTvPlayerViewController: UIViewController {
                 return
             case .upArrow:
                 if isLive {
-                    showOsd()
+                    presentChannelCarousel()
                     return
                 }
                 focusedZone = .scrubber
@@ -1846,6 +1865,8 @@ final class AppleTvPlayerViewController: UIViewController {
         case .info:
             presentInfoPanel()
         case .channels:
+            presentChannelCarousel()
+        case .guide:
             onOpenGuide?()
         case .favorite:
             onToggleFavorite?()
@@ -1902,14 +1923,38 @@ final class AppleTvPlayerViewController: UIViewController {
         present(panel, animated: true)
     }
 
-    private func presentChannelList() {
-        guard !channelList.isEmpty else { return }
-        let panel = ChannelListViewController(channels: channelList) {
-            [weak self] channelId in
+    private var carouselTheme: ChannelCarouselTheme {
+        ChannelCarouselTheme(
+            accent: themeAccent,
+            surface: hasThemeConfig ? glassSurface : UIColor(white: 0.1, alpha: 1),
+            surfaceVariant: glassSurfaceVariant,
+            onSurface: hasThemeConfig ? glassOnSurface : .white,
+            rangeTrack: glassRangeTrack,
+            rangeProgress: hasThemeConfig ? glassRangeProgress : themeAccent,
+            isGlass: glassActive)
+    }
+
+    private func presentChannelCarousel() {
+        guard !channelList.isEmpty, presentedViewController == nil else { return }
+        // Opening from the OSD button should put the OSD back on the way out.
+        let restoreOsd = isOsdOnScreen
+        hideOsd()
+        let overlay = ChannelCarouselOverlayViewController(
+            entries: channelList,
+            startIndex: selectedChannelIndex,
+            theme: carouselTheme)
+        overlay.onChannelSelected = { [weak self] channelId in
             self?.onSelectChannel?(channelId)
         }
-        panel.modalPresentationStyle = .overFullScreen
-        present(panel, animated: true)
+        overlay.onShowControls = { [weak self] in
+            self?.showOsd()
+        }
+        overlay.onDismissed = { [weak self] in
+            if restoreOsd { self?.showOsd() }
+        }
+        overlay.modalPresentationStyle = .overFullScreen
+        channelCarousel = overlay
+        present(overlay, animated: false)
     }
 
     private func updateFocusHighlight() {
@@ -1946,7 +1991,8 @@ final class AppleTvPlayerViewController: UIViewController {
         case .quality: return "Playback Quality"
         case .zoom: return "Zoom Mode"
         case .info: return "Playback Information"
-        case .channels: return "Guide"
+        case .channels: return "Channels"
+        case .guide: return "Guide"
         case .favorite: return isFavorite ? "Remove from Favorites" : "Add to Favorites"
         case .syncplay: return "SyncPlay"
         }
@@ -3347,238 +3393,6 @@ final class PaddedLabel: UILabel {
         return CGSize(
             width: size.width + insets.left + insets.right,
             height: size.height + insets.top + insets.bottom)
-    }
-}
-
-private final class ChannelListViewController: UIViewController, UITableViewDataSource,
-    UITableViewDelegate
-{
-    private let channels:
-        [(id: String, number: String, name: String, logoUrl: String, programName: String,
-            selected: Bool)]
-    private let onSelect: (String) -> Void
-    private let tableView = UITableView(frame: .zero, style: .plain)
-    private let selectedIndex: Int
-
-    init(
-        channels: [(
-            id: String, number: String, name: String, logoUrl: String, programName: String,
-            selected: Bool
-        )],
-        onSelect: @escaping (String) -> Void
-    ) {
-        self.channels = channels
-        self.onSelect = onSelect
-        self.selectedIndex = channels.firstIndex(where: { $0.selected }) ?? 0
-        super.init(nibName: nil, bundle: nil)
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        view.backgroundColor = UIColor(white: 0, alpha: 0.55)
-
-        let panel = UIView()
-        panel.translatesAutoresizingMaskIntoConstraints = false
-        panel.backgroundColor = UIColor(white: 0.1, alpha: 0.97)
-        panel.layer.cornerRadius = 22
-        panel.clipsToBounds = true
-        view.addSubview(panel)
-
-        let title = UILabel()
-        title.translatesAutoresizingMaskIntoConstraints = false
-        title.text = "Channels"
-        title.font = .systemFont(ofSize: 38, weight: .bold)
-        title.textColor = .white
-        panel.addSubview(title)
-
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.backgroundColor = .clear
-        tableView.dataSource = self
-        tableView.delegate = self
-        tableView.rowHeight = 110
-        tableView.remembersLastFocusedIndexPath = true
-        tableView.register(ChannelRowCell.self, forCellReuseIdentifier: "channel")
-        panel.addSubview(tableView)
-
-        NSLayoutConstraint.activate([
-            panel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            panel.topAnchor.constraint(
-                equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 60),
-            panel.bottomAnchor.constraint(
-                equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -60),
-            panel.widthAnchor.constraint(equalToConstant: 980),
-
-            title.topAnchor.constraint(equalTo: panel.topAnchor, constant: 40),
-            title.leadingAnchor.constraint(equalTo: panel.leadingAnchor, constant: 56),
-
-            tableView.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 16),
-            tableView.leadingAnchor.constraint(equalTo: panel.leadingAnchor, constant: 24),
-            tableView.trailingAnchor.constraint(equalTo: panel.trailingAnchor, constant: -24),
-            tableView.bottomAnchor.constraint(equalTo: panel.bottomAnchor, constant: -24),
-        ])
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        guard channels.indices.contains(selectedIndex) else { return }
-        tableView.scrollToRow(
-            at: IndexPath(row: selectedIndex, section: 0), at: .middle, animated: false)
-    }
-
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        channels.count
-    }
-
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath)
-        -> UITableViewCell
-    {
-        let cell =
-            tableView.dequeueReusableCell(withIdentifier: "channel", for: indexPath)
-            as! ChannelRowCell
-        let channel = channels[indexPath.row]
-        cell.configure(
-            number: channel.number, name: channel.name, program: channel.programName,
-            logoUrl: channel.logoUrl, isCurrent: channel.selected)
-        return cell
-    }
-
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let channel = channels[indexPath.row]
-        dismiss(animated: true) { [onSelect] in
-            onSelect(channel.id)
-        }
-    }
-
-    override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
-        for press in presses where press.type == .menu {
-            dismiss(animated: true)
-            return
-        }
-        super.pressesBegan(presses, with: event)
-    }
-}
-
-private final class ChannelRowCell: UITableViewCell {
-    private let logoView = UIImageView()
-    private let numberLabel = UILabel()
-    private let nameLabel = UILabel()
-    private let programLabel = UILabel()
-    private let liveTag = PaddedLabel()
-    private var logoUrl = ""
-
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        backgroundColor = .clear
-        selectionStyle = .none
-
-        logoView.translatesAutoresizingMaskIntoConstraints = false
-        logoView.contentMode = .scaleAspectFit
-        logoView.backgroundColor = UIColor(white: 1, alpha: 0.08)
-        logoView.layer.cornerRadius = 8
-        logoView.clipsToBounds = true
-        contentView.addSubview(logoView)
-
-        numberLabel.translatesAutoresizingMaskIntoConstraints = false
-        numberLabel.font = .monospacedDigitSystemFont(ofSize: 28, weight: .bold)
-        numberLabel.textColor = UIColor(white: 1, alpha: 0.7)
-        numberLabel.textAlignment = .center
-        contentView.addSubview(numberLabel)
-
-        nameLabel.translatesAutoresizingMaskIntoConstraints = false
-        nameLabel.font = .systemFont(ofSize: 28, weight: .semibold)
-        nameLabel.textColor = .white
-        nameLabel.numberOfLines = 1
-        contentView.addSubview(nameLabel)
-
-        programLabel.translatesAutoresizingMaskIntoConstraints = false
-        programLabel.font = .systemFont(ofSize: 22, weight: .regular)
-        programLabel.textColor = UIColor(white: 1, alpha: 0.55)
-        programLabel.numberOfLines = 1
-        contentView.addSubview(programLabel)
-
-        liveTag.translatesAutoresizingMaskIntoConstraints = false
-        liveTag.text = "NOW PLAYING"
-        liveTag.font = .systemFont(ofSize: 18, weight: .bold)
-        liveTag.textColor = .white
-        liveTag.backgroundColor = UIColor(red: 0.9, green: 0.1, blue: 0.55, alpha: 1)
-        liveTag.layer.cornerRadius = 6
-        liveTag.clipsToBounds = true
-        liveTag.isHidden = true
-        contentView.addSubview(liveTag)
-
-        NSLayoutConstraint.activate([
-            numberLabel.leadingAnchor.constraint(
-                equalTo: contentView.leadingAnchor, constant: 12),
-            numberLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            numberLabel.widthAnchor.constraint(equalToConstant: 84),
-
-            logoView.leadingAnchor.constraint(
-                equalTo: numberLabel.trailingAnchor, constant: 12),
-            logoView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            logoView.widthAnchor.constraint(equalToConstant: 120),
-            logoView.heightAnchor.constraint(equalToConstant: 72),
-
-            nameLabel.leadingAnchor.constraint(
-                equalTo: logoView.trailingAnchor, constant: 24),
-            nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 24),
-            nameLabel.trailingAnchor.constraint(
-                lessThanOrEqualTo: liveTag.leadingAnchor, constant: -16),
-
-            programLabel.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor),
-            programLabel.topAnchor.constraint(
-                equalTo: nameLabel.bottomAnchor, constant: 4),
-            programLabel.trailingAnchor.constraint(
-                lessThanOrEqualTo: liveTag.leadingAnchor, constant: -16),
-
-            liveTag.trailingAnchor.constraint(
-                equalTo: contentView.trailingAnchor, constant: -16),
-            liveTag.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-        ])
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    func configure(
-        number: String, name: String, program: String, logoUrl: String, isCurrent: Bool
-    ) {
-        numberLabel.text = number
-        nameLabel.text = name
-        programLabel.text = program
-        programLabel.isHidden = program.isEmpty
-        liveTag.isHidden = !isCurrent
-        self.logoUrl = logoUrl
-        logoView.image = nil
-        guard !logoUrl.isEmpty, let url = URL(string: logoUrl) else { return }
-        let expected = logoUrl
-        URLSession.shared.dataTask(with: url) { [weak self] data, _, _ in
-            let image = data.flatMap { UIImage(data: $0) }
-            DispatchQueue.main.async {
-                guard let self, self.logoUrl == expected else { return }
-                self.logoView.image = image
-            }
-        }.resume()
-    }
-
-    override func didUpdateFocus(
-        in context: UIFocusUpdateContext, with coordinator: UIFocusAnimationCoordinator
-    ) {
-        coordinator.addCoordinatedAnimations {
-            if self.isFocused {
-                self.backgroundColor = UIColor(red: 0.0, green: 0.5, blue: 1.0, alpha: 0.9)
-                self.numberLabel.textColor = .white
-                self.programLabel.textColor = UIColor(white: 1, alpha: 0.85)
-            } else {
-                self.backgroundColor = .clear
-                self.numberLabel.textColor = UIColor(white: 1, alpha: 0.7)
-                self.programLabel.textColor = UIColor(white: 1, alpha: 0.55)
-            }
-        }
     }
 }
 

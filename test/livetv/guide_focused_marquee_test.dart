@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:moonfin_design/moonfin_design.dart';
 import 'package:moonfin/ui/screens/livetv/epg/epg_genre.dart';
 import 'package:moonfin/ui/screens/livetv/epg/widgets/epg_channel_cell.dart';
 import 'package:moonfin/ui/screens/livetv/epg/widgets/epg_hero_preview.dart';
@@ -76,7 +77,9 @@ void main() {
     final title = tester.widget<Text>(
       find.text('A deliberately long program title'),
     );
-    expect(title.style?.fontSize, 14);
+    // The face that clears the ten foot floor once a television scales the
+    // canvas down onto the panel.
+    expect(title.style?.fontSize, AppTypography.fontSizeLg);
 
     await tester.pumpWidget(cell(true));
     await tester.pump();

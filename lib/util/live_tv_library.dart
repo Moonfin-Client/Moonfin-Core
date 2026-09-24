@@ -7,9 +7,13 @@ bool isLiveTvLibrary(AggregatedLibrary library) =>
 
 /// The guide has a button of its own, so the library list drops Live TV rather
 /// than offering a second way to the same screen.
+///
+/// [hideLiveTv] drops it with no button standing in for it, for Kids Mode,
+/// where the guide is off limits and the tile would be the way in.
 List<AggregatedLibrary> librariesForNav(
   List<AggregatedLibrary> libraries,
-  bool hasLiveTvButton,
-) => hasLiveTvButton
+  bool hasLiveTvButton, {
+  bool hideLiveTv = false,
+}) => hasLiveTvButton || hideLiveTv
     ? libraries.where((lib) => !isLiveTvLibrary(lib)).toList()
     : libraries;

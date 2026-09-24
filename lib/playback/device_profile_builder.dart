@@ -946,6 +946,22 @@ class DeviceProfileBuilder {
         .toList(growable: false);
   }
 
+  /// Every audio codec the HLS transcoding profiles offer the server, with the
+  /// fallback preference first. Built from the same lists the device profile
+  /// sends, so the settings screen can't drift from what the server sees.
+  static List<String> transcodeTargetAudioCodecs({
+    required AudioFallbackCodec fallbackCodec,
+    required bool forAvFoundation,
+  }) => _hlsAudioCodecsForFallback(
+    effectiveAudioFallbackCodec: fallbackCodec,
+    allowedAudioCodecs: _supportedAudioCodecs,
+    containerAudioCodecs: const [
+      ..._hlsMpegTsAudioCodecs,
+      ..._hlsFmp4AudioCodecs,
+    ],
+    forAvFoundation: forAvFoundation,
+  );
+
   static bool _isAudioCodecAllowed({
     required String codec,
     required AudioCapabilityProfile capabilityProfile,

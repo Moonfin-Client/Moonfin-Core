@@ -9,6 +9,7 @@ import 'package:moonfin/data/repositories/offline_repository.dart';
 import 'package:moonfin/data/services/plugin_sync_service.dart';
 import 'package:moonfin/data/viewmodels/item_detail_view_model.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
+import 'package:moonfin/ui/widgets/rating_display.dart';
 import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/preference/seerr_preferences.dart';
 import 'package:moonfin/preference/user_preferences.dart';
@@ -175,6 +176,25 @@ void main() {
       ),
     );
   }
+
+  testWidgets('a score the viewer set alone is enough to draw the row', (tester) async {
+    when(() => vm.item).thenReturn(AggregatedItem(
+      id: 'movie-1',
+      serverId: 'server-1',
+      rawData: const {
+        'Id': 'movie-1',
+        'Name': 'Arcane',
+        'Type': 'Movie',
+        'UserData': {'Rating': 9.0},
+      },
+    ));
+
+    await tester.pumpWidget(buildTestWidget());
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+
+    expect(find.byType(RatingsRow), findsWidgets);
+  });
 
   testWidgets('Series reserves Seasons tab at index 0 and renders SkeletonHomeRow while seasons are empty', (tester) async {
     when(() => vm.item).thenReturn(seriesItem());

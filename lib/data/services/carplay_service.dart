@@ -20,6 +20,7 @@ class CarPlayService {
 
   StreamSubscription<void>? _queueSub;
   bool? _lastPushedAudiobookMode;
+  Map<String, Object>? _lastPushedModes;
 
   CarPlayService({
     required MediaBrowseService browse,
@@ -31,6 +32,7 @@ class CarPlayService {
     _channel.setMethodCallHandler(_handleCall);
     _queueSub = _manager.queueService.queueChangedStream.listen((_) {
       _pushNowPlayingContextIfChanged();
+      _pushPlaybackModesIfChanged();
     });
   }
 
@@ -66,7 +68,7 @@ class CarPlayService {
         }
       case 'playItem':
         final mediaId = (call.arguments as Map?)?['mediaId'] as String?;
-        if (mediaId == null || mediaId.startsWith('msg|')) {
+        if (mediaId == null || MediaBrowseService.isMessageId(mediaId)) {
           return {'ok': false};
         }
         final request = await _browse.resolvePlayRequest(mediaId);
@@ -109,6 +111,12 @@ class CarPlayService {
           await _manager.playFromQueue(index);
         }
         return {'ok': true};
+      case 'toggleShuffle':
+        _manager.toggleShuffle();
+        return _playbackModes();
+      case 'cycleRepeat':
+        _manager.toggleRepeat();
+        return _playbackModes();
       case 'cyclePlaybackSpeed':
         final current = _manager.state.playbackSpeed;
         final index = _speedSteps.indexWhere(
@@ -136,6 +144,33 @@ class CarPlayService {
       'browsable': !playable,
       'playable': playable,
     };
+  }
+
+  Map<String, Object> _playbackModes() => {
+        'shuffle': _manager.queueService.isShuffled,
+        'repeat': switch (_manager.queueService.repeatMode) {
+          RepeatMode.none => 'none',
+          RepeatMode.repeatAll => 'all',
+          RepeatMode.repeatOne => 'one',
+        },
+      };
+
+  // Keeps the car's shuffle and repeat buttons showing the modes when they
+  // change from the phone, the lock screen or the car itself.
+  void _pushPlaybackModesIfChanged() {
+    final modes = _playbackModes();
+    final last = _lastPushedModes;
+    if (last != null &&
+        last['shuffle'] == modes['shuffle'] &&
+        last['repeat'] == modes['repeat']) {
+      return;
+    }
+    _lastPushedModes = modes;
+    unawaited(
+      _channel
+          .invokeMethod('playbackModesChanged', modes)
+          .catchError((_) {}),
+    );
   }
 
   void _pushNowPlayingContextIfChanged({bool force = false}) {

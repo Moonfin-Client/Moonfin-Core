@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:server_core/server_core.dart';
 
+import '../../util/accent_folding.dart';
 import '../services/storage_path_service.dart';
 import 'offline_catalog.dart';
 import 'offline_errors.dart';
@@ -101,8 +102,10 @@ class OfflineItemsApi implements ItemsApi {
   }
 
   bool _matchesSearch(OfflineEntry e, String term) {
-    final t = term.toLowerCase();
-    bool has(String? s) => s != null && s.toLowerCase().contains(t);
+    // Standing in for the search the server would have answered, which folds
+    // accents, so a term turns up the same rows offline as it did online.
+    final t = foldForSearch(term);
+    bool has(String? s) => s != null && foldForSearch(s).contains(t);
     if (has(e.metadata['Name'] as String?) || has(e.row.name)) return true;
     if (has(e.metadata['OriginalTitle'] as String?)) return true;
     if (has(e.row.seriesName) || has(e.metadata['SeriesName'] as String?)) {
@@ -111,7 +114,7 @@ class OfflineItemsApi implements ItemsApi {
     if (has(e.metadata['Album'] as String?)) return true;
     if (has(e.metadata['AlbumArtist'] as String?)) return true;
     final artists = (e.metadata['Artists'] as List?) ?? const [];
-    return artists.whereType<String>().any((a) => a.toLowerCase().contains(t));
+    return artists.whereType<String>().any((a) => foldForSearch(a).contains(t));
   }
 
   bool _matchesGenres(OfflineEntry e, List<String> genreIds) {

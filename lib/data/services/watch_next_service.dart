@@ -132,7 +132,16 @@ class WatchNextService {
     final imageApi = client.imageApi;
 
     final poster = CarArtwork.instance
-        .wrap(carAuthedImageUrl(client, isEpisode ? _episodePoster(item, imageApi) : _moviePoster(item, imageApi)))
+        .wrap(
+          carAuthedImageUrl(
+            client,
+            isEpisode
+                ? _episodePoster(item, imageApi)
+                : (isSeries
+                      ? _seriesPoster(item, imageApi)
+                      : _moviePoster(item, imageApi)),
+          ),
+        )
         ?.toString();
 
     final resumeMs = item.playbackPositionTicks != null
@@ -161,6 +170,58 @@ class WatchNextService {
       'durationMs': ?durationMs,
       'lastEngagementMs': lastEngagementMs,
     };
+  }
+
+  /// A show's card wants the wide 16:9 thumb that carries its title, then its
+  /// poster, and only falls back to fanart that names nothing.
+  ///
+  /// Each tag is asked for against the item it came from, so a show's own tag
+  /// never goes out paired with its parent folder's id.
+  static String? _seriesPoster(AggregatedItem item, ImageApi imageApi) {
+    final thumb = item.thumbImageTag;
+    if (thumb != null && thumb.isNotEmpty) {
+      return imageApi.getThumbImageUrl(item.id, maxWidth: 960, tag: thumb);
+    }
+    final parentThumbId = item.parentThumbItemId;
+    final parentThumb = item.parentThumbImageTag;
+    if (parentThumbId != null && parentThumb != null && parentThumb.isNotEmpty) {
+      return imageApi.getThumbImageUrl(
+        parentThumbId,
+        maxWidth: 960,
+        tag: parentThumb,
+      );
+    }
+    final primary = item.primaryImageTag;
+    if (primary != null && primary.isNotEmpty) {
+      return imageApi.getPrimaryImageUrl(item.id, maxHeight: 720, tag: primary);
+    }
+    final seriesId = item.seriesId;
+    final seriesPrimary = item.seriesPrimaryImageTag;
+    if (seriesId != null && seriesPrimary != null && seriesPrimary.isNotEmpty) {
+      return imageApi.getPrimaryImageUrl(
+        seriesId,
+        maxHeight: 720,
+        tag: seriesPrimary,
+      );
+    }
+    final backdrops = item.backdropImageTags;
+    if (backdrops.isNotEmpty) {
+      return imageApi.getBackdropImageUrl(
+        item.id,
+        maxWidth: 960,
+        tag: backdrops.first,
+      );
+    }
+    final parentBackdropId = item.parentBackdropItemId;
+    final parentBackdrops = item.parentBackdropImageTags;
+    if (parentBackdropId != null && parentBackdrops.isNotEmpty) {
+      return imageApi.getBackdropImageUrl(
+        parentBackdropId,
+        maxWidth: 960,
+        tag: parentBackdrops.first,
+      );
+    }
+    return null;
   }
 
   /// The launcher card is 16:9, so a wide image is asked for first and the

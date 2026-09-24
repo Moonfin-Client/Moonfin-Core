@@ -20,9 +20,29 @@ class EpgChannelCell extends StatelessWidget {
   /// Marks the channel as a favourite with a red heart beside the number.
   final bool isFavorite;
 
+  /// Above this the rail is the one a television lays out, and the cell steps
+  /// up to a face that carries at ten feet. Below it the rail belongs to a
+  /// window being read at arm's length, where the larger face would only crowd
+  /// the call sign out.
+  static const double _tenFootRailWidth = 180;
+
   /// The number is what a viewer navigates by, so it outsizes the call sign.
-  static const double _numberSize = 13;
-  static const double _logoWidth = 48;
+  static double _numberSize(double width) =>
+      width >= _tenFootRailWidth ? 20 : 13;
+
+  static double _nameSize(double width) => width >= _tenFootRailWidth ? 18 : 12;
+
+  /// Icons set in a line of text take this share of that line's face, so they
+  /// keep their weight beside it at any interface size.
+  static const double _inlineIconShare = 0.8;
+
+  /// The share of the cell the logo takes, and the bounds it keeps whatever
+  /// the rail is given. A share rather than a fixed width because the rail is
+  /// itself a share of the canvas, and a logo sized for the roomy one leaves
+  /// the call sign nowhere to go on a narrow one.
+  static const double _logoWidthFactor = 0.36;
+  static const double _logoMinWidth = 40;
+  static const double _logoMaxWidth = 66;
   static const double _logoGap = 6;
   static const Color _restingCellColor = Color(0xEF353940);
 
@@ -39,6 +59,7 @@ class EpgChannelCell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final scaler = MediaQuery.textScalerOf(context);
     final accent = AppColorScheme.accent;
     final radius = apple ? 14.0 : 10.0;
     final Color bg;
@@ -52,63 +73,73 @@ class EpgChannelCell extends StatelessWidget {
       bg = _restingCellColor;
     }
 
-    final nameStyle = textTheme.bodySmall?.copyWith(
+    // Sized from the rail rather than left on the body token, which is meant
+    // for reading at arm's length and lands under the ten foot floor once a
+    // television scales the canvas down onto the panel.
+    TextStyle? nameStyleFor(double width) => textTheme.bodySmall?.copyWith(
+      fontSize: _nameSize(width),
       fontWeight: focused ? FontWeight.w600 : FontWeight.w500,
       color: AppColorScheme.onSurface,
     );
 
-    final chip = number == null ? null : _numberChip(number!, accent);
-    final hasTopRow = chip != null || isFavorite;
-
-    final body = Row(
-      children: [
-        _logo(_logoWidth),
-        const SizedBox(width: _logoGap),
-        Expanded(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              if (hasTopRow) ...[
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    if (isFavorite) ...[
-                      const Icon(
-                        Icons.favorite,
-                        size: 11,
-                        color: AppColors.red500,
-                      ),
-                      const SizedBox(width: 4),
+    Widget bodyFor(double width) {
+      final nameStyle = nameStyleFor(width);
+      final chip = number == null
+          ? null
+          : _numberChip(number!, accent, _numberSize(width));
+      final hasTopRow = chip != null || isFavorite;
+      return Row(
+        children: [
+          _logo((width * _logoWidthFactor).clamp(_logoMinWidth, _logoMaxWidth)),
+          const SizedBox(width: _logoGap),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                if (hasTopRow) ...[
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      if (isFavorite) ...[
+                        Icon(
+                          Icons.favorite,
+                          size:
+                              scaler.scale(_numberSize(width)) *
+                              _inlineIconShare,
+                          color: AppColors.red500,
+                        ),
+                        const SizedBox(width: 4),
+                      ],
+                      ?chip,
                     ],
-                    ?chip,
-                  ],
-                ),
-                const SizedBox(height: 3),
-              ],
-              focused
-                  ? SizedBox(
-                      width: double.infinity,
-                      child: MarqueeText(
-                        text: name,
-                        style: nameStyle ?? const TextStyle(),
-                        showDotSeparator: false,
+                  ),
+                  const SizedBox(height: 3),
+                ],
+                focused
+                    ? SizedBox(
+                        width: double.infinity,
+                        child: MarqueeText(
+                          text: name,
+                          style: nameStyle ?? const TextStyle(),
+                          showDotSeparator: false,
+                          textAlign: TextAlign.right,
+                        ),
+                      )
+                    : Text(
+                        name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.right,
+                        style: nameStyle,
                       ),
-                    )
-                  : Text(
-                      name,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.right,
-                      style: nameStyle,
-                    ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ],
-    );
+        ],
+      );
+    }
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -121,7 +152,9 @@ class EpgChannelCell extends StatelessWidget {
           width: 1,
         ),
       ),
-      child: body,
+      child: LayoutBuilder(
+        builder: (context, constraints) => bodyFor(constraints.maxWidth),
+      ),
     );
   }
 
@@ -147,7 +180,7 @@ class EpgChannelCell extends StatelessWidget {
     color: AppColorScheme.onSurface.withValues(alpha: 0.5),
   );
 
-  Widget _numberChip(String number, Color accent) => Container(
+  Widget _numberChip(String number, Color accent, double size) => Container(
     padding: const EdgeInsets.symmetric(horizontal: 6),
     decoration: BoxDecoration(
       color: focused
@@ -158,7 +191,7 @@ class EpgChannelCell extends StatelessWidget {
     child: Text(
       number,
       style: TextStyle(
-        fontSize: _numberSize,
+        fontSize: size,
         fontWeight: FontWeight.w700,
         color: focused
             ? const Color(0xFF062430)

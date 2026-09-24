@@ -8,7 +8,9 @@ import 'package:server_core/server_core.dart';
 
 import '../../../preference/user_preferences.dart';
 import '../../../util/game_artwork_cache.dart';
+import '../../../util/platform_detection.dart';
 import '../bounded_network_image.dart';
+import '../media_card.dart';
 import '../../../data/services/retro_artwork/retro_artwork_activity_gate.dart';
 import '../../../data/services/retro_artwork/retro_artwork_data_source.dart';
 import '../../../data/services/retro_artwork/retro_artwork_transport.dart';
@@ -53,7 +55,14 @@ class GamePosterRail extends StatelessWidget {
         ? ThemeRegistry.active.borders.focusBorder.color
         : Color(prefs.get(UserPreferences.focusColor).colorValue);
     final cardFocusExpansion = prefs.get(UserPreferences.cardFocusExpansion);
+    final isMobile = PlatformDetection.useMobileUi;
     final textScale = MediaQuery.textScalerOf(context).scale(1);
+    final upwardGrowth = cardFocusExpansion && !isMobile
+        ? (cardWidth * 1.34) * (MediaCard.focusScale - 1.0)
+        : 0.0;
+    final itemSpacing = cardFocusExpansion && !isMobile
+        ? MediaCard.focusGap(cardWidth, minimum: 12.0)
+        : 12.0;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -80,12 +89,13 @@ class GamePosterRail extends StatelessWidget {
           ),
         ),
         SizedBox(
-          height: cardWidth * 1.34 + 6 + 42 * textScale,
+          height: cardWidth * 1.34 + 6 + 42 * textScale + upwardGrowth,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            clipBehavior: Clip.none,
+            padding: EdgeInsets.fromLTRB(20, upwardGrowth, 20, 0),
             itemCount: games.length,
-            separatorBuilder: (_, _) => const SizedBox(width: 12),
+            separatorBuilder: (_, _) => SizedBox(width: itemSpacing),
             itemBuilder: (context, i) {
               final game = games[i];
               final reference = artworkDataSource?.imageFor(

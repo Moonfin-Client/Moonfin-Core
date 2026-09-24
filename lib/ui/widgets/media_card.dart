@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_tvos/flutter_tvos.dart'
@@ -22,11 +20,16 @@ import 'seerr/seerr_status_dot.dart';
 import '../mixins/focus_state_mixin.dart';
 
 class MediaCard extends StatefulWidget {
-  /// How much a focused card grows. The scale is centered, so a card paints
-  /// half the extra size past each edge of its cell, and a layout that packs
-  /// cards against a clip boundary or each other has to leave that much room
-  /// or the focused card loses its edges.
-  static double get focusScale => PlatformDetection.isAppleTV ? 1.12 : 1.05;
+  /// How much a focused card grows. A card with a title grows from the bottom
+  /// of its artwork, so all of the extra height lands above it and half the
+  /// extra width past each side. One without a title grows about its center.
+  /// A layout that packs cards against a clip boundary or each other has to
+  /// leave that much room or the focused card loses its edges.
+  ///
+  /// A television gets the larger pop because it's read from across a room.
+  /// Every television lays out on the same canvas, so which television it is
+  /// doesn't come into it.
+  static double get focusScale => PlatformDetection.isTV ? 1.12 : 1.05;
 
   /// How much room to leave beside a card of [extent] so a focused one keeps
   /// its edges.
@@ -36,7 +39,15 @@ class MediaCard extends StatefulWidget {
   /// by the same fraction of a much larger number, so a gap that suits a
   /// poster does not suit a banner.
   static double focusGap(double extent, {double minimum = 12.0}) =>
-      math.max(minimum, extent * (focusScale - 1) / 2);
+      minimum + (extent * (focusScale - 1) / 2);
+
+  /// The widest decode a card of this shape ever holds, in physical pixels.
+  ///
+  /// Public so a prefetch of a card's image uses the same cap the card does.
+  /// A prefetch capped differently lands under a different cache key and the
+  /// card decodes the image a second time.
+  static int decodeMaxWidthFor(double aspectRatio) =>
+      aspectRatio > 1.2 ? 960 : 640;
 
   final String? title;
   final String? subtitle;
@@ -345,24 +356,27 @@ class _MediaCardState extends State<MediaCard> with FocusStateMixin {
           ? null
           : () => widget.onLongPress!(),
       child: RepaintBoundary(
-        child: _withTvParallax(
-          active: cardActive,
-          child: AnimatedScale(
-            scale: cardActive ? MediaCard.focusScale : 1.0,
-            duration: navigationAnimationDuration,
-            curve: PlatformDetection.isAppleTV
-                ? Curves.easeOutCubic
-                : Curves.linear,
-            child: LayoutBuilder(
-              builder: (context, cardConstraints) {
-                final cardWidth = cardConstraints.maxWidth.isFinite
-                    ? cardConstraints.maxWidth
-                    : (widget.width.isFinite ? widget.width : 150.0);
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _CardImage(
+        child: LayoutBuilder(
+          builder: (context, cardConstraints) {
+            final cardWidth = cardConstraints.maxWidth.isFinite
+                ? cardConstraints.maxWidth
+                : (widget.width.isFinite ? widget.width : 150.0);
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _withTvParallax(
+                  active: cardActive,
+                  child: AnimatedScale(
+                    scale: cardActive ? MediaCard.focusScale : 1.0,
+                    duration: navigationAnimationDuration,
+                    curve: PlatformDetection.isAppleTV
+                        ? Curves.easeOutCubic
+                        : Curves.linear,
+                    alignment: widget.title != null
+                        ? Alignment.bottomCenter
+                        : Alignment.center,
+                    child: _CardImage(
                       imageUrl: widget.imageUrl,
                       title: widget.title,
                       aspectRatio: widget.aspectRatio,
@@ -380,84 +394,73 @@ class _MediaCardState extends State<MediaCard> with FocusStateMixin {
                       itemType: widget.itemType,
                       seerrMediaType: widget.seerrMediaType,
                       seerrStatus: widget.seerrStatus,
-                      imageOverlays: [
-                        ...widget.imageOverlays,
-                        if (widget.animeMarkerItemId != null)
-                          Positioned(
-                            top: 6,
-                            left: 6,
-                            child: AnimeItemAudioBadge(
-                              itemId: widget.animeMarkerItemId!,
-                              scale: 0.85,
-                            ),
-                          ),
-                      ],
-                      overlayOccupiesTopLeft: widget.overlayOccupiesTopLeft ||
-                          widget.animeMarkerItemId != null,
+                      imageOverlays: widget.imageOverlays,
+                      overlayOccupiesTopLeft: widget.overlayOccupiesTopLeft,
+                      animeMarkerItemId: widget.animeMarkerItemId,
                       isGenreFallback: widget.isGenreFallback,
                     ),
-                    if (widget.isBanner) ...[
-                      if (widget.title != null) ...[
-                        const SizedBox(height: 6),
-                        SizedBox(
-                          height: titleLineHeight,
-                          width: cardWidth,
-                          child: _bannerLabel(
-                            titleStyle: titleStyle,
-                            subtitleStyle: subtitleStyle,
-                            showMarquee: showMarquee,
-                          ),
-                        ),
-                      ],
-                      if (widget.subtitleWidget != null) ...[
-                        SizedBox(height: widget.title != null ? 2 : 6),
-                        widget.subtitleWidget!,
-                      ],
-                    ] else ...[
-                      if (widget.title != null) ...[
-                        const SizedBox(height: 6),
-                        SizedBox(
-                          height: titleLineHeight,
-                          width: cardWidth,
-                          child: showMarquee
-                              ? MarqueeText(
-                                  text: widget.title!,
-                                  style: titleStyle,
-                                )
-                              : Text(
-                                  widget.title!,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: titleStyle,
-                                ),
-                        ),
-                      ],
-                      if (widget.subtitleWidget != null) ...[
-                        SizedBox(height: widget.title != null ? 2 : 6),
-                        widget.subtitleWidget!,
-                      ] else if (widget.subtitle != null &&
-                          widget.subtitle!.isNotEmpty)
-                        SizedBox(
-                          height: subtitleLineHeight,
-                          width: cardWidth,
-                          child: showMarquee
-                              ? MarqueeText(
-                                  text: widget.subtitle!,
-                                  style: subtitleStyle,
-                                )
-                              : Text(
-                                  widget.subtitle!,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: subtitleStyle,
-                                ),
-                        ),
-                    ],
+                  ),
+                ),
+                if (widget.isBanner) ...[
+                  if (widget.title != null) ...[
+                    const SizedBox(height: 6),
+                    SizedBox(
+                      height: titleLineHeight,
+                      width: cardWidth,
+                      child: _bannerLabel(
+                        titleStyle: titleStyle,
+                        subtitleStyle: subtitleStyle,
+                        showMarquee: showMarquee,
+                      ),
+                    ),
                   ],
-                );
-              },
-            ),
-          ),
+                  if (widget.subtitleWidget != null) ...[
+                    SizedBox(height: widget.title != null ? 2 : 6),
+                    widget.subtitleWidget!,
+                  ],
+                ] else ...[
+                  if (widget.title != null) ...[
+                    const SizedBox(height: 6),
+                    SizedBox(
+                      height: titleLineHeight,
+                      width: cardWidth,
+                      child: showMarquee
+                          ? MarqueeText(
+                              text: widget.title!,
+                              style: titleStyle,
+                            )
+                          : Text(
+                              widget.title!,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: titleStyle,
+                            ),
+                    ),
+                  ],
+                  if (widget.subtitleWidget != null) ...[
+                    SizedBox(height: widget.title != null ? 2 : 6),
+                    widget.subtitleWidget!,
+                  ] else if (widget.subtitle != null &&
+                      widget.subtitle!.isNotEmpty)
+                    SizedBox(
+                      height: subtitleLineHeight,
+                      width: cardWidth,
+                      child: showMarquee
+                          ? MarqueeText(
+                              text: widget.subtitle!,
+                              style: subtitleStyle,
+                            )
+                          : Text(
+                              widget.subtitle!,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: subtitleStyle,
+                            ),
+                    ),
+                ],
+              ],
+            );
+          },
         ),
       ),
     );
@@ -648,6 +651,7 @@ class _CardImage extends StatelessWidget {
   final List<Widget> imageOverlays;
   final bool overlayOccupiesTopLeft;
   final bool isGenreFallback;
+  final String? animeMarkerItemId;
 
   const _CardImage({
     this.imageUrl,
@@ -670,6 +674,7 @@ class _CardImage extends StatelessWidget {
     this.imageOverlays = const [],
     this.overlayOccupiesTopLeft = false,
     this.isGenreFallback = false,
+    this.animeMarkerItemId,
   });
 
   /// How far the focus ring sits outside the artwork. The ring is 3px thick
@@ -746,7 +751,9 @@ class _CardImage extends StatelessWidget {
                                   ? BoxFit.contain
                                   : BoxFit.cover,
                               fadeInDuration: Duration.zero,
-                              maxWidth: aspectRatio > 1.2 ? 960 : 640,
+                              maxWidth: MediaCard.decodeMaxWidthFor(
+                                aspectRatio,
+                              ),
                               errorBuilder: (_, _, _) => _PlaceholderIcon(
                                 itemType: itemType,
                                 title: title,
@@ -794,19 +801,36 @@ class _CardImage extends StatelessWidget {
                         )
                       : _PlaceholderIcon(itemType: itemType, title: title),
                 ),
-                if (isFavorite)
+                if (isFavorite ||
+                    _showSeerrMediaTypeBadge ||
+                    animeMarkerItemId != null)
                   Positioned(
-                    top: (_showSeerrMediaTypeBadge || overlayOccupiesTopLeft)
-                        ? 32
-                        : 6,
+                    top: overlayOccupiesTopLeft ? 32 : 6,
                     left: 6,
-                    child: MediaFavoriteBadge(size: 22),
-                  ),
-                if (_showSeerrMediaTypeBadge)
-                  Positioned(
-                    top: 6,
-                    left: 6,
-                    child: SeerrMediaTypeBadge(mediaType: seerrMediaType),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (_showSeerrMediaTypeBadge) ...[
+                          SeerrMediaTypeBadge(mediaType: seerrMediaType),
+                          if (animeMarkerItemId != null || isFavorite)
+                            const SizedBox(height: 4),
+                        ],
+                        // The gap sits inside the pill rather than in a sibling
+                        // box, because the pill draws nothing until an audio
+                        // verdict resolves and an empty one must take no space.
+                        if (animeMarkerItemId != null)
+                          AnimeItemAudioBadge(
+                            itemId: animeMarkerItemId!,
+                            scale: 0.85,
+                            padding: isFavorite
+                                ? const EdgeInsets.only(bottom: 4)
+                                : EdgeInsets.zero,
+                          ),
+                        if (isFavorite)
+                          const MediaFavoriteBadge(size: 22),
+                      ],
+                    ),
                   ),
                 if (_showSeerrStatusIndicator)
                   Positioned(

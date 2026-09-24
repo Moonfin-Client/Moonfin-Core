@@ -1,5 +1,6 @@
 import CarPlay
 import Flutter
+import MediaPlayer
 import UIKit
 
 /// Coordinates the CarPlay template UI with the Dart browse/playback layer
@@ -54,6 +55,9 @@ final class CarPlayBridge: NSObject {
         nowPlayingMode = mode
       }
       configureNowPlayingTemplate()
+      result(nil)
+    case "playbackModesChanged":
+      applyPlaybackModes(call.arguments)
       result(nil)
     default:
       result(FlutterMethodNotImplemented)
@@ -121,17 +125,24 @@ final class CarPlayBridge: NSObject {
         return
       }
       let nodes = Self.browseItems(from: response)
-      let tabNodes = Array(nodes.filter { $0.browsable }.prefix(4))
+      // A lone message (no session, or the server is down) explains itself in
+      // the placeholder rather than becoming a tab named after it.
+      let message: BrowseItem? =
+        nodes.count == 1 && nodes[0].id.hasPrefix("msg|") ? nodes[0] : nil
+      let tabNodes: [BrowseItem] =
+        message != nil ? [] : Array(nodes.filter { $0.browsable }.prefix(4))
       let templates = tabNodes.map { node in
         self.makeTabTemplate(for: node)
       }
       guard !templates.isEmpty else {
-        // No session yet: show a single tab whose empty state explains the fix;
-        // signInStateChanged rebuilds once the user signs in on the phone.
+        // Show a single tab whose empty state explains the fix. signInStateChanged
+        // rebuilds once the user signs in on the phone.
         let placeholder = CPListTemplate(title: "Moonfin", sections: [])
         placeholder.tabImage = UIImage(systemName: "music.note")
         placeholder.tabTitle = "Moonfin"
-        placeholder.emptyViewTitleVariants = ["Open Moonfin on your iPhone to sign in"]
+        placeholder.emptyViewTitleVariants = [
+          message?.title ?? "Open Moonfin on your iPhone to sign in"
+        ]
         let tabBar = CPTabBarTemplate(templates: [placeholder])
         interfaceController.setRootTemplate(tabBar, animated: false) { _, _ in }
         return
@@ -272,15 +283,40 @@ final class CarPlayBridge: NSObject {
       template.updateNowPlayingButtons([rateButton])
     case .music:
       if #available(iOS 15.0, *) {
-        // Shuffle and repeat route through MPRemoteCommandCenter, which
-        // audio_service already handles.
+        // CarPlay sends these taps to the button's handler, not to the remote
+        // commands audio_service listens on, so Dart toggles the mode here and
+        // the reply sets the state the buttons show.
         template.updateNowPlayingButtons([
-          CPNowPlayingShuffleButton { _ in },
-          CPNowPlayingRepeatButton { _ in },
+          CPNowPlayingShuffleButton { [weak self] _ in
+            self?.invokeDart("toggleShuffle", [:]) { response in
+              self?.applyPlaybackModes(response)
+            }
+          },
+          CPNowPlayingRepeatButton { [weak self] _ in
+            self?.invokeDart("cycleRepeat", [:]) { response in
+              self?.applyPlaybackModes(response)
+            }
+          },
         ])
       } else {
         template.updateNowPlayingButtons([])
       }
+    }
+  }
+
+  // CarPlay draws the shuffle and repeat buttons from the remote commands'
+  // current types, which audio_service never sets.
+  private func applyPlaybackModes(_ response: Any?) {
+    guard let modes = response as? [String: Any] else { return }
+    let commands = MPRemoteCommandCenter.shared()
+    if let shuffle = modes["shuffle"] as? Bool {
+      commands.changeShuffleModeCommand.currentShuffleType = shuffle ? .items : .off
+    }
+    switch modes["repeat"] as? String {
+    case "all": commands.changeRepeatModeCommand.currentRepeatType = .all
+    case "one": commands.changeRepeatModeCommand.currentRepeatType = .one
+    case "none": commands.changeRepeatModeCommand.currentRepeatType = .off
+    default: break
     }
   }
 

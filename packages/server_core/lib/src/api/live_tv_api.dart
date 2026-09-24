@@ -38,6 +38,12 @@ abstract class LiveTvApi {
     bool? isAiring,
   });
 
+  /// A single program, images enabled. [getGuide] disables images for its
+  /// whole batch to keep the payload small (issue #666), which also means a
+  /// program's own `ImageTags` never comes back from it even when the server
+  /// has one on file — this is the only call that can see it.
+  Future<Map<String, dynamic>> getProgram(String programId, {String? userId});
+
   Future<Map<String, dynamic>> getRecordings({
     int? limit,
     String? fields,

@@ -15,6 +15,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:server_core/server_core.dart' hide ImageType;
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../data/services/achievements_service.dart';
 import '../../../data/services/auto_download_service.dart';
 import '../../../data/services/plugin_sync_service.dart';
 import '../../../data/services/custom_external_lists_service.dart';
@@ -37,7 +38,10 @@ import '../../../util/platform_detection.dart';
 import '../../../util/playback_time_label.dart';
 import '../../../util/tv_image_cache_stub.dart'
     if (dart.library.io) '../../../util/tv_image_cache_io.dart';
+import '../../../util/app_beta.dart';
 import '../../../util/app_distribution.dart';
+import '../../../util/pin_code_util.dart';
+import '../../widgets/pin_entry_dialog.dart';
 import '../../widgets/app_update_dialog.dart';
 
 import '../../../auth/store/authentication_preferences.dart';
@@ -46,6 +50,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../util/error_message.dart';
 import '../../../playback/audio_capability_profile.dart';
 import '../../../playback/audio_capability_probe.dart';
+import '../../../playback/device_profile_builder.dart';
 import '../../../playback/external_player_service.dart';
 import '../../../playback/letterbox_croppers.dart';
 import '../../../preference/preference_constants.dart';
@@ -82,6 +87,7 @@ import 'home_sections_screen.dart';
 import 'home_row_toggles_screen.dart';
 import 'home_rows_image_type_screen.dart';
 import 'emulator_cores_screen.dart';
+import 'achievements_screen.dart';
 import 'downloaded_games_screen.dart';
 import 'library_settings_screen.dart';
 import 'media_bar_settings_screen.dart';
@@ -183,6 +189,31 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
     }
   }
 
+  /// Turns Kids Mode off once the PIN checks out. The PIN is the whole
+  /// boundary, so a missing one leaves the mode on rather than opening it up.
+  Future<void> _exitKidsMode(BuildContext context) async {
+    final prefs = GetIt.instance<UserPreferences>();
+    final userId = GetIt.instance<SessionRepository>().activeUserId ?? '';
+    final pin = PinCodeUtil.kidsMode(GetIt.instance<PreferenceStore>(), userId);
+
+    if (pin.isPinEnabled) {
+      final verified = await PinEntryDialog.show(
+        context,
+        mode: PinEntryMode.verify,
+        onVerify: pin.verifyPin,
+        onFailedAttempt: pin.registerFailedAttempt,
+        lockoutRemaining: () => pin.lockoutRemaining,
+      );
+      if (!verified) return;
+    }
+
+    await prefs.set(UserPreferences.kidsModeEnabled, false);
+    // The PIN belonged to this stretch of the mode. Clearing it means the next
+    // time Kids Mode goes on, someone picks a code for it rather than a
+    // forgotten one still quietly being the way out.
+    await pin.removePin();
+  }
+
   void _closeSettingsPanel() {
     final rootNavigator = Navigator.of(context, rootNavigator: true);
     if (rootNavigator.canPop()) {
@@ -262,64 +293,79 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final showAdmin = !PlatformDetection.isTV && ref.watch(isAdminProvider);
+    final kidsMode = ref.watch(kidsModeProvider);
+    final showAdmin =
+        !kidsMode && !PlatformDetection.isTV && ref.watch(isAdminProvider);
     final enablePanelAutofocus = !PlatformDetection.useMobileUi;
-    final entries = <_PanelEntry>[
-      if (showAdmin)
-        _PanelEntry(
-          icon: Icons.admin_panel_settings,
-          title: l10n.administration,
-          subtitle: l10n.settingsAdministrationSubtitle,
-          focusNode: enablePanelAutofocus ? _firstFocusNode : null,
-          onTap: () {
-            _closeSettingsPanel();
-            context.navigateTopLevel(Destinations.admin);
-          },
-        ),
-      _PanelEntry(
-        icon: Icons.lock,
-        title: l10n.settingsAccountSecurity,
-        subtitle: l10n.settingsAccountSecuritySubtitle,
-        focusNode: (!showAdmin && enablePanelAutofocus)
-            ? _firstFocusNode
-            : null,
-        onTap: () =>
-            context.pushSettingsScreen(const _AuthenticationCategoryScreen()),
-      ),
-      _PanelEntry(
-        icon: Icons.palette,
-        title: l10n.settingsPersonalization,
-        subtitle: l10n.settingsPersonalizationSubtitle,
-        onTap: () =>
-            context.pushSettingsScreen(const _CustomizationCategoryScreen()),
-      ),
-      _PanelEntry(
-        icon: Icons.play_circle,
-        title: l10n.settingsPlaybackSyncplay,
-        subtitle: l10n.settingsPlaybackSyncplaySubtitle,
-        onTap: () =>
-            context.pushSettingsScreen(const _PlaybackCategoryScreen()),
-      ),
-      _PanelEntry(
-        icon: Icons.hub,
-        title: l10n.integrations,
-        subtitle: l10n.settingsIntegrationsSubtitle,
-        onTap: () => context.pushSettingsScreen(const _IntegrationsScreen()),
-      ),
-      if (_showThemeEditorEntry)
-        _PanelEntry(
-          icon: Icons.brush,
-          title: l10n.themeEditor,
-          subtitle: l10n.themeEditorSubtitle,
-          onTap: () => unawaited(_openThemeEditor()),
-        ),
-      _PanelEntry(
-        icon: Icons.info_outline,
-        title: l10n.aboutTitle,
-        subtitle: l10n.settingsAboutSubtitle,
-        onTap: () => context.pushSettingsScreen(const _AboutCategoryScreen()),
-      ),
-    ];
+
+    // Kids Mode leaves one entry standing. Hiding settings outright would
+    // leave no way back, and a hidden gesture is worse than an obvious tile.
+    final entries = kidsMode
+        ? <_PanelEntry>[
+            _PanelEntry(
+              icon: Icons.lock_open,
+              title: l10n.kidsModeExit,
+              subtitle: l10n.kidsModeExitSubtitle,
+              focusNode: enablePanelAutofocus ? _firstFocusNode : null,
+              onTap: () => unawaited(_exitKidsMode(context)),
+            ),
+          ]
+        : <_PanelEntry>[
+            if (showAdmin)
+              _PanelEntry(
+                icon: Icons.admin_panel_settings,
+                title: l10n.administration,
+                subtitle: l10n.settingsAdministrationSubtitle,
+                focusNode: enablePanelAutofocus ? _firstFocusNode : null,
+                onTap: () {
+                  _closeSettingsPanel();
+                  context.navigateTopLevel(Destinations.admin);
+                },
+              ),
+            _PanelEntry(
+              icon: Icons.lock,
+              title: l10n.settingsAccountSecurity,
+              subtitle: l10n.settingsAccountSecuritySubtitle,
+              focusNode: (!showAdmin && enablePanelAutofocus)
+                  ? _firstFocusNode
+                  : null,
+              onTap: () =>
+                  context.pushSettingsScreen(const _AuthenticationCategoryScreen()),
+            ),
+            _PanelEntry(
+              icon: Icons.palette,
+              title: l10n.settingsPersonalization,
+              subtitle: l10n.settingsPersonalizationSubtitle,
+              onTap: () =>
+                  context.pushSettingsScreen(const _CustomizationCategoryScreen()),
+            ),
+            _PanelEntry(
+              icon: Icons.play_circle,
+              title: l10n.settingsPlaybackSyncplay,
+              subtitle: l10n.settingsPlaybackSyncplaySubtitle,
+              onTap: () =>
+                  context.pushSettingsScreen(const _PlaybackCategoryScreen()),
+            ),
+            _PanelEntry(
+              icon: Icons.hub,
+              title: l10n.integrations,
+              subtitle: l10n.settingsIntegrationsSubtitle,
+              onTap: () => context.pushSettingsScreen(const _IntegrationsScreen()),
+            ),
+            if (_showThemeEditorEntry)
+              _PanelEntry(
+                icon: Icons.brush,
+                title: l10n.themeEditor,
+                subtitle: l10n.themeEditorSubtitle,
+                onTap: () => unawaited(_openThemeEditor()),
+              ),
+            _PanelEntry(
+              icon: Icons.info_outline,
+              title: l10n.aboutTitle,
+              subtitle: l10n.settingsAboutSubtitle,
+              onTap: () => context.pushSettingsScreen(const _AboutCategoryScreen()),
+            ),
+          ];
 
     return Scaffold(
       appBar: AppBar(
@@ -345,7 +391,7 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
             ),
           ),
           Expanded(
-            child: _query.isEmpty
+            child: (_query.isEmpty || kidsMode)
                 ? ListView(
                     children: [
                       adaptiveListSection(

@@ -128,8 +128,85 @@ void main() {
       expect(hd.unavailableOrRequestedSeasons, {2, 3});
     });
 
-    test('declined and failed requests are not active and free their seasons',
-        () {
+    // Request a season, watch it, delete it from the library, and Seerr marks
+    // the season deleted while the finished request stays on the record.
+    // Neither of those may stand in the way of asking for it a second time.
+    // https://github.com/Moonfin-Client/Moonfin-Core/issues/1573
+    test('a season Seerr marks deleted can be requested again', () {
+      final info = SeerrMediaInfo(
+        status: SeerrMediaStatus.deleted,
+        seasons: const [
+          SeerrSeasonAvailability(
+            seasonNumber: 1,
+            status: SeerrMediaStatus.deleted,
+          ),
+          SeerrSeasonAvailability(
+            seasonNumber: 2,
+            status: SeerrMediaStatus.available,
+          ),
+        ],
+        requests: [
+          _request(id: 1, status: SeerrRequest.statusCompleted, seasons: [1]),
+        ],
+      );
+      final hd = SeerrQualityStatus.of(
+        is4k: false,
+        mediaInfo: info,
+        canManageRequests: false,
+        currentUserId: null,
+      );
+
+      // The deleted season is neither held by the library nor spoken for, so
+      // the chip carries no check and stays selectable.
+      expect(hd.availableSeasons, {2});
+      expect(hd.requestedSeasons, isEmpty);
+      expect(hd.unavailableOrRequestedSeasons, {2});
+    });
+
+    test('a blocklisted season is not mistaken for one the library holds', () {
+      final info = SeerrMediaInfo(
+        seasons: const [
+          SeerrSeasonAvailability(
+            seasonNumber: 1,
+            status: SeerrMediaStatus.blocklisted,
+          ),
+        ],
+      );
+      final hd = SeerrQualityStatus.of(
+        is4k: false,
+        mediaInfo: info,
+        canManageRequests: false,
+        currentUserId: null,
+      );
+
+      // Blocklisted sorts above available, so it must never be read as held.
+      expect(hd.availableSeasons, isEmpty);
+    });
+
+    test('an open request still holds its seasons once one is deleted', () {
+      final info = SeerrMediaInfo(
+        seasons: const [
+          SeerrSeasonAvailability(
+            seasonNumber: 1,
+            status: SeerrMediaStatus.deleted,
+          ),
+        ],
+        requests: [
+          _request(id: 1, status: SeerrRequest.statusApproved, seasons: [1]),
+        ],
+      );
+      final hd = SeerrQualityStatus.of(
+        is4k: false,
+        mediaInfo: info,
+        canManageRequests: false,
+        currentUserId: null,
+      );
+
+      // Approved is still on its way, so asking again would duplicate it.
+      expect(hd.unavailableOrRequestedSeasons, {1});
+    });
+
+    test('declined, failed and completed requests free their seasons', () {
       final info = SeerrMediaInfo(
         requests: [
           _request(id: 1, status: SeerrRequest.statusDeclined, seasons: [1]),
@@ -146,8 +223,10 @@ void main() {
 
       expect(hd.activeRequests, isEmpty);
       expect(hd.hasExistingRequest, isFalse);
-      // Completed requests still hold their seasons, declined/failed do not.
-      expect(hd.requestedSeasons, {3});
+      // A finished request is history, not a standing claim on the season.
+      // Whether the season is still there is what per season availability
+      // answers, the same way Seerr decides it.
+      expect(hd.requestedSeasons, isEmpty);
     });
 
     test('a user may cancel their own request only while it is pending', () {

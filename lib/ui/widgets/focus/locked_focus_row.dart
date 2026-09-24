@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
@@ -19,9 +20,24 @@ typedef LockedFocusItemBuilder<T> = Widget Function(
 
 typedef LockedFocusVerticalNav = bool Function(bool isUp);
 
+/// What identifies an item across rebuilds. See [LockedFocusRow.itemKey].
+typedef LockedFocusItemKey<T> = Object Function(T item, int index);
+
 class LockedFocusRow<T> extends StatefulWidget {
   final List<T> items;
   final String hubKey;
+
+  /// An identity for each item that survives the list being replaced.
+  ///
+  /// Paging appends to a row by handing it a longer list. Without an
+  /// identity every card is keyed by position in a fresh list, so every
+  /// element is thrown away and inflated again, and each image resolves
+  /// again from the memory cache. On a low-memory box whose cache holds
+  /// less than a row, the posters go back to placeholders. With an identity
+  /// the cards that were there keep their elements and their images. Left
+  /// null, position is the identity, which is right for a row whose items
+  /// are only ever replaced wholesale.
+  final LockedFocusItemKey<T>? itemKey;
   final double itemExtent;
   final double leadingPadding;
   final double itemSpacing;
@@ -63,6 +79,7 @@ class LockedFocusRow<T> extends StatefulWidget {
     this.padding = EdgeInsets.zero,
     this.autofocus = false,
     this.clipBehavior = Clip.hardEdge,
+    this.itemKey,
   });
 
   @override
@@ -75,8 +92,18 @@ class LockedFocusRowState<T> extends State<LockedFocusRow<T>> {
   late ScrollController _scrollController;
   bool _ownsScrollController = false;
   List<GlobalKey> _itemKeys = const [];
-  int _focusedIndex = 0;
-  bool _hasRowFocus = false;
+  Map<Object, GlobalKey> _keyByIdentity = const {};
+  Map<Key, int> _indexByKey = const {};
+
+  // Focus is broadcast rather than set with setState. A D-pad step used to
+  // rebuild the whole row, every visible card through the caller's builder,
+  // for a change that only two cards can see. Each card listens and rebuilds
+  // itself when its own focused flag flips.
+  final ValueNotifier<int> _focusedIndexNotifier = ValueNotifier<int>(0);
+  final ValueNotifier<bool> _hasRowFocusNotifier = ValueNotifier<bool>(false);
+  int get _focusedIndex => _focusedIndexNotifier.value;
+  set _focusedIndex(int value) => _focusedIndexNotifier.value = value;
+  bool get _hasRowFocus => _hasRowFocusNotifier.value;
   Timer? _selectHoldTimer;
   bool _selectLongPressFired = false;
   bool _selectDownSeen = false;
@@ -110,6 +137,11 @@ class LockedFocusRowState<T> extends State<LockedFocusRow<T>> {
     if (widget.items.length != oldWidget.items.length) {
       _focusedIndex =
           _focusedIndex.clamp(0, widget.items.isEmpty ? 0 : widget.items.length - 1);
+    }
+    // Identities can move on a same-length refresh, so the keys follow the
+    // list rather than its length.
+    if (!identical(widget.items, oldWidget.items) ||
+        widget.itemKey != oldWidget.itemKey) {
       _syncItemKeys();
     }
     if (_hasRowFocus && widget.items.isNotEmpty && _focusedIndex < widget.items.length) {
@@ -129,15 +161,37 @@ class LockedFocusRowState<T> extends State<LockedFocusRow<T>> {
     _focusNode.removeListener(_onRowFocusChange);
     if (_ownsFocusNode) _focusNode.dispose();
     if (_ownsScrollController) _scrollController.dispose();
+    _focusedIndexNotifier.dispose();
+    _hasRowFocusNotifier.dispose();
     super.dispose();
   }
 
   bool get hasFocusedItem => _hasRowFocus;
   int get focusedIndex => _focusedIndex;
 
+  /// Keeps the key of every item still present and allocates only for new
+  /// ones, so appending a page leaves the existing elements alone.
   void _syncItemKeys() {
-    _itemKeys = List<GlobalKey>.generate(widget.items.length, (_) => GlobalKey());
+    final identityOf = widget.itemKey;
+    final next = <Object, GlobalKey>{};
+    final indexByKey = <Key, int>{};
+    _itemKeys = List<GlobalKey>.generate(widget.items.length, (index) {
+      var identity = identityOf?.call(widget.items[index], index) ?? index;
+      // A hub can list one item twice and a GlobalKey may appear once, so
+      // the second copy falls back to its position.
+      if (next.containsKey(identity)) identity = (position: index);
+      final key = _keyByIdentity[identity] ?? GlobalKey();
+      next[identity] = key;
+      indexByKey[key] = index;
+      return key;
+    });
+    _keyByIdentity = next;
+    _indexByKey = indexByKey;
   }
+
+  /// Lets the list find a moved child by key instead of rebuilding it, which
+  /// is what makes a prepend as cheap as an append.
+  int? _itemIndexForKey(Key key) => _indexByKey[key];
 
   void requestFocusAt(int index) {
     if (widget.items.isEmpty) return;
@@ -157,7 +211,7 @@ class LockedFocusRowState<T> extends State<LockedFocusRow<T>> {
     if (!mounted) return;
     final has = _focusNode.hasFocus;
     if (has != _hasRowFocus) {
-      setState(() => _hasRowFocus = has);
+      _hasRowFocusNotifier.value = has;
       widget.onFocusChange?.call(has);
     }
     if (has) {
@@ -172,7 +226,7 @@ class LockedFocusRowState<T> extends State<LockedFocusRow<T>> {
   void _setFocusedIndex(int index) {
     if (widget.items.isEmpty) return;
     if (index == _focusedIndex) return;
-    setState(() => _focusedIndex = index);
+    _focusedIndex = index;
     HubFocusMemory.set(widget.hubKey, index);
     if (index >= 0 && index < widget.items.length) {
       widget.onIndexChanged?.call(index, widget.items[index]);
@@ -304,21 +358,84 @@ class LockedFocusRowState<T> extends State<LockedFocusRow<T>> {
           clipBehavior: widget.clipBehavior,
           padding: widget.padding,
           itemCount: widget.items.length,
+          findItemIndexCallback: _itemIndexForKey,
           separatorBuilder: (_, _) => SizedBox(width: widget.itemSpacing),
-          itemBuilder: (context, index) {
-            final isFocused = _hasRowFocus && index == _focusedIndex;
-            return KeyedSubtree(
-              key: _itemKeys[index],
-              child: widget.itemBuilder(
-                context,
-                widget.items[index],
-                index,
-                isFocused,
-              ),
-            );
-          },
+          itemBuilder: (context, index) => _RowItem<T>(
+            key: _itemKeys[index],
+            index: index,
+            item: widget.items[index],
+            focusedIndex: _focusedIndexNotifier,
+            rowHasFocus: _hasRowFocusNotifier,
+            builder: widget.itemBuilder,
+          ),
         ),
       ),
     );
   }
+}
+
+/// One card of the row. Rebuilds when its own focused flag flips, and when
+/// the row itself rebuilds, which hands it a fresh builder.
+class _RowItem<T> extends StatefulWidget {
+  const _RowItem({
+    super.key,
+    required this.index,
+    required this.item,
+    required this.focusedIndex,
+    required this.rowHasFocus,
+    required this.builder,
+  });
+
+  final int index;
+  final T item;
+  final ValueListenable<int> focusedIndex;
+  final ValueListenable<bool> rowHasFocus;
+  final LockedFocusItemBuilder<T> builder;
+
+  @override
+  State<_RowItem<T>> createState() => _RowItemState<T>();
+}
+
+class _RowItemState<T> extends State<_RowItem<T>> {
+  late bool _isFocused = _computeFocused();
+
+  bool _computeFocused() =>
+      widget.rowHasFocus.value && widget.focusedIndex.value == widget.index;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.focusedIndex.addListener(_onFocusChanged);
+    widget.rowHasFocus.addListener(_onFocusChanged);
+  }
+
+  @override
+  void didUpdateWidget(covariant _RowItem<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.focusedIndex, widget.focusedIndex) ||
+        !identical(oldWidget.rowHasFocus, widget.rowHasFocus)) {
+      oldWidget.focusedIndex.removeListener(_onFocusChanged);
+      oldWidget.rowHasFocus.removeListener(_onFocusChanged);
+      widget.focusedIndex.addListener(_onFocusChanged);
+      widget.rowHasFocus.addListener(_onFocusChanged);
+    }
+    _isFocused = _computeFocused();
+  }
+
+  @override
+  void dispose() {
+    widget.focusedIndex.removeListener(_onFocusChanged);
+    widget.rowHasFocus.removeListener(_onFocusChanged);
+    super.dispose();
+  }
+
+  void _onFocusChanged() {
+    final focused = _computeFocused();
+    if (focused == _isFocused) return;
+    setState(() => _isFocused = focused);
+  }
+
+  @override
+  Widget build(BuildContext context) =>
+      widget.builder(context, widget.item, widget.index, _isFocused);
 }

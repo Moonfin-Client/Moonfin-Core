@@ -14,6 +14,8 @@ import '../models/aggregated_item.dart';
 import '../models/home_row.dart';
 import '../utils/bounded_concurrency.dart';
 import '../utils/latest_media_row_normalizer.dart';
+import '../../util/parental_filter.dart';
+import '../utils/blocked_ratings.dart';
 import '../utils/genre_browse_utils.dart';
 import '../utils/next_up_cutoff.dart';
 import '../utils/next_up_enrichment.dart';
@@ -21,6 +23,7 @@ import '../utils/playlist_utils.dart';
 import 'package:flutter/foundation.dart';
 import '../repositories/seerr_repository.dart';
 import '../repositories/user_views_repository.dart';
+import 'library_scope_service.dart';
 import '../../preference/seerr_preferences.dart';
 import '../viewmodels/seerr_discover_view_model.dart';
 import '../viewmodels/live_tv_guide_view_model.dart';
@@ -96,6 +99,8 @@ class RowDataSource {
   static const int _recommendationCacheMaxEntries = 64;
   static final Map<String, List<Map<String, dynamic>>> _recommendationCache = {};
   static final Map<String, List<AggregatedItem>> _scoredRecommendationsCache = {};
+
+  static const int _fillerCandidateCeiling = 30;
 
   static void clearRecommendationCache() {
     _recommendationCache.clear();
@@ -304,14 +309,32 @@ class RowDataSource {
     List<String> includeItemTypes, {
     int limit = _defaultLimit,
   }) async {
+    final isTv =
+        includeItemTypes.contains('Series') ||
+        includeItemTypes.contains('Episode');
+    final fetchLimit = isTv
+        ? latestMediaFetchLimitForCollection(
+            'tvshows',
+            defaultLimit: limit,
+            maxLimit: _maxItems,
+          )
+        : limit;
     final response = await _client.itemsApi.getLatestItems(
       includeItemTypes: includeItemTypes,
-      limit: limit,
+      limit: fetchLimit,
       fields: _fields,
       enableImageTypes: _imageTypes,
       imageTypeLimit: _imageTypeLimit,
     );
-    return _parseItems(response, serverId);
+    final items = _parseItems(response, serverId);
+    if (isTv) {
+      return normalizeLatestMediaItems(
+        items,
+        collectionType: 'tvshows',
+        limit: limit,
+      );
+    }
+    return items;
   }
 
   /// Recently released items of [includeItemTypes] across every library, the
@@ -935,20 +958,40 @@ class RowDataSource {
     String sortOrder = _defaultSortOrder,
     int limit = _defaultLimit,
   }) async {
-    final response = await _getItemsWithFallback(
-      includeItemTypes: includeItemTypes,
-      sortBy: sortBy,
-      sortOrder: sortOrder,
-      recursive: true,
-      limit: limit,
-      isFavorite: isFavorite,
+    final responses = await _searchVisibleLibraries(
+      includeItemTypes ?? const [],
+      (parentId) => _getItemsWithFallback(
+        parentId: parentId,
+        includeItemTypes: includeItemTypes,
+        sortBy: sortBy,
+        sortOrder: sortOrder,
+        recursive: true,
+        limit: limit,
+        isFavorite: isFavorite,
+      ),
     );
-    return _buildRow(
+
+    final items = [
+      for (final response in responses) ..._parseItems(response, serverId),
+    ];
+    // Each library ordered only its own share, so the merged list needs the
+    // sort redone before it can be cut back to one row's worth.
+    if (responses.length > 1) {
+      final merge = _mergeComparatorFor(sortBy, sortOrder);
+      if (merge != null) items.sort(merge);
+    }
+
+    var totalCount = 0;
+    for (final response in responses) {
+      totalCount += response['TotalRecordCount'] as int? ?? 0;
+    }
+
+    return HomeRow(
       id: id,
       title: title,
-      response: response,
-      serverId: serverId,
+      items: items.take(limit).toList(growable: false),
       rowType: rowType,
+      totalCount: totalCount == 0 ? items.length : totalCount,
     );
   }
 
@@ -956,9 +999,23 @@ class RowDataSource {
     String serverId, [
     HomeRowType rowType = HomeRowType.libraryTiles,
   ]) async {
-    final response = GetIt.instance.isRegistered<UserViewsRepository>()
+    var response = GetIt.instance.isRegistered<UserViewsRepository>()
         ? await GetIt.instance<UserViewsRepository>().getVisibleViewsResponse()
         : await loadVisibleUserViews(_client);
+
+    // Kids Mode routes Live TV back to home, so leaving its tile here would
+    // just be a dead end.
+    if (GetIt.instance<UserPreferences>().get(UserPreferences.kidsModeEnabled)) {
+      response = {
+        ...response,
+        'Items': _rawItems(response)
+            .where(
+              (item) =>
+                  item['CollectionType']?.toString().toLowerCase() != 'livetv',
+            )
+            .toList(),
+      };
+    }
 
     return _buildRow(
       id: rowType == HomeRowType.libraryTilesSmall
@@ -2248,13 +2305,11 @@ class RowDataSource {
     }
   }
 
-
   List<AggregatedItem> _parseItems(
     Map<String, dynamic> response,
     String serverId,
   ) {
     final rawItems = response['Items'] as List? ?? [];
-    final blocked = _blockedParentalRatings();
     final items = rawItems.map((item) {
       final data = item as Map<String, dynamic>;
       return AggregatedItem(
@@ -2262,13 +2317,8 @@ class RowDataSource {
         serverId: serverId,
         rawData: data,
       );
-    });
-    if (blocked.isEmpty) return items.toList();
-    return items.where((item) {
-      final rating = item.officialRating?.trim().toUpperCase();
-      if (rating == null || rating.isEmpty) return true;
-      return !blocked.contains(rating);
     }).toList();
+    return withoutBlockedItems(items);
   }
 
   // Ceilings that keep a row within reach of low memory devices like the
@@ -2341,9 +2391,16 @@ class RowDataSource {
           return aEp.compareTo(bEp);
         });
       if (episodes.isEmpty) return [item];
-      return episodes.length > _maxEpisodesPerSeries
-          ? episodes.sublist(0, _maxEpisodesPerSeries)
-          : episodes;
+      // A series whose episodes were all filtered out must not come back as
+      // its own card, which is what falling through to [item] would do.
+      final visible = withoutBlockedItems(
+        episodes,
+        fallbackRating: item.officialRating,
+      );
+      if (visible.isEmpty) return const [];
+      return visible.length > _maxEpisodesPerSeries
+          ? visible.sublist(0, _maxEpisodesPerSeries)
+          : visible;
     } catch (_) {
       return [item];
     }
@@ -2397,19 +2454,6 @@ class RowDataSource {
     return result;
   }
 
-  Set<String> _blockedParentalRatings() {
-    if (!GetIt.instance.isRegistered<UserPreferences>()) return const {};
-    final csv = GetIt.instance<UserPreferences>().get(
-      UserPreferences.blockedParentalRatings,
-    );
-    if (csv.trim().isEmpty) return const {};
-    return csv
-        .split(',')
-        .map((e) => e.trim().toUpperCase())
-        .where((e) => e.isNotEmpty)
-        .toSet();
-  }
-
   Future<List<AggregatedItem>> _enrichNextUpItemsWithSeriesLastPlayed(
     List<AggregatedItem> items,
   ) => enrichNextUpItemsWithSeriesLastPlayed(items, _client);
@@ -2430,47 +2474,6 @@ class RowDataSource {
     return parsed?.year;
   }
 
-  int _getRatingLevel(String? rating) {
-    if (rating == null || rating.isEmpty) return 100;
-    final clean = rating.trim().toUpperCase();
-
-    // Movies (US/Global)
-    if (clean == 'G') return 1;
-    if (clean == 'PG') return 2;
-    if (clean == 'PG-13') return 3;
-    if (clean == 'R') return 4;
-    if (clean == 'NC-17') return 5;
-
-    // TV Shows (US/Global)
-    if (clean == 'TV-Y' || clean == 'TV-Y7') return 1;
-    if (clean == 'TV-G') return 1;
-    if (clean == 'TV-PG') return 2;
-    if (clean == 'TV-14') return 3;
-    if (clean == 'TV-MA') return 4;
-
-    // UK Ratings
-    if (clean == 'U' || clean == 'UC') return 1;
-    if (clean == 'PG') return 2;
-    if (clean == '12' || clean == '12A') return 3;
-    if (clean == '15') return 4;
-    if (clean == '18') return 5;
-
-    // Fallback: parse numbers if found (e.g. "12", "16", "18")
-    final match = RegExp(r'\d+').firstMatch(clean);
-    if (match != null) {
-      final age = int.tryParse(match.group(0)!);
-      if (age != null) {
-        if (age <= 7) return 1;
-        if (age <= 12) return 2;
-        if (age <= 15) return 3;
-        if (age <= 17) return 4;
-        return 5;
-      }
-    }
-
-    return 3; // Default intermediate severity level
-  }
-
   /// Applies the row's watched and parental-rating rules. Both server paths
   /// get their candidates back unfiltered, so the rule lives here rather than
   /// in each of them.
@@ -2482,15 +2485,12 @@ class RowDataSource {
     final includeWatched = prefs.get(
       UserPreferences.sinceYouWatchedIncludeWatched,
     );
-    final applyRatingCap = prefs.get(
-      UserPreferences.recommendationsApplyParentalRatingCap,
-    );
-    final sourceRatingLevel = _getRatingLevel(baseItem.officialRating);
+    final applyRatingCap = prefs.effectiveRecommendationsApplyParentalRatingCap;
 
     return candidates.where((item) {
       if (!includeWatched && item.isPlayed) return false;
       if (applyRatingCap &&
-          _getRatingLevel(item.officialRating) > sourceRatingLevel) {
+          exceedsRatingCap(item.officialRating, baseItem.officialRating)) {
         return false;
       }
       return true;
@@ -2610,26 +2610,34 @@ class RowDataSource {
         baseItems = resolvedBaseItems;
       }
     } else if (sourceItemType == SinceYouWatchedSourceItem.favorites) {
-      final res = await _getItemsWithFallback(
-        isFavorite: true,
-        filters: const ['IsPlayed'],
-        recursive: true,
-        includeItemTypes: queryItemTypes,
-        limit: 30,
-        fields: '$_fields,Tags,People',
+      baseItems = await _searchVisibleLibraryItems(
+        serverId,
+        queryItemTypes,
+        (parentId) => _getItemsWithFallback(
+          parentId: parentId,
+          isFavorite: true,
+          filters: const ['IsPlayed'],
+          recursive: true,
+          includeItemTypes: queryItemTypes,
+          limit: 30,
+          fields: '$_fields,Tags,People',
+        ),
       );
-      baseItems = _parseItems(res, serverId);
     } else {
       // Random
-      final res = await _getItemsWithFallback(
-        sortBy: 'Random',
-        filters: const ['IsPlayed'],
-        recursive: true,
-        includeItemTypes: queryItemTypes,
-        limit: 30,
-        fields: '$_fields,Tags,People',
+      baseItems = await _searchVisibleLibraryItems(
+        serverId,
+        queryItemTypes,
+        (parentId) => _getItemsWithFallback(
+          parentId: parentId,
+          sortBy: 'Random',
+          filters: const ['IsPlayed'],
+          recursive: true,
+          includeItemTypes: queryItemTypes,
+          limit: 30,
+          fields: '$_fields,Tags,People',
+        ),
       );
-      baseItems = _parseItems(res, serverId);
     }
 
     final sourceIdx = rowIndex - 1;
@@ -2731,22 +2739,23 @@ class RowDataSource {
       final people = (itemDetail['People'] as List?)?.map((e) => e is Map ? Map<String, dynamic>.from(e) : null).whereType<Map<String, dynamic>>().toList() ?? const <Map<String, dynamic>>[];
       final baseStudios = (itemDetail['Studios'] as List?)?.map((e) => e is Map ? e['Name']?.toString() : e?.toString()).whereType<String>().toList() ?? const <String>[];
       final baseYear = itemDetail['ProductionYear'] as int?;
+      final baseRating = (itemDetail['CommunityRating'] as num?)?.toDouble();
 
       final actorNames = people
           .where((p) => p['Type'] == 'Actor')
           .map((p) => p['Name']?.toString())
           .whereType<String>()
-          .toList();
+          .toSet();
       final directorNames = people
           .where((p) => p['Type'] == 'Director')
           .map((p) => p['Name']?.toString())
           .whereType<String>()
-          .toList();
+          .toSet();
       final writerNames = people
           .where((p) => p['Type'] == 'Writer')
           .map((p) => p['Name']?.toString())
           .whereType<String>()
-          .toList();
+          .toSet();
 
       final actorIds = people
           .where((p) => p['Type'] == 'Actor')
@@ -2889,9 +2898,9 @@ class RowDataSource {
       await Future.wait(futures);
 
       final bool effectiveIncludeWatched = includeWatched ?? prefs.get(UserPreferences.sinceYouWatchedIncludeWatched);
-      final bool applyRatingCap = prefs.get(UserPreferences.recommendationsApplyParentalRatingCap);
+      final bool applyRatingCap = prefs.effectiveRecommendationsApplyParentalRatingCap;
       final sourceRating = baseItem.officialRating;
-      final sourceRatingLevel = _getRatingLevel(sourceRating);
+      final parentalFilter = activeParentalFilter;
 
       final scoredCandidates = <MapEntry<Map<String, dynamic>, double>>[];
 
@@ -2904,10 +2913,15 @@ class RowDataSource {
         final isPlayed = userData?['Played'] as bool? ?? false;
         if (!effectiveIncludeWatched && isPlayed) continue;
 
+        if (parentalFilter.isBlockedRaw(candidate)) continue;
+
         // Parental rating constraint upper bound
-        if (applyRatingCap) {
-          final candRating = candidate['OfficialRating'] as String?;
-          if (_getRatingLevel(candRating) > sourceRatingLevel) continue;
+        if (applyRatingCap &&
+            exceedsRatingCap(
+              candidate['OfficialRating'] as String?,
+              sourceRating,
+            )) {
+          continue;
         }
 
         final score = _scoreCandidate(
@@ -2919,32 +2933,38 @@ class RowDataSource {
           writerNames: writerNames,
           baseStudios: baseStudios,
           baseYear: baseYear,
+          baseRating: baseRating,
           baseName: baseItem.name,
         );
         scoredCandidates.add(MapEntry(candidate, score));
       }
 
-      // If we have fewer than 15 items after candidate scoring and filtering, fetch filler items
-      if (scoredCandidates.length < 15) {
+      // Asking for more than the filler can ever add would buy a request on every
+      // build that can't change the result.
+      if (scoredCandidates.length < limit.clamp(0, _fillerCandidateCeiling)) {
         try {
-          final fallbackCacheKey = '$serverId:fallback:${types.join(",")}:${genres.join(",")}';
+          final fallbackCacheKey =
+              '$serverId:$scope:fallback:${types.join(",")}:${genres.join(",")}';
           final List<Map<String, dynamic>> items;
           if (_recommendationCache.containsKey(fallbackCacheKey)) {
             items = _recommendationCache[fallbackCacheKey]!;
           } else {
-            final res = await _client.itemsApi.getItems(
-              includeItemTypes: types,
-              genres: genres.isNotEmpty ? genres : null,
-              recursive: true,
-              limit: 30,
-              sortBy: 'ProductionYear,SortName',
-              sortOrder: 'Descending',
-              fields: 'Genres,Tags,People,UserData,OfficialRating,ProductionYear,CommunityRating,Studios',
+            final responses = await _searchLibraries(
+              parentIds,
+              (parentId) => _client.itemsApi.getItems(
+                parentId: parentId,
+                includeItemTypes: types,
+                genres: genres.isNotEmpty ? genres : null,
+                recursive: true,
+                limit: 30,
+                sortBy: 'ProductionYear,SortName',
+                sortOrder: 'Descending',
+                fields: 'Genres,Tags,People,UserData,OfficialRating,ProductionYear,CommunityRating,Studios',
+              ),
             );
-            items = (res['Items'] as List? ?? [])
-                .map((e) => e is Map ? Map<String, dynamic>.from(e) : null)
-                .whereType<Map<String, dynamic>>()
-                .toList();
+            items = [
+              for (final res in responses) ..._rawItems(res),
+            ];
             _cacheRecommendations(fallbackCacheKey, items);
           }
           for (final item in items) {
@@ -2954,9 +2974,14 @@ class RowDataSource {
               final isPlayed = userData?['Played'] as bool? ?? false;
               if (!effectiveIncludeWatched && isPlayed) continue;
 
-              if (applyRatingCap) {
-                final candRating = item['OfficialRating'] as String?;
-                if (_getRatingLevel(candRating) > sourceRatingLevel) continue;
+              if (parentalFilter.isBlockedRaw(item)) continue;
+
+              if (applyRatingCap &&
+                  exceedsRatingCap(
+                    item['OfficialRating'] as String?,
+                    sourceRating,
+                  )) {
+                continue;
               }
 
               final score = _scoreCandidate(
@@ -2968,14 +2993,14 @@ class RowDataSource {
                 writerNames: writerNames,
                 baseStudios: baseStudios,
                 baseYear: baseYear,
+                baseRating: baseRating,
                 baseName: baseItem.name,
               );
 
               candidatesMap[id] = item;
               scoredCandidates.add(MapEntry(item, score));
 
-              // Cap the extra items to prevent bloating
-              if (scoredCandidates.length >= 30) {
+              if (scoredCandidates.length >= _fillerCandidateCeiling) {
                 break;
               }
             }
@@ -3150,15 +3175,6 @@ class RowDataSource {
     return recommendedItems;
   }
 
-  /// Collection types that can hold each item type, so a search only visits
-  /// the libraries worth visiting. A library that declares no type holds
-  /// anything, so it is always worth a look.
-  static const _libraryTypesByItemType = <String, String>{
-    'Movie': 'movies',
-    'Series': 'tvshows',
-    'Episode': 'tvshows',
-  };
-
   /// Runs [search] once for every library that could hold [includeItemTypes],
   /// or once across the whole server when the user has hidden nothing, and
   /// hands back every answer.
@@ -3216,6 +3232,49 @@ class RowDataSource {
   static int _byLastPlayed(AggregatedItem a, AggregatedItem b) =>
       _lastPlayedOf(b).compareTo(_lastPlayedOf(a));
 
+  /// Redoes the server's sort over items several libraries answered
+  /// separately, since each one only ordered its own share.
+  ///
+  /// Null for a sort we can't reproduce here, which leaves the libraries
+  /// concatenated. Random is null on purpose, any order is a valid one.
+  static Comparator<AggregatedItem>? _mergeComparatorFor(
+    String sortBy,
+    String sortOrder,
+  ) {
+    final descending = sortOrder.toLowerCase() == 'descending';
+    String? field(AggregatedItem item, String key) =>
+        item.rawData[key]?.toString();
+    num? number(AggregatedItem item, String key) {
+      final raw = item.rawData[key];
+      return raw is num ? raw : num.tryParse(raw?.toString() ?? '');
+    }
+
+    final field0 = sortBy.split(',').first;
+    Comparator<AggregatedItem>? base;
+    switch (field0) {
+      case 'SortName':
+        base = (a, b) => (field(a, 'SortName') ?? a.name)
+            .toLowerCase()
+            .compareTo((field(b, 'SortName') ?? b.name).toLowerCase());
+      case 'DateCreated':
+        base = (a, b) => (field(a, 'DateCreated') ?? '')
+            .compareTo(field(b, 'DateCreated') ?? '');
+      case 'PremiereDate':
+        base = (a, b) => (field(a, 'PremiereDate') ?? '')
+            .compareTo(field(b, 'PremiereDate') ?? '');
+      case 'CommunityRating':
+      case 'CriticRating':
+      case 'ProductionYear':
+      case 'Runtime':
+        final key = field0 == 'Runtime' ? 'RunTimeTicks' : field0;
+        base = (a, b) => (number(a, key) ?? 0).compareTo(number(b, key) ?? 0);
+      default:
+        return null;
+    }
+    final ascending = base;
+    return descending ? (a, b) => ascending(b, a) : ascending;
+  }
+
   static List<Map<String, dynamic>> _rawItems(Map<String, dynamic> response) =>
       ((response['Items'] as List?) ?? const [])
           .whereType<Map>()
@@ -3225,29 +3284,10 @@ class RowDataSource {
   /// The libraries to search, or null when one sweep of the server is still
   /// right because nothing is hidden.
   Future<List<String>?> _visibleLibraryIds(List<String> includeItemTypes) async {
-    if (!GetIt.instance.isRegistered<UserViewsRepository>()) return null;
-    try {
-      final repo = GetIt.instance<UserViewsRepository>();
-      if ((await repo.getMyMediaExcludes()).isEmpty) return null;
-
-      final wanted = includeItemTypes
-          .map((type) => _libraryTypesByItemType[type])
-          .whereType<String>()
-          .toSet();
-      final ids = <String>[];
-      for (final view in await repo.getUserViews()) {
-        final type = view.collectionType.toLowerCase();
-        if (view.id.isEmpty) continue;
-        if (type.isEmpty || wanted.isEmpty || wanted.contains(type)) {
-          ids.add(view.id);
-        }
-      }
-      // Nothing left to search would empty the row, so let the sweep stand and
-      // show something rather than nothing.
-      return ids.isEmpty ? null : ids;
-    } catch (_) {
-      return null;
-    }
+    if (!GetIt.instance.isRegistered<LibraryScopeService>()) return null;
+    return GetIt.instance<LibraryScopeService>().visibleLibraryIds(
+      includeItemTypes,
+    );
   }
 
   Future<HomeRow> loadRewatchRow(String serverId) async {
@@ -3362,13 +3402,17 @@ class RowDataSource {
     final collectionLastPlayedDates = <String, String>{};
     if (includeCollections) {
       try {
-        final res = await _getItemsWithFallback(
-          includeItemTypes: const ['BoxSet'],
-          recursive: true,
-          limit: 50,
-          fields: _fields,
+        final collections = await _searchVisibleLibraryItems(
+          serverId,
+          const ['BoxSet'],
+          (parentId) => _getItemsWithFallback(
+            parentId: parentId,
+            includeItemTypes: const ['BoxSet'],
+            recursive: true,
+            limit: 50,
+            fields: _fields,
+          ),
         );
-        final collections = _parseItems(res, serverId);
         
         final collectionFutures = collections.map((col) async {
           try {
@@ -3468,64 +3512,102 @@ class RowDataSource {
     );
   }
 
+  static double _scoreDiminishing(int count, double first, double second, [double third = 0.0]) {
+    if (count <= 0) return 0.0;
+    if (count == 1) return first;
+    if (count == 2) return first + second;
+    return first + second + third;
+  }
+
+  @visibleForTesting
+  double scoreCandidateForTesting(
+    Map<String, dynamic> candidate, {
+    required List<String> genres,
+    required List<String> tags,
+    required Set<String> actorNames,
+    required Set<String> directorNames,
+    required Set<String> writerNames,
+    required List<String> baseStudios,
+    required int? baseYear,
+    required double? baseRating,
+    required String baseName,
+  }) =>
+      _scoreCandidate(
+        candidate,
+        genres: genres,
+        tags: tags,
+        actorNames: actorNames,
+        directorNames: directorNames,
+        writerNames: writerNames,
+        baseStudios: baseStudios,
+        baseYear: baseYear,
+        baseRating: baseRating,
+        baseName: baseName,
+      );
+
   double _scoreCandidate(
     Map<String, dynamic> candidate, {
     required List<String> genres,
     required List<String> tags,
-    required List<String> actorNames,
-    required List<String> directorNames,
-    required List<String> writerNames,
+    required Set<String> actorNames,
+    required Set<String> directorNames,
+    required Set<String> writerNames,
     required List<String> baseStudios,
     required int? baseYear,
+    required double? baseRating,
     required String baseName,
   }) {
     double score = 0.0;
 
     final cGenres = (candidate['Genres'] as List?)?.map((e) => e?.toString()).whereType<String>().toList() ?? const <String>[];
+    var genreMatches = 0;
     for (final g in genres) {
-      if (cGenres.contains(g)) score += 3.0;
+      if (cGenres.contains(g)) genreMatches++;
     }
+    score += (genreMatches * 7.0).clamp(0.0, 35.0);
 
     final cTags = (candidate['Tags'] as List?)?.map((e) => e?.toString()).whereType<String>().toList() ?? const <String>[];
+    var tagMatches = 0;
     for (final t in tags) {
-      if (cTags.contains(t)) score += 3.0;
+      if (cTags.contains(t)) tagMatches++;
     }
+    score += (tagMatches * 4.0).clamp(0.0, 20.0);
 
     final cPeople = (candidate['People'] as List?)?.map((e) => e is Map ? Map<String, dynamic>.from(e) : null).whereType<Map<String, dynamic>>().toList() ?? const <Map<String, dynamic>>[];
     final cActors = cPeople.where((p) => p['Type'] == 'Actor').map((p) => p['Name']?.toString()).whereType<String>().toSet();
     final cDirectors = cPeople.where((p) => p['Type'] == 'Director').map((p) => p['Name']?.toString()).whereType<String>().toSet();
     final cWriters = cPeople.where((p) => p['Type'] == 'Writer').map((p) => p['Name']?.toString()).whereType<String>().toSet();
-    for (final a in actorNames) {
-      if (cActors.contains(a)) score += 5.0;
-    }
-    for (final d in directorNames) {
-      if (cDirectors.contains(d)) score += 6.0;
-    }
-    for (final w in writerNames) {
-      if (cWriters.contains(w)) score += 6.0;
-    }
+    score += _scoreDiminishing(cActors.intersection(actorNames).length, 10.0, 6.0, 4.0);
+    score += _scoreDiminishing(cDirectors.intersection(directorNames).length, 15.0, 10.0, 5.0);
+    score += _scoreDiminishing(cWriters.intersection(writerNames).length, 15.0, 10.0, 5.0);
 
     final cStudios = (candidate['Studios'] as List?)?.map((e) => e is Map ? e['Name']?.toString() : e?.toString()).whereType<String>().toSet() ?? const <String>{};
+    var studioMatches = 0;
     for (final s in baseStudios) {
-      if (cStudios.contains(s)) score += 3.0;
+      if (cStudios.contains(s)) studioMatches++;
     }
+    score += _scoreDiminishing(studioMatches, 12.0, 8.0);
 
     final candYear = candidate['ProductionYear'] as int?;
     if (candYear != null && baseYear != null) {
-      if (candYear == baseYear) {
-        score += 2.0;
-      } else if ((candYear - baseYear).abs() <= 3) {
-        score += 1.0;
+      final diff = (candYear - baseYear).abs();
+      if (diff < 15) {
+        score += 10.0 * (1.0 - (diff / 15.0));
       }
     }
 
     if (_isSequelOrSimilarTitle(baseName, candidate['Name']?.toString() ?? '')) {
-      score += 10.0;
+      score += 25.0;
     }
 
     final candCommRating = (candidate['CommunityRating'] as num?)?.toDouble();
     if (candCommRating != null) {
-      score += candCommRating / 10.0;
+      if (baseRating != null) {
+        final diff = (candCommRating - baseRating).abs();
+        score += 10.0 * (1.0 - (diff / 10.0)).clamp(0.0, 1.0);
+      } else {
+        score += 10.0 * (candCommRating / 10.0);
+      }
     }
 
     return score;
@@ -3554,9 +3636,9 @@ class RowDataSource {
     // shared between "Dark Knight" and "Dark Waters" is not enough.
     if (setA.containsAll(setB) || setB.containsAll(setA)) return true;
 
-    // A single subject word that only differs by a short suffix, so pluralized
-    // sequels like "Alien" and "Aliens" or "Predator" and "Predators" still
-    // count without matching something unrelated like "Alien" and "Alienist".
+    // A single subject word differing only by a short suffix (<= 2 chars), so pluralized
+    // sequels like "Alien" and "Aliens" match, while unrelated titles sharing a common
+    // prefix (such as matching "Alien" to "The Alienist") are excluded.
     if (setA.length == 1 && setB.length == 1) {
       final short = a.first.length <= b.first.length ? a.first : b.first;
       final long = a.first.length <= b.first.length ? b.first : a.first;

@@ -4,11 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:playback_core/playback_core.dart';
+import 'package:moonfin/data/viewmodels/live_tv_guide_view_model.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/preference/user_preferences.dart';
+import 'package:moonfin/ui/navigation/destinations.dart';
+import 'package:moonfin/ui/screens/livetv/epg/widgets/epg_filter_rail.dart';
+import 'package:moonfin/ui/screens/livetv/epg/widgets/epg_hero_preview.dart';
 import 'package:moonfin/ui/screens/livetv/guide/guide_window.dart';
 import 'package:moonfin/ui/screens/livetv/live_tv_guide_screen.dart';
 import 'package:server_core/server_core.dart';
@@ -638,6 +643,36 @@ void main() {
     expect(_focusedLabel(), 'GuideChannel:1');
   });
 
+  testWidgets(
+    'the mini-player guide fetches no program artwork, having no hero band',
+    (tester) async {
+      when(
+        () => liveTvApi.getProgram(any(), userId: any(named: 'userId')),
+      ).thenAnswer(
+        (inv) async => <String, dynamic>{
+          'Id': inv.positionalArguments[0],
+          'ChannelId': 'ch0',
+          'Name': 'anything',
+          'StartDate': DateTime.now().toUtc().toIso8601String(),
+          'EndDate': DateTime.now()
+              .toUtc()
+              .add(const Duration(minutes: 30))
+              .toIso8601String(),
+          'ImageTags': <String, dynamic>{'Primary': 'tag'},
+        },
+      );
+
+      await pumpGuide(tester, miniPlayerMode: true);
+      // Past both the scroll debounce and the on-focus artwork debounce.
+      await tester.pump(const Duration(seconds: 1));
+      await tester.pumpAndSettle();
+
+      verifyNever(
+        () => liveTvApi.getProgram(any(), userId: any(named: 'userId')),
+      );
+    },
+  );
+
   testWidgets('UP from row zero reaches the mini player in miniPlayerMode', (
     tester,
   ) async {
@@ -651,4 +686,387 @@ void main() {
 
     expect(_focusedLabel(), 'GuideMiniPlayer');
   });
+
+  testWidgets(
+    'a back press is not consumed when the entry channel is filtered out',
+    (tester) async {
+      // ch5 is the only favorite; the entry channel (ch0, the default when no
+      // last-channel preference is set) is not, so switching to the
+      // favorites filter drops the entry channel from filteredChannels.
+      final favoriteChannel = _channelRaw(5)
+        ..['UserData'] = <String, dynamic>{'IsFavorite': true};
+      when(
+        () => liveTvApi.getChannels(
+          startIndex: any(named: 'startIndex'),
+          limit: any(named: 'limit'),
+          sortBy: any(named: 'sortBy'),
+          sortOrder: any(named: 'sortOrder'),
+          fields: any(named: 'fields'),
+          enableTotalRecordCount: any(named: 'enableTotalRecordCount'),
+          userId: any(named: 'userId'),
+        ),
+      ).thenAnswer(
+        (_) async => <String, dynamic>{
+          'Items': [
+            for (var i = 0; i < channelCount; i++)
+              if (i == 5) favoriteChannel else _channelRaw(i),
+          ],
+        },
+      );
+
+      tester.view.physicalSize = const Size(900, 700);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Builder(
+            builder: (context) => ElevatedButton(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => const LiveTvGuideScreen(),
+                ),
+              ),
+              child: const Text('open guide'),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('open guide'));
+      await tester.pumpAndSettle();
+      expect(find.byType(LiveTvGuideScreen), findsOneWidget);
+
+      // Switch to the favorites filter, which excludes the entry channel.
+      final filterRail = tester.widget<EpgFilterRail>(
+        find.byType(EpgFilterRail),
+      );
+      filterRail.onSelect(GuideFilter.values.indexOf(GuideFilter.favorites));
+      await tester.pumpAndSettle();
+
+      // Move real focus onto the one remaining (favorited) channel row, so
+      // the guide's tracked focused channel differs from the entry channel.
+      _nodeLabelled(tester, 'GuideChannel:0').requestFocus();
+      await tester.pumpAndSettle();
+
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+
+      // Back was NOT consumed by the guide's reset-to-entry handling, so the
+      // route popped back to the host screen instead of getting stuck.
+      expect(find.byType(LiveTvGuideScreen), findsNothing);
+    },
+  );
+
+  testWidgets(
+    'a lineup change while covered by another route does not steal focus',
+    (tester) async {
+      // ch5 is the only favorite, so switching to the favorites filter later
+      // drops every other channel (including the one holding the current
+      // selection) from filteredChannels.
+      final favoriteChannel = _channelRaw(5)
+        ..['UserData'] = <String, dynamic>{'IsFavorite': true};
+      when(
+        () => liveTvApi.getChannels(
+          startIndex: any(named: 'startIndex'),
+          limit: any(named: 'limit'),
+          sortBy: any(named: 'sortBy'),
+          sortOrder: any(named: 'sortOrder'),
+          fields: any(named: 'fields'),
+          enableTotalRecordCount: any(named: 'enableTotalRecordCount'),
+          userId: any(named: 'userId'),
+        ),
+      ).thenAnswer(
+        (_) async => <String, dynamic>{
+          'Items': [
+            for (var i = 0; i < channelCount; i++)
+              if (i == 5) favoriteChannel else _channelRaw(i),
+          ],
+        },
+      );
+
+      tester.view.physicalSize = const Size(900, 700);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Builder(
+            builder: (context) => ElevatedButton(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => const LiveTvGuideScreen(),
+                ),
+              ),
+              child: const Text('open guide'),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('open guide'));
+      await tester.pumpAndSettle();
+      expect(find.byType(LiveTvGuideScreen), findsOneWidget);
+
+      // Establish a selection in the grid before the guide is covered.
+      await establishAnchor(tester);
+
+      // A fully opaque covering route wraps the guide in an Offstage, which
+      // finders skip by default, so grab the filter callback while the guide
+      // is still on top.
+      final onSelectFavorites = tester
+          .widget<EpgFilterRail>(find.byType(EpgFilterRail))
+          .onSelect;
+
+      // Simulate tuning a channel: push a route on top of the guide (the
+      // guide stays mounted underneath, exactly like the player) and move
+      // focus into it, as the real player does on entry.
+      final playerFocusNode = FocusNode(debugLabel: 'FakePlayer');
+      addTearDown(playerFocusNode.dispose);
+      final guideContext = tester.element(find.byType(LiveTvGuideScreen));
+      Navigator.of(guideContext).push(
+        MaterialPageRoute<void>(
+          builder: (_) => Focus(
+            focusNode: playerFocusNode,
+            autofocus: true,
+            child: const SizedBox(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(_focusedLabel(), 'FakePlayer');
+
+      // Switch to the favorites filter, which changes filteredChannels while
+      // the guide is covered by the pushed route.
+      onSelectFavorites(GuideFilter.values.indexOf(GuideFilter.favorites));
+      await tester.pumpAndSettle();
+
+      // Focus must still belong to the pushed route, not to a guide cell it
+      // cannot see.
+      expect(
+        _focusedLabel(),
+        'FakePlayer',
+        reason:
+            'the covered guide stole focus after a lineup change instead '
+            'of leaving it with the route on top',
+      );
+    },
+  );
+
+  testWidgets(
+    'returning from the player focuses the preference channel, not the '
+    'one launched',
+    (tester) async {
+      tester.view.physicalSize = const Size(900, 700);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+
+      final router = GoRouter(
+        routes: [
+          GoRoute(path: '/', builder: (_, _) => const LiveTvGuideScreen()),
+          GoRoute(
+            path: Destinations.liveTvPlayer,
+            builder: (_, _) => const Scaffold(body: SizedBox.shrink()),
+          ),
+        ],
+      );
+      addTearDown(router.dispose);
+
+      await tester.pumpWidget(
+        MaterialApp.router(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          routerConfig: router,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Launch ch0 from the guide.
+      _nodeLabelled(tester, 'GuideChannel:0').requestFocus();
+      await tester.pumpAndSettle();
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+
+      // The player route is up. Simulate it having switched to ch3 while the
+      // guide waited underneath, exactly as the carousel does.
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.liveTvLastChannelId,
+        'ch3',
+      );
+
+      router.pop();
+      await tester.pumpAndSettle();
+
+      expect(_focusedLabel(), 'GuideChannel:3');
+    },
+  );
+
+  testWidgets(
+    'a back press re-homes to the channel the user has since tuned, not '
+    'the one playing when the guide opened',
+    (tester) async {
+      tester.view.physicalSize = const Size(900, 700);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Builder(
+            builder: (context) => ElevatedButton(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => const LiveTvGuideScreen(),
+                ),
+              ),
+              child: const Text('open guide'),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('open guide'));
+      await tester.pumpAndSettle();
+      expect(find.byType(LiveTvGuideScreen), findsOneWidget);
+
+      // Simulate the player having tuned ch2 while the guide sat underneath;
+      // the guide itself never touches the preference here.
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.liveTvLastChannelId,
+        'ch2',
+      );
+
+      // Page the window off live so back has somewhere to reset from.
+      final before = _windowRangeText(tester);
+      _nodeLabelled(tester, 'GuideWindowBar:0').requestFocus();
+      await tester.pumpAndSettle();
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+      final after = _windowRangeText(tester);
+      expect(after, isNot(before), reason: 'window did not page');
+
+      await tester.binding.handlePopRoute();
+      // The reset now schedules its own frames for both deferred
+      // postFrameCallbacks, so ordinary pumping settles it without waiting
+      // on the guide's periodic display-clock timer.
+      await tester.pumpAndSettle();
+
+      // Back re-homed to the last-tuned channel (ch2), not the channel
+      // playing when the guide opened (ch0) -- and did not exit the guide.
+      expect(find.byType(LiveTvGuideScreen), findsOneWidget);
+      expect(_focusedLabel(), 'GuideChannel:2');
+    },
+  );
+
+  testWidgets(
+    'a back press re-homes to row 0 when no channel has ever been tuned',
+    (tester) async {
+      tester.view.physicalSize = const Size(900, 700);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Builder(
+            builder: (context) => ElevatedButton(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => const LiveTvGuideScreen(),
+                ),
+              ),
+              child: const Text('open guide'),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('open guide'));
+      await tester.pumpAndSettle();
+      expect(find.byType(LiveTvGuideScreen), findsOneWidget);
+
+      // liveTvLastChannelId is empty (never tuned), so the guide entered on
+      // row 0 by falling back to it in _scheduleInitialChannelFocus. Move
+      // focus onto another channel and page the window off live.
+      _nodeLabelled(tester, 'GuideChannel:3').requestFocus();
+      await tester.pumpAndSettle();
+
+      final before = _windowRangeText(tester);
+      _nodeLabelled(tester, 'GuideWindowBar:0').requestFocus();
+      await tester.pumpAndSettle();
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+      final after = _windowRangeText(tester);
+      expect(after, isNot(before), reason: 'window did not page');
+
+      await tester.binding.handlePopRoute();
+      // The reset now schedules its own frames for both deferred
+      // postFrameCallbacks, so ordinary pumping settles it without waiting
+      // on the guide's periodic display-clock timer.
+      await tester.pumpAndSettle();
+
+      // Back re-homed to row 0, not exited the guide -- even though no
+      // channel has ever actually been tuned.
+      expect(find.byType(LiveTvGuideScreen), findsOneWidget);
+      expect(_focusedLabel(), 'GuideChannel:0');
+    },
+  );
+
+  testWidgets(
+    'a genre filter that swaps a focused row\'s channel updates the hero '
+    'band',
+    (tester) async {
+      // ch5 is the only favorite; switching to favorites collapses the
+      // lineup to that one channel, so row 0 -- still focused from entry --
+      // now holds ch5 instead of the entry channel ch0.
+      final favoriteChannel = _channelRaw(5)
+        ..['UserData'] = <String, dynamic>{'IsFavorite': true};
+      when(
+        () => liveTvApi.getChannels(
+          startIndex: any(named: 'startIndex'),
+          limit: any(named: 'limit'),
+          sortBy: any(named: 'sortBy'),
+          sortOrder: any(named: 'sortOrder'),
+          fields: any(named: 'fields'),
+          enableTotalRecordCount: any(named: 'enableTotalRecordCount'),
+          userId: any(named: 'userId'),
+        ),
+      ).thenAnswer(
+        (_) async => <String, dynamic>{
+          'Items': [
+            for (var i = 0; i < channelCount; i++)
+              if (i == 5) favoriteChannel else _channelRaw(i),
+          ],
+        },
+      );
+
+      await pumpGuide(tester);
+
+      // Put real focus on row 0 (the entry channel, ch0) and confirm the
+      // hero band describes it before the filter changes anything.
+      _nodeLabelled(tester, 'GuideChannel:0').requestFocus();
+      await tester.pumpAndSettle();
+      expect(
+        tester.widget<EpgHeroPreview>(find.byType(EpgHeroPreview)).title,
+        'Channel 0',
+      );
+
+      final filterRail = tester.widget<EpgFilterRail>(
+        find.byType(EpgFilterRail),
+      );
+      filterRail.onSelect(GuideFilter.values.indexOf(GuideFilter.favorites));
+      await tester.pumpAndSettle();
+
+      // Row 0's FocusNode is still the one focused (true -> true fires no
+      // onFocusChange), but it now holds ch5. The hero band must describe
+      // the channel actually in that row, not the pre-filter one.
+      expect(_focusedLabel(), 'GuideChannel:0');
+      expect(
+        tester.widget<EpgHeroPreview>(find.byType(EpgHeroPreview)).title,
+        'Channel 5',
+      );
+    },
+  );
 }

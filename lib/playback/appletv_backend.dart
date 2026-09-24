@@ -316,6 +316,7 @@ class AppleTvBackend implements PlayerBackend {
       'videoCodec': payload['videoCodec']?.toString(),
       'videoDvProfile': payload['videoDvProfile'],
       'dolbyVisionBaseLayerOnly': needsBaseLayerOnlyForDolbyVisionAv1(payload),
+      'externalSubtitles': payload['externalSubtitles'] ?? const [],
       'videoFrameRate': payload['videoFrameRate'],
       'videoWidth': payload['videoWidth'],
       'videoHeight': payload['videoHeight'],
@@ -491,6 +492,10 @@ class AppleTvBackend implements PlayerBackend {
     required String topTitle,
     required String topSubtitle,
     required List<Map<String, dynamic>> chapters,
+    // Gates the marks alone. The chapter list still travels in full, since
+    // the chapters button and its menu read the same array. Off by default
+    // to match the preference.
+    bool showChapterMarkers = false,
     required bool hasPrevious,
     required bool hasNext,
     required int skipForwardMs,
@@ -519,6 +524,7 @@ class AppleTvBackend implements PlayerBackend {
       'topTitle': topTitle,
       'topSubtitle': topSubtitle,
       'chapters': chapters,
+      'showChapterMarkers': showChapterMarkers,
       'hasPrevious': hasPrevious,
       'hasNext': hasNext,
       'skipForwardMs': skipForwardMs,
@@ -613,6 +619,7 @@ class AppleTvBackend implements PlayerBackend {
     required bool isGlass,
     required int accentARGB,
     required int surfaceARGB,
+    required int surfaceVariantARGB,
     required int onSurfaceARGB,
     required int rangeProgressARGB,
     required int rangeTrackARGB,
@@ -621,6 +628,7 @@ class AppleTvBackend implements PlayerBackend {
       'isGlass': isGlass,
       'accent': accentARGB,
       'surface': surfaceARGB,
+      'surfaceVariant': surfaceVariantARGB,
       'onSurface': onSurfaceARGB,
       'rangeProgress': rangeProgressARGB,
       'rangeTrack': rangeTrackARGB,

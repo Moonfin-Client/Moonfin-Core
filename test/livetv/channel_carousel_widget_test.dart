@@ -7,6 +7,7 @@ import 'package:moonfin/ui/theme/app_theme.dart';
 import 'package:moonfin/ui/widgets/live_tv/channel_carousel.dart';
 import 'package:moonfin/ui/widgets/live_tv/channel_carousel_card.dart';
 import 'package:moonfin/ui/widgets/live_tv/channel_carousel_overlay.dart';
+import 'package:moonfin/util/tv_ui_scale.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
 
@@ -227,6 +228,22 @@ void main() {
     return vm;
   }
 
+  test('the television canvas shows three whole cards and two half ones', () {
+    final layout = ChannelCarouselCard.layoutFor(kTvDesignWidth);
+
+    // The strip is centre-locked, so an even number of pitches puts the
+    // centred card between two whole neighbours with a half card bleeding
+    // off each edge.
+    expect(layout.count, 4);
+    expect(
+      layout.width,
+      inInclusiveRange(
+        ChannelCarouselCard.minCardWidth,
+        ChannelCarouselCard.maxCardWidth,
+      ),
+    );
+  });
+
   testWidgets('overlay header waits until 200 ms after scrolling ends', (
     tester,
   ) async {
@@ -244,7 +261,11 @@ void main() {
     await tester.pump(const Duration(seconds: 2));
     expect(find.text('Show ch11 (S6:E19)'), findsOneWidget);
     expect(find.text('Overview ch11'), findsOneWidget);
-    expect(tester.widget<Text>(find.text('Overview ch11')).style?.fontSize, 16);
+    expect(
+      tester.widget<Text>(find.text('Overview ch11')).style?.fontSize,
+      AppTypography.fontSizeLg,
+      reason: 'the description carries the overview face, not a default',
+    );
     await tester.pumpWidget(const SizedBox.shrink());
   });
 

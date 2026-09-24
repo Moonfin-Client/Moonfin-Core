@@ -28,7 +28,7 @@ Moonfin is a media client for Jellyfin and Emby servers, built with Flutter. One
 | Linux               | [![Arch Linux](https://img.shields.io/badge/Arch%20Linux-1793D1?logo=arch-linux\&logoColor=fff)](https://aur.archlinux.org/packages/moonfin-bin)<br>[![Linux](https://img.shields.io/badge/Linux-FCC624?logo=linux\&logoColor=black)](https://github.com/Moonfin-Client/Moonfin-Core/releases) |
 | macOS               | [![App Store](https://img.shields.io/badge/App_Store-0D96F6?logo=app-store\&logoColor=white)](https://apps.apple.com/app/moonfin/id6761283970)<br>[![Homebrew](https://img.shields.io/badge/Homebrew-FBB040?logo=homebrew\&logoColor=fff)](https://formulae.brew.sh/cask/moonfin)              |
 | tvOS                | [![App Store](https://img.shields.io/badge/App_Store-0D96F6?logo=app-store\&logoColor=white)](https://apps.apple.com/app/moonfin/id6761283970)                                                                                                                                                 |
-| Windows             | [![Release](https://img.shields.io/github/v/release/Moonfin-Client/Moonfin-Core?label=Release\&logo=github\&logoColor=white)](https://github.com/Moonfin-Client/Moonfin-Core/releases)<br>or `winget install Moonfin.Moonfin`                                                                                                         |
+| Windows | [![Release](https://img.shields.io/github/v/release/Moonfin-Client/Moonfin-Core?label=Release&logo=github&logoColor=white)](https://github.com/Moonfin-Client/Moonfin-Core/releases)<br>[![WinGet](https://img.shields.io/winget/v/Moonfin.Moonfin?label=WinGet&logo=windows&logoColor=white)](https://winstall.app/apps/Moonfin.Moonfin)<br>or `winget install Moonfin.Moonfin` |                                                                                                     |
 
 ## Supported Servers
 
@@ -56,23 +56,27 @@ Moonfin is a media client for Jellyfin and Emby servers, built with Flutter. One
 ## Features
 
 - **One codebase, every screen.** Phones, tablets, desktop, Android TV, Apple TV, and web, with navigation tuned for touch, pointer, and remote.
-- **Playback that just works.** Wide codec support including AV1, HEVC, Dolby Vision, Dolby Atmos, HDR10+, and audio passthrough. Dolby Vision Profile 7 direct plays on Apple and Android TV, converted in real time instead of transcoded. See [Playback and Codecs](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Playback-and-Codecs).
-- **Offline downloads** in original or smaller server-transcoded quality, with automatic folder organization and offline subtitles. See [Downloads](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Downloads).
+- **Playback that just works.** Wide codec support including AV1, HEVC, Dolby Vision, Dolby Atmos, HDR10+, and audio passthrough. Dolby Vision Profile 7 direct plays on Apple and Android TV, converted in real time instead of transcoded, and Windows can send HDR to the display untouched. See [Playback and Codecs](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Playback-and-Codecs).
+- **Offline downloads** in original or smaller server-transcoded quality, with automatic folder organization, offline subtitles, and automatic downloads of new episodes for the series you follow. See [Downloads](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Downloads).
 - **Ebooks and audiobooks.** Read EPUB, MOBI, AZW/AZW3, PDF, and comic archives. Play M4B audiobooks with chapter navigation.
-- **Retro games** browsed and played in-app from a server game library, with gamepad support and save states that sync between devices. See [Retro Games](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Retro-Games).
+- **Retro games** browsed and played in-app from a server game library, with gamepad support, save states that sync between devices, and hardware rendering on Android. See [Retro Games](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Retro-Games).
 - **Multi-server unified library** that merges several Jellyfin and Emby servers into one browsable, searchable UI.
 - **A setup wizard on first run** that asks how you want the app to look, with live previews built from your own artwork.
+- **Five detail screen styles** to pick from: Classic, Modern, Spotlight, Nouveau, and Minimalist.
 - **Featured media bar** with six layouts, plus optional in-bar trailer previews.
-- **Themes and a Theme Store** with a built-in editor, server-side sync, and an OLED mode for true blacks.
+- **Themes and a Theme Store** with a built-in editor, server-side sync, and an OLED mode for true blacks, plus custom loading animations and a screensaver on TV.
 - **An integrated admin panel** for settings, users, libraries, logs, devices, and analytics, plus a messages window for notes from your server admin.
 - **Discovery with Seerr** built into the details screen, with trending, popular, and upcoming rows and request status overlays.
-- **Live TV and DVR** with a program guide and recording management.
+- **Live TV and DVR** with a program guide, a quick channel changer on TV, and recording management.
 - **Trickplay scrubbing** as a single thumbnail, a filmstrip, or full screen, on both Jellyfin and Emby.
 - **Cinema Mode and segment skipping** for pre-rolls, intros, credits, and SponsorBlock.
-- **Casting and remote control** over Google Cast, DLNA, and AirPlay, plus control of other Jellyfin devices on your network.
+- **Casting and remote control** over Google Cast, DLNA, and AirPlay, plus control of other Jellyfin devices on your network. Other Jellyfin apps can steer Moonfin too.
 - **SyncPlay** for synchronized group watching.
 - **Personal ratings** as a like, five stars, or a score out of ten, usable to sort or filter a library.
-- **Ratings from MDBList and TMDB**, home row customization, parental controls with PIN, and in-app update checks.
+- **Kids Mode** that strips the app back to what a child needs and locks the way out with a PIN, plus blocked ratings that apply everywhere in the app.
+- **Achievement Badges** drawn natively when your Jellyfin server runs the Achievement Badges plugin.
+- **Anime markers** for filler, recap, canon, and subbed or dubbed episodes, served by the Moonbase plugin.
+- **Ratings from MDBList and TMDB**, home row customization, and in-app update checks.
 
 The full list is on the [Features](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Features) wiki page.
 
@@ -102,7 +106,7 @@ The store links above are the easy route. To install a file yourself, download i
 | Linux ARM64 | `Moonfin_LinuxARM64_v<version>.<ext>` (same formats) |
 | Web | Served as a PWA by the [Moonbase](https://github.com/Moonfin-Client/Plugin) server plugin, no download needed |
 
-On Arch Linux, install from the AUR with `yay -S moonfin` (or `paru`, `pamac build`).
+On Arch Linux, install from the AUR with `yay -S moonfin-bin` (or `paru -S moonfin-bin`, `pamac build moonfin-bin`).
 
 Click-by-click steps for every platform are on [Installation](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Installation), and [Getting Started](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Getting-Started) covers connecting to your server for the first time.
 
@@ -130,9 +134,8 @@ The deeper reference material lives in the [Wiki](https://github.com/Moonfin-Cli
 | [Retro Games](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Retro-Games) | Playing server game libraries in-app, cores, controllers, and save states |
 | [Installation](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Installation) | App store links first, then installing a release file by hand on every platform, and how updates work |
 | [Getting Started](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Getting-Started) | Connecting to your server, Quick Connect, the setup wizard, and the settings worth a look on day one |
-| [User Guide](https://github.com/Moonfin-Client/Moonfin-Core/wiki/User-Guide) | The player on touch, remote and keyboard, casting, Seerr requests, downloads, themes and parental controls |
+| [User Guide](https://github.com/Moonfin-Client/Moonfin-Core/wiki/User-Guide) | The player on touch, remote and keyboard, Live TV, casting and remote control, Seerr requests, downloads, subtitle downloads, themes, parental controls, and Kids Mode |
 | [Common Problems](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Common-Problems) | Plain fixes for connection, login, playback, sound, subtitle, download and casting trouble |
-| [User Guide](https://github.com/Moonfin-Client/Moonfin-Core/wiki/User-Guide) | Keyboard shortcuts, subtitle downloads, and remote device control |
 | [Collecting Logs](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Collecting-Logs) | Capturing a diagnostic report for a bug report |
 | [Custom mpv Configuration](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Custom-mpv-Configuration) | Tuning playback with your own `mpv.conf`, allowed options, and SVP on Windows |
 | [Building from Source](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Building-from-Source) | Toolchain versions, step by step setup, and the build commands for every platform |

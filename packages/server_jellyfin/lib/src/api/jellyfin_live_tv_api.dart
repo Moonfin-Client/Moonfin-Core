@@ -99,6 +99,18 @@ class JellyfinLiveTvApi implements LiveTvApi {
   }
 
   @override
+  Future<Map<String, dynamic>> getProgram(
+    String programId, {
+    String? userId,
+  }) async {
+    final response = await _dio.get(
+      '/LiveTv/Programs/${Uri.encodeComponent(programId)}',
+      queryParameters: {'UserId': ?userId},
+    );
+    return response.data as Map<String, dynamic>;
+  }
+
+  @override
   Future<Map<String, dynamic>> getRecordings({
     int? limit,
     String? fields,

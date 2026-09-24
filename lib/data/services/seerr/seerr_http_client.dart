@@ -217,10 +217,13 @@ class SeerrHttpClient {
     return response.data as Map<String, dynamic>;
   }
 
+  /// No creator parameter. Seerr validates against a spec that declares only
+  /// take, skip, sort, filter and requestedBy here, so anything else comes
+  /// back a 400, and it already scopes a user who can't view all issues to
+  /// their own.
   Future<Map<String, dynamic>> getIssues({
     String? filter,
     String? sort,
-    int? createdBy,
     int limit = 20,
     int offset = 0,
   }) async {
@@ -231,7 +234,6 @@ class SeerrHttpClient {
         'take': limit,
         'filter': ?filter,
         'sort': ?sort,
-        'createdBy': ?createdBy,
       },
       options: _authOptions(),
     );

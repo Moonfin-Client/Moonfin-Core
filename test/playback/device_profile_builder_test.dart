@@ -406,6 +406,63 @@ String? _videoAudioChannelFloor(Map<String, dynamic> profile, String codec) {
 }
 
 void main() {
+  group('DeviceProfileBuilder transcode target audio codecs', () {
+    List<String> targets({
+      AudioFallbackCodec fallbackCodec = AudioFallbackCodec.auto,
+      bool forAvFoundation = false,
+    }) => DeviceProfileBuilder.transcodeTargetAudioCodecs(
+      fallbackCodec: fallbackCodec,
+      forAvFoundation: forAvFoundation,
+    );
+
+    test("never offers a codec the server can't encode to", () {
+      for (final forAvFoundation in [false, true]) {
+        final codecs = targets(forAvFoundation: forAvFoundation);
+        for (final codec in ['truehd', 'mlp', 'dca']) {
+          expect(codecs, isNot(contains(codec)), reason: codec);
+        }
+      }
+    });
+
+    test("AVFoundation drops the codecs it can't play out of HLS", () {
+      expect(targets(), containsAll(<String>['dts', 'mp2', 'mp3']));
+      final apple = targets(forAvFoundation: true);
+      for (final codec in ['dts', 'mp2', 'mp3']) {
+        expect(apple, isNot(contains(codec)), reason: codec);
+      }
+    });
+
+    test('the fallback preference leads the list', () {
+      expect(targets(fallbackCodec: AudioFallbackCodec.flac).first, 'flac');
+      expect(targets().first, 'aac');
+    });
+
+    test('lists each codec once', () {
+      final codecs = targets(fallbackCodec: AudioFallbackCodec.eac3);
+      expect(codecs.toSet().length, codecs.length);
+    });
+
+    test('matches what the device profile offers the server', () {
+      for (final forAvFoundation in [false, true]) {
+        final profile = DeviceProfileBuilder.build(
+          universalAudioDecode: true,
+          hlsAudioForAvFoundation: forAvFoundation,
+        );
+        final offered = <String>{
+          for (final entry
+              in (profile['TranscodingProfiles'] as List<dynamic>)
+                  .cast<Map<String, dynamic>>())
+            ...(entry['AudioCodec'] as String).split(','),
+        };
+        expect(
+          targets(forAvFoundation: forAvFoundation).toSet(),
+          offered,
+          reason: 'forAvFoundation=$forAvFoundation',
+        );
+      }
+    });
+  });
+
   group('DeviceProfileBuilder bridged audio sample rate', () {
     test('a player that bridges audio caps the codecs it has to re-encode', () {
       final cap = _sampleRateCap(

@@ -63,6 +63,17 @@ class NavigationLayout extends StatefulWidget {
   );
   static final focusDetailsPlayButtonNotifier = ValueNotifier<FocusNode?>(null);
 
+  /// Hands focus to the play button a details page registered, and says
+  /// whether it took it so the caller can fall back to its own choice.
+  static bool focusDetailsPlayButton() {
+    final node = focusDetailsPlayButtonNotifier.value;
+    if (node == null || node.context == null || !node.canRequestFocus) {
+      return false;
+    }
+    node.requestFocus();
+    return true;
+  }
+
   /// True while a media-bar trailer is playing; the toolbar and sidebar fade
   /// out on TV. Focusing chrome cancels the trailer, which fades them back in.
   static final trailerImmersiveNotifier = ValueNotifier<bool>(false);
@@ -98,6 +109,7 @@ class NavigationLayout extends StatefulWidget {
 class _NavigationLayoutState extends State<NavigationLayout> with WidgetsBindingObserver {
   final _prefs = GetIt.instance<UserPreferences>();
   final _contentFocusNode = FocusNode(debugLabel: 'NavigationContent');
+  final _contentKey = GlobalKey(debugLabel: 'navigationLayoutContent');
   final ValueNotifier<double> _toolbarScrollOffset = ValueNotifier<double>(0.0);
   late NavbarPosition _position;
   final _playbackManager = GetIt.instance<PlaybackManager>();
@@ -181,12 +193,19 @@ class _NavigationLayoutState extends State<NavigationLayout> with WidgetsBinding
         : layout;
   }
 
-  Widget _buildBottomBar() {
-    final content = Focus(
+  /// Keyed so moving the navbar reparents the page that is already on screen
+  /// instead of tearing it down and building it again.
+  Widget get _content => KeyedSubtree(
+    key: _contentKey,
+    child: Focus(
       focusNode: _contentFocusNode,
       skipTraversal: true,
       child: widget.child,
-    );
+    ),
+  );
+
+  Widget _buildBottomBar() {
+    final content = _content;
     return Stack(
       children: [
         Positioned.fill(child: content),
@@ -227,11 +246,7 @@ class _NavigationLayoutState extends State<NavigationLayout> with WidgetsBinding
 
   Widget _buildToolbar() {
     final translateWithScroll = PlatformDetection.isTV && !widget.pinTopToolbar;
-    final content = Focus(
-      focusNode: _contentFocusNode,
-      skipTraversal: true,
-      child: widget.child,
-    );
+    final content = _content;
     final toolbar = ValueListenableBuilder<bool>(
       valueListenable: NavigationLayout.trailerImmersiveNotifier,
       builder: (context, trailerImmersive, child) {
@@ -330,11 +345,7 @@ class _NavigationLayoutState extends State<NavigationLayout> with WidgetsBinding
   }
 
   Widget _buildSidebar() {
-    final content = Focus(
-      focusNode: _contentFocusNode,
-      skipTraversal: true,
-      child: widget.child,
-    );
+    final content = _content;
 
     final sidebar = ValueListenableBuilder<bool>(
       valueListenable: NavigationLayout.trailerImmersiveNotifier,

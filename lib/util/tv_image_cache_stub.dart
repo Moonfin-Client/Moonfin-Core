@@ -33,3 +33,5 @@ Future<void> retainGameArtworkCacheScope(String scope) async {}
 void releaseGameArtworkCacheScope(String scope) {}
 
 Future<void> clearImageDiskCache() async {}
+
+Future<void> flushImageCacheIndex() async {}

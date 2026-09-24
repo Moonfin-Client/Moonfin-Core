@@ -31,6 +31,26 @@ StreamResolutionResult _dolbyVisionWithEl({bool isLocalMedia = false}) {
   );
 }
 
+/// A Dolby Vision file as Emby describes it: no VideoRangeType, the profile
+/// typed in ExtendedVideoSubType, and VideoRange derived from it.
+StreamResolutionResult _embyDolbyVision(String subType) {
+  return StreamResolutionResult(
+    streamUrl: 'http://server/stream.mkv',
+    mediaSourceId: 'source-1',
+    playMethod: StreamPlayMethod.directPlay,
+    container: 'mkv',
+    mediaStreams: [
+      {
+        'Type': 'Video',
+        'Codec': 'hevc',
+        'ExtendedVideoType': 'DolbyVision',
+        'ExtendedVideoSubType': subType,
+        'VideoRange': 'DolbyVision',
+      },
+    ],
+  );
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -132,6 +152,60 @@ void main() {
       dolbyVisionTranscodeReason(_dolbyVisionWithEl(isLocalMedia: true), prefs),
       isNull,
     );
+  });
+
+  group('an Emby stream', () {
+    // A profile 8 only decoder on a Dolby Vision panel.
+    setUp(() {
+      PlatformDetection.setDisplayHdrTypes(const <String>['DOLBY_VISION']);
+      PlatformDetection.setMediaCodecCapabilities(const <String, dynamic>{
+        'supportsDvP8': true,
+        'supportsHevcHdr10': true,
+      });
+    });
+
+    test('a profile 8.1 file direct plays on a profile 8 decoder', () {
+      // Used to read as profile 5 for want of a VideoRangeType, so this
+      // decoder refused it and the session transcoded with no reason the
+      // server could name.
+      expect(
+        dolbyVisionTranscodeReason(_embyDolbyVision('DoviProfile81'), prefs),
+        isNull,
+      );
+    });
+
+    test(
+      'a profile 8.1 file direct plays as HDR10 without a Dolby Vision panel',
+      () async {
+        PlatformDetection.setDisplayHdrTypes(const <String>['HDR10']);
+        await prefs.set(
+          UserPreferences.dolbyVisionFallbackBehavior,
+          DolbyVisionFallbackBehavior.transcode,
+        );
+        // The base layer is plain HDR10, so even a pinned transcode
+        // preference has nothing to fall back from.
+        expect(
+          dolbyVisionTranscodeReason(_embyDolbyVision('DoviProfile81'), prefs),
+          isNull,
+        );
+      },
+    );
+
+    test('a profile 5 file on the same decoder still names the gate', () {
+      expect(
+        dolbyVisionTranscodeReason(_embyDolbyVision('DoviProfile50'), prefs),
+        'dolbyVisionProfileNotDirectPlayable',
+      );
+    });
+
+    test('an untyped file takes any Dolby Vision decoder', () {
+      // An older Emby with no sub type to give. A bare DolbyVision can only
+      // be held to some profile, and this decoder has one.
+      expect(
+        dolbyVisionTranscodeReason(_embyDolbyVision('None'), prefs),
+        isNull,
+      );
+    });
   });
 
   test('the ladder is inert away from Android TV', () {

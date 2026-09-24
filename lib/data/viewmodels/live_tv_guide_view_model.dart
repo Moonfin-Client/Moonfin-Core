@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
@@ -34,6 +35,11 @@ class GuideChannel {
     rawData: raw,
   );
 }
+
+/// Where a program's artwork lives: the item that carries it, the tag that
+/// identifies the image, and whether that tag names the item's Thumb image
+/// rather than its Primary one. The two are served by different endpoints.
+typedef GuideArtworkSource = ({String itemId, String tag, bool isThumb});
 
 class GuideProgram {
   final String id;
@@ -77,6 +83,75 @@ class GuideProgram {
   /// The broadcast classification (`TV-G`, `TV-14`, ...) when the guide data
   /// carries one.
   String? get officialRating => rawData['OfficialRating'] as String?;
+
+  /// Present only when the server matched this program to a recognised
+  /// episode or movie. Rare in practice: a live TV program's own item
+  /// usually carries no unique art of its own, even when recognised.
+  String? get imageTag => (rawData['ImageTags'] as Map?)?['Primary'] as String?;
+
+  String? get seriesId => rawData['SeriesId']?.toString();
+  String? get seriesPrimaryImageTag => rawData['SeriesPrimaryImageTag'] as String?;
+  String? get parentPrimaryImageItemId =>
+      rawData['ParentPrimaryImageItemId']?.toString();
+  String? get parentPrimaryImageTag => rawData['ParentPrimaryImageTag'] as String?;
+  String? get parentThumbItemId => rawData['ParentThumbItemId']?.toString();
+  String? get parentThumbImageTag => rawData['ParentThumbImageTag'] as String?;
+
+  /// The item id and tag for this program's own artwork, preferring (in
+  /// order) its own art, the matched series' poster, the parent item's
+  /// primary image, and finally the parent's landscape thumb — the same
+  /// fallback chain the home screen's "On Now" row already resolves
+  /// successfully for this same data, since a live TV program's own item
+  /// essentially never carries unique art of its own.
+  ///
+  /// Only the last branch sets `isThumb`. `ParentThumbImageTag` tags the
+  /// parent's Thumb image, so asking for its Primary with that tag serves
+  /// the parent's poster where it has one and 404s where it doesn't.
+  GuideArtworkSource? get artworkSource {
+    if (imageTag case final tag?) {
+      return (itemId: id, tag: tag, isThumb: false);
+    }
+    if (seriesId case final sid?) {
+      if (seriesPrimaryImageTag case final tag?) {
+        return (itemId: sid, tag: tag, isThumb: false);
+      }
+    }
+    if (parentPrimaryImageItemId case final pid?) {
+      if (parentPrimaryImageTag case final tag?) {
+        return (itemId: pid, tag: tag, isThumb: false);
+      }
+    }
+    if (parentThumbItemId case final pid?) {
+      if (parentThumbImageTag case final tag?) {
+        return (itemId: pid, tag: tag, isThumb: true);
+      }
+    }
+    return null;
+  }
+
+  double? get communityRating => (rawData['CommunityRating'] as num?)?.toDouble();
+
+  bool get isRepeat => rawData['IsRepeat'] == true;
+
+  /// `S{season}:E{episode}`, matching the quick channel changer's format.
+  String? get seasonEpisodeLabel {
+    final season = rawData['ParentIndexNumber'];
+    final episode = rawData['IndexNumber'];
+    return season != null && episode != null ? 'S$season:E$episode' : null;
+  }
+
+  /// The episode title and its `(S1:E5)` numbering, with whichever of the two
+  /// the program carries. Listings often name an episode without numbering it,
+  /// and movies and news carry neither, so the two have to stand on their own.
+  /// Empty when there's nothing to show.
+  String get episodeLine {
+    final title = episodeTitle?.trim() ?? '';
+    final label = seasonEpisodeLabel;
+    return [
+      if (title.isNotEmpty) title,
+      if (label != null) '($label)',
+    ].join(' ');
+  }
 
   /// The program's categories in a fixed order, as the same [GuideFilter]
   /// values the guide's filter chips label, so callers localise them once.
@@ -124,10 +199,11 @@ class LiveTvGuideViewModel extends ChangeNotifier {
   // The smallest responsive guide span. Wider landscape surfaces replace it
   // through setWindow after GuideLayoutProfile measures their available area.
   static const _defaultGuideWindow = Duration(minutes: 150);
-  // Programs only need the synopsis; channel logos come from the separate
-  // /LiveTv/Channels fetch, so we don't request ImageTags here. OfficialRating
-  // needs no entry: it isn't an ItemFields value and the server returns it
+  // OfficialRating, CommunityRating, IsPremiere and IsRepeat need no entry:
+  // none of them are ItemFields values, so the server returns them
   // unconditionally.
+  // Programs only need the synopsis here because the guide fetch runs with
+  // images disabled, so the image-related fields come back empty anyway.
   static const _fields = 'Overview';
 
   // Programs are loaded lazily in batches of this many channels as the guide is
@@ -963,6 +1039,12 @@ class LiveTvGuideViewModel extends ChangeNotifier {
     _programGeneration++;
     _loadGeneration++;
     cancelBoundaryRefresh();
+    _artworkNotifyCoalesce?.cancel();
+    _artworkPrefetchQueue.clear();
+    _artworkQueued.clear();
+    _artworkInFlight.clear();
+    _artworkCache.clear();
+    _artworkByContentKey.clear();
     super.dispose();
   }
 
@@ -1202,39 +1284,265 @@ class LiveTvGuideViewModel extends ChangeNotifier {
     final items = (response['Items'] as List?) ?? [];
     final byChannel = <String, List<GuideProgram>>{};
     for (final raw in items.cast<Map<String, dynamic>>()) {
-      final channelId = raw['ChannelId']?.toString();
-      if (channelId == null) continue;
-
-      final startStr = raw['StartDate'] as String?;
-      final endStr = raw['EndDate'] as String?;
-      if (startStr == null || endStr == null) continue;
-
-      final program = GuideProgram(
-        id: raw['Id']?.toString() ?? '',
-        channelId: channelId,
-        name: raw['Name'] as String? ?? '',
-        startDate: DateTime.parse(startStr).toLocal(),
-        endDate: DateTime.parse(endStr).toLocal(),
-        overview: raw['Overview'] as String?,
-        episodeTitle: raw['EpisodeTitle'] as String?,
-        isMovie: raw['IsMovie'] == true,
-        isSeries: raw['IsSeries'] == true,
-        isSports: raw['IsSports'] == true,
-        isNews: raw['IsNews'] == true,
-        isKids: raw['IsKids'] == true,
-        isPremiere: raw['IsPremiere'] == true,
-        hasTimer: raw['TimerId'] != null,
-        hasSeriesTimer: raw['SeriesTimerId'] != null,
-        rawData: raw,
-      );
-
-      (byChannel[channelId] ??= <GuideProgram>[]).add(program);
+      final program = _programFromRaw(raw);
+      if (program == null) continue;
+      (byChannel[program.channelId] ??= <GuideProgram>[]).add(program);
     }
 
     for (final programs in byChannel.values) {
       programs.sort((a, b) => a.startDate.compareTo(b.startDate));
     }
     return byChannel;
+  }
+
+  /// Shared by the batch guide parser and the single-program artwork lookup.
+  /// Returns null when the raw item is missing what a [GuideProgram] needs.
+  GuideProgram? _programFromRaw(Map<String, dynamic> raw) {
+    final channelId = raw['ChannelId']?.toString();
+    if (channelId == null) return null;
+
+    final startStr = raw['StartDate'] as String?;
+    final endStr = raw['EndDate'] as String?;
+    if (startStr == null || endStr == null) return null;
+
+    return GuideProgram(
+      id: raw['Id']?.toString() ?? '',
+      channelId: channelId,
+      name: raw['Name'] as String? ?? '',
+      startDate: DateTime.parse(startStr).toLocal(),
+      endDate: DateTime.parse(endStr).toLocal(),
+      overview: raw['Overview'] as String?,
+      // Some guide sources deliver EpisodeTitle with literal backslash-escaped
+      // quotes (`\"Raygun\"`) even though the same program's Overview does
+      // not, so this field alone needs unescaping.
+      episodeTitle: (raw['EpisodeTitle'] as String?)?.replaceAll(r'\"', '"'),
+      isMovie: raw['IsMovie'] == true,
+      isSeries: raw['IsSeries'] == true,
+      isSports: raw['IsSports'] == true,
+      isNews: raw['IsNews'] == true,
+      isKids: raw['IsKids'] == true,
+      isPremiere: raw['IsPremiere'] == true,
+      hasTimer: raw['TimerId'] != null,
+      hasSeriesTimer: raw['SeriesTimerId'] != null,
+      rawData: raw,
+    );
+  }
+
+  /// Per-program artwork, keyed by program id. `null` means "looked up and
+  /// confirmed there is none" (see [artworkSourceFor]) — a genuine negative
+  /// result is cached like a positive one, so a channel the user scrolls
+  /// back and forth across never re-issues the same request. A failed
+  /// lookup (network/server error) is NOT cached here; see
+  /// [_fetchArtworkSource].
+  ///
+  /// A plain map literal is a [LinkedHashMap], so insertion order survives:
+  /// past the cap, [_insertWithCap] drops the oldest entry rather than the
+  /// whole cache, so one channel's worth of scrolling never costs every other
+  /// channel's already-resolved artwork.
+  final Map<String, GuideArtworkSource?> _artworkCache = {};
+
+  /// Well above what one submission can hold, since callers only queue the
+  /// rows around the viewport. That headroom is what keeps an eviction from
+  /// being re-queued, re-fetched, and evicting something else in turn.
+  static const _artworkCacheCap = 2000;
+
+  @visibleForTesting
+  static int get artworkCacheCap => _artworkCacheCap;
+
+  /// Secondary cache keyed by content (name + episode title) rather than
+  /// program id, so a repeat airing of an already-resolved episode is a cache
+  /// hit instead of a fetch. Same cap and eviction as [_artworkCache].
+  final Map<String, GuideArtworkSource?> _artworkByContentKey = {};
+
+  /// The key [_artworkByContentKey] is keyed on. `\u0000` separates the two
+  /// fields since it cannot appear in either.
+  String _contentKeyFor(GuideProgram program) {
+    final episode = program.episodeTitle?.trim() ?? '';
+    // Without an episode title the name alone would be the whole key, and
+    // generic names recur across unrelated channels.
+    return episode.isEmpty
+        ? '${program.name}\u0000CH\u0000${program.channelId}'
+        : '${program.name}\u0000$episode';
+  }
+
+  /// Inserts [value] under [key] in [cache], evicting the oldest entry first
+  /// once [_artworkCacheCap] is reached.
+  void _insertWithCap(
+    Map<String, GuideArtworkSource?> cache,
+    String key,
+    GuideArtworkSource? value,
+  ) {
+    // Without this, re-inserting a key already present evicts an unrelated
+    // entry to make room the map never needed.
+    cache.remove(key);
+    if (cache.length >= _artworkCacheCap) {
+      cache.remove(cache.keys.first);
+    }
+    cache[key] = value;
+  }
+
+  /// In-flight artwork fetches keyed by program id, so concurrent callers for
+  /// the same program share one request instead of issuing duplicates.
+  final Map<String, Future<GuideArtworkSource?>> _artworkInFlight = {};
+
+  bool hasArtworkResult(String programId) => _artworkCache.containsKey(programId);
+
+  GuideArtworkSource? cachedArtworkFor(String programId) =>
+      _artworkCache[programId];
+
+  /// [getGuide] disables images for its whole batch to keep the payload small
+  /// (issue #666), so a program's own `ImageTags` never comes back from the
+  /// bulk fetch even when the server has one on file — confirmed on a live
+  /// server: the same program id carries `ImageTags.Primary` through
+  /// `/LiveTv/Programs/Recommended` but not through `/LiveTv/Programs`. This
+  /// re-fetches one program, images enabled, to get what the bulk fetch
+  /// can't. Safe to call for anything — [queueArtworkPrefetch] and a call
+  /// site's own debounced on-focus lookup can both land here for the same
+  /// program, and concurrent callers for the same id share a single
+  /// in-flight request.
+  Future<GuideArtworkSource?> artworkSourceFor(
+    GuideProgram program,
+  ) {
+    // A program that already carries its art needs no lookup. The prefetch
+    // path skips these too, so this only catches the on-focus caller.
+    if (program.artworkSource case final source?) {
+      return Future.value(source);
+    }
+    if (_artworkCache.containsKey(program.id)) {
+      return Future.value(_artworkCache[program.id]);
+    }
+    final contentKey = _contentKeyFor(program);
+    if (_artworkByContentKey.containsKey(contentKey)) {
+      final result = _artworkByContentKey[contentKey];
+      _insertWithCap(_artworkCache, program.id, result);
+      return Future.value(result);
+    }
+    if (_artworkLookupsDisabled) return Future.value(null);
+    final inFlight = _artworkInFlight[program.id];
+    if (inFlight != null) return inFlight;
+
+    final future = _fetchArtworkSource(program);
+    _artworkInFlight[program.id] = future;
+    return future.whenComplete(() => _artworkInFlight.remove(program.id));
+  }
+
+  /// Trips after [_artworkFailureLimit] lookups fail in a row and stays
+  /// tripped for the life of the view model.
+  ///
+  /// Failures aren't cached per program, so a server that can't answer
+  /// `/LiveTv/Programs/{id}` at all would otherwise be asked again for every
+  /// program in the lineup every time the queue is resubmitted. A run that
+  /// long is enough to conclude the route isn't going to start working, and
+  /// the guide falls back to channel logos.
+  bool _artworkLookupsDisabled = false;
+  int _artworkConsecutiveFailures = 0;
+  static const _artworkFailureLimit = 8;
+
+  @visibleForTesting
+  bool get artworkLookupsDisabled => _artworkLookupsDisabled;
+
+  Future<GuideArtworkSource?> _fetchArtworkSource(
+    GuideProgram program,
+  ) async {
+    final GuideArtworkSource? result;
+    try {
+      final raw = await _client.liveTvApi.getProgram(
+        program.id,
+        userId: _client.userId,
+      );
+      result = _programFromRaw(raw)?.artworkSource;
+    } catch (_) {
+      // A transient network/server failure is not proof there is no
+      // artwork. Leave both caches untouched so a later call retries,
+      // instead of permanently suppressing this program and every other
+      // program sharing its content key. A sustained run is a different
+      // thing, and [_artworkLookupsDisabled] catches that.
+      _artworkConsecutiveFailures++;
+      if (_artworkConsecutiveFailures >= _artworkFailureLimit) {
+        _artworkLookupsDisabled = true;
+        _artworkPrefetchQueue.clear();
+        _artworkQueued.clear();
+      }
+      return null;
+    }
+    _artworkConsecutiveFailures = 0;
+    _insertWithCap(_artworkCache, program.id, result);
+    _insertWithCap(_artworkByContentKey, _contentKeyFor(program), result);
+    _scheduleArtworkNotify();
+    return result;
+  }
+
+  /// Background prefetch, throttled to [_artworkPrefetchConcurrency]
+  /// concurrent requests so a big lazily-loaded channel batch can't turn into
+  /// exactly the kind of all-at-once load issue #666 was about, just spread
+  /// across many small requests instead of one huge one. Cheap to call
+  /// often — already-cached or already-queued programs are skipped for the
+  /// cost of a couple of lookups. Bounded to [_artworkPrefetchHorizon] ahead
+  /// of now; a program beyond that still resolves on demand through
+  /// [artworkSourceFor] when the user actually focuses it.
+  final Queue<GuideProgram> _artworkPrefetchQueue = Queue<GuideProgram>();
+  final Set<String> _artworkQueued = {};
+  int _artworkPrefetchActive = 0;
+  static const _artworkPrefetchConcurrency = 3;
+
+  /// How far ahead of now the speculative prefetch reaches.
+  static const _artworkPrefetchHorizon = Duration(hours: 6);
+
+  /// Queues [programs] for background artwork prefetch. When [replace] is
+  /// true, the pending queue is dropped first, so a caller re-submitting for
+  /// a new viewport doesn't leave stale, now-off-screen programs queued
+  /// ahead of it — only entries not yet dequeued are affected; a fetch
+  /// already in flight runs to completion either way and is never
+  /// cancelled or double-counted.
+  void queueArtworkPrefetch(
+    Iterable<GuideProgram> programs, {
+    bool replace = false,
+  }) {
+    if (replace) {
+      // Safe to clear both wholesale: _pumpArtworkPrefetch removes an id
+      // from _artworkQueued the moment it dequeues it, before the fetch
+      // starts, so nothing in-flight is ever tracked in _artworkQueued.
+      _artworkPrefetchQueue.clear();
+      _artworkQueued.clear();
+    }
+    if (_artworkLookupsDisabled) return;
+    final horizon = _now().add(_artworkPrefetchHorizon);
+    for (final program in programs) {
+      if (program.startDate.isAfter(horizon)) continue;
+      if (program.artworkSource != null) continue;
+      if (_artworkCache.containsKey(program.id)) continue;
+      if (!_artworkQueued.add(program.id)) continue;
+      _artworkPrefetchQueue.add(program);
+    }
+    _pumpArtworkPrefetch();
+  }
+
+  void _pumpArtworkPrefetch() {
+    while (!_disposed &&
+        _artworkPrefetchActive < _artworkPrefetchConcurrency &&
+        _artworkPrefetchQueue.isNotEmpty) {
+      final program = _artworkPrefetchQueue.removeFirst();
+      _artworkQueued.remove(program.id);
+      if (_artworkCache.containsKey(program.id)) continue;
+      _artworkPrefetchActive++;
+      unawaited(
+        artworkSourceFor(program).whenComplete(() {
+          _artworkPrefetchActive--;
+          if (!_disposed) _pumpArtworkPrefetch();
+        }),
+      );
+    }
+  }
+
+  /// A prefetch backlog can resolve dozens of items a second; coalescing
+  /// keeps that from rebuilding the whole guide once per item.
+  Timer? _artworkNotifyCoalesce;
+
+  void _scheduleArtworkNotify() {
+    _artworkNotifyCoalesce ??= Timer(const Duration(milliseconds: 200), () {
+      _artworkNotifyCoalesce = null;
+      if (!_disposed) _notifyListeners();
+    });
   }
 
   /// Fetches programs for one batch of channels over the current window and

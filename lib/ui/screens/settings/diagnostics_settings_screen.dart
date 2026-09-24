@@ -5,6 +5,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../data/services/log_service.dart';
 import '../../../preference/user_preferences.dart';
+import '../../../util/artwork_timing.dart';
 import '../../../util/focus/dpad_keys.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/overlay_sheet.dart';
@@ -30,6 +31,7 @@ class _DiagnosticsSettingsScreenState extends State<DiagnosticsSettingsScreen> {
 
   Future<void> _sendReport() async {
     setState(() => _uploading = true);
+    ArtworkTimings.prepareReport();
     try {
       final fileName = await _log.uploadToServer();
       if (!mounted) return;
@@ -48,6 +50,7 @@ class _DiagnosticsSettingsScreenState extends State<DiagnosticsSettingsScreen> {
   }
 
   Future<void> _copyAll() async {
+    ArtworkTimings.prepareReport();
     await Clipboard.setData(ClipboardData(text: _log.exportText()));
     _showSnack('Logs copied to clipboard');
   }
@@ -282,6 +285,7 @@ class _DiagnosticsSettingsScreenState extends State<DiagnosticsSettingsScreen> {
     LogCategory.auth => 'Authentication',
     LogCategory.playback => 'Playback',
     LogCategory.sync => 'Sync',
+    LogCategory.artwork => 'Artwork',
   };
 }
 

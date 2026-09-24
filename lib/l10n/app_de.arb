@@ -9096,7 +9096,7 @@
     "@moveDown": {
         "description": "Moves a button one place later in its row"
     },
-    "settingsAudioPassthroughMode": "Durchreichen",
+    "settingsAudioPassthroughMode": "Passthrough",
     "@settingsAudioPassthroughMode": {
         "description": "Title of the audio passthrough mode selector"
     },
@@ -10452,5 +10452,9 @@
     "shortcutPlaybackInfo": "Zeige Wiedergabeinformationen",
     "@shortcutPlaybackInfo": {
         "description": "Player shortcut action"
+    },
+    "actionButtonsOnScreenAuto": "Auto (Standard-Design)",
+    "@actionButtonsOnScreenAuto": {
+        "description": "Option showing theme default number of action buttons"
     }
 }

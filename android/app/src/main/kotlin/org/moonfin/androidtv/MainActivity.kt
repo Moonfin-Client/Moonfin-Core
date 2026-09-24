@@ -337,6 +337,9 @@ class MainActivity : AudioServiceActivity(), GamepadsCompatibleActivity {
         if (cached === engineHandedToActivity || AudioServiceState.isPlaying()) return
         cache.remove(id)
         cached.destroy()
+        // The next engine is built synchronously in super.onCreate, so no car
+        // call can land between this and its attach.
+        AudioServiceState.markFlutterNotReady()
     }
 
     // Null travels back to Dart as "ask again" rather than as "not a TV".
@@ -983,7 +986,12 @@ class MainActivity : AudioServiceActivity(), GamepadsCompatibleActivity {
 
     override fun onUserLeaveHint() {
         super.onUserLeaveHint()
-        requestEnterPiPIfEligible()
+        // A dream or a call taking the foreground never reaches here, which
+        // is what separates walking away from the screensaver coming on. PiP
+        // keeps the player on screen, so that is not walking away either.
+        if (!requestEnterPiPIfEligible()) {
+            methodChannel?.invokeMethod("onUserLeftApp", null)
+        }
     }
 
     override fun onPictureInPictureRequested(): Boolean {

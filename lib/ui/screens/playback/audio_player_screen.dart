@@ -8,7 +8,6 @@ import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonfin_design/moonfin_design.dart';
-import 'package:moonfin_native_video/moonfin_native_video.dart';
 import 'package:playback_core/playback_core.dart';
 import 'package:server_core/server_core.dart';
 
@@ -864,28 +863,12 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
   @override
   Widget build(BuildContext context) {
     final item = _resolveCurrentItem();
-    final attachMedia3View = _activeMedia3Backend != null;
+    // Media3 audio plays on a player the native bridge owns, so car and lock
+    // screen playback never wait on this screen mounting a view.
     final isAudiobookRoute = GoRouterState.of(context).uri.queryParameters['isAudiobook'] == 'true';
     final isAudiobook = (item != null && item.isAudiobook) || isAudiobookRoute;
     if (isAudiobook) {
-      if (!attachMedia3View) {
-        return const AudiobookPlayerView();
-      }
-      return const Stack(
-        fit: StackFit.expand,
-        children: [
-          Positioned(
-            left: -2,
-            top: -2,
-            width: 1,
-            height: 1,
-            child: IgnorePointer(
-              child: Media3VideoView(fill: Color(0x00000000)),
-            ),
-          ),
-          AudiobookPlayerView(),
-        ],
-      );
+      return const AudiobookPlayerView();
     }
     final localPoster = _offlinePosterPath();
     final artUrl = item != null && !_manager.isOfflinePlayback
@@ -901,16 +884,6 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
     final content = Stack(
       fit: StackFit.expand,
       children: [
-        if (attachMedia3View)
-          const Positioned(
-            left: -2,
-            top: -2,
-            width: 1,
-            height: 1,
-            child: IgnorePointer(
-              child: Media3VideoView(fill: Color(0x00000000)),
-            ),
-          ),
         Positioned.fill(
           child: AmbientBackground(
             image: ambientImage,

@@ -996,7 +996,7 @@ class _BackdropImage extends StatelessWidget {
             cacheManager: gameArtworkCacheManagerForScope(artworkScope),
             fit: BoxFit.cover,
             alignment: Alignment.center,
-            fadeInDuration: const Duration(milliseconds: 250),
+            fadeInDuration: Duration.zero,
             maxWidth: 1920,
             onLoadFinished: () =>
                 artworkDataSource?.reportImageLoaded(gameId, role: step.role),

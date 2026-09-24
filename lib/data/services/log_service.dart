@@ -20,6 +20,7 @@ enum LogCategory {
   auth,
   playback,
   sync,
+  artwork,
 }
 
 extension LogLevelLabel on LogLevel {
@@ -40,6 +41,7 @@ extension LogCategoryLabel on LogCategory {
     LogCategory.auth => 'auth',
     LogCategory.playback => 'playback',
     LogCategory.sync => 'sync',
+    LogCategory.artwork => 'artwork',
   };
 }
 

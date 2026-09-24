@@ -62,6 +62,28 @@ List<Shadow> get _textShadows => [
 ];
 
 class MediaBar extends StatefulWidget {
+  /// The decode width of the backdrop layer, shared by the widget and every
+  /// precache of a neighbouring slide. Built from the screen rather than the
+  /// layer's own constraints so a precache issued before the layer exists
+  /// still lands on the key the layer will look up.
+  static int backdropDecodeWidth(BuildContext context) =>
+      ArtworkDecode.widthFor(
+        MediaQuery.sizeOf(context).width,
+        MediaQuery.devicePixelRatioOf(context),
+        minWidth: 640,
+        maxWidth: 1280,
+      );
+
+  /// The widest logo box any layout paints. A precache at this width is the
+  /// desktop layout's exact key and, for the narrower mobile boxes, still
+  /// warms the disk cache so the slide change only decodes.
+  static const logoBoxWidth = 280.0;
+
+  static int logoDecodeWidth(BuildContext context) => ArtworkDecode.widthFor(
+    logoBoxWidth,
+    MediaQuery.devicePixelRatioOf(context),
+  );
+
   final MediaBarViewModel viewModel;
   final UserPreferences prefs;
   final bool externallyPaused;
@@ -579,7 +601,6 @@ class _MediaBarState extends State<MediaBar>
   ) {
     if (!mounted || items.isEmpty) return;
     final dpr = MediaQuery.devicePixelRatioOf(context);
-    final screenWidth = MediaQuery.sizeOf(context).width;
 
     // Calculate dimensions matching layout constraints exactly to maximize memory cache hits.
     final isMobile = PlatformDetection.useMobileUi;
@@ -587,7 +608,8 @@ class _MediaBarState extends State<MediaBar>
     final activeBookHeight = contentHeight * 0.84;
     final activeBookWidth = activeBookHeight * 0.72;
     final posterCacheW = (activeBookWidth * 0.88 * dpr).round().clamp(150, 400);
-    final backdropCacheW = (screenWidth * dpr).round().clamp(640, 1280);
+    final backdropCacheW = MediaBar.backdropDecodeWidth(context);
+    final logoCacheW = MediaBar.logoDecodeWidth(context);
 
     final warmIndices = <int>{
       centerIndex,
@@ -620,18 +642,15 @@ class _MediaBarState extends State<MediaBar>
           if (isBookshelf) {
             if (item.posterUrl != null) {
               await precacheImage(
-                ResizeImage(
-                  offlineAwareImageProvider(item.posterUrl!),
-                  width: posterCacheW,
-                ),
+                ArtworkDecode.provider(item.posterUrl!, width: posterCacheW),
                 context,
               );
             }
           } else {
             if (item.backdropUrl != null) {
               await precacheImage(
-                ResizeImage(
-                  offlineAwareImageProvider(item.backdropUrl!),
+                ArtworkDecode.provider(
+                  item.backdropUrl!,
                   width: backdropCacheW,
                 ),
                 context,
@@ -640,7 +659,7 @@ class _MediaBarState extends State<MediaBar>
             }
             if (item.logoUrl != null) {
               await precacheImage(
-                offlineAwareImageProvider(item.logoUrl!),
+                ArtworkDecode.provider(item.logoUrl!, width: logoCacheW),
                 context,
               );
             }
@@ -816,7 +835,6 @@ class _MediaBarState extends State<MediaBar>
   void _prefetchAround(List<MediaBarSlideItem> items, int centerIndex) {
     if (!mounted || items.isEmpty) return;
     final dpr = MediaQuery.devicePixelRatioOf(context);
-    final screenWidth = MediaQuery.sizeOf(context).width;
 
     // Calculate dimensions matching layout constraints exactly to maximize memory cache hits.
     final isMobile = PlatformDetection.useMobileUi;
@@ -824,7 +842,8 @@ class _MediaBarState extends State<MediaBar>
     final activeBookHeight = contentHeight * 0.84;
     final activeBookWidth = activeBookHeight * 0.72;
     final posterCacheW = (activeBookWidth * 0.88 * dpr).round().clamp(150, 400);
-    final backdropCacheW = (screenWidth * dpr).round().clamp(640, 1280);
+    final backdropCacheW = MediaBar.backdropDecodeWidth(context);
+    final logoCacheW = MediaBar.logoDecodeWidth(context);
 
     final isBookshelf = _isBookshelfMode();
 
@@ -842,26 +861,23 @@ class _MediaBarState extends State<MediaBar>
         if (isBookshelf) {
           if (item.posterUrl != null) {
             precacheImage(
-              ResizeImage(
-                offlineAwareImageProvider(item.posterUrl!),
-                width: posterCacheW,
-              ),
+              ArtworkDecode.provider(item.posterUrl!, width: posterCacheW),
               context,
             );
           }
         } else {
           if (item.backdropUrl != null) {
             precacheImage(
-              ResizeImage(
-                offlineAwareImageProvider(item.backdropUrl!),
-                width: backdropCacheW,
-              ),
+              ArtworkDecode.provider(item.backdropUrl!, width: backdropCacheW),
               context,
             );
           }
 
           if (item.logoUrl != null) {
-            precacheImage(offlineAwareImageProvider(item.logoUrl!), context);
+            precacheImage(
+              ArtworkDecode.provider(item.logoUrl!, width: logoCacheW),
+              context,
+            );
           }
         }
       }
@@ -2068,7 +2084,7 @@ class _MediaBarState extends State<MediaBar>
                         duration: const Duration(milliseconds: 300),
                         child: SizedBox(
                           key: ValueKey('logo_${currentItem.itemId}'),
-                          width: 280,
+                          width: MediaBar.logoBoxWidth,
                           height: 120,
                           child: _buildLogoWithShadow(
                             currentItem.logoUrl,
@@ -3033,6 +3049,7 @@ class _MediaBarState extends State<MediaBar>
       fit: BoxFit.contain,
       alignment: Alignment.centerLeft,
       fadeInDuration: Duration.zero,
+      priority: ImageFetchPriority.high,
       errorWidget: (_, _, _) => _buildLogoFallback(title),
     );
     return Stack(
@@ -3086,8 +3103,8 @@ class _BackdropLayer extends StatelessWidget {
         imageBuilder: (imageUrl) {
           final Widget image = BoundedNetworkImage(
             imageUrl: imageUrl,
-            minWidth: 640,
-            maxWidth: 1280,
+            memCacheWidth: MediaBar.backdropDecodeWidth(context),
+            priority: ImageFetchPriority.high,
             errorBuilder: (_, _, _) =>
                 ColoredBox(color: AppColorScheme.background),
           );

@@ -71,28 +71,47 @@ class _AudioPreferencesScreenState extends State<_AudioPreferencesScreen> {
     return values.join(', ');
   }
 
+  // Media3 on Android, AetherEngine on Apple and mpv on Linux and Windows all
+  // decode these on the device, so the list doesn't depend on the engine.
+  static const _locallyDecodedCodecs =
+      'AAC, AC3, EAC3, DTS, DTS-HD, TrueHD, FLAC';
+
+  List<Widget> _buildCodecRows(AppLocalizations l10n) {
+    final transcodeCodecs = DeviceProfileBuilder.transcodeTargetAudioCodecs(
+      fallbackCodec: _prefs.get(UserPreferences.audioFallbackCodec),
+      forAvFoundation: PlatformDetection.isApple || PlatformDetection.isAppleTV,
+    ).map((codec) => codec == 'opus' ? 'Opus' : codec.toUpperCase());
+
+    return <Widget>[
+      _TvSettingsListTile(
+        leading: const Icon(Icons.memory),
+        title: Text(l10n.locallyDecodedCodecs),
+        subtitle: const Text(_locallyDecodedCodecs),
+      ),
+      _TvSettingsListTile(
+        leading: const Icon(Icons.swap_horiz),
+        title: Text(l10n.transcodeTargetCodecs),
+        subtitle: Text(transcodeCodecs.join(', ')),
+      ),
+    ];
+  }
+
   List<Widget> _buildDetectedCapabilities(AppLocalizations l10n) {
-    final hasSnapshot = PlatformDetection.hasAudioCapabilities;
-    if (!hasSnapshot) {
+    if (!AudioCapabilityProbe.isSupported) {
+      return _buildCodecRows(l10n);
+    }
+
+    if (!PlatformDetection.hasAudioCapabilities) {
       return <Widget>[
         _TvSettingsListTile(
           leading: const Icon(Icons.hearing_disabled),
           title: Text(l10n.settingsDetectedAudioCapabilitiesUnavailable),
         ),
+        ..._buildCodecRows(l10n),
       ];
     }
 
     final profile = _audioCapabilityProfile;
-    final decodeCodecs = <String>[
-      'AAC',
-      if (profile.canDecodeAc3) 'AC3',
-      if (profile.canDecodeEac3) 'EAC3',
-      if (profile.canDecodeDts) 'DTS',
-      if (profile.canDecodeDtsHd) 'DTS-HD',
-      if (profile.canDecodeTrueHd) 'TrueHD',
-      if (profile.canDecodeFlac) 'FLAC',
-    ];
-
     final passthroughCodecs = <String>[
       if (profile.canPassthroughAc3) 'AC3',
       if (profile.canPassthroughEac3) 'EAC3',
@@ -113,11 +132,7 @@ class _AudioPreferencesScreenState extends State<_AudioPreferencesScreen> {
         title: Text(l10n.connection),
         subtitle: Text(routeSubtitleParts.join(' • ')),
       ),
-      _TvSettingsListTile(
-        leading: const Icon(Icons.memory),
-        title: Text(l10n.audioTranscodeTarget),
-        subtitle: Text(_joinedOrUnknown(l10n, decodeCodecs)),
-      ),
+      ..._buildCodecRows(l10n),
       _TvSettingsListTile(
         leading: const Icon(Icons.settings_input_hdmi),
         title: Text(l10n.passthrough),
@@ -437,12 +452,12 @@ class _AudioPreferencesScreenState extends State<_AudioPreferencesScreen> {
             ),
           ],
 
-          if (AudioCapabilityProbe.isSupported) ...[
+          if (!PlatformDetection.isWeb) ...[
             _SectionHeader(l10n.settingsDetectedAudioCapabilities),
             adaptiveListSection(
               children: [
                 ..._buildDetectedCapabilities(l10n),
-                _buildRedetectTile(),
+                if (AudioCapabilityProbe.isSupported) _buildRedetectTile(),
               ],
             ),
           ],

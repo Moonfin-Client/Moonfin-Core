@@ -154,6 +154,9 @@ class _HdrOverlayCaptureState extends State<HdrOverlayCapture>
       // Physical pixels: the layered window is sized in them, and rendering
       // at the logical size would upscale the chrome on a high-DPI display.
       final ratio = MediaQuery.devicePixelRatioOf(context!);
+      // Read before the awaits, since the origin below needs it and the
+      // context is no longer safe to reach through by then.
+      final viewRatio = View.of(context).devicePixelRatio;
       image = await boundary.toImage(pixelRatio: ratio);
       // rawRgba is premultiplied, which is what AC_SRC_ALPHA wants. The
       // runner swaps RGBA to BGRA so that loop stays off this isolate.
@@ -164,7 +167,11 @@ class _HdrOverlayCaptureState extends State<HdrOverlayCapture>
       // `data == null` is a documented outcome of toByteData; fall through
       // rather than return so the capture still reschedules.
       if (data != null && mounted && widget.enabled) {
-        final origin = boundary.localToGlobal(Offset.zero) * ratio;
+        // localToGlobal has already walked whatever scales the tree, so the
+        // origin is in the view's own points. The ratio above carries that
+        // scale, so multiplying by it here would apply the scale twice to
+        // the corner while applying it once to the size.
+        final origin = boundary.localToGlobal(Offset.zero) * viewRatio;
         await widget.channel.push(
           x: origin.dx,
           y: origin.dy,
@@ -244,8 +251,13 @@ class _HdrVideoGeometryState extends State<HdrVideoGeometry> {
 
     final box = context.findRenderObject() as RenderBox?;
     if (box == null || !box.hasSize) return;
+    // The size is measured in the tree's own points, so it takes the ratio
+    // that carries whatever scale the tree is under. The origin comes back
+    // from localToGlobal already in the view's points, so it takes the view's
+    // own ratio or the scale lands on it twice.
     final ratio = MediaQuery.devicePixelRatioOf(context);
-    final origin = box.localToGlobal(Offset.zero) * ratio;
+    final origin =
+        box.localToGlobal(Offset.zero) * View.of(context).devicePixelRatio;
     final rect = Rect.fromLTWH(
       origin.dx,
       origin.dy,

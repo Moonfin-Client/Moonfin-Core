@@ -26,6 +26,7 @@ class NativeVideoPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, EventC
 
     override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         applicationContext = binding.applicationContext
+        Media3Bridge.onPluginAttached(binding.applicationContext)
 
         binding.platformViewRegistry.registerViewFactory(
             "moonfin/native_video",
@@ -105,6 +106,7 @@ class NativeVideoPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, EventC
 
         applicationContext = null
 
+        Media3Bridge.onPluginDetached(this, registeredSink)
         Media3Bridge.clearEventSink(registeredSink)
         registeredSink = null
 
@@ -113,7 +115,7 @@ class NativeVideoPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, EventC
     }
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
-        Media3Bridge.handleMethodCall(call, result)
+        Media3Bridge.handleMethodCall(call, result, this)
     }
 
     override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {

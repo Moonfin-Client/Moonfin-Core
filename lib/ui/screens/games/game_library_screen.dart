@@ -18,6 +18,7 @@ import '../../../util/platform_detection.dart';
 import '../../navigation/destinations.dart';
 import '../../navigation/route_lifecycle_observer.dart';
 import '../../widgets/game/game_system_card.dart';
+import '../../widgets/media_card.dart';
 
 /// Displays the platforms in a retro-game library. Selecting a platform opens
 /// its vertically scrolling, searchable game grid.
@@ -204,7 +205,14 @@ class _GameLibraryScreenState extends State<GameLibraryScreen>
         // than relying on a font-specific multiplier.
         final cardHeight = minimumCardHeight + math.max(0, textScale - 1) * 96;
         final maximumCardWidth = (compact ? 360.0 : 320.0) * layoutScale;
-        final spacing = 18 * layoutScale;
+        final isMobile = compact || PlatformDetection.useMobileUi;
+        final expansionHeadroom = (cardFocusExpansion && !isMobile)
+            ? (cardHeight * (MediaCard.focusScale - 1.0)) / 2.0
+            : 0.0;
+        final topPadding = (20 * layoutScale) + expansionHeadroom;
+        final spacing = (cardFocusExpansion && !isMobile)
+            ? MediaCard.focusGap(maximumCardWidth, minimum: 18 * layoutScale)
+            : (18 * layoutScale);
         final availableWidth = constraints.maxWidth - horizontalPadding * 2;
         final crossAxisCount =
             ((availableWidth + spacing) / (maximumCardWidth + spacing))
@@ -213,10 +221,11 @@ class _GameLibraryScreenState extends State<GameLibraryScreen>
         return GridView.builder(
           padding: EdgeInsets.fromLTRB(
             horizontalPadding,
-            20 * layoutScale,
+            topPadding,
             horizontalPadding,
             32 * layoutScale,
           ),
+          clipBehavior: Clip.none,
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: crossAxisCount,
             mainAxisExtent: cardHeight,

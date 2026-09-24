@@ -6,6 +6,7 @@ import '../../l10n/app_localizations.dart';
 import '../../preference/user_preferences.dart';
 import '../../util/platform_detection.dart';
 import 'horizontal_scroll_section.dart';
+import 'media_card.dart';
 
 class LibraryRow extends StatefulWidget {
   final String title;
@@ -38,7 +39,19 @@ class _LibraryRowState extends State<LibraryRow> {
     final desktopScale = GetIt.instance<UserPreferences>()
         .get(UserPreferences.desktopUiScale)
         .scaleFactor;
-    final rowHeight = (widget.rowHeight ?? 220) * desktopScale;
+    final cardFocusExpansion = GetIt.instance<UserPreferences>()
+        .get(UserPreferences.cardFocusExpansion);
+    final isMobile = PlatformDetection.useMobileUi;
+    final baseHeight = widget.rowHeight ?? 220.0;
+    final estArtworkHeight = (baseHeight - 45.0).clamp(60.0, 400.0);
+    final upwardGrowth = cardFocusExpansion && !isMobile
+        ? estArtworkHeight * (MediaCard.focusScale - 1.0)
+        : 0.0;
+    final rowHeight = (baseHeight * desktopScale) + upwardGrowth;
+    final itemSpacing = cardFocusExpansion && !isMobile
+        ? MediaCard.focusGap(130.0 * desktopScale, minimum: 12.0 * desktopScale)
+        : (12.0 * desktopScale);
+    final topPadding = (5.0 * desktopScale) + upwardGrowth;
     return HorizontalScrollSection(
       title: widget.title,
       scrollController: widget.scrollController,
@@ -74,15 +87,16 @@ class _LibraryRowState extends State<LibraryRow> {
                 ? ListView.separated(
                     controller: scrollController,
                     scrollDirection: Axis.horizontal,
+                    clipBehavior: Clip.none,
                     padding: EdgeInsets.fromLTRB(
                       20 * desktopScale,
-                      5 * desktopScale,
+                      topPadding,
                       20 * desktopScale,
                       5 * desktopScale,
                     ),
                     itemCount: widget.children.length,
                     separatorBuilder: (_, _) =>
-                        SizedBox(width: 12 * desktopScale),
+                        SizedBox(width: itemSpacing),
                     itemBuilder: (_, i) => widget.children[i],
                   )
                 : Center(

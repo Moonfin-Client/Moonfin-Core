@@ -14,6 +14,7 @@ import '../models/aggregated_item.dart';
 import '../models/aggregated_library.dart';
 import '../models/home_row.dart';
 import '../services/media_server_client_factory.dart';
+import '../utils/blocked_ratings.dart';
 import '../utils/bounded_concurrency.dart';
 import '../utils/genre_browse_utils.dart';
 import '../utils/latest_media_row_normalizer.dart';
@@ -576,12 +577,15 @@ class MultiServerRepository {
 
     while (outstanding.isNotEmpty) {
       final response = await fetchPage(startIndex, _studioPageSize);
-      final page = _parseItems(response, serverId);
-      if (page.isEmpty) break;
-      for (final studio in page) {
+      // Paging walks the server's own count. A page that comes back short
+      // because items were filtered out of it is still a full page as far as
+      // the next offset is concerned.
+      final rawCount = (response['Items'] as List?)?.length ?? 0;
+      if (rawCount == 0) break;
+      for (final studio in _parseItems(response, serverId)) {
         if (outstanding.remove(studio.id)) found.add(studio);
       }
-      if (page.length < _studioPageSize) break;
+      if (rawCount < _studioPageSize) break;
       startIndex += _studioPageSize;
     }
 
@@ -1352,7 +1356,7 @@ class MultiServerRepository {
     String serverId,
   ) {
     final rawItems = response['Items'] as List? ?? [];
-    return rawItems.map((item) {
+    final items = rawItems.map((item) {
       final data = item as Map<String, dynamic>;
       return AggregatedItem(
         id: data['Id']?.toString() ?? '',
@@ -1360,6 +1364,7 @@ class MultiServerRepository {
         rawData: data,
       );
     }).toList();
+    return withoutBlockedItems(items);
   }
 
   List<AggregatedItem> _sortAggregatedItems(

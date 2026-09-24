@@ -110,6 +110,9 @@ List<SpotlightCardSpec> spotlightCardsFor({
   List<SeerrDiscoverItem> seerrAppearances = const [],
   List<SeerrDiscoverItem> seerrCrewCredits = const [],
   String? fallbackImageUrl,
+  String? mainBackdropKey,
+  bool seerrAvailable = false,
+  Map<String, String?>? personCardBackdrops,
 }) {
   final builder = _SpotlightCardsBuilder(
     vm: vm,
@@ -121,6 +124,9 @@ List<SpotlightCardSpec> spotlightCardsFor({
     seerrAppearances: seerrAppearances,
     seerrCrewCredits: seerrCrewCredits,
     fallbackImageUrl: fallbackImageUrl,
+    mainBackdropKey: mainBackdropKey,
+    seerrAvailable: seerrAvailable,
+    personCardBackdrops: personCardBackdrops,
   );
   return builder.build();
 }
@@ -139,6 +145,9 @@ SpotlightCardSpec? spotlightCardFor({
   List<SeerrDiscoverItem> seerrAppearances = const [],
   List<SeerrDiscoverItem> seerrCrewCredits = const [],
   String? fallbackImageUrl,
+  String? mainBackdropKey,
+  bool seerrAvailable = false,
+  Map<String, String?>? personCardBackdrops,
 }) {
   final builder = _SpotlightCardsBuilder(
     vm: vm,
@@ -150,6 +159,9 @@ SpotlightCardSpec? spotlightCardFor({
     seerrAppearances: seerrAppearances,
     seerrCrewCredits: seerrCrewCredits,
     fallbackImageUrl: fallbackImageUrl,
+    mainBackdropKey: mainBackdropKey,
+    seerrAvailable: seerrAvailable,
+    personCardBackdrops: personCardBackdrops,
   );
   return builder.buildOne(id);
 }
@@ -164,6 +176,9 @@ class _SpotlightCardsBuilder {
   final List<SeerrDiscoverItem> seerrAppearances;
   final List<SeerrDiscoverItem> seerrCrewCredits;
   final String? fallbackImageUrl;
+  final String? mainBackdropKey;
+  final bool seerrAvailable;
+  final Map<String, String?>? personCardBackdrops;
 
   _SpotlightCardsBuilder({
     required this.vm,
@@ -175,6 +190,9 @@ class _SpotlightCardsBuilder {
     required this.seerrAppearances,
     required this.seerrCrewCredits,
     required this.fallbackImageUrl,
+    this.mainBackdropKey,
+    this.seerrAvailable = false,
+    this.personCardBackdrops,
   });
 
   ImageApi get _imageApi => vm.imageApi;
@@ -215,7 +233,13 @@ class _SpotlightCardsBuilder {
       },
       'Playlist' => {'playlist': _playlistCard},
       'MusicArtist' => {'albums': _albumsCard, 'similar': _similarCard},
-      'Person' => {'filmography': _filmographyCard},
+      'Person' => {
+        'filmography': _personFilmographyCard,
+        if (seerrAvailable) ...{
+          'appearances': _personAppearancesCard,
+          'crew': _personCrewCard,
+        },
+      },
       'BoxSet' => {
         'boxset_items': _boxSetItemsCard,
         'people': _boxSetPeopleCard,
@@ -808,15 +832,24 @@ class _SpotlightCardsBuilder {
     );
   }
 
-  SpotlightCardSpec? _filmographyCard() {
+  /// The page picks these once and passes them down so they hold still, and
+  /// picking here covers a build that runs before it has an item to pick from.
+  late final Map<String, String?> _personCardBackdrops =
+      personCardBackdrops?.isNotEmpty == true
+      ? personCardBackdrops!
+      : personCardBackdropsFor(
+          local: collectPersonLocalBackdrops(vm),
+          appearances: collectPersonSeerrBackdrops(seerrAppearances),
+          crew: collectPersonSeerrBackdrops(seerrCrewCredits),
+          mainBackdropKey: mainBackdropKey,
+        );
+
+  SpotlightCardSpec? _personFilmographyCard() {
     final movies = vm.filmographyMovies;
     final series = vm.filmographySeries;
     final other = vm.filmography;
     final hasLibrary = movies.isNotEmpty || series.isNotEmpty;
-    if (!hasLibrary &&
-        other.isEmpty &&
-        seerrAppearances.isEmpty &&
-        seerrCrewCredits.isEmpty) {
+    if (!hasLibrary && other.isEmpty) {
       return null;
     }
     final subtitle = [
@@ -824,43 +857,71 @@ class _SpotlightCardsBuilder {
       if (series.isNotEmpty) l10n.spotlightShowsCount(series.length),
       if (!hasLibrary && other.isNotEmpty)
         l10n.spotlightItemsCount(other.length),
-      if (!hasLibrary && other.isEmpty && seerrAppearances.isNotEmpty)
-        l10n.spotlightItemsCount(seerrAppearances.length),
     ].join(' · ');
-    final imageSource = movies.isNotEmpty
-        ? movies.first
-        : (series.isNotEmpty
-              ? series.first
-              : (other.isNotEmpty ? other.first : null));
-    final imageUrl = imageSource != null
-        ? spotlightItemImageUrl(_imageApi, imageSource)
-        : _firstSeerrPoster(seerrAppearances);
+
+    final imageUrl = _personCardBackdrops['filmography'] ??
+        _firstItemLandscape(movies) ??
+        _firstItemLandscape(series) ??
+        (other.isNotEmpty ? _firstItemLandscape(other) : null) ??
+        fallbackImageUrl;
+
     return SpotlightCardSpec(
       id: 'filmography',
       title: l10n.spotlightFilmography,
       subtitle: subtitle,
-      imageUrl: imageUrl ?? fallbackImageUrl,
+      imageUrl: imageUrl,
       icon: Icons.movie_outlined,
       sections: [
         if (movies.isNotEmpty) _mediaSection(l10n.movies, movies),
         if (series.isNotEmpty) _mediaSection(l10n.series, series),
-        if (seerrAppearances.isNotEmpty)
-          _seerrSection(
-            l10n.appearancesSeerr,
-            seerrAppearances,
-            showCredit: true,
-          ),
-        if (seerrCrewCredits.isNotEmpty)
-          _seerrSection(
-            l10n.crewContributionsSeerr,
-            seerrCrewCredits,
-            showCredit: true,
-          ),
-        if (!hasLibrary &&
-            seerrAppearances.isEmpty &&
-            seerrCrewCredits.isEmpty &&
-            other.isNotEmpty)
-          _mediaSection(l10n.appearances, other),
+        if (!hasLibrary && other.isNotEmpty)
+          _mediaSection(l10n.spotlightFilmography, other),
+      ],
+    );
+  }
+
+  SpotlightCardSpec? _personAppearancesCard() {
+    if (seerrAppearances.isEmpty) return null;
+
+    final imageUrl = _personCardBackdrops['appearances'] ??
+        _firstSeerrPoster(seerrAppearances) ??
+        fallbackImageUrl;
+
+    return SpotlightCardSpec(
+      id: 'appearances',
+      title: l10n.appearancesSeerr,
+      subtitle: l10n.spotlightItemsCount(seerrAppearances.length),
+      imageUrl: imageUrl,
+      icon: Icons.star_outline,
+      sections: [
+        _seerrSection(
+          l10n.appearancesSeerr,
+          seerrAppearances,
+          showCredit: true,
+        ),
+      ],
+    );
+  }
+
+  SpotlightCardSpec? _personCrewCard() {
+    if (seerrCrewCredits.isEmpty) return null;
+
+    final imageUrl = _personCardBackdrops['crew'] ??
+        _firstSeerrPoster(seerrCrewCredits) ??
+        fallbackImageUrl;
+
+    return SpotlightCardSpec(
+      id: 'crew',
+      title: l10n.crewContributionsSeerr,
+      subtitle: l10n.spotlightItemsCount(seerrCrewCredits.length),
+      imageUrl: imageUrl,
+      icon: Icons.movie_creation_outlined,
+      sections: [
+        _seerrSection(
+          l10n.crewContributionsSeerr,
+          seerrCrewCredits,
+          showCredit: true,
+        ),
       ],
     );
   }

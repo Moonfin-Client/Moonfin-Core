@@ -148,6 +148,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
     icon: Icons.pin,
     open: () => push(const PinCodeSettingsScreen()),
   );
+  final kidsMode = _SearchSection(
+    slug: 'kids-mode',
+    path: [l10n.settingsAccountSecurity, l10n.kidsMode],
+    icon: Icons.child_care,
+    open: () => push(const _AuthenticationCategoryScreen()),
+  );
   final parental = _SearchSection(
     slug: 'parental',
     path: [l10n.settingsAccountSecurity, l10n.settingsBlockedRatings],
@@ -535,6 +541,9 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
     ),
     pin.leaf('change', l10n.changePin, subtitle: l10n.setNewPinCode),
     pin.leaf('remove', l10n.removePin, subtitle: l10n.removePinProtection),
+    kidsMode.screen(
+      keywords: ['kids', 'child', 'children', 'simple', 'lock', 'pin'],
+    ),
     parental.screen(keywords: [
       'parental controls',
       'age',
@@ -675,6 +684,8 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       'classic',
       'modern',
       'spotlight',
+      'nouveau',
+      'minimalist',
     ]),
     details.leaf('detailsBackgroundBlurAmount', l10n.detailsBackgroundBlur),
     details.leaf(
@@ -1184,6 +1195,13 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       'crop',
       'stretch',
     ]),
+    if (PlatformDetection.isIOS)
+      video.leaf(
+        'pref_video_clear_of_dynamic_island',
+        l10n.keepVideoClearOfDynamicIsland,
+        subtitle: l10n.keepVideoClearOfDynamicIslandDescription,
+        keywords: ['notch', 'dynamic island', 'camera', 'safe area'],
+      ),
     if (letterboxCropSettingVisible())
       video.leaf('crop_black_bars', l10n.cropBlackBars, keywords: [
         'letterbox',
@@ -1261,6 +1279,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
     video.leaf('skipForwardLength', l10n.skipForwardLength, keywords: [
       'seek forward',
     ]),
+    video.leaf(
+      'showChapterMarkers',
+      l10n.showChapterMarkers,
+      subtitle: l10n.showChapterMarkersDescription,
+      keywords: ['seek bar', 'seekbar', 'progress bar', 'chapters', 'marks'],
+    ),
     if (PlatformDetection.useMobileUi) ...[
       video.leaf(
         'osdLockEnabled',

@@ -174,6 +174,60 @@ void main() {
       expect(_names(vm), <String>['The Matrix']);
     });
 
+    test('finds an accented name typed without its accents', () async {
+      final api = _FakeItemsApi([
+        [_movie('Cançó'), _movie('Titanic')],
+      ]);
+      final vm = await _viewModel(api);
+      addTearDown(vm.dispose);
+      await vm.load();
+
+      // What the server answers for the same term, so the two search boxes
+      // agree rather than one of them coming back empty.
+      vm.setSearchQuery('canco');
+
+      expect(_names(vm), <String>['Cançó']);
+    });
+
+    test('finds an accented name typed with different accents', () async {
+      final api = _FakeItemsApi([
+        [_movie('Cançó')],
+      ]);
+      final vm = await _viewModel(api);
+      addTearDown(vm.dispose);
+      await vm.load();
+
+      vm.setSearchQuery('canço');
+
+      expect(_names(vm), <String>['Cançó']);
+    });
+
+    test('an accented query still finds the plain name', () async {
+      final api = _FakeItemsApi([
+        [_movie('Cancion'), _movie('Titanic')],
+      ]);
+      final vm = await _viewModel(api);
+      addTearDown(vm.dispose);
+      await vm.load();
+
+      vm.setSearchQuery('canción');
+
+      expect(_names(vm), <String>['Cancion']);
+    });
+
+    test('folds the sort name too', () async {
+      final api = _FakeItemsApi([
+        [_movie('Cançó', sortName: 'Cançó, La')],
+      ]);
+      final vm = await _viewModel(api);
+      addTearDown(vm.dispose);
+      await vm.load();
+
+      vm.setSearchQuery('canco, la');
+
+      expect(_names(vm), <String>['Cançó']);
+    });
+
     test('an empty query hands back every item', () async {
       final api = _FakeItemsApi([
         [_movie('Alien'), _movie('Titanic')],

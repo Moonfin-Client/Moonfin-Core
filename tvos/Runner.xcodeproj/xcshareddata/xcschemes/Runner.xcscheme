@@ -5,6 +5,24 @@
    <BuildAction
       parallelizeBuildables = "YES"
       buildImplicitDependencies = "YES">
+      <PreActions>
+         <ExecutionAction
+            ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
+            <ActionContent
+               title = "Prepare Flutter framework"
+               scriptText = "#!/bin/sh&#10;# Stage the Flutter engine where the Swift package targets look for frameworks.&#10;#&#10;# The generated FlutterFramework package is empty: federated plugin packages&#10;# depend on it so they can import Flutter, but the engine itself is a plain&#10;# framework this pre-action copies into BUILT_PRODUCTS_DIR before anything&#10;# compiles. Without it every plugin target fails with &quot;no such module Flutter&quot;.&#10;# This is the tvOS equivalent of upstream Flutter&apos;s &quot;Run Prepare Flutter&#10;# Framework Script&quot; pre-action for iOS/macOS.&#10;#&#10;# flutter-tvos performs the same copy itself, so `flutter-tvos build/run` does&#10;# not depend on this; this covers builds and archives started from Xcode.&#10;SRC=&quot;${PROJECT_DIR}/Flutter/Flutter.framework&quot;&#10;if [ ! -d &quot;${SRC}&quot; ]; then&#10;  echo &quot;error: ${SRC} does not exist. Run &apos;flutter-tvos build tvos&apos; (or &apos;flutter-tvos run&apos;) for this configuration first, then build again.&quot;&#10;  exit 1&#10;fi&#10;mkdir -p &quot;${BUILT_PRODUCTS_DIR}&quot;&#10;rsync -a --delete &quot;${SRC}&quot; &quot;${BUILT_PRODUCTS_DIR}/&quot;&#10;">
+               <EnvironmentBuildable>
+                  <BuildableReference
+                     BuildableIdentifier = "primary"
+                     BlueprintIdentifier = "97C146ED1CF9000082B41690"
+                     BuildableName = "Runner.app"
+                     BlueprintName = "Runner"
+                     ReferencedContainer = "container:Runner.xcodeproj">
+                  </BuildableReference>
+               </EnvironmentBuildable>
+            </ActionContent>
+         </ExecutionAction>
+      </PreActions>
       <BuildActionEntries>
          <BuildActionEntry
             buildForTesting = "YES"

@@ -30,7 +30,6 @@
 		81DCCA41EF933CEC711C17AF /* genesis_plus_gx_libretro.framework in Embed Libretro Cores */ = {isa = PBXBuildFile; fileRef = 3D25A3FF43C9B94D5ED8A397 /* genesis_plus_gx_libretro.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		86EBDA29EC9F3F8B48EC6A25 /* AppleTvPreviewChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B3D4A2E4C583DF7B8CAE4BA /* AppleTvPreviewChannel.swift */; };
 		8DDA1544C590D9C1AAA8093C /* gambatte_libretro.framework in Embed Libretro Cores */ = {isa = PBXBuildFile; fileRef = 5A0944BC3FD88308B7E81F3D /* gambatte_libretro.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		9705A1C61CF904A100538489 /* Flutter.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAB004F5970 /* Flutter.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		97C146FB1CF9000082B4168C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000082B4168C /* AppDelegate.swift */; };
 		97C1470A1CF9000082B4168D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000082B4168D /* Main.storyboard */; };
 		97C1470B1CF9000082B4168D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000082B4168E /* LaunchScreen.storyboard */; };
@@ -45,9 +44,12 @@
 		C1F1E8188A6812EC3C6A9EF1 /* AppleTvGameInputViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A868E735744FD641776321 /* AppleTvGameInputViewController.swift */; };
 		CAE8045C3AB63C66024FA6B7 /* AetherVideoChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78635028C38C060155519D22 /* AetherVideoChannel.swift */; };
 		D806D8D63D0DFDE94D61895A /* TVServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69C2A2281BE7FC2256E62A2C /* TVServices.framework */; };
+		D81EC9F73053545200B9517B /* FlutterGeneratedPluginSwiftPackage in Frameworks */ = {isa = PBXBuildFile; productRef = D81EC9F63053545200B9517B /* FlutterGeneratedPluginSwiftPackage */; };
 		D8C7A8FA09A6FD717A2D9A10 /* mgba_libretro.framework in Embed Libretro Cores */ = {isa = PBXBuildFile; fileRef = 98DD98A0507A79F82DE9B512 /* mgba_libretro.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		DC8916296F406B350E0E7238 /* ServiceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEF4B8C13F871646DA3AA02 /* ServiceProvider.swift */; };
 		DD0D4D9E542FAF4E11816368 /* AppleTvPlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA725D51E6DE797D0DDC9C2F /* AppleTvPlayerViewController.swift */; };
+		C0A1E10300000000000000A3 /* ChannelCarouselOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0A1E10400000000000000A4 /* ChannelCarouselOverlay.swift */; };
+		C0A1E10100000000000000A1 /* ChannelCarousel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0A1E10200000000000000A2 /* ChannelCarousel.swift */; };
 		DFD4D95C3B71D467770180E3 /* fceumm_libretro.framework in Embed Libretro Cores */ = {isa = PBXBuildFile; fileRef = EBDE8DF681CD2620EB749A48 /* fceumm_libretro.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E86325A97B10B11E8E226CFE /* SubtitleFontLocator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 147184DF7C5FC0873513C3FA /* SubtitleFontLocator.swift */; };
 		F679DA3562E5260D7EB5E8E9 /* snes9x_libretro.framework in Embed Libretro Cores */ = {isa = PBXBuildFile; fileRef = E96043FE795EA6E651493D5F /* snes9x_libretro.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -64,17 +66,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		3B06AD1E1E4923F5004D2608 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				9705A1C61CF904A100538489 /* Flutter.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		60EDF8A1CB9173CB8A4CB006 /* Embed App Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -153,6 +144,8 @@
 		D59C7B5CE2E844F445D8B72B /* AppleTvVideoChannel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppleTvVideoChannel.swift; sourceTree = "<group>"; };
 		D5DC400404ADA61BB07E400A /* GameAudioOutput.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GameAudioOutput.swift; sourceTree = "<group>"; };
 		DA725D51E6DE797D0DDC9C2F /* AppleTvPlayerViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppleTvPlayerViewController.swift; sourceTree = "<group>"; };
+		C0A1E10400000000000000A4 /* ChannelCarouselOverlay.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ChannelCarouselOverlay.swift; sourceTree = "<group>"; };
+		C0A1E10200000000000000A2 /* ChannelCarousel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ChannelCarousel.swift; sourceTree = "<group>"; };
 		DDC62E8B96B51BBBCBA1EC23 /* EngineTrustPolicy.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = EngineTrustPolicy.swift; path = Aether/EngineTrustPolicy.swift; sourceTree = "<group>"; };
 		E96043FE795EA6E651493D5F /* snes9x_libretro.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = snes9x_libretro.framework; sourceTree = "<group>"; };
 		EBDE8DF681CD2620EB749A48 /* fceumm_libretro.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = fceumm_libretro.framework; sourceTree = "<group>"; };
@@ -176,6 +169,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3B3967161E833CAB004F5970 /* Flutter.framework in Frameworks */,
+				D81EC9F73053545200B9517B /* FlutterGeneratedPluginSwiftPackage in Frameworks */,
 				5BA7845828F41526E1B65D24 /* Pods_Runner.framework in Frameworks */,
 				5CE155E72FDE599A002FEC36 /* AVKit.framework in Frameworks */,
 				7A8BDAB827D12F39CAF7401E /* AetherEngine in Frameworks */,
@@ -253,6 +247,8 @@
 				147184DF7C5FC0873513C3FA /* SubtitleFontLocator.swift */,
 				F2A0477050CD294B7CB8C754 /* SubtitleOverlay.swift */,
 				DA725D51E6DE797D0DDC9C2F /* AppleTvPlayerViewController.swift */,
+				C0A1E10400000000000000A4 /* ChannelCarouselOverlay.swift */,
+				C0A1E10200000000000000A2 /* ChannelCarousel.swift */,
 				D59C7B5CE2E844F445D8B72B /* AppleTvVideoChannel.swift */,
 				7B47F49C774D38D5782E3CF3 /* MoonfinTvosStubs.swift */,
 			);
@@ -362,12 +358,13 @@
 			buildConfigurationList = 97C147051CF9000082B4168C /* Build configuration list for PBXNativeTarget "Runner" */;
 			buildPhases = (
 				CBC64758AED267822414F1CB /* [CP] Check Pods Manifest.lock */,
+				D8596C0630535A0E00FFEEE0 /* Check Flutter build mode */,
 				97C146EA1CF9000082B4168C /* Sources */,
 				97C146EB1CF9000082B4168C /* Frameworks */,
 				97C146EC1CF9000082B4168C /* Resources */,
-				3B06AD1E1E4923F5004D2608 /* Embed Frameworks */,
 				AAF10000000000000000F00D /* Embed App.framework */,
 				9740EEB31CF901A200538489 /* Copy flutter_assets */,
+				D87D3B4C305357FA006759C7 /* Embed Flutter.framework */,
 				60EDF8A1CB9173CB8A4CB006 /* Embed App Extensions */,
 				C684840F3AA166FC634CC11A /* Embed Libretro Cores */,
 				9427036CA2B715EC33ABC892 /* [CP] Embed Pods Frameworks */,
@@ -381,6 +378,7 @@
 			packageProductDependencies = (
 				7AFE3931A7703B48EA41DA54 /* AetherEngine */,
 				6839BF2ED5903422B72FBF8A /* libass */,
+				D81EC9F63053545200B9517B /* FlutterGeneratedPluginSwiftPackage */,
 			);
 			productName = Runner;
 			productReference = 97C146EE1CF9000082B41680 /* Runner.app */;
@@ -413,6 +411,7 @@
 			packageReferences = (
 				28D9549FFBD2C43236F78996 /* XCRemoteSwiftPackageReference "AetherEngine" */,
 				2886DC5D0179EDDA99AD5335 /* XCRemoteSwiftPackageReference "libass-build" */,
+				D8D421AA30534E05005231ED /* XCLocalSwiftPackageReference "FlutterGeneratedPluginSwiftPackage" */,
 			);
 			productRefGroup = 97C146EF1CF9000082B41690 /* Products */;
 			projectDirPath = "";
@@ -477,7 +476,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#!/bin/sh\n# Copy flutter_assets into the app bundle\nFLUTTER_ASSETS_SRC=\"${PROJECT_DIR}/Flutter/flutter_assets\"\nDEST=\"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/flutter_assets\"\nif [ -d \"${FLUTTER_ASSETS_SRC}\" ]; then\n  echo \"Copying flutter_assets to app bundle...\"\n  rsync -av --delete \"${FLUTTER_ASSETS_SRC}/\" \"${DEST}/\"\nelse\n  echo \"warning: flutter_assets not found at ${FLUTTER_ASSETS_SRC}\"\nfi\n";
+			shellScript = "#!/bin/sh\n# Copy flutter_assets into the app bundle\nFLUTTER_ASSETS_SRC=\"${PROJECT_DIR}/Flutter/flutter_assets\"\nDEST=\"${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME}/flutter_assets\"\nif [ -d \"${FLUTTER_ASSETS_SRC}\" ]; then\n  echo \"Copying flutter_assets to app bundle...\"\n  rsync -av --delete \"${FLUTTER_ASSETS_SRC}/\" \"${DEST}/\"\nelse\n  echo \"warning: flutter_assets not found at ${FLUTTER_ASSETS_SRC}\"\nfi\n";
 		};
 		AAF10000000000000000F00D /* Embed App.framework */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -494,7 +493,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#!/bin/sh\n# Embed App.framework (AOT Dart snapshots) into the app bundle.\n# Present only for release/profile (AOT) builds; debug/JIT has no App.framework.\n# Runs for build, run, AND archive, so TestFlight/App Store builds get it too.\nAPP_FRAMEWORK_SRC=\"${PROJECT_DIR}/Flutter/App.framework\"\nDEST_FRAMEWORKS=\"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/Frameworks\"\nif [ -d \"${APP_FRAMEWORK_SRC}\" ]; then\n  echo \"Embedding App.framework...\"\n  mkdir -p \"${DEST_FRAMEWORKS}\"\n  rsync -av --delete \"${APP_FRAMEWORK_SRC}\" \"${DEST_FRAMEWORKS}/\"\n  # The flutter-tvos tool stamps the iOS deployment floor (e.g. 13.0) into\n  # App.framework/Info.plist, but the binary is linked at the tvOS target.\n  # App Store validation rejects the mismatch (ITMS-90208), so rewrite the\n  # plist to the binary minos so the two always agree.\n  APP_PLIST=\"${DEST_FRAMEWORKS}/App.framework/Info.plist\"\n  APP_BIN=\"${DEST_FRAMEWORKS}/App.framework/App\"\n  MINOS=\"\"\n  if [ -f \"${APP_BIN}\" ]; then\n    MINOS=$(vtool -show-build \"${APP_BIN}\" 2>/dev/null | awk \"/minos/{print \\$2; exit}\")\n  fi\n  if [ -z \"${MINOS}\" ]; then MINOS=\"${TVOS_DEPLOYMENT_TARGET}\"; fi\n  if [ -f \"${APP_PLIST}\" ] && [ -n \"${MINOS}\" ]; then\n    echo \"Setting App.framework MinimumOSVersion to ${MINOS}...\"\n    plutil -replace MinimumOSVersion -string \"${MINOS}\" \"${APP_PLIST}\"\n  fi\n  if [ \"${CODE_SIGNING_REQUIRED}\" != \"NO\" ] && [ -n \"${EXPANDED_CODE_SIGN_IDENTITY}\" ]; then\n    echo \"Codesigning App.framework with ${EXPANDED_CODE_SIGN_IDENTITY}...\"\n    codesign --force --sign \"${EXPANDED_CODE_SIGN_IDENTITY}\" --timestamp=none --generate-entitlement-der \"${DEST_FRAMEWORKS}/App.framework\"\n  fi\nelse\n  echo \"No App.framework to embed (debug/JIT build).\"\nfi\n";
+			shellScript = "#!/bin/sh\n# Embed App.framework (AOT Dart snapshots) into the app bundle.\n# Present only for release/profile (AOT) builds; debug/JIT has no App.framework.\n# Runs for build, run, AND archive, so TestFlight/App Store builds get it too.\nAPP_FRAMEWORK_SRC=\"${PROJECT_DIR}/Flutter/App.framework\"\nDEST_FRAMEWORKS=\"${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME}/Frameworks\"\nif [ -d \"${APP_FRAMEWORK_SRC}\" ]; then\n  echo \"Embedding App.framework...\"\n  mkdir -p \"${DEST_FRAMEWORKS}\"\n  rsync -av --delete \"${APP_FRAMEWORK_SRC}\" \"${DEST_FRAMEWORKS}/\"\n  # The flutter-tvos tool stamps the iOS deployment floor (e.g. 13.0) into\n  # App.framework/Info.plist, but the binary is linked at the tvOS target.\n  # App Store validation rejects the mismatch (ITMS-90208), so rewrite the\n  # plist to the binary minos so the two always agree.\n  APP_PLIST=\"${DEST_FRAMEWORKS}/App.framework/Info.plist\"\n  APP_BIN=\"${DEST_FRAMEWORKS}/App.framework/App\"\n  MINOS=\"\"\n  if [ -f \"${APP_BIN}\" ]; then\n    MINOS=$(vtool -show-build \"${APP_BIN}\" 2>/dev/null | awk \"/minos/{print \\$2; exit}\")\n  fi\n  if [ -z \"${MINOS}\" ]; then MINOS=\"${TVOS_DEPLOYMENT_TARGET}\"; fi\n  if [ -f \"${APP_PLIST}\" ] && [ -n \"${MINOS}\" ]; then\n    echo \"Setting App.framework MinimumOSVersion to ${MINOS}...\"\n    plutil -replace MinimumOSVersion -string \"${MINOS}\" \"${APP_PLIST}\"\n  fi\n  if [ \"${CODE_SIGNING_REQUIRED}\" != \"NO\" ] && [ -n \"${EXPANDED_CODE_SIGN_IDENTITY}\" ]; then\n    echo \"Codesigning App.framework with ${EXPANDED_CODE_SIGN_IDENTITY}...\"\n    codesign --force --sign \"${EXPANDED_CODE_SIGN_IDENTITY}\" --timestamp=none --generate-entitlement-der \"${DEST_FRAMEWORKS}/App.framework\"\n  fi\nelse\n  echo \"No App.framework to embed (debug/JIT build).\"\nfi\n";
 		};
 		CBC64758AED267822414F1CB /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -517,6 +516,38 @@
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
+		};
+		D8596C0630535A0E00FFEEE0 /* Check Flutter build mode */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(PROJECT_DIR)/Flutter/Generated.xcconfig",
+			);
+			name = "Check Flutter build mode";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#!/bin/sh\n# Fail the build when the Flutter payload staged in tvos/Flutter does not match\n# what Xcode is building.\n#\n# This project runs no Dart build. \"Embed App.framework\" and \"Copy\n# flutter_assets\" copy whatever the last `flutter-tvos build/run` staged, and\n# the engine is the Flutter.framework that same run staged -- so\n# Xcode's CONFIGURATION has no influence on the Flutter payload at all.\n# Archiving Release right after a debug run therefore ships the JIT engine and\n# a kernel_blob inside a release app. That still installs and launches under\n# development signing, then hangs on a blank screen once installed from\n# TestFlight or the App Store, where the distribution signature carries no\n# get-task-allow and the VM cannot get executable pages.\n#\n# Two independent checks run below. The payload check reads what is on disk and\n# cannot go stale. The marker check reads FLUTTER_STAGED_BUILD_MODE, which is\n# more precise but only as fresh as the last build that finished staging. The\n# payload check therefore runs first, and is the one that catches a stale marker.\ncase \"${CONFIGURATION}\" in\n  Debug*)   EXPECTED=\"debug\" ;;\n  Profile*) EXPECTED=\"profile\" ;;\n  Release*) EXPECTED=\"release\" ;;\n  *)\n    # warning, not note. note is Xcode's lowest severity: absent from the issue\n    # navigator, dropped by xcbeautify and most CI log filters -- so announcing\n    # the check's own disablement at that level hides it from exactly the\n    # projects that customise configurations and most need to see it.\n    echo \"warning: unrecognized configuration \\\"${CONFIGURATION}\\\" - the Flutter build-mode check cannot tell which payload this configuration expects, so it is skipping. Set FLUTTER_STAGED_BUILD_MODE_CHECK=off in your project to silence this deliberately.\"\n    exit 0\n    ;;\nesac\n\nif [ \"${FLUTTER_STAGED_BUILD_MODE_CHECK}\" = \"off\" ]; then\n  exit 0\nfi\n\n# 1. Payload check -- what is actually on disk.\n#\n# kernel_blob.bin is staged only for debug/JIT builds. Its presence under a\n# non-debug configuration proves the payload is JIT no matter what any marker\n# says, which is what makes this check the backstop for a stale one.\nif [ \"${EXPECTED}\" != \"debug\" ] && [ -f \"${PROJECT_DIR}/Flutter/flutter_assets/kernel_blob.bin\" ]; then\n  echo \"error: ${PROJECT_DIR}/Flutter/flutter_assets/kernel_blob.bin is present, so the staged Flutter payload is a debug/JIT build, but Xcode is building the ${CONFIGURATION} configuration (${EXPECTED} mode).\"\n  echo \"error: this project copies the staged payload as-is, so the build would ship the debug engine and Dart code inside a ${EXPECTED} app. It would install and run from Xcode, then hang on a blank screen when installed from TestFlight or the App Store.\"\n  echo \"error: run \\\"flutter-tvos build tvos --${EXPECTED}\\\" first, then build or archive again.\"\n  exit 1\nfi\n\n# App.framework is deleted only by `flutter-tvos clean`, never by a build, so a\n# release one survives any number of debug builds. Its presence proves nothing;\n# its absence still proves an AOT build cannot work.\nif [ \"${EXPECTED}\" != \"debug\" ] && [ ! -d \"${PROJECT_DIR}/Flutter/App.framework\" ]; then\n  echo \"error: a ${EXPECTED} build needs the AOT App.framework, but ${PROJECT_DIR}/Flutter/App.framework does not exist. Run \\\"flutter-tvos build tvos --${EXPECTED}\\\" first.\"\n  exit 1\nfi\n\n# 2. Marker check -- what the last completed build recorded.\nSTAGED=\"${FLUTTER_STAGED_BUILD_MODE}\"\nif [ -z \"${STAGED}\" ] || [ \"${STAGED}\" = \"unknown\" ]; then\n  # Empty after `flutter-tvos clean` (which deletes Generated.xcconfig), on a\n  # fresh clone or CI checkout since that file is gitignored, or with a CLI\n  # older than this phase. \"unknown\" means a build began staging and did not\n  # finish. Either way nothing here describes the payload on disk. Under Debug\n  # the cost of being wrong is a launch failure on a device in your hand; under\n  # anything else it is a submission that dies after review, so this fails.\n  if [ \"${EXPECTED}\" = \"debug\" ]; then\n    echo \"warning: ${PROJECT_DIR}/Flutter/Generated.xcconfig records no completed staged build mode, so the payload could not be checked. Run \\\"flutter-tvos build tvos --debug\\\" to regenerate it.\"\n  else\n    echo \"error: ${PROJECT_DIR}/Flutter/Generated.xcconfig records no completed staged build mode, so nothing establishes that the staged payload matches the ${CONFIGURATION} configuration.\"\n    echo \"error: this is the state after \\\"flutter-tvos clean\\\", on a fresh checkout (Generated.xcconfig is gitignored), or when a build was interrupted while staging.\"\n    echo \"error: run \\\"flutter-tvos build tvos --${EXPECTED}\\\" first, then build or archive again.\"\n    exit 1\n  fi\nelif [ \"${STAGED}\" != \"${EXPECTED}\" ]; then\n  # flutter-tvos drives profile builds through the Release configuration, so a\n  # profile payload under Release is expected. It is AOT-compiled and does run,\n  # so warn rather than fail.\n  if [ \"${EXPECTED}\" = \"release\" ] && [ \"${STAGED}\" = \"profile\" ]; then\n    echo \"warning: the Flutter payload in ${PROJECT_DIR}/Flutter was built in profile mode while Xcode builds ${CONFIGURATION}. Profile builds carry the VM Service and are not meant for the App Store - run \\\"flutter-tvos build tvos --release\\\" before archiving.\"\n  else\n    echo \"error: the Flutter payload in ${PROJECT_DIR}/Flutter was built in ${STAGED} mode, but Xcode is building the ${CONFIGURATION} configuration (${EXPECTED} mode).\"\n    echo \"error: this project copies the staged payload as-is, so the build would ship the ${STAGED} engine and Dart code inside a ${EXPECTED} app.\"\n    echo \"error: run \\\"flutter-tvos build tvos --${EXPECTED}\\\" first, then build or archive again.\"\n    exit 1\n  fi\nfi\n\n# 3. SDK check -- a payload staged for the simulator archives just as quietly.\nif [ -n \"${FLUTTER_STAGED_SDK}\" ] && [ \"${FLUTTER_STAGED_SDK}\" != \"unknown\" ] && [ -n \"${PLATFORM_NAME}\" ] && [ \"${FLUTTER_STAGED_SDK}\" != \"${PLATFORM_NAME}\" ]; then\n  echo \"error: the staged Flutter payload was built against the ${FLUTTER_STAGED_SDK} SDK, but Xcode is building for ${PLATFORM_NAME}. The embedded App.framework and engine slice would be for the wrong platform.\"\n  echo \"error: run \\\"flutter-tvos build tvos --${EXPECTED}\\\" for this destination first, then build or archive again.\"\n  exit 1\nfi\n";
+		};
+		D87D3B4C305357FA006759C7 /* Embed Flutter.framework */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(PROJECT_DIR)/Flutter/Flutter.framework",
+			);
+			name = "Embed Flutter.framework";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#!/bin/sh\n# Embed + code-sign the Flutter engine into the app bundle.\n#\n# flutter-tvos stages the engine at tvos/Flutter/Flutter.framework on every\n# build/run, and the Runner scheme's \"Prepare Flutter framework\" pre-action\n# copies it into BUILT_PRODUCTS_DIR so the Swift package targets can compile\n# against it. Neither of those puts it in the bundle -- this phase does,\n# mirroring what upstream Flutter's xcode_backend does for iOS. Runs for build,\n# run, AND archive, so TestFlight/App Store builds get it too.\n#\n# Headers and Modules are compile-time only. Xcode's own framework embed strips\n# them, so strip them here too rather than shipping them inside every app.\n#\n# Sign the embedded engine with the app's own identity, the same thing upstream\n# Flutter does to the engine it copies -- a framework that reaches the bundle\n# unsigned fails to load. This is NOT what satisfies Apple's ITMS-91065 check:\n# that needs a Developer ID signature on the engine BEFORE this phase embeds\n# it, which flutter-tvos applies to its artifact cache on every device build.\n#\n# Use CODESIGNING_FOLDER_PATH (the bundle being signed), not ${PRODUCT_NAME}.app,\n# which is wrong whenever the product name is overridden.\nFRAMEWORK_SRC=\"${PROJECT_DIR}/Flutter/Flutter.framework\"\nDEST_FRAMEWORKS=\"${CODESIGNING_FOLDER_PATH}/Frameworks\"\nif [ ! -d \"${FRAMEWORK_SRC}\" ]; then\n  echo \"error: ${FRAMEWORK_SRC} does not exist, so this build would ship without a Flutter engine. Run 'flutter-tvos build tvos' (or 'flutter-tvos run') for this configuration first, then build again.\"\n  exit 1\nfi\necho \"Embedding Flutter.framework...\"\nmkdir -p \"${DEST_FRAMEWORKS}\"\nrsync -a --delete --filter \"- Headers\" --filter \"- Modules\" \"${FRAMEWORK_SRC}\" \"${DEST_FRAMEWORKS}/\"\nif [ \"${CODE_SIGNING_REQUIRED}\" = \"NO\" ] || [ -z \"${EXPANDED_CODE_SIGN_IDENTITY}\" ]; then\n  echo \"Skipping Flutter.framework signing (code signing not required for this build).\"\nelse\n  echo \"Codesigning Flutter.framework with ${EXPANDED_CODE_SIGN_IDENTITY}...\"\n  codesign --force --sign \"${EXPANDED_CODE_SIGN_IDENTITY}\" --timestamp=none --generate-entitlement-der \"${DEST_FRAMEWORKS}/Flutter.framework\"\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -548,6 +579,8 @@
 				E86325A97B10B11E8E226CFE /* SubtitleFontLocator.swift in Sources */,
 				BC59339B180C88464B1212F8 /* SubtitleOverlay.swift in Sources */,
 				DD0D4D9E542FAF4E11816368 /* AppleTvPlayerViewController.swift in Sources */,
+				C0A1E10300000000000000A3 /* ChannelCarouselOverlay.swift in Sources */,
+				C0A1E10100000000000000A1 /* ChannelCarousel.swift in Sources */,
 				69A64DCAF44C6CBA903F3BC4 /* AppleTvVideoChannel.swift in Sources */,
 				0520DB98CE279F2BA3B6E562 /* MoonfinTvosStubs.swift in Sources */,
 			);
@@ -940,6 +973,13 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		D8D421AA30534E05005231ED /* XCLocalSwiftPackageReference "FlutterGeneratedPluginSwiftPackage" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage;
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCRemoteSwiftPackageReference section */
 		2886DC5D0179EDDA99AD5335 /* XCRemoteSwiftPackageReference "libass-build" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -954,7 +994,7 @@
 			repositoryURL = "https://github.com/superuser404notfound/AetherEngine";
 			requirement = {
 				kind = exactVersion;
-				version = 6.84.0;
+				version = 6.89.1;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -969,6 +1009,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 28D9549FFBD2C43236F78996 /* XCRemoteSwiftPackageReference "AetherEngine" */;
 			productName = AetherEngine;
+		};
+		D81EC9F63053545200B9517B /* FlutterGeneratedPluginSwiftPackage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D8D421AA30534E05005231ED /* XCLocalSwiftPackageReference "FlutterGeneratedPluginSwiftPackage" */;
+			productName = FlutterGeneratedPluginSwiftPackage;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

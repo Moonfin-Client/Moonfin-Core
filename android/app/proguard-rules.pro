@@ -30,6 +30,11 @@
 -keep class com.google.android.gms.cast.** { *; }
 -keep class * implements com.google.android.gms.cast.framework.OptionsProvider { *; }
 
+# --- audio_service ready flag (reset by name in AudioServiceState) -----------
+-keepclassmembers class com.ryanheise.audioservice.AudioServicePlugin {
+    boolean flutterReady;
+}
+
 # --- sqlite3 native library (loaded by name; drift uses FFI) -----------------
 -keep class org.sqlite.** { *; }
 -dontwarn org.sqlite.**

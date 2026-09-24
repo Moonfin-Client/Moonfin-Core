@@ -165,21 +165,14 @@ class _GamePosterCardState extends State<GamePosterCard> {
           behavior: HitTestBehavior.opaque,
           onTap: widget.onTap,
           child: RepaintBoundary(
-            child: AnimatedScale(
-              scale: scale,
-              duration: const Duration(milliseconds: 150),
-              curve: PlatformDetection.isAppleTV
-                  ? Curves.easeOutCubic
-                  : Curves.linear,
-              child: _buildCard(context, active),
-            ),
+            child: _buildCard(context, active, scale),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildCard(BuildContext context, bool active) {
+  Widget _buildCard(BuildContext context, bool active, double scale) {
     final url = widget.imageUrl;
     final borders = ThemeRegistry.active.borders;
     final baseTextStyle =
@@ -194,21 +187,29 @@ class _GamePosterCardState extends State<GamePosterCard> {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
         // The single focus border + glow lives here and nowhere else.
-        GameCardFocusFrame(
-          active: active,
-          focusColor: widget.focusColor,
-          suppressFocusGlow: widget.suppressFocusGlow,
-          child: SizedBox(
-            width: widget.width,
-            height: widget.width * 1.34,
-            child: ClipRRect(
-              borderRadius: borders.cardRadius,
-              child:
-                  !widget.loadArtwork || (url == null && widget.artwork == null)
-                  ? _Fallback(seed: widget.seed, iconSize: widget.width * 0.3)
-                  : Stack(
+        AnimatedScale(
+          scale: scale,
+          duration: const Duration(milliseconds: 150),
+          curve: PlatformDetection.isAppleTV
+              ? Curves.easeOutCubic
+              : Curves.linear,
+          alignment: Alignment.bottomCenter,
+          child: GameCardFocusFrame(
+            active: active,
+            focusColor: widget.focusColor,
+            suppressFocusGlow: widget.suppressFocusGlow,
+            child: SizedBox(
+              width: widget.width,
+              height: widget.width * 1.34,
+              child: ClipRRect(
+                borderRadius: borders.cardRadius,
+                child:
+                    !widget.loadArtwork || (url == null && widget.artwork == null)
+                    ? _Fallback(seed: widget.seed, iconSize: widget.width * 0.3)
+                    : Stack(
                       fit: StackFit.expand,
                       children: [
                         // Keep the seeded game fallback visible while artwork
@@ -235,6 +236,7 @@ class _GamePosterCardState extends State<GamePosterCard> {
                           ),
                       ],
                     ),
+              ),
             ),
           ),
         ),

@@ -37,6 +37,7 @@ class ScreensaverController {
   bool _playbackActive = false;
   bool _streamPlaying = false;
   bool _trailerActive = false;
+  bool _nativePlayerPresented = false;
   bool _wakeLockEnabled = false;
 
   bool get activityPaused => _activityPaused;
@@ -55,6 +56,17 @@ class ScreensaverController {
     _onStateChanged();
   }
 
+  /// Apple TV presents its player over the Flutter view, so our screensaver
+  /// would draw underneath it and never be seen. While it is up the screen is
+  /// left to tvOS, which means nothing is armed here and a paused player
+  /// releases the idle timer so the system screensaver and sleep still work.
+  void setNativePlayerPresented(bool value) {
+    if (_nativePlayerPresented == value) return;
+    _nativePlayerPresented = value;
+    _refreshWakeLock();
+    _onStateChanged();
+  }
+
   void setMediaBarTrailerActive(bool value) {
     if (_trailerActive == value) return;
     _trailerActive = value;
@@ -68,7 +80,8 @@ class ScreensaverController {
       !_activityPaused &&
       !_playbackActive &&
       !_streamPlaying &&
-      !_trailerActive;
+      !_trailerActive &&
+      !_nativePlayerPresented;
 
   void notifyInteraction() {
     if (!PlatformDetection.isTV || visible.value) return;
@@ -162,14 +175,36 @@ class ScreensaverController {
     } catch (_) {}
   }
 
+  @visibleForTesting
+  static bool wakeLockNeeded({
+    required bool activityPaused,
+    required bool playbackActive,
+    required bool streamPlaying,
+    required bool trailerActive,
+    required bool screensaverVisible,
+    required bool isTv,
+    required bool screensaverEnabled,
+    required bool nativePlayerPresented,
+  }) {
+    if (activityPaused) return false;
+    return playbackActive ||
+        streamPlaying ||
+        trailerActive ||
+        screensaverVisible ||
+        (isTv && screensaverEnabled && !nativePlayerPresented);
+  }
+
   void _refreshWakeLock({bool force = false}) {
-    final shouldEnable =
-        !_activityPaused &&
-            (_playbackActive ||
-                _streamPlaying ||
-                _trailerActive ||
-                visible.value ||
-                (PlatformDetection.isTV && _enabledCache));
+    final shouldEnable = wakeLockNeeded(
+      activityPaused: _activityPaused,
+      playbackActive: _playbackActive,
+      streamPlaying: _streamPlaying,
+      trailerActive: _trailerActive,
+      screensaverVisible: visible.value,
+      isTv: PlatformDetection.isTV,
+      screensaverEnabled: _enabledCache,
+      nativePlayerPresented: _nativePlayerPresented,
+    );
     if (_wakeLockEnabled == shouldEnable && !force) {
       return;
     }

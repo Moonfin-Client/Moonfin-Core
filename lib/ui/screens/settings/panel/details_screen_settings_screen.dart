@@ -39,6 +39,7 @@ class _DetailsScreenSettingsScreenState
               adaptiveListSection(
                 children: [
                   EnumPreferenceTile<DetailScreenStyle>(
+                    key: const ValueKey('pref_detail_screen_style'),
                     autofocus: true,
                     preference: UserPreferences.detailScreenStyle,
                     title: l10n.detailScreenStyle,
@@ -53,6 +54,8 @@ class _DetailsScreenSettingsScreenState
                         l10n.detailScreenStyleSpotlight,
                       DetailScreenStyle.nouveau =>
                         l10n.detailScreenStyleNouveau,
+                      DetailScreenStyle.minimalist =>
+                        l10n.detailScreenStyleMinimalist,
                     },
                   ),
                   EnumPreferenceTile<PersonalRatingStyle>(

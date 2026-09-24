@@ -1,10 +1,10 @@
 import 'dart:math' as math;
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../screens/livetv/epg/epg_genre.dart';
+import '../offline_aware_image.dart';
 
 /// One channel in the quick channel carousel. Pure presentation: the host
 /// owns scrolling, focus, and data. This only renders what it is given.
@@ -53,23 +53,33 @@ class ChannelCarouselCard extends StatelessWidget {
   final double width;
 
   /// Preferred card width, and the target [layoutFor] aims at.
-  static const double cardWidth = 200;
-  static const double cardHeight = 108;
+  ///
+  /// Written against the canvas a television lays out on, which the panel
+  /// paints at about 1.45 pixels to the point. A size written in a panel's
+  /// own units lands a third short of what it was drawn for once that
+  /// multiplication is done.
+  ///
+  /// The value is the width the canvas gives when four pitches fit across it,
+  /// which is the arrangement the strip reads best in. The centred card keeps
+  /// a whole neighbour either side and a half card bleeds off each edge, so
+  /// there is always something further along to scroll to.
+  static const double cardWidth = 320;
+  static const double cardHeight = 151;
   static const double cardSpacing = 10;
 
   /// The logo owns the header's right edge. It grows to the header band's
   /// height so it never reaches the program text below it.
-  static const double _logoHeight = 30;
-  static const double _logoMaxWidth = 44;
+  static const double _logoHeight = 42;
+  static const double _logoMaxWidth = 62;
   static const double cardPitch = cardWidth + cardSpacing;
 
   /// Band a derived card width has to land in before it is considered.
-  static const double minCardWidth = 150;
-  static const double maxCardWidth = 280;
+  static const double minCardWidth = 207;
+  static const double maxCardWidth = 386;
 
   /// Absolute floor: below this the program block has nothing to say, so a
   /// narrower strip takes fewer cards instead.
-  static const double _minLegibleWidth = 96;
+  static const double _minLegibleWidth = 166;
 
   /// Upper bound on the whole-card count, so a very wide window can't turn
   /// the strip into a row of slivers.
@@ -80,13 +90,18 @@ class ChannelCarouselCard extends StatelessWidget {
   /// Full-bleed genre bar down the leading edge.
   static const double _genreBarWidth = 4;
 
-  static const EdgeInsets _contentPadding = EdgeInsets.fromLTRB(12, 8, 8, 8);
-  double get _contentWidth => width - 12 - 8; // _contentPadding horizontal
+  static const EdgeInsets _contentPadding = EdgeInsets.fromLTRB(16, 11, 11, 11);
+  double get _contentWidth => width - _contentPadding.horizontal;
   static const double _contentHeight =
-      cardHeight - 8 - 8; // _contentPadding vertical
+      cardHeight - 11 - 11; // _contentPadding vertical
 
-  static const double _headerGap = 6;
+  static const double _headerGap = 8;
   static const double _statusGap = 3;
+
+  /// Icons set in a line of text take this share of that line's face, so they
+  /// keep their weight beside it at any interface size. The header's marks are
+  /// sized from the channel number, the largest face in that band.
+  static const double _inlineIconShare = 0.8;
 
   const ChannelCarouselCard({
     super.key,
@@ -178,6 +193,10 @@ class ChannelCarouselCard extends StatelessWidget {
       color: AppColorScheme.onSurface,
     );
 
+    final inlineIconSize =
+        scaler.scale(numberStyle.fontSize ?? AppTypography.fontSizeLg) *
+        _inlineIconShare;
+
     // The content box is known from the given width, so the fit decisions that
     // used to run inside a LayoutBuilder are made here instead: a relayout
     // boundary per card cost more than the arithmetic it guarded.
@@ -233,7 +252,7 @@ class ChannelCarouselCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _headerRow(nameStyle, numberStyle),
+                  _headerRow(nameStyle, numberStyle, inlineIconSize),
                   const SizedBox(height: _headerGap),
                   if (programTitle != null)
                     Text(
@@ -304,10 +323,14 @@ class ChannelCarouselCard extends StatelessWidget {
 
   /// Logo leads, the heart sits with the channel number it belongs to, and
   /// the recording dot trails so nothing crowds the identity.
-  Widget _headerRow(TextStyle nameStyle, TextStyle numberStyle) => Row(
+  Widget _headerRow(
+    TextStyle nameStyle,
+    TextStyle numberStyle,
+    double inlineIconSize,
+  ) => Row(
     children: [
       if (isFavorite) ...[
-        const Icon(Icons.favorite, size: 13, color: AppColors.red500),
+        Icon(Icons.favorite, size: inlineIconSize, color: AppColors.red500),
         const SizedBox(width: 4),
       ],
       if (channelNumber != null) ...[
@@ -329,10 +352,10 @@ class ChannelCarouselCard extends StatelessWidget {
       ),
       if (hasTimer) ...[
         const SizedBox(width: _statusGap),
-        const Icon(
+        Icon(
           Icons.fiber_manual_record,
-          size: 10,
-          color: Color(0xFFE0685C),
+          size: inlineIconSize,
+          color: const Color(0xFFE0685C),
         ),
       ],
       if (logoUrl != null && logoUrl!.isNotEmpty) ...[
@@ -347,7 +370,7 @@ class ChannelCarouselCard extends StatelessWidget {
   Widget _logo() => SizedBox(
     height: _logoHeight,
     width: _logoMaxWidth,
-    child: CachedNetworkImage(
+    child: OfflineAwareImage(
       imageUrl: logoUrl!,
       fit: BoxFit.contain,
       alignment: Alignment.centerRight,

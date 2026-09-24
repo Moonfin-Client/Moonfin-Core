@@ -1051,9 +1051,15 @@ class PluginSyncService extends ChangeNotifier {
     if (headers == null) return null;
 
     try {
+      // Moonbase needs the user to work out which libraries the caller may see, and it
+      // answers with nothing at all when it can't resolve one.
+      final userId = client.userId;
       final response = await _dio.get(
         '${client.baseUrl}/Moonfin/Items/$itemId/Similar',
-        queryParameters: {'limit': limit},
+        queryParameters: {
+          'limit': limit,
+          if (userId != null && userId.isNotEmpty) 'userId': userId,
+        },
         options: Options(headers: headers),
       );
       if (response.data is Map<String, dynamic>) {

@@ -13,6 +13,7 @@ import '../../data/services/audiobook_notes_service.dart';
 import '../../data/services/audiobook_resume_service.dart';
 import '../../data/services/connectivity_service.dart';
 import '../../data/services/log_service.dart';
+import '../../data/services/blocked_content_gate.dart';
 import '../../data/services/media_server_client_factory.dart';
 import '../../data/services/offline_playback_tracker.dart';
 import '../../playback/local_aware_player_service.dart';
@@ -532,6 +533,19 @@ void registerPlaybackModule() {
       },
     );
   });
+  manager.setContentRefusal(
+    queueFilter: (item) {
+      if (item is! AggregatedItem) return false;
+      if (!_getIt.isRegistered<BlockedContentGate>()) return false;
+      return _getIt<BlockedContentGate>().isBlockedNow(item);
+    },
+    playRefusal: (item) async {
+      if (item is! AggregatedItem) return false;
+      if (!_getIt.isRegistered<BlockedContentGate>()) return false;
+      return _getIt<BlockedContentGate>().isBlocked(item);
+    },
+  );
+
   manager.setExternalPlaybackDecider((items) {
     if (!PlatformDetection.isAndroid) {
       return false;

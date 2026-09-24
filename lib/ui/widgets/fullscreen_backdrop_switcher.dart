@@ -8,13 +8,20 @@ class FullscreenBackdropSwitcher extends StatefulWidget {
   final Duration fadeInDuration;
   final Widget Function(String imageUrl)? imageBuilder;
 
+  /// A full-screen backdrop is the one image the screen is about, so its
+  /// fetch goes ahead of the cards built alongside it. Callers that supply
+  /// [imageBuilder] set the lane on their own image.
+  final ImageFetchPriority priority;
+
   const FullscreenBackdropSwitcher({
     super.key,
     required this.imageUrl,
     required this.duration,
     this.alignment = Alignment.topCenter,
-    this.fadeInDuration = const Duration(milliseconds: 300),
+    // The load fade. The crossfade between two backdrops is [duration].
+    this.fadeInDuration = Duration.zero,
     this.imageBuilder,
+    this.priority = ImageFetchPriority.high,
   });
 
   @override
@@ -117,6 +124,12 @@ class _FullscreenBackdropSwitcherState extends State<FullscreenBackdropSwitcher>
           fit: BoxFit.cover,
           alignment: widget.alignment,
           fadeInDuration: widget.fadeInDuration,
+          // A backdrop covers the whole screen, so on a portrait phone it
+          // paints far wider than the screen. The aspect lets the decode
+          // bound follow the painted width instead of the box width.
+          sourceAspectRatio: 16 / 9,
+          maxDecodeWidth: ArtworkDecode.maxSourceWidth,
+          priority: widget.priority,
           errorWidget: (_, _, _) => const SizedBox.shrink(),
         );
   }

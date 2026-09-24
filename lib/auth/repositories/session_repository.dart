@@ -30,6 +30,7 @@ import '../../data/services/download_notification_service.dart';
 import '../../data/services/tv_channels_service.dart';
 import '../../data/services/watch_next_service.dart';
 import '../../data/services/media_server_client_factory.dart';
+import '../../data/services/achievements_service.dart';
 import '../../data/services/plugin_sync_service.dart';
 import '../../data/services/push_messaging_service.dart';
 import '../../data/services/server_messages_service.dart';
@@ -215,6 +216,9 @@ class SessionRepository {
   }) async {
     _setState(SessionState.switching);
     _pluginSyncService.resetState();
+    if (GetIt.instance.isRegistered<AchievementsService>()) {
+      GetIt.instance<AchievementsService>().reset();
+    }
     if (GetIt.instance.isRegistered<ServerMessagesService>()) {
       GetIt.instance<ServerMessagesService>().clear();
     }
@@ -389,6 +393,13 @@ class SessionRepository {
 
     await _pluginSyncService.syncOnLogin(client, serverId: serverId);
 
+    // The settings entry stays hidden until this answers.
+    if (GetIt.instance.isRegistered<AchievementsService>()) {
+      unawaited(
+        GetIt.instance<AchievementsService>().refreshAvailability(client),
+      );
+    }
+
     // Register the FCM token now that a session exists, and push the current
     // notification prefs so defaults reach the plugin. Startup registration
     // bails before login, so this is where closed-app push actually enrolls.
@@ -514,6 +525,9 @@ class SessionRepository {
     }
 
     _pluginSyncService.resetState();
+    if (GetIt.instance.isRegistered<AchievementsService>()) {
+      GetIt.instance<AchievementsService>().reset();
+    }
     if (GetIt.instance.isRegistered<ServerMessagesService>()) {
       GetIt.instance<ServerMessagesService>().clear();
     }

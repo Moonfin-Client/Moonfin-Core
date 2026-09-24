@@ -256,7 +256,119 @@ class EmbyItemsApi implements ItemsApi {
         'ImageTypeLimit': ?imageTypeLimit,
       },
     );
-    return response.data as Map<String, dynamic>;
+    final raw = response.data as Map<String, dynamic>;
+    final items = raw['Items'] as List? ?? const [];
+    if (items.isNotEmpty || seriesId != null) {
+      return raw;
+    }
+    // Emby 4.10 answers an unscoped Next Up with an empty list however much
+    // history the user has, while the same query scoped to a series returns
+    // the right episode. Ask per series instead, newest play first, so the row
+    // has the contents the server would have given if the wide query worked.
+    return _nextUpPerSeries(
+      startIndex: startIndex,
+      limit: limit,
+      fields: fields,
+      enableImageTypes: enableImageTypes,
+      imageTypeLimit: imageTypeLimit,
+      empty: raw,
+    );
+  }
+
+  /// How many recently played series the per series sweep asks about, and how
+  /// many of those it has in flight at once so a small server isn't hit with
+  /// the lot in one go.
+  static const _nextUpSeriesSweepLimit = 25;
+  static const _nextUpSweepConcurrency = 5;
+
+  Future<Map<String, dynamic>> _nextUpPerSeries({
+    required int? startIndex,
+    required int? limit,
+    required String? fields,
+    required String? enableImageTypes,
+    required int? imageTypeLimit,
+    required Map<String, dynamic> empty,
+  }) async {
+    try {
+      final played = await getItems(
+        includeItemTypes: const ['Episode'],
+        filters: const ['IsPlayed'],
+        recursive: true,
+        sortBy: 'DatePlayed',
+        sortOrder: 'Descending',
+        limit: 100,
+        fields: 'SeriesId',
+      );
+
+      // A set keeps the order it was filled in, so this stays newest play
+      // first while dropping the repeats a binged series produces.
+      final seriesIds = <String>{};
+      for (final item in played['Items'] as List? ?? const []) {
+        if (item is! Map) continue;
+        final id = item['SeriesId']?.toString();
+        if (id == null || id.isEmpty) continue;
+        seriesIds.add(id);
+        if (seriesIds.length >= _nextUpSeriesSweepLimit) break;
+      }
+      if (seriesIds.isEmpty) return empty;
+
+      final ordered = seriesIds.toList();
+      final episodes = <Object?>[];
+      for (var i = 0; i < ordered.length; i += _nextUpSweepConcurrency) {
+        final batch = ordered.skip(i).take(_nextUpSweepConcurrency);
+        episodes.addAll(
+          await Future.wait(
+            batch.map(
+              (id) => _firstNextUpForSeries(
+                id,
+                fields: fields,
+                enableImageTypes: enableImageTypes,
+                imageTypeLimit: imageTypeLimit,
+              ),
+            ),
+          ),
+        );
+      }
+
+      final merged = episodes.nonNulls.toList();
+      final from = (startIndex ?? 0).clamp(0, merged.length);
+      final to = limit == null
+          ? merged.length
+          : (from + limit).clamp(from, merged.length);
+
+      return {
+        ...empty,
+        'Items': merged.sublist(from, to),
+        'TotalRecordCount': merged.length,
+      };
+    } catch (_) {
+      // The sweep is a best effort on top of an answer we already have, so
+      // anything it throws leaves that answer alone rather than failing the
+      // row outright.
+      return empty;
+    }
+  }
+
+  Future<Object?> _firstNextUpForSeries(
+    String seriesId, {
+    required String? fields,
+    required String? enableImageTypes,
+    required int? imageTypeLimit,
+  }) async {
+    final response = await _dio.get(
+      '/Shows/NextUp',
+      queryParameters: {
+        'UserId': _getUserId(),
+        'SeriesId': seriesId,
+        'Limit': 1,
+        'Fields': ?_knownFields(fields),
+        'EnableImageTypes': ?enableImageTypes,
+        'ImageTypeLimit': ?imageTypeLimit,
+      },
+    );
+    final data = response.data as Map<String, dynamic>;
+    final items = data['Items'] as List? ?? const [];
+    return items.isEmpty ? null : items.first;
   }
 
   @override
@@ -668,7 +780,9 @@ class EmbyItemsApi implements ItemsApi {
       '/Genres',
       queryParameters: {
         'ParentId': ?parentId,
-        'UserId': ?userId,
+        // Defaulted rather than left to callers. Without a user the server
+        // answers across every library, including ones this account can't see.
+        'UserId': userId ?? _getUserId(),
         'SortBy': ?sortBy,
         'SortOrder': ?sortOrder,
         'StartIndex': ?startIndex,

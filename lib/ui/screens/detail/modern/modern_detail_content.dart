@@ -40,6 +40,7 @@ import '../../../widgets/logo_view.dart';
 import '../../../widgets/marquee_text.dart';
 import '../../../widgets/media_card.dart';
 import '../../../widgets/rating_display.dart';
+import '../../../widgets/focus/can_claim_initial_focus.dart';
 import '../../../widgets/focus/context_action.dart';
 import '../../../widgets/focus/context_menu_sheet.dart';
 import '../../../widgets/focus/focusable_wrapper.dart';
@@ -52,6 +53,7 @@ import '../../../../data/repositories/seerr_repository.dart';
 import '../../../../data/repositories/tmdb_repository.dart';
 import '../../../../data/services/seerr/seerr_api_models.dart';
 import '../../../../data/services/plugin_sync_service.dart';
+import '../detail_layout_metrics.dart';
 import '../item_detail_screen.dart'
     show
         DetailActionButtons,
@@ -548,7 +550,8 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     _selectedTab = (_expandedTabs || _vm.item?.type == 'Season') ? 0 : -1;
     if (PlatformDetection.isTV) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) widget.initialFocusNode?.requestFocus();
+        if (!mounted || !canClaimInitialFocus(context)) return;
+        widget.initialFocusNode?.requestFocus();
       });
       NavigationLayout.focusDetailsPlayButtonNotifier.value = widget.initialFocusNode;
     }
@@ -571,7 +574,8 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     super.didUpdateWidget(oldWidget);
     if (widget.initialFocusNode != oldWidget.initialFocusNode && PlatformDetection.isTV) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) widget.initialFocusNode?.requestFocus();
+        if (!mounted || !canClaimInitialFocus(context)) return;
+        widget.initialFocusNode?.requestFocus();
       });
       NavigationLayout.focusDetailsPlayButtonNotifier.value = widget.initialFocusNode;
     }
@@ -3866,7 +3870,8 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     final hasUpNext = _landscape && _buildUpNext(context, item) != null;
     final showRatings = _vm.ratings.isNotEmpty ||
         item.communityRating != null ||
-        item.criticRating != null;
+        item.criticRating != null ||
+        item.personalRating != null;
 
     final desktopScale = _desktopUiScale(prefs: widget.prefs);
     final logoScaleFactor = desktopScale > 1.1 ? 0.70 : 1.0;
@@ -4851,9 +4856,11 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           OfflineAwareImage(
             imageUrl: url,
             fit: BoxFit.cover,
-            alignment:
-                landscape ? Alignment.centerRight : Alignment.topCenter,
-            fadeInDuration: const Duration(milliseconds: 250),
+            alignment: landscape ? Alignment.centerRight : Alignment.topCenter,
+            fadeInDuration: Duration.zero,
+            sourceAspectRatio: 16 / 9,
+            maxDecodeWidth: ArtworkDecode.maxSourceWidth,
+            priority: ImageFetchPriority.high,
             errorWidget: (context, url, error) => const SizedBox.shrink(),
           ),
           if (item?.type == 'Person' && _randomBackdropUrl == null)
@@ -5015,9 +5022,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     final desktopScale = _desktopUiScale(prefs: widget.prefs);
     final logoScaleFactor = desktopScale > 1.1 ? 0.70 : 1.0;
 
-    _landscape = PlatformDetection.isTV ||
-        PlatformDetection.useDesktopUi ||
-        MediaQuery.orientationOf(context) == Orientation.landscape;
+    _landscape = detailUsesLandscapeLayout(context);
 
     final tabs = _tabsFor(item, l10n);
     final isMusicAlbumOrPlaylist = item.type == 'Playlist' || item.type == 'MusicAlbum';
@@ -5131,7 +5136,8 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
 
     final showRatings = _vm.ratings.isNotEmpty ||
         item.communityRating != null ||
-        item.criticRating != null;
+        item.criticRating != null ||
+        item.personalRating != null;
 
     final selectedSource = selectedMediaSourceForItem(item, widget.selectedMediaSourceId);
 

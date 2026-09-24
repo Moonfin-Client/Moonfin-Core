@@ -5,10 +5,10 @@ description: >-
 # Vendored fork of pub.dev kindle_unpack 0.1.1. The source change is in
 # lib/src/epub.dart, moving the mimetype entry off archive 3.x's `compress`
 # bool onto archive 4.x's `compression` enum, so the package builds against the
-# app's archive 4.x. See patches/kindle_unpack-0.1.1-archive4.patch. Re-apply
-# that patch when re-vendoring a newer upstream release. The upstream test
-# suite, dev_dependencies, and analysis_options.yaml were dropped since only
-# lib/ is consumed here.
+# app's archive 4.x. Upstream 0.2.0 depends on archive ^4.0.9 and carries that
+# change itself, so this fork can be retired for a plain pub.dev dependency.
+# The upstream test suite, dev_dependencies, and analysis_options.yaml were
+# dropped since only lib/ is consumed here.
 version: 0.1.1
 repository: https://github.com/emaurel/kindle_unpack
 issue_tracker: https://github.com/emaurel/kindle_unpack/issues

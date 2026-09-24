@@ -15,6 +15,7 @@ import '../../data/services/download_notification_service.dart';
 import '../../data/services/download_service.dart';
 import '../../data/services/media_server_client_factory.dart';
 import '../../data/services/push_messaging_service.dart';
+import '../../data/services/saved_media_presence.dart';
 import '../../data/services/seerr_notification_service.dart';
 import '../../data/services/socket_handler.dart';
 import '../../data/services/storage_path_service.dart';
@@ -94,6 +95,11 @@ void setActiveServerClient(
   }
   _getIt.registerSingleton<MediaServerClient>(wrapped);
 
+  if (_getIt.isRegistered<SavedMediaPresence>()) {
+    // Listens to the download service, so it goes before the one it watches.
+    _getIt<SavedMediaPresence>().dispose();
+    _getIt.unregister<SavedMediaPresence>();
+  }
   if (_getIt.isRegistered<DownloadService>()) {
     // Detach the replaced instance's app-lifetime listeners (preferences,
     // download coordinator); its in-flight downloads keep running.
@@ -105,6 +111,13 @@ void setActiveServerClient(
     _getIt<DownloadNotificationService>(),
   );
   _getIt.registerSingleton<DownloadService>(downloadService);
+
+  // Absent on the background isolates, which never draw a nav bar.
+  if (_getIt.isRegistered<OfflineRepository>()) {
+    _getIt.registerSingleton<SavedMediaPresence>(
+      SavedMediaPresence(_getIt<OfflineRepository>(), downloadService),
+    );
+  }
 
   if (AutoDownloadService.isSupportedPlatform) {
     _replaceAutoDownloadService(

@@ -5,6 +5,7 @@ import 'package:server_core/server_core.dart';
 
 import '../models/aggregated_item.dart';
 import '../repositories/user_views_repository.dart';
+import '../utils/blocked_ratings.dart';
 import '../utils/playlist_utils.dart';
 
 class BreadcrumbEntry {
@@ -188,6 +189,7 @@ class FolderBrowseViewModel extends ChangeNotifier {
   Future<List<AggregatedItem>> _filterItemsForFolder(
     List<AggregatedItem> items,
   ) async {
+    items = withoutBlockedItems(items);
     final isPlaylistRoot = _rootCollectionType == 'playlists';
     if (!isPlaylistRoot) return items;
 

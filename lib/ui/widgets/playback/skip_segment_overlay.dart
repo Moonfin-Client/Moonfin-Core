@@ -137,6 +137,9 @@ class _SkipSegmentOverlayState extends State<SkipSegmentOverlay> {
     // TV dismisses with the back button, so this is for touch and desktop.
     final bool showDismissButton = !PlatformDetection.isTV;
 
+    final effectiveRadius = AppColorScheme.isPixel ? 0.0 : _capsuleRadius;
+    final borders = ThemeRegistry.active.borders;
+
     return Positioned(
       right: 24,
       bottom: widget.bottomInset,
@@ -169,83 +172,111 @@ class _SkipSegmentOverlayState extends State<SkipSegmentOverlay> {
               ],
               InkWell(
                 onTap: widget.onSkip,
-                borderRadius: AppRadius.circular(_capsuleRadius),
+                borderRadius: AppRadius.circular(effectiveRadius),
                 child: Container(
                   decoration: FocusTheme.focusDecoration(
                     isFocused: true,
-                    radius: _capsuleRadius,
-                    color: AppColorScheme.accent,
+                    radius: effectiveRadius,
+                    color: null,
                   ),
-                  child: adaptiveGlass(
-                    context: context,
-                    cornerRadius: _capsuleRadius,
-                    blur: 24,
-                    fallbackColor: AppColorScheme.surface.withValues(alpha: 0.55),
-                    tint: AppColorScheme.surface.withValues(alpha: 0.18),
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 10, 16, 10),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.skip_next_rounded,
-                            color: AppColorScheme.accent,
-                            size: 20,
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    fit: StackFit.passthrough,
+                    children: [
+                      adaptiveGlass(
+                        context: context,
+                        cornerRadius: effectiveRadius,
+                        blur: 24,
+                        fallbackColor: AppColorScheme.surface.withValues(
+                          alpha: 0.55,
+                        ),
+                        tint: AppColorScheme.surface.withValues(alpha: 0.18),
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(20, 10, 16, 10),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.skip_next_rounded,
+                                color: AppColorScheme.accent,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 9),
+                              Text(
+                                l10n.skipSegment(
+                                  widget.segment.type.displayName,
+                                ),
+                                style: TextStyle(
+                                  color: AppColorScheme.onSurface,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              if (widget.nextItem case final next?)
+                                AnimeMarkerBadge(
+                                  seriesId: next.seriesId,
+                                  episodeId: next.id,
+                                  scale: 0.9,
+                                  padding: const EdgeInsets.only(left: 8),
+                                ),
+                              if (showInlineTimer) ...[
+                                const SizedBox(width: 8),
+                                Text(
+                                  l10n.endsIn(timerText),
+                                  style: TextStyle(
+                                    color: AppColorScheme.onSurface.withValues(
+                                      alpha: 0.5,
+                                    ),
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    fontFeatures: const [
+                                      FontFeature.tabularFigures(),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                              if (showRing) ...[
+                                const SizedBox(width: 13),
+                                _CountdownRing(
+                                  progress: progress,
+                                  center: numberInRing
+                                      ? Text(
+                                          '$remainingSec',
+                                          style: TextStyle(
+                                            color: AppColorScheme.onSurface,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600,
+                                            fontFeatures: const [
+                                              FontFeature.tabularFigures(),
+                                            ],
+                                          ),
+                                        )
+                                      : Icon(
+                                          Icons.skip_next_rounded,
+                                          color: AppColorScheme.accent,
+                                          size: 15,
+                                        ),
+                                ),
+                              ],
+                            ],
                           ),
-                          const SizedBox(width: 9),
-                          Text(
-                            l10n.skipSegment(widget.segment.type.displayName),
-                            style: TextStyle(
-                              color: AppColorScheme.onSurface,
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          if (widget.nextItem case final next?)
-                            AnimeMarkerBadge(
-                              seriesId: next.seriesId,
-                              episodeId: next.id,
-                              scale: 0.9,
-                              padding: const EdgeInsets.only(left: 8),
-                            ),
-                          if (showInlineTimer) ...[
-                            const SizedBox(width: 8),
-                            Text(
-                              l10n.endsIn(timerText),
-                              style: TextStyle(
-                                color: AppColorScheme.onSurface.withValues(alpha: 0.5),
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                fontFeatures: const [FontFeature.tabularFigures()],
+                        ),
+                      ),
+                      Positioned.fill(
+                        child: IgnorePointer(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: AppRadius.circular(effectiveRadius),
+                              border: Border.fromBorderSide(
+                                borders.focusBorder.copyWith(
+                                  color: AppColorScheme.accent,
+                                ),
                               ),
                             ),
-                          ],
-                          if (showRing) ...[
-                            const SizedBox(width: 13),
-                            _CountdownRing(
-                              progress: progress,
-                              center: numberInRing
-                                  ? Text(
-                                      '$remainingSec',
-                                      style: TextStyle(
-                                        color: AppColorScheme.onSurface,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                        fontFeatures: const [
-                                          FontFeature.tabularFigures()
-                                        ],
-                                      ),
-                                    )
-                                  : Icon(
-                                      Icons.skip_next_rounded,
-                                      color: AppColorScheme.accent,
-                                      size: 15,
-                                    ),
-                            ),
-                          ],
-                        ],
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   ),
                 ),
               ),
@@ -296,6 +327,7 @@ class _SkipDismissButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final dismissRadius = AppColorScheme.isPixel ? 0.0 : _dismissChipSize / 2;
     return Tooltip(
       message: label,
       excludeFromSemantics: true,
@@ -304,12 +336,14 @@ class _SkipDismissButton extends StatelessWidget {
         label: label,
         child: InkWell(
           onTap: onPressed,
-          customBorder: const CircleBorder(),
+          customBorder: AppColorScheme.isPixel
+              ? const RoundedRectangleBorder()
+              : const CircleBorder(),
           child: Padding(
             padding: const EdgeInsets.all(_dismissTapPadding),
             child: adaptiveGlass(
               context: context,
-              cornerRadius: _dismissChipSize / 2,
+              cornerRadius: dismissRadius,
               blur: 24,
               fallbackColor: AppColorScheme.surface.withValues(alpha: 0.55),
               tint: AppColorScheme.surface.withValues(alpha: 0.18),

@@ -337,9 +337,10 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             state = .error
             lastErrorMessage = message
             if !didEmitLoadError {
-                // Mid-play failures rarely name a codec, so classify at the
-                // container level and let the Dart side retry via server transcode.
-                emitError(kind: "unsupported_container", recoverable: true, message: message)
+                let info = Self.sharedEngine()?.errorInfo
+                let kind = Self.classifySessionError(
+                    engineKind: info?.kind.rawValue, underlyingDomain: info?.underlyingDomain)
+                emitError(kind: kind, recoverable: true, message: message)
             }
         }
         updateStallCheckTimer()
@@ -607,9 +608,41 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         var audioStreamIndex: Int32?
         var audioBridgeLossless = false
         var dolbyVisionBaseLayerOnly = false
+
+        /// Sidecars the host wants listed. They ride the load rather than
+        /// arriving after it, because the engine clears its external registry
+        /// when a load begins and only re-seats what the load itself declared.
+        var externalSubtitles: [ExternalSubtitleTrack] = []
+    }
+
+    /// Reads the sidecars out of a `setSource` payload. Anything without a
+    /// usable url is dropped rather than sent on as a track that can't open.
+    nonisolated static func externalSubtitleTracks(from raw: Any?) -> [ExternalSubtitleTrack] {
+        guard let entries = raw as? [[String: Any]] else { return [] }
+        return entries.compactMap { entry in
+            func text(_ key: String) -> String? {
+                guard let value = entry[key] as? String, !value.isEmpty else { return nil }
+                return value
+            }
+            guard let urlString = text("url"),
+                let url = urlString.hasPrefix("/")
+                    ? URL(fileURLWithPath: urlString) : URL(string: urlString)
+            else { return nil }
+            return ExternalSubtitleTrack(
+                url: url,
+                name: text("title"),
+                language: text("language"),
+                isForced: (entry["isForced"] as? Bool) ?? false,
+                isDefault: (entry["isDefault"] as? Bool) ?? false,
+                formatHint: text("codec"))
+        }
     }
 
     private var sourceConfiguration = SourceConfiguration()
+
+    /// Urls handed to the engine with the load. A later add of the same file
+    /// would list it a second time and shift every ordinal after it.
+    private var declaredSubtitleURLs: Set<String> = []
 
     func configureSource(_ configuration: SourceConfiguration) {
         sourceConfiguration = configuration
@@ -657,6 +690,9 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         resetStallTracking()
         resetAssState()
         subtitleOverlay.clear()
+        externalSubIDsByURL.removeAll()
+        declaredSubtitleURLs = Set(
+            sourceConfiguration.externalSubtitles.map { $0.url.absoluteString })
         state = .opening
         loadGeneration &+= 1
         let generation = loadGeneration
@@ -687,6 +723,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             preserveASSMarkup: preserveASS,
             probesize: isLiveSession ? Self.liveProbeBytes : nil,
             maxAnalyzeDuration: isLiveSession ? Self.liveProbeMicroseconds : nil,
+            externalSubtitles: sourceConfiguration.externalSubtitles,
             autoplay: sourceConfiguration.autoPlay
         )
 
@@ -716,11 +753,13 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             // A load that outlived its watchdog or was superseded finished
             // against an engine that has already been stopped or reloaded.
             guard loadGeneration == generation, !didEmitLoadError else { return }
+            seatDeclaredSubtitles(engine)
             if forceSubtitlesDisabledOnStart {
                 engine.clearSubtitle()
             }
         } catch {
             guard loadGeneration == generation, !didEmitLoadError else { return }
+            declaredSubtitleURLs.removeAll()
             didEmitLoadError = true
             state = .error
             let (kind, message) = Self.classifyLoadError(error)
@@ -760,6 +799,25 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             return ("unsupported_video", message)
         }
         return ("unsupported_container", message)
+    }
+
+    /// Engine error kinds where the connection failed, not the stream.
+    private nonisolated static let transportErrorKinds: Set<String> = [
+        PlaybackErrorKind.vodSourceFailed.rawValue,
+        PlaybackErrorKind.sourceRateLimited.rawValue,
+        PlaybackErrorKind.sourceCertificateRejected.rawValue,
+        PlaybackErrorKind.liveSourceUnavailable.rawValue,
+    ]
+
+    /// A mid-play failure only carries a message, so the engine's `errorInfo`
+    /// is the only way to tell a dropped connection from a stream it can't
+    /// play. Only the second is worth a server transcode.
+    nonisolated static func classifySessionError(
+        engineKind: String?, underlyingDomain: String?
+    ) -> String {
+        if underlyingDomain == NSURLErrorDomain { return "network" }
+        if let engineKind, transportErrorKinds.contains(engineKind) { return "network" }
+        return "unsupported_container"
     }
 
     private func emitError(kind: String, recoverable: Bool, message: String) {
@@ -1006,12 +1064,39 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         resetAssState()
     }
 
+    /// Learns the ids the engine gave the declared sidecars. Reading them back
+    /// beats deriving them, because the id space is the engine's to assign.
+    private func seatDeclaredSubtitles(_ engine: AetherEngine) {
+        let declared = sourceConfiguration.externalSubtitles
+        guard !declared.isEmpty else { return }
+        let seated = engine.subtitleTracks.filter { $0.isExternal }
+        guard seated.count == declared.count else {
+            hostLog(
+                "declared subtitles not seated (declared=\(declared.count) "
+                    + "seated=\(seated.count))")
+            declaredSubtitleURLs.removeAll()
+            // With none seated the runtime path is the only way back to a
+            // subtitle. A partial listing can't be paired to its urls, and adding
+            // everything again would list the seated ones twice.
+            if seated.isEmpty {
+                for track in declared {
+                    addSubtitle(url: track.url, title: track.name, language: track.language)
+                }
+            }
+            return
+        }
+        for (track, info) in zip(declared, seated) {
+            externalSubIDsByURL[track.url.absoluteString] = info.id
+        }
+    }
+
     func addSubtitle(url: URL) {
         addSubtitle(url: url, title: nil, language: nil)
     }
 
     func addSubtitle(url: URL, title: String?, language: String?) {
         guard let engine = Self.sharedEngine() else { return }
+        guard !declaredSubtitleURLs.contains(url.absoluteString) else { return }
         let track = engine.addExternalSubtitleTrack(
             ExternalSubtitleTrack(url: url, name: title, language: language))
         externalSubIDsByURL[url.absoluteString] = track.id

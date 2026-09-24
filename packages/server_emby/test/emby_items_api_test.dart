@@ -183,4 +183,95 @@ void main() {
     expect(request()?.path, '/Collections/boxset-1/Items');
     expect(request()?.queryParameters['Ids'], 'a,b');
   });
+
+  // Verified against Emby 4.10.0.40.
+  test('empty unscoped next up falls back to a sweep per played series',
+      () async {
+    final requests = <RequestOptions>[];
+    final dio = Dio()
+      ..interceptors.add(
+        _FakeServer((options, handler) {
+          requests.add(options);
+          Object? body;
+          if (options.path == '/Shows/NextUp') {
+            final seriesId = options.queryParameters['SeriesId'];
+            body = seriesId == null
+                ? {'Items': <dynamic>[], 'TotalRecordCount': 0}
+                : {
+                    'Items': [
+                      {'Id': 'ep-$seriesId', 'SeriesId': seriesId},
+                    ],
+                    'TotalRecordCount': 1,
+                  };
+          } else {
+            body = {
+              'Items': [
+                {'Id': 'e1', 'SeriesId': 's1'},
+                {'Id': 'e2', 'SeriesId': 's2'},
+                {'Id': 'e3', 'SeriesId': 's1'},
+              ],
+              'TotalRecordCount': 3,
+            };
+          }
+          handler.resolve(Response(requestOptions: options, data: body));
+        }),
+      );
+
+    final result = await EmbyItemsApi(dio, () => 'user-1').getNextUp(limit: 15);
+
+    // The unscoped attempt, the played-episode lookup, then one call per
+    // distinct series in the order they were last played.
+    expect(requests.map((r) => r.path), [
+      '/Shows/NextUp',
+      '/Users/user-1/Items',
+      '/Shows/NextUp',
+      '/Shows/NextUp',
+    ]);
+    expect(requests[2].queryParameters['SeriesId'], 's1');
+    expect(requests[3].queryParameters['SeriesId'], 's2');
+
+    final items = result['Items'] as List;
+    expect(items.map((i) => (i as Map)['Id']), ['ep-s1', 'ep-s2']);
+    expect(result['TotalRecordCount'], 2);
+  });
+
+  test('a scoped next up is left alone when it comes back empty', () async {
+    final (dio, request) = _recordingDio(
+      data: const {'Items': <dynamic>[], 'TotalRecordCount': 0},
+    );
+
+    final result = await EmbyItemsApi(
+      dio,
+      () => 'user-1',
+    ).getNextUp(seriesId: 'series-1', limit: 15);
+
+    expect(request()?.path, '/Shows/NextUp');
+    expect((result['Items'] as List), isEmpty);
+  });
+
+  test('a non empty unscoped next up makes no extra calls', () async {
+    final requests = <RequestOptions>[];
+    final dio = Dio()
+      ..interceptors.add(
+        _FakeServer((options, handler) {
+          requests.add(options);
+          handler.resolve(
+            Response(
+              requestOptions: options,
+              data: {
+                'Items': [
+                  {'Id': 'ep-1'},
+                ],
+                'TotalRecordCount': 1,
+              },
+            ),
+          );
+        }),
+      );
+
+    await EmbyItemsApi(dio, () => 'user-1').getNextUp(limit: 15);
+
+    expect(requests, hasLength(1));
+    expect(requests.single.path, '/Shows/NextUp');
+  });
 }

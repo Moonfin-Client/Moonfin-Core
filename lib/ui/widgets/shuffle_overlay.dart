@@ -940,20 +940,23 @@ class _ShuffleOverlayState extends State<_ShuffleOverlay> {
       builder: (context, constraints) {
         const posterAspectRatio = 2 / 3;
         final centerScale = isTv ? 1.34 : 1.18;
-        final cardExpansionScale = cardFocusExpansion == true ? 1.05 : 1.0;
-        final selectedScale = centerScale * cardExpansionScale;
         final textBlockHeight = isTv ? 8.0 : 6.0;
 
-        final spacing = isTv ? 18.0 : 14.0;
+        final baseSpacing = isTv ? 18.0 : 14.0;
         final minCardWidth = isTv ? 130.0 : 112.0;
         final maxCardWidth = isTv ? 250.0 : 220.0;
 
+        // The center card grows both ways, so each neighbouring gap absorbs
+        // half of it, plus a little more so the two never quite touch.
+        final expansionFactor = ((centerScale - 1) / 2) + 0.05;
         final cardsAvailableWidth = math.max(0, constraints.maxWidth - 4);
-        final totalSpacing = spacing * (_items.length - 1);
-        final widthUnits = (_items.length - 1) + centerScale;
+        final count = _items.length;
+        final gapCount = math.max(0, count - 1);
+        final totalBaseSpacing = baseSpacing * gapCount;
+        final widthUnits = count + (gapCount * expansionFactor);
 
         final widthBased = widthUnits > 0
-            ? ((cardsAvailableWidth - totalSpacing) / widthUnits).clamp(
+            ? ((cardsAvailableWidth - totalBaseSpacing) / widthUnits).clamp(
                 minCardWidth,
                 maxCardWidth,
               )
@@ -962,13 +965,15 @@ class _ShuffleOverlayState extends State<_ShuffleOverlay> {
         final maxStripHeight = constraints.maxHeight - (isTv ? 64 : 26);
         final maxImageHeight = math.max(
           0,
-          (maxStripHeight - textBlockHeight) / selectedScale,
+          (maxStripHeight - textBlockHeight) / centerScale,
         );
         final heightBased = maxImageHeight * posterAspectRatio;
         final cardWidth = math
             .min(widthBased.toDouble(), heightBased)
             .clamp(80.0, maxCardWidth)
             .toDouble();
+
+        final spacing = baseSpacing + (cardWidth * expansionFactor);
 
         return Column(
           children: [
@@ -1141,7 +1146,7 @@ class _ShuffleOverlayState extends State<_ShuffleOverlay> {
         playedPercentage: item.playedPercentage,
         watchedBehavior: watchedBehavior,
         focusColor: focusColor,
-        cardFocusExpansion: cardFocusExpansion,
+        cardFocusExpansion: false,
         focusNode: _cardFocusNodes[index],
         autofocus: index == _selectedIndex,
         onFocus: () => _setSelectedAt(index),

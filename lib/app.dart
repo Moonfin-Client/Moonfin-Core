@@ -55,6 +55,7 @@ import 'util/focus/input_mode_tracker.dart';
 import 'util/idiom/app_ui_idiom.dart';
 import 'util/idiom/glass_capability.dart';
 import 'util/platform_detection.dart';
+import 'util/tv_ui_scale.dart';
 import 'ui/widgets/overlay_sheet.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'util/focus/key_event_utils.dart';
@@ -353,13 +354,14 @@ class _MoonfinAppState extends State<MoonfinApp> {
                   ],
                 );
 
-                final mainChild = PlatformDetection.isAppleTV
-                    ? _TvUiScale(child: overlay)
-                    : overlay;
-
                 return ListenableBuilder(
                   listenable: _prefs,
                   builder: (context, _) {
+                    // Read here rather than hoisted above the builder, so a
+                    // change to the interface layout override is picked up.
+                    final mainChild = PlatformDetection.isTV
+                        ? TvUiScale(child: overlay)
+                        : overlay;
                     final scale = _prefs
                         .get(UserPreferences.desktopUiScale)
                         .scaleFactor;
@@ -1193,49 +1195,5 @@ class _ConnectivityListenerState extends ConsumerState<_ConnectivityListener>
     _wasOnline = isOnline;
 
     return widget.child;
-  }
-}
-
-class _TvUiScale extends StatelessWidget {
-  const _TvUiScale({required this.child});
-
-  final Widget child;
-
-  static const double _targetScale = 1.45;
-  static const double _designWidth = 1920 / _targetScale;
-
-  @override
-  Widget build(BuildContext context) {
-    final mq = MediaQuery.of(context);
-    final realSize = mq.size;
-    if (realSize.width <= 0) {
-      return child;
-    }
-    final scale = realSize.width / _designWidth;
-    final logicalSize = Size(realSize.width / scale, realSize.height / scale);
-    EdgeInsets scaleInsets(EdgeInsets insets, {bool zeroTop = false}) =>
-        EdgeInsets.fromLTRB(
-          insets.left / scale,
-          zeroTop ? 0 : insets.top / scale,
-          insets.right / scale,
-          insets.bottom / scale,
-        );
-    return FittedBox(
-      fit: BoxFit.fill,
-      child: SizedBox(
-        width: logicalSize.width,
-        height: logicalSize.height,
-        child: MediaQuery(
-          data: mq.copyWith(
-            size: logicalSize,
-            devicePixelRatio: mq.devicePixelRatio * scale,
-            padding: scaleInsets(mq.padding, zeroTop: true),
-            viewPadding: scaleInsets(mq.viewPadding, zeroTop: true),
-            viewInsets: scaleInsets(mq.viewInsets),
-          ),
-          child: child,
-        ),
-      ),
-    );
   }
 }

@@ -1,12 +1,13 @@
 import 'dart:async';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../preference/preference_constants.dart';
 import '../../preference/user_preferences.dart';
+import '../../util/artwork_timing.dart';
 import '../../util/clock_format.dart';
+import '../widgets/offline_aware_image.dart';
 import '../widgets/playback/loading_animation_widget.dart';
 import 'bouncing_box.dart';
 import 'screensaver_content_service.dart';
@@ -86,9 +87,13 @@ class _ScreensaverViewState extends State<ScreensaverView> {
 
   void _precacheNext() {
     if (_index + 1 < _items.length) {
-      precacheImage(
-        CachedNetworkImageProvider(_items[_index + 1].backdropUrl),
+      ArtworkDecode.precache(
         context,
+        _items[_index + 1].backdropUrl,
+        layoutWidth: MediaQuery.sizeOf(context).width,
+        layoutHeight: MediaQuery.sizeOf(context).height,
+        sourceAspectRatio: 16 / 9,
+        scale: ScreensaverSlide.kenBurnsScale,
       );
     }
   }
@@ -116,7 +121,7 @@ class _ScreensaverViewState extends State<ScreensaverView> {
           if (showSlides)
             AnimatedSwitcher(
               duration: const Duration(seconds: 1),
-              child: _SlideView(
+              child: ScreensaverSlide(
                 key: ValueKey(_index),
                 item: _items[_index],
               ),
@@ -239,18 +244,37 @@ extension ScreensaverSizeX on ScreensaverSize {
 }
 
 
-class _SlideView extends StatefulWidget {
-  const _SlideView({super.key, required this.item});
+/// One slide of the library screensaver. Public only so a test can drive
+/// its failure path.
+@visibleForTesting
+class ScreensaverSlide extends StatefulWidget {
+  /// Where the Ken Burns zoom ends.
+  static const kenBurnsScale = 1.1;
+
+  const ScreensaverSlide({super.key, required this.item});
 
   final ScreensaverItem item;
 
   @override
-  State<_SlideView> createState() => _SlideViewState();
+  State<ScreensaverSlide> createState() => _ScreensaverSlideState();
 }
 
-class _SlideViewState extends State<_SlideView>
+class _ScreensaverSlideState extends State<ScreensaverSlide>
     with SingleTickerProviderStateMixin {
   late final AnimationController _kenBurns;
+  bool _reportedFailure = false;
+
+  /// The error builder runs during build and the log notifies its listeners
+  /// at once, so the report waits for the frame to end rather than marking
+  /// another screen dirty mid build. Once per slide, since the builder runs
+  /// again on every rebuild of the failed image.
+  void _reportFailure(String url, Object error) {
+    if (_reportedFailure) return;
+    _reportedFailure = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ArtworkTimings.screensaverSlideFailed(url, error);
+    });
+  }
 
   @override
   void initState() {
@@ -273,13 +297,23 @@ class _SlideViewState extends State<_SlideView>
       fit: StackFit.expand,
       children: [
         ScaleTransition(
-          scale: Tween<double>(begin: 1.0, end: 1.1).animate(_kenBurns),
-          child: CachedNetworkImage(
+          scale: Tween<double>(
+            begin: 1.0,
+            end: ScreensaverSlide.kenBurnsScale,
+          ).animate(_kenBurns),
+          child: OfflineAwareImage(
             imageUrl: widget.item.backdropUrl,
             fit: BoxFit.cover,
-            fadeInDuration: const Duration(milliseconds: 500),
+            fadeInDuration: Duration.zero,
+            // The zoom ends at kenBurnsScale, so decode for that size or the
+            // last seconds of every slide paint an upscaled frame.
+            sourceAspectRatio: 16 / 9,
+            decodeScale: ScreensaverSlide.kenBurnsScale,
             placeholder: (_, _) => const ColoredBox(color: Colors.black),
-            errorWidget: (_, _, _) => const ColoredBox(color: Colors.black),
+            errorWidget: (_, url, error) {
+              _reportFailure(url, error);
+              return const ColoredBox(color: Colors.black);
+            },
           ),
         ),
         const DecoratedBox(
@@ -295,7 +329,7 @@ class _SlideViewState extends State<_SlideView>
           child: Padding(
             padding: const EdgeInsets.all(56),
             child: widget.item.logoUrl != null
-                ? CachedNetworkImage(
+                ? OfflineAwareImage(
                     imageUrl: widget.item.logoUrl!,
                     width: 400,
                     height: 120,

@@ -201,3 +201,99 @@ final class StalledStateTests: XCTestCase {
         XCTAssertEqual(state(isPlaying: false, isPaused: false), .buffering(0.4))
     }
 }
+
+/// A mid-play failure only goes to a server transcode when the stream is the
+/// problem. A dead connection would fail the transcode the same way.
+final class SessionErrorClassificationTests: XCTestCase {
+
+    private func kind(_ engineKind: String?, domain: String? = nil) -> String {
+        AetherPlayerWrapper.classifySessionError(engineKind: engineKind, underlyingDomain: domain)
+    }
+
+    func testADeadVODSourceIsANetworkFailure() {
+        XCTAssertEqual(kind("vodSourceFailed"), "network")
+    }
+
+    func testRateLimitingIsANetworkFailure() {
+        XCTAssertEqual(kind("sourceRateLimited"), "network")
+    }
+
+    func testANativeItemFailingOnAURLErrorIsANetworkFailure() {
+        XCTAssertEqual(kind("nativeItemFailed", domain: NSURLErrorDomain), "network")
+    }
+
+    func testANativeItemFailingInAVFoundationStillTranscodes() {
+        XCTAssertEqual(kind("nativeItemFailed", domain: "AVFoundationErrorDomain"), "unsupported_container")
+    }
+
+    func testARefusedSourceStillTranscodes() {
+        XCTAssertEqual(kind("sourceRefused"), "unsupported_container")
+    }
+
+    func testAnUnclassifiedFailureStillTranscodes() {
+        XCTAssertEqual(kind(nil), "unsupported_container")
+    }
+}
+
+/// Reading the sidecars out of a setSource payload. They are declared with the
+/// load because the engine clears its external registry when a load begins, so
+/// a file handed over afterwards is dropped.
+final class ExternalSubtitleTrackParsingTests: XCTestCase {
+
+    func testBareFilesystemPathBecomesAFileURL() {
+        let tracks = AetherPlayerWrapper.externalSubtitleTracks(from: [
+            ["url": "/Downloads/Movie_sub_3.ass", "codec": "ass", "language": "eng"]
+        ])
+        XCTAssertEqual(tracks.count, 1)
+        XCTAssertEqual(tracks.first?.url.isFileURL, true)
+        XCTAssertEqual(tracks.first?.url.path, "/Downloads/Movie_sub_3.ass")
+        XCTAssertEqual(tracks.first?.language, "eng")
+        XCTAssertEqual(tracks.first?.formatHint, "ass")
+    }
+
+    func testRemoteUrlIsKeptAsIs() {
+        let tracks = AetherPlayerWrapper.externalSubtitleTracks(from: [
+            ["url": "https://host.test/Stream.srt", "codec": "srt"]
+        ])
+        XCTAssertEqual(tracks.first?.url.absoluteString, "https://host.test/Stream.srt")
+    }
+
+    func testOrderIsPreserved() {
+        let tracks = AetherPlayerWrapper.externalSubtitleTracks(from: [
+            ["url": "/a_sub_3.ass"], ["url": "/b_sub_4.ass"], ["url": "/c_sub_5.ass"],
+        ])
+        XCTAssertEqual(tracks.map { $0.url.lastPathComponent },
+                       ["a_sub_3.ass", "b_sub_4.ass", "c_sub_5.ass"])
+    }
+
+    func testEntriesWithNoUsableUrlAreDropped() {
+        let tracks = AetherPlayerWrapper.externalSubtitleTracks(from: [
+            ["url": ""], ["codec": "srt"], ["url": "/good_sub_3.srt"],
+        ])
+        XCTAssertEqual(tracks.count, 1)
+        XCTAssertEqual(tracks.first?.url.lastPathComponent, "good_sub_3.srt")
+    }
+
+    func testEmptyStringsDoNotBecomeTrackMetadata() {
+        let tracks = AetherPlayerWrapper.externalSubtitleTracks(from: [
+            ["url": "/x_sub_3.srt", "title": "", "language": "", "codec": ""]
+        ])
+        XCTAssertNil(tracks.first?.name)
+        XCTAssertNil(tracks.first?.language)
+        XCTAssertNil(tracks.first?.formatHint)
+    }
+
+    func testFlagsRideAlong() {
+        let tracks = AetherPlayerWrapper.externalSubtitleTracks(from: [
+            ["url": "/x_sub_3.srt", "isForced": true, "isDefault": true]
+        ])
+        XCTAssertEqual(tracks.first?.isForced, true)
+        XCTAssertEqual(tracks.first?.isDefault, true)
+    }
+
+    func testAMissingOrMalformedPayloadYieldsNothing() {
+        XCTAssertTrue(AetherPlayerWrapper.externalSubtitleTracks(from: nil).isEmpty)
+        XCTAssertTrue(AetherPlayerWrapper.externalSubtitleTracks(from: "nonsense").isEmpty)
+        XCTAssertTrue(AetherPlayerWrapper.externalSubtitleTracks(from: []).isEmpty)
+    }
+}

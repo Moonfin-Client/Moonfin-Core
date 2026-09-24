@@ -68,9 +68,17 @@ class AutoBitrateService {
         responseType: ResponseType.bytes,
         receiveTimeout: _requestTimeout,
         connectTimeout: _requestTimeout,
-        // Both server types accept this one, so the measurement does not need
-        // to know which it is talking to.
-        headers: {'X-Emby-Token': client.accessToken ?? ''},
+        // Newer Jellyfin rejects a bare X-Emby-Token, so send the same
+        // Authorization header the server clients use.
+        headers: {
+          'Authorization': buildServerAuthorizationHeader(
+            scheme: client.serverType == ServerType.emby
+                ? 'Emby'
+                : 'MediaBrowser',
+            deviceInfo: client.deviceInfo,
+            accessToken: client.accessToken,
+          ),
+        },
       ),
     );
 

@@ -19,6 +19,11 @@ class EpgProgramCell extends StatelessWidget {
   /// Below this content width the metadata line is dropped entirely.
   static const double _minMetaWidth = 96;
 
+  /// Icons set in a line of text take this share of that line's face, so they
+  /// keep their weight beside it at any interface size. The genre dot is not
+  /// one of these: it is decoration rather than a mark read with the title.
+  static const double _inlineIconShare = 0.8;
+
   final String title;
 
   final EpgGenre genre;
@@ -120,13 +125,16 @@ class EpgProgramCell extends StatelessWidget {
       );
     }
 
-    // TV guide titles meet the 10-foot UI body-text floor while retaining a
-    // regular weight for the existing focus and on-now treatments.
+    // Titles clear the ten foot body-text floor, which is about 24 painted
+    // pixels on a 1080p panel, while keeping a regular weight for the existing
+    // focus and on-now treatments. The floor is a painted size, so it has to
+    // be read against the canvas a television lays out on rather than against
+    // whatever size a given panel reports.
     final titleStyle =
         (textTheme.bodyMedium ??
-                const TextStyle(fontSize: AppTypography.fontSizeSm))
+                const TextStyle(fontSize: AppTypography.fontSizeLg))
             .copyWith(
-              fontSize: AppTypography.fontSizeSm,
+              fontSize: AppTypography.fontSizeLg,
               fontWeight: FontWeight.w400,
               color: placeholderLabel != null
                   ? muted
@@ -135,8 +143,8 @@ class EpgProgramCell extends StatelessWidget {
 
     final metaStyle =
         (textTheme.labelMedium ??
-                const TextStyle(fontSize: AppTypography.fontSizeXs))
-            .copyWith(fontSize: AppTypography.fontSizeXs, color: muted);
+                const TextStyle(fontSize: AppTypography.fontSizeSm))
+            .copyWith(fontSize: AppTypography.fontSizeSm, color: muted);
 
     final markerStyle = titleStyle.copyWith(
       fontWeight: FontWeight.w700,
@@ -182,6 +190,13 @@ class EpgProgramCell extends StatelessWidget {
                     );
 
               final scaler = MediaQuery.textScalerOf(context);
+              // The continuation arrow and the recording dot both sit on the
+              // title line, so both are sized from it.
+              final inlineIconSize =
+                  scaler.scale(
+                    titleStyle.fontSize ?? AppTypography.fontSizeLg,
+                  ) *
+                  _inlineIconShare;
               final titleLine = _lineHeight(titleStyle, scaler);
               final metaLine = _lineHeight(metaStyle, scaler);
               final innerWidth = cell.maxWidth.isFinite
@@ -221,7 +236,7 @@ class EpgProgramCell extends StatelessWidget {
                       : MainAxisAlignment.start,
                   children: [
                     showMarker
-                        ? _markerRow(titleStyle, markerStyle)
+                        ? _markerRow(titleStyle, markerStyle, inlineIconSize)
                         : Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -253,7 +268,7 @@ class EpgProgramCell extends StatelessWidget {
                                 const SizedBox(width: 6),
                                 Padding(
                                   padding: const EdgeInsets.only(top: 2),
-                                  child: _timerDot(),
+                                  child: _timerDot(inlineIconSize),
                                 ),
                               ],
                             ],
@@ -301,15 +316,20 @@ class EpgProgramCell extends StatelessWidget {
     decoration: BoxDecoration(color: genre.color, shape: BoxShape.circle),
   );
 
-  Widget _timerDot() =>
-      const Icon(Icons.fiber_manual_record, size: 9, color: Color(0xFFE0685C));
+  Widget _timerDot(double size) => Icon(
+    Icons.fiber_manual_record,
+    size: size,
+    color: const Color(0xFFE0685C),
+  );
 
   /// Width-priority title row for a program that started before the window:
   /// every slot is measured and allotted in order, so the continuation marker
   /// is served before the title and can't be squeezed out or overflow the row.
-  Widget _markerRow(TextStyle titleStyle, TextStyle markerStyle) {
-    const markerWidth = 16.0;
-
+  Widget _markerRow(
+    TextStyle titleStyle,
+    TextStyle markerStyle,
+    double inlineIconSize,
+  ) {
     return LayoutBuilder(
       builder: (context, constraints) {
         var remaining = constraints.maxWidth.isFinite
@@ -322,9 +342,9 @@ class EpgProgramCell extends StatelessWidget {
         }
 
         final dot = apple ? take(12) : 0.0;
-        final marker = take(markerWidth);
+        final marker = take(inlineIconSize);
         final gap = take(4);
-        final timer = hasTimer ? take(15) : 0.0;
+        final timer = hasTimer ? take(inlineIconSize) : 0.0;
         final titleWidth = remaining.isFinite ? remaining : double.infinity;
 
         return Row(
@@ -338,7 +358,7 @@ class EpgProgramCell extends StatelessWidget {
               width: marker,
               child: Icon(
                 Icons.keyboard_double_arrow_left_rounded,
-                size: 15,
+                size: marker,
                 color: markerStyle.color,
               ),
             ),
@@ -361,10 +381,7 @@ class EpgProgramCell extends StatelessWidget {
             if (hasTimer)
               SizedBox(
                 width: timer,
-                child: Align(
-                  alignment: Alignment.centerRight,
-                  child: _timerDot(),
-                ),
+                child: _timerDot(timer),
               ),
           ],
         );

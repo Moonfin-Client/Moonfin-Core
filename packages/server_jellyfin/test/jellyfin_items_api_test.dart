@@ -173,4 +173,47 @@ void main() {
     expect(request?.path, '/Collections/boxset-1/Items');
     expect(request?.queryParameters['Ids'], 'a,b');
   });
+
+  test('getLatestItems requests /Users/\$userId/Items/Latest when userId is present', () async {
+    RequestOptions? request;
+    final dio = Dio()
+      ..interceptors.add(
+        _FakeServer((options, handler) {
+          request = options;
+          handler.resolve(
+            Response(requestOptions: options, data: <dynamic>[]),
+          );
+        }),
+      );
+
+    await JellyfinItemsApi(
+      dio,
+      () => 'user-1',
+    ).getLatestItems(includeItemTypes: ['Movie']);
+
+    expect(request?.method, 'GET');
+    expect(request?.path, '/Users/user-1/Items/Latest');
+    expect(request?.queryParameters['IncludeItemTypes'], 'Movie');
+  });
+
+  test('getLatestItems falls back to /Items/Latest when userId is empty', () async {
+    RequestOptions? request;
+    final dio = Dio()
+      ..interceptors.add(
+        _FakeServer((options, handler) {
+          request = options;
+          handler.resolve(
+            Response(requestOptions: options, data: <dynamic>[]),
+          );
+        }),
+      );
+
+    await JellyfinItemsApi(
+      dio,
+      () => '',
+    ).getLatestItems(includeItemTypes: ['Movie']);
+
+    expect(request?.method, 'GET');
+    expect(request?.path, '/Items/Latest');
+  });
 }

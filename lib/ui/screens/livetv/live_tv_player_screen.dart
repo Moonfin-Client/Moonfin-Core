@@ -11,6 +11,7 @@ import 'package:server_core/server_core.dart';
 import 'package:screen_brightness_platform_interface/screen_brightness_platform_interface.dart';
 import 'package:volume_controller/volume_controller.dart';
 
+import '../../../data/services/log_service.dart';
 import '../../../data/utils/video_range_label.dart';
 import '../../../playback/subtitle_style.dart';
 import '../../../data/models/aggregated_item.dart';
@@ -70,6 +71,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   final _client = GetIt.instance<MediaServerClient>();
   final _prefs = GetIt.instance<UserPreferences>();
   final _screensaverController = GetIt.instance<ScreensaverController>();
+  SubtitleStyle? _lastSubtitleStyle;
 
   MediaKitPlayerBackend? get _activeMediaKitBackend {
     final backend = _manager.backend;
@@ -92,6 +94,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   bool _isStopping = false;
   bool _isSwitching = false;
   bool _isGuidePickerOpen = false;
+  final _guideBackController = LiveTvGuideBackController();
   bool _isCarouselOpen = false;
   int _carouselSelectionRevision = 0;
 
@@ -107,6 +110,9 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   GuideProgram? _currentProgram;
   Timer? _programRefreshTimer;
   StreamSubscription<PlayerBackend>? _backendSub;
+
+  /// Guards the focus reclaim below against fighting another widget forever.
+  bool _reclaimingFocus = false;
   StreamSubscription<bool>? _screensaverPlayingSub;
 
   // Brightness and volume swipe gesture state (mobile/tablet). Left half of the
@@ -147,6 +153,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   final _overlayFocus = FocusNode();
   final _tvPlayPauseFocus = FocusNode(debugLabel: 'LiveTvPlayPause');
   final _tvChannelsFocus = FocusNode(debugLabel: 'LiveTvChannels');
+  final _tvGuideFocus = FocusNode(debugLabel: 'LiveTvGuide');
   final _tvAudioFocus = FocusNode(debugLabel: 'LiveTvAudio');
   final _tvSubtitleFocus = FocusNode(debugLabel: 'LiveTvSubtitle');
   final _tvBitrateFocus = FocusNode(debugLabel: 'LiveTvBitrate');
@@ -167,14 +174,18 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     _currentIndex = widget.startIndex;
     _applyPlayerDisplayMode();
     _applySubtitleStyle();
+    _prefs.addListener(_applySubtitleStyle);
     _backendSub = _manager.backendChangedStream.listen((backend) {
       if (!mounted) return;
+      _applySubtitleStyle(force: true);
       _listenForPlayerTrackChanges();
       setState(() {});
     });
     _listenForPlayerTrackChanges();
+    FocusManager.instance.addListener(_onGlobalFocusChanged);
     _tvPlayPauseFocus.addListener(_onControlFocusChanged);
     _tvChannelsFocus.addListener(_onControlFocusChanged);
+    _tvGuideFocus.addListener(_onControlFocusChanged);
     _tvAudioFocus.addListener(_onControlFocusChanged);
     _tvSubtitleFocus.addListener(_onControlFocusChanged);
     _tvBitrateFocus.addListener(_onControlFocusChanged);
@@ -207,6 +218,8 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     _hideTimer?.cancel();
     _programRefreshTimer?.cancel();
     _backendSub?.cancel();
+    _prefs.removeListener(_applySubtitleStyle);
+    FocusManager.instance.removeListener(_onGlobalFocusChanged);
     _tracksChangedSub?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     _volumeOverlayTimer?.cancel();
@@ -235,6 +248,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     }
     _tvPlayPauseFocus.removeListener(_onControlFocusChanged);
     _tvChannelsFocus.removeListener(_onControlFocusChanged);
+    _tvGuideFocus.removeListener(_onControlFocusChanged);
     _tvAudioFocus.removeListener(_onControlFocusChanged);
     _tvSubtitleFocus.removeListener(_onControlFocusChanged);
     _tvBitrateFocus.removeListener(_onControlFocusChanged);
@@ -242,6 +256,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     _overlayFocus.dispose();
     _tvPlayPauseFocus.dispose();
     _tvChannelsFocus.dispose();
+    _tvGuideFocus.dispose();
     _tvAudioFocus.dispose();
     _tvSubtitleFocus.dispose();
     _tvBitrateFocus.dispose();
@@ -671,9 +686,55 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
       }
       return false;
     }
+    _applySubtitleStyle(force: true);
     unawaited(_fetchCurrentProgram());
     _warmChannelCarousel();
     return true;
+  }
+
+  /// Takes focus back when something off-screen steals it.
+  ///
+  /// While this player is the route on top, every remote key belongs to it.
+  /// A screen underneath that defers a focus request to a post-frame callback
+  /// can land it after the player opened -- the route below is still mounted,
+  /// so its own `mounted` check passes -- and from then on the remote appears
+  /// dead: keys go to a widget nobody can see and the overlay never opens.
+  /// The screens that did this are fixed, but this is the cheap backstop that
+  /// makes the player robust against any other one, and the symptom is bad
+  /// enough to be worth belt and braces.
+  void _onGlobalFocusChanged() {
+    if (!mounted || _isStopping || _reclaimingFocus) return;
+    final route = ModalRoute.of(context);
+    // Not our turn: a dialog or another screen is legitimately on top.
+    if (route != null && !route.isCurrent) return;
+    final focused = FocusManager.instance.primaryFocus;
+    // Anything inside this screen -- the overlay buttons, the channel
+    // carousel -- is ours and keeps what it took.
+    if (focused != null &&
+        (focused == _overlayFocus ||
+            _overlayFocus.descendants.contains(focused))) {
+      return;
+    }
+    // A null focus counts. When the OSD hides, the control that had focus is
+    // unmounted, and focus is left for the framework to place: it walks up and
+    // hands it to whichever scope still remembers a focused child, which can
+    // be the screen underneath. That is how the remote goes dead after the
+    // overlay has been used once, with no code here ever asking for it.
+    _reclaimingFocus = true;
+    GetIt.instance<LogService>().playback(
+      'Live TV: focus left the player for '
+      '${focused?.debugLabel ?? focused ?? 'nothing'}, taking it back',
+      level: LogLevel.info,
+    );
+    // After this frame: reclaiming mid-notification would re-enter the
+    // FocusManager while it is still dispatching this change.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _reclaimingFocus = false;
+      if (!mounted || _isStopping) return;
+      final current = ModalRoute.of(context);
+      if (current != null && !current.isCurrent) return;
+      _overlayFocus.requestFocus();
+    });
   }
 
   Future<void> _switchChannel(int newIndex) async {
@@ -794,6 +855,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   List<FocusNode> get _osdFocusOrder => [
     _tvPlayPauseFocus,
     _tvChannelsFocus,
+    _tvGuideFocus,
     if (_streamsOfType('Audio').length > 1) _tvAudioFocus,
     if (_hasSubtitleChoices) _tvSubtitleFocus,
     _tvBitrateFocus,
@@ -1420,7 +1482,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
       if (PlatformDetection.isTV) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (!mounted || !_infoVisible) return;
-          _tvChannelsFocus.requestFocus();
+          _tvGuideFocus.requestFocus();
         });
       }
     }
@@ -1445,13 +1507,16 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     if (mounted) Navigator.of(context).pop();
   }
 
-  void _applySubtitleStyle() {
+  /// [force] pushes even when nothing changed, for a new stream or backend.
+  void _applySubtitleStyle({bool force = false}) {
     final backend = _manager.backend;
     if (backend == null) return;
     final style = SubtitleStyle.forResolution(
       _prefs,
       _manager.currentResolution,
     );
+    if (!force && style == _lastSubtitleStyle) return;
+    _lastSubtitleStyle = style;
     unawaited(
       backend.configureSubtitleStyle(
         textColor: style.textColor,
@@ -1554,10 +1619,16 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
           return KeyEventResult.handled;
         }
 
-        if (PlatformDetection.isTV &&
-            FocusManager.instance.primaryFocus == _tvChannelsFocus) {
-          unawaited(_showChannelPicker());
-          return KeyEventResult.handled;
+        if (PlatformDetection.isTV) {
+          final focused = FocusManager.instance.primaryFocus;
+          if (focused == _tvChannelsFocus) {
+            _showChannelCarousel();
+            return KeyEventResult.handled;
+          }
+          if (focused == _tvGuideFocus) {
+            unawaited(_showChannelPicker());
+            return KeyEventResult.handled;
+          }
         }
 
         _togglePlayback();
@@ -1610,6 +1681,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
           return;
         }
         if (_isGuidePickerOpen) {
+          if (_guideBackController.consumeBackPress()) return;
           _closeGuideOverlay();
           return;
         }
@@ -1756,6 +1828,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
         currentChannel: _currentChannel,
         onChannelSelected: _onGuideChannelSelected,
         onClose: _closeGuideOverlay,
+        backController: _guideBackController,
       ),
     );
   }
@@ -1894,6 +1967,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   Widget _buildBottomOverlay() {
     final padding = MediaQuery.of(context).padding;
     final program = _currentProgram;
+    final episodeLine = program?.episodeLine ?? '';
 
     return Positioned(
       bottom: 0,
@@ -1917,11 +1991,11 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (program?.episodeTitle != null)
+            if (episodeLine.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(bottom: AppSpacing.spaceXs),
                 child: Text(
-                  program!.episodeTitle!,
+                  episodeLine,
                   style: const TextStyle(
                     color: Colors.white70,
                     fontSize: AppTypography.fontSizeSm,
@@ -1962,11 +2036,20 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
               );
             },
           ),
+          if (PlatformDetection.isTV) ...[
+            const SizedBox(width: AppSpacing.spaceSm),
+            _buildOverlayControlButton(
+              focusNode: _tvChannelsFocus,
+              icon: Icons.grid_view_rounded,
+              tooltip: l10n.channels,
+              onPressed: _showChannelCarousel,
+            ),
+          ],
           const SizedBox(width: AppSpacing.spaceSm),
           _buildOverlayControlButton(
-            focusNode: PlatformDetection.isTV ? _tvChannelsFocus : null,
+            focusNode: PlatformDetection.isTV ? _tvGuideFocus : null,
             icon: Icons.list_rounded,
-            tooltip: l10n.channels,
+            tooltip: l10n.guide,
             onPressed: () => unawaited(_showChannelPicker()),
           ),
           if (PlatformDetection.isMobile) ...[

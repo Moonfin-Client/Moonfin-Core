@@ -111,7 +111,6 @@ class SeerrIssuesViewModel extends ChangeNotifier {
 
       final response = await _repo.getIssues(
         filter: _state.filter.apiValue,
-        createdBy: user.canViewAllIssues ? null : user.id,
         limit: _pageSize,
         offset: 0,
       );
@@ -150,10 +149,8 @@ class SeerrIssuesViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final user = _state.currentUser!;
       final response = await _repo.getIssues(
         filter: _state.filter.apiValue,
-        createdBy: user.canViewAllIssues ? null : user.id,
         limit: _pageSize,
         offset: _state.issues.length,
       );

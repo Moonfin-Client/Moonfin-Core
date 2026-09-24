@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -35,6 +34,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../util/error_message.dart';
 import '../../widgets/focus/focusable_wrapper.dart';
 import '../../widgets/focus/request_initial_focus.dart';
+import '../../widgets/offline_aware_image.dart';
 
 // w342, like the other Seerr screens. w200 is too soft once the grid
 // enlarges it.
@@ -47,6 +47,11 @@ const double _cardHeight = 175;
 
 /// Poster width on the stacked card. Keeps a 1.59 ratio with [_cardHeight].
 const double _cardPosterWidth = 110;
+
+/// Inset a grid card spends inside its cell so the focus scale has room.
+/// Both [_SeerrRequestsScreenState._tileGrid] and [_RequestCardState.build]
+/// need the same number, one to reserve it and one to spend it.
+const double _tileFocusInset = 12;
 
 double _uiScale() => PlatformDetection.useDesktopUi
     ? GetIt.instance<UserPreferences>()
@@ -616,7 +621,9 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
     );
     final tileWidth = (available - spacing * (columns - 1)) / columns;
     final tileHeight =
-        tileWidth * 1.5 + SeerrRequestTileCaption.reservedHeight * scale;
+        tileWidth * 1.5 +
+        SeerrRequestTileCaption.reservedHeight * scale +
+        _tileFocusInset * 2;
     // Written during build on purpose. It is a plain field the row snap reads
     // after the frame, not state the widget rebuilds from.
     _tileGeometry = (
@@ -1111,33 +1118,36 @@ class _CardActionButton extends StatelessWidget {
   final FocusNode? focusNode;
   final VoidCallback? onPressed;
 
+  /// Draw the icon alone and put the label in a tooltip. Two labelled buttons
+  /// want about 190px and a TV tile's caption has about 111, so the second
+  /// fell outside the card shell's ClipRRect but stayed focusable.
+  final bool compact;
+
   const _CardActionButton({
     required this.label,
     required this.icon,
     required this.color,
     this.focusNode,
     this.onPressed,
+    this.compact = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final scale = _uiScale();
-    final button = TextButton.icon(
+    final glyph = Icon(icon, size: (compact ? 18 : 16) * scale, color: color);
+    Widget button = TextButton(
       onPressed: onPressed,
       focusNode: focusNode,
-      icon: Icon(icon, size: 16 * scale, color: color),
-      label: Text(
-        label,
-        style: TextStyle(color: color, fontSize: 12.5 * scale),
-      ),
       style:
           TextButton.styleFrom(
             backgroundColor: color.withValues(alpha: 0.12),
             padding: EdgeInsets.symmetric(
-              horizontal: 10 * scale,
+              horizontal: (compact ? 8 : 10) * scale,
               vertical: 6 * scale,
             ),
-            minimumSize: Size(0, 32 * scale),
+            // Same height either way, so the caption's reservation holds.
+            minimumSize: Size(compact ? 36 * scale : 0, 32 * scale),
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             shape: RoundedRectangleBorder(borderRadius: AppRadius.circular(8)),
           ).copyWith(
@@ -1147,7 +1157,24 @@ class _CardActionButton extends StatelessWidget {
                   : BorderSide.none,
             ),
           ),
+      child: compact
+          ? glyph
+          : Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                glyph,
+                SizedBox(width: 8 * scale),
+                Text(
+                  label,
+                  style: TextStyle(color: color, fontSize: 12.5 * scale),
+                ),
+              ],
+            ),
     );
+
+    if (compact) {
+      button = Tooltip(message: label, child: button);
+    }
 
     final node = focusNode;
     if (node == null) return button;
@@ -1383,9 +1410,12 @@ class _RequestCardState extends State<_RequestCard> with FocusStateMixin {
         // Room inside the cell for the focus scale. The scale is a transform
         // so it never widens the layout box, and ensureVisible parks a focused
         // cell flush against the viewport edge. A 344px tile at 1.02 needs
-        // 3.4px a side; 12 also covers the border, a theme glow and rounding.
+        // 3.4px a side, and the rest covers the border, a theme glow and
+        // rounding.
         child: Padding(
-          padding: EdgeInsets.symmetric(vertical: _usesTileGrid ? 12 : 0),
+          padding: EdgeInsets.symmetric(
+            vertical: _usesTileGrid ? _tileFocusInset : 0,
+          ),
           child: _HubCardShell(
             highlighted: showFocusBorder,
             highlightColor: focusColor,
@@ -1446,7 +1476,7 @@ class _RequestCardState extends State<_RequestCard> with FocusStateMixin {
               fit: StackFit.expand,
               children: [
                 if (posterPath != null)
-                  CachedNetworkImage(
+                  OfflineAwareImage(
                     imageUrl: '$_tmdbPosterBase$posterPath',
                     fit: BoxFit.cover,
                     placeholder: (_, _) =>
@@ -1483,9 +1513,11 @@ class _RequestCardState extends State<_RequestCard> with FocusStateMixin {
         ),
         SeerrRequestTileCaption(
           title: title,
-          requestedBy: l10n.requestedByName(requester),
+          requestedByLabel: l10n.requestedByLabel,
+          requester: requester,
           date: date,
           scale: scale,
+          marqueeTitle: showFocusBorder,
           status: downloadSummary != null
               ? SeerrDownloadProgressBar(
                   summary: downloadSummary,
@@ -1522,7 +1554,7 @@ class _RequestCardState extends State<_RequestCard> with FocusStateMixin {
               fit: StackFit.expand,
               children: [
                 if (posterPath != null)
-                  CachedNetworkImage(
+                  OfflineAwareImage(
                     imageUrl: '$_tmdbPosterBase$posterPath',
                     fit: BoxFit.cover,
                     height: double.infinity,
@@ -1657,8 +1689,9 @@ class _RequestCardState extends State<_RequestCard> with FocusStateMixin {
     );
   }
 
-  /// Approve/decline, retry, or the spinner. Shared so the tile and the card
-  /// offer the same actions.
+  /// The tile's action row: approve and decline, retry, or the spinner. Icon
+  /// only, since the caption under a poster is too narrow for two labelled
+  /// buttons. The stacked card builds its own labelled pair inline.
   List<Widget> _actions(AppLocalizations l10n, Color onSurface) {
     if (widget.isActioning) {
       return [
@@ -1677,6 +1710,7 @@ class _RequestCardState extends State<_RequestCard> with FocusStateMixin {
           color: AppColorScheme.statusAvailable,
           focusNode: _approveFocus,
           onPressed: widget.onApprove,
+          compact: true,
         ),
         const SizedBox(width: 8),
         _CardActionButton(
@@ -1685,6 +1719,7 @@ class _RequestCardState extends State<_RequestCard> with FocusStateMixin {
           color: AppColorScheme.statusError,
           focusNode: _declineFocus,
           onPressed: widget.onDecline,
+          compact: true,
         ),
       ];
     }
@@ -1696,6 +1731,7 @@ class _RequestCardState extends State<_RequestCard> with FocusStateMixin {
           color: AppColorScheme.statusPending,
           focusNode: _retryFocus,
           onPressed: widget.onRetry,
+          compact: true,
         ),
       ];
     }
@@ -1894,7 +1930,7 @@ class _IssueCardState extends State<_IssueCard> with FocusStateMixin {
             SizedBox(
               width: _cardPosterWidth * scale,
               child: posterPath != null
-                  ? CachedNetworkImage(
+                  ? OfflineAwareImage(
                       imageUrl: '$_tmdbPosterBase$posterPath',
                       fit: BoxFit.cover,
                       height: double.infinity,

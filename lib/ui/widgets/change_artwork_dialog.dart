@@ -18,6 +18,7 @@ import 'package:dio/dio.dart';
 import 'adaptive/adaptive_dialog.dart';
 import 'focus/focusable_wrapper.dart';
 import 'overlay_sheet.dart';
+import 'offline_aware_image.dart';
 
 class ImageDimensions {
   final double width;
@@ -2124,7 +2125,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
         child: Stack(
           children: [
             Positioned.fill(
-              child: CachedNetworkImage(
+              child: OfflineAwareImage(
                 imageUrl: imageUrl,
                 fit: BoxFit.cover,
                 memCacheWidth:
@@ -2430,7 +2431,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
                           ),
                           child: ClipRRect(
                             borderRadius: AppRadius.circular(8),
-                            child: CachedNetworkImage(
+                            child: OfflineAwareImage(
                               imageUrl: previewUrl,
                               fit: BoxFit.contain,
                               memCacheWidth:
@@ -2593,7 +2594,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
         child: Stack(
           children: [
             Positioned.fill(
-              child: CachedNetworkImage(
+              child: OfflineAwareImage(
                 imageUrl: thumbUrl,
                 fit: BoxFit.cover,
                 memCacheWidth:

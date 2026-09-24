@@ -7,9 +7,11 @@ import 'package:server_core/server_core.dart' hide ImageType;
 
 import '../../preference/preference_constants.dart';
 import '../../preference/user_preferences.dart';
+import '../../util/accent_folding.dart';
 import '../../util/network_errors.dart';
 import '../../util/parental_rating_severity.dart';
 import '../models/aggregated_item.dart';
+import '../utils/blocked_ratings.dart';
 import '../repositories/mdblist_repository.dart';
 import '../services/plugin_sync_service.dart';
 import '../services/user_data_sync.dart';
@@ -63,17 +65,36 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   List<AggregatedItem>? _searchResultsSource;
   String _searchResultsQuery = '';
 
+  // Folding costs a pass over every title, so the names are prepared once for
+  // a given set of items rather than again on each keystroke.
+  List<AggregatedItem>? _searchNamesSource;
+  List<String> _searchNames = const [];
+
+  List<String> get _foldedNames {
+    if (!identical(_searchNamesSource, _items)) {
+      _searchNames = [
+        for (final item in _items) foldForSearch(item.sortName ?? item.name),
+      ];
+      _searchNamesSource = _items;
+    }
+    return _searchNames;
+  }
+
   List<AggregatedItem> get items {
-    final query = _searchQuery.trim().toLowerCase();
+    // The server folds accents for the searches it answers, so matching here
+    // has to as well or the same query finds different things depending on
+    // which search box it was typed into.
+    final query = foldForSearch(_searchQuery.trim());
     if (query.isEmpty) return _items;
     if (_searchResults != null &&
         _searchResultsQuery == query &&
         identical(_searchResultsSource, _items)) {
       return _searchResults!;
     }
+    final names = _foldedNames;
     final matches = [
-      for (final item in _items)
-        if ((item.sortName ?? item.name).toLowerCase().contains(query)) item,
+      for (var i = 0; i < _items.length; i++)
+        if (names[i].contains(query)) _items[i],
     ];
     _searchResults = matches;
     _searchResultsSource = _items;
@@ -253,6 +274,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
 
   final Set<String> _playlistTypeFilters = {
     'Video',
+    'MusicVideo',
     'Audio',
     'AudioBook',
     'Book',
@@ -285,6 +307,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   Map<String, List<AggregatedItem>> get groupedPlaylists {
     final Map<String, List<AggregatedItem>> groups = {
       'Video': [],
+      'MusicVideo': [],
       'Audio': [],
       'AudioBook': [],
       'Book': [],
@@ -319,6 +342,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   Future<List<AggregatedItem>> _filterLibraryItems(
     List<AggregatedItem> items,
   ) async {
+    items = withoutBlockedItems(items);
     if (!isPlaylistBrowse) return items;
 
     // A playlist the summary can't settle costs a request of its own, so keep a
@@ -892,10 +916,10 @@ class LibraryBrowseViewModel extends ChangeNotifier {
 
     var filtered = await _filterLibraryItems(mapped);
 
-    if (isPlaylistBrowse) {
-      final filteredOutInBatch = mapped.length - filtered.length;
-      _filteredOutCount += filteredOutInBatch;
-    }
+    // Counted for every browse, not just playlists. A dropped item is gone for
+    // good, so the total has to shrink with it or the grid keeps asking for
+    // pages that will never arrive.
+    _filteredOutCount += mapped.length - filtered.length;
 
     // A playlist is free to list the same item more than once, so only the
     // library browses drop repeats. A repeat means the server reshuffled

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../detail_layout_metrics.dart';
+
 /// Arranges the Modern detail pieces for portrait phones and tablets: a
 /// full-bleed backdrop fading into the content, then a vertical stack of hero,
 /// Up Next, tabs and the active tab content. Pure arrangement, with all of the
@@ -37,7 +39,7 @@ class ModernPortraitLayout extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: size.height * 0.26 + topInset),
+                SizedBox(height: detailPortraitBackdropGap(size, topInset)),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: hero,

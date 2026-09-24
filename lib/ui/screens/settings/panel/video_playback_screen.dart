@@ -34,6 +34,13 @@ class _VideoPlaybackScreen extends StatelessWidget {
                   ZoomMode.stretch => l10n.stretch,
                 },
               ),
+              if (PlatformDetection.isIOS)
+                SwitchPreferenceTile(
+                  preference: UserPreferences.keepVideoClearOfDynamicIsland,
+                  title: l10n.keepVideoClearOfDynamicIsland,
+                  subtitle: l10n.keepVideoClearOfDynamicIslandDescription,
+                  icon: Icons.crop_free,
+                ),
               if (letterboxCropSettingVisible())
                 SwitchPreferenceTile(
                   preference: UserPreferences.cropBlackBars,
@@ -119,6 +126,12 @@ class _VideoPlaybackScreen extends StatelessWidget {
                   45000: l10n.settingsFortyFiveSeconds,
                   60000: l10n.settingsSixtySeconds,
                 },
+              ),
+              SwitchPreferenceTile(
+                preference: UserPreferences.showChapterMarkers,
+                title: l10n.showChapterMarkers,
+                subtitle: l10n.showChapterMarkersDescription,
+                icon: Icons.straighten,
               ),
               if (PlatformDetection.useMobileUi) ...[
                 SwitchPreferenceTile(

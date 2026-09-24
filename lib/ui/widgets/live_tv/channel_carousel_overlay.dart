@@ -287,18 +287,22 @@ class _ChannelCarouselOverlayState extends State<ChannelCarouselOverlay>
   static const double _overviewGap = 4;
   static const int _overviewLines = 2;
 
+  /// The header is the one place a viewer reads more than a label, so its
+  /// three lines are sized for reading at ten feet. A panel paints the canvas
+  /// at about 1.45 pixels to the point, which lands the description near 26
+  /// and the metadata just past 20, and the title keeps a step on both.
   static const TextStyle _titleStyle = TextStyle(
     color: Colors.white,
-    fontSize: 18,
+    fontSize: AppTypography.fontSizeXl,
     fontWeight: FontWeight.w700,
   );
   static const TextStyle _metaStyle = TextStyle(
     color: Colors.white70,
-    fontSize: 13,
+    fontSize: AppTypography.fontSizeSm,
   );
   static const TextStyle _overviewStyle = TextStyle(
     color: Colors.white60,
-    fontSize: AppTypography.fontSizeMd,
+    fontSize: AppTypography.fontSizeLg,
     height: 1.25,
   );
   late final LiveTvGuideViewModel _vm;
@@ -862,10 +866,10 @@ class _ChannelCarouselOverlayState extends State<ChannelCarouselOverlay>
       child: SlideTransition(
         position: _offset,
         child: Container(
-          // 24 dp of bottom margin sits inside the 5% TV overscan allowance
-          // (27 dp of a 540 dp viewport) while dropping the whole overlay
-          // closer to the screen edge.
-          padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
+          // Inside the 5% a television keeps clear at its edges, which is
+          // about 37 points of the canvas every panel lays out on, while
+          // still dropping the overlay close to that line.
+          padding: const EdgeInsets.fromLTRB(33, 33, 33, 33),
           decoration: BoxDecoration(
             // Reaches most of its darkness by the time it is behind the
             // description, which no longer carries a panel of its own.

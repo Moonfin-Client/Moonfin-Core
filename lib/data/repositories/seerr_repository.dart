@@ -768,7 +768,6 @@ class SeerrRepository {
   Future<SeerrIssueListResponse> getIssues({
     String? filter,
     String? sort,
-    int? createdBy,
     int limit = 20,
     int offset = 0,
   }) => _withClient(
@@ -776,7 +775,6 @@ class SeerrRepository {
       await c.getIssues(
         filter: filter,
         sort: sort,
-        createdBy: createdBy,
         limit: limit,
         offset: offset,
       ),

@@ -11259,7 +11259,7 @@
     "@serverMessagesShowButton": {
         "description": "Setting that shows or hides the messages button in the menu"
     },
-    "serverMessagesShowButtonSubtitle": "Ajoute au menu un bouton pour les messages envoyés par l'administration du serveur",
+    "serverMessagesShowButtonSubtitle": "Ajoute au menu un bouton pour les messages envoyés par l'admin du serveur",
     "@serverMessagesShowButtonSubtitle": {
         "description": "Explains the setting that shows or hides the messages button"
     },
@@ -11692,5 +11692,17 @@
     "siriRemoteSwipeSensitivity": "Sensibilité du glissé sur le pavé tactile",
     "@siriRemoteSwipeSensitivity": {
         "description": "Apple TV settings label for how far a swipe on the Siri Remote touchpad moves the focus highlight"
+    },
+    "savedMediaOfLimit": "{used} sur {limit}",
+    "@savedMediaOfLimit": {
+        "description": "Storage used against the configured limit, for example '56.4 GB of 80 GB'",
+        "placeholders": {
+            "used": {
+                "type": "String"
+            },
+            "limit": {
+                "type": "String"
+            }
+        }
     }
 }

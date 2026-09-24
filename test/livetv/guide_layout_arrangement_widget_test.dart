@@ -126,6 +126,7 @@ void main() {
   Future<AppLocalizations> pumpGuide(
     WidgetTester tester, {
     Size surface = const Size(900, 700),
+    double textScale = 1.0,
   }) async {
     tester.view.physicalSize = surface;
     tester.view.devicePixelRatio = 1.0;
@@ -135,6 +136,14 @@ void main() {
       MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
+        // The interface size setting reaches the guide the way the app hands
+        // it down, as a scaler over everything below it.
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.linear(textScale)),
+          child: child!,
+        ),
         home: const LiveTvGuideScreen(),
       ),
     );
@@ -258,9 +267,15 @@ void main() {
     );
     final now = tester.getRect(find.text(l10n.now));
     final channelCells = find.byType(EpgChannelCell);
+    final area = guideAvailableArea(
+      maxWidth: surface.width,
+      maxHeight: surface.height,
+      landscape: true,
+      miniPlayerMode: false,
+    );
     final profile = GuideLayoutProfile.fromAvailableArea(
-      availableWidth: surface.width - 24 - 24,
-      availableHeight: surface.height - 8 - 16,
+      availableWidth: area.width,
+      availableHeight: area.height,
     );
 
     expect(hero.height, closeTo(EpgHeroPreview.compactHeight, 0.1));
@@ -273,6 +288,66 @@ void main() {
     expect(fifth.height, closeTo(profile.rowHeight - 1, 0.1));
     expect(fifth.bottom, lessThanOrEqualTo(surface.height - 16));
   });
+
+  /// The canvas every television lays out on, and a panel small enough that
+  /// the guide has to give something up. It has to hold together on both, and
+  /// the canvas is where the row height was derived, so it carries the floor
+  /// the derivation was aiming at.
+  const tvCanvases = {
+    'the television canvas': (surface: Size(1324, 745), rows: 8),
+    'a surface below it': (surface: Size(960, 540), rows: 5),
+  };
+
+  /// Rows sitting whole inside the screen, which is what a viewer can read
+  /// without scrolling.
+  int wholeRows(WidgetTester tester) {
+    final screen = tester.getRect(find.byType(LiveTvGuideScreen));
+    final cells = find.byType(EpgChannelCell);
+    var whole = 0;
+    for (var i = 0; i < cells.evaluate().length; i++) {
+      final row = tester.getRect(cells.at(i));
+      if (row.top >= screen.top - 0.5 && row.bottom <= screen.bottom + 0.5) {
+        whole++;
+      }
+    }
+    return whole;
+  }
+
+  testWidgets('a larger interface size trades guide rows for room to read', (
+    tester,
+  ) async {
+    const canvas = Size(1324, 745);
+    await pumpGuide(tester, surface: canvas);
+    final regular = wholeRows(tester);
+
+    await pumpGuide(tester, surface: canvas, textScale: 1.3);
+    final scaled = wholeRows(tester);
+
+    // A row that held still while its text grew clipped it top and bottom,
+    // which an overflow reports here.
+    expect(tester.takeException(), isNull);
+    expect(scaled, lessThan(regular), reason: 'taller rows mean fewer of them');
+    expect(
+      scaled,
+      greaterThanOrEqualTo(5),
+      reason: 'the guide still has to be worth scrolling',
+    );
+  });
+
+  for (final entry in tvCanvases.entries) {
+    testWidgets('the guide fits its chrome on ${entry.key}', (tester) async {
+      await pumpGuide(tester, surface: entry.value.surface);
+
+      // An overflow throws in a widget test, so this catches a row or a cell
+      // that has outgrown the room the chrome left it.
+      expect(tester.takeException(), isNull, reason: entry.key);
+      expect(
+        wholeRows(tester),
+        greaterThanOrEqualTo(entry.value.rows),
+        reason: entry.key,
+      );
+    });
+  }
 
   testWidgets('DOWN from the genre rail descends through the controls row', (
     tester,

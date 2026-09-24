@@ -561,19 +561,27 @@ class _FavoritesScreenState extends State<FavoritesScreen>
         );
         final desktopTextScale = MediaQuery.textScalerOf(context).scale(1.0);
         final textHeight = (hasSubtitles ? 42.0 : 24.0) * desktopTextScale;
-        final childAspectRatio = cellWidth / (cellWidth / ar + textHeight);
+        final imageHeight = cellWidth / ar;
+        final upwardGrowth = focusExpansion && !isMobile
+            ? (imageHeight * (MediaCard.focusScale - 1))
+            : 0.0;
+        final baseRowSpacing = 16.0;
+        final rowSpacing = baseRowSpacing + upwardGrowth;
+        final baseTopPadding = 18.0;
+        final topPadding = baseTopPadding + upwardGrowth;
+        final childAspectRatio = cellWidth / (imageHeight + textHeight);
 
         return GridView.builder(
           controller: _scrollController,
           padding: EdgeInsets.fromLTRB(
             horizontalPadding,
-            12,
+            topPadding,
             horizontalPadding,
             32,
           ),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: columns,
-            mainAxisSpacing: 8,
+            mainAxisSpacing: rowSpacing,
             crossAxisSpacing: spacing,
             childAspectRatio: childAspectRatio,
           ),
@@ -699,22 +707,30 @@ class _FavoritesScreenState extends State<FavoritesScreen>
         );
         final desktopTextScale = MediaQuery.textScalerOf(context).scale(1.0);
         final textHeight = (hasSubtitles ? 42.0 : 24.0) * desktopTextScale;
-        final childAspectRatio = cellWidth / (cellWidth / ar + textHeight);
+        final imageHeight = cellWidth / ar;
         final focusColor = Color(
           _prefs.get(UserPreferences.focusColor).colorValue,
         );
         final focusExpansion = _prefs.get(UserPreferences.cardFocusExpansion);
+        final upwardGrowth = focusExpansion && !isMobile
+            ? (imageHeight * (MediaCard.focusScale - 1))
+            : 0.0;
+        final baseRowSpacing = 16.0;
+        final rowSpacing = baseRowSpacing + upwardGrowth;
+        final baseTopPadding = 18.0;
+        final topPadding = baseTopPadding + upwardGrowth;
+        final childAspectRatio = cellWidth / (imageHeight + textHeight);
         final suppressFocusGlow = ThemeRegistry.active.borders.focusGlow.isNotEmpty;
 
         return CustomScrollView(
           controller: _scrollController,
           slivers: [
             SliverPadding(
-              padding: EdgeInsets.fromLTRB(gridPadding, 8, gridPadding, 16),
+              padding: EdgeInsets.fromLTRB(gridPadding, topPadding, gridPadding, 16),
               sliver: SliverGrid(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: crossAxisCount,
-                  mainAxisSpacing: 8,
+                  mainAxisSpacing: rowSpacing,
                   crossAxisSpacing: spacing,
                   childAspectRatio: childAspectRatio,
                 ),

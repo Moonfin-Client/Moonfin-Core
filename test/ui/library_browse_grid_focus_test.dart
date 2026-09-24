@@ -110,7 +110,7 @@ void main() {
   }
 
   group('grid line starts match the sliver the browse screen builds', () {
-    testWidgets('tvOS focus scale, standard poster', (tester) async {
+    testWidgets('television focus scale, standard poster', (tester) async {
       await expectNoDrift(
         tester,
         focusScale: 1.12,
@@ -120,9 +120,7 @@ void main() {
       );
     });
 
-    testWidgets('desktop and Android TV focus scale, standard poster', (
-      tester,
-    ) async {
+    testWidgets('desktop focus scale, standard poster', (tester) async {
       await expectNoDrift(
         tester,
         focusScale: 1.05,
@@ -132,9 +130,7 @@ void main() {
       );
     });
 
-    testWidgets('desktop and Android TV focus scale, large poster', (
-      tester,
-    ) async {
+    testWidgets('desktop focus scale, large poster', (tester) async {
       await expectNoDrift(
         tester,
         focusScale: 1.05,

@@ -4,6 +4,8 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import 'unscaled_platform_view.dart';
+
 class Media3VideoView extends StatelessWidget {
   const Media3VideoView({
     super.key,
@@ -33,27 +35,30 @@ class Media3VideoView extends StatelessWidget {
 
     return ColoredBox(
       color: fill,
-      child: PlatformViewLink(
-        viewType: _viewType,
-        surfaceFactory: (context, controller) {
-          return AndroidViewSurface(
-            controller: controller as AndroidViewController,
-            gestureRecognizers: const <Factory<OneSequenceGestureRecognizer>>{},
-            hitTestBehavior: PlatformViewHitTestBehavior.transparent,
-          );
-        },
-        onCreatePlatformView: (params) {
-          onPlatformViewCreated?.call(params.id);
-          return PlatformViewsService.initExpensiveAndroidView(
-            id: params.id,
-            viewType: _viewType,
-            layoutDirection: TextDirection.ltr,
-            creationParams: {'role': role},
-            creationParamsCodec: const StandardMessageCodec(),
-          )
-            ..addOnPlatformViewCreatedListener(params.onPlatformViewCreated)
-            ..create();
-        },
+      child: UnscaledPlatformView(
+        child: PlatformViewLink(
+          viewType: _viewType,
+          surfaceFactory: (context, controller) {
+            return AndroidViewSurface(
+              controller: controller as AndroidViewController,
+              gestureRecognizers:
+                  const <Factory<OneSequenceGestureRecognizer>>{},
+              hitTestBehavior: PlatformViewHitTestBehavior.transparent,
+            );
+          },
+          onCreatePlatformView: (params) {
+            onPlatformViewCreated?.call(params.id);
+            return PlatformViewsService.initExpensiveAndroidView(
+              id: params.id,
+              viewType: _viewType,
+              layoutDirection: TextDirection.ltr,
+              creationParams: {'role': role},
+              creationParamsCodec: const StandardMessageCodec(),
+            )
+              ..addOnPlatformViewCreatedListener(params.onPlatformViewCreated)
+              ..create();
+          },
+        ),
       ),
     );
   }

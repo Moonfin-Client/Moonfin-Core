@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -11,14 +10,12 @@ import '../../../../data/repositories/seerr_repository.dart';
 import '../../../../data/services/plugin_sync_service.dart';
 import '../../../../data/services/seerr/seerr_api_models.dart';
 import '../../../../data/viewmodels/item_detail_view_model.dart';
-import '../../../../preference/preference_constants.dart';
 import '../../../../preference/user_preferences.dart';
 import '../../../../util/platform_detection.dart';
 import '../../../../util/seerr_credits.dart';
 import '../../../widgets/fullscreen_backdrop_switcher.dart';
 import '../../../widgets/navigation_layout.dart';
-import '../../../widgets/offline_aware_image.dart';
-import '../../../widgets/top_toolbar.dart';
+import '../detail_layout_metrics.dart';
 import '../item_detail_screen.dart';
 import 'chapters/nouveau_chapters_section.dart';
 import 'collection/nouveau_collection_section.dart';
@@ -708,47 +705,16 @@ class NouveauDetailContentState extends State<NouveauDetailContent> {
     _scheduleOuterReveal(_personHeroKey);
   }
 
-  double _nouveauHeroScale(Size size) {
-    if (size.height > size.width) {
-      return (size.width / 430.0).clamp(0.84, 1.0);
-    }
-
-    return (size.width / 1920.0).clamp(0.90, 1.08);
-  }
-
-  double _nouveauLandscapeExplicitHorizontalInset(Size size) {
-    return PlatformDetection.isTV
-        ? 56.0
-        : (size.width * 0.046).clamp(56.0, 96.0);
-  }
-
   EdgeInsets _nouveauLandscapeContentInsets() {
-    final navbarIsTop =
-        widget.prefs.get(UserPreferences.navbarPosition) == NavbarPosition.top;
-
     final safePadding = MediaQuery.paddingOf(context);
 
     final size = MediaQuery.sizeOf(context);
 
-    final scale = _nouveauHeroScale(size);
+    final scale = nouveauHeroScale(size);
 
-    // The designed inset is a share of a desktop screen, so on a 540 tall TV
-    // it takes a third of the viewport and leaves the action row no room.
-    // Cap it at a fifth of the screen, with the toolbar it sits under as the
-    // floor. Taller screens keep the inset they had.
-    final designedHeroTop = navbarIsTop
-        ? (212.0 * scale).clamp(190.0, 232.0)
-        : (152.0 * scale).clamp(136.0, 166.0);
+    final heroTop = nouveauHeroTop(context, prefs: widget.prefs);
 
-    final heroTop = math.min(
-      designedHeroTop,
-      math.max(
-        navbarIsTop ? TopToolbar.baseHeightFor(context) : 0.0,
-        size.height * 0.20,
-      ),
-    );
-
-    final horizontalInset = _nouveauLandscapeExplicitHorizontalInset(size);
+    final horizontalInset = nouveauHorizontalInset(size);
 
     final horizontalSafePadding = PlatformDetection.isTV
         ? EdgeInsets.zero
@@ -996,9 +962,7 @@ class NouveauDetailContentState extends State<NouveauDetailContent> {
         : _buildMediaSections(context, item, sectionInsets);
 
     if (usePortraitLayout) {
-      final heroMinHeight = isPhonePortrait
-          ? (size.height * 0.60).clamp(500.0, 610.0)
-          : (size.height * 0.74).clamp(560.0, 720.0);
+      final heroMinHeight = nouveauHeroMinHeight(size);
 
       return NouveauPortraitLayout(
         backdrop: backdrop,
@@ -1019,7 +983,7 @@ class NouveauDetailContentState extends State<NouveauDetailContent> {
       );
     }
 
-    final heroLayoutScale = _nouveauHeroScale(size);
+    final heroLayoutScale = nouveauHeroScale(size);
 
     return NouveauLandscapeLayout(
       backdrop: backdrop,
@@ -1314,13 +1278,6 @@ class NouveauDetailContentState extends State<NouveauDetailContent> {
           duration: const Duration(milliseconds: 350),
           alignment: portrait ? Alignment.topCenter : Alignment.centerRight,
           fadeInDuration: Duration.zero,
-          imageBuilder: (imageUrl) => OfflineAwareImage(
-            imageUrl: imageUrl,
-            fit: BoxFit.cover,
-            alignment: portrait ? Alignment.topCenter : Alignment.centerRight,
-            fadeInDuration: Duration.zero,
-            errorWidget: (_, _, _) => const SizedBox.shrink(),
-          ),
         ),
 
         ColoredBox(color: Colors.black.withValues(alpha: overlayAlpha)),

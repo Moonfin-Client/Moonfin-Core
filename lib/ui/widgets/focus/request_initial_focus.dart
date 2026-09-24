@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 
 import '../left_sidebar.dart';
 import '../top_toolbar.dart';
+import 'can_claim_initial_focus.dart';
 
 /// Wraps a screen subtree and grants focus to the first focusable descendant
 /// after the first frame so dpad navigation works on a freshly pushed route.
@@ -65,6 +66,9 @@ class _RequestInitialFocusState extends State<RequestInitialFocus> {
 
   void _tryFocus(int attempt) {
     if (!mounted || _settled) return;
+    // didUpdateWidget checks this too, but build re-arms the retry as well,
+    // so a rebuild behind an open panel would otherwise walk off with focus.
+    if (!canClaimInitialFocus(context)) return;
     final target = widget.targetNode;
     final scope = FocusScope.of(context);
 

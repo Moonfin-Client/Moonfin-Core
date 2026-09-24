@@ -1,5 +1,6 @@
 package org.moonfin.nativevideo
 
+import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import io.flutter.plugin.common.EventChannel
@@ -82,6 +83,12 @@ object Media3Bridge {
     @Volatile
     private var activeView: Media3VideoView? = null
 
+    // Audio needs no surface, so it plays on this host rather than a platform
+    // view. The plugin instance that created it owns it.
+    private lateinit var appContext: Context
+    private var headlessHost: Media3VideoView? = null
+    private var hostOwner: Any? = null
+
     @Volatile
     private var eventSink: EventChannel.EventSink? = null
 
@@ -105,44 +112,111 @@ object Media3Bridge {
     }
 
     fun attachView(view: Media3VideoView) {
-        mainHandler.post {
-            val oldView = activeView
-            // A preview (media bar / row trailer) must never interrupt a live
-            // main player. It stays registered so activateView can promote it
-            // later, once the main view is gone.
-            if (view.role == "preview" &&
-                oldView != null &&
-                oldView !== view &&
-                oldView.role == "main" &&
-                oldView.isPlayerLive()
-            ) {
-                return@post
-            }
-            // A source that already landed on the outgoing main view moves with
-            // the slot. Flutter can mount the replacement after setSource was
-            // dispatched, and the incoming view would otherwise own the surface
-            // with nothing loaded.
-            var carriedSource: Map<*, *>? = null
-            if (oldView != null && oldView !== view) {
-                val carries = oldView.role == "main" && oldView.hasLiveSource()
-                oldView.forceReleasePlayer()
-                if (carries) carriedSource = oldView.handoverSourceArguments()
-            }
-            activeView = view
-            emitEvent(
-                mapOf(
-                    "event" to "viewReady",
-                ),
-            )
-            // A queued source is the newer intent, so it wins over the carried
-            // one rather than being replayed after it.
-            val flushedSource = flushPendingCalls(view)
-            if (carriedSource != null && !flushedSource) {
-                view.ensurePlayerAlive()
-                view.handleQueuedCall("setSource", carriedSource)
-            }
+        mainHandler.post { attachViewNow(view) }
+    }
+
+    fun isActive(view: Media3VideoView): Boolean = activeView === view
+
+    fun onPluginAttached(context: Context) {
+        appContext = context.applicationContext
+    }
+
+    // A host whose engine is gone has nothing left to stop it, so it goes with
+    // its owner.
+    fun onPluginDetached(plugin: Any, sink: EventChannel.EventSink?) {
+        if (hostOwner === plugin) {
+            destroyHeadlessHost()
+        }
+        if (sink != null && eventSink === sink) {
+            synchronized(pendingCalls) { pendingCalls.clear() }
         }
     }
+
+    private fun slotOf(view: Media3VideoView?): Media3SlotPolicy.Slot = when {
+        view == null -> Media3SlotPolicy.Slot.NONE
+        view === headlessHost -> Media3SlotPolicy.Slot.HOST
+        view.role == "preview" -> Media3SlotPolicy.Slot.PREVIEW
+        else -> Media3SlotPolicy.Slot.MAIN
+    }
+
+    private fun attachViewNow(view: Media3VideoView) {
+        val oldView = activeView
+        // A source that already landed on the outgoing main view moves with
+        // the slot. Flutter can mount the replacement after setSource was
+        // dispatched, and the incoming view would otherwise own the surface
+        // with nothing loaded.
+        var carriedSource: Map<*, *>? = null
+        if (oldView != null && oldView !== view) {
+            val action = Media3SlotPolicy.attach(
+                incomingIsPreview = view.role == "preview",
+                slot = slotOf(oldView),
+                slotPlayerLive = oldView.isPlayerLive(),
+                slotHasLiveSource = oldView.hasLiveSource(),
+            )
+            // A declined view stays registered so activateView or its own
+            // source can promote it later.
+            if (action == Media3SlotPolicy.AttachAction.DECLINE) return
+            if (oldView === headlessHost) {
+                destroyHeadlessHost()
+            } else {
+                oldView.forceReleasePlayer()
+                if (action == Media3SlotPolicy.AttachAction.TAKE_CARRY) {
+                    carriedSource = oldView.handoverSourceArguments()
+                }
+            }
+        }
+        activeView = view
+        emitViewReady()
+        // A queued source is the newer intent, so it wins over the carried
+        // one rather than being replayed after it.
+        val flushedSource = flushPendingCalls(view)
+        if (carriedSource != null && !flushedSource) {
+            view.ensurePlayerAlive()
+            view.handleQueuedCall("setSource", carriedSource)
+        }
+    }
+
+    private fun emitViewReady() {
+        emitEvent(
+            mapOf(
+                "event" to "viewReady",
+            ),
+        )
+    }
+
+    // Runs synchronously so the source can't race a posted attach or be
+    // overwritten by a source queued for a view that never mounted.
+    private fun routeToHost(call: MethodCall, result: MethodChannel.Result, caller: Any) {
+        synchronized(pendingCalls) { pendingCalls.clear() }
+        val current = activeView
+        if (current !== headlessHost) current?.forceReleasePlayer()
+        val existing = headlessHost
+        val host = existing ?: Media3VideoView(appContext, isHeadlessHost = true)
+        headlessHost = host
+        hostOwner = caller
+        activeView = host
+        if (existing == null) emitViewReady()
+        host.handleControlCall(call, result)
+        host.syncTicker()
+    }
+
+    private fun destroyHeadlessHost() {
+        val host = headlessHost ?: return
+        headlessHost = null
+        hostOwner = null
+        if (activeView === host) {
+            activeView = null
+        }
+        host.destroyHeadless()
+    }
+
+    // The newest platform view still able to play, for a video source that
+    // arrives after the host displaced it.
+    private fun newestMountedMainView(): Media3VideoView? =
+        viewRegistry.entries
+            .filter { it.value.role == "main" && it.value.isReattachable() }
+            .maxByOrNull { it.key }
+            ?.value
 
     fun detachView(view: Media3VideoView) {
         mainHandler.post {
@@ -205,7 +279,7 @@ object Media3Bridge {
         sessionTunnelingDisabled = value
     }
 
-    fun handleMethodCall(call: MethodCall, result: MethodChannel.Result) {
+    fun handleMethodCall(call: MethodCall, result: MethodChannel.Result, caller: Any) {
         if (call.method == "activateView") {
             val id = ((call.arguments as? Map<*, *>)?.get("viewId") as? Number)?.toInt()
             val view = id?.let { viewRegistry[it] }
@@ -279,33 +353,48 @@ object Media3Bridge {
 
         if (call.method == "setSource") {
             val sourceArgs = call.arguments as? Map<*, *>
-            val isPreviewSource = sourceArgs?.get("preview") as? Boolean ?: false
-            val isAudioSource =
-                sourceArgs?.get("mediaType")?.toString()?.lowercase() == "audio"
             val current = activeView
-            if (!isPreviewSource && current != null && current.role == "preview") {
-                // Real playback starting while a trailer owns the slot, during
-                // the idle-home start window.
-                queueSourceForNextView(call, result)
-                return
+            val mounted = newestMountedMainView()
+            val route = Media3SlotPolicy.routeSource(
+                isPreview = sourceArgs?.get("preview") as? Boolean ?: false,
+                isAudio = sourceArgs?.get("mediaType")?.toString()?.lowercase() == "audio",
+                slot = slotOf(current),
+                slotReattachable = current?.isReattachable() == true,
+                slotPlayerLive = current?.isPlayerLive() == true,
+                slotHasLiveSource = current?.hasLiveSource() == true,
+                hasMountedMain = mounted != null,
+            )
+            when (route) {
+                Media3SlotPolicy.SourceRoute.TO_HOST -> {
+                    routeToHost(call, result, caller)
+                    return
+                }
+                Media3SlotPolicy.SourceRoute.REATTACH_MOUNTED -> {
+                    val target = mounted ?: return queueSourceForNextView(call, result)
+                    destroyHeadlessHost()
+                    target.ensurePlayerAlive()
+                    attachViewNow(target)
+                    target.handleControlCall(call, result)
+                    return
+                }
+                Media3SlotPolicy.SourceRoute.QUEUE -> {
+                    queueSourceForNextView(call, result)
+                    return
+                }
+                Media3SlotPolicy.SourceRoute.DROP -> {
+                    result.success(null)
+                    return
+                }
+                Media3SlotPolicy.SourceRoute.TO_ACTIVE -> Unit
             }
-            if (!isPreviewSource && !isAudioSource &&
-                current != null && !current.isReattachable()
-            ) {
-                // A view Flutter disposed stays active so background audio
-                // keeps playing, but its surface is gone, so video loaded into
-                // it has nowhere to render and is lost when the mounting
-                // player view takes the slot.
-                queueSourceForNextView(call, result)
-                return
-            }
-            if (isPreviewSource && current != null &&
-                current.role == "main" && current.isPlayerLive()
-            ) {
-                // Never let a trailer interrupt real playback.
-                result.success(null)
-                return
-            }
+        }
+
+        if (call.method == "release" && headlessHost != null && activeView === headlessHost) {
+            // Trailer teardown releases the shared backend whenever main playback
+            // starts, and that must never stop music. An idle host is cheap to
+            // keep for the next song.
+            result.success(null)
+            return
         }
 
         val view = activeView
@@ -355,7 +444,8 @@ object Media3Bridge {
     // Drops the slot and queues the source so the flush lands on the view that
     // mounts next, rather than the one holding the slot now.
     private fun queueSourceForNextView(call: MethodCall, result: MethodChannel.Result) {
-        activeView?.forceReleasePlayer()
+        val current = activeView
+        if (current === headlessHost) destroyHeadlessHost() else current?.forceReleasePlayer()
         activeView = null
         queueCall(call.method, call.arguments)
         result.success(null)

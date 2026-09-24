@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:moonfin_design/moonfin_design.dart';
@@ -10,6 +9,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../mixins/focus_state_mixin.dart';
 import '../../navigation/destinations.dart';
 import 'seerr_image_urls.dart';
+import '../offline_aware_image.dart';
 
 /// The "part of a collection" strip under a movie's actions, which leads into
 /// the collection it belongs to.
@@ -98,7 +98,7 @@ class _SeerrCollectionBannerState extends State<SeerrCollectionBanner>
                 children: [
                   if (backdrop != null)
                     Positioned.fill(
-                      child: CachedNetworkImage(
+                      child: OfflineAwareImage(
                         imageUrl: '$seerrBackdropBase$backdrop',
                         fit: BoxFit.cover,
                       ),
