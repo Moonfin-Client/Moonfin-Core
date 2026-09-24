@@ -147,6 +147,7 @@ class JellyfinMediaStreamResolver implements MediaStreamResolver {
       source,
       isAudio: isAudio,
       enableDirectPlay: enableDirectPlay,
+      enableDirectStream: enableDirectStream,
       maxStreamingBitrate: maxStreamingBitrate,
     );
 
@@ -363,6 +364,7 @@ class JellyfinMediaStreamResolver implements MediaStreamResolver {
     PlaybackMediaSource source, {
     bool isAudio = false,
     bool enableDirectPlay = true,
+    bool enableDirectStream = true,
     int? maxStreamingBitrate,
   }) {
     final remotePath = source.path;
@@ -404,6 +406,7 @@ class JellyfinMediaStreamResolver implements MediaStreamResolver {
       supportsTranscoding: source.supportsTranscoding,
       hasTranscodingUrl: source.transcodingUrl != null,
       enableDirectPlay: enableDirectPlay,
+      enableDirectStream: enableDirectStream,
       isAudio: isAudio,
       transcodingReasons: source.transcodingReasons,
       bitrate: source.bitrate,
@@ -472,6 +475,7 @@ class JellyfinMediaStreamResolver implements MediaStreamResolver {
     required bool supportsTranscoding,
     required bool hasTranscodingUrl,
     required bool enableDirectPlay,
+    required bool enableDirectStream,
     required bool isAudio,
     required List<String> transcodingReasons,
     required int? bitrate,
@@ -491,8 +495,10 @@ class JellyfinMediaStreamResolver implements MediaStreamResolver {
         enableDirectPlay && !requiresVideoTranscode && supportsDirectPlay;
     // A remux copies the video stream through untouched, so a reason to
     // re-encode it rules this out the same way it rules out direct play.
-    final canDirectStream =
-        supportsDirectStream && hasDirectStreamUrl && !requiresVideoTranscode;
+    final canDirectStream = enableDirectStream &&
+        supportsDirectStream &&
+        hasDirectStreamUrl &&
+        !requiresVideoTranscode;
     final canTranscode = supportsTranscoding && hasTranscodingUrl;
     final directPlayRoute = isAudio
         ? JellyfinStreamRoute.audioDirectPlay

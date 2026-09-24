@@ -663,7 +663,12 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
       start: () => _manager.playItems(
         [item],
         enableDirectPlay: allowDirect,
-        enableDirectStream: allowDirect,
+        // Never withdrawn with direct play. A viewer who turns direct play off
+        // wants the server to serve the channel, not to re-encode it: the
+        // remux keeps the original codecs and arrives as HLS, which has the
+        // live window a raw transport stream never had. Withdrawing both left
+        // them with a transcode nobody asked for.
+        enableDirectStream: true,
         // Keep transcoding available as a fallback so a failed direct-play
         // of the upstream URL recovers to the server transcode instead of
         // erroring.
