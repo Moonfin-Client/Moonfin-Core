@@ -25,6 +25,7 @@ import android.view.Surface
 import android.view.SurfaceView
 import android.view.TextureView
 import android.view.View
+import android.util.Log as AndroidLog
 import android.widget.FrameLayout
 import androidx.annotation.OptIn
 import androidx.core.content.getSystemService
@@ -37,6 +38,7 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.TrackGroup
+import androidx.media3.common.Timeline
 import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.TrackSelectionOverride
 import androidx.media3.common.Tracks
@@ -577,6 +579,8 @@ class Media3VideoView(
         // surface more than once, so one retry is not always enough. The
         // recovery window is what stops this running on.
         private const val DISPLAY_MODE_SWITCH_MAX_RETRIES = 3
+        /** One greppable logcat tag for everything live recovery reports. */
+        private const val LIVE_TAG = "MoonfinLive"
         // An HDMI route flap pauses the player through the becoming-noisy
         // broadcast or an audio focus loss. The sink coming back inside this
         // window undoes that pause, past it the pause is left as it is.
@@ -1025,7 +1029,7 @@ class Media3VideoView(
                     mapOf(
                         "event" to "completed",
                         "completed" to true,
-                    ),
+                    ) + endOfStreamDiagnostics(),
                 )
             }
             syncTicker()
@@ -2045,6 +2049,12 @@ class Media3VideoView(
                     result.success(null)
                 }
 
+                "resumeLive" -> {
+                    resumeLiveEdge()
+                    emitState()
+                    result.success(null)
+                }
+
                 "stop" -> {
                     stopPlaybackAndRestoreDisplayMode()
                     if (isDisposedByFlutter && currentMediaType != "audio") {
@@ -2243,6 +2253,11 @@ class Media3VideoView(
 
                 "pause" -> {
                     player.pause()
+                    emitState()
+                }
+
+                "resumeLive" -> {
+                    resumeLiveEdge()
                     emitState()
                 }
 
@@ -3697,6 +3712,82 @@ class Media3VideoView(
         if (verticalOffset != null) {
             subtitleView.setBottomPaddingFraction(verticalOffset.coerceIn(0f, 0.95f))
         }
+    }
+
+    /** The window the player is on, or null before it has a timeline. */
+    private fun currentWindow(): Timeline.Window? {
+        val timeline = player.currentTimeline
+        if (timeline.isEmpty) return null
+        return try {
+            timeline.getWindow(player.currentMediaItemIndex, Timeline.Window())
+        } catch (_: IndexOutOfBoundsException) {
+            null
+        }
+    }
+
+    /**
+     * What the player thought it was playing when it reported the end of the
+     * stream. A live source has no end, so the window's own view of itself is
+     * what separates a starved live stream from a finished one, whatever
+     * container the server chose to deliver it in.
+     */
+    private fun endOfStreamDiagnostics(): Map<String, Any> {
+        val window = currentWindow()
+        val mimeType = inferStreamMimeType(currentUrl ?: "", currentContainer, currentMediaType)
+        val fields = mapOf(
+            "isLive" to currentIsLive,
+            "windowIsLive" to (window?.isLive() ?: false),
+            "windowIsDynamic" to (window?.isDynamic ?: false),
+            "sourceMimeType" to (mimeType ?: "unknown"),
+            "durationMs" to player.duration,
+            "positionMs" to player.currentPosition,
+            "bufferedPositionMs" to player.bufferedPosition,
+            // C.TIME_UNSET means the player isn't treating the window as live.
+            "liveOffsetMs" to player.currentLiveOffset,
+            // A starved live source ends with loading still true; one that ran
+            // out ends with nothing left to load.
+            "isLoading" to player.isLoading,
+            "playWhenReady" to player.playWhenReady,
+        )
+        // Also to logcat: the Dart diagnostic log only keeps entries when the
+        // user has the diagnostics preference on, and its developer.log call
+        // sits behind an assert, so on a release build this is the only place
+        // the answer survives.
+        AndroidLog.w(LIVE_TAG, fields.entries.joinToString(" ") { "${it.key}=${it.value}" })
+        return fields
+    }
+
+    /**
+     * Picks a starved live stream back up in place, without the server
+     * session being torn down. Only a window that says it is live has an edge
+     * to seek to; anything else -- a progressive transport stream the server
+     * stopped feeding, say -- is re-prepared where it stopped, since seeking
+     * such a source to its default position means restarting it from the
+     * front.
+     */
+    private fun resumeLiveEdge() {
+        if (isPlayerReleased) return
+        val window = currentWindow()
+        // Only a dynamic window has newer media to seek into; seeking a fixed
+        // window's default position restarts it from 0.
+        val hasLiveEdge = window?.isDynamic == true
+        if (hasLiveEdge) {
+            // Jump to the edge and re-prepare onto fresh media.
+            player.seekToDefaultPosition()
+            player.prepare()
+        } else {
+            // ENDED with nothing after the playhead, so only handing the
+            // source back reopens the connection.
+            prepareCurrentSource(player.currentPosition, true)
+        }
+        player.playWhenReady = true
+        AndroidLog.w(LIVE_TAG, "resumeLiveEdge seekedToEdge=$hasLiveEdge")
+        Media3Bridge.emitEvent(
+            mapOf(
+                "event" to "liveEdgeResumed",
+                "seekedToEdge" to hasLiveEdge,
+            ) + endOfStreamDiagnostics(),
+        )
     }
 
     /**

@@ -289,7 +289,35 @@ class Media3PlayerBackend extends PlayerBackend {
         }
       case 'completed':
         _completed = _toBool(map['completed']);
+        if (_completed) {
+          // A live source has no end, so what the player thought the window
+          // was is the thing worth knowing when it reports one anyway.
+          _diag(
+            'Media3 reported end of stream: live=${map['isLive']} '
+            'windowIsLive=${map['windowIsLive']} '
+            'windowIsDynamic=${map['windowIsDynamic']} '
+            'liveOffset=${map['liveOffsetMs']}ms '
+            'source=${map['sourceMimeType'] ?? 'unknown'} '
+            'duration=${map['durationMs']}ms '
+            'position=${map['positionMs']}ms '
+            'buffered=${map['bufferedPositionMs']}ms '
+            'loading=${map['isLoading']} '
+            'playWhenReady=${map['playWhenReady']}',
+            level: _sourceIsLive ? LogLevel.warning : LogLevel.debug,
+          );
+        }
         _completedStream.add(_completed);
+      case 'liveEdgeResumed':
+        _completed = false;
+        _diag(
+          'Media3 resumed a live source: seekedToEdge=${map['seekedToEdge']} '
+          'windowIsLive=${map['windowIsLive']} '
+          'windowIsDynamic=${map['windowIsDynamic']} '
+          'position=${map['positionMs']}ms '
+          'buffered=${map['bufferedPositionMs']}ms',
+          level: LogLevel.info,
+        );
+        _completedStream.add(false);
       case 'subtitleRendererModeChanged':
         _requestedSubtitleRendererMode = _modeFromWire(map['requestedMode']);
       case 'viewReady':
@@ -1127,6 +1155,14 @@ class Media3PlayerBackend extends PlayerBackend {
   @override
   Future<void> pause() async {
     await _invoke<void>('pause');
+  }
+
+  @override
+  Future<bool> resumeLiveEdge() async {
+    if (!_sourceIsLive) return false;
+    _diag('Media3: resuming the live edge after the source ran out');
+    await _invoke<void>('resumeLive');
+    return true;
   }
 
   @override
