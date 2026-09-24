@@ -1950,11 +1950,6 @@ class AppLocalizationsHi extends AppLocalizations {
   String get subtitleDelay => 'उपशीर्षक विलंब';
 
   @override
-  String subtitleDelayAuto(String value) {
-    return 'Auto $value';
-  }
-
-  @override
   String get reset => 'रीसेट करें';
 
   @override

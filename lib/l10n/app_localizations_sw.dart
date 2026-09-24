@@ -1963,11 +1963,6 @@ class AppLocalizationsSw extends AppLocalizations {
   String get subtitleDelay => 'Ucheleweshaji wa Manukuu';
 
   @override
-  String subtitleDelayAuto(String value) {
-    return 'Auto $value';
-  }
-
-  @override
   String get reset => 'Weka upya';
 
   @override

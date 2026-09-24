@@ -1969,11 +1969,6 @@ class AppLocalizationsSl extends AppLocalizations {
   String get subtitleDelay => 'Zakasnitev podnapisov';
 
   @override
-  String subtitleDelayAuto(String value) {
-    return 'Auto $value';
-  }
-
-  @override
   String get reset => 'Ponastavi';
 
   @override

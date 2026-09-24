@@ -1918,11 +1918,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get subtitleDelay => '字幕の遅延';
 
   @override
-  String subtitleDelayAuto(String value) {
-    return 'Auto $value';
-  }
-
-  @override
   String get reset => 'リセット';
 
   @override

@@ -11644,15 +11644,6 @@
     "@animeMarkerRecap": {
         "description": "Badge on an anime episode that recaps earlier episodes"
     },
-    "subtitleDelayAuto": "Auto {value}",
-    "@subtitleDelayAuto": {
-        "description": "Read-only line under the subtitle delay showing a correction the player applied on its own, value is a formatted delay like +2000 ms",
-        "placeholders": {
-            "value": {
-                "type": "String"
-            }
-        }
-    },
     "noProgramData": "Ohjelmatietoja ei ole",
     "@noProgramData": {
         "description": "Guide cell label for a real EPG schedule gap, not a genre-filtered program"

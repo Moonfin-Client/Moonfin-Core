@@ -1965,11 +1965,6 @@ class AppLocalizationsCs extends AppLocalizations {
   String get subtitleDelay => 'Zpoždění titulků';
 
   @override
-  String subtitleDelayAuto(String value) {
-    return 'Auto $value';
-  }
-
-  @override
   String get reset => 'Resetovat';
 
   @override

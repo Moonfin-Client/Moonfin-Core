@@ -1920,11 +1920,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get subtitleDelay => '자막 지연';
 
   @override
-  String subtitleDelayAuto(String value) {
-    return 'Auto $value';
-  }
-
-  @override
   String get reset => '초기화';
 
   @override

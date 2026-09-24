@@ -23,8 +23,7 @@ internal class TimeOffsetMediaSource(
     private val activePeriods = ArrayList<TimeOffsetMediaPeriod>()
 
     @Volatile
-    var timeOffsetUs: Long = initialOffsetUs
-        private set
+    private var timeOffsetUs: Long = initialOffsetUs
 
     fun setTimeOffsetUs(offsetUs: Long) {
         timeOffsetUs = offsetUs

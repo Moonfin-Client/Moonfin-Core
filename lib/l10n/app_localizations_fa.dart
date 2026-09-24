@@ -1946,11 +1946,6 @@ class AppLocalizationsFa extends AppLocalizations {
   String get subtitleDelay => 'تاخیر در زیرنویس';
 
   @override
-  String subtitleDelayAuto(String value) {
-    return 'Auto $value';
-  }
-
-  @override
   String get reset => 'بازنشانی';
 
   @override

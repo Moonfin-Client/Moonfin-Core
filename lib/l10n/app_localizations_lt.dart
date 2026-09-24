@@ -1958,11 +1958,6 @@ class AppLocalizationsLt extends AppLocalizations {
   String get subtitleDelay => 'Subtitrų vėlavimas';
 
   @override
-  String subtitleDelayAuto(String value) {
-    return 'Auto $value';
-  }
-
-  @override
   String get reset => 'Atstatyti';
 
   @override

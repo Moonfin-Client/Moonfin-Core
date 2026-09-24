@@ -74,13 +74,6 @@ abstract class PlayerBackend {
   Stream<bool> get completedStream;
   Stream<Map<String, dynamic>>? get errorStream => null;
 
-  /// A correction the backend applies to sideloaded subtitles on its own,
-  /// in seconds, positive meaning later. It sits on top of the delay the
-  /// user set and is shown next to it, never added into it. Only a backend
-  /// that measures one provides it.
-  double get subtitleAutoOffsetSeconds => 0.0;
-  Stream<double>? get subtitleAutoOffsetStream => null;
-
   Map<String, dynamic> getDeviceProfile({bool useProgressiveTranscode = false});
 
   Future<void> setPlaybackSpeed(double speed);

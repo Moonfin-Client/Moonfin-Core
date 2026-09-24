@@ -3358,12 +3358,6 @@ abstract class AppLocalizations {
   /// **'Subtitle Delay'**
   String get subtitleDelay;
 
-  /// Read-only line under the subtitle delay showing a correction the player applied on its own, value is a formatted delay like +2000 ms
-  ///
-  /// In en, this message translates to:
-  /// **'Auto {value}'**
-  String subtitleDelayAuto(String value);
-
   /// Button label to reset a value
   ///
   /// In en, this message translates to:

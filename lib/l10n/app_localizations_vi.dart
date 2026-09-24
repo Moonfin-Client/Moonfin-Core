@@ -1957,11 +1957,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get subtitleDelay => 'Độ trễ phụ đề';
 
   @override
-  String subtitleDelayAuto(String value) {
-    return 'Auto $value';
-  }
-
-  @override
   String get reset => 'Đặt lại';
 
   @override

@@ -1960,11 +1960,6 @@ class AppLocalizationsMk extends AppLocalizations {
   String get subtitleDelay => 'Одложување на титловите';
 
   @override
-  String subtitleDelayAuto(String value) {
-    return 'Auto $value';
-  }
-
-  @override
   String get reset => 'Ресетирај';
 
   @override

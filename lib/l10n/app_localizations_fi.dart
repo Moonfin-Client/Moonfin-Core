@@ -1958,11 +1958,6 @@ class AppLocalizationsFi extends AppLocalizations {
   String get subtitleDelay => 'Tekstityksen viive';
 
   @override
-  String subtitleDelayAuto(String value) {
-    return 'Auto $value';
-  }
-
-  @override
   String get reset => 'Nollaa';
 
   @override

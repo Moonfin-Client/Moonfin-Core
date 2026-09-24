@@ -1970,11 +1970,6 @@ class AppLocalizationsEl extends AppLocalizations {
   String get subtitleDelay => 'Καθυστέρηση υπότιτλων';
 
   @override
-  String subtitleDelayAuto(String value) {
-    return 'Auto $value';
-  }
-
-  @override
   String get reset => 'Επαναφορά';
 
   @override

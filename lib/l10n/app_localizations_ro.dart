@@ -1963,11 +1963,6 @@ class AppLocalizationsRo extends AppLocalizations {
   String get subtitleDelay => 'Întârziere subtitrare';
 
   @override
-  String subtitleDelayAuto(String value) {
-    return 'Auto $value';
-  }
-
-  @override
   String get reset => 'Resetează';
 
   @override

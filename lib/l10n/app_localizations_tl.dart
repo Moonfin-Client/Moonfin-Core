@@ -1964,11 +1964,6 @@ class AppLocalizationsTl extends AppLocalizations {
   String get subtitleDelay => 'Pagkaantala ng Subtitle';
 
   @override
-  String subtitleDelayAuto(String value) {
-    return 'Auto $value';
-  }
-
-  @override
   String get reset => 'I-reset';
 
   @override

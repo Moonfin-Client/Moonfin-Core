@@ -68,7 +68,6 @@ import androidx.media3.exoplayer.audio.DefaultAudioSink
 import androidx.media3.exoplayer.audio.MediaCodecAudioRenderer
 import androidx.media3.exoplayer.Renderer
 import androidx.media3.exoplayer.RendererCapabilities
-import androidx.media3.exoplayer.hls.HlsMediaSource
 import androidx.media3.exoplayer.mediacodec.MediaCodecAdapter
 import androidx.media3.exoplayer.mediacodec.MediaCodecInfo
 import androidx.media3.exoplayer.mediacodec.MediaCodecSelector
@@ -105,10 +104,8 @@ import org.moonfin.nativevideo.subtitle.SourceTree
 import org.moonfin.nativevideo.subtitle.TextStreamOffsetMediaSource
 import org.moonfin.nativevideo.subtitle.TimeOffsetMediaSource
 import org.moonfin.nativevideo.subtitle.clampManualDelayMs
-import org.moonfin.nativevideo.subtitle.effectiveOffsetUs
 import org.moonfin.nativevideo.subtitle.externalFormatIdMatches
 import org.moonfin.nativevideo.subtitle.joinStackedCues
-import org.moonfin.nativevideo.subtitle.shouldRetime
 import org.moonfin.nativevideo.subtitle.sourceTreeFor
 import org.moonfin.nativevideo.subtitle.syncDelaysPayload
 
@@ -907,7 +904,7 @@ class Media3VideoView(
     private var retimeRunnable: Runnable? = null
     @Volatile private var subtitleRetime: SubtitleRetime? = null
 
-    private class SubtitleRetime(var reselect: Boolean) {
+    private class SubtitleRetime {
         var disabling = false
         var writing = false
     }
@@ -3040,7 +3037,7 @@ class Media3VideoView(
         }
         manualSubtitleDelayMs = nextDelayMs
         clearSubtitleCues()
-        applyEffectiveOffset(manualChanged = true)
+        applySubtitleDelay()
         emitSyncDelayState()
         emitState()
     }
@@ -3145,7 +3142,6 @@ class Media3VideoView(
             syncDelaysPayload(
                 audioDelayMs = audioDelayMs,
                 subtitleDelayMs = manualSubtitleDelayMs,
-                subtitleAutoOffsetMs = 0L,
             ),
         )
     }
@@ -3552,9 +3548,8 @@ class Media3VideoView(
         activeSubtitleRendererMode = resolvedMode
 
         applySubtitleRendererMode(activeSubtitleRendererMode)
-        // A sideloaded and an embedded track can carry different shifts, so
-        // the overlay follows whichever one is on screen now.
-        assOverlayView?.timeOffsetUs = selectedTrackOffsetUs()
+        // The overlay only shifts once the source tree shifts the cues with it.
+        assOverlayView?.timeOffsetUs = if (embeddedOffsetSource == null) 0L else subtitleOffsetUs()
 
         if (previousActive != activeSubtitleRendererMode || desiredMode != previousActive) {
             emitSubtitleRendererModeChanged(desiredMode)
@@ -3726,7 +3721,7 @@ class Media3VideoView(
                 player.setMediaItem(mediaItem, startPositionMs)
             }
             SourceTree.CUSTOM_TREE -> {
-                player.setMediaSource(buildSourceTree(mediaItem, inferredMimeType), startPositionMs)
+                player.setMediaSource(buildSourceTree(mediaItem), startPositionMs)
             }
         }
         player.prepare()
@@ -3745,46 +3740,27 @@ class Media3VideoView(
      * The content item drops its subtitle configurations because each one
      * becomes a child of its own here, wrapped so its timeline can slide.
      */
-    @Suppress("DEPRECATION")
-    private fun buildSourceTree(mediaItem: MediaItem, mimeType: String?): MediaSource {
+    private fun buildSourceTree(mediaItem: MediaItem): MediaSource {
         val contentItem = mediaItem.buildUpon()
             .setSubtitleConfigurations(emptyList())
             .build()
-        val content = if (mimeType == MimeTypes.APPLICATION_M3U8) {
-            // Match the player's own HLS factory's subtitle parsing behavior.
-            HlsMediaSource.Factory(bootDataSourceFactory)
-                .setSubtitleParserFactory(assParserFactory)
-                .experimentalParseSubtitlesDuringExtraction(true)
-                .createMediaSource(contentItem)
-        } else {
-            bootMediaSourceFactory.createMediaSource(contentItem)
-        }
-        val manualUs = effectiveOffsetUs(0L, manualSubtitleDelayMs)
-        val embedded = TextStreamOffsetMediaSource(content, manualUs)
+        val content = bootMediaSourceFactory.createMediaSource(contentItem)
+        val offsetUs = subtitleOffsetUs()
+        val embedded = TextStreamOffsetMediaSource(content, offsetUs)
         val sidecars = externalSubtitleConfigurations.map { configuration ->
             TimeOffsetMediaSource(
                 SidecarSourceFactory.create(configuration, bootDataSourceFactory, assParserFactory),
-                sidecarOffsetUs(),
+                offsetUs,
             )
         }
         embeddedOffsetSource = embedded
         sidecarOffsetSources = sidecars
-        assOverlayView?.timeOffsetUs = selectedTrackOffsetUs()
+        assOverlayView?.timeOffsetUs = offsetUs
         if (sidecars.isEmpty()) return embedded
         return MergingMediaSource(embedded, *sidecars.toTypedArray())
     }
 
-    // Extracted subtitles use source-file timestamps. The HLS adjuster can
-    // also remove transport padding, so its raw offset is not a subtitle
-    // correction without a verified source-to-transport mapping.
-    private fun sidecarOffsetUs(): Long = effectiveOffsetUs(0L, manualSubtitleDelayMs)
-
-    /** The ASS overlay shows one track, so it follows that track's shift. */
-    private fun selectedTrackOffsetUs(): Long = when {
-        embeddedOffsetSource == null -> 0L
-        selectedSubtitleIsExternal -> sidecarOffsetUs()
-        else -> effectiveOffsetUs(0L, manualSubtitleDelayMs)
-    }
+    private fun subtitleOffsetUs(): Long = manualSubtitleDelayMs * 1000L
 
     /**
      * Pushes the current offsets into the source tree. The first non zero
@@ -3793,10 +3769,9 @@ class Media3VideoView(
      * that the wrappers take the new value live, and the text track is
      * re-selected so cues the renderer already holds pick it up.
      */
-    private fun applyEffectiveOffset(manualChanged: Boolean) {
+    private fun applySubtitleDelay() {
         if (isPlayerReleased || currentUrl == null) return
-        val embedded = embeddedOffsetSource
-        if (embedded == null) {
+        if (embeddedOffsetSource == null) {
             val tree = sourceTreeFor(
                 isLive = currentIsLive,
                 isPreview = currentIsPreview,
@@ -3810,20 +3785,8 @@ class Media3VideoView(
             }
             return
         }
-        val sidecars = sidecarOffsetSources
-        val sidecarUs = sidecarOffsetUs()
-        val embeddedUs = effectiveOffsetUs(0L, manualSubtitleDelayMs)
-        // Only the track on screen decides whether a re-select is worth it.
-        val previousUs = if (selectedSubtitleIsExternal) {
-            sidecars.firstOrNull()?.timeOffsetUs ?: embedded.timeOffsetUs
-        } else {
-            embedded.timeOffsetUs
-        }
-        val nextUs = if (selectedSubtitleIsExternal) sidecarUs else embeddedUs
-        val reselect = shouldRetime(previousUs, nextUs, manualChanged)
-        val request = subtitleRetime ?: SubtitleRetime(reselect).also { subtitleRetime = it }
-        request.reselect = request.reselect || reselect
-        if (reselect && !request.disabling && !request.writing) {
+        val request = subtitleRetime ?: SubtitleRetime().also { subtitleRetime = it }
+        if (!request.disabling && !request.writing) {
             scheduleRetime()
         } else if (retimeRunnable == null) {
             retimeTextTrack()
@@ -3858,7 +3821,7 @@ class Media3VideoView(
     private fun retimeTextTrack() {
         val request = subtitleRetime ?: return
         if (isDisposed || isPlayerReleased || retimeRunnable != null || request.writing) return
-        if (request.reselect && !request.disabling) {
+        if (!request.disabling) {
             request.disabling = true
             trackSelector.parameters = trackSelector.parameters.buildUpon()
                 .setTrackTypeDisabled(C.TRACK_TYPE_TEXT, true)
@@ -3869,28 +3832,25 @@ class Media3VideoView(
         val owner = player
         val embedded = embeddedOffsetSource ?: return
         val sidecars = sidecarOffsetSources
-        val embeddedUs = effectiveOffsetUs(0L, manualSubtitleDelayMs)
-        val sidecarUs = sidecarOffsetUs()
+        val offsetUs = subtitleOffsetUs()
         request.writing = true
         // This also orders writes after queued selection invalidations when
         // text was already Off and no track-change callback will be delivered.
         val posted = Handler(owner.playbackLooper).post playback@{
             if (subtitleRetime !== request) return@playback
-            embedded.setTimeOffsetUs(embeddedUs)
-            for (source in sidecars) source.setTimeOffsetUs(sidecarUs)
+            embedded.setTimeOffsetUs(offsetUs)
+            for (source in sidecars) source.setTimeOffsetUs(offsetUs)
             mainHandler.post completion@{
                 if (subtitleRetime !== request || player !== owner || isDisposed || isPlayerReleased) {
                     return@completion
                 }
                 request.writing = false
-                if (embeddedUs != effectiveOffsetUs(0L, manualSubtitleDelayMs) ||
-                    sidecarUs != sidecarOffsetUs() || (request.reselect && !request.disabling)
-                ) {
+                if (offsetUs != subtitleOffsetUs()) {
                     retimeTextTrack()
                     return@completion
                 }
                 subtitleRetime = null
-                assOverlayView?.timeOffsetUs = selectedTrackOffsetUs()
+                assOverlayView?.timeOffsetUs = offsetUs
                 // Keep accepted overrides rather than restoring a snapshot of
                 // possibly stale Tracks. New pending choices and Off take priority.
                 if (!applyPendingSubtitle()) {

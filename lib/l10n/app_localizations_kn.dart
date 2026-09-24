@@ -1957,11 +1957,6 @@ class AppLocalizationsKn extends AppLocalizations {
   String get subtitleDelay => 'ಉಪಶೀರ್ಷಿಕೆ ವಿಳಂಬ';
 
   @override
-  String subtitleDelayAuto(String value) {
-    return 'Auto $value';
-  }
-
-  @override
   String get reset => 'ಮರುಹೊಂದಿಸಿ';
 
   @override

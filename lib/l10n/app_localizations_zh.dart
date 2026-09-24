@@ -1905,11 +1905,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get subtitleDelay => '字幕延迟';
 
   @override
-  String subtitleDelayAuto(String value) {
-    return 'Auto $value';
-  }
-
-  @override
   String get reset => '重置';
 
   @override

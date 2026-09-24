@@ -1957,11 +1957,6 @@ class AppLocalizationsTe extends AppLocalizations {
   String get subtitleDelay => 'ఉపశీర్షిక ఆలస్యం';
 
   @override
-  String subtitleDelayAuto(String value) {
-    return 'Auto $value';
-  }
-
-  @override
   String get reset => 'రీసెట్ చేయండి';
 
   @override

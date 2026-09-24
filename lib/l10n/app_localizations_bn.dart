@@ -1948,11 +1948,6 @@ class AppLocalizationsBn extends AppLocalizations {
   String get subtitleDelay => 'সাবটাইটেল বিলম্ব';
 
   @override
-  String subtitleDelayAuto(String value) {
-    return 'Auto $value';
-  }
-
-  @override
   String get reset => 'রিসেট করুন';
 
   @override
