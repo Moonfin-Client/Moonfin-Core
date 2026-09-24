@@ -158,6 +158,7 @@ class Media3PlayerBackend extends PlayerBackend {
   int _bufferingNudgedAtMs = 0;
   bool _bufferingFailed = false;
   bool _sourceIsLive = false;
+  bool? _playWhenReady;
   String? _lastFrameRateLine;
 
   final _positionStream = StreamController<Duration>.broadcast();
@@ -173,6 +174,9 @@ class Media3PlayerBackend extends PlayerBackend {
 
   @override
   Stream<Map<String, dynamic>> get errorStream => _errorStream.stream;
+
+  @override
+  bool? get playWhenReady => _playWhenReady;
 
   @override
   double get subtitleAutoOffsetSeconds => _subtitleAutoOffsetSeconds;
@@ -223,6 +227,20 @@ class Media3PlayerBackend extends PlayerBackend {
         _buffer = Duration(milliseconds: _toInt(map['bufferedMs']));
         _isPlaying = _toBool(map['isPlaying']);
         _isBuffering = _toBool(map['isBuffering']);
+        // The player's own intent, which isPlaying folds away. Absent from an
+        // older native side, so it stays null rather than guessing false.
+        _playWhenReady = map.containsKey('playWhenReady')
+            ? _toBool(map['playWhenReady'])
+            : null;
+        // The rate the player actually settled on, which is not always the one
+        // that was asked for: bitstreamed audio cannot be time stretched, so
+        // the audio sink resets a non-1.0 speed back to 1.0 within a frame or
+        // two. Reading it back keeps the UI and the position estimate honest
+        // instead of reporting a speed that is not happening.
+        final reportedSpeed = (map['playbackSpeed'] as num?)?.toDouble();
+        if (reportedSpeed != null && reportedSpeed > 0) {
+          _playbackSpeed = reportedSpeed;
+        }
         if (_isPlaying != wasPlaying || _isBuffering != wasBuffering) {
           _diag(
             'Media3 state: playing=$_isPlaying buffering=$_isBuffering '

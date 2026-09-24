@@ -4913,6 +4913,9 @@ class Media3VideoView(
             "bufferedMs" to if (bufferedPosition > 0) bufferedPosition else 0L,
             "isPlaying" to player.isPlaying,
             "isBuffering" to (player.playbackState == Player.STATE_BUFFERING),
+            // isPlaying can't tell a viewer pause from a stall; playWhenReady
+            // is the intent to play.
+            "playWhenReady" to player.playWhenReady,
             "playbackSpeed" to player.playbackParameters.speed.toDouble(),
             "videoWidth" to videoSize.width,
             "videoHeight" to videoSize.height,

@@ -836,6 +836,13 @@ class PlaybackManager implements AudioOwnable {
       backend.positionStream.listen((pos) {
         state.setPosition(pos);
         if (pos > Duration.zero) _lastKnownPosition = pos;
+        // A backend can refuse a speed it was given - bitstreamed audio cannot
+        // be time stretched - so track what it actually settled on rather than
+        // leaving the UI showing a rate that is not happening.
+        final actualSpeed = backend.playbackSpeed;
+        if (actualSpeed > 0 && actualSpeed != state.playbackSpeed) {
+          state.setPlaybackSpeed(actualSpeed);
+        }
       }),
       backend.durationStream.listen((dur) {
         if (_itemKnownDuration > Duration.zero &&
@@ -846,8 +853,16 @@ class PlaybackManager implements AudioOwnable {
         }
       }),
       backend.bufferStream.listen(state.setBuffer),
-      backend.playingStream.listen(state.setPlaying),
-      backend.bufferingStream.listen(state.setBuffering),
+      backend.playingStream.listen((playing) {
+        // The intent is read from the backend at the same moment, so a
+        // progress report can tell a viewer pause from a starved stream.
+        state.setPlayWhenReady(backend.playWhenReady);
+        state.setPlaying(playing);
+      }),
+      backend.bufferingStream.listen((buffering) {
+        state.setPlayWhenReady(backend.playWhenReady);
+        state.setBuffering(buffering);
+      }),
       backend.completedStream.listen(_onTrackCompleted),
     ]);
 
@@ -2127,7 +2142,10 @@ class PlaybackManager implements AudioOwnable {
           activeGeneration.item,
           activeGeneration.resolution,
           state.position,
-          isPaused: !state.isPlaying,
+          // Not `!isPlaying`: that reads true while the stream is merely
+          // starved, so the server could never tell a viewer pause from a
+          // stall. Engines with no intent flag fall back to the old answer.
+          isPaused: state.isPaused,
           audioStreamIndex: _audioStreamIndex,
           subtitleStreamIndex: _subtitleStreamIndex,
           volumeLevel: _volume.round(),

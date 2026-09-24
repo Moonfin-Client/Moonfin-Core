@@ -257,6 +257,10 @@ class AetherBackend implements PlayerBackend {
     await _invoke<void>('pause');
   }
 
+  // Implements rather than extends, so the interface default is not inherited.
+  @override
+  bool? get playWhenReady => null;
+
   @override
   Future<void> stop() async {
     await _invoke<void>('stop');

@@ -13,6 +13,7 @@ class PlayerState {
 
   bool _isPlaying = false;
   bool _isBuffering = false;
+  bool? _playWhenReady;
   Duration _position = Duration.zero;
   Duration _duration = Duration.zero;
   Duration _buffer = Duration.zero;
@@ -22,6 +23,19 @@ class PlayerState {
 
   bool get isPlaying => _isPlaying;
   bool get isBuffering => _isBuffering;
+
+  /// Whether the player has been told to play, independent of whether it
+  /// currently can. Null on engines that do not report their own intent.
+  ///
+  /// [isPlaying] is a derived value -- media3 defines it as
+  /// `playWhenReady && READY && no suppression` -- so it reads false for a
+  /// viewer pause, a starved stream and a transient audio-focus loss alike.
+  /// Anything that has to tell those apart wants this, not [isPlaying].
+  bool? get playWhenReady => _playWhenReady;
+
+  /// Whether the viewer paused. Falls back to "not playing" on an engine that
+  /// reports no intent, which is what every caller used to assume.
+  bool get isPaused => !(_playWhenReady ?? _isPlaying);
   Duration get position => _position;
   Duration get duration => _duration;
   Duration get buffer => _buffer;
@@ -41,6 +55,10 @@ class PlayerState {
     if (_isPlaying == playing) return;
     _isPlaying = playing;
     _playingController.add(playing);
+  }
+
+  void setPlayWhenReady(bool? playWhenReady) {
+    _playWhenReady = playWhenReady;
   }
 
   void setBuffering(bool buffering) {
@@ -86,6 +104,7 @@ class PlayerState {
   void reset() {
     _isPlaying = false;
     _isBuffering = false;
+    _playWhenReady = null;
     _position = Duration.zero;
     _duration = Duration.zero;
     _buffer = Duration.zero;

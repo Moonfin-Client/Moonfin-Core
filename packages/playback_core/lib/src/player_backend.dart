@@ -74,6 +74,14 @@ abstract class PlayerBackend {
   Stream<bool> get completedStream;
   Stream<Map<String, dynamic>>? get errorStream => null;
 
+  /// Whether the player has been told to play, independent of whether it
+  /// currently can. Null on engines that do not expose their own intent, and
+  /// callers then fall back to "not playing".
+  ///
+  /// This exists because `isPlaying` is derived: a viewer pause, a starved
+  /// stream and a transient audio-focus loss all read as not playing.
+  bool? get playWhenReady => null;
+
   /// A correction the backend applies to sideloaded subtitles on its own,
   /// in seconds, positive meaning later. It sits on top of the delay the
   /// user set and is shown next to it, never added into it. Only a backend
