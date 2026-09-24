@@ -111,6 +111,38 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   Timer? _programRefreshTimer;
   StreamSubscription<PlayerBackend>? _backendSub;
 
+  /// Watches the bringup state for the whole time the screen is up, not just
+  /// while a channel is tuning. A live stream that dies mid-watch is reported
+  /// as a failed bringup by the manager once its bounded recovery is spent,
+  /// and without a standing listener that report reaches nobody: playback
+  /// simply stops and the viewer is left on a still frame with no way back.
+  StreamSubscription<PlaybackBringupState>? _liveFailureSub;
+
+  /// Defensive reconcile alongside [_liveFailureSub]: an intermediate
+  /// recovery failure the manager already drops can still race a stale
+  /// failure card onto the screen. If playback is actually advancing again
+  /// while the card is up, clear it rather than trust the card was right.
+  StreamSubscription<bool>? _failureCardReconcilePlayingSub;
+  StreamSubscription<bool>? _failureCardReconcileBufferingSub;
+
+  /// The tune path reports its own failures, so this must not double up on
+  /// them. Only a failure arriving after a channel was playing is this
+  /// listener's to report.
+  bool _channelIsUp = false;
+
+  /// Progress of the manager's bounded live recovery, or null when none is in
+  /// flight. Drives the reconnecting overlay in place of the plain buffering
+  /// spinner.
+  LiveRecoveryStatus? _liveRecoveryStatus;
+  StreamSubscription<LiveRecoveryStatus?>? _liveRecoveryStatusSub;
+
+  /// Whether the persistent failure card is showing. Unlike the old snackbar
+  /// it does not time out -- it stays until the viewer retries, tunes
+  /// elsewhere, or leaves.
+  bool _channelFailed = false;
+  String? _failedChannelName;
+  final _retryFocus = FocusNode(debugLabel: 'LiveTvRetry');
+
   /// Guards the focus reclaim below against fighting another widget forever.
   bool _reclaimingFocus = false;
   StreamSubscription<bool>? _screensaverPlayingSub;
@@ -182,6 +214,19 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
       setState(() {});
     });
     _listenForPlayerTrackChanges();
+    _liveFailureSub = _manager.bringupStateStream.listen(_onBringupState);
+    _failureCardReconcilePlayingSub = _state.playingStream.listen(
+      (_) => _reconcileFailureCardWithPlayback(),
+    );
+    _failureCardReconcileBufferingSub = _state.bufferingStream.listen(
+      (_) => _reconcileFailureCardWithPlayback(),
+    );
+    _liveRecoveryStatusSub = _manager.liveRecoveryStatusStream.listen((
+      status,
+    ) {
+      if (!mounted) return;
+      setState(() => _liveRecoveryStatus = status);
+    });
     FocusManager.instance.addListener(_onGlobalFocusChanged);
     _tvPlayPauseFocus.addListener(_onControlFocusChanged);
     _tvChannelsFocus.addListener(_onControlFocusChanged);
@@ -218,6 +263,11 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     _hideTimer?.cancel();
     _programRefreshTimer?.cancel();
     _backendSub?.cancel();
+    _liveFailureSub?.cancel();
+    _failureCardReconcilePlayingSub?.cancel();
+    _failureCardReconcileBufferingSub?.cancel();
+    _liveRecoveryStatusSub?.cancel();
+    _retryFocus.dispose();
     _prefs.removeListener(_applySubtitleStyle);
     FocusManager.instance.removeListener(_onGlobalFocusChanged);
     _tracksChangedSub?.cancel();
@@ -648,6 +698,11 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     // A channel change starts a new stream, so whatever caption choice is
     // remembered has to be put back once this one reports its own captions.
     _captionTrackApplied = false;
+    // The old channel is no longer up, and until the new one is, a failure
+    // belongs to the tune below and nothing else. Left set, the persistent
+    // listener claims the same failure first and the viewer gets told twice.
+    _channelIsUp = false;
+    _clearChannelFailedCard();
     final channel = _currentChannel;
     unawaited(_prefs.set(UserPreferences.liveTvLastChannelId, channel.id));
     final item = AggregatedItem(
@@ -679,22 +734,82 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
       return false;
     }
     final succeeded = terminalState?.phase == PlaybackBringupPhase.ready;
+    _channelIsUp = succeeded;
     if (!succeeded) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              AppLocalizations.of(context).failedToPlayChannel(channel.name),
-            ),
-          ),
-        );
-      }
+      _showChannelFailedCard(channel.name);
       return false;
     }
     _applySubtitleStyle(force: true);
     unawaited(_fetchCurrentProgram());
     _warmChannelCarousel();
     return true;
+  }
+
+  /// A failure that arrives once a channel is playing is the manager saying
+  /// its bounded recovery could not save the stream. The tune path never sees
+  /// it, because by then it has already returned.
+  void _onBringupState(PlaybackBringupState state) {
+    if (!mounted || _isStopping || !_channelIsUp) return;
+    if (state.phase != PlaybackBringupPhase.failed) return;
+    _channelIsUp = false;
+    _showChannelFailedCard(_currentChannel.name);
+  }
+
+  /// Belt and braces: the manager suppresses an intermediate recovery
+  /// failure so this screen never sees it, but if something still leaves
+  /// the failure card up while the stream is genuinely playing again, drop
+  /// it rather than leave the viewer looking at a stale Retry card.
+  void _reconcileFailureCardWithPlayback() {
+    if (!mounted || !_channelFailed) return;
+    if (!_state.isPlaying || _state.isBuffering) return;
+    _channelIsUp = true;
+    _clearChannelFailedCard();
+  }
+
+  /// Shows the persistent failure card. It stays up until the viewer retries,
+  /// tunes to another channel, or leaves -- unlike the snackbar it replaces,
+  /// it never times out on its own.
+  void _showChannelFailedCard(String channelName) {
+    if (!mounted) return;
+    setState(() {
+      _channelFailed = true;
+      _failedChannelName = channelName;
+    });
+    if (PlatformDetection.isTV) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted || !_channelFailed) return;
+        _retryFocus.requestFocus();
+      });
+    }
+  }
+
+  void _clearChannelFailedCard() {
+    if (!_channelFailed) return;
+    setState(() {
+      _channelFailed = false;
+      _failedChannelName = null;
+    });
+  }
+
+  /// Where focus rests when nothing on the OSD holds it: Retry while the
+  /// failure card is up, so OK retries, otherwise the screen itself.
+  void _focusPlayerRoot() {
+    if (_channelFailed && PlatformDetection.isTV) {
+      _retryFocus.requestFocus();
+    } else {
+      _overlayFocus.requestFocus();
+    }
+  }
+
+  /// What the failure card's Retry control does.
+  Future<void> _retryCurrentChannel() async {
+    if (_isSwitching) return;
+    _isSwitching = true;
+    try {
+      await _playCurrentChannel();
+    } finally {
+      _isSwitching = false;
+    }
   }
 
   /// Takes focus back when something off-screen steals it.
@@ -738,7 +853,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
       if (!mounted || _isStopping) return;
       final current = ModalRoute.of(context);
       if (current != null && !current.isCurrent) return;
-      _overlayFocus.requestFocus();
+      _focusPlayerRoot();
     });
   }
 
@@ -850,7 +965,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
       }
       setState(() => _infoVisible = false);
       if (PlatformDetection.isTV) {
-        _overlayFocus.requestFocus();
+        _focusPlayerRoot();
       }
     });
   }
@@ -920,7 +1035,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     // Move focus off the OSD controls so it doesn't immediately re-pin itself
     // (a focused control keeps the OSD visible via _onControlFocusChanged).
     if (PlatformDetection.isTV) {
-      _overlayFocus.requestFocus();
+      _focusPlayerRoot();
     }
   }
 
@@ -981,7 +1096,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
       } else if (priorInfoVisible && priorFocus?.canRequestFocus == true) {
         priorFocus!.requestFocus();
       } else {
-        _overlayFocus.requestFocus();
+        _focusPlayerRoot();
       }
     });
   }
@@ -1735,6 +1850,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
                 children: [
                   _buildVideoSurface(),
                   _buildBufferingIndicator(),
+                  _buildReconnectingOverlay(),
                   if (PlatformDetection.isMobile) _buildBrightnessOverlay(),
                   if (PlatformDetection.isMobile) _buildVolumeOverlay(),
                   if (_isGuidePickerOpen) _buildGuideOverlay(),
@@ -1745,6 +1861,10 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
                     _buildTopOverlay(),
                     _buildBottomOverlay(),
                   ],
+                  if (_channelFailed &&
+                      !_isGuidePickerOpen &&
+                      !_isCarouselOpen)
+                    _buildChannelFailedCard(),
                 ],
               ),
             ),
@@ -1862,11 +1982,84 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
         stream: _state.bufferingStream,
         initialData: _state.isBuffering,
         builder: (context, snap) {
+          // The reconnecting overlay has its own spinner; showing both would
+          // put two on screen at once.
+          if (_liveRecoveryStatus != null) return const SizedBox.shrink();
           if (snap.data != true) return const SizedBox.shrink();
           return Center(
             child: CircularProgressIndicator(color: AppColorScheme.accent),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildReconnectingOverlay() {
+    final status = _liveRecoveryStatus;
+    if (status == null) return const SizedBox.shrink();
+    final l10n = AppLocalizations.of(context);
+    return AnimatedPositioned.fromRect(
+      rect: _videoRect(MediaQuery.sizeOf(context)),
+      duration: _kGuideResizeDuration,
+      curve: Curves.easeInOut,
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircularProgressIndicator(color: AppColorScheme.accent),
+            const SizedBox(height: AppSpacing.spaceMd),
+            Text(
+              l10n.liveReconnecting(status.attempt, status.maxAttempts),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: AppTypography.fontSizeMd,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Replaces the old transient snackbar. Stays up until the viewer retries
+  /// via the Retry control, tunes to another channel, or leaves the screen.
+  Widget _buildChannelFailedCard() {
+    final l10n = AppLocalizations.of(context);
+    final channelName = _failedChannelName ?? _currentChannel.name;
+    return Positioned.fill(
+      child: Center(
+        child: Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.spaceLg,
+            vertical: AppSpacing.spaceLg,
+          ),
+          decoration: BoxDecoration(
+            color: Colors.black87,
+            borderRadius: AppRadius.circular(14),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                l10n.failedToPlayChannel(channelName),
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: AppTypography.fontSizeMd,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.spaceMd),
+              _LiveTvRetryButton(
+                focusNode: _retryFocus,
+                label: l10n.retry,
+                onPressed: () => unawaited(_retryCurrentChannel()),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -2342,6 +2535,99 @@ class _LiveTvRoundControlButtonState extends State<_LiveTvRoundControlButton> {
               ),
             ),
             child: Icon(widget.icon, size: 24, color: Colors.white),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// The failure card's Retry control. Styled like [_LiveTvRoundControlButton]
+/// so it fits the rest of this screen's overlay chrome, but as a labelled
+/// pill rather than an icon -- and it owns select/enter itself so the OSD's
+/// key handler never has to special-case the card being up.
+class _LiveTvRetryButton extends StatefulWidget {
+  final FocusNode focusNode;
+  final VoidCallback onPressed;
+  final String label;
+
+  const _LiveTvRetryButton({
+    required this.onPressed,
+    required this.label,
+    required this.focusNode,
+  });
+
+  @override
+  State<_LiveTvRetryButton> createState() => _LiveTvRetryButtonState();
+}
+
+class _LiveTvRetryButtonState extends State<_LiveTvRetryButton> {
+  bool _focused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.focusNode.addListener(_onFocusChanged);
+  }
+
+  @override
+  void dispose() {
+    widget.focusNode.removeListener(_onFocusChanged);
+    super.dispose();
+  }
+
+  void _onFocusChanged() {
+    if (!mounted) return;
+    final hasFocus = widget.focusNode.hasFocus;
+    if (_focused != hasFocus) {
+      setState(() => _focused = hasFocus);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final focusColor = ThemeRegistry.active.borders.focusBorder.color;
+    return Focus(
+      focusNode: widget.focusNode,
+      onKeyEvent: (_, event) {
+        if (event is KeyDownEvent &&
+            (event.logicalKey == LogicalKeyboardKey.select ||
+                event.logicalKey == LogicalKeyboardKey.enter)) {
+          widget.onPressed();
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.ignored;
+      },
+      child: InkWell(
+        // Same reasoning as _LiveTvRoundControlButton: the outer Focus is the
+        // single focus target, a focusable InkWell would add a second one.
+        canRequestFocus: false,
+        borderRadius: AppRadius.circular(24),
+        onTap: widget.onPressed,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 140),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          decoration: BoxDecoration(
+            borderRadius: AppRadius.circular(24),
+            color: _focused
+                ? AppColorScheme.accent.withValues(alpha: 0.30)
+                : Colors.white.withValues(alpha: 0.14),
+            border: Border.fromBorderSide(
+              ThemeRegistry.active.borders.focusBorder.copyWith(
+                color: _focused
+                    ? focusColor
+                    : Colors.white.withValues(alpha: 0.10),
+                width: _focused ? 2 : 1,
+              ),
+            ),
+          ),
+          child: Text(
+            widget.label,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: AppTypography.fontSizeMd,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
       ),

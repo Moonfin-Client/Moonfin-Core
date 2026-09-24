@@ -3379,6 +3379,22 @@
       }
     }
   },
+  "playbackStreamLost": "Playback stopped and could not be recovered.",
+  "@playbackStreamLost": {
+    "description": "Shown in place of an internal sentinel error code when playback gives up trying to recover a stalled or starved stream"
+  },
+  "liveReconnecting": "Reconnecting… ({attempt} of {total})",
+  "@liveReconnecting": {
+    "description": "Overlay shown while a live channel's bounded recovery is retrying",
+    "placeholders": {
+      "attempt": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "failedToLoadRecordings": "Failed to load recordings",
   "@failedToLoadRecordings": {
     "description": "Error when recordings fail to load"
