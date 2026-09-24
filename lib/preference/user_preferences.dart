@@ -1940,8 +1940,9 @@ class UserPreferences extends ChangeNotifier {
   );
 
   /// Seconds between recrops while [cropBlackBars] is on. `0` is once at
-  /// start. `1` / `5` / `10` keep scanning; libmpv pays copy-back decode
-  /// for the whole title while that is on.
+  /// start. `1` / `5` / `10` keep scanning where playback can afford it.
+  /// 4K software/copy-back decode and decoder-mode switches use one scan to
+  /// avoid frame drops. Repeated scans also stop if they begin dropping frames.
   static final cropBlackBarsIntervalSeconds = Preference<int>(
     key: 'crop_black_bars_interval_seconds',
     defaultValue: 0,

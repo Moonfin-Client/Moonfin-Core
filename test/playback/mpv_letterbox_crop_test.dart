@@ -5,6 +5,12 @@ import 'package:moonfin/playback/media3_letterbox_crop.dart';
 import 'package:moonfin/playback/mpv_letterbox_crop.dart';
 import 'package:playback_core/playback_core.dart';
 
+bool _isVideoCrop(List<String> args, String spec) =>
+    args.length >= 3 &&
+    args[0] == 'set' &&
+    args[1] == 'file-local-options/video-crop' &&
+    args[2] == spec;
+
 class _MpvDetectHost extends _RecordingHost {
   Map<String, String> lavfi = const {
     'w': '1920',
@@ -12,11 +18,13 @@ class _MpvDetectHost extends _RecordingHost {
     'x': '0',
     'y': '138',
   };
+  String? hwdecCurrent;
 
   @override
   Future<String?> getProperty(String key) async {
     if (key == 'width') return '1920';
     if (key == 'height') return '1080';
+    if (key == 'hwdec-current' || key == 'hwdec') return hwdecCurrent;
     if (key == 'sub-pos') return subtitlePosition;
     for (final entry in lavfi.entries) {
       if (key == MpvLetterboxCrop.metadataProperty(entry.key)) {
@@ -266,6 +274,16 @@ void main() {
         contains('reset=1'),
       );
     });
+
+    test(
+      'zero-copy hwdec downloads one graph instead of a bare cropdetect',
+      () {
+        final spec = MpvLetterboxCrop.filterSpec(download: true);
+        expect(spec, contains('hwdownload,format=nv12|p010le,cropdetect='));
+        expect(spec, contains('reset=0'));
+        expect(spec, isNot(contains('hwdec')));
+      },
+    );
   });
 
   group('MpvLetterboxCrop.mustDisableHwdec', () {
@@ -327,30 +345,51 @@ void main() {
         cropper.setEnabled(true);
         async.flushMicrotasks();
         expect(
-          host.commands.any(
-            (args) =>
-                args.length >= 3 &&
-                args[0] == 'vf' &&
-                args[1] == 'add' &&
-                args[2].contains('1920:804:0:138'),
-          ),
+          host.commands.any((args) => _isVideoCrop(args, '1920x804+0+138')),
           isTrue,
         );
         final applies = host.commands
-            .where(
-              (args) => args.length >= 3 && args[0] == 'vf' && args[1] == 'add',
-            )
+            .where((args) => _isVideoCrop(args, '1920x804+0+138'))
             .length;
         async.elapse(const Duration(seconds: 5));
         async.flushMicrotasks();
         expect(
           host.commands
-              .where(
-                (args) =>
-                    args.length >= 3 && args[0] == 'vf' && args[1] == 'add',
-              )
+              .where((args) => _isVideoCrop(args, '1920x804+0+138'))
               .length,
           applies,
+        );
+        cropper.cancel();
+        async.flushMicrotasks();
+      });
+    });
+
+    test('nvdec keeps the decoder and downloads frames for cropdetect', () {
+      fakeAsync((async) {
+        final host = _MpvDetectHost()..hwdecCurrent = 'nvdec';
+        final cropper = MpvLetterboxCropper(
+          host,
+          supported: true,
+          autoDelay: Duration.zero,
+          detectDuration: Duration.zero,
+        );
+        cropper.setEnabled(true);
+        async.elapse(MpvLetterboxCrop.downloadWindow);
+        async.flushMicrotasks();
+        expect(
+          host.commands.any(
+            (args) =>
+                args.length >= 3 &&
+                args[0] == 'vf' &&
+                args[1] == 'pre' &&
+                args[2].contains('hwdownload,format=nv12|p010le,cropdetect='),
+          ),
+          isTrue,
+        );
+        expect(host.setProperties['hwdec'], isNull);
+        expect(
+          host.commands.any((args) => _isVideoCrop(args, '1920x804+0+138')),
+          isTrue,
         );
         cropper.cancel();
         async.flushMicrotasks();
@@ -373,13 +412,7 @@ void main() {
         cropper.recrop();
         async.flushMicrotasks();
         expect(
-          host.commands.any(
-            (args) =>
-                args.length >= 3 &&
-                args[0] == 'vf' &&
-                args[1] == 'add' &&
-                args[2].contains('1920:800:0:140'),
-          ),
+          host.commands.any((args) => _isVideoCrop(args, '1920x800+0+140')),
           isTrue,
         );
         cropper.cancel();
@@ -421,13 +454,7 @@ void main() {
         async.elapse(const Duration(seconds: 2));
         async.flushMicrotasks();
         expect(
-          host.commands.any(
-            (args) =>
-                args.length >= 3 &&
-                args[0] == 'vf' &&
-                args[1] == 'add' &&
-                args[2].contains('1920:804:0:138'),
-          ),
+          host.commands.any((args) => _isVideoCrop(args, '1920x804+0+138')),
           isTrue,
         );
         cropper.cancel();

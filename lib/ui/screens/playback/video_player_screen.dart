@@ -7235,6 +7235,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       _prefs.get(UserPreferences.cropBlackBars) &&
       (_activeBackend?.supportsLetterboxCrop ?? false);
 
+  bool get _mpvLetterboxCropEnabled =>
+      _letterboxCropOsd && _activeMediaKitBackend != null;
+
   void _listenToLetterboxCropState(PlayerBackend? backend) {
     _letterboxCropAppliedSub?.cancel();
     final cropper = backend?.letterboxCropper;
@@ -7247,14 +7250,16 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     });
   }
 
-  /// A cropped widescreen frame must use cover to fill fullscreen. In a
-  /// window, cover would discard left/right picture (and can cut subtitles),
-  /// so retain the user's regular fit there.
-  ZoomMode get _effectiveZoomMode =>
-      _letterboxCropApplied &&
-          (!PlatformDetection.useDesktopUi || _isDesktopFullscreen)
-      ? ZoomMode.autoCrop
-      : _zoomMode;
+  /// The mpv crop preserves the detected picture's shape. Fit leaves any
+  /// space required by a wider display at the sides.
+  ZoomMode get _effectiveZoomMode {
+    if (_mpvLetterboxCropEnabled) return ZoomMode.fit;
+    if (_letterboxCropApplied &&
+        (!PlatformDetection.useDesktopUi || _isDesktopFullscreen)) {
+      return ZoomMode.autoCrop;
+    }
+    return _zoomMode;
+  }
 
   String? _recropShortcutLabel(AppLocalizations l10n) {
     final keys = _keyBindings.keysFor(PlayerAction.recropBlackBars);
@@ -7763,7 +7768,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         CastTargetKind.dlna => 'DLNA',
         _ => l10n.cast,
       };
-      _showThrottledCastError(l10n.castActionFailed(label, describeError(e, l10n)));
+      _showThrottledCastError(
+        l10n.castActionFailed(label, describeError(e, l10n)),
+      );
     }
   }
 
