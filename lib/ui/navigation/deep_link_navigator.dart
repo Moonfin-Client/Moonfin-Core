@@ -26,7 +26,7 @@ void navigateWhenReady(String route) {
     // the original fast navigation holds.
     if (pinnedUserId == null ||
         pinnedUserId == GetIt.instance<SessionRepository>().activeUserId) {
-      appRouter.go(route);
+      unawaited(_navigateWhenSettled(route));
       return;
     }
     unawaited(_warmRepin(route, pinnedUserId));
@@ -176,6 +176,20 @@ Future<void> _warmRepin(String route, String userId) async {
 
 /// The pre-patch warm behavior, kept as the fallback for every repin failure.
 void _navigateWarm(String route) => appRouter.go(route);
+
+/// The no-repin warm path. A cold-started app fires this while the startup
+/// screen is still settling (the session restores from disk, so
+/// [SessionRepository.activeUserId] is already set before the router leaves
+/// the startup route); navigating into an item screen mid-startup races the
+/// first home transition and the item can read "not found". Wait until the
+/// router has left the startup screen, then navigate. A genuinely warm app is
+/// never on the startup route, so this is a no-op delay there.
+Future<void> _navigateWhenSettled(String route) async {
+  for (var i = 0; i < 60 && _currentPath() == Destinations.startup; i++) {
+    await Future<void>.delayed(const Duration(milliseconds: 500));
+  }
+  appRouter.go(route);
+}
 
 /// Polls until the app is no longer on the startup screen (StartupScreen's
 /// own restore finished or it gave up and showed the picker), capped so a
