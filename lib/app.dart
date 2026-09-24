@@ -315,14 +315,24 @@ class _MoonfinAppState extends State<MoonfinApp> {
                         );
                         if (GlassSettings.usePackageRenderer) {
                           // Governs every package-rendered glass pane below.
-                          // Benchmarks the device, throttles quality under
-                          // GPU and thermal pressure, and recovers when it
-                          // cools. The persisted settled quality skips the
-                          // warm-up on repeat launches.
+                          // Throttles quality under GPU and thermal pressure,
+                          // and recovers when it cools. The persisted settled
+                          // quality from a previous session is used directly;
+                          // on a cold first launch we seed with adaptiveMaxQuality
+                          // instead of null so the scope shows its child
+                          // immediately rather than blocking on the startup
+                          // benchmark. Windows 10 machines with older D3D11
+                          // drivers stall the benchmark indefinitely, producing
+                          // a permanent gray screen. The adaptive scope still
+                          // throttles downward at runtime if the device can't
+                          // sustain the quality, writing the result to prefs
+                          // via onQualityChanged so subsequent launches start
+                          // at the correct tier without a benchmark.
                           // ignore: experimental_member_use
                           content = GlassAdaptiveScope(
                             maxQuality: GlassCapability.adaptiveMaxQuality,
-                            initialQuality: _settledGlassInitialQuality(),
+                            initialQuality: _settledGlassInitialQuality() ??
+                                GlassCapability.adaptiveMaxQuality,
                             onQualityChanged: _onGlassQualityChanged,
                             child: content,
                           );
