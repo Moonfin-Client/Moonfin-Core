@@ -18,8 +18,18 @@ import 'destinations.dart';
 /// screen. Otherwise it waits for the first moment the app is authenticated and
 /// settled on Home.
 void navigateWhenReady(String route) {
+  final pinnedUserId = _pinnedUserId(route);
   if (_isAuthenticated()) {
-    appRouter.go(route);
+    // Warm path. A link pinned to a user different from the active session
+    // must re-pin first, or the route resolves under the wrong profile and the
+    // item reads "not found". With no pin, or the pin already the active user,
+    // the original fast navigation holds.
+    if (pinnedUserId == null ||
+        pinnedUserId == GetIt.instance<SessionRepository>().activeUserId) {
+      appRouter.go(route);
+      return;
+    }
+    unawaited(_warmRepin(route, pinnedUserId));
     return;
   }
 
@@ -115,6 +125,57 @@ Future<void> _pinUserIfRequested(
 
   onPinned();
 }
+
+/// The `userId` a deep link asked us to pin, or null when it carried none.
+String? _pinnedUserId(String route) {
+  final userId = Uri.tryParse(route)?.queryParameters['userId'];
+  return (userId == null || userId.isEmpty) ? null : userId;
+}
+
+/// Warm-session re-pin: the app already holds a session for a different user,
+/// so a link pinned to another user has to switch sessions before navigating,
+/// or the route resolves under the wrong profile. Applies the same gates the
+/// cold-start pin does (a link must never bypass a PIN or an
+/// always-authenticate requirement), reuses `switchCurrentSession` exactly the
+/// way the cold path does, and falls back to the plain warm navigation on any
+/// gate or failure so a link can't end up worse than before.
+Future<void> _warmRepin(String route, String userId) async {
+  try {
+    if (GetIt.instance<AuthenticationPreferences>().shouldAlwaysAuthenticate) {
+      return _navigateWarm(route);
+    }
+    if (PinCodeUtil(GetIt.instance<PreferenceStore>(), userId).isPinEnabled) {
+      return _navigateWarm(route);
+    }
+  } catch (_) {
+    // Preferences unavailable, so don't repin; keep the old warm behavior.
+    return _navigateWarm(route);
+  }
+
+  final query = Uri.tryParse(route)?.queryParameters;
+  final serverId = _resolveServerIdForUser(userId, query?['serverId']);
+  // Unknown or ambiguous, so keep the old warm behavior.
+  if (serverId == null) return _navigateWarm(route);
+
+  bool pinned = false;
+  try {
+    await GetIt.instance<ServerRepository>().loadStoredServers();
+    pinned = await GetIt.instance<SessionRepository>().switchCurrentSession(
+      serverId: serverId,
+      userId: userId,
+    );
+  } catch (_) {
+    pinned = false;
+  }
+  if (!pinned || !_isAuthenticated()) return _navigateWarm(route);
+
+  // Same post-frame hop the cold path uses: a switch settles Home, and
+  // re-navigating inside that settlement would fight the router mid-go().
+  WidgetsBinding.instance.addPostFrameCallback((_) => appRouter.go(route));
+}
+
+/// The pre-patch warm behavior, kept as the fallback for every repin failure.
+void _navigateWarm(String route) => appRouter.go(route);
 
 /// Polls until the app is no longer on the startup screen (StartupScreen's
 /// own restore finished or it gave up and showed the picker), capped so a
