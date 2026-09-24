@@ -7250,8 +7250,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     });
   }
 
-  /// The mpv crop preserves the detected picture's shape. Fit leaves any
-  /// space required by a wider display at the sides.
+  /// Fit keeps the cropped shape. A 16:9 window then gets a separate zoom
+  /// that only removes the vertical bars fit puts back.
   ZoomMode get _effectiveZoomMode {
     if (_mpvLetterboxCropEnabled) return ZoomMode.fit;
     if (_letterboxCropApplied &&

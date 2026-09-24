@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:playback_core/playback_core.dart';
 
 import 'mpv_frame_sample.dart';
@@ -34,20 +33,64 @@ class MpvLetterboxCrop {
   /// cannot read the hardware surface. The decoder is not restarted.
   ///
   /// `hwdownload` is the generic ffmpeg filter (VAAPI, Vulkan, D3D11,
-  /// VideoToolbox, nvdec). nv12 is the usual 8-bit layout and p010le the
-  /// usual 10-bit layout; neither names a GPU vendor.
+  /// VideoToolbox, nvdec). Pass one layout only. A list such as
+  /// `nv12|p010le` makes mpv try nv12 first and abort a 10-bit frame.
   static String filterSpec({
     bool resetEachFrame = false,
-    bool download = false,
+    String? downloadFormat,
   }) {
     final detect =
         'cropdetect=limit=$detectLimit:round=$detectRound:reset=${resetEachFrame ? 1 : 0}';
-    if (!download) return '@$filterLabel:$detect';
-    return '@$filterLabel:lavfi=[hwdownload,format=nv12|p010le,$detect]';
+    if (downloadFormat == null) return '@$filterLabel:$detect';
+    return '@$filterLabel:lavfi=[hwdownload,format=$downloadFormat,$detect]';
+  }
+
+  /// Software layout `hwdownload` can actually write for this hardware frame.
+  /// `video-params/hw-pixelformat` is `nv12` or `p010` on every desktop hwdec.
+  static String? downloadFormatFor(String? hwPixelFormat, {int? averageBpp}) {
+    switch (hwPixelFormat) {
+      case 'nv12':
+      case 'nv21':
+        return 'nv12';
+      case 'p010':
+      case 'p010le':
+      case 'p016':
+      case 'p016le':
+        return 'p010le';
+    }
+    // cuda/vaapi/vulkan/drm name the surface, not the pixels. 4:2:0 8-bit is
+    // about 12 bits per pixel; 10-bit is about 24.
+    if (averageBpp != null && averageBpp >= 20) return 'p010le';
+    if (averageBpp != null && averageBpp > 0) return 'nv12';
+    return null;
   }
 
   static String metadataProperty(String key) =>
       'vf-metadata/$filterLabel/$_lavfiPrefix$key';
+
+  /// How far to zoom a fitted crop so vertical bars disappear.
+  ///
+  /// A 2:1 picture in a 16:9 window is letterboxed again by fit, which hides
+  /// the crop. Zooming by the aspect ratio fills the height and clips the
+  /// sides. A wider window already has no vertical bars, so it stays at 1
+  /// and keeps the side space.
+  static double fillScale({
+    required int cropWidth,
+    required int cropHeight,
+    required double windowWidth,
+    required double windowHeight,
+  }) {
+    if (cropWidth <= 0 ||
+        cropHeight <= 0 ||
+        windowWidth <= 0 ||
+        windowHeight <= 0) {
+      return 1;
+    }
+    final cropAspect = cropWidth / cropHeight;
+    final windowAspect = windowWidth / windowHeight;
+    if (cropAspect <= windowAspect) return 1;
+    return cropAspect / windowAspect;
+  }
 
   /// Non-copy hwdec cannot feed cropdetect. Same exceptions as autocrop.lua.
   static bool mustDisableHwdec(String? hwdecCurrent) {
@@ -66,6 +109,19 @@ class MpvLetterboxCrop {
 
   static String? hwdecForCropdetect(String? hwdecCurrent) {
     if (!mustDisableHwdec(hwdecCurrent)) return null;
+    // auto-copy may leave nvdec and come back as vulkan-copy. Stay on the
+    // same accelerator.
+    const sameApi = {
+      'nvdec',
+      'vaapi',
+      'vulkan',
+      'd3d11va',
+      'videotoolbox',
+      'qsv',
+      'drm',
+      'vdpau',
+    };
+    if (sameApi.contains(hwdecCurrent)) return '$hwdecCurrent-copy';
     return copyHwdec;
   }
 
@@ -186,6 +242,7 @@ class MpvLetterboxCropper extends LetterboxCropper {
   final LetterboxCropStabilizer _stabilizer;
   final _appliedController = StreamController<bool>.broadcast();
   final _geometryController = StreamController<MpvCropGeometry?>.broadcast();
+  String? _panscan;
 
   final Duration autoDelay;
   final Duration detectDuration;
@@ -205,10 +262,6 @@ class MpvLetterboxCropper extends LetterboxCropper {
   bool _inFlight = false;
 
   bool get _continuous => _recropInterval > Duration.zero;
-
-  void _log(String message) {
-    if (kDebugMode) debugPrint('[letterbox_crop/mpv] $message');
-  }
 
   @override
   bool get isApplied => _applied;
@@ -232,7 +285,6 @@ class MpvLetterboxCropper extends LetterboxCropper {
   Future<void> setEnabled(bool enabled) async {
     final changed = enabled != _enabled;
     _enabled = enabled;
-    if (changed) _log('enabled=$enabled supported=$isSupported');
     if (!isSupported || !changed) return;
     if (!enabled) {
       await _sync();
@@ -249,7 +301,6 @@ class MpvLetterboxCropper extends LetterboxCropper {
     if (_recropInterval == interval) return;
     final wasContinuous = _continuous;
     _recropInterval = interval;
-    _log('interval=${interval.inSeconds}s wasContinuous=$wasContinuous');
     if (!isSupported || !_enabled) return;
     final url = _host.currentUrl;
     if (url == null || url.isEmpty) return;
@@ -270,7 +321,6 @@ class MpvLetterboxCropper extends LetterboxCropper {
 
   @override
   Future<void> onSourceOpened(String url) async {
-    _log('source opened; restarting detection');
     // Opening the same URL again is still a new playback session.
     _doneUrl = null;
     _loopUrl = null;
@@ -282,7 +332,6 @@ class MpvLetterboxCropper extends LetterboxCropper {
   @override
   Future<void> recrop() async {
     if (!isSupported || !_enabled) return;
-    _log('manual recrop requested');
     _skipStartDelay = true;
     _forceRestart = true;
     _keepAppliedCrop = _applied;
@@ -291,7 +340,6 @@ class MpvLetterboxCropper extends LetterboxCropper {
 
   Future<void> _sync() async {
     if (!_enabled) {
-      _log('disabled; clearing crop and detector');
       _generation++;
       _doneUrl = null;
       _loopUrl = null;
@@ -300,23 +348,19 @@ class MpvLetterboxCropper extends LetterboxCropper {
       return;
     }
     if (!_host.hasNativePlayer) {
-      _log('cannot detect: native mpv player unavailable');
       return;
     }
     final url = _host.currentUrl;
     if (url == null || url.isEmpty) {
-      _log('cannot detect: no source URL');
       return;
     }
 
     if (!_forceRestart) {
       if (_continuous) {
         if (_inFlight && _loopUrl == url) {
-          _log('continuous detector already running');
           return;
         }
       } else if (_doneUrl == url || (_inFlight && _loopUrl == url)) {
-        _log('one-shot detector already running or completed');
         return;
       }
     }
@@ -333,9 +377,6 @@ class MpvLetterboxCropper extends LetterboxCropper {
       _stabilizer.reset();
     }
     final generation = ++_generation;
-    _log(
-      'start generation=$generation continuous=$_continuous keepCrop=$keepCrop',
-    );
     await _removeDetectFilter();
     if (!keepCrop) {
       if (_applied || _hwdecBackup != null) {
@@ -376,10 +417,8 @@ class MpvLetterboxCropper extends LetterboxCropper {
     }
 
     try {
-      _log('generation=$generation waiting for playback');
       if (!await _waitWhileCurrent(generation, untilPlaying: true)) return;
       if (!_skipStartDelay && _host.position < autoDelay) {
-        _log('generation=$generation start delay=${autoDelay.inSeconds}s');
         if (!await _delay(generation, autoDelay)) {
           return;
         }
@@ -393,9 +432,6 @@ class MpvLetterboxCropper extends LetterboxCropper {
       final need = _continuous ? _recropInterval : detectDuration;
       if (_host.duration > Duration.zero &&
           remaining < need + const Duration(seconds: 1)) {
-        _log(
-          'generation=$generation skipped: only ${remaining.inSeconds}s left',
-        );
         return;
       }
       if (!_isCurrent(generation)) return;
@@ -420,21 +456,29 @@ class MpvLetterboxCropper extends LetterboxCropper {
       // Zero-copy hwdec used to force one scan because switching to copy-back
       // restarted the decoder. A short hwdownload does not, so repeated scans
       // stay cheap.
-      final download = MpvLetterboxCrop.mustDisableHwdec(hwdecCurrent);
+      final needsDownload = MpvLetterboxCrop.mustDisableHwdec(hwdecCurrent);
+      final hwPixel = await _host.getProperty('video-params/hw-pixelformat');
+      final averageBpp = int.tryParse(
+        await _host.getProperty('video-params/average-bpp') ?? '',
+      );
+      final downloadFormat = needsDownload
+          ? MpvLetterboxCrop.downloadFormatFor(hwPixel, averageBpp: averageBpp)
+          : null;
       final scanContinuously = _continuous && !expensiveDecode;
-      if (_continuous && !scanContinuously) {
-        _log(
-          'generation=$generation using one scan for '
-          '${source.$1}x${source.$2} hwdec=$hwdecCurrent; '
-          'manual recrop remains available',
-        );
-      }
-      _log('generation=$generation hwdec=$hwdecCurrent download=$download');
+      if (_continuous && !scanContinuously) {}
 
       if (scanContinuously) {
-        await _runContinuous(generation, download: download);
+        await _runContinuous(
+          generation,
+          needsDownload: needsDownload,
+          downloadFormat: downloadFormat,
+        );
       } else {
-        await _runOnce(generation, download: download);
+        await _runOnce(
+          generation,
+          needsDownload: needsDownload,
+          downloadFormat: downloadFormat,
+        );
       }
     } finally {
       if (generation == _generation) {
@@ -456,10 +500,6 @@ class MpvLetterboxCropper extends LetterboxCropper {
           _doneUrl = _host.currentUrl;
           return true;
         }
-        _log(
-          'generation=$generation cropped frame is not the coded picture; '
-          'switching to filter detection',
-        );
         return false;
       }
       if (!await _waitWhileCurrent(generation, untilPlaying: true)) return true;
@@ -475,13 +515,10 @@ class MpvLetterboxCropper extends LetterboxCropper {
           size.$2,
           window: _geometry?.rect,
         );
-      } catch (error) {
-        _log('generation=$generation frame capture failed: $error');
-      }
+      } catch (error) {}
       if (!_isCurrent(generation)) return true;
       if (frame == null) {
         if (++failures >= 3) {
-          _log('frame capture unavailable; using filter detection fallback');
           return false;
         }
       } else {
@@ -495,10 +532,6 @@ class MpvLetterboxCropper extends LetterboxCropper {
           y: rect?.y,
           sourceWidth: size.$1,
           sourceHeight: size.$2,
-        );
-        _log(
-          'generation=$generation frame=${frame.width}x${frame.height} '
-          'rect=${rect?.videoCrop} captureMs=${frame.elapsed.inMilliseconds}',
         );
         await _applyDecision(generation, decision, size);
         if (!_isCurrent(generation)) return true;
@@ -515,10 +548,6 @@ class MpvLetterboxCropper extends LetterboxCropper {
               windowW: geometry.rect.w,
               windowH: geometry.rect.h,
             )) {
-          _log(
-            'generation=$generation cropped frame hides the surrounding '
-            'picture; switching to filter detection',
-          );
           return false;
         }
         final dropsAfter = int.tryParse(
@@ -537,7 +566,6 @@ class MpvLetterboxCropper extends LetterboxCropper {
         }
         if (nextMillis > adaptiveInterval.inMilliseconds) {
           adaptiveInterval = Duration(milliseconds: nextMillis);
-          _log('generation=$generation sample backoff=${nextMillis}ms');
         }
         if (!_continuous &&
             (decision.changed ||
@@ -556,87 +584,53 @@ class MpvLetterboxCropper extends LetterboxCropper {
     return true;
   }
 
-  Future<void> _runOnce(int generation, {required bool download}) async {
-    final measured = await _measure(
+  Future<void> _runOnce(
+    int generation, {
+    required bool needsDownload,
+    required String? downloadFormat,
+  }) async {
+    final measured = await _readOrCopyBack(
       generation,
-      download: download,
+      needsDownload: needsDownload,
+      downloadFormat: downloadFormat,
       resetEachFrame: false,
-      window: download ? MpvLetterboxCrop.downloadWindow : detectDuration,
+      window: downloadFormat != null
+          ? MpvLetterboxCrop.downloadWindow
+          : detectDuration,
     );
     if (measured == null || !_isCurrent(generation)) return;
-    var sample = measured.sample;
-    var source = measured.source;
-    if (measured.failed) {
-      final fallback = await _copyBackSample(generation, resetEachFrame: false);
-      if (fallback == null || !_isCurrent(generation)) return;
-      sample = fallback.sample;
-      source = fallback.source;
-    }
-    if (sample == null) return;
-    _log(
-      'generation=$generation sample=${sample.kind.name} rect=${sample.rect?.videoCrop}',
-    );
-    if (sample.kind == LetterboxSampleKind.fullFrame) {
-      _log('generation=$generation full frame; clearing previous crop');
-      if (_applied) {
-        await _clearVideoCrop();
-        if (!_isCurrent(generation)) return;
-        _setApplied(false);
-      }
-      _doneUrl = _host.currentUrl;
-      return;
-    }
-    final rect = sample.rect;
-    if (rect == null) {
-      _log('generation=$generation no valid crop rectangle');
-      _doneUrl = _host.currentUrl;
-      return;
-    }
-    if (!await _applyVideoCrop(rect, source)) return;
-    if (!_isCurrent(generation)) return;
+    await _commitSample(generation, measured);
     _doneUrl = _host.currentUrl;
   }
 
-  Future<void> _runContinuous(int generation, {required bool download}) async {
-    var samples = 0;
+  Future<void> _runContinuous(
+    int generation, {
+    required bool needsDownload,
+    required String? downloadFormat,
+  }) async {
     var scanDrops = 0;
     try {
       while (_isCurrent(generation) && _enabled && _continuous) {
-        if (kDebugMode && samples++ % 5 == 0) {
-          _log(
-            'generation=$generation playback '
-            'drops=${await _host.getProperty('frame-drop-count')} '
-            'decoderDrops=${await _host.getProperty('decoder-frame-drop-count')} '
-            'late=${await _host.getProperty('vo-delayed-frame-count')} '
-            'mistimed=${await _host.getProperty('mistimed-frame-count')} '
-            'hwdec=${await _host.getProperty('hwdec-current')}',
-          );
-        }
         if (!await _waitWhileCurrent(generation, untilPlaying: true)) return;
         final before = _host.position;
         final dropsBefore = int.tryParse(
           await _host.getProperty('frame-drop-count') ?? '',
         );
-        final measured = await _measure(
+        final measured = await _readOrCopyBack(
           generation,
-          download: download,
-          resetEachFrame: true,
-          window: download
+          needsDownload: needsDownload,
+          downloadFormat: downloadFormat,
+          resetEachFrame: downloadFormat != null,
+          window: downloadFormat != null
               ? MpvLetterboxCrop.downloadWindow
               : const Duration(milliseconds: 250),
         );
         if (measured == null || !_isCurrent(generation)) return;
-        if (measured.failed) {
-          _log(
-            'generation=$generation hardware download unavailable; '
-            'one copy-back scan',
-          );
-          final fallback = await _copyBackSample(
-            generation,
-            resetEachFrame: true,
-          );
-          if (fallback == null || !_isCurrent(generation)) return;
-          await _applyMeasured(generation, fallback);
+        if (measured.copyBack) {
+          // This reading already accumulated for a second, and the fallback
+          // does not take a second one. Apply it instead of waiting for
+          // another hit that never comes.
+          await _commitSample(generation, measured);
           return;
         }
         await _applyMeasured(generation, measured);
@@ -651,10 +645,6 @@ class MpvLetterboxCropper extends LetterboxCropper {
             scanDrops += dropsAfter - dropsBefore;
           }
           if (scanDrops >= 3) {
-            _log(
-              'generation=$generation repeated scans stopped after '
-              '$scanDrops playback frame drops; manual recrop remains available',
-            );
             return;
           }
         }
@@ -676,9 +666,55 @@ class MpvLetterboxCropper extends LetterboxCropper {
     }
   }
 
+  Future<_Measurement?> _readOrCopyBack(
+    int generation, {
+    required bool needsDownload,
+    required String? downloadFormat,
+    required bool resetEachFrame,
+    required Duration window,
+  }) async {
+    if (!needsDownload) {
+      return _measure(
+        generation,
+        downloadFormat: null,
+        resetEachFrame: resetEachFrame,
+        window: window,
+      );
+    }
+    if (downloadFormat == null) {
+      return _copyBackSample(generation);
+    }
+    final measured = await _measure(
+      generation,
+      downloadFormat: downloadFormat,
+      resetEachFrame: resetEachFrame,
+      window: window,
+    );
+    if (measured == null || !measured.failed) return measured;
+    return _copyBackSample(generation);
+  }
+
+  Future<void> _commitSample(int generation, _Measurement measured) async {
+    final sample = measured.sample;
+    if (sample == null || !_isCurrent(generation)) return;
+    if (sample.kind == LetterboxSampleKind.fullFrame) {
+      if (_applied) {
+        await _clearVideoCrop();
+        if (!_isCurrent(generation)) return;
+        _setApplied(false);
+      }
+      return;
+    }
+    final rect = sample.rect;
+    if (rect == null) {
+      return;
+    }
+    await _applyVideoCrop(rect, measured.source);
+  }
+
   Future<_Measurement?> _measure(
     int generation, {
-    required bool download,
+    required String? downloadFormat,
     required bool resetEachFrame,
     required Duration window,
   }) async {
@@ -687,12 +723,9 @@ class MpvLetterboxCropper extends LetterboxCropper {
       'pre',
       MpvLetterboxCrop.filterSpec(
         resetEachFrame: resetEachFrame,
-        download: download,
+        downloadFormat: downloadFormat,
       ),
     ]);
-    _log(
-      'generation=$generation detector inserted=$inserted download=$download',
-    );
     if (!inserted) {
       return _Measurement.failed();
     }
@@ -701,7 +734,6 @@ class MpvLetterboxCropper extends LetterboxCropper {
       if (!_isCurrent(generation)) return null;
       final source = await _sourceSize();
       final lavfi = await _readLavfi();
-      _log('detect metadata=$lavfi source=${source.$1}x${source.$2}');
       if (lavfi.length < 4) return _Measurement.failed(source);
       return _Measurement.fromLavfi(lavfi, source);
     } finally {
@@ -710,10 +742,7 @@ class MpvLetterboxCropper extends LetterboxCropper {
   }
 
   /// Copy-back restarts the decoder. Used only when hwdownload produced nothing.
-  Future<_Measurement?> _copyBackSample(
-    int generation, {
-    required bool resetEachFrame,
-  }) async {
+  Future<_Measurement?> _copyBackSample(int generation) async {
     final mode = MpvLetterboxCrop.hwdecForCropdetect(
       await _host.getProperty('hwdec-current'),
     );
@@ -723,18 +752,15 @@ class MpvLetterboxCropper extends LetterboxCropper {
       if (!await _delay(generation, const Duration(milliseconds: 400))) {
         return null;
       }
-      _log(
-        'generation=$generation hwdec after switch='
-        '${await _host.getProperty('hwdec-current')}',
-      );
     }
     try {
-      return await _measure(
+      final measured = await _measure(
         generation,
-        download: false,
-        resetEachFrame: resetEachFrame,
+        downloadFormat: null,
+        resetEachFrame: false,
         window: detectDuration,
       );
+      return measured?.asCopyBack();
     } finally {
       await _restoreHwdec();
     }
@@ -750,12 +776,6 @@ class MpvLetterboxCropper extends LetterboxCropper {
       sourceWidth: measured.source.$1,
       sourceHeight: measured.source.$2,
     );
-    _log(
-      'generation=$generation poll metadata='
-      '{w: ${measured.width}, h: ${measured.height}, '
-      'x: ${measured.x}, y: ${measured.y}} '
-      'source=${measured.source.$1}x${measured.source.$2}',
-    );
     await _applyDecision(generation, decision, measured.source);
   }
 
@@ -765,9 +785,6 @@ class MpvLetterboxCropper extends LetterboxCropper {
     (int, int) size,
   ) async {
     if (!decision.changed || !_isCurrent(generation)) return;
-    _log(
-      'generation=$generation decision=${decision.rect?.videoCrop ?? 'full frame'}',
-    );
 
     if (decision.rect == null) {
       if (_applied) {
@@ -794,7 +811,6 @@ class MpvLetterboxCropper extends LetterboxCropper {
       final blob = await _host.getProperty(
         'vf-metadata/${MpvLetterboxCrop.filterLabel}',
       );
-      _log('metadata fallback=$blob');
       lavfi.addAll(MpvLetterboxCrop.parseVfMetadata(blob));
     }
     return lavfi;
@@ -856,7 +872,6 @@ class MpvLetterboxCropper extends LetterboxCropper {
       'file-local-options/video-crop',
       rect.videoCrop,
     ]);
-    _log('apply rect=${rect.videoCrop} videoCropAccepted=$applied');
     if (!applied) {
       await _clearVideoCrop();
       _setApplied(false);
@@ -864,27 +879,32 @@ class MpvLetterboxCropper extends LetterboxCropper {
     }
     _setGeometry(MpvCropGeometry(rect, source.$1, source.$2));
     _setApplied(true);
-    if (kDebugMode) unawaited(_logAppliedOutput(rect));
+    await _syncPanscan();
     return true;
   }
 
-  Future<void> _logAppliedOutput(LetterboxCropRect rect) async {
-    final source = _host.currentUrl;
-    await Future<void>.delayed(const Duration(milliseconds: 250));
-    if (_host.isDisposed || _host.currentUrl != source) return;
-    final width = await _host.getProperty('video-out-params/w');
-    final height = await _host.getProperty('video-out-params/h');
-    final cropWidth = await _host.getProperty('video-out-params/crop-w');
-    final cropHeight = await _host.getProperty('video-out-params/crop-h');
-    final displayWidth = await _host.getProperty('dwidth');
-    final displayHeight = await _host.getProperty('dheight');
-    final panscan = await _host.getProperty('panscan');
-    final filters = await _host.getProperty('vf');
-    _log(
-      'applied rect=${rect.videoCrop} output=${width}x$height '
-      'crop=${cropWidth}x$cropHeight display=${displayWidth}x$displayHeight '
-      'panscan=$panscan vf=$filters',
+  /// The rendered frame stays the source size. Fit then paints the removed
+  /// bars back into that frame, which is why a 16:9 screen still shows them.
+  /// Fill the frame when the cropped picture is wider than the source.
+  Future<void> _syncPanscan() async {
+    final geometry = _geometry;
+    if (!_applied || geometry == null) {
+      await _setPanscan('0');
+      return;
+    }
+    final fill = MpvLetterboxCrop.fillScale(
+      cropWidth: geometry.rect.w,
+      cropHeight: geometry.rect.h,
+      windowWidth: geometry.sourceWidth.toDouble(),
+      windowHeight: geometry.sourceHeight.toDouble(),
     );
+    await _setPanscan(fill > 1 ? '1' : '0');
+  }
+
+  Future<void> _setPanscan(String value) async {
+    if (_panscan == value) return;
+    _panscan = value;
+    await _host.setProperty('panscan', value);
   }
 
   Future<void> _clearVideoCrop() async {
@@ -897,6 +917,7 @@ class MpvLetterboxCropper extends LetterboxCropper {
     await _host.command(['set', 'file-local-options/video-crop', '']);
     await _restoreSubtitlePosition();
     _setGeometry(null);
+    await _setPanscan('0');
   }
 
   void _setGeometry(MpvCropGeometry? geometry) {
@@ -936,7 +957,6 @@ class MpvLetterboxCropper extends LetterboxCropper {
   void _setApplied(bool value) {
     if (_applied == value) return;
     _applied = value;
-    _log('applied=$value');
     _appliedController.add(value);
   }
 
@@ -961,7 +981,19 @@ class _Measurement {
     this.x,
     this.y,
     this.sample,
+    this.copyBack = false,
   });
+
+  _Measurement asCopyBack() => _Measurement(
+    source: source,
+    failed: failed,
+    width: width,
+    height: height,
+    x: x,
+    y: y,
+    sample: sample,
+    copyBack: true,
+  );
 
   factory _Measurement.failed([(int, int) source = (0, 0)]) {
     return _Measurement(source: source, failed: true);
@@ -998,4 +1030,5 @@ class _Measurement {
   final int? x;
   final int? y;
   final LetterboxSample? sample;
+  final bool copyBack;
 }

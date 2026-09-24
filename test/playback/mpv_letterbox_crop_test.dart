@@ -25,6 +25,9 @@ class _MpvDetectHost extends _RecordingHost {
     if (key == 'width') return '1920';
     if (key == 'height') return '1080';
     if (key == 'hwdec-current' || key == 'hwdec') return hwdecCurrent;
+    if (key == 'video-params/hw-pixelformat') {
+      return hwdecCurrent == null ? null : 'nv12';
+    }
     if (key == 'sub-pos') return subtitlePosition;
     for (final entry in lavfi.entries) {
       if (key == MpvLetterboxCrop.metadataProperty(entry.key)) {
@@ -275,15 +278,46 @@ void main() {
       );
     });
 
-    test(
-      'zero-copy hwdec downloads one graph instead of a bare cropdetect',
-      () {
-        final spec = MpvLetterboxCrop.filterSpec(download: true);
-        expect(spec, contains('hwdownload,format=nv12|p010le,cropdetect='));
-        expect(spec, contains('reset=0'));
-        expect(spec, isNot(contains('hwdec')));
-      },
-    );
+    test('8-bit hardware frames download as nv12', () {
+      expect(MpvLetterboxCrop.downloadFormatFor('nv12'), 'nv12');
+      expect(
+        MpvLetterboxCrop.filterSpec(downloadFormat: 'nv12'),
+        contains('hwdownload,format=nv12,cropdetect='),
+      );
+    });
+
+    test('16:9 window zooms a wider crop; a wider window does not', () {
+      expect(
+        MpvLetterboxCrop.fillScale(
+          cropWidth: 3840,
+          cropHeight: 1920,
+          windowWidth: 3840,
+          windowHeight: 2160,
+        ),
+        closeTo(3840 / 1920 / (3840 / 2160), 0.0001),
+      );
+      expect(
+        MpvLetterboxCrop.fillScale(
+          cropWidth: 3840,
+          cropHeight: 1920,
+          windowWidth: 3440,
+          windowHeight: 1440,
+        ),
+        1,
+      );
+    });
+
+    test('10-bit hardware frames download as p010le only', () {
+      expect(MpvLetterboxCrop.downloadFormatFor('p010'), 'p010le');
+      expect(
+        MpvLetterboxCrop.filterSpec(downloadFormat: 'p010le'),
+        contains('hwdownload,format=p010le,cropdetect='),
+      );
+      expect(
+        MpvLetterboxCrop.filterSpec(downloadFormat: 'p010le'),
+        isNot(contains('nv12')),
+      );
+    });
   });
 
   group('MpvLetterboxCrop.mustDisableHwdec', () {
@@ -299,8 +333,10 @@ void main() {
       expect(MpvLetterboxCrop.mustDisableHwdec('nvdec'), isTrue);
     });
 
-    test('hwdecForCropdetect prefers auto-copy over software', () {
-      expect(MpvLetterboxCrop.hwdecForCropdetect('nvdec'), 'auto-copy');
+    test('hwdecForCropdetect stays on the same accelerator', () {
+      expect(MpvLetterboxCrop.hwdecForCropdetect('nvdec'), 'nvdec-copy');
+      expect(MpvLetterboxCrop.hwdecForCropdetect('vaapi'), 'vaapi-copy');
+      expect(MpvLetterboxCrop.hwdecForCropdetect('auto'), 'auto-copy');
       expect(MpvLetterboxCrop.hwdecForCropdetect('vaapi-copy'), isNull);
       expect(MpvLetterboxCrop.hwdecForCropdetect('no'), isNull);
     });
@@ -382,7 +418,7 @@ void main() {
                 args.length >= 3 &&
                 args[0] == 'vf' &&
                 args[1] == 'pre' &&
-                args[2].contains('hwdownload,format=nv12|p010le,cropdetect='),
+                args[2].contains('hwdownload,format=nv12,cropdetect='),
           ),
           isTrue,
         );
