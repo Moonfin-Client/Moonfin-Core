@@ -178,6 +178,21 @@ class LogService extends ChangeNotifier {
         level: _devLevel(level),
         error: error,
       );
+      // developer.log only reaches the VM service, so a device investigation
+      // over adb never saw any of this. debugPrint is the one sink that lands
+      // in logcat, and a debug build is where those investigations happen.
+      //
+      // Not everything, though. Mirroring every entry put a line in logcat for
+      // each HTTP request and response, which is most of the volume and enough
+      // to make a modest box feel sluggish. Playback and media are the
+      // categories a device investigation actually reads; everything else has
+      // to be worth an operator's attention to earn a line.
+      if (level != LogLevel.debug ||
+          category == LogCategory.playback ||
+          category == LogCategory.media) {
+        debugPrint('[${category.label}] ${level.label} $message');
+        if (error != null) debugPrint('    └─ $error');
+      }
       return true;
     }());
 
