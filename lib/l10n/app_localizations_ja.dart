@@ -1553,6 +1553,9 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String get noAlternateVersions => 'No alternate versions for this channel';
+
+  @override
   String get downloadAllQuality => 'すべてダウンロード — 品質';
 
   @override

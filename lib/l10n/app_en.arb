@@ -2027,6 +2027,10 @@
       }
     }
   },
+  "noAlternateVersions": "No alternate versions for this channel",
+  "@noAlternateVersions": {
+    "description": "Shown when a live TV channel has only one MediaSource to pick from"
+  },
   "downloadAllQuality": "Download All — Quality",
   "@downloadAllQuality": {
     "description": "Title for download quality picker when downloading all"

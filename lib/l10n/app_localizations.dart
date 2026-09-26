@@ -2800,6 +2800,12 @@ abstract class AppLocalizations {
   /// **'Version {number}'**
   String versionNumber(int number);
 
+  /// Shown when a live TV channel has only one MediaSource to pick from
+  ///
+  /// In en, this message translates to:
+  /// **'No alternate versions for this channel'**
+  String get noAlternateVersions;
+
   /// Title for download quality picker when downloading all
   ///
   /// In en, this message translates to:

@@ -1585,6 +1585,9 @@ class AppLocalizationsUg extends AppLocalizations {
   }
 
   @override
+  String get noAlternateVersions => 'No alternate versions for this channel';
+
+  @override
   String get downloadAllQuality => 'ھەممىنى چۈشۈرۈش - سۈپەت';
 
   @override

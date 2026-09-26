@@ -1575,6 +1575,9 @@ class AppLocalizationsHe extends AppLocalizations {
   }
 
   @override
+  String get noAlternateVersions => 'No alternate versions for this channel';
+
+  @override
   String get downloadAllQuality => 'הורד הכל - איכות';
 
   @override

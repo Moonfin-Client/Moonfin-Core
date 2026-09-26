@@ -1585,6 +1585,9 @@ class AppLocalizationsSv extends AppLocalizations {
   }
 
   @override
+  String get noAlternateVersions => 'No alternate versions for this channel';
+
+  @override
   String get downloadAllQuality => 'Ladda ner alla — kvalitet';
 
   @override

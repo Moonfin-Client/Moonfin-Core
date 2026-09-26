@@ -1555,6 +1555,9 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
+  String get noAlternateVersions => 'No alternate versions for this channel';
+
+  @override
   String get downloadAllQuality => '모두 다운로드 - 품질';
 
   @override

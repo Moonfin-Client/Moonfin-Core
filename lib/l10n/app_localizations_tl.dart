@@ -1592,6 +1592,9 @@ class AppLocalizationsTl extends AppLocalizations {
   }
 
   @override
+  String get noAlternateVersions => 'No alternate versions for this channel';
+
+  @override
   String get downloadAllQuality => 'I-download Lahat — Kalidad';
 
   @override

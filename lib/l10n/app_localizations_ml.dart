@@ -1592,6 +1592,9 @@ class AppLocalizationsMl extends AppLocalizations {
   }
 
   @override
+  String get noAlternateVersions => 'No alternate versions for this channel';
+
+  @override
   String get downloadAllQuality => 'എല്ലാം ഡൗൺലോഡ് ചെയ്യുക - ഗുണനിലവാരം';
 
   @override

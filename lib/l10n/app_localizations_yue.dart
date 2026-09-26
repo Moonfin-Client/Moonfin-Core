@@ -1546,6 +1546,9 @@ class AppLocalizationsYue extends AppLocalizations {
   }
 
   @override
+  String get noAlternateVersions => 'No alternate versions for this channel';
+
+  @override
   String get downloadAllQuality => '下載全部 — 質量';
 
   @override

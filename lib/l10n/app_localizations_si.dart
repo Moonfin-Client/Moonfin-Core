@@ -1580,6 +1580,9 @@ class AppLocalizationsSi extends AppLocalizations {
   }
 
   @override
+  String get noAlternateVersions => 'No alternate versions for this channel';
+
+  @override
   String get downloadAllQuality => 'සියල්ල බාගත කරන්න - ගුණාත්මක';
 
   @override
