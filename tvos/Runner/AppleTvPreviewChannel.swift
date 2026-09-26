@@ -10,7 +10,7 @@ protocol PreviewBackend: AnyObject {
     var textureId: Int64 { get }
     func open(
         url: String, headers: [String: String], volume: Float, live: Bool,
-        startPositionMs: Int, completion: @escaping (Bool) -> Void)
+        startPositionMs: Int, audioLanguage: String?, completion: @escaping (Bool) -> Void)
     func resume()
     func pause()
     func stop()
@@ -72,6 +72,7 @@ final class AppleTvPreviewChannel: NSObject, FlutterStreamHandler {
             let volume = (args["volume"] as? NSNumber)?.floatValue ?? 0
             let live = (args["live"] as? Bool) ?? false
             let startPositionMs = (args["startPositionMs"] as? NSNumber)?.intValue ?? 0
+            let audioLanguage = args["audioLanguage"] as? String
             disposePlayer(playerId)
             let onEvent: ([String: Any]) -> Void = { [weak self] payload in
                 self?.send(payload)
@@ -81,7 +82,7 @@ final class AppleTvPreviewChannel: NSObject, FlutterStreamHandler {
             players[playerId] = player
             player.open(
                 url: url, headers: headers, volume: volume, live: live,
-                startPositionMs: startPositionMs
+                startPositionMs: startPositionMs, audioLanguage: audioLanguage
             ) { ok in
                 if ok {
                     result(["textureId": player.textureId])
@@ -150,7 +151,7 @@ private final class PreviewPlayer: NSObject, FlutterTexture, PreviewBackend {
 
     func open(
         url urlString: String, headers: [String: String], volume: Float, live: Bool,
-        startPositionMs: Int, completion: @escaping (Bool) -> Void
+        startPositionMs: Int, audioLanguage: String?, completion: @escaping (Bool) -> Void
     ) {
         guard let url = URL(string: urlString) else {
             completion(false)
@@ -182,6 +183,12 @@ private final class PreviewPlayer: NSObject, FlutterTexture, PreviewBackend {
         player.isMuted = volume <= 0
         player.actionAtItemEnd = .pause
         player.preventsDisplaySleepDuringVideoPlayback = false
+        if let audioLanguage, !audioLanguage.isEmpty {
+            player.setMediaSelectionCriteria(
+                AVPlayerMediaSelectionCriteria(
+                    preferredLanguages: [audioLanguage], preferredMediaCharacteristics: nil),
+                forMediaCharacteristic: .audible)
+        }
         self.player = player
 
         statusObservation = item.observe(\.status, options: [.new]) {
