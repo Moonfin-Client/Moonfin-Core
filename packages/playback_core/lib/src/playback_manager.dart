@@ -272,7 +272,7 @@ class PlaybackManager implements AudioOwnable {
   /// playing gets 8s: Media3 won't resume until 5s is re-buffered, which a
   /// live stream only delivers in real time, so anything shorter would fire
   /// on ordinary rebuffers.
-  static const _liveFirstFrameTimeout = Duration(seconds: 15);
+  static const _liveFirstFrameTimeout = Duration(seconds: 30);
   static const _liveMidStreamStallTimeout = Duration(seconds: 8);
   Timer? _liveStallWatchdog;
 
@@ -364,7 +364,7 @@ class PlaybackManager implements AudioOwnable {
     _liveStallWatchdog = null;
   }
 
-  /// Starts watching the current live stream, from a fresh 15s window.
+  /// Starts watching the current live stream, from a fresh 30s window.
   void _startLiveStallWatch() {
     _liveStallWatchActive = true;
     _armLiveStallWatchdog();
@@ -379,7 +379,7 @@ class PlaybackManager implements AudioOwnable {
   /// Re-evaluates the watchdog after a playing or buffering change. A real
   /// frame or a viewer pause disarms it; buffering, or "not playing" with an
   /// unfulfilled intent to play, arms it if it isn't already running -- a
-  /// buffering flicker must not keep resetting the 15s window.
+  /// buffering flicker must not keep resetting the first-frame window.
   void _evaluateLiveStallWatchdog() {
     if (!_liveStallWatchActive) return;
     if (!_currentItemIsLive || _isOfflinePlayback) return;
