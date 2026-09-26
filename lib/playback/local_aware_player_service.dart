@@ -104,14 +104,25 @@ class LocalAwarePlayerService implements PlayerService {
   Future<void> onPlaybackStop(
     dynamic mediaItem,
     StreamResolutionResult resolution,
-    Duration position,
-  ) async {
+    Duration position, {
+    bool releaseLiveStream = true,
+  }) async {
     if (!resolution.isLocalMedia) {
-      return _inner.onPlaybackStop(mediaItem, resolution, position);
+      return _inner.onPlaybackStop(
+        mediaItem,
+        resolution,
+        position,
+        releaseLiveStream: releaseLiveStream,
+      );
     }
     await _recordLocal(mediaItem, position.inMicroseconds * 10);
     await _forward(
-      () => _inner.onPlaybackStop(mediaItem, resolution, position),
+      () => _inner.onPlaybackStop(
+        mediaItem,
+        resolution,
+        position,
+        releaseLiveStream: releaseLiveStream,
+      ),
     );
   }
 

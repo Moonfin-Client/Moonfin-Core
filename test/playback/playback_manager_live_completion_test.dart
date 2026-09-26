@@ -301,8 +301,9 @@ class _TestService implements PlayerService {
   Future<void> onPlaybackStop(
     dynamic mediaItem,
     StreamResolutionResult resolution,
-    Duration position,
-  ) async {
+    Duration position, {
+    bool releaseLiveStream = true,
+  }) async {
     events.add('stop:${resolution.playSessionId}');
     stoppedResolutions.add(resolution);
   }
