@@ -13212,6 +13212,33 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get appTitle => 'Moonfin';
 
   @override
+  String get animeMarkerFiller => 'Filler';
+
+  @override
+  String get animeMarkerMixed => 'Misturado';
+
+  @override
+  String get animeMarkerAnimeCanon => 'Cânone de anime';
+
+  @override
+  String get animeMarkerMangaCanon => 'Cânone do mangá';
+
+  @override
+  String get animeMarkerSubbed => 'Legendado';
+
+  @override
+  String get animeMarkerDubbed => 'Apelidado';
+
+  @override
+  String get animeMarkerSubbedAndDubbed => 'Legendado/Dublado';
+
+  @override
+  String get animeMarkerPending => 'Pendente';
+
+  @override
+  String get animeMarkerRecap => 'Recapitular';
+
+  @override
   String get accountPreferences => 'PREFERÊNCIAS DA CONTA';
 
   @override
@@ -13345,13 +13372,195 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get detailScreenStyleSubtitle =>
-      'Clássico é o layout centralizado original do Moonfin. Moderno é um layout cinematográfico responsivo.';
+      'Clássico é o layout centralizado original do Moonfin. Moderno é um layout cinematográfico responsivo';
 
   @override
   String get detailScreenStyleMoonfin => 'Clássico';
 
   @override
   String get detailScreenStyleModern => 'Moderno';
+
+  @override
+  String get detailScreenStyleSpotlight => 'Destaque';
+
+  @override
+  String get spotlightMoreActions => 'Mais ações';
+
+  @override
+  String get spotlightCastCrewStudios => 'Elenco, equipe e estúdios';
+
+  @override
+  String get spotlightChaptersExtras => 'Capítulos e Extras';
+
+  @override
+  String get spotlightSimilarRecommendations => 'Semelhantes e Recomendações';
+
+  @override
+  String get spotlightSeasonsEpisodes => 'Temporadas e Episódios';
+
+  @override
+  String get spotlightMoreEpisodes => 'Mais episódios';
+
+  @override
+  String get spotlightFilmography => 'Filmografia';
+
+  @override
+  String get spotlightCollectionsCard => 'Coleções';
+
+  @override
+  String get spotlightPlaylistOrder => 'Ordem da playlist';
+
+  @override
+  String get spotlightMoviesAndShows => 'Filmes e séries';
+
+  @override
+  String get spotlightSimilarSeerr => 'Semelhante (Seerr)';
+
+  @override
+  String get spotlightRecommendationsSeerr => 'Recomendações (Seerr)';
+
+  @override
+  String spotlightPeopleCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pessoas',
+      one: '1 pessoa',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String spotlightFactsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count fatos',
+      one: '1 fato',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String spotlightTagsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count tags',
+      one: '1 tag',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String spotlightStudiosCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count estúdios',
+      one: '1 estúdio',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String spotlightChaptersCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count capítulos',
+      one: '1 capítulo',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String spotlightExtrasCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count extras',
+      one: '1 extra',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String spotlightSeasonsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count temporadas',
+      one: '1 temporada',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String spotlightEpisodesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count episódios',
+      one: '1 episódio',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String spotlightMoviesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count filmes',
+      one: '1 filme',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String spotlightShowsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count séries',
+      one: '1 série',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String spotlightTracksCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count faixas',
+      one: '1 faixa',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String spotlightItemsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count itens',
+      one: '1 item',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String spotlightAlbumsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count álbuns',
+      one: '1 álbum',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get expandedTabs => 'Abas expandidas';
@@ -23280,6 +23489,49 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get imdbTopEnglishMovies => 'Melhores filmes em inglês do IMDb';
+
+  @override
+  String get animationSpeedExtraSlow => 'Extra lento';
+
+  @override
+  String get animationSpeedSlow => 'Lento';
+
+  @override
+  String get animationSpeedMedium => 'Médio';
+
+  @override
+  String get animationSpeedFast => 'Rápido';
+
+  @override
+  String get animationSpeedOff => 'Desligado';
+
+  @override
+  String get pageTransitionFadeNone => 'Sem desbotamento';
+
+  @override
+  String get pageTransitionFadeShort => 'Desvanecimento curto';
+
+  @override
+  String get pageTransitionFadeMedium => 'Desbotamento médio';
+
+  @override
+  String get pageTransitionFadeLong => 'Longo Desvanecimento';
+
+  @override
+  String get siriRemoteSwipeSensitivity =>
+      'Sensibilidade ao deslizar no touchpad';
+
+  @override
+  String get siriRemoteSwipeSensitivityDescription =>
+      'O quanto o foco se move a cada deslize no touchpad do Siri Remote';
+
+  @override
+  String get keepVideoClearOfDynamicIsland =>
+      'Mantenha as filmagens longe da Ilha Dinâmica';
+
+  @override
+  String get keepVideoClearOfDynamicIslandDescription =>
+      'Na horizontal, a carcaça da câmera cobre uma das bordas da tela. Isso impede que a imagem seja exibida completamente, o que só altera o resultado em vídeos com largura suficiente para alcançar essa distância';
 }
 
 /// The translations for Portuguese, as used in Portugal (`pt_PT`).

@@ -2419,7 +2419,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get premiere => 'Ensiesitys';
 
   @override
-  String get guideRepeatBadge => 'Toista';
+  String get guideRepeatBadge => 'Jatkuva';
 
   @override
   String get guideTimeline => 'Opas aikajana';
@@ -3260,7 +3260,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get trickplaySettingsPreviewHint =>
-      'Vedä liukusäädintä nähdäksesi esikatselun liu’uttamisesta';
+      'Vedä liukusäädintä nähdäksesi esikatselun';
 
   @override
   String get trickplayPreviewScale => 'Esikatselukoko';
@@ -3276,7 +3276,7 @@ class AppLocalizationsFi extends AppLocalizations {
       'Esikatsele hakupalkilla, kun liu’utat, sen sijaan että ne pysyisivät keskellä';
 
   @override
-  String get trickplayPauseWhileScrubbing => 'Tauko Kelauksen Ajaksi';
+  String get trickplayPauseWhileScrubbing => 'Tauko Skrubbauksen Ajaksi';
 
   @override
   String get trickplayPauseWhileScrubbingSubtitle =>
