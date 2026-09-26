@@ -41,13 +41,26 @@ class _VideoPlaybackScreen extends StatelessWidget {
                   subtitle: l10n.keepVideoClearOfDynamicIslandDescription,
                   icon: Icons.crop_free,
                 ),
-              if (letterboxCropSettingVisible())
+              if (letterboxCropSettingVisible()) ...[
                 SwitchPreferenceTile(
                   preference: UserPreferences.cropBlackBars,
                   title: l10n.cropBlackBars,
                   subtitle: l10n.settingsCropBlackBarsDescription,
                   icon: Icons.crop_16_9_outlined,
                 ),
+                IntPickerPreferenceTile(
+                  preference: UserPreferences.cropBlackBarsIntervalSeconds,
+                  title: l10n.cropBlackBarsRecropInterval,
+                  description: l10n.settingsCropBlackBarsIntervalDescription,
+                  icon: Icons.timelapse_outlined,
+                  options: {
+                    0: l10n.cropBlackBarsOnce,
+                    1: l10n.cropBlackBarsEverySecond,
+                    5: l10n.fiveSeconds,
+                    10: l10n.tenSeconds,
+                  },
+                ),
+              ],
               _TvSettingsListTile(
                 leading: const Icon(Icons.timer_outlined),
                 title: Text(l10n.playbackTimeDisplay),
@@ -526,9 +539,8 @@ class _ExternalPlayerAppPickerTileState
                   AppLocalizations.of(dialogContext).settingsAskEachTime,
                 ),
                 subtitle: Text(
-                  AppLocalizations.of(
-                    dialogContext,
-                  ).externalPlayerAskEachTimeSubtitle,
+                  AppLocalizations.of(dialogContext)
+                      .externalPlayerAskEachTimeSubtitle,
                 ),
                 trailing: normalizedCurrent.isEmpty
                     ? const Icon(Icons.check)

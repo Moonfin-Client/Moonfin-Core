@@ -318,6 +318,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   StreamSubscription? _positionSub;
   StreamSubscription? _queueSub;
   StreamSubscription<PlayerBackend>? _backendSub;
+  StreamSubscription<bool>? _letterboxCropAppliedSub;
+  bool _letterboxCropApplied = false;
   StreamSubscription<PlaybackBringupState>? _bringupSub;
   StreamSubscription? _pipChangedSub;
   StreamSubscription? _pipActionSub;
@@ -883,7 +885,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       if (!mounted || _isStopping) return;
       unawaited(_exitPlayback());
     });
+    _listenToLetterboxCropState(_activeBackend);
     _backendSub = _manager.backendChangedStream.listen((backend) {
+      _listenToLetterboxCropState(backend);
       if (backend is Media3PlayerBackend) {
         unawaited(_syncMedia3ZoomMode());
         _syncMedia3VolumeBoostLevel();
@@ -1075,6 +1079,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _positionSub?.cancel();
     _queueSub?.cancel();
     _backendSub?.cancel();
+    _letterboxCropAppliedSub?.cancel();
     _bringupSub?.cancel();
     _pipChangedSub?.cancel();
     _userLeftAppSub?.cancel();
@@ -1194,9 +1199,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     }
     _lastCastErrorAt = now;
     _lastCastErrorMessage = message;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 
   void _showThrottledPlaybackError(String message) {
@@ -1216,9 +1220,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
     _lastPlaybackErrorAt = now;
     _lastPlaybackErrorMessage = normalized;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(normalized)));
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(normalized)));
   }
 
   void _showBringupFailureIfAny(PlaybackBringupState state) {
@@ -2160,7 +2163,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       topSubtitle: topSubtitle,
       artworkUrl: artworkUrl,
       showClock: false,
-      zoomModeLabel: _zoomModeLabel(_zoomMode),
+      zoomModeLabel: _letterboxCropOsd
+          ? l10n.shortcutRecropBlackBars
+          : _zoomModeLabel(_zoomMode),
       streamInfoSections: streamInfoSections,
       hasCastCrew: hasCastCrew,
       castPeople: castPeople,
@@ -2205,7 +2210,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         unawaited(_pushMedia3UiMetadata());
         return;
       case 'toggleZoom':
-        _cyclePlayerZoom();
+        if (_letterboxCropOsd) {
+          _recropBlackBarsFromUi();
+        } else {
+          _cyclePlayerZoom();
+        }
         return;
       case 'castPlay':
         unawaited(_runCastAction((k) => _castService.play(k)));
@@ -2480,9 +2489,13 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     if (!mounted) return;
     _applySubtitleStyle();
     final zoom = _prefs.get(UserPreferences.playerZoomMode);
-    if (zoom == _zoomMode) return;
-    setState(() => _zoomMode = zoom);
-    unawaited(_syncMedia3ZoomMode());
+    if (zoom != _zoomMode) {
+      setState(() => _zoomMode = zoom);
+      unawaited(_syncMedia3ZoomMode());
+    } else {
+      setState(() {});
+    }
+    unawaited(_pushMedia3UiMetadata());
   }
 
   void _syncMediaQueuingPreference() {
@@ -3920,6 +3933,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
           _showControls();
         }
         return KeyEventResult.handled;
+      case PlayerAction.recropBlackBars:
+        if (event is KeyRepeatEvent) return KeyEventResult.handled;
+        if (!_letterboxCropOsd) return KeyEventResult.ignored;
+        _recropBlackBarsFromUi();
+        return KeyEventResult.handled;
     }
   }
 
@@ -4104,13 +4122,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                               _nextUpItem!.primaryImageTag != null &&
                                   _prefs.get(UserPreferences.nextUpBehavior) !=
                                       NextUpBehavior.minimal
-                              ? _clientForItem(
-                                  _nextUpItem!,
-                                ).imageApi.getPrimaryImageUrl(
-                                  _nextUpItem!.id,
-                                  maxWidth: 400,
-                                  tag: _nextUpItem!.primaryImageTag,
-                                )
+                              ? _clientForItem(_nextUpItem!).imageApi
+                                    .getPrimaryImageUrl(
+                                      _nextUpItem!.id,
+                                      maxWidth: 400,
+                                      tag: _nextUpItem!.primaryImageTag,
+                                    )
                               : null,
                           timeoutMs: _prefs.get(UserPreferences.nextUpTimeout),
                           onPlayNext: _handleNextUpPlay,
@@ -4192,7 +4209,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         child: Trickplay(
           fillFrame: true,
           content: (_) => FittedBox(
-            fit: _zoomToFit(_zoomMode),
+            fit: _zoomToFit(_effectiveZoomMode),
             child: SizedBox(
               width: tile.thumbWidth,
               height: tile.thumbHeight,
@@ -4213,7 +4230,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       return Positioned.fill(
         child: AetherVideoView(
           key: _videoSurfaceKey,
-          zoomMode: _zoomMode.name,
+          zoomMode: _effectiveZoomMode.name,
           keepClearOfHousing: _keepVideoClearOfHousing,
         ),
       );
@@ -4232,7 +4249,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     final htmlBackend = _activeHtmlVideoBackend;
     if (htmlBackend != null) {
       return Positioned.fill(
-        child: htmlBackend.buildView(fit: _zoomToFit(_zoomMode)),
+        child: htmlBackend.buildView(fit: _zoomToFit(_effectiveZoomMode)),
       );
     }
 
@@ -4265,7 +4282,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       return Positioned.fill(
         child: NativeVideoView(
           player: mediaKitBackend.player,
-          zoomMode: _nativeZoomMode(_zoomMode),
+          zoomMode: _nativeZoomMode(_effectiveZoomMode),
           fill: Colors.black,
           videoOutput: selectedVo,
           hardwareDecodingEnabled: hwDecodingEnabled,
@@ -4287,7 +4304,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
             controls: NoVideoControls,
             width: constraints.maxWidth,
             height: constraints.maxHeight,
-            fit: _zoomToFit(_zoomMode),
+            fit: _zoomToFit(_effectiveZoomMode),
             fill: Colors.black,
             pauseUponEnteringBackgroundMode:
                 !PlatformDetection.isIOS && !PlatformDetection.isAndroid,
@@ -4313,7 +4330,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   Future<void> _syncMedia3ZoomMode() async {
     final backend = _activeMedia3Backend;
     if (backend == null) return;
-    await backend.setZoomMode(_media3ZoomModeWire(_zoomMode));
+    await backend.setZoomMode(_media3ZoomModeWire(_effectiveZoomMode));
   }
 
   bool _isBringupInProgress(PlaybackBringupPhase phase) {
@@ -4402,9 +4419,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                   alignment: pos.alignment,
                   child: Padding(
                     padding: pos.safePadding,
-                    child: PlayerLoadingOverlay(
-                      label: _streamLoadingLabel,
-                    ),
+                    child: PlayerLoadingOverlay(label: _streamLoadingLabel),
                   ),
                 ),
         );
@@ -4789,11 +4804,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       return null;
     }
 
-    return _clientForQueueItem(item).imageApi.getLogoImageUrl(
-      normalizedItemId,
-      maxWidth: 420,
-      tag: normalizedTag,
-    );
+    return _clientForQueueItem(item).imageApi
+        .getLogoImageUrl(normalizedItemId, maxWidth: 420, tag: normalizedTag);
   }
 
   String? _artworkUrlForQueueItem(dynamic item) {
@@ -5765,7 +5777,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
             OsdButton.zoom: _buildZoomButton(
               size: secondaryIconSize,
               extent: secondaryExtent,
-              tooltip: l10n.playerZoomMode,
+              tooltip: _letterboxCropOsd
+                  ? _tooltipMessage(
+                      l10n.shortcutRecropBlackBars,
+                      shortcut: _recropShortcutLabel(l10n),
+                    )
+                  : l10n.playerZoomMode,
             ),
           if (PlatformDetection.isMobile && shows(OsdButton.orientation))
             OsdButton.orientation: _controlButton(
@@ -7177,8 +7194,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                 autoOffset: audio
                     ? 0.0
                     : (_activeBackend?.subtitleAutoOffsetSeconds ?? 0.0),
-                autoOffsetStream:
-                    audio ? null : _activeBackend?.subtitleAutoOffsetStream,
+                autoOffsetStream: audio
+                    ? null
+                    : _activeBackend?.subtitleAutoOffsetStream,
                 onDelayChanged: (d) => _applyDelay(audio: audio, delay: d),
                 formatDelay: _formatDelay,
               ),
@@ -7221,6 +7239,50 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _showControls();
   }
 
+  bool get _letterboxCropOsd =>
+      _prefs.get(UserPreferences.cropBlackBars) &&
+      (_activeBackend?.supportsLetterboxCrop ?? false);
+
+  bool get _mpvLetterboxCropEnabled =>
+      _letterboxCropOsd && _activeMediaKitBackend != null;
+
+  void _listenToLetterboxCropState(PlayerBackend? backend) {
+    _letterboxCropAppliedSub?.cancel();
+    final cropper = backend?.letterboxCropper;
+    _letterboxCropApplied = cropper?.isApplied ?? false;
+    if (cropper == null) return;
+    _letterboxCropAppliedSub = cropper.appliedStream.listen((applied) {
+      if (!mounted) return;
+      setState(() => _letterboxCropApplied = applied);
+      unawaited(_syncMedia3ZoomMode());
+    });
+  }
+
+  /// Fit keeps the cropped shape. A 16:9 window then gets a separate zoom
+  /// that only removes the vertical bars fit puts back.
+  ZoomMode get _effectiveZoomMode {
+    if (_mpvLetterboxCropEnabled) return ZoomMode.fit;
+    if (_letterboxCropApplied &&
+        (!PlatformDetection.useDesktopUi || _isDesktopFullscreen)) {
+      return ZoomMode.autoCrop;
+    }
+    return _zoomMode;
+  }
+
+  String? _recropShortcutLabel(AppLocalizations l10n) {
+    final keys = _keyBindings.keysFor(PlayerAction.recropBlackBars);
+    if (keys.isEmpty) return null;
+    return keyBindingLabel(keys.first, l10n);
+  }
+
+  void _recropBlackBarsFromUi() {
+    final cropper = _activeBackend?.letterboxCropper;
+    if (cropper == null || !cropper.isSupported) return;
+    unawaited(cropper.recrop());
+    if (!mounted) return;
+    _showPlayerToast(AppLocalizations.of(context).playerRecroppingBlackBars);
+  }
+
   void _cyclePlayerZoom() {
     final modes = ZoomMode.values;
     final next = modes[(_zoomMode.index + 1) % modes.length];
@@ -7238,6 +7300,17 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     FocusNode? focusNode,
     VoidCallback? onRightBoundary,
   }) {
+    if (_letterboxCropOsd) {
+      return _controlButton(
+        Icons.crop_16_9_outlined,
+        size: size,
+        extent: extent,
+        onPressed: _recropBlackBarsFromUi,
+        tooltip: tooltip,
+        focusNode: focusNode,
+        onRightBoundary: onRightBoundary,
+      );
+    }
     final icon = switch (_zoomMode) {
       ZoomMode.fit => Icons.fit_screen_rounded,
       ZoomMode.autoCrop => Icons.crop_rounded,
@@ -7255,8 +7328,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   void _showZoomModeToast(ZoomMode mode) {
-    final overlay = Overlay.of(context, rootOverlay: true);
     final l10n = AppLocalizations.of(context);
+    _showPlayerToast('${l10n.playerZoomMode}: ${_zoomModeLabel(mode)}');
+  }
+
+  void _showPlayerToast(String message) {
+    final overlay = Overlay.of(context, rootOverlay: true);
     _zoomModeToastTimer?.cancel();
     _removeZoomModeToastOverlay();
 
@@ -7289,7 +7366,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                   ],
                 ),
                 child: Text(
-                  '${l10n.playerZoomMode}: ${_zoomModeLabel(mode)}',
+                  message,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     color: Color(0xFFE4ECF7),
@@ -7699,7 +7776,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         CastTargetKind.dlna => 'DLNA',
         _ => l10n.cast,
       };
-      _showThrottledCastError(l10n.castActionFailed(label, describeError(e, l10n)));
+      _showThrottledCastError(
+        l10n.castActionFailed(label, describeError(e, l10n)),
+      );
     }
   }
 

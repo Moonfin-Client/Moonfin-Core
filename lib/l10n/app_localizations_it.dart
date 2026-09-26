@@ -2100,6 +2100,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get shortcutMpvStats => 'mpv statistics on or off';
 
   @override
+  String get shortcutRecropBlackBars => 'Recrop black bars';
+
+  @override
   String get shortcutLeaveFullscreenOrStop =>
       'Exit fullscreen, or stop if not fullscreen';
 
@@ -3215,7 +3218,23 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get settingsCropBlackBarsDescription =>
-      'Detect encoded letterbox bars, crop them, then fill the screen.';
+      'Detect encoded letterbox bars after playback starts, crop them, then fill the screen. Recrop from the player zoom button.';
+
+  @override
+  String get cropBlackBarsRecropInterval => 'Recrop interval';
+
+  @override
+  String get cropBlackBarsOnce => 'Once at start';
+
+  @override
+  String get cropBlackBarsEverySecond => 'Every second';
+
+  @override
+  String get settingsCropBlackBarsIntervalDescription =>
+      'Follow aspect-ratio changes during playback. Uses a copy-back decoder while scanning.';
+
+  @override
+  String get playerRecroppingBlackBars => 'Recropping black bars';
 
   @override
   String get stretch => 'Estendi';

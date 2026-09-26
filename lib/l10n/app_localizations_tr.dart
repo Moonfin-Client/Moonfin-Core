@@ -2096,6 +2096,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get shortcutMpvStats => 'mpv istatistiklerini aç yada kapat';
 
   @override
+  String get shortcutRecropBlackBars => 'Recrop black bars';
+
+  @override
   String get shortcutLeaveFullscreenOrStop =>
       'Tam ekrandan çık veya tam ekranda değilse durdur';
 
@@ -3202,6 +3205,22 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get settingsCropBlackBarsDescription =>
       'Kodlanmış siyah bantları tespit et, kırp ve ekranı doldur.';
+
+  @override
+  String get cropBlackBarsRecropInterval => 'Recrop interval';
+
+  @override
+  String get cropBlackBarsOnce => 'Once at start';
+
+  @override
+  String get cropBlackBarsEverySecond => 'Every second';
+
+  @override
+  String get settingsCropBlackBarsIntervalDescription =>
+      'Follow aspect-ratio changes during playback. Uses a copy-back decoder while scanning.';
+
+  @override
+  String get playerRecroppingBlackBars => 'Recropping black bars';
 
   @override
   String get stretch => 'Uzat';

@@ -18,6 +18,8 @@ import 'hdr_output_controller.dart';
 import 'known_defects.dart';
 import 'letterbox_croppers.dart';
 import 'mpv_letterbox_crop.dart';
+import 'mpv_frame_sample.dart';
+import 'mpv_frame_sampler.dart';
 import 'server_transcode_capabilities.dart';
 
 class _ParsedMpvConfCacheEntry {
@@ -692,9 +694,7 @@ class MediaKitPlayerBackend extends PlayerBackend {
     }
     await _maybeEngageNativeHdr();
     unawaited(() async {
-      await _letterboxCropper.setEnabled(
-        _prefs.get(UserPreferences.cropBlackBars),
-      );
+      await _configureLetterboxCropper();
       await _letterboxCropper.onSourceOpened(url);
     }());
   }
@@ -1356,14 +1356,20 @@ class MediaKitPlayerBackend extends PlayerBackend {
     } catch (_) {}
   }
 
+  Future<void> _configureLetterboxCropper() async {
+    final seconds = _prefs.get(UserPreferences.cropBlackBarsIntervalSeconds);
+    await _letterboxCropper.setRecropInterval(Duration(seconds: seconds));
+    await _letterboxCropper.setEnabled(
+      _prefs.get(UserPreferences.cropBlackBars),
+    );
+  }
+
   void _onPreferencesChanged() {
     if (_isDisposed) {
       return;
     }
 
-    unawaited(
-      _letterboxCropper.setEnabled(_prefs.get(UserPreferences.cropBlackBars)),
-    );
+    unawaited(_configureLetterboxCropper());
 
     if (_audioPassthroughApplyInProgress) {
       _audioPassthroughApplyQueued = true;
@@ -1774,9 +1780,9 @@ class MediaKitPlayerBackend extends PlayerBackend {
     if (_player.platform is! NativePlayer) return;
     try {
       final native = _player.platform as NativePlayer;
-      final fontsDirPath =
-          ((await (native as dynamic).getProperty('sub-fonts-dir')) as String)
-              .trim();
+      final fontsDirPath = ((await (native as dynamic).getProperty(
+        'sub-fonts-dir',
+      )) as String).trim();
       if (fontsDirPath.isEmpty) return;
       final fontsDir = Directory(fontsDirPath);
       if (!await fontsDir.exists()) return;
@@ -1956,9 +1962,21 @@ class MediaKitPlayerBackend extends PlayerBackend {
     return false;
   }
 
+  /// mpv 0.41 logs these when a software screenshot meets an nvdec frame.
+  /// Playback is fine; surfacing them marks the session failed and snacks
+  /// the text onto the player.
+  static bool _isScreenshotScalerNoise(String message) {
+    final lower = message.toLowerCase();
+    return lower.contains('libswscale initialization failed') ||
+        lower.contains('not supported by libswscale');
+  }
+
   @override
   Stream<Map<String, dynamic>>? get errorStream => _player.stream.error
-      .where((err) => !_isTransientReconnectError(err))
+      .where(
+        (err) =>
+            !_isTransientReconnectError(err) && !_isScreenshotScalerNoise(err),
+      )
       .map((err) => <String, dynamic>{'event': 'error', 'message': err});
 
   @override
@@ -2466,8 +2484,30 @@ class MediaKitPlayerBackend extends PlayerBackend {
   }
 }
 
-class _MediaKitLetterboxHost implements MpvLetterboxHost {
+class _MediaKitLetterboxHost implements MpvLetterboxHost, MpvFrameSampleHost {
   _MediaKitLetterboxHost(this._backend);
+
+  final _frameSampler = MpvFrameSampler();
+
+  @override
+  Future<MpvFrameSample?> sampleFrame(
+    int width,
+    int height, {
+    LetterboxCropRect? window,
+  }) async {
+    if (_backend._isDisposed) return null;
+    final handle = await _backend._player.handle;
+    if (_backend._isDisposed) return null;
+    return _frameSampler.capture(
+      handle,
+      width,
+      height,
+      windowX: window?.x,
+      windowY: window?.y,
+      windowW: window?.w,
+      windowH: window?.h,
+    );
+  }
 
   final MediaKitPlayerBackend _backend;
 
