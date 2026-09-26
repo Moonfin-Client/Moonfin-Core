@@ -154,8 +154,9 @@ class _MoonfinAppState extends State<MoonfinApp> {
   }
 
   /// The settled quality persisted by [_onGlassQualityChanged] last session,
-  /// or null to run the warm-up benchmark on a first launch.
-  GlassQuality? _settledGlassInitialQuality() {
+  /// or the ceiling when none has been saved yet, which skips the warm-up
+  /// benchmark.
+  GlassQuality _settledGlassInitialQuality() {
     switch (_prefs.get(UserPreferences.glassSettledQuality)) {
       case GlassSettledQuality.minimal:
         return GlassQuality.minimal;
@@ -164,7 +165,7 @@ class _MoonfinAppState extends State<MoonfinApp> {
       case GlassSettledQuality.premium:
         return GlassQuality.premium;
       case GlassSettledQuality.unset:
-        return null;
+        return GlassCapability.adaptiveMaxQuality;
     }
   }
 
@@ -316,23 +317,11 @@ class _MoonfinAppState extends State<MoonfinApp> {
                         if (GlassSettings.usePackageRenderer) {
                           // Governs every package-rendered glass pane below.
                           // Throttles quality under GPU and thermal pressure,
-                          // and recovers when it cools. The persisted settled
-                          // quality from a previous session is used directly;
-                          // on a cold first launch we seed with adaptiveMaxQuality
-                          // instead of null so the scope shows its child
-                          // immediately rather than blocking on the startup
-                          // benchmark. Windows 10 machines with older D3D11
-                          // drivers stall the benchmark indefinitely, producing
-                          // a permanent gray screen. The adaptive scope still
-                          // throttles downward at runtime if the device can't
-                          // sustain the quality, writing the result to prefs
-                          // via onQualityChanged so subsequent launches start
-                          // at the correct tier without a benchmark.
+                          // and recovers when it cools.
                           // ignore: experimental_member_use
                           content = GlassAdaptiveScope(
                             maxQuality: GlassCapability.adaptiveMaxQuality,
-                            initialQuality: _settledGlassInitialQuality() ??
-                                GlassCapability.adaptiveMaxQuality,
+                            initialQuality: _settledGlassInitialQuality(),
                             onQualityChanged: _onGlassQualityChanged,
                             child: content,
                           );
