@@ -259,6 +259,13 @@ class PlaybackManager implements AudioOwnable {
   bool _liveRecoveryInFlight = false;
   Timer? _liveRecoveryRetry;
 
+  /// How long a recovered channel has to keep playing before its recovery
+  /// budget is given back. Without it, a channel that needed every attempt
+  /// had nothing left for its next ordinary hiccup, and a stream that was
+  /// playing fine was given up.
+  static const _liveRecoveryProvenAfter = Duration(seconds: 20);
+  Timer? _liveRecoveryProvenTimer;
+
   /// Set only around the re-resolve await inside `_recoverStalledStream`. A
   /// failed bringup state raised in that window is an intermediate failure
   /// the recovery loop may still paper over, not the terminal one listeners
@@ -337,6 +344,32 @@ class PlaybackManager implements AudioOwnable {
       _liveRecoveryRetry!.cancel();
       _liveRecoveryRetry = null;
     }
+    _armLiveRecoveryProven();
+  }
+
+  /// Once a recovery has the channel playing again, gives the budget back
+  /// after [_liveRecoveryProvenAfter], unless another attempt starts first.
+  /// A channel that never plays still gives up after the full budget.
+  void _armLiveRecoveryProven() {
+    if (_liveRecoveryAttempts == 0) return;
+    if (_liveRecoveryProvenTimer?.isActive ?? false) return;
+    final intent = _viewerIntentGeneration;
+    _liveRecoveryProvenTimer = Timer(_liveRecoveryProvenAfter, () {
+      _liveRecoveryProvenTimer = null;
+      if (intent != _viewerIntentGeneration || _liveRecoveryInFlight) return;
+      if (!_isActuallyPlaying) return;
+      _diagnosticLogger?.call(
+        'Live recovery: playing for ${_liveRecoveryProvenAfter.inSeconds}s '
+        'after attempt $_liveRecoveryAttempts, budget restored',
+      );
+      _liveRecoveryAttempts = 0;
+      _lastLiveRecoveryAt = null;
+    });
+  }
+
+  void _cancelLiveRecoveryProven() {
+    _liveRecoveryProvenTimer?.cancel();
+    _liveRecoveryProvenTimer = null;
   }
 
   /// Arms (or re-arms) the live stall watchdog. A no-op off a live item, so
@@ -423,6 +456,7 @@ class PlaybackManager implements AudioOwnable {
   /// Clears the live recovery attempt count, its timestamp, and any held
   /// retry timer.
   void _resetLiveRecoveryBudget() {
+    _cancelLiveRecoveryProven();
     _liveRecoveryAttempts = 0;
     _lastLiveRecoveryAt = null;
     _liveRecoveryRetry?.cancel();
@@ -1366,6 +1400,7 @@ class PlaybackManager implements AudioOwnable {
     if (windowExpired) {
       _liveRecoveryAttempts = 0;
     }
+    _cancelLiveRecoveryProven();
     _lastLiveRecoveryAt = now;
     final attempt = ++_liveRecoveryAttempts;
     _liveRecoveryInFlight = true;
@@ -4071,6 +4106,7 @@ class PlaybackManager implements AudioOwnable {
 
   void dispose() {
     _liveRecoveryRetry?.cancel();
+    _cancelLiveRecoveryProven();
     _endLiveStallWatch();
     _stopProgressTimer();
     _disposeStreamSubs();
