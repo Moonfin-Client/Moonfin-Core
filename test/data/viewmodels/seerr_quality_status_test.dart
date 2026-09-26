@@ -494,5 +494,47 @@ void main() {
       expect(state4k.hd.isAvailable, isFalse);
       expect(state4k.isAvailableAnyQuality, isTrue);
     });
+
+    group('shows4k', () {
+      const info = SeerrMediaInfo(
+        status: 5,
+        status4k: 3,
+        downloadStatus4k: [SeerrDownloadingItem(size: 100, sizeLeft: 50)],
+      );
+      SeerrMediaDetailState movie(int permissions) => SeerrMediaDetailState(
+        movie: const SeerrMovieDetails(id: 1, title: 't', mediaInfo: info),
+        currentUser: SeerrUser(id: 1, permissions: permissions),
+      );
+
+      test('keeps 4K status from a viewer who can only request HD', () {
+        final state = movie(SeerrPermission.request);
+        expect(state.shows4k, isFalse);
+        expect(state.download4k, isNull);
+      });
+
+      test('shows it to a 4K requester and a request manager', () {
+        final state = movie(SeerrPermission.request4kMovie);
+        expect(state.shows4k, isTrue);
+        expect(state.download4k, isA<SeerrDownloadSummary>());
+        expect(movie(SeerrPermission.manageRequests).shows4k, isTrue);
+      });
+
+      test('takes the 4K permission per media type', () {
+        const user = SeerrUser(id: 1, permissions: SeerrPermission.request4kTv);
+        const tv = SeerrMediaDetailState(
+          tv: SeerrTvDetails(id: 1, mediaInfo: info),
+          currentUser: user,
+        );
+        expect(tv.shows4k, isTrue);
+        expect(movie(SeerrPermission.request4kTv).shows4k, isFalse);
+      });
+
+      test('hides it while the viewer is unknown', () {
+        const state = SeerrMediaDetailState(
+          movie: SeerrMovieDetails(id: 1, title: 't', mediaInfo: info),
+        );
+        expect(state.shows4k, isFalse);
+      });
+    });
   });
 }

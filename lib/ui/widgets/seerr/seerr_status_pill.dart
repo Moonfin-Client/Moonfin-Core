@@ -16,7 +16,7 @@ List<SeerrStatusTrack> seerrStatusTracks(
   AppLocalizations l10n,
 ) {
   final uhd = state.uhd;
-  if (!uhd.hasAnyState) return [(state.hd, null)];
+  if (!state.shows4k || !uhd.hasAnyState) return [(state.hd, null)];
   return [(state.hd, 'HD'), (uhd, l10n.uhd4k)];
 }
 

@@ -15,7 +15,8 @@ SeerrMediaDetailState? seerrItemStatus(ItemDetailViewModel viewModel) {
   final state = _resolved(viewModel);
   if (state == null) return null;
   final worthShowing =
-      seerrStatusIsNoteworthy(state.hd) || seerrStatusIsNoteworthy(state.uhd);
+      seerrStatusIsNoteworthy(state.hd) ||
+      (state.shows4k && seerrStatusIsNoteworthy(state.uhd));
   return worthShowing ? state : null;
 }
 

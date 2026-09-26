@@ -288,10 +288,18 @@ class SeerrMediaDetailState {
   bool get isAvailableAnyQuality => hd.isAvailable || uhd.isAvailable;
 
   SeerrDownloadSummary? get hdDownload => hd.download;
-  SeerrDownloadSummary? get download4k => uhd.download;
+  SeerrDownloadSummary? get download4k => shows4k ? uhd.download : null;
 
   bool get canManageRequests =>
       currentUser?.hasPermission(SeerrPermission.manageRequests) ?? false;
+
+  /// Seerr only shows 4K status to those who can request 4K or manage requests.
+  bool get shows4k {
+    final user = currentUser;
+    if (user == null) return false;
+    return canManageRequests ||
+        (isTv ? user.canRequest4kTv : user.canRequest4kMovies);
+  }
 
   /// Pending or approved requests across both qualities, for the requester
   /// rows and for checking whether anything is still open on the title.

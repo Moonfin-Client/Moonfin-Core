@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:moonfin/data/services/seerr/seerr_api_models.dart';
 import 'package:moonfin/data/viewmodels/seerr_media_detail_view_model.dart';
+import 'package:moonfin/l10n/app_localizations_en.dart';
 import 'package:moonfin/ui/widgets/seerr/seerr_status_pill.dart';
 
 SeerrQualityStatus _track({
@@ -67,6 +68,31 @@ void main() {
       );
       expect(track.hasExistingRequest, isTrue);
       expect(seerrStatusIsNoteworthy(track), isTrue);
+    });
+  });
+
+  group('seerrStatusTracks', () {
+    final l10n = AppLocalizationsEn();
+    SeerrMediaDetailState state(int permissions) => SeerrMediaDetailState(
+      movie: const SeerrMovieDetails(
+        id: 1,
+        title: 't',
+        mediaInfo: SeerrMediaInfo(status: 4, status4k: 3),
+      ),
+      currentUser: SeerrUser(id: 1, permissions: permissions),
+    );
+
+    test('shows HD alone to a viewer who can only request HD', () {
+      final tracks = seerrStatusTracks(state(SeerrPermission.request), l10n);
+      expect(tracks.map((t) => t.$2), [null]);
+    });
+
+    test('adds the 4K track for a viewer who can request 4K', () {
+      final tracks = seerrStatusTracks(
+        state(SeerrPermission.request4kMovie),
+        l10n,
+      );
+      expect(tracks.map((t) => t.$2), ['HD', '4K']);
     });
   });
 }
