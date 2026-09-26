@@ -109,6 +109,10 @@ int? highlightedSubtitleIndex({
     fallbackLanguage:
         prefs.get(UserPreferences.fallbackSubtitleLanguage) as String? ?? '',
     preferSdh: prefs.get(UserPreferences.preferSdhSubtitles) as bool? ?? false,
+    preferTextSubtitles:
+        prefs.get(UserPreferences.preferTextSubtitles) as bool? ?? false,
+    preferExternalSubtitles:
+        prefs.get(UserPreferences.preferExternalSubtitles) as bool? ?? false,
     pgsDirectPlay: prefs.get(UserPreferences.pgsDirectPlay) as bool? ?? false,
     assDirectPlay: prefs.get(UserPreferences.assDirectPlay) as bool? ?? false,
     preferredAudioLanguage:
