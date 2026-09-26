@@ -1955,11 +1955,6 @@ class AppLocalizationsId extends AppLocalizations {
   String get subtitleDelay => 'Penundaan Subtitle';
 
   @override
-  String subtitleDelayAuto(String value) {
-    return 'Auto $value';
-  }
-
-  @override
   String get reset => 'Atur Ulang';
 
   @override

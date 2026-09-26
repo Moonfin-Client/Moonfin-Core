@@ -1947,11 +1947,6 @@ class AppLocalizationsSi extends AppLocalizations {
   String get subtitleDelay => 'උපසිරැසි ප්‍රමාදය';
 
   @override
-  String subtitleDelayAuto(String value) {
-    return 'Auto $value';
-  }
-
-  @override
   String get reset => 'යළි සකසන්න';
 
   @override

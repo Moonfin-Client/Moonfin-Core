@@ -1953,11 +1953,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get subtitleDelay => 'Altyazı Gecikmesi';
 
   @override
-  String subtitleDelayAuto(String value) {
-    return 'Otomatik $value';
-  }
-
-  @override
   String get reset => 'Sıfırla';
 
   @override

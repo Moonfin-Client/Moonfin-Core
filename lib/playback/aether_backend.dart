@@ -363,12 +363,6 @@ class AetherBackend implements PlayerBackend {
   Stream<bool> get bufferingStream => _bufferingStream.stream;
 
   @override
-  double get subtitleAutoOffsetSeconds => 0.0;
-
-  @override
-  Stream<double>? get subtitleAutoOffsetStream => null;
-
-  @override
   Stream<bool> get completedStream => _completedStream.stream;
 
   @override

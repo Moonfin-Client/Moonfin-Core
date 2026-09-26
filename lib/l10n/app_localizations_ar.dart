@@ -1967,11 +1967,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get subtitleDelay => 'تأخير الترجمة';
 
   @override
-  String subtitleDelayAuto(String value) {
-    return 'Auto $value';
-  }
-
-  @override
   String get reset => 'إعادة تعيين';
 
   @override

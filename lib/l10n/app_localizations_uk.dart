@@ -1965,11 +1965,6 @@ class AppLocalizationsUk extends AppLocalizations {
   String get subtitleDelay => 'Затримка субтитрів';
 
   @override
-  String subtitleDelayAuto(String value) {
-    return 'Auto $value';
-  }
-
-  @override
   String get reset => 'Скинути';
 
   @override

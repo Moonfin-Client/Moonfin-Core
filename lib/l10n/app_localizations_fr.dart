@@ -1970,11 +1970,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get subtitleDelay => 'Décalage des sous-titres';
 
   @override
-  String subtitleDelayAuto(String value) {
-    return 'Auto $value';
-  }
-
-  @override
   String get reset => 'Réinitialiser';
 
   @override

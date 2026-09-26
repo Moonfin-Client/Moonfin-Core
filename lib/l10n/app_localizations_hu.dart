@@ -1960,11 +1960,6 @@ class AppLocalizationsHu extends AppLocalizations {
   String get subtitleDelay => 'Feliratkésleltetés';
 
   @override
-  String subtitleDelayAuto(String value) {
-    return 'Auto $value';
-  }
-
-  @override
   String get reset => 'Visszaállítás';
 
   @override

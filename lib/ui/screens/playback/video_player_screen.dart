@@ -7160,7 +7160,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
       if (!mounted) return;
 
-      final delayLimits = delayLimitsFor(_activeBackend, audio: audio);
+      final backend = _activeBackend;
+      final delayLimits = delayLimitsFor(backend, audio: audio);
       final result = await TrackSelectorDialog.show(
         context,
         title: audio ? l10n.audioTrack : l10n.subtitleTrack,
@@ -7170,15 +7171,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         footer: delayLimits == null
             ? null
             : DelayFooter(
-                initialDelay: audio ? _audioDelay : _subtitleDelay,
+                initialDelay: audio
+                    ? _audioDelay
+                    : backend is Media3PlayerBackend
+                    ? backend.subtitleDelaySeconds
+                    : _subtitleDelay,
                 label: audio ? l10n.audioDelay : l10n.subtitleDelay,
                 minDelay: delayLimits.$1,
                 maxDelay: delayLimits.$2,
-                autoOffset: audio
-                    ? 0.0
-                    : (_activeBackend?.subtitleAutoOffsetSeconds ?? 0.0),
-                autoOffsetStream:
-                    audio ? null : _activeBackend?.subtitleAutoOffsetStream,
                 onDelayChanged: (d) => _applyDelay(audio: audio, delay: d),
                 formatDelay: _formatDelay,
               ),

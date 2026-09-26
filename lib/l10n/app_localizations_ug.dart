@@ -1951,11 +1951,6 @@ class AppLocalizationsUg extends AppLocalizations {
   String get subtitleDelay => 'ئېكران خېتى كېچىكتۈرۈش';
 
   @override
-  String subtitleDelayAuto(String value) {
-    return 'Auto $value';
-  }
-
-  @override
   String get reset => 'ئەسلىگە قايتۇرۇش';
 
   @override

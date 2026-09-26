@@ -2045,11 +2045,6 @@ class AppLocalizationsHr extends AppLocalizations {
   String get subtitleDelay => 'Odgoda titla';
 
   @override
-  String subtitleDelayAuto(String value) {
-    return 'Auto $value';
-  }
-
-  @override
   String get reset => 'Resetiraj';
 
   @override

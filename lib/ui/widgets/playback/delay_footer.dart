@@ -1,14 +1,9 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../l10n/app_localizations.dart';
 import '../adaptive/sf_symbol.dart';
 
-/// The delay stepper under a track picker. [autoOffset] is a correction the
-/// backend applied on its own and only shows when there is one. It is
-/// read only and rides beside the value the user sets, so Reset leaves it.
 class DelayFooter extends StatefulWidget {
   const DelayFooter({
     super.key,
@@ -16,8 +11,6 @@ class DelayFooter extends StatefulWidget {
     required this.label,
     this.minDelay,
     this.maxDelay,
-    this.autoOffset = 0.0,
-    this.autoOffsetStream,
     required this.onDelayChanged,
     required this.formatDelay,
   });
@@ -26,8 +19,6 @@ class DelayFooter extends StatefulWidget {
   final String label;
   final double? minDelay;
   final double? maxDelay;
-  final double autoOffset;
-  final Stream<double>? autoOffsetStream;
   final void Function(double delay) onDelayChanged;
   final String Function(double seconds) formatDelay;
 
@@ -37,24 +28,11 @@ class DelayFooter extends StatefulWidget {
 
 class _DelayFooterState extends State<DelayFooter> {
   late double _delay;
-  late double _autoOffset;
-  StreamSubscription<double>? _autoOffsetSubscription;
 
   @override
   void initState() {
     super.initState();
     _delay = widget.initialDelay;
-    _autoOffset = widget.autoOffset;
-    _autoOffsetSubscription = widget.autoOffsetStream?.listen((offset) {
-      if (!mounted || offset == _autoOffset) return;
-      setState(() => _autoOffset = offset);
-    });
-  }
-
-  @override
-  void dispose() {
-    _autoOffsetSubscription?.cancel();
-    super.dispose();
   }
 
   void _adjust(double delta) {
@@ -100,19 +78,6 @@ class _DelayFooterState extends State<DelayFooter> {
               ),
             ],
           ),
-          if (_autoOffset != 0.0) ...[
-            const SizedBox(height: 4),
-            Align(
-              alignment: Alignment.centerRight,
-              child: Text(
-                l10n.subtitleDelayAuto(widget.formatDelay(_autoOffset)),
-                style: const TextStyle(
-                  color: Colors.white54,
-                  fontSize: AppTypography.fontSizeXs,
-                ),
-              ),
-            ),
-          ],
           const SizedBox(height: 6),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,

@@ -33,8 +33,7 @@ internal class TextStreamOffsetMediaSource(
     private val activePeriods = ArrayList<TextStreamOffsetMediaPeriod>()
 
     @Volatile
-    var timeOffsetUs: Long = initialOffsetUs
-        private set
+    private var timeOffsetUs: Long = initialOffsetUs
 
     fun setTimeOffsetUs(offsetUs: Long) {
         timeOffsetUs = offsetUs
