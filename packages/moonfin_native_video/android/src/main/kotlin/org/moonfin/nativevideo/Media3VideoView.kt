@@ -8,6 +8,7 @@ import android.content.ContextWrapper
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Typeface
+import android.hardware.display.DisplayManager
 import android.media.AudioDeviceCallback
 import android.media.AudioDeviceInfo
 import android.media.AudioManager
@@ -140,7 +141,9 @@ private class MoonfinRenderersFactory(
         var videoRendererBuilder =
             MediaCodecVideoRenderer
                 .Builder(context)
-                .setCodecAdapterFactory(codecAdapterFactory)
+                .setCodecAdapterFactory(
+                    VsyncPacingAdapterFactory(codecAdapterFactory, primaryDisplay(context)),
+                )
                 .setMediaCodecSelector(mediaCodecSelector)
                 .setAllowedJoiningTimeMs(allowedVideoJoiningTimeMs)
                 .setEnableDecoderFallback(enableDecoderFallback)
@@ -167,7 +170,7 @@ private class MoonfinRenderersFactory(
             out.add(av1ExtensionRenderer)
         }
 
-        out.add(videoRendererBuilder.build())
+        out.add(MoonfinVideoRenderer(videoRendererBuilder))
 
         if (av1ExtensionRenderer != null &&
             extensionRendererMode != DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF &&
@@ -293,6 +296,64 @@ private class MoonfinRenderersFactory(
                 MAX_DROPPED_VIDEO_FRAME_COUNT_TO_NOTIFY,
             )
         }.getOrNull()
+    }
+}
+
+private fun primaryDisplay(context: Context): Display? =
+    runCatching {
+        (context.getSystemService(Context.DISPLAY_SERVICE) as DisplayManager)
+            .getDisplay(Display.DEFAULT_DISPLAY)
+    }.getOrNull()
+
+/**
+ * Pacing gives each frame its own vsync, so Media3's skip of a frame whose
+ * release time matches the previous one would only discard a frame that can
+ * still be shown. A surplus frame from a source faster than the display shares
+ * a vsync instead, and the compositor shows the newer of the two.
+ */
+@UnstableApi
+private class MoonfinVideoRenderer(
+    builder: MediaCodecVideoRenderer.Builder,
+) : MediaCodecVideoRenderer(builder) {
+    override fun shouldSkipBuffersWithIdenticalReleaseTime(): Boolean = false
+}
+
+@UnstableApi
+private class VsyncPacingAdapterFactory(
+    private val delegate: MediaCodecAdapter.Factory,
+    private val display: Display?,
+) : MediaCodecAdapter.Factory {
+    override fun createAdapter(configuration: MediaCodecAdapter.Configuration): MediaCodecAdapter =
+        VsyncPacingAdapter(delegate.createAdapter(configuration), display)
+}
+
+/** Applies [VsyncPacer] to the video codec's frame release. */
+@UnstableApi
+private class VsyncPacingAdapter(
+    private val inner: MediaCodecAdapter,
+    private val display: Display?,
+) : MediaCodecAdapter by inner {
+    private val pacer = VsyncPacer()
+    private var vsyncNs = 0L
+    private var vsyncReadAtMs = -1L
+
+    override fun releaseOutputBuffer(index: Int, renderTimeStampNs: Long) {
+        inner.releaseOutputBuffer(index, pacer.pace(renderTimeStampNs, currentVsyncNs()))
+    }
+
+    // Re-read so a refresh-rate switch during playback is followed.
+    private fun currentVsyncNs(): Long {
+        val nowMs = SystemClock.elapsedRealtime()
+        if (vsyncReadAtMs < 0L || nowMs - vsyncReadAtMs >= VSYNC_REREAD_INTERVAL_MS) {
+            vsyncReadAtMs = nowMs
+            val hz = display?.refreshRate ?: 0f
+            vsyncNs = if (hz > 1f) (1_000_000_000.0 / hz).toLong() else 0L
+        }
+        return vsyncNs
+    }
+
+    private companion object {
+        const val VSYNC_REREAD_INTERVAL_MS = 1_000L
     }
 }
 
