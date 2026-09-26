@@ -67,6 +67,20 @@ class ConnectivityService extends ChangeNotifier {
   /// Set when a sync was skipped because the app was backgrounded.
   bool _pendingSync = false;
 
+  /// The app server id of the registered client, handed over with it by
+  /// [onServerClientReady] so the sync never pairs one server's rows with
+  /// another server's client.
+  String? _serverId;
+
+  /// The boot-time check, a sign-in and a network flip can all ask for the
+  /// sync within a second of each other, and only the progress step guards
+  /// itself, so a second chain would repeat the ratings push and the whole
+  /// metadata sweep. A request for a client that registered since the running
+  /// chain started waits for it and then runs once.
+  Future<void>? _inFlightSync;
+  MediaServerClient? _inFlightSyncClient;
+  bool _syncQueued = false;
+
   ConnectivityService({
     @visibleForTesting Connectivity? connectivity,
     @visibleForTesting Duration retryBase = const Duration(seconds: 5),
@@ -157,6 +171,19 @@ class ConnectivityService extends ChangeNotifier {
     getIt<SessionRepository>().onNetworkRegained();
   }
 
+  /// A server client was just registered for [serverId] (session restore,
+  /// sign-in, account or server switch). The boot-time check runs before any
+  /// client exists and a sign-in brings no reachability edge, so this is the
+  /// moment that reconciles progress recorded offline.
+  Future<void> onServerClientReady(String serverId) async {
+    _serverId = serverId;
+    if (!_isOnline) return;
+    // Straight to the probe rather than recheckNow, which would add a
+    // connectivity_plus call on Apple TV, where the service never makes one.
+    await _checkServerReachability();
+    if (_serverReachable) _triggerSync();
+  }
+
   void _triggerSync() {
     _nudgeSocket();
     // Every network flip lands here, and the full progress and metadata sync
@@ -167,23 +194,47 @@ class ConnectivityService extends ChangeNotifier {
       _pendingSync = true;
       return;
     }
+    _startSyncChain();
+  }
+
+  void _startSyncChain() {
     final getIt = GetIt.instance;
-    if (!getIt.isRegistered<SyncService>() ||
+    final serverId = _serverId;
+    if (serverId == null ||
+        !getIt.isRegistered<SyncService>() ||
         !getIt.isRegistered<MediaServerClient>()) {
+      ServerLog.network('Progress sync skipped: no server client yet');
       return;
     }
     final syncService = getIt<SyncService>();
     final client = getIt<MediaServerClient>();
-    final serverId = getIt.isRegistered<SessionRepository>()
-        ? getIt<SessionRepository>().activeServerId
-        : null;
+    if (_inFlightSync != null) {
+      if (!identical(client, _inFlightSyncClient)) _syncQueued = true;
+      return;
+    }
+    _inFlightSyncClient = client;
     // Ratings push first, so the metadata refresh at the end of the chain
     // pulls back items that already carry them.
-    syncService
+    _inFlightSync = syncService
         .syncPendingRatings(client, serverId: serverId)
-        .then((_) => syncService.syncPlaybackProgress(client))
-        .then((_) {
-          syncService.refreshMetadata(client);
+        .then(
+          (_) => syncService.syncPlaybackProgress(client, serverId: serverId),
+        )
+        .then((_) => syncService.refreshMetadata(client, serverId: serverId))
+        .catchError((Object e) {
+          ServerLog.network(
+            'Progress sync failed',
+            level: ServerLogLevel.warning,
+            error: e,
+          );
+        })
+        .whenComplete(() {
+          _inFlightSync = null;
+          _inFlightSyncClient = null;
+          if (_syncQueued) {
+            _syncQueued = false;
+            _startSyncChain();
+          }
         });
   }
 
