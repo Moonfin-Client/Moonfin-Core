@@ -1,5 +1,7 @@
 import '../../data/models/home_row.dart';
+import '../../data/services/seerr/seerr_slider_catalog.dart';
 import '../../l10n/app_localizations.dart';
+import '../../preference/home_section_config.dart';
 import '../../preference/preference_constants.dart';
 
 /// The Seerr page builds its rows from the type alone, so it localizes the
@@ -20,6 +22,36 @@ String localizeSeerrRowTitle(SeerrRowType type, AppLocalizations l10n) =>
       SeerrRowType.upcomingSeries => l10n.upcomingSeries,
       SeerrRowType.networks => l10n.networks,
     };
+
+/// Admin-named custom sliders keep [serverTitle]. Stock types 1-12 map back
+/// onto [SeerrRowType] so they keep the translations those rows already have,
+/// and only types with no Moonfin equivalent fall back to the English catalog
+/// name (the same string Seerr shows).
+String localizeSeerrSliderTitle(
+  int type,
+  AppLocalizations l10n, {
+  String? serverTitle,
+}) {
+  final server = serverTitle?.trim() ?? '';
+  if (server.isNotEmpty && seerrSliderUsesServerTitle(type)) return server;
+  final rowType = seerrRowTypeForSliderType(type);
+  if (rowType != null) return localizeSeerrRowTitle(rowType, l10n);
+  final fallback = seerrSliderFallbackTitle(type);
+  if (fallback.isNotEmpty) return fallback;
+  return server;
+}
+
+String localizeSeerrSliderConfigTitle(
+  HomeSectionConfig config,
+  AppLocalizations l10n,
+) {
+  if (config.isSeerrShortcutsSlider) return l10n.seerrShortcutsRow;
+  return localizeSeerrSliderTitle(
+    config.sliderType ?? 0,
+    l10n,
+    serverTitle: config.pluginDisplayText,
+  );
+}
 
 String localizeHomeRowTitle({
   required HomeRow row,
@@ -64,30 +96,6 @@ String localizeHomeRowTitle({
       return 'Upcoming Movies (Radarr)';
     case 'sonarr_calendar':
       return 'Upcoming TV Shows (Sonarr)';
-    case 'seerr_recent_requests':
-      return l10n.recentRequests;
-    case 'seerr_recently_added':
-      return l10n.recentlyAdded;
-    case 'seerr_popular_movies':
-      return l10n.popularMovies;
-    case 'seerr_upcoming_movies':
-      return l10n.upcomingMovies;
-    case 'seerr_popular_series':
-      return l10n.popularSeries;
-    case 'seerr_upcoming_series':
-      return l10n.upcomingSeries;
-    case 'seerr_shortcuts':
-      return l10n.seerrShortcutsRow;
-    case 'seerr_trending':
-      return l10n.trending;
-    case 'seerr_movie_genres':
-      return l10n.movieGenres;
-    case 'seerr_studios':
-      return l10n.studios;
-    case 'seerr_series_genres':
-      return l10n.seriesGenres;
-    case 'seerr_networks':
-      return l10n.networks;
     case 'rewatch':
       return 'Rewatch';
   }

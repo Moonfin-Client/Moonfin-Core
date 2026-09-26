@@ -87,7 +87,7 @@ void main() {
           order: 1,
         ),
         HomeSectionConfig(
-          type: HomeSectionType.seerrTrending,
+          type: HomeSectionType.tmdbTrendingAllWeekly,
           enabled: true,
           order: 2,
         ),
@@ -95,7 +95,7 @@ void main() {
 
       final types = prefs.activeHomeSectionConfigs.map((c) => c.type);
       expect(types, contains(HomeSectionType.liveTv));
-      expect(types, contains(HomeSectionType.seerrTrending));
+      expect(types, contains(HomeSectionType.tmdbTrendingAllWeekly));
     });
 
     test('drops requests and live tv rows when the mode is on', () async {
@@ -111,7 +111,7 @@ void main() {
           order: 1,
         ),
         HomeSectionConfig(
-          type: HomeSectionType.seerrTrending,
+          type: HomeSectionType.tmdbTrendingAllWeekly,
           enabled: true,
           order: 2,
         ),
@@ -125,7 +125,7 @@ void main() {
       final types = prefs.activeHomeSectionConfigs.map((c) => c.type);
       expect(types, contains(HomeSectionType.libraryTilesSmall));
       expect(types, isNot(contains(HomeSectionType.liveTv)));
-      expect(types, isNot(contains(HomeSectionType.seerrTrending)));
+      expect(types, isNot(contains(HomeSectionType.tmdbTrendingAllWeekly)));
       expect(types, isNot(contains(HomeSectionType.activeRecordings)));
     });
 
@@ -289,12 +289,12 @@ void main() {
           order: 6,
         ),
         HomeSectionConfig(
-          type: HomeSectionType.seerrShortcuts,
+          type: HomeSectionType.tmdbTrendingAllWeekly,
           enabled: true,
           order: 7,
         ),
         HomeSectionConfig(
-          type: HomeSectionType.seerrTrending,
+          type: HomeSectionType.imdbTop250Movies,
           enabled: true,
           order: 8,
         ),
