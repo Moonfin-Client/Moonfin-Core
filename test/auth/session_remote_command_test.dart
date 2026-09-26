@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:playback_core/playback_core.dart';
 import 'package:server_core/server_core.dart';
@@ -15,7 +18,11 @@ import 'package:moonfin/data/services/download_notification_service.dart';
 import 'package:moonfin/data/services/media_server_client_factory.dart';
 import 'package:moonfin/data/services/plugin_sync_service.dart';
 import 'package:moonfin/data/services/socket_handler.dart';
+import 'package:moonfin/data/services/remote_search_session.dart';
+import 'package:moonfin/playback/appletv_backend.dart';
 import 'package:moonfin/preference/user_preferences.dart';
+import 'package:moonfin/ui/navigation/app_router.dart';
+import 'package:moonfin/ui/navigation/destinations.dart';
 
 /// The command handlers never reach the collaborators the repository is built
 /// from, so these stay empty on purpose.
@@ -35,6 +42,12 @@ class _FakeUserRepository extends Fake implements UserRepository {}
 
 class _FakePluginSyncService extends Fake implements PluginSyncService {}
 
+class _AppleTvBackend extends Fake implements AppleTvBackend {
+  bool dismissed = false;
+  @override
+  Future<void> dismissPlayer() async => dismissed = true;
+}
+
 class _FakeNotifications extends Fake implements DownloadNotificationService {
   final List<String> messages = [];
 
@@ -52,12 +65,13 @@ class _RecordingManager extends Fake implements PlaybackManager {
 
   double trackedVolume = 100;
   bool trackedMuted = false;
+  Completer<void>? stopBarrier;
 
   @override
   final PlayerState state = PlayerState();
 
   @override
-  PlayerBackend? get backend => null;
+  PlayerBackend? backend;
 
   @override
   double get volume => trackedVolume;
@@ -81,7 +95,10 @@ class _RecordingManager extends Fake implements PlaybackManager {
   Future<void> previous() async => calls.add('previous');
 
   @override
-  Future<void> stop({bool userInitiated = true}) async => calls.add('stop');
+  Future<void> stop({bool userInitiated = true}) async {
+    calls.add('stop');
+    await stopBarrier?.future;
+  }
 
   @override
   Future<void> seekTo(Duration position) async {
@@ -130,10 +147,94 @@ void main() {
         PlaystateMessage(command: command, seekPositionTicks: seekTicks),
       );
 
-  Future<void> sendGeneral(String name, {Map<String, String> args = const {}}) =>
-      repository.handleRemoteCommandForTest(
-        GeneralCommandMessage(name: name, arguments: args),
+  Future<void> sendGeneral(
+    String name, {
+    Map<String, String> args = const {},
+  }) => repository.handleRemoteCommandForTest(
+    GeneralCommandMessage(name: name, arguments: args),
+  );
+
+  group('remote search navigation', () {
+    setUp(() => appRouter.go(Destinations.startup));
+
+    test('buffers text while stopping playback and dismisses the native Apple TV player', () async {
+      final backend = _AppleTvBackend();
+      manager.backend = backend;
+      manager.stopBarrier = Completer<void>();
+      final opening = sendGeneral(
+        'GoToSearch',
+        args: {'MoonfinInputId': 'phone'},
       );
+      await sendGeneral(
+        'SendString',
+        args: {
+          'String': 'alien',
+          'MoonfinInputId': 'phone',
+          'MoonfinRevision': '1',
+        },
+      );
+      expect(backend.dismissed, isFalse);
+      manager.stopBarrier!.complete();
+      await opening;
+      expect(backend.dismissed, isTrue);
+      expect(manager.calls, ['stop']);
+      expect(
+        appRouter.routeInformationProvider.value.uri.path,
+        Destinations.search,
+      );
+      final route =
+          appRouter.routeInformationProvider.value.state
+              as RouteInformationState;
+      final search = route.extra as RemoteSearchSession;
+      final values = <String>[];
+      search.attach(values.add);
+      expect(values, ['alien']);
+      search.close();
+    });
+
+    test('back cancels a search still waiting for playback to stop', () async {
+      manager.stopBarrier = Completer<void>();
+      final opening = sendGeneral('GoToSearch');
+      await sendGeneral('Back');
+      manager.stopBarrier!.complete();
+      await opening;
+      expect(
+        appRouter.routeInformationProvider.value.uri.path,
+        Destinations.startup,
+      );
+    });
+
+    test('a second search supersedes the first and its delayed text', () async {
+      manager.stopBarrier = Completer<void>();
+      final first = sendGeneral('GoToSearch', args: {'MoonfinInputId': 'old'});
+      final second = sendGeneral('GoToSearch', args: {'MoonfinInputId': 'new'});
+      await sendGeneral(
+        'SendString',
+        args: {
+          'String': 'stale',
+          'MoonfinInputId': 'old',
+          'MoonfinRevision': '9',
+        },
+      );
+      await sendGeneral(
+        'SendString',
+        args: {
+          'String': 'latest',
+          'MoonfinInputId': 'new',
+          'MoonfinRevision': '1',
+        },
+      );
+      manager.stopBarrier!.complete();
+      await Future.wait([first, second]);
+      final route =
+          appRouter.routeInformationProvider.value.state
+              as RouteInformationState;
+      final search = route.extra as RemoteSearchSession;
+      expect(search.inputId, 'new');
+      expect(search.text, 'latest');
+      search.close();
+    });
+  });
 
   group('play and pause', () {
     test('PlayPause pauses what is playing', () async {

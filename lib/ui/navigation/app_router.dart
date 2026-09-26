@@ -7,6 +7,7 @@ import '../../auth/repositories/session_repository.dart';
 import '../../auth/repositories/user_repository.dart';
 import '../../data/services/connectivity_service.dart';
 import '../../data/services/media_server_client_factory.dart';
+import '../../data/services/remote_search_session.dart';
 import '../../data/services/retro_artwork/retro_artwork_activity_gate.dart';
 import '../../di/injection.dart';
 import '../../playback/external_player_policy.dart';
@@ -301,6 +302,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: Destinations.search,
       builder: (context, state) => SearchScreen(
+        key: state.extra is RemoteSearchSession ? ObjectKey(state.extra) : null,
+        remoteSearch: state.extra is RemoteSearchSession
+            ? state.extra as RemoteSearchSession
+            : null,
         initialQuery: state.uri.queryParameters['query'],
         scopedLibraryId: state.uri.queryParameters['libraryId'],
       ),

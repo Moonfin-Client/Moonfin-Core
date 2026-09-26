@@ -14,12 +14,14 @@ import '../../../data/models/aggregated_item.dart';
 import '../../../data/repositories/search_repository.dart';
 import '../../../data/repositories/seerr_repository.dart';
 import '../../../data/services/recent_searches_store.dart';
+import '../../../data/services/remote_search_session.dart';
 import '../../../data/services/voice_search_controller.dart';
 import '../../../data/viewmodels/search_view_model.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../preference/seerr_preferences.dart';
 import '../../navigation/destinations.dart';
+import '../../navigation/route_lifecycle_observer.dart';
 import '../../../util/artwork_request_size.dart';
 import '../../../util/platform_detection.dart';
 import '../../../util/game_library.dart';
@@ -41,14 +43,21 @@ import '../../widgets/skeleton/skeleton_library_grid.dart';
 class SearchScreen extends StatefulWidget {
   final String? initialQuery;
   final String? scopedLibraryId;
+  final RemoteSearchSession? remoteSearch;
 
-  const SearchScreen({super.key, this.initialQuery, this.scopedLibraryId});
+  const SearchScreen({
+    super.key,
+    this.initialQuery,
+    this.scopedLibraryId,
+    this.remoteSearch,
+  });
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
 }
 
-class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
+class _SearchScreenState extends State<SearchScreen>
+    with GridFocusNodeMixin, RouteAware {
   final _searchController = TextEditingController();
   final _voiceFocus = FocusNode();
   final _searchFocus = FocusNode();
@@ -74,6 +83,8 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
   int _selectedTab = 0;
   String? _tabSelectionQuery;
   bool _focusTabsAfterResults = false;
+  bool _applyingRemoteSearch = false;
+  String _lastSearchText = '';
 
   // Tracks the current grid tab's content so async refreshes can restore focus
   // without stealing it from the search field.
@@ -115,12 +126,32 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
     _searchInputFocus.addListener(_onFocusChanged);
     _voiceController.addListener(_onVoiceControllerChanged);
 
+    if (widget.remoteSearch != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        widget.remoteSearch!.attach(_applyRemoteSearch);
+        _fieldNode.requestFocus();
+      });
+    }
+
     // Desktop keyboard/d-pad: let arrow Down/Up leave the plain text field.
     if (PlatformDetection.useDesktopUi) {
       _searchInputFocus.onKeyEvent = _onSearchInputKey;
     }
     // Initial focus is granted by the RequestInitialFocus wrapper in build().
   }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final route = ModalRoute.of(context);
+    if (widget.remoteSearch != null && route != null) {
+      routeLifecycleObserver.subscribe(this, route);
+    }
+  }
+
+  @override
+  void didPushNext() => widget.remoteSearch?.close();
 
   Future<void> _initSeerr() async {
     try {
@@ -197,6 +228,10 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
   }
 
   void _onSearchTextChanged() {
+    if (!_applyingRemoteSearch && _searchController.text != _lastSearchText) {
+      widget.remoteSearch?.close();
+    }
+    _lastSearchText = _searchController.text;
     _vm.searchDebounced(_searchController.text);
     if (mounted) setState(() {});
   }
@@ -207,6 +242,19 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
       parentId: widget.scopedLibraryId,
       limit: 5,
     );
+  }
+
+  void _applyRemoteSearch(String text) {
+    if (!mounted) return;
+    _applyingRemoteSearch = true;
+    try {
+      _searchController.value = TextEditingValue(
+        text: text,
+        selection: TextSelection.collapsed(offset: text.length),
+      );
+    } finally {
+      _applyingRemoteSearch = false;
+    }
   }
 
   Future<void> _saveRecentSearch(String query) async {
@@ -469,6 +517,8 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
 
   @override
   void dispose() {
+    routeLifecycleObserver.unsubscribe(this);
+    widget.remoteSearch?.close();
     _vm.removeListener(_onViewModelChanged);
     _searchController.removeListener(_onSearchTextChanged);
     _voiceFocus.removeListener(_onFocusChanged);
@@ -651,6 +701,7 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
     if (event.logicalKey == LogicalKeyboardKey.enter ||
         event.logicalKey == LogicalKeyboardKey.select) {
       if (!_searchFocus.hasFocus) _searchFocus.requestFocus();
+      widget.remoteSearch?.close();
       _searchTvFieldKey.currentState?.openKeyboard();
       return KeyEventResult.handled;
     }
