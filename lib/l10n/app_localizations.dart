@@ -4354,6 +4354,18 @@ abstract class AppLocalizations {
   /// **'Failed to play {name}'**
   String failedToPlayChannel(String name);
 
+  /// Shown in place of an internal sentinel error code when playback gives up trying to recover a stalled or starved stream
+  ///
+  /// In en, this message translates to:
+  /// **'Playback stopped and could not be recovered.'**
+  String get playbackStreamLost;
+
+  /// Overlay shown while a live channel's bounded recovery is retrying
+  ///
+  /// In en, this message translates to:
+  /// **'Reconnecting… ({attempt} of {total})'**
+  String liveReconnecting(int attempt, int total);
+
   /// Error when recordings fail to load
   ///
   /// In en, this message translates to:

@@ -24,13 +24,12 @@ class PlayerState {
   bool get isPlaying => _isPlaying;
   bool get isBuffering => _isBuffering;
 
-  /// Whether the player has been told to play, independent of whether it
-  /// currently can. Null on engines that do not report their own intent.
+  /// Whether the player has been told to play. Null on engines that don't
+  /// report their own intent.
   ///
-  /// [isPlaying] is a derived value -- media3 defines it as
-  /// `playWhenReady && READY && no suppression` -- so it reads false for a
-  /// viewer pause, a starved stream and a transient audio-focus loss alike.
-  /// Anything that has to tell those apart wants this, not [isPlaying].
+  /// [isPlaying] reads false for a viewer pause, a starved stream and a
+  /// transient audio focus loss alike. Only a starved stream leaves this
+  /// true, so anything that has to spot a stall wants this, not [isPlaying].
   bool? get playWhenReady => _playWhenReady;
 
   /// Whether the viewer paused. Falls back to "not playing" on an engine that

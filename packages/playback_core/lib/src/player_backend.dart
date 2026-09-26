@@ -74,12 +74,12 @@ abstract class PlayerBackend {
   Stream<bool> get completedStream;
   Stream<Map<String, dynamic>>? get errorStream => null;
 
-  /// Whether the player has been told to play, independent of whether it
-  /// currently can. Null on engines that do not expose their own intent, and
-  /// callers then fall back to "not playing".
+  /// Whether the player has been told to play. Null on engines that don't
+  /// expose their own intent, and callers then fall back to "not playing".
   ///
   /// This exists because `isPlaying` is derived: a viewer pause, a starved
-  /// stream and a transient audio-focus loss all read as not playing.
+  /// stream and a transient audio focus loss all read as not playing. Only a
+  /// starved stream leaves this true.
   bool? get playWhenReady => null;
 
   /// A correction the backend applies to sideloaded subtitles on its own,
