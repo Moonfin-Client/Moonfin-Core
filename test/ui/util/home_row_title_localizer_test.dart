@@ -39,4 +39,41 @@ void main() {
   test('the pinned wording covers every row type', () {
     expect(_englishTitles.keys.toSet(), SeerrRowType.values.toSet());
   });
+
+  group('localizeHomeSectionTitle', () {
+    // Spelled out rather than read from the l10n getters, which would pass either way.
+    test('tells audio playlists apart from playlists', () {
+      expect(
+        localizeHomeSectionTitle(HomeSectionType.audioPlaylists, _l10n),
+        'Audio Playlists',
+      );
+      expect(
+        localizeHomeSectionTitle(HomeSectionType.playlists, _l10n),
+        'Playlists',
+      );
+    });
+
+    test('names the sections it is asked about', () {
+      expect(
+        localizeHomeSectionTitle(HomeSectionType.mediaBar, _l10n),
+        'Media Bar',
+      );
+      expect(
+        localizeHomeSectionTitle(HomeSectionType.resume, _l10n),
+        'Continue Watching',
+      );
+      expect(localizeHomeSectionTitle(HomeSectionType.none, _l10n), 'None');
+    });
+
+    // A new section missing here would throw.
+    test('has something to say about every section there is', () {
+      for (final type in HomeSectionType.values) {
+        expect(
+          localizeHomeSectionTitle(type, _l10n),
+          isNotEmpty,
+          reason: 'no title for $type',
+        );
+      }
+    });
+  });
 }
