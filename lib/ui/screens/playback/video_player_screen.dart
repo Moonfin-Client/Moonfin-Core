@@ -20,6 +20,7 @@ import 'package:window_manager/window_manager.dart';
 import '../../../data/utils/chapter_markers.dart';
 import '../../../data/utils/video_range_label.dart';
 import '../../../playback/subtitle_style.dart';
+import '../../../playback/subtitle_view_config.dart';
 import '../../../util/fullscreen_helper.dart';
 import '../../../util/scroll_sensitivity_binding.dart';
 import '../../widgets/player_volume_control.dart';
@@ -69,7 +70,6 @@ import '../../../util/playback_time_label.dart';
 import '../../../util/server_url.dart';
 import '../../navigation/destinations.dart';
 import '../../widgets/adaptive/sf_symbol.dart';
-import '../../widgets/subtitle_preview.dart';
 import '../../screensaver/screensaver_controller.dart';
 import '../../widgets/remote_play_to_session_dialog.dart';
 import '../../widgets/track_selector_dialog.dart';
@@ -3417,57 +3417,13 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     return '${seconds >= 0 ? '+' : ''}${(seconds * 1000).round()} ms';
   }
 
-  SubtitleViewConfiguration _buildSubtitleConfig() {
-    final style = SubtitleStyle.forResolution(
-      _prefs,
-      _manager.currentResolution,
-    );
-    final textColor = Color(style.textColor);
-    final bgColor = Color(style.backgroundColor);
-    final strokeColor = Color(style.strokeColor);
-    final prefSize = style.fontSize;
-    final fontWeight = style.fontWeight;
-    final offset = style.verticalOffset;
-
-    final baseSize = PlatformDetection.useMobileUi ? 40.0 : 32.0;
-    final fontSize = (prefSize / 24.0) * baseSize;
-
-    final basePadding = PlatformDetection.useMobileUi ? 16.0 : 24.0;
-    final bottomPadding =
-        basePadding + (offset * MediaQuery.sizeOf(context).height * 0.5);
-
-    final strokeShadows = subtitleStrokeShadows(strokeColor, fontSize);
-
-    final activeIndex = _manager.subtitleStreamIndex;
-    bool isAssOrPgs = false;
-    if (activeIndex != null && activeIndex >= 0) {
-      final mediaStreams = _manager.currentResolution?.mediaStreams;
-      if (mediaStreams != null) {
-        final activeStream = mediaStreams.firstWhere(
-          (s) => s['Index'] == activeIndex,
-          orElse: () => const <String, dynamic>{},
-        );
-        final codec = activeStream['Codec'] as String?;
-        isAssOrPgs = shouldRenderSubtitleNatively(codec);
-      }
-    }
-
-    return SubtitleViewConfiguration(
-      visible: PlatformDetection.isDesktop ? false : !isAssOrPgs,
-      style: TextStyle(
-        inherit: false,
-        height: 1.4,
-        fontSize: fontSize,
-        color: textColor,
-        fontWeight: fontWeight >= 700 ? FontWeight.bold : FontWeight.normal,
-        backgroundColor: bgColor,
-        fontFamilyFallback: const ['Roboto', 'Noto Sans', 'Arial'],
-        shadows: strokeShadows,
-      ),
-      textAlign: TextAlign.center,
-      padding: EdgeInsets.fromLTRB(16.0, 0.0, 16.0, bottomPadding),
-    );
-  }
+  SubtitleViewConfiguration _buildSubtitleConfig() =>
+      buildSubtitleViewConfiguration(
+        context: context,
+        prefs: _prefs,
+        resolution: _manager.currentResolution,
+        subtitleStreamIndex: _manager.subtitleStreamIndex,
+      );
 
   (SubtitleStyle, bool, bool)? _lastSubtitleStyle;
 
