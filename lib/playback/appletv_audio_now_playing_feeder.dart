@@ -1,11 +1,10 @@
 import 'dart:async';
 
-import 'package:get_it/get_it.dart';
 import 'package:playback_core/playback_core.dart';
-import 'package:server_core/server_core.dart';
 
 import '../data/models/aggregated_item.dart';
 import '../data/services/media_server_client_factory.dart';
+import '../util/audio_artwork_url.dart';
 import 'appletv_backend.dart';
 
 /// Keeps the tvOS system Now Playing card (and Siri Remote / Control Center
@@ -70,21 +69,9 @@ class AppleTvAudioNowPlayingFeeder {
     ));
   }
 
-  String? _artUrl(AggregatedItem item) {
-    try {
-      final client = _clientFactory.getClientIfExists(item.serverId) ??
-          GetIt.instance<MediaServerClient>();
-      final albumTag = item.albumPrimaryImageTag;
-      final albumId = item.albumId;
-      if (item.type == 'Audio' && albumTag != null && albumId != null) {
-        return client.imageApi
-            .getPrimaryImageUrl(albumId, maxHeight: 600, tag: albumTag);
-      }
-      if (item.primaryImageTag != null) {
-        return client.imageApi
-            .getPrimaryImageUrl(item.id, maxHeight: 600, tag: item.primaryImageTag);
-      }
-    } catch (_) {}
-    return null;
-  }
+  String? _artUrl(AggregatedItem item) => audioArtUrl(
+        item,
+        clientFactory: _clientFactory,
+        maxHeight: 600,
+      );
 }

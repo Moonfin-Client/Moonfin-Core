@@ -19,6 +19,7 @@ import '../../preference/preference_constants.dart';
 import '../../preference/seerr_preferences.dart';
 import '../../preference/user_preferences.dart';
 import '../../l10n/app_localizations.dart';
+import '../../util/audio_artwork_url.dart';
 import '../../util/clock_format.dart';
 import '../../util/focus/dpad_keys.dart';
 import '../../util/game_library.dart';
@@ -1684,23 +1685,11 @@ class _SidebarMusicCardState extends State<SidebarMusicCard> {
     return raw is AggregatedItem ? raw : null;
   }
 
-  String? _artUrl(AggregatedItem item) {
-    try {
-      final client = _clientFactory.getClientIfExists(item.serverId) ??
-          GetIt.instance<MediaServerClient>();
-      final albumTag = item.albumPrimaryImageTag;
-      final albumId = item.albumId;
-      if (item.type == 'Audio' && albumTag != null && albumId != null) {
-        return client.imageApi
-            .getPrimaryImageUrl(albumId, maxHeight: 120, tag: albumTag);
-      }
-      if (item.primaryImageTag != null) {
-        return client.imageApi
-            .getPrimaryImageUrl(item.id, maxHeight: 120, tag: item.primaryImageTag);
-      }
-    } catch (_) {}
-    return null;
-  }
+  String? _artUrl(AggregatedItem item) => audioArtUrl(
+        item,
+        clientFactory: _clientFactory,
+        maxHeight: 120,
+      );
 
   Widget _buildCardButton({
     required IconData icon,
