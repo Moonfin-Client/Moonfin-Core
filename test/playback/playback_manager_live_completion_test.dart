@@ -1319,7 +1319,7 @@ void main() {
       ..clock = () => DateTime(2026, 9, 15, 20).add(async.elapsed);
 
     test(
-      'a channel that opens but never plays recovers at 15s, not before',
+      'a channel that opens but never plays recovers at 30s, not before',
       () {
         fakeAsync((async) {
           final backend = _TestBackend();
@@ -1331,7 +1331,7 @@ void main() {
             async.flushMicrotasks();
             expect(backend.resumeLiveEdgeCalls, isZero);
 
-            async.elapse(const Duration(seconds: 14));
+            async.elapse(const Duration(seconds: 29));
             async.flushMicrotasks();
             expect(backend.resumeLiveEdgeCalls, isZero);
 
@@ -1390,7 +1390,7 @@ void main() {
             if (manager.bringupState.phase == PlaybackBringupPhase.failed) {
               break;
             }
-            async.elapse(const Duration(seconds: 15));
+            async.elapse(const Duration(seconds: 30));
             async.flushMicrotasks();
           }
           expect(manager.bringupState.phase, PlaybackBringupPhase.failed);
@@ -1459,7 +1459,7 @@ void main() {
 
     test(
       'a frame seen during open (web/MediaKit) still gets the 8s '
-      'mid-stream window on the next stall, not 15s',
+      'mid-stream window on the next stall, not 30s',
       () {
         fakeAsync((async) {
           final backend = _TestBackend()..emitFrameDuringOpen = true;
@@ -1527,7 +1527,7 @@ void main() {
       },
     );
 
-    test('after an in-place resume the next frame gets the 15s window', () {
+    test('after an in-place resume the next frame gets the 30s window', () {
       fakeAsync((async) {
         final backend = _TestBackend();
         final resolver = _TestResolver();
@@ -1547,13 +1547,12 @@ void main() {
           expect(backend.resumeLiveEdgeCalls, 1);
           final resolves = resolver.calls;
 
-          // The reopened source is treated like a fresh tune: 8s of no frame
-          // is not yet a stall.
-          async.elapse(const Duration(seconds: 12));
+          // The reopened source gets the full first-frame window.
+          async.elapse(const Duration(seconds: 29));
           async.flushMicrotasks();
           expect(resolver.calls, resolves);
 
-          async.elapse(const Duration(seconds: 4));
+          async.elapse(const Duration(seconds: 1));
           async.flushMicrotasks();
           expect(resolver.calls, resolves + 1);
         } finally {
@@ -1619,7 +1618,7 @@ void main() {
           unawaited(manager.stop());
           async.flushMicrotasks();
 
-          async.elapse(const Duration(seconds: 10));
+          async.elapse(const Duration(seconds: 21));
           async.flushMicrotasks();
           expect(backend.resumeLiveEdgeCalls, isZero);
         } finally {
@@ -1648,7 +1647,7 @@ void main() {
           ]));
           async.flushMicrotasks();
 
-          async.elapse(const Duration(seconds: 10));
+          async.elapse(const Duration(seconds: 21));
           async.flushMicrotasks();
           expect(backend.resumeLiveEdgeCalls, isZero);
         } finally {
@@ -1671,12 +1670,12 @@ void main() {
             async.flushMicrotasks();
             expect(resolver.calls, 1);
 
-            async.elapse(const Duration(seconds: 15));
+            async.elapse(const Duration(seconds: 30));
             async.flushMicrotasks();
             expect(backend.resumeLiveEdgeCalls, 1);
             expect(resolver.calls, 1);
 
-            async.elapse(const Duration(seconds: 15));
+            async.elapse(const Duration(seconds: 30));
             async.flushMicrotasks();
             expect(resolver.calls, 2);
             expect(backend.playedUrls.last, 'https://example.test/session-2');
@@ -1700,11 +1699,11 @@ void main() {
             unawaited(manager.playItems(<dynamic>[_liveChannel]));
             async.flushMicrotasks();
 
-            // Drive the watchdog through enough 15s cycles to exhaust the
+            // Drive the watchdog through enough 30s cycles to exhaust the
             // recovery budget: the stream never plays, so every cycle
             // re-fires it.
             for (var i = 0; i < 8; i++) {
-              async.elapse(const Duration(seconds: 15));
+              async.elapse(const Duration(seconds: 30));
               async.flushMicrotasks();
               if (manager.bringupState.phase ==
                   PlaybackBringupPhase.failed) {
@@ -1770,7 +1769,7 @@ void main() {
       },
     );
 
-    test('buffering for 15s with no pause recovers', () {
+    test('buffering for 30s with no pause recovers', () {
       fakeAsync((async) {
         final backend = _TestBackend()..forceNoIntent = true;
         final resolver = _TestResolver();
@@ -1786,7 +1785,7 @@ void main() {
           backend.emitBuffering(true);
           async.flushMicrotasks();
 
-          async.elapse(const Duration(seconds: 15));
+          async.elapse(const Duration(seconds: 30));
           async.flushMicrotasks();
           expect(backend.resumeLiveEdgeCalls, 1);
         } finally {
@@ -1795,7 +1794,7 @@ void main() {
       });
     });
 
-    test('a channel that opens and never plays recovers at 15s', () {
+    test('a channel that opens and never plays recovers at 30s', () {
       fakeAsync((async) {
         final backend = _TestBackend()..forceNoIntent = true;
         final resolver = _TestResolver();
@@ -1805,7 +1804,7 @@ void main() {
           unawaited(manager.playItems(<dynamic>[_liveChannel]));
           async.flushMicrotasks();
 
-          async.elapse(const Duration(seconds: 15));
+          async.elapse(const Duration(seconds: 30));
           async.flushMicrotasks();
           expect(backend.resumeLiveEdgeCalls, 1);
         } finally {
@@ -1844,7 +1843,7 @@ void main() {
       },
     );
 
-    test('pause then resume then buffering for 15s recovers', () {
+    test('pause then resume then buffering for 30s recovers', () {
       fakeAsync((async) {
         final backend = _TestBackend()..forceNoIntent = true;
         final resolver = _TestResolver();
@@ -1864,7 +1863,7 @@ void main() {
           backend.emitBuffering(true);
           async.flushMicrotasks();
 
-          async.elapse(const Duration(seconds: 15));
+          async.elapse(const Duration(seconds: 30));
           async.flushMicrotasks();
           expect(backend.resumeLiveEdgeCalls, 1);
         } finally {
@@ -1891,7 +1890,7 @@ void main() {
       ..clock = () => DateTime(2026, 9, 15, 20).add(async.elapsed);
 
     test(
-      'playing=true with buffering=true for 15s is still a stall and '
+      'playing=true with buffering=true for 30s is still a stall and '
       'recovers',
       () {
         fakeAsync((async) {
@@ -1910,7 +1909,7 @@ void main() {
             async.flushMicrotasks();
             expect(backend.resumeLiveEdgeCalls, isZero);
 
-            async.elapse(const Duration(seconds: 15));
+            async.elapse(const Duration(seconds: 30));
             async.flushMicrotasks();
             expect(backend.resumeLiveEdgeCalls, 1);
           } finally {
@@ -2031,10 +2030,10 @@ void main() {
             final resumesAfterResume = backend.resumeLiveEdgeCalls;
 
             // Elapse well past attempt 2's 10s gap (and the watchdog's own
-            // fresh 15s window, which the resume above disarmed): the held
+            // fresh 30s window, which the resume above disarmed): the held
             // retry must not fire, because it was cancelled the moment
             // playback resumed.
-            async.elapse(const Duration(seconds: 15));
+            async.elapse(const Duration(seconds: 30));
             async.flushMicrotasks();
 
             expect(resolver.calls, callsAfterResume);
