@@ -301,8 +301,9 @@ class _TestService implements PlayerService {
   Future<void> onPlaybackStop(
     dynamic mediaItem,
     StreamResolutionResult resolution,
-    Duration position,
-  ) async {
+    Duration position, {
+    bool releaseLiveStream = true,
+  }) async {
     events.add('stop:${resolution.playSessionId}');
     stoppedResolutions.add(resolution);
   }
@@ -2167,5 +2168,144 @@ void main() {
         });
       },
     );
+  });
+  group('a recovery that got the channel playing gives the budget back', () {
+    PlaybackManager fakeManager(
+      _TestBackend backend,
+      _TestResolver resolver,
+      _TestService service,
+      FakeAsync async,
+    ) => PlaybackManager()
+      ..setBackend(backend)
+      ..setResolver(resolver)
+      ..setPlayerService(service)
+      ..clock = () => DateTime(2026, 9, 15, 20).add(async.elapsed);
+
+    /// Spends all three attempts on end-of-stream events, then has the last
+    /// one work: the shape of a channel that only plays once transcoded.
+    void spendBudgetThenPlay(_TestBackend backend, FakeAsync async) {
+      backend.emitPlaying();
+      async.flushMicrotasks();
+      for (final gap in const [4, 11, 21]) {
+        async.elapse(Duration(seconds: gap));
+        backend.emitCompleted();
+        async.flushMicrotasks();
+      }
+      backend.emitPlaying();
+      async.flushMicrotasks();
+    }
+
+    test('an end of stream after 20s of playing starts a fresh budget', () {
+      fakeAsync((async) {
+        final backend = _TestBackend();
+        final resolver = _TestResolver();
+        final manager = fakeManager(backend, resolver, _TestService(), async);
+        try {
+          unawaited(manager.playItems(<dynamic>[_liveChannel]));
+          async.flushMicrotasks();
+          spendBudgetThenPlay(backend, async);
+          expect(resolver.calls, 3);
+          expect(backend.resumeLiveEdgeCalls, 1);
+
+          // Still inside the minute since the last attempt.
+          async.elapse(const Duration(seconds: 25));
+          backend.emitCompleted();
+          async.flushMicrotasks();
+
+          // Attempt 1 again: the cheap in-place resume, not a give-up.
+          expect(backend.resumeLiveEdgeCalls, 2);
+          expect(manager.bringupState.phase, isNot(PlaybackBringupPhase.failed));
+        } finally {
+          manager.dispose();
+        }
+      });
+    });
+
+    test('an end of stream before the recovery has proven itself gives up', () {
+      fakeAsync((async) {
+        final backend = _TestBackend();
+        final resolver = _TestResolver();
+        final manager = fakeManager(backend, resolver, _TestService(), async);
+        try {
+          unawaited(manager.playItems(<dynamic>[_liveChannel]));
+          async.flushMicrotasks();
+          spendBudgetThenPlay(backend, async);
+
+          async.elapse(const Duration(seconds: 10));
+          backend.emitCompleted();
+          async.flushMicrotasks();
+
+          expect(backend.resumeLiveEdgeCalls, 1);
+          expect(manager.bringupState.phase, PlaybackBringupPhase.failed);
+          expect(manager.bringupState.error, liveStreamLostError);
+        } finally {
+          manager.dispose();
+        }
+      });
+    });
+
+    test('playing for moments between attempts still gives up', () {
+      fakeAsync((async) {
+        final backend = _TestBackend();
+        final resolver = _TestResolver();
+        final manager = fakeManager(backend, resolver, _TestService(), async);
+        try {
+          unawaited(manager.playItems(<dynamic>[_liveChannel]));
+          async.flushMicrotasks();
+          backend.emitPlaying();
+          async.flushMicrotasks();
+          // Each attempt gets a picture back, but never for 20s. The second
+          // plays for 15s, so a timer left over from the first attempt would
+          // land while it plays and wrongly count as proven.
+          for (final (untilFailure, played) in const [
+            (4, 3),
+            (8, 15),
+            (6, 3),
+            (9, 0),
+          ]) {
+            async.elapse(Duration(seconds: untilFailure));
+            backend.emitCompleted();
+            async.flushMicrotasks();
+            if (played == 0) break;
+            backend.emitPlaying();
+            async.flushMicrotasks();
+            async.elapse(Duration(seconds: played));
+            backend.emitNotPlaying(playWhenReady: false);
+            async.flushMicrotasks();
+          }
+
+          expect(manager.bringupState.phase, PlaybackBringupPhase.failed);
+          expect(manager.bringupState.error, liveStreamLostError);
+        } finally {
+          manager.dispose();
+        }
+      });
+    });
+
+    test('a channel stalled when the 20s is up has not proven itself', () {
+      fakeAsync((async) {
+        final backend = _TestBackend();
+        final resolver = _TestResolver();
+        final manager = fakeManager(backend, resolver, _TestService(), async);
+        try {
+          unawaited(manager.playItems(<dynamic>[_liveChannel]));
+          async.flushMicrotasks();
+          spendBudgetThenPlay(backend, async);
+
+          async.elapse(const Duration(seconds: 15));
+          backend.emitNotPlaying();
+          backend.emitBuffering(true);
+          async.flushMicrotasks();
+          // Past the 20s mark while stalled, then the 8s watchdog fires.
+          async.elapse(const Duration(seconds: 8));
+          async.flushMicrotasks();
+
+          expect(backend.resumeLiveEdgeCalls, 1);
+          expect(manager.bringupState.phase, PlaybackBringupPhase.failed);
+        } finally {
+          manager.dispose();
+        }
+      });
+    });
   });
 }

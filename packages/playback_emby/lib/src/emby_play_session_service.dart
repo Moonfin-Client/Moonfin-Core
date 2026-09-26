@@ -55,8 +55,9 @@ class EmbyPlaySessionService implements PlayerService {
   Future<void> onPlaybackStop(
     dynamic mediaItem,
     StreamResolutionResult resolution,
-    Duration position,
-  ) async {
+    Duration position, {
+    bool releaseLiveStream = true,
+  }) async {
     final report = PlaybackStopReport(
       itemId: MediaStreamResolver.extractItemId(mediaItem),
       mediaSourceId: resolution.mediaSourceId,
@@ -75,7 +76,7 @@ class EmbyPlaySessionService implements PlayerService {
     }
 
     final liveStreamId = resolution.liveStreamId;
-    if (liveStreamId != null && liveStreamId.isNotEmpty) {
+    if (releaseLiveStream && liveStreamId != null && liveStreamId.isNotEmpty) {
       try {
         await _client.playbackApi.closeLiveStream(liveStreamId);
       } catch (_) {}
