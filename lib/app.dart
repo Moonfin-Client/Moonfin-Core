@@ -154,8 +154,9 @@ class _MoonfinAppState extends State<MoonfinApp> {
   }
 
   /// The settled quality persisted by [_onGlassQualityChanged] last session,
-  /// or null to run the warm-up benchmark on a first launch.
-  GlassQuality? _settledGlassInitialQuality() {
+  /// or the ceiling when none has been saved yet, which skips the warm-up
+  /// benchmark.
+  GlassQuality _settledGlassInitialQuality() {
     switch (_prefs.get(UserPreferences.glassSettledQuality)) {
       case GlassSettledQuality.minimal:
         return GlassQuality.minimal;
@@ -164,7 +165,7 @@ class _MoonfinAppState extends State<MoonfinApp> {
       case GlassSettledQuality.premium:
         return GlassQuality.premium;
       case GlassSettledQuality.unset:
-        return null;
+        return GlassCapability.adaptiveMaxQuality;
     }
   }
 
@@ -315,10 +316,8 @@ class _MoonfinAppState extends State<MoonfinApp> {
                         );
                         if (GlassSettings.usePackageRenderer) {
                           // Governs every package-rendered glass pane below.
-                          // Benchmarks the device, throttles quality under
-                          // GPU and thermal pressure, and recovers when it
-                          // cools. The persisted settled quality skips the
-                          // warm-up on repeat launches.
+                          // Throttles quality under GPU and thermal pressure,
+                          // and recovers when it cools.
                           // ignore: experimental_member_use
                           content = GlassAdaptiveScope(
                             maxQuality: GlassCapability.adaptiveMaxQuality,
