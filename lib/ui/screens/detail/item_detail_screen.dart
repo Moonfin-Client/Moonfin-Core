@@ -121,6 +121,8 @@ import '../../../util/audio_track_logic.dart';
 import '../../../util/artwork_request_size.dart';
 import '../../../util/platform_detection.dart';
 import 'detail_layout_metrics.dart';
+import '../../../data/utils/video_range_label.dart';
+import '../../../data/utils/video_resolution_label.dart';
 
 const _textShadows = [Shadow(blurRadius: 4, color: Colors.black54)];
 
@@ -10862,41 +10864,6 @@ String? _endsAt(
   return '$h12:$minute $amPm';
 }
 
-String? resolutionFromStreams(List<Map<String, dynamic>> streams) {
-  final video = streams.where((s) => s['Type'] == 'Video').firstOrNull;
-  if (video == null) {
-    return null;
-  }
-  final width = video['Width'] as int?;
-  final height = video['Height'] as int?;
-  if (width == null || height == null || width <= 0 || height <= 0) {
-    return null;
-  }
-
-  final interlaced = video['IsInterlaced'] == true;
-  final suffix = interlaced ? 'i' : 'p';
-
-  if (width >= 7600 || height >= 4300) return '8K';
-  if (width >= 3800 || height >= 2000) return '4K';
-  if (width >= 2500 || height >= 1400) return '1440$suffix';
-  if (width >= 1800 || height >= 1000) return '1080$suffix';
-  if (width >= 1200 || height >= 700) return '720$suffix';
-  if (width >= 600 || height >= 400) return '480$suffix';
-  return 'SD';
-}
-
-String? hdrFromStreams(List<Map<String, dynamic>> streams) {
-  final video = streams.where((s) => s['Type'] == 'Video').firstOrNull;
-  if (video == null) {
-    return null;
-  }
-  final hdr = video['VideoRangeType'] as String?;
-  if (hdr == null || hdr.isEmpty) {
-    return null;
-  }
-  return hdr.toUpperCase();
-}
-
 String? audioLabelFromStreams(List<Map<String, dynamic>> streams) {
   final audio = streams.where((s) => s['Type'] == 'Audio').firstOrNull;
   if (audio == null) return null;
@@ -10927,10 +10894,16 @@ String? codecFromStreams(
 ) {
   final streams = mediaStreamsForItem(item, selectedMediaSource);
   final badges = <String>[];
-  final res = resolutionFromStreams(streams) ?? item.videoResolution;
+  final videoStream = streams
+      .where((s) => s['Type'] == 'Video')
+      .firstOrNull;
+  final res =
+      (videoStream == null ? null : videoResolutionLabel(videoStream)) ??
+      item.videoResolution;
   if (res != null) badges.add(res);
-  final hdr = hdrFromStreams(streams) ?? item.hdrType;
-  if (hdr != null) badges.add(hdr);
+  // Same reading as the player panels; SDR isn't badged.
+  final hdr = videoStream == null ? null : videoRangeLabel(videoStream);
+  if (hdr != null && hdr != 'SDR') badges.add(hdr);
   final vcodec =
       codecFromStreams(streams, 'Video') ?? item.videoCodec?.toUpperCase();
   if (vcodec != null) badges.add(vcodec);
