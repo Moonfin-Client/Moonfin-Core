@@ -2588,6 +2588,11 @@ class AppLocalizationsFi extends AppLocalizations {
   String get searchThisLibrary => 'Hae tästä kirjastosta...';
 
   @override
+  String searchFacetValues(String facet) {
+    return 'Search $facet';
+  }
+
+  @override
   String get searchEllipsis => 'Haku...';
 
   @override

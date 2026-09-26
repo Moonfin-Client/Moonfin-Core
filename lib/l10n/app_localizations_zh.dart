@@ -2518,6 +2518,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get searchThisLibrary => '搜索此媒体库...';
 
   @override
+  String searchFacetValues(String facet) {
+    return 'Search $facet';
+  }
+
+  @override
   String get searchEllipsis => '搜索...';
 
   @override

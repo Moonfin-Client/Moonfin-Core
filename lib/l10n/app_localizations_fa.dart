@@ -2565,6 +2565,11 @@ class AppLocalizationsFa extends AppLocalizations {
   String get searchThisLibrary => 'جستجو در این کتابخانه...';
 
   @override
+  String searchFacetValues(String facet) {
+    return 'Search $facet';
+  }
+
+  @override
   String get searchEllipsis => 'جستجو...';
 
   @override

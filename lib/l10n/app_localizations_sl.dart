@@ -2594,6 +2594,11 @@ class AppLocalizationsSl extends AppLocalizations {
   String get searchThisLibrary => 'Išči v tej knjižnici ...';
 
   @override
+  String searchFacetValues(String facet) {
+    return 'Search $facet';
+  }
+
+  @override
   String get searchEllipsis => 'Iskanje ...';
 
   @override

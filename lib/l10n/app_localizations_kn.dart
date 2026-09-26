@@ -2585,6 +2585,11 @@ class AppLocalizationsKn extends AppLocalizations {
   String get searchThisLibrary => 'ಈ ಗ್ರಂಥಾಲಯವನ್ನು ಹುಡುಕಿ...';
 
   @override
+  String searchFacetValues(String facet) {
+    return 'Search $facet';
+  }
+
+  @override
   String get searchEllipsis => 'ಹುಡುಕು...';
 
   @override

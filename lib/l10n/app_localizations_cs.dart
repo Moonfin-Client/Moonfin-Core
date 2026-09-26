@@ -2588,6 +2588,11 @@ class AppLocalizationsCs extends AppLocalizations {
   String get searchThisLibrary => 'Prohledat tuto knihovnu...';
 
   @override
+  String searchFacetValues(String facet) {
+    return 'Search $facet';
+  }
+
+  @override
   String get searchEllipsis => 'Vyhledávání...';
 
   @override

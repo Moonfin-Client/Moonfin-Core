@@ -2575,6 +2575,11 @@ class AppLocalizationsEo extends AppLocalizations {
   String get searchThisLibrary => 'Serĉu ĉi tiun bibliotekon...';
 
   @override
+  String searchFacetValues(String facet) {
+    return 'Search $facet';
+  }
+
+  @override
   String get searchEllipsis => 'Serĉu...';
 
   @override

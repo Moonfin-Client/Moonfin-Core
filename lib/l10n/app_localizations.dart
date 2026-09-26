@@ -4474,6 +4474,12 @@ abstract class AppLocalizations {
   /// **'Search this library...'**
   String get searchThisLibrary;
 
+  /// Hint in the box that narrows a long filter list, e.g. "Search Tags"
+  ///
+  /// In en, this message translates to:
+  /// **'Search {facet}'**
+  String searchFacetValues(String facet);
+
   /// Search hint placeholder
   ///
   /// In en, this message translates to:

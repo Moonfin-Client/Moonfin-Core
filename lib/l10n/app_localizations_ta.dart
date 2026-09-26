@@ -2588,6 +2588,11 @@ class AppLocalizationsTa extends AppLocalizations {
   String get searchThisLibrary => 'இந்த நூலகத்தில் தேடவும்...';
 
   @override
+  String searchFacetValues(String facet) {
+    return 'Search $facet';
+  }
+
+  @override
   String get searchEllipsis => 'தேடு...';
 
   @override

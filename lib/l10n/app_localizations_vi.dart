@@ -2579,6 +2579,11 @@ class AppLocalizationsVi extends AppLocalizations {
   String get searchThisLibrary => 'Tìm kiếm thư viện này...';
 
   @override
+  String searchFacetValues(String facet) {
+    return 'Search $facet';
+  }
+
+  @override
   String get searchEllipsis => 'Tìm kiếm...';
 
   @override

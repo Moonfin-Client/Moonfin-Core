@@ -3478,6 +3478,15 @@
   "@searchThisLibrary": {
     "description": "Search hint when scoped to a specific library"
   },
+  "searchFacetValues": "Search {facet}",
+  "@searchFacetValues": {
+    "description": "Hint in the box that narrows a long filter list, e.g. \"Search Tags\"",
+    "placeholders": {
+      "facet": {
+        "type": "String"
+      }
+    }
+  },
   "searchEllipsis": "Search...",
   "@searchEllipsis": {
     "description": "Search hint placeholder"

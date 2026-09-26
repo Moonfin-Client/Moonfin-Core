@@ -2590,6 +2590,11 @@ class AppLocalizationsSw extends AppLocalizations {
   String get searchThisLibrary => 'Tafuta maktaba hii...';
 
   @override
+  String searchFacetValues(String facet) {
+    return 'Search $facet';
+  }
+
+  @override
   String get searchEllipsis => 'Tafuta...';
 
   @override

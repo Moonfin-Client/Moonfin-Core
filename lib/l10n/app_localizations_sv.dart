@@ -2581,6 +2581,11 @@ class AppLocalizationsSv extends AppLocalizations {
   String get searchThisLibrary => 'Sök i det här biblioteket...';
 
   @override
+  String searchFacetValues(String facet) {
+    return 'Search $facet';
+  }
+
+  @override
   String get searchEllipsis => 'Söka...';
 
   @override

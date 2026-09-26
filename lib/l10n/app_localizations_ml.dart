@@ -2588,6 +2588,11 @@ class AppLocalizationsMl extends AppLocalizations {
   String get searchThisLibrary => 'ഈ ലൈബ്രറി തിരയൂ...';
 
   @override
+  String searchFacetValues(String facet) {
+    return 'Search $facet';
+  }
+
+  @override
   String get searchEllipsis => 'തിരയുക...';
 
   @override

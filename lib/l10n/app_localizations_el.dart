@@ -2599,6 +2599,11 @@ class AppLocalizationsEl extends AppLocalizations {
   String get searchThisLibrary => 'Αναζήτηση αυτής της βιβλιοθήκης...';
 
   @override
+  String searchFacetValues(String facet) {
+    return 'Search $facet';
+  }
+
+  @override
   String get searchEllipsis => 'Ερευνα...';
 
   @override

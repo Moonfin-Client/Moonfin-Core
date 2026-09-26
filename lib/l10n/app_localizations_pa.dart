@@ -2576,6 +2576,11 @@ class AppLocalizationsPa extends AppLocalizations {
   String get searchThisLibrary => 'ਇਸ ਲਾਇਬ੍ਰੇਰੀ ਨੂੰ ਖੋਜੋ...';
 
   @override
+  String searchFacetValues(String facet) {
+    return 'Search $facet';
+  }
+
+  @override
   String get searchEllipsis => 'ਖੋਜ...';
 
   @override

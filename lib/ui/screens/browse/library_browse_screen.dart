@@ -41,6 +41,7 @@ import '../../widgets/local_search_field.dart';
 import '../../widgets/skeleton/skeleton_library_grid.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../util/error_message.dart';
+import '../../util/facet_search.dart';
 
 Color get _navyBackground => AppColorScheme.background;
 Color get _jellyfinBlue => AppColorScheme.accent;
@@ -2465,6 +2466,12 @@ class _FilterSortDialogState extends State<_FilterSortDialog> {
   /// closed as a heading until they are asked for.
   String? _expandedSection = 'sort';
 
+  /// What's been typed into each long facet's box.
+  final _facetQueries = <String, String>{};
+  final _facetSearchControllers = <String, TextEditingController>{};
+  final _facetSearchFocusNodes = <String, FocusNode>{};
+
+
   @override
   void initState() {
     super.initState();
@@ -2475,6 +2482,12 @@ class _FilterSortDialogState extends State<_FilterSortDialog> {
   @override
   void dispose() {
     widget.vm.removeListener(_rebuild);
+    for (final controller in _facetSearchControllers.values) {
+      controller.dispose();
+    }
+    for (final node in _facetSearchFocusNodes.values) {
+      node.dispose();
+    }
     super.dispose();
   }
 
@@ -2597,18 +2610,48 @@ class _FilterSortDialogState extends State<_FilterSortDialog> {
       Map<String, String> labels = const {},
     }) {
       if (values.isEmpty) return const [];
+      // Long lists get a search box.
+      final searchable = facetIsSearchable(values);
+      final query = searchable ? (_facetQueries[key] ?? '') : '';
+      final shown = facetValuesMatching(values, query, labels: labels);
       return section(
         key: key,
         title: title,
         summary: countSummary(values.where(selected.contains).length),
         body: () => [
-          for (final value in values)
+          // LocalSearchField is what lets the remote reach the box on TV.
+          if (searchable)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 4, 24, 8),
+              child: LocalSearchField(
+                controller: _facetSearchControllers.putIfAbsent(
+                  key,
+                  TextEditingController.new,
+                ),
+                focusNode: _facetSearchFocusNodes.putIfAbsent(
+                  key,
+                  FocusNode.new,
+                ),
+                hint: l10n.searchFacetValues(title),
+                onChanged: (text) => setState(() => _facetQueries[key] = text),
+              ),
+            ),
+          for (final value in shown)
             _DialogCheckboxTile(
               label: labels[value] ?? value,
               checked: selected.contains(value),
               onTap: () => onToggle(value),
               accent: accent,
               onSurface: onSurface,
+            ),
+          // Shown when nothing matches.
+          if (shown.isEmpty)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
+              child: Text(
+                l10n.noLabelFound(title),
+                style: TextStyle(fontSize: 13, color: sectionColor),
+              ),
             ),
         ],
       );

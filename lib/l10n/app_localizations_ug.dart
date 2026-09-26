@@ -2577,6 +2577,11 @@ class AppLocalizationsUg extends AppLocalizations {
   String get searchThisLibrary => 'بۇ كۇتۇپخانىنى ئىزدەڭ ...';
 
   @override
+  String searchFacetValues(String facet) {
+    return 'Search $facet';
+  }
+
+  @override
   String get searchEllipsis => 'ئىزدەش ...';
 
   @override

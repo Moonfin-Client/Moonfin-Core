@@ -2587,6 +2587,11 @@ class AppLocalizationsHu extends AppLocalizations {
   String get searchThisLibrary => 'Keresés ebben a könyvtárban...';
 
   @override
+  String searchFacetValues(String facet) {
+    return 'Search $facet';
+  }
+
+  @override
   String get searchEllipsis => 'Keresés...';
 
   @override

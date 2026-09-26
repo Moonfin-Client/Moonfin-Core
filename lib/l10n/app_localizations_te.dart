@@ -2586,6 +2586,11 @@ class AppLocalizationsTe extends AppLocalizations {
   String get searchThisLibrary => 'ఈ లైబ్రరీని వెతకండి...';
 
   @override
+  String searchFacetValues(String facet) {
+    return 'Search $facet';
+  }
+
+  @override
   String get searchEllipsis => 'శోధన...';
 
   @override

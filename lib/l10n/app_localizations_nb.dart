@@ -2573,6 +2573,11 @@ class AppLocalizationsNb extends AppLocalizations {
   String get searchThisLibrary => 'Søk i dette biblioteket...';
 
   @override
+  String searchFacetValues(String facet) {
+    return 'Search $facet';
+  }
+
+  @override
   String get searchEllipsis => 'Søk...';
 
   @override

@@ -2537,6 +2537,11 @@ class AppLocalizationsJa extends AppLocalizations {
   String get searchThisLibrary => 'このライブラリを検索...';
 
   @override
+  String searchFacetValues(String facet) {
+    return 'Search $facet';
+  }
+
+  @override
   String get searchEllipsis => '検索...';
 
   @override
