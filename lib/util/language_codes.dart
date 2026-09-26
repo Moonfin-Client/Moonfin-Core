@@ -1,3 +1,6 @@
+import '../l10n/app_localizations.dart';
+import 'locale_names.dart';
+
 /// ISO 639-2 language codes sourced from the Jellyfin/Emby server localization
 /// file (Emby.Server.Implementations/Localization/iso6392.txt).
 ///
@@ -405,3 +408,22 @@ const Map<String, String> kIso6391To6392 = {
   'zh': 'zho',
   'zu': 'zul',
 };
+
+/// ISO 639-2 code to display name for every language the app itself is
+/// translated into, in [kIso6392Languages] order. The audio and subtitle
+/// language pickers all offer this list, each behind its own "none" or
+/// "server default" entry.
+final Map<String, String> supportedLanguageOptions = Map.unmodifiable(() {
+  final iso3ToIso1 = {
+    for (final entry in kIso6391To6392.entries) entry.value: entry.key,
+  };
+  final supportedIso3Codes = {
+    for (final locale in AppLocalizations.supportedLocales)
+      kIso6391To6392[locale.languageCode] ?? locale.languageCode,
+  };
+  return {
+    for (final entry in kIso6392Languages.entries)
+      if (supportedIso3Codes.contains(entry.key))
+        entry.key: kLocaleDisplayNames[iso3ToIso1[entry.key]] ?? entry.value,
+  };
+}());

@@ -13,6 +13,7 @@ class PlayerState {
 
   bool _isPlaying = false;
   bool _isBuffering = false;
+  bool? _playWhenReady;
   Duration _position = Duration.zero;
   Duration _duration = Duration.zero;
   Duration _buffer = Duration.zero;
@@ -22,6 +23,18 @@ class PlayerState {
 
   bool get isPlaying => _isPlaying;
   bool get isBuffering => _isBuffering;
+
+  /// Whether the player has been told to play. Null on engines that don't
+  /// report their own intent.
+  ///
+  /// [isPlaying] reads false for a viewer pause, a starved stream and a
+  /// transient audio focus loss alike. Only a starved stream leaves this
+  /// true, so anything that has to spot a stall wants this, not [isPlaying].
+  bool? get playWhenReady => _playWhenReady;
+
+  /// Whether the viewer paused. Falls back to "not playing" on an engine that
+  /// reports no intent, which is what every caller used to assume.
+  bool get isPaused => !(_playWhenReady ?? _isPlaying);
   Duration get position => _position;
   Duration get duration => _duration;
   Duration get buffer => _buffer;
@@ -41,6 +54,10 @@ class PlayerState {
     if (_isPlaying == playing) return;
     _isPlaying = playing;
     _playingController.add(playing);
+  }
+
+  void setPlayWhenReady(bool? playWhenReady) {
+    _playWhenReady = playWhenReady;
   }
 
   void setBuffering(bool buffering) {
@@ -86,6 +103,7 @@ class PlayerState {
   void reset() {
     _isPlaying = false;
     _isBuffering = false;
+    _playWhenReady = null;
     _position = Duration.zero;
     _duration = Duration.zero;
     _buffer = Duration.zero;

@@ -2464,6 +2464,15 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
+  String get playbackStreamLost =>
+      'Playback stopped and could not be recovered.';
+
+  @override
+  String liveReconnecting(int attempt, int total) {
+    return 'Reconnecting… ($attempt of $total)';
+  }
+
+  @override
   String get failedToLoadRecordings => '녹음을 로드하지 못했습니다.';
 
   @override
@@ -12277,6 +12286,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get setupTourQuestion => '설정이 완료되었습니다. 그 밖의 기능을 살펴보세요.';
+
+  @override
+  String get setupPlaybackLanguages => 'Playback languages';
+
+  @override
+  String get setupOptional => 'Optional';
 
   @override
   String get setupStyleClassic => '클래식';

@@ -7560,7 +7560,7 @@
     "@detailScreenStyle": {
         "description": "Label for the media detail screen layout style setting"
     },
-    "detailScreenStyleSubtitle": "Clàssic és la disposició original centrada de Moonfin. Modern és una disposició cinematogràfica adaptativa. Spotlight és una disposició centrada en la imatge principal amb targetes de contingut emergents. Nouveau és una disposició a pantalla completa amb les seccions apilades al llarg de la pàgina.",
+    "detailScreenStyleSubtitle": "Clàssic és la disposició original centrada de moonfin. Modern és una disposició cinematogràfica adaptativa. Spotlight és una disposició que posa la il·lustració al davant, amb targetes de contingut emergents. Nouveau és una disposició a pantalla completa amb les seccions apilades al llarg de la pàgina. Minimalista és la il·lustració, un botó de reproducció i els episodis.",
     "@detailScreenStyleSubtitle": {
         "description": "Explanation under the detail screen style setting"
     },
@@ -11838,5 +11838,667 @@
         "description": "Sort option: most recently downloaded first"
     },
     "transcodeTargetCodecs": "Còdecs de destinació de la transcodificació",
-    "locallyDecodedCodecs": "Còdecs descodificats localment"
+    "locallyDecodedCodecs": "Còdecs descodificats localment",
+    "achievementsRecap": "Resum",
+    "@achievementsRecap": {
+        "description": "Recap section title"
+    },
+    "achievementsDailyQuests": "Diàriament",
+    "@achievementsDailyQuests": {
+        "description": "Daily quests section"
+    },
+    "achievementsWeeklyQuests": "Setmanalment",
+    "@achievementsWeeklyQuests": {
+        "description": "Weekly quests section"
+    },
+    "achievementsAppearance": "Aparença",
+    "@achievementsAppearance": {
+        "description": "Row that opens the avatars and rank titles a profile can wear"
+    },
+    "achievementsTitles": "Títols",
+    "@achievementsTitles": {
+        "description": "Tab of the titles that can replace a rank name"
+    },
+    "achievementsStatsWatched": "Vist",
+    "@achievementsStatsWatched": {
+        "description": "Section of counters for what a user has watched"
+    },
+    "achievementsStatUsers": "Usuaris",
+    "@achievementsStatUsers": {
+        "description": "Counter label for how many people use the server"
+    },
+    "achievementsActivity": "Activitat",
+    "@achievementsActivity": {
+        "description": "Screen listing badges unlocked across the server"
+    },
+    "achievementsPeriodYear": "Any",
+    "@achievementsPeriodYear": {
+        "description": "Recap period: the last year"
+    },
+    "guideRepeatBadge": "Repetiu",
+    "@guideRepeatBadge": {
+        "description": "Short badge label shown on a rerun in the guide hero band"
+    },
+    "blue": "Blau",
+    "@blue": {
+        "description": "Color: blue"
+    },
+    "magenta": "Magenta",
+    "@magenta": {
+        "description": "Color: magenta"
+    },
+    "achievementBadges": "Insígnies de fites",
+    "@achievementBadges": {
+        "description": "Title of the Achievement Badges plugin panel"
+    },
+    "achievementsAvatars": "Avatars",
+    "@achievementsAvatars": {
+        "description": "Tab of the icons that can sit on a profile"
+    },
+    "achievementsBadges": "Insígnies",
+    "@achievementsBadges": {
+        "description": "Badges section title"
+    },
+    "achievementBadgesSubtitle": "Insígnies, rangs i missions que guanyes pel que mires",
+    "@achievementBadgesSubtitle": {
+        "description": "Subtitle of the Achievement Badges entry in Integrations"
+    },
+    "achievementsStatBadgesUnlocked": "Insígnies desbloquejades",
+    "@achievementsStatBadgesUnlocked": {
+        "description": "Counter label"
+    },
+    "achievementsStatBestCombo": "Millor combo",
+    "@achievementsStatBestCombo": {
+        "description": "Counter label"
+    },
+    "achievementsBestStreak": "Millor: {days} dies",
+    "@achievementsBestStreak": {
+        "description": "The best watch streak",
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsStatBestLoginStreak": "Millor ratxa d'inicis de sessió",
+    "@achievementsStatBestLoginStreak": {
+        "description": "Counter label"
+    },
+    "achievementsStatsBests": "Rècords",
+    "@achievementsStatsBests": {
+        "description": "Section of a user's highest counters"
+    },
+    "achievementsStatBestWatchStreak": "Millor ratxa de visionat",
+    "@achievementsStatBestWatchStreak": {
+        "description": "Counter label"
+    },
+    "achievementsBuyConfirm": "Vols comprar-ho?",
+    "@achievementsBuyConfirm": {
+        "description": "Title of the dialog confirming a purchase"
+    },
+    "achievementsBuyFailed": "No s'ha pogut comprar.",
+    "@achievementsBuyFailed": {
+        "description": "Message shown when a purchase did not go through"
+    },
+    "achievementsAppearanceFailed": "No s'ha pogut canviar l'aspecte del perfil.",
+    "@achievementsAppearanceFailed": {
+        "description": "Shown when equipping or removing an avatar or title fails"
+    },
+    "achievementsLoadFailed": "No s'han pogut carregar les teves fites.",
+    "@achievementsLoadFailed": {
+        "description": "Shown when the Achievement Badges plugin data fails to load"
+    },
+    "achievementsRerollFailed": "No s'han pogut canviar aquestes missions.",
+    "@achievementsRerollFailed": {
+        "description": "Message shown when a quest reroll did not go through"
+    },
+    "achievementsPowerUpFailed": "No s'ha pogut utilitzar aquest potenciador.",
+    "@achievementsPowerUpFailed": {
+        "description": "Message shown when using a power-up did not go through"
+    },
+    "achievementsBadgesEarned": "{count} insígnies aconseguides",
+    "@achievementsBadgesEarned": {
+        "description": "How many badges were earned in the recap period",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsQuestCount": "{count} completades",
+    "@achievementsQuestCount": {
+        "description": "How many quests are completed",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsDaysWatched": "{count} dies de visionat",
+    "@achievementsDaysWatched": {
+        "description": "How many days the user watched something",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsLibraryCount": "{count} biblioteques",
+    "@achievementsLibraryCount": {
+        "description": "How many libraries have a completion percentage",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsStatCountries": "Països vistos",
+    "@achievementsStatCountries": {
+        "description": "Counter label"
+    },
+    "achievementsStreakFreezeBody": "Cobreix un dia que hagis perdut. Només en pots guardar un.",
+    "@achievementsStreakFreezeBody": {
+        "description": "What the Streak Freeze power-up does"
+    },
+    "achievementsCurrentStreak": "Ratxa de {days} dies",
+    "@achievementsCurrentStreak": {
+        "description": "The current watch streak",
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsStatDaysSignedIn": "Dies amb sessió iniciada",
+    "@achievementsStatDaysSignedIn": {
+        "description": "Counter label"
+    },
+    "achievementsStatDays": "Dies de visionat",
+    "@achievementsStatDays": {
+        "description": "Counter label"
+    },
+    "achievementsStatDecades": "Dècades vistes",
+    "@achievementsStatDecades": {
+        "description": "Counter label"
+    },
+    "achievementsDoubleCredit": "Doble recompte",
+    "@achievementsDoubleCredit": {
+        "description": "Power-up that makes the next item count twice"
+    },
+    "achievementsBoostBody": "Duplica la puntuació durant una hora. Si el tornes a utilitzar, l'hora torna a començar.",
+    "@achievementsBoostBody": {
+        "description": "What the XP Boost power-up does"
+    },
+    "achievementsStatEarlyMorning": "Sessions de bon matí",
+    "@achievementsStatEarlyMorning": {
+        "description": "Counter label"
+    },
+    "achievementsEarnedAt": "S'aconsegueix amb {score} punts acumulats",
+    "@achievementsEarnedAt": {
+        "description": "What a user has to reach to unlock a cosmetic without paying",
+        "placeholders": {
+            "score": {
+                "type": "int"
+            }
+        }
+    },
+    "kidsModeExitSubtitle": "Introdueix el PIN per recuperar l'aplicació completa",
+    "@kidsModeExitSubtitle": {
+        "description": "Explanation under the Exit Kids Mode entry"
+    },
+    "achievementsEquipped": "Equipat",
+    "@achievementsEquipped": {
+        "description": "State of the avatar or title a profile is wearing"
+    },
+    "kidsModeExit": "Surt del mode infantil",
+    "@kidsModeExit": {
+        "description": "Settings entry that turns Kids Mode off, shown while Kids Mode is on"
+    },
+    "achievementsStatMovies": "Pel·lícules vistes",
+    "@achievementsStatMovies": {
+        "description": "Counter label"
+    },
+    "achievementsStatGenres": "Gèneres vistos",
+    "@achievementsStatGenres": {
+        "description": "Counter label"
+    },
+    "achievementsStatsHabits": "Hàbits",
+    "@achievementsStatsHabits": {
+        "description": "Section of counters for when a user watches"
+    },
+    "achievementsHiddenBadge": "Fita oculta",
+    "@achievementsHiddenBadge": {
+        "description": "Placeholder name for a secret badge that is still locked"
+    },
+    "achievementsHours": "Hores",
+    "@achievementsHours": {
+        "description": "Leaderboard category: hours watched"
+    },
+    "achievementsStatHours": "Hores vistes",
+    "@achievementsStatHours": {
+        "description": "Counter label"
+    },
+    "achievementsLeaderboardSubtitle": "Com et compares amb els altres usuaris d'aquest servidor",
+    "@achievementsLeaderboardSubtitle": {
+        "description": "Leaderboard section subtitle"
+    },
+    "achievementsBuyConfirmBody": "Surt directament de la teva reserva de punts.",
+    "@achievementsBuyConfirmBody": {
+        "description": "Body of the dialog confirming a purchase"
+    },
+    "achievementsStatItems": "Elements vistos",
+    "@achievementsStatItems": {
+        "description": "Counter label"
+    },
+    "achievementsUsePowerUpBody": "Es gasta tan bon punt ho confirmis.",
+    "@achievementsUsePowerUpBody": {
+        "description": "Body of the dialog confirming a power-up is spent"
+    },
+    "kidsMode": "Mode infantil",
+    "@kidsMode": {
+        "description": "Label for the setting that strips the app back to what a child needs"
+    },
+    "achievementsStatLanguages": "Idiomes vistos",
+    "@achievementsStatLanguages": {
+        "description": "Counter label"
+    },
+    "achievementsStatLateNight": "Sessions de nit",
+    "@achievementsStatLateNight": {
+        "description": "Counter label"
+    },
+    "achievementsLeaderboard": "Classificació",
+    "@achievementsLeaderboard": {
+        "description": "Leaderboard section title"
+    },
+    "achievementsStatLibraries": "Biblioteques visitades",
+    "@achievementsStatLibraries": {
+        "description": "Counter label"
+    },
+    "achievementsLibraryCompletion": "Progrés de les biblioteques",
+    "@achievementsLibraryCompletion": {
+        "description": "Library completion section title"
+    },
+    "achievementsLoadout": "Equipament",
+    "@achievementsLoadout": {
+        "description": "Screen holding the score bank and the power-ups a user owns"
+    },
+    "achievementsLocked": "Bloquejades",
+    "@achievementsLocked": {
+        "description": "Badge filter: locked only"
+    },
+    "achievementsStatLongestItem": "Element més llarg",
+    "@achievementsStatLongestItem": {
+        "description": "Counter label, a run time in minutes"
+    },
+    "achievementsPeriodMonth": "Mes",
+    "@achievementsPeriodMonth": {
+        "description": "Recap period: the last month"
+    },
+    "achievementsStatCommonBadge": "Insígnia més comuna",
+    "@achievementsStatCommonBadge": {
+        "description": "Label for the badge the most users hold"
+    },
+    "achievementsStatMostEpisodes": "Més episodis en un dia",
+    "@achievementsStatMostEpisodes": {
+        "description": "Counter label"
+    },
+    "achievementsStatMostMovies": "Més pel·lícules en un dia",
+    "@achievementsStatMostMovies": {
+        "description": "Counter label"
+    },
+    "achievementsShopPack": "{name} ×{count}",
+    "@achievementsShopPack": {
+        "description": "A shop item that grants more than one of a power-up",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsShopEmpty": "Ara mateix no hi ha res a la venda.",
+    "@achievementsShopEmpty": {
+        "description": "Shown when the shop catalogue came back with nothing"
+    },
+    "achievementsNothingHere": "Encara no hi ha res aquí.",
+    "@achievementsNothingHere": {
+        "description": "Empty state for an achievements list"
+    },
+    "achievementsNoSuggestions": "No hi ha res a suggerir per a aquesta insígnia.",
+    "@achievementsNoSuggestions": {
+        "description": "Shown when the plugin has no items to recommend for a badge"
+    },
+    "achievementsOwned": "Adquirit",
+    "@achievementsOwned": {
+        "description": "State of an avatar or title that is held but not worn"
+    },
+    "achievementsQuestReward": "+{points}",
+    "@achievementsQuestReward": {
+        "description": "Points a quest pays out",
+        "placeholders": {
+            "points": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsPointsToNextRank": "{points} punts per a {tier}",
+    "@achievementsPointsToNextRank": {
+        "description": "Points needed to reach the next rank tier",
+        "placeholders": {
+            "points": {
+                "type": "int"
+            },
+            "tier": {
+                "type": "String"
+            }
+        }
+    },
+    "achievementsPoints": "{points} pts",
+    "@achievementsPoints": {
+        "description": "Points a badge is worth",
+        "placeholders": {
+            "points": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsPowerUps": "Potenciadors",
+    "@achievementsPowerUps": {
+        "description": "Section header above the consumable boosts a user holds"
+    },
+    "achievementsProgressLabel": "Progrés",
+    "@achievementsProgressLabel": {
+        "description": "Label above a badge's current progress figure"
+    },
+    "achievementsQuests": "Missions",
+    "@achievementsQuests": {
+        "description": "Quests section title"
+    },
+    "achievementsRerollDaily": "Canvia les missions diàries",
+    "@achievementsRerollDaily": {
+        "description": "Action that swaps the daily quest set for a new one"
+    },
+    "achievementsRerollConfirm": "Vols canviar aquestes missions?",
+    "@achievementsRerollConfirm": {
+        "description": "Title of the dialog confirming a quest reroll"
+    },
+    "achievementsRerollWeekly": "Canvia les missions setmanals",
+    "@achievementsRerollWeekly": {
+        "description": "Action that swaps the weekly quest set for a new one"
+    },
+    "achievementsStatRewatches": "Revisionats",
+    "@achievementsStatRewatches": {
+        "description": "Counter label"
+    },
+    "achievementsPowerUpActive": "Actiu ara",
+    "@achievementsPowerUpActive": {
+        "description": "Marker on a power-up that is currently in effect"
+    },
+    "achievementsScoreLabel": "Puntuació",
+    "@achievementsScoreLabel": {
+        "description": "Leaderboard category: overall score"
+    },
+    "achievementsScoreBank": "Reserva de punts",
+    "@achievementsScoreBank": {
+        "description": "Label for the score a user still has to spend"
+    },
+    "achievementsStatScoreEarned": "Punts aconseguits",
+    "@achievementsStatScoreEarned": {
+        "description": "Counter label"
+    },
+    "achievementsScore": "{score} punts",
+    "@achievementsScore": {
+        "description": "The score a user has earned",
+        "placeholders": {
+            "score": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsLoadoutSubtitle": "Punts per gastar i els potenciadors que tens",
+    "@achievementsLoadoutSubtitle": {
+        "description": "Subtitle on the row that opens the loadout"
+    },
+    "achievementsStatSeries": "Sèries acabades",
+    "@achievementsStatSeries": {
+        "description": "Counter label"
+    },
+    "achievementsShop": "Botiga",
+    "@achievementsShop": {
+        "description": "Screen selling power-ups for score"
+    },
+    "achievementsShowcase": "Vitrina",
+    "@achievementsShowcase": {
+        "description": "The badges a user pinned to their profile"
+    },
+    "kidsModeSubtitle": "Simplifica l'aplicació i bloqueja la sortida amb un PIN",
+    "@kidsModeSubtitle": {
+        "description": "Explanation under the Kids Mode setting"
+    },
+    "achievementsShopSubtitle": "Gasta punts en més potenciadors",
+    "@achievementsShopSubtitle": {
+        "description": "Subtitle on the row that opens the shop"
+    },
+    "achievementsStats": "Estadístiques",
+    "@achievementsStats": {
+        "description": "Screen of watch counters and server figures"
+    },
+    "achievementsStreak": "Ratxa",
+    "@achievementsStreak": {
+        "description": "Leaderboard category: best watch streak"
+    },
+    "achievementsStreakFreeze": "Congelació de ratxa",
+    "@achievementsStreakFreeze": {
+        "description": "Power-up that protects a watch streak"
+    },
+    "achievementsSuggested": "Elements suggerits per mirar",
+    "@achievementsSuggested": {
+        "description": "Header above the items the plugin suggests for a badge"
+    },
+    "achievementsRerollOffer": "Canvia aquest conjunt per un altre",
+    "@achievementsRerollOffer": {
+        "description": "Subtitle on the reroll row while a reroll is still available"
+    },
+    "achievementsAppearanceSubtitle": "L'avatar i el títol del teu perfil",
+    "@achievementsAppearanceSubtitle": {
+        "description": "Subtitle on the row that opens the appearance screen"
+    },
+    "achievementsDoubleCreditBody": "El següent que acabis compta doble per a les insígnies.",
+    "@achievementsDoubleCreditBody": {
+        "description": "What the Double Credit power-up does"
+    },
+    "achievementsStatsServer": "Aquest servidor",
+    "@achievementsStatsServer": {
+        "description": "Section of figures covering every user"
+    },
+    "achievementsAppearanceEmpty": "Aquest servidor no té cap avatar ni títol per portar.",
+    "@achievementsAppearanceEmpty": {
+        "description": "Shown when the plugin carries no cosmetics this panel can draw"
+    },
+    "pinTryAgainIn": "Massa intents. Torna-ho a provar d'aquí a {wait}.",
+    "@pinTryAgainIn": {
+        "description": "Shown when PIN entry is locked after repeated wrong guesses",
+        "placeholders": {
+            "wait": {
+                "type": "String",
+                "example": "30s"
+            }
+        }
+    },
+    "achievementsTopActors": "Actors més vistos",
+    "@achievementsTopActors": {
+        "description": "Recap list of most-watched actors"
+    },
+    "achievementsTopDirectors": "Directors més vistos",
+    "@achievementsTopDirectors": {
+        "description": "Recap list of most-watched directors"
+    },
+    "achievementsTopRank": "Has arribat al rang màxim",
+    "@achievementsTopRank": {
+        "description": "Shown instead of progress when the user is at the highest rank"
+    },
+    "achievementsUnlocked": "Desbloquejades",
+    "@achievementsUnlocked": {
+        "description": "Badge filter: unlocked only"
+    },
+    "achievementsUnlockedOn": "Desbloquejada el {date}",
+    "@achievementsUnlockedOn": {
+        "description": "When a badge was unlocked",
+        "placeholders": {
+            "date": {
+                "type": "String"
+            }
+        }
+    },
+    "achievementsBadgeCount": "{unlocked} de {total} insígnies",
+    "@achievementsBadgeCount": {
+        "description": "How many badges are unlocked out of the total",
+        "placeholders": {
+            "unlocked": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsRerollSpentWeekly": "Ja utilitzat aquesta setmana; torna dilluns UTC",
+    "@achievementsRerollSpentWeekly": {
+        "description": "Subtitle on the reroll row once the weekly reroll is spent"
+    },
+    "achievementsRerollSpentDaily": "Ja utilitzat avui; torna a mitjanit UTC",
+    "@achievementsRerollSpentDaily": {
+        "description": "Subtitle on the reroll row once the daily reroll is spent"
+    },
+    "achievementsActivityUnlocked": "{user} ha desbloquejat {badge}",
+    "@achievementsActivityUnlocked": {
+        "description": "One line of the activity feed",
+        "placeholders": {
+            "user": {
+                "type": "String"
+            },
+            "badge": {
+                "type": "String"
+            }
+        }
+    },
+    "achievementsUsePowerUp": "Vols utilitzar aquest potenciador?",
+    "@achievementsUsePowerUp": {
+        "description": "Title of the dialog confirming a power-up is spent"
+    },
+    "achievementsStatsVariety": "Varietat",
+    "@achievementsStatsVariety": {
+        "description": "Section of counters for how widely a user watches"
+    },
+    "achievementsPeriodWeek": "Setmana",
+    "@achievementsPeriodWeek": {
+        "description": "Recap period: the last week"
+    },
+    "achievementsStatWeekend": "Sessions de cap de setmana",
+    "@achievementsStatWeekend": {
+        "description": "Counter label"
+    },
+    "achievementsActivitySubtitle": "Què ha desbloquejat el servidor darrerament",
+    "@achievementsActivitySubtitle": {
+        "description": "Subtitle on the row that opens the activity feed"
+    },
+    "achievementsRecapSubtitle": "Què has vist darrerament",
+    "@achievementsRecapSubtitle": {
+        "description": "Recap section subtitle"
+    },
+    "achievementsStatsClock": "Quan mires",
+    "@achievementsStatsClock": {
+        "description": "Header above the hour of day chart"
+    },
+    "achievementsBoost": "Impuls d'XP",
+    "@achievementsBoost": {
+        "description": "Power-up that doubles score for an hour"
+    },
+    "achievementsRerollConfirmBody": "Tens un canvi diari i un de setmanal, i això te'l gasta.",
+    "@achievementsRerollConfirmBody": {
+        "description": "Body of the dialog confirming a quest reroll"
+    },
+    "achievementsStatsSubtitle": "Els teus rècords i com va el servidor",
+    "@achievementsStatsSubtitle": {
+        "description": "Subtitle on the row that opens stats"
+    },
+    "blockedRatingsCeilingHint": "Bloquejar una classificació també bloqueja totes les superiors.",
+    "@blockedRatingsCeilingHint": {
+        "description": "Explains that the blocked ratings list works as a ceiling"
+    },
+    "showChapterMarkers": "Marques de capítol",
+    "@showChapterMarkers": {
+        "description": "Setting label for drawing a mark per chapter on the player seek bar"
+    },
+    "blockedRatingsUnrankedSection": "Bloqueja només aquesta classificació",
+    "@blockedRatingsUnrankedSection": {
+        "description": "Heading for ratings the app can't rank, which block only the exact rating rather than everything above it"
+    },
+    "itemBlockedByParentalControls": "Això no està disponible",
+    "@itemBlockedByParentalControls": {
+        "description": "Shown instead of a title whose rating the viewer has blocked. Deliberately says nothing about what the title is."
+    },
+    "darkGray": "Gris fosc",
+    "@darkGray": {
+        "description": "Color: dark gray"
+    },
+    "lightGray": "Gris clar",
+    "@lightGray": {
+        "description": "Color: light gray"
+    },
+    "showChapterMarkersDescription": "Marca on comença cada capítol a la barra de progrés",
+    "@showChapterMarkersDescription": {
+        "description": "Description for the chapter marks setting"
+    },
+    "musicVideoPlaylistsSection": "Llistes de reproducció de vídeos musicals",
+    "@musicVideoPlaylistsSection": {
+        "description": "Section header above music video playlists when Group by Type is enabled"
+    },
+    "requestedByLabel": "Sol·licitat per",
+    "@requestedByLabel": {
+        "description": "Label above the name of whoever requested media, where the name sits on its own line"
+    },
+    "semiTransparentWhite": "Blanc semitransparent",
+    "@semiTransparentWhite": {
+        "description": "Color: semi-transparent white"
+    },
+    "detailScreenStyleMinimalist": "Minimalista",
+    "@detailScreenStyleMinimalist": {
+        "description": "Detail screen style option: artwork, one play button and the episodes, and the style Kids Mode always shows"
+    },
+    "setupStyleMinimalist": "Minimalista",
+    "@setupStyleMinimalist": {
+        "description": "Name of the stripped-back detail layout, offered in the setup wizard"
+    },
+    "achievementsPowerUpHeld": "{count, plural, =0{Cap disponible} =1{1 disponible} other{{count} disponibles}}",
+    "@achievementsPowerUpHeld": {
+        "description": "How many of a power-up the user owns",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "setupDetailMinimalistHint": "La il·lustració, un botó de reproducció i els episodis.",
+    "@setupDetailMinimalistHint": {
+        "description": "What the minimalist detail screen style gives you"
+    },
+    "keepVideoClearOfDynamicIsland": "Mantén el vídeo apartat de la Dynamic Island",
+    "@keepVideoClearOfDynamicIsland": {
+        "description": "iPhone playback setting that holds the picture back from the camera housing in landscape"
+    },
+    "keepVideoClearOfDynamicIslandDescription": "En horitzontal, l'allotjament de la càmera tapa una vora de la pantalla. Això manté la imatge apartada, cosa que només té efecte en vídeos prou amples per arribar-hi.",
+    "@keepVideoClearOfDynamicIslandDescription": {
+        "description": "Description for the iPhone setting that keeps video clear of the Dynamic Island"
+    },
+    "playlistTypeMusicVideo": "Vídeo musical",
+    "@playlistTypeMusicVideo": {
+        "description": "Filter checkbox label for music video playlists"
+    },
+    "uiScaleGrandparents": "Per als avis",
+    "@uiScaleGrandparents": {
+        "description": "UI scaling option above extra large"
+    }
 }

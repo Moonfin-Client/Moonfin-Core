@@ -17,8 +17,12 @@ import androidx.media3.common.util.UnstableApi
 object Media3LogRelay : Log.Logger {
     // A warning raised from the playback loop repeats many times a second, so
     // repeats inside the window are counted and reported on the next one out
-    // rather than written one by one.
+    // rather than written one by one. Logcat is held to the same rate: the
+    // transport stream reader alone wrote a line a second all session, which
+    // was the largest single draw on a main buffer that only holds minutes.
     private const val REPEAT_WINDOW_MS = 10_000L
+
+    private val DIGIT_RUN = Regex("""\d+""")
 
     private const val SPURIOUS_TIMESTAMP_PREFIX =
         "Spurious audio timestamp (frame position mismatch): "
@@ -64,17 +68,25 @@ object Media3LogRelay : Log.Logger {
         Log.Logger.DEFAULT.i(tag, message, throwable)
 
     override fun w(tag: String, message: String, throwable: Throwable?) {
-        Log.Logger.DEFAULT.w(tag, message, throwable)
+        // Ahead of the window: the listener drives a recovery, so it has to
+        // see every warning even when only one of them is written out.
         spuriousAudioPositionUs(message)?.let {
             spuriousAudioPositionListener?.invoke(it)
         }
         relay("warning", tag, message, throwable)
     }
 
-    override fun e(tag: String, message: String, throwable: Throwable?) {
-        Log.Logger.DEFAULT.e(tag, message, throwable)
+    override fun e(tag: String, message: String, throwable: Throwable?) =
         relay("error", tag, message, throwable)
-    }
+
+    /**
+     * The key a repeat is recognised by: the tag and the message with runs of
+     * digits replaced. A warning that names a changing value -- an offset, a
+     * byte count, a stream position -- reads as a new message every time and
+     * would otherwise never count as a repeat at all.
+     */
+    private fun repeatKey(tag: String, message: String) =
+        tag + "|" + DIGIT_RUN.replace(message, "#")
 
     @Synchronized
     private fun relay(
@@ -83,7 +95,7 @@ object Media3LogRelay : Log.Logger {
         message: String,
         throwable: Throwable?,
     ) {
-        val key = "$tag|$message"
+        val key = repeatKey(tag, message)
         val nowMs = SystemClock.elapsedRealtime()
         if (key == lastKey) {
             if (nowMs - lastAtMs < REPEAT_WINDOW_MS) {
@@ -97,6 +109,13 @@ object Media3LogRelay : Log.Logger {
         lastKey = key
         lastAtMs = nowMs
         suppressed = 0
+        val written =
+            if (repeats > 0) "$message (and $repeats more)" else message
+        if (level == "error") {
+            Log.Logger.DEFAULT.e(tag, written, throwable)
+        } else {
+            Log.Logger.DEFAULT.w(tag, written, throwable)
+        }
         Media3Bridge.emitEvent(
             mapOf(
                 "event" to "media3Log",

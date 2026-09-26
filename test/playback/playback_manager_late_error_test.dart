@@ -171,6 +171,12 @@ class _Harness {
   final List<String> notes = <String>[];
   late final StreamSubscription<PlaybackBringupState> _states;
 
+  /// Only the notes this suite is about. The manager also writes a line for
+  /// every stop and re-resolve, which say who tore playback down rather than
+  /// what was dropped.
+  List<String> get drops =>
+      notes.where((note) => note.startsWith('Dropped a late')).toList();
+
   bool get sawFailure =>
       phases.any((state) => state.phase == PlaybackBringupPhase.failed);
 
@@ -201,9 +207,9 @@ void main() {
 
       expect(h.manager.bringupState.phase, PlaybackBringupPhase.idle);
       expect(h.sawFailure, isFalse);
-      expect(h.notes, hasLength(1));
-      expect(h.notes.single, contains('Dropped a late error'));
-      expect(h.notes.single, contains('Unexpected runtime error'));
+      expect(h.drops, hasLength(1));
+      expect(h.drops.single, contains('Dropped a late error'));
+      expect(h.drops.single, contains('Unexpected runtime error'));
     } finally {
       await h.dispose();
     }
@@ -219,7 +225,7 @@ void main() {
 
       expect(h.manager.bringupState.phase, PlaybackBringupPhase.failed);
       expect(h.manager.bringupState.error, 'Unexpected runtime error');
-      expect(h.notes, isEmpty);
+      expect(h.drops, isEmpty);
     } finally {
       await h.dispose();
     }
@@ -239,7 +245,7 @@ void main() {
       await pumpEventQueue();
 
       expect(h.sawFailure, isFalse);
-      expect(h.notes.single, contains('Dropped a late error'));
+      expect(h.drops.single, contains('Dropped a late error'));
     } finally {
       await h.dispose();
     }
@@ -260,7 +266,7 @@ void main() {
       await pumpEventQueue();
 
       expect(h.sawFailure, isFalse);
-      expect(h.notes.single, contains('Dropped a late playerError'));
+      expect(h.drops.single, contains('Dropped a late playerError'));
     } finally {
       await h.dispose();
     }

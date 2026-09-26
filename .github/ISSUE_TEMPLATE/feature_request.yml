@@ -40,6 +40,18 @@ body:
     validations:
       required: true
 
+  - type: dropdown
+    id: server_type
+    attributes:
+      label: Server
+      description: Which server(s) does this apply to?
+      options:
+        - Jellyfin
+        - Emby
+        - Both / Not server-specific
+    validations:
+      required: true
+
   - type: textarea
     id: alternatives
     attributes:

@@ -556,7 +556,7 @@ create_desktop_file() {
 [Desktop Entry]
 Type=Application
 Name=Moonfin
-Exec=moonfin
+Exec=moonfin %U
 Icon=${APP_ID}
 Categories=AudioVideo;Video;
 Comment=Jellyfin & Emby media client
@@ -1158,7 +1158,7 @@ EOF
 [Desktop Entry]
 Type=Application
 Name=Moonfin
-Exec=moonfin
+Exec=moonfin %U
 Icon=\${SNAP}/meta/gui/icon.png
 Categories=AudioVideo;Video;
 Comment=Jellyfin & Emby media client

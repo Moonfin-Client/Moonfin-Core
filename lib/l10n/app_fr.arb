@@ -9895,6 +9895,14 @@
     "@setupTourQuestion": {
         "description": "Heading of the final setup wizard screen"
     },
+    "setupPlaybackLanguages": "Langues de lecture",
+    "@setupPlaybackLanguages": {
+        "description": "Heading of the optional audio and subtitle language section on the last setup wizard screen"
+    },
+    "setupOptional": "Facultatif",
+    "@setupOptional": {
+        "description": "Tag beside an optional section in the setup wizard"
+    },
     "setupStyleClassic": "Classique",
     "@setupStyleClassic": {
         "description": "Name of the original layout, offered in the setup wizard"
@@ -11695,5 +11703,39 @@
                 "type": "String"
             }
         }
+    },
+    "spotlightFactsCount": "{count, plural, one{{count} information} other{{count} informations}}",
+    "@spotlightFactsCount": {
+        "description": "Count fragment on spotlight summary cards: Seerr facts",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightTagsCount": "{count, plural, one{{count} tag} other{{count} tags}}",
+    "@spotlightTagsCount": {
+        "description": "Count fragment on spotlight summary cards: genres, networks and keywords",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "detailScreenStyleMinimalist": "Minimaliste",
+    "@detailScreenStyleMinimalist": {
+        "description": "Detail screen style option: artwork, one play button and the episodes, and the style Kids Mode always shows"
+    },
+    "uiScaleGrandparents": "Grand-mère",
+    "@uiScaleGrandparents": {
+        "description": "UI scaling option above extra large"
+    },
+    "guideRepeatBadge": "Rediffusion",
+    "@guideRepeatBadge": {
+        "description": "Short badge label shown on a rerun in the guide hero band"
+    },
+    "activeDownloads": "Téléchargements en cours",
+    "@activeDownloads": {
+        "description": "Tab title for downloads that are transferring or queued"
     }
 }

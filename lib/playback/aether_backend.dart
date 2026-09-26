@@ -257,6 +257,14 @@ class AetherBackend implements PlayerBackend {
     await _invoke<void>('pause');
   }
 
+  // Implements rather than extends, so the interface default is not inherited.
+  @override
+  bool? get playWhenReady => null;
+
+  // No way to re-open a live source in place, so the manager escalates.
+  @override
+  Future<bool> resumeLiveEdge() async => false;
+
   @override
   Future<void> stop() async {
     await _invoke<void>('stop');

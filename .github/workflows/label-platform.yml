@@ -1,4 +1,4 @@
-name: Auto-label platform, type and template gaps
+name: Auto-label platform, server, type and template gaps
 
 on:
   issues:
@@ -27,7 +27,7 @@ jobs:
       github.event_name != 'issue_comment' ||
       (github.event.issue.pull_request && github.event.comment.user.type != 'Bot')
     steps:
-      - name: Apply platform, type and evidence labels
+      - name: Apply platform, server, type and evidence labels
         uses: actions/github-script@v7
         with:
           script: |
@@ -85,6 +85,11 @@ jobs:
               ['Linux', /\bLinux\b/i]
             ];
 
+            const SERVERS = [
+              ['Jellyfin', /\bJellyfin\b/i],
+              ['Emby', /\bEmby\b/i]
+            ];
+
             const TYPES = [
               ['Bug', /\bBug\s*fix\b/i],
               ['Feature Request', /\bNew\s*feature\b/i],
@@ -129,6 +134,15 @@ jobs:
               apply(PLATFORMS, isAll ? [] : items);
             }
 
+            // "Both" on the feature request form gets both labels, so filtering by
+            // either server still finds it.
+            const serverLines = section(body, /^server$/i);
+            if (serverLines) {
+              const items = selected(serverLines);
+              const both = items.some(i => /^both\b/i.test(i));
+              apply(SERVERS, both ? ['Jellyfin', 'Emby'] : items);
+            }
+
             const typeLines = section(body, /^type of change\b/i);
             if (typeLines) {
               // "Other" carries whatever the author typed after it, which would
@@ -159,7 +173,7 @@ jobs:
             }
 
             if (!managed.size) {
-              core.info('No Platform or Type of Change section found, leaving labels alone.');
+              core.info('No Platform, Server or Type of Change section found, leaving labels alone.');
               return;
             }
 

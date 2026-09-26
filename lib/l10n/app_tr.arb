@@ -2295,7 +2295,7 @@
     "@seerr": {
         "description": "Seerr brand name"
     },
-    "savedMedia": "Kayıtlı Medya",
+    "savedMedia": "İndirilenler",
     "@savedMedia": {
         "description": "Header title for saved/downloaded media screen"
     },
@@ -6007,7 +6007,7 @@
     "offlineServerUnavailable": "İnternete bağlı, ancak mevcut sunucu kullanılamıyor.",
     "offlineNoInternet": "Çevrimdışısınız. Yalnızca indirilen içerik kullanılabilir.",
     "offlineSwitchServer": "Sunucuyu Değiştir",
-    "offlineSavedMedia": "Kayıtlı Medya",
+    "offlineSavedMedia": "İndirilenler",
     "castGoogleCast": "Google Cast",
     "castAirPlay": "AirPlay",
     "castDlna": "DLNA",
@@ -6065,14 +6065,14 @@
     "pinForgot": "PIN'inizi mi unuttunuz?",
     "pinClear": "Temizle",
     "pinBackspace": "Geri tuşu",
-    "quickConnectAuthorized": "Quick Connect isteği onaylandı.",
-    "quickConnectInvalidOrExpired": "Quick Connect kodu geçersiz veya süresi dolmuş.",
-    "quickConnectNotSupported": "Quick Connect bu sunucuda desteklenmiyor.",
-    "quickConnectAuthorizeFailed": "Quick Connect kodu yetkilendirilemedi.",
-    "quickConnectDisabled": "Quick Connect bu sunucuda devre dışı bırakıldı.",
-    "quickConnectForbidden": "Hesabınız bu Quick Connect isteğine yetki veremez.",
-    "quickConnectNotFound": "Quick Connect kodu bulunamadı. Yeni bir kod deneyin.",
-    "quickConnectFailedWithMessage": "Quick Connect başarısız oldu: {message}",
+    "quickConnectAuthorized": "Hızlı Bağlantı isteği onaylandı.",
+    "quickConnectInvalidOrExpired": "Hızlı Bağlantı kodu geçersiz veya süresi dolmuş.",
+    "quickConnectNotSupported": "Hızlı Bağlantı bu sunucuda desteklenmiyor.",
+    "quickConnectAuthorizeFailed": "Hızlı Bağlantı kodu yetkilendirilemedi.",
+    "quickConnectDisabled": "Hızlı Bağlantı bu sunucuda devre dışı bırakıldı.",
+    "quickConnectForbidden": "Hesabınız bu Hızlı Bağlantı isteğine yetki veremez.",
+    "quickConnectNotFound": "Hızlı Bağlantı kodu bulunamadı. Yeni bir kod deneyin.",
+    "quickConnectFailedWithMessage": "Hızlı Bağlantı başarısız oldu: {message}",
     "@quickConnectFailedWithMessage": {
         "placeholders": {
             "message": {
@@ -8002,7 +8002,7 @@
     "adminPlaybackTonemappingMode": "Ton eşleme modu",
     "adminPlaybackTonemappingRange": "Ton eşleme aralığı",
     "adminPlaybackTonemappingDesat": "Ton eşleme doygunluk azaltma",
-    "adminGeneralQuickConnect": "Quick Connect'i Etkinleştir",
+    "adminGeneralQuickConnect": "Hızlı Bağlantıyı Etkinleştir",
     "adminGeneralSectionServer": "Sunucu",
     "adminGeneralSectionMetadata": "Meta Veri",
     "adminGeneralSectionPaths": "Yollar",
@@ -10792,5 +10792,590 @@
     "shortcutNextItem": "Sonraki öğe",
     "@shortcutNextItem": {
         "description": "Player shortcut action for the next-track media key"
-    }
+    },
+    "uiScaleGrandfather": "Büyükbaba",
+    "@uiScaleGrandfather": {
+        "description": "UI scaling option above extra large"
+    },
+    "shortcutPreviousItem": "Önceki öğe",
+    "@shortcutPreviousItem": {
+        "description": "Player shortcut action for the previous-track media key"
+    },
+    "shortcutShowShortcuts": "Bu listeyi göster",
+    "@shortcutShowShortcuts": {
+        "description": "What ? and F1 do in the player"
+    },
+    "shortcutNextPage": "Sonraki sayfa",
+    "@shortcutNextPage": {
+        "description": "Reader shortcut action"
+    },
+    "shortcutPreviousPage": "Önceki sayfa",
+    "@shortcutPreviousPage": {
+        "description": "Reader shortcut action"
+    },
+    "shortcutScrollPage": "Sayfayı kaydır (e-kitaplar)",
+    "@shortcutScrollPage": {
+        "description": "What the up and down arrows do in the ebook reader"
+    },
+    "shortcutFirstPage": "İlk sayfa veya bölüm başı",
+    "@shortcutFirstPage": {
+        "description": "Reader shortcut action"
+    },
+    "shortcutLastPage": "Son sayfa veya bölüm sonu",
+    "@shortcutLastPage": {
+        "description": "Reader shortcut action"
+    },
+    "shortcutZoom": "Yakınlaştır veya uzaklaştır (çizgi romanlar)",
+    "@shortcutZoom": {
+        "description": "Reader shortcut action"
+    },
+    "shortcutResetZoom": "Yakınlaştırmayı sıfırla (çizgi romanlar)",
+    "@shortcutResetZoom": {
+        "description": "Reader shortcut action"
+    },
+    "guideRepeatBadge": "Tekrar",
+    "@guideRepeatBadge": {
+        "description": "Short badge label shown on a rerun in the guide hero band"
+    },
+    "noProgramData": "Program verisi yok",
+    "@noProgramData": {
+        "description": "Guide cell label for a real EPG schedule gap, not a genre-filtered program"
+    },
+    "watchChannelLive": "Kanalı canlı izle",
+    "@watchChannelLive": {
+        "description": "Button label to tune a channel live when the selected program is not the one that will play (ended or upcoming)"
+    },
+    "activeDownloads": "Aktif İndirilenler",
+    "@activeDownloads": {
+        "description": "Tab title for downloads that are transferring or queued"
+    },
+    "savedMediaCount": "{count, plural, =1{1 öğe} other{{count} öğe}}",
+    "@savedMediaCount": {
+        "description": "How many downloads the saved media list holds, shown beside the total size",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "savedMediaOfLimit": "{used} / {limit}",
+    "@savedMediaOfLimit": {
+        "description": "Storage used against the configured limit, for example '56.4 GB of 80 GB'",
+        "placeholders": {
+            "used": {
+                "type": "String"
+            },
+            "limit": {
+                "type": "String"
+            }
+        }
+    },
+    "savedMediaSelectItems": "Seçili öğeler",
+    "@savedMediaSelectItems": {
+        "description": "Overflow menu entry that turns on multi-select in the saved media list"
+    },
+    "savedMediaNoDownloads": "Henüz kaydedilen yok",
+    "@savedMediaNoDownloads": {
+        "description": "Empty state title when no downloads are on the device"
+    },
+    "savedMediaNoDownloadsDetail": "Başlattığınız indirmeler burada görünür ve internet bağlantısı olmadan oynatılabilir.",
+    "@savedMediaNoDownloadsDetail": {
+        "description": "Empty state body when no downloads are on the device"
+    },
+    "savedMediaNoActiveDownloads": "Şu anda hiçbir şey indirilmiyor",
+    "@savedMediaNoActiveDownloads": {
+        "description": "Empty state for the active downloads tab"
+    },
+    "savedMediaNoResults": "Bu aramayla eşleşen indirme yok",
+    "@savedMediaNoResults": {
+        "description": "Empty state when a search over saved media matches nothing"
+    },
+    "savedMediaPlayFromStart": "Baştan başlat",
+    "@savedMediaPlayFromStart": {
+        "description": "Row menu action that restarts a partly watched download from the beginning"
+    },
+    "savedMediaGoToDetails": "Detaylara git",
+    "@savedMediaGoToDetails": {
+        "description": "Row menu action that opens the item's detail screen"
+    },
+    "savedMediaDeleteDownload": "İndirmeyi sil",
+    "@savedMediaDeleteDownload": {
+        "description": "Row menu action that removes one downloaded file from the device"
+    },
+    "savedMediaDeleteSeason": "{season} Sil",
+    "@savedMediaDeleteSeason": {
+        "description": "Menu action that removes every saved episode of one season",
+        "placeholders": {
+            "season": {
+                "type": "String"
+            }
+        }
+    },
+    "savedMediaDeleteEpisodes": "{count, plural, =1{1 bölüm sil} other{{count} bölüm sil}}",
+    "@savedMediaDeleteEpisodes": {
+        "description": "Menu action that removes every saved episode of one series",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "savedMediaOpenShow": "Diziyi aç",
+    "@savedMediaOpenShow": {
+        "description": "Row menu action that opens a saved show's seasons and episodes"
+    },
+    "savedMediaPlayNextUnwatched": "Sonraki izlenmemiş bölümü oynat",
+    "@savedMediaPlayNextUnwatched": {
+        "description": "Row menu action that plays the earliest unwatched saved episode of a show"
+    },
+    "savedMediaRead": "Oku",
+    "@savedMediaRead": {
+        "description": "Row menu action that opens a downloaded book in the reader"
+    },
+    "savedMediaCancelDownload": "İndirmeyi iptal et",
+    "@savedMediaCancelDownload": {
+        "description": "Row menu action that stops a running or queued transfer"
+    },
+    "sortBySize": "Boyut",
+    "@sortBySize": {
+        "description": "Sort option: largest download first"
+    },
+    "sortByName": "İsim",
+    "@sortByName": {
+        "description": "Sort option: alphabetical by title"
+    },
+    "sortByDateAdded": "Eklenme tarihi",
+    "@sortByDateAdded": {
+        "description": "Sort option: most recently downloaded first"
+    },
+    "loadingAnimation": "Yüklenme Animasyonu",
+    "@loadingAnimation": {
+        "description": "Setting title for custom loading animation"
+    },
+    "loadingAnimationDescription": "Moonfin genelinde kullanılan yükleme animasyonlarını özelleştir",
+    "@loadingAnimationDescription": {
+        "description": "Description for loading animation customization settings"
+    },
+    "loadingAnimationConfiguration": "Yüklenme Animasyonu Ayarları",
+    "@loadingAnimationConfiguration": {
+        "description": "Subtitle header for loading animation settings"
+    },
+    "loadingAnimationImage": "Resim",
+    "@loadingAnimationImage": {
+        "description": "Title for loading animation image selection"
+    },
+    "loadingAnimationImageMoonfinLogo": "Moonfin Logo",
+    "@loadingAnimationImageMoonfinLogo": {
+        "description": "Loading animation image option: Moonfin Logo"
+    },
+    "loadingAnimationImageSpinner": "Yükleme çarkı",
+    "@loadingAnimationImageSpinner": {
+        "description": "Loading animation image option: Spinner"
+    },
+    "loadingAnimationImageRunner": "Kayan çizgi",
+    "@loadingAnimationImageRunner": {
+        "description": "Loading animation image option: Runner"
+    },
+    "loadingAnimationImageMoonPhases": "Ay Evreleri",
+    "@loadingAnimationImageMoonPhases": {
+        "description": "Loading animation image option: Moon Phases"
+    },
+    "loadingAnimationImageMoonfinPhases": "Moonfin Evreleri",
+    "@loadingAnimationImageMoonfinPhases": {
+        "description": "Loading animation image option: Moonfin Phases in brand gradient"
+    },
+    "loadingAnimationImageNeonfinPhases": "Neonfin Evreleri",
+    "@loadingAnimationImageNeonfinPhases": {
+        "description": "Loading animation image option: Neonfin Phases in neon colors"
+    },
+    "loadingAnimationSize": "Animasyon Boyutu",
+    "@loadingAnimationSize": {
+        "description": "Title for loading animation size selection"
+    },
+    "loadingAnimationSizeThumbnail": "Küçük Resim",
+    "@loadingAnimationSizeThumbnail": {
+        "description": "Loading animation size option: Thumbnail"
+    },
+    "loadingAnimationSizeSmall": "Küçük",
+    "@loadingAnimationSizeSmall": {
+        "description": "Loading animation size option: Small"
+    },
+    "loadingAnimationSizeMedium": "Orta",
+    "@loadingAnimationSizeMedium": {
+        "description": "Loading animation size option: Medium"
+    },
+    "loadingAnimationSizeLarge": "Büyük",
+    "@loadingAnimationSizeLarge": {
+        "description": "Loading animation size option: Large"
+    },
+    "loadingAnimationPosition": "Animasyon Konumu",
+    "@loadingAnimationPosition": {
+        "description": "Title for loading animation position selection"
+    },
+    "loadingAnimationPositionTopLeft": "Üst Sol",
+    "@loadingAnimationPositionTopLeft": {
+        "description": "Loading animation position: Top-Left"
+    },
+    "loadingAnimationPositionTopCenter": "Üst Orta",
+    "@loadingAnimationPositionTopCenter": {
+        "description": "Loading animation position: Top-Center"
+    },
+    "loadingAnimationPositionTopRight": "Üst Sağ",
+    "@loadingAnimationPositionTopRight": {
+        "description": "Loading animation position: Top-Right"
+    },
+    "loadingAnimationPositionMiddleLeft": "Orta Sol",
+    "@loadingAnimationPositionMiddleLeft": {
+        "description": "Loading animation position: Middle-Left"
+    },
+    "loadingAnimationPositionMiddle": "Orta",
+    "@loadingAnimationPositionMiddle": {
+        "description": "Loading animation position: Middle"
+    },
+    "loadingAnimationPositionMiddleRight": "Orta Sağ",
+    "@loadingAnimationPositionMiddleRight": {
+        "description": "Loading animation position: Middle-Right"
+    },
+    "loadingAnimationPositionBottomLeft": "Alt Sol",
+    "@loadingAnimationPositionBottomLeft": {
+        "description": "Loading animation position: Bottom-Left"
+    },
+    "loadingAnimationPositionBottomCenter": "Alt Orta",
+    "@loadingAnimationPositionBottomCenter": {
+        "description": "Loading animation position: Bottom-Center"
+    },
+    "loadingAnimationPositionBottomRight": "Alt Sağ",
+    "@loadingAnimationPositionBottomRight": {
+        "description": "Loading animation position: Bottom-Right"
+    },
+    "loadingAnimationPositionBouncing": "Zıplayan",
+    "@loadingAnimationPositionBouncing": {
+        "description": "Loading animation position: Bouncing DVD screensaver style"
+    },
+    "loadingAnimationSpeed": "Animasyon Hızı",
+    "@loadingAnimationSpeed": {
+        "description": "Title for loading animation speed selection"
+    },
+    "loadingAnimationSpeedSlow": "Yavaş",
+    "@loadingAnimationSpeedSlow": {
+        "description": "Loading animation speed option: Slow"
+    },
+    "loadingAnimationSpeedModerate": "Orta",
+    "@loadingAnimationSpeedModerate": {
+        "description": "Loading animation speed option: Moderate"
+    },
+    "loadingAnimationSpeedFast": "Hızlı",
+    "@loadingAnimationSpeedFast": {
+        "description": "Loading animation speed option: Fast"
+    },
+    "loadingAnimationSpeedUltra": "Ultra",
+    "@loadingAnimationSpeedUltra": {
+        "description": "Loading animation speed option: Ultra"
+    },
+    "showLoadingAnimationText": "Yazı Gözüksün Mü?",
+    "@showLoadingAnimationText": {
+        "description": "Setting toggle for showing loading animation text"
+    },
+    "loadingAnimationPreview": "Önizleme",
+    "@loadingAnimationPreview": {
+        "description": "Label for loading animation preview window"
+    },
+    "cropBlackBars": "Siyah bantları kırp",
+    "@cropBlackBars": {
+        "description": "Setting to detect and crop encoded letterbox/pillarbox bars"
+    },
+    "settingsCropBlackBarsDescription": "Kodlanmış siyah bantları tespit et, kırp ve ekranı doldur.",
+    "@settingsCropBlackBarsDescription": {
+        "description": "Description for the crop black bars playback setting"
+    },
+    "trickplayPauseWhileScrubbing": "Kaydırırken duraklat",
+    "@trickplayPauseWhileScrubbing": {
+        "description": "Setting for whether seeking pauses playback so the trickplay preview holds still"
+    },
+    "trickplayPauseWhileScrubbingSubtitle": "Kaydırma sırasında oynatma duraklatılır ve oynat tuşuna bastığınızda devam eder. Oynatmayı kesmeden doğrudan yeni konuma atlamak için bu ayarı kapatın",
+    "@trickplayPauseWhileScrubbingSubtitle": {
+        "description": "Description for the trickplay pause-while-scrubbing setting"
+    },
+    "showChapterMarkers": "Bölüm İşaretleri",
+    "@showChapterMarkers": {
+        "description": "Setting label for drawing a mark per chapter on the player seek bar"
+    },
+    "showChapterMarkersDescription": "İlerleme çubuğunda bölüm başlangıçlarını işaretle",
+    "@showChapterMarkersDescription": {
+        "description": "Description for the chapter marks setting"
+    },
+    "actionButtonsOnScreen": "Ekrandaki eylem düğmeleri",
+    "@actionButtonsOnScreen": {
+        "description": "Setting title for choosing how many action buttons are visible before overflowing into More Actions"
+    },
+    "actionButtonsOnScreenDescription": "Diğer Eylemler menüsüne taşınmadan önce kaç eylem düğmesinin gösterileceğini belirleyin.",
+    "@actionButtonsOnScreenDescription": {
+        "description": "Subtitle explaining how action buttons overflow into More Actions"
+    },
+    "actionButtonsOnScreenAuto": "Otomatik (Tema Varsayılanı)",
+    "@actionButtonsOnScreenAuto": {
+        "description": "Option showing theme default number of action buttons"
+    },
+    "actionButtonsOnScreenPlayOnly": "1 (Sadece Oynat)",
+    "@actionButtonsOnScreenPlayOnly": {
+        "description": "Option showing only the play action button on screen"
+    },
+    "actionButtonsOnScreenAll": "Tümü (Yatay Kaydırma)",
+    "@actionButtonsOnScreenAll": {
+        "description": "Option showing all action buttons in a horizontal scrollable row"
+    },
+    "detailMetadata": "Meta Veri Satırı",
+    "@detailMetadata": {
+        "description": "Settings screen for choosing and reordering details screen metadata items"
+    },
+    "detailMetadataDescription": "Detaylar ekranında gösterilecek meta verileri seçin ve sıralayın",
+    "@detailMetadataDescription": {
+        "description": "Subtitle for the details metadata settings tile"
+    },
+    "detailMetadataSectionDescription": "Meta veri öğelerini açıp kapatın ve detaylar ekranındaki görünüm sırasını düzenleyin. Her cihaz türü kendi listesini ayrı tutar.",
+    "@detailMetadataSectionDescription": {
+        "description": "Explains how to customize and reorder details screen metadata items"
+    },
+    "detailMetadataYear": "Yayın Yılı",
+    "@detailMetadataYear": {
+        "description": "Item label for release or production year in metadata row"
+    },
+    "detailMetadataParentalRating": "Yaş Sınırı",
+    "@detailMetadataParentalRating": {
+        "description": "Item label for parental content rating in metadata row"
+    },
+    "detailMetadataRuntimeAndSeasons": "Süre & Sezonlar",
+    "@detailMetadataRuntimeAndSeasons": {
+        "description": "Item label for runtime or season/episode counts in metadata row"
+    },
+    "detailMetadataStatus": "Dizi Durumu",
+    "@detailMetadataStatus": {
+        "description": "Item label for series status badge in metadata row"
+    },
+    "detailMetadataStatusSubtitle": "Dizinin devam ettiğini, sona erdiğini veya geri döneceğini gösterir",
+    "@detailMetadataStatusSubtitle": {
+        "description": "Subtitle explaining the series status metadata badge"
+    },
+    "detailMetadataGenres": "Türler",
+    "@detailMetadataGenres": {
+        "description": "Item label for genre tags in metadata row"
+    },
+    "detailMetadataSeerrAvailability": "Seerr Durumu",
+    "@detailMetadataSeerrAvailability": {
+        "description": "Item label for Seerr request and availability badge in metadata row"
+    },
+    "detailMetadataSeerrAvailabilitySubtitle": "Seerr üzerindeki talep ve medya durumunu gösterir",
+    "@detailMetadataSeerrAvailabilitySubtitle": {
+        "description": "Subtitle explaining the Seerr availability metadata badge"
+    },
+    "detailMetadataUpcomingEpisodeDate": "Gelecek Bölümler",
+    "@detailMetadataUpcomingEpisodeDate": {
+        "description": "Item label for upcoming episode air date badge in metadata row"
+    },
+    "detailMetadataUpcomingEpisodeDateSubtitle": "Sonarr ve TMDB kullanarak gelecek yayın tarihlerini gösterir",
+    "@detailMetadataUpcomingEpisodeDateSubtitle": {
+        "description": "Subtitle describing data sources for upcoming episode air dates in metadata row"
+    },
+    "upcomingEpisodeNext": "Sonraki: {date} (S{season}:E{episode})",
+    "@upcomingEpisodeNext": {
+        "description": "Formatted badge text for an upcoming episode release date",
+        "placeholders": {
+            "date": {
+                "type": "String"
+            },
+            "season": {
+                "type": "int"
+            },
+            "episode": {
+                "type": "int"
+            }
+        }
+    },
+    "upcomingEpisodeToday": "Bugün",
+    "@upcomingEpisodeToday": {
+        "description": "Upcoming episode airs today"
+    },
+    "upcomingEpisodeTomorrow": "Yarın",
+    "@upcomingEpisodeTomorrow": {
+        "description": "Upcoming episode airs tomorrow"
+    },
+    "settingsAudioPassthroughOutput": "Doğrudan Geçiş (Passthrough) çıkışı",
+    "@settingsAudioPassthroughOutput": {
+        "description": "Title of the RAW-vs-IEC passthrough packer selector (Android TV, Media3 engine)"
+    },
+    "settingsAudioPassthroughOutputDescription": "HDMI bağlantısı için bit akışlarını kimin paketleyeceğini belirleyin. Bu cihazda doğrudan geçiş (passthrough) sırasında ses gelmiyorsa veya kesilmeler oluyorsa uygulama paketleyicisini deneyin.",
+    "settingsAudioPassthroughOutputPlatform": "Otomatik, sistem paketleyicisi (AudioTrack RAW)",
+    "settingsAudioPassthroughOutputIec": "Uygulama paketleyicisi (AudioTrack IEC)",
+    "settingsAudioPassthroughOutputIecLabel": "Uygulama (IEC)",
+    "semiTransparentWhite": "Yarı şeffaf Beyaz",
+    "@semiTransparentWhite": {
+        "description": "Color: semi-transparent white"
+    },
+    "lightGray": "Açık Gri",
+    "@lightGray": {
+        "description": "Color: light gray"
+    },
+    "darkGray": "Koyu Gri",
+    "@darkGray": {
+        "description": "Color: dark gray"
+    },
+    "blue": "Mavi",
+    "@blue": {
+        "description": "Color: blue"
+    },
+    "magenta": "Macenta",
+    "@magenta": {
+        "description": "Color: magenta"
+    },
+    "showLiveTvButton": "Canlı TV Butonunu Göster",
+    "@showLiveTvButton": {
+        "description": "Setting for showing live TV button"
+    },
+    "showDownloadsButton": "İndirilenler Butonunu Göster",
+    "@showDownloadsButton": {
+        "description": "Setting for showing downloads button"
+    },
+    "screensaverGeneralSettings": "Genel Ayarlar",
+    "@screensaverGeneralSettings": {
+        "description": "Section header for screensaver general settings"
+    },
+    "screensaverVisualComponents": "Görsel Bileşenler",
+    "@screensaverVisualComponents": {
+        "description": "Section header for screensaver visual components"
+    },
+    "screensaverLibraryContent": "Kütüphane İçeriği",
+    "@screensaverLibraryContent": {
+        "description": "Section header for screensaver library content"
+    },
+    "screensaverBackdrop": "Arka Plan",
+    "@screensaverBackdrop": {
+        "description": "Setting for screensaver backdrop"
+    },
+    "screensaverBackdropBlack": "Siyah",
+    "@screensaverBackdropBlack": {
+        "description": "Screensaver backdrop: Black"
+    },
+    "screensaverBackdropMoonfin": "Moonfin",
+    "@screensaverBackdropMoonfin": {
+        "description": "Screensaver backdrop: Moonfin"
+    },
+    "screensaverBackdropCalm": "Sakin",
+    "@screensaverBackdropCalm": {
+        "description": "Screensaver backdrop: Calm"
+    },
+    "screensaverBackdropNeonPulse": "Neon Pulse",
+    "@screensaverBackdropNeonPulse": {
+        "description": "Screensaver backdrop: Neon Pulse"
+    },
+    "screensaverBackdropAurora": "Aurora",
+    "@screensaverBackdropAurora": {
+        "description": "Screensaver backdrop: Aurora"
+    },
+    "screensaverAdditionalComponent": "Ek Bileşen",
+    "@screensaverAdditionalComponent": {
+        "description": "Setting for screensaver additional component"
+    },
+    "screensaverComponentMoonfinLogo": "Moonfin Logo",
+    "@screensaverComponentMoonfinLogo": {
+        "description": "Screensaver component: Moonfin Logo"
+    },
+    "screensaverComponentRunner": "Kayan Yazı",
+    "@screensaverComponentRunner": {
+        "description": "Screensaver component: Runner"
+    },
+    "screensaverComponentMovement": "Bileşen Hareketi",
+    "@screensaverComponentMovement": {
+        "description": "Setting for screensaver component movement"
+    },
+    "screensaverComponentPosition": "Bileşen Pozisyonu",
+    "@screensaverComponentPosition": {
+        "description": "Setting for screensaver component position"
+    },
+    "screensaverComponentSize": "Bileşen Boyutu",
+    "@screensaverComponentSize": {
+        "description": "Setting for screensaver component size"
+    },
+    "screensaverSourceLibrariesDefault": "Tümü (Varsayılan)",
+    "@screensaverSourceLibrariesDefault": {
+        "description": "Subtitle when no source libraries are explicitly filtered in screensaver"
+    },
+    "showMissingCollectionItems": "Eksik Koleksiyon Öğelerini Göster",
+    "@showMissingCollectionItems": {
+        "description": "Setting title to show missing items from Seerr on Collection pages"
+    },
+    "showMissingCollectionItemsDesc": "Eksik öğeleri Koleksiyon sayfalarına dahil et",
+    "@showMissingCollectionItemsDesc": {
+        "description": "Setting subtitle explaining that missing items will be included on Collection pages"
+    },
+    "showSeerrAvailabilityBadges": "Seerr Durum Rozetlerini Göster",
+    "@showSeerrAvailabilityBadges": {
+        "description": "Setting title for showing Seerr availability badges on media details pages"
+    },
+    "showSeerrAvailabilityBadgesDescription": "Medya detay sayfalarında sezon durum rozetlerini göster",
+    "@showSeerrAvailabilityBadgesDescription": {
+        "description": "Setting description for showing Seerr availability badges on media details pages"
+    },
+    "requestedByLabel": "Talep Eden",
+    "@requestedByLabel": {
+        "description": "Label above the name of whoever requested media, where the name sits on its own line"
+    },
+    "kidsMode": "Çocuk Modu",
+    "@kidsMode": {
+        "description": "Label for the setting that strips the app back to what a child needs"
+    },
+    "kidsModeSubtitle": "Uygulamayı sadeleştir ve çıkışı PIN ile kilitle",
+    "@kidsModeSubtitle": {
+        "description": "Explanation under the Kids Mode setting"
+    },
+    "kidsModeExit": "Çocuk Modundan Çık",
+    "@kidsModeExit": {
+        "description": "Settings entry that turns Kids Mode off, shown while Kids Mode is on"
+    },
+    "kidsModeExitSubtitle": "Tam uygulamaya dönmek için PIN'inizi girin",
+    "@kidsModeExitSubtitle": {
+        "description": "Explanation under the Exit Kids Mode entry"
+    },
+    "pinTryAgainIn": "Çok fazla deneme. {wait} sonra tekrar deneyin.",
+    "@pinTryAgainIn": {
+        "description": "Shown when PIN entry is locked after repeated wrong guesses",
+        "placeholders": {
+            "wait": {
+                "type": "String",
+                "example": "30s"
+            }
+        }
+    },
+    "contextMenuRemoveFromCollection": "Koleksiyondan Sil",
+    "@contextMenuRemoveFromCollection": {
+        "description": "Context menu action to remove an item from the collection whose page it is shown on"
+    },
+    "removeFromCollectionConfirm": "{item} öğesi {collection} koleksiyonundan kaldırılsın mı? Öğe kütüphanenizde kalır.",
+    "@removeFromCollectionConfirm": {
+        "description": "Confirmation shown before removing an item from a collection",
+        "placeholders": {
+            "item": {
+                "type": "String"
+            },
+            "collection": {
+                "type": "String"
+            }
+        }
+    },
+    "removeFromCollectionFailed": "Koleksiyondan kaldırılamadı",
+    "@removeFromCollectionFailed": {
+        "description": "Error shown when removing an item from a collection fails"
+    },
+    "itemBlockedByParentalControls": "Bu öğe mevcut değil",
+    "@itemBlockedByParentalControls": {
+        "description": "Shown instead of a title whose rating the viewer has blocked. Deliberately says nothing about what the title is."
+    },
+    "blockedRatingsCeilingHint": "Bir derecelendirmeyi engellemek, ondan daha yüksek olanları da engeller.",
+    "@blockedRatingsCeilingHint": {
+        "description": "Explains that the blocked ratings list works as a ceiling"
+    },
+    "blockedRatingsUnrankedSection": "Sadece kendini engeller",
+    "@blockedRatingsUnrankedSection": {
+        "description": "Heading for ratings the app can't rank, which block only the exact rating rather than everything above it"
+    },
+    "settingsShowLiveTvButtonInNavigation": "Sunucuda Canlı TV kütüphanesi varsa gezinme çubuğunda Canlı TV düğmesini göster"
 }

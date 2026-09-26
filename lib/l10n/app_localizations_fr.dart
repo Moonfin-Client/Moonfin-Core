@@ -238,8 +238,8 @@ class AppLocalizationsFr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count facts',
-      one: '1 fact',
+      other: '$count informations',
+      one: '$count information',
     );
     return '$_temp0';
   }
@@ -250,7 +250,7 @@ class AppLocalizationsFr extends AppLocalizations {
       count,
       locale: localeName,
       other: '$count tags',
-      one: '1 tag',
+      one: '$count tag',
     );
     return '$_temp0';
   }
@@ -391,7 +391,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get detailScreenStyleNouveau => 'Nouveau';
 
   @override
-  String get detailScreenStyleMinimalist => 'Minimalist';
+  String get detailScreenStyleMinimalist => 'Minimaliste';
 
   @override
   String get expandedTabs => 'Onglets déployés';
@@ -798,7 +798,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get extraLarge => 'Très grand';
 
   @override
-  String get uiScaleGrandparents => 'Grandparents';
+  String get uiScaleGrandparents => 'Grand-mère';
 
   @override
   String get scrollDirection => 'Sens de défilement';
@@ -2424,7 +2424,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get premiere => 'Première';
 
   @override
-  String get guideRepeatBadge => 'Repeat';
+  String get guideRepeatBadge => 'Rediffusion';
 
   @override
   String get guideTimeline => 'Grille des Programmes';
@@ -2522,6 +2522,15 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String failedToPlayChannel(String name) {
     return 'Échec de la lecture de $name';
+  }
+
+  @override
+  String get playbackStreamLost =>
+      'Playback stopped and could not be recovered.';
+
+  @override
+  String liveReconnecting(int attempt, int total) {
+    return 'Reconnecting… ($attempt of $total)';
   }
 
   @override
@@ -2745,7 +2754,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get downloadedItems => 'Éléments téléchargés';
 
   @override
-  String get activeDownloads => 'Active Downloads';
+  String get activeDownloads => 'Téléchargements en cours';
 
   @override
   String savedMediaCount(int count) {
@@ -12778,6 +12787,12 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get setupTourQuestion =>
       'C\'est prêt. Voici ce que vous pouvez encore découvrir.';
+
+  @override
+  String get setupPlaybackLanguages => 'Langues de lecture';
+
+  @override
+  String get setupOptional => 'Facultatif';
 
   @override
   String get setupStyleClassic => 'Classique';

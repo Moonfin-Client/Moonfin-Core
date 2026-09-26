@@ -2645,6 +2645,15 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
+  String get playbackStreamLost =>
+      'Playback stopped and could not be recovered.';
+
+  @override
+  String liveReconnecting(int attempt, int total) {
+    return 'Reconnecting… ($attempt of $total)';
+  }
+
+  @override
   String get failedToLoadRecordings => 'Nie udało się wczytać nagrań';
 
   @override
@@ -12956,6 +12965,12 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String get setupTourQuestion =>
       'Gotowe. Zobacz, co jeszcze znajdziesz w Moonfin.';
+
+  @override
+  String get setupPlaybackLanguages => 'Playback languages';
+
+  @override
+  String get setupOptional => 'Optional';
 
   @override
   String get setupStyleClassic => 'Klasyczny';

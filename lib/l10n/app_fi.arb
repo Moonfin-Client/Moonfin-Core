@@ -2633,7 +2633,7 @@
     "@signInAndSecurity": {
         "description": "Account section description"
     },
-    "administration": "Ylläpito",
+    "administration": "Hallinta",
     "@administration": {
         "description": "Administration section title"
     },
@@ -3360,7 +3360,7 @@
     "@changeDownloadLocationDescription": {
         "description": "Description for changing download location"
     },
-    "confirm": "Vahvistaa",
+    "confirm": "Vahvista",
     "@confirm": {
         "description": "Button to confirm an action"
     },
@@ -4314,7 +4314,7 @@
     "@declineAction": {
         "description": "Tooltip/button to decline a request"
     },
-    "similar": "Samanlainen",
+    "similar": "Samantyylinen",
     "@similar": {
         "description": "Section title for similar media"
     },
@@ -4587,7 +4587,7 @@
     "adminDrawerPlugins": "Laajennukset",
     "adminDrawerRepositories": "Pakettivarastot",
     "adminDrawerLiveTv": "Live-TV",
-    "adminExitTooltip": "Poistu järjestelmänvalvojasta",
+    "adminExitTooltip": "Poistu",
     "adminDashboardLoadFailed": "Koontinäyttöä ei voitu ladata",
     "adminMediaOverview": "Median yleiskatsaus",
     "adminMediaTotalsError": "Palvelimen mediakokonaisuuksia ei voitu ladata.",
@@ -4904,7 +4904,7 @@
     "adminBackToUsers": "Takaisin Käyttäjiin",
     "adminSaveProfile": "Tallenna profiili",
     "adminDeleteUser": "Poista käyttäjä",
-    "admin": "Järjestelmänvalvoja",
+    "admin": "Hallinta",
     "adminFullAccessWarning": "Järjestelmänvalvojilla on täydellinen pääsy palvelimeen. Myönnä varoen.",
     "administrator": "Järjestelmänvalvoja",
     "adminHiddenUser": "Piilotettu käyttäjä",
@@ -10149,7 +10149,7 @@
     "@trickplayModeFull": {
         "description": "Trickplay mode option: temporarily replaces the video with the trickplay image while scrubbing"
     },
-    "trickplaySettingsPreviewHint": "Vedä liukusäädintä nähdäksesi esikatselun liu’uttamisesta",
+    "trickplaySettingsPreviewHint": "Vedä liukusäädintä nähdäksesi esikatselun",
     "@trickplaySettingsPreviewHint": {
         "description": "Hint shown below the live trickplay settings preview"
     },
@@ -10932,7 +10932,7 @@
             }
         }
     },
-    "trickplayPauseWhileScrubbing": "Tauko Kelauksen Ajaksi",
+    "trickplayPauseWhileScrubbing": "Tauko Skrubbauksen Ajaksi",
     "@trickplayPauseWhileScrubbing": {
         "description": "Setting for whether seeking pauses playback so the trickplay preview holds still"
     },
@@ -12445,7 +12445,7 @@
     "@setupDetailMinimalistHint": {
         "description": "What the minimalist detail screen style gives you"
     },
-    "guideRepeatBadge": "Toista",
+    "guideRepeatBadge": "Jatkuva",
     "@guideRepeatBadge": {
         "description": "Short badge label shown on a rerun in the guide hero band"
     },
@@ -12456,5 +12456,53 @@
     "keepVideoClearOfDynamicIslandDescription": "Vaakakuvausasennossa kamerakotelo peittää näytön yhden reunan. Tämä rajoittaa kuvan ulottuvuutta, mikä vaikuttaa ainoastaan videoihin, jotka ovat riittävän leveitä ulottuakseen sinne asti.",
     "@keepVideoClearOfDynamicIslandDescription": {
         "description": "Description for the iPhone setting that keeps video clear of the Dynamic Island"
+    },
+    "uiScaleGrandfather": "Isoisä",
+    "@uiScaleGrandfather": {
+        "description": "UI scaling option above extra large"
+    },
+    "showChapterMarkers": "Lukumerkit",
+    "@showChapterMarkers": {
+        "description": "Setting label for drawing a mark per chapter on the player seek bar"
+    },
+    "showChapterMarkersDescription": "Merkitse hakupalkkiin kunkin luvun alkupiste",
+    "@showChapterMarkersDescription": {
+        "description": "Description for the chapter marks setting"
+    },
+    "semiTransparentWhite": "Semiläpinäkyvä valkoinen",
+    "@semiTransparentWhite": {
+        "description": "Color: semi-transparent white"
+    },
+    "lightGray": "Vaaleanharmaa",
+    "@lightGray": {
+        "description": "Color: light gray"
+    },
+    "darkGray": "Tummanharmaa",
+    "@darkGray": {
+        "description": "Color: dark gray"
+    },
+    "blue": "Sininen",
+    "@blue": {
+        "description": "Color: blue"
+    },
+    "magenta": "Magenta",
+    "@magenta": {
+        "description": "Color: magenta"
+    },
+    "requestedByLabel": "Pyynnön esittäjä",
+    "@requestedByLabel": {
+        "description": "Label above the name of whoever requested media, where the name sits on its own line"
+    },
+    "playlistTypeMusicVideo": "Musiikkivideo",
+    "@playlistTypeMusicVideo": {
+        "description": "Filter checkbox label for music video playlists"
+    },
+    "musicVideoPlaylistsSection": "Musiikkivideoiden soittolistat",
+    "@musicVideoPlaylistsSection": {
+        "description": "Section header above music video playlists when Group by Type is enabled"
+    },
+    "uiScaleGrandparents": "Isovanhemmat",
+    "@uiScaleGrandparents": {
+        "description": "UI scaling option above extra large"
     }
 }

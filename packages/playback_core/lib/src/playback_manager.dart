@@ -28,6 +28,17 @@ class _ProgressGeneration {
 /// on a keyframe, not the exact frame asked for.
 const seekConfirmTolerance = Duration(seconds: 10);
 
+/// Reported as the bringup error when a live stream stopped feeding and the
+/// bounded recovery gave up on it. A sentinel for a screen to match on, not a
+/// message to show: this package has no localizations, and the only consumer
+/// today is the diagnostic log.
+const liveStreamLostError = 'live-stream-lost';
+
+/// Reported as the bringup error when a stream that is NOT live ran out of
+/// media nowhere near the item's end -- a transcode the client outran -- and
+/// the bounded recovery could not get it going again.
+const streamStarvedError = 'stream-starved';
+
 /// Whether a seek actually landed. The player reports the seek target as its
 /// position while the seek is still in flight, and a seek issued early in a
 /// file's life can quietly fail and fall back to the start, so a single read
@@ -183,6 +194,10 @@ class PlaybackManager implements AudioOwnable {
   bool autoAdvanceEnabled = true;
   bool _isOfflinePlayback = false;
   bool _forceTranscodeForQueue = false;
+  // What playItems was asked to allow for this queue. A recovery re-resolve
+  // defaults enableDirectPlay to true, and without this it would silently
+  // switch a viewer who had direct play off back on.
+  bool _directPlayAllowedForQueue = true;
   bool _backendSelectionLockedForSession = false;
   PlayerBackend? _sessionLockedBackend;
   Future<void> Function()? _onOfflineStop;
@@ -202,6 +217,219 @@ class PlaybackManager implements AudioOwnable {
   final Set<String> _vetoedAudioCodecs = <String>{};
   bool _suppressNextGenericBackendError = false;
   bool _teardownForReResolve = false;
+
+  /// Live recovery budget. Attempt 1 resumes in place (re-resolving if the
+  /// engine can't), attempt 2 re-resolves, and attempt 3 escalates one step
+  /// past the current route: direct play hands the stream to the server,
+  /// and a server-served channel forces a transcode. The next failure gives
+  /// up. A clean minute since the last attempt restores the budget.
+  ///
+  /// Gaps are measured from the end of the previous attempt, since a tune can
+  /// itself take ~10s: 4s before attempt 1 and the give-up, which outlasts a
+  /// Fire Cube decoder's forced release, then 10s and 20s so a restarting
+  /// server can come back. A re-resolve that throws schedules the next
+  /// attempt instead of giving up, and these re-resolves skip the nested
+  /// startup transcode retry so the budget alone paces them.
+  static const _liveRecoveryMaxAttempts = 3;
+  static const _liveRecoveryDebounce = Duration(seconds: 4);
+  static const _liveRecoveryGapAttempt2 = Duration(seconds: 10);
+  static const _liveRecoveryGapAttempt3 = Duration(seconds: 20);
+  static const _liveRecoveryWindow = Duration(seconds: 60);
+
+  /// The minimum gap since the previous attempt before [attempt] may run.
+  /// Attempt 1 and the give-up step (any attempt past the budget) use the
+  /// plain debounce; attempts 2 and 3 wait longer so a restarting server has
+  /// time to come back.
+  Duration _liveRecoveryGapBefore(int attempt) {
+    switch (attempt) {
+      case 2:
+        return _liveRecoveryGapAttempt2;
+      case 3:
+        return _liveRecoveryGapAttempt3;
+      default:
+        return _liveRecoveryDebounce;
+    }
+  }
+  int _liveRecoveryAttempts = 0;
+  DateTime? _lastLiveRecoveryAt;
+  bool _liveRecoveryInFlight = false;
+  Timer? _liveRecoveryRetry;
+
+  /// Set only around the re-resolve await inside `_recoverStalledStream`. A
+  /// failed bringup state raised in that window is an intermediate failure
+  /// the recovery loop may still paper over, not the terminal one listeners
+  /// should see -- that only comes from `_giveUpOnStalledStream`, which runs
+  /// outside this window.
+  bool _suppressFailedBringupDuringRecovery = false;
+
+  /// A live stream can open and keep receiving bytes without ever rendering
+  /// a frame -- weak reception trickles data, so the HTTP read never times
+  /// out and no backend error ever fires. Neither of `_recoverStalledStream`'s
+  /// usual triggers (a backend error, an end-of-stream) helps here, so this
+  /// watchdog covers the gap: it watches for a first frame after the stream
+  /// opens, and for a frame after any later stall, and treats either miss as
+  /// a stalled channel worth recovering.
+  ///
+  /// A first frame gets longer because a tune can take ~10s. A stall after
+  /// playing gets 8s: Media3 won't resume until 5s is re-buffered, which a
+  /// live stream only delivers in real time, so anything shorter would fire
+  /// on ordinary rebuffers.
+  static const _liveFirstFrameTimeout = Duration(seconds: 15);
+  static const _liveMidStreamStallTimeout = Duration(seconds: 8);
+  Timer? _liveStallWatchdog;
+
+  /// Whether a live session is being watched at all: on when a live stream
+  /// opens or resumes, off on any stop, give-up or tune-away. A stopped
+  /// player still reports "not playing", and without this that would re-arm
+  /// the watchdog and restart a channel the viewer already left.
+  bool _liveStallWatchActive = false;
+
+  /// Set by [pause], cleared by [resume], [playItems], [stop] and a fresh
+  /// live open. Backends that report no `playWhenReady` (AppleTvBackend,
+  /// AetherBackend, the web video backend, MediaKitPlayerBackend) can't tell
+  /// a viewer pause from a stall on their own, so the manager tracks the
+  /// viewer's own last pause/resume call and falls back to it.
+  bool _viewerPaused = false;
+
+  /// Whether a frame has rendered since the current live stream opened.
+  /// Reset at each fresh open, set the first time `playing` reports true.
+  bool _liveFrameSeenSinceOpen = false;
+
+  /// True only when playback is genuinely advancing: unpaused AND not
+  /// buffering. `state.isPlaying` alone means "unpaused", not "advancing" --
+  /// the web/MediaKit backends forward media3-style playing/buffering as two
+  /// independent streams, so `isPlaying` can stay true through a stall while
+  /// `isBuffering` is what actually flips. Everywhere recovery reads
+  /// progress must use this, not `state.isPlaying` alone.
+  bool get _isActuallyPlaying => state.isPlaying && !state.isBuffering;
+
+  /// Whether the current state looks like a stall worth recovering from,
+  /// rather than a pause. On an engine that reports its own intent
+  /// (`playWhenReady`), that intent decides. On one that doesn't, a pause
+  /// this manager itself issued always wins; short of that, only buffering
+  /// or "no frame shown yet" counts -- a quiet "not playing" with frames
+  /// already on screen is indistinguishable from a pause made outside the
+  /// app (system remote), so it must not be treated as a stall.
+  bool _liveStallSuspected() {
+    if (_isActuallyPlaying) return false;
+    final playWhenReady = state.playWhenReady;
+    if (playWhenReady != null) return playWhenReady;
+    if (_viewerPaused) return false;
+    return state.isBuffering || !_liveFrameSeenSinceOpen;
+  }
+
+  /// Bookkeeping shared by the playing and buffering listeners, since either
+  /// stream can be the one whose change makes playback actually advance.
+  /// Marks the first frame seen, clears the recovery status, and drops any
+  /// retry still waiting to fire -- the channel does not need it any more.
+  void _onProgressStreamsUpdated() {
+    if (!_isActuallyPlaying) return;
+    _liveFrameSeenSinceOpen = true;
+    _setLiveRecoveryStatus(null);
+    if (_liveRecoveryRetry?.isActive ?? false) {
+      _diagnosticLogger?.call(
+        'Live recovery: playback resumed, dropping a held retry',
+      );
+      _liveRecoveryRetry!.cancel();
+      _liveRecoveryRetry = null;
+    }
+  }
+
+  /// Arms (or re-arms) the live stall watchdog. A no-op off a live item, so
+  /// every call site can invoke it without checking first. Captures the
+  /// current viewer-intent generation so a timer that outlives a tune or a
+  /// stop fires into nothing.
+  void _armLiveStallWatchdog() {
+    _liveStallWatchdog?.cancel();
+    _liveStallWatchdog = null;
+    if (!_liveStallWatchActive || !_currentItemIsLive || _isOfflinePlayback) {
+      return;
+    }
+    final intent = _viewerIntentGeneration;
+    final timeout = _liveFrameSeenSinceOpen
+        ? _liveMidStreamStallTimeout
+        : _liveFirstFrameTimeout;
+    _liveStallWatchdog = Timer(timeout, () {
+      _liveStallWatchdog = null;
+      if (!_liveStallWatchActive || intent != _viewerIntentGeneration) return;
+      if (!_liveStallSuspected()) return;
+      _diagnosticLogger?.call(
+        'Live stall watchdog: no frame for ${timeout.inSeconds}s, '
+        'recovering',
+      );
+      unawaited(_recoverStalledStream(trigger: 'stalled'));
+    });
+  }
+
+  void _disarmLiveStallWatchdog() {
+    _liveStallWatchdog?.cancel();
+    _liveStallWatchdog = null;
+  }
+
+  /// Starts watching the current live stream, from a fresh 15s window.
+  void _startLiveStallWatch() {
+    _liveStallWatchActive = true;
+    _armLiveStallWatchdog();
+  }
+
+  /// Stops watching until the next live stream opens.
+  void _endLiveStallWatch() {
+    _liveStallWatchActive = false;
+    _disarmLiveStallWatchdog();
+  }
+
+  /// Re-evaluates the watchdog after a playing or buffering change. A real
+  /// frame or a viewer pause disarms it; buffering, or "not playing" with an
+  /// unfulfilled intent to play, arms it if it isn't already running -- a
+  /// buffering flicker must not keep resetting the 15s window.
+  void _evaluateLiveStallWatchdog() {
+    if (!_liveStallWatchActive) return;
+    if (!_currentItemIsLive || _isOfflinePlayback) return;
+    if (!_liveStallSuspected()) {
+      _disarmLiveStallWatchdog();
+      return;
+    }
+    if (_liveStallWatchdog?.isActive ?? false) return;
+    _armLiveStallWatchdog();
+  }
+
+  /// Bumped whenever the viewer moves on: a stop, or a new queue. Recovery
+  /// carries it across its own awaits so it can tell "the viewer left" from
+  /// "we restarted the stream ourselves". The session token cannot do that
+  /// job -- recovery's own re-resolve takes a new one -- and reading it as
+  /// abandonment made a failed recovery discard its own failure report.
+  int _viewerIntentGeneration = 0;
+
+  /// Gives up on recovering the channel the viewer has just left.
+  ///
+  /// Bumping the generation is what stops an attempt already under way from
+  /// escalating, but a held retry is a timer that would otherwise still fire
+  /// and start a re-resolve on top of whatever was tuned instead. Both ends
+  /// have to be closed, and at the moment the viewer moves rather than later
+  /// in the tune, or the timer fires inside that gap.
+  void _abandonLiveRecovery(String reason) {
+    _viewerIntentGeneration++;
+    _endLiveStallWatch();
+    if (_liveRecoveryRetry?.isActive ?? false) {
+      _diagnosticLogger?.call('Live recovery: dropping a held retry, $reason');
+    }
+    _resetLiveRecoveryBudget();
+  }
+
+  /// Clears the live recovery attempt count, its timestamp, and any held
+  /// retry timer.
+  void _resetLiveRecoveryBudget() {
+    _liveRecoveryAttempts = 0;
+    _lastLiveRecoveryAt = null;
+    _liveRecoveryRetry?.cancel();
+    _liveRecoveryRetry = null;
+    _setLiveRecoveryStatus(null);
+  }
+
+  /// Clock behind the live recovery budget and playback start time. A seam
+  /// so tests can cross the rolling window without waiting a minute.
+  DateTime Function() clock = DateTime.now;
+
   DateTime? _lastTrackSwitchReResolveAt;
   bool _transcodeSwitchRecoveryConsumed = false;
   Future<void>? _reResolveQueue;
@@ -209,7 +437,19 @@ class PlaybackManager implements AudioOwnable {
   final _bringupStateController =
       StreamController<PlaybackBringupState>.broadcast();
   final _sessionEndedController = StreamController<void>.broadcast();
+  final _liveRecoveryStatusController =
+      StreamController<LiveRecoveryStatus?>.broadcast();
   PlaybackBringupState _bringupState = const PlaybackBringupState.idle();
+  LiveRecoveryStatus? _liveRecoveryStatus;
+
+  /// Updates the live recovery progress, emitting only when it actually
+  /// changes so a held retry that keeps re-announcing the same attempt does
+  /// not spam the stream.
+  void _setLiveRecoveryStatus(LiveRecoveryStatus? status) {
+    if (_liveRecoveryStatus == status) return;
+    _liveRecoveryStatus = status;
+    _liveRecoveryStatusController.add(status);
+  }
 
   PlayerBackend? get backend => _backend;
 
@@ -250,6 +490,9 @@ class PlaybackManager implements AudioOwnable {
   Stream<PlaybackBringupState> get bringupStateStream =>
       _bringupStateController.stream;
   Stream<void> get sessionEndedStream => _sessionEndedController.stream;
+  LiveRecoveryStatus? get liveRecoveryStatus => _liveRecoveryStatus;
+  Stream<LiveRecoveryStatus?> get liveRecoveryStatusStream =>
+      _liveRecoveryStatusController.stream;
   StreamResolutionResult? get currentResolution => _currentResolution;
 
   /// Item that gained a stream on the server after this session resolved. The
@@ -633,6 +876,14 @@ class PlaybackManager implements AudioOwnable {
   }
 
   void _setBringupState(PlaybackBringupState state) {
+    if (_suppressFailedBringupDuringRecovery &&
+        state.phase == PlaybackBringupPhase.failed) {
+      _diagnosticLogger?.call(
+        'Live recovery: dropping an intermediate failed bringup state '
+        'during a re-resolve',
+      );
+      return;
+    }
     _bringupState = state;
     _bringupStateController.add(state);
   }
@@ -644,6 +895,7 @@ class PlaybackManager implements AudioOwnable {
     final previous = _backend;
     _unsupportedAudioRecoveryInFlight = false;
     _suppressNextGenericBackendError = false;
+    _endLiveStallWatch();
     _disposeStreamSubs();
     _backend = backend;
     _retainedBackends.add(backend);
@@ -839,6 +1091,13 @@ class PlaybackManager implements AudioOwnable {
       backend.positionStream.listen((pos) {
         state.setPosition(pos);
         if (pos > Duration.zero) _lastKnownPosition = pos;
+        // A backend can refuse a speed it was given - bitstreamed audio cannot
+        // be time stretched - so track what it actually settled on rather than
+        // leaving the UI showing a rate that is not happening.
+        final actualSpeed = backend.playbackSpeed;
+        if (actualSpeed > 0 && actualSpeed != state.playbackSpeed) {
+          state.setPlaybackSpeed(actualSpeed);
+        }
       }),
       backend.durationStream.listen((dur) {
         if (_itemKnownDuration > Duration.zero &&
@@ -849,8 +1108,24 @@ class PlaybackManager implements AudioOwnable {
         }
       }),
       backend.bufferStream.listen(state.setBuffer),
-      backend.playingStream.listen(state.setPlaying),
-      backend.bufferingStream.listen(state.setBuffering),
+      backend.playingStream.listen((playing) {
+        // The intent is read from the backend at the same moment, so a
+        // progress report can tell a viewer pause from a starved stream.
+        state.setPlayWhenReady(backend.playWhenReady);
+        state.setPlaying(playing);
+        _onProgressStreamsUpdated();
+        _evaluateLiveStallWatchdog();
+      }),
+      backend.bufferingStream.listen((buffering) {
+        state.setPlayWhenReady(backend.playWhenReady);
+        state.setBuffering(buffering);
+        // On web/MediaKit, buffering going false while playing is already
+        // true is the moment playback actually resumes -- the playing
+        // stream never fires again to tell us. Run the same bookkeeping
+        // here as the playing listener does.
+        _onProgressStreamsUpdated();
+        _evaluateLiveStallWatchdog();
+      }),
       backend.completedStream.listen(_onTrackCompleted),
     ]);
 
@@ -922,6 +1197,15 @@ class PlaybackManager implements AudioOwnable {
   void _onTrackCompleted(bool completed) {
     if (!completed) return;
 
+    // A live stream has no end, so the player reaching one means the source
+    // starved. Every branch below is written for an item that finished and
+    // would either stop playback or park the player on its last frame.
+    if (_currentItemIsLive) {
+      _logCompletion('live');
+      unawaited(_recoverStalledStream());
+      return;
+    }
+
     final completedItem = queueService.currentItem;
     if (completedItem != null) {
       final itemId = MediaStreamResolver.extractItemId(completedItem);
@@ -933,9 +1217,11 @@ class PlaybackManager implements AudioOwnable {
         _isAutoNexting ||
         _isManualNexting ||
         suppressAutoNext) {
+      _logCompletion('suppressed');
       return;
     }
     if (!autoAdvanceEnabled && !_isPreroll(queueService.currentItem)) {
+      _logCompletion('stop');
       _isAutoNexting = true;
       _mediaSourceId = null;
       _stopAndReportCurrent(skipQueueChange: true).whenComplete(() {
@@ -945,7 +1231,8 @@ class PlaybackManager implements AudioOwnable {
       return;
     }
     if (_playbackStartTime != null &&
-        DateTime.now().difference(_playbackStartTime!).inSeconds < 5) {
+        clock().difference(_playbackStartTime!).inSeconds < 5) {
+      _logCompletion('too-soon');
       return;
     }
     final pos = _lastKnownPosition > state.position
@@ -957,16 +1244,332 @@ class PlaybackManager implements AudioOwnable {
         : (backendDuration > Duration.zero ? backendDuration : state.duration);
 
     if (effectiveDuration <= Duration.zero) {
+      _logCompletion('no-duration', effectiveDuration: effectiveDuration);
       return;
     }
 
     final remaining = effectiveDuration - pos;
     if (remaining > const Duration(seconds: 5)) {
+      // The player ran out of media early. That is starvation -- a server
+      // transcode the client outran -- and it used to return here and do
+      // nothing at all, parking the player on its last frame with no way back.
+      //
+      // But only the PLAYER's own duration may decide that. `effectiveDuration`
+      // prefers library metadata, which routinely overstates a file's real
+      // length, and believing it would turn an ordinary end-of-file into
+      // retries, server churn and a failure card. When the player's own
+      // duration says the media is spent, the file simply ended.
+      final playerRemaining = backendDuration > Duration.zero
+          ? backendDuration - pos
+          : Duration.zero;
+      if (playerRemaining > const Duration(seconds: 30)) {
+        _logCompletion('starved', effectiveDuration: effectiveDuration);
+        unawaited(_recoverStalledStream(trigger: 'starved', live: false));
+      } else {
+        _logCompletion('not-near-end', effectiveDuration: effectiveDuration);
+      }
       return;
     }
 
+    _logCompletion('auto-next', effectiveDuration: effectiveDuration);
     _isAutoNexting = true;
     _autoNext().whenComplete(() => _isAutoNexting = false);
+  }
+
+  /// Which branch of [_onTrackCompleted] ran, and the state it decided on.
+  void _logCompletion(String branch, {Duration? effectiveDuration}) {
+    final logger = _diagnosticLogger;
+    if (logger == null) return;
+    final resolution = _currentResolution ?? _lastPlaybackResolution;
+    final item = queueService.currentItem ?? _lastPlaybackItem;
+    logger(
+      'Track completed -> $branch: autoAdvance=$autoAdvanceEnabled '
+      'playMethod=${resolution?.playMethod.name ?? 'none'} '
+      'liveStreamId=${resolution?.liveStreamId != null} '
+      'liveTvItem=${_isLiveTvItem(item)} '
+      'container=${resolution?.container ?? 'none'} '
+      'duration=${effectiveDuration?.inMilliseconds ?? -1}ms '
+      'position=${_lastKnownPosition.inMilliseconds}ms '
+      'liveAttempts=$_liveRecoveryAttempts',
+    );
+  }
+
+  /// A live stream that reports the end of its media has run out of playlist,
+  /// not out of programme; a non-live starved transcode (`live: false`) is
+  /// handled the same way. Follows the budget in [_liveRecoveryMaxAttempts]'s
+  /// doc: cheap resumes, then re-resolves, the last with direct play
+  /// disabled, then give up so the server releases the tuner and the live
+  /// screen can offer Retry.
+  ///
+  /// [cheapResumeFirst] is false for a source the engine already reported as
+  /// reset: re-opening it in place cannot help, so those attempts go straight
+  /// to the re-resolve tier while still spending the same budget.
+  Future<void> _recoverStalledStream({
+    String trigger = 'completed',
+    bool cheapResumeFirst = true,
+    bool live = true,
+    int? forIntent,
+  }) async {
+    // Belt and braces alongside the retry cancellation in
+    // `_onProgressStreamsUpdated`: a timer already due to fire in the same
+    // turn playback resumed would otherwise still run a recovery on top of
+    // a channel that is fine again.
+    if (forIntent != null && _isActuallyPlaying) {
+      _diagnosticLogger?.call(
+        'Live recovery: playback already resumed, dropping a held $trigger',
+      );
+      return;
+    }
+    // A recovery belongs to the channel that asked for it. Once the viewer has
+    // tuned elsewhere there is nothing left to fix, and worse, re-resolving
+    // now would take the tuner and the player away from the channel they just
+    // asked for. A held retry carries the generation it was scheduled under,
+    // so it can tell that it has been outlived.
+    final intent = forIntent ?? _viewerIntentGeneration;
+    if (intent != _viewerIntentGeneration) {
+      _diagnosticLogger?.call(
+        'Live recovery: the viewer moved on, abandoning a held $trigger',
+      );
+      return;
+    }
+    final now = clock();
+    final lastAt = _lastLiveRecoveryAt;
+    final sinceLast = lastAt == null ? null : now.difference(lastAt);
+    final windowExpired =
+        sinceLast != null && sinceLast >= _liveRecoveryWindow;
+    // The attempt this event would become if it ran now, so it is held for
+    // that attempt's own gap rather than a single fixed debounce.
+    final nextAttempt =
+        (sinceLast == null || windowExpired) ? 1 : _liveRecoveryAttempts + 1;
+    final gap = _liveRecoveryGapBefore(nextAttempt);
+    // Hold a burst, never drop one. By the time a second failure arrives the
+    // player is usually stopped, and nothing else would ever ask again, so a
+    // discarded event could strand the channel for good.
+    if (_liveRecoveryInFlight ||
+        (sinceLast != null && !windowExpired && sinceLast < gap)) {
+      final wait = _liveRecoveryInFlight ? gap : gap - sinceLast!;
+      _diagnosticLogger?.call(
+        'Live recovery: holding a $trigger for ${wait.inMilliseconds}ms',
+      );
+      _scheduleLiveRecoveryRetry(
+        wait,
+        trigger: trigger,
+        cheapResumeFirst: cheapResumeFirst,
+        live: live,
+        intent: intent,
+      );
+      return;
+    }
+    if (windowExpired) {
+      _liveRecoveryAttempts = 0;
+    }
+    _lastLiveRecoveryAt = now;
+    final attempt = ++_liveRecoveryAttempts;
+    _liveRecoveryInFlight = true;
+    try {
+      if (attempt > _liveRecoveryMaxAttempts) {
+        _diagnosticLogger?.call(
+          'Live recovery: $trigger, budget spent after '
+          '$_liveRecoveryMaxAttempts attempts, giving the channel up',
+        );
+        await _giveUpOnStalledStream(live: live, intent: intent);
+        return;
+      }
+      _setLiveRecoveryStatus(
+        LiveRecoveryStatus(
+          attempt: attempt,
+          maxAttempts: _liveRecoveryMaxAttempts,
+        ),
+      );
+      // Cheapest tier: ask the player to re-open the source where the stream
+      // is now. Most engines cannot, and one that says so falls straight
+      // through to the re-resolve rather than spending its attempt on a call
+      // that did nothing, then waiting for a recovery that is never coming.
+      if (cheapResumeFirst && attempt == 1) {
+        // Reset before the call, not after it returns true: the backend can
+        // emit playing/non-buffering from inside `resumeLiveEdge`, before it
+        // returns, and a reset placed after would erase that first frame.
+        _liveFrameSeenSinceOpen = false;
+        if (await _backend?.resumeLiveEdge() ?? false) {
+          _diagnosticLogger?.call(
+            'Live recovery: $trigger, attempt $attempt of '
+            '$_liveRecoveryMaxAttempts, resumed the live edge',
+          );
+          // A cheap resume doesn't go through bringup, so nothing else would
+          // re-arm the watchdog. Only the intent could have changed since the
+          // await above; _armLiveStallWatchdog is a no-op if it has.
+          if (intent == _viewerIntentGeneration) _startLiveStallWatch();
+          return;
+        }
+        _diagnosticLogger?.call(
+          'Live recovery: $trigger, attempt $attempt of '
+          '$_liveRecoveryMaxAttempts, the engine cannot resume in place',
+        );
+      }
+
+      // The cheap resume above was awaited, so the viewer has had a chance to
+      // move on since. A re-resolve is the tier that would take the tuner from
+      // whatever they tuned instead, so it is the one that must not run late.
+      if (intent != _viewerIntentGeneration) {
+        _diagnosticLogger?.call(
+          'Live recovery: the viewer moved on, not re-resolving the channel',
+        );
+        return;
+      }
+
+      // A full re-resolve: new PlaybackInfo, a fresh tuner session and a fresh
+      // upstream URL, which is materially different from re-opening the URL we
+      // already have. The last attempt escalates one step past whatever route
+      // the channel is currently on: a direct-played channel gives up direct
+      // play and asks the server to serve the stream instead, which normally
+      // means a remux, and a remuxed live channel arrives as HLS, which has a
+      // real live window the raw transport stream never had -- transcoding is
+      // left available but not demanded, since the server decides whether it
+      // has to re-encode and for most channels it does not. A channel that is
+      // already server-served has no such step left, so that one forces a
+      // full transcode instead.
+      final serverServed = attempt >= _liveRecoveryMaxAttempts;
+      final currentPlayMethod =
+          (_currentResolution ?? _lastPlaybackResolution)?.playMethod;
+      final forceTranscode =
+          serverServed && currentPlayMethod != StreamPlayMethod.directPlay;
+      _diagnosticLogger?.call(
+        'Live recovery: $trigger, attempt $attempt of '
+        '$_liveRecoveryMaxAttempts, re-resolving the channel'
+        '${forceTranscode
+            ? ', forcing a transcode -- already server-served'
+            : serverServed
+            ? ' without direct play, letting the server serve it'
+            : ''}',
+      );
+      // `_playCurrentItem` can emit a failed bringup state and then throw
+      // (a startup failure, with `allowStartupRecovery: false` so it does
+      // not retry itself) before this recovery attempt has decided whether
+      // to hold and try again. Suppressing just around this await keeps
+      // that intermediate failure off listeners; the give-up path below and
+      // the budget-exceeded one above are outside it and still emit.
+      _suppressFailedBringupDuringRecovery = true;
+      try {
+        await _reResolveAtCurrentPosition(
+          isErrorRecovery: true,
+          disableDirectPlay: serverServed,
+          forceTranscode: forceTranscode,
+          reason: forceTranscode
+              ? 'live-edge-recovery-transcode'
+              : serverServed
+              ? 'live-edge-recovery-server-stream'
+              : 'live-edge-recovery',
+          allowStartupRecovery: false,
+        );
+      } finally {
+        _suppressFailedBringupDuringRecovery = false;
+      }
+    } catch (e) {
+      // The source is gone, not just stalled -- a re-resolve that threw
+      // didn't spend a wasted attempt on the cheap resume, so the next one
+      // goes straight to a fresh re-resolve. Only the last attempt gives up;
+      // an earlier failure still has budget left, and the viewer may not
+      // even have noticed if the channel comes back before it is spent.
+      if (attempt < _liveRecoveryMaxAttempts &&
+          intent == _viewerIntentGeneration) {
+        _diagnosticLogger?.call(
+          'Live recovery: attempt $attempt failed to re-resolve, retrying: $e',
+        );
+        _scheduleLiveRecoveryRetry(
+          _liveRecoveryGapBefore(attempt + 1),
+          trigger: 'retry-after-failure',
+          cheapResumeFirst: false,
+          live: live,
+          intent: intent,
+        );
+      } else {
+        _diagnosticLogger?.call(
+          'Live recovery: attempt $attempt failed, giving the channel up: $e',
+        );
+        await _giveUpOnStalledStream(live: live, intent: intent);
+      }
+    } finally {
+      // Stamped again at the end, not just the start: a re-resolve's own tune
+      // can take several seconds, and measuring the next attempt's gap from
+      // when this one finished (rather than when it began) is what keeps a
+      // slow-but-working re-resolve from eating its own gap.
+      _lastLiveRecoveryAt = clock();
+      _liveRecoveryInFlight = false;
+    }
+  }
+
+  /// Schedules a held or retried recovery attempt on [_liveRecoveryRetry],
+  /// cancelling anything already waiting there.
+  void _scheduleLiveRecoveryRetry(
+    Duration wait, {
+    required String trigger,
+    required bool cheapResumeFirst,
+    required bool live,
+    required int intent,
+  }) {
+    _liveRecoveryRetry?.cancel();
+    _liveRecoveryRetry = Timer(wait, () {
+      unawaited(
+        _recoverStalledStream(
+          trigger: trigger,
+          cheapResumeFirst: cheapResumeFirst,
+          live: live,
+          forIntent: intent,
+        ),
+      );
+    });
+  }
+
+  /// The terminal step of [_recoverStalledStream]. Two jobs: release the
+  /// tuner, and say the channel failed.
+  ///
+  /// The stop report is what frees the tuner. The failed bringup state is the
+  /// manager's existing way of reporting that a stream could not be played --
+  /// the same one the backend error path uses -- and a channel that died is a
+  /// failure, not a finished queue, so this deliberately does not raise
+  /// `sessionEnded`. The queue is kept so the screen can retune the same
+  /// channel without rebuilding it.
+  Future<void> _giveUpOnStalledStream({
+    required bool live,
+    required int intent,
+  }) async {
+    // Reporting a failure over a stop the viewer asked for, or over an item
+    // they have since started, would leave a stale error on a screen that
+    // moved on. Checked again after the teardown below, because a stop that
+    // arrives while it is in flight is folded into it and produces no state of
+    // its own -- so this failure would be the only thing the viewer is left
+    // looking at.
+    _setLiveRecoveryStatus(null);
+    _endLiveStallWatch();
+    bool viewerMovedOn() => intent != _viewerIntentGeneration;
+    if (viewerMovedOn()) {
+      _diagnosticLogger?.call(
+        'Live recovery: the viewer moved on before the channel was given up',
+      );
+      return;
+    }
+    final item = queueService.currentItem ?? _lastPlaybackItem;
+    final resolution = _currentResolution ?? _lastPlaybackResolution;
+    _isAutoNexting = true;
+    _mediaSourceId = null;
+    try {
+      await _stopAndReportCurrent(skipQueueChange: true);
+    } catch (_) {
+    } finally {
+      _isAutoNexting = false;
+      if (!viewerMovedOn()) {
+        _setBringupState(
+          PlaybackBringupState(
+            phase: PlaybackBringupPhase.failed,
+            sessionToken: _playbackSessionToken,
+            itemId: item == null ? null : _traceItemId(item),
+            backend: _traceBackendName(_backend),
+            playMethod: resolution?.playMethod.name,
+            error: live ? liveStreamLostError : streamStarvedError,
+          ),
+        );
+      }
+    }
   }
 
   void _clearPendingItemOverrides() {
@@ -1108,7 +1711,10 @@ class PlaybackManager implements AudioOwnable {
       _transcodeSwitchRecoveryConsumed = true;
       _suppressNextGenericBackendError = true;
       try {
-        await _reResolveAtCurrentPosition(isErrorRecovery: true);
+        await _reResolveAtCurrentPosition(
+          isErrorRecovery: true,
+          reason: 'transcode-switch-retry',
+        );
       } catch (_) {
         // A recovery that dies quietly leaves the bring-up phase parked at
         // resolving and the player screen spinning with no way out.
@@ -1124,6 +1730,21 @@ class PlaybackManager implements AudioOwnable {
 
       if (canRetryTranscodeSwitch()) {
         await retryTranscodeSwitch();
+        return;
+      }
+
+      // A live stream that trips over one bad response is not a dead channel.
+      // Direct-played live has no playlist to starve, so this -- not the
+      // end-of-stream path -- is how most of its failures arrive: an HTTP
+      // error mid-stream. Re-preparing in place is exactly what the player
+      // does to retry a source, so it gets the same bounded budget as any
+      // other live recovery rather than going straight to a dead channel.
+      // Not _suppressNextGenericBackendError: that swallows the NEXT error,
+      // which on a flaky feed is the next real one, and the budget would never
+      // be spent. A re-resolve's own dying-player noise is already dropped by
+      // the _teardownForReResolve guard above.
+      if (_currentItemIsLive && !_isOfflinePlayback) {
+        await _recoverStalledStream(trigger: 'source-error');
         return;
       }
 
@@ -1181,6 +1802,7 @@ class PlaybackManager implements AudioOwnable {
         await _reResolveAtCurrentPosition(
           forceTranscode: true,
           isErrorRecovery: true,
+          reason: 'unsupported-audio-recovery',
         );
       } catch (_) {
         emitFailedBringupState('Playback failed.');
@@ -1191,17 +1813,19 @@ class PlaybackManager implements AudioOwnable {
 
     // A live source dropped or was reset upstream: re-resolve the stream at
     // the current position rather than forcing a transcode. The server hands
-    // back a fresh session and the player rejoins at the edge.
+    // back a fresh session and the player rejoins at the edge. Re-opening the
+    // source in place cannot help here, so this skips the cheap tier, but it
+    // shares the recovery budget: a channel that is simply gone used to
+    // re-tune the tuner for as long as the screen stayed open.
     if (kind == 'live_source_reset') {
       if (resolution == null || _isOfflinePlayback || _waitingForMedia) {
         return;
       }
       _suppressNextGenericBackendError = true;
-      try {
-        await _reResolveAtCurrentPosition(isErrorRecovery: true);
-      } catch (_) {
-        emitFailedBringupState('Playback failed.');
-      }
+      await _recoverStalledStream(
+        trigger: 'live_source_reset',
+        cheapResumeFirst: false,
+      );
       return;
     }
 
@@ -1361,6 +1985,8 @@ class PlaybackManager implements AudioOwnable {
     // frame of playback until the group's own Unpause.
     bool autoPlay = true,
   }) async {
+    _abandonLiveRecovery('the viewer tuned somewhere else');
+    _viewerPaused = false;
     _clearPendingItemOverrides();
     _vetoedAudioCodecs.clear();
     _lastItemId = null;
@@ -1407,6 +2033,7 @@ class PlaybackManager implements AudioOwnable {
     _subtitleSelectionExplicit = subtitleSelectionExplicit;
     _mediaSourceId = mediaSourceId;
     _forceTranscodeForQueue = !enableDirectPlay && !enableDirectStream;
+    _directPlayAllowedForQueue = enableDirectPlay;
     final adjuster = _startPositionAdjuster;
     if (adjuster != null && startPosition > Duration.zero && items.isNotEmpty) {
       final currentItem = items[startIndex.clamp(0, items.length - 1)];
@@ -1474,6 +2101,31 @@ class PlaybackManager implements AudioOwnable {
     return false;
   }
 
+  /// Whether a queue item is a live TV channel.
+  bool _isLiveTvItem(dynamic item) {
+    if (item == null) return false;
+    try {
+      final Map? map = item is Map ? item : (item as dynamic).rawData as Map?;
+      final type = map?['Type']?.toString();
+      return type == 'TvChannel' || type == 'LiveTvChannel';
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Whether what is playing right now is a live stream. The server decides
+  /// this, never the container or the URL: a channel can arrive as HLS, as a
+  /// raw transport stream or as fragmented MP4, and only the resolution and
+  /// the item say which of them is live. Two signals because a false negative
+  /// is the one that kills playback, and `_lastPlaybackResolution` is the
+  /// fallback because `_reResolveNow` clears the current resolution before it
+  /// restarts.
+  bool get _currentItemIsLive {
+    final resolution = _currentResolution ?? _lastPlaybackResolution;
+    if (resolution?.liveStreamId != null) return true;
+    return _isLiveTvItem(queueService.currentItem ?? _lastPlaybackItem);
+  }
+
   Future<void> _playCurrentItem({
     Duration startPosition = Duration.zero,
     bool enableDirectPlay = true,
@@ -1484,12 +2136,19 @@ class PlaybackManager implements AudioOwnable {
   }) async {
     _deferredStartPosition = Duration.zero;
     _deferPlaybackToExternalPlayer = false;
+    // A channel started afresh -- a tune, or Retry on the card a spent budget
+    // raised -- gets the whole budget back. A re-resolve reaches here too, and
+    // that one is an attempt being spent, so it must not clear the count.
+    if (!_teardownForReResolve) {
+      _resetLiveRecoveryBudget();
+    }
 
     if (_forceTranscodeForQueue) {
       enableDirectPlay = false;
       enableDirectStream = false;
       enableTranscoding = true;
     }
+    enableDirectPlay = enableDirectPlay && _directPlayAllowedForQueue;
 
     final item = queueService.currentItem;
     if (item == null || _backend == null) {
@@ -1831,7 +2490,7 @@ class PlaybackManager implements AudioOwnable {
       state.setDuration(_itemKnownDuration);
     }
 
-    _playbackStartTime = DateTime.now();
+    _playbackStartTime = clock();
     _unsupportedAudioRecoveryInFlight = false;
     _suppressNextGenericBackendError = false;
     _waitingForMedia = true;
@@ -1851,7 +2510,7 @@ class PlaybackManager implements AudioOwnable {
         headers: resolution.requestHeaders,
         normalizationGainDb: resolution.normalizationGainDb,
         hybridAudioUrl: resolution.hybridAudioUrl,
-        isLive: resolution.liveStreamId != null,
+        isLive: resolution.liveStreamId != null || _isLiveTvItem(item),
         autoPlay: autoPlay,
         externalSubtitles: resolution.externalSubtitles,
         audioLike: _isAudioLikeItem(item),
@@ -1861,6 +2520,10 @@ class PlaybackManager implements AudioOwnable {
         _cleanupPreemptedSession(item, resolution);
         return;
       }
+      // Reset before the source opens, not after: web (and possibly
+      // MediaKit) can emit playing/non-buffering from inside `open`, before
+      // it returns, and a reset placed after would erase that first frame.
+      _liveFrameSeenSinceOpen = false;
       await _backend!.play(
         backendMediaPayload,
         startPosition: useNativeStart ? startPosition : Duration.zero,
@@ -2003,6 +2666,14 @@ class PlaybackManager implements AudioOwnable {
           error: 'mediaNotReady',
         ),
       );
+      // Outside recovery this is a normal return -- the caller reads the
+      // failed bringup state above. During a recovery re-resolve that state
+      // was just suppressed, so returning here would look like a successful
+      // re-resolve and no further attempt would ever be scheduled. Throw
+      // instead so the recovery loop's catch schedules the next attempt.
+      if (_suppressFailedBringupDuringRecovery) {
+        throw const _MediaNotReadyDuringRecoveryException();
+      }
       return;
     }
 
@@ -2093,6 +2764,16 @@ class PlaybackManager implements AudioOwnable {
         playMethod: resolution.playMethod.name,
       ),
     );
+    // `autoPlay` is the manager's own intent, so it decides arming here
+    // rather than the backend's (possibly stale) playWhenReady. The frame-seen
+    // flag was already reset before the source opened, above.
+    if (autoPlay) {
+      _viewerPaused = false;
+      _startLiveStallWatch();
+    } else {
+      _viewerPaused = true;
+      _endLiveStallWatch();
+    }
   }
 
   void _startProgressTimer() {
@@ -2130,7 +2811,10 @@ class PlaybackManager implements AudioOwnable {
           activeGeneration.item,
           activeGeneration.resolution,
           state.position,
-          isPaused: !state.isPlaying,
+          // Not `!isPlaying`: that reads true while the stream is merely
+          // starved, so the server could never tell a viewer pause from a
+          // stall. Engines with no intent flag fall back to the old answer.
+          isPaused: state.isPaused,
           audioStreamIndex: _audioStreamIndex,
           subtitleStreamIndex: _subtitleStreamIndex,
           volumeLevel: _volume.round(),
@@ -2193,11 +2877,13 @@ class PlaybackManager implements AudioOwnable {
   }
 
   Future<void> resume() async {
+    _viewerPaused = false;
     if (await _maybeIntercept(TransportAction.resume)) return;
     await _backend?.resume();
   }
 
   Future<void> pause() async {
+    _viewerPaused = true;
     if (await _maybeIntercept(TransportAction.pause)) return;
     await _backend?.pause();
   }
@@ -2255,6 +2941,8 @@ class PlaybackManager implements AudioOwnable {
 
   Future<void> stop({bool userInitiated = true}) async {
     if (userInitiated && await _maybeIntercept(TransportAction.stop)) return;
+    _abandonLiveRecovery('the viewer stopped playback');
+    _viewerPaused = false;
     await _stopAndReportCurrent();
   }
 
@@ -2797,7 +3485,20 @@ class PlaybackManager implements AudioOwnable {
   /// session twice or race two restarts.
   Future<void> _reResolveAtCurrentPosition({
     bool forceTranscode = false,
+    // Refuses direct play but leaves the server free to remux rather than
+    // re-encode. [forceTranscode] refuses the remux too, which is a much
+    // heavier ask and is only what a bitrate cap or a burned-in subtitle
+    // needs.
+    bool disableDirectPlay = false,
     bool isErrorRecovery = false,
+    // Named only by the error-recovery paths, which is what the log needs to
+    // tell an automatic teardown from one the viewer asked for.
+    String reason = 'track-change',
+    // Live recovery passes false: its own budget already paces the re-resolve
+    // attempts, and the nested transcode retry this would otherwise trigger
+    // on a startup failure doubles an attempt into two and forces a re-encode
+    // the budget deliberately leaves optional.
+    bool allowStartupRecovery = true,
   }) {
     final previous = _reResolveQueue;
 
@@ -2814,8 +3515,11 @@ class PlaybackManager implements AudioOwnable {
 
       await _reResolveNow(
         forceTranscode: forceTranscode,
+        disableDirectPlay: disableDirectPlay,
         isErrorRecovery: isErrorRecovery,
         autoPlayAfterResolve: autoPlayAfterResolve,
+        reason: reason,
+        allowStartupRecovery: allowStartupRecovery,
       );
     }();
 
@@ -2825,17 +3529,35 @@ class PlaybackManager implements AudioOwnable {
 
   Future<void> _reResolveNow({
     required bool forceTranscode,
+    bool disableDirectPlay = false,
     required bool isErrorRecovery,
     required bool autoPlayAfterResolve,
+    required String reason,
+    bool allowStartupRecovery = true,
   }) async {
-    final backendPos = _backend?.position ?? Duration.zero;
-    final currentPos = Duration(
-      microseconds: [
-        backendPos.inMicroseconds,
-        state.position.inMicroseconds,
-        _lastKnownPosition.inMicroseconds,
-      ].reduce((a, b) => a > b ? a : b),
+    // A re-resolve stops the backend, reports the stop and kills the server
+    // job, so it is one of the few things that can clear the player's
+    // playlist mid-playback. Naming the caller is what tells that apart from
+    // a stop the user asked for.
+    _diagnosticLogger?.call(
+      'Re-resolving for $reason: forceTranscode=$forceTranscode '
+      'errorRecovery=$isErrorRecovery live=$_currentItemIsLive '
+      'playMethod='
+      '${(_currentResolution ?? _lastPlaybackResolution)?.playMethod.name ?? 'none'}',
     );
+    final backendPos = _backend?.position ?? Duration.zero;
+    // A re-resolve opens a brand new stream. For live that stream starts at
+    // zero, so carrying the old playhead forward asks it to resume past its
+    // own end and it reports completion the moment it is ready.
+    final currentPos = _currentItemIsLive
+        ? Duration.zero
+        : Duration(
+            microseconds: [
+              backendPos.inMicroseconds,
+              state.position.inMicroseconds,
+              _lastKnownPosition.inMicroseconds,
+            ].reduce((a, b) => a > b ? a : b),
+          );
     _stopProgressTimer();
     final item = queueService.currentItem ?? _lastPlaybackItem;
     final resolution = _currentResolution ?? _lastPlaybackResolution;
@@ -2882,9 +3604,10 @@ class PlaybackManager implements AudioOwnable {
     try {
       await _playCurrentItem(
         startPosition: currentPos,
-        enableDirectPlay: !forceTranscode,
+        enableDirectPlay: !forceTranscode && !disableDirectPlay,
         enableDirectStream: !forceTranscode,
         autoPlay: autoPlayAfterResolve,
+        allowStartupRecovery: allowStartupRecovery,
       );
     } finally {
       _teardownForReResolve = false;
@@ -3153,7 +3876,7 @@ class PlaybackManager implements AudioOwnable {
       state.setDuration(itemDuration);
     }
 
-    _playbackStartTime = DateTime.now();
+    _playbackStartTime = clock();
     _waitingForMedia = true;
     ++_playbackSessionToken;
     final offlineStreams =
@@ -3200,15 +3923,25 @@ class PlaybackManager implements AudioOwnable {
           !identical(queueService.currentItem, expectedItem)) {
         return false;
       }
+      // The other half of the re-resolve note: between them every app
+      // initiated teardown of the player's playlist is now on the record.
+      _diagnosticLogger?.call(
+        'Stopping playback: live=$_currentItemIsLive '
+        'skipQueueChange=$skipQueueChange '
+        'releaseServerResources=$releaseServerResources '
+        'position=${_lastKnownPosition.inMilliseconds}ms',
+      );
       if (!preserveSubtitleDelay) _subtitleDelaySessionId++;
       _deferredStartPosition = Duration.zero;
       _deferPlaybackToExternalPlayer = false;
+      _endLiveStallWatch();
       _playbackSessionToken++;
       _stopProgressTimer();
       final backend = _backend;
       if (_hasNoActivePlayback(backend)) {
         if (!skipQueueChange) {
           _forceTranscodeForQueue = false;
+          _directPlayAllowedForQueue = true;
           _resetBackendSelectionLock();
           queueService.clear();
           state.reset();
@@ -3228,6 +3961,7 @@ class PlaybackManager implements AudioOwnable {
         if (!skipQueueChange) {
           _isOfflinePlayback = false;
           _forceTranscodeForQueue = false;
+          _directPlayAllowedForQueue = true;
           _resetBackendSelectionLock();
           queueService.clear();
           state.reset();
@@ -3280,6 +4014,7 @@ class PlaybackManager implements AudioOwnable {
       _waitingForMedia = false;
       if (!skipQueueChange) {
         _forceTranscodeForQueue = false;
+        _directPlayAllowedForQueue = true;
         _resetBackendSelectionLock();
         queueService.clear();
         state.reset();
@@ -3305,11 +4040,14 @@ class PlaybackManager implements AudioOwnable {
   }
 
   void dispose() {
+    _liveRecoveryRetry?.cancel();
+    _endLiveStallWatch();
     _stopProgressTimer();
     _disposeStreamSubs();
     _backendChangedController.close();
     _bringupStateController.close();
     _sessionEndedController.close();
+    _liveRecoveryStatusController.close();
     for (final backend in _retainedBackends.toList()) {
       backend.dispose();
     }
@@ -3423,6 +4161,16 @@ class PlaybackStartupFailureContext {
   });
 }
 
+/// Thrown from `_playCurrentItem` when a recovery re-resolve's media never
+/// becomes ready, so the recovery loop's catch schedules the next attempt
+/// instead of treating the re-resolve as a success.
+class _MediaNotReadyDuringRecoveryException implements Exception {
+  const _MediaNotReadyDuringRecoveryException();
+
+  @override
+  String toString() => '_MediaNotReadyDuringRecoveryException: mediaNotReady';
+}
+
 class PlaybackStartupRecoveryAbortedException implements Exception {
   const PlaybackStartupRecoveryAbortedException();
 
@@ -3481,6 +4229,24 @@ class PlaybackBringupState {
       backend = null,
       playMethod = null,
       error = null;
+}
+
+/// Progress of a bounded live recovery in flight, for a screen to show a
+/// reconnecting indicator instead of a plain buffering spinner.
+class LiveRecoveryStatus {
+  final int attempt;
+  final int maxAttempts;
+
+  const LiveRecoveryStatus({required this.attempt, required this.maxAttempts});
+
+  @override
+  bool operator ==(Object other) =>
+      other is LiveRecoveryStatus &&
+      other.attempt == attempt &&
+      other.maxAttempts == maxAttempts;
+
+  @override
+  int get hashCode => Object.hash(attempt, maxAttempts);
 }
 
 bool _languagesMatch(Map? stream, String? targetLanguage) {

@@ -2493,6 +2493,15 @@ class AppLocalizationsFa extends AppLocalizations {
   }
 
   @override
+  String get playbackStreamLost =>
+      'Playback stopped and could not be recovered.';
+
+  @override
+  String liveReconnecting(int attempt, int total) {
+    return 'Reconnecting… ($attempt of $total)';
+  }
+
+  @override
   String get failedToLoadRecordings => 'موارد ضبط شده بارگیری نشد';
 
   @override
@@ -12565,6 +12574,12 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get setupTourQuestion => 'You\'re set. Here\'s what else is in here.';
+
+  @override
+  String get setupPlaybackLanguages => 'Playback languages';
+
+  @override
+  String get setupOptional => 'Optional';
 
   @override
   String get setupStyleClassic => 'Classic';

@@ -4535,7 +4535,7 @@
     "adminSetVolume": "Lautstärke einstellen",
     "sessionPrev": "Zurück",
     "sessionRewind": "Zurückspulen",
-    "sessionForward": "Vorspulen",
+    "sessionForward": "Vorwärts",
     "sessionNext": "Weiter",
     "sessionVolumeDown": "Leiser",
     "sessionVolumeUp": "Lauter",
@@ -6216,7 +6216,7 @@
     "@playerTooltipSeekBack": {
         "description": "Tooltip label for seek back control in player"
     },
-    "playerTooltipSeekForward": "Vorspulen",
+    "playerTooltipSeekForward": "Vorwärts springen",
     "@playerTooltipSeekForward": {
         "description": "Tooltip label for seek forward control in player"
     },
@@ -9327,7 +9327,7 @@
     "@trickplaySettingsPreviewHint": {
         "description": "Hint shown below the live trickplay settings preview"
     },
-    "osdButtonsDescription": "Lege fest, welche Schaltflächen im Player angezeigt werden",
+    "osdButtonsDescription": "Wähle aus, welche Schaltflächen der Player anzeigt",
     "@osdButtonsDescription": {
         "description": "Subtitle for the player buttons settings tile"
     },
@@ -9370,7 +9370,7 @@
     "@detailButtons": {
         "description": "Settings screen for choosing which buttons the details screen shows"
     },
-    "detailButtonsDescription": "Legen Sie fest, welche Aktionen auf der Detailseite verfügbar sind.",
+    "detailButtonsDescription": "Wähle aus, welche Schalttflächen die Detailansicht anzeigt",
     "@detailButtonsDescription": {
         "description": "Subtitle for the details action buttons settings tile"
     },
@@ -10320,7 +10320,7 @@
     "@downloadScopeLoadFailed": {
         "description": "Snackbar shown when the item list for a batch download could not be fetched"
     },
-    "downloadEstimateUnknownCount": "unbekannt",
+    "downloadEstimateUnknownCount": "{count} unbekannt",
     "@downloadEstimateUnknownCount": {
         "description": "Appended to a batch size estimate when some items had no runtime to estimate from",
         "placeholders": {
@@ -10329,11 +10329,11 @@
             }
         }
     },
-    "showMpvStats": "Zeige MPV Statistiken (Shift+i)",
+    "showMpvStats": "Zeige mpv Statistiken (Shift+i)",
     "@showMpvStats": {
         "description": "Button in the stream info sheet that shows mpv's own statistics overlay; Shift+I is the keyboard shortcut"
     },
-    "hideMpvStats": "Verstecke MPV Statistiken (Shift+i)",
+    "hideMpvStats": "Verstecke mpv Statistiken (Shift+i)",
     "@hideMpvStats": {
         "description": "Button in the stream info sheet that hides mpv's own statistics overlay; Shift+I is the keyboard shortcut"
     },
@@ -10456,5 +10456,157 @@
     "actionButtonsOnScreenAuto": "Auto (Standard-Design)",
     "@actionButtonsOnScreenAuto": {
         "description": "Option showing theme default number of action buttons"
+    },
+    "kidsMode": "Kinderfreundlicher Modus",
+    "@kidsMode": {
+        "description": "Label for the setting that strips the app back to what a child needs"
+    },
+    "kidsModeSubtitle": "Vereinfacht die Anwendung und sperrt die Einstellungen mit einer PIN",
+    "@kidsModeSubtitle": {
+        "description": "Explanation under the Kids Mode setting"
+    },
+    "kidsModeExit": "Den Kinderfreundlichen Modus verlassen",
+    "@kidsModeExit": {
+        "description": "Settings entry that turns Kids Mode off, shown while Kids Mode is on"
+    },
+    "kidsModeExitSubtitle": "Geben Sie die PIN ein um zum vollständigen Modus zurückzukehren",
+    "@kidsModeExitSubtitle": {
+        "description": "Explanation under the Exit Kids Mode entry"
+    },
+    "loadingAnimation": "Ladeanimation",
+    "@loadingAnimation": {
+        "description": "Setting title for custom loading animation"
+    },
+    "loadingAnimationDescription": "Passen Sie die Ladeanimationen an",
+    "@loadingAnimationDescription": {
+        "description": "Description for loading animation customization settings"
+    },
+    "loadingAnimationConfiguration": "Ladeanimation Einstellungen",
+    "@loadingAnimationConfiguration": {
+        "description": "Subtitle header for loading animation settings"
+    },
+    "loadingAnimationImage": "Animation",
+    "@loadingAnimationImage": {
+        "description": "Title for loading animation image selection"
+    },
+    "loadingAnimationImageSpinner": "Rotierender Kreisel",
+    "@loadingAnimationImageSpinner": {
+        "description": "Loading animation image option: Spinner"
+    },
+    "loadingAnimationImageRunner": "Rennendes Männchen",
+    "@loadingAnimationImageRunner": {
+        "description": "Loading animation image option: Runner"
+    },
+    "loadingAnimationImageMoonPhases": "Mondphasen",
+    "@loadingAnimationImageMoonPhases": {
+        "description": "Loading animation image option: Moon Phases"
+    },
+    "loadingAnimationImageMoonfinPhases": "Moonfin Phasenweise",
+    "@loadingAnimationImageMoonfinPhases": {
+        "description": "Loading animation image option: Moonfin Phases in brand gradient"
+    },
+    "loadingAnimationImageNeonfinPhases": "Neonfin Phasenweise",
+    "@loadingAnimationImageNeonfinPhases": {
+        "description": "Loading animation image option: Neonfin Phases in neon colors"
+    },
+    "loadingAnimationSize": "Animationsgröße",
+    "@loadingAnimationSize": {
+        "description": "Title for loading animation size selection"
+    },
+    "loadingAnimationSizeThumbnail": "Mini",
+    "@loadingAnimationSizeThumbnail": {
+        "description": "Loading animation size option: Thumbnail"
+    },
+    "loadingAnimationSizeSmall": "Klein",
+    "@loadingAnimationSizeSmall": {
+        "description": "Loading animation size option: Small"
+    },
+    "loadingAnimationSizeMedium": "Mittel",
+    "@loadingAnimationSizeMedium": {
+        "description": "Loading animation size option: Medium"
+    },
+    "loadingAnimationSizeLarge": "Groß",
+    "@loadingAnimationSizeLarge": {
+        "description": "Loading animation size option: Large"
+    },
+    "loadingAnimationPosition": "Positionierung der Animation",
+    "@loadingAnimationPosition": {
+        "description": "Title for loading animation position selection"
+    },
+    "loadingAnimationPositionTopLeft": "Oben links",
+    "@loadingAnimationPositionTopLeft": {
+        "description": "Loading animation position: Top-Left"
+    },
+    "loadingAnimationPositionTopCenter": "Oben mittig",
+    "@loadingAnimationPositionTopCenter": {
+        "description": "Loading animation position: Top-Center"
+    },
+    "loadingAnimationPositionTopRight": "Oben rechts",
+    "@loadingAnimationPositionTopRight": {
+        "description": "Loading animation position: Top-Right"
+    },
+    "loadingAnimationPositionMiddleLeft": "Mittig links",
+    "@loadingAnimationPositionMiddleLeft": {
+        "description": "Loading animation position: Middle-Left"
+    },
+    "loadingAnimationPositionMiddle": "Mittig",
+    "@loadingAnimationPositionMiddle": {
+        "description": "Loading animation position: Middle"
+    },
+    "loadingAnimationPositionMiddleRight": "Mittig rechts",
+    "@loadingAnimationPositionMiddleRight": {
+        "description": "Loading animation position: Middle-Right"
+    },
+    "loadingAnimationPositionBottomLeft": "Unten links",
+    "@loadingAnimationPositionBottomLeft": {
+        "description": "Loading animation position: Bottom-Left"
+    },
+    "loadingAnimationPositionBottomCenter": "Unten mittig",
+    "@loadingAnimationPositionBottomCenter": {
+        "description": "Loading animation position: Bottom-Center"
+    },
+    "loadingAnimationPositionBottomRight": "Unten rechts",
+    "@loadingAnimationPositionBottomRight": {
+        "description": "Loading animation position: Bottom-Right"
+    },
+    "loadingAnimationPositionBouncing": "Herumspringend",
+    "@loadingAnimationPositionBouncing": {
+        "description": "Loading animation position: Bouncing DVD screensaver style"
+    },
+    "loadingAnimationSpeed": "Geschwindigkeit der Animation",
+    "@loadingAnimationSpeed": {
+        "description": "Title for loading animation speed selection"
+    },
+    "loadingAnimationSpeedSlow": "Langsam",
+    "@loadingAnimationSpeedSlow": {
+        "description": "Loading animation speed option: Slow"
+    },
+    "loadingAnimationSpeedModerate": "Mittel",
+    "@loadingAnimationSpeedModerate": {
+        "description": "Loading animation speed option: Moderate"
+    },
+    "loadingAnimationSpeedFast": "Schnell",
+    "@loadingAnimationSpeedFast": {
+        "description": "Loading animation speed option: Fast"
+    },
+    "loadingAnimationSpeedUltra": "Sehr schnell",
+    "@loadingAnimationSpeedUltra": {
+        "description": "Loading animation speed option: Ultra"
+    },
+    "showLoadingAnimationText": "Text anzeigen?",
+    "@showLoadingAnimationText": {
+        "description": "Setting toggle for showing loading animation text"
+    },
+    "loadingAnimationPreview": "Vorschau",
+    "@loadingAnimationPreview": {
+        "description": "Label for loading animation preview window"
+    },
+    "animeMarkerFiller": "Filler-Folge",
+    "@animeMarkerFiller": {
+        "description": "Badge on an anime episode that is filler, meaning it is not adapted from the source manga"
+    },
+    "animeMarkerMixed": "Gemischte Folge",
+    "@animeMarkerMixed": {
+        "description": "Badge on an anime episode that mixes source material with filler, so it still contains story"
     }
 }

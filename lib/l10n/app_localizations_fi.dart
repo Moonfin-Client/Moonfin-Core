@@ -799,7 +799,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get extraLarge => 'Erittäin suuri';
 
   @override
-  String get uiScaleGrandparents => 'Grandparents';
+  String get uiScaleGrandparents => 'Isovanhemmat';
 
   @override
   String get scrollDirection => 'Vierityssuunta';
@@ -2514,6 +2514,15 @@ class AppLocalizationsFi extends AppLocalizations {
   }
 
   @override
+  String get playbackStreamLost =>
+      'Playback stopped and could not be recovered.';
+
+  @override
+  String liveReconnecting(int attempt, int total) {
+    return 'Reconnecting… ($attempt of $total)';
+  }
+
+  @override
   String get failedToLoadRecordings => 'Tallenteiden lataaminen epäonnistui';
 
   @override
@@ -2908,7 +2917,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get signInAndSecurity => 'Sisäänkirjautuminen ja suojaus';
 
   @override
-  String get administration => 'Ylläpito';
+  String get administration => 'Hallinta';
 
   @override
   String get serverSettingsUsersLibraries =>
@@ -3276,11 +3285,11 @@ class AppLocalizationsFi extends AppLocalizations {
       'Himmennä video ja näytä yleiskatsausteksti tauon aikana';
 
   @override
-  String get showChapterMarkers => 'Chapter Marks';
+  String get showChapterMarkers => 'Lukumerkit';
 
   @override
   String get showChapterMarkersDescription =>
-      'Mark where each chapter starts on the seek bar';
+      'Merkitse hakupalkkiin kunkin luvun alkupiste';
 
   @override
   String get osdLockButton => 'OSD-lukituspainike';
@@ -3958,16 +3967,16 @@ class AppLocalizationsFi extends AppLocalizations {
   String get semiTransparentBlack => 'Puoliksi läpinäkyvä musta';
 
   @override
-  String get semiTransparentWhite => 'Semi-transparent White';
+  String get semiTransparentWhite => 'Semiläpinäkyvä valkoinen';
 
   @override
-  String get lightGray => 'Light Gray';
+  String get lightGray => 'Vaaleanharmaa';
 
   @override
-  String get darkGray => 'Dark Gray';
+  String get darkGray => 'Tummanharmaa';
 
   @override
-  String get blue => 'Blue';
+  String get blue => 'Sininen';
 
   @override
   String get magenta => 'Magenta';
@@ -4138,7 +4147,7 @@ class AppLocalizationsFi extends AppLocalizations {
       'Uudet lataukset tallennetaan valittuun kansioon. Nykyiset lataukset pysyvät nykyisessä paikassaan, ja niitä voidaan hallita tallennusasetuksista.';
 
   @override
-  String get confirm => 'Vahvistaa';
+  String get confirm => 'Vahvista';
 
   @override
   String get cannotWriteToFolder =>
@@ -5165,7 +5174,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get playInMoonfin => 'Toista Moonfinissä';
 
   @override
-  String get requestedByLabel => 'Requested by';
+  String get requestedByLabel => 'Pyynnön esittäjä';
 
   @override
   String requestedByName(String name) {
@@ -5188,7 +5197,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get declineAction => 'Hylkää';
 
   @override
-  String get similar => 'Samanlainen';
+  String get similar => 'Samantyylinen';
 
   @override
   String get recommendations => 'Suositukset';
@@ -5701,7 +5710,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get adminDrawerLiveTv => 'Live-TV';
 
   @override
-  String get adminExitTooltip => 'Poistu järjestelmänvalvojasta';
+  String get adminExitTooltip => 'Poistu';
 
   @override
   String get adminDashboardLoadFailed => 'Koontinäyttöä ei voitu ladata';
@@ -6416,7 +6425,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get adminDeleteUser => 'Poista käyttäjä';
 
   @override
-  String get admin => 'Järjestelmänvalvoja';
+  String get admin => 'Hallinta';
 
   @override
   String get adminFullAccessWarning =>
@@ -12398,7 +12407,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get playlistTypeVideo => 'Video';
 
   @override
-  String get playlistTypeMusicVideo => 'Music Video';
+  String get playlistTypeMusicVideo => 'Musiikkivideo';
 
   @override
   String get playlistTypeAudio => 'Ääni (musiikki)';
@@ -12419,7 +12428,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get videoPlaylistsSection => 'Videosoittolistat';
 
   @override
-  String get musicVideoPlaylistsSection => 'Music Video Playlists';
+  String get musicVideoPlaylistsSection => 'Musiikkivideoiden soittolistat';
 
   @override
   String get audioPlaylistsSection => 'Äänisoittolistat';
@@ -12678,6 +12687,12 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get setupTourQuestion => 'Valmis. Tässä on muutkin sisällön osat.';
+
+  @override
+  String get setupPlaybackLanguages => 'Playback languages';
+
+  @override
+  String get setupOptional => 'Optional';
 
   @override
   String get setupStyleClassic => 'Klassikko';

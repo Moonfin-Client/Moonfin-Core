@@ -46,14 +46,18 @@ static void my_application_set_window_icon(GtkWindow* window) {
   gtk_window_set_icon(window, icon);
 }
 
-// The opening of the entry we write. Generating from this is what lets a later
-// run tell its own entry apart from somebody else's, so both sides stay in
-// step.
-#define MOONFIN_ENTRY_HEADER \
-  "[Desktop Entry]\n"        \
-  "Type=Application\n"       \
-  "Name=Moonfin\n"           \
-  "Comment=Jellyfin & Emby media client\n"
+// How a later run tells its own entry apart. It runs through the quoted Exec
+// because Gear Lever's copy of the bundled entry opens with the same lines.
+#define MOONFIN_ENTRY_SIGNATURE            \
+  "[Desktop Entry]\n"                      \
+  "Type=Application\n"                     \
+  "Name=Moonfin\n"                         \
+  "Comment=Jellyfin & Emby media client\n" \
+  "Exec=\""
+
+static gboolean my_application_is_own_entry(const gchar* contents) {
+  return g_str_has_prefix(contents, MOONFIN_ENTRY_SIGNATURE);
+}
 
 // Asks the desktop to reread the directory. Best effort, desktops without the
 // tool pick the change up on their own.
@@ -62,6 +66,12 @@ static void my_application_refresh_desktop_database(
   const gchar* argv[] = {"update-desktop-database", applications_dir, nullptr};
   g_spawn_async(nullptr, const_cast<gchar**>(argv), nullptr,
                 G_SPAWN_SEARCH_PATH, nullptr, nullptr, nullptr, nullptr);
+}
+
+// AppImageLauncher and Gear Lever set this when launching an image.
+static gboolean my_application_launched_by_manager() {
+  const gchar* value = g_getenv("DESKTOPINTEGRATION");
+  return value != nullptr && *value != '\0';
 }
 
 // A desktop environment or an AppImage manager drops one of these to say it
@@ -104,7 +114,7 @@ static gboolean my_application_appimage_is_integrated(
 
     // An entry of ours saved under some other name still names the image, so
     // without this it would read as somebody else's integration.
-    if (g_str_has_prefix(contents, MOONFIN_ENTRY_HEADER)) {
+    if (my_application_is_own_entry(contents)) {
       continue;
     }
 
@@ -118,8 +128,8 @@ static gboolean my_application_appimage_is_integrated(
   return integrated;
 }
 
-// Takes away an entry an earlier run wrote, now that something else offers one
-// for the same image. Only ever clears a file this app produced.
+// Takes away an entry an earlier run wrote. Only ever clears a file this app
+// produced.
 static void my_application_remove_desktop_entry(const gchar* applications_dir,
                                                 const gchar* entry_path) {
   g_autofree gchar* existing = nullptr;
@@ -127,7 +137,7 @@ static void my_application_remove_desktop_entry(const gchar* applications_dir,
     return;
   }
 
-  if (!g_str_has_prefix(existing, MOONFIN_ENTRY_HEADER)) {
+  if (!my_application_is_own_entry(existing)) {
     return;
   }
 
@@ -206,20 +216,17 @@ static void my_application_install_desktop_entry() {
   g_autofree gchar* entry_path = g_build_filename(
       applications_dir, APPLICATION_ID ".desktop", nullptr);
 
-  // The manager owns the menu entry, so stand down and clear the one an
-  // earlier run put next to it rather than keep the duplicate alive.
-  if (my_application_appimage_is_integrated(applications_dir, appimage)) {
+  // A manager owns the menu entry or the user opted out, so clear the one an
+  // earlier run left rather than keep a duplicate.
+  if (my_application_launched_by_manager() ||
+      my_application_desktop_integration_opted_out() ||
+      my_application_appimage_is_integrated(applications_dir, appimage)) {
     my_application_remove_desktop_entry(applications_dir, entry_path);
     return;
   }
 
-  if (my_application_desktop_integration_opted_out()) {
-    return;
-  }
-
   g_autofree gchar* entry = g_strdup_printf(
-      MOONFIN_ENTRY_HEADER
-      "Exec=\"%s\" %%U\n"
+      MOONFIN_ENTRY_SIGNATURE "%s\" %%U\n"
       "Icon=%s\n"
       "Categories=AudioVideo;Video;\n"
       "Terminal=false\n"
@@ -228,10 +235,12 @@ static void my_application_install_desktop_entry() {
       appimage, APPLICATION_ID, APPLICATION_ID);
 
   // Rewrite only when something changed, so moving the image updates the entry
-  // while an ordinary launch touches nothing.
+  // while an ordinary launch touches nothing. A file there that we didn't write
+  // belongs to a manager like AppManager and stays as is.
   g_autofree gchar* existing = nullptr;
   if (g_file_get_contents(entry_path, &existing, nullptr, nullptr) &&
-      g_strcmp0(existing, entry) == 0) {
+      (g_strcmp0(existing, entry) == 0 ||
+       !my_application_is_own_entry(existing))) {
     return;
   }
 

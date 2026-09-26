@@ -12,10 +12,12 @@ import '../../../l10n/app_localizations.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/focus/dpad_keys.dart';
+import '../../../util/language_codes.dart';
 import '../../../util/platform_detection.dart';
 import '../../navigation/destinations.dart';
 import '../../theme/app_theme_controller.dart';
 import '../../widgets/navigation_layout.dart';
+import '../../widgets/settings/preference_tiles.dart';
 import 'setup_wizard_gate.dart';
 import 'setup_wizard_previews.dart';
 
@@ -51,6 +53,12 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
   String? _mediaBar;
   HomeRowsStyle? _homeRows;
   DetailScreenStyle? _detailStyle;
+  String? _audioLanguage;
+  String? _subtitleLanguage;
+  SubtitleMode? _subtitleMode;
+  bool? _preferDefaultAudioTrack;
+  bool _playbackExpanded = false;
+  bool _pickerOpen = false;
 
   MediaServerClient? get _client {
     try {
@@ -137,6 +145,31 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
       final detailStyle = _detailStyle;
       if (detailStyle != null) {
         await _prefs.set(UserPreferences.detailScreenStyle, detailStyle);
+      }
+      // Mode goes first because changing it can rewrite the subtitle language.
+      // With subtitles off the language stays cleared.
+      final subtitleMode = _subtitleMode;
+      if (subtitleMode != null) {
+        await _prefs.set(UserPreferences.subtitleMode, subtitleMode);
+      }
+      final subtitleLanguage = _subtitleLanguage;
+      if (subtitleLanguage != null &&
+          _prefs.get(UserPreferences.subtitleMode) != SubtitleMode.none) {
+        await _prefs.set(
+          UserPreferences.defaultSubtitleLanguage,
+          subtitleLanguage,
+        );
+      }
+      final audioLanguage = _audioLanguage;
+      if (audioLanguage != null) {
+        await _prefs.set(UserPreferences.defaultAudioLanguage, audioLanguage);
+      }
+      final preferDefaultAudioTrack = _preferDefaultAudioTrack;
+      if (preferDefaultAudioTrack != null) {
+        await _prefs.set(
+          UserPreferences.preferDefaultAudioTrack,
+          preferDefaultAudioTrack,
+        );
       }
     });
 
@@ -388,7 +421,10 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
     SetupStep.mediaBar => _buildMediaBarStep(l10n),
     SetupStep.homeRows => _buildHomeRowsStep(l10n),
     SetupStep.detailStyle => _buildDetailStyleStep(l10n),
-    SetupStep.tour => _SetupTourStep(prefs: _prefs),
+    SetupStep.tour => _SetupTourStep(
+      prefs: _prefs,
+      playback: _buildPlaybackSection(l10n),
+    ),
   };
 
   Widget _buildNavbarStep(AppLocalizations l10n) {
@@ -552,6 +588,147 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
         ),
       ],
     );
+  }
+
+  /// The optional playback languages under the themes. Sign-in has already
+  /// filled these in from the server or the device, so it starts folded up
+  /// with those answers showing.
+  Widget _buildPlaybackSection(AppLocalizations l10n) {
+    // The same lists the audio and subtitle settings offer.
+    final audioOptions = {
+      'auto': l10n.autoServerDefault,
+      ...supportedLanguageOptions,
+    };
+    final subtitleOptions = {'': l10n.none, ...supportedLanguageOptions};
+    final audio =
+        _audioLanguage ??
+        _prefs.get(UserPreferences.defaultAudioLanguage) ??
+        'auto';
+    final subtitle =
+        _subtitleLanguage ??
+        _prefs.get(UserPreferences.defaultSubtitleLanguage) ??
+        '';
+    final mode =
+        _subtitleMode ??
+        _prefs.get(UserPreferences.subtitleMode) ??
+        SubtitleMode.flagged;
+    final preferDefaultAudioTrack =
+        _preferDefaultAudioTrack ??
+        _prefs.get(UserPreferences.preferDefaultAudioTrack) ??
+        false;
+    // A language the server brought in at sign-in may not be in the list, so
+    // it shows as its code, the way the settings show it.
+    final audioLabel = audioOptions[audio] ?? audio;
+    final subtitleLabel = subtitleOptions[subtitle] ?? subtitle;
+    final subtitlesOn = mode != SubtitleMode.none;
+    // The same names the subtitle settings use.
+    String modeLabel(SubtitleMode mode) => switch (mode) {
+      SubtitleMode.flagged => l10n.subtitleModeFlagged,
+      SubtitleMode.always => l10n.subtitleModeAlways,
+      SubtitleMode.foreign => l10n.subtitleModeForeign,
+      SubtitleMode.forced => l10n.subtitleModeForced,
+      SubtitleMode.none => l10n.none,
+    };
+
+    return _CollapsibleSection(
+      order: 10,
+      expanded: _playbackExpanded,
+      icon: Icons.translate_rounded,
+      title: l10n.setupPlaybackLanguages,
+      badge: l10n.setupOptional,
+      summary: [
+        audioLabel,
+        if (subtitlesOn) subtitleLabel,
+        modeLabel(mode),
+      ].join(' · '),
+      onToggle: () => setState(() => _playbackExpanded = !_playbackExpanded),
+      children: [
+        _SettingRow(
+          order: 11,
+          label: l10n.defaultAudioLanguage,
+          trailing: _ChosenValue(audioLabel),
+          onPressed: () => _pick(
+            title: l10n.defaultAudioLanguage,
+            values: audioOptions.keys.toList(),
+            current: audio,
+            labelOf: (code) => audioOptions[code]!,
+            onPicked: (code) => _audioLanguage = code,
+          ),
+        ),
+        _SettingRow(
+          order: 12,
+          label: l10n.preferDefaultAudioTrack,
+          hint: l10n.preferDefaultAudioTrackDescription,
+          // The row takes the press and the focus; the switch only shows the
+          // state, so it doesn't become a second stop for the remote.
+          trailing: ExcludeFocus(
+            child: IgnorePointer(
+              child: Switch(value: preferDefaultAudioTrack, onChanged: (_) {}),
+            ),
+          ),
+          onPressed: () => setState(
+            () => _preferDefaultAudioTrack = !preferDefaultAudioTrack,
+          ),
+        ),
+        // Mode stays above the language so hiding the language doesn't move
+        // the focused row.
+        _SettingRow(
+          order: 13,
+          label: l10n.subtitleMode,
+          trailing: _ChosenValue(modeLabel(mode)),
+          onPressed: () => _pick(
+            title: l10n.subtitleMode,
+            values: SubtitleMode.values,
+            current: mode,
+            labelOf: modeLabel,
+            subtitleOf: (mode) => switch (mode) {
+              SubtitleMode.flagged => l10n.subtitleModeFlaggedDescription,
+              SubtitleMode.always => l10n.subtitleModeAlwaysDescription,
+              SubtitleMode.foreign => l10n.subtitleModeForeignDescription,
+              SubtitleMode.forced => l10n.subtitleModeForcedDescription,
+              SubtitleMode.none => l10n.subtitleModeNoneDescription,
+            },
+            onPicked: (mode) => _subtitleMode = mode,
+          ),
+        ),
+        if (subtitlesOn)
+          _SettingRow(
+            order: 14,
+            label: l10n.defaultSubtitleLanguage,
+            trailing: _ChosenValue(subtitleLabel),
+            onPressed: () => _pick(
+              title: l10n.defaultSubtitleLanguage,
+              values: subtitleOptions.keys.toList(),
+              current: subtitle,
+              labelOf: (code) => subtitleOptions[code]!,
+              onPicked: (code) => _subtitleLanguage = code,
+            ),
+          ),
+      ],
+    );
+  }
+
+  Future<void> _pick<T>({
+    required String title,
+    required List<T> values,
+    required T current,
+    required String Function(T value) labelOf,
+    required ValueChanged<T> onPicked,
+    String Function(T value)? subtitleOf,
+  }) async {
+    if (_pickerOpen) return;
+    _pickerOpen = true;
+    final result = await showSettingsPicker<T>(
+      context,
+      title: title,
+      values: values,
+      current: current,
+      labelOf: labelOf,
+      subtitleOf: subtitleOf,
+    );
+    _pickerOpen = false;
+    if (!mounted || result == null || result == current) return;
+    setState(() => onPicked(result));
   }
 
   Widget _buildActions(BuildContext context, AppLocalizations l10n) {
@@ -790,6 +967,235 @@ class _OptionCard extends StatelessWidget {
   }
 }
 
+/// The box a playback row sits in, lit up while focused.
+class _FocusPanel extends StatelessWidget {
+  const _FocusPanel({
+    required this.focused,
+    required this.radius,
+    required this.padding,
+    required this.child,
+  });
+
+  final bool focused;
+  final double radius;
+  final EdgeInsetsGeometry padding;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = AppColorScheme.onSurface;
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 180),
+      padding: padding,
+      decoration: BoxDecoration(
+        borderRadius: AppRadius.circular(radius),
+        color: accent.withValues(alpha: focused ? 0.1 : 0.04),
+        border: Border.all(
+          color: focused ? accent : accent.withValues(alpha: 0.14),
+          width: focused ? 2 : 1,
+        ),
+      ),
+      child: child,
+    );
+  }
+}
+
+/// One playback setting: its name, an optional line under it, and its
+/// current answer on the right.
+class _SettingRow extends StatelessWidget {
+  const _SettingRow({
+    required this.order,
+    required this.label,
+    required this.trailing,
+    required this.onPressed,
+    this.hint,
+  });
+
+  final int order;
+  final String label;
+  final String? hint;
+  final Widget trailing;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = AppColorScheme.onSurface;
+
+    return _Focusable(
+      order: order,
+      onPressed: onPressed,
+      builder: (focused) => _FocusPanel(
+        focused: focused,
+        radius: 10,
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.spaceLg,
+          vertical: AppSpacing.spaceMd,
+        ),
+        child: Row(
+          spacing: AppSpacing.spaceMd,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 2,
+                children: [
+                  Text(
+                    label,
+                    style: TextStyle(
+                      color: accent.withValues(alpha: 0.7),
+                      fontSize: AppTypography.fontSizeSm,
+                    ),
+                  ),
+                  if (hint != null)
+                    Text(
+                      hint!,
+                      style: TextStyle(
+                        color: accent.withValues(alpha: 0.5),
+                        fontSize: AppTypography.fontSizeXs,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            Flexible(child: trailing),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// The answer on a row that opens a list.
+class _ChosenValue extends StatelessWidget {
+  const _ChosenValue(this.label);
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = AppColorScheme.onSurface;
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      spacing: AppSpacing.spaceSm,
+      children: [
+        Flexible(
+          child: Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: accent,
+              fontSize: AppTypography.fontSizeSm,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+        Icon(Icons.chevron_right, color: accent.withValues(alpha: 0.55)),
+      ],
+    );
+  }
+}
+
+/// A header that shows the current answers while folded, opening downwards
+/// into [children] when pressed.
+class _CollapsibleSection extends StatelessWidget {
+  const _CollapsibleSection({
+    required this.order,
+    required this.expanded,
+    required this.icon,
+    required this.title,
+    required this.badge,
+    required this.summary,
+    required this.onToggle,
+    required this.children,
+  });
+
+  final int order;
+  final bool expanded;
+  final IconData icon;
+  final String title;
+  final String badge;
+  final String summary;
+  final VoidCallback onToggle;
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = AppColorScheme.onSurface;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: AppSpacing.spaceSm,
+      children: [
+        _Focusable(
+          order: order,
+          onPressed: onToggle,
+          builder: (focused) => _FocusPanel(
+            focused: focused,
+            radius: 12,
+            padding: const EdgeInsets.all(AppSpacing.spaceMd),
+            child: Row(
+              spacing: AppSpacing.spaceSm,
+              children: [
+                Icon(icon, size: 18, color: accent),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: 2,
+                    children: [
+                      Text.rich(
+                        TextSpan(
+                          text: title,
+                          children: [
+                            TextSpan(
+                              text: '  $badge',
+                              style: TextStyle(
+                                color: accent.withValues(alpha: 0.55),
+                                fontSize: AppTypography.fontSizeXs,
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                          ],
+                        ),
+                        style: TextStyle(
+                          color: accent,
+                          fontSize: AppTypography.fontSizeSm,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      if (!expanded)
+                        Text(
+                          summary,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: accent.withValues(alpha: 0.65),
+                            fontSize: AppTypography.fontSizeXs,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                AnimatedRotation(
+                  turns: expanded ? 0.5 : 0,
+                  duration: const Duration(milliseconds: 180),
+                  child: Icon(
+                    Icons.expand_more_rounded,
+                    color: accent.withValues(alpha: 0.7),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (expanded) ...children,
+      ],
+    );
+  }
+}
+
 class _SetupTextButton extends StatelessWidget {
   const _SetupTextButton({
     required this.label,
@@ -887,12 +1293,15 @@ class _SetupPrimaryButton extends StatelessWidget {
   }
 }
 
-/// The closing screen: pick a look, then a list of what else lives in
-/// Settings. Only the theme writes anything.
+/// The closing screen: pick a look, the optional playback languages, then a
+/// list of what else lives in Settings. Only the theme writes anything here;
+/// the languages go out with the rest of the answers.
 class _SetupTourStep extends StatefulWidget {
-  const _SetupTourStep({required this.prefs});
+  const _SetupTourStep({required this.prefs, required this.playback});
 
   final UserPreferences prefs;
+
+  final Widget playback;
 
   @override
   State<_SetupTourStep> createState() => _SetupTourStepState();
@@ -939,6 +1348,7 @@ class _SetupTourStepState extends State<_SetupTourStep> {
                 ),
             ],
           ),
+          widget.playback,
           Container(
             padding: const EdgeInsets.all(AppSpacing.spaceMd),
             decoration: BoxDecoration(

@@ -63,12 +63,23 @@ body:
     validations:
       required: true
 
+  - type: dropdown
+    id: server_type
+    attributes:
+      label: Server
+      description: The media server Moonfin is signed in to
+      options:
+        - Jellyfin
+        - Emby
+    validations:
+      required: true
+
   - type: input
     id: server_version
     attributes:
-      label: Server type and version
-      description: "e.g. Jellyfin 10.10.0 or Emby 4.8.11.0"
-      placeholder: Jellyfin 10.x.x / Emby 4.x.x
+      label: Server version
+      description: "e.g. 10.10.0 for Jellyfin or 4.8.11.0 for Emby"
+      placeholder: 10.x.x / 4.x.x
     validations:
       required: true
 

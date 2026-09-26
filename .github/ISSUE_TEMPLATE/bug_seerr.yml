@@ -46,6 +46,17 @@ body:
       required: false
 
   - type: dropdown
+    id: server_type
+    attributes:
+      label: Server
+      description: The media server Moonfin is signed in to
+      options:
+        - Jellyfin
+        - Emby
+    validations:
+      required: true
+
+  - type: dropdown
     id: connection_type
     attributes:
       label: How are you connecting?

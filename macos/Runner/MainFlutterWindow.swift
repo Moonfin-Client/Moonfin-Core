@@ -2,6 +2,17 @@ import Cocoa
 import FlutterMacOS
 import moonfin_game_host
 
+/// Keeps Intel Macs on Skia. Impeller became the macOS default in Flutter 3.47
+/// and garbles text, flickers and lags on Intel GPUs (flutter/flutter#191538).
+/// enableImpeller is a private FlutterDartProject getter, but it's the only
+/// per-architecture switch since the FLTEnableImpeller plist key applies to
+/// every Mac and release builds ignore engine switches.
+final class MoonfinDartProject: FlutterDartProject {
+  #if arch(x86_64)
+  @objc var enableImpeller: Bool { false }
+  #endif
+}
+
 class MainFlutterWindow: NSWindow {
   private var sfSymbolChannel: FlutterMethodChannel?
   private var downloadDirChannel: FlutterMethodChannel?
@@ -13,7 +24,7 @@ class MainFlutterWindow: NSWindow {
   private var accessedDownloadURL: URL?
 
   override func awakeFromNib() {
-    let flutterViewController = FlutterViewController()
+    let flutterViewController = FlutterViewController(project: MoonfinDartProject())
     let minimumWindowSize = NSSize(width: 1200, height: 760)
     self.minSize = minimumWindowSize
 

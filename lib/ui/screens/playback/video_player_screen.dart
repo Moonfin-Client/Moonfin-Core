@@ -1229,6 +1229,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     if (error == null || error.isEmpty) {
       return;
     }
+    // `liveStreamLostError`/`streamStarvedError` are internal sentinels the
+    // manager uses to tag why it gave up recovering, not viewer-facing text.
+    if (error == liveStreamLostError || error == streamStarvedError) {
+      _showThrottledPlaybackError(
+        AppLocalizations.of(context).playbackStreamLost,
+      );
+      return;
+    }
     _showThrottledPlaybackError(error);
   }
 

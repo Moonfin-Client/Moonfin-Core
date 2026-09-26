@@ -297,3 +297,26 @@ final class ExternalSubtitleTrackParsingTests: XCTestCase {
         XCTAssertTrue(AetherPlayerWrapper.externalSubtitleTracks(from: []).isEmpty)
     }
 }
+
+/// The Intel override depends on a private FlutterDartProject getter. If a
+/// Flutter upgrade renames it, Intel Macs quietly go back to Impeller.
+final class MoonfinDartProjectTests: XCTestCase {
+
+    private func impellerEnabled(_ project: FlutterDartProject) -> Bool? {
+        project.value(forKey: "enableImpeller") as? Bool
+    }
+
+    func testFlutterStillHasTheEnableImpellerGetter() {
+        XCTAssertTrue(
+            FlutterDartProject.instancesRespond(to: NSSelectorFromString("enableImpeller")))
+    }
+
+    func testIntelStaysOnSkiaAndAppleSiliconKeepsTheDefault() {
+        #if arch(x86_64)
+        XCTAssertEqual(impellerEnabled(MoonfinDartProject()), false)
+        #else
+        XCTAssertEqual(
+            impellerEnabled(MoonfinDartProject()), impellerEnabled(FlutterDartProject()))
+        #endif
+    }
+}

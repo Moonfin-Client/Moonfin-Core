@@ -7330,7 +7330,7 @@
     "@detailScreenStyle": {
         "description": "Label for the media detail screen layout style setting"
     },
-    "detailScreenStyleSubtitle": "Clássico é o layout centralizado original do Moonfin. Moderno é um layout cinematográfico responsivo.",
+    "detailScreenStyleSubtitle": "Clássico é o layout centralizado original do Moonfin. Moderno é um layout cinematográfico responsivo",
     "@detailScreenStyleSubtitle": {
         "description": "Explanation under the detail screen style setting"
     },
@@ -9005,5 +9005,262 @@
     "mixedRowsOnly": "Somente linhas mistas",
     "@mixedRowsOnly": {
         "description": "Option: only show the label on rows holding both movies and series"
+    },
+    "animationSpeedExtraSlow": "Extra lento",
+    "@animationSpeedExtraSlow": {
+        "description": "Option label for extra slow animation speed"
+    },
+    "animationSpeedSlow": "Lento",
+    "@animationSpeedSlow": {
+        "description": "Option label for slow animation speed"
+    },
+    "animationSpeedMedium": "Médio",
+    "@animationSpeedMedium": {
+        "description": "Option label for medium/normal animation speed"
+    },
+    "animationSpeedFast": "Rápido",
+    "@animationSpeedFast": {
+        "description": "Option label for fast animation speed"
+    },
+    "animationSpeedOff": "Desligado",
+    "@animationSpeedOff": {
+        "description": "Option label for turning animations off / instant transitions"
+    },
+    "pageTransitionFadeNone": "Sem desbotamento",
+    "@pageTransitionFadeNone": {
+        "description": "Option label for instant page transition with no fade"
+    },
+    "pageTransitionFadeShort": "Desvanecimento curto",
+    "@pageTransitionFadeShort": {
+        "description": "Option label for short fade page transition"
+    },
+    "pageTransitionFadeMedium": "Desbotamento médio",
+    "@pageTransitionFadeMedium": {
+        "description": "Option label for medium fade page transition"
+    },
+    "pageTransitionFadeLong": "Longo Desvanecimento",
+    "@pageTransitionFadeLong": {
+        "description": "Option label for long fade page transition"
+    },
+    "siriRemoteSwipeSensitivity": "Sensibilidade ao deslizar no touchpad",
+    "@siriRemoteSwipeSensitivity": {
+        "description": "Apple TV settings label for how far a swipe on the Siri Remote touchpad moves the focus highlight"
+    },
+    "siriRemoteSwipeSensitivityDescription": "O quanto o foco se move a cada deslize no touchpad do Siri Remote",
+    "@siriRemoteSwipeSensitivityDescription": {
+        "description": "Apple TV settings subtitle for the Siri Remote touchpad swipe sensitivity option"
+    },
+    "keepVideoClearOfDynamicIsland": "Mantenha as filmagens longe da Ilha Dinâmica",
+    "@keepVideoClearOfDynamicIsland": {
+        "description": "iPhone playback setting that holds the picture back from the camera housing in landscape"
+    },
+    "keepVideoClearOfDynamicIslandDescription": "Na horizontal, a carcaça da câmera cobre uma das bordas da tela. Isso impede que a imagem seja exibida completamente, o que só altera o resultado em vídeos com largura suficiente para alcançar essa distância",
+    "@keepVideoClearOfDynamicIslandDescription": {
+        "description": "Description for the iPhone setting that keeps video clear of the Dynamic Island"
+    },
+    "animeMarkerFiller": "Filler",
+    "@animeMarkerFiller": {
+        "description": "Badge on an anime episode that is filler, meaning it is not adapted from the source manga"
+    },
+    "animeMarkerMixed": "Misturado",
+    "@animeMarkerMixed": {
+        "description": "Badge on an anime episode that mixes source material with filler, so it still contains story"
+    },
+    "animeMarkerAnimeCanon": "Cânone de anime",
+    "@animeMarkerAnimeCanon": {
+        "description": "Badge on an anime episode that is not in the source manga but is part of the anime's own continuity"
+    },
+    "animeMarkerMangaCanon": "Cânone do mangá",
+    "@animeMarkerMangaCanon": {
+        "description": "Badge on an anime episode adapted from the source manga"
+    },
+    "animeMarkerSubbed": "Legendado",
+    "@animeMarkerSubbed": {
+        "description": "Badge on an anime episode or season whose only audio is Japanese, so it is watched with subtitles"
+    },
+    "animeMarkerDubbed": "Apelidado",
+    "@animeMarkerDubbed": {
+        "description": "Badge on an anime episode or season that has an audio track in a language other than Japanese"
+    },
+    "animeMarkerSubbedAndDubbed": "Legendado/Dublado",
+    "@animeMarkerSubbedAndDubbed": {
+        "description": "Badge on anime that carries both the original Japanese audio and a dub, so it can be watched either way"
+    },
+    "animeMarkerPending": "Pendente",
+    "@animeMarkerPending": {
+        "description": "Badge on an anime episode whose filler information the server has matched but not downloaded yet"
+    },
+    "animeMarkerRecap": "Recapitular",
+    "@animeMarkerRecap": {
+        "description": "Badge on an anime episode that recaps earlier episodes"
+    },
+    "detailScreenStyleSpotlight": "Destaque",
+    "@detailScreenStyleSpotlight": {
+        "description": "Detail screen style option: the hero-first layout with summary cards that open grid modals"
+    },
+    "spotlightMoreActions": "Mais ações",
+    "@spotlightMoreActions": {
+        "description": "Tooltip/semantics of the spotlight ellipsis button and the title of the overflow actions menu it opens"
+    },
+    "spotlightCastCrewStudios": "Elenco, equipe e estúdios",
+    "@spotlightCastCrewStudios": {
+        "description": "Title of the spotlight summary card that opens the people and studios modal"
+    },
+    "spotlightChaptersExtras": "Capítulos e Extras",
+    "@spotlightChaptersExtras": {
+        "description": "Title of the spotlight summary card that opens the chapters and special features modal"
+    },
+    "spotlightSimilarRecommendations": "Semelhantes e Recomendações",
+    "@spotlightSimilarRecommendations": {
+        "description": "Title of the spotlight summary card that opens the similar titles and recommendations modal"
+    },
+    "spotlightSeasonsEpisodes": "Temporadas e Episódios",
+    "@spotlightSeasonsEpisodes": {
+        "description": "Title of the spotlight summary card that opens the seasons grid modal for a series"
+    },
+    "spotlightMoreEpisodes": "Mais episódios",
+    "@spotlightMoreEpisodes": {
+        "description": "Title of the spotlight summary card listing the other episodes of the season"
+    },
+    "spotlightFilmography": "Filmografia",
+    "@spotlightFilmography": {
+        "description": "Title of the spotlight summary card that opens a person's filmography modal"
+    },
+    "spotlightCollectionsCard": "Coleções",
+    "@spotlightCollectionsCard": {
+        "description": "Title of the spotlight summary card that opens the parent collections modal"
+    },
+    "spotlightPlaylistOrder": "Ordem da playlist",
+    "@spotlightPlaylistOrder": {
+        "description": "Title of the spotlight summary card that opens the ordered box set playlist modal"
+    },
+    "spotlightMoviesAndShows": "Filmes e séries",
+    "@spotlightMoviesAndShows": {
+        "description": "Subtitle of the spotlight similar and recommendations card"
+    },
+    "spotlightSimilarSeerr": "Semelhante (Seerr)",
+    "@spotlightSimilarSeerr": {
+        "description": "Header of the Seerr similar-titles section when it appears beside the library's own similar section"
+    },
+    "spotlightRecommendationsSeerr": "Recomendações (Seerr)",
+    "@spotlightRecommendationsSeerr": {
+        "description": "Header of the Seerr recommendations section when it appears in the Spotlight recommendations modal"
+    },
+    "spotlightPeopleCount": "{count, plural, =1{1 pessoa} other{{count} pessoas}}",
+    "@spotlightPeopleCount": {
+        "description": "Count fragment on spotlight summary cards: people",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightFactsCount": "{count, plural, =1{1 fato} other{{count} fatos}}",
+    "@spotlightFactsCount": {
+        "description": "Count fragment on spotlight summary cards: Seerr facts",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightTagsCount": "{count, plural, =1{1 tag} other{{count} tags}}",
+    "@spotlightTagsCount": {
+        "description": "Count fragment on spotlight summary cards: genres, networks and keywords",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightStudiosCount": "{count, plural, =1{1 estúdio} other{{count} estúdios}}",
+    "@spotlightStudiosCount": {
+        "description": "Count fragment on spotlight summary cards: studios",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightChaptersCount": "{count, plural, =1{1 capítulo} other{{count} capítulos}}",
+    "@spotlightChaptersCount": {
+        "description": "Count fragment on spotlight summary cards: chapters",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightExtrasCount": "{count, plural, =1{1 extra} other{{count} extras}}",
+    "@spotlightExtrasCount": {
+        "description": "Count fragment on spotlight summary cards: extras/special features",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightSeasonsCount": "{count, plural, =1{1 temporada} other{{count} temporadas}}",
+    "@spotlightSeasonsCount": {
+        "description": "Count fragment on spotlight summary cards: seasons",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightEpisodesCount": "{count, plural, =1{1 episódio} other{{count} episódios}}",
+    "@spotlightEpisodesCount": {
+        "description": "Count fragment on spotlight summary cards: episodes",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightMoviesCount": "{count, plural, =1{1 filme} other{{count} filmes}}",
+    "@spotlightMoviesCount": {
+        "description": "Count fragment on spotlight summary cards: movies",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightShowsCount": "{count, plural, =1{1 série} other{{count} séries}}",
+    "@spotlightShowsCount": {
+        "description": "Count fragment on spotlight summary cards: series/shows",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightTracksCount": "{count, plural, =1{1 faixa} other{{count} faixas}}",
+    "@spotlightTracksCount": {
+        "description": "Count fragment on spotlight summary cards: audio tracks",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightItemsCount": "{count, plural, =1{1 item} other{{count} itens}}",
+    "@spotlightItemsCount": {
+        "description": "Count fragment on spotlight summary cards: generic items",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "spotlightAlbumsCount": "{count, plural, =1{1 álbum} other{{count} álbuns}}",
+    "@spotlightAlbumsCount": {
+        "description": "Count fragment on spotlight summary cards: albums",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
     }
 }
