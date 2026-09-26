@@ -549,6 +549,8 @@ class UserPreferences extends ChangeNotifier {
     'subtitles_use_embedded_styles',
     'subtitles_use_embedded_font_sizes',
     'prefer_sdh_subtitles',
+    'prefer_text_subtitles',
+    'prefer_external_subtitles',
     'app_theme_id',
     'pref_custom_theme_id',
     'pref_glass_quality',
@@ -2417,6 +2419,16 @@ class UserPreferences extends ChangeNotifier {
 
   static final preferSdhSubtitles = Preference(
     key: 'prefer_sdh_subtitles',
+    defaultValue: false,
+  );
+
+  static final preferTextSubtitles = Preference(
+    key: 'prefer_text_subtitles',
+    defaultValue: false,
+  );
+
+  static final preferExternalSubtitles = Preference(
+    key: 'prefer_external_subtitles',
     defaultValue: false,
   );
 

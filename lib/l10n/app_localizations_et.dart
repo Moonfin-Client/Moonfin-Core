@@ -11101,6 +11101,20 @@ class AppLocalizationsEt extends AppLocalizations {
       'Seadistage automaatsel valimisel prioriteediks SDH/CC subtiitrirajad.';
 
   @override
+  String get preferTextSubtitles => 'Prefer text subtitles';
+
+  @override
+  String get preferTextSubtitlesSubtitle =>
+      'Prioritize text-based subtitles (SRT, VTT) over image-based formats (PGS, VobSub).';
+
+  @override
+  String get preferExternalSubtitles => 'Prefer external subtitles';
+
+  @override
+  String get preferExternalSubtitlesSubtitle =>
+      'Prioritize external subtitle files over embedded tracks.';
+
+  @override
   String get webDiagnostics => 'Veebi diagnostika';
 
   @override

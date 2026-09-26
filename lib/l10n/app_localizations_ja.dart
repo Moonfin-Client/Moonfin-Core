@@ -10802,6 +10802,20 @@ class AppLocalizationsJa extends AppLocalizations {
   String get preferSdhSubtitlesSubtitle => '自動選択時に SDH / CC の字幕トラックを優先します。';
 
   @override
+  String get preferTextSubtitles => 'Prefer text subtitles';
+
+  @override
+  String get preferTextSubtitlesSubtitle =>
+      'Prioritize text-based subtitles (SRT, VTT) over image-based formats (PGS, VobSub).';
+
+  @override
+  String get preferExternalSubtitles => 'Prefer external subtitles';
+
+  @override
+  String get preferExternalSubtitlesSubtitle =>
+      'Prioritize external subtitle files over embedded tracks.';
+
+  @override
   String get webDiagnostics => 'Web 診断';
 
   @override

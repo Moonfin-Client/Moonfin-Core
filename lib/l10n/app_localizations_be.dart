@@ -11152,6 +11152,20 @@ class AppLocalizationsBe extends AppLocalizations {
       'Прыярытэзуйце дарожкі субтытраў SDH/CC пры аўтаматычным выбары.';
 
   @override
+  String get preferTextSubtitles => 'Prefer text subtitles';
+
+  @override
+  String get preferTextSubtitlesSubtitle =>
+      'Prioritize text-based subtitles (SRT, VTT) over image-based formats (PGS, VobSub).';
+
+  @override
+  String get preferExternalSubtitles => 'Prefer external subtitles';
+
+  @override
+  String get preferExternalSubtitlesSubtitle =>
+      'Prioritize external subtitle files over embedded tracks.';
+
+  @override
   String get webDiagnostics => 'Вэб дыягностыка';
 
   @override

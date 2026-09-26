@@ -8013,6 +8013,9 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       preferredLanguage: preferredLanguage,
       fallbackLanguage: prefs.get(UserPreferences.fallbackSubtitleLanguage),
       preferSdh: prefs.get(UserPreferences.preferSdhSubtitles),
+      preferTextSubtitles: prefs.get(UserPreferences.preferTextSubtitles),
+      preferExternalSubtitles:
+          prefs.get(UserPreferences.preferExternalSubtitles),
       pgsDirectPlay: prefs.get(UserPreferences.pgsDirectPlay),
       assDirectPlay: prefs.get(UserPreferences.assDirectPlay),
       preferredAudioLanguage: prefs.get(UserPreferences.defaultAudioLanguage),

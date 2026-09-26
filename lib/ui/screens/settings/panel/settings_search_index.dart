@@ -1585,6 +1585,18 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       keywords: ['hearing impaired', 'accessibility'],
     ),
     subtitles.leaf(
+      'prefer_text_subtitles',
+      l10n.preferTextSubtitles,
+      subtitle: l10n.preferTextSubtitlesSubtitle,
+      keywords: ['text', 'srt', 'vtt', 'pgs', 'bitmap', 'accessibility'],
+    ),
+    subtitles.leaf(
+      'prefer_external_subtitles',
+      l10n.preferExternalSubtitles,
+      subtitle: l10n.preferExternalSubtitlesSubtitle,
+      keywords: ['external', 'sidecar', 'download'],
+    ),
+    subtitles.leaf(
       'pgs_enabled',
       l10n.pgsDirectPlay,
       subtitle: l10n.directPlayPgsSubtitles,

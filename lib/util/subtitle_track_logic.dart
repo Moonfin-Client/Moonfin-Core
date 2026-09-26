@@ -52,6 +52,34 @@ bool shouldRenderSubtitleNatively(String? codec) {
       normalized == 'xsub';
 }
 
+bool isBitmapSubtitleStream(Map<String, dynamic> stream) {
+  final codec = (stream['Codec'] as String?)?.trim().toLowerCase() ?? '';
+  return codec == 'pgs' ||
+      codec == 'pgssub' ||
+      codec == 'hdmv_pgs_subtitle' ||
+      codec == 'dvdsub' ||
+      codec == 'vobsub' ||
+      codec == 'dvd_subtitle' ||
+      codec == 'dvbsub' ||
+      codec == 'dvb_subtitle' ||
+      codec == 'xsub';
+}
+
+bool isTextSubtitleStream(Map<String, dynamic> stream) {
+  if (stream['IsTextSubtitleStream'] == true) return true;
+  if (isBitmapSubtitleStream(stream)) return false;
+  final codec = (stream['Codec'] as String?)?.trim().toLowerCase() ?? '';
+  if (codec.isEmpty) return false;
+  return codec == 'subrip' ||
+      codec == 'srt' ||
+      codec == 'vtt' ||
+      codec == 'webvtt' ||
+      codec == 'ass' ||
+      codec == 'ssa' ||
+      codec == 'ttml';
+}
+
+
 /// Internal streams first, external streams last.
 List<Map<String, dynamic>> sortedSubtitleStreams(
   List<Map<String, dynamic>> streams,
@@ -73,6 +101,8 @@ int? computeEffectiveSubtitleIndex({
   required String preferredLanguage,
   required String fallbackLanguage,
   required bool preferSdh,
+  bool preferTextSubtitles = false,
+  bool preferExternalSubtitles = false,
   required bool pgsDirectPlay,
   required bool assDirectPlay,
   required String preferredAudioLanguage,
@@ -197,36 +227,45 @@ int? computeEffectiveSubtitleIndex({
       return aSpecial ? 1 : -1;
     }
 
-    // 2 and 3. SDH match and internal vs external, ordered by preferSdh. With SDH
-    // on we match SDH first, with it off we keep internal tracks first so a bad
-    // external download cannot beat an internal SDH track.
+    // 2. SDH match (when preferSdh is enabled)
     if (preferSdh) {
-      final aSdhMatch = isSdhSubtitleStream(streamA) == preferSdh;
-      final bSdhMatch = isSdhSubtitleStream(streamB) == preferSdh;
-      if (aSdhMatch != bSdhMatch) {
-        return aSdhMatch ? -1 : 1;
-      }
-
-      final aInternal = !isExternalSubtitleStream(streamA);
-      final bInternal = !isExternalSubtitleStream(streamB);
-      if (aInternal != bInternal) {
-        return aInternal ? -1 : 1;
-      }
-    } else {
-      final aInternal = !isExternalSubtitleStream(streamA);
-      final bInternal = !isExternalSubtitleStream(streamB);
-      if (aInternal != bInternal) {
-        return aInternal ? -1 : 1;
-      }
-
-      final aSdhMatch = isSdhSubtitleStream(streamA) == preferSdh;
-      final bSdhMatch = isSdhSubtitleStream(streamB) == preferSdh;
+      final aSdhMatch = isSdhSubtitleStream(streamA);
+      final bSdhMatch = isSdhSubtitleStream(streamB);
       if (aSdhMatch != bSdhMatch) {
         return aSdhMatch ? -1 : 1;
       }
     }
 
-    // 4. Fancy vs Normal
+    // 3. Text format preference (when preferTextSubtitles is enabled)
+    if (preferTextSubtitles) {
+      final aText = isTextSubtitleStream(streamA);
+      final bText = isTextSubtitleStream(streamB);
+      if (aText != bText) {
+        return aText ? -1 : 1;
+      }
+    }
+
+    // 4. External vs Internal storage origin
+    final aExt = isExternalSubtitleStream(streamA);
+    final bExt = isExternalSubtitleStream(streamB);
+    if (aExt != bExt) {
+      if (preferExternalSubtitles) {
+        return aExt ? -1 : 1;
+      } else {
+        return aExt ? 1 : -1;
+      }
+    }
+
+    // 5. Non-SDH preference (when preferSdh is disabled)
+    if (!preferSdh) {
+      final aSdh = isSdhSubtitleStream(streamA);
+      final bSdh = isSdhSubtitleStream(streamB);
+      if (aSdh != bSdh) {
+        return aSdh ? 1 : -1;
+      }
+    }
+
+    // 6. Fancy vs Normal
     final aFormat = getFormatPriority(streamA);
     final bFormat = getFormatPriority(streamB);
     if (aFormat != bFormat) {

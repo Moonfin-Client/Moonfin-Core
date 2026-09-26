@@ -10958,6 +10958,20 @@ class AppLocalizationsHe extends AppLocalizations {
       'תעדף רצועות כתוביות SDH/CC בבחירה אוטומטית.';
 
   @override
+  String get preferTextSubtitles => 'Prefer text subtitles';
+
+  @override
+  String get preferTextSubtitlesSubtitle =>
+      'Prioritize text-based subtitles (SRT, VTT) over image-based formats (PGS, VobSub).';
+
+  @override
+  String get preferExternalSubtitles => 'Prefer external subtitles';
+
+  @override
+  String get preferExternalSubtitlesSubtitle =>
+      'Prioritize external subtitle files over embedded tracks.';
+
+  @override
   String get webDiagnostics => 'אבחון ווב';
 
   @override

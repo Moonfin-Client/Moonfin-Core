@@ -312,6 +312,8 @@ final List<SyncedField> syncedFields = <SyncedField>[
   SyncedField('preferAudioDescription', UserPreferences.preferAudioDescription, SyncCodec.boolean),
   SyncedField('preferDefaultAudioTrack', UserPreferences.preferDefaultAudioTrack, SyncCodec.boolean),
   SyncedField('preferSdhSubtitles', UserPreferences.preferSdhSubtitles, SyncCodec.boolean),
+  SyncedField('preferTextSubtitles', UserPreferences.preferTextSubtitles, SyncCodec.boolean),
+  SyncedField('preferExternalSubtitles', UserPreferences.preferExternalSubtitles, SyncCodec.boolean),
   SyncedField('preferSystemImeKeyboard', UserPreferences.preferSystemImeKeyboard, SyncCodec.boolean),
   SyncedField('radarrCalendarShowCinema', UserPreferences.radarrCalendarShowCinema, SyncCodec.boolean),
   SyncedField('radarrCalendarShowDate', UserPreferences.radarrCalendarShowDate, SyncCodec.boolean),

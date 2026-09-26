@@ -19594,6 +19594,30 @@ abstract class AppLocalizations {
   /// **'Prioritize SDH/CC subtitle tracks when auto-selecting.'**
   String get preferSdhSubtitlesSubtitle;
 
+  /// No description provided for @preferTextSubtitles.
+  ///
+  /// In en, this message translates to:
+  /// **'Prefer text subtitles'**
+  String get preferTextSubtitles;
+
+  /// No description provided for @preferTextSubtitlesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Prioritize text-based subtitles (SRT, VTT) over image-based formats (PGS, VobSub).'**
+  String get preferTextSubtitlesSubtitle;
+
+  /// No description provided for @preferExternalSubtitles.
+  ///
+  /// In en, this message translates to:
+  /// **'Prefer external subtitles'**
+  String get preferExternalSubtitles;
+
+  /// No description provided for @preferExternalSubtitlesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Prioritize external subtitle files over embedded tracks.'**
+  String get preferExternalSubtitlesSubtitle;
+
   /// No description provided for @webDiagnostics.
   ///
   /// In en, this message translates to:

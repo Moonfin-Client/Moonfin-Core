@@ -94,6 +94,18 @@ class SubtitleSettingsScreen extends StatelessWidget {
                         subtitle: l10n.preferSdhSubtitlesSubtitle,
                         icon: Icons.hearing,
                       ),
+                      SwitchPreferenceTile(
+                        preference: UserPreferences.preferTextSubtitles,
+                        title: l10n.preferTextSubtitles,
+                        subtitle: l10n.preferTextSubtitlesSubtitle,
+                        icon: Icons.subtitles,
+                      ),
+                      SwitchPreferenceTile(
+                        preference: UserPreferences.preferExternalSubtitles,
+                        title: l10n.preferExternalSubtitles,
+                        subtitle: l10n.preferExternalSubtitlesSubtitle,
+                        icon: Icons.file_download,
+                      ),
                     ],
                   ),
                   SettingsSectionHeader(l10n.subtitleCustomization),
