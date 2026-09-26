@@ -10,6 +10,7 @@ import '../../../data/viewmodels/series_recordings_view_model.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../ui/mixins/focus_state_mixin.dart';
+import '../../../util/focus/dpad_keys.dart';
 import '../../navigation/destinations.dart';
 import '../../widgets/adaptive/adaptive_dialog.dart';
 import '../../widgets/focus/request_initial_focus.dart';
@@ -405,6 +406,16 @@ class _SeriesTimerCardState extends State<_SeriesTimerCard> with FocusStateMixin
           setFocused(focused);
           if (focused) widget.onFocused();
         },
+        // GestureDetector only reacts to pointer taps, so on a TV remote the
+        // card could be focused but never opened. Matches the select-key
+        // handling in media_card.dart and the browse screens (GH #1610).
+        onKeyEvent: (_, event) {
+          if (isActivateKey(event)) {
+            widget.onTap();
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
         child: GestureDetector(
           onTap: widget.onTap,
           child: AnimatedScale(
@@ -627,6 +638,16 @@ class _RecordingCardState extends State<_RecordingCard> with FocusStateMixin {
         onFocusChange: (focused) {
           setFocused(focused);
           if (focused) widget.onFocused();
+        },
+        // GestureDetector only reacts to pointer taps, so on a TV remote the
+        // card could be focused but never opened. Matches the select-key
+        // handling in media_card.dart and the browse screens (GH #1610).
+        onKeyEvent: (_, event) {
+          if (isActivateKey(event)) {
+            widget.onTap();
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
         },
         child: GestureDetector(
           onTap: widget.onTap,
