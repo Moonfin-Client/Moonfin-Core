@@ -397,6 +397,7 @@ class MainActivity : AudioServiceActivity(), GamepadsCompatibleActivity {
                     result.success(DisplayCapabilities.query(this, trigger))
                 }
                 "buildFingerprint" -> result.success(Build.FINGERPRINT)
+                "uptimeMillis" -> result.success(SystemClock.uptimeMillis())
                 "dolbyVisionCodecCapabilities" -> {
                     result.success(MediaCodecCapabilities.queryDolbyVisionCapabilities())
                 }

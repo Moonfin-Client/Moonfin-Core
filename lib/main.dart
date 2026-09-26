@@ -459,6 +459,19 @@ Future<void> _cacheCodecCaps(
   );
 }
 
+/// Some Amlogic and MediaTek audio drivers misbehave once a device has been up
+/// for a long time, so the diagnostic report says how long that's been.
+Future<void> _detectAndSetSystemUptime() async {
+  if (!PlatformDetection.isAndroid) return;
+  try {
+    const channel = MethodChannel('org.moonfin.androidtv/platform');
+    final uptimeMs = await channel
+        .invokeMethod<int>('uptimeMillis')
+        .timeout(const Duration(seconds: 2));
+    if (uptimeMs != null) PlatformDetection.setSystemUptime(uptimeMs);
+  } catch (_) {}
+}
+
 Future<void> _detectAndSetCodecCapabilities() async {
   if (!PlatformDetection.isAndroid) return;
   const channel = MethodChannel('org.moonfin.androidtv/platform');
@@ -843,6 +856,7 @@ void main() async {
     _detectAndSetDisplayCapabilities(),
     _detectAndSetCodecCapabilities(),
     _detectAndSetDeviceMemory(),
+    _detectAndSetSystemUptime(),
   ]);
 
   if (PlatformDetection.isAppleTV) {
