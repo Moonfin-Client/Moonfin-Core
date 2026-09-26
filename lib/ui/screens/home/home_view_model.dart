@@ -202,70 +202,16 @@ class HomeViewModel extends ChangeNotifier {
         type == HomeSectionType.seerrNetworks;
   }
 
-  static bool _isTmdbSectionType(HomeSectionType type) {
-    return type == HomeSectionType.tmdbPopularMovies ||
-        type == HomeSectionType.tmdbTopRatedMovies ||
-        type == HomeSectionType.tmdbNowPlayingMovies ||
-        type == HomeSectionType.tmdbUpcomingMovies ||
-        type == HomeSectionType.tmdbPopularTv ||
-        type == HomeSectionType.tmdbTopRatedTv ||
-        type == HomeSectionType.tmdbAiringTodayTv ||
-        type == HomeSectionType.tmdbOnTheAirTv ||
-        type == HomeSectionType.tmdbTrendingMovieDaily ||
-        type == HomeSectionType.tmdbTrendingMovieWeekly ||
-        type == HomeSectionType.tmdbTrendingTvDaily ||
-        type == HomeSectionType.tmdbTrendingTvWeekly ||
-        type == HomeSectionType.tmdbTrendingAllWeekly;
-  }
+  static bool _isTmdbSectionType(HomeSectionType type) =>
+      UserPreferences.isTmdbSectionType(type);
 
   bool _isTmdbSectionEnabled(HomeSectionType type) {
-    switch (type) {
-      case HomeSectionType.tmdbPopularMovies:
-        return _prefs.get(UserPreferences.tmdbPopularMoviesEnabled);
-      case HomeSectionType.tmdbTopRatedMovies:
-        return _prefs.get(UserPreferences.tmdbTopRatedMoviesEnabled);
-      case HomeSectionType.tmdbNowPlayingMovies:
-        return _prefs.get(UserPreferences.tmdbNowPlayingMoviesEnabled);
-      case HomeSectionType.tmdbUpcomingMovies:
-        return _prefs.get(UserPreferences.tmdbUpcomingMoviesEnabled);
-      case HomeSectionType.tmdbPopularTv:
-        return _prefs.get(UserPreferences.tmdbPopularTvEnabled);
-      case HomeSectionType.tmdbTopRatedTv:
-        return _prefs.get(UserPreferences.tmdbTopRatedTvEnabled);
-      case HomeSectionType.tmdbAiringTodayTv:
-        return _prefs.get(UserPreferences.tmdbAiringTodayTvEnabled);
-      case HomeSectionType.tmdbOnTheAirTv:
-        return _prefs.get(UserPreferences.tmdbOnTheAirTvEnabled);
-      case HomeSectionType.tmdbTrendingMovieDaily:
-        return _prefs.get(UserPreferences.tmdbTrendingMovieDailyEnabled);
-      case HomeSectionType.tmdbTrendingMovieWeekly:
-        return _prefs.get(UserPreferences.tmdbTrendingMovieWeeklyEnabled);
-      case HomeSectionType.tmdbTrendingTvDaily:
-        return _prefs.get(UserPreferences.tmdbTrendingTvDailyEnabled);
-      case HomeSectionType.tmdbTrendingTvWeekly:
-        return _prefs.get(UserPreferences.tmdbTrendingTvWeeklyEnabled);
-      case HomeSectionType.tmdbTrendingAllWeekly:
-        return _prefs.get(UserPreferences.tmdbTrendingAllWeeklyEnabled);
-      default:
-        return false;
-    }
+    final pref = UserPreferences.tmdbSectionEnabled[type];
+    return pref != null && _prefs.get(pref);
   }
 
-  bool _isAnyTmdbSectionEnabled() {
-    return _prefs.get(UserPreferences.tmdbPopularMoviesEnabled) ||
-        _prefs.get(UserPreferences.tmdbTopRatedMoviesEnabled) ||
-        _prefs.get(UserPreferences.tmdbNowPlayingMoviesEnabled) ||
-        _prefs.get(UserPreferences.tmdbUpcomingMoviesEnabled) ||
-        _prefs.get(UserPreferences.tmdbPopularTvEnabled) ||
-        _prefs.get(UserPreferences.tmdbTopRatedTvEnabled) ||
-        _prefs.get(UserPreferences.tmdbAiringTodayTvEnabled) ||
-        _prefs.get(UserPreferences.tmdbOnTheAirTvEnabled) ||
-        _prefs.get(UserPreferences.tmdbTrendingMovieDailyEnabled) ||
-        _prefs.get(UserPreferences.tmdbTrendingMovieWeeklyEnabled) ||
-        _prefs.get(UserPreferences.tmdbTrendingTvDailyEnabled) ||
-        _prefs.get(UserPreferences.tmdbTrendingTvWeeklyEnabled) ||
-        _prefs.get(UserPreferences.tmdbTrendingAllWeeklyEnabled);
-  }
+  bool _isAnyTmdbSectionEnabled() =>
+      UserPreferences.tmdbSectionEnabled.values.any(_prefs.get);
 
   static bool _isImdbSectionType(HomeSectionType type) {
     return type == HomeSectionType.imdbTop250Movies ||
