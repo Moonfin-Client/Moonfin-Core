@@ -63,29 +63,37 @@ IconData bottomNavHubActionIcon(BottomNavHubAction action) => switch (action) {
     };
 
 /// Filled when active and outlined when not, the way both platforms mark
-/// the current tab.
+/// the current tab. Genres keeps the artwork the other navbars use, so only
+/// its colour changes.
 Widget bottomNavTabIconWidget(
   BottomNavTab tab, {
   required bool active,
   required double size,
   required Color color,
 }) {
-  final icon = switch (tab) {
-    BottomNavTab.search => Icons.search_rounded,
+  Widget adaptive(IconData filled, IconData outlined) =>
+      AdaptiveIcon(active ? filled : outlined, size: size, color: color);
+
+  return switch (tab) {
+    BottomNavTab.search =>
+      adaptive(Icons.search_rounded, Icons.search_rounded),
     BottomNavTab.libraries =>
-      active ? Icons.video_library_rounded : Icons.video_library_outlined,
+      adaptive(Icons.video_library_rounded, Icons.video_library_outlined),
     BottomNavTab.favorites =>
-      active ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-    BottomNavTab.genres =>
-      active ? Icons.category_rounded : Icons.category_outlined,
+      adaptive(Icons.favorite_rounded, Icons.favorite_border_rounded),
     BottomNavTab.liveTv =>
-      active ? Icons.live_tv_rounded : Icons.live_tv_outlined,
+      adaptive(Icons.live_tv_rounded, Icons.live_tv_outlined),
     BottomNavTab.folders =>
-      active ? Icons.folder_rounded : Icons.folder_outlined,
-    BottomNavTab.discover => null,
+      adaptive(Icons.folder_rounded, Icons.folder_outlined),
+    BottomNavTab.genres => Image.asset(
+        'assets/icons/genres.png',
+        width: size,
+        height: size,
+        color: color,
+        fit: BoxFit.contain,
+      ),
+    BottomNavTab.discover => SeerrIcon(size: size, color: color, solid: active),
   };
-  if (icon == null) return SeerrIcon(size: size, color: color, solid: active);
-  return AdaptiveIcon(icon, size: size, color: color);
 }
 
 /// What a bar style draws for [item]. The bar and the setup wizard's

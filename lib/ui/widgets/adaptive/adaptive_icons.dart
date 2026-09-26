@@ -302,8 +302,6 @@ final _sfForMaterial = <IconData, String>{
   Icons.video_library_rounded: 'film.stack.fill',
   Icons.video_library_outlined: 'film.stack',
   Icons.favorite_border_rounded: 'heart',
-  Icons.category_rounded: 'square.grid.2x2.fill',
-  Icons.category_outlined: 'square.grid.2x2',
   Icons.live_tv_rounded: 'tv.fill',
   Icons.live_tv_outlined: 'tv',
   Icons.folder_outlined: 'folder',
