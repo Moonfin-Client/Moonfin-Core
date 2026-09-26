@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:drift/drift.dart' hide isNotNull;
+import 'package:drift/drift.dart' hide isNotNull, isNull;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
@@ -712,6 +712,44 @@ void main() {
         expect(batchService.isBatchDownloading, isFalse);
       },
     );
+
+    test('each collection reports and cancels only its own batch', () async {
+      await prefs.set(UserPreferences.downloadConcurrentCount, 2);
+      final first = await batchService.queueDownloads([
+        movie('a'),
+        movie('b'),
+      ], ownerId: 'box-a');
+      final second = await batchService.queueDownloads([
+        movie('c'),
+      ], ownerId: 'box-b');
+
+      expect(batchService.batchProgressFor('box-a')?.total, 2);
+      expect(batchService.batchProgressFor('box-b')?.total, 1);
+      expect(
+        batchService.batchProgressFor('box-c'),
+        isNull,
+        reason: 'a collection with nothing queued shows no batch',
+      );
+
+      // 'c' waits behind the two running items, so cancelling its
+      // collection must leave the other one alone.
+      batchService.cancelBatch('box-b');
+      await second.done;
+      expect(batchService.batchProgressFor('box-b'), isNull);
+      expect(batchService.batchProgressFor('box-a')?.total, 2);
+      expect(batchService.inFlightItemIds, {'a', 'b'});
+      expect(
+        batchService.totalQueued,
+        2,
+        reason: 'the shared total drops the cancelled item',
+      );
+
+      await _waitForCalls(api, 2);
+      api.releaseNext();
+      api.releaseNext();
+      await first.done;
+      expect(batchService.batchProgressFor('box-a'), isNull);
+    });
 
     test('an auto batch stamps its rows with the auto source', () async {
       final batch = await batchService.queueDownloads([

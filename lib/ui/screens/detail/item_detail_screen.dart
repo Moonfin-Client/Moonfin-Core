@@ -6581,8 +6581,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         ? GetIt.instance<DownloadService>()
         : null;
     final progress = downloadService?.activeDownloads[item.id];
-    final isMulti = _DownloadButtonState._isBatchType(item.type);
-    final isBatch = downloadService?.isBatchDownloading ?? false;
+    final batch = downloadService?.batchProgressFor(item.id);
 
     if (progress != null && !progress.isComplete && progress.error == null) {
       final label = progress.isFinalizing
@@ -6603,22 +6602,11 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       );
     }
 
-    if (isBatch && isMulti && downloadService != null) {
-      final done = downloadService.completedCount;
-      final total = downloadService.totalQueued;
-      var pct = '';
-      for (final p in downloadService.activeDownloads.values) {
-        if (!p.isComplete && p.error == null) {
-          if (p.progress >= 0) {
-            pct = '${(p.progress * 100).toInt()}%';
-          }
-          break;
-        }
-      }
+    if (batch != null) {
       return _DetailActionButton(
-        label: '${done + 1}/$total${pct.isNotEmpty ? ' · $pct' : ''}',
+        label: _DownloadButtonState._batchLabel(batch),
         icon: Icons.close,
-        onPressed: () => downloadService.cancelAll(),
+        onPressed: () => downloadService!.cancelBatch(item.id),
         isActive: true,
         activeColor: AppColorScheme.accent,
       );
@@ -11201,10 +11189,9 @@ class _DownloadButtonState extends State<_DownloadButton> {
       listenable: downloadService,
       builder: (context, _) {
         final item = widget.item;
-        final isMulti = _isBatchType(item.type);
+        final batch = downloadService.batchProgressFor(item.id);
         final progress = downloadService.activeDownloads[item.id];
         final downloadError = progress?.error;
-        final isBatch = downloadService.isBatchDownloading;
 
         // Forward the focus node and arrow wiring the action row assigns to this
         // slot so the button is reachable by d-pad in every download state.
@@ -11254,22 +11241,11 @@ class _DownloadButtonState extends State<_DownloadButton> {
           );
         }
 
-        if (isBatch && isMulti) {
-          final done = downloadService.completedCount;
-          final total = downloadService.totalQueued;
-          var pct = '';
-          for (final progress in downloadService.activeDownloads.values) {
-            if (!progress.isComplete && progress.error == null) {
-              if (progress.progress >= 0) {
-                pct = '${(progress.progress * 100).toInt()}%';
-              }
-              break;
-            }
-          }
+        if (batch != null) {
           return wire(
-            label: '${done + 1}/$total${pct.isNotEmpty ? ' · $pct' : ''}',
+            label: _batchLabel(batch),
             icon: Icons.close,
-            onPressed: () => downloadService.cancelAll(),
+            onPressed: () => downloadService.cancelBatch(item.id),
             isActive: true,
             activeColor: AppColorScheme.accent,
           );
@@ -11313,6 +11289,15 @@ class _DownloadButtonState extends State<_DownloadButton> {
 
   static bool _isBatchType(String? type) =>
       type == 'Season' || type == 'Series' || type == 'BoxSet';
+
+  /// "2/5 · 40%": the item in progress and, when known, its percentage.
+  static String _batchLabel(BatchProgress batch) {
+    final current = batch.current;
+    final pct = current != null && current.progress >= 0
+        ? ' · ${(current.progress * 100).toInt()}%'
+        : '';
+    return '${batch.done + 1}/${batch.total}$pct';
+  }
 
   /// One line of context under a sheet title.
   static Widget _sheetNote(BuildContext sheetContext, String text) => Padding(
@@ -11812,7 +11797,7 @@ class _DownloadButtonState extends State<_DownloadButton> {
         ).showSnackBar(SnackBar(content: Text(l10n.noEpisodesLoaded)));
         return;
       }
-      service.downloadItems(items, quality: quality);
+      service.downloadItems(items, quality: quality, ownerId: item.id);
       message = l10n.downloadingTitle(item.name, items.length);
     } else {
       if (item.type == 'MusicAlbum') {
