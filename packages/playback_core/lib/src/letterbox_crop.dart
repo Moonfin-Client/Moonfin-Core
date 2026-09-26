@@ -11,6 +11,7 @@
 library;
 
 import 'dart:async';
+import 'dart:math' as math;
 
 class LetterboxCropRect {
   const LetterboxCropRect({
@@ -52,10 +53,18 @@ enum LetterboxSampleKind {
 }
 
 class LetterboxSample {
-  const LetterboxSample({required this.kind, this.rect});
+  const LetterboxSample({
+    required this.kind,
+    this.rect,
+    this.windowbox = false,
+  });
 
   final LetterboxSampleKind kind;
   final LetterboxCropRect? rect;
+
+  /// Bars on all four sides. Easier to mistake for a lit shape in a dark
+  /// scene than a crop that spans an edge, so it needs more agreement.
+  final bool windowbox;
 }
 
 /// Apply a new crop (or `null` to uncrop). [hold] means keep the last apply.
@@ -72,6 +81,11 @@ class LetterboxCropDecision {
 abstract final class LetterboxCrop {
   /// Drop a detect that would keep less than this fraction of the source.
   static const minRatio = 0.5;
+
+  /// One-shot scans have no stabilizer. Bars on all four sides must still
+  /// match on this many later reads, [windowboxGap] apart.
+  static const windowboxConfirmations = 2;
+  static const windowboxGap = Duration(seconds: 1);
 
   /// Same list as mpv `dynamic-crop.lua`. Known ratios confirm faster.
   static const knownRatios = <double>[
@@ -154,7 +168,19 @@ abstract final class LetterboxCrop {
     final linkedToSource =
         (top <= margin && bottom <= margin) ||
         (left <= margin && right <= margin);
-    if (!linkedToSource) {
+    final windowbox =
+        !linkedToSource &&
+        isWindowbox(
+          width: width,
+          height: height,
+          top: top,
+          bottom: bottom,
+          left: left,
+          right: right,
+          sourceWidth: sourceWidth,
+          sourceHeight: sourceHeight,
+        );
+    if (!linkedToSource && !windowbox) {
       return const LetterboxSample(kind: LetterboxSampleKind.ignore);
     }
 
@@ -167,9 +193,38 @@ abstract final class LetterboxCrop {
     return LetterboxSample(
       kind: LetterboxSampleKind.crop,
       rect: LetterboxCropRect(w: width, h: height, x: x, y: y),
+      windowbox: windowbox,
     );
   }
 
+  /// Bars on all four sides. Only a centred picture in the cinema ratio
+  /// range, so a lit shape in a dark scene does not read as a windowbox.
+  /// Production copies sit at odd ratios (2.5:1), so no known-ratio match.
+  static bool isWindowbox({
+    required int width,
+    required int height,
+    required int top,
+    required int bottom,
+    required int left,
+    required int right,
+    required int sourceWidth,
+    required int sourceHeight,
+    double centerTolerance = 0.01,
+    double minAspect = 1.25,
+    double maxAspect = 2.8,
+  }) {
+    if (top < 0 || bottom < 0 || left < 0 || right < 0) return false;
+    final maxOffX = math.max(8, sourceWidth * centerTolerance);
+    final maxOffY = math.max(8, sourceHeight * centerTolerance);
+    if ((left - right).abs() > maxOffX || (top - bottom).abs() > maxOffY) {
+      return false;
+    }
+    final aspect = width / height;
+    return aspect >= minAspect && aspect <= maxAspect;
+  }
+
+  /// The crop's own shape is a known ratio. Comparing against the source
+  /// instead would count every full-width crop of a 16:9 file as 16:9.
   static bool isKnownRatio({
     required int width,
     required int height,
@@ -178,19 +233,35 @@ abstract final class LetterboxCrop {
     int ratioTolerance = 2,
     int linkedTolerance = 2,
   }) {
+    if (width <= 0 || height <= 0) return false;
     if (width >= sourceWidth - linkedTolerance &&
         height >= sourceHeight - linkedTolerance) {
       return false;
     }
+    final heightSlack = math.max(ratioTolerance, height * 0.01);
+    final widthSlack = math.max(ratioTolerance, width * 0.01);
     for (final ratio in knownRatios) {
-      final expectedW = (sourceHeight * ratio).floor();
-      final expectedH = (sourceWidth / ratio).floor();
-      if ((width - expectedW).abs() <= ratioTolerance ||
-          (height - expectedH).abs() <= ratioTolerance) {
+      if ((height - width / ratio).abs() <= heightSlack ||
+          (width - height * ratio).abs() <= widthSlack) {
         return true;
       }
     }
     return false;
+  }
+
+  /// Position moved in a way playback at [speed] cannot explain: a seek.
+  /// A pause only makes the position fall behind, so it is not a seek.
+  static bool seeked({
+    required Duration before,
+    required Duration after,
+    required Duration elapsed,
+    double speed = 1,
+    Duration tolerance = const Duration(seconds: 2),
+  }) {
+    final advance = after - before;
+    if (advance < -tolerance) return true;
+    final reach = elapsed * (speed > 0 ? speed : 1);
+    return advance > reach + tolerance;
   }
 
   static bool similar(
@@ -238,6 +309,9 @@ class LetterboxCropStabilizer {
   int _sourceHeight = 0;
 
   LetterboxCropRect? get applied => _applied;
+
+  /// A sample is waiting for more matching hits.
+  bool get hasCandidate => _hits > 0;
 
   void reset() {
     resetCandidate();
@@ -331,6 +405,7 @@ class LetterboxCropStabilizer {
   int _hitsNeeded(LetterboxSample sample) {
     if (_isTrusted(sample)) return trustedHits;
     if (sample.kind == LetterboxSampleKind.fullFrame) return newCropHits;
+    if (sample.windowbox) return unknownHits;
     final rect = sample.rect;
     if (rect != null &&
         LetterboxCrop.isKnownRatio(

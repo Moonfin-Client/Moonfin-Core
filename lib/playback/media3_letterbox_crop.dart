@@ -10,7 +10,6 @@ class Media3LetterboxCrop {
   static const round = 2;
   static const minRatio = LetterboxCrop.minRatio;
   static const autoDelay = Duration(seconds: 4);
-  static const pollInterval = Duration(seconds: 1);
 
   /// One PixelCopy is one frame, so a fade or a dark scene at that moment would
   /// crop real picture for the rest of the title. mpv's cropdetect avoids that
@@ -63,27 +62,18 @@ class Media3LetterboxCrop {
   }
 
   static LetterboxCropRect? decide(Map<String, int> detected) {
-    final w = detected['w'];
-    final h = detected['h'];
-    final x = detected['x'];
-    final y = detected['y'];
-    final sourceWidth = detected['sourceWidth'];
-    final sourceHeight = detected['sourceHeight'];
-    if (w == null ||
-        h == null ||
-        x == null ||
-        y == null ||
-        sourceWidth == null ||
-        sourceHeight == null) {
-      return null;
-    }
-    return LetterboxCrop.decide(
-      width: w,
-      height: h,
-      x: x,
-      y: y,
-      sourceWidth: sourceWidth,
-      sourceHeight: sourceHeight,
+    final sample = classify(detected);
+    return sample.kind == LetterboxSampleKind.crop ? sample.rect : null;
+  }
+
+  static LetterboxSample classify(Map<String, int> detected) {
+    return LetterboxCrop.classify(
+      width: detected['w'],
+      height: detected['h'],
+      x: detected['x'],
+      y: detected['y'],
+      sourceWidth: detected['sourceWidth'] ?? 0,
+      sourceHeight: detected['sourceHeight'] ?? 0,
       minRatio: minRatio,
     );
   }
@@ -99,6 +89,9 @@ abstract class Media3LetterboxHost {
   Stream<bool> get playingStream;
   String? get currentUrl;
   bool get isDisposed;
+
+  /// Position advances this much faster than the wall clock.
+  double get playbackSpeed;
 }
 
 class Media3LetterboxCropper extends LetterboxCropper {
@@ -108,6 +101,7 @@ class Media3LetterboxCropper extends LetterboxCropper {
     this.autoDelay = Media3LetterboxCrop.autoDelay,
     this.sampleCount = Media3LetterboxCrop.sampleCount,
     this.sampleGap = Media3LetterboxCrop.sampleGap,
+    this.windowboxGap = LetterboxCrop.windowboxGap,
     LetterboxCropStabilizer? stabilizer,
   }) : _supported = supported,
        _stabilizer = stabilizer ?? LetterboxCropStabilizer();
@@ -125,6 +119,9 @@ class Media3LetterboxCropper extends LetterboxCropper {
 
   @visibleForTesting
   final Duration sampleGap;
+
+  @visibleForTesting
+  final Duration windowboxGap;
 
   int _generation = 0;
   bool _enabled = false;
@@ -302,20 +299,43 @@ class Media3LetterboxCropper extends LetterboxCropper {
       if (sample != null) samples.add(sample);
     }
 
+    // Every PixelCopy failed, e.g. the surface was still attaching. Leave
+    // the title open so the next sync can scan again.
     final merged = Media3LetterboxCrop.widest(samples);
-    if (merged == null) {
-      _doneUrl = _host.currentUrl;
-      return;
-    }
-    final rect = Media3LetterboxCrop.decide(merged);
+    if (merged == null) return;
+    final sample = Media3LetterboxCrop.classify(merged);
+    final rect = sample.kind == LetterboxSampleKind.crop ? sample.rect : null;
     if (!_isCurrent(generation)) return;
-    if (rect == null) {
-      _doneUrl = _host.currentUrl;
+    if (rect == null || !await _windowboxHolds(generation, sample)) {
+      if (_isCurrent(generation)) _doneUrl = _host.currentUrl;
       return;
     }
     await _host.setLetterboxCrop(rect);
     _setApplied(true);
     _doneUrl = _host.currentUrl;
+  }
+
+  /// The widest-of-three merge is not enough for bars on all four sides: a
+  /// centred title card fills every sample. Later reads must still agree.
+  Future<bool> _windowboxHolds(int generation, LetterboxSample sample) async {
+    final rect = sample.rect;
+    if (!sample.windowbox || rect == null) return true;
+    for (var i = 0; i < LetterboxCrop.windowboxConfirmations; i++) {
+      if (!await _delay(generation, windowboxGap)) return false;
+      if (!await _waitWhileCurrent(generation, untilPlaying: true)) {
+        return false;
+      }
+      final next = await _host.detectLetterbox().timeout(
+        Media3LetterboxCrop.detectTimeout,
+        onTimeout: () => null,
+      );
+      if (next == null || !_isCurrent(generation)) return false;
+      final nextRect = Media3LetterboxCrop.decide(next);
+      if (nextRect == null || !LetterboxCrop.similar(nextRect, rect)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   Future<void> _runContinuous(int generation) async {
@@ -330,8 +350,12 @@ class Media3LetterboxCropper extends LetterboxCropper {
       if (!_enabled || !_continuous || !_isCurrent(generation)) return;
       if (_host.isPlaying != true) continue;
 
-      final jumped = _host.position - before - _recropInterval;
-      if (jumped.abs() > const Duration(seconds: 2)) {
+      if (LetterboxCrop.seeked(
+        before: before,
+        after: _host.position,
+        elapsed: _recropInterval,
+        speed: _host.playbackSpeed,
+      )) {
         _stabilizer.resetCandidate();
       }
 
@@ -378,12 +402,16 @@ class Media3LetterboxCropper extends LetterboxCropper {
     if (_host.isPlaying == untilPlaying) {
       return _isCurrent(generation);
     }
-    try {
-      await _host.playingStream
-          .firstWhere((playing) => playing == untilPlaying)
-          .timeout(const Duration(seconds: 30));
-    } catch (_) {
-      return false;
+    while (_isCurrent(generation) && _host.isPlaying != untilPlaying) {
+      try {
+        await _host.playingStream
+            .firstWhere((playing) => playing == untilPlaying)
+            .timeout(const Duration(seconds: 30));
+      } on TimeoutException {
+        // A long pause is normal. Keep waiting for playback to resume.
+      } catch (_) {
+        return false;
+      }
     }
     return _isCurrent(generation);
   }

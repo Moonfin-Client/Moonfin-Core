@@ -3,16 +3,9 @@ import 'dart:typed_data';
 import 'package:playback_core/playback_core.dart';
 
 class MpvFrameSample {
-  const MpvFrameSample({
-    required this.rect,
-    required this.width,
-    required this.height,
-    required this.elapsed,
-  });
+  const MpvFrameSample({required this.rect, required this.elapsed});
 
   final LetterboxCropRect? rect;
-  final int width;
-  final int height;
   final Duration elapsed;
 }
 
@@ -87,40 +80,4 @@ LetterboxCropRect? scanMpvBgra(
   final endY = ((((bottom + 1) * sourceHeight / height).ceil() + 1) ~/ 2 * 2)
       .clamp(0, sourceHeight);
   return LetterboxCropRect(w: endX - x, h: endY - y, x: x, y: y);
-}
-
-/// A `video-crop` is already on screen. The VO screenshot is that window,
-/// not the coded frame, so a full-bleed picture must stay the current crop.
-bool screenshotIsCropWindow({
-  required int shotWidth,
-  required int shotHeight,
-  required int sourceWidth,
-  required int sourceHeight,
-  required int windowW,
-  required int windowH,
-}) {
-  if (windowW <= 0 || windowH <= 0) return false;
-  final matchesWindow =
-      (shotWidth - windowW).abs() <= 8 && (shotHeight - windowH).abs() <= 8;
-  final matchesSource =
-      (shotWidth - sourceWidth).abs() <= 8 &&
-      (shotHeight - sourceHeight).abs() <= 8;
-  return matchesWindow && !matchesSource;
-}
-
-/// [scanned] is in crop-window coordinates. Shift it back onto the source.
-LetterboxCropRect? offsetScanToSource(
-  LetterboxCropRect? scanned, {
-  required int windowX,
-  required int windowY,
-  required int sourceWidth,
-  required int sourceHeight,
-}) {
-  if (scanned == null || sourceWidth <= 0 || sourceHeight <= 0) return null;
-  final x = windowX + scanned.x;
-  final y = windowY + scanned.y;
-  if (x >= sourceWidth || y >= sourceHeight) return null;
-  final w = scanned.w.clamp(1, sourceWidth - x).toInt();
-  final h = scanned.h.clamp(1, sourceHeight - y).toInt();
-  return LetterboxCropRect(w: w, h: h, x: x, y: y);
 }

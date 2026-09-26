@@ -21,7 +21,6 @@ class MpvLetterboxCrop {
   /// Long enough for cropdetect to see a few frames, short enough that a 4K
   /// download does not stay on the playback path.
   static const downloadWindow = Duration(milliseconds: 250);
-  static const pollInterval = Duration(seconds: 1);
 
   static const _lavfiPrefix = 'lavfi.cropdetect.';
 
@@ -209,13 +208,9 @@ abstract class MpvLetterboxHost {
 }
 
 abstract class MpvFrameSampleHost {
-  /// [window] is the crop already on screen. A VO screenshot of that window
-  /// is not the coded frame.
-  Future<MpvFrameSample?> sampleFrame(
-    int width,
-    int height, {
-    LetterboxCropRect? window,
-  });
+  /// Only called while no `video-crop` is on screen, so the shot is the
+  /// coded frame.
+  Future<MpvFrameSample?> sampleFrame(int width, int height);
 }
 
 class MpvCropGeometry {
@@ -233,6 +228,8 @@ class MpvLetterboxCropper extends LetterboxCropper {
     required bool supported,
     this.autoDelay = MpvLetterboxCrop.autoDelay,
     this.detectDuration = MpvLetterboxCrop.detectDuration,
+    this.windowboxGap = LetterboxCrop.windowboxGap,
+    this.managePanscan = true,
     LetterboxCropStabilizer? stabilizer,
   }) : _supported = supported,
        _stabilizer = stabilizer ?? LetterboxCropStabilizer();
@@ -242,10 +239,18 @@ class MpvLetterboxCropper extends LetterboxCropper {
   final LetterboxCropStabilizer _stabilizer;
   final _appliedController = StreamController<bool>.broadcast();
   final _geometryController = StreamController<MpvCropGeometry?>.broadcast();
-  String? _panscan;
+
+  /// Apply and clear each take several mpv calls. Running them one at a time
+  /// keeps a disable from landing halfway through an apply.
+  Future<void> _cropOps = Future<void>.value();
 
   final Duration autoDelay;
   final Duration detectDuration;
+  final Duration windowboxGap;
+
+  /// Set `panscan` to fill the frame. Off where the video view already owns
+  /// `panscan` (Android native surface) and follows [fillsFrame] instead.
+  final bool managePanscan;
 
   int _generation = 0;
   String? _hwdecBackup;
@@ -272,6 +277,20 @@ class MpvLetterboxCropper extends LetterboxCropper {
   MpvCropGeometry? get geometry => _geometry;
 
   Stream<MpvCropGeometry?> get geometryStream => _geometryController.stream;
+
+  /// The applied crop is wider than the source frame, so fit would paint the
+  /// removed bars back. The picture has to be zoomed to fill.
+  bool get fillsFrame {
+    final geometry = _geometry;
+    if (!_applied || geometry == null) return false;
+    return MpvLetterboxCrop.fillScale(
+          cropWidth: geometry.rect.w,
+          cropHeight: geometry.rect.h,
+          windowWidth: geometry.sourceWidth.toDouble(),
+          windowHeight: geometry.sourceHeight.toDouble(),
+        ) >
+        1;
+  }
 
   @override
   bool get isSupported => _supported;
@@ -377,13 +396,10 @@ class MpvLetterboxCropper extends LetterboxCropper {
       _stabilizer.reset();
     }
     final generation = ++_generation;
-    await _removeDetectFilter();
-    if (!keepCrop) {
-      if (_applied || _hwdecBackup != null) {
-        if (_applied) await _clearVideoCrop();
-        _setApplied(false);
-        await _restoreHwdec();
-      }
+    if (keepCrop) {
+      await _removeDetectFilter();
+    } else {
+      await reset();
     }
     if (!_isCurrent(generation)) {
       if (generation == _generation) _inFlight = false;
@@ -395,12 +411,14 @@ class MpvLetterboxCropper extends LetterboxCropper {
   @override
   Future<void> reset() async {
     if (!_host.hasNativePlayer) return;
-    await _removeDetectFilter();
-    if (_applied || _hwdecBackup != null) {
-      if (_applied) await _clearVideoCrop();
-      _setApplied(false);
-      await _restoreHwdec();
-    }
+    await _serialized(() async {
+      await _removeDetectFilter();
+      if (_applied || _hwdecBackup != null) {
+        if (_applied) await _clearVideoCrop();
+        _setApplied(false);
+        await _restoreHwdec();
+      }
+    });
   }
 
   /// Stale in-flight detect without touching filters during player teardown.
@@ -464,10 +482,7 @@ class MpvLetterboxCropper extends LetterboxCropper {
       final downloadFormat = needsDownload
           ? MpvLetterboxCrop.downloadFormatFor(hwPixel, averageBpp: averageBpp)
           : null;
-      final scanContinuously = _continuous && !expensiveDecode;
-      if (_continuous && !scanContinuously) {}
-
-      if (scanContinuously) {
+      if (_continuous && !expensiveDecode) {
         await _runContinuous(
           generation,
           needsDownload: needsDownload,
@@ -510,12 +525,11 @@ class MpvLetterboxCropper extends LetterboxCropper {
       );
       MpvFrameSample? frame;
       try {
-        frame = await sampler.sampleFrame(
-          size.$1,
-          size.$2,
-          window: _geometry?.rect,
-        );
-      } catch (error) {}
+        frame = await sampler.sampleFrame(size.$1, size.$2);
+      } catch (_) {
+        // Counted as a failed shot below; cropdetect takes over after three.
+        frame = null;
+      }
       if (!_isCurrent(generation)) return true;
       if (frame == null) {
         if (++failures >= 3) {
@@ -535,21 +549,6 @@ class MpvLetterboxCropper extends LetterboxCropper {
         );
         await _applyDecision(generation, decision, size);
         if (!_isCurrent(generation)) return true;
-        final geometry = _geometry;
-        // The VO image is already video-cropped, so a full-bleed sample cannot
-        // see a later wider shot. Filter detection still reads the coded frame.
-        if (_continuous &&
-            geometry != null &&
-            screenshotIsCropWindow(
-              shotWidth: frame.width,
-              shotHeight: frame.height,
-              sourceWidth: size.$1,
-              sourceHeight: size.$2,
-              windowW: geometry.rect.w,
-              windowH: geometry.rect.h,
-            )) {
-          return false;
-        }
         final dropsAfter = int.tryParse(
           await _host.getProperty('frame-drop-count') ?? '',
         );
@@ -567,10 +566,12 @@ class MpvLetterboxCropper extends LetterboxCropper {
         if (nextMillis > adaptiveInterval.inMilliseconds) {
           adaptiveInterval = Duration(milliseconds: nextMillis);
         }
+        // Three quiet samples with nothing pending means no bars. A pending
+        // candidate still needs its hits, which can take more than three.
         if (!_continuous &&
             (decision.changed ||
                 samples >= 6 ||
-                (samples >= 3 && !_applied && rect != null))) {
+                (samples >= 3 && !_applied && !_stabilizer.hasCandidate))) {
           _doneUrl = _host.currentUrl;
           return true;
         }
@@ -589,7 +590,7 @@ class MpvLetterboxCropper extends LetterboxCropper {
     required bool needsDownload,
     required String? downloadFormat,
   }) async {
-    final measured = await _readOrCopyBack(
+    Future<_Measurement?> read() => _readOrCopyBack(
       generation,
       needsDownload: needsDownload,
       downloadFormat: downloadFormat,
@@ -598,9 +599,38 @@ class MpvLetterboxCropper extends LetterboxCropper {
           ? MpvLetterboxCrop.downloadWindow
           : detectDuration,
     );
+    final measured = await read();
     if (measured == null || !_isCurrent(generation)) return;
-    await _commitSample(generation, measured);
-    _doneUrl = _host.currentUrl;
+    if (await _windowboxHolds(generation, measured, read)) {
+      await _commitSample(generation, measured);
+    }
+    if (_isCurrent(generation)) _doneUrl = _host.currentUrl;
+  }
+
+  /// A single reading has no stabilizer behind it. Bars on all four sides
+  /// could be a centred title card, so they must still be there on later
+  /// reads. Any other reading passes straight through.
+  Future<bool> _windowboxHolds(
+    int generation,
+    _Measurement measured,
+    Future<_Measurement?> Function() read,
+  ) async {
+    final sample = measured.sample;
+    final rect = sample?.rect;
+    if (sample == null || !sample.windowbox || rect == null) return true;
+    for (var i = 0; i < LetterboxCrop.windowboxConfirmations; i++) {
+      if (!await _delay(generation, windowboxGap)) return false;
+      if (!await _waitWhileCurrent(generation, untilPlaying: true)) {
+        return false;
+      }
+      final next = await read();
+      if (next == null || !_isCurrent(generation)) return false;
+      final nextRect = next.sample?.rect;
+      if (nextRect == null || !LetterboxCrop.similar(nextRect, rect)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   Future<void> _runContinuous(
@@ -616,21 +646,27 @@ class MpvLetterboxCropper extends LetterboxCropper {
         final dropsBefore = int.tryParse(
           await _host.getProperty('frame-drop-count') ?? '',
         );
+        final scanWindow = downloadFormat != null
+            ? MpvLetterboxCrop.downloadWindow
+            : const Duration(milliseconds: 250);
         final measured = await _readOrCopyBack(
           generation,
           needsDownload: needsDownload,
           downloadFormat: downloadFormat,
           resetEachFrame: downloadFormat != null,
-          window: downloadFormat != null
-              ? MpvLetterboxCrop.downloadWindow
-              : const Duration(milliseconds: 250),
+          window: scanWindow,
         );
         if (measured == null || !_isCurrent(generation)) return;
         if (measured.copyBack) {
           // This reading already accumulated for a second, and the fallback
           // does not take a second one. Apply it instead of waiting for
           // another hit that never comes.
-          await _commitSample(generation, measured);
+          final holds = await _windowboxHolds(
+            generation,
+            measured,
+            () => _copyBackSample(generation),
+          );
+          if (holds) await _commitSample(generation, measured);
           return;
         }
         await _applyMeasured(generation, measured);
@@ -649,12 +685,15 @@ class MpvLetterboxCropper extends LetterboxCropper {
           }
         }
         if (!await _delay(generation, _recropInterval)) return;
-        final jumped =
-            _host.position -
-            before -
-            _recropInterval -
-            const Duration(milliseconds: 250);
-        if (jumped.abs() > const Duration(seconds: 2)) {
+        final speed =
+            double.tryParse(await _host.getProperty('speed') ?? '') ?? 1;
+        if (LetterboxCrop.seeked(
+          before: before,
+          after: _host.position,
+          elapsed:
+              scanWindow + const Duration(milliseconds: 100) + _recropInterval,
+          speed: speed,
+        )) {
           _stabilizer.resetCandidate();
         }
       }
@@ -698,18 +737,14 @@ class MpvLetterboxCropper extends LetterboxCropper {
     final sample = measured.sample;
     if (sample == null || !_isCurrent(generation)) return;
     if (sample.kind == LetterboxSampleKind.fullFrame) {
-      if (_applied) {
-        await _clearVideoCrop();
-        if (!_isCurrent(generation)) return;
-        _setApplied(false);
-      }
+      await _clearCrop(generation);
       return;
     }
     final rect = sample.rect;
     if (rect == null) {
       return;
     }
-    await _applyVideoCrop(rect, measured.source);
+    await _applyCrop(generation, rect, measured.source);
   }
 
   Future<_Measurement?> _measure(
@@ -787,14 +822,10 @@ class MpvLetterboxCropper extends LetterboxCropper {
     if (!decision.changed || !_isCurrent(generation)) return;
 
     if (decision.rect == null) {
-      if (_applied) {
-        await _clearVideoCrop();
-        if (!_isCurrent(generation)) return;
-        _setApplied(false);
-      }
+      await _clearCrop(generation);
       return;
     }
-    if (!await _applyVideoCrop(decision.rect!, size)) {
+    if (!await _applyCrop(generation, decision.rect!, size)) {
       _stabilizer.reset();
     }
   }
@@ -855,6 +886,29 @@ class MpvLetterboxCropper extends LetterboxCropper {
     return _isCurrent(generation);
   }
 
+  Future<T> _serialized<T>(Future<T> Function() op) {
+    final result = _cropOps.then((_) => op());
+    _cropOps = result.then<void>((_) {}, onError: (Object _) {});
+    return result;
+  }
+
+  /// Checked inside the lock: a disable queued ahead of this apply has
+  /// already bumped the generation, so the stale apply never starts.
+  Future<bool> _applyCrop(
+    int generation,
+    LetterboxCropRect rect,
+    (int, int) source,
+  ) => _serialized(() async {
+    if (!_enabled || !_isCurrent(generation)) return false;
+    return _applyVideoCrop(rect, source);
+  });
+
+  Future<void> _clearCrop(int generation) => _serialized(() async {
+    if (!_applied || !_isCurrent(generation)) return;
+    await _clearVideoCrop();
+    _setApplied(false);
+  });
+
   Future<bool> _applyVideoCrop(
     LetterboxCropRect rect,
     (int, int) source,
@@ -886,24 +940,12 @@ class MpvLetterboxCropper extends LetterboxCropper {
   /// The rendered frame stays the source size. Fit then paints the removed
   /// bars back into that frame, which is why a 16:9 screen still shows them.
   /// Fill the frame when the cropped picture is wider than the source.
-  Future<void> _syncPanscan() async {
-    final geometry = _geometry;
-    if (!_applied || geometry == null) {
-      await _setPanscan('0');
-      return;
-    }
-    final fill = MpvLetterboxCrop.fillScale(
-      cropWidth: geometry.rect.w,
-      cropHeight: geometry.rect.h,
-      windowWidth: geometry.sourceWidth.toDouble(),
-      windowHeight: geometry.sourceHeight.toDouble(),
-    );
-    await _setPanscan(fill > 1 ? '1' : '0');
-  }
+  Future<void> _syncPanscan() => _setPanscan(fillsFrame ? '1' : '0');
 
+  /// Not cached: the video view can also write `panscan`, so a remembered
+  /// value goes stale.
   Future<void> _setPanscan(String value) async {
-    if (_panscan == value) return;
-    _panscan = value;
+    if (!managePanscan) return;
     await _host.setProperty('panscan', value);
   }
 

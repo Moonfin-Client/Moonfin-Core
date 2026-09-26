@@ -1600,6 +1600,9 @@ class _Media3LetterboxHost implements Media3LetterboxHost {
   Duration get duration => _backend._duration;
 
   @override
+  double get playbackSpeed => _backend._playbackSpeed;
+
+  @override
   Stream<bool> get playingStream => _backend._playingStream.stream;
 
   @override

@@ -31,6 +31,7 @@ import '../../widgets/playback/trickplay_tile_image.dart';
 import '../../../playback/html_video_backend.dart';
 import '../../../playback/aether_backend.dart';
 import '../../../playback/media_kit_player_backend.dart';
+import '../../../playback/mpv_letterbox_crop.dart';
 import '../../widgets/aether_video_view.dart';
 import '../../../playback/playback_lifecycle_handler.dart';
 import '../../../playback/playback_profile_diagnostics.dart';
@@ -319,6 +320,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   StreamSubscription? _queueSub;
   StreamSubscription<PlayerBackend>? _backendSub;
   StreamSubscription<bool>? _letterboxCropAppliedSub;
+  StreamSubscription<Object?>? _letterboxCropGeometrySub;
   bool _letterboxCropApplied = false;
   StreamSubscription<PlaybackBringupState>? _bringupSub;
   StreamSubscription? _pipChangedSub;
@@ -1080,6 +1082,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _queueSub?.cancel();
     _backendSub?.cancel();
     _letterboxCropAppliedSub?.cancel();
+    _letterboxCropGeometrySub?.cancel();
     _bringupSub?.cancel();
     _pipChangedSub?.cancel();
     _userLeftAppSub?.cancel();
@@ -4274,7 +4277,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       return Positioned.fill(
         child: NativeVideoView(
           player: mediaKitBackend.player,
-          zoomMode: _nativeZoomMode(_effectiveZoomMode),
+          zoomMode: _nativeZoomMode(
+            _mpvCropFillsFrame ? ZoomMode.autoCrop : _effectiveZoomMode,
+          ),
           fill: Colors.black,
           videoOutput: selectedVo,
           hardwareDecodingEnabled: hwDecodingEnabled,
@@ -7235,11 +7240,19 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       _prefs.get(UserPreferences.cropBlackBars) &&
       (_activeBackend?.supportsLetterboxCrop ?? false);
 
-  bool get _mpvLetterboxCropEnabled =>
-      _letterboxCropOsd && _activeMediaKitBackend != null;
+  /// The native Android TV surface owns mpv `panscan`, so it must zoom
+  /// exactly when the cropper would.
+  bool get _mpvCropFillsFrame {
+    final cropper = _activeMediaKitBackend?.letterboxCropper;
+    return _letterboxCropApplied &&
+        cropper is MpvLetterboxCropper &&
+        cropper.fillsFrame;
+  }
 
   void _listenToLetterboxCropState(PlayerBackend? backend) {
     _letterboxCropAppliedSub?.cancel();
+    _letterboxCropGeometrySub?.cancel();
+    _letterboxCropGeometrySub = null;
     final cropper = backend?.letterboxCropper;
     _letterboxCropApplied = cropper?.isApplied ?? false;
     if (cropper == null) return;
@@ -7248,15 +7261,22 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       setState(() => _letterboxCropApplied = applied);
       unawaited(_syncMedia3ZoomMode());
     });
+    // A new crop can change the fill without touching the applied flag.
+    if (cropper is MpvLetterboxCropper) {
+      _letterboxCropGeometrySub = cropper.geometryStream.listen((_) {
+        if (mounted) setState(() {});
+      });
+    }
   }
 
-  /// Fit keeps the cropped shape. A 16:9 window then gets a separate zoom
-  /// that only removes the vertical bars fit puts back.
+  /// Nothing cropped: the user's zoom mode. mpv crops keep the cropped shape
+  /// with fit and fill through `panscan`; Media3 zooms into its crop.
   ZoomMode get _effectiveZoomMode {
-    if (_mpvLetterboxCropEnabled) return ZoomMode.fit;
-    if (_letterboxCropApplied &&
-        (!PlatformDetection.useDesktopUi || _isDesktopFullscreen)) {
-      return ZoomMode.autoCrop;
+    if (_letterboxCropApplied) {
+      if (_activeMediaKitBackend != null) return ZoomMode.fit;
+      if (!PlatformDetection.useDesktopUi || _isDesktopFullscreen) {
+        return ZoomMode.autoCrop;
+      }
     }
     return _zoomMode;
   }

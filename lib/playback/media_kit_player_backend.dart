@@ -427,6 +427,8 @@ class MediaKitPlayerBackend extends PlayerBackend {
     _letterboxCropper = MpvLetterboxCropper(
       _MediaKitLetterboxHost(this),
       supported: letterboxCropAvailable(),
+      // NativeVideoView sets panscan from the zoom mode on every surface.
+      managePanscan: !PlatformDetection.useNativeVideoSurface,
     );
     _prefs.addListener(_onPreferencesChanged);
     _ccTracksSub = _player.stream.tracks.listen(
@@ -2490,23 +2492,11 @@ class _MediaKitLetterboxHost implements MpvLetterboxHost, MpvFrameSampleHost {
   final _frameSampler = MpvFrameSampler();
 
   @override
-  Future<MpvFrameSample?> sampleFrame(
-    int width,
-    int height, {
-    LetterboxCropRect? window,
-  }) async {
+  Future<MpvFrameSample?> sampleFrame(int width, int height) async {
     if (_backend._isDisposed) return null;
     final handle = await _backend._player.handle;
     if (_backend._isDisposed) return null;
-    return _frameSampler.capture(
-      handle,
-      width,
-      height,
-      windowX: window?.x,
-      windowY: window?.y,
-      windowW: window?.w,
-      windowH: window?.h,
-    );
+    return _frameSampler.capture(handle, width, height);
   }
 
   final MediaKitPlayerBackend _backend;

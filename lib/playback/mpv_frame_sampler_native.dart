@@ -12,15 +12,7 @@ import 'mpv_frame_sample.dart';
 class MpvFrameSampler {
   bool _busy = false;
 
-  Future<MpvFrameSample?> capture(
-    int handle,
-    int width,
-    int height, {
-    int? windowX,
-    int? windowY,
-    int? windowW,
-    int? windowH,
-  }) async {
+  Future<MpvFrameSample?> capture(int handle, int width, int height) async {
     if (_busy || handle == 0 || width <= 0 || height <= 0) return null;
     _busy = true;
     final path = NativeLibrary.path;
@@ -35,18 +27,7 @@ class MpvFrameSampler {
     try {
       if (client == nullptr) return null;
       final address = client.address;
-      return await Isolate.run(
-        () => _capture(
-          path,
-          address,
-          width,
-          height,
-          windowX ?? -1,
-          windowY ?? -1,
-          windowW ?? -1,
-          windowH ?? -1,
-        ),
-      );
+      return await Isolate.run(() => _capture(path, address, width, height));
     } finally {
       // The worker has completed before this client reference is released.
       if (client != nullptr) api.mpv_destroy(client);
@@ -55,16 +36,7 @@ class MpvFrameSampler {
   }
 }
 
-MpvFrameSample? _capture(
-  String path,
-  int address,
-  int width,
-  int height,
-  int windowX,
-  int windowY,
-  int windowW,
-  int windowH,
-) {
+MpvFrameSample? _capture(String path, int address, int width, int height) {
   final watch = Stopwatch()..start();
   final api = mpv.MPV(DynamicLibrary.open(path));
   final client = Pointer<mpv.mpv_handle>.fromAddress(address);
@@ -124,37 +96,15 @@ MpvFrameSample? _capture(
       return null;
     }
     final pixels = data.ref.data.cast<Uint8>().asTypedList(data.ref.size);
-    final onWindow = screenshotIsCropWindow(
-      shotWidth: w,
-      shotHeight: h,
-      sourceWidth: width,
-      sourceHeight: height,
-      windowW: windowW,
-      windowH: windowH,
-    );
-    final scanned = scanMpvBgra(
+    final rect = scanMpvBgra(
       pixels,
       width: w,
       height: h,
       stride: stride,
-      sourceWidth: onWindow ? windowW : width,
-      sourceHeight: onWindow ? windowH : height,
+      sourceWidth: width,
+      sourceHeight: height,
     );
-    final rect = onWindow
-        ? offsetScanToSource(
-            scanned,
-            windowX: windowX,
-            windowY: windowY,
-            sourceWidth: width,
-            sourceHeight: height,
-          )
-        : scanned;
-    return MpvFrameSample(
-      rect: rect,
-      width: w,
-      height: h,
-      elapsed: watch.elapsed,
-    );
+    return MpvFrameSample(rect: rect, elapsed: watch.elapsed);
   } finally {
     api.mpv_free_node_contents(result);
     calloc.free(result);
