@@ -29,6 +29,8 @@ import '../viewmodels/seerr_discover_view_model.dart';
 import '../viewmodels/live_tv_guide_view_model.dart';
 import 'custom_external_lists_service.dart';
 import 'plugin_sync_service.dart';
+import 'skipped_episode_cleanup.dart';
+import 'skipped_episode_endings.dart';
 
 class RowDataSource {
   final MediaServerClient _client;
@@ -200,13 +202,14 @@ class RowDataSource {
       startIndex: startIndex,
       limit: _defaultLimit,
     );
-    return _buildRow(
+    final row = _buildRow(
       id: 'resume',
       title: _l10n.continueWatching,
       response: response,
       serverId: serverId,
       rowType: HomeRowType.resume,
     );
+    return _applySkippedEpisodeCleanup(row);
   }
 
   Future<HomeRow> loadResumeAudio(String serverId) async {
@@ -247,13 +250,14 @@ class RowDataSource {
       mediaTypes: 'Video',
       limit: _defaultLimit,
     );
-    return _buildRow(
+    final row = _buildRow(
       id: 'resume',
       title: _l10n.continueWatching,
       response: response,
       serverId: serverId,
       rowType: HomeRowType.resume,
     );
+    return _applySkippedEpisodeCleanup(row);
   }
 
   Future<HomeRow> loadNextUpRelaxed(String serverId) async {
@@ -1034,13 +1038,14 @@ class RowDataSource {
       mediaTypes: 'Video',
       limit: _defaultLimit,
     );
-    return _buildRow(
+    final row = _buildRow(
       id: 'resume_$parentId',
       title: _l10n.continueWatching,
       response: response,
       serverId: serverId,
       rowType: HomeRowType.resume,
     );
+    return _applySkippedEpisodeCleanup(row);
   }
 
   Future<HomeRow> loadLibraryNextUp(String parentId, String serverId) async {
@@ -1779,10 +1784,13 @@ class RowDataSource {
                 : null,
           )
         : _parseItems(response, serverId);
+    final cleanedNewItems = row.rowType == HomeRowType.resume
+        ? await _cleanupResumeItems(newItems)
+        : newItems;
     final totalCount =
         response['TotalRecordCount'] as int? ??
-        (row.items.length + newItems.length);
-    return ([...row.items, ...newItems], totalCount);
+        (row.items.length + cleanedNewItems.length);
+    return ([...row.items, ...cleanedNewItems], totalCount);
   }
 
   Future<Map<String, dynamic>> _getItemsWithFallback({
@@ -2081,6 +2089,37 @@ class RowDataSource {
       items: items,
       rowType: rowType,
       totalCount: totalCount,
+    );
+  }
+
+  Future<HomeRow> _applySkippedEpisodeCleanup(HomeRow row) async {
+    final cleaned = await _cleanupResumeItems(row.items);
+    if (identical(cleaned, row.items) || cleaned.length == row.items.length) {
+      return row;
+    }
+    final removed = row.items.length - cleaned.length;
+    return row.copyWith(
+      items: cleaned,
+      totalCount: (row.totalCount - removed).clamp(0, row.totalCount),
+    );
+  }
+
+  Future<List<AggregatedItem>> _cleanupResumeItems(
+    List<AggregatedItem> items,
+  ) async {
+    if (items.isEmpty) return items;
+    if (!GetIt.instance.isRegistered<UserPreferences>()) return items;
+    final prefs = GetIt.instance<UserPreferences>();
+    if (!prefs.get(UserPreferences.autoCompleteSkippedEpisodeEndings)) {
+      return items;
+    }
+    final threshold = skippedEpisodeProgressThreshold(
+      prefs.get(UserPreferences.autoCompleteSkippedEpisodeThreshold),
+    );
+    return cleanupSkippedEpisodeEndings(
+      resume: items,
+      client: _client,
+      progressThreshold: threshold,
     );
   }
 

@@ -3816,6 +3816,21 @@ class AppLocalizationsSl extends AppLocalizations {
   String get stillWatchingPrompt => 'Še vedno gledam poziv';
 
   @override
+  String get autoCompleteSkippedEpisodeEndings =>
+      'Auto-complete skipped episode endings';
+
+  @override
+  String get autoCompleteSkippedEpisodeEndingsSubtitle =>
+      'When you have started a later episode, leftover paused episodes at or above the minimum progress are marked watched the next time Continue Watching loads.';
+
+  @override
+  String get autoCompleteSkippedEpisodeThreshold => 'Minimum leftover progress';
+
+  @override
+  String get autoCompleteSkippedEpisodeThresholdSubtitle =>
+      'Only leftovers at this percentage or higher are auto-completed.';
+
+  @override
   String afterEpisodesAndHours(int episodes, double hours) {
     return 'Po $episodes epizodah / $hours h';
   }

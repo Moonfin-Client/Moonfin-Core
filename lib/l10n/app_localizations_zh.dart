@@ -3689,6 +3689,21 @@ class AppLocalizationsZh extends AppLocalizations {
   String get stillWatchingPrompt => '仍在观看提示';
 
   @override
+  String get autoCompleteSkippedEpisodeEndings =>
+      'Auto-complete skipped episode endings';
+
+  @override
+  String get autoCompleteSkippedEpisodeEndingsSubtitle =>
+      'When you have started a later episode, leftover paused episodes at or above the minimum progress are marked watched the next time Continue Watching loads.';
+
+  @override
+  String get autoCompleteSkippedEpisodeThreshold => 'Minimum leftover progress';
+
+  @override
+  String get autoCompleteSkippedEpisodeThresholdSubtitle =>
+      'Only leftovers at this percentage or higher are auto-completed.';
+
+  @override
   String afterEpisodesAndHours(int episodes, double hours) {
     return '$episodes 集 / $hours 小时后';
   }
