@@ -125,6 +125,19 @@ void main() {
     );
   });
 
+  test('a tap handled on release does not need a fallback activation', () {
+    final previous = ServicesBinding.instance.keyEventManager.keyMessageHandler;
+    ServicesBinding.instance.keyEventManager.keyMessageHandler = (message) =>
+        message.events.any((event) => event is KeyUpEvent);
+    addTearDown(
+      () =>
+          ServicesBinding.instance.keyEventManager.keyMessageHandler = previous,
+    );
+    final remote = GamepadKeySynthesizer.remote();
+    expect(remote.tap(GamepadNavKey.select), isTrue);
+    expect(remote.pressedKeys, isEmpty);
+  });
+
   test('doesn\'t reach the focus tree when a global handler consumed it', () {
     // Flutter only dispatches to focused widgets when no HardwareKeyboard
     // handler claimed the event, and we have to mirror that.

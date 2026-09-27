@@ -72,11 +72,15 @@ class GamepadKeySynthesizer {
   /// One complete press. Release even if an action throws or changes routes.
   bool tap(GamepadNavKey key) {
     if (!_down.add(key)) return false;
+    var handled = false;
     try {
-      return _emit(key, _EventKind.down);
+      handled = _emit(key, _EventKind.down);
     } finally {
-      release(key);
+      // Some controls activate on release. Count that as handled too so a
+      // fallback action cannot activate them a second time.
+      handled = release(key) || handled;
     }
+    return handled;
   }
 
   /// Begins a hold. Pressing an already-held key repeats it instead, which is
@@ -93,9 +97,8 @@ class GamepadKeySynthesizer {
     if (_down.contains(key)) _emit(key, _EventKind.repeat);
   }
 
-  void release(GamepadNavKey key) {
-    if (_down.remove(key)) _emit(key, _EventKind.up);
-  }
+  bool release(GamepadNavKey key) =>
+      _down.remove(key) && _emit(key, _EventKind.up);
 
   /// Releases everything, so a key can't stay logically held after the pad
   /// stops reporting. Call when the app pauses, when a controller disconnects,
