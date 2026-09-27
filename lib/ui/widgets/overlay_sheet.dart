@@ -185,14 +185,24 @@ Future<T?> showFocusRestoringModalBottomSheet<T>({
 }
 
 class OverlaySheetController {
-  static final List<VoidCallback> _openSheetCloseHandles = <VoidCallback>[];
+  static final _openSheetCloseHandles =
+      <Future<void> Function({bool restoreFocus})>[];
 
   static bool get hasOpenSheet => _openSheetCloseHandles.isNotEmpty;
 
   static bool closeTopSheet() {
     if (_openSheetCloseHandles.isEmpty) return false;
-    _openSheetCloseHandles.last();
+    unawaited(_openSheetCloseHandles.last(restoreFocus: true));
     return true;
+  }
+
+  /// Navigation replaces the page below these sheets, so do not restore its
+  /// old focus after the closing animation finishes.
+  static Future<void> closeAllSheets() async {
+    await Future.wait([
+      for (final close in _openSheetCloseHandles.toList().reversed)
+        close(restoreFocus: false),
+    ]);
   }
 
   static Future<T?> show<T>(
@@ -322,12 +332,13 @@ class _OverlaySheetState<T> extends State<_OverlaySheet<T>>
   bool _closing = false;
   bool _restoreFocusOnClose = true;
   Future<void>? _closeFuture;
-  late final VoidCallback _registryCloseHandle;
+  late final Future<void> Function({bool restoreFocus}) _registryCloseHandle;
 
   @override
   void initState() {
     super.initState();
-    _registryCloseHandle = () => _close();
+    _registryCloseHandle = ({bool restoreFocus = true}) =>
+        _close(null, restoreFocus);
     OverlaySheetController._openSheetCloseHandles.add(_registryCloseHandle);
     _controller = AnimationController(
       vsync: this,
@@ -361,7 +372,10 @@ class _OverlaySheetState<T> extends State<_OverlaySheet<T>>
   }
 
   Future<void> _close([T? result, bool restoreFocus = true]) {
-    if (_closing) return _closeFuture ?? Future.value();
+    if (_closing) {
+      if (!restoreFocus) _restoreFocusOnClose = false;
+      return _closeFuture ?? Future.value();
+    }
     _restoreFocusOnClose = restoreFocus;
     _closing = true;
     _closeFuture = _controller.reverse().whenComplete(() {

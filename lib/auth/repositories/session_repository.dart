@@ -16,6 +16,8 @@ import '../../l10n/current_app_localizations.dart';
 import '../../ui/navigation/app_router.dart';
 import '../../ui/navigation/destinations.dart';
 import '../../ui/navigation/home_refresh_bus.dart';
+import '../../ui/screensaver/screensaver_controller.dart';
+import '../../ui/widgets/overlay_sheet.dart';
 import '../../ui/widgets/floating_notification.dart';
 
 import 'package:get_it/get_it.dart';
@@ -696,6 +698,13 @@ class SessionRepository {
     await backend.setVolume(clamped);
   }
 
+  void _wakeRemoteScreen() {
+    if (!GetIt.instance.isRegistered<ScreensaverController>()) return;
+    final screensaver = GetIt.instance<ScreensaverController>();
+    screensaver.dismissIfVisible();
+    screensaver.notifyInteraction();
+  }
+
   final _remoteKeys = GamepadKeySynthesizer.remote();
   int _remoteNavigationGeneration = 0;
 
@@ -1021,6 +1030,7 @@ class SessionRepository {
           await _setShuffleMode(manager, mode);
         }
       case 'gohome':
+        _wakeRemoteScreen();
         final generation = ++_remoteNavigationGeneration;
         _remoteSearch?.close();
         CustomTVTextField.closeTopKeyboard();
@@ -1028,6 +1038,10 @@ class SessionRepository {
           (route) => route is PageRoute,
         );
         final backend = manager.backend;
+        if (OverlaySheetController.hasOpenSheet) {
+          await OverlaySheetController.closeAllSheets();
+        }
+        if (generation != _remoteNavigationGeneration) return;
         await manager.stop(userInitiated: false);
         if (generation != _remoteNavigationGeneration) return;
         if (backend is AppleTvBackend) await backend.dismissPlayer();
@@ -1047,6 +1061,7 @@ class SessionRepository {
           search.close();
         }
         if (search != null && search.active) {
+          _wakeRemoteScreen();
           search.receive(message.arguments);
         } else if (message.arguments['MoonfinInputId'] == null) {
           // Another controller's text has no Search to land in yet, so it
@@ -1072,11 +1087,16 @@ class SessionRepository {
     _remoteNavigationGeneration++;
     _remoteSearch?.close();
     _remoteSearch = search;
+    _wakeRemoteScreen();
     try {
       CustomTVTextField.closeTopKeyboard();
       appRouter.routerDelegate.navigatorKey.currentState?.popUntil(
         (route) => route is PageRoute,
       );
+      if (OverlaySheetController.hasOpenSheet) {
+        await OverlaySheetController.closeAllSheets();
+      }
+      if (!search.active) return;
       await manager.stop(userInitiated: false);
       if (!search.active) return;
       // Native tvOS playback is presented above Flutter's routes.

@@ -3079,6 +3079,7 @@ private final class InfoPanelViewController: UIViewController, RemotePlayerNavig
 {
     private let sections: [(title: String, rows: [(label: String, value: String)])]
     private let tableView = UITableView(frame: .zero, style: .grouped)
+    private let closeButton = UIButton(type: .system)
 
     init(sections: [(title: String, rows: [(label: String, value: String)])]) {
         self.sections = sections
@@ -3117,7 +3118,6 @@ private final class InfoPanelViewController: UIViewController, RemotePlayerNavig
         tableView.register(InfoCell.self, forCellReuseIdentifier: "cell")
         content.addSubview(tableView)
 
-        let closeButton = UIButton(type: .system)
         closeButton.translatesAutoresizingMaskIntoConstraints = false
         closeButton.setTitle("Close", for: .normal)
         closeButton.titleLabel?.font = .systemFont(ofSize: 22, weight: .semibold)
@@ -3196,14 +3196,29 @@ private final class InfoPanelViewController: UIViewController, RemotePlayerNavig
     }
 
     func handleRemoteNavigation(_ command: String) {
-        switch command {
-        case "back", "select": dismiss(animated: true)
-        case "moveup", "movedown":
-            let delta: CGFloat = command == "moveup" ? -180 : 180
-            let maximum = max(0, tableView.contentSize.height - tableView.bounds.height)
-            tableView.setContentOffset(CGPoint(x: 0, y: min(maximum, max(0, tableView.contentOffset.y + delta))), animated: false)
-        default: break
+        if command == "back" { dismiss(animated: true); return }
+        let system = UIFocusSystem.focusSystem(for: view)
+        if command == "select" {
+            if system?.focusedItem === closeButton { closeButton.sendActions(for: .primaryActionTriggered) }
+            return
         }
+        guard command == "moveup" || command == "movedown" else { return }
+        let paths = sections.indices.flatMap { section in
+            (0..<tableView.numberOfRows(inSection: section)).map { IndexPath(row: $0, section: section) }
+        }
+        let focused = (system?.focusedItem as? UITableViewCell).flatMap { tableView.indexPath(for: $0) }
+        let index = focused.flatMap { paths.firstIndex(of: $0) }
+        let next = index.map { $0 + (command == "moveup" ? -1 : 1) }
+            ?? (system?.focusedItem === closeButton && command == "moveup" ? paths.count - 1 : 0)
+        if next >= paths.count || paths.isEmpty {
+            system?.requestFocusUpdate(to: closeButton)
+        } else {
+            let path = paths[max(0, next)]
+            tableView.scrollToRow(at: path, at: .middle, animated: false)
+            tableView.layoutIfNeeded()
+            if let cell = tableView.cellForRow(at: path) { system?.requestFocusUpdate(to: cell) }
+        }
+        system?.updateFocusIfNeeded()
     }
 
     override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {

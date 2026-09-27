@@ -29,6 +29,7 @@ import 'package:moonfin/ui/navigation/destinations.dart';
 import 'package:moonfin/util/platform_detection.dart';
 import 'package:moonfin/util/focus/input_mode_tracker.dart';
 import 'package:moonfin/ui/screensaver/screensaver_controller.dart';
+import 'package:moonfin/ui/widgets/overlay_sheet.dart';
 
 /// The command handlers never reach the collaborators the repository is built
 /// from, so these stay empty on purpose.
@@ -215,6 +216,49 @@ void main() {
       {'screensaverVisible': false, 'underlyingSelections': 0},
     );
   });
+
+  for (final command in ['GoHome', 'GoToSearch']) {
+    testWidgets('$command wakes the screensaver and closes an overlay sheet', (
+      tester,
+    ) async {
+      PlatformDetection.setTvMode(true);
+      final screensaver = ScreensaverController(
+        GetIt.instance<UserPreferences>(),
+        manager,
+      );
+      GetIt.instance.registerSingleton<ScreensaverController>(screensaver);
+      addTearDown(screensaver.dispose);
+      appRouter.go(Destinations.startup);
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Builder(
+            builder: (context) => TextButton(
+              onPressed: () => OverlaySheetController.show<void>(
+                context,
+                builder: (_) => const Material(child: Text('Options overlay')),
+              ),
+              child: const Text('Open'),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Open'));
+      await tester.pumpAndSettle();
+      expect(find.text('Options overlay'), findsOneWidget);
+      screensaver.visible.value = true;
+      final navigating = sendGeneral(command);
+      await tester.pumpAndSettle();
+      await navigating;
+      expect(find.text('Options overlay'), findsNothing);
+      expect(screensaver.visible.value, isFalse);
+      expect(
+        appRouter.routeInformationProvider.value.uri.path,
+        command == 'GoHome' ? Destinations.home : Destinations.search,
+      );
+      screensaver.activityPaused = true;
+      await tester.pumpWidget(const SizedBox());
+    });
+  }
 
   testWidgets(
     'TV commands reach custom focus handlers without held hardware keys',
