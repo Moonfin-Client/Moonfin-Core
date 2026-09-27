@@ -67,6 +67,26 @@ void main() {
     },
   );
 
+  testWidgets('a titled section without chevrons keeps their header height', (
+    tester,
+  ) async {
+    double rowTop() => tester.getTopLeft(find.byKey(const Key('row'))).dy;
+
+    await pump(tester, title: 'Next Up');
+    final withChevrons = rowTop();
+
+    await pump(tester, title: 'Next Up', showControls: false);
+    expect(rowTop(), withChevrons);
+    expect(
+      tester
+          .widget<Visibility>(
+            find.ancestor(of: chevrons(), matching: find.byType(Visibility)),
+          )
+          .visible,
+      isFalse,
+    );
+  });
+
   testWidgets('an untitled section with no controls has no header at all', (
     tester,
   ) async {

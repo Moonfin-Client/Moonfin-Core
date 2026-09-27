@@ -105,6 +105,9 @@ double _focusHeadroom(double imageHeight, bool cardExpansion) =>
 ///
 /// The focused row must remain complete: it is the user's active navigation
 /// target, and clipping its artwork can leave only the card metadata visible.
+/// [isFocused] means the row holds focus. A mouse scroll makes the row nearest
+/// the top the active one without focusing it, so that row still passes
+/// behind the info area like the rest.
 @visibleForTesting
 double classicHomeRowOverlayClipTop({
   required bool isFocused,
@@ -3994,7 +3997,7 @@ class _ContentRowsState extends State<_ContentRows>
         viewportHeight: _scrollController.position.viewportDimension,
         overlayBottom: overlayBottom,
         classicClipTop: classicHomeRowOverlayClipTop(
-          isFocused: isFocusedRow,
+          isFocused: _rowStateOf(rowIndex)?.hasFocusedItem ?? false,
           rowViewportTop: rowViewportTop,
           rowExtent: rowExtent,
           overlayBottom: overlayBottom,

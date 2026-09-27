@@ -7,6 +7,7 @@ import 'package:moonfin/data/models/aggregated_item.dart';
 import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/screens/detail/item_detail_screen.dart';
+import 'package:moonfin/ui/widgets/media_card.dart';
 import 'package:moonfin/util/platform_detection.dart';
 import 'package:server_core/server_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -77,6 +78,66 @@ void main() {
       // A 200px box was clipping this row at the largest scale.
       expect(tester.takeException(), isNull, reason: 'at ${scale.name}');
     }
+  });
+
+  testWidgets('every row starts its cards the same distance under its top', (
+    tester,
+  ) async {
+    AggregatedItem item(String id, String type) => AggregatedItem(
+      id: id,
+      serverId: 's1',
+      rawData: {
+        'Id': id,
+        'Name': 'Item $id',
+        'Type': type,
+        'ImageTags': const {'Primary': 'tag1'},
+      },
+    );
+
+    Future<double> cardInset(Widget row, Finder card) async {
+      await pump(tester, KeyedSubtree(key: UniqueKey(), child: row));
+      return tester.getTopLeft(card.first).dy -
+          tester.getTopLeft(find.byWidget(row)).dy;
+    }
+
+    final insets = <String, double>{
+      'cast': await cardInset(
+        DetailCastRow(
+          people: const [
+            {'Id': 'p1', 'Name': 'Hailee Steinfeld', 'Role': 'Vi'},
+          ],
+          imageApi: imageApi,
+          serverId: 's1',
+        ),
+        find.byType(CircleAvatar),
+      ),
+      'similar': await cardInset(
+        DetailSimilarRow(
+          items: [item('m1', 'Movie')],
+          imageApi: imageApi,
+          prefs: prefs,
+        ),
+        find.byType(MediaCard),
+      ),
+      'seasons': await cardInset(
+        DetailSeasonsRow(
+          seasons: [item('s1', 'Season')],
+          imageApi: imageApi,
+          prefs: prefs,
+        ),
+        find.byType(MediaCard),
+      ),
+      'filmography': await cardInset(
+        FilmographyRow(
+          items: [item('m2', 'Movie')],
+          imageApi: imageApi,
+          prefs: prefs,
+        ),
+        find.byType(MediaCard),
+      ),
+    };
+
+    expect(insets.values.toSet(), {4.0}, reason: '$insets');
   });
 
   testWidgets('a 200px extras row has room for its cards at every scale', (
