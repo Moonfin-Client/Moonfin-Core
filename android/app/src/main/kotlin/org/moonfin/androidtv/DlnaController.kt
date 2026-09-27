@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.wifi.WifiManager
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
 import java.io.OutputStreamWriter
@@ -12,9 +13,6 @@ import java.net.HttpURLConnection
 import java.net.InetAddress
 import java.net.MulticastSocket
 import java.net.URL
-import javax.xml.parsers.DocumentBuilderFactory
-import org.xml.sax.InputSource
-import java.io.StringReader
 import java.net.NetworkInterface
 import java.net.ServerSocket
 import java.net.Socket
@@ -33,14 +31,6 @@ class DlnaController(private val context: Context) {
     private var activeDeviceRenderingControlUrl: String? = null
     private val pollExecutor = Executors.newSingleThreadScheduledExecutor()
     private var pollFuture: ScheduledFuture<*>? = null
-    private val xmlFactory: DocumentBuilderFactory by lazy {
-        DocumentBuilderFactory.newInstance().apply {
-            isNamespaceAware = true
-            setFeature("http://apache.org/xml/features/disallow-doctype-decl", true)
-            setFeature("http://xml.org/sax/features/external-general-entities", false)
-            setFeature("http://xml.org/sax/features/external-parameter-entities", false)
-        }
-    }
 
     private var activeDeviceEventSubUrl: String? = null
     private var genaSubscriptionId: String? = null
@@ -411,8 +401,7 @@ class DlnaController(private val context: Context) {
             val xml = conn.inputStream.bufferedReader().use { it.readText() }
             conn.disconnect()
 
-            val builder = xmlFactory.newDocumentBuilder()
-            val doc = builder.parse(InputSource(StringReader(xml)))
+            val doc = DlnaXml.parse(xml)
 
             val friendlyName = doc.getElementsByTagName("friendlyName").item(0)?.textContent ?: "DLNA Device"
             val modelName = doc.getElementsByTagName("modelName").item(0)?.textContent ?: ""
@@ -456,7 +445,8 @@ class DlnaController(private val context: Context) {
                 "title" to friendlyName,
                 "subtitle" to modelName,
             )
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            Log.w("DlnaController", "Failed to read DLNA device description", e)
             null
         }
     }
@@ -577,8 +567,7 @@ class DlnaController(private val context: Context) {
     }
 
     private fun parseXmlElement(xml: String, elementName: String): String? {
-        val builder = xmlFactory.newDocumentBuilder()
-        val doc = builder.parse(InputSource(StringReader(xml)))
+        val doc = DlnaXml.parse(xml)
         return doc.getElementsByTagName(elementName).item(0)?.textContent
     }
 
@@ -766,11 +755,10 @@ class DlnaController(private val context: Context) {
 
     private fun handleGenaNotify(body: String) {
         try {
-            val builder = xmlFactory.newDocumentBuilder()
-            val outerDoc = builder.parse(InputSource(StringReader(body)))
+            val outerDoc = DlnaXml.parse(body)
             val lastChangeText = outerDoc.getElementsByTagName("LastChange")
                 .item(0)?.textContent?.trim() ?: return
-            val innerDoc = builder.parse(InputSource(StringReader(lastChangeText)))
+            val innerDoc = DlnaXml.parse(lastChangeText)
             val state = innerDoc.getElementsByTagName("TransportState")
                 .item(0)?.attributes?.getNamedItem("val")?.textContent ?: return
             val relTimeStr = innerDoc.getElementsByTagName("RelativeTimePosition")
