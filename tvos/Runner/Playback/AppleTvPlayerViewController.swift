@@ -102,6 +102,11 @@ final class AppleTvPlayerViewController: UIViewController {
     /// halves of the flow report their own ending instead of the search one
     /// falling through to "No Subtitles Found" whatever went wrong.
     private weak var subtitleProgressAlert: UIAlertController?
+    // Keep action closures available to the session remote without relying on
+    // private UIKit event injection. Physical Siri Remote menus stay native.
+    private var remoteMenuActions: [ObjectIdentifier: (UIAlertAction) -> Void] = [:]
+    private var remoteMenuTransition = false
+    private var pendingRemoteMenuCommands: [String] = []
     /// The buttons the player button settings left switched on, in the order
     /// the user put them in. Nil until the Dart side sends one, and the row
     /// offers everything until then.
@@ -1650,12 +1655,20 @@ final class AppleTvPlayerViewController: UIViewController {
             super.pressesBegan(presses, with: event)
             return
         }
+        if nextUpVisible {
+            for press in presses { _ = handleNavigationPress(press.type) }
+            return
+        }
+        for press in presses where handleNavigationPress(press.type) { return }
+        super.pressesBegan(presses, with: event)
+    }
+
+    private func handleNavigationPress(_ type: UIPress.PressType) -> Bool {
         // While the Next Up card is up it owns the remote. Every press is
         // consumed here so nothing falls through to scrubbing, OSD handling,
         // or the default menu behavior underneath the card.
         if nextUpVisible {
-            for press in presses {
-                switch press.type {
+            switch type {
                 case .select:
                     hideNextUpCard()
                     if nextUpFocusOnPlay {
@@ -1673,40 +1686,39 @@ final class AppleTvPlayerViewController: UIViewController {
                     // Menu is handled by the tap recognizer.
                     break
                 }
-            }
-            return
+            return true
         }
-        for press in presses {
+        do {
             // A press while a touch pan is scrubbing resolves the pan first so
             // the press acts on the restored zone. Select means commit the
             // seek, anything else commits and proceeds. Menu belongs to the
             // tap recognizer, which cancels the pan itself.
-            if panScrubEngaged && press.type != .menu {
+            if panScrubEngaged && type != .menu {
                 finishPanScrub()
-                if press.type == .select {
+                if type == .select {
                     showOsd()
-                    return
+                    return true
                 }
             }
-            switch press.type {
+            switch type {
             case .menu:
                 // Consumed so the down press can't reach the system while the
                 // recognizer decides on release.
-                return
+                return true
             case .upArrow:
                 if isLive {
                     presentChannelCarousel()
-                    return
+                    return true
                 }
                 focusedZone = .scrubber
                 updateFocusHighlight()
                 showOsd()
-                return
+                return true
             case .downArrow:
                 focusedZone = .buttons
                 updateFocusHighlight()
                 showOsd()
-                return
+                return true
             case .playPause:
                 togglePlayPause()
                 if !isOsdOnScreen {
@@ -1717,7 +1729,7 @@ final class AppleTvPlayerViewController: UIViewController {
                 }
                 updateFocusHighlight()
                 showOsd()
-                return
+                return true
             case .select:
                 if skipSegmentActive {
                     let osdWasOnScreen = isOsdOnScreen
@@ -1728,29 +1740,100 @@ final class AppleTvPlayerViewController: UIViewController {
                         updateFocusHighlight()
                     }
                     showOsd()
-                    return
+                    return true
                 }
                 if !isOsdOnScreen {
                     togglePlayPause()
                     focusedZone = .scrubber
                     updateFocusHighlight()
                     showOsd()
-                    return
+                    return true
                 }
                 handleSelect()
                 showOsd()
-                return
+                return true
             case .leftArrow:
                 seekOrMoveFocus(forward: false)
-                return
+                return true
             case .rightArrow:
                 seekOrMoveFocus(forward: true)
-                return
+                return true
             default:
                 break
             }
         }
-        super.pressesBegan(presses, with: event)
+        return false
+    }
+
+    /// A complete tap from the Jellyfin session remote; never starts a hold.
+    func handleRemoteNavigation(_ command: String) {
+        guard viewIfLoaded?.window != nil, !isBeingDismissed else { return }
+        if remoteMenuTransition {
+            if pendingRemoteMenuCommands.count < 8 { pendingRemoteMenuCommands.append(command) }
+            return
+        }
+        if let modal = presentedViewController {
+            if let remote = modal as? RemotePlayerNavigable {
+                remote.handleRemoteNavigation(command)
+            } else if let alert = modal as? UIAlertController {
+                if command == "back" {
+                    // A progress prompt has no cancellation action.
+                    if !alert.actions.isEmpty { alert.dismiss(animated: true) }
+                } else if !alert.actions.isEmpty {
+                    presentRemoteMenu(for: alert)
+                }
+            } else if command == "back" {
+                modal.dismiss(animated: true)
+            }
+            return
+        }
+        if command == "back" { handleMenuTap(); return }
+        let key: UIPress.PressType
+        switch command {
+        case "moveup": key = .upArrow
+        case "movedown": key = .downArrow
+        case "moveleft": key = .leftArrow
+        case "moveright": key = .rightArrow
+        case "select": key = .select
+        default: return
+        }
+        _ = handleNavigationPress(key)
+        endScrubHold()
+    }
+
+    private func makePlayerMenu(title: String?, message: String?, preferredStyle: UIAlertController.Style) -> UIAlertController {
+        remoteMenuActions.removeAll()
+        return UIAlertController(title: title, message: message, preferredStyle: preferredStyle)
+    }
+
+    private func makePlayerAction(title: String?, style: UIAlertAction.Style, handler: ((UIAlertAction) -> Void)? = nil) -> UIAlertAction {
+        let action = UIAlertAction(title: title, style: style, handler: handler)
+        remoteMenuActions[ObjectIdentifier(action)] = handler ?? { _ in }
+        return action
+    }
+
+    private func presentRemoteMenu(for alert: UIAlertController) {
+        let entries = alert.actions.map { action in
+            RemotePlayerMenu.Entry(action: action, invoke: remoteMenuActions[ObjectIdentifier(action)] ?? { _ in })
+        }
+        let menu = RemotePlayerMenu(title: alert.title, message: alert.message, entries: entries)
+        remoteMenuTransition = true
+        alert.dismiss(animated: false) { [weak self] in
+            guard let self else { return }
+            guard self.viewIfLoaded?.window != nil, !self.isBeingDismissed else {
+                self.remoteMenuTransition = false
+                self.pendingRemoteMenuCommands.removeAll()
+                return
+            }
+            self.present(menu, animated: false) {
+                self.remoteMenuTransition = false
+                // The first tap establishes visible focus rather than guessing
+                // which private UIKit action previously had focus.
+                let commands = self.pendingRemoteMenuCommands
+                self.pendingRemoteMenuCommands.removeAll()
+                for queued in commands { menu.handleRemoteNavigation(queued) }
+            }
+        }
     }
 
     override func pressesEnded(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
@@ -2415,50 +2498,50 @@ final class AppleTvPlayerViewController: UIViewController {
     }
 
     private func presentAudioMenu() {
-        let sheet = UIAlertController(
+        let sheet = self.makePlayerMenu(
             title: "Audio", message: nil, preferredStyle: .actionSheet)
         for track in audioTracks {
             sheet.addAction(
-                UIAlertAction(title: trackActionTitle(track), style: .default) {
+                self.makePlayerAction(title: trackActionTitle(track), style: .default) {
                     [weak self] _ in
                     self?.onSelectAudio?(track.index)
                 })
         }
-        sheet.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        sheet.addAction(self.makePlayerAction(title: "Cancel", style: .cancel))
         present(sheet, animated: true)
     }
 
     private func presentSubtitleMenu() {
-        let sheet = UIAlertController(
+        let sheet = self.makePlayerMenu(
             title: "Subtitles", message: nil, preferredStyle: .actionSheet)
         let anySelected = subtitleTracks.contains { $0.selected }
         let offTitle = (anySelected ? "" : "\u{2713} ") + "Off"
         sheet.addAction(
-            UIAlertAction(title: offTitle, style: .default) { [weak self] _ in
+            self.makePlayerAction(title: offTitle, style: .default) { [weak self] _ in
                 self?.onSelectSubtitle?(-1)
             })
         for track in subtitleTracks {
             sheet.addAction(
-                UIAlertAction(title: trackActionTitle(track), style: .default) {
+                self.makePlayerAction(title: trackActionTitle(track), style: .default) {
                     [weak self] _ in
                     self?.onSelectSubtitle?(track.index)
                 })
         }
         if anySelected {
             sheet.addAction(
-                UIAlertAction(title: "Subtitle Offset\u{2026}", style: .default) {
+                self.makePlayerAction(title: "Subtitle Offset\u{2026}", style: .default) {
                     [weak self] _ in
                     self?.presentSubtitleDelayMenu()
                 })
         }
         if canDownloadSubtitles {
             sheet.addAction(
-                UIAlertAction(title: "Download Subtitles\u{2026}", style: .default) {
+                self.makePlayerAction(title: "Download Subtitles\u{2026}", style: .default) {
                     [weak self] _ in
                     self?.beginSubtitleSearch()
                 })
         }
-        sheet.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        sheet.addAction(self.makePlayerAction(title: "Cancel", style: .cancel))
         present(sheet, animated: true)
     }
 
@@ -2466,24 +2549,24 @@ final class AppleTvPlayerViewController: UIViewController {
     /// that reopens after each adjustment until the user is done.
     private func presentSubtitleDelayMenu() {
         let current = player.subtitleOverlay.delaySeconds
-        let sheet = UIAlertController(
+        let sheet = self.makePlayerMenu(
             title: "Subtitle Offset",
             message: String(format: "%+.1f s", current),
             preferredStyle: .actionSheet)
         for step in [-0.5, -0.1, 0.1, 0.5] {
             sheet.addAction(
-                UIAlertAction(title: String(format: "%+.1f s", step), style: .default) {
+                self.makePlayerAction(title: String(format: "%+.1f s", step), style: .default) {
                     [weak self] _ in
                     self?.applySubtitleDelay(current + step)
                 })
         }
         if current != 0 {
             sheet.addAction(
-                UIAlertAction(title: "Reset", style: .default) { [weak self] _ in
+                self.makePlayerAction(title: "Reset", style: .default) { [weak self] _ in
                     self?.applySubtitleDelay(0)
                 })
         }
-        sheet.addAction(UIAlertAction(title: "Done", style: .cancel))
+        sheet.addAction(self.makePlayerAction(title: "Done", style: .cancel))
         present(sheet, animated: true)
     }
 
@@ -2503,7 +2586,7 @@ final class AppleTvPlayerViewController: UIViewController {
     /// closes and nothing happens for as long as the refresh takes, which reads
     /// as the press having been ignored.
     func showSubtitleProgress(_ message: String) {
-        let alert = UIAlertController(title: message, message: nil, preferredStyle: .alert)
+        let alert = self.makePlayerMenu(title: message, message: nil, preferredStyle: .alert)
         subtitleProgressAlert = alert
         present(alert, animated: true)
     }
@@ -2514,8 +2597,8 @@ final class AppleTvPlayerViewController: UIViewController {
     func hideSubtitleProgress(message: String?) {
         dismissSubtitleProgress { [weak self] in
             guard let self, let message, !message.isEmpty else { return }
-            let alert = UIAlertController(title: message, message: nil, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .cancel))
+            let alert = self.makePlayerMenu(title: message, message: nil, preferredStyle: .alert)
+            alert.addAction(self.makePlayerAction(title: "OK", style: .cancel))
             self.present(alert, animated: true)
         }
     }
@@ -2535,13 +2618,13 @@ final class AppleTvPlayerViewController: UIViewController {
         let show = { [weak self] in
             guard let self else { return }
             if results.isEmpty {
-                let alert = UIAlertController(
+                let alert = self.makePlayerMenu(
                     title: "No Subtitles Found", message: nil, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .cancel))
+                alert.addAction(self.makePlayerAction(title: "OK", style: .cancel))
                 self.present(alert, animated: true)
                 return
             }
-            let sheet = UIAlertController(
+            let sheet = self.makePlayerMenu(
                 title: "Download Subtitles", message: nil, preferredStyle: .actionSheet)
             for result in results {
                 guard let id = result["id"] as? String, !id.isEmpty else { continue }
@@ -2549,34 +2632,34 @@ final class AppleTvPlayerViewController: UIViewController {
                 let subtitle = (result["subtitle"] as? String) ?? ""
                 let title = subtitle.isEmpty ? label : "\(label) \u{00B7} \(subtitle)"
                 sheet.addAction(
-                    UIAlertAction(title: title, style: .default) { [weak self] _ in
+                    self.makePlayerAction(title: title, style: .default) { [weak self] _ in
                         self?.onDownloadSubtitle?(id)
                     })
             }
-            sheet.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+            sheet.addAction(self.makePlayerAction(title: "Cancel", style: .cancel))
             self.present(sheet, animated: true)
         }
         dismissSubtitleProgress { show() }
     }
 
     private func presentChapterMenu() {
-        let sheet = UIAlertController(
+        let sheet = self.makePlayerMenu(
             title: "Chapters", message: nil, preferredStyle: .actionSheet)
         for chapter in chapters {
             let stamp = formatTime(Double(chapter.startMs) / 1000.0)
             sheet.addAction(
-                UIAlertAction(title: "\(chapter.title) · \(stamp)", style: .default) {
+                self.makePlayerAction(title: "\(chapter.title) · \(stamp)", style: .default) {
                     [weak self] _ in
                     self?.seekDirect(toMs: chapter.startMs)
                     self?.showOsd()
                 })
         }
-        sheet.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        sheet.addAction(self.makePlayerAction(title: "Cancel", style: .cancel))
         present(sheet, animated: true)
     }
 
     private func presentSpeedMenu() {
-        let sheet = UIAlertController(
+        let sheet = self.makePlayerMenu(
             title: "Playback Speed", message: nil, preferredStyle: .actionSheet)
         let speeds: [Double] = [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0]
         let current = Double(player.rate)
@@ -2584,29 +2667,29 @@ final class AppleTvPlayerViewController: UIViewController {
             let check = abs(speed - current) < 0.01 ? "\u{2713} " : ""
             let label = speed == 1.0 ? "Normal" : String(format: "%gx", speed)
             sheet.addAction(
-                UIAlertAction(title: "\(check)\(label)", style: .default) {
+                self.makePlayerAction(title: "\(check)\(label)", style: .default) {
                     [weak self] _ in
                     self?.onSetSpeed?(speed)
                 })
         }
-        sheet.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        sheet.addAction(self.makePlayerAction(title: "Cancel", style: .cancel))
         present(sheet, animated: true)
     }
 
     private func presentQualityMenu() {
-        let sheet = UIAlertController(
+        let sheet = self.makePlayerMenu(
             title: "Quality", message: nil, preferredStyle: .actionSheet)
         let options = [-1, 40, 20, 12, 8, 4, 2]
         for mbps in options {
             let check = mbps == selectedBitrateMbps ? "\u{2713} " : ""
             let label = mbps < 0 ? "Auto" : "\(mbps) Mbps"
             sheet.addAction(
-                UIAlertAction(title: "\(check)\(label)", style: .default) {
+                self.makePlayerAction(title: "\(check)\(label)", style: .default) {
                     [weak self] _ in
                     self?.onSetBitrate?(mbps)
                 })
         }
-        sheet.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        sheet.addAction(self.makePlayerAction(title: "Cancel", style: .cancel))
         present(sheet, animated: true)
     }
 
@@ -2991,7 +3074,7 @@ extension AppleTvPlayerViewController: UIGestureRecognizerDelegate {
 
 private let kInfoAccentColor = UIColor(red: 0.42, green: 0.49, blue: 0.96, alpha: 1)
 
-private final class InfoPanelViewController: UIViewController, UITableViewDataSource,
+private final class InfoPanelViewController: UIViewController, RemotePlayerNavigable, UITableViewDataSource,
     UITableViewDelegate
 {
     private let sections: [(title: String, rows: [(label: String, value: String)])]
@@ -3112,6 +3195,17 @@ private final class InfoPanelViewController: UIViewController, UITableViewDataSo
         return cell
     }
 
+    func handleRemoteNavigation(_ command: String) {
+        switch command {
+        case "back", "select": dismiss(animated: true)
+        case "moveup", "movedown":
+            let delta: CGFloat = command == "moveup" ? -180 : 180
+            let maximum = max(0, tableView.contentSize.height - tableView.bounds.height)
+            tableView.setContentOffset(CGPoint(x: 0, y: min(maximum, max(0, tableView.contentOffset.y + delta))), animated: false)
+        default: break
+        }
+    }
+
     override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
         for press in presses where press.type == .menu {
             dismiss(animated: true)
@@ -3214,7 +3308,7 @@ private final class InfoCell: UITableViewCell {
     }
 }
 
-private final class CastPanelViewController: UIViewController, UICollectionViewDataSource,
+private final class CastPanelViewController: UIViewController, RemotePlayerNavigable, UICollectionViewDataSource,
     UICollectionViewDelegate
 {
     private let people: [(name: String, subtitle: String, imageUrl: String, personId: String)]
@@ -3292,6 +3386,27 @@ private final class CastPanelViewController: UIViewController, UICollectionViewD
         let person = people[indexPath.item]
         guard !person.personId.isEmpty else { return }
         onSelect(person.personId)
+    }
+
+    func handleRemoteNavigation(_ command: String) {
+        if command == "back" { dismiss(animated: true); return }
+        guard !people.isEmpty else { return }
+        let system = UIFocusSystem.focusSystem(for: view)
+        let cell = system?.focusedItem as? UICollectionViewCell
+        let focused = cell.flatMap { collectionView.indexPath(for: $0) }
+        if command == "select", let focused {
+            collectionView(collectionView, didSelectItemAt: focused)
+            return
+        }
+        let delta = command == "moveleft" ? -1 : command == "moveright" ? 1 : 0
+        let index = focused.map { min(people.count - 1, max(0, $0.item + delta)) } ?? 0
+        let target = IndexPath(item: index, section: 0)
+        collectionView.scrollToItem(at: target, at: .centeredHorizontally, animated: false)
+        collectionView.layoutIfNeeded()
+        if let targetCell = collectionView.cellForItem(at: target) {
+            system?.requestFocusUpdate(to: targetCell)
+            system?.updateFocusIfNeeded()
+        }
     }
 
     override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
@@ -3400,7 +3515,7 @@ final class PaddedLabel: UILabel {
 // prompt surfaces use: a glass card with an eye badge, title, body copy, a
 // full width accent Continue over a quiet Stop. Focus is the two stacked
 // buttons with the soft overlay Material renders, no border ring.
-private final class StillWatchingViewController: UIViewController {
+private final class StillWatchingViewController: UIViewController, RemotePlayerNavigable {
     private let strings: PromptStrings
     private let accent: UIColor
     private let surface: UIColor
@@ -3613,6 +3728,16 @@ private final class StillWatchingViewController: UIViewController {
         }
     }
 
+    func handleRemoteNavigation(_ command: String) {
+        switch command {
+        case "moveup": focusOnContinue = true; updateFocusHighlight()
+        case "movedown": focusOnContinue = false; updateFocusHighlight()
+        case "select": resolve(continueWatching: focusOnContinue)
+        case "back": resolve(continueWatching: false)
+        default: break
+        }
+    }
+
     override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
         for press in presses {
             switch press.type {
@@ -3637,13 +3762,14 @@ private final class StillWatchingViewController: UIViewController {
     }
 }
 
-private final class SyncPlayPanelViewController: UIViewController {
+private final class SyncPlayPanelViewController: UIViewController, RemotePlayerNavigable {
     private let groupName: String
     private let participants: [String]
     private var ignoreWait: Bool
     private let onIgnoreWait: (Bool) -> Void
     private let onLeave: () -> Void
     private let ignoreWaitButton = UIButton(type: .system)
+    private let leaveButton = UIButton(type: .system)
 
     init(
         groupName: String, participants: [String], ignoreWait: Bool,
@@ -3712,7 +3838,6 @@ private final class SyncPlayPanelViewController: UIViewController {
             }, for: .primaryActionTriggered)
         panel.addSubview(ignoreWaitButton)
 
-        let leaveButton = UIButton(type: .system)
         leaveButton.translatesAutoresizingMaskIntoConstraints = false
         leaveButton.setTitle("Leave Group", for: .normal)
         leaveButton.setTitleColor(
@@ -3755,9 +3880,127 @@ private final class SyncPlayPanelViewController: UIViewController {
             ignoreWait ? "Ignore Wait: On" : "Ignore Wait: Off", for: .normal)
     }
 
+    func handleRemoteNavigation(_ command: String) {
+        if command == "back" { dismiss(animated: true); return }
+        let system = UIFocusSystem.focusSystem(for: view)
+        if command == "select", let button = system?.focusedItem as? UIButton {
+            button.sendActions(for: .primaryActionTriggered)
+            return
+        }
+        let target = command == "movedown" ? leaveButton : ignoreWaitButton
+        system?.requestFocusUpdate(to: target)
+        system?.updateFocusIfNeeded()
+    }
+
     override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
         for press in presses where press.type == .menu {
             dismiss(animated: true)
+            return
+        }
+        super.pressesBegan(presses, with: event)
+    }
+}
+
+/// Player overlays route session commands to visible controls, never Flutter
+/// controls underneath the native presentation.
+@MainActor
+protocol RemotePlayerNavigable: AnyObject {
+    func handleRemoteNavigation(_ command: String)
+}
+
+/// UIKit has no public API for remotely activating UIAlertActions. Only when
+/// session navigation takes over an alert, show its same actions in a table
+/// whose focus and activation are public. Physical-only alerts are unchanged.
+private final class RemotePlayerMenu: UITableViewController, RemotePlayerNavigable {
+    struct Entry {
+        let action: UIAlertAction
+        let invoke: (UIAlertAction) -> Void
+    }
+    private let entries: [Entry]
+    private let message: String?
+    private var selectedIndex = 0
+    private var answered = false
+
+    init(title: String?, message: String?, entries: [Entry]) {
+        self.entries = entries.filter { $0.action.isEnabled }
+        self.message = message
+        super.init(style: .grouped)
+        self.title = title
+        modalPresentationStyle = .overFullScreen
+    }
+
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        tableView.backgroundColor = UIColor(white: 0.08, alpha: 0.98)
+        tableView.contentInset = UIEdgeInsets(top: 60, left: 240, bottom: 60, right: 240)
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "action")
+        tableView.remembersLastFocusedIndexPath = true
+    }
+
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        [title, message].compactMap { $0 }.joined(separator: "\n")
+    }
+
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { entries.count }
+
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "action", for: indexPath)
+        var content = cell.defaultContentConfiguration()
+        content.text = entries[indexPath.row].action.title
+        cell.contentConfiguration = content
+        return cell
+    }
+
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) { activate(indexPath.row) }
+
+    override func tableView(_ tableView: UITableView, didUpdateFocusIn context: UITableViewFocusUpdateContext, with coordinator: UIFocusAnimationCoordinator) {
+        if let next = context.nextFocusedIndexPath { selectedIndex = next.row }
+    }
+
+    override func indexPathForPreferredFocusedView(in tableView: UITableView) -> IndexPath? {
+        entries.isEmpty ? nil : IndexPath(row: selectedIndex, section: 0)
+    }
+
+    private func activate(_ index: Int) {
+        guard !answered, !isBeingDismissed, entries.indices.contains(index) else { return }
+        answered = true
+        let entry = entries[index]
+        dismiss(animated: true) { entry.invoke(entry.action) }
+    }
+
+    func handleRemoteNavigation(_ command: String) {
+        guard !answered, !isBeingDismissed else { return }
+        if command == "back" {
+            if let cancel = entries.firstIndex(where: { $0.action.style == .cancel }) {
+                activate(cancel)
+            } else {
+                answered = true
+                dismiss(animated: true)
+            }
+            return
+        }
+        guard !entries.isEmpty else { return }
+        if command == "select" { activate(selectedIndex); return }
+        switch command {
+        case "moveup", "moveleft": selectedIndex = max(0, selectedIndex - 1)
+        case "movedown", "moveright": selectedIndex = min(entries.count - 1, selectedIndex + 1)
+        default: return
+        }
+        let path = IndexPath(row: selectedIndex, section: 0)
+        tableView.scrollToRow(at: path, at: .middle, animated: false)
+        tableView.layoutIfNeeded()
+        if let cell = tableView.cellForRow(at: path) {
+            let system = UIFocusSystem.focusSystem(for: view)
+            system?.requestFocusUpdate(to: cell)
+            system?.updateFocusIfNeeded()
+        }
+    }
+
+    override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+        if presses.contains(where: { $0.type == .menu }) {
+            handleRemoteNavigation("back")
             return
         }
         super.pressesBegan(presses, with: event)

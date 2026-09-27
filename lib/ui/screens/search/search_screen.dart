@@ -91,9 +91,8 @@ class _SearchScreenState extends State<SearchScreen>
   int _lastGridCount = -1;
   Object? _lastGridFirstId;
 
-  /// D-pad/keyboard focus navigation applies on TV and desktop; mobile is touch.
-  bool get _usesDpad =>
-      PlatformDetection.isTV || PlatformDetection.useDesktopUi;
+  /// The normal mobile layout also accepts keys from a connected remote.
+  bool get _usesDpad => true;
 
   /// The focus node that owns the search field on this platform.
   FocusNode get _fieldNode =>
@@ -135,7 +134,7 @@ class _SearchScreenState extends State<SearchScreen>
     }
 
     // Desktop keyboard/d-pad: let arrow Down/Up leave the plain text field.
-    if (PlatformDetection.useDesktopUi) {
+    if (!PlatformDetection.isTV) {
       _searchInputFocus.onKeyEvent = _onSearchInputKey;
     }
     // Initial focus is granted by the RequestInitialFocus wrapper in build().
@@ -638,7 +637,13 @@ class _SearchScreenState extends State<SearchScreen>
   }
 
   KeyEventResult _onVoiceKey(FocusNode node, KeyEvent event) {
-    if (!PlatformDetection.isTV) return KeyEventResult.ignored;
+    if (!PlatformDetection.isTV) {
+      if (isActivateKey(event)) {
+        _toggleVoiceSearch();
+        return KeyEventResult.handled;
+      }
+      return KeyEventResult.ignored;
+    }
     if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
       return KeyEventResult.ignored;
     }

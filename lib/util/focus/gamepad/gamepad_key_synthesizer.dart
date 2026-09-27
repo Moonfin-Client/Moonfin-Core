@@ -15,6 +15,11 @@ enum GamepadNavKey { up, down, left, right, select, back, contextMenu }
 /// and has no central Actions map to target. Emitting keys reaches all of it,
 /// including screens written later.
 class GamepadKeySynthesizer {
+  GamepadKeySynthesizer() : _physicalBase = _gamepadPhysicalBase;
+
+  /// Server commands use separate physical keys from real and virtual pads.
+  GamepadKeySynthesizer.remote() : _physicalBase = _remotePhysicalBase;
+
   /// Base of a private-use USB HID usage range.
   ///
   /// Emitting a distinct physical key matters, because HardwareKeyboard tracks
@@ -22,7 +27,9 @@ class GamepadKeySynthesizer {
   /// have been the obvious choice, but Android maps real pad buttons onto those
   /// same usages, so a real button press and a synthetic one would share an
   /// entry and clobber each other.
-  static const int _physicalBase = 0x0FF00001;
+  static const int _gamepadPhysicalBase = 0x0FF00001;
+  static const int _remotePhysicalBase = 0x0FF00101;
+  final int _physicalBase;
 
   static const Map<GamepadNavKey, LogicalKeyboardKey> _logical = {
     GamepadNavKey.up: LogicalKeyboardKey.arrowUp,
@@ -41,8 +48,14 @@ class GamepadKeySynthesizer {
   /// isn't what these are. A pad press is real user input arriving over a
   /// different transport.
   static bool isSynthetic(PhysicalKeyboardKey key) =>
-      key.usbHidUsage >= _physicalBase &&
-      key.usbHidUsage < _physicalBase + GamepadNavKey.values.length;
+      (key.usbHidUsage >= _gamepadPhysicalBase &&
+          key.usbHidUsage <
+              _gamepadPhysicalBase + GamepadNavKey.values.length) ||
+      isRemote(key);
+
+  static bool isRemote(PhysicalKeyboardKey key) =>
+      key.usbHidUsage >= _remotePhysicalBase &&
+      key.usbHidUsage < _remotePhysicalBase + GamepadNavKey.values.length;
 
   /// The keyboard key [key] is emitted as.
   static LogicalKeyboardKey logicalKeyFor(GamepadNavKey key) => _logical[key]!;
@@ -55,6 +68,16 @@ class GamepadKeySynthesizer {
 
   @visibleForTesting
   Set<GamepadNavKey> get pressedKeys => Set.unmodifiable(_down);
+
+  /// One complete press. Release even if an action throws or changes routes.
+  bool tap(GamepadNavKey key) {
+    if (!_down.add(key)) return false;
+    try {
+      return _emit(key, _EventKind.down);
+    } finally {
+      release(key);
+    }
+  }
 
   /// Begins a hold. Pressing an already-held key repeats it instead, which is
   /// what a real keyboard does.
@@ -83,11 +106,11 @@ class GamepadKeySynthesizer {
     }
   }
 
-  void _emit(GamepadNavKey key, _EventKind kind) {
+  bool _emit(GamepadNavKey key, _EventKind kind) {
     final physical = PhysicalKeyboardKey(_physicalBase + key.index);
     final logical = _logical[key]!;
     final time = _clock.elapsed;
-    _dispatch(switch (kind) {
+    return _dispatch(switch (kind) {
       _EventKind.down => KeyDownEvent(
         physicalKey: physical,
         logicalKey: logical,
@@ -106,7 +129,7 @@ class GamepadKeySynthesizer {
     });
   }
 
-  void _dispatch(KeyEvent event) {
+  bool _dispatch(KeyEvent event) {
     // Two stages, and the gating between them is the whole correctness
     // argument. First the HardwareKeyboard handlers, which run whether or not
     // anything is focused. Then the focus tree, reached only if no handler
@@ -116,7 +139,7 @@ class GamepadKeySynthesizer {
     // both unconditionally double-handles: pad B emits escape, the app's global
     // handler closes the top overlay sheet and reports it handled, and then the
     // focus tree pops the route as well, so one press does two things.
-    if (HardwareKeyboard.instance.handleKeyEvent(event)) return;
+    if (HardwareKeyboard.instance.handleKeyEvent(event)) return true;
 
     // These are deprecated against the eventual removal of RawKeyEvent, but
     // they're still the only public way to reach the focus tree. The
@@ -124,10 +147,11 @@ class GamepadKeySynthesizer {
     // the stage above and doesn't reach focused widgets. Kept in one place so
     // the migration is a single edit.
     // ignore: deprecated_member_use
-    ServicesBinding.instance.keyEventManager.keyMessageHandler?.call(
-      // ignore: deprecated_member_use
-      KeyMessage([event], null),
-    );
+    return ServicesBinding.instance.keyEventManager.keyMessageHandler?.call(
+          // ignore: deprecated_member_use
+          KeyMessage([event], null),
+        ) ??
+        false;
   }
 }
 

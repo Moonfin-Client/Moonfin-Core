@@ -1,5 +1,8 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -23,6 +26,9 @@ import 'package:moonfin/playback/appletv_backend.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/navigation/app_router.dart';
 import 'package:moonfin/ui/navigation/destinations.dart';
+import 'package:moonfin/util/platform_detection.dart';
+import 'package:moonfin/util/focus/input_mode_tracker.dart';
+import 'package:moonfin/ui/screensaver/screensaver_controller.dart';
 
 /// The command handlers never reach the collaborators the repository is built
 /// from, so these stay empty on purpose.
@@ -44,6 +50,12 @@ class _FakePluginSyncService extends Fake implements PluginSyncService {}
 
 class _AppleTvBackend extends Fake implements AppleTvBackend {
   bool dismissed = false;
+  final navigation = <String>[];
+  @override
+  Future<void> sendRemoteNavigation(String command) async =>
+      navigation.add(command);
+  @override
+  bool get isPlayerPresented => !dismissed;
   @override
   Future<void> dismissPlayer() async => dismissed = true;
 }
@@ -140,7 +152,10 @@ void main() {
     );
   });
 
-  tearDown(() => GetIt.instance.reset());
+  tearDown(() async {
+    PlatformDetection.setTvMode(false);
+    await GetIt.instance.reset();
+  });
 
   Future<void> send(String command, {int? seekTicks}) =>
       repository.handleRemoteCommandForTest(
@@ -153,6 +168,258 @@ void main() {
   }) => repository.handleRemoteCommandForTest(
     GeneralCommandMessage(name: name, arguments: args),
   );
+
+  testWidgets('remote Select wakes screensaver before activating a button', (
+    tester,
+  ) async {
+    PlatformDetection.setTvMode(true);
+    final screensaver = ScreensaverController(
+      GetIt.instance<UserPreferences>(),
+      manager,
+    );
+    GetIt.instance.registerSingleton<ScreensaverController>(screensaver);
+    final handler = screensaver.handleKeyEvent;
+    HardwareKeyboard.instance.addHandler(handler);
+    addTearDown(() {
+      HardwareKeyboard.instance.removeHandler(handler);
+      screensaver.dispose();
+    });
+    var selected = 0;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: TextButton(
+          autofocus: true,
+          onPressed: () => selected++,
+          child: const Text('Covered item'),
+        ),
+      ),
+    );
+    await tester.pump();
+    screensaver.visible.value = true;
+    await sendGeneral('Select');
+    await tester.pump();
+    final remainedVisible = screensaver.visible.value;
+    final remotelySelected = selected;
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowUp);
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowUp);
+    final physicalKeyDismissed = !screensaver.visible.value;
+    screensaver.activityPaused = true;
+    await tester.pumpWidget(const SizedBox());
+    // The first remote press should wake, as the physical remote does.
+    expect(physicalKeyDismissed, isTrue);
+    expect(
+      {
+        'screensaverVisible': remainedVisible,
+        'underlyingSelections': remotelySelected,
+      },
+      {'screensaverVisible': false, 'underlyingSelections': 0},
+    );
+  });
+
+  testWidgets(
+    'TV commands reach custom focus handlers without held hardware keys',
+    (tester) async {
+      PlatformDetection.setTvMode(true);
+      final keys = <LogicalKeyboardKey>[];
+      final releases = <LogicalKeyboardKey>[];
+      final hardwareKeys = {...HardwareKeyboard.instance.logicalKeysPressed};
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Focus(
+            autofocus: true,
+            onKeyEvent: (node, event) {
+              if (event is KeyDownEvent) keys.add(event.logicalKey);
+              if (event is KeyUpEvent) releases.add(event.logicalKey);
+              return KeyEventResult.handled;
+            },
+            child: const SizedBox(),
+          ),
+        ),
+      );
+      await tester.pump();
+      for (final name in [
+        'MoveUp',
+        'MoveDown',
+        'MoveLeft',
+        'MoveRight',
+        'Select',
+        'Back',
+      ]) {
+        await sendGeneral(name);
+      }
+      expect(keys, [
+        LogicalKeyboardKey.arrowUp,
+        LogicalKeyboardKey.arrowDown,
+        LogicalKeyboardKey.arrowLeft,
+        LogicalKeyboardKey.arrowRight,
+        LogicalKeyboardKey.select,
+        LogicalKeyboardKey.escape,
+      ]);
+      expect(releases, keys);
+      expect(HardwareKeyboard.instance.logicalKeysPressed, hardwareKeys);
+    },
+  );
+
+  for (final platform in TargetPlatform.values) {
+    testWidgets(
+      '$platform navigation traverses and activates in the normal layout',
+      (tester) async {
+        debugDefaultTargetPlatformOverride = platform;
+        addTearDown(() => debugDefaultTargetPlatformOverride = null);
+        PlatformDetection.setTvMode(false);
+        final first = FocusNode();
+        final second = FocusNode();
+        addTearDown(first.dispose);
+        addTearDown(second.dispose);
+        var selected = 0;
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Row(
+              children: [
+                TextButton(
+                  focusNode: first,
+                  autofocus: true,
+                  onPressed: () {},
+                  child: const Text('First'),
+                ),
+                TextButton(
+                  focusNode: second,
+                  onPressed: () => selected++,
+                  child: const Text('Second'),
+                ),
+              ],
+            ),
+          ),
+        );
+        await tester.pump();
+        await sendGeneral('MoveRight');
+        await tester.pump();
+        expect(second.hasFocus, isTrue);
+        await sendGeneral('Select');
+        await tester.pump();
+        debugDefaultTargetPlatformOverride = null;
+        expect(selected, 1);
+        await tester.pumpWidget(const SizedBox());
+      },
+    );
+  }
+
+  testWidgets('remote navigation shows focus and touch can take over again', (
+    tester,
+  ) async {
+    late BuildContext trackedContext;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: InputModeTracker(
+          child: Builder(
+            builder: (context) {
+              trackedContext = context;
+              return TextButton(
+                autofocus: true,
+                onPressed: () {},
+                child: const Text('Item'),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+    await sendGeneral('MoveRight');
+    await tester.pump();
+    expect(InputModeTracker.of(trackedContext), InputMode.keyboard);
+    await tester.tap(find.text('Item'));
+    await tester.pump();
+    expect(InputModeTracker.of(trackedContext), InputMode.pointer);
+  });
+
+  testWidgets('native playback cannot activate hidden Flutter controls', (
+    tester,
+  ) async {
+    PlatformDetection.setTvMode(true);
+    final backend = _AppleTvBackend();
+    manager.backend = backend;
+    var selected = 0;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: TextButton(
+          autofocus: true,
+          onPressed: () => selected++,
+          child: const Text('Hidden'),
+        ),
+      ),
+    );
+    await tester.pump();
+    await sendGeneral('MoveDown');
+    await sendGeneral('Select');
+    expect(selected, 0);
+    await sendGeneral('Back');
+    expect(backend.navigation, ['movedown', 'select', 'back']);
+    expect(manager.calls, isEmpty);
+    expect(backend.dismissed, isFalse);
+  });
+
+  test('Home stops playback and dismisses its native presentation', () async {
+    final backend = _AppleTvBackend();
+    manager.backend = backend;
+    appRouter.go(Destinations.search);
+    manager.stopBarrier = Completer<void>();
+    final home = sendGeneral('GoHome');
+    expect(backend.dismissed, isFalse);
+    manager.stopBarrier!.complete();
+    await home;
+    expect(manager.calls, ['stop']);
+    expect(backend.dismissed, isTrue);
+    expect(
+      appRouter.routeInformationProvider.value.uri.path,
+      Destinations.home,
+    );
+  });
+
+  test(
+    'an older Home cannot replace a newer Search after playback stops',
+    () async {
+      appRouter.go(Destinations.startup);
+      manager.stopBarrier = Completer<void>();
+      final home = sendGeneral('GoHome');
+      final search = sendGeneral('GoToSearch');
+      manager.stopBarrier!.complete();
+      await Future.wait([home, search]);
+      expect(
+        appRouter.routeInformationProvider.value.uri.path,
+        Destinations.search,
+      );
+    },
+  );
+
+  testWidgets('Back closes the top dialog before navigating the TV page', (
+    tester,
+  ) async {
+    PlatformDetection.setTvMode(true);
+    await tester.pumpWidget(
+      MaterialApp(
+        navigatorKey: appRouter.routerDelegate.navigatorKey,
+        home: Scaffold(
+          body: Builder(
+            builder: (context) => TextButton(
+              onPressed: () => showDialog<void>(
+                context: context,
+                builder: (_) => const AlertDialog(content: Text('Options')),
+              ),
+              child: const Text('Open'),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
+    expect(find.text('Options'), findsOneWidget);
+    await sendGeneral('Back');
+    await tester.pumpAndSettle();
+    expect(find.text('Options'), findsNothing);
+    expect(find.text('Open'), findsOneWidget);
+  });
 
   group('remote search navigation', () {
     setUp(() => appRouter.go(Destinations.startup));
@@ -239,12 +506,15 @@ void main() {
       search.close();
     });
 
-    test('a search opened away from a player is pushed so Back returns', () async {
-      await sendGeneral('GoToSearch', args: {'MoonfinInputId': 'phone'});
-      expect(currentPath(), Destinations.search);
-      expect(currentRoute().type, NavigatingType.push);
-      (currentRoute().extra as RemoteSearchSession).close();
-    });
+    test(
+      'a search opened away from a player is pushed so Back returns',
+      () async {
+        await sendGeneral('GoToSearch', args: {'MoonfinInputId': 'phone'});
+        expect(currentPath(), Destinations.search);
+        expect(currentRoute().type, NavigatingType.push);
+        (currentRoute().extra as RemoteSearchSession).close();
+      },
+    );
 
     test('a search opened over a player replaces the stopped player', () async {
       appRouter.go(Destinations.videoPlayer);
@@ -265,18 +535,21 @@ void main() {
       search.close();
     });
 
-    test('a phone edit after its search ended does not reopen Search', () async {
-      await sendGeneral(
-        'SendString',
-        args: {
-          'String': 'late',
-          'MoonfinInputId': 'phone',
-          'MoonfinRevision': '3',
-        },
-      );
-      expect(manager.calls, isEmpty);
-      expect(currentPath(), Destinations.startup);
-    });
+    test(
+      'a phone edit after its search ended does not reopen Search',
+      () async {
+        await sendGeneral(
+          'SendString',
+          args: {
+            'String': 'late',
+            'MoonfinInputId': 'phone',
+            'MoonfinRevision': '3',
+          },
+        );
+        expect(manager.calls, isEmpty);
+        expect(currentPath(), Destinations.startup);
+      },
+    );
 
     test('a phone edit while Search is showing reaches it', () async {
       await sendGeneral('GoToSearch', args: {'MoonfinInputId': 'phone'});

@@ -74,6 +74,10 @@ final class AppleTvVideoChannel: NSObject, FlutterStreamHandler {
             present(audioOnly: (args["audioOnly"] as? Bool) ?? false)
         case "dismiss":
             dismiss()
+        case "remoteNavigation":
+            if let command = args["command"] as? String {
+                playerVC?.handleRemoteNavigation(command)
+            }
         case "setSource":
             setSource(args)
         case "setEngineLogForwarding":

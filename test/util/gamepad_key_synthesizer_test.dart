@@ -104,6 +104,27 @@ void main() {
     );
   });
 
+  test('remote taps have their own identity and always release', () {
+    final remote = GamepadKeySynthesizer.remote();
+    synthesizer.press(GamepadNavKey.select);
+    final heldPadKey = seen.single.physicalKey;
+    seen.clear();
+    consume = true;
+    expect(remote.tap(GamepadNavKey.select), isTrue);
+    expect(seen.map((e) => e.runtimeType), [KeyDownEvent, KeyUpEvent]);
+    expect(
+      seen.every((e) => GamepadKeySynthesizer.isRemote(e.physicalKey)),
+      isTrue,
+    );
+    expect(seen.first.physicalKey, isNot(heldPadKey));
+    expect(remote.pressedKeys, isEmpty);
+    expect(HardwareKeyboard.instance.physicalKeysPressed, contains(heldPadKey));
+    expect(
+      HardwareKeyboard.instance.physicalKeysPressed,
+      isNot(contains(seen.first.physicalKey)),
+    );
+  });
+
   test('doesn\'t reach the focus tree when a global handler consumed it', () {
     // Flutter only dispatches to focused widgets when no HardwareKeyboard
     // handler claimed the event, and we have to mirror that.

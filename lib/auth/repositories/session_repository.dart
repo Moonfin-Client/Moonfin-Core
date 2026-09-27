@@ -5,12 +5,11 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:flutter/widgets.dart'
     show
-        ActivateIntent,
         Actions,
+        ActivateIntent,
         AppLifecycleState,
         FocusManager,
         PageRoute,
-        TraversalDirection,
         WidgetsBinding;
 
 import '../../l10n/current_app_localizations.dart';
@@ -52,6 +51,7 @@ import '../../preference/user_preferences.dart';
 import '../../syncplay/syncplay_manager.dart';
 import '../../util/fullscreen_helper.dart';
 import '../../util/platform_detection.dart';
+import '../../util/focus/gamepad/gamepad_key_synthesizer.dart';
 import '../store/authentication_preferences.dart';
 import '../store/authentication_store.dart';
 import '../store/credential_store.dart';
@@ -79,7 +79,7 @@ class SessionRepository {
     'VolumeDown',
   ];
 
-  static const List<String> _tvNavigationRemoteCommands = [
+  static const List<String> _navigationRemoteCommands = [
     'MoveUp',
     'MoveDown',
     'MoveLeft',
@@ -90,7 +90,7 @@ class SessionRepository {
 
   List<String> get _supportedRemoteCommands => [
     ..._baseSupportedRemoteCommands,
-    if (PlatformDetection.isTV) ..._tvNavigationRemoteCommands,
+    ..._navigationRemoteCommands,
     // Nothing but a desktop has a window to resize, so anywhere else would be
     // offering a button that does nothing.
     if (PlatformDetection.isDesktop) 'ToggleFullscreen',
@@ -222,6 +222,7 @@ class SessionRepository {
     bool validateToken = false,
   }) async {
     _setState(SessionState.switching);
+    _remoteNavigationGeneration++;
     _remoteSearch?.close();
     _pluginSyncService.resetState();
     if (GetIt.instance.isRegistered<AchievementsService>()) {
@@ -516,6 +517,7 @@ class SessionRepository {
   /// token. The push unregister and the logout both authenticate with it, so
   /// sending them would only add 401s to the burst that got us here.
   Future<void> destroyCurrentSession({bool tokenKnownInvalid = false}) async {
+    _remoteNavigationGeneration++;
     _remoteSearch?.close();
     final serverId = _activeServerId;
     final userId = _activeUserId;
@@ -694,16 +696,24 @@ class SessionRepository {
     await backend.setVolume(clamped);
   }
 
-  void _moveFocus(TraversalDirection direction) {
-    if (!PlatformDetection.isTV) return;
-    FocusManager.instance.primaryFocus?.focusInDirection(direction);
-  }
+  final _remoteKeys = GamepadKeySynthesizer.remote();
+  int _remoteNavigationGeneration = 0;
 
-  void _activateFocused() {
-    if (!PlatformDetection.isTV) return;
-    final focusContext = FocusManager.instance.primaryFocus?.context;
-    if (focusContext != null) {
-      Actions.maybeInvoke<ActivateIntent>(focusContext, const ActivateIntent());
+  Future<void> _navigateRemote(String command, GamepadNavKey key) async {
+    final backend = GetIt.instance<PlaybackManager>().backend;
+    if (backend is AppleTvBackend && backend.isPlayerPresented) {
+      // Native playback owns its input, including any menu above the player.
+      await backend.sendRemoteNavigation(command);
+      return;
+    }
+    final handled = _remoteKeys.tap(key);
+    if (!handled && key == GamepadNavKey.select) {
+      // Cupertino's default shortcuts do not map the TV Select key.
+      final context = FocusManager.instance.primaryFocus?.context;
+      if (context != null) Actions.maybeInvoke(context, const ActivateIntent());
+    }
+    if (!handled && key == GamepadNavKey.back) {
+      await appRouter.routerDelegate.navigatorKey.currentState?.maybePop();
     }
   }
 
@@ -803,6 +813,7 @@ class SessionRepository {
     int startIndex,
     PlayMessage message,
   ) async {
+    _remoteNavigationGeneration++;
     _remoteSearch?.close();
     final item = items[startIndex];
     final isLiveTv = _isLiveTvItem(item);
@@ -971,24 +982,19 @@ class SessionRepository {
       case 'togglefullscreen':
         await FullscreenHelper.toggle();
       case 'moveup':
-        _moveFocus(TraversalDirection.up);
+        await _navigateRemote('moveup', GamepadNavKey.up);
       case 'movedown':
-        _moveFocus(TraversalDirection.down);
+        await _navigateRemote('movedown', GamepadNavKey.down);
       case 'moveleft':
-        _moveFocus(TraversalDirection.left);
+        await _navigateRemote('moveleft', GamepadNavKey.left);
       case 'moveright':
-        _moveFocus(TraversalDirection.right);
+        await _navigateRemote('moveright', GamepadNavKey.right);
       case 'select':
-        _activateFocused();
+        await _navigateRemote('select', GamepadNavKey.select);
       case 'back':
+        _remoteNavigationGeneration++;
         _remoteSearch?.close();
-        if (PlatformDetection.isTV) {
-          if (appRouter.canPop()) {
-            appRouter.pop();
-          } else {
-            appRouter.go(Destinations.home);
-          }
-        }
+        await _navigateRemote('back', GamepadNavKey.back);
       case 'setaudiostreamindex':
         final index = _parseIntArg(message.arguments, 'Index');
         if (index != null) {
@@ -1015,8 +1021,17 @@ class SessionRepository {
           await _setShuffleMode(manager, mode);
         }
       case 'gohome':
+        final generation = ++_remoteNavigationGeneration;
         _remoteSearch?.close();
+        CustomTVTextField.closeTopKeyboard();
+        appRouter.routerDelegate.navigatorKey.currentState?.popUntil(
+          (route) => route is PageRoute,
+        );
+        final backend = manager.backend;
         await manager.stop(userInitiated: false);
+        if (generation != _remoteNavigationGeneration) return;
+        if (backend is AppleTvBackend) await backend.dismissPlayer();
+        if (generation != _remoteNavigationGeneration) return;
         appRouter.go(Destinations.home);
       case 'gotosearch':
         await _openRemoteSearch(
@@ -1054,6 +1069,7 @@ class SessionRepository {
     PlaybackManager manager,
     RemoteSearchSession search,
   ) async {
+    _remoteNavigationGeneration++;
     _remoteSearch?.close();
     _remoteSearch = search;
     try {
@@ -1103,6 +1119,8 @@ class SessionRepository {
   }
 
   void dispose() {
+    _remoteNavigationGeneration++;
+    _remoteKeys.releaseAll();
     _remoteSearch?.close();
     _remoteCommandSubscription?.cancel();
     _pluginEventSubscription?.cancel();

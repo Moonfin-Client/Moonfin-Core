@@ -16,6 +16,47 @@ void main() {
   };
   for (final entry in factories.entries) {
     test(
+      '${entry.key} preserves the navigation commands and target session',
+      () async {
+        final dio = Dio();
+        addTearDown(dio.close);
+        final received = <String>[];
+        dio.interceptors.add(
+          InterceptorsWrapper(
+            onRequest: (request, handler) {
+              expect(request.method, 'POST');
+              expect(request.path, '/Sessions/selected-client/Command');
+              final message = WebSocketMessageParser.parse(
+                jsonEncode({
+                  'MessageType': 'GeneralCommand',
+                  'Data': request.data,
+                }),
+              ) as GeneralCommandMessage;
+              received.add(message.name);
+              handler.resolve(
+                Response(requestOptions: request, statusCode: 204),
+              );
+            },
+          ),
+        );
+        final api = entry.value(dio);
+        const commands = [
+          'MoveUp',
+          'MoveDown',
+          'MoveLeft',
+          'MoveRight',
+          'Select',
+          'Back',
+          'GoHome',
+        ];
+        for (final command in commands) {
+          await api.sendGeneralCommand('selected-client', command);
+        }
+        expect(received, commands);
+      },
+    );
+
+    test(
       '${entry.key} carries search, Unicode and empty text through the session envelope',
       () async {
         RemoteSearchSession? receiver;

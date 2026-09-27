@@ -58,6 +58,7 @@ class AppleTvBackend implements PlayerBackend {
   bool? _engineLogForwarding;
   EngineTrust? _trust;
   bool _playerPresented = false;
+  bool _audioOnly = false;
   Timer? _audioDelayDebounce;
 
   final _positionStream = StreamController<Duration>.broadcast();
@@ -102,6 +103,7 @@ class AppleTvBackend implements PlayerBackend {
   Future<void> _ensurePlayerPresented({bool audioOnly = false}) async {
     if (_disposed || _playerPresented) return;
     _playerPresented = true;
+    _audioOnly = audioOnly;
     await _invoke<void>('present', {'audioOnly': audioOnly});
   }
 
@@ -112,6 +114,11 @@ class AppleTvBackend implements PlayerBackend {
   }
 
   Future<void> dismissPlayer() => _dismissPlayer();
+
+  bool get isPlayerPresented => _playerPresented && !_audioOnly;
+
+  Future<void> sendRemoteNavigation(String command) =>
+      _invoke<void>('remoteNavigation', {'command': command});
 
   void _handleEvent(dynamic event) {
     if (_disposed || event is! Map) return;

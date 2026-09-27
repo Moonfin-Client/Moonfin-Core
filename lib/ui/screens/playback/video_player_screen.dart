@@ -6,6 +6,8 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+import '../../../util/focus/gamepad/gamepad_key_synthesizer.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonfin_design/moonfin_design.dart';
@@ -3638,8 +3640,23 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     }
 
     final primaryFocus = FocusManager.instance.primaryFocus;
+    final fromRemote = GamepadKeySynthesizer.isRemote(event.physicalKey);
+    if (fromRemote && !PlatformDetection.isTV &&
+        (event.logicalKey.isDirectional || event.logicalKey == LogicalKeyboardKey.select)) {
+      // A session D-pad navigates the visible controls. Desktop arrow-key
+      // seek/volume shortcuts remain available to the local keyboard.
+      if (!_controlsVisible || primaryFocus == _overlayFocus) {
+        _showControls();
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted && _controlsVisible) _tvBottomPrimaryFocus.requestFocus();
+        });
+        return KeyEventResult.handled;
+      }
+      _scheduleHide();
+      return KeyEventResult.ignored;
+    }
 
-    if (PlatformDetection.isTV) {
+    if (PlatformDetection.isTV || fromRemote) {
       if (_showNextUp) {
         switch (event.logicalKey) {
           case LogicalKeyboardKey.arrowLeft:

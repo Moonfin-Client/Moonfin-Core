@@ -50,6 +50,7 @@ import '../../../util/global_shortcut_focus.dart';
 import '../../widgets/focus/context_menu_sheet.dart';
 import '../../widgets/focus/locked_focus_row.dart';
 import '../../../util/focus/dpad_keys.dart';
+import '../../../util/focus/input_mode_tracker.dart';
 import '../../../util/artwork_request_size.dart';
 import '../../../util/platform_detection.dart';
 import '../../../util/server_url.dart';
@@ -4971,7 +4972,8 @@ class _ContentRowsState extends State<_ContentRows>
           ).clamp(1.0, 2.0);
           final imageApi = widget.viewModel.imageApiForServer(item.serverId);
           final previewKey = _previewKeyFor(item, rowIndex);
-          final isV2MobileTouch = isRowsV2 && PlatformDetection.useMobileUi;
+          final isV2MobileTouch = isRowsV2 && PlatformDetection.useMobileUi &&
+              InputModeTracker.of(ctx) == InputMode.pointer;
           final delayExpansion =
               prefs.get(UserPreferences.delayCardExpansionOnRapidScroll);
           return SelectorBuilder<bool>(
@@ -4981,7 +4983,7 @@ class _ContentRowsState extends State<_ContentRows>
               isFocused: isFocused,
               isRowsV2: isRowsV2,
               isV2MobileTouch: isV2MobileTouch,
-              delayExpansion: delayExpansion,
+              delayExpansion: delayExpansion && !PlatformDetection.useMobileUi,
             ),
             builder: (ctx, effectiveV2Focused) {
           late final double ar;
