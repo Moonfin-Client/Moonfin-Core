@@ -152,6 +152,13 @@ void _installCrashHandlers() {
 
 void _captureCrash(Object error, StackTrace? stack) {
   try {
+    if (error is MissingPluginException &&
+        (error.message?.contains('native_cast_events') == true ||
+            error.message?.contains('native_dlna_events') == true ||
+            error.message?.contains('native_airplay_events') == true)) {
+      return;
+    }
+
     final errorLine = error.toString().split('\n').first;
     final frameLine = stack?.toString().split('\n').first.trim() ?? '';
     final signature = '$errorLine @ $frameLine';
