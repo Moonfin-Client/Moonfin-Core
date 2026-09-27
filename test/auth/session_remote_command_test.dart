@@ -157,6 +157,10 @@ void main() {
   group('remote search navigation', () {
     setUp(() => appRouter.go(Destinations.startup));
 
+    String currentPath() => appRouter.routeInformationProvider.value.uri.path;
+    RouteInformationState currentRoute() =>
+        appRouter.routeInformationProvider.value.state as RouteInformationState;
+
     test('buffers text while stopping playback and dismisses the native Apple TV player', () async {
       final backend = _AppleTvBackend();
       manager.backend = backend;
@@ -233,6 +237,79 @@ void main() {
       expect(search.inputId, 'new');
       expect(search.text, 'latest');
       search.close();
+    });
+
+    test('a search opened away from a player is pushed so Back returns', () async {
+      await sendGeneral('GoToSearch', args: {'MoonfinInputId': 'phone'});
+      expect(currentPath(), Destinations.search);
+      expect(currentRoute().type, NavigatingType.push);
+      (currentRoute().extra as RemoteSearchSession).close();
+    });
+
+    test('a search opened over a player replaces the stopped player', () async {
+      appRouter.go(Destinations.videoPlayer);
+      await sendGeneral('GoToSearch', args: {'MoonfinInputId': 'phone'});
+      expect(currentPath(), Destinations.search);
+      expect(currentRoute().type, NavigatingType.pushReplacement);
+      (currentRoute().extra as RemoteSearchSession).close();
+    });
+
+    test('plain text from another controller opens Search with it', () async {
+      await sendGeneral('SendString', args: {'String': 'alien'});
+      expect(manager.calls, ['stop']);
+      expect(currentPath(), Destinations.search);
+      final search = currentRoute().extra as RemoteSearchSession;
+      final values = <String>[];
+      search.attach(values.add);
+      expect(values, ['alien']);
+      search.close();
+    });
+
+    test('a phone edit after its search ended does not reopen Search', () async {
+      await sendGeneral(
+        'SendString',
+        args: {
+          'String': 'late',
+          'MoonfinInputId': 'phone',
+          'MoonfinRevision': '3',
+        },
+      );
+      expect(manager.calls, isEmpty);
+      expect(currentPath(), Destinations.startup);
+    });
+
+    test('a phone edit while Search is showing reaches it', () async {
+      await sendGeneral('GoToSearch', args: {'MoonfinInputId': 'phone'});
+      final search = currentRoute().extra as RemoteSearchSession;
+      final values = <String>[];
+      search.attach(values.add);
+      await sendGeneral(
+        'SendString',
+        args: {
+          'String': 'alien',
+          'MoonfinInputId': 'phone',
+          'MoonfinRevision': '1',
+        },
+      );
+      expect(values, ['', 'alien']);
+      search.close();
+    });
+
+    test('a phone edit after the viewer left Search ends it there', () async {
+      await sendGeneral('GoToSearch', args: {'MoonfinInputId': 'phone'});
+      final search = currentRoute().extra as RemoteSearchSession;
+      search.attach((_) {});
+      appRouter.go(Destinations.home);
+      await sendGeneral(
+        'SendString',
+        args: {
+          'String': 'late',
+          'MoonfinInputId': 'phone',
+          'MoonfinRevision': '1',
+        },
+      );
+      expect(search.active, isFalse);
+      expect(currentPath(), Destinations.home);
     });
   });
 

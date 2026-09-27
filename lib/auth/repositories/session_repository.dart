@@ -1019,36 +1019,65 @@ class SessionRepository {
         await manager.stop(userInitiated: false);
         appRouter.go(Destinations.home);
       case 'gotosearch':
-        _remoteSearch?.close();
-        final search = RemoteSearchSession(message.arguments['MoonfinInputId']);
-        _remoteSearch = search;
-        try {
-          CustomTVTextField.closeTopKeyboard();
-          appRouter.routerDelegate.navigatorKey.currentState?.popUntil(
-            (route) => route is PageRoute,
-          );
-          await manager.stop(userInitiated: false);
-          if (!search.active) return;
-          // Native tvOS playback is presented above Flutter's routes.
-          final backend = manager.backend;
-          if (backend is AppleTvBackend) await backend.dismissPlayer();
-          if (!search.active) return;
-          appRouter.go(Destinations.search, extra: search);
-        } catch (_) {
-          search.close();
-          rethrow;
-        }
+        await _openRemoteSearch(
+          manager,
+          RemoteSearchSession(message.arguments['MoonfinInputId']),
+        );
       case 'sendstring':
         final search = _remoteSearch;
-        if (search == null) return;
-        if (!search.opening &&
-            appRouter.routerDelegate.currentConfiguration.uri.path !=
+        if (search != null &&
+            !search.opening &&
+            appRouter.routeInformationProvider.value.uri.path !=
                 Destinations.search) {
           search.close();
         }
-        search.receive(message.arguments);
+        if (search != null && search.active) {
+          search.receive(message.arguments);
+        } else if (message.arguments['MoonfinInputId'] == null) {
+          // Another controller's text has no Search to land in yet, so it
+          // opens one. Edits from a phone whose input session ended stay
+          // dropped.
+          final opened = RemoteSearchSession(null)
+            ..receive(message.arguments);
+          await _openRemoteSearch(manager, opened);
+        }
       default:
         break;
+    }
+  }
+
+  /// Opens Search for [search] once dialogs, the TV keyboard and playback are
+  /// out of the way. A stopped player or an earlier Search is replaced rather
+  /// than kept, so Back skips it. From anywhere else Search is pushed, so Back
+  /// returns to where the viewer was.
+  Future<void> _openRemoteSearch(
+    PlaybackManager manager,
+    RemoteSearchSession search,
+  ) async {
+    _remoteSearch?.close();
+    _remoteSearch = search;
+    try {
+      CustomTVTextField.closeTopKeyboard();
+      appRouter.routerDelegate.navigatorKey.currentState?.popUntil(
+        (route) => route is PageRoute,
+      );
+      await manager.stop(userInitiated: false);
+      if (!search.active) return;
+      // Native tvOS playback is presented above Flutter's routes.
+      final backend = manager.backend;
+      if (backend is AppleTvBackend) await backend.dismissPlayer();
+      if (!search.active) return;
+      final path = appRouter.routeInformationProvider.value.uri.path;
+      if (path == Destinations.search || Destinations.isPlayerRoute(path)) {
+        unawaited(
+          appRouter.pushReplacement(Destinations.search, extra: search),
+        );
+      } else {
+        unawaited(appRouter.push(Destinations.search, extra: search));
+      }
+    } catch (_) {
+      search.close();
+      rethrow;
     }
   }
 
