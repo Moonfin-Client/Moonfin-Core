@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart' show TickerCanceled;
 import 'package:flutter/services.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
