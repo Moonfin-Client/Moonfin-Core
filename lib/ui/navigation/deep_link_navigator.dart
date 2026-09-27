@@ -8,49 +8,26 @@ import '../../auth/repositories/server_repository.dart';
 import '../../auth/repositories/session_repository.dart';
 import '../../auth/store/authentication_preferences.dart';
 import '../../auth/store/authentication_store.dart';
+import '../../preference/user_preferences.dart';
 import '../../util/pin_code_util.dart';
 import 'app_router.dart';
 import 'destinations.dart';
 
 /// Routes a launch or deep-link path, holding it back past the cold-start auth
 /// window so the router's redirect doesn't swallow it. When the session is
-/// already authenticated this navigates right away, the warm path from any
-/// screen. Otherwise it waits for the first moment the app is authenticated and
-/// settled on Home.
+/// already authenticated this navigates once startup has settled, switching
+/// first to the user the link pinned. Otherwise it waits for the first moment
+/// the app is authenticated and settled on Home.
 void navigateWhenReady(String route) {
   final pinnedUserId = _pinnedUserId(route);
   if (_isAuthenticated()) {
-    // Warm path. A link pinned to a user different from the active session
-    // must re-pin first, or the route resolves under the wrong profile and the
-    // item reads "not found". With no pin, or the pin already the active user,
-    // the original fast navigation holds.
-    if (pinnedUserId == null ||
-        pinnedUserId == GetIt.instance<SessionRepository>().activeUserId) {
-      unawaited(_navigateWhenSettled(route));
-      return;
-    }
-    unawaited(_warmRepin(route, pinnedUserId));
+    unawaited(_navigate(route, pinnedUserId));
     return;
   }
 
   var done = false;
   late final VoidCallback listener;
-
-  /// Navigate, re-pinning first if a stored session the startup screen
-  /// restored is a different user than the link pinned. Without this the pin
-  /// is only honored at link receipt, where the session is not yet known;
-  /// once the last-logged-in session lands, a pin for another user silently
-  /// resolves the item under the wrong profile ("not found").
-  void navigate() {
-    final active = GetIt.instance<SessionRepository>().activeUserId;
-    if (pinnedUserId != null && active != null && pinnedUserId != active) {
-      unawaited(_warmRepin(route, pinnedUserId));
-      return;
-    }
-    unawaited(_navigateWhenSettled(route));
-  }
-
-  void finish({required bool shouldNavigate}) {
+  void finish({required bool navigate}) {
     if (done) return;
     done = true;
     appRouter.routerDelegate.removeListener(listener);
@@ -58,28 +35,28 @@ void navigateWhenReady(String route) {
     // synchronously inside the startup navigation to Home (the delegate
     // notifies its listeners during go()), and navigating re-entrantly there
     // would fight go_router mid-transition. A post-frame hop lets Home settle.
-    if (shouldNavigate) {
-      WidgetsBinding.instance.addPostFrameCallback((_) => navigate());
+    if (navigate) {
+      WidgetsBinding.instance.addPostFrameCallback(
+        (_) => unawaited(_navigate(route, pinnedUserId)),
+      );
     }
   }
 
   listener = () {
     if (_isAuthenticated() && _currentPath() == Destinations.home) {
-      finish(shouldNavigate: true);
+      finish(navigate: true);
     }
   };
   appRouter.routerDelegate.addListener(listener);
 
   // Detach only, never an early drop. This survives long PIN, login, and
   // server-select cold starts, and can't leak a listener if auth never lands.
-  Timer(const Duration(minutes: 5), () {
-    finish(shouldNavigate: false);
-  });
+  Timer(const Duration(minutes: 5), () => finish(navigate: false));
 
   // Cold start with a pinned user: establish that stored session directly so
   // the profile picker isn't needed. Best effort and non blocking, so any gate
   // or failure falls through to the picker path above, which is unchanged.
-  unawaited(_pinUserIfRequested(route, onPinned: () => finish(shouldNavigate: true)));
+  unawaited(_pinUserIfRequested(route, onPinned: () => finish(navigate: true)));
 }
 
 /// Cold-start user pin for a deep link that carried `userId`: establish that
@@ -93,28 +70,11 @@ Future<void> _pinUserIfRequested(
   String route, {
   required void Function() onPinned,
 }) async {
-  final query = Uri.tryParse(route)?.queryParameters;
-  final userId = query?['userId'];
-  if (userId == null || userId.isEmpty) return;
-
-  // The same gates the picker applies before switching to a user: a link
-  // must never silently bypass a PIN or an always-authenticate requirement.
-  try {
-    if (GetIt.instance<AuthenticationPreferences>().shouldAlwaysAuthenticate) {
-      return;
-    }
-    if (PinCodeUtil(GetIt.instance<PreferenceStore>(), userId).isPinEnabled) {
-      return;
-    }
-  } catch (_) {
-    // Preferences unavailable, so don't pin and let the picker handle it.
-    return;
-  }
+  final userId = _pinnedUserId(route);
+  if (userId == null || _switchBlocked(userId)) return;
 
   if (!await _startupSettled()) return;
-  if (_isAuthenticated()) {
-    return;
-  }
+  if (_isAuthenticated()) return; // startup already gave us a session
 
   final session = GetIt.instance<SessionRepository>();
   if (session.state != SessionState.ready) {
@@ -126,11 +86,10 @@ Future<void> _pinUserIfRequested(
         );
   }
 
+  final query = Uri.tryParse(route)?.queryParameters;
   final serverId = _resolveServerIdForUser(userId, query?['serverId']);
   // Unknown or ambiguous, so let the picker decide.
-  if (serverId == null) {
-    return;
-  }
+  if (serverId == null) return;
 
   bool pinned = false;
   try {
@@ -147,40 +106,51 @@ Future<void> _pinUserIfRequested(
   onPinned();
 }
 
-/// The `userId` a deep link asked us to pin, or null when it carried none.
 String? _pinnedUserId(String route) {
   final userId = Uri.tryParse(route)?.queryParameters['userId'];
   return (userId == null || userId.isEmpty) ? null : userId;
 }
 
-/// Warm-session re-pin: the app already holds a session for a different user,
-/// so a link pinned to another user has to switch sessions before navigating,
-/// or the route resolves under the wrong profile. Applies the same gates the
-/// cold-start pin does (a link must never bypass a PIN or an
-/// always-authenticate requirement), reuses `switchCurrentSession` exactly the
-/// way the cold path does, and falls back to the plain warm navigation on any
-/// gate or failure so a link can't end up worse than before.
-Future<void> _warmRepin(String route, String userId) async {
+/// The gates the picker applies before switching to a user. A link must never
+/// silently bypass a PIN or an always-authenticate requirement.
+bool _switchBlocked(String userId) {
   try {
-    if (GetIt.instance<AuthenticationPreferences>().shouldAlwaysAuthenticate) {
-      await _navigateWhenSettled(route);
-      return;
-    }
-    if (PinCodeUtil(GetIt.instance<PreferenceStore>(), userId).isPinEnabled) {
-      await _navigateWhenSettled(route);
-      return;
-    }
+    return GetIt.instance<AuthenticationPreferences>()
+            .shouldAlwaysAuthenticate ||
+        PinCodeUtil(GetIt.instance<PreferenceStore>(), userId).isPinEnabled;
   } catch (_) {
-    // Preferences unavailable, so don't repin; keep the old warm behavior.
-    await _navigateWhenSettled(route);
+    // Preferences unavailable, so don't switch.
+    return true;
+  }
+}
+
+/// Navigates to [route], switching first when the link pinned a user other
+/// than the signed-in one. A session restored from disk counts as signed in
+/// before the startup screen has moved on, and navigating or switching then
+/// races its trip to Home, where the item can read "not found". So this waits
+/// for startup to settle first, which costs nothing once the app is running.
+Future<void> _navigate(String route, String? pinnedUserId) async {
+  await _startupSettled();
+  final activeUserId = GetIt.instance<SessionRepository>().activeUserId;
+  if (pinnedUserId == null || pinnedUserId == activeUserId) {
+    appRouter.go(route);
     return;
   }
+  await _switchUserAndNavigate(route, pinnedUserId);
+}
 
+/// Switches to [userId] before navigating, since otherwise the route resolves
+/// under the wrong profile. Any gate or failure opens it under the current
+/// user instead, so a link never ends up worse than it was.
+Future<void> _switchUserAndNavigate(String route, String userId) async {
   final query = Uri.tryParse(route)?.queryParameters;
   final serverId = _resolveServerIdForUser(userId, query?['serverId']);
-  // Unknown or ambiguous, so keep the old warm behavior.
-  if (serverId == null) {
-    await _navigateWhenSettled(route);
+  // Kids Mode locks its way out behind a PIN, so a link can't switch away from
+  // it either.
+  if (serverId == null ||
+      _switchBlocked(userId) ||
+      GetIt.instance<UserPreferences>().get(UserPreferences.kidsModeEnabled)) {
+    appRouter.go(route);
     return;
   }
 
@@ -194,28 +164,14 @@ Future<void> _warmRepin(String route, String userId) async {
   } catch (_) {
     pinned = false;
   }
-  if (!pinned || !_isAuthenticated()) {
-    await _navigateWhenSettled(route);
+  if (!pinned) {
+    appRouter.go(route);
     return;
   }
 
-  // Same post-frame hop the cold path uses: a switch settles Home, and
-  // re-navigating inside that settlement would fight the router mid-go().
+  // The switch rebuilds everything that follows the signed-in user, so the
+  // navigation waits a frame rather than landing in the middle of that.
   WidgetsBinding.instance.addPostFrameCallback((_) => appRouter.go(route));
-}
-
-/// The no-repin warm path. A cold-started app fires this while the startup
-/// screen is still settling (the session restores from disk, so
-/// [SessionRepository.activeUserId] is already set before the router leaves
-/// the startup route); navigating into an item screen mid-startup races the
-/// first home transition and the item can read "not found". Wait until the
-/// router has left the startup screen, then navigate. A genuinely warm app is
-/// never on the startup route, so this is a no-op delay there.
-Future<void> _navigateWhenSettled(String route) async {
-  for (var i = 0; i < 60 && _currentPath() == Destinations.startup; i++) {
-    await Future<void>.delayed(const Duration(milliseconds: 500));
-  }
-  appRouter.go(route);
 }
 
 /// Polls until the app is no longer on the startup screen (StartupScreen's
