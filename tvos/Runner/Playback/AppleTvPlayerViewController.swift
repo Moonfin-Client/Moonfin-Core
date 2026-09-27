@@ -1656,10 +1656,14 @@ final class AppleTvPlayerViewController: UIViewController {
             return
         }
         if nextUpVisible {
-            for press in presses { _ = handleNavigationPress(press.type) }
+            for press in presses {
+                _ = handleNavigationPress(press.type)
+            }
             return
         }
-        for press in presses where handleNavigationPress(press.type) { return }
+        for press in presses {
+            if handleNavigationPress(press.type) { return }
+        }
         super.pressesBegan(presses, with: event)
     }
 
@@ -1688,79 +1692,77 @@ final class AppleTvPlayerViewController: UIViewController {
                 }
             return true
         }
-        do {
-            // A press while a touch pan is scrubbing resolves the pan first so
-            // the press acts on the restored zone. Select means commit the
-            // seek, anything else commits and proceeds. Menu belongs to the
-            // tap recognizer, which cancels the pan itself.
-            if panScrubEngaged && type != .menu {
-                finishPanScrub()
-                if type == .select {
-                    showOsd()
-                    return true
-                }
-            }
-            switch type {
-            case .menu:
-                // Consumed so the down press can't reach the system while the
-                // recognizer decides on release.
+        // A press while a touch pan is scrubbing resolves the pan first so
+        // the press acts on the restored zone. Select means commit the
+        // seek, anything else commits and proceeds. Menu belongs to the
+        // tap recognizer, which cancels the pan itself.
+        if panScrubEngaged && type != .menu {
+            finishPanScrub()
+            if type == .select {
+                showOsd()
                 return true
-            case .upArrow:
-                if isLive {
-                    presentChannelCarousel()
-                    return true
+            }
+        }
+        switch type {
+        case .menu:
+            // Consumed so the down press can't reach the system while the
+            // recognizer decides on release.
+            return true
+        case .upArrow:
+            if isLive {
+                presentChannelCarousel()
+                return true
+            }
+            focusedZone = .scrubber
+            updateFocusHighlight()
+            showOsd()
+            return true
+        case .downArrow:
+            focusedZone = .buttons
+            updateFocusHighlight()
+            showOsd()
+            return true
+        case .playPause:
+            togglePlayPause()
+            if !isOsdOnScreen {
+                focusedZone = .scrubber
+            } else {
+                focusedZone = .buttons
+                focusedControlIndex = controls.firstIndex(of: .playPause) ?? 0
+            }
+            updateFocusHighlight()
+            showOsd()
+            return true
+        case .select:
+            if skipSegmentActive {
+                let osdWasOnScreen = isOsdOnScreen
+                hideSkipSegment()
+                onSkipSegmentSelect?()
+                if !osdWasOnScreen {
+                    focusedZone = .scrubber
+                    updateFocusHighlight()
                 }
+                showOsd()
+                return true
+            }
+            if !isOsdOnScreen {
+                togglePlayPause()
                 focusedZone = .scrubber
                 updateFocusHighlight()
                 showOsd()
                 return true
-            case .downArrow:
-                focusedZone = .buttons
-                updateFocusHighlight()
-                showOsd()
-                return true
-            case .playPause:
-                togglePlayPause()
-                if !isOsdOnScreen {
-                    focusedZone = .scrubber
-                } else {
-                    focusedZone = .buttons
-                    focusedControlIndex = controls.firstIndex(of: .playPause) ?? 0
-                }
-                updateFocusHighlight()
-                showOsd()
-                return true
-            case .select:
-                if skipSegmentActive {
-                    let osdWasOnScreen = isOsdOnScreen
-                    hideSkipSegment()
-                    onSkipSegmentSelect?()
-                    if !osdWasOnScreen {
-                        focusedZone = .scrubber
-                        updateFocusHighlight()
-                    }
-                    showOsd()
-                    return true
-                }
-                if !isOsdOnScreen {
-                    togglePlayPause()
-                    focusedZone = .scrubber
-                    updateFocusHighlight()
-                    showOsd()
-                    return true
-                }
-                handleSelect()
-                showOsd()
-                return true
-            case .leftArrow:
-                seekOrMoveFocus(forward: false)
-                return true
-            case .rightArrow:
-                seekOrMoveFocus(forward: true)
-                return true
-            default:
-                break
             }
+            handleSelect()
+            showOsd()
+            return true
+        case .leftArrow:
+            seekOrMoveFocus(forward: false)
+            return true
+        case .rightArrow:
+            seekOrMoveFocus(forward: true)
+            return true
+        default:
+            break
         }
         return false
     }

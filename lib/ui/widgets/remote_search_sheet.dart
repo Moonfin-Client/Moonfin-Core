@@ -112,7 +112,8 @@ class _RemoteSearchSheetState extends State<RemoteSearchSheet>
         });
       }
       _suspended = false;
-    } else if (state == AppLifecycleState.paused ||
+    } else if (state == AppLifecycleState.hidden ||
+        state == AppLifecycleState.paused ||
         state == AppLifecycleState.detached) {
       _suspended = true;
       _debounce?.cancel();

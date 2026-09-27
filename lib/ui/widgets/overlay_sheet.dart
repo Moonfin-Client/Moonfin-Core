@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart' show TickerCanceled;
 import 'package:flutter/services.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
@@ -367,6 +368,7 @@ class _OverlaySheetState<T> extends State<_OverlaySheet<T>>
   void dispose() {
     OverlaySheetController._openSheetCloseHandles.remove(_registryCloseHandle);
     _controller.dispose();
+    if (!widget.completer.isCompleted) widget.completer.complete();
     _scopeNode.dispose();
     super.dispose();
   }
@@ -378,13 +380,20 @@ class _OverlaySheetState<T> extends State<_OverlaySheet<T>>
     }
     _restoreFocusOnClose = restoreFocus;
     _closing = true;
-    _closeFuture = _controller.reverse().whenComplete(() {
-      if (!widget.completer.isCompleted) {
-        widget.completer.complete(result);
-      }
-      widget.onClosed(_restoreFocusOnClose);
-    });
+    _closeFuture = _animateClose(result);
     return _closeFuture!;
+  }
+
+  Future<void> _animateClose(T? result) async {
+    try {
+      await _controller.reverse().orCancel;
+    } on TickerCanceled {
+      // Disposal already removed the sheet; navigation must still settle.
+      return;
+    }
+    if (!mounted) return;
+    if (!widget.completer.isCompleted) widget.completer.complete(result);
+    widget.onClosed(_restoreFocusOnClose);
   }
 
   KeyEventResult _onKey(FocusNode node, KeyEvent event) {

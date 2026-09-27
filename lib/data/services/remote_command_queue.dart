@@ -4,6 +4,9 @@ import 'dart:collection';
 /// Ordered button presses for one captured target. Commands are never retried:
 /// replaying Select or Back after a network failure can perform a second action.
 class RemoteCommandQueue {
+  static const _maxPendingCommands = 8;
+  static const _maxPendingAge = Duration(seconds: 2);
+
   RemoteCommandQueue({
     required this.send,
     required this.onError,
@@ -22,7 +25,7 @@ class RemoteCommandQueue {
 
   void add(String command) {
     if (_closed) return;
-    if (_pending.length >= 8) {
+    if (_pending.length >= _maxPendingCommands) {
       _fail(TimeoutException('Remote control is not keeping up'));
       return;
     }
@@ -35,7 +38,7 @@ class RemoteCommandQueue {
     try {
       while (!_closed && _pending.isNotEmpty) {
         final (command, queuedAt) = _pending.removeFirst();
-        if (_now().difference(queuedAt) > const Duration(seconds: 2)) {
+        if (_now().difference(queuedAt) > _maxPendingAge) {
           throw TimeoutException('Remote control is not keeping up');
         }
         await send(command);

@@ -91,9 +91,6 @@ class _SearchScreenState extends State<SearchScreen>
   int _lastGridCount = -1;
   Object? _lastGridFirstId;
 
-  /// The normal mobile layout also accepts keys from a connected remote.
-  bool get _usesDpad => true;
-
   /// The focus node that owns the search field on this platform.
   FocusNode get _fieldNode =>
       PlatformDetection.isTV ? _searchFocus : _searchInputFocus;
@@ -133,7 +130,7 @@ class _SearchScreenState extends State<SearchScreen>
       });
     }
 
-    // Desktop keyboard/d-pad: let arrow Down/Up leave the plain text field.
+    // Let keyboard/remote arrows leave the normal-layout search field.
     if (!PlatformDetection.isTV) {
       _searchInputFocus.onKeyEvent = _onSearchInputKey;
     }
@@ -357,7 +354,6 @@ class _SearchScreenState extends State<SearchScreen>
   }
 
   void _focusFirstResult() {
-    if (!_usesDpad) return;
     if (_tabIsAll(_selectedTab)) {
       _focusAllCard(0, 0);
     } else {
@@ -775,7 +771,7 @@ class _SearchScreenState extends State<SearchScreen>
   }
 
   Widget _buildVoiceActivation() {
-    final hasFocus = _usesDpad && _voiceFocus.hasFocus;
+    final hasFocus = _voiceFocus.hasFocus;
     final isListening = _voiceController.isListening;
     final isInitializing = _voiceController.isInitializing;
     final backgroundColor = isListening
@@ -832,12 +828,8 @@ class _SearchScreenState extends State<SearchScreen>
       ),
     );
 
-    if (!_usesDpad) {
-      return button;
-    }
-
-    // On TV, _onVoiceKey drives directional focus; on desktop the button just
-    // joins the Tab traversal order (the handler no-ops off-TV).
+    // TV handles directional focus explicitly; other layouts use normal
+    // traversal and also accept activation from a connected remote.
     return Focus(
       focusNode: _voiceFocus,
       onKeyEvent: _onVoiceKey,
@@ -1365,10 +1357,8 @@ class _SearchScreenState extends State<SearchScreen>
       ar: ar,
       focusColor: focusColor,
       cardFocusExpansion: cardFocusExpansion,
-      focusNode: _usesDpad ? _allCardNode(row, col) : null,
-      onNavKey: _usesDpad
-          ? (node, event) => _onAllCardKey(row, col, rowLens, event)
-          : null,
+      focusNode: _allCardNode(row, col),
+      onNavKey: (node, event) => _onAllCardKey(row, col, rowLens, event),
     );
   }
 
@@ -1385,10 +1375,8 @@ class _SearchScreenState extends State<SearchScreen>
       width: cardWidth,
       focusColor: focusColor,
       cardFocusExpansion: cardFocusExpansion,
-      focusNode: _usesDpad ? _allCardNode(row, col) : null,
-      onNavKey: _usesDpad
-          ? (node, event) => _onAllCardKey(row, col, rowLens, event)
-          : null,
+      focusNode: _allCardNode(row, col),
+      onNavKey: (node, event) => _onAllCardKey(row, col, rowLens, event),
     );
   }
 
@@ -1405,10 +1393,8 @@ class _SearchScreenState extends State<SearchScreen>
       width: cardWidth,
       focusColor: focusColor,
       cardFocusExpansion: cardFocusExpansion,
-      focusNode: _usesDpad ? _allCardNode(row, col) : null,
-      onNavKey: _usesDpad
-          ? (node, event) => _onAllCardKey(row, col, rowLens, event)
-          : null,
+      focusNode: _allCardNode(row, col),
+      onNavKey: (node, event) => _onAllCardKey(row, col, rowLens, event),
     );
   }
 
@@ -1609,15 +1595,13 @@ class _SearchScreenState extends State<SearchScreen>
       ar: ar,
       focusColor: focusColor,
       cardFocusExpansion: cardFocusExpansion,
-      focusNode: _usesDpad ? getGridItemFocusNode(index) : null,
-      onNavKey: _usesDpad
-          ? (node, event) => _onGridKey(
-              index: index,
-              columns: columns,
-              count: count,
-              event: event,
-            )
-          : null,
+      focusNode: getGridItemFocusNode(index),
+      onNavKey: (node, event) => _onGridKey(
+        index: index,
+        columns: columns,
+        count: count,
+        event: event,
+      ),
     );
   }
 
@@ -1634,15 +1618,13 @@ class _SearchScreenState extends State<SearchScreen>
       width: cellWidth,
       focusColor: focusColor,
       cardFocusExpansion: cardFocusExpansion,
-      focusNode: _usesDpad ? getGridItemFocusNode(index) : null,
-      onNavKey: _usesDpad
-          ? (node, event) => _onGridKey(
-              index: index,
-              columns: columns,
-              count: count,
-              event: event,
-            )
-          : null,
+      focusNode: getGridItemFocusNode(index),
+      onNavKey: (node, event) => _onGridKey(
+        index: index,
+        columns: columns,
+        count: count,
+        event: event,
+      ),
     );
   }
 
@@ -1687,15 +1669,13 @@ class _SearchScreenState extends State<SearchScreen>
       width: cellWidth,
       focusColor: focusColor,
       cardFocusExpansion: cardFocusExpansion,
-      focusNode: _usesDpad ? getGridItemFocusNode(index) : null,
-      onNavKey: _usesDpad
-          ? (node, event) => _onGridKey(
-              index: index,
-              columns: columns,
-              count: count,
-              event: event,
-            )
-          : null,
+      focusNode: getGridItemFocusNode(index),
+      onNavKey: (node, event) => _onGridKey(
+        index: index,
+        columns: columns,
+        count: count,
+        event: event,
+      ),
     );
   }
 }

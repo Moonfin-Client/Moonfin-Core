@@ -102,7 +102,8 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused ||
+    if (state == AppLifecycleState.hidden ||
+        state == AppLifecycleState.paused ||
         state == AppLifecycleState.detached) {
       _suspended = true;
       _cancelNavigation();

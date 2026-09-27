@@ -324,9 +324,10 @@ void main() {
     connected.dispose();
   });
 
-  testWidgets(
-    'backgrounding cancels pending text without replaying it on resume',
-    (tester) async {
+  for (final state in [AppLifecycleState.paused, AppLifecycleState.hidden]) {
+    testWidgets('$state cancels pending text without replaying it on resume', (
+      tester,
+    ) async {
       final api = _SessionApi();
       final connected = ValueNotifier(true);
       await _open(tester, api, connected);
@@ -334,7 +335,9 @@ void main() {
       await tester.enterText(find.byType(TextField), 'old');
       tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
       tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
-      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+      if (state == AppLifecycleState.paused) {
+        tester.binding.handleAppLifecycleStateChanged(state);
+      }
       await tester.pump(const Duration(milliseconds: 300));
       expect(api.sentText, isEmpty);
       tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
@@ -348,8 +351,8 @@ void main() {
       expect(api.commands.last.$3['MoonfinInputId'], isNot(firstId));
       await tester.pumpWidget(const SizedBox());
       connected.dispose();
-    },
-  );
+    });
+  }
 
   testWidgets('one-shot retry sends the latest edited phrase', (tester) async {
     final api = _SessionApi()..failText = true;

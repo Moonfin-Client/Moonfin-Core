@@ -253,28 +253,28 @@ void main() {
     },
   );
 
-  testWidgets('backgrounding cancels queued presses until resumed', (
-    tester,
-  ) async {
-    api.sessions = [target('tv')];
-    await open(tester);
-    await tester.tap(find.text('Moonfin for webOS · tv'));
-    await tester.pumpAndSettle();
-    final barrier = Completer<void>();
-    api.barrier = barrier;
-    await tapCommand(tester, 'MoveDown');
-    await tapCommand(tester, 'Select');
-    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
-    api.barrier = null;
-    barrier.complete();
-    await tester.pump();
-    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
-    await tester.pumpAndSettle();
-    expect(api.commands, [('tv', 'MoveDown')]);
-    await tapCommand(tester, 'Back');
-    expect(api.commands.last, ('tv', 'Back'));
-    await disposeRemote(tester);
-  });
+  for (final state in [AppLifecycleState.paused, AppLifecycleState.hidden]) {
+    testWidgets('$state cancels queued presses until resumed', (tester) async {
+      api.sessions = [target('tv')];
+      await open(tester);
+      await tester.tap(find.text('Moonfin for webOS · tv'));
+      await tester.pumpAndSettle();
+      final barrier = Completer<void>();
+      api.barrier = barrier;
+      await tapCommand(tester, 'MoveDown');
+      await tapCommand(tester, 'Select');
+      tester.binding.handleAppLifecycleStateChanged(state);
+      api.barrier = null;
+      barrier.complete();
+      await tester.pump();
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      await tester.pumpAndSettle();
+      expect(api.commands, [('tv', 'MoveDown')]);
+      await tapCommand(tester, 'Back');
+      expect(api.commands.last, ('tv', 'Back'));
+      await disposeRemote(tester);
+    });
+  }
 
   testWidgets('server account changes cannot send to the captured old server', (
     tester,
