@@ -1,15 +1,14 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 import 'cast_target.dart';
+import 'resilient_event_stream.dart';
 import '../../../l10n/current_app_localizations.dart';
 import '../../../util/platform_detection.dart';
 
 class NativeDlnaChannel {
   static const MethodChannel _channel = MethodChannel(
     'com.moonfin/native_dlna',
-  );
-  static const EventChannel _events = EventChannel(
-    'com.moonfin/native_dlna_events',
   );
   static Stream<Map<String, dynamic>>? _cachedEventStream;
 
@@ -126,8 +125,9 @@ class NativeDlnaChannel {
     if (!_supported) {
       return const Stream<Map<String, dynamic>>.empty();
     }
-    return _cachedEventStream ??= _events
-        .receiveBroadcastStream()
+    return _cachedEventStream ??= resilientEventChannelStream(
+      'com.moonfin/native_dlna_events',
+    )
         .map((event) {
           if (event is Map) {
             return event.cast<String, dynamic>();
@@ -135,5 +135,10 @@ class NativeDlnaChannel {
           return <String, dynamic>{};
         })
         .where((event) => event.isNotEmpty);
+  }
+
+  @visibleForTesting
+  static void resetForTesting() {
+    _cachedEventStream = null;
   }
 }

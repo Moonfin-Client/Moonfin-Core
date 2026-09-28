@@ -95,9 +95,13 @@ internal class TimeOffsetMediaPeriod(
     override fun discardBuffer(positionUs: Long, toKeyframe: Boolean) =
         wrappedMediaPeriod.discardBuffer(positionUs - timeOffsetUs, toKeyframe)
 
+    // A subtitle file only reports a discontinuity when a download with no
+    // known length fails and starts over from zero, and passing it up would
+    // make the merged period seek the video back to zero too. The child is
+    // still asked, since it holds its samples back until it's read.
     override fun readDiscontinuity(): Long {
-        val discontinuityUs = wrappedMediaPeriod.readDiscontinuity()
-        return if (discontinuityUs == C.TIME_UNSET) C.TIME_UNSET else discontinuityUs + timeOffsetUs
+        wrappedMediaPeriod.readDiscontinuity()
+        return C.TIME_UNSET
     }
 
     override fun seekToUs(positionUs: Long): Long {

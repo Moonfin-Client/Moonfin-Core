@@ -13,7 +13,7 @@ import AppKit
 /// Center transport controls fall through to whatever app last held the Now
 /// Playing session.
 ///
-/// Two modes:
+/// Three modes:
 /// - Detached (default): `MPRemoteCommandCenter.shared()` +
 ///   `MPNowPlayingInfoCenter.default()`, used when no AVPlayer is available
 ///   (software decode path, teardown).
@@ -22,6 +22,11 @@ import AppKit
 ///   loopback-HLS player. `attach(player:)` must be called again on every
 ///   player republish. The engine swaps AVPlayer instances on internal
 ///   reloads and a stale session binding reintroduces the race.
+/// - Adopted: a session the engine owns and publishes from its own player,
+///   used for music. Only the command handlers move onto it.
+///
+/// On iOS audio_service owns the shared centers, so there only the adopted
+/// mode does anything.
 @MainActor
 final class NowPlayingController {
     var onPlay: (@MainActor () -> Void)?
@@ -32,6 +37,7 @@ final class NowPlayingController {
     var onNext: (@MainActor () -> Void)?
     var onPrevious: (@MainActor () -> Void)?
 
+    private var wantsCommands = false
     private var commandsRegistered = false
     private var registeredTargets: [(MPRemoteCommand, Any)] = []
     private var info: [String: Any] = [:]
@@ -45,23 +51,33 @@ final class NowPlayingController {
     /// the same setting and a remote agrees with the on screen buttons.
     private var skipForwardInterval: TimeInterval = 10
     private var skipBackwardInterval: TimeInterval = 10
+    private var intervalSkipsEnabled = true
 
     // MPNowPlayingSession is an iOS and tvOS API. Only tvOS drives Now Playing
     // natively, so on macOS this class stays inert and the default centers
     // stand in for the session.
     #if os(iOS) || os(tvOS)
         private var session: MPNowPlayingSession?
+        private var sessionIsAdopted = false
 
-        private var commandCenter: MPRemoteCommandCenter {
-            session?.remoteCommandCenter ?? .shared()
+        private var commandCenter: MPRemoteCommandCenter? {
+            #if os(iOS)
+                return session?.remoteCommandCenter
+            #else
+                return session?.remoteCommandCenter ?? .shared()
+            #endif
         }
 
-        private var infoCenter: MPNowPlayingInfoCenter {
-            session?.nowPlayingInfoCenter ?? .default()
+        private var infoCenter: MPNowPlayingInfoCenter? {
+            #if os(iOS)
+                return session?.nowPlayingInfoCenter
+            #else
+                return session?.nowPlayingInfoCenter ?? .default()
+            #endif
         }
     #else
-        private var commandCenter: MPRemoteCommandCenter { .shared() }
-        private var infoCenter: MPNowPlayingInfoCenter { .default() }
+        private var commandCenter: MPRemoteCommandCenter? { .shared() }
+        private var infoCenter: MPNowPlayingInfoCenter? { .default() }
     #endif
 
     /// Binds Now Playing to a concrete AVPlayer via `MPNowPlayingSession`.
@@ -71,8 +87,7 @@ final class NowPlayingController {
     func attach(player: AVPlayer?) {
         #if os(iOS) || os(tvOS)
             if player === attachedPlayer { return }
-            let wasRegistered = commandsRegistered
-            if wasRegistered { unregisterCommands() }
+            if commandsRegistered { unregisterCommands() }
             let savedInfo = info
             if let player {
                 let newSession = MPNowPlayingSession(players: [player])
@@ -84,20 +99,38 @@ final class NowPlayingController {
                 session = nil
                 attachedPlayer = nil
             }
-            if wasRegistered { registerCommands() }
+            sessionIsAdopted = false
+            if wantsCommands { registerCommands() }
             if !savedInfo.isEmpty {
                 info = savedInfo
-                infoCenter.nowPlayingInfo = info
+                publish(info)
             }
         #else
             attachedPlayer = player
         #endif
     }
 
+    #if os(iOS) || os(tvOS)
+        /// Moves the command handlers onto the engine's session, or back to the
+        /// shared center for nil. The engine makes that session the active one,
+        /// so remote commands only reach handlers registered on it.
+        func adopt(session adopted: MPNowPlayingSession?) {
+            guard adopted !== session else { return }
+            if commandsRegistered { unregisterCommands() }
+            session = adopted
+            sessionIsAdopted = adopted != nil
+            attachedPlayer = nil
+            if wantsCommands { registerCommands() }
+            // The engine asked before any handler was on, and a session with
+            // none isn't eligible to be Now Playing.
+            adopted?.becomeActiveIfPossible()
+        }
+    #endif
+
     func registerCommands() {
-        guard !commandsRegistered else { return }
+        wantsCommands = true
+        guard !commandsRegistered, let center = commandCenter else { return }
         commandsRegistered = true
-        let center = commandCenter
 
         addTarget(center.playCommand) { [weak self] _ in
             MainActor.assumeIsolated {
@@ -185,8 +218,8 @@ final class NowPlayingController {
         center.pauseCommand.isEnabled = true
         center.togglePlayPauseCommand.isEnabled = true
         center.changePlaybackPositionCommand.isEnabled = true
-        center.skipForwardCommand.isEnabled = true
-        center.skipBackwardCommand.isEnabled = true
+        center.skipForwardCommand.isEnabled = intervalSkipsEnabled
+        center.skipBackwardCommand.isEnabled = intervalSkipsEnabled
         center.seekForwardCommand.isEnabled = true
         center.seekBackwardCommand.isEnabled = true
         center.nextTrackCommand.isEnabled = queueHasNext
@@ -209,7 +242,7 @@ final class NowPlayingController {
     }
 
     private func applySkipIntervals() {
-        let center = commandCenter
+        guard let center = commandCenter else { return }
         center.skipForwardCommand.preferredIntervals = [
             NSNumber(value: skipForwardInterval)
         ]
@@ -218,10 +251,19 @@ final class NowPlayingController {
         ]
     }
 
+    /// The system shows interval skips in place of the track buttons when
+    /// both are on, so music turns them off to keep next and previous.
+    func setIntervalSkipsEnabled(_ enabled: Bool) {
+        intervalSkipsEnabled = enabled
+        guard commandsRegistered, let center = commandCenter else { return }
+        center.skipForwardCommand.isEnabled = enabled
+        center.skipBackwardCommand.isEnabled = enabled
+    }
+
     func setQueueCapabilities(hasNext: Bool, hasPrevious: Bool) {
         queueHasNext = hasNext
         queueHasPrevious = hasPrevious
-        let center = commandCenter
+        guard let center = commandCenter else { return }
         center.nextTrackCommand.isEnabled = hasNext
         center.previousTrackCommand.isEnabled = hasPrevious
     }
@@ -236,7 +278,7 @@ final class NowPlayingController {
             info[MPMediaItemPropertyPlaybackDuration] = durationSeconds
         }
         info[MPNowPlayingInfoPropertyMediaType] = MPNowPlayingInfoMediaType.video.rawValue
-        infoCenter.nowPlayingInfo = info
+        publish(info)
         loadArtwork(artworkURL)
     }
 
@@ -249,22 +291,31 @@ final class NowPlayingController {
         }
         info[MPNowPlayingInfoPropertyElapsedPlaybackTime] = max(0, elapsed)
         info[MPNowPlayingInfoPropertyPlaybackRate] = isPlaying ? Double(rate <= 0 ? 1 : rate) : 0
-        infoCenter.nowPlayingInfo = info
+        publish(info)
     }
 
     func clear() {
         info = [:]
         artworkURLString = nil
-        infoCenter.nowPlayingInfo = nil
+        publish(nil)
     }
 
     func teardown() {
+        wantsCommands = false
         unregisterCommands()
         clear()
         #if os(iOS) || os(tvOS)
             session = nil
+            sessionIsAdopted = false
         #endif
         attachedPlayer = nil
+    }
+
+    private func publish(_ value: [String: Any]?) {
+        #if os(iOS) || os(tvOS)
+            if sessionIsAdopted { return }
+        #endif
+        infoCenter?.nowPlayingInfo = value
     }
 
     private func unregisterCommands() {
@@ -305,6 +356,6 @@ final class NowPlayingController {
         info[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: image.size) { _ in
             image
         }
-        infoCenter.nowPlayingInfo = info
+        publish(info)
     }
 }

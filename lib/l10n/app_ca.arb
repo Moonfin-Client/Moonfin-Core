@@ -12500,5 +12500,105 @@
     "uiScaleGrandparents": "Per als avis",
     "@uiScaleGrandparents": {
         "description": "UI scaling option above extra large"
+    },
+    "setupOptional": "Opcional",
+    "@setupOptional": {
+        "description": "Tag beside an optional section in the setup wizard"
+    },
+    "playbackStreamLost": "La reproducció s'ha aturat i no s'ha pogut recuperar.",
+    "@playbackStreamLost": {
+        "description": "Shown in place of an internal sentinel error code when playback gives up trying to recover a stalled or starved stream"
+    },
+    "liveReconnecting": "S'està reconnectant… ({attempt} de {total})",
+    "@liveReconnecting": {
+        "description": "Overlay shown while a live channel's bounded recovery is retrying",
+        "placeholders": {
+            "attempt": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "setupPlaybackLanguages": "Idiomes de reproducció",
+    "@setupPlaybackLanguages": {
+        "description": "Heading of the optional audio and subtitle language section on the last setup wizard screen"
+    },
+    "setupNavbarStyleQuestion": "Quin aspecte ha de tenir la barra inferior?",
+    "@setupNavbarStyleQuestion": {
+        "description": "Setup question asking which style the bottom navigation bar should use"
+    },
+    "setupNavbarStyleDockHint": "Una càpsula flotant amb etiquetes sota cada pestanya.",
+    "@setupNavbarStyleDockHint": {
+        "description": "What the Dock bottom bar style gives you"
+    },
+    "setupNavbarStyleSplitHint": "La cerca té el seu propi botó i la barra s'encongeix mentre et desplaces.",
+    "@setupNavbarStyleSplitHint": {
+        "description": "What the Split bottom bar style gives you"
+    },
+    "setupNavbarStyleStripHint": "Una barra d'amplada completa al llarg de la vora inferior.",
+    "@setupNavbarStyleStripHint": {
+        "description": "What the Strip bottom bar style gives you"
+    },
+    "bottomNavbarStyle": "Estil de la barra inferior",
+    "@bottomNavbarStyle": {
+        "description": "Settings title for choosing how the mobile bottom navigation bar looks"
+    },
+    "bottomNavbarStyleDock": "Dock",
+    "@bottomNavbarStyleDock": {
+        "description": "Bottom bar style: a floating pill with labelled tabs"
+    },
+    "bottomNavbarStyleSplit": "Dividida",
+    "@bottomNavbarStyleSplit": {
+        "description": "Bottom bar style: tabs in one capsule with search as its own round button"
+    },
+    "bottomNavbarStyleStrip": "Franja",
+    "@bottomNavbarStyleStrip": {
+        "description": "Bottom bar style: a full-width bar along the bottom edge"
+    },
+    "bottomNavbarTabs": "Pestanyes de la barra inferior",
+    "@bottomNavbarTabs": {
+        "description": "Settings title for choosing which tabs sit on the mobile bottom navigation bar"
+    },
+    "bottomNavbarTabsDescription": "Fixa fins a 3 pestanyes entre «Inici» i «Tu». Tota la resta és al menú «Tu».",
+    "@bottomNavbarTabsDescription": {
+        "description": "Explains the bottom bar tabs screen"
+    },
+    "bottomNavbarTabsAutomatic": "Automàtic",
+    "@bottomNavbarTabsAutomatic": {
+        "description": "Shown when the bottom bar tabs are picked from the navigation button settings"
+    },
+    "bottomNavbarTabsPinned": "Fixades",
+    "@bottomNavbarTabsPinned": {
+        "description": "Section header for the tabs pinned to the bottom bar"
+    },
+    "bottomNavbarTabsAvailable": "Disponibles",
+    "@bottomNavbarTabsAvailable": {
+        "description": "Section header for tabs that can be pinned to the bottom bar"
+    },
+    "bottomNavbarTabsReset": "Restableix a automàtic",
+    "@bottomNavbarTabsReset": {
+        "description": "Action that clears the pinned bottom bar tabs so they are picked automatically again"
+    },
+    "bottomNavbarTabsLimit": "Pots fixar fins a 3 pestanyes. Treu-ne una per fixar-ne una altra.",
+    "@bottomNavbarTabsLimit": {
+        "description": "Hint shown when the maximum number of bottom bar tabs is already pinned"
+    },
+    "bottomNavbarTabTurnedOff": "Desactivada a «Botons»",
+    "@bottomNavbarTabTurnedOff": {
+        "description": "Hint on a bottom bar tab that can't be pinned because its navigation button setting is off"
+    },
+    "bottomNavbarSplitSearchNote": "A l'estil «Dividida», la cerca sempre té el seu propi botó.",
+    "@bottomNavbarSplitSearchNote": {
+        "description": "Note on the bottom bar tabs screen about the Split style"
+    },
+    "bottomNavbarButtonsNote": "Aquests botons decideixen quines pestanyes pots fixar a la barra inferior i què es mostra al menú «Tu».",
+    "@bottomNavbarButtonsNote": {
+        "description": "Note under the navigation buttons section while the bottom bar is in use"
+    },
+    "navYou": "Tu",
+    "@navYou": {
+        "description": "Bottom bar tab that opens the user's own menu with their profile, extra destinations and settings"
     }
 }

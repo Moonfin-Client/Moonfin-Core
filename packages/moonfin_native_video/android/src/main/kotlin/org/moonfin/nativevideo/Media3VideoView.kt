@@ -113,6 +113,7 @@ import org.moonfin.nativevideo.subtitle.externalFormatIdMatches
 import org.moonfin.nativevideo.subtitle.joinStackedCues
 import org.moonfin.nativevideo.subtitle.sourceTreeFor
 import org.moonfin.nativevideo.subtitle.syncDelaysPayload
+import org.moonfin.nativevideo.ts.withHdmvTsSupport
 
 @OptIn(ExperimentalApi::class)
 private class MoonfinRenderersFactory(
@@ -692,31 +693,6 @@ class Media3VideoView(
             "NotoSansSymbols", "NotoSansSymbols2", "NotoSansMath", "NotoMusic",
         )
     }
-
-    private fun DefaultExtractorsFactory.setTsPayloadReaderFactoryFlagsCompat(
-        flags: Int,
-    ): DefaultExtractorsFactory {
-        try {
-            DefaultExtractorsFactory::class.java
-                .getMethod(
-                    "setTsExtractorPayloadReaderFactoryFlags",
-                    Int::class.javaPrimitiveType,
-                )
-                .invoke(this, flags)
-            return this
-        } catch (_: Throwable) {
-        }
-
-        try {
-            DefaultExtractorsFactory::class.java
-                .getMethod("setTsExtractorFlags", Int::class.javaPrimitiveType)
-                .invoke(this, flags)
-        } catch (_: Throwable) {
-        }
-
-        return this
-    }
-
 
     private enum class SubtitleRendererMode(
         val wireValue: String,
@@ -1927,14 +1903,15 @@ class Media3VideoView(
         }
 
         val extractorsFactory = DefaultExtractorsFactory()
-            .setTsExtractorMode(TsExtractor.MODE_SINGLE_PMT)
-            .setTsPayloadReaderFactoryFlagsCompat(DefaultTsPayloadReaderFactory.FLAG_ALLOW_NON_IDR_KEYFRAMES)
-            .setTsExtractorTimestampSearchBytes(
-                if (isLowRamDevice) TS_SEARCH_BYTES_LOW_RAM else TS_SEARCH_BYTES_DEFAULT,
-            )
-            .setTsSubtitleFormats(FALLBACK_CLOSED_CAPTION_FORMATS)
             .setConstantBitrateSeekingEnabled(true)
             .setConstantBitrateSeekingAlwaysEnabled(true)
+            .withHdmvTsSupport(
+                mode = TsExtractor.MODE_SINGLE_PMT,
+                payloadReaderFlags = DefaultTsPayloadReaderFactory.FLAG_ALLOW_NON_IDR_KEYFRAMES,
+                subtitleFormats = FALLBACK_CLOSED_CAPTION_FORMATS,
+                timestampSearchBytes =
+                    if (isLowRamDevice) TS_SEARCH_BYTES_LOW_RAM else TS_SEARCH_BYTES_DEFAULT,
+            )
 
         httpDataSourceFactory = DefaultHttpDataSource.Factory()
             .setAllowCrossProtocolRedirects(true)

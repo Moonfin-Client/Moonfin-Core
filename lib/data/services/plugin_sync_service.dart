@@ -384,7 +384,7 @@ class PluginSyncService extends ChangeNotifier {
             await _applyServerSettings(client, _profileName, resolved);
           }
 
-          await _startSettingsStream(client);
+          unawaited(_startSettingsStream(client));
         }
 
         if (availability == _PluginAvailabilityStatus.unknown) {
@@ -415,7 +415,7 @@ class PluginSyncService extends ChangeNotifier {
 
       await _applyServerSettings(client, _profileName, resolved);
       await _prefs.set(syncInitializedPref, true);
-      await _startSettingsStream(client);
+      unawaited(_startSettingsStream(client));
     } catch (_) {
       resetState();
     } finally {
@@ -559,6 +559,9 @@ class PluginSyncService extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Sign-in leaves this running rather than waiting on it. The server can
+  /// hold the first reply back until its heartbeat, and the stream reconnects
+  /// on its own.
   Future<void> _startSettingsStream(MediaServerClient client) async {
     // Emby servers have no SSE endpoint, so plugin events arrive over the
     // session websocket instead. Don't loop on 501 reconnects here.
@@ -633,6 +636,8 @@ class PluginSyncService extends ChangeNotifier {
     }
   }
 
+  /// Signs this user in to Seerr through the plugin, and returns whether that
+  /// brought Seerr up, which is when the home has to load its rows again.
   Future<bool> configureSeerr(
     MediaServerClient client, {
     String? username,
@@ -642,6 +647,17 @@ class PluginSyncService extends ChangeNotifier {
     if (token == null || token.isEmpty) return false;
 
     final seerrRepo = await GetIt.instance.getAsync<SeerrRepository>();
+
+    // A session the plugin kept from an earlier sign in is already live, and
+    // the home loads its rows with it. Signing in again would swap the Seerr
+    // client under those loads and reload the home for nothing.
+    if (_pluginAvailable) {
+      await seerrRepo.ensureInitialized();
+      if (seerrRepo.isAvailable) {
+        await _enableSeerrOnceSignedIn(client);
+        return false;
+      }
+    }
 
     // A cold start can reach this before the server answers the plugin ping, or
     // before the plugin's Seerr session comes up after the restored token is
@@ -669,14 +685,7 @@ class PluginSyncService extends ChangeNotifier {
           username: username,
           password: password,
         );
-        if (seerrRepo.isAvailable &&
-            !_prefs.get(UserPreferences.seerrEnabled)) {
-          _setLocalSeerrEnabled(true);
-          await pushSettingsForProfile(
-            client,
-            profile: selectedCustomizationProfile,
-          );
-        }
+        if (seerrRepo.isAvailable) await _enableSeerrOnceSignedIn(client);
         await _refreshAvailabilityStatus(client);
       } catch (_) {
         continue;
@@ -686,6 +695,12 @@ class PluginSyncService extends ChangeNotifier {
     }
 
     return seerrRepo.isAvailable;
+  }
+
+  Future<void> _enableSeerrOnceSignedIn(MediaServerClient client) async {
+    if (_prefs.get(UserPreferences.seerrEnabled)) return;
+    _setLocalSeerrEnabled(true);
+    await pushSettingsForProfile(client, profile: selectedCustomizationProfile);
   }
 
   Future<void> pushSettings(

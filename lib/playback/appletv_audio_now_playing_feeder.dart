@@ -37,6 +37,7 @@ class AppleTvAudioNowPlayingFeeder {
       s.playingStream.listen((_) => _push()),
       s.durationStream.listen((_) => _push()),
       _manager.queueService.queueChangedStream.listen((_) => _push()),
+      _backend.uiActionStream.listen(_handleCommand),
     ]);
   }
 
@@ -45,6 +46,28 @@ class AppleTvAudioNowPlayingFeeder {
       sub.cancel();
     }
     _subs.clear();
+  }
+
+  // Video presses go to its player screen, but music has no screen of its own
+  // to take them, so they're handled here.
+  void _handleCommand(Map<String, dynamic> command) {
+    final raw = _manager.queueService.currentItem;
+    if (raw is! AggregatedItem || !raw.isAudioLike) return;
+    switch (command['event']) {
+      case 'play':
+        unawaited(_manager.resume());
+      case 'pause':
+        unawaited(_manager.pause());
+      case 'seek':
+        final positionMs = (command['positionMs'] as num?)?.toInt();
+        if (positionMs != null) {
+          unawaited(_manager.seekTo(Duration(milliseconds: positionMs)));
+        }
+      case 'next':
+        unawaited(_manager.next());
+      case 'previous':
+        unawaited(_manager.previous());
+    }
   }
 
   void _push() {

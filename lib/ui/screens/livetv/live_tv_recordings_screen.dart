@@ -10,6 +10,7 @@ import '../../../data/viewmodels/series_recordings_view_model.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../ui/mixins/focus_state_mixin.dart';
+import '../../../util/focus/dpad_keys.dart';
 import '../../navigation/destinations.dart';
 import '../../widgets/adaptive/adaptive_dialog.dart';
 import '../../widgets/focus/request_initial_focus.dart';
@@ -106,28 +107,44 @@ class _LiveTvRecordingsScreenState extends State<LiveTvRecordingsScreen> {
               color: Colors.white,
             ),
           ),
-          const Spacer(),
-          _RecordingsPillButton(
-            label: '${l10n.recordings} ($_recordingsCount)',
-            isActive: _activeTab == _RecordingsTab.recordings,
-            onPressed: () => setState(() => _activeTab = _RecordingsTab.recordings),
-          ),
-          const SizedBox(width: 8),
-          _RecordingsPillButton(
-            label: '${l10n.schedule} ($_scheduledCount)',
-            isActive: _activeTab == _RecordingsTab.scheduled,
-            onPressed: () => setState(() => _activeTab = _RecordingsTab.scheduled),
-          ),
-          const SizedBox(width: 8),
-          _RecordingsPillButton(
-            label: '${l10n.seriesRecordings} (${_seriesVm.seriesTimers.length})',
-            isActive: _activeTab == _RecordingsTab.series,
-            onPressed: () => setState(() => _activeTab = _RecordingsTab.series),
-          ),
-          const SizedBox(width: 12),
-          _RecordingsPillButton(
-            icon: Icons.arrow_back,
-            onPressed: () => Navigator.of(context).maybePop(),
+          const SizedBox(width: 16),
+          // A phone is too narrow for every pill beside the title, so there
+          // they wrap onto another line instead of running off the edge.
+          Expanded(
+            child: Wrap(
+              alignment: WrapAlignment.end,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                _RecordingsPillButton(
+                  label: '${l10n.recordings} ($_recordingsCount)',
+                  isActive: _activeTab == _RecordingsTab.recordings,
+                  onPressed: () =>
+                      setState(() => _activeTab = _RecordingsTab.recordings),
+                ),
+                _RecordingsPillButton(
+                  label: '${l10n.schedule} ($_scheduledCount)',
+                  isActive: _activeTab == _RecordingsTab.scheduled,
+                  onPressed: () =>
+                      setState(() => _activeTab = _RecordingsTab.scheduled),
+                ),
+                _RecordingsPillButton(
+                  label:
+                      '${l10n.seriesRecordings} (${_seriesVm.seriesTimers.length})',
+                  isActive: _activeTab == _RecordingsTab.series,
+                  onPressed: () =>
+                      setState(() => _activeTab = _RecordingsTab.series),
+                ),
+                Padding(
+                  padding: const EdgeInsetsDirectional.only(start: 4),
+                  child: _RecordingsPillButton(
+                    icon: Icons.arrow_back,
+                    onPressed: () => Navigator.of(context).maybePop(),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -405,6 +422,13 @@ class _SeriesTimerCardState extends State<_SeriesTimerCard> with FocusStateMixin
           setFocused(focused);
           if (focused) widget.onFocused();
         },
+        onKeyEvent: (_, event) {
+          if (isActivateKey(event)) {
+            widget.onTap();
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
         child: GestureDetector(
           onTap: widget.onTap,
           child: AnimatedScale(
@@ -627,6 +651,13 @@ class _RecordingCardState extends State<_RecordingCard> with FocusStateMixin {
         onFocusChange: (focused) {
           setFocused(focused);
           if (focused) widget.onFocused();
+        },
+        onKeyEvent: (_, event) {
+          if (isActivateKey(event)) {
+            widget.onTap();
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
         },
         child: GestureDetector(
           onTap: widget.onTap,

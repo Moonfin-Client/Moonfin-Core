@@ -3891,7 +3891,7 @@
     "@trakt": {
         "description": "Rating source: Trakt"
     },
-    "letterboxd": "Kirjelaatikkod",
+    "letterboxd": "Letterboxd",
     "@letterboxd": {
         "description": "Rating source: Letterboxd"
     },
@@ -10585,7 +10585,7 @@
     "settingsRedetectDisplay": "Näytä uudelleen-toiminto",
     "settingsRedetectDisplayDescription": "Kysy televisiolta uudelleen, mitä HDR-formaatteja se tukee. Käytä tätä, jos Dolby Vision- tai HDR10-sisältöjä transkoodataan sen jälkeen, kun televisio tai vastaanotin on kytketty päälle myöhään.",
     "settingsDisplayIsSdr": "Televisiossani ei ole HDR-tukea",
-    "settingsDisplayIsSdrDescription": "Älä muistuta tämän näytön HDR-tukea. Käytä tätä vain, jos tunnistustoiminto ilmoittaa jatkuvasti HDR:stä, jota televisio ei todellisuudessa pysty näyttämään.",
+    "settingsDisplayIsSdrDescription": "Älä muistuta tämän näytön HDR-tukea.",
     "settingsDisplayRedetected": "Näyttö tunnistettu uudelleen: {formats}",
     "@settingsDisplayRedetected": {
         "placeholders": {
@@ -12504,5 +12504,105 @@
     "uiScaleGrandparents": "Isovanhemmat",
     "@uiScaleGrandparents": {
         "description": "UI scaling option above extra large"
+    },
+    "playbackStreamLost": "Toisto keskeytyi, eikä sitä voitu jatkaa.",
+    "@playbackStreamLost": {
+        "description": "Shown in place of an internal sentinel error code when playback gives up trying to recover a stalled or starved stream"
+    },
+    "liveReconnecting": "Yhdistetään uudelleen… ({attempt} of {total})",
+    "@liveReconnecting": {
+        "description": "Overlay shown while a live channel's bounded recovery is retrying",
+        "placeholders": {
+            "attempt": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "setupPlaybackLanguages": "Toistokielet",
+    "@setupPlaybackLanguages": {
+        "description": "Heading of the optional audio and subtitle language section on the last setup wizard screen"
+    },
+    "setupOptional": "Valinnainen",
+    "@setupOptional": {
+        "description": "Tag beside an optional section in the setup wizard"
+    },
+    "setupNavbarStyleQuestion": "Miltä alareunan palkin pitäisi näyttää?",
+    "@setupNavbarStyleQuestion": {
+        "description": "Setup question asking which style the bottom navigation bar should use"
+    },
+    "setupNavbarStyleDockHint": "Kelluva painike, jonka jokaisen välilehden alla on merkintöjä.",
+    "@setupNavbarStyleDockHint": {
+        "description": "What the Dock bottom bar style gives you"
+    },
+    "setupNavbarStyleSplitHint": "Hakutoiminnolle tulee oma painike, ja hakupalkki kutistuu, kun vierität sivua.",
+    "@setupNavbarStyleSplitHint": {
+        "description": "What the Split bottom bar style gives you"
+    },
+    "setupNavbarStyleStripHint": "Alareunassa oleva koko sivun levyinen palkki.",
+    "@setupNavbarStyleStripHint": {
+        "description": "What the Strip bottom bar style gives you"
+    },
+    "bottomNavbarStyle": "Alaosan palkin tyyli",
+    "@bottomNavbarStyle": {
+        "description": "Settings title for choosing how the mobile bottom navigation bar looks"
+    },
+    "bottomNavbarStyleDock": "Telakka",
+    "@bottomNavbarStyleDock": {
+        "description": "Bottom bar style: a floating pill with labelled tabs"
+    },
+    "bottomNavbarStyleSplit": "Jaettu",
+    "@bottomNavbarStyleSplit": {
+        "description": "Bottom bar style: tabs in one capsule with search as its own round button"
+    },
+    "bottomNavbarStyleStrip": "Nauha",
+    "@bottomNavbarStyleStrip": {
+        "description": "Bottom bar style: a full-width bar along the bottom edge"
+    },
+    "bottomNavbarTabs": "Alareunan välilehdet",
+    "@bottomNavbarTabs": {
+        "description": "Settings title for choosing which tabs sit on the mobile bottom navigation bar"
+    },
+    "bottomNavbarTabsDescription": "Voit kiinnittää enintään 3 välilehteä Home ja You välilehtien väliin. Kaikki muu löytyy You valikosta.",
+    "@bottomNavbarTabsDescription": {
+        "description": "Explains the bottom bar tabs screen"
+    },
+    "bottomNavbarTabsAutomatic": "Automaattinen",
+    "@bottomNavbarTabsAutomatic": {
+        "description": "Shown when the bottom bar tabs are picked from the navigation button settings"
+    },
+    "bottomNavbarTabsPinned": "Kiinnitetty",
+    "@bottomNavbarTabsPinned": {
+        "description": "Section header for the tabs pinned to the bottom bar"
+    },
+    "bottomNavbarTabsAvailable": "Saatavilla",
+    "@bottomNavbarTabsAvailable": {
+        "description": "Section header for tabs that can be pinned to the bottom bar"
+    },
+    "bottomNavbarTabsReset": "Palauta automaattitilaan",
+    "@bottomNavbarTabsReset": {
+        "description": "Action that clears the pinned bottom bar tabs so they are picked automatically again"
+    },
+    "bottomNavbarTabsLimit": "Voit kiinnittää enintään 3 välilehteä. Poista yksi, jotta voit kiinnittää toisen.",
+    "@bottomNavbarTabsLimit": {
+        "description": "Hint shown when the maximum number of bottom bar tabs is already pinned"
+    },
+    "bottomNavbarTabTurnedOff": "Poistettu käytöstä Painikkeet kohdasta",
+    "@bottomNavbarTabTurnedOff": {
+        "description": "Hint on a bottom bar tab that can't be pinned because its navigation button setting is off"
+    },
+    "bottomNavbarSplitSearchNote": "Split tyylissä Haku toiminnolla on aina oma painikkeensa.",
+    "@bottomNavbarSplitSearchNote": {
+        "description": "Note on the bottom bar tabs screen about the Split style"
+    },
+    "bottomNavbarButtonsNote": "Nämä asetukset määrittävät, mitkä välilehdet voit kiinnittää alareunan palkkiin ja mitä ”You”-valikossa näkyy.",
+    "@bottomNavbarButtonsNote": {
+        "description": "Note under the navigation buttons section while the bottom bar is in use"
+    },
+    "navYou": "You",
+    "@navYou": {
+        "description": "Bottom bar tab that opens the user's own menu with their profile, extra destinations and settings"
     }
 }

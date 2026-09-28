@@ -31,6 +31,9 @@ final class AetherVideoChannel: NSObject, FlutterStreamHandler {
         created.onPlayerError = { [weak self] payload in
             self?.send(payload)
         }
+        created.onNowPlayingCommand = { [weak self] payload in
+            self?.send(payload)
+        }
         return created
     }()
 
@@ -134,6 +137,8 @@ final class AetherVideoChannel: NSObject, FlutterStreamHandler {
             break
         case "setEngineLogForwarding":
             setEngineLogForwarding((args["enabled"] as? Bool) == true)
+        case "setUiMetadata":
+            player.applyNowPlayingMetadata(args)
         default:
             break
         }

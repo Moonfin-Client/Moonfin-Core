@@ -63,6 +63,7 @@ import '../../../playback/hdr_composition.dart';
 import '../../../playback/hdr_output_controller.dart';
 import '../../../playback/hdr_overlay_channel.dart';
 import 'hdr_overlay_capture.dart';
+import '../../../util/focus/back_key_release.dart';
 import '../../../util/focus/dpad_keys.dart';
 import '../../../util/focus/gamepad/gamepad_key_synthesizer.dart';
 import '../../../util/play_method_label.dart';
@@ -264,6 +265,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   bool _subtitleReapplyRetryScheduled = false;
   bool _isStopping = false;
   bool _readyToPop = false;
+  VoidCallback? _cancelPopAfterBackKeyUp;
   DateTime? _suppressTvLifecycleExitUntil;
   bool _isOsdLocked = false;
   String? _remotePlaybackState;
@@ -1016,6 +1018,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   @override
   void dispose() {
+    _cancelPopAfterBackKeyUp?.call();
     _trickplayLoadGeneration++;
     _hdrStatus?.removeListener(_onHdrStatusChanged);
     _hdrRendererCycling?.removeListener(_onHdrStatusChanged);
@@ -2898,16 +2901,22 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         _readyToPop = true;
       });
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          if (context.canPop()) {
-            context.pop();
-          } else {
-            Navigator.of(context).pop();
-          }
-        }
+        if (!mounted) return;
+        _cancelPopAfterBackKeyUp = runAfterBackKeyUp(_popPlayerRoute);
       });
     }
     unawaited(_manager.stop(userInitiated: false));
+  }
+
+  void _popPlayerRoute() {
+    // Newer Android sends the system back before the key up reaches here, and
+    // that back has already popped the player.
+    if (ModalRoute.of(context)?.isCurrent == false) return;
+    if (context.canPop()) {
+      context.pop();
+    } else {
+      Navigator.of(context).pop();
+    }
   }
 
   Future<void> _restoreSystemUiForExit() async {

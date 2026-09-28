@@ -8,6 +8,7 @@ import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:moonfin/auth/repositories/session_repository.dart';
+import 'package:moonfin/data/repositories/seerr_repository.dart';
 import 'package:moonfin/data/services/plugin_sync_service.dart';
 import 'package:moonfin/preference/seerr_preferences.dart';
 import 'package:moonfin/preference/user_preferences.dart';
@@ -18,13 +19,12 @@ class _MockClient extends Mock implements MediaServerClient {}
 
 class _MockSessionRepository extends Mock implements SessionRepository {}
 
-/// Serves the plugin endpoints sign-in touches and records every request.
-class _RecordingAdapter implements HttpClientAdapter {
-  final List<String> requests = [];
+class _MockSeerrRepository extends Mock implements SeerrRepository {}
 
-  /// Holds the profile read, standing in for the calls sign-in waits on.
-  Duration resolveDelay = Duration.zero;
-
+/// Answers the plugin, except for the settings stream, which stays open
+/// without sending anything the way a server holding back its first flush
+/// does.
+class _PluginAdapter implements HttpClientAdapter {
   @override
   Future<ResponseBody> fetch(
     RequestOptions options,
@@ -32,23 +32,16 @@ class _RecordingAdapter implements HttpClientAdapter {
     Future<void>? cancelFuture,
   ) async {
     final path = options.uri.path;
-    requests.add('${options.method} $path');
-
-    if (path.contains('/Moonfin/Settings/Resolved/') &&
-        resolveDelay > Duration.zero) {
-      await Future<void>.delayed(resolveDelay);
+    if (path.endsWith('/Moonfin/Settings/Stream')) {
+      return Completer<ResponseBody>().future;
     }
-
     Map<String, dynamic>? body;
     if (path.endsWith('/Moonfin/Ping')) {
       body = {'installed': true, 'settingsSyncEnabled': true};
     } else if (path.contains('/Moonfin/Settings/')) {
       body = {};
     }
-
-    if (body == null) {
-      return ResponseBody.fromString('', 404);
-    }
+    if (body == null) return ResponseBody.fromString('', 404);
     return ResponseBody.fromString(
       jsonEncode(body),
       200,
@@ -65,24 +58,23 @@ class _RecordingAdapter implements HttpClientAdapter {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  late _RecordingAdapter adapter;
-  late UserPreferences prefs;
   late PluginSyncService service;
   late _MockClient client;
+  late _MockSeerrRepository seerr;
+  late bool seerrSignedIn;
 
-  List<String> profilePosts() => adapter.requests
-      .where((r) => r.startsWith('POST') && r.contains('/Settings/Profile/'))
-      .toList();
-
-  /// Waits out the 1000ms push debounce plus slack.
-  Future<void> settle() =>
-      Future<void>.delayed(const Duration(milliseconds: 1400));
+  Future<void> signInToSeerr() => seerr.bootstrapMoonfinSso(
+    jellyfinBaseUrl: any(named: 'jellyfinBaseUrl'),
+    jellyfinToken: any(named: 'jellyfinToken'),
+    username: any(named: 'username'),
+    password: any(named: 'password'),
+  );
 
   setUp(() async {
     SharedPreferences.setMockInitialValues({'pref_last_server_id': 'srv1'});
     final store = PreferenceStore();
     await store.init();
-    prefs = UserPreferences(store);
+    final prefs = UserPreferences(store);
 
     final session = _MockSessionRepository();
     when(() => session.activeUserId).thenReturn('user1');
@@ -102,44 +94,44 @@ void main() {
         appVersion: '0.0.0',
       ),
     );
-
-    adapter = _RecordingAdapter();
-    final dio = Dio();
-    dio.httpClientAdapter = adapter;
-    service = PluginSyncService(prefs, store, dio: dio);
-
-    await prefs.set(UserPreferences.pluginSyncEnabled, true);
-    expect(await service.refreshAvailability(client), isTrue);
     GetIt.instance.registerSingleton<MediaServerClient>(client);
-    adapter.requests.clear();
-  });
 
-  tearDown(() async {
-    await GetIt.instance.reset();
-  });
-
-  // Sign-in reads the server profile behind the calls ahead of it, so a setting
-  // changed in that window would push local state up first and overwrite the
-  // stored profile along with the rows it defines.
-  test('a change during sign in waits for the server profile', () async {
-    adapter.resolveDelay = const Duration(milliseconds: 2500);
-    unawaited(service.syncOnLogin(client, serverId: 'srv1'));
-    await Future<void>.delayed(const Duration(milliseconds: 100));
-
-    await prefs.set(UserPreferences.use24HourClock, true);
-    await settle();
-
-    expect(
-      profilePosts(),
-      isEmpty,
-      reason: 'pushed before sign-in had read the server profile',
+    seerr = _MockSeerrRepository();
+    seerrSignedIn = false;
+    when(
+      () => seerr.ensureInitialized(force: any(named: 'force')),
+    ).thenAnswer((_) async {});
+    when(() => seerr.isAvailable).thenAnswer((_) => seerrSignedIn);
+    when(signInToSeerr).thenAnswer((_) async => seerrSignedIn = true);
+    GetIt.instance.registerLazySingletonAsync<SeerrRepository>(
+      () async => seerr,
     );
+
+    final dio = Dio()..httpClientAdapter = _PluginAdapter();
+    service = PluginSyncService(prefs, store, dio: dio);
+    await prefs.set(UserPreferences.pluginSyncEnabled, true);
   });
 
-  test('an ordinary change outside sign in still pushes', () async {
-    await prefs.set(UserPreferences.use24HourClock, true);
-    await settle();
+  tearDown(() => GetIt.instance.reset());
 
-    expect(profilePosts(), isNotEmpty);
+  test('sign-in finishes without waiting on the settings stream', () async {
+    await service
+        .syncOnLogin(client, serverId: 'srv1')
+        .timeout(const Duration(seconds: 2));
+  });
+
+  test('a live Seerr session skips signing in again', () async {
+    expect(await service.refreshAvailability(client), isTrue);
+    seerrSignedIn = true;
+
+    expect(await service.configureSeerr(client), isFalse);
+    verifyNever(signInToSeerr);
+  });
+
+  test('signing in to Seerr asks the home to load its rows again', () async {
+    expect(await service.refreshAvailability(client), isTrue);
+
+    expect(await service.configureSeerr(client), isTrue);
+    verify(signInToSeerr).called(1);
   });
 }

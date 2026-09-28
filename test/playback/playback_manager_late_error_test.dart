@@ -142,8 +142,9 @@ class _TestService implements PlayerService {
   Future<void> onPlaybackStop(
     dynamic mediaItem,
     StreamResolutionResult resolution,
-    Duration position,
-  ) async {}
+    Duration position, {
+    bool releaseLiveStream = true,
+  }) async {}
 
   @override
   Future<void> closeLiveStream(String liveStreamId) async {}

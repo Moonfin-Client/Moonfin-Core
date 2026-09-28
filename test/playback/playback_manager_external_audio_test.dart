@@ -1,25 +1,31 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:playback_core/playback_core.dart';
 
+// The issue #1672 file shape: the server numbers an external audio file ahead
+// of the two tracks the container holds.
+const _mediaStreams = <Map<String, dynamic>>[
+  {'Index': 0, 'Type': 'Audio', 'IsExternal': true},
+  {'Index': 1, 'Type': 'Video', 'IsExternal': false},
+  {'Index': 2, 'Type': 'Audio', 'IsExternal': false},
+  {'Index': 3, 'Type': 'Audio', 'IsExternal': false},
+];
+
 class _TestBackend extends Fake implements PlayerBackend {
-  final List<String> playedUrls = <String>[];
-  final List<bool> autoPlayValues = <bool>[];
-  int resumeCalls = 0;
-  bool playing = false;
-  Duration currentPosition = Duration.zero;
+  final List<Map<String, dynamic>> payloads = <Map<String, dynamic>>[];
+  final List<int> audioTracks = <int>[];
 
   @override
-  Duration get position => currentPosition;
+  Duration get position => const Duration(seconds: 90);
 
   @override
   Duration get duration =>
-      playedUrls.isEmpty ? Duration.zero : const Duration(minutes: 30);
+      payloads.isEmpty ? Duration.zero : const Duration(minutes: 30);
 
   @override
   Duration get buffer => Duration.zero;
 
   @override
-  bool get isPlaying => playing;
+  bool get isPlaying => true;
 
   @override
   double get playbackSpeed => 1.0;
@@ -52,10 +58,13 @@ class _TestBackend extends Fake implements PlayerBackend {
   bool get supportsRuntimeTrackSelection => false;
 
   @override
-  bool get supportsDirectPlayAudioSwitch => false;
+  bool get supportsDirectPlayAudioSwitch => true;
 
   @override
   bool get canRenderBitmapSubtitles => false;
+
+  @override
+  bool get demuxesEmbeddedSubtitles => true;
 
   @override
   bool get requiresStartupMediaReadyCheck => false;
@@ -73,31 +82,17 @@ class _TestBackend extends Fake implements PlayerBackend {
     dynamic mediaItem, {
     Duration startPosition = Duration.zero,
   }) async {
-    final payload = mediaItem as Map<String, dynamic>;
-    final autoPlay = payload['autoPlay'] != false;
-    playedUrls.add(payload['url'] as String);
-    autoPlayValues.add(autoPlay);
-    currentPosition = startPosition;
-    // The real backends load the source and only start it when asked, which
-    // is the behaviour under test.
-    playing = autoPlay;
+    payloads.add(mediaItem as Map<String, dynamic>);
   }
 
   @override
-  Future<void> pause() async {
-    playing = false;
-  }
+  Future<void> setAudioTrack(int index) async => audioTracks.add(index);
 
   @override
-  Future<void> resume() async {
-    resumeCalls++;
-    playing = true;
-  }
+  Future<void> disableSubtitleTrack() async {}
 
   @override
-  Future<void> stop() async {
-    playing = false;
-  }
+  Future<void> stop() async {}
 
   @override
   Future<void> setSubtitleRendererMode(SubtitleRendererMode mode) async {}
@@ -110,7 +105,7 @@ class _TestBackend extends Fake implements PlayerBackend {
 }
 
 class _TestResolver extends MediaStreamResolver {
-  int calls = 0;
+  final List<int?> requestedAudio = <int?>[];
 
   @override
   Future<StreamResolutionResult> resolve(
@@ -125,12 +120,13 @@ class _TestResolver extends MediaStreamResolver {
     bool enableDirectStream = true,
     bool enableTranscoding = true,
   }) async {
-    calls++;
+    requestedAudio.add(audioStreamIndex);
     return StreamResolutionResult(
-      streamUrl: 'https://example.test/session-$calls',
-      mediaSourceId: 'source-$calls',
-      playSessionId: 'session-$calls',
-      playMethod: StreamPlayMethod.directStream,
+      streamUrl: 'https://example.test/session-${requestedAudio.length}',
+      mediaSourceId: 'movie',
+      playSessionId: 'session-${requestedAudio.length}',
+      playMethod: StreamPlayMethod.directPlay,
+      mediaStreams: _mediaStreams,
     );
   }
 }
@@ -191,34 +187,40 @@ void main() {
 
   tearDown(() => manager.dispose());
 
-  Future<void> startPlayback() async {
-    await manager.playItems(<dynamic>[
+  Future<void> startPlayback({int? audioStreamIndex}) => manager.playItems(
+    <dynamic>[
       <String, dynamic>{'Id': 'movie', 'Type': 'Movie'},
-    ]);
-    backend.currentPosition = const Duration(seconds: 90);
-  }
+    ],
+    audioStreamIndex: audioStreamIndex,
+    audioSelectionExplicit: audioStreamIndex != null,
+  );
 
-  test('a paused session stays paused across a re-resolve', () async {
-    await startPlayback();
-    await manager.pause();
-    expect(backend.isPlaying, isFalse);
+  test('the first embedded track opens on the container first track', () async {
+    await startPlayback(audioStreamIndex: 2);
 
-    await manager.changeAudioTrack(3);
-
-    expect(resolver.calls, 2);
-    expect(backend.autoPlayValues, [true, false]);
-    expect(backend.resumeCalls, 0);
-    expect(backend.isPlaying, isFalse);
+    expect(backend.payloads.single['audioTrackOrdinal'], 1);
+    expect(backend.audioTracks, everyElement(1));
   });
 
-  test('a playing session keeps playing across a re-resolve', () async {
-    await startPlayback();
-    expect(backend.isPlaying, isTrue);
+  test('switching to the second embedded track picks it in place', () async {
+    await startPlayback(audioStreamIndex: 2);
+    backend.audioTracks.clear();
 
     await manager.changeAudioTrack(3);
 
-    expect(resolver.calls, 2);
-    expect(backend.autoPlayValues, [true, true]);
-    expect(backend.isPlaying, isTrue);
+    expect(backend.audioTracks, isNotEmpty);
+    expect(backend.audioTracks, everyElement(2));
+    expect(resolver.requestedAudio, hasLength(1));
+  });
+
+  test('switching to the external file asks the server for it', () async {
+    await startPlayback(audioStreamIndex: 2);
+    backend.audioTracks.clear();
+
+    await manager.changeAudioTrack(0);
+
+    expect(resolver.requestedAudio.last, 0);
+    expect(backend.payloads, hasLength(2));
+    expect(backend.audioTracks, isNot(contains(1)));
   });
 }

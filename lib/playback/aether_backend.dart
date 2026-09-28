@@ -81,9 +81,31 @@ class AetherBackend implements PlayerBackend {
   final _bufferingStream = StreamController<bool>.broadcast();
   final _completedStream = StreamController<bool>.broadcast();
   final _errorStream = StreamController<Map<String, dynamic>>.broadcast();
+  final _remoteCommandStream =
+      StreamController<Map<String, dynamic>>.broadcast();
 
   @override
   Stream<Map<String, dynamic>> get errorStream => _errorStream.stream;
+
+  /// Transport presses from the system controls while music plays on the
+  /// engine's own Now Playing session, which audio_service never sees.
+  Stream<Map<String, dynamic>> get remoteCommandStream =>
+      _remoteCommandStream.stream;
+
+  /// Fills that session in. iOS shows it in place of the audio_service entry
+  /// while music plays, so without this the card has no title or artwork.
+  Future<void> setNowPlaying({
+    required String title,
+    required String artist,
+    required String? artworkUrl,
+    required bool hasNext,
+  }) => _invoke<void>('setUiMetadata', {
+    'topTitle': title,
+    'topSubtitle': artist,
+    'logoUrl': artworkUrl ?? '',
+    'hasNext': hasNext,
+    'hasPrevious': true,
+  });
 
   Future<T?> _invoke<T>(String method, [dynamic arguments]) async {
     if (_disposed) return null;
@@ -131,6 +153,12 @@ class AetherBackend implements PlayerBackend {
         _completedStream.add(_completed);
       case 'engineLog':
         _logEngineLine(map['line']);
+      case 'play':
+      case 'pause':
+      case 'seek':
+      case 'next':
+      case 'previous':
+        _remoteCommandStream.add(map.cast<String, dynamic>());
       case 'playerError':
       case 'error':
         _logPlaybackError(map);
@@ -654,6 +682,7 @@ class AetherBackend implements PlayerBackend {
     _bufferingStream.close();
     _completedStream.close();
     _errorStream.close();
+    _remoteCommandStream.close();
     _tracksChangedController.close();
   }
 }

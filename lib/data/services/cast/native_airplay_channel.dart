@@ -1,9 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+
+import 'resilient_event_stream.dart';
 import '../../../util/platform_detection.dart';
 
 class NativeAirPlayChannel {
   static const _channel = MethodChannel('com.moonfin/native_cast');
-  static const _events = EventChannel('com.moonfin/native_airplay_events');
   static Stream<Map<String, dynamic>>? _cachedEventStream;
 
   const NativeAirPlayChannel();
@@ -72,11 +74,18 @@ class NativeAirPlayChannel {
     if (!_supported) {
       return const Stream<Map<String, dynamic>>.empty();
     }
-    return _cachedEventStream ??= _events.receiveBroadcastStream().map((event) {
+    return _cachedEventStream ??= resilientEventChannelStream(
+      'com.moonfin/native_airplay_events',
+    ).map((event) {
       if (event is Map) {
         return event.cast<String, dynamic>();
       }
       return <String, dynamic>{};
     }).where((event) => event.isNotEmpty);
+  }
+
+  @visibleForTesting
+  static void resetForTesting() {
+    _cachedEventStream = null;
   }
 }

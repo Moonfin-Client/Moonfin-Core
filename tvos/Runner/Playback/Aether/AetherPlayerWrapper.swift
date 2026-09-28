@@ -73,6 +73,11 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
     private var surfaceAttachedContinuations: [CheckedContinuation<Void, Never>] = []
     private var audioSessionActive = false
     private var isAudioOnlySession = false
+    #if os(iOS) || os(tvOS)
+        private var audioNowPlayingInfo: [String: Any] = [:]
+        private var audioArtworkURL: String?
+        private var audioArtwork: MPMediaItemArtwork?
+    #endif
     private var isLiveSession = false
     private var forceSubtitlesDisabledOnStart = false
     private var didEmitLoadError = false
@@ -140,9 +145,11 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
 
     override init() {
         super.init()
-        if Self.drivesNowPlaying {
+        #if os(iOS) || os(tvOS)
+            // On iOS the handlers only ever land on the engine's music
+            // session, which audio_service has no way to reach.
             wireNowPlaying()
-        }
+        #endif
         subscribeToEngine()
         observeForegroundReturn()
     }
@@ -453,15 +460,16 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
     /// audio host owns the Now Playing session, so route through it instead of
     /// creating a competing session.
     func applyNowPlayingMetadata(_ args: [String: Any]) {
-        guard Self.drivesNowPlaying else { return }
         let title = (args["topTitle"] as? String) ?? ""
         let subtitle = (args["topSubtitle"] as? String) ?? ""
         let logo = args["logoUrl"] as? String
-        // The engine's audio Now Playing bridge is an iOS/tvOS API. This whole
-        // method is a no-op off tvOS through drivesNowPlaying, but the call
-        // still has to compile out on macOS.
+        // The engine's music session only exists on iOS and tvOS, and only tvOS
+        // drives Now Playing for video.
         #if os(iOS) || os(tvOS)
-            if isAudioOnlySession, let engine = Self.sharedEngine() {
+            nowPlaying.setQueueCapabilities(
+                hasNext: (args["hasNext"] as? Bool) ?? false,
+                hasPrevious: (args["hasPrevious"] as? Bool) ?? false)
+            if isAudioOnlySession {
                 var info: [String: Any] = [
                     MPMediaItemPropertyTitle: title,
                     MPMediaItemPropertyArtist: subtitle,
@@ -472,21 +480,52 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
                 if duration > 0 {
                     info[MPMediaItemPropertyPlaybackDuration] = duration
                 }
-                engine.setAudioNowPlayingInfo(info)
+                audioNowPlayingInfo = info
+                loadAudioArtwork(logo)
+                publishAudioNowPlaying()
                 return
             }
         #endif
+        guard Self.drivesNowPlaying else { return }
         nowPlaying.updateMetadata(
             title: title,
             subtitle: subtitle,
             durationSeconds: duration,
             artworkURL: (logo?.isEmpty ?? true) ? nil : logo)
-        nowPlaying.setQueueCapabilities(
-            hasNext: (args["hasNext"] as? Bool) ?? false,
-            hasPrevious: (args["hasPrevious"] as? Bool) ?? false)
         nowPlaying.updatePlaybackState(
             isPlaying: isPlaying, elapsed: currentTime, duration: duration, rate: rate)
     }
+
+    #if os(iOS) || os(tvOS)
+        private func publishAudioNowPlaying() {
+            var info = audioNowPlayingInfo
+            info[MPMediaItemPropertyArtwork] = audioArtwork
+            Self.sharedEngine()?.setAudioNowPlayingInfo(info)
+        }
+
+        private func loadAudioArtwork(_ logo: String?) {
+            let wanted = logo?.isEmpty == false ? logo : nil
+            guard wanted != audioArtworkURL else { return }
+            audioArtworkURL = wanted
+            audioArtwork = nil
+            guard let urlString = wanted, let url = URL(string: urlString) else { return }
+            Task { [weak self] in
+                guard let (data, _) = try? await URLSession.shared.data(from: url),
+                    let artwork = Self.audioArtwork(from: data),
+                    let self, self.audioArtworkURL == urlString
+                else { return }
+                self.audioArtwork = artwork
+                self.publishAudioNowPlaying()
+            }
+        }
+
+        // The engine's session asks for the bitmap from its own queue, so the
+        // image is decoded up front and the artwork built off the main actor.
+        nonisolated private static func audioArtwork(from data: Data) -> MPMediaItemArtwork? {
+            guard let image = UIImage(data: data)?.preparingForDisplay() else { return nil }
+            return MPMediaItemArtwork(boundsSize: image.size) { _ in image }
+        }
+    #endif
 
     // MARK: - Surface
 
@@ -753,6 +792,14 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             // A load that outlived its watchdog or was superseded finished
             // against an engine that has already been stopped or reloaded.
             guard loadGeneration == generation, !didEmitLoadError else { return }
+            #if os(iOS) || os(tvOS)
+                // The engine opens its music session during the load, so it
+                // can only be adopted once the load returns.
+                if audioOnly {
+                    nowPlaying.adopt(session: engine.audioNowPlayingSession)
+                }
+                nowPlaying.setIntervalSkipsEnabled(!audioOnly)
+            #endif
             seatDeclaredSubtitles(engine)
             if forceSubtitlesDisabledOnStart {
                 engine.clearSubtitle()

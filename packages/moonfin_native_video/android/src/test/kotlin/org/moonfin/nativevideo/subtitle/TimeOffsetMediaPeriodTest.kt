@@ -86,7 +86,11 @@ class TimeOffsetMediaPeriodTest {
             discardedAtUs = positionUs
         }
 
-        override fun readDiscontinuity(): Long = discontinuityUs
+        override fun readDiscontinuity(): Long {
+            val result = discontinuityUs
+            discontinuityUs = C.TIME_UNSET
+            return result
+        }
 
         override fun seekToUs(positionUs: Long): Long {
             soughtToUs = positionUs
@@ -174,10 +178,17 @@ class TimeOffsetMediaPeriodTest {
         assertEquals(3_000_000L, child.loadingPositionUs)
         child.bufferedUs = 7_000_000L
         child.nextLoadUs = 8_000_000L
-        child.discontinuityUs = 1_000_000L
         assertEquals(9_000_000L, period.bufferedPositionUs)
         assertEquals(10_000_000L, period.nextLoadPositionUs)
-        assertEquals(3_000_000L, period.readDiscontinuity())
+    }
+
+    @Test
+    fun `a subtitle file starting over after a failed download never moves the video`() {
+        val child = FakePeriod(emptyList())
+        val period = TimeOffsetMediaPeriod(child, 2_000_000L)
+        child.discontinuityUs = 0L
+        assertEquals(C.TIME_UNSET, period.readDiscontinuity())
+        assertEquals(C.TIME_UNSET, child.discontinuityUs)
     }
 
     @Test
@@ -186,10 +197,8 @@ class TimeOffsetMediaPeriodTest {
         val period = TimeOffsetMediaPeriod(child, 2_000_000L)
         child.bufferedUs = C.TIME_END_OF_SOURCE
         child.nextLoadUs = C.TIME_END_OF_SOURCE
-        child.discontinuityUs = C.TIME_UNSET
         assertEquals(C.TIME_END_OF_SOURCE, period.bufferedPositionUs)
         assertEquals(C.TIME_END_OF_SOURCE, period.nextLoadPositionUs)
-        assertEquals(C.TIME_UNSET, period.readDiscontinuity())
         assertEquals(C.TIME_END_OF_SOURCE, period.setEndPositionUs(C.TIME_END_OF_SOURCE))
     }
 

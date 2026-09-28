@@ -233,17 +233,25 @@ class PlaybackManager implements AudioOwnable {
   bool _suppressNextGenericBackendError = false;
   bool _teardownForReResolve = false;
 
+  /// Sessions that have claimed their one live stream release attempt, set
+  /// before the close is sent, so a failed close is not retried. Keyed by
+  /// resolution, not live stream id, because the server hands a reopened
+  /// channel the same id.
+  final _liveStreamReleaseClaimed = Expando<bool>();
+
   /// Live recovery budget. Attempt 1 resumes in place (re-resolving if the
   /// engine can't), attempt 2 re-resolves, and attempt 3 escalates one step
   /// past the current route: direct play hands the stream to the server,
   /// and a server-served channel forces a transcode. The next failure gives
-  /// up. A clean minute since the last attempt restores the budget.
+  /// up. A clean minute since the last attempt restores the budget, and so
+  /// does a recovered channel that keeps playing for
+  /// [_liveRecoveryProvenAfter].
   ///
   /// Gaps are measured from the end of the previous attempt, since a tune can
-  /// itself take ~10s: 4s before attempt 1 and the give-up, which outlasts a
-  /// Fire Cube decoder's forced release, then 10s and 20s so a restarting
-  /// server can come back. A re-resolve that throws schedules the next
-  /// attempt instead of giving up, and these re-resolves skip the nested
+  /// itself take 17s or more: 4s before attempt 1 and the give-up, which
+  /// outlasts a Fire Cube decoder's forced release, then 10s and 20s so a
+  /// restarting server can come back. A re-resolve that throws schedules the
+  /// next attempt instead of giving up, and these re-resolves skip the nested
   /// startup transcode retry so the budget alone paces them.
   static const _liveRecoveryMaxAttempts = 3;
   static const _liveRecoveryDebounce = Duration(seconds: 4);
@@ -270,6 +278,13 @@ class PlaybackManager implements AudioOwnable {
   bool _liveRecoveryInFlight = false;
   Timer? _liveRecoveryRetry;
 
+  /// How long a recovered channel has to keep playing before its recovery
+  /// budget is given back. Without it, a channel that needed every attempt
+  /// had nothing left for its next ordinary hiccup, and a stream that was
+  /// playing fine was given up.
+  static const _liveRecoveryProvenAfter = Duration(seconds: 20);
+  Timer? _liveRecoveryProvenTimer;
+
   /// Set only around the re-resolve await inside `_recoverStalledStream`. A
   /// failed bringup state raised in that window is an intermediate failure
   /// the recovery loop may still paper over, not the terminal one listeners
@@ -285,11 +300,14 @@ class PlaybackManager implements AudioOwnable {
   /// opens, and for a frame after any later stall, and treats either miss as
   /// a stalled channel worth recovering.
   ///
-  /// A first frame gets longer because a tune can take ~10s. A stall after
-  /// playing gets 8s: Media3 won't resume until 5s is re-buffered, which a
-  /// live stream only delivers in real time, so anything shorter would fire
-  /// on ordinary rebuffers.
-  static const _liveFirstFrameTimeout = Duration(seconds: 15);
+  /// A freshly opened stream gets the longest wait, since a tune that goes
+  /// through a relaying tuner and then the server's own remux can take 17s or
+  /// more to show a first frame. A stream resumed in place is already flowing
+  /// upstream, so it gets 15s. A stall after playing gets 8s: Media3 won't
+  /// resume until 5s is re-buffered, which a live stream only delivers in
+  /// real time, so anything shorter would fire on ordinary rebuffers.
+  static const _liveFirstFrameTimeout = Duration(seconds: 30);
+  static const _liveResumeFrameTimeout = Duration(seconds: 15);
   static const _liveMidStreamStallTimeout = Duration(seconds: 8);
   Timer? _liveStallWatchdog;
 
@@ -309,6 +327,10 @@ class PlaybackManager implements AudioOwnable {
   /// Whether a frame has rendered since the current live stream opened.
   /// Reset at each fresh open, set the first time `playing` reports true.
   bool _liveFrameSeenSinceOpen = false;
+
+  /// Whether the current live stream was reopened at its live edge rather
+  /// than freshly opened. Reset at each fresh open.
+  bool _liveResumedInPlace = false;
 
   /// True only when playback is genuinely advancing: unpaused AND not
   /// buffering. `state.isPlaying` alone means "unpaused", not "advancing" --
@@ -348,6 +370,32 @@ class PlaybackManager implements AudioOwnable {
       _liveRecoveryRetry!.cancel();
       _liveRecoveryRetry = null;
     }
+    _armLiveRecoveryProven();
+  }
+
+  /// Once a recovery has the channel playing again, gives the budget back
+  /// after [_liveRecoveryProvenAfter], unless another attempt starts first.
+  /// A channel that never plays still gives up after the full budget.
+  void _armLiveRecoveryProven() {
+    if (_liveRecoveryAttempts == 0) return;
+    if (_liveRecoveryProvenTimer?.isActive ?? false) return;
+    final intent = _viewerIntentGeneration;
+    _liveRecoveryProvenTimer = Timer(_liveRecoveryProvenAfter, () {
+      _liveRecoveryProvenTimer = null;
+      if (intent != _viewerIntentGeneration || _liveRecoveryInFlight) return;
+      if (!_isActuallyPlaying) return;
+      _diagnosticLogger?.call(
+        'Live recovery: playing for ${_liveRecoveryProvenAfter.inSeconds}s '
+        'after attempt $_liveRecoveryAttempts, budget restored',
+      );
+      _liveRecoveryAttempts = 0;
+      _lastLiveRecoveryAt = null;
+    });
+  }
+
+  void _cancelLiveRecoveryProven() {
+    _liveRecoveryProvenTimer?.cancel();
+    _liveRecoveryProvenTimer = null;
   }
 
   /// Arms (or re-arms) the live stall watchdog. A no-op off a live item, so
@@ -363,6 +411,8 @@ class PlaybackManager implements AudioOwnable {
     final intent = _viewerIntentGeneration;
     final timeout = _liveFrameSeenSinceOpen
         ? _liveMidStreamStallTimeout
+        : _liveResumedInPlace
+        ? _liveResumeFrameTimeout
         : _liveFirstFrameTimeout;
     _liveStallWatchdog = Timer(timeout, () {
       _liveStallWatchdog = null;
@@ -381,7 +431,7 @@ class PlaybackManager implements AudioOwnable {
     _liveStallWatchdog = null;
   }
 
-  /// Starts watching the current live stream, from a fresh 15s window.
+  /// Starts watching the current live stream, from a fresh first-frame window.
   void _startLiveStallWatch() {
     _liveStallWatchActive = true;
     _armLiveStallWatchdog();
@@ -396,7 +446,7 @@ class PlaybackManager implements AudioOwnable {
   /// Re-evaluates the watchdog after a playing or buffering change. A real
   /// frame or a viewer pause disarms it; buffering, or "not playing" with an
   /// unfulfilled intent to play, arms it if it isn't already running -- a
-  /// buffering flicker must not keep resetting the 15s window.
+  /// buffering flicker must not keep resetting the first-frame window.
   void _evaluateLiveStallWatchdog() {
     if (!_liveStallWatchActive) return;
     if (!_currentItemIsLive || _isOfflinePlayback) return;
@@ -434,6 +484,7 @@ class PlaybackManager implements AudioOwnable {
   /// Clears the live recovery attempt count, its timestamp, and any held
   /// retry timer.
   void _resetLiveRecoveryBudget() {
+    _cancelLiveRecoveryProven();
     _liveRecoveryAttempts = 0;
     _lastLiveRecoveryAt = null;
     _liveRecoveryRetry?.cancel();
@@ -1390,6 +1441,7 @@ class PlaybackManager implements AudioOwnable {
     if (windowExpired) {
       _liveRecoveryAttempts = 0;
     }
+    _cancelLiveRecoveryProven();
     _lastLiveRecoveryAt = now;
     final attempt = ++_liveRecoveryAttempts;
     _liveRecoveryInFlight = true;
@@ -1422,6 +1474,7 @@ class PlaybackManager implements AudioOwnable {
             'Live recovery: $trigger, attempt $attempt of '
             '$_liveRecoveryMaxAttempts, resumed the live edge',
           );
+          _liveResumedInPlace = true;
           // A cheap resume doesn't go through bringup, so nothing else would
           // re-arm the watchdog. Only the intent could have changed since the
           // await above; _armLiveStallWatchdog is a no-op if it has.
@@ -2592,6 +2645,7 @@ class PlaybackManager implements AudioOwnable {
       // MediaKit) can emit playing/non-buffering from inside `open`, before
       // it returns, and a reset placed after would erase that first frame.
       _liveFrameSeenSinceOpen = false;
+      _liveResumedInPlace = false;
       await _backend!.play(
         backendMediaPayload,
         startPosition: useNativeStart ? startPosition : Duration.zero,
@@ -2818,8 +2872,10 @@ class PlaybackManager implements AudioOwnable {
     if (resolution.playMethod == StreamPlayMethod.directPlay &&
         directLiveStreamId != null &&
         directLiveStreamId.isNotEmpty) {
-      final closeFuture = _service?.closeLiveStream(directLiveStreamId);
-      if (closeFuture != null) unawaited(closeFuture);
+      if (_claimLiveStreamRelease(resolution)) {
+        final closeFuture = _service?.closeLiveStream(directLiveStreamId);
+        if (closeFuture != null) unawaited(closeFuture);
+      }
     }
 
     _startProgressTimer();
@@ -2933,10 +2989,20 @@ class PlaybackManager implements AudioOwnable {
               generation.item,
               generation.resolution,
               generation.stopPosition,
+              releaseLiveStream: _claimLiveStreamRelease(generation.resolution),
             )
             .catchError((_) {}),
       );
     } catch (_) {}
+  }
+
+  /// True only the first time it is asked for [resolution], so a session
+  /// makes at most one live stream release attempt however many stops it
+  /// reports.
+  bool _claimLiveStreamRelease(StreamResolutionResult resolution) {
+    if (_liveStreamReleaseClaimed[resolution] == true) return false;
+    _liveStreamReleaseClaimed[resolution] = true;
+    return true;
   }
 
   void _stopProgressTimer() {
@@ -3645,7 +3711,12 @@ class PlaybackManager implements AudioOwnable {
     } catch (_) {}
 
     if (item != null && resolution != null) {
-      final stopReport = _service?.onPlaybackStop(item, resolution, currentPos);
+      final stopReport = _service?.onPlaybackStop(
+        item,
+        resolution,
+        currentPos,
+        releaseLiveStream: _claimLiveStreamRelease(resolution),
+      );
       if (resolution.playMethod == StreamPlayMethod.directPlay) {
         // No server-side job to tear down, so don't delay the restart.
         if (stopReport != null) {
@@ -4061,7 +4132,12 @@ class PlaybackManager implements AudioOwnable {
           try {
             unawaited(
               _service
-                      ?.onPlaybackStop(reportItem, resolution, pos)
+                      ?.onPlaybackStop(
+                        reportItem,
+                        resolution,
+                        pos,
+                        releaseLiveStream: _claimLiveStreamRelease(resolution),
+                      )
                       .catchError((_) {}) ??
                   Future<void>.value(),
             );
@@ -4103,12 +4179,22 @@ class PlaybackManager implements AudioOwnable {
 
   void _cleanupPreemptedSession(dynamic item, StreamResolutionResult? resolution) {
     if (item != null && resolution != null) {
-      unawaited(_service?.onPlaybackStop(item, resolution, Duration.zero).catchError((_) => null));
+      unawaited(
+        _service
+            ?.onPlaybackStop(
+              item,
+              resolution,
+              Duration.zero,
+              releaseLiveStream: _claimLiveStreamRelease(resolution),
+            )
+            .catchError((_) => null),
+      );
     }
   }
 
   void dispose() {
     _liveRecoveryRetry?.cancel();
+    _cancelLiveRecoveryProven();
     _endLiveStallWatch();
     _stopProgressTimer();
     _disposeStreamSubs();
