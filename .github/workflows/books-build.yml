@@ -32,6 +32,11 @@ jobs:
 
         flutter test test/data/database/database_identity_test.dart --dart-define=MOONFIN_CUSTOM_BUILD=true
 
+
+        flutter test test/auth/credential_store_identity_test.dart
+
+        flutter test test/auth/credential_store_identity_test.dart --dart-define=MOONFIN_CUSTOM_BUILD=true
+
         '
   android-mobile:
     needs: books-tests

@@ -79,3 +79,9 @@ Use the release's platform status for the formats actually provided. Desktop, me
 3. If **Books** is missing, confirm you installed the **Moonfin Books** fork rather than official Moonfin. Ask the administrator to check that Moonbase Books is loaded, **Settings Sync** and **Books** are enabled, and the authenticated plugin Ping reports `booksEnabled: true`. If search fails, the administrator should check Shelfmark and its private network connection.
 
 To return to the official native app, open or reinstall official Moonfin and sign in there. Its local data is independent from Moonfin Books. Back up anything you need from the fork before uninstalling it. A server plugin rollback is an administrator task; it does not require wiping either client's data.
+
+## Coexistence limits
+
+App identities, local databases and credential storage are separate. The fork currently still registers the upstream `moonfin://` deep-link scheme on some non-Windows platforms; with both apps installed, the operating system may offer either app for those links. Set your preferred link handler where the platform supports it. Open Moonfin Books directly for the Books page. Windows Books builds leave the official scheme registration alone. tvOS keeps its existing scheme for Top Shelf behavior.
+
+For a locally installed Snap, check `snap connections moonfin-books`. If display interfaces were not connected automatically, connect `moonfin-books:x11` and `moonfin-books:wayland` with `sudo snap connect`, as appropriate for your desktop. This is separate from testing the app on that desktop.

@@ -4,6 +4,11 @@ project(moonfin LANGUAGES CXX)
 
 set(BINARY_NAME "moonfin")
 
+# Keep the Windows credential key and legacy credential cleanup separate.
+if("$ENV{MOONFIN_CUSTOM_BUILD}" STREQUAL "true")
+  set(STORAGE_PREFIX "moonfin_books")
+endif()
+
 # Explicitly opt in to modern CMake behaviors to avoid warnings with recent
 # versions of CMake.
 cmake_policy(VERSION 3.14...3.25)

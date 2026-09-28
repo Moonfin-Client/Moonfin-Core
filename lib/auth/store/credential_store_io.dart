@@ -1,5 +1,6 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import '../../util/app_distribution.dart';
 import 'credential_store_base.dart';
 
 /// Every call answers rather than throwing. A platform with no plugin
@@ -14,7 +15,12 @@ class CredentialStoreImpl implements CredentialStore {
   // launch comes up with nothing to reach the server with. The file based
   // keychain carries no such requirement.
   final FlutterSecureStorage _storage = const FlutterSecureStorage(
-    mOptions: MacOsOptions(usesDataProtectionKeychain: false),
+    mOptions: MacOsOptions(
+      usesDataProtectionKeychain: false,
+      accountName: AppDistribution.isCustomBuild
+          ? 'moonfin_books'
+          : AppleOptions.defaultAccountName,
+    ),
   );
   bool _unavailable = false;
 
@@ -57,9 +63,7 @@ class CredentialStoreImpl implements CredentialStore {
   @override
   Future<void> deleteToken(String serverId) async {
     try {
-      await _storage.delete(
-        key: '${CredentialStore.tokenKeyPrefix}$serverId',
-      );
+      await _storage.delete(key: '${CredentialStore.tokenKeyPrefix}$serverId');
     } on Exception catch (_) {
       _markUnavailable();
     }

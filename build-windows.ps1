@@ -393,6 +393,7 @@ try {
     $resourceText = Replace-CheckedBuildText $resourceText 'VALUE "ProductName", "Moonfin" "\0"' 'VALUE "ProductName", "Moonfin Books" "\0"'
     # The custom app must not take over the official moonfin:// association.
     $mainText = Replace-CheckedBuildText $mainText 'RegisterMoonfinScheme();' '// Moonfin Books does not claim the upstream moonfin:// handler.'
+    $mainText = Replace-CheckedBuildText $mainText 'void RegisterMoonfinScheme() {' '[[maybe_unused]] void RegisterMoonfinScheme() {'
     [System.IO.File]::WriteAllText($resourcePath, $resourceText, $utf8)
     [System.IO.File]::WriteAllText($mainCppPath, $mainText, $utf8)
   }

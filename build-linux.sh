@@ -890,6 +890,9 @@ exec "$APPDIR/moonfin-bin" "$@"
 EOF
     chmod +x "$tar_dir/moonfin"
   fi
+  if [ "$EXEC_NAME" != "moonfin" ]; then
+    ln -s moonfin "$tar_dir/$EXEC_NAME"
+  fi
 
   cat > "$tar_dir/README.txt" << EOF
 ${DISPLAY_NAME} ${version}
@@ -897,7 +900,7 @@ Jellyfin & Emby media client for Linux
 
 Installation:
   1. Extract this archive
-  2. Run ./moonfin
+  2. Run ./${EXEC_NAME}
 
 Dependencies:
   - GTK 3.0+
@@ -1192,6 +1195,10 @@ apps:
       - home
       - network
       - network-bind
+      - x11
+      - wayland
+      - desktop
+      - desktop-legacy
       - opengl
       - pulseaudio
     environment:
