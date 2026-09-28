@@ -9,6 +9,7 @@ PACKAGE_SUMMARY="Jellyfin & Emby media client"
 PACKAGE_DESCRIPTION="Moonfin is a media client for Jellyfin and Emby servers,"
 PACKAGE_NAME="moonfin"
 EXEC_NAME="moonfin"
+BUNDLE_BINARY="moonfin"
 INSTALL_DIR="moonfin"
 SNAP_NAME="moonfin"
 SNAP_APP="moonfin"
@@ -21,6 +22,11 @@ if [ "$IS_CUSTOM_BUILD" = "true" ]; then
   PACKAGE_DESCRIPTION="Moonfin Books is a media client for Jellyfin and Emby servers,"
   PACKAGE_NAME="moonfin-books"
   EXEC_NAME="moonfin-books"
+  # path_provider_linux falls back to /proc/self/exe when the unversioned
+  # libgio-2.0.so is absent. path_provider strips the executable's final
+  # extension, so the .bin suffix makes its fallback exactly the app ID.
+  # This keeps preferences, support files, caches and downloads separate.
+  BUNDLE_BINARY="${APP_ID}.bin"
   INSTALL_DIR="moonfin-books"
   SNAP_NAME="moonfin-books"
   SNAP_APP="moonfin-books"
@@ -139,6 +145,16 @@ resolve_mpv_package_name() {
   printf '%s\n' "libmpv1"
 }
 
+resolve_pipewire_package_name() {
+  if command -v apt-cache >/dev/null 2>&1; then
+    if apt-cache show libpipewire-0.3-0t64 >/dev/null 2>&1; then
+      printf '%s\n' libpipewire-0.3-0t64
+      return
+    fi
+  fi
+  printf '%s\n' libpipewire-0.3-0
+}
+
 resolve_build_dir() {
   local candidates=(
     "$REPO_ROOT/build/linux/x64/release/bundle"
@@ -148,7 +164,7 @@ resolve_build_dir() {
 
   local candidate
   for candidate in "${candidates[@]}"; do
-    if [ -d "$candidate" ] && [ -f "$candidate/moonfin" ]; then
+    if [ -d "$candidate" ] && [ -f "$candidate/$BUNDLE_BINARY" ]; then
       printf '%s\n' "$candidate"
       return 0
     fi
@@ -678,6 +694,10 @@ prepare_custom_linux_sources() {
     echo "Error: upstream Linux application ID changed; inspect CMakeLists.txt." >&2
     return 1
   }
+  grep -Fqx 'set(BINARY_NAME "moonfin")' "$cmake_file" || {
+    echo "Error: upstream Linux binary name changed; inspect CMakeLists.txt." >&2
+    return 1
+  }
   grep -Fq '"Name=Moonfin\n"' "$runner_file" || {
     echo "Error: upstream AppImage desktop entry changed; inspect my_application.cc." >&2
     return 1
@@ -687,6 +707,7 @@ prepare_custom_linux_sources() {
   cp -a "$runner_file" "$CUSTOM_SOURCE_BACKUP/my_application.cc"
   trap restore_custom_linux_sources EXIT
   sed -i 's/set(APPLICATION_ID "org.moonfin.linux")/set(APPLICATION_ID "art.tiedemann.moonfin.linux")/' "$cmake_file"
+  sed -i 's/set(BINARY_NAME "moonfin")/set(BINARY_NAME "art.tiedemann.moonfin.linux.bin")/' "$cmake_file"
   sed -i 's/"Name=Moonfin\\n"/"Name=Moonfin Books\\n"/' "$runner_file"
 }
 
@@ -742,8 +763,8 @@ build_appimage() {
   cp -r "$BUILD_DIR"/* "$appimage_dir/"
   inject_linux_runtime_libs "$appimage_dir"
 
-  cat > "$appimage_dir/AppRun" << 'EOF'
-#!/bin/bash
+  printf '#!/bin/bash\nAPP_BINARY=%q\n' "$BUNDLE_BINARY" > "$appimage_dir/AppRun"
+  cat >> "$appimage_dir/AppRun" << 'EOF'
 APPDIR="$(cd "$(dirname "$0")" && pwd)"
 export LD_LIBRARY_PATH="$APPDIR/lib:$LD_LIBRARY_PATH"
 
@@ -763,7 +784,7 @@ resolve_exact_lib() {
   return 1
 }
 
-ldd_output="$(ldd "$APPDIR/moonfin" 2>/dev/null || true)"
+ldd_output="$(ldd "$APPDIR/$APP_BINARY" 2>/dev/null || true)"
 
 # Only "libfoo.so => not found" lines name a missing library. Symbol version
 # lines start with the binary path, so matching bare "not found" reports the
@@ -792,7 +813,7 @@ if [ -n "$version_errors" ]; then
   exit 127
 fi
 
-exec "$APPDIR/moonfin" "$@"
+exec "$APPDIR/$APP_BINARY" "$@"
 EOF
   chmod +x "$appimage_dir/AppRun"
 
@@ -851,10 +872,14 @@ build_tarball() {
   cp -r "$BUILD_DIR"/* "$tar_dir/"
   inject_linux_runtime_libs "$tar_dir"
 
-  if [ -f "$tar_dir/moonfin" ]; then
-    mv "$tar_dir/moonfin" "$tar_dir/moonfin-bin"
-    cat > "$tar_dir/moonfin" << 'EOF'
-#!/bin/sh
+  if [ -f "$tar_dir/$BUNDLE_BINARY" ]; then
+    local packaged_binary="$BUNDLE_BINARY"
+    if [ "$IS_CUSTOM_BUILD" != "true" ]; then
+      packaged_binary="moonfin-bin"
+      mv "$tar_dir/$BUNDLE_BINARY" "$tar_dir/$packaged_binary"
+    fi
+    printf '#!/bin/sh\nAPP_BINARY=%s\n' "$packaged_binary" > "$tar_dir/moonfin"
+    cat >> "$tar_dir/moonfin" << 'EOF'
 APPDIR="$(cd "$(dirname "$0")" && pwd)"
 export LD_LIBRARY_PATH="$APPDIR/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 
@@ -874,7 +899,7 @@ resolve_exact_lib() {
   return 1
 }
 
-missing_libs="$(ldd "$APPDIR/moonfin-bin" 2>/dev/null | awk '/not found/ {print $1}' | sort -u || true)"
+missing_libs="$(ldd "$APPDIR/$APP_BINARY" 2>/dev/null | awk '/not found/ {print $1}' | sort -u || true)"
 if ! resolve_exact_lib libsqlite3.so; then
   missing_libs="$(printf '%s\n%s\n' "$missing_libs" "libsqlite3.so" | awk 'NF' | sort -u)"
 fi
@@ -886,7 +911,7 @@ if [ -n "$missing_libs" ]; then
   exit 127
 fi
 
-exec "$APPDIR/moonfin-bin" "$@"
+exec "$APPDIR/$APP_BINARY" "$@"
 EOF
     chmod +x "$tar_dir/moonfin"
   fi
@@ -908,6 +933,12 @@ Dependencies:
   - WebKitGTK 4.1 runtime (libwebkit2gtk-4.1-0)
   - libflutter_linux_gtk (bundled)
   - Additional runtime libs are bundled when available (libmpv, libsecret)
+$(if [ "$IS_CUSTOM_BUILD" = "true" ]; then cat <<'BOOKS_DEPS'
+  - EGL and GLESv2 (libegl1, libgles2)
+  - PipeWire 0.3 (libpipewire-0.3-0t64 or libpipewire-0.3-0)
+  - Wayland server library (libwayland-server0)
+BOOKS_DEPS
+fi)
 
 Requirements:
   - X11 or Wayland display server
@@ -969,7 +1000,7 @@ build_deb() {
 #!/bin/sh
 APPDIR="/usr/lib/${INSTALL_DIR}"
 export LD_LIBRARY_PATH="\$APPDIR/lib\${LD_LIBRARY_PATH:+:\$LD_LIBRARY_PATH}"
-exec "\$APPDIR/moonfin" "\$@"
+exec "\$APPDIR/${BUNDLE_BINARY}" "\$@"
 EOF
   chmod +x "$pkg_root/usr/bin/$EXEC_NAME"
 
@@ -983,6 +1014,9 @@ EOF
   # one the package can run on. Declaring it turns a wall of loader errors at
   # launch into a refused install that names the glibc the machine needs.
   local depends="libgtk-3-0, libglib2.0-0, libsecret-1-0, libwebkit2gtk-4.1-0"
+  if [ "$IS_CUSTOM_BUILD" = "true" ]; then
+    depends="$depends, libegl1, libgles2, libwayland-server0, libpipewire-0.3-0t64 | libpipewire-0.3-0"
+  fi
   local glibc
   glibc="$(required_glibc_version "$pkg_root/usr/lib/$INSTALL_DIR")"
   if [ -n "$glibc" ]; then
@@ -1077,7 +1111,7 @@ cat > %{buildroot}/usr/bin/${EXEC_NAME} << 'EOFRUNNER'
 #!/bin/sh
 APPDIR="/usr/lib/${INSTALL_DIR}"
 export LD_LIBRARY_PATH="\$APPDIR/lib\${LD_LIBRARY_PATH:+:\$LD_LIBRARY_PATH}"
-exec "\$APPDIR/moonfin" "\$@"
+exec "\$APPDIR/${BUNDLE_BINARY}" "\$@"
 EOFRUNNER
 chmod +x %{buildroot}/usr/bin/${EXEC_NAME}
 
@@ -1170,6 +1204,13 @@ build_snap() {
   snap_mpv_package="$(resolve_mpv_package_name)"
   local snap_triplet
   snap_triplet="$(get_multiarch_triplet)"
+  local books_stage_packages=""
+  if [ "$IS_CUSTOM_BUILD" = "true" ]; then
+    books_stage_packages="      - libegl1
+      - libgles2
+      - libwayland-server0
+      - $(resolve_pipewire_package_name)"
+  fi
 
   rm -rf "$snap_dir"
   mkdir -p "$snap_dir"
@@ -1190,7 +1231,7 @@ icon: ${APP_ID}.png
 
 apps:
   ${SNAP_APP}:
-    command: moonfin
+    command: ${BUNDLE_BINARY}
     plugs:
       - home
       - network
@@ -1222,6 +1263,7 @@ parts:
       - ${snap_mpv_package}
       - libsecret-1-0
       - libwebkit2gtk-4.1-0
+${books_stage_packages}
 EOF
 
   cp -r "$BUILD_DIR"/* "$snap_dir/"
@@ -1347,7 +1389,7 @@ modules:
     build-commands:
       - mkdir -p /app/bin /app/${INSTALL_DIR} /app/share/applications /app/share/metainfo /app/share/icons/hicolor/512x512/apps
       - cp -r . /app/${INSTALL_DIR}/
-      - chmod +x /app/${INSTALL_DIR}/moonfin
+      - chmod +x /app/${INSTALL_DIR}/${BUNDLE_BINARY}
       - |
         cat > /app/bin/${EXEC_NAME} << 'EOFRUN'
         #!/bin/sh
@@ -1369,7 +1411,7 @@ modules:
           return 1
         }
 
-        missing_libs="\$(ldd /app/${INSTALL_DIR}/moonfin 2>/dev/null | awk '/not found/ {print \$1}' | sort -u || true)"
+        missing_libs="\$(ldd /app/${INSTALL_DIR}/${BUNDLE_BINARY} 2>/dev/null | awk '/not found/ {print \$1}' | sort -u || true)"
         if ! resolve_exact_lib libsqlite3.so; then
           missing_libs="\$(printf '%s\\n%s\\n' "\$missing_libs" "libsqlite3.so" | awk 'NF' | sort -u)"
         fi
@@ -1381,7 +1423,7 @@ modules:
           exit 127
         fi
 
-        exec /app/${INSTALL_DIR}/moonfin "\$@"
+        exec /app/${INSTALL_DIR}/${BUNDLE_BINARY} "\$@"
         EOFRUN
       - chmod +x /app/bin/${EXEC_NAME}
       - '[ -f ${APP_ID}.png ] && cp ${APP_ID}.png /app/share/icons/hicolor/512x512/apps/ || true'

@@ -1,6 +1,6 @@
 name: Moonfin Books builds
 concurrency:
-  group: moonfin-books-${{ github.ref }}
+  group: moonfin-books-${{ github.ref }}-${{ inputs.target || 'all' }}
   cancel-in-progress: true
 permissions:
   contents: read
@@ -39,6 +39,7 @@ jobs:
 
         '
   android-mobile:
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.target != 'linux' }}
     needs: books-tests
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -101,6 +102,7 @@ jobs:
       if: always()
       run: rm -f android/app/release.keystore android/keystore.properties
   ios:
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.target != 'linux' }}
     needs: books-tests
     runs-on: macos-26
     timeout-minutes: 90
@@ -166,6 +168,7 @@ jobs:
         if-no-files-found: error
         retention-days: 14
   macos:
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.target != 'linux' }}
     needs: books-tests
     runs-on: macos-26
     timeout-minutes: 90
@@ -204,6 +207,7 @@ jobs:
         if-no-files-found: error
         retention-days: 14
   windows-x64:
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.target != 'linux' }}
     needs: books-tests
     runs-on: windows-latest
     timeout-minutes: 90
@@ -241,6 +245,7 @@ jobs:
         if-no-files-found: error
         retention-days: 14
   windows-arm64:
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.target != 'linux' }}
     needs: books-tests
     runs-on: windows-11-arm
     timeout-minutes: 120
@@ -366,6 +371,7 @@ jobs:
         retention-days: 14
       if: always()
   web:
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.target != 'linux' }}
     needs: books-tests
     runs-on: ubuntu-latest
     timeout-minutes: 45
@@ -401,6 +407,7 @@ jobs:
         if-no-files-found: error
         retention-days: 14
   android-startup:
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.target != 'linux' }}
     needs: android-mobile
     runs-on: ubuntu-latest
     timeout-minutes: 35
@@ -437,6 +444,7 @@ jobs:
         if-no-files-found: warn
         retention-days: 14
   android-tv:
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.target != 'linux' }}
     needs: books-tests
     runs-on: ubuntu-24.04
     timeout-minutes: 120
@@ -493,6 +501,7 @@ jobs:
       if: always()
       run: rm -f android/app/release.keystore android/keystore.properties
   tvos:
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.target != 'linux' }}
     needs: books-tests
     runs-on: macos-26
     timeout-minutes: 90
@@ -627,4 +636,13 @@ jobs:
     - build-*.ps1
     - pubspec.*
     - l10n.yaml
-  workflow_dispatch: null
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Build all platforms or only Linux
+        required: true
+        default: all
+        type: choice
+        options:
+        - all
+        - linux
