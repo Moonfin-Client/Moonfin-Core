@@ -86,7 +86,11 @@ class TimeOffsetMediaPeriodTest {
             discardedAtUs = positionUs
         }
 
-        override fun readDiscontinuity(): Long = discontinuityUs
+        override fun readDiscontinuity(): Long {
+            val result = discontinuityUs
+            discontinuityUs = C.TIME_UNSET
+            return result
+        }
 
         override fun seekToUs(positionUs: Long): Long {
             soughtToUs = positionUs
@@ -177,7 +181,8 @@ class TimeOffsetMediaPeriodTest {
         child.discontinuityUs = 1_000_000L
         assertEquals(9_000_000L, period.bufferedPositionUs)
         assertEquals(10_000_000L, period.nextLoadPositionUs)
-        assertEquals(3_000_000L, period.readDiscontinuity())
+        assertEquals(C.TIME_UNSET, period.readDiscontinuity())
+        assertEquals(C.TIME_UNSET, child.discontinuityUs)
     }
 
     @Test
