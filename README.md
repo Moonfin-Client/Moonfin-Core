@@ -38,7 +38,7 @@ The fork is intended to use separate app and installer identities so it can coex
 
 See [Build status](docs/BUILD_STATUS.md) for the current package and signing evidence. The fork targets the upstream platform set: Android mobile and TV/Fire TV, iOS, tvOS, macOS, Windows x64/ARM64, Linux x64/ARM64, and web. A target in the source tree does not mean a Moonfin Books package has passed device testing or been published.
 
-The initial Books backend version `2.3.1.0` was tested with Jellyfin `12.1` and Shelfmark `1.3.15`. A source-compatible Books packaging revision `2.3.1.100` is planned; treat it as a preview until its build and installation checks finish. Other server combinations need their own checks.
+The released [Moonbase Books `2.3.1.100` plugin](https://github.com/ZepiGit/Moonbase-Books/releases/tag/v2.3.1.100-books.1) was deployed and tested with Jellyfin `12.1` and Shelfmark Lite `1.3.15`. It passed 17 live API checks and the regular-user web search/release flow. Other server combinations need their own checks.
 
 ## Build from source
 
