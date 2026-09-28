@@ -50,6 +50,7 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet>
   int _volumeRequest = 0;
   bool _volumeDragging = false;
   Timer? _volumeRefreshTimer;
+  Timer? _volumeConfirmationTimer;
   Timer? _refreshTimer;
   StreamSubscription<ServerWebSocketMessage>? _socketSub;
   final _searchConnected = ValueNotifier<bool>(true);
@@ -110,6 +111,8 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet>
   void _cancelVolume() {
     _volumeRefreshTimer?.cancel();
     _volumeRefreshTimer = null;
+    _volumeConfirmationTimer?.cancel();
+    _volumeConfirmationTimer = null;
     _volumeSender?.close();
     _volumeSender = null;
     _volumeRequest++;
@@ -145,6 +148,8 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet>
       );
     });
     final request = ++_volumeRequest;
+    _volumeRefreshTimer?.cancel();
+    _volumeConfirmationTimer?.cancel();
     setState(() {
       _volume = volume?.toDouble();
       _volumeSessionId = id;
@@ -153,10 +158,14 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet>
     try {
       await sender.add(command, volume: volume);
       if (!mounted || request != _volumeRequest) return;
-      _volumeRefreshTimer?.cancel();
-      _volumeRefreshTimer = Timer(const Duration(milliseconds: 300), () {
-        if (mounted && request == _volumeRequest) unawaited(_refresh());
-      });
+      if (volume != null) {
+        // Older receivers only report every five seconds. This bounds the
+        // optimistic display; it never delays or retries the volume command.
+        _volumeConfirmationTimer = Timer(const Duration(seconds: 6), () {
+          if (mounted && request == _volumeRequest) setState(_cancelVolume);
+        });
+      }
+      _scheduleVolumeRefresh(request);
     } catch (error) {
       if (!mounted || request != _volumeRequest) return;
       setState(_cancelVolume);
@@ -167,6 +176,19 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet>
         ),
       );
     }
+  }
+
+  void _scheduleVolumeRefresh(
+    int request, {
+    Duration delay = const Duration(milliseconds: 300),
+  }) {
+    _volumeRefreshTimer = Timer(delay, () async {
+      if (!mounted || request != _volumeRequest) return;
+      await _refresh();
+      if (mounted && request == _volumeRequest && _volume != null) {
+        _scheduleVolumeRefresh(request, delay: const Duration(seconds: 1));
+      }
+    });
   }
 
   @override
@@ -244,6 +266,7 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet>
   Future<void> _load() async {
     if (_fetching) return;
     _fetching = true;
+    final volumeRequest = _volumeRequest;
     try {
       final client = GetIt.instance<MediaServerClient>();
       if (!_sameAccount) {
@@ -325,7 +348,7 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet>
             _cancelVolume();
           }
         }
-        _reconcileVolume();
+        _reconcileVolume(volumeRequest);
       });
     } catch (e) {
       if (!mounted) return;
@@ -462,9 +485,8 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet>
     }
   }
 
-  /// A settled refresh is authoritative even if the receiver rejected the
-  /// requested level. Never leave an unsent/unsupported value stuck on screen.
-  void _reconcileVolume() {
+  /// A successful command POST does not mean Sessions has its new volume yet.
+  void _reconcileVolume(int request) {
     final held = _volume;
     if (held == null) return;
 
@@ -473,9 +495,13 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet>
       _cancelVolume();
       return;
     }
-    if (!_volumeDragging && !(_volumeSender?.isSending ?? false)) {
-      _volume = null;
-      _volumeSessionId = null;
+    final reported = _selectedSession?['PlayState']?['VolumeLevel'];
+    if (request == _volumeRequest &&
+        !_volumeDragging &&
+        !(_volumeSender?.isSending ?? false) &&
+        reported is num &&
+        reported.round() == held.round()) {
+      _cancelVolume();
     }
   }
 
@@ -1087,6 +1113,11 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet>
                 max: 100,
                 value: value,
                 onChanged: (v) => setState(() {
+                  if (!_volumeDragging) {
+                    _volumeRequest++;
+                    _volumeRefreshTimer?.cancel();
+                    _volumeConfirmationTimer?.cancel();
+                  }
                   _volume = v;
                   _volumeSessionId = _selectedSession?['Id']?.toString();
                   _volumeDragging = true;

@@ -92,6 +92,7 @@ class _RecordingManager extends Fake implements PlaybackManager {
 
   double trackedVolume = 100;
   bool trackedMuted = false;
+  final reportedVolumes = <double>[];
   Completer<void>? stopBarrier;
 
   @override
@@ -104,9 +105,14 @@ class _RecordingManager extends Fake implements PlaybackManager {
   double get volume => trackedVolume;
 
   @override
-  void reportVolumeState({required double volume, required bool isMuted}) {
+  void reportVolumeState({
+    required double volume,
+    required bool isMuted,
+    bool reportImmediately = false,
+  }) {
     trackedVolume = volume.clamp(0, 100).toDouble();
     trackedMuted = isMuted;
+    if (reportImmediately) reportedVolumes.add(trackedVolume);
   }
 
   @override
@@ -877,10 +883,12 @@ void main() {
         await Future<void>.delayed(Duration.zero);
         expect(backend.volumes, [50]);
         expect(manager.trackedVolume, 40);
+        expect(manager.reportedVolumes, isEmpty);
         backend.barrier!.complete();
         await Future.wait([first, second]);
         expect(backend.volumes, [50, 60]);
         expect(manager.trackedVolume, 60);
+        expect(manager.reportedVolumes, [50, 60]);
       },
     );
 
@@ -909,6 +917,7 @@ void main() {
         await sendGeneral('SetVolume', args: {'Volume': raw});
         expect(backend.volumes, [expected]);
         expect(manager.trackedVolume, expected);
+        expect(manager.reportedVolumes, [expected]);
       });
     }
     for (final raw in [
@@ -923,6 +932,7 @@ void main() {
         await sendGeneral('SetVolume', args: {'Volume': raw});
         expect(backend.volumes, isEmpty);
         expect(manager.trackedVolume, 100);
+        expect(manager.reportedVolumes, isEmpty);
       });
     }
     test(
@@ -961,6 +971,7 @@ void main() {
         manager.backend = null;
         await sendGeneral('SetVolume', args: {'Volume': '25'});
         expect(manager.trackedVolume, 40);
+        expect(manager.reportedVolumes, isEmpty);
       },
     );
     test('VolumeUp steps up from what the device last reported', () async {
@@ -1029,6 +1040,7 @@ void main() {
     expect(levels, [0, 0.4, 0.5, 0.01]);
     expect(backend.volumes, isEmpty);
     expect(manager.trackedVolume, 1);
+    expect(manager.reportedVolumes, [0, 40, 50, 1]);
   });
 
   test('a message from another client is shown', () async {

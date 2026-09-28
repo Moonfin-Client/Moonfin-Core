@@ -732,10 +732,18 @@ class SessionRepository {
       // Mobile playback keeps player gain at full and adjusts system volume.
       await VolumeController.instance.setVolume(clamped / 100);
       final actual = await VolumeController.instance.getVolume();
-      manager.reportVolumeState(volume: actual * 100, isMuted: actual <= 0);
+      manager.reportVolumeState(
+        volume: actual * 100,
+        isMuted: actual <= 0,
+        reportImmediately: true,
+      );
     } else {
       await backend.setVolume(clamped);
-      manager.reportVolumeState(volume: clamped, isMuted: clamped <= 0);
+      manager.reportVolumeState(
+        volume: clamped,
+        isMuted: clamped <= 0,
+        reportImmediately: true,
+      );
     }
     if (manager.volume > 0) _lastUnmutedVolume = manager.volume;
   }

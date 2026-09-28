@@ -21,6 +21,8 @@ class _ProgressGeneration {
   final StreamResolutionResult resolution;
   final PlayerService? service;
   bool ended = false;
+  bool reporting = false;
+  bool reportPending = false;
   Duration stopPosition = Duration.zero;
 }
 
@@ -522,9 +524,15 @@ class PlaybackManager implements AudioOwnable {
   double get volume => _volume;
   bool get isMuted => _isMuted;
 
-  void reportVolumeState({required double volume, required bool isMuted}) {
+  void reportVolumeState({
+    required double volume,
+    required bool isMuted,
+    bool reportImmediately = false,
+  }) {
     _volume = volume.clamp(0, 100);
     _isMuted = isMuted;
+    final generation = _progressGeneration;
+    if (reportImmediately && generation != null) _reportProgress(generation);
   }
 
   Duration get currentPlaybackPosition {
@@ -2924,46 +2932,64 @@ class PlaybackManager implements AudioOwnable {
     }
 
     final activeGeneration = generation;
-    _progressTimer = Timer.periodic(const Duration(seconds: 5), (_) {
-      if (activeGeneration.ended ||
-          !identical(_progressGeneration, activeGeneration)) {
-        return;
-      }
-      Future<void>? progress;
-      try {
-        progress = activeGeneration.service?.onPlaybackProgress(
-          activeGeneration.item,
-          activeGeneration.resolution,
-          state.position,
-          // Not `!isPlaying`: that reads true while the stream is merely
-          // starved, so the server could never tell a viewer pause from a
-          // stall. Engines with no intent flag fall back to the old answer.
-          isPaused: state.isPaused,
-          audioStreamIndex: _audioStreamIndex,
-          subtitleStreamIndex: _subtitleStreamIndex,
-          volumeLevel: _volume.round(),
-          isMuted: _isMuted,
-        );
-      } catch (_) {
-        return;
-      }
-      if (progress == null) return;
+    _progressTimer = Timer.periodic(
+      const Duration(seconds: 5),
+      (_) => _reportProgress(activeGeneration),
+    );
+  }
+
+  void _reportProgress(_ProgressGeneration generation) {
+    if (_progressTimer == null ||
+        generation.ended ||
+        !identical(_progressGeneration, generation)) {
+      return;
+    }
+    // Keep old progress from overwriting a newer volume report. While one is
+    // in flight, coalesce requests into a single report of the latest state.
+    if (generation.reporting) {
+      generation.reportPending = true;
+      return;
+    }
+    final service = generation.service;
+    if (service == null) return;
+    generation
+      ..reporting = true
+      ..reportPending = false;
+    try {
       unawaited(
-        progress.then<void>(
-          (_) => _progressSettled(activeGeneration),
-          onError: (Object _, StackTrace _) =>
-              _progressSettled(activeGeneration),
-        ),
+        service
+            .onPlaybackProgress(
+              generation.item,
+              generation.resolution,
+              state.position,
+              // Not `!isPlaying`: that reads true while the stream is merely
+              // starved, so the server could never tell a viewer pause from a
+              // stall. Engines with no intent flag fall back to the old answer.
+              isPaused: state.isPaused,
+              audioStreamIndex: _audioStreamIndex,
+              subtitleStreamIndex: _subtitleStreamIndex,
+              volumeLevel: _volume.round(),
+              isMuted: _isMuted,
+            )
+            .then<void>(
+              (_) => _progressSettled(generation),
+              onError: (Object _, StackTrace _) => _progressSettled(generation),
+            ),
       );
-    });
+    } catch (_) {
+      _progressSettled(generation);
+    }
   }
 
   void _progressSettled(_ProgressGeneration generation) {
+    generation.reporting = false;
     if (generation.ended) {
       // The request may have reached the server after the original stop. A
       // second stop, scoped to this generation's old PlaySessionId, ensures
       // that no late progress report can be the server's final state.
       _issuePlaybackStop(generation);
+    } else if (generation.reportPending) {
+      _reportProgress(generation);
     }
   }
 

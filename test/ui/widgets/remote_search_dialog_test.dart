@@ -15,6 +15,8 @@ class _Api extends Fake implements SessionApi {
   final commands = <(String, String)>[];
   final volumeArguments = <String?>[];
   Completer<void>? barrier;
+  Completer<void>? sessionsBarrier;
+  int sessionFetches = 0;
   final playCommands = <String>[];
   @override
   Future<void> sendPlayStateCommand(
@@ -28,7 +30,13 @@ class _Api extends Fake implements SessionApi {
   @override
   Future<List<Map<String, dynamic>>> getSessions({
     String? controllableByUserId,
-  }) async => sessions;
+  }) async {
+    sessionFetches++;
+    final snapshot = List<Map<String, dynamic>>.of(sessions);
+    await sessionsBarrier?.future;
+    return snapshot;
+  }
+
   @override
   Future<void> sendGeneralCommand(
     String id,
@@ -428,6 +436,12 @@ void main() {
       expect(api.volumeArguments, ['20', '60']);
       tv['PlayState'] = {'VolumeLevel': 55, 'IsMuted': false};
       await tester.pump(const Duration(milliseconds: 350));
+      expect(tester.widget<Slider>(volumeSlider()).value, 60);
+      tv['PlayState'] = {'VolumeLevel': 60, 'IsMuted': false};
+      await tester.pump(const Duration(seconds: 1));
+      expect(tester.widget<Slider>(volumeSlider()).value, 60);
+      tv['PlayState'] = {'VolumeLevel': 55, 'IsMuted': false};
+      await tester.pump(const Duration(seconds: 5));
       expect(tester.widget<Slider>(volumeSlider()).value, 55);
       // SetVolume support alone never enables a pretend Mute button.
       expect(
@@ -441,6 +455,142 @@ void main() {
       await disposeRemote(tester);
     },
   );
+
+  testWidgets(
+    'a stale report cannot undo a one percent adjustment before confirmation',
+    (tester) async {
+      final tv = playingTarget('tv', ['SetVolume']);
+      api.sessions = [tv];
+      await open(tester);
+      await tester.tap(find.text('Movie'));
+      await tester.pumpAndSettle();
+      await changeVolume(tester, 41);
+      expect(api.volumeArguments, ['41']);
+      await tester.pump(const Duration(milliseconds: 350));
+      expect(tester.widget<Slider>(volumeSlider()).value, 41);
+      await tester.pump(const Duration(seconds: 4));
+      expect(tester.widget<Slider>(volumeSlider()).value, 41);
+      tv['PlayState'] = {'VolumeLevel': 41};
+      await tester.pump(const Duration(seconds: 1));
+      expect(tester.widget<Slider>(volumeSlider()).value, 41);
+      tv['PlayState'] = {'VolumeLevel': 45};
+      await tester.pump(const Duration(seconds: 5));
+      expect(tester.widget<Slider>(volumeSlider()).value, 45);
+      expect(api.volumeArguments, ['41']);
+      await disposeRemote(tester);
+    },
+    variant: TargetPlatformVariant({
+      TargetPlatform.iOS,
+      TargetPlatform.android,
+    }),
+  );
+
+  testWidgets('unconfirmed volume expires without resending the command', (
+    tester,
+  ) async {
+    final tv = playingTarget('tv', ['SetVolume']);
+    api.sessions = [tv];
+    await open(tester);
+    await tester.tap(find.text('Movie'));
+    await tester.pumpAndSettle();
+    await changeVolume(tester, 60);
+    // A receiver may quantize or reject a level. Its last report wins at the
+    // deadline, even if the last confirmation fetch is still outstanding.
+    tv['PlayState'] = {'VolumeLevel': 56};
+    await tester.pump(const Duration(milliseconds: 300));
+    final barrier = api.sessionsBarrier = Completer<void>();
+    await tester.pump(const Duration(milliseconds: 5600));
+    expect(tester.widget<Slider>(volumeSlider()).value, 60);
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(tester.widget<Slider>(volumeSlider()).value, 56);
+    api.sessionsBarrier = null;
+    barrier.complete();
+    await tester.pump();
+    expect(api.volumeArguments, ['60']);
+    final fetches = api.sessionFetches;
+    await tester.pump(const Duration(seconds: 10));
+    expect(api.sessionFetches - fetches, lessThanOrEqualTo(2));
+    await disposeRemote(tester);
+  });
+
+  testWidgets('a fetch started before a gesture cannot confirm its value', (
+    tester,
+  ) async {
+    api.sessions = [
+      playingTarget('tv', ['SetVolume']),
+    ];
+    await open(tester);
+    await tester.tap(find.text('Movie'));
+    await tester.pumpAndSettle();
+    final barrier = api.sessionsBarrier = Completer<void>();
+    await tester.pump(const Duration(seconds: 5)); // Fetches the old 40.
+    await changeVolume(tester, 40);
+    api.sessions = [
+      {
+        ...playingTarget('tv', ['SetVolume']),
+        'PlayState': {'VolumeLevel': 30},
+      },
+    ];
+    api.sessionsBarrier = null;
+    barrier.complete();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 350));
+    // If the old matching report had confirmed 40, this would snap to 30.
+    expect(tester.widget<Slider>(volumeSlider()).value, 40);
+    await disposeRemote(tester);
+  });
+
+  testWidgets('a new drag cancels the previous confirmation deadline', (
+    tester,
+  ) async {
+    api.sessions = [
+      playingTarget('tv', ['SetVolume']),
+    ];
+    await open(tester);
+    await tester.tap(find.text('Movie'));
+    await tester.pumpAndSettle();
+    await changeVolume(tester, 60);
+    await tester.pump(const Duration(seconds: 5));
+    tester.widget<Slider>(volumeSlider()).onChanged!(70);
+    await tester.pump(const Duration(seconds: 2));
+    expect(tester.widget<Slider>(volumeSlider()).value, 70);
+    expect(api.volumeArguments, ['60']);
+    tester.widget<Slider>(volumeSlider()).onChangeEnd!(70);
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 5));
+    expect(tester.widget<Slider>(volumeSlider()).value, 70);
+    expect(api.volumeArguments, ['60', '70']);
+    await disposeRemote(tester);
+  });
+
+  for (final cancel in ['account', 'disconnect', 'dispose']) {
+    testWidgets('$cancel cancels pending volume confirmation', (tester) async {
+      api.sessions = [
+        playingTarget('tv', ['SetVolume']),
+      ];
+      await open(tester);
+      await tester.tap(find.text('Movie'));
+      await tester.pumpAndSettle();
+      await changeVolume(tester, 60);
+      if (cancel == 'account') {
+        await GetIt.instance.unregister<MediaServerClient>();
+        GetIt.instance.registerSingleton<MediaServerClient>(_Client(_Api()));
+      } else if (cancel == 'disconnect') {
+        api.sessions = [];
+        socket.controller.add(const SessionEndedMessage(sessionId: 'tv'));
+      } else {
+        await disposeRemote(tester);
+      }
+      await tester.pump(const Duration(milliseconds: 350));
+      final fetches = api.sessionFetches;
+      await tester.pump(const Duration(seconds: 7));
+      // The ordinary five-second refresh remains, but confirmation polling ends.
+      expect(api.sessionFetches - fetches, lessThanOrEqualTo(2));
+      expect(api.volumeArguments, ['60']);
+      expect(tester.takeException(), isNull);
+      await disposeRemote(tester);
+    });
+  }
 
   for (final cancel in ['target', 'hidden', 'failure']) {
     testWidgets('$cancel discards queued volume and stale slider state', (

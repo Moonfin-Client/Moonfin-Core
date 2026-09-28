@@ -163,6 +163,7 @@ class _TestService implements PlayerService {
   final bool stallProgress;
   final List<String> events = <String>[];
   final List<_ProgressRequest> progressRequests = <_ProgressRequest>[];
+  final reportedVolumes = <(int?, bool?)>[];
   final List<StreamResolutionResult> stoppedResolutions =
       <StreamResolutionResult>[];
   final List<StreamResolutionResult> transcodingStops =
@@ -190,6 +191,7 @@ class _TestService implements PlayerService {
     int? volumeLevel,
     bool? isMuted,
   }) {
+    reportedVolumes.add((volumeLevel, isMuted));
     if (!stallProgress) {
       events.add('progress:${resolution.playSessionId}:immediate');
       return Future<void>.value();
@@ -333,7 +335,7 @@ void main() {
   });
 
   testWidgets(
-    'older overlapping progress completing last is followed by old stop',
+    'pending progress is discarded on stop and late progress is followed by stop',
     (tester) async {
       final backend = _TestBackend();
       final resolver = _TestResolver();
@@ -343,17 +345,15 @@ void main() {
 
       await manager.playItems(<dynamic>[item]);
       await tester.pump(const Duration(seconds: 10));
-      expect(service.progressRequests, hasLength(2));
+      expect(service.progressRequests, hasLength(1));
+      manager.reportVolumeState(
+        volume: 60,
+        isMuted: false,
+        reportImmediately: true,
+      );
 
       expect(await manager.stopForBackground(item), isTrue);
       expect(service.events.last, 'stop:session-1');
-
-      service.progressRequests[1].completer.complete();
-      await tester.pump();
-      expect(service.events.takeLast(2), <String>[
-        'progress:session-1:1',
-        'stop:session-1',
-      ]);
 
       service.progressRequests[0].completer.complete();
       await tester.pump();
@@ -363,7 +363,7 @@ void main() {
       ]);
 
       await tester.pump(const Duration(seconds: 15));
-      expect(service.progressRequests, hasLength(2));
+      expect(service.progressRequests, hasLength(1));
       manager.dispose();
     },
   );
@@ -379,7 +379,7 @@ void main() {
 
       await manager.playItems(<dynamic>[item]);
       await tester.pump(const Duration(seconds: 10));
-      expect(service.progressRequests, hasLength(2));
+      expect(service.progressRequests, hasLength(1));
 
       await tester.runAsync(() async {
         expect(
@@ -398,17 +398,124 @@ void main() {
             .timeout(const Duration(milliseconds: 100));
       });
       expect(service.events, contains('start:session-2'));
+      manager.reportVolumeState(
+        volume: 60,
+        isMuted: false,
+        reportImmediately: true,
+      );
+      expect(service.progressRequests, hasLength(2));
+      expect(service.progressRequests.last.sessionId, 'session-2');
 
-      service.progressRequests[1].completer.complete();
+      service.progressRequests[0].completer.complete();
       await tester.pump();
       expect(service.events.last, 'stop:session-1');
       expect(service.stoppedResolutions.last.playSessionId, isNot('session-2'));
 
-      // Request zero intentionally never completes. It neither blocks local
-      // work nor produces a server progress update requiring compensation.
+      // The new session's request intentionally never completes. It neither
+      // blocks local work nor produces a report requiring compensation.
       manager.dispose();
     },
   );
+
+  testWidgets('only explicit volume changes request prompt reporting', (
+    tester,
+  ) async {
+    final service = _TestService();
+    final manager = _manager(_TestBackend(), _TestResolver(), service);
+    manager.reportVolumeState(
+      volume: 40,
+      isMuted: false,
+      reportImmediately: true,
+    );
+    expect(service.reportedVolumes, isEmpty);
+    await manager.playItems(<dynamic>[
+      {'Id': 'volume', 'Type': 'Movie'},
+    ]);
+    manager.reportVolumeState(volume: 41, isMuted: false);
+    expect(service.reportedVolumes, isEmpty);
+    manager.reportVolumeState(
+      volume: 42,
+      isMuted: false,
+      reportImmediately: true,
+    );
+    expect(service.reportedVolumes, [(42, false)]);
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 5));
+    expect(service.reportedVolumes, [(42, false), (42, false)]);
+    manager.dispose();
+  });
+
+  for (final fail in [false, true]) {
+    testWidgets(
+      'volume reports coalesce behind ${fail ? 'failed' : 'delayed'} progress',
+      (tester) async {
+        final service = _TestService(stallProgress: true);
+        final manager = _manager(_TestBackend(), _TestResolver(), service);
+        await manager.playItems(<dynamic>[
+          {'Id': 'volume', 'Type': 'Movie'},
+        ]);
+        manager.reportVolumeState(volume: 40, isMuted: false);
+        await tester.pump(const Duration(seconds: 5));
+        manager.reportVolumeState(
+          volume: 50,
+          isMuted: false,
+          reportImmediately: true,
+        );
+        manager.reportVolumeState(
+          volume: 60,
+          isMuted: false,
+          reportImmediately: true,
+        );
+        await tester.pump(const Duration(seconds: 5));
+        expect(service.reportedVolumes, [(40, false)]);
+        if (fail) {
+          service.progressRequests.single.completer.completeError(
+            StateError('offline'),
+          );
+        } else {
+          service.progressRequests.single.completer.complete();
+        }
+        await tester.pump();
+        expect(service.reportedVolumes, [(40, false), (60, false)]);
+        manager.reportVolumeState(
+          volume: 0,
+          isMuted: true,
+          reportImmediately: true,
+        );
+        service.progressRequests.last.completer.complete();
+        await tester.pump();
+        expect(service.reportedVolumes, [(40, false), (60, false), (0, true)]);
+        service.progressRequests.last.completer.complete();
+        await tester.pump();
+        expect(service.progressRequests, hasLength(3));
+        expect(tester.takeException(), isNull);
+        manager.dispose();
+      },
+    );
+  }
+
+  testWidgets('disposal discards a queued volume report', (tester) async {
+    final service = _TestService(stallProgress: true);
+    final manager = _manager(_TestBackend(), _TestResolver(), service);
+    await manager.playItems(<dynamic>[
+      {'Id': 'volume', 'Type': 'Movie'},
+    ]);
+    manager.reportVolumeState(
+      volume: 40,
+      isMuted: false,
+      reportImmediately: true,
+    );
+    manager.reportVolumeState(
+      volume: 60,
+      isMuted: false,
+      reportImmediately: true,
+    );
+    manager.dispose();
+    service.progressRequests.single.completer.complete();
+    await tester.pump();
+    expect(service.reportedVolumes, [(40, false)]);
+    expect(tester.takeException(), isNull);
+  });
 
   test('canonical user stop still clears queue and playback state', () async {
     final backend = _TestBackend();
