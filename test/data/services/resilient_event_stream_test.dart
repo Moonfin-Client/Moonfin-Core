@@ -1,4 +1,5 @@
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:moonfin/data/services/cast/resilient_event_stream.dart';
 
@@ -114,6 +115,55 @@ void main() {
     expect(callCount, equals(3)); // 1 initial + 2 retries
     expect(events, isEmpty);
     expect(errors, isEmpty); // Gracefully swallowed, not thrown or errored
+
+    await sub.cancel();
+  });
+
+  test('once the retries run out, a resume subscribes when the handler exists',
+      () async {
+    var callCount = 0;
+    var handlerRegistered = false;
+    messenger.setMockMethodCallHandler(methodChannel, (call) async {
+      if (call.method == 'listen') {
+        callCount++;
+        if (!handlerRegistered) {
+          throw MissingPluginException('No implementation found');
+        }
+      }
+      return null;
+    });
+
+    final stream = resilientEventChannelStream(
+      channelName,
+      retryInterval: const Duration(milliseconds: 10),
+      maxRetries: 1,
+    );
+    final events = <dynamic>[];
+    final sub = stream.listen(events.add);
+
+    await Future<void>.delayed(const Duration(milliseconds: 30));
+    expect(callCount, equals(2));
+
+    // An Activity adopting the engine registers the handler, then resumes.
+    handlerRegistered = true;
+    final binding = TestWidgetsFlutterBinding.instance;
+    binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+    binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await pumpEventQueue();
+    expect(callCount, equals(3));
+
+    await messenger.handlePlatformMessage(
+      channelName,
+      const StandardMethodCodec().encodeSuccessEnvelope({'state': 'connected'}),
+      (_) {},
+    );
+    expect(events, equals([{'state': 'connected'}]));
+
+    // Subscribed now, so a later resume leaves the channel alone.
+    binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+    binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await pumpEventQueue();
+    expect(callCount, equals(3));
 
     await sub.cancel();
   });

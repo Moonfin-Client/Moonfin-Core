@@ -1,15 +1,17 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 
-/// Creates a broadcast stream from a platform event channel that gracefully
-/// handles [MissingPluginException] when native handlers have not yet registered
-/// during cold startup or on headless engines.
+/// A broadcast stream over a platform event channel that copes with the
+/// channel having no native handler yet. An engine the system starts with no
+/// Activity, for a car head unit or a media button, has none until an
+/// Activity adopts it.
 ///
-/// Unlike Flutter's default [EventChannel.receiveBroadcastStream], which reports
-/// an uncaught [FlutterError] whenever the native channel is unhandled, this stream
-/// catches [MissingPluginException] and retries with a backoff interval until the
-/// platform host completes engine configuration, or until [maxRetries] is reached.
+/// [EventChannel.receiveBroadcastStream] reports that as an uncaught
+/// [MissingPluginException]. This stream swallows it, tries again every
+/// [retryInterval] up to [maxRetries] times, and after that tries again each
+/// time the app resumes, since an Activity adopting the engine resumes it.
 Stream<dynamic> resilientEventChannelStream(
   String channelName, {
   BinaryMessenger? binaryMessenger,
@@ -23,18 +25,30 @@ Stream<dynamic> resilientEventChannelStream(
   final methodChannel = MethodChannel(channelName, codec, messenger);
   late StreamController<dynamic> controller;
   Timer? retryTimer;
+  AppLifecycleListener? resumeListener;
   var retriesRemaining = maxRetries;
   var isSubscribed = false;
+
+  void stopWaitingForResume() {
+    resumeListener?.dispose();
+    resumeListener = null;
+  }
 
   Future<void> tryListen() async {
     if (!controller.hasListener || isSubscribed) return;
     try {
       await methodChannel.invokeMethod<void>('listen', arguments);
       isSubscribed = true;
+      stopWaitingForResume();
     } on MissingPluginException {
-      if (retriesRemaining > 0 && controller.hasListener) {
+      if (!controller.hasListener) return;
+      if (retriesRemaining > 0) {
         retriesRemaining--;
         retryTimer = Timer(retryInterval, tryListen);
+      } else {
+        resumeListener ??= AppLifecycleListener(
+          onResume: () => unawaited(tryListen()),
+        );
       }
     } catch (e, st) {
       if (controller.hasListener) {
@@ -64,6 +78,7 @@ Stream<dynamic> resilientEventChannelStream(
     onCancel: () async {
       retryTimer?.cancel();
       retryTimer = null;
+      stopWaitingForResume();
       messenger.setMessageHandler(channelName, null);
       if (isSubscribed) {
         isSubscribed = false;
