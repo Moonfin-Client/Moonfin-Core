@@ -3183,7 +3183,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fit => 'Fit';
 
   @override
-  String get autoCrop => 'Auto Crop';
+  String get autoCrop => 'Zoom to Fill';
 
   @override
   String get cropBlackBars => 'Crop black bars';
@@ -10024,7 +10024,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsPlayerZoomDescription =>
-      'How video should be scaled to fit the screen.';
+      'How video is scaled to the screen. Zoom to Fill enlarges the picture until it fills the screen and cuts off the edges; it does not detect black bars.';
 
   @override
   String get settingsPlaybackEngineAndroidTv => 'Playback Engine (Android TV)';
@@ -16198,7 +16198,7 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
   String get fit => 'Fit';
 
   @override
-  String get autoCrop => 'Auto Crop';
+  String get autoCrop => 'Zoom to Fill';
 
   @override
   String get cropBlackBars => 'Crop black bars';
@@ -23039,7 +23039,7 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
 
   @override
   String get settingsPlayerZoomDescription =>
-      'How video should be scaled to fit the screen.';
+      'How video is scaled to the screen. Zoom to Fill enlarges the picture until it fills the screen and cuts off the edges; it does not detect black bars.';
 
   @override
   String get settingsPlaybackEngineAndroidTv => 'Playback Engine (Android TV)';

@@ -5560,10 +5560,10 @@ abstract class AppLocalizations {
   /// **'Fit'**
   String get fit;
 
-  /// Zoom mode: auto crop
+  /// Zoom mode: scale the video to fill the screen and clip the overflowing edges. Does not detect or remove black bars.
   ///
   /// In en, this message translates to:
-  /// **'Auto Crop'**
+  /// **'Zoom to Fill'**
   String get autoCrop;
 
   /// Setting to detect and crop encoded letterbox/pillarbox bars
@@ -17821,7 +17821,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsPlayerZoomDescription.
   ///
   /// In en, this message translates to:
-  /// **'How video should be scaled to fit the screen.'**
+  /// **'How video is scaled to the screen. Zoom to Fill enlarges the picture until it fills the screen and cuts off the edges; it does not detect black bars.'**
   String get settingsPlayerZoomDescription;
 
   /// No description provided for @settingsPlaybackEngineAndroidTv.
