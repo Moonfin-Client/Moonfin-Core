@@ -6,13 +6,13 @@ Moonfin Books is the client fork that adds a native **Books** request tab. Your 
 
 ## Before installing
 
-1. Check [current build status](BUILD_STATUS.md). The platform list below describes **planned preview packages after validation**, not packages already published or tested on every device. The expanded CI jobs and device checks must finish first.
-2. When a validated package is published, download it from [Moonfin Books Releases](https://github.com/ZepiGit/Moonfin-Books/releases). Choose your operating system and CPU architecture, compare its SHA-256 with the release checksum, and keep the package for rollback. A temporary CI artifact is not a release.
+1. Check [current build status](BUILD_STATUS.md) for the built packages, signing status and actual runtime coverage. A successful build does not mean testing on every physical device.
+2. Download the preview from [Moonfin Books Preview 1](https://github.com/ZepiGit/Moonfin-Books/releases/tag/v2.6.0-books.1). Choose your operating system and CPU architecture, compare its SHA-256 with the release checksum, and keep the package for rollback. A temporary CI artifact is not a release.
 3. Ask your administrator for the Jellyfin server URL. Use a URL that already works for normal Jellyfin sign-in; do not enter a private Shelfmark URL or any server secret in the app.
 
 ## Choose and install a package
 
-| Platform | Planned preview output | Installation notes |
+| Platform | Preview package | Installation notes |
 | --- | --- | --- |
 | Android phone/tablet | Release-signed mobile APK and AAB | Install the APK through Android's trusted local-package flow. An AAB is for a compatible distribution service or bundle tool; it is not directly installable as an APK. Use APKs from the same release publisher for future in-place updates; temporary debug builds use a different signature. |
 | Android TV / Google TV / Fire TV | Release-signed TV/Fire TV flavor APKs and AABs | Choose the correct device flavor and install its APK using that device's supported local-package flow. Use the remote to check navigation after installation. TV input handling has source-level unit tests; real-device runtime remains unverified until device testing. |
@@ -22,11 +22,13 @@ Moonfin Books is the client fork that adds a native **Books** request tab. Your 
 | Linux x64 / ARM64 | `tar.gz`, `deb`, `rpm`, `AppImage`, `snap`, and `flatpak` for each architecture | Choose one format supported by your distribution, verify its checksum, and install it with that distribution's package manager or local application flow. Check its required media and desktop libraries on the target system. See the package and runtime evidence in the build-status table. |
 | Web / PWA | Served by Moonbase Books | Open `https://your-jellyfin-server/Moonfin/Web/` in a browser. The server supplies the web build; no native package is needed. |
 
-These packages are planned for the [Releases page](https://github.com/ZepiGit/Moonfin-Books/releases) only after validation. No store release, notarized macOS app, signed Windows installer, or currently published preview package is implied here. See [Build status](BUILD_STATUS.md) for evidence as the builds finish.
+The packages are provided as a GitHub preview release. This is not a store release; macOS is ad hoc signed and unnotarized, Windows is unsigned, and iOS/tvOS still need Apple signing. See [Build status](BUILD_STATUS.md) for the checks actually completed.
 
 ## Platform steps
 
 ### Android phones and tablets
+
+The preview requires **Android 7.0 / API 24 or newer**.
 
 1. Download the **mobile APK** on the device. Do not select the TV APK or the AAB.
 2. Open the downloaded APK. If Android asks, grant the specific browser or file manager permission to install this package, then choose **Install**.
@@ -46,6 +48,8 @@ These packages are planned for the [Releases page](https://github.com/ZepiGit/Mo
 3. Start **Moonfin Books** from the Start menu and connect. It installs separately from official Moonfin.
 
 ### macOS
+
+The preview requires **macOS 14 or newer**, on Intel or Apple Silicon.
 
 1. Open the downloaded universal `.dmg`.
 2. Drag **Moonfin Books.app** into **Applications**, then eject the disk image.
@@ -67,6 +71,8 @@ Choose **one** package for your architecture. `Linux` assets are x86_64; `LinuxA
 Use the release's platform status for the formats actually provided. Desktop, media and system-library compatibility still depends on your distribution; a successful CI build does not establish runtime support for every Linux release. Portable packages also need EGL/GLES, PipeWire and Wayland runtime libraries. On Ubuntu 24.04, missing-library startup errors on a minimal installation were resolved with `sudo apt install libegl1 libegl-mesa0 libgles2 libpipewire-0.3-0t64 libwayland-server0`. Use your distribution's matching packages; a graphical desktop is still required.
 
 ### iOS and tvOS
+
+The preview requires **iOS 16 or newer**, or **tvOS 17 or newer**.
 
 1. Check whether the release provides an **unsigned** IPA. Such an IPA is a build artifact, not a ready-to-install App Store package.
 2. A distributor must prepare the appropriate Apple certificate, app identifiers, entitlements and provisioning profile using [Apple's distribution instructions](https://developer.apple.com/documentation/xcode/distributing-your-app-for-beta-testing-and-releases). tvOS also contains a Top Shelf extension that needs matching provisioning.

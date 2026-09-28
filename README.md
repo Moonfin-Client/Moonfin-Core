@@ -28,14 +28,16 @@ These are captures of the **finished web build**, including a responsive narrow 
 
 ## Native build evidence
 
-The release-signed Android mobile APK reached server selection in an Android 15 emulator. This is a native first-launch capture, not proof of an Android Books request or physical-device playback.
+The Linux screenshot shows Books search in the released x64 tar package, running under Ubuntu 24.04/Xvfb with an existing regular Jellyfin session. The Android screenshot shows the exact release-signed APK at first launch in an Android 15 emulator. These captures do not establish physical-device playback or an Android Books request.
 
-<img src="docs/screenshots/android-first-launch.png" alt="Moonfin Books Android APK at server selection in the emulator" width="300">
+| Native Linux Books search | Native Android first launch |
+| --- | --- |
+| ![Books search in the native Linux release](docs/screenshots/books-search-linux-native.png) | <img src="docs/screenshots/android-first-launch.png" alt="Moonfin Books Android APK at server selection" width="240"> |
 
 ## Get started
 
 1. Ask your server administrator to follow [Moonbase Books server setup](https://github.com/ZepiGit/Moonbase-Books/blob/master/docs/SERVER_SETUP.md). End users only install a client and sign in; they do not configure Shelfmark, indexers, or downloader credentials.
-2. Check [build status](docs/BUILD_STATUS.md). After a package passes validation and is published, obtain it from [Moonfin Books Releases](https://github.com/ZepiGit/Moonfin-Books/releases), verify the published checksum, and follow the [platform installation guide](docs/INSTALL.md). A CI artifact or configured build job is not a public release.
+2. Download [Moonfin Books Preview 1](https://github.com/ZepiGit/Moonfin-Books/releases/tag/v2.6.0-books.1), choose the package for your device, verify its checksum, and follow the [platform installation guide](docs/INSTALL.md). Read [build status](docs/BUILD_STATUS.md) for signing and runtime-test limits. iOS/tvOS IPAs require Apple signing before installation.
 3. Open Moonfin Books, enter your existing Jellyfin server URL, and sign in with your Jellyfin account. Open **Books** to search ebooks or audiobooks. If the entry is absent, the administrator should check the matching plugin and its Books/Settings Sync settings.
 
 The fork is intended to use separate app and installer identities so it can coexist with official Moonfin. Its local settings and downloads are separate; sign in again and do not assume local data is migrated. Web users open the plugin-served `/Moonfin/Web/` URL and do not install a native package.
