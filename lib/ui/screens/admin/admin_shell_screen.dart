@@ -30,6 +30,37 @@ class AdminShellScreen extends StatelessWidget {
     // comes from the router rather than the navigator, which is a child of
     // this widget and still holds the previous stack while this builds.
     final canGoBack = _stackDepth(context) > 1;
+    // Blended over the scaffold up front so the gradient is opaque, since
+    // every page also paints it over the page it replaces.
+    final backdrop = BoxDecoration(
+      gradient: LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
+          Color.alphaBlend(
+            theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.45),
+            theme.scaffoldBackgroundColor,
+          ),
+          Color.alphaBlend(
+            theme.colorScheme.surface,
+            theme.scaffoldBackgroundColor,
+          ),
+        ],
+      ),
+    );
+    // Admin pages draw no background of their own, so each one carries what
+    // sits behind it. Otherwise the page being left stays readable under the
+    // one fading in.
+    final pages = Theme(
+      data: theme.copyWith(
+        pageTransitionsTheme: _BackedPageTransitions(
+          theme.pageTransitionsTheme,
+          backdrop: backdrop,
+          panel: isWide ? theme.colorScheme.surface : null,
+        ),
+      ),
+      child: child,
+    );
 
     return AdminWebSocketHandler(
       child: Scaffold(
@@ -77,16 +108,7 @@ class AdminShellScreen extends StatelessWidget {
         ),
         drawer: isWide ? null : AdminDrawer(currentPath: currentPath),
         body: DecoratedBox(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.45),
-                theme.colorScheme.surface,
-              ],
-            ),
-          ),
+          decoration: backdrop,
           child: isWide
               ? Row(
                   children: [
@@ -119,14 +141,14 @@ class AdminShellScreen extends StatelessWidget {
                           clipBehavior: Clip.antiAlias,
                           child: ScrollConfiguration(
                             behavior: const _AdminShellScrollBehavior(),
-                            child: child,
+                            child: pages,
                           ),
                         ),
                       ),
                     ),
                   ],
                 )
-              : child,
+              : pages,
         ),
       ),
     );
@@ -141,6 +163,36 @@ class AdminShellScreen extends StatelessWidget {
     }
     return 0;
   }
+}
+
+class _BackedPageTransitions extends PageTransitionsTheme {
+  _BackedPageTransitions(this._base, {required this.backdrop, this.panel})
+    : super(builders: _base.builders);
+
+  final PageTransitionsTheme _base;
+  final Decoration backdrop;
+
+  /// The wide layout's panel color, painted over [backdrop] the way the panel
+  /// sits over the body.
+  final Color? panel;
+
+  @override
+  Widget buildTransitions<T>(
+    PageRoute<T> route,
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) => _base.buildTransitions(
+    route,
+    context,
+    animation,
+    secondaryAnimation,
+    DecoratedBox(
+      decoration: backdrop,
+      child: panel == null ? child : ColoredBox(color: panel!, child: child),
+    ),
+  );
 }
 
 class _AdminShellScrollBehavior extends MaterialScrollBehavior {

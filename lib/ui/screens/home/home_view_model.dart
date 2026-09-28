@@ -133,6 +133,11 @@ class HomeViewModel extends ChangeNotifier {
     return '$_serverId|$userId|$sections|$multiServer|$merge|$blocked|offline:$offline|fields:$shape';
   }
 
+  /// Called again when the resume and next up rows refresh on their own, or
+  /// the next cold start paints the ones from before the last episode
+  /// finished.
+  void _saveRowCache() => unawaited(_cacheStore.write(_homeCacheKey(), _rows));
+
   static bool _isFavoriteSectionType(HomeSectionType type) {
     return switch (type) {
       HomeSectionType.favoriteMovies ||
@@ -628,20 +633,22 @@ class HomeViewModel extends ChangeNotifier {
         notifyListeners();
       }
 
+      // The merged row is the one a viewer checks first, so it doesn't wait
+      // behind every other section while its cached copy sits on screen.
+      if (showMergedResume) {
+        unawaited(_loadResumeAndNextUpInBackground());
+      }
+
       await mapBounded<HomeSectionConfig, void>(
         nonResumeEffectiveConfigs,
         3,
         (cfg) => loadConfigItem(cfg),
       );
 
-      unawaited(_cacheStore.write(_homeCacheKey(), _rows));
+      _saveRowCache();
       _topShelf.update(_rows);
       _watchNext.update(_rows);
       _tvChannels.update();
-
-      if (showMergedResume) {
-        unawaited(_loadResumeAndNextUpInBackground());
-      }
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -904,6 +911,7 @@ class HomeViewModel extends ChangeNotifier {
     } finally {
       _bgResumeRefreshInFlight = false;
     }
+    _saveRowCache();
     _topShelf.update(_rows);
     _watchNext.update(_rows);
     _tvChannels.update();
@@ -2259,6 +2267,7 @@ class HomeViewModel extends ChangeNotifier {
       );
     }
     notifyListeners();
+    _saveRowCache();
     _watchNext.update(_rows);
     _tvChannels.update();
   }

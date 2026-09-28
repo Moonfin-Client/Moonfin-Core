@@ -98,6 +98,9 @@ void main() {
         for (final position in NavbarPosition.values) {
           await pumpPreview(tester, navbarPreview(position));
         }
+        for (final style in BottomNavbarStyle.values) {
+          await pumpPreview(tester, bottomNavbarStylePreview(style));
+        }
         await pumpPreview(tester, homeRowsPreview(modern: false));
         await pumpPreview(tester, homeRowsPreview(modern: true));
         for (final style in DetailScreenStyle.values) {
@@ -116,6 +119,9 @@ void main() {
         }
         for (final position in NavbarPosition.values) {
           await pumpPreview(tester, navbarPreview(position));
+        }
+        for (final style in BottomNavbarStyle.values) {
+          await pumpPreview(tester, bottomNavbarStylePreview(style));
         }
         await pumpPreview(tester, homeRowsPreview(modern: false));
         for (final style in DetailScreenStyle.values) {

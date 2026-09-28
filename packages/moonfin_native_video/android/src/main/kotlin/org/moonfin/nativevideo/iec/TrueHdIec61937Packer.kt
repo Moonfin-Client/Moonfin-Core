@@ -55,9 +55,9 @@ internal class TrueHdIec61937Packer(
         val au = parseAccessUnit(data, offset, auSize)
 
         if (au.samplesPerFrame != 0) samplesPerFrame = au.samplesPerFrame
-        if (samplesPerFrame == 0) {
-            throw Iec61937Exception("TrueHD access unit before first major sync")
-        }
+        // The first buffer after a seek can open partway between major syncs,
+        // and those units can't be timed until one arrives, so they're dropped.
+        if (samplesPerFrame == 0) return
 
         val inputTiming = au.inputTiming
         var paddingRemaining = 0

@@ -29,6 +29,7 @@ import '../navigation/home_refresh_bus.dart';
 import '../navigation/route_lifecycle_observer.dart';
 import 'downloads_nav_slot.dart';
 import 'expandable_icon_button.dart';
+import 'marquee_text.dart';
 import 'overlay_sheet.dart';
 import 'navigation_layout.dart';
 import 'settings/settings_panel.dart';
@@ -61,6 +62,7 @@ const _kPillRadius = 36.0;
 const _kButtonSpacing = 12.0;
 const _kButtonSpacingMobile = 8.0;
 const _kButtonSpacingTV = 2.0;
+const _kMusicBarTitleMaxWidth = 280.0;
 
 class TopToolbar extends StatefulWidget {
   final String? activeRoute;
@@ -2509,6 +2511,17 @@ class _TopMusicBarState extends State<TopMusicBar> {
     final displayText = artist.isNotEmpty
         ? '${item.name} - $artist'
         : item.name;
+    final titleStyle = TextStyle(
+      color: AppColorScheme.onSurface,
+      fontSize: 13,
+      fontWeight: FontWeight.w600,
+    );
+    // The text already grows with the UI scale, so the cap on it does too.
+    final titleMaxWidth =
+        _kMusicBarTitleMaxWidth *
+        GetIt.instance<UserPreferences>()
+            .get(UserPreferences.desktopUiScale)
+            .scaleFactor;
     final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
 
     return Center(
@@ -2585,16 +2598,22 @@ class _TopMusicBarState extends State<TopMusicBar> {
                                         )
                                       : Colors.transparent,
                                 ),
-                                child: Text(
-                                  displayText,
-                                  style: TextStyle(
-                                    color: AppColorScheme.onSurface,
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
+                                child: PlatformDetection.useMobileUi
+                                    ? Text(
+                                        displayText,
+                                        style: titleStyle,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      )
+                                    : ConstrainedBox(
+                                        constraints: BoxConstraints(
+                                          maxWidth: titleMaxWidth,
+                                        ),
+                                        child: MarqueeText(
+                                          text: displayText,
+                                          style: titleStyle,
+                                        ),
+                                      ),
                               ),
                             ),
                           );

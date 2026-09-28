@@ -544,15 +544,15 @@
     "@scanWithYourPhone": {
         "description": "Instruction shown above a QR code"
     },
-    "audiobookGenres": "Äänikirjan tyylilajit",
+    "audiobookGenres": "Äänikirjan Genret",
     "@audiobookGenres": {
         "description": "Title for audiobook genre picker panel"
     },
-    "pickAudiobookGenres": "Valitse äänikirja Discoverissa näytettävät tyylilajit.",
+    "pickAudiobookGenres": "Valitse, mitkä genret haluat näyttää Audiobook Discover -osiossa.",
     "@pickAudiobookGenres": {
         "description": "Instruction text in audiobook genre picker"
     },
-    "discoverAudiobooks": "Tutustu äänikirjoihin",
+    "discoverAudiobooks": "Tutustu Äänikirjoihin",
     "@discoverAudiobooks": {
         "description": "Section title for audiobook discovery"
     },
@@ -3404,23 +3404,23 @@
     "@showShuffleButton": {
         "description": "Setting for showing shuffle button"
     },
-    "showGenresButton": "Näytä genret -painike",
+    "showGenresButton": "Näytä Genret Painike",
     "@showGenresButton": {
         "description": "Setting for showing genres button"
     },
-    "showFavoritesButton": "Näytä suosikit-painike",
+    "showFavoritesButton": "Näytä Suosikit Painike",
     "@showFavoritesButton": {
         "description": "Setting for showing favorites button"
     },
-    "showLibrariesInToolbar": "Näytä kirjastot työkalupalkissa",
+    "showLibrariesInToolbar": "Näytä Kirjastot Työkalupalkissa",
     "@showLibrariesInToolbar": {
         "description": "Setting for showing libraries in toolbar"
     },
-    "navbarOpacity": "Navbarin läpinäkyvyys",
+    "navbarOpacity": "Navbarin Läpinäkyvyys",
     "@navbarOpacity": {
         "description": "Setting for navbar opacity"
     },
-    "navbarColor": "Navipalkin väri",
+    "navbarColor": "Navipalkin Väri",
     "@navbarColor": {
         "description": "Setting for navbar color"
     },
@@ -3532,7 +3532,7 @@
     "@sourceCollections": {
         "description": "Setting for source collections"
     },
-    "excludedGenres": "Poissuljetut genret",
+    "excludedGenres": "Poissuljetut Genret",
     "@excludedGenres": {
         "description": "Setting for excluded genres"
     },
@@ -4035,7 +4035,7 @@
     "@popularSeries": {
         "description": "Seerr row: popular series"
     },
-    "seriesGenres": "Sarjan genret",
+    "seriesGenres": "Sarjojen Genret",
     "@seriesGenres": {
         "description": "Seerr row: series genres"
     },
@@ -4289,7 +4289,7 @@
     "@request": {
         "description": "Button to submit a media request"
     },
-    "cancelRequest": "Keskeytä pyyntö",
+    "cancelRequest": "Peruuta Pyyntö",
     "@cancelRequest": {
         "description": "Button/dialog title to cancel a media request"
     },
@@ -4628,7 +4628,7 @@
     "analyticsVideoCodecs": "Videokoodekit",
     "analyticsAudioCodecs": "Äänikoodekit",
     "analyticsContainers": "Säiliöt",
-    "analyticsTopGenres": "Suosituimmat genret",
+    "analyticsTopGenres": "Suosituimmat Genret",
     "analyticsReleaseYears": "Julkaisuvuodet",
     "analyticsContentRatings": "Sisällön luokitukset",
     "analyticsRuntimeBuckets": "Ajonaikaiset kauhat",
@@ -6734,7 +6734,7 @@
     "@seconds": {
         "description": "Time unit label in seconds"
     },
-    "localPreviews": "Paikalliset esikatselut",
+    "localPreviews": "Paikalliset Esikatselut",
     "@localPreviews": {
         "description": "Local previews settings screen title"
     },
@@ -7066,9 +7066,9 @@
     "collectionsRowSortingDescription": "Lajittele kokoelmien rivit lisäyspäivän, julkaisupäivän, aakkosjärjestyksen ja muiden mukaan.",
     "displayGenresRows": "Näytä lajityypit rivit",
     "displayGenresRowsSubtitle": "Näytä Genres-rivit Koti-osioissa.",
-    "genresRowSorting": "Genret rivilajittelu",
+    "genresRowSorting": "Genret Rivilajittelu",
     "genresRowSortingDescription": "Lajittele Genres-rivit lisäyspäivän, julkaisupäivän, aakkosjärjestyksen ja muiden mukaan.",
-    "genresRowItems": "Genret rivikohdat",
+    "genresRowItems": "Kohteet Genre rivillä",
     "genresRowItemsDescription": "Näytä elokuvat, sarjat tai molemmat lajityypit-riveillä.",
     "appearance": "Ulkoasu",
     "cardSize": "Kortin koko",
@@ -7303,8 +7303,8 @@
     "loadingShuffle": "Ladataan satunnaistoistoa...",
     "libraryShuffleLabel": "KIRJASTON SEKOITUS",
     "randomShuffleLabel": "SATUNNAINEN SEKOITUS",
-    "genresShuffleLabel": "GENREJEN SEKOITUS",
-    "autoHdrSwitching": "Automaattinen HDR-vaihto",
+    "genresShuffleLabel": "GENRE SEKOITUS",
+    "autoHdrSwitching": "Automaattinen HDR Kytkentä",
     "autoHdrSwitchingDescription": "Ota HDR automaattisesti käyttöön HDR-videon toistoa varten ja palauta näyttötila poistuessasi.",
     "whenFullscreen": "Kun koko näyttö",
     "transcodingLimits": "Transkoodausrajat",
@@ -7858,11 +7858,11 @@
     },
     "reportDownloadsActivity": "Näytä lataukset palvelimella",
     "reportDownloadsActivitySubtitle": "Anna palvelimen ylläpitäjän nähdä transkoodatut lataukset hallintapaneelissa",
-    "navbarAlwaysExpanded": "Näytä navigointipalkin tekstit aina",
+    "navbarAlwaysExpanded": "Näytä Navigointipalkin tekstit aina",
     "@navbarAlwaysExpanded": {
         "description": "Setting to keep every top navbar heading's text label visible at all times, tvOS-style"
     },
-    "showSeerrButton": "Näytä Seerr-painike",
+    "showSeerrButton": "Näytä Seerr Painike",
     "@showSeerrButton": {
         "description": "Setting for showing Seerr button"
     },
@@ -9236,11 +9236,11 @@
     "@tags": {
         "description": "Heading for the keyword tags a title is filed under"
     },
-    "genresAndTags": "Genret ja tunnisteet",
+    "genresAndTags": "Genret ja Tunnisteet",
     "@genresAndTags": {
         "description": "Button and dialog title for browsing a title's genres, networks and tags"
     },
-    "yourWatchlist": "Aktiivilistallasi",
+    "yourWatchlist": "Katselulistallasi",
     "@yourWatchlist": {
         "description": "Seerr row: watchlist"
     },
@@ -9264,7 +9264,7 @@
     "@requested4k": {
         "description": "Disabled label shown when a 4K request already exists and the user cannot cancel it"
     },
-    "cancelRequest4k": "Keskeytä 4K-pyyntö",
+    "cancelRequest4k": "Peruuta 4K-pyyntö",
     "@cancelRequest4k": {
         "description": "Button/dialog title to cancel a 4K media request"
     },
@@ -9372,7 +9372,7 @@
     "collectionsRowSortOrderDescription": "Lajittele Kokoelmat-taulukon rivit nousevaan tai laskevaan järjestykseen.",
     "collectionsRowShowEpisodes": "Näytä yksittäiset jaksot",
     "collectionsRowShowEpisodesSubtitle": "Laajenna TV-sarjoja, jotta jokainen jakso näkyy erikseen.",
-    "genresRowSortOrderDescription": "Lajittele ”Genret”-rivit nousevaan tai laskevaan järjestykseen.",
+    "genresRowSortOrderDescription": "Lajittele Genre rivit nousevaan tai laskevaan järjestykseen.",
     "personalRatingStars": "5 tähteä",
     "@personalRatingStars": {
         "description": "Personal rating style using a five-star scale."
@@ -10281,7 +10281,7 @@
     "@nativeHdrOutputDescription": {
         "description": "Settings description for native HDR output"
     },
-    "loadingAnimation": "Ladataan Animaatiota",
+    "loadingAnimation": "Latausanimaatio",
     "@loadingAnimation": {
         "description": "Setting title for custom loading animation"
     },
@@ -10562,7 +10562,7 @@
             }
         }
     },
-    "showDownloadsButton": "Näytä latauspainike",
+    "showDownloadsButton": "Näytä Latauspainike",
     "@showDownloadsButton": {
         "description": "Setting for showing downloads button"
     },
@@ -11321,7 +11321,7 @@
     "@shortcutResetZoom": {
         "description": "Reader shortcut action"
     },
-    "showLiveTvButton": "Näytä Live TV -painike",
+    "showLiveTvButton": "Näytä Live TV Painike",
     "@showLiveTvButton": {
         "description": "Setting for showing live TV button"
     },
@@ -11643,15 +11643,6 @@
     "animeMarkerRecap": "Yhteenveto",
     "@animeMarkerRecap": {
         "description": "Badge on an anime episode that recaps earlier episodes"
-    },
-    "subtitleDelayAuto": "Auto {value}",
-    "@subtitleDelayAuto": {
-        "description": "Read-only line under the subtitle delay showing a correction the player applied on its own, value is a formatted delay like +2000 ms",
-        "placeholders": {
-            "value": {
-                "type": "String"
-            }
-        }
     },
     "noProgramData": "Ohjelmatietoja ei ole",
     "@noProgramData": {
@@ -12255,7 +12246,7 @@
     "@achievementsStatLibraries": {
         "description": "Counter label"
     },
-    "achievementsStatGenres": "Genret katsotut",
+    "achievementsStatGenres": "Katsotut Genret",
     "@achievementsStatGenres": {
         "description": "Counter label"
     },
@@ -12498,7 +12489,7 @@
     "@magenta": {
         "description": "Color: magenta"
     },
-    "requestedByLabel": "Pyynnön esittäjä",
+    "requestedByLabel": "Pyytäjän nimi",
     "@requestedByLabel": {
         "description": "Label above the name of whoever requested media, where the name sits on its own line"
     },

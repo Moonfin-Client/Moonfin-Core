@@ -38,12 +38,14 @@ class AppleTvPreviewPlayer {
       .where((e) => e['playerId'] == _playerId && e['event'] == 'error')
       .map((_) {});
 
+  /// [audioLanguage] picks the soundtrack when the stream carries several.
   Future<void> open(
     String url, {
     Map<String, String>? headers,
     double volume = 0,
     bool live = false,
     Duration startPosition = Duration.zero,
+    String? audioLanguage,
   }) async {
     if (_disposed) return;
     final result = await _control.invokeMethod<Map<dynamic, dynamic>>('open', {
@@ -54,6 +56,7 @@ class AppleTvPreviewPlayer {
       if (live) 'live': true,
       if (startPosition > Duration.zero)
         'startPositionMs': startPosition.inMilliseconds,
+      'audioLanguage': ?audioLanguage,
     });
     textureId = (result?['textureId'] as num?)?.toInt();
     if (textureId == null) {

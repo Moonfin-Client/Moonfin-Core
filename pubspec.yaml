@@ -58,7 +58,11 @@ dependencies:
   media_kit_libs_linux: 1.2.1
 
   # Image Loading
-  cached_network_image: ^3.4.1
+  # Vendored fork of cached_network_image 3.4.1 that skips decoding an image
+  # again once it's been shown, since that second decode painted blank on
+  # Firefox web. See packages/cached_network_image_fork/pubspec.yaml.
+  cached_network_image:
+    path: packages/cached_network_image_fork
   flutter_cache_manager: ^3.4.1
   # Direct because the image cache index stamps its entries with clock.now(),
   # the same clock the cache manager reads, so a test can drive both. Keep in

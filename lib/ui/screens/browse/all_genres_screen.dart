@@ -145,7 +145,7 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
               itemCount: itemCount,
             );
           })
-          .where((x) => x.itemCount > 0)
+          .where((x) => x.itemCount > 0 || !genreReportsCounts(x.data))
           .toList();
 
       _genres = temp.map((x) {
@@ -218,10 +218,15 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
   Future<void> _loadGenreArtwork(int token) async {
     final groupCollections = _lastGroupCollections;
 
-    // A genre with its own artwork already has an exact count from getGenres,
-    // so it only needs a query when grouping changes what that count means.
+    // A genre with its own artwork only needs a query when grouping changes
+    // what its count means, or when the server sent no count at all.
     final needsWork = _genres
-        .where((genre) => genre.isGenreFallback || groupCollections)
+        .where(
+          (genre) =>
+              genre.isGenreFallback ||
+              groupCollections ||
+              genre.itemCount == 0,
+        )
         .toList();
 
     if (needsWork.isEmpty) return;

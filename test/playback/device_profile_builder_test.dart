@@ -466,7 +466,7 @@ void main() {
   group('DeviceProfileBuilder bridged audio sample rate', () {
     test('a player that bridges audio caps the codecs it has to re-encode', () {
       final cap = _sampleRateCap(
-        DeviceProfileBuilder.build(universalAudioDecode: true),
+        DeviceProfileBuilder.build(bridgesAudioToEac3: true),
       );
 
       expect(cap, isNotNull);
@@ -479,7 +479,7 @@ void main() {
 
     test('codecs the container carries untouched are left alone', () {
       final cap = _sampleRateCap(
-        DeviceProfileBuilder.build(universalAudioDecode: true),
+        DeviceProfileBuilder.build(bridgesAudioToEac3: true),
       );
 
       // These are stream copied, so their rate never reaches an encoder and
@@ -489,8 +489,11 @@ void main() {
       }
     });
 
-    test('a player that decodes natively gets no cap', () {
-      expect(_sampleRateCap(DeviceProfileBuilder.build()), isNull);
+    test('a player that decodes every codec itself gets no cap', () {
+      expect(
+        _sampleRateCap(DeviceProfileBuilder.build(universalAudioDecode: true)),
+        isNull,
+      );
     });
   });
 
@@ -1039,6 +1042,34 @@ void main() {
 
       expect(_subtitleMethodsFor(profile, 'vtt'), contains('Embed'));
       expect(_subtitleMethodsFor(profile, 'srt'), contains('Embed'));
+    });
+
+    test("PGS isn't offered as a file unless the player reads .sup", () {
+      final profile = DeviceProfileBuilder.build();
+
+      expect(_subtitleMethodsFor(profile, 'pgssub'), {'Embed', 'Encode'});
+    });
+
+    test('a player that reads .sup files is offered PGS as a file', () {
+      final profile = DeviceProfileBuilder.build(
+        supportsExternalPgsSubtitles: true,
+      );
+
+      expect(_subtitleMethodsFor(profile, 'pgssub'), {
+        'Embed',
+        'External',
+        'Encode',
+      });
+      expect(_subtitleMethodsFor(profile, 'pgs'), contains('External'));
+    });
+
+    test('turning PGS direct play off burns every PGS track in', () {
+      final profile = DeviceProfileBuilder.build(
+        pgsDirectPlay: false,
+        supportsExternalPgsSubtitles: true,
+      );
+
+      expect(_subtitleMethodsFor(profile, 'pgssub'), {'Encode'});
     });
   });
 

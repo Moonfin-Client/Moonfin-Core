@@ -130,28 +130,41 @@ class _HorizontalScrollSectionState extends State<HorizontalScrollSection> {
                     ),
                   ),
                 if (widget.trailing != null) widget.trailing!,
-                if (hasControls) ...[
-                  Focus(
-                    canRequestFocus: false,
-                    skipTraversal: true,
-                    descendantsAreFocusable: false,
-                    child: IconButton(
-                      icon: const Icon(Icons.chevron_left),
-                      onPressed: () => _scrollBy(-_scrollStep),
-                      visualDensity: VisualDensity.compact,
+                // Hidden rather than left out, so a section without them keeps
+                // the same header height and its row starts as far under the
+                // title as every other section's.
+                if (PlatformDetection.useDesktopUi)
+                  Visibility(
+                    visible: hasControls,
+                    maintainSize: true,
+                    maintainAnimation: true,
+                    maintainState: true,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Focus(
+                          canRequestFocus: false,
+                          skipTraversal: true,
+                          descendantsAreFocusable: false,
+                          child: IconButton(
+                            icon: const Icon(Icons.chevron_left),
+                            onPressed: () => _scrollBy(-_scrollStep),
+                            visualDensity: VisualDensity.compact,
+                          ),
+                        ),
+                        Focus(
+                          canRequestFocus: false,
+                          skipTraversal: true,
+                          descendantsAreFocusable: false,
+                          child: IconButton(
+                            icon: const Icon(Icons.chevron_right),
+                            onPressed: () => _scrollBy(_scrollStep),
+                            visualDensity: VisualDensity.compact,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  Focus(
-                    canRequestFocus: false,
-                    skipTraversal: true,
-                    descendantsAreFocusable: false,
-                    child: IconButton(
-                      icon: const Icon(Icons.chevron_right),
-                      onPressed: () => _scrollBy(_scrollStep),
-                      visualDensity: VisualDensity.compact,
-                    ),
-                  ),
-                ],
               ],
             ),
           ),

@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
+import 'package:jellyfin_preference/jellyfin_preference.dart';
+import 'package:moonfin/preference/preference_constants.dart'
+    show DesktopUiScale;
+import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/screens/detail/nouveau/hero/nouveau_action_buttons.dart';
 import 'package:moonfin/ui/theme/app_theme.dart';
 import 'package:moonfin/ui/widgets/marquee_text.dart';
+import 'package:moonfin/util/platform_detection.dart';
 import 'package:moonfin_design/moonfin_design.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   setUp(() => ThemeRegistry.setActiveById(ThemeRegistry.moonfinId));
@@ -311,6 +318,122 @@ void main() {
       findsNothing,
     );
   });
+
+  group('UI scale', () {
+    late UserPreferences prefs;
+
+    setUp(() async => prefs = await _registerDesktopPrefs());
+    tearDown(_resetDesktopPrefs);
+
+    testWidgets('the buttons grow with it but the text leaves it to the '
+        'text scaler', (tester) async {
+      tester.view.physicalSize = const Size(1920, 1080);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+
+      Future<void> pumpRow() => tester.pumpWidget(
+        _TestApp(
+          child: NouveauActionButtons(
+            primaryAction: NouveauAction(
+              label: 'Play',
+              icon: Icons.play_arrow,
+              onPressed: () {},
+            ),
+            secondaryActions: [
+              NouveauAction(
+                label: 'Favorite',
+                icon: Icons.favorite,
+                onPressed: () {},
+              ),
+            ],
+          ),
+        ),
+      );
+      final circle = find.byWidgetPredicate(
+        (widget) =>
+            widget.runtimeType.toString() == '_NouveauCircleActionButton',
+      );
+      double playFontSize() =>
+          tester.widget<Text>(find.text('Play')).style!.fontSize!;
+
+      await pumpRow();
+      expect(tester.getSize(circle), const Size(64, 64));
+      expect(playFontSize(), 16.5);
+
+      await prefs.set(
+        UserPreferences.desktopUiScale,
+        DesktopUiScale.extraLarge,
+      );
+      await pumpRow();
+      expect(tester.getSize(circle).width, closeTo(64 * 1.3, 0.001));
+      expect(playFontSize(), 16.5);
+    });
+  });
+
+  group('focus expansion', () {
+    late UserPreferences prefs;
+
+    setUp(() async => prefs = await _registerDesktopPrefs());
+    tearDown(_resetDesktopPrefs);
+
+    testWidgets('a focused button only grows while the setting is on', (
+      tester,
+    ) async {
+      final node = FocusNode();
+      addTearDown(node.dispose);
+      final circle = find.byWidgetPredicate(
+        (widget) =>
+            widget.runtimeType.toString() == '_NouveauCircleActionButton',
+      );
+
+      Future<double> focusedScale() async {
+        await tester.pumpWidget(
+          _TestApp(
+            child: NouveauActionButtons(
+              primaryAction: null,
+              secondaryActions: [
+                NouveauAction(
+                  label: 'Favorite',
+                  icon: Icons.favorite,
+                  focusNode: node,
+                  onPressed: () {},
+                ),
+              ],
+            ),
+          ),
+        );
+        node.requestFocus();
+        await tester.pumpAndSettle();
+        return tester
+            .widget<AnimatedScale>(
+              find
+                  .descendant(of: circle, matching: find.byType(AnimatedScale))
+                  .first,
+            )
+            .scale;
+      }
+
+      expect(await focusedScale(), 1.075);
+
+      await prefs.set(UserPreferences.cardFocusExpansion, false);
+      expect(await focusedScale(), 1.0);
+    });
+  });
+}
+
+Future<UserPreferences> _registerDesktopPrefs() async {
+  SharedPreferences.setMockInitialValues({});
+  final store = PreferenceStore();
+  await store.init();
+  final prefs = UserPreferences(store);
+  GetIt.instance.registerSingleton<UserPreferences>(prefs);
+  PlatformDetection.setInterfaceLayout(InterfaceLayout.desktop);
+  return prefs;
+}
+
+Future<void> _resetDesktopPrefs() async {
+  PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic);
+  await GetIt.instance.reset();
 }
 
 class _TestApp extends StatelessWidget {

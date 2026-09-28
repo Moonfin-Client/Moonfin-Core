@@ -3,6 +3,7 @@ import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:moonfin/data/services/log_service.dart';
 import 'package:moonfin/data/services/media_server_client_factory.dart';
 import 'package:moonfin/preference/user_preferences.dart';
+import 'package:moonfin/util/platform_detection.dart';
 import 'package:server_core/server_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -225,6 +226,22 @@ void main() {
       expect(text, contains('INFO  [general] routine event'));
       expect(text, contains('ERROR [general] Uncaught: boom'));
       expect(text, contains('└─ stack trace'));
+    });
+
+    test('includes the system uptime only once it is known', () async {
+      final logs = await _service(loggingEnabled: true);
+      addTearDown(() => PlatformDetection.setSystemUptime(null));
+
+      PlatformDetection.setSystemUptime(null);
+      expect(logs.exportText(), isNot(contains('System uptime')));
+
+      PlatformDetection.setSystemUptime(
+        const Duration(days: 25, hours: 3, minutes: 7).inMilliseconds,
+      );
+      expect(
+        logs.exportText(),
+        matches(RegExp(r'System uptime: 25d 3h 7m \(21712\d{5} ms\)')),
+      );
     });
 
     test('can be bounded to the newest entries', () async {

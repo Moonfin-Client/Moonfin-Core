@@ -13,6 +13,7 @@ import '../../../util/platform_detection.dart';
 import '../../navigation/destinations.dart';
 import '../../widgets/library_row.dart';
 import '../../widgets/media_card.dart';
+import '../../widgets/bottom_nav/bottom_navbar.dart';
 import '../../widgets/navigation_layout.dart';
 import '../../widgets/quick_return_wrapper.dart';
 import '../../widgets/seerr/seerr_advanced_request_options.dart';
@@ -159,19 +160,22 @@ class _SeerrCollectionScreenState extends State<SeerrCollectionScreen> {
             ),
           ),
         ),
-        SingleChildScrollView(
-          controller: _scrollController,
-          padding: EdgeInsets.only(
-            top: MediaQuery.of(context).padding.top + 56,
-            bottom: 48,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeader(vm, collection, l10n),
-              const SizedBox(height: 12),
-              _buildPartsRow(vm, l10n),
-            ],
+        BottomNavPadded(
+          fallback: 48,
+          builder: (context, bottom) => SingleChildScrollView(
+            controller: _scrollController,
+            padding: EdgeInsets.only(
+              top: MediaQuery.of(context).padding.top + 56,
+              bottom: bottom,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildHeader(vm, collection, l10n),
+                const SizedBox(height: 12),
+                _buildPartsRow(vm, l10n),
+              ],
+            ),
           ),
         ),
       ],

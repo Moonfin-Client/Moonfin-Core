@@ -2,10 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get_it/get_it.dart';
 
+import '../../../../../preference/user_preferences.dart';
 import '../../../../../util/platform_detection.dart';
 import '../../../../widgets/marquee_text.dart';
 import '../../../../widgets/overlay_sheet.dart';
+import '../../detail_layout_metrics.dart';
 
 class NouveauAction {
   final String label;
@@ -63,6 +66,19 @@ double _nouveauActionScale(BuildContext context) {
 
   return (width / 1920.0).clamp(0.90, 1.08);
 }
+
+/// The buttons also follow the UI scale, apart from a compact layout, which
+/// keeps its fixed sizes like the rest of the screen. Text already gets the
+/// scale from the text scaler, so font sizes stay on [_nouveauActionScale].
+double _nouveauButtonScale(BuildContext context) =>
+    _nouveauActionScale(context) *
+    (detailIsCompact(context) ? 1.0 : detailDesktopScale());
+
+/// Whether focused and hovered buttons grow, which follows the same setting
+/// as cards. Without preferences to ask it stays on, the setting's default.
+bool _nouveauGrowsOnFocus() =>
+    !GetIt.instance.isRegistered<UserPreferences>() ||
+    GetIt.instance<UserPreferences>().get(UserPreferences.cardFocusExpansion);
 
 class NouveauActionButtons extends StatefulWidget {
   final NouveauAction? primaryAction;
@@ -415,7 +431,7 @@ class _NouveauActionButtonsState extends State<NouveauActionButtons> {
     List<NouveauAction> visibleSecondaryActions,
     List<NouveauAction> overflowActions,
   ) {
-    final scale = _nouveauActionScale(context);
+    final scale = _nouveauButtonScale(context);
 
     final primaryGap = 18.0 * scale;
     final secondaryGap = 12.0 * scale;
@@ -615,7 +631,8 @@ class _NouveauPrimaryButtonState extends State<_NouveauPrimaryButton> {
   @override
   Widget build(BuildContext context) {
     final action = widget.action;
-    final scale = _nouveauActionScale(context);
+    final scale = _nouveauButtonScale(context);
+    final textScale = _nouveauActionScale(context);
 
     final phone = _nouveauActionsUsePhoneLayout(context);
 
@@ -627,7 +644,7 @@ class _NouveauPrimaryButtonState extends State<_NouveauPrimaryButton> {
 
     final labelStyle = TextStyle(
       color: _highlighted ? Colors.black : Colors.white,
-      fontSize: phone ? 15.5 : 16.5 * scale,
+      fontSize: phone ? 15.5 : 16.5 * textScale,
       fontWeight: FontWeight.w700,
       height: 1,
       letterSpacing: -0.1,
@@ -739,7 +756,9 @@ class _NouveauPrimaryButtonState extends State<_NouveauPrimaryButton> {
           onTap: action.onPressed,
           onLongPress: action.onLongPress,
           child: AnimatedScale(
-            scale: _focused
+            scale: !_nouveauGrowsOnFocus()
+                ? 1
+                : _focused
                 ? phone
                       ? 1.015
                       : 1.06
@@ -827,7 +846,7 @@ class _NouveauPrimaryButtonState extends State<_NouveauPrimaryButton> {
                             style: TextStyle(
                               color: (_highlighted ? Colors.black : Colors.white)
                                   .withValues(alpha: 0.62),
-                              fontSize: phone ? 13 : 13.5 * scale,
+                              fontSize: phone ? 13 : 13.5 * textScale,
                               fontWeight: FontWeight.w600,
                               height: 1,
                               letterSpacing: -0.1,
@@ -1011,7 +1030,7 @@ class _NouveauCircleActionButtonState
 
     final activeColor = action.activeColor ?? Colors.white;
 
-    final scale = _nouveauActionScale(context);
+    final scale = _nouveauButtonScale(context);
 
     final size = widget.compact ? 52.0 : 64.0 * scale;
 
@@ -1099,7 +1118,7 @@ class _NouveauCircleActionButtonState
                 onTap: action.onPressed,
                 onLongPress: action.onLongPress,
                 child: AnimatedScale(
-                  scale: _highlighted
+                  scale: _highlighted && _nouveauGrowsOnFocus()
                       ? widget.compact
                             ? 1.035
                             : 1.075
@@ -1288,7 +1307,7 @@ class _NouveauMoreButtonState extends State<_NouveauMoreButton> {
 
   @override
   Widget build(BuildContext context) {
-    final scale = _nouveauActionScale(context);
+    final scale = _nouveauButtonScale(context);
 
     final size = widget.compact ? 52.0 : 64.0 * scale;
 
@@ -1344,7 +1363,7 @@ class _NouveauMoreButtonState extends State<_NouveauMoreButton> {
                 behavior: HitTestBehavior.opaque,
                 onTap: widget.onPressed,
                 child: AnimatedScale(
-                  scale: _highlighted
+                  scale: _highlighted && _nouveauGrowsOnFocus()
                       ? widget.compact
                             ? 1.035
                             : 1.075
@@ -1411,7 +1430,7 @@ class _NouveauActionTooltip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scale = _nouveauActionScale(context);
+    final scale = _nouveauButtonScale(context);
 
     return IgnorePointer(
       child: TweenAnimationBuilder<double>(
@@ -1454,7 +1473,7 @@ class _NouveauActionTooltip extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 13.0 * scale,
+                fontSize: 13.0 * _nouveauActionScale(context),
                 fontWeight: FontWeight.w600,
                 height: 1.1,
               ),

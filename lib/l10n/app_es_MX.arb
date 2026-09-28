@@ -1050,7 +1050,7 @@
             }
         }
     },
-    "play": "Jugar",
+    "play": "Reproducir",
     "@play": {
         "description": "Action button label to play media"
     },
@@ -1066,7 +1066,7 @@
     "@readOffline": {
         "description": "Action button label to read offline"
     },
-    "playOffline": "Jugar sin conexión",
+    "playOffline": "Reproducir sin conexión",
     "@playOffline": {
         "description": "Action button label to play offline"
     },
@@ -4248,7 +4248,7 @@
     "@cancelRequest": {
         "description": "Button/dialog title to cancel a media request"
     },
-    "playInMoonfin": "Jugar en Moonfin",
+    "playInMoonfin": "Reproducir en Moonfin",
     "@playInMoonfin": {
         "description": "Button to play available media in Moonfin"
     },

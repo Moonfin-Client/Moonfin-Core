@@ -13,6 +13,7 @@ import '../../../preference/user_preferences.dart';
 import '../../navigation/destinations.dart';
 import '../../widgets/library_row.dart';
 import '../../widgets/media_card.dart';
+import '../../widgets/bottom_nav/bottom_navbar.dart';
 import '../../widgets/navigation_layout.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../util/error_message.dart';
@@ -258,7 +259,12 @@ class _SeerrPersonScreenState extends State<SeerrPersonScreen> {
           SliverToBoxAdapter(
             child: _buildCreditsRow(l10n.crewSection, s.crewCredits, false),
           ),
-        const SliverToBoxAdapter(child: SizedBox(height: 80)),
+        SliverToBoxAdapter(
+          child: BottomNavPadded(
+            fallback: 80,
+            builder: (_, bottom) => SizedBox(height: bottom),
+          ),
+        ),
       ],
     );
   }

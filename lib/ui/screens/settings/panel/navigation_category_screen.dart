@@ -29,6 +29,22 @@ class _NavigationCategoryScreenState extends State<_NavigationCategoryScreen> {
     if (mounted) setState(() {});
   }
 
+  static bool _bottomMode(UserPreferences prefs) =>
+      NavigationLayout.allowBottomNavbar &&
+      prefs.get(UserPreferences.navbarPosition) == NavbarPosition.bottom;
+
+  String _bottomTabsSummary(AppLocalizations l10n, UserPreferences prefs) {
+    final raw = prefs.get(UserPreferences.bottomNavbarTabs);
+    final pins = BottomNavTabGates.fromPreferences(
+      prefs,
+      seerrAvailable: _syncService.seerrAvailable,
+    ).resolvePins(raw);
+    final labels = pins.map((t) => bottomNavTabLabel(l10n, t)).join(', ');
+    if (!isAutomaticBottomNavTabs(raw)) return labels;
+    return [l10n.bottomNavbarTabsAutomatic, if (labels.isNotEmpty) labels]
+        .join(' · ');
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -73,6 +89,35 @@ class _NavigationCategoryScreenState extends State<_NavigationCategoryScreen> {
                   _pushPersonalizationSync();
                 },
               ),
+              // The picker above writes through its own binding, so this
+              // watches the preferences to follow it.
+              ListenableBuilder(
+                listenable: prefs,
+                builder: (context, _) => !_bottomMode(prefs)
+                    ? const SizedBox.shrink()
+                    : Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          EnumPreferenceTile<BottomNavbarStyle>(
+                            preference: UserPreferences.bottomNavbarStyle,
+                            title: l10n.bottomNavbarStyle,
+                            icon: Icons.space_bar_rounded,
+                            labelOf: (v) => bottomNavbarStyleLabel(l10n, v),
+                            dialogSubtitleOf: (v) =>
+                                bottomNavbarStyleHint(l10n, v),
+                            onChanged: _pushPersonalizationSync,
+                          ),
+                          _TvSettingsListTile(
+                            leading: const Icon(Icons.push_pin_outlined),
+                            title: Text(l10n.bottomNavbarTabs),
+                            subtitle: Text(_bottomTabsSummary(l10n, prefs)),
+                            onTap: () => context.pushSettingsScreen(
+                              const _BottomNavTabsScreen(),
+                            ),
+                          ),
+                        ],
+                      ),
+              ),
               _NavbarColorPickerTile(onChanged: _pushPersonalizationSync),
               SliderPreferenceTile(
                 preference: UserPreferences.navbarOpacity,
@@ -83,16 +128,38 @@ class _NavigationCategoryScreenState extends State<_NavigationCategoryScreen> {
                 divisions: 20,
                 labelOf: (v) => '$v%',
               ),
-              SwitchPreferenceTile(
-                preference: UserPreferences.navbarAlwaysExpanded,
-                title: l10n.navbarAlwaysExpanded,
-                subtitle: l10n.settingsAlwaysExpandNavbarLabels,
-                icon: Icons.unfold_more,
-                onChanged: _pushPersonalizationSync,
+              // The bottom navbar always labels its tabs.
+              ListenableBuilder(
+                listenable: prefs,
+                builder: (context, _) => _bottomMode(prefs)
+                    ? const SizedBox.shrink()
+                    : SwitchPreferenceTile(
+                        preference: UserPreferences.navbarAlwaysExpanded,
+                        title: l10n.navbarAlwaysExpanded,
+                        subtitle: l10n.settingsAlwaysExpandNavbarLabels,
+                        icon: Icons.unfold_more,
+                        onChanged: _pushPersonalizationSync,
+                      ),
               ),
             ],
           ),
           _SectionHeader(l10n.navButtons),
+          ListenableBuilder(
+            listenable: prefs,
+            builder: (context, _) {
+              if (!_bottomMode(prefs)) return const SizedBox.shrink();
+              final theme = Theme.of(context);
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                child: Text(
+                  l10n.bottomNavbarButtonsNote,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              );
+            },
+          ),
           adaptiveListSection(
             children: [
               SwitchPreferenceTile(

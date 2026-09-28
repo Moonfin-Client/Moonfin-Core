@@ -90,6 +90,21 @@ void stripVetoedAudioCodecs(
   }
 }
 
+/// Takes back the offer in [profile] to receive PGS as a file. The server
+/// answers that offer for a PGS track inside the media file by extracting the
+/// whole track before it sends a byte, so a request that picks one withholds
+/// it and the track gets burned in instead.
+void withholdExternalPgsSubtitles(Map<String, dynamic> profile) {
+  final entries = profile['SubtitleProfiles'];
+  if (entries is! List) return;
+  entries.removeWhere(
+    (entry) =>
+        entry is Map &&
+        entry['Method'] == 'External' &&
+        MediaStreamResolver.isPgsCodec(entry['Format'] as String?),
+  );
+}
+
 class PlaybackManager implements AudioOwnable {
   static const _mediaReadyPollInterval = Duration(milliseconds: 100);
   static const _defaultMediaReadyTimeout = Duration(seconds: 60);
@@ -205,6 +220,8 @@ class PlaybackManager implements AudioOwnable {
   Map<String, Map<String, dynamic>> _offlineMetadataByUrl = {};
   Future<bool>? _stopInFlight;
   int _playbackSessionToken = 0;
+  // Unlike the request token, this survives stream and player rebuilds.
+  int _subtitleDelaySessionId = 0;
   Future<void>? _externalSubsLoaded;
   Duration _deferredStartPosition = Duration.zero;
   bool _deferPlaybackToExternalPlayer = false;
@@ -752,6 +769,7 @@ class PlaybackManager implements AudioOwnable {
     return <String, dynamic>{
       'url': url,
       'autoPlay': autoPlay,
+      'subtitleDelaySessionId': _subtitleDelaySessionId,
       if (container != null && container.isNotEmpty) 'container': container,
       if (videoRangeType != null && videoRangeType.isNotEmpty)
         'videoRangeType': videoRangeType,
@@ -1140,6 +1158,18 @@ class PlaybackManager implements AudioOwnable {
     }
     _streamSubs.clear();
   }
+
+  /// The ceiling Auto sends. The server holds direct play to it too, so a
+  /// source that outruns [measured] gets its own bitrate as the ceiling and
+  /// still direct plays. A transcode that happens anyway is then held to the
+  /// source's bitrate, no more than playing the file would ask of the link.
+  static int _autoBitrateCap(
+    int measured,
+    int? sourceBitrate,
+    bool enableDirectPlay,
+  ) => enableDirectPlay && sourceBitrate != null && sourceBitrate > measured
+      ? sourceBitrate
+      : measured;
 
   /// The highest bitrate any of [item]'s sources needs, or null when the item
   /// does not say. Read duck-typed like the rest of the item, so a queue entry
@@ -2130,6 +2160,7 @@ class PlaybackManager implements AudioOwnable {
     bool enableTranscoding = true,
     bool allowStartupRecovery = true,
     bool autoPlay = true,
+    bool withholdExternalPgs = false,
   }) async {
     _deferredStartPosition = Duration.zero;
     _deferPlaybackToExternalPlayer = false;
@@ -2219,33 +2250,32 @@ class PlaybackManager implements AudioOwnable {
       useProgressiveTranscode: forceTranscode,
     );
     stripVetoedAudioCodecs(profile, _vetoedAudioCodecs);
+    if (withholdExternalPgs) {
+      withholdExternalPgsSubtitles(profile);
+    }
     if (_maxBitrateOverrideMbps != null) {
       profile['MaxStreamingBitrate'] = _maxBitrateOverrideMbps! * 1000000;
     }
     var maxBitrate = profile['MaxStreamingBitrate'] as int?;
+    int? measuredBitrate;
     if (maxBitrate == null && autoBitrateProvider != null) {
       final measured = await autoBitrateProvider!();
       if (sessionToken != _playbackSessionToken) return;
       if (measured != null && measured > 0) {
-        // The measurement bounds how heavy a transcode the server is asked
-        // for, but the server reads it as a ceiling on direct play too, and a
-        // short sample under-reads a fast link. A source that outruns it keeps
-        // the uncapped request rather than becoming a transcode nothing asked
-        // for.
-        final sourceBps = _sourceBitrate(item);
-        final vetoesDirectPlay =
-            enableDirectPlay && sourceBps != null && sourceBps > measured;
-        if (!vetoesDirectPlay) {
-          maxBitrate = measured;
-          profile['MaxStreamingBitrate'] = measured;
-        }
+        measuredBitrate = measured;
+        maxBitrate = _autoBitrateCap(
+          measured,
+          _sourceBitrate(item),
+          enableDirectPlay,
+        );
+        profile['MaxStreamingBitrate'] = maxBitrate;
       }
     }
 
-    final resolution = await _resolver!.resolve(
+    Future<StreamResolutionResult> resolve(int? cap) => _resolver!.resolve(
       item,
       deviceProfile: profile,
-      maxStreamingBitrate: maxBitrate,
+      maxStreamingBitrate: cap,
       audioStreamIndex: _audioStreamIndex,
       subtitleStreamIndex: _subtitleStreamIndex,
       startTimeTicks: startTicks,
@@ -2255,9 +2285,33 @@ class PlaybackManager implements AudioOwnable {
       enableTranscoding: enableTranscoding,
     );
 
+    var resolution = await resolve(maxBitrate);
+
     if (sessionToken != _playbackSessionToken) {
       _cleanupPreemptedSession(item, resolution);
       return;
+    }
+
+    // An item that came without its sources only learns the source bitrate
+    // from the server, so the ceiling is weighed again once it's known. A live
+    // stream is left as is, since asking again would open a second one.
+    if (measuredBitrate != null &&
+        resolution.liveStreamId == null &&
+        resolution.playMethod == StreamPlayMethod.transcode) {
+      final cap = _autoBitrateCap(
+        measuredBitrate,
+        resolution.sourceBitrate,
+        enableDirectPlay,
+      );
+      if (cap > maxBitrate!) {
+        maxBitrate = cap;
+        profile['MaxStreamingBitrate'] = cap;
+        resolution = await resolve(cap);
+        if (sessionToken != _playbackSessionToken) {
+          _cleanupPreemptedSession(item, resolution);
+          return;
+        }
+      }
     }
 
     _setBringupState(
@@ -2301,6 +2355,7 @@ class PlaybackManager implements AudioOwnable {
           enableDirectStream: false,
           enableTranscoding: true,
           allowStartupRecovery: allowStartupRecovery,
+          withholdExternalPgs: withholdExternalPgs,
         );
         return;
       }
@@ -2375,6 +2430,21 @@ class PlaybackManager implements AudioOwnable {
       }
     }
 
+    final pickedSubtitleIndex =
+        _subtitleStreamIndex ?? resolution.selectedSubtitleStreamIndex;
+    final pickedSubtitle = resolution.mediaStreams.firstWhere(
+      (s) => s['Type'] == 'Subtitle' && s['Index'] == pickedSubtitleIndex,
+      orElse: () => const <String, dynamic>{},
+    );
+    final pickedEmbeddedPgs = MediaStreamResolver.isEmbeddedPgsSubtitle(
+      pickedSubtitle,
+    );
+    if (pickedEmbeddedPgs &&
+        !withholdExternalPgs &&
+        pickedSubtitle['DeliveryMethod'] == 'External') {
+      needsReResolve = true;
+    }
+
     if (needsReResolve && !_reResolvingForTrackMatch) {
       _reResolvingForTrackMatch = true;
       try {
@@ -2385,6 +2455,7 @@ class PlaybackManager implements AudioOwnable {
           enableTranscoding: enableTranscoding,
           allowStartupRecovery: allowStartupRecovery,
           autoPlay: autoPlay,
+          withholdExternalPgs: pickedEmbeddedPgs,
         );
         return;
       } finally {
@@ -2954,6 +3025,7 @@ class PlaybackManager implements AudioOwnable {
       skipQueueChange: true,
       expectedItem: expectedItem,
       releaseServerResources: true,
+      preserveSubtitleDelay: true,
     );
   }
 
@@ -3905,10 +3977,12 @@ class PlaybackManager implements AudioOwnable {
     bool skipQueueChange = false,
     dynamic expectedItem,
     bool releaseServerResources = false,
+    bool preserveSubtitleDelay = false,
   }) async {
     final existingStop = _stopInFlight;
     if (existingStop != null) {
       await existingStop;
+      if (!preserveSubtitleDelay) _subtitleDelaySessionId++;
       return false;
     }
 
@@ -3925,6 +3999,7 @@ class PlaybackManager implements AudioOwnable {
         'releaseServerResources=$releaseServerResources '
         'position=${_lastKnownPosition.inMilliseconds}ms',
       );
+      if (!preserveSubtitleDelay) _subtitleDelaySessionId++;
       _deferredStartPosition = Duration.zero;
       _deferPlaybackToExternalPlayer = false;
       _endLiveStallWatch();

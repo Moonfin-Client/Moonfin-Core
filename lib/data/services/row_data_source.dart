@@ -224,11 +224,13 @@ class RowDataSource {
   }
 
   Future<HomeRow> loadNextUp(String serverId, {int? startIndex}) async {
-    final response = await _getNextUpWithFallback(
+    final request = _getNextUpWithFallback(
       startIndex: startIndex,
       limit: _defaultLimit,
       enableResumable: false,
     );
+    final recentlyPlayed = fetchSeriesLastPlayed(_client);
+    final response = await request;
     final row = _buildRow(
       id: 'nextUp',
       title: _l10n.nextUp,
@@ -238,6 +240,7 @@ class RowDataSource {
     );
     final enrichedItems = await _enrichNextUpItemsWithSeriesLastPlayed(
       row.items,
+      recentlyPlayed,
     );
     return row.copyWith(items: enrichedItems);
   }
@@ -257,7 +260,9 @@ class RowDataSource {
   }
 
   Future<HomeRow> loadNextUpRelaxed(String serverId) async {
-    final response = await getNextUpRelaxed(limit: _defaultLimit);
+    final request = getNextUpRelaxed(limit: _defaultLimit);
+    final recentlyPlayed = fetchSeriesLastPlayed(_client);
+    final response = await request;
     final row = _buildRow(
       id: 'nextUp',
       title: _l10n.nextUp,
@@ -267,6 +272,7 @@ class RowDataSource {
     );
     final enrichedItems = await _enrichNextUpItemsWithSeriesLastPlayed(
       row.items,
+      recentlyPlayed,
     );
     return row.copyWith(items: enrichedItems);
   }
@@ -689,12 +695,10 @@ class RowDataSource {
         .whereType<Map>()
         .map((item) => item.cast<String, dynamic>())
         .where(
-          (genre) =>
-              browsableGenreCount(
-                genre,
-                normalizedItemTypes: includeItemTypes,
-              ) >
-              0,
+          (genre) => mayHaveBrowsableItems(
+            genre,
+            normalizedItemTypes: includeItemTypes,
+          ),
         )
         .toList(growable: false);
 
@@ -1044,10 +1048,12 @@ class RowDataSource {
   }
 
   Future<HomeRow> loadLibraryNextUp(String parentId, String serverId) async {
-    final response = await _getNextUpWithFallback(
+    final request = _getNextUpWithFallback(
       parentId: parentId,
       limit: _defaultLimit,
     );
+    final recentlyPlayed = fetchSeriesLastPlayed(_client);
+    final response = await request;
     final row = _buildRow(
       id: 'nextUp_$parentId',
       title: _l10n.nextUp,
@@ -1057,6 +1063,7 @@ class RowDataSource {
     );
     final enrichedItems = await _enrichNextUpItemsWithSeriesLastPlayed(
       row.items,
+      recentlyPlayed,
     );
     return row.copyWith(items: enrichedItems);
   }
@@ -2456,7 +2463,8 @@ class RowDataSource {
 
   Future<List<AggregatedItem>> _enrichNextUpItemsWithSeriesLastPlayed(
     List<AggregatedItem> items,
-  ) => enrichNextUpItemsWithSeriesLastPlayed(items, _client);
+    Future<Map<String, String>?> recentlyPlayed,
+  ) => enrichNextUpItemsWithSeriesLastPlayed(items, _client, recentlyPlayed);
 
   (String, String) _resolveAudioSort(String? sortOpt, String itemType) {
     if (sortOpt == 'release_year' &&

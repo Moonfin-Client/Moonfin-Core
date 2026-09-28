@@ -102,6 +102,14 @@ enum NavbarPosition {
   bottom,
 }
 
+/// How the mobile bottom navbar is drawn. Only read while [NavbarPosition.bottom]
+/// is in effect, which is phones and tablets only.
+enum BottomNavbarStyle {
+  dock,
+  split,
+  strip,
+}
+
 enum NextUpBehavior {
   extended,
   minimal,
@@ -136,7 +144,8 @@ enum DesktopUiScale {
   medium(1.0),
   large(1.15),
   extraLarge(1.3),
-  grandparents(1.45);
+  grandparents(1.45),
+  greatGrandparents(1.6);
 
   const DesktopUiScale(this.scaleFactor);
   final double scaleFactor;
@@ -546,8 +555,12 @@ enum LibrarySortBy {
       return const [
         name,
         dateAdded,
+        premiereDate,
+        rating,
         datePlayed,
         playCount,
+        criticRating,
+        communityRating,
         runtime,
         random,
         foldersFirst,

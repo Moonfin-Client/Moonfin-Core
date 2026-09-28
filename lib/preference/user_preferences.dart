@@ -494,6 +494,8 @@ class UserPreferences extends ChangeNotifier {
     'blocked_ratings',
     'blocked_series_ids',
     'pref_navbar_position',
+    'pref_bottom_navbar_style',
+    'pref_bottom_navbar_tabs',
     'focus_color',
     'pref_watched_indicator_behavior',
     'pref_card_focus_expansion',
@@ -1654,6 +1656,21 @@ class UserPreferences extends ChangeNotifier {
     key: 'pref_navbar_position',
     defaultValue: NavbarPosition.top,
     values: NavbarPosition.values,
+  );
+
+  // Anyone on the bottom navbar before these styles has nothing stored here,
+  // so they land on Dock. That's the whole migration.
+  static final bottomNavbarStyle = EnumPreference(
+    key: 'pref_bottom_navbar_style',
+    defaultValue: BottomNavbarStyle.dock,
+    values: BottomNavbarStyle.values,
+  );
+
+  /// Comma separated [BottomNavTab] names pinned between Home and You. Empty
+  /// means automatic, resolved from the nav button toggles.
+  static final bottomNavbarTabs = Preference(
+    key: 'pref_bottom_navbar_tabs',
+    defaultValue: '',
   );
 
   static final shuffleContentType = Preference(

@@ -802,6 +802,9 @@ class AppLocalizationsFi extends AppLocalizations {
   String get uiScaleGrandparents => 'Isovanhemmat';
 
   @override
+  String get uiScaleGreatGrandparents => 'Great-Grandparents';
+
+  @override
   String get scrollDirection => 'Vierityssuunta';
 
   @override
@@ -881,14 +884,14 @@ class AppLocalizationsFi extends AppLocalizations {
   String get scanWithYourPhone => 'Skannaa puhelimellasi';
 
   @override
-  String get audiobookGenres => 'Äänikirjan tyylilajit';
+  String get audiobookGenres => 'Äänikirjan Genret';
 
   @override
   String get pickAudiobookGenres =>
-      'Valitse äänikirja Discoverissa näytettävät tyylilajit.';
+      'Valitse, mitkä genret haluat näyttää Audiobook Discover -osiossa.';
 
   @override
-  String get discoverAudiobooks => 'Tutustu äänikirjoihin';
+  String get discoverAudiobooks => 'Tutustu Äänikirjoihin';
 
   @override
   String get librivoxDescription =>
@@ -1958,11 +1961,6 @@ class AppLocalizationsFi extends AppLocalizations {
   String get subtitleDelay => 'Tekstityksen viive';
 
   @override
-  String subtitleDelayAuto(String value) {
-    return 'Auto $value';
-  }
-
-  @override
   String get reset => 'Nollaa';
 
   @override
@@ -2419,7 +2417,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get premiere => 'Ensiesitys';
 
   @override
-  String get guideRepeatBadge => 'Toista';
+  String get guideRepeatBadge => 'Jatkuva';
 
   @override
   String get guideTimeline => 'Opas aikajana';
@@ -3023,7 +3021,7 @@ class AppLocalizationsFi extends AppLocalizations {
       'Visuaaliset tehosteet ja kausittaiset efektit';
 
   @override
-  String get loadingAnimation => 'Ladataan Animaatiota';
+  String get loadingAnimation => 'Latausanimaatio';
 
   @override
   String get loadingAnimationDescription =>
@@ -3260,7 +3258,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get trickplaySettingsPreviewHint =>
-      'Vedä liukusäädintä nähdäksesi esikatselun liu’uttamisesta';
+      'Vedä liukusäädintä nähdäksesi esikatselun';
 
   @override
   String get trickplayPreviewScale => 'Esikatselukoko';
@@ -3276,7 +3274,7 @@ class AppLocalizationsFi extends AppLocalizations {
       'Esikatsele hakupalkilla, kun liu’utat, sen sijaan että ne pysyisivät keskellä';
 
   @override
-  String get trickplayPauseWhileScrubbing => 'Tauko Kelauksen Ajaksi';
+  String get trickplayPauseWhileScrubbing => 'Tauko Skrubbauksen Ajaksi';
 
   @override
   String get trickplayPauseWhileScrubbingSubtitle =>
@@ -4193,31 +4191,31 @@ class AppLocalizationsFi extends AppLocalizations {
   String get showShuffleButton => 'Näytä satunnaistoistopainike';
 
   @override
-  String get showGenresButton => 'Näytä genret -painike';
+  String get showGenresButton => 'Näytä Genret Painike';
 
   @override
-  String get showFavoritesButton => 'Näytä suosikit-painike';
+  String get showFavoritesButton => 'Näytä Suosikit Painike';
 
   @override
-  String get showLiveTvButton => 'Näytä Live TV -painike';
+  String get showLiveTvButton => 'Näytä Live TV Painike';
 
   @override
-  String get showDownloadsButton => 'Näytä latauspainike';
+  String get showDownloadsButton => 'Näytä Latauspainike';
 
   @override
-  String get showLibrariesInToolbar => 'Näytä kirjastot työkalupalkissa';
+  String get showLibrariesInToolbar => 'Näytä Kirjastot Työkalupalkissa';
 
   @override
-  String get navbarAlwaysExpanded => 'Näytä navigointipalkin tekstit aina';
+  String get navbarAlwaysExpanded => 'Näytä Navigointipalkin tekstit aina';
 
   @override
-  String get showSeerrButton => 'Näytä Seerr-painike';
+  String get showSeerrButton => 'Näytä Seerr Painike';
 
   @override
-  String get navbarOpacity => 'Navbarin läpinäkyvyys';
+  String get navbarOpacity => 'Navbarin Läpinäkyvyys';
 
   @override
-  String get navbarColor => 'Navipalkin väri';
+  String get navbarColor => 'Navipalkin Väri';
 
   @override
   String get gray => 'Harmaa';
@@ -4331,7 +4329,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get sourceCollections => 'Lähdekokoelmat';
 
   @override
-  String get excludedGenres => 'Poissuljetut genret';
+  String get excludedGenres => 'Poissuljetut Genret';
 
   @override
   String get selectAll => 'Valitse Kaikki';
@@ -4354,7 +4352,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get seconds => 'sekuntia';
 
   @override
-  String get localPreviews => 'Paikalliset esikatselut';
+  String get localPreviews => 'Paikalliset Esikatselut';
 
   @override
   String get localPreviewsDescription =>
@@ -4868,7 +4866,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get popularSeries => 'Suosittu sarja';
 
   @override
-  String get seriesGenres => 'Sarjan genret';
+  String get seriesGenres => 'Sarjojen Genret';
 
   @override
   String get upcomingSeries => 'Tuleva sarja';
@@ -4880,13 +4878,13 @@ class AppLocalizationsFi extends AppLocalizations {
   String get tags => 'Tunnisteet';
 
   @override
-  String get genresAndTags => 'Genret ja tunnisteet';
+  String get genresAndTags => 'Genret ja Tunnisteet';
 
   @override
   String get seerrDiscoveryRows => 'Seerr Suositusrivit';
 
   @override
-  String get yourWatchlist => 'Aktiivilistallasi';
+  String get yourWatchlist => 'Katselulistallasi';
 
   @override
   String get resetRowsToDefaults => 'Palauta rivit oletusarvoihin';
@@ -5170,16 +5168,16 @@ class AppLocalizationsFi extends AppLocalizations {
   String get requested4k => 'Pyydetään 4K-tarkkuutta';
 
   @override
-  String get cancelRequest => 'Keskeytä pyyntö';
+  String get cancelRequest => 'Peruuta Pyyntö';
 
   @override
-  String get cancelRequest4k => 'Keskeytä 4K-pyyntö';
+  String get cancelRequest4k => 'Peruuta 4K-pyyntö';
 
   @override
   String get playInMoonfin => 'Toista Moonfinissä';
 
   @override
-  String get requestedByLabel => 'Pyynnön esittäjä';
+  String get requestedByLabel => 'Pyytäjän nimi';
 
   @override
   String requestedByName(String name) {
@@ -5764,7 +5762,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get analyticsContainers => 'Säiliöt';
 
   @override
-  String get analyticsTopGenres => 'Suosituimmat genret';
+  String get analyticsTopGenres => 'Suosituimmat Genret';
 
   @override
   String get analyticsReleaseYears => 'Julkaisuvuodet';
@@ -10643,7 +10641,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get displayGenresRowsSubtitle => 'Näytä Genres-rivit Koti-osioissa.';
 
   @override
-  String get genresRowSorting => 'Genret rivilajittelu';
+  String get genresRowSorting => 'Genret Rivilajittelu';
 
   @override
   String get genresRowSortingDescription =>
@@ -10651,10 +10649,10 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get genresRowSortOrderDescription =>
-      'Lajittele ”Genret”-rivit nousevaan tai laskevaan järjestykseen.';
+      'Lajittele Genre rivit nousevaan tai laskevaan järjestykseen.';
 
   @override
-  String get genresRowItems => 'Genret rivikohdat';
+  String get genresRowItems => 'Kohteet Genre rivillä';
 
   @override
   String get genresRowItemsDescription =>
@@ -11323,7 +11321,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get achievementsStatLibraries => 'Vieraillut kirjastot';
 
   @override
-  String get achievementsStatGenres => 'Genret katsotut';
+  String get achievementsStatGenres => 'Katsotut Genret';
 
   @override
   String get achievementsStatDecades => 'Vuosikymmen katsotut';
@@ -11700,10 +11698,10 @@ class AppLocalizationsFi extends AppLocalizations {
   String get randomShuffleLabel => 'SATUNNAINEN SEKOITUS';
 
   @override
-  String get genresShuffleLabel => 'GENREJEN SEKOITUS';
+  String get genresShuffleLabel => 'GENRE SEKOITUS';
 
   @override
-  String get autoHdrSwitching => 'Automaattinen HDR-vaihto';
+  String get autoHdrSwitching => 'Automaattinen HDR Kytkentä';
 
   @override
   String get autoHdrSwitchingDescription =>
@@ -12741,6 +12739,21 @@ class AppLocalizationsFi extends AppLocalizations {
       'Kuvitus, yksi toistopainike ja jaksot.';
 
   @override
+  String get setupNavbarStyleQuestion => 'How should the bottom bar look?';
+
+  @override
+  String get setupNavbarStyleDockHint =>
+      'A floating pill with labels under every tab.';
+
+  @override
+  String get setupNavbarStyleSplitHint =>
+      'Search gets its own button, and the bar shrinks while you scroll.';
+
+  @override
+  String get setupNavbarStyleStripHint =>
+      'A full-width bar along the bottom edge.';
+
+  @override
   String get setupPickALook => 'Valitse tyyli';
 
   @override
@@ -13105,4 +13118,53 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String get keepVideoClearOfDynamicIslandDescription =>
       'Vaakakuvausasennossa kamerakotelo peittää näytön yhden reunan. Tämä rajoittaa kuvan ulottuvuutta, mikä vaikuttaa ainoastaan videoihin, jotka ovat riittävän leveitä ulottuakseen sinne asti.';
+
+  @override
+  String get bottomNavbarStyle => 'Bottom Bar Style';
+
+  @override
+  String get bottomNavbarStyleDock => 'Dock';
+
+  @override
+  String get bottomNavbarStyleSplit => 'Split';
+
+  @override
+  String get bottomNavbarStyleStrip => 'Strip';
+
+  @override
+  String get bottomNavbarTabs => 'Bottom Bar Tabs';
+
+  @override
+  String get bottomNavbarTabsDescription =>
+      'Pin up to 3 tabs between Home and You. Everything else is in the You menu.';
+
+  @override
+  String get bottomNavbarTabsAutomatic => 'Automatic';
+
+  @override
+  String get bottomNavbarTabsPinned => 'Pinned';
+
+  @override
+  String get bottomNavbarTabsAvailable => 'Available';
+
+  @override
+  String get bottomNavbarTabsReset => 'Reset to Automatic';
+
+  @override
+  String get bottomNavbarTabsLimit =>
+      'You can pin up to 3 tabs. Remove one to pin another.';
+
+  @override
+  String get bottomNavbarTabTurnedOff => 'Turned off under Buttons';
+
+  @override
+  String get bottomNavbarSplitSearchNote =>
+      'In the Split style, Search always has its own button.';
+
+  @override
+  String get bottomNavbarButtonsNote =>
+      'These decide which tabs you can pin to the bottom bar and what shows in the You menu.';
+
+  @override
+  String get navYou => 'You';
 }

@@ -52,6 +52,9 @@ class DownloadProgress {
   /// progress replaces it, so UIs can show (and cancel) the waiting item.
   final bool isQueued;
 
+  /// Queued or transferring: neither finished nor failed.
+  bool get isInFlight => !isComplete && error == null;
+
   /// Seconds the download is expected to still need. For transcoded
   /// downloads this is the server's own transcode estimate; for original
   /// files it is derived from the recent transfer rate. Null when unknown.
@@ -105,6 +108,10 @@ class DownloadProgress {
   /// 0.99 during this window, so without this the UI looks stuck at 99%.
   bool get isFinalizing => !isComplete && error == null && progress >= 0.99;
 }
+
+/// Progress of the batch started from one series, season or collection page.
+/// [current] is the item whose percentage to show, preferring a running one.
+typedef BatchProgress = ({int done, int total, DownloadProgress? current});
 
 /// Byte progress of a transfer. The native engine also reports its own rate
 /// and remaining time; the legacy engine leaves them null and the service
@@ -404,6 +411,30 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
   bool get isBatchDownloading =>
       _totalQueued > 0 && _completedCount < _totalQueued;
 
+  /// Items of the batches started from a series, season or collection page,
+  /// keyed by that page's item id, so each page reports only its own batch
+  /// rather than the global counters.
+  final Map<String, Set<String>> _batchItemsByOwner = {};
+
+  /// Progress of the batch started from [ownerId], or null when none of its
+  /// items is still queued or transferring.
+  BatchProgress? batchProgressFor(String ownerId) {
+    final ids = _batchItemsByOwner[ownerId];
+    if (ids == null) return null;
+    DownloadProgress? current;
+    var remaining = 0;
+    for (final id in ids) {
+      final progress = _activeDownloads[id];
+      if (progress == null || !progress.isInFlight) continue;
+      remaining++;
+      if (current == null || (current.isQueued && !progress.isQueued)) {
+        current = progress;
+      }
+    }
+    if (remaining == 0) return null;
+    return (done: ids.length - remaining, total: ids.length, current: current);
+  }
+
   final StreamController<String> _errorController =
       StreamController<String>.broadcast();
   Stream<String> get errors => _errorController.stream;
@@ -439,7 +470,7 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
   @override
   Set<String> get inFlightItemIds => {
     for (final entry in _activeDownloads.entries)
-      if (!entry.value.isComplete && entry.value.error == null) entry.key,
+      if (entry.value.isInFlight) entry.key,
   };
 
   /// The app-lifetime coordinator for the native download engine, or null
@@ -2796,12 +2827,20 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
 
   /// Queues every item in [items] that is not already downloaded or in
   /// flight. Resolves once the whole batch has finished, succeeded or not.
+  /// [ownerId] is the series, season or collection the batch was started
+  /// from, for [batchProgressFor].
   Future<void> downloadItems(
     List<AggregatedItem> items, {
     DownloadQuality quality = DownloadQuality.original,
     DownloadSource source = DownloadSource.manual,
+    String? ownerId,
   }) async {
-    final batch = await queueDownloads(items, quality: quality, source: source);
+    final batch = await queueDownloads(
+      items,
+      quality: quality,
+      source: source,
+      ownerId: ownerId,
+    );
     await batch.done;
   }
 
@@ -2813,6 +2852,7 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
     List<AggregatedItem> items, {
     DownloadQuality quality = DownloadQuality.original,
     DownloadSource source = DownloadSource.manual,
+    String? ownerId,
   }) async {
     // "Cancel all" is a user decision; only the user's next batch may lift
     // it while the cancelled transfers are still winding down.
@@ -2840,6 +2880,10 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
     }
     _openBatches++;
     _totalQueued += toQueue.length;
+    final queuedIds = {for (final item in toQueue) item.id};
+    if (ownerId != null) {
+      _batchItemsByOwner.putIfAbsent(ownerId, () => {}).addAll(queuedIds);
+    }
     notifyListeners();
 
     final downloads = <Future<void>>[];
@@ -2853,6 +2897,10 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
     final done = Future.wait(downloads).then((_) {}).whenComplete(() async {
       // A cancelled batch's counters were already cleared by cancelAll.
       if (generation != _batchGeneration) return;
+      final ids = _batchItemsByOwner[ownerId];
+      if (ids != null && (ids..removeAll(queuedIds)).isEmpty) {
+        _batchItemsByOwner.remove(ownerId);
+      }
       _openBatches--;
       if (_openBatches == 0) {
         _resetBatch();
@@ -3352,6 +3400,26 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
     _cancelTokens[itemId]?.cancel();
   }
 
+  /// Cancels only the batch started from [ownerId], leaving other batches
+  /// running. Queued items go first so none of them starts in the gap.
+  void cancelBatch(String ownerId) {
+    final ids = _batchItemsByOwner[ownerId];
+    if (ids == null) return;
+    final queued = <String>[];
+    final running = <String>[];
+    for (final id in ids) {
+      final progress = _activeDownloads[id];
+      if (progress == null || !progress.isInFlight) continue;
+      (progress.isQueued ? queued : running).add(id);
+    }
+    // Cancelled items never complete, so drop them from the shared total or
+    // a batch still running beside this one could never reach it.
+    _totalQueued -= queued.length + running.length;
+    for (final id in [...queued, ...running]) {
+      cancelDownload(id);
+    }
+  }
+
   void cancelAll() {
     _cancelAllRequested = true;
     for (final pending in _pendingDownloads) {
@@ -3381,6 +3449,7 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
     }
     _batchGeneration++;
     _openBatches = 0;
+    _batchItemsByOwner.clear();
     _resetBatch();
     _notificationService.dismiss();
     notifyListeners();

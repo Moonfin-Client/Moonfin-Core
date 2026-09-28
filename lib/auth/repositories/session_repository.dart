@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:custom_tv_text_field/custom_tv_text_field.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:flutter/widgets.dart'
@@ -8,6 +9,7 @@ import 'package:flutter/widgets.dart'
         Actions,
         AppLifecycleState,
         FocusManager,
+        PageRoute,
         TraversalDirection,
         WidgetsBinding;
 
@@ -33,12 +35,14 @@ import '../../data/services/media_server_client_factory.dart';
 import '../../data/services/achievements_service.dart';
 import '../../data/services/plugin_sync_service.dart';
 import '../../data/services/push_messaging_service.dart';
+import '../../data/services/remote_search_session.dart';
 import '../../data/services/server_messages_service.dart';
 import '../../data/services/socket_handler.dart';
 import '../../data/services/user_data_sync.dart';
 import '../../di/modules/app_module.dart';
 import '../../di/modules/playback_module.dart';
 import '../../di/modules/server_module.dart';
+import '../../playback/appletv_backend.dart';
 import '../../playback/audio_handler.dart';
 import '../../playback/headless_session_bootstrap.dart';
 import '../../playback/last_playback_session_store.dart';
@@ -69,6 +73,8 @@ class SessionRepository {
     'SetRepeatMode',
     'SetShuffleQueue',
     'GoHome',
+    'GoToSearch',
+    'SendString',
     'VolumeUp',
     'VolumeDown',
   ];
@@ -107,6 +113,7 @@ class SessionRepository {
   String? _activeUserId;
   SessionState _state = SessionState.ready;
   StreamSubscription<ServerWebSocketMessage>? _remoteCommandSubscription;
+  RemoteSearchSession? _remoteSearch;
   StreamSubscription<ServerWebSocketMessage>? _pluginEventSubscription;
   StreamSubscription<void>? _socketConnectionSubscription;
   double _lastUnmutedVolume = 100;
@@ -215,6 +222,7 @@ class SessionRepository {
     bool validateToken = false,
   }) async {
     _setState(SessionState.switching);
+    _remoteSearch?.close();
     _pluginSyncService.resetState();
     if (GetIt.instance.isRegistered<AchievementsService>()) {
       GetIt.instance<AchievementsService>().reset();
@@ -413,12 +421,12 @@ class SessionRepository {
       } catch (_) {}
     }
 
-    final seerrAvailable = await _pluginSyncService.configureSeerr(
+    final seerrCameUp = await _pluginSyncService.configureSeerr(
       client,
       username: username ?? user.name,
       password: password,
     );
-    if (seerrAvailable) {
+    if (seerrCameUp) {
       homeRefreshBus.requestNowOrAfterNavigation();
     }
   }
@@ -508,6 +516,7 @@ class SessionRepository {
   /// token. The push unregister and the logout both authenticate with it, so
   /// sending them would only add 401s to the burst that got us here.
   Future<void> destroyCurrentSession({bool tokenKnownInvalid = false}) async {
+    _remoteSearch?.close();
     final serverId = _activeServerId;
     final userId = _activeUserId;
 
@@ -794,6 +803,7 @@ class SessionRepository {
     int startIndex,
     PlayMessage message,
   ) async {
+    _remoteSearch?.close();
     final item = items[startIndex];
     final isLiveTv = _isLiveTvItem(item);
     final allowDirect = isLiveTv
@@ -971,6 +981,7 @@ class SessionRepository {
       case 'select':
         _activateFocused();
       case 'back':
+        _remoteSearch?.close();
         if (PlatformDetection.isTV) {
           if (appRouter.canPop()) {
             appRouter.pop();
@@ -1004,10 +1015,69 @@ class SessionRepository {
           await _setShuffleMode(manager, mode);
         }
       case 'gohome':
+        _remoteSearch?.close();
         await manager.stop(userInitiated: false);
         appRouter.go(Destinations.home);
+      case 'gotosearch':
+        await _openRemoteSearch(
+          manager,
+          RemoteSearchSession(message.arguments['MoonfinInputId']),
+        );
+      case 'sendstring':
+        final search = _remoteSearch;
+        if (search != null &&
+            !search.opening &&
+            appRouter.routeInformationProvider.value.uri.path !=
+                Destinations.search) {
+          search.close();
+        }
+        if (search != null && search.active) {
+          search.receive(message.arguments);
+        } else if (message.arguments['MoonfinInputId'] == null) {
+          // Another controller's text has no Search to land in yet, so it
+          // opens one. Edits from a phone whose input session ended stay
+          // dropped.
+          final opened = RemoteSearchSession(null)
+            ..receive(message.arguments);
+          await _openRemoteSearch(manager, opened);
+        }
       default:
         break;
+    }
+  }
+
+  /// Opens Search for [search] once dialogs, the TV keyboard and playback are
+  /// out of the way. A stopped player or an earlier Search is replaced rather
+  /// than kept, so Back skips it. From anywhere else Search is pushed, so Back
+  /// returns to where the viewer was.
+  Future<void> _openRemoteSearch(
+    PlaybackManager manager,
+    RemoteSearchSession search,
+  ) async {
+    _remoteSearch?.close();
+    _remoteSearch = search;
+    try {
+      CustomTVTextField.closeTopKeyboard();
+      appRouter.routerDelegate.navigatorKey.currentState?.popUntil(
+        (route) => route is PageRoute,
+      );
+      await manager.stop(userInitiated: false);
+      if (!search.active) return;
+      // Native tvOS playback is presented above Flutter's routes.
+      final backend = manager.backend;
+      if (backend is AppleTvBackend) await backend.dismissPlayer();
+      if (!search.active) return;
+      final path = appRouter.routeInformationProvider.value.uri.path;
+      if (path == Destinations.search || Destinations.isPlayerRoute(path)) {
+        unawaited(
+          appRouter.pushReplacement(Destinations.search, extra: search),
+        );
+      } else {
+        unawaited(appRouter.push(Destinations.search, extra: search));
+      }
+    } catch (_) {
+      search.close();
+      rethrow;
     }
   }
 
@@ -1033,6 +1103,7 @@ class SessionRepository {
   }
 
   void dispose() {
+    _remoteSearch?.close();
     _remoteCommandSubscription?.cancel();
     _pluginEventSubscription?.cancel();
     _stateController.close();

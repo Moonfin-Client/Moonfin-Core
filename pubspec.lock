@@ -212,10 +212,9 @@ packages:
   cached_network_image:
     dependency: "direct main"
     description:
-      name: cached_network_image
-      sha256: "7c1183e361e5c8b0a0f21a28401eecdbde252441106a9816400dd4c2b2424916"
-      url: "https://pub.dev"
-    source: hosted
+      path: "packages/cached_network_image_fork"
+      relative: true
+    source: path
     version: "3.4.1"
   cached_network_image_platform_interface:
     dependency: transitive

@@ -194,6 +194,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   int _selectedTab = 0;
   String? _selectedTabId;
   String? _lastItemId;
+  bool _tabPickedByUser = false;
   bool _landscape = true;
 
   /// Expanded Tabs preference: when on, tabs behave like the search pill, with
@@ -782,6 +783,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
 
   void _onTabBarNavigateDown(int tabIndex) {
     if (_vm.item == null) return;
+    _tabPickedByUser = true;
     if (_selectedTab != tabIndex) {
       _selectTab(tabIndex);
     }
@@ -4965,6 +4967,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   }
 
   void _selectTab(int index) {
+    _tabPickedByUser = true;
     if (index == _selectedTab) {
       // With Expanded Tabs on, reselecting the current tab never collapses.
       if (!_expandedTabs) {
@@ -5030,6 +5033,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     // Reset tab selection if the item changed completely.
     if (_lastItemId != item.id) {
       _lastItemId = item.id;
+      _tabPickedByUser = false;
       _selectedTab = (isMusicAlbumOrPlaylist || _expandedTabs || item.type == 'Season') ? 0 : -1;
       _selectedTabId = (_selectedTab == 0 && tabs.isNotEmpty) ? tabs[0].id : null;
     }
@@ -5040,6 +5044,10 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     } else if (tabs.isEmpty) {
       _selectedTab = -1;
       _selectedTabId = null;
+    } else if (!_tabPickedByUser && _selectedTab == 0) {
+      // Tabs that load later can land in front of the default one, so until the
+      // user picks a tab the selection stays on whichever tab is first.
+      _selectedTabId = tabs[0].id;
     } else {
       // Identity-aware resolution: anchor to _selectedTabId across dynamic tab insertions/prepending
       if (_selectedTabId != null) {

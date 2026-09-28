@@ -1033,6 +1033,7 @@ class _MediaBarState extends State<MediaBar>
     final client = _clientForServer(item.serverId);
     String? streamUrl;
     bool useYouTubeHeaders = false;
+    String? youTubeAudioLanguage;
     String? youTubeVideoId;
     String? sponsorBlockVideoId;
     StreamResolutionResult? localRes;
@@ -1091,11 +1092,13 @@ class _MediaBarState extends State<MediaBar>
             break;
           }
           if (!webOnly) {
-            streamUrl = await YouTubeStreamResolver.resolveFromUrl(
+            final stream = await YouTubeStreamResolver.resolveFromUrl(
               url,
             ).timeout(_trailerResolveTimeout, onTimeout: () => null);
+            streamUrl = stream?.url;
             if (streamUrl != null) {
               useYouTubeHeaders = true;
+              youTubeAudioLanguage = stream?.audioLanguage;
             }
           }
         } else if (!webOnly) {
@@ -1167,6 +1170,7 @@ class _MediaBarState extends State<MediaBar>
           'url': streamUrl,
           'mediaType': localRes?.mediaType ?? 'video',
           'preview': true,
+          'preferredAudioLanguage': ?youTubeAudioLanguage,
           if (localHeaders.isNotEmpty) 'headers': localHeaders,
           if (localRes?.container != null) 'container': localRes!.container,
           if (localRes?.videoRangeType != null)
@@ -1185,6 +1189,7 @@ class _MediaBarState extends State<MediaBar>
               streamUrl,
               headers: localHeaders.isNotEmpty ? localHeaders : null,
               volume: 0,
+              audioLanguage: youTubeAudioLanguage,
             )
             .timeout(_openTimeout);
         if (resolveId != _trailerResolveId || !_trailerShouldBeActive()) {
@@ -1201,6 +1206,10 @@ class _MediaBarState extends State<MediaBar>
         final media = localHeaders.isNotEmpty
             ? Media(streamUrl, httpHeaders: localHeaders)
             : Media(streamUrl);
+        await YouTubeStreamResolver.preferAudioLanguage(
+          player,
+          youTubeAudioLanguage,
+        );
         await player.open(media).timeout(_openTimeout);
         if (resolveId != _trailerResolveId || !_trailerShouldBeActive()) {
           await player.stop();

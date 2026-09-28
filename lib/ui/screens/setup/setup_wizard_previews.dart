@@ -10,10 +10,19 @@ import '../../../data/models/media_bar_state.dart';
 import '../../../data/repositories/media_bar_repository.dart';
 import '../../../data/viewmodels/media_bar_view_model.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../preference/bottom_nav_tabs.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/overlay_color_palette.dart';
 import '../../../util/platform_detection.dart';
+import '../../widgets/bottom_nav/bottom_nav_destinations.dart';
+import '../../widgets/bottom_nav/bottom_nav_metrics.dart';
+import '../../widgets/bottom_nav/bottom_nav_model.dart';
+import '../../widgets/bottom_nav/bottom_nav_tab.dart';
+import '../../widgets/bottom_nav/bottom_nav_theme.dart';
+import '../../widgets/bottom_nav/dock_bar.dart';
+import '../../widgets/bottom_nav/split_bar.dart';
+import '../../widgets/bottom_nav/strip_bar.dart';
 import '../../widgets/bounded_network_image.dart';
 import '../../widgets/mediabar/gallery_glow.dart';
 
@@ -1635,7 +1644,8 @@ Widget navbarPreview(NavbarPosition position) => _liveOrFallback(
   live: (context, items) => switch (position) {
     NavbarPosition.top => _topNavbarPreview(context, items),
     NavbarPosition.left => _leftNavbarPreview(context, items),
-    NavbarPosition.bottom => _bottomNavbarPreview(context, items),
+    NavbarPosition.bottom =>
+      _bottomNavbarPreview(context, items, BottomNavbarStyle.dock),
   },
   fallback: _fallbackNavbar(position),
 );
@@ -1823,83 +1833,163 @@ Widget _leftNavbarPreview(BuildContext context, List<MediaBarSlideItem> items) {
 
 /// A floating pill above the bottom edge, its active tab held in a glowing
 /// chip, the way the real bar draws it. Content keeps running underneath.
+/// The real bottom navbar over the tabs a fresh install gets. The card is the
+/// thing to tap, so the bar inside it neither takes touches nor reads out its
+/// tabs.
 Widget _bottomNavbarPreview(
   BuildContext context,
   List<MediaBarSlideItem> items,
+  BottomNavbarStyle style,
 ) {
-  const tabs = [
-    Icons.home_rounded,
-    Icons.search_rounded,
-    Icons.shuffle_rounded,
-    Icons.favorite_rounded,
-    Icons.settings_rounded,
+  final l10n = AppLocalizations.of(context);
+  final theme = BottomNavTheme.resolve(context, preview: true);
+  var name = '';
+  if (GetIt.instance.isRegistered<UserRepository>()) {
+    name = GetIt.instance<UserRepository>().currentUser?.name ?? '';
+  }
+  final views = [
+    for (final item in resolveBarItems(
+      const BottomNavTabGates(),
+      '',
+      withoutSearch: style == BottomNavbarStyle.split,
+    ))
+      bottomNavItemView(
+        item,
+        l10n,
+        avatar: (active, size, color) => BottomNavAvatar(
+          imageUrl: null,
+          name: name,
+          size: BottomNavMetrics.avatarSize,
+          ring: theme.onBar.withValues(alpha: 0.18),
+          fallbackColor: theme.onBar,
+        ),
+      ),
   ];
 
-  Widget tab(int index) {
-    final active = index == 0;
-    final slot = AppColorScheme.navColorForSlot(index);
-    final base = slot ?? AppColorScheme.accent;
-    final color = active
-        ? Color.lerp(base, Colors.white, 0.30)!
-        : (slot ?? Colors.white.withValues(alpha: 0.6));
-    return SizedBox(
-      width: 64,
-      child: Center(
-        child: Container(
-          width: 56,
-          height: 32,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: active ? base.withValues(alpha: 0.16) : null,
-            borderRadius: AppRadius.circular(16),
-            boxShadow: active
-                ? [
-                    BoxShadow(
-                      color: base.withValues(alpha: 0.35),
-                      blurRadius: 12,
-                    ),
-                  ]
-                : null,
-          ),
-          child: Icon(tabs[index], size: 24, color: color),
-        ),
+  const inset = 24.0;
+  final Widget bar = switch (style) {
+    BottomNavbarStyle.dock => DockBarView(
+        items: views,
+        activeIndex: 0,
+        theme: theme,
+        bottomInset: inset,
       ),
-    );
-  }
-
-  final bar = Padding(
-    padding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
-    child: Container(
-      height: 54,
-      decoration: BoxDecoration(
-        color: Color.alphaBlend(
-          _navbarSurface.withValues(alpha: 0.98),
-          AppColorScheme.surface,
-        ),
-        borderRadius: AppRadius.circular(22),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.45),
-            blurRadius: 30,
-            spreadRadius: -12,
-            offset: const Offset(0, 14),
-          ),
-        ],
+    BottomNavbarStyle.split => SplitBarView(
+        items: views,
+        activeIndex: 0,
+        theme: theme,
+        bottomInset: inset,
+        searchLabel: l10n.search,
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [for (var i = 0; i < tabs.length; i++) tab(i)],
+    BottomNavbarStyle.strip => StripBarView(
+        items: views,
+        activeIndex: 0,
+        theme: theme,
+        bottomInset: inset,
       ),
-    ),
-  );
+  };
 
   return Stack(
     children: [
       Positioned.fill(child: _navbarRows(context, items, topInset: 24)),
-      Align(alignment: Alignment.bottomCenter, child: bar),
+      Align(
+        alignment: Alignment.bottomCenter,
+        child: IgnorePointer(child: ExcludeSemantics(child: bar)),
+      ),
     ],
   );
 }
+
+Widget bottomNavbarStylePreview(BottomNavbarStyle style) => _liveOrFallback(
+  live: (context, items) => _bottomNavbarPreview(context, items, style),
+  fallback: _fallbackBottomNavbar(style),
+);
+
+/// Drawn stand-ins for the three styles: an inset pill, a pill beside a
+/// circle, and a full-width band with its tick.
+Widget _fallbackBottomNavbar(BottomNavbarStyle style) {
+  final surface = AppColorScheme.onSurface.withValues(alpha: 0.14);
+  Widget marks(int count) => Row(
+    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    children: [for (var i = 0; i < count; i++) _bar(8, 3, _strong)],
+  );
+
+  final rows = _fallbackNavbarRows();
+
+  final Widget chrome = switch (style) {
+    BottomNavbarStyle.dock => Padding(
+        padding: const EdgeInsets.fromLTRB(24, 0, 24, 6),
+        child: Container(
+          height: 14,
+          decoration: BoxDecoration(
+            color: surface,
+            borderRadius: AppRadius.circular(7),
+          ),
+          child: marks(5),
+        ),
+      ),
+    BottomNavbarStyle.split => Padding(
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 6),
+        child: Row(
+          children: [
+            Expanded(
+              child: Container(
+                height: 14,
+                decoration: BoxDecoration(
+                  color: surface,
+                  borderRadius: AppRadius.circular(7),
+                ),
+                child: marks(4),
+              ),
+            ),
+            const SizedBox(width: 6),
+            Container(
+              width: 14,
+              height: 14,
+              decoration: BoxDecoration(
+                color: surface,
+                shape: AppColorScheme.isPixel
+                    ? BoxShape.rectangle
+                    : BoxShape.circle,
+              ),
+            ),
+          ],
+        ),
+      ),
+    BottomNavbarStyle.strip => Container(
+        height: 16,
+        color: surface,
+        child: Stack(
+          children: [
+            marks(5),
+            Positioned(
+              top: 0,
+              left: 22,
+              child: Container(width: 10, height: 2, color: AppColorScheme.accent),
+            ),
+          ],
+        ),
+      ),
+  };
+
+  return Column(children: [Expanded(child: rows), chrome]);
+}
+
+Widget _fallbackNavbarRows() => Padding(
+  padding: const EdgeInsets.all(8),
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    mainAxisAlignment: MainAxisAlignment.center,
+    spacing: 6,
+    children: [
+      _bar(30, 3, _weak),
+      Row(
+        spacing: 4,
+        children: [for (var i = 0; i < 4; i++) _posterCard(13)],
+      ),
+    ],
+  ),
+);
 
 Widget _fallbackNavbar(NavbarPosition position) {
   Widget chrome({double? width, double? height}) => Container(
@@ -1921,21 +2011,7 @@ Widget _fallbackNavbar(NavbarPosition position) {
     ),
   );
 
-  final rows = Padding(
-    padding: const EdgeInsets.all(8),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.center,
-      spacing: 6,
-      children: [
-        _bar(30, 3, _weak),
-        Row(
-          spacing: 4,
-          children: [for (var i = 0; i < 4; i++) _posterCard(13)],
-        ),
-      ],
-    ),
-  );
+  final rows = _fallbackNavbarRows();
 
   return switch (position) {
     NavbarPosition.top => Column(
@@ -1951,12 +2027,7 @@ Widget _fallbackNavbar(NavbarPosition position) {
         Expanded(child: rows),
       ],
     ),
-    NavbarPosition.bottom => Column(
-      children: [
-        Expanded(child: rows),
-        chrome(height: 16),
-      ],
-    ),
+    NavbarPosition.bottom => _fallbackBottomNavbar(BottomNavbarStyle.dock),
   };
 }
 

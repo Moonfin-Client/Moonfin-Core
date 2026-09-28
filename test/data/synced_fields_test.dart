@@ -159,6 +159,8 @@ void main() {
     'navbarColor',
     'navbarOpacity',
     'navbarPosition',
+    'bottomNavbarStyle',
+    'bottomNavbarTabs',
     'nextUpBehavior',
     'nextUpMaxDays',
     'nextUpTimeout',

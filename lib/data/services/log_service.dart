@@ -7,6 +7,7 @@ import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../preference/user_preferences.dart';
+import '../../util/platform_detection.dart';
 import 'media_server_client_factory.dart';
 import 'plugin_sync_service.dart';
 
@@ -266,8 +267,15 @@ class LogService extends ChangeNotifier {
       ..writeln('App: ${_deviceInfo.appName} ${_deviceInfo.appVersion}')
       ..writeln('Device: ${_deviceInfo.name} (${_deviceInfo.id})')
       ..writeln('Entries: ${_entries.length - start}')
-      ..writeln('Platform: ${defaultTargetPlatform.name}')
-      ..writeln('=' * 60);
+      ..writeln('Platform: ${defaultTargetPlatform.name}');
+    final uptime = PlatformDetection.systemUptime;
+    if (uptime != null) {
+      buffer.writeln(
+        'System uptime: ${uptime.inDays}d ${uptime.inHours.remainder(24)}h '
+        '${uptime.inMinutes.remainder(60)}m (${uptime.inMilliseconds} ms)',
+      );
+    }
+    buffer.writeln('=' * 60);
     for (final entry in _entries.skip(start)) {
       buffer.writeln(entry.format());
     }

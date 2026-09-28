@@ -118,6 +118,11 @@ internal class TimeOffsetMediaPeriod(
     }
 
     override fun getNextLoadPositionUs(): Long {
+        // While its one request is out, a subtitle file reports the position
+        // it started from. The merging period only lets the video load past
+        // the lowest position any child reports, so a server slow to hand the
+        // file over would hold the picture there until it arrived.
+        if (wrappedMediaPeriod.isLoading) return C.TIME_END_OF_SOURCE
         val nextLoadUs = wrappedMediaPeriod.nextLoadPositionUs
         return if (nextLoadUs == C.TIME_END_OF_SOURCE) C.TIME_END_OF_SOURCE else nextLoadUs + timeOffsetUs
     }

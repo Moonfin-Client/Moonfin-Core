@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
@@ -110,8 +111,6 @@ void main() {
     when(() => vm.collectionItems).thenReturn([]);
     when(() => vm.missingCollectionItems).thenReturn([]);
     when(() => vm.parentCollections).thenReturn([]);
-    when(() => vm.parentCollectionItems).thenReturn([]);
-    when(() => vm.parentCollectionName).thenReturn(null);
     when(() => vm.playlistItems).thenReturn([]);
     when(() => vm.playlistIndexBuilding).thenReturn(false);
     when(() => vm.tracks).thenReturn([]);
@@ -177,6 +176,37 @@ void main() {
     );
   }
 
+  Future<void> openCollection(WidgetTester tester) async {
+    when(() => vm.item).thenReturn(
+      AggregatedItem(
+        id: 'boxset-1',
+        serverId: 'server-1',
+        rawData: const {
+          'Id': 'boxset-1',
+          'Name': '1001 Movies You Must See Before You Die',
+          'Type': 'BoxSet',
+          'Studios': [
+            {'Id': 'studio-1', 'Name': '20th Century Fox'},
+          ],
+        },
+      ),
+    );
+    await tester.pumpWidget(buildTestWidget());
+    await tester.pump(const Duration(milliseconds: 100));
+  }
+
+  Future<void> loadCollectionMovie(WidgetTester tester) async {
+    when(() => vm.collectionItems).thenReturn([
+      AggregatedItem(
+        id: 'movie-1',
+        serverId: 'server-1',
+        rawData: const {'Id': 'movie-1', 'Name': 'Alien', 'Type': 'Movie'},
+      ),
+    ]);
+    await tester.pumpWidget(buildTestWidget());
+    await tester.pump(const Duration(milliseconds: 100));
+  }
+
   testWidgets('a score the viewer set alone is enough to draw the row', (tester) async {
     when(() => vm.item).thenReturn(AggregatedItem(
       id: 'movie-1',
@@ -239,6 +269,45 @@ void main() {
 
     expect(find.text('Cast'), findsOneWidget);
     expect(selectedTabLabel(tester), 'Similar');
+  });
+
+  testWidgets('a collection opens on Movies when its studios load before its movies', (tester) async {
+    await openCollection(tester);
+    expect(selectedTabLabel(tester), 'Studios');
+
+    await loadCollectionMovie(tester);
+    expect(selectedTabLabel(tester), 'Movies');
+  });
+
+  testWidgets('a collection stays on Studios when the user picks it before its movies load', (tester) async {
+    await openCollection(tester);
+    await tester.tap(find.text('Studios'));
+    await tester.pump(const Duration(milliseconds: 100));
+
+    await loadCollectionMovie(tester);
+    expect(selectedTabLabel(tester), 'Studios');
+  });
+
+  testWidgets('a collection stays on Studios when the user moves down into it before its movies load', (tester) async {
+    await openCollection(tester);
+    tester.widget<DetailsTabBar>(find.byType(DetailsTabBar)).focusNodeFor(0).requestFocus();
+    await tester.pump();
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+    await tester.pump(const Duration(milliseconds: 100));
+
+    await loadCollectionMovie(tester);
+    expect(selectedTabLabel(tester), 'Studios');
+  });
+
+  testWidgets('a collection stays on Movies when the user clicks it after it loads', (tester) async {
+    await openCollection(tester);
+    await loadCollectionMovie(tester);
+    await tester.tap(find.text('Movies'));
+    await tester.pump(const Duration(milliseconds: 100));
+
+    await tester.pumpWidget(buildTestWidget());
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(selectedTabLabel(tester), 'Movies');
   });
 
   testWidgets('a Series with no seasons says so once the fetch is done', (tester) async {

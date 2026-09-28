@@ -33,6 +33,7 @@ import '../../widgets/track_selector_dialog.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../util/error_message.dart';
 import '../../widgets/focus/focusable_wrapper.dart';
+import '../../widgets/bottom_nav/bottom_navbar.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/offline_aware_image.dart';
 
@@ -442,7 +443,12 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
             builder: (context, constraints) => GridView.builder(
               controller: _requestsScroll,
               // Top inset leaves room for the focus scale on the first row.
-              padding: EdgeInsets.fromLTRB(_leftInset, 12, 16, 80),
+              padding: EdgeInsets.fromLTRB(
+                _leftInset,
+                12,
+                16,
+                bottomNavContentPadding(context, 80),
+              ),
               gridDelegate: _tileGrid(
                 scale,
                 constraints.maxWidth - _leftInset - 16,
@@ -460,34 +466,37 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
 
     return RefreshIndicator(
       onRefresh: vm.refresh,
-      child: ListView.builder(
-        controller: _requestsScroll,
-        padding: EdgeInsets.fromLTRB(_leftInset, 8, 16, 80),
-        itemCount: s.requests.length + (s.hasMore ? 1 : 0),
-        itemBuilder: (context, index) {
-          if (index >= s.requests.length) {
-            return const _LoaderRow();
-          }
-          final req = s.requests[index];
-          final animate =
-              !disableAnimations && !_animatedRequestIds.contains(req.id);
-          if (animate) _animatedRequestIds.add(req.id);
-          return _Entrance(
-            key: ValueKey('req-${req.id}'),
-            animate: animate,
-            slot: index.clamp(0, 8),
-            child: _RequestCard(
-              request: req,
-              summary: s.summaryFor(req),
-              canManage: s.canManageRequests,
-              isActioning: s.actioningRequestId == req.id,
-              onTap: () => _onRequestTap(req),
-              onApprove: () => vm.approveRequest(req.id),
-              onDecline: () => vm.declineRequest(req.id),
-              onRetry: () => vm.retryRequest(req.id),
-            ),
-          );
-        },
+      child: BottomNavPadded(
+        fallback: 80,
+        builder: (context, bottom) => ListView.builder(
+          controller: _requestsScroll,
+          padding: EdgeInsets.fromLTRB(_leftInset, 8, 16, bottom),
+          itemCount: s.requests.length + (s.hasMore ? 1 : 0),
+          itemBuilder: (context, index) {
+            if (index >= s.requests.length) {
+              return const _LoaderRow();
+            }
+            final req = s.requests[index];
+            final animate =
+                !disableAnimations && !_animatedRequestIds.contains(req.id);
+            if (animate) _animatedRequestIds.add(req.id);
+            return _Entrance(
+              key: ValueKey('req-${req.id}'),
+              animate: animate,
+              slot: index.clamp(0, 8),
+              child: _RequestCard(
+                request: req,
+                summary: s.summaryFor(req),
+                canManage: s.canManageRequests,
+                isActioning: s.actioningRequestId == req.id,
+                onTap: () => _onRequestTap(req),
+                onApprove: () => vm.approveRequest(req.id),
+                onDecline: () => vm.declineRequest(req.id),
+                onRetry: () => vm.retryRequest(req.id),
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -572,34 +581,37 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
     final disableAnimations = MediaQuery.of(context).disableAnimations;
     return RefreshIndicator(
       onRefresh: vm.refresh,
-      child: ListView.builder(
-        controller: _issuesScroll,
-        padding: EdgeInsets.fromLTRB(_leftInset, 8, 16, 80),
-        itemCount: s.issues.length + (s.hasMore ? 1 : 0),
-        itemBuilder: (context, index) {
-          if (index >= s.issues.length) {
-            return const _LoaderRow();
-          }
-          final issue = s.issues[index];
-          final animate =
-              !disableAnimations && !_animatedIssueIds.contains(issue.id);
-          if (animate) _animatedIssueIds.add(issue.id);
-          return _Entrance(
-            key: ValueKey('issue-${issue.id}'),
-            animate: animate,
-            slot: index.clamp(0, 8),
-            child: _IssueCard(
-              issue: issue,
-              summary: s.summaryFor(issue),
-              canResolve: vm.canResolve(issue),
-              isActioning: s.actioningIssueId == issue.id,
-              onTap: () => _showIssueDialog(issue),
-              onResolve: () => issue.isOpen
-                  ? vm.resolveIssue(issue.id)
-                  : vm.reopenIssue(issue.id),
-            ),
-          );
-        },
+      child: BottomNavPadded(
+        fallback: 80,
+        builder: (context, bottom) => ListView.builder(
+          controller: _issuesScroll,
+          padding: EdgeInsets.fromLTRB(_leftInset, 8, 16, bottom),
+          itemCount: s.issues.length + (s.hasMore ? 1 : 0),
+          itemBuilder: (context, index) {
+            if (index >= s.issues.length) {
+              return const _LoaderRow();
+            }
+            final issue = s.issues[index];
+            final animate =
+                !disableAnimations && !_animatedIssueIds.contains(issue.id);
+            if (animate) _animatedIssueIds.add(issue.id);
+            return _Entrance(
+              key: ValueKey('issue-${issue.id}'),
+              animate: animate,
+              slot: index.clamp(0, 8),
+              child: _IssueCard(
+                issue: issue,
+                summary: s.summaryFor(issue),
+                canResolve: vm.canResolve(issue),
+                isActioning: s.actioningIssueId == issue.id,
+                onTap: () => _showIssueDialog(issue),
+                onResolve: () => issue.isOpen
+                    ? vm.resolveIssue(issue.id)
+                    : vm.reopenIssue(issue.id),
+              ),
+            );
+          },
+        ),
       ),
     );
   }

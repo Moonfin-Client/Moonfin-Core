@@ -197,6 +197,40 @@ function Copy-VcpkgRuntimeDlls {
   }
 }
 
+function Copy-VcRuntimeDlls {
+  param(
+    [string]$ReleaseDir,
+    [string]$Architecture = 'x64'
+  )
+
+  # moonfin.exe and the plugin DLLs link the Visual C++ runtime dynamically.
+  # Shipping it next to the exe means a machine with a missing or outdated
+  # redistributable still loads the version these binaries were built against.
+  $vswhere = Join-Path ${env:ProgramFiles(x86)} "Microsoft Visual Studio\Installer\vswhere.exe"
+  if (-not (Test-Path $vswhere)) {
+    throw "vswhere.exe not found at $vswhere. Install Visual Studio with the Desktop development with C++ workload."
+  }
+
+  $vsPath = & $vswhere -latest -products * -property installationPath
+  if ([string]::IsNullOrWhiteSpace($vsPath)) {
+    throw "No Visual Studio installation found by vswhere."
+  }
+
+  $crtDir = Get-ChildItem -Path (Join-Path $vsPath "VC\Redist\MSVC\*\$Architecture\Microsoft.VC*.CRT") -Directory -ErrorAction SilentlyContinue |
+    Where-Object { $_.Parent.Parent.Name -match '^\d+(\.\d+)+$' } |
+    Sort-Object { [Version]$_.Parent.Parent.Name } -Descending |
+    Select-Object -First 1
+  if (-not $crtDir) {
+    throw "Visual C++ runtime for $Architecture not found under $vsPath\VC\Redist\MSVC"
+  }
+
+  foreach ($dll in Get-ChildItem -Path $crtDir.FullName -Filter *.dll -File) {
+    Copy-Item -Path $dll.FullName -Destination (Join-Path $ReleaseDir $dll.Name) -Force
+  }
+
+  Write-Host "Bundled Visual C++ runtime from $($crtDir.FullName)"
+}
+
 function Get-AppVersion {
   $pubspecPath = Join-Path $repoRoot "pubspec.yaml"
   if (-not (Test-Path $pubspecPath)) {
@@ -333,6 +367,7 @@ try {
   }
 
   Copy-VcpkgRuntimeDlls -VcpkgRoot $env:VCPKG_ROOT -ReleaseDir $releaseDir -Triplet $vcpkgTriplet
+  Copy-VcRuntimeDlls -ReleaseDir $releaseDir -Architecture $Architecture
 
   $outputDir = Join-Path $repoRoot "build\windows\installer"
   $iconPath = Join-Path $repoRoot "windows\runner\resources\app_icon.ico"

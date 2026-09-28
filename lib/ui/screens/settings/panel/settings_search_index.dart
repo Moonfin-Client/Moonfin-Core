@@ -228,6 +228,16 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
     icon: Icons.navigation,
     open: () => push(const _NavigationCategoryScreen()),
   );
+  final bottomNavTabs = _SearchSection(
+    slug: 'bottom-nav-tabs',
+    path: [
+      l10n.settingsPersonalization,
+      l10n.navigation,
+      l10n.bottomNavbarTabs,
+    ],
+    icon: Icons.push_pin_outlined,
+    open: () => push(const _BottomNavTabsScreen()),
+  );
   final screensaver = _SearchSection(
     slug: 'screensaver',
     path: [l10n.settingsPersonalization, l10n.screensaver],
@@ -758,6 +768,21 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       'left',
       'bottom',
     ]),
+    // Device gate only: the entries stay findable while another position is
+    // picked, like every other setting here.
+    if (NavigationLayout.allowBottomNavbar) ...[
+      navigation.leaf(
+        'pref_bottom_navbar_style',
+        l10n.bottomNavbarStyle,
+        keywords: ['dock', 'split', 'strip', 'bottom bar', 'tab bar'],
+      ),
+      bottomNavTabs.screen(keywords: [
+        'pin',
+        'tabs',
+        'bottom bar',
+        'reorder',
+      ]),
+    ],
     navigation.leaf('navbarColor', l10n.navbarColor),
     navigation.leaf('navbarOpacity', l10n.navbarOpacity, keywords: [
       'transparency',

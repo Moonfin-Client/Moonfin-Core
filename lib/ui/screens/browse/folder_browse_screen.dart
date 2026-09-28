@@ -12,6 +12,7 @@ import '../../../util/focus/dpad_keys.dart';
 import '../../navigation/destinations.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/media_card.dart';
+import '../../widgets/bottom_nav/bottom_navbar.dart';
 import '../../widgets/navigation_layout.dart';
 import '../../widgets/quick_return_wrapper.dart';
 import '../../widgets/skeleton/skeleton_library_grid.dart';
@@ -221,6 +222,11 @@ class _FolderBrowseScreenState extends State<FolderBrowseScreen> {
     return Scaffold(
       backgroundColor: AppColorScheme.background,
       body: NavigationLayout(
+        // The root keeps the exact route, so the toolbar's Folders button
+        // still lights up on it.
+        activeRoute: widget.folderId == 'root'
+            ? Destinations.folderView
+            : '/folder/${widget.folderId}',
         showBackButton: true,
         child: QuickReturnWrapper(
           scrollController: _scrollController,
@@ -380,11 +386,11 @@ class _FolderBrowseScreenState extends State<FolderBrowseScreen> {
 
         return GridView.builder(
           controller: _scrollController,
-          padding: const EdgeInsets.fromLTRB(
+          padding: EdgeInsets.fromLTRB(
             horizontalPadding,
             16,
             horizontalPadding,
-            32,
+            bottomNavContentPadding(context, 32),
           ),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: crossAxisCount,

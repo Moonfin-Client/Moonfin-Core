@@ -947,6 +947,10 @@
   "@uiScaleGrandparents": {
     "description": "UI scaling option above extra large"
   },
+  "uiScaleGreatGrandparents": "Great-Grandparents",
+  "@uiScaleGreatGrandparents": {
+    "description": "UI scaling option above Grandparents"
+  },
   "scrollDirection": "Scroll Direction",
   "@scrollDirection": {
     "description": "Section header for scroll direction selection in library display settings"
@@ -2607,15 +2611,6 @@
   "subtitleDelay": "Subtitle Delay",
   "@subtitleDelay": {
     "description": "Title for subtitle delay adjuster"
-  },
-  "subtitleDelayAuto": "Auto {value}",
-  "@subtitleDelayAuto": {
-    "description": "Read-only line under the subtitle delay showing a correction the player applied on its own, value is a formatted delay like +2000 ms",
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
   },
   "reset": "Reset",
   "@reset": {
@@ -11690,6 +11685,22 @@
   "@setupDetailMinimalistHint": {
     "description": "What the minimalist detail screen style gives you"
   },
+  "setupNavbarStyleQuestion": "How should the bottom bar look?",
+  "@setupNavbarStyleQuestion": {
+    "description": "Setup question asking which style the bottom navigation bar should use"
+  },
+  "setupNavbarStyleDockHint": "A floating pill with labels under every tab.",
+  "@setupNavbarStyleDockHint": {
+    "description": "What the Dock bottom bar style gives you"
+  },
+  "setupNavbarStyleSplitHint": "Search gets its own button, and the bar shrinks while you scroll.",
+  "@setupNavbarStyleSplitHint": {
+    "description": "What the Split bottom bar style gives you"
+  },
+  "setupNavbarStyleStripHint": "A full-width bar along the bottom edge.",
+  "@setupNavbarStyleStripHint": {
+    "description": "What the Strip bottom bar style gives you"
+  },
   "setupPickALook": "Pick a look",
   "@setupPickALook": {
     "description": "Label above the theme swatches on the final setup screen"
@@ -12163,5 +12174,65 @@
   "keepVideoClearOfDynamicIslandDescription": "In landscape the camera housing covers one edge of the screen. This holds the picture back from it, which only changes anything for video wide enough to reach that far.",
   "@keepVideoClearOfDynamicIslandDescription": {
     "description": "Description for the iPhone setting that keeps video clear of the Dynamic Island"
+  },
+  "bottomNavbarStyle": "Bottom Bar Style",
+  "@bottomNavbarStyle": {
+    "description": "Settings title for choosing how the mobile bottom navigation bar looks"
+  },
+  "bottomNavbarStyleDock": "Dock",
+  "@bottomNavbarStyleDock": {
+    "description": "Bottom bar style: a floating pill with labelled tabs"
+  },
+  "bottomNavbarStyleSplit": "Split",
+  "@bottomNavbarStyleSplit": {
+    "description": "Bottom bar style: tabs in one capsule with search as its own round button"
+  },
+  "bottomNavbarStyleStrip": "Strip",
+  "@bottomNavbarStyleStrip": {
+    "description": "Bottom bar style: a full-width bar along the bottom edge"
+  },
+  "bottomNavbarTabs": "Bottom Bar Tabs",
+  "@bottomNavbarTabs": {
+    "description": "Settings title for choosing which tabs sit on the mobile bottom navigation bar"
+  },
+  "bottomNavbarTabsDescription": "Pin up to 3 tabs between Home and You. Everything else is in the You menu.",
+  "@bottomNavbarTabsDescription": {
+    "description": "Explains the bottom bar tabs screen"
+  },
+  "bottomNavbarTabsAutomatic": "Automatic",
+  "@bottomNavbarTabsAutomatic": {
+    "description": "Shown when the bottom bar tabs are picked from the navigation button settings"
+  },
+  "bottomNavbarTabsPinned": "Pinned",
+  "@bottomNavbarTabsPinned": {
+    "description": "Section header for the tabs pinned to the bottom bar"
+  },
+  "bottomNavbarTabsAvailable": "Available",
+  "@bottomNavbarTabsAvailable": {
+    "description": "Section header for tabs that can be pinned to the bottom bar"
+  },
+  "bottomNavbarTabsReset": "Reset to Automatic",
+  "@bottomNavbarTabsReset": {
+    "description": "Action that clears the pinned bottom bar tabs so they are picked automatically again"
+  },
+  "bottomNavbarTabsLimit": "You can pin up to 3 tabs. Remove one to pin another.",
+  "@bottomNavbarTabsLimit": {
+    "description": "Hint shown when the maximum number of bottom bar tabs is already pinned"
+  },
+  "bottomNavbarTabTurnedOff": "Turned off under Buttons",
+  "@bottomNavbarTabTurnedOff": {
+    "description": "Hint on a bottom bar tab that can't be pinned because its navigation button setting is off"
+  },
+  "bottomNavbarSplitSearchNote": "In the Split style, Search always has its own button.",
+  "@bottomNavbarSplitSearchNote": {
+    "description": "Note on the bottom bar tabs screen about the Split style"
+  },
+  "bottomNavbarButtonsNote": "These decide which tabs you can pin to the bottom bar and what shows in the You menu.",
+  "@bottomNavbarButtonsNote": {
+    "description": "Note under the navigation buttons section while the bottom bar is in use"
+  },
+  "navYou": "You",
+  "@navYou": {
+    "description": "Bottom bar tab that opens the user's own menu with their profile, extra destinations and settings"
   }
 }

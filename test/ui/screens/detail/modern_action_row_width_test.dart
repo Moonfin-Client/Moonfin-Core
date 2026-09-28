@@ -43,6 +43,29 @@ void main() {
     expect(worstWidth(5), 442);
   });
 
+  // The spacing comes in already scaled, so only the buttons grow here.
+  test('the same row at the extra large UI scale asks for 565', () {
+    expect(
+      DetailActionButtonsState.modernRowWorstWidth(5, spacing, 140, scale: 1.3),
+      closeTo(565, 0.001),
+    );
+  });
+
+  // With focus expansion off no button widens, so the row is only as wide as
+  // every button at rest.
+  test('a row that never expands asks for its resting width', () {
+    double resting(int buttonCount) =>
+        DetailActionButtonsState.modernRowWorstWidth(
+          buttonCount,
+          spacing,
+          140,
+          expands: false,
+        );
+
+    expect(resting(1), playResting);
+    expect(resting(5), 4 * spacing + playResting + 4 * circleResting);
+  });
+
   // Play only ever rests while a circle is grown, so how wide its label makes
   // it cannot change what the row needs.
   test('the Play label does not change a row that has circles', () {

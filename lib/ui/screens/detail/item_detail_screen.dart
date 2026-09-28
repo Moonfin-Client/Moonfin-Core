@@ -115,6 +115,7 @@ import '../../../util/episode_playability.dart';
 import '../../../util/item_watch_state.dart';
 import '../../../util/season_queue_context.dart';
 import '../../../util/focus/dpad_keys.dart';
+import '../../../util/focus/input_mode_tracker.dart';
 import '../../../util/language_matching.dart';
 import '../../../util/subtitle_track_logic.dart';
 import '../../../util/audio_track_logic.dart';
@@ -131,6 +132,15 @@ bool _useDesktopDetailLayout(BuildContext context) =>
 
 double _desktopUiScale({UserPreferences? prefs}) =>
     detailDesktopScale(prefs: prefs);
+
+/// How far below its top edge every row starts its cards, so each section's
+/// title sits the same distance from the row under it.
+const double _kDetailRowTopInset = 4.0;
+
+/// The UI scale the modern buttons are drawn at. A compact layout keeps its
+/// fixed sizes like the rest of the screen does.
+double _modernButtonScale(BuildContext context) =>
+    _isCompact(context) ? 1.0 : _desktopUiScale();
 
 /// Smoothly scrolls a position back to the top. Ignore if already there.
 void _animateScrollToTop(ScrollPosition position) {
@@ -1976,12 +1986,16 @@ class _DetailContentState extends State<_DetailContent> {
         : null;
 
     final hasCast = viewModel.actors.isNotEmpty;
-    final hasCollection = viewModel.parentCollectionItems.isNotEmpty;
+    final collections = viewModel.parentCollections
+        .where((collection) => collection.items.isNotEmpty)
+        .toList();
     final hasSimilar = viewModel.similar.isNotEmpty;
     final castFocusNode = hasCast ? _sectionFocusNode('detailMovieCast') : null;
-    final collectionFocusNode = hasCollection
-        ? _sectionFocusNode('detailMovieCollection')
-        : null;
+    final collectionFocusNodes = [
+      for (final collection in collections)
+        _sectionFocusNode('detailMovieCollection:${collection.id}'),
+    ];
+    final collectionFocusNode = collectionFocusNodes.firstOrNull;
     final similarFocusNode = hasSimilar
         ? _sectionFocusNode('detailMovieSimilar')
         : null;
@@ -2060,25 +2074,29 @@ class _DetailContentState extends State<_DetailContent> {
           ),
         ),
       ],
-      if (viewModel.parentCollectionItems.isNotEmpty) ...[
+      for (var i = 0; i < collections.length; i++) ...[
         const SizedBox(height: 32),
         HorizontalScrollSection(
-          title: viewModel.parentCollectionName ?? l10n.collection,
+          title: collections[i].name,
           builder: (_, ctrl) => DetailSimilarRow(
-            items: viewModel.parentCollectionItems,
+            items: collections[i].items,
             imageApi: viewModel.imageApi,
             prefs: prefs,
             onItemLongPress: _showItemContextMenu,
             scrollController: _trackSectionScrollController(
-              collectionFocusNode,
+              collectionFocusNodes[i],
               ctrl,
             ),
-            firstItemFocusNode: collectionFocusNode,
+            firstItemFocusNode: collectionFocusNodes[i],
             onItemKeyEvent: _buildVerticalRowHandler(
-              sourceFocusNode: collectionFocusNode,
-              upTarget: collectionUpTarget,
-              downTarget: similarFocusNode,
-              itemCount: viewModel.parentCollectionItems.length,
+              sourceFocusNode: collectionFocusNodes[i],
+              upTarget: i == 0
+                  ? collectionUpTarget
+                  : collectionFocusNodes[i - 1],
+              downTarget: i + 1 < collections.length
+                  ? collectionFocusNodes[i + 1]
+                  : similarFocusNode,
+              itemCount: collections[i].items.length,
             ),
           ),
         ),
@@ -2104,7 +2122,7 @@ class _DetailContentState extends State<_DetailContent> {
             onItemKeyEvent: _buildVerticalRowHandler(
               sourceFocusNode: similarFocusNode,
               upTarget:
-                  collectionFocusNode ??
+                  collectionFocusNodes.lastOrNull ??
                   castFocusNode ??
                   chapterFeatureLastNode,
               downTarget: seerrFirstNode,
@@ -2313,47 +2331,50 @@ class _DetailContentState extends State<_DetailContent> {
       ],
       if (hasNextUp) ...[
         const SizedBox(height: 32),
-        Text(
-          l10n.nextUp,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+        HorizontalScrollSection(
+          title: l10n.nextUp,
+          titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
             color: AppColorScheme.onSurface,
             fontWeight: FontWeight.bold,
             shadows: _textShadows,
             fontSize: _isCompact(context) ? 17 : null,
           ),
-        ),
-        const SizedBox(height: 12),
-        DetailNextUpCard(
-          episode: viewModel.nextUp!,
-          imageApi: viewModel.imageApi,
-          contextSeasonId: viewModel.effectiveSeasonId,
-          focusNode: seriesNextUpFocusNode,
-          onKeyEvent: (event) {
-            if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
-              return KeyEventResult.ignored;
-            }
-            if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-              if (event is KeyDownEvent) {
-                _tryFocusSidebar();
-                return KeyEventResult.handled;
-              }
-              return KeyEventResult.ignored;
-            }
-            if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
-              return KeyEventResult.handled;
-            }
-            if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-              return _requestSectionFocus(
-                metadataFocusNode ?? actionButtonsFocusNode,
-              );
-            }
-            if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-              return _requestSectionFocus(
-                seasonsFocusNode ?? castFocusNode ?? similarFocusNode,
-              );
-            }
-            return KeyEventResult.ignored;
-          },
+          showControls: false,
+          builder: (_, _) => Padding(
+            padding: const EdgeInsets.only(top: _kDetailRowTopInset),
+            child: DetailNextUpCard(
+              episode: viewModel.nextUp!,
+              imageApi: viewModel.imageApi,
+              contextSeasonId: viewModel.effectiveSeasonId,
+              focusNode: seriesNextUpFocusNode,
+              onKeyEvent: (event) {
+                if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
+                  return KeyEventResult.ignored;
+                }
+                if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+                  if (event is KeyDownEvent) {
+                    _tryFocusSidebar();
+                    return KeyEventResult.handled;
+                  }
+                  return KeyEventResult.ignored;
+                }
+                if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+                  return KeyEventResult.handled;
+                }
+                if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+                  return _requestSectionFocus(
+                    metadataFocusNode ?? actionButtonsFocusNode,
+                  );
+                }
+                if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+                  return _requestSectionFocus(
+                    seasonsFocusNode ?? castFocusNode ?? similarFocusNode,
+                  );
+                }
+                return KeyEventResult.ignored;
+              },
+            ),
+          ),
         ),
       ],
       if (hasSeasons) ...[
@@ -2609,49 +2630,46 @@ class _DetailContentState extends State<_DetailContent> {
         nextSectionFocusNode: chapterFeatureNextNode,
       ),
       if (nextEpisode != null) ...[
-        Padding(
-          padding: const EdgeInsets.only(top: 32),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                l10n.nextEpisode,
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: AppColorScheme.onSurface,
-                  fontWeight: FontWeight.bold,
-                  shadows: _textShadows,
-                  fontSize: _isCompact(context) ? 17 : null,
-                ),
-              ),
-              DetailNextUpCard(
-                episode: nextEpisode,
-                imageApi: viewModel.imageApi,
-                contextSeasonId: viewModel.effectiveSeasonId,
-                focusNode: nextEpisodeFocusNode,
-                onKeyEvent: (event) {
-                  if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
-                    return KeyEventResult.ignored;
-                  }
-                  if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-                    if (event is KeyDownEvent) {
-                      _tryFocusSidebar();
-                      return KeyEventResult.handled;
-                    }
-                    return KeyEventResult.ignored;
-                  }
-                  if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+        const SizedBox(height: 32),
+        HorizontalScrollSection(
+          title: l10n.nextEpisode,
+          titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
+            color: AppColorScheme.onSurface,
+            fontWeight: FontWeight.bold,
+            shadows: _textShadows,
+            fontSize: _isCompact(context) ? 17 : null,
+          ),
+          showControls: false,
+          builder: (_, _) => Padding(
+            padding: const EdgeInsets.only(top: _kDetailRowTopInset),
+            child: DetailNextUpCard(
+              episode: nextEpisode,
+              imageApi: viewModel.imageApi,
+              contextSeasonId: viewModel.effectiveSeasonId,
+              focusNode: nextEpisodeFocusNode,
+              onKeyEvent: (event) {
+                if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
+                  return KeyEventResult.ignored;
+                }
+                if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+                  if (event is KeyDownEvent) {
+                    _tryFocusSidebar();
                     return KeyEventResult.handled;
                   }
-                  if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-                    return _requestSectionFocus(chapterFeatureLastNode);
-                  }
-                  if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-                    return _requestSectionFocus(episodesFocusNode);
-                  }
                   return KeyEventResult.ignored;
-                },
-              ),
-            ],
+                }
+                if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+                  return KeyEventResult.handled;
+                }
+                if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+                  return _requestSectionFocus(chapterFeatureLastNode);
+                }
+                if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+                  return _requestSectionFocus(episodesFocusNode);
+                }
+                return KeyEventResult.ignored;
+              },
+            ),
           ),
         ),
       ],
@@ -6380,11 +6398,12 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
   /// the pill is drawn within, so a label too long to fit is measured at the
   /// width it ends up ellipsised to rather than the width it wanted.
   double _modernPlayFocusedWidth(String? label) {
-    if (label == null) return _modernFocusedFloor;
+    final scale = _modernButtonScale(context);
+    if (label == null) return _modernFocusedFloor * scale;
     // Matching what _buildModernChild lays out around the label.
-    const iconWidth = 50.0; // height (54) - 4
-    const iconGap = 6.0;
-    const horizontalPadding = 22.0; // left (6) + right (16)
+    final iconWidth = 54.0 * scale - 4; // height - 4
+    final iconGap = 6.0 * scale;
+    final horizontalPadding = 22.0 * scale; // left (6) + right (16)
     const borderWidth = 5.0; // showHighlight ? 2.5 * 2
     final painter = TextPainter(
       text: TextSpan(
@@ -6401,28 +6420,34 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     final measured =
         painter.width + iconWidth + iconGap + horizontalPadding + borderWidth;
     painter.dispose();
-    return measured.clamp(_modernPlayFocusedFloor, _modernFocusedFloor);
+    return measured.clamp(
+      _modernPlayFocusedFloor * scale,
+      _modernFocusedFloor * scale,
+    );
   }
 
   /// The widest a modern row of [buttonCount] buttons can get. One button
   /// holds focus and every grown button stops at the same cap, so the widest
   /// row is that cap plus the rest at rest, and Play rests wider than a
   /// circle. Counting Play grown as well describes a row that cannot happen
-  /// and sends buttons to the overflow menu that had room to stay.
+  /// and sends buttons to the overflow menu that had room to stay. With
+  /// [expands] off nothing grows, so every button counts at rest.
   ///
   /// Public for the width tests. Every production caller lives in this file.
   @visibleForTesting
   static double modernRowWorstWidth(
     int buttonCount,
     double spacing,
-    double playFocused,
-  ) {
-    const playResting = 54.0;
-    const circleResting = 52.0;
-    const circleFocused = _modernFocusedFloor;
+    double playFocused, {
+    double scale = 1.0,
+    bool expands = true,
+  }) {
+    final playResting = 54.0 * scale;
+    final circleResting = 52.0 * scale;
+    final circleFocused = expands ? _modernFocusedFloor * scale : circleResting;
 
     final circles = buttonCount - 1;
-    if (circles <= 0) return playFocused;
+    if (circles <= 0) return expands ? playFocused : playResting;
 
     return circles * spacing +
         circleFocused +
@@ -6581,8 +6606,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         ? GetIt.instance<DownloadService>()
         : null;
     final progress = downloadService?.activeDownloads[item.id];
-    final isMulti = _DownloadButtonState._isBatchType(item.type);
-    final isBatch = downloadService?.isBatchDownloading ?? false;
+    final batch = downloadService?.batchProgressFor(item.id);
 
     if (progress != null && !progress.isComplete && progress.error == null) {
       final label = progress.isFinalizing
@@ -6603,22 +6627,11 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       );
     }
 
-    if (isBatch && isMulti && downloadService != null) {
-      final done = downloadService.completedCount;
-      final total = downloadService.totalQueued;
-      var pct = '';
-      for (final p in downloadService.activeDownloads.values) {
-        if (!p.isComplete && p.error == null) {
-          if (p.progress >= 0) {
-            pct = '${(p.progress * 100).toInt()}%';
-          }
-          break;
-        }
-      }
+    if (batch != null) {
       return _DetailActionButton(
-        label: '${done + 1}/$total${pct.isNotEmpty ? ' · $pct' : ''}',
+        label: _DownloadButtonState._batchLabel(batch),
         icon: Icons.close,
-        onPressed: () => downloadService.cancelAll(),
+        onPressed: () => downloadService!.cancelBatch(item.id),
         isActive: true,
         activeColor: AppColorScheme.accent,
       );
@@ -7664,6 +7677,8 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
                     allButtons.length,
                     buttonSpacing,
                     _modernPlayFocusedWidth(playLabel),
+                    scale: _modernButtonScale(context),
+                    expands: prefs.get(UserPreferences.cardFocusExpansion),
                   ) <=
                   rowBudget
             : allButtons.length <= maxVisible);
@@ -11201,10 +11216,9 @@ class _DownloadButtonState extends State<_DownloadButton> {
       listenable: downloadService,
       builder: (context, _) {
         final item = widget.item;
-        final isMulti = _isBatchType(item.type);
+        final batch = downloadService.batchProgressFor(item.id);
         final progress = downloadService.activeDownloads[item.id];
         final downloadError = progress?.error;
-        final isBatch = downloadService.isBatchDownloading;
 
         // Forward the focus node and arrow wiring the action row assigns to this
         // slot so the button is reachable by d-pad in every download state.
@@ -11254,22 +11268,11 @@ class _DownloadButtonState extends State<_DownloadButton> {
           );
         }
 
-        if (isBatch && isMulti) {
-          final done = downloadService.completedCount;
-          final total = downloadService.totalQueued;
-          var pct = '';
-          for (final progress in downloadService.activeDownloads.values) {
-            if (!progress.isComplete && progress.error == null) {
-              if (progress.progress >= 0) {
-                pct = '${(progress.progress * 100).toInt()}%';
-              }
-              break;
-            }
-          }
+        if (batch != null) {
           return wire(
-            label: '${done + 1}/$total${pct.isNotEmpty ? ' · $pct' : ''}',
+            label: _batchLabel(batch),
             icon: Icons.close,
-            onPressed: () => downloadService.cancelAll(),
+            onPressed: () => downloadService.cancelBatch(item.id),
             isActive: true,
             activeColor: AppColorScheme.accent,
           );
@@ -11313,6 +11316,15 @@ class _DownloadButtonState extends State<_DownloadButton> {
 
   static bool _isBatchType(String? type) =>
       type == 'Season' || type == 'Series' || type == 'BoxSet';
+
+  /// "2/5 · 40%": the item in progress and, when known, its percentage.
+  static String _batchLabel(BatchProgress batch) {
+    final current = batch.current;
+    final pct = current != null && current.progress >= 0
+        ? ' · ${(current.progress * 100).toInt()}%'
+        : '';
+    return '${batch.done + 1}/${batch.total}$pct';
+  }
 
   /// One line of context under a sheet title.
   static Widget _sheetNote(BuildContext sheetContext, String text) => Padding(
@@ -11812,7 +11824,7 @@ class _DownloadButtonState extends State<_DownloadButton> {
         ).showSnackBar(SnackBar(content: Text(l10n.noEpisodesLoaded)));
         return;
       }
-      service.downloadItems(items, quality: quality);
+      service.downloadItems(items, quality: quality, ownerId: item.id);
       message = l10n.downloadingTitle(item.name, items.length);
     } else {
       if (item.type == 'MusicAlbum') {
@@ -12171,10 +12183,11 @@ class _DetailActionButtonState extends State<_DetailActionButton>
     required Color iconColor,
     required Color labelColor,
   }) {
-    final isExpanded = showHighlight;
+    final isExpanded = showHighlight && cardFocusExpansion;
+    final scale = _modernButtonScale(context);
     final double height = widget.isPrimary
-        ? (isMobile ? 50.0 : 54.0)
-        : (isMobile ? 48.0 : 52.0);
+        ? (isMobile ? 50.0 : 54.0 * scale)
+        : (isMobile ? 48.0 : 52.0 * scale);
 
     // Portrait spans the primary Play full width (circular secondary actions
     // wrap beneath); landscape keeps it content-width, inline with them.
@@ -12293,18 +12306,22 @@ class _DetailActionButtonState extends State<_DetailActionButton>
     }
 
     final double minWidth = height;
-    final double maxWidth = isExpanded ? 200.0 : height;
+    final double maxWidth = isExpanded ? 200.0 * scale : height;
     final double maxLabelWidth =
         (maxWidth -
-                (isExpanded ? 22.0 : 0.0) -
+                (isExpanded ? 22.0 * scale : 0.0) -
                 (showHighlight ? 5.0 : 3.0) -
                 (height - 4) -
-                6.0)
+                6.0 * scale)
             .clamp(0.0, maxWidth);
+
+    // Only a compact layout keeps Play filled with the accent. Everywhere else
+    // it looks like the buttons beside it until it has focus.
+    final accentPrimary = widget.isPrimary && isMobile;
 
     final containerColor = showHighlight
         ? AppColorScheme.buttonFocused
-        : (widget.isPrimary
+        : (accentPrimary
               ? AppColorScheme.accent
               : (widget.isActive
                     ? (widget.activeColor ?? AppColorScheme.accent).withValues(
@@ -12314,7 +12331,7 @@ class _DetailActionButtonState extends State<_DetailActionButton>
 
     final borderColor = showHighlight
         ? focusColor
-        : (widget.isPrimary
+        : (accentPrimary
               ? Colors.transparent
               : AppColorScheme.onSurface.withValues(alpha: 0.35));
 
@@ -12323,25 +12340,23 @@ class _DetailActionButtonState extends State<_DetailActionButton>
             widget.icon ?? Icons.play_arrow,
             color: (widget.icon == Icons.favorite && widget.isActive)
                 ? const Color(0xFFE50914)
-                : (showHighlight
-                      ? AppColorScheme.onButtonFocused
-                      : AppColorScheme.onAccent),
-            size: 24,
+                : (accentPrimary && !showHighlight
+                      ? AppColorScheme.onAccent
+                      : iconColor),
+            size: 24 * scale,
           )
         : (widget.iconBuilder != null
-              ? widget.iconBuilder!(36, iconColor)
+              ? widget.iconBuilder!(36 * scale, iconColor)
               : AdaptiveIcon(
                   widget.icon!,
                   color: (widget.icon == Icons.favorite && widget.isActive)
                       ? const Color(0xFFE50914)
                       : iconColor,
-                  size: 24,
+                  size: 24 * scale,
                 ));
 
-    final effectiveLabelColor = widget.isPrimary
-        ? (showHighlight
-              ? AppColorScheme.onButtonFocused
-              : AppColorScheme.onAccent)
+    final effectiveLabelColor = accentPrimary && !showHighlight
+        ? AppColorScheme.onAccent
         : labelColor;
 
     return AnimatedContainer(
@@ -12350,8 +12365,8 @@ class _DetailActionButtonState extends State<_DetailActionButton>
       height: height,
       constraints: BoxConstraints(minWidth: minWidth, maxWidth: maxWidth),
       padding: EdgeInsets.only(
-        left: isExpanded ? 6 : 0,
-        right: isExpanded ? 16 : 0,
+        left: isExpanded ? 6 * scale : 0,
+        right: isExpanded ? 16 * scale : 0,
       ),
       decoration: BoxDecoration(
         borderRadius: AppRadius.circular(height / 2),
@@ -12376,7 +12391,7 @@ class _DetailActionButtonState extends State<_DetailActionButton>
                 child: Center(child: iconWidget),
               ),
               if (isExpanded && widget.label.isNotEmpty) ...[
-                const SizedBox(width: 6),
+                SizedBox(width: 6 * scale),
                 ConstrainedBox(
                   constraints: BoxConstraints(maxWidth: maxLabelWidth),
                   child: MarqueeText(
@@ -12484,12 +12499,18 @@ class _DetailActionButtonState extends State<_DetailActionButton>
           .colorValue,
     );
     final nodeHasFocus = widget.focusNode?.hasFocus ?? false;
-    final showHighlight = showFocusBorder || nodeHasFocus;
-    final modern =
-        context
-            .findAncestorWidgetOfExactType<DetailActionButtons>()
-            ?.modernStyle ??
-        false;
+    // Focus only shows while the keys are driving, or the Play button that
+    // takes focus on arrival would stay lit beside whatever the mouse hovers.
+    final showHighlight =
+        hovered ||
+        InputModeTracker.showFocusVisuals(context, focused || nodeHasFocus);
+    final row = context.findAncestorWidgetOfExactType<DetailActionButtons>();
+    final modern = row?.modernStyle ?? false;
+    // Grows with focus like cards and tiles do. The full width Play pill
+    // already fills its column, so it stays put.
+    final growsOnFocus =
+        cardFocusExpansion &&
+        !(modern && widget.isPrimary && (row?.fullWidthPrimary ?? false));
 
     final activeColor = widget.isActive ? widget.activeColor : null;
     final neonAccent = widget.neonAccentColor ?? AppColorScheme.onSurface;
@@ -12601,74 +12622,79 @@ class _DetailActionButtonState extends State<_DetailActionButton>
           onTap: widget.onPressed,
           onLongPress: widget.onLongPress,
           onSecondaryTap: widget.onLongPress,
-          child: modern
-              ? _buildModernChild(
-                  context,
-                  isMobile: isMobile,
-                  showHighlight: showHighlight,
-                  focusColor: focusColor,
-                  iconColor: iconColor,
-                  labelColor: labelColor,
-                )
-              : SizedBox(
-                  width: isMobile ? 80 : 108 * desktopScale,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        width: isMobile ? 44 : 58 * desktopScale,
-                        height: isMobile ? 44 : 58 * desktopScale,
-                        decoration: BoxDecoration(
-                          color: showHighlight
-                              ? (isNeon
-                                    ? Colors.transparent
-                                    : AppColorScheme.buttonFocused)
-                              : activeColor != null
-                              ? activeColor.withValues(
-                                  alpha: isNeon ? 0.12 : 0.15,
-                                )
-                              : (isNeon
-                                    ? Colors.transparent
-                                    : Colors.white.withValues(alpha: 0.08)),
-                          border: showHighlight
-                              ? Border.fromBorderSide(
-                                  ThemeRegistry.active.borders.focusBorder
-                                      .copyWith(
-                                        color: isNeon
-                                            ? AppColorScheme.accent
-                                            : focusColor,
-                                      ),
-                                )
-                              : null,
-                          borderRadius: AppRadius.circular(
-                            isMobile ? 14 : 15 * desktopScale,
+          child: AnimatedScale(
+            scale: growsOnFocus && showHighlight ? 1.05 : 1.0,
+            duration: const Duration(milliseconds: 150),
+            curve: Curves.easeOut,
+            child: modern
+                ? _buildModernChild(
+                    context,
+                    isMobile: isMobile,
+                    showHighlight: showHighlight,
+                    focusColor: focusColor,
+                    iconColor: iconColor,
+                    labelColor: labelColor,
+                  )
+                : SizedBox(
+                    width: isMobile ? 80 : 108 * desktopScale,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: isMobile ? 44 : 58 * desktopScale,
+                          height: isMobile ? 44 : 58 * desktopScale,
+                          decoration: BoxDecoration(
+                            color: showHighlight
+                                ? (isNeon
+                                      ? Colors.transparent
+                                      : AppColorScheme.buttonFocused)
+                                : activeColor != null
+                                ? activeColor.withValues(
+                                    alpha: isNeon ? 0.12 : 0.15,
+                                  )
+                                : (isNeon
+                                      ? Colors.transparent
+                                      : Colors.white.withValues(alpha: 0.08)),
+                            border: showHighlight
+                                ? Border.fromBorderSide(
+                                    ThemeRegistry.active.borders.focusBorder
+                                        .copyWith(
+                                          color: isNeon
+                                              ? AppColorScheme.accent
+                                              : focusColor,
+                                        ),
+                                  )
+                                : null,
+                            borderRadius: AppRadius.circular(
+                              isMobile ? 14 : 15 * desktopScale,
+                            ),
                           ),
+                          child: widget.iconBuilder != null
+                              ? widget.iconBuilder!(
+                                  isMobile ? 22 : 27 * desktopScale,
+                                  iconColor,
+                                )
+                              : AdaptiveIcon(
+                                  widget.icon!,
+                                  color: iconColor,
+                                  size: isMobile ? 22 : 27 * desktopScale,
+                                ),
                         ),
-                        child: widget.iconBuilder != null
-                            ? widget.iconBuilder!(
-                                isMobile ? 22 : 27 * desktopScale,
-                                iconColor,
-                              )
-                            : AdaptiveIcon(
-                                widget.icon!,
-                                color: iconColor,
-                                size: isMobile ? 22 : 27 * desktopScale,
-                              ),
-                      ),
-                      SizedBox(height: isMobile ? 6 : 8 * desktopScale),
-                      Text(
-                        widget.label,
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: labelColor,
-                          fontWeight: FontWeight.w600,
+                        SizedBox(height: isMobile ? 6 : 8 * desktopScale),
+                        Text(
+                          widget.label,
+                          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                            color: labelColor,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        textAlign: TextAlign.center,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
+          ),
         ),
       ),
     );
@@ -12888,7 +12914,13 @@ class DetailCastRow extends StatelessWidget {
         controller: scrollController,
         scrollDirection: Axis.horizontal,
         clipBehavior: Clip.none,
-        padding: const EdgeInsets.fromLTRB(4, 12, 4, 12),
+        // The ring around each avatar adds the other 3.5.
+        padding: const EdgeInsets.fromLTRB(
+          4,
+          _kDetailRowTopInset - 3.5,
+          4,
+          12,
+        ),
         itemCount: people.length,
         separatorBuilder: (_, _) =>
             SizedBox(width: isMobile ? 12 : 16 * desktopScale),
@@ -13128,7 +13160,7 @@ class DetailSimilarRow extends StatelessWidget {
         controller: scrollController,
         scrollDirection: Axis.horizontal,
         clipBehavior: Clip.none,
-        padding: const EdgeInsets.fromLTRB(6, 10, 6, 4),
+        padding: const EdgeInsets.fromLTRB(6, _kDetailRowTopInset, 6, 4),
         itemCount: items.length,
         separatorBuilder: (_, _) => SizedBox(width: separatorWidth),
         itemBuilder: (context, index) {
@@ -13221,7 +13253,7 @@ class DetailFeaturesRow extends StatelessWidget {
         controller: scrollController,
         scrollDirection: Axis.horizontal,
         clipBehavior: Clip.none,
-        padding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
+        padding: const EdgeInsets.fromLTRB(4, _kDetailRowTopInset, 4, 4),
         itemCount: items.length,
         separatorBuilder: (_, _) =>
             SizedBox(width: isMobile ? 8 : 12 * desktopScale),
@@ -13309,7 +13341,7 @@ class DetailChaptersRow extends StatelessWidget {
         controller: scrollController,
         scrollDirection: Axis.horizontal,
         clipBehavior: Clip.none,
-        padding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
+        padding: const EdgeInsets.fromLTRB(4, _kDetailRowTopInset, 4, 4),
         itemCount: chapters.length,
         separatorBuilder: (_, _) =>
             SizedBox(width: isMobile ? 8 : 12 * desktopScale),
@@ -14283,7 +14315,7 @@ class DetailSeasonsRow extends StatelessWidget {
         controller: scrollController,
         scrollDirection: Axis.horizontal,
         clipBehavior: Clip.none,
-        padding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
+        padding: const EdgeInsets.fromLTRB(4, _kDetailRowTopInset, 4, 4),
         itemCount: seasons.length,
         separatorBuilder: (_, _) =>
             SizedBox(width: isMobile ? 8 : 12 * desktopScale),
@@ -14444,11 +14476,12 @@ class _EpisodesRow extends StatelessWidget {
     ).scale((labelStyle?.fontSize ?? 12) * (labelStyle?.height ?? 1.4));
 
     return SizedBox(
-      height: imageHeight + 10 + labelLine + 6,
+      height: _kDetailRowTopInset + imageHeight + 10 + labelLine + 6,
       child: ListView.separated(
         controller: scrollController,
         scrollDirection: Axis.horizontal,
         clipBehavior: Clip.none,
+        padding: const EdgeInsets.only(top: _kDetailRowTopInset),
         itemCount: episodes.length,
         separatorBuilder: (_, _) =>
             SizedBox(width: isMobile ? 8 : 12 * desktopScale),
@@ -15847,7 +15880,9 @@ class FilmographyRow extends StatelessWidget {
     final cardWidth = isMobile
         ? (isEpisode ? 160.0 : 120.0)
         : cardHeight * cardAspectRatio;
-    final rowHeight = isMobile ? 240.0 : cardHeight + (56 * metadataScale);
+    final rowHeight =
+        _kDetailRowTopInset +
+        (isMobile ? 240.0 : cardHeight + (56 * metadataScale));
 
     return SizedBox(
       height: rowHeight,
@@ -15855,6 +15890,7 @@ class FilmographyRow extends StatelessWidget {
         controller: scrollController,
         scrollDirection: Axis.horizontal,
         clipBehavior: Clip.none,
+        padding: const EdgeInsets.only(top: _kDetailRowTopInset),
         itemCount: items.length,
         separatorBuilder: (_, _) =>
             SizedBox(width: isMobile ? 8 : 12 * desktopScale),
@@ -15951,7 +15987,9 @@ class SeerrAppearancesRow extends StatelessWidget {
         posterSize.portraitHeight.toDouble() * platformScale * rowScale;
 
     final cardWidth = isMobile ? 120.0 : cardHeight * (2 / 3);
-    final rowHeight = isMobile ? 240.0 : cardHeight + (56 * metadataScale);
+    final rowHeight =
+        _kDetailRowTopInset +
+        (isMobile ? 240.0 : cardHeight + (56 * metadataScale));
     final focusColor = Color(prefs.get(UserPreferences.focusColor).colorValue);
     final suppressFocusGlow = ThemeRegistry.active.borders.focusGlow.isNotEmpty;
     final baseGap = isMobile ? 8.0 : 12 * desktopScale;
@@ -15965,6 +16003,7 @@ class SeerrAppearancesRow extends StatelessWidget {
         controller: scrollController,
         scrollDirection: Axis.horizontal,
         clipBehavior: Clip.none,
+        padding: const EdgeInsets.only(top: _kDetailRowTopInset),
         itemCount: items.length,
         separatorBuilder: (_, _) => SizedBox(width: separatorWidth),
         itemBuilder: (context, index) {
@@ -16037,7 +16076,9 @@ class SeerrCrewCreditsRow extends StatelessWidget {
         posterSize.portraitHeight.toDouble() * platformScale * rowScale;
 
     final cardWidth = isMobile ? 120.0 : cardHeight * (2 / 3);
-    final rowHeight = isMobile ? 240.0 : cardHeight + (56 * metadataScale);
+    final rowHeight =
+        _kDetailRowTopInset +
+        (isMobile ? 240.0 : cardHeight + (56 * metadataScale));
     final focusColor = Color(prefs.get(UserPreferences.focusColor).colorValue);
     final suppressFocusGlow = ThemeRegistry.active.borders.focusGlow.isNotEmpty;
 
@@ -16047,6 +16088,7 @@ class SeerrCrewCreditsRow extends StatelessWidget {
         controller: scrollController,
         scrollDirection: Axis.horizontal,
         clipBehavior: Clip.none,
+        padding: const EdgeInsets.only(top: _kDetailRowTopInset),
         itemCount: items.length,
         separatorBuilder: (_, _) =>
             SizedBox(width: isMobile ? 8 : 12 * desktopScale),
@@ -16529,11 +16571,12 @@ class _AlbumsRow extends StatelessWidget {
     final cardWidth = isMobile ? 120.0 : 150.0 * desktopScale;
 
     return SizedBox(
-      height: isMobile ? 180 : 220 * desktopScale,
+      height: _kDetailRowTopInset + (isMobile ? 180 : 220 * desktopScale),
       child: ListView.separated(
         controller: scrollController,
         scrollDirection: Axis.horizontal,
         clipBehavior: Clip.none,
+        padding: const EdgeInsets.only(top: _kDetailRowTopInset),
         itemCount: albums.length,
         separatorBuilder: (_, _) =>
             SizedBox(width: isMobile ? 8 : 12 * desktopScale),

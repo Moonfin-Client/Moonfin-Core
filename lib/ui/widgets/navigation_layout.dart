@@ -1,22 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../preference/preference_constants.dart';
 import '../../preference/user_preferences.dart';
 import '../../util/platform_detection.dart';
 import '../../util/overlay_color_palette.dart';
+import 'bottom_nav/bottom_navbar.dart';
 import 'download_progress_bar.dart';
 import 'left_sidebar.dart';
-import 'mobile_bottom_nav_bar.dart';
 import 'top_toolbar.dart';
 
 import 'dart:async';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:playback_core/playback_core.dart';
-import '../../data/models/aggregated_item.dart';
-import '../../util/focus/dpad_keys.dart';
-import '../navigation/app_router.dart';
 import '../navigation/destinations.dart';
+import '../navigation/route_lifecycle_observer.dart';
 
 class NavigationLayout extends StatefulWidget {
   final String? activeRoute;
@@ -106,12 +105,22 @@ class NavigationLayout extends StatefulWidget {
   State<NavigationLayout> createState() => _NavigationLayoutState();
 }
 
-class _NavigationLayoutState extends State<NavigationLayout> with WidgetsBindingObserver {
+class _NavigationLayoutState extends State<NavigationLayout>
+    with WidgetsBindingObserver, RouteAware {
   final _prefs = GetIt.instance<UserPreferences>();
   final _contentFocusNode = FocusNode(debugLabel: 'NavigationContent');
   final _contentKey = GlobalKey(debugLabel: 'navigationLayoutContent');
   final ValueNotifier<double> _toolbarScrollOffset = ValueNotifier<double>(0.0);
   late NavbarPosition _position;
+  late BottomNavbarStyle _bottomStyle;
+  bool _keyboardVisible = false;
+
+  // Split shrinks while the user scrolls down and comes back on the way up.
+  // The flag only flips at the thresholds, so scrolling rebuilds nothing.
+  final _bottomMinimized = ValueNotifier<bool>(false);
+  bool _userScrolling = false;
+  double _scrollTravel = 0;
+  ModalRoute<dynamic>? _observedRoute;
   final _playbackManager = GetIt.instance<PlaybackManager>();
   StreamSubscription? _playSub;
   StreamSubscription? _queueSub;
@@ -124,6 +133,8 @@ class _NavigationLayoutState extends State<NavigationLayout> with WidgetsBinding
     if (_position != storedPosition) {
       _prefs.set(UserPreferences.navbarPosition, _position);
     }
+    _bottomStyle = _prefs.get(UserPreferences.bottomNavbarStyle);
+    _prefs.addListener(_onPrefsChanged);
     WidgetsBinding.instance.addObserver(this);
     NavigationLayout.positionNotifier.addListener(_onPositionNotified);
     // The top toolbar grows to host the embedded music bar; rebuild so the
@@ -137,7 +148,72 @@ class _NavigationLayoutState extends State<NavigationLayout> with WidgetsBinding
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final route = ModalRoute.of(context);
+    if (route == null || route == _observedRoute) return;
+    if (_observedRoute != null) routeLifecycleObserver.unsubscribe(this);
+    _observedRoute = route;
+    routeLifecycleObserver.subscribe(this, route);
+  }
+
+  @override
+  void didUpdateWidget(NavigationLayout oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.activeRoute != widget.activeRoute) _expandBottomBar();
+  }
+
+  // Home stays mounted under whatever it pushes, so coming back to it, or
+  // leaving it, starts the bar out whole again.
+  @override
+  void didPushNext() => _expandBottomBar();
+
+  @override
+  void didPopNext() => _expandBottomBar();
+
+  void _expandBottomBar() {
+    _scrollTravel = 0;
+    _bottomMinimized.value = false;
+  }
+
+  bool _onBottomScroll(ScrollNotification n) {
+    if (_bottomStyle != BottomNavbarStyle.split) return false;
+    // Rows of cards scroll sideways and a nested list isn't the page.
+    if (n.metrics.axis != Axis.vertical || n.depth > 1) return false;
+
+    // Only a finger moves the bar. A jump back to the top, a D-pad scroll or
+    // a row snapping into view shouldn't. A drag starts at the top, so this
+    // is noted before the top check below can return.
+    if (n is UserScrollNotification) {
+      _userScrolling = n.direction != ScrollDirection.idle;
+      _scrollTravel = 0;
+    }
+
+    final metrics = n.metrics;
+    if (metrics.pixels <= metrics.minScrollExtent + 8) {
+      _expandBottomBar();
+      return false;
+    }
+    if (n is ScrollUpdateNotification &&
+        _userScrolling &&
+        metrics.maxScrollExtent > 120) {
+      final delta = n.scrollDelta ?? 0;
+      if (delta.sign != _scrollTravel.sign) _scrollTravel = 0;
+      _scrollTravel += delta;
+      if (_scrollTravel > 24 && metrics.pixels > 56) {
+        _bottomMinimized.value = true;
+      } else if (_scrollTravel < -16) {
+        _bottomMinimized.value = false;
+      }
+    }
+    return false;
+  }
+
+  @override
   void dispose() {
+    if (_observedRoute != null) routeLifecycleObserver.unsubscribe(this);
+    _bottomMinimized.dispose();
+    _prefs.removeListener(_onPrefsChanged);
     NavigationLayout.positionNotifier.removeListener(_onPositionNotified);
     WidgetsBinding.instance.removeObserver(this);
     _playSub?.cancel();
@@ -163,9 +239,28 @@ class _NavigationLayoutState extends State<NavigationLayout> with WidgetsBinding
     }
   }
 
+  // The bar's height, and with it the content inset, depends on the style.
+  void _onPrefsChanged() {
+    final style = _prefs.get(UserPreferences.bottomNavbarStyle);
+    if (style == _bottomStyle || !mounted) return;
+    _expandBottomBar();
+    setState(() => _bottomStyle = style);
+  }
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) _refreshPosition();
+  }
+
+  // MediaQuery can't be used for this: the Scaffold strips view insets from
+  // the body the layout sits in.
+  @override
+  void didChangeMetrics() {
+    if (!mounted) return;
+    final view = View.maybeOf(context);
+    if (view == null) return;
+    final visible = view.viewInsets.bottom / view.devicePixelRatio > 0;
+    if (visible != _keyboardVisible) setState(() => _keyboardVisible = visible);
   }
 
   void _refreshPosition() {
@@ -208,28 +303,41 @@ class _NavigationLayoutState extends State<NavigationLayout> with WidgetsBinding
     final content = _content;
     return Stack(
       children: [
-        Positioned.fill(child: content),
-        // The navbar goes last because it is the one that pads the system
-        // inset underneath itself. Above the bars it pads for an edge it no
-        // longer touches and leaves the music bar under the gesture area.
+        Positioned.fill(
+          child: BottomNavInsetScope(
+            height: BottomNavbar.heightFor(context, style: _bottomStyle),
+            child: NotificationListener<ScrollNotification>(
+              onNotification: _onBottomScroll,
+              child: content,
+            ),
+          ),
+        ),
         Positioned(
           left: 0,
           right: 0,
           bottom: 0,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const DownloadProgressBar(),
-              const BottomMusicBar(),
-              AnimatedOpacity(
-                opacity: widget.showNavigationChrome ? 1.0 : 0.0,
-                duration: const Duration(milliseconds: 200),
-                child: IgnorePointer(
-                  ignoring: !widget.showNavigationChrome,
-                  child: MobileBottomNavBar(activeRoute: widget.activeRoute),
+          // The keyboard covers the bar anyway, and a bar riding up on top of
+          // it would hide the field that brought it up.
+          child: IgnorePointer(
+            ignoring: _keyboardVisible,
+            child: AnimatedSlide(
+              offset: _keyboardVisible ? const Offset(0, 1.2) : Offset.zero,
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.easeOutCubic,
+              child: BottomNavbar(
+                activeRoute: widget.activeRoute,
+                chromeVisible: widget.showNavigationChrome,
+                minimized: _bottomMinimized,
+                onExpand: _expandBottomBar,
+                // The download progress bar pads the system inset itself,
+                // which it no longer touches once the bar sits under it.
+                header: MediaQuery.removePadding(
+                  context: context,
+                  removeBottom: true,
+                  child: const DownloadProgressBar(),
                 ),
               ),
-            ],
+            ),
           ),
         ),
         if (widget.showBackButton)
@@ -444,157 +552,6 @@ class _NavigationLayoutState extends State<NavigationLayout> with WidgetsBinding
             Icons.arrow_back,
             size: 20,
             color: Colors.white,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class BottomMusicBar extends StatefulWidget {
-  const BottomMusicBar({super.key});
-
-  @override
-  State<BottomMusicBar> createState() => _BottomMusicBarState();
-}
-
-class _BottomMusicBarState extends State<BottomMusicBar> {
-  final _manager = GetIt.instance<PlaybackManager>();
-  StreamSubscription? _playSub;
-  StreamSubscription? _queueSub;
-
-  @override
-  void initState() {
-    super.initState();
-    _playSub = _manager.state.playingStream.listen((_) {
-      if (mounted) setState(() {});
-    });
-    _queueSub = _manager.queueService.queueChangedStream.listen((_) {
-      if (mounted) setState(() {});
-    });
-  }
-
-  @override
-  void dispose() {
-    _playSub?.cancel();
-    _queueSub?.cancel();
-    super.dispose();
-  }
-
-  AggregatedItem? get _currentItem {
-    final raw = _manager.queueService.currentItem;
-    return raw is AggregatedItem ? raw : null;
-  }
-
-  Widget _buildBarButton({
-    required IconData icon,
-    required VoidCallback onPressed,
-  }) {
-    return Focus(
-      onKeyEvent: (node, event) {
-        if (isActivateKey(event)) {
-          onPressed();
-          return KeyEventResult.handled;
-        }
-        return KeyEventResult.ignored;
-      },
-      child: Builder(
-        builder: (context) {
-          final focused = Focus.of(context).hasFocus;
-          return GestureDetector(
-            onTap: onPressed,
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 90),
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: focused
-                    ? AppColorScheme.onSurface
-                    : Colors.transparent,
-              ),
-              child: Icon(
-                icon,
-                size: 20,
-                color: focused ? AppColorScheme.surface : AppColorScheme.onSurface,
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final item = _currentItem;
-    if (item == null || !item.isAudioLike) {
-      return const SizedBox.shrink();
-    }
-
-    final isPlaying = _manager.state.isPlaying;
-    final artist = item.artists.isNotEmpty
-        ? item.artists.join(', ')
-        : item.albumArtist ?? '';
-    final displayText = artist.isNotEmpty ? '${item.name} - $artist' : item.name;
-
-    return FocusTraversalGroup(
-      child: GlassSurface(
-        cornerRadius: 0,
-        reinforced: true,
-        fallbackColor: AppColorScheme.surfaceVariant.withValues(alpha: 0.3),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-        child: SizedBox(
-          height: 38,
-          child: Row(
-            children: [
-              Icon(
-                Icons.music_note,
-                size: 16,
-                color: AppColorScheme.accent,
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: GestureDetector(
-                  onTap: () => appRouter.push(Destinations.audioPlayer),
-                  child: Text(
-                    displayText,
-                    style: TextStyle(
-                      color: AppColorScheme.onSurface,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 16),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _buildBarButton(
-                    icon: Icons.skip_previous,
-                    onPressed: _manager.previous,
-                  ),
-                  const SizedBox(width: 4),
-                  _buildBarButton(
-                    icon: isPlaying ? Icons.pause : Icons.play_arrow,
-                    onPressed: isPlaying ? _manager.pause : _manager.resume,
-                  ),
-                  const SizedBox(width: 4),
-                  _buildBarButton(
-                    icon: Icons.skip_next,
-                    onPressed: _manager.next,
-                  ),
-                  const SizedBox(width: 4),
-                  _buildBarButton(
-                    icon: Icons.stop,
-                    onPressed: () => unawaited(_manager.stop(userInitiated: true)),
-                  ),
-                ],
-              ),
-            ],
           ),
         ),
       ),

@@ -27,6 +27,7 @@ import '../../widgets/focus/focusable_wrapper.dart';
 import '../../widgets/skeleton/skeleton_library_grid.dart';
 import '../../widgets/focus/locked_focus_row.dart';
 import '../../widgets/focus/request_initial_focus.dart';
+import '../../widgets/bottom_nav/bottom_navbar.dart';
 import '../../widgets/navigation_layout.dart';
 
 class BookBrowseScreen extends StatefulWidget {
@@ -212,6 +213,7 @@ class _BookBrowseScreenState extends State<BookBrowseScreen> {
     return Scaffold(
       backgroundColor: AppColorScheme.background,
       body: NavigationLayout(
+        activeRoute: '/books/${widget.libraryId}',
         showBackButton: true,
         child: _vm.isLoading
             ? const SkeletonLibraryGrid(
@@ -220,9 +222,12 @@ class _BookBrowseScreenState extends State<BookBrowseScreen> {
               )
             : RefreshIndicator(
                 onRefresh: _vm.refresh,
-                child: ListView(
-                  padding: const EdgeInsets.only(bottom: 120),
-                  children: _buildSections(context),
+                child: BottomNavPadded(
+                  fallback: 120,
+                  builder: (_, bottom) => ListView(
+                    padding: EdgeInsets.only(bottom: bottom),
+                    children: _buildSections(context),
+                  ),
                 ),
               ),
       ),

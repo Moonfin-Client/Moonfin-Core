@@ -587,16 +587,12 @@ class LibraryBrowseViewModel extends ChangeNotifier {
         }
       }
 
-      if (isHomeVideosLibrary || isMixedContentLibrary) {
-        if (_sortBy != LibrarySortBy.name &&
-            _sortBy != LibrarySortBy.dateAdded &&
-            _sortBy != LibrarySortBy.random) {
-          _sortBy = LibrarySortBy.name;
-          await _prefs.set(
-            UserPreferences.librarySortBy(_prefKey),
-            LibrarySortBy.name,
-          );
-        }
+      // Folders come first until something else is picked, and a saved sort
+      // these libraries don't offer goes back to that too.
+      if (isFolderyLibrary &&
+          (!_prefs.containsPreference(UserPreferences.librarySortBy(_prefKey)) ||
+              !sortOptions.contains(_sortBy))) {
+        _sortBy = LibrarySortBy.foldersFirst;
       }
 
       _refreshPosterSizeFromScope();
@@ -772,9 +768,8 @@ class LibraryBrowseViewModel extends ChangeNotifier {
       recursive = true;
       includeTypes = ['Book', 'Audio', 'AudioBook'];
       sortBy = 'SortName';
-    } else if (isHomeVideosLibrary || isMixedContentLibrary) {
+    } else if (isFolderyLibrary) {
       recursive = false;
-      sortBy = 'IsFolder,$sortBy';
     }
 
     // A genre tag sits on anything the tree holds, so an unscoped browse comes
@@ -1573,8 +1568,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   bool get isSongsBrowse =>
       includeItemTypes != null && includeItemTypes!.contains('Audio');
 
-  /// Libraries that list folders beside their items, where the metadata the
-  /// richer sorts read is mostly absent.
+  /// Libraries that list folders beside their items.
   bool get isFolderyLibrary => isHomeVideosLibrary || isMixedContentLibrary;
 
   /// Only video holds a picture quality or a disc source worth filtering on.

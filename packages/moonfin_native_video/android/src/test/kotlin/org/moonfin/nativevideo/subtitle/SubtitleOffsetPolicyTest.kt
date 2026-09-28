@@ -15,13 +15,6 @@ class SubtitleOffsetPolicyTest {
     }
 
     @Test
-    fun `effective offset adds the clamped manual delay to the auto one`() {
-        assertEquals(2_000_000L, effectiveOffsetUs(2_000_000L, 0L))
-        assertEquals(1_500_000L, effectiveOffsetUs(2_000_000L, -500L))
-        assertEquals(7_000_000L, effectiveOffsetUs(2_000_000L, 9000L))
-    }
-
-    @Test
     fun `parsed cues bitmap and text formats are shifted`() {
         assertTrue(shiftsEmbeddedFormat("application/x-media3-cues", "application/x-subrip"))
         assertTrue(shiftsEmbeddedFormat("application/x-media3-cues", null))
@@ -48,20 +41,6 @@ class SubtitleOffsetPolicyTest {
         assertFalse(shiftsEmbeddedFormat("video/avc", null))
         assertFalse(shiftsEmbeddedFormat("audio/eac3", null))
         assertFalse(shiftsEmbeddedFormat(null, null))
-    }
-
-    @Test
-    fun `a manual change always retimes`() {
-        assertTrue(shouldRetime(0L, 0L, manualChanged = true))
-        assertTrue(shouldRetime(100L, 110L, manualChanged = true))
-    }
-
-    @Test
-    fun `an auto change retimes only once it moved far enough to see`() {
-        assertFalse(shouldRetime(2_000_000L, 2_040_000L, manualChanged = false))
-        assertTrue(shouldRetime(2_000_000L, 2_050_000L, manualChanged = false))
-        assertTrue(shouldRetime(2_050_000L, 2_000_000L, manualChanged = false))
-        assertTrue(shouldRetime(0L, 2_000_000L, manualChanged = false))
     }
 
     private fun tree(
@@ -109,12 +88,11 @@ class SubtitleOffsetPolicyTest {
     }
 
     @Test
-    fun `the sync delays payload keeps the manual value apart from the auto one`() {
-        val payload = syncDelaysPayload(audioDelayMs = -200L, subtitleDelayMs = 300L, subtitleAutoOffsetMs = 2000L)
+    fun `the sync delays payload carries both delays`() {
+        val payload = syncDelaysPayload(audioDelayMs = -200L, subtitleDelayMs = 300L)
         assertEquals("syncDelays", payload["event"])
         assertEquals(-200L, payload["audioDelayMs"])
         assertEquals(300L, payload["subtitleDelayMs"])
-        assertEquals(2000L, payload["subtitleAutoOffsetMs"])
-        assertEquals(4, payload.size)
+        assertEquals(3, payload.size)
     }
 }

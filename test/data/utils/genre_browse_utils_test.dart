@@ -50,6 +50,38 @@ void main() {
     });
   });
 
+  // Verified against Emby 4.10.0.40, which sends a genre's name and art but
+  // never a count, whatever fields are asked for.
+  group('a genre the server sent no count for', () {
+    const emby = {'Id': 'g1', 'Name': 'Fantasy', 'Type': 'Genre'};
+    const videoTypes = ['Movie', 'Series'];
+
+    test('is kept for its own item query to count', () {
+      expect(genreReportsCounts(emby), isFalse);
+      expect(
+        mayHaveBrowsableItems(emby, normalizedItemTypes: videoTypes),
+        isTrue,
+      );
+    });
+
+    test('is dropped once a count says it holds nothing', () {
+      const empty = {'Id': 'g2', 'MovieCount': 0, 'SeriesCount': 0};
+      expect(genreReportsCounts(empty), isTrue);
+      expect(
+        mayHaveBrowsableItems(empty, normalizedItemTypes: videoTypes),
+        isFalse,
+      );
+    });
+
+    test('is kept when a count says it holds something', () {
+      const movies = {'Id': 'g3', 'MovieCount': 4};
+      expect(
+        mayHaveBrowsableItems(movies, normalizedItemTypes: videoTypes),
+        isTrue,
+      );
+    });
+  });
+
   // A grid of genres wants a different picture on each tile, which means
   // knowing which item each tile took rather than working it out again.
   test('fallback artwork reports the item it drew', () {

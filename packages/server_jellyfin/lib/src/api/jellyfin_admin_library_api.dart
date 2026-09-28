@@ -28,8 +28,16 @@ class JellyfinAdminLibraryApi implements AdminLibraryApi {
         'collectionType': ?collectionType,
         'refreshLibrary': refreshLibrary,
       },
+      // The server reads a new library's folders from its library options and
+      // ignores any other body field. Its query list splits on commas, which
+      // breaks a folder with one in its name.
       data: {
-        'Paths': ?paths,
+        if (paths != null && paths.isNotEmpty)
+          'LibraryOptions': {
+            'PathInfos': [
+              for (final path in paths) {'Path': path},
+            ],
+          },
       },
     );
   }

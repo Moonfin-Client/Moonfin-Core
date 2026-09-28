@@ -41,9 +41,10 @@ class DeepLinkService {
   ///  - `moonfin://play?id=<itemId>[&serverId=<serverId>][&userId=<userId>]`
   ///    (starts playback)
   ///
-  /// `userId` optionally pins a stored user for cold starts, skipping the
-  /// profile picker. It is only honored for users already signed in on this
-  /// device, and never bypasses a PIN or an always-authenticate setting.
+  /// `userId` optionally pins a stored user, skipping the profile picker on a
+  /// cold start and switching to that user when another one is signed in. It
+  /// is only honored for users already signed in on this device, and never
+  /// bypasses a PIN, an always-authenticate setting or Kids Mode.
   static String? routeForDeepLink(Uri uri) {
     if (uri.scheme != 'moonfin') return null;
     final id = uri.queryParameters['id'];

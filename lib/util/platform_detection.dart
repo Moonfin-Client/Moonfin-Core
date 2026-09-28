@@ -81,6 +81,8 @@ class PlatformDetection {
   static final Map<String, dynamic> _mediaCodecCapabilities =
       <String, dynamic>{};
   static final Map<String, dynamic> _deviceMemory = <String, dynamic>{};
+  static int? _uptimeAtProbeMs;
+  static final Stopwatch _sinceUptimeProbe = Stopwatch();
   static final Map<String, dynamic> _audioCapabilities = <String, dynamic>{};
   static bool _hasDisplayHdrCapabilities = false;
   static bool _hasDolbyVisionCodecCapabilities = false;
@@ -261,6 +263,22 @@ class PlatformDetection {
     _deviceMemory
       ..clear()
       ..addAll(values ?? const <String, dynamic>{});
+  }
+
+  /// How long the device has been up, not counting deep sleep. It's read from
+  /// SystemClock.uptimeMillis once at launch and moved forward by a Stopwatch,
+  /// which runs on the same clock on Android. Null until the probe answers.
+  static Duration? get systemUptime {
+    final atProbe = _uptimeAtProbeMs;
+    if (atProbe == null) return null;
+    return Duration(milliseconds: atProbe) + _sinceUptimeProbe.elapsed;
+  }
+
+  static void setSystemUptime(int? uptimeMs) {
+    _uptimeAtProbeMs = uptimeMs;
+    _sinceUptimeProbe
+      ..reset()
+      ..start();
   }
 
   static bool _capabilityBool(String key) {

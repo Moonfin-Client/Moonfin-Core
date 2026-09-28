@@ -16,6 +16,7 @@ import '../../../util/language_codes.dart';
 import '../../../util/platform_detection.dart';
 import '../../navigation/destinations.dart';
 import '../../theme/app_theme_controller.dart';
+import '../../widgets/bottom_nav/bottom_nav_destinations.dart';
 import '../../widgets/navigation_layout.dart';
 import '../../widgets/settings/preference_tiles.dart';
 import 'setup_wizard_gate.dart';
@@ -40,7 +41,17 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
   final _scopeNode = FocusScopeNode(debugLabel: 'setupWizard');
   final _skipNode = FocusNode(debugLabel: 'setupWizardSkip');
 
-  List<SetupStep> _steps = const [];
+  List<SetupStep> _allSteps = const [];
+
+  // The style question comes and goes with the navbar answer. It can only
+  // change on the navbar step, which sits before it, so [_index] stays put.
+  List<SetupStep> get _steps => visibleSetupSteps(_allSteps, _effectiveNavbar);
+
+  NavbarPosition get _effectiveNavbar =>
+      NavigationLayout.sanitizeNavbarPosition(
+        _navbar ?? _prefs.get(UserPreferences.navbarPosition),
+      );
+
   int _index = 0;
   bool _ready = false;
   bool _leaving = false;
@@ -50,6 +61,7 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
   // profile push that the plugin then echoes back, so the answers across the
   // steps become one batch at the end.
   NavbarPosition? _navbar;
+  BottomNavbarStyle? _navbarStyle;
   String? _mediaBar;
   HomeRowsStyle? _homeRows;
   DetailScreenStyle? _detailStyle;
@@ -109,7 +121,7 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
     }
 
     setState(() {
-      _steps = steps;
+      _allSteps = steps;
       _ready = true;
     });
   }
@@ -133,6 +145,11 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
     await _prefs.batchNotifications(() async {
       if (navbar != null) {
         await _prefs.set(UserPreferences.navbarPosition, navbar);
+      }
+      // A style picked before switching away from Bottom isn't an answer.
+      final navbarStyle = _navbarStyle;
+      if (navbarStyle != null && _effectiveNavbar == NavbarPosition.bottom) {
+        await _prefs.set(UserPreferences.bottomNavbarStyle, navbarStyle);
       }
       final mediaBar = _mediaBar;
       if (mediaBar != null) {
@@ -406,6 +423,7 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
 
   String _questionFor(SetupStep step, AppLocalizations l10n) => switch (step) {
     SetupStep.navbar => l10n.setupNavbarQuestion,
+    SetupStep.navbarStyle => l10n.setupNavbarStyleQuestion,
     SetupStep.mediaBar => l10n.setupMediaBarQuestion,
     SetupStep.homeRows => l10n.setupHomeRowsQuestion,
     SetupStep.detailStyle => l10n.setupDetailQuestion,
@@ -418,6 +436,7 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
     AppLocalizations l10n,
   ) => switch (step) {
     SetupStep.navbar => _buildNavbarStep(l10n),
+    SetupStep.navbarStyle => _buildNavbarStyleStep(l10n),
     SetupStep.mediaBar => _buildMediaBarStep(l10n),
     SetupStep.homeRows => _buildHomeRowsStep(l10n),
     SetupStep.detailStyle => _buildDetailStyleStep(l10n),
@@ -436,9 +455,7 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
       NavbarPosition.left: l10n.leftSidebar,
       NavbarPosition.bottom: l10n.bottomBar,
     };
-    final selected = NavigationLayout.sanitizeNavbarPosition(
-      _navbar ?? _prefs.get(UserPreferences.navbarPosition),
-    );
+    final selected = _effectiveNavbar;
 
     return _OptionLayout(
       columns: positions.length,
@@ -451,6 +468,28 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
             autofocus: selected == positions[i],
             preview: SetupPreview(child: navbarPreview(positions[i])),
             onPressed: () => setState(() => _navbar = positions[i]),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildNavbarStyleStep(AppLocalizations l10n) {
+    const styles = BottomNavbarStyle.values;
+    final selected =
+        _navbarStyle ?? _prefs.get(UserPreferences.bottomNavbarStyle);
+
+    return _OptionLayout(
+      columns: styles.length,
+      children: [
+        for (var i = 0; i < styles.length; i++)
+          _OptionCard(
+            order: i,
+            label: bottomNavbarStyleLabel(l10n, styles[i]),
+            hint: bottomNavbarStyleHint(l10n, styles[i]),
+            selected: selected == styles[i],
+            autofocus: selected == styles[i],
+            preview: SetupPreview(child: bottomNavbarStylePreview(styles[i])),
+            onPressed: () => setState(() => _navbarStyle = styles[i]),
           ),
       ],
     );

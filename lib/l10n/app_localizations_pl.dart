@@ -16,28 +16,28 @@ class AppLocalizationsPl extends AppLocalizations {
   String get animeMarkerFiller => 'Filler';
 
   @override
-  String get animeMarkerMixed => 'Mixed';
+  String get animeMarkerMixed => 'Mieszany';
 
   @override
-  String get animeMarkerAnimeCanon => 'Anime Canon';
+  String get animeMarkerAnimeCanon => 'Kanon anime';
 
   @override
-  String get animeMarkerMangaCanon => 'Manga Canon';
+  String get animeMarkerMangaCanon => 'Kanon mangi';
 
   @override
-  String get animeMarkerSubbed => 'Subbed';
+  String get animeMarkerSubbed => 'Z napisami';
 
   @override
-  String get animeMarkerDubbed => 'Dubbed';
+  String get animeMarkerDubbed => 'Z dubbingiem';
 
   @override
-  String get animeMarkerSubbedAndDubbed => 'Subbed/Dubbed';
+  String get animeMarkerSubbedAndDubbed => 'Napisy / dubbing';
 
   @override
-  String get animeMarkerPending => 'Pending';
+  String get animeMarkerPending => 'Oczekuje';
 
   @override
-  String get animeMarkerRecap => 'Recap';
+  String get animeMarkerRecap => 'Przypomnienie';
 
   @override
   String get accountPreferences => 'Ustawienia konta';
@@ -173,7 +173,7 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get detailScreenStyleSubtitle =>
-      'Klasyczny to oryginalny, wyśrodkowany układ Moonfin. Nowoczesny to responsywny układ w stylu kinowym. Spotlight to układ z dużą grafiką na pierwszym planie i wyskakującymi kartami treści. Nouveau to pełnoekranowy układ z sekcjami ułożonymi jedna pod drugą.';
+      'Klasyczny to oryginalny, wyśrodkowany układ Moonfin. Nowoczesny to responsywny układ w stylu kinowym. Spotlight to układ z dużą grafiką na pierwszym planie i wyskakującymi kartami treści. Nouveau to pełnoekranowy układ z sekcjami ułożonymi jedna pod drugą. Minimalistyczny to układ z grafiką, jednym przyciskiem odtwarzania i odcinkami.';
 
   @override
   String get detailScreenStyleMoonfin => 'Klasyczny';
@@ -238,8 +238,10 @@ class AppLocalizationsPl extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count facts',
-      one: '1 fact',
+      other: '$count informacji',
+      many: '$count informacji',
+      few: '$count informacje',
+      one: '$count informacja',
     );
     return '$_temp0';
   }
@@ -249,8 +251,10 @@ class AppLocalizationsPl extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count tags',
-      one: '1 tag',
+      other: '$count tagu',
+      many: '$count tagów',
+      few: '$count tagi',
+      one: '$count tag',
     );
     return '$_temp0';
   }
@@ -415,7 +419,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get detailScreenStyleNouveau => 'Nouveau';
 
   @override
-  String get detailScreenStyleMinimalist => 'Minimalist';
+  String get detailScreenStyleMinimalist => 'Minimalistyczny';
 
   @override
   String get expandedTabs => 'Rozszerzone zakładki';
@@ -836,7 +840,10 @@ class AppLocalizationsPl extends AppLocalizations {
   String get extraLarge => 'Bardzo duży';
 
   @override
-  String get uiScaleGrandparents => 'Grandparents';
+  String get uiScaleGrandparents => 'Dla dziadków';
+
+  @override
+  String get uiScaleGreatGrandparents => 'Great-Grandparents';
 
   @override
   String get scrollDirection => 'Kierunek przewijania';
@@ -2093,11 +2100,6 @@ class AppLocalizationsPl extends AppLocalizations {
   String get subtitleDelay => 'Opóźnienie napisów';
 
   @override
-  String subtitleDelayAuto(String value) {
-    return 'Auto $value';
-  }
-
-  @override
   String get reset => 'Resetuj';
 
   @override
@@ -2549,7 +2551,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get premiere => 'Premiera';
 
   @override
-  String get guideRepeatBadge => 'Repeat';
+  String get guideRepeatBadge => 'Powtórka';
 
   @override
   String get guideTimeline => 'Oś czasu programu TV';
@@ -2563,7 +2565,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get noChannelsFound => 'Nie znaleziono kanałów';
 
   @override
-  String get noProgramData => 'No program data';
+  String get noProgramData => 'Brak danych programu';
 
   @override
   String get liveBadge => 'NA ŻYWO';
@@ -2639,7 +2641,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get watch => 'Oglądaj';
 
   @override
-  String get watchChannelLive => 'Watch channel live';
+  String get watchChannelLive => 'Oglądaj kanał na żywo';
 
   @override
   String get close => 'Zamknij';
@@ -2887,52 +2889,54 @@ class AppLocalizationsPl extends AppLocalizations {
   String get downloadedItems => 'Pobrane';
 
   @override
-  String get activeDownloads => 'Active Downloads';
+  String get activeDownloads => 'Aktywne pobierania';
 
   @override
   String savedMediaCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count items',
-      one: '1 item',
+      other: '$count pozycji',
+      many: '$count pozycji',
+      few: '$count pozycje',
+      one: '$count pozycja',
     );
     return '$_temp0';
   }
 
   @override
   String savedMediaOfLimit(String used, String limit) {
-    return '$used of $limit';
+    return '$used z $limit';
   }
 
   @override
-  String get savedMediaSelectItems => 'Select items';
+  String get savedMediaSelectItems => 'Wybierz pozycje';
 
   @override
-  String get savedMediaNoDownloads => 'Nothing saved yet';
+  String get savedMediaNoDownloads => 'Brak pobranych materiałów';
 
   @override
   String get savedMediaNoDownloadsDetail =>
-      'Downloads you start appear here and play without a connection.';
+      'Rozpoczęte pobierania pojawią się tutaj i będzie można je odtwarzać bez połączenia z internetem.';
 
   @override
-  String get savedMediaNoActiveDownloads => 'Nothing downloading right now';
+  String get savedMediaNoActiveDownloads => 'Obecnie nic się nie pobiera';
 
   @override
-  String get savedMediaNoResults => 'No downloads match that search';
+  String get savedMediaNoResults => 'Brak pobrań pasujących do wyszukiwania';
 
   @override
-  String get savedMediaPlayFromStart => 'Play from start';
+  String get savedMediaPlayFromStart => 'Odtwórz od początku';
 
   @override
-  String get savedMediaGoToDetails => 'Go to details';
+  String get savedMediaGoToDetails => 'Przejdź do szczegółów';
 
   @override
-  String get savedMediaDeleteDownload => 'Delete download';
+  String get savedMediaDeleteDownload => 'Usuń pobranie';
 
   @override
   String savedMediaDeleteSeason(String season) {
-    return 'Delete $season';
+    return 'Usuń $season';
   }
 
   @override
@@ -2940,32 +2944,34 @@ class AppLocalizationsPl extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'Delete $count episodes',
-      one: 'Delete 1 episode',
+      other: 'Usuń $count odcinka',
+      many: 'Usuń $count odcinków',
+      few: 'Usuń $count odcinki',
+      one: 'Usuń $count odcinek',
     );
     return '$_temp0';
   }
 
   @override
-  String get savedMediaOpenShow => 'Open show';
+  String get savedMediaOpenShow => 'Otwórz serial';
 
   @override
-  String get savedMediaPlayNextUnwatched => 'Play next unwatched';
+  String get savedMediaPlayNextUnwatched => 'Odtwórz następny nieobejrzany';
 
   @override
-  String get savedMediaRead => 'Read';
+  String get savedMediaRead => 'Czytaj';
 
   @override
-  String get savedMediaCancelDownload => 'Cancel download';
+  String get savedMediaCancelDownload => 'Anuluj pobieranie';
 
   @override
-  String get sortBySize => 'Size';
+  String get sortBySize => 'Rozmiar';
 
   @override
-  String get sortByName => 'Name';
+  String get sortByName => 'Nazwa';
 
   @override
-  String get sortByDateAdded => 'Date added';
+  String get sortByDateAdded => 'Data dodania';
 
   @override
   String get storageLimit => 'Limit pamięci';
@@ -3449,11 +3455,11 @@ class AppLocalizationsPl extends AppLocalizations {
       'Przyciemnij wideo i pokazuj opis podczas pauzy';
 
   @override
-  String get showChapterMarkers => 'Chapter Marks';
+  String get showChapterMarkers => 'Znaczniki rozdziałów';
 
   @override
   String get showChapterMarkersDescription =>
-      'Mark where each chapter starts on the seek bar';
+      'Oznaczaj na pasku postępu miejsca rozpoczęcia rozdziałów';
 
   @override
   String get osdLockButton => 'Przycisk blokady OSD';
@@ -3492,20 +3498,20 @@ class AppLocalizationsPl extends AppLocalizations {
       'Odtwarzanie jest zawsze na początku, a zablokowane przyciski pozostają widoczne. Resztę możesz ustawić po swojemu, osobno dla każdego typu urządzenia.';
 
   @override
-  String get actionButtonsOnScreen => 'Action Buttons on Screen';
+  String get actionButtonsOnScreen => 'Przyciski akcji na ekranie';
 
   @override
   String get actionButtonsOnScreenDescription =>
-      'Customize how many action buttons appear before folding into the More Actions menu.';
+      'Ustaw, ile przycisków akcji ma być widocznych, zanim pozostałe trafią do menu „Więcej akcji”.';
 
   @override
-  String get actionButtonsOnScreenAuto => 'Auto (Theme Default)';
+  String get actionButtonsOnScreenAuto => 'Automatycznie (domyślne dla motywu)';
 
   @override
-  String get actionButtonsOnScreenPlayOnly => '1 (Play only)';
+  String get actionButtonsOnScreenPlayOnly => '1 (tylko odtwarzanie)';
 
   @override
-  String get actionButtonsOnScreenAll => 'All (Horizontal Scroll)';
+  String get actionButtonsOnScreenAll => 'Wszystkie (przewijanie poziome)';
 
   @override
   String get detailMetadata => 'Wiersz metadanych';
@@ -3794,21 +3800,22 @@ class AppLocalizationsPl extends AppLocalizations {
       'Ręcznie (wybierz formaty poniżej)';
 
   @override
-  String get settingsAudioPassthroughOutput => 'Passthrough output';
+  String get settingsAudioPassthroughOutput => 'Wyjście przekazywania dźwięku';
 
   @override
   String get settingsAudioPassthroughOutputDescription =>
-      'Who packs bitstreams for the HDMI link. Try the app packer if passthrough is silent or glitchy on this device.';
+      'Określa, co pakuje strumienie bitowe dla połączenia HDMI. Jeśli przekazywanie dźwięku jest bezgłośne lub działa nieprawidłowo na tym urządzeniu, wypróbuj pakowanie przez aplikację.';
 
   @override
   String get settingsAudioPassthroughOutputPlatform =>
-      'Automatic, system packer (AudioTrack RAW)';
+      'Automatyczne, pakowanie systemowe (AudioTrack RAW)';
 
   @override
-  String get settingsAudioPassthroughOutputIec => 'App packer (AudioTrack IEC)';
+  String get settingsAudioPassthroughOutputIec =>
+      'Pakowanie przez aplikację (AudioTrack IEC)';
 
   @override
-  String get settingsAudioPassthroughOutputIecLabel => 'App (IEC)';
+  String get settingsAudioPassthroughOutputIecLabel => 'Aplikacja (IEC)';
 
   @override
   String get settingsDownmixToStereoDescription =>
@@ -4129,16 +4136,16 @@ class AppLocalizationsPl extends AppLocalizations {
   String get semiTransparentBlack => 'Półprzezroczysty czarny';
 
   @override
-  String get semiTransparentWhite => 'Semi-transparent White';
+  String get semiTransparentWhite => 'Półprzezroczysty biały';
 
   @override
-  String get lightGray => 'Light Gray';
+  String get lightGray => 'Jasnoszary';
 
   @override
-  String get darkGray => 'Dark Gray';
+  String get darkGray => 'Ciemnoszary';
 
   @override
-  String get blue => 'Blue';
+  String get blue => 'Niebieski';
 
   @override
   String get magenta => 'Magenta';
@@ -5346,7 +5353,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get playInMoonfin => 'Odtwórz w Moonfin';
 
   @override
-  String get requestedByLabel => 'Requested by';
+  String get requestedByLabel => 'Prośba od';
 
   @override
   String requestedByName(String name) {
@@ -9655,24 +9662,25 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
-  String get kidsMode => 'Kids Mode';
+  String get kidsMode => 'Tryb dziecięcy';
 
   @override
   String get kidsModeSubtitle =>
-      'Simplify the app and lock the way out with a PIN';
+      'Uprość aplikację i zabezpiecz wyjście kodem PIN';
 
   @override
-  String get kidsModeExit => 'Exit Kids Mode';
+  String get kidsModeExit => 'Wyłącz tryb dziecięcy';
 
   @override
-  String get kidsModeExitSubtitle => 'Enter your PIN to restore the full app';
+  String get kidsModeExitSubtitle =>
+      'Wprowadź kod PIN, aby przywrócić pełną wersję aplikacji';
 
   @override
   String get pinIncorrect => 'Nieprawidłowy PIN';
 
   @override
   String pinTryAgainIn(String wait) {
-    return 'Too many attempts. Try again in $wait.';
+    return 'Zbyt wiele prób. Spróbuj ponownie za $wait.';
   }
 
   @override
@@ -9980,15 +9988,15 @@ class AppLocalizationsPl extends AppLocalizations {
   String get contextMenuAddToCollection => 'Dodaj do kolekcji';
 
   @override
-  String get contextMenuRemoveFromCollection => 'Remove from Collection';
+  String get contextMenuRemoveFromCollection => 'Usuń z kolekcji';
 
   @override
   String removeFromCollectionConfirm(String item, String collection) {
-    return 'Remove $item from $collection? The item stays in your library.';
+    return 'Usunąć „$item” z kolekcji „$collection”? Pozycja pozostanie w bibliotece.';
   }
 
   @override
-  String get removeFromCollectionFailed => 'Failed to remove from collection';
+  String get removeFromCollectionFailed => 'Nie udało się usunąć z kolekcji';
 
   @override
   String get settingsAdministrationSubtitle =>
@@ -10057,14 +10065,14 @@ class AppLocalizationsPl extends AppLocalizations {
   String get settingsPrivacyAndSafetySection => 'PRYWATNOŚĆ I BEZPIECZEŃSTWO';
 
   @override
-  String get itemBlockedByParentalControls => 'This isn\'t available';
+  String get itemBlockedByParentalControls => 'Ta treść jest niedostępna';
 
   @override
   String get blockedRatingsCeilingHint =>
-      'Blocking a rating also blocks everything stronger than it.';
+      'Zablokowanie klasyfikacji blokuje również wszystkie wyższe klasyfikacje.';
 
   @override
-  String get blockedRatingsUnrankedSection => 'Only blocks itself';
+  String get blockedRatingsUnrankedSection => 'Blokuje tylko tę klasyfikację';
 
   @override
   String get settingsBlockedRatings => 'Zablokowane klasyfikacje wiekowe';
@@ -11067,10 +11075,10 @@ class AppLocalizationsPl extends AppLocalizations {
   String get connection => 'Połączenie';
 
   @override
-  String get locallyDecodedCodecs => 'Locally Decoded Codecs';
+  String get locallyDecodedCodecs => 'Kodeki dekodowane lokalnie';
 
   @override
-  String get transcodeTargetCodecs => 'Transcode Target Codecs';
+  String get transcodeTargetCodecs => 'Docelowe kodeki transkodowania';
 
   @override
   String get passthrough => 'Przekazywanie dźwięku';
@@ -11334,105 +11342,113 @@ class AppLocalizationsPl extends AppLocalizations {
   String get openInBrowser => 'Otwórz w przeglądarce';
 
   @override
-  String get achievementBadges => 'Achievement Badges';
+  String get achievementBadges => 'Odznaki osiągnięć';
 
   @override
   String get achievementBadgesSubtitle =>
-      'Badges, ranks and quests earned from what you watch';
+      'Odznaki, rangi i zadania zdobywane za oglądane treści';
 
   @override
-  String get achievementsBadges => 'Badges';
+  String get achievementsBadges => 'Odznaki';
 
   @override
   String achievementsBadgeCount(int unlocked, int total) {
-    return '$unlocked of $total badges';
+    return '$unlocked z $total odznak';
   }
 
   @override
-  String get achievementsQuests => 'Quests';
+  String get achievementsQuests => 'Zadania';
 
   @override
   String achievementsQuestCount(int count) {
-    return '$count completed';
+    return 'Ukończono: $count';
   }
 
   @override
-  String get achievementsLeaderboard => 'Leaderboard';
+  String get achievementsLeaderboard => 'Ranking';
 
   @override
   String get achievementsLeaderboardSubtitle =>
-      'How you compare with other users on this server';
+      'Porównaj swoje wyniki z innymi użytkownikami tego serwera';
 
   @override
-  String get achievementsRecap => 'Recap';
+  String get achievementsRecap => 'Podsumowanie';
 
   @override
-  String get achievementsRecapSubtitle => 'What you watched recently';
+  String get achievementsRecapSubtitle => 'Co ostatnio oglądałeś';
 
   @override
-  String get achievementsLibraryCompletion => 'Library completion';
+  String get achievementsLibraryCompletion => 'Ukończenie biblioteki';
 
   @override
   String achievementsLibraryCount(int count) {
-    return '$count libraries';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count biblioteki',
+      many: '$count bibliotek',
+      few: '$count biblioteki',
+      one: '$count biblioteka',
+    );
+    return '$_temp0';
   }
 
   @override
   String achievementsScore(int score) {
-    return '$score points';
+    return '$score pkt';
   }
 
   @override
-  String get achievementsScoreLabel => 'Score';
+  String get achievementsScoreLabel => 'Wynik';
 
   @override
-  String get achievementsTopRank => 'Top rank reached';
+  String get achievementsTopRank => 'Osiągnięto najwyższą rangę';
 
   @override
   String achievementsPointsToNextRank(int points, String tier) {
-    return '$points points to $tier';
+    return '$points pkt do rangi $tier';
   }
 
   @override
   String achievementsCurrentStreak(int days) {
-    return '$days day streak';
+    return 'Seria: $days dni';
   }
 
   @override
   String achievementsBestStreak(int days) {
-    return 'Best: $days days';
+    return 'Najlepsza: $days dni';
   }
 
   @override
-  String get achievementsShowcase => 'Showcase';
+  String get achievementsShowcase => 'Wyróżnione';
 
   @override
-  String get achievementsUnlocked => 'Unlocked';
+  String get achievementsUnlocked => 'Odblokowane';
 
   @override
-  String get achievementsLocked => 'Locked';
+  String get achievementsLocked => 'Zablokowane';
 
   @override
-  String get achievementsNothingHere => 'Nothing here yet.';
+  String get achievementsNothingHere => 'Jeszcze nic tu nie ma.';
 
   @override
-  String get achievementsHiddenBadge => 'Hidden achievement';
+  String get achievementsHiddenBadge => 'Ukryte osiągnięcie';
 
   @override
   String achievementsUnlockedOn(String date) {
-    return 'Unlocked $date';
+    return 'Odblokowano $date';
   }
 
   @override
   String achievementsPoints(int points) {
-    return '$points pts';
+    return '$points pkt';
   }
 
   @override
-  String get achievementsDailyQuests => 'Daily';
+  String get achievementsDailyQuests => 'Dzienne';
 
   @override
-  String get achievementsWeeklyQuests => 'Weekly';
+  String get achievementsWeeklyQuests => 'Tygodniowe';
 
   @override
   String achievementsQuestReward(int points) {
@@ -11440,200 +11456,200 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
-  String get achievementsRerollDaily => 'Reroll daily quests';
+  String get achievementsRerollDaily => 'Wylosuj ponownie zadania dzienne';
 
   @override
-  String get achievementsRerollWeekly => 'Reroll weekly quests';
+  String get achievementsRerollWeekly => 'Wylosuj ponownie zadania tygodniowe';
 
   @override
-  String get achievementsRerollOffer => 'Swap this set for a different one';
+  String get achievementsRerollOffer => 'Zamień ten zestaw na inny';
 
   @override
   String get achievementsRerollSpentDaily =>
-      'Used today, comes back at midnight UTC';
+      'Wykorzystano dzisiaj, dostępne ponownie o północy UTC';
 
   @override
   String get achievementsRerollSpentWeekly =>
-      'Used this week, comes back Monday UTC';
+      'Wykorzystano w tym tygodniu, dostępne ponownie w poniedziałek UTC';
 
   @override
-  String get achievementsRerollConfirm => 'Reroll these quests?';
+  String get achievementsRerollConfirm => 'Wylosować te zadania ponownie?';
 
   @override
   String get achievementsRerollConfirmBody =>
-      'You get one daily and one weekly reroll, and this spends it.';
+      'Masz jedno ponowne losowanie dzienne i jedno tygodniowe. To wykorzysta dostępne losowanie.';
 
   @override
-  String get achievementsRerollFailed => 'Could not reroll those quests.';
+  String get achievementsRerollFailed =>
+      'Nie udało się ponownie wylosować tych zadań.';
 
   @override
-  String get achievementsSuggested => 'Suggested items to watch';
+  String get achievementsSuggested => 'Polecane treści do obejrzenia';
 
   @override
-  String get achievementsNoSuggestions => 'Nothing to suggest for this badge.';
+  String get achievementsNoSuggestions => 'Brak propozycji dla tej odznaki.';
 
   @override
-  String get achievementsProgressLabel => 'Progress';
+  String get achievementsProgressLabel => 'Postęp';
 
   @override
-  String get achievementsLoadout => 'Loadout';
+  String get achievementsLoadout => 'Wyposażenie';
 
   @override
   String get achievementsLoadoutSubtitle =>
-      'Score to spend and the boosts you hold';
+      'Punkty do wydania i posiadane wzmocnienia';
 
   @override
-  String get achievementsAppearance => 'Appearance';
+  String get achievementsAppearance => 'Wygląd';
 
   @override
   String get achievementsAppearanceSubtitle =>
-      'The avatar and title on your profile';
+      'Awatar i tytuł na Twoim profilu';
 
   @override
-  String get achievementsAvatars => 'Avatars';
+  String get achievementsAvatars => 'Awatary';
 
   @override
-  String get achievementsTitles => 'Titles';
+  String get achievementsTitles => 'Tytuły';
 
   @override
-  String get achievementsEquipped => 'Equipped';
+  String get achievementsEquipped => 'Wybrane';
 
   @override
-  String get achievementsOwned => 'Owned';
+  String get achievementsOwned => 'Posiadane';
 
   @override
   String achievementsEarnedAt(int score) {
-    return 'Earned at $score lifetime score';
+    return 'Odblokowywane po osiągnięciu $score punktów łącznie';
   }
 
   @override
   String get achievementsAppearanceEmpty =>
-      'This server has no avatars or titles to wear.';
+      'Ten serwer nie ma dostępnych awatarów ani tytułów.';
 
   @override
   String get achievementsAppearanceFailed =>
-      'Could not change how the profile looks.';
+      'Nie udało się zmienić wyglądu profilu.';
 
   @override
-  String get achievementsPowerUps => 'Power-ups';
+  String get achievementsPowerUps => 'Wzmocnienia';
 
   @override
-  String get achievementsStats => 'Stats';
+  String get achievementsStats => 'Statystyki';
 
   @override
-  String get achievementsStatsSubtitle =>
-      'Your records and how the server is doing';
+  String get achievementsStatsSubtitle => 'Twoje rekordy i statystyki serwera';
 
   @override
-  String get achievementsStatsWatched => 'Watched';
+  String get achievementsStatsWatched => 'Obejrzane';
 
   @override
-  String get achievementsStatsBests => 'Bests';
+  String get achievementsStatsBests => 'Rekordy';
 
   @override
-  String get achievementsStatsHabits => 'Habits';
+  String get achievementsStatsHabits => 'Nawyki';
 
   @override
-  String get achievementsStatsVariety => 'Variety';
+  String get achievementsStatsVariety => 'Różnorodność';
 
   @override
-  String get achievementsStatsServer => 'This server';
+  String get achievementsStatsServer => 'Ten serwer';
 
   @override
-  String get achievementsStatsClock => 'When you watch';
+  String get achievementsStatsClock => 'Kiedy oglądasz';
 
   @override
-  String get achievementsStatItems => 'Items watched';
+  String get achievementsStatItems => 'Obejrzane pozycje';
 
   @override
-  String get achievementsStatMovies => 'Films watched';
+  String get achievementsStatMovies => 'Obejrzane filmy';
 
   @override
-  String get achievementsStatSeries => 'Series finished';
+  String get achievementsStatSeries => 'Ukończone seriale';
 
   @override
-  String get achievementsStatHours => 'Hours watched';
+  String get achievementsStatHours => 'Godziny oglądania';
 
   @override
-  String get achievementsStatDays => 'Days watched';
+  String get achievementsStatDays => 'Dni oglądania';
 
   @override
-  String get achievementsStatRewatches => 'Rewatches';
+  String get achievementsStatRewatches => 'Ponowne odtworzenia';
 
   @override
-  String get achievementsStatBestWatchStreak => 'Best watch streak';
+  String get achievementsStatBestWatchStreak => 'Najlepsza seria oglądania';
 
   @override
-  String get achievementsStatBestLoginStreak => 'Best login streak';
+  String get achievementsStatBestLoginStreak => 'Najlepsza seria logowań';
 
   @override
-  String get achievementsStatMostEpisodes => 'Most episodes in a day';
+  String get achievementsStatMostEpisodes => 'Najwięcej odcinków w ciągu dnia';
 
   @override
-  String get achievementsStatMostMovies => 'Most films in a day';
+  String get achievementsStatMostMovies => 'Najwięcej filmów w ciągu dnia';
 
   @override
-  String get achievementsStatLongestItem => 'Longest single item';
+  String get achievementsStatLongestItem => 'Najdłuższa pojedyncza pozycja';
 
   @override
-  String get achievementsStatBestCombo => 'Best combo';
+  String get achievementsStatBestCombo => 'Najlepsze combo';
 
   @override
-  String get achievementsStatLateNight => 'Late night sessions';
+  String get achievementsStatLateNight => 'Sesje późną nocą';
 
   @override
-  String get achievementsStatEarlyMorning => 'Early morning sessions';
+  String get achievementsStatEarlyMorning => 'Sesje wcześnie rano';
 
   @override
-  String get achievementsStatWeekend => 'Weekend sessions';
+  String get achievementsStatWeekend => 'Sesje weekendowe';
 
   @override
-  String get achievementsStatDaysSignedIn => 'Days signed in';
+  String get achievementsStatDaysSignedIn => 'Dni z logowaniem';
 
   @override
-  String get achievementsStatLibraries => 'Libraries visited';
+  String get achievementsStatLibraries => 'Odwiedzone biblioteki';
 
   @override
-  String get achievementsStatGenres => 'Genres watched';
+  String get achievementsStatGenres => 'Obejrzane gatunki';
 
   @override
-  String get achievementsStatDecades => 'Decades watched';
+  String get achievementsStatDecades => 'Obejrzane dekady';
 
   @override
-  String get achievementsStatCountries => 'Countries watched';
+  String get achievementsStatCountries => 'Obejrzane kraje';
 
   @override
-  String get achievementsStatLanguages => 'Languages watched';
+  String get achievementsStatLanguages => 'Obejrzane języki';
 
   @override
-  String get achievementsStatUsers => 'Users';
+  String get achievementsStatUsers => 'Użytkownicy';
 
   @override
-  String get achievementsStatBadgesUnlocked => 'Badges unlocked';
+  String get achievementsStatBadgesUnlocked => 'Odblokowane odznaki';
 
   @override
-  String get achievementsStatScoreEarned => 'Score earned';
+  String get achievementsStatScoreEarned => 'Zdobyte punkty';
 
   @override
-  String get achievementsStatCommonBadge => 'Most common badge';
+  String get achievementsStatCommonBadge => 'Najpopularniejsza odznaka';
 
   @override
-  String get achievementsActivity => 'Activity';
+  String get achievementsActivity => 'Aktywność';
 
   @override
-  String get achievementsActivitySubtitle =>
-      'What the server has unlocked lately';
+  String get achievementsActivitySubtitle => 'Ostatnio odblokowane na serwerze';
 
   @override
   String achievementsActivityUnlocked(String user, String badge) {
-    return '$user unlocked $badge';
+    return '$user odblokował(a) $badge';
   }
 
   @override
-  String get achievementsShop => 'Shop';
+  String get achievementsShop => 'Sklep';
 
   @override
-  String get achievementsShopSubtitle => 'Spend score on more boosts';
+  String get achievementsShopSubtitle =>
+      'Wydawaj punkty na dodatkowe wzmocnienia';
 
   @override
   String achievementsShopPack(String name, int count) {
@@ -11641,100 +11657,113 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
-  String get achievementsShopEmpty => 'Nothing for sale right now.';
+  String get achievementsShopEmpty =>
+      'Obecnie nic nie jest dostępne w sprzedaży.';
 
   @override
-  String get achievementsBuyConfirm => 'Buy this?';
+  String get achievementsBuyConfirm => 'Kupić?';
 
   @override
   String get achievementsBuyConfirmBody =>
-      'It comes straight out of your score bank.';
+      'Koszt zostanie odjęty bezpośrednio od dostępnych punktów.';
 
   @override
-  String get achievementsBuyFailed => 'Could not buy that.';
+  String get achievementsBuyFailed => 'Nie udało się dokonać zakupu.';
 
   @override
-  String get achievementsScoreBank => 'Score bank';
+  String get achievementsScoreBank => 'Dostępne punkty';
 
   @override
-  String get achievementsBoost => 'XP Boost';
+  String get achievementsBoost => 'Premia XP';
 
   @override
   String get achievementsBoostBody =>
-      'Doubles score for an hour. Using it again restarts the hour.';
+      'Podwaja zdobywane punkty przez godzinę. Ponowne użycie uruchamia godzinę od początku.';
 
   @override
-  String get achievementsDoubleCredit => 'Double Credit';
+  String get achievementsDoubleCredit => 'Podwójne zaliczenie';
 
   @override
   String get achievementsDoubleCreditBody =>
-      'The next thing you finish counts twice towards badges.';
+      'Następna ukończona treść liczy się podwójnie do postępu odznak.';
 
   @override
-  String get achievementsStreakFreeze => 'Streak Freeze';
+  String get achievementsStreakFreeze => 'Ochrona serii';
 
   @override
   String get achievementsStreakFreezeBody =>
-      'Covers one missed day. Only one can be banked.';
+      'Chroni serię przez jeden pominięty dzień. Możesz przechowywać tylko jedną ochronę.';
 
   @override
   String achievementsPowerUpHeld(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count held',
-      one: '1 held',
-      zero: 'None held',
+      other: 'Posiadasz $count',
+      many: 'Posiadasz $count',
+      few: 'Posiadasz $count',
+      one: 'Posiadasz $count',
+      zero: 'Brak',
     );
     return '$_temp0';
   }
 
   @override
-  String get achievementsPowerUpActive => 'Running now';
+  String get achievementsPowerUpActive => 'Aktywne teraz';
 
   @override
-  String get achievementsUsePowerUp => 'Use this power-up?';
+  String get achievementsUsePowerUp => 'Użyć tego wzmocnienia?';
 
   @override
   String get achievementsUsePowerUpBody =>
-      'It\'s spent as soon as you confirm.';
+      'Zostanie zużyte natychmiast po potwierdzeniu.';
 
   @override
-  String get achievementsPowerUpFailed => 'Could not use that power-up.';
+  String get achievementsPowerUpFailed =>
+      'Nie udało się użyć tego wzmocnienia.';
 
   @override
-  String get achievementsHours => 'Hours';
+  String get achievementsHours => 'Godziny';
 
   @override
-  String get achievementsStreak => 'Streak';
+  String get achievementsStreak => 'Seria';
 
   @override
-  String get achievementsPeriodWeek => 'Week';
+  String get achievementsPeriodWeek => 'Tydzień';
 
   @override
-  String get achievementsPeriodMonth => 'Month';
+  String get achievementsPeriodMonth => 'Miesiąc';
 
   @override
-  String get achievementsPeriodYear => 'Year';
+  String get achievementsPeriodYear => 'Rok';
 
   @override
   String achievementsDaysWatched(int count) {
-    return '$count days watched';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count dnia oglądania',
+      many: '$count dni oglądania',
+      few: '$count dni oglądania',
+      one: '$count dzień oglądania',
+    );
+    return '$_temp0';
   }
 
   @override
   String achievementsBadgesEarned(int count) {
-    return '$count badges earned';
+    return 'Zdobyte odznaki: $count';
   }
 
   @override
-  String get achievementsTopDirectors => 'Top directors';
+  String get achievementsTopDirectors => 'Najczęściej oglądani reżyserzy';
 
   @override
-  String get achievementsTopActors => 'Top actors';
+  String get achievementsTopActors => 'Najczęściej oglądani aktorzy';
 
   @override
-  String get achievementsLoadFailed => 'Could not load your achievements.';
+  String get achievementsLoadFailed =>
+      'Nie udało się wczytać Twoich osiągnięć.';
 
   @override
   String get embeddedBrowserNotAvailable =>
@@ -12692,7 +12721,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get playlistTypeVideo => 'Wideo';
 
   @override
-  String get playlistTypeMusicVideo => 'Music Video';
+  String get playlistTypeMusicVideo => 'Teledysk';
 
   @override
   String get playlistTypeAudio => 'Audio (muzyka)';
@@ -12713,7 +12742,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get videoPlaylistsSection => 'Playlisty wideo';
 
   @override
-  String get musicVideoPlaylistsSection => 'Music Video Playlists';
+  String get musicVideoPlaylistsSection => 'Playlisty teledysków';
 
   @override
   String get audioPlaylistsSection => 'Playlisty audio';
@@ -13013,11 +13042,26 @@ class AppLocalizationsPl extends AppLocalizations {
       'Pełny ekran z sekcjami ułożonymi jedna pod drugą zamiast zakładek.';
 
   @override
-  String get setupStyleMinimalist => 'Minimalist';
+  String get setupStyleMinimalist => 'Minimalistyczny';
 
   @override
   String get setupDetailMinimalistHint =>
-      'Artwork, one play button and the episodes.';
+      'Grafika, jeden przycisk odtwarzania i odcinki.';
+
+  @override
+  String get setupNavbarStyleQuestion => 'How should the bottom bar look?';
+
+  @override
+  String get setupNavbarStyleDockHint =>
+      'A floating pill with labels under every tab.';
+
+  @override
+  String get setupNavbarStyleSplitHint =>
+      'Search gets its own button, and the bar shrinks while you scroll.';
+
+  @override
+  String get setupNavbarStyleStripHint =>
+      'A full-width bar along the bottom edge.';
 
   @override
   String get setupPickALook => 'Wybierz wygląd';
@@ -13060,11 +13104,11 @@ class AppLocalizationsPl extends AppLocalizations {
       'Dodaje do menu przycisk wiadomości wysyłanych przez administratora serwera';
 
   @override
-  String get showBookDiscoverTab => 'Show Book Library Discovery';
+  String get showBookDiscoverTab => 'Pokaż odkrywanie w bibliotece książek';
 
   @override
   String get showBookDiscoverTabDescription =>
-      'Browse titles from Open Library and LibriVox in your book and audiobook libraries';
+      'Przeglądaj tytuły z Open Library i LibriVox w bibliotekach książek i audiobooków';
 
   @override
   String get autoDownloadNewEpisodes => 'Automatycznie pobieraj nowe odcinki';
@@ -13379,17 +13423,66 @@ class AppLocalizationsPl extends AppLocalizations {
   String get pageTransitionFadeLong => 'Długie zanikanie';
 
   @override
-  String get siriRemoteSwipeSensitivity => 'Touchpad swipe sensitivity';
+  String get siriRemoteSwipeSensitivity => 'Czułość przesuwania po gładziku';
 
   @override
   String get siriRemoteSwipeSensitivityDescription =>
-      'How far focus moves for each swipe on the Siri Remote touchpad';
+      'Określa, jak daleko przesuwa się zaznaczenie po każdym przesunięciu po gładziku Siri Remote';
 
   @override
   String get keepVideoClearOfDynamicIsland =>
-      'Keep video clear of the Dynamic Island';
+      'Nie zasłaniaj wideo przez Dynamic Island';
 
   @override
   String get keepVideoClearOfDynamicIslandDescription =>
-      'In landscape the camera housing covers one edge of the screen. This holds the picture back from it, which only changes anything for video wide enough to reach that far.';
+      'W orientacji poziomej obudowa aparatu zasłania jedną krawędź ekranu. Ta opcja odsuwa od niej obraz i ma znaczenie tylko w przypadku materiałów wystarczająco szerokich, aby sięgały aż do tej krawędzi.';
+
+  @override
+  String get bottomNavbarStyle => 'Bottom Bar Style';
+
+  @override
+  String get bottomNavbarStyleDock => 'Dock';
+
+  @override
+  String get bottomNavbarStyleSplit => 'Split';
+
+  @override
+  String get bottomNavbarStyleStrip => 'Strip';
+
+  @override
+  String get bottomNavbarTabs => 'Bottom Bar Tabs';
+
+  @override
+  String get bottomNavbarTabsDescription =>
+      'Pin up to 3 tabs between Home and You. Everything else is in the You menu.';
+
+  @override
+  String get bottomNavbarTabsAutomatic => 'Automatic';
+
+  @override
+  String get bottomNavbarTabsPinned => 'Pinned';
+
+  @override
+  String get bottomNavbarTabsAvailable => 'Available';
+
+  @override
+  String get bottomNavbarTabsReset => 'Reset to Automatic';
+
+  @override
+  String get bottomNavbarTabsLimit =>
+      'You can pin up to 3 tabs. Remove one to pin another.';
+
+  @override
+  String get bottomNavbarTabTurnedOff => 'Turned off under Buttons';
+
+  @override
+  String get bottomNavbarSplitSearchNote =>
+      'In the Split style, Search always has its own button.';
+
+  @override
+  String get bottomNavbarButtonsNote =>
+      'These decide which tabs you can pin to the bottom bar and what shows in the You menu.';
+
+  @override
+  String get navYou => 'You';
 }

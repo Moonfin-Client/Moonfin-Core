@@ -10,6 +10,7 @@ import '../../l10n/app_localizations.dart';
 import '../util/error_message.dart';
 import 'bounded_network_image.dart';
 import 'overlay_sheet.dart';
+import 'remote_search_sheet.dart';
 
 void showRemoteControlDialog(BuildContext context) {
   showFocusRestoringModalBottomSheet<void>(
@@ -40,6 +41,9 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet> {
   String? _volumeSessionId;
   Timer? _refreshTimer;
   StreamSubscription<ServerWebSocketMessage>? _socketSub;
+  final _searchConnected = ValueNotifier<bool>(true);
+  String? _searchSessionId;
+  String? _searchDeviceId;
 
   @override
   void initState() {
@@ -70,6 +74,7 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet> {
   void dispose() {
     _socketSub?.cancel();
     _refreshTimer?.cancel();
+    _searchConnected.dispose();
     super.dispose();
   }
 
@@ -106,6 +111,15 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet> {
 
         return _isPotentiallyControllable(s);
       }).toList();
+      if (_searchSessionId != null) {
+        _searchConnected.value =
+            identical(client.sessionApi, _sessionApi) &&
+            controllable.any(
+              (s) =>
+                  s['Id']?.toString() == _searchSessionId &&
+                  s['DeviceId']?.toString() == _searchDeviceId,
+            );
+      }
       setState(() {
         _sessions = controllable;
         _loading = false;
@@ -120,6 +134,7 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet> {
       });
     } catch (e) {
       if (!mounted) return;
+      if (_searchSessionId != null) _searchConnected.value = false;
       setState(() {
         _error = describeError(e, AppLocalizations.of(context));
         _loading = false;
@@ -156,7 +171,10 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet> {
       return true;
     }
 
-    final commands = session['SupportedCommands'];
+    final capabilities = session['Capabilities'];
+    final commands =
+        session['SupportedCommands'] ??
+        (capabilities is Map ? capabilities['SupportedCommands'] : null);
     if (commands is List) {
       return commands.whereType<String>().isNotEmpty;
     }
@@ -209,6 +227,38 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet> {
     return _run(
       () => _sessionApi.sendGeneralCommand(id, commandName, arguments: args),
     );
+  }
+
+  Future<void> _openSearch() async {
+    final session = _selectedSession;
+    final id = session?['Id']?.toString();
+    if (session == null || id == null) return;
+    _searchSessionId = id;
+    _searchDeviceId = session['DeviceId']?.toString();
+    _searchConnected.value = true;
+    try {
+      await showFocusRestoringModalBottomSheet<void>(
+        context: context,
+        isScrollControlled: true,
+        builder: (_) => RemoteSearchSheet(
+          sessionApi: _sessionApi,
+          sessionId: id,
+          deviceName:
+              session['DeviceName']?.toString() ??
+              session['Client']?.toString() ??
+              '',
+          // Moonfin's receivers replace the phrase. Others may insert text,
+          // so leave their SendString as an explicit one-shot send.
+          liveUpdates: (session['Client']?.toString() ?? '')
+              .toLowerCase()
+              .contains('moonfin'),
+          connected: _searchConnected,
+        ),
+      );
+    } finally {
+      _searchSessionId = null;
+      _searchDeviceId = null;
+    }
   }
 
   /// Hands the slider back to the session once it reports a volume close to
@@ -492,9 +542,19 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet> {
     final runtimeTicks = (nowPlaying?['RunTimeTicks'] as num?)?.toInt();
     final volumeLevel = (playState?['VolumeLevel'] as num?)?.toDouble();
     final supportsSetVolume = _supportsCommand(session, 'SetVolume');
+    final search = <Widget>[
+      if (_supportsCommand(session, 'GoToSearch') &&
+          _supportsCommand(session, 'SendString'))
+        TextButton.icon(
+          onPressed: _openSearch,
+          icon: const Icon(Icons.search),
+          label: Text(l10n.search),
+        ),
+    ];
 
     if (nowPlaying == null) {
       return [
+        ...search,
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 28),
           child: Center(
@@ -514,6 +574,7 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet> {
     }
 
     return [
+      ...search,
       _buildNowPlayingCard(theme, nowPlaying, positionTicks, runtimeTicks),
       const SizedBox(height: 18),
       _buildTransportRow(theme, isPaused),
@@ -809,7 +870,10 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet> {
   }
 
   bool _supportsCommand(Map<String, dynamic> session, String command) {
-    final commands = session['SupportedCommands'];
+    final capabilities = session['Capabilities'];
+    final commands =
+        session['SupportedCommands'] ??
+        (capabilities is Map ? capabilities['SupportedCommands'] : null);
     return commands is List && commands.whereType<String>().contains(command);
   }
 

@@ -96,7 +96,7 @@ class ParentCollection {
 
   /// Titles TMDB files under this collection that the library lacks, from
   /// Seerr. Kept apart from [items] because the library lists feed user-data
-  /// sync and the classic collection row, and neither can take a Seerr id.
+  /// sync and the classic collection rows, and neither can take a Seerr id.
   final List<AggregatedItem> missingItems;
 
   ParentCollection({
@@ -118,6 +118,15 @@ class ParentCollection {
         boxSetItem: boxSetItem,
         items: items,
         missingItems: missing,
+      );
+
+  ParentCollection withItems(List<AggregatedItem> updated) =>
+      ParentCollection(
+        id: id,
+        name: name,
+        boxSetItem: boxSetItem,
+        items: updated,
+        missingItems: missingItems,
       );
 }
 
@@ -417,12 +426,6 @@ class ItemDetailViewModel extends ChangeNotifier {
   CollectionSortOption _collectionSort = CollectionSortOption.releaseAscending;
   CollectionSortOption get collectionSort => _collectionSort;
 
-  String? _parentCollectionName;
-  String? get parentCollectionName => _parentCollectionName;
-
-  List<AggregatedItem> _parentCollectionItems = const [];
-  List<AggregatedItem> get parentCollectionItems => _parentCollectionItems;
-
   List<ParentCollection> _parentCollections = const [];
 
   /// Bumped on every publication of [_parentCollections], so a Seerr pass
@@ -610,8 +613,16 @@ class ItemDetailViewModel extends ChangeNotifier {
     _tracks = patch(_tracks);
     _collectionItems = patch(_collectionItems);
     _playlistItems = patch(_playlistItems);
-    _parentCollectionItems = patch(_parentCollectionItems);
     _features = patch(_features);
+    final collections = [..._parentCollections];
+    var collectionsChanged = false;
+    for (var i = 0; i < collections.length; i++) {
+      final items = patch(collections[i].items);
+      if (identical(items, collections[i].items)) continue;
+      collections[i] = collections[i].withItems(items);
+      collectionsChanged = true;
+    }
+    if (collectionsChanged) _parentCollections = collections;
 
     if (changed) notifyListeners();
     if (!_syncingUserData) _userDataStale = true;
@@ -634,10 +645,11 @@ class ItemDetailViewModel extends ChangeNotifier {
         _tracks,
         _collectionItems,
         _playlistItems,
-        _parentCollectionItems,
         _features,
       ])
         for (final item in list) item.id,
+      for (final collection in _parentCollections)
+        for (final item in collection.items) item.id,
     };
     _syncingUserData = true;
     try {
@@ -762,8 +774,6 @@ class ItemDetailViewModel extends ChangeNotifier {
     _state = ItemDetailState.loading;
     _collectionItems = const [];
     _missingCollectionItems = const [];
-    _parentCollectionItems = const [];
-    _parentCollectionName = null;
     _parentCollections = const [];
     _flattenedIds = null;
     _customOrderIds = null;
@@ -1891,8 +1901,6 @@ class ItemDetailViewModel extends ChangeNotifier {
   Future<void> _loadParentCollection() async {
     final item = _item;
     if (item == null) {
-      _parentCollectionItems = const [];
-      _parentCollectionName = null;
       _parentCollections = const [];
       notifyListeners();
       return;
@@ -1922,14 +1930,12 @@ class ItemDetailViewModel extends ChangeNotifier {
 
       if (boxSetInfo.isEmpty) {
         _parentCollections = const [];
-        _parentCollectionItems = const [];
-        _parentCollectionName = null;
         notifyListeners();
         return;
       }
 
-      // Keep collections in a stable order so the rows and the legacy
-      // single-collection fields don't shuffle around between opens.
+      // Keep collections in a stable order so the rows don't shuffle around
+      // between opens.
       final entries = boxSetInfo.entries.toList();
       final ordered = List<ParentCollection?>.filled(entries.length, null);
       final fetchFutures = <Future<void>>[];
@@ -1967,13 +1973,6 @@ class ItemDetailViewModel extends ChangeNotifier {
       final collections = ordered.whereType<ParentCollection>().toList();
 
       _parentCollections = collections;
-      if (collections.isNotEmpty) {
-        _parentCollectionName = collections.first.name;
-        _parentCollectionItems = collections.first.items;
-      } else {
-        _parentCollectionName = null;
-        _parentCollectionItems = const [];
-      }
 
       notifyListeners();
       final load = ++_parentCollectionsLoad;

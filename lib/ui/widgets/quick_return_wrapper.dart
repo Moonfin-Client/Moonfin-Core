@@ -1,13 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../../util/platform_detection.dart';
-import '../../preference/preference_constants.dart';
-import '../../preference/user_preferences.dart';
 import '../navigation/route_lifecycle_observer.dart';
+import 'bottom_nav/bottom_navbar.dart';
 import 'overlay_sheet.dart';
 
 const _kScrolledAwayThreshold = 20.0;
@@ -185,10 +183,10 @@ class _QuickReturnWrapperState extends State<QuickReturnWrapper>
   Widget build(BuildContext context) {
     if (PlatformDetection.isTV) return widget.child;
 
-    final prefs = GetIt.instance<UserPreferences>();
-    final navbarPosition = prefs.get(UserPreferences.navbarPosition);
-    final raiseButton = navbarPosition == NavbarPosition.bottom && !widget.hideNavbar;
-    final bottomPadding = raiseButton ? 78.0 : 24.0;
+    // Only screens that really show the bottom navbar have the scope, and its
+    // height already counts the system inset.
+    final barInset =
+        widget.hideNavbar ? null : BottomNavInsetScope.maybeOf(context);
 
     return Stack(
       fit: StackFit.expand,
@@ -196,8 +194,9 @@ class _QuickReturnWrapperState extends State<QuickReturnWrapper>
         widget.child,
         Positioned(
           right: 24,
-          bottom: bottomPadding,
+          bottom: barInset != null ? barInset + 12 : 24,
           child: SafeArea(
+            bottom: barInset == null,
             child: AnimatedOpacity(
               opacity: _isScrolledAway ? 1.0 : 0.0,
               duration: const Duration(milliseconds: 200),

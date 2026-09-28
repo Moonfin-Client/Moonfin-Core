@@ -221,6 +221,8 @@ class MediaKitPlayerBackend extends PlayerBackend {
   }
 
   bool _isStale = false;
+  // Held the way media_kit normalizes it, since that is what its playlist
+  // reports back. A Windows path comes back with forward slashes.
   String? _currentUrl;
 
   // The viewer asked for no subtitles. Held here so the deferred visibility
@@ -657,7 +659,8 @@ class MediaKitPlayerBackend extends PlayerBackend {
         : payload['url']?.toString() ?? '';
     if (url.isEmpty) return;
 
-    _currentUrl = url;
+    final media = Media(url);
+    _currentUrl = media.uri;
     _isStale = true;
     _embeddedCaptionTracks = const [];
     _ccTrackSids = const [];
@@ -679,7 +682,6 @@ class MediaKitPlayerBackend extends PlayerBackend {
       await _nativeSetProperty(native, 'sub-ass', 'yes');
     }
 
-    final media = Media(url);
     final openPaused = !autoPlay || startPosition > Duration.zero;
     // Whatever mpv reported for the previous title must not answer for this
     // one; the listener repopulates it once this file is loaded.
@@ -695,7 +697,7 @@ class MediaKitPlayerBackend extends PlayerBackend {
       await _letterboxCropper.setEnabled(
         _prefs.get(UserPreferences.cropBlackBars),
       );
-      await _letterboxCropper.onSourceOpened(url);
+      await _letterboxCropper.onSourceOpened(media.uri);
     }());
   }
 

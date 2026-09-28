@@ -24,6 +24,7 @@ import '../../../util/fullscreen_helper.dart';
 import '../../../util/scroll_sensitivity_binding.dart';
 import '../../widgets/player_volume_control.dart';
 import '../../widgets/playback/playback_time_row.dart';
+import '../../widgets/playback/player_logo.dart';
 import '../../widgets/playback/seek_icons.dart';
 import '../../widgets/playback/trickplay.dart';
 import '../../widgets/playback/trickplay_tile_image.dart';
@@ -4598,10 +4599,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                 tooltip: PlatformDetection.useDesktopUi
                     ? _tooltipMessage(l10n.back, shortcut: 'Esc')
                     : null,
-                icon: const AdaptiveIcon(
+                icon: AdaptiveIcon(
                   Icons.arrow_back,
                   color: Colors.white,
-                  size: 24,
+                  size: 24 * _osdButtonScale,
                 ),
               ),
             const SizedBox(width: AppSpacing.spaceSm),
@@ -4671,12 +4672,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       mainAxisSize: MainAxisSize.min,
       children: [
         if (logoUrl != null) ...[
-          Image.network(
-            logoUrl,
-            headers: serverImageHeaders,
-            height: 64,
-            fit: BoxFit.contain,
-            alignment: Alignment.centerLeft,
+          PlayerLogo(
+            image: NetworkImage(logoUrl, headers: serverImageHeaders),
             errorBuilder: (_, _, _) => Text(
               seriesName ?? titleText,
               style: const TextStyle(
@@ -5458,12 +5455,20 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     return kIsWeb ? tokenAuthedUrl(client, url) : url;
   }
 
+  /// The buttons follow the UI scale the way the text around them already
+  /// does through the text scaler. A phone keeps its sizes like the rest of
+  /// the app.
+  double get _osdButtonScale => PlatformDetection.useMobileUi
+      ? 1.0
+      : _prefs.get(UserPreferences.desktopUiScale).scaleFactor;
+
   Widget _buildTvTransportRow() {
     final l10n = AppLocalizations.of(context);
     final isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
-    final buttonExtent = isLandscape ? 56.0 : 48.0;
-    final buttonIconSize = isLandscape ? 28.0 : 24.0;
+    final scale = _osdButtonScale;
+    final buttonExtent = (isLandscape ? 56.0 : 48.0) * scale;
+    final buttonIconSize = (isLandscape ? 28.0 : 24.0) * scale;
 
     return FocusTraversalGroup(
       policy: ReadingOrderTraversalPolicy(),
@@ -5635,8 +5640,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
         final isLandscape =
             MediaQuery.of(context).orientation == Orientation.landscape;
-        final secondaryIconSize = isLandscape ? 28.0 : 24.0;
-        final secondaryExtent = isLandscape ? 56.0 : 48.0;
+        final scale = _osdButtonScale;
+        final secondaryIconSize = (isLandscape ? 28.0 : 24.0) * scale;
+        final secondaryExtent = (isLandscape ? 56.0 : 48.0) * scale;
         final secondaryTextSize = isLandscape
             ? AppTypography.fontSizeMd
             : AppTypography.fontSizeSm;
@@ -6654,6 +6660,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       builder: (context, snap) {
         final l10n = AppLocalizations.of(context);
         final isPlaying = _displayPlaying;
+        final scale = _osdButtonScale;
 
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -6667,8 +6674,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                     _controlButton(
                       Icons.skip_previous_rounded,
                       onPressed: _manager.previous,
-                      size: 40,
-                      extent: 72,
+                      size: 40 * scale,
+                      extent: 72 * scale,
                       tooltip: l10n.playerTooltipPrevious,
                     ),
                     _controlButton(
@@ -6676,8 +6683,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                       onPressed: () => _seekRelative(
                         -_prefs.get(UserPreferences.skipBackLength),
                       ),
-                      size: 46,
-                      extent: 78,
+                      size: 46 * scale,
+                      extent: 78 * scale,
                       tooltip: _tooltipMessage(
                         l10n.playerTooltipSeekBack,
                         shortcut: 'Left',
@@ -6691,8 +6698,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
               isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
               onPressed: () =>
                   isPlaying ? _manager.pause() : _resumeWithConfiguredRewind(),
-              size: 64,
-              extent: 92,
+              size: 64 * scale,
+              extent: 92 * scale,
               tooltip: _tooltipMessage(
                 isPlaying ? l10n.pause : l10n.play,
                 shortcut: 'Space',
@@ -6711,8 +6718,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                       onPressed: () => _seekRelative(
                         _prefs.get(UserPreferences.skipForwardLength),
                       ),
-                      size: 46,
-                      extent: 78,
+                      size: 46 * scale,
+                      extent: 78 * scale,
                       tooltip: _tooltipMessage(
                         l10n.playerTooltipSeekForward,
                         shortcut: 'Right',
@@ -6721,8 +6728,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                     _controlButton(
                       Icons.skip_next_rounded,
                       onPressed: _manager.next,
-                      size: 40,
-                      extent: 72,
+                      size: 40 * scale,
+                      extent: 72 * scale,
                       tooltip: l10n.next,
                     ),
                   ],
@@ -7160,7 +7167,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
       if (!mounted) return;
 
-      final delayLimits = delayLimitsFor(_activeBackend, audio: audio);
+      final backend = _activeBackend;
+      final delayLimits = delayLimitsFor(backend, audio: audio);
       final result = await TrackSelectorDialog.show(
         context,
         title: audio ? l10n.audioTrack : l10n.subtitleTrack,
@@ -7170,15 +7178,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         footer: delayLimits == null
             ? null
             : DelayFooter(
-                initialDelay: audio ? _audioDelay : _subtitleDelay,
+                initialDelay: audio
+                    ? _audioDelay
+                    : backend is Media3PlayerBackend
+                    ? backend.subtitleDelaySeconds
+                    : _subtitleDelay,
                 label: audio ? l10n.audioDelay : l10n.subtitleDelay,
                 minDelay: delayLimits.$1,
                 maxDelay: delayLimits.$2,
-                autoOffset: audio
-                    ? 0.0
-                    : (_activeBackend?.subtitleAutoOffsetSeconds ?? 0.0),
-                autoOffsetStream:
-                    audio ? null : _activeBackend?.subtitleAutoOffsetStream,
                 onDelayChanged: (d) => _applyDelay(audio: audio, delay: d),
                 formatDelay: _formatDelay,
               ),

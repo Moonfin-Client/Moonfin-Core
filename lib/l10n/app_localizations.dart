@@ -1456,6 +1456,12 @@ abstract class AppLocalizations {
   /// **'Grandparents'**
   String get uiScaleGrandparents;
 
+  /// UI scaling option above Grandparents
+  ///
+  /// In en, this message translates to:
+  /// **'Great-Grandparents'**
+  String get uiScaleGreatGrandparents;
+
   /// Section header for scroll direction selection in library display settings
   ///
   /// In en, this message translates to:
@@ -3357,12 +3363,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Subtitle Delay'**
   String get subtitleDelay;
-
-  /// Read-only line under the subtitle delay showing a correction the player applied on its own, value is a formatted delay like +2000 ms
-  ///
-  /// In en, this message translates to:
-  /// **'Auto {value}'**
-  String subtitleDelayAuto(String value);
 
   /// Button label to reset a value
   ///
@@ -22333,6 +22333,30 @@ abstract class AppLocalizations {
   /// **'Artwork, one play button and the episodes.'**
   String get setupDetailMinimalistHint;
 
+  /// Setup question asking which style the bottom navigation bar should use
+  ///
+  /// In en, this message translates to:
+  /// **'How should the bottom bar look?'**
+  String get setupNavbarStyleQuestion;
+
+  /// What the Dock bottom bar style gives you
+  ///
+  /// In en, this message translates to:
+  /// **'A floating pill with labels under every tab.'**
+  String get setupNavbarStyleDockHint;
+
+  /// What the Split bottom bar style gives you
+  ///
+  /// In en, this message translates to:
+  /// **'Search gets its own button, and the bar shrinks while you scroll.'**
+  String get setupNavbarStyleSplitHint;
+
+  /// What the Strip bottom bar style gives you
+  ///
+  /// In en, this message translates to:
+  /// **'A full-width bar along the bottom edge.'**
+  String get setupNavbarStyleStripHint;
+
   /// Label above the theme swatches on the final setup screen
   ///
   /// In en, this message translates to:
@@ -22870,6 +22894,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'In landscape the camera housing covers one edge of the screen. This holds the picture back from it, which only changes anything for video wide enough to reach that far.'**
   String get keepVideoClearOfDynamicIslandDescription;
+
+  /// Settings title for choosing how the mobile bottom navigation bar looks
+  ///
+  /// In en, this message translates to:
+  /// **'Bottom Bar Style'**
+  String get bottomNavbarStyle;
+
+  /// Bottom bar style: a floating pill with labelled tabs
+  ///
+  /// In en, this message translates to:
+  /// **'Dock'**
+  String get bottomNavbarStyleDock;
+
+  /// Bottom bar style: tabs in one capsule with search as its own round button
+  ///
+  /// In en, this message translates to:
+  /// **'Split'**
+  String get bottomNavbarStyleSplit;
+
+  /// Bottom bar style: a full-width bar along the bottom edge
+  ///
+  /// In en, this message translates to:
+  /// **'Strip'**
+  String get bottomNavbarStyleStrip;
+
+  /// Settings title for choosing which tabs sit on the mobile bottom navigation bar
+  ///
+  /// In en, this message translates to:
+  /// **'Bottom Bar Tabs'**
+  String get bottomNavbarTabs;
+
+  /// Explains the bottom bar tabs screen
+  ///
+  /// In en, this message translates to:
+  /// **'Pin up to 3 tabs between Home and You. Everything else is in the You menu.'**
+  String get bottomNavbarTabsDescription;
+
+  /// Shown when the bottom bar tabs are picked from the navigation button settings
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic'**
+  String get bottomNavbarTabsAutomatic;
+
+  /// Section header for the tabs pinned to the bottom bar
+  ///
+  /// In en, this message translates to:
+  /// **'Pinned'**
+  String get bottomNavbarTabsPinned;
+
+  /// Section header for tabs that can be pinned to the bottom bar
+  ///
+  /// In en, this message translates to:
+  /// **'Available'**
+  String get bottomNavbarTabsAvailable;
+
+  /// Action that clears the pinned bottom bar tabs so they are picked automatically again
+  ///
+  /// In en, this message translates to:
+  /// **'Reset to Automatic'**
+  String get bottomNavbarTabsReset;
+
+  /// Hint shown when the maximum number of bottom bar tabs is already pinned
+  ///
+  /// In en, this message translates to:
+  /// **'You can pin up to 3 tabs. Remove one to pin another.'**
+  String get bottomNavbarTabsLimit;
+
+  /// Hint on a bottom bar tab that can't be pinned because its navigation button setting is off
+  ///
+  /// In en, this message translates to:
+  /// **'Turned off under Buttons'**
+  String get bottomNavbarTabTurnedOff;
+
+  /// Note on the bottom bar tabs screen about the Split style
+  ///
+  /// In en, this message translates to:
+  /// **'In the Split style, Search always has its own button.'**
+  String get bottomNavbarSplitSearchNote;
+
+  /// Note under the navigation buttons section while the bottom bar is in use
+  ///
+  /// In en, this message translates to:
+  /// **'These decide which tabs you can pin to the bottom bar and what shows in the You menu.'**
+  String get bottomNavbarButtonsNote;
+
+  /// Bottom bar tab that opens the user's own menu with their profile, extra destinations and settings
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get navYou;
 }
 
 class _AppLocalizationsDelegate
