@@ -90,7 +90,7 @@ func mediaIsOpen(_ state: PlayerState) -> Bool {
 
 enum ZoomMode: String, StringRepresentableEnum, CaseIterable {
     case fit = "Fit"
-    case autoCrop = "Auto Crop"
+    case autoCrop = "Zoom to Fill"
     case stretch = "Stretch"
 
     var displayName: String { rawValue }
