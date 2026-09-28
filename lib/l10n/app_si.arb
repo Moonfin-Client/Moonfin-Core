@@ -2828,10 +2828,6 @@
     "@fit": {
         "description": "Zoom mode: fit"
     },
-    "autoCrop": "ස්වයංක්‍රීය බෝග",
-    "@autoCrop": {
-        "description": "Zoom mode: auto crop"
-    },
     "stretch": "දිගු කරන්න",
     "@stretch": {
         "description": "Zoom mode: stretch"

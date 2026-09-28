@@ -2828,10 +2828,6 @@
     "@fit": {
         "description": "Zoom mode: fit"
     },
-    "autoCrop": "Mazao ya Kiotomatiki",
-    "@autoCrop": {
-        "description": "Zoom mode: auto crop"
-    },
     "stretch": "Nyosha",
     "@stretch": {
         "description": "Zoom mode: stretch"

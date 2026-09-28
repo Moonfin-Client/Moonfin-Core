@@ -3210,7 +3210,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get fit => 'Sopiva';
 
   @override
-  String get autoCrop => 'Automaattinen rajaus';
+  String get zoomToFill => 'Zoom to Fill';
 
   @override
   String get cropBlackBars => 'Leikkaa mustat palkit pois';

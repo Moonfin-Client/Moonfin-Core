@@ -3195,7 +3195,7 @@ class AppLocalizationsDa extends AppLocalizations {
   String get fit => 'Passe';
 
   @override
-  String get autoCrop => 'Automatisk beskæring';
+  String get zoomToFill => 'Zoom to Fill';
 
   @override
   String get cropBlackBars => 'Crop black bars';

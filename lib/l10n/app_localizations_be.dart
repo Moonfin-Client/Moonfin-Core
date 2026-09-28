@@ -3209,7 +3209,7 @@ class AppLocalizationsBe extends AppLocalizations {
   String get fit => 'Прыстасаваны';
 
   @override
-  String get autoCrop => 'Аўтаматычнае абрэзка';
+  String get zoomToFill => 'Zoom to Fill';
 
   @override
   String get cropBlackBars => 'Crop black bars';

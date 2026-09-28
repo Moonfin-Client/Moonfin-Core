@@ -3212,7 +3212,7 @@ class AppLocalizationsSq extends AppLocalizations {
   String get fit => 'Përshtatet';
 
   @override
-  String get autoCrop => 'Prirje automatike';
+  String get zoomToFill => 'Zoom to Fill';
 
   @override
   String get cropBlackBars => 'Crop black bars';

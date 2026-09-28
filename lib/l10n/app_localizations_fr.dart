@@ -3228,7 +3228,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get fit => 'Ajuster';
 
   @override
-  String get autoCrop => 'Recadrage auto';
+  String get zoomToFill => 'Zoom to Fill';
 
   @override
   String get cropBlackBars => 'Rogner les bandes noires';

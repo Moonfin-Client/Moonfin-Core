@@ -3208,7 +3208,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get fit => 'Fit';
 
   @override
-  String get autoCrop => 'Automatisch bijsnijden';
+  String get zoomToFill => 'Zoom to Fill';
 
   @override
   String get cropBlackBars => 'Crop black bars';

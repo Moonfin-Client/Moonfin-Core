@@ -2828,10 +2828,6 @@
     "@fit": {
         "description": "Zoom mode: fit"
     },
-    "autoCrop": "Crop Otomatis",
-    "@autoCrop": {
-        "description": "Zoom mode: auto crop"
-    },
     "stretch": "Rentangkan",
     "@stretch": {
         "description": "Zoom mode: stretch"

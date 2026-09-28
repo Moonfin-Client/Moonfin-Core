@@ -3223,7 +3223,7 @@ class AppLocalizationsGl extends AppLocalizations {
   String get fit => 'Encaixar';
 
   @override
-  String get autoCrop => 'Recorte automático';
+  String get zoomToFill => 'Zoom to Fill';
 
   @override
   String get cropBlackBars => 'Crop black bars';

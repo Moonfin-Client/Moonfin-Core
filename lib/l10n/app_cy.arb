@@ -2828,10 +2828,6 @@
     "@fit": {
         "description": "Zoom mode: fit"
     },
-    "autoCrop": "Cnwd Auto",
-    "@autoCrop": {
-        "description": "Zoom mode: auto crop"
-    },
     "stretch": "Ymestyn",
     "@stretch": {
         "description": "Zoom mode: stretch"

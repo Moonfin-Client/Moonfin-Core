@@ -3197,7 +3197,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get fit => 'Sesuai';
 
   @override
-  String get autoCrop => 'Crop Otomatis';
+  String get zoomToFill => 'Zoom to Fill';
 
   @override
   String get cropBlackBars => 'Crop black bars';

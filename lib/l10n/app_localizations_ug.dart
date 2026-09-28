@@ -3198,7 +3198,7 @@ class AppLocalizationsUg extends AppLocalizations {
   String get fit => 'Fit';
 
   @override
-  String get autoCrop => 'ئاپتوماتىك كېسىش';
+  String get zoomToFill => 'Zoom to Fill';
 
   @override
   String get cropBlackBars => 'Crop black bars';

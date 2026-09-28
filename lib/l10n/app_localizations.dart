@@ -5564,7 +5564,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Zoom to Fill'**
-  String get autoCrop;
+  String get zoomToFill;
 
   /// Setting to detect and crop encoded letterbox/pillarbox bars
   ///

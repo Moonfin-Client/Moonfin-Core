@@ -3209,7 +3209,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get fit => 'Illesztés';
 
   @override
-  String get autoCrop => 'Automatikus kivágás';
+  String get zoomToFill => 'Zoom to Fill';
 
   @override
   String get cropBlackBars => 'Crop black bars';
