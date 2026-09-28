@@ -45,6 +45,50 @@ void main() {
   });
 
   test(
+    'volume keeps percent units and persists into the next source',
+    () async {
+      await backend.setVolume(1);
+      expect(calls.last.method, 'setVolume');
+      expect(calls.last.arguments, {'volume': 1.0});
+      await backend.play({
+        'url': 'https://example.com/video',
+        'mediaType': 'video',
+      });
+      final source = calls.lastWhere((call) => call.method == 'setSource');
+      expect(source.arguments['volume'], 1.0);
+    },
+  );
+
+  test(
+    'native volume failure propagates and does not replace the stored level',
+    () async {
+      await backend.setVolume(40);
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(control, (call) async {
+            calls.add(call);
+            if (call.method == 'setVolume') {
+              throw PlatformException(code: 'no_player');
+            }
+            return null;
+          });
+      await expectLater(
+        backend.setVolume(5),
+        throwsA(isA<PlatformException>()),
+      );
+      await backend.play({
+        'url': 'https://example.com/video',
+        'mediaType': 'video',
+      });
+      expect(
+        calls
+            .lastWhere((call) => call.method == 'setSource')
+            .arguments['volume'],
+        40,
+      );
+    },
+  );
+
+  test(
     'audio-only playback does not claim the visible native player',
     () async {
       expect(backend.isPlayerPresented, isFalse);

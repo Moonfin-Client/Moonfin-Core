@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:custom_tv_text_field/custom_tv_text_field.dart';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -48,6 +50,18 @@ class _FakeServerRepository extends Fake implements ServerRepository {}
 class _FakeUserRepository extends Fake implements UserRepository {}
 
 class _FakePluginSyncService extends Fake implements PluginSyncService {}
+
+class _VolumeBackend extends Fake implements PlayerBackend {
+  final volumes = <double>[];
+  bool fail = false;
+  Completer<void>? barrier;
+  @override
+  Future<void> setVolume(double volume) async {
+    if (fail) throw StateError('Volume unavailable');
+    volumes.add(volume);
+    await barrier?.future;
+  }
+}
 
 class _AppleTvBackend extends Fake implements AppleTvBackend {
   bool dismissed = false;
@@ -630,6 +644,143 @@ void main() {
     });
   });
 
+  for (final startingPage in [
+    Destinations.home,
+    Destinations.videoPlayer,
+    Destinations.search,
+  ]) {
+    testWidgets('mounted remote Search accepts live text from $startingPage', (
+      tester,
+    ) async {
+      PlatformDetection.setTvMode(true);
+      final controller = TextEditingController();
+      var fieldKey = GlobalKey<CustomTVTextFieldState>();
+      late RemoteSearchSession session;
+      final router = GoRouter(
+        initialLocation: startingPage,
+        routes: [
+          GoRoute(
+            path: Destinations.home,
+            builder: (_, _) => const SizedBox(),
+          ),
+          GoRoute(
+            path: Destinations.videoPlayer,
+            builder: (_, _) => const SizedBox(),
+          ),
+          GoRoute(
+            path: Destinations.search,
+            builder: (_, state) {
+              if (state.extra == null) return const SizedBox();
+              session = state.extra as RemoteSearchSession;
+              return Scaffold(
+                body: CustomTVTextField(
+                  key: fieldKey,
+                  controller: controller,
+                  popParentOnKeyboardClose: false,
+                ),
+              );
+            },
+          ),
+        ],
+      );
+      final receiver = SessionRepository(
+        _FakeAuthStore(),
+        _FakeAuthPrefs(),
+        _FakeCredentialStore(),
+        _FakeClientFactory(),
+        _FakeSocketHandler(),
+        _FakeServerRepository(),
+        _FakeUserRepository(),
+        _FakePluginSyncService(),
+        router: router,
+      );
+      Future<void> command(
+        String name, [
+        Map<String, String> args = const {},
+      ]) => receiver.handleRemoteCommandForTest(
+        GeneralCommandMessage(name: name, arguments: args),
+      );
+      await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+      await tester.pumpAndSettle();
+      await command('GoToSearch', {'MoonfinInputId': 'phone'});
+      await tester.pumpAndSettle();
+      session.attach((value) => controller.text = value);
+      // The settled visible route, not the pending route request, owns typing.
+      expect(router.state.uri.path, Destinations.search);
+      await command('SendString', {
+        'String': 'alien',
+        'MoonfinInputId': 'phone',
+        'MoonfinRevision': '1',
+      });
+      expect(controller.text, 'alien');
+      await command('SendString', {
+        'String': '',
+        'MoonfinInputId': 'phone',
+        'MoonfinRevision': '2',
+      });
+      expect(controller.text, '');
+      await command('SendString', {
+        'String': 'stale',
+        'MoonfinInputId': 'old',
+        'MoonfinRevision': '9',
+      });
+      expect(controller.text, '');
+      // A receiver keyboard can take Back without leaving Search.
+      bool keyboardBack(KeyEvent event) =>
+          event is KeyDownEvent &&
+          event.logicalKey == LogicalKeyboardKey.escape &&
+          CustomTVTextField.closeTopKeyboard();
+      HardwareKeyboard.instance.addHandler(keyboardBack);
+      fieldKey.currentState!.openKeyboard();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
+      await command('Back');
+      HardwareKeyboard.instance.removeHandler(keyboardBack);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
+      expect(session.active, true);
+      await command('SendString', {
+        'String': 'aliens',
+        'MoonfinInputId': 'phone',
+        'MoonfinRevision': '3',
+      });
+      expect(controller.text, 'aliens');
+      // A fresh Search replaces this one, then old text cannot take ownership.
+      fieldKey = GlobalKey<CustomTVTextFieldState>();
+      await command('GoToSearch', {'MoonfinInputId': 'new'});
+      await tester.pumpAndSettle();
+      session.attach((value) => controller.text = value);
+      expect(
+        router.routerDelegate.currentConfiguration.matches.length,
+        startingPage == Destinations.home ? 2 : 1,
+      );
+      await command('SendString', {
+        'String': 'old',
+        'MoonfinInputId': 'phone',
+        'MoonfinRevision': '4',
+      });
+      expect(controller.text, '');
+      await command('SendString', {
+        'String': 'new',
+        'MoonfinInputId': 'new',
+        'MoonfinRevision': '1',
+      });
+      expect(controller.text, 'new');
+      router.go(Destinations.home);
+      await tester.pumpAndSettle();
+      await command('SendString', {
+        'String': 'late',
+        'MoonfinInputId': 'new',
+        'MoonfinRevision': '2',
+      });
+      expect(session.active, false);
+      await tester.pumpWidget(const SizedBox());
+      receiver.dispose();
+      router.dispose();
+      controller.dispose();
+    });
+  }
+
   group('play and pause', () {
     test('PlayPause pauses what is playing', () async {
       manager.state.setPlaying(true);
@@ -709,6 +860,109 @@ void main() {
   });
 
   group('stepped volume', () {
+    late _VolumeBackend backend;
+    setUp(() {
+      PlatformDetection.setTvMode(true);
+      backend = _VolumeBackend();
+      manager.backend = backend;
+    });
+
+    test(
+      'overlapping steps wait for the previous volume to be applied',
+      () async {
+        manager.trackedVolume = 40;
+        backend.barrier = Completer<void>();
+        final first = sendGeneral('VolumeUp');
+        final second = sendGeneral('VolumeUp');
+        await Future<void>.delayed(Duration.zero);
+        expect(backend.volumes, [50]);
+        expect(manager.trackedVolume, 40);
+        backend.barrier!.complete();
+        await Future.wait([first, second]);
+        expect(backend.volumes, [50, 60]);
+        expect(manager.trackedVolume, 60);
+      },
+    );
+
+    test('disposal cancels unsent receiver volume commands', () async {
+      backend.barrier = Completer<void>();
+      final first = sendGeneral('SetVolume', args: {'Volume': '25'});
+      final second = sendGeneral('SetVolume', args: {'Volume': '75'});
+      await Future<void>.delayed(Duration.zero);
+      repository.dispose();
+      backend.barrier!.complete();
+      await Future.wait([first, second]);
+      expect(backend.volumes, [25]);
+    });
+
+    for (final (raw, expected) in [
+      ('0', 0.0),
+      ('1', 1.0),
+      ('2', 2.0),
+      ('25', 25.0),
+      ('100', 100.0),
+      ('-1', 0.0),
+      ('101', 100.0),
+      ('0.5', 50.0),
+    ]) {
+      test('SetVolume $raw applies $expected percent', () async {
+        await sendGeneral('SetVolume', args: {'Volume': raw});
+        expect(backend.volumes, [expected]);
+        expect(manager.trackedVolume, expected);
+      });
+    }
+    for (final raw in [
+      '',
+      'oops',
+      '25garbage',
+      'NaN',
+      'Infinity',
+      '-Infinity',
+    ]) {
+      test('SetVolume ignores invalid $raw', () async {
+        await sendGeneral('SetVolume', args: {'Volume': raw});
+        expect(backend.volumes, isEmpty);
+        expect(manager.trackedVolume, 100);
+      });
+    }
+    test(
+      'mute restores the local level and repeated mute/unmute is idempotent',
+      () async {
+        manager.trackedVolume = 40;
+        await sendGeneral('Mute');
+        await sendGeneral('Mute');
+        await sendGeneral('Unmute');
+        await sendGeneral('Unmute');
+        manager.trackedVolume = 25;
+        await sendGeneral('ToggleMute');
+        await sendGeneral('ToggleMute');
+        expect(backend.volumes, [0, 40, 0, 25]);
+        expect(manager.trackedVolume, 25);
+      },
+    );
+    test('unmute after a local change preserves the local volume', () async {
+      manager.trackedVolume = 40;
+      await sendGeneral('Mute');
+      manager.trackedVolume = 60;
+      await sendGeneral('Unmute');
+      expect(backend.volumes, [0]);
+      expect(manager.trackedVolume, 60);
+    });
+    test(
+      'failed or unavailable backends do not report a changed volume',
+      () async {
+        manager.trackedVolume = 40;
+        backend.fail = true;
+        await expectLater(
+          sendGeneral('SetVolume', args: {'Volume': '25'}),
+          throwsStateError,
+        );
+        expect(manager.trackedVolume, 40);
+        manager.backend = null;
+        await sendGeneral('SetVolume', args: {'Volume': '25'});
+        expect(manager.trackedVolume, 40);
+      },
+    );
     test('VolumeUp steps up from what the device last reported', () async {
       manager.reportVolumeState(volume: 40, isMuted: false);
 
@@ -747,6 +1001,34 @@ void main() {
 
       expect(manager.trackedVolume, 25);
     });
+  });
+
+  test('a mobile receiver adjusts and reports system volume without changing player gain', () async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+    addTearDown(() => debugDefaultTargetPlatformOverride = null);
+    const channel = MethodChannel('com.kurenai7968.volume_controller.method');
+    final messenger =
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+    var systemVolume = 0.4;
+    final levels = <double>[];
+    messenger.setMockMethodCallHandler(channel, (call) async {
+      if (call.method == 'setVolume') {
+        systemVolume = (call.arguments as Map)['volume'] as double;
+        levels.add(systemVolume);
+        return null;
+      }
+      return systemVolume;
+    });
+    addTearDown(() => messenger.setMockMethodCallHandler(channel, null));
+    final backend = _VolumeBackend();
+    manager.backend = backend;
+    await sendGeneral('Mute');
+    await sendGeneral('Unmute');
+    await sendGeneral('VolumeUp');
+    await sendGeneral('SetVolume', args: {'Volume': '1'});
+    expect(levels, [0, 0.4, 0.5, 0.01]);
+    expect(backend.volumes, isEmpty);
+    expect(manager.trackedVolume, 1);
   });
 
   test('a message from another client is shown', () async {

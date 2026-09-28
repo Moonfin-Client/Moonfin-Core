@@ -13,6 +13,7 @@ import 'package:server_core/server_core.dart';
 class _Api extends Fake implements SessionApi {
   List<Map<String, dynamic>> sessions = [];
   final commands = <(String, String)>[];
+  final volumeArguments = <String?>[];
   Completer<void>? barrier;
   final playCommands = <String>[];
   @override
@@ -35,6 +36,7 @@ class _Api extends Fake implements SessionApi {
     Map<String, String>? arguments,
   }) async {
     commands.add((id, name));
+    if (name == 'SetVolume') volumeArguments.add(arguments?['Volume']);
     await barrier?.future;
   }
 }
@@ -389,6 +391,116 @@ void main() {
     expect(find.text('Stop'), findsNothing);
     await disposeRemote(tester);
   });
+
+  Finder volumeSlider() =>
+      find.byWidgetPredicate((widget) => widget is Slider && widget.max == 100);
+
+  Map<String, dynamic> playingTarget(String id, List<String> commands) => {
+    ...target(id, commands: commands),
+    'NowPlayingItem': {'Name': 'Movie', 'RunTimeTicks': 600000000},
+    'PlayState': {'VolumeLevel': 40, 'IsMuted': false},
+  };
+
+  Future<void> changeVolume(WidgetTester tester, double value) async {
+    final slider = tester.widget<Slider>(volumeSlider());
+    slider.onChanged!(value);
+    slider.onChangeEnd!(value);
+    await tester.pump();
+  }
+
+  testWidgets(
+    'rapid slider gestures send the newest value and reconcile reported volume',
+    (tester) async {
+      final tv = playingTarget('tv', ['SetVolume']);
+      api.sessions = [tv];
+      await open(tester);
+      await tester.tap(find.text('Movie'));
+      await tester.pumpAndSettle();
+      final barrier = api.barrier = Completer<void>();
+      await changeVolume(tester, 20);
+      await changeVolume(tester, 30);
+      await changeVolume(tester, 60);
+      expect(api.volumeArguments, ['20']);
+      expect(tester.widget<Slider>(volumeSlider()).value, 60);
+      api.barrier = null;
+      barrier.complete();
+      await tester.pump();
+      expect(api.volumeArguments, ['20', '60']);
+      tv['PlayState'] = {'VolumeLevel': 55, 'IsMuted': false};
+      await tester.pump(const Duration(milliseconds: 350));
+      expect(tester.widget<Slider>(volumeSlider()).value, 55);
+      // SetVolume support alone never enables a pretend Mute button.
+      expect(
+        tester
+            .widget<IconButton>(
+              find.widgetWithIcon(IconButton, Icons.volume_up_rounded),
+            )
+            .onPressed,
+        isNull,
+      );
+      await disposeRemote(tester);
+    },
+  );
+
+  for (final cancel in ['target', 'hidden', 'failure']) {
+    testWidgets('$cancel discards queued volume and stale slider state', (
+      tester,
+    ) async {
+      api.sessions = [
+        playingTarget('tv', ['SetVolume']),
+        target('other'),
+      ];
+      await open(tester);
+      await tester.tap(find.text('Movie'));
+      await tester.pumpAndSettle();
+      final barrier = api.barrier = Completer<void>();
+      await changeVolume(tester, 20);
+      await changeVolume(tester, 60);
+      if (cancel == 'target') {
+        await tester.ensureVisible(find.text('Moonfin for webOS · other'));
+        await tester.tap(find.text('Moonfin for webOS · other'));
+      } else if (cancel == 'hidden') {
+        tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
+      }
+      api.barrier = null;
+      if (cancel == 'failure') {
+        barrier.completeError(StateError('Disconnected'));
+      } else {
+        barrier.complete();
+      }
+      await tester.pump();
+      expect(api.volumeArguments, ['20']);
+      if (cancel == 'failure') {
+        await tester.pump();
+        expect(tester.widget<Slider>(volumeSlider()).value, 40);
+        await changeVolume(tester, 25);
+        expect(api.volumeArguments, ['20', '25']);
+      }
+      if (cancel == 'hidden') {
+        tester.binding.handleAppLifecycleStateChanged(
+          AppLifecycleState.resumed,
+        );
+        await tester.pump();
+        expect(tester.widget<Slider>(volumeSlider()).value, 40);
+      }
+      await disposeRemote(tester);
+    });
+  }
+
+  testWidgets(
+    'playback without volume capabilities offers no volume operations',
+    (tester) async {
+      api.sessions = [playingTarget('tv', navigationCommands.take(9).toList())];
+      await open(tester);
+      await tester.tap(find.text('Movie'));
+      await tester.pumpAndSettle();
+      expect(volumeSlider(), findsNothing);
+      expect(find.byIcon(Icons.volume_up_rounded), findsNothing);
+      expect(find.byIcon(Icons.volume_down_rounded), findsNothing);
+      expect(find.byIcon(Icons.volume_off_rounded), findsNothing);
+      await disposeRemote(tester);
+    },
+  );
 
   testWidgets('refreshed capabilities drop unsupported queued navigation', (
     tester,

@@ -327,7 +327,7 @@ class CustomTVTextFieldState extends State<CustomTVTextField>
     widget.onVisibilityChanged?.call(visible);
   }
 
-  late final VoidCallback _closeHandle = closeKeyboard;
+  void _closeHandle() => closeKeyboard(submit: false);
 
   /// Removes first so repeated visibility notifications can't stack duplicate
   /// handles for the same field.
@@ -392,9 +392,9 @@ class CustomTVTextFieldState extends State<CustomTVTextField>
     if (!_isOverlayOpen.value) _showKeyboardOverlay();
   }
 
-  void closeKeyboard() {
+  void closeKeyboard({bool submit = true}) {
     if (_keyboardController.isVisible) {
-      _keyboardController.hide(true);
+      _keyboardController.hide(submit);
       return;
     }
     _deactivateSystemIme();
@@ -557,6 +557,7 @@ class CustomTVTextFieldState extends State<CustomTVTextField>
       },
     ).whenComplete(() {
       _keyboardOverlayContext = null;
+      if (!mounted) return;
       _isOverlayOpen.value = false;
       if (_keyboardController.isVisible) {
         _keyboardController.hide(false);

@@ -735,8 +735,12 @@ class AppleTvBackend implements PlayerBackend {
 
   @override
   Future<void> setVolume(double volume) async {
-    _volume = volume.clamp(0.0, 100.0);
-    await _invoke<void>('setVolume', {'volume': _volume});
+    if (_disposed) throw StateError('Player is disposed');
+    final value = volume.clamp(0.0, 100.0);
+    // Unlike fire-and-forget player commands, report volume only after the
+    // native setter succeeds. Keep failures visible to the session receiver.
+    await _control.invokeMethod<void>('setVolume', {'volume': value});
+    _volume = value;
   }
 
   @override

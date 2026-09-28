@@ -141,8 +141,8 @@ class _SearchScreenState extends State<SearchScreen>
   void didChangeDependencies() {
     super.didChangeDependencies();
     final route = ModalRoute.of(context);
-    if (widget.remoteSearch != null && route != null) {
-      routeLifecycleObserver.subscribe(this, route);
+    if (widget.remoteSearch != null && route is PageRoute<dynamic>) {
+      pageRouteLifecycleObserver.subscribe(this, route);
     }
   }
 
@@ -244,6 +244,9 @@ class _SearchScreenState extends State<SearchScreen>
     if (!mounted) return;
     _applyingRemoteSearch = true;
     try {
+      // A native editor has its own snapshot. Dismiss it before applying phone
+      // text so a later native completion cannot replace the newer query.
+      _searchTvFieldKey.currentState?.closeKeyboard(submit: false);
       _searchController.value = TextEditingValue(
         text: text,
         selection: TextSelection.collapsed(offset: text.length),
@@ -512,7 +515,7 @@ class _SearchScreenState extends State<SearchScreen>
 
   @override
   void dispose() {
-    routeLifecycleObserver.unsubscribe(this);
+    pageRouteLifecycleObserver.unsubscribe(this);
     widget.remoteSearch?.close();
     _vm.removeListener(_onViewModelChanged);
     _searchController.removeListener(_onSearchTextChanged);
@@ -702,7 +705,6 @@ class _SearchScreenState extends State<SearchScreen>
     if (event.logicalKey == LogicalKeyboardKey.enter ||
         event.logicalKey == LogicalKeyboardKey.select) {
       if (!_searchFocus.hasFocus) _searchFocus.requestFocus();
-      widget.remoteSearch?.close();
       _searchTvFieldKey.currentState?.openKeyboard();
       return KeyEventResult.handled;
     }

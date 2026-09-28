@@ -33,6 +33,7 @@ import 'preference/preference_constants.dart' show GlassSettledQuality;
 import 'preference/user_preferences.dart';
 import 'syncplay/syncplay_manager.dart';
 import 'ui/navigation/app_router.dart';
+import 'ui/navigation/deferred_route_pop.dart';
 import 'ui/navigation/deep_link_navigator.dart';
 import 'ui/navigation/destinations.dart';
 import 'ui/navigation/home_refresh_bus.dart';
@@ -768,10 +769,7 @@ class _GlobalShortcutScopeState extends State<_GlobalShortcutScope>
         if (PlatformDetection.isAndroid && key == LogicalKeyboardKey.goBack) {
           return true;
         }
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (!mounted) return;
-          appRouter.pop();
-        });
+        scheduleRoutePop(appRouter, isMounted: () => mounted);
       } else if (!_exitDialogShowing) {
         // A server remote navigates Moonfin; it cannot quit the receiving app.
         if (fromRemote) return true;

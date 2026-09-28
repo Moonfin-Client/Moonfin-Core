@@ -7,6 +7,7 @@ import 'package:server_core/server_core.dart';
 
 import '../../data/services/socket_handler.dart';
 import '../../data/services/remote_command_queue.dart';
+import '../../data/services/remote_volume_sender.dart';
 import '../../l10n/app_localizations.dart';
 import '../util/error_message.dart';
 import 'bounded_network_image.dart';
@@ -45,6 +46,10 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet>
   double? _seekPosition;
   double? _volume;
   String? _volumeSessionId;
+  RemoteVolumeSender? _volumeSender;
+  int _volumeRequest = 0;
+  bool _volumeDragging = false;
+  Timer? _volumeRefreshTimer;
   Timer? _refreshTimer;
   StreamSubscription<ServerWebSocketMessage>? _socketSub;
   final _searchConnected = ValueNotifier<bool>(true);
@@ -69,6 +74,7 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet>
           if (_searchSessionId == sessionId) _searchConnected.value = false;
           if (_selectedSession?['Id'] == sessionId) {
             _cancelNavigation();
+            _cancelVolume();
             setState(() => _selectedSession = null);
           }
           _refresh();
@@ -89,6 +95,7 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _cancelNavigation();
+    _cancelVolume();
     _socketSub?.cancel();
     _refreshTimer?.cancel();
     _searchConnected.dispose();
@@ -100,6 +107,68 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet>
     _navigation = null;
   }
 
+  void _cancelVolume() {
+    _volumeRefreshTimer?.cancel();
+    _volumeRefreshTimer = null;
+    _volumeSender?.close();
+    _volumeSender = null;
+    _volumeRequest++;
+    _volume = null;
+    _volumeSessionId = null;
+    _volumeDragging = false;
+  }
+
+  Future<void> _sendVolume(String command, {int? volume}) async {
+    final session = _selectedSession;
+    final id = session?['Id']?.toString();
+    if (_suspended ||
+        !_sameAccount ||
+        session == null ||
+        id == null ||
+        !_supportsCommand(session, command)) {
+      return;
+    }
+    final sender = _volumeSender ??= RemoteVolumeSender((name, level) async {
+      final current = _selectedSession;
+      if (_suspended ||
+          !_sameAccount ||
+          current == null ||
+          current['Id']?.toString() != id ||
+          current['DeviceId'] != session['DeviceId'] ||
+          !_supportsCommand(current, name)) {
+        throw StateError('Remote volume target is unavailable');
+      }
+      await _sessionApi.sendGeneralCommand(
+        id,
+        name,
+        arguments: level == null ? null : {'Volume': '$level'},
+      );
+    });
+    final request = ++_volumeRequest;
+    setState(() {
+      _volume = volume?.toDouble();
+      _volumeSessionId = id;
+      _volumeDragging = false;
+    });
+    try {
+      await sender.add(command, volume: volume);
+      if (!mounted || request != _volumeRequest) return;
+      _volumeRefreshTimer?.cancel();
+      _volumeRefreshTimer = Timer(const Duration(milliseconds: 300), () {
+        if (mounted && request == _volumeRequest) unawaited(_refresh());
+      });
+    } catch (error) {
+      if (!mounted || request != _volumeRequest) return;
+      setState(_cancelVolume);
+      final l10n = AppLocalizations.of(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.remoteCommandFailed(describeError(error, l10n))),
+        ),
+      );
+    }
+  }
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.hidden ||
@@ -107,6 +176,7 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet>
         state == AppLifecycleState.detached) {
       _suspended = true;
       _cancelNavigation();
+      _cancelVolume();
     } else if (state == AppLifecycleState.resumed) {
       _suspended = false;
       unawaited(_refresh());
@@ -178,6 +248,7 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet>
       final client = GetIt.instance<MediaServerClient>();
       if (!_sameAccount) {
         _cancelNavigation();
+        _cancelVolume();
         _searchConnected.value = false;
         if (mounted) {
           setState(() {
@@ -209,6 +280,7 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet>
       if (!mounted) return;
       if (!_sameAccount) {
         _cancelNavigation();
+        _cancelVolume();
         _searchConnected.value = false;
         setState(() {
           _sessions = [];
@@ -248,13 +320,17 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet>
                 (s) => s?['Id'] == id && s?['DeviceId'] == deviceId,
                 orElse: () => null,
               );
-          if (_selectedSession == null) _cancelNavigation();
+          if (_selectedSession == null) {
+            _cancelNavigation();
+            _cancelVolume();
+          }
         }
         _reconcileVolume();
       });
     } catch (e) {
       if (!mounted) return;
       _cancelNavigation();
+      _cancelVolume();
       if (_searchSessionId != null) _searchConnected.value = false;
       setState(() {
         _error = describeError(e, AppLocalizations.of(context));
@@ -342,14 +418,6 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet>
     );
   }
 
-  Future<void> _sendGeneral(String commandName, {Map<String, String>? args}) {
-    final id = _selectedSession?['Id']?.toString();
-    if (id == null) return Future.value();
-    return _run(
-      () => _sessionApi.sendGeneralCommand(id, commandName, arguments: args),
-    );
-  }
-
   Future<void> _openSearch() async {
     final session = _selectedSession;
     final id = session?['Id']?.toString();
@@ -394,23 +462,18 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet>
     }
   }
 
-  /// Hands the slider back to the session once it reports a volume close to
-  /// the one we asked for. A session that reports none keeps our value, since
-  /// it is the only number either side knows. Called inside a setState.
+  /// A settled refresh is authoritative even if the receiver rejected the
+  /// requested level. Never leave an unsent/unsupported value stuck on screen.
   void _reconcileVolume() {
     final held = _volume;
     if (held == null) return;
 
     final currentId = _selectedSession?['Id']?.toString();
     if (currentId == null || currentId != _volumeSessionId) {
-      _volume = null;
-      _volumeSessionId = null;
+      _cancelVolume();
       return;
     }
-
-    final playState = _selectedSession?['PlayState'] as Map<String, dynamic>?;
-    final reported = (playState?['VolumeLevel'] as num?)?.toDouble();
-    if (reported != null && (reported - held).abs() <= 2) {
+    if (!_volumeDragging && !(_volumeSender?.isSending ?? false)) {
       _volume = null;
       _volumeSessionId = null;
     }
@@ -556,6 +619,7 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet>
           borderRadius: AppRadius.circular(14),
           onTap: () => setState(() {
             _cancelNavigation();
+            _cancelVolume();
             _selectedSession = isSelected ? null : session;
             // Another device has its own volume and position, so what was held
             // for the last one doesn't carry over.
@@ -766,19 +830,19 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet>
         if (_supportsCommand(session, 'VolumeDown'))
           IconButton(
             tooltip: l10n.sessionVolumeDown,
-            onPressed: () => _sendNavigation('VolumeDown'),
+            onPressed: () => _sendVolume('VolumeDown'),
             icon: const Icon(Icons.volume_down_rounded),
           ),
         if (_supportsCommand(session, 'ToggleMute'))
           IconButton(
             tooltip: l10n.shortcutMute,
-            onPressed: () => _sendNavigation('ToggleMute'),
+            onPressed: () => _sendVolume('ToggleMute'),
             icon: const Icon(Icons.volume_off_outlined),
           ),
         if (_supportsCommand(session, 'VolumeUp'))
           IconButton(
             tooltip: l10n.sessionVolumeUp,
-            onPressed: () => _sendNavigation('VolumeUp'),
+            onPressed: () => _sendVolume('VolumeUp'),
             icon: const Icon(Icons.volume_up_rounded),
           ),
       ],
@@ -946,27 +1010,39 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet>
     double? volumeLevel,
     bool supportsSetVolume,
   ) {
+    final session = _selectedSession!;
+    final mute = isMuted ? 'Unmute' : 'Mute';
+    final muteCommand = _supportsCommand(session, mute)
+        ? mute
+        : _supportsCommand(session, 'ToggleMute')
+        ? 'ToggleMute'
+        : null;
     if (!supportsSetVolume) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          _ControlButton(
-            icon: isMuted ? Icons.volume_off_rounded : Icons.volume_up_rounded,
-            label: isMuted ? l10n.unmute : l10n.mute,
-            onTap: () => _sendGeneral(isMuted ? 'Unmute' : 'Mute'),
-          ),
+          if (muteCommand != null)
+            _ControlButton(
+              icon: isMuted
+                  ? Icons.volume_off_rounded
+                  : Icons.volume_up_rounded,
+              label: isMuted ? l10n.unmute : l10n.mute,
+              onTap: () => _sendVolume(muteCommand),
+            ),
           const SizedBox(width: 8),
-          _ControlButton(
-            icon: Icons.volume_down_rounded,
-            label: l10n.sessionVolumeDown,
-            onTap: () => _sendGeneral('VolumeDown'),
-          ),
+          if (_supportsCommand(session, 'VolumeDown'))
+            _ControlButton(
+              icon: Icons.volume_down_rounded,
+              label: l10n.sessionVolumeDown,
+              onTap: () => _sendVolume('VolumeDown'),
+            ),
           const SizedBox(width: 8),
-          _ControlButton(
-            icon: Icons.volume_up_rounded,
-            label: l10n.sessionVolumeUp,
-            onTap: () => _sendGeneral('VolumeUp'),
-          ),
+          if (_supportsCommand(session, 'VolumeUp'))
+            _ControlButton(
+              icon: Icons.volume_up_rounded,
+              label: l10n.sessionVolumeUp,
+              onTap: () => _sendVolume('VolumeUp'),
+            ),
         ],
       );
     }
@@ -995,7 +1071,9 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet>
             icon: Icon(volumeIcon),
             color: theme.colorScheme.onSurfaceVariant,
             tooltip: isMuted ? l10n.unmute : l10n.mute,
-            onPressed: () => _sendGeneral(isMuted ? 'Unmute' : 'Mute'),
+            onPressed: muteCommand == null
+                ? null
+                : () => _sendVolume(muteCommand),
           ),
           Expanded(
             child: SliderTheme(
@@ -1008,19 +1086,13 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet>
                 min: 0,
                 max: 100,
                 value: value,
-                onChanged: (v) => setState(() => _volume = v),
+                onChanged: (v) => setState(() {
+                  _volume = v;
+                  _volumeSessionId = _selectedSession?['Id']?.toString();
+                  _volumeDragging = true;
+                }),
                 onChangeEnd: (v) {
-                  // The value has to stay put until the session reports one of
-                  // its own. Most never report a volume at all, so dropping it
-                  // here leaves the slider on its fallback of 100.
-                  setState(() {
-                    _volume = v;
-                    _volumeSessionId = _selectedSession?['Id']?.toString();
-                  });
-                  _sendGeneral(
-                    'SetVolume',
-                    args: {'Volume': v.round().toString()},
-                  );
+                  _sendVolume('SetVolume', volume: v.round());
                 },
               ),
             ),
