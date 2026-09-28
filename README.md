@@ -26,6 +26,12 @@ These are captures of the **finished web build**, including a responsive narrow 
 | --- | --- |
 | ![Books search in the finished desktop web build](docs/screenshots/books-search-desktop.png) | ![Books search in the finished narrow web build](docs/screenshots/books-search-narrow.png) |
 
+## Native build evidence
+
+The release-signed Android mobile APK reached server selection in an Android 15 emulator. This is a native first-launch capture, not proof of an Android Books request or physical-device playback.
+
+<img src="docs/screenshots/android-first-launch.png" alt="Moonfin Books Android APK at server selection in the emulator" width="300">
+
 ## Get started
 
 1. Ask your server administrator to follow [Moonbase Books server setup](https://github.com/ZepiGit/Moonbase-Books/blob/master/docs/SERVER_SETUP.md). End users only install a client and sign in; they do not configure Shelfmark, indexers, or downloader credentials.
@@ -38,7 +44,7 @@ The fork is intended to use separate app and installer identities so it can coex
 
 See [Build status](docs/BUILD_STATUS.md) for the current package and signing evidence. The fork targets the upstream platform set: Android mobile and TV/Fire TV, iOS, tvOS, macOS, Windows x64/ARM64, Linux x64/ARM64, and web. A target in the source tree does not mean a Moonfin Books package has passed device testing or been published.
 
-The released [Moonbase Books `2.3.1.100` plugin](https://github.com/ZepiGit/Moonbase-Books/releases/tag/v2.3.1.100-books.1) was deployed and tested with Jellyfin `12.1` and Shelfmark Lite `1.3.15`. It passed 17 live API checks and the regular-user web search/release flow. Other server combinations need their own checks.
+The released [Moonbase Books `2.3.1.100` plugin](https://github.com/ZepiGit/Moonbase-Books/releases/tag/v2.3.1.100-books.1) was deployed and tested with [Jellyfin `12.1`](https://github.com/jellyfin/jellyfin/releases/tag/v12.1) and [Shelfmark Lite `1.3.15`](https://github.com/calibrain/shelfmark/releases/tag/v1.3.15). It passed 17 live API checks and the regular-user web search/release flow. Other server combinations need their own checks.
 
 ## Build from source
 
@@ -49,7 +55,7 @@ flutter pub get
 flutter test test/books
 ```
 
-The native and web jobs, including TV and both desktop architectures, are in [`.github/workflows/books-build.yml`](.github/workflows/books-build.yml). A separately verified local Android package uses the owner's stable private release key. The Android CI jobs now require private GitHub Actions signing secrets to use that key; package validation is pending. Previous debug-signed CI intermediates are not release packages. The iOS/tvOS outputs need Apple signing and provisioning before device installation. CI does not publish a release or upload to a store. Web assets for the plugin are built by the pinned app-source step in [Moonbase Books' plugin workflow](https://github.com/ZepiGit/Moonbase-Books/blob/master/.github/workflows/books-plugin.yml).
+The native and web jobs, including TV and both desktop architectures, are in [`.github/workflows/books-build.yml`](.github/workflows/books-build.yml). Android CI packages use the owner's stable private release key through GitHub Actions secrets. The mobile and both TV APKs passed certificate, package-ID and architecture checks; the exact mobile APK also passed a first-launch test in an Android 15 emulator. The iOS/tvOS outputs need Apple signing and provisioning before device installation. CI does not publish a release or upload to a store. Web assets for the plugin are built by the pinned app-source step in [Moonbase Books' plugin workflow](https://github.com/ZepiGit/Moonbase-Books/blob/master/.github/workflows/books-plugin.yml).
 
 ## License and upstream
 
