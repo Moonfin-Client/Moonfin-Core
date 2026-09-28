@@ -3279,7 +3279,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get fit => 'พอดี';
 
   @override
-  String get autoCrop => 'ครอบตัดอัตโนมัติ';
+  String get zoomToFill => 'Zoom to Fill';
 
   @override
   String get cropBlackBars => 'Crop Black Bars';

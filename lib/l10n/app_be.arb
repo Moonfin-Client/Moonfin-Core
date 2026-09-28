@@ -2828,10 +2828,6 @@
     "@fit": {
         "description": "Zoom mode: fit"
     },
-    "autoCrop": "Аўтаматычнае абрэзка",
-    "@autoCrop": {
-        "description": "Zoom mode: auto crop"
-    },
     "stretch": "Расцяжка",
     "@stretch": {
         "description": "Zoom mode: stretch"

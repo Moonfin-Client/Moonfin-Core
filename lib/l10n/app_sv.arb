@@ -2802,10 +2802,6 @@
     "@fit": {
         "description": "Zoom mode: fit"
     },
-    "autoCrop": "Autobeskärning",
-    "@autoCrop": {
-        "description": "Zoom mode: auto crop"
-    },
     "stretch": "Sträcka",
     "@stretch": {
         "description": "Zoom mode: stretch"

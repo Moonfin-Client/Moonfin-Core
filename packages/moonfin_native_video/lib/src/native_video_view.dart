@@ -11,7 +11,7 @@ import 'package:media_kit/media_kit.dart';
 
 enum NativeVideoZoomMode {
   fit,
-  crop,
+  zoomToFill,
   stretch,
 }
 
@@ -214,7 +214,7 @@ class _NativeVideoViewState extends State<NativeVideoView> {
         await _setProperty('panscan', '0.0');
         await _setProperty('video-aspect-override', '-1');
         await _setProperty('video-unscaled', 'no');
-      case NativeVideoZoomMode.crop:
+      case NativeVideoZoomMode.zoomToFill:
         await _setProperty('panscan', '1.0');
         await _setProperty('video-aspect-override', '-1');
         await _setProperty('video-unscaled', 'no');

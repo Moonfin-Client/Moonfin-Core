@@ -3312,7 +3312,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get fit => 'Ajustar';
 
   @override
-  String get autoCrop => 'Recorte automático';
+  String get zoomToFill => 'Zoom to Fill';
 
   @override
   String get cropBlackBars => 'Crop Black Bars';
@@ -16118,9 +16118,6 @@ class AppLocalizationsEs419 extends AppLocalizationsEs {
   String get fit => 'Adaptar';
 
   @override
-  String get autoCrop => 'Recorte automático';
-
-  @override
   String get stretch => 'Estirar';
 
   @override
@@ -23811,9 +23808,6 @@ class AppLocalizationsEsAr extends AppLocalizationsEs {
   String get fit => 'Adaptar';
 
   @override
-  String get autoCrop => 'Recorte automático';
-
-  @override
   String get stretch => 'Estirar';
 
   @override
@@ -31419,9 +31413,6 @@ class AppLocalizationsEsDo extends AppLocalizationsEs {
 
   @override
   String get fit => 'Adaptar';
-
-  @override
-  String get autoCrop => 'Recorte automático';
 
   @override
   String get stretch => 'Estirar';
@@ -39079,9 +39070,6 @@ class AppLocalizationsEsMx extends AppLocalizationsEs {
 
   @override
   String get fit => 'Adaptar';
-
-  @override
-  String get autoCrop => 'Recorte automático';
 
   @override
   String get stretch => 'Estirar';

@@ -3312,7 +3312,7 @@ class AppLocalizationsSw extends AppLocalizations {
   String get fit => 'Inafaa';
 
   @override
-  String get autoCrop => 'Mazao ya Kiotomatiki';
+  String get zoomToFill => 'Zoom to Fill';
 
   @override
   String get cropBlackBars => 'Crop Black Bars';

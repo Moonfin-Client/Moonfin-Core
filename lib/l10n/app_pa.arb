@@ -2828,10 +2828,6 @@
     "@fit": {
         "description": "Zoom mode: fit"
     },
-    "autoCrop": "ਆਟੋ ਕ੍ਰੌਪ",
-    "@autoCrop": {
-        "description": "Zoom mode: auto crop"
-    },
     "stretch": "ਖਿੱਚੋ",
     "@stretch": {
         "description": "Zoom mode: stretch"

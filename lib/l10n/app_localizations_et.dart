@@ -3302,7 +3302,7 @@ class AppLocalizationsEt extends AppLocalizations {
   String get fit => 'Sobivad';
 
   @override
-  String get autoCrop => 'Automaatne kärpimine';
+  String get zoomToFill => 'Zoom to Fill';
 
   @override
   String get cropBlackBars => 'Crop Black Bars';

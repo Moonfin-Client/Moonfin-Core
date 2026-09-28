@@ -2828,10 +2828,6 @@
     "@fit": {
         "description": "Zoom mode: fit"
     },
-    "autoCrop": "ครอบตัดอัตโนมัติ",
-    "@autoCrop": {
-        "description": "Zoom mode: auto crop"
-    },
     "stretch": "ยืด",
     "@stretch": {
         "description": "Zoom mode: stretch"

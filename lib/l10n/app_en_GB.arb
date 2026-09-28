@@ -2828,8 +2828,8 @@
     "@fit": {
         "description": "Zoom mode: fit"
     },
-    "autoCrop": "Zoom to Fill",
-    "@autoCrop": {
+    "zoomToFill": "Zoom to Fill",
+    "@zoomToFill": {
         "description": "Zoom mode: scale the video to fill the screen and clip the overflowing edges. Does not detect or remove black bars."
     },
     "stretch": "Stretch",

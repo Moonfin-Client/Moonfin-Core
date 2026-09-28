@@ -722,7 +722,7 @@ class Media3VideoView(
         val wireValue: String,
     ) {
         FIT("fit"),
-        CROP("crop"),
+        ZOOM_TO_FILL("zoomToFill"),
         STRETCH("stretch"),
         ;
 
@@ -3696,7 +3696,7 @@ class Media3VideoView(
                 cropY = crop.y.toFloat(),
                 cropW = crop.w * videoPixelRatio,
                 cropH = crop.h.toFloat(),
-                cover = zoomMode == ZoomMode.CROP,
+                cover = zoomMode == ZoomMode.ZOOM_TO_FILL,
             )
             applyBounds(
                 bounds.width,
@@ -3723,7 +3723,7 @@ class Media3VideoView(
                 }
             }
 
-            ZoomMode.CROP -> {
+            ZoomMode.ZOOM_TO_FILL -> {
                 if (containerAspect > sourceAspect) {
                     val targetWidth = containerWidth
                     val targetHeight = (targetWidth / sourceAspect).roundToInt()

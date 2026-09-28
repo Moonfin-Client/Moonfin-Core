@@ -3297,7 +3297,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get fit => 'Тохиромжтой';
 
   @override
-  String get autoCrop => 'Автомат тайрах';
+  String get zoomToFill => 'Zoom to Fill';
 
   @override
   String get cropBlackBars => 'Crop Black Bars';

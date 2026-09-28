@@ -1371,7 +1371,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         guard let engine = Self.sharedEngine() else { return }
         switch mode {
         case .fit: engine.videoGravity = .resizeAspect
-        case .autoCrop: engine.videoGravity = .resizeAspectFill
+        case .zoomToFill: engine.videoGravity = .resizeAspectFill
         case .stretch: engine.videoGravity = .resize
         }
     }

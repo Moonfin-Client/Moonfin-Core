@@ -3306,7 +3306,7 @@ class AppLocalizationsBg extends AppLocalizations {
   String get fit => 'Fit';
 
   @override
-  String get autoCrop => 'Автоматично изрязване';
+  String get zoomToFill => 'Zoom to Fill';
 
   @override
   String get cropBlackBars => 'Crop Black Bars';

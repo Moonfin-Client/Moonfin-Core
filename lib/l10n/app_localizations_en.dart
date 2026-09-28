@@ -3285,7 +3285,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fit => 'Fit';
 
   @override
-  String get autoCrop => 'Zoom to Fill';
+  String get zoomToFill => 'Zoom to Fill';
 
   @override
   String get cropBlackBars => 'Crop Black Bars';
@@ -16902,7 +16902,7 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
   String get fit => 'Fit';
 
   @override
-  String get autoCrop => 'Zoom to Fill';
+  String get zoomToFill => 'Zoom to Fill';
 
   @override
   String get cropBlackBars => 'Crop black bars';

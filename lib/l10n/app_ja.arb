@@ -2828,10 +2828,6 @@
     "@fit": {
         "description": "Zoom mode: fit"
     },
-    "autoCrop": "自動トリミング",
-    "@autoCrop": {
-        "description": "Zoom mode: auto crop"
-    },
     "stretch": "ストレッチ",
     "@stretch": {
         "description": "Zoom mode: stretch"

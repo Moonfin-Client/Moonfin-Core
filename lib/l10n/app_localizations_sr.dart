@@ -3333,7 +3333,7 @@ class AppLocalizationsSr extends AppLocalizations {
   String get fit => 'Уклопи';
 
   @override
-  String get autoCrop => 'Аутоматско исецање';
+  String get zoomToFill => 'Zoom to Fill';
 
   @override
   String get cropBlackBars => 'Исеци црне траке';

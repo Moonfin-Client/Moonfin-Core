@@ -3306,7 +3306,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get fit => 'Ajustar';
 
   @override
-  String get autoCrop => 'Corte Automático';
+  String get zoomToFill => 'Zoom to Fill';
 
   @override
   String get cropBlackBars => 'Crop Black Bars';
@@ -17098,9 +17098,6 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get fit => 'Ajustar';
 
   @override
-  String get autoCrop => 'Corte automático';
-
-  @override
   String get cropBlackBars => 'Cortar barras pretas';
 
   @override
@@ -29536,9 +29533,6 @@ class AppLocalizationsPtPt extends AppLocalizationsPt {
 
   @override
   String get fit => 'Ajustar';
-
-  @override
-  String get autoCrop => 'Corte automático';
 
   @override
   String get stretch => 'Esticar';
