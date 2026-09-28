@@ -1527,7 +1527,7 @@ void main() {
       },
     );
 
-    test('after an in-place resume the next frame gets the 30s window', () {
+    test('after an in-place resume the next frame gets the 15s window', () {
       fakeAsync((async) {
         final backend = _TestBackend();
         final resolver = _TestResolver();
@@ -1547,8 +1547,9 @@ void main() {
           expect(backend.resumeLiveEdgeCalls, 1);
           final resolves = resolver.calls;
 
-          // The reopened source gets the full first-frame window.
-          async.elapse(const Duration(seconds: 29));
+          // The resumed source is already flowing, so it gets the shorter
+          // resume window rather than a fresh tune's.
+          async.elapse(const Duration(seconds: 14));
           async.flushMicrotasks();
           expect(resolver.calls, resolves);
 
@@ -1685,6 +1686,37 @@ void main() {
         });
       },
     );
+
+    test("a re-resolved stream gets a fresh tune's full first-frame window", () {
+      fakeAsync((async) {
+        final backend = _TestBackend();
+        final resolver = _TestResolver();
+        final service = _TestService();
+        final manager = fakeManager(backend, resolver, service, async);
+        try {
+          unawaited(manager.playItems(<dynamic>[_liveChannel]));
+          async.flushMicrotasks();
+
+          async.elapse(const Duration(seconds: 30));
+          async.flushMicrotasks();
+          expect(backend.resumeLiveEdgeCalls, 1);
+
+          async.elapse(const Duration(seconds: 15));
+          async.flushMicrotasks();
+          expect(resolver.calls, 2);
+
+          async.elapse(const Duration(seconds: 29));
+          async.flushMicrotasks();
+          expect(resolver.calls, 2);
+
+          async.elapse(const Duration(seconds: 1));
+          async.flushMicrotasks();
+          expect(resolver.calls, 3);
+        } finally {
+          manager.dispose();
+        }
+      });
+    });
 
     test(
       'repeated stalls exhaust the budget and give up, and the watchdog '

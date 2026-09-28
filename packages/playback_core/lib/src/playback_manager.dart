@@ -240,10 +240,10 @@ class PlaybackManager implements AudioOwnable {
   /// up. A clean minute since the last attempt restores the budget.
   ///
   /// Gaps are measured from the end of the previous attempt, since a tune can
-  /// itself take ~10s: 4s before attempt 1 and the give-up, which outlasts a
-  /// Fire Cube decoder's forced release, then 10s and 20s so a restarting
-  /// server can come back. A re-resolve that throws schedules the next
-  /// attempt instead of giving up, and these re-resolves skip the nested
+  /// itself take 17s or more: 4s before attempt 1 and the give-up, which
+  /// outlasts a Fire Cube decoder's forced release, then 10s and 20s so a
+  /// restarting server can come back. A re-resolve that throws schedules the
+  /// next attempt instead of giving up, and these re-resolves skip the nested
   /// startup transcode retry so the budget alone paces them.
   static const _liveRecoveryMaxAttempts = 3;
   static const _liveRecoveryDebounce = Duration(seconds: 4);
@@ -285,11 +285,14 @@ class PlaybackManager implements AudioOwnable {
   /// opens, and for a frame after any later stall, and treats either miss as
   /// a stalled channel worth recovering.
   ///
-  /// A first frame gets longer because a tune can take ~10s. A stall after
-  /// playing gets 8s: Media3 won't resume until 5s is re-buffered, which a
-  /// live stream only delivers in real time, so anything shorter would fire
-  /// on ordinary rebuffers.
+  /// A freshly opened stream gets the longest wait, since a tune that goes
+  /// through a relaying tuner and then the server's own remux can take 17s or
+  /// more to show a first frame. A stream resumed in place is already flowing
+  /// upstream, so it gets 15s. A stall after playing gets 8s: Media3 won't
+  /// resume until 5s is re-buffered, which a live stream only delivers in
+  /// real time, so anything shorter would fire on ordinary rebuffers.
   static const _liveFirstFrameTimeout = Duration(seconds: 30);
+  static const _liveResumeFrameTimeout = Duration(seconds: 15);
   static const _liveMidStreamStallTimeout = Duration(seconds: 8);
   Timer? _liveStallWatchdog;
 
@@ -309,6 +312,10 @@ class PlaybackManager implements AudioOwnable {
   /// Whether a frame has rendered since the current live stream opened.
   /// Reset at each fresh open, set the first time `playing` reports true.
   bool _liveFrameSeenSinceOpen = false;
+
+  /// Whether the current live stream was reopened at its live edge rather
+  /// than freshly opened. Reset at each fresh open.
+  bool _liveResumedInPlace = false;
 
   /// True only when playback is genuinely advancing: unpaused AND not
   /// buffering. `state.isPlaying` alone means "unpaused", not "advancing" --
@@ -363,6 +370,8 @@ class PlaybackManager implements AudioOwnable {
     final intent = _viewerIntentGeneration;
     final timeout = _liveFrameSeenSinceOpen
         ? _liveMidStreamStallTimeout
+        : _liveResumedInPlace
+        ? _liveResumeFrameTimeout
         : _liveFirstFrameTimeout;
     _liveStallWatchdog = Timer(timeout, () {
       _liveStallWatchdog = null;
@@ -381,7 +390,7 @@ class PlaybackManager implements AudioOwnable {
     _liveStallWatchdog = null;
   }
 
-  /// Starts watching the current live stream, from a fresh 30s window.
+  /// Starts watching the current live stream, from a fresh first-frame window.
   void _startLiveStallWatch() {
     _liveStallWatchActive = true;
     _armLiveStallWatchdog();
@@ -1422,6 +1431,7 @@ class PlaybackManager implements AudioOwnable {
             'Live recovery: $trigger, attempt $attempt of '
             '$_liveRecoveryMaxAttempts, resumed the live edge',
           );
+          _liveResumedInPlace = true;
           // A cheap resume doesn't go through bringup, so nothing else would
           // re-arm the watchdog. Only the intent could have changed since the
           // await above; _armLiveStallWatchdog is a no-op if it has.
@@ -2592,6 +2602,7 @@ class PlaybackManager implements AudioOwnable {
       // MediaKit) can emit playing/non-buffering from inside `open`, before
       // it returns, and a reset placed after would erase that first frame.
       _liveFrameSeenSinceOpen = false;
+      _liveResumedInPlace = false;
       await _backend!.play(
         backendMediaPayload,
         startPosition: useNativeStart ? startPosition : Duration.zero,
