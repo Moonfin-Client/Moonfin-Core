@@ -289,8 +289,8 @@ class _ChannelCarouselOverlayState extends State<ChannelCarouselOverlay>
 
   /// The header is the one place a viewer reads more than a label, so its
   /// three lines are sized for reading at ten feet. A panel paints the canvas
-  /// at about 1.45 pixels to the point, which lands the description near 26
-  /// and the metadata just past 20, and the title keeps a step on both.
+  /// at about 1.67 pixels to the point, which lands the description near 30
+  /// and the metadata near 23, and the title keeps a step on both.
   static const TextStyle _titleStyle = TextStyle(
     color: Colors.white,
     fontSize: AppTypography.fontSizeXl,

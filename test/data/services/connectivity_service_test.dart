@@ -19,6 +19,7 @@ void main() {
   late _MockConnectivity connectivity;
   var failuresLeft = 0;
   var probes = 0;
+  var answer = HttpStatus.ok;
 
   setUp(() async {
     // The test binding answers every request with a 400, and the probe has to
@@ -27,12 +28,13 @@ void main() {
     await GetIt.instance.reset();
     failuresLeft = 0;
     probes = 0;
+    answer = HttpStatus.ok;
     server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
     server.listen((request) async {
       probes++;
       request.response.statusCode = failuresLeft > 0
           ? HttpStatus.serviceUnavailable
-          : HttpStatus.ok;
+          : answer;
       if (failuresLeft > 0) failuresLeft--;
       await request.response.close();
     });
@@ -108,6 +110,31 @@ void main() {
 
     expect(probes, 1);
     expect(service.canReachServer, isTrue);
+  });
+
+  test('a ping turned down for its missing token still counts', () async {
+    answer = HttpStatus.unauthorized;
+    final service = serviceOnline(online: true);
+    addTearDown(service.dispose);
+
+    await service.recheckNow();
+
+    expect(service.canReachServer, isTrue);
+    expect(probes, 1);
+  });
+
+  // Jellyfin always answers the ping, so a 404 is an address that isn't the
+  // server anymore, and a 502 is a proxy with nothing behind it.
+  test('any other refusal still counts as down', () async {
+    for (final status in [HttpStatus.notFound, HttpStatus.badGateway]) {
+      answer = status;
+      final service = serviceOnline(online: true);
+
+      await service.recheckNow();
+
+      expect(service.canReachServer, isFalse, reason: '$status');
+      service.dispose();
+    }
   });
 
   test('leaves the server alone while the device itself is offline', () async {

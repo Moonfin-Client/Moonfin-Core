@@ -271,6 +271,15 @@ class ConnectivityService extends ChangeNotifier {
         await _pingDio.get('${client.baseUrl}/System/Ping');
         failure = null;
         break;
+      } on DioException catch (e) {
+        // The probe carries no token, and Emby only lets that through from its
+        // own network, so a remote server turns it down with a 401. That
+        // refusal still came from the server.
+        if (e.response?.statusCode == 401) {
+          failure = null;
+          break;
+        }
+        failure = e;
       } catch (e) {
         failure = e;
       }

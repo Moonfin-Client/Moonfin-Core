@@ -105,6 +105,7 @@ import kotlin.math.roundToInt
 import org.moonfin.nativevideo.iec.Iec61937AudioOutputProvider
 import org.moonfin.nativevideo.subtitle.SidecarSourceFactory
 import org.moonfin.nativevideo.subtitle.SourceTree
+import org.moonfin.nativevideo.subtitle.SupAwareSubtitleParserFactory
 import org.moonfin.nativevideo.subtitle.TextStreamOffsetMediaSource
 import org.moonfin.nativevideo.subtitle.TimeOffsetMediaSource
 import org.moonfin.nativevideo.subtitle.clampManualDelayMs
@@ -777,8 +778,21 @@ class Media3VideoView(
     private val firstFrameCover = View(context).apply {
         setBackgroundColor(Color.BLACK)
     }
+    private val paddingRowMask = View(context).apply {
+        setBackgroundColor(Color.BLACK)
+    }
     private val subtitleView = SubtitleView(context)
-    private val containerView: FrameLayout = FrameLayout(context).also { container ->
+    private val containerView: FrameLayout = object : FrameLayout(context) {
+        override fun onVisibilityAggregated(isVisible: Boolean) {
+            super.onVisibilityAggregated(isVisible)
+            if (isVisible) ParkedFlutterSurface.clear(this)
+        }
+
+        override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+            super.onLayout(changed, left, top, right, bottom)
+            layoutPaddingRowMask()
+        }
+    }.also { container ->
         container.setBackgroundColor(Color.BLACK)
         container.clipChildren = true
         container.clipToPadding = true
@@ -796,6 +810,7 @@ class Media3VideoView(
             FrameLayout.LayoutParams.MATCH_PARENT,
         )
         container.addView(videoView, videoLayoutParams)
+        container.addView(paddingRowMask)
         // The cover keeps its own params so resizing the subtitle canvas to the
         // active video box never shrinks the full-frame cover.
         container.addView(
@@ -967,6 +982,8 @@ class Media3VideoView(
     private var tunnelingActive = false
     private var audioRekickRunnable: Runnable? = null
     private var suppressStateEmissionsForRekick = false
+    private var resumeWedgeCheck: Runnable? = null
+    private var pausedWhileReady = false
     private var skipSilenceEnabled = false
     // The delay the user set. Positive shows subtitles later.
     private var manualSubtitleDelayMs = 0L
@@ -1046,6 +1063,39 @@ class Media3VideoView(
         audioRekickRunnable = null
     }
 
+    private fun scheduleResumeWedgeCheck() {
+        cancelResumeWedgeCheck()
+        val check = Runnable {
+            resumeWedgeCheck = null
+            if (isDisposed || currentUrl == null) return@Runnable
+            val bufferedAheadMs = player.bufferedPosition - player.currentPosition
+            val stuck = ResumeWedgePolicy.shouldReprepare(
+                stillBuffering = player.playbackState == Player.STATE_BUFFERING,
+                playWhenReady = player.playWhenReady,
+                bufferedAheadMs = bufferedAheadMs,
+                isLiveSource = currentIsLive,
+                playerLive = isPlayerLive(),
+            )
+            if (!stuck) return@Runnable
+            val resumeMs = player.currentPosition.coerceAtLeast(0L)
+            Media3Bridge.emitEvent(
+                mapOf(
+                    "event" to "resumeWedgeRecovery",
+                    "positionMs" to resumeMs,
+                    "bufferedAheadMs" to bufferedAheadMs,
+                ),
+            )
+            prepareCurrentSource(resumeMs, playWhenReady = true)
+        }
+        resumeWedgeCheck = check
+        mainHandler.postDelayed(check, ResumeWedgePolicy.CHECK_DELAY_MS)
+    }
+
+    private fun cancelResumeWedgeCheck() {
+        resumeWedgeCheck?.let { mainHandler.removeCallbacks(it) }
+        resumeWedgeCheck = null
+    }
+
     private fun performAudioRekick() {
         if (isDisposed || !player.playWhenReady) return
         suppressStateEmissionsForRekick = true
@@ -1123,6 +1173,19 @@ class Media3VideoView(
                 systemPauseReason = reason
             } else {
                 systemPausedAtMs = 0L
+            }
+            // Only a pause the viewer asked for. The system's own pauses have
+            // their recoveries above, and the rekick after a seek toggles play
+            // without anyone pausing.
+            if (!suppressStateEmissionsForRekick) {
+                if (!playWhenReady) {
+                    cancelResumeWedgeCheck()
+                    pausedWhileReady = player.playbackState == Player.STATE_READY &&
+                        reason == Player.PLAY_WHEN_READY_CHANGE_REASON_USER_REQUEST
+                } else if (pausedWhileReady) {
+                    pausedWhileReady = false
+                    scheduleResumeWedgeCheck()
+                }
             }
             emitState()
             syncTicker()
@@ -1211,6 +1274,7 @@ class Media3VideoView(
             videoHeightPx = videoSize.height
             videoPixelRatio = videoSize.pixelWidthHeightRatio
             applyVideoLayout()
+            layoutPaddingRowMask()
             resolveSelectedVideoFrameRate()?.let { frameRate ->
                 // detectedFrameRate holds the normalized rate, so compare like
                 // with like or every callback re-runs the whole switch.
@@ -1537,6 +1601,7 @@ class Media3VideoView(
         isDisposed = true
         cancelPendingRetime()
         cancelPendingAudioRekick()
+        cancelResumeWedgeCheck()
         stopTicker()
         closeExternalAudioEffectSessionIfOpen()
         currentAudioSessionId = C.AUDIO_SESSION_ID_UNSET
@@ -1885,7 +1950,7 @@ class Media3VideoView(
         // Serializes track creation and dialogue reads against the overlay's
         // render thread.
         assParserFactory = MoonfinAssParserFactory(
-            AssSubtitleParserFactory(assHandler),
+            SupAwareSubtitleParserFactory(AssSubtitleParserFactory(assHandler)),
             assHandler,
         )
         bootMediaSourceFactory = DefaultMediaSourceFactory(
@@ -2064,6 +2129,7 @@ class Media3VideoView(
         clearSubtitleCues()
         cancelPendingRetime()
         cancelPendingAudioRekick()
+        cancelResumeWedgeCheck()
         closeExternalAudioEffectSessionIfOpen()
         currentAudioSessionId = C.AUDIO_SESSION_ID_UNSET
         restorePreferredDisplayMode()
@@ -2450,6 +2516,8 @@ class Media3VideoView(
         val autoPlay = args["autoPlay"] as? Boolean ?: false
         displayModeSwitchRetriesForCurrentSource = 0
         decoderReclaimRetriesForCurrentSource = 0
+        cancelResumeWedgeCheck()
+        pausedWhileReady = false
 
         restorePreferredDisplayMode()
         detectedFrameRate = null
@@ -3572,6 +3640,13 @@ class Media3VideoView(
             targetSize.first.coerceAtLeast(1),
             targetSize.second.coerceAtLeast(1),
         )
+    }
+
+    private fun layoutPaddingRowMask() {
+        val video = videoView
+        val maskHeight =
+            if (video.visibility == View.VISIBLE) PaddingRowMask.heightPx(videoHeightPx, video.height) else 0
+        paddingRowMask.layout(video.left, video.bottom - maskHeight, video.right, video.bottom)
     }
 
     private fun applyLayoutBounds(

@@ -15,7 +15,11 @@ void main() {
       expect(tvos.width, closeTo(kTvDesignWidth, 0.01));
       expect(androidTv.width, closeTo(kTvDesignWidth, 0.01));
       expect(tvos.height, closeTo(androidTv.height, 0.01));
-      expect(tvos.height, closeTo(745.0, 0.5));
+      expect(tvos.height, closeTo(kTvDesignWidth * 9 / 16, 0.5));
+    });
+
+    test('is 1150 points across on every TV', () {
+      expect(kTvDesignWidth, 1150);
     });
 
     test('drives a 1080p panel at the scale the layouts were drawn for', () {
@@ -25,7 +29,7 @@ void main() {
 
     test('leaves the effective density the same on both', () {
       // What the panel ends up painting at is the density it reported times
-      // the magnification. Both land on 1.45, which is 1920 real pixels.
+      // the magnification. Both land on 1920 real pixels across.
       const tvosReported = 1.0;
       const androidTvReported = 2.0;
       expect(
@@ -103,7 +107,7 @@ void main() {
     }
 
     testWidgets('lays out on the panel rather than the canvas', (tester) async {
-      // A 1080p Android TV at density two, where the canvas is 1324 across.
+      // A 1080p Android TV at density two, where the canvas is 1150 across.
       final result = await pump(
         tester,
         panel: const Size(960, 540),
@@ -148,26 +152,24 @@ void main() {
         slot: const Rect.fromLTWH(40, 32, 300, 168),
       );
 
-      expect(result.laidOut.width, closeTo(217.5, 0.1));
-      expect(result.onScreen.width, closeTo(217.5, 0.1));
-      expect(result.onScreen.left, closeTo(29, 0.1));
+      const toPanel = 960 / kTvDesignWidth;
+      expect(result.laidOut.width, closeTo(300 * toPanel, 0.1));
+      expect(result.onScreen.width, closeTo(300 * toPanel, 0.1));
+      expect(result.onScreen.left, closeTo(40 * toPanel, 0.1));
     });
 
     testWidgets('adds nothing on a panel already at the design width', (
       tester,
     ) async {
-      final result = await pump(
-        tester,
-        panel: const Size(1324, 745),
-        density: 1.0,
-      );
+      const canvas = Size(kTvDesignWidth, kTvDesignWidth * 9 / 16);
+      final result = await pump(tester, panel: canvas, density: 1.0);
 
       expect(
         result.transforms,
         0,
         reason: "there's nothing to undo, so there should be no layer",
       );
-      expect(result.laidOut, const Size(1324, 745));
+      expect(result.laidOut, canvas);
     });
   });
 }

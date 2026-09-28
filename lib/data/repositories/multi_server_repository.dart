@@ -263,7 +263,7 @@ class MultiServerRepository {
     final results = await _gatherPerServer(
       sessions,
       (session) async {
-        final response = await session.client.itemsApi.getNextUp(
+        final request = session.client.itemsApi.getNextUp(
           limit: perServer,
           fields: _fields,
           enableImageTypes: _imageTypes,
@@ -271,10 +271,13 @@ class MultiServerRepository {
           enableResumable: false,
           nextUpDateCutoff: nextUpDateCutoff,
         );
+        final recentlyPlayed = fetchSeriesLastPlayed(session.client);
+        final response = await request;
         final parsed = _parseItems(response, session.server.id);
         return await _enrichNextUpItemsWithSeriesLastPlayed(
           parsed,
           session.client,
+          recentlyPlayed,
         );
       },
       label: 'next up',
@@ -1445,5 +1448,6 @@ class MultiServerRepository {
   Future<List<AggregatedItem>> _enrichNextUpItemsWithSeriesLastPlayed(
     List<AggregatedItem> items,
     MediaServerClient client,
-  ) => enrichNextUpItemsWithSeriesLastPlayed(items, client);
+    Future<Map<String, String>?> recentlyPlayed,
+  ) => enrichNextUpItemsWithSeriesLastPlayed(items, client, recentlyPlayed);
 }
