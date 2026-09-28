@@ -24,6 +24,9 @@ import java.io.IOException
  * untouched. Each method reads the offset once so a change landing mid call
  * never mixes two values.
  *
+ * If a subtitle download fails and retries, keep the video at its current
+ * position.
+ *
  * Runs on the playback thread, which is also where [updateTimeOffsetUs] is
  * expected to be called from.
  */
@@ -96,8 +99,10 @@ internal class TimeOffsetMediaPeriod(
         wrappedMediaPeriod.discardBuffer(positionUs - timeOffsetUs, toKeyframe)
 
     override fun readDiscontinuity(): Long {
-        val discontinuityUs = wrappedMediaPeriod.readDiscontinuity()
-        return if (discontinuityUs == C.TIME_UNSET) C.TIME_UNSET else discontinuityUs + timeOffsetUs
+        // Read and clear the subtitle's request to reset its playback position.
+        wrappedMediaPeriod.readDiscontinuity()
+        // Do not pass that request to the video, which should keep playing where it is.
+        return C.TIME_UNSET
     }
 
     override fun seekToUs(positionUs: Long): Long {
