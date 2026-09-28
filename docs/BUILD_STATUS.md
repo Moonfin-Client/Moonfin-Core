@@ -4,11 +4,11 @@ Snapshot: 28 September 2026. This table describes **Moonfin Books fork artifacts
 
 | Target | Current evidence | Next validation |
 | --- | --- | --- |
-| Web / PWA | Books web build deployed and exercised with Jellyfin 12.1; the screenshots in this repository show that finished web UI. | Build the public plugin from a pinned app commit and verify it in a separate installation. |
+| Web / PWA | Books web build deployed and exercised with Jellyfin 12.1; the screenshots in this repository show that finished web UI. | Public plugin 2.3.1.100 ZIP deployed and accepted with 17 live API checks and a regular-user web search/release flow. |
 | Android phones and tablets | Renamed APK built; a local copy was signed with the owner's stable release key. Package signature and `Moonfin Books` label were verified. | Install and test on physical devices; prepare an approved distribution channel. |
 | Android TV / Google TV / Fire TV | TV build jobs are configured; CI validation is pending. No Moonfin Books TV package is claimed. | Build the TV flavor and test remote navigation on target devices. |
 | iOS | Renamed unsigned IPA built. | Sign with an Apple identity and provision a device before installation testing. |
-| tvOS / Apple TV | Build job is configured; CI validation is pending. No Moonfin Books tvOS package is claimed. | Build, sign, provision, and test on Apple TV. |
+| tvOS / Apple TV | Unsigned tvOS IPA built from `feb9f17c` and verified, including the separate app and Top Shelf bundle IDs. | Build, sign, provision, and test on Apple TV. |
 | macOS, Intel and Apple Silicon | Earlier ad hoc universal DMG built; bundle ID, app name and Intel/Apple Silicon executables verified. Updated identity checks are rebuilding. | Verify the produced DMG, both intended architectures, installation, and runtime behavior. |
 | Windows x64 | Unsigned installer built successfully; Moonfin Books installer/product labels verified. Device installation is pending. | Verify installer identity, install/uninstall, and app behavior on Windows. |
 | Windows ARM64 | Build job is configured; CI validation is pending. No Moonfin Books ARM64 installer is claimed. | Build and test on an ARM64 Windows device. |
@@ -30,3 +30,7 @@ Use a matching [Moonbase Books server build](https://github.com/ZepiGit/Moonbase
 The first four successful platform packages were built by [run 36398630697](https://github.com/ZepiGit/Moonfin-FireTV32/actions/runs/36398630697) from upstream `7933dd9ac0ecd9f34ce7c1129272bc280bc782bb` plus overlay commit `848c92da09489bfb970c3bbc280613b075940bdc`. They are earlier validation evidence, not binaries built from this repository's current main branch and not the planned public release assets.
 
 The expanded first source build used this repository's `f22d305159be9160a9a9a484a2d2e13714539853`. Seventeen Books tests, web compilation and unsigned tvOS packaging passed. Publication review found packaging and app-data isolation fixes; final release packages are being rebuilt with those fixes and stable Android signing. Release notes will identify the exact source commit and build run for distributed assets.
+
+## Verified public plugin release
+
+[Moonbase Books Preview 1](https://github.com/ZepiGit/Moonbase-Books/releases/tag/v2.3.1.100-books.1) is published: plugin source `4e041ca3562480a91e46897f160d3f3e681f7048`, embedded app source `feb9f17c1b8764b6fa42ced0b1a706a4207e7d4f`, successful CI run `36405823673`. That exact ZIP is deployed and its authenticated API and browser Books flow passed acceptance. Both screenshots now show this released build. Native client release preparation continues in app run `36405721870`.
