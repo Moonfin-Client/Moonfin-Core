@@ -699,7 +699,7 @@ class SessionRepository {
               await _handleGeneralCommandMessage(event);
             }
           });
-          // A failed setter must not block the next deliberate adjustment.
+          // A failed setter shouldn't block the next adjustment.
           _remoteVolumeFlight = result.catchError((_) {});
           await result;
         } else {
@@ -782,7 +782,7 @@ class SessionRepository {
     }
     final handled = _remoteKeys.tap(key);
     if (!handled && key == GamepadNavKey.select) {
-      // Cupertino's default shortcuts do not map the TV Select key.
+      // Cupertino's default shortcuts don't map the TV Select key.
       final context = FocusManager.instance.primaryFocus?.context;
       if (context != null) Actions.maybeInvoke(context, const ActivateIntent());
     }
@@ -794,8 +794,8 @@ class SessionRepository {
   double? _normalizeVolume(String raw) {
     final parsed = double.tryParse(raw);
     if (parsed == null || !parsed.isFinite) return null;
-    // Session commands use percentages: 1 means 1%, never full volume.
-    // Preserve fractional senders only for values strictly between 0 and 1.
+    // Session commands send a percentage, so 1 means 1%. Only a value between
+    // 0 and 1 is read as a fraction.
     if (parsed > 0 && parsed < 1) {
       return (parsed * 100).clamp(0, 100).toDouble();
     }

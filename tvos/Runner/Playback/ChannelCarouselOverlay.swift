@@ -410,14 +410,20 @@ final class ChannelCarouselOverlayViewController: UIViewController, RemotePlayer
         switch command {
         case "moveleft": move(by: -1)
         case "moveright": move(by: 1)
-        case "back", "movedown": dismissCarousel(showingControls: true)
-        case "select":
-            guard entries.indices.contains(centeredIndex) else { return }
-            let id = entries[centeredIndex].channelId
-            dismissed = true
-            stopTimers()
-            dismiss(animated: false) { [weak self] in self?.onChannelSelected?(id) }
+        case "back": dismissCarousel()
+        case "movedown": dismissCarousel(showingControls: true)
+        case "select": tuneCenteredChannel()
         default: break
+        }
+    }
+
+    private func tuneCenteredChannel() {
+        guard entries.indices.contains(centeredIndex) else { return }
+        let id = entries[centeredIndex].channelId
+        dismissed = true
+        stopTimers()
+        dismiss(animated: false) { [weak self] in
+            self?.onChannelSelected?(id)
         }
     }
 
@@ -430,13 +436,7 @@ final class ChannelCarouselOverlayViewController: UIViewController, RemotePlayer
                 // recognizer decides on release.
                 return
             case .select:
-                guard entries.indices.contains(centeredIndex) else { return }
-                let id = entries[centeredIndex].channelId
-                dismissed = true
-                stopTimers()
-                dismiss(animated: false) { [weak self] in
-                    self?.onChannelSelected?(id)
-                }
+                tuneCenteredChannel()
                 return
             case .leftArrow:
                 refreshWatchdog()

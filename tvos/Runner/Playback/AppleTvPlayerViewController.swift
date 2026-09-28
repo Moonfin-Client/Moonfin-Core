@@ -102,8 +102,7 @@ final class AppleTvPlayerViewController: UIViewController {
     /// halves of the flow report their own ending instead of the search one
     /// falling through to "No Subtitles Found" whatever went wrong.
     private weak var subtitleProgressAlert: UIAlertController?
-    // Keep action closures available to the session remote without relying on
-    // private UIKit event injection. Physical Siri Remote menus stay native.
+    // Alert action handlers, kept so the session remote can run them.
     private var remoteMenuActions: [ObjectIdentifier: (UIAlertAction) -> Void] = [:]
     private var remoteMenuTransition = false
     private var pendingRemoteMenuCommands: [String] = []
@@ -1673,23 +1672,23 @@ final class AppleTvPlayerViewController: UIViewController {
         // or the default menu behavior underneath the card.
         if nextUpVisible {
             switch type {
-                case .select:
-                    hideNextUpCard()
-                    if nextUpFocusOnPlay {
-                        onNextUpPlay?()
-                    } else {
-                        onNextUpCancel?()
-                    }
-                case .leftArrow:
-                    nextUpFocusOnPlay = true
-                    updateNextUpFocusHighlight()
-                case .rightArrow:
-                    nextUpFocusOnPlay = false
-                    updateNextUpFocusHighlight()
-                default:
-                    // Menu is handled by the tap recognizer.
-                    break
+            case .select:
+                hideNextUpCard()
+                if nextUpFocusOnPlay {
+                    onNextUpPlay?()
+                } else {
+                    onNextUpCancel?()
                 }
+            case .leftArrow:
+                nextUpFocusOnPlay = true
+                updateNextUpFocusHighlight()
+            case .rightArrow:
+                nextUpFocusOnPlay = false
+                updateNextUpFocusHighlight()
+            default:
+                // Menu is handled by the tap recognizer.
+                break
+            }
             return true
         }
         // A press while a touch pan is scrubbing resolves the pan first so
@@ -1767,7 +1766,7 @@ final class AppleTvPlayerViewController: UIViewController {
         return false
     }
 
-    /// A complete tap from the Jellyfin session remote; never starts a hold.
+    /// Handles one complete tap from the session remote. A tap never starts a hold.
     func handleRemoteNavigation(_ command: String) {
         guard viewIfLoaded?.window != nil, !isBeingDismissed else { return }
         if remoteMenuTransition {
@@ -1778,6 +1777,9 @@ final class AppleTvPlayerViewController: UIViewController {
             if let remote = modal as? RemotePlayerNavigable {
                 remote.handleRemoteNavigation(command)
             } else if let alert = modal as? UIAlertController {
+                // UIKit ignores a dismiss while the alert is still animating and
+                // never finishes the swap, so a tap that lands then is dropped.
+                guard !alert.isBeingPresented, !alert.isBeingDismissed else { return }
                 if command == "back" {
                     // A progress prompt has no cancellation action.
                     if !alert.actions.isEmpty { alert.dismiss(animated: true) }
@@ -1829,11 +1831,18 @@ final class AppleTvPlayerViewController: UIViewController {
             }
             self.present(menu, animated: false) {
                 self.remoteMenuTransition = false
-                // The first tap establishes visible focus rather than guessing
-                // which private UIKit action previously had focus.
+                // The tap that opened this menu only shows it, since the action
+                // the alert had focused is private. Taps that came in during the
+                // swap run here.
                 let commands = self.pendingRemoteMenuCommands
                 self.pendingRemoteMenuCommands.removeAll()
                 for queued in commands { menu.handleRemoteNavigation(queued) }
+            }
+            // UIKit refuses the menu if something else got presented first, and
+            // then its completion never runs.
+            if self.presentedViewController !== menu {
+                self.remoteMenuTransition = false
+                self.pendingRemoteMenuCommands.removeAll()
             }
         }
     }
@@ -3205,13 +3214,15 @@ private final class InfoPanelViewController: UIViewController, RemotePlayerNavig
             return
         }
         guard command == "moveup" || command == "movedown" else { return }
+        let onClose = system?.focusedItem === closeButton
+        if onClose && command == "movedown" { return }
         let paths = sections.indices.flatMap { section in
             (0..<tableView.numberOfRows(inSection: section)).map { IndexPath(row: $0, section: section) }
         }
         let focused = (system?.focusedItem as? UITableViewCell).flatMap { tableView.indexPath(for: $0) }
         let index = focused.flatMap { paths.firstIndex(of: $0) }
         let next = index.map { $0 + (command == "moveup" ? -1 : 1) }
-            ?? (system?.focusedItem === closeButton && command == "moveup" ? paths.count - 1 : 0)
+            ?? (onClose ? paths.count - 1 : 0)
         if next >= paths.count || paths.isEmpty {
             system?.requestFocusUpdate(to: closeButton)
         } else {
@@ -3904,6 +3915,7 @@ private final class SyncPlayPanelViewController: UIViewController, RemotePlayerN
             button.sendActions(for: .primaryActionTriggered)
             return
         }
+        guard command == "moveup" || command == "movedown" else { return }
         let target = command == "movedown" ? leaveButton : ignoreWaitButton
         system?.requestFocusUpdate(to: target)
         system?.updateFocusIfNeeded()
@@ -3918,16 +3930,15 @@ private final class SyncPlayPanelViewController: UIViewController, RemotePlayerN
     }
 }
 
-/// Player overlays route session commands to visible controls, never Flutter
-/// controls underneath the native presentation.
+/// An overlay on the native player that handles session remote commands itself.
 @MainActor
 protocol RemotePlayerNavigable: AnyObject {
     func handleRemoteNavigation(_ command: String)
 }
 
-/// UIKit has no public API for remotely activating UIAlertActions. Only when
-/// session navigation takes over an alert, show its same actions in a table
-/// whose focus and activation are public. Physical-only alerts are unchanged.
+/// UIKit has no public way to trigger a UIAlertAction from code, so when a
+/// session remote command reaches an alert, this table replaces it with the
+/// same actions. Alerts driven by the Siri Remote stay native.
 private final class RemotePlayerMenu: UITableViewController, RemotePlayerNavigable {
     struct Entry {
         let action: UIAlertAction

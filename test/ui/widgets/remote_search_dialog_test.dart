@@ -592,6 +592,26 @@ void main() {
     });
   }
 
+  testWidgets('a session that never reports volume keeps the level sent', (
+    tester,
+  ) async {
+    final tv = playingTarget('tv', ['SetVolume']);
+    tv['PlayState'] = {'IsMuted': false};
+    api.sessions = [tv];
+    await open(tester);
+    await tester.tap(find.text('Movie'));
+    await tester.pumpAndSettle();
+    await changeVolume(tester, 30);
+    await tester.pump(const Duration(seconds: 7));
+    expect(tester.widget<Slider>(volumeSlider()).value, 30);
+    // Its polling ends with the deadline, leaving the ordinary refresh.
+    final fetches = api.sessionFetches;
+    await tester.pump(const Duration(seconds: 10));
+    expect(api.sessionFetches - fetches, lessThanOrEqualTo(2));
+    expect(api.volumeArguments, ['30']);
+    await disposeRemote(tester);
+  });
+
   for (final cancel in ['target', 'hidden', 'failure']) {
     testWidgets('$cancel discards queued volume and stale slider state', (
       tester,

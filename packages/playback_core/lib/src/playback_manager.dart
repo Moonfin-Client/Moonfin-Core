@@ -507,6 +507,7 @@ class PlaybackManager implements AudioOwnable {
   final _sessionEndedController = StreamController<void>.broadcast();
   final _liveRecoveryStatusController =
       StreamController<LiveRecoveryStatus?>.broadcast();
+  final _volumeController = StreamController<double>.broadcast();
   PlaybackBringupState _bringupState = const PlaybackBringupState.idle();
   LiveRecoveryStatus? _liveRecoveryStatus;
 
@@ -524,13 +525,21 @@ class PlaybackManager implements AudioOwnable {
   double get volume => _volume;
   bool get isMuted => _isMuted;
 
+  /// Each new level, so a screen showing its own volume can follow a change
+  /// made from somewhere else, such as a session remote.
+  Stream<double> get volumeStream => _volumeController.stream;
+
   void reportVolumeState({
     required double volume,
     required bool isMuted,
     bool reportImmediately = false,
   }) {
-    _volume = volume.clamp(0, 100);
+    final level = volume.clamp(0, 100).toDouble();
     _isMuted = isMuted;
+    if (level != _volume) {
+      _volume = level;
+      _volumeController.add(level);
+    }
     final generation = _progressGeneration;
     if (reportImmediately && generation != null) _reportProgress(generation);
   }
@@ -4228,6 +4237,7 @@ class PlaybackManager implements AudioOwnable {
     _bringupStateController.close();
     _sessionEndedController.close();
     _liveRecoveryStatusController.close();
+    _volumeController.close();
     for (final backend in _retainedBackends.toList()) {
       backend.dispose();
     }

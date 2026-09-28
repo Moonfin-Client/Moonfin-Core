@@ -159,10 +159,18 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet>
       await sender.add(command, volume: volume);
       if (!mounted || request != _volumeRequest) return;
       if (volume != null) {
-        // Older receivers only report every five seconds. This bounds the
-        // optimistic display; it never delays or retries the volume command.
+        // Older receivers only report every five seconds, so this bounds the
+        // optimistic display without delaying or retrying the command. A
+        // session that reports no level keeps ours, as it's the only number
+        // either side knows.
         _volumeConfirmationTimer = Timer(const Duration(seconds: 6), () {
-          if (mounted && request == _volumeRequest) setState(_cancelVolume);
+          if (!mounted || request != _volumeRequest) return;
+          if (_selectedSession?['PlayState']?['VolumeLevel'] is num) {
+            setState(_cancelVolume);
+          } else {
+            _volumeRefreshTimer?.cancel();
+            _volumeRequest++;
+          }
         });
       }
       _scheduleVolumeRefresh(request);
@@ -242,7 +250,7 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet>
         onError: (error) {
           if (!mounted || !identical(_navigation, queue)) return;
           // Overflow can fail while a request is still in flight. Keep the
-          // closed queue until it settles so a later tap cannot overtake it.
+          // closed queue until it settles so a later tap can't overtake it.
           unawaited(
             queue.settled.then((_) {
               if (identical(_navigation, queue)) _navigation = null;
@@ -485,7 +493,7 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet>
     }
   }
 
-  /// A successful command POST does not mean Sessions has its new volume yet.
+  /// A successful command POST doesn't mean Sessions has its new volume yet.
   void _reconcileVolume(int request) {
     final held = _volume;
     if (held == null) return;
@@ -811,7 +819,7 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet>
       return [
         ...navigation,
         // These receivers use TV system volume independently of playback.
-        // General session capabilities alone cannot distinguish system volume
+        // General session capabilities alone can't tell system volume apart
         // from a Core client's player-only volume or provide a fresh idle level.
         if (const {
           'moonfin for webos',

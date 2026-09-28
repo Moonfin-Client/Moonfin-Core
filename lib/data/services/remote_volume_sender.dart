@@ -1,7 +1,8 @@
 import 'dart:async';
 
 /// Orders volume gestures independently of playback controls. Consecutive
-/// pending slider values collapse to the latest; mute and steps keep their order.
+/// pending slider values collapse to the latest, while mute and steps keep
+/// their order.
 class RemoteVolumeSender {
   RemoteVolumeSender(this.send);
 

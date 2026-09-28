@@ -751,7 +751,7 @@ void main() {
         'MoonfinRevision': '3',
       });
       expect(controller.text, 'aliens');
-      // A fresh Search replaces this one, then old text cannot take ownership.
+      // A fresh Search replaces this one, so old text can't take ownership.
       fieldKey = GlobalKey<CustomTVTextFieldState>();
       await command('GoToSearch', {'MoonfinInputId': 'new'});
       await tester.pumpAndSettle();

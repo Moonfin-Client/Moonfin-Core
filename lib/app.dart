@@ -726,7 +726,9 @@ class _GlobalShortcutScopeState extends State<_GlobalShortcutScope>
         return true;
       }
       // Dismiss a receiving phone's keyboard before leaving its page.
-      if (fromRemote && _isEditingText() && View.of(context).viewInsets.bottom > 0) {
+      if (fromRemote &&
+          _isEditingText() &&
+          View.of(context).viewInsets.bottom > 0) {
         FocusManager.instance.primaryFocus?.unfocus();
         return true;
       }
@@ -771,7 +773,7 @@ class _GlobalShortcutScopeState extends State<_GlobalShortcutScope>
         }
         scheduleRoutePop(appRouter, isMounted: () => mounted);
       } else if (!_exitDialogShowing) {
-        // A server remote navigates Moonfin; it cannot quit the receiving app.
+        // A server remote only navigates, it can't quit the app it's driving.
         if (fromRemote) return true;
         if (PlatformDetection.isAndroid && key == LogicalKeyboardKey.goBack) {
           return true;

@@ -1058,8 +1058,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     if (PlatformDetection.isDesktop) {
       unawaited(_prefs.set(UserPreferences.playerVolume, _playerVolume));
     }
+    _volumeListenerSub?.cancel();
     if (_useSystemVolume) {
-      _volumeListenerSub?.cancel();
       VolumeController.instance.removeListener();
     }
     if (PlatformDetection.isMobile) {
@@ -6234,6 +6234,13 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         .toDouble();
     unawaited(_manager.backend?.setVolume(_playerVolume));
     _reportVolumeToManager();
+    // A session remote sets the backend and reports its level without coming
+    // through here, so the slider follows it and a new backend keeps it.
+    _volumeListenerSub = _manager.volumeStream.listen((level) {
+      if (!mounted || (level - _playerVolume).abs() < 0.5) return;
+      setState(() => _playerVolume = level);
+      _persistPlayerVolume();
+    });
   }
 
   void _persistPlayerVolume() {

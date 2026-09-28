@@ -245,7 +245,7 @@ class _SearchScreenState extends State<SearchScreen>
     _applyingRemoteSearch = true;
     try {
       // A native editor has its own snapshot. Dismiss it before applying phone
-      // text so a later native completion cannot replace the newer query.
+      // text so a later native completion can't replace the newer query.
       _searchTvFieldKey.currentState?.closeKeyboard(submit: false);
       _searchController.value = TextEditingValue(
         text: text,
@@ -830,8 +830,8 @@ class _SearchScreenState extends State<SearchScreen>
       ),
     );
 
-    // TV handles directional focus explicitly; other layouts use normal
-    // traversal and also accept activation from a connected remote.
+    // TV handles directional focus itself. Other layouts use normal traversal
+    // and also take activation from a connected remote.
     return Focus(
       focusNode: _voiceFocus,
       onKeyEvent: _onVoiceKey,

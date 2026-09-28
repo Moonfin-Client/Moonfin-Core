@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../l10n/app_localizations.dart';
 
-/// Five independent tap targets; ordinary taps do not start a repeat timer.
+/// Five separate tap targets, and a tap never starts a repeat.
 class RemoteNavigationPad extends StatelessWidget {
   const RemoteNavigationPad({
     super.key,

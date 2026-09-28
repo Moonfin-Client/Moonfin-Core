@@ -77,7 +77,7 @@ class GamepadKeySynthesizer {
       handled = _emit(key, _EventKind.down);
     } finally {
       // Some controls activate on release. Count that as handled too so a
-      // fallback action cannot activate them a second time.
+      // fallback action can't activate them a second time.
       handled = release(key) || handled;
     }
     return handled;

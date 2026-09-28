@@ -196,8 +196,8 @@ class OverlaySheetController {
     return true;
   }
 
-  /// Navigation replaces the page below these sheets, so do not restore its
-  /// old focus after the closing animation finishes.
+  /// Navigation replaces the page below these sheets, so its old focus isn't
+  /// restored once they finish closing.
   static Future<void> closeAllSheets() async {
     await Future.wait([
       for (final close in _openSheetCloseHandles.toList().reversed)
@@ -387,7 +387,7 @@ class _OverlaySheetState<T> extends State<_OverlaySheet<T>>
     try {
       await _controller.reverse().orCancel;
     } on TickerCanceled {
-      // Disposal already removed the sheet; navigation must still settle.
+      // Disposal already removed the sheet, but navigation still has to settle.
       return;
     }
     if (!mounted) return;
