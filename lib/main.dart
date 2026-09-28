@@ -51,6 +51,7 @@ import 'platform/web_runtime_config.dart';
 import 'preference/preference_constants.dart';
 import 'preference/user_preferences.dart';
 import 'util/fullscreen_helper.dart';
+import 'util/app_distribution.dart';
 import 'util/window_geometry.dart';
 import 'util/http_overrides_stub.dart'
     if (dart.library.io) 'util/http_overrides_io.dart';
@@ -195,6 +196,7 @@ Future<void> _restoreWindowGeometry() async {
       : null;
 
   final options = WindowOptions(
+    title: AppDistribution.isCustomBuild ? 'Moonfin Books' : 'Moonfin',
     size: bounds?.size ?? const Size(1280, 720),
     minimumSize: const Size(minW, minH),
     center: !hasSavedGeometry && !startMaximized,

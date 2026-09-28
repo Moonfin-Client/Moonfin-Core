@@ -968,6 +968,7 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
     final navLibraries = _navLibraries;
     final showLibraries =
         !kidsMode && _prefs.get(UserPreferences.showLibrariesInToolbar);
+    final showBooks = GetIt.instance<PluginSyncService>().booksSupported;
     final alwaysExpanded = _prefs.get(UserPreferences.navbarAlwaysExpanded);
     final showFolders = _prefs.get(UserPreferences.enableFolderView);
     final showSyncPlay =
@@ -1180,6 +1181,23 @@ class _TopToolbarState extends State<TopToolbar> with RouteAware {
                           iconColor: nextNavColor(),
                           alwaysExpanded: alwaysExpanded,
                         ),
+                ),
+              ],
+              if (showBooks) ...[
+                _gap(),
+                _orderButton(
+                  order: (order++).toDouble(),
+                  child: ExpandableIconButton(
+                    key: const ValueKey('toolbar-books'),
+                    forceExpanded: alwaysExpanded,
+                    baseColor: nextNavColor(),
+                    icon: Icons.menu_book_rounded,
+                    label: l10n.books,
+                    onPressed: () {
+                      if (_isActive(Destinations.booksRequests)) return;
+                      context.navigateTopLevel(Destinations.booksRequests);
+                    },
+                  ),
                 ),
               ],
               _gap(),

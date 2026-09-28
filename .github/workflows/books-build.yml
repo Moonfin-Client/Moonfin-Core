@@ -1,0 +1,559 @@
+name: Moonfin Books builds
+concurrency:
+  group: moonfin-books-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+env:
+  FLUTTER_VERSION: 3.47.2
+  MOONFIN_CUSTOM_BUILD: 'true'
+jobs:
+  books-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        persist-credentials: false
+    - uses: subosito/flutter-action@v2
+      with:
+        flutter-version: ${{ env.FLUTTER_VERSION }}
+    - name: Test Books and update guard
+      run: 'flutter pub get
+
+        flutter test test/books
+
+        flutter test test/util/app_distribution_custom_build_test.dart --dart-define=DISTRIBUTION_CHANNEL=windows
+
+        flutter test test/util/app_distribution_custom_build_test.dart --dart-define=DISTRIBUTION_CHANNEL=windows --dart-define=MOONFIN_CUSTOM_BUILD=true
+
+        '
+  android-mobile:
+    needs: books-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        persist-credentials: false
+    - uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: '17'
+    - uses: subosito/flutter-action@v2
+      with:
+        flutter-version: ${{ env.FLUTTER_VERSION }}
+    - name: Build mobile APK only
+      shell: bash
+      run: 'set -euo pipefail
+
+        flutter pub get
+
+        flutter build apk --release --flavor mobile --dart-define=DISTRIBUTION_CHANNEL=apk --dart-define=MOONFIN_CUSTOM_BUILD=true
+
+        test -s build/app/outputs/flutter-apk/app-mobile-release.apk
+
+        mkdir -p dist
+
+        cp build/app/outputs/flutter-apk/app-mobile-release.apk dist/Moonfin_Books_Android_mobile_debug-signed.apk
+
+        '
+    - name: Build mobile App Bundle
+      shell: bash
+      run: 'set -euo pipefail
+
+        flutter build appbundle --release --flavor mobile --dart-define=DISTRIBUTION_CHANNEL=aab --dart-define=MOONFIN_CUSTOM_BUILD=true
+
+        test -s build/app/outputs/bundle/mobileRelease/app-mobile-release.aab
+
+        cp build/app/outputs/bundle/mobileRelease/app-mobile-release.aab dist/Moonfin_Books_Android_mobile_debug-signed.aab
+
+        '
+    - uses: actions/upload-artifact@v4
+      with:
+        name: books-android-mobile-debug-signed
+        path: dist/Moonfin_Books_Android_mobile_debug-signed.*
+        if-no-files-found: error
+        retention-days: 14
+  ios:
+    needs: books-tests
+    runs-on: macos-26
+    timeout-minutes: 90
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        persist-credentials: false
+    - uses: subosito/flutter-action@v2
+      with:
+        flutter-version: ${{ env.FLUTTER_VERSION }}
+    - name: Select upstream Xcode version
+      run: sudo xcode-select -s /Applications/Xcode_26.3.app/Contents/Developer
+    - name: Prepare iOS identity and bundled cores
+      shell: bash
+      run: 'set -euo pipefail
+
+        cat > ios/Flutter/Local.xcconfig <<''EOF''
+
+        MOONFIN_BUNDLE_IDENTIFIER = art.tiedemann.moonfin.ios
+
+        MOONFIN_BUNDLE_DISPLAY_NAME = Moonfin Books
+
+        EOF
+
+        flutter pub get
+
+        ./ios/game_host/fetch_cores.sh
+
+        ./ios/game_host/wrap_frameworks.sh
+
+        '
+    - name: Build unsigned iOS IPA
+      shell: bash
+      run: 'set -euo pipefail
+
+        flutter build ipa --release --no-codesign --dart-define=DISTRIBUTION_CHANNEL=ios_unsigned --dart-define=MOONFIN_CUSTOM_BUILD=true
+
+        app_path="$(find build/ios/archive -type d -path ''*/Products/Applications/*.app'' -print -quit)"
+
+        test -n "$app_path"
+
+        mkdir -p dist
+
+        stage="$(mktemp -d)"
+
+        mkdir -p "$stage/Payload"
+
+        cp -R "$app_path" "$stage/Payload/"
+
+        (cd "$stage" && zip -qry "$GITHUB_WORKSPACE/dist/Moonfin_Books_iOS_unsigned.ipa" Payload)
+
+        test -s dist/Moonfin_Books_iOS_unsigned.ipa
+
+        '
+    - uses: actions/upload-artifact@v4
+      with:
+        name: books-ios-unsigned
+        path: dist/Moonfin_Books_iOS_unsigned.ipa
+        if-no-files-found: error
+        retention-days: 14
+  macos:
+    needs: books-tests
+    runs-on: macos-26
+    timeout-minutes: 90
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        persist-credentials: false
+    - uses: subosito/flutter-action@v2
+      with:
+        flutter-version: ${{ env.FLUTTER_VERSION }}
+    - name: Select upstream Xcode version
+      run: sudo xcode-select -s /Applications/Xcode_26.3.app/Contents/Developer
+    - name: Set custom macOS bundle identity
+      shell: bash
+      run: 'set -euo pipefail
+
+        sed -i '''' ''s/^PRODUCT_BUNDLE_IDENTIFIER = org.moonfin.app$/PRODUCT_BUNDLE_IDENTIFIER = art.tiedemann.moonfin.macos/'' macos/Runner/Configs/AppInfo.xcconfig
+
+        /usr/libexec/PlistBuddy -c ''Add :CFBundleDisplayName string Moonfin Books'' macos/Runner/Info.plist
+
+        '
+    - name: Build ad hoc DMG
+      shell: bash
+      env:
+        BUILD_APPSTORE_PKG: '0'
+        BUILD_DMG_GITHUB: '1'
+        ALLOW_PROVISIONING_UPDATES: '0'
+      run: 'set -euo pipefail
+
+        ./build-macos.sh
+
+        dmg="$(find . -maxdepth 1 -name ''Moonfin_macOS_v*.dmg'' -print -quit)"
+
+        test -s "$dmg"
+
+        mkdir -p dist
+
+        cp "$dmg" dist/Moonfin_Books_macOS_adhoc.dmg
+
+        '
+    - uses: actions/upload-artifact@v4
+      with:
+        name: books-macos-adhoc
+        path: dist/Moonfin_Books_macOS_adhoc.dmg
+        if-no-files-found: error
+        retention-days: 14
+  windows-x64:
+    needs: books-tests
+    runs-on: windows-latest
+    timeout-minutes: 90
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        persist-credentials: false
+    - uses: subosito/flutter-action@v2
+      with:
+        flutter-version: ${{ env.FLUTTER_VERSION }}
+    - name: Install Inno Setup
+      shell: pwsh
+      run: choco install innosetup -y --no-progress
+    - name: Build x64 installer
+      shell: pwsh
+      run: 'flutter config --enable-windows-desktop
+
+        .\build-windows.ps1 -Architecture x64
+
+        if ($LASTEXITCODE -ne 0) { throw "Windows build failed: $LASTEXITCODE" }
+
+        $package = Get-ChildItem Moonfin_Books_Windows_v*.exe -File | Select-Object -First 1
+
+        if (-not $package -or $package.Length -eq 0) { throw ''Windows installer missing'' }
+
+        New-Item -ItemType Directory -Force dist | Out-Null
+
+        Copy-Item $package.FullName dist\Moonfin_Books_Windows_x64_unsigned.exe
+
+        '
+    - uses: actions/upload-artifact@v4
+      with:
+        name: books-windows-x64-unsigned
+        path: dist/Moonfin_Books_Windows_x64_unsigned.exe
+        if-no-files-found: error
+        retention-days: 14
+  windows-arm64:
+    needs: books-tests
+    runs-on: windows-11-arm
+    timeout-minutes: 120
+    env:
+      FLUTTER_VERSION: 3.47.2
+      MOONFIN_CUSTOM_BUILD: 'true'
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        persist-credentials: false
+    - name: Verify native ARM64 runner
+      shell: pwsh
+      run: "if ($env:PROCESSOR_ARCHITECTURE -ne 'ARM64') {\n  throw \"Native ARM64 runner required, got $env:PROCESSOR_ARCHITECTURE\"\n}\n"
+    - name: Set up native ARM64 Flutter
+      shell: pwsh
+      run: 'git clone https://github.com/flutter/flutter.git --branch $env:FLUTTER_VERSION --depth 1 C:\flutter
+
+        if ($LASTEXITCODE -ne 0) { throw ''Flutter checkout failed'' }
+
+        ''C:\flutter\bin'' | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+        '
+    - name: Verify Flutter and Dart architecture
+      shell: pwsh
+      run: "flutter --version\nif ($LASTEXITCODE -ne 0) { throw 'Flutter bootstrap failed' }\n$dartVersion = dart --version 2>&1 | Out-String\nif ($dartVersion -notmatch 'windows_arm64|arm64') {\n  throw \"Native ARM64 Dart SDK required: $dartVersion\"\n}\n"
+    - name: Install Inno Setup 6
+      shell: pwsh
+      run: choco install innosetup -y --no-progress
+    - name: Build Moonfin Books ARM64 installer
+      shell: pwsh
+      run: "flutter config --enable-windows-desktop\nif ($LASTEXITCODE -ne 0) { throw 'Windows desktop configuration failed' }\n.\\build-windows.ps1 -Architecture arm64\nif ($LASTEXITCODE -ne 0) { throw 'Windows ARM64 build failed' }\n$packages = @(Get-ChildItem -Path . -Filter 'Moonfin_Books_WindowsARM64_v*.exe' -File)\nif ($packages.Count -ne 1 -or $packages[0].Length -eq 0) {\n  throw 'Expected one nonempty Moonfin Books ARM64 installer'\n}\n"
+    - uses: actions/upload-artifact@v4
+      with:
+        name: books-windows-arm64-unsigned
+        path: Moonfin_Books_WindowsARM64_v*.exe
+        if-no-files-found: error
+        retention-days: 14
+  linux:
+    needs: books-tests
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - arch: x64
+          runner: ubuntu-24.04
+          appimagetool_arch: x86_64
+          platform: Linux
+        - arch: arm64
+          runner: ubuntu-22.04-arm
+          appimagetool_arch: aarch64
+          platform: LinuxARM64
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 180
+    env:
+      FLUTTER_VERSION: 3.47.2
+      MOONFIN_CUSTOM_BUILD: 'true'
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        persist-credentials: false
+    - uses: subosito/flutter-action@v2
+      if: matrix.arch == 'x64'
+      with:
+        flutter-version: ${{ env.FLUTTER_VERSION }}
+    - name: Set up native ARM64 Flutter
+      if: matrix.arch == 'arm64'
+      shell: bash
+      run: "set -euo pipefail\ngit clone https://github.com/flutter/flutter.git \\\n  --branch \"$FLUTTER_VERSION\" --depth 1 \"$HOME/flutter\"\necho \"$HOME/flutter/bin\" >> \"$GITHUB_PATH\"\n"
+    - name: Verify native architecture and Flutter
+      shell: bash
+      run: "set -euo pipefail\ncase \"${{ matrix.arch }}:$(uname -m)\" in\n  x64:x86_64|arm64:aarch64) ;;\n  *) echo 'Wrong runner architecture' >&2; exit 1 ;;\nesac\nflutter --version\n"
+    - name: Install Linux build and package tools
+      shell: bash
+      run: "set -euo pipefail\nsudo apt-get update\nsudo apt-get install -y \\\n  clang cmake ninja-build pkg-config \\\n  libgtk-3-dev libglib2.0-dev libwebkit2gtk-4.1-dev \\\n  libmpv-dev libsecret-1-dev libasound2-dev libarchive-dev \\\n  rpm flatpak flatpak-builder libfuse2 zsync\npkg-config --exists webkit2gtk-4.1\n"
+    - name: Install AppImage and Snap tools
+      shell: bash
+      run: "set -euo pipefail\ncurl -fsSL -o \"$RUNNER_TEMP/appimagetool\" \\\n  \"https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-${{ matrix.appimagetool_arch }}.AppImage\"\nchmod +x \"$RUNNER_TEMP/appimagetool\"\necho \"$RUNNER_TEMP\" >> \"$GITHUB_PATH\"\nsudo snap install snapcraft --classic\n"
+    - name: Build all six Linux formats
+      shell: bash
+      run: 'set -euo pipefail
+
+        ./build-linux.sh all
+
+        '
+    - name: Verify Linux package set and identity
+      shell: bash
+      env:
+        PLATFORM: ${{ matrix.platform }}
+      run: "set -euo pipefail\nshopt -s nullglob\nprefix=\"Moonfin_Books_${PLATFORM}_v\"\nfor suffix in tar.gz deb rpm AppImage snap flatpak; do\n  files=( ${prefix}*.\"$suffix\" )\n  if [ \"${#files[@]}\" -ne 1 ] || [ ! -s \"${files[0]}\" ]; then\n    echo \"Expected one nonempty ${prefix}*.${suffix}\" >&2\n    exit 1\n  fi\ndone\ndeb=( ${prefix}*.deb )\nrpm=( ${prefix}*.rpm )\ntest \"$(dpkg-deb -f \"${deb[0]}\" Package)\" = moonfin-books\ntest \"$(rpm -qp --qf '%{NAME}' \"${rpm[0]}\")\" = moonfin-books\n"
+    - uses: actions/upload-artifact@v4
+      with:
+        name: books-linux-${{ matrix.arch }}
+        path: 'Moonfin_Books_${{ matrix.platform }}_v*.tar.gz
+
+          Moonfin_Books_${{ matrix.platform }}_v*.deb
+
+          Moonfin_Books_${{ matrix.platform }}_v*.rpm
+
+          Moonfin_Books_${{ matrix.platform }}_v*.AppImage
+
+          Moonfin_Books_${{ matrix.platform }}_v*.snap
+
+          Moonfin_Books_${{ matrix.platform }}_v*.flatpak
+
+          '
+        if-no-files-found: warn
+        retention-days: 14
+      if: always()
+  web:
+    needs: books-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        persist-credentials: false
+    - uses: subosito/flutter-action@v2
+      with:
+        flutter-version: ${{ env.FLUTTER_VERSION }}
+    - name: Build Moonfin Books web client
+      run: 'flutter build web --release --no-wasm-dry-run --base-href /Moonfin/Web/ --dart-define=MOONFIN_CUSTOM_BUILD=true
+
+        python3 scripts/brand-books-web.py build/web
+
+        rsync -a web/theme/ build/web/theme/
+
+        '
+    - name: Package web client
+      run: 'mkdir -p dist
+
+        (cd build/web && zip -qr ../../dist/Moonfin_Books_Web_plugin.zip .)
+
+        sha256sum dist/*.zip > dist/SHA256SUMS
+
+        '
+    - uses: actions/upload-artifact@v4
+      with:
+        name: books-web
+        path: dist/*
+        if-no-files-found: error
+        retention-days: 14
+  android-startup:
+    needs: android-mobile
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        persist-credentials: false
+    - uses: actions/download-artifact@v4
+      with:
+        name: books-android-mobile-debug-signed
+        path: apk
+    - name: Enable KVM on the disposable runner
+      run: 'echo ''KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"'' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+
+        sudo udevadm control --reload-rules
+
+        sudo udevadm trigger --name-match=kvm
+
+        '
+    - name: Launch the built Android APK
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        api-level: 35
+        target: google_apis
+        arch: x86_64
+        profile: pixel_7_pro
+        disable-animations: true
+        script: bash scripts/android-startup-smoke.sh
+    - uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: books-android-startup-evidence
+        path: qa-evidence/*
+        if-no-files-found: warn
+        retention-days: 14
+  android-tv:
+    needs: books-tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - variant: stable
+          flavor: androidTv
+        - variant: beta
+          flavor: androidTv-beta
+    permissions:
+      contents: read
+    env:
+      MOONFIN_CUSTOM_BUILD: 'true'
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        persist-credentials: false
+    - uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: '17'
+    - uses: subosito/flutter-action@v2
+      with:
+        flutter-version: 3.47.2
+    - name: Build TV APK and AAB with the Books identity
+      shell: bash
+      run: "set -euo pipefail\ntest ! -e android/app/release.keystore\nflutter pub get\nmkdir -p dist\nflutter build apk --release --flavor '${{ matrix.flavor }}' \\\n  --dart-define=MOONFIN_FORCE_TV=true \\\n  --dart-define=DISTRIBUTION_CHANNEL=android_tv_apk \\\n  --dart-define=MOONFIN_CUSTOM_BUILD=true\nmapfile -t apks < <(find build/app/outputs/flutter-apk -maxdepth 1 \\\n  -type f -name 'app-*-release.apk')\ntest \"${#apks[@]}\" -eq 1 && test -s \"${apks[0]}\"\ncp \"${apks[0]}\" 'dist/Moonfin_Books_AndroidTV_${{ matrix.variant }}_debug-signed.apk'\nflutter build appbundle --release --flavor '${{ matrix.flavor }}' \\\n  --dart-define=MOONFIN_FORCE_TV=true \\\n  --dart-define=DISTRIBUTION_CHANNEL=android_tv_aab \\\n  --dart-define=MOONFIN_CUSTOM_BUILD=true\nmapfile -t bundles < <(find build/app/outputs/bundle -type f -name '*.aab')\ntest \"${#bundles[@]}\" -eq 1 && test -s \"${bundles[0]}\"\ncp \"${bundles[0]}\" 'dist/Moonfin_Books_AndroidTV_${{ matrix.variant }}_debug-signed.aab'\n"
+    - uses: actions/upload-artifact@v4
+      with:
+        name: books-android-tv-${{ matrix.variant }}-debug-signed
+        path: dist/Moonfin_Books_AndroidTV_${{ matrix.variant }}_debug-signed.*
+        if-no-files-found: error
+        retention-days: 14
+  tvos:
+    needs: books-tests
+    runs-on: macos-26
+    timeout-minutes: 90
+    permissions:
+      contents: read
+    env:
+      MOONFIN_CUSTOM_BUILD: 'true'
+      FLUTTER_TVOS_REF: v3.47.2-tvos.1.10.0
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        persist-credentials: false
+    - name: Select Xcode 26.3
+      run: sudo xcode-select -s /Applications/Xcode_26.3.app/Contents/Developer
+    - name: Install tvOS platform
+      shell: bash
+      run: "sudo xcodebuild -runFirstLaunch || true\nfor i in 1 2 3 4 5 6; do\n  if xcodebuild -downloadPlatform tvOS; then exit 0; fi\n  echo \"downloadPlatform attempt $i failed, retrying in 25s\"\n  sleep 25\ndone\necho '::error::tvOS platform install failed after 6 attempts'\nexit 1\n"
+    - name: Cache flutter-tvos toolchain
+      id: cache-fluttertvos
+      uses: actions/cache@v4
+      with:
+        path: ~/flutter-tvos
+        key: flutter-tvos-${{ env.FLUTTER_TVOS_REF }}-${{ runner.os }}-arm64
+    - name: Install flutter-tvos
+      if: steps.cache-fluttertvos.outputs.cache-hit != 'true'
+      run: "git clone --depth 1 --branch \"$FLUTTER_TVOS_REF\" \\\n  https://github.com/fluttertv/flutter-tvos.git \"$HOME/flutter-tvos\"\n"
+    - name: Add flutter-tvos to PATH and precache
+      run: 'echo "$HOME/flutter-tvos/bin" >> "$GITHUB_PATH"
+
+        "$HOME/flutter-tvos/bin/flutter-tvos" precache
+
+        '
+    - name: Resolve dependencies and set the separate TV identity
+      shell: bash
+      run: 'set -euo pipefail
+
+        flutter-tvos pub get
+
+        python3 tvos/scripts/configure_books_identity.py
+
+        '
+    - name: Prepare Flutter build settings
+      shell: bash
+      run: "flutter-tvos build tvos --release --no-tree-shake-icons \\\n  --dart-define=MOONFIN_TVOS=true \\\n  --dart-define=DISTRIBUTION_CHANNEL=tvos_unsigned \\\n  --dart-define=MOONFIN_CUSTOM_BUILD=true || true\ntest -f tvos/Flutter/Generated.xcconfig\ngrep -q '^FLUTTER_ROOT=' tvos/Flutter/Generated.xcconfig \\\n  || echo \"FLUTTER_ROOT=$HOME/flutter-tvos\" >> tvos/Flutter/Generated.xcconfig\ngrep -q 'PRODUCT_BUNDLE_IDENTIFIER = art.tiedemann.moonfin.tvos;' \\\n  tvos/Runner.xcodeproj/project.pbxproj\n"
+    - name: Install pods
+      env:
+        LC_ALL: en_US.UTF-8
+      run: 'python3 tvos/scripts/restore_tvos_plugins.py
+
+        cd tvos && pod install
+
+        '
+    - name: Stage flutter_assets for the Xcode copy phase
+      shell: bash
+      run: "set -euo pipefail\nDEST='tvos/Flutter/flutter_assets'\nrm -rf \"$DEST\"\nmkdir -p \"$DEST\"\nSRC_APP=$(find build/tvos -maxdepth 3 -type d \\\n  -path '*Release-appletvos/Runner.app/flutter_assets' | head -1)\nif [ -n \"$SRC_APP\" ]; then\n  rsync -a \"$SRC_APP/\" \"$DEST/\"\nelse\n  rsync -a \\\n    --exclude='*-appletvos' --exclude='*-appletvsimulator' \\\n    --exclude='aot' --exclude='.last_build_id' \\\n    --exclude='kernel_blob.bin' --exclude='vm_snapshot_data' \\\n    --exclude='isolate_snapshot_data' \\\n    build/tvos/ \"$DEST/\"\nfi\ntest -f \"$DEST/fonts/MaterialIcons-Regular.otf\"\ntest -f \"$DEST/AssetManifest.bin\"\n"
+    - name: Build unsigned app
+      shell: bash
+      run: "xcodebuild \\\n  -workspace tvos/Runner.xcworkspace \\\n  -scheme Runner \\\n  -configuration Release \\\n  -sdk appletvos \\\n  -derivedDataPath \"$RUNNER_TEMP/dd\" \\\n  CODE_SIGNING_ALLOWED=NO \\\n  CODE_SIGN_IDENTITY=\"\" \\\n  build\n"
+    - name: Verify app and package unsigned IPA
+      shell: bash
+      run: 'set -euo pipefail
+
+        APP="$RUNNER_TEMP/dd/Build/Products/Release-appletvos/Runner.app"
+
+        test -d "$APP"
+
+        test "$(plutil -extract CFBundleIdentifier raw "$APP/Info.plist")" = ''art.tiedemann.moonfin.tvos''
+
+        test "$(plutil -extract CFBundleDisplayName raw "$APP/Info.plist")" = ''Moonfin Books''
+
+        test "$(plutil -extract CFBundleIdentifier raw "$APP/PlugIns/MoonfinTopShelf.appex/Info.plist")" = ''art.tiedemann.moonfin.tvos.topshelf''
+
+        test -f "$APP/flutter_assets/fonts/MaterialIcons-Regular.otf"
+
+        test -e "$APP/PlugIns/MoonfinTopShelf.appex/MoonfinTopShelf"
+
+        PLIST_MIN=$(plutil -extract MinimumOSVersion raw "$APP/Frameworks/App.framework/Info.plist")
+
+        BIN_MIN=$(vtool -show-build "$APP/Frameworks/App.framework/App" | awk ''/minos/{print $2; exit}'')
+
+        test "$PLIST_MIN" = "$BIN_MIN"
+
+        VERSION=$(grep ''^version:'' pubspec.yaml | sed ''s/version:[[:space:]]*//'' | cut -d''+'' -f1 | tr -d ''[:space:]'')
+
+        test -n "$VERSION"
+
+        mkdir -p "$RUNNER_TEMP/Payload"
+
+        cp -R "$APP" "$RUNNER_TEMP/Payload/"
+
+        (cd "$RUNNER_TEMP" && zip -qry "$GITHUB_WORKSPACE/Moonfin_Books_tvOS_v${VERSION}_unsigned.ipa" Payload)
+
+        '
+    - uses: actions/upload-artifact@v4
+      with:
+        name: books-tvos-unsigned
+        path: Moonfin_Books_tvOS_v*_unsigned.ipa
+        if-no-files-found: error
+        retention-days: 14
+'on':
+  push:
+    branches:
+    - main
+    paths:
+    - .github/workflows/books-build.yml
+    - lib/**
+    - test/**
+    - packages/**
+    - android/**
+    - ios/**
+    - tvos/**
+    - macos/**
+    - windows/**
+    - linux/**
+    - web/**
+    - assets/**
+    - scripts/**
+    - build-*.sh
+    - build-*.ps1
+    - pubspec.*
+    - l10n.yaml
+  workflow_dispatch: null

@@ -13297,4 +13297,104 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get navYou => 'You';
+
+  @override
+  String get booksHint =>
+      'Downloads werden deiner Bibliothek auf dem Server hinzugefügt.';
+
+  @override
+  String get booksSearchLabel => 'Titel oder Autor';
+
+  @override
+  String get booksSearchPrompt => 'Was möchtest du lesen oder hören?';
+
+  @override
+  String get booksSearchEmpty =>
+      'Keine Ergebnisse. Versuche einen anderen Titel oder Autor.';
+
+  @override
+  String get booksSearchFailed => 'Suche momentan nicht möglich.';
+
+  @override
+  String get booksReleasesTitle => 'Ausgabe auswählen';
+
+  @override
+  String get booksReleasesEmpty => 'Keine passende Ausgabe gefunden.';
+
+  @override
+  String get booksReleasesFailed => 'Ausgaben konnten nicht geladen werden.';
+
+  @override
+  String get booksSelectRelease => 'Wähle eine Ausgabe';
+
+  @override
+  String get booksStarted => 'Download gestartet';
+
+  @override
+  String get booksStartUnknown =>
+      'Start konnte nicht bestätigt werden. Downloadstatus prüfen.';
+
+  @override
+  String get booksActiveEmpty => 'Noch keine aktiven Downloads.';
+
+  @override
+  String get booksStatusFailed => 'Status konnte nicht aktualisiert werden.';
+
+  @override
+  String get booksUnavailable =>
+      'Bücher sind auf diesem Server nicht verfügbar.';
+
+  @override
+  String get booksForbidden => 'Für diese Aktion fehlt die Berechtigung.';
+
+  @override
+  String get booksLoading => 'Wird geladen …';
+
+  @override
+  String get booksRetry => 'Erneut versuchen';
+
+  @override
+  String get booksMore => 'Weitere Ergebnisse';
+
+  @override
+  String get booksShowDownloads => 'Downloads anzeigen';
+
+  @override
+  String get booksQueued => 'In Warteschlange';
+
+  @override
+  String get booksDownloading => 'Wird heruntergeladen';
+
+  @override
+  String get booksProcessing => 'Wird verarbeitet';
+
+  @override
+  String get booksComplete => 'Download abgeschlossen';
+
+  @override
+  String get booksFailed => 'Download fehlgeschlagen';
+
+  @override
+  String get booksUnknownStatus => 'Status derzeit nicht verfügbar';
+
+  @override
+  String get booksCancelled => 'Abgebrochen';
+
+  @override
+  String get booksRefresh => 'Aktualisieren';
+
+  @override
+  String get booksClose => 'Schließen';
+
+  @override
+  String get booksStarting => 'Wird gestartet …';
+
+  @override
+  String get booksReleaseSelected => 'Ausgewählte Ausgabe';
+
+  @override
+  String get booksDownloads => 'Downloads';
+
+  @override
+  String get booksPreparing => 'Download wird vorbereitet';
 }

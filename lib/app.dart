@@ -47,6 +47,7 @@ import 'ui/widgets/keyboard_shortcuts/keyboard_shortcut_reference.dart';
 import 'ui/screensaver/screensaver_controller.dart';
 import 'ui/screensaver/screensaver_host.dart';
 import 'util/app_exit.dart';
+import 'util/app_distribution.dart';
 import 'util/focus/dpad_keys.dart';
 import 'util/focus/siri_remote_glide.dart';
 import 'util/fullscreen_helper.dart';
@@ -226,8 +227,9 @@ class _MoonfinAppState extends State<MoonfinApp> {
           animation: _themeController,
           builder: (context, _) {
             return MaterialApp.router(
-              onGenerateTitle: (context) =>
-                  AppLocalizations.of(context).appTitle,
+              onGenerateTitle: (context) => AppDistribution.isCustomBuild
+                  ? 'Moonfin Books'
+                  : AppLocalizations.of(context).appTitle,
               theme: AppTheme.buildTheme(_themeController.activeSpec),
               routerConfig: appRouter,
               debugShowCheckedModeBanner: false,

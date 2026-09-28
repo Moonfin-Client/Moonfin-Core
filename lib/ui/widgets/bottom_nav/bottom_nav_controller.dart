@@ -91,6 +91,7 @@ class BottomNavController extends ChangeNotifier {
   BottomNavTabGates get gates => BottomNavTabGates.fromPreferences(
         _prefs,
         seerrAvailable: _pluginSync?.seerrAvailable ?? false,
+        booksSupported: _pluginSync?.booksSupported ?? false,
       );
 
   bool get _hasLiveTvLibrary => _libraries.any(isLiveTvLibrary);

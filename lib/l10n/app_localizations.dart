@@ -22984,6 +22984,198 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You'**
   String get navYou;
+
+  /// No description provided for @booksHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloads are added to your library on the server.'**
+  String get booksHint;
+
+  /// No description provided for @booksSearchLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Title or author'**
+  String get booksSearchLabel;
+
+  /// No description provided for @booksSearchPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'What would you like to read or hear?'**
+  String get booksSearchPrompt;
+
+  /// No description provided for @booksSearchEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No results found. Try another title or author.'**
+  String get booksSearchEmpty;
+
+  /// No description provided for @booksSearchFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Search is unavailable right now.'**
+  String get booksSearchFailed;
+
+  /// No description provided for @booksReleasesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose an edition'**
+  String get booksReleasesTitle;
+
+  /// No description provided for @booksReleasesEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching editions found.'**
+  String get booksReleasesEmpty;
+
+  /// No description provided for @booksReleasesFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Editions could not be loaded.'**
+  String get booksReleasesFailed;
+
+  /// No description provided for @booksSelectRelease.
+  ///
+  /// In en, this message translates to:
+  /// **'Select an edition'**
+  String get booksSelectRelease;
+
+  /// No description provided for @booksStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Download started'**
+  String get booksStarted;
+
+  /// No description provided for @booksStartUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Start could not be confirmed. Check downloads.'**
+  String get booksStartUnknown;
+
+  /// No description provided for @booksActiveEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No active downloads.'**
+  String get booksActiveEmpty;
+
+  /// No description provided for @booksStatusFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Download status could not be updated.'**
+  String get booksStatusFailed;
+
+  /// No description provided for @booksUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Books are not available on this server.'**
+  String get booksUnavailable;
+
+  /// No description provided for @booksForbidden.
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have permission for this action.'**
+  String get booksForbidden;
+
+  /// No description provided for @booksLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading…'**
+  String get booksLoading;
+
+  /// No description provided for @booksRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get booksRetry;
+
+  /// No description provided for @booksMore.
+  ///
+  /// In en, this message translates to:
+  /// **'More results'**
+  String get booksMore;
+
+  /// No description provided for @booksShowDownloads.
+  ///
+  /// In en, this message translates to:
+  /// **'Show downloads'**
+  String get booksShowDownloads;
+
+  /// No description provided for @booksQueued.
+  ///
+  /// In en, this message translates to:
+  /// **'Queued'**
+  String get booksQueued;
+
+  /// No description provided for @booksDownloading.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading'**
+  String get booksDownloading;
+
+  /// No description provided for @booksProcessing.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing'**
+  String get booksProcessing;
+
+  /// No description provided for @booksComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Download complete'**
+  String get booksComplete;
+
+  /// No description provided for @booksFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Download failed'**
+  String get booksFailed;
+
+  /// No description provided for @booksUnknownStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Status unavailable'**
+  String get booksUnknownStatus;
+
+  /// No description provided for @booksCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get booksCancelled;
+
+  /// No description provided for @booksRefresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get booksRefresh;
+
+  /// No description provided for @booksClose.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get booksClose;
+
+  /// No description provided for @booksStarting.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting…'**
+  String get booksStarting;
+
+  /// No description provided for @booksReleaseSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected edition'**
+  String get booksReleaseSelected;
+
+  /// No description provided for @booksDownloads.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloads'**
+  String get booksDownloads;
+
+  /// No description provided for @booksPreparing.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing download'**
+  String get booksPreparing;
 }
 
 class _AppLocalizationsDelegate

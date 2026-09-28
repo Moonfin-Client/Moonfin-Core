@@ -16,6 +16,7 @@
 library;
 
 import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 
 enum DistributionChannel {
@@ -36,8 +37,13 @@ enum DistributionChannel {
 class AppDistribution {
   const AppDistribution._();
 
-  static const _raw =
-      String.fromEnvironment('DISTRIBUTION_CHANNEL');
+  /// Custom builds must never offer upstream release assets as updates.
+  /// Upstream packages do not contain Moonfin Books.
+  static const bool isCustomBuild = bool.fromEnvironment(
+    'MOONFIN_CUSTOM_BUILD',
+  );
+
+  static const _raw = String.fromEnvironment('DISTRIBUTION_CHANNEL');
 
   static DistributionChannel get channel {
     switch (_raw.toLowerCase().trim()) {
@@ -75,6 +81,7 @@ class AppDistribution {
   /// Returns false for store/managed distributions (AAB, AUR, PKG, signed IPA),
   /// which update through their store.
   static bool get supportsInAppUpdates {
+    if (isCustomBuild) return false;
     switch (channel) {
       case DistributionChannel.apk:
       case DistributionChannel.androidTvApk:

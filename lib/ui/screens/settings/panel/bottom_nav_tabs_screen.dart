@@ -16,6 +16,7 @@ class _BottomNavTabsScreenState extends State<_BottomNavTabsScreen> {
   BottomNavTabGates get _gates => BottomNavTabGates.fromPreferences(
         _prefs,
         seerrAvailable: GetIt.instance<PluginSyncService>().seerrAvailable,
+        booksSupported: GetIt.instance<PluginSyncService>().booksSupported,
       );
 
   String get _raw => _prefs.get(UserPreferences.bottomNavbarTabs);

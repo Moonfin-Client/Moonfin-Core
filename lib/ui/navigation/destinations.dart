@@ -69,6 +69,7 @@ class Destinations {
   // General
   static const home = '/home';
   static const search = '/search';
+  static const booksRequests = '/book-requests';
 
   // Browsing
   static const libraryBrowse = '/library/:libraryId';

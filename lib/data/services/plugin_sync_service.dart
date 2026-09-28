@@ -75,6 +75,8 @@ class PluginSyncService extends ChangeNotifier {
       _pluginAvailable && _seerrEnabled && _prefs.get(UserPreferences.seerrEnabled);
   bool _seerrInfoAvailable = false;
   bool get seerrInfoAvailable => _seerrInfoAvailable;
+  bool _booksSupported = false;
+  bool get booksSupported => _pluginAvailable && _booksSupported;
 
   bool _mdblistAvailable = false;
   bool get mdblistAvailable => _mdblistAvailable;
@@ -211,6 +213,7 @@ class PluginSyncService extends ChangeNotifier {
     _seerrUrl = null;
     _seerrEnabled = false;
     _seerrInfoAvailable = false;
+    _booksSupported = false;
     _mdblistAvailable = false;
     _tmdbAvailable = false;
     _recommendationsSupported = false;
@@ -269,6 +272,9 @@ class PluginSyncService extends ChangeNotifier {
       _pluginVersion = _readString(pingResult, 'version');
       _seerrUrl = _readString(pingResult, 'seerrUrl');
       _seerrEnabled = _readBool(pingResult, 'seerrEnabled') ?? false;
+      _booksSupported = _readBool(pingResult, 'booksSupported') ??
+          _readBool(pingResult, 'booksEnabled') ??
+          false;
       _mdblistAvailable = _readBool(pingResult, 'mdblistAvailable') ?? false;
       _tmdbAvailable = _readBool(pingResult, 'tmdbAvailable') ?? false;
       _recommendationsSupported =

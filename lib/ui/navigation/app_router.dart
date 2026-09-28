@@ -31,6 +31,7 @@ import '../screens/browse/library_genres_screen.dart';
 import '../screens/browse/library_letters_screen.dart';
 import '../screens/browse/library_suggestions_screen.dart';
 import '../screens/browse/book_browse_screen.dart';
+import '../screens/books/books_requests_screen.dart';
 import '../screens/browse/music_browse_screen.dart';
 import '../../data/models/tmdb_item_ref.dart';
 import '../screens/detail/item_detail_screen.dart';
@@ -309,6 +310,10 @@ final appRouter = GoRouter(
         initialQuery: state.uri.queryParameters['query'],
         scopedLibraryId: state.uri.queryParameters['libraryId'],
       ),
+    ),
+    GoRoute(
+      path: Destinations.booksRequests,
+      builder: (context, state) => const BooksRequestsScreen(),
     ),
 
     // Browsing

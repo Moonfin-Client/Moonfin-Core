@@ -141,3 +141,10 @@ web/drift_worker.js.map
 # Tizen build output. Tizen was removed upstream; these are generated
 # NuGet/MSBuild artifacts.
 tizen/obj/
+
+# Moonfin Books packaging and local Python helpers
+/dist/
+__pycache__/
+*.pyc
+/qa-evidence/
+/apk/

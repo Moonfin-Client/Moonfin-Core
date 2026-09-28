@@ -3,7 +3,7 @@ import 'user_preferences.dart';
 /// Destinations that can be pinned between Home and You on the mobile bottom
 /// navbar. The names are the wire format of [UserPreferences.bottomNavbarTabs],
 /// so renaming one breaks every synced profile that holds it.
-enum BottomNavTab { search, libraries, favorites, genres, liveTv, discover, folders }
+enum BottomNavTab { search, libraries, favorites, genres, liveTv, discover, folders, books }
 
 const int kMaxPinnedBottomNavTabs = 3;
 
@@ -11,6 +11,7 @@ const int kMaxPinnedBottomNavTabs = 3;
 const List<BottomNavTab> _autoOrder = [
   BottomNavTab.search,
   BottomNavTab.libraries,
+  BottomNavTab.books,
   BottomNavTab.favorites,
   BottomNavTab.liveTv,
   BottomNavTab.discover,
@@ -56,6 +57,7 @@ class BottomNavTabGates {
   final bool showSeerr;
   final bool seerrAvailable;
   final bool folderView;
+  final bool booksSupported;
 
   const BottomNavTabGates({
     this.kidsMode = false,
@@ -66,11 +68,13 @@ class BottomNavTabGates {
     this.showSeerr = true,
     this.seerrAvailable = false,
     this.folderView = false,
+    this.booksSupported = false,
   });
 
   factory BottomNavTabGates.fromPreferences(
     UserPreferences prefs, {
     required bool seerrAvailable,
+    bool booksSupported = false,
   }) {
     return BottomNavTabGates(
       kidsMode: prefs.get(UserPreferences.kidsModeEnabled),
@@ -80,6 +84,7 @@ class BottomNavTabGates {
       showLiveTv: prefs.get(UserPreferences.showLiveTvButton),
       showSeerr: prefs.get(UserPreferences.showSeerrButton),
       seerrAvailable: seerrAvailable,
+      booksSupported: booksSupported,
       folderView: prefs.get(UserPreferences.enableFolderView),
     );
   }
@@ -89,6 +94,7 @@ class BottomNavTabGates {
   bool offers(BottomNavTab tab) => switch (tab) {
         BottomNavTab.search => true,
         BottomNavTab.libraries => !kidsMode && showLibraries,
+        BottomNavTab.books => booksSupported,
         BottomNavTab.favorites => showFavorites,
         BottomNavTab.genres => showGenres,
         BottomNavTab.liveTv => !kidsMode && showLiveTv,

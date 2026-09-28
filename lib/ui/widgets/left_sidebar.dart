@@ -1138,6 +1138,22 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
                         : const SizedBox.shrink(),
                   ),
                 ],
+                if (GetIt.instance<PluginSyncService>().booksSupported)
+                  _SidebarItem(
+                    key: const ValueKey('sidebar-books'),
+                    baseColor: nextMainSidebarColor(),
+                    icon: Icons.menu_book_rounded,
+                    label: l10n.books,
+                    showLabel: _showLabels,
+                    onPressed: () {
+                      if (_isActive(Destinations.booksRequests)) {
+                        _exitSidebarToContent();
+                        return;
+                      }
+                      _markNavigationAwayFromSidebar();
+                      context.navigateTopLevel(Destinations.booksRequests);
+                    },
+                  ),
                 // The slot is taken here rather than inside the builder, so
                 // the rows below keep their colour whether or not anything is
                 // saved right now.

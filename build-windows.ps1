@@ -9,6 +9,7 @@ $ErrorActionPreference = 'Stop'
 
 $repoRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $vcpkgTriplet = "$Architecture-windows"
+$isCustomBuild = $env:MOONFIN_CUSTOM_BUILD -eq 'true'
 
 function Get-IsccPath {
   $candidates = @(
@@ -286,18 +287,25 @@ function New-InnoScript {
     $archesInstallIn64Bit = 'x64compatible'
   }
 
+  $installerName = if ($isCustomBuild) { 'Moonfin Books' } else { 'Moonfin' }
+  $installerId = if ($isCustomBuild) {
+    '{{8D63E4FD-CC6A-4A84-A9DB-94D467E148A0}'
+  } else {
+    '{{2B684544-2B56-47BE-B52F-6F7A94BCA4E1}'
+  }
+
   $iss = @"
-#define MyAppName "Moonfin"
+#define MyAppName "$installerName"
 #define MyAppVersion "$AppVersion"
 #define MyAppPublisher "Moonfin"
 #define MyAppExeName "moonfin.exe"
 
 [Setup]
-AppId={{2B684544-2B56-47BE-B52F-6F7A94BCA4E1}
+AppId=$installerId
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppPublisher={#MyAppPublisher}
-DefaultDirName={autopf}\Moonfin
+DefaultDirName={autopf}\$installerName
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
 OutputDir=$OutputDir
@@ -338,9 +346,9 @@ $appVersion = Get-AppVersion
 # x64 keeps the original "Moonfin_Windows_v<version>" name; arm64 follows the same
 # scheme with a "WindowsARM64" platform token.
 if ($Architecture -eq 'arm64') {
-  $installerBaseName = "Moonfin_WindowsARM64_v$appVersion"
+  $installerBaseName = if ($isCustomBuild) { "Moonfin_Books_WindowsARM64_v$appVersion" } else { "Moonfin_WindowsARM64_v$appVersion" }
 } else {
-  $installerBaseName = "Moonfin_Windows_v$appVersion"
+  $installerBaseName = if ($isCustomBuild) { "Moonfin_Books_Windows_v$appVersion" } else { "Moonfin_Windows_v$appVersion" }
 }
 
 Push-Location $repoRoot
@@ -351,14 +359,18 @@ try {
 
   Initialize-LibarchiveForWindows -Triplet $vcpkgTriplet
 
-  Write-Host "Cleaning previous Flutter outputs..."
-  Invoke-CheckedCommand -Name "flutter clean" -FilePath $flutterExe -Arguments @("clean")
+  if (-not $isCustomBuild) {
+    Write-Host "Cleaning previous Flutter outputs..."
+    Invoke-CheckedCommand -Name "flutter clean" -FilePath $flutterExe -Arguments @("clean")
+  }
 
   Write-Host "Resolving Dart and Flutter packages..."
   Invoke-CheckedCommand -Name "flutter pub get" -FilePath $flutterExe -Arguments @("pub", "get")
 
   Write-Host "Building Windows $Architecture release..."
-  Invoke-CheckedCommand -Name "flutter build windows" -FilePath $flutterExe -Arguments @("build", "windows", "--release", "--dart-define=DISTRIBUTION_CHANNEL=windows")
+  $flutterBuildArgs = @("build", "windows", "--release", "--dart-define=DISTRIBUTION_CHANNEL=windows")
+  if ($isCustomBuild) { $flutterBuildArgs += "--dart-define=MOONFIN_CUSTOM_BUILD=true" }
+  Invoke-CheckedCommand -Name "flutter build windows" -FilePath $flutterExe -Arguments $flutterBuildArgs
 
   $releaseDir = Join-Path $repoRoot "build\windows\$Architecture\runner\Release"
   $releaseExe = Join-Path $releaseDir "moonfin.exe"

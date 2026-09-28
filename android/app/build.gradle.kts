@@ -34,7 +34,8 @@ plugins {
     // push_messaging_service.dart:38 returns unless PlatformDetection.isMobile,
     // and the initializeApp call is try/caught regardless.
     id("com.google.gms.google-services")
-        .apply(System.getenv("MOONFIN_TEST_ID_SUFFIX").isNullOrEmpty())
+        .apply(System.getenv("MOONFIN_TEST_ID_SUFFIX").isNullOrEmpty() &&
+            System.getenv("MOONFIN_CUSTOM_BUILD") != "true")
     // END: FlutterFire Configuration
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
@@ -95,15 +96,19 @@ android {
         // the server, so an uninstall can lose real game progress. A distinct id
         // installs alongside instead and touches nothing.
         val testIdSuffix = System.getenv("MOONFIN_TEST_ID_SUFFIX").orEmpty()
+        // Opt-in Moonfin Books package. A different application id keeps the
+        // official Moonfin installation and its local data intact.
+        val customBuild = System.getenv("MOONFIN_CUSTOM_BUILD") == "true"
         val mobileAbis = listOf("arm64-v8a", "armeabi-v7a", "x86_64")
         val tvAbis = listOf("arm64-v8a", "armeabi-v7a", "x86_64")
         create("mobile") {
             dimension = "device"
-            applicationId = baseAppId
+            applicationId = if (customBuild) "art.tiedemann.moonfin" else baseAppId
             versionCode = flutter.versionCode
             versionName = flutter.versionName
             ndk { abiFilters += mobileAbis }
-            manifestPlaceholders["appName"] = baseAppName
+            manifestPlaceholders["appName"] =
+                if (customBuild) "Moonfin Books" else baseAppName
         }
         create("mobile-beta") {
             dimension = "device"
@@ -115,22 +120,26 @@ android {
         }
         create("androidTv") {
             dimension = "device"
-            applicationId = baseAppId + testIdSuffix
+            applicationId =
+                if (customBuild) "art.tiedemann.moonfin.tv$testIdSuffix"
+                else baseAppId + testIdSuffix
             versionCode = androidTvVersionCode
             versionName = androidTvVersionName
             ndk { abiFilters += tvAbis }
             manifestPlaceholders["appName"] =
-                if (testIdSuffix.isEmpty()) baseAppName else "$baseAppName Test"
+                if (customBuild) {
+                    if (testIdSuffix.isEmpty()) "Moonfin Books" else "Moonfin Books Test"
+                } else if (testIdSuffix.isEmpty()) baseAppName else "$baseAppName Test"
             // Impeller off on TV: the GLES fallback stutters on TV-box GPUs.
             manifestPlaceholders["enableImpeller"] = "false"
         }
         create("androidTv-beta") {
             dimension = "device"
-            applicationId = "$baseAppId.beta"
+            applicationId = if (customBuild) "art.tiedemann.moonfin.tv.beta" else "$baseAppId.beta"
             versionCode = androidTvVersionCode
             versionName = androidTvVersionName
             ndk { abiFilters += tvAbis }
-            manifestPlaceholders["appName"] = "$baseAppName Beta"
+            manifestPlaceholders["appName"] = if (customBuild) "Moonfin Books Beta" else "$baseAppName Beta"
             manifestPlaceholders["enableImpeller"] = "false"
         }
     }

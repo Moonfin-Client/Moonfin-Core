@@ -12972,4 +12972,102 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get navYou => 'You';
+
+  @override
+  String get booksHint => 'Downloads are added to your library on the server.';
+
+  @override
+  String get booksSearchLabel => 'Title or author';
+
+  @override
+  String get booksSearchPrompt => 'What would you like to read or hear?';
+
+  @override
+  String get booksSearchEmpty =>
+      'No results found. Try another title or author.';
+
+  @override
+  String get booksSearchFailed => 'Search is unavailable right now.';
+
+  @override
+  String get booksReleasesTitle => 'Choose an edition';
+
+  @override
+  String get booksReleasesEmpty => 'No matching editions found.';
+
+  @override
+  String get booksReleasesFailed => 'Editions could not be loaded.';
+
+  @override
+  String get booksSelectRelease => 'Select an edition';
+
+  @override
+  String get booksStarted => 'Download started';
+
+  @override
+  String get booksStartUnknown =>
+      'Start could not be confirmed. Check downloads.';
+
+  @override
+  String get booksActiveEmpty => 'No active downloads.';
+
+  @override
+  String get booksStatusFailed => 'Download status could not be updated.';
+
+  @override
+  String get booksUnavailable => 'Books are not available on this server.';
+
+  @override
+  String get booksForbidden => 'You do not have permission for this action.';
+
+  @override
+  String get booksLoading => 'Loading…';
+
+  @override
+  String get booksRetry => 'Try again';
+
+  @override
+  String get booksMore => 'More results';
+
+  @override
+  String get booksShowDownloads => 'Show downloads';
+
+  @override
+  String get booksQueued => 'Queued';
+
+  @override
+  String get booksDownloading => 'Downloading';
+
+  @override
+  String get booksProcessing => 'Processing';
+
+  @override
+  String get booksComplete => 'Download complete';
+
+  @override
+  String get booksFailed => 'Download failed';
+
+  @override
+  String get booksUnknownStatus => 'Status unavailable';
+
+  @override
+  String get booksCancelled => 'Cancelled';
+
+  @override
+  String get booksRefresh => 'Refresh';
+
+  @override
+  String get booksClose => 'Close';
+
+  @override
+  String get booksStarting => 'Starting…';
+
+  @override
+  String get booksReleaseSelected => 'Selected edition';
+
+  @override
+  String get booksDownloads => 'Downloads';
+
+  @override
+  String get booksPreparing => 'Preparing download';
 }

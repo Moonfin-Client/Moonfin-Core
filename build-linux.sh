@@ -4,6 +4,27 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 APP_NAME="Moonfin"
 APP_ID="org.moonfin.linux"
+DISPLAY_NAME="Moonfin"
+PACKAGE_SUMMARY="Jellyfin & Emby media client"
+PACKAGE_DESCRIPTION="Moonfin is a media client for Jellyfin and Emby servers,"
+PACKAGE_NAME="moonfin"
+EXEC_NAME="moonfin"
+INSTALL_DIR="moonfin"
+SNAP_NAME="moonfin"
+SNAP_APP="moonfin"
+IS_CUSTOM_BUILD="${MOONFIN_CUSTOM_BUILD:-false}"
+if [ "$IS_CUSTOM_BUILD" = "true" ]; then
+  APP_NAME="Moonfin_Books"
+  APP_ID="art.tiedemann.moonfin.linux"
+  DISPLAY_NAME="Moonfin Books"
+  PACKAGE_SUMMARY="Moonfin Books, a Jellyfin & Emby media client"
+  PACKAGE_DESCRIPTION="Moonfin Books is a media client for Jellyfin and Emby servers,"
+  PACKAGE_NAME="moonfin-books"
+  EXEC_NAME="moonfin-books"
+  INSTALL_DIR="moonfin-books"
+  SNAP_NAME="moonfin-books"
+  SNAP_APP="moonfin-books"
+fi
 APP_ICON="$REPO_ROOT/assets/icons/moonfin.png"
 BUILD_DIR="$REPO_ROOT/build/linux/release/bundle"
 TEMP_DIR="$REPO_ROOT/build/linux/temp"
@@ -551,12 +572,13 @@ inject_flatpak_libs() {
 create_desktop_file() {
   local dest="$1"
   local version="${2:-}"
+  local desktop_exec="${3:-moonfin}"
   mkdir -p "$dest"
   cat > "$dest/${APP_ID}.desktop" << EOF
 [Desktop Entry]
 Type=Application
-Name=Moonfin
-Exec=moonfin %U
+Name=${DISPLAY_NAME}
+Exec=${desktop_exec} %U
 Icon=${APP_ID}
 Categories=AudioVideo;Video;
 Comment=Jellyfin & Emby media client
@@ -582,7 +604,7 @@ create_metainfo_file() {
   <id>${APP_ID}</id>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0-only</project_license>
-  <name>Moonfin</name>
+  <name>${DISPLAY_NAME}</name>
   <developer_name>Moonfin Team</developer_name>
   <summary>Jellyfin &amp; Emby media client</summary>
   <description>
@@ -636,15 +658,55 @@ install_icons() {
   copy_icon "$share_dir/pixmaps"
 }
 
+CUSTOM_SOURCE_BACKUP=""
+restore_custom_linux_sources() {
+  if [ -n "$CUSTOM_SOURCE_BACKUP" ]; then
+    cp -a "$CUSTOM_SOURCE_BACKUP/CMakeLists.txt" "$REPO_ROOT/linux/CMakeLists.txt"
+    cp -a "$CUSTOM_SOURCE_BACKUP/my_application.cc" "$REPO_ROOT/linux/runner/my_application.cc"
+    # Force a later ordinary build in this checkout to recompile the runner.
+    touch "$REPO_ROOT/linux/CMakeLists.txt" "$REPO_ROOT/linux/runner/my_application.cc"
+    rm -rf "$CUSTOM_SOURCE_BACKUP"
+    CUSTOM_SOURCE_BACKUP=""
+  fi
+}
+
+prepare_custom_linux_sources() {
+  [ "$IS_CUSTOM_BUILD" = "true" ] || return 0
+  local cmake_file="$REPO_ROOT/linux/CMakeLists.txt"
+  local runner_file="$REPO_ROOT/linux/runner/my_application.cc"
+  grep -Fqx 'set(APPLICATION_ID "org.moonfin.linux")' "$cmake_file" || {
+    echo "Error: upstream Linux application ID changed; inspect CMakeLists.txt." >&2
+    return 1
+  }
+  grep -Fq '"Name=Moonfin\n"' "$runner_file" || {
+    echo "Error: upstream AppImage desktop entry changed; inspect my_application.cc." >&2
+    return 1
+  }
+  CUSTOM_SOURCE_BACKUP="$(mktemp -d)"
+  cp -a "$cmake_file" "$CUSTOM_SOURCE_BACKUP/CMakeLists.txt"
+  cp -a "$runner_file" "$CUSTOM_SOURCE_BACKUP/my_application.cc"
+  trap restore_custom_linux_sources EXIT
+  sed -i 's/set(APPLICATION_ID "org.moonfin.linux")/set(APPLICATION_ID "art.tiedemann.moonfin.linux")/' "$cmake_file"
+  sed -i 's/"Name=Moonfin\\n"/"Name=Moonfin Books\\n"/' "$runner_file"
+}
+
 build_flutter_binary() {
   echo "Building Flutter release binary for Linux..."
   local flutter_bin
   flutter_bin="$(resolve_flutter)"
   cd "$REPO_ROOT"
+  prepare_custom_linux_sources
+
+  local flutter_args=(build linux --release --dart-define=DISTRIBUTION_CHANNEL=linux)
+  if [ "$IS_CUSTOM_BUILD" = "true" ]; then
+    flutter_args+=(--dart-define=MOONFIN_CUSTOM_BUILD=true)
+  fi
 
   local attempt=1 max_attempts=3
   while true; do
-    if "$flutter_bin" build linux --release --dart-define=DISTRIBUTION_CHANNEL=linux; then
+    if "$flutter_bin" "${flutter_args[@]}"; then
+      restore_custom_linux_sources
+      if [ "$IS_CUSTOM_BUILD" = "true" ]; then trap - EXIT; fi
       return 0
     fi
     if [ "$attempt" -ge "$max_attempts" ]; then
@@ -746,12 +808,13 @@ EOF
     cp "$appimage_dir/${APP_ID}.png" "$appimage_dir/.DirIcon"
   fi
 
-  # Update information lets AppImage updaters fetch only the changed blocks from
-  # the .zsync published with each release. The wildcard matches whichever
-  # version the current release carries.
-  local update_info="${APPIMAGE_UPDATE_INFO:-gh-releases-zsync|Moonfin-Client|Moonfin-Core|latest|${APP_NAME}_${PLATFORM_TAG}_v*.AppImage.zsync}"
+  # Upstream builds retain their existing release update URL. Custom builds do
+  # not embed that URL, because upstream releases have no Books code.
   local appimagetool_args=()
-  if command -v zsyncmake >/dev/null 2>&1; then
+  if [ "$IS_CUSTOM_BUILD" = "true" ]; then
+    echo "Custom AppImage: upstream update information disabled."
+  elif command -v zsyncmake >/dev/null 2>&1; then
+    local update_info="${APPIMAGE_UPDATE_INFO:-gh-releases-zsync|Moonfin-Client|Moonfin-Core|latest|${APP_NAME}_${PLATFORM_TAG}_v*.AppImage.zsync}"
     appimagetool_args+=( -u "$update_info" )
   else
     echo "Warning: zsyncmake not found, building AppImage without embedded update information." >&2
@@ -781,7 +844,7 @@ build_tarball() {
 
   local version="$(get_app_version)"
   local tarball_name="${APP_NAME}_${PLATFORM_TAG}_v${version}.tar.gz"
-  local tar_dir="$TEMP_DIR/tarball/moonfin-${version}"
+  local tar_dir="$TEMP_DIR/tarball/${PACKAGE_NAME}-${version}"
 
   rm -rf "$TEMP_DIR/tarball"
   mkdir -p "$tar_dir"
@@ -829,7 +892,7 @@ EOF
   fi
 
   cat > "$tar_dir/README.txt" << EOF
-Moonfin ${version}
+${DISPLAY_NAME} ${version}
 Jellyfin & Emby media client for Linux
 
 Installation:
@@ -856,7 +919,7 @@ EOF
   install_icons "$tar_dir/share"
 
   cd "$TEMP_DIR/tarball"
-  tar -czf "$tarball_name" "moonfin-${version}"
+  tar -czf "$tarball_name" "${PACKAGE_NAME}-${version}"
   mv "$tarball_name" "$REPO_ROOT/"
   echo "✓ Created: $REPO_ROOT/$tarball_name"
 }
@@ -888,26 +951,26 @@ build_deb() {
 
   local version="$(get_app_version)"
   local deb_name="${APP_NAME}_${PLATFORM_TAG}_v${version}.deb"
-  local pkg_root="$TEMP_DIR/deb/moonfin-${version}"
+  local pkg_root="$TEMP_DIR/deb/${PACKAGE_NAME}-${version}"
   local deb_arch
   deb_arch="$(get_deb_architecture)"
 
   rm -rf "$TEMP_DIR/deb"
-  mkdir -p "$pkg_root"/{usr/bin,usr/lib/moonfin,usr/share/applications,usr/share/pixmaps,usr/share/doc/moonfin,DEBIAN}
+  mkdir -p "$pkg_root"/{usr/bin,usr/lib/"$INSTALL_DIR",usr/share/applications,usr/share/pixmaps,usr/share/doc/"$PACKAGE_NAME",DEBIAN}
 
-  cp -r "$BUILD_DIR"/* "$pkg_root/usr/lib/moonfin/"
+  cp -r "$BUILD_DIR"/* "$pkg_root/usr/lib/$INSTALL_DIR/"
 
-  inject_linux_runtime_libs "$pkg_root/usr/lib/moonfin"
+  inject_linux_runtime_libs "$pkg_root/usr/lib/$INSTALL_DIR"
 
-  cat > "$pkg_root/usr/bin/moonfin" << 'EOF'
+  cat > "$pkg_root/usr/bin/$EXEC_NAME" << EOF
 #!/bin/sh
-APPDIR="/usr/lib/moonfin"
-export LD_LIBRARY_PATH="$APPDIR/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-exec "$APPDIR/moonfin" "$@"
+APPDIR="/usr/lib/${INSTALL_DIR}"
+export LD_LIBRARY_PATH="\$APPDIR/lib\${LD_LIBRARY_PATH:+:\$LD_LIBRARY_PATH}"
+exec "\$APPDIR/moonfin" "\$@"
 EOF
-  chmod +x "$pkg_root/usr/bin/moonfin"
+  chmod +x "$pkg_root/usr/bin/$EXEC_NAME"
 
-  create_desktop_file "$pkg_root/usr/share/applications"
+  create_desktop_file "$pkg_root/usr/share/applications" "" "$EXEC_NAME"
   install_icons "$pkg_root/usr/share"
 
   mkdir -p "$pkg_root/usr/share/metainfo"
@@ -918,21 +981,21 @@ EOF
   # launch into a refused install that names the glibc the machine needs.
   local depends="libgtk-3-0, libglib2.0-0, libsecret-1-0, libwebkit2gtk-4.1-0"
   local glibc
-  glibc="$(required_glibc_version "$pkg_root/usr/lib/moonfin")"
+  glibc="$(required_glibc_version "$pkg_root/usr/lib/$INSTALL_DIR")"
   if [ -n "$glibc" ]; then
     depends="$depends, libc6 (>= $glibc)"
   fi
   echo "Depends: $depends"
 
   cat > "$pkg_root/DEBIAN/control" << EOF
-Package: moonfin
+Package: ${PACKAGE_NAME}
 Version: ${version}
 Architecture: ${deb_arch}
 Maintainer: Moonfin Team <support@moonfin.dev>
 Installed-Size: $(du -sk "$pkg_root/usr" | cut -f1)
 Depends: ${depends}
-Description: Jellyfin & Emby media client
- Moonfin is a media client for Jellyfin and Emby servers,
+Description: ${PACKAGE_SUMMARY}
+ ${PACKAGE_DESCRIPTION}
  available on mobile, TV, and desktop platforms.
  .
  Features:
@@ -944,9 +1007,9 @@ Homepage: https://moonfin.app/
 License: GPL-3.0-only
 EOF
 
-  cat > "$pkg_root/usr/share/doc/moonfin/copyright" << EOF
+  cat > "$pkg_root/usr/share/doc/$PACKAGE_NAME/copyright" << EOF
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
-Upstream-Name: Moonfin
+Upstream-Name: ${DISPLAY_NAME}
 Upstream-Contact: https://github.com/jmshrv/Moonfin
 Source: https://github.com/jmshrv/Moonfin
 
@@ -956,7 +1019,7 @@ License: GPL-3.0-only
 EOF
 
   cd "$TEMP_DIR/deb"
-  dpkg-deb --build "moonfin-${version}" "$deb_name" 2>/dev/null || true
+  dpkg-deb --build "${PACKAGE_NAME}-${version}" "$deb_name" 2>/dev/null || true
 
   if [ -f "$deb_name" ]; then
     mv "$deb_name" "$REPO_ROOT/"
@@ -978,36 +1041,36 @@ build_rpm() {
 
   rm -rf "$rpm_dir"
   mkdir -p "$rpm_dir"/{SPECS,SOURCES,BUILD,RPMS,SRPMS}
-  create_desktop_file "$rpm_dir"
+  create_desktop_file "$rpm_dir" "" "$EXEC_NAME"
   create_metainfo_file "$rpm_dir" "$version"
 
   cat > "$spec_file" << EOF
-Name:           moonfin
+Name:           ${PACKAGE_NAME}
 Version:        ${version}
 Release:        1
-Summary:        Jellyfin & Emby media client
+Summary:        ${PACKAGE_SUMMARY}
 License:        GPL-3.0-only
 
 %description
-Moonfin is a media client for Jellyfin and Emby servers,
+${PACKAGE_DESCRIPTION}
 available on mobile, TV, and desktop platforms.
 
 %install
 mkdir -p %{buildroot}/usr/bin
-mkdir -p %{buildroot}/usr/lib/moonfin
+mkdir -p %{buildroot}/usr/lib/${INSTALL_DIR}
 mkdir -p %{buildroot}/usr/share/applications
 mkdir -p %{buildroot}/usr/share/pixmaps
 mkdir -p %{buildroot}/usr/share/metainfo
 
-cp -r ${BUILD_DIR}/* %{buildroot}/usr/lib/moonfin/
+cp -r ${BUILD_DIR}/* %{buildroot}/usr/lib/${INSTALL_DIR}/
 
-cat > %{buildroot}/usr/bin/moonfin << 'EOFRUNNER'
+cat > %{buildroot}/usr/bin/${EXEC_NAME} << 'EOFRUNNER'
 #!/bin/sh
-APPDIR="/usr/lib/moonfin"
+APPDIR="/usr/lib/${INSTALL_DIR}"
 export LD_LIBRARY_PATH="\$APPDIR/lib\${LD_LIBRARY_PATH:+:\$LD_LIBRARY_PATH}"
 exec "\$APPDIR/moonfin" "\$@"
 EOFRUNNER
-chmod +x %{buildroot}/usr/bin/moonfin
+chmod +x %{buildroot}/usr/bin/${EXEC_NAME}
 
 cp "$rpm_dir/${APP_ID}.desktop" %{buildroot}/usr/share/applications/${APP_ID}.desktop
 cp "$rpm_dir/${APP_ID}.metainfo.xml" %{buildroot}/usr/share/metainfo/${APP_ID}.metainfo.xml
@@ -1019,9 +1082,9 @@ if [ -f "$APP_ICON" ]; then
 fi
 
 %files
-/usr/bin/moonfin
-%dir /usr/lib/moonfin
-/usr/lib/moonfin/*
+/usr/bin/${EXEC_NAME}
+%dir /usr/lib/${INSTALL_DIR}
+/usr/lib/${INSTALL_DIR}/*
 /usr/share/applications/${APP_ID}.desktop
 /usr/share/icons/hicolor/512x512/apps/${APP_ID}.png
 /usr/share/pixmaps/${APP_ID}.png
@@ -1103,8 +1166,8 @@ build_snap() {
   mkdir -p "$snap_dir"
 
   cat > "$snap_dir/snapcraft.yaml" << EOF
-name: moonfin
-title: Moonfin
+name: ${SNAP_NAME}
+title: ${DISPLAY_NAME}
 version: '${version}'
 summary: Jellyfin & Emby media client
 description: |
@@ -1117,7 +1180,7 @@ base: ${snap_base}
 icon: ${APP_ID}.png
 
 apps:
-  moonfin:
+  ${SNAP_APP}:
     command: moonfin
     plugs:
       - home
@@ -1154,11 +1217,11 @@ EOF
   # snapcraft installs snap/gui into meta/gui and snapd rewrites the entry on
   # install, which is the only way a strictly confined snap gets an icon.
   mkdir -p "$snap_dir/snap/gui"
-  cat > "$snap_dir/snap/gui/moonfin.desktop" << EOF
+  cat > "$snap_dir/snap/gui/${SNAP_NAME}.desktop" << EOF
 [Desktop Entry]
 Type=Application
-Name=Moonfin
-Exec=moonfin %U
+Name=${DISPLAY_NAME}
+Exec=${SNAP_NAME} %U
 Icon=\${SNAP}/meta/gui/icon.png
 Categories=AudioVideo;Video;
 Comment=Jellyfin & Emby media client
@@ -1207,7 +1270,7 @@ build_flatpak() {
   cp -r "$BUILD_DIR"/* "$flatpak_src/"
   inject_flatpak_libs "$flatpak_src/lib/moonfin"
   [ -f "$APP_ICON" ] && cp "$APP_ICON" "$flatpak_src/${APP_ID}.png"
-  create_desktop_file "$flatpak_src"
+  create_desktop_file "$flatpak_src" "" "$EXEC_NAME"
   create_metainfo_file "$flatpak_src" "$version"
 
   cat > "$flatpak_dir/${APP_ID}.yml" << EOF
@@ -1216,7 +1279,7 @@ runtime: org.gnome.Platform
 runtime-version: '50'
 sdk: org.gnome.Sdk
 
-command: moonfin
+command: ${EXEC_NAME}
 
 finish-args:
   - --share=network
@@ -1266,16 +1329,16 @@ modules:
               args+=("\$arg")
             done
             exec appstreamcli compose "\${args[@]}"
-  - name: moonfin
+  - name: ${PACKAGE_NAME}
     buildsystem: simple
     build-commands:
-      - mkdir -p /app/bin /app/moonfin /app/share/applications /app/share/metainfo /app/share/icons/hicolor/512x512/apps
-      - cp -r . /app/moonfin/
-      - chmod +x /app/moonfin/moonfin
+      - mkdir -p /app/bin /app/${INSTALL_DIR} /app/share/applications /app/share/metainfo /app/share/icons/hicolor/512x512/apps
+      - cp -r . /app/${INSTALL_DIR}/
+      - chmod +x /app/${INSTALL_DIR}/moonfin
       - |
-        cat > /app/bin/moonfin << 'EOFRUN'
+        cat > /app/bin/${EXEC_NAME} << 'EOFRUN'
         #!/bin/sh
-        export LD_LIBRARY_PATH="/app/moonfin/lib/moonfin:/app/moonfin/lib\${LD_LIBRARY_PATH:+:\$LD_LIBRARY_PATH}"
+        export LD_LIBRARY_PATH="/app/${INSTALL_DIR}/lib/moonfin:/app/${INSTALL_DIR}/lib\${LD_LIBRARY_PATH:+:\$LD_LIBRARY_PATH}"
 
         resolve_exact_lib() {
           lib_name="\$1"
@@ -1293,7 +1356,7 @@ modules:
           return 1
         }
 
-        missing_libs="\$(ldd /app/moonfin/moonfin 2>/dev/null | awk '/not found/ {print \$1}' | sort -u || true)"
+        missing_libs="\$(ldd /app/${INSTALL_DIR}/moonfin 2>/dev/null | awk '/not found/ {print \$1}' | sort -u || true)"
         if ! resolve_exact_lib libsqlite3.so; then
           missing_libs="\$(printf '%s\\n%s\\n' "\$missing_libs" "libsqlite3.so" | awk 'NF' | sort -u)"
         fi
@@ -1305,9 +1368,9 @@ modules:
           exit 127
         fi
 
-        exec /app/moonfin/moonfin "\$@"
+        exec /app/${INSTALL_DIR}/moonfin "\$@"
         EOFRUN
-      - chmod +x /app/bin/moonfin
+      - chmod +x /app/bin/${EXEC_NAME}
       - '[ -f ${APP_ID}.png ] && cp ${APP_ID}.png /app/share/icons/hicolor/512x512/apps/ || true'
       - cp ${APP_ID}.desktop /app/share/applications/
       - cp ${APP_ID}.metainfo.xml /app/share/metainfo/
@@ -1340,7 +1403,7 @@ main() {
   local version="$(get_app_version)"
 
   echo "======================================"
-  echo "Moonfin Linux Package Builder"
+  echo "${DISPLAY_NAME} Linux Package Builder"
   echo "Version: ${version}"
   echo "======================================"
   echo ""

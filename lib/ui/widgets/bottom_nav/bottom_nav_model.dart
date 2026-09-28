@@ -70,6 +70,7 @@ bool bottomNavTabMatchesRoute(BottomNavTab tab, String route) {
   bool under(String prefix) => route == prefix || route.startsWith('$prefix/');
   return switch (tab) {
     BottomNavTab.search => route == Destinations.search,
+    BottomNavTab.books => under(Destinations.booksRequests),
     BottomNavTab.libraries => under('/library') ||
         under('/library-view') ||
         under('/music') ||

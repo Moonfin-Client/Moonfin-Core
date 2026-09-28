@@ -22,6 +22,7 @@ import '../platform/web_runtime_config.dart';
 import '../preference/preference_constants.dart';
 import '../preference/user_preferences.dart';
 import '../util/app_beta.dart';
+import '../util/app_distribution.dart';
 import '../util/platform_detection.dart';
 import 'modules/app_module.dart';
 import 'modules/auth_module.dart';
@@ -43,6 +44,7 @@ bool _legacyStereoAacFallbackDefaultForPlatform() {
 }
 
 String _clientName() {
+  if (AppDistribution.isCustomBuild) return 'Moonfin Books';
   if (PlatformDetection.isAppleTV) return 'Moonfin for tvOS';
   if (PlatformDetection.isAndroid && PlatformDetection.isTV) {
     return 'Moonfin for Android TV';

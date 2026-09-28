@@ -13,6 +13,7 @@ BUILD_APPSTORE_PKG="${BUILD_APPSTORE_PKG:-1}"
 BUILD_DMG_GITHUB="${BUILD_DMG_GITHUB:-1}"
 CLEAN_FLUTTER="${CLEAN_FLUTTER:-0}"
 FETCH_CORES="${FETCH_CORES:-1}"
+MOONFIN_CUSTOM_BUILD="${MOONFIN_CUSTOM_BUILD:-false}"
 
 DEVELOPER_ID="${DEVELOPER_ID:-}"
 APP_SIGN_ID="${APP_SIGN_ID:-$DEVELOPER_ID}"
@@ -30,6 +31,10 @@ ASC_ISSUER_ID="${ASC_ISSUER_ID:-}"
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 APP_NAME="Moonfin"
+DMG_APP_NAME="$APP_NAME"
+if [ "$MOONFIN_CUSTOM_BUILD" = "true" ]; then
+  DMG_APP_NAME="Moonfin Books"
+fi
 PKG_OUTPUT=""
 
 if [ "$#" -gt 0 ]; then
@@ -136,10 +141,14 @@ if [ -z "$APP_SIGN_ID" ] && [ -z "$TEAM_ID" ]; then
 fi
 
 echo "Preparing Flutter macOS generated files..."
+CUSTOM_DART_DEFINE=()
+if [ "$MOONFIN_CUSTOM_BUILD" = "true" ]; then
+  CUSTOM_DART_DEFINE=(--dart-define=MOONFIN_CUSTOM_BUILD=true)
+fi
 if [ "$BUILD_APPSTORE_PKG" = "1" ]; then
-  flutter build macos --release --dart-define=DISTRIBUTION_CHANNEL=macos_pkg
+  flutter build macos --release --dart-define=DISTRIBUTION_CHANNEL=macos_pkg "${CUSTOM_DART_DEFINE[@]+"${CUSTOM_DART_DEFINE[@]}"}"
 else
-  flutter build macos --release --dart-define=DISTRIBUTION_CHANNEL=macos_dmg
+  flutter build macos --release --dart-define=DISTRIBUTION_CHANNEL=macos_dmg "${CUSTOM_DART_DEFINE[@]+"${CUSTOM_DART_DEFINE[@]}"}"
 fi
 
 echo "Cleaning previous App Store outputs..."
@@ -264,7 +273,7 @@ if [ "$BUILD_DMG_GITHUB" = "1" ]; then
     DMG_ARCHIVE_PATH="$REPO_ROOT/build/macos/dmg/${APP_NAME}.xcarchive"
     rm -rf "$DMG_ARCHIVE_PATH"
     mkdir -p "$(dirname "$DMG_ARCHIVE_PATH")"
-    flutter build macos --release --dart-define=DISTRIBUTION_CHANNEL=macos_dmg
+    flutter build macos --release --dart-define=DISTRIBUTION_CHANNEL=macos_dmg "${CUSTOM_DART_DEFINE[@]+"${CUSTOM_DART_DEFINE[@]}"}"
     DMG_ARCHIVE_CMD=(
       xcodebuild
       -workspace "$WORKSPACE"
@@ -295,14 +304,14 @@ if [ "$BUILD_DMG_GITHUB" = "1" ]; then
   echo "Building DMG for GitHub distribution..."
   rm -rf "$STAGING_DIR"
   mkdir -p "$STAGING_DIR"
-  cp -R "$DMG_APP_FROM_ARCHIVE" "$STAGING_DIR/"
+  cp -R "$DMG_APP_FROM_ARCHIVE" "$STAGING_DIR/${DMG_APP_NAME}.app"
 
   if [ -n "$APP_SIGN_ID" ]; then
     echo "Re-signing app bundle with hardened runtime..."
-    find "$STAGING_DIR/${APP_NAME}.app" -type f \( -name '*.dylib' -o -name '*.framework' -o -perm +111 \) -print0 | while IFS= read -r -d '' file; do
+    find "$STAGING_DIR/${DMG_APP_NAME}.app" -type f \( -name '*.dylib' -o -name '*.framework' -o -perm +111 \) -print0 | while IFS= read -r -d '' file; do
       codesign --force --timestamp --options runtime --sign "$APP_SIGN_ID" "$file" 2>/dev/null || true
     done
-    codesign --force --deep --timestamp --options runtime --sign "$APP_SIGN_ID" "$STAGING_DIR/${APP_NAME}.app"
+    codesign --force --deep --timestamp --options runtime --sign "$APP_SIGN_ID" "$STAGING_DIR/${DMG_APP_NAME}.app"
   fi
 
   DMG_SIZE_MB=$(( $(du -sk "$STAGING_DIR" | awk '{print $1}') / 1024 + 100 ))
@@ -312,7 +321,7 @@ if [ "$BUILD_DMG_GITHUB" = "1" ]; then
   hdiutil create \
     -size "${DMG_SIZE_MB}m" \
     -fs HFS+ \
-    -volname "$APP_NAME" \
+    -volname "$DMG_APP_NAME" \
     -ov \
     "$DMG_RW_IMAGE"
 
@@ -322,7 +331,7 @@ if [ "$BUILD_DMG_GITHUB" = "1" ]; then
       -mountpoint "$DMG_MOUNTPOINT" \
       -nobrowse \
       -noautoopen
-    ditto "$STAGING_DIR/${APP_NAME}.app" "$DMG_MOUNTPOINT/${APP_NAME}.app"
+    ditto "$STAGING_DIR/${DMG_APP_NAME}.app" "$DMG_MOUNTPOINT/${DMG_APP_NAME}.app"
     ln -s /Applications "$DMG_MOUNTPOINT/Applications"
     hdiutil detach "$DMG_MOUNTPOINT" -quiet
   )
