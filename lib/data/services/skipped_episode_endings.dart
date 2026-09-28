@@ -65,50 +65,30 @@ bool _viewed(Map<String, dynamic> item) {
   return false;
 }
 
-bool _inProgress(Map<String, dynamic> item) {
-  final userData = _userData(item);
-  if (userData?['Played'] == true) return false;
-  if ((_asNum(userData?['PlayedPercentage']) ?? 0) > 0) return true;
-  if ((_asNum(userData?['PlaybackPositionTicks']) ?? 0) > 0) return true;
-  return false;
-}
-
-int _lastPlayedMs(Map<String, dynamic> item) {
+/// UserData.LastPlayedDate, or null when absent or unparseable.
+DateTime? episodeLastPlayed(Map<String, dynamic> item) {
   final raw = _userData(item)?['LastPlayedDate'];
-  if (raw is! String || raw.isEmpty) return 0;
-  return DateTime.tryParse(raw)?.millisecondsSinceEpoch ?? 0;
+  if (raw is! String || raw.isEmpty) return null;
+  return DateTime.tryParse(raw);
 }
 
 bool _isLaterCoordinate(_SeasonEpisode later, _SeasonEpisode current) =>
     later.$1 > current.$1 || (later.$1 == current.$1 && later.$2 > current.$2);
 
-/// Later episode must be started after the candidate, not merely watched earlier.
+/// The later episode must have been played after the candidate was last
+/// played. Without both dates there is no evidence of moving on, so the
+/// candidate stays. This also keeps the series' most recently played episode
+/// (the one being watched now) from ever being auto-completed, including when
+/// the viewer goes back to rewatch an earlier episode.
 bool _isLaterViewingActivity(
   Map<String, dynamic> later,
   Map<String, dynamic> candidate,
 ) {
   if (!_viewed(later)) return false;
-  if (_inProgress(later)) return true;
-  final laterMs = _lastPlayedMs(later);
-  final candidateMs = _lastPlayedMs(candidate);
-  if (laterMs == 0 || candidateMs == 0) return false;
-  return laterMs > candidateMs;
-}
-
-/// Leading in-progress episode for a series; never auto-completed.
-String? frontierEpisodeId(List<Map<String, dynamic>> seriesEpisodes) {
-  Map<String, dynamic>? frontier;
-  _SeasonEpisode? frontierCoord;
-  for (final episode in seriesEpisodes) {
-    if (episode['Type'] != 'Episode' || !_inProgress(episode)) continue;
-    final coord = _coordinate(episode);
-    if (coord == null) continue;
-    if (frontierCoord == null || _isLaterCoordinate(coord, frontierCoord)) {
-      frontier = episode;
-      frontierCoord = coord;
-    }
-  }
-  return frontier?['Id']?.toString();
+  final laterPlayed = episodeLastPlayed(later);
+  final candidatePlayed = episodeLastPlayed(candidate);
+  if (laterPlayed == null || candidatePlayed == null) return false;
+  return laterPlayed.isAfter(candidatePlayed);
 }
 
 /// True when [candidate] is a leftover resume point superseded by a later episode.

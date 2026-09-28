@@ -23,9 +23,21 @@ class EmbyUserLibraryApi implements UserLibraryApi {
   }
 
   @override
-  Future<void> markPlayed(String itemId) async {
+  Future<void> markPlayed(String itemId, {DateTime? datePlayed}) async {
     final userId = _getUserId();
-    await _dio.post('/Users/$userId/PlayedItems/$itemId');
+    await _dio.post(
+      '/Users/$userId/PlayedItems/$itemId',
+      queryParameters: {'DatePlayed': ?_embyDate(datePlayed)},
+    );
+  }
+
+  // Emby parses DatePlayed as UTC yyyyMMddHHmmss.
+  static String? _embyDate(DateTime? value) {
+    if (value == null) return null;
+    final utc = value.toUtc();
+    String two(int n) => n.toString().padLeft(2, '0');
+    return '${utc.year.toString().padLeft(4, '0')}${two(utc.month)}'
+        '${two(utc.day)}${two(utc.hour)}${two(utc.minute)}${two(utc.second)}';
   }
 
   @override

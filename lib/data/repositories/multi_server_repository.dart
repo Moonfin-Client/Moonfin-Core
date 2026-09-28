@@ -14,6 +14,8 @@ import '../models/aggregated_item.dart';
 import '../models/aggregated_library.dart';
 import '../models/home_row.dart';
 import '../services/media_server_client_factory.dart';
+import '../services/skipped_episode_cleanup.dart';
+import '../services/skipped_episode_endings.dart';
 import '../utils/blocked_ratings.dart';
 import '../utils/bounded_concurrency.dart';
 import '../utils/genre_browse_utils.dart';
@@ -22,8 +24,6 @@ import '../utils/next_up_cutoff.dart';
 import '../utils/next_up_enrichment.dart';
 import '../utils/playlist_utils.dart';
 import 'user_views_repository.dart';
-import '../services/skipped_episode_cleanup.dart';
-import '../services/skipped_episode_endings.dart';
 import '../../l10n/app_localizations.dart';
 import '../../l10n/current_app_localizations.dart';
 

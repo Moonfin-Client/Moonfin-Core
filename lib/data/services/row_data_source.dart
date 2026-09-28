@@ -1794,9 +1794,11 @@ class RowDataSource {
     final cleanedNewItems = row.rowType == HomeRowType.resume
         ? await _cleanupResumeItems(newItems)
         : newItems;
-    final totalCount =
-        response['TotalRecordCount'] as int? ??
-        (row.items.length + cleanedNewItems.length);
+    // The server counted this page before its leftovers were marked played.
+    final serverTotal = response['TotalRecordCount'] as int?;
+    final totalCount = serverTotal != null
+        ? serverTotal - (newItems.length - cleanedNewItems.length)
+        : row.items.length + cleanedNewItems.length;
     return ([...row.items, ...cleanedNewItems], totalCount);
   }
 

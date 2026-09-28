@@ -66,4 +66,29 @@ void main() {
     expect(request?.method, 'DELETE');
     expect(request?.path, '/UserItems/movie-1/Rating');
   });
+
+  test('marking played sends datePlayed only when one is given', () async {
+    final requests = <RequestOptions>[];
+    final dio = Dio()
+      ..interceptors.add(
+        _FakeServer((options, handler) {
+          requests.add(options);
+          handler.resolve(Response(requestOptions: options, statusCode: 200));
+        }),
+      );
+
+    final api = JellyfinUserLibraryApi(dio);
+    await api.markPlayed('ep-1');
+    await api.markPlayed(
+      'ep-1',
+      datePlayed: DateTime.utc(2026, 8, 23, 18, 5, 9),
+    );
+
+    expect(requests[0].method, 'POST');
+    expect(requests[0].path, '/UserPlayedItems/ep-1');
+    expect(requests[0].queryParameters, isEmpty);
+    expect(requests[1].queryParameters, {
+      'datePlayed': '2026-08-23T18:05:09.000Z',
+    });
+  });
 }

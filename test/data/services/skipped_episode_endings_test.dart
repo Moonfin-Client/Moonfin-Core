@@ -8,16 +8,15 @@ Map<String, dynamic> episode(
   Map<String, dynamic> userData, {
   String? seriesId = 'series',
   String type = 'Episode',
-}) =>
-    {
-      'Id': id,
-      'Name': id,
-      'Type': type,
-      if (seriesId != null) 'SeriesId': seriesId,
-      if (season != null) 'ParentIndexNumber': season,
-      if (number != null) 'IndexNumber': number,
-      'UserData': userData,
-    };
+}) => {
+  'Id': id,
+  'Name': id,
+  'Type': type,
+  if (seriesId != null) 'SeriesId': seriesId,
+  if (season != null) 'ParentIndexNumber': season,
+  if (number != null) 'IndexNumber': number,
+  'UserData': userData,
+};
 
 void main() {
   group('skipped episode ending classification', () {
@@ -58,10 +57,9 @@ void main() {
         isTrue,
       );
       expect(
-        isStaleSkippedEpisode(
-          episode('e1', 1, 1, {'PlayedPercentage': 50}),
-          [episode('e2', 1, 2, {})],
-        ),
+        isStaleSkippedEpisode(episode('e1', 1, 1, {'PlayedPercentage': 50}), [
+          episode('e2', 1, 2, {}),
+        ]),
         isFalse,
       );
     });
@@ -87,89 +85,184 @@ void main() {
       );
     });
 
-    test('accepts partial later playback and orders across regular seasons', () {
-      expect(
-        isStaleSkippedEpisode(
-          episode('e1', 1, 12, {'PlayedPercentage': 50}),
-          [episode('e2', 2, 1, {'PlaybackPositionTicks': 1})],
-        ),
-        isTrue,
-      );
-    });
-
-    test('ignores other series, specials, movies, and missing coordinates', () {
-      final candidate = episode('e1', 1, 1, {'PlayedPercentage': 75});
-      expect(
-        isStaleSkippedEpisode(candidate, [
-          episode('other', 1, 2, {'Played': true}, seriesId: 'other-series'),
-        ]),
-        isFalse,
-      );
-      expect(
-        isStaleSkippedEpisode(candidate, [
-          episode('special', 0, 99, {'Played': true}),
-        ]),
-        isFalse,
-      );
-      expect(
-        isStaleSkippedEpisode(
-          episode('movie', 1, 1, {'PlayedPercentage': 75}, type: 'Movie'),
-          [episode('e2', 1, 2, {'Played': true})],
-        ),
-        isFalse,
-      );
-      expect(
-        isStaleSkippedEpisode(
-          episode('missing', null, 1, {'PlayedPercentage': 75}),
-          [episode('e2', 1, 2, {'Played': true})],
-        ),
-        isFalse,
-      );
-    });
-
-    test('identifies multiple stale episodes but retains the newest active one', () {
-      final e1 = episode('e1', 1, 1, {'PlayedPercentage': 70});
-      final e2 = episode('e2', 1, 2, {'PlayedPercentage': 60});
-      final e3 = episode('e3', 1, 3, {'PlayedPercentage': 20});
-      final all = [e1, e2, e3];
-      expect(isStaleSkippedEpisode(e1, all), isTrue);
-      expect(isStaleSkippedEpisode(e2, all), isTrue);
-      expect(isStaleSkippedEpisode(e3, all), isFalse);
-    });
-
     test(
-      'does not mark a season finale when only later seasons were watched earlier',
+      'accepts partial later playback and orders across regular seasons',
       () {
-        final finale = episode('finale', 5, 10, {
-          'PlayedPercentage': 60,
-          'LastPlayedDate': '2026-08-23T20:00:00Z',
-        });
-        final nextSeason = episode('s6e1', 6, 1, {
-          'Played': true,
-          'LastPlayedDate': '2026-06-01T12:00:00Z',
-        });
-        expect(isStaleSkippedEpisode(finale, [finale, nextSeason]), isFalse);
+        expect(
+          isStaleSkippedEpisode(
+            episode('e1', 1, 12, {
+              'PlayedPercentage': 50,
+              'LastPlayedDate': '2026-08-23T18:00:00Z',
+            }),
+            [
+              episode('e2', 2, 1, {
+                'PlaybackPositionTicks': 1,
+                'LastPlayedDate': '2026-08-23T19:00:00Z',
+              }),
+            ],
+          ),
+          isTrue,
+        );
       },
     );
 
-    test('marks a skipped ending when a later episode was started more recently', () {
-      final skipped = episode('e5', 1, 5, {
-        'PlayedPercentage': 70,
-        'LastPlayedDate': '2026-08-23T18:00:00Z',
-      });
-      final startedLater = episode('e6', 1, 6, {
-        'Played': true,
-        'LastPlayedDate': '2026-08-23T19:00:00Z',
+    test('ignores other series, specials, movies, and missing coordinates', () {
+      const before = '2026-08-23T18:00:00Z';
+      const after = '2026-08-23T19:00:00Z';
+      final candidate = episode('e1', 1, 1, {
+        'PlayedPercentage': 75,
+        'LastPlayedDate': before,
       });
       expect(
-        isStaleSkippedEpisode(skipped, [skipped, startedLater]),
+        isStaleSkippedEpisode(candidate, [
+          episode('e2', 1, 2, {'Played': true, 'LastPlayedDate': after}),
+        ]),
         isTrue,
+      );
+      expect(
+        isStaleSkippedEpisode(candidate, [
+          episode('other', 1, 2, {
+            'Played': true,
+            'LastPlayedDate': after,
+          }, seriesId: 'other-series'),
+        ]),
+        isFalse,
+      );
+      expect(
+        isStaleSkippedEpisode(candidate, [
+          episode('special', 0, 99, {'Played': true, 'LastPlayedDate': after}),
+        ]),
+        isFalse,
+      );
+      expect(
+        isStaleSkippedEpisode(
+          episode('movie', 1, 1, {
+            'PlayedPercentage': 75,
+            'LastPlayedDate': before,
+          }, type: 'Movie'),
+          [
+            episode('e2', 1, 2, {'Played': true, 'LastPlayedDate': after}),
+          ],
+        ),
+        isFalse,
+      );
+      expect(
+        isStaleSkippedEpisode(
+          episode('missing', null, 1, {
+            'PlayedPercentage': 75,
+            'LastPlayedDate': before,
+          }),
+          [
+            episode('e2', 1, 2, {'Played': true, 'LastPlayedDate': after}),
+          ],
+        ),
+        isFalse,
       );
     });
 
-    test('does not mark the frontier episode even when it is above 50 percent', () {
-      final frontier = episode('e10', 1, 10, {'PlayedPercentage': 65});
-      expect(isStaleSkippedEpisode(frontier, [frontier]), isFalse);
+    test(
+      'identifies multiple stale episodes but retains the newest active one',
+      () {
+        final e1 = episode('e1', 1, 1, {
+          'PlayedPercentage': 70,
+          'LastPlayedDate': '2026-08-23T18:00:00Z',
+        });
+        final e2 = episode('e2', 1, 2, {
+          'PlayedPercentage': 60,
+          'LastPlayedDate': '2026-08-23T19:00:00Z',
+        });
+        final e3 = episode('e3', 1, 3, {
+          'PlayedPercentage': 20,
+          'LastPlayedDate': '2026-08-23T20:00:00Z',
+        });
+        final all = [e1, e2, e3];
+        expect(isStaleSkippedEpisode(e1, all), isTrue);
+        expect(isStaleSkippedEpisode(e2, all), isTrue);
+        expect(isStaleSkippedEpisode(e3, all), isFalse);
+      },
+    );
+
+    test('does not mark a season finale when only later seasons were watched earlier', () {
+      final finale = episode('finale', 5, 10, {
+        'PlayedPercentage': 60,
+        'LastPlayedDate': '2026-08-23T20:00:00Z',
+      });
+      final nextSeason = episode('s6e1', 6, 1, {
+        'Played': true,
+        'LastPlayedDate': '2026-06-01T12:00:00Z',
+      });
+      expect(isStaleSkippedEpisode(finale, [finale, nextSeason]), isFalse);
+    });
+
+    test(
+      'marks a skipped ending when a later episode was started more recently',
+      () {
+        final skipped = episode('e5', 1, 5, {
+          'PlayedPercentage': 70,
+          'LastPlayedDate': '2026-08-23T18:00:00Z',
+        });
+        final startedLater = episode('e6', 1, 6, {
+          'Played': true,
+          'LastPlayedDate': '2026-08-23T19:00:00Z',
+        });
+        expect(isStaleSkippedEpisode(skipped, [skipped, startedLater]), isTrue);
+      },
+    );
+
+    test(
+      'does not mark the latest episode even when it is above 50 percent',
+      () {
+        final latest = episode('e10', 1, 10, {
+          'PlayedPercentage': 65,
+          'LastPlayedDate': '2026-08-23T18:00:00Z',
+        });
+        expect(isStaleSkippedEpisode(latest, [latest]), isFalse);
+      },
+    );
+
+    test('marks the leftover once a later episode was finished after it', () {
+      // e11 is the furthest in-progress episode, but e12 was watched to the
+      // end after it, so the viewer has moved on.
+      final e11 = episode('e11', 1, 11, {
+        'PlayedPercentage': 85,
+        'LastPlayedDate': '2026-08-23T18:00:00Z',
+      });
+      final e12 = episode('e12', 1, 12, {
+        'Played': true,
+        'LastPlayedDate': '2026-08-23T18:30:00Z',
+      });
+      expect(isStaleSkippedEpisode(e11, [e11, e12]), isTrue);
+    });
+
+    test('keeps an earlier episode being rewatched after a later one', () {
+      final e11 = episode('e11', 1, 11, {
+        'PlayedPercentage': 30,
+        'LastPlayedDate': '2026-08-20T18:00:00Z',
+      });
+      final rewatch = episode('e5', 1, 5, {
+        'PlayedPercentage': 60,
+        'LastPlayedDate': '2026-08-23T18:00:00Z',
+      });
+      expect(isStaleSkippedEpisode(rewatch, [rewatch, e11]), isFalse);
+    });
+
+    test('needs play dates on both episodes to compare activity', () {
+      final leftover = episode('e1', 1, 1, {
+        'PlayedPercentage': 80,
+        'LastPlayedDate': '2026-08-23T18:00:00Z',
+      });
+      final undated = episode('e2', 1, 2, {'PlaybackPositionTicks': 1});
+      expect(isStaleSkippedEpisode(leftover, [leftover, undated]), isFalse);
+
+      final undatedLeftover = episode('e1', 1, 1, {'PlayedPercentage': 80});
+      final dated = episode('e2', 1, 2, {
+        'PlaybackPositionTicks': 1,
+        'LastPlayedDate': '2026-08-23T19:00:00Z',
+      });
+      expect(
+        isStaleSkippedEpisode(undatedLeftover, [undatedLeftover, dated]),
+        isFalse,
+      );
     });
 
     test('still treats a played leftover resume point as stale', () {
@@ -178,26 +271,39 @@ void main() {
         'PlayedPercentage': 88,
         'LastPlayedDate': '2026-08-25T14:42:00Z',
       });
-      final later = episode('e2', 1, 2, {'PlaybackPositionTicks': 1});
+      final later = episode('e2', 1, 2, {
+        'PlaybackPositionTicks': 1,
+        'LastPlayedDate': '2026-08-25T15:00:00Z',
+      });
       expect(isStaleSkippedEpisode(leftover, [leftover, later]), isTrue);
     });
 
     test('honors a custom leftover progress threshold', () {
-      final leftover = episode('e1', 1, 1, {'PlayedPercentage': 40});
-      final later = episode('e2', 1, 2, {'PlaybackPositionTicks': 1});
+      final leftover = episode('e1', 1, 1, {
+        'PlayedPercentage': 40,
+        'LastPlayedDate': '2026-08-23T18:00:00Z',
+      });
+      final later = episode('e2', 1, 2, {
+        'PlaybackPositionTicks': 1,
+        'LastPlayedDate': '2026-08-23T19:00:00Z',
+      });
       expect(isStaleSkippedEpisode(leftover, [leftover, later]), isFalse);
       expect(isStaleSkippedEpisode(leftover, [leftover, later], 40), isTrue);
       expect(isStaleSkippedEpisode(leftover, [leftover, later], 41), isFalse);
     });
 
-    test('picks the leading in-progress episode as the frontier', () {
-      final e10 = episode('e10', 1, 10, {'PlayedPercentage': 70});
-      final e12 = episode('e12', 1, 12, {'PlayedPercentage': 65});
-      final e13 = episode('e13', 1, 13, {'PlayedPercentage': 60});
-      final e15 = episode('e15', 1, 15, {'PlayedPercentage': 55});
-      expect(frontierEpisodeId([e10, e12, e13, e15]), 'e15');
-      final e16 = episode('e16', 1, 16, {'PlaybackPositionTicks': 1});
-      expect(frontierEpisodeId([e10, e12, e13, e15, e16]), 'e16');
+    test('reads the last played date', () {
+      expect(
+        episodeLastPlayed(
+          episode('e1', 1, 1, {'LastPlayedDate': '2026-08-23T18:00:00Z'}),
+        ),
+        DateTime.utc(2026, 8, 23, 18),
+      );
+      expect(episodeLastPlayed(episode('e1', 1, 1, {})), isNull);
+      expect(
+        episodeLastPlayed(episode('e1', 1, 1, {'LastPlayedDate': 'x'})),
+        isNull,
+      );
     });
   });
 }

@@ -60,8 +60,6 @@ Future<List<AggregatedItem>> cleanupSkippedEpisodeEndings({
     if (seriesId == null) continue;
     final seriesEpisodes = episodesBySeries[seriesId];
     if (seriesEpisodes == null) continue;
-    final frontierId = frontierEpisodeId(seriesEpisodes);
-    if (frontierId != null && item.id == frontierId) continue;
     if (isStaleSkippedEpisode(item.rawData, seriesEpisodes, minProgress)) {
       classified.add(item);
     }
@@ -72,7 +70,14 @@ Future<List<AggregatedItem>> cleanupSkippedEpisodeEndings({
   final completedIds = <String>{};
   for (final item in classified) {
     try {
-      await mutations.setPlayed(item.id, isPlayed: true);
+      // Keep the original play date so this episode does not look like
+      // newer activity than the ones before it, and Next Up still follows
+      // the episode the viewer actually moved on to.
+      await mutations.setPlayed(
+        item.id,
+        isPlayed: true,
+        datePlayed: episodeLastPlayed(item.rawData),
+      );
       completedIds.add(item.id);
     } catch (error, stack) {
       debugPrint(
