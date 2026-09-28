@@ -8,6 +8,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DataSource
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
+import androidx.media3.exoplayer.source.loadOnlyOnceSelected
 import androidx.media3.extractor.Extractor
 import androidx.media3.extractor.ExtractorInput
 import androidx.media3.extractor.ExtractorOutput
@@ -21,10 +22,12 @@ import java.io.IOException
 /**
  * Builds a media source for one sideloaded subtitle the way
  * DefaultMediaSourceFactory does, which has to be repeated here because that
- * factory is final and its lazy loading hook is package private. Handing the
- * format to [SubtitleExtractor] makes the extractor announce the same cues
- * format the factory would, at the cost of reading the file at prepare time
- * instead of on first selection, which for a subtitle file is nothing.
+ * factory is final.
+ *
+ * The file is only fetched once its track is selected. A server extracting
+ * subtitles out of a large file can take minutes to answer the first time,
+ * and a source that read every file at prepare couldn't start playback until
+ * the last of them came back.
  */
 @UnstableApi
 internal object SidecarSourceFactory {
@@ -42,16 +45,27 @@ internal object SidecarSourceFactory {
             .setLabel(configuration.label)
             .setId(configuration.id)
             .build()
+        val canParse = parserFactory.supportsFormat(format)
         val extractorsFactory = ExtractorsFactory {
             arrayOf<Extractor>(
-                if (parserFactory.supportsFormat(format)) {
-                    SubtitleExtractor(parserFactory.create(format), format)
+                if (canParse) {
+                    SubtitleExtractor(parserFactory.create(format), /* format= */ null)
                 } else {
                     UnknownSubtitlesExtractor(format)
                 },
             )
         }
+        val announcedFormat = if (canParse) {
+            format.buildUpon()
+                .setSampleMimeType(MimeTypes.APPLICATION_MEDIA3_CUES)
+                .setCodecs(format.sampleMimeType)
+                .setCueReplacementBehavior(parserFactory.getCueReplacementBehavior(format))
+                .build()
+        } else {
+            format
+        }
         return ProgressiveMediaSource.Factory(dataSourceFactory, extractorsFactory)
+            .loadOnlyOnceSelected(SubtitleExtractor.TRACK_ID, announcedFormat)
             .createMediaSource(MediaItem.fromUri(configuration.uri))
     }
 }

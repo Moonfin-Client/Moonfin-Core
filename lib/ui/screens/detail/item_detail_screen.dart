@@ -1986,12 +1986,16 @@ class _DetailContentState extends State<_DetailContent> {
         : null;
 
     final hasCast = viewModel.actors.isNotEmpty;
-    final hasCollection = viewModel.parentCollectionItems.isNotEmpty;
+    final collections = viewModel.parentCollections
+        .where((collection) => collection.items.isNotEmpty)
+        .toList();
     final hasSimilar = viewModel.similar.isNotEmpty;
     final castFocusNode = hasCast ? _sectionFocusNode('detailMovieCast') : null;
-    final collectionFocusNode = hasCollection
-        ? _sectionFocusNode('detailMovieCollection')
-        : null;
+    final collectionFocusNodes = [
+      for (final collection in collections)
+        _sectionFocusNode('detailMovieCollection:${collection.id}'),
+    ];
+    final collectionFocusNode = collectionFocusNodes.firstOrNull;
     final similarFocusNode = hasSimilar
         ? _sectionFocusNode('detailMovieSimilar')
         : null;
@@ -2070,25 +2074,29 @@ class _DetailContentState extends State<_DetailContent> {
           ),
         ),
       ],
-      if (viewModel.parentCollectionItems.isNotEmpty) ...[
+      for (var i = 0; i < collections.length; i++) ...[
         const SizedBox(height: 32),
         HorizontalScrollSection(
-          title: viewModel.parentCollectionName ?? l10n.collection,
+          title: collections[i].name,
           builder: (_, ctrl) => DetailSimilarRow(
-            items: viewModel.parentCollectionItems,
+            items: collections[i].items,
             imageApi: viewModel.imageApi,
             prefs: prefs,
             onItemLongPress: _showItemContextMenu,
             scrollController: _trackSectionScrollController(
-              collectionFocusNode,
+              collectionFocusNodes[i],
               ctrl,
             ),
-            firstItemFocusNode: collectionFocusNode,
+            firstItemFocusNode: collectionFocusNodes[i],
             onItemKeyEvent: _buildVerticalRowHandler(
-              sourceFocusNode: collectionFocusNode,
-              upTarget: collectionUpTarget,
-              downTarget: similarFocusNode,
-              itemCount: viewModel.parentCollectionItems.length,
+              sourceFocusNode: collectionFocusNodes[i],
+              upTarget: i == 0
+                  ? collectionUpTarget
+                  : collectionFocusNodes[i - 1],
+              downTarget: i + 1 < collections.length
+                  ? collectionFocusNodes[i + 1]
+                  : similarFocusNode,
+              itemCount: collections[i].items.length,
             ),
           ),
         ),
@@ -2114,7 +2122,7 @@ class _DetailContentState extends State<_DetailContent> {
             onItemKeyEvent: _buildVerticalRowHandler(
               sourceFocusNode: similarFocusNode,
               upTarget:
-                  collectionFocusNode ??
+                  collectionFocusNodes.lastOrNull ??
                   castFocusNode ??
                   chapterFeatureLastNode,
               downTarget: seerrFirstNode,

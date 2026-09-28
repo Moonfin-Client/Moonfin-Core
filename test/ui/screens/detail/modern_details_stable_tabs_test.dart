@@ -111,8 +111,6 @@ void main() {
     when(() => vm.collectionItems).thenReturn([]);
     when(() => vm.missingCollectionItems).thenReturn([]);
     when(() => vm.parentCollections).thenReturn([]);
-    when(() => vm.parentCollectionItems).thenReturn([]);
-    when(() => vm.parentCollectionName).thenReturn(null);
     when(() => vm.playlistItems).thenReturn([]);
     when(() => vm.playlistIndexBuilding).thenReturn(false);
     when(() => vm.tracks).thenReturn([]);

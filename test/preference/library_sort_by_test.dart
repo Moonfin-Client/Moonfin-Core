@@ -65,6 +65,14 @@ void main() {
     );
   });
 
+  test('a library that lists folders still offers the date and rating sorts', () {
+    final foldery = LibrarySortBy.optionsFor(isFolderyLibrary: true);
+    expect(foldery, contains(LibrarySortBy.premiereDate));
+    expect(foldery, contains(LibrarySortBy.rating));
+    expect(foldery, contains(LibrarySortBy.criticRating));
+    expect(foldery, contains(LibrarySortBy.communityRating));
+  });
+
   test('the my rating sort only appears when the plugin can serve it', () {
     expect(
       LibrarySortBy.optionsFor(supportsMyRating: true).first,

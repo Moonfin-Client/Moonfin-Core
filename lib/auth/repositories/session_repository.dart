@@ -421,12 +421,12 @@ class SessionRepository {
       } catch (_) {}
     }
 
-    final seerrAvailable = await _pluginSyncService.configureSeerr(
+    final seerrCameUp = await _pluginSyncService.configureSeerr(
       client,
       username: username ?? user.name,
       password: password,
     );
-    if (seerrAvailable) {
+    if (seerrCameUp) {
       homeRefreshBus.requestNowOrAfterNavigation();
     }
   }

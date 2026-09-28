@@ -2,14 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
-import 'package:go_router/go_router.dart';
 import 'package:server_core/server_core.dart';
 import 'package:dio/dio.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:convert';
 import 'dart:io';
 
-import '../../../navigation/destinations.dart';
 import '../admin_plugin_version_utils.dart';
 import '../../../widgets/adaptive/adaptive_dialog.dart';
 import '../providers/admin_user_providers.dart';
@@ -281,14 +279,6 @@ class _AdminPluginDetailScreenState
     }
   }
 
-  Widget _backButton(BuildContext context) {
-    return IconButton(
-      tooltip: AppLocalizations.of(context).adminDrawerPlugins,
-      icon: const Icon(Icons.arrow_back),
-      onPressed: () => context.go(Destinations.adminPlugins),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -340,20 +330,12 @@ class _AdminPluginDetailScreenState
       return ListView(
         padding: const EdgeInsets.fromLTRB(16, 20, 16, 40),
         children: [
-          Row(
-            children: [
-              _backButton(context),
-              const SizedBox(width: 4),
-              Expanded(
-                child: adminScreenHeader(
-                  context,
-                  title: plugin.name,
-                  subtitle: AppLocalizations.of(context)
-                      .adminPluginVersion(plugin.version),
-                  icon: Icons.extension_outlined,
-                ),
-              ),
-            ],
+          adminScreenHeader(
+            context,
+            title: plugin.name,
+            subtitle: AppLocalizations.of(context)
+                .adminPluginVersion(plugin.version),
+            icon: Icons.extension_outlined,
           ),
           if (statusBanner != null) ...[
             statusBanner,
@@ -434,8 +416,6 @@ class _AdminPluginDetailScreenState
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _backButton(context),
-            const SizedBox(width: 4),
             _PluginImage(
               imageUrl: plugin.hasImage
                   ? _pluginImageUrl(plugin)

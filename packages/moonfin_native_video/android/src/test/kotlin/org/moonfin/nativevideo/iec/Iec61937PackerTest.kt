@@ -1,5 +1,6 @@
 package org.moonfin.nativevideo.iec
 
+import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -89,6 +90,21 @@ class Iec61937PackerTest {
         assertArrayEqualsPrefix(oneShot.packedSnapshot(), twoCalls.packedSnapshot())
     }
 
+    @Test fun truehd_unitsBeforeTheFirstMajorSyncAreDropped() {
+        val elementary = resource("truehd.bin")
+        // Major syncs fall every 16 access units in this stream.
+        val midStream = auOffset(elementary, 5)
+        val nextMajorSync = auOffset(elementary, 16)
+
+        val afterSeek = Iec61937Packer.create(IecCodec.TRUEHD, 48000)!!
+        afterSeek.writeAccessUnits(elementary, midStream, elementary.size - midStream)
+        val fromSync = Iec61937Packer.create(IecCodec.TRUEHD, 48000)!!
+        fromSync.writeAccessUnits(elementary, nextMajorSync, elementary.size - nextMajorSync)
+
+        assertTrue(fromSync.packedSnapshot().isNotEmpty())
+        assertArrayEquals(fromSync.packedSnapshot(), afterSeek.packedSnapshot())
+    }
+
     @Test fun resetClearsPackerState() {
         val elementary = resource("ac3.bin")
         val packer = Iec61937Packer.create(IecCodec.AC3, 48000)!!
@@ -109,6 +125,12 @@ class Iec61937PackerTest {
         assertEquals(8, hbr.channelCount)
         // The EAC3 carrier runs at 4x the stream rate.
         assertEquals(192000, Iec61937CarrierSpec.forCodec(IecCodec.EAC3, 48000)!!.sampleRate)
+    }
+
+    private fun auOffset(data: ByteArray, index: Int): Int {
+        var pos = 0
+        repeat(index) { pos += (data.rb16(pos) and 0x0FFF) * 2 }
+        return pos
     }
 
     private fun auBoundaryNear(data: ByteArray, target: Int): Int {

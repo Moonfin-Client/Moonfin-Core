@@ -66,7 +66,7 @@ void main() {
 
   test('gives a 30-minute cell a readable width on the television canvas', () {
     // Every television lays out on this canvas and the panel paints it at
-    // about 1.45 pixels to the point, so a cell has to clear the ten foot
+    // about 1.67 pixels to the point, so a cell has to clear the ten foot
     // floor once that multiplication is done, not before it.
     final area = guideAvailableArea(
       maxWidth: kTvDesignWidth,
@@ -79,17 +79,17 @@ void main() {
       availableHeight: area.height,
     );
 
-    expect(profile.guideWindow, const Duration(minutes: 180));
-    expect(30 * profile.pixelsPerMinute, closeTo(178.7, 0.5));
+    expect(profile.guideWindow, const Duration(minutes: 150));
+    expect(30 * profile.pixelsPerMinute, closeTo(185.1, 0.5));
     expect(
       30 * profile.pixelsPerMinute * kTvTargetScale,
       greaterThan(240),
       reason: 'a 30 minute cell has to carry a title at ten feet',
     );
-    expect(profile.rowHeight, closeTo(60, 0.5));
+    expect(profile.rowHeight, closeTo(57.6, 0.5));
     expect(
       profile.channelColumnWidth,
-      closeTo(204, 1),
+      closeTo(176.3, 1),
       reason: 'the rail keeps its share of the canvas rather than a ceiling',
     );
   });

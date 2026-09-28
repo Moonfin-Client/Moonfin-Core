@@ -20,11 +20,16 @@ abstract class PlayerService {
     bool? isMuted,
   });
 
+  /// Reports the stop and, when [releaseLiveStream] is set, closes the
+  /// session's server live stream. A stop can be reported more than once for
+  /// one session, but a shared live stream counts every close as a viewer
+  /// leaving, so the caller sets it on at most one release attempt.
   Future<void> onPlaybackStop(
     dynamic mediaItem,
     StreamResolutionResult resolution,
-    Duration position,
-  );
+    Duration position, {
+    bool releaseLiveStream = true,
+  });
 
   /// Closes an opened server-side live stream session by id. Used to release the
   /// server's upstream connection when the client is playing the live source

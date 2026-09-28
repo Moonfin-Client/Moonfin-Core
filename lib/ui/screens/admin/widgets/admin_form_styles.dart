@@ -138,11 +138,19 @@ Widget adminGlassGroup(
     blur: 22,
     tint: AppColorScheme.onSurface.withValues(alpha: 0.04),
     fallbackColor: AppColorScheme.surface.withValues(alpha: 0.55),
-    child: Padding(
-      padding: const EdgeInsets.symmetric(vertical: AppSpacing.spaceXs),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: rows,
+    // Rows paint their hover and press highlight on the nearest Material.
+    // Without this one, that's the panel under the pane, and the square
+    // highlight shows through past the rounded corners.
+    child: Material(
+      type: MaterialType.transparency,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+      clipBehavior: Clip.antiAlias,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.spaceXs),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: rows,
+        ),
       ),
     ),
   );

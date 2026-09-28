@@ -555,8 +555,12 @@ enum LibrarySortBy {
       return const [
         name,
         dateAdded,
+        premiereDate,
+        rating,
         datePlayed,
         playCount,
+        criticRating,
+        communityRating,
         runtime,
         random,
         foldersFirst,

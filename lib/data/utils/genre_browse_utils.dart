@@ -45,6 +45,28 @@ List<String> normalizeBrowsableGenreItemTypes(List<String>? includeItemTypes) {
   return normalized;
 }
 
+/// Whether the genres endpoint said how many items a genre holds. Emby never
+/// does, so a genre from it has to be counted with its own item query.
+bool genreReportsCounts(Map<String, dynamic> genreData) => const [
+  'ChildCount',
+  'MovieCount',
+  'SeriesCount',
+  'SongCount',
+  'AlbumCount',
+  'ArtistCount',
+  'MusicVideoCount',
+].any((field) => genreData[field] != null);
+
+/// Whether a genre can still be listed. A count of zero rules it out, and a
+/// genre with no counts at all stays until its own item query answers.
+bool mayHaveBrowsableItems(
+  Map<String, dynamic> genreData, {
+  required List<String> normalizedItemTypes,
+}) =>
+    !genreReportsCounts(genreData) ||
+    browsableGenreCount(genreData, normalizedItemTypes: normalizedItemTypes) >
+        0;
+
 int browsableGenreCount(
   Map<String, dynamic> genreData, {
   List<String>? includeItemTypes,

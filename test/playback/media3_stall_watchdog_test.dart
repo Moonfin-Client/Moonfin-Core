@@ -238,6 +238,22 @@ void main() {
       expect(backend.isBuffering, isFalse);
       expect(backend.isPlaying, isFalse);
     });
+
+    test('a stuck resume prepared again stays diagnostic', () async {
+      final errors = <Map<String, dynamic>>[];
+      backend.errorStream.listen(errors.add);
+
+      await _send(<String, dynamic>{
+        'event': 'resumeWedgeRecovery',
+        'positionMs': 348736,
+        'bufferedAheadMs': 18047,
+      });
+      await pumpEventQueue();
+
+      expect(errors, isEmpty);
+      expect(backend.isBuffering, isFalse);
+      expect(backend.isPlaying, isFalse);
+    });
   });
 
   group('the stall payload through the manager', () {

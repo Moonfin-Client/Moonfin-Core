@@ -55,14 +55,14 @@ class ChannelCarouselCard extends StatelessWidget {
   /// Preferred card width, and the target [layoutFor] aims at.
   ///
   /// Written against the canvas a television lays out on, which the panel
-  /// paints at about 1.45 pixels to the point. A size written in a panel's
-  /// own units lands a third short of what it was drawn for once that
-  /// multiplication is done.
+  /// paints at about 1.67 pixels to the point. A size written in a panel's
+  /// own units would draw at a different size on every TV.
   ///
-  /// The value is the width the canvas gives when four pitches fit across it,
-  /// which is the arrangement the strip reads best in. The centred card keeps
-  /// a whole neighbour either side and a half card bleeds off each edge, so
-  /// there is always something further along to scroll to.
+  /// The value sits close enough to four pitches across the canvas that
+  /// [layoutFor] settles on four, which is the arrangement the strip reads
+  /// best in. The centred card keeps a whole neighbour either side and a half
+  /// card bleeds off each edge, so there is always something further along to
+  /// scroll to.
   static const double cardWidth = 320;
   static const double cardHeight = 151;
   static const double cardSpacing = 10;

@@ -253,6 +253,64 @@ void main() {
         isNull,
       );
     });
+
+    // The issue #1672 file shape: the server numbers an external audio file
+    // ahead of the two tracks the container holds.
+    final externalAudioStreams = <Map<String, dynamic>>[
+      _stream(0, 'Audio', isExternal: true), // Lektor - AC3 - External
+      _stream(1, 'Video'),
+      _stream(2, 'Audio'), // Surround - EAC3 Atmos
+      _stream(3, 'Audio'), // Commentary - AC3
+      _stream(4, 'Subtitle'),
+    ];
+
+    test('embedded tracks keep their container order past an external file', () {
+      for (final (streamIndex, ordinal) in [(2, 1), (3, 2)]) {
+        expect(
+          TrackOrdinalMapper.mpvTrackIdForStream(
+            streamIndex: streamIndex,
+            type: 'Audio',
+            mediaStreams: externalAudioStreams,
+            externalSubtitles: null,
+            embeddedStripped: false,
+          ),
+          ordinal,
+        );
+        expect(
+          TrackOrdinalMapper.streamIndexForMpvTrackId(
+            mpvTrackId: ordinal,
+            type: 'Audio',
+            mediaStreams: externalAudioStreams,
+            externalSubtitles: null,
+            embeddedStripped: false,
+          ),
+          streamIndex,
+        );
+      }
+    });
+
+    test('an external audio file has no track in the container', () {
+      expect(
+        TrackOrdinalMapper.mpvTrackIdForStream(
+          streamIndex: 0,
+          type: 'Audio',
+          mediaStreams: externalAudioStreams,
+          externalSubtitles: null,
+          embeddedStripped: false,
+        ),
+        isNull,
+      );
+      expect(
+        TrackOrdinalMapper.streamIndexForMpvTrackId(
+          mpvTrackId: 3,
+          type: 'Audio',
+          mediaStreams: externalAudioStreams,
+          externalSubtitles: null,
+          embeddedStripped: false,
+        ),
+        isNull,
+      );
+    });
   });
 
   group('containerStreamIndex', () {

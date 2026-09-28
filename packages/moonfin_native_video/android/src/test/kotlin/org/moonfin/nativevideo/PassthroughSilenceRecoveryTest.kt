@@ -7,12 +7,15 @@ import org.junit.Test
 
 class PassthroughSilenceRecoveryTest {
 
+    // The stream has already played, so the short threshold applies.
     private fun playingPassthrough(
         recovery: PassthroughSilenceRecovery,
         nowMs: Long,
     ) {
         recovery.onConfigure(passthrough = true, nowMs = nowMs)
         recovery.onPlay(nowMs)
+        recovery.onPosition(4_000L, true, nowMs)
+        recovery.onPosition(5_000L, true, nowMs)
     }
 
     @Test
@@ -71,6 +74,26 @@ class PassthroughSilenceRecoveryTest {
         assertFalse(recovery.onPosition(5_000L, true, 500))
         assertTrue(recovery.onPosition(5_000L, true, 900))
         assertTrue(recovery.isBroken)
+    }
+
+    @Test
+    fun `a stream that has not started yet gets the startup grace`() {
+        val recovery = PassthroughSilenceRecovery()
+        recovery.onConfigure(passthrough = true, nowMs = 0)
+        recovery.onPlay(0)
+        recovery.onPosition(0L, true, 10)
+        assertFalse(recovery.onPosition(0L, true, 900))
+        assertFalse(recovery.onPosition(0L, true, 2_900))
+        assertTrue(recovery.onPosition(0L, true, 3_100))
+    }
+
+    @Test
+    fun `a seek after the stream has played keeps the short threshold`() {
+        val recovery = PassthroughSilenceRecovery()
+        playingPassthrough(recovery, 0)
+        recovery.onFlush(1_000)
+        recovery.onPosition(5_000L, true, 1_100)
+        assertTrue(recovery.onPosition(5_000L, true, 1_900))
     }
 
     @Test

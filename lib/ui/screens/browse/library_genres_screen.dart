@@ -133,7 +133,7 @@ class _LibraryGenresScreenState extends State<LibraryGenresScreen> {
         );
       }).where((genre) {
         if (_collectionType == 'music') return true;
-        return genre.itemCount > 0;
+        return genre.itemCount > 0 || !genreReportsCounts(genre.data);
       }).toList();
 
       _genres = temp.map((x) {
@@ -197,15 +197,17 @@ class _LibraryGenresScreenState extends State<LibraryGenresScreen> {
     final groupCollections = _lastGroupCollections;
     final isVideo = includeType == 'Movie' || includeType == 'Series';
 
-    // A genre with its own artwork already has an exact count, so it only needs
-    // a query when grouping changes what that count means. Music tiles always
-    // need one, since they take their picture from the first album.
+    // A genre with its own artwork only needs a query when grouping changes
+    // what its count means, or when the server sent no count at all. Music
+    // tiles always need one, since they take their picture from the first
+    // album.
     final needsWork = _genres
         .where(
           (genre) =>
               _collectionType == 'music' ||
               genre.isGenreFallback ||
-              (groupCollections && isVideo),
+              (groupCollections && isVideo) ||
+              genre.itemCount == 0,
         )
         .toList();
 

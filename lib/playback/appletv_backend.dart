@@ -438,6 +438,7 @@ class AppleTvBackend implements PlayerBackend {
       // Vorbis/PCM are bridged to EAC3 or FLAC on-device, so stereo routes
       // never need a server-side audio transcode.
       universalAudioDecode: true,
+      bridgesAudioToEac3: true,
       maxResolution: maxResolution,
       pgsDirectPlay: _prefs.get(UserPreferences.pgsDirectPlay),
       assDirectPlay: _prefs.get(UserPreferences.assDirectPlay),

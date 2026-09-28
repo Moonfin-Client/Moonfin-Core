@@ -10,15 +10,19 @@ package org.moonfin.nativevideo
  * Everything here is armed by evidence and nothing engages on a healthy
  * device. A recovery needs a playback position that sat frozen for
  * [silenceThresholdMs] while the sink was playing bitstream audio and holding
- * unplayed data, which a working track can never show. The write hold guards
- * only flushes that happen after a detection, so seek latency everywhere else
- * is untouched. PCM output never engages any of it.
+ * unplayed data, which a running track never shows. A stream that hasn't
+ * played anything since it was configured gets [startupGraceMs] instead,
+ * since some sinks take well past the threshold to start a bitstream and a
+ * rebuild in that window can leave no working track at all. The write hold
+ * guards only flushes that happen after a detection, so seek latency
+ * everywhere else is untouched. PCM output never engages any of it.
  *
  * The caller owns the clock, every entry point takes elapsed milliseconds, so
  * the logic stays a plain object a JVM test can drive.
  */
 class PassthroughSilenceRecovery(
     private val silenceThresholdMs: Long = 700L,
+    private val startupGraceMs: Long = 3_000L,
     private val recoveryMinIntervalMs: Long = 3_000L,
     private val maxConsecutiveFailures: Int = 4,
     private val holdStepsMs: LongArray = longArrayOf(250L, 500L, 800L),
@@ -28,6 +32,7 @@ class PassthroughSilenceRecovery(
         private set
 
     private var isPassthrough = false
+    private var playedSinceConfigure = false
     private var playing = false
     private var holdUntilMs = 0L
     private var lastPositionUs = Long.MIN_VALUE
@@ -38,6 +43,7 @@ class PassthroughSilenceRecovery(
 
     fun onConfigure(passthrough: Boolean, nowMs: Long) {
         isPassthrough = passthrough
+        playedSinceConfigure = false
         resetBaseline(nowMs)
     }
 
@@ -71,6 +77,7 @@ class PassthroughSilenceRecovery(
 
     fun onReset(nowMs: Long) {
         isPassthrough = false
+        playedSinceConfigure = false
         recoveryPending = false
         consecutiveFailures = 0
         holdUntilMs = 0L
@@ -91,14 +98,18 @@ class PassthroughSilenceRecovery(
             val seeding = lastPositionUs == Long.MIN_VALUE
             lastPositionUs = positionUs
             lastMovementAtMs = nowMs
-            if (!seeding) consecutiveFailures = 0
+            if (!seeding) {
+                consecutiveFailures = 0
+                if (positionUs != Long.MIN_VALUE) playedSinceConfigure = true
+            }
             return false
         }
         if (positionUs == Long.MIN_VALUE) return false
         if (!isPassthrough || !playing || !hasPendingData || recoveryPending) {
             return false
         }
-        if (nowMs - lastMovementAtMs < silenceThresholdMs) return false
+        val thresholdMs = if (playedSinceConfigure) silenceThresholdMs else startupGraceMs
+        if (nowMs - lastMovementAtMs < thresholdMs) return false
         if (!canRecover(nowMs)) return false
         beginRecovery(nowMs)
         return true

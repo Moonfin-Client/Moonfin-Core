@@ -201,6 +201,16 @@ abstract class MediaStreamResolver {
     }
   }
 
+  static const _pgsCodecs = {'pgs', 'pgssub', 'hdmv_pgs_subtitle'};
+
+  static bool isPgsCodec(String? codec) =>
+      _pgsCodecs.contains(codec?.toLowerCase());
+
+  static bool isEmbeddedPgsSubtitle(Map<String, dynamic> stream) =>
+      stream['Type'] == 'Subtitle' &&
+      stream['IsExternal'] != true &&
+      isPgsCodec(stream['Codec'] as String?);
+
   static List<ExternalSubtitle> extractExternalSubtitles(
     List<Map<String, dynamic>> mediaStreams,
     String baseUrl,
@@ -210,6 +220,9 @@ abstract class MediaStreamResolver {
       if (stream['Type'] != 'Subtitle') continue;
       final deliveryUrl = stream['DeliveryUrl'] as String?;
       if (deliveryUrl == null || deliveryUrl.isEmpty) continue;
+      // The server has to extract all of an embedded PGS track before it
+      // sends the file, which can take minutes.
+      if (isEmbeddedPgsSubtitle(stream)) continue;
       final isExternal = stream['IsExternal'] == true;
       final supportsExternal = stream['SupportsExternalStream'] == true;
       if (!isExternal && !supportsExternal) continue;
