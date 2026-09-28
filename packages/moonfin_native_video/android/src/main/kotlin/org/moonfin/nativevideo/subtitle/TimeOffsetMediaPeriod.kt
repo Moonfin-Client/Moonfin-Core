@@ -24,9 +24,6 @@ import java.io.IOException
  * untouched. Each method reads the offset once so a change landing mid call
  * never mixes two values.
  *
- * If a subtitle download fails and retries, keep the video at its current
- * position.
- *
  * Runs on the playback thread, which is also where [updateTimeOffsetUs] is
  * expected to be called from.
  */
@@ -98,10 +95,12 @@ internal class TimeOffsetMediaPeriod(
     override fun discardBuffer(positionUs: Long, toKeyframe: Boolean) =
         wrappedMediaPeriod.discardBuffer(positionUs - timeOffsetUs, toKeyframe)
 
+    // A subtitle file only reports a discontinuity when a download with no
+    // known length fails and starts over from zero, and passing it up would
+    // make the merged period seek the video back to zero too. The child is
+    // still asked, since it holds its samples back until it's read.
     override fun readDiscontinuity(): Long {
-        // Read and clear the subtitle's request to reset its playback position.
         wrappedMediaPeriod.readDiscontinuity()
-        // Do not pass that request to the video, which should keep playing where it is.
         return C.TIME_UNSET
     }
 
