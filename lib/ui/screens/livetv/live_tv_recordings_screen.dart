@@ -406,9 +406,7 @@ class _SeriesTimerCardState extends State<_SeriesTimerCard> with FocusStateMixin
           setFocused(focused);
           if (focused) widget.onFocused();
         },
-        // GestureDetector only reacts to pointer taps, so on a TV remote the
-        // card could be focused but never opened. Matches the select-key
-        // handling in media_card.dart and the browse screens (GH #1610).
+        // GestureDetector only handles pointer taps.
         onKeyEvent: (_, event) {
           if (isActivateKey(event)) {
             widget.onTap();
@@ -639,9 +637,7 @@ class _RecordingCardState extends State<_RecordingCard> with FocusStateMixin {
           setFocused(focused);
           if (focused) widget.onFocused();
         },
-        // GestureDetector only reacts to pointer taps, so on a TV remote the
-        // card could be focused but never opened. Matches the select-key
-        // handling in media_card.dart and the browse screens (GH #1610).
+        // GestureDetector only handles pointer taps.
         onKeyEvent: (_, event) {
           if (isActivateKey(event)) {
             widget.onTap();

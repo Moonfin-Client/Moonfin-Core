@@ -8,6 +8,7 @@ import '../../../data/viewmodels/schedule_view_model.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../ui/mixins/focus_state_mixin.dart';
+import '../../../util/focus/dpad_keys.dart';
 import '../../widgets/adaptive/adaptive_dialog.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/focus/request_initial_focus.dart';
@@ -287,6 +288,14 @@ class _ScheduleCardState extends State<_ScheduleCard> with FocusStateMixin {
         onFocusChange: (focused) {
           setFocused(focused);
           if (focused) widget.onFocused();
+        },
+        // GestureDetector only handles pointer taps.
+        onKeyEvent: (_, event) {
+          if (isActivateKey(event)) {
+            widget.onTap();
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
         },
         child: GestureDetector(
           onTap: widget.onTap,
