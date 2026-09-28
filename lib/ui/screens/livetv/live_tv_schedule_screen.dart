@@ -289,7 +289,6 @@ class _ScheduleCardState extends State<_ScheduleCard> with FocusStateMixin {
           setFocused(focused);
           if (focused) widget.onFocused();
         },
-        // GestureDetector only handles pointer taps.
         onKeyEvent: (_, event) {
           if (isActivateKey(event)) {
             widget.onTap();

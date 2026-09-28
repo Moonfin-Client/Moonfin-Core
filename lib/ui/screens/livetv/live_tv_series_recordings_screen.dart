@@ -303,7 +303,6 @@ class _SeriesTimerCardState extends State<_SeriesTimerCard> with FocusStateMixin
           setFocused(focused);
           if (focused) widget.onFocused();
         },
-        // GestureDetector only handles pointer taps.
         onKeyEvent: (_, event) {
           if (isActivateKey(event)) {
             widget.onTap();
