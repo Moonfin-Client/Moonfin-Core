@@ -8,9 +8,12 @@ import 'package:server_core/server_core.dart';
 
 import '../data/models/aggregated_item.dart';
 import '../data/services/media_server_client_factory.dart';
+import '../util/app_distribution.dart';
 import 'car_artwork.dart';
 
-const _busName = 'org.mpris.MediaPlayer2.moonfin';
+const _busName = AppDistribution.isCustomBuild
+    ? 'org.mpris.MediaPlayer2.moonfin_books'
+    : 'org.mpris.MediaPlayer2.moonfin';
 const _objectPath = '/org/mpris/MediaPlayer2';
 const _rootInterface = 'org.mpris.MediaPlayer2';
 const _playerInterface = 'org.mpris.MediaPlayer2.Player';
@@ -370,9 +373,13 @@ class _MprisPlayer extends DBusObject {
       case 'HasTrackList':
         return const DBusBoolean(false);
       case 'Identity':
-        return const DBusString('Moonfin');
+        return const DBusString(AppDistribution.isCustomBuild
+            ? 'Moonfin Books'
+            : 'Moonfin');
       case 'DesktopEntry':
-        return const DBusString('org.moonfin.linux');
+        return const DBusString(AppDistribution.isCustomBuild
+            ? 'art.tiedemann.moonfin.linux'
+            : 'org.moonfin.linux');
       case 'SupportedUriSchemes':
         return DBusArray.string(const []);
       case 'SupportedMimeTypes':

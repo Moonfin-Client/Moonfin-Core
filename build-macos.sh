@@ -30,11 +30,6 @@ ASC_KEY_ID="${ASC_KEY_ID:-}"
 ASC_ISSUER_ID="${ASC_ISSUER_ID:-}"
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-APP_NAME="Moonfin"
-DMG_APP_NAME="$APP_NAME"
-if [ "$MOONFIN_CUSTOM_BUILD" = "true" ]; then
-  DMG_APP_NAME="Moonfin Books"
-fi
 PKG_OUTPUT=""
 
 if [ "$#" -gt 0 ]; then
@@ -49,6 +44,78 @@ if [ -f "$PRIVATE_ENV_FILE" ]; then
   # shellcheck disable=SC1090
   source "$PRIVATE_ENV_FILE"
 fi
+PLIST_BUDDY="${PLIST_BUDDY:-/usr/libexec/PlistBuddy}"
+
+APP_NAME="Moonfin"
+ARTIFACT_NAME="Moonfin"
+if [ "$MOONFIN_CUSTOM_BUILD" = "true" ]; then
+  APP_NAME="Moonfin Books"
+  ARTIFACT_NAME="Moonfin_Books"
+fi
+DMG_APP_NAME="$APP_NAME"
+
+CUSTOM_SOURCE_BACKUP=""
+SIGNING_SOURCE_BACKUP=""
+restore_macos_sources() {
+  if [ -n "$SIGNING_SOURCE_BACKUP" ]; then
+    cp -a "$SIGNING_SOURCE_BACKUP/project.pbxproj" "$REPO_ROOT/macos/Runner.xcodeproj/project.pbxproj"
+    rm -rf "$SIGNING_SOURCE_BACKUP"
+    SIGNING_SOURCE_BACKUP=""
+  fi
+  if [ -n "$CUSTOM_SOURCE_BACKUP" ]; then
+    cp -a "$CUSTOM_SOURCE_BACKUP/AppInfo.xcconfig" "$REPO_ROOT/macos/Runner/Configs/AppInfo.xcconfig"
+    cp -a "$CUSTOM_SOURCE_BACKUP/Info.plist" "$REPO_ROOT/macos/Runner/Info.plist"
+    # Make the next ordinary build regenerate the app with upstream identity.
+    touch "$REPO_ROOT/macos/Runner/Configs/AppInfo.xcconfig" "$REPO_ROOT/macos/Runner/Info.plist"
+    rm -rf "$CUSTOM_SOURCE_BACKUP"
+    CUSTOM_SOURCE_BACKUP=""
+  fi
+}
+
+prepare_custom_macos_sources() {
+  [ "$MOONFIN_CUSTOM_BUILD" = "true" ] || return 0
+  local app_info="$REPO_ROOT/macos/Runner/Configs/AppInfo.xcconfig"
+  local info_plist="$REPO_ROOT/macos/Runner/Info.plist"
+
+  if [ "$(grep -Fxc 'PRODUCT_NAME = Moonfin' "$app_info")" != "1" ] ||
+     [ "$(grep -Fxc 'PRODUCT_BUNDLE_IDENTIFIER = org.moonfin.app' "$app_info")" != "1" ]; then
+    echo "Error: upstream macOS product name or bundle ID changed; inspect AppInfo.xcconfig." >&2
+    return 1
+  fi
+  if "$PLIST_BUDDY" -c 'Print :CFBundleDisplayName' "$info_plist" >/dev/null 2>&1; then
+    echo "Error: macOS Info.plist already defines CFBundleDisplayName; inspect it before building." >&2
+    return 1
+  fi
+
+  CUSTOM_SOURCE_BACKUP="$(mktemp -d)"
+  cp -a "$app_info" "$CUSTOM_SOURCE_BACKUP/AppInfo.xcconfig"
+  cp -a "$info_plist" "$CUSTOM_SOURCE_BACKUP/Info.plist"
+  trap restore_macos_sources EXIT
+  trap 'exit 130' INT
+  trap 'exit 143' TERM
+
+  sed -i '' \
+    -e 's/^PRODUCT_NAME = Moonfin$/PRODUCT_NAME = Moonfin Books/' \
+    -e 's/^PRODUCT_BUNDLE_IDENTIFIER = org.moonfin.app$/PRODUCT_BUNDLE_IDENTIFIER = art.tiedemann.moonfin.macos/' \
+    "$app_info"
+  "$PLIST_BUDDY" -c 'Add :CFBundleDisplayName string Moonfin Books' "$info_plist"
+  grep -Fqx 'PRODUCT_NAME = Moonfin Books' "$app_info"
+  grep -Fqx 'PRODUCT_BUNDLE_IDENTIFIER = art.tiedemann.moonfin.macos' "$app_info"
+  plutil -lint "$info_plist" >/dev/null
+}
+
+verify_custom_macos_app() {
+  [ "$MOONFIN_CUSTOM_BUILD" = "true" ] || return 0
+  local app="$1"
+  local plist="$app/Contents/Info.plist"
+  if [ ! -f "$plist" ] ||
+     [ "$(plutil -extract CFBundleIdentifier raw -o - "$plist")" != 'art.tiedemann.moonfin.macos' ] ||
+     [ "$(plutil -extract CFBundleName raw -o - "$plist")" != 'Moonfin Books' ] ||
+     [ "$(plutil -extract CFBundleDisplayName raw -o - "$plist")" != 'Moonfin Books' ]; then
+    echo "Error: custom macOS archive has the wrong bundle ID or app name: $app" >&2
+    return 1
+  fi
+}
 
 for cmd in flutter xcodebuild; do
   if ! command -v "$cmd" >/dev/null 2>&1; then
@@ -56,6 +123,14 @@ for cmd in flutter xcodebuild; do
     exit 1
   fi
 done
+if [ "$MOONFIN_CUSTOM_BUILD" = "true" ]; then
+  for cmd in plutil "$PLIST_BUDDY"; do
+    if ! command -v "$cmd" >/dev/null 2>&1; then
+      echo "Error: required command not found: $cmd" >&2
+      exit 1
+    fi
+  done
+fi
 if [ "$BUILD_DMG_GITHUB" = "1" ] && ! command -v hdiutil >/dev/null 2>&1; then
   echo "Error: required command not found: hdiutil" >&2
   exit 1
@@ -97,9 +172,9 @@ fi
 ARCHIVE_PATH="$REPO_ROOT/build/macos/appstore/${APP_NAME}.xcarchive"
 EXPORT_DIR="$REPO_ROOT/build/macos/appstore/export"
 EXPORT_OPTIONS_PLIST="$REPO_ROOT/build/macos/appstore/ExportOptions.plist"
-FINAL_PKG_OUTPUT="$REPO_ROOT/${APP_NAME}_macOS_v${APP_VERSION}.pkg"
+FINAL_PKG_OUTPUT="$REPO_ROOT/${ARTIFACT_NAME}_macOS_v${APP_VERSION}.pkg"
 APP_FROM_ARCHIVE="$ARCHIVE_PATH/Products/Applications/${APP_NAME}.app"
-DMG_OUTPUT="$REPO_ROOT/${APP_NAME}_macOS_v${APP_VERSION}.dmg"
+DMG_OUTPUT="$REPO_ROOT/${ARTIFACT_NAME}_macOS_v${APP_VERSION}.dmg"
 STAGING_DIR="$REPO_ROOT/build/macos/dmg-staging"
 DMG_RW_IMAGE="$REPO_ROOT/build/macos/dmg-rw.dmg"
 DMG_MOUNTPOINT="$REPO_ROOT/build/macos/dmg-mount"
@@ -112,6 +187,7 @@ fi
 echo "${APP_NAME} version: ${APP_VERSION}"
 
 cd "$REPO_ROOT"
+prepare_custom_macos_sources
 
 if [ "$CLEAN_FLUTTER" = "1" ]; then
   echo "Cleaning previous Flutter outputs..."
@@ -131,8 +207,11 @@ if [ -z "$APP_SIGN_ID" ] && [ -z "$TEAM_ID" ]; then
   UNSIGNED=1
   echo "No signing identity available, ad-hoc signing so PR builds still run."
   PBXPROJ="$REPO_ROOT/macos/Runner.xcodeproj/project.pbxproj"
-  cp "$PBXPROJ" "$PBXPROJ.signing.bak"
-  trap 'mv -f "$PBXPROJ.signing.bak" "$PBXPROJ" 2>/dev/null || true' EXIT
+  SIGNING_SOURCE_BACKUP="$(mktemp -d)"
+  cp -a "$PBXPROJ" "$SIGNING_SOURCE_BACKUP/project.pbxproj"
+  trap restore_macos_sources EXIT
+  trap 'exit 130' INT
+  trap 'exit 143' TERM
   sed -i '' \
     -e 's/DEVELOPMENT_TEAM = [A-Z0-9]*;/DEVELOPMENT_TEAM = "";/g' \
     -e 's/CODE_SIGN_STYLE = Automatic;/CODE_SIGN_STYLE = Manual;/g' \
@@ -182,6 +261,7 @@ if [ "$ALLOW_PROVISIONING_UPDATES" = "1" ]; then
   ARCHIVE_CMD+=( -allowProvisioningUpdates ${ASC_AUTH_ARGS[@]+"${ASC_AUTH_ARGS[@]}"} )
 fi
 "${ARCHIVE_CMD[@]}"
+verify_custom_macos_app "$APP_FROM_ARCHIVE"
 
 if [ "$BUILD_APPSTORE_PKG" = "1" ]; then
   echo "Writing export options plist..."
@@ -300,6 +380,7 @@ if [ "$BUILD_DMG_GITHUB" = "1" ]; then
     echo "Error: archived app not found at $DMG_APP_FROM_ARCHIVE" >&2
     exit 1
   fi
+  verify_custom_macos_app "$DMG_APP_FROM_ARCHIVE"
 
   echo "Building DMG for GitHub distribution..."
   rm -rf "$STAGING_DIR"

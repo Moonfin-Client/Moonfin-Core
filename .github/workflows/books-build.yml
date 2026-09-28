@@ -27,6 +27,11 @@ jobs:
 
         flutter test test/util/app_distribution_custom_build_test.dart --dart-define=DISTRIBUTION_CHANNEL=windows --dart-define=MOONFIN_CUSTOM_BUILD=true
 
+
+        flutter test test/data/database/database_identity_test.dart
+
+        flutter test test/data/database/database_identity_test.dart --dart-define=MOONFIN_CUSTOM_BUILD=true
+
         '
   android-mobile:
     needs: books-tests
@@ -43,7 +48,13 @@ jobs:
     - uses: subosito/flutter-action@v2
       with:
         flutter-version: ${{ env.FLUTTER_VERSION }}
-    - name: Build mobile APK only
+    - name: Load stable Android release signing key
+      env: &id001
+        ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+      run: python3 scripts/prepare-android-signing.py
+    - name: Build signed mobile APK
       shell: bash
       run: 'set -euo pipefail
 
@@ -55,7 +66,7 @@ jobs:
 
         mkdir -p dist
 
-        cp build/app/outputs/flutter-apk/app-mobile-release.apk dist/Moonfin_Books_Android_mobile_debug-signed.apk
+        cp build/app/outputs/flutter-apk/app-mobile-release.apk dist/Moonfin_Books_Android_mobile_signed.apk
 
         '
     - name: Build mobile App Bundle
@@ -66,15 +77,24 @@ jobs:
 
         test -s build/app/outputs/bundle/mobileRelease/app-mobile-release.aab
 
-        cp build/app/outputs/bundle/mobileRelease/app-mobile-release.aab dist/Moonfin_Books_Android_mobile_debug-signed.aab
+        cp build/app/outputs/bundle/mobileRelease/app-mobile-release.aab dist/Moonfin_Books_Android_mobile_signed.aab
 
         '
+    - name: Verify APK release certificate
+      shell: bash
+      run: "set -euo pipefail\napksigner=\"$(find \"$ANDROID_HOME/build-tools\" -name apksigner -type f | sort -V | tail -1)\"\
+        \ntest -x \"$apksigner\"\nfor apk in dist/*.apk; do\n  \"$apksigner\" verify --verbose --print-certs \"$apk\" | tee\
+        \ \"$apk.signature.txt\"\n  grep -q 'certificate SHA-256 digest: 5e26d981d4e219389ed2bb74239e8564c70209a1525219f6fb22384339b21006'\
+        \ \"$apk.signature.txt\"\ndone"
     - uses: actions/upload-artifact@v4
       with:
-        name: books-android-mobile-debug-signed
-        path: dist/Moonfin_Books_Android_mobile_debug-signed.*
+        name: books-android-mobile-signed
+        path: dist/Moonfin_Books_Android_mobile_signed.*
         if-no-files-found: error
         retention-days: 14
+    - name: Remove private Android signing files
+      if: always()
+      run: rm -f android/app/release.keystore android/keystore.properties
   ios:
     needs: books-tests
     runs-on: macos-26
@@ -117,6 +137,10 @@ jobs:
 
         test -n "$app_path"
 
+        test "$(plutil -extract CFBundleIdentifier raw "$app_path/Info.plist")" = ''art.tiedemann.moonfin.ios''
+
+        test "$(plutil -extract CFBundleDisplayName raw "$app_path/Info.plist")" = ''Moonfin Books''
+
         mkdir -p dist
 
         stage="$(mktemp -d)"
@@ -149,15 +173,6 @@ jobs:
         flutter-version: ${{ env.FLUTTER_VERSION }}
     - name: Select upstream Xcode version
       run: sudo xcode-select -s /Applications/Xcode_26.3.app/Contents/Developer
-    - name: Set custom macOS bundle identity
-      shell: bash
-      run: 'set -euo pipefail
-
-        sed -i '''' ''s/^PRODUCT_BUNDLE_IDENTIFIER = org.moonfin.app$/PRODUCT_BUNDLE_IDENTIFIER = art.tiedemann.moonfin.macos/'' macos/Runner/Configs/AppInfo.xcconfig
-
-        /usr/libexec/PlistBuddy -c ''Add :CFBundleDisplayName string Moonfin Books'' macos/Runner/Info.plist
-
-        '
     - name: Build ad hoc DMG
       shell: bash
       env:
@@ -168,7 +183,7 @@ jobs:
 
         ./build-macos.sh
 
-        dmg="$(find . -maxdepth 1 -name ''Moonfin_macOS_v*.dmg'' -print -quit)"
+        dmg="$(find . -maxdepth 1 -name ''Moonfin_Books_macOS_v*.dmg'' -print -quit)"
 
         test -s "$dmg"
 
@@ -233,7 +248,8 @@ jobs:
         persist-credentials: false
     - name: Verify native ARM64 runner
       shell: pwsh
-      run: "if ($env:PROCESSOR_ARCHITECTURE -ne 'ARM64') {\n  throw \"Native ARM64 runner required, got $env:PROCESSOR_ARCHITECTURE\"\n}\n"
+      run: "if ($env:PROCESSOR_ARCHITECTURE -ne 'ARM64') {\n  throw \"Native ARM64 runner required, got $env:PROCESSOR_ARCHITECTURE\"\
+        \n}\n"
     - name: Set up native ARM64 Flutter
       shell: pwsh
       run: 'git clone https://github.com/flutter/flutter.git --branch $env:FLUTTER_VERSION --depth 1 C:\flutter
@@ -245,13 +261,18 @@ jobs:
         '
     - name: Verify Flutter and Dart architecture
       shell: pwsh
-      run: "flutter --version\nif ($LASTEXITCODE -ne 0) { throw 'Flutter bootstrap failed' }\n$dartVersion = dart --version 2>&1 | Out-String\nif ($dartVersion -notmatch 'windows_arm64|arm64') {\n  throw \"Native ARM64 Dart SDK required: $dartVersion\"\n}\n"
+      run: "flutter --version\nif ($LASTEXITCODE -ne 0) { throw 'Flutter bootstrap failed' }\n$dartVersion = dart --version\
+        \ 2>&1 | Out-String\nif ($dartVersion -notmatch 'windows_arm64|arm64') {\n  throw \"Native ARM64 Dart SDK required:\
+        \ $dartVersion\"\n}\n"
     - name: Install Inno Setup 6
       shell: pwsh
       run: choco install innosetup -y --no-progress
     - name: Build Moonfin Books ARM64 installer
       shell: pwsh
-      run: "flutter config --enable-windows-desktop\nif ($LASTEXITCODE -ne 0) { throw 'Windows desktop configuration failed' }\n.\\build-windows.ps1 -Architecture arm64\nif ($LASTEXITCODE -ne 0) { throw 'Windows ARM64 build failed' }\n$packages = @(Get-ChildItem -Path . -Filter 'Moonfin_Books_WindowsARM64_v*.exe' -File)\nif ($packages.Count -ne 1 -or $packages[0].Length -eq 0) {\n  throw 'Expected one nonempty Moonfin Books ARM64 installer'\n}\n"
+      run: "flutter config --enable-windows-desktop\nif ($LASTEXITCODE -ne 0) { throw 'Windows desktop configuration failed'\
+        \ }\n.\\build-windows.ps1 -Architecture arm64\nif ($LASTEXITCODE -ne 0) { throw 'Windows ARM64 build failed' }\n$packages\
+        \ = @(Get-ChildItem -Path . -Filter 'Moonfin_Books_WindowsARM64_v*.exe' -File)\nif ($packages.Count -ne 1 -or $packages[0].Length\
+        \ -eq 0) {\n  throw 'Expected one nonempty Moonfin Books ARM64 installer'\n}\n"
     - uses: actions/upload-artifact@v4
       with:
         name: books-windows-arm64-unsigned
@@ -288,16 +309,22 @@ jobs:
     - name: Set up native ARM64 Flutter
       if: matrix.arch == 'arm64'
       shell: bash
-      run: "set -euo pipefail\ngit clone https://github.com/flutter/flutter.git \\\n  --branch \"$FLUTTER_VERSION\" --depth 1 \"$HOME/flutter\"\necho \"$HOME/flutter/bin\" >> \"$GITHUB_PATH\"\n"
+      run: "set -euo pipefail\ngit clone https://github.com/flutter/flutter.git \\\n  --branch \"$FLUTTER_VERSION\" --depth\
+        \ 1 \"$HOME/flutter\"\necho \"$HOME/flutter/bin\" >> \"$GITHUB_PATH\"\n"
     - name: Verify native architecture and Flutter
       shell: bash
-      run: "set -euo pipefail\ncase \"${{ matrix.arch }}:$(uname -m)\" in\n  x64:x86_64|arm64:aarch64) ;;\n  *) echo 'Wrong runner architecture' >&2; exit 1 ;;\nesac\nflutter --version\n"
+      run: "set -euo pipefail\ncase \"${{ matrix.arch }}:$(uname -m)\" in\n  x64:x86_64|arm64:aarch64) ;;\n  *) echo 'Wrong\
+        \ runner architecture' >&2; exit 1 ;;\nesac\nflutter --version\n"
     - name: Install Linux build and package tools
       shell: bash
-      run: "set -euo pipefail\nsudo apt-get update\nsudo apt-get install -y \\\n  clang cmake ninja-build pkg-config \\\n  libgtk-3-dev libglib2.0-dev libwebkit2gtk-4.1-dev \\\n  libmpv-dev libsecret-1-dev libasound2-dev libarchive-dev \\\n  rpm flatpak flatpak-builder libfuse2 zsync\npkg-config --exists webkit2gtk-4.1\n"
+      run: "set -euo pipefail\nsudo apt-get update\nsudo apt-get install -y \\\n  clang cmake ninja-build pkg-config \\\n\
+        \  libgtk-3-dev libglib2.0-dev libwebkit2gtk-4.1-dev \\\n  libmpv-dev libsecret-1-dev libasound2-dev libarchive-dev\
+        \ \\\n  rpm flatpak flatpak-builder libfuse2 zsync\npkg-config --exists webkit2gtk-4.1\n"
     - name: Install AppImage and Snap tools
       shell: bash
-      run: "set -euo pipefail\ncurl -fsSL -o \"$RUNNER_TEMP/appimagetool\" \\\n  \"https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-${{ matrix.appimagetool_arch }}.AppImage\"\nchmod +x \"$RUNNER_TEMP/appimagetool\"\necho \"$RUNNER_TEMP\" >> \"$GITHUB_PATH\"\nsudo snap install snapcraft --classic\n"
+      run: "set -euo pipefail\ncurl -fsSL -o \"$RUNNER_TEMP/appimagetool\" \\\n  \"https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-${{\
+        \ matrix.appimagetool_arch }}.AppImage\"\nchmod +x \"$RUNNER_TEMP/appimagetool\"\necho \"$RUNNER_TEMP\" >> \"$GITHUB_PATH\"\
+        \nsudo snap install snapcraft --classic\n"
     - name: Build all six Linux formats
       shell: bash
       run: 'set -euo pipefail
@@ -309,7 +336,11 @@ jobs:
       shell: bash
       env:
         PLATFORM: ${{ matrix.platform }}
-      run: "set -euo pipefail\nshopt -s nullglob\nprefix=\"Moonfin_Books_${PLATFORM}_v\"\nfor suffix in tar.gz deb rpm AppImage snap flatpak; do\n  files=( ${prefix}*.\"$suffix\" )\n  if [ \"${#files[@]}\" -ne 1 ] || [ ! -s \"${files[0]}\" ]; then\n    echo \"Expected one nonempty ${prefix}*.${suffix}\" >&2\n    exit 1\n  fi\ndone\ndeb=( ${prefix}*.deb )\nrpm=( ${prefix}*.rpm )\ntest \"$(dpkg-deb -f \"${deb[0]}\" Package)\" = moonfin-books\ntest \"$(rpm -qp --qf '%{NAME}' \"${rpm[0]}\")\" = moonfin-books\n"
+      run: "set -euo pipefail\nshopt -s nullglob\nprefix=\"Moonfin_Books_${PLATFORM}_v\"\nfor suffix in tar.gz deb rpm AppImage\
+        \ snap flatpak; do\n  files=( ${prefix}*.\"$suffix\" )\n  if [ \"${#files[@]}\" -ne 1 ] || [ ! -s \"${files[0]}\"\
+        \ ]; then\n    echo \"Expected one nonempty ${prefix}*.${suffix}\" >&2\n    exit 1\n  fi\ndone\ndeb=( ${prefix}*.deb\
+        \ )\nrpm=( ${prefix}*.rpm )\ntest \"$(dpkg-deb -f \"${deb[0]}\" Package)\" = moonfin-books\ntest \"$(rpm -qp --qf\
+        \ '%{NAME}' \"${rpm[0]}\")\" = moonfin-books\n"
     - uses: actions/upload-artifact@v4
       with:
         name: books-linux-${{ matrix.arch }}
@@ -349,7 +380,9 @@ jobs:
 
         '
     - name: Package web client
-      run: 'mkdir -p dist
+      run: 'rm -f build/web/config.json
+
+        mkdir -p dist
 
         (cd build/web && zip -qr ../../dist/Moonfin_Books_Web_plugin.zip .)
 
@@ -372,7 +405,7 @@ jobs:
         persist-credentials: false
     - uses: actions/download-artifact@v4
       with:
-        name: books-android-mobile-debug-signed
+        name: books-android-mobile-signed
         path: apk
     - name: Enable KVM on the disposable runner
       run: 'echo ''KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"'' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
@@ -425,15 +458,35 @@ jobs:
     - uses: subosito/flutter-action@v2
       with:
         flutter-version: 3.47.2
+    - name: Load stable Android release signing key
+      env: *id001
+      run: python3 scripts/prepare-android-signing.py
     - name: Build TV APK and AAB with the Books identity
       shell: bash
-      run: "set -euo pipefail\ntest ! -e android/app/release.keystore\nflutter pub get\nmkdir -p dist\nflutter build apk --release --flavor '${{ matrix.flavor }}' \\\n  --dart-define=MOONFIN_FORCE_TV=true \\\n  --dart-define=DISTRIBUTION_CHANNEL=android_tv_apk \\\n  --dart-define=MOONFIN_CUSTOM_BUILD=true\nmapfile -t apks < <(find build/app/outputs/flutter-apk -maxdepth 1 \\\n  -type f -name 'app-*-release.apk')\ntest \"${#apks[@]}\" -eq 1 && test -s \"${apks[0]}\"\ncp \"${apks[0]}\" 'dist/Moonfin_Books_AndroidTV_${{ matrix.variant }}_debug-signed.apk'\nflutter build appbundle --release --flavor '${{ matrix.flavor }}' \\\n  --dart-define=MOONFIN_FORCE_TV=true \\\n  --dart-define=DISTRIBUTION_CHANNEL=android_tv_aab \\\n  --dart-define=MOONFIN_CUSTOM_BUILD=true\nmapfile -t bundles < <(find build/app/outputs/bundle -type f -name '*.aab')\ntest \"${#bundles[@]}\" -eq 1 && test -s \"${bundles[0]}\"\ncp \"${bundles[0]}\" 'dist/Moonfin_Books_AndroidTV_${{ matrix.variant }}_debug-signed.aab'\n"
+      run: "set -euo pipefail\ntest -s android/app/release.keystore\nflutter pub get\nmkdir -p dist\nflutter build apk --release\
+        \ --flavor '${{ matrix.flavor }}' \\\n  --dart-define=MOONFIN_FORCE_TV=true \\\n  --dart-define=DISTRIBUTION_CHANNEL=android_tv_apk\
+        \ \\\n  --dart-define=MOONFIN_CUSTOM_BUILD=true\nmapfile -t apks < <(find build/app/outputs/flutter-apk -maxdepth\
+        \ 1 \\\n  -type f -name 'app-*-release.apk')\ntest \"${#apks[@]}\" -eq 1 && test -s \"${apks[0]}\"\ncp \"${apks[0]}\"\
+        \ 'dist/Moonfin_Books_AndroidTV_${{ matrix.variant }}_signed.apk'\nflutter build appbundle --release --flavor '${{\
+        \ matrix.flavor }}' \\\n  --dart-define=MOONFIN_FORCE_TV=true \\\n  --dart-define=DISTRIBUTION_CHANNEL=android_tv_aab\
+        \ \\\n  --dart-define=MOONFIN_CUSTOM_BUILD=true\nmapfile -t bundles < <(find build/app/outputs/bundle -type f -name\
+        \ '*.aab')\ntest \"${#bundles[@]}\" -eq 1 && test -s \"${bundles[0]}\"\ncp \"${bundles[0]}\" 'dist/Moonfin_Books_AndroidTV_${{\
+        \ matrix.variant }}_signed.aab'\n"
+    - name: Verify APK release certificate
+      shell: bash
+      run: "set -euo pipefail\napksigner=\"$(find \"$ANDROID_HOME/build-tools\" -name apksigner -type f | sort -V | tail -1)\"\
+        \ntest -x \"$apksigner\"\nfor apk in dist/*.apk; do\n  \"$apksigner\" verify --verbose --print-certs \"$apk\" | tee\
+        \ \"$apk.signature.txt\"\n  grep -q 'certificate SHA-256 digest: 5e26d981d4e219389ed2bb74239e8564c70209a1525219f6fb22384339b21006'\
+        \ \"$apk.signature.txt\"\ndone"
     - uses: actions/upload-artifact@v4
       with:
-        name: books-android-tv-${{ matrix.variant }}-debug-signed
-        path: dist/Moonfin_Books_AndroidTV_${{ matrix.variant }}_debug-signed.*
+        name: books-android-tv-${{ matrix.variant }}-signed
+        path: dist/Moonfin_Books_AndroidTV_${{ matrix.variant }}_signed.*
         if-no-files-found: error
         retention-days: 14
+    - name: Remove private Android signing files
+      if: always()
+      run: rm -f android/app/release.keystore android/keystore.properties
   tvos:
     needs: books-tests
     runs-on: macos-26
@@ -451,7 +504,9 @@ jobs:
       run: sudo xcode-select -s /Applications/Xcode_26.3.app/Contents/Developer
     - name: Install tvOS platform
       shell: bash
-      run: "sudo xcodebuild -runFirstLaunch || true\nfor i in 1 2 3 4 5 6; do\n  if xcodebuild -downloadPlatform tvOS; then exit 0; fi\n  echo \"downloadPlatform attempt $i failed, retrying in 25s\"\n  sleep 25\ndone\necho '::error::tvOS platform install failed after 6 attempts'\nexit 1\n"
+      run: "sudo xcodebuild -runFirstLaunch || true\nfor i in 1 2 3 4 5 6; do\n  if xcodebuild -downloadPlatform tvOS; then\
+        \ exit 0; fi\n  echo \"downloadPlatform attempt $i failed, retrying in 25s\"\n  sleep 25\ndone\necho '::error::tvOS\
+        \ platform install failed after 6 attempts'\nexit 1\n"
     - name: Cache flutter-tvos toolchain
       id: cache-fluttertvos
       uses: actions/cache@v4
@@ -460,7 +515,8 @@ jobs:
         key: flutter-tvos-${{ env.FLUTTER_TVOS_REF }}-${{ runner.os }}-arm64
     - name: Install flutter-tvos
       if: steps.cache-fluttertvos.outputs.cache-hit != 'true'
-      run: "git clone --depth 1 --branch \"$FLUTTER_TVOS_REF\" \\\n  https://github.com/fluttertv/flutter-tvos.git \"$HOME/flutter-tvos\"\n"
+      run: "git clone --depth 1 --branch \"$FLUTTER_TVOS_REF\" \\\n  https://github.com/fluttertv/flutter-tvos.git \"$HOME/flutter-tvos\"\
+        \n"
     - name: Add flutter-tvos to PATH and precache
       run: 'echo "$HOME/flutter-tvos/bin" >> "$GITHUB_PATH"
 
@@ -478,7 +534,10 @@ jobs:
         '
     - name: Prepare Flutter build settings
       shell: bash
-      run: "flutter-tvos build tvos --release --no-tree-shake-icons \\\n  --dart-define=MOONFIN_TVOS=true \\\n  --dart-define=DISTRIBUTION_CHANNEL=tvos_unsigned \\\n  --dart-define=MOONFIN_CUSTOM_BUILD=true || true\ntest -f tvos/Flutter/Generated.xcconfig\ngrep -q '^FLUTTER_ROOT=' tvos/Flutter/Generated.xcconfig \\\n  || echo \"FLUTTER_ROOT=$HOME/flutter-tvos\" >> tvos/Flutter/Generated.xcconfig\ngrep -q 'PRODUCT_BUNDLE_IDENTIFIER = art.tiedemann.moonfin.tvos;' \\\n  tvos/Runner.xcodeproj/project.pbxproj\n"
+      run: "flutter-tvos build tvos --release --no-tree-shake-icons \\\n  --dart-define=MOONFIN_TVOS=true \\\n  --dart-define=DISTRIBUTION_CHANNEL=tvos_unsigned\
+        \ \\\n  --dart-define=MOONFIN_CUSTOM_BUILD=true || true\ntest -f tvos/Flutter/Generated.xcconfig\ngrep -q '^FLUTTER_ROOT='\
+        \ tvos/Flutter/Generated.xcconfig \\\n  || echo \"FLUTTER_ROOT=$HOME/flutter-tvos\" >> tvos/Flutter/Generated.xcconfig\n\
+        grep -q 'PRODUCT_BUNDLE_IDENTIFIER = art.tiedemann.moonfin.tvos;' \\\n  tvos/Runner.xcodeproj/project.pbxproj\n"
     - name: Install pods
       env:
         LC_ALL: en_US.UTF-8
@@ -489,10 +548,17 @@ jobs:
         '
     - name: Stage flutter_assets for the Xcode copy phase
       shell: bash
-      run: "set -euo pipefail\nDEST='tvos/Flutter/flutter_assets'\nrm -rf \"$DEST\"\nmkdir -p \"$DEST\"\nSRC_APP=$(find build/tvos -maxdepth 3 -type d \\\n  -path '*Release-appletvos/Runner.app/flutter_assets' | head -1)\nif [ -n \"$SRC_APP\" ]; then\n  rsync -a \"$SRC_APP/\" \"$DEST/\"\nelse\n  rsync -a \\\n    --exclude='*-appletvos' --exclude='*-appletvsimulator' \\\n    --exclude='aot' --exclude='.last_build_id' \\\n    --exclude='kernel_blob.bin' --exclude='vm_snapshot_data' \\\n    --exclude='isolate_snapshot_data' \\\n    build/tvos/ \"$DEST/\"\nfi\ntest -f \"$DEST/fonts/MaterialIcons-Regular.otf\"\ntest -f \"$DEST/AssetManifest.bin\"\n"
+      run: "set -euo pipefail\nDEST='tvos/Flutter/flutter_assets'\nrm -rf \"$DEST\"\nmkdir -p \"$DEST\"\nSRC_APP=$(find build/tvos\
+        \ -maxdepth 3 -type d \\\n  -path '*Release-appletvos/Runner.app/flutter_assets' | head -1)\nif [ -n \"$SRC_APP\"\
+        \ ]; then\n  rsync -a \"$SRC_APP/\" \"$DEST/\"\nelse\n  rsync -a \\\n    --exclude='*-appletvos' --exclude='*-appletvsimulator'\
+        \ \\\n    --exclude='aot' --exclude='.last_build_id' \\\n    --exclude='kernel_blob.bin' --exclude='vm_snapshot_data'\
+        \ \\\n    --exclude='isolate_snapshot_data' \\\n    build/tvos/ \"$DEST/\"\nfi\ntest -f \"$DEST/fonts/MaterialIcons-Regular.otf\"\
+        \ntest -f \"$DEST/AssetManifest.bin\"\n"
     - name: Build unsigned app
       shell: bash
-      run: "xcodebuild \\\n  -workspace tvos/Runner.xcworkspace \\\n  -scheme Runner \\\n  -configuration Release \\\n  -sdk appletvos \\\n  -derivedDataPath \"$RUNNER_TEMP/dd\" \\\n  CODE_SIGNING_ALLOWED=NO \\\n  CODE_SIGN_IDENTITY=\"\" \\\n  build\n"
+      run: "xcodebuild \\\n  -workspace tvos/Runner.xcworkspace \\\n  -scheme Runner \\\n  -configuration Release \\\n  -sdk\
+        \ appletvos \\\n  -derivedDataPath \"$RUNNER_TEMP/dd\" \\\n  CODE_SIGNING_ALLOWED=NO \\\n  CODE_SIGN_IDENTITY=\"\"\
+        \ \\\n  build\n"
     - name: Verify app and package unsigned IPA
       shell: bash
       run: 'set -euo pipefail

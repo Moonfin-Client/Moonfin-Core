@@ -265,6 +265,15 @@ function Invoke-CheckedCommand {
   }
 }
 
+function Replace-CheckedBuildText {
+  param([string]$Text, [string]$Original, [string]$Replacement)
+
+  if ([regex]::Matches($Text, [regex]::Escape($Original)).Count -ne 1) {
+    throw "Expected exactly one build identity pattern: $Original"
+  }
+  return $Text.Replace($Original, $Replacement)
+}
+
 function New-InnoScript {
   param(
     [string]$AppVersion,
@@ -351,6 +360,11 @@ if ($Architecture -eq 'arm64') {
   $installerBaseName = if ($isCustomBuild) { "Moonfin_Books_Windows_v$appVersion" } else { "Moonfin_Windows_v$appVersion" }
 }
 
+$resourcePath = Join-Path $repoRoot "windows\runner\Runner.rc"
+$mainCppPath = Join-Path $repoRoot "windows\runner\main.cpp"
+$resourceOriginalBytes = $null
+$mainOriginalBytes = $null
+
 Push-Location $repoRoot
 try {
   Write-Host "Moonfin version: $appVersion (target: $Architecture)"
@@ -366,6 +380,22 @@ try {
 
   Write-Host "Resolving Dart and Flutter packages..."
   Invoke-CheckedCommand -Name "flutter pub get" -FilePath $flutterExe -Arguments @("pub", "get")
+
+  if ($isCustomBuild) {
+    # Resource metadata controls path_provider's Windows support directory.
+    # Restore the exact source bytes even when compilation or packaging fails.
+    $utf8 = New-Object System.Text.UTF8Encoding($false, $true)
+    $resourceOriginalBytes = [System.IO.File]::ReadAllBytes($resourcePath)
+    $mainOriginalBytes = [System.IO.File]::ReadAllBytes($mainCppPath)
+    $resourceText = $utf8.GetString($resourceOriginalBytes)
+    $mainText = $utf8.GetString($mainOriginalBytes)
+    $resourceText = Replace-CheckedBuildText $resourceText 'VALUE "CompanyName", "org.moonfin" "\0"' 'VALUE "CompanyName", "art.tiedemann.moonfin" "\0"'
+    $resourceText = Replace-CheckedBuildText $resourceText 'VALUE "ProductName", "Moonfin" "\0"' 'VALUE "ProductName", "Moonfin Books" "\0"'
+    # The custom app must not take over the official moonfin:// association.
+    $mainText = Replace-CheckedBuildText $mainText 'RegisterMoonfinScheme();' '// Moonfin Books does not claim the upstream moonfin:// handler.'
+    [System.IO.File]::WriteAllText($resourcePath, $resourceText, $utf8)
+    [System.IO.File]::WriteAllText($mainCppPath, $mainText, $utf8)
+  }
 
   Write-Host "Building Windows $Architecture release..."
   $flutterBuildArgs = @("build", "windows", "--release", "--dart-define=DISTRIBUTION_CHANNEL=windows")
@@ -408,5 +438,19 @@ try {
   Write-Host "Installer copied to root:" $rootExe
 }
 finally {
-  Pop-Location
+  try {
+    if ($null -ne $mainOriginalBytes) {
+      [System.IO.File]::WriteAllBytes($mainCppPath, $mainOriginalBytes)
+    }
+  }
+  finally {
+    try {
+      if ($null -ne $resourceOriginalBytes) {
+        [System.IO.File]::WriteAllBytes($resourcePath, $resourceOriginalBytes)
+      }
+    }
+    finally {
+      Pop-Location
+    }
+  }
 }

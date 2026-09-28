@@ -6,6 +6,7 @@ import 'package:drift/native.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqlite3/open.dart';
 
+import '../../util/app_distribution.dart';
 import '../../util/platform_detection.dart';
 
 QueryExecutor openConnection() {
@@ -13,7 +14,10 @@ QueryExecutor openConnection() {
     final docs = PlatformDetection.isAppleTV
         ? await getApplicationCacheDirectory()
         : await getApplicationDocumentsDirectory();
-    final dbDir = Directory('${docs.path}/Moonfin/DB');
+    final appFolder = AppDistribution.isCustomBuild
+        ? 'MoonfinBooks'
+        : 'Moonfin';
+    final dbDir = Directory('${docs.path}/$appFolder/DB');
     if (!dbDir.existsSync()) {
       await dbDir.create(recursive: true);
     }

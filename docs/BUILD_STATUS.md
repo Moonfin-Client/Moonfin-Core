@@ -9,7 +9,7 @@ Snapshot: 28 September 2026. This table describes **Moonfin Books fork artifacts
 | Android TV / Google TV / Fire TV | TV build jobs are configured; CI validation is pending. No Moonfin Books TV package is claimed. | Build the TV flavor and test remote navigation on target devices. |
 | iOS | Renamed unsigned IPA built. | Sign with an Apple identity and provision a device before installation testing. |
 | tvOS / Apple TV | Build job is configured; CI validation is pending. No Moonfin Books tvOS package is claimed. | Build, sign, provision, and test on Apple TV. |
-| macOS, Intel and Apple Silicon | Ad hoc build is in progress; no completed or tested Moonfin Books package is claimed here. | Verify the produced DMG, both intended architectures, installation, and runtime behavior. |
+| macOS, Intel and Apple Silicon | Earlier ad hoc universal DMG built; bundle ID, app name and Intel/Apple Silicon executables verified. Updated identity checks are rebuilding. | Verify the produced DMG, both intended architectures, installation, and runtime behavior. |
 | Windows x64 | Unsigned installer built successfully; Moonfin Books installer/product labels verified. Device installation is pending. | Verify installer identity, install/uninstall, and app behavior on Windows. |
 | Windows ARM64 | Build job is configured; CI validation is pending. No Moonfin Books ARM64 installer is claimed. | Build and test on an ARM64 Windows device. |
 | Linux x64 and ARM64 | Both architecture jobs and six package formats are configured; CI validation is pending. No Moonfin Books Linux package is claimed. | Build each architecture and test install, launch, and playback dependencies. |
@@ -24,3 +24,9 @@ The shared Flutter Books page includes responsive layouts and TV input handling 
 - Custom-build update checks are disabled by `MOONFIN_CUSTOM_BUILD=true`, so upstream release assets are not offered as replacements for this fork.
 
 Use a matching [Moonbase Books server build](https://github.com/ZepiGit/Moonbase-Books) for Books requests. Official Moonfin packages do not gain the Books page when only the server is upgraded. Books requests on Emby are not yet supported, even though upstream Moonfin supports Emby for other features.
+
+## Earlier preview provenance
+
+The first four successful platform packages were built by [run 36398630697](https://github.com/ZepiGit/Moonfin-FireTV32/actions/runs/36398630697) from upstream `7933dd9ac0ecd9f34ce7c1129272bc280bc782bb` plus overlay commit `848c92da09489bfb970c3bbc280613b075940bdc`. They are earlier validation evidence, not binaries built from this repository's current main branch and not the planned public release assets.
+
+The expanded first source build used this repository's `f22d305159be9160a9a9a484a2d2e13714539853`. Seventeen Books tests, web compilation and unsigned tvOS packaging passed. Publication review found packaging and app-data isolation fixes; final release packages are being rebuilt with those fixes and stable Android signing. Release notes will identify the exact source commit and build run for distributed assets.

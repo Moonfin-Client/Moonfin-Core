@@ -572,7 +572,7 @@ inject_flatpak_libs() {
 create_desktop_file() {
   local dest="$1"
   local version="${2:-}"
-  local desktop_exec="${3:-moonfin}"
+  local desktop_exec="${3:-$EXEC_NAME}"
   mkdir -p "$dest"
   cat > "$dest/${APP_ID}.desktop" << EOF
 [Desktop Entry]
@@ -914,7 +914,7 @@ EOF
   # The AUR package is built from this tarball, so it has to carry the desktop
   # entry and the icon. Without them there is nothing for a packager to install
   # and the window falls back to a placeholder.
-  create_desktop_file "$tar_dir/share/applications"
+  create_desktop_file "$tar_dir/share/applications" "" "$EXEC_NAME"
   create_metainfo_file "$tar_dir/share/metainfo" "$version"
   install_icons "$tar_dir/share"
 
@@ -1038,6 +1038,11 @@ build_rpm() {
   local rpm_name="${APP_NAME}_${PLATFORM_TAG}_v${version}.rpm"
   local rpm_dir="$TEMP_DIR/rpm"
   local spec_file="$rpm_dir/moonfin.spec"
+  local build_id_links_macro=""
+  if [ "$IS_CUSTOM_BUILD" = "true" ]; then
+    # Shared Flutter engine build IDs can collide with the upstream RPM.
+    build_id_links_macro="%define _build_id_links none"
+  fi
 
   rm -rf "$rpm_dir"
   mkdir -p "$rpm_dir"/{SPECS,SOURCES,BUILD,RPMS,SRPMS}
@@ -1045,6 +1050,7 @@ build_rpm() {
   create_metainfo_file "$rpm_dir" "$version"
 
   cat > "$spec_file" << EOF
+${build_id_links_macro}
 Name:           ${PACKAGE_NAME}
 Version:        ${version}
 Release:        1
