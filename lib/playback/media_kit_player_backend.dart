@@ -229,6 +229,18 @@ class MediaKitPlayerBackend extends PlayerBackend {
   // pass can tell a fresh source apart from a choice it must not undo.
   bool _subtitlesDisabled = false;
 
+  int _subtitleLoadSession = 0;
+  int _subtitleLoadId = 0;
+  int _subtitleSelectionGeneration = 0;
+  final _pendingSubtitleLoads = <String, String>{};
+  final _externalSubtitleTitles = <String, Set<String>>{};
+
+  void _resetSubtitleState() {
+    _subtitleLoadSession++;
+    _subtitleSelectionGeneration++;
+    _externalSubtitleTitles.clear();
+  }
+
   // Captions mpv found inside the video, cached from the async track-list
   // property so the sync getter can serve them. An EmbeddedCaptionTrack id is
   // a 1-based position into [_ccTrackSids], which holds the real mpv sids.
@@ -343,20 +355,44 @@ class MediaKitPlayerBackend extends PlayerBackend {
     return c == 'eia_608' || c == 'eia_708' || c == 'cea708' || c == 'cea_708';
   }
 
-  // Whether an mpv external track was sub-added from the requested URL. mpv can
-  // re-encode the URL it reports in `external-filename`, so an exact compare
-  // misses. Jellyfin external subtitle URLs carry the unique subtitle stream
-  // index in the path, so a decoded-path match still identifies the sub.
+  // Check the server and query too, since the same path can serve different
+  // subtitles. Also handle local paths and file:// URLs without changing
+  // characters that are part of the filename.
   static bool _externalFilenameMatches(
     String? mpvFilename,
     String requestedUrl,
   ) {
     if (mpvFilename == null || mpvFilename.isEmpty) return false;
     if (mpvFilename == requestedUrl) return true;
-    final a = Uri.tryParse(mpvFilename);
-    final b = Uri.tryParse(requestedUrl);
-    if (a == null || b == null) return false;
-    return Uri.decodeFull(a.path) == Uri.decodeFull(b.path);
+    try {
+      final a = Uri.parse(mpvFilename);
+      final b = Uri.parse(requestedUrl);
+      bool isFile(Uri uri) =>
+          !uri.hasScheme ||
+          uri.scheme == 'file' ||
+          (Platform.isWindows && uri.scheme.length == 1);
+      if (isFile(a) || isFile(b)) {
+        if (!isFile(a) || !isFile(b)) return false;
+        String path(Uri uri, String raw) {
+          final value = uri.scheme == 'file'
+              ? uri.toFilePath(windows: Platform.isWindows)
+              : raw;
+          return Platform.isWindows ? value.replaceAll(r'\', '/') : value;
+        }
+
+        return path(a, mpvFilename) == path(b, requestedUrl);
+      }
+      return a.scheme == b.scheme &&
+          a.authority == b.authority &&
+          a.hasQuery == b.hasQuery &&
+          a.query == b.query &&
+          a.fragment == b.fragment &&
+          listEquals(a.pathSegments, b.pathSegments);
+    } on FormatException {
+      return false;
+    } on UnsupportedError {
+      return false;
+    }
   }
 
   static Future<void> _nativeSetProperty(
@@ -659,6 +695,8 @@ class MediaKitPlayerBackend extends PlayerBackend {
         : payload['url']?.toString() ?? '';
     if (url.isEmpty) return;
 
+    _resetSubtitleState();
+    final subtitleSession = _subtitleLoadSession;
     final media = Media(url);
     _currentUrl = media.uri;
     _isStale = true;
@@ -686,7 +724,12 @@ class MediaKitPlayerBackend extends PlayerBackend {
     // Whatever mpv reported for the previous title must not answer for this
     // one; the listener repopulates it once this file is loaded.
     _decodedVideoParams = null;
-    await _player.open(media, play: !openPaused);
+    try {
+      await _player.open(media, play: !openPaused);
+    } catch (_) {
+      if (subtitleSession == _subtitleLoadSession) _resetSubtitleState();
+      rethrow;
+    }
     _updateStaleState();
     await _applyLinuxHwdecFallbackIfNeeded(media, openPaused: openPaused);
     if (!_useLibass) {
@@ -1854,6 +1897,7 @@ class MediaKitPlayerBackend extends PlayerBackend {
 
   @override
   Future<void> stop() async {
+    _resetSubtitleState();
     _isStale = true;
     await _player.stop();
   }
@@ -1958,10 +2002,52 @@ class MediaKitPlayerBackend extends PlayerBackend {
     return false;
   }
 
+  Map<String, dynamic> _mapMpvError(String message) {
+    // A subtitle can fail to load while the video keeps playing.
+    // Check that the failed file is a subtitle we tried to load,
+    // so video and audio failures still reach the normal error handler.
+    final text = message.trim();
+    final match =
+        RegExp(
+          r'^(?:Failed to open|Can not open external file) (.+)\.$',
+        ).firstMatch(text) ??
+        RegExp(r"^Cannot open file '(.+)': .+$").firstMatch(text);
+    final url = match?.group(1);
+    if (url == null) return {'event': 'error', 'message': message};
+    bool matchesFailedFile(String known) {
+      if (_externalFilenameMatches(url, known)) return true;
+      try {
+        // mpv may decode a URL before printing it in an error message.
+        // Leave literal '%' characters in local file paths alone.
+        final uri = Uri.tryParse(known);
+        return uri != null &&
+            uri.hasScheme &&
+            uri.hasAuthority &&
+            Uri.decodeComponent(known) == url;
+      } on FormatException {
+        return false;
+      }
+    }
+
+    final currentUrl = _currentUrl;
+    if ((currentUrl == null || !matchesFailedFile(currentUrl)) &&
+        [
+          ..._pendingSubtitleLoads.values,
+          ..._externalSubtitleTitles.keys,
+        ].any(matchesFailedFile)) {
+      return {
+        'event': 'subtitleError',
+        // Log the file path without including the API key.
+        'message': 'Could not load subtitle file: ${Uri.tryParse(url)?.path}',
+      };
+    }
+    return {'event': 'error', 'message': message};
+  }
+
   @override
   Stream<Map<String, dynamic>>? get errorStream => _player.stream.error
       .where((err) => !_isTransientReconnectError(err))
-      .map((err) => <String, dynamic>{'event': 'error', 'message': err});
+      .map(_mapMpvError);
 
   @override
   Future<void> setPlaybackSpeed(double speed) async {
@@ -2071,10 +2157,14 @@ class MediaKitPlayerBackend extends PlayerBackend {
     String? externalSubtitleUrl,
   }) async {
     if (mpvTrackId < 1) return;
+    final generation = ++_subtitleSelectionGeneration;
+    bool isCurrentSelection() =>
+        !_isDisposed && generation == _subtitleSelectionGeneration;
     _subtitlesDisabled = false;
     try {
       final native = _player.platform as NativePlayer;
       final trackListBefore = await _tryNativeGetProperty(native, 'track-list');
+      if (!isCurrentSelection()) return;
       // The CC track mpv creates from in-video captions has no server stream,
       // so it must not shift the positions this mapping hands out.
       final subEntries = _extractTrackEntries(
@@ -2083,51 +2173,39 @@ class MediaKitPlayerBackend extends PlayerBackend {
       ).where((e) => !_isClosedCaptionCodec(e.codec)).toList();
       final subtitleIds = subEntries.map((e) => e.id).toList();
 
-      // Resolve the 1-based position to a real mpv sid. External tracks are
-      // matched by the URL they were sub-added from, so a scrambled add order
-      // (external added before a slow embedded demux finished) can't select
-      // the wrong track. Embedded positions count only demuxed tracks for the
-      // same reason.
+      // Find the mpv track ID for the requested subtitle. External tracks use
+      // their load marker first, then their filename, because load order can vary.
+      // Embedded positions count only tracks inside the video.
       String? resolvedSid;
-      if (isExternalSubtitle && externalSubtitleUrl != null) {
-        for (final entry in subEntries) {
-          if (entry.external &&
-              _externalFilenameMatches(
-                entry.externalFilename,
-                externalSubtitleUrl,
-              )) {
-            resolvedSid = entry.id.toString();
-            break;
-          }
-        }
-        // If the URL match missed, pick among external tracks only, using the
-        // live demuxed embedded count so a miscounted ordinal can't shift into
-        // or across embedded tracks.
-        if (resolvedSid == null) {
-          final liveEmbedded = subEntries.where((e) => !e.external).length;
-          final externals = subEntries.where((e) => e.external).toList();
-          final externalPos = mpvTrackId - 1 - liveEmbedded;
-          if (externalPos >= 0 && externalPos < externals.length) {
-            resolvedSid = externals[externalPos].id.toString();
-          }
-        }
-      } else if (!isExternalSubtitle) {
+      if (isExternalSubtitle) {
+        resolvedSid = _externalSubtitleSid(
+          trackListBefore,
+          externalSubtitleUrl,
+        );
+      } else {
         final embedded = subEntries.where((e) => !e.external).toList();
         if (mpvTrackId <= embedded.length) {
           resolvedSid = embedded[mpvTrackId - 1].id.toString();
         }
       }
-      final sidToApply =
-          resolvedSid ??
-          ((mpvTrackId <= subtitleIds.length)
-              ? subtitleIds[mpvTrackId - 1].toString()
-              : mpvTrackId.toString());
+      // If we still can't identify the requested track, leave subtitles off.
+      // Falling back to a list position could select a different language.
+      if (resolvedSid == null) {
+        await _player.setSubtitleTrack(SubtitleTrack.no());
+        if (!isCurrentSelection()) return;
+        await _nativeSetProperty(native, 'sid', 'no');
+        if (!isCurrentSelection()) return;
+        await _nativeSetProperty(native, 'secondary-sid', 'no');
+        return;
+      }
+      final sidToApply = resolvedSid;
       final subtitleTracks = _player.state.tracks.subtitle;
       final playableSubtitleTracks = subtitleTracks
           .where((t) => t.id != 'auto' && t.id != 'no' && !_isCcSid(t.id))
           .toList();
 
       var sidAfter = await _tryNativeGetProperty(native, 'sid');
+      if (!isCurrentSelection()) return;
 
       SubtitleTrack? target;
       for (final t in playableSubtitleTracks) {
@@ -2136,30 +2214,37 @@ class MediaKitPlayerBackend extends PlayerBackend {
           break;
         }
       }
-      target ??= (mpvTrackId <= playableSubtitleTracks.length && mpvTrackId > 0)
-          ? playableSubtitleTracks[mpvTrackId - 1]
-          : null;
-      if (target != null) {
-        await _player.setSubtitleTrack(target);
-        sidAfter = await _tryNativeGetProperty(native, 'sid');
-      }
+      // media_kit's track list may not have updated yet.
+      // Select the track ID we found in mpv instead.
+      target ??= SubtitleTrack(sidToApply, null, null);
+      await _player.setSubtitleTrack(target);
+      if (!isCurrentSelection()) return;
+      sidAfter = await _tryNativeGetProperty(native, 'sid');
+      if (!isCurrentSelection()) return;
 
       if (sidAfter != sidToApply) {
         await _nativeSetProperty(native, 'sid', sidToApply);
+        if (!isCurrentSelection()) return;
         sidAfter = await _tryNativeGetProperty(native, 'sid');
+        if (!isCurrentSelection()) return;
       }
       if (sidAfter != sidToApply) {
         await _nativeCommand(native, ['set_property', 'sid', sidToApply]);
+        if (!isCurrentSelection()) return;
         sidAfter = await _tryNativeGetProperty(native, 'sid');
+        if (!isCurrentSelection()) return;
       }
 
       await _nativeSetProperty(native, 'secondary-sid', 'no');
+      if (!isCurrentSelection()) return;
 
       // Moonfin never shows a Flutter subtitle overlay (media_kit disables its
       // SubtitleView when libass is on, and it stays hidden otherwise), so mpv
       // has to draw every subtitle including plain text like SRT and VTT.
       await _nativeSetProperty(native, 'sub-visibility', 'yes');
+      if (!isCurrentSelection()) return;
       await _nativeSetProperty(native, 'sub-ass', 'yes');
+      if (!isCurrentSelection()) return;
       await _applyAssOverrideMode();
       _subtitleDebug(
         'set track=$mpvTrackId sid_requested=$sidToApply sid_after=$sidAfter '
@@ -2169,6 +2254,23 @@ class MediaKitPlayerBackend extends PlayerBackend {
     } catch (e) {
       _subtitleDebug('set track=$mpvTrackId threw: $e');
     }
+  }
+
+  String? _externalSubtitleSid(String? trackList, String? url) {
+    if (url == null || url.isEmpty) return null;
+    final entries = _extractTrackEntries(trackList, type: 'sub')
+        .where((entry) => entry.external && !_isClosedCaptionCodec(entry.codec))
+        .toList();
+    // Find the subtitle track by the tag we added when loading it.
+    for (final title in _externalSubtitleTitles[url] ?? const <String>{}) {
+      final matches = entries.where((entry) => entry.title == title).toList();
+      if (matches.length == 1) return matches.single.id.toString();
+    }
+    // Otherwise, use the URL or filename only if it matches exactly one track.
+    final matches = entries
+        .where((entry) => _externalFilenameMatches(entry.externalFilename, url))
+        .toList();
+    return matches.length == 1 ? matches.single.id.toString() : null;
   }
 
   /// Re-reads mpv's track list for the CC track it creates once caption data
@@ -2214,24 +2316,37 @@ class MediaKitPlayerBackend extends PlayerBackend {
   @override
   Future<void> setEmbeddedCaptionTrack(int id) async {
     if (id <= 0 || id > _ccTrackSids.length) return;
+    final generation = ++_subtitleSelectionGeneration;
     _subtitlesDisabled = false;
     final platform = _player.platform;
     if (platform is! NativePlayer) return;
     final sid = _ccTrackSids[id - 1].toString();
+    // Use the same queue so an older subtitle selection can't overwrite this one.
+    try {
+      await _player.setSubtitleTrack(SubtitleTrack(sid, null, null));
+    } catch (_) {}
+    if (_isDisposed || generation != _subtitleSelectionGeneration) return;
     await _nativeSetProperty(platform, 'sid', sid);
+    if (_isDisposed || generation != _subtitleSelectionGeneration) return;
     await _nativeSetProperty(platform, 'secondary-sid', 'no');
+    if (_isDisposed || generation != _subtitleSelectionGeneration) return;
     await _nativeSetProperty(platform, 'sub-visibility', 'yes');
+    if (_isDisposed || generation != _subtitleSelectionGeneration) return;
     await _nativeSetProperty(platform, 'sub-ass', 'yes');
   }
 
   @override
   Future<void> disableSubtitleTrack() async {
+    final generation = ++_subtitleSelectionGeneration;
     _subtitlesDisabled = true;
     await _player.setSubtitleTrack(SubtitleTrack.no());
+    if (_isDisposed || generation != _subtitleSelectionGeneration) return;
     try {
       final native = _player.platform as NativePlayer;
       await _nativeSetProperty(native, 'sid', 'no');
+      if (_isDisposed || generation != _subtitleSelectionGeneration) return;
       await _nativeSetProperty(native, 'secondary-sid', 'no');
+      if (_isDisposed || generation != _subtitleSelectionGeneration) return;
       await _nativeSetProperty(native, 'sub-visibility', 'no');
     } catch (_) {}
   }
@@ -2308,13 +2423,22 @@ class MediaKitPlayerBackend extends PlayerBackend {
     String? codec,
   }) async {
     final native = _player.platform as NativePlayer;
-    await _nativeCommand(native, [
-      'sub-add',
-      url,
-      'auto',
-      title ?? 'external',
-      language ?? '',
-    ]);
+    // Tag each load so we can identify its track even if mpv reports a
+    // different filename. Moonfin's subtitle menu uses the server's titles.
+    final trackTitle = '${title ?? 'external'} [moonfin-sub:${++_subtitleLoadId}]';
+    _externalSubtitleTitles.putIfAbsent(url, () => <String>{}).add(trackTitle);
+    _pendingSubtitleLoads[trackTitle] = url;
+    try {
+      await _nativeCommand(native, [
+        'sub-add',
+        url,
+        'auto',
+        trackTitle,
+        language ?? '',
+      ]);
+    } finally {
+      _pendingSubtitleLoads.remove(trackTitle);
+    }
     _subtitleDebug(
       'sub-add title=$title lang=$language codec=$codec '
       'mpv_sub_tracks=${_realSubtitleTrackCount(_player.state.tracks.subtitle)}',
@@ -2458,6 +2582,7 @@ class MediaKitPlayerBackend extends PlayerBackend {
 
   @override
   void dispose() {
+    _resetSubtitleState();
     _isDisposed = true;
     _letterboxCropper.cancel();
     _prefs.removeListener(_onPreferencesChanged);

@@ -1735,6 +1735,11 @@ class PlaybackManager implements AudioOwnable {
   }
 
   Future<void> _handleBackendErrorEvent(Map<String, dynamic> event) async {
+    if (event['event'] == 'subtitleError') {
+      // Log subtitle failures without interrupting the video.
+      _diagnosticLogger?.call(event['message']?.toString() ?? 'Subtitle error');
+      return;
+    }
     final queueItem = queueService.currentItem;
     if (_isPreroll(queueItem)) {
       _suppressNextGenericBackendError = true;
