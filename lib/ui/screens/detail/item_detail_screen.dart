@@ -3587,18 +3587,6 @@ class _DetailContentState extends State<_DetailContent> {
           isPlaylist: isPlaylist,
           imageApi: viewModel.imageApi,
           onPlayTrack: (index) {
-            final selectedTrack = viewModel.tracks[index];
-            if (isPlaylist && !_isAudioItem(selectedTrack)) {
-              context.push(
-                Destinations.itemOrPhoto(
-                  selectedTrack.id,
-                  serverId: selectedTrack.serverId,
-                  type: selectedTrack.type,
-                  channelId: selectedTrack.channelId,
-                ),
-              );
-              return;
-            }
             final manager = GetIt.instance<PlaybackManager>();
             unawaited(() async {
               final isAudio = viewModel.tracks.every(_isAudioItem);
@@ -16792,8 +16780,7 @@ class TrackTile extends StatefulWidget {
 }
 
 class _TrackTileState extends State<TrackTile> with FocusStateMixin {
-  Timer? _selectLongPressTimer;
-  bool _selectLongPressTriggered = false;
+  final _selectKeyHandler = LongPressSelectKeyHandler();
 
   void _keepTrackVisible() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -16809,7 +16796,7 @@ class _TrackTileState extends State<TrackTile> with FocusStateMixin {
 
   @override
   void dispose() {
-    _selectLongPressTimer?.cancel();
+    _selectKeyHandler.dispose();
     super.dispose();
   }
 
@@ -16839,42 +16826,13 @@ class _TrackTileState extends State<TrackTile> with FocusStateMixin {
       }
     }
 
-    if (key.isContextMenuKey && event.isActionable) {
-      _showTrackActions(context);
-      return KeyEventResult.handled;
-    }
-
-    if (!key.isSelectKey) return KeyEventResult.ignored;
-
-    if (event is KeyDownEvent) {
-      _selectLongPressTriggered = false;
-      _selectLongPressTimer?.cancel();
-      _selectLongPressTimer = Timer(const Duration(milliseconds: 450), () {
-        if (!mounted || _selectLongPressTriggered) return;
-        _selectLongPressTriggered = true;
-        _showTrackActions(context);
-      });
-      return KeyEventResult.handled;
-    }
-
-    if (event is KeyRepeatEvent) {
-      if (!_selectLongPressTriggered) {
-        _selectLongPressTimer?.cancel();
-        _selectLongPressTriggered = true;
-        _showTrackActions(context);
-      }
-      return KeyEventResult.handled;
-    }
-
-    if (event is KeyUpEvent) {
-      _selectLongPressTimer?.cancel();
-      _selectLongPressTimer = null;
-      if (_selectLongPressTriggered) {
-        _selectLongPressTriggered = false;
-        return KeyEventResult.handled;
-      }
-      widget.onTap();
-      return KeyEventResult.handled;
+    final handlerResult = _selectKeyHandler.handleKeyEvent(
+      event,
+      onTap: widget.onTap,
+      onLongPress: () => _showTrackActions(context),
+    );
+    if (handlerResult != KeyEventResult.ignored) {
+      return handlerResult;
     }
 
     return KeyEventResult.ignored;
@@ -17076,9 +17034,8 @@ class _TrackTileState extends State<TrackTile> with FocusStateMixin {
         onKeyEvent: (_, event) => _handleTvKeys(event),
         child: GestureDetector(
           onTap: widget.onTap,
-          onLongPress: widget.reorderable
-              ? null
-              : () => _showTrackActions(context),
+          onLongPress: () => _showTrackActions(context),
+          onSecondaryTap: () => _showTrackActions(context),
           behavior: HitTestBehavior.opaque,
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 120),
@@ -17142,46 +17099,52 @@ class _TrackTileState extends State<TrackTile> with FocusStateMixin {
                   ),
                 ),
                 if (PlatformDetection.isTV) ...[
-                  if (widget.reorderable) ...[
-                    IconButton(
-                      onPressed: widget.currentIndex > 0
-                          ? () {
-                              widget.onMoveUp?.call(widget.currentIndex);
-                              _keepTrackVisible();
-                            }
-                          : null,
-                      icon: AdaptiveIcon(
-                        Icons.arrow_back,
-                        color: showFocusBorder ? Colors.white : Colors.white38,
-                        size: 18,
-                      ),
-                      splashRadius: 20,
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(
-                        minWidth: 32,
-                        minHeight: 32,
+                  if (widget.reorderable)
+                    ExcludeFocus(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            onPressed: widget.currentIndex > 0
+                                ? () {
+                                    widget.onMoveUp?.call(widget.currentIndex);
+                                    _keepTrackVisible();
+                                  }
+                                : null,
+                            icon: AdaptiveIcon(
+                              Icons.arrow_back,
+                              color: showFocusBorder ? Colors.white : Colors.white38,
+                              size: 18,
+                            ),
+                            splashRadius: 20,
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(
+                              minWidth: 32,
+                              minHeight: 32,
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: widget.currentIndex < widget.totalCount - 1
+                                ? () {
+                                    widget.onMoveDown?.call(widget.currentIndex);
+                                    _keepTrackVisible();
+                                  }
+                                : null,
+                            icon: AdaptiveIcon(
+                              Icons.arrow_forward,
+                              color: showFocusBorder ? Colors.white : Colors.white38,
+                              size: 18,
+                            ),
+                            splashRadius: 20,
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(
+                              minWidth: 32,
+                              minHeight: 32,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    IconButton(
-                      onPressed: widget.currentIndex < widget.totalCount - 1
-                          ? () {
-                              widget.onMoveDown?.call(widget.currentIndex);
-                              _keepTrackVisible();
-                            }
-                          : null,
-                      icon: AdaptiveIcon(
-                        Icons.arrow_forward,
-                        color: showFocusBorder ? Colors.white : Colors.white38,
-                        size: 18,
-                      ),
-                      splashRadius: 20,
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(
-                        minWidth: 32,
-                        minHeight: 32,
-                      ),
-                    ),
-                  ],
                 ] else ...[
                   if (widget.reorderable)
                     ReorderableDragStartListener(
@@ -17223,6 +17186,16 @@ class _TrackTileState extends State<TrackTile> with FocusStateMixin {
       track: widget.track,
       onPlay: widget.onTap,
       onPlayNext: () => manager.queueService.insertNext(widget.track),
+      onViewDetails: () {
+        context.push(
+          Destinations.itemOrPhoto(
+            widget.track.id,
+            serverId: widget.track.serverId,
+            type: widget.track.type,
+            channelId: widget.track.channelId,
+          ),
+        );
+      },
       onAddToQueue: () => manager.queueService.addToQueue(widget.track),
       onAddToPlaylist: () => AddToPlaylistDialog.show(
         context,

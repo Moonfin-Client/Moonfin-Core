@@ -9545,6 +9545,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get trackActionPlayNext => 'Reproduzir a Seguir';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'Adicionar à Fila';
 
   @override

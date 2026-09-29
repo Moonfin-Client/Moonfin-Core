@@ -9534,6 +9534,9 @@ class AppLocalizationsSk extends AppLocalizations {
   String get trackActionPlayNext => 'Prehrať ako ďalšie';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'Pridať do poradia';
 
   @override

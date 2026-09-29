@@ -9466,6 +9466,9 @@ class AppLocalizationsBn extends AppLocalizations {
   String get trackActionPlayNext => 'পরবর্তী খেলুন';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'সারিতে যোগ করুন';
 
   @override

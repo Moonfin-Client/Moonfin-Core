@@ -9544,6 +9544,9 @@ class AppLocalizationsMk extends AppLocalizations {
   String get trackActionPlayNext => 'Играј Следно';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'Додај во редица';
 
   @override

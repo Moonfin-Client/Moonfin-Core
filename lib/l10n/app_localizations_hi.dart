@@ -9458,6 +9458,9 @@ class AppLocalizationsHi extends AppLocalizations {
   String get trackActionPlayNext => 'अगला खेलें';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'क़तार में जोड़ें';
 
   @override

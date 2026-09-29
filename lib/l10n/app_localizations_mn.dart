@@ -9501,6 +9501,9 @@ class AppLocalizationsMn extends AppLocalizations {
   String get trackActionPlayNext => 'Дараа нь тоглуул';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'Дараалалд нэмэх';
 
   @override

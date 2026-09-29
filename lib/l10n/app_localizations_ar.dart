@@ -9470,6 +9470,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get trackActionPlayNext => 'العب التالي';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'إضافة إلى قائمة الانتظار';
 
   @override

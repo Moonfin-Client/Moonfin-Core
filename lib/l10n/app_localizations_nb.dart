@@ -9477,6 +9477,9 @@ class AppLocalizationsNb extends AppLocalizations {
   String get trackActionPlayNext => 'Spill Neste';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'Legg til i kø';
 
   @override

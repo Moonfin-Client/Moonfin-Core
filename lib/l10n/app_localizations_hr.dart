@@ -9691,6 +9691,9 @@ class AppLocalizationsHr extends AppLocalizations {
   String get trackActionPlayNext => 'Igraj dalje';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'Dodaj u red čekanja';
 
   @override

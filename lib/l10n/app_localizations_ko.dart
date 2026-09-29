@@ -9234,6 +9234,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get trackActionPlayNext => '다음 곡 재생';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => '대기열에 추가';
 
   @override

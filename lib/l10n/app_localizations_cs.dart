@@ -9511,6 +9511,9 @@ class AppLocalizationsCs extends AppLocalizations {
   String get trackActionPlayNext => 'Přehrát jako další';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'Přidat do fronty';
 
   @override

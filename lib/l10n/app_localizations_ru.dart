@@ -9548,6 +9548,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get trackActionPlayNext => 'Играть дальше';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'Добавить в очередь';
 
   @override

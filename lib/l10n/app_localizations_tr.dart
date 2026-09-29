@@ -9491,6 +9491,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get trackActionPlayNext => 'Sonrakini Oynat';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'Kuyruğa Ekle';
 
   @override

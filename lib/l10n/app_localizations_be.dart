@@ -9525,6 +9525,9 @@ class AppLocalizationsBe extends AppLocalizations {
   String get trackActionPlayNext => 'Гуляць далей';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'Дадаць у чаргу';
 
   @override

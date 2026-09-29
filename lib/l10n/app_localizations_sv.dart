@@ -9492,6 +9492,9 @@ class AppLocalizationsSv extends AppLocalizations {
   String get trackActionPlayNext => 'Spela Nästa';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'Lägg till i kö';
 
   @override

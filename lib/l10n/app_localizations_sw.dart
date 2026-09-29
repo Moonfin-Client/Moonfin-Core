@@ -9547,6 +9547,9 @@ class AppLocalizationsSw extends AppLocalizations {
   String get trackActionPlayNext => 'Cheza Inayofuata';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'Ongeza kwenye Foleni';
 
   @override

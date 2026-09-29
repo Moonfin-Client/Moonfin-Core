@@ -9467,6 +9467,9 @@ class AppLocalizationsEo extends AppLocalizations {
   String get trackActionPlayNext => 'Ludu Poste';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'Aldoni al Vico';
 
   @override

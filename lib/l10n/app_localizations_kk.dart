@@ -9520,6 +9520,9 @@ class AppLocalizationsKk extends AppLocalizations {
   String get trackActionPlayNext => 'Келесі ойнату';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'Кезекке қосу';
 
   @override

@@ -9164,6 +9164,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get trackActionPlayNext => '接下来播放';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => '添加到队列';
 
   @override

@@ -9578,6 +9578,9 @@ class AppLocalizationsMl extends AppLocalizations {
   String get trackActionPlayNext => 'അടുത്തത് കളിക്കുക';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'ക്യൂവിൽ ചേർക്കുക';
 
   @override

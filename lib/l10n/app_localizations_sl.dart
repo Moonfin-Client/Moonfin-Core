@@ -9531,6 +9531,9 @@ class AppLocalizationsSl extends AppLocalizations {
   String get trackActionPlayNext => 'Predvajaj naprej';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'Dodaj v čakalno vrsto';
 
   @override

@@ -9549,6 +9549,9 @@ class AppLocalizationsRo extends AppLocalizations {
   String get trackActionPlayNext => 'Joacă în continuare';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'Adăugați la coadă';
 
   @override

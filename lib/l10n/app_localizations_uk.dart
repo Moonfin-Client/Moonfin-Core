@@ -9549,6 +9549,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get trackActionPlayNext => 'Грати далі';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'Додати в чергу';
 
   @override

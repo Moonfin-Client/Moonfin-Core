@@ -9527,6 +9527,9 @@ class AppLocalizationsLv extends AppLocalizations {
   String get trackActionPlayNext => 'Spēlēt nākamo';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'Pievienot rindai';
 
   @override

@@ -9529,6 +9529,9 @@ class AppLocalizationsCy extends AppLocalizations {
   String get trackActionPlayNext => 'Chwarae Nesaf';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'Ychwanegu at Ciw';
 
   @override

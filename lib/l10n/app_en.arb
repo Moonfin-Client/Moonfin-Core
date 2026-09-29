@@ -9316,6 +9316,7 @@
   "noRemoteDevicesIos": "No remote playback devices available.\n\nOn iOS, AirPlay targets may be unavailable in the simulator.",
 
   "trackActionPlayNext": "Play Next",
+  "trackActionViewDetails": "View Details",
   "trackActionAddToQueue": "Add to Queue",
   "trackActionAddToPlaylist": "Add to Playlist",
   "trackActionCancelDownload": "Cancel Download",

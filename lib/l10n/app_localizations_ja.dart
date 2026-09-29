@@ -9258,6 +9258,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get trackActionPlayNext => '次にプレイ';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'キューに追加';
 
   @override

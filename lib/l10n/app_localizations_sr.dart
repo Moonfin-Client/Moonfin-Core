@@ -9700,6 +9700,9 @@ class AppLocalizationsSr extends AppLocalizations {
   String get trackActionPlayNext => 'Плаи Нект';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'Додај у ред';
 
   @override

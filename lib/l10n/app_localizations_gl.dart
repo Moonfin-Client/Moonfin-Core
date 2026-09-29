@@ -9595,6 +9595,9 @@ class AppLocalizationsGl extends AppLocalizations {
   String get trackActionPlayNext => 'Xoga a seguinte';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'Engadir á cola';
 
   @override

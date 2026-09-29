@@ -9451,6 +9451,9 @@ class AppLocalizationsPa extends AppLocalizations {
   String get trackActionPlayNext => 'ਅੱਗੇ ਚਲਾਓ';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'ਕਤਾਰ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ';
 
   @override

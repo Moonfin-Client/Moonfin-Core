@@ -9602,6 +9602,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get trackActionPlayNext => 'Lire ensuite';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'Ajouter à la file d\'attente';
 
   @override

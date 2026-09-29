@@ -9473,6 +9473,9 @@ class AppLocalizationsSi extends AppLocalizations {
   String get trackActionPlayNext => 'ඊළඟට සෙල්ලම් කරන්න';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'පෝලිමට එකතු කරන්න';
 
   @override

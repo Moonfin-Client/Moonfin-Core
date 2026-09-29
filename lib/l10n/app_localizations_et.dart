@@ -9488,6 +9488,9 @@ class AppLocalizationsEt extends AppLocalizations {
   String get trackActionPlayNext => 'Mängi edasi';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'Lisa järjekorda';
 
   @override

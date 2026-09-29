@@ -9530,6 +9530,9 @@ class AppLocalizationsLt extends AppLocalizations {
   String get trackActionPlayNext => 'Žaisti toliau';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'Pridėti į eilę';
 
   @override

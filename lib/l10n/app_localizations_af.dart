@@ -9485,6 +9485,9 @@ class AppLocalizationsAf extends AppLocalizations {
   String get trackActionPlayNext => 'Speel Volgende';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'Voeg by waglys';
 
   @override

@@ -9558,6 +9558,9 @@ class AppLocalizationsSq extends AppLocalizations {
   String get trackActionPlayNext => 'Luaj Tjetra';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'Shto në radhë';
 
   @override

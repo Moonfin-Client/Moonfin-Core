@@ -9539,6 +9539,9 @@ class AppLocalizationsTe extends AppLocalizations {
   String get trackActionPlayNext => 'తదుపరి ప్లే చేయండి';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'క్యూకి జోడించండి';
 
   @override

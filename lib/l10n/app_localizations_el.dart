@@ -9608,6 +9608,9 @@ class AppLocalizationsEl extends AppLocalizations {
   String get trackActionPlayNext => 'Αναπαραγωγή επόμενου';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'Προσθήκη στην ουρά';
 
   @override

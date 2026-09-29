@@ -9429,6 +9429,9 @@ class AppLocalizationsTh extends AppLocalizations {
   String get trackActionPlayNext => 'เล่นถัดไป';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'เพิ่มเข้าคิว';
 
   @override

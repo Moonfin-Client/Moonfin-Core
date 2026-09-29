@@ -16738,6 +16738,12 @@ abstract class AppLocalizations {
   /// **'Play Next'**
   String get trackActionPlayNext;
 
+  /// No description provided for @trackActionViewDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'View Details'**
+  String get trackActionViewDetails;
+
   /// No description provided for @trackActionAddToQueue.
   ///
   /// In en, this message translates to:

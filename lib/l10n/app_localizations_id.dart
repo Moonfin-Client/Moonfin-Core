@@ -9487,6 +9487,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get trackActionPlayNext => 'Putar Berikutnya';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'Tambahkan ke Antrean';
 
   @override

@@ -9428,6 +9428,9 @@ class AppLocalizationsFa extends AppLocalizations {
   String get trackActionPlayNext => 'پخش بعدی';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'به صف اضافه کنید';
 
   @override

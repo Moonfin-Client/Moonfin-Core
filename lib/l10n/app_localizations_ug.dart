@@ -9509,6 +9509,9 @@ class AppLocalizationsUg extends AppLocalizations {
   String get trackActionPlayNext => 'كېيىنكى ئوينى';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'ئۆچرەتكە قوشۇڭ';
 
   @override

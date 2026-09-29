@@ -9529,6 +9529,9 @@ class AppLocalizationsNl extends AppLocalizations {
   String get trackActionPlayNext => 'Speel Volgende';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'Toevoegen aan wachtrij';
 
   @override

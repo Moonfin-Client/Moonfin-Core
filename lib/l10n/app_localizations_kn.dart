@@ -9538,6 +9538,9 @@ class AppLocalizationsKn extends AppLocalizations {
   String get trackActionPlayNext => 'ಮುಂದೆ ಪ್ಲೇ ಮಾಡಿ';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'ಕ್ಯೂಗೆ ಸೇರಿಸಿ';
 
   @override

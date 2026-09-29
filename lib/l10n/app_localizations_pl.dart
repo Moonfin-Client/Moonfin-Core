@@ -9782,6 +9782,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get trackActionPlayNext => 'Odtwórz jako następne';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'Dodaj do kolejki';
 
   @override

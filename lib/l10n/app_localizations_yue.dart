@@ -9202,6 +9202,9 @@ class AppLocalizationsYue extends AppLocalizations {
   String get trackActionPlayNext => '播放下一個';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => '添加到隊列';
 
   @override

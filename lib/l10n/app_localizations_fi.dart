@@ -9519,6 +9519,9 @@ class AppLocalizationsFi extends AppLocalizations {
   String get trackActionPlayNext => 'Toista seuraavaksi';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'Lisää jonoon';
 
   @override

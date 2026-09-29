@@ -14,6 +14,7 @@ class TrackActionDialog extends StatelessWidget {
   final AggregatedItem track;
   final VoidCallback? onPlay;
   final VoidCallback? onPlayNext;
+  final VoidCallback? onViewDetails;
   final VoidCallback? onAddToQueue;
   final VoidCallback? onAddToPlaylist;
   final VoidCallback? onRemoveFromPlaylist;
@@ -28,6 +29,7 @@ class TrackActionDialog extends StatelessWidget {
     required this.track,
     this.onPlay,
     this.onPlayNext,
+    this.onViewDetails,
     this.onAddToQueue,
     this.onAddToPlaylist,
     this.onRemoveFromPlaylist,
@@ -43,6 +45,7 @@ class TrackActionDialog extends StatelessWidget {
     required AggregatedItem track,
     VoidCallback? onPlay,
     VoidCallback? onPlayNext,
+    VoidCallback? onViewDetails,
     VoidCallback? onAddToQueue,
     VoidCallback? onAddToPlaylist,
     VoidCallback? onRemoveFromPlaylist,
@@ -58,6 +61,7 @@ class TrackActionDialog extends StatelessWidget {
         track: track,
         onPlay: onPlay,
         onPlayNext: onPlayNext,
+        onViewDetails: onViewDetails,
         onAddToQueue: onAddToQueue,
         onAddToPlaylist: onAddToPlaylist,
         onRemoveFromPlaylist: onRemoveFromPlaylist,
@@ -167,6 +171,15 @@ class TrackActionDialog extends StatelessWidget {
                             onTap: () {
                               Navigator.pop(context);
                               onPlayNext!();
+                            },
+                          ),
+                        if (onViewDetails != null)
+                          FocusableDialogRow(
+                            icon: Icons.info_outline,
+                            label: l10n.trackActionViewDetails,
+                            onTap: () {
+                              Navigator.pop(context);
+                              onViewDetails!();
                             },
                           ),
                         if (onAddToQueue != null)

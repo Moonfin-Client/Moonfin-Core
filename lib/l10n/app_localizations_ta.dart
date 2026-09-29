@@ -9547,6 +9547,9 @@ class AppLocalizationsTa extends AppLocalizations {
   String get trackActionPlayNext => 'அடுத்து விளையாடு';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'வரிசையில் சேர்க்கவும்';
 
   @override

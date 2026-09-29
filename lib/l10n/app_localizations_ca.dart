@@ -9630,6 +9630,9 @@ class AppLocalizationsCa extends AppLocalizations {
   String get trackActionPlayNext => 'Reproduir a continuació';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'Afegeix a la cua';
 
   @override

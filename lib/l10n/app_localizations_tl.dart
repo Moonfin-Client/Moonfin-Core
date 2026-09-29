@@ -9572,6 +9572,9 @@ class AppLocalizationsTl extends AppLocalizations {
   String get trackActionPlayNext => 'I-play Susunod';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'Idagdag sa Queue';
 
   @override

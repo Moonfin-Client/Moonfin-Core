@@ -9481,6 +9481,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get trackActionPlayNext => 'Chơi tiếp';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'Thêm vào hàng đợi';
 
   @override

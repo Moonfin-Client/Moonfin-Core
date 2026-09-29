@@ -9623,6 +9623,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get trackActionPlayNext => 'Als Nächstes abspielen';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'Zur Warteschlange hinzufügen';
 
   @override

@@ -9560,6 +9560,9 @@ class AppLocalizationsHu extends AppLocalizations {
   String get trackActionPlayNext => 'Lejátszás következőként';
 
   @override
+  String get trackActionViewDetails => 'View Details';
+
+  @override
   String get trackActionAddToQueue => 'Hozzáadás a lejátszási sorhoz';
 
   @override
