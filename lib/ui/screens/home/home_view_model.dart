@@ -37,6 +37,7 @@ import '../../../util/platform_detection.dart';
 import '../../../util/server_url.dart';
 import '../../../preference/seerr_preferences.dart';
 import '../../../data/viewmodels/seerr_discover_view_model.dart';
+import '../../util/home_row_title_localizer.dart';
 import '../../widgets/seerr/seerr_shortcuts.dart';
 import '../../../data/services/custom_external_lists_service.dart';
 import '../../../util/seerr_genre_art.dart';
@@ -2351,7 +2352,7 @@ class HomeViewModel extends ChangeNotifier {
       return [
         _seerrRow(
           cfg.stableId,
-          slider.title,
+          localizeSeerrSliderTitle(slider, currentAppLocalizations()),
           items,
           totalCount: page.totalPages > 1 ? items.length + 1 : items.length,
         ),

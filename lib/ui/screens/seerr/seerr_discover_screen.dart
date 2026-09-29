@@ -560,7 +560,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
     final l10n = AppLocalizations.of(context);
     final slider = row.slider;
     final title = slider != null
-        ? slider.title
+        ? localizeSeerrSliderTitle(slider, l10n)
         : localizeSeerrRowTitle(row.type!, l10n);
     final desktopScale = GetIt.instance<UserPreferences>()
         .get(UserPreferences.desktopUiScale)

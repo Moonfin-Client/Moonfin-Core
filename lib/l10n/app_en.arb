@@ -6399,6 +6399,74 @@
   "@seerrDiscoveryRows": {
     "description": "Subtitle shown under Seerr discovery home rows"
   },
+  "seerrTraktRecommendations": "Trakt Recommendations",
+  "@seerrTraktRecommendations": {
+    "description": "Title of a Seerr discover row, served only by the Foreseerr fork, showing Trakt recommendations. Trakt, AniList and Simkl are service names"
+  },
+  "seerrTraktWatchlist": "Trakt Watchlist",
+  "@seerrTraktWatchlist": {
+    "description": "Title of a Seerr discover row, served only by the Foreseerr fork, showing the Trakt watchlist. Trakt, AniList and Simkl are service names"
+  },
+  "seerrTraktHistory": "Trakt History",
+  "@seerrTraktHistory": {
+    "description": "Title of a Seerr discover row, served only by the Foreseerr fork, showing Trakt watch history. Trakt, AniList and Simkl are service names"
+  },
+  "seerrAnilistTrending": "AniList Trending",
+  "@seerrAnilistTrending": {
+    "description": "Title of a Seerr discover row, served only by the Foreseerr fork, showing anime trending on AniList. Trakt, AniList and Simkl are service names"
+  },
+  "seerrAnilistThisSeason": "AniList This Season",
+  "@seerrAnilistThisSeason": {
+    "description": "Title of a Seerr discover row, served only by the Foreseerr fork, showing anime airing this season on AniList. Trakt, AniList and Simkl are service names"
+  },
+  "seerrAnilistPopular": "AniList Popular",
+  "@seerrAnilistPopular": {
+    "description": "Title of a Seerr discover row, served only by the Foreseerr fork, showing popular anime on AniList. Trakt, AniList and Simkl are service names"
+  },
+  "seerrAnilistTop100": "AniList Top 100",
+  "@seerrAnilistTop100": {
+    "description": "Title of a Seerr discover row, served only by the Foreseerr fork, showing the AniList top 100 anime. Trakt, AniList and Simkl are service names"
+  },
+  "seerrAnilistNextSeason": "AniList Next Season",
+  "@seerrAnilistNextSeason": {
+    "description": "Title of a Seerr discover row, served only by the Foreseerr fork, showing anime airing next season on AniList. Trakt, AniList and Simkl are service names"
+  },
+  "seerrAnilistWatching": "AniList Watching",
+  "@seerrAnilistWatching": {
+    "description": "Title of a Seerr discover row, served only by the Foreseerr fork, showing the user's AniList watching list. Trakt, AniList and Simkl are service names"
+  },
+  "seerrAnilistPlanning": "AniList Planning",
+  "@seerrAnilistPlanning": {
+    "description": "Title of a Seerr discover row, served only by the Foreseerr fork, showing the user's AniList planning list. Trakt, AniList and Simkl are service names"
+  },
+  "seerrAnilistCompleted": "AniList Completed",
+  "@seerrAnilistCompleted": {
+    "description": "Title of a Seerr discover row, served only by the Foreseerr fork, showing the user's AniList completed list. Trakt, AniList and Simkl are service names"
+  },
+  "seerrSimklTrending": "Simkl Trending",
+  "@seerrSimklTrending": {
+    "description": "Title of a Seerr discover row, served only by the Foreseerr fork, showing titles trending on Simkl. Trakt, AniList and Simkl are service names"
+  },
+  "seerrSimklPlanToWatch": "Simkl Plan to Watch",
+  "@seerrSimklPlanToWatch": {
+    "description": "Title of a Seerr discover row, served only by the Foreseerr fork, showing the user's Simkl plan to watch list. Trakt, AniList and Simkl are service names"
+  },
+  "seerrSimklWatching": "Simkl Watching",
+  "@seerrSimklWatching": {
+    "description": "Title of a Seerr discover row, served only by the Foreseerr fork, showing the user's Simkl watching list. Trakt, AniList and Simkl are service names"
+  },
+  "seerrSimklOnHold": "Simkl On Hold",
+  "@seerrSimklOnHold": {
+    "description": "Title of a Seerr discover row, served only by the Foreseerr fork, showing the user's Simkl on hold list. Trakt, AniList and Simkl are service names"
+  },
+  "seerrSimklCompleted": "Simkl Completed",
+  "@seerrSimklCompleted": {
+    "description": "Title of a Seerr discover row, served only by the Foreseerr fork, showing the user's Simkl completed list. Trakt, AniList and Simkl are service names"
+  },
+  "seerrSimklDropped": "Simkl Dropped",
+  "@seerrSimklDropped": {
+    "description": "Title of a Seerr discover row, served only by the Foreseerr fork, showing the user's Simkl dropped list. Trakt, AniList and Simkl are service names"
+  },
   "yourWatchlist": "Your Watchlist",
   "@yourWatchlist": {
     "description": "Seerr row: watchlist"

@@ -23,6 +23,7 @@ import '../../../util/extensions.dart';
 import '../../../util/focus/scroll_utils.dart';
 import '../../../util/platform_detection.dart';
 import '../../navigation/route_lifecycle_observer.dart';
+import '../../util/home_row_title_localizer.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/poster_size_settings_dialog.dart';
 import '../../widgets/skeleton/skeleton_shimmer.dart';
@@ -1273,13 +1274,15 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
   /// Sliders are picked there, so none are added here.
   bool _mergeSeerrSliderSections(List<SeerrDiscoverSlider> sliders) {
     final serverId = GetIt.instance<MediaServerClient>().baseUrl;
+    final l10n = AppLocalizations.of(context);
     var changed = false;
 
     for (var i = 0; i < _sections.length; i++) {
       final slider = findSeerrSliderFor(_sections[i], sliders);
       if (slider == null) continue;
-      if (_sections[i].pluginDisplayText != slider.title) {
-        _sections[i] = _sections[i].copyWith(pluginDisplayText: slider.title);
+      final title = localizeSeerrSliderTitle(slider, l10n);
+      if (_sections[i].pluginDisplayText != title) {
+        _sections[i] = _sections[i].copyWith(pluginDisplayText: title);
         changed = true;
       }
     }

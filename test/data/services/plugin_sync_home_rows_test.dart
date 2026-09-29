@@ -194,6 +194,7 @@ void main() {
         data: '207317',
       ),
       serverId: 'http://plugin.test',
+      title: 'Christmas',
     );
 
     List<HomeSectionConfig> sliders() =>

@@ -1,4 +1,5 @@
 import '../../data/models/home_row.dart';
+import '../../data/services/seerr/seerr_discover_sliders.dart';
 import '../../l10n/app_localizations.dart';
 import '../../preference/preference_constants.dart';
 
@@ -20,6 +21,33 @@ String localizeSeerrRowTitle(SeerrRowType type, AppLocalizations l10n) =>
       SeerrRowType.upcomingSeries => l10n.upcomingSeries,
       SeerrRowType.networks => l10n.networks,
     };
+
+/// A discover slider's row title. An admin's slider carries its own. The rows
+/// Foreseerr ships with are named here in the user's language, and any other
+/// server row falls back to the English name the server gives it.
+String localizeSeerrSliderTitle(
+  SeerrDiscoverSlider slider,
+  AppLocalizations l10n,
+) => switch (slider.type) {
+  ForeseerrSliderType.traktRecommendations => l10n.seerrTraktRecommendations,
+  ForeseerrSliderType.traktWatchlist => l10n.seerrTraktWatchlist,
+  ForeseerrSliderType.traktHistory => l10n.seerrTraktHistory,
+  ForeseerrSliderType.anilistTrending => l10n.seerrAnilistTrending,
+  ForeseerrSliderType.anilistSeason => l10n.seerrAnilistThisSeason,
+  ForeseerrSliderType.anilistPopular => l10n.seerrAnilistPopular,
+  ForeseerrSliderType.anilistTop => l10n.seerrAnilistTop100,
+  ForeseerrSliderType.anilistNextSeason => l10n.seerrAnilistNextSeason,
+  ForeseerrSliderType.anilistWatching => l10n.seerrAnilistWatching,
+  ForeseerrSliderType.anilistPlanning => l10n.seerrAnilistPlanning,
+  ForeseerrSliderType.anilistCompleted => l10n.seerrAnilistCompleted,
+  ForeseerrSliderType.simklTrending => l10n.seerrSimklTrending,
+  ForeseerrSliderType.simklPlanToWatch => l10n.seerrSimklPlanToWatch,
+  ForeseerrSliderType.simklWatching => l10n.seerrSimklWatching,
+  ForeseerrSliderType.simklOnHold => l10n.seerrSimklOnHold,
+  ForeseerrSliderType.simklCompleted => l10n.seerrSimklCompleted,
+  ForeseerrSliderType.simklDropped => l10n.seerrSimklDropped,
+  _ => slider.title.isNotEmpty ? slider.title : slider.defaultTitle,
+};
 
 String localizeHomeRowTitle({
   required HomeRow row,
