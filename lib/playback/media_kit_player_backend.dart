@@ -234,11 +234,16 @@ class MediaKitPlayerBackend extends PlayerBackend {
   int _subtitleSelectionGeneration = 0;
   final _pendingSubtitleLoads = <String, String>{};
   final _externalSubtitleTitles = <String, Set<String>>{};
+  final _externalSubtitleLoads = <String, Future<void>>{};
+  final _externalSubtitleDetails =
+      <String, ({String? title, String? language, String? codec})>{};
 
   void _resetSubtitleState() {
     _subtitleLoadSession++;
     _subtitleSelectionGeneration++;
     _externalSubtitleTitles.clear();
+    _externalSubtitleLoads.clear();
+    _externalSubtitleDetails.clear();
   }
 
   // Captions mpv found inside the video, cached from the async track-list
@@ -2196,6 +2201,22 @@ class MediaKitPlayerBackend extends PlayerBackend {
         await _nativeSetProperty(native, 'sid', 'no');
         if (!isCurrentSelection()) return;
         await _nativeSetProperty(native, 'secondary-sid', 'no');
+        if (!isCurrentSelection()) return;
+        if (isExternalSubtitle && externalSubtitleUrl != null) {
+          unawaited(
+            _retryExternalSubtitle(
+              externalSubtitleUrl,
+              isCurrentSelection: isCurrentSelection,
+              selectTrack: () => setSubtitleTrack(
+                mpvTrackId,
+                isBitmapSubtitle: isBitmapSubtitle,
+                subtitleCodec: subtitleCodec,
+                isExternalSubtitle: true,
+                externalSubtitleUrl: externalSubtitleUrl,
+              ),
+            ),
+          );
+        }
         return;
       }
       final sidToApply = resolvedSid;
@@ -2271,6 +2292,57 @@ class MediaKitPlayerBackend extends PlayerBackend {
         .where((entry) => _externalFilenameMatches(entry.externalFilename, url))
         .toList();
     return matches.length == 1 ? matches.single.id.toString() : null;
+  }
+
+  // Check if the file is already loaded, even when multiple tracks match it.
+  bool _hasExternalSubtitle(String? trackList, String url) {
+    if (url.isEmpty) return false;
+    final titles = _externalSubtitleTitles[url] ?? const <String>{};
+    return _extractTrackEntries(trackList, type: 'sub').any(
+      (entry) =>
+          entry.external &&
+          (titles.contains(entry.title) ||
+              _externalFilenameMatches(entry.externalFilename, url)),
+    );
+  }
+
+  Future<void> _retryExternalSubtitle(
+    String url, {
+    required bool Function() isCurrentSelection,
+    required Future<void> Function() selectTrack,
+  }) async {
+    final scheme = Uri.tryParse(url)?.scheme;
+    if (scheme != 'http' && scheme != 'https') return;
+
+    // Jellyfin may still be extracting subtitles when mpv gives up.
+    // Keep retrying while this subtitle is selected.
+    await Future<void>.delayed(const Duration(seconds: 5));
+    while (isCurrentSelection()) {
+      // Another subtitle may still be loading, so wait for this one's details.
+      if (_externalSubtitleDetails.containsKey(url)) {
+        await _addExternalSubtitle(url, shouldLoad: isCurrentSelection);
+      }
+      // Don't let an old download change subtitles after the viewer switches
+      // tracks, turns subtitles off, or leaves the video.
+      if (!isCurrentSelection()) return;
+      final native = _player.platform as NativePlayer;
+      final tracks = await _tryNativeGetProperty(native, 'track-list');
+      if (!isCurrentSelection()) return;
+      // mpv can finish the command even when the download fails.
+      // Make sure the subtitle track actually loaded.
+      if (_externalSubtitleSid(tracks, url) != null) {
+        await selectTrack();
+        return;
+      }
+      if (_hasExternalSubtitle(tracks, url)) {
+        _subtitleDebug(
+          'External subtitle loaded without a unique selectable track; '
+          'stopping retries.',
+        );
+        return;
+      }
+      await Future<void>.delayed(const Duration(seconds: 10));
+    }
   }
 
   /// Re-reads mpv's track list for the CC track it creates once caption data
@@ -2421,8 +2493,49 @@ class MediaKitPlayerBackend extends PlayerBackend {
     String? title,
     String? language,
     String? codec,
+  }) {
+    _externalSubtitleDetails[url] = (
+      title: title,
+      language: language,
+      codec: codec,
+    );
+    return _addExternalSubtitle(url);
+  }
+
+  Future<void> _addExternalSubtitle(
+    String url, {
+    bool Function()? shouldLoad,
   }) async {
+    final load = _externalSubtitleLoads.putIfAbsent(
+      url,
+      () => _loadExternalSubtitle(url, _subtitleLoadSession, shouldLoad),
+    );
+    try {
+      await load;
+    } finally {
+      if (identical(_externalSubtitleLoads[url], load)) {
+        _externalSubtitleLoads.remove(url);
+      }
+    }
+  }
+
+  Future<void> _loadExternalSubtitle(
+    String url,
+    int session,
+    bool Function()? shouldLoad,
+  ) async {
+    bool canLoad() =>
+        !_isDisposed &&
+        session == _subtitleLoadSession &&
+        (shouldLoad?.call() ?? true);
+    if (!canLoad()) return;
+    final (title: title, language: language, codec: codec) =
+        _externalSubtitleDetails[url]!;
     final native = _player.platform as NativePlayer;
+    final tracks = await _tryNativeGetProperty(native, 'track-list');
+    if (!canLoad()) return;
+    // Don't download the subtitle again if it has already loaded.
+    if (_hasExternalSubtitle(tracks, url)) return;
     // Tag each load so we can identify its track even if mpv reports a
     // different filename. Moonfin's subtitle menu uses the server's titles.
     final trackTitle = '${title ?? 'external'} [moonfin-sub:${++_subtitleLoadId}]';
