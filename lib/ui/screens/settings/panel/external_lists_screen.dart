@@ -1855,7 +1855,7 @@ class _AddEditCustomRowDialogState extends State<_AddEditCustomRowDialog> {
 
     try {
       final customService = GetIt.instance<CustomExternalListsService>();
-      final items = await customService.fetchCustomRow(newConfig);
+      final items = await customService.fetchCustomRow(newConfig, throwOnError: true);
       if (items.isEmpty) {
         throw Exception('No results returned.');
       }
@@ -1863,6 +1863,7 @@ class _AddEditCustomRowDialogState extends State<_AddEditCustomRowDialog> {
       final customService = GetIt.instance<CustomExternalListsService>();
       final url = customService.constructSourceUrl(_source, _type, params);
       setState(() => _isValidating = false);
+      if (!mounted) return;
 
       final errorString = describeError(e, AppLocalizations.of(context))
           .replaceAll('Constructed URL: $url. ', '')
