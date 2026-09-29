@@ -2322,7 +2322,7 @@ class HomeViewModel extends ChangeNotifier {
       return [
         _seerrRow(
           cfg.stableId,
-          slider.title,
+          localizeSeerrSliderTitle(slider, currentAppLocalizations()),
           items,
           totalCount: page.totalPages > 1 ? items.length + 1 : items.length,
         ),

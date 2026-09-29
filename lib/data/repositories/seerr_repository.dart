@@ -532,26 +532,21 @@ class SeerrRepository {
     return fresh;
   }
 
-  /// One page of [slider]'s results. A search slider also finds people, which
-  /// have no page to open, so only movies and series are kept.
+  /// One page of [slider]'s results, keeping only what opens as a movie or
+  /// series.
   Future<SeerrDiscoverPage> getSliderPage(
     SeerrDiscoverSlider slider, {
     int page = 1,
   }) async {
     final query = slider.query;
     if (query == null) return const SeerrDiscoverPage();
-    final result = await _withClient(
+    return _withClient(
       (c) async => SeerrDiscoverPage.fromJson(
-        await c.getSliderPage(query.path, query.params, page: page),
+        readSeerrSliderPage(
+          await c.getSliderPage(query.path, query.params, page: page),
+          page: page,
+        ),
       ),
-    );
-    return SeerrDiscoverPage(
-      results: result.results
-          .where((item) => item.mediaType == 'movie' || item.mediaType == 'tv')
-          .toList(growable: false),
-      totalPages: result.totalPages,
-      totalResults: result.totalResults,
-      page: result.page,
     );
   }
 

@@ -1351,11 +1351,14 @@ class _SeerrListsScreenState extends State<_SeerrListsScreen> {
     }
   }
 
-  HomeSectionConfig _sliderSection(SeerrDiscoverSlider slider) =>
-      seerrSliderSection(
-        slider,
-        serverId: GetIt.instance<MediaServerClient>().baseUrl,
-      );
+  HomeSectionConfig _sliderSection(
+    SeerrDiscoverSlider slider,
+    AppLocalizations l10n,
+  ) => seerrSliderSection(
+    slider,
+    serverId: GetIt.instance<MediaServerClient>().baseUrl,
+    title: localizeSeerrSliderTitle(slider, l10n),
+  );
 
   bool _isSliderShown(HomeSectionConfig entry) => GetIt.instance<UserPreferences>()
       .homeSectionsConfig
@@ -1456,7 +1459,9 @@ class _SeerrListsScreenState extends State<_SeerrListsScreen> {
                   _SectionHeader(l10n.seerrDiscoverSliders),
                   adaptiveListSection(
                     children: [
-                      for (final entry in sliders.map(_sliderSection))
+                      for (final entry in sliders.map(
+                        (slider) => _sliderSection(slider, l10n),
+                      ))
                         _SeerrRowSwitchTile(
                           title: entry.pluginDisplayText ?? '',
                           value: _isSliderShown(entry),
