@@ -31,6 +31,7 @@ import '../../../preference/user_preferences.dart';
 import '../../../data/repositories/seerr_repository.dart';
 import '../../../data/services/plugin_sync_service.dart';
 import '../../../data/services/seerr/seerr_api_models.dart';
+import '../../../data/services/seerr/seerr_discover_sliders.dart';
 import '../../../data/utils/bounded_concurrency.dart';
 import '../../../util/platform_detection.dart';
 import '../../../util/server_url.dart';
@@ -458,6 +459,7 @@ class HomeViewModel extends ChangeNotifier {
                                 HomeSectionPluginSource.playlists))) &&
                 (showAudioRows || !_isAudioSectionType(c.type)) &&
                 (!_isSeerrSectionType(c.type) || (showSeerrRows && seerrPrefs.isSeerrHomeRowEnabled(c.type))) &&
+                (showSeerrRows || !isSeerrSliderSection(c)) &&
                 (!_isImdbSectionType(c.type) || (showImdbRows && _isImdbSectionEnabled(c.type))) &&
                 (!_isTmdbSectionType(c.type) || (showTmdbRows && _isTmdbSectionEnabled(c.type))) &&
                 (c.type != HomeSectionType.radarrCalendar || _prefs.get(UserPreferences.enableRadarrCalendar)) &&
@@ -958,6 +960,11 @@ class HomeViewModel extends ChangeNotifier {
         await _loadMoreSeerrRow(rowIndex, seerrType);
         return;
       }
+      final slider = _seerrSliderRows[row.id];
+      if (slider != null) {
+        await _loadMoreSeerrSliderRow(rowIndex, slider);
+        return;
+      }
 
       // The aggregated multi-server rows take no offset, so they keep the
       // paging they already had.
@@ -998,6 +1005,7 @@ class HomeViewModel extends ChangeNotifier {
   }
 
   Future<List<HomeRow>> _loadConfig(HomeSectionConfig cfg, {bool forceRefresh = false}) async {
+    if (isSeerrSliderSection(cfg)) return _loadSeerrSliderRow(cfg);
     if (cfg.isPluginDynamic) {
       final section = cfg.pluginSection;
       if (section == null || section.isEmpty) return const [];
@@ -2317,6 +2325,66 @@ class HomeViewModel extends ChangeNotifier {
   /// the home rows count in items, so this can't share `_rowOffsets`.
   final Map<String, int> _seerrRowPages = {};
 
+  /// The live slider behind each Seerr slider row, kept for paging.
+  final Map<String, SeerrDiscoverSlider> _seerrSliderRows = {};
+
+  /// A row for a slider an admin set up on Seerr's discover page. One Seerr
+  /// no longer has, or has switched off, is left off Home rather than shown
+  /// empty.
+  Future<List<HomeRow>> _loadSeerrSliderRow(HomeSectionConfig cfg) async {
+    try {
+      final repo = await GetIt.instance.getAsync<SeerrRepository>();
+      await repo.ensureInitialized();
+      if (!repo.isAvailable) return const [];
+
+      final slider = findSeerrSliderFor(cfg, await repo.getDiscoverSliders());
+      if (slider == null || !slider.isSupported) return const [];
+
+      final page = await repo.getSliderPage(slider);
+      final items = _seerrAggregatedItems(
+        page.results,
+        null,
+        GetIt.instance<SeerrPreferences>().blockNsfw,
+      );
+      _seerrRowPages[cfg.stableId] = 1;
+      _seerrSliderRows[cfg.stableId] = slider;
+      return [
+        _seerrRow(
+          cfg.stableId,
+          slider.title,
+          items,
+          totalCount: page.totalPages > 1 ? items.length + 1 : items.length,
+        ),
+      ];
+    } catch (e) {
+      debugPrint('[SeerrHomeRow] Failed to load Seerr slider row: $e');
+      return const [];
+    }
+  }
+
+  /// Appends the next page of a slider row, the way [_loadMoreSeerrRow] does
+  /// for the built-in Seerr rows.
+  Future<void> _loadMoreSeerrSliderRow(
+    int rowIndex,
+    SeerrDiscoverSlider slider,
+  ) async {
+    final row = _rows[rowIndex];
+    final repo = await GetIt.instance.getAsync<SeerrRepository>();
+    await repo.ensureInitialized();
+    if (!repo.isAvailable) return;
+
+    final nextPage = (_seerrRowPages[row.id] ?? 1) + 1;
+    final page = await repo.getSliderPage(slider, page: nextPage);
+    _seerrRowPages[row.id] = nextPage;
+    _appendSeerrRowItems(
+      rowIndex,
+      row,
+      page.results,
+      null,
+      exhausted: nextPage >= page.totalPages,
+    );
+  }
+
   Future<List<HomeRow>> _loadSeerrRow(
     SeerrRowType type,
     String title,
@@ -2506,14 +2574,24 @@ class HomeViewModel extends ChangeNotifier {
     // empty a whole page, and holding the pointer back would refetch that same
     // page on every scroll instead of moving on.
     _seerrRowPages[row.id] = nextPage;
+    _appendSeerrRowItems(rowIndex, row, rawItems, type, exhausted: exhausted);
+  }
 
+  /// Adds a fetched page to a Seerr row, skipping what it already shows.
+  void _appendSeerrRowItems(
+    int rowIndex,
+    HomeRow row,
+    List<SeerrDiscoverItem> rawItems,
+    SeerrRowType? type, {
+    required bool exhausted,
+  }) {
     final existingIds = row.items.map((item) => item.id).toSet();
     final items = [
       ...row.items,
       ..._seerrAggregatedItems(
         rawItems,
         type,
-        seerrPrefs.blockNsfw,
+        GetIt.instance<SeerrPreferences>().blockNsfw,
       ).where((item) => !existingIds.contains(item.id)),
     ];
 
@@ -2568,9 +2646,11 @@ class HomeViewModel extends ChangeNotifier {
     }).toList();
   }
 
+  /// A null [type] is a discover slider row, which hides what is available
+  /// like the other discovery rows.
   List<AggregatedItem> _seerrAggregatedItems(
     List<SeerrDiscoverItem> rawItems,
-    SeerrRowType type,
+    SeerrRowType? type,
     bool blockNsfw,
   ) {
     // The request, watchlist and recently added rows are meant to show media the

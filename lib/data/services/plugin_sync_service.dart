@@ -11,6 +11,7 @@ import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../data/repositories/seerr_repository.dart';
+import 'seerr/seerr_discover_sliders.dart';
 import 'server_messages_service.dart';
 import 'settings_stream_transport.dart';
 import 'storage_path_service.dart';
@@ -1409,6 +1410,18 @@ class PluginSyncService extends ChangeNotifier {
         );
         for (final custom in existingCustom) {
           sections.add(custom.copyWith(order: order++));
+        }
+        // Seerr slider rows go missing when a client from before them saves
+        // the layout, since it drops sections it can't read. They can't be
+        // removed by hand, so a missing one was lost rather than deleted.
+        final incomingSliders = sections
+            .where(isSeerrSliderSection)
+            .map((s) => s.stableId)
+            .toSet();
+        for (final slider in _prefs.homeSectionsConfig.where(
+          (c) => isSeerrSliderSection(c) && !incomingSliders.contains(c.stableId),
+        )) {
+          sections.add(slider.copyWith(order: order++));
         }
         _appendDisabledBuiltinSections(sections, order);
         await _raiseSinceYouWatchedRowCount(sections);

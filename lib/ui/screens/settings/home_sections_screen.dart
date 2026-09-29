@@ -10,6 +10,8 @@ import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../data/models/aggregated_item.dart';
+import '../../../data/repositories/seerr_repository.dart';
+import '../../../data/services/seerr/seerr_discover_sliders.dart';
 import '../../../data/utils/playlist_utils.dart';
 import '../../../data/services/plugin_sync_service.dart';
 import '../../../preference/home_section_config.dart';
@@ -104,6 +106,10 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
   bool _showOverlay = true;
 
   final Set<String> _emptySectionIds = {};
+
+  /// Seerr slider rows whose slider Seerr still has but this client can't
+  /// show, so they stay in the layout without being offered.
+  Set<String> _unshownSeerrSliderIds = const {};
 
   static FavoriteTypeFilter _favoriteFilterForSection(HomeSectionType type) {
     return switch (type) {
@@ -662,11 +668,17 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
             (section.isPluginDynamic &&
                 section.pluginSource == HomeSectionPluginSource.playlists));
     final hiddenBySeerr =
-        _isSeerrSectionType(section.type) &&
-        (!showSeerrRows ||
-            !GetIt.instance<SeerrPreferences>().isSeerrHomeRowEnabled(
-              section.type,
-            ));
+        (_isSeerrSectionType(section.type) &&
+            (!showSeerrRows ||
+                !GetIt.instance<SeerrPreferences>().isSeerrHomeRowEnabled(
+                  section.type,
+                ))) ||
+        // Like Seerr's own rows, a slider row switched off goes back to Seerr
+        // Lists, where it's switched on again.
+        (isSeerrSliderSection(section) &&
+            (!showSeerrRows ||
+                !section.enabled ||
+                _unshownSeerrSliderIds.contains(section.stableId)));
     final hiddenByImdb =
         _isImdbSectionType(section.type) &&
         (!showImdbRows || !_isImdbRowEnabled(section.type));
@@ -838,9 +850,11 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
       final collectionsFuture = _fetchCollectionsForHomeSections();
       final genresFuture = _fetchGenresForHomeSections();
       final playlistsFuture = _fetchPlaylistsForHomeSections();
+      final seerrSlidersFuture = _fetchSeerrSlidersForHomeSections();
       final discoveredCollections = await collectionsFuture;
       final discoveredGenres = await genresFuture;
       final discoveredPlaylists = await playlistsFuture;
+      final discoveredSeerrSliders = await seerrSlidersFuture;
       if (!mounted) return;
       var changed = false;
       setState(() {
@@ -852,6 +866,8 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
         final mergedPlaylistSections = _mergePlaylistSections(
           discoveredPlaylists,
         );
+        final mergedSeerrSliderSections = discoveredSeerrSliders != null &&
+            _mergeSeerrSliderSections(discoveredSeerrSliders);
 
         final beforeIds = _sections.map((s) => s.stableId).toList();
         _sortSectionsEnabledAboveDisabled();
@@ -868,6 +884,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
             mergedCollectionSections ||
             mergedGenreSections ||
             mergedPlaylistSections ||
+            mergedSeerrSliderSections ||
             sortChanged;
         _rebuildFocusNodes();
       });
@@ -1233,6 +1250,55 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
           !freshIds.contains(s.stableId),
     );
     if (_sections.length != before) changed = true;
+
+    return changed;
+  }
+
+  /// Every slider on Seerr's discover page. Null when Seerr can't be reached,
+  /// so a failed read leaves the rows in place instead of reading as every
+  /// slider having been deleted.
+  Future<List<SeerrDiscoverSlider>?> _fetchSeerrSlidersForHomeSections() async {
+    if (!GetIt.instance<PluginSyncService>().seerrAvailable) return null;
+    try {
+      final repo = await GetIt.instance.getAsync<SeerrRepository>();
+      await repo.ensureInitialized();
+      if (!repo.isAvailable) return null;
+      return await repo.getDiscoverSliders(force: true);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Keeps the slider rows put on Home from Seerr Lists in step with Seerr.
+  /// Sliders are picked there, so none are added here.
+  bool _mergeSeerrSliderSections(List<SeerrDiscoverSlider> sliders) {
+    final serverId = GetIt.instance<MediaServerClient>().baseUrl;
+    var changed = false;
+
+    for (var i = 0; i < _sections.length; i++) {
+      final slider = findSeerrSliderFor(_sections[i], sliders);
+      if (slider == null) continue;
+      if (_sections[i].pluginDisplayText != slider.title) {
+        _sections[i] = _sections[i].copyWith(pluginDisplayText: slider.title);
+        changed = true;
+      }
+    }
+
+    // Only a slider Seerr no longer has is dropped. One it still has but this
+    // client can't show, switched off for now or of a type a newer client
+    // knows, keeps its entry and state and is just left out of the list.
+    final before = _sections.length;
+    _sections.removeWhere(
+      (s) =>
+          isSeerrSliderSection(s) &&
+          s.serverId == serverId &&
+          findSeerrSliderFor(s, sliders) == null,
+    );
+    if (_sections.length != before) changed = true;
+    _unshownSeerrSliderIds = {
+      for (final s in _sections.where(isSeerrSliderSection))
+        if (findSeerrSliderFor(s, sliders)?.isSupported == false) s.stableId,
+    };
 
     return changed;
   }
@@ -2841,6 +2907,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
       HomeSectionPluginSource.collections => 'Collections row',
       HomeSectionPluginSource.genres => 'Genres row',
       HomeSectionPluginSource.playlists => 'Playlists row',
+      HomeSectionPluginSource.seerr => 'Seerr Discovery Rows',
       HomeSectionPluginSource.custom => (() {
         Map<String, dynamic> rowConfig = {};
         try {
