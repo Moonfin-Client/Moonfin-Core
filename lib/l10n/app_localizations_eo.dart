@@ -1588,6 +1588,9 @@ class AppLocalizationsEo extends AppLocalizations {
   }
 
   @override
+  String get noAlternateVersions => 'No alternate versions for this channel';
+
+  @override
   String get downloadAllQuality => 'Elŝutu Ĉion - Kvalito';
 
   @override

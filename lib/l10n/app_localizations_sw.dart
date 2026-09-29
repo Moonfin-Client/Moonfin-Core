@@ -1598,6 +1598,9 @@ class AppLocalizationsSw extends AppLocalizations {
   }
 
   @override
+  String get noAlternateVersions => 'No alternate versions for this channel';
+
+  @override
   String get downloadAllQuality => 'Pakua Zote - Ubora';
 
   @override
