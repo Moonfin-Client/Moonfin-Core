@@ -12622,7 +12622,7 @@
     "@achievementsUnlockedNotification": {
         "description": "Title of the notification for one newly unlocked badge"
     },
-    "achievementsUnlockedCount": "{count, monikko, yksi{{count} saavutus avattu} muu{{count} saavutus avattu}}",
+    "achievementsUnlockedCount": "{count, plural, one{{count} saavutus avattu} other{{count} saavutus avattu}}",
     "@achievementsUnlockedCount": {
         "description": "Title of the notification for several badges unlocked at once",
         "placeholders": {
@@ -12660,7 +12660,7 @@
     "@friendsMessages": {
         "description": "Entry that opens the list of chats"
     },
-    "friendsUnreadCount": "{count, monikko, =0{Ei lukemattomia viestejä} =1{1 lukematon viesti} muu{{count} lukematonta viestiä}}",
+    "friendsUnreadCount": "{count, plural, =0{Ei lukemattomia viestejä} =1{1 lukematon viesti} other{{count} lukematonta viestiä}}",
     "@friendsUnreadCount": {
         "description": "How many chat messages are unread",
         "placeholders": {
@@ -12673,7 +12673,7 @@
     "@friendsRequests": {
         "description": "Entry that opens pending friend requests"
     },
-    "friendsRequestCount": "{count, monikko, =0{Ei ketään odottamassa} =1{1 odottaa sinua} muu{{count} odottaa sinua}}",
+    "friendsRequestCount": "{count, plural, =0{Ei ketään odottamassa} =1{1 odottaa sinua} other{{count} odottaa sinua}}",
     "@friendsRequestCount": {
         "description": "How many friend requests wait for an answer",
         "placeholders": {
