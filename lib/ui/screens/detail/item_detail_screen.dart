@@ -16826,16 +16826,11 @@ class _TrackTileState extends State<TrackTile> with FocusStateMixin {
       }
     }
 
-    final handlerResult = _selectKeyHandler.handleKeyEvent(
+    return _selectKeyHandler.handleKeyEvent(
       event,
       onTap: widget.onTap,
       onLongPress: () => _showTrackActions(context),
     );
-    if (handlerResult != KeyEventResult.ignored) {
-      return handlerResult;
-    }
-
-    return KeyEventResult.ignored;
   }
 
   @override
@@ -17034,7 +17029,11 @@ class _TrackTileState extends State<TrackTile> with FocusStateMixin {
         onKeyEvent: (_, event) => _handleTvKeys(event),
         child: GestureDetector(
           onTap: widget.onTap,
-          onLongPress: () => _showTrackActions(context),
+          // A reorderable row drags from its handle, and a long press there
+          // would open the menu instead. The menu button still opens it.
+          onLongPress: widget.reorderable
+              ? null
+              : () => _showTrackActions(context),
           onSecondaryTap: () => _showTrackActions(context),
           behavior: HitTestBehavior.opaque,
           child: AnimatedContainer(
@@ -17113,7 +17112,9 @@ class _TrackTileState extends State<TrackTile> with FocusStateMixin {
                                 : null,
                             icon: AdaptiveIcon(
                               Icons.arrow_back,
-                              color: showFocusBorder ? Colors.white : Colors.white38,
+                              color: showFocusBorder
+                                  ? Colors.white
+                                  : Colors.white38,
                               size: 18,
                             ),
                             splashRadius: 20,
@@ -17124,15 +17125,20 @@ class _TrackTileState extends State<TrackTile> with FocusStateMixin {
                             ),
                           ),
                           IconButton(
-                            onPressed: widget.currentIndex < widget.totalCount - 1
+                            onPressed:
+                                widget.currentIndex < widget.totalCount - 1
                                 ? () {
-                                    widget.onMoveDown?.call(widget.currentIndex);
+                                    widget.onMoveDown?.call(
+                                      widget.currentIndex,
+                                    );
                                     _keepTrackVisible();
                                   }
                                 : null,
                             icon: AdaptiveIcon(
                               Icons.arrow_forward,
-                              color: showFocusBorder ? Colors.white : Colors.white38,
+                              color: showFocusBorder
+                                  ? Colors.white
+                                  : Colors.white38,
                               size: 18,
                             ),
                             splashRadius: 20,
