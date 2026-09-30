@@ -1860,10 +1860,10 @@ class _AddEditCustomRowDialogState extends State<_AddEditCustomRowDialog> {
         throw Exception('No results returned.');
       }
     } catch (e) {
+      if (!mounted) return;
       final customService = GetIt.instance<CustomExternalListsService>();
       final url = customService.constructSourceUrl(_source, _type, params);
       setState(() => _isValidating = false);
-      if (!mounted) return;
 
       final errorString = describeError(e, AppLocalizations.of(context))
           .replaceAll('Constructed URL: $url. ', '')
@@ -1917,6 +1917,7 @@ class _AddEditCustomRowDialogState extends State<_AddEditCustomRowDialog> {
       return;
     }
 
+    if (!mounted) return;
     setState(() => _isValidating = false);
 
     if (isEditing) {
