@@ -229,22 +229,25 @@ class MediaKitPlayerBackend extends PlayerBackend {
   // pass can tell a fresh source apart from a choice it must not undo.
   bool _subtitlesDisabled = false;
 
-  int _subtitleLoadSession = 0;
-  int _subtitleLoadId = 0;
+  // Bumped by every subtitle choice and every new or stopped source, so a
+  // selection or retry still waiting on mpv can tell it was replaced.
   int _subtitleSelectionGeneration = 0;
-  final _pendingSubtitleLoads = <String, String>{};
-  final _externalSubtitleTitles = <String, Set<String>>{};
+  // Every external subtitle sub-added, with its title and language for a
+  // retry. It's kept after its source ends, so a late failure from a previous
+  // source still reads as a subtitle error rather than a video error.
+  final _externalSubtitles = <String, ({String? title, String? language})>{};
   final _externalSubtitleLoads = <String, Future<void>>{};
-  final _externalSubtitleDetails =
-      <String, ({String? title, String? language, String? codec})>{};
+
+  static const _externalSubtitleRetries = 5;
+  static const _externalSubtitleRetryDelay = Duration(seconds: 10);
 
   void _resetSubtitleState() {
-    _subtitleLoadSession++;
     _subtitleSelectionGeneration++;
-    _externalSubtitleTitles.clear();
     _externalSubtitleLoads.clear();
-    _externalSubtitleDetails.clear();
   }
+
+  bool _isLatestSubtitleSelection(int generation) =>
+      !_isDisposed && generation == _subtitleSelectionGeneration;
 
   // Captions mpv found inside the video, cached from the async track-list
   // property so the sync getter can serve them. An EmbeddedCaptionTrack id is
@@ -360,44 +363,20 @@ class MediaKitPlayerBackend extends PlayerBackend {
     return c == 'eia_608' || c == 'eia_708' || c == 'cea708' || c == 'cea_708';
   }
 
-  // Check the server and query too, since the same path can serve different
-  // subtitles. Also handle local paths and file:// URLs without changing
-  // characters that are part of the filename.
+  // Whether an mpv external track was sub-added from the requested URL. mpv can
+  // re-encode the URL it reports in `external-filename`, so an exact compare
+  // misses. Jellyfin external subtitle URLs carry the unique subtitle stream
+  // index in the path, so a decoded-path match still identifies the sub.
   static bool _externalFilenameMatches(
     String? mpvFilename,
     String requestedUrl,
   ) {
     if (mpvFilename == null || mpvFilename.isEmpty) return false;
     if (mpvFilename == requestedUrl) return true;
-    try {
-      final a = Uri.parse(mpvFilename);
-      final b = Uri.parse(requestedUrl);
-      bool isFile(Uri uri) =>
-          !uri.hasScheme ||
-          uri.scheme == 'file' ||
-          (Platform.isWindows && uri.scheme.length == 1);
-      if (isFile(a) || isFile(b)) {
-        if (!isFile(a) || !isFile(b)) return false;
-        String path(Uri uri, String raw) {
-          final value = uri.scheme == 'file'
-              ? uri.toFilePath(windows: Platform.isWindows)
-              : raw;
-          return Platform.isWindows ? value.replaceAll(r'\', '/') : value;
-        }
-
-        return path(a, mpvFilename) == path(b, requestedUrl);
-      }
-      return a.scheme == b.scheme &&
-          a.authority == b.authority &&
-          a.hasQuery == b.hasQuery &&
-          a.query == b.query &&
-          a.fragment == b.fragment &&
-          listEquals(a.pathSegments, b.pathSegments);
-    } on FormatException {
-      return false;
-    } on UnsupportedError {
-      return false;
-    }
+    final a = Uri.tryParse(mpvFilename);
+    final b = Uri.tryParse(requestedUrl);
+    if (a == null || b == null) return false;
+    return Uri.decodeFull(a.path) == Uri.decodeFull(b.path);
   }
 
   static Future<void> _nativeSetProperty(
@@ -701,7 +680,6 @@ class MediaKitPlayerBackend extends PlayerBackend {
     if (url.isEmpty) return;
 
     _resetSubtitleState();
-    final subtitleSession = _subtitleLoadSession;
     final media = Media(url);
     _currentUrl = media.uri;
     _isStale = true;
@@ -729,12 +707,7 @@ class MediaKitPlayerBackend extends PlayerBackend {
     // Whatever mpv reported for the previous title must not answer for this
     // one; the listener repopulates it once this file is loaded.
     _decodedVideoParams = null;
-    try {
-      await _player.open(media, play: !openPaused);
-    } catch (_) {
-      if (subtitleSession == _subtitleLoadSession) _resetSubtitleState();
-      rethrow;
-    }
+    await _player.open(media, play: !openPaused);
     _updateStaleState();
     await _applyLinuxHwdecFallbackIfNeeded(media, openPaused: openPaused);
     if (!_useLibass) {
@@ -2007,52 +1980,45 @@ class MediaKitPlayerBackend extends PlayerBackend {
     return false;
   }
 
-  Map<String, dynamic> _mapMpvError(String message) {
-    // A subtitle can fail to load while the video keeps playing.
-    // Check that the failed file is a subtitle we tried to load,
-    // so video and audio failures still reach the normal error handler.
-    final text = message.trim();
-    final match =
-        RegExp(
-          r'^(?:Failed to open|Can not open external file) (.+)\.$',
-        ).firstMatch(text) ??
-        RegExp(r"^Cannot open file '(.+)': .+$").firstMatch(text);
-    final url = match?.group(1);
-    if (url == null) return {'event': 'error', 'message': message};
-    bool matchesFailedFile(String known) {
-      if (_externalFilenameMatches(url, known)) return true;
+  // A subtitle that fails to load leaves the video playing, so it's reported
+  // apart from video errors and the manager only logs it.
+  Map<String, dynamic> _errorEvent(String message) {
+    final subtitleUrl = externalSubtitleInError(
+      message,
+      _externalSubtitles.keys,
+    );
+    if (subtitleUrl == null) return {'event': 'error', 'message': message};
+    return {
+      'event': 'subtitleError',
+      'message':
+          'Could not load subtitle file: ${subtitleUrl.split('?').first}',
+    };
+  }
+
+  // mpv names the failed file in its error, sometimes decoded, so the match
+  // uses the URL without its query.
+  @visibleForTesting
+  static String? externalSubtitleInError(
+    String message,
+    Iterable<String> subtitleUrls,
+  ) {
+    for (final url in subtitleUrls) {
+      final withoutQuery = url.split('?').first;
+      if (withoutQuery.isEmpty) continue;
+      if (message.contains(withoutQuery)) return url;
       try {
-        // mpv may decode a URL before printing it in an error message.
-        // Leave literal '%' characters in local file paths alone.
-        final uri = Uri.tryParse(known);
-        return uri != null &&
-            uri.hasScheme &&
-            uri.hasAuthority &&
-            Uri.decodeComponent(known) == url;
-      } on FormatException {
-        return false;
+        if (message.contains(Uri.decodeFull(withoutQuery))) return url;
+      } catch (_) {
+        // A % that isn't a valid escape, like one in a local filename.
       }
     }
-
-    final currentUrl = _currentUrl;
-    if ((currentUrl == null || !matchesFailedFile(currentUrl)) &&
-        [
-          ..._pendingSubtitleLoads.values,
-          ..._externalSubtitleTitles.keys,
-        ].any(matchesFailedFile)) {
-      return {
-        'event': 'subtitleError',
-        // Log the file path without including the API key.
-        'message': 'Could not load subtitle file: ${Uri.tryParse(url)?.path}',
-      };
-    }
-    return {'event': 'error', 'message': message};
+    return null;
   }
 
   @override
   Stream<Map<String, dynamic>>? get errorStream => _player.stream.error
       .where((err) => !_isTransientReconnectError(err))
-      .map(_mapMpvError);
+      .map(_errorEvent);
 
   @override
   Future<void> setPlaybackSpeed(double speed) async {
@@ -2163,8 +2129,7 @@ class MediaKitPlayerBackend extends PlayerBackend {
   }) async {
     if (mpvTrackId < 1) return;
     final generation = ++_subtitleSelectionGeneration;
-    bool isCurrentSelection() =>
-        !_isDisposed && generation == _subtitleSelectionGeneration;
+    bool isCurrentSelection() => _isLatestSubtitleSelection(generation);
     _subtitlesDisabled = false;
     try {
       final native = _player.platform as NativePlayer;
@@ -2176,26 +2141,26 @@ class MediaKitPlayerBackend extends PlayerBackend {
         trackListBefore,
         type: 'sub',
       ).where((e) => !_isClosedCaptionCodec(e.codec)).toList();
-      final subtitleIds = subEntries.map((e) => e.id).toList();
 
-      // Find the mpv track ID for the requested subtitle. External tracks use
-      // their load marker first, then their filename, because load order can vary.
-      // Embedded positions count only tracks inside the video.
-      String? resolvedSid;
+      // Resolve the 1-based position to a real mpv sid. External tracks are
+      // matched by the URL they were sub-added from, so a scrambled add order
+      // (external added before a slow embedded demux finished) can't select
+      // the wrong track. Embedded positions count only demuxed tracks for the
+      // same reason.
+      final String? sidToApply;
       if (isExternalSubtitle) {
-        resolvedSid = _externalSubtitleSid(
-          trackListBefore,
-          externalSubtitleUrl,
-        );
+        sidToApply = externalSubtitleUrl == null
+            ? null
+            : _externalSubtitleSid(trackListBefore, externalSubtitleUrl);
       } else {
         final embedded = subEntries.where((e) => !e.external).toList();
-        if (mpvTrackId <= embedded.length) {
-          resolvedSid = embedded[mpvTrackId - 1].id.toString();
-        }
+        sidToApply = mpvTrackId <= embedded.length
+            ? embedded[mpvTrackId - 1].id.toString()
+            : null;
       }
-      // If we still can't identify the requested track, leave subtitles off.
-      // Falling back to a list position could select a different language.
-      if (resolvedSid == null) {
+      // A track that isn't there stays off. Falling back to a list position
+      // can land on another language.
+      if (sidToApply == null) {
         await _player.setSubtitleTrack(SubtitleTrack.no());
         if (!isCurrentSelection()) return;
         await _nativeSetProperty(native, 'sid', 'no');
@@ -2219,28 +2184,17 @@ class MediaKitPlayerBackend extends PlayerBackend {
         }
         return;
       }
-      final sidToApply = resolvedSid;
-      final subtitleTracks = _player.state.tracks.subtitle;
-      final playableSubtitleTracks = subtitleTracks
-          .where((t) => t.id != 'auto' && t.id != 'no' && !_isCcSid(t.id))
-          .toList();
 
-      var sidAfter = await _tryNativeGetProperty(native, 'sid');
-      if (!isCurrentSelection()) return;
-
-      SubtitleTrack? target;
-      for (final t in playableSubtitleTracks) {
-        if (t.id == sidToApply) {
-          target = t;
-          break;
-        }
-      }
-      // media_kit's track list may not have updated yet.
-      // Select the track ID we found in mpv instead.
-      target ??= SubtitleTrack(sidToApply, null, null);
+      // media_kit's own track list can lag behind mpv's, so a track it
+      // doesn't know yet is selected by the sid mpv reported.
+      final target =
+          _player.state.tracks.subtitle
+              .where((t) => t.id == sidToApply)
+              .firstOrNull ??
+          SubtitleTrack(sidToApply, null, null);
       await _player.setSubtitleTrack(target);
       if (!isCurrentSelection()) return;
-      sidAfter = await _tryNativeGetProperty(native, 'sid');
+      var sidAfter = await _tryNativeGetProperty(native, 'sid');
       if (!isCurrentSelection()) return;
 
       if (sidAfter != sidToApply) {
@@ -2270,78 +2224,50 @@ class MediaKitPlayerBackend extends PlayerBackend {
       _subtitleDebug(
         'set track=$mpvTrackId sid_requested=$sidToApply sid_after=$sidAfter '
         'codec=$subtitleCodec external=$isExternalSubtitle '
-        'bitmap=$isBitmapSubtitle mpv_sub_tracks=${subtitleIds.length}',
+        'bitmap=$isBitmapSubtitle mpv_sub_tracks=${subEntries.length}',
       );
     } catch (e) {
       _subtitleDebug('set track=$mpvTrackId threw: $e');
     }
   }
 
-  String? _externalSubtitleSid(String? trackList, String? url) {
-    if (url == null || url.isEmpty) return null;
-    final entries = _extractTrackEntries(trackList, type: 'sub')
-        .where((entry) => entry.external && !_isClosedCaptionCodec(entry.codec))
-        .toList();
-    // Find the subtitle track by the tag we added when loading it.
-    for (final title in _externalSubtitleTitles[url] ?? const <String>{}) {
-      final matches = entries.where((entry) => entry.title == title).toList();
-      if (matches.length == 1) return matches.single.id.toString();
+  static String? _externalSubtitleSid(String? trackList, String url) {
+    for (final entry in _extractTrackEntries(trackList, type: 'sub')) {
+      if (entry.external &&
+          _externalFilenameMatches(entry.externalFilename, url)) {
+        return entry.id.toString();
+      }
     }
-    // Otherwise, use the URL or filename only if it matches exactly one track.
-    final matches = entries
-        .where((entry) => _externalFilenameMatches(entry.externalFilename, url))
-        .toList();
-    return matches.length == 1 ? matches.single.id.toString() : null;
+    return null;
   }
 
-  // Check if the file is already loaded, even when multiple tracks match it.
-  bool _hasExternalSubtitle(String? trackList, String url) {
-    if (url.isEmpty) return false;
-    final titles = _externalSubtitleTitles[url] ?? const <String>{};
-    return _extractTrackEntries(trackList, type: 'sub').any(
-      (entry) =>
-          entry.external &&
-          (titles.contains(entry.title) ||
-              _externalFilenameMatches(entry.externalFilename, url)),
-    );
-  }
-
+  // Jellyfin can still be extracting a subtitle when mpv gives up on it, so
+  // the selected one is added again a few times while it stays selected.
   Future<void> _retryExternalSubtitle(
     String url, {
     required bool Function() isCurrentSelection,
     required Future<void> Function() selectTrack,
   }) async {
     final scheme = Uri.tryParse(url)?.scheme;
-    if (scheme != 'http' && scheme != 'https') return;
-
-    // Jellyfin may still be extracting subtitles when mpv gives up.
-    // Keep retrying while this subtitle is selected.
-    await Future<void>.delayed(const Duration(seconds: 5));
-    while (isCurrentSelection()) {
-      // Another subtitle may still be loading, so wait for this one's details.
-      if (_externalSubtitleDetails.containsKey(url)) {
-        await _addExternalSubtitle(url, shouldLoad: isCurrentSelection);
-      }
-      // Don't let an old download change subtitles after the viewer switches
-      // tracks, turns subtitles off, or leaves the video.
+    if (!_externalSubtitles.containsKey(url) ||
+        (scheme != 'http' && scheme != 'https')) {
+      return;
+    }
+    final native = _player.platform as NativePlayer;
+    var retries = 0;
+    while (true) {
+      await _externalSubtitleLoads[url];
       if (!isCurrentSelection()) return;
-      final native = _player.platform as NativePlayer;
       final tracks = await _tryNativeGetProperty(native, 'track-list');
       if (!isCurrentSelection()) return;
-      // mpv can finish the command even when the download fails.
-      // Make sure the subtitle track actually loaded.
       if (_externalSubtitleSid(tracks, url) != null) {
         await selectTrack();
         return;
       }
-      if (_hasExternalSubtitle(tracks, url)) {
-        _subtitleDebug(
-          'External subtitle loaded without a unique selectable track; '
-          'stopping retries.',
-        );
-        return;
-      }
-      await Future<void>.delayed(const Duration(seconds: 10));
+      if (retries++ == _externalSubtitleRetries) return;
+      await Future<void>.delayed(_externalSubtitleRetryDelay);
+      if (!isCurrentSelection()) return;
+      await _addExternalSubtitle(url);
     }
   }
 
@@ -2393,17 +2319,12 @@ class MediaKitPlayerBackend extends PlayerBackend {
     final platform = _player.platform;
     if (platform is! NativePlayer) return;
     final sid = _ccTrackSids[id - 1].toString();
-    // Use the same queue so an older subtitle selection can't overwrite this one.
-    try {
-      await _player.setSubtitleTrack(SubtitleTrack(sid, null, null));
-    } catch (_) {}
-    if (_isDisposed || generation != _subtitleSelectionGeneration) return;
     await _nativeSetProperty(platform, 'sid', sid);
-    if (_isDisposed || generation != _subtitleSelectionGeneration) return;
+    if (!_isLatestSubtitleSelection(generation)) return;
     await _nativeSetProperty(platform, 'secondary-sid', 'no');
-    if (_isDisposed || generation != _subtitleSelectionGeneration) return;
+    if (!_isLatestSubtitleSelection(generation)) return;
     await _nativeSetProperty(platform, 'sub-visibility', 'yes');
-    if (_isDisposed || generation != _subtitleSelectionGeneration) return;
+    if (!_isLatestSubtitleSelection(generation)) return;
     await _nativeSetProperty(platform, 'sub-ass', 'yes');
   }
 
@@ -2412,13 +2333,13 @@ class MediaKitPlayerBackend extends PlayerBackend {
     final generation = ++_subtitleSelectionGeneration;
     _subtitlesDisabled = true;
     await _player.setSubtitleTrack(SubtitleTrack.no());
-    if (_isDisposed || generation != _subtitleSelectionGeneration) return;
+    if (!_isLatestSubtitleSelection(generation)) return;
     try {
       final native = _player.platform as NativePlayer;
       await _nativeSetProperty(native, 'sid', 'no');
-      if (_isDisposed || generation != _subtitleSelectionGeneration) return;
+      if (!_isLatestSubtitleSelection(generation)) return;
       await _nativeSetProperty(native, 'secondary-sid', 'no');
-      if (_isDisposed || generation != _subtitleSelectionGeneration) return;
+      if (!_isLatestSubtitleSelection(generation)) return;
       await _nativeSetProperty(native, 'sub-visibility', 'no');
     } catch (_) {}
   }
@@ -2493,69 +2414,34 @@ class MediaKitPlayerBackend extends PlayerBackend {
     String? title,
     String? language,
     String? codec,
-  }) {
-    _externalSubtitleDetails[url] = (
-      title: title,
-      language: language,
-      codec: codec,
-    );
-    return _addExternalSubtitle(url);
-  }
-
-  Future<void> _addExternalSubtitle(
-    String url, {
-    bool Function()? shouldLoad,
   }) async {
-    final load = _externalSubtitleLoads.putIfAbsent(
-      url,
-      () => _loadExternalSubtitle(url, _subtitleLoadSession, shouldLoad),
-    );
-    try {
-      await load;
-    } finally {
-      if (identical(_externalSubtitleLoads[url], load)) {
-        _externalSubtitleLoads.remove(url);
-      }
-    }
-  }
-
-  Future<void> _loadExternalSubtitle(
-    String url,
-    int session,
-    bool Function()? shouldLoad,
-  ) async {
-    bool canLoad() =>
-        !_isDisposed &&
-        session == _subtitleLoadSession &&
-        (shouldLoad?.call() ?? true);
-    if (!canLoad()) return;
-    final (title: title, language: language, codec: codec) =
-        _externalSubtitleDetails[url]!;
-    final native = _player.platform as NativePlayer;
-    final tracks = await _tryNativeGetProperty(native, 'track-list');
-    if (!canLoad()) return;
-    // Don't download the subtitle again if it has already loaded.
-    if (_hasExternalSubtitle(tracks, url)) return;
-    // Tag each load so we can identify its track even if mpv reports a
-    // different filename. Moonfin's subtitle menu uses the server's titles.
-    final trackTitle = '${title ?? 'external'} [moonfin-sub:${++_subtitleLoadId}]';
-    _externalSubtitleTitles.putIfAbsent(url, () => <String>{}).add(trackTitle);
-    _pendingSubtitleLoads[trackTitle] = url;
-    try {
-      await _nativeCommand(native, [
-        'sub-add',
-        url,
-        'auto',
-        trackTitle,
-        language ?? '',
-      ]);
-    } finally {
-      _pendingSubtitleLoads.remove(trackTitle);
-    }
+    _externalSubtitles[url] = (title: title, language: language);
+    await _addExternalSubtitle(url);
     _subtitleDebug(
       'sub-add title=$title lang=$language codec=$codec '
       'mpv_sub_tracks=${_realSubtitleTrackCount(_player.state.tracks.subtitle)}',
     );
+  }
+
+  // The retry and the first add can overlap, so a URL that is still being
+  // added is waited on rather than added again.
+  Future<void> _addExternalSubtitle(String url) {
+    final pending = _externalSubtitleLoads[url];
+    if (pending != null) return pending;
+    final subtitle = _externalSubtitles[url];
+    final load = _nativeCommand(_player.platform as NativePlayer, [
+      'sub-add',
+      url,
+      'auto',
+      subtitle?.title ?? 'external',
+      subtitle?.language ?? '',
+    ]);
+    _externalSubtitleLoads[url] = load;
+    return load.whenComplete(() {
+      if (identical(_externalSubtitleLoads[url], load)) {
+        _externalSubtitleLoads.remove(url);
+      }
+    });
   }
 
   int? _lastTextColor;
@@ -2695,7 +2581,6 @@ class MediaKitPlayerBackend extends PlayerBackend {
 
   @override
   void dispose() {
-    _resetSubtitleState();
     _isDisposed = true;
     _letterboxCropper.cancel();
     _prefs.removeListener(_onPreferencesChanged);
