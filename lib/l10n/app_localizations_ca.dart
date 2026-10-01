@@ -194,6 +194,9 @@ class AppLocalizationsCa extends AppLocalizations {
   String get spotlightChaptersExtras => 'Capítols i extres';
 
   @override
+  String get spotlightFileDetails => 'File Details';
+
+  @override
   String get spotlightSimilarRecommendations => 'Similars i recomanacions';
 
   @override

@@ -562,6 +562,12 @@ abstract class AppLocalizations {
   /// **'Chapters and Extras'**
   String get spotlightChaptersExtras;
 
+  /// Title of the spotlight summary card that opens the file details modal
+  ///
+  /// In en, this message translates to:
+  /// **'File Details'**
+  String get spotlightFileDetails;
+
   /// Title of the spotlight summary card that opens the similar titles and recommendations modal
   ///
   /// In en, this message translates to:

@@ -195,6 +195,9 @@ class AppLocalizationsSk extends AppLocalizations {
   String get spotlightChaptersExtras => 'Chapters and Extras';
 
   @override
+  String get spotlightFileDetails => 'File Details';
+
+  @override
   String get spotlightSimilarRecommendations => 'Similar and Recommendations';
 
   @override

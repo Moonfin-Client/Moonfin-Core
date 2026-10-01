@@ -194,6 +194,9 @@ class AppLocalizationsRo extends AppLocalizations {
   String get spotlightChaptersExtras => 'Capitole și bonusuri';
 
   @override
+  String get spotlightFileDetails => 'File Details';
+
+  @override
   String get spotlightSimilarRecommendations => 'Similare și recomandări';
 
   @override

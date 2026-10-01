@@ -194,6 +194,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get spotlightChaptersExtras => 'Bölümler ve Ekstralar';
 
   @override
+  String get spotlightFileDetails => 'File Details';
+
+  @override
   String get spotlightSimilarRecommendations => 'Benzerler ve Öneriler';
 
   @override

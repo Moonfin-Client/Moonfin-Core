@@ -256,6 +256,10 @@
   "@spotlightChaptersExtras": {
     "description": "Title of the spotlight summary card that opens the chapters and special features modal"
   },
+  "spotlightFileDetails": "File Details",
+  "@spotlightFileDetails": {
+    "description": "Title of the spotlight summary card that opens the file details modal"
+  },
   "spotlightSimilarRecommendations": "Similar and Recommendations",
   "@spotlightSimilarRecommendations": {
     "description": "Title of the spotlight summary card that opens the similar titles and recommendations modal"

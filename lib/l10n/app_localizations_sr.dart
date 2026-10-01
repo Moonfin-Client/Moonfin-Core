@@ -194,6 +194,9 @@ class AppLocalizationsSr extends AppLocalizations {
   String get spotlightChaptersExtras => 'Поглавља и додатни садржај';
 
   @override
+  String get spotlightFileDetails => 'File Details';
+
+  @override
   String get spotlightSimilarRecommendations => 'Слично и препоруке';
 
   @override

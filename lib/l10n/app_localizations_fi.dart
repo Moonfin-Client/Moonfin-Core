@@ -197,6 +197,9 @@ class AppLocalizationsFi extends AppLocalizations {
   String get spotlightChaptersExtras => 'Kappaleet ja Lisämateriaalit';
 
   @override
+  String get spotlightFileDetails => 'File Details';
+
+  @override
   String get spotlightSimilarRecommendations => 'Samankaltaiset ja Suositukset';
 
   @override

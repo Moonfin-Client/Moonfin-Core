@@ -195,6 +195,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get spotlightChaptersExtras => 'Chapitres et bonus';
 
   @override
+  String get spotlightFileDetails => 'File Details';
+
+  @override
   String get spotlightSimilarRecommendations =>
       'Titres similaires et recommandations';
 

@@ -108,9 +108,17 @@ void main() {
       () => imageApi.getBackdropImageUrl(
         any(),
         maxWidth: any(named: 'maxWidth'),
+        index: any(named: 'index'),
         tag: any(named: 'tag'),
       ),
     ).thenReturn('http://img/backdrop');
+    when(
+      () => imageApi.getThumbImageUrl(
+        any(),
+        maxWidth: any(named: 'maxWidth'),
+        tag: any(named: 'tag'),
+      ),
+    ).thenReturn('http://img/thumb');
 
     vm = _Vm();
     when(() => vm.imageApi).thenReturn(imageApi);
@@ -148,6 +156,7 @@ void main() {
     List<SeerrDiscoverItem> seerrCrewCredits = const [],
     String? mainBackdropKey,
     bool seerrAvailable = false,
+    String? selectedMediaSourceId,
   }) => spotlightCardsFor(
     vm: vm,
     item: item,
@@ -159,6 +168,7 @@ void main() {
     seerrCrewCredits: seerrCrewCredits,
     mainBackdropKey: mainBackdropKey,
     seerrAvailable: seerrAvailable,
+    selectedMediaSourceId: selectedMediaSourceId,
   );
 
   test('an item with no loaded content gets no cards', () {
@@ -707,4 +717,96 @@ void main() {
     // No crew and no studios: the people card holds only the cast section.
     expect(cards.single.sections.map((s) => s.title), [_l10n.castMembers]);
   });
+
+  test('a movie with media sources produces a file details card', () {
+    final movie = _item('Movie', {
+      'MediaSources': [
+        {
+          'Id': 'src-1',
+          'Container': 'mkv',
+          'Size': 5583457484, // ~5.20 GB
+        },
+      ],
+    });
+    final cards = cardsFor(movie);
+    expect(cards.map((c) => c.id), contains('file_details'));
+    final fileDetails = cards.firstWhere((c) => c.id == 'file_details');
+    expect(fileDetails.title, _l10n.spotlightFileDetails);
+    expect(fileDetails.modalTitle, _l10n.fileInformation);
+    expect(fileDetails.subtitle, contains('MKV'));
+    expect(fileDetails.subtitle, contains('5.20 GB'));
+    expect(fileDetails.sections, hasLength(1));
+  });
+
+  test('an episode with media sources produces a file details card', () {
+    final ep = _child('ep-1', 'Episode');
+    final epWithSource = AggregatedItem(
+      id: ep.id,
+      serverId: ep.serverId,
+      rawData: {
+        ...ep.rawData,
+        'MediaSources': [
+          {
+            'Id': 'src-ep',
+            'Container': 'mp4',
+            'Size': 1073741824, // 1.00 GB
+          },
+        ],
+      },
+    );
+    final cards = cardsFor(epWithSource);
+    expect(cards.map((c) => c.id), contains('file_details'));
+    final fileDetails = cards.firstWhere((c) => c.id == 'file_details');
+    expect(fileDetails.subtitle, contains('MP4'));
+    expect(fileDetails.subtitle, contains('1.00 GB'));
+  });
+
+  test('file details card respects selectedMediaSourceId', () {
+    final movie = _item('Movie', {
+      'MediaSources': [
+        {
+          'Id': 'src-1',
+          'Container': 'mkv',
+          'Size': 2147483648, // 2.00 GB
+        },
+        {
+          'Id': 'src-2',
+          'Container': 'mp4',
+          'Size': 5368709120, // 5.00 GB
+        },
+      ],
+    });
+    final cardsDefault = cardsFor(movie);
+    expect(
+      cardsDefault.firstWhere((c) => c.id == 'file_details').subtitle,
+      contains('2.00 GB'),
+    );
+
+    final cardsSelected = cardsFor(movie, selectedMediaSourceId: 'src-2');
+    expect(
+      cardsSelected.firstWhere((c) => c.id == 'file_details').subtitle,
+      contains('5.00 GB'),
+    );
+  });
+
+  test('file details card picks distinct backdrop tag when available', () {
+    final movie = _item('Movie', {
+      'BackdropImageTags': ['tag0', 'tag1', 'tag2'],
+      'MediaSources': [
+        {'Id': 'src-1', 'Container': 'mkv'},
+      ],
+    });
+    final cards = cardsFor(movie);
+    expect(cards.map((c) => c.id), contains('file_details'));
+    // Expect tag2 and index 2 to be picked for file details backdrop
+    verify(
+      () => vm.imageApi.getBackdropImageUrl(
+        'item-1',
+        maxWidth: any(named: 'maxWidth'),
+        index: 2,
+        tag: 'tag2',
+      ),
+    ).called(1);
+  });
 }
+

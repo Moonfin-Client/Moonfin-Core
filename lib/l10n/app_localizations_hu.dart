@@ -194,6 +194,9 @@ class AppLocalizationsHu extends AppLocalizations {
   String get spotlightChaptersExtras => 'Fejezetek és további tartalmak';
 
   @override
+  String get spotlightFileDetails => 'File Details';
+
+  @override
   String get spotlightSimilarRecommendations => 'Hasonló és javaslatok';
 
   @override
