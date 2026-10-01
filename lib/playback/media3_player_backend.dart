@@ -15,7 +15,8 @@ import 'known_defects.dart';
 import 'media3_letterbox_crop.dart';
 import 'server_transcode_capabilities.dart';
 
-class Media3PlayerBackend extends PlayerBackend {
+class Media3PlayerBackend extends PlayerBackend
+    implements SubtitleLoadingBackend {
   static const _discontinuityWindowMs = 15000;
   static const _discontinuityThreshold = 3;
   static const _audioSinkErrorThreshold = 2;
@@ -132,6 +133,20 @@ class Media3PlayerBackend extends PlayerBackend {
   final List<int> _discontinuityTimestamps = <int>[];
   final List<int> _audioSinkErrorTimestamps = <int>[];
   Timer? _audioDelayDebounce;
+  bool _isSubtitleLoading = false;
+  final _subtitleLoadingStream = StreamController<bool>.broadcast();
+
+  @override
+  bool get isSubtitleLoading => _isSubtitleLoading;
+
+  @override
+  Stream<bool> get subtitleLoadingStream => _subtitleLoadingStream.stream;
+
+  void _setSubtitleLoading(bool loading) {
+    if (_disposed || _isSubtitleLoading == loading) return;
+    _isSubtitleLoading = loading;
+    _subtitleLoadingStream.add(loading);
+  }
 
   // Freeze diagnostics: surface decode/render stalls into the in-app report so
   // a frozen-picture playback is visible without adb. See _checkPlaybackWatchdogs.
@@ -222,6 +237,7 @@ class Media3PlayerBackend extends PlayerBackend {
         _buffer = Duration(milliseconds: _toInt(map['bufferedMs']));
         _isPlaying = _toBool(map['isPlaying']);
         _isBuffering = _toBool(map['isBuffering']);
+        _setSubtitleLoading(_toBool(map['isSubtitleLoading']));
         // The player's own intent, which isPlaying folds away. Absent from an
         // older native side, so it stays null rather than guessing false.
         _playWhenReady = map.containsKey('playWhenReady')
@@ -322,6 +338,7 @@ class Media3PlayerBackend extends PlayerBackend {
           _tracksReadyCompleter!.complete();
         }
       case 'viewDisposed':
+        _setSubtitleLoading(false);
         _activityStarted = false;
         _isPlaying = false;
         _isBuffering = false;
@@ -330,6 +347,7 @@ class Media3PlayerBackend extends PlayerBackend {
       case 'activityAction':
         _activityActionController.add(map.cast<String, dynamic>());
       case 'playerError':
+        _setSubtitleLoading(false);
         final cause = map['cause']?.toString();
         _diag(
           'Media3 player error: ${map['errorCode'] ?? ''} ${map['message'] ?? ''}'
@@ -338,6 +356,7 @@ class Media3PlayerBackend extends PlayerBackend {
         );
         _errorStream.add(map.cast<String, dynamic>());
       case 'error':
+        _setSubtitleLoading(false);
         final cause = map['cause']?.toString();
         _diag(
           'Media3 error: ${map['errorCode'] ?? ''} '
@@ -991,6 +1010,7 @@ class Media3PlayerBackend extends PlayerBackend {
         : payload['url']?.toString() ?? '';
     if (_disposed || url.isEmpty) return;
 
+    _setSubtitleLoading(false);
     _currentUrl = url;
     final mediaType = payload['mediaType']?.toString() ?? 'video';
     final container = payload['container']?.toString();
@@ -1167,6 +1187,7 @@ class Media3PlayerBackend extends PlayerBackend {
   }
 
   Future<void> _teardown(String command) async {
+    _setSubtitleLoading(false);
     // The watchdogs guard a single item's bring-up, so stopping has to stop
     // the timer too or it keeps warning about a player that was told to stop.
     _watchdogTimer?.cancel();
@@ -1575,6 +1596,7 @@ class Media3PlayerBackend extends PlayerBackend {
     _completedStream.close();
     _errorStream.close();
     _tracksChangedController.close();
+    _subtitleLoadingStream.close();
   }
 }
 

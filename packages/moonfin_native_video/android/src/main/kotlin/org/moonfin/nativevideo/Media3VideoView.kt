@@ -5113,6 +5113,10 @@ class Media3VideoView(
             "bufferedMs" to if (bufferedPosition > 0) bufferedPosition else 0L,
             "isPlaying" to player.isPlaying,
             "isBuffering" to (player.playbackState == Player.STATE_BUFFERING),
+            "isSubtitleLoading" to (subtitleTrackEnabled &&
+                player.playbackState != Player.STATE_IDLE &&
+                player.playbackState != Player.STATE_ENDED &&
+                sidecarOffsetSources.any { it.isSubtitleLoading }),
             // isPlaying can't tell a viewer pause from a stall, so this sends the
             // intent to play. A phone call holds playback without clearing that
             // intent, so it counts as paused here instead of looking like a stall.

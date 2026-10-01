@@ -1985,6 +1985,10 @@
   "@searchingSubtitles": {
     "description": "Shown while a remote subtitle search is running"
   },
+  "fetchingSubtitles": "Fetching subtitles",
+  "@fetchingSubtitles": {
+    "description": "Playback status shown while the selected subtitle file is loading"
+  },
   "downloadingSubtitle": "Downloading subtitle\u2026",
   "@downloadingSubtitle": {
     "description": "Shown while a chosen subtitle is downloaded and the server is picking it up"

@@ -102,6 +102,48 @@ import 'playback_takeover.dart';
 import 'osd_buttons.dart';
 import 'trickplay_housing_inset.dart';
 
+class _SubtitleLoadingSpinner extends StatefulWidget {
+  const _SubtitleLoadingSpinner();
+
+  @override
+  State<_SubtitleLoadingSpinner> createState() =>
+      _SubtitleLoadingSpinnerState();
+}
+
+class _SubtitleLoadingSpinnerState extends State<_SubtitleLoadingSpinner>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      // Run Flutter's stock spinner at half speed.
+      duration: Duration(
+        milliseconds:
+            CircularProgressIndicator.defaultAnimationDuration.inMilliseconds *
+            2,
+      ),
+      vsync: this,
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CircularProgressIndicator(
+      controller: _controller,
+      strokeWidth: 2,
+      color: Colors.white,
+    );
+  }
+}
+
 class VideoPlayerScreen extends StatefulWidget {
   const VideoPlayerScreen({super.key});
 
@@ -332,6 +374,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   StreamSubscription? _pipActionSub;
   StreamSubscription? _playingSub;
   StreamSubscription? _bufferingSub;
+  StreamSubscription<bool>? _subtitleLoadingSub;
+  Timer? _subtitleLoadingTimer;
+  bool _showSubtitleLoading = false;
   StreamSubscription<Map<String, dynamic>>? _castEventsSub;
   StreamSubscription<Map<String, dynamic>>? _dlnaEventsSub;
   StreamSubscription<Map<String, dynamic>>? _airPlayEventsSub;
@@ -981,6 +1026,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         PlatformDetection.isIOS;
 
     _displayPlaying = _state.isPlaying;
+    _subtitleLoadingSub = _state.subtitleLoadingStream.listen(
+      _onSubtitleLoadingChanged,
+    );
+    _onSubtitleLoadingChanged(_state.isSubtitleLoading);
     _playingSub = _state.playingStream.listen((playing) {
       _updateDisplayPlaying(playing);
       // The hide timer passes over a player that hasn't started yet, so a
@@ -1099,6 +1148,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _pipActionSub?.cancel();
     _playingSub?.cancel();
     _bufferingSub?.cancel();
+    _subtitleLoadingSub?.cancel();
+    _subtitleLoadingTimer?.cancel();
     _castEventsSub?.cancel();
     _dlnaEventsSub?.cancel();
     _airPlayEventsSub?.cancel();
@@ -4438,6 +4489,55 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     );
   }
 
+  void _onSubtitleLoadingChanged(bool loading) {
+    _subtitleLoadingTimer?.cancel();
+    _subtitleLoadingTimer = null;
+    if (!mounted) return;
+    if (!loading) {
+      if (_showSubtitleLoading) setState(() => _showSubtitleLoading = false);
+    } else if (!_showSubtitleLoading) {
+      // Cached subtitles should not make the indicator flash briefly.
+      _subtitleLoadingTimer = Timer(const Duration(milliseconds: 500), () {
+        _subtitleLoadingTimer = null;
+        if (mounted) setState(() => _showSubtitleLoading = true);
+      });
+    }
+  }
+
+  Widget _buildSubtitleLoadingIndicator() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.spaceLg),
+      child: IgnorePointer(
+        child: Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(
+                width: AppTypography.fontSizeLg,
+                height: AppTypography.fontSizeLg,
+                child: _SubtitleLoadingSpinner(),
+              ),
+              const SizedBox(width: AppSpacing.spaceSm),
+              Flexible(
+                child: Text(
+                  AppLocalizations.of(context).fetchingSubtitles,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: Colors.white70,
+                    fontSize: AppTypography.fontSizeXs,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildPausedDescriptionOverlay() {
     if (!_prefs.get(UserPreferences.showDescriptionOnPause)) {
       return const SizedBox.shrink();
@@ -5036,6 +5136,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                     return Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
+                        if (_showSubtitleLoading &&
+                            !_isBringupInProgress(_bringupState.phase)) ...[
+                          _buildSubtitleLoadingIndicator(),
+                          const SizedBox(height: AppSpacing.spaceMd),
+                        ],
                         if (hasAboveRow)
                           Padding(
                             padding: const EdgeInsets.only(
