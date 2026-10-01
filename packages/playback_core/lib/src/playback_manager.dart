@@ -833,6 +833,14 @@ class PlaybackManager implements AudioOwnable {
       mediaStreams,
       externalSubtitles,
     );
+    // Seed the requested subtitle before opening the source: mpv's startup
+    // selection waits for the background subtitle add pass to finish.
+    final selectedExternalSubtitleUrl =
+        subtitleStreamIndex != null &&
+            _isSubtitleDeliveredExternally(subtitleStreamIndex) &&
+            !_subtitleIsBurnedIntoVideo(subtitleStreamIndex)
+        ? _externalSubtitleUrlForStream(subtitleStreamIndex)
+        : null;
 
     return <String, dynamic>{
       'url': url,
@@ -875,6 +883,8 @@ class PlaybackManager implements AudioOwnable {
           normalizationGainDb ??
           MediaStreamResolver.extractNormalizationGainDb(mediaStreams),
       if (declaredSubtitles.isNotEmpty) 'externalSubtitles': declaredSubtitles,
+      if (selectedExternalSubtitleUrl != null)
+        'selectedExternalSubtitleUrl': selectedExternalSubtitleUrl,
     };
   }
 
@@ -1170,6 +1180,16 @@ class PlaybackManager implements AudioOwnable {
   }
 
   void _bindStreams(PlayerBackend backend) {
+    // If the new backend can't report subtitle loading, reset the indicator to false.
+    final subtitleLoader = backend is SubtitleLoadingBackend
+        ? backend as SubtitleLoadingBackend
+        : null;
+    state.setSubtitleLoading(subtitleLoader?.isSubtitleLoading ?? false);
+    if (subtitleLoader != null) {
+      _streamSubs.add(
+        subtitleLoader.subtitleLoadingStream.listen(state.setSubtitleLoading),
+      );
+    }
     _streamSubs.addAll([
       backend.positionStream.listen((pos) {
         state.setPosition(pos);

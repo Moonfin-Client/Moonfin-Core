@@ -31,12 +31,27 @@ import java.io.IOException
 internal class TimeOffsetMediaPeriod(
     val wrappedMediaPeriod: MediaPeriod,
     initialOffsetUs: Long,
+    private val onLoadingChanged: () -> Unit = {},
 ) : MediaPeriod, MediaPeriod.Callback {
 
     @Volatile
     private var timeOffsetUs = initialOffsetUs
 
     private var callback: MediaPeriod.Callback? = null
+    private var trackSelected = false
+    var isSubtitleLoading = false
+        private set
+
+    private fun updateSubtitleLoading(
+        bufferedPositionUs: Long = wrappedMediaPeriod.bufferedPositionUs,
+    ) {
+        // A selected subtitle is still pending between retries, when isLoading
+        // may be false. End-of-source marks completion without waiting for a cue.
+        val loading = trackSelected && bufferedPositionUs != C.TIME_END_OF_SOURCE
+        if (isSubtitleLoading == loading) return
+        isSubtitleLoading = loading
+        onLoadingChanged()
+    }
 
     /**
      * Applies to every read and position from now on. Data the renderer has
@@ -89,6 +104,8 @@ internal class TimeOffsetMediaPeriod(
                 else -> current
             }
         }
+        trackSelected = childStreams.any { it != null }
+        updateSubtitleLoading()
         return startPositionUs + offset
     }
 
@@ -108,7 +125,9 @@ internal class TimeOffsetMediaPeriod(
         val offset = timeOffsetUs
         // The merging period insists every child answers a seek with the exact
         // position it was given, so the offset has to come off and go back on.
-        return wrappedMediaPeriod.seekToUs(positionUs - offset) + offset
+        val seekPositionUs = wrappedMediaPeriod.seekToUs(positionUs - offset) + offset
+        updateSubtitleLoading()
+        return seekPositionUs
     }
 
     override fun getAdjustedSeekPositionUs(positionUs: Long, seekParameters: SeekParameters): Long {
@@ -118,6 +137,7 @@ internal class TimeOffsetMediaPeriod(
 
     override fun getBufferedPositionUs(): Long {
         val bufferedUs = wrappedMediaPeriod.bufferedPositionUs
+        updateSubtitleLoading(bufferedUs)
         return if (bufferedUs == C.TIME_END_OF_SOURCE) C.TIME_END_OF_SOURCE else bufferedUs + timeOffsetUs
     }
 
@@ -155,6 +175,7 @@ internal class TimeOffsetMediaPeriod(
     }
 
     override fun onContinueLoadingRequested(source: MediaPeriod) {
+        updateSubtitleLoading()
         callback?.onContinueLoadingRequested(this)
     }
 }

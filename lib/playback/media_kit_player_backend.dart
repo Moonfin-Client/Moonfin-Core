@@ -172,7 +172,8 @@ class _MediaKitDeviceProfileCapabilities {
   }
 }
 
-class MediaKitPlayerBackend extends PlayerBackend {
+class MediaKitPlayerBackend extends PlayerBackend
+    implements SubtitleLoadingBackend {
   static const Duration _linuxHwdecFirstFrameTimeout = Duration(
     milliseconds: 1500,
   );
@@ -228,6 +229,30 @@ class MediaKitPlayerBackend extends PlayerBackend {
   // The viewer asked for no subtitles. Held here so the deferred visibility
   // pass can tell a fresh source apart from a choice it must not undo.
   bool _subtitlesDisabled = false;
+
+  String? _selectedExternalSubtitleUrl;
+  bool _isSubtitleLoading = false;
+  final _subtitleLoadingStream = StreamController<bool>.broadcast();
+
+  @override
+  bool get isSubtitleLoading => _isSubtitleLoading;
+
+  @override
+  Stream<bool> get subtitleLoadingStream => _subtitleLoadingStream.stream;
+
+  void _setSubtitleLoading(bool loading) {
+    if (_isDisposed || _isSubtitleLoading == loading) return;
+    _isSubtitleLoading = loading;
+    _subtitleLoadingStream.add(loading);
+  }
+
+  void _setSelectedExternalSubtitle(String? url) {
+    _selectedExternalSubtitleUrl = url;
+    _setSubtitleLoading(url != null);
+  }
+
+  bool _isSelectedExternalSubtitle(String url) =>
+      _selectedExternalSubtitleUrl == url;
 
   // Bumped by every subtitle choice and every new or stopped source, so a
   // selection or retry still waiting on mpv can tell it was replaced.
@@ -680,6 +705,10 @@ class MediaKitPlayerBackend extends PlayerBackend {
     if (url.isEmpty) return;
 
     _resetSubtitleState();
+    _setSelectedExternalSubtitle(
+      payload['selectedExternalSubtitleUrl'] as String?,
+    );
+    final subtitleGeneration = _subtitleSelectionGeneration;
     final media = Media(url);
     _currentUrl = media.uri;
     _isStale = true;
@@ -707,7 +736,14 @@ class MediaKitPlayerBackend extends PlayerBackend {
     // Whatever mpv reported for the previous title must not answer for this
     // one; the listener repopulates it once this file is loaded.
     _decodedVideoParams = null;
-    await _player.open(media, play: !openPaused);
+    try {
+      await _player.open(media, play: !openPaused);
+    } catch (_) {
+      if (_isLatestSubtitleSelection(subtitleGeneration)) {
+        _setSelectedExternalSubtitle(null);
+      }
+      rethrow;
+    }
     _updateStaleState();
     await _applyLinuxHwdecFallbackIfNeeded(media, openPaused: openPaused);
     if (!_useLibass) {
@@ -1876,6 +1912,7 @@ class MediaKitPlayerBackend extends PlayerBackend {
   @override
   Future<void> stop() async {
     _resetSubtitleState();
+    _setSelectedExternalSubtitle(null);
     _isStale = true;
     await _player.stop();
   }
@@ -2130,6 +2167,9 @@ class MediaKitPlayerBackend extends PlayerBackend {
     if (mpvTrackId < 1) return;
     final generation = ++_subtitleSelectionGeneration;
     bool isCurrentSelection() => _isLatestSubtitleSelection(generation);
+    _setSelectedExternalSubtitle(
+      isExternalSubtitle ? externalSubtitleUrl : null,
+    );
     _subtitlesDisabled = false;
     try {
       final native = _player.platform as NativePlayer;
@@ -2221,12 +2261,19 @@ class MediaKitPlayerBackend extends PlayerBackend {
       await _nativeSetProperty(native, 'sub-ass', 'yes');
       if (!isCurrentSelection()) return;
       await _applyAssOverrideMode();
+      if (!isCurrentSelection()) return;
+      // Startup can still be waiting on other sub-adds after this file loads.
+      // Finish here so the indicator stays visible until its selection is applied.
+      if (isExternalSubtitle) _setSubtitleLoading(false);
       _subtitleDebug(
         'set track=$mpvTrackId sid_requested=$sidToApply sid_after=$sidAfter '
         'codec=$subtitleCodec external=$isExternalSubtitle '
         'bitmap=$isBitmapSubtitle mpv_sub_tracks=${subEntries.length}',
       );
     } catch (e) {
+      if (isExternalSubtitle && isCurrentSelection()) {
+        _setSubtitleLoading(false);
+      }
       _subtitleDebug('set track=$mpvTrackId threw: $e');
     }
   }
@@ -2249,8 +2296,15 @@ class MediaKitPlayerBackend extends PlayerBackend {
     required Future<void> Function() selectTrack,
   }) async {
     final scheme = Uri.tryParse(url)?.scheme;
-    if (!_externalSubtitles.containsKey(url) ||
-        (scheme != 'http' && scheme != 'https')) {
+    if (scheme != 'http' && scheme != 'https') {
+      if (isCurrentSelection() && _isSelectedExternalSubtitle(url)) {
+        _setSubtitleLoading(false);
+      }
+      return;
+    }
+    if (!_externalSubtitles.containsKey(url)) {
+      // The selected subtitle has not reached the normal background add yet.
+      // Keep reporting it as loading; selecting it is handled separately.
       return;
     }
     final native = _player.platform as NativePlayer;
@@ -2264,7 +2318,12 @@ class MediaKitPlayerBackend extends PlayerBackend {
         await selectTrack();
         return;
       }
-      if (retries++ == _externalSubtitleRetries) return;
+      if (retries++ == _externalSubtitleRetries) {
+        if (isCurrentSelection() && _isSelectedExternalSubtitle(url)) {
+          _setSubtitleLoading(false);
+        }
+        return;
+      }
       await Future<void>.delayed(_externalSubtitleRetryDelay);
       if (!isCurrentSelection()) return;
       await _addExternalSubtitle(url);
@@ -2314,6 +2373,7 @@ class MediaKitPlayerBackend extends PlayerBackend {
   @override
   Future<void> setEmbeddedCaptionTrack(int id) async {
     if (id <= 0 || id > _ccTrackSids.length) return;
+    _setSelectedExternalSubtitle(null);
     final generation = ++_subtitleSelectionGeneration;
     _subtitlesDisabled = false;
     final platform = _player.platform;
@@ -2330,6 +2390,7 @@ class MediaKitPlayerBackend extends PlayerBackend {
 
   @override
   Future<void> disableSubtitleTrack() async {
+    _setSelectedExternalSubtitle(null);
     final generation = ++_subtitleSelectionGeneration;
     _subtitlesDisabled = true;
     await _player.setSubtitleTrack(SubtitleTrack.no());
@@ -2581,12 +2642,14 @@ class MediaKitPlayerBackend extends PlayerBackend {
 
   @override
   void dispose() {
+    _setSelectedExternalSubtitle(null);
     _isDisposed = true;
     _letterboxCropper.cancel();
     _prefs.removeListener(_onPreferencesChanged);
     _ccTracksSub?.cancel();
     _videoParamsSub?.cancel();
     _tracksChangedController.close();
+    _subtitleLoadingStream.close();
     _player.dispose();
   }
 }
