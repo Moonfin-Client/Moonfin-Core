@@ -261,18 +261,28 @@ class MediaKitPlayerBackend extends PlayerBackend
   // Bumped by every subtitle choice and every new or stopped source, so a
   // selection or retry still waiting on mpv can tell it was replaced.
   int _subtitleSelectionGeneration = 0;
-  // Every external subtitle sub-added, with its title and language for a
-  // retry. It's kept after its source ends, so a late failure from a previous
-  // source still reads as a subtitle error rather than a video error.
-  final _externalSubtitles = <String, ({String? title, String? language})>{};
+  int _subtitleSourceGeneration = 0;
+
+  // Retained after a source ends so late mpv failures still read as subtitle
+  // errors. The generation distinguishes that history from URLs registered
+  // by the current source.
+  final _externalSubtitles =
+      <String, ({String? title, String? language, int sourceGeneration})>{};
   final _externalSubtitleLoads = <String, Future<void>>{};
+  ({
+    String url,
+    bool Function() isCurrentSelection,
+    Future<void> Function() selectTrack,
+  })? _pendingExternalSubtitleSelection;
 
   static const _externalSubtitleRetries = 5;
   static const _externalSubtitleRetryDelay = Duration(seconds: 10);
 
   void _resetSubtitleState() {
     _subtitleSelectionGeneration++;
+    _subtitleSourceGeneration++;
     _externalSubtitleLoads.clear();
+    _pendingExternalSubtitleSelection = null;
   }
 
   bool _isLatestSubtitleSelection(int generation) =>
@@ -2328,19 +2338,29 @@ class MediaKitPlayerBackend extends PlayerBackend
         await _nativeSetProperty(native, 'secondary-sid', 'no');
         if (!isCurrentSelection()) return;
         if (isExternalSubtitle && externalSubtitleUrl != null) {
-          unawaited(
-            _retryExternalSubtitle(
-              externalSubtitleUrl,
-              isCurrentSelection: isCurrentSelection,
-              selectTrack: () => setSubtitleTrack(
-                mpvTrackId,
-                isBitmapSubtitle: isBitmapSubtitle,
-                subtitleCodec: subtitleCodec,
-                isExternalSubtitle: true,
-                externalSubtitleUrl: externalSubtitleUrl,
-              ),
-            ),
+          final selectTrack = () => setSubtitleTrack(
+            mpvTrackId,
+            isBitmapSubtitle: isBitmapSubtitle,
+            subtitleCodec: subtitleCodec,
+            isExternalSubtitle: true,
+            externalSubtitleUrl: externalSubtitleUrl,
           );
+          if (_externalSubtitles[externalSubtitleUrl]?.sourceGeneration !=
+              _subtitleSourceGeneration) {
+            _pendingExternalSubtitleSelection = (
+              url: externalSubtitleUrl,
+              isCurrentSelection: isCurrentSelection,
+              selectTrack: selectTrack,
+            );
+          } else {
+            unawaited(
+              _retryExternalSubtitle(
+                externalSubtitleUrl,
+                isCurrentSelection: isCurrentSelection,
+                selectTrack: selectTrack,
+              ),
+            );
+          }
         }
         return;
       }
@@ -2596,8 +2616,26 @@ class MediaKitPlayerBackend extends PlayerBackend
     String? language,
     String? codec,
   }) async {
-    _externalSubtitles[url] = (title: title, language: language);
+    final sourceGeneration = _subtitleSourceGeneration;
+    _externalSubtitles[url] = (
+      title: title,
+      language: language,
+      sourceGeneration: sourceGeneration,
+    );
     await _addExternalSubtitle(url);
+
+    // An add from the previous source can finish after the next source starts.
+    // Only the source that registered this URL may consume its pending choice.
+    if (sourceGeneration == _subtitleSourceGeneration) {
+      final pendingSelection = _pendingExternalSubtitleSelection;
+      if (pendingSelection != null && pendingSelection.url == url) {
+        _pendingExternalSubtitleSelection = null;
+        if (pendingSelection.isCurrentSelection()) {
+          await pendingSelection.selectTrack();
+        }
+      }
+    }
+
     _subtitleDebug(
       'sub-add title=$title lang=$language codec=$codec '
       'mpv_sub_tracks=${_realSubtitleTrackCount(_player.state.tracks.subtitle)}',
