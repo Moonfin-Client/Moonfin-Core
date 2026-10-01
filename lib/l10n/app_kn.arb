@@ -2828,10 +2828,6 @@
     "@fit": {
         "description": "Zoom mode: fit"
     },
-    "autoCrop": "ಸ್ವಯಂ ಬೆಳೆ",
-    "@autoCrop": {
-        "description": "Zoom mode: auto crop"
-    },
     "stretch": "ಸ್ಟ್ರೆಚ್",
     "@stretch": {
         "description": "Zoom mode: stretch"

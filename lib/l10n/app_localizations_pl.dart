@@ -3377,7 +3377,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get fit => 'Dopasuj';
 
   @override
-  String get autoCrop => 'Automatyczne przycinanie';
+  String get zoomToFill => 'Zoom to Fill';
 
   @override
   String get cropBlackBars => 'Przytnij czarne pasy';

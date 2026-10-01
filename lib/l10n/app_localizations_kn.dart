@@ -3206,7 +3206,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get fit => 'ಫಿಟ್';
 
   @override
-  String get autoCrop => 'ಸ್ವಯಂ ಬೆಳೆ';
+  String get zoomToFill => 'Zoom to Fill';
 
   @override
   String get cropBlackBars => 'Crop black bars';

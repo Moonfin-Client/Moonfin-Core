@@ -3209,7 +3209,7 @@ class AppLocalizationsMk extends AppLocalizations {
   String get fit => 'Се вклопуваат';
 
   @override
-  String get autoCrop => 'Автоматско отсекување';
+  String get zoomToFill => 'Zoom to Fill';
 
   @override
   String get cropBlackBars => 'Crop black bars';

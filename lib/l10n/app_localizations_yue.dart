@@ -3134,7 +3134,7 @@ class AppLocalizationsYue extends AppLocalizations {
   String get fit => '合身';
 
   @override
-  String get autoCrop => '自動裁切';
+  String get zoomToFill => 'Zoom to Fill';
 
   @override
   String get cropBlackBars => 'Crop black bars';
@@ -15084,9 +15084,6 @@ class AppLocalizationsYueCn extends AppLocalizationsYue {
   String get fit => '合身';
 
   @override
-  String get autoCrop => '自动裁剪';
-
-  @override
   String get stretch => '拉紧';
 
   @override
@@ -22528,9 +22525,6 @@ class AppLocalizationsYueHk extends AppLocalizationsYue {
 
   @override
   String get fit => '合身';
-
-  @override
-  String get autoCrop => '自動裁切';
 
   @override
   String get stretch => '拉緊';

@@ -2166,7 +2166,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       topSubtitle: topSubtitle,
       artworkUrl: artworkUrl,
       showClock: false,
-      zoomModeLabel: _zoomModeLabel(_zoomMode),
+      zoomModeLabel: _zoomModeLabel(l10n, _zoomMode),
       streamInfoSections: streamInfoSections,
       hasCastCrew: hasCastCrew,
       castPeople: castPeople,
@@ -4345,13 +4345,13 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   NativeVideoZoomMode _nativeZoomMode(ZoomMode mode) => switch (mode) {
     ZoomMode.fit => NativeVideoZoomMode.fit,
-    ZoomMode.autoCrop => NativeVideoZoomMode.crop,
+    ZoomMode.autoCrop => NativeVideoZoomMode.zoomToFill,
     ZoomMode.stretch => NativeVideoZoomMode.stretch,
   };
 
   String _media3ZoomModeWire(ZoomMode mode) => switch (mode) {
     ZoomMode.fit => 'fit',
-    ZoomMode.autoCrop => 'crop',
+    ZoomMode.autoCrop => 'zoomToFill',
     ZoomMode.stretch => 'stretch',
   };
 
@@ -7345,7 +7345,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                   ],
                 ),
                 child: Text(
-                  '${l10n.playerZoomMode}: ${_zoomModeLabel(mode)}',
+                  '${l10n.playerZoomMode}: ${_zoomModeLabel(l10n, mode)}',
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     color: Color(0xFFE4ECF7),
@@ -7372,12 +7372,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _zoomModeToastOverlay = null;
   }
 
-  String _zoomModeLabel(ZoomMode mode) {
-    final spaced = mode.name.replaceAllMapped(_camelCaseSpaceRe, (_) => ' ');
-    return spaced.isEmpty
-        ? mode.name
-        : '${spaced[0].toUpperCase()}${spaced.substring(1)}';
-  }
+  String _zoomModeLabel(AppLocalizations l10n, ZoomMode mode) =>
+      switch (mode) {
+        ZoomMode.fit => l10n.fit,
+        ZoomMode.autoCrop => l10n.zoomToFill,
+        ZoomMode.stretch => l10n.stretch,
+      };
 
   String _tooltipMessage(String label, {String? shortcut}) {
     if (shortcut == null || shortcut.isEmpty || PlatformDetection.isTV) {

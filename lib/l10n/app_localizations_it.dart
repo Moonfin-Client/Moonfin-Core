@@ -3206,7 +3206,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get fit => 'Adatta';
 
   @override
-  String get autoCrop => 'Ritaglio Automatico';
+  String get zoomToFill => 'Zoom to Fill';
 
   @override
   String get cropBlackBars => 'Crop black bars';

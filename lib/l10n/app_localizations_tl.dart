@@ -3213,7 +3213,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get fit => 'Angkop';
 
   @override
-  String get autoCrop => 'Auto I-crop';
+  String get zoomToFill => 'Zoom to Fill';
 
   @override
   String get cropBlackBars => 'Crop black bars';

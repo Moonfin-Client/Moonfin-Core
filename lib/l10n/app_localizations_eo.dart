@@ -3193,7 +3193,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get fit => 'Fit';
 
   @override
-  String get autoCrop => 'Aŭtomata Tondado';
+  String get zoomToFill => 'Zoom to Fill';
 
   @override
   String get cropBlackBars => 'Crop black bars';

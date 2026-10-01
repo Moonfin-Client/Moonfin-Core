@@ -3192,7 +3192,7 @@ class AppLocalizationsSi extends AppLocalizations {
   String get fit => 'සුදුසුයි';
 
   @override
-  String get autoCrop => 'ස්වයංක්‍රීය බෝග';
+  String get zoomToFill => 'Zoom to Fill';
 
   @override
   String get cropBlackBars => 'Crop black bars';

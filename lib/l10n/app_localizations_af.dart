@@ -3199,7 +3199,7 @@ class AppLocalizationsAf extends AppLocalizations {
   String get fit => 'Gepas';
 
   @override
-  String get autoCrop => 'Outo-snoei';
+  String get zoomToFill => 'Zoom to Fill';
 
   @override
   String get cropBlackBars => 'Crop black bars';

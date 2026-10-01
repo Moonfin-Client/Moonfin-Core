@@ -3177,7 +3177,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get fit => 'לְהַתְאִים';
 
   @override
-  String get autoCrop => 'חיתוך אוטומטי';
+  String get zoomToFill => 'Zoom to Fill';
 
   @override
   String get cropBlackBars => 'Crop black bars';

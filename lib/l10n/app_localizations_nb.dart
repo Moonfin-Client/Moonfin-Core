@@ -3193,7 +3193,7 @@ class AppLocalizationsNb extends AppLocalizations {
   String get fit => 'Passe';
 
   @override
-  String get autoCrop => 'Automatisk beskjæring';
+  String get zoomToFill => 'Zoom to Fill';
 
   @override
   String get cropBlackBars => 'Crop black bars';

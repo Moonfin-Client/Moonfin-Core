@@ -3206,7 +3206,7 @@ class AppLocalizationsLt extends AppLocalizations {
   String get fit => 'Tinka';
 
   @override
-  String get autoCrop => 'Automatinis apkarpymas';
+  String get zoomToFill => 'Zoom to Fill';
 
   @override
   String get cropBlackBars => 'Crop black bars';

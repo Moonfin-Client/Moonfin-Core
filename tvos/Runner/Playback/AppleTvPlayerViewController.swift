@@ -2382,7 +2382,7 @@ final class AppleTvPlayerViewController: UIViewController {
         trickplayCover.frame = view.bounds
         switch player.zoomMode {
         case .fit: trickplayCover.contentMode = .scaleAspectFit
-        case .autoCrop: trickplayCover.contentMode = .scaleAspectFill
+        case .zoomToFill: trickplayCover.contentMode = .scaleAspectFill
         case .stretch: trickplayCover.contentMode = .scaleToFill
         }
         if let image = trickplayTile(tp, atMs: targetMs) {

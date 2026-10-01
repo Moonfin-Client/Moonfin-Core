@@ -30,7 +30,7 @@ class _VideoPlaybackScreen extends StatelessWidget {
                 icon: Icons.zoom_out_map,
                 labelOf: (v) => switch (v) {
                   ZoomMode.fit => l10n.fit,
-                  ZoomMode.autoCrop => l10n.autoCrop,
+                  ZoomMode.autoCrop => l10n.zoomToFill,
                   ZoomMode.stretch => l10n.stretch,
                 },
               ),

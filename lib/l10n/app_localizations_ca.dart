@@ -3233,7 +3233,7 @@ class AppLocalizationsCa extends AppLocalizations {
   String get fit => 'Ajustar';
 
   @override
-  String get autoCrop => 'Retall automàtic';
+  String get zoomToFill => 'Zoom to Fill';
 
   @override
   String get cropBlackBars => 'Retalla les bandes negres';

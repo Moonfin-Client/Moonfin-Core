@@ -2828,9 +2828,9 @@
     "@fit": {
         "description": "Zoom mode: fit"
     },
-    "autoCrop": "Auto Crop",
-    "@autoCrop": {
-        "description": "Zoom mode: auto crop"
+    "zoomToFill": "Zoom to Fill",
+    "@zoomToFill": {
+        "description": "Zoom mode: scale the video to fill the screen and clip the overflowing edges. Does not detect or remove black bars."
     },
     "stretch": "Stretch",
     "@stretch": {
@@ -6593,7 +6593,7 @@
     "settingsDoNothing": "Do Nothing",
     "settingsMaxBitrateDescription": "Cap the streaming bitrate. Content above this threshold will be transcoded to fit.",
     "settingsMaxResolutionDescription": "Limit the maximum resolution the player will request. Higher-resolution content will be transcoded down.",
-    "settingsPlayerZoomDescription": "How video should be scaled to fit the screen.",
+    "settingsPlayerZoomDescription": "How video is scaled to the screen. Zoom to Fill enlarges the picture until it fills the screen and cuts off the edges; it does not detect black bars.",
     "settingsPlaybackEngineAndroidTv": "Playback Engine (Android TV)",
     "settingsPlaybackEngineAndroidTvDescription": "Choose the default playback engine on Android TV devices. Changes apply to the next playback session.",
     "settingsPlaybackEngineMedia3Recommended": "Media3 (recommended)",

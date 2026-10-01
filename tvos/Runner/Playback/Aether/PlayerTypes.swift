@@ -90,7 +90,7 @@ func mediaIsOpen(_ state: PlayerState) -> Bool {
 
 enum ZoomMode: String, StringRepresentableEnum, CaseIterable {
     case fit = "Fit"
-    case autoCrop = "Auto Crop"
+    case zoomToFill = "Zoom to Fill"
     case stretch = "Stretch"
 
     var displayName: String { rawValue }
@@ -104,7 +104,7 @@ enum ZoomMode: String, StringRepresentableEnum, CaseIterable {
     var iconName: String {
         switch self {
         case .fit: return "arrow.down.right.and.arrow.up.left"
-        case .autoCrop: return "arrow.up.left.and.arrow.down.right"
+        case .zoomToFill: return "arrow.up.left.and.arrow.down.right"
         case .stretch: return "arrow.left.and.right"
         }
     }

@@ -2828,10 +2828,6 @@
     "@fit": {
         "description": "Zoom mode: fit"
     },
-    "autoCrop": "অটো ক্রপ",
-    "@autoCrop": {
-        "description": "Zoom mode: auto crop"
-    },
     "stretch": "প্রসারিত",
     "@stretch": {
         "description": "Zoom mode: stretch"

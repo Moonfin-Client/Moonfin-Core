@@ -3210,7 +3210,7 @@ class AppLocalizationsCs extends AppLocalizations {
   String get fit => 'Fit';
 
   @override
-  String get autoCrop => 'Automatické oříznutí';
+  String get zoomToFill => 'Zoom to Fill';
 
   @override
   String get cropBlackBars => 'Crop black bars';

@@ -3124,7 +3124,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get fit => '适应';
 
   @override
-  String get autoCrop => '自动裁剪';
+  String get zoomToFill => 'Zoom to Fill';
 
   @override
   String get cropBlackBars => 'Crop black bars';
@@ -15291,9 +15291,6 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get fit => '合身';
-
-  @override
-  String get autoCrop => '自動裁切';
 
   @override
   String get stretch => '拉緊';

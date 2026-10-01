@@ -1226,7 +1226,7 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
     ),
     video.leaf('player_zoom_mode', l10n.playerZoomMode, keywords: [
       'aspect ratio',
-      'crop',
+      'fill',
       'stretch',
     ]),
     if (PlatformDetection.isIOS)

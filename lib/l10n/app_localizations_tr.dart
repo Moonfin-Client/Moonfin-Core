@@ -3191,7 +3191,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get fit => 'Sığdır';
 
   @override
-  String get autoCrop => 'Otomatik Kırp';
+  String get zoomToFill => 'Zoom to Fill';
 
   @override
   String get cropBlackBars => 'Siyah bantları kırp';
