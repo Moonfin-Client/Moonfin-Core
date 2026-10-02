@@ -12,6 +12,7 @@ import '../data/services/media_server_client_factory.dart';
 import '../preference/user_preferences.dart';
 import '../ui/navigation/app_router.dart';
 import '../ui/navigation/destinations.dart';
+import '../ui/widgets/video_mini_player.dart';
 import 'sync_correction_policy.dart';
 import 'syncplay_state.dart';
 import 'time_sync_manager.dart';
@@ -749,6 +750,14 @@ class SyncPlayManager extends ChangeNotifier {
         item.type == 'MusicAlbum' ||
         item.type == 'AudioBook' ||
         mediaType == 'Audio';
+    // A viewer who minimized the video keeps watching in the mini player,
+    // which follows the group's item on its own; reopening the full player on
+    // every group item change would undo the minimize.
+    if (!isAudio &&
+        VideoMiniPlayerController.isSupported &&
+        VideoMiniPlayerController.instance.isMinimized) {
+      return;
+    }
     appRouter.push(
       isAudio ? Destinations.audioPlayer : Destinations.videoPlayer,
     );

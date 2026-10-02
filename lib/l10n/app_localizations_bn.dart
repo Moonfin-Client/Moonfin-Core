@@ -9887,6 +9887,12 @@ class AppLocalizationsBn extends AppLocalizations {
   String get playerTooltipSeekForward => 'সামনে তাকান';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => 'দেখা হয়েছে হিসেবে চিহ্নিত করুন';
 
   @override

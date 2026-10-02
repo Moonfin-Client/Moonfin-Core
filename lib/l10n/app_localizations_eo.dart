@@ -9888,6 +9888,12 @@ class AppLocalizationsEo extends AppLocalizations {
   String get playerTooltipSeekForward => 'Serĉu antaŭen';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => 'Marki kiel Rigardita';
 
   @override

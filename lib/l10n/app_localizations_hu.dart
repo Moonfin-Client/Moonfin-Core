@@ -9982,6 +9982,12 @@ class AppLocalizationsHu extends AppLocalizations {
   String get playerTooltipSeekForward => 'Előretekerés';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => 'Megjelölés megtekintettként';
 
   @override

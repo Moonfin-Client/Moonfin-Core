@@ -9879,6 +9879,12 @@ class AppLocalizationsHi extends AppLocalizations {
   String get playerTooltipSeekForward => 'आगे की तलाश करो';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => 'देखे गए के रूप में चिह्नित करें';
 
   @override

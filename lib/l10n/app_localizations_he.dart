@@ -9790,6 +9790,12 @@ class AppLocalizationsHe extends AppLocalizations {
   String get playerTooltipSeekForward => 'חפש קדימה';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => 'סמן כנצפית';
 
   @override

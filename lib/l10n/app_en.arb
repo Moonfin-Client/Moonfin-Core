@@ -9750,6 +9750,14 @@
   "@playerTooltipSeekForward": {
     "description": "Tooltip label for seek forward control in player"
   },
+  "playerTooltipMinimize": "Minimize player",
+  "@playerTooltipMinimize": {
+    "description": "Tooltip label for shrinking the video player into the mini player bar so the viewer can keep browsing"
+  },
+  "miniPlayerOpenPlayer": "Open player",
+  "@miniPlayerOpenPlayer": {
+    "description": "Tooltip label for returning from the video mini player bar to the full player"
+  },
   "contextMenuMarkWatched": "Mark as Watched",
   "@contextMenuMarkWatched": {
     "description": "Context menu action to mark an item as watched"

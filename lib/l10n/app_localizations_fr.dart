@@ -10025,6 +10025,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get playerTooltipSeekForward => 'Avancer';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => 'Marquer comme vu';
 
   @override

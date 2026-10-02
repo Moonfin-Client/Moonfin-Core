@@ -10004,6 +10004,12 @@ class AppLocalizationsMl extends AppLocalizations {
   String get playerTooltipSeekForward => 'മുന്നോട്ട് അന്വേഷിക്കുക';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => 'കണ്ടതായി അടയാളപ്പെടുത്തുക';
 
   @override

@@ -9959,6 +9959,12 @@ class AppLocalizationsKn extends AppLocalizations {
   String get playerTooltipSeekForward => 'ಮುಂದೆ ಹುಡುಕು';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => 'ವೀಕ್ಷಿಸಲಾಗಿದೆ ಎಂದು ಗುರುತಿಸಿ';
 
   @override

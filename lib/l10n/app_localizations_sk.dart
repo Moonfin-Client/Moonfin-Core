@@ -9954,6 +9954,12 @@ class AppLocalizationsSk extends AppLocalizations {
   String get playerTooltipSeekForward => 'Hľadajte dopredu';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => 'Označiť ako sledované';
 
   @override

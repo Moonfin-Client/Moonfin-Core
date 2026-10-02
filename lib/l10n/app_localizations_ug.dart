@@ -9927,6 +9927,12 @@ class AppLocalizationsUg extends AppLocalizations {
   String get playerTooltipSeekForward => 'ئالدىغا قاراپ بېقىڭ';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => 'كۆزىتىلگەندەك بەلگە';
 
   @override

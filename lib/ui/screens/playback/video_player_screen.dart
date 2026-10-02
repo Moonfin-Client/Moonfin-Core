@@ -55,10 +55,10 @@ import '../../../data/services/media_segment_service.dart';
 import '../../../data/services/media_server_client_factory.dart';
 import '../../../data/services/theme_music_service.dart';
 import '../../../platform/pip_service.dart';
+import '../../widgets/video_mini_player.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/audio_labels.dart';
-import '../../../util/auto_hdr_switcher.dart';
 import '../../../util/episode_playability.dart';
 import '../../../util/player_edge_drag.dart';
 import '../../../playback/hdr_composition.dart';
@@ -169,7 +169,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       ? GetIt.instance<MediaKitPlayerBackend>()
       : null;
   final _prefs = GetIt.instance<UserPreferences>();
-  final _autoHdrSwitcher = AutoHdrSwitcher();
+  // App lifetime and shared with the mini player, so minimizing does not
+  // flip the display out of HDR while the video carries on in the bar.
+  final _autoHdrSwitcher = VideoMiniPlayerController.instance.autoHdrSwitcher;
   final _clientFactory = GetIt.instance<MediaServerClientFactory>();
   final _castService = GetIt.instance<CastService>();
   final _nativeCast = GetIt.instance<NativeCastChannel>();
@@ -303,6 +305,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   bool _subtitleReapplyRetryScheduled = false;
   bool _isStopping = false;
   bool _readyToPop = false;
+  bool _isMinimizing = false;
   VoidCallback? _cancelPopAfterBackKeyUp;
   DateTime? _suppressTvLifecycleExitUntil;
   bool _isOsdLocked = false;
@@ -662,6 +665,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   Future<void> _syncAutoHdrSwitching() async {
     if (!PlatformDetection.isWindows) return;
+    // Leaving fullscreen on the way to the mini player must not drop the
+    // display out of HDR under the video that carries on there.
+    if (_isMinimizing) return;
     final behavior = _prefs.get(UserPreferences.autoHdrSwitchingBehavior);
     final switched = await _autoHdrSwitcher.sync(
       behavior: behavior,
@@ -687,6 +693,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       releaseImageMemoryForPlayback();
       detachTextInputForPlayback();
     }
+    // Back from the mini player: take the HDR session it held, before the
+    // presenter claim below, so the window is never torn down in between.
+    VideoMiniPlayerController.instance.playerScreenOpened(this);
     final hdrBackend = _hdrBackend;
     if (hdrBackend != null) {
       // Engagement finishes at the tail of play(), after the last build, and
@@ -923,10 +932,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       GetIt.instance<PlaybackArbiter>().pipActive = false;
     }
     _screensaverPlayingSub?.cancel();
-    _screensaverController.setPlaybackActive(false);
+    // A minimized video keeps playing, and the mini bar keeps the display
+    // awake from here.
+    if (!_isMinimizing) _screensaverController.setPlaybackActive(false);
     _prefs.removeListener(_onPlaybackPrefsChanged);
     _syncPlayManager?.removeListener(_onSyncPlayChanged);
-    _manager.autoAdvanceEnabled = true;
+    // A minimized video keeps the autoplay setting this screen applied; the
+    // mini player resets it when it ends.
+    if (!_isMinimizing) _manager.autoAdvanceEnabled = true;
     WidgetsBinding.instance.removeObserver(this);
     if (PlatformDetection.isDesktop) {
       windowManager.removeListener(this);
@@ -995,8 +1008,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _tvSecondaryFocus.dispose();
     _tvTransportLastFocus.dispose();
     _tvSecondaryLastFocus.dispose();
-    unawaited(_autoHdrSwitcher.restore());
-    TrackPicker.resetDelays();
+    if (!_isMinimizing) unawaited(_autoHdrSwitcher.restore());
+    if (!_isMinimizing) TrackPicker.resetDelays();
     _themeMusicService.setExternalAudioActive(false);
     if (!PlatformDetection.isTV) _pipService.enableAutoPiP(false);
     if (_wasAlwaysOnTopOnEntry == false && _isAlwaysOnTop) {
@@ -2816,6 +2829,50 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     unawaited(_manager.stop(userInitiated: false));
   }
 
+  /// Shrinks the player into the bar along the bottom of the app. Playback
+  /// keeps running and the bar's thumbnail takes the picture over, so this
+  /// leaves exactly like [_exitPlayback] minus the stop.
+  bool get _canMinimize =>
+      VideoMiniPlayerController.isSupported &&
+      !_isCurrentPreroll &&
+      _castService.activeKind == null &&
+      _bringupState.phase == PlaybackBringupPhase.ready;
+
+  Future<void> _minimizePlayer() async {
+    if (_isStopping || !_canMinimize) return;
+    setState(() {
+      _isStopping = true;
+    });
+    // Set before the awaits below: if the route goes away during them, the
+    // dispose that skips the stop still leaves a bar to control playback.
+    _isMinimizing = true;
+    VideoMiniPlayerController.instance.minimize(screen: this);
+    // The next up card goes with the screen, and a pending card would keep
+    // the manager from advancing on its own.
+    _manager.suppressAutoNext = false;
+    _showNextUp = false;
+    if (_wasAlwaysOnTopOnEntry == false && _isAlwaysOnTop) {
+      await _setAlwaysOnTop(false);
+    }
+    if (PlatformDetection.useDesktopUi &&
+        _wasDesktopFullscreenOnEntry == false) {
+      final isFullscreen = await FullscreenHelper.isFullscreen();
+      if (isFullscreen) {
+        await _setDesktopFullscreen(false);
+      }
+    }
+    await _restoreSystemUiForExit();
+    if (!mounted) return;
+    _dismissTopOverlayRouteIfAny();
+    setState(() {
+      _readyToPop = true;
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _popPlayerRoute();
+    });
+  }
+
   void _popPlayerRoute() {
     // Newer Android sends the system back before the key up reaches here, and
     // that back has already popped the player.
@@ -4603,6 +4660,16 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
               ),
             const SizedBox(width: AppSpacing.spaceSm),
             Expanded(child: _buildTitleInfo()),
+            if (_canMinimize)
+              IconButton(
+                onPressed: _minimizePlayer,
+                tooltip: l10n.playerTooltipMinimize,
+                icon: AdaptiveIcon(
+                  Icons.picture_in_picture_alt_rounded,
+                  color: Colors.white,
+                  size: 30 * _osdButtonScale,
+                ),
+              ),
             if (PlatformDetection.useMobileUi &&
                 _prefs.get(UserPreferences.osdLockEnabled))
               IconButton(

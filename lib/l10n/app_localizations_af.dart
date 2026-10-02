@@ -9905,6 +9905,12 @@ class AppLocalizationsAf extends AppLocalizations {
   String get playerTooltipSeekForward => 'Soek vorentoe';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => 'Merk as gekyk';
 
   @override

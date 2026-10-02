@@ -9990,6 +9990,12 @@ class AppLocalizationsTl extends AppLocalizations {
   String get playerTooltipSeekForward => 'Humanap ng pasulong';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => 'Markahan bilang Napanood';
 
   @override
