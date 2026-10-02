@@ -106,7 +106,7 @@ class GuideLayoutProfile {
     // only costs another row, and capping it would clip the very text the
     // larger size was set to read.
     return GuideLayoutProfile(
-      rowHeight: (50 + (12 * heightProgress)) * scale,
+      rowHeight: 62 * scale,
       channelColumnWidth: channelColumnWidth,
       pixelsPerMinute: guideWidth / guideWindow.inMinutes,
       timeHeaderHeight: (22 + (2 * heightProgress)) * scale,

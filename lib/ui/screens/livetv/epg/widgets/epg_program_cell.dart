@@ -17,7 +17,7 @@ class EpgProgramCell extends StatelessWidget {
   static const String _metaSeparator = ' \u00B7 ';
 
   /// Below this content width the metadata line is dropped entirely.
-  static const double _minMetaWidth = 96;
+  static const double _minMetaWidth = 48;
 
   /// Icons set in a line of text take this share of that line's face, so they
   /// keep their weight beside it at any interface size. The genre dot is not
@@ -25,6 +25,7 @@ class EpgProgramCell extends StatelessWidget {
   static const double _inlineIconShare = 0.8;
 
   final String title;
+  final String? episodeTitle;
 
   final EpgGenre genre;
   final bool isLive;
@@ -53,6 +54,7 @@ class EpgProgramCell extends StatelessWidget {
   const EpgProgramCell({
     super.key,
     required this.title,
+    this.episodeTitle,
     required this.genre,
     required this.isLive,
     this.isPast = false,
@@ -278,7 +280,7 @@ class EpgProgramCell extends StatelessWidget {
                         metaItems.join(_metaSeparator),
                         maxLines: 1,
                         softWrap: false,
-                        overflow: TextOverflow.clip,
+                        overflow: TextOverflow.ellipsis,
                         style: metaStyle,
                       ),
                   ],
@@ -389,9 +391,10 @@ class EpgProgramCell extends StatelessWidget {
     );
   }
 
-  /// Metadata that fits the given width, rating first and tags after, dropping
-  /// from the end once the line is full.
+  /// Prefer the episode title; otherwise fit rating and tags to the width.
   List<String> _fittingMeta(double width, TextStyle style, TextScaler scaler) {
+    final episode = episodeTitle?.trim() ?? '';
+    if (episode.isNotEmpty) return [episode];
     final items = <String>[
       if (rating != null && rating!.trim().isNotEmpty) rating!.trim(),
       for (final tag in tags)

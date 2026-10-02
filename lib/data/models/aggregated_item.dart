@@ -129,6 +129,10 @@ class AggregatedItem {
   }
 
   String? get subtitle {
+    if (type == 'Program' || type == 'LiveTvProgram') {
+      final episodeTitle = (rawData['EpisodeTitle'] as String?)?.trim();
+      if (episodeTitle != null && episodeTitle.isNotEmpty) return episodeTitle;
+    }
     final customSubtitle = rawData['Subtitle'] as String?;
     if (customSubtitle != null && customSubtitle.isNotEmpty) {
       return customSubtitle;
