@@ -9847,6 +9847,12 @@ class AppLocalizationsFa extends AppLocalizations {
   String get playerTooltipSeekForward => 'به دنبال جلو بروید';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => 'علامت گذاری به عنوان تماشا شده';
 
   @override

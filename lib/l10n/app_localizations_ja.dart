@@ -9679,6 +9679,12 @@ class AppLocalizationsJa extends AppLocalizations {
   String get playerTooltipSeekForward => '前を向く';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => '監視済みとしてマークする';
 
   @override

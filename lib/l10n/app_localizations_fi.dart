@@ -9942,6 +9942,12 @@ class AppLocalizationsFi extends AppLocalizations {
   String get playerTooltipSeekForward => 'Etsi eteenpäin';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => 'Merkitse katsotuksi';
 
   @override

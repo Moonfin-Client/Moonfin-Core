@@ -10203,6 +10203,12 @@ class AppLocalizationsPl extends AppLocalizations {
   String get playerTooltipSeekForward => 'Przewiń do przodu';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => 'Oznacz jako obejrzane';
 
   @override

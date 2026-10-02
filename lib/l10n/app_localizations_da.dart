@@ -9895,6 +9895,12 @@ class AppLocalizationsDa extends AppLocalizations {
   String get playerTooltipSeekForward => 'Søg frem';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => 'Marker som set';
 
   @override

@@ -9847,6 +9847,12 @@ class AppLocalizationsTh extends AppLocalizations {
   String get playerTooltipSeekForward => 'แสวงหาไปข้างหน้า';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => 'ทำเครื่องหมายว่าดูแล้ว';
 
   @override

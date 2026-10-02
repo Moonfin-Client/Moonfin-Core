@@ -9950,6 +9950,12 @@ class AppLocalizationsCy extends AppLocalizations {
   String get playerTooltipSeekForward => 'Ceisio ymlaen';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => 'Marciwch fel y\'i Gwyliwyd';
 
   @override

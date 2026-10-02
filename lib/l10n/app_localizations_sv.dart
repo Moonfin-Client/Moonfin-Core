@@ -9912,6 +9912,12 @@ class AppLocalizationsSv extends AppLocalizations {
   String get playerTooltipSeekForward => 'Sök framåt';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => 'Markera som sedd';
 
   @override

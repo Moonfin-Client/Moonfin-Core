@@ -9965,6 +9965,12 @@ class AppLocalizationsSw extends AppLocalizations {
   String get playerTooltipSeekForward => 'Tafuta mbele';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => 'Weka alama kama Imetazamwa';
 
   @override

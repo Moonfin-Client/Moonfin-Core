@@ -9947,6 +9947,12 @@ class AppLocalizationsNl extends AppLocalizations {
   String get playerTooltipSeekForward => 'Zoek vooruit';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => 'Markeer als bekeken';
 
   @override

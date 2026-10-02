@@ -9968,6 +9968,12 @@ class AppLocalizationsUk extends AppLocalizations {
   String get playerTooltipSeekForward => 'Шукати вперед';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => 'Позначити як переглянуте';
 
   @override

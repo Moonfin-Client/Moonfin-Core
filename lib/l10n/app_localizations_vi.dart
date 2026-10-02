@@ -9902,6 +9902,12 @@ class AppLocalizationsVi extends AppLocalizations {
   String get playerTooltipSeekForward => 'Tìm về phía trước';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => 'Đánh dấu là đã xem';
 
   @override

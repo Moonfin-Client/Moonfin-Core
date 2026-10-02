@@ -9947,6 +9947,12 @@ class AppLocalizationsLv extends AppLocalizations {
   String get playerTooltipSeekForward => 'Meklējiet uz priekšu';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => 'Atzīmēt kā skatītu';
 
   @override

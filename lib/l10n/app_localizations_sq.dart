@@ -9975,6 +9975,12 @@ class AppLocalizationsSq extends AppLocalizations {
   String get playerTooltipSeekForward => 'Kërkoni përpara';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => 'Shënoni si të shikuar';
 
   @override
