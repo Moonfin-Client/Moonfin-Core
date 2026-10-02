@@ -28,6 +28,7 @@ import '../../widgets/player_volume_control.dart';
 import '../../widgets/playback/playback_time_row.dart';
 import '../../widgets/playback/player_logo.dart';
 import '../../widgets/playback/seek_icons.dart';
+import '../../widgets/playback/track_picker.dart';
 import '../../widgets/playback/trickplay.dart';
 import '../../widgets/playback/trickplay_tile_image.dart';
 
@@ -39,7 +40,6 @@ import '../../widgets/aether_video_view.dart';
 import '../../../playback/playback_lifecycle_handler.dart';
 import '../../../playback/playback_profile_diagnostics.dart';
 import '../../../playback/hdr_stream_capability.dart';
-import '../../../auth/repositories/user_repository.dart';
 import '../../../data/models/aggregated_item.dart';
 import '../../../data/repositories/item_mutation_repository.dart';
 import '../../../data/models/media_segment.dart';
@@ -58,7 +58,6 @@ import '../../../platform/pip_service.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/audio_labels.dart';
-import '../../../util/subtitle_track_logic.dart';
 import '../../../util/auto_hdr_switcher.dart';
 import '../../../util/episode_playability.dart';
 import '../../../util/player_edge_drag.dart';
@@ -91,11 +90,6 @@ import '../../widgets/syncplay/syncplay_player_button.dart';
 import '../../../syncplay/syncplay_manager.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../util/error_message.dart';
-import '../../widgets/playback/delay_footer.dart';
-import '../../widgets/progress_snack_bar.dart';
-import '../../../util/remote_subtitle_labels.dart';
-import '../../../util/subtitle_appearance_schedule.dart';
-import '../../../playback/delay_limits.dart';
 import '../../../playback/media3_player_backend.dart';
 import '../../../util/system_ui.dart';
 import 'playback_takeover.dart';
@@ -304,8 +298,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   final GlobalKey _topOverlayKey = GlobalKey();
   final GlobalKey _bottomOverlayKey = GlobalKey();
   late ZoomMode _zoomMode;
-  double _audioDelay = 0.0;
-  double _subtitleDelay = 0.0;
   bool _subtitleActive = false;
   int? _subtitleIndexBeforeQuickOff;
   bool _subtitleReapplyRetryScheduled = false;
@@ -567,177 +559,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       _controlsVisible = false;
       _isOsdLocked = false;
     });
-  }
-
-  bool _canDownloadRemoteSubtitles(AggregatedItem item) {
-    final user = GetIt.instance<UserRepository>().currentUser;
-    final mediaType = item.rawData['MediaType'] as String?;
-    final isAudio =
-        item.type == 'Audio' ||
-        item.type == 'MusicAlbum' ||
-        item.type == 'AudioBook' ||
-        mediaType == 'Audio';
-
-    return (user?.canManageSubtitles ?? false) &&
-        item.mediaSources.isNotEmpty &&
-        item.type != 'Photo' &&
-        item.type != 'Book' &&
-        !isAudio;
-  }
-
-  Future<Map<String, dynamic>?> _awaitDownloadedSubtitle(
-    AggregatedItem currentItem,
-    Set<int> existingIndexes,
-  ) {
-    return awaitNewSubtitleStream(
-      client: _clientForItem(currentItem),
-      item: currentItem,
-      existingIndexes: existingIndexes,
-      keepGoing: () => mounted,
-    );
-  }
-
-  Future<void> _downloadRemoteSubtitles(
-    AggregatedItem item,
-    List<Map<String, dynamic>> subtitleStreams,
-    List<Map<String, dynamic>> audioStreams,
-  ) async {
-    final messenger = ScaffoldMessenger.of(context);
-    final client = _clientForItem(item);
-    final language = remoteSubtitleLanguage(subtitleStreams, audioStreams);
-
-    List<Map<String, dynamic>> results;
-    try {
-      results = await withProgressSnackBar(
-        messenger,
-        AppLocalizations.of(context).searchingSubtitles,
-        () =>
-            client.itemsApi.searchRemoteSubtitles(item.id, language: language),
-      );
-    } catch (error) {
-      if (!mounted) return;
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text(
-            remoteSubtitleErrorMessage(
-              error,
-              AppLocalizations.of(context),
-              action: AppLocalizations.of(context).search,
-            ),
-          ),
-        ),
-      );
-      return;
-    }
-
-    if (!mounted) return;
-    if (results.isEmpty) {
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text(
-            AppLocalizations.of(context).noRemoteSubtitlesFound(language),
-          ),
-        ),
-      );
-      return;
-    }
-
-    final l10n = AppLocalizations.of(context);
-    final result = await TrackSelectorDialog.show(
-      context,
-      title: l10n.downloadSubtitles,
-      options: results.map((subtitle) {
-        final label =
-            subtitle['Name'] as String? ??
-            subtitle['Author'] as String? ??
-            l10n.subtitles;
-        final subtitleText = remoteSubtitleDetails(subtitle, l10n);
-        return TrackOption(
-          label: label,
-          subtitle: subtitleText.isNotEmpty ? subtitleText : null,
-          subtitleMaxLines: 2,
-          badges: remoteSubtitleFlags(subtitle, l10n),
-        );
-      }).toList(),
-    );
-
-    if (!mounted || result == null || result >= results.length) return;
-
-    final subtitleId = results[result]['Id']?.toString();
-    if (subtitleId == null || subtitleId.isEmpty) {
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context).selectedSubtitleInvalid),
-        ),
-      );
-      return;
-    }
-
-    final existingIndexes = subtitleStreams
-        .map((stream) => stream['Index'] as int?)
-        .whereType<int>()
-        .toSet();
-
-    try {
-      final newStream = await withProgressSnackBar(
-        messenger,
-        AppLocalizations.of(context).downloadingSubtitle,
-        () async {
-          await client.itemsApi.downloadRemoteSubtitle(item.id, subtitleId);
-          return _awaitDownloadedSubtitle(item, existingIndexes);
-        },
-      );
-      if (!mounted) return;
-
-      if (newStream != null) {
-        final streamIndex = newStream['Index'] as int?;
-        if (streamIndex != null) {
-          unawaited(
-            _runSinglePlayerMutation(
-              'downloaded_subtitle_$streamIndex',
-              () => _manager.changeSubtitleTrack(
-                streamIndex,
-                refreshStreams: true,
-              ),
-            ).then((_) {
-              if (mounted) _syncSubtitleActive();
-            }),
-          );
-        }
-        messenger.showSnackBar(
-          SnackBar(
-            content: Text(
-              AppLocalizations.of(context).subtitleDownloadedSelected(
-                newStream['DisplayTitle'] as String? ??
-                    newStream['Title'] as String? ??
-                    newStream['Language'] as String? ??
-                    AppLocalizations.of(context).unknown,
-              ),
-            ),
-          ),
-        );
-        return;
-      }
-
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context).subtitleDownloadedPending),
-        ),
-      );
-    } catch (error) {
-      if (!mounted) return;
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text(
-            remoteSubtitleErrorMessage(
-              error,
-              AppLocalizations.of(context),
-              action: AppLocalizations.of(context).download,
-            ),
-          ),
-        ),
-      );
-    }
   }
 
   MediaSegmentService _createSegmentService([AggregatedItem? item]) {
@@ -1175,6 +996,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _tvTransportLastFocus.dispose();
     _tvSecondaryLastFocus.dispose();
     unawaited(_autoHdrSwitcher.restore());
+    TrackPicker.resetDelays();
     _themeMusicService.setExternalAudioActive(false);
     if (!PlatformDetection.isTV) _pipService.enableAutoPiP(false);
     if (_wasAlwaysOnTopOnEntry == false && _isAlwaysOnTop) {
@@ -3517,11 +3339,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _seekRepeatCount = 0;
   }
 
-  String _formatDelay(double seconds) {
-    if (seconds == 0) return AppLocalizations.of(context).none;
-    return '${seconds >= 0 ? '+' : ''}${(seconds * 1000).round()} ms';
-  }
-
   SubtitleViewConfiguration _buildSubtitleConfig() =>
       buildSubtitleViewConfiguration(
         context: context,
@@ -5812,7 +5629,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
           (s) => s['Type'] == 'Subtitle',
         );
         final canDownloadRemoteSubtitles =
-            item is AggregatedItem && _canDownloadRemoteSubtitles(item);
+            item is AggregatedItem && TrackPicker.canDownloadRemoteSubtitles(item);
         final showSubtitleButton =
             hasSubtitleStreams || canDownloadRemoteSubtitles;
         final subtitleButtonIcon =
@@ -7284,165 +7101,19 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   void _showTrackSelector({required bool audio}) {
-    final l10n = AppLocalizations.of(context);
-    final resolution = _manager.currentResolution;
-    final streamType = audio ? 'Audio' : 'Subtitle';
-    final item = _queue.currentItem;
-    final offlineMeta = _manager.currentOfflineMetadata;
-    final allStreams =
-        resolution?.mediaStreams ??
-        (offlineMeta?['MediaStreams'] as List?)?.cast<Map<String, dynamic>>() ??
-        const <Map<String, dynamic>>[];
-    final streams = allStreams.where((s) => s['Type'] == streamType).toList();
-    final displaySubtitleStreams = audio
-        ? const <Map<String, dynamic>>[]
-        : sortedSubtitleStreams(streams);
-    final optionStreams = audio ? streams : displaySubtitleStreams;
-    final audioStreams = allStreams.where((s) => s['Type'] == 'Audio').toList();
-    final canDownloadRemote =
-        !audio && item is AggregatedItem && _canDownloadRemoteSubtitles(item);
-
-    unawaited(() async {
-      final int? currentStreamIndex;
-      if (audio) {
-        currentStreamIndex =
-            _manager.audioStreamIndex ??
-            streams.where((s) => s['IsDefault'] == true).firstOrNull?['Index']
-                as int?;
-      } else {
-        final subIdx = await _manager.getSubtitleStreamIndexAsync();
-        currentStreamIndex =
-            subIdx ??
-            streams.where((s) => s['IsDefault'] == true).firstOrNull?['Index']
-                as int?;
-      }
-      final isSubsOff = !audio && currentStreamIndex == -1;
-
-      final options = <TrackOption>[
-        if (!audio) TrackOption(label: l10n.off),
-        ...optionStreams.asMap().entries.map((entry) {
-          final index = entry.key;
-          final trackNumber = index + 1;
-          final s = entry.value;
-          final displayTitle = s['DisplayTitle'] as String?;
-          final title = s['Title'] as String?;
-          final language = s['Language'] as String?;
-          final codec = s['Codec'] as String?;
-          final label =
-              displayTitle ??
-              title ??
-              language ??
-              l10n.streamTypeFallback(streamType, index + 1);
-          final subtitle = audio
-              ? [
-                  if (language != null && displayTitle != null) language,
-                  if (codec != null) codec.toUpperCase(),
-                  if (s['Channels'] != null) '${s['Channels']}ch',
-                ].join(' · ')
-              : (() {
-                  final subtitleType =
-                      ((codec == null || codec.isEmpty) ? 'Unknown' : codec)
-                          .toUpperCase();
-                  final deliveryMethod = (s['DeliveryMethod'] as String?)
-                      ?.trim()
-                      .toLowerCase();
-                  final location = s['IsExternal'] == true
-                      ? 'External'
-                      : (deliveryMethod == 'embed' ? 'Embedded' : 'Internal');
-                  return '$subtitleType · $location';
-                })();
-          return TrackOption(
-            label: '$trackNumber - $label',
-            subtitle: subtitle.isNotEmpty ? subtitle : null,
-            scrollLabel: true,
-            scrollSubtitle: true,
-          );
-        }),
-        if (canDownloadRemote)
-          TrackOption(
-            label: l10n.downloadSubtitlesLabel,
-            subtitle: l10n.searchOpenSubtitlesPlugin,
-          ),
-      ];
-
-      final int? selectedIndex;
-      if (audio) {
-        final idx = currentStreamIndex != null
-            ? streams.indexWhere((s) => s['Index'] == currentStreamIndex)
-            : -1;
-        selectedIndex = idx >= 0 ? idx : null;
-      } else {
-        if (isSubsOff || (currentStreamIndex == null && streams.isNotEmpty)) {
-          selectedIndex = 0;
-        } else if (currentStreamIndex != null) {
-          final idx = optionStreams.indexWhere(
-            (s) => s['Index'] == currentStreamIndex,
-          );
-          selectedIndex = idx >= 0 ? idx + 1 : null;
-        } else {
-          selectedIndex = null;
-        }
-      }
-
-      if (!mounted) return;
-
-      final backend = _activeBackend;
-      final delayLimits = delayLimitsFor(backend, audio: audio);
-      final result = await TrackSelectorDialog.show(
+    unawaited(
+      TrackPicker.show(
         context,
-        title: audio ? l10n.audioTrack : l10n.subtitleTrack,
-        options: options,
-        selectedIndex: selectedIndex,
+        manager: _manager,
+        audio: audio,
+        clientFor: _clientForItem,
         useRootNavigator: false,
-        footer: delayLimits == null
-            ? null
-            : DelayFooter(
-                initialDelay: audio
-                    ? _audioDelay
-                    : backend is Media3PlayerBackend
-                    ? backend.subtitleDelaySeconds
-                    : _subtitleDelay,
-                label: audio ? l10n.audioDelay : l10n.subtitleDelay,
-                minDelay: delayLimits.$1,
-                maxDelay: delayLimits.$2,
-                onDelayChanged: (d) => _applyDelay(audio: audio, delay: d),
-                formatDelay: _formatDelay,
-              ),
-      );
-      if (result == null || !mounted) return;
-      if (!audio) {
-        if (result == 0) {
-          await _runSinglePlayerMutation(
-            'subtitles_off',
-            _manager.disableSubtitles,
-          );
-          _syncSubtitleActive();
-          return;
-        }
-        final streamIdx = result - 1;
-        if (canDownloadRemote && streamIdx == streams.length) {
-          await _downloadRemoteSubtitles(item, streams, audioStreams);
-          return;
-        }
-        if (streamIdx < optionStreams.length) {
-          final streamIndex =
-              optionStreams[streamIdx]['Index'] as int? ?? streamIdx;
-          await _runSinglePlayerMutation(
-            'subtitle_$streamIndex',
-            () => _manager.changeSubtitleTrack(streamIndex),
-          );
-          _syncSubtitleActive();
-        }
-      } else {
-        if (result < streams.length) {
-          final streamIndex = streams[result]['Index'] as int? ?? result;
-          await _runSinglePlayerMutation(
-            'audio_$streamIndex',
-            () => _manager.changeAudioTrack(streamIndex),
-          );
-        }
-      }
-    }());
+        runMutation: _runSinglePlayerMutation,
+        onSubtitlesChanged: () {
+          if (mounted) _syncSubtitleActive();
+        },
+      ),
+    );
     _showControls();
   }
 
@@ -8047,16 +7718,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         _ => l10n.cast,
       };
       _showThrottledCastError(l10n.castActionFailed(label, describeError(e, l10n)));
-    }
-  }
-
-  void _applyDelay({required bool audio, required double delay}) {
-    if (audio) {
-      _audioDelay = delay;
-      _manager.backend?.setAudioDelay(delay);
-    } else {
-      _subtitleDelay = delay;
-      _manager.backend?.setSubtitleDelay(delay);
     }
   }
 
