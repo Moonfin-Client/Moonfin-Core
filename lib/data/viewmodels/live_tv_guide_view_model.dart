@@ -153,6 +153,11 @@ class GuideProgram {
     ].join(' ');
   }
 
+  String get titleWithEpisode => [
+    name,
+    if (episodeLine.isNotEmpty) episodeLine,
+  ].join(' — ');
+
   /// The program's categories in a fixed order, as the same [GuideFilter]
   /// values the guide's filter chips label, so callers localise them once.
   List<GuideFilter> get categoryTags => [

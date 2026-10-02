@@ -80,7 +80,7 @@ class EpgNowNextCard extends StatelessWidget {
                     Flexible(
                       child: Text(
                         nowTitle!,
-                        maxLines: 1,
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: textTheme.bodyMedium,
                       ),
@@ -116,7 +116,7 @@ class EpgNowNextCard extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(
                   nextLabel!,
-                  maxLines: 1,
+                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: textTheme.labelMedium?.copyWith(color: muted),
                 ),
