@@ -2371,7 +2371,13 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       _trickplayMediaSourceId = mediaSourceId;
     });
     if (_controlsVisible) {
-      _prefetchTrickplayDirectional(_state.position, forward: true);
+      // Precaching reads MediaQuery through the context, which initState
+      // can't do. Reopening a player whose item is already playing finds the
+      // info without awaiting anything, so this runs from initState then.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted || generation != _trickplayLoadGeneration) return;
+        _prefetchTrickplayDirectional(_state.position, forward: true);
+      });
     }
   }
 
