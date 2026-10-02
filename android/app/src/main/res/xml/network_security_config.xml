@@ -3,6 +3,12 @@
     <base-config cleartextTrafficPermitted="true">
         <trust-anchors>
             <certificates src="system" />
+            <!-- Trust CAs the user has installed in the device's store, so the
+                 app can reach self-hosted servers secured by a private/self-signed
+                 CA (e.g. an internal Caddy root). Per Android policy, apps
+                 targeting API 24+ only honor user-installed CAs when they opt
+                 in here; without it the OS store is ignored by this app. -->
+            <certificates src="user" />
         </trust-anchors>
     </base-config>
 </network-security-config>
