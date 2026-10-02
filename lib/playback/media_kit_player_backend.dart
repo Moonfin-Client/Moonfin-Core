@@ -905,6 +905,23 @@ class MediaKitPlayerBackend extends PlayerBackend
     return _maybeEngageNativeHdr();
   }
 
+  /// Moves the native HDR session from one presenter to another without
+  /// touching mpv, so the video player screen can hand it to the mini player
+  /// and take it back. Releasing instead would swap mpv to the texture and
+  /// back, a black frame each way, and the window would have to be rebuilt.
+  ///
+  /// Only the current presenter can hand over; anything else is ignored.
+  /// Returns whether the session moved.
+  bool transferNativeHdrPresenter({
+    required Object from,
+    required Object to,
+  }) {
+    if (!identical(hdrOutput.presenter, from)) return false;
+    hdrOutput.presenter = to;
+    hdrOutput.window.transferOwnership(from: from, to: to);
+    return true;
+  }
+
   /// Hands the native HDR path back when the presenting screen goes away.
   ///
   /// mpv returns to media_kit's texture output, subtitles are re-asserted

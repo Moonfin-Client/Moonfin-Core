@@ -45,6 +45,10 @@ class _FakeWindow implements HdrVideoWindow {
 
   @override
   Future<void> release(Object presenter) async => log.add('release');
+
+  @override
+  void transferOwnership({required Object from, required Object to}) =>
+      log.add('transfer');
 }
 
 void main() {
