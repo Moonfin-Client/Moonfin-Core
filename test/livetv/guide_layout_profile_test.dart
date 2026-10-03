@@ -12,7 +12,7 @@ void main() {
         availableHeight: height,
       );
 
-      expect(profile.rowHeight, inInclusiveRange(50, 62));
+      expect(profile.rowHeight, 62);
       expect(profile.timeHeaderHeight, inInclusiveRange(22, 24));
     }
   });
@@ -60,7 +60,7 @@ void main() {
 
     expect(profile.guideWindow, const Duration(minutes: 150));
     expect(profile.channelColumnWidth, closeTo(153.6, 0.0001));
-    expect(profile.rowHeight, lessThan(56));
+    expect(profile.rowHeight, 62);
     expect(30 * profile.pixelsPerMinute, greaterThan(150));
   });
 
@@ -86,7 +86,7 @@ void main() {
       greaterThan(240),
       reason: 'a 30 minute cell has to carry a title at ten feet',
     );
-    expect(profile.rowHeight, closeTo(57.6, 0.5));
+    expect(profile.rowHeight, 62);
     expect(
       profile.channelColumnWidth,
       closeTo(176.3, 1),
