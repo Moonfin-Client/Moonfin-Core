@@ -186,9 +186,61 @@ void main() {
       expect(index, 0); // fre is Index 0
     });
 
-    test('falls back to English if preferred and fallback not found', () {
+    test('falls back to the default track before English if preferred and fallback not found', () {
       final index = computeEffectiveAudioIndex(
         audioStreams: testStreams,
+        preferredAudioLanguage: 'jpn',
+        fallbackAudioLanguage: 'ger',
+        preferDefaultAudioTrack: false,
+        preferAudioDescription: false,
+      );
+      expect(index, 0); // fre is the default track
+    });
+
+    test('falls back to English if no track is flagged default', () {
+      final noDefaultStreams = [
+        {
+          'Type': 'Audio',
+          'Index': 0,
+          'Language': 'fre',
+          'Channels': 6,
+        },
+        {
+          'Type': 'Audio',
+          'Index': 1,
+          'Language': 'eng',
+          'Channels': 2,
+        },
+      ];
+      final index = computeEffectiveAudioIndex(
+        audioStreams: noDefaultStreams,
+        preferredAudioLanguage: 'jpn',
+        fallbackAudioLanguage: 'ger',
+        preferDefaultAudioTrack: false,
+        preferAudioDescription: false,
+      );
+      expect(index, 1); // eng is Index 1
+    });
+
+    test('falls back to English if every track is flagged default', () {
+      final allDefaultStreams = [
+        {
+          'Type': 'Audio',
+          'Index': 0,
+          'Language': 'fre',
+          'IsDefault': true,
+          'Channels': 6,
+        },
+        {
+          'Type': 'Audio',
+          'Index': 1,
+          'Language': 'eng',
+          'IsDefault': true,
+          'Channels': 2,
+        },
+      ];
+      final index = computeEffectiveAudioIndex(
+        audioStreams: allDefaultStreams,
         preferredAudioLanguage: 'jpn',
         fallbackAudioLanguage: 'ger',
         preferDefaultAudioTrack: false,
