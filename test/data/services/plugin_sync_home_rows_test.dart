@@ -8,6 +8,8 @@ import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:moonfin/auth/repositories/session_repository.dart';
 import 'package:moonfin/data/services/plugin_sync_service.dart';
+import 'package:moonfin/data/services/seerr/seerr_discover_sliders.dart';
+import 'package:moonfin/preference/home_section_config.dart';
 import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/preference/seerr_preferences.dart';
 import 'package:moonfin/preference/user_preferences.dart';
@@ -181,5 +183,54 @@ void main() {
 
     expect(prefs.get(UserPreferences.sinceYouWatched2Enabled), isTrue);
     expect(prefs.get(UserPreferences.sinceYouWatched3Enabled), isFalse);
+  });
+
+  group('Seerr slider rows', () {
+    final slider = seerrSliderSection(
+      const SeerrDiscoverSlider(
+        id: 42,
+        type: SeerrSliderType.movieKeyword,
+        title: 'Christmas',
+        data: '207317',
+      ),
+      serverId: 'http://plugin.test',
+    );
+
+    List<HomeSectionConfig> sliders() =>
+        prefs.homeSectionsConfig.where(isSeerrSliderSection).toList();
+
+    test('come through a layout that carries them', () async {
+      await pushLayout([
+        _section(HomeSectionType.resume, order: 0),
+        slider.copyWith(order: 1).toJson(),
+      ]);
+
+      expect(sliders().map((c) => c.stableId), [slider.stableId]);
+      expect(sliders().single.enabled, isTrue);
+    });
+
+    test('survive a layout from a client that dropped them', () async {
+      await prefs.setHomeSectionsConfig([
+        const HomeSectionConfig(type: HomeSectionType.resume),
+        slider.copyWith(order: 1),
+      ]);
+
+      await pushLayout([_section(HomeSectionType.resume, order: 0)]);
+
+      expect(sliders().map((c) => c.stableId), [slider.stableId]);
+      expect(sliders().single.enabled, isTrue);
+    });
+
+    test('take the state the layout gives them', () async {
+      await prefs.setHomeSectionsConfig([slider]);
+
+      await pushLayout([
+        _section(HomeSectionType.resume, order: 0),
+        slider.copyWith(enabled: false, order: 1).toJson(),
+      ]);
+
+      expect(sliders(), hasLength(1));
+      expect(sliders().single.enabled, isFalse);
+    });
   });
 }

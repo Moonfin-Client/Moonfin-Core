@@ -4084,6 +4084,9 @@ class _ContentRowsState extends State<_ContentRows>
     if (row.id.startsWith('imdb_')) return 'IMDb List';
 
     final config = widget.prefs.homeSectionsConfig.firstWhereOrNull((c) => c.stableId == row.id);
+    if (config != null && config.pluginSource == HomeSectionPluginSource.seerr) {
+      return l10n.seerrDiscoveryRows;
+    }
     if (config != null && config.pluginSource == HomeSectionPluginSource.custom) {
       Map<String, dynamic> rowConfig = {};
       try {

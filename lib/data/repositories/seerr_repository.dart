@@ -3,6 +3,7 @@ import 'package:server_core/server_core.dart';
 
 import '../../auth/repositories/session_repository.dart';
 import '../services/seerr/seerr_api_models.dart';
+import '../services/seerr/seerr_discover_sliders.dart';
 import '../services/seerr/seerr_http_client.dart';
 import '../services/seerr/seerr_models.dart';
 
@@ -41,6 +42,13 @@ class SeerrRepository {
   static const _badgeCountCacheDurationMs = 60 * 1000;
 
   final Map<String, SeerrMediaSummary> _mediaSummaryCache = {};
+
+  // Every slider row on Home asks for the list while it loads, so they share
+  // one read. Admins rarely touch it, and the Home settings screen forces a
+  // fresh one to pick up new sliders.
+  Future<List<SeerrDiscoverSlider>>? _discoverSliders;
+  int _discoverSlidersAtMs = 0;
+  static const _discoverSlidersCacheDurationMs = 5 * 60 * 1000;
 
   bool get isAvailable => _isAvailable;
   bool get isMoonfinMode => _isMoonfinMode;
@@ -160,6 +168,7 @@ class SeerrRepository {
     _httpClient?.close();
     _httpClient = SeerrHttpClient(proxyConfig: proxyConfig);
     _cachedPublicSettings = null;
+    _discoverSliders = null;
   }
 
   Future<T> _withClient<T>(
@@ -497,6 +506,54 @@ class SeerrRepository {
       ),
     ),
   );
+
+  /// The sliders on Seerr's discover page. A failed read isn't kept, so the
+  /// next caller tries again.
+  Future<List<SeerrDiscoverSlider>> getDiscoverSliders({bool force = false}) {
+    final now = DateTime.now().millisecondsSinceEpoch;
+    final cached = _discoverSliders;
+    if (!force &&
+        cached != null &&
+        now - _discoverSlidersAtMs < _discoverSlidersCacheDurationMs) {
+      return cached;
+    }
+    final fresh = _withClient(
+      (c) async => (await c.getDiscoverSliders())
+          .map(SeerrDiscoverSlider.tryFromJson)
+          .whereType<SeerrDiscoverSlider>()
+          .toList(growable: false),
+    );
+    _discoverSliders = fresh;
+    _discoverSlidersAtMs = now;
+    fresh.catchError((Object _) {
+      if (identical(_discoverSliders, fresh)) _discoverSliders = null;
+      return const <SeerrDiscoverSlider>[];
+    });
+    return fresh;
+  }
+
+  /// One page of [slider]'s results. A search slider also finds people, which
+  /// have no page to open, so only movies and series are kept.
+  Future<SeerrDiscoverPage> getSliderPage(
+    SeerrDiscoverSlider slider, {
+    int page = 1,
+  }) async {
+    final query = slider.query;
+    if (query == null) return const SeerrDiscoverPage();
+    final result = await _withClient(
+      (c) async => SeerrDiscoverPage.fromJson(
+        await c.getSliderPage(query.path, query.params, page: page),
+      ),
+    );
+    return SeerrDiscoverPage(
+      results: result.results
+          .where((item) => item.mediaType == 'movie' || item.mediaType == 'tv')
+          .toList(growable: false),
+      totalPages: result.totalPages,
+      totalResults: result.totalResults,
+      page: result.page,
+    );
+  }
 
   Future<List<SeerrLanguage>> getLanguages() => _withClient(
     (c) async => (await c.getLanguages())
