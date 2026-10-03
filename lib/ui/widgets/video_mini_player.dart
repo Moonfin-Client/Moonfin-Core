@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:get_it/get_it.dart';
 import 'package:media_kit_video/media_kit_video.dart';
@@ -504,16 +505,22 @@ class _VideoMiniPlayerBarState extends State<_VideoMiniPlayerBar> {
     unawaited(_manager.seekTo(clamped));
   }
 
-  ({String title, String? subtitle}) _describe(Object? item) {
+  _ItemInfo _describe(Object? item) {
     String? name;
     String? series;
     int? season;
     int? episode;
+    String? itemPage;
+    String? seriesPage;
     if (item is AggregatedItem) {
       name = item.name;
       series = item.seriesName;
       season = item.parentIndexNumber;
       episode = item.indexNumber;
+      itemPage = Destinations.item(item.id, serverId: item.serverId);
+      if (item.seriesId case final seriesId?) {
+        seriesPage = Destinations.item(seriesId, serverId: item.serverId);
+      }
     } else {
       final meta = item is Map ? item : _manager.currentOfflineMetadata;
       name = meta?['Name'] as String?;
@@ -523,11 +530,44 @@ class _VideoMiniPlayerBarState extends State<_VideoMiniPlayerBar> {
       if (name == null && item is String) name = item.split('/').last;
     }
     name ??= '';
-    if (series == null || series.isEmpty) return (title: name, subtitle: null);
+    if (series == null || series.isEmpty) {
+      return (
+        title: name,
+        subtitle: null,
+        titlePage: itemPage,
+        subtitlePage: null,
+      );
+    }
     final number = episode == null ? null : 'S${season ?? '?'} · E$episode';
     final subtitle = [?number, if (name.isNotEmpty) name].join(' — ');
-    return (title: series, subtitle: subtitle.isEmpty ? null : subtitle);
+    return (
+      title: series,
+      subtitle: subtitle.isEmpty ? null : subtitle,
+      titlePage: seriesPage,
+      subtitlePage: itemPage,
+    );
   }
+
+  /// Opens a detail page over whatever is on screen; the bar stays. A page
+  /// already on top is not pushed again, so repeat clicks open it once.
+  void _openPage(String route) {
+    final path = Uri.parse(route).path;
+    // Pushed pages leave the router's uri on the tab below them; only the
+    // last match names what is on screen.
+    final config = appRouter.routerDelegate.currentConfiguration;
+    if (config.isNotEmpty && config.last.matchedLocation == path) return;
+    final now = DateTime.now();
+    if (_lastPagePath == path &&
+        now.difference(_lastPageAt) < const Duration(seconds: 1)) {
+      return;
+    }
+    _lastPagePath = path;
+    _lastPageAt = now;
+    unawaited(appRouter.push(route));
+  }
+
+  String? _lastPagePath;
+  DateTime _lastPageAt = DateTime.fromMillisecondsSinceEpoch(0);
 
   @override
   Widget build(BuildContext context) {
@@ -541,42 +581,55 @@ class _VideoMiniPlayerBarState extends State<_VideoMiniPlayerBar> {
 
     // While the native HDR window shows through the thumbnail, the bar's own
     // fill must not paint over it.
-    return AbsorbPointer(
-      absorbing: _pickerOpen,
-      child: ClipPath(
-        key: _barKey,
-        clipper: _HoleClipper(
-          hole: VideoMiniPlayerController.instance.hdrHole,
-          originKey: _barKey,
-        ),
-        child: GlassSurface(
-          cornerRadius: 0,
-          fallbackColor: AppColorScheme.surface,
-          padding: EdgeInsets.only(bottom: bottomPad),
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final wide = constraints.maxWidth >= 720;
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _MiniProgressBar(
-                    state: _state,
-                    onSeek: (position) => unawaited(_manager.seekTo(position)),
-                    tileAt: _trickplayTileAt,
-                  ),
-                  wide
-                      ? _buildWide(l10n, info.title, info.subtitle)
-                      : _buildCompact(l10n, info.title, info.subtitle),
-                ],
-              );
-            },
+    // The bar is outside the navigator, so a picker's barrier does not cover
+    // it. While one is open, a click anywhere on the bar - its own button
+    // included - closes it, the way the barrier would.
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onTap: _pickerOpen ? _dismissPicker : null,
+      child: AbsorbPointer(
+        absorbing: _pickerOpen,
+        child: _HoleClipPath(
+          key: _barKey,
+          clipper: _HoleClipper(
+            hole: VideoMiniPlayerController.instance.hdrHole,
+            originKey: _barKey,
+          ),
+          child: GlassSurface(
+            cornerRadius: 0,
+            fallbackColor: AppColorScheme.surface,
+            padding: EdgeInsets.only(bottom: bottomPad),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final wide = constraints.maxWidth >= 720;
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _MiniProgressBar(
+                      state: _state,
+                      onSeek: (position) =>
+                          unawaited(_manager.seekTo(position)),
+                      tileAt: _trickplayTileAt,
+                    ),
+                    wide
+                        ? _buildWide(l10n, info)
+                        : _buildCompact(l10n, info),
+                  ],
+                );
+              },
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildWide(AppLocalizations l10n, String title, String? subtitle) {
+  void _dismissPicker() {
+    final navigator = appRouter.routerDelegate.navigatorKey.currentState;
+    if (navigator != null) unawaited(navigator.maybePop());
+  }
+
+  Widget _buildWide(AppLocalizations l10n, _ItemInfo info) {
     final back = _prefs.get(UserPreferences.skipBackLength);
     final forward = _prefs.get(UserPreferences.skipForwardLength);
     final scale = _prefs.get(UserPreferences.desktopUiScale).scaleFactor;
@@ -593,8 +646,8 @@ class _VideoMiniPlayerBarState extends State<_VideoMiniPlayerBar> {
                   const SizedBox(width: 16),
                   Expanded(
                     child: _TitleBlock(
-                      title: title,
-                      subtitle: subtitle,
+                      info: info,
+                      onOpenPage: _openPage,
                       state: _state,
                       showTime: true,
                     ),
@@ -683,6 +736,9 @@ class _VideoMiniPlayerBarState extends State<_VideoMiniPlayerBar> {
                             .routerDelegate
                             .navigatorKey
                             .currentContext,
+                        onSheetOpenChanged: (open) {
+                          if (mounted) setState(() => _pickerOpen = open);
+                        },
                       ),
                     if (PlatformDetection.isDesktop &&
                         constraints.maxWidth >= _rightSideWidth(scale) + 168)
@@ -716,7 +772,7 @@ class _VideoMiniPlayerBarState extends State<_VideoMiniPlayerBar> {
     );
   }
 
-  Widget _buildCompact(AppLocalizations l10n, String title, String? subtitle) {
+  Widget _buildCompact(AppLocalizations l10n, _ItemInfo info) {
     return SizedBox(
       height: 64,
       child: Padding(
@@ -730,8 +786,8 @@ class _VideoMiniPlayerBarState extends State<_VideoMiniPlayerBar> {
                 behavior: HitTestBehavior.opaque,
                 onTap: _openPlayer,
                 child: _TitleBlock(
-                  title: title,
-                  subtitle: subtitle,
+                  info: info,
+                  onOpenPage: _openPage,
                   state: _state,
                   showTime: false,
                 ),
@@ -877,6 +933,21 @@ class _HdrHoleState extends State<_HdrHole> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback(_follow);
+  }
+
+  // A window resize moves the thumbnail without changing its size, so
+  // nothing here relayouts; measure after every frame instead. Rides frames
+  // that happen anyway, so it never schedules one of its own.
+  void _follow(Duration _) {
+    if (!mounted) return;
+    _publish();
+    WidgetsBinding.instance.addPostFrameCallback(_follow);
+  }
+
+  @override
   void dispose() {
     final hole = VideoMiniPlayerController.instance.hdrHole;
     if (hole.value == _published) hole.value = null;
@@ -885,16 +956,10 @@ class _HdrHoleState extends State<_HdrHole> {
 
   @override
   Widget build(BuildContext context) {
-    // Relayouts (window resize, the bar switching layouts) move the rect
-    // without rebuilding this, so measure after every layout.
-    return LayoutBuilder(
-      builder: (context, _) {
-        WidgetsBinding.instance.addPostFrameCallback((_) => _publish());
-        return HdrVideoGeometry(
-          onGeometry: widget.onGeometry,
-          onDetached: widget.onDetached,
-        );
-      },
+    return HdrVideoGeometry(
+      onGeometry: widget.onGeometry,
+      onDetached: widget.onDetached,
+      followsPosition: true,
     );
   }
 }
@@ -929,6 +994,31 @@ class _HoleClipper extends CustomClipper<Path> {
       oldClipper.hole != hole || oldClipper.originKey != originKey;
 }
 
+/// A [ClipPath] that clips painting only. A plain one also drops hits outside
+/// its path, and the hole sits exactly over the thumbnail, so the tap that
+/// reopens the player would never arrive.
+class _HoleClipPath extends ClipPath {
+  const _HoleClipPath({super.key, super.clipper, super.child});
+
+  @override
+  RenderClipPath createRenderObject(BuildContext context) =>
+      _RenderHoleClipPath(clipper: clipper, clipBehavior: clipBehavior);
+}
+
+class _RenderHoleClipPath extends RenderClipPath {
+  _RenderHoleClipPath({super.clipper, super.clipBehavior});
+
+  @override
+  bool hitTest(BoxHitTestResult result, {required Offset position}) {
+    if (!size.contains(position)) return false;
+    if (hitTestChildren(result, position: position) || hitTestSelf(position)) {
+      result.add(BoxHitTestEntry(this, position));
+      return true;
+    }
+    return false;
+  }
+}
+
 /// Clips the HDR thumbnail's hole out of the app's backdrop, so nothing
 /// behind the shell covers the video either. Used by the app shell.
 class VideoMiniPlayerHoleClip extends StatelessWidget {
@@ -939,7 +1029,7 @@ class VideoMiniPlayerHoleClip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!PlatformDetection.isWindows) return child;
-    return ClipPath(
+    return _HoleClipPath(
       clipper: _HoleClipper(hole: VideoMiniPlayerController.instance.hdrHole),
       child: child,
     );
@@ -974,15 +1064,71 @@ class _SkipSegmentButton extends StatelessWidget {
   }
 }
 
+/// What the bar shows for the playing item, and the detail page each line
+/// opens: the movie's own page, or for an episode the series page from the
+/// series name and the episode page from the episode line. Offline items have
+/// no page to open.
+typedef _ItemInfo = ({
+  String title,
+  String? subtitle,
+  String? titlePage,
+  String? subtitlePage,
+});
+
+class _PageLink extends StatefulWidget {
+  final String text;
+  final String? page;
+  final ValueChanged<String> onOpenPage;
+  final TextStyle style;
+
+  const _PageLink({
+    required this.text,
+    required this.page,
+    required this.onOpenPage,
+    required this.style,
+  });
+
+  @override
+  State<_PageLink> createState() => _PageLinkState();
+}
+
+class _PageLinkState extends State<_PageLink> {
+  bool _hovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final text = Text(
+      widget.text,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: _hovered
+          ? widget.style.copyWith(decoration: TextDecoration.underline)
+          : widget.style,
+    );
+    final page = widget.page;
+    if (page == null) return text;
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit: (_) => setState(() => _hovered = false),
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => widget.onOpenPage(page),
+        child: text,
+      ),
+    );
+  }
+}
+
 class _TitleBlock extends StatelessWidget {
-  final String title;
-  final String? subtitle;
+  final _ItemInfo info;
+  final ValueChanged<String> onOpenPage;
   final PlayerState state;
   final bool showTime;
 
   const _TitleBlock({
-    required this.title,
-    required this.subtitle,
+    required this.info,
+    required this.onOpenPage,
     required this.state,
     required this.showTime,
   });
@@ -994,22 +1140,22 @@ class _TitleBlock extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          title,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
+        _PageLink(
+          text: info.title,
+          page: info.titlePage,
+          onOpenPage: onOpenPage,
           style: TextStyle(
             color: AppColorScheme.onSurface,
             fontSize: AppTypography.fontSizeMd,
             fontWeight: FontWeight.w600,
           ),
         ),
-        if (subtitle != null) ...[
+        if (info.subtitle case final subtitle?) ...[
           const SizedBox(height: 2),
-          Text(
-            subtitle!,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+          _PageLink(
+            text: subtitle,
+            page: info.subtitlePage,
+            onOpenPage: onOpenPage,
             style: TextStyle(
               color: secondary,
               fontSize: AppTypography.fontSizeSm,
