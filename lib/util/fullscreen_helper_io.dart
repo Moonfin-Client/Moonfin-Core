@@ -24,14 +24,23 @@ Future<void> setFullscreen(bool value) async {
     if (value) {
       _wasMaximized = await windowManager.isMaximized();
       if (_wasMaximized) {
-        // If maximized, we must unmaximize/restore first to avoid title bar remaining visible
-        await windowManager.unmaximize();
+        // A maximized window keeps its title bar in fullscreen. On Windows
+        // hide it instead of restoring, which animates the window down and up.
+        if (PlatformDetection.isWindows) {
+          await windowManager.setTitleBarStyle(TitleBarStyle.hidden);
+        } else {
+          await windowManager.unmaximize();
+        }
       }
       await windowManager.setFullScreen(true);
     } else {
       await windowManager.setFullScreen(false);
       if (_wasMaximized) {
-        await windowManager.maximize();
+        if (PlatformDetection.isWindows) {
+          await windowManager.setTitleBarStyle(TitleBarStyle.normal);
+        } else {
+          await windowManager.maximize();
+        }
         _wasMaximized = false;
       }
     }
