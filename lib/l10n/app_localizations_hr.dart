@@ -10028,6 +10028,12 @@ class AppLocalizationsHr extends AppLocalizations {
   String get playerTooltipSeekForward => 'Traži naprijed';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => 'Označi kao gledano';
 
   @override

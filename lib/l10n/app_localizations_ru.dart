@@ -9883,6 +9883,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get playerTooltipSeekForward => 'Ищи вперед';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => 'Отметить как просмотренное';
 
   @override

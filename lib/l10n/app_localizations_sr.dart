@@ -10036,6 +10036,12 @@ class AppLocalizationsSr extends AppLocalizations {
   String get playerTooltipSeekForward => 'Тражи напред';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => 'Означи као Гледано';
 
   @override

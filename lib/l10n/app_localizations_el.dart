@@ -9947,6 +9947,12 @@ class AppLocalizationsEl extends AppLocalizations {
   String get playerTooltipSeekForward => 'Αναζητήστε μπροστά';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => 'Επισήμανση ως παρακολούθησης';
 
   @override

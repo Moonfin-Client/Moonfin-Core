@@ -14,10 +14,21 @@ class SyncPlayPlayerButton extends StatelessWidget {
     super.key,
     this.size = 24,
     this.extent = 48,
+    this.sheetContext,
+    this.onSheetOpenChanged,
   });
 
   final double size;
   final double extent;
+
+  /// Where the sheet opens, for a button that lives outside the navigator
+  /// (the mini player bar). Defaults to the button's own context.
+  final BuildContext? Function()? sheetContext;
+
+  /// Told when the sheet opens and closes. A button outside the navigator is
+  /// not covered by the sheet's barrier, so its owner has to block repeat
+  /// presses itself.
+  final ValueChanged<bool>? onSheetOpenChanged;
 
   SyncPlayManager get _manager => GetIt.instance<SyncPlayManager>();
 
@@ -33,7 +44,16 @@ class SyncPlayPlayerButton extends StatelessWidget {
           height: extent,
           child: IconButton(
             tooltip: l10n.syncPlayGroupTooltip,
-            onPressed: () => _showSheet(context),
+            onPressed: () async {
+              final target = sheetContext?.call() ?? context;
+              if (!target.mounted) return;
+              onSheetOpenChanged?.call(true);
+              try {
+                await _showSheet(target);
+              } finally {
+                onSheetOpenChanged?.call(false);
+              }
+            },
             icon: Icon(Icons.groups_rounded,
               color: AppColorScheme.onSurface, size: size),
             padding: EdgeInsets.zero,
@@ -44,8 +64,8 @@ class SyncPlayPlayerButton extends StatelessWidget {
     );
   }
 
-  void _showSheet(BuildContext context) {
-    showFocusRestoringModalBottomSheet<void>(
+  Future<void> _showSheet(BuildContext context) {
+    return showFocusRestoringModalBottomSheet<void>(
       context: context,
       backgroundColor: AppColorScheme.surface,
       builder: (ctx) {

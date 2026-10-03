@@ -9933,6 +9933,12 @@ class AppLocalizationsRo extends AppLocalizations {
   String get playerTooltipSeekForward => 'Derulează înainte';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => 'Marchează ca vizionat';
 
   @override

@@ -9846,6 +9846,12 @@ class AppLocalizationsCs extends AppLocalizations {
   String get playerTooltipSeekForward => 'Hledejte dopředu';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => 'Označit jako sledované';
 
   @override

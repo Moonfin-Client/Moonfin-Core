@@ -17374,6 +17374,18 @@ abstract class AppLocalizations {
   /// **'Seek forward'**
   String get playerTooltipSeekForward;
 
+  /// Tooltip label for shrinking the video player into the mini player bar so the viewer can keep browsing
+  ///
+  /// In en, this message translates to:
+  /// **'Minimize player'**
+  String get playerTooltipMinimize;
+
+  /// Tooltip label for returning from the video mini player bar to the full player
+  ///
+  /// In en, this message translates to:
+  /// **'Open player'**
+  String get miniPlayerOpenPlayer;
+
   /// Context menu action to mark an item as watched
   ///
   /// In en, this message translates to:

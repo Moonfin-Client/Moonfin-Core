@@ -9875,6 +9875,12 @@ class AppLocalizationsTe extends AppLocalizations {
   String get playerTooltipSeekForward => 'ముందుకు వెతుకుము';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => 'వీక్షించినట్లు గుర్తు పెట్టండి';
 
   @override

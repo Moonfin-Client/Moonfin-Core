@@ -12,6 +12,7 @@ import '../data/services/media_server_client_factory.dart';
 import '../preference/user_preferences.dart';
 import '../ui/navigation/app_router.dart';
 import '../ui/navigation/destinations.dart';
+import '../ui/widgets/video_mini_player.dart';
 import 'sync_correction_policy.dart';
 import 'syncplay_state.dart';
 import 'time_sync_manager.dart';
@@ -749,6 +750,14 @@ class SyncPlayManager extends ChangeNotifier {
         item.type == 'MusicAlbum' ||
         item.type == 'AudioBook' ||
         mediaType == 'Audio';
+    // A viewer who minimized the video keeps watching in the mini player,
+    // which follows the group's item on its own; reopening the full player on
+    // every group item change would undo the minimize.
+    if (!isAudio &&
+        VideoMiniPlayerController.isSupported &&
+        VideoMiniPlayerController.instance.isMinimized) {
+      return;
+    }
     appRouter.push(
       isAudio ? Destinations.audioPlayer : Destinations.videoPlayer,
     );
@@ -989,8 +998,12 @@ class SyncPlayManager extends ChangeNotifier {
     final windowMs = forSeek
         ? math.max(_bufferingSuppressionMs, _maxSeekLatencyMs)
         : _bufferingSuppressionMs;
-    _suppressBufferingUntilMs =
-        DateTime.now().millisecondsSinceEpoch + windowMs;
+    // Never shortens a window already armed: a renderer cycle landing inside
+    // a corrective seek's longer window must not cut it back.
+    _suppressBufferingUntilMs = math.max(
+      _suppressBufferingUntilMs,
+      DateTime.now().millisecondsSinceEpoch + windowMs,
+    );
   }
 
   int _clampedPositionMs(int value) {
@@ -1288,6 +1301,14 @@ class SyncPlayManager extends ChangeNotifier {
     _trace(() => 'player buffering $buffering');
     if (buffering && !_isBuffering) {
       _isBuffering = true;
+      // Windows recreates mpv's HDR renderer when the window crosses onto a
+      // screen with a different HDR state, and the swap stalls the pipeline
+      // for a moment. That is not a network stall worth holding the group.
+      if (VideoMiniPlayerController.instance.hdrBackend?.nativeRendererCycling
+              .value ??
+          false) {
+        _armBufferingSuppression();
+      }
       final nowMs = DateTime.now().millisecondsSinceEpoch;
       if (nowMs < _suppressBufferingUntilMs) {
         // This buffering was caused by our own seek/resume. Re-check when the

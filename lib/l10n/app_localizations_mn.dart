@@ -9835,6 +9835,12 @@ class AppLocalizationsMn extends AppLocalizations {
   String get playerTooltipSeekForward => 'Урагшаа хайх';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => 'Үзсэн гэж тэмдэглэ';
 
   @override

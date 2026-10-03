@@ -104,6 +104,13 @@ class HdrVideoWindow {
     await setVisible(true);
   }
 
+  /// Gives the window to [to] where it stands, so the departing presenter's
+  /// release no longer hides it. The window keeps its place until the new
+  /// owner claims a rect.
+  void transferOwnership({required Object from, required Object to}) {
+    if (identical(_presenter, from)) _presenter = to;
+  }
+
   Future<void> release(Object presenter) async {
     if (!identical(_presenter, presenter)) return;
     _presenter = null;

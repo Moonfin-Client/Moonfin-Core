@@ -779,6 +779,23 @@ class MediaKitPlayerBackend extends PlayerBackend {
     return _maybeEngageNativeHdr();
   }
 
+  /// Moves the native HDR session from one presenter to another without
+  /// touching mpv, so the video player screen can hand it to the mini player
+  /// and take it back. Releasing instead would swap mpv to the texture and
+  /// back, a black frame each way, and the window would have to be rebuilt.
+  ///
+  /// Only the current presenter can hand over; anything else is ignored.
+  /// Returns whether the session moved.
+  bool transferNativeHdrPresenter({
+    required Object from,
+    required Object to,
+  }) {
+    if (!identical(hdrOutput.presenter, from)) return false;
+    hdrOutput.presenter = to;
+    hdrOutput.window.transferOwnership(from: from, to: to);
+    return true;
+  }
+
   /// Hands the native HDR path back when the presenting screen goes away.
   ///
   /// mpv returns to media_kit's texture output, subtitles are re-asserted
@@ -829,8 +846,9 @@ class MediaKitPlayerBackend extends PlayerBackend {
   /// The two can differ: drag the window onto an SDR monitor mid-playback and
   /// the screen shows SDR while the session stays engaged. The monitor's own
   /// HDR state is the authority - whichever side does the conversion, an SDR
-  /// display is not showing HDR - and mpv's `target-params`, its account of
-  /// the output target after every conversion, refines it where available.
+  /// display is not showing HDR - and mpv's `video-target-params`, its
+  /// account of the output target after every conversion, refines it where
+  /// available.
   ///
   /// Null when there is nothing to say (not engaged, no native player), so
   /// callers can fall back to the session-level status.
@@ -892,7 +910,7 @@ class MediaKitPlayerBackend extends PlayerBackend {
   Future<(bool?, bool?)> _readHdrOutputState(NativePlayer native) async {
     final (displayHdr, gamma) = await (
       AutoHdrSwitcher.displayHdrState(),
-      _tryNativeGetProperty(native, 'target-params/gamma'),
+      _tryNativeGetProperty(native, 'video-target-params/gamma'),
     ).wait;
     final bool? outputtingHdr = gamma == null
         ? null

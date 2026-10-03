@@ -9854,6 +9854,12 @@ class AppLocalizationsKk extends AppLocalizations {
   String get playerTooltipSeekForward => 'Алға ұмтыл';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => 'Қаралған деп белгілеу';
 
   @override

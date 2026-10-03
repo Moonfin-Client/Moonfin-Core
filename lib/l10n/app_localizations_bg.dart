@@ -9900,6 +9900,12 @@ class AppLocalizationsBg extends AppLocalizations {
   String get playerTooltipSeekForward => 'Търсене напред';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => 'Маркирайте като гледани';
 
   @override

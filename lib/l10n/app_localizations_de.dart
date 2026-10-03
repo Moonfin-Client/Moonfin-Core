@@ -9961,6 +9961,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get playerTooltipSeekForward => 'Vorwärts springen';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => 'Als gesehen markieren';
 
   @override

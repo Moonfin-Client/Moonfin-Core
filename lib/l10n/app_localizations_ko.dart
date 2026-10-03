@@ -9566,6 +9566,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get playerTooltipSeekForward => '앞으로 탐색';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => '시청한 것으로 표시';
 
   @override

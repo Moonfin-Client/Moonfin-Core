@@ -9534,6 +9534,12 @@ class AppLocalizationsYue extends AppLocalizations {
   String get playerTooltipSeekForward => '向前尋求';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => '標記為已觀看';
 
   @override

@@ -9802,6 +9802,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get playerTooltipSeekForward => 'تسعى إلى الأمام';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => 'وضع علامة \"تمت مشاهدته\".';
 
   @override

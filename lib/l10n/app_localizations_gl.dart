@@ -9935,6 +9935,12 @@ class AppLocalizationsGl extends AppLocalizations {
   String get playerTooltipSeekForward => 'Busca adiante';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => 'Marcar como visto';
 
   @override

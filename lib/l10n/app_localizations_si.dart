@@ -9806,6 +9806,12 @@ class AppLocalizationsSi extends AppLocalizations {
   String get playerTooltipSeekForward => 'ඉදිරියට සොයන්න';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => 'නැරඹූ ලෙස ලකුණු කරන්න';
 
   @override

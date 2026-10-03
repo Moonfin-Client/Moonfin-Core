@@ -9883,6 +9883,12 @@ class AppLocalizationsTa extends AppLocalizations {
   String get playerTooltipSeekForward => 'முன்னோக்கி தேடுங்கள்';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => 'பார்த்ததாகக் குறி';
 
   @override

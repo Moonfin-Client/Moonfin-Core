@@ -9496,6 +9496,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get playerTooltipSeekForward => '快进';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => '标记为已观看';
 
   @override

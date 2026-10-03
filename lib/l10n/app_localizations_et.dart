@@ -9823,6 +9823,12 @@ class AppLocalizationsEt extends AppLocalizations {
   String get playerTooltipSeekForward => 'Otsige edasi';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => 'Märgi vaadatuks';
 
   @override

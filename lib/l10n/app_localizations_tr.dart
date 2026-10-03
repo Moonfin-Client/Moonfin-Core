@@ -9826,6 +9826,12 @@ class AppLocalizationsTr extends AppLocalizations {
   String get playerTooltipSeekForward => 'İleriye doğru ara';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => 'İzlendi olarak işaretle';
 
   @override

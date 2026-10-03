@@ -9860,6 +9860,12 @@ class AppLocalizationsBe extends AppLocalizations {
   String get playerTooltipSeekForward => 'Шукаць наперад';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => 'Пазначыць як прагледжанае';
 
   @override

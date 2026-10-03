@@ -9913,6 +9913,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get playerTooltipSeekForward => 'Avanzar';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => 'Marcar como visto';
 
   @override

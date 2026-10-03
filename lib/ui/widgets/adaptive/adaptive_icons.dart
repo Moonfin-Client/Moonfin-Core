@@ -279,6 +279,7 @@ final _sfForMaterial = <IconData, String>{
   Icons.brightness_medium: 'sun.max',
   Icons.album: 'square.stack',
   Icons.arrow_back: 'chevron.left',
+  Icons.picture_in_picture_alt_rounded: 'pip.enter',
   Icons.arrow_forward: 'arrow.right',
   Icons.auto_stories_rounded: 'book',
   Icons.cast: 'airplayvideo',

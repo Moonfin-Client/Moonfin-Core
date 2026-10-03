@@ -9822,6 +9822,12 @@ class AppLocalizationsId extends AppLocalizations {
   String get playerTooltipSeekForward => 'Maju';
 
   @override
+  String get playerTooltipMinimize => 'Minimize player';
+
+  @override
+  String get miniPlayerOpenPlayer => 'Open player';
+
+  @override
   String get contextMenuMarkWatched => 'Tandai sebagai Ditonton';
 
   @override
