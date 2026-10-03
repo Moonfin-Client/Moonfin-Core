@@ -14,6 +14,7 @@ import 'package:volume_controller/volume_controller.dart';
 import '../../../data/services/log_service.dart';
 import '../../../data/utils/video_range_label.dart';
 import '../../../playback/subtitle_style.dart';
+import '../../../playback/subtitle_view_config.dart';
 import '../../../data/models/aggregated_item.dart';
 import '../../../data/viewmodels/live_tv_guide_view_model.dart';
 import '../../../l10n/app_localizations.dart';
@@ -33,7 +34,6 @@ import '../../../util/system_ui.dart';
 import '../../widgets/adaptive/sf_symbol.dart';
 import '../../widgets/aether_video_view.dart';
 import '../../widgets/playback/stream_info_dialog.dart';
-import '../../widgets/subtitle_preview.dart';
 import '../../widgets/track_selector_dialog.dart';
 import '../../widgets/live_tv/channel_carousel_overlay.dart';
 import 'channel_tune_observer.dart';
@@ -1649,56 +1649,13 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     );
   }
 
-  SubtitleViewConfiguration _buildSubtitleConfig() {
-    final style = SubtitleStyle.forResolution(
-      _prefs,
-      _manager.currentResolution,
-    );
-    final textColor = Color(style.textColor);
-    final bgColor = Color(style.backgroundColor);
-    final strokeColor = Color(style.strokeColor);
-    final prefSize = style.fontSize;
-    final fontWeight = style.fontWeight;
-    final offset = style.verticalOffset;
-
-    final baseSize = PlatformDetection.useMobileUi ? 40.0 : 32.0;
-    final fontSize = (prefSize / 24.0) * baseSize;
-    final basePadding = PlatformDetection.useMobileUi ? 16.0 : 24.0;
-    final bottomPadding =
-        basePadding + (offset * MediaQuery.sizeOf(context).height * 0.5);
-
-    final strokeShadows = subtitleStrokeShadows(strokeColor, fontSize);
-
-    final activeIndex = _manager.subtitleStreamIndex;
-    bool isAssOrPgs = false;
-    if (activeIndex != null && activeIndex >= 0) {
-      final mediaStreams = _manager.currentResolution?.mediaStreams;
-      if (mediaStreams != null) {
-        final activeStream = mediaStreams.firstWhere(
-          (s) => s['Index'] == activeIndex,
-          orElse: () => const <String, dynamic>{},
-        );
-        final codec = activeStream['Codec'] as String?;
-        isAssOrPgs = shouldRenderSubtitleNatively(codec);
-      }
-    }
-
-    return SubtitleViewConfiguration(
-      visible: PlatformDetection.isDesktop ? false : !isAssOrPgs,
-      style: TextStyle(
-        inherit: false,
-        height: 1.4,
-        fontSize: fontSize,
-        color: textColor,
-        fontWeight: fontWeight >= 700 ? FontWeight.bold : FontWeight.normal,
-        backgroundColor: bgColor,
-        fontFamilyFallback: const ['Roboto', 'Noto Sans', 'Arial'],
-        shadows: strokeShadows,
-      ),
-      textAlign: TextAlign.center,
-      padding: EdgeInsets.fromLTRB(16.0, 0.0, 16.0, bottomPadding),
-    );
-  }
+  SubtitleViewConfiguration _buildSubtitleConfig() =>
+      buildSubtitleViewConfiguration(
+        context: context,
+        prefs: _prefs,
+        resolution: _manager.currentResolution,
+        subtitleStreamIndex: _manager.subtitleStreamIndex,
+      );
 
   KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
     if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
