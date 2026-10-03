@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:clock/clock.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -389,6 +390,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   bool _verticalDragIsVolume = false;
   bool _verticalDragIgnored = false;
   Offset? _doubleTapDownPosition;
+  DateTime? _lastDesktopClickAt;
   DateTime? _lastSeekTime;
   bool _showSkipForward = false;
   bool _showSkipBackward = false;
@@ -4030,7 +4032,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
           autofocus: true,
           onKeyEvent: _handleKeyEvent,
           child: GestureDetector(
-            onTap: PlatformDetection.isTV ? null : _toggleControls,
+            onTap: PlatformDetection.isTV ? null : _onSurfaceTap,
             onDoubleTapDown: PlatformDetection.isTV
                 ? null
                 : PlatformDetection.useMobileUi && !_isOsdLocked
@@ -6328,6 +6330,21 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         );
       }
     } catch (_) {}
+  }
+
+  // Desktop double-click is timed here because onDoubleTap delays every click.
+  void _onSurfaceTap() {
+    if (PlatformDetection.useDesktopUi) {
+      final now = clock.now();
+      final last = _lastDesktopClickAt;
+      _lastDesktopClickAt = now;
+      if (last != null && now.difference(last) < kDoubleTapTimeout) {
+        _lastDesktopClickAt = null;
+        unawaited(_toggleDesktopFullscreen());
+        return;
+      }
+    }
+    _toggleControls();
   }
 
   void _onDoubleTapDown(TapDownDetails details) {
