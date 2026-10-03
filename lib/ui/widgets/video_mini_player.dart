@@ -56,7 +56,9 @@ class VideoMiniPlayerController {
   /// and Windows shows mpv's texture or moves its native HDR window into the
   /// thumbnail. Phones and tablets have system PiP instead.
   static bool get isSupported =>
-      PlatformDetection.isMacOS || PlatformDetection.isWindows;
+      PlatformDetection.isMacOS ||
+      PlatformDetection.isWindows ||
+      PlatformDetection.isLinux;
 
   /// App lifetime, so the display's HDR mode survives the player screen going
   /// away while the video keeps playing here. The player screen borrows it.
@@ -77,6 +79,12 @@ class VideoMiniPlayerController {
 
   /// Whether the bar shows: minimized, with no player route on screen.
   final ValueNotifier<bool> visible = ValueNotifier<bool>(false);
+
+  /// mpv's backend, on Windows and Linux. macOS plays through AetherEngine.
+  MediaKitPlayerBackend? get mediaKitBackend =>
+      GetIt.instance.isRegistered<MediaKitPlayerBackend>()
+      ? GetIt.instance<MediaKitPlayerBackend>()
+      : null;
 
   /// The backend whose native HDR window this controller may present, on
   /// Windows only.
@@ -835,8 +843,8 @@ class _VideoThumbnail extends StatelessWidget {
           child: SizedBox(
             height: height,
             width: height * 16 / 9,
-            child: PlatformDetection.isWindows
-                ? const _WindowsVideoSurface()
+            child: !PlatformDetection.isMacOS
+                ? const _MpvVideoSurface()
                 : const ColoredBox(
                     color: Colors.black,
                     // The engine draws into whichever view attached last, so
@@ -853,7 +861,8 @@ class _VideoThumbnail extends StatelessWidget {
 
 const _thumbnailRadius = 6.0;
 
-/// mpv's picture on Windows, in whichever of its two outputs it is on.
+/// mpv's picture on Windows and Linux, in whichever of its two outputs it is
+/// on. Linux only has the texture.
 ///
 /// SDR plays into media_kit's texture, shared with the full player, so this
 /// is the same `Video` the Live TV preview uses. HDR on an HDR display plays
@@ -862,14 +871,19 @@ const _thumbnailRadius = 6.0;
 /// thumbnail paints nothing, leaving a hole the picture shows through, still
 /// in HDR. Either can change while minimized, when the next item is HDR or not
 /// or the window crosses onto another monitor.
-class _WindowsVideoSurface extends StatelessWidget {
-  const _WindowsVideoSurface();
+class _MpvVideoSurface extends StatelessWidget {
+  const _MpvVideoSurface();
 
   @override
   Widget build(BuildContext context) {
     final controller = VideoMiniPlayerController.instance;
     final backend = controller.hdrBackend;
-    if (backend == null) return const ColoredBox(color: Colors.black);
+    if (backend == null) {
+      final textureBackend = controller.mediaKitBackend;
+      return textureBackend == null
+          ? const ColoredBox(color: Colors.black)
+          : _texture(textureBackend);
+    }
     final hdr = backend.hdrOutput;
     return ListenableBuilder(
       listenable: Listenable.merge([hdr.status, backend.nativeRendererCycling]),
