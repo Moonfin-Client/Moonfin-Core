@@ -90,7 +90,7 @@ class OfflineUserLibraryApi implements UserLibraryApi {
   }
 
   @override
-  Future<void> markPlayed(String itemId) async {
+  Future<void> markPlayed(String itemId, {DateTime? datePlayed}) async {
     throw offlineUnavailable('/UserPlayedItems/$itemId');
   }
 

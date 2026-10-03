@@ -18,9 +18,13 @@ class ItemMutationRepository {
     userDataSync.publish(itemId, {'IsFavorite': isFavorite});
   }
 
-  Future<void> setPlayed(String itemId, {required bool isPlayed}) async {
+  Future<void> setPlayed(
+    String itemId, {
+    required bool isPlayed,
+    DateTime? datePlayed,
+  }) async {
     if (isPlayed) {
-      await _client.userLibraryApi.markPlayed(itemId);
+      await _client.userLibraryApi.markPlayed(itemId, datePlayed: datePlayed);
       final prefs = GetIt.instance<UserPreferences>();
       await prefs.setItemSubtitleStreamIndex(itemId, null);
       await prefs.setItemAudioStreamIndex(itemId, null);

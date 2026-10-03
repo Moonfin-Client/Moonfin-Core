@@ -20,8 +20,10 @@ class JellyfinUserLibraryApi implements UserLibraryApi {
   }
 
   @override
-  Future<void> markPlayed(String itemId) async {
-    await _dio.post('/UserPlayedItems/$itemId');
+  Future<void> markPlayed(String itemId, {DateTime? datePlayed}) async {
+    await _dio.post('/UserPlayedItems/$itemId', queryParameters: {
+      'datePlayed': ?datePlayed?.toUtc().toIso8601String(),
+    });
   }
 
   @override

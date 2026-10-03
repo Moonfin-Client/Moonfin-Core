@@ -14,6 +14,8 @@ import '../models/aggregated_item.dart';
 import '../models/aggregated_library.dart';
 import '../models/home_row.dart';
 import '../services/media_server_client_factory.dart';
+import '../services/skipped_episode_cleanup.dart';
+import '../services/skipped_episode_endings.dart';
 import '../utils/blocked_ratings.dart';
 import '../utils/bounded_concurrency.dart';
 import '../utils/genre_browse_utils.dart';
@@ -219,11 +221,11 @@ class MultiServerRepository {
     );
 
     final all = results.expand((e) => e).toList()..sort(_compareByLastPlayed);
-
+    final cleaned = await _cleanupAggregatedResume(all, sessions);
     return HomeRow(
       id: 'resume',
       title: _l10n.continueWatching,
-      items: all.take(limit).toList(),
+      items: cleaned.take(limit).toList(),
       rowType: HomeRowType.resume,
     );
   }
@@ -1373,6 +1375,29 @@ class MultiServerRepository {
     } catch (_) {
       return null;
     }
+  }
+
+  Future<List<AggregatedItem>> _cleanupAggregatedResume(
+    List<AggregatedItem> items,
+    List<ServerUserSession> sessions,
+  ) async {
+    if (items.isEmpty) return items;
+    if (!GetIt.instance.isRegistered<UserPreferences>()) return items;
+    final prefs = GetIt.instance<UserPreferences>();
+    if (!prefs.get(UserPreferences.autoCompleteSkippedEpisodeEndings)) {
+      return items;
+    }
+    final threshold = skippedEpisodeProgressThreshold(
+      prefs.get(UserPreferences.autoCompleteSkippedEpisodeThreshold),
+    );
+    final clientsByServerId = {
+      for (final session in sessions) session.server.id: session.client,
+    };
+    return cleanupSkippedEpisodeEndingsMultiServer(
+      resume: items,
+      clientsByServerId: clientsByServerId,
+      progressThreshold: threshold,
+    );
   }
 
   List<AggregatedItem> _parseItems(

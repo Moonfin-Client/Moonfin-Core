@@ -43,6 +43,21 @@ Future<RequestOptions?> record(
 }
 
 void main() {
+  test('marking played sends DatePlayed in UTC yyyyMMddHHmmss', () async {
+    final plain = await record((api) => api.markPlayed('ep-1'));
+    expect(plain?.method, 'POST');
+    expect(plain?.path, '/Users/user-1/PlayedItems/ep-1');
+    expect(plain?.queryParameters, isEmpty);
+
+    final dated = await record(
+      (api) => api.markPlayed(
+        'ep-1',
+        datePlayed: DateTime.utc(2026, 8, 3, 8, 5, 9),
+      ),
+    );
+    expect(dated?.queryParameters, {'DatePlayed': '20260803080509'});
+  });
+
   test('a numeric rating goes to Moonbase', () async {
     final request = await record(
       (api) => api.updateNumericUserRating('movie-1', rating: 8.5),
