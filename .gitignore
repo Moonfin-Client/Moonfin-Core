@@ -90,6 +90,7 @@ app.*.map.json
 # Windows installer
 /Moonfin-Setup-x64.exe
 /Moonfin_Windows_v*.exe
+/MoonfinStore_Windows*_v*.msix
 
 # Android APK artifacts
 /Moonfin-android.apk

@@ -303,11 +303,14 @@ flutter:
       fonts:
         - asset: assets/fonts/PressStart2P-Regular.ttf
 
+# The identity has to match Partner Center's Product identity page or the Store
+# rejects the upload.
 msix_config:
   display_name: Moonfin
   publisher_display_name: Moonfin
-  identity_name: com.moonfin.app
-  msix_version: 2.6.0.0
+  identity_name: Moonfin.Moonfin
+  publisher: CN=4E670673-D47F-4792-94F7-65B4918F6E4C
   logo_path: assets/icons/app_icon.png
-  capabilities: internetClient, internetClientServer
+  capabilities: internetClient, internetClientServer, privateNetworkClientServer
   languages: en-us
+  protocol_activation: moonfin

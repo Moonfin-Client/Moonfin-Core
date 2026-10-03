@@ -528,6 +528,20 @@ jobs:
           overwrite: true
           if-no-files-found: error
 
+      # Tags and manual runs only, since rebuilding for the Store doubles the
+      # job's time.
+      - name: Build Microsoft Store package
+        if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
+        shell: pwsh
+        run: .\build-windows.ps1 -Store
+
+      - uses: actions/upload-artifact@v4
+        if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
+        with:
+          name: windows-msix
+          path: MoonfinStore_Windows_v*.msix
+          if-no-files-found: error
+
   # Windows ARM64 installer EXE (native build on an ARM64 runner)
   windows-arm64:
     if: ${{ (github.event_name != 'workflow_dispatch' || inputs.run_all || inputs.windows_arm64) && inputs.distribution != 'testflight' }}
@@ -614,6 +628,18 @@ jobs:
           name: windows-arm64-exe
           path: signed/Moonfin_WindowsARM64_v*.exe
           overwrite: true
+          if-no-files-found: error
+
+      - name: Build Microsoft Store package
+        if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
+        shell: pwsh
+        run: .\build-windows.ps1 -Architecture arm64 -Store
+
+      - uses: actions/upload-artifact@v4
+        if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
+        with:
+          name: windows-arm64-msix
+          path: MoonfinStore_WindowsARM64_v*.msix
           if-no-files-found: error
 
   # Linux packages, built natively for each architecture
