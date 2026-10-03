@@ -9,6 +9,7 @@ import 'package:server_core/server_core.dart' hide ImageType;
 import '../../../data/models/aggregated_item.dart';
 import '../../../auth/repositories/user_repository.dart';
 import '../../../data/services/background_service.dart';
+import '../../../data/services/log_service.dart';
 import '../../../data/utils/genre_browse_utils.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
@@ -138,41 +139,11 @@ class _LibraryGenresScreenState extends State<LibraryGenresScreen> {
 
       _genres = temp.map((x) {
         final data = x.data;
-        final primaryTag = data['PrimaryImageTag'] as String?;
-        final imageTags = data['ImageTags'] as Map?;
-        final primaryAr = data['PrimaryImageAspectRatio'] as num?;
-        final backdropTags = data['BackdropImageTags'] as List?;
-
-        final customThumb = imageTags?['Thumb'] as String?;
-        final hasCustomArtwork = (primaryTag != null && primaryAr != null && primaryAr < 1.0) ||
-            (customThumb != null && customThumb.isNotEmpty);
-
-        String? imageUrl;
-        String? backdropUrl;
-
-        if (hasCustomArtwork) {
-          if (customThumb != null && customThumb.isNotEmpty) {
-            imageUrl = _client.imageApi.getThumbImageUrl(
-              data['Id']?.toString() ?? '',
-              tag: customThumb,
-              maxWidth: _genreCardRequestMaxWidth(),
-            );
-          } else if (primaryTag != null) {
-            imageUrl = _client.imageApi.getPrimaryImageUrl(
-              data['Id']?.toString() ?? '',
-              tag: primaryTag,
-              maxWidth: _genreCardRequestMaxWidth(),
-            );
-          }
-
-          if (backdropTags != null && backdropTags.isNotEmpty) {
-            backdropUrl = _client.imageApi.getBackdropImageUrl(
-              data['Id']?.toString() ?? '',
-              tag: backdropTags.first.toString(),
-              maxWidth: 960,
-            );
-          }
-        }
+        final (imageUrl, backdropUrl, hasOwnArtwork) = resolveGenreOwnArtwork(
+          genreData: data,
+          imageApi: _client.imageApi,
+          maxWidth: _genreCardRequestMaxWidth(),
+        );
 
         return GenreCardData(
           id: data['Id']?.toString() ?? '',
@@ -180,10 +151,20 @@ class _LibraryGenresScreenState extends State<LibraryGenresScreen> {
           itemCount: x.itemCount,
           imageUrl: imageUrl,
           backdropUrl: backdropUrl,
-          isGenreFallback: !hasCustomArtwork,
+          isGenreFallback: !hasOwnArtwork,
         );
       }).toList();
-    } catch (_) {}
+    } catch (e) {
+      // Logged, since the empty state looks the same as a library with no genres.
+      if (GetIt.instance.isRegistered<LogService>()) {
+        GetIt.instance<LogService>().log(
+          LogCategory.network,
+          'Loading genres failed',
+          level: LogLevel.warning,
+          error: e,
+        );
+      }
+    }
 
     if (token != _loadToken) return;
     _isLoading = false;
