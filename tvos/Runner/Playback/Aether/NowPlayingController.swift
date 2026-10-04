@@ -269,7 +269,8 @@ final class NowPlayingController {
     }
 
     func updateMetadata(
-        title: String, subtitle: String, durationSeconds: TimeInterval, artworkURL: String?
+        title: String, subtitle: String, durationSeconds: TimeInterval, artworkURL: String?,
+        mediaType: MPNowPlayingInfoMediaType = .video,
     ) {
         info[MPMediaItemPropertyTitle] = title
         info[MPMediaItemPropertyArtist] = subtitle
@@ -277,7 +278,7 @@ final class NowPlayingController {
         if durationSeconds > 0 {
             info[MPMediaItemPropertyPlaybackDuration] = durationSeconds
         }
-        info[MPNowPlayingInfoPropertyMediaType] = MPNowPlayingInfoMediaType.video.rawValue
+        info[MPNowPlayingInfoPropertyMediaType] = mediaType.rawValue
         publish(info)
         loadArtwork(artworkURL)
     }
