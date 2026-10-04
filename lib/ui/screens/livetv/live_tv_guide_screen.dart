@@ -763,7 +763,6 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
     showFocusRestoringDialog(
       context: context,
       builder: (dialogContext) => AlertDialog.adaptive(
-        backgroundColor: AppColorScheme.surface,
         title: Text(l10n.sortBy, style: const TextStyle(color: Colors.white)),
         content: RadioGroup<ChannelSortBy>(
           groupValue: _vm.sortBy,
@@ -2489,7 +2488,6 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
           });
         }
         return AlertDialog.adaptive(
-          backgroundColor: AppColorScheme.surface,
           title: Text(
             program.name,
             style: const TextStyle(color: Colors.white),
