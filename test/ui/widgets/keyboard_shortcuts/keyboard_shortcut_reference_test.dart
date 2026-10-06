@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
+import 'package:moonfin/playback/letterbox_croppers.dart';
 import 'package:moonfin/ui/widgets/keyboard_shortcuts/keyboard_shortcut_reference.dart';
 import 'package:moonfin/util/platform_detection.dart';
 
@@ -31,6 +32,9 @@ void main() {
         .firstWhere((s) => s.title == l10n.keyboardShortcutsSectionPlayer);
     final keys = player.shortcuts.expand((s) => s.keys).toSet();
     expect(keys, containsAll(['K', 'J', 'L', 'M', 'C', 'H', 'I', ',', '.']));
+    if (letterboxCropAvailable()) {
+      expect(keys, contains('B'));
+    }
   });
 
   // The reader only takes keyboard input on the desktop UI, so its section

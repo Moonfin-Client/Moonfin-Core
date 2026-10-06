@@ -595,18 +595,7 @@ class SeerrHttpClient {
     int offset = 0,
   }) async {
     final page = (offset ~/ limit) + 1;
-    // Percent-encode query string explicitly using %20 for spaces and %27 for
-    // apostrophes. Passing query directly to Dio queryParameters uses
-    // x-www-form-urlencoded format (+ for spaces), which causes Seerr/TMDB
-    // to search for literal '+' characters and return 0 results.
-    final encodedQuery = Uri.encodeComponent(query)
-        .replaceAll("'", '%27')
-        .replaceAll('!', '%21')
-        .replaceAll('*', '%2A')
-        .replaceAll('(', '%28')
-        .replaceAll(')', '%29');
-
-    var url = '${_apiUrl('search')}?query=$encodedQuery&page=$page';
+    var url = '${_apiUrl('search')}?query=${_encodeQueryValue(query)}&page=$page';
     if (mediaType != null) {
       url += '&type=${Uri.encodeComponent(mediaType)}';
     }
@@ -617,6 +606,47 @@ class SeerrHttpClient {
     );
     _requireSuccess(response, 'search');
     return response.data as Map<String, dynamic>;
+  }
+
+  /// Percent-encodes with %20 for spaces and %27 for apostrophes. Dio's
+  /// queryParameters use x-www-form-urlencoded (+ for spaces), which makes
+  /// Seerr/TMDB search for a literal '+' and return 0 results.
+  static String _encodeQueryValue(String value) => Uri.encodeComponent(value)
+      .replaceAll("'", '%27')
+      .replaceAll('!', '%21')
+      .replaceAll('*', '%2A')
+      .replaceAll('(', '%28')
+      .replaceAll(')', '%29');
+
+  /// The sliders on Seerr's discover page, in the order the admin set.
+  Future<List<dynamic>> getDiscoverSliders() async {
+    final response = await _dio.get(
+      _apiUrl('settings/discover'),
+      options: _authOptions(),
+    );
+    _requireSuccess(response, 'getDiscoverSliders');
+    final data = response.data;
+    return data is List ? data : const [];
+  }
+
+  /// One page of a discover slider's results. The query is built by hand for
+  /// the same reason as [search], since a search slider carries free text.
+  Future<Map<String, dynamic>> getSliderPage(
+    String path,
+    Map<String, String> params, {
+    int page = 1,
+  }) async {
+    final query = [
+      for (final entry in params.entries)
+        '${entry.key}=${_encodeQueryValue(entry.value)}',
+      'page=$page',
+    ].join('&');
+    final response = await _dio.get(
+      '${_apiUrl(path)}?$query',
+      options: _authOptions(),
+    );
+    _requireSuccess(response, 'getSliderPage');
+    return _pageBody(response, 'getSliderPage');
   }
 
   Future<Map<String, dynamic>> getMovieDetails(int tmdbId) async {

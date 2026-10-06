@@ -42,7 +42,7 @@ enum DetailSection {
     'versionBadge',
     Icons.video_file_outlined,
     DetailSectionGroup.header,
-    {_modern},
+    {_modern, _spotlight},
   ),
   upNext('upNext', Icons.skip_next_outlined, DetailSectionGroup.header, {
     _classic,
@@ -100,6 +100,7 @@ enum DetailSection {
   mediaInfo('mediaInfo', Icons.info_outline, DetailSectionGroup.sections, {
     _modern,
     _nouveau,
+    _spotlight,
   }),
   seerrGenresTags(
     'seerrGenresTags',

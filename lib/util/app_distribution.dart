@@ -9,6 +9,7 @@
 ///   macos_dmg      : macOS DMG (GitHub direct download)
 ///   macos_pkg      : macOS App Store PKG
 ///   windows        : Windows installer EXE
+///   msstore        : Microsoft Store MSIX (updates through the Store)
 ///   linux          : Linux direct download (opens browser)
 ///   linux_aur      : Linux AUR package (no in-app updater)
 ///   ios_signed     : Signed IPA (App Store)
@@ -26,6 +27,7 @@ enum DistributionChannel {
   macosDmg,
   macosPkg,
   windows,
+  microsoftStore,
   linux,
   linuxAur,
   iosSigned,
@@ -55,6 +57,8 @@ class AppDistribution {
         return DistributionChannel.macosPkg;
       case 'windows':
         return DistributionChannel.windows;
+      case 'msstore':
+        return DistributionChannel.microsoftStore;
       case 'linux':
         return DistributionChannel.linux;
       case 'linux_aur':
@@ -72,8 +76,8 @@ class AppDistribution {
   }
 
   /// Whether this build prompts about updates (linking to the releases page).
-  /// Returns false for store/managed distributions (AAB, AUR, PKG, signed IPA),
-  /// which update through their store.
+  /// Returns false for store/managed distributions (AAB, AUR, PKG, Microsoft
+  /// Store, signed IPA), which update through their store.
   static bool get supportsInAppUpdates {
     switch (channel) {
       case DistributionChannel.apk:

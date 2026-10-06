@@ -87,6 +87,7 @@ class _TestBackend extends Fake implements PlayerBackend {
 class _TestResolver extends MediaStreamResolver {
   int calls = 0;
   StreamPlayMethod playMethod = StreamPlayMethod.directStream;
+  List<Map<String, dynamic>> mediaStreams = const [];
 
   /// 1-based resolve calls that throw, like a server that cannot be reached.
   final Set<int> failOnCalls = <int>{};
@@ -115,7 +116,7 @@ class _TestResolver extends MediaStreamResolver {
       liveStreamId: 'live-channel',
       playSessionId: 'session-$calls',
       playMethod: playMethod,
-      mediaStreams: const [],
+      mediaStreams: mediaStreams,
     );
   }
 }
@@ -233,6 +234,60 @@ void main() {
 
       expect(service.stops, <String>['session-1']);
       expect(service.releases, <String>['direct:live-channel']);
+      manager.dispose();
+    },
+  );
+
+  testWidgets(
+    'a channel re-resolved for its audio track releases both opens',
+    (tester) async {
+      // Jellyfin lists a live channel's tracks at -1, which never matches the
+      // unset index a new queue starts with.
+      final resolver = _TestResolver()
+        ..playMethod = StreamPlayMethod.transcode
+        ..mediaStreams = const [
+          {'Type': 'Video', 'Index': -1},
+          {'Type': 'Audio', 'Index': -1},
+        ];
+      final service = _TestService();
+      final manager = _manager(_TestBackend(), resolver, service)
+        ..audioTrackSelector = (streams, explicitIndex) =>
+            explicitIndex ?? streams.first['Index'] as int?;
+
+      await manager.playItems(<dynamic>[_channel], enableDirectPlay: false);
+      await tester.pump();
+
+      expect(resolver.calls, 2);
+      expect(service.releases, <String>['direct:live-channel']);
+
+      await manager.stop();
+      await tester.pump();
+
+      expect(service.stops, <String>['session-2']);
+      expect(service.releases, <String>['direct:live-channel', 'session-2']);
+      manager.dispose();
+    },
+  );
+
+  testWidgets(
+    'a channel forced to transcode by the client releases the dropped open',
+    (tester) async {
+      final resolver = _TestResolver();
+      final service = _TestService();
+      final manager = _manager(_TestBackend(), resolver, service)
+        ..setTranscodeSelector((_) => "client can't play this source");
+
+      await manager.playItems(<dynamic>[_channel]);
+      await tester.pump();
+
+      expect(resolver.calls, 2);
+      expect(service.releases, <String>['direct:live-channel']);
+
+      await manager.stop();
+      await tester.pump();
+
+      expect(service.stops, <String>['session-2']);
+      expect(service.releases, <String>['direct:live-channel', 'session-2']);
       manager.dispose();
     },
   );

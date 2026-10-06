@@ -29,6 +29,7 @@ import '../../../../util/detail_track_highlight.dart';
 import '../../../../util/direct_play_reasons_formatter.dart';
 import '../../../../util/episode_playability.dart';
 import '../../../../util/item_watch_state.dart';
+import '../../../../util/media_source_summary.dart';
 import '../../../../util/overview_text.dart';
 import '../../../../util/playback_time_label.dart';
 import '../../../../util/platform_detection.dart';
@@ -2880,18 +2881,9 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     final textTheme = theme.textTheme;
 
     // File name and Size
-    final sizeBytes = mediaSource['Size'] as int? ?? 0;
-    final String formattedSize;
-    if (sizeBytes > 0) {
-      final double mb = sizeBytes / (1024 * 1024);
-      if (mb > 999) {
-        formattedSize = '${(mb / 1024).toStringAsFixed(2)} GB';
-      } else {
-        formattedSize = '${mb.toStringAsFixed(0)} MB';
-      }
-    } else {
-      formattedSize = 'Unknown Size';
-    }
+    final formattedSize =
+        formatMediaSourceSize(mediaSource['Size'] as int? ?? 0) ??
+        'Unknown Size';
 
     final String path = mediaSource['Path'] as String? ?? '';
     final String fileName = path.split('/').last.split('\\').last;
@@ -2905,61 +2897,18 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           ).format(addedOn);
 
     // Parse streams
-    final List<Map<String, dynamic>> rawStreams = (mediaSource['MediaStreams'] as List?)
-            ?.whereType<Map>()
-            .map((e) => e.cast<String, dynamic>())
-            .toList() ??
-        [];
+    final rawStreams = mediaSourceStreams(mediaSource);
 
     final videoStreams = rawStreams.where((s) => s['Type'] == 'Video').toList();
     final audioStreams = rawStreams.where((s) => s['Type'] == 'Audio').toList();
     final subtitleStreams = rawStreams.where((s) => s['Type'] == 'Subtitle').toList();
 
-    // Video "Greatest Hits"
-    final List<String> videoDetails = [];
-    if (videoStreams.isNotEmpty) {
-      final v = videoStreams.first;
-      final codec = v['Codec']?.toString().toUpperCase() ?? 'Unknown Codec';
-      final profile = v['Profile']?.toString();
-      final width = v['Width']?.toString();
-      final height = v['Height']?.toString();
-      final frameRate = v['RealFrameRate'] ?? v['AverageFrameRate'];
-      final bitDepth = v['BitDepth'] as int?;
-      final videoRange = v['VideoRange']?.toString();
-      final videoRangeType = v['VideoRangeType']?.toString();
+    final videoDetails = videoStreams.isEmpty
+        ? const <String>[]
+        : videoStreamSummary(videoStreams.first, unknownCodec: 'Unknown Codec');
 
-      var videoStr = codec;
-      if (profile != null && profile.isNotEmpty) videoStr += ' ($profile)';
-      videoDetails.add(videoStr);
-
-      if (width != null && height != null) {
-        videoDetails.add('$width x $height');
-      }
-
-      if (frameRate != null) {
-        final fr = double.tryParse(frameRate.toString());
-        if (fr != null) {
-          videoDetails.add('${fr.toStringAsFixed(3)} fps');
-        }
-      }
-
-      if (bitDepth != null) {
-        videoDetails.add('$bitDepth-bit');
-      }
-
-      if (videoRange != null && videoRange.isNotEmpty) {
-        var rangeStr = videoRange;
-        if (videoRangeType != null && videoRangeType.isNotEmpty) {
-          rangeStr += ' ($videoRangeType)';
-        }
-        videoDetails.add(rangeStr);
-      }
-    }
-
-    String formatLang(String? code) {
-      if (code == null || code.isEmpty) return 'Unknown';
-      return code.toUpperCase();
-    }
+    String formatLang(String? code) =>
+        streamLanguageLabel(code, unknown: 'Unknown');
 
     final manager = GetIt.instance<PlaybackManager>();
     // The queue holds bare id strings during offline playback, so this checks

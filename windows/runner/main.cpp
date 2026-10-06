@@ -1,6 +1,7 @@
 #include <flutter/dart_project.h>
 #include <flutter/flutter_view_controller.h>
 #include <windows.h>
+#include <appmodel.h>
 
 #include <string>
 
@@ -9,6 +10,12 @@
 #include "utils.h"
 
 namespace {
+
+bool IsPackaged() {
+  UINT32 length = 0;
+  return ::GetCurrentPackageFullName(&length, nullptr) !=
+         APPMODEL_ERROR_NO_PACKAGE;
+}
 
 // Registers the moonfin:// scheme for the current user, pointing at this
 // executable. Written on every launch so a moved or updated install keeps
@@ -66,7 +73,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
   // plugins.
   ::CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
 
-  RegisterMoonfinScheme();
+  // Registry writes from a packaged app land in a private per-app hive, so the
+  // Store build gets moonfin:// from protocol_activation in pubspec.yaml.
+  if (!IsPackaged()) {
+    RegisterMoonfinScheme();
+  }
 
   flutter::DartProject project(L"data");
   project.set_impeller_switch(flutter::ImpellerSwitch::Disabled);

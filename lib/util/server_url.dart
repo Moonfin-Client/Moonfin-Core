@@ -3,6 +3,20 @@ import 'package:server_core/server_core.dart' show MediaServerClient;
 
 final _schemeRegex = RegExp(r'^[a-zA-Z][a-zA-Z0-9+.-]*://');
 
+/// Whether a download row's [stored] server belongs to the server known as
+/// [serverId] at [baseUrl]. Rows keep the app's server id, or the server's
+/// URL when the item came straight from a client.
+bool isStoredServer(
+  String stored, {
+  required String serverId,
+  required String baseUrl,
+}) {
+  if (stored == serverId) return true;
+  if (!stored.contains('://')) return false;
+  final storedUrl = normalizeServerBaseUrl(stored);
+  return storedUrl.isNotEmpty && storedUrl == normalizeServerBaseUrl(baseUrl);
+}
+
 String normalizeServerBaseUrl(String input) {
   final trimmed = input.trim();
   if (trimmed.isEmpty) return '';

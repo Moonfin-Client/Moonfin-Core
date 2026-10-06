@@ -18,11 +18,28 @@ class _SeasonalEffectsScreen extends StatelessWidget {
                 title: l10n.settingsSeasonalSurprise,
                 icon: Icons.auto_awesome,
                 options: {
-                  'none': l10n.none,
-                  'snow': l10n.snow,
-                  'fireworks': l10n.fireworks,
-                  'confetti': l10n.confetti,
-                  'leaves': l10n.fallingLeaves,
+                  UserPreferences.seasonalNone: l10n.none,
+                  UserPreferences.seasonalSnow: l10n.snow,
+                  UserPreferences.seasonalChristmas: l10n.seasonalChristmas,
+                  UserPreferences.seasonalFireworks: l10n.fireworks,
+                  UserPreferences.seasonalConfetti: l10n.confetti,
+                  UserPreferences.seasonalPetals: l10n.seasonalPetals,
+                  UserPreferences.seasonalFireflies: l10n.seasonalFireflies,
+                  UserPreferences.seasonalLeaves: l10n.fallingLeaves,
+                  UserPreferences.seasonalHalloween: l10n.seasonalHalloween,
+                },
+              ),
+              StringPickerPreferenceTile(
+                preference: UserPreferences.seasonalDensity,
+                title: l10n.seasonalDensity,
+                icon: Icons.grain,
+                options: {
+                  UserPreferences.seasonalDensityLight:
+                      l10n.seasonalDensityLight,
+                  UserPreferences.seasonalDensityNormal:
+                      l10n.seasonalDensityNormal,
+                  UserPreferences.seasonalDensityHeavy:
+                      l10n.seasonalDensityHeavy,
                 },
               ),
             ],

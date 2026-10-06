@@ -2,9 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get_it/get_it.dart';
 
-import '../../../../../preference/user_preferences.dart';
 import '../../../../../util/platform_detection.dart';
 import '../../../../widgets/marquee_text.dart';
 import '../../../../widgets/overlay_sheet.dart';
@@ -73,12 +71,6 @@ double _nouveauActionScale(BuildContext context) {
 double _nouveauButtonScale(BuildContext context) =>
     _nouveauActionScale(context) *
     (detailIsCompact(context) ? 1.0 : detailDesktopScale());
-
-/// Whether focused and hovered buttons grow, which follows the same setting
-/// as cards. Without preferences to ask it stays on, the setting's default.
-bool _nouveauGrowsOnFocus() =>
-    !GetIt.instance.isRegistered<UserPreferences>() ||
-    GetIt.instance<UserPreferences>().get(UserPreferences.cardFocusExpansion);
 
 class NouveauActionButtons extends StatefulWidget {
   final NouveauAction? primaryAction;
@@ -756,9 +748,7 @@ class _NouveauPrimaryButtonState extends State<_NouveauPrimaryButton> {
           onTap: action.onPressed,
           onLongPress: action.onLongPress,
           child: AnimatedScale(
-            scale: !_nouveauGrowsOnFocus()
-                ? 1
-                : _focused
+            scale: _focused
                 ? phone
                       ? 1.015
                       : 1.06
@@ -1118,7 +1108,7 @@ class _NouveauCircleActionButtonState
                 onTap: action.onPressed,
                 onLongPress: action.onLongPress,
                 child: AnimatedScale(
-                  scale: _highlighted && _nouveauGrowsOnFocus()
+                  scale: _highlighted
                       ? widget.compact
                             ? 1.035
                             : 1.075
@@ -1363,7 +1353,7 @@ class _NouveauMoreButtonState extends State<_NouveauMoreButton> {
                 behavior: HitTestBehavior.opaque,
                 onTap: widget.onPressed,
                 child: AnimatedScale(
-                  scale: _highlighted && _nouveauGrowsOnFocus()
+                  scale: _highlighted
                       ? widget.compact
                             ? 1.035
                             : 1.075

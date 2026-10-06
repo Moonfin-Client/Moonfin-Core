@@ -496,9 +496,6 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
         } else {
           _selectedMediaSourceId = null;
         }
-
-        _viewModel.selectedAudioIndex = null;
-        _viewModel.selectedSubtitleIndex = null;
       }
       if (!_themeMusicStarted) {
         _themeMusicStarted = true;
@@ -5960,8 +5957,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
   /// holds focus and every grown button stops at the same cap, so the widest
   /// row is that cap plus the rest at rest, and Play rests wider than a
   /// circle. Counting Play grown as well describes a row that cannot happen
-  /// and sends buttons to the overflow menu that had room to stay. With
-  /// [expands] off nothing grows, so every button counts at rest.
+  /// and sends buttons to the overflow menu that had room to stay.
   ///
   /// Public for the width tests. Every production caller lives in this file.
   @visibleForTesting
@@ -5970,14 +5966,13 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     double spacing,
     double playFocused, {
     double scale = 1.0,
-    bool expands = true,
   }) {
     final playResting = 54.0 * scale;
     final circleResting = 52.0 * scale;
-    final circleFocused = expands ? _modernFocusedFloor * scale : circleResting;
+    final circleFocused = _modernFocusedFloor * scale;
 
     final circles = buttonCount - 1;
-    if (circles <= 0) return expands ? playFocused : playResting;
+    if (circles <= 0) return playFocused;
 
     return circles * spacing +
         circleFocused +
@@ -7208,7 +7203,6 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
                     buttonSpacing,
                     _modernPlayFocusedWidth(playLabel),
                     scale: _modernButtonScale(context),
-                    expands: prefs.get(UserPreferences.cardFocusExpansion),
                   ) <=
                   rowBudget
             : allButtons.length <= maxVisible);
@@ -11715,7 +11709,7 @@ class _DetailActionButtonState extends State<_DetailActionButton>
     required Color iconColor,
     required Color labelColor,
   }) {
-    final isExpanded = showHighlight && cardFocusExpansion;
+    final isExpanded = showHighlight;
     final scale = _modernButtonScale(context);
     final double height = widget.isPrimary
         ? (isMobile ? 50.0 : 54.0 * scale)
@@ -12036,13 +12030,11 @@ class _DetailActionButtonState extends State<_DetailActionButton>
     final showHighlight =
         hovered ||
         InputModeTracker.showFocusVisuals(context, focused || nodeHasFocus);
-    final row = context.findAncestorWidgetOfExactType<DetailActionButtons>();
-    final modern = row?.modernStyle ?? false;
-    // Grows with focus like cards and tiles do. The full width Play pill
-    // already fills its column, so it stays put.
-    final growsOnFocus =
-        cardFocusExpansion &&
-        !(modern && widget.isPrimary && (row?.fullWidthPrimary ?? false));
+    final modern =
+        context
+            .findAncestorWidgetOfExactType<DetailActionButtons>()
+            ?.modernStyle ??
+        false;
 
     final activeColor = widget.isActive ? widget.activeColor : null;
     final neonAccent = widget.neonAccentColor ?? AppColorScheme.onSurface;
@@ -12154,79 +12146,74 @@ class _DetailActionButtonState extends State<_DetailActionButton>
           onTap: widget.onPressed,
           onLongPress: widget.onLongPress,
           onSecondaryTap: widget.onLongPress,
-          child: AnimatedScale(
-            scale: growsOnFocus && showHighlight ? 1.05 : 1.0,
-            duration: const Duration(milliseconds: 150),
-            curve: Curves.easeOut,
-            child: modern
-                ? _buildModernChild(
-                    context,
-                    isMobile: isMobile,
-                    showHighlight: showHighlight,
-                    focusColor: focusColor,
-                    iconColor: iconColor,
-                    labelColor: labelColor,
-                  )
-                : SizedBox(
-                    width: isMobile ? 80 : 108 * desktopScale,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          width: isMobile ? 44 : 58 * desktopScale,
-                          height: isMobile ? 44 : 58 * desktopScale,
-                          decoration: BoxDecoration(
-                            color: showHighlight
-                                ? (isNeon
-                                      ? Colors.transparent
-                                      : AppColorScheme.buttonFocused)
-                                : activeColor != null
-                                ? activeColor.withValues(
-                                    alpha: isNeon ? 0.12 : 0.15,
-                                  )
-                                : (isNeon
-                                      ? Colors.transparent
-                                      : Colors.white.withValues(alpha: 0.08)),
-                            border: showHighlight
-                                ? Border.fromBorderSide(
-                                    ThemeRegistry.active.borders.focusBorder
-                                        .copyWith(
-                                          color: isNeon
-                                              ? AppColorScheme.accent
-                                              : focusColor,
-                                        ),
-                                  )
-                                : null,
-                            borderRadius: AppRadius.circular(
-                              isMobile ? 14 : 15 * desktopScale,
-                            ),
-                          ),
-                          child: widget.iconBuilder != null
-                              ? widget.iconBuilder!(
-                                  isMobile ? 22 : 27 * desktopScale,
-                                  iconColor,
+          child: modern
+              ? _buildModernChild(
+                  context,
+                  isMobile: isMobile,
+                  showHighlight: showHighlight,
+                  focusColor: focusColor,
+                  iconColor: iconColor,
+                  labelColor: labelColor,
+                )
+              : SizedBox(
+                  width: isMobile ? 80 : 108 * desktopScale,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: isMobile ? 44 : 58 * desktopScale,
+                        height: isMobile ? 44 : 58 * desktopScale,
+                        decoration: BoxDecoration(
+                          color: showHighlight
+                              ? (isNeon
+                                    ? Colors.transparent
+                                    : AppColorScheme.buttonFocused)
+                              : activeColor != null
+                              ? activeColor.withValues(
+                                  alpha: isNeon ? 0.12 : 0.15,
                                 )
-                              : AdaptiveIcon(
-                                  widget.icon!,
-                                  color: iconColor,
-                                  size: isMobile ? 22 : 27 * desktopScale,
-                                ),
-                        ),
-                        SizedBox(height: isMobile ? 6 : 8 * desktopScale),
-                        Text(
-                          widget.label,
-                          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            color: labelColor,
-                            fontWeight: FontWeight.w600,
+                              : (isNeon
+                                    ? Colors.transparent
+                                    : Colors.white.withValues(alpha: 0.08)),
+                          border: showHighlight
+                              ? Border.fromBorderSide(
+                                  ThemeRegistry.active.borders.focusBorder
+                                      .copyWith(
+                                        color: isNeon
+                                            ? AppColorScheme.accent
+                                            : focusColor,
+                                      ),
+                                )
+                              : null,
+                          borderRadius: AppRadius.circular(
+                            isMobile ? 14 : 15 * desktopScale,
                           ),
-                          textAlign: TextAlign.center,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
                         ),
-                      ],
-                    ),
+                        child: widget.iconBuilder != null
+                            ? widget.iconBuilder!(
+                                isMobile ? 22 : 27 * desktopScale,
+                                iconColor,
+                              )
+                            : AdaptiveIcon(
+                                widget.icon!,
+                                color: iconColor,
+                                size: isMobile ? 22 : 27 * desktopScale,
+                              ),
+                      ),
+                      SizedBox(height: isMobile ? 6 : 8 * desktopScale),
+                      Text(
+                        widget.label,
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: labelColor,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
                   ),
-          ),
+                ),
         ),
       ),
     );

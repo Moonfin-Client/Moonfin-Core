@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/preference/preference_constants.dart';
@@ -27,6 +28,10 @@ void main() {
   });
 
   tearDown(tearDownBottomNav);
+
+  Finder hubTile(String label) => find
+      .ancestor(of: find.text(label), matching: find.byType(InkWell))
+      .first;
 
   group('heights', () {
     test('each style reports the room it takes', () {
@@ -145,11 +150,9 @@ void main() {
       expect(find.text('Quick Connect'), findsNothing);
     });
 
-    testWidgets('hub tiles are short, with the icon centered over the label',
+    testWidgets('hub tiles keep the icon centered over the label',
         (tester) async {
       usePhoneView(tester);
-      // A 3-button nav bar and a large text setting.
-      tester.view.padding = const FakeViewPadding(bottom: 48 * 3);
       tester.platformDispatcher.textScaleFactorTestValue = 2;
       addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
       await tester.pumpWidget(bottomNavApp());
@@ -158,25 +161,40 @@ void main() {
       await tester.tap(find.text('You'));
       await tester.pumpAndSettle();
 
-      final tile = find
-          .ancestor(of: find.text('Shuffle'), matching: find.byType(InkWell))
-          .first;
+      final tile = hubTile('Shuffle');
       final icon = find.descendant(
         of: tile,
         matching: find.byType(AdaptiveIcon),
       );
-      expect(tester.getSize(tile).height, 72);
       expect(tester.getCenter(icon).dx, tester.getCenter(tile).dx);
       expect(
         tester.getRect(icon).bottom,
         lessThan(tester.getRect(find.text('Shuffle')).top),
       );
-      // The grid ends at its last row instead of padding itself with the
-      // system inset.
+    });
+
+    testWidgets('a long hub label wraps to a second line and grows its row',
+        (tester) async {
+      usePhoneView(tester, size: const Size(430, 932));
+      await tester.pumpWidget(bottomNavApp());
+      await tester.pump();
+
+      await tester.tap(find.text('You'));
+      await tester.pumpAndSettle();
+
+      final wrapped = find.text('Remote Control');
       expect(
-        tester.getRect(find.byType(GridView)).bottom,
-        tester.getRect(tile).bottom,
+        tester.renderObject<RenderParagraph>(wrapped).didExceedMaxLines,
+        isFalse,
       );
+      expect(
+        tester.getSize(wrapped).height,
+        tester.getSize(find.text('Shuffle')).height * 2,
+      );
+      final height = tester.getSize(hubTile('Remote Control')).height;
+      expect(height, greaterThan(72));
+      expect(tester.getSize(hubTile('Shuffle')).height, height);
+      expect(tester.getSize(hubTile('Genres')).height, height);
     });
 
     testWidgets('a new screen springs the indicator over from the last tab',

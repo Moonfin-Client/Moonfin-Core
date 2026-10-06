@@ -169,30 +169,30 @@ class _BottomNavbarHub extends StatelessWidget {
               ),
             ],
           ),
-          if (tiles.isNotEmpty) ...[
-            const SizedBox(height: 16),
-            // Without zero padding the grid pads itself with the system nav
-            // bar inset. A fixed tile height keeps the rows short on wide
-            // sheets.
-            GridView(
-              shrinkWrap: true,
-              padding: EdgeInsets.zero,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                mainAxisSpacing: 10,
-                crossAxisSpacing: 10,
-                mainAxisExtent: _HubTile.height,
+          if (tiles.isNotEmpty) const SizedBox(height: 16),
+          // A label that wraps to a second line grows its whole row, so the
+          // tiles next to it stay the same height.
+          for (var row = 0; row < tiles.length; row += 3) ...[
+            if (row > 0) const SizedBox(height: 10),
+            IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  for (var i = row; i < row + 3; i++) ...[
+                    if (i > row) const SizedBox(width: 10),
+                    Expanded(
+                      child: i < tiles.length
+                          ? _HubTile(
+                              tile: tiles[i],
+                              slot: i,
+                              theme: theme,
+                              onTap: () => onTile(tiles[i]),
+                            )
+                          : const SizedBox.shrink(),
+                    ),
+                  ],
+                ],
               ),
-              children: [
-                for (var i = 0; i < tiles.length; i++)
-                  _HubTile(
-                    tile: tiles[i],
-                    slot: i,
-                    theme: theme,
-                    onTap: () => onTile(tiles[i]),
-                  ),
-              ],
             ),
           ],
           const SizedBox(height: 16),
@@ -260,7 +260,7 @@ class _BottomNavbarHub extends StatelessWidget {
 }
 
 class _HubTile extends StatelessWidget {
-  static const double height = 72;
+  static const double _minHeight = 72;
   static const double _iconSize = 32;
 
   final BottomNavHubTile tile;
@@ -296,8 +296,8 @@ class _HubTile extends StatelessWidget {
             size: _iconSize,
             color: iconColor,
           );
-    // The tile height is fixed, so a large text setting stops growing the
-    // label before it pushes the icon out.
+    // Capped so a large text setting can't stretch a two-line label's row
+    // far past the others.
     final textScaler = MediaQuery.textScalerOf(context).clamp(
       maxScaleFactor: 1.3,
     );
@@ -311,31 +311,34 @@ class _HubTile extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           borderRadius: AppRadius.circular(18),
-          child: Ink(
-            decoration: BoxDecoration(
-              color: onBar.withValues(alpha: 0.06),
-              borderRadius: AppRadius.circular(18),
-              border: Border.all(color: onBar.withValues(alpha: 0.06)),
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                icon,
-                const SizedBox(height: 6),
-                Text(
-                  label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.center,
-                  textScaler: textScaler,
-                  style: theme.labelStyle.copyWith(
-                    color: onBar,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: _minHeight),
+            child: Ink(
+              decoration: BoxDecoration(
+                color: onBar.withValues(alpha: 0.06),
+                borderRadius: AppRadius.circular(18),
+                border: Border.all(color: onBar.withValues(alpha: 0.06)),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  icon,
+                  const SizedBox(height: 6),
+                  Text(
+                    label,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                    textScaler: textScaler,
+                    style: theme.labelStyle.copyWith(
+                      color: onBar,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

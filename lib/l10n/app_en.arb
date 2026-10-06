@@ -256,6 +256,10 @@
   "@spotlightChaptersExtras": {
     "description": "Title of the spotlight summary card that opens the chapters and special features modal"
   },
+  "spotlightFileDetails": "File Details",
+  "@spotlightFileDetails": {
+    "description": "Title of the spotlight summary card that opens the file details modal"
+  },
   "spotlightSimilarRecommendations": "Similar and Recommendations",
   "@spotlightSimilarRecommendations": {
     "description": "Title of the spotlight summary card that opens the similar titles and recommendations modal"
@@ -2788,6 +2792,10 @@
   "@shortcutMpvStats": {
     "description": "Player shortcut action, Windows only"
   },
+  "shortcutRecropBlackBars": "Recrop black bars",
+  "@shortcutRecropBlackBars": {
+    "description": "Player shortcut to run letterbox crop detection now"
+  },
   "shortcutLeaveFullscreenOrStop": "Exit fullscreen, or stop if not fullscreen",
   "@shortcutLeaveFullscreenOrStop": {
     "description": "What Esc does in the player"
@@ -4245,6 +4253,114 @@
   "@fallingLeaves": {
     "description": "Seasonal effect: falling leaves"
   },
+  "seasonalChristmas": "Christmas",
+  "@seasonalChristmas": {
+    "description": "Seasonal effect: snow with falling baubles and stars"
+  },
+  "seasonalPetals": "Spring Petals",
+  "@seasonalPetals": {
+    "description": "Seasonal effect: falling cherry blossoms and petals with bees flying by"
+  },
+  "seasonalFireflies": "Fireflies",
+  "@seasonalFireflies": {
+    "description": "Seasonal effect: glowing fireflies for summer"
+  },
+  "seasonalHalloween": "Halloween",
+  "@seasonalHalloween": {
+    "description": "Seasonal effect: bats, ghosts, candy and orange and purple leaves"
+  },
+  "seasonalDensity": "Density",
+  "@seasonalDensity": {
+    "description": "Setting for how many seasonal effect particles are on screen at once"
+  },
+  "seasonalDensityLight": "Light",
+  "@seasonalDensityLight": {
+    "description": "Seasonal effect density: fewest particles"
+  },
+  "seasonalDensityNormal": "Normal",
+  "@seasonalDensityNormal": {
+    "description": "Seasonal effect density: the default amount"
+  },
+  "seasonalDensityHeavy": "Heavy",
+  "@seasonalDensityHeavy": {
+    "description": "Seasonal effect density: most particles"
+  },
+  "seasonalRow": "Seasonal Row",
+  "@seasonalRow": {
+    "description": "Name of the Home row that shows holiday movies"
+  },
+  "seasonalRowDescription": "Show a row of holiday movies from your library, with Seerr suggestions when available.",
+  "@seasonalRowDescription": {
+    "description": "Explains the seasonal Home row setting"
+  },
+  "seasonalRowSubtitle": "Seasonal",
+  "@seasonalRowSubtitle": {
+    "description": "Source label shown under the seasonal row's title"
+  },
+  "seasonalRowCountry": "Country",
+  "@seasonalRowCountry": {
+    "description": "Setting for which country's holidays the seasonal row follows"
+  },
+  "seasonalRowCountryAuto": "Automatic",
+  "@seasonalRowCountryAuto": {
+    "description": "Country option that reads the country from the device"
+  },
+  "countryUnitedStates": "United States",
+  "@countryUnitedStates": {
+    "description": "Country name"
+  },
+  "countryCanada": "Canada",
+  "@countryCanada": {
+    "description": "Country name"
+  },
+  "seasonalRowCountryOther": "Other",
+  "@seasonalRowCountryOther": {
+    "description": "Country option for a country the seasonal row does not list"
+  },
+  "seasonalRowHolidays": "Holidays",
+  "@seasonalRowHolidays": {
+    "description": "Heading for the list of holidays the seasonal row can show"
+  },
+  "seasonalRowHolidaysHint": "Untick a holiday to hide its row.",
+  "@seasonalRowHolidaysHint": {
+    "description": "Hint under the holiday checklist"
+  },
+  "holidayNewYear": "New Year's",
+  "@holidayNewYear": {
+    "description": "Seasonal row title for New Year's"
+  },
+  "holidayValentines": "Valentine's Day",
+  "@holidayValentines": {
+    "description": "Seasonal row title for Valentine's Day"
+  },
+  "holidayEaster": "Easter",
+  "@holidayEaster": {
+    "description": "Seasonal row title for Easter"
+  },
+  "holidayPride": "Pride",
+  "@holidayPride": {
+    "description": "Seasonal row title for Pride month"
+  },
+  "holidayHalloween": "Halloween",
+  "@holidayHalloween": {
+    "description": "Seasonal row title for Halloween"
+  },
+  "holidayThanksgiving": "Thanksgiving",
+  "@holidayThanksgiving": {
+    "description": "Seasonal row title for Thanksgiving"
+  },
+  "holidayChristmas": "Christmas Movies",
+  "@holidayChristmas": {
+    "description": "Seasonal row title for Christmas"
+  },
+  "holidayLunarNewYear": "Lunar New Year",
+  "@holidayLunarNewYear": {
+    "description": "Seasonal row title for Lunar New Year"
+  },
+  "holidayDiwali": "Diwali",
+  "@holidayDiwali": {
+    "description": "Seasonal row title for Diwali"
+  },
   "themeMusic": "Theme Music",
   "@themeMusic": {
     "description": "Setting for theme music"
@@ -4355,9 +4471,29 @@
   "@cropBlackBars": {
     "description": "Setting to detect and crop encoded letterbox/pillarbox bars"
   },
-  "settingsCropBlackBarsDescription": "Detect encoded letterbox bars, crop them, then fill the screen.",
+  "settingsCropBlackBarsDescription": "Detect encoded letterbox bars after playback starts, crop them, then fill the screen. Recrop from the player zoom button.",
   "@settingsCropBlackBarsDescription": {
     "description": "Description for the crop black bars playback setting"
+  },
+  "cropBlackBarsRecropInterval": "Recrop interval",
+  "@cropBlackBarsRecropInterval": {
+    "description": "Setting for how often to re-detect encoded letterbox bars"
+  },
+  "cropBlackBarsOnce": "Once at start",
+  "@cropBlackBarsOnce": {
+    "description": "Letterbox recrop interval: detect once after playback starts"
+  },
+  "cropBlackBarsEverySecond": "Every second",
+  "@cropBlackBarsEverySecond": {
+    "description": "Letterbox recrop interval: scan about once a second"
+  },
+  "settingsCropBlackBarsIntervalDescription": "Follow aspect ratio changes during playback.",
+  "@settingsCropBlackBarsIntervalDescription": {
+    "description": "Description for the letterbox recrop-interval setting"
+  },
+  "playerRecroppingBlackBars": "Recropping black bars",
+  "@playerRecroppingBlackBars": {
+    "description": "Toast when the player re-runs letterbox crop detection"
   },
   "stretch": "Stretch",
   "@stretch": {
@@ -6616,6 +6752,10 @@
   "seerrDiscoveryRows": "Seerr Discovery Rows",
   "@seerrDiscoveryRows": {
     "description": "Subtitle shown under Seerr discovery home rows"
+  },
+  "seerrDiscoverSliders": "Seerr Discover Sliders",
+  "@seerrDiscoverSliders": {
+    "description": "Seerr Lists heading for the sliders an admin set up on Seerr's discover page"
   },
   "yourWatchlist": "Your Watchlist",
   "@yourWatchlist": {
@@ -12522,6 +12662,35 @@
       }
     }
   },
+  "smartDownloadsSection": "Smart downloads",
+  "@smartDownloadsSection": {
+    "description": "Settings section header for downloading the next episodes of a series after one is watched"
+  },
+  "smartDownloadsEnable": "Download next episodes",
+  "@smartDownloadsEnable": {
+    "description": "Switch that swaps a watched downloaded episode for the next episodes of the series"
+  },
+  "smartDownloadsEnableSubtitle": "When you finish an episode on any device, Moonfin downloads the next ones. Downloaded episodes are deleted once watched.",
+  "@smartDownloadsEnableSubtitle": {
+    "description": "Explains the smart downloads switch, including that watched episodes are deleted"
+  },
+  "smartDownloadsKeepReady": "Episodes to keep downloaded",
+  "@smartDownloadsKeepReady": {
+    "description": "Setting for how many unwatched episodes of a series stay downloaded after one is watched"
+  },
+  "smartDownloadsKeepReadySubtitle": "{count, plural, =1{Keeps the next episode downloaded} other{Keeps the next {count} episodes downloaded}}",
+  "@smartDownloadsKeepReadySubtitle": {
+    "description": "Subtitle under the episodes to keep ready setting",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "smartDownloadsKeepReadyLowered": "Episodes already downloaded stay on your device. The new number applies to future downloads.",
+  "@smartDownloadsKeepReadyLowered": {
+    "description": "Shown after lowering the episodes to keep downloaded, explaining nothing is deleted"
+  },
   "autoDownloadSection": "Automatic downloads",
   "@autoDownloadSection": {
     "description": "Settings section header for auto-download subscriptions"
@@ -12867,6 +13036,26 @@
   "siriRemoteSwipeSensitivityDescription": "How far focus moves for each swipe on the Siri Remote touchpad",
   "@siriRemoteSwipeSensitivityDescription": {
     "description": "Apple TV settings subtitle for the Siri Remote touchpad swipe sensitivity option"
+  },
+  "appleTvHomeScreen": "Apple TV home screen",
+  "@appleTvHomeScreen": {
+    "description": "Section header in Home Screen settings for options that affect the tvOS home screen outside the app"
+  },
+  "topShelf": "Top Shelf",
+  "@topShelf": {
+    "description": "Apple TV settings label for what the tvOS home screen shows above the Moonfin icon. Top Shelf is Apple's name for that area"
+  },
+  "topShelfDescription": "What the Apple TV home screen shows above the Moonfin icon when it is selected. This setting stays on this device.",
+  "@topShelfDescription": {
+    "description": "Apple TV settings subtitle for the Top Shelf option"
+  },
+  "topShelfLatestMedia": "Latest media",
+  "@topShelfLatestMedia": {
+    "description": "Top Shelf option that shows a carousel of the newest items from the home screen's Latest rows"
+  },
+  "topShelfAppBanner": "Moonfin banner",
+  "@topShelfAppBanner": {
+    "description": "Top Shelf option that shows only the static Moonfin logo banner, nothing from the library"
   },
   "keepVideoClearOfDynamicIsland": "Keep video clear of the Dynamic Island",
   "@keepVideoClearOfDynamicIsland": {

@@ -35,6 +35,9 @@ enum PlayerAction {
 
   /// Show the controls, or play/pause while they are showing.
   showControlsOrPlayPause,
+
+  /// Run letterbox crop detection now.
+  recropBlackBars,
 }
 
 /// One key, optionally with Shift.
@@ -92,6 +95,7 @@ class PlayerKeyBindings {
       KeyBinding(LogicalKeyboardKey.enter),
       KeyBinding(LogicalKeyboardKey.select),
     ],
+    PlayerAction.recropBlackBars: [KeyBinding(LogicalKeyboardKey.keyB)],
   });
 
   List<KeyBinding> keysFor(PlayerAction action) =>

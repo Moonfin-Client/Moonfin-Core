@@ -41,6 +41,31 @@ AggregatedItem episode(
   },
 );
 
+/// When test downloads finished.
+final downloadedAt = DateTime.utc(2026, 9, 5);
+
+/// An episode the user finished a day after [downloadedAt].
+AggregatedItem watched(
+  String id, {
+  String series = 'series-1',
+  int season = 1,
+  int? number,
+  DateTime? playedAt,
+}) => episode(
+  id,
+  series: series,
+  season: season,
+  number: number,
+  played: true,
+  extra: {
+    'UserData': {
+      'Played': true,
+      'LastPlayedDate': (playedAt ?? downloadedAt.add(const Duration(days: 1)))
+          .toIso8601String(),
+    },
+  },
+);
+
 int sizeOf(AggregatedItem item) =>
     ((item.rawData['MediaSources'] as List).first['Size'] as int?) ?? 0;
 
@@ -81,6 +106,9 @@ class FakeDownloader implements AutoDownloadDownloader {
   Set<String> get inFlightItemIds => Set.of(inFlight);
 
   @override
+  String get serverBaseUrl => 'https://media.example';
+
+  @override
   Future<List<AggregatedItem>> fetchEpisodes(
     String seriesId, {
     String? seasonId,
@@ -91,6 +119,28 @@ class FakeDownloader implements AutoDownloadDownloader {
     if (gate != null) await gate.future;
     if (failSeries.contains(seriesId)) throw StateError('offline');
     return episodesBySeries[seriesId] ?? const [];
+  }
+
+  /// How many episodes the fake server's recently played list sends at once.
+  int historyPageSize = 100;
+
+  @override
+  Future<List<AggregatedItem>> fetchRecentlyPlayedEpisodes({
+    DateTime? playedAfter,
+  }) {
+    final history = [
+      for (final list in episodesBySeries.values)
+        for (final item in list)
+          if (item.isPlayed && item.lastPlayedDate != null) item,
+    ]..sort((a, b) => b.lastPlayedDate!.compareTo(a.lastPlayedDate!));
+    return readRecentlyPlayedEpisodes(
+      (startIndex) async {
+        final page = history.skip(startIndex).take(historyPageSize).toList();
+        return (read: page.length, items: page);
+      },
+      playedAfter: playedAfter,
+      pageSize: historyPageSize,
+    );
   }
 
   @override

@@ -11,6 +11,7 @@ import '../../data/repositories/offline_repository.dart';
 import '../../data/services/audiobook_bookmarks_service.dart';
 import '../../data/services/audiobook_notes_service.dart';
 import '../../data/services/audiobook_resume_service.dart';
+import '../../data/services/auto_download_service.dart';
 import '../../data/services/connectivity_service.dart';
 import '../../data/services/log_service.dart';
 import '../../data/services/blocked_content_gate.dart';
@@ -783,6 +784,7 @@ void setActiveStreamResolver(MediaServerClient client) {
     canReachServer: () =>
         !_getIt.isRegistered<ConnectivityService>() ||
         _getIt<ConnectivityService>().canReachServer,
+    onStopped: _onItemStopped,
   );
 
   _getIt.registerSingleton<MediaStreamResolver>(resolver);
@@ -793,6 +795,16 @@ void setActiveStreamResolver(MediaServerClient client) {
   manager.setPlayerService(service);
 
   _currentActiveResolverClient = client;
+}
+
+/// Smart downloads reacts as soon as an episode stops, rather than
+/// waiting for the server's debounced user data event.
+void _onItemStopped(dynamic item) {
+  if (item is AggregatedItem &&
+      item.type == 'Episode' &&
+      _getIt.isRegistered<AutoDownloadService>()) {
+    _getIt<AutoDownloadService>().onEpisodeStopped(item.serverId);
+  }
 }
 
 Future<void> _ensureResolverForItem(dynamic item) async {

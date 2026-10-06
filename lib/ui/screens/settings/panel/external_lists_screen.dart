@@ -236,6 +236,12 @@ class _ExternalListsScreenState extends State<_ExternalListsScreen> {
                           onTap: () => context.pushSettingsScreen(const _ImdbListsScreen()),
                         ),
                         _TvSettingsListTile(
+                          leading: const Icon(Icons.celebration_outlined),
+                          title: Text(l10n.seasonalRow),
+                          subtitle: Text(l10n.seasonalRowDescription),
+                          onTap: () => context.pushSettingsScreen(const _SeasonalRowScreen()),
+                        ),
+                        _TvSettingsListTile(
                           leading: const Icon(Icons.trending_up),
                           title: const Text('TMDB Lists'),
                           subtitle: Text(
@@ -282,6 +288,142 @@ class _ExternalListsScreenState extends State<_ExternalListsScreen> {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class _SeasonalRowScreen extends StatefulWidget {
+  const _SeasonalRowScreen();
+
+  @override
+  State<_SeasonalRowScreen> createState() => _SeasonalRowScreenState();
+}
+
+class _SeasonalRowScreenState extends State<_SeasonalRowScreen> {
+  final _scope = FocusScopeNode(debugLabel: 'SeasonalRowScope');
+  final _firstFocusNode = FocusNode(debugLabel: 'seasonal_row_enabled');
+
+  @override
+  void dispose() {
+    _scope.dispose();
+    _firstFocusNode.dispose();
+    super.dispose();
+  }
+
+  Set<String> _hiddenHolidays(UserPreferences prefs) =>
+      UserPreferences.parseSeasonalRowHiddenHolidays(
+        prefs.get(UserPreferences.seasonalRowHiddenHolidays),
+      );
+
+  Future<void> _toggleHoliday(UserPreferences prefs, String holiday) async {
+    final hidden = _hiddenHolidays(prefs);
+    if (!hidden.remove(holiday)) hidden.add(holiday);
+    await prefs.set(
+      UserPreferences.seasonalRowHiddenHolidays,
+      UserPreferences.seasonalHolidayIds.where(hidden.contains).join(','),
+    );
+    if (mounted) setState(() {});
+  }
+
+  /// Switching the row on puts it right after Continue Watching and Next Up,
+  /// where a holiday row gets noticed. Switching it off keeps its place.
+  void _syncSectionState(bool enabled) {
+    final prefs = GetIt.instance<UserPreferences>();
+    final configs = List<HomeSectionConfig>.from(prefs.homeSectionsConfig);
+    final idx = configs.indexWhere((c) => c.type == HomeSectionType.seasonal);
+    final current = idx >= 0
+        ? configs.removeAt(idx)
+        : const HomeSectionConfig(type: HomeSectionType.seasonal, enabled: false, order: 0);
+
+    var insertAt = idx >= 0 ? idx : configs.length;
+    if (enabled && !current.enabled) {
+      final anchor = configs.lastIndexWhere(
+        (c) => c.isBuiltin &&
+            (c.type == HomeSectionType.resume || c.type == HomeSectionType.nextUp),
+      );
+      insertAt = anchor + 1;
+    }
+    configs.insert(insertAt, current.copyWith(enabled: enabled));
+    for (var i = 0; i < configs.length; i++) {
+      configs[i] = configs[i].copyWith(order: i);
+    }
+    prefs.setHomeSectionsConfig(configs);
+    _pushPersonalizationSync();
+  }
+
+  String _countryLabel(String code, AppLocalizations l10n) => switch (code) {
+        UserPreferences.seasonalRowCountryAuto => l10n.seasonalRowCountryAuto,
+        'US' => l10n.countryUnitedStates,
+        'CA' => l10n.countryCanada,
+        UserPreferences.seasonalRowCountryOther => l10n.seasonalRowCountryOther,
+        _ => code,
+      };
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final prefs = GetIt.instance<UserPreferences>();
+    final hidden = _hiddenHolidays(prefs);
+
+    return withCleanSettingsTypography(
+      context,
+      RequestInitialFocus(
+        targetNode: PlatformDetection.isTV ? _firstFocusNode : null,
+        child: Scaffold(
+          appBar: buildSettingsAppBar(context, Text(l10n.seasonalRow)),
+          body: FocusScope(
+            node: _scope,
+            autofocus: true,
+            child: ListView(
+              children: [
+                adaptiveListSection(
+                  children: [
+                    SwitchPreferenceTile(
+                      focusNode: _firstFocusNode,
+                      preference: UserPreferences.seasonalRowEnabled,
+                      title: l10n.seasonalRow,
+                      subtitle: l10n.seasonalRowDescription,
+                      icon: Icons.celebration_outlined,
+                      onChangedValue: _syncSectionState,
+                    ),
+                    StringPickerPreferenceTile(
+                      preference: UserPreferences.seasonalRowCountry,
+                      title: l10n.seasonalRowCountry,
+                      icon: Icons.public,
+                      options: {
+                        for (final code in UserPreferences.seasonalRowCountryOptions)
+                          code: _countryLabel(code, l10n),
+                      },
+                    ),
+                  ],
+                ),
+                _SectionHeader(l10n.seasonalRowHolidays),
+                adaptiveListSection(
+                  children: [
+                    for (final holiday in UserPreferences.seasonalHolidayIds)
+                      _TvSettingsListTile(
+                        leading: Icon(
+                          hidden.contains(holiday)
+                              ? Icons.check_box_outline_blank
+                              : Icons.check_box,
+                        ),
+                        title: Text(seasonalHolidayTitle(holiday, l10n)),
+                        onTap: () => _toggleHoliday(prefs, holiday),
+                      ),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
+                  child: Text(
+                    l10n.seasonalRowHolidaysHint,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -1183,10 +1325,49 @@ class _SeerrListsScreenState extends State<_SeerrListsScreen> {
   final _scope = FocusScopeNode(debugLabel: 'SeerrListsScope');
   final _firstFocusNode = FocusNode(debugLabel: 'seerr_display_rows');
 
+  /// The sliders on Seerr's discover page this client can show, or null until
+  /// they are read.
+  List<SeerrDiscoverSlider>? _sliders;
+
   @override
   void initState() {
     super.initState();
     _rows = List.of(_seerrPrefs.homeRowsConfig);
+    _loadSliders();
+  }
+
+  Future<void> _loadSliders() async {
+    try {
+      final repo = await GetIt.instance.getAsync<SeerrRepository>();
+      await repo.ensureInitialized();
+      if (!repo.isAvailable) return;
+      final sliders = await repo.getDiscoverSliders(force: true);
+      if (!mounted) return;
+      setState(() {
+        _sliders = sliders.where((s) => s.isSupported).toList();
+      });
+    } catch (e) {
+      debugPrint('[SeerrLists] Failed to load discover sliders: $e');
+    }
+  }
+
+  HomeSectionConfig _sliderSection(SeerrDiscoverSlider slider) =>
+      seerrSliderSection(
+        slider,
+        serverId: GetIt.instance<MediaServerClient>().baseUrl,
+      );
+
+  bool _isSliderShown(HomeSectionConfig entry) => GetIt.instance<UserPreferences>()
+      .homeSectionsConfig
+      .any((s) => s.stableId == entry.stableId && s.enabled);
+
+  Future<void> _setSliderShown(HomeSectionConfig entry, bool shown) async {
+    final prefs = GetIt.instance<UserPreferences>();
+    await prefs.setHomeSectionsConfig(
+      setSeerrSliderShown(prefs.homeSectionsConfig, entry, shown: shown),
+    );
+    _pushPersonalizationSync();
+    if (mounted) setState(() {});
   }
 
   @override
@@ -1271,6 +1452,19 @@ class _SeerrListsScreenState extends State<_SeerrListsScreen> {
                     );
                   }).toList(),
                 ),
+                if (_sliders case final sliders? when sliders.isNotEmpty) ...[
+                  _SectionHeader(l10n.seerrDiscoverSliders),
+                  adaptiveListSection(
+                    children: [
+                      for (final entry in sliders.map(_sliderSection))
+                        _SeerrRowSwitchTile(
+                          title: entry.pluginDisplayText ?? '',
+                          value: _isSliderShown(entry),
+                          onChanged: (shown) => _setSliderShown(entry, shown),
+                        ),
+                    ],
+                  ),
+                ],
               ],
             ),
           ),

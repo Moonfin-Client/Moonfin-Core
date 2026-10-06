@@ -122,6 +122,21 @@ void main() {
     expect(configuredValues(), [true, false, true, false]);
   });
 
+  test('smart downloads schedules it without a followed series', () async {
+    binding.attach();
+    await settle();
+    await prefs.set(UserPreferences.smartDownloadsEnabled, true);
+    await settle();
+    // The follow master switch only pauses subscriptions.
+    await prefs.set(UserPreferences.autoDownloadEnabled, false);
+    await settle();
+    expect(configuredValues(), [false, true]);
+
+    await prefs.set(UserPreferences.autoDownloadBackgroundRefresh, false);
+    await settle();
+    expect(configuredValues(), [false, true, false]);
+  });
+
   test('a Wi-Fi-only change re-configures the task', () async {
     await subscribe('series-1');
     binding.attach();

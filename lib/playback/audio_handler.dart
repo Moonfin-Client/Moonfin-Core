@@ -12,6 +12,7 @@ import 'package:server_core/server_core.dart';
 import '../data/models/aggregated_item.dart';
 import '../data/services/audiobook_resume_service.dart';
 import '../data/services/media_server_client_factory.dart';
+import '../util/audio_artwork_url.dart';
 import '../platform/pip_service.dart';
 import '../util/platform_detection.dart';
 import '../preference/user_preferences.dart';
@@ -431,18 +432,11 @@ class MoonfinAudioHandler extends BaseAudioHandler
 
   MediaItem _mediaItemFor(AggregatedItem item) {
     final client = _clientFor(item);
-    String? artUri;
-    try {
-      final albumTag = item.albumPrimaryImageTag;
-      final albumId = item.albumId;
-      if (item.type == 'Audio' && albumTag != null && albumId != null) {
-        artUri = client.imageApi
-            .getPrimaryImageUrl(albumId, maxHeight: 300, tag: albumTag);
-      } else if (item.primaryImageTag != null) {
-        artUri = client.imageApi
-            .getPrimaryImageUrl(item.id, maxHeight: 300, tag: item.primaryImageTag);
-      }
-    } catch (_) {}
+    final artUri = audioArtUrl(
+      item,
+      clientFactory: _clientFactory,
+      maxHeight: 300,
+    );
 
     final String? artistName;
     if (item.type == 'Episode') {

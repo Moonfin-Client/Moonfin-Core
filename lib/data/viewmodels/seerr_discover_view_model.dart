@@ -6,10 +6,13 @@ import '../../preference/preference_constants.dart';
 import '../../preference/seerr_preferences.dart';
 import '../repositories/seerr_repository.dart';
 import '../services/seerr/seerr_api_models.dart';
+import '../services/seerr/seerr_discover_sliders.dart';
 import '../utils/bounded_concurrency.dart';
 
 class SeerrDiscoverRow {
-  final SeerrRowType type;
+  /// Null for a row showing an admin slider from Seerr's discover page.
+  final SeerrRowType? type;
+  final SeerrDiscoverSlider? slider;
   final List<SeerrDiscoverItem> items;
   final List<SeerrGenre> genres;
   final List<SeerrNetwork> networks;
@@ -19,7 +22,7 @@ class SeerrDiscoverRow {
   final int totalPages;
 
   const SeerrDiscoverRow({
-    required this.type,
+    required SeerrRowType this.type,
     this.items = const [],
     this.genres = const [],
     this.networks = const [],
@@ -27,6 +30,29 @@ class SeerrDiscoverRow {
     this.isLoading = false,
     this.page = 1,
     this.totalPages = 1,
+  }) : slider = null;
+
+  const SeerrDiscoverRow.slider(
+    SeerrDiscoverSlider this.slider, {
+    this.items = const [],
+    this.isLoading = false,
+    this.page = 1,
+    this.totalPages = 1,
+  }) : type = null,
+       genres = const [],
+       networks = const [],
+       studios = const [];
+
+  const SeerrDiscoverRow._({
+    required this.type,
+    required this.slider,
+    required this.items,
+    required this.genres,
+    required this.networks,
+    required this.studios,
+    required this.isLoading,
+    required this.page,
+    required this.totalPages,
   });
 
   SeerrDiscoverRow copyWith({
@@ -38,8 +64,9 @@ class SeerrDiscoverRow {
     int? page,
     int? totalPages,
   }) =>
-      SeerrDiscoverRow(
+      SeerrDiscoverRow._(
         type: type,
+        slider: slider,
         items: items ?? this.items,
         genres: genres ?? this.genres,
         networks: networks ?? this.networks,
@@ -50,6 +77,10 @@ class SeerrDiscoverRow {
       );
 
   bool get hasMore => page < totalPages;
+
+  /// Tells rows apart for focus memory. A slider goes by its id, so sliders
+  /// coming and going don't hand one row another's position.
+  String get key => type?.name ?? 'slider_${slider?.id}';
   bool get isGenreRow => type == SeerrRowType.movieGenres || type == SeerrRowType.seriesGenres;
   bool get isNetworkRow => type == SeerrRowType.networks;
   bool get isStudioRow => type == SeerrRowType.studios;
@@ -144,11 +175,17 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
       }
 
       final activeRows = _prefs.activeRows;
+      final slidersFuture = _loadSliders();
       await _refreshRecentlyAddedGate(activeRows);
-      _rows = _visibleRows(activeRows).map((type) => SeerrDiscoverRow(
-        type: type,
-        isLoading: true,
-      )).toList();
+      final sliders = await slidersFuture;
+      _rows = [
+        ..._visibleRows(activeRows).map((type) => SeerrDiscoverRow(
+          type: type,
+          isLoading: true,
+        )),
+        for (final slider in sliders)
+          SeerrDiscoverRow.slider(slider, isLoading: true),
+      ];
       notifyListeners();
 
       await _loadAllRows();
@@ -185,6 +222,18 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
     }
   }
 
+  /// The admin sliders set up on Seerr's discover page, after Moonfin's own
+  /// rows. Failing to read them leaves just the built-in rows.
+  Future<List<SeerrDiscoverSlider>> _loadSliders() async {
+    try {
+      final sliders = await _repo.getDiscoverSliders(force: true);
+      return sliders.where((s) => s.isSupported).toList();
+    } catch (e) {
+      debugPrint('[SeerrDiscover] Failed to load discover sliders: $e');
+      return const [];
+    }
+  }
+
   List<SeerrRowType> _visibleRows(List<SeerrRowType> rows) =>
       _canViewRecentlyAdded
           ? rows
@@ -193,7 +242,7 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
   Future<void> applyRowConfig() async {
     if (_rows.isEmpty) return;
     final activeTypes = _visibleRows(_prefs.activeRows);
-    final rowMap = {for (final r in _rows) r.type: r};
+    final rowMap = {for (final r in _rows) ?r.type: r};
     final newRows = <SeerrDiscoverRow>[];
     for (final type in activeTypes) {
       final existing = rowMap[type];
@@ -204,7 +253,7 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
         return;
       }
     }
-    _rows = newRows;
+    _rows = [...newRows, ..._rows.where((r) => r.slider != null)];
     notifyListeners();
   }
 
@@ -218,7 +267,7 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final page = await _loadPage(row.type, row.page + 1);
+      final page = await _loadPage(row, row.page + 1);
       if (page != null) {
         List<SeerrDiscoverItem> newItems;
         if (row.type == SeerrRowType.yourWatchlist) {
@@ -277,7 +326,7 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
             isLoading: false,
           ));
         default:
-          final page = await _loadPage(row.type, 1);
+          final page = await _loadPage(row, 1);
           if (page != null) {
             final filtered = _filterItems(page.results);
             _updateRow(index, row.copyWith(
@@ -475,10 +524,12 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
     }
   }
 
-  Future<SeerrDiscoverPage?> _loadPage(SeerrRowType type, int page) async {
+  Future<SeerrDiscoverPage?> _loadPage(SeerrDiscoverRow row, int page) async {
+    final slider = row.slider;
+    if (slider != null) return _repo.getSliderPage(slider, page: page);
     final limit = _prefs.fetchLimit.limit;
     final offset = (page - 1) * limit;
-    switch (type) {
+    switch (row.type) {
       case SeerrRowType.trending:
         return _repo.getTrending(limit: limit, offset: offset);
       case SeerrRowType.popularMovies:

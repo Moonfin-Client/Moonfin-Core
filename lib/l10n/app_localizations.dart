@@ -562,6 +562,12 @@ abstract class AppLocalizations {
   /// **'Chapters and Extras'**
   String get spotlightChaptersExtras;
 
+  /// Title of the spotlight summary card that opens the file details modal
+  ///
+  /// In en, this message translates to:
+  /// **'File Details'**
+  String get spotlightFileDetails;
+
   /// Title of the spotlight summary card that opens the similar titles and recommendations modal
   ///
   /// In en, this message translates to:
@@ -3628,6 +3634,12 @@ abstract class AppLocalizations {
   /// **'mpv statistics on or off'**
   String get shortcutMpvStats;
 
+  /// Player shortcut to run letterbox crop detection now
+  ///
+  /// In en, this message translates to:
+  /// **'Recrop black bars'**
+  String get shortcutRecropBlackBars;
+
   /// What Esc does in the player
   ///
   /// In en, this message translates to:
@@ -5422,6 +5434,168 @@ abstract class AppLocalizations {
   /// **'Falling Leaves'**
   String get fallingLeaves;
 
+  /// Seasonal effect: snow with falling baubles and stars
+  ///
+  /// In en, this message translates to:
+  /// **'Christmas'**
+  String get seasonalChristmas;
+
+  /// Seasonal effect: falling cherry blossoms and petals with bees flying by
+  ///
+  /// In en, this message translates to:
+  /// **'Spring Petals'**
+  String get seasonalPetals;
+
+  /// Seasonal effect: glowing fireflies for summer
+  ///
+  /// In en, this message translates to:
+  /// **'Fireflies'**
+  String get seasonalFireflies;
+
+  /// Seasonal effect: bats, ghosts, candy and orange and purple leaves
+  ///
+  /// In en, this message translates to:
+  /// **'Halloween'**
+  String get seasonalHalloween;
+
+  /// Setting for how many seasonal effect particles are on screen at once
+  ///
+  /// In en, this message translates to:
+  /// **'Density'**
+  String get seasonalDensity;
+
+  /// Seasonal effect density: fewest particles
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get seasonalDensityLight;
+
+  /// Seasonal effect density: the default amount
+  ///
+  /// In en, this message translates to:
+  /// **'Normal'**
+  String get seasonalDensityNormal;
+
+  /// Seasonal effect density: most particles
+  ///
+  /// In en, this message translates to:
+  /// **'Heavy'**
+  String get seasonalDensityHeavy;
+
+  /// Name of the Home row that shows holiday movies
+  ///
+  /// In en, this message translates to:
+  /// **'Seasonal Row'**
+  String get seasonalRow;
+
+  /// Explains the seasonal Home row setting
+  ///
+  /// In en, this message translates to:
+  /// **'Show a row of holiday movies from your library, with Seerr suggestions when available.'**
+  String get seasonalRowDescription;
+
+  /// Source label shown under the seasonal row's title
+  ///
+  /// In en, this message translates to:
+  /// **'Seasonal'**
+  String get seasonalRowSubtitle;
+
+  /// Setting for which country's holidays the seasonal row follows
+  ///
+  /// In en, this message translates to:
+  /// **'Country'**
+  String get seasonalRowCountry;
+
+  /// Country option that reads the country from the device
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic'**
+  String get seasonalRowCountryAuto;
+
+  /// Country name
+  ///
+  /// In en, this message translates to:
+  /// **'United States'**
+  String get countryUnitedStates;
+
+  /// Country name
+  ///
+  /// In en, this message translates to:
+  /// **'Canada'**
+  String get countryCanada;
+
+  /// Country option for a country the seasonal row does not list
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get seasonalRowCountryOther;
+
+  /// Heading for the list of holidays the seasonal row can show
+  ///
+  /// In en, this message translates to:
+  /// **'Holidays'**
+  String get seasonalRowHolidays;
+
+  /// Hint under the holiday checklist
+  ///
+  /// In en, this message translates to:
+  /// **'Untick a holiday to hide its row.'**
+  String get seasonalRowHolidaysHint;
+
+  /// Seasonal row title for New Year's
+  ///
+  /// In en, this message translates to:
+  /// **'New Year\'s'**
+  String get holidayNewYear;
+
+  /// Seasonal row title for Valentine's Day
+  ///
+  /// In en, this message translates to:
+  /// **'Valentine\'s Day'**
+  String get holidayValentines;
+
+  /// Seasonal row title for Easter
+  ///
+  /// In en, this message translates to:
+  /// **'Easter'**
+  String get holidayEaster;
+
+  /// Seasonal row title for Pride month
+  ///
+  /// In en, this message translates to:
+  /// **'Pride'**
+  String get holidayPride;
+
+  /// Seasonal row title for Halloween
+  ///
+  /// In en, this message translates to:
+  /// **'Halloween'**
+  String get holidayHalloween;
+
+  /// Seasonal row title for Thanksgiving
+  ///
+  /// In en, this message translates to:
+  /// **'Thanksgiving'**
+  String get holidayThanksgiving;
+
+  /// Seasonal row title for Christmas
+  ///
+  /// In en, this message translates to:
+  /// **'Christmas Movies'**
+  String get holidayChristmas;
+
+  /// Seasonal row title for Lunar New Year
+  ///
+  /// In en, this message translates to:
+  /// **'Lunar New Year'**
+  String get holidayLunarNewYear;
+
+  /// Seasonal row title for Diwali
+  ///
+  /// In en, this message translates to:
+  /// **'Diwali'**
+  String get holidayDiwali;
+
   /// Setting for theme music
   ///
   /// In en, this message translates to:
@@ -5575,8 +5749,38 @@ abstract class AppLocalizations {
   /// Description for the crop black bars playback setting
   ///
   /// In en, this message translates to:
-  /// **'Detect encoded letterbox bars, crop them, then fill the screen.'**
+  /// **'Detect encoded letterbox bars after playback starts, crop them, then fill the screen. Recrop from the player zoom button.'**
   String get settingsCropBlackBarsDescription;
+
+  /// Setting for how often to re-detect encoded letterbox bars
+  ///
+  /// In en, this message translates to:
+  /// **'Recrop interval'**
+  String get cropBlackBarsRecropInterval;
+
+  /// Letterbox recrop interval: detect once after playback starts
+  ///
+  /// In en, this message translates to:
+  /// **'Once at start'**
+  String get cropBlackBarsOnce;
+
+  /// Letterbox recrop interval: scan about once a second
+  ///
+  /// In en, this message translates to:
+  /// **'Every second'**
+  String get cropBlackBarsEverySecond;
+
+  /// Description for the letterbox recrop-interval setting
+  ///
+  /// In en, this message translates to:
+  /// **'Follow aspect ratio changes during playback.'**
+  String get settingsCropBlackBarsIntervalDescription;
+
+  /// Toast when the player re-runs letterbox crop detection
+  ///
+  /// In en, this message translates to:
+  /// **'Recropping black bars'**
+  String get playerRecroppingBlackBars;
 
   /// Zoom mode: stretch
   ///
@@ -8901,6 +9105,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Seerr Discovery Rows'**
   String get seerrDiscoveryRows;
+
+  /// Seerr Lists heading for the sliders an admin set up on Seerr's discover page
+  ///
+  /// In en, this message translates to:
+  /// **'Seerr Discover Sliders'**
+  String get seerrDiscoverSliders;
 
   /// Seerr row: watchlist
   ///
@@ -23389,6 +23599,42 @@ abstract class AppLocalizations {
   /// **'Auto-download stopped for {title}'**
   String autoDownloadStoppedFor(String title);
 
+  /// Settings section header for downloading the next episodes of a series after one is watched
+  ///
+  /// In en, this message translates to:
+  /// **'Smart downloads'**
+  String get smartDownloadsSection;
+
+  /// Switch that swaps a watched downloaded episode for the next episodes of the series
+  ///
+  /// In en, this message translates to:
+  /// **'Download next episodes'**
+  String get smartDownloadsEnable;
+
+  /// Explains the smart downloads switch, including that watched episodes are deleted
+  ///
+  /// In en, this message translates to:
+  /// **'When you finish an episode on any device, Moonfin downloads the next ones. Downloaded episodes are deleted once watched.'**
+  String get smartDownloadsEnableSubtitle;
+
+  /// Setting for how many unwatched episodes of a series stay downloaded after one is watched
+  ///
+  /// In en, this message translates to:
+  /// **'Episodes to keep downloaded'**
+  String get smartDownloadsKeepReady;
+
+  /// Subtitle under the episodes to keep ready setting
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Keeps the next episode downloaded} other{Keeps the next {count} episodes downloaded}}'**
+  String smartDownloadsKeepReadySubtitle(int count);
+
+  /// Shown after lowering the episodes to keep downloaded, explaining nothing is deleted
+  ///
+  /// In en, this message translates to:
+  /// **'Episodes already downloaded stay on your device. The new number applies to future downloads.'**
+  String get smartDownloadsKeepReadyLowered;
+
   /// Settings section header for auto-download subscriptions
   ///
   /// In en, this message translates to:
@@ -23764,6 +24010,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'How far focus moves for each swipe on the Siri Remote touchpad'**
   String get siriRemoteSwipeSensitivityDescription;
+
+  /// Section header in Home Screen settings for options that affect the tvOS home screen outside the app
+  ///
+  /// In en, this message translates to:
+  /// **'Apple TV home screen'**
+  String get appleTvHomeScreen;
+
+  /// Apple TV settings label for what the tvOS home screen shows above the Moonfin icon. Top Shelf is Apple's name for that area
+  ///
+  /// In en, this message translates to:
+  /// **'Top Shelf'**
+  String get topShelf;
+
+  /// Apple TV settings subtitle for the Top Shelf option
+  ///
+  /// In en, this message translates to:
+  /// **'What the Apple TV home screen shows above the Moonfin icon when it is selected. This setting stays on this device.'**
+  String get topShelfDescription;
+
+  /// Top Shelf option that shows a carousel of the newest items from the home screen's Latest rows
+  ///
+  /// In en, this message translates to:
+  /// **'Latest media'**
+  String get topShelfLatestMedia;
+
+  /// Top Shelf option that shows only the static Moonfin logo banner, nothing from the library
+  ///
+  /// In en, this message translates to:
+  /// **'Moonfin banner'**
+  String get topShelfAppBanner;
 
   /// iPhone playback setting that holds the picture back from the camera housing in landscape
   ///

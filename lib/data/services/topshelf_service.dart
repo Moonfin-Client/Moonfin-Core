@@ -1,19 +1,33 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 
+import '../../preference/preference_constants.dart';
+import '../../preference/user_preferences.dart';
 import '../../util/platform_detection.dart';
 import '../models/aggregated_item.dart';
 import '../models/home_row.dart';
+import '../utils/latest_media_row_normalizer.dart';
 import 'deep_link_service.dart';
 
 /// Bridges the Apple TV Top Shelf extension: writes a cached snapshot of the
 /// "Latest" home content into the shared App Group container (consumed by the
 /// MoonfinTopShelf extension) and routes the `moonfin://` deep links the shelf
 /// emits back into the app.
+///
+/// With no cache file the extension returns nothing and tvOS shows the static
+/// Top Shelf image from the brand assets instead, which is what the banner
+/// setting and signing out both rely on.
 class TopShelfService {
+  // One instance app wide, so signing out or switching the setting can cancel
+  // a write the home screen already scheduled and reuse the rows it was given.
+  factory TopShelfService() => _instance;
+  TopShelfService._();
+  static final TopShelfService _instance = TopShelfService._();
+
   static const _channel = MethodChannel('moonfin/appletv_topshelf');
   static const _maxItems = 15;
   static const _debounceDelay = Duration(seconds: 2);
@@ -24,25 +38,66 @@ class TopShelfService {
   static const _image2xMaxHeight = 2160;
 
   Timer? _debounce;
+  List<HomeRow>? _lastRows;
 
   /// Schedules a Top Shelf cache refresh, coalescing the rapid successive
   /// calls a single home load produces into one write.
   void update(List<HomeRow> rows) {
     if (!PlatformDetection.isAppleTV) return;
+    _lastRows = rows;
     _debounce?.cancel();
     _debounce = Timer(_debounceDelay, () => unawaited(_writeCache(rows)));
+  }
+
+  /// Rewrites the shelf from the rows it last saw, for when the setting
+  /// changes while the home is already loaded. Does nothing before the first
+  /// home load, which writes the shelf on its own.
+  void refresh() {
+    if (!PlatformDetection.isAppleTV) return;
+    final rows = _lastRows;
+    if (rows == null) return;
+    _debounce?.cancel();
+    unawaited(_writeCache(rows));
+  }
+
+  /// Drops the cached snapshot so the shelf falls back to the Moonfin banner.
+  /// Called on sign out, so the last account's artwork doesn't stay on the
+  /// Apple TV home screen for whoever picks up the remote next.
+  void clear() {
+    if (!PlatformDetection.isAppleTV) return;
+    _debounce?.cancel();
+    _lastRows = null;
+    unawaited(_channel.invokeMethod('clearCache').catchError((_) {}));
   }
 
   void dispose() {
     _debounce?.cancel();
     _debounce = null;
+    _lastRows = null;
   }
+
+  /// Only the Latest rows feed the shelf. Favorites, Last Played, Since You
+  /// Watched and Rewatch share [HomeRowType.latestMedia], so the type alone
+  /// would put whichever of them sits highest on the home up there.
+  @visibleForTesting
+  static bool isLatestRow(HomeRow row) =>
+      row.rowType == HomeRowType.latestMedia &&
+      (row.id.startsWith('latest_') ||
+          row.id.startsWith('${mergedTypeRowIdPrefix}latest_'));
 
   Future<void> _writeCache(List<HomeRow> rows) async {
     try {
+      final content = GetIt.instance<UserPreferences>().get(
+        UserPreferences.topShelfContent,
+      );
+      if (content == TopShelfContent.appBanner) {
+        await _channel.invokeMethod('clearCache');
+        return;
+      }
+
       final imageApi = GetIt.instance<MediaServerClient>().imageApi;
       final items = <Map<String, dynamic>>[];
-      for (final row in rows.where((r) => r.rowType == HomeRowType.latestMedia)) {
+      for (final row in rows.where(isLatestRow)) {
         for (final item in row.items) {
           final payload = _itemPayload(item, imageApi);
           if (payload != null) items.add(payload);

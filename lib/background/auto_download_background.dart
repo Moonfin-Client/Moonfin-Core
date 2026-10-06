@@ -1,6 +1,12 @@
+import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
+import 'package:server_core/server_core.dart';
 
+import '../data/repositories/offline_repository.dart';
 import '../data/services/auto_download_service.dart';
+import '../data/services/pending_rating_store.dart';
+import '../data/services/sync_service.dart';
+import '../preference/user_preferences.dart';
 import '../playback/headless_session_bootstrap.dart';
 
 /// The work behind a background refresh, on any platform that can wake the
@@ -33,6 +39,9 @@ Future<bool> runAutoDownloadBackgroundRefresh(Duration budget) async {
   }
 
   final service = getIt<AutoDownloadService>();
+  // Capped so a slow push leaves the check most of the budget.
+  await _pushOfflineProgress(service.serverId)
+      .timeout(budget ~/ 3, onTimeout: () {});
   final summary = await service.runCheck(
     trigger: AutoDownloadTrigger.backgroundRefresh,
     deadline: remaining(),
@@ -41,4 +50,28 @@ Future<bool> runAutoDownloadBackgroundRefresh(Duration budget) async {
   // queued items must be in the native engine's hands by then.
   await service.downloader.waitForNativeHandoff(timeout: remaining());
   return summary.error == null;
+}
+
+/// Smart downloads swaps what the server says was watched, so an episode
+/// watched offline is reported before the check, or a phone left on Wi-Fi
+/// overnight would wait for the app to be opened. The headless Android
+/// engine never registers the sync service, so one is built for the run.
+Future<void> _pushOfflineProgress(String serverId) async {
+  final getIt = GetIt.instance;
+  if (!getIt.isRegistered<UserPreferences>() ||
+      !getIt.isRegistered<MediaServerClient>() ||
+      !getIt<UserPreferences>().get(UserPreferences.smartDownloadsEnabled)) {
+    return;
+  }
+  final sync = getIt.isRegistered<SyncService>()
+      ? getIt<SyncService>()
+      : SyncService(getIt<OfflineRepository>(), getIt<PendingRatingStore>());
+  try {
+    await sync.syncPlaybackProgress(
+      getIt<MediaServerClient>(),
+      serverId: serverId,
+    );
+  } catch (e) {
+    debugPrint('[AutoDownload] background: progress sync failed ($e)');
+  }
 }

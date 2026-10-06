@@ -6,7 +6,8 @@ import 'background_refresh.dart';
 
 /// Keeps the platform's background refresh task in step with the
 /// auto-download state: scheduled only while the setting is on and at least
-/// one series is followed, so the OS never wakes the app for nothing.
+/// one series is followed, or smart downloads is on, so the OS never wakes
+/// the app for nothing.
 class AutoDownloadBackgroundBinding {
   AutoDownloadBackgroundBinding({
     required this.service,
@@ -43,9 +44,10 @@ class AutoDownloadBackgroundBinding {
 
   void _sync() {
     final enabled =
-        _hasSubscriptions &&
-        prefs.get(UserPreferences.autoDownloadEnabled) &&
-        prefs.get(UserPreferences.autoDownloadBackgroundRefresh);
+        prefs.get(UserPreferences.autoDownloadBackgroundRefresh) &&
+        ((_hasSubscriptions &&
+                prefs.get(UserPreferences.autoDownloadEnabled)) ||
+            prefs.get(UserPreferences.smartDownloadsEnabled));
     final wanted = (
       enabled: enabled,
       // Only meaningful while scheduled; keeps a Wi-Fi toggle from

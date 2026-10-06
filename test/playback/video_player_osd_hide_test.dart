@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
@@ -110,4 +111,53 @@ void main() {
 
     await tester.pumpWidget(const SizedBox());
   });
+
+  // Issue #985: a double-click toggles fullscreen without delaying a single
+  // click, which still hides the controls at once.
+  testWidgets('desktop double-click toggles fullscreen', (tester) async {
+    final calls = <MethodCall>[];
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      const MethodChannel('window_manager'),
+      (call) async {
+        calls.add(call);
+        if (call.method == 'isVisible') return true;
+        return call.method.startsWith('is') ? false : null;
+      },
+    );
+    addTearDown(
+      () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        const MethodChannel('window_manager'),
+        null,
+      ),
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: const [Locale('en')],
+        home: const VideoPlayerScreen(),
+      ),
+    );
+    await tester.pump();
+    expect(find.byType(Slider), findsOneWidget);
+
+    await tester.tapAt(const Offset(100, 300));
+    await tester.pump();
+    expect(find.byType(Slider), findsNothing);
+    await tester.pump(const Duration(seconds: 1));
+    expect(calls.where((c) => c.method == 'setFullScreen'), isEmpty);
+
+    await tester.tapAt(const Offset(100, 300));
+    await tester.pump(const Duration(milliseconds: 100));
+    await tester.tapAt(const Offset(100, 300));
+    await tester.pumpAndSettle();
+    expect(
+      calls.where((c) => c.method == 'setFullScreen').map((c) => c.arguments),
+      [
+        {'isFullScreen': true},
+      ],
+    );
+
+    await tester.pumpWidget(const SizedBox());
+  }, variant: TargetPlatformVariant.only(TargetPlatform.windows));
 }
