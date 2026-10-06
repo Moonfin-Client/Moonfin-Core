@@ -1453,7 +1453,7 @@ class _SeerrListsScreenState extends State<_SeerrListsScreen> {
                   }).toList(),
                 ),
                 if (_sliders case final sliders? when sliders.isNotEmpty) ...[
-                  const _SectionHeader('Seerr Discover Sliders'),
+                  _SectionHeader(l10n.seerrDiscoverSliders),
                   adaptiveListSection(
                     children: [
                       for (final entry in sliders.map(_sliderSection))

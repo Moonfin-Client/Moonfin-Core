@@ -5140,6 +5140,9 @@ class AppLocalizationsFi extends AppLocalizations {
   String get seerrDiscoveryRows => 'Seerr Suositusrivit';
 
   @override
+  String get seerrDiscoverSliders => 'Seerr Discover Sliders';
+
+  @override
   String get yourWatchlist => 'Katselulistallasi';
 
   @override

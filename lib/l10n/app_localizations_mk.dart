@@ -5133,6 +5133,9 @@ class AppLocalizationsMk extends AppLocalizations {
   String get seerrDiscoveryRows => 'Редови за откривање во Seerr';
 
   @override
+  String get seerrDiscoverSliders => 'Seerr Discover Sliders';
+
+  @override
   String get yourWatchlist => 'Your Watchlist';
 
   @override

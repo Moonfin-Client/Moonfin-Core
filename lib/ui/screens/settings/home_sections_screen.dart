@@ -1239,7 +1239,13 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
     final serverId = GetIt.instance<MediaServerClient>().baseUrl;
     var changed = false;
 
+    // Another server's Seerr may number its sliders the same way, so only
+    // this server's rows are matched against the list.
+    bool isOwnSlider(HomeSectionConfig s) =>
+        isSeerrSliderSection(s) && s.serverId == serverId;
+
     for (var i = 0; i < _sections.length; i++) {
+      if (!isOwnSlider(_sections[i])) continue;
       final slider = findSeerrSliderFor(_sections[i], sliders);
       if (slider == null) continue;
       if (_sections[i].pluginDisplayText != slider.title) {
@@ -1253,14 +1259,11 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
     // knows, keeps its entry and state and is just left out of the list.
     final before = _sections.length;
     _sections.removeWhere(
-      (s) =>
-          isSeerrSliderSection(s) &&
-          s.serverId == serverId &&
-          findSeerrSliderFor(s, sliders) == null,
+      (s) => isOwnSlider(s) && findSeerrSliderFor(s, sliders) == null,
     );
     if (_sections.length != before) changed = true;
     _unshownSeerrSliderIds = {
-      for (final s in _sections.where(isSeerrSliderSection))
+      for (final s in _sections.where(isOwnSlider))
         if (findSeerrSliderFor(s, sliders)?.isSupported == false) s.stableId,
     };
 
@@ -2855,7 +2858,8 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
       HomeSectionPluginSource.collections => 'Collections row',
       HomeSectionPluginSource.genres => 'Genres row',
       HomeSectionPluginSource.playlists => 'Playlists row',
-      HomeSectionPluginSource.seerr => 'Seerr Discovery Rows',
+      HomeSectionPluginSource.seerr =>
+        AppLocalizations.of(context).seerrDiscoveryRows,
       HomeSectionPluginSource.custom => (() {
         Map<String, dynamic> rowConfig = {};
         try {

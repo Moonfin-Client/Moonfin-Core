@@ -5110,6 +5110,9 @@ class AppLocalizationsEo extends AppLocalizations {
   String get seerrDiscoveryRows => 'Malkovraj vicoj de Seerr';
 
   @override
+  String get seerrDiscoverSliders => 'Seerr Discover Sliders';
+
+  @override
   String get yourWatchlist => 'Your Watchlist';
 
   @override

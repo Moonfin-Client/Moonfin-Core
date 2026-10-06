@@ -4994,6 +4994,9 @@ class AppLocalizationsYue extends AppLocalizations {
   String get seerrDiscoveryRows => 'Seerr 探索列表';
 
   @override
+  String get seerrDiscoverSliders => 'Seerr Discover Sliders';
+
+  @override
   String get yourWatchlist => 'Your Watchlist';
 
   @override

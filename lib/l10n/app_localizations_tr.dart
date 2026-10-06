@@ -5124,6 +5124,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get seerrDiscoveryRows => 'Seerr Keşfet Satırları';
 
   @override
+  String get seerrDiscoverSliders => 'Seerr Discover Sliders';
+
+  @override
   String get yourWatchlist => 'İzleme Listen';
 
   @override

@@ -4964,6 +4964,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get seerrDiscoveryRows => 'Seerr 发现栏目';
 
   @override
+  String get seerrDiscoverSliders => 'Seerr Discover Sliders';
+
+  @override
   String get yourWatchlist => '我的观看清单';
 
   @override

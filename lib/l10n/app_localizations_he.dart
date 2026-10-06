@@ -5077,6 +5077,9 @@ class AppLocalizationsHe extends AppLocalizations {
   String get seerrDiscoveryRows => 'שורות גילוי של Seerr';
 
   @override
+  String get seerrDiscoverSliders => 'Seerr Discover Sliders';
+
+  @override
   String get yourWatchlist => 'Your Watchlist';
 
   @override

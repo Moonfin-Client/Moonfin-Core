@@ -5158,6 +5158,9 @@ class AppLocalizationsEl extends AppLocalizations {
   String get seerrDiscoveryRows => 'Σειρές ανακάλυψης Seerr';
 
   @override
+  String get seerrDiscoverSliders => 'Seerr Discover Sliders';
+
+  @override
   String get yourWatchlist => 'Η λίστα παρακολούθησής σας';
 
   @override

@@ -6727,6 +6727,10 @@
   "@seerrDiscoveryRows": {
     "description": "Subtitle shown under Seerr discovery home rows"
   },
+  "seerrDiscoverSliders": "Seerr Discover Sliders",
+  "@seerrDiscoverSliders": {
+    "description": "Seerr Lists heading for the sliders an admin set up on Seerr's discover page"
+  },
   "yourWatchlist": "Your Watchlist",
   "@yourWatchlist": {
     "description": "Seerr row: watchlist"

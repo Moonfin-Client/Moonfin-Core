@@ -5124,6 +5124,9 @@ class AppLocalizationsCs extends AppLocalizations {
   String get seerrDiscoveryRows => 'Objevovací řádky Seerr';
 
   @override
+  String get seerrDiscoverSliders => 'Seerr Discover Sliders';
+
+  @override
   String get yourWatchlist => 'Your Watchlist';
 
   @override

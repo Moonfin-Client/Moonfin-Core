@@ -5133,6 +5133,9 @@ class AppLocalizationsBe extends AppLocalizations {
   String get seerrDiscoveryRows => 'Радкі агляду Seerr';
 
   @override
+  String get seerrDiscoverSliders => 'Seerr Discover Sliders';
+
+  @override
   String get yourWatchlist => 'Your Watchlist';
 
   @override

@@ -5011,6 +5011,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get seerrDiscoveryRows => 'Seerr 둘러보기 행';
 
   @override
+  String get seerrDiscoverSliders => 'Seerr Discover Sliders';
+
+  @override
   String get yourWatchlist => '내 관심 목록';
 
   @override

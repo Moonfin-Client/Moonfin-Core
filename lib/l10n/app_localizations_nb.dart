@@ -5108,6 +5108,9 @@ class AppLocalizationsNb extends AppLocalizations {
   String get seerrDiscoveryRows => 'Seerr-oppdagelsesrader';
 
   @override
+  String get seerrDiscoverSliders => 'Seerr Discover Sliders';
+
+  @override
   String get yourWatchlist => 'Din visningsliste';
 
   @override

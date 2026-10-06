@@ -9106,6 +9106,12 @@ abstract class AppLocalizations {
   /// **'Seerr Discovery Rows'**
   String get seerrDiscoveryRows;
 
+  /// Seerr Lists heading for the sliders an admin set up on Seerr's discover page
+  ///
+  /// In en, this message translates to:
+  /// **'Seerr Discover Sliders'**
+  String get seerrDiscoverSliders;
+
   /// Seerr row: watchlist
   ///
   /// In en, this message translates to:

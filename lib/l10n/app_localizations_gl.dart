@@ -5156,6 +5156,9 @@ class AppLocalizationsGl extends AppLocalizations {
   String get seerrDiscoveryRows => 'Filas de descubrimento de Seerr';
 
   @override
+  String get seerrDiscoverSliders => 'Seerr Discover Sliders';
+
+  @override
   String get yourWatchlist => 'Your Watchlist';
 
   @override

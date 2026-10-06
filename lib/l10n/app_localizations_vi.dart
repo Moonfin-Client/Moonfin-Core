@@ -5119,6 +5119,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get seerrDiscoveryRows => 'Hàng khám phá Seerr';
 
   @override
+  String get seerrDiscoverSliders => 'Seerr Discover Sliders';
+
+  @override
   String get yourWatchlist => 'Your Watchlist';
 
   @override

@@ -5134,6 +5134,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get seerrDiscoveryRows => 'Linhas de Descoberta do Seerr';
 
   @override
+  String get seerrDiscoverSliders => 'Seerr Discover Sliders';
+
+  @override
   String get yourWatchlist => 'Your Watchlist';
 
   @override

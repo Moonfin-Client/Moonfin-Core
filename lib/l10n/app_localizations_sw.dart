@@ -5140,6 +5140,9 @@ class AppLocalizationsSw extends AppLocalizations {
   String get seerrDiscoveryRows => 'Safu za Ugunduzi za Seerr';
 
   @override
+  String get seerrDiscoverSliders => 'Seerr Discover Sliders';
+
+  @override
   String get yourWatchlist => 'Your Watchlist';
 
   @override
