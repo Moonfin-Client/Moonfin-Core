@@ -1,6 +1,7 @@
 import 'package:playback_core/playback_core.dart';
 
 import '../../../l10n/app_localizations.dart';
+import '../../../util/secondary_subtitle_track_selection.dart';
 import '../../../util/subtitle_track_logic.dart';
 import '../track_selector_dialog.dart';
 
@@ -37,6 +38,8 @@ class TrackChoices {
     PlaybackManager manager,
     AppLocalizations l10n, {
     required bool audio,
+    bool secondary = false,
+    String preferredSecondaryLanguage = '',
   }) async {
     final streamType = audio ? 'Audio' : 'Subtitle';
     final offlineMeta = manager.currentOfflineMetadata;
@@ -45,7 +48,19 @@ class TrackChoices {
         (offlineMeta?['MediaStreams'] as List?)?.cast<Map<String, dynamic>>() ??
         const <Map<String, dynamic>>[];
     final streams = allStreams.where((s) => s['Type'] == streamType).toList();
-    final optionStreams = audio ? streams : sortedSubtitleStreams(streams);
+    final optionStreams = audio
+        ? streams
+        : secondary
+        ? rankSecondarySubtitleStreams(
+            sortedSubtitleStreams(streams).where((stream) {
+              final index = stream['Index'] as int?;
+              return index != null &&
+                  index != manager.subtitleStreamIndex &&
+                  manager.canUseAsSecondarySubtitle(index);
+            }).toList(),
+            preferredSecondaryLanguage,
+          )
+        : sortedSubtitleStreams(streams);
 
     final int? currentStreamIndex;
     if (audio) {
@@ -53,6 +68,8 @@ class TrackChoices {
           manager.audioStreamIndex ??
           streams.where((s) => s['IsDefault'] == true).firstOrNull?['Index']
               as int?;
+    } else if (secondary) {
+      currentStreamIndex = manager.secondarySubtitleStreamIndex;
     } else {
       final subIdx = await manager.getSubtitleStreamIndexAsync();
       currentStreamIndex =
@@ -111,7 +128,7 @@ class TrackChoices {
           : -1;
       selectedIndex = idx >= 0 ? idx : null;
     } else if (isSubsOff ||
-        (currentStreamIndex == null && streams.isNotEmpty)) {
+        (currentStreamIndex == null && (secondary || streams.isNotEmpty))) {
       selectedIndex = 0;
     } else if (currentStreamIndex != null) {
       final idx = optionStreams.indexWhere(

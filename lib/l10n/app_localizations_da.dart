@@ -4083,6 +4083,10 @@ class AppLocalizationsDa extends AppLocalizations {
   String get defaultSubtitleLanguage => 'Standardsprog for undertekster';
 
   @override
+  String get preferredSecondarySubtitleLanguage =>
+      'Preferred Secondary Subtitle Language';
+
+  @override
   String get defaultToNoSubtitles => 'Standard til Ingen undertekster';
 
   @override
@@ -4090,6 +4094,18 @@ class AppLocalizationsDa extends AppLocalizations {
 
   @override
   String get subtitleSize => 'Undertekst størrelse';
+
+  @override
+  String get primarySubtitleSlot => 'Primary';
+
+  @override
+  String get secondarySubtitleSlot => 'Secondary';
+
+  @override
+  String get decreaseValue => 'Decrease';
+
+  @override
+  String get increaseValue => 'Increase';
 
   @override
   String get textFillColor => 'Tekstfyldfarve';

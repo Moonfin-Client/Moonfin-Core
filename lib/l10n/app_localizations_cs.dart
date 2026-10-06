@@ -4100,6 +4100,10 @@ class AppLocalizationsCs extends AppLocalizations {
   String get defaultSubtitleLanguage => 'Výchozí jazyk titulků';
 
   @override
+  String get preferredSecondarySubtitleLanguage =>
+      'Preferred Secondary Subtitle Language';
+
+  @override
   String get defaultToNoSubtitles => 'Výchozí nastavení je Bez titulků';
 
   @override
@@ -4108,6 +4112,18 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get subtitleSize => 'Velikost titulků';
+
+  @override
+  String get primarySubtitleSlot => 'Primary';
+
+  @override
+  String get secondarySubtitleSlot => 'Secondary';
+
+  @override
+  String get decreaseValue => 'Decrease';
+
+  @override
+  String get increaseValue => 'Increase';
 
   @override
   String get textFillColor => 'Barva výplně textu';

@@ -4077,6 +4077,10 @@ class AppLocalizationsHi extends AppLocalizations {
   String get defaultSubtitleLanguage => 'डिफ़ॉल्ट उपशीर्षक भाषा';
 
   @override
+  String get preferredSecondarySubtitleLanguage =>
+      'Preferred Secondary Subtitle Language';
+
+  @override
   String get defaultToNoSubtitles => 'कोई उपशीर्षक नहीं के लिए डिफ़ॉल्ट';
 
   @override
@@ -4085,6 +4089,18 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get subtitleSize => 'उपशीर्षक आकार';
+
+  @override
+  String get primarySubtitleSlot => 'Primary';
+
+  @override
+  String get secondarySubtitleSlot => 'Secondary';
+
+  @override
+  String get decreaseValue => 'Decrease';
+
+  @override
+  String get increaseValue => 'Increase';
 
   @override
   String get textFillColor => 'टेक्स्ट भरें रंग';

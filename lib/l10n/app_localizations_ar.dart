@@ -4097,6 +4097,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get defaultSubtitleLanguage => 'لغة الترجمة الافتراضية';
 
   @override
+  String get preferredSecondarySubtitleLanguage =>
+      'Preferred Secondary Subtitle Language';
+
+  @override
   String get defaultToNoSubtitles => 'الافتراضي إلى لا ترجمات';
 
   @override
@@ -4105,6 +4109,18 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get subtitleSize => 'حجم الترجمة';
+
+  @override
+  String get primarySubtitleSlot => 'Primary';
+
+  @override
+  String get secondarySubtitleSlot => 'Secondary';
+
+  @override
+  String get decreaseValue => 'Decrease';
+
+  @override
+  String get increaseValue => 'Increase';
 
   @override
   String get textFillColor => 'لون تعبئة النص';

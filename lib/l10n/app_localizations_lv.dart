@@ -4101,6 +4101,10 @@ class AppLocalizationsLv extends AppLocalizations {
   String get defaultSubtitleLanguage => 'Noklusējuma subtitru valoda';
 
   @override
+  String get preferredSecondarySubtitleLanguage =>
+      'Preferred Secondary Subtitle Language';
+
+  @override
   String get defaultToNoSubtitles => 'Pēc noklusējuma nav subtitru';
 
   @override
@@ -4109,6 +4113,18 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String get subtitleSize => 'Subtitru lielums';
+
+  @override
+  String get primarySubtitleSlot => 'Primary';
+
+  @override
+  String get secondarySubtitleSlot => 'Secondary';
+
+  @override
+  String get decreaseValue => 'Decrease';
+
+  @override
+  String get increaseValue => 'Increase';
 
   @override
   String get textFillColor => 'Teksta aizpildījuma krāsa';

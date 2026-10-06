@@ -4106,6 +4106,10 @@ class AppLocalizationsFi extends AppLocalizations {
   String get defaultSubtitleLanguage => 'Tekstityksen oletuskieli';
 
   @override
+  String get preferredSecondarySubtitleLanguage =>
+      'Preferred Secondary Subtitle Language';
+
+  @override
   String get defaultToNoSubtitles => 'Oletuksena Ei tekstityksiä';
 
   @override
@@ -4114,6 +4118,18 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get subtitleSize => 'Tekstityksen koko';
+
+  @override
+  String get primarySubtitleSlot => 'Primary';
+
+  @override
+  String get secondarySubtitleSlot => 'Secondary';
+
+  @override
+  String get decreaseValue => 'Decrease';
+
+  @override
+  String get increaseValue => 'Increase';
 
   @override
   String get textFillColor => 'Tekstin täyttöväri';

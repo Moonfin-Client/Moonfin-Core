@@ -5411,6 +5411,10 @@
     "description": "Info text about subtitle styling"
   },
   "defaultSubtitleLanguage": "Default Subtitle Language",
+  "preferredSecondarySubtitleLanguage": "Preferred Secondary Subtitle Language",
+  "@preferredSecondarySubtitleLanguage": {
+    "description": "Preferred language used to sort secondary subtitle tracks in the picker. It does not enable subtitles."
+  },
   "@defaultSubtitleLanguage": {
     "description": "Setting for default subtitle language"
   },
@@ -5425,6 +5429,22 @@
   "subtitleSize": "Subtitle Size",
   "@subtitleSize": {
     "description": "Setting for subtitle size"
+  },
+  "primarySubtitleSlot": "Primary",
+  "@primarySubtitleSlot": {
+    "description": "Label for the primary subtitle selection slot"
+  },
+  "secondarySubtitleSlot": "Secondary",
+  "@secondarySubtitleSlot": {
+    "description": "Label for the secondary subtitle selection slot"
+  },
+  "decreaseValue": "Decrease",
+  "@decreaseValue": {
+    "description": "Action that decreases a value in a control"
+  },
+  "increaseValue": "Increase",
+  "@increaseValue": {
+    "description": "Action that increases a value in a control"
   },
   "textFillColor": "Text Fill Color",
   "@textFillColor": {

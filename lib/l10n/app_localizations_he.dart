@@ -4065,6 +4065,10 @@ class AppLocalizationsHe extends AppLocalizations {
   String get defaultSubtitleLanguage => 'שפת ברירת המחדל של כתוביות';
 
   @override
+  String get preferredSecondarySubtitleLanguage =>
+      'Preferred Secondary Subtitle Language';
+
+  @override
   String get defaultToNoSubtitles => 'ברירת המחדל היא ללא כתוביות';
 
   @override
@@ -4072,6 +4076,18 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get subtitleSize => 'גודל כתוביות';
+
+  @override
+  String get primarySubtitleSlot => 'Primary';
+
+  @override
+  String get secondarySubtitleSlot => 'Secondary';
+
+  @override
+  String get decreaseValue => 'Decrease';
+
+  @override
+  String get increaseValue => 'Increase';
 
   @override
   String get textFillColor => 'צבע מילוי טקסט';

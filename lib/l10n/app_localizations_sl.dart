@@ -4110,6 +4110,10 @@ class AppLocalizationsSl extends AppLocalizations {
   String get defaultSubtitleLanguage => 'Privzeti jezik podnapisov';
 
   @override
+  String get preferredSecondarySubtitleLanguage =>
+      'Preferred Secondary Subtitle Language';
+
+  @override
   String get defaultToNoSubtitles => 'Privzeto je Brez podnapisov';
 
   @override
@@ -4117,6 +4121,18 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String get subtitleSize => 'Velikost podnapisov';
+
+  @override
+  String get primarySubtitleSlot => 'Primary';
+
+  @override
+  String get secondarySubtitleSlot => 'Secondary';
+
+  @override
+  String get decreaseValue => 'Decrease';
+
+  @override
+  String get increaseValue => 'Increase';
 
   @override
   String get textFillColor => 'Barva polnila besedila';

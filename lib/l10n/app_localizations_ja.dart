@@ -4029,6 +4029,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get defaultSubtitleLanguage => 'デフォルトの字幕言語';
 
   @override
+  String get preferredSecondarySubtitleLanguage =>
+      'Preferred Secondary Subtitle Language';
+
+  @override
   String get defaultToNoSubtitles => 'デフォルトは字幕なし';
 
   @override
@@ -4036,6 +4040,18 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get subtitleSize => '字幕サイズ';
+
+  @override
+  String get primarySubtitleSlot => 'Primary';
+
+  @override
+  String get secondarySubtitleSlot => 'Secondary';
+
+  @override
+  String get decreaseValue => 'Decrease';
+
+  @override
+  String get increaseValue => 'Increase';
 
   @override
   String get textFillColor => 'テキストの塗りつぶしの色';

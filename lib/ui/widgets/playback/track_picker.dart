@@ -10,11 +10,14 @@ import '../../../data/models/aggregated_item.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../playback/delay_limits.dart';
 import '../../../playback/media3_player_backend.dart';
+import '../../../playback/subtitle_style.dart';
+import '../../../preference/user_preferences.dart';
 import '../../../util/remote_subtitle_labels.dart';
 import '../../../util/subtitle_appearance_schedule.dart';
 import '../progress_snack_bar.dart';
 import '../track_selector_dialog.dart';
 import 'delay_footer.dart';
+import 'secondary_subtitle_appearance_footer.dart';
 import 'track_choices.dart';
 
 /// Runs a change to the player, returning false when it was refused.
@@ -64,18 +67,31 @@ abstract final class TrackPicker {
     required PlaybackManager manager,
     required bool audio,
     required MediaServerClient Function(AggregatedItem item) clientFor,
+    bool secondary = false,
     bool useRootNavigator = true,
     PlayerMutation? runMutation,
     VoidCallback? onSubtitlesChanged,
     ValueChanged<bool>? onDialogOpenChanged,
   }) async {
     final l10n = AppLocalizations.of(context);
+    final prefs = GetIt.instance<UserPreferences>();
     final item = manager.queueService.currentItem;
     final canDownloadRemote =
-        !audio && item is AggregatedItem && canDownloadRemoteSubtitles(item);
+        !audio &&
+        !secondary &&
+        item is AggregatedItem &&
+        canDownloadRemoteSubtitles(item);
     final mutate = runMutation ?? _runDirectly;
 
-    final choices = await TrackChoices.load(manager, l10n, audio: audio);
+    final choices = await TrackChoices.load(
+      manager,
+      l10n,
+      audio: audio,
+      secondary: secondary,
+      preferredSecondaryLanguage: secondary
+          ? prefs.get(UserPreferences.preferredSecondarySubtitleLanguage)
+          : '',
+    );
     final streams = choices.streams;
     final options = <TrackOption>[
       ...choices.options,
@@ -89,37 +105,107 @@ abstract final class TrackPicker {
 
     final backend = manager.backend;
     final delayLimits = delayLimitsFor(backend, audio: audio);
+    String formatDelay(double seconds) => seconds == 0
+        ? l10n.none
+        : '${seconds >= 0 ? '+' : ''}${(seconds * 1000).round()} ms';
+    final Widget? footer;
+    if (secondary) {
+      final style = SubtitleStyle.forResolution(
+        prefs,
+        manager.currentResolution,
+      );
+      footer = Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          DelayFooter(
+            initialDelay: manager.secondarySubtitleDelaySeconds,
+            label: l10n.subtitleDelay,
+            minDelay: -5,
+            maxDelay: 5,
+            onDelayChanged: (d) => manager.setSecondarySubtitleDelay(d),
+            formatDelay: formatDelay,
+          ),
+          SecondarySubtitleAppearanceFooter(
+            initialFontSize:
+                manager.secondarySubtitleFontSize ?? style.fontSize,
+            initialOffset: manager.secondarySubtitleOffset,
+            initialTextColor: manager.secondarySubtitleTextColor,
+            defaultTextColor: style.textColor,
+            onChanged: (fontSize, offset, textColor) {
+              unawaited(
+                manager.configureSecondarySubtitleStyle(
+                  fontSize: fontSize,
+                  verticalOffset: offset,
+                  textColor: textColor,
+                ),
+              );
+              unawaited(
+                prefs.set(UserPreferences.secondarySubtitleTextSize, fontSize),
+              );
+              unawaited(
+                prefs.set(
+                  UserPreferences.secondarySubtitleOffsetPosition,
+                  offset,
+                ),
+              );
+              unawaited(
+                prefs.set(
+                  UserPreferences.secondarySubtitleTextColor,
+                  textColor ?? -1,
+                ),
+              );
+            },
+          ),
+        ],
+      );
+    } else if (delayLimits == null) {
+      footer = null;
+    } else {
+      footer = DelayFooter(
+        initialDelay: audio
+            ? audioDelay
+            : backend is Media3PlayerBackend
+            ? backend.subtitleDelaySeconds
+            : subtitleDelay,
+        label: audio ? l10n.audioDelay : l10n.subtitleDelay,
+        minDelay: delayLimits.$1,
+        maxDelay: delayLimits.$2,
+        onDelayChanged: (d) => _applyDelay(manager, audio: audio, delay: d),
+        formatDelay: formatDelay,
+      );
+    }
     final result = await _whileOpen(
       onDialogOpenChanged,
       () => TrackSelectorDialog.show(
         context,
-        title: audio ? l10n.audioTrack : l10n.subtitleTrack,
+        title: audio
+            ? l10n.audioTrack
+            : secondary
+            ? '${l10n.secondarySubtitleSlot} ${l10n.subtitleTrack}'
+            : '${l10n.primarySubtitleSlot} ${l10n.subtitleTrack}',
         options: options,
         selectedIndex: choices.selectedIndex,
         useRootNavigator: useRootNavigator,
-        footer: delayLimits == null
-            ? null
-            : DelayFooter(
-                initialDelay: audio
-                    ? audioDelay
-                    : backend is Media3PlayerBackend
-                    ? backend.subtitleDelaySeconds
-                    : subtitleDelay,
-                label: audio ? l10n.audioDelay : l10n.subtitleDelay,
-                minDelay: delayLimits.$1,
-                maxDelay: delayLimits.$2,
-                onDelayChanged: (d) =>
-                    _applyDelay(manager, audio: audio, delay: d),
-                formatDelay: (seconds) => seconds == 0
-                    ? l10n.none
-                    : '${seconds >= 0 ? '+' : ''}${(seconds * 1000).round()} ms',
-              ),
+        footer: footer,
       ),
     );
     if (result == null || !context.mounted) return;
     final streamIndex = choices.streamIndexFor(result);
     if (!audio) {
       if (streamIndex == -1) {
+        if (secondary) {
+          try {
+            await mutate(
+              'secondary_subtitles_off',
+              () => manager.changeSecondarySubtitleTrack(null),
+            );
+          } catch (error, stackTrace) {
+            debugPrint(
+              'Could not turn off secondary subtitles: $error\n$stackTrace',
+            );
+          }
+          return;
+        }
         await mutate('subtitles_off', manager.disableSubtitles);
         onSubtitlesChanged?.call();
         return;
@@ -141,6 +227,20 @@ abstract final class TrackPicker {
         return;
       }
       if (streamIndex != null) {
+        if (secondary) {
+          try {
+            final changed = await mutate(
+              'secondary_subtitle_$streamIndex',
+              () => manager.changeSecondarySubtitleTrack(streamIndex),
+            );
+            if (changed && context.mounted) onSubtitlesChanged?.call();
+          } catch (error, stackTrace) {
+            debugPrint(
+              'Could not change secondary subtitles: $error\n$stackTrace',
+            );
+          }
+          return;
+        }
         await mutate(
           'subtitle_$streamIndex',
           () => manager.changeSubtitleTrack(streamIndex),

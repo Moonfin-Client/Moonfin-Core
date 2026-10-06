@@ -4104,6 +4104,10 @@ class AppLocalizationsTa extends AppLocalizations {
   String get defaultSubtitleLanguage => 'இயல்புநிலை வசன மொழி';
 
   @override
+  String get preferredSecondarySubtitleLanguage =>
+      'Preferred Secondary Subtitle Language';
+
+  @override
   String get defaultToNoSubtitles => 'வசனங்கள் இல்லை என்பதற்கு இயல்புநிலை';
 
   @override
@@ -4111,6 +4115,18 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get subtitleSize => 'வசன அளவு';
+
+  @override
+  String get primarySubtitleSlot => 'Primary';
+
+  @override
+  String get secondarySubtitleSlot => 'Secondary';
+
+  @override
+  String get decreaseValue => 'Decrease';
+
+  @override
+  String get increaseValue => 'Increase';
 
   @override
   String get textFillColor => 'உரை நிரப்பு வண்ணம்';

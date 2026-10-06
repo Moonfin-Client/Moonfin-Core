@@ -721,6 +721,23 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _themeMusicService.setExternalAudioActive(true);
     _segmentService = _createSegmentService();
     _zoomMode = _prefs.get(UserPreferences.playerZoomMode);
+    final savedSecondaryFontSize = _prefs.get(
+      UserPreferences.secondarySubtitleTextSize,
+    );
+    unawaited(
+      _manager.configureSecondarySubtitleStyle(
+        fontSize: savedSecondaryFontSize > 0 ? savedSecondaryFontSize : null,
+        verticalOffset: _prefs.get(
+          UserPreferences.secondarySubtitleOffsetPosition,
+        ),
+        textColor: switch (_prefs.get(
+          UserPreferences.secondarySubtitleTextColor,
+        )) {
+          -1 => null,
+          final color => color,
+        },
+      ),
+    );
     // Media3 only takes the zoom mode from this call, and the backend change it
     // listens for never fires when it was already the one playing.
     unawaited(_syncMedia3ZoomMode());
@@ -7170,12 +7187,73 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     );
   }
 
-  void _showTrackSelector({required bool audio}) {
+  void _showSubtitleSlotSelector() {
+    final l10n = AppLocalizations.of(context);
+    final resolution = _manager.currentResolution;
+    final streams =
+        (resolution?.mediaStreams ??
+                (_manager.currentOfflineMetadata?['MediaStreams'] as List?)
+                    ?.cast<Map<String, dynamic>>() ??
+                const <Map<String, dynamic>>[])
+            .where((stream) => stream['Type'] == 'Subtitle')
+            .toList();
+
+    String trackLabel(int? index) {
+      if (index == null || index < 0) return l10n.off;
+      final stream = streams
+          .where((entry) => entry['Index'] == index)
+          .firstOrNull;
+      if (stream == null) return l10n.off;
+      final displayTitle = (stream['DisplayTitle'] as String?)?.trim();
+      if (displayTitle != null && displayTitle.isNotEmpty) return displayTitle;
+      final title = (stream['Title'] as String?)?.trim();
+      if (title != null && title.isNotEmpty) return title;
+      final language = (stream['Language'] as String?)?.trim();
+      if (language != null && language.isNotEmpty) return language;
+      return l10n.streamTypeFallback('Subtitle', streams.indexOf(stream) + 1);
+    }
+
+    unawaited(() async {
+      final result = await TrackSelectorDialog.show(
+        context,
+        title: l10n.subtitles,
+        options: [
+          TrackOption(
+            label: l10n.primarySubtitleSlot,
+            subtitle: trackLabel(_manager.subtitleStreamIndex),
+          ),
+          TrackOption(
+            label: l10n.secondarySubtitleSlot,
+            subtitle: trackLabel(_manager.secondarySubtitleStreamIndex),
+          ),
+        ],
+        useRootNavigator: false,
+      );
+      if (result == null || !mounted) return;
+      _showTrackSelector(
+        audio: false,
+        secondary: result == 1,
+        chooseSubtitleSlot: false,
+      );
+    }());
+    _showControls();
+  }
+
+  void _showTrackSelector({
+    required bool audio,
+    bool secondary = false,
+    bool chooseSubtitleSlot = true,
+  }) {
+    if (!audio && chooseSubtitleSlot && _activeBackend is Media3PlayerBackend) {
+      _showSubtitleSlotSelector();
+      return;
+    }
     unawaited(
       TrackPicker.show(
         context,
         manager: _manager,
         audio: audio,
+        secondary: secondary,
         clientFor: _clientForItem,
         useRootNavigator: false,
         runMutation: _runSinglePlayerMutation,

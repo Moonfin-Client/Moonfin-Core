@@ -105,6 +105,7 @@ import kotlin.math.roundToInt
 import org.moonfin.nativevideo.iec.Iec61937AudioOutputProvider
 import org.moonfin.nativevideo.subtitle.DeclaredSubtitle
 import org.moonfin.nativevideo.subtitle.SidecarSourceFactory
+import org.moonfin.nativevideo.subtitle.SecondarySubtitleOverlay
 import org.moonfin.nativevideo.subtitle.SourceTree
 import org.moonfin.nativevideo.subtitle.SupAwareSubtitleParserFactory
 import org.moonfin.nativevideo.subtitle.TextStreamOffsetMediaSource
@@ -761,6 +762,8 @@ class Media3VideoView(
         setBackgroundColor(Color.BLACK)
     }
     private val subtitleView = SubtitleView(context)
+    private val secondarySubtitleView = SubtitleView(context)
+    private lateinit var secondarySubtitleOverlay: SecondarySubtitleOverlay
     private val containerView: FrameLayout = object : FrameLayout(context) {
         override fun onVisibilityAggregated(isVisible: Boolean) {
             super.onVisibilityAggregated(isVisible)
@@ -800,6 +803,15 @@ class Media3VideoView(
             ),
         )
         container.addView(subtitleView, subtitleLayoutParams)
+        // This text layer is independent from Media3's primary SubtitleView
+        // and sits above the existing SurfaceView video output.
+        container.addView(
+            secondarySubtitleView,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT,
+            ),
+        )
 
         container.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
             override fun onViewAttachedToWindow(v: View) {
@@ -1092,11 +1104,25 @@ class Media3VideoView(
     private val listener = object : Player.Listener {
         @Suppress("DEPRECATION")
         override fun onCues(cues: List<Cue>) {
-            subtitleView.setCues(joinStackedCues(cues))
+            val stacked = joinStackedCues(cues)
+            subtitleView.setCues(stacked)
+            if (::secondarySubtitleOverlay.isInitialized) {
+                secondarySubtitleOverlay.updatePrimaryCues(
+                    stacked,
+                    allowAutomaticShift = !selectedSubtitleIsAss,
+                )
+            }
         }
 
         override fun onCues(cueGroup: CueGroup) {
-            subtitleView.setCues(joinStackedCues(cueGroup.cues))
+            val stacked = joinStackedCues(cueGroup.cues)
+            subtitleView.setCues(stacked)
+            if (::secondarySubtitleOverlay.isInitialized) {
+                secondarySubtitleOverlay.updatePrimaryCues(
+                    stacked,
+                    allowAutomaticShift = !selectedSubtitleIsAss,
+                )
+            }
         }
 
         override fun onPlaybackStateChanged(playbackState: Int) {
@@ -1295,6 +1321,7 @@ class Media3VideoView(
                 reason == Player.DISCONTINUITY_REASON_SEEK_ADJUSTMENT
             ) {
                 clearSubtitleCues()
+                secondarySubtitleOverlay.renderAt(player.currentPosition)
                 scheduleAudioRekickAfterSeek()
                 // Otherwise Dart only learns the seek landed from the next
                 // 250ms ticker tick, which can still report the pre-seek
@@ -1487,6 +1514,20 @@ class Media3VideoView(
     init {
         // createPlayer() constructs trackSelector, so build the player first.
         player = createPlayer()
+        secondarySubtitleOverlay = SecondarySubtitleOverlay(
+            view = secondarySubtitleView,
+            dataSourceFactory = { bootDataSourceFactory },
+            mainHandler = mainHandler,
+            positionMs = { if (isPlayerReleased) lastPlaybackPositionMs else player.currentPosition },
+            onFailure = { message ->
+                Media3Bridge.emitEvent(
+                    mapOf("event" to "secondarySubtitleError", "message" to message),
+                )
+            },
+            onPrimaryVerticalOffset = { offsetPx ->
+                subtitleView.translationY = offsetPx
+            },
+        )
 
         applyTrackSelectorForCurrentSource()
 
@@ -1612,6 +1653,7 @@ class Media3VideoView(
         // never be re-activated.
         Media3Bridge.unregisterView(platformViewId, this)
         unregisterSystemCallbacks()
+        secondarySubtitleOverlay.dispose()
         if (currentMediaType == "audio") {
             player.clearVideoSurface()
             return
@@ -1623,6 +1665,7 @@ class Media3VideoView(
 
     fun destroyHeadless() {
         unregisterSystemCallbacks()
+        secondarySubtitleOverlay.dispose()
         forceReleasePlayer()
         containerView.removeAllViews()
     }
@@ -2273,6 +2316,30 @@ class Media3VideoView(
                     result.success(null)
                 }
 
+                "setSecondarySubtitle" -> {
+                    val args = call.arguments as? Map<*, *>
+                    secondarySubtitleOverlay.select(
+                        args?.get("url")?.toString()?.takeIf { it.isNotBlank() },
+                        args?.get("codec")?.toString(),
+                    )
+                    result.success(null)
+                }
+
+                "setSecondarySubtitleDelay" -> {
+                    secondarySubtitleOverlay.setDelayMs(parseDelayMs(call.arguments))
+                    result.success(null)
+                }
+
+                "configureSecondarySubtitleStyle" -> {
+                    val args = call.arguments as? Map<*, *>
+                    secondarySubtitleOverlay.configureAppearance(
+                        (args?.get("fontSize") as? Number)?.toFloat(),
+                        (args?.get("verticalOffset") as? Number)?.toFloat(),
+                        (args?.get("textColor") as? Number)?.toInt(),
+                    )
+                    result.success(null)
+                }
+
                 "setClosedCaptionTrack" -> {
                     handleSetClosedCaptionTrack(call.arguments as? Map<*, *>)
                     result.success(null)
@@ -2443,6 +2510,27 @@ class Media3VideoView(
                     handleSetSubtitleTrack(args as? Map<*, *>)
                 }
 
+                "setSecondarySubtitle" -> {
+                    val subtitleArgs = args as? Map<*, *>
+                    secondarySubtitleOverlay.select(
+                        subtitleArgs?.get("url")?.toString()?.takeIf { it.isNotBlank() },
+                        subtitleArgs?.get("codec")?.toString(),
+                    )
+                }
+
+                "setSecondarySubtitleDelay" -> {
+                    secondarySubtitleOverlay.setDelayMs(parseDelayMs(args))
+                }
+
+                "configureSecondarySubtitleStyle" -> {
+                    val styleArgs = args as? Map<*, *>
+                    secondarySubtitleOverlay.configureAppearance(
+                        (styleArgs?.get("fontSize") as? Number)?.toFloat(),
+                        (styleArgs?.get("verticalOffset") as? Number)?.toFloat(),
+                        (styleArgs?.get("textColor") as? Number)?.toInt(),
+                    )
+                }
+
                 "setClosedCaptionTrack" -> {
                     handleSetClosedCaptionTrack(args as? Map<*, *>)
                 }
@@ -2492,6 +2580,7 @@ class Media3VideoView(
 
     private fun setSource(arguments: Any?) {
         val args = arguments as? Map<*, *> ?: return
+        secondarySubtitleOverlay.clear()
         lastSourceArguments = args
         val url = args["url"]?.toString() ?: return
         val startPositionMs = (args["startPositionMs"] as? Number)?.toLong() ?: 0L
@@ -2629,6 +2718,18 @@ class Media3VideoView(
         emitVolumeBoostState()
         prepareCurrentSource(startPositionMs, playWhenReady = autoPlay)
         playerHasLoadedSource = true
+        secondarySubtitleOverlay.setDelayMs(
+            (args["secondarySubtitleDelayMs"] as? Number)?.toLong() ?: 0L,
+        )
+        secondarySubtitleOverlay.configureAppearance(
+            (args["secondarySubtitleFontSize"] as? Number)?.toFloat(),
+            (args["secondarySubtitleOffset"] as? Number)?.toFloat(),
+            (args["secondarySubtitleTextColor"] as? Number)?.toInt(),
+        )
+        secondarySubtitleOverlay.select(
+            args["secondarySubtitleUrl"]?.toString()?.takeIf { it.isNotBlank() },
+            args["secondarySubtitleCodec"]?.toString(),
+        )
     }
 
     private fun revealVideo() {
@@ -2797,6 +2898,7 @@ class Media3VideoView(
     }
 
     private fun stopPlaybackAndRestoreDisplayMode() {
+        secondarySubtitleOverlay.clear()
         cancelPendingRetime()
         // A canonical stop ends ownership of this source. Clear it before
         // touching the player because appPaused may already have released it,
@@ -3824,6 +3926,14 @@ class Media3VideoView(
         if (verticalOffset != null) {
             subtitleView.setBottomPaddingFraction(verticalOffset.coerceIn(0f, 0.95f))
         }
+        secondarySubtitleOverlay.configureBaseStyle(
+            textColor = textColor,
+            backgroundColor = bgColor,
+            strokeColor = strokeColor,
+            fontSize = fontSize,
+            fontWeight = fontWeight,
+            verticalOffset = verticalOffset,
+        )
     }
 
     /** The window the player is on, or null before it has a timeline. */
@@ -5155,6 +5265,7 @@ class Media3VideoView(
         val runnable = object : Runnable {
             override fun run() {
                 emitState()
+                secondarySubtitleOverlay.renderAt(player.currentPosition)
                 mainHandler.postDelayed(this, 250L)
             }
         }
@@ -5193,4 +5304,3 @@ class Media3VideoView(
         }
     }
 }
-

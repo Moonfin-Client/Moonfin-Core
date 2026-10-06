@@ -4111,6 +4111,10 @@ class AppLocalizationsCy extends AppLocalizations {
   String get defaultSubtitleLanguage => 'Iaith Isdeitl Diofyn';
 
   @override
+  String get preferredSecondarySubtitleLanguage =>
+      'Preferred Secondary Subtitle Language';
+
+  @override
   String get defaultToNoSubtitles => 'Rhagosodedig i Dim Is-deitlau';
 
   @override
@@ -4118,6 +4122,18 @@ class AppLocalizationsCy extends AppLocalizations {
 
   @override
   String get subtitleSize => 'Maint Isdeitl';
+
+  @override
+  String get primarySubtitleSlot => 'Primary';
+
+  @override
+  String get secondarySubtitleSlot => 'Secondary';
+
+  @override
+  String get decreaseValue => 'Decrease';
+
+  @override
+  String get increaseValue => 'Increase';
 
   @override
   String get textFillColor => 'Lliw Llenwch Testun';

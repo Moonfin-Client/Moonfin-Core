@@ -4067,6 +4067,10 @@ class AppLocalizationsFa extends AppLocalizations {
   String get defaultSubtitleLanguage => 'زبان پیش‌فرض زیرنویس';
 
   @override
+  String get preferredSecondarySubtitleLanguage =>
+      'Preferred Secondary Subtitle Language';
+
+  @override
   String get defaultToNoSubtitles => 'پیش‌فرض بدون زیرنویس است';
 
   @override
@@ -4075,6 +4079,18 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get subtitleSize => 'اندازه زیرنویس';
+
+  @override
+  String get primarySubtitleSlot => 'Primary';
+
+  @override
+  String get secondarySubtitleSlot => 'Secondary';
+
+  @override
+  String get decreaseValue => 'Decrease';
+
+  @override
+  String get increaseValue => 'Increase';
 
   @override
   String get textFillColor => 'رنگ پر کردن متن';

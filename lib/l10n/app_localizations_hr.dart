@@ -4201,6 +4201,10 @@ class AppLocalizationsHr extends AppLocalizations {
   String get defaultSubtitleLanguage => 'Zadani jezik titlova';
 
   @override
+  String get preferredSecondarySubtitleLanguage =>
+      'Preferred Secondary Subtitle Language';
+
+  @override
   String get defaultToNoSubtitles => 'Zadano je Bez titlova';
 
   @override
@@ -4209,6 +4213,18 @@ class AppLocalizationsHr extends AppLocalizations {
 
   @override
   String get subtitleSize => 'Veličina podnaslova';
+
+  @override
+  String get primarySubtitleSlot => 'Primary';
+
+  @override
+  String get secondarySubtitleSlot => 'Secondary';
+
+  @override
+  String get decreaseValue => 'Decrease';
+
+  @override
+  String get increaseValue => 'Increase';
 
   @override
   String get textFillColor => 'Boja ispune teksta';
