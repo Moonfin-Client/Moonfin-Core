@@ -153,9 +153,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
 
     override init() {
         super.init()
-        #if os(iOS) || os(tvOS)
-            // On iOS the handlers only ever land on the engine's music
-            // session, which audio_service has no way to reach.
+        #if os(iOS) || os(tvOS) || os(macOS)
             wireNowPlaying()
         #endif
         subscribeToEngine()
