@@ -269,9 +269,50 @@ class MediaKitPlayerBackend extends PlayerBackend {
   VideoParams? _decodedVideoParams;
   StreamSubscription<VideoParams>? _videoParamsSub;
 
+  // mpv reports core-idle=yes while its playback core is inactive during
+  // startup. For Live TV, wait for core-idle=no before trusting MediaKit's
+  // playing=true.
+  int _playbackGeneration = 0;
+
+  // null = normal, false = opening/stopped, true = waiting for core-idle=no.
+  bool? _liveStartupGate;
+  late final Future<bool> _liveStartupObserverReady;
+  final _playingGateChangedController = StreamController<void>.broadcast();
+
+  bool _ownsPlayback(int generation) =>
+      !_isDisposed && generation == _playbackGeneration;
+
+  void _releaseLiveStartupGate() {
+    if (_liveStartupGate != true) return;
+    _liveStartupGate = null;
+    // playing=true may have already fired, so refresh the public stream.
+    _playingGateChangedController.add(null);
+  }
+
+  Future<bool> _installLiveStartupObserver() async {
+    final native = _player.platform;
+    if (native is! NativePlayer) return false;
+
+    try {
+      final dynamic dyn = native;
+      await dyn.observeProperty('core-idle', (String value) async {
+        if (_liveStartupGate == true && value == 'no') {
+          _releaseLiveStartupGate();
+        }
+      });
+      return true;
+    } catch (_) {
+      // Fall back to MediaKit's normal startup behavior if observation fails.
+      return false;
+    }
+  }
+
   late final Stream<bool> _playingStream = _mergeWithStale<bool>(
     _player.stream.playing,
-    () => _isStale ? false : _player.state.playing,
+    () => _isStale || _liveStartupGate != null
+        ? false
+        : _player.state.playing,
+    extraTrigger: _playingGateChangedController.stream,
   );
 
   late final Stream<bool> _bufferingStream = _mergeWithStale<bool>(
@@ -448,6 +489,7 @@ class MediaKitPlayerBackend extends PlayerBackend {
     this._onNativeHandleReady,
     this._hwDecodingEnabled,
   ) {
+    _liveStartupObserverReady = _installLiveStartupObserver();
     _letterboxHost = _MediaKitLetterboxHost(this);
     _letterboxCropper = MpvLetterboxCropper(
       _letterboxHost,
@@ -692,12 +734,21 @@ class MediaKitPlayerBackend extends PlayerBackend {
         : payload['url']?.toString() ?? '';
     if (url.isEmpty) return;
 
+    final generation = ++_playbackGeneration;
+    _liveStartupGate = null;
+
     _resetSubtitleState();
     final media = Media(url);
     _currentUrl = media.uri;
     _isStale = true;
     _embeddedCaptionTracks = const [];
     _ccTrackSids = const [];
+
+    final gateLiveVideo =
+        payload['isLive'] == true &&
+        payload['mediaType']?.toString().trim().toLowerCase() == 'video' &&
+        (await _liveStartupObserverReady);
+    if (!_ownsPlayback(generation)) return;
 
     await _notifyNativeHandleReady();
     await _configureAppleMobileLibassFont();
@@ -716,11 +767,31 @@ class MediaKitPlayerBackend extends PlayerBackend {
       await _nativeSetProperty(native, 'sub-ass', 'yes');
     }
 
+    if (!_ownsPlayback(generation)) return;
+
     final openPaused = !autoPlay || startPosition > Duration.zero;
+    if (gateLiveVideo) {
+      _liveStartupGate = false;
+      // Hide any playing=true left over from the previous source.
+      _playingGateChangedController.add(null);
+    }
+
     // Whatever mpv reported for the previous title must not answer for this
     // one; the listener repopulates it once this file is loaded.
     _decodedVideoParams = null;
     await _player.open(media, play: !openPaused);
+    if (!_ownsPlayback(generation)) return;
+
+    if (gateLiveVideo) {
+      _liveStartupGate = true;
+      final platform = _player.platform;
+      if (platform == null) return;
+      final coreIdle = await _tryNativeGetProperty(platform, 'core-idle');
+      if (!_ownsPlayback(generation)) return;
+      if (_liveStartupGate == true && coreIdle == 'no') {
+        _releaseLiveStartupGate();
+      }
+    }
     _updateStaleState();
     await _applyLinuxHwdecFallbackIfNeeded(media, openPaused: openPaused);
     if (!_useLibass) {
@@ -1905,8 +1976,11 @@ class MediaKitPlayerBackend extends PlayerBackend {
 
   @override
   Future<void> stop() async {
+    ++_playbackGeneration;
     _resetSubtitleState();
     _isStale = true;
+    // An earlier open() may still emit playing=true before stop() finishes.
+    _liveStartupGate = false;
     await _player.stop();
   }
 
@@ -2609,10 +2683,15 @@ class MediaKitPlayerBackend extends PlayerBackend {
     };
   }
 
-  Stream<T> _mergeWithStale<T>(Stream<T> source, T Function() getValue) {
+Stream<T> _mergeWithStale<T>(
+  Stream<T> source,
+  T Function() getValue, {
+  Stream<void>? extraTrigger,
+}) {
     late StreamController<T> controller;
     StreamSubscription<T>? sourceSub;
     StreamSubscription<Playlist>? playlistSub;
+    StreamSubscription<void>? extraSub;
 
     controller = StreamController<T>.broadcast(
       onListen: () {
@@ -2625,11 +2704,13 @@ class MediaKitPlayerBackend extends PlayerBackend {
 
         sourceSub = source.listen((_) => checkAndPush());
         playlistSub = _player.stream.playlist.listen((_) => checkAndPush());
+        extraSub = extraTrigger?.listen((_) => checkAndPush());
         checkAndPush();
       },
       onCancel: () {
         sourceSub?.cancel();
         playlistSub?.cancel();
+        extraSub?.cancel();
       },
     );
     return controller.stream;
@@ -2638,12 +2719,15 @@ class MediaKitPlayerBackend extends PlayerBackend {
   @override
   void dispose() {
     _isDisposed = true;
+    ++_playbackGeneration;
+    _liveStartupGate = null;
     _letterboxGeometrySub?.cancel();
     _letterboxCropper.cancel();
     _prefs.removeListener(_onPreferencesChanged);
     _ccTracksSub?.cancel();
     _videoParamsSub?.cancel();
     _tracksChangedController.close();
+    _playingGateChangedController.close();
     _player.dispose();
   }
 }
