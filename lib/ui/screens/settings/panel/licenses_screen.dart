@@ -192,7 +192,12 @@ class _LicenseDetailScreenState extends State<_LicenseDetailScreen> {
             thumbVisibility: true,
             child: ListView.builder(
               controller: _scrollController,
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+              padding: EdgeInsets.fromLTRB(
+                16,
+                16,
+                16,
+                24 + MediaQuery.paddingOf(context).bottom,
+              ),
               itemCount: widget.entry.blocks.length,
               itemBuilder: (context, index) => Padding(
                 padding: const EdgeInsets.only(bottom: 24),

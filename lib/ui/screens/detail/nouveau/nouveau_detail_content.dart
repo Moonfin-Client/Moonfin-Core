@@ -10,6 +10,7 @@ import '../../../../data/repositories/seerr_repository.dart';
 import '../../../../data/services/plugin_sync_service.dart';
 import '../../../../data/services/seerr/seerr_api_models.dart';
 import '../../../../data/viewmodels/item_detail_view_model.dart';
+import '../../../../preference/detail_section_layout.dart';
 import '../../../../preference/user_preferences.dart';
 import '../../../../util/platform_detection.dart';
 import '../../../../util/seerr_credits.dart';
@@ -111,6 +112,11 @@ class NouveauDetailContentState extends State<NouveauDetailContent> {
 
   bool _personHeroParentFocusInProgress = false;
 
+  // Read once per build, so the focus chain walks what was last drawn.
+  late DetailSectionVisibility _visibility = DetailSectionVisibility.of(
+    widget.prefs,
+  );
+
   ItemDetailViewModel get _vm => widget.viewModel;
 
   bool _usePortraitLayout(BuildContext context) {
@@ -125,7 +131,37 @@ class NouveauDetailContentState extends State<NouveauDetailContent> {
     return size.height > size.width && size.width < 600;
   }
 
-  bool _shouldShowChapters(AggregatedItem item) => item.chapters.isNotEmpty;
+  List<Map<String, dynamic>> get _visibleActors =>
+      _visibility.shows(DetailSection.cast) ? _vm.actors : const [];
+
+  List<Map<String, dynamic>> get _visibleDirectors =>
+      _visibility.shows(DetailSection.crew) ? _vm.directors : const [];
+
+  List<Map<String, dynamic>> get _visibleWriters =>
+      _visibility.shows(DetailSection.crew) ? _vm.writers : const [];
+
+  /// Whether a media section has anything left to draw once the hidden
+  /// sections are taken out. Both the page and the focus chain ask this, so a
+  /// hidden section can never be a Down target.
+  bool _sectionVisible(GlobalKey key, AggregatedItem item) {
+    return switch (key) {
+      _ when key == _episodesSectionKey =>
+        item.type == 'Series' || item.type == 'Season',
+      _ when key == _collectionSectionKey =>
+        NouveauCollectionSection.shouldInclude(_vm),
+      _ when key == _chaptersSectionKey =>
+        _visibility.shows(DetailSection.chapters) && item.chapters.isNotEmpty,
+      _ when key == _extrasSectionKey =>
+        _visibility.shows(DetailSection.extras) && _vm.features.isNotEmpty,
+      _ when key == _discoverySectionKey =>
+        NouveauDiscoverySection.shouldInclude(_vm, _visibility),
+      _ when key == _peopleSectionKey =>
+        _visibleActors.isNotEmpty ||
+            _visibleDirectors.isNotEmpty ||
+            _visibleWriters.isNotEmpty,
+      _ => false,
+    };
+  }
 
   List<GlobalKey> _focusableVerticalSections() {
     final sections = <GlobalKey>[];
@@ -910,6 +946,8 @@ class NouveauDetailContentState extends State<NouveauDetailContent> {
       return const SizedBox.shrink();
     }
 
+    _visibility = DetailSectionVisibility.of(widget.prefs);
+
     final size = MediaQuery.sizeOf(context);
 
     final usePortraitLayout = _usePortraitLayout(context);
@@ -937,6 +975,7 @@ class NouveauDetailContentState extends State<NouveauDetailContent> {
               viewModel: _vm,
               imageApi: _vm.imageApi,
               prefs: widget.prefs,
+              visibility: _visibility,
               initialFocusNode: widget.initialFocusNode,
               onNavigateDown: _focusPersonTabs,
               onExternalFocusEntry: _handleExternalPersonHeroFocusEntry,
@@ -954,6 +993,7 @@ class NouveauDetailContentState extends State<NouveauDetailContent> {
               onActionsExpandedChanged: widget.onActionsExpandedChanged,
               onNavigateDown: () => _moveDown(_heroKey),
               prefs: widget.prefs,
+              visibility: _visibility,
             ),
     );
 
@@ -1033,6 +1073,7 @@ class NouveauDetailContentState extends State<NouveauDetailContent> {
           key: _personContentKey,
           viewModel: _vm,
           prefs: widget.prefs,
+          visibility: _visibility,
           seerrCrewCredits: seerrCrewCredits,
           seerrAppearances: seerrAppearances,
           onBackdropItemFocused: widget.onBackdropItemFocused,
@@ -1085,7 +1126,7 @@ class NouveauDetailContentState extends State<NouveauDetailContent> {
 
     final sectionWidgets = <GlobalKey, Widget>{};
 
-    if (item.type == 'Series' || item.type == 'Season') {
+    if (_sectionVisible(_episodesSectionKey, item)) {
       sectionWidgets[_episodesSectionKey] = SizedBox(
         width: double.infinity,
         child: NouveauEpisodesSection(
@@ -1100,25 +1141,23 @@ class NouveauDetailContentState extends State<NouveauDetailContent> {
       );
     }
 
-    if (NouveauCollectionSection.shouldInclude(_vm)) {
+    if (_sectionVisible(_collectionSectionKey, item)) {
       sectionWidgets[_collectionSectionKey] = _buildCollectionSection();
     }
 
-    if (_shouldShowChapters(item)) {
+    if (_sectionVisible(_chaptersSectionKey, item)) {
       sectionWidgets[_chaptersSectionKey] = _buildChaptersSection(item);
     }
 
-    if (_vm.features.isNotEmpty) {
+    if (_sectionVisible(_extrasSectionKey, item)) {
       sectionWidgets[_extrasSectionKey] = _buildExtrasSection();
     }
 
-    if (NouveauDiscoverySection.shouldInclude(_vm)) {
+    if (_sectionVisible(_discoverySectionKey, item)) {
       sectionWidgets[_discoverySectionKey] = _buildDiscoverySection();
     }
 
-    if (_vm.actors.isNotEmpty ||
-        _vm.directors.isNotEmpty ||
-        _vm.writers.isNotEmpty) {
+    if (_sectionVisible(_peopleSectionKey, item)) {
       sectionWidgets[_peopleSectionKey] = _buildCastCrewSection(item);
     }
 
@@ -1154,35 +1193,14 @@ class NouveauDetailContentState extends State<NouveauDetailContent> {
   }
 
   List<GlobalKey> _orderedMediaSectionKeys(AggregatedItem item) {
-    final keys = <GlobalKey>[];
-
-    if (item.type == 'Series' || item.type == 'Season') {
-      keys.add(_episodesSectionKey);
-    }
-
-    if (NouveauCollectionSection.shouldInclude(_vm)) {
-      keys.add(_collectionSectionKey);
-    }
-
-    if (_shouldShowChapters(item)) {
-      keys.add(_chaptersSectionKey);
-    }
-
-    if (_vm.features.isNotEmpty) {
-      keys.add(_extrasSectionKey);
-    }
-
-    if (NouveauDiscoverySection.shouldInclude(_vm)) {
-      keys.add(_discoverySectionKey);
-    }
-
-    if (_vm.actors.isNotEmpty ||
-        _vm.directors.isNotEmpty ||
-        _vm.writers.isNotEmpty) {
-      keys.add(_peopleSectionKey);
-    }
-
-    return keys;
+    return <GlobalKey>[
+      _episodesSectionKey,
+      _collectionSectionKey,
+      _chaptersSectionKey,
+      _extrasSectionKey,
+      _discoverySectionKey,
+      _peopleSectionKey,
+    ].where((key) => _sectionVisible(key, item)).toList();
   }
 
   String _sectionName(GlobalKey key) {
@@ -1372,6 +1390,7 @@ class NouveauDetailContentState extends State<NouveauDetailContent> {
       key: _collectionSectionKey,
       viewModel: _vm,
       prefs: widget.prefs,
+      visibility: _visibility,
       actionButtonsKey: _actionButtonsKey,
       onNavigateUp: () => _moveUp(_collectionSectionKey),
       onNavigateDown: () => _moveDown(_collectionSectionKey),
@@ -1406,6 +1425,7 @@ class NouveauDetailContentState extends State<NouveauDetailContent> {
       key: _discoverySectionKey,
       viewModel: _vm,
       prefs: widget.prefs,
+      visibility: _visibility,
       onNavigateUp: () => _moveUp(_discoverySectionKey),
       onNavigateDown: () => _moveDown(_discoverySectionKey),
       onRevealRequested: _scheduleOuterReveal,
@@ -1415,9 +1435,9 @@ class NouveauDetailContentState extends State<NouveauDetailContent> {
   Widget _buildCastCrewSection(AggregatedItem item) {
     return NouveauPeopleSection(
       key: _peopleSectionKey,
-      actors: _vm.actors,
-      directors: _vm.directors,
-      writers: _vm.writers,
+      actors: _visibleActors,
+      directors: _visibleDirectors,
+      writers: _visibleWriters,
       imageApi: _vm.imageApi,
       serverId: item.serverId,
       onNavigateUp: () => _moveUp(_peopleSectionKey),
@@ -1430,6 +1450,7 @@ class NouveauDetailContentState extends State<NouveauDetailContent> {
       key: _detailsSectionKey,
       item: item,
       viewModel: _vm,
+      visibility: _visibility,
       contentInsets: contentInsets,
       selectedMediaSource: selectedMediaSourceForItem(
         item,

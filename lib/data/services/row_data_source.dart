@@ -2288,6 +2288,7 @@ class RowDataSource {
                 'SeerrMediaType': item.type == 'Series' ? 'tv' : 'movie',
                 'UserRating': item.userRating ?? '',
                 'ShowUserRatings': showUserRatings,
+                'OfficialRating': item.officialRating,
                 'ProviderIds': {
                   if (item.imdbId.isNotEmpty) 'Imdb': item.imdbId,
                   if (item.tmdbId.isNotEmpty) 'Tmdb': item.tmdbId,
@@ -2299,7 +2300,7 @@ class RowDataSource {
             id: rowId,
             title: title,
             rowType: HomeRowType.pluginDynamic,
-            items: aggregatedItems,
+            items: withoutUnratedOrBlockedItems(aggregatedItems),
           );
         } catch (e) {
           debugPrint('[RowDataSource] Failed to load custom dynamic section: $e');

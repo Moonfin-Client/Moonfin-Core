@@ -56,7 +56,10 @@ import 'util/http_overrides_stub.dart'
     if (dart.library.io) 'util/http_overrides_io.dart';
 import 'util/game_core_licenses.dart';
 import 'util/device_performance.dart';
+import 'ui/navigation/app_router.dart';
+import 'ui/screensaver/screensaver_controller.dart';
 import 'util/platform_detection.dart';
+import 'util/process_exit_reporter.dart';
 import 'util/system_ui.dart';
 import 'util/tv_image_cache_stub.dart'
     if (dart.library.io) 'util/tv_image_cache_io.dart';
@@ -133,6 +136,24 @@ void _configureImageCache() {
   apply(600, 256 << 20);
 }
 
+/// The TV builds draw with Skia, which sizes its GPU cache from the screen, and
+/// Impeller builds ignore this call. It waits for the first frame so the view
+/// has its real size.
+void _capSkiaCache() {
+  if (!PlatformDetection.isAndroid) return;
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    final size = WidgetsBinding.instance.platformDispatcher.implicitView
+        ?.physicalSize;
+    final cap = size == null ? null : skiaCacheCapFor(size.width * size.height);
+    if (cap == null) return;
+    unawaited(
+      SystemChannels.skia
+          .invokeMethod<void>('Skia.setResourceCacheMaxBytes', cap)
+          .catchError((_) {}),
+    );
+  });
+}
+
 Timer? _crashFlushDebounce;
 
 /// Routes uncaught Dart errors into the diagnostic buffer and the pending
@@ -175,6 +196,26 @@ void _captureCrash(Object error, StackTrace? stack) {
   } catch (_) {
     // The crash handler must never become a second crash.
   }
+}
+
+void _startProcessExitReporter() {
+  final reporter = ProcessExitReporter(
+    GetIt.instance<LogService>(),
+    GetIt.instance<CrashReportService>(),
+  );
+  unawaited(reporter.reportPreviousExits());
+  reporter.watch(
+    routeChanges: appRouter.routerDelegate,
+    // A player is pushed over the tab that opened it, so the last match is
+    // what's on screen.
+    currentRoute: () {
+      final matches = appRouter.routerDelegate.currentConfiguration.matches;
+      return matches.isEmpty ? '' : matches.last.matchedLocation;
+    },
+    screensaverVisible: PlatformDetection.isTV
+        ? GetIt.instance<ScreensaverController>().visible
+        : null,
+  );
 }
 
 Future<void> _restoreWindowGeometry() async {
@@ -866,6 +907,7 @@ void main() async {
   }
 
   _configureImageCache();
+  _capSkiaCache();
   await configureImageDiskCache(tier: _resolvedTier());
 
   // On Linux the GTK font pipeline loads fonts asynchronously. The first frame
@@ -890,6 +932,7 @@ void main() async {
 
   await configureDependencies();
   _installCrashHandlers();
+  if (PlatformDetection.isAndroid) _startProcessExitReporter();
   // When the system runs the auto-download refresh task against this
   // engine, the native side retries its call until this handler is bound.
   if (AutoDownloadService.isSupportedPlatform) {

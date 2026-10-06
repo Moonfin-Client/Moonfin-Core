@@ -194,6 +194,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get spotlightChaptersExtras => 'Chapters and Extras';
 
   @override
+  String get spotlightFileDetails => 'File Details';
+
+  @override
   String get spotlightSimilarRecommendations => 'Similar and Recommendations';
 
   @override
@@ -2098,6 +2101,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get shortcutMpvStats => 'mpv statistics on or off';
 
   @override
+  String get shortcutRecropBlackBars => 'Recrop black bars';
+
+  @override
   String get shortcutLeaveFullscreenOrStop =>
       'Exit fullscreen, or stop if not fullscreen';
 
@@ -3127,6 +3133,88 @@ class AppLocalizationsPt extends AppLocalizations {
   String get fallingLeaves => 'Folhas Caindo';
 
   @override
+  String get seasonalChristmas => 'Christmas';
+
+  @override
+  String get seasonalPetals => 'Spring Petals';
+
+  @override
+  String get seasonalFireflies => 'Fireflies';
+
+  @override
+  String get seasonalHalloween => 'Halloween';
+
+  @override
+  String get seasonalDensity => 'Density';
+
+  @override
+  String get seasonalDensityLight => 'Light';
+
+  @override
+  String get seasonalDensityNormal => 'Normal';
+
+  @override
+  String get seasonalDensityHeavy => 'Heavy';
+
+  @override
+  String get seasonalRow => 'Seasonal Row';
+
+  @override
+  String get seasonalRowDescription =>
+      'Show a row of holiday movies from your library, with Seerr suggestions when available.';
+
+  @override
+  String get seasonalRowSubtitle => 'Seasonal';
+
+  @override
+  String get seasonalRowCountry => 'Country';
+
+  @override
+  String get seasonalRowCountryAuto => 'Automatic';
+
+  @override
+  String get countryUnitedStates => 'United States';
+
+  @override
+  String get countryCanada => 'Canada';
+
+  @override
+  String get seasonalRowCountryOther => 'Other';
+
+  @override
+  String get seasonalRowHolidays => 'Holidays';
+
+  @override
+  String get seasonalRowHolidaysHint => 'Untick a holiday to hide its row.';
+
+  @override
+  String get holidayNewYear => 'New Year\'s';
+
+  @override
+  String get holidayValentines => 'Valentine\'s Day';
+
+  @override
+  String get holidayEaster => 'Easter';
+
+  @override
+  String get holidayPride => 'Pride';
+
+  @override
+  String get holidayHalloween => 'Halloween';
+
+  @override
+  String get holidayThanksgiving => 'Thanksgiving';
+
+  @override
+  String get holidayChristmas => 'Christmas Movies';
+
+  @override
+  String get holidayLunarNewYear => 'Lunar New Year';
+
+  @override
+  String get holidayDiwali => 'Diwali';
+
+  @override
   String get themeMusic => 'Música Tema';
 
   @override
@@ -3212,7 +3300,23 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get settingsCropBlackBarsDescription =>
-      'Detect encoded letterbox bars, crop them, then fill the screen.';
+      'Detect encoded letterbox bars after playback starts, crop them, then fill the screen. Recrop from the player zoom button.';
+
+  @override
+  String get cropBlackBarsRecropInterval => 'Recrop interval';
+
+  @override
+  String get cropBlackBarsOnce => 'Once at start';
+
+  @override
+  String get cropBlackBarsEverySecond => 'Every second';
+
+  @override
+  String get settingsCropBlackBarsIntervalDescription =>
+      'Follow aspect ratio changes during playback.';
+
+  @override
+  String get playerRecroppingBlackBars => 'Recropping black bars';
 
   @override
   String get stretch => 'Esticar';
@@ -3383,6 +3487,139 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get detailMetadataUpcomingEpisodeDateSubtitle =>
       'Uses Sonarr and TMDB to show upcoming release dates';
+
+  @override
+  String get detailSections => 'Sections';
+
+  @override
+  String get detailSectionsDescription =>
+      'Choose which parts of the Details screen to show';
+
+  @override
+  String get detailSectionsScreenDescription =>
+      'Only the sections the current Details screen style can show are listed. Hiding one hides it in every style that has it.';
+
+  @override
+  String get detailSectionGroupHeader => 'Header';
+
+  @override
+  String get detailSectionGroupSections => 'Sections';
+
+  @override
+  String get detailSectionGroupPerson => 'Person pages';
+
+  @override
+  String get detailSectionGroupCollection => 'Collection pages';
+
+  @override
+  String get detailSectionGroupOther => 'Other';
+
+  @override
+  String get detailSectionLogo => 'Logo';
+
+  @override
+  String get detailSectionLogoSubtitle => 'Shows the title as text when off';
+
+  @override
+  String get detailSectionTagline => 'Tagline';
+
+  @override
+  String get detailSectionPoster => 'Poster';
+
+  @override
+  String get detailSectionVersionBadge => 'Version badge';
+
+  @override
+  String get detailSectionUpNext => 'Next Up';
+
+  @override
+  String get detailSectionLyrics => 'Lyrics';
+
+  @override
+  String get detailSectionCast => 'Cast';
+
+  @override
+  String get detailSectionCastSubtitle => 'Also on collection pages';
+
+  @override
+  String get detailSectionCrew => 'Directors & writers';
+
+  @override
+  String get detailSectionStudios => 'Studios';
+
+  @override
+  String get detailSectionChapters => 'Chapters';
+
+  @override
+  String get detailSectionExtras => 'Extras';
+
+  @override
+  String get detailSectionCollections => 'Collections';
+
+  @override
+  String get detailSectionMoreLikeThis => 'More Like This';
+
+  @override
+  String get detailSectionMoreLikeThisSubtitle =>
+      'Also similar albums and artists';
+
+  @override
+  String get detailSectionMoreEpisodes => 'More episodes';
+
+  @override
+  String get detailSectionMoreEpisodesSubtitle => 'On episode pages';
+
+  @override
+  String get detailSectionMediaInfo => 'Media info';
+
+  @override
+  String get detailSectionMediaInfoSubtitle =>
+      'File, streams and Direct Play check';
+
+  @override
+  String get detailSectionSeerrGenresTags => 'Genres & tags';
+
+  @override
+  String get detailSectionSeerrStats => 'Stats';
+
+  @override
+  String get detailSectionSeerrRecommendations => 'Recommendations';
+
+  @override
+  String get detailSectionSeerrSimilar => 'Similar titles';
+
+  @override
+  String get detailSectionSeerrCollection => 'Collection banner';
+
+  @override
+  String get detailSectionSeerrPersonAppearances => 'Appearances';
+
+  @override
+  String get detailSectionSeerrPersonCrew => 'Crew credits';
+
+  @override
+  String get detailSectionPersonPagesSubtitle => 'On person pages';
+
+  @override
+  String get detailSectionBiography => 'Biography';
+
+  @override
+  String get detailSectionBirthplace => 'Birthplace';
+
+  @override
+  String get detailSectionGuestAppearances => 'Guest appearances';
+
+  @override
+  String get detailSectionMusicVideos => 'Music videos';
+
+  @override
+  String get detailSectionPlaylistOrder => 'Playlist order';
+
+  @override
+  String get detailSectionBookGenres => 'Book genres';
+
+  @override
+  String get detailSectionPhotoExif => 'Photo details';
 
   @override
   String upcomingEpisodeNext(String date, int season, int episode) {
@@ -4313,6 +4550,23 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get showInLatestMedia => 'Mostrar nas mídias recentes';
+
+  @override
+  String get libraryOrder => 'Library Order';
+
+  @override
+  String get libraryOrderSubtitle => 'Choose the order of your libraries';
+
+  @override
+  String get libraryOrderDescription =>
+      'Your libraries appear in this order on My Media, the recently added rows and the navigation bar. The order is saved to your server account, so other apps you sign in to use it too.';
+
+  @override
+  String get libraryOrderTvHint =>
+      'Press left or right to move the highlighted library.';
+
+  @override
+  String get libraryOrderSaveFailed => 'Couldn\'t save the library order';
 
   @override
   String get sourceLibraries => 'Bibliotecas de Origem';
@@ -9829,6 +10083,10 @@ class AppLocalizationsPt extends AppLocalizations {
       'Confiar em servidores que usam certificados TLS autoassinados ou de CA privada. Ative apenas para servidores que você controla. Isto desativa a validação de certificados em todas as conexões.';
 
   @override
+  String get untrustedServerCertificate =>
+      'This server\'s certificate isn\'t trusted. If it\'s your own server and uses a self-signed or private certificate, you can allow it here.';
+
+  @override
   String get settingsPrivacyAndSafetySection => 'PRIVACIDADE E SEGURANÇA';
 
   @override
@@ -13514,6 +13772,22 @@ class AppLocalizationsPt extends AppLocalizations {
       'How far focus moves for each swipe on the Siri Remote touchpad';
 
   @override
+  String get appleTvHomeScreen => 'Apple TV home screen';
+
+  @override
+  String get topShelf => 'Top Shelf';
+
+  @override
+  String get topShelfDescription =>
+      'What the Apple TV home screen shows above the Moonfin icon when it is selected. This setting stays on this device.';
+
+  @override
+  String get topShelfLatestMedia => 'Latest media';
+
+  @override
+  String get topShelfAppBanner => 'Moonfin banner';
+
+  @override
   String get keepVideoClearOfDynamicIsland =>
       'Keep video clear of the Dynamic Island';
 
@@ -13538,7 +13812,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get bottomNavbarTabsDescription =>
-      'Pin up to 3 tabs between Home and You. Everything else is in the You menu.';
+      'Pin up to 3 tabs between Home and You. Everything else is in the bottom navbar hub.';
 
   @override
   String get bottomNavbarTabsAutomatic => 'Automatic';
@@ -13565,7 +13839,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get bottomNavbarButtonsNote =>
-      'These decide which tabs you can pin to the bottom bar and what shows in the You menu.';
+      'These decide what shows in the bottom navbar hub and which tabs you can pin to the bottom bar. Tabs already on the bar aren\'t listed here.';
 
   @override
   String get navYou => 'You';
@@ -13626,7 +13900,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   }
 
   @override
-  String get quickConnect => 'Quick Connect';
+  String get quickConnect => 'Conexão Rápida';
 
   @override
   String get password => 'Senha';
@@ -13739,7 +14013,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get detailScreenStyleSubtitle =>
-      'Clássico é o layout centralizado original do Moonfin. Moderno é um layout cinematográfico responsivo';
+      'O Clássico é o layout original e centrado do Moonfin. O Moderno é um layout cinematográfico e responsivo. O Destaque é um layout focado na imagem principal (hero) com cartões de conteúdo em pop-up. O Nouveau é um layout em tela cheia com seções empilhadas ao longo da página. O Minimalista traz apenas a arte de capa, um botão de reproduzir e os episódios.';
 
   @override
   String get detailScreenStyleMoonfin => 'Clássico';
@@ -13813,8 +14087,8 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count tags',
-      one: '1 tag',
+      other: '$count etiquetas',
+      one: '1 etiqueta',
     );
     return '$_temp0';
   }
@@ -13941,6 +14215,23 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   }
 
   @override
+  String spotlightTitlesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count títulos',
+      one: '1 título',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get detailScreenStyleNouveau => 'Estilo Nouveau';
+
+  @override
+  String get detailScreenStyleMinimalist => 'Minimalista';
+
+  @override
   String get expandedTabs => 'Abas expandidas';
 
   @override
@@ -13962,7 +14253,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
       'Use o algoritmo de biblioteca local Moonfin Recommends, o mecanismo de servidor Jellyfin Recommends ou as métricas de similaridade online do TMDb. Observação: recomendações online exigem integração com o Seerr.';
 
   @override
-  String get recommendationSystemMoonfin => 'Moonfin Recommends';
+  String get recommendationSystemMoonfin => 'Moonfin Recomenda';
 
   @override
   String get recommendationSystemJellyfin => 'Jellyfin Recomenda';
@@ -14008,7 +14299,26 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get interfaceLayoutTv => 'TV';
 
   @override
+  String get interfaceLayoutDesktop => 'Desktop';
+
+  @override
+  String get interfaceLayoutPhone => 'Celular';
+
+  @override
   String get glassQuality => 'Qualidade do vidro';
+
+  @override
+  String get oledMode => 'Modo OLED';
+
+  @override
+  String get oledModeSubtitle =>
+      'Escureça os tons de preto e realce as artes de capa. Ideal para telas OLED.';
+
+  @override
+  String get oledModeSubtle => 'Suave';
+
+  @override
+  String get oledModeVivid => 'Vibrante';
 
   @override
   String get glassQualitySubtitle =>
@@ -14024,8 +14334,27 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get glassQualityReduced => 'Reduzido';
 
   @override
+  String get performanceMode => 'Modo de desempenho';
+
+  @override
+  String get performanceModeSubtitle =>
+      'O recurso automático analisa este dispositivo e limita o uso naqueles que estão com pouca memória, o que mantém menos imagens na memória e deixa os trailers como imagens estáticas. Tem efeito total na próxima inicialização.';
+
+  @override
+  String get performanceModeAuto => 'Automático';
+
+  @override
+  String get performanceModeStandard => 'Padrão';
+
+  @override
+  String get performanceModeReduced => 'Reduzido';
+
+  @override
+  String get trailerPreviewHeldBack => 'Prévia do trailer adiada';
+
+  @override
   String get settingsAppearanceThemeSubtitle =>
-      'Alterne entre Moonfin e Neon Pulse sem reiniciar o aplicativo';
+      'Aplique um tema totalmente personalizado e alterne entre uma interface de usuário inspirada na Apple ou no Material Design.';
 
   @override
   String get customThemeTitle => 'Tema personalizado';
@@ -14040,6 +14369,16 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   @override
   String get keyboardPreferSystemImeDescription =>
       'Usar o método de entrada do seu dispositivo por padrão para digitar';
+
+  @override
+  String get controller => 'Controle';
+
+  @override
+  String get gamepadNavigation => 'Navegação por controle';
+
+  @override
+  String get gamepadNavigationDescription =>
+      'Navegue pelo aplicativo usando um controle';
 
   @override
   String get themeMoonfin => 'Moonfin';
@@ -14294,6 +14633,21 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get extraLarge => 'Extra Grande';
 
   @override
+  String get uiScaleGrandparents => 'Avós';
+
+  @override
+  String get uiScaleGreatGrandparents => 'Bisavós';
+
+  @override
+  String get scrollDirection => 'Direção da rolagem';
+
+  @override
+  String get scrollDirectionVertical => 'Vertical';
+
+  @override
+  String get scrollDirectionHorizontal => 'Horizontal';
+
+  @override
   String libraryGenresTitle(String name) {
     return '$name — Gêneros';
   }
@@ -14387,6 +14741,9 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get scrollRight => 'Role para a direita';
+
+  @override
+  String get scrollToTop => 'Voltar ao topo';
 
   @override
   String get couldNotLoadGenre =>
@@ -14574,6 +14931,12 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get latestAudiobooks => 'Audiolivros recentes';
 
   @override
+  String get latestComics => 'Quadrinhos recentes';
+
+  @override
+  String get comics => 'Quadrinhos';
+
+  @override
   String bookSeriesItemCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -14591,7 +14954,13 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get bookFormatAudiobook => 'Audiolivro';
 
   @override
+  String get bookFormatComic => 'Quadrinho';
+
+  @override
   String get noBooksFound => 'Nenhum livro encontrado deste autor.';
+
+  @override
+  String get noBooksFoundDescription => 'Nenhum livro encontrado';
 
   @override
   String bookPercentRead(int percent) {
@@ -14877,6 +15246,9 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get cast => 'Transmitir';
 
   @override
+  String get castMembers => 'Elenco';
+
+  @override
   String get trailer => 'Trailer';
 
   @override
@@ -14893,6 +15265,23 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get downloaded => 'Baixado';
+
+  @override
+  String get finalizingDownload => 'Finalizando download';
+
+  @override
+  String get queuedDownload => 'Download na fila';
+
+  @override
+  String queuedMoreCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'mais $count na fila',
+      one: 'mais 1 na fila',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get downloadAll => 'Baixar tudo';
@@ -14932,6 +15321,11 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get failedToDeleteItem => 'Falha ao excluir item';
+
+  @override
+  String failedToDeleteItemWithError(String error) {
+    return 'A operação de exclusão falhou com o seguinte erro: $error';
+  }
 
   @override
   String get renamePlaylist => 'Renomear lista de reprodução';
@@ -15003,6 +15397,12 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get downloadSubtitles => 'Baixar legendas';
 
   @override
+  String get searchingSubtitles => 'Procurando legendas';
+
+  @override
+  String get downloadingSubtitle => 'Baixando legenda';
+
+  @override
   String get selectedSubtitleInvalid => 'A legenda selecionada é inválida.';
 
   @override
@@ -15044,6 +15444,53 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get noEpisodesLoaded => 'Nenhum episódio carregado';
 
   @override
+  String get downloadScopeTitle => 'O que deseja baixar?';
+
+  @override
+  String get downloadAllEpisodes => 'Baixar todos os episódios';
+
+  @override
+  String get downloadUnwatchedEpisodes => 'Baixar episódios não assistidos';
+
+  @override
+  String get downloadAllMovies => 'Baixar todos os filmes';
+
+  @override
+  String get downloadUnwatchedMovies => 'Baixar filmes não assistidos';
+
+  @override
+  String get downloadScopeLoading => 'Carregando opções de download';
+
+  @override
+  String get downloadScopeLoadFailed =>
+      'Falha ao carregar as opções de download';
+
+  @override
+  String downloadEstimateTotal(String size) {
+    return '~$size no total';
+  }
+
+  @override
+  String downloadBytesOfTotal(String received, String total) {
+    return '$received de $total';
+  }
+
+  @override
+  String downloadSpeed(String speed) {
+    return '$speed/s';
+  }
+
+  @override
+  String downloadSizeTotal(String size) {
+    return '$size total';
+  }
+
+  @override
+  String downloadEstimateUnknownCount(int count) {
+    return '$count desconhecido';
+  }
+
+  @override
   String downloadingItem(String name, String quality) {
     return 'Baixando $name ($quality)...';
   }
@@ -15067,6 +15514,9 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get director => 'DIRETOR';
+
+  @override
+  String get starring => 'Estrelando';
 
   @override
   String get directors => 'DIRETORES';
@@ -15152,6 +15602,9 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get shuffle => 'Aleatório';
 
   @override
+  String get shuffleAll => 'Reproduzir tudo aleatoriamente';
+
+  @override
   String get shuffleAllMusic => 'Reproduzir tudo aleatoriamente';
 
   @override
@@ -15167,6 +15620,20 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get perfectMatch => 'Combinação perfeita';
+
+  @override
+  String get aiTranslated => 'Traduzida por IA';
+
+  @override
+  String get machineTranslated => 'Tradução automática';
+
+  @override
+  String get hearingImpaired => 'Para deficientes auditivos';
+
+  @override
+  String framerateFps(String rate) {
+    return '$rate fps';
+  }
 
   @override
   String channelsCount(int count) {
@@ -15340,6 +15807,170 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get playbackInformation => 'Informações de reprodução';
 
   @override
+  String get showMpvStats => 'Mostrar estatísticas do MPV';
+
+  @override
+  String get hideMpvStats => 'Ocultar estatísticas do MPV';
+
+  @override
+  String get keyboardShortcutsTitle => 'Atalhos de teclado';
+
+  @override
+  String get keyboardShortcutsSubtitle =>
+      'Veja os atalhos de teclado disponíveis';
+
+  @override
+  String get keyboardShortcutsPlayerHint =>
+      'Use estes atalhos durante a reprodução';
+
+  @override
+  String get keyboardShortcutsSectionApp => 'Aplicativo';
+
+  @override
+  String get keyboardShortcutsSectionAppScope => 'Atalhos gerais do aplicativo';
+
+  @override
+  String get keyboardShortcutsSectionPlayer => 'Reprodutor';
+
+  @override
+  String get keyboardShortcutsSectionPlayerScope =>
+      'Atalhos disponíveis durante a reprodução';
+
+  @override
+  String get keyboardShortcutsSectionReader => 'Leitor';
+
+  @override
+  String get keyboardShortcutsSectionReaderScope =>
+      'Atalhos disponíveis durante a leitura';
+
+  @override
+  String get keyNameArrowKeys => 'Teclas de seta';
+
+  @override
+  String get keyNameSpace => 'Espaço';
+
+  @override
+  String get keyNameEnter => 'Enter';
+
+  @override
+  String get keyNameEsc => 'Esc';
+
+  @override
+  String get keyNameBackspace => 'Backspace';
+
+  @override
+  String get keyNamePageUp => 'Page Up';
+
+  @override
+  String get keyNamePageDown => 'Page Down';
+
+  @override
+  String get keyNameHome => 'Home';
+
+  @override
+  String get keyNameEnd => 'End';
+
+  @override
+  String get keyNameShift => 'Shift';
+
+  @override
+  String get keyNameCtrl => 'Ctrl';
+
+  @override
+  String get keyNameAlt => 'Alt';
+
+  @override
+  String get keyNameScrollWheel => 'Roda do mouse';
+
+  @override
+  String get shortcutMoveFocus => 'Mover o foco';
+
+  @override
+  String get shortcutActivate => 'Selecionar';
+
+  @override
+  String get shortcutGoBack => 'Voltar';
+
+  @override
+  String get shortcutToggleFullscreen => 'Alternar tela cheia';
+
+  @override
+  String get shortcutQuit => 'Sair';
+
+  @override
+  String get shortcutPlayPause => 'Reproduzir/Pausar';
+
+  @override
+  String get shortcutShowControlsOrPlayPause =>
+      'Mostrar controles ou reproduzir/pausar';
+
+  @override
+  String get shortcutSeekBack => 'Retroceder';
+
+  @override
+  String get shortcutSeekForward => 'Avançar';
+
+  @override
+  String get shortcutVolumeUp => 'Aumentar volume';
+
+  @override
+  String get shortcutVolumeDown => 'Diminuir volume';
+
+  @override
+  String get shortcutMute => 'Ativar/desativar mudo';
+
+  @override
+  String get shortcutToggleSubtitles => 'Ativar/desativar legendas';
+
+  @override
+  String get shortcutSlower => 'Diminuir velocidade';
+
+  @override
+  String get shortcutFaster => 'Aumentar velocidade';
+
+  @override
+  String get shortcutPlaybackInfo => 'Informações da reprodução';
+
+  @override
+  String get shortcutMpvStats => 'Estatísticas do MPV';
+
+  @override
+  String get shortcutLeaveFullscreenOrStop => 'Sair da tela cheia ou parar';
+
+  @override
+  String get shortcutStopPlayback => 'Parar reprodução';
+
+  @override
+  String get shortcutNextItem => 'Próximo item';
+
+  @override
+  String get shortcutPreviousItem => 'Item anterior';
+
+  @override
+  String get shortcutShowShortcuts => 'Mostrar atalhos';
+
+  @override
+  String get shortcutNextPage => 'Próxima página';
+
+  @override
+  String get shortcutPreviousPage => 'Página anterior';
+
+  @override
+  String get shortcutScrollPage => 'Rolar página';
+
+  @override
+  String get shortcutFirstPage => 'Primeira página';
+
+  @override
+  String get shortcutLastPage => 'Última página';
+
+  @override
+  String get shortcutZoom => 'Zoom';
+
+  @override
+  String get shortcutResetZoom => 'Redefinir zoom';
+
+  @override
   String get playback => 'Reprodução';
 
   @override
@@ -15374,6 +16005,36 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get hdr => 'HDR';
+
+  @override
+  String get hdrOutput => 'Saída HDR';
+
+  @override
+  String hdrOutputActive(String format) {
+    return 'Ativo — $format';
+  }
+
+  @override
+  String get hdrOutputActiveTonemapped => 'HDR ativo com mapeamento de tons';
+
+  @override
+  String get hdrOutputDisplayNotHdr => 'A tela não é compatível com HDR';
+
+  @override
+  String get hdrOutputContentSdr => 'O conteúdo está em SDR';
+
+  @override
+  String get hdrOutputDisabled => 'HDR desativado';
+
+  @override
+  String get hdrOutputFailed => 'Falha ao ativar HDR';
+
+  @override
+  String get nativeHdrOutput => 'Saída HDR nativa';
+
+  @override
+  String get nativeHdrOutputDescription =>
+      'Exibe conteúdo HDR diretamente em uma tela compatível com HDR';
 
   @override
   String get codec => 'Codec';
@@ -15583,6 +16244,9 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get premiere => 'Estreia';
 
   @override
+  String get guideRepeatBadge => 'Reprise';
+
+  @override
   String get guideTimeline => 'Linha do tempo do guia';
 
   @override
@@ -15592,6 +16256,9 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get noChannelsFound => 'Nenhum canal encontrado';
+
+  @override
+  String get noProgramData => 'Nenhuma informação de programação';
 
   @override
   String get liveBadge => 'AO VIVO';
@@ -15651,7 +16318,23 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get unableToCreateRecording => 'Não foi possível criar gravação';
 
   @override
+  String get recordSeries => 'Gravar série';
+
+  @override
+  String get seriesSetToRecord => 'Série programada para gravação';
+
+  @override
+  String get seriesRecordingCancelled => 'Gravação da série cancelada';
+
+  @override
+  String get unableToCreateSeriesRecording =>
+      'Não foi possível programar a gravação da série';
+
+  @override
   String get watch => 'Assistir';
+
+  @override
+  String get watchChannelLive => 'Assistir ao canal ao vivo';
 
   @override
   String get close => 'Fechar';
@@ -15659,6 +16342,14 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   @override
   String failedToPlayChannel(String name) {
     return 'Falha ao reproduzir $name';
+  }
+
+  @override
+  String get playbackStreamLost => 'Conexão com a transmissão perdida';
+
+  @override
+  String liveReconnecting(int attempt, int total) {
+    return 'Reconectando… ($attempt de $total)';
   }
 
   @override
@@ -15879,6 +16570,87 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get downloadedItems => 'Itens baixados';
 
   @override
+  String get activeDownloads => 'Downloads ativos';
+
+  @override
+  String savedMediaCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count itens',
+      one: '1 item',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String savedMediaOfLimit(String used, String limit) {
+    return '\"$used de $limit\"';
+  }
+
+  @override
+  String get savedMediaSelectItems => 'Selecionar itens';
+
+  @override
+  String get savedMediaNoDownloads => 'Nenhuma mídia baixada';
+
+  @override
+  String get savedMediaNoDownloadsDetail =>
+      'As mídias baixadas aparecerão aqui';
+
+  @override
+  String get savedMediaNoActiveDownloads => 'Nenhum download ativo';
+
+  @override
+  String get savedMediaNoResults => 'Nenhum resultado encontrado';
+
+  @override
+  String get savedMediaPlayFromStart => 'Reproduzir do início';
+
+  @override
+  String get savedMediaGoToDetails => 'Ver detalhes';
+
+  @override
+  String get savedMediaDeleteDownload => 'Excluir download';
+
+  @override
+  String savedMediaDeleteSeason(String season) {
+    return '\"Excluir $season\"';
+  }
+
+  @override
+  String savedMediaDeleteEpisodes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Excluir $count episódios',
+      one: 'Excluir 1 episódio',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get savedMediaOpenShow => 'Abrir série';
+
+  @override
+  String get savedMediaPlayNextUnwatched => 'Reproduzir próximo não assistido';
+
+  @override
+  String get savedMediaRead => 'Ler';
+
+  @override
+  String get savedMediaCancelDownload => 'Cancelar download';
+
+  @override
+  String get sortBySize => 'Ordenar por tamanho';
+
+  @override
+  String get sortByName => 'Ordenar por nome';
+
+  @override
+  String get sortByDateAdded => 'Ordenar por data de adição';
+
+  @override
   String get storageLimit => 'Limite de armazenamento';
 
   @override
@@ -15918,6 +16690,9 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get settings => 'Configurações';
+
+  @override
+  String get settingsSearchHint => 'Pesquisar configurações';
 
   @override
   String get authentication => 'Autenticação';
@@ -16075,6 +16850,106 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
       'Efeitos visuais e decorações sazonais';
 
   @override
+  String get loadingAnimation => 'Animação de carregamento';
+
+  @override
+  String get loadingAnimationDescription =>
+      'Personalize a animação exibida durante o carregamento';
+
+  @override
+  String get loadingAnimationConfiguration => 'Configuração da animação';
+
+  @override
+  String get loadingAnimationImage => 'Imagem da animação';
+
+  @override
+  String get loadingAnimationImageMoonfinLogo => 'Logo do Moonfin';
+
+  @override
+  String get loadingAnimationImageSpinner => 'Indicador giratório';
+
+  @override
+  String get loadingAnimationImageRunner => 'Corredor';
+
+  @override
+  String get loadingAnimationImageMoonPhases => 'Fases da Lua';
+
+  @override
+  String get loadingAnimationImageMoonfinPhases => 'Fases do Moonfin';
+
+  @override
+  String get loadingAnimationImageNeonfinPhases => 'Fases do Neonfin';
+
+  @override
+  String get loadingAnimationSize => 'Tamanho da animação';
+
+  @override
+  String get loadingAnimationSizeThumbnail => 'Miniatura';
+
+  @override
+  String get loadingAnimationSizeSmall => 'Pequeno';
+
+  @override
+  String get loadingAnimationSizeMedium => 'Médio';
+
+  @override
+  String get loadingAnimationSizeLarge => 'Grande';
+
+  @override
+  String get loadingAnimationPosition => 'Posição da animação';
+
+  @override
+  String get loadingAnimationPositionTopLeft => 'Superior esquerdo';
+
+  @override
+  String get loadingAnimationPositionTopCenter => 'Superior central';
+
+  @override
+  String get loadingAnimationPositionTopRight => 'Superior direito';
+
+  @override
+  String get loadingAnimationPositionMiddleLeft => 'Centro esquerdo';
+
+  @override
+  String get loadingAnimationPositionMiddle => 'Centro';
+
+  @override
+  String get loadingAnimationPositionMiddleRight => 'Centro direito';
+
+  @override
+  String get loadingAnimationPositionBottomLeft => 'Inferior esquerdo';
+
+  @override
+  String get loadingAnimationPositionBottomCenter => 'Inferior central';
+
+  @override
+  String get loadingAnimationPositionBottomRight => 'Inferior direito';
+
+  @override
+  String get loadingAnimationPositionBouncing => 'Saltando pela tela';
+
+  @override
+  String get loadingAnimationSpeed => 'Velocidade da animação';
+
+  @override
+  String get loadingAnimationSpeedSlow => 'Lenta';
+
+  @override
+  String get loadingAnimationSpeedModerate => 'Moderada';
+
+  @override
+  String get loadingAnimationSpeedFast => 'Rápida';
+
+  @override
+  String get loadingAnimationSpeedUltra => 'Ultrarrápida';
+
+  @override
+  String get showLoadingAnimationText => 'Mostrar texto de carregamento';
+
+  @override
+  String get loadingAnimationPreview => 'Prévia da animação';
+
+  @override
   String get snow => 'Neve';
 
   @override
@@ -16123,6 +16998,9 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get detailsBackgroundBlur => 'Detalhes do desfoque de fundo';
 
   @override
+  String get detailsBackgroundOpacity => 'Opacidade do fundo dos detalhes';
+
+  @override
   String pixelValue(int value) {
     return '${value}px';
   }
@@ -16165,6 +17043,13 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get autoCrop => 'Corte automático';
 
   @override
+  String get cropBlackBars => 'Cortar barras pretas';
+
+  @override
+  String get settingsCropBlackBarsDescription =>
+      'Recorta as barras pretas ao redor do vídeo';
+
+  @override
   String get stretch => 'Esticar';
 
   @override
@@ -16172,6 +17057,12 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get disabled => 'Desativado';
+
+  @override
+  String get manual => 'Manual';
+
+  @override
+  String get autoDetect => 'Detectar automaticamente';
 
   @override
   String get scaleOnTv => 'Escala na TV';
@@ -16187,6 +17078,39 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
       'Mostrar miniaturas de visualização ao pesquisar';
 
   @override
+  String get trickplayDisplayStyleSingle => 'Imagem única';
+
+  @override
+  String get trickplayDisplayStyleStrip => 'Faixa de imagens';
+
+  @override
+  String get trickplayModeFull => 'Completo';
+
+  @override
+  String get trickplaySettingsPreviewHint =>
+      'Prévia das miniaturas durante a busca no vídeo';
+
+  @override
+  String get trickplayPreviewScale => 'Tamanho da prévia';
+
+  @override
+  String get trickplayVerticalOffset => 'Deslocamento vertical';
+
+  @override
+  String get trickplayFollowScrubPosition => 'Acompanhar posição da busca';
+
+  @override
+  String get trickplayFollowScrubPositionSubtitle =>
+      'Mantém a prévia próxima à posição selecionada na linha do tempo';
+
+  @override
+  String get trickplayPauseWhileScrubbing => 'Pausar durante a busca';
+
+  @override
+  String get trickplayPauseWhileScrubbingSubtitle =>
+      'Pausa a reprodução enquanto você navega pela linha do tempo';
+
+  @override
   String get showDescriptionOnPause => 'Mostrar descrição em pausa';
 
   @override
@@ -16194,11 +17118,133 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
       'Escureça o vídeo e mostre o texto de visão geral durante a pausa';
 
   @override
+  String get showChapterMarkers => 'Mostrar marcadores de capítulos';
+
+  @override
+  String get showChapterMarkersDescription =>
+      'Exibe os capítulos na linha do tempo do reprodutor';
+
+  @override
   String get osdLockButton => 'Botão de bloqueio OSD';
 
   @override
   String get osdLockButtonDescription =>
       'Mostrar um botão de bloqueio que bloqueia a entrada por toque até ser pressionado por muito tempo';
+
+  @override
+  String get playerSwipeGestures => 'Gestos de deslizar no reprodutor';
+
+  @override
+  String get playerSwipeGesturesDescription =>
+      'Controle a reprodução usando gestos de deslizar';
+
+  @override
+  String get osdButtons => 'Botões do OSD';
+
+  @override
+  String get osdButtonsDescription =>
+      'Personalize os botões exibidos nos controles do reprodutor';
+
+  @override
+  String get osdButtonsSectionDescription =>
+      'Escolha quais botões aparecem durante a reprodução';
+
+  @override
+  String get detailButtons => 'Botões da tela de detalhes';
+
+  @override
+  String get detailButtonsDescription =>
+      'Personalize os botões exibidos na tela de detalhes';
+
+  @override
+  String get detailButtonsSectionDescription =>
+      'Escolha quais botões aparecem na tela de detalhes';
+
+  @override
+  String get actionButtonsOnScreen => 'Botões de ação na tela';
+
+  @override
+  String get actionButtonsOnScreenDescription =>
+      'Escolha quais botões de ação ficam visíveis';
+
+  @override
+  String get actionButtonsOnScreenAuto => 'Automático';
+
+  @override
+  String get actionButtonsOnScreenPlayOnly => 'Somente reproduzir';
+
+  @override
+  String get actionButtonsOnScreenAll => 'Todos';
+
+  @override
+  String get detailMetadata => 'Metadados dos detalhes';
+
+  @override
+  String get detailMetadataDescription =>
+      'Personalize as informações exibidas na tela de detalhes';
+
+  @override
+  String get detailMetadataSectionDescription =>
+      'Escolha quais informações aparecem nos detalhes da mídia';
+
+  @override
+  String get detailMetadataYear => 'Ano';
+
+  @override
+  String get detailMetadataParentalRating => 'Classificação indicativa';
+
+  @override
+  String get detailMetadataRuntimeAndSeasons => 'Duração e temporadas';
+
+  @override
+  String get detailMetadataStatus => 'Status';
+
+  @override
+  String get detailMetadataStatusSubtitle => 'Exibe o status atual da série';
+
+  @override
+  String get detailMetadataGenres => 'Gêneros';
+
+  @override
+  String get detailMetadataSeerrAvailability => 'Disponibilidade no Seerr';
+
+  @override
+  String get detailMetadataSeerrAvailabilitySubtitle =>
+      'Exibe informações de disponibilidade fornecidas pelo Seerr';
+
+  @override
+  String get detailMetadataUpcomingEpisodeDate => 'Data do próximo episódio';
+
+  @override
+  String get detailMetadataUpcomingEpisodeDateSubtitle =>
+      'Exibe quando o próximo episódio será lançado';
+
+  @override
+  String upcomingEpisodeNext(String date, int season, int episode) {
+    return 'Próximo: $date (T$season:E$episode)';
+  }
+
+  @override
+  String get upcomingEpisodeToday => 'Hoje';
+
+  @override
+  String get upcomingEpisodeTomorrow => 'Amanhã';
+
+  @override
+  String get moveUp => 'Mover para cima';
+
+  @override
+  String get moveDown => 'Mover para baixo';
+
+  @override
+  String get buttonOrderHint =>
+      'Arraste ou mova os botões para alterar a ordem';
+
+  @override
+  String get orientationLock => 'Bloqueio de orientação';
+
+  @override
+  String get fullscreen => 'Tela cheia';
 
   @override
   String get audioBehavior => 'Comportamento de áudio';
@@ -16394,6 +17440,51 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get settingsAudioDtsHdPassthrough => 'Passthrough DTS-HD MA';
+
+  @override
+  String get settingsAudioPassthroughMode => 'Modo de passagem de áudio';
+
+  @override
+  String get settingsAudioPassthroughModeDescription =>
+      'Define como o áudio compatível é enviado diretamente ao dispositivo de saída';
+
+  @override
+  String get settingsAudioPassthroughModeDisabled => 'Desativado';
+
+  @override
+  String get settingsAudioPassthroughModeAuto => 'Automático';
+
+  @override
+  String get settingsAudioPassthroughModeManual => 'Manual';
+
+  @override
+  String get settingsAudioPassthroughOutput => 'Saída de passagem de áudio';
+
+  @override
+  String get settingsAudioPassthroughOutputDescription =>
+      'Escolha o método usado para enviar áudio diretamente ao dispositivo';
+
+  @override
+  String get settingsAudioPassthroughOutputPlatform => 'Padrão da plataforma';
+
+  @override
+  String get settingsAudioPassthroughOutputIec => 'IEC';
+
+  @override
+  String get settingsAudioPassthroughOutputIecLabel => 'IEC 61937';
+
+  @override
+  String get settingsDownmixToStereoDescription =>
+      'Converte áudio multicanal para estéreo quando necessário';
+
+  @override
+  String get settingsAudioEac3IncludesAtmos => 'E-AC-3 inclui Dolby Atmos';
+
+  @override
+  String get settingsAudioDtsHdIncludesDtsX => 'DTS-HD inclui DTS:X';
+
+  @override
+  String get settingsAudioTrueHdIncludesAtmos => 'TrueHD inclui Dolby Atmos';
 
   @override
   String get settingsAudioTrueHdPassthrough => 'Passthrough TrueHD';
@@ -16699,6 +17790,21 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get semiTransparentBlack => 'Preto Semitransparente';
 
   @override
+  String get semiTransparentWhite => 'Branco semitransparente';
+
+  @override
+  String get lightGray => 'Cinza-claro';
+
+  @override
+  String get darkGray => 'Cinza-escuro';
+
+  @override
+  String get blue => 'Azul';
+
+  @override
+  String get magenta => 'Magenta';
+
+  @override
   String get global => 'Global';
 
   @override
@@ -16742,6 +17848,43 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get syncToProfile => 'Sincronizar com perfil';
 
   @override
+  String get resetProfile => 'Redefinir perfil';
+
+  @override
+  String resetProfileTitle(String profile) {
+    return '\"Redefinir $profile?\"';
+  }
+
+  @override
+  String resetProfileDescription(String profile) {
+    return 'Isso exclui o perfil $profile do servidor e redefine todas as configurações sincronizadas neste dispositivo para os valores padrão.';
+  }
+
+  @override
+  String get resetGlobalProfileDescription =>
+      'Restaura as configurações globais do perfil para os valores padrão';
+
+  @override
+  String profileReset(String profile) {
+    return 'Redefinir o perfil $profile para os valores padrão.\"';
+  }
+
+  @override
+  String get resetRatingsTitle => 'Redefinir classificações';
+
+  @override
+  String get resetRatingsDescription =>
+      'Remove e redefine as classificações personalizadas';
+
+  @override
+  String get ratingsReset => 'Classificações redefinidas';
+
+  @override
+  String failedToResetProfile(String profile) {
+    return 'Falha ao redefinir o perfil $profile.';
+  }
+
+  @override
   String get profileSyncHidden => 'Sincronização de perfil oculta';
 
   @override
@@ -16759,6 +17902,13 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get wifiOnlyDownloads => 'Downloads somente WiFi';
+
+  @override
+  String get tvOfflineDownloads => 'Downloads offline na TV';
+
+  @override
+  String get tvOfflineDownloadsSubtitle =>
+      'Permite baixar mídias para assistir offline na TV';
 
   @override
   String get reportDownloadsActivity => 'Mostrar downloads no servidor';
@@ -16787,6 +17937,13 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get defaultLabel => 'Padrão';
+
+  @override
+  String get sdCard => 'Cartão SD';
+
+  @override
+  String get downloadLocationLimitedByAndroid =>
+      'O local de download é limitado pelo Android';
 
   @override
   String get saveToDownloadsFolder => 'Salvar na pasta Downloads';
@@ -16826,6 +17983,10 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
       'A mídia baixada será salva em Downloads/Moonfin no seu dispositivo. Esses arquivos ficarão visíveis para outros aplicativos, como sua galeria ou reprodutor de música.\n\nOs downloads existentes permanecerão no local atual.';
 
   @override
+  String get transcodingTimeRemainingUnavailable =>
+      'Tempo restante de transcodificação indisponível';
+
+  @override
   String get enable => 'Habilitar';
 
   @override
@@ -16852,6 +18013,12 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get showFavoritesButton => 'Mostrar botão Favoritos';
+
+  @override
+  String get showLiveTvButton => 'Mostrar botão de TV ao vivo';
+
+  @override
+  String get showDownloadsButton => 'Mostrar botão de downloads';
 
   @override
   String get showLibrariesInToolbar =>
@@ -16929,6 +18096,16 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   @override
   String get showLibrariesFromAllServers =>
       'Mostrar bibliotecas de todos os servidores conectados';
+
+  @override
+  String get mergeRecentRowsByType => 'Agrupar linhas recentes por tipo';
+
+  @override
+  String get mergeRecentRowsByTypeDescription =>
+      'Agrupa mídias recentes do mesmo tipo em uma única linha';
+
+  @override
+  String get libraryView => 'Visualização da biblioteca';
 
   @override
   String get enableFolderView => 'Ativar visualização de pasta';
@@ -17017,6 +18194,18 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get mediaBarModeOff => 'Desativado';
 
   @override
+  String get mediaBarModeBookshelf => 'Estante';
+
+  @override
+  String get mediaBarModeGallery => 'Galeria';
+
+  @override
+  String get mediaBarModeBanner => 'Banner';
+
+  @override
+  String get mediaBarModeAya => 'Aya';
+
+  @override
   String get enableMediaBar => 'Ativar barra de mídia';
 
   @override
@@ -17025,6 +18214,12 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get contentType => 'Tipo de conteúdo';
+
+  @override
+  String get mediaBarSourceType => 'Tipo de origem da barra de mídia';
+
+  @override
+  String get mediaBarSourceRandom => 'Aleatório';
 
   @override
   String get moviesAndTvShows => 'Filmes e programas de TV';
@@ -17069,6 +18264,13 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
       'Ativar o áudio dos trailers na barra de mídia';
 
   @override
+  String get trailerCaptions => 'Legendas dos trailers';
+
+  @override
+  String get trailerCaptionsDescription =>
+      'Exibe legendas durante as prévias de trailers';
+
+  @override
   String get episodePreview => 'Prévia do episódio';
 
   @override
@@ -17096,6 +18298,14 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get recentlyReleased => 'Lançado recentemente';
 
   @override
+  String get recentlyReleasedSeriesType =>
+      'Tipo de séries lançadas recentemente';
+
+  @override
+  String get recentlyReleasedSeriesTypeDescription =>
+      'Define como as séries lançadas recentemente são exibidas';
+
+  @override
   String get myMedia => 'Minha mídia';
 
   @override
@@ -17118,6 +18328,9 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get liveTV => 'TV ao vivo';
+
+  @override
+  String get favoriteChannels => 'Canais favoritos';
 
   @override
   String get homeSections => 'Seções iniciais';
@@ -17144,10 +18357,29 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
       'Combine as duas linhas em uma única seção inicial';
 
   @override
+  String get nextUpMaxDays => 'Máximo de dias para Próximos';
+
+  @override
+  String get nextUpMaxDaysDescription =>
+      'Define quantos dias futuros podem aparecer na seção Próximos';
+
+  @override
+  String daysValue(int days) {
+    return '\"$days dias\"';
+  }
+
+  @override
   String get fullScreenRows => 'Linhas iniciais expandidas';
 
   @override
   String get fullScreenRowsDescription => 'Limitar a 1 linha inicial por tela';
+
+  @override
+  String get homeRowsPadding => 'Espaçamento das linhas da tela inicial';
+
+  @override
+  String get homeRowsPaddingDescription =>
+      'Ajusta o espaço entre as linhas da tela inicial';
 
   @override
   String get perRowImageType => 'Tipo de imagem por linha';
@@ -17274,6 +18506,55 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get clockModeBouncing => 'Flutuante';
+
+  @override
+  String get screensaverGeneralSettings =>
+      'Configurações gerais do protetor de tela';
+
+  @override
+  String get screensaverVisualComponents => 'Componentes visuais';
+
+  @override
+  String get screensaverLibraryContent => 'Conteúdo da biblioteca';
+
+  @override
+  String get screensaverBackdrop => 'Plano de fundo';
+
+  @override
+  String get screensaverBackdropBlack => 'Preto';
+
+  @override
+  String get screensaverBackdropMoonfin => 'Moonfin';
+
+  @override
+  String get screensaverBackdropCalm => 'Calmo';
+
+  @override
+  String get screensaverBackdropNeonPulse => 'Neon Pulse';
+
+  @override
+  String get screensaverBackdropAurora => 'Aurora';
+
+  @override
+  String get screensaverAdditionalComponent => 'Componente adicional';
+
+  @override
+  String get screensaverComponentMoonfinLogo => 'Logo do Moonfin';
+
+  @override
+  String get screensaverComponentRunner => 'Corredor';
+
+  @override
+  String get screensaverComponentMovement => 'Movimento';
+
+  @override
+  String get screensaverComponentPosition => 'Posição';
+
+  @override
+  String get screensaverComponentSize => 'Tamanho';
+
+  @override
+  String get screensaverSourceLibrariesDefault => 'Bibliotecas padrão';
 
   @override
   String get rottenTomatoesCritics => 'Rotten Tomatoes (críticos)';
@@ -17418,7 +18699,16 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get networks => 'Redes';
 
   @override
+  String get tags => 'Tags';
+
+  @override
+  String get genresAndTags => 'Gêneros e tags';
+
+  @override
   String get seerrDiscoveryRows => 'Linhas de descoberta do Seerr';
+
+  @override
+  String get yourWatchlist => 'Sua lista de interesse';
 
   @override
   String get resetRowsToDefaults => 'Redefinir seções para os padrões';
@@ -17439,6 +18729,22 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get hideAdultContent => 'Ocultar conteúdo adulto nos resultados';
+
+  @override
+  String get showMissingCollectionItems =>
+      'Mostrar itens ausentes das coleções';
+
+  @override
+  String get showMissingCollectionItemsDesc =>
+      'Exibe itens que pertencem à coleção, mas ainda não estão disponíveis na biblioteca';
+
+  @override
+  String get showSeerrAvailabilityBadges =>
+      'Mostrar indicadores de disponibilidade do Seerr';
+
+  @override
+  String get showSeerrAvailabilityBadgesDescription =>
+      'Exibe indicadores de disponibilidade fornecidos pelo Seerr';
 
   @override
   String get seerrNotificationsSection => 'Notificações';
@@ -17464,6 +18770,13 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   @override
   String get seerrNotifyIssuesSubtitle =>
       'Novos problemas, respostas e resoluções';
+
+  @override
+  String get seerrNotifyNewMediaTitle => 'Notificar sobre novas mídias';
+
+  @override
+  String get seerrNotifyNewMediaSubtitle =>
+      'Receba notificações quando novas mídias solicitadas estiverem disponíveis';
 
   @override
   String loggedInAs(String username) {
@@ -17634,6 +18947,24 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get seerrRequestedStatus => 'Solicitado';
 
   @override
+  String get seerrDownloading => 'Baixando';
+
+  @override
+  String seerrDownloadingSize(String done, String total) {
+    return 'Baixando · $done / $total';
+  }
+
+  @override
+  String seerrDownloadedOfTotal(String done, String total) {
+    return '\"$done / $total\"';
+  }
+
+  @override
+  String seerrPercentValue(int percent) {
+    return '$percent%';
+  }
+
+  @override
   String seerrDownloadingPercent(int percent) {
     return 'Baixando · $percent%';
   }
@@ -17653,18 +18984,42 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get requestMore => 'Solicite mais';
 
   @override
+  String get requestMore4k => 'Solicitar mais em 4K';
+
+  @override
   String get request => 'Solicitar';
+
+  @override
+  String get request4k => 'Solicitar em 4K';
+
+  @override
+  String get requested4k => 'Solicitado em 4K';
 
   @override
   String get cancelRequest => 'Cancelar solicitação';
 
   @override
+  String get cancelRequest4k => 'Cancelar solicitação em 4K';
+
+  @override
   String get playInMoonfin => 'Reproduzir no Moonfin';
+
+  @override
+  String get requestedByLabel => 'Solicitado por';
 
   @override
   String requestedByName(String name) {
     return 'Solicitado por $name';
   }
+
+  @override
+  String get manageRequests => 'Gerenciar solicitações';
+
+  @override
+  String get watchlist => 'Lista de interesse';
+
+  @override
+  String get onWatchlist => 'Na lista de interesse';
 
   @override
   String get approve => 'Aprovar';
@@ -17719,10 +19074,18 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   }
 
   @override
+  String requestSeriesOrMovie4k(String type) {
+    return 'Solicitar $type em 4K';
+  }
+
+  @override
   String get submitRequest => 'Enviar solicitação';
 
   @override
   String get allSeasons => 'Todas as temporadas';
+
+  @override
+  String get seerrSeriesContinuing => 'Série em andamento';
 
   @override
   String get advancedOptions => 'Opções Avançadas';
@@ -20423,10 +21786,197 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get adminMetadataFieldCriticRating => 'Avaliação crítica';
 
   @override
+  String get adminMetadataFieldCustomRating => 'Classificação personalizada';
+
+  @override
   String get adminMetadataFieldTagline => 'Slogan';
 
   @override
   String get adminMetadataFieldOverview => 'Visão geral';
+
+  @override
+  String get adminMetadataFieldDisplayOrder => 'Ordem de exibição';
+
+  @override
+  String get adminMetadataDisplayOrderAired => 'Exibição original';
+
+  @override
+  String get adminMetadataDisplayOrderOriginalAirDate =>
+      'Data de exibição original';
+
+  @override
+  String get adminMetadataDisplayOrderAbsolute => 'Absoluta';
+
+  @override
+  String get adminMetadataDisplayOrderDvd => 'DVD';
+
+  @override
+  String get adminMetadataDisplayOrderDigital => 'Digital';
+
+  @override
+  String get adminMetadataDisplayOrderStoryArc => 'Arco da história';
+
+  @override
+  String get adminMetadataDisplayOrderProduction => 'Produção';
+
+  @override
+  String get adminMetadataDisplayOrderTv => 'TV';
+
+  @override
+  String get adminMetadataDisplayOrderAlternate => 'Alternativa';
+
+  @override
+  String get adminMetadataDisplayOrderRegional => 'Regional';
+
+  @override
+  String get adminMetadataDisplayOrderAlternateDvd => 'DVD alternativo';
+
+  @override
+  String get adminMetadataDisplayOrderDateModified => 'Data de modificação';
+
+  @override
+  String get adminMetadataDisplayOrderSortName => 'Nome de ordenação';
+
+  @override
+  String get adminMetadataDisplayOrderReleaseDate => 'Data de lançamento';
+
+  @override
+  String get adminMetadataSettings => 'Configurações de metadados';
+
+  @override
+  String get adminMetadataDownloadLanguage =>
+      'Idioma para download de metadados';
+
+  @override
+  String get adminMetadataCountryRegion => 'País/Região';
+
+  @override
+  String get adminMetadataInheritHelp =>
+      'Herdar configurações do item pai quando aplicável';
+
+  @override
+  String get adminMetadataField3DFormat => 'Formato 3D';
+
+  @override
+  String get adminMetadataPersonKindUnknown => 'Desconhecido';
+
+  @override
+  String get adminMetadataPersonKindActor => 'Ator';
+
+  @override
+  String get adminMetadataPersonKindDirector => 'Diretor';
+
+  @override
+  String get adminMetadataPersonKindComposer => 'Compositor';
+
+  @override
+  String get adminMetadataPersonKindWriter => 'Roteirista';
+
+  @override
+  String get adminMetadataPersonKindGuestStar => 'Participação especial';
+
+  @override
+  String get adminMetadataPersonKindProducer => 'Produtor';
+
+  @override
+  String get adminMetadataPersonKindConductor => 'Maestro';
+
+  @override
+  String get adminMetadataPersonKindLyricist => 'Letrista';
+
+  @override
+  String get adminMetadataPersonKindArranger => 'Arranjador';
+
+  @override
+  String get adminMetadataPersonKindEngineer => 'Engenheiro';
+
+  @override
+  String get adminMetadataPersonKindMixer => 'Mixador';
+
+  @override
+  String get adminMetadataPersonKindRemixer => 'Remixador';
+
+  @override
+  String get adminMetadataPersonKindCreator => 'Criador';
+
+  @override
+  String get adminMetadataPersonKindArtist => 'Artista';
+
+  @override
+  String get adminMetadataPersonKindAlbumArtist => 'Artista do álbum';
+
+  @override
+  String get adminMetadataPersonKindAuthor => 'Autor';
+
+  @override
+  String get adminMetadataPersonKindIllustrator => 'Ilustrador';
+
+  @override
+  String get adminMetadataPersonKindPenciller => 'Desenhista';
+
+  @override
+  String get adminMetadataPersonKindInker => 'Arte-finalista';
+
+  @override
+  String get adminMetadataPersonKindColorist => 'Colorista';
+
+  @override
+  String get adminMetadataPersonKindLetterer => 'Letreirista';
+
+  @override
+  String get adminMetadataPersonKindCoverArtist => 'Artista da capa';
+
+  @override
+  String get adminMetadataPersonKindEditor => 'Editor';
+
+  @override
+  String get adminMetadataPersonKindTranslator => 'Tradutor';
+
+  @override
+  String get adminMetadataPersonKindNarrator => 'Narrador';
+
+  @override
+  String get adminMetadataAirDays => 'Dias de exibição';
+
+  @override
+  String get adminMetadataLockItem => 'Bloquear item';
+
+  @override
+  String get adminMetadataEnabledFields => 'Campos habilitados';
+
+  @override
+  String get adminMetadataEnabledFieldsHelp =>
+      'Selecione os campos de metadados que podem ser editados ou atualizados';
+
+  @override
+  String get adminMetadataLockFieldName => 'Nome';
+
+  @override
+  String get adminMetadataLockFieldOverview => 'Sinopse';
+
+  @override
+  String get adminMetadataLockFieldGenres => 'Gêneros';
+
+  @override
+  String get adminMetadataLockFieldOfficialRating => 'Classificação indicativa';
+
+  @override
+  String get adminMetadataLockFieldCast => 'Elenco';
+
+  @override
+  String get adminMetadataLockFieldProductionLocations => 'Locais de produção';
+
+  @override
+  String get adminMetadataLockFieldBirthLocation => 'Local de nascimento';
+
+  @override
+  String get adminMetadataLockFieldRuntime => 'Duração';
+
+  @override
+  String get adminMetadataLockFieldStudios => 'Estúdios';
+
+  @override
+  String get adminMetadataLockFieldTags => 'Tags';
 
   @override
   String get adminMetadataGenres => 'Gêneros';
@@ -20549,11 +22099,21 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get adminPluginsRestart => 'Reiniciar';
 
   @override
+  String get adminPluginsRestartRequired => 'Reinicialização necessária';
+
+  @override
   String get adminPluginsNoSearchResults =>
       'Nenhum plug-in corresponde à sua pesquisa';
 
   @override
   String get adminPluginsNoneInstalled => 'Nenhum plug-in instalado';
+
+  @override
+  String get adminPluginsNoneActive => 'Nenhum plugin ativo';
+
+  @override
+  String get adminPluginsNoneRequireRestart =>
+      'Nenhum plugin requer reinicialização';
 
   @override
   String adminPluginsUpdateAvailable(String version) {
@@ -21704,7 +23264,25 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   }
 
   @override
+  String get kidsMode => 'Modo infantil';
+
+  @override
+  String get kidsModeSubtitle => 'Simplifica a interface para crianças';
+
+  @override
+  String get kidsModeExit => 'Sair do modo infantil';
+
+  @override
+  String get kidsModeExitSubtitle =>
+      'Desative o modo infantil para voltar à interface normal';
+
+  @override
   String get pinIncorrect => 'PIN incorreto';
+
+  @override
+  String pinTryAgainIn(String wait) {
+    return 'Muitas tentativas. Tente novamente em $wait.';
+  }
 
   @override
   String get pinMismatch => 'Os PINs não correspondem';
@@ -21802,6 +23380,9 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get trackActionPlayNext => 'Reproduzir a seguir';
+
+  @override
+  String get trackActionViewDetails => 'Ver detalhes';
 
   @override
   String get trackActionAddToQueue => 'Adicionar à fila';
@@ -22011,6 +23592,17 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get contextMenuAddToCollection => 'Adicionar à coleção';
 
   @override
+  String get contextMenuRemoveFromCollection => 'Remover da coleção';
+
+  @override
+  String removeFromCollectionConfirm(String item, String collection) {
+    return 'Remover $item de $collection? O item continuará na sua biblioteca.';
+  }
+
+  @override
+  String get removeFromCollectionFailed => 'Falha ao remover o item da coleção';
+
+  @override
   String get settingsAdministrationSubtitle =>
       'Acesse o painel de administração do servidor';
 
@@ -22077,6 +23669,17 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get settingsPrivacyAndSafetySection => 'PRIVACIDADE E SEGURANÇA';
 
   @override
+  String get itemBlockedByParentalControls =>
+      'Item bloqueado pelo controle parental';
+
+  @override
+  String get blockedRatingsCeilingHint =>
+      'Conteúdos acima desta classificação serão bloqueados';
+
+  @override
+  String get blockedRatingsUnrankedSection => 'Conteúdo sem classificação';
+
+  @override
   String get settingsBlockedRatings => 'Avaliações bloqueadas';
 
   @override
@@ -22124,6 +23727,10 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
       'Mostrar o botão de favoritos na barra de navegação';
 
   @override
+  String get settingsShowLiveTvButtonInNavigation =>
+      'Mostrar botão de TV ao vivo na navegação';
+
+  @override
   String get settingsShowLibrariesButtonInNavigation =>
       'Mostrar o botão de bibliotecas na barra de navegação';
 
@@ -22158,6 +23765,75 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get settingsOfflineDownloads => 'Downloads off-line';
+
+  @override
+  String get useNativeEmulator => 'Usar emulador nativo';
+
+  @override
+  String get useNativeEmulatorSubtitle =>
+      'Use o emulador nativo do dispositivo quando disponível';
+
+  @override
+  String get emulatorCores => 'Núcleos do emulador';
+
+  @override
+  String get emulatorCoresSubtitle =>
+      'Gerencie os núcleos usados para emulação';
+
+  @override
+  String get emulatorCoresDescription =>
+      'Baixe e configure os núcleos necessários para executar seus jogos';
+
+  @override
+  String get emulatorCoreDownloading => 'Baixando núcleo do emulador';
+
+  @override
+  String get emulatorCoreUnavailable => 'Núcleo do emulador indisponível';
+
+  @override
+  String get emulatorCoreDownloadFailed =>
+      'Falha ao baixar o núcleo do emulador';
+
+  @override
+  String emulatorCoreResetSettings(String system) {
+    return 'Redefinir as configurações de $system para os padrões.';
+  }
+
+  @override
+  String get emulatorCoreSettingsReset => 'Configurações do núcleo redefinidas';
+
+  @override
+  String get emulatorCoreResetSettingsFailed =>
+      'Falha ao redefinir as configurações do núcleo';
+
+  @override
+  String get downloadedGames => 'Jogos baixados';
+
+  @override
+  String get downloadedGamesSubtitle => 'Gerencie os jogos disponíveis offline';
+
+  @override
+  String get downloadedGamesDescription => 'Jogos baixados neste dispositivo';
+
+  @override
+  String get downloadedGamesEmpty => 'Nenhum jogo baixado';
+
+  @override
+  String downloadedGamesTotal(int count, String size) {
+    return '$count jogos, $size';
+  }
+
+  @override
+  String get removeAllDownloadedGames => 'Remover todos os jogos baixados';
+
+  @override
+  String removeDownloadedGameConfirm(String title) {
+    return 'Remover este jogo baixado?';
+  }
+
+  @override
+  String get removeAllDownloadedGamesConfirm =>
+      'Remover todos os jogos baixados deste dispositivo?';
 
   @override
   String get settingsHigh => 'Alto';
@@ -22287,6 +23963,11 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get settingsSkipIntrosAndOutros => 'Pular introduções e outros?';
 
   @override
+  String settingsMediaSegmentTypeAction(String segment) {
+    return 'Ação para tipo de segmento de mídia';
+  }
+
+  @override
   String get settingsMediaSegmentCountdown =>
       'Contagem regressiva do segmento de mídia';
 
@@ -22298,6 +23979,14 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get settingsNone => 'Nenhum';
+
+  @override
+  String get settingsSkipButtonAutoHide =>
+      'Ocultar automaticamente o botão de pular';
+
+  @override
+  String get settingsSkipButtonAutoHideDescription =>
+      'Oculta automaticamente o botão de pular após alguns segundos';
 
   @override
   String get settingsPromptUser => 'Solicitar usuário';
@@ -22333,6 +24022,31 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get settingsPlaybackEngineMpvLegacy => 'mpv (legado)';
+
+  @override
+  String get settingsRedetectDisplay => 'Detectar tela novamente';
+
+  @override
+  String get settingsRedetectDisplayDescription =>
+      'Executa novamente a detecção dos recursos HDR da tela';
+
+  @override
+  String get settingsDisplayIsSdr => 'Tela SDR';
+
+  @override
+  String get settingsDisplayIsSdrDescription =>
+      'Este dispositivo está usando uma tela SDR';
+
+  @override
+  String settingsDisplayRedetected(String formats) {
+    return 'Tela detectada novamente';
+  }
+
+  @override
+  String get settingsDisplayNoHdrDetected => 'Nenhum suporte a HDR detectado';
+
+  @override
+  String get settingsDisplayMarkedSdr => 'Tela marcada como SDR';
 
   @override
   String get settingsDolbyVisionFallback => 'Substituição Dolby Vision';
@@ -22407,6 +24121,13 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   @override
   String get settingsCinemaModeSubtitle =>
       'Reproduzir trailers/prerolls antes de um filme principal';
+
+  @override
+  String get settingsCinemaModeEpisodes => 'Modo cinema para episódios';
+
+  @override
+  String get settingsCinemaModeEpisodesSubtitle =>
+      'Ativa o modo cinema ao reproduzir episódios';
 
   @override
   String get settingsNextUpDisplayDescription =>
@@ -22516,7 +24237,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String latestLibraryName(String libraryName) {
-    return 'Latest $libraryName';
+    return 'Mais recentes em $libraryName';
   }
 
   @override
@@ -22724,6 +24445,22 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
       'Clássico mantém o tipo de imagem e a sobreposição de informações por linha. Moderno usa linhas que vão de retrato a plano de fundo.';
 
   @override
+  String get modernCardsOnMyMediaRow => 'Cards modernos na linha Minha mídia';
+
+  @override
+  String get modernCardsOnMyMediaRowDescription =>
+      'Usa o estilo moderno de cards na linha Minha mídia';
+
+  @override
+  String get sortOrder => 'Ordem de classificação';
+
+  @override
+  String get ascending => 'Crescente';
+
+  @override
+  String get descending => 'Decrescente';
+
+  @override
   String get displayFavoritesRows => 'Exibir linhas de favoritos';
 
   @override
@@ -22736,6 +24473,10 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   @override
   String get favoritesRowSortingDescription =>
       'Ordene as linhas de favoritos por data de adição, data de lançamento, ordem alfabética e muito mais.';
+
+  @override
+  String get favoritesRowSortOrderDescription =>
+      'Define a ordem de classificação da linha de favoritos';
 
   @override
   String get displayCollectionsRows => 'Exibir linhas de coleções';
@@ -22752,6 +24493,17 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
       'Ordene as linhas de coleções por data de adição, data de lançamento, ordem alfabética e muito mais.';
 
   @override
+  String get collectionsRowSortOrderDescription =>
+      'Define a ordem de classificação da linha de coleções';
+
+  @override
+  String get collectionsRowShowEpisodes => 'Mostrar episódios nas coleções';
+
+  @override
+  String get collectionsRowShowEpisodesSubtitle =>
+      'Inclui episódios individuais na linha de coleções';
+
+  @override
   String get displayGenresRows => 'Exibir linhas de gêneros';
 
   @override
@@ -22766,11 +24518,64 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
       'Ordene as linhas de gêneros por data de adição, data de lançamento, ordem alfabética e muito mais.';
 
   @override
+  String get genresRowSortOrderDescription =>
+      'Define a ordem de classificação da linha de gêneros';
+
+  @override
   String get genresRowItems => 'Itens das linhas de gêneros';
 
   @override
   String get genresRowItemsDescription =>
       'Mostrar filmes, séries ou ambos nas linhas de gêneros.';
+
+  @override
+  String get displayStudiosRows => 'Mostrar linhas de estúdios';
+
+  @override
+  String get displayStudiosRowsSubtitle =>
+      'Exibe linhas de conteúdo agrupadas por estúdio';
+
+  @override
+  String get studiosRowSorting => 'Classificação das linhas de estúdios';
+
+  @override
+  String get studiosRowSortingDescription =>
+      'Escolha como os estúdios serão classificados';
+
+  @override
+  String get studiosRowSortOrderDescription =>
+      'Define a ordem de classificação das linhas de estúdios';
+
+  @override
+  String get selectStudiosToInclude => 'Selecionar estúdios para incluir';
+
+  @override
+  String get selectStudiosToIncludeDescription =>
+      'Escolha quais estúdios serão exibidos';
+
+  @override
+  String get selectAllStudios => 'Selecionar todos os estúdios';
+
+  @override
+  String get deselectAllStudios => 'Desmarcar todos os estúdios';
+
+  @override
+  String get tvStudiosFilter => 'Estúdios de TV';
+
+  @override
+  String get movieStudiosFilter => 'Estúdios de filmes';
+
+  @override
+  String get selectedStudiosFilter => 'Estúdios selecionados';
+
+  @override
+  String get unselectedStudiosFilter => 'Estúdios não selecionados';
+
+  @override
+  String get filtersHeader => 'Filtros';
+
+  @override
+  String get showHeader => 'Mostrar cabeçalho';
 
   @override
   String get displayPlaylistsRows => 'Exibir linhas de playlists';
@@ -22787,6 +24592,17 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
       'Ordene as linhas de playlists por data de adição, data de lançamento, ordem alfabética e muito mais.';
 
   @override
+  String get playlistsRowSortOrderDescription =>
+      'Define a ordem de classificação da linha de playlists';
+
+  @override
+  String get playlistsRowShowEpisodes => 'Mostrar episódios nas playlists';
+
+  @override
+  String get playlistsRowShowEpisodesSubtitle =>
+      'Inclui episódios individuais na linha de playlists';
+
+  @override
   String get displayAudioRows => 'Exibir linhas de áudio';
 
   @override
@@ -22799,6 +24615,10 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   @override
   String get audioRowsSortingDescription =>
       'Ordene as linhas de áudio por data de adição, data de lançamento, ordem alfabética e muito mais.';
+
+  @override
+  String get audioRowsSortOrderDescription =>
+      'Define a ordem de classificação das linhas de áudio';
 
   @override
   String get audioPlaylists => 'Playlists de áudio';
@@ -22843,6 +24663,12 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get connection => 'Conexão';
+
+  @override
+  String get locallyDecodedCodecs => 'Codecs decodificados localmente';
+
+  @override
+  String get transcodeTargetCodecs => 'Codecs de destino da transcodificação';
 
   @override
   String get passthrough => 'Passthrough';
@@ -23103,6 +24929,736 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get openInBrowser => 'Abrir no navegador';
+
+  @override
+  String get achievementBadges => 'Insígnias de conquistas';
+
+  @override
+  String get achievementBadgesSubtitle =>
+      'Exiba e gerencie suas insígnias de conquistas';
+
+  @override
+  String get achievementsBadges => 'Insígnias';
+
+  @override
+  String achievementsBadgeCount(int unlocked, int total) {
+    return 'Quantidade de insígnias';
+  }
+
+  @override
+  String get achievementsUnlockToasts =>
+      'Notificações de conquistas desbloqueadas';
+
+  @override
+  String get achievementsUnlockToastsSubtitle =>
+      'Mostra uma notificação quando você desbloquear uma conquista';
+
+  @override
+  String get achievementsUnlockedNotification => 'Conquista desbloqueada';
+
+  @override
+  String achievementsUnlockedCount(int count) {
+    return 'Conquistas desbloqueadas';
+  }
+
+  @override
+  String achievementsUnlockedMore(int count) {
+    return 'Mais conquistas desbloqueadas';
+  }
+
+  @override
+  String get achievementsQuests => 'Missões';
+
+  @override
+  String achievementsQuestCount(int count) {
+    return 'Quantidade de missões';
+  }
+
+  @override
+  String get achievementsLeaderboard => 'Ranking';
+
+  @override
+  String get achievementsLeaderboardSubtitle =>
+      'Compare sua pontuação com outros usuários';
+
+  @override
+  String get achievementsRecap => 'Resumo de conquistas';
+
+  @override
+  String get achievementsRecapSubtitle =>
+      'Veja um resumo do seu progresso e conquistas';
+
+  @override
+  String get achievementsLibraryCompletion => 'Conclusão da biblioteca';
+
+  @override
+  String achievementsLibraryCount(int count) {
+    return 'Itens da biblioteca';
+  }
+
+  @override
+  String achievementsScore(int score) {
+    return 'Pontuação';
+  }
+
+  @override
+  String get achievementsScoreLabel => 'Pontuação de conquistas';
+
+  @override
+  String get achievementsTopRank => 'Melhor posição';
+
+  @override
+  String achievementsPointsToNextRank(int points, String tier) {
+    return 'Pontos para a próxima posição';
+  }
+
+  @override
+  String achievementsCurrentStreak(int days) {
+    return 'Sequência atual';
+  }
+
+  @override
+  String achievementsBestStreak(int days) {
+    return 'Melhor sequência';
+  }
+
+  @override
+  String get achievementsShowcase => 'Destaques';
+
+  @override
+  String get achievementsUnlocked => 'Desbloqueadas';
+
+  @override
+  String get achievementsLocked => 'Bloqueadas';
+
+  @override
+  String get achievementsNothingHere => 'Nada por aqui';
+
+  @override
+  String get achievementsHiddenBadge => 'Insígnia oculta';
+
+  @override
+  String achievementsUnlockedOn(String date) {
+    return 'Desbloqueada em';
+  }
+
+  @override
+  String achievementsPoints(int points) {
+    return 'Pontos';
+  }
+
+  @override
+  String get achievementsDailyQuests => 'Missões diárias';
+
+  @override
+  String get achievementsWeeklyQuests => 'Missões semanais';
+
+  @override
+  String achievementsQuestReward(int points) {
+    return 'Recompensa da missão';
+  }
+
+  @override
+  String get achievementsRerollDaily => 'Trocar missão diária';
+
+  @override
+  String get achievementsRerollWeekly => 'Trocar missão semanal';
+
+  @override
+  String get achievementsRerollOffer => 'Trocar missão';
+
+  @override
+  String get achievementsRerollSpentDaily => 'Troca diária já utilizada';
+
+  @override
+  String get achievementsRerollSpentWeekly => 'Troca semanal já utilizada';
+
+  @override
+  String get achievementsRerollConfirm => 'Confirmar troca de missão';
+
+  @override
+  String get achievementsRerollConfirmBody =>
+      'Deseja substituir esta missão por uma nova?';
+
+  @override
+  String get achievementsRerollFailed => 'Falha ao trocar a missão';
+
+  @override
+  String get achievementsSuggested => 'Sugeridas';
+
+  @override
+  String get achievementsNoSuggestions => 'Nenhuma sugestão disponível';
+
+  @override
+  String get achievementsProgressLabel => 'Progresso';
+
+  @override
+  String get achievementsLoadout => 'Equipamento';
+
+  @override
+  String get achievementsLoadoutSubtitle =>
+      'Escolha os itens que deseja exibir no seu perfil';
+
+  @override
+  String get achievementsAppearance => 'Aparência';
+
+  @override
+  String get achievementsAppearanceSubtitle =>
+      'Personalize sua aparência nas conquistas';
+
+  @override
+  String get achievementsAvatars => 'Avatares';
+
+  @override
+  String get achievementsTitles => 'Títulos';
+
+  @override
+  String get achievementsEquipped => 'Equipado';
+
+  @override
+  String get achievementsOwned => 'Adquirido';
+
+  @override
+  String achievementsEarnedAt(int score) {
+    return 'Obtido em';
+  }
+
+  @override
+  String get achievementsAppearanceEmpty =>
+      'Nenhum item de aparência disponível';
+
+  @override
+  String get achievementsAppearanceFailed =>
+      'Falha ao carregar os itens de aparência';
+
+  @override
+  String get achievementsPowerUps => 'Power-ups';
+
+  @override
+  String get achievementsStats => 'Estatísticas';
+
+  @override
+  String get achievementsStatsSubtitle =>
+      'Veja suas estatísticas de reprodução e conquistas';
+
+  @override
+  String get achievementsStatsWatched => 'Assistidos';
+
+  @override
+  String get achievementsStatsBests => 'Recordes';
+
+  @override
+  String get achievementsStatsHabits => 'Hábitos';
+
+  @override
+  String get achievementsStatsVariety => 'Variedade';
+
+  @override
+  String get achievementsStatsServer => 'Servidor';
+
+  @override
+  String get achievementsStatsClock => 'Tempo';
+
+  @override
+  String get achievementsStatItems => 'Itens';
+
+  @override
+  String get achievementsStatMovies => 'Filmes';
+
+  @override
+  String get achievementsStatSeries => 'Séries';
+
+  @override
+  String get achievementsStatHours => 'Horas';
+
+  @override
+  String get achievementsStatDays => 'Dias';
+
+  @override
+  String get achievementsStatRewatches => 'Reassistidos';
+
+  @override
+  String get achievementsStatBestWatchStreak => 'Melhor sequência assistindo';
+
+  @override
+  String get achievementsStatBestLoginStreak => 'Melhor sequência de acessos';
+
+  @override
+  String get achievementsStatMostEpisodes => 'Maior número de episódios';
+
+  @override
+  String get achievementsStatMostMovies => 'Maior número de filmes';
+
+  @override
+  String get achievementsStatLongestItem => 'Item mais longo';
+
+  @override
+  String get achievementsStatBestCombo => 'Melhor combo';
+
+  @override
+  String get achievementsStatLateNight => 'Assistidos tarde da noite';
+
+  @override
+  String get achievementsStatEarlyMorning => 'Assistidos de manhã cedo';
+
+  @override
+  String get achievementsStatWeekend => 'Assistidos no fim de semana';
+
+  @override
+  String get achievementsStatDaysSignedIn => 'Dias conectado';
+
+  @override
+  String get achievementsStatLibraries => 'Bibliotecas';
+
+  @override
+  String get achievementsStatGenres => 'Gêneros';
+
+  @override
+  String get achievementsStatDecades => 'Décadas';
+
+  @override
+  String get achievementsStatCountries => 'Países';
+
+  @override
+  String get achievementsStatLanguages => 'Idiomas';
+
+  @override
+  String get achievementsStatUsers => 'Usuários';
+
+  @override
+  String get achievementsStatBadgesUnlocked => 'Insígnias desbloqueadas';
+
+  @override
+  String get achievementsStatScoreEarned => 'Pontuação obtida';
+
+  @override
+  String get achievementsStatCommonBadge => 'Insígnia mais comum';
+
+  @override
+  String get achievementsActivity => 'Atividade';
+
+  @override
+  String get achievementsActivitySubtitle =>
+      'Veja suas conquistas e atividades recentes';
+
+  @override
+  String achievementsActivityUnlocked(String user, String badge) {
+    return 'Desbloqueou';
+  }
+
+  @override
+  String get achievementsShop => 'Loja';
+
+  @override
+  String get achievementsShopSubtitle =>
+      'Use seus pontos para obter recompensas';
+
+  @override
+  String achievementsShopPack(String name, int count) {
+    return 'Pacote';
+  }
+
+  @override
+  String get achievementsShopEmpty => 'Nenhum item disponível na loja';
+
+  @override
+  String get achievementsBuyConfirm => 'Confirmar compra';
+
+  @override
+  String get achievementsBuyConfirmBody => 'Deseja comprar este item?';
+
+  @override
+  String get achievementsBuyFailed => 'Falha ao concluir a compra';
+
+  @override
+  String get achievementsScoreBank => 'Banco de pontos';
+
+  @override
+  String get achievementsBoost => 'Impulso';
+
+  @override
+  String get achievementsBoostBody =>
+      'Aumenta temporariamente os pontos obtidos';
+
+  @override
+  String get achievementsDoubleCredit => 'Crédito em dobro';
+
+  @override
+  String get achievementsDoubleCreditBody =>
+      'Receba o dobro de créditos durante o período ativo';
+
+  @override
+  String get achievementsStreakFreeze => 'Proteção de sequência';
+
+  @override
+  String get achievementsStreakFreezeBody =>
+      'Protege sua sequência caso você perca um dia';
+
+  @override
+  String achievementsPowerUpHeld(int count) {
+    return 'Power-up disponível';
+  }
+
+  @override
+  String get achievementsPowerUpActive => 'Power-up ativo';
+
+  @override
+  String get achievementsUsePowerUp => 'Usar power-up';
+
+  @override
+  String get achievementsUsePowerUpBody => 'Deseja ativar este power-up agora?';
+
+  @override
+  String get achievementsPowerUpFailed => 'Falha ao usar o power-up';
+
+  @override
+  String get achievementsHours => 'Horas';
+
+  @override
+  String get achievementsStreak => 'Sequência';
+
+  @override
+  String get achievementsPeriodWeek => 'Semana';
+
+  @override
+  String get achievementsPeriodMonth => 'Mês';
+
+  @override
+  String get achievementsPeriodYear => 'Ano';
+
+  @override
+  String achievementsDaysWatched(int count) {
+    return 'Dias assistidos';
+  }
+
+  @override
+  String achievementsBadgesEarned(int count) {
+    return 'Insígnias conquistadas';
+  }
+
+  @override
+  String get achievementsTopDirectors => 'Diretores mais assistidos';
+
+  @override
+  String get achievementsTopActors => 'Atores mais assistidos';
+
+  @override
+  String get achievementsLoadFailed => 'Falha ao carregar as conquistas';
+
+  @override
+  String get friends => 'Amigos';
+
+  @override
+  String get friendsSubtitle => 'Conecte-se e interaja com outros usuários';
+
+  @override
+  String get friendsShowButton => 'Mostrar botão de amigos';
+
+  @override
+  String get friendsShowButtonSubtitle =>
+      'Exibe o botão de amigos na interface';
+
+  @override
+  String get friendsMessages => 'Mensagens';
+
+  @override
+  String friendsUnreadCount(int count) {
+    return 'Mensagens não lidas';
+  }
+
+  @override
+  String get friendsRequests => 'Solicitações de amizade';
+
+  @override
+  String friendsRequestCount(int count) {
+    return 'Solicitações pendentes';
+  }
+
+  @override
+  String get friendsAdd => 'Adicionar amigo';
+
+  @override
+  String get friendsAddSubtitle => 'Encontre e adicione outros usuários';
+
+  @override
+  String get friendsPrivacy => 'Privacidade';
+
+  @override
+  String get friendsPrivacySubtitle => 'Controle o que seus amigos podem ver';
+
+  @override
+  String get friendsOnline => 'Online';
+
+  @override
+  String get friendsOffline => 'Offline';
+
+  @override
+  String get friendsNone => 'Nenhum amigo';
+
+  @override
+  String friendsWatching(String title) {
+    return 'Assistindo';
+  }
+
+  @override
+  String friendsLastWatched(String title) {
+    return 'Assistiu por último';
+  }
+
+  @override
+  String friendsLastSeen(String time) {
+    return 'Visto por último';
+  }
+
+  @override
+  String get friendsLoadFailed => 'Falha ao carregar amigos';
+
+  @override
+  String get friendsActionFailed => 'Falha ao executar a ação';
+
+  @override
+  String get friendsIncoming => 'Recebidas';
+
+  @override
+  String get friendsOutgoing => 'Enviadas';
+
+  @override
+  String get friendsNoRequests => 'Nenhuma solicitação de amizade';
+
+  @override
+  String get friendsAccept => 'Aceitar';
+
+  @override
+  String get friendsDecline => 'Recusar';
+
+  @override
+  String get friendsCancelRequest => 'Cancelar solicitação';
+
+  @override
+  String friendsRequestFrom(String name) {
+    return 'Solicitação de';
+  }
+
+  @override
+  String friendsCancelRequestBody(String name) {
+    return 'Deseja cancelar esta solicitação de amizade?';
+  }
+
+  @override
+  String get friendsSearchHint => 'Pesquisar usuários';
+
+  @override
+  String get friendsNoMatches => 'Nenhum usuário encontrado';
+
+  @override
+  String friendsRequestSent(String name) {
+    return 'Solicitação de amizade enviada';
+  }
+
+  @override
+  String get friendsSendRequest => 'Enviar solicitação';
+
+  @override
+  String get friendsSendMessage => 'Enviar mensagem';
+
+  @override
+  String friendsOpenItem(String title) {
+    return 'Abrir item';
+  }
+
+  @override
+  String get friendsRemove => 'Remover amigo';
+
+  @override
+  String friendsRemoveBody(String name) {
+    return 'Deseja remover este usuário da sua lista de amigos?';
+  }
+
+  @override
+  String get friendsBlock => 'Bloquear';
+
+  @override
+  String get friendsUnblock => 'Desbloquear';
+
+  @override
+  String friendsBlockBody(String name) {
+    return 'Deseja bloquear este usuário?';
+  }
+
+  @override
+  String friendsUnblockBody(String name) {
+    return 'Deseja desbloquear este usuário?';
+  }
+
+  @override
+  String get friendsBlocked => 'Bloqueado';
+
+  @override
+  String friendsProfileHidden(String name) {
+    return 'Perfil oculto';
+  }
+
+  @override
+  String get friendsAppearOffline => 'Aparecer offline';
+
+  @override
+  String get friendsAppearOfflineSubtitle =>
+      'Mostra seu status como offline para outros usuários';
+
+  @override
+  String get friendsHideNowPlaying => 'Ocultar o que estou assistindo';
+
+  @override
+  String get friendsHideNowPlayingSubtitle =>
+      'Impede que amigos vejam o que você está assistindo agora';
+
+  @override
+  String get friendsHideLastWatched => 'Ocultar último conteúdo assistido';
+
+  @override
+  String get friendsHideLastWatchedSubtitle =>
+      'Impede que amigos vejam o último conteúdo que você assistiu';
+
+  @override
+  String get friendsMessageNotifications => 'Notificações de mensagens';
+
+  @override
+  String get friendsMessageNotificationsSubtitle =>
+      'Receba notificações de novas mensagens';
+
+  @override
+  String get friendsMuteDuringPlayback => 'Silenciar durante a reprodução';
+
+  @override
+  String get friendsMuteDuringPlaybackSubtitle =>
+      'Silencia notificações de mensagens durante a reprodução';
+
+  @override
+  String get friendsSaveFailed => 'Falha ao salvar as configurações de amigos';
+
+  @override
+  String get chatNew => 'Nova conversa';
+
+  @override
+  String get chatNewSubtitle => 'Inicie uma nova conversa';
+
+  @override
+  String get chatNewGroup => 'Novo grupo';
+
+  @override
+  String get chatNewGroupSubtitle => 'Crie uma conversa em grupo';
+
+  @override
+  String get chatNone => 'Nenhuma conversa';
+
+  @override
+  String get chatYou => 'Você';
+
+  @override
+  String chatYouSaid(String text) {
+    return 'Você disse';
+  }
+
+  @override
+  String get chatPhoto => 'Foto';
+
+  @override
+  String get chatEmoji => 'Emoji';
+
+  @override
+  String get chatEmojiSearch => 'Pesquisar emojis';
+
+  @override
+  String get chatNoRecentEmoji => 'Nenhum emoji recente';
+
+  @override
+  String get chatViewPhoto => 'Ver foto';
+
+  @override
+  String get chatHint => 'Digite uma mensagem';
+
+  @override
+  String get chatAttach => 'Anexar';
+
+  @override
+  String get chatEdited => 'Editada';
+
+  @override
+  String get chatSeen => 'Visualizada';
+
+  @override
+  String get chatSent => 'Enviada';
+
+  @override
+  String get chatEditing => 'Editando';
+
+  @override
+  String get chatMessageOptions => 'Opções da mensagem';
+
+  @override
+  String get chatDeleteBody => 'Deseja excluir esta mensagem?';
+
+  @override
+  String get chatClear => 'Limpar conversa';
+
+  @override
+  String get chatClearBody =>
+      'Deseja apagar todas as mensagens desta conversa?';
+
+  @override
+  String get chatGroupInfo => 'Informações do grupo';
+
+  @override
+  String get chatGroupName => 'Nome do grupo';
+
+  @override
+  String chatMemberCount(int count) {
+    return 'Membros';
+  }
+
+  @override
+  String get chatOwner => 'Proprietário';
+
+  @override
+  String get chatAdmin => 'Administrador';
+
+  @override
+  String get chatMakeAdmin => 'Tornar administrador';
+
+  @override
+  String get chatRemoveAdmin => 'Remover administrador';
+
+  @override
+  String get chatRemoveMember => 'Remover membro';
+
+  @override
+  String get chatAddMember => 'Adicionar membro';
+
+  @override
+  String get chatNobodyToAdd => 'Nenhum usuário disponível para adicionar';
+
+  @override
+  String get chatLeave => 'Sair do grupo';
+
+  @override
+  String get chatLeaveBody => 'Deseja sair deste grupo?';
+
+  @override
+  String get chatCreate => 'Criar';
+
+  @override
+  String get chatPickMembers => 'Selecionar membros';
+
+  @override
+  String chatNewMessageFrom(String name) {
+    return 'Nova mensagem de';
+  }
+
+  @override
+  String get chatImageTooLarge => 'A imagem é muito grande';
+
+  @override
+  String get chatImageUnsupported => 'Formato de imagem não compatível';
 
   @override
   String get embeddedBrowserNotAvailable =>
@@ -23516,6 +26072,9 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get audiobookFocusedTimeline => 'Linha do tempo focada';
 
   @override
+  String get audiobookFullTimeline => 'Linha do tempo completa do audiolivro';
+
+  @override
   String get audiobookExportBookmarks => 'Exportar marcadores';
 
   @override
@@ -23704,6 +26263,11 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   }
 
   @override
+  String dateCreatedFormat(Object date) {
+    return 'Data de criação';
+  }
+
+  @override
   String showAllAudioTracks(int count) {
     return 'Mostrar todas as ($count) faixas de áudio';
   }
@@ -23779,6 +26343,117 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   @override
   String get transcodeAudioChannelsNotSupported =>
       'O número de canais de áudio não é compatível.';
+
+  @override
+  String transcodeAudioCodecWithCodec(String codec) {
+    return 'Codec de áudio: $codec';
+  }
+
+  @override
+  String transcodeAudioCodecHintPassthrough(String codec) {
+    return 'Este codec pode ser enviado diretamente sem transcodificação';
+  }
+
+  @override
+  String transcodeAudioChannelsExceeded(int channels) {
+    return 'Quantidade de canais de áudio excedida';
+  }
+
+  @override
+  String get transcodeAudioChannelsHint =>
+      'O dispositivo não oferece suporte a esta quantidade de canais de áudio';
+
+  @override
+  String get transcodeSubtitleBurnInAssDisabled =>
+      'Gravação de legendas ASS desativada';
+
+  @override
+  String get transcodeSubtitleBurnInAssHint =>
+      'Legendas ASS podem precisar ser incorporadas ao vídeo para reprodução correta';
+
+  @override
+  String get transcodeSubtitleBurnInPgsDisabled =>
+      'Gravação de legendas PGS desativada';
+
+  @override
+  String get transcodeSubtitleBurnInPgsHint =>
+      'Legendas PGS podem precisar ser incorporadas ao vídeo para reprodução correta';
+
+  @override
+  String transcodeSubtitleNotSupportedWithCodec(String codec) {
+    return 'Legendas não compatíveis com o codec $codec';
+  }
+
+  @override
+  String transcodeBitrateExceededWithValues(
+    String fileBitrate,
+    String maxBitrate,
+  ) {
+    return 'A taxa de bits excede o limite suportado';
+  }
+
+  @override
+  String get transcodeBitrateHint =>
+      'A taxa de bits do vídeo excede o limite suportado pelo dispositivo';
+
+  @override
+  String get transcodeResolutionHint =>
+      'A resolução do vídeo não é compatível com este dispositivo';
+
+  @override
+  String get transcodeVideoRangeNotSupported =>
+      'Faixa dinâmica de vídeo não compatível';
+
+  @override
+  String get transcodeDolbyVisionProfile7ElDisabled =>
+      'Camada de aprimoramento do Dolby Vision Perfil 7 desativada';
+
+  @override
+  String get transcodeDolbyVisionProfile7ElHint =>
+      'A camada de aprimoramento do Dolby Vision Perfil 7 não pode ser reproduzida diretamente';
+
+  @override
+  String get transcodeDolbyVisionFallbackPreferenceTranscode =>
+      'Transcodificar como alternativa ao Dolby Vision';
+
+  @override
+  String get transcodeDolbyVisionFallbackHint =>
+      'O dispositivo não oferece suporte ao Dolby Vision deste conteúdo';
+
+  @override
+  String get transcodeDisplayReportsNoHdr =>
+      'A tela informa que não oferece suporte a HDR';
+
+  @override
+  String get transcodeDisplayLacksHdr10ForFallback =>
+      'A tela não oferece suporte a HDR10 para reprodução alternativa';
+
+  @override
+  String get transcodeAudioSampleRateNotSupported =>
+      'Taxa de amostragem de áudio não compatível';
+
+  @override
+  String get transcodeAudioBitDepthNotSupported =>
+      'Profundidade de bits do áudio não compatível';
+
+  @override
+  String get transcodeRefFramesNotSupported =>
+      'Quantidade de quadros de referência não compatível';
+
+  @override
+  String get transcodeAnamorphicVideoNotSupported =>
+      'Vídeo anamórfico não compatível';
+
+  @override
+  String get transcodeInterlacedVideoNotSupported =>
+      'Vídeo entrelaçado não compatível';
+
+  @override
+  String get transcodeSecondaryAudioNotSupported =>
+      'Áudio secundário não compatível';
+
+  @override
+  String get transcodeDirectPlayError => 'Erro durante a reprodução direta';
 
   @override
   String get sortAlphabetical => 'Alfabética';
@@ -23885,6 +26560,694 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get imdbTopEnglishMovies => 'Melhores filmes em inglês do IMDb';
 
   @override
+  String get addToWatchlist => 'Adicionar à lista de interesse';
+
+  @override
+  String get removeFromWatchlist => 'Remover da lista de interesse';
+
+  @override
+  String get watchlistUpdateFailed => 'Falha ao atualizar a lista de interesse';
+
+  @override
+  String get adminSearchParameters => 'Parâmetros de pesquisa';
+
+  @override
+  String get adminCurrentMetadata => 'Metadados atuais';
+
+  @override
+  String get adminLabelYear => 'Ano';
+
+  @override
+  String get adminLabelImdbId => 'ID do IMDb';
+
+  @override
+  String get adminLabelTmdbMovieId => 'ID do filme no TMDB';
+
+  @override
+  String get adminLabelTmdbBoxSetId => 'ID da coleção no TMDB';
+
+  @override
+  String get adminLabelTvdbBoxSetId => 'ID da coleção no TVDB';
+
+  @override
+  String get adminLabelTvdbId => 'ID do TVDB';
+
+  @override
+  String get adminLabelTvdbSlug => 'Slug do TVDB';
+
+  @override
+  String get adminReplaceImages => 'Substituir imagens';
+
+  @override
+  String get adminBackToSearch => 'Voltar à pesquisa';
+
+  @override
+  String get grouping => 'Agrupamento';
+
+  @override
+  String get groupByType => 'Agrupar por tipo';
+
+  @override
+  String get playlistTypes => 'Tipos de playlist';
+
+  @override
+  String get playlistTypeVideo => 'Vídeo';
+
+  @override
+  String get playlistTypeMusicVideo => 'Videoclipe';
+
+  @override
+  String get playlistTypeAudio => 'Áudio';
+
+  @override
+  String get playlistTypeAudiobook => 'Audiolivro';
+
+  @override
+  String get playlistTypeBook => 'Livro';
+
+  @override
+  String get playlistTypePhoto => 'Foto';
+
+  @override
+  String get playlistTypeMixed => 'Mista';
+
+  @override
+  String get videoPlaylistsSection => 'Playlists de vídeos';
+
+  @override
+  String get musicVideoPlaylistsSection => 'Playlists de videoclipes';
+
+  @override
+  String get audioPlaylistsSection => 'Playlists de áudio';
+
+  @override
+  String get audiobookPlaylistsSection => 'Playlists de audiolivros';
+
+  @override
+  String get bookPlaylistsSection => 'Playlists de livros';
+
+  @override
+  String get photoPlaylistsSection => 'Playlists de fotos';
+
+  @override
+  String get mixedPlaylistsSection => 'Playlists mistas';
+
+  @override
+  String get currentTime => 'Hora atual';
+
+  @override
+  String get playbackTimeDisplay => 'Exibição do tempo de reprodução';
+
+  @override
+  String get settingsPlaybackTimeDisplayDescription =>
+      'Escolha como o tempo de reprodução será exibido';
+
+  @override
+  String get playbackTimeTotal => 'Duração total';
+
+  @override
+  String get playbackTimeRemaining => 'Tempo restante';
+
+  @override
+  String get playbackTimeEndsAt => 'Termina às';
+
+  @override
+  String get playbackTimeElapsed => 'Tempo decorrido';
+
+  @override
+  String get playbackTimeVideoSection => 'Vídeo';
+
+  @override
+  String get playbackTimeMusicSection => 'Música';
+
+  @override
+  String get playbackTimeSlotDescription =>
+      'Escolha quais informações de tempo serão exibidas nesta posição';
+
+  @override
+  String get playbackTimeAboveBarLeft => 'Acima da barra à esquerda';
+
+  @override
+  String get playbackTimeAboveBarCenter => 'Acima da barra ao centro';
+
+  @override
+  String get playbackTimeAboveBarRight => 'Acima da barra à direita';
+
+  @override
+  String get playbackTimeBelowBarLeft => 'Abaixo da barra à esquerda';
+
+  @override
+  String get playbackTimeBelowBarCenter => 'Abaixo da barra ao centro';
+
+  @override
+  String get playbackTimeBelowBarRight => 'Abaixo da barra à direita';
+
+  @override
+  String get settingsMusicPlaybackTimeDescription =>
+      'Escolha como o tempo será exibido durante a reprodução de músicas';
+
+  @override
+  String get groupByTitle => 'Agrupar por título';
+
+  @override
+  String get groupByDecade => 'Agrupar por década';
+
+  @override
+  String get groupByParentalRating => 'Agrupar por classificação indicativa';
+
+  @override
+  String get groupByStudio => 'Agrupar por estúdio';
+
+  @override
+  String get showAlphabeticalFilters => 'Mostrar filtros alfabéticos';
+
+  @override
+  String get personalRatingStyle => 'Estilo de avaliação pessoal';
+
+  @override
+  String get personalRatingThumbs => 'Gostei/Não gostei';
+
+  @override
+  String get personalRatingStars => 'Estrelas';
+
+  @override
+  String get personalRatingNumeric => 'Numérica';
+
+  @override
+  String get rate => 'Avaliar';
+
+  @override
+  String get like => 'Gostei';
+
+  @override
+  String get dislike => 'Não gostei';
+
+  @override
+  String get personalRatingClear => 'Limpar avaliação';
+
+  @override
+  String get personalRatingRated => 'Avaliado';
+
+  @override
+  String get personalRatingMine => 'Minha avaliação';
+
+  @override
+  String get personalRatingSaveFailed => 'Falha ao salvar a avaliação';
+
+  @override
+  String get increase => 'Aumentar';
+
+  @override
+  String get decrease => 'Diminuir';
+
+  @override
+  String personalRatingOutOfTen(String rating) {
+    return 'de 10';
+  }
+
+  @override
+  String personalRatingOutOfFive(String rating) {
+    return 'de 5';
+  }
+
+  @override
+  String get filterInProgress => 'Em andamento';
+
+  @override
+  String get filterUnreleased => 'Não lançados';
+
+  @override
+  String get filterTrailers => 'Trailers';
+
+  @override
+  String get filterExtras => 'Extras';
+
+  @override
+  String get filterThemeSongs => 'Músicas-tema';
+
+  @override
+  String get filterThemeVideos => 'Vídeos-tema';
+
+  @override
+  String get source => 'Fonte';
+
+  @override
+  String get years => 'Anos';
+
+  @override
+  String get audioLanguage => 'Idioma do áudio';
+
+  @override
+  String get subtitleLanguage => 'Idioma da legenda';
+
+  @override
+  String get clearFilters => 'Limpar filtros';
+
+  @override
+  String get seerrShortcutsRow => 'Atalhos do Seerr';
+
+  @override
+  String get seerrReleased => 'Lançado';
+
+  @override
+  String get seerrMinRating => 'Avaliação mínima';
+
+  @override
+  String get seerrMinVotes => 'Número mínimo de votos';
+
+  @override
+  String get seerrOriginalLanguage => 'Idioma original';
+
+  @override
+  String get seerrRuntime => 'Duração';
+
+  @override
+  String get subtitleHdrSeparate =>
+      'Configurações separadas de legendas para HDR';
+
+  @override
+  String get subtitleHdrSeparateSubtitle =>
+      'Use configurações de legendas diferentes ao reproduzir conteúdo HDR';
+
+  @override
+  String get scrollSensitivity => 'Sensibilidade da rolagem';
+
+  @override
+  String get scrollSensitivitySubtitle =>
+      'Ajuste a velocidade de resposta da rolagem';
+
+  @override
+  String get mediaDetailsAndSpoilers => 'Detalhes da mídia e spoilers';
+
+  @override
+  String get openTrailersExternally => 'Abrir trailers externamente';
+
+  @override
+  String get openTrailersExternallySubtitle =>
+      'Abre trailers em um aplicativo externo quando disponível';
+
+  @override
+  String get hideDetailsMediaDescription =>
+      'Ocultar descrição da mídia nos detalhes';
+
+  @override
+  String get hideDetailsMediaDescriptionSubtitle =>
+      'Oculta a sinopse na tela de detalhes para evitar spoilers';
+
+  @override
+  String get detailUseSeriesThumbnails =>
+      'Usar miniaturas da série nos detalhes';
+
+  @override
+  String get detailUseSeriesThumbnailsSubtitle =>
+      'Usa miniaturas dos episódios da série na tela de detalhes';
+
+  @override
+  String get hideHomeMediaDescription =>
+      'Ocultar descrição da mídia na tela inicial';
+
+  @override
+  String get hideHomeMediaDescriptionSubtitle =>
+      'Oculta as descrições das mídias na tela inicial para evitar spoilers';
+
+  @override
+  String get continueWatchingAndNextUpHeader =>
+      'Continuar assistindo e Próximos';
+
+  @override
+  String get setupSkip => 'Pular';
+
+  @override
+  String get setupNavbarQuestion => 'Como você prefere a barra de navegação?';
+
+  @override
+  String get setupMediaBarQuestion => 'Como você prefere a barra de mídia?';
+
+  @override
+  String get setupHomeRowsQuestion =>
+      'Como você prefere as linhas da tela inicial?';
+
+  @override
+  String get setupDetailQuestion => 'Como você prefere a tela de detalhes?';
+
+  @override
+  String get setupTourQuestion => 'Quer conhecer os principais recursos?';
+
+  @override
+  String get setupPlaybackLanguages => 'Idiomas de reprodução';
+
+  @override
+  String get setupOptional => 'Opcional';
+
+  @override
+  String get setupStyleClassic => 'Clássico';
+
+  @override
+  String get setupStyleModern => 'Moderno';
+
+  @override
+  String get setupRowsClassicHint =>
+      'Visual tradicional com linhas simples e familiares';
+
+  @override
+  String get setupRowsModernHint =>
+      'Visual moderno com cards maiores e mais destacados';
+
+  @override
+  String get setupDetailClassicHint =>
+      'Tela de detalhes tradicional e familiar';
+
+  @override
+  String get setupDetailModernHint =>
+      'Tela de detalhes moderna com maior destaque visual';
+
+  @override
+  String get setupStyleSpotlight => 'Destaque';
+
+  @override
+  String get setupDetailSpotlightHint =>
+      'Dá maior destaque à arte e às informações principais';
+
+  @override
+  String get setupStyleNouveau => 'Nouveau';
+
+  @override
+  String get setupDetailNouveauHint =>
+      'Um visual elegante e contemporâneo para a tela de detalhes';
+
+  @override
+  String get setupStyleMinimalist => 'Minimalista';
+
+  @override
+  String get setupDetailMinimalistHint =>
+      'Uma tela de detalhes limpa e com menos elementos visuais';
+
+  @override
+  String get setupNavbarStyleQuestion =>
+      'Qual estilo de barra de navegação você prefere?';
+
+  @override
+  String get setupNavbarStyleDockHint =>
+      'Navegação compacta em formato de dock';
+
+  @override
+  String get setupNavbarStyleSplitHint =>
+      'Navegação dividida em áreas separadas';
+
+  @override
+  String get setupNavbarStyleStripHint => 'Navegação em uma faixa contínua';
+
+  @override
+  String get setupPickALook => 'Escolha um visual';
+
+  @override
+  String get setupTourMoreHeader => 'E muito mais';
+
+  @override
+  String get setupTourBulletRequests =>
+      'Solicite filmes e séries diretamente pelo aplicativo';
+
+  @override
+  String get setupTourBulletSyncPlay =>
+      'Assista em sincronia com outras pessoas';
+
+  @override
+  String get setupTourBulletThemes =>
+      'Personalize a aparência com diferentes temas';
+
+  @override
+  String get setupTourBulletDownloads => 'Baixe mídias para assistir offline';
+
+  @override
+  String get setupTourBulletMore =>
+      'Explore ainda mais recursos e opções de personalização';
+
+  @override
+  String get runSetupAgain => 'Executar configuração novamente';
+
+  @override
+  String get serverMessages => 'Mensagens do servidor';
+
+  @override
+  String get serverMessagesEmpty => 'Nenhuma mensagem do servidor';
+
+  @override
+  String get serverMessagesMarkAllRead => 'Marcar todas como lidas';
+
+  @override
+  String get serverMessagesShowButton =>
+      'Mostrar botão de mensagens do servidor';
+
+  @override
+  String get serverMessagesShowButtonSubtitle =>
+      'Exibe o botão de mensagens enviadas pelo servidor';
+
+  @override
+  String get showBookDiscoverTab => 'Mostrar aba Descobrir em livros';
+
+  @override
+  String get showBookDiscoverTabDescription =>
+      'Exibe a aba Descobrir na seção de livros';
+
+  @override
+  String get autoDownloadNewEpisodes =>
+      'Baixar novos episódios automaticamente';
+
+  @override
+  String get autoDownloadStop => 'Parar download automático';
+
+  @override
+  String autoDownloadKeepUnwatchedSubtitle(int count) {
+    return 'Mantém episódios não assistidos baixados';
+  }
+
+  @override
+  String autoDownloadStopSubtitle(String quality) {
+    return 'Interrompe novos downloads automáticos para esta série';
+  }
+
+  @override
+  String get autoDownloadTranscodedForegroundNote =>
+      'Downloads transcodificados precisam permanecer em primeiro plano';
+
+  @override
+  String get autoDownloadTranscodedRunningNote =>
+      'Download transcodificado em andamento';
+
+  @override
+  String get autoDownloadForegroundOnly => 'Somente em primeiro plano';
+
+  @override
+  String get autoDownloadQualityTitle => 'Qualidade do download automático';
+
+  @override
+  String autoDownloadEnabledFor(String title) {
+    return 'Download automático ativado para';
+  }
+
+  @override
+  String autoDownloadStoppedFor(String title) {
+    return 'Download automático interrompido para';
+  }
+
+  @override
+  String get autoDownloadSection => 'Downloads automáticos';
+
+  @override
+  String get autoDownloadEnable => 'Ativar download automático';
+
+  @override
+  String get autoDownloadEnableSubtitle =>
+      'Baixa automaticamente novos episódios desta série';
+
+  @override
+  String get autoDownloadKeepUnwatched => 'Manter episódios não assistidos';
+
+  @override
+  String get autoDownloadKeepAll => 'Manter todos';
+
+  @override
+  String get autoDownloadDelete => 'Excluir automaticamente';
+
+  @override
+  String get autoDownloadDeleteSubtitle =>
+      'Escolha quando os downloads assistidos serão removidos';
+
+  @override
+  String get autoDownloadDeleteNever => 'Nunca';
+
+  @override
+  String get autoDownloadDeleteImmediately => 'Imediatamente após assistir';
+
+  @override
+  String get autoDownloadDeleteAfterDay => 'Após 1 dia';
+
+  @override
+  String get autoDownloadDeleteAfterWeek => 'Após 1 semana';
+
+  @override
+  String get autoDownloadBackgroundRefresh => 'Atualização em segundo plano';
+
+  @override
+  String get autoDownloadBackgroundRefreshSubtitle =>
+      'Verifica automaticamente novos episódios em segundo plano';
+
+  @override
+  String get autoDownloadBackgroundRefreshDenied =>
+      'Permissão para atualização em segundo plano negada';
+
+  @override
+  String get autoDownloadBackgroundRestrictedAndroid =>
+      'O Android está restringindo a atividade em segundo plano';
+
+  @override
+  String get autoDownloadCheckNow => 'Verificar agora';
+
+  @override
+  String get autoDownloadChecking => 'Verificando';
+
+  @override
+  String get autoDownloadNeverChecked => 'Nunca verificado';
+
+  @override
+  String autoDownloadLastCheck(String when, int queued) {
+    return 'Última verificação';
+  }
+
+  @override
+  String autoDownloadLastCheckFailed(String when, String error) {
+    return 'Falha na última verificação';
+  }
+
+  @override
+  String get autoDownloadFollowedSeries => 'Séries acompanhadas';
+
+  @override
+  String get autoDownloadNoSubscriptions =>
+      'Nenhuma série configurada para download automático';
+
+  @override
+  String get autoDownloadRemove => 'Remover download automático';
+
+  @override
+  String get autoDownloadStorageFull => 'Armazenamento cheio';
+
+  @override
+  String get autoDownloadWaitingForWifi => 'Aguardando Wi-Fi';
+
+  @override
+  String get downloadNotificationRunning => 'Download em andamento';
+
+  @override
+  String downloadNotificationRunningBatch(int done, int total) {
+    return 'Downloads em andamento';
+  }
+
+  @override
+  String downloadNotificationProgress(String name, int percent) {
+    return 'Progresso do download';
+  }
+
+  @override
+  String downloadNotificationTransfer(
+    String name,
+    String progress,
+    String timeRemaining,
+  ) {
+    return 'Transferindo';
+  }
+
+  @override
+  String downloadNotificationStarting(String name) {
+    return 'Iniciando download';
+  }
+
+  @override
+  String downloadNotificationCompleteTitle(int count) {
+    return 'Download concluído';
+  }
+
+  @override
+  String downloadNotificationSaved(String name) {
+    return 'Salvo para uso offline';
+  }
+
+  @override
+  String downloadNotificationSavedCount(int count) {
+    return 'Itens salvos';
+  }
+
+  @override
+  String downloadNotificationSeriesEpisodes(String series, int count) {
+    return 'Episódios da série baixados';
+  }
+
+  @override
+  String get downloadNotificationFailedTitle => 'Falha no download';
+
+  @override
+  String downloadNotificationFailedBody(String name, String error) {
+    return 'Não foi possível concluir o download';
+  }
+
+  @override
+  String get serverMessagesNotificationTitle => 'Nova mensagem do servidor';
+
+  @override
+  String get serverMessagesNotificationReceived =>
+      'Você recebeu uma nova mensagem do servidor';
+
+  @override
+  String get downloadStorageLimitReached =>
+      'Limite de armazenamento para downloads atingido';
+
+  @override
+  String downloadNotEnoughStorage(String needed, String free) {
+    return 'Espaço de armazenamento insuficiente';
+  }
+
+  @override
+  String get autoDownloadStorageFullTitle => 'Armazenamento insuficiente';
+
+  @override
+  String autoDownloadStorageFullBody(int count, String name, String size) {
+    return 'Não há espaço suficiente para continuar os downloads automáticos';
+  }
+
+  @override
+  String get settingsAnimationSpeed => 'Velocidade das animações';
+
+  @override
+  String get pageTransitions => 'Transições de página';
+
+  @override
+  String get pageTransitionsSubtitle =>
+      'Ajuste a velocidade das transições entre páginas';
+
+  @override
+  String get navigationSpeed => 'Velocidade da navegação';
+
+  @override
+  String get navigationSpeedSubtitle =>
+      'Ajuste a velocidade das animações durante a navegação';
+
+  @override
+  String get modernCardsTransitionSpeed =>
+      'Velocidade da transição dos cards modernos';
+
+  @override
+  String get modernCardsTransitionSpeedSubtitle =>
+      'Ajuste a velocidade das animações dos cards modernos';
+
+  @override
+  String get delayCardExpansionOnRapidScroll =>
+      'Atrasar expansão do card durante rolagem rápida';
+
+  @override
+  String get delayCardExpansionOnRapidScrollSubtitle =>
+      'Evita expandir cards enquanto você navega rapidamente pela lista';
+
+  @override
   String get animationSpeedExtraSlow => 'Extra lento';
 
   @override
@@ -23926,6 +27289,54 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   @override
   String get keepVideoClearOfDynamicIslandDescription =>
       'Na horizontal, a carcaça da câmera cobre uma das bordas da tela. Isso impede que a imagem seja exibida completamente, o que só altera o resultado em vídeos com largura suficiente para alcançar essa distância';
+
+  @override
+  String get bottomNavbarStyle => 'Estilo da barra de navegação inferior';
+
+  @override
+  String get bottomNavbarStyleDock => 'Dock';
+
+  @override
+  String get bottomNavbarStyleSplit => 'Dividida';
+
+  @override
+  String get bottomNavbarStyleStrip => 'Faixa';
+
+  @override
+  String get bottomNavbarTabs => 'Abas da barra inferior';
+
+  @override
+  String get bottomNavbarTabsDescription =>
+      'Escolha quais abas aparecem na barra de navegação inferior';
+
+  @override
+  String get bottomNavbarTabsAutomatic => 'Automáticas';
+
+  @override
+  String get bottomNavbarTabsPinned => 'Fixadas';
+
+  @override
+  String get bottomNavbarTabsAvailable => 'Disponíveis';
+
+  @override
+  String get bottomNavbarTabsReset => 'Redefinir abas';
+
+  @override
+  String get bottomNavbarTabsLimit => 'Limite de abas';
+
+  @override
+  String get bottomNavbarTabTurnedOff => 'Aba desativada';
+
+  @override
+  String get bottomNavbarSplitSearchNote =>
+      'No estilo dividido, a pesquisa aparece separadamente';
+
+  @override
+  String get bottomNavbarButtonsNote =>
+      'Alguns botões podem variar conforme o dispositivo e os recursos disponíveis';
+
+  @override
+  String get navYou => 'Você';
 }
 
 /// The translations for Portuguese, as used in Portugal (`pt_PT`).

@@ -9,16 +9,20 @@ import '../../../../widgets/focus/focusable_wrapper.dart';
 import '../../../../widgets/overlay_sheet.dart';
 
 /// One section inside a [SpotlightSectionModal]: an optional header plus a
-/// grid (or list) built by [builder]. Only the first section of a modal
-/// receives a [FocusNode] to claim initial d-pad focus. A known [count] shows
-/// as a pill next to the title. Leave [title] off for content that stands on
-/// its own, like the Seerr chips and stats.
+/// grid (or list) built by [builder]. Only the first section of a modal that
+/// can take focus receives a [FocusNode] to claim initial d-pad focus. A known
+/// [count] shows as a pill next to the title. Leave [title] off for content
+/// that stands on its own, like the Seerr chips and stats.
 class SpotlightModalSection {
   final String? id;
   final String? title;
   final int? count;
   final bool collapsible;
   final bool initiallyExpanded;
+
+  /// False for content with nothing in it the remote can land on, like the
+  /// Seerr stats. The opening focus skips it for the next section down.
+  final bool focusable;
   final Widget Function(BuildContext context, FocusNode? firstFocusNode)
   builder;
 
@@ -29,6 +33,7 @@ class SpotlightModalSection {
     this.count,
     this.collapsible = false,
     this.initiallyExpanded = true,
+    this.focusable = true,
   });
 }
 
@@ -288,10 +293,10 @@ class _SpotlightModalShellState extends State<_SpotlightModalShell> {
     final glass = AppColorScheme.isGlass;
     final textTheme = Theme.of(context).textTheme;
 
-    int? firstExpandedIndex;
+    int? firstFocusableIndex;
     for (var i = 0; i < _sections.length; i++) {
-      if (_isSectionExpanded(_sections[i], i)) {
-        firstExpandedIndex = i;
+      if (_sections[i].focusable && _isSectionExpanded(_sections[i], i)) {
+        firstFocusableIndex = i;
         break;
       }
     }
@@ -326,7 +331,7 @@ class _SpotlightModalShellState extends State<_SpotlightModalShell> {
             if (_isSectionExpanded(_sections[i], i))
               _sections[i].builder(
                 context,
-                i == firstExpandedIndex ? _firstCellFocusNode : null,
+                i == firstFocusableIndex ? _firstCellFocusNode : null,
               ),
           ],
         ],

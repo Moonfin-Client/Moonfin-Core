@@ -18,11 +18,11 @@ import 'bottom_nav_metrics.dart';
 import 'bottom_nav_model.dart';
 import 'bottom_nav_tab.dart';
 import 'bottom_nav_theme.dart';
+import 'bottom_navbar_hub_sheet.dart';
 import 'dock_bar.dart';
 import 'libraries_sheet.dart';
 import 'split_bar.dart';
 import 'strip_bar.dart';
-import 'you_hub_sheet.dart';
 
 /// How much of the bottom of the screen the bottom navbar covers, for content
 /// that scrolls underneath it. Only present while the bottom navbar is.
@@ -43,6 +43,13 @@ class BottomNavInsetScope extends InheritedWidget {
   bool updateShouldNotify(BottomNavInsetScope oldWidget) =>
       height != oldWidget.height;
 }
+
+/// How much of the bottom of the screen is covered. That's the bottom navbar
+/// on screens that show it and the OS navigation buttons or home indicator
+/// everywhere else. The bar's height already includes the system inset.
+double bottomContentInset(BuildContext context) =>
+    BottomNavInsetScope.maybeOf(context) ??
+    MediaQuery.paddingOf(context).bottom;
 
 /// Bottom padding for a scrollable that may run under the bottom navbar:
 /// [fallback] where there is no bar, otherwise enough to clear it.
@@ -185,7 +192,7 @@ class _BottomNavbarState extends State<BottomNavbar> {
           openBottomNavTab(context, tab);
         }
       case BottomNavItemKind.you:
-        showYouHub(
+        showBottomNavbarHub(
           context: context,
           controller: _controller,
           theme: theme,

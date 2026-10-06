@@ -2424,14 +2424,18 @@ class PlaybackManager implements AudioOwnable {
       // through to the decision logger.
       _clientTranscodeReason = transcodeSelector(resolution);
       if (_clientTranscodeReason != null) {
-        await _playCurrentItem(
-          startPosition: startPosition,
-          enableDirectPlay: false,
-          enableDirectStream: false,
-          enableTranscoding: true,
-          allowStartupRecovery: allowStartupRecovery,
-          withholdExternalPgs: withholdExternalPgs,
-        );
+        try {
+          await _playCurrentItem(
+            startPosition: startPosition,
+            enableDirectPlay: false,
+            enableDirectStream: false,
+            enableTranscoding: true,
+            allowStartupRecovery: allowStartupRecovery,
+            withholdExternalPgs: withholdExternalPgs,
+          );
+        } finally {
+          _closeLiveStreamOnce(resolution);
+        }
         return;
       }
     }
@@ -2535,6 +2539,7 @@ class PlaybackManager implements AudioOwnable {
         return;
       } finally {
         _reResolvingForTrackMatch = false;
+        _closeLiveStreamOnce(resolution);
       }
     }
 
@@ -2890,14 +2895,8 @@ class PlaybackManager implements AudioOwnable {
     // (providers often cap connections). Safe: the played URL is the upstream,
     // not the server, and directPlay+liveStreamId only happens via the live
     // upstream branch.
-    final directLiveStreamId = resolution.liveStreamId;
-    if (resolution.playMethod == StreamPlayMethod.directPlay &&
-        directLiveStreamId != null &&
-        directLiveStreamId.isNotEmpty) {
-      if (_claimLiveStreamRelease(resolution)) {
-        final closeFuture = _service?.closeLiveStream(directLiveStreamId);
-        if (closeFuture != null) unawaited(closeFuture);
-      }
+    if (resolution.playMethod == StreamPlayMethod.directPlay) {
+      _closeLiveStreamOnce(resolution);
     }
 
     _startProgressTimer();
@@ -3043,6 +3042,18 @@ class PlaybackManager implements AudioOwnable {
     if (_liveStreamReleaseClaimed[resolution] == true) return false;
     _liveStreamReleaseClaimed[resolution] = true;
     return true;
+  }
+
+  /// Every PlaybackInfo opens the channel again and the server counts each
+  /// open as a viewer, so a resolution dropped for a fresh resolve has to give
+  /// its stream back here or the channel stays open after stop. Call it after
+  /// the replacement resolves, since closing first leaves a shared stream with
+  /// no viewers and makes it reconnect to its source.
+  void _closeLiveStreamOnce(StreamResolutionResult resolution) {
+    final liveStreamId = resolution.liveStreamId;
+    if (liveStreamId == null || liveStreamId.isEmpty) return;
+    if (!_claimLiveStreamRelease(resolution)) return;
+    unawaited(_service?.closeLiveStream(liveStreamId));
   }
 
   void _stopProgressTimer() {

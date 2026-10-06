@@ -133,14 +133,16 @@ class BottomNavController extends ChangeNotifier {
           DownloadsNavSlot.isOffered() && DownloadsNavSlot.hasSavedMedia(),
       shuffle: _prefs.get(UserPreferences.showShuffleButton),
       syncPlay: syncPlay,
+      quickConnect:
+          _maybe<MediaServerClient>()?.serverType == ServerType.jellyfin,
       alsoOnBar: style == BottomNavbarStyle.split
           ? const {BottomNavTab.search}
           : const {},
     );
   }
 
-  /// Whether the You hub lists server messages: the user turned the button on
-  /// and the server has something to say.
+  /// Whether the bottom navbar hub lists server messages: the user turned the
+  /// button on and the server has something to say.
   bool get messagesVisible =>
       _prefs.get(UserPreferences.showServerMessagesButton) &&
       (_messages?.messages.isNotEmpty ?? false);
@@ -150,8 +152,8 @@ class BottomNavController extends ChangeNotifier {
   int get unreadMessages =>
       messagesVisible ? (_messages?.unreadCount ?? 0) : 0;
 
-  /// Whether the You hub lists Friends: the user left the button on and the
-  /// server's Achievement Badges plugin has friends turned on.
+  /// Whether the bottom navbar hub lists Friends: the user left the button on
+  /// and the server's Achievement Badges plugin has friends turned on.
   bool get friendsVisible =>
       FriendsNavSlot.isOffered() && (_achievements?.socialAvailable ?? false);
 
@@ -159,7 +161,7 @@ class BottomNavController extends ChangeNotifier {
   int get friendsBadge =>
       friendsVisible ? (_achievements?.socialBadgeCount ?? 0) : 0;
 
-  /// What the avatar counts: everything waiting behind the You hub.
+  /// What the avatar counts: everything waiting behind the bottom navbar hub.
   int get hubBadge => unreadMessages + friendsBadge;
 
   // Rebuilding the bar on every preference write in the app would be wasted

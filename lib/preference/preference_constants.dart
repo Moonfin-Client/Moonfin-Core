@@ -165,6 +165,16 @@ enum SiriRemoteSwipeSensitivity {
   final double stepTravel;
 }
 
+/// What the Apple TV home screen shows above the Moonfin icon.
+enum TopShelfContent {
+  /// A carousel of the newest items from the home's Latest rows.
+  latestMedia,
+
+  /// The static Moonfin banner from the brand assets, with nothing from the
+  /// library on it.
+  appBanner,
+}
+
 enum RefreshRateSwitchingBehavior {
   disabled,
   scaleOnTv,
@@ -466,6 +476,7 @@ enum HomeSectionType {
   sinceYouWatched4('sinceyouwatched4'),
   sinceYouWatched5('sinceyouwatched5'),
   rewatch('rewatch'),
+  seasonal('seasonal'),
   none('none');
 
   const HomeSectionType(this.serializedName);

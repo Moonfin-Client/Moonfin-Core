@@ -12,6 +12,7 @@ import 'package:moonfin/data/services/plugin_sync_service.dart';
 import 'package:moonfin/data/viewmodels/item_detail_view_model.dart';
 import 'package:moonfin/auth/repositories/user_repository.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
+import 'package:moonfin/preference/detail_section_layout.dart';
 import 'package:moonfin/preference/seerr_preferences.dart';
 import 'package:moonfin/preference/preference_constants.dart'
     show DesktopUiScale;
@@ -21,6 +22,7 @@ import 'package:moonfin/ui/screens/detail/minimalist/minimalist_detail_content.d
 import 'package:moonfin/ui/screens/detail/modern/modern_detail_content.dart';
 import 'package:moonfin/data/models/aggregated_item.dart';
 import 'package:moonfin/ui/widgets/focus/locked_focus_row.dart';
+import 'package:moonfin/ui/widgets/logo_view.dart';
 import 'package:moonfin/ui/widgets/rating_display.dart';
 import 'package:moonfin/ui/widgets/sliding_pill_tabs.dart';
 import 'package:moonfin/ui/theme/app_theme.dart';
@@ -318,6 +320,67 @@ void main() {
     // Without a logo the show falls back to its name, so both lines show and
     // the episode isn't left looking like the whole series.
     expect(find.text('The Backyardigans'), findsOneWidget);
+  });
+
+  testWidgets('a hidden logo leaves the title in its place', (tester) async {
+    final data = itemData('Movie')..['ImageTags'] = {'Logo': 'logo-tag'};
+    final branding = find.byKey(const ValueKey('minimalist-branding'));
+    final title = find.descendant(
+      of: branding,
+      matching: find.text('Movie title'),
+    );
+
+    await pumpContent(tester, viewModel('Movie', data: data));
+    expect(find.descendant(of: branding, matching: find.byType(LogoView)),
+        findsOneWidget);
+    expect(title, findsNothing);
+
+    await prefs.set(detailSectionLayout.hiddenPreference, 'logo');
+    await pumpContent(tester, viewModel('Movie', data: data));
+    expect(find.byType(LogoView), findsNothing);
+    expect(title, findsOneWidget);
+  });
+
+  testWidgets('a hidden logo names the show above an episode', (tester) async {
+    final data = itemData('Episode')
+      ..['Name'] = 'Robot Rampage'
+      ..['SeriesName'] = 'The Backyardigans'
+      ..['SeriesId'] = 'series-1'
+      ..['ParentLogoImageTag'] = 'logo-tag';
+    await prefs.set(detailSectionLayout.hiddenPreference, 'logo');
+    await pumpContent(tester, viewModel('Episode', data: data));
+
+    expect(find.byType(LogoView), findsNothing);
+    expect(find.text('The Backyardigans'), findsOneWidget);
+  });
+
+  // Minimalist hands a BoxSet to Spotlight, so these reach Spotlight's hero.
+  testWidgets('Spotlight swaps a hidden logo for the title and drops the '
+      'tagline', (tester) async {
+    final data = {
+      ...itemData('BoxSet'),
+      'ImageTags': {'Logo': 'logo-tag'},
+      'Taglines': ['Every one of them'],
+    };
+
+    await pumpContent(tester, viewModel('BoxSet', data: data));
+    expect(find.byType(LogoView), findsOneWidget);
+    expect(find.text('EVERY ONE OF THEM'), findsOneWidget);
+
+    await prefs.set(detailSectionLayout.hiddenPreference, 'logo,tagline');
+    await pumpContent(tester, viewModel('BoxSet', data: data));
+    expect(find.byType(LogoView), findsNothing);
+    expect(find.text('BoxSet title'), findsOneWidget);
+    expect(find.text('EVERY ONE OF THEM'), findsNothing);
+  });
+
+  testWidgets('Spotlight leaves out a hidden biography', (tester) async {
+    await pumpContent(tester, viewModel('Person'));
+    expect(find.textContaining('A useful detail overview'), findsOneWidget);
+
+    await prefs.set(detailSectionLayout.hiddenPreference, 'biography');
+    await pumpContent(tester, viewModel('Person'));
+    expect(find.textContaining('A useful detail overview'), findsNothing);
   });
 
   testWidgets('a movie gets no second line under its title', (tester) async {

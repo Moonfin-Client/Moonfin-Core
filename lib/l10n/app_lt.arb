@@ -914,7 +914,7 @@
             }
         }
     },
-    "audiobookCountLabel": "{count, plural, =1{1 garso knyga} one{{count} garso knyga} few{{count} garso knygos} many{{count} garso knygos} other{{count} garso knygų}}",
+    "audiobookCountLabel": "{count, plural, one{{count} garso knyga} few{{count} garso knygos} many{{count} garso knygos} other{{count} garso knygų}}",
     "@audiobookCountLabel": {
         "description": "Subtitle showing number of audiobooks by an author",
         "placeholders": {
@@ -1036,7 +1036,7 @@
     "@publicationDateUnknown": {
         "description": "Placeholder when publication date is unknown"
     },
-    "seasonCount": "{count, plural, =1{1 sezonas} one{{count} sezonas} few{{count} sezonai} many{{count} sezono} other{{count} sezonų}}",
+    "seasonCount": "{count, plural, one{{count} sezonas} few{{count} sezonai} many{{count} sezono} other{{count} sezonų}}",
     "@seasonCount": {
         "description": "Number of seasons for a series",
         "placeholders": {
@@ -1447,7 +1447,7 @@
             }
         }
     },
-    "trackCount": "{count, plural, =1{1 takelis} one{{count} takelis} few{{count} takeliai} many{{count} takelio} other{{count} takelių}}",
+    "trackCount": "{count, plural, one{{count} takelis} few{{count} takeliai} many{{count} takelio} other{{count} takelių}}",
     "@trackCount": {
         "description": "Label showing number of tracks in an album",
         "placeholders": {
@@ -1456,7 +1456,7 @@
             }
         }
     },
-    "chapterCount": "{count, plural, =1{1 skyrius} one{{count} skyrius} few{{count} skyriai} many{{count} skyriaus} other{{count} skyrių}}",
+    "chapterCount": "{count, plural, one{{count} skyrius} few{{count} skyriai} many{{count} skyriaus} other{{count} skyrių}}",
     "@chapterCount": {
         "description": "Label showing number of chapters in an audiobook",
         "placeholders": {
@@ -2490,7 +2490,7 @@
             }
         }
     },
-    "episodeCount": "{count, plural, =1{1 serija} one{{count} serija} few{{count} serijos} many{{count} serijos} other{{count} serijų}}",
+    "episodeCount": "{count, plural, one{{count} serija} few{{count} serijos} many{{count} serijos} other{{count} serijų}}",
     "@episodeCount": {
         "description": "Number of episodes with pluralization",
         "placeholders": {
@@ -7192,7 +7192,7 @@
     "analyticsTopArtists": "Geriausi atlikėjai",
     "analyticsTopAuthors": "Geriausi autoriai",
     "analyticsTopContributors": "Geriausi bendradarbiai",
-    "analyticsLibrariesCount": "{count, plural, =1{1 biblioteka} one{{count} biblioteka} few{{count} bibliotekos} many{{count} bibliotekos} other{{count} bibliotekų}}",
+    "analyticsLibrariesCount": "{count, plural, one{{count} biblioteka} few{{count} bibliotekos} many{{count} bibliotekos} other{{count} bibliotekų}}",
     "@analyticsLibrariesCount": {
         "placeholders": {
             "count": {
@@ -7494,7 +7494,7 @@
     "@latestAudiobooks": {
         "description": "Row title for recently added audiobooks in the book library"
     },
-    "bookSeriesItemCount": "{count, plural, =1{1 knyga} one{{count} knyga} few{{count} knygos} many{{count} knygos} other{{count} knygų}}",
+    "bookSeriesItemCount": "{count, plural, one{{count} knyga} few{{count} knygos} many{{count} knygos} other{{count} knygų}}",
     "@bookSeriesItemCount": {
         "description": "Subtitle for a book series shelf entry showing how many books it contains",
         "placeholders": {

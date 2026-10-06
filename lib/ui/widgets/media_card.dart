@@ -49,6 +49,39 @@ class MediaCard extends StatefulWidget {
   static int decodeMaxWidthFor(double aspectRatio) =>
       aspectRatio > 1.2 ? 960 : 640;
 
+  static const double _labelGap = 6;
+
+  static TextStyle _labelBaseStyle(BuildContext context) =>
+      Theme.of(context).textTheme.bodySmall ?? const TextStyle(fontSize: 12);
+
+  static double _titleFontSize(TextStyle base) => (base.fontSize ?? 12) + 1.0;
+
+  static double _lineHeight(TextScaler scaler, TextStyle style) =>
+      (scaler.scale(style.fontSize ?? 12) * (style.height ?? 1.2)) + 2;
+
+  /// How tall a titled card of [width] lays out, so a row can fit the cards it
+  /// holds. Assumes a card that isn't a banner and takes its subtitle as a
+  /// plain string.
+  ///
+  /// Focus growth isn't counted, since a titled card grows upward from the
+  /// bottom of its artwork and its bottom edge stays put.
+  static double layoutHeight(
+    BuildContext context, {
+    required double width,
+    required double aspectRatio,
+    bool hasSubtitle = false,
+  }) {
+    final scaler = MediaQuery.textScalerOf(context);
+    final base = _labelBaseStyle(context);
+    var height = width / aspectRatio + _labelGap;
+    height += _lineHeight(
+      scaler,
+      base.copyWith(fontSize: _titleFontSize(base)),
+    );
+    if (hasSubtitle) height += _lineHeight(scaler, base);
+    return height;
+  }
+
   final String? title;
   final String? subtitle;
   final Widget? subtitleWidget;
@@ -304,8 +337,7 @@ class _MediaCardState extends State<MediaCard> with FocusStateMixin {
   @override
   Widget build(BuildContext context) {
     final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
-    final baseTextStyle =
-        Theme.of(context).textTheme.bodySmall ?? const TextStyle(fontSize: 12);
+    final baseTextStyle = MediaCard._labelBaseStyle(context);
     final subtitleColor =
         widget.subtitleColor ??
         (isNeon
@@ -316,7 +348,7 @@ class _MediaCardState extends State<MediaCard> with FocusStateMixin {
           widget.titleColor ??
           (isNeon ? AppColorScheme.accent : AppColorScheme.onSurface),
       fontWeight: FontWeight.bold,
-      fontSize: (baseTextStyle.fontSize ?? 12) + 1.0,
+      fontSize: MediaCard._titleFontSize(baseTextStyle),
       shadows: const [Shadow(blurRadius: 4, color: Colors.black54)],
     );
     final subtitleStyle = baseTextStyle.copyWith(
@@ -324,15 +356,8 @@ class _MediaCardState extends State<MediaCard> with FocusStateMixin {
       shadows: const [Shadow(blurRadius: 4, color: Colors.black54)],
     );
     final textScaler = MediaQuery.textScalerOf(context);
-
-    double lineHeightFor(TextStyle style) {
-      final fontSize = style.fontSize ?? 12;
-      final height = style.height ?? 1.2;
-      return (textScaler.scale(fontSize) * height) + 2;
-    }
-
-    final titleLineHeight = lineHeightFor(titleStyle);
-    final subtitleLineHeight = lineHeightFor(subtitleStyle);
+    final titleLineHeight = MediaCard._lineHeight(textScaler, titleStyle);
+    final subtitleLineHeight = MediaCard._lineHeight(textScaler, subtitleStyle);
     final externallyDriven = widget.externalIsFocused != null;
     final hasNodeFocus = widget.focusNode?.hasFocus ?? false;
     final effectiveFocused = externallyDriven
@@ -403,7 +428,7 @@ class _MediaCardState extends State<MediaCard> with FocusStateMixin {
                 ),
                 if (widget.isBanner) ...[
                   if (widget.title != null) ...[
-                    const SizedBox(height: 6),
+                    const SizedBox(height: MediaCard._labelGap),
                     SizedBox(
                       height: titleLineHeight,
                       width: cardWidth,
@@ -420,7 +445,7 @@ class _MediaCardState extends State<MediaCard> with FocusStateMixin {
                   ],
                 ] else ...[
                   if (widget.title != null) ...[
-                    const SizedBox(height: 6),
+                    const SizedBox(height: MediaCard._labelGap),
                     SizedBox(
                       height: titleLineHeight,
                       width: cardWidth,

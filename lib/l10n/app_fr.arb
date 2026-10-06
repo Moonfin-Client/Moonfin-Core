@@ -5862,7 +5862,7 @@
     "adminTaskTriggerEvery12Hours": "Toutes les 12 heures",
     "adminTaskTriggerEvery24Hours": "Toutes les 24 heures",
     "adminTaskTriggerEvery2Days": "Tous les 2 jours",
-    "adminTaskTriggerHours": "{count, plural, one{1 heure} other{{count} heures}}",
+    "adminTaskTriggerHours": "{count, plural, one{{count} heure} other{{count} heures}}",
     "@adminTaskTriggerHours": {
         "placeholders": {
             "count": {
@@ -7095,8 +7095,8 @@
     "useExternalPlayer": "Toujours utiliser un lecteur externe",
     "useExternalPlayerSubtitle": "Ouvrez la lecture vidéo dans votre application externe sélectionnée sur Android TV.",
     "automaticQueuing": "File d'attente automatique",
-    "preferSdhSubtitles": "Préférer les sous-titres SDH",
-    "preferSdhSubtitlesSubtitle": "Donnez la priorité aux pistes de sous-titres SDH/CC lors de la sélection automatique.",
+    "preferSdhSubtitles": "Préférer les sous-titres SME",
+    "preferSdhSubtitlesSubtitle": "Donnez la priorité aux pistes de sous-titres SME/CC lors de la sélection automatique.",
     "webDiagnostics": "Diagnostic Web",
     "webDiagnosticsTitle": "Moonfin Diagnostic Web",
     "webDiagnosticsIntro": "Utilisez cette page pour diagnostiquer les problèmes de connectivité du navigateur (CORS, contenu mixte et paramètres de découverte).",
@@ -7776,7 +7776,7 @@
     "@libraryWriteAccessHowToFix": {
         "description": "Section header for write access troubleshooting"
     },
-    "libraryWriteAccessFixSteps": "1. Accordez les permissions d'écriture à l'utilisateur du service Jellyfin (par exemple, jellyfin ou le PUID/PGID Docker) sur les dossiers de votre bibliothèque multimédia, côté serveur.\n\n2. Ou, dans le tableau de bord Jellyfin → Bibliothèques, modifiez cette bibliothèque et désactivez « Enregistrer les illustrations dans les dossiers multimédias » pour stocker les visuels dans la base de données interne de Jellyfin.",
+    "libraryWriteAccessFixSteps": "1. Accordez les permissions d'écriture à l'utilisateur du service Jellyfin (par exemple, jellyfin ou le PUID/PGID Docker) sur les dossiers de votre bibliothèque multimédia, côté serveur.\n\n2. Ou, dans le tableau de bord Jellyfin (Bibliothèques), modifiez cette bibliothèque et désactivez « Enregistrer les visuels dans les dossiers multimédias » pour stocker les visuels dans la base de données interne de Jellyfin.",
     "@libraryWriteAccessFixSteps": {
         "description": "Troubleshooting steps for write access issues"
     },
@@ -7784,7 +7784,7 @@
     "@dismiss": {
         "description": "Dismiss button text"
     },
-    "libraryWriteAccessProactiveBody": "Votre bibliothèque {libraryName} est configurée pour enregistrer les visuels directement dans les dossiers multimédias (l'option « Enregistrer les illustrations dans les dossiers multimédias » est activée). Cependant, Jellyfin a testé l'accès en écriture et n'a pas la permission d'écrire dans ce répertoire :\n\n{failedPath}",
+    "libraryWriteAccessProactiveBody": "Votre bibliothèque {libraryName} est configurée pour enregistrer les visuels directement dans les dossiers multimédias (l'option « Enregistrer les visuels dans les dossiers multimédias » est activée). Cependant, Jellyfin a testé l'accès en écriture et n'a pas la permission d'écrire dans ce répertoire :\n\n{failedPath}",
     "@libraryWriteAccessProactiveBody": {
         "description": "Proactive warning message about server write access",
         "placeholders": {
@@ -7796,7 +7796,7 @@
             }
         }
     },
-    "libraryWriteAccessReactiveBody": "Il semble que Jellyfin n'ait pas réussi à mettre à jour le visuel. Votre bibliothèque est configurée pour enregistrer les visuels directement dans les dossiers multimédias (l'option « Enregistrer les illustrations dans les dossiers multimédias » est activée). Cette erreur survient généralement lorsque le serveur Jellyfin n'a pas la permission d'écrire dans vos répertoires multimédias.",
+    "libraryWriteAccessReactiveBody": "Il semble que Jellyfin n'ait pas réussi à mettre à jour le visuel. Votre bibliothèque est configurée pour enregistrer les visuels directement dans les dossiers multimédias (l'option « Enregistrer les visuels dans les dossiers multimédias » est activée). Cette erreur survient généralement lorsque le serveur Jellyfin n'a pas la permission d'écrire dans vos répertoires multimédias.",
     "@libraryWriteAccessReactiveBody": {
         "description": "Reactive error warning message when artwork update fails"
     },
@@ -8068,7 +8068,7 @@
     "@detailScreenStyle": {
         "description": "Label for the media detail screen layout style setting"
     },
-    "detailScreenStyleSubtitle": "Classique correspond à la mise en page centrée d'origine de Moonfin. Moderne propose une mise en page cinématographique et adaptative. Spotlight met en avant un grand visuel, avec des fenêtres surgissantes pour le contenu. Nouveau occupe tout l'écran, avec des sections empilées les unes sous les autres.",
+    "detailScreenStyleSubtitle": "Classique correspond à la mise en page centrée d'origine de Moonfin. Moderne propose une mise en page cinématographique et adaptative. Spotlight met en avant un grand visuel, avec des fenêtres surgissantes pour le contenu. Nouveau occupe tout l'écran, avec des sections empilées les unes sous les autres. Minimaliste se résume au visuel, à un bouton de lecture et aux épisodes.",
     "@detailScreenStyleSubtitle": {
         "description": "Explanation under the detail screen style setting"
     },
@@ -8549,7 +8549,7 @@
     "adminDrawerNfo": "Paramètres NFO",
     "adminActivitySeverityAll": "Toutes les gravités",
     "adminActivityDateRange": "Plage de dates",
-    "adminRemoveDeviceConfirm": "Supprimer l'appareil « {name} » ? L'utilisateur devra se reconnecter sur cet appareil.",
+    "adminRemoveDeviceConfirm": "Supprimer l'appareil « {name} » ? L'utilisateur devra se reconnecter sur cet appareil.",
     "@adminRemoveDeviceConfirm": {
         "placeholders": {
             "name": {
@@ -10052,7 +10052,7 @@
     "@adminPluginsNoneRequireRestart": {
         "description": "Empty state for the installed-plugin filter showing changes that require a server restart"
     },
-    "emulatorCoreResetSettings": "Réinitialiser les réglages {system} aux valeurs par défaut",
+    "emulatorCoreResetSettings": "Réinitialiser les paramètres {system} aux valeurs par défaut",
     "@emulatorCoreResetSettings": {
         "description": "Semantic label for the button that resets one core's saved emulator settings",
         "placeholders": {
@@ -10061,11 +10061,11 @@
             }
         }
     },
-    "emulatorCoreSettingsReset": "Réglages réinitialisés aux valeurs par défaut.",
+    "emulatorCoreSettingsReset": "Paramètres réinitialisés aux valeurs par défaut.",
     "@emulatorCoreSettingsReset": {
         "description": "Snackbar shown after resetting a core's saved emulator settings"
     },
-    "emulatorCoreResetSettingsFailed": "Impossible de réinitialiser les réglages. Vérifiez votre connexion et réessayez.",
+    "emulatorCoreResetSettingsFailed": "Impossible de réinitialiser les paramètres. Vérifiez votre connexion et réessayez.",
     "@emulatorCoreResetSettingsFailed": {
         "description": "Snackbar shown when resetting a core's saved emulator settings fails"
     },
@@ -10930,11 +10930,11 @@
     "@detailMetadata": {
         "description": "Settings screen for choosing and reordering details screen metadata items"
     },
-    "detailMetadataDescription": "Choisissez les métadonnées affichées sur la fiche et leur ordre",
+    "detailMetadataDescription": "Choisissez les métadonnées affichées sur l'écran de détails et leur ordre",
     "@detailMetadataDescription": {
         "description": "Subtitle for the details metadata settings tile"
     },
-    "detailMetadataSectionDescription": "Activez ou désactivez les métadonnées et organisez leur ordre d'affichage sur la fiche. Chaque type d'appareil conserve sa propre liste.",
+    "detailMetadataSectionDescription": "Activez ou désactivez les métadonnées et organisez leur ordre d'affichage sur l'écran de détails. Chaque type d'appareil conserve sa propre liste.",
     "@detailMetadataSectionDescription": {
         "description": "Explains how to customize and reorder details screen metadata items"
     },
@@ -11093,7 +11093,7 @@
     "@showSeerrAvailabilityBadges": {
         "description": "Setting title for showing Seerr availability badges on media details pages"
     },
-    "showSeerrAvailabilityBadgesDescription": "Affiche les badges de disponibilité des saisons sur les fiches des médias",
+    "showSeerrAvailabilityBadgesDescription": "Affiche les badges de disponibilité des saisons sur les écrans de détails des médias",
     "@showSeerrAvailabilityBadgesDescription": {
         "description": "Setting description for showing Seerr availability badges on media details pages"
     },
@@ -11210,9 +11210,9 @@
     "transcodeResolutionHint": "Astuce : augmentez « Résolution maximum » dans les paramètres de lecture pour autoriser la diffusion directe.",
     "transcodeVideoRangeNotSupported": "La plage dynamique de la vidéo (Dolby Vision, HDR…) n'est pas prise en charge par cet écran.",
     "transcodeDolbyVisionProfile7ElDisabled": "La lecture directe de la couche d'amélioration Dolby Vision Profil 7 est désactivée.",
-    "transcodeDolbyVisionProfile7ElHint": "Astuce : activez « Lecture directe Dolby Vision Profil 7 » dans les paramètres de lecture si votre écran le permet.",
+    "transcodeDolbyVisionProfile7ElHint": "Astuce : activez « Dolby Vision Profile 7 Lecture directe » dans les paramètres de lecture si votre écran le permet.",
     "transcodeDolbyVisionFallbackPreferenceTranscode": "Vos paramètres privilégient le transcodage comme solution secondaire pour le Dolby Vision.",
-    "transcodeDolbyVisionFallbackHint": "Astuce : réglez « Dolby Vision secondaire » sur « Lire en HDR10 » dans les paramètres de lecture pour éviter le transcodage.",
+    "transcodeDolbyVisionFallbackHint": "Astuce : réglez « Solution de repli Dolby Vision » sur « Lire en HDR10 » dans les paramètres de lecture pour éviter le transcodage.",
     "transcodeDisplayReportsNoHdr": "L'écran ne déclare aucune prise en charge du HDR ni du Dolby Vision.",
     "transcodeDisplayLacksHdr10ForFallback": "L'écran ne gère pas le HDR10, nécessaire au repli Dolby Vision.",
     "transcodeAudioSampleRateNotSupported": "La fréquence d'échantillonnage audio n'est pas prise en charge.",
@@ -11737,5 +11737,1547 @@
     "activeDownloads": "Téléchargements en cours",
     "@activeDownloads": {
         "description": "Tab title for downloads that are transferring or queued"
+    },
+    "uiScaleGreatGrandparents": "Arrière-grand-mère",
+    "@uiScaleGreatGrandparents": {
+        "description": "UI scaling option above Grandparents"
+    },
+    "playbackStreamLost": "La lecture s'est interrompue et n'a pas pu reprendre.",
+    "@playbackStreamLost": {
+        "description": "Shown in place of an internal sentinel error code when playback gives up trying to recover a stalled or starved stream"
+    },
+    "liveReconnecting": "Reconnexion… ({attempt} sur {total})",
+    "@liveReconnecting": {
+        "description": "Overlay shown while a live channel's bounded recovery is retrying",
+        "placeholders": {
+            "attempt": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "savedMediaCount": "{count, plural, one{{count} élément} other{{count} éléments}}",
+    "@savedMediaCount": {
+        "description": "How many downloads the saved media list holds, shown beside the total size",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "savedMediaSelectItems": "Sélectionner des éléments",
+    "@savedMediaSelectItems": {
+        "description": "Overflow menu entry that turns on multi-select in the saved media list"
+    },
+    "savedMediaNoDownloads": "Aucun téléchargement pour l'instant",
+    "@savedMediaNoDownloads": {
+        "description": "Empty state title when no downloads are on the device"
+    },
+    "savedMediaNoDownloadsDetail": "Vos téléchargements apparaissent ici et se lisent sans connexion.",
+    "@savedMediaNoDownloadsDetail": {
+        "description": "Empty state body when no downloads are on the device"
+    },
+    "savedMediaNoActiveDownloads": "Aucun téléchargement en cours",
+    "@savedMediaNoActiveDownloads": {
+        "description": "Empty state for the active downloads tab"
+    },
+    "savedMediaNoResults": "Aucun téléchargement ne correspond à cette recherche",
+    "@savedMediaNoResults": {
+        "description": "Empty state when a search over saved media matches nothing"
+    },
+    "savedMediaPlayFromStart": "Lire depuis le début",
+    "@savedMediaPlayFromStart": {
+        "description": "Row menu action that restarts a partly watched download from the beginning"
+    },
+    "savedMediaGoToDetails": "Voir les détails",
+    "@savedMediaGoToDetails": {
+        "description": "Row menu action that opens the item's detail screen"
+    },
+    "savedMediaDeleteDownload": "Supprimer le téléchargement",
+    "@savedMediaDeleteDownload": {
+        "description": "Row menu action that removes one downloaded file from the device"
+    },
+    "savedMediaDeleteSeason": "Supprimer {season}",
+    "@savedMediaDeleteSeason": {
+        "description": "Menu action that removes every saved episode of one season",
+        "placeholders": {
+            "season": {
+                "type": "String"
+            }
+        }
+    },
+    "savedMediaOpenShow": "Ouvrir la série",
+    "@savedMediaOpenShow": {
+        "description": "Row menu action that opens a saved show's seasons and episodes"
+    },
+    "savedMediaPlayNextUnwatched": "Lire le prochain épisode non vu",
+    "@savedMediaPlayNextUnwatched": {
+        "description": "Row menu action that plays the earliest unwatched saved episode of a show"
+    },
+    "savedMediaRead": "Lire",
+    "@savedMediaRead": {
+        "description": "Row menu action that opens a downloaded book in the reader"
+    },
+    "savedMediaCancelDownload": "Annuler le téléchargement",
+    "@savedMediaCancelDownload": {
+        "description": "Row menu action that stops a running or queued transfer"
+    },
+    "sortBySize": "Taille",
+    "@sortBySize": {
+        "description": "Sort option: largest download first"
+    },
+    "savedMediaDeleteEpisodes": "{count, plural, one{Supprimer {count} épisode} other{Supprimer {count} épisodes}}",
+    "@savedMediaDeleteEpisodes": {
+        "description": "Menu action that removes every saved episode of one series",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "sortByName": "Nom",
+    "@sortByName": {
+        "description": "Sort option: alphabetical by title"
+    },
+    "sortByDateAdded": "Date d'ajout",
+    "@sortByDateAdded": {
+        "description": "Sort option: most recently downloaded first"
+    },
+    "showChapterMarkers": "Repères de chapitre",
+    "@showChapterMarkers": {
+        "description": "Setting label for drawing a mark per chapter on the player seek bar"
+    },
+    "showChapterMarkersDescription": "Marque le début de chaque chapitre sur la barre de progression",
+    "@showChapterMarkersDescription": {
+        "description": "Description for the chapter marks setting"
+    },
+    "detailSections": "Sections",
+    "@detailSections": {
+        "description": "Settings tile title for switching Details screen sections on and off"
+    },
+    "detailSectionsDescription": "Choisissez les parties de l'écran de détails à afficher",
+    "@detailSectionsDescription": {
+        "description": "Settings tile subtitle for the Details screen sections list"
+    },
+    "detailSectionsScreenDescription": "Seules les sections compatibles avec le style d'écran de détails actuel sont listées. En masquer une la masque dans tous les styles qui la proposent.",
+    "@detailSectionsScreenDescription": {
+        "description": "Explanatory text at the top of the Details screen sections list"
+    },
+    "detailSectionGroupHeader": "En-tête",
+    "@detailSectionGroupHeader": {
+        "description": "Group heading for the title area of the Details screen"
+    },
+    "detailSectionGroupSections": "Sections",
+    "@detailSectionGroupSections": {
+        "description": "Group heading for the rows, tabs and cards of the Details screen"
+    },
+    "detailSectionGroupPerson": "Pages des personnes",
+    "@detailSectionGroupPerson": {
+        "description": "Group heading for sections only shown on a person's Details screen"
+    },
+    "detailSectionGroupCollection": "Pages de collection",
+    "@detailSectionGroupCollection": {
+        "description": "Group heading for sections only shown on a collection's Details screen"
+    },
+    "detailSectionGroupOther": "Autres",
+    "@detailSectionGroupOther": {
+        "description": "Group heading for Details screen sections that fit no other group"
+    },
+    "detailSectionLogo": "Logo",
+    "@detailSectionLogo": {
+        "description": "Details screen section: the title logo artwork"
+    },
+    "detailSectionLogoSubtitle": "Affiche le titre en texte lorsque l'option est désactivée",
+    "@detailSectionLogoSubtitle": {
+        "description": "Subtitle for the logo section switch"
+    },
+    "detailSectionTagline": "Accroche",
+    "@detailSectionTagline": {
+        "description": "Details screen section: the short tagline under the title"
+    },
+    "detailSectionPoster": "Affiche",
+    "@detailSectionPoster": {
+        "description": "Details screen section: the poster image beside the title"
+    },
+    "detailSectionVersionBadge": "Badge de version",
+    "@detailSectionVersionBadge": {
+        "description": "Details screen section: the badge shown when an item has more than one version"
+    },
+    "detailSectionUpNext": "Prochain épisode",
+    "@detailSectionUpNext": {
+        "description": "Details screen section: the next up or next episode card"
+    },
+    "detailSectionLyrics": "Paroles",
+    "@detailSectionLyrics": {
+        "description": "Details screen section: the lyrics panel for songs"
+    },
+    "detailSectionCast": "Distribution",
+    "@detailSectionCast": {
+        "description": "Details screen section: the cast row, tab or card"
+    },
+    "detailSectionCastSubtitle": "Également sur les pages de collection",
+    "@detailSectionCastSubtitle": {
+        "description": "Subtitle for the cast section switch"
+    },
+    "detailSectionCrew": "Réalisation et scénario",
+    "@detailSectionCrew": {
+        "description": "Details screen section: directors and writers"
+    },
+    "detailSectionStudios": "Studios",
+    "@detailSectionStudios": {
+        "description": "Details screen section: studios and networks"
+    },
+    "detailSectionChapters": "Chapitres",
+    "@detailSectionChapters": {
+        "description": "Details screen section: chapters"
+    },
+    "detailSectionExtras": "Bonus",
+    "@detailSectionExtras": {
+        "description": "Details screen section: trailers, featurettes and other extras"
+    },
+    "detailSectionCollections": "Collections",
+    "@detailSectionCollections": {
+        "description": "Details screen section: the collections an item belongs to"
+    },
+    "detailSectionMoreLikeThis": "Titres similaires",
+    "@detailSectionMoreLikeThis": {
+        "description": "Details screen section: similar items from the library"
+    },
+    "detailSectionMoreLikeThisSubtitle": "Également les albums et artistes similaires",
+    "@detailSectionMoreLikeThisSubtitle": {
+        "description": "Subtitle for the More Like This section switch"
+    },
+    "detailSectionMoreEpisodes": "Autres épisodes",
+    "@detailSectionMoreEpisodes": {
+        "description": "Details screen section: the other episodes of a show on an episode's page"
+    },
+    "detailSectionMoreEpisodesSubtitle": "Sur les pages d'épisode",
+    "@detailSectionMoreEpisodesSubtitle": {
+        "description": "Subtitle for the More episodes section switch"
+    },
+    "detailSectionMediaInfo": "Informations du média",
+    "@detailSectionMediaInfo": {
+        "description": "Details screen section: file, stream and Direct Play details"
+    },
+    "detailSectionMediaInfoSubtitle": "Fichier, pistes et vérification de la lecture directe",
+    "@detailSectionMediaInfoSubtitle": {
+        "description": "Subtitle for the media info section switch"
+    },
+    "detailSectionSeerrGenresTags": "Genres et tags",
+    "@detailSectionSeerrGenresTags": {
+        "description": "Details screen Seerr section: genre and keyword chips"
+    },
+    "detailSectionSeerrStats": "Statistiques",
+    "@detailSectionSeerrStats": {
+        "description": "Details screen Seerr section: TMDB score, status, budget and revenue"
+    },
+    "detailSectionSeerrRecommendations": "Recommandations",
+    "@detailSectionSeerrRecommendations": {
+        "description": "Details screen Seerr section: recommended titles"
+    },
+    "detailSectionSeerrSimilar": "Titres similaires",
+    "@detailSectionSeerrSimilar": {
+        "description": "Details screen Seerr section: similar titles"
+    },
+    "detailSectionSeerrCollection": "Bannière de collection",
+    "@detailSectionSeerrCollection": {
+        "description": "Details screen Seerr section: the banner for the collection a movie is part of"
+    },
+    "detailSectionSeerrPersonAppearances": "Apparitions",
+    "@detailSectionSeerrPersonAppearances": {
+        "description": "Details screen Seerr section: a person's appearances"
+    },
+    "detailSectionSeerrPersonCrew": "Équipe technique",
+    "@detailSectionSeerrPersonCrew": {
+        "description": "Details screen Seerr section: a person's crew credits"
+    },
+    "detailSectionPersonPagesSubtitle": "Sur les pages des personnes",
+    "@detailSectionPersonPagesSubtitle": {
+        "description": "Subtitle for Seerr sections only shown on a person's Details screen"
+    },
+    "detailSectionBiography": "Biographie",
+    "@detailSectionBiography": {
+        "description": "Details screen section: a person's biography"
+    },
+    "detailSectionBirthplace": "Lieu de naissance",
+    "@detailSectionBirthplace": {
+        "description": "Details screen section: a person's place of birth"
+    },
+    "detailSectionGuestAppearances": "Apparitions d'invités",
+    "@detailSectionGuestAppearances": {
+        "description": "Details screen section: a person's guest appearances"
+    },
+    "detailSectionMusicVideos": "Vidéoclips",
+    "@detailSectionMusicVideos": {
+        "description": "Details screen section: a person's music videos"
+    },
+    "detailSectionPlaylistOrder": "Ordre de visionnage",
+    "@detailSectionPlaylistOrder": {
+        "description": "Details screen section: a collection's playlist order"
+    },
+    "detailSectionBookGenres": "Genres du livre",
+    "@detailSectionBookGenres": {
+        "description": "Details screen section: the genre chips on a book's page"
+    },
+    "detailSectionPhotoExif": "Détails de la photo",
+    "@detailSectionPhotoExif": {
+        "description": "Details screen section: camera and image details on a photo's page"
+    },
+    "semiTransparentWhite": "Blanc semi-transparent",
+    "@semiTransparentWhite": {
+        "description": "Color: semi-transparent white"
+    },
+    "lightGray": "Gris clair",
+    "@lightGray": {
+        "description": "Color: light gray"
+    },
+    "darkGray": "Gris foncé",
+    "@darkGray": {
+        "description": "Color: dark gray"
+    },
+    "blue": "Bleu",
+    "@blue": {
+        "description": "Color: blue"
+    },
+    "magenta": "Magenta",
+    "@magenta": {
+        "description": "Color: magenta"
+    },
+    "libraryOrder": "Ordre des bibliothèques",
+    "@libraryOrder": {
+        "description": "Title of the settings screen that reorders the user's libraries"
+    },
+    "libraryOrderSubtitle": "Choisissez l'ordre de vos bibliothèques",
+    "@libraryOrderSubtitle": {
+        "description": "Subtitle of the Library Order entry in the libraries settings"
+    },
+    "libraryOrderDescription": "Vos bibliothèques apparaissent dans cet ordre sur Mes médias, dans les rangées des ajouts récents et dans la barre de navigation. L'ordre est enregistré sur votre compte serveur, les autres applications où vous vous connectez l'utilisent donc aussi.",
+    "@libraryOrderDescription": {
+        "description": "Explanation shown at the top of the Library Order settings screen"
+    },
+    "libraryOrderTvHint": "Appuyez sur gauche ou droite pour déplacer la bibliothèque sélectionnée.",
+    "@libraryOrderTvHint": {
+        "description": "Remote control hint on the Library Order settings screen"
+    },
+    "libraryOrderSaveFailed": "Impossible d'enregistrer l'ordre des bibliothèques",
+    "@libraryOrderSaveFailed": {
+        "description": "Error shown when saving the library order to the server fails"
+    },
+    "requestedByLabel": "Demandé par",
+    "@requestedByLabel": {
+        "description": "Label above the name of whoever requested media, where the name sits on its own line"
+    },
+    "kidsMode": "Mode enfants",
+    "@kidsMode": {
+        "description": "Label for the setting that strips the app back to what a child needs"
+    },
+    "kidsModeSubtitle": "Simplifie l'application et verrouille la sortie avec un code PIN",
+    "@kidsModeSubtitle": {
+        "description": "Explanation under the Kids Mode setting"
+    },
+    "kidsModeExit": "Quitter le mode enfants",
+    "@kidsModeExit": {
+        "description": "Settings entry that turns Kids Mode off, shown while Kids Mode is on"
+    },
+    "kidsModeExitSubtitle": "Saisissez votre PIN pour restaurer l'application complète",
+    "@kidsModeExitSubtitle": {
+        "description": "Explanation under the Exit Kids Mode entry"
+    },
+    "pinTryAgainIn": "Trop de tentatives. Réessayez dans {wait}.",
+    "@pinTryAgainIn": {
+        "description": "Shown when PIN entry is locked after repeated wrong guesses",
+        "placeholders": {
+            "wait": {
+                "type": "String",
+                "example": "30s"
+            }
+        }
+    },
+    "trackActionViewDetails": "Voir les détails",
+    "contextMenuRemoveFromCollection": "Retirer de la collection",
+    "@contextMenuRemoveFromCollection": {
+        "description": "Context menu action to remove an item from the collection whose page it is shown on"
+    },
+    "removeFromCollectionConfirm": "Retirer {item} de {collection} ? L'élément reste dans votre bibliothèque.",
+    "@removeFromCollectionConfirm": {
+        "description": "Confirmation shown before removing an item from a collection",
+        "placeholders": {
+            "item": {
+                "type": "String"
+            },
+            "collection": {
+                "type": "String"
+            }
+        }
+    },
+    "removeFromCollectionFailed": "Échec de la suppression de la collection",
+    "@removeFromCollectionFailed": {
+        "description": "Error shown when removing an item from a collection fails"
+    },
+    "untrustedServerCertificate": "Le certificat de ce serveur n'est pas approuvé. S'il s'agit de votre propre serveur et qu'il utilise un certificat auto-signé ou privé, vous pouvez l'autoriser ici.",
+    "@untrustedServerCertificate": {
+        "description": "Shown on the sign-in screens when a server's TLS certificate is rejected, above a button that turns on Allow self-signed certificates"
+    },
+    "itemBlockedByParentalControls": "Non disponible",
+    "@itemBlockedByParentalControls": {
+        "description": "Shown instead of a title whose rating the viewer has blocked. Deliberately says nothing about what the title is."
+    },
+    "blockedRatingsCeilingHint": "Bloquer une classification bloque aussi tout ce qui est plus restrictif.",
+    "@blockedRatingsCeilingHint": {
+        "description": "Explains that the blocked ratings list works as a ceiling"
+    },
+    "blockedRatingsUnrankedSection": "Ne bloque que cette classification",
+    "@blockedRatingsUnrankedSection": {
+        "description": "Heading for ratings the app can't rank, which block only the exact rating rather than everything above it"
+    },
+    "locallyDecodedCodecs": "Codecs décodés localement",
+    "transcodeTargetCodecs": "Codecs cibles du transcodage",
+    "achievementBadges": "Badges de succès",
+    "@achievementBadges": {
+        "description": "Title of the Achievement Badges plugin panel"
+    },
+    "achievementBadgesSubtitle": "Badges, rangs et quêtes obtenus grâce à ce que vous regardez",
+    "@achievementBadgesSubtitle": {
+        "description": "Subtitle of the Achievement Badges entry in Integrations"
+    },
+    "achievementsBadges": "Badges",
+    "@achievementsBadges": {
+        "description": "Badges section title"
+    },
+    "achievementsBadgeCount": "{unlocked} sur {total} badges",
+    "@achievementsBadgeCount": {
+        "description": "How many badges are unlocked out of the total",
+        "placeholders": {
+            "unlocked": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsUnlockToasts": "Notifications de déblocage",
+    "@achievementsUnlockToasts": {
+        "description": "Switch that shows a notification when the user unlocks a badge"
+    },
+    "achievementsUnlockToastsSubtitle": "Affiche une notification lorsque vous débloquez un badge",
+    "@achievementsUnlockToastsSubtitle": {
+        "description": "Subtitle of the unlock notifications switch"
+    },
+    "achievementsUnlockedNotification": "Badge débloqué",
+    "@achievementsUnlockedNotification": {
+        "description": "Title of the notification for one newly unlocked badge"
+    },
+    "achievementsUnlockedCount": "{count, plural, one{{count} badge débloqué} other{{count} badges débloqués}}",
+    "@achievementsUnlockedCount": {
+        "description": "Title of the notification for several badges unlocked at once",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsUnlockedMore": "+{count} autres",
+    "@achievementsUnlockedMore": {
+        "description": "Follows the first few badge names when more were unlocked at once",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsQuests": "Quêtes",
+    "@achievementsQuests": {
+        "description": "Quests section title"
+    },
+    "achievementsQuestCount": "Quêtes terminées : {count}",
+    "@achievementsQuestCount": {
+        "description": "How many quests are completed",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsLeaderboard": "Classement",
+    "@achievementsLeaderboard": {
+        "description": "Leaderboard section title"
+    },
+    "achievementsLeaderboardSubtitle": "Votre position par rapport aux autres utilisateurs de ce serveur",
+    "@achievementsLeaderboardSubtitle": {
+        "description": "Leaderboard section subtitle"
+    },
+    "achievementsRecap": "Récap",
+    "@achievementsRecap": {
+        "description": "Recap section title"
+    },
+    "achievementsRecapSubtitle": "Ce que vous avez regardé récemment",
+    "@achievementsRecapSubtitle": {
+        "description": "Recap section subtitle"
+    },
+    "achievementsLibraryCompletion": "Avancement des bibliothèques",
+    "@achievementsLibraryCompletion": {
+        "description": "Library completion section title"
+    },
+    "achievementsLibraryCount": "Bibliothèques : {count}",
+    "@achievementsLibraryCount": {
+        "description": "How many libraries have a completion percentage",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsScore": "{score} points",
+    "@achievementsScore": {
+        "description": "The score a user has earned",
+        "placeholders": {
+            "score": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsScoreLabel": "Score",
+    "@achievementsScoreLabel": {
+        "description": "Leaderboard category: overall score"
+    },
+    "achievementsTopRank": "Rang maximal atteint",
+    "@achievementsTopRank": {
+        "description": "Shown instead of progress when the user is at the highest rank"
+    },
+    "achievementsPointsToNextRank": "{points} points avant {tier}",
+    "@achievementsPointsToNextRank": {
+        "description": "Points needed to reach the next rank tier",
+        "placeholders": {
+            "points": {
+                "type": "int"
+            },
+            "tier": {
+                "type": "String"
+            }
+        }
+    },
+    "achievementsCurrentStreak": "Série de {days} jours",
+    "@achievementsCurrentStreak": {
+        "description": "The current watch streak",
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsBestStreak": "Record : {days} jours",
+    "@achievementsBestStreak": {
+        "description": "The best watch streak",
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsShowcase": "Vitrine",
+    "@achievementsShowcase": {
+        "description": "The badges a user pinned to their profile"
+    },
+    "achievementsUnlocked": "Débloqués",
+    "@achievementsUnlocked": {
+        "description": "Badge filter: unlocked only"
+    },
+    "achievementsLocked": "Verrouillé",
+    "@achievementsLocked": {
+        "description": "Badge filter: locked only"
+    },
+    "achievementsNothingHere": "Rien ici pour le moment.",
+    "@achievementsNothingHere": {
+        "description": "Empty state for an achievements list"
+    },
+    "achievementsHiddenBadge": "Succès caché",
+    "@achievementsHiddenBadge": {
+        "description": "Placeholder name for a secret badge that is still locked"
+    },
+    "achievementsUnlockedOn": "Débloqué le {date}",
+    "@achievementsUnlockedOn": {
+        "description": "When a badge was unlocked",
+        "placeholders": {
+            "date": {
+                "type": "String"
+            }
+        }
+    },
+    "achievementsPoints": "{points} pts",
+    "@achievementsPoints": {
+        "description": "Points a badge is worth",
+        "placeholders": {
+            "points": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsDailyQuests": "Quotidien",
+    "@achievementsDailyQuests": {
+        "description": "Daily quests section"
+    },
+    "achievementsWeeklyQuests": "Hebdomadaire",
+    "@achievementsWeeklyQuests": {
+        "description": "Weekly quests section"
+    },
+    "achievementsQuestReward": "+{points}",
+    "@achievementsQuestReward": {
+        "description": "Points a quest pays out",
+        "placeholders": {
+            "points": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsRerollDaily": "Relancer les quêtes quotidiennes",
+    "@achievementsRerollDaily": {
+        "description": "Action that swaps the daily quest set for a new one"
+    },
+    "achievementsRerollWeekly": "Relancer les quêtes hebdomadaires",
+    "@achievementsRerollWeekly": {
+        "description": "Action that swaps the weekly quest set for a new one"
+    },
+    "achievementsRerollOffer": "Échanger cet ensemble contre un autre",
+    "@achievementsRerollOffer": {
+        "description": "Subtitle on the reroll row while a reroll is still available"
+    },
+    "achievementsRerollSpentDaily": "Utilisé aujourd'hui, revient à minuit UTC",
+    "@achievementsRerollSpentDaily": {
+        "description": "Subtitle on the reroll row once the daily reroll is spent"
+    },
+    "achievementsRerollSpentWeekly": "Utilisé cette semaine, revient lundi UTC",
+    "@achievementsRerollSpentWeekly": {
+        "description": "Subtitle on the reroll row once the weekly reroll is spent"
+    },
+    "achievementsRerollConfirm": "Relancer ces quêtes ?",
+    "@achievementsRerollConfirm": {
+        "description": "Title of the dialog confirming a quest reroll"
+    },
+    "achievementsRerollConfirmBody": "Vous disposez d'une relance quotidienne et d'une relance hebdomadaire, et cette action l'utilise.",
+    "@achievementsRerollConfirmBody": {
+        "description": "Body of the dialog confirming a quest reroll"
+    },
+    "achievementsRerollFailed": "Impossible de relancer ces quêtes.",
+    "@achievementsRerollFailed": {
+        "description": "Message shown when a quest reroll did not go through"
+    },
+    "achievementsSuggested": "Titres suggérés à regarder",
+    "@achievementsSuggested": {
+        "description": "Header above the items the plugin suggests for a badge"
+    },
+    "achievementsNoSuggestions": "Rien à suggérer pour ce badge.",
+    "@achievementsNoSuggestions": {
+        "description": "Shown when the plugin has no items to recommend for a badge"
+    },
+    "achievementsProgressLabel": "Progression",
+    "@achievementsProgressLabel": {
+        "description": "Label above a badge's current progress figure"
+    },
+    "achievementsLoadout": "Équipement",
+    "@achievementsLoadout": {
+        "description": "Screen holding the score bank and the power-ups a user owns"
+    },
+    "achievementsLoadoutSubtitle": "Le score à dépenser et les bonus en votre possession",
+    "@achievementsLoadoutSubtitle": {
+        "description": "Subtitle on the row that opens the loadout"
+    },
+    "achievementsAppearance": "Apparence",
+    "@achievementsAppearance": {
+        "description": "Row that opens the avatars and rank titles a profile can wear"
+    },
+    "achievementsAppearanceSubtitle": "L'avatar et le titre de votre profil",
+    "@achievementsAppearanceSubtitle": {
+        "description": "Subtitle on the row that opens the appearance screen"
+    },
+    "achievementsAvatars": "Avatars",
+    "@achievementsAvatars": {
+        "description": "Tab of the icons that can sit on a profile"
+    },
+    "achievementsTitles": "Titres",
+    "@achievementsTitles": {
+        "description": "Tab of the titles that can replace a rank name"
+    },
+    "achievementsEquipped": "Équipé",
+    "@achievementsEquipped": {
+        "description": "State of the avatar or title a profile is wearing"
+    },
+    "achievementsOwned": "Possédé",
+    "@achievementsOwned": {
+        "description": "State of an avatar or title that is held but not worn"
+    },
+    "achievementsEarnedAt": "Débloqué à {score} points de score cumulé",
+    "@achievementsEarnedAt": {
+        "description": "What a user has to reach to unlock a cosmetic without paying",
+        "placeholders": {
+            "score": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsAppearanceEmpty": "Ce serveur ne propose aucun avatar ni titre à porter.",
+    "@achievementsAppearanceEmpty": {
+        "description": "Shown when the plugin carries no cosmetics this panel can draw"
+    },
+    "achievementsAppearanceFailed": "Impossible de modifier l'apparence du profil.",
+    "@achievementsAppearanceFailed": {
+        "description": "Shown when equipping or removing an avatar or title fails"
+    },
+    "achievementsPowerUps": "Bonus",
+    "@achievementsPowerUps": {
+        "description": "Section header above the consumable boosts a user holds"
+    },
+    "achievementsStats": "Statistiques",
+    "@achievementsStats": {
+        "description": "Screen of watch counters and server figures"
+    },
+    "achievementsStatsSubtitle": "Vos records et l'état du serveur",
+    "@achievementsStatsSubtitle": {
+        "description": "Subtitle on the row that opens stats"
+    },
+    "achievementsStatsWatched": "Vu",
+    "@achievementsStatsWatched": {
+        "description": "Section of counters for what a user has watched"
+    },
+    "achievementsStatsBests": "Records",
+    "@achievementsStatsBests": {
+        "description": "Section of a user's highest counters"
+    },
+    "achievementsStatsHabits": "Habitudes",
+    "@achievementsStatsHabits": {
+        "description": "Section of counters for when a user watches"
+    },
+    "achievementsStatsVariety": "Diversité",
+    "@achievementsStatsVariety": {
+        "description": "Section of counters for how widely a user watches"
+    },
+    "achievementsStatsServer": "Ce serveur",
+    "@achievementsStatsServer": {
+        "description": "Section of figures covering every user"
+    },
+    "achievementsStatsClock": "Quand vous regardez",
+    "@achievementsStatsClock": {
+        "description": "Header above the hour of day chart"
+    },
+    "achievementsStatItems": "Éléments visionnés",
+    "@achievementsStatItems": {
+        "description": "Counter label"
+    },
+    "achievementsStatMovies": "Films visionnés",
+    "@achievementsStatMovies": {
+        "description": "Counter label"
+    },
+    "achievementsStatSeries": "Séries terminées",
+    "@achievementsStatSeries": {
+        "description": "Counter label"
+    },
+    "achievementsStatHours": "Heures visionnées",
+    "@achievementsStatHours": {
+        "description": "Counter label"
+    },
+    "achievementsStatDays": "Jours visionnés",
+    "@achievementsStatDays": {
+        "description": "Counter label"
+    },
+    "achievementsStatRewatches": "Revisionnages",
+    "@achievementsStatRewatches": {
+        "description": "Counter label"
+    },
+    "achievementsStatBestWatchStreak": "Meilleure série de visionnage",
+    "@achievementsStatBestWatchStreak": {
+        "description": "Counter label"
+    },
+    "achievementsStatBestLoginStreak": "Meilleure série de connexions",
+    "@achievementsStatBestLoginStreak": {
+        "description": "Counter label"
+    },
+    "achievementsStatMostEpisodes": "Le plus d'épisodes en une journée",
+    "@achievementsStatMostEpisodes": {
+        "description": "Counter label"
+    },
+    "achievementsStatMostMovies": "Le plus de films en une journée",
+    "@achievementsStatMostMovies": {
+        "description": "Counter label"
+    },
+    "achievementsStatLongestItem": "Élément le plus long",
+    "@achievementsStatLongestItem": {
+        "description": "Counter label, a run time in minutes"
+    },
+    "achievementsStatBestCombo": "Meilleur combo",
+    "@achievementsStatBestCombo": {
+        "description": "Counter label"
+    },
+    "achievementsStatLateNight": "Sessions nocturnes",
+    "@achievementsStatLateNight": {
+        "description": "Counter label"
+    },
+    "achievementsStatEarlyMorning": "Sessions matinales",
+    "@achievementsStatEarlyMorning": {
+        "description": "Counter label"
+    },
+    "achievementsStatWeekend": "Sessions du week-end",
+    "@achievementsStatWeekend": {
+        "description": "Counter label"
+    },
+    "achievementsStatDaysSignedIn": "Jours connectés",
+    "@achievementsStatDaysSignedIn": {
+        "description": "Counter label"
+    },
+    "achievementsStatLibraries": "Bibliothèques visitées",
+    "@achievementsStatLibraries": {
+        "description": "Counter label"
+    },
+    "achievementsStatGenres": "Genres visionnés",
+    "@achievementsStatGenres": {
+        "description": "Counter label"
+    },
+    "achievementsStatDecades": "Décennies visionnées",
+    "@achievementsStatDecades": {
+        "description": "Counter label"
+    },
+    "achievementsStatCountries": "Pays visionnés",
+    "@achievementsStatCountries": {
+        "description": "Counter label"
+    },
+    "achievementsStatLanguages": "Langues visionnées",
+    "@achievementsStatLanguages": {
+        "description": "Counter label"
+    },
+    "achievementsStatUsers": "Utilisateurs",
+    "@achievementsStatUsers": {
+        "description": "Counter label for how many people use the server"
+    },
+    "achievementsStatBadgesUnlocked": "Badges débloqués",
+    "@achievementsStatBadgesUnlocked": {
+        "description": "Counter label"
+    },
+    "achievementsStatScoreEarned": "Score gagné",
+    "@achievementsStatScoreEarned": {
+        "description": "Counter label"
+    },
+    "achievementsStatCommonBadge": "Badge le plus courant",
+    "@achievementsStatCommonBadge": {
+        "description": "Label for the badge the most users hold"
+    },
+    "achievementsActivity": "Activité",
+    "@achievementsActivity": {
+        "description": "Screen listing badges unlocked across the server"
+    },
+    "achievementsActivitySubtitle": "Ce que le serveur a débloqué récemment",
+    "@achievementsActivitySubtitle": {
+        "description": "Subtitle on the row that opens the activity feed"
+    },
+    "achievementsActivityUnlocked": "{user} a débloqué {badge}",
+    "@achievementsActivityUnlocked": {
+        "description": "One line of the activity feed",
+        "placeholders": {
+            "user": {
+                "type": "String"
+            },
+            "badge": {
+                "type": "String"
+            }
+        }
+    },
+    "achievementsShop": "Boutique",
+    "@achievementsShop": {
+        "description": "Screen selling power-ups for score"
+    },
+    "achievementsShopSubtitle": "Dépenser du score pour plus de bonus",
+    "@achievementsShopSubtitle": {
+        "description": "Subtitle on the row that opens the shop"
+    },
+    "achievementsShopPack": "{name} ×{count}",
+    "@achievementsShopPack": {
+        "description": "A shop item that grants more than one of a power-up",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            },
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsShopEmpty": "Rien à vendre pour le moment.",
+    "@achievementsShopEmpty": {
+        "description": "Shown when the shop catalogue came back with nothing"
+    },
+    "achievementsBuyConfirm": "Acheter ceci ?",
+    "@achievementsBuyConfirm": {
+        "description": "Title of the dialog confirming a purchase"
+    },
+    "achievementsBuyConfirmBody": "Le montant est prélevé directement sur votre réserve de score.",
+    "@achievementsBuyConfirmBody": {
+        "description": "Body of the dialog confirming a purchase"
+    },
+    "achievementsBuyFailed": "Impossible d'acheter cet article.",
+    "@achievementsBuyFailed": {
+        "description": "Message shown when a purchase did not go through"
+    },
+    "achievementsScoreBank": "Réserve de score",
+    "@achievementsScoreBank": {
+        "description": "Label for the score a user still has to spend"
+    },
+    "achievementsBoost": "Boost d'XP",
+    "@achievementsBoost": {
+        "description": "Power-up that doubles score for an hour"
+    },
+    "achievementsBoostBody": "Double le score pendant une heure. Une nouvelle utilisation relance le décompte.",
+    "@achievementsBoostBody": {
+        "description": "What the XP Boost power-up does"
+    },
+    "achievementsDoubleCredit": "Crédit double",
+    "@achievementsDoubleCredit": {
+        "description": "Power-up that makes the next item count twice"
+    },
+    "achievementsDoubleCreditBody": "Le prochain élément terminé compte double pour les badges.",
+    "@achievementsDoubleCreditBody": {
+        "description": "What the Double Credit power-up does"
+    },
+    "achievementsStreakFreeze": "Gel de série",
+    "@achievementsStreakFreeze": {
+        "description": "Power-up that protects a watch streak"
+    },
+    "achievementsStreakFreezeBody": "Couvre un jour manqué. Un seul peut être mis en réserve.",
+    "@achievementsStreakFreezeBody": {
+        "description": "What the Streak Freeze power-up does"
+    },
+    "achievementsPowerUpHeld": "{count, plural, one{{count} en stock} other{{count} en stock}}",
+    "@achievementsPowerUpHeld": {
+        "description": "How many of a power-up the user owns",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsPowerUpActive": "En cours",
+    "@achievementsPowerUpActive": {
+        "description": "Marker on a power-up that is currently in effect"
+    },
+    "achievementsUsePowerUp": "Utiliser ce bonus ?",
+    "@achievementsUsePowerUp": {
+        "description": "Title of the dialog confirming a power-up is spent"
+    },
+    "achievementsUsePowerUpBody": "Il est dépensé dès que vous confirmez.",
+    "@achievementsUsePowerUpBody": {
+        "description": "Body of the dialog confirming a power-up is spent"
+    },
+    "achievementsPowerUpFailed": "Impossible d'utiliser ce bonus.",
+    "@achievementsPowerUpFailed": {
+        "description": "Message shown when using a power-up did not go through"
+    },
+    "achievementsHours": "Heures",
+    "@achievementsHours": {
+        "description": "Leaderboard category: hours watched"
+    },
+    "achievementsStreak": "Série",
+    "@achievementsStreak": {
+        "description": "Leaderboard category: best watch streak"
+    },
+    "achievementsPeriodWeek": "Semaine",
+    "@achievementsPeriodWeek": {
+        "description": "Recap period: the last week"
+    },
+    "achievementsPeriodMonth": "Mois",
+    "@achievementsPeriodMonth": {
+        "description": "Recap period: the last month"
+    },
+    "achievementsPeriodYear": "Année",
+    "@achievementsPeriodYear": {
+        "description": "Recap period: the last year"
+    },
+    "achievementsDaysWatched": "Jours regardés : {count}",
+    "@achievementsDaysWatched": {
+        "description": "How many days the user watched something",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsBadgesEarned": "Badges obtenus : {count}",
+    "@achievementsBadgesEarned": {
+        "description": "How many badges were earned in the recap period",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsTopDirectors": "Réalisateurs les plus vus",
+    "@achievementsTopDirectors": {
+        "description": "Recap list of most-watched directors"
+    },
+    "achievementsTopActors": "Acteurs les plus vus",
+    "@achievementsTopActors": {
+        "description": "Recap list of most-watched actors"
+    },
+    "achievementsLoadFailed": "Impossible de charger vos succès.",
+    "@achievementsLoadFailed": {
+        "description": "Shown when the Achievement Badges plugin data fails to load"
+    },
+    "friends": "Amis",
+    "@friends": {
+        "description": "Title of the friends panel from the Achievement Badges plugin"
+    },
+    "friendsSubtitle": "Voyez qui est en ligne et discutez avec des personnes de ce serveur",
+    "@friendsSubtitle": {
+        "description": "Subtitle of the Friends entry"
+    },
+    "friendsShowButton": "Afficher le bouton Amis",
+    "@friendsShowButton": {
+        "description": "Navigation setting that adds a Friends button"
+    },
+    "friendsShowButtonSubtitle": "Amis et messagerie du plugin Achievement Badges",
+    "@friendsShowButtonSubtitle": {
+        "description": "Subtitle of the setting that adds a Friends button"
+    },
+    "friendsMessages": "Messages",
+    "@friendsMessages": {
+        "description": "Entry that opens the list of chats"
+    },
+    "friendsUnreadCount": "{count, plural, one{{count} message non lu} other{{count} messages non lus}}",
+    "@friendsUnreadCount": {
+        "description": "How many chat messages are unread",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "friendsRequests": "Demandes d'amis",
+    "@friendsRequests": {
+        "description": "Entry that opens pending friend requests"
+    },
+    "friendsRequestCount": "{count, plural, one{{count} demande en attente} other{{count} demandes en attente}}",
+    "@friendsRequestCount": {
+        "description": "How many friend requests wait for an answer",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "friendsAdd": "Ajouter des amis",
+    "@friendsAdd": {
+        "description": "Entry that opens the people search"
+    },
+    "friendsAddSubtitle": "Trouver des personnes sur ce serveur",
+    "@friendsAddSubtitle": {
+        "description": "Subtitle of the Add friends entry"
+    },
+    "friendsPrivacy": "Confidentialité",
+    "@friendsPrivacy": {
+        "description": "Entry that opens the friends privacy settings"
+    },
+    "friendsPrivacySubtitle": "Ce que vos amis peuvent voir",
+    "@friendsPrivacySubtitle": {
+        "description": "Subtitle of the friends Privacy entry"
+    },
+    "friendsOnline": "En ligne",
+    "@friendsOnline": {
+        "description": "Section header and status for friends who are online"
+    },
+    "friendsOffline": "Hors ligne",
+    "@friendsOffline": {
+        "description": "Section header and status for friends who are offline"
+    },
+    "friendsNone": "Aucun ami pour l'instant. Ajoutez des personnes depuis ce serveur pour les voir ici.",
+    "@friendsNone": {
+        "description": "Shown when the friends list is empty"
+    },
+    "friendsWatching": "Regarde {title}",
+    "@friendsWatching": {
+        "description": "Status line of a friend who is playing something",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "friendsLastWatched": "Dernier visionnage : {title}",
+    "@friendsLastWatched": {
+        "description": "Status line of an offline friend with the last thing they played",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "friendsLastSeen": "Dernière connexion : {time}",
+    "@friendsLastSeen": {
+        "description": "Status line of an offline friend, with a relative time such as 5m ago",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "friendsLoadFailed": "Impossible de charger ce contenu. Vérifiez votre connexion et réessayez.",
+    "@friendsLoadFailed": {
+        "description": "Shown when a friends or chat screen fails to load"
+    },
+    "friendsActionFailed": "Cette action a échoué. Réessayez dans un instant.",
+    "@friendsActionFailed": {
+        "description": "Shown when a friends or chat action fails without a reason from the server"
+    },
+    "friendsIncoming": "En attente de votre réponse",
+    "@friendsIncoming": {
+        "description": "Section header for friend requests others sent"
+    },
+    "friendsOutgoing": "Envoyées par vous",
+    "@friendsOutgoing": {
+        "description": "Section header for friend requests the user sent"
+    },
+    "friendsNoRequests": "Aucune demande d'ami.",
+    "@friendsNoRequests": {
+        "description": "Shown when there are no pending friend requests"
+    },
+    "friendsAccept": "Accepter",
+    "@friendsAccept": {
+        "description": "Accept a friend request"
+    },
+    "friendsDecline": "Refuser",
+    "@friendsDecline": {
+        "description": "Decline a friend request"
+    },
+    "friendsCancelRequest": "Annuler la demande",
+    "@friendsCancelRequest": {
+        "description": "Take back a friend request the user sent"
+    },
+    "friendsRequestFrom": "Demande d'ami de {name}",
+    "@friendsRequestFrom": {
+        "description": "Title of the dialog answering a friend request",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "friendsCancelRequestBody": "Annuler la demande envoyée à {name} ?",
+    "@friendsCancelRequestBody": {
+        "description": "Body of the dialog cancelling a sent friend request",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "friendsSearchHint": "Rechercher des personnes",
+    "@friendsSearchHint": {
+        "description": "Hint of the people search field"
+    },
+    "friendsNoMatches": "Personne ne correspond à ce nom.",
+    "@friendsNoMatches": {
+        "description": "Shown when the people search finds nobody"
+    },
+    "friendsRequestSent": "Demande envoyée à {name}",
+    "@friendsRequestSent": {
+        "description": "Shown after sending a friend request",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "friendsSendRequest": "Ajouter comme ami",
+    "@friendsSendRequest": {
+        "description": "Action that sends a friend request to someone"
+    },
+    "friendsSendMessage": "Envoyer un message",
+    "@friendsSendMessage": {
+        "description": "Action that opens a chat with a friend"
+    },
+    "friendsOpenItem": "Ouvrir {title}",
+    "@friendsOpenItem": {
+        "description": "Action that opens what a friend is watching",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "friendsRemove": "Retirer l'ami",
+    "@friendsRemove": {
+        "description": "Action that removes a friend"
+    },
+    "friendsRemoveBody": "Retirer {name} de vos amis ? Vous pourrez l'ajouter de nouveau plus tard.",
+    "@friendsRemoveBody": {
+        "description": "Body of the dialog removing a friend",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "friendsBlock": "Bloquer",
+    "@friendsBlock": {
+        "description": "Action that blocks a user from messaging"
+    },
+    "friendsUnblock": "Débloquer",
+    "@friendsUnblock": {
+        "description": "Action that unblocks a user"
+    },
+    "friendsBlockBody": "Bloquer {name} ? Vous ne pourrez plus vous envoyer de messages directs l'un à l'autre. Les groupes que vous partagez restent ouverts.",
+    "@friendsBlockBody": {
+        "description": "Body of the dialog blocking a user",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "friendsUnblockBody": "Débloquer {name} ?",
+    "@friendsUnblockBody": {
+        "description": "Body of the dialog unblocking a user",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "friendsBlocked": "Utilisateurs bloqués",
+    "@friendsBlocked": {
+        "description": "Section header listing blocked users"
+    },
+    "friendsProfileHidden": "{name} garde son profil privé.",
+    "@friendsProfileHidden": {
+        "description": "Shown when another user hides their profile",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "friendsAppearOffline": "Apparaître hors ligne",
+    "@friendsAppearOffline": {
+        "description": "Privacy setting that always shows the user as offline"
+    },
+    "friendsAppearOfflineSubtitle": "Vos amis vous voient toujours comme hors ligne",
+    "@friendsAppearOfflineSubtitle": {
+        "description": "Subtitle of the Appear offline setting"
+    },
+    "friendsHideNowPlaying": "Masquer ce que je regarde",
+    "@friendsHideNowPlaying": {
+        "description": "Privacy setting that hides what is playing"
+    },
+    "friendsHideNowPlayingSubtitle": "Vos amis vous voient toujours en ligne, mais pas ce que vous regardez",
+    "@friendsHideNowPlayingSubtitle": {
+        "description": "Subtitle of the Hide what I am watching setting"
+    },
+    "friendsHideLastWatched": "Masquer ce que j'ai regardé en dernier",
+    "@friendsHideLastWatched": {
+        "description": "Privacy setting that hides the last played item while offline"
+    },
+    "friendsHideLastWatchedSubtitle": "Vos amis ne verront pas ce que vous avez regardé en dernier lorsque vous êtes hors ligne",
+    "@friendsHideLastWatchedSubtitle": {
+        "description": "Subtitle of the Hide my last watched setting"
+    },
+    "friendsMessageNotifications": "Notifications de messages",
+    "@friendsMessageNotifications": {
+        "description": "Setting that shows a banner for new chat messages"
+    },
+    "friendsMessageNotificationsSubtitle": "Affiche une bannière lorsqu'un ami vous envoie un message",
+    "@friendsMessageNotificationsSubtitle": {
+        "description": "Subtitle of the Message notifications setting"
+    },
+    "friendsMuteDuringPlayback": "Couper pendant la lecture",
+    "@friendsMuteDuringPlayback": {
+        "description": "Setting that hides new message banners while a video or game plays"
+    },
+    "friendsMuteDuringPlaybackSubtitle": "Aucune bannière de message pendant la lecture d'une vidéo ou d'un jeu",
+    "@friendsMuteDuringPlaybackSubtitle": {
+        "description": "Subtitle of the Mute during playback setting"
+    },
+    "friendsSaveFailed": "Impossible d'enregistrer vos paramètres.",
+    "@friendsSaveFailed": {
+        "description": "Shown when the friends privacy settings fail to save"
+    },
+    "chatNew": "Nouveau message",
+    "@chatNew": {
+        "description": "Entry that starts a chat with one friend"
+    },
+    "chatNewSubtitle": "Démarre une discussion avec un ami",
+    "@chatNewSubtitle": {
+        "description": "Subtitle of the New message entry"
+    },
+    "chatNewGroup": "Nouveau groupe",
+    "@chatNewGroup": {
+        "description": "Entry that creates a group chat"
+    },
+    "chatNewGroupSubtitle": "Discute avec plusieurs amis à la fois",
+    "@chatNewGroupSubtitle": {
+        "description": "Subtitle of the New group entry"
+    },
+    "chatNone": "Aucun message pour le moment.",
+    "@chatNone": {
+        "description": "Shown when there are no chats or no messages in a chat"
+    },
+    "chatYou": "Vous",
+    "@chatYou": {
+        "description": "Stands for the signed-in user in chats and member lists"
+    },
+    "chatYouSaid": "Vous : {text}",
+    "@chatYouSaid": {
+        "description": "Preview of the last chat message when the user sent it",
+        "placeholders": {
+            "text": {
+                "type": "String"
+            }
+        }
+    },
+    "chatPhoto": "Photo",
+    "@chatPhoto": {
+        "description": "Preview of a chat message that is an image"
+    },
+    "chatEmoji": "Émoji",
+    "@chatEmoji": {
+        "description": "Button that opens the emoji picker in a chat"
+    },
+    "chatEmojiSearch": "Rechercher un émoji",
+    "@chatEmojiSearch": {
+        "description": "Hint of the search field in the emoji picker"
+    },
+    "chatNoRecentEmoji": "Aucun emoji récent",
+    "@chatNoRecentEmoji": {
+        "description": "Shown in the emoji picker's recent tab before any emoji was used"
+    },
+    "chatViewPhoto": "Voir la photo",
+    "@chatViewPhoto": {
+        "description": "Action that opens a photo sent in a chat at full size"
+    },
+    "chatHint": "Écrivez un message",
+    "@chatHint": {
+        "description": "Hint of the chat message field"
+    },
+    "chatAttach": "Envoyer une photo",
+    "@chatAttach": {
+        "description": "Button that picks an image to send in a chat"
+    },
+    "chatEdited": "modifié",
+    "@chatEdited": {
+        "description": "Marks a chat message that was changed after sending"
+    },
+    "chatSeen": "Vu",
+    "@chatSeen": {
+        "description": "Read receipt on a sent chat message"
+    },
+    "chatSent": "Envoyé",
+    "@chatSent": {
+        "description": "Delivery mark on a sent chat message nobody has read yet"
+    },
+    "chatEditing": "Modification du message",
+    "@chatEditing": {
+        "description": "Banner above the chat field while changing a sent message"
+    },
+    "chatMessageOptions": "Options du message",
+    "@chatMessageOptions": {
+        "description": "Title of the dialog with actions for a chat message"
+    },
+    "chatDeleteBody": "Supprimer ce message pour tout le monde ?",
+    "@chatDeleteBody": {
+        "description": "Body of the dialog deleting a chat message"
+    },
+    "chatClear": "Effacer la conversation",
+    "@chatClear": {
+        "description": "Action that deletes every message in a chat"
+    },
+    "chatClearBody": "Supprimer tous les messages de cette conversation pour tout le monde ?",
+    "@chatClearBody": {
+        "description": "Body of the dialog clearing a chat"
+    },
+    "chatGroupInfo": "Infos du groupe",
+    "@chatGroupInfo": {
+        "description": "Screen and action with a group chat name and members"
+    },
+    "chatGroupName": "Nom du groupe",
+    "@chatGroupName": {
+        "description": "Label of the group chat name field"
+    },
+    "chatMemberCount": "{count, plural, one{{count} membre} other{{count} membres}}",
+    "@chatMemberCount": {
+        "description": "How many people are in a group chat",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "chatOwner": "Propriétaire",
+    "@chatOwner": {
+        "description": "Marks the person who created a group chat"
+    },
+    "chatAdmin": "Admin",
+    "@chatAdmin": {
+        "description": "Marks a group chat admin"
+    },
+    "chatMakeAdmin": "Nommer admin",
+    "@chatMakeAdmin": {
+        "description": "Action that makes a group member an admin"
+    },
+    "chatRemoveAdmin": "Retirer des admins",
+    "@chatRemoveAdmin": {
+        "description": "Action that takes admin away from a group member"
+    },
+    "chatRemoveMember": "Retirer du groupe",
+    "@chatRemoveMember": {
+        "description": "Action that removes someone from a group chat"
+    },
+    "chatAddMember": "Ajouter des personnes",
+    "@chatAddMember": {
+        "description": "Action that adds friends to a group chat"
+    },
+    "chatNobodyToAdd": "Plus personne à ajouter.",
+    "@chatNobodyToAdd": {
+        "description": "Shown when every friend is already in the group"
+    },
+    "chatLeave": "Quitter le groupe",
+    "@chatLeave": {
+        "description": "Action that leaves a group chat"
+    },
+    "chatLeaveBody": "Quitter ce groupe ? Quelqu'un devra vous ajouter de nouveau pour que vous puissiez le rejoindre.",
+    "@chatLeaveBody": {
+        "description": "Body of the dialog leaving a group chat"
+    },
+    "chatCreate": "Créer un groupe",
+    "@chatCreate": {
+        "description": "Button that creates a group chat"
+    },
+    "chatPickMembers": "Choisissez au moins deux amis",
+    "@chatPickMembers": {
+        "description": "Hint on the new group screen"
+    },
+    "chatNewMessageFrom": "Nouveau message de {name}",
+    "@chatNewMessageFrom": {
+        "description": "Title of the banner for a new chat message",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "chatImageTooLarge": "Cette image dépasse 8 Mo.",
+    "@chatImageTooLarge": {
+        "description": "Shown when a picked chat image is too big"
+    },
+    "chatImageUnsupported": "Seules les images PNG, JPEG, GIF et WebP peuvent être envoyées.",
+    "@chatImageUnsupported": {
+        "description": "Shown when a picked chat image has an unsupported type"
+    },
+    "playlistTypeMusicVideo": "Vidéoclip",
+    "@playlistTypeMusicVideo": {
+        "description": "Filter checkbox label for music video playlists"
+    },
+    "musicVideoPlaylistsSection": "Playlists de vidéoclips",
+    "@musicVideoPlaylistsSection": {
+        "description": "Section header above music video playlists when Group by Type is enabled"
+    },
+    "setupStyleMinimalist": "Minimaliste",
+    "@setupStyleMinimalist": {
+        "description": "Name of the stripped-back detail layout, offered in the setup wizard"
+    },
+    "setupDetailMinimalistHint": "Le visuel, un bouton de lecture et les épisodes.",
+    "@setupDetailMinimalistHint": {
+        "description": "What the minimalist detail screen style gives you"
+    },
+    "setupNavbarStyleQuestion": "Quelle apparence pour la barre du bas ?",
+    "@setupNavbarStyleQuestion": {
+        "description": "Setup question asking which style the bottom navigation bar should use"
+    },
+    "setupNavbarStyleDockHint": "Une pastille flottante avec des libellés sous chaque onglet.",
+    "@setupNavbarStyleDockHint": {
+        "description": "What the Dock bottom bar style gives you"
+    },
+    "setupNavbarStyleSplitHint": "La recherche dispose de son propre bouton, et la barre se réduit pendant le défilement.",
+    "@setupNavbarStyleSplitHint": {
+        "description": "What the Split bottom bar style gives you"
+    },
+    "setupNavbarStyleStripHint": "Une barre pleine largeur le long du bord inférieur.",
+    "@setupNavbarStyleStripHint": {
+        "description": "What the Strip bottom bar style gives you"
+    },
+    "showBookDiscoverTab": "Afficher la découverte dans les bibliothèques de livres",
+    "@showBookDiscoverTab": {
+        "description": "Setting that shows or hides the discovery tab in book and audiobook libraries"
+    },
+    "showBookDiscoverTabDescription": "Parcourez des titres d'Open Library et de LibriVox dans vos bibliothèques de livres et de livres audio",
+    "@showBookDiscoverTabDescription": {
+        "description": "Explains the setting that shows or hides the discovery tab in book libraries"
+    },
+    "siriRemoteSwipeSensitivityDescription": "Distance parcourue par la sélection à chaque glissé sur le pavé tactile de la Siri Remote",
+    "@siriRemoteSwipeSensitivityDescription": {
+        "description": "Apple TV settings subtitle for the Siri Remote touchpad swipe sensitivity option"
+    },
+    "keepVideoClearOfDynamicIsland": "Garder la vidéo à l'écart de la Dynamic Island",
+    "@keepVideoClearOfDynamicIsland": {
+        "description": "iPhone playback setting that holds the picture back from the camera housing in landscape"
+    },
+    "keepVideoClearOfDynamicIslandDescription": "En mode paysage, le logement de la caméra recouvre un bord de l'écran. Ce réglage retient l'image en retrait de cette zone ; il n'a d'effet que sur une vidéo assez large pour l'atteindre.",
+    "@keepVideoClearOfDynamicIslandDescription": {
+        "description": "Description for the iPhone setting that keeps video clear of the Dynamic Island"
+    },
+    "bottomNavbarStyle": "Style de la barre inférieure",
+    "@bottomNavbarStyle": {
+        "description": "Settings title for choosing how the mobile bottom navigation bar looks"
+    },
+    "bottomNavbarStyleDock": "Dock",
+    "@bottomNavbarStyleDock": {
+        "description": "Bottom bar style: a floating pill with labelled tabs"
+    },
+    "bottomNavbarStyleSplit": "Scindé",
+    "@bottomNavbarStyleSplit": {
+        "description": "Bottom bar style: tabs in one capsule with search as its own round button"
+    },
+    "bottomNavbarStyleStrip": "Bandeau",
+    "@bottomNavbarStyleStrip": {
+        "description": "Bottom bar style: a full-width bar along the bottom edge"
+    },
+    "bottomNavbarTabs": "Onglets de la barre inférieure",
+    "@bottomNavbarTabs": {
+        "description": "Settings title for choosing which tabs sit on the mobile bottom navigation bar"
+    },
+    "bottomNavbarTabsDescription": "Épinglez jusqu'à 3 onglets entre Accueil et Vous. Tout le reste se trouve dans le menu de la barre inférieure.",
+    "@bottomNavbarTabsDescription": {
+        "description": "Explains the bottom bar tabs screen"
+    },
+    "bottomNavbarTabsAutomatic": "Automatique",
+    "@bottomNavbarTabsAutomatic": {
+        "description": "Shown when the bottom bar tabs are picked from the navigation button settings"
+    },
+    "bottomNavbarTabsPinned": "Épinglés",
+    "@bottomNavbarTabsPinned": {
+        "description": "Section header for the tabs pinned to the bottom bar"
+    },
+    "bottomNavbarTabsAvailable": "Disponible",
+    "@bottomNavbarTabsAvailable": {
+        "description": "Section header for tabs that can be pinned to the bottom bar"
+    },
+    "bottomNavbarTabsReset": "Réinitialiser en mode automatique",
+    "@bottomNavbarTabsReset": {
+        "description": "Action that clears the pinned bottom bar tabs so they are picked automatically again"
+    },
+    "bottomNavbarTabsLimit": "Vous pouvez épingler jusqu'à 3 onglets. Retirez-en un pour en épingler un autre.",
+    "@bottomNavbarTabsLimit": {
+        "description": "Hint shown when the maximum number of bottom bar tabs is already pinned"
+    },
+    "bottomNavbarTabTurnedOff": "Désactivé dans « Boutons »",
+    "@bottomNavbarTabTurnedOff": {
+        "description": "Hint on a bottom bar tab that can't be pinned because its navigation button setting is off"
+    },
+    "bottomNavbarSplitSearchNote": "Dans le style Scindé, Rechercher a toujours son propre bouton.",
+    "@bottomNavbarSplitSearchNote": {
+        "description": "Note on the bottom bar tabs screen about the Split style"
+    },
+    "bottomNavbarButtonsNote": "Ils déterminent ce qui apparaît dans le menu de la barre inférieure et les onglets que vous pouvez épingler à la barre. Les onglets déjà présents sur la barre n'apparaissent pas ici.",
+    "@bottomNavbarButtonsNote": {
+        "description": "Note under the navigation buttons section while the bottom bar is in use"
+    },
+    "navYou": "Vous",
+    "@navYou": {
+        "description": "Bottom bar tab that opens the user's own menu with their profile, extra destinations and settings"
     }
 }

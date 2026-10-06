@@ -2,6 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:get_it/get_it.dart';
+
+import '../data/services/log_service.dart';
 
 /// Inline preview player for Apple TV backed by a native AVPlayer rendering
 /// into a Flutter texture, so previews composite inside the Flutter UI
@@ -13,6 +16,7 @@ class AppleTvPreviewPlayer {
   static const _control = MethodChannel('moonfin/appletv_preview');
   static const _events = EventChannel('moonfin/appletv_preview_events');
   static Stream<Map<String, dynamic>>? _sharedEvents;
+  static StreamSubscription<Map<String, dynamic>>? _nativeLogs;
   static int _nextPlayerId = 1;
 
   final int _playerId;
@@ -26,6 +30,17 @@ class AppleTvPreviewPlayer {
         .where((event) => event is Map)
         .map((event) => (event as Map).cast<String, dynamic>())
         .asBroadcastStream();
+  }
+
+  /// Passes the native player's open, seek, frame, stall and stop lines to
+  /// the diagnostic log, tagged with the player they came from.
+  static void _forwardNativeLogs() {
+    _nativeLogs ??= _eventStream.where((e) => e['event'] == 'log').listen((e) {
+      if (!GetIt.instance.isRegistered<LogService>()) return;
+      GetIt.instance<LogService>().playback(
+        'Preview player ${e['playerId']}: ${e['message']}',
+      );
+    });
   }
 
   Stream<void> get completedStream => _eventStream
@@ -48,6 +63,7 @@ class AppleTvPreviewPlayer {
     String? audioLanguage,
   }) async {
     if (_disposed) return;
+    _forwardNativeLogs();
     final result = await _control.invokeMethod<Map<dynamic, dynamic>>('open', {
       'playerId': _playerId,
       'url': url,

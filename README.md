@@ -67,16 +67,16 @@ Moonfin is a media client for Jellyfin and Emby servers, built with Flutter. One
 - **Themes and a Theme Store** with a built-in editor, server-side sync, and an OLED mode for true blacks, plus custom loading animations and a screensaver on TV.
 - **An integrated admin panel** for settings, users, libraries, logs, devices, and analytics, plus a messages window for notes from your server admin.
 - **Discovery with Seerr** built into the details screen, with trending, popular, and upcoming rows and request status overlays.
-- **Live TV and DVR** with a program guide, a quick channel changer on TV, and recording management.
+- **Live TV and DVR** with a program guide, a quick channel changer on TV, automatic recovery when a channel stalls, and recording management.
 - **Trickplay scrubbing** as a single thumbnail, a filmstrip, or full screen, on both Jellyfin and Emby.
 - **Cinema Mode and segment skipping** for pre-rolls, intros, credits, and SponsorBlock.
-- **Casting and remote control** over Google Cast, DLNA, and AirPlay, plus control of other Jellyfin devices on your network. Other Jellyfin apps can steer Moonfin too.
+- **Casting and remote control** over Google Cast, DLNA, and AirPlay, plus control of other Jellyfin devices on your network with a D-pad and search typed from your phone. Other Jellyfin apps can steer Moonfin too.
 - **SyncPlay** for synchronized group watching.
 - **Personal ratings** as a like, five stars, or a score out of ten, usable to sort or filter a library.
 - **Kids Mode** that strips the app back to what a child needs and locks the way out with a PIN, plus blocked ratings that apply everywhere in the app.
-- **Achievement Badges** drawn natively when your Jellyfin server runs the Achievement Badges plugin.
+- **Achievement Badges** drawn natively when your Jellyfin server runs the Achievement Badges plugin, including its friends list and chat.
 - **Anime markers** for filler, recap, canon, and subbed or dubbed episodes, served by the Moonbase plugin.
-- **Ratings from MDBList and TMDB**, home row customization, and in-app update checks.
+- **Ratings from MDBList and TMDB**, home row customization with a seasonal holiday row, and in-app update checks.
 
 The full list is on the [Features](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Features) wiki page.
 
@@ -145,7 +145,7 @@ The deeper reference material lives in the [Wiki](https://github.com/Moonfin-Cli
 
 Contributions are welcome. Check the existing issues first, discuss major feature changes before implementing them, match the existing code style, run `flutter analyze`, and test on at least one target platform. Keep pull requests focused and include context, screenshots or logs where useful.
 
-See [Development](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Development) for the full guidelines and the pull request process.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guidelines and the pull request process.
 
 ## Help translate Moonfin [here](https://translate.moonfin.io/engage/moonfin-core/)
 

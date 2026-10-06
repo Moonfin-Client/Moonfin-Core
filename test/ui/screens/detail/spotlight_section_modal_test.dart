@@ -145,6 +145,51 @@ void main() {
     }
   });
 
+  testWidgets('on TV the opening focus skips a section that cannot take it', (
+    tester,
+  ) async {
+    // Like the Seerr facts ahead of the collection banner once the genre chips
+    // are hidden.
+    PlatformDetection.setTvMode(true);
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Builder(
+            builder: (context) => ElevatedButton(
+              onPressed: () => SpotlightSectionModal.show(
+                context,
+                title: 'Details',
+                sections: [
+                  SpotlightModalSection(
+                    focusable: false,
+                    builder: (context, firstFocusNode) => const Text('facts'),
+                  ),
+                  SpotlightModalSection(
+                    title: 'Collection',
+                    builder: (context, firstFocusNode) => Row(
+                      children: [
+                        cell('lead'),
+                        cell('banner', focusNode: firstFocusNode),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              child: const Text('open'),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+
+    // Handed to the facts, the node would never attach and the fallback walk
+    // would land on the first cell instead.
+    expect(Focus.of(tester.element(find.text('banner'))).hasFocus, isTrue);
+    expect(Focus.of(tester.element(find.text('lead'))).hasFocus, isFalse);
+  });
+
   testWidgets('back closes the modal and restores the card focus', (
     tester,
   ) async {

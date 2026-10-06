@@ -392,4 +392,133 @@ void main() {
       expect(handled, 1);
     });
   });
+
+  group('an untrusted certificate', () {
+    late HttpServer server;
+
+    setUp(() async {
+      final context = SecurityContext()
+        ..useCertificateChainBytes(_selfSignedCertificate.codeUnits)
+        ..usePrivateKeyBytes(_selfSignedKey.codeUnits);
+      server = await HttpServer.bindSecure(
+        InternetAddress.loopbackIPv4,
+        0,
+        context,
+      );
+      server.listen((request) async {
+        request.response.statusCode = HttpStatus.noContent;
+        await request.response.close();
+      });
+    });
+
+    tearDown(() async {
+      gAllowSelfSignedCertificates = false;
+      await server.close(force: true);
+    });
+
+    Future<int?> statusOf(Dio dio) async {
+      try {
+        final response = await dio.get<void>(
+          'https://127.0.0.1:${server.port}/',
+        );
+        return response.statusCode;
+      } finally {
+        dio.close(force: true);
+      }
+    }
+
+    test(
+      'is refused while the user has not allowed self-signed ones',
+      () async {
+        final dio = Dio();
+        configureServerDio(dio);
+
+        await expectLater(
+          statusOf(dio),
+          throwsA(
+            isA<DioException>().having(
+              isUntrustedCertificate,
+              'an untrusted certificate',
+              isTrue,
+            ),
+          ),
+        );
+      },
+    );
+
+    test('is accepted once the user allows self-signed ones', () async {
+      gAllowSelfSignedCertificates = true;
+      final dio = Dio();
+      configureServerDio(dio);
+
+      expect(await statusOf(dio), HttpStatus.noContent);
+    });
+
+    test('is the only failure read as one', () {
+      final refused = DioException.connectionError(
+        requestOptions: RequestOptions(path: '/'),
+        reason: 'refused',
+        error: const SocketException('Connection refused'),
+      );
+
+      expect(isUntrustedCertificate(refused), isFalse);
+      expect(isUntrustedCertificate(StateError('bug')), isFalse);
+      expect(isUntrustedCertificate(null), isFalse);
+    });
+  });
 }
+
+// A self-signed certificate for 127.0.0.1 and its key, used only by the tests
+// above.
+const _selfSignedCertificate = '''
+-----BEGIN CERTIFICATE-----
+MIIDHDCCAgSgAwIBAgIUd6aI6q7jVvc06OotVkZtTgIOIxcwDQYJKoZIhvcNAQEL
+BQAwFDESMBAGA1UEAwwJMTI3LjAuMC4xMCAXDTI2MTAwMjAwMzYzMFoYDzIxMjYw
+OTA4MDAzNjMwWjAUMRIwEAYDVQQDDAkxMjcuMC4wLjEwggEiMA0GCSqGSIb3DQEB
+AQUAA4IBDwAwggEKAoIBAQDIVeFC2ZId8nyItKdDZFqeM2ZuPTkVIGG66iCkf9UJ
+owpw36EZivH/yVJkw3nDLVjvR93oG0C3TWXhwRueYzzCVAy0eI7S6AasmkJi6FUv
+zKrVH6yLdP1vtbcQrhav+lrUbCyja5JfkemKFf67ar8fm4VSXJRS0Scm7bgkmYIn
+hBTBYgMWnoKzqZma3usfqUWcZ9kPZ+5geKbqDeKkQMKYqKvEG+99tp0vglJeCZM4
+Lu8/NqXqyPjINLsE5cNzzlqCCUfovkt7XvgJ4jnfQIZLwoAVZAztXaiZ+9qWdAWG
+CEoGO+oDbB6169+vNfT4UPiI5hzk8ldGauHJ7R+K0r9RAgMBAAGjZDBiMB0GA1Ud
+DgQWBBTXFD9LJa5dxR8YVlUpG+gqnzDYqzAfBgNVHSMEGDAWgBTXFD9LJa5dxR8Y
+VlUpG+gqnzDYqzAPBgNVHRMBAf8EBTADAQH/MA8GA1UdEQQIMAaHBH8AAAEwDQYJ
+KoZIhvcNAQELBQADggEBAFvrLgVEPVBhIULRjxOk3BL+w8kYXxllmyIpE6XHKQVG
+kc3jEai7gACWCS/Wuz2ldTQAtUtdL9uVt2ggBZ6As2Bq6PazzAUApZZMN5X7T7pa
+qgZWQA2Hy6/tNjaNP/91/ELI4yVkVxYilBI7wyytFg2WnQQgv5+0DLIrVtF8e9xV
+2Cg8jut8OP92TjCGwHOiWc9eGzq7CzyvHTfglaIQKHTVksF8cCD2RcI8+ALT/Wzl
+GTHblhl7E/jdNEziaKn2JdO7cIJUaevh6j/2E4H+pTXgJufYyLOWc3EDKC1OgiZ6
+CLvZCbmJfvb30ZUlO4c4KI4E8KHR5UgQXd4goCTjVW8=
+-----END CERTIFICATE-----
+''';
+
+const _selfSignedKey = '''
+-----BEGIN PRIVATE KEY-----
+MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDIVeFC2ZId8nyI
+tKdDZFqeM2ZuPTkVIGG66iCkf9UJowpw36EZivH/yVJkw3nDLVjvR93oG0C3TWXh
+wRueYzzCVAy0eI7S6AasmkJi6FUvzKrVH6yLdP1vtbcQrhav+lrUbCyja5JfkemK
+Ff67ar8fm4VSXJRS0Scm7bgkmYInhBTBYgMWnoKzqZma3usfqUWcZ9kPZ+5geKbq
+DeKkQMKYqKvEG+99tp0vglJeCZM4Lu8/NqXqyPjINLsE5cNzzlqCCUfovkt7XvgJ
+4jnfQIZLwoAVZAztXaiZ+9qWdAWGCEoGO+oDbB6169+vNfT4UPiI5hzk8ldGauHJ
+7R+K0r9RAgMBAAECggEAFY1bqw/yDsO4DxL0TaU9tHhOJDz056dwrCWk9l2EQ0Gl
+jWgZkkBm8YAsm4eGEW/O+gsOvfo0l6O9erCGMp91eWiGZ2Hy55CrqyT7UF2zUG2h
+0UTTkLs4yqxPcf1wlmUGIYUzti8L87kkWUUtfucogZN/H9Gy6Uf0ANWhMlrLbEmx
+3fPtoSy1H51LElkSjmXgB+8MGXSPCZE9RlspFOs5iR0vqaI8Un/IAGgSMXIFdJvP
+5JZJ7u5mUQ8VWRovNMcCYwyNS0z/tDrwfI1gltDcrE9dCkWwaZ2RSW/pBAS02JYA
+wTjFO+HZIE5GabSazxpovEs1VAllhuXSfH6iJ/vAIQKBgQD7WvRjOgCM1Cp2uxD+
+WwD6v7QWsoE7D3qFL2ZA4oiK94S9Mtmhh0pMwfQuypCGuW+vaSRxXpoAy2i64kvx
+i/CVc9mhU4VfCqXVaU0v43oJmcanPbK+q9WfyZ3Drg0iSQBoQDz0agsDx37FlSWX
+6DwhXUFkasXklAWxBEwYbTpaeQKBgQDMCZL74moQONbRHkmryx97GzAeNSeammso
+HbpCyVC4AepMeGQE/XtGDgW4ewwD2UZpTih6+uEFelvTZSerfd7/kOcJlgdXw0km
+IaYwqgtifeDbO+qmWZGo9OyNK57vrpN2G47tllzWqffebYntWWHgfqF8EUkYCh/c
+nP6OOAzVmQKBgQCKbKDCNKMw63cnRAYrzfpQHVsUVOIOoIuc5WmuuhLwVTfo6iQo
+bNViSD4ttqi5SU5Uj9beCHdPkLXwlce1Epg/9jkYO2Lr4HVLfl5fzSrcNq/MUpIp
+p4BSKzqTFTtucj2jLB1ljTDbt/X84hJ+Agt7ZFwq7RJmu44W2oL9wMmuIQKBgAM/
+R8KQeOWnMewEEmIUiny4Ewz4BZhVSs1Jo9Q6RfmXtjXfWKAntJWJ1Zd5Bdjt1UwJ
+vWUvpvMiXmG/42C8URc6JCMn6xf/eKONt4pgumun2zNCAdsB4+qPc1BP2GiyG5Cu
+oZiwYuvbqqE0lxRa7s7W1RUXZVVnm9gz+20iATpJAoGBAIGNPiN+TXoEuuAOk1DJ
+5Kxi2WIKkgkYS/j/WrqJ5iy900MpDt+vF5PthFGBp8q+X4TOTEBLMO2WNOTuqkof
+1WaB9xPeh32Wtblqb1e3jMhIH8hAIQSy/EXWmWKcHwDnvopFONFg4K5+OVxCNE1I
+tGeB6FL356Pj6Ltsc5k5fWwn
+-----END PRIVATE KEY-----
+''';

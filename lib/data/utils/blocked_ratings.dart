@@ -60,3 +60,19 @@ List<AggregatedItem> withoutBlockedItems(
       .where((item) => !_isItemBlocked(item, fallbackRating: fallbackRating))
       .toList();
 }
+
+/// [items] with the blocked ones and the unrated ones dropped.
+///
+/// For titles from outside lists, where a missing rating means nobody looked
+/// it up rather than that the server rates nothing. Once a viewer blocks any
+/// rating, a title whose rating is unknown stays out.
+List<AggregatedItem> withoutUnratedOrBlockedItems(List<AggregatedItem> items) {
+  final filter = activeParentalFilter;
+  if (!filter.isActive) return items;
+  return items.where((item) {
+    final rating = item.officialRating?.trim();
+    return rating != null &&
+        rating.isNotEmpty &&
+        !filter.isBlockedRating(rating);
+  }).toList();
+}

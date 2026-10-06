@@ -12,9 +12,9 @@ class ButtonLayout {
     required this.hiddenTv,
     required this.hiddenMobile,
     required this.hiddenDesktop,
-    required this.orderTv,
-    required this.orderMobile,
-    required this.orderDesktop,
+    this.orderTv,
+    this.orderMobile,
+    this.orderDesktop,
   });
 
   /// These hold the buttons switched off rather than the ones left on, so a
@@ -24,15 +24,21 @@ class ButtonLayout {
   final Preference<String> hiddenMobile;
   final Preference<String> hiddenDesktop;
 
-  final Preference<String> orderTv;
-  final Preference<String> orderMobile;
-  final Preference<String> orderDesktop;
+  /// Left out for a row that can only be switched on and off, which keeps the
+  /// order it was declared in.
+  final Preference<String>? orderTv;
+  final Preference<String>? orderMobile;
+  final Preference<String>? orderDesktop;
+
+  bool get isReorderable =>
+      orderTv != null && orderMobile != null && orderDesktop != null;
 
   Preference<String> get hiddenPreference =>
       _forThisDevice(hiddenTv, hiddenMobile, hiddenDesktop);
 
+  /// Only meaningful when [isReorderable].
   Preference<String> get orderPreference =>
-      _forThisDevice(orderTv, orderMobile, orderDesktop);
+      _forThisDevice(orderTv!, orderMobile!, orderDesktop!);
 
   Set<String> hidden(UserPreferences prefs) =>
       _ids(prefs.get(hiddenPreference)).toSet();
@@ -46,6 +52,7 @@ class ButtonLayout {
     String Function(T) idOf,
     UserPreferences prefs,
   ) {
+    if (!isReorderable) return all;
     final stored = _ids(prefs.get(orderPreference));
     if (stored.isEmpty) return all;
 

@@ -522,49 +522,11 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
     }
   }
 
-  bool _isAnyTmdbSectionEnabled() {
-    return _prefs.get(UserPreferences.tmdbPopularMoviesEnabled) ||
-        _prefs.get(UserPreferences.tmdbTopRatedMoviesEnabled) ||
-        _prefs.get(UserPreferences.tmdbNowPlayingMoviesEnabled) ||
-        _prefs.get(UserPreferences.tmdbUpcomingMoviesEnabled) ||
-        _prefs.get(UserPreferences.tmdbPopularTvEnabled) ||
-        _prefs.get(UserPreferences.tmdbTopRatedTvEnabled) ||
-        _prefs.get(UserPreferences.tmdbAiringTodayTvEnabled) ||
-        _prefs.get(UserPreferences.tmdbOnTheAirTvEnabled) ||
-        _prefs.get(UserPreferences.tmdbTrendingMovieDailyEnabled) ||
-        _prefs.get(UserPreferences.tmdbTrendingMovieWeeklyEnabled) ||
-        _prefs.get(UserPreferences.tmdbTrendingTvDailyEnabled) ||
-        _prefs.get(UserPreferences.tmdbTrendingTvWeeklyEnabled) ||
-        _prefs.get(UserPreferences.tmdbTrendingAllWeeklyEnabled);
-  }
+  bool _isAnyTmdbSectionEnabled() =>
+      UserPreferences.tmdbSectionEnabled.values.any(_prefs.get);
 
   bool _isTmdbRowEnabled(HomeSectionType type) {
-    final prefKey = switch (type) {
-      HomeSectionType.tmdbPopularMovies =>
-        UserPreferences.tmdbPopularMoviesEnabled,
-      HomeSectionType.tmdbTopRatedMovies =>
-        UserPreferences.tmdbTopRatedMoviesEnabled,
-      HomeSectionType.tmdbNowPlayingMovies =>
-        UserPreferences.tmdbNowPlayingMoviesEnabled,
-      HomeSectionType.tmdbUpcomingMovies =>
-        UserPreferences.tmdbUpcomingMoviesEnabled,
-      HomeSectionType.tmdbPopularTv => UserPreferences.tmdbPopularTvEnabled,
-      HomeSectionType.tmdbTopRatedTv => UserPreferences.tmdbTopRatedTvEnabled,
-      HomeSectionType.tmdbAiringTodayTv =>
-        UserPreferences.tmdbAiringTodayTvEnabled,
-      HomeSectionType.tmdbOnTheAirTv => UserPreferences.tmdbOnTheAirTvEnabled,
-      HomeSectionType.tmdbTrendingMovieDaily =>
-        UserPreferences.tmdbTrendingMovieDailyEnabled,
-      HomeSectionType.tmdbTrendingMovieWeekly =>
-        UserPreferences.tmdbTrendingMovieWeeklyEnabled,
-      HomeSectionType.tmdbTrendingTvDaily =>
-        UserPreferences.tmdbTrendingTvDailyEnabled,
-      HomeSectionType.tmdbTrendingTvWeekly =>
-        UserPreferences.tmdbTrendingTvWeeklyEnabled,
-      HomeSectionType.tmdbTrendingAllWeekly =>
-        UserPreferences.tmdbTrendingAllWeeklyEnabled,
-      _ => null,
-    };
+    final prefKey = UserPreferences.tmdbSectionEnabled[type];
     if (prefKey == null) return false;
     return _prefs.get(prefKey);
   }
@@ -623,21 +585,8 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
         type == HomeSectionType.imdbTopEnglishMovies;
   }
 
-  bool _isTmdbSectionType(HomeSectionType type) {
-    return type == HomeSectionType.tmdbPopularMovies ||
-        type == HomeSectionType.tmdbTopRatedMovies ||
-        type == HomeSectionType.tmdbNowPlayingMovies ||
-        type == HomeSectionType.tmdbUpcomingMovies ||
-        type == HomeSectionType.tmdbPopularTv ||
-        type == HomeSectionType.tmdbTopRatedTv ||
-        type == HomeSectionType.tmdbAiringTodayTv ||
-        type == HomeSectionType.tmdbOnTheAirTv ||
-        type == HomeSectionType.tmdbTrendingMovieDaily ||
-        type == HomeSectionType.tmdbTrendingMovieWeekly ||
-        type == HomeSectionType.tmdbTrendingTvDaily ||
-        type == HomeSectionType.tmdbTrendingTvWeekly ||
-        type == HomeSectionType.tmdbTrendingAllWeekly;
-  }
+  bool _isTmdbSectionType(HomeSectionType type) =>
+      UserPreferences.isTmdbSectionType(type);
 
   bool _isHiddenByRowVisibilityGates(HomeSectionConfig section) {
     final showFavoritesRows = _prefs.get(UserPreferences.displayFavoritesRows);
@@ -685,6 +634,10 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
     final hiddenByTmdb =
         _isTmdbSectionType(section.type) &&
         (!showTmdbRows || !_isTmdbRowEnabled(section.type));
+    final hiddenBySeasonal =
+        section.type == HomeSectionType.seasonal &&
+        (!GetIt.instance<PluginSyncService>().pluginAvailable ||
+            !_prefs.get(UserPreferences.seasonalRowEnabled));
 
     final showAudioRows = _prefs.get(UserPreferences.displayAudioRows);
     final hiddenByAudio = !showAudioRows && _isAudioSectionType(section.type);
@@ -712,6 +665,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
         hiddenBySeerr ||
         hiddenByImdb ||
         hiddenByTmdb ||
+        hiddenBySeasonal ||
         hiddenByAudio ||
         hiddenBySinceYouWatched ||
         hiddenByRewatch;
@@ -749,10 +703,9 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
     _sections = all.where((s) => s.type != HomeSectionType.mediaBar).toList()
       ..sort((a, b) => a.order.compareTo(b.order));
     for (var i = 0; i < _sections.length; i++) {
-      if (_isImdbSectionType(_sections[i].type)) {
-        _sections[i] = _sections[i].copyWith(
-          enabled: _isImdbRowEnabled(_sections[i].type),
-        );
+      final toggle = _toggleAuthoritativeEnabled(_sections[i].type);
+      if (toggle != null) {
+        _sections[i] = _sections[i].copyWith(enabled: toggle);
       }
     }
     final addedBuiltins = _ensureBuiltinSectionsPresent();
@@ -802,14 +755,25 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
     if (!mounted) return;
     var changed = false;
     for (var i = 0; i < _sections.length; i++) {
-      if (!_isImdbSectionType(_sections[i].type)) continue;
-      final enabled = _isImdbRowEnabled(_sections[i].type);
+      final enabled = _toggleAuthoritativeEnabled(_sections[i].type);
+      if (enabled == null) continue;
       if (_sections[i].enabled != enabled) {
         _sections[i] = _sections[i].copyWith(enabled: enabled);
         changed = true;
       }
     }
     if (changed) setState(() {});
+  }
+
+  /// The rows whose own toggle outranks the saved layout: the IMDb rows and the
+  /// seasonal row, both switched on from the External Lists screen. Null for
+  /// every other type.
+  bool? _toggleAuthoritativeEnabled(HomeSectionType type) {
+    if (_isImdbSectionType(type)) return _isImdbRowEnabled(type);
+    if (type == HomeSectionType.seasonal) {
+      return _prefs.get(UserPreferences.seasonalRowEnabled);
+    }
+    return null;
   }
 
   bool _ensureBuiltinSectionsPresent() {
@@ -829,7 +793,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
       _addSection(
         HomeSectionConfig(
           type: type,
-          enabled: _isImdbSectionType(type) ? _isImdbRowEnabled(type) : false,
+          enabled: _toggleAuthoritativeEnabled(type) ?? false,
           order: nextOrder++,
         ),
       );
@@ -1368,30 +1332,9 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
 
   void _syncIndividualPreferences() {
     Preference<bool>? mapToPref(HomeSectionType type) {
+      final tmdb = UserPreferences.tmdbSectionEnabled[type];
+      if (tmdb != null) return tmdb;
       return switch (type) {
-        HomeSectionType.tmdbPopularMovies =>
-          UserPreferences.tmdbPopularMoviesEnabled,
-        HomeSectionType.tmdbTopRatedMovies =>
-          UserPreferences.tmdbTopRatedMoviesEnabled,
-        HomeSectionType.tmdbNowPlayingMovies =>
-          UserPreferences.tmdbNowPlayingMoviesEnabled,
-        HomeSectionType.tmdbUpcomingMovies =>
-          UserPreferences.tmdbUpcomingMoviesEnabled,
-        HomeSectionType.tmdbPopularTv => UserPreferences.tmdbPopularTvEnabled,
-        HomeSectionType.tmdbTopRatedTv => UserPreferences.tmdbTopRatedTvEnabled,
-        HomeSectionType.tmdbAiringTodayTv =>
-          UserPreferences.tmdbAiringTodayTvEnabled,
-        HomeSectionType.tmdbOnTheAirTv => UserPreferences.tmdbOnTheAirTvEnabled,
-        HomeSectionType.tmdbTrendingMovieDaily =>
-          UserPreferences.tmdbTrendingMovieDailyEnabled,
-        HomeSectionType.tmdbTrendingMovieWeekly =>
-          UserPreferences.tmdbTrendingMovieWeeklyEnabled,
-        HomeSectionType.tmdbTrendingTvDaily =>
-          UserPreferences.tmdbTrendingTvDailyEnabled,
-        HomeSectionType.tmdbTrendingTvWeekly =>
-          UserPreferences.tmdbTrendingTvWeeklyEnabled,
-        HomeSectionType.tmdbTrendingAllWeekly =>
-          UserPreferences.tmdbTrendingAllWeeklyEnabled,
         HomeSectionType.imdbTop250Movies =>
           UserPreferences.imdbTop250MoviesEnabled,
         HomeSectionType.imdbTop250TvShows =>
@@ -1405,6 +1348,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
         HomeSectionType.imdbTopEnglishMovies =>
           UserPreferences.imdbTopEnglishMoviesEnabled,
         HomeSectionType.rewatch => UserPreferences.displayRewatchRow,
+        HomeSectionType.seasonal => UserPreferences.seasonalRowEnabled,
         HomeSectionType.sinceYouWatched1 =>
           UserPreferences.sinceYouWatched1Enabled,
         HomeSectionType.sinceYouWatched2 =>
@@ -1750,6 +1694,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
         HomeSectionType.sinceYouWatched4 => 'Since You Watched Row 4',
         HomeSectionType.sinceYouWatched5 => 'Since You Watched Row 5',
         HomeSectionType.rewatch => 'Rewatch',
+        HomeSectionType.seasonal => l10n.seasonalRow,
         HomeSectionType.none => l10n.none,
       };
 
@@ -2492,6 +2437,9 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
               ),
             );
           },
+        ),
+        SliverToBoxAdapter(
+          child: SizedBox(height: 16 + MediaQuery.paddingOf(context).bottom),
         ),
       ],
     );

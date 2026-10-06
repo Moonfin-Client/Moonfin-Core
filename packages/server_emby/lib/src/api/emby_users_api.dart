@@ -5,7 +5,15 @@ class EmbyUsersApi implements UsersApi {
   final Dio _dio;
   final String Function() _getUserId;
 
-  EmbyUsersApi(this._dio, this._getUserId);
+  /// Called after a configuration write, so anything cached from the old
+  /// configuration can be dropped.
+  final void Function()? _onConfigurationUpdated;
+
+  EmbyUsersApi(
+    this._dio,
+    this._getUserId, {
+    void Function()? onConfigurationUpdated,
+  }) : _onConfigurationUpdated = onConfigurationUpdated;
 
   @override
   Future<ServerUser> getCurrentUser() async {
@@ -27,5 +35,6 @@ class EmbyUsersApi implements UsersApi {
   Future<void> updateUserConfiguration(UserConfiguration config) async {
     final userId = _getUserId();
     await _dio.post('/Users/$userId/Configuration', data: config.toJson());
+    _onConfigurationUpdated?.call();
   }
 }

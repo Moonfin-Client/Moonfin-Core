@@ -47,6 +47,19 @@ int imageCacheBytesFor(DevicePerformanceTier tier, int standardBytes) =>
       DevicePerformanceTier.reduced => 32 << 20,
     };
 
+const _pixelsAt1080p = 1920 * 1080;
+
+/// The GPU cache budget Skia gets on a 1080p screen. The engine allows 12
+/// frames of 4 byte pixels, so a 4K UI gets four times this.
+const skiaCacheBytesAt1080p = _pixelsAt1080p * 12 * 4;
+
+/// The Skia cache budget to set for a screen of [physicalPixels], or null to
+/// keep the engine's own. Only a UI drawn above 1080p is held back, since the
+/// bigger budget is what lets the screensaver claim hundreds of MB of GPU
+/// memory.
+int? skiaCacheCapFor(double physicalPixels) =>
+    physicalPixels > _pixelsAt1080p ? skiaCacheBytesAt1080p : null;
+
 /// Whether an inline trailer may play. Off on the reduced tier even when the
 /// user asked for it, because the decoder is what takes these devices down.
 bool inlinePreviewAllowed({

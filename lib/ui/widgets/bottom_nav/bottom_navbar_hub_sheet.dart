@@ -18,9 +18,9 @@ import 'bottom_nav_tab.dart';
 import 'bottom_nav_theme.dart';
 import 'libraries_sheet.dart';
 
-/// The You tab: who is signed in, everything that isn't on the bar, and the
-/// way into settings.
-Future<void> showYouHub({
+/// The bottom navbar hub: who is signed in, everything that isn't on the bar,
+/// and the way into settings.
+Future<void> showBottomNavbarHub({
   required BuildContext context,
   required BottomNavController controller,
   required BottomNavTheme theme,
@@ -44,7 +44,7 @@ Future<void> showYouHub({
 
         return ListenableBuilder(
           listenable: controller,
-          builder: (_, _) => _YouHub(
+          builder: (_, _) => _BottomNavbarHub(
             controller: controller,
             theme: theme,
             onAccount: () => then(() => showUserMenu(context)),
@@ -78,7 +78,7 @@ Future<void> showYouHub({
   }
 }
 
-class _YouHub extends StatelessWidget {
+class _BottomNavbarHub extends StatelessWidget {
   final BottomNavController controller;
   final BottomNavTheme theme;
   final VoidCallback onAccount;
@@ -87,7 +87,7 @@ class _YouHub extends StatelessWidget {
   final VoidCallback onMessages;
   final VoidCallback onSettings;
 
-  const _YouHub({
+  const _BottomNavbarHub({
     required this.controller,
     required this.theme,
     required this.onAccount,
@@ -169,24 +169,30 @@ class _YouHub extends StatelessWidget {
               ),
             ],
           ),
-          if (tiles.isNotEmpty) ...[
-            const SizedBox(height: 16),
-            GridView.count(
-              crossAxisCount: 3,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              mainAxisSpacing: 10,
-              crossAxisSpacing: 10,
-              childAspectRatio: 1.2,
-              children: [
-                for (var i = 0; i < tiles.length; i++)
-                  _HubTile(
-                    tile: tiles[i],
-                    slot: i,
-                    theme: theme,
-                    onTap: () => onTile(tiles[i]),
-                  ),
-              ],
+          if (tiles.isNotEmpty) const SizedBox(height: 16),
+          // A label that wraps to a second line grows its whole row, so the
+          // tiles next to it stay the same height.
+          for (var row = 0; row < tiles.length; row += 3) ...[
+            if (row > 0) const SizedBox(height: 10),
+            IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  for (var i = row; i < row + 3; i++) ...[
+                    if (i > row) const SizedBox(width: 10),
+                    Expanded(
+                      child: i < tiles.length
+                          ? _HubTile(
+                              tile: tiles[i],
+                              slot: i,
+                              theme: theme,
+                              onTap: () => onTile(tiles[i]),
+                            )
+                          : const SizedBox.shrink(),
+                    ),
+                  ],
+                ],
+              ),
             ),
           ],
           const SizedBox(height: 16),
@@ -254,6 +260,9 @@ class _YouHub extends StatelessWidget {
 }
 
 class _HubTile extends StatelessWidget {
+  static const double _minHeight = 72;
+  static const double _iconSize = 32;
+
   final BottomNavHubTile tile;
   final int slot;
   final BottomNavTheme theme;
@@ -276,12 +285,22 @@ class _HubTile extends StatelessWidget {
         ? bottomNavTabLabel(l10n, tab)
         : bottomNavHubActionLabel(l10n, tile.action!);
     final icon = tab != null
-        ? bottomNavTabIconWidget(tab, active: false, size: 22, color: iconColor)
+        ? bottomNavTabIconWidget(
+            tab,
+            active: false,
+            size: _iconSize,
+            color: iconColor,
+          )
         : AdaptiveIcon(
             bottomNavHubActionIcon(tile.action!),
-            size: 22,
+            size: _iconSize,
             color: iconColor,
           );
+    // Capped so a large text setting can't stretch a two-line label's row
+    // far past the others.
+    final textScaler = MediaQuery.textScalerOf(context).clamp(
+      maxScaleFactor: 1.3,
+    );
 
     return Semantics(
       button: true,
@@ -292,29 +311,34 @@ class _HubTile extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           borderRadius: AppRadius.circular(18),
-          child: Ink(
-            decoration: BoxDecoration(
-              color: onBar.withValues(alpha: 0.06),
-              borderRadius: AppRadius.circular(18),
-              border: Border.all(color: onBar.withValues(alpha: 0.06)),
-            ),
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                icon,
-                Text(
-                  label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.labelStyle.copyWith(
-                    color: onBar,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: _minHeight),
+            child: Ink(
+              decoration: BoxDecoration(
+                color: onBar.withValues(alpha: 0.06),
+                borderRadius: AppRadius.circular(18),
+                border: Border.all(color: onBar.withValues(alpha: 0.06)),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  icon,
+                  const SizedBox(height: 6),
+                  Text(
+                    label,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                    textScaler: textScaler,
+                    style: theme.labelStyle.copyWith(
+                      color: onBar,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

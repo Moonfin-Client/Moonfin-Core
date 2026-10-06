@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/preference/user_preferences.dart';
+import 'package:moonfin/ui/widgets/adaptive/sf_symbol.dart';
 import 'package:moonfin/ui/widgets/bottom_nav/bottom_mini_player.dart';
 import 'package:moonfin/ui/widgets/bottom_nav/bottom_nav_indicator.dart';
 import 'package:moonfin/ui/widgets/bottom_nav/bottom_nav_metrics.dart';
@@ -26,6 +28,10 @@ void main() {
   });
 
   tearDown(tearDownBottomNav);
+
+  Finder hubTile(String label) => find
+      .ancestor(of: find.text(label), matching: find.byType(InkWell))
+      .first;
 
   group('heights', () {
     test('each style reports the room it takes', () {
@@ -138,6 +144,57 @@ void main() {
       expect(find.text('Settings'), findsOneWidget);
       expect(find.text('Shuffle'), findsOneWidget);
       expect(find.text('Genres'), findsOneWidget);
+      expect(find.text('Remote Control'), findsOneWidget);
+      // No Jellyfin client is signed in here, so Quick Connect has nothing
+      // to authorize against.
+      expect(find.text('Quick Connect'), findsNothing);
+    });
+
+    testWidgets('hub tiles keep the icon centered over the label',
+        (tester) async {
+      usePhoneView(tester);
+      tester.platformDispatcher.textScaleFactorTestValue = 2;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      await tester.pumpWidget(bottomNavApp());
+      await tester.pump();
+
+      await tester.tap(find.text('You'));
+      await tester.pumpAndSettle();
+
+      final tile = hubTile('Shuffle');
+      final icon = find.descendant(
+        of: tile,
+        matching: find.byType(AdaptiveIcon),
+      );
+      expect(tester.getCenter(icon).dx, tester.getCenter(tile).dx);
+      expect(
+        tester.getRect(icon).bottom,
+        lessThan(tester.getRect(find.text('Shuffle')).top),
+      );
+    });
+
+    testWidgets('a long hub label wraps to a second line and grows its row',
+        (tester) async {
+      usePhoneView(tester, size: const Size(430, 932));
+      await tester.pumpWidget(bottomNavApp());
+      await tester.pump();
+
+      await tester.tap(find.text('You'));
+      await tester.pumpAndSettle();
+
+      final wrapped = find.text('Remote Control');
+      expect(
+        tester.renderObject<RenderParagraph>(wrapped).didExceedMaxLines,
+        isFalse,
+      );
+      expect(
+        tester.getSize(wrapped).height,
+        tester.getSize(find.text('Shuffle')).height * 2,
+      );
+      final height = tester.getSize(hubTile('Remote Control')).height;
+      expect(height, greaterThan(72));
+      expect(tester.getSize(hubTile('Shuffle')).height, height);
+      expect(tester.getSize(hubTile('Genres')).height, height);
     });
 
     testWidgets('a new screen springs the indicator over from the last tab',

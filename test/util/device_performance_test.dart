@@ -164,4 +164,16 @@ void main() {
       }
     });
   });
+
+  group('skiaCacheCapFor', () {
+    test('a 4K UI gets the budget a 1080p screen has', () {
+      expect(skiaCacheCapFor(3840 * 2160), skiaCacheBytesAt1080p);
+      expect(skiaCacheCapFor(2560 * 1440), skiaCacheBytesAt1080p);
+    });
+
+    test('1080p and smaller keep the engine budget', () {
+      expect(skiaCacheCapFor(1920 * 1080), isNull);
+      expect(skiaCacheCapFor(1280 * 720), isNull);
+    });
+  });
 }

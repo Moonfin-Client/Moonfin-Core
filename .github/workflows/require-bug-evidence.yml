@@ -70,12 +70,35 @@ jobs:
             const needsImage = has('Bug') && has('UI');
             const needsLog = has('Bug') && has('Playback');
 
-            // Every form renders one "### Question" heading per field, blank ones
-            // included, and the smallest still produces four. A body without them
+            // Every form renders one "### <label>" heading per field, blank ones
+            // included, and the smallest still produces six. A body without them
             // came in around the forms, which is also why it never picked up the
             // labels the evidence checks read. Counting headings catches that even
             // when the author typed a convincing tag into the title by hand.
-            const countFormHeadings = text => (text.match(/^### /gm) || []).length;
+            // Only the forms' own labels count, since a handwritten report with its
+            // own "### Cause" style sections would pass as a form otherwise.
+            // Keep this list in step with the labels in .github/ISSUE_TEMPLATE.
+            const FORM_FIELDS = new Set([
+              // In more than one form
+              'Moonfin version', 'Platform', 'OS version', 'Device model', 'Server',
+              'Input method', 'Steps to reproduce',
+              // Bug: Playback
+              'Server version', 'Content type',
+              'Media details (as much as you know, check the info button at the bottom right of the player)',
+              'Playback path', 'Symptoms (check all that apply)', 'Frequency', 'Diagnostic log',
+              // Bug: UI
+              'Where does it happen?', 'Screenshots / recordings',
+              // Bug: Seerr
+              'How are you connecting?', 'Using HTTPS?', 'Error message / what happens',
+              'Does Seerr work from a phone/PC browser on the same network?',
+              'Logs / extra context (optional)',
+              // Feature request
+              'What problem does this solve?', 'Proposed solution', 'Alternatives considered',
+              'Additional context',
+            ].map(label => label.toLowerCase()));
+            const countFormHeadings = text => [...text.matchAll(/^###[ \t]+(.+)$/gm)]
+              .filter(m => FORM_FIELDS.has(m[1].trim().toLowerCase()))
+              .length;
             const mayNeedTemplate = countFormHeadings(issue.body || '') < 3;
 
             // The templates prefill "[UI] ", "[Playback] ", "[Seerr] " and "[Feature] ",
@@ -192,7 +215,7 @@ jobs:
               '',
               'The forms also decide how an issue gets labelled, and those labels are what tell this bot whether to ask you for a screenshot or a diagnostic log. Skipping the form means nobody was prompted for the one thing the report actually needs.',
               '',
-              `Please open a fresh one from [New issue](https://github.com/${context.repo.owner}/${context.repo.repo}/issues/new/choose) and pick the form that fits, then this can be closed as a duplicate. If you would rather not start over, paste the form's answers into a comment below and they will be picked up.`,
+              `Please open a fresh one from [New issue](https://github.com/${context.repo.owner}/${context.repo.repo}/issues/new/choose) and pick the form that fits, then this can be closed as a duplicate. If you would rather not start over, answer the form's fields in a comment below, each under a heading named after the field, such as \`### Moonfin version\`, \`### Platform\` and \`### Server\`, and they will be picked up.`,
               '',
               '- **Bug: Playback** for video or audio, which needs a diagnostic log',
               '- **Bug: UI** for anything visual, which needs a screenshot or recording',

@@ -214,7 +214,12 @@ class _ThemeStoreScreenState extends State<ThemeStoreScreen> {
           body: _loading
               ? const Center(child: CircularProgressIndicator())
               : ListView(
-                  padding: const EdgeInsets.all(20),
+                  padding: EdgeInsets.fromLTRB(
+                    20,
+                    20,
+                    20,
+                    20 + MediaQuery.paddingOf(context).bottom,
+                  ),
                   children: [
                     Text(
                       l10n.themeStoreDescription,

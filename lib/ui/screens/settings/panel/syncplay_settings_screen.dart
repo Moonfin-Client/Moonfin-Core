@@ -58,7 +58,9 @@ class _SyncPlaySettingsScreenState extends State<_SyncPlaySettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final bottomPad = PlatformDetection.isTV ? 96.0 : 24.0;
+    final bottomPad =
+        (PlatformDetection.isTV ? 96.0 : 24.0) +
+        MediaQuery.paddingOf(context).bottom;
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: buildSettingsAppBar(context, Text(l10n.syncPlay)),

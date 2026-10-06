@@ -276,6 +276,26 @@ void main() {
     expect(api.tags, isNull);
   });
 
+  test('clearing one group leaves the others in place', () async {
+    final api = _RecordingItemsApi();
+    final vm = await _viewModel(api);
+    addTearDown(vm.dispose);
+
+    await vm.toggleGenreFilter('Horror');
+    await vm.toggleTagFilter('imax');
+    await vm.toggleVideoQualityFilter(LibraryVideoQualityFilter.hd);
+    await vm.toggleFeatureFilter(LibraryFeatureFilter.subtitles);
+
+    await vm.clearFilterGroup(LibraryFilterGroup.genres);
+    await vm.clearFilterGroup(LibraryFilterGroup.quality);
+
+    expect(vm.genreFilters, isEmpty);
+    expect(api.genres, isNull);
+    expect(api.isHd, isNull);
+    expect(api.tags, <String>['imax']);
+    expect(api.hasSubtitles, isTrue);
+  });
+
   test('the facet values are only read once per browse', () async {
     final api = _RecordingItemsApi()
       ..facets = const QueryFilterValues(

@@ -89,9 +89,12 @@ class LogService extends ChangeNotifier {
     caseSensitive: false,
   );
 
+  // A value that is itself a URL is left to the URL rule above, so an error
+  // like "Invalid statusCode: 500, uri = ..." keeps its path.
   static final _genericErrorRedactRegex = RegExp(
     r'''\b(host(?:name)?|address|ip|server|url|uri|domain|origin)'''
-    r'''(\s*"?\s*[:=]\s*"?\s*)([^\s,;()<>"{}\[\]']*[.0-9][^\s,;()<>"{}\[\]']*)("?)''',
+    r'''(\s*"?\s*[:=]\s*"?\s*)(?![a-z][a-z0-9+.-]*://)'''
+    r'''([^\s,;()<>"{}\[\]']*[.0-9][^\s,;()<>"{}\[\]']*)("?)''',
     caseSensitive: false,
   );
 

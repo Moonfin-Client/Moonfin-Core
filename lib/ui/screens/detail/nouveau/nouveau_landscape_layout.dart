@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../widgets/bottom_nav/bottom_navbar.dart';
 import 'shared/nouveau_spacing.dart';
 
 class NouveauLandscapeLayout extends StatelessWidget {
@@ -126,6 +127,9 @@ class NouveauLandscapeLayout extends StatelessWidget {
                   ),
                 ),
             ],
+            SliverToBoxAdapter(
+              child: SizedBox(height: bottomContentInset(context)),
+            ),
           ],
         ),
       ],

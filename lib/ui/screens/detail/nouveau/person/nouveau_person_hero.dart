@@ -6,6 +6,7 @@ import 'package:server_core/server_core.dart';
 import '../../../../../data/models/aggregated_item.dart';
 import '../../../../../data/viewmodels/item_detail_view_model.dart';
 import '../../../../../l10n/app_localizations.dart';
+import '../../../../../preference/detail_section_layout.dart';
 import '../../../../../preference/user_preferences.dart';
 import '../../../../../util/platform_detection.dart';
 import '../../../../widgets/focus/focusable_wrapper.dart';
@@ -21,6 +22,9 @@ class NouveauPersonHero extends StatefulWidget {
   final ImageApi imageApi;
   final UserPreferences prefs;
 
+  /// Gates the biography and the birthplace.
+  final DetailSectionVisibility visibility;
+
   final FocusNode? initialFocusNode;
 
   final VoidCallback? onNavigateDown;
@@ -32,6 +36,7 @@ class NouveauPersonHero extends StatefulWidget {
     required this.viewModel,
     required this.imageApi,
     required this.prefs,
+    this.visibility = DetailSectionVisibility.all,
     this.initialFocusNode,
     this.onNavigateDown,
     this.onExternalFocusEntry,
@@ -105,11 +110,13 @@ class NouveauPersonHeroState extends State<NouveauPersonHero> {
   }
 
   /// The biography only takes focus when it overflows, so on a short one the
-  /// actions are the top of the page and Up belongs to the navbar.
+  /// actions are the top of the page and Up belongs to the navbar. The node
+  /// keeps its last context once a hidden biography is gone, hence the mounted
+  /// check.
   void _focusAbove() {
     if (_overviewFocusable &&
         _overviewFocusNode.canRequestFocus &&
-        _overviewFocusNode.context != null) {
+        (_overviewFocusNode.context?.mounted ?? false)) {
       _overviewFocusNode.requestFocus();
 
       return;
@@ -403,11 +410,17 @@ class NouveauPersonHeroState extends State<NouveauPersonHero> {
   Widget build(BuildContext context) {
     final imageUrl = _profileImageUrl();
 
-    final overview = widget.item.overview?.trim() ?? '';
+    final visibility = widget.visibility;
+
+    final overview = visibility.shows(DetailSection.biography)
+        ? widget.item.overview?.trim() ?? ''
+        : '';
 
     final dateParts = _dateParts(context);
 
-    final location = widget.item.productionLocations.isNotEmpty
+    final location =
+        visibility.shows(DetailSection.birthplace) &&
+            widget.item.productionLocations.isNotEmpty
         ? widget.item.productionLocations.first.trim()
         : '';
 

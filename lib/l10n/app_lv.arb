@@ -914,7 +914,7 @@
             }
         }
     },
-    "audiobookCountLabel": "{count, plural, =1{1 audiogrāmata} zero{{count} audiogrāmatu} one{{count} audiogrāmata} other{{count} audiogrāmatas}}",
+    "audiobookCountLabel": "{count, plural, zero{{count} audiogrāmatu} one{{count} audiogrāmata} other{{count} audiogrāmatas}}",
     "@audiobookCountLabel": {
         "description": "Subtitle showing number of audiobooks by an author",
         "placeholders": {
@@ -1036,7 +1036,7 @@
     "@publicationDateUnknown": {
         "description": "Placeholder when publication date is unknown"
     },
-    "seasonCount": "{count, plural, =1{1 sezona} zero{{count} sezonu} one{{count} sezona} other{{count} sezonas}}",
+    "seasonCount": "{count, plural, zero{{count} sezonu} one{{count} sezona} other{{count} sezonas}}",
     "@seasonCount": {
         "description": "Number of seasons for a series",
         "placeholders": {
@@ -1447,7 +1447,7 @@
             }
         }
     },
-    "trackCount": "{count, plural, =1{1 celiņš} zero{{count} celiņu} one{{count} celiņš} other{{count} celiņi}}",
+    "trackCount": "{count, plural, zero{{count} celiņu} one{{count} celiņš} other{{count} celiņi}}",
     "@trackCount": {
         "description": "Label showing number of tracks in an album",
         "placeholders": {
@@ -1456,7 +1456,7 @@
             }
         }
     },
-    "chapterCount": "{count, plural, =1{1 nodaļa} zero{{count} nodaļu} one{{count} nodaļa} other{{count} nodaļas}}",
+    "chapterCount": "{count, plural, zero{{count} nodaļu} one{{count} nodaļa} other{{count} nodaļas}}",
     "@chapterCount": {
         "description": "Label showing number of chapters in an audiobook",
         "placeholders": {
@@ -2490,7 +2490,7 @@
             }
         }
     },
-    "episodeCount": "{count, plural, =1{1 epizode} zero{{count} epizožu} one{{count} epizode} other{{count} epizodes}}",
+    "episodeCount": "{count, plural, zero{{count} epizožu} one{{count} epizode} other{{count} epizodes}}",
     "@episodeCount": {
         "description": "Number of episodes with pluralization",
         "placeholders": {
@@ -7192,7 +7192,7 @@
     "analyticsTopArtists": "Labākie mākslinieki",
     "analyticsTopAuthors": "Populārākie autori",
     "analyticsTopContributors": "Aktīvākie līdzstrādnieki",
-    "analyticsLibrariesCount": "{count, plural, =1{1 bibliotēka} zero{{count} bibliotēku} one{{count} bibliotēka} other{{count} bibliotēkas}}",
+    "analyticsLibrariesCount": "{count, plural, zero{{count} bibliotēku} one{{count} bibliotēka} other{{count} bibliotēkas}}",
     "@analyticsLibrariesCount": {
         "placeholders": {
             "count": {
@@ -7494,7 +7494,7 @@
     "@latestAudiobooks": {
         "description": "Row title for recently added audiobooks in the book library"
     },
-    "bookSeriesItemCount": "{count, plural, =1{1 grāmata} zero{{count} grāmatu} one{{count} grāmata} other{{count} grāmatas}}",
+    "bookSeriesItemCount": "{count, plural, zero{{count} grāmatu} one{{count} grāmata} other{{count} grāmatas}}",
     "@bookSeriesItemCount": {
         "description": "Subtitle for a book series shelf entry showing how many books it contains",
         "placeholders": {

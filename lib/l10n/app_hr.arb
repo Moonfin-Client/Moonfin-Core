@@ -914,7 +914,7 @@
             }
         }
     },
-    "audiobookCountLabel": "{count, plural, =1{1 audioknjiga} one{{count} audioknjiga} few{{count} audioknjige} other{{count} audioknjiga}}",
+    "audiobookCountLabel": "{count, plural, one{{count} audioknjiga} few{{count} audioknjige} other{{count} audioknjiga}}",
     "@audiobookCountLabel": {
         "description": "Subtitle showing number of audiobooks by an author",
         "placeholders": {
@@ -1036,7 +1036,7 @@
     "@publicationDateUnknown": {
         "description": "Placeholder when publication date is unknown"
     },
-    "seasonCount": "{count, plural, =1{1 sezona} one{{count} sezona} few{{count} sezone} other{{count} sezona}}",
+    "seasonCount": "{count, plural, one{{count} sezona} few{{count} sezone} other{{count} sezona}}",
     "@seasonCount": {
         "description": "Number of seasons for a series",
         "placeholders": {
@@ -1447,7 +1447,7 @@
             }
         }
     },
-    "trackCount": "{count, plural, =1{1 pjesma} one{{count} pjesma} few{{count} pjesme} other{{count} pjesama}}",
+    "trackCount": "{count, plural, one{{count} pjesma} few{{count} pjesme} other{{count} pjesama}}",
     "@trackCount": {
         "description": "Label showing number of tracks in an album",
         "placeholders": {
@@ -1456,7 +1456,7 @@
             }
         }
     },
-    "chapterCount": "{count, plural, =1{1 poglavlje} one{{count} poglavlje} few{{count} poglavlja} other{{count} poglavlja}}",
+    "chapterCount": "{count, plural, one{{count} poglavlje} few{{count} poglavlja} other{{count} poglavlja}}",
     "@chapterCount": {
         "description": "Label showing number of chapters in an audiobook",
         "placeholders": {
@@ -2490,7 +2490,7 @@
             }
         }
     },
-    "episodeCount": "{count, plural, =1{1 epizoda} one{{count} epizoda} few{{count} epizode} other{{count} epizoda}}",
+    "episodeCount": "{count, plural, one{{count} epizoda} few{{count} epizode} other{{count} epizoda}}",
     "@episodeCount": {
         "description": "Number of episodes with pluralization",
         "placeholders": {
@@ -7192,7 +7192,7 @@
     "analyticsTopArtists": "Najbolji izvođači",
     "analyticsTopAuthors": "Najbolji autori",
     "analyticsTopContributors": "Najveći doprinositelji",
-    "analyticsLibrariesCount": "{count, plural, =1{1 biblioteka} one{{count} biblioteka} few{{count} biblioteke} other{{count} biblioteka}}",
+    "analyticsLibrariesCount": "{count, plural, one{{count} biblioteka} few{{count} biblioteke} other{{count} biblioteka}}",
     "@analyticsLibrariesCount": {
         "placeholders": {
             "count": {
@@ -7494,7 +7494,7 @@
     "@latestAudiobooks": {
         "description": "Row title for recently added audiobooks in the book library"
     },
-    "bookSeriesItemCount": "{count, plural, =1{1 knjiga} one{{count} knjiga} few{{count} knjige} other{{count} knjiga}}",
+    "bookSeriesItemCount": "{count, plural, one{{count} knjiga} few{{count} knjige} other{{count} knjiga}}",
     "@bookSeriesItemCount": {
         "description": "Subtitle for a book series shelf entry showing how many books it contains",
         "placeholders": {

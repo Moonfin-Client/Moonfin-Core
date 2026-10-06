@@ -914,7 +914,7 @@
             }
         }
     },
-    "audiobookCountLabel": "{count, plural, =1{1 аудіокнига} one{{count} аудіокнига} few{{count} аудіокниги} many{{count} аудіокниг} other{{count} аудіокниги}}",
+    "audiobookCountLabel": "{count, plural, one{{count} аудіокнига} few{{count} аудіокниги} many{{count} аудіокниг} other{{count} аудіокниги}}",
     "@audiobookCountLabel": {
         "description": "Subtitle showing number of audiobooks by an author",
         "placeholders": {
@@ -1036,7 +1036,7 @@
     "@publicationDateUnknown": {
         "description": "Placeholder when publication date is unknown"
     },
-    "seasonCount": "{count, plural, =1{1 сезон} one{{count} сезон} few{{count} сезони} many{{count} сезонів} other{{count} сезону}}",
+    "seasonCount": "{count, plural, one{{count} сезон} few{{count} сезони} many{{count} сезонів} other{{count} сезону}}",
     "@seasonCount": {
         "description": "Number of seasons for a series",
         "placeholders": {
@@ -1447,7 +1447,7 @@
             }
         }
     },
-    "trackCount": "{count, plural, =1{1 трек} one{{count} трек} few{{count} треки} many{{count} треків} other{{count} треку}}",
+    "trackCount": "{count, plural, one{{count} трек} few{{count} треки} many{{count} треків} other{{count} треку}}",
     "@trackCount": {
         "description": "Label showing number of tracks in an album",
         "placeholders": {
@@ -1456,7 +1456,7 @@
             }
         }
     },
-    "chapterCount": "{count, plural, =1{1 розділ} one{{count} розділ} few{{count} розділи} many{{count} розділів} other{{count} розділу}}",
+    "chapterCount": "{count, plural, one{{count} розділ} few{{count} розділи} many{{count} розділів} other{{count} розділу}}",
     "@chapterCount": {
         "description": "Label showing number of chapters in an audiobook",
         "placeholders": {
@@ -2490,7 +2490,7 @@
             }
         }
     },
-    "episodeCount": "{count, plural, =1{1 епізод} one{{count} епізод} few{{count} епізоди} many{{count} епізодів} other{{count} епізоду}}",
+    "episodeCount": "{count, plural, one{{count} епізод} few{{count} епізоди} many{{count} епізодів} other{{count} епізоду}}",
     "@episodeCount": {
         "description": "Number of episodes with pluralization",
         "placeholders": {
@@ -7192,7 +7192,7 @@
     "analyticsTopArtists": "Найкращі виконавці",
     "analyticsTopAuthors": "Найкращі автори",
     "analyticsTopContributors": "Найкращі учасники",
-    "analyticsLibrariesCount": "{count, plural, =1{1 бібліотека} one{{count} бібліотека} few{{count} бібліотеки} many{{count} бібліотек} other{{count} бібліотеки}}",
+    "analyticsLibrariesCount": "{count, plural, one{{count} бібліотека} few{{count} бібліотеки} many{{count} бібліотек} other{{count} бібліотеки}}",
     "@analyticsLibrariesCount": {
         "placeholders": {
             "count": {
@@ -7494,7 +7494,7 @@
     "@latestAudiobooks": {
         "description": "Row title for recently added audiobooks in the book library"
     },
-    "bookSeriesItemCount": "{count, plural, =1{1 книга} one{{count} книга} few{{count} книги} many{{count} книг} other{{count} книги}}",
+    "bookSeriesItemCount": "{count, plural, one{{count} книга} few{{count} книги} many{{count} книг} other{{count} книги}}",
     "@bookSeriesItemCount": {
         "description": "Subtitle for a book series shelf entry showing how many books it contains",
         "placeholders": {

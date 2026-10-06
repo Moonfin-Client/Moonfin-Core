@@ -19,6 +19,17 @@ subprojects {
 }
 
 subprojects {
+    // file_picker 11 only applies the Kotlin plugin on AGP 8 and expects
+    // built-in Kotlin on AGP 9, which this project opts out of, so its sources
+    // never compile. Apply it here until the app moves to file_picker 12.
+    if (name == "file_picker") {
+        plugins.withId("com.android.library") {
+            pluginManager.apply("org.jetbrains.kotlin.android")
+        }
+    }
+}
+
+subprojects {
     configurations.configureEach {
         resolutionStrategy.eachDependency {
             // This force covers only the androidx.media3 group. The bundled

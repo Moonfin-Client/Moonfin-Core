@@ -47,7 +47,10 @@ class EmbyUserViewsApi implements UserViewsApi {
         .whereType<String>()
         .toSet();
 
-    final missing = (await _myMediaExcludes())
+    final config = await _userConfiguration();
+    if (config == null) return views;
+
+    final missing = config.myMediaExcludes
         .where((id) => id.isNotEmpty && !present.contains(id))
         .toList(growable: false);
     if (missing.isEmpty) return views;
@@ -57,17 +60,40 @@ class EmbyUserViewsApi implements UserViewsApi {
 
     return <String, dynamic>{
       ...views,
-      'Items': [...items, ...excluded],
+      'Items': _inSavedOrder([...items, ...excluded], config.orderedViews),
       'TotalRecordCount': items.length + excluded.length,
     };
   }
 
-  Future<List<String>> _myMediaExcludes() async {
+  Future<UserConfiguration?> _userConfiguration() async {
     try {
-      return (await _usersApi().getUserConfiguration()).myMediaExcludes;
+      return await _usersApi().getUserConfiguration();
     } catch (_) {
-      return const [];
+      return null;
     }
+  }
+
+  /// Emby already returns its views in the user's saved order, so this only
+  /// puts the ones fetched back by id in their slot instead of at the end.
+  /// Anything the saved order leaves out keeps its place after the rest.
+  static List<dynamic> _inSavedOrder(
+    List<dynamic> items,
+    List<String> orderedViews,
+  ) {
+    if (orderedViews.isEmpty) return items;
+    final rank = {
+      for (final (index, id) in orderedViews.indexed) id: index,
+    };
+    int rankOf(dynamic item) =>
+        rank[item is Map ? item['Id']?.toString() : null] ??
+        orderedViews.length;
+
+    final arrived = items.indexed.toList()
+      ..sort((a, b) {
+        final byRank = rankOf(a.$2).compareTo(rankOf(b.$2));
+        return byRank != 0 ? byRank : a.$1.compareTo(b.$1);
+      });
+    return [for (final (_, item) in arrived) item];
   }
 
   /// A library the user still has access to, just not on My Media, so a plain

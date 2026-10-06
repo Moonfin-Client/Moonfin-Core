@@ -256,6 +256,10 @@
   "@spotlightChaptersExtras": {
     "description": "Title of the spotlight summary card that opens the chapters and special features modal"
   },
+  "spotlightFileDetails": "File Details",
+  "@spotlightFileDetails": {
+    "description": "Title of the spotlight summary card that opens the file details modal"
+  },
   "spotlightSimilarRecommendations": "Similar and Recommendations",
   "@spotlightSimilarRecommendations": {
     "description": "Title of the spotlight summary card that opens the similar titles and recommendations modal"
@@ -2788,6 +2792,10 @@
   "@shortcutMpvStats": {
     "description": "Player shortcut action, Windows only"
   },
+  "shortcutRecropBlackBars": "Recrop black bars",
+  "@shortcutRecropBlackBars": {
+    "description": "Player shortcut to run letterbox crop detection now"
+  },
   "shortcutLeaveFullscreenOrStop": "Exit fullscreen, or stop if not fullscreen",
   "@shortcutLeaveFullscreenOrStop": {
     "description": "What Esc does in the player"
@@ -4219,6 +4227,114 @@
   "@fallingLeaves": {
     "description": "Seasonal effect: falling leaves"
   },
+  "seasonalChristmas": "Christmas",
+  "@seasonalChristmas": {
+    "description": "Seasonal effect: snow with falling baubles and stars"
+  },
+  "seasonalPetals": "Spring Petals",
+  "@seasonalPetals": {
+    "description": "Seasonal effect: falling cherry blossoms and petals with bees flying by"
+  },
+  "seasonalFireflies": "Fireflies",
+  "@seasonalFireflies": {
+    "description": "Seasonal effect: glowing fireflies for summer"
+  },
+  "seasonalHalloween": "Halloween",
+  "@seasonalHalloween": {
+    "description": "Seasonal effect: bats, ghosts, candy and orange and purple leaves"
+  },
+  "seasonalDensity": "Density",
+  "@seasonalDensity": {
+    "description": "Setting for how many seasonal effect particles are on screen at once"
+  },
+  "seasonalDensityLight": "Light",
+  "@seasonalDensityLight": {
+    "description": "Seasonal effect density: fewest particles"
+  },
+  "seasonalDensityNormal": "Normal",
+  "@seasonalDensityNormal": {
+    "description": "Seasonal effect density: the default amount"
+  },
+  "seasonalDensityHeavy": "Heavy",
+  "@seasonalDensityHeavy": {
+    "description": "Seasonal effect density: most particles"
+  },
+  "seasonalRow": "Seasonal Row",
+  "@seasonalRow": {
+    "description": "Name of the Home row that shows holiday movies"
+  },
+  "seasonalRowDescription": "Show a row of holiday movies from your library, with Seerr suggestions when available.",
+  "@seasonalRowDescription": {
+    "description": "Explains the seasonal Home row setting"
+  },
+  "seasonalRowSubtitle": "Seasonal",
+  "@seasonalRowSubtitle": {
+    "description": "Source label shown under the seasonal row's title"
+  },
+  "seasonalRowCountry": "Country",
+  "@seasonalRowCountry": {
+    "description": "Setting for which country's holidays the seasonal row follows"
+  },
+  "seasonalRowCountryAuto": "Automatic",
+  "@seasonalRowCountryAuto": {
+    "description": "Country option that reads the country from the device"
+  },
+  "countryUnitedStates": "United States",
+  "@countryUnitedStates": {
+    "description": "Country name"
+  },
+  "countryCanada": "Canada",
+  "@countryCanada": {
+    "description": "Country name"
+  },
+  "seasonalRowCountryOther": "Other",
+  "@seasonalRowCountryOther": {
+    "description": "Country option for a country the seasonal row does not list"
+  },
+  "seasonalRowHolidays": "Holidays",
+  "@seasonalRowHolidays": {
+    "description": "Heading for the list of holidays the seasonal row can show"
+  },
+  "seasonalRowHolidaysHint": "Untick a holiday to hide its row.",
+  "@seasonalRowHolidaysHint": {
+    "description": "Hint under the holiday checklist"
+  },
+  "holidayNewYear": "New Year's",
+  "@holidayNewYear": {
+    "description": "Seasonal row title for New Year's"
+  },
+  "holidayValentines": "Valentine's Day",
+  "@holidayValentines": {
+    "description": "Seasonal row title for Valentine's Day"
+  },
+  "holidayEaster": "Easter",
+  "@holidayEaster": {
+    "description": "Seasonal row title for Easter"
+  },
+  "holidayPride": "Pride",
+  "@holidayPride": {
+    "description": "Seasonal row title for Pride month"
+  },
+  "holidayHalloween": "Halloween",
+  "@holidayHalloween": {
+    "description": "Seasonal row title for Halloween"
+  },
+  "holidayThanksgiving": "Thanksgiving",
+  "@holidayThanksgiving": {
+    "description": "Seasonal row title for Thanksgiving"
+  },
+  "holidayChristmas": "Christmas Movies",
+  "@holidayChristmas": {
+    "description": "Seasonal row title for Christmas"
+  },
+  "holidayLunarNewYear": "Lunar New Year",
+  "@holidayLunarNewYear": {
+    "description": "Seasonal row title for Lunar New Year"
+  },
+  "holidayDiwali": "Diwali",
+  "@holidayDiwali": {
+    "description": "Seasonal row title for Diwali"
+  },
   "themeMusic": "Theme Music",
   "@themeMusic": {
     "description": "Setting for theme music"
@@ -4329,9 +4445,29 @@
   "@cropBlackBars": {
     "description": "Setting to detect and crop encoded letterbox/pillarbox bars"
   },
-  "settingsCropBlackBarsDescription": "Detect encoded letterbox bars, crop them, then fill the screen.",
+  "settingsCropBlackBarsDescription": "Detect encoded letterbox bars after playback starts, crop them, then fill the screen. Recrop from the player zoom button.",
   "@settingsCropBlackBarsDescription": {
     "description": "Description for the crop black bars playback setting"
+  },
+  "cropBlackBarsRecropInterval": "Recrop interval",
+  "@cropBlackBarsRecropInterval": {
+    "description": "Setting for how often to re-detect encoded letterbox bars"
+  },
+  "cropBlackBarsOnce": "Once at start",
+  "@cropBlackBarsOnce": {
+    "description": "Letterbox recrop interval: detect once after playback starts"
+  },
+  "cropBlackBarsEverySecond": "Every second",
+  "@cropBlackBarsEverySecond": {
+    "description": "Letterbox recrop interval: scan about once a second"
+  },
+  "settingsCropBlackBarsIntervalDescription": "Follow aspect ratio changes during playback.",
+  "@settingsCropBlackBarsIntervalDescription": {
+    "description": "Description for the letterbox recrop-interval setting"
+  },
+  "playerRecroppingBlackBars": "Recropping black bars",
+  "@playerRecroppingBlackBars": {
+    "description": "Toast when the player re-runs letterbox crop detection"
   },
   "stretch": "Stretch",
   "@stretch": {
@@ -4536,6 +4672,178 @@
   "detailMetadataUpcomingEpisodeDateSubtitle": "Uses Sonarr and TMDB to show upcoming release dates",
   "@detailMetadataUpcomingEpisodeDateSubtitle": {
     "description": "Subtitle describing data sources for upcoming episode air dates in metadata row"
+  },
+  "detailSections": "Sections",
+  "@detailSections": {
+    "description": "Settings tile title for switching Details screen sections on and off"
+  },
+  "detailSectionsDescription": "Choose which parts of the Details screen to show",
+  "@detailSectionsDescription": {
+    "description": "Settings tile subtitle for the Details screen sections list"
+  },
+  "detailSectionsScreenDescription": "Only the sections the current Details screen style can show are listed. Hiding one hides it in every style that has it.",
+  "@detailSectionsScreenDescription": {
+    "description": "Explanatory text at the top of the Details screen sections list"
+  },
+  "detailSectionGroupHeader": "Header",
+  "@detailSectionGroupHeader": {
+    "description": "Group heading for the title area of the Details screen"
+  },
+  "detailSectionGroupSections": "Sections",
+  "@detailSectionGroupSections": {
+    "description": "Group heading for the rows, tabs and cards of the Details screen"
+  },
+  "detailSectionGroupPerson": "Person pages",
+  "@detailSectionGroupPerson": {
+    "description": "Group heading for sections only shown on a person's Details screen"
+  },
+  "detailSectionGroupCollection": "Collection pages",
+  "@detailSectionGroupCollection": {
+    "description": "Group heading for sections only shown on a collection's Details screen"
+  },
+  "detailSectionGroupOther": "Other",
+  "@detailSectionGroupOther": {
+    "description": "Group heading for Details screen sections that fit no other group"
+  },
+  "detailSectionLogo": "Logo",
+  "@detailSectionLogo": {
+    "description": "Details screen section: the title logo artwork"
+  },
+  "detailSectionLogoSubtitle": "Shows the title as text when off",
+  "@detailSectionLogoSubtitle": {
+    "description": "Subtitle for the logo section switch"
+  },
+  "detailSectionTagline": "Tagline",
+  "@detailSectionTagline": {
+    "description": "Details screen section: the short tagline under the title"
+  },
+  "detailSectionPoster": "Poster",
+  "@detailSectionPoster": {
+    "description": "Details screen section: the poster image beside the title"
+  },
+  "detailSectionVersionBadge": "Version badge",
+  "@detailSectionVersionBadge": {
+    "description": "Details screen section: the badge shown when an item has more than one version"
+  },
+  "detailSectionUpNext": "Next Up",
+  "@detailSectionUpNext": {
+    "description": "Details screen section: the next up or next episode card"
+  },
+  "detailSectionLyrics": "Lyrics",
+  "@detailSectionLyrics": {
+    "description": "Details screen section: the lyrics panel for songs"
+  },
+  "detailSectionCast": "Cast",
+  "@detailSectionCast": {
+    "description": "Details screen section: the cast row, tab or card"
+  },
+  "detailSectionCastSubtitle": "Also on collection pages",
+  "@detailSectionCastSubtitle": {
+    "description": "Subtitle for the cast section switch"
+  },
+  "detailSectionCrew": "Directors & writers",
+  "@detailSectionCrew": {
+    "description": "Details screen section: directors and writers"
+  },
+  "detailSectionStudios": "Studios",
+  "@detailSectionStudios": {
+    "description": "Details screen section: studios and networks"
+  },
+  "detailSectionChapters": "Chapters",
+  "@detailSectionChapters": {
+    "description": "Details screen section: chapters"
+  },
+  "detailSectionExtras": "Extras",
+  "@detailSectionExtras": {
+    "description": "Details screen section: trailers, featurettes and other extras"
+  },
+  "detailSectionCollections": "Collections",
+  "@detailSectionCollections": {
+    "description": "Details screen section: the collections an item belongs to"
+  },
+  "detailSectionMoreLikeThis": "More Like This",
+  "@detailSectionMoreLikeThis": {
+    "description": "Details screen section: similar items from the library"
+  },
+  "detailSectionMoreLikeThisSubtitle": "Also similar albums and artists",
+  "@detailSectionMoreLikeThisSubtitle": {
+    "description": "Subtitle for the More Like This section switch"
+  },
+  "detailSectionMoreEpisodes": "More episodes",
+  "@detailSectionMoreEpisodes": {
+    "description": "Details screen section: the other episodes of a show on an episode's page"
+  },
+  "detailSectionMoreEpisodesSubtitle": "On episode pages",
+  "@detailSectionMoreEpisodesSubtitle": {
+    "description": "Subtitle for the More episodes section switch"
+  },
+  "detailSectionMediaInfo": "Media info",
+  "@detailSectionMediaInfo": {
+    "description": "Details screen section: file, stream and Direct Play details"
+  },
+  "detailSectionMediaInfoSubtitle": "File, streams and Direct Play check",
+  "@detailSectionMediaInfoSubtitle": {
+    "description": "Subtitle for the media info section switch"
+  },
+  "detailSectionSeerrGenresTags": "Genres & tags",
+  "@detailSectionSeerrGenresTags": {
+    "description": "Details screen Seerr section: genre and keyword chips"
+  },
+  "detailSectionSeerrStats": "Stats",
+  "@detailSectionSeerrStats": {
+    "description": "Details screen Seerr section: TMDB score, status, budget and revenue"
+  },
+  "detailSectionSeerrRecommendations": "Recommendations",
+  "@detailSectionSeerrRecommendations": {
+    "description": "Details screen Seerr section: recommended titles"
+  },
+  "detailSectionSeerrSimilar": "Similar titles",
+  "@detailSectionSeerrSimilar": {
+    "description": "Details screen Seerr section: similar titles"
+  },
+  "detailSectionSeerrCollection": "Collection banner",
+  "@detailSectionSeerrCollection": {
+    "description": "Details screen Seerr section: the banner for the collection a movie is part of"
+  },
+  "detailSectionSeerrPersonAppearances": "Appearances",
+  "@detailSectionSeerrPersonAppearances": {
+    "description": "Details screen Seerr section: a person's appearances"
+  },
+  "detailSectionSeerrPersonCrew": "Crew credits",
+  "@detailSectionSeerrPersonCrew": {
+    "description": "Details screen Seerr section: a person's crew credits"
+  },
+  "detailSectionPersonPagesSubtitle": "On person pages",
+  "@detailSectionPersonPagesSubtitle": {
+    "description": "Subtitle for Seerr sections only shown on a person's Details screen"
+  },
+  "detailSectionBiography": "Biography",
+  "@detailSectionBiography": {
+    "description": "Details screen section: a person's biography"
+  },
+  "detailSectionBirthplace": "Birthplace",
+  "@detailSectionBirthplace": {
+    "description": "Details screen section: a person's place of birth"
+  },
+  "detailSectionGuestAppearances": "Guest appearances",
+  "@detailSectionGuestAppearances": {
+    "description": "Details screen section: a person's guest appearances"
+  },
+  "detailSectionMusicVideos": "Music videos",
+  "@detailSectionMusicVideos": {
+    "description": "Details screen section: a person's music videos"
+  },
+  "detailSectionPlaylistOrder": "Playlist order",
+  "@detailSectionPlaylistOrder": {
+    "description": "Details screen section: a collection's playlist order"
+  },
+  "detailSectionBookGenres": "Book genres",
+  "@detailSectionBookGenres": {
+    "description": "Details screen section: the genre chips on a book's page"
+  },
+  "detailSectionPhotoExif": "Photo details",
+  "@detailSectionPhotoExif": {
+    "description": "Details screen section: camera and image details on a photo's page"
   },
   "upcomingEpisodeNext": "Next: {date} (S{season}:E{episode})",
   "@upcomingEpisodeNext": {
@@ -5676,6 +5984,26 @@
   "showInLatestMedia": "Show in recently added/released media",
   "@showInLatestMedia": {
     "description": "Toggle for showing library in recently added/released media"
+  },
+  "libraryOrder": "Library Order",
+  "@libraryOrder": {
+    "description": "Title of the settings screen that reorders the user's libraries"
+  },
+  "libraryOrderSubtitle": "Choose the order of your libraries",
+  "@libraryOrderSubtitle": {
+    "description": "Subtitle of the Library Order entry in the libraries settings"
+  },
+  "libraryOrderDescription": "Your libraries appear in this order on My Media, the recently added rows and the navigation bar. The order is saved to your server account, so other apps you sign in to use it too.",
+  "@libraryOrderDescription": {
+    "description": "Explanation shown at the top of the Library Order settings screen"
+  },
+  "libraryOrderTvHint": "Press left or right to move the highlighted library.",
+  "@libraryOrderTvHint": {
+    "description": "Remote control hint on the Library Order settings screen"
+  },
+  "libraryOrderSaveFailed": "Couldn't save the library order",
+  "@libraryOrderSaveFailed": {
+    "description": "Error shown when saving the library order to the server fails"
   },
   "sourceLibraries": "Source Libraries",
   "@sourceLibraries": {
@@ -9513,6 +9841,10 @@
   "@settingsAllowSelfSignedCertsSubtitle": {
     "description": "Description for the allow self-signed certificates setting"
   },
+  "untrustedServerCertificate": "This server's certificate isn't trusted. If it's your own server and uses a self-signed or private certificate, you can allow it here.",
+  "@untrustedServerCertificate": {
+    "description": "Shown on the sign-in screens when a server's TLS certificate is rejected, above a button that turns on Allow self-signed certificates"
+  },
   "settingsPrivacyAndSafetySection": "PRIVACY & SAFETY",
   "itemBlockedByParentalControls": "This isn't available",
   "@itemBlockedByParentalControls": {
@@ -12646,6 +12978,26 @@
   "@siriRemoteSwipeSensitivityDescription": {
     "description": "Apple TV settings subtitle for the Siri Remote touchpad swipe sensitivity option"
   },
+  "appleTvHomeScreen": "Apple TV home screen",
+  "@appleTvHomeScreen": {
+    "description": "Section header in Home Screen settings for options that affect the tvOS home screen outside the app"
+  },
+  "topShelf": "Top Shelf",
+  "@topShelf": {
+    "description": "Apple TV settings label for what the tvOS home screen shows above the Moonfin icon. Top Shelf is Apple's name for that area"
+  },
+  "topShelfDescription": "What the Apple TV home screen shows above the Moonfin icon when it is selected. This setting stays on this device.",
+  "@topShelfDescription": {
+    "description": "Apple TV settings subtitle for the Top Shelf option"
+  },
+  "topShelfLatestMedia": "Latest media",
+  "@topShelfLatestMedia": {
+    "description": "Top Shelf option that shows a carousel of the newest items from the home screen's Latest rows"
+  },
+  "topShelfAppBanner": "Moonfin banner",
+  "@topShelfAppBanner": {
+    "description": "Top Shelf option that shows only the static Moonfin logo banner, nothing from the library"
+  },
   "keepVideoClearOfDynamicIsland": "Keep video clear of the Dynamic Island",
   "@keepVideoClearOfDynamicIsland": {
     "description": "iPhone playback setting that holds the picture back from the camera housing in landscape"
@@ -12674,7 +13026,7 @@
   "@bottomNavbarTabs": {
     "description": "Settings title for choosing which tabs sit on the mobile bottom navigation bar"
   },
-  "bottomNavbarTabsDescription": "Pin up to 3 tabs between Home and You. Everything else is in the You menu.",
+  "bottomNavbarTabsDescription": "Pin up to 3 tabs between Home and You. Everything else is in the bottom navbar hub.",
   "@bottomNavbarTabsDescription": {
     "description": "Explains the bottom bar tabs screen"
   },
@@ -12706,7 +13058,7 @@
   "@bottomNavbarSplitSearchNote": {
     "description": "Note on the bottom bar tabs screen about the Split style"
   },
-  "bottomNavbarButtonsNote": "These decide which tabs you can pin to the bottom bar and what shows in the You menu.",
+  "bottomNavbarButtonsNote": "These decide what shows in the bottom navbar hub and which tabs you can pin to the bottom bar. Tabs already on the bar aren't listed here.",
   "@bottomNavbarButtonsNote": {
     "description": "Note under the navigation buttons section while the bottom bar is in use"
   },

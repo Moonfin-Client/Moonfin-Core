@@ -4,6 +4,7 @@ import '../../../../../data/models/aggregated_item.dart';
 import '../../../../../data/services/seerr/seerr_api_models.dart';
 import '../../../../../data/viewmodels/item_detail_view_model.dart';
 import '../../../../../l10n/app_localizations.dart';
+import '../../../../../preference/detail_section_layout.dart';
 import '../../../../../preference/user_preferences.dart';
 import '../../../../../util/platform_detection.dart';
 import '../shared/nouveau_segmented_selector.dart';
@@ -24,6 +25,10 @@ class NouveauPersonContent extends StatefulWidget {
   final ItemDetailViewModel viewModel;
   final UserPreferences prefs;
 
+  /// Guest appearances, music videos and both Seerr credit lists each have a
+  /// switch. A hidden one has no tab, and the All fallback leaves it out too.
+  final DetailSectionVisibility visibility;
+
   final List<SeerrDiscoverItem> seerrCrewCredits;
   final List<SeerrDiscoverItem> seerrAppearances;
 
@@ -38,6 +43,7 @@ class NouveauPersonContent extends StatefulWidget {
     super.key,
     required this.viewModel,
     required this.prefs,
+    this.visibility = DetailSectionVisibility.all,
     required this.seerrCrewCredits,
     required this.seerrAppearances,
     this.onBackdropItemFocused,
@@ -113,31 +119,60 @@ class NouveauPersonContentState extends State<NouveauPersonContent> {
 
   List<AggregatedItem> get _series => _sortJellyfinItems(_vm.filmographySeries);
 
-  List<AggregatedItem> get _musicVideos =>
-      _sortJellyfinItems(_vm.filmographyMusicVideos);
+  bool _shows(DetailSection section) => widget.visibility.shows(section);
 
-  List<AggregatedItem> get _allFilmography =>
-      _sortJellyfinItems(_vm.filmography);
+  List<AggregatedItem> get _musicVideos => _shows(DetailSection.musicVideos)
+      ? _sortJellyfinItems(_vm.filmographyMusicVideos)
+      : const [];
 
-  List<AggregatedItem> get _guestAppearances {
-    final series = _series;
+  /// Everything the person is credited in, less the categories that are
+  /// hidden, so falling back to it can't bring them back.
+  List<AggregatedItem> get _allFilmography {
+    final hiddenGuestIds = _shows(DetailSection.guestAppearances)
+        ? const <String>{}
+        : {for (final episode in _guestAppearanceEpisodes) episode.id};
+
+    final showsMusicVideos = _shows(DetailSection.musicVideos);
 
     return _sortJellyfinItems(
-      _vm.filmographyEpisodes.where((episode) {
-        final seriesId = episode.seriesId;
-
-        if (seriesId == null || seriesId.isEmpty) {
-          return true;
+      _vm.filmography.where((item) {
+        if (!showsMusicVideos && item.type == 'MusicVideo') {
+          return false;
         }
 
-        final isMainCastOfSeries = series.any(
-          (seriesItem) => seriesItem.id == seriesId,
-        );
-
-        return !isMainCastOfSeries;
+        return !hiddenGuestIds.contains(item.id);
       }).toList(),
     );
   }
+
+  List<AggregatedItem> get _guestAppearances =>
+      _shows(DetailSection.guestAppearances)
+      ? _sortJellyfinItems(_guestAppearanceEpisodes)
+      : const [];
+
+  List<AggregatedItem> get _guestAppearanceEpisodes {
+    final seriesIds = {for (final series in _vm.filmographySeries) series.id};
+
+    return _vm.filmographyEpisodes.where((episode) {
+      final seriesId = episode.seriesId;
+
+      if (seriesId == null || seriesId.isEmpty) {
+        return true;
+      }
+
+      return !seriesIds.contains(seriesId);
+    }).toList();
+  }
+
+  List<SeerrDiscoverItem> get _seerrCrewCredits =>
+      _shows(DetailSection.seerrPersonCrew)
+      ? widget.seerrCrewCredits
+      : const [];
+
+  List<SeerrDiscoverItem> get _seerrAppearances =>
+      _shows(DetailSection.seerrPersonAppearances)
+      ? widget.seerrAppearances
+      : const [];
 
   List<_PersonTab> get _availableTabs {
     final tabs = <_PersonTab>[
@@ -145,8 +180,8 @@ class NouveauPersonContentState extends State<NouveauPersonContent> {
       if (_series.isNotEmpty) _PersonTab.series,
       if (_guestAppearances.isNotEmpty) _PersonTab.guestAppearances,
       if (_musicVideos.isNotEmpty) _PersonTab.musicVideos,
-      if (widget.seerrCrewCredits.isNotEmpty) _PersonTab.crew,
-      if (widget.seerrAppearances.isNotEmpty) _PersonTab.appearances,
+      if (_seerrCrewCredits.isNotEmpty) _PersonTab.crew,
+      if (_seerrAppearances.isNotEmpty) _PersonTab.appearances,
     ];
 
     if (tabs.isEmpty && _allFilmography.isNotEmpty) {
@@ -419,7 +454,7 @@ class NouveauPersonContentState extends State<NouveauPersonContent> {
         return NouveauSeerrFilmographySection(
           key: _crewSectionKey,
           title: '',
-          items: widget.seerrCrewCredits,
+          items: _seerrCrewCredits,
           isCrew: true,
           onNavigateUp: _navigateRailUp,
           onNavigateDown: _navigateRailDown,
@@ -429,7 +464,7 @@ class NouveauPersonContentState extends State<NouveauPersonContent> {
         return NouveauSeerrFilmographySection(
           key: _appearancesSectionKey,
           title: '',
-          items: widget.seerrAppearances,
+          items: _seerrAppearances,
           isCrew: false,
           onNavigateUp: _navigateRailUp,
           onNavigateDown: _navigateRailDown,

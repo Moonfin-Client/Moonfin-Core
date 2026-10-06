@@ -62,27 +62,18 @@ class Media3LetterboxCrop {
   }
 
   static LetterboxCropRect? decide(Map<String, int> detected) {
-    final w = detected['w'];
-    final h = detected['h'];
-    final x = detected['x'];
-    final y = detected['y'];
-    final sourceWidth = detected['sourceWidth'];
-    final sourceHeight = detected['sourceHeight'];
-    if (w == null ||
-        h == null ||
-        x == null ||
-        y == null ||
-        sourceWidth == null ||
-        sourceHeight == null) {
-      return null;
-    }
-    return LetterboxCrop.decide(
-      width: w,
-      height: h,
-      x: x,
-      y: y,
-      sourceWidth: sourceWidth,
-      sourceHeight: sourceHeight,
+    final sample = classify(detected);
+    return sample.kind == LetterboxSampleKind.crop ? sample.rect : null;
+  }
+
+  static LetterboxSample classify(Map<String, int> detected) {
+    return LetterboxCrop.classify(
+      width: detected['w'],
+      height: detected['h'],
+      x: detected['x'],
+      y: detected['y'],
+      sourceWidth: detected['sourceWidth'] ?? 0,
+      sourceHeight: detected['sourceHeight'] ?? 0,
       minRatio: minRatio,
     );
   }
@@ -98,6 +89,9 @@ abstract class Media3LetterboxHost {
   Stream<bool> get playingStream;
   String? get currentUrl;
   bool get isDisposed;
+
+  /// Position advances this much faster than the wall clock.
+  double get playbackSpeed;
 }
 
 class Media3LetterboxCropper extends LetterboxCropper {
@@ -107,10 +101,15 @@ class Media3LetterboxCropper extends LetterboxCropper {
     this.autoDelay = Media3LetterboxCrop.autoDelay,
     this.sampleCount = Media3LetterboxCrop.sampleCount,
     this.sampleGap = Media3LetterboxCrop.sampleGap,
-  }) : _supported = supported;
+    this.windowboxGap = LetterboxCrop.windowboxGap,
+    LetterboxCropStabilizer? stabilizer,
+  }) : _supported = supported,
+       _stabilizer = stabilizer ?? LetterboxCropStabilizer();
 
   final Media3LetterboxHost _host;
   final bool _supported;
+  final LetterboxCropStabilizer _stabilizer;
+  final _appliedController = StreamController<bool>.broadcast();
 
   @visibleForTesting
   final Duration autoDelay;
@@ -121,10 +120,27 @@ class Media3LetterboxCropper extends LetterboxCropper {
   @visibleForTesting
   final Duration sampleGap;
 
+  @visibleForTesting
+  final Duration windowboxGap;
+
   int _generation = 0;
   bool _enabled = false;
+  Duration _recropInterval = Duration.zero;
+  bool _skipStartDelay = false;
+  bool _forceRestart = false;
+  bool _keepAppliedCrop = false;
+  bool _applied = false;
   String? _doneUrl;
+  String? _loopUrl;
   bool _inFlight = false;
+
+  bool get _continuous => _recropInterval > Duration.zero;
+
+  @override
+  bool get isApplied => _applied;
+
+  @override
+  Stream<bool> get appliedStream => _appliedController.stream;
 
   @override
   bool get isSupported => _supported;
@@ -144,27 +160,80 @@ class Media3LetterboxCropper extends LetterboxCropper {
   }
 
   @override
+  Future<void> setRecropInterval(Duration interval) async {
+    if (interval.isNegative) interval = Duration.zero;
+    if (_recropInterval == interval) return;
+    final wasContinuous = _continuous;
+    _recropInterval = interval;
+    if (!isSupported || !_enabled) return;
+    final url = _host.currentUrl;
+    if (url == null || url.isEmpty) return;
+    if (_continuous && !wasContinuous) {
+      _skipStartDelay = true;
+      _forceRestart = true;
+      _keepAppliedCrop = _applied;
+      await _sync();
+    } else if (!_continuous && wasContinuous) {
+      _generation++;
+      _inFlight = false;
+      _loopUrl = null;
+      _doneUrl = url;
+    }
+  }
+
+  @override
   Future<void> onSourceOpened(String url) async {
-    if (_doneUrl != url) _doneUrl = null;
+    if (_doneUrl != url && _loopUrl != url) {
+      _doneUrl = null;
+      _loopUrl = null;
+      _stabilizer.reset();
+    }
     if (!isSupported) return;
+    await _sync();
+  }
+
+  @override
+  Future<void> recrop() async {
+    if (!isSupported || !_enabled) return;
+    _skipStartDelay = true;
+    _forceRestart = true;
+    _keepAppliedCrop = _applied;
     await _sync();
   }
 
   Future<void> _sync() async {
     if (!_enabled) {
       _generation++;
-      await reset();
       _doneUrl = null;
+      _loopUrl = null;
+      _stabilizer.reset();
+      await reset();
       return;
     }
     final url = _host.currentUrl;
     if (url == null || url.isEmpty) return;
-    if (_doneUrl == url) return;
-    if (_inFlight) return;
+
+    if (!_forceRestart) {
+      if (_continuous) {
+        if (_inFlight && _loopUrl == url) return;
+      } else if (_doneUrl == url || _inFlight) {
+        return;
+      }
+    }
+    final keepCrop = _keepAppliedCrop;
+    _forceRestart = false;
+    _keepAppliedCrop = false;
 
     _inFlight = true;
+    _loopUrl = url;
+    _doneUrl = null;
+    if (keepCrop) {
+      _stabilizer.resetCandidate();
+    } else {
+      _stabilizer.reset();
+    }
     final generation = ++_generation;
-    await reset();
+    if (!keepCrop) await reset();
     if (!_isCurrent(generation)) {
       if (generation == _generation) _inFlight = false;
       return;
@@ -175,6 +244,7 @@ class Media3LetterboxCropper extends LetterboxCropper {
   @override
   Future<void> reset() async {
     if (!isSupported) return;
+    _setApplied(false);
     await _host.setLetterboxCrop(null);
   }
 
@@ -187,40 +257,29 @@ class Media3LetterboxCropper extends LetterboxCropper {
   Future<void> _run(int generation) async {
     try {
       if (!await _waitWhileCurrent(generation, untilPlaying: true)) return;
-      if (_host.position < autoDelay) {
+      if (!_skipStartDelay && _host.position < autoDelay) {
         if (!await _delay(generation, autoDelay)) {
           return;
         }
       }
+      _skipStartDelay = false;
       if (_host.isPlaying != true) {
         if (!await _waitWhileCurrent(generation, untilPlaying: true)) return;
       }
 
       final remaining = _host.duration - _host.position;
+      final need = _continuous ? _recropInterval : autoDelay;
       if (_host.duration > Duration.zero &&
-          remaining < autoDelay + const Duration(seconds: 1)) {
+          remaining < need + const Duration(seconds: 1)) {
         return;
       }
       if (!_isCurrent(generation)) return;
 
-      final samples = <Map<String, int>>[];
-      for (var i = 0; i < sampleCount; i++) {
-        if (i > 0 && !await _delay(generation, sampleGap)) return;
-        final sample = await _host.detectLetterbox().timeout(
-          Media3LetterboxCrop.detectTimeout,
-          onTimeout: () => null,
-        );
-        if (!_isCurrent(generation)) return;
-        if (sample != null) samples.add(sample);
+      if (_continuous) {
+        await _runContinuous(generation);
+      } else {
+        await _runOnce(generation);
       }
-
-      final merged = Media3LetterboxCrop.widest(samples);
-      if (merged == null) return;
-      final rect = Media3LetterboxCrop.decide(merged);
-      if (rect == null || !_isCurrent(generation)) return;
-
-      await _host.setLetterboxCrop(rect);
-      _doneUrl = _host.currentUrl;
     } finally {
       if (generation == _generation) {
         _inFlight = false;
@@ -228,8 +287,114 @@ class Media3LetterboxCropper extends LetterboxCropper {
     }
   }
 
+  Future<void> _runOnce(int generation) async {
+    final samples = <Map<String, int>>[];
+    for (var i = 0; i < sampleCount; i++) {
+      if (i > 0 && !await _delay(generation, sampleGap)) return;
+      final sample = await _host.detectLetterbox().timeout(
+        Media3LetterboxCrop.detectTimeout,
+        onTimeout: () => null,
+      );
+      if (!_isCurrent(generation)) return;
+      if (sample != null) samples.add(sample);
+    }
+
+    // Every PixelCopy failed, e.g. the surface was still attaching. Leave
+    // the title open so the next sync can scan again.
+    final merged = Media3LetterboxCrop.widest(samples);
+    if (merged == null) return;
+    final sample = Media3LetterboxCrop.classify(merged);
+    final rect = sample.kind == LetterboxSampleKind.crop ? sample.rect : null;
+    if (!_isCurrent(generation)) return;
+    if (rect == null || !await _windowboxHolds(generation, sample)) {
+      if (_isCurrent(generation)) _doneUrl = _host.currentUrl;
+      return;
+    }
+    await _host.setLetterboxCrop(rect);
+    _setApplied(true);
+    _doneUrl = _host.currentUrl;
+  }
+
+  /// The widest-of-three merge is not enough for bars on all four sides: a
+  /// centred title card fills every sample. Later reads must still agree.
+  Future<bool> _windowboxHolds(int generation, LetterboxSample sample) async {
+    final rect = sample.rect;
+    if (!sample.windowbox || rect == null) return true;
+    for (var i = 0; i < LetterboxCrop.windowboxConfirmations; i++) {
+      if (!await _delay(generation, windowboxGap)) return false;
+      if (!await _waitWhileCurrent(generation, untilPlaying: true)) {
+        return false;
+      }
+      final next = await _host.detectLetterbox().timeout(
+        Media3LetterboxCrop.detectTimeout,
+        onTimeout: () => null,
+      );
+      if (next == null || !_isCurrent(generation)) return false;
+      final nextRect = Media3LetterboxCrop.decide(next);
+      if (nextRect == null || !LetterboxCrop.similar(nextRect, rect)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  Future<void> _runContinuous(int generation) async {
+    // A PixelCopy of a 4K surface isn't free on a TV box, so a slow read
+    // stretches the gap to keep capture under about 5% of playback time.
+    var gap = _recropInterval;
+    while (_isCurrent(generation) && _enabled && _continuous) {
+      if (_host.isPlaying != true) {
+        if (!await _waitWhileCurrent(generation, untilPlaying: true)) {
+          return;
+        }
+      }
+      final before = _host.position;
+      if (!await _delay(generation, gap)) return;
+      if (!_enabled || !_continuous || !_isCurrent(generation)) return;
+      if (_host.isPlaying != true) continue;
+
+      if (LetterboxCrop.seeked(
+        before: before,
+        after: _host.position,
+        elapsed: gap,
+        speed: _host.playbackSpeed,
+      )) {
+        _stabilizer.resetCandidate();
+      }
+
+      final watch = Stopwatch()..start();
+      final sample = await _host.detectLetterbox().timeout(
+        Media3LetterboxCrop.detectTimeout,
+        onTimeout: () => null,
+      );
+      if (!_isCurrent(generation)) return;
+      final paced = Duration(
+        milliseconds: (watch.elapsedMilliseconds * 20).clamp(0, 10000),
+      );
+      gap = paced > _recropInterval ? paced : _recropInterval;
+
+      final decision = _stabilizer.observe(
+        width: sample?['w'],
+        height: sample?['h'],
+        x: sample?['x'],
+        y: sample?['y'],
+        sourceWidth: sample?['sourceWidth'] ?? 0,
+        sourceHeight: sample?['sourceHeight'] ?? 0,
+      );
+      if (!decision.changed || !_isCurrent(generation)) continue;
+      await _host.setLetterboxCrop(decision.rect);
+      _setApplied(decision.rect != null);
+    }
+  }
+
   bool _isCurrent(int generation) {
     return !_host.isDisposed && generation == _generation;
+  }
+
+  void _setApplied(bool value) {
+    if (_applied == value) return;
+    _applied = value;
+    _appliedController.add(value);
   }
 
   Future<bool> _delay(int generation, Duration duration) async {
@@ -245,12 +410,16 @@ class Media3LetterboxCropper extends LetterboxCropper {
     if (_host.isPlaying == untilPlaying) {
       return _isCurrent(generation);
     }
-    try {
-      await _host.playingStream
-          .firstWhere((playing) => playing == untilPlaying)
-          .timeout(const Duration(seconds: 30));
-    } catch (_) {
-      return false;
+    while (_isCurrent(generation) && _host.isPlaying != untilPlaying) {
+      try {
+        await _host.playingStream
+            .firstWhere((playing) => playing == untilPlaying)
+            .timeout(const Duration(seconds: 30));
+      } on TimeoutException {
+        // A long pause is normal. Keep waiting for playback to resume.
+      } catch (_) {
+        return false;
+      }
     }
     return _isCurrent(generation);
   }

@@ -209,12 +209,13 @@ class UserConfiguration {
   }
 
   UserConfiguration copyWith({
+    List<String>? orderedViews,
     List<String>? myMediaExcludes,
     List<String>? latestItemsExcludes,
     String? subtitleMode,
   }) {
     return UserConfiguration(
-      orderedViews: orderedViews,
+      orderedViews: orderedViews ?? this.orderedViews,
       latestItemsExcludes: latestItemsExcludes ?? this.latestItemsExcludes,
       myMediaExcludes: myMediaExcludes ?? this.myMediaExcludes,
       groupedFolders: groupedFolders,

@@ -144,6 +144,36 @@ void main() {
       ArtworkTimings.flushNow();
       expect(lines.single, contains('n=1 '));
       expect(lines.single, contains('hits=1'));
+      expect(lines.single, contains('fail=1'));
+      expect(lines.single, contains('why=http404:1'));
+    });
+
+    test('a not modified answer is no failure', () async {
+      server.listen((request) {
+        request.response.statusCode = HttpStatus.notModified;
+        request.response.close();
+      });
+      final service = BoundedImageFileService(http.Client());
+      final response = await service.get(
+        'http://127.0.0.1:${server.port}/Items/4/Images/Primary',
+      );
+      await response.content.drain<void>();
+      ArtworkTimings.flushNow();
+      expect(lines.single, contains('fail=0'));
+      expect(lines.single, isNot(contains('why=')));
+    });
+
+    test('a refused connection reads as a socket failure', () async {
+      final port = server.port;
+      await server.close(force: true);
+      final service = BoundedImageFileService(http.Client());
+      await expectLater(
+        service.get('http://127.0.0.1:$port/Items/5/Images/Primary'),
+        throwsA(isA<SocketException>()),
+      );
+      ArtworkTimings.flushNow();
+      expect(lines.single, contains('fail=1'));
+      expect(lines.single, contains('why=socket:1'));
     });
 
     test('a timeout closes the record with an error', () async {
@@ -160,6 +190,8 @@ void main() {
       );
       ArtworkTimings.flushNow();
       expect(lines.single, contains('fail=1'));
+      expect(lines.single, contains('why=headerTimeout:1'));
+      expect(lines.single, matches(RegExp(r'failAfter=\d+/\d+ms$')));
     });
   });
 }

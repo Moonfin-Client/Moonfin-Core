@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../widgets/bottom_nav/bottom_navbar.dart';
+
 class NouveauPortraitLayout extends StatelessWidget {
   final Widget backdrop;
   final Widget hero;
@@ -74,6 +76,9 @@ class NouveauPortraitLayout extends StatelessWidget {
                   ),
                 ),
               ),
+            SliverToBoxAdapter(
+              child: SizedBox(height: bottomContentInset(context)),
+            ),
           ],
         ),
       ],

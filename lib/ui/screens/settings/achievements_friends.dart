@@ -62,7 +62,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
     return RefreshIndicator(
       onRefresh: _refresh,
       child: ListView(
-        padding: _listPadding,
+        padding: _listPadding(context),
         children: [
           adaptiveListSection(
             children: [
@@ -485,7 +485,7 @@ class _FriendProfileScreenState extends State<_FriendProfileScreen>
     final playing = friend?.online == true ? friend?.nowPlaying : null;
 
     return ListView(
-      padding: _listPadding,
+      padding: _listPadding(context),
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
@@ -671,7 +671,7 @@ class _RequestsScreenState extends State<_RequestsScreen> {
             );
           }
           return ListView(
-            padding: _listPadding,
+            padding: _listPadding(context),
             children: [
               if (incoming.isNotEmpty) ...[
                 SettingsSectionHeader(l10n.friendsIncoming),
@@ -777,7 +777,7 @@ class _FindPeopleScreenState extends State<_FindPeopleScreen>
         if (loading) return const Center(child: CircularProgressIndicator());
         final matches = _matches();
         return ListView(
-          padding: _listPadding,
+          padding: _listPadding(context),
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
@@ -915,7 +915,7 @@ class _SocialPrivacyScreenState extends State<_SocialPrivacyScreen>
         );
 
         return ListView(
-          padding: _listPadding,
+          padding: _listPadding(context),
           children: [
             adaptiveListSection(
               children: [

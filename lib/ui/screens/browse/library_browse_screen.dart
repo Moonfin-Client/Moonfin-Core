@@ -20,6 +20,7 @@ import '../../../data/viewmodels/library_browse_view_model.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../ui/mixins/focus_state_mixin.dart';
+import '../../../util/accent_folding.dart';
 import '../../../util/artwork_request_size.dart';
 import '../home/home_row_prefetch.dart';
 import '../../../util/focus/dpad_keys.dart';
@@ -2465,6 +2466,13 @@ class _FilterSortDialogState extends State<_FilterSortDialog> {
   /// closed as a heading until they are asked for.
   String? _expandedSection = 'sort';
 
+  /// Shorter lists are quicker to scroll through than to search.
+  static const _searchableMinimum = 10;
+
+  final _headingFocus = <String, FocusNode>{};
+  final _searchController = TextEditingController();
+  final _searchFocus = FocusNode();
+
   @override
   void initState() {
     super.initState();
@@ -2475,8 +2483,16 @@ class _FilterSortDialogState extends State<_FilterSortDialog> {
   @override
   void dispose() {
     widget.vm.removeListener(_rebuild);
+    for (final node in _headingFocus.values) {
+      node.dispose();
+    }
+    _searchController.dispose();
+    _searchFocus.dispose();
     super.dispose();
   }
+
+  FocusNode _headingNode(String key) =>
+      _headingFocus.putIfAbsent(key, FocusNode.new);
 
   void _rebuild() {
     if (mounted) setState(() {});
@@ -2578,9 +2594,11 @@ class _FilterSortDialogState extends State<_FilterSortDialog> {
           label: title,
           summary: summary,
           expanded: expanded,
-          onTap: () => setState(() {
-            _expandedSection = expanded ? null : key;
-          }),
+          focusNode: _headingNode(key),
+          onTap: () {
+            _searchController.clear();
+            setState(() => _expandedSection = expanded ? null : key);
+          },
           sectionColor: sectionColor,
           accent: accent,
         ),
@@ -2588,9 +2606,23 @@ class _FilterSortDialogState extends State<_FilterSortDialog> {
       ];
     }
 
+    // The tile goes away once its group is empty, so focus moves to the
+    // heading first rather than being left on nothing.
+    Widget clearGroupTile(String key, LibraryFilterGroup group) =>
+        _DialogActionTile(
+          label: l10n.clear,
+          icon: Icons.filter_alt_off,
+          onTap: () {
+            _headingNode(key).requestFocus();
+            unawaited(vm.clearFilterGroup(group));
+          },
+          accent: accent,
+        );
+
     List<Widget> facetSection({
       required String key,
       required String title,
+      required LibraryFilterGroup group,
       required List<String> values,
       required Set<String> selected,
       required Future<void> Function(String) onToggle,
@@ -2601,16 +2633,46 @@ class _FilterSortDialogState extends State<_FilterSortDialog> {
         key: key,
         title: title,
         summary: countSummary(values.where(selected.contains).length),
-        body: () => [
-          for (final value in values)
-            _DialogCheckboxTile(
-              label: labels[value] ?? value,
-              checked: selected.contains(value),
-              onTap: () => onToggle(value),
-              accent: accent,
-              onSurface: onSurface,
-            ),
-        ],
+        body: () {
+          final query = foldForSearch(_searchController.text.trim());
+          final shown = query.isEmpty
+              ? values
+              : values
+                    .where((v) => foldForSearch(labels[v] ?? v).contains(query))
+                    .toList();
+          return [
+            if (selected.isNotEmpty) clearGroupTile(key, group),
+            if (values.length >= _searchableMinimum)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 4, 24, 8),
+                child: LocalSearchField(
+                  controller: _searchController,
+                  focusNode: _searchFocus,
+                  hint: title,
+                  onChanged: (_) => setState(() {}),
+                ),
+              ),
+            for (final value in shown)
+              _DialogCheckboxTile(
+                label: labels[value] ?? value,
+                checked: selected.contains(value),
+                onTap: () => onToggle(value),
+                accent: accent,
+                onSurface: onSurface,
+              ),
+            if (shown.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
+                child: Text(
+                  l10n.noResults,
+                  style: TextStyle(fontSize: 15, color: sectionColor),
+                ),
+              ),
+          ];
+        },
       );
     }
 
@@ -2762,6 +2824,8 @@ class _FilterSortDialogState extends State<_FilterSortDialog> {
                 title: l10n.features,
                 summary: countSummary(vm.featureFilters.length),
                 body: () => [
+                  if (vm.featureFilters.isNotEmpty)
+                    clearGroupTile('features', LibraryFilterGroup.features),
                   for (final option in LibraryFeatureFilter.values)
                     _DialogCheckboxTile(
                       label: featureLabel(option),
@@ -2777,6 +2841,8 @@ class _FilterSortDialogState extends State<_FilterSortDialog> {
                 title: l10n.quality,
                 summary: countSummary(vm.videoQualityFilters.length),
                 body: () => [
+                  if (vm.videoQualityFilters.isNotEmpty)
+                    clearGroupTile('quality', LibraryFilterGroup.quality),
                   for (final option in LibraryVideoQualityFilter.values)
                     if (option != LibraryVideoQualityFilter.uhd ||
                         vm.supportsUhdFilter)
@@ -2794,6 +2860,8 @@ class _FilterSortDialogState extends State<_FilterSortDialog> {
                 title: l10n.source,
                 summary: countSummary(vm.videoSourceFilters.length),
                 body: () => [
+                  if (vm.videoSourceFilters.isNotEmpty)
+                    clearGroupTile('source', LibraryFilterGroup.source),
                   for (final option in LibraryVideoSourceFilter.values)
                     _DialogCheckboxTile(
                       label: option.displayName,
@@ -2807,6 +2875,7 @@ class _FilterSortDialogState extends State<_FilterSortDialog> {
             ],
             ...facetSection(
               key: 'genres',
+              group: LibraryFilterGroup.genres,
               title: l10n.genres,
               values: vm.facetValues.genres,
               selected: vm.genreFilters,
@@ -2814,6 +2883,7 @@ class _FilterSortDialogState extends State<_FilterSortDialog> {
             ),
             ...facetSection(
               key: 'ratings',
+              group: LibraryFilterGroup.ratings,
               title: l10n.groupByParentalRating,
               values: vm.facetValues.officialRatings,
               selected: vm.officialRatingFilters,
@@ -2821,6 +2891,7 @@ class _FilterSortDialogState extends State<_FilterSortDialog> {
             ),
             ...facetSection(
               key: 'tags',
+              group: LibraryFilterGroup.tags,
               title: l10n.tags,
               values: vm.facetValues.tags,
               selected: vm.tagFilters,
@@ -2828,6 +2899,7 @@ class _FilterSortDialogState extends State<_FilterSortDialog> {
             ),
             ...facetSection(
               key: 'years',
+              group: LibraryFilterGroup.years,
               title: l10n.years,
               values: vm.facetValues.years.map((e) => e.toString()).toList(),
               selected: vm.yearFilters,
@@ -2835,6 +2907,7 @@ class _FilterSortDialogState extends State<_FilterSortDialog> {
             ),
             ...facetSection(
               key: 'audio',
+              group: LibraryFilterGroup.audioLanguages,
               title: l10n.audioLanguage,
               values: vm.facetValues.audioLanguages
                   .map((e) => e.value)
@@ -2847,6 +2920,7 @@ class _FilterSortDialogState extends State<_FilterSortDialog> {
             ),
             ...facetSection(
               key: 'subtitles',
+              group: LibraryFilterGroup.subtitleLanguages,
               title: l10n.subtitleLanguage,
               values: vm.facetValues.subtitleLanguages
                   .map((e) => e.value)
@@ -3095,6 +3169,7 @@ class _DialogExpanderTile extends StatefulWidget {
   final String label;
   final String? summary;
   final bool expanded;
+  final FocusNode? focusNode;
   final VoidCallback onTap;
   final Color sectionColor;
   final Color accent;
@@ -3103,6 +3178,7 @@ class _DialogExpanderTile extends StatefulWidget {
     required this.label,
     required this.summary,
     required this.expanded,
+    this.focusNode,
     required this.onTap,
     required this.sectionColor,
     required this.accent,
@@ -3125,6 +3201,7 @@ class _DialogExpanderTileState extends State<_DialogExpanderTile>
       onEnter: (_) => setHovered(true),
       onExit: (_) => setHovered(false),
       child: Focus(
+        focusNode: widget.focusNode,
         onFocusChange: (f) => setFocused(f),
         onKeyEvent: (_, event) {
           if (isActivateKey(event)) {

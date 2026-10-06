@@ -269,7 +269,7 @@
     "@noHomeRowsHint": {
         "description": "Hint text below the no-home-rows heading"
     },
-    "retryHomeRows": "Yritä ladata etusivu uudelleen",
+    "retryHomeRows": "Yritä Ladata Kotirivit Uudelleen",
     "@retryHomeRows": {
         "description": "Button to retry loading home rows after failure"
     },
@@ -281,7 +281,7 @@
     "@recordings": {
         "description": "Live TV recordings button label"
     },
-    "schedule": "Ajoittaa",
+    "schedule": "Ajastus",
     "@schedule": {
         "description": "Live TV schedule button label"
     },
@@ -4007,7 +4007,7 @@
     "@recentRequests": {
         "description": "Seerr row: recent requests"
     },
-    "recentlyAdded": "Äskettäin lisätty",
+    "recentlyAdded": "Äskettäin lisätyt",
     "@recentlyAdded": {
         "description": "Seerr row: recently added"
     },
@@ -4495,7 +4495,7 @@
     "@revenueLabel": {
         "description": "Stat label for revenue"
     },
-    "runtimeLabel": "Suoritusaika",
+    "runtimeLabel": "Kesto",
     "@runtimeLabel": {
         "description": "Stat label for runtime"
     },
@@ -7053,7 +7053,7 @@
     "bottomBar": "Alapalkki",
     "homeRowsStyleClassic": "Klassinen",
     "homeRowsStyleModern": "Moderni",
-    "homeRowsSection": "Etusivun Rivit",
+    "homeRowsSection": "Kotirivit",
     "rowsType": "Rivien tyyppi",
     "rowsTypeDescription": "Classic säilyttää rivikohtaisen kuvatyypin ja tietopeittokuvan. Moderni käyttää muotokuvasta taustaan -rivejä.",
     "displayFavoritesRows": "Näytä suosikkirivit",
@@ -8387,7 +8387,7 @@
     "adminTunerReadAtNativeFramerate": "Lue syöte natiivilla kuvataajuudella",
     "adminEditProvider": "Muokkaa tarjoajaa",
     "adminProviderXmltv": "XMLTV",
-    "adminProviderSchedulesDirect": "Schedules Direct",
+    "adminProviderSchedulesDirect": "Ohjelmatietopalvelu",
     "adminXmltvPath": "Tiedosto tai URL",
     "adminXmltvMoviePrefix": "Elokuvien etuliite",
     "adminXmltvMovieCategories": "Elokuvakategoriat",
@@ -8594,10 +8594,10 @@
             }
         }
     },
-    "homeRowDisplay": "Aloitusnäytön rivien näyttö",
-    "homeRowSections": "Aloitusnäytön riviosiot",
-    "homeRowToggles": "Aloitusnäytön rivivalinnat",
-    "homeRowTogglesSubtitle": "Ota käyttöön tai poista käytöstä kirjastopohjaiset aloitusnäytön riviluokat",
+    "homeRowDisplay": "Kotirivien Näyttö",
+    "homeRowSections": "Kotirivien Osiot",
+    "homeRowToggles": "Kotirivien Säätimet",
+    "homeRowTogglesSubtitle": "Ota käyttöön tai poista käytöstä kirjastopohjaiset kotirivi kategoriat",
     "homeRowTogglesDescription": "Ota alla olevat valinnat käyttöön, niin rivit näkyvät aloitusnäytön osioissa.",
     "displayPlaylistsRows": "Näytä soittolistarivit",
     "displayPlaylistsRowsSubtitle": "Näytä soittolistarivit aloitusnäytön osioissa.",
@@ -9191,7 +9191,7 @@
     "@mergeRecentRowsByType": {
         "description": "Setting for merging recently added and recently released libraries by media type"
     },
-    "mergeRecentRowsByTypeDescription": "Yhdistä saman tyyppiset erilliset kirjastot ”Äskettäin lisätty” ja ”Äskettäin julkaistu” -aloitussarjoihin.",
+    "mergeRecentRowsByTypeDescription": "Yhdistä saman tyyppiset erilliset kirjastot ”Äskettäin lisätyt” ja ”Äskettäin julkaistut” -aloitussarjoihin.",
     "@mergeRecentRowsByTypeDescription": {
         "description": "Description for merging recent home rows by media type"
     },
@@ -10211,7 +10211,7 @@
     "@performanceMode": {
         "description": "Label for the device performance setting"
     },
-    "performanceModeSubtitle": "Toiminto mittaa laitteen resurssit automaattisesti ja rajoittaa toimintoja laitteissa, joissa on vähän muistia. \nNäin muistiin tallennetaan vähemmän kuvia ja videot tallennetaan still-kuvina. Muutos astuu voimaan seuraavalla käynnistyskerralla.",
+    "performanceModeSubtitle": "Toiminto mittaa laitteen resurssit automaattisesti ja rajoittaa toimintoja laitteissa, joissa on vähän muistia. Näin muistiin tallennetaan vähemmän kuvia ja videot tallennetaan still-kuvina. Muutos astuu voimaan seuraavalla käynnistyskerralla.",
     "@performanceModeSubtitle": {
         "description": "Explanation under the device performance setting"
     },
@@ -11616,11 +11616,11 @@
     "@animeMarkerMixed": {
         "description": "Badge on an anime episode that mixes source material with filler, so it still contains story"
     },
-    "animeMarkerAnimeCanon": "Anime Canon",
+    "animeMarkerAnimeCanon": "Animen kaanon",
     "@animeMarkerAnimeCanon": {
         "description": "Badge on an anime episode that is not in the source manga but is part of the anime's own continuity"
     },
-    "animeMarkerMangaCanon": "Manga Canon",
+    "animeMarkerMangaCanon": "Manga Kaanon",
     "@animeMarkerMangaCanon": {
         "description": "Badge on an anime episode adapted from the source manga"
     },
@@ -12565,7 +12565,7 @@
     "@bottomNavbarTabs": {
         "description": "Settings title for choosing which tabs sit on the mobile bottom navigation bar"
     },
-    "bottomNavbarTabsDescription": "Voit kiinnittää enintään 3 välilehteä Home ja You välilehtien väliin. Kaikki muu löytyy You valikosta.",
+    "bottomNavbarTabsDescription": "Voit kiinnittää enintään 3 välilehteä Home ja You välilehtien väliin. Kaikki muu löytyy alareunan navigointipalkista.",
     "@bottomNavbarTabsDescription": {
         "description": "Explains the bottom bar tabs screen"
     },
@@ -12597,7 +12597,7 @@
     "@bottomNavbarSplitSearchNote": {
         "description": "Note on the bottom bar tabs screen about the Split style"
     },
-    "bottomNavbarButtonsNote": "Nämä asetukset määrittävät, mitkä välilehdet voit kiinnittää alareunan palkkiin ja mitä ”You”-valikossa näkyy.",
+    "bottomNavbarButtonsNote": "Nämä määrittävät, mitä alareunan navigointipalkissa näkyy ja mitkä välilehdet voit kiinnittää alareunan palkkiin. Palkissa jo olevat välilehdet eivät näy tässä luettelossa.",
     "@bottomNavbarButtonsNote": {
         "description": "Note under the navigation buttons section while the bottom bar is in use"
     },
@@ -13087,5 +13087,233 @@
     "chatImageUnsupported": "Vain PNG-, JPEG-, GIF- ja WebP-kuvia voidaan lähettää.",
     "@chatImageUnsupported": {
         "description": "Shown when a picked chat image has an unsupported type"
+    },
+    "detailSections": "Osat",
+    "@detailSections": {
+        "description": "Settings tile title for switching Details screen sections on and off"
+    },
+    "detailSectionsDescription": "Valitse, mitkä osat Tiedot-näytöstä haluat näyttää",
+    "@detailSectionsDescription": {
+        "description": "Settings tile subtitle for the Details screen sections list"
+    },
+    "detailSectionsScreenDescription": "Luettelossa näkyvät vain ne osiot, jotka nykyisessä ”Tiedot”-näytön tyylissä voidaan näyttää. Yhden osion piilottaminen piilottaa sen kaikissa tyyleissä, joissa se esiintyy.",
+    "@detailSectionsScreenDescription": {
+        "description": "Explanatory text at the top of the Details screen sections list"
+    },
+    "detailSectionGroupHeader": "Otsikko",
+    "@detailSectionGroupHeader": {
+        "description": "Group heading for the title area of the Details screen"
+    },
+    "detailSectionGroupSections": "Osat",
+    "@detailSectionGroupSections": {
+        "description": "Group heading for the rows, tabs and cards of the Details screen"
+    },
+    "detailSectionGroupPerson": "Henkilösivut",
+    "@detailSectionGroupPerson": {
+        "description": "Group heading for sections only shown on a person's Details screen"
+    },
+    "detailSectionGroupCollection": "Kokoelmasivut",
+    "@detailSectionGroupCollection": {
+        "description": "Group heading for sections only shown on a collection's Details screen"
+    },
+    "detailSectionGroupOther": "Muut",
+    "@detailSectionGroupOther": {
+        "description": "Group heading for Details screen sections that fit no other group"
+    },
+    "detailSectionLogo": "Logo",
+    "@detailSectionLogo": {
+        "description": "Details screen section: the title logo artwork"
+    },
+    "detailSectionLogoSubtitle": "Näyttää otsikon tekstinä, kun laite on pois päältä",
+    "@detailSectionLogoSubtitle": {
+        "description": "Subtitle for the logo section switch"
+    },
+    "detailSectionTagline": "Slogan",
+    "@detailSectionTagline": {
+        "description": "Details screen section: the short tagline under the title"
+    },
+    "detailSectionPoster": "Juliste",
+    "@detailSectionPoster": {
+        "description": "Details screen section: the poster image beside the title"
+    },
+    "detailSectionVersionBadge": "Versiotunnus",
+    "@detailSectionVersionBadge": {
+        "description": "Details screen section: the badge shown when an item has more than one version"
+    },
+    "detailSectionUpNext": "Seuraavaksi",
+    "@detailSectionUpNext": {
+        "description": "Details screen section: the next up or next episode card"
+    },
+    "detailSectionLyrics": "Sanoitukset",
+    "@detailSectionLyrics": {
+        "description": "Details screen section: the lyrics panel for songs"
+    },
+    "detailSectionCast": "Näyttelijät",
+    "@detailSectionCast": {
+        "description": "Details screen section: the cast row, tab or card"
+    },
+    "detailSectionCastSubtitle": "Myös kokoelmasivuilla",
+    "@detailSectionCastSubtitle": {
+        "description": "Subtitle for the cast section switch"
+    },
+    "detailSectionCrew": "Ohjaajat & Käsikirjoittajat",
+    "@detailSectionCrew": {
+        "description": "Details screen section: directors and writers"
+    },
+    "detailSectionStudios": "Studiot",
+    "@detailSectionStudios": {
+        "description": "Details screen section: studios and networks"
+    },
+    "detailSectionChapters": "Luvut",
+    "@detailSectionChapters": {
+        "description": "Details screen section: chapters"
+    },
+    "detailSectionExtras": "Extrat",
+    "@detailSectionExtras": {
+        "description": "Details screen section: trailers, featurettes and other extras"
+    },
+    "detailSectionCollections": "Kokoelmat",
+    "@detailSectionCollections": {
+        "description": "Details screen section: the collections an item belongs to"
+    },
+    "detailSectionMoreLikeThis": "Lisää samanlaisia",
+    "@detailSectionMoreLikeThis": {
+        "description": "Details screen section: similar items from the library"
+    },
+    "detailSectionMoreLikeThisSubtitle": "Myös vastaavia albumeita ja artisteja",
+    "@detailSectionMoreLikeThisSubtitle": {
+        "description": "Subtitle for the More Like This section switch"
+    },
+    "detailSectionMoreEpisodes": "Lisää jaksoja",
+    "@detailSectionMoreEpisodes": {
+        "description": "Details screen section: the other episodes of a show on an episode's page"
+    },
+    "detailSectionMoreEpisodesSubtitle": "Jaksosivuilla",
+    "@detailSectionMoreEpisodesSubtitle": {
+        "description": "Subtitle for the More episodes section switch"
+    },
+    "detailSectionMediaInfo": "Media info",
+    "@detailSectionMediaInfo": {
+        "description": "Details screen section: file, stream and Direct Play details"
+    },
+    "detailSectionMediaInfoSubtitle": "Tiedostojen, suoratoistojen ja Direct Play -toiminnon tarkistus",
+    "@detailSectionMediaInfoSubtitle": {
+        "description": "Subtitle for the media info section switch"
+    },
+    "detailSectionSeerrGenresTags": "Genret & Tunnisteet",
+    "@detailSectionSeerrGenresTags": {
+        "description": "Details screen Seerr section: genre and keyword chips"
+    },
+    "detailSectionSeerrStats": "Tilastot",
+    "@detailSectionSeerrStats": {
+        "description": "Details screen Seerr section: TMDB score, status, budget and revenue"
+    },
+    "detailSectionSeerrRecommendations": "Suositukset",
+    "@detailSectionSeerrRecommendations": {
+        "description": "Details screen Seerr section: recommended titles"
+    },
+    "detailSectionSeerrSimilar": "Samankaltaisia nimikkeitä",
+    "@detailSectionSeerrSimilar": {
+        "description": "Details screen Seerr section: similar titles"
+    },
+    "detailSectionSeerrCollection": "Kokoelman banneri",
+    "@detailSectionSeerrCollection": {
+        "description": "Details screen Seerr section: the banner for the collection a movie is part of"
+    },
+    "detailSectionSeerrPersonAppearances": "Esiintymiset",
+    "@detailSectionSeerrPersonAppearances": {
+        "description": "Details screen Seerr section: a person's appearances"
+    },
+    "detailSectionSeerrPersonCrew": "Tuotantoryhmä",
+    "@detailSectionSeerrPersonCrew": {
+        "description": "Details screen Seerr section: a person's crew credits"
+    },
+    "detailSectionPersonPagesSubtitle": "Henkilösivuilla",
+    "@detailSectionPersonPagesSubtitle": {
+        "description": "Subtitle for Seerr sections only shown on a person's Details screen"
+    },
+    "detailSectionBiography": "Elämäkerta",
+    "@detailSectionBiography": {
+        "description": "Details screen section: a person's biography"
+    },
+    "detailSectionBirthplace": "Syntymäpaikka",
+    "@detailSectionBirthplace": {
+        "description": "Details screen section: a person's place of birth"
+    },
+    "detailSectionGuestAppearances": "Vierailut",
+    "@detailSectionGuestAppearances": {
+        "description": "Details screen section: a person's guest appearances"
+    },
+    "detailSectionMusicVideos": "Musiikkivideot",
+    "@detailSectionMusicVideos": {
+        "description": "Details screen section: a person's music videos"
+    },
+    "detailSectionPlaylistOrder": "Soittolistan järjestys",
+    "@detailSectionPlaylistOrder": {
+        "description": "Details screen section: a collection's playlist order"
+    },
+    "detailSectionBookGenres": "Kirjagenret",
+    "@detailSectionBookGenres": {
+        "description": "Details screen section: the genre chips on a book's page"
+    },
+    "detailSectionPhotoExif": "Kuvan tiedot",
+    "@detailSectionPhotoExif": {
+        "description": "Details screen section: camera and image details on a photo's page"
+    },
+    "libraryOrder": "Kirjasto Järjestys",
+    "@libraryOrder": {
+        "description": "Title of the settings screen that reorders the user's libraries"
+    },
+    "libraryOrderSubtitle": "Valitse kirjastojen järjestys",
+    "@libraryOrderSubtitle": {
+        "description": "Subtitle of the Library Order entry in the libraries settings"
+    },
+    "libraryOrderDescription": "Kirjastosi näkyvät tässä järjestyksessä kohdassa ”Omat mediat”, äskettäin lisättyjen rivien joukossa sekä navigointipalkissa. Järjestys tallennetaan palvelintilillesi, joten myös muut sovellukset, joihin kirjaudut sisään, käyttävät sitä.",
+    "@libraryOrderDescription": {
+        "description": "Explanation shown at the top of the Library Order settings screen"
+    },
+    "libraryOrderTvHint": "Paina vasenta tai oikeaa nuolinäppäintä siirtääksesi korostettua kirjastoa.",
+    "@libraryOrderTvHint": {
+        "description": "Remote control hint on the Library Order settings screen"
+    },
+    "libraryOrderSaveFailed": "Kirjaston järjestystä ei voitu tallentaa",
+    "@libraryOrderSaveFailed": {
+        "description": "Error shown when saving the library order to the server fails"
+    },
+    "untrustedServerCertificate": "Tämän palvelimen varmennetta ei pidetä luotettavana. Jos kyseessä on oma palvelimesi ja se käyttää itse allekirjoitettua tai yksityistä varmennetta, voit sallia sen tässä.",
+    "@untrustedServerCertificate": {
+        "description": "Shown on the sign-in screens when a server's TLS certificate is rejected, above a button that turns on Allow self-signed certificates"
+    },
+    "seasonalChristmas": "Joulu",
+    "@seasonalChristmas": {
+        "description": "Seasonal effect: snow with falling baubles and stars"
+    },
+    "seasonalPetals": "Kevään Versot",
+    "@seasonalPetals": {
+        "description": "Seasonal effect: falling cherry blossoms and petals with bees flying by"
+    },
+    "seasonalFireflies": "Tulikärpäset",
+    "@seasonalFireflies": {
+        "description": "Seasonal effect: glowing fireflies for summer"
+    },
+    "seasonalHalloween": "Halloween",
+    "@seasonalHalloween": {
+        "description": "Seasonal effect: bats, ghosts, candy and orange and purple leaves"
+    },
+    "seasonalDensity": "Tiheys",
+    "@seasonalDensity": {
+        "description": "Setting for how many seasonal effect particles are on screen at once"
+    },
+    "seasonalDensityLight": "Kevyt",
+    "@seasonalDensityLight": {
+        "description": "Seasonal effect density: fewest particles"
+    },
+    "seasonalDensityNormal": "Normaali",
+    "@seasonalDensityNormal": {
+        "description": "Seasonal effect density: the default amount"
+    },
+    "seasonalDensityHeavy": "Painava",
+    "@seasonalDensityHeavy": {
+        "description": "Seasonal effect density: most particles"
     }
 }

@@ -4,8 +4,11 @@ import 'package:get_it/get_it.dart';
 import '../../../data/viewmodels/item_detail_view_model.dart';
 import '../../../data/viewmodels/seerr_media_detail_view_model.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../preference/detail_section_layout.dart';
 import '../../../preference/seerr_preferences.dart';
 import '../seerr_download_progress_bar.dart';
+import 'seerr_item_chips.dart';
+import 'seerr_stats_card.dart';
 import 'seerr_status_pill.dart';
 
 /// The Seerr state worth showing beside a library item's metadata, or null when
@@ -31,6 +34,62 @@ SeerrMediaDetailState? seerrItemTabState(ItemDetailViewModel viewModel) {
       state.similar.isNotEmpty ||
       state.recommendations.isNotEmpty;
   return hasContent ? state : null;
+}
+
+/// The parts of the Seerr block a Details screen draws for one title, the ones
+/// with something to show that the viewer left on. Every style reads its Seerr
+/// gates from here so what it draws and where focus can go agree.
+@immutable
+class SeerrDetailPieces {
+  const SeerrDetailPieces._({
+    required this.chips,
+    required this.stats,
+    required this.recommendations,
+    required this.similar,
+    required this.collection,
+  });
+
+  static const none = SeerrDetailPieces._(
+    chips: false,
+    stats: false,
+    recommendations: false,
+    similar: false,
+    collection: false,
+  );
+
+  /// [state] is what [seerrItemTabState] returned, so a null one shows nothing.
+  factory SeerrDetailPieces.resolve(
+    SeerrMediaDetailState? state,
+    DetailSectionVisibility visibility,
+    AppLocalizations l10n,
+  ) {
+    if (state == null) return none;
+    return SeerrDetailPieces._(
+      chips:
+          visibility.shows(DetailSection.seerrGenresTags) &&
+          SeerrItemChips.hasContent(state),
+      stats:
+          visibility.shows(DetailSection.seerrStats) &&
+          SeerrStatsCard.hasContent(state, l10n),
+      recommendations:
+          visibility.shows(DetailSection.seerrRecommendations) &&
+          state.recommendations.isNotEmpty,
+      similar:
+          visibility.shows(DetailSection.seerrSimilar) &&
+          state.similar.isNotEmpty,
+      collection:
+          visibility.shows(DetailSection.seerrCollection) &&
+          state.movie?.collection != null,
+    );
+  }
+
+  final bool chips;
+  final bool stats;
+  final bool recommendations;
+  final bool similar;
+  final bool collection;
+
+  bool get hasAny => chips || stats || recommendations || similar || collection;
 }
 
 /// Season number to Seerr status for a series, empty when Seerr has nothing to

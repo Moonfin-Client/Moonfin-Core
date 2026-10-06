@@ -25,6 +25,7 @@ class ArtworkTiming {
   DateTime? admittedAt;
   DateTime? headersAt;
   DateTime? doneAt;
+  int? statusCode;
   int bytes = 0;
   Object? error;
 
@@ -37,7 +38,10 @@ class ArtworkTiming {
     this.queueDepth = queueDepth;
   }
 
-  void headers() => headersAt = DateTime.now();
+  void headers(int statusCode) {
+    headersAt = DateTime.now();
+    this.statusCode = statusCode;
+  }
 
   void chunk(int length) => bytes += length;
 
@@ -56,6 +60,35 @@ class ArtworkTiming {
     final headers = headersAt;
     return headers == null ? null : doneAt?.difference(headers);
   }
+
+  /// From admission to the end, leaving out the queue wait.
+  Duration? get elapsed => doneAt?.difference(admittedAt ?? enqueuedAt);
+
+  /// Null when the fetch worked. Not modified means the cached copy is still
+  /// good, so it isn't a failure.
+  String? get failureKind {
+    final e = error;
+    if (e != null) return _failureKind(e, gotHeaders: headersAt != null);
+    final status = statusCode;
+    if (status == null || status == 200 || status == 202 || status == 304) {
+      return null;
+    }
+    return 'http$status';
+  }
+}
+
+/// Web builds use this file too, so dart:io types can't be named here and
+/// the error text is matched instead.
+String _failureKind(Object error, {required bool gotHeaders}) {
+  if (error is TimeoutException) return gotHeaders ? 'stall' : 'headerTimeout';
+  final text = error.toString();
+  if (text.contains('HandshakeException') || text.contains('TlsException')) {
+    return 'tls';
+  }
+  if (text.contains('SocketException')) {
+    return text.contains('timed out') ? 'connectTimeout' : 'socket';
+  }
+  return error.runtimeType.toString();
 }
 
 /// Where every artwork fetch reports, and where the aggregate line is built.
@@ -218,7 +251,10 @@ class ArtworkTimings {
       0,
       (max, t) => t.queueDepth > max ? t.queueDepth : max,
     );
-    final failed = timings.where((t) => t.error != null).length;
+    final failures = <(String, Duration?)>[
+      for (final t in timings)
+        if (t.failureKind case final kind?) (kind, t.elapsed),
+    ];
 
     ServerLog.emit(
       'artwork',
@@ -228,9 +264,28 @@ class ArtworkTimings {
           'hdr=${_p(header, 50)}/${_p(header, 95)}ms '
           'xfer=${_p(transfer, 50)}/${_p(transfer, 95)}ms '
           'KB=${_p(kb, 50)}/${_p(kb, 95)} '
-          'batches=$batches maxDepth=$maxDepth fail=$failed hits=$hits '
-          'inflight=$_inFlight',
+          'batches=$batches maxDepth=$maxDepth fail=${failures.length} '
+          'hits=$hits inflight=$_inFlight${_failureSummary(failures)}',
     );
+  }
+
+  /// A count alone can't tell a server that answers 500 from one that never
+  /// answers.
+  static String _failureSummary(List<(String, Duration?)> failures) {
+    if (failures.isEmpty) return '';
+    final kinds = <String, int>{};
+    for (final (kind, _) in failures) {
+      kinds.update(kind, (n) => n + 1, ifAbsent: () => 1);
+    }
+    final sorted = kinds.entries.toList()
+      ..sort(
+        (a, b) => a.value == b.value
+            ? a.key.compareTo(b.key)
+            : b.value.compareTo(a.value),
+      );
+    final why = sorted.map((e) => '${e.key}:${e.value}').join(',');
+    final took = _sortedMs(failures.map((f) => f.$2));
+    return ' why=$why failAfter=${_p(took, 50)}/${_p(took, 95)}ms';
   }
 
   static List<int> _sortedMs(Iterable<Duration?> values) =>

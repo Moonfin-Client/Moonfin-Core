@@ -11,8 +11,10 @@ import '../../navigation/home_refresh_bus.dart';
 import '../../screens/downloads/downloads_panel.dart';
 import '../../screens/syncplay/syncplay_screen.dart';
 import '../adaptive/sf_symbol.dart';
+import '../remote_control_dialog.dart';
 import '../seerr_icons.dart';
 import '../shuffle_overlay.dart';
+import '../user_menu_dialog.dart';
 import 'bottom_nav_model.dart';
 import 'bottom_nav_tab.dart';
 
@@ -37,6 +39,8 @@ String bottomNavHubActionLabel(
       BottomNavHubAction.saved => l10n.savedMedia,
       BottomNavHubAction.shuffle => l10n.shuffle,
       BottomNavHubAction.syncPlay => l10n.syncPlay,
+      BottomNavHubAction.quickConnect => l10n.quickConnect,
+      BottomNavHubAction.remoteControl => l10n.remoteControl,
     };
 
 String bottomNavbarStyleLabel(
@@ -60,6 +64,8 @@ IconData bottomNavHubActionIcon(BottomNavHubAction action) => switch (action) {
       BottomNavHubAction.saved => Icons.download_for_offline,
       BottomNavHubAction.shuffle => Icons.shuffle_rounded,
       BottomNavHubAction.syncPlay => Icons.groups_rounded,
+      BottomNavHubAction.quickConnect => Icons.devices,
+      BottomNavHubAction.remoteControl => Icons.settings_remote_rounded,
     };
 
 /// Filled when active and outlined when not, the way both platforms mark
@@ -173,5 +179,9 @@ void runBottomNavHubAction(BuildContext context, BottomNavHubAction action) {
       Navigator.of(context).push(
         MaterialPageRoute<void>(builder: (_) => const SyncPlayScreen()),
       );
+    case BottomNavHubAction.quickConnect:
+      showQuickConnectCodeDialog(context);
+    case BottomNavHubAction.remoteControl:
+      showRemoteControlDialog(context);
   }
 }

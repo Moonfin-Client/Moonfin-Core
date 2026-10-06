@@ -24,6 +24,7 @@ class NativeVideoView(
     private val mainHandler = Handler(Looper.getMainLooper())
 
     private var surfaceRef: Long = 0L
+    internal var leaveCensus: (() -> Unit)? = null
     private var pendingReleaseRef: Long = 0L
     private var releaseRunnable: Runnable? = null
 
@@ -103,6 +104,7 @@ class NativeVideoView(
     }
 
     override fun dispose() {
+        leaveCensus?.invoke()
         channel.setMethodCallHandler(null)
         surfaceView.holder.removeCallback(this)
 

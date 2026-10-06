@@ -19,10 +19,10 @@ class AppLocalizationsFi extends AppLocalizations {
   String get animeMarkerMixed => 'Mixed';
 
   @override
-  String get animeMarkerAnimeCanon => 'Anime Canon';
+  String get animeMarkerAnimeCanon => 'Animen kaanon';
 
   @override
-  String get animeMarkerMangaCanon => 'Manga Canon';
+  String get animeMarkerMangaCanon => 'Manga Kaanon';
 
   @override
   String get animeMarkerSubbed => 'Tekstitetty';
@@ -195,6 +195,9 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get spotlightChaptersExtras => 'Kappaleet ja Lisämateriaalit';
+
+  @override
+  String get spotlightFileDetails => 'File Details';
 
   @override
   String get spotlightSimilarRecommendations => 'Samankaltaiset ja Suositukset';
@@ -501,7 +504,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get performanceModeSubtitle =>
-      'Toiminto mittaa laitteen resurssit automaattisesti ja rajoittaa toimintoja laitteissa, joissa on vähän muistia. \nNäin muistiin tallennetaan vähemmän kuvia ja videot tallennetaan still-kuvina. Muutos astuu voimaan seuraavalla käynnistyskerralla.';
+      'Toiminto mittaa laitteen resurssit automaattisesti ja rajoittaa toimintoja laitteissa, joissa on vähän muistia. Näin muistiin tallennetaan vähemmän kuvia ja videot tallennetaan still-kuvina. Muutos astuu voimaan seuraavalla käynnistyskerralla.';
 
   @override
   String get performanceModeAuto => 'Auto';
@@ -673,7 +676,7 @@ class AppLocalizationsFi extends AppLocalizations {
       'Yritä päivittää tai vähentää aktiivisia osioita etusivulla.';
 
   @override
-  String get retryHomeRows => 'Yritä ladata etusivu uudelleen';
+  String get retryHomeRows => 'Yritä Ladata Kotirivit Uudelleen';
 
   @override
   String get guide => 'Opas';
@@ -682,7 +685,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get recordings => 'Tallenteet';
 
   @override
-  String get schedule => 'Ajoittaa';
+  String get schedule => 'Ajastus';
 
   @override
   String get series => 'Sarjat';
@@ -2103,6 +2106,9 @@ class AppLocalizationsFi extends AppLocalizations {
       'mpv-tilastojen käyttöönotto tai poistaminen käytöstä';
 
   @override
+  String get shortcutRecropBlackBars => 'Recrop black bars';
+
+  @override
   String get shortcutLeaveFullscreenOrStop =>
       'Poistu koko näytön tilasta tai lopeta, jos koko näytön tila ei ole käytössä';
 
@@ -3133,6 +3139,88 @@ class AppLocalizationsFi extends AppLocalizations {
   String get fallingLeaves => 'Putoavia lehtiä';
 
   @override
+  String get seasonalChristmas => 'Joulu';
+
+  @override
+  String get seasonalPetals => 'Kevään Versot';
+
+  @override
+  String get seasonalFireflies => 'Tulikärpäset';
+
+  @override
+  String get seasonalHalloween => 'Halloween';
+
+  @override
+  String get seasonalDensity => 'Tiheys';
+
+  @override
+  String get seasonalDensityLight => 'Kevyt';
+
+  @override
+  String get seasonalDensityNormal => 'Normaali';
+
+  @override
+  String get seasonalDensityHeavy => 'Painava';
+
+  @override
+  String get seasonalRow => 'Seasonal Row';
+
+  @override
+  String get seasonalRowDescription =>
+      'Show a row of holiday movies from your library, with Seerr suggestions when available.';
+
+  @override
+  String get seasonalRowSubtitle => 'Seasonal';
+
+  @override
+  String get seasonalRowCountry => 'Country';
+
+  @override
+  String get seasonalRowCountryAuto => 'Automatic';
+
+  @override
+  String get countryUnitedStates => 'United States';
+
+  @override
+  String get countryCanada => 'Canada';
+
+  @override
+  String get seasonalRowCountryOther => 'Other';
+
+  @override
+  String get seasonalRowHolidays => 'Holidays';
+
+  @override
+  String get seasonalRowHolidaysHint => 'Untick a holiday to hide its row.';
+
+  @override
+  String get holidayNewYear => 'New Year\'s';
+
+  @override
+  String get holidayValentines => 'Valentine\'s Day';
+
+  @override
+  String get holidayEaster => 'Easter';
+
+  @override
+  String get holidayPride => 'Pride';
+
+  @override
+  String get holidayHalloween => 'Halloween';
+
+  @override
+  String get holidayThanksgiving => 'Thanksgiving';
+
+  @override
+  String get holidayChristmas => 'Christmas Movies';
+
+  @override
+  String get holidayLunarNewYear => 'Lunar New Year';
+
+  @override
+  String get holidayDiwali => 'Diwali';
+
+  @override
   String get themeMusic => 'Teema Musiikki';
 
   @override
@@ -3218,6 +3306,22 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String get settingsCropBlackBarsDescription =>
       'Tunnista koodatut letterbox-palkit, rajaa ne pois ja täytä sitten näyttö.';
+
+  @override
+  String get cropBlackBarsRecropInterval => 'Recrop interval';
+
+  @override
+  String get cropBlackBarsOnce => 'Once at start';
+
+  @override
+  String get cropBlackBarsEverySecond => 'Every second';
+
+  @override
+  String get settingsCropBlackBarsIntervalDescription =>
+      'Follow aspect ratio changes during playback.';
+
+  @override
+  String get playerRecroppingBlackBars => 'Recropping black bars';
 
   @override
   String get stretch => 'Venytä';
@@ -3390,6 +3494,140 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String get detailMetadataUpcomingEpisodeDateSubtitle =>
       'Käyttää Sonarr- ja TMDB-palveluita tulevien julkaisupäivien näyttämiseen';
+
+  @override
+  String get detailSections => 'Osat';
+
+  @override
+  String get detailSectionsDescription =>
+      'Valitse, mitkä osat Tiedot-näytöstä haluat näyttää';
+
+  @override
+  String get detailSectionsScreenDescription =>
+      'Luettelossa näkyvät vain ne osiot, jotka nykyisessä ”Tiedot”-näytön tyylissä voidaan näyttää. Yhden osion piilottaminen piilottaa sen kaikissa tyyleissä, joissa se esiintyy.';
+
+  @override
+  String get detailSectionGroupHeader => 'Otsikko';
+
+  @override
+  String get detailSectionGroupSections => 'Osat';
+
+  @override
+  String get detailSectionGroupPerson => 'Henkilösivut';
+
+  @override
+  String get detailSectionGroupCollection => 'Kokoelmasivut';
+
+  @override
+  String get detailSectionGroupOther => 'Muut';
+
+  @override
+  String get detailSectionLogo => 'Logo';
+
+  @override
+  String get detailSectionLogoSubtitle =>
+      'Näyttää otsikon tekstinä, kun laite on pois päältä';
+
+  @override
+  String get detailSectionTagline => 'Slogan';
+
+  @override
+  String get detailSectionPoster => 'Juliste';
+
+  @override
+  String get detailSectionVersionBadge => 'Versiotunnus';
+
+  @override
+  String get detailSectionUpNext => 'Seuraavaksi';
+
+  @override
+  String get detailSectionLyrics => 'Sanoitukset';
+
+  @override
+  String get detailSectionCast => 'Näyttelijät';
+
+  @override
+  String get detailSectionCastSubtitle => 'Myös kokoelmasivuilla';
+
+  @override
+  String get detailSectionCrew => 'Ohjaajat & Käsikirjoittajat';
+
+  @override
+  String get detailSectionStudios => 'Studiot';
+
+  @override
+  String get detailSectionChapters => 'Luvut';
+
+  @override
+  String get detailSectionExtras => 'Extrat';
+
+  @override
+  String get detailSectionCollections => 'Kokoelmat';
+
+  @override
+  String get detailSectionMoreLikeThis => 'Lisää samanlaisia';
+
+  @override
+  String get detailSectionMoreLikeThisSubtitle =>
+      'Myös vastaavia albumeita ja artisteja';
+
+  @override
+  String get detailSectionMoreEpisodes => 'Lisää jaksoja';
+
+  @override
+  String get detailSectionMoreEpisodesSubtitle => 'Jaksosivuilla';
+
+  @override
+  String get detailSectionMediaInfo => 'Media info';
+
+  @override
+  String get detailSectionMediaInfoSubtitle =>
+      'Tiedostojen, suoratoistojen ja Direct Play -toiminnon tarkistus';
+
+  @override
+  String get detailSectionSeerrGenresTags => 'Genret & Tunnisteet';
+
+  @override
+  String get detailSectionSeerrStats => 'Tilastot';
+
+  @override
+  String get detailSectionSeerrRecommendations => 'Suositukset';
+
+  @override
+  String get detailSectionSeerrSimilar => 'Samankaltaisia nimikkeitä';
+
+  @override
+  String get detailSectionSeerrCollection => 'Kokoelman banneri';
+
+  @override
+  String get detailSectionSeerrPersonAppearances => 'Esiintymiset';
+
+  @override
+  String get detailSectionSeerrPersonCrew => 'Tuotantoryhmä';
+
+  @override
+  String get detailSectionPersonPagesSubtitle => 'Henkilösivuilla';
+
+  @override
+  String get detailSectionBiography => 'Elämäkerta';
+
+  @override
+  String get detailSectionBirthplace => 'Syntymäpaikka';
+
+  @override
+  String get detailSectionGuestAppearances => 'Vierailut';
+
+  @override
+  String get detailSectionMusicVideos => 'Musiikkivideot';
+
+  @override
+  String get detailSectionPlaylistOrder => 'Soittolistan järjestys';
+
+  @override
+  String get detailSectionBookGenres => 'Kirjagenret';
+
+  @override
+  String get detailSectionPhotoExif => 'Kuvan tiedot';
 
   @override
   String upcomingEpisodeNext(String date, int season, int episode) {
@@ -4282,7 +4520,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get mergeRecentRowsByTypeDescription =>
-      'Yhdistä saman tyyppiset erilliset kirjastot ”Äskettäin lisätty” ja ”Äskettäin julkaistu” -aloitussarjoihin.';
+      'Yhdistä saman tyyppiset erilliset kirjastot ”Äskettäin lisätyt” ja ”Äskettäin julkaistut” -aloitussarjoihin.';
 
   @override
   String get libraryView => 'Kirjastonäkymä';
@@ -4321,6 +4559,24 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String get showInLatestMedia =>
       'Näytä äskettäin lisätyissä/julkaistuissa tiedostoissa';
+
+  @override
+  String get libraryOrder => 'Kirjasto Järjestys';
+
+  @override
+  String get libraryOrderSubtitle => 'Valitse kirjastojen järjestys';
+
+  @override
+  String get libraryOrderDescription =>
+      'Kirjastosi näkyvät tässä järjestyksessä kohdassa ”Omat mediat”, äskettäin lisättyjen rivien joukossa sekä navigointipalkissa. Järjestys tallennetaan palvelintilillesi, joten myös muut sovellukset, joihin kirjaudut sisään, käyttävät sitä.';
+
+  @override
+  String get libraryOrderTvHint =>
+      'Paina vasenta tai oikeaa nuolinäppäintä siirtääksesi korostettua kirjastoa.';
+
+  @override
+  String get libraryOrderSaveFailed =>
+      'Kirjaston järjestystä ei voitu tallentaa';
 
   @override
   String get sourceLibraries => 'Lähdekirjastot';
@@ -4845,7 +5101,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get recentRequests => 'Viimeaikaiset pyynnöt';
 
   @override
-  String get recentlyAdded => 'Äskettäin lisätty';
+  String get recentlyAdded => 'Äskettäin lisätyt';
 
   @override
   String get trending => 'Trendaavat';
@@ -5473,7 +5729,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get revenueLabel => 'Tulot';
 
   @override
-  String get runtimeLabel => 'Suoritusaika';
+  String get runtimeLabel => 'Kesto';
 
   @override
   String get budgetLabel => 'Budjetti';
@@ -7563,7 +7819,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get adminProviderXmltv => 'XMLTV';
 
   @override
-  String get adminProviderSchedulesDirect => 'Schedules Direct';
+  String get adminProviderSchedulesDirect => 'Ohjelmatietopalvelu';
 
   @override
   String get adminXmltvPath => 'Tiedosto tai URL';
@@ -9805,6 +10061,10 @@ class AppLocalizationsFi extends AppLocalizations {
       'Luota palvelimiin, jotka käyttävät itse allekirjoitettuja tai yksityisen CA:n TLS-varmenteita. Ota käyttöön vain hallitsemillesi palvelimille. Tämä poistaa varmenteiden tarkistuksen kaikista yhteyksistä.';
 
   @override
+  String get untrustedServerCertificate =>
+      'Tämän palvelimen varmennetta ei pidetä luotettavana. Jos kyseessä on oma palvelimesi ja se käyttää itse allekirjoitettua tai yksityistä varmennetta, voit sallia sen tässä.';
+
+  @override
   String get settingsPrivacyAndSafetySection =>
       'YKSITYISYYDEN SUOJA JA TURVALLISUUS';
 
@@ -10551,20 +10811,20 @@ class AppLocalizationsFi extends AppLocalizations {
   String get homeRowsStyleModern => 'Moderni';
 
   @override
-  String get homeRowsSection => 'Etusivun Rivit';
+  String get homeRowsSection => 'Kotirivit';
 
   @override
-  String get homeRowDisplay => 'Aloitusnäytön rivien näyttö';
+  String get homeRowDisplay => 'Kotirivien Näyttö';
 
   @override
-  String get homeRowSections => 'Aloitusnäytön riviosiot';
+  String get homeRowSections => 'Kotirivien Osiot';
 
   @override
-  String get homeRowToggles => 'Aloitusnäytön rivivalinnat';
+  String get homeRowToggles => 'Kotirivien Säätimet';
 
   @override
   String get homeRowTogglesSubtitle =>
-      'Ota käyttöön tai poista käytöstä kirjastopohjaiset aloitusnäytön riviluokat';
+      'Ota käyttöön tai poista käytöstä kirjastopohjaiset kotirivi kategoriat';
 
   @override
   String get homeRowTogglesDescription =>
@@ -13484,6 +13744,22 @@ class AppLocalizationsFi extends AppLocalizations {
       'Kuinka paljon tarkennus siirtyy jokaisen Siri Remote -kaukosäätimen kosketuslevyllä tehdyn pyyhkäisyn yhteydessä';
 
   @override
+  String get appleTvHomeScreen => 'Apple TV home screen';
+
+  @override
+  String get topShelf => 'Top Shelf';
+
+  @override
+  String get topShelfDescription =>
+      'What the Apple TV home screen shows above the Moonfin icon when it is selected. This setting stays on this device.';
+
+  @override
+  String get topShelfLatestMedia => 'Latest media';
+
+  @override
+  String get topShelfAppBanner => 'Moonfin banner';
+
+  @override
   String get keepVideoClearOfDynamicIsland =>
       'Varmista, että video ei peitä Dynamic Islandia';
 
@@ -13508,7 +13784,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get bottomNavbarTabsDescription =>
-      'Voit kiinnittää enintään 3 välilehteä Home ja You välilehtien väliin. Kaikki muu löytyy You valikosta.';
+      'Voit kiinnittää enintään 3 välilehteä Home ja You välilehtien väliin. Kaikki muu löytyy alareunan navigointipalkista.';
 
   @override
   String get bottomNavbarTabsAutomatic => 'Automaattinen';
@@ -13536,7 +13812,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get bottomNavbarButtonsNote =>
-      'Nämä asetukset määrittävät, mitkä välilehdet voit kiinnittää alareunan palkkiin ja mitä ”You”-valikossa näkyy.';
+      'Nämä määrittävät, mitä alareunan navigointipalkissa näkyy ja mitkä välilehdet voit kiinnittää alareunan palkkiin. Palkissa jo olevat välilehdet eivät näy tässä luettelossa.';
 
   @override
   String get navYou => 'You';

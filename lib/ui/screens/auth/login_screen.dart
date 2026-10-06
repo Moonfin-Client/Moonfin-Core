@@ -25,6 +25,7 @@ import '../../../util/pin_code_util.dart';
 import '../../../util/platform_detection.dart';
 import '../../../util/web_diagnostics_failure.dart';
 import '../../navigation/destinations.dart';
+import '../../widgets/allow_self_signed_dialog.dart';
 import '../../widgets/login_scaffold.dart';
 import '../../widgets/pin_entry_dialog.dart';
 
@@ -63,11 +64,13 @@ class _LoginScreenState extends State<LoginScreen> {
   final _backFocus = FocusNode();
   final _qcBtnFocus = FocusNode();
   final _pwBtnFocus = FocusNode();
+  final _allowCertFocus = FocusNode();
 
   Server? _server;
   MediaServerClient? _client;
   bool _isLoading = false;
   String? _errorMessage;
+  bool _untrustedCertificate = false;
   List<String> _recentUsernames = const [];
 
   bool _supportsQuickConnect = false;
@@ -128,6 +131,7 @@ class _LoginScreenState extends State<LoginScreen> {
     _backFocus.dispose();
     _qcBtnFocus.dispose();
     _pwBtnFocus.dispose();
+    _allowCertFocus.dispose();
     _quickConnectTimer?.cancel();
     super.dispose();
   }
@@ -279,6 +283,7 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       _showQuickConnect = true;
       _errorMessage = null;
+      _untrustedCertificate = false;
     });
     if (_quickConnectTimer == null) _startQuickConnect();
   }
@@ -289,6 +294,7 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       _showQuickConnect = false;
       _errorMessage = null;
+      _untrustedCertificate = false;
     });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
@@ -320,6 +326,10 @@ class _LoginScreenState extends State<LoginScreen> {
       );
     } on DioException catch (e) {
       if (!mounted) return;
+      if (isUntrustedCertificate(e)) {
+        _showUntrustedCertificate();
+        return;
+      }
       final status = e.response?.statusCode;
       final detail =
           e.response?.data?.toString() ??
@@ -433,6 +443,30 @@ class _LoginScreenState extends State<LoginScreen> {
     context.go('${Destinations.server}?serverId=${server.id}');
   }
 
+  void _showUntrustedCertificate() {
+    setState(() {
+      _isLoading = false;
+      _untrustedCertificate = true;
+      _errorMessage = AppLocalizations.of(context).untrustedServerCertificate;
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _allowCertFocus.requestFocus();
+    });
+  }
+
+  Future<void> _allowSelfSignedAndRetry() async {
+    if (!await confirmAllowSelfSignedCertificates(context) || !mounted) return;
+    setState(() {
+      _errorMessage = null;
+      _untrustedCertificate = false;
+    });
+    if (_showQuickConnect) {
+      await _startQuickConnect();
+    } else {
+      await _login();
+    }
+  }
+
   void _finishLoginWithError(String message) {
     setState(() {
       _isLoading = false;
@@ -489,6 +523,7 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       _isLoading = true;
       _errorMessage = null;
+      _untrustedCertificate = false;
     });
 
     try {
@@ -553,6 +588,8 @@ class _LoginScreenState extends State<LoginScreen> {
           _finishLoginWithError(error);
         case ServerUnavailable():
           _finishLoginWithError(l10n.serverUnavailable);
+        case UntrustedCertificate():
+          _showUntrustedCertificate();
         default:
           _finishLoginWithError(l10n.loginFailed);
       }
@@ -753,6 +790,14 @@ class _LoginScreenState extends State<LoginScreen> {
           const SizedBox(height: 16),
           Text(_errorMessage!, style: TextStyle(color: _loginErrorColor)),
         ],
+        if (_untrustedCertificate) ...[
+          const SizedBox(height: 12),
+          _buildActionButton(
+            label: l10n.settingsAllowSelfSignedCerts,
+            focusNode: _allowCertFocus,
+            onPressed: _allowSelfSignedAndRetry,
+          ),
+        ],
         const SizedBox(height: 24),
         _buildActionButton(
           label: l10n.back,
@@ -796,6 +841,14 @@ class _LoginScreenState extends State<LoginScreen> {
         if (_errorMessage != null) ...[
           const SizedBox(height: 12),
           Text(_errorMessage!, style: TextStyle(color: _loginErrorColor)),
+        ],
+        if (_untrustedCertificate) ...[
+          const SizedBox(height: 12),
+          _buildActionButton(
+            label: l10n.settingsAllowSelfSignedCerts,
+            focusNode: _allowCertFocus,
+            onPressed: _allowSelfSignedAndRetry,
+          ),
         ],
         const SizedBox(height: 24),
         Wrap(

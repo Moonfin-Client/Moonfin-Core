@@ -105,9 +105,16 @@ int? activeBarIndex(
   return null;
 }
 
-enum BottomNavHubAction { saved, shuffle, syncPlay }
+enum BottomNavHubAction {
+  saved,
+  shuffle,
+  syncPlay,
+  quickConnect,
+  remoteControl,
+}
 
-/// A tile in the You hub: a destination that isn't pinned, or an action.
+/// A tile in the bottom navbar hub: a destination that isn't pinned, or an
+/// action.
 class BottomNavHubTile {
   final BottomNavTab? tab;
   final BottomNavHubAction? action;
@@ -126,9 +133,9 @@ class BottomNavHubTile {
   String toString() => 'BottomNavHubTile(${tab?.name ?? action?.name})';
 }
 
-/// Tiles for the You hub, in the order they are drawn: saved media first
-/// because it matters most offline, then every destination that is offered
-/// but not on the bar, then the actions.
+/// Tiles for the bottom navbar hub, in the order they are drawn: saved media
+/// first because it matters most offline, then every destination that is
+/// offered but not on the bar, then the actions.
 ///
 /// [alsoOnBar] names tabs the bar shows outside its tab row, like Split's
 /// search button.
@@ -139,6 +146,7 @@ List<BottomNavHubTile> resolveHubTiles({
   required bool savedAvailable,
   required bool shuffle,
   required bool syncPlay,
+  required bool quickConnect,
   Set<BottomNavTab> alsoOnBar = const {},
 }) {
   final onBar = {
@@ -153,5 +161,8 @@ List<BottomNavHubTile> resolveHubTiles({
         BottomNavHubTile.tab(tab),
     if (shuffle) const BottomNavHubTile.action(BottomNavHubAction.shuffle),
     if (syncPlay) const BottomNavHubTile.action(BottomNavHubAction.syncPlay),
+    if (quickConnect)
+      const BottomNavHubTile.action(BottomNavHubAction.quickConnect),
+    const BottomNavHubTile.action(BottomNavHubAction.remoteControl),
   ];
 }

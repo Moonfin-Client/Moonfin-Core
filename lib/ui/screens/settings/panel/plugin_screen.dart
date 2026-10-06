@@ -90,7 +90,9 @@ class _PluginScreenState extends State<_PluginScreen> {
               ),
               body: ListView(
                 controller: _scrollController,
-                padding: const EdgeInsets.only(bottom: 48),
+                padding: EdgeInsets.only(
+                  bottom: 48 + MediaQuery.paddingOf(context).bottom,
+                ),
                 children: [
                   Padding(
                     padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),

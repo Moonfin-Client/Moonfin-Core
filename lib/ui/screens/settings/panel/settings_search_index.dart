@@ -117,6 +117,7 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
 }) {
   final seerrAvailable = GetIt.instance<PluginSyncService>().seerrAvailable;
   final tmdbAvailable = GetIt.instance<PluginSyncService>().tmdbAvailable;
+  final pluginAvailable = GetIt.instance<PluginSyncService>().pluginAvailable;
   final friendsAvailable =
       GetIt.instance<AchievementsService>().socialAvailable;
 
@@ -224,6 +225,16 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
     icon: Icons.view_headline_outlined,
     open: () => push(const _DetailMetadataScreen()),
   );
+  final detailSections = _SearchSection(
+    slug: 'detail-sections',
+    path: [
+      l10n.settingsPersonalization,
+      l10n.settingsDetailsScreen,
+      l10n.detailSections,
+    ],
+    icon: Icons.dashboard_customize_outlined,
+    open: () => push(const _DetailSectionsScreen()),
+  );
   final navigation = _SearchSection(
     slug: 'navigation',
     path: [l10n.settingsPersonalization, l10n.navigation],
@@ -286,6 +297,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
     icon: Icons.list_alt,
     open: () => push(const _ImdbListsScreen()),
   );
+  final seasonalRow = _SearchSection(
+    slug: 'seasonal-row',
+    path: [l10n.integrations, l10n.externalLists, l10n.seasonalRow],
+    icon: Icons.celebration_outlined,
+    open: () => push(const _SeasonalRowScreen()),
+  );
   final tmdbLists = _SearchSection(
     slug: 'tmdb',
     path: [l10n.integrations, l10n.externalLists, 'TMDB Lists'],
@@ -325,6 +342,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
     ],
     icon: Icons.visibility,
     open: () => push(const LibraryVisibilityScreen()),
+  );
+  final libraryOrder = _SearchSection(
+    slug: 'library-order',
+    path: [l10n.settingsPersonalization, l10n.libraries, l10n.libraryOrder],
+    icon: Icons.swap_vert,
+    open: () => push(const LibraryOrderScreen()),
   );
   final mediaBar = _SearchSection(
     slug: 'media-bar',
@@ -762,6 +785,25 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       'seerr',
       'reorder',
     ]),
+    detailSections.screen(keywords: [
+      'sections',
+      'hide',
+      'logo',
+      'tagline',
+      'cast',
+      'crew',
+      'studios',
+      'chapters',
+      'extras',
+      'collections',
+      'similar',
+      'more like this',
+      'episodes',
+      'media info',
+      'seerr',
+      'recommendations',
+      'biography',
+    ]),
 
     navigation.screen(keywords: ['navbar', 'toolbar', 'sidebar']),
     navigation.leaf('pref_navbar_position', l10n.navigationStyle, keywords: [
@@ -917,6 +959,13 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       'gap',
     ]),
     home.leaf('poster_size', l10n.cardSize, keywords: ['poster size']),
+    if (PlatformDetection.isAppleTV)
+      home.leaf(
+        'pref_top_shelf_content',
+        l10n.topShelf,
+        subtitle: l10n.topShelfDescription,
+        keywords: ['apple tv', 'top shelf', 'banner', 'latest', 'launcher'],
+      ),
     homeSections.screen(keywords: [
       'reorder rows',
       'toggle rows',
@@ -973,6 +1022,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       keywords: ['recommendations'],
     ),
     rowImages.screen(keywords: ['poster', 'thumbnail', 'banner']),
+    if (pluginAvailable) ...[
+      seasonalRow.screen(keywords: ['holiday', 'christmas', 'halloween', 'seasonal']),
+      seasonalRow.leaf('seasonal_row_enabled', l10n.seasonalRow, subtitle: l10n.seasonalRowDescription),
+      seasonalRow.leaf('seasonal_row_country', l10n.seasonalRowCountry),
+      seasonalRow.leaf('seasonal_row_hidden_holidays', l10n.seasonalRowHolidays),
+    ],
     if (seerrAvailable) ...[
       externalLists.screen(keywords: [
         'external home rows',
@@ -1082,6 +1137,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       'show in navigation',
       'latest media',
     ]),
+    libraryOrder.screen(keywords: [
+      'reorder libraries',
+      'sort libraries',
+      'my media',
+      'navbar',
+    ]),
     libraries.leaf(
       'enable_multi_server_libraries',
       l10n.multiServerLibraries,
@@ -1175,7 +1236,27 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       keywords: ['mute'],
     ),
 
-    seasonal.screen(keywords: ['snow', 'fireworks', 'confetti', 'holiday']),
+    seasonal.screen(
+      keywords: [
+        'snow',
+        'christmas',
+        'fireworks',
+        'confetti',
+        'petals',
+        'spring',
+        'fireflies',
+        'summer',
+        'leaves',
+        'halloween',
+        'bats',
+        'holiday',
+      ],
+    ),
+    seasonal.leaf(
+      'seasonalDensity',
+      l10n.seasonalDensity,
+      keywords: ['particles', 'amount', 'light', 'heavy'],
+    ),
     themeMusic.screen(keywords: ['soundtrack']),
     themeMusic.leaf(
       'themeMusicEnabled',
@@ -1236,14 +1317,18 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         subtitle: l10n.keepVideoClearOfDynamicIslandDescription,
         keywords: ['notch', 'dynamic island', 'camera', 'safe area'],
       ),
-    if (letterboxCropSettingVisible())
-      video.leaf('crop_black_bars', l10n.cropBlackBars, keywords: [
-        'letterbox',
-        'cropdetect',
-        'black bars',
-        'mpv',
-        'android',
-      ]),
+    if (letterboxCropSettingVisible()) ...[
+      video.leaf(
+        'crop_black_bars',
+        l10n.cropBlackBars,
+        keywords: ['letterbox', 'cropdetect', 'black bars', 'mpv', 'android'],
+      ),
+      video.leaf(
+        'crop_black_bars_interval_seconds',
+        l10n.cropBlackBarsRecropInterval,
+        keywords: ['letterbox', 'dynamic crop', 'aspect ratio', 'imax'],
+      ),
+    ],
     playbackTime.screen(keywords: [
       'time left',
       'time remaining',

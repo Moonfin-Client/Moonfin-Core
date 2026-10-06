@@ -31,7 +31,9 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('the You hub lists Friends with what is waiting', (tester) async {
+  testWidgets('the bottom navbar hub lists Friends with what is waiting', (
+    tester,
+  ) async {
     await GetIt.instance<UserPreferences>().set(
       UserPreferences.showFriendsButton,
       true,

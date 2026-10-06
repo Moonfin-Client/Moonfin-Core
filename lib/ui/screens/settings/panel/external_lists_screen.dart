@@ -236,6 +236,12 @@ class _ExternalListsScreenState extends State<_ExternalListsScreen> {
                           onTap: () => context.pushSettingsScreen(const _ImdbListsScreen()),
                         ),
                         _TvSettingsListTile(
+                          leading: const Icon(Icons.celebration_outlined),
+                          title: Text(l10n.seasonalRow),
+                          subtitle: Text(l10n.seasonalRowDescription),
+                          onTap: () => context.pushSettingsScreen(const _SeasonalRowScreen()),
+                        ),
+                        _TvSettingsListTile(
                           leading: const Icon(Icons.trending_up),
                           title: const Text('TMDB Lists'),
                           subtitle: Text(
@@ -282,6 +288,142 @@ class _ExternalListsScreenState extends State<_ExternalListsScreen> {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class _SeasonalRowScreen extends StatefulWidget {
+  const _SeasonalRowScreen();
+
+  @override
+  State<_SeasonalRowScreen> createState() => _SeasonalRowScreenState();
+}
+
+class _SeasonalRowScreenState extends State<_SeasonalRowScreen> {
+  final _scope = FocusScopeNode(debugLabel: 'SeasonalRowScope');
+  final _firstFocusNode = FocusNode(debugLabel: 'seasonal_row_enabled');
+
+  @override
+  void dispose() {
+    _scope.dispose();
+    _firstFocusNode.dispose();
+    super.dispose();
+  }
+
+  Set<String> _hiddenHolidays(UserPreferences prefs) =>
+      UserPreferences.parseSeasonalRowHiddenHolidays(
+        prefs.get(UserPreferences.seasonalRowHiddenHolidays),
+      );
+
+  Future<void> _toggleHoliday(UserPreferences prefs, String holiday) async {
+    final hidden = _hiddenHolidays(prefs);
+    if (!hidden.remove(holiday)) hidden.add(holiday);
+    await prefs.set(
+      UserPreferences.seasonalRowHiddenHolidays,
+      UserPreferences.seasonalHolidayIds.where(hidden.contains).join(','),
+    );
+    if (mounted) setState(() {});
+  }
+
+  /// Switching the row on puts it right after Continue Watching and Next Up,
+  /// where a holiday row gets noticed. Switching it off keeps its place.
+  void _syncSectionState(bool enabled) {
+    final prefs = GetIt.instance<UserPreferences>();
+    final configs = List<HomeSectionConfig>.from(prefs.homeSectionsConfig);
+    final idx = configs.indexWhere((c) => c.type == HomeSectionType.seasonal);
+    final current = idx >= 0
+        ? configs.removeAt(idx)
+        : const HomeSectionConfig(type: HomeSectionType.seasonal, enabled: false, order: 0);
+
+    var insertAt = idx >= 0 ? idx : configs.length;
+    if (enabled && !current.enabled) {
+      final anchor = configs.lastIndexWhere(
+        (c) => c.isBuiltin &&
+            (c.type == HomeSectionType.resume || c.type == HomeSectionType.nextUp),
+      );
+      insertAt = anchor + 1;
+    }
+    configs.insert(insertAt, current.copyWith(enabled: enabled));
+    for (var i = 0; i < configs.length; i++) {
+      configs[i] = configs[i].copyWith(order: i);
+    }
+    prefs.setHomeSectionsConfig(configs);
+    _pushPersonalizationSync();
+  }
+
+  String _countryLabel(String code, AppLocalizations l10n) => switch (code) {
+        UserPreferences.seasonalRowCountryAuto => l10n.seasonalRowCountryAuto,
+        'US' => l10n.countryUnitedStates,
+        'CA' => l10n.countryCanada,
+        UserPreferences.seasonalRowCountryOther => l10n.seasonalRowCountryOther,
+        _ => code,
+      };
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final prefs = GetIt.instance<UserPreferences>();
+    final hidden = _hiddenHolidays(prefs);
+
+    return withCleanSettingsTypography(
+      context,
+      RequestInitialFocus(
+        targetNode: PlatformDetection.isTV ? _firstFocusNode : null,
+        child: Scaffold(
+          appBar: buildSettingsAppBar(context, Text(l10n.seasonalRow)),
+          body: FocusScope(
+            node: _scope,
+            autofocus: true,
+            child: ListView(
+              children: [
+                adaptiveListSection(
+                  children: [
+                    SwitchPreferenceTile(
+                      focusNode: _firstFocusNode,
+                      preference: UserPreferences.seasonalRowEnabled,
+                      title: l10n.seasonalRow,
+                      subtitle: l10n.seasonalRowDescription,
+                      icon: Icons.celebration_outlined,
+                      onChangedValue: _syncSectionState,
+                    ),
+                    StringPickerPreferenceTile(
+                      preference: UserPreferences.seasonalRowCountry,
+                      title: l10n.seasonalRowCountry,
+                      icon: Icons.public,
+                      options: {
+                        for (final code in UserPreferences.seasonalRowCountryOptions)
+                          code: _countryLabel(code, l10n),
+                      },
+                    ),
+                  ],
+                ),
+                _SectionHeader(l10n.seasonalRowHolidays),
+                adaptiveListSection(
+                  children: [
+                    for (final holiday in UserPreferences.seasonalHolidayIds)
+                      _TvSettingsListTile(
+                        leading: Icon(
+                          hidden.contains(holiday)
+                              ? Icons.check_box_outline_blank
+                              : Icons.check_box,
+                        ),
+                        title: Text(seasonalHolidayTitle(holiday, l10n)),
+                        onTap: () => _toggleHoliday(prefs, holiday),
+                      ),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
+                  child: Text(
+                    l10n.seasonalRowHolidaysHint,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

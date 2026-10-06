@@ -798,7 +798,7 @@
     "@unread": {
         "description": "Status label for an unread book"
     },
-    "unwatched": "No vist",
+    "unwatched": "Sense veure",
     "@unwatched": {
         "description": "Filter label for unwatched items"
     },
@@ -11624,15 +11624,15 @@
     "@animeMarkerMangaCanon": {
         "description": "Badge on an anime episode adapted from the source manga"
     },
-    "animeMarkerSubbed": "Subtitulat",
+    "animeMarkerSubbed": "Sub",
     "@animeMarkerSubbed": {
         "description": "Badge on an anime episode or season whose only audio is Japanese, so it is watched with subtitles"
     },
-    "animeMarkerDubbed": "Doblat",
+    "animeMarkerDubbed": "Dub",
     "@animeMarkerDubbed": {
         "description": "Badge on an anime episode or season that has an audio track in a language other than Japanese"
     },
-    "animeMarkerSubbedAndDubbed": "Subtitulat/Doblat",
+    "animeMarkerSubbedAndDubbed": "Sub/Dub",
     "@animeMarkerSubbedAndDubbed": {
         "description": "Badge on anime that carries both the original Japanese audio and a dub, so it can be watched either way"
     },
@@ -12561,7 +12561,7 @@
     "@bottomNavbarTabs": {
         "description": "Settings title for choosing which tabs sit on the mobile bottom navigation bar"
     },
-    "bottomNavbarTabsDescription": "Fixa fins a 3 pestanyes entre «Inici» i «Tu». Tota la resta és al menú «Tu».",
+    "bottomNavbarTabsDescription": "Fixa fins a 3 pestanyes entre Inici i Tu. Tota la resta és al centre de la barra inferior.",
     "@bottomNavbarTabsDescription": {
         "description": "Explains the bottom bar tabs screen"
     },
@@ -12593,7 +12593,7 @@
     "@bottomNavbarSplitSearchNote": {
         "description": "Note on the bottom bar tabs screen about the Split style"
     },
-    "bottomNavbarButtonsNote": "Aquests botons decideixen quines pestanyes pots fixar a la barra inferior i què es mostra al menú «Tu».",
+    "bottomNavbarButtonsNote": "Aquests botons decideixen què es mostra al centre de la barra inferior i quines pestanyes pots fixar a la barra inferior. Les pestanyes que ja són a la barra no s'hi mostren.",
     "@bottomNavbarButtonsNote": {
         "description": "Note under the navigation buttons section while the bottom bar is in use"
     },
@@ -12604,5 +12604,680 @@
     "uiScaleGreatGrandparents": "Per als besavis",
     "@uiScaleGreatGrandparents": {
         "description": "UI scaling option above Grandparents"
+    },
+    "friends": "Amics",
+    "@friends": {
+        "description": "Title of the friends panel from the Achievement Badges plugin"
+    },
+    "friendsSubtitle": "Mira qui està en línia i xateja amb la gent d'aquest servidor",
+    "@friendsSubtitle": {
+        "description": "Subtitle of the Friends entry"
+    },
+    "friendsShowButton": "Mostra el botó d'amics",
+    "@friendsShowButton": {
+        "description": "Navigation setting that adds a Friends button"
+    },
+    "friendsShowButtonSubtitle": "Amics i xat del connector Insígnies de fites",
+    "@friendsShowButtonSubtitle": {
+        "description": "Subtitle of the setting that adds a Friends button"
+    },
+    "friendsMessages": "Missatges",
+    "@friendsMessages": {
+        "description": "Entry that opens the list of chats"
+    },
+    "friendsUnreadCount": "{count, plural, =0{Cap missatge sense llegir} =1{1 missatge sense llegir} other{{count} missatges sense llegir}}",
+    "@friendsUnreadCount": {
+        "description": "How many chat messages are unread",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "friendsRequests": "Sol·licituds d'amistat",
+    "@friendsRequests": {
+        "description": "Entry that opens pending friend requests"
+    },
+    "friendsRequestCount": "{count, plural, =0{No hi ha res pendent} =1{1 t'està esperant} other{{count} t'estan esperant}}",
+    "@friendsRequestCount": {
+        "description": "How many friend requests wait for an answer",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "friendsAdd": "Afegeix amics",
+    "@friendsAdd": {
+        "description": "Entry that opens the people search"
+    },
+    "friendsAddSubtitle": "Troba gent d'aquest servidor",
+    "@friendsAddSubtitle": {
+        "description": "Subtitle of the Add friends entry"
+    },
+    "friendsPrivacy": "Privadesa",
+    "@friendsPrivacy": {
+        "description": "Entry that opens the friends privacy settings"
+    },
+    "friendsPrivacySubtitle": "Què poden veure els teus amics",
+    "@friendsPrivacySubtitle": {
+        "description": "Subtitle of the friends Privacy entry"
+    },
+    "friendsOnline": "En línia",
+    "@friendsOnline": {
+        "description": "Section header and status for friends who are online"
+    },
+    "friendsOffline": "Fora de línia",
+    "@friendsOffline": {
+        "description": "Section header and status for friends who are offline"
+    },
+    "friendsNone": "Encara no tens amics. Afegeix gent d'aquest servidor per veure-la aquí.",
+    "@friendsNone": {
+        "description": "Shown when the friends list is empty"
+    },
+    "friendsWatching": "Veient {title}",
+    "@friendsWatching": {
+        "description": "Status line of a friend who is playing something",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "friendsLastWatched": "Últim vist: {title}",
+    "@friendsLastWatched": {
+        "description": "Status line of an offline friend with the last thing they played",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "friendsLastSeen": "Última connexió {time}",
+    "@friendsLastSeen": {
+        "description": "Status line of an offline friend, with a relative time such as 5m ago",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "friendsLoadFailed": "No s'ha pogut carregar. Comprova la connexió i torna-ho a provar.",
+    "@friendsLoadFailed": {
+        "description": "Shown when a friends or chat screen fails to load"
+    },
+    "friendsActionFailed": "No ha funcionat. Torna-ho a provar d'aquí a un moment.",
+    "@friendsActionFailed": {
+        "description": "Shown when a friends or chat action fails without a reason from the server"
+    },
+    "friendsIncoming": "Pendents de la teva resposta",
+    "@friendsIncoming": {
+        "description": "Section header for friend requests others sent"
+    },
+    "friendsOutgoing": "Enviades per tu",
+    "@friendsOutgoing": {
+        "description": "Section header for friend requests the user sent"
+    },
+    "friendsNoRequests": "No hi ha sol·licituds d'amistat.",
+    "@friendsNoRequests": {
+        "description": "Shown when there are no pending friend requests"
+    },
+    "friendsAccept": "Accepta",
+    "@friendsAccept": {
+        "description": "Accept a friend request"
+    },
+    "friendsDecline": "Declinar",
+    "@friendsDecline": {
+        "description": "Decline a friend request"
+    },
+    "friendsCancelRequest": "Cancel·la la sol·licitud",
+    "@friendsCancelRequest": {
+        "description": "Take back a friend request the user sent"
+    },
+    "friendsRequestFrom": "{name} t'ha enviat una sol·licitud d'amistat",
+    "@friendsRequestFrom": {
+        "description": "Title of the dialog answering a friend request",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "friendsCancelRequestBody": "Vols retirar la sol·licitud que has enviat a {name}?",
+    "@friendsCancelRequestBody": {
+        "description": "Body of the dialog cancelling a sent friend request",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "friendsSearchHint": "Cerca persones",
+    "@friendsSearchHint": {
+        "description": "Hint of the people search field"
+    },
+    "friendsNoMatches": "Ningú no coincideix amb aquest nom.",
+    "@friendsNoMatches": {
+        "description": "Shown when the people search finds nobody"
+    },
+    "friendsRequestSent": "S'ha enviat la sol·licitud a {name}",
+    "@friendsRequestSent": {
+        "description": "Shown after sending a friend request",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "friendsSendRequest": "Afegeix com a amic",
+    "@friendsSendRequest": {
+        "description": "Action that sends a friend request to someone"
+    },
+    "friendsSendMessage": "Enviar missatge",
+    "@friendsSendMessage": {
+        "description": "Action that opens a chat with a friend"
+    },
+    "friendsOpenItem": "Obre {title}",
+    "@friendsOpenItem": {
+        "description": "Action that opens what a friend is watching",
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "friendsRemove": "Elimina dels amics",
+    "@friendsRemove": {
+        "description": "Action that removes a friend"
+    },
+    "friendsRemoveBody": "Vols eliminar {name} dels teus amics? Més endavant podràs tornar a afegir aquesta persona.",
+    "@friendsRemoveBody": {
+        "description": "Body of the dialog removing a friend",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "friendsBlock": "Bloqueja",
+    "@friendsBlock": {
+        "description": "Action that blocks a user from messaging"
+    },
+    "friendsUnblock": "Desbloqueja",
+    "@friendsUnblock": {
+        "description": "Action that unblocks a user"
+    },
+    "friendsBlockBody": "Vols bloquejar {name}? Cap de vosaltres no podrà enviar missatges directes a l'altre. Els xats de grup que compartiu continuaran oberts.",
+    "@friendsBlockBody": {
+        "description": "Body of the dialog blocking a user",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "friendsUnblockBody": "Vols desbloquejar {name}?",
+    "@friendsUnblockBody": {
+        "description": "Body of the dialog unblocking a user",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "friendsBlocked": "Usuaris bloquejats",
+    "@friendsBlocked": {
+        "description": "Section header listing blocked users"
+    },
+    "friendsProfileHidden": "{name} té el perfil privat.",
+    "@friendsProfileHidden": {
+        "description": "Shown when another user hides their profile",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "friendsAppearOffline": "Mostra'm fora de línia",
+    "@friendsAppearOffline": {
+        "description": "Privacy setting that always shows the user as offline"
+    },
+    "friendsAppearOfflineSubtitle": "Els amics sempre et veuran fora de línia",
+    "@friendsAppearOfflineSubtitle": {
+        "description": "Subtitle of the Appear offline setting"
+    },
+    "friendsHideNowPlaying": "Amaga el que estic veient",
+    "@friendsHideNowPlaying": {
+        "description": "Privacy setting that hides what is playing"
+    },
+    "friendsHideNowPlayingSubtitle": "Els amics et continuaran veient en línia, però no què s'està reproduint",
+    "@friendsHideNowPlayingSubtitle": {
+        "description": "Subtitle of the Hide what I am watching setting"
+    },
+    "friendsHideLastWatched": "Amaga el meu últim visionat",
+    "@friendsHideLastWatched": {
+        "description": "Privacy setting that hides the last played item while offline"
+    },
+    "friendsHideLastWatchedSubtitle": "Els amics no veuran què vas veure per última vegada mentre estiguis fora de línia",
+    "@friendsHideLastWatchedSubtitle": {
+        "description": "Subtitle of the Hide my last watched setting"
+    },
+    "friendsMessageNotifications": "Notificacions de missatges",
+    "@friendsMessageNotifications": {
+        "description": "Setting that shows a banner for new chat messages"
+    },
+    "friendsMessageNotificationsSubtitle": "Mostra un bàner quan un amic t'enviï un missatge",
+    "@friendsMessageNotificationsSubtitle": {
+        "description": "Subtitle of the Message notifications setting"
+    },
+    "friendsMuteDuringPlayback": "Silencia durant la reproducció",
+    "@friendsMuteDuringPlayback": {
+        "description": "Setting that hides new message banners while a video or game plays"
+    },
+    "friendsMuteDuringPlaybackSubtitle": "Cap bàner de missatges mentre es reprodueix un vídeo o un joc",
+    "@friendsMuteDuringPlaybackSubtitle": {
+        "description": "Subtitle of the Mute during playback setting"
+    },
+    "friendsSaveFailed": "No s'ha pogut desar la configuració.",
+    "@friendsSaveFailed": {
+        "description": "Shown when the friends privacy settings fail to save"
+    },
+    "chatNew": "Missatge nou",
+    "@chatNew": {
+        "description": "Entry that starts a chat with one friend"
+    },
+    "chatNewSubtitle": "Comença un xat amb un amic",
+    "@chatNewSubtitle": {
+        "description": "Subtitle of the New message entry"
+    },
+    "chatNewGroup": "Grup nou",
+    "@chatNewGroup": {
+        "description": "Entry that creates a group chat"
+    },
+    "chatNewGroupSubtitle": "Xateja amb diversos amics alhora",
+    "@chatNewGroupSubtitle": {
+        "description": "Subtitle of the New group entry"
+    },
+    "chatNone": "Encara no hi ha missatges.",
+    "@chatNone": {
+        "description": "Shown when there are no chats or no messages in a chat"
+    },
+    "chatYou": "Tu",
+    "@chatYou": {
+        "description": "Stands for the signed-in user in chats and member lists"
+    },
+    "chatYouSaid": "Tu: {text}",
+    "@chatYouSaid": {
+        "description": "Preview of the last chat message when the user sent it",
+        "placeholders": {
+            "text": {
+                "type": "String"
+            }
+        }
+    },
+    "chatPhoto": "Foto",
+    "@chatPhoto": {
+        "description": "Preview of a chat message that is an image"
+    },
+    "chatEmoji": "Emoji",
+    "@chatEmoji": {
+        "description": "Button that opens the emoji picker in a chat"
+    },
+    "chatEmojiSearch": "Cerca emojis",
+    "@chatEmojiSearch": {
+        "description": "Hint of the search field in the emoji picker"
+    },
+    "chatNoRecentEmoji": "No hi ha emojis recents",
+    "@chatNoRecentEmoji": {
+        "description": "Shown in the emoji picker's recent tab before any emoji was used"
+    },
+    "chatViewPhoto": "Mostra la foto",
+    "@chatViewPhoto": {
+        "description": "Action that opens a photo sent in a chat at full size"
+    },
+    "chatHint": "Escriu un missatge",
+    "@chatHint": {
+        "description": "Hint of the chat message field"
+    },
+    "chatAttach": "Envia una foto",
+    "@chatAttach": {
+        "description": "Button that picks an image to send in a chat"
+    },
+    "chatEdited": "editat",
+    "@chatEdited": {
+        "description": "Marks a chat message that was changed after sending"
+    },
+    "chatSeen": "Llegit",
+    "@chatSeen": {
+        "description": "Read receipt on a sent chat message"
+    },
+    "chatSent": "Enviat",
+    "@chatSent": {
+        "description": "Delivery mark on a sent chat message nobody has read yet"
+    },
+    "chatEditing": "S'està editant el missatge",
+    "@chatEditing": {
+        "description": "Banner above the chat field while changing a sent message"
+    },
+    "chatMessageOptions": "Opcions del missatge",
+    "@chatMessageOptions": {
+        "description": "Title of the dialog with actions for a chat message"
+    },
+    "chatDeleteBody": "Vols suprimir aquest missatge per a tothom?",
+    "@chatDeleteBody": {
+        "description": "Body of the dialog deleting a chat message"
+    },
+    "chatClear": "Buida la conversa",
+    "@chatClear": {
+        "description": "Action that deletes every message in a chat"
+    },
+    "chatClearBody": "Vols suprimir tots els missatges d'aquest xat per a tots els participants?",
+    "@chatClearBody": {
+        "description": "Body of the dialog clearing a chat"
+    },
+    "chatGroupInfo": "Informació del grup",
+    "@chatGroupInfo": {
+        "description": "Screen and action with a group chat name and members"
+    },
+    "chatGroupName": "Nom del grup",
+    "@chatGroupName": {
+        "description": "Label of the group chat name field"
+    },
+    "chatMemberCount": "{count, plural, =1{1 membre} other{{count} membres}}",
+    "@chatMemberCount": {
+        "description": "How many people are in a group chat",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "chatOwner": "Propietari",
+    "@chatOwner": {
+        "description": "Marks the person who created a group chat"
+    },
+    "chatAdmin": "Admin",
+    "@chatAdmin": {
+        "description": "Marks a group chat admin"
+    },
+    "chatMakeAdmin": "Fes administrador",
+    "@chatMakeAdmin": {
+        "description": "Action that makes a group member an admin"
+    },
+    "chatRemoveAdmin": "Retira els permisos d'administrador",
+    "@chatRemoveAdmin": {
+        "description": "Action that takes admin away from a group member"
+    },
+    "chatRemoveMember": "Elimina del grup",
+    "@chatRemoveMember": {
+        "description": "Action that removes someone from a group chat"
+    },
+    "chatAddMember": "Afegeix persones",
+    "@chatAddMember": {
+        "description": "Action that adds friends to a group chat"
+    },
+    "chatNobodyToAdd": "No queda ningú per afegir.",
+    "@chatNobodyToAdd": {
+        "description": "Shown when every friend is already in the group"
+    },
+    "chatLeave": "Abandonar el grup",
+    "@chatLeave": {
+        "description": "Action that leaves a group chat"
+    },
+    "chatLeaveBody": "Vols abandonar aquest grup? Algú t'hi haurà de tornar a afegir perquè hi puguis tornar.",
+    "@chatLeaveBody": {
+        "description": "Body of the dialog leaving a group chat"
+    },
+    "chatCreate": "Crear grup",
+    "@chatCreate": {
+        "description": "Button that creates a group chat"
+    },
+    "chatPickMembers": "Tria almenys dos amics",
+    "@chatPickMembers": {
+        "description": "Hint on the new group screen"
+    },
+    "chatNewMessageFrom": "Missatge nou de {name}",
+    "@chatNewMessageFrom": {
+        "description": "Title of the banner for a new chat message",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "chatImageTooLarge": "Aquesta imatge supera els 8 MB.",
+    "@chatImageTooLarge": {
+        "description": "Shown when a picked chat image is too big"
+    },
+    "chatImageUnsupported": "Només es poden enviar imatges PNG, JPEG, GIF i WebP.",
+    "@chatImageUnsupported": {
+        "description": "Shown when a picked chat image has an unsupported type"
+    },
+    "trackActionViewDetails": "Veure detalls",
+    "achievementsUnlockToasts": "Notificacions de desbloqueig",
+    "@achievementsUnlockToasts": {
+        "description": "Switch that shows a notification when the user unlocks a badge"
+    },
+    "achievementsUnlockToastsSubtitle": "Mostra una notificació quan desbloquegis una insígnia",
+    "@achievementsUnlockToastsSubtitle": {
+        "description": "Subtitle of the unlock notifications switch"
+    },
+    "achievementsUnlockedNotification": "Fita desbloquejada",
+    "@achievementsUnlockedNotification": {
+        "description": "Title of the notification for one newly unlocked badge"
+    },
+    "achievementsUnlockedCount": "{count, plural, one{{count} fita desbloquejada} other{{count} fites desbloquejades}}",
+    "@achievementsUnlockedCount": {
+        "description": "Title of the notification for several badges unlocked at once",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "achievementsUnlockedMore": "+{count} més",
+    "@achievementsUnlockedMore": {
+        "description": "Follows the first few badge names when more were unlocked at once",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "detailSections": "Seccions",
+    "@detailSections": {
+        "description": "Settings tile title for switching Details screen sections on and off"
+    },
+    "detailSectionsDescription": "Tria quines parts de la pantalla de detalls es mostren",
+    "@detailSectionsDescription": {
+        "description": "Settings tile subtitle for the Details screen sections list"
+    },
+    "detailSectionsScreenDescription": "Només es mostren les seccions que pot mostrar l'estil actual de la pantalla de detalls. Si n'amagues una, s'amaga en tots els estils que la tenen.",
+    "@detailSectionsScreenDescription": {
+        "description": "Explanatory text at the top of the Details screen sections list"
+    },
+    "detailSectionGroupHeader": "Capçalera",
+    "@detailSectionGroupHeader": {
+        "description": "Group heading for the title area of the Details screen"
+    },
+    "detailSectionGroupSections": "Seccions",
+    "@detailSectionGroupSections": {
+        "description": "Group heading for the rows, tabs and cards of the Details screen"
+    },
+    "detailSectionGroupPerson": "Pàgines de persones",
+    "@detailSectionGroupPerson": {
+        "description": "Group heading for sections only shown on a person's Details screen"
+    },
+    "detailSectionGroupCollection": "Pàgines de col·leccions",
+    "@detailSectionGroupCollection": {
+        "description": "Group heading for sections only shown on a collection's Details screen"
+    },
+    "detailSectionGroupOther": "Altres",
+    "@detailSectionGroupOther": {
+        "description": "Group heading for Details screen sections that fit no other group"
+    },
+    "detailSectionLogo": "Logotip",
+    "@detailSectionLogo": {
+        "description": "Details screen section: the title logo artwork"
+    },
+    "detailSectionLogoSubtitle": "Mostra el títol com a text quan està desactivat",
+    "@detailSectionLogoSubtitle": {
+        "description": "Subtitle for the logo section switch"
+    },
+    "detailSectionTagline": "Eslogan",
+    "@detailSectionTagline": {
+        "description": "Details screen section: the short tagline under the title"
+    },
+    "detailSectionPoster": "Pòster",
+    "@detailSectionPoster": {
+        "description": "Details screen section: the poster image beside the title"
+    },
+    "detailSectionVersionBadge": "Insígnia de versió",
+    "@detailSectionVersionBadge": {
+        "description": "Details screen section: the badge shown when an item has more than one version"
+    },
+    "detailSectionUpNext": "Següent",
+    "@detailSectionUpNext": {
+        "description": "Details screen section: the next up or next episode card"
+    },
+    "detailSectionLyrics": "Lletres",
+    "@detailSectionLyrics": {
+        "description": "Details screen section: the lyrics panel for songs"
+    },
+    "detailSectionCast": "Repartiment",
+    "@detailSectionCast": {
+        "description": "Details screen section: the cast row, tab or card"
+    },
+    "detailSectionCastSubtitle": "També a les pàgines de col·leccions",
+    "@detailSectionCastSubtitle": {
+        "description": "Subtitle for the cast section switch"
+    },
+    "detailSectionCrew": "Direcció i guió",
+    "@detailSectionCrew": {
+        "description": "Details screen section: directors and writers"
+    },
+    "detailSectionStudios": "Estudis",
+    "@detailSectionStudios": {
+        "description": "Details screen section: studios and networks"
+    },
+    "detailSectionChapters": "Capítols",
+    "@detailSectionChapters": {
+        "description": "Details screen section: chapters"
+    },
+    "detailSectionExtras": "Extres",
+    "@detailSectionExtras": {
+        "description": "Details screen section: trailers, featurettes and other extras"
+    },
+    "detailSectionCollections": "Col·leccions",
+    "@detailSectionCollections": {
+        "description": "Details screen section: the collections an item belongs to"
+    },
+    "detailSectionMoreLikeThis": "Més així",
+    "@detailSectionMoreLikeThis": {
+        "description": "Details screen section: similar items from the library"
+    },
+    "detailSectionMoreLikeThisSubtitle": "També àlbums i artistes similars",
+    "@detailSectionMoreLikeThisSubtitle": {
+        "description": "Subtitle for the More Like This section switch"
+    },
+    "detailSectionMoreEpisodes": "Més episodis",
+    "@detailSectionMoreEpisodes": {
+        "description": "Details screen section: the other episodes of a show on an episode's page"
+    },
+    "detailSectionMoreEpisodesSubtitle": "A les pàgines d'episodis",
+    "@detailSectionMoreEpisodesSubtitle": {
+        "description": "Subtitle for the More episodes section switch"
+    },
+    "detailSectionMediaInfo": "Informació multimèdia",
+    "@detailSectionMediaInfo": {
+        "description": "Details screen section: file, stream and Direct Play details"
+    },
+    "detailSectionMediaInfoSubtitle": "Fitxer, fluxos i comprovació de reproducció nativa",
+    "@detailSectionMediaInfoSubtitle": {
+        "description": "Subtitle for the media info section switch"
+    },
+    "detailSectionSeerrGenresTags": "Gèneres i etiquetes",
+    "@detailSectionSeerrGenresTags": {
+        "description": "Details screen Seerr section: genre and keyword chips"
+    },
+    "detailSectionSeerrStats": "Estadístiques",
+    "@detailSectionSeerrStats": {
+        "description": "Details screen Seerr section: TMDB score, status, budget and revenue"
+    },
+    "detailSectionSeerrRecommendations": "Recomanacions",
+    "@detailSectionSeerrRecommendations": {
+        "description": "Details screen Seerr section: recommended titles"
+    },
+    "detailSectionSeerrSimilar": "Títols similars",
+    "@detailSectionSeerrSimilar": {
+        "description": "Details screen Seerr section: similar titles"
+    },
+    "detailSectionSeerrCollection": "Bàner de la col·lecció",
+    "@detailSectionSeerrCollection": {
+        "description": "Details screen Seerr section: the banner for the collection a movie is part of"
+    },
+    "detailSectionSeerrPersonAppearances": "Aparicions",
+    "@detailSectionSeerrPersonAppearances": {
+        "description": "Details screen Seerr section: a person's appearances"
+    },
+    "detailSectionSeerrPersonCrew": "Crèdits d'equip tècnic",
+    "@detailSectionSeerrPersonCrew": {
+        "description": "Details screen Seerr section: a person's crew credits"
+    },
+    "detailSectionPersonPagesSubtitle": "A les pàgines de persones",
+    "@detailSectionPersonPagesSubtitle": {
+        "description": "Subtitle for Seerr sections only shown on a person's Details screen"
+    },
+    "detailSectionBiography": "Biografia",
+    "@detailSectionBiography": {
+        "description": "Details screen section: a person's biography"
+    },
+    "detailSectionBirthplace": "Lloc de naixement",
+    "@detailSectionBirthplace": {
+        "description": "Details screen section: a person's place of birth"
+    },
+    "detailSectionGuestAppearances": "Aparicions de convidats",
+    "@detailSectionGuestAppearances": {
+        "description": "Details screen section: a person's guest appearances"
+    },
+    "detailSectionMusicVideos": "Vídeos musicals",
+    "@detailSectionMusicVideos": {
+        "description": "Details screen section: a person's music videos"
+    },
+    "detailSectionPlaylistOrder": "Ordre de la llista de reproducció",
+    "@detailSectionPlaylistOrder": {
+        "description": "Details screen section: a collection's playlist order"
+    },
+    "detailSectionBookGenres": "Gèneres de llibres",
+    "@detailSectionBookGenres": {
+        "description": "Details screen section: the genre chips on a book's page"
+    },
+    "detailSectionPhotoExif": "Detalls de la foto",
+    "@detailSectionPhotoExif": {
+        "description": "Details screen section: camera and image details on a photo's page"
+    },
+    "libraryOrder": "Ordre de les biblioteques",
+    "@libraryOrder": {
+        "description": "Title of the settings screen that reorders the user's libraries"
+    },
+    "libraryOrderSubtitle": "Tria l'ordre de les teves biblioteques",
+    "@libraryOrderSubtitle": {
+        "description": "Subtitle of the Library Order entry in the libraries settings"
+    },
+    "libraryOrderDescription": "Les teves biblioteques apareixen en aquest ordre a «La meva biblioteca», a les files d'afegits recentment i a la barra de navegació. L'ordre es desa al teu compte del servidor, de manera que també el fan servir les altres aplicacions on iniciïs la sessió.",
+    "@libraryOrderDescription": {
+        "description": "Explanation shown at the top of the Library Order settings screen"
+    },
+    "libraryOrderTvHint": "Prem esquerra o dreta per moure la biblioteca seleccionada.",
+    "@libraryOrderTvHint": {
+        "description": "Remote control hint on the Library Order settings screen"
+    },
+    "libraryOrderSaveFailed": "No s'ha pogut desar l'ordre de les biblioteques",
+    "@libraryOrderSaveFailed": {
+        "description": "Error shown when saving the library order to the server fails"
+    },
+    "untrustedServerCertificate": "No es confia en el certificat d'aquest servidor. Si és el teu propi servidor i fa servir un certificat autosignat o privat, pots permetre'l aquí.",
+    "@untrustedServerCertificate": {
+        "description": "Shown on the sign-in screens when a server's TLS certificate is rejected, above a button that turns on Allow self-signed certificates"
     }
 }

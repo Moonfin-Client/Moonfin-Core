@@ -82,6 +82,7 @@ void main() {
       bool saved = false,
       bool shuffle = true,
       bool syncPlay = false,
+      bool quickConnect = false,
       Set<BottomNavTab> alsoOnBar = const {},
     }) =>
         resolveHubTiles(
@@ -91,15 +92,18 @@ void main() {
           savedAvailable: saved,
           shuffle: shuffle,
           syncPlay: syncPlay,
+          quickConnect: quickConnect,
           alsoOnBar: alsoOnBar,
         );
 
     test('holds everything offered that isn\'t on the bar', () {
-      expect(tiles(saved: true, syncPlay: true), const [
+      expect(tiles(saved: true, syncPlay: true, quickConnect: true), const [
         BottomNavHubTile.action(BottomNavHubAction.saved),
         BottomNavHubTile.tab(BottomNavTab.genres),
         BottomNavHubTile.action(BottomNavHubAction.shuffle),
         BottomNavHubTile.action(BottomNavHubAction.syncPlay),
+        BottomNavHubTile.action(BottomNavHubAction.quickConnect),
+        BottomNavHubTile.action(BottomNavHubAction.remoteControl),
       ]);
     });
 

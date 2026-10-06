@@ -100,6 +100,14 @@ class SearchViewModel extends ChangeNotifier {
   static const _debounceMs = 600;
   static const _resultLimit = 24;
   static const _globalFetchLimit = 240;
+  // Some servers answer a people search far slower than everything else, so
+  // the rest of the results only wait a moment for it and it's dropped if it
+  // takes too long.
+  static const _peopleGrace = Duration(seconds: 1);
+  static const _peopleTimeout = Duration(seconds: 10);
+
+  // Counts searches, so people that answer late only fill in their own search.
+  int _searchRun = 0;
 
   static List<SearchResultGroup> _bookSearchGroups() {
     final l10n = currentAppLocalizations();
@@ -180,6 +188,7 @@ class SearchViewModel extends ChangeNotifier {
 
   Future<void> _executeSearch(String query) async {
     if (query != _query) return;
+    final run = ++_searchRun;
 
     try {
         final activeGroups = _scopedParentId != null
@@ -190,26 +199,52 @@ class SearchViewModel extends ChangeNotifier {
           ? Future.value(const <GameSearchResult>[])
           : _fetchGameResults(query);
 
-      final groups = _scopedParentId != null
-          ? await Future.wait(activeGroups.map((group) async {
-              final items = await _searchRepository.search(
-                query,
-                includeItemTypes: group.itemTypes,
-                parentId: _scopedParentId,
-                limit: _resultLimit,
-              );
-              return group.copyWith(items: items);
-            }))
+      final (groups, peopleFuture) = _scopedParentId != null
+          ? (
+              await Future.wait(
+                activeGroups.map((group) async {
+                  final items = await _searchRepository.search(
+                    query,
+                    includeItemTypes: group.itemTypes,
+                    parentId: _scopedParentId,
+                    limit: _resultLimit,
+                  );
+                  return group.copyWith(items: items);
+                }),
+              ),
+              Future.value(const <AggregatedItem>[]),
+            )
           : await _buildGroupedGlobalResults(query, activeGroups);
       final seerr = await seerrFuture;
       final games = await gamesFuture;
 
+      // With nothing else to show, the results wait for people instead of
+      // coming up empty.
+      final hasOtherResults =
+          groups.any((g) => g.items.isNotEmpty) ||
+          seerr.isNotEmpty ||
+          games.isNotEmpty;
+      final people = hasOtherResults
+          ? await peopleFuture
+                .then<List<AggregatedItem>?>((found) => found)
+                .timeout(_peopleGrace, onTimeout: () => null)
+          : await peopleFuture;
+
       if (query != _query) return;
 
-      _results = groups.where((g) => g.items.isNotEmpty).toList();
+      _results = _withPeople(groups, people ?? const []);
       _seerrResults = seerr;
       _gameResults = games;
       _state = SearchState.ready;
+      if (people == null) {
+        unawaited(
+          peopleFuture.then((found) {
+            if (found.isEmpty || run != _searchRun || query != _query) return;
+            _results = _withPeople(groups, found);
+            notifyListeners();
+          }),
+        );
+      }
     } catch (e) {
       if (query != _query) return;
       _error = e;
@@ -218,7 +253,10 @@ class SearchViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<List<SearchResultGroup>> _buildGroupedGlobalResults(
+  /// Every group in order with the People group left empty, and the people
+  /// search that fills it.
+  Future<(List<SearchResultGroup>, Future<List<AggregatedItem>>)>
+  _buildGroupedGlobalResults(
     String query,
     List<SearchResultGroup> activeGroups,
   ) async {
@@ -229,7 +267,9 @@ class SearchViewModel extends ChangeNotifier {
         ? {for (final session in sessions) session.server.id: session.server.name}
         : const {};
     final peopleFuture = _searchEachServer(
-      (repository) => repository.searchPeople(query, limit: _resultLimit),
+      (repository) => repository
+          .searchPeople(query, limit: _resultLimit)
+          .timeout(_peopleTimeout),
       label: 'people search',
     ).then(_interleave).catchError((_) => <AggregatedItem>[]);
     final channelsFuture = _channelMatches(query);
@@ -241,13 +281,12 @@ class SearchViewModel extends ChangeNotifier {
       ),
       label: 'search',
     );
-    final people = await peopleFuture;
     final channels = await channelsFuture;
 
     final grouped = <SearchResultGroup>[];
     for (final group in activeGroups) {
       if (group.itemTypes.contains('Person')) {
-        grouped.add(group.copyWith(items: people.take(_resultLimit).toList()));
+        grouped.add(group);
         continue;
       }
       if (group.itemTypes.contains('LiveTvChannel')) {
@@ -261,8 +300,21 @@ class SearchViewModel extends ChangeNotifier {
       grouped.add(group.copyWith(items: matched));
     }
 
-    return grouped;
+    return (grouped, peopleFuture);
   }
+
+  /// The groups that have something to show, with [people] in the People
+  /// group.
+  static List<SearchResultGroup> _withPeople(
+    List<SearchResultGroup> groups,
+    List<AggregatedItem> people,
+  ) => [
+    for (final group in groups)
+      if (group.itemTypes.contains('Person'))
+        group.copyWith(items: people.take(_resultLimit).toList())
+      else
+        group,
+  ].where((g) => g.items.isNotEmpty).toList();
 
   Future<List<List<AggregatedItem>>> _searchEachServer(
     Future<List<AggregatedItem>> Function(SearchRepository repository) search, {
@@ -366,6 +418,8 @@ class SearchViewModel extends ChangeNotifier {
   @override
   void dispose() {
     _debounceTimer?.cancel();
+    // Keeps people that answer after the screen closed from landing on it.
+    _searchRun++;
     super.dispose();
   }
 }

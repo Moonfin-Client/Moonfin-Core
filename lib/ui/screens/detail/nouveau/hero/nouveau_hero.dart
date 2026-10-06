@@ -7,6 +7,7 @@ import '../../../../../data/viewmodels/item_detail_view_model.dart';
 import '../../../../../data/viewmodels/seerr_media_detail_view_model.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../../preference/detail_metadata_layout.dart';
+import '../../../../../preference/detail_section_layout.dart';
 import '../../../../../preference/user_preferences.dart';
 import '../../../../../util/overview_text.dart';
 import '../../../../../util/playback_time_label.dart';
@@ -24,6 +25,9 @@ class NouveauHero extends StatefulWidget {
   final AggregatedItem item;
   final ItemDetailViewModel viewModel;
   final UserPreferences prefs;
+
+  /// A hidden logo falls back to the title text.
+  final DetailSectionVisibility visibility;
   final String? selectedMediaSourceId;
   final ValueChanged<String?> onSelectedMediaSourceChanged;
   final FocusNode? initialFocusNode;
@@ -38,6 +42,7 @@ class NouveauHero extends StatefulWidget {
     required this.item,
     required this.viewModel,
     required this.prefs,
+    this.visibility = DetailSectionVisibility.all,
     required this.selectedMediaSourceId,
     required this.onSelectedMediaSourceChanged,
     required this.initialFocusNode,
@@ -356,7 +361,10 @@ class NouveauHeroState extends State<NouveauHero> {
       letterSpacing: -0.10,
     );
 
-    final logoUrl = logoTag != null && logoId != null
+    final logoUrl =
+        widget.visibility.shows(DetailSection.logo) &&
+            logoTag != null &&
+            logoId != null
         ? viewModel.imageApi.getLogoImageUrl(
             logoId,
             maxWidth: logoMaxWidth.round(),

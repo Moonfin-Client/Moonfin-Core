@@ -59,7 +59,12 @@ class _AppearanceThemeScreenState extends State<AppearanceThemeScreen> {
             return RequestInitialFocus(
               child: ListView(
                 controller: _scrollController,
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.fromLTRB(
+                  20,
+                  20,
+                  20,
+                  20 + MediaQuery.paddingOf(context).bottom,
+                ),
                 children: [
                   _SectionHeader(l10n.customThemeTitle, topPadding: 0),
                   const SizedBox(height: 4),

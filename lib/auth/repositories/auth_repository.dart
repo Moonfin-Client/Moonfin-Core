@@ -135,6 +135,11 @@ class AuthRepository {
   }
 
   LoginState _handleDioError(DioException e) {
+    if (isUntrustedCertificate(e)) {
+      const state = UntrustedCertificate();
+      _stateController.add(state);
+      return state;
+    }
     final statusCode = e.response?.statusCode;
     if (statusCode == 401) {
       final state = ApiClientError(

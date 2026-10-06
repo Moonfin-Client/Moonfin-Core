@@ -209,6 +209,25 @@ class _HomeScreenCategoryScreenState extends State<_HomeScreenCategoryScreen> {
                 ),
             ],
           ),
+
+          if (PlatformDetection.isAppleTV) ...[
+            _SectionHeader(l10n.appleTvHomeScreen),
+            adaptiveListSection(
+              children: [
+                EnumPreferenceTile<TopShelfContent>(
+                  preference: UserPreferences.topShelfContent,
+                  title: l10n.topShelf,
+                  description: l10n.topShelfDescription,
+                  icon: Icons.tv,
+                  labelOf: (v) => switch (v) {
+                    TopShelfContent.latestMedia => l10n.topShelfLatestMedia,
+                    TopShelfContent.appBanner => l10n.topShelfAppBanner,
+                  },
+                  onChanged: TopShelfService().refresh,
+                ),
+              ],
+            ),
+          ],
           const SizedBox(height: 32),
         ],
       ),

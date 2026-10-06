@@ -1096,6 +1096,7 @@ class Media3PlayerBackend extends PlayerBackend {
       'skipSilenceEnabled': _skipSilenceEnabled,
       'preferredAudioLanguage': preferredAudioLanguage,
       'preferredTextLanguage': preferredSubtitleLanguage,
+      'externalSubtitles': payload['externalSubtitles'] ?? const [],
       if (payload['audioTrackOrdinal'] is int)
         'audioTrackOrdinal': payload['audioTrackOrdinal'],
       'selectUndeterminedTextLanguage': false,
@@ -1127,9 +1128,7 @@ class Media3PlayerBackend extends PlayerBackend {
       unawaited(_letterboxCropper.reset());
     } else {
       unawaited(() async {
-        await _letterboxCropper.setEnabled(
-          _prefs.get(UserPreferences.cropBlackBars),
-        );
+        await _configureLetterboxCropper();
         await _letterboxCropper.onSourceOpened(url);
       }());
     }
@@ -1543,11 +1542,17 @@ class Media3PlayerBackend extends PlayerBackend {
   @override
   bool get canRenderBitmapSubtitles => true;
 
+  Future<void> _configureLetterboxCropper() async {
+    final seconds = _prefs.get(UserPreferences.cropBlackBarsIntervalSeconds);
+    await _letterboxCropper.setRecropInterval(Duration(seconds: seconds));
+    await _letterboxCropper.setEnabled(
+      _prefs.get(UserPreferences.cropBlackBars),
+    );
+  }
+
   void _onPreferencesChanged() {
     if (_disposed) return;
-    unawaited(
-      _letterboxCropper.setEnabled(_prefs.get(UserPreferences.cropBlackBars)),
-    );
+    unawaited(_configureLetterboxCropper());
   }
 
   @override
@@ -1635,6 +1640,9 @@ class _Media3LetterboxHost implements Media3LetterboxHost {
 
   @override
   Duration get duration => _backend._duration;
+
+  @override
+  double get playbackSpeed => _backend._playbackSpeed;
 
   @override
   Stream<bool> get playingStream => _backend._playingStream.stream;

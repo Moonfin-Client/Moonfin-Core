@@ -22,6 +22,11 @@ class ServerRepository {
   List<Server> get servers => List.unmodifiable(_servers);
   Stream<ServerAdditionState> get additionState => _stateController.stream;
 
+  /// The most recent server that couldn't be added, for a caller that only
+  /// sees the null result.
+  ServerUnableToConnect? get lastFailure => _lastFailure;
+  ServerUnableToConnect? _lastFailure;
+
   static const _defaultPorts = [8096, 8920];
 
   Future<void> loadStoredServers() async {
@@ -71,6 +76,7 @@ class ServerRepository {
     String? lastErrorType;
     int? lastStatusCode;
     String? lastErrorMessage;
+    String? untrustedCandidate;
 
     for (final candidate in candidates) {
       try {
@@ -121,6 +127,7 @@ class ServerRepository {
         lastErrorType = e.type.name;
         lastStatusCode = status;
         lastErrorMessage = detail;
+        if (isUntrustedCertificate(e)) untrustedCandidate ??= candidate;
       } catch (e) {
         lastCandidate = candidate;
         lastErrorType = 'exception';
@@ -129,15 +136,16 @@ class ServerRepository {
       }
     }
 
-    _stateController.add(
-      ServerUnableToConnect(
-        candidatesTried: candidates,
-        lastCandidate: lastCandidate,
-        lastErrorType: lastErrorType,
-        lastStatusCode: lastStatusCode,
-        lastErrorMessage: lastErrorMessage,
-      ),
+    final failure = ServerUnableToConnect(
+      candidatesTried: candidates,
+      lastCandidate: lastCandidate,
+      lastErrorType: lastErrorType,
+      lastStatusCode: lastStatusCode,
+      lastErrorMessage: lastErrorMessage,
+      untrustedCandidate: untrustedCandidate,
     );
+    _lastFailure = failure;
+    _stateController.add(failure);
     return null;
   }
 

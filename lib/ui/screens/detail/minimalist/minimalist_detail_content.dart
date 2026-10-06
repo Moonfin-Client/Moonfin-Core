@@ -6,6 +6,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../../data/models/aggregated_item.dart';
 import '../../../../data/viewmodels/item_detail_view_model.dart';
+import '../../../../preference/detail_section_layout.dart';
 import '../../../../preference/user_preferences.dart';
 import '../../../widgets/fullscreen_backdrop_switcher.dart';
 import '../../../widgets/logo_view.dart';
@@ -194,7 +195,7 @@ class _MinimalistDetailContentState extends State<MinimalistDetailContent> {
   }
 
   /// The show's own logo where the title would go, falling back to text when
-  /// the server has no logo to give.
+  /// the server has no logo to give or the viewer switched logos off.
   ///
   /// On an episode the logo names the show and the episode's own name sits
   /// under it, so the artwork still says what you're in while the line below
@@ -206,9 +207,13 @@ class _MinimalistDetailContentState extends State<MinimalistDetailContent> {
   ) {
     final isEpisode = item.type == 'Episode';
     final isEpisodeOrSeason = isEpisode || item.type == 'Season';
-    final logoTag =
-        item.logoImageTag ??
-        (isEpisodeOrSeason ? item.seriesLogoImageTag : null);
+    final showLogo = DetailSectionVisibility.of(
+      widget.prefs,
+    ).shows(DetailSection.logo);
+    final logoTag = showLogo
+        ? item.logoImageTag ??
+              (isEpisodeOrSeason ? item.seriesLogoImageTag : null)
+        : null;
     final logoId = logoTag == null
         ? null
         : (item.logoImageTag != null ? item.id : item.seriesId);

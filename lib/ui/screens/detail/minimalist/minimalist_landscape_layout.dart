@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../widgets/bottom_nav/bottom_navbar.dart';
+
 /// TV and desktop: the title and buttons sit low on the left over the artwork,
 /// with the episodes along the bottom. Nothing competes with them for the
 /// upper half, which is where the picture is.
@@ -42,14 +44,21 @@ class MinimalistLandscapeLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
+      bottom: false,
       child: LayoutBuilder(
         builder: (context, constraints) {
+          final bottomInset = bottomContentInset(context);
           final short =
               constraints.hasBoundedHeight &&
-              constraints.maxHeight < _kShortCanvas;
+              constraints.maxHeight - bottomInset < _kShortCanvas;
           final brandingToActions = short ? 16.0 : 26.0;
           final contentToEpisodes = short ? 20.0 : 34.0;
-          final padding = EdgeInsets.fromLTRB(56, short ? 24 : 40, 56, 44);
+          final padding = EdgeInsets.fromLTRB(
+            56,
+            short ? 24 : 40,
+            56,
+            44 + bottomInset,
+          );
 
           // An unbounded column carries its infinity through, which the rail
           // reads as no ceiling at all.

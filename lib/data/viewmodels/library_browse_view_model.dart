@@ -23,6 +23,20 @@ import '../utils/playlist_utils.dart';
 
 enum LibraryBrowseState { loading, ready, error }
 
+/// The filters that hold several values at once, each of which the Sort &
+/// Filter panel can clear on its own.
+enum LibraryFilterGroup {
+  features,
+  quality,
+  source,
+  genres,
+  ratings,
+  tags,
+  years,
+  audioLanguages,
+  subtitleLanguages,
+}
+
 class LibraryBrowseViewModel extends ChangeNotifier {
   final MediaServerClient _client;
   final UserPreferences _prefs;
@@ -1250,6 +1264,61 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     UserPreferences.librarySubtitleLanguageFilters(_prefKey),
   );
 
+  /// The selections a group holds and where they are saved.
+  (Set<Object>, Preference<List<String>>) _filterGroup(
+    LibraryFilterGroup group,
+  ) => switch (group) {
+    LibraryFilterGroup.features => (
+      _featureFilters,
+      UserPreferences.libraryFeatureFilters(_prefKey),
+    ),
+    LibraryFilterGroup.quality => (
+      _videoQualityFilters,
+      UserPreferences.libraryVideoQualityFilters(_prefKey),
+    ),
+    LibraryFilterGroup.source => (
+      _videoSourceFilters,
+      UserPreferences.libraryVideoSourceFilters(_prefKey),
+    ),
+    LibraryFilterGroup.genres => (
+      _genreFilters,
+      UserPreferences.libraryGenreFilters(_prefKey),
+    ),
+    LibraryFilterGroup.ratings => (
+      _officialRatingFilters,
+      UserPreferences.libraryOfficialRatingFilters(_prefKey),
+    ),
+    LibraryFilterGroup.tags => (
+      _tagFilters,
+      UserPreferences.libraryTagFilters(_prefKey),
+    ),
+    LibraryFilterGroup.years => (
+      _yearFilters,
+      UserPreferences.libraryYearFilters(_prefKey),
+    ),
+    LibraryFilterGroup.audioLanguages => (
+      _audioLanguageFilters,
+      UserPreferences.libraryAudioLanguageFilters(_prefKey),
+    ),
+    LibraryFilterGroup.subtitleLanguages => (
+      _subtitleLanguageFilters,
+      UserPreferences.librarySubtitleLanguageFilters(_prefKey),
+    ),
+  };
+
+  Future<void> _resetFilterGroup(LibraryFilterGroup group) {
+    final (values, preference) = _filterGroup(group);
+    values.clear();
+    return _prefs.set(preference, const <String>[]);
+  }
+
+  /// Clears one group and leaves the rest as they are.
+  Future<void> clearFilterGroup(LibraryFilterGroup group) async {
+    if (_filterGroup(group).$1.isEmpty) return;
+    await _resetFilterGroup(group);
+    await load();
+  }
+
   /// Clears every filter at once, which is the only way out of a combination
   /// that matches nothing.
   Future<void> clearFilters() async {
@@ -1257,15 +1326,6 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     _likedFilter = LikedStatusFilter.all;
     _seriesFilter = SeriesStatusFilter.all;
     if (!favoritesOnly) _favoriteFilter = false;
-    _featureFilters.clear();
-    _videoQualityFilters.clear();
-    _videoSourceFilters.clear();
-    _genreFilters.clear();
-    _officialRatingFilters.clear();
-    _tagFilters.clear();
-    _yearFilters.clear();
-    _audioLanguageFilters.clear();
-    _subtitleLanguageFilters.clear();
 
     await Future.wait([
       _prefs.set(
@@ -1282,39 +1342,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
       ),
       if (!favoritesOnly)
         _prefs.set(UserPreferences.libraryFavoriteFilter(_prefKey), false),
-      _prefs.set(
-        UserPreferences.libraryFeatureFilters(_prefKey),
-        const <String>[],
-      ),
-      _prefs.set(
-        UserPreferences.libraryVideoQualityFilters(_prefKey),
-        const <String>[],
-      ),
-      _prefs.set(
-        UserPreferences.libraryVideoSourceFilters(_prefKey),
-        const <String>[],
-      ),
-      _prefs.set(
-        UserPreferences.libraryGenreFilters(_prefKey),
-        const <String>[],
-      ),
-      _prefs.set(
-        UserPreferences.libraryOfficialRatingFilters(_prefKey),
-        const <String>[],
-      ),
-      _prefs.set(UserPreferences.libraryTagFilters(_prefKey), const <String>[]),
-      _prefs.set(
-        UserPreferences.libraryYearFilters(_prefKey),
-        const <String>[],
-      ),
-      _prefs.set(
-        UserPreferences.libraryAudioLanguageFilters(_prefKey),
-        const <String>[],
-      ),
-      _prefs.set(
-        UserPreferences.librarySubtitleLanguageFilters(_prefKey),
-        const <String>[],
-      ),
+      for (final group in LibraryFilterGroup.values) _resetFilterGroup(group),
     ]);
     await load();
   }

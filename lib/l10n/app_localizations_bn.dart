@@ -194,6 +194,9 @@ class AppLocalizationsBn extends AppLocalizations {
   String get spotlightChaptersExtras => 'Chapters and Extras';
 
   @override
+  String get spotlightFileDetails => 'File Details';
+
+  @override
   String get spotlightSimilarRecommendations => 'Similar and Recommendations';
 
   @override
@@ -2088,6 +2091,9 @@ class AppLocalizationsBn extends AppLocalizations {
   String get shortcutMpvStats => 'mpv statistics on or off';
 
   @override
+  String get shortcutRecropBlackBars => 'Recrop black bars';
+
+  @override
   String get shortcutLeaveFullscreenOrStop =>
       'Exit fullscreen, or stop if not fullscreen';
 
@@ -3110,6 +3116,88 @@ class AppLocalizationsBn extends AppLocalizations {
   String get fallingLeaves => 'ঝরে পড়া পাতা';
 
   @override
+  String get seasonalChristmas => 'Christmas';
+
+  @override
+  String get seasonalPetals => 'Spring Petals';
+
+  @override
+  String get seasonalFireflies => 'Fireflies';
+
+  @override
+  String get seasonalHalloween => 'Halloween';
+
+  @override
+  String get seasonalDensity => 'Density';
+
+  @override
+  String get seasonalDensityLight => 'Light';
+
+  @override
+  String get seasonalDensityNormal => 'Normal';
+
+  @override
+  String get seasonalDensityHeavy => 'Heavy';
+
+  @override
+  String get seasonalRow => 'Seasonal Row';
+
+  @override
+  String get seasonalRowDescription =>
+      'Show a row of holiday movies from your library, with Seerr suggestions when available.';
+
+  @override
+  String get seasonalRowSubtitle => 'Seasonal';
+
+  @override
+  String get seasonalRowCountry => 'Country';
+
+  @override
+  String get seasonalRowCountryAuto => 'Automatic';
+
+  @override
+  String get countryUnitedStates => 'United States';
+
+  @override
+  String get countryCanada => 'Canada';
+
+  @override
+  String get seasonalRowCountryOther => 'Other';
+
+  @override
+  String get seasonalRowHolidays => 'Holidays';
+
+  @override
+  String get seasonalRowHolidaysHint => 'Untick a holiday to hide its row.';
+
+  @override
+  String get holidayNewYear => 'New Year\'s';
+
+  @override
+  String get holidayValentines => 'Valentine\'s Day';
+
+  @override
+  String get holidayEaster => 'Easter';
+
+  @override
+  String get holidayPride => 'Pride';
+
+  @override
+  String get holidayHalloween => 'Halloween';
+
+  @override
+  String get holidayThanksgiving => 'Thanksgiving';
+
+  @override
+  String get holidayChristmas => 'Christmas Movies';
+
+  @override
+  String get holidayLunarNewYear => 'Lunar New Year';
+
+  @override
+  String get holidayDiwali => 'Diwali';
+
+  @override
   String get themeMusic => 'থিম সঙ্গীত';
 
   @override
@@ -3193,7 +3281,23 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get settingsCropBlackBarsDescription =>
-      'Detect encoded letterbox bars, crop them, then fill the screen.';
+      'Detect encoded letterbox bars after playback starts, crop them, then fill the screen. Recrop from the player zoom button.';
+
+  @override
+  String get cropBlackBarsRecropInterval => 'Recrop interval';
+
+  @override
+  String get cropBlackBarsOnce => 'Once at start';
+
+  @override
+  String get cropBlackBarsEverySecond => 'Every second';
+
+  @override
+  String get settingsCropBlackBarsIntervalDescription =>
+      'Follow aspect ratio changes during playback.';
+
+  @override
+  String get playerRecroppingBlackBars => 'Recropping black bars';
 
   @override
   String get stretch => 'প্রসারিত';
@@ -3364,6 +3468,139 @@ class AppLocalizationsBn extends AppLocalizations {
   @override
   String get detailMetadataUpcomingEpisodeDateSubtitle =>
       'Uses Sonarr and TMDB to show upcoming release dates';
+
+  @override
+  String get detailSections => 'Sections';
+
+  @override
+  String get detailSectionsDescription =>
+      'Choose which parts of the Details screen to show';
+
+  @override
+  String get detailSectionsScreenDescription =>
+      'Only the sections the current Details screen style can show are listed. Hiding one hides it in every style that has it.';
+
+  @override
+  String get detailSectionGroupHeader => 'Header';
+
+  @override
+  String get detailSectionGroupSections => 'Sections';
+
+  @override
+  String get detailSectionGroupPerson => 'Person pages';
+
+  @override
+  String get detailSectionGroupCollection => 'Collection pages';
+
+  @override
+  String get detailSectionGroupOther => 'Other';
+
+  @override
+  String get detailSectionLogo => 'Logo';
+
+  @override
+  String get detailSectionLogoSubtitle => 'Shows the title as text when off';
+
+  @override
+  String get detailSectionTagline => 'Tagline';
+
+  @override
+  String get detailSectionPoster => 'Poster';
+
+  @override
+  String get detailSectionVersionBadge => 'Version badge';
+
+  @override
+  String get detailSectionUpNext => 'Next Up';
+
+  @override
+  String get detailSectionLyrics => 'Lyrics';
+
+  @override
+  String get detailSectionCast => 'Cast';
+
+  @override
+  String get detailSectionCastSubtitle => 'Also on collection pages';
+
+  @override
+  String get detailSectionCrew => 'Directors & writers';
+
+  @override
+  String get detailSectionStudios => 'Studios';
+
+  @override
+  String get detailSectionChapters => 'Chapters';
+
+  @override
+  String get detailSectionExtras => 'Extras';
+
+  @override
+  String get detailSectionCollections => 'Collections';
+
+  @override
+  String get detailSectionMoreLikeThis => 'More Like This';
+
+  @override
+  String get detailSectionMoreLikeThisSubtitle =>
+      'Also similar albums and artists';
+
+  @override
+  String get detailSectionMoreEpisodes => 'More episodes';
+
+  @override
+  String get detailSectionMoreEpisodesSubtitle => 'On episode pages';
+
+  @override
+  String get detailSectionMediaInfo => 'Media info';
+
+  @override
+  String get detailSectionMediaInfoSubtitle =>
+      'File, streams and Direct Play check';
+
+  @override
+  String get detailSectionSeerrGenresTags => 'Genres & tags';
+
+  @override
+  String get detailSectionSeerrStats => 'Stats';
+
+  @override
+  String get detailSectionSeerrRecommendations => 'Recommendations';
+
+  @override
+  String get detailSectionSeerrSimilar => 'Similar titles';
+
+  @override
+  String get detailSectionSeerrCollection => 'Collection banner';
+
+  @override
+  String get detailSectionSeerrPersonAppearances => 'Appearances';
+
+  @override
+  String get detailSectionSeerrPersonCrew => 'Crew credits';
+
+  @override
+  String get detailSectionPersonPagesSubtitle => 'On person pages';
+
+  @override
+  String get detailSectionBiography => 'Biography';
+
+  @override
+  String get detailSectionBirthplace => 'Birthplace';
+
+  @override
+  String get detailSectionGuestAppearances => 'Guest appearances';
+
+  @override
+  String get detailSectionMusicVideos => 'Music videos';
+
+  @override
+  String get detailSectionPlaylistOrder => 'Playlist order';
+
+  @override
+  String get detailSectionBookGenres => 'Book genres';
+
+  @override
+  String get detailSectionPhotoExif => 'Photo details';
 
   @override
   String upcomingEpisodeNext(String date, int season, int episode) {
@@ -4289,6 +4526,23 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get showInLatestMedia => 'সাম্প্রতিক মিডিয়াতে দেখান';
+
+  @override
+  String get libraryOrder => 'Library Order';
+
+  @override
+  String get libraryOrderSubtitle => 'Choose the order of your libraries';
+
+  @override
+  String get libraryOrderDescription =>
+      'Your libraries appear in this order on My Media, the recently added rows and the navigation bar. The order is saved to your server account, so other apps you sign in to use it too.';
+
+  @override
+  String get libraryOrderTvHint =>
+      'Press left or right to move the highlighted library.';
+
+  @override
+  String get libraryOrderSaveFailed => 'Couldn\'t save the library order';
 
   @override
   String get sourceLibraries => 'উৎস লাইব্রেরি';
@@ -9747,6 +10001,10 @@ class AppLocalizationsBn extends AppLocalizations {
       'সেলফ-সাইনড বা প্রাইভেট-CA TLS সার্টিফিকেট ব্যবহার করা সার্ভারকে বিশ্বাস করুন। শুধু আপনার নিজের নিয়ন্ত্রণে থাকা সার্ভারের জন্য চালু করুন। এটি সব সংযোগের সার্টিফিকেট যাচাই বন্ধ করে দেয়।';
 
   @override
+  String get untrustedServerCertificate =>
+      'This server\'s certificate isn\'t trusted. If it\'s your own server and uses a self-signed or private certificate, you can allow it here.';
+
+  @override
   String get settingsPrivacyAndSafetySection => 'গোপনীয়তা এবং নিরাপত্তা';
 
   @override
@@ -13407,6 +13665,22 @@ class AppLocalizationsBn extends AppLocalizations {
       'How far focus moves for each swipe on the Siri Remote touchpad';
 
   @override
+  String get appleTvHomeScreen => 'Apple TV home screen';
+
+  @override
+  String get topShelf => 'Top Shelf';
+
+  @override
+  String get topShelfDescription =>
+      'What the Apple TV home screen shows above the Moonfin icon when it is selected. This setting stays on this device.';
+
+  @override
+  String get topShelfLatestMedia => 'Latest media';
+
+  @override
+  String get topShelfAppBanner => 'Moonfin banner';
+
+  @override
   String get keepVideoClearOfDynamicIsland =>
       'Keep video clear of the Dynamic Island';
 
@@ -13431,7 +13705,7 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get bottomNavbarTabsDescription =>
-      'Pin up to 3 tabs between Home and You. Everything else is in the You menu.';
+      'Pin up to 3 tabs between Home and You. Everything else is in the bottom navbar hub.';
 
   @override
   String get bottomNavbarTabsAutomatic => 'Automatic';
@@ -13458,7 +13732,7 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get bottomNavbarButtonsNote =>
-      'These decide which tabs you can pin to the bottom bar and what shows in the You menu.';
+      'These decide what shows in the bottom navbar hub and which tabs you can pin to the bottom bar. Tabs already on the bar aren\'t listed here.';
 
   @override
   String get navYou => 'You';

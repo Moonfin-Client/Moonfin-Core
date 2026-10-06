@@ -914,7 +914,7 @@
             }
         }
     },
-    "audiobookCountLabel": "{count, plural, =1{1 аудиокітап} one{{count} аудиокітап} other{{count} аудиокітап}}",
+    "audiobookCountLabel": "{count, plural, one{{count} аудиокітап} other{{count} аудиокітап}}",
     "@audiobookCountLabel": {
         "description": "Subtitle showing number of audiobooks by an author",
         "placeholders": {
@@ -1036,7 +1036,7 @@
     "@publicationDateUnknown": {
         "description": "Placeholder when publication date is unknown"
     },
-    "seasonCount": "{count, plural, =1{1 Маусым} one{{count} Маусым} other{{count} Маусым}}",
+    "seasonCount": "{count, plural, one{{count} Маусым} other{{count} Маусым}}",
     "@seasonCount": {
         "description": "Number of seasons for a series",
         "placeholders": {
@@ -1447,7 +1447,7 @@
             }
         }
     },
-    "trackCount": "{count, plural, =1{1 трек} one{{count} трек} other{{count} трек}}",
+    "trackCount": "{count, plural, one{{count} трек} other{{count} трек}}",
     "@trackCount": {
         "description": "Label showing number of tracks in an album",
         "placeholders": {
@@ -1456,7 +1456,7 @@
             }
         }
     },
-    "chapterCount": "{count, plural, =1{1 тарау} one{{count} тарау} other{{count} тарау}}",
+    "chapterCount": "{count, plural, one{{count} тарау} other{{count} тарау}}",
     "@chapterCount": {
         "description": "Label showing number of chapters in an audiobook",
         "placeholders": {
@@ -2490,7 +2490,7 @@
             }
         }
     },
-    "episodeCount": "{count, plural, =1{1 эпизод} one{{count} эпизод} other{{count} эпизод}}",
+    "episodeCount": "{count, plural, one{{count} эпизод} other{{count} эпизод}}",
     "@episodeCount": {
         "description": "Number of episodes with pluralization",
         "placeholders": {
@@ -7192,7 +7192,7 @@
     "analyticsTopArtists": "Үздік орындаушылар",
     "analyticsTopAuthors": "Үздік авторлар",
     "analyticsTopContributors": "Үздік үлес қосушылар",
-    "analyticsLibrariesCount": "{count, plural, =1{1 Кітапхана} one{{count} Кітапхана} other{{count} Кітапхана}}",
+    "analyticsLibrariesCount": "{count, plural, one{{count} Кітапхана} other{{count} Кітапхана}}",
     "@analyticsLibrariesCount": {
         "placeholders": {
             "count": {
@@ -7494,7 +7494,7 @@
     "@latestAudiobooks": {
         "description": "Row title for recently added audiobooks in the book library"
     },
-    "bookSeriesItemCount": "{count, plural, =1{1 кітап} one{{count} кітап} other{{count} кітап}}",
+    "bookSeriesItemCount": "{count, plural, one{{count} кітап} other{{count} кітап}}",
     "@bookSeriesItemCount": {
         "description": "Subtitle for a book series shelf entry showing how many books it contains",
         "placeholders": {

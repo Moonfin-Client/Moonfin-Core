@@ -100,7 +100,7 @@ class BoundedImageFileService extends FileService {
     final request = http.Request('GET', Uri.parse(url));
     if (headers != null) request.headers.addAll(headers);
     final response = await _client.send(request).timeout(headerTimeout);
-    timing?.headers();
+    timing?.headers(response.statusCode);
     if (response.statusCode != 200 && response.statusCode != 202) {
       // Not modified carries no body, and the cache manager reads no body
       // on any other status either, so the record closes and the slot goes

@@ -7,6 +7,7 @@ import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
 
 import '../diagnostics/server_log_sink.dart';
+import 'insecure_certificates.dart';
 import 'server_user_agent.dart';
 
 /// How many requests may be reaching the server at once.
@@ -36,7 +37,8 @@ void configureServerDio(Dio dio, {Duration? idleTimeout}) {
 
         client.userAgent = serverUserAgent;
 
-        client.badCertificateCallback = (_, _, _) => true;
+        client.badCertificateCallback = (_, _, _) =>
+            gAllowSelfSignedCertificates;
 
         client.idleTimeout = idleTimeout ?? _idleTimeout;
 

@@ -222,7 +222,9 @@ class _DiagnosticsSettingsScreenState extends State<DiagnosticsSettingsScreen> {
               childCount: entries.length,
             ),
           ),
-        const SliverToBoxAdapter(child: SizedBox(height: 24)),
+        SliverToBoxAdapter(
+          child: SizedBox(height: 24 + MediaQuery.paddingOf(context).bottom),
+        ),
       ],
     );
   }

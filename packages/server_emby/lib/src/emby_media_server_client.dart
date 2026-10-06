@@ -164,7 +164,11 @@ class EmbyMediaServerClient extends MediaServerClient {
       EmbyDisplayPreferencesApi(_dio);
 
   @override
-  late final UsersApi usersApi = EmbyUsersApi(_dio, _requireUserId);
+  late final UsersApi usersApi = EmbyUsersApi(
+    _dio,
+    _requireUserId,
+    onConfigurationUpdated: () => userViewsApi.invalidateCache(),
+  );
 
   @override
   late final ClientLogApi clientLogApi = EmbyClientLogApi(_dio);

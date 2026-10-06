@@ -16,6 +16,10 @@ class ServerUnavailable extends LoginState {
   const ServerUnavailable();
 }
 
+class UntrustedCertificate extends LoginState {
+  const UntrustedCertificate();
+}
+
 class VersionNotSupported extends LoginState {
   final Server server;
   const VersionNotSupported({required this.server});

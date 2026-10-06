@@ -11,7 +11,6 @@ import '../data/models/series_track_preference.dart';
 import '../playback/audio_capability_profile.dart';
 import '../util/device_performance.dart';
 import '../util/idiom/app_ui_idiom.dart';
-import '../util/insecure_certificates.dart';
 import '../util/language_matching.dart';
 import '../util/platform_detection.dart';
 import 'home_section_config.dart';
@@ -39,6 +38,68 @@ class UserPreferences extends ChangeNotifier {
     mediaBarModeOff,
   };
 
+  static const seasonalNone = 'none';
+  static const seasonalSnow = 'snow';
+  static const seasonalFireworks = 'fireworks';
+  static const seasonalConfetti = 'confetti';
+  static const seasonalLeaves = 'leaves';
+  static const seasonalChristmas = 'christmas';
+  static const seasonalPetals = 'petals';
+  static const seasonalFireflies = 'fireflies';
+  static const seasonalHalloween = 'halloween';
+  static const seasonalSurpriseValues = <String>{
+    seasonalNone,
+    seasonalSnow,
+    seasonalFireworks,
+    seasonalConfetti,
+    seasonalLeaves,
+    seasonalChristmas,
+    seasonalPetals,
+    seasonalFireflies,
+    seasonalHalloween,
+  };
+
+  // The original Android TV client and older Smart-TV builds sync these names.
+  static const _legacySeasonalSurprise = <String, String>{
+    'winter': seasonalSnow,
+    'fall': seasonalLeaves,
+    'spring': seasonalPetals,
+    'summer': seasonalFireflies,
+  };
+
+  static const seasonalDensityLight = 'light';
+  static const seasonalDensityNormal = 'normal';
+  static const seasonalDensityHeavy = 'heavy';
+  static const seasonalDensityValues = <String>{
+    seasonalDensityLight,
+    seasonalDensityNormal,
+    seasonalDensityHeavy,
+  };
+
+  // The seasonal row follows the viewer's country. Automatic reads it from the device, and
+  // the list only names the countries Moonbase tells apart.
+  static const seasonalRowCountryAuto = 'auto';
+  static const seasonalRowCountryOther = 'other';
+  static const seasonalRowCountryOptions = <String>[
+    seasonalRowCountryAuto,
+    'US',
+    'CA',
+    seasonalRowCountryOther,
+  ];
+
+  /// The holidays Moonbase can build the row for, in the order it tries them.
+  static const seasonalHolidayIds = <String>[
+    'newYear',
+    'valentines',
+    'easter',
+    'pride',
+    'halloween',
+    'thanksgiving',
+    'christmas',
+    'lunarNewYear',
+    'diwali',
+  ];
+
   // Where the bar draws its titles from. Every source still passes through the
   // library, collection, content type and genre filters, and still picks its
   // slides at random out of what comes back.
@@ -57,14 +118,6 @@ class UserPreferences extends ChangeNotifier {
     _enforceMediaQueuingAlwaysOn();
     _seedClockFormatFromSystem();
     _migrateScreensaverPreferences();
-    _syncInsecureCertificateFlag();
-  }
-
-  // Prime the native bad-certificate override with the stored opt-in so the
-  // choice survives restarts. The toggle keeps [gAllowSelfSignedCertificates]
-  // in sync while the app runs; this covers the value at launch.
-  void _syncInsecureCertificateFlag() {
-    gAllowSelfSignedCertificates = get(allowSelfSignedCerts);
   }
 
   // Carry over the pre-rename jellyseerr* preference keys to their seerr* names.
@@ -321,6 +374,9 @@ class UserPreferences extends ChangeNotifier {
     'hiddenDetailMetadataDesktop',
     'hiddenDetailMetadataMobile',
     'hiddenDetailMetadataTv',
+    'hiddenDetailSectionsDesktop',
+    'hiddenDetailSectionsMobile',
+    'hiddenDetailSectionsTv',
     'hiddenOsdButtonsDesktop',
     'hiddenOsdButtonsMobile',
     'hiddenOsdButtonsTv',
@@ -531,6 +587,10 @@ class UserPreferences extends ChangeNotifier {
     'pref_merge_recent_rows_by_type',
     'enable_folder_view',
     'seasonal_surprise',
+    'seasonal_density',
+    'seasonal_row_enabled',
+    'seasonal_row_country',
+    'seasonal_row_hidden_holidays',
     'mediaBarEnabled',
     'mediaBarMode',
     'mediaBarContentType',
@@ -950,6 +1010,45 @@ class UserPreferences extends ChangeNotifier {
     return mediaBarModeMoonfin;
   }
 
+  /// The effect a synced or stored value stands for, or null when this client doesn't know
+  /// the value, so a sync can leave the local choice alone.
+  static String? parseSeasonalSurprise(String? value) {
+    final normalized = (value ?? '').trim().toLowerCase();
+    if (seasonalSurpriseValues.contains(normalized)) return normalized;
+    return _legacySeasonalSurprise[normalized];
+  }
+
+  static String normalizeSeasonalSurprise(String? value) =>
+      parseSeasonalSurprise(value) ?? seasonalNone;
+
+  static String? parseSeasonalDensity(String? value) {
+    final normalized = (value ?? '').trim().toLowerCase();
+    return seasonalDensityValues.contains(normalized) ? normalized : null;
+  }
+
+  static String normalizeSeasonalDensity(String? value) =>
+      parseSeasonalDensity(value) ?? seasonalDensityNormal;
+
+  /// Automatic, Other, or an ISO alpha-2 code upper-cased. Anything else is unknown.
+  static String? parseSeasonalRowCountry(String? value) {
+    final lower = (value ?? '').trim().toLowerCase();
+    if (lower == seasonalRowCountryAuto || lower == seasonalRowCountryOther) {
+      return lower;
+    }
+    return parseCountryCode(value);
+  }
+
+  /// [value] upper-cased when it is a two letter country code, else null.
+  static String? parseCountryCode(String? value) {
+    final trimmed = (value ?? '').trim();
+    final isCode = trimmed.length == 2 &&
+        trimmed.codeUnits.every((c) => (c >= 65 && c <= 90) || (c >= 97 && c <= 122));
+    return isCode ? trimmed.toUpperCase() : null;
+  }
+
+  static Set<String> parseSeasonalRowHiddenHolidays(String value) =>
+      value.split(',').map((h) => h.trim()).where((h) => h.isNotEmpty).toSet();
+
   static bool isMediaBarModeEnabled(String? mode) {
     return normalizeMediaBarMode(mode) != mediaBarModeOff;
   }
@@ -1338,6 +1437,15 @@ class UserPreferences extends ChangeNotifier {
     key: 'pref_siri_remote_swipe_sensitivity',
     defaultValue: SiriRemoteSwipeSensitivity.medium,
     values: SiriRemoteSwipeSensitivity.values,
+  );
+
+  /// What the Apple TV Top Shelf shows above the app icon. The shelf is on the
+  /// Apple TV home screen whoever is signed in, so this belongs to the device
+  /// and is neither synced nor scoped to an account.
+  static final topShelfContent = EnumPreference(
+    key: 'pref_top_shelf_content',
+    defaultValue: TopShelfContent.latestMedia,
+    values: TopShelfContent.values,
   );
 
   static final visualTheme = EnumPreference(
@@ -1963,12 +2071,21 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: false,
   );
 
-  /// One-shot encoded-letterbox crop. libmpv on Linux/Windows; Media3
-  /// (and libmpv if selected) on Android phone and TV. Hidden on iOS,
-  /// macOS, web, and tvOS.
+  /// One-shot encoded-letterbox crop at start. libmpv on Linux/Windows;
+  /// Media3 (and libmpv if selected) on Android phone and TV. Hidden on
+  /// iOS, macOS, web, and tvOS. [cropBlackBarsIntervalSeconds] keeps scanning.
   static final cropBlackBars = Preference(
     key: 'crop_black_bars',
     defaultValue: false,
+  );
+
+  /// Seconds between recrops while [cropBlackBars] is on. `0` is once at
+  /// start. `1` / `5` / `10` keep scanning where playback can afford it.
+  /// 4K software/copy-back decode and decoder-mode switches use one scan to
+  /// avoid frame drops. Repeated scans also stop if they begin dropping frames.
+  static final cropBlackBarsIntervalSeconds = Preference<int>(
+    key: 'crop_black_bars_interval_seconds',
+    defaultValue: 0,
   );
 
   static final desktopScrollWheelAction = EnumPreference(
@@ -2439,6 +2556,18 @@ class UserPreferences extends ChangeNotifier {
     key: 'hiddenDetailMetadataDesktop',
     defaultValue: '',
   );
+  static final hiddenDetailSectionsTv = Preference(
+    key: 'hiddenDetailSectionsTv',
+    defaultValue: '',
+  );
+  static final hiddenDetailSectionsMobile = Preference(
+    key: 'hiddenDetailSectionsMobile',
+    defaultValue: '',
+  );
+  static final hiddenDetailSectionsDesktop = Preference(
+    key: 'hiddenDetailSectionsDesktop',
+    defaultValue: '',
+  );
   static final hiddenOsdButtonsTv = Preference(
     key: 'hiddenOsdButtonsTv',
     defaultValue: '',
@@ -2746,6 +2875,27 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: false,
   );
 
+  /// Every TMDB home section, against the preference that turns it on.
+  static final Map<HomeSectionType, Preference<bool>> tmdbSectionEnabled = {
+    HomeSectionType.tmdbPopularMovies: tmdbPopularMoviesEnabled,
+    HomeSectionType.tmdbTopRatedMovies: tmdbTopRatedMoviesEnabled,
+    HomeSectionType.tmdbNowPlayingMovies: tmdbNowPlayingMoviesEnabled,
+    HomeSectionType.tmdbUpcomingMovies: tmdbUpcomingMoviesEnabled,
+    HomeSectionType.tmdbPopularTv: tmdbPopularTvEnabled,
+    HomeSectionType.tmdbTopRatedTv: tmdbTopRatedTvEnabled,
+    HomeSectionType.tmdbAiringTodayTv: tmdbAiringTodayTvEnabled,
+    HomeSectionType.tmdbOnTheAirTv: tmdbOnTheAirTvEnabled,
+    HomeSectionType.tmdbTrendingMovieDaily: tmdbTrendingMovieDailyEnabled,
+    HomeSectionType.tmdbTrendingMovieWeekly: tmdbTrendingMovieWeeklyEnabled,
+    HomeSectionType.tmdbTrendingTvDaily: tmdbTrendingTvDailyEnabled,
+    HomeSectionType.tmdbTrendingTvWeekly: tmdbTrendingTvWeeklyEnabled,
+    HomeSectionType.tmdbTrendingAllWeekly: tmdbTrendingAllWeeklyEnabled,
+  };
+
+  /// Whether [type] is one of the TMDB sections.
+  static bool isTmdbSectionType(HomeSectionType type) =>
+      tmdbSectionEnabled.containsKey(type);
+
   static final enableRadarrCalendar = Preference(
     key: 'enable_radarr_calendar',
     defaultValue: false,
@@ -3004,7 +3154,28 @@ class UserPreferences extends ChangeNotifier {
 
   static final seasonalSurprise = Preference(
     key: 'seasonal_surprise',
-    defaultValue: 'none',
+    defaultValue: seasonalNone,
+  );
+
+  static final seasonalDensity = Preference(
+    key: 'seasonal_density',
+    defaultValue: seasonalDensityNormal,
+  );
+
+  static final seasonalRowEnabled = Preference(
+    key: 'seasonal_row_enabled',
+    defaultValue: false,
+  );
+
+  static final seasonalRowCountry = Preference(
+    key: 'seasonal_row_country',
+    defaultValue: seasonalRowCountryAuto,
+  );
+
+  /// Holiday ids the viewer switched off, comma separated.
+  static final seasonalRowHiddenHolidays = Preference(
+    key: 'seasonal_row_hidden_holidays',
+    defaultValue: '',
   );
 
   static final loadingAnimationImage = EnumPreference(

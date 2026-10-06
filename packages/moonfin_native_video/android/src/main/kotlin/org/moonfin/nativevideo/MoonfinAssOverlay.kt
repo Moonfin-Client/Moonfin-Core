@@ -8,6 +8,7 @@ import android.graphics.PorterDuffXfermode
 import android.view.View
 import androidx.media3.common.Format
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MimeTypes
 import androidx.media3.common.Player
 import androidx.media3.common.Tracks
 import androidx.media3.common.VideoSize
@@ -217,7 +218,7 @@ class MoonfinAssOverlayView(
 }
 
 /**
- * Wraps ass-media's parser factory so every parse holds the [assHandler]
+ * Wraps ass-media's parser factory so every ASS parse holds the [assHandler]
  * monitor. Track creation, header reads and dialogue reads all run on the
  * loading thread, concurrent with the overlay's render thread.
  */
@@ -232,9 +233,15 @@ class MoonfinAssParserFactory(
     override fun getCueReplacementBehavior(format: Format): Int =
         delegate.getCueReplacementBehavior(format)
 
-    // create() reaches ass.createTrack() and ass.createRender() for an ASS format.
+    // create() reaches ass.createTrack() and ass.createRender() for an ASS
+    // format. No other format touches libass, so those parse without the lock
+    // and a long WebVTT file can't hold up the player callbacks waiting on it.
     override fun create(format: Format): SubtitleParser =
-        synchronized(assHandler) { MoonfinAssParser(delegate.create(format), assHandler) }
+        if (format.sampleMimeType == MimeTypes.TEXT_SSA) {
+            synchronized(assHandler) { MoonfinAssParser(delegate.create(format), assHandler) }
+        } else {
+            delegate.create(format)
+        }
 }
 
 @UnstableApi
@@ -273,7 +280,7 @@ private class MoonfinAssParser(
 
 /**
  * Forwards the player callbacks AssHandler acts on under its own monitor.
- * Those callbacks swap the track and resize the renderer from the playback
+ * Those callbacks swap the track and resize the renderer from the main
  * thread, so they take the same lock the render itself takes.
  */
 @UnstableApi

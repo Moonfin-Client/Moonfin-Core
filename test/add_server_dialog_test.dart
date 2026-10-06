@@ -12,7 +12,9 @@ import 'package:moonfin/ui/widgets/overlay_sheet.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:moonfin/auth/models/server_addition_state.dart';
 import 'package:moonfin/auth/repositories/server_repository.dart';
+import 'package:moonfin/util/insecure_certificates.dart';
 
 class _MockServerRepository extends Mock implements ServerRepository {}
 
@@ -28,10 +30,15 @@ void main() {
     ThemeRegistry.setActiveById(ThemeRegistry.moonfinId);
   });
 
-  tearDown(() => GetIt.instance.reset());
+  tearDown(() async {
+    await GetIt.instance.reset();
+    gAllowSelfSignedCertificates = false;
+  });
 
-  Future<({TextEditingController controller, Future<void> closed})>
-  openDialog(WidgetTester tester) async {
+  Future<({TextEditingController controller, Future<void> closed})> openDialog(
+    WidgetTester tester, {
+    ServerRepository? serverRepo,
+  }) async {
     final controller = TextEditingController(text: 'http://localhos');
     late Future<void> closed;
     await tester.pumpWidget(
@@ -50,7 +57,7 @@ void main() {
                   builder: (ctx) => AddServerDialog(
                     l10n: AppLocalizations.of(ctx),
                     controller: controller,
-                    serverRepo: _MockServerRepository(),
+                    serverRepo: serverRepo ?? _MockServerRepository(),
                   ),
                 );
               },
@@ -105,5 +112,41 @@ void main() {
 
     expect(didClose, isTrue);
     expect(controller.text, 'http://localhos');
+  });
+
+  testWidgets('an untrusted certificate offers to allow self-signed ones', (
+    tester,
+  ) async {
+    final repo = _MockServerRepository();
+    when(() => repo.addServer(any())).thenAnswer((_) async => null);
+    when(() => repo.lastFailure).thenReturn(
+      const ServerUnableToConnect(
+        candidatesTried: ['https://localhos', 'http://localhos'],
+        untrustedCandidate: 'https://localhos',
+      ),
+    );
+    await openDialog(tester, serverRepo: repo);
+
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Connect'));
+    await tester.pumpAndSettle();
+
+    final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+    expect(find.text(l10n.untrustedServerCertificate), findsOneWidget);
+
+    await tester.tap(
+      find.widgetWithText(OutlinedButton, l10n.settingsAllowSelfSignedCerts),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(l10n.enable));
+    await tester.pumpAndSettle();
+
+    expect(gAllowSelfSignedCertificates, isTrue);
+    expect(
+      GetIt.instance<UserPreferences>().get(
+        UserPreferences.allowSelfSignedCerts,
+      ),
+      isTrue,
+    );
+    verify(() => repo.addServer('https://localhos')).called(1);
   });
 }

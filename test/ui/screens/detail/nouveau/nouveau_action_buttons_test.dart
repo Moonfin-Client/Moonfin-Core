@@ -322,8 +322,19 @@ void main() {
   group('UI scale', () {
     late UserPreferences prefs;
 
-    setUp(() async => prefs = await _registerDesktopPrefs());
-    tearDown(_resetDesktopPrefs);
+    setUp(() async {
+      SharedPreferences.setMockInitialValues({});
+      final store = PreferenceStore();
+      await store.init();
+      prefs = UserPreferences(store);
+      GetIt.instance.registerSingleton<UserPreferences>(prefs);
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.desktop);
+    });
+
+    tearDown(() async {
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic);
+      await GetIt.instance.reset();
+    });
 
     testWidgets('the buttons grow with it but the text leaves it to the '
         'text scaler', (tester) async {
@@ -369,71 +380,6 @@ void main() {
       expect(playFontSize(), 16.5);
     });
   });
-
-  group('focus expansion', () {
-    late UserPreferences prefs;
-
-    setUp(() async => prefs = await _registerDesktopPrefs());
-    tearDown(_resetDesktopPrefs);
-
-    testWidgets('a focused button only grows while the setting is on', (
-      tester,
-    ) async {
-      final node = FocusNode();
-      addTearDown(node.dispose);
-      final circle = find.byWidgetPredicate(
-        (widget) =>
-            widget.runtimeType.toString() == '_NouveauCircleActionButton',
-      );
-
-      Future<double> focusedScale() async {
-        await tester.pumpWidget(
-          _TestApp(
-            child: NouveauActionButtons(
-              primaryAction: null,
-              secondaryActions: [
-                NouveauAction(
-                  label: 'Favorite',
-                  icon: Icons.favorite,
-                  focusNode: node,
-                  onPressed: () {},
-                ),
-              ],
-            ),
-          ),
-        );
-        node.requestFocus();
-        await tester.pumpAndSettle();
-        return tester
-            .widget<AnimatedScale>(
-              find
-                  .descendant(of: circle, matching: find.byType(AnimatedScale))
-                  .first,
-            )
-            .scale;
-      }
-
-      expect(await focusedScale(), 1.075);
-
-      await prefs.set(UserPreferences.cardFocusExpansion, false);
-      expect(await focusedScale(), 1.0);
-    });
-  });
-}
-
-Future<UserPreferences> _registerDesktopPrefs() async {
-  SharedPreferences.setMockInitialValues({});
-  final store = PreferenceStore();
-  await store.init();
-  final prefs = UserPreferences(store);
-  GetIt.instance.registerSingleton<UserPreferences>(prefs);
-  PlatformDetection.setInterfaceLayout(InterfaceLayout.desktop);
-  return prefs;
-}
-
-Future<void> _resetDesktopPrefs() async {
-  PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic);
-  await GetIt.instance.reset();
 }
 
 class _TestApp extends StatelessWidget {

@@ -1,0 +1,64 @@
+# yaml-language-server: $schema=https://www.coderabbit.ai/integrations/schema.v2.json
+tone_instructions: >-
+  Most contributors are volunteers. Be direct and friendly, explain why a change
+  matters, and point to the existing code to follow. Use plain American English.
+
+reviews:
+  profile: chill
+  request_changes_workflow: false
+  high_level_summary: true
+  # The summary stays in the walkthrough comment. Writing it into the description
+  # reruns the label workflow, which takes off any of its labels added by hand.
+  high_level_summary_in_walkthrough: true
+  in_progress_fortune: false
+  # label-platform.yml owns the labels.
+  suggested_labels: false
+  auto_review:
+    base_branches:
+      - ".*"
+  finishing_touches:
+    docstrings:
+      enabled: false
+    unit_tests:
+      enabled: false
+  pre_merge_checks:
+    docstrings:
+      mode: "off"
+  path_filters:
+    - "!lib/l10n/app_localizations*.dart"
+    - "!**/*.g.dart"
+    - "!**/pubspec.lock"
+    - "!**/Podfile.lock"
+    - "!web/vendor/**"
+    - "!native/libretro_host/vendor/**"
+    - "!tvos/Frameworks/**"
+    - "!packages/rar_fork/web/unrar.min.js"
+  path_instructions:
+    - path: "**/*.dart"
+      instructions: |
+        Moonfin is one Flutter app that ships on Android phones and tablets, Android TV and Fire TV, iOS, tvOS, macOS, Windows, Linux and the web, and it talks to both Jellyfin and Emby servers.
+        - Shared code has to work against both servers. Server specific behavior belongs in packages/server_jellyfin, packages/server_emby, packages/playback_jellyfin and packages/playback_emby. Flag code outside those packages that only works on one server type.
+        - Every screen has to work with a TV remote. New interactive widgets need a focus node, a visible focus state, and a D-pad path in and out. Flag UI that can only be reached by touch or mouse when it also shows on TV.
+        - To decide whether a FocusNode is a real D-pad target, check `node.context?.mounted == true`. `context != null` stays true after the widget is gone, because detach never clears it.
+        - Server image URLs send `quality=90`, the same `_artworkQuality` that JellyfinImageApi and EmbyImageApi use. Left out, the server encodes at quality 100, about three times the bytes.
+        - Studio logos only come from the Moonfin plugin's TMDB endpoint (`/Moonfin/Tmdb/StudioImage/{id}`). Don't suggest the server's studio image endpoint or a client side TMDB key.
+        - Say Seerr, not Jellyseerr, in code, comments and UI strings.
+        - Live TV logic has to key on item Type TvChannel or a program's ChannelId. A TvChannel item has no ChannelId.
+        - Main playback on macOS, iOS and tvOS runs on AetherEngine (AetherBackend and AppleTvBackend). libmpv through media_kit is main playback only on Windows and Linux, and Android uses Media3. Don't suggest mpv options or mpv.conf fixes for Apple platforms.
+        - A setting that syncs to the server needs all of these: the Preference in lib/preference/user_preferences.dart, its key in `_scopedPreferenceKeys`, a SyncedField in lib/data/services/synced_fields.dart, the server key in `expectedServerKeys` in test/data/synced_fields_test.dart, a leaf in lib/ui/screens/settings/panel/settings_search_index.dart, and a nullable property on MoonfinSettingsProfile in both ports of the Moonfin-Client/Plugin repo. Point out any piece that's missing.
+        - Android sends Back in two orders. On API 33 and newer every Back sends popRoute, on API 32 and older only an unhandled key up does. Changes around DialogBackSuppressor or Back key handling have to hold up on both, since most TV boxes are on the older order.
+        - The repo isn't formatted with the current dart format. Don't suggest running it on existing files, and point out pull requests where reformatting buries the real change.
+    - path: "lib/l10n/*.arb"
+      instructions: |
+        app_en.arb is the template and the only locale edited by hand. The other locales come from Weblate, which pushes straight to main, so hand edits to them in a pull request conflict with it. Ask the author about any change to a non English ARB file. New strings need valid ICU syntax, since a broken plural or select fails gen-l10n and every build.
+    - path: "packages/moonfin_native_video/android/**"
+      instructions: |
+        Media3 audio plays on a headless host owned by Media3Bridge, so Android Auto and lock screen playback work without the app's UI. Never route audio through a mounted view again. Routing decisions belong in Media3SlotPolicy, which has JVM tests, so new routing logic should come with a test there.
+    - path: "test/**"
+      instructions: |
+        - Tests run as Android, so PlatformDetection reports a mobile UI and the bottom navbar is allowed by default. A test meant for a TV or desktop layout calls PlatformDetection.setInterfaceLayout in setUp and resets it to automatic in tearDown.
+        - In testWidgets, create Completers inside the test body or lazily in the fake. One built in setUp completes on the real microtask queue, after the pumps have already returned.
+        - Focus tests should check the row's own node, for example `primaryFocus?.debugLabel`. A `find.ancestor` check on Focus also matches the route scope and passes when nothing is focused.
+
+chat:
+  art: false

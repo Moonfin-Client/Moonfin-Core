@@ -1,28 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:moonfin/data/models/aggregated_item.dart';
 import 'package:moonfin/data/repositories/item_mutation_repository.dart';
 import 'package:moonfin/data/repositories/mdblist_repository.dart';
 import 'package:moonfin/data/repositories/offline_repository.dart';
 import 'package:moonfin/data/repositories/tmdb_repository.dart';
 import 'package:moonfin/data/services/row_data_source.dart';
 import 'package:moonfin/data/services/plugin_sync_service.dart';
+import 'package:moonfin/data/services/seerr/seerr_api_models.dart';
 import 'package:moonfin/data/viewmodels/item_detail_view_model.dart';
+import 'package:moonfin/data/viewmodels/seerr_media_detail_view_model.dart';
 import 'package:moonfin/auth/repositories/user_repository.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
+import 'package:moonfin/preference/detail_section_layout.dart';
 import 'package:moonfin/preference/preference_constants.dart'
     show DetailScreenStyle;
 import 'package:moonfin/preference/seerr_preferences.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/auth/repositories/session_repository.dart';
+import 'package:moonfin/ui/screens/detail/nouveau/chapters/nouveau_chapters_section.dart';
+import 'package:moonfin/ui/screens/detail/nouveau/details/nouveau_details_section.dart';
+import 'package:moonfin/ui/screens/detail/nouveau/discovery/nouveau_discovery_rail.dart';
 import 'package:moonfin/ui/screens/detail/nouveau/hero/nouveau_action_buttons.dart';
 import 'package:moonfin/ui/screens/detail/nouveau/hero/nouveau_hero.dart';
 import 'package:moonfin/ui/screens/detail/nouveau/nouveau_detail_content.dart';
+import 'package:moonfin/ui/screens/detail/nouveau/people/nouveau_people_section.dart';
+import 'package:moonfin/ui/screens/detail/nouveau/person/nouveau_filmography_section.dart';
 import 'package:moonfin/ui/screens/detail/nouveau/person/nouveau_person_content.dart';
+import 'package:moonfin/ui/screens/detail/nouveau/shared/nouveau_segmented_selector.dart';
 import 'package:moonfin/ui/theme/app_theme.dart';
 import 'package:moonfin/ui/widgets/rating_display.dart';
+import 'package:moonfin/ui/widgets/seerr/seerr_item_chips.dart';
+import 'package:moonfin/ui/widgets/seerr/seerr_stats_card.dart';
 import 'package:moonfin/ui/widgets/skeleton/skeleton_detail_screen.dart';
 import 'package:moonfin/ui/widgets/skeleton/skeleton_shimmer.dart';
 import 'package:moonfin/util/platform_detection.dart';
@@ -49,6 +62,56 @@ class _OfflineRepository extends Mock implements OfflineRepository {}
 
 class _QueueService extends Mock implements QueueService {}
 
+class _SeerrViewModel extends Mock implements SeerrMediaDetailViewModel {}
+
+/// A real view model with the lists that need a server, or a Seerr lookup, to
+/// fill handed in directly.
+class _StubbedViewModel extends ItemDetailViewModel {
+  _StubbedViewModel({
+    required super.itemId,
+    required super.client,
+    required super.mutations,
+    required super.mdbListRepository,
+    required super.tmdbRepository,
+  });
+
+  SeerrMediaDetailViewModel? seerrOverride;
+  List<AggregatedItem>? similarOverride;
+  List<AggregatedItem>? filmographyOverride;
+
+  @override
+  SeerrMediaDetailViewModel? get seerr => seerrOverride ?? super.seerr;
+
+  @override
+  List<AggregatedItem> get similar => similarOverride ?? super.similar;
+
+  @override
+  bool get similarInitialLoadComplete =>
+      similarOverride != null || super.similarInitialLoadComplete;
+
+  @override
+  List<AggregatedItem> get filmography =>
+      filmographyOverride ?? super.filmography;
+
+  List<AggregatedItem> _filmographyOf(String type) => [
+    for (final item in filmography)
+      if (item.type == type) item,
+  ];
+
+  @override
+  List<AggregatedItem> get filmographyMovies => _filmographyOf('Movie');
+
+  @override
+  List<AggregatedItem> get filmographySeries => _filmographyOf('Series');
+
+  @override
+  List<AggregatedItem> get filmographyMusicVideos =>
+      _filmographyOf('MusicVideo');
+
+  @override
+  List<AggregatedItem> get filmographyEpisodes => _filmographyOf('Episode');
+}
+
 Future<UserPreferences> _preferences() async {
   SharedPreferences.setMockInitialValues({});
   final store = PreferenceStore();
@@ -61,6 +124,7 @@ void main() {
 
   late _Client client;
   late _ItemsApi itemsApi;
+  late _PluginSync plugin;
   late UserPreferences prefs;
 
   setUp(() async {
@@ -71,7 +135,7 @@ void main() {
     final userLibrary = _UserLibraryApi();
     when(() => userLibrary.supportsNumericUserRatings).thenReturn(false);
 
-    final plugin = _PluginSync();
+    plugin = _PluginSync();
     when(() => plugin.seerrAvailable).thenReturn(false);
     GetIt.instance.registerSingleton<PluginSyncService>(plugin);
     GetIt.instance.registerSingleton<UserPreferences>(prefs);
@@ -121,8 +185,8 @@ void main() {
     'ProviderIds': const {},
   };
 
-  ItemDetailViewModel viewModel(String type, {Map<String, dynamic>? data}) {
-    final vm = ItemDetailViewModel(
+  _StubbedViewModel viewModel(String type, {Map<String, dynamic>? data}) {
+    final vm = _StubbedViewModel(
       itemId: 'item-1',
       client: client,
       mutations: ItemMutationRepository(client),
@@ -140,6 +204,31 @@ void main() {
     return vm;
   }
 
+  Widget content(
+    ItemDetailViewModel vm, {
+    FocusNode? initialFocusNode,
+    Size size = const Size(1200, 2200),
+  }) => MediaQuery(
+    data: MediaQueryData(size: size),
+    child: MaterialApp(
+      theme: AppTheme.buildTheme(ThemeRegistry.active),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: Scaffold(
+        body: NouveauDetailContent(
+          viewModel: vm,
+          prefs: prefs,
+          backdropUrl: ValueNotifier<String?>(null),
+          selectedMediaSourceId: null,
+          initialFocusNode: initialFocusNode,
+          onSelectedMediaSourceChanged: (_) {},
+          actionsExpanded: false,
+          onActionsExpandedChanged: (_) {},
+        ),
+      ),
+    ),
+  );
+
   Future<void> pumpContent(
     WidgetTester tester,
     ItemDetailViewModel vm, {
@@ -150,26 +239,7 @@ void main() {
     await tester.pump();
     await vm.load();
     await tester.pumpWidget(
-      MediaQuery(
-        data: MediaQueryData(size: size),
-        child: MaterialApp(
-          theme: AppTheme.buildTheme(ThemeRegistry.active),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(
-            body: NouveauDetailContent(
-              viewModel: vm,
-              prefs: prefs,
-              backdropUrl: ValueNotifier<String?>(null),
-              selectedMediaSourceId: null,
-              initialFocusNode: initialFocusNode,
-              onSelectedMediaSourceChanged: (_) {},
-              actionsExpanded: false,
-              onActionsExpandedChanged: (_) {},
-            ),
-          ),
-        ),
-      ),
+      content(vm, initialFocusNode: initialFocusNode, size: size),
     );
     await tester.pump(const Duration(milliseconds: 500));
   }
@@ -459,5 +529,350 @@ void main() {
       find.byKey(const ValueKey('nouveau-section-details')),
       findsOneWidget,
     );
+  });
+
+  // The screen rebuilds its content when the hidden list changes, so these
+  // flip the preference and rebuild in place.
+  group('hidden sections', () {
+    const tvSize = Size(1920, 1080);
+
+    late FocusNode play;
+
+    void useTv(WidgetTester tester) {
+      PlatformDetection.setTvMode(true);
+      addTearDown(() => PlatformDetection.setTvMode(false));
+      tester.view.physicalSize = tvSize;
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+      play = FocusNode(debugLabel: 'play');
+      addTearDown(play.dispose);
+    }
+
+    Future<void> hide(
+      WidgetTester tester,
+      ItemDetailViewModel vm,
+      String ids,
+    ) async {
+      await prefs.set(detailSectionLayout.hiddenPreference, ids);
+      await tester.pumpWidget(
+        content(vm, initialFocusNode: play, size: tvSize),
+      );
+      await tester.pump(const Duration(milliseconds: 500));
+    }
+
+    Future<void> press(WidgetTester tester, LogicalKeyboardKey key) async {
+      await tester.sendKeyEvent(key);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+    }
+
+    bool focusIn<T extends Widget>() {
+      final context = FocusManager.instance.primaryFocus?.context;
+      return context?.findAncestorWidgetOfExactType<T>() != null;
+    }
+
+    Future<void> focusPlay(WidgetTester tester) async {
+      play.requestFocus();
+      await tester.pump();
+      expect(play.hasPrimaryFocus, isTrue);
+    }
+
+    // A lookup that landed with nothing the viewer can request or report.
+    _SeerrViewModel seerrWith(SeerrMediaDetailState state) {
+      final seerr = _SeerrViewModel();
+      when(() => seerr.state).thenReturn(state);
+      when(() => seerr.relatedLoadComplete).thenReturn(true);
+      when(() => seerr.canRequest).thenReturn(false);
+      when(() => seerr.canRequest4k).thenReturn(false);
+      when(() => seerr.canRequestAdvanced).thenReturn(false);
+      when(() => seerr.canManageRequests).thenReturn(false);
+      when(() => seerr.canReportIssue).thenReturn(false);
+      return seerr;
+    }
+
+    final actor = {'Name': 'Actor', 'Type': 'Actor', 'Id': 'person-1'};
+    final chapter = {'StartPositionTicks': 1000, 'Name': 'Chapter one'};
+
+    testWidgets('a hidden section leaves the chain and Down skips it', (
+      tester,
+    ) async {
+      useTv(tester);
+      final vm = viewModel(
+        'Movie',
+        data: {
+          ...itemData('Movie', chapters: [chapter], people: [actor]),
+          'Studios': const [
+            {'Name': 'Studio One', 'Id': 'studio-1'},
+          ],
+        },
+      );
+      await pumpContent(tester, vm, initialFocusNode: play, size: tvSize);
+
+      await focusPlay(tester);
+      await press(tester, LogicalKeyboardKey.arrowDown);
+      expect(focusIn<NouveauChaptersSection>(), isTrue);
+
+      await hide(tester, vm, 'chapters');
+      expect(
+        find.byKey(const ValueKey('nouveau-section-chapters')),
+        findsNothing,
+      );
+
+      await focusPlay(tester);
+      await press(tester, LogicalKeyboardKey.arrowDown);
+      expect(focusIn<NouveauPeopleSection>(), isTrue);
+
+      await press(tester, LogicalKeyboardKey.arrowDown);
+      expect(focusIn<NouveauDetailsSection>(), isTrue);
+
+      await press(tester, LogicalKeyboardKey.arrowUp);
+      expect(focusIn<NouveauPeopleSection>(), isTrue);
+
+      await press(tester, LogicalKeyboardKey.arrowUp);
+      expect(play.hasPrimaryFocus, isTrue);
+
+      // Cast was the only thing in the people rail, so it goes as a whole.
+      await hide(tester, vm, 'chapters,cast');
+      expect(
+        find.byKey(const ValueKey('nouveau-section-people')),
+        findsNothing,
+      );
+
+      await focusPlay(tester);
+      await press(tester, LogicalKeyboardKey.arrowDown);
+      expect(focusIn<NouveauDetailsSection>(), isTrue);
+    });
+
+    testWidgets('a details section with every group hidden leaves the chain', (
+      tester,
+    ) async {
+      useTv(tester);
+      final seerr = seerrWith(
+        const SeerrMediaDetailState(
+          movie: SeerrMovieDetails(
+            id: 603,
+            title: 'Movie title',
+            status: 'Released',
+            voteAverage: 8.1,
+            genres: [SeerrGenre(id: 28, name: 'Action')],
+          ),
+          similar: [SeerrDiscoverItem(id: 604, title: 'Sequel')],
+        ),
+      );
+
+      final vm = viewModel(
+        'Movie',
+        data: {
+          ...itemData('Movie', people: [actor]),
+          'Studios': const [
+            {'Name': 'Studio One', 'Id': 'studio-1'},
+          ],
+          'MediaSources': const [
+            {
+              'Id': 'source-1',
+              'Path': '/media/movie.mkv',
+              'Container': 'mkv',
+              'MediaStreams': [
+                {'Type': 'Video', 'Codec': 'hevc'},
+              ],
+            },
+          ],
+        },
+      )..seerrOverride = seerr;
+      await pumpContent(tester, vm, initialFocusNode: play, size: tvSize);
+
+      final details = tester.state<NouveauDetailsSectionState>(
+        find.byType(NouveauDetailsSection),
+      );
+      expect(find.text('Studio One'), findsOneWidget);
+      expect(find.byType(SeerrItemChips), findsOneWidget);
+      expect(find.byType(SeerrStatsCard), findsOneWidget);
+      expect(details.canFocusTop, isTrue);
+
+      // The reading node was mounted for the stats and the file details, and
+      // keeps its context after they go, which used to keep it in the chain.
+      await hide(tester, vm, 'studios,seerrGenresTags,seerrStats,mediaInfo');
+      expect(find.text('Studio One'), findsNothing);
+      expect(find.byType(SeerrItemChips), findsNothing);
+      expect(find.byType(SeerrStatsCard), findsNothing);
+      expect(details.canFocusTop, isFalse);
+
+      await focusPlay(tester);
+      await press(tester, LogicalKeyboardKey.arrowDown);
+      expect(focusIn<NouveauPeopleSection>(), isTrue);
+
+      // The people rail is the last stop now, so Down stays put.
+      await press(tester, LogicalKeyboardKey.arrowDown);
+      expect(focusIn<NouveauPeopleSection>(), isTrue);
+    });
+
+    testWidgets('hidden Seerr recommendations stop stripping the related rail', (
+      tester,
+    ) async {
+      when(() => plugin.seerrAvailable).thenReturn(true);
+
+      AggregatedItem library(int index, {int? tmdb, String? name}) =>
+          AggregatedItem(
+            id: 'similar-$index',
+            serverId: 'server',
+            rawData: {
+              'Id': 'similar-$index',
+              'Name': name ?? 'Similar $index',
+              'Type': 'Movie',
+              'ProductionYear': 2000 + index,
+              'ProviderIds': {'Tmdb': '${tmdb ?? 200 + index}'},
+            },
+          );
+
+      // The first seven are the protected head of the rail. The two after it
+      // are the tail, and one of them is also a Seerr recommendation.
+      final similar = [
+        for (var i = 0; i < 7; i++) library(i),
+        library(7, tmdb: 900, name: 'Shared pick'),
+        library(8),
+      ];
+
+      final seerr = seerrWith(
+        const SeerrMediaDetailState(
+          movie: SeerrMovieDetails(id: 100, title: 'Movie title'),
+          recommendations: [
+            SeerrDiscoverItem(id: 900, mediaType: 'movie', title: 'Shared'),
+            SeerrDiscoverItem(id: 901, mediaType: 'movie', title: 'Both'),
+          ],
+          similar: [
+            SeerrDiscoverItem(id: 901, mediaType: 'movie', title: 'Both'),
+            SeerrDiscoverItem(id: 902, mediaType: 'movie', title: 'Only here'),
+          ],
+        ),
+      );
+
+      final vm =
+          viewModel(
+              'Movie',
+              data: {
+                ...itemData('Movie'),
+                'ProviderIds': const {'Tmdb': '100'},
+              },
+            )
+            ..similarOverride = similar
+            ..seerrOverride = seerr;
+      await pumpContent(tester, vm);
+
+      List<List<String>> rails() => [
+        for (final rail in tester.widgetList<NouveauDiscoveryRail>(
+          find.byType(NouveauDiscoveryRail),
+        ))
+          [for (final item in rail.items) item.id],
+      ];
+
+      final head = [for (var i = 0; i < 7; i++) 'similar-$i'];
+
+      expect(rails(), [
+        [...head, 'similar-8', '902'],
+        ['900', '901'],
+      ]);
+
+      await prefs.set(
+        detailSectionLayout.hiddenPreference,
+        'seerrRecommendations',
+      );
+      await tester.pumpWidget(content(vm));
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(rails(), [
+        [...head, 'similar-7', 'similar-8', '901', '902'],
+      ]);
+    });
+
+    testWidgets('person tabs and the All fallback leave hidden credits out', (
+      tester,
+    ) async {
+      AggregatedItem credit(String id, String type, {String? seriesId}) =>
+          AggregatedItem(
+            id: id,
+            serverId: 'server',
+            rawData: {
+              'Id': id,
+              'Name': 'Credit $id',
+              'Type': type,
+              'SeriesId': ?seriesId,
+            },
+          );
+
+      List<String> tabs() {
+        final selector = tester.widget<NouveauSegmentedSelector<Object?>>(
+          find.byWidgetPredicate((w) => w is NouveauSegmentedSelector),
+        );
+        return [for (final tab in selector.values) (tab as Enum).name];
+      }
+
+      List<String> rail() => [
+        for (final item in tester
+            .widget<NouveauFilmographySection>(
+              find.byType(NouveauFilmographySection),
+            )
+            .items)
+          item.id,
+      ];
+
+      final vm = viewModel(
+        'Person',
+        data: {
+          ...itemData('Person'),
+          'ProductionLocations': const ['Springfield'],
+        },
+      )..filmographyOverride = [
+          credit('movie-1', 'Movie'),
+          credit('guest-1', 'Episode', seriesId: 'someone-elses-show'),
+          credit('video-1', 'MusicVideo'),
+        ];
+      await pumpContent(tester, vm);
+
+      expect(tabs(), ['movies', 'guestAppearances', 'musicVideos']);
+      expect(find.text('A useful detail overview'), findsOneWidget);
+      expect(find.text('Springfield'), findsOneWidget);
+
+      await prefs.set(
+        detailSectionLayout.hiddenPreference,
+        'guestAppearances,musicVideos,biography,birthplace',
+      );
+      await tester.pumpWidget(content(vm));
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(tabs(), ['movies']);
+      expect(find.text('A useful detail overview'), findsNothing);
+      expect(find.text('Springfield'), findsNothing);
+
+      // Without the movie nothing visible is left, and the All tab used to
+      // bring every credit back. It keeps only what no switch covers.
+      vm.filmographyOverride = [
+        credit('guest-1', 'Episode', seriesId: 'someone-elses-show'),
+        credit('video-1', 'MusicVideo'),
+        credit('trailer-1', 'Trailer'),
+      ];
+      await tester.pumpWidget(content(vm));
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(tabs(), ['all']);
+      expect(rail(), ['trailer-1']);
+
+      vm.filmographyOverride = [
+        credit('guest-1', 'Episode', seriesId: 'someone-elses-show'),
+        credit('video-1', 'MusicVideo'),
+      ];
+      await tester.pumpWidget(content(vm));
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(find.byWidgetPredicate((w) => w is NouveauSegmentedSelector),
+          findsNothing);
+      expect(
+        tester
+            .state<NouveauPersonContentState>(
+              find.byType(NouveauPersonContent),
+            )
+            .canFocusTop,
+        isFalse,
+      );
+    });
   });
 }

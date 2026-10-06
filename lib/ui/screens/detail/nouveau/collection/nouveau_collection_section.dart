@@ -7,6 +7,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 import '../../../../../data/models/aggregated_item.dart';
 import '../../../../../data/viewmodels/item_detail_view_model.dart';
 import '../../../../../l10n/app_localizations.dart';
+import '../../../../../preference/detail_section_layout.dart';
 import '../../../../../preference/preference_constants.dart';
 import '../../../../../preference/user_preferences.dart';
 import '../../../../../util/item_watch_state.dart';
@@ -28,6 +29,9 @@ import '../shared/nouveau_spacing.dart';
 class NouveauCollectionSection extends StatefulWidget {
   final ItemDetailViewModel viewModel;
   final UserPreferences prefs;
+
+  /// A hidden playlist order reads as an empty playlist.
+  final DetailSectionVisibility visibility;
   final GlobalKey<DetailActionButtonsState> actionButtonsKey;
   final bool Function()? onNavigateUp;
   final bool Function()? onNavigateDown;
@@ -37,6 +41,7 @@ class NouveauCollectionSection extends StatefulWidget {
     super.key,
     required this.viewModel,
     required this.prefs,
+    this.visibility = DetailSectionVisibility.all,
     required this.actionButtonsKey,
     this.onNavigateUp,
     this.onNavigateDown,
@@ -101,6 +106,10 @@ class NouveauCollectionSectionState
   }
 
   List<AggregatedItem> get _playlistItems {
+    if (!widget.visibility.shows(DetailSection.playlistOrder)) {
+      return const [];
+    }
+
     final live = _vm.playlistItems;
 
     if (live.isNotEmpty) {
@@ -109,6 +118,12 @@ class NouveauCollectionSectionState
 
     return _stablePlaylistItems;
   }
+
+  // The node keeps its last context once the playlist rail is gone, so ask
+  // whether that element is still mounted.
+  bool get _sortFocusable =>
+      _sortFocusNode.canRequestFocus &&
+      (_sortFocusNode.context?.mounted ?? false);
 
   bool get _navbarIsLeft =>
       widget.prefs.get(UserPreferences.navbarPosition) == NavbarPosition.left;
@@ -274,7 +289,7 @@ class NouveauCollectionSectionState
       return true;
     }
 
-    if (_playlistItems.isNotEmpty && _sortFocusNode.canRequestFocus) {
+    if (_playlistItems.isNotEmpty && _sortFocusable) {
       return true;
     }
 
@@ -292,7 +307,7 @@ class NouveauCollectionSectionState
       return true;
     }
 
-    if (_playlistItems.isNotEmpty && _sortFocusNode.canRequestFocus) {
+    if (_playlistItems.isNotEmpty && _sortFocusable) {
       _sortFocusNode.requestFocus();
 
       _revealPlaylistSection();
@@ -389,7 +404,7 @@ class NouveauCollectionSectionState
       return widget.onNavigateUp?.call() ?? false;
     }
 
-    if (_playlistItems.isNotEmpty && _sortFocusNode.canRequestFocus) {
+    if (_playlistItems.isNotEmpty && _sortFocusable) {
       _sortFocusNode.requestFocus();
 
       _revealPlaylistSection();
@@ -412,7 +427,7 @@ class NouveauCollectionSectionState
 
   bool _handlePlaylistArtworkVerticalNavigation(bool isUp) {
     if (isUp) {
-      if (_sortFocusNode.canRequestFocus) {
+      if (_sortFocusable) {
         _sortFocusNode.requestFocus();
 
         _revealPlaylistSection();
@@ -540,7 +555,14 @@ class NouveauCollectionSectionState
   }
 
   void _openItem(BuildContext context, AggregatedItem item) {
-    context.push(Destinations.item(item.id, serverId: item.serverId));
+    context.push(
+      Destinations.itemOrPhoto(
+        item.id,
+        serverId: item.serverId,
+        type: item.type,
+        channelId: item.channelId,
+      ),
+    );
   }
 
   void _playItem(BuildContext context, AggregatedItem item) {

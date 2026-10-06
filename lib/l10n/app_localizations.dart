@@ -562,6 +562,12 @@ abstract class AppLocalizations {
   /// **'Chapters and Extras'**
   String get spotlightChaptersExtras;
 
+  /// Title of the spotlight summary card that opens the file details modal
+  ///
+  /// In en, this message translates to:
+  /// **'File Details'**
+  String get spotlightFileDetails;
+
   /// Title of the spotlight summary card that opens the similar titles and recommendations modal
   ///
   /// In en, this message translates to:
@@ -3628,6 +3634,12 @@ abstract class AppLocalizations {
   /// **'mpv statistics on or off'**
   String get shortcutMpvStats;
 
+  /// Player shortcut to run letterbox crop detection now
+  ///
+  /// In en, this message translates to:
+  /// **'Recrop black bars'**
+  String get shortcutRecropBlackBars;
+
   /// What Esc does in the player
   ///
   /// In en, this message translates to:
@@ -5422,6 +5434,168 @@ abstract class AppLocalizations {
   /// **'Falling Leaves'**
   String get fallingLeaves;
 
+  /// Seasonal effect: snow with falling baubles and stars
+  ///
+  /// In en, this message translates to:
+  /// **'Christmas'**
+  String get seasonalChristmas;
+
+  /// Seasonal effect: falling cherry blossoms and petals with bees flying by
+  ///
+  /// In en, this message translates to:
+  /// **'Spring Petals'**
+  String get seasonalPetals;
+
+  /// Seasonal effect: glowing fireflies for summer
+  ///
+  /// In en, this message translates to:
+  /// **'Fireflies'**
+  String get seasonalFireflies;
+
+  /// Seasonal effect: bats, ghosts, candy and orange and purple leaves
+  ///
+  /// In en, this message translates to:
+  /// **'Halloween'**
+  String get seasonalHalloween;
+
+  /// Setting for how many seasonal effect particles are on screen at once
+  ///
+  /// In en, this message translates to:
+  /// **'Density'**
+  String get seasonalDensity;
+
+  /// Seasonal effect density: fewest particles
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get seasonalDensityLight;
+
+  /// Seasonal effect density: the default amount
+  ///
+  /// In en, this message translates to:
+  /// **'Normal'**
+  String get seasonalDensityNormal;
+
+  /// Seasonal effect density: most particles
+  ///
+  /// In en, this message translates to:
+  /// **'Heavy'**
+  String get seasonalDensityHeavy;
+
+  /// Name of the Home row that shows holiday movies
+  ///
+  /// In en, this message translates to:
+  /// **'Seasonal Row'**
+  String get seasonalRow;
+
+  /// Explains the seasonal Home row setting
+  ///
+  /// In en, this message translates to:
+  /// **'Show a row of holiday movies from your library, with Seerr suggestions when available.'**
+  String get seasonalRowDescription;
+
+  /// Source label shown under the seasonal row's title
+  ///
+  /// In en, this message translates to:
+  /// **'Seasonal'**
+  String get seasonalRowSubtitle;
+
+  /// Setting for which country's holidays the seasonal row follows
+  ///
+  /// In en, this message translates to:
+  /// **'Country'**
+  String get seasonalRowCountry;
+
+  /// Country option that reads the country from the device
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic'**
+  String get seasonalRowCountryAuto;
+
+  /// Country name
+  ///
+  /// In en, this message translates to:
+  /// **'United States'**
+  String get countryUnitedStates;
+
+  /// Country name
+  ///
+  /// In en, this message translates to:
+  /// **'Canada'**
+  String get countryCanada;
+
+  /// Country option for a country the seasonal row does not list
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get seasonalRowCountryOther;
+
+  /// Heading for the list of holidays the seasonal row can show
+  ///
+  /// In en, this message translates to:
+  /// **'Holidays'**
+  String get seasonalRowHolidays;
+
+  /// Hint under the holiday checklist
+  ///
+  /// In en, this message translates to:
+  /// **'Untick a holiday to hide its row.'**
+  String get seasonalRowHolidaysHint;
+
+  /// Seasonal row title for New Year's
+  ///
+  /// In en, this message translates to:
+  /// **'New Year\'s'**
+  String get holidayNewYear;
+
+  /// Seasonal row title for Valentine's Day
+  ///
+  /// In en, this message translates to:
+  /// **'Valentine\'s Day'**
+  String get holidayValentines;
+
+  /// Seasonal row title for Easter
+  ///
+  /// In en, this message translates to:
+  /// **'Easter'**
+  String get holidayEaster;
+
+  /// Seasonal row title for Pride month
+  ///
+  /// In en, this message translates to:
+  /// **'Pride'**
+  String get holidayPride;
+
+  /// Seasonal row title for Halloween
+  ///
+  /// In en, this message translates to:
+  /// **'Halloween'**
+  String get holidayHalloween;
+
+  /// Seasonal row title for Thanksgiving
+  ///
+  /// In en, this message translates to:
+  /// **'Thanksgiving'**
+  String get holidayThanksgiving;
+
+  /// Seasonal row title for Christmas
+  ///
+  /// In en, this message translates to:
+  /// **'Christmas Movies'**
+  String get holidayChristmas;
+
+  /// Seasonal row title for Lunar New Year
+  ///
+  /// In en, this message translates to:
+  /// **'Lunar New Year'**
+  String get holidayLunarNewYear;
+
+  /// Seasonal row title for Diwali
+  ///
+  /// In en, this message translates to:
+  /// **'Diwali'**
+  String get holidayDiwali;
+
   /// Setting for theme music
   ///
   /// In en, this message translates to:
@@ -5575,8 +5749,38 @@ abstract class AppLocalizations {
   /// Description for the crop black bars playback setting
   ///
   /// In en, this message translates to:
-  /// **'Detect encoded letterbox bars, crop them, then fill the screen.'**
+  /// **'Detect encoded letterbox bars after playback starts, crop them, then fill the screen. Recrop from the player zoom button.'**
   String get settingsCropBlackBarsDescription;
+
+  /// Setting for how often to re-detect encoded letterbox bars
+  ///
+  /// In en, this message translates to:
+  /// **'Recrop interval'**
+  String get cropBlackBarsRecropInterval;
+
+  /// Letterbox recrop interval: detect once after playback starts
+  ///
+  /// In en, this message translates to:
+  /// **'Once at start'**
+  String get cropBlackBarsOnce;
+
+  /// Letterbox recrop interval: scan about once a second
+  ///
+  /// In en, this message translates to:
+  /// **'Every second'**
+  String get cropBlackBarsEverySecond;
+
+  /// Description for the letterbox recrop-interval setting
+  ///
+  /// In en, this message translates to:
+  /// **'Follow aspect ratio changes during playback.'**
+  String get settingsCropBlackBarsIntervalDescription;
+
+  /// Toast when the player re-runs letterbox crop detection
+  ///
+  /// In en, this message translates to:
+  /// **'Recropping black bars'**
+  String get playerRecroppingBlackBars;
 
   /// Zoom mode: stretch
   ///
@@ -5883,6 +6087,264 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Uses Sonarr and TMDB to show upcoming release dates'**
   String get detailMetadataUpcomingEpisodeDateSubtitle;
+
+  /// Settings tile title for switching Details screen sections on and off
+  ///
+  /// In en, this message translates to:
+  /// **'Sections'**
+  String get detailSections;
+
+  /// Settings tile subtitle for the Details screen sections list
+  ///
+  /// In en, this message translates to:
+  /// **'Choose which parts of the Details screen to show'**
+  String get detailSectionsDescription;
+
+  /// Explanatory text at the top of the Details screen sections list
+  ///
+  /// In en, this message translates to:
+  /// **'Only the sections the current Details screen style can show are listed. Hiding one hides it in every style that has it.'**
+  String get detailSectionsScreenDescription;
+
+  /// Group heading for the title area of the Details screen
+  ///
+  /// In en, this message translates to:
+  /// **'Header'**
+  String get detailSectionGroupHeader;
+
+  /// Group heading for the rows, tabs and cards of the Details screen
+  ///
+  /// In en, this message translates to:
+  /// **'Sections'**
+  String get detailSectionGroupSections;
+
+  /// Group heading for sections only shown on a person's Details screen
+  ///
+  /// In en, this message translates to:
+  /// **'Person pages'**
+  String get detailSectionGroupPerson;
+
+  /// Group heading for sections only shown on a collection's Details screen
+  ///
+  /// In en, this message translates to:
+  /// **'Collection pages'**
+  String get detailSectionGroupCollection;
+
+  /// Group heading for Details screen sections that fit no other group
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get detailSectionGroupOther;
+
+  /// Details screen section: the title logo artwork
+  ///
+  /// In en, this message translates to:
+  /// **'Logo'**
+  String get detailSectionLogo;
+
+  /// Subtitle for the logo section switch
+  ///
+  /// In en, this message translates to:
+  /// **'Shows the title as text when off'**
+  String get detailSectionLogoSubtitle;
+
+  /// Details screen section: the short tagline under the title
+  ///
+  /// In en, this message translates to:
+  /// **'Tagline'**
+  String get detailSectionTagline;
+
+  /// Details screen section: the poster image beside the title
+  ///
+  /// In en, this message translates to:
+  /// **'Poster'**
+  String get detailSectionPoster;
+
+  /// Details screen section: the badge shown when an item has more than one version
+  ///
+  /// In en, this message translates to:
+  /// **'Version badge'**
+  String get detailSectionVersionBadge;
+
+  /// Details screen section: the next up or next episode card
+  ///
+  /// In en, this message translates to:
+  /// **'Next Up'**
+  String get detailSectionUpNext;
+
+  /// Details screen section: the lyrics panel for songs
+  ///
+  /// In en, this message translates to:
+  /// **'Lyrics'**
+  String get detailSectionLyrics;
+
+  /// Details screen section: the cast row, tab or card
+  ///
+  /// In en, this message translates to:
+  /// **'Cast'**
+  String get detailSectionCast;
+
+  /// Subtitle for the cast section switch
+  ///
+  /// In en, this message translates to:
+  /// **'Also on collection pages'**
+  String get detailSectionCastSubtitle;
+
+  /// Details screen section: directors and writers
+  ///
+  /// In en, this message translates to:
+  /// **'Directors & writers'**
+  String get detailSectionCrew;
+
+  /// Details screen section: studios and networks
+  ///
+  /// In en, this message translates to:
+  /// **'Studios'**
+  String get detailSectionStudios;
+
+  /// Details screen section: chapters
+  ///
+  /// In en, this message translates to:
+  /// **'Chapters'**
+  String get detailSectionChapters;
+
+  /// Details screen section: trailers, featurettes and other extras
+  ///
+  /// In en, this message translates to:
+  /// **'Extras'**
+  String get detailSectionExtras;
+
+  /// Details screen section: the collections an item belongs to
+  ///
+  /// In en, this message translates to:
+  /// **'Collections'**
+  String get detailSectionCollections;
+
+  /// Details screen section: similar items from the library
+  ///
+  /// In en, this message translates to:
+  /// **'More Like This'**
+  String get detailSectionMoreLikeThis;
+
+  /// Subtitle for the More Like This section switch
+  ///
+  /// In en, this message translates to:
+  /// **'Also similar albums and artists'**
+  String get detailSectionMoreLikeThisSubtitle;
+
+  /// Details screen section: the other episodes of a show on an episode's page
+  ///
+  /// In en, this message translates to:
+  /// **'More episodes'**
+  String get detailSectionMoreEpisodes;
+
+  /// Subtitle for the More episodes section switch
+  ///
+  /// In en, this message translates to:
+  /// **'On episode pages'**
+  String get detailSectionMoreEpisodesSubtitle;
+
+  /// Details screen section: file, stream and Direct Play details
+  ///
+  /// In en, this message translates to:
+  /// **'Media info'**
+  String get detailSectionMediaInfo;
+
+  /// Subtitle for the media info section switch
+  ///
+  /// In en, this message translates to:
+  /// **'File, streams and Direct Play check'**
+  String get detailSectionMediaInfoSubtitle;
+
+  /// Details screen Seerr section: genre and keyword chips
+  ///
+  /// In en, this message translates to:
+  /// **'Genres & tags'**
+  String get detailSectionSeerrGenresTags;
+
+  /// Details screen Seerr section: TMDB score, status, budget and revenue
+  ///
+  /// In en, this message translates to:
+  /// **'Stats'**
+  String get detailSectionSeerrStats;
+
+  /// Details screen Seerr section: recommended titles
+  ///
+  /// In en, this message translates to:
+  /// **'Recommendations'**
+  String get detailSectionSeerrRecommendations;
+
+  /// Details screen Seerr section: similar titles
+  ///
+  /// In en, this message translates to:
+  /// **'Similar titles'**
+  String get detailSectionSeerrSimilar;
+
+  /// Details screen Seerr section: the banner for the collection a movie is part of
+  ///
+  /// In en, this message translates to:
+  /// **'Collection banner'**
+  String get detailSectionSeerrCollection;
+
+  /// Details screen Seerr section: a person's appearances
+  ///
+  /// In en, this message translates to:
+  /// **'Appearances'**
+  String get detailSectionSeerrPersonAppearances;
+
+  /// Details screen Seerr section: a person's crew credits
+  ///
+  /// In en, this message translates to:
+  /// **'Crew credits'**
+  String get detailSectionSeerrPersonCrew;
+
+  /// Subtitle for Seerr sections only shown on a person's Details screen
+  ///
+  /// In en, this message translates to:
+  /// **'On person pages'**
+  String get detailSectionPersonPagesSubtitle;
+
+  /// Details screen section: a person's biography
+  ///
+  /// In en, this message translates to:
+  /// **'Biography'**
+  String get detailSectionBiography;
+
+  /// Details screen section: a person's place of birth
+  ///
+  /// In en, this message translates to:
+  /// **'Birthplace'**
+  String get detailSectionBirthplace;
+
+  /// Details screen section: a person's guest appearances
+  ///
+  /// In en, this message translates to:
+  /// **'Guest appearances'**
+  String get detailSectionGuestAppearances;
+
+  /// Details screen section: a person's music videos
+  ///
+  /// In en, this message translates to:
+  /// **'Music videos'**
+  String get detailSectionMusicVideos;
+
+  /// Details screen section: a collection's playlist order
+  ///
+  /// In en, this message translates to:
+  /// **'Playlist order'**
+  String get detailSectionPlaylistOrder;
+
+  /// Details screen section: the genre chips on a book's page
+  ///
+  /// In en, this message translates to:
+  /// **'Book genres'**
+  String get detailSectionBookGenres;
+
+  /// Details screen section: camera and image details on a photo's page
+  ///
+  /// In en, this message translates to:
+  /// **'Photo details'**
+  String get detailSectionPhotoExif;
 
   /// Formatted badge text for an upcoming episode release date
   ///
@@ -7569,6 +8031,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Show in recently added/released media'**
   String get showInLatestMedia;
+
+  /// Title of the settings screen that reorders the user's libraries
+  ///
+  /// In en, this message translates to:
+  /// **'Library Order'**
+  String get libraryOrder;
+
+  /// Subtitle of the Library Order entry in the libraries settings
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the order of your libraries'**
+  String get libraryOrderSubtitle;
+
+  /// Explanation shown at the top of the Library Order settings screen
+  ///
+  /// In en, this message translates to:
+  /// **'Your libraries appear in this order on My Media, the recently added rows and the navigation bar. The order is saved to your server account, so other apps you sign in to use it too.'**
+  String get libraryOrderDescription;
+
+  /// Remote control hint on the Library Order settings screen
+  ///
+  /// In en, this message translates to:
+  /// **'Press left or right to move the highlighted library.'**
+  String get libraryOrderTvHint;
+
+  /// Error shown when saving the library order to the server fails
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save the library order'**
+  String get libraryOrderSaveFailed;
 
   /// Setting for source libraries
   ///
@@ -17260,6 +17752,12 @@ abstract class AppLocalizations {
   /// **'Trust servers using self-signed or private-CA TLS certificates. Only enable for servers you control. This disables certificate validation for all connections.'**
   String get settingsAllowSelfSignedCertsSubtitle;
 
+  /// Shown on the sign-in screens when a server's TLS certificate is rejected, above a button that turns on Allow self-signed certificates
+  ///
+  /// In en, this message translates to:
+  /// **'This server\'s certificate isn\'t trusted. If it\'s your own server and uses a self-signed or private certificate, you can allow it here.'**
+  String get untrustedServerCertificate;
+
   /// No description provided for @settingsPrivacyAndSafetySection.
   ///
   /// In en, this message translates to:
@@ -23471,6 +23969,36 @@ abstract class AppLocalizations {
   /// **'How far focus moves for each swipe on the Siri Remote touchpad'**
   String get siriRemoteSwipeSensitivityDescription;
 
+  /// Section header in Home Screen settings for options that affect the tvOS home screen outside the app
+  ///
+  /// In en, this message translates to:
+  /// **'Apple TV home screen'**
+  String get appleTvHomeScreen;
+
+  /// Apple TV settings label for what the tvOS home screen shows above the Moonfin icon. Top Shelf is Apple's name for that area
+  ///
+  /// In en, this message translates to:
+  /// **'Top Shelf'**
+  String get topShelf;
+
+  /// Apple TV settings subtitle for the Top Shelf option
+  ///
+  /// In en, this message translates to:
+  /// **'What the Apple TV home screen shows above the Moonfin icon when it is selected. This setting stays on this device.'**
+  String get topShelfDescription;
+
+  /// Top Shelf option that shows a carousel of the newest items from the home screen's Latest rows
+  ///
+  /// In en, this message translates to:
+  /// **'Latest media'**
+  String get topShelfLatestMedia;
+
+  /// Top Shelf option that shows only the static Moonfin logo banner, nothing from the library
+  ///
+  /// In en, this message translates to:
+  /// **'Moonfin banner'**
+  String get topShelfAppBanner;
+
   /// iPhone playback setting that holds the picture back from the camera housing in landscape
   ///
   /// In en, this message translates to:
@@ -23516,7 +24044,7 @@ abstract class AppLocalizations {
   /// Explains the bottom bar tabs screen
   ///
   /// In en, this message translates to:
-  /// **'Pin up to 3 tabs between Home and You. Everything else is in the You menu.'**
+  /// **'Pin up to 3 tabs between Home and You. Everything else is in the bottom navbar hub.'**
   String get bottomNavbarTabsDescription;
 
   /// Shown when the bottom bar tabs are picked from the navigation button settings
@@ -23564,7 +24092,7 @@ abstract class AppLocalizations {
   /// Note under the navigation buttons section while the bottom bar is in use
   ///
   /// In en, this message translates to:
-  /// **'These decide which tabs you can pin to the bottom bar and what shows in the You menu.'**
+  /// **'These decide what shows in the bottom navbar hub and which tabs you can pin to the bottom bar. Tabs already on the bar aren\'t listed here.'**
   String get bottomNavbarButtonsNote;
 
   /// Bottom bar tab that opens the user's own menu with their profile, extra destinations and settings

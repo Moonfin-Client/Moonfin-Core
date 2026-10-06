@@ -1,11 +1,11 @@
 name: moonfin
 description: "Moonfin - Jellyfin & Emby media client for mobile, tablet, and desktop"
 publish_to: 'none'
-version: 2.6.0+30000153
+version: 2.7.0+30000154
 
 moonfin:
-  android_tv_version: 2.6.0
-  android_tv_build_number: 2000019
+  android_tv_version: 2.7.0
+  android_tv_build_number: 2000021
   beta: false
   beta_number: 1
 
@@ -46,6 +46,8 @@ dependencies:
   sqlite3: ^2.7.0
 
   # Media Playback (Android, desktop and web. Apple runs on AetherEngine)
+  # mpv_frame_sampler_native.dart imports media_kit's NativeLibrary and libmpv
+  # bindings from src/, so check that file when moving this pin.
   media_kit: 1.2.6
   media_kit_video: 2.0.1
   # media_kit_libs_video would pull in the Apple libs packages, and
@@ -72,6 +74,8 @@ dependencies:
   # client of its own. Keep in step with what flutter_cache_manager resolves.
   http: ^1.6.0
   flutter_svg: ^2.2.1
+  # Parses the seasonal effects' artwork into paths for the sprite atlas.
+  path_parsing: ^1.1.0
 
   # Crypto
   crypto: ^3.0.6
@@ -308,11 +312,14 @@ flutter:
       fonts:
         - asset: assets/fonts/PressStart2P-Regular.ttf
 
+# The identity has to match Partner Center's Product identity page or the Store
+# rejects the upload.
 msix_config:
   display_name: Moonfin
   publisher_display_name: Moonfin
-  identity_name: com.moonfin.app
-  msix_version: 2.6.0.0
+  identity_name: Moonfin.Moonfin
+  publisher: CN=4E670673-D47F-4792-94F7-65B4918F6E4C
   logo_path: assets/icons/app_icon.png
-  capabilities: internetClient, internetClientServer
+  capabilities: internetClient, internetClientServer, privateNetworkClientServer
   languages: en-us
+  protocol_activation: moonfin

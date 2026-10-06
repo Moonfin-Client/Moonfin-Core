@@ -8,6 +8,7 @@ import '../../../../../data/services/plugin_sync_service.dart';
 import '../../../../../data/services/seerr/seerr_api_models.dart';
 import '../../../../../data/viewmodels/item_detail_view_model.dart';
 import '../../../../../l10n/app_localizations.dart';
+import '../../../../../preference/detail_section_layout.dart';
 import '../../../../../preference/preference_constants.dart';
 import '../../../../../preference/user_preferences.dart';
 import '../../../../../util/platform_detection.dart';
@@ -23,6 +24,10 @@ class NouveauDiscoverySection extends StatefulWidget {
 
   final UserPreferences prefs;
 
+  /// Which of the rails' sources the viewer left on. A hidden one counts as
+  /// empty, so it never holds a rail open or strips items from the other.
+  final DetailSectionVisibility visibility;
+
   final bool Function()? onNavigateUp;
 
   final bool Function()? onNavigateDown;
@@ -33,6 +38,7 @@ class NouveauDiscoverySection extends StatefulWidget {
     super.key,
     required this.viewModel,
     required this.prefs,
+    this.visibility = DetailSectionVisibility.all,
     this.onNavigateUp,
     this.onNavigateDown,
     this.onRevealRequested,
@@ -75,19 +81,34 @@ class NouveauDiscoverySection extends StatefulWidget {
     return seerr.relatedLoadComplete;
   }
 
-  static bool shouldInclude(ItemDetailViewModel viewModel) {
+  static bool shouldInclude(
+    ItemDetailViewModel viewModel,
+    DetailSectionVisibility visibility,
+  ) {
     final item = viewModel.item;
 
     if (item == null || !supportsItem(item)) {
       return false;
     }
 
-    if (!viewModel.similarInitialLoadComplete) {
-      return true;
+    if (visibility.shows(DetailSection.moreLikeThis)) {
+      if (!viewModel.similarInitialLoadComplete) {
+        return true;
+      }
+
+      if (viewModel.similar.isNotEmpty) {
+        return true;
+      }
     }
 
-    if (viewModel.similar.isNotEmpty) {
-      return true;
+    final showsSimilar = visibility.shows(DetailSection.seerrSimilar);
+
+    final showsRecommendations = visibility.shows(
+      DetailSection.seerrRecommendations,
+    );
+
+    if (!showsSimilar && !showsRecommendations) {
+      return false;
     }
 
     if (!_seerrExpected(viewModel)) {
@@ -101,7 +122,8 @@ class NouveauDiscoverySection extends StatefulWidget {
     final state = seerrItemTabState(viewModel);
 
     return state != null &&
-        (state.similar.isNotEmpty || state.recommendations.isNotEmpty);
+        ((showsSimilar && state.similar.isNotEmpty) ||
+            (showsRecommendations && state.recommendations.isNotEmpty));
   }
 
   @override
@@ -230,6 +252,12 @@ class NouveauDiscoverySectionState extends State<NouveauDiscoverySection>
       widget.viewModel.addListener(_onViewModelChanged);
 
       _resetForItem();
+
+      return;
+    }
+
+    if (oldWidget.visibility != widget.visibility) {
+      _syncRailContent();
     }
   }
 
@@ -335,14 +363,10 @@ class NouveauDiscoverySectionState extends State<NouveauDiscoverySection>
 
       final recommendations = _recommendations;
 
-      final baseWaiting = !_vm.similarInitialLoadComplete;
-
-      final seerrWaiting = _seerrExpected && !_seerrRelatedResolved;
-
       var changed = false;
 
       if (related.isEmpty &&
-          (baseWaiting || seerrWaiting) &&
+          _relatedWaiting &&
           !_relatedCardsShown &&
           !_relatedSkeletonShown) {
         _relatedSkeletonShown = true;
@@ -353,7 +377,7 @@ class NouveauDiscoverySectionState extends State<NouveauDiscoverySection>
       }
 
       if (recommendations.isEmpty &&
-          seerrWaiting &&
+          _recommendationsWaiting &&
           !_recommendationsCardsShown &&
           !_recommendationsSkeletonShown) {
         _recommendationsSkeletonShown = true;
@@ -410,11 +434,11 @@ class NouveauDiscoverySectionState extends State<NouveauDiscoverySection>
       }
     }
 
-    final baseWaiting = !_vm.similarInitialLoadComplete;
+    final relatedWaiting = _relatedWaiting;
 
-    final seerrWaiting = _seerrExpected && !_seerrRelatedResolved;
+    final recommendationsWaiting = _recommendationsWaiting;
 
-    if (!hasRelated && !baseWaiting && !seerrWaiting && _relatedSkeletonShown) {
+    if (!hasRelated && !relatedWaiting && _relatedSkeletonShown) {
       _relatedSkeletonShown = false;
 
       _relatedOpacityController
@@ -422,7 +446,9 @@ class NouveauDiscoverySectionState extends State<NouveauDiscoverySection>
         ..value = 0;
     }
 
-    if (!hasRecommendations && !seerrWaiting && _recommendationsSkeletonShown) {
+    if (!hasRecommendations &&
+        !recommendationsWaiting &&
+        _recommendationsSkeletonShown) {
       _recommendationsSkeletonShown = false;
 
       _recommendationsOpacityController
@@ -435,7 +461,7 @@ class NouveauDiscoverySectionState extends State<NouveauDiscoverySection>
     }
 
     if (!hasRelated &&
-        (baseWaiting || seerrWaiting) &&
+        relatedWaiting &&
         !_relatedCardsShown &&
         !_relatedSkeletonShown) {
       _relatedSkeletonShown = true;
@@ -444,7 +470,7 @@ class NouveauDiscoverySectionState extends State<NouveauDiscoverySection>
     }
 
     if (!hasRecommendations &&
-        seerrWaiting &&
+        recommendationsWaiting &&
         !_recommendationsCardsShown &&
         !_recommendationsSkeletonShown) {
       _recommendationsSkeletonShown = true;
@@ -483,6 +509,26 @@ class NouveauDiscoverySectionState extends State<NouveauDiscoverySection>
 
     return seerr.relatedLoadComplete;
   }
+
+  bool get _showsBaseRelated =>
+      widget.visibility.shows(DetailSection.moreLikeThis);
+
+  bool get _showsSeerrSimilar =>
+      widget.visibility.shows(DetailSection.seerrSimilar);
+
+  bool get _showsSeerrRecommendations =>
+      widget.visibility.shows(DetailSection.seerrRecommendations);
+
+  bool get _seerrWaiting => _seerrExpected && !_seerrRelatedResolved;
+
+  /// Whether a source the related rail still shows is loading. A hidden one
+  /// never holds a skeleton up.
+  bool get _relatedWaiting =>
+      (_showsBaseRelated && !_vm.similarInitialLoadComplete) ||
+      (_showsSeerrSimilar && _seerrWaiting);
+
+  bool get _recommendationsWaiting =>
+      _showsSeerrRecommendations && _seerrWaiting;
 
   bool get _navbarIsLeft =>
       widget.prefs.get(UserPreferences.navbarPosition) == NavbarPosition.left;
@@ -528,6 +574,10 @@ class NouveauDiscoverySectionState extends State<NouveauDiscoverySection>
   }
 
   List<AggregatedItem> get _baseRelated {
+    if (!_showsBaseRelated) {
+      return const [];
+    }
+
     if (_baseRelatedCaptured) {
       return _baseRelatedSnapshot;
     }
@@ -555,7 +605,9 @@ class NouveauDiscoverySectionState extends State<NouveauDiscoverySection>
   List<AggregatedItem> get _recommendations {
     final state = seerrItemTabState(_vm);
 
-    if (state == null || state.recommendations.isEmpty) {
+    if (!_showsSeerrRecommendations ||
+        state == null ||
+        state.recommendations.isEmpty) {
       return const [];
     }
 
@@ -636,9 +688,13 @@ class NouveauDiscoverySectionState extends State<NouveauDiscoverySection>
 
     final seen = <String>{for (final item in result) ..._identityKeys(item)};
 
+    final seerrSimilar = _showsSeerrSimilar
+        ? state.similar
+        : const <SeerrDiscoverItem>[];
+
     // Source API calls this collection "similar". Inside Nouveau Discovery
     // it is treated as the related-content rail.
-    for (final item in state.similar) {
+    for (final item in seerrSimilar) {
       final converted = _seerrItemToAggregated(item);
 
       final keys = _identityKeys(converted);
@@ -816,14 +872,11 @@ class NouveauDiscoverySectionState extends State<NouveauDiscoverySection>
 
     final recommendations = _recommendations;
 
-    final baseWaiting = !_vm.similarInitialLoadComplete;
-
-    final seerrWaiting = _seerrExpected && !_seerrRelatedResolved;
-
-    final showRelated = related.isNotEmpty || baseWaiting || seerrWaiting;
+    final showRelated = related.isNotEmpty || _relatedWaiting;
 
     final showRecommendations =
-        _seerrExpected && (recommendations.isNotEmpty || seerrWaiting);
+        _seerrExpected &&
+        (recommendations.isNotEmpty || _recommendationsWaiting);
 
     if (!showRelated && !showRecommendations) {
       return const SizedBox.shrink();

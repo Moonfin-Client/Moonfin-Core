@@ -72,7 +72,11 @@ class _SearchScreenState extends State<SearchScreen>
   final Map<String, FocusNode> _allRowNodes = <String, FocusNode>{};
   // Per-row keys so focusing a card can scroll its whole row (title included)
   // into view rather than just the card.
-  final Map<int, GlobalKey> _allRowKeys = <int, GlobalKey>{};
+  final Map<String, GlobalKey> _allRowKeys = <String, GlobalKey>{};
+  // What each All tab row shows, top to bottom, as of the last build. Nodes
+  // and keys go by this rather than the row's position, so a row that arrives
+  // late doesn't take focus or scroll position from the rows below it.
+  List<String> _allRowIds = const [];
   // The results tab pill is a single focus stop.
   final _tabsFocusNode = FocusNode(debugLabel: 'search_tabs');
   // Vertical focus model: search field, then the tabs pill. Rebuilt each build.
@@ -86,6 +90,9 @@ class _SearchScreenState extends State<SearchScreen>
   static const _tmdbPosterBase = 'https://image.tmdb.org/t/p/w342';
   int _selectedTab = 0;
   String? _tabSelectionQuery;
+  // The tabs as of the last results, so the selection stays on its tab when a
+  // group arrives late.
+  List<String> _shownTabKeys = const [];
   bool _focusTabsAfterResults = false;
   bool _applyingRemoteSearch = false;
   String _lastSearchText = '';
@@ -173,9 +180,16 @@ class _SearchScreenState extends State<SearchScreen>
 
   void _onViewModelChanged() {
     final query = _searchController.text.trim();
+    final tabKeys = _tabKeys;
+    final keptTab = _selectedTab < _shownTabKeys.length
+        ? tabKeys.indexOf(_shownTabKeys[_selectedTab])
+        : -1;
+    _shownTabKeys = tabKeys;
     if (_tabCount > 0 && query != _tabSelectionQuery) {
       _tabSelectionQuery = query;
       _selectedTab = _leadingTabCount;
+    } else if (keptTab >= 0) {
+      _selectedTab = keptTab;
     } else if (_selectedTab >= _tabCount) {
       _selectedTab = _tabCount == 0 ? 0 : _leadingTabCount;
     }
@@ -189,7 +203,25 @@ class _SearchScreenState extends State<SearchScreen>
       });
     }
     _maybeBumpGridVersion();
+    _keepFocusedAllCardInView();
     if (mounted) setState(() {});
+  }
+
+  // A row that arrives late pushes the rows below it down, which can leave the
+  // focused card off screen.
+  void _keepFocusedAllCardInView() {
+    final focused = FocusManager.instance.primaryFocus;
+    if (focused == null || !_allRowNodes.containsValue(focused)) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final cardContext = focused.context;
+      if (!mounted || cardContext == null) return;
+      unawaited(
+        Scrollable.ensureVisible(
+          cardContext,
+          alignmentPolicy: ScrollPositionAlignmentPolicy.keepVisibleAtEnd,
+        ),
+      );
+    });
   }
 
   // Detect when the current grid tab's content changed (async results arriving)
@@ -325,6 +357,16 @@ class _SearchScreenState extends State<SearchScreen>
     final hasContent = _vm.results.isNotEmpty || _hasSeerr || _hasGames;
     return hasContent ? _leadingTabCount + 1 + _vm.results.length : 0;
   }
+
+  // Names the tabs in the order _buildResults labels them.
+  List<String> get _tabKeys => _tabCount == 0
+      ? const []
+      : [
+          if (_hasSeerr) 'seerr',
+          if (_hasGames) 'games',
+          'all',
+          for (final group in _vm.results) group.itemTypes.first,
+        ];
 
   // How many special tabs sit before the All tab. This is also the All index.
   int get _leadingTabCount => (_hasSeerr ? 1 : 0) + (_hasGames ? 1 : 0);
@@ -1132,27 +1174,31 @@ class _SearchScreenState extends State<SearchScreen>
     );
   }
 
-  FocusNode _allCardNode(int row, int col) => _allRowNodes.putIfAbsent(
-    '$row:$col',
-    () => FocusNode(debugLabel: 'search_all_$row:$col'),
-  );
+  FocusNode _allCardNode(int row, int col) {
+    final id = '${_allRowIds[row]}:$col';
+    return _allRowNodes.putIfAbsent(
+      id,
+      () => FocusNode(debugLabel: 'search_all_$id'),
+    );
+  }
 
   GlobalKey _allRowKey(int row) =>
-      _allRowKeys.putIfAbsent(row, () => GlobalKey());
+      _allRowKeys.putIfAbsent(_allRowIds[row], () => GlobalKey());
 
   void _focusAllCard(int row, int col, {bool changedRow = true}) {
+    if (row >= _allRowIds.length) return;
     final node = _allCardNode(row, col);
+    final rowKey = _allRowKey(row);
     if (node.context != null) {
       node.requestFocus();
-      _ensureAllCardVisible(row, node, changedRow: changedRow);
+      _ensureAllCardVisible(rowKey, node, changedRow: changedRow);
       return;
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      final target = _allCardNode(row, col);
-      if (target.canRequestFocus) {
-        target.requestFocus();
-        _ensureAllCardVisible(row, target, changedRow: changedRow);
+      if (node.canRequestFocus) {
+        node.requestFocus();
+        _ensureAllCardVisible(rowKey, node, changedRow: changedRow);
       }
     });
   }
@@ -1161,7 +1207,7 @@ class _SearchScreenState extends State<SearchScreen>
   // outer list vertically when the row actually changed. Scrolling vertically on
   // every left/right press is what makes the page bounce up and down.
   void _ensureAllCardVisible(
-    int row,
+    GlobalKey rowKey,
     FocusNode node, {
     required bool changedRow,
   }) {
@@ -1170,7 +1216,7 @@ class _SearchScreenState extends State<SearchScreen>
       _revealInNearestScrollable(cardContext, alignment: 0.5);
     }
     if (!changedRow) return;
-    final rowContext = _allRowKey(row).currentContext;
+    final rowContext = rowKey.currentContext;
     if (rowContext != null) {
       unawaited(
         Scrollable.ensureVisible(
@@ -1261,6 +1307,11 @@ class _SearchScreenState extends State<SearchScreen>
 
     final hasSeerr = _vm.seerrResults.isNotEmpty;
     final hasGames = _vm.gameResults.isNotEmpty;
+    _allRowIds = [
+      for (final g in groups) g.itemTypes.first,
+      if (hasSeerr) 'seerr',
+      if (hasGames) 'games',
+    ];
     // Library groups come first, then the Seerr and Games rows when present.
     final rowLens = <int>[
       for (final g in groups) g.items.length,

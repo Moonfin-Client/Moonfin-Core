@@ -43,6 +43,12 @@ class NavigationLayout extends StatefulWidget {
     return position;
   }
 
+  static bool get usesBottomNavbar =>
+      sanitizeNavbarPosition(
+        GetIt.instance<UserPreferences>().get(UserPreferences.navbarPosition),
+      ) ==
+      NavbarPosition.bottom;
+
   static final positionNotifier = ValueNotifier<NavbarPosition?>(
     sanitizeNavbarPosition(
       GetIt.instance<UserPreferences>().get(UserPreferences.navbarPosition),

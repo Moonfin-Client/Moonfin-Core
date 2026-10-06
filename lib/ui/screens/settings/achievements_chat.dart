@@ -60,7 +60,7 @@ class _ChatsScreenState extends State<_ChatsScreen> {
         builder: (context, _) {
           final threads = _service.threads;
           return ListView(
-            padding: _listPadding,
+            padding: _listPadding(context),
             children: [
               adaptiveListSection(
                 children: [
@@ -314,7 +314,7 @@ class _PickPersonScreenState extends State<_PickPersonScreen> {
               child: Text(widget.empty),
             )
           : ListView(
-              padding: _listPadding,
+              padding: _listPadding(context),
               children: [
                 adaptiveListSection(
                   children: [
@@ -391,7 +391,7 @@ class _NewGroupScreenState extends State<_NewGroupScreen> {
     return _AchievementsScaffold(
       title: l10n.chatNewGroup,
       builder: (context) => ListView(
-        padding: _listPadding,
+        padding: _listPadding(context),
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
@@ -1387,7 +1387,7 @@ class _GroupInfoScreenState extends State<_GroupInfoScreen>
         }
 
         return ListView(
-          padding: _listPadding,
+          padding: _listPadding(context),
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),

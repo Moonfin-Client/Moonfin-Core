@@ -24,6 +24,14 @@ SeerrRequest _request({
             ],
     );
 
+SeerrQualityStatus _track(SeerrMediaInfo info, {bool is4k = false}) =>
+    SeerrQualityStatus.of(
+      is4k: is4k,
+      mediaInfo: info,
+      canManageRequests: false,
+      currentUserId: null,
+    );
+
 void main() {
   group('SeerrQualityStatus', () {
     test('routes status and status4k to their own tracks', () {
@@ -461,6 +469,26 @@ void main() {
       );
 
       expect(hd.seasonStatus, {3: 5});
+    });
+
+    test('a title stays in flight from the request until it lands', () {
+      expect(_track(const SeerrMediaInfo(status: 2)).isInFlight, isTrue);
+      expect(_track(const SeerrMediaInfo(status: 3)).isInFlight, isTrue);
+      expect(_track(const SeerrMediaInfo(status: 5)).isInFlight, isFalse);
+      expect(_track(const SeerrMediaInfo(status: 1)).isInFlight, isFalse);
+    });
+
+    test('a newly requested season keeps a partial series in flight', () {
+      const info = SeerrMediaInfo(
+        status: 4,
+        seasons: [
+          SeerrSeasonAvailability(seasonNumber: 1, status: 5),
+          SeerrSeasonAvailability(seasonNumber: 2, status: 3, status4k: 1),
+        ],
+      );
+
+      expect(_track(info).isInFlight, isTrue);
+      expect(_track(info, is4k: true).isInFlight, isFalse);
     });
   });
 

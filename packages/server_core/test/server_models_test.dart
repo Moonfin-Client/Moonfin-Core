@@ -65,4 +65,33 @@ void main() {
       expect(policy.canFetchRemoteSubtitles, isFalse);
     });
   });
+
+  group('UserConfiguration library order', () {
+    test('a new order goes out and everything else rides along', () {
+      final config = UserConfiguration.fromJson({
+        'OrderedViews': ['a', 'b'],
+        'MyMediaExcludes': ['c'],
+        'HidePlayedInLatest': false,
+        'CastReceiverId': 'receiver',
+      });
+
+      final json = config.copyWith(orderedViews: ['c', 'b', 'a']).toJson();
+
+      expect(json['OrderedViews'], ['c', 'b', 'a']);
+      expect(json['MyMediaExcludes'], ['c']);
+      expect(json['HidePlayedInLatest'], isFalse);
+      expect(json['CastReceiverId'], 'receiver');
+    });
+
+    test('leaving the order out keeps the one already saved', () {
+      final config = UserConfiguration.fromJson({
+        'orderedViews': ['a', 'b'],
+      });
+
+      final json = config.copyWith(myMediaExcludes: ['a']).toJson();
+
+      expect(json['OrderedViews'], ['a', 'b']);
+      expect(json.containsKey('orderedViews'), isFalse);
+    });
+  });
 }

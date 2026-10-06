@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart' show AppLifecycleState, WidgetsBinding;
 
 import '../../preference/seerr_preferences.dart';
 import '../repositories/seerr_repository.dart';
@@ -93,6 +94,18 @@ class SeerrQualityStatus {
   bool get hasAnyState => status > 1 || requests.isNotEmpty;
 
   bool get hasExistingRequest => activeRequests.isNotEmpty;
+
+  /// Whether the title or one of its seasons is still on its way into the
+  /// library on this track, waiting on approval, a download or the import.
+  bool get isInFlight =>
+      isPending ||
+      isProcessing ||
+      download != null ||
+      seasonAvailability.any((s) {
+        final seasonState = is4k ? s.status4k : s.status;
+        return seasonState == SeerrMediaStatus.pending ||
+            seasonState == SeerrMediaStatus.processing;
+      });
 
   /// Seerr's delete rule: a request manager may remove any open request, and
   /// everyone else only their own while it is still pending. Offering more
@@ -357,7 +370,11 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
   bool _movie4kEnabled = true;
   bool _series4kEnabled = true;
 
-  Timer? _downloadPollTimer;
+  static const _downloadPollInterval = Duration(seconds: 15);
+  static const _waitingPollInterval = Duration(seconds: 30);
+
+  Timer? _statusPollTimer;
+  Duration? _statusPollInterval;
   bool _isDisposed = false;
 
   SeerrMediaDetailViewModel(this._repo, this._prefs);
@@ -374,29 +391,49 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
   @override
   void dispose() {
     _isDisposed = true;
-    _downloadPollTimer?.cancel();
+    _statusPollTimer?.cancel();
     super.dispose();
   }
 
-  /// Keep a refresh timer running only while a download is active, so the
-  /// progress bars advance without leaving and reopening the screen.
-  void _syncDownloadPolling() {
-    if (_state.hdDownload != null || _state.download4k != null) {
-      _downloadPollTimer ??= Timer.periodic(
-        const Duration(seconds: 15),
-        (_) => _pollDownloadStatus(),
-      );
-    } else {
-      _downloadPollTimer?.cancel();
-      _downloadPollTimer = null;
+  /// How often the open page refetches the title, or null once nothing is on
+  /// its way. A download moves every few seconds, while a request waiting on
+  /// approval or on the library scan changes far less often.
+  static Duration? _statusPollIntervalFor(SeerrMediaDetailState state) {
+    final hd = state.hd;
+    final uhd = state.uhd;
+    if (hd.download != null || uhd.download != null) {
+      return _downloadPollInterval;
     }
+    if (hd.isInFlight || uhd.isInFlight) return _waitingPollInterval;
+    return null;
+  }
+
+  /// Keeps the refresh running from the request until the title lands, so the
+  /// progress and the Play button show up without leaving the page.
+  void _syncStatusPolling() {
+    // A fetch that lands after the page closed must not start a new timer.
+    if (_isDisposed) return;
+    final interval = _statusPollIntervalFor(_state);
+    if (interval == _statusPollInterval) return;
+    _statusPollTimer?.cancel();
+    _statusPollInterval = interval;
+    _statusPollTimer = interval == null
+        ? null
+        : Timer.periodic(interval, (_) => _pollStatus());
   }
 
   /// Quiet details refetch that only swaps the media payload. It never touches
   /// isRequesting or requestSuccess, so no snackbar fires, and failures are
   /// ignored so a flaky tick never surfaces error UI.
-  Future<void> _pollDownloadStatus() async {
+  Future<void> _pollStatus() async {
     if (_state.isLoading || _state.isRequesting || _state.tmdbId == 0) return;
+    // Nobody is looking at the page while the app is in the background.
+    if (WidgetsBinding.instance.lifecycleState
+        case AppLifecycleState.paused ||
+            AppLifecycleState.hidden ||
+            AppLifecycleState.detached) {
+      return;
+    }
     try {
       if (_state.isTv) {
         final details = await _repo.getTvDetails(_state.tmdbId);
@@ -411,7 +448,7 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
     } catch (_) {
       // Leave the details as-is and let the next tick retry.
     }
-    _syncDownloadPolling();
+    _syncStatusPolling();
   }
 
   void clearFeedback() {
@@ -556,7 +593,7 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
       _state = SeerrMediaDetailState(error: e);
     }
     notifyListeners();
-    _syncDownloadPolling();
+    _syncStatusPolling();
   }
 
   Future<void> _loadRelated(int tmdbId, String mediaType) async {
@@ -756,7 +793,7 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
         requestSuccess: successMessage,
       );
     }
-    _syncDownloadPolling();
+    _syncStatusPolling();
   }
 
   Future<void> toggleWatchlist() async {

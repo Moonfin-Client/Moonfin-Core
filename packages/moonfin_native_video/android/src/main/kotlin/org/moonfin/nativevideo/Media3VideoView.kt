@@ -103,12 +103,15 @@ import java.nio.ByteBuffer
 import java.util.Locale
 import kotlin.math.roundToInt
 import org.moonfin.nativevideo.iec.Iec61937AudioOutputProvider
+import org.moonfin.nativevideo.subtitle.DeclaredSubtitle
 import org.moonfin.nativevideo.subtitle.SidecarSourceFactory
 import org.moonfin.nativevideo.subtitle.SourceTree
 import org.moonfin.nativevideo.subtitle.SupAwareSubtitleParserFactory
 import org.moonfin.nativevideo.subtitle.TextStreamOffsetMediaSource
 import org.moonfin.nativevideo.subtitle.TimeOffsetMediaSource
 import org.moonfin.nativevideo.subtitle.clampManualDelayMs
+import org.moonfin.nativevideo.subtitle.declaredSubtitleFrom
+import org.moonfin.nativevideo.subtitle.declaredSubtitlesFrom
 import org.moonfin.nativevideo.subtitle.externalFormatIdMatches
 import org.moonfin.nativevideo.subtitle.joinStackedCues
 import org.moonfin.nativevideo.subtitle.sourceTreeFor
@@ -981,6 +984,7 @@ class Media3VideoView(
     private var subtitleEmbeddedFontSizesEnabled = true
     private var assFallbackFontBytes: ByteArray? = null
     private var isDisposed = false
+    internal var leaveCensus: (() -> Unit)? = null
     private var isDisposedByFlutter = false
     private var lastAudioClockRecoveryAtMs = 0L
     private var playerCreatedAtMs = 0L
@@ -1602,6 +1606,7 @@ class Media3VideoView(
     }
 
     override fun dispose() {
+        leaveCensus?.invoke()
         isDisposedByFlutter = true
         // Unregister before the audio early return so a disposed view can
         // never be re-activated.
@@ -2585,6 +2590,7 @@ class Media3VideoView(
 
         resetTrackSelectionsForNewSource()
         externalSubtitleConfigurations.clear()
+        declaredSubtitlesFrom(args["externalSubtitles"]).forEach(::appendExternalSubtitle)
         selectedSubtitleCodec = null
         selectedSubtitleIsExternal = false
         selectedSubtitleIsBitmap = false
@@ -3735,34 +3741,33 @@ class Media3VideoView(
     private fun clearAssSubtitleScript() {
     }
 
+    /**
+     * Adds a sidecar after the source opened, which costs a re-prepare. The
+     * app sends every sidecar through here, including the ones that came with
+     * the source, so one already in place is left alone.
+     */
     private fun addExternalSubtitle(args: Map<*, *>?) {
-        val url = args?.get("url")?.toString() ?: return
-        val codec = args["codec"]?.toString()
-        val language = args["language"]?.toString()
-        val title = args["title"]?.toString()
+        val subtitle = declaredSubtitleFrom(args) ?: return
+        val uri = parseUri(subtitle.url)
+        if (externalSubtitleConfigurations.any { it.uri == uri }) return
 
-        val subtitleBuilder = MediaItem.SubtitleConfiguration.Builder(parseUri(url))
-            .setSelectionFlags(C.SELECTION_FLAG_DEFAULT)
-            // ass-media matches selected Media3 text tracks back to libass tracks by ID.
-            .setId((EXTERNAL_SUBTITLE_ID_BASE + externalSubtitleConfigurations.size).toString())
-
-        val mimeType = codecToMimeType(codec)
-        if (!mimeType.isNullOrEmpty()) {
-            subtitleBuilder.setMimeType(mimeType)
-        }
-        if (!language.isNullOrEmpty()) {
-            subtitleBuilder.setLanguage(language)
-        }
-        if (!title.isNullOrEmpty()) {
-            subtitleBuilder.setLabel(title)
-        }
-
-        externalSubtitleConfigurations.add(subtitleBuilder.build())
+        appendExternalSubtitle(subtitle)
         applyTrackSelectorForCurrentSource()
 
         val playWhenReady = player.playWhenReady
         val currentPosition = player.currentPosition
         prepareCurrentSource(currentPosition, playWhenReady = playWhenReady)
+    }
+
+    private fun appendExternalSubtitle(subtitle: DeclaredSubtitle) {
+        val builder = MediaItem.SubtitleConfiguration.Builder(parseUri(subtitle.url))
+            .setSelectionFlags(C.SELECTION_FLAG_DEFAULT)
+            // ass-media matches selected Media3 text tracks back to libass tracks by ID.
+            .setId((EXTERNAL_SUBTITLE_ID_BASE + externalSubtitleConfigurations.size).toString())
+        codecToMimeType(subtitle.codec)?.let(builder::setMimeType)
+        subtitle.language?.let(builder::setLanguage)
+        subtitle.title?.let(builder::setLabel)
+        externalSubtitleConfigurations.add(builder.build())
     }
 
     private fun configureSubtitleStyle(args: Map<*, *>?) {

@@ -14,12 +14,17 @@ class ServerUnableToConnect extends ServerAdditionState {
   final int? lastStatusCode;
   final String? lastErrorMessage;
 
+  /// An address that answered but whose certificate wasn't trusted. A later
+  /// address failing some other way would otherwise hide it.
+  final String? untrustedCandidate;
+
   const ServerUnableToConnect({
     required this.candidatesTried,
     this.lastCandidate,
     this.lastErrorType,
     this.lastStatusCode,
     this.lastErrorMessage,
+    this.untrustedCandidate,
   });
 }
 

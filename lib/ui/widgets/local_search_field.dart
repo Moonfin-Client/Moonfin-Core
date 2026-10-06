@@ -19,6 +19,7 @@ class LocalSearchField extends StatefulWidget {
     required this.controller,
     required this.focusNode,
     this.tvFieldKey,
+    this.hint,
     this.onChanged,
     this.onTvKeyEvent,
   });
@@ -26,6 +27,7 @@ class LocalSearchField extends StatefulWidget {
   final TextEditingController controller;
   final FocusNode focusNode;
   final GlobalKey<CustomTVTextFieldState>? tvFieldKey;
+  final String? hint;
   final ValueChanged<String>? onChanged;
   final FocusOnKeyEventCallback? onTvKeyEvent;
 
@@ -81,7 +83,7 @@ class _LocalSearchFieldState extends State<LocalSearchField> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final effectiveHint = l10n.searchThisLibrary;
+    final effectiveHint = widget.hint ?? l10n.searchThisLibrary;
     final focusColor = Color(_prefs.get(UserPreferences.focusColor).colorValue);
 
     final fillColor = AppColorScheme.surface.withValues(alpha: 0.72);

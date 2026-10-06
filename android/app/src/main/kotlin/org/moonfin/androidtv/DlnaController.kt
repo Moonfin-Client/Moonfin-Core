@@ -28,7 +28,6 @@ class DlnaController(private val context: Context) {
     private val handler = Handler(Looper.getMainLooper())
     private val executor = Executors.newCachedThreadPool()
     private var eventSink: EventChannel.EventSink? = null
-    private var multicastLock: WifiManager.MulticastLock? = null
     private var activeDeviceControlUrl: String? = null
     private var activeDeviceRenderingControlUrl: String? = null
     private val pollExecutor = Executors.newSingleThreadScheduledExecutor()
@@ -130,8 +129,13 @@ class DlnaController(private val context: Context) {
         onDevice: (Map<String, Any>) -> Unit,
     ) {
         var socket: MulticastSocket? = null
+        // Each scan holds its own lock. The picker's continuous scan and a
+        // one-shot lookup can overlap, and a shared lock would let one scan
+        // release it twice or out from under the other.
+        var multicastLock: WifiManager.MulticastLock? = null
         try {
-            acquireMulticastLock()
+            val wifi = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+            multicastLock = wifi.createMulticastLock("moonfin_dlna_discovery").also { it.acquire() }
             val group = InetAddress.getByName(SSDP_ADDRESS)
             socket = MulticastSocket(SSDP_PORT)
             socket.reuseAddress = true
@@ -172,7 +176,7 @@ class DlnaController(private val context: Context) {
         } catch (_: Exception) {
         } finally {
             socket?.close()
-            releaseMulticastLock()
+            multicastLock?.release()
         }
     }
 
@@ -289,7 +293,6 @@ class DlnaController(private val context: Context) {
         activeDeviceRenderingControlUrl = null
         consecutivePollFailures.set(0)
         eventSink = null
-        releaseMulticastLock()
     }
 
     fun getVolume(result: MethodChannel.Result) {
@@ -372,23 +375,6 @@ class DlnaController(private val context: Context) {
                 }
             }
         }
-    }
-
-    private fun acquireMulticastLock() {
-        if (multicastLock == null) {
-            val wifi = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
-            multicastLock = wifi.createMulticastLock("moonfin_dlna_discovery").apply {
-                setReferenceCounted(true)
-                acquire()
-            }
-        }
-    }
-
-    private fun releaseMulticastLock() {
-        multicastLock?.let {
-            if (it.isHeld) it.release()
-        }
-        multicastLock = null
     }
 
     private fun parseHeader(response: String, header: String): String? {

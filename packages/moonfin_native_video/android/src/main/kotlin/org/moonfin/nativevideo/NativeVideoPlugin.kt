@@ -166,7 +166,9 @@ private class NativeVideoFactory(
 ) : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
 
     override fun create(context: Context, viewId: Int, args: Any?): PlatformView {
-        return NativeVideoView(context, messenger, viewId)
+        return NativeVideoView(context, messenger, viewId).also {
+            it.leaveCensus = PlatformViewCensus.join("mpv")
+        }
     }
 }
 
@@ -174,6 +176,8 @@ private class Media3VideoFactory : PlatformViewFactory(StandardMessageCodec.INST
 
     override fun create(context: Context, viewId: Int, args: Any?): PlatformView {
         val role = (args as? Map<*, *>)?.get("role") as? String ?: "main"
-        return Media3VideoView(context, viewId, role)
+        return Media3VideoView(context, viewId, role).also {
+            it.leaveCensus = PlatformViewCensus.join("media3-$role")
+        }
     }
 }

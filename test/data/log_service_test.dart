@@ -89,6 +89,24 @@ void main() {
       );
     });
 
+    test('keeps the endpoint of a URL given as a labelled value', () {
+      logs.clear();
+      logs.logCrash(
+        'Uncaught: HttpException',
+        'HttpException: Invalid statusCode: 500, uri = '
+            'https://my-server.com/Items/abc/Images/Primary'
+            '?maxWidth=420&api_key=deadbeefcafe',
+      );
+      final error = logs.entries.single.error!;
+      expect(
+        error,
+        contains('uri = https://[REDACTED]/Items/abc/Images/Primary'),
+      );
+      expect(error, contains('api_key=[REDACTED]'));
+      expect(error, isNot(contains('my-server.com')));
+      expect(error, isNot(contains('deadbeefcafe')));
+    });
+
     test('redacts a credential left in a query string', () {
       assertRedacted(
         'GET https://my-server.com/Videos/abc/stream?MediaSourceId=abc'
@@ -157,7 +175,7 @@ void main() {
     test('handles multiple field replacements and case sensitivity', () {
       assertRedacted(
         'SERVER: 1.1.1.1, ORIGIN: https://moonfin.io',
-        'SERVER: [REDACTED], ORIGIN: [REDACTED]',
+        'SERVER: [REDACTED], ORIGIN: https://[REDACTED]',
       );
       assertRedacted(
         'host: a.com and ip: 1.2.3.4',

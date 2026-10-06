@@ -11,6 +11,7 @@ import '../../../../../data/models/aggregated_item.dart';
 import '../../../../../data/viewmodels/item_detail_view_model.dart';
 import '../../../../../data/viewmodels/seerr_media_detail_view_model.dart';
 import '../../../../../l10n/app_localizations.dart';
+import '../../../../../preference/detail_section_layout.dart';
 import '../../../../../preference/preference_constants.dart';
 import '../../../../../preference/user_preferences.dart';
 import '../../../../../util/detail_playback_info.dart';
@@ -30,6 +31,11 @@ class NouveauDetailsSection extends StatefulWidget {
   final ItemDetailViewModel viewModel;
   final Map<String, dynamic>? selectedMediaSource;
 
+  /// Studios, the Seerr pieces and the media info each have a switch. A hidden
+  /// one reads as empty, and with all of them off the section draws nothing
+  /// and drops out of the focus chain.
+  final DetailSectionVisibility visibility;
+
   /// The section background is full-bleed.
   ///
   /// These insets only align its inner content with the rest of Nouveau.
@@ -42,6 +48,7 @@ class NouveauDetailsSection extends StatefulWidget {
     required this.item,
     required this.viewModel,
     required this.selectedMediaSource,
+    this.visibility = DetailSectionVisibility.all,
     required this.contentInsets,
     this.onNavigateUp,
     this.onNavigateDown,
@@ -101,18 +108,24 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
 
   SeerrMediaDetailState? get _seerrState => seerrItemTabState(_vm);
 
-  bool get _hasSeerrChips {
-    final state = _seerrState;
+  SeerrDetailPieces get _seerrPieces {
+    if (!mounted) {
+      return SeerrDetailPieces.none;
+    }
 
-    return state != null && SeerrItemChips.hasContent(state);
+    return SeerrDetailPieces.resolve(
+      _seerrState,
+      widget.visibility,
+      AppLocalizations.of(context),
+    );
   }
 
-  bool _hasSeerrStats(BuildContext context) {
-    final state = _seerrState;
+  bool get _hasSeerrChips => _seerrPieces.chips;
 
-    return state != null &&
-        SeerrStatsCard.hasContent(state, AppLocalizations.of(context));
-  }
+  // A node keeps its last context after its widget is gone, so a group that
+  // was hidden would still look focusable without the mounted check.
+  bool _canFocus(FocusNode node) =>
+      node.canRequestFocus && (node.context?.mounted ?? false);
 
   GlobalKey? get topRevealKey {
     final studios = _studioNames(widget.item);
@@ -139,7 +152,7 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
     final hasTechnicalDetails =
         isPlayable && _mediaSourceFor(targetItem) != null;
 
-    final hasStats = mounted && _hasSeerrStats(context);
+    final hasStats = _seerrPieces.stats;
 
     if (hasStats || hasTechnicalDetails) {
       return _readingContentKey;
@@ -184,16 +197,14 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
       final key = _studioKey(0, studios.first);
       final node = _studioFocusNodes[key];
 
-      return node != null && node.canRequestFocus && node.context != null;
+      return node != null && _canFocus(node);
     }
 
     if (_hasSeerrChips) {
-      return _seerrChipsFocusNode.canRequestFocus &&
-          _seerrChipsFocusNode.context != null;
+      return _canFocus(_seerrChipsFocusNode);
     }
 
-    return _readingFocusNode.canRequestFocus &&
-        _readingFocusNode.context != null;
+    return _canFocus(_readingFocusNode);
   }
 
   bool focusTop() {
@@ -204,16 +215,13 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
       return true;
     }
 
-    if (_hasSeerrChips &&
-        _seerrChipsFocusNode.canRequestFocus &&
-        _seerrChipsFocusNode.context != null) {
+    if (_hasSeerrChips && _canFocus(_seerrChipsFocusNode)) {
       _seerrChipsFocusNode.requestFocus();
 
       return true;
     }
 
-    if (_readingFocusNode.canRequestFocus &&
-        _readingFocusNode.context != null) {
+    if (_canFocus(_readingFocusNode)) {
       _readingFocusNode.requestFocus();
 
       return true;
@@ -233,19 +241,15 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
     final hasTechnicalDetails =
         isPlayable && _mediaSourceFor(targetItem) != null;
 
-    final hasStats = mounted && _hasSeerrStats(context);
+    final hasStats = _seerrPieces.stats;
 
-    if ((hasStats || hasTechnicalDetails) &&
-        _readingFocusNode.canRequestFocus &&
-        _readingFocusNode.context != null) {
+    if ((hasStats || hasTechnicalDetails) && _canFocus(_readingFocusNode)) {
       _readingFocusNode.requestFocus();
 
       return true;
     }
 
-    if (_hasSeerrChips &&
-        _seerrChipsFocusNode.canRequestFocus &&
-        _seerrChipsFocusNode.context != null) {
+    if (_hasSeerrChips && _canFocus(_seerrChipsFocusNode)) {
       _seerrChipsFocusNode.requestFocus();
 
       return true;
@@ -287,12 +291,20 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
   }
 
   Map<String, dynamic>? _mediaSourceFor(AggregatedItem item) {
+    if (!widget.visibility.shows(DetailSection.mediaInfo)) {
+      return null;
+    }
+
     final selectedSourceId = widget.selectedMediaSource?['Id']?.toString();
 
     return selectedMediaSourceForItem(item, selectedSourceId);
   }
 
   List<String> _studioNames(AggregatedItem item) {
+    if (!widget.visibility.shows(DetailSection.studios)) {
+      return const [];
+    }
+
     final names = <String>[];
     final seen = <String>{};
 
@@ -394,17 +406,13 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
           return KeyEventResult.handled;
         }
 
-        if (hasSeerrChips &&
-            _seerrChipsFocusNode.canRequestFocus &&
-            _seerrChipsFocusNode.context != null) {
+        if (hasSeerrChips && _canFocus(_seerrChipsFocusNode)) {
           _seerrChipsFocusNode.requestFocus();
 
           return KeyEventResult.handled;
         }
 
-        if (hasReadingContent &&
-            _readingFocusNode.canRequestFocus &&
-            _readingFocusNode.context != null) {
+        if (hasReadingContent && _canFocus(_readingFocusNode)) {
           _readingFocusNode.requestFocus();
 
           WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -430,7 +438,7 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
   }
 
   void _requestStudioFocus(FocusNode node, {required bool scrollIfNeeded}) {
-    if (!node.canRequestFocus || node.context == null) {
+    if (!_canFocus(node)) {
       return;
     }
 
@@ -582,7 +590,7 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
     final result = <MapEntry<FocusNode, Offset>>[];
 
     for (final node in _studioFocusNodes.values) {
-      if (!node.canRequestFocus || node.context == null) {
+      if (!_canFocus(node)) {
         continue;
       }
 
@@ -751,7 +759,7 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
 
     final node = _studioFocusNodes[key];
 
-    if (node == null || !node.canRequestFocus || node.context == null) {
+    if (node == null || !_canFocus(node)) {
       return false;
     }
 
@@ -773,7 +781,7 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
     if (rememberedKey != null) {
       final node = _studioFocusNodes[rememberedKey];
 
-      if (node != null && node.canRequestFocus && node.context != null) {
+      if (node != null && _canFocus(node)) {
         _requestStudioFocus(node, scrollIfNeeded: scrollIfNeeded);
 
         return true;
@@ -794,7 +802,7 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
 
     final node = _studioFocusNodes[key];
 
-    if (node == null || !node.canRequestFocus || node.context == null) {
+    if (node == null || !_canFocus(node)) {
       return false;
     }
 
@@ -804,9 +812,7 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
   }
 
   bool _focusSeerrChips() {
-    if (!_hasSeerrChips ||
-        !_seerrChipsFocusNode.canRequestFocus ||
-        _seerrChipsFocusNode.context == null) {
+    if (!_hasSeerrChips || !_canFocus(_seerrChipsFocusNode)) {
       return false;
     }
 
@@ -816,8 +822,7 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
   }
 
   bool _focusReading() {
-    if (!_readingFocusNode.canRequestFocus ||
-        _readingFocusNode.context == null) {
+    if (!_canFocus(_readingFocusNode)) {
       return false;
     }
 
@@ -1021,19 +1026,14 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
 
     final seerrState = _seerrState;
 
-    final hasSeerrChips =
-        seerrState != null && SeerrItemChips.hasContent(seerrState);
-
-    final hasSeerrStats =
-        seerrState != null &&
-        SeerrStatsCard.hasContent(seerrState, AppLocalizations.of(context));
+    final seerrPieces = _seerrPieces;
 
     final hasStudios = studios.isNotEmpty;
 
     if (!hasTechnicalDetails &&
         !hasStudios &&
-        !hasSeerrChips &&
-        !hasSeerrStats) {
+        !seerrPieces.chips &&
+        !seerrPieces.stats) {
       return const SizedBox.shrink();
     }
 
@@ -1055,6 +1055,7 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
       mediaSource: mediaSource,
       studios: studios,
       seerrState: seerrState,
+      seerrPieces: seerrPieces,
     );
   }
 
@@ -1064,6 +1065,7 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
     required Map<String, dynamic>? mediaSource,
     required List<String> studios,
     required SeerrMediaDetailState? seerrState,
+    required SeerrDetailPieces seerrPieces,
   }) {
     final theme = Theme.of(context);
 
@@ -1075,11 +1077,9 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
 
     final hasStudios = studios.isNotEmpty;
 
-    final hasSeerrChips =
-        seerrState != null && SeerrItemChips.hasContent(seerrState);
+    final hasSeerrChips = seerrState != null && seerrPieces.chips;
 
-    final hasSeerrStats =
-        seerrState != null && SeerrStatsCard.hasContent(seerrState, l10n);
+    final hasSeerrStats = seerrState != null && seerrPieces.stats;
 
     final hasReadingContent = hasSeerrStats || hasTechnicalDetails;
 

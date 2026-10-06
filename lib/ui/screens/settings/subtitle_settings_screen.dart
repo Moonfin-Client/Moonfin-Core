@@ -40,7 +40,9 @@ class SubtitleSettingsScreen extends StatelessWidget {
             final showStreamSettings = mode != SubtitleMode.none;
 
             return ListView(
-              padding: const EdgeInsets.only(bottom: 64.0),
+              padding: EdgeInsets.only(
+                bottom: 64.0 + MediaQuery.paddingOf(context).bottom,
+              ),
               children: [
                 SettingsSectionHeader(l10n.general),
                 adaptiveListSection(
