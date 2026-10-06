@@ -188,6 +188,37 @@ void main() {
   });
 
   group('extractExternalSubtitles', () {
+    test('builds a delivery URL for extractable embedded text subtitles', () {
+      final subs = MediaStreamResolver.extractExternalSubtitles(
+        <Map<String, dynamic>>[
+          {
+            'Type': 'Subtitle',
+            'Index': 3,
+            'Codec': 'subrip',
+            'IsExternal': false,
+            'SupportsExternalStream': true,
+          },
+          {
+            'Type': 'Subtitle',
+            'Index': 4,
+            'Codec': 'webvtt',
+            'IsExternal': false,
+            'SupportsExternalStream': true,
+          },
+        ],
+        'https://example.test/jellyfin',
+        itemId: 'item id',
+        mediaSourceId: 'source',
+      );
+
+      expect(subs.map((subtitle) => subtitle.deliveryUrl), [
+        'https://example.test/jellyfin/Videos/item%20id/source/'
+            'Subtitles/3/0/Stream.srt',
+        'https://example.test/jellyfin/Videos/item%20id/source/'
+            'Subtitles/4/0/Stream.vtt',
+      ]);
+    });
+
     test(
       'keeps a .sup file and skips a PGS track the server would extract',
       () {

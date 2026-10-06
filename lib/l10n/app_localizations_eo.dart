@@ -4053,6 +4053,10 @@ class AppLocalizationsEo extends AppLocalizations {
   String get defaultSubtitleLanguage => 'Defaŭlta Subtitola Lingvo';
 
   @override
+  String get preferredSecondarySubtitleLanguage =>
+      'Preferred Secondary Subtitle Language';
+
+  @override
   String get defaultToNoSubtitles => 'Defaŭlte al Neniuj Subtekstoj';
 
   @override
@@ -4060,6 +4064,18 @@ class AppLocalizationsEo extends AppLocalizations {
 
   @override
   String get subtitleSize => 'Subtitolo Grandeco';
+
+  @override
+  String get primarySubtitleSlot => 'Primary';
+
+  @override
+  String get secondarySubtitleSlot => 'Secondary';
+
+  @override
+  String get decreaseValue => 'Decrease';
+
+  @override
+  String get increaseValue => 'Increase';
 
   @override
   String get textFillColor => 'Teksto Plenigkoloro';

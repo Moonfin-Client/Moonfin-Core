@@ -4060,6 +4060,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get defaultSubtitleLanguage => 'Varsayılan Altyazı Dili';
 
   @override
+  String get preferredSecondarySubtitleLanguage =>
+      'Preferred Secondary Subtitle Language';
+
+  @override
   String get defaultToNoSubtitles => 'Varsayılan olarak Altyazı Yok';
 
   @override
@@ -4067,6 +4071,18 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get subtitleSize => 'Altyazı Boyutu';
+
+  @override
+  String get primarySubtitleSlot => 'Primary';
+
+  @override
+  String get secondarySubtitleSlot => 'Secondary';
+
+  @override
+  String get decreaseValue => 'Decrease';
+
+  @override
+  String get increaseValue => 'Increase';
 
   @override
   String get textFillColor => 'Metin Dolgu Rengi';

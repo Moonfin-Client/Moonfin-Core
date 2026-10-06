@@ -4059,6 +4059,10 @@ class AppLocalizationsUg extends AppLocalizations {
   String get defaultSubtitleLanguage => 'سۈكۈتتىكى تېما تىلى';
 
   @override
+  String get preferredSecondarySubtitleLanguage =>
+      'Preferred Secondary Subtitle Language';
+
+  @override
   String get defaultToNoSubtitles => 'سۈكۈتتىكى مەزمۇن يوق';
 
   @override
@@ -4066,6 +4070,18 @@ class AppLocalizationsUg extends AppLocalizations {
 
   @override
   String get subtitleSize => 'ئېكران خېتى چوڭلۇقى';
+
+  @override
+  String get primarySubtitleSlot => 'Primary';
+
+  @override
+  String get secondarySubtitleSlot => 'Secondary';
+
+  @override
+  String get decreaseValue => 'Decrease';
+
+  @override
+  String get increaseValue => 'Increase';
 
   @override
   String get textFillColor => 'تېكىست تولدۇرۇش رەڭگى';

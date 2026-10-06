@@ -4074,6 +4074,10 @@ class AppLocalizationsHu extends AppLocalizations {
   String get defaultSubtitleLanguage => 'Alapértelmezett feliratnyelv';
 
   @override
+  String get preferredSecondarySubtitleLanguage =>
+      'Preferred Secondary Subtitle Language';
+
+  @override
   String get defaultToNoSubtitles => 'Alapértelmezés szerint nincs felirat';
 
   @override
@@ -4082,6 +4086,18 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get subtitleSize => 'Felirat mérete';
+
+  @override
+  String get primarySubtitleSlot => 'Primary';
+
+  @override
+  String get secondarySubtitleSlot => 'Secondary';
+
+  @override
+  String get decreaseValue => 'Decrease';
+
+  @override
+  String get increaseValue => 'Increase';
 
   @override
   String get textFillColor => 'Szöveg kitöltési színe';

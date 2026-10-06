@@ -4067,6 +4067,10 @@ class AppLocalizationsPt extends AppLocalizations {
   String get defaultSubtitleLanguage => 'Idioma de Legenda Padrão';
 
   @override
+  String get preferredSecondarySubtitleLanguage =>
+      'Preferred Secondary Subtitle Language';
+
+  @override
   String get defaultToNoSubtitles => 'Padrão Sem Legendas';
 
   @override
@@ -4074,6 +4078,18 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get subtitleSize => 'Tamanho da Legenda';
+
+  @override
+  String get primarySubtitleSlot => 'Primary';
+
+  @override
+  String get secondarySubtitleSlot => 'Secondary';
+
+  @override
+  String get decreaseValue => 'Decrease';
+
+  @override
+  String get increaseValue => 'Increase';
 
   @override
   String get textFillColor => 'Cor de preenchimento de texto';

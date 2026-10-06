@@ -188,7 +188,10 @@ class JellyfinMediaStreamResolver implements MediaStreamResolver {
     // Append auth token for mpv (which doesn't use our Dio interceptors).
     url = _appendAuth(url);
 
-    final externalSubs = MediaStreamResolver.extractExternalSubtitles(source.mediaStreams, _client.baseUrl);
+    final externalSubs = MediaStreamResolver.extractExternalSubtitles(source.mediaStreams, _client.baseUrl,
+      itemId: itemId,
+      mediaSourceId: source.id,
+    );
     final authedSubs = externalSubs.map((s) => ExternalSubtitle(
       deliveryUrl: _appendAuth(s.deliveryUrl),
       title: s.title,
@@ -301,7 +304,9 @@ class JellyfinMediaStreamResolver implements MediaStreamResolver {
     if (token == null || token.isEmpty) return url;
     if (!_isServerUrl(url)) return url;
     final lowerUrl = url.toLowerCase();
-    if (lowerUrl.contains('api_key=') || lowerUrl.contains('apikey=')) return url;
+    if (lowerUrl.contains('api_key=') || lowerUrl.contains('apikey=')) {
+      return url;
+    }
     final separator = url.contains('?') ? '&' : '?';
     return '$url${separator}ApiKey=${Uri.encodeComponent(token)}';
   }

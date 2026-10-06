@@ -4078,6 +4078,10 @@ class AppLocalizationsSq extends AppLocalizations {
   String get defaultSubtitleLanguage => 'Gjuha e parazgjedhur e titrave';
 
   @override
+  String get preferredSecondarySubtitleLanguage =>
+      'Preferred Secondary Subtitle Language';
+
+  @override
   String get defaultToNoSubtitles => 'Parazgjedhja është pa titra';
 
   @override
@@ -4085,6 +4089,18 @@ class AppLocalizationsSq extends AppLocalizations {
 
   @override
   String get subtitleSize => 'Madhësia e titrave';
+
+  @override
+  String get primarySubtitleSlot => 'Primary';
+
+  @override
+  String get secondarySubtitleSlot => 'Secondary';
+
+  @override
+  String get decreaseValue => 'Decrease';
+
+  @override
+  String get increaseValue => 'Increase';
 
   @override
   String get textFillColor => 'Ngjyra e mbushjes së tekstit';

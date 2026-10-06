@@ -4053,6 +4053,10 @@ class AppLocalizationsSi extends AppLocalizations {
   String get defaultSubtitleLanguage => 'පෙරනිමි උපසිරැසි භාෂාව';
 
   @override
+  String get preferredSecondarySubtitleLanguage =>
+      'Preferred Secondary Subtitle Language';
+
+  @override
   String get defaultToNoSubtitles => 'උපසිරැසි නැත යන්නට පෙරනිමිය';
 
   @override
@@ -4060,6 +4064,18 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get subtitleSize => 'උපසිරැසි ප්රමාණය';
+
+  @override
+  String get primarySubtitleSlot => 'Primary';
+
+  @override
+  String get secondarySubtitleSlot => 'Secondary';
+
+  @override
+  String get decreaseValue => 'Decrease';
+
+  @override
+  String get increaseValue => 'Increase';
 
   @override
   String get textFillColor => 'පෙළ පිරවුම් වර්ණය';

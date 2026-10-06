@@ -43,6 +43,7 @@ import '../../util/episode_playability.dart';
 import '../../util/season_queue_context.dart';
 import '../../util/audio_track_logic.dart';
 import '../../util/subtitle_track_logic.dart';
+import '../../util/secondary_subtitle_track_selection.dart';
 
 final _getIt = GetIt.instance;
 
@@ -419,6 +420,32 @@ void registerPlaybackModule() {
   };
   manager.onAudioTrackChanged = (itemId, index) {
     _getIt<UserPreferences>().setItemAudioStreamIndex(itemId, index);
+  };
+
+  manager.onSecondarySubtitleTrackSelected = (itemId, index, stream) async {
+    final streams = manager.currentResolution?.mediaStreams
+            .where((s) => s['Type'] == 'Subtitle')
+            .toList() ??
+        const <Map<String, dynamic>>[];
+    await prefs.setItemSecondarySubtitleSelection(
+      itemId,
+      stream == null
+          ? const {'off': true}
+          : secondarySubtitleTrackSelection(streams, index),
+    );
+  };
+  manager.secondarySubtitleTrackSelector = (itemId, streams) {
+    if (itemId.isEmpty) return null;
+    return restoreSecondarySubtitleTrack(
+      prefs.getItemSecondarySubtitleSelection(itemId),
+      streams,
+      isCompatible: (stream) {
+        final index = stream['Index'];
+        return index is int &&
+            index != manager.subtitleStreamIndex &&
+            manager.canUseAsSecondarySubtitle(index);
+      },
+    );
   };
 
   // This choice carries to the next episode, so it takes the selected signal

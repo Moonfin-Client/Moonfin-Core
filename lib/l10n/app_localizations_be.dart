@@ -4071,6 +4071,10 @@ class AppLocalizationsBe extends AppLocalizations {
   String get defaultSubtitleLanguage => 'Мова субтытраў па змаўчанні';
 
   @override
+  String get preferredSecondarySubtitleLanguage =>
+      'Preferred Secondary Subtitle Language';
+
+  @override
   String get defaultToNoSubtitles => 'Па змаўчанні няма субтытраў';
 
   @override
@@ -4078,6 +4082,18 @@ class AppLocalizationsBe extends AppLocalizations {
 
   @override
   String get subtitleSize => 'Памер субтытраў';
+
+  @override
+  String get primarySubtitleSlot => 'Primary';
+
+  @override
+  String get secondarySubtitleSlot => 'Secondary';
+
+  @override
+  String get decreaseValue => 'Decrease';
+
+  @override
+  String get increaseValue => 'Increase';
 
   @override
   String get textFillColor => 'Колер запаўнення тэкстам';

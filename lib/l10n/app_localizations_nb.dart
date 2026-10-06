@@ -4052,6 +4052,10 @@ class AppLocalizationsNb extends AppLocalizations {
   String get defaultSubtitleLanguage => 'Standard undertekstspråk';
 
   @override
+  String get preferredSecondarySubtitleLanguage =>
+      'Preferred Secondary Subtitle Language';
+
+  @override
   String get defaultToNoSubtitles => 'Standard til Ingen undertekster';
 
   @override
@@ -4059,6 +4063,18 @@ class AppLocalizationsNb extends AppLocalizations {
 
   @override
   String get subtitleSize => 'Undertekststørrelse';
+
+  @override
+  String get primarySubtitleSlot => 'Primary';
+
+  @override
+  String get secondarySubtitleSlot => 'Secondary';
+
+  @override
+  String get decreaseValue => 'Decrease';
+
+  @override
+  String get increaseValue => 'Increase';
 
   @override
   String get textFillColor => 'Tekstfyllfarge';

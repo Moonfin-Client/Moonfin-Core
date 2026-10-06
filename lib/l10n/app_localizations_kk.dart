@@ -4063,6 +4063,10 @@ class AppLocalizationsKk extends AppLocalizations {
   String get defaultSubtitleLanguage => 'Әдепкі субтитр тілі';
 
   @override
+  String get preferredSecondarySubtitleLanguage =>
+      'Preferred Secondary Subtitle Language';
+
+  @override
   String get defaultToNoSubtitles => 'Әдепкі бойынша Субтитрлер жоқ';
 
   @override
@@ -4071,6 +4075,18 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get subtitleSize => 'Субтитр өлшемі';
+
+  @override
+  String get primarySubtitleSlot => 'Primary';
+
+  @override
+  String get secondarySubtitleSlot => 'Secondary';
+
+  @override
+  String get decreaseValue => 'Decrease';
+
+  @override
+  String get increaseValue => 'Increase';
 
   @override
   String get textFillColor => 'Мәтінді толтыру түсі';

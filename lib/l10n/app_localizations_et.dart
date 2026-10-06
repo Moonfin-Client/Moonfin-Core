@@ -4064,6 +4064,10 @@ class AppLocalizationsEt extends AppLocalizations {
   String get defaultSubtitleLanguage => 'Subtiitrite vaikekeel';
 
   @override
+  String get preferredSecondarySubtitleLanguage =>
+      'Preferred Secondary Subtitle Language';
+
+  @override
   String get defaultToNoSubtitles => 'Vaikimisi Subtiitreid pole';
 
   @override
@@ -4071,6 +4075,18 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String get subtitleSize => 'Subtiitrite suurus';
+
+  @override
+  String get primarySubtitleSlot => 'Primary';
+
+  @override
+  String get secondarySubtitleSlot => 'Secondary';
+
+  @override
+  String get decreaseValue => 'Decrease';
+
+  @override
+  String get increaseValue => 'Increase';
 
   @override
   String get textFillColor => 'Teksti täitevärv';

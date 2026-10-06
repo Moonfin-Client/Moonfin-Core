@@ -391,6 +391,11 @@ class Media3PlayerBackend extends PlayerBackend {
               ? LogLevel.warning
               : LogLevel.debug,
         );
+      case 'secondarySubtitleError':
+        _diag(
+          'Media3: secondary subtitle failed: ${map['message'] ?? 'unknown error'}',
+          level: LogLevel.warning,
+        );
       case 'nativeErrorRetry':
         _diag(
           'Media3: retrying in place after ${map['errorCodeName'] ?? ''} '
@@ -1097,6 +1102,16 @@ class Media3PlayerBackend extends PlayerBackend {
       'preferredAudioLanguage': preferredAudioLanguage,
       'preferredTextLanguage': preferredSubtitleLanguage,
       'externalSubtitles': payload['externalSubtitles'] ?? const [],
+      if (payload['secondarySubtitleUrl'] is String)
+        'secondarySubtitleUrl': payload['secondarySubtitleUrl'],
+      if (payload['secondarySubtitleCodec'] is String)
+        'secondarySubtitleCodec': payload['secondarySubtitleCodec'],
+      'secondarySubtitleDelayMs': payload['secondarySubtitleDelayMs'] ?? 0,
+      'secondarySubtitleOffset': payload['secondarySubtitleOffset'] ?? 0.08,
+      if (payload['secondarySubtitleFontSize'] is num)
+        'secondarySubtitleFontSize': payload['secondarySubtitleFontSize'],
+      if (payload['secondarySubtitleTextColor'] is int)
+        'secondarySubtitleTextColor': payload['secondarySubtitleTextColor'],
       if (payload['audioTrackOrdinal'] is int)
         'audioTrackOrdinal': payload['audioTrackOrdinal'],
       'selectUndeterminedTextLanguage': false,
@@ -1388,6 +1403,32 @@ class Media3PlayerBackend extends PlayerBackend {
   @override
   Future<void> disableSubtitleTrack() async {
     await _invoke<void>('disableSubtitleTrack');
+  }
+
+  @override
+  Future<void> setSecondarySubtitle({String? url, String? codec}) async {
+    await _invoke<void>('setSecondarySubtitle', {'url': url, 'codec': codec});
+  }
+
+  @override
+  Future<void> setSecondarySubtitleDelay(double seconds) async {
+    await _invoke<void>('setSecondarySubtitleDelay', {
+      'seconds': seconds,
+      'delayMs': (seconds * 1000).round(),
+    });
+  }
+
+  @override
+  Future<void> configureSecondarySubtitleStyle({
+    double? fontSize,
+    double? verticalOffset,
+    int? textColor,
+  }) async {
+    await _invoke<void>('configureSecondarySubtitleStyle', {
+      'fontSize': fontSize,
+      'verticalOffset': verticalOffset,
+      'textColor': textColor,
+    });
   }
 
   @override

@@ -4069,6 +4069,10 @@ class AppLocalizationsKn extends AppLocalizations {
   String get defaultSubtitleLanguage => 'ಡೀಫಾಲ್ಟ್ ಉಪಶೀರ್ಷಿಕೆ ಭಾಷೆ';
 
   @override
+  String get preferredSecondarySubtitleLanguage =>
+      'Preferred Secondary Subtitle Language';
+
+  @override
   String get defaultToNoSubtitles => 'ಉಪಶೀರ್ಷಿಕೆಗಳಿಲ್ಲ ಎಂಬುದಕ್ಕೆ ಡೀಫಾಲ್ಟ್';
 
   @override
@@ -4077,6 +4081,18 @@ class AppLocalizationsKn extends AppLocalizations {
 
   @override
   String get subtitleSize => 'ಉಪಶೀರ್ಷಿಕೆ ಗಾತ್ರ';
+
+  @override
+  String get primarySubtitleSlot => 'Primary';
+
+  @override
+  String get secondarySubtitleSlot => 'Secondary';
+
+  @override
+  String get decreaseValue => 'Decrease';
+
+  @override
+  String get increaseValue => 'Increase';
 
   @override
   String get textFillColor => 'ಪಠ್ಯವನ್ನು ತುಂಬುವ ಬಣ್ಣ';

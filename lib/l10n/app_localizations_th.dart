@@ -4037,6 +4037,10 @@ class AppLocalizationsTh extends AppLocalizations {
   String get defaultSubtitleLanguage => 'ภาษาคำบรรยายเริ่มต้น';
 
   @override
+  String get preferredSecondarySubtitleLanguage =>
+      'Preferred Secondary Subtitle Language';
+
+  @override
   String get defaultToNoSubtitles => 'ค่าเริ่มต้นเป็นไม่มีคำบรรยาย';
 
   @override
@@ -4044,6 +4048,18 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get subtitleSize => 'ขนาดคำบรรยาย';
+
+  @override
+  String get primarySubtitleSlot => 'Primary';
+
+  @override
+  String get secondarySubtitleSlot => 'Secondary';
+
+  @override
+  String get decreaseValue => 'Decrease';
+
+  @override
+  String get increaseValue => 'Increase';
 
   @override
   String get textFillColor => 'สีเติมข้อความ';

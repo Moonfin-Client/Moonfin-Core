@@ -4105,6 +4105,10 @@ class AppLocalizationsRo extends AppLocalizations {
   String get defaultSubtitleLanguage => 'Limba implicită a subtitrărilor';
 
   @override
+  String get preferredSecondarySubtitleLanguage =>
+      'Preferred Secondary Subtitle Language';
+
+  @override
   String get defaultToNoSubtitles => 'Implicit fără subtitrări';
 
   @override
@@ -4113,6 +4117,18 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get subtitleSize => 'Dimensiunea subtitrărilor';
+
+  @override
+  String get primarySubtitleSlot => 'Primary';
+
+  @override
+  String get secondarySubtitleSlot => 'Secondary';
+
+  @override
+  String get decreaseValue => 'Decrease';
+
+  @override
+  String get increaseValue => 'Increase';
 
   @override
   String get textFillColor => 'Culoarea de umplere a textului';

@@ -3976,6 +3976,10 @@ class AppLocalizationsYue extends AppLocalizations {
   String get defaultSubtitleLanguage => '預設字幕語言';
 
   @override
+  String get preferredSecondarySubtitleLanguage =>
+      'Preferred Secondary Subtitle Language';
+
+  @override
   String get defaultToNoSubtitles => '預設為無字幕';
 
   @override
@@ -3983,6 +3987,18 @@ class AppLocalizationsYue extends AppLocalizations {
 
   @override
   String get subtitleSize => '字幕大小';
+
+  @override
+  String get primarySubtitleSlot => 'Primary';
+
+  @override
+  String get secondarySubtitleSlot => 'Secondary';
+
+  @override
+  String get decreaseValue => 'Decrease';
+
+  @override
+  String get increaseValue => 'Increase';
 
   @override
   String get textFillColor => '文字填滿顏色';

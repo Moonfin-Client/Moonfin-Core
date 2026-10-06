@@ -4070,6 +4070,10 @@ class AppLocalizationsMl extends AppLocalizations {
   String get defaultSubtitleLanguage => 'ഡിഫോൾട്ട് സബ്ടൈറ്റിൽ ഭാഷ';
 
   @override
+  String get preferredSecondarySubtitleLanguage =>
+      'Preferred Secondary Subtitle Language';
+
+  @override
   String get defaultToNoSubtitles =>
       'സബ്‌ടൈറ്റിലുകൾ ഇല്ല എന്നതിലേക്ക് ഡിഫോൾട്ട്';
 
@@ -4079,6 +4083,18 @@ class AppLocalizationsMl extends AppLocalizations {
 
   @override
   String get subtitleSize => 'ഉപശീർഷക വലുപ്പം';
+
+  @override
+  String get primarySubtitleSlot => 'Primary';
+
+  @override
+  String get secondarySubtitleSlot => 'Secondary';
+
+  @override
+  String get decreaseValue => 'Decrease';
+
+  @override
+  String get increaseValue => 'Increase';
 
   @override
   String get textFillColor => 'ടെക്സ്റ്റ് ഫിൽ കളർ';

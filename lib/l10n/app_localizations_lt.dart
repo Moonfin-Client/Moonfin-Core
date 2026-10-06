@@ -4071,6 +4071,10 @@ class AppLocalizationsLt extends AppLocalizations {
   String get defaultSubtitleLanguage => 'Numatytoji subtitrų kalba';
 
   @override
+  String get preferredSecondarySubtitleLanguage =>
+      'Preferred Secondary Subtitle Language';
+
+  @override
   String get defaultToNoSubtitles =>
       'Pagal numatytuosius nustatymus subtitrų nėra';
 
@@ -4080,6 +4084,18 @@ class AppLocalizationsLt extends AppLocalizations {
 
   @override
   String get subtitleSize => 'Subtitrų dydis';
+
+  @override
+  String get primarySubtitleSlot => 'Primary';
+
+  @override
+  String get secondarySubtitleSlot => 'Secondary';
+
+  @override
+  String get decreaseValue => 'Decrease';
+
+  @override
+  String get increaseValue => 'Increase';
 
   @override
   String get textFillColor => 'Teksto užpildymo spalva';

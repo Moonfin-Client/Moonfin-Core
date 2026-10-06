@@ -4068,6 +4068,10 @@ class AppLocalizationsBg extends AppLocalizations {
   String get defaultSubtitleLanguage => 'Език на субтитрите по подразбиране';
 
   @override
+  String get preferredSecondarySubtitleLanguage =>
+      'Preferred Secondary Subtitle Language';
+
+  @override
   String get defaultToNoSubtitles => 'По подразбиране няма субтитри';
 
   @override
@@ -4076,6 +4080,18 @@ class AppLocalizationsBg extends AppLocalizations {
 
   @override
   String get subtitleSize => 'Размер на субтитрите';
+
+  @override
+  String get primarySubtitleSlot => 'Primary';
+
+  @override
+  String get secondarySubtitleSlot => 'Secondary';
+
+  @override
+  String get decreaseValue => 'Decrease';
+
+  @override
+  String get increaseValue => 'Increase';
 
   @override
   String get textFillColor => 'Цвят на запълване на текст';

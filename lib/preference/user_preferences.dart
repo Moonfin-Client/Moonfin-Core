@@ -20,6 +20,10 @@ import 'seerr_row_config.dart';
 class UserPreferences extends ChangeNotifier {
   static const _lastServerIdPreferenceKey = 'pref_last_server_id';
   static const _lastUserIdPreferenceKey = 'pref_last_user_id';
+  static const _legacyItemSecondarySubtitleSelectionPrefix =
+      'pref_item_secondary_subtitle_selection_';
+  static const _scopedItemSecondarySubtitleSelectionPrefix =
+      'pref_scoped_item_secondary_subtitle_selection_';
 
   static const mediaBarModeMoonfin = 'moonfin';
   static const mediaBarModeMakd = 'makd';
@@ -183,6 +187,7 @@ class UserPreferences extends ChangeNotifier {
       }
       _store.remove(key);
     }
+
   }
 
   // The store is typed per getter and doesn't record which type a key holds, so each one is
@@ -522,6 +527,7 @@ class UserPreferences extends ChangeNotifier {
     'pref_prefer_default_audio_track',
     'pref_prefer_audio_description',
     'pref_subtitle_language',
+    'pref_secondary_subtitle_language',
     'pref_fallback_subtitle_language',
     'pref_subtitle_mode',
     'subtitles_background_color',
@@ -2303,6 +2309,10 @@ class UserPreferences extends ChangeNotifier {
     key: 'pref_subtitle_language',
     defaultValue: '',
   );
+  static final preferredSecondarySubtitleLanguage = Preference<String>(
+    key: 'pref_secondary_subtitle_language',
+    defaultValue: '',
+  );
 
   static final subtitlesBackgroundColor = Preference(
     key: 'subtitles_background_color',
@@ -2332,6 +2342,22 @@ class UserPreferences extends ChangeNotifier {
   static final subtitlesOffsetPosition = Preference(
     key: 'subtitles_offset_position',
     defaultValue: 0.04,
+  );
+
+  static final secondarySubtitleTextSize = Preference<double>(
+    key: 'secondary_subtitle_text_size',
+    defaultValue: 0.0,
+  );
+
+  static final secondarySubtitleOffsetPosition = Preference<double>(
+    key: 'secondary_subtitle_offset_position',
+    defaultValue: 0.08,
+  );
+
+  /// -1 means that Secondary inherits the active primary subtitle color.
+  static final secondarySubtitleTextColor = Preference<int>(
+    key: 'secondary_subtitle_text_color',
+    defaultValue: -1,
   );
 
   /// A second appearance used only while HDR reaches the screen, defaulting to
@@ -3619,6 +3645,50 @@ class UserPreferences extends ChangeNotifier {
       await _store.set(pref, index);
     }
     notifyListeners();
+  }
+
+  Map<String, dynamic>? getItemSecondarySubtitleSelection(String itemId) {
+    final pref = Preference<String>(
+      key: _itemSecondarySubtitleSelectionKey(itemId),
+      defaultValue: '',
+    );
+    final raw = _store.get(pref);
+    if (raw.isEmpty) return null;
+    try {
+      final decoded = jsonDecode(raw);
+      return decoded is Map ? decoded.cast<String, dynamic>() : null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<void> setItemSecondarySubtitleSelection(
+    String itemId,
+    Map<String, dynamic> selection,
+  ) async {
+    if (itemId.trim().isEmpty) return;
+    final pref = Preference<String>(
+      key: _itemSecondarySubtitleSelectionKey(itemId),
+      defaultValue: '',
+    );
+    await _store.set(pref, jsonEncode(selection));
+    notifyListeners();
+  }
+
+  String _itemSecondarySubtitleSelectionKey(String itemId) {
+    final suffix = _activeProfileScopeSuffix();
+    if (suffix == null) {
+      return '$_legacyItemSecondarySubtitleSelectionPrefix$itemId';
+    }
+    final legacyKey = '$_legacyItemSecondarySubtitleSelectionPrefix$itemId';
+    final scopedKey =
+        '$_scopedItemSecondarySubtitleSelectionPrefix${suffix}_$itemId';
+    // Move the old global choice to the active profile on its first read.
+    if (!_store.containsKey(scopedKey) && _store.containsKey(legacyKey)) {
+      _copyStoredValue(legacyKey, scopedKey);
+    }
+    _store.remove(legacyKey);
+    return scopedKey;
   }
 
   int getItemAudioStreamIndex(String itemId) {

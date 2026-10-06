@@ -4061,6 +4061,10 @@ class AppLocalizationsVi extends AppLocalizations {
   String get defaultSubtitleLanguage => 'Ngôn ngữ phụ đề mặc định';
 
   @override
+  String get preferredSecondarySubtitleLanguage =>
+      'Preferred Secondary Subtitle Language';
+
+  @override
   String get defaultToNoSubtitles => 'Mặc định là Không có phụ đề';
 
   @override
@@ -4068,6 +4072,18 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get subtitleSize => 'Kích thước phụ đề';
+
+  @override
+  String get primarySubtitleSlot => 'Primary';
+
+  @override
+  String get secondarySubtitleSlot => 'Secondary';
+
+  @override
+  String get decreaseValue => 'Decrease';
+
+  @override
+  String get increaseValue => 'Increase';
 
   @override
   String get textFillColor => 'Màu tô văn bản';

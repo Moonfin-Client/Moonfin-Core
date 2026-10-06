@@ -4068,6 +4068,10 @@ class AppLocalizationsNl extends AppLocalizations {
   String get defaultSubtitleLanguage => 'Standaard ondertiteltaal';
 
   @override
+  String get preferredSecondarySubtitleLanguage =>
+      'Preferred Secondary Subtitle Language';
+
+  @override
   String get defaultToNoSubtitles => 'Standaard ingesteld op Geen ondertitels';
 
   @override
@@ -4075,6 +4079,18 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get subtitleSize => 'Grootte ondertiteling';
+
+  @override
+  String get primarySubtitleSlot => 'Primary';
+
+  @override
+  String get secondarySubtitleSlot => 'Secondary';
+
+  @override
+  String get decreaseValue => 'Decrease';
+
+  @override
+  String get increaseValue => 'Increase';
 
   @override
   String get textFillColor => 'Tekstvulkleur';

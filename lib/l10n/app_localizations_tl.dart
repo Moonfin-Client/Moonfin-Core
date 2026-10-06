@@ -4075,6 +4075,10 @@ class AppLocalizationsTl extends AppLocalizations {
   String get defaultSubtitleLanguage => 'Default na Subtitle na Wika';
 
   @override
+  String get preferredSecondarySubtitleLanguage =>
+      'Preferred Secondary Subtitle Language';
+
+  @override
   String get defaultToNoSubtitles => 'Default sa Walang Subtitle';
 
   @override
@@ -4083,6 +4087,18 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String get subtitleSize => 'Laki ng Subtitle';
+
+  @override
+  String get primarySubtitleSlot => 'Primary';
+
+  @override
+  String get secondarySubtitleSlot => 'Secondary';
+
+  @override
+  String get decreaseValue => 'Decrease';
+
+  @override
+  String get increaseValue => 'Increase';
 
   @override
   String get textFillColor => 'Kulay ng Text Fill';

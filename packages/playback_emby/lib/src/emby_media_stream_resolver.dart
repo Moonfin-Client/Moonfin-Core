@@ -88,7 +88,10 @@ class EmbyMediaStreamResolver implements MediaStreamResolver {
 
     url = _appendAuth(url);
 
-    final externalSubs = MediaStreamResolver.extractExternalSubtitles(source.mediaStreams, _client.baseUrl);
+    final externalSubs = MediaStreamResolver.extractExternalSubtitles(source.mediaStreams, _client.baseUrl,
+      itemId: itemId,
+      mediaSourceId: source.id,
+    );
     final authedSubs = externalSubs
         .map(
           (s) => ExternalSubtitle(

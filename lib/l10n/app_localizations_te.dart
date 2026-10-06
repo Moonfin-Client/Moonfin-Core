@@ -4070,6 +4070,10 @@ class AppLocalizationsTe extends AppLocalizations {
   String get defaultSubtitleLanguage => 'డిఫాల్ట్ ఉపశీర్షిక భాష';
 
   @override
+  String get preferredSecondarySubtitleLanguage =>
+      'Preferred Secondary Subtitle Language';
+
+  @override
   String get defaultToNoSubtitles => 'ఉపశీర్షికలు లేవు డిఫాల్ట్';
 
   @override
@@ -4077,6 +4081,18 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get subtitleSize => 'ఉపశీర్షిక పరిమాణం';
+
+  @override
+  String get primarySubtitleSlot => 'Primary';
+
+  @override
+  String get secondarySubtitleSlot => 'Secondary';
+
+  @override
+  String get decreaseValue => 'Decrease';
+
+  @override
+  String get increaseValue => 'Increase';
 
   @override
   String get textFillColor => 'టెక్స్ట్ ఫిల్ కలర్';
