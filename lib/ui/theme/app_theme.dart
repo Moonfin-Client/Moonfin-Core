@@ -73,9 +73,6 @@ class AppTheme {
             : JellyfinTokens.shapes.smallShape;
     final inputRadius =
         pixel ? BorderRadius.zero : JellyfinTokens.shapes.smallRadius;
-    bool focused(Set<WidgetState> states) =>
-        states.contains(WidgetState.focused) &&
-        !states.contains(WidgetState.disabled);
     return ThemeData(
       useMaterial3: true,
       platform: switch (AppUiIdiomResolver.current) {
@@ -141,24 +138,6 @@ class AppTheme {
           shape: buttonShape,
         ),
       ),
-      textButtonTheme: TextButtonThemeData(
-        style: ButtonStyle(
-          backgroundColor: WidgetStateProperty.resolveWith(
-            (states) => focused(states)
-                ? c.accent.withValues(alpha: 0.18)
-                : null,
-          ),
-          overlayColor: WidgetStateProperty.resolveWith(
-            (states) => focused(states) ? Colors.transparent : null,
-          ),
-          side: WidgetStateProperty.resolveWith(
-            (states) => focused(states)
-                ? BorderSide(color: c.inputBorderFocused, width: 1)
-                : null,
-          ),
-          shape: WidgetStatePropertyAll(buttonShape),
-        ),
-      ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: c.onSurface,
@@ -193,9 +172,8 @@ class AppTheme {
         shape: pixel ? buttonShape : JellyfinTokens.shapes.extraLargeShape,
       ),
       dialogTheme: DialogThemeData(
-        backgroundColor: (spec.isGlass ? const Color(0xFF0E1117) : c.surface)
-            .withValues(alpha: 0.65),
-        surfaceTintColor: Colors.transparent,
+        backgroundColor: spec.isGlass ? const Color(0xD90E1117) : c.surface,
+        surfaceTintColor: spec.isGlass ? Colors.transparent : null,
         shape: spec.isGlass
             ? RoundedRectangleBorder(
                 borderRadius: AppRadius.circular(20),

@@ -129,7 +129,7 @@ void main() {
           theme: ThemeData.dark().copyWith(
             colorScheme: ColorScheme.dark(surface: color),
             dialogTheme: DialogThemeData(
-              backgroundColor: color.withValues(alpha: 0.65),
+              backgroundColor: color,
               surfaceTintColor: Colors.transparent,
             ),
           ),
@@ -160,18 +160,12 @@ void main() {
           matching: find.byType(Material),
         )
         .first;
-    expect(
-      tester.widget<Material>(dialog).color,
-      Colors.blueGrey.withValues(alpha: 0.65),
-    );
+    expect(tester.widget<Material>(dialog).color, Colors.blueGrey);
     surface.value = Colors.deepPurple;
     await tester.pumpAndSettle();
-    expect(
-      tester.widget<Material>(dialog).color,
-      Colors.deepPurple.withValues(alpha: 0.65),
-    );
+    expect(tester.widget<Material>(dialog).color, Colors.deepPurple);
     expect(find.text('Record This Episode'), findsOneWidget);
-    expect(find.text('Exit'), findsOneWidget);
+    expect(find.text('Close'), findsOneWidget);
   });
 
   group('recording dialog', () {
@@ -306,14 +300,14 @@ void main() {
       await open(tester, isSeries: false);
       expect(find.text('Record This Program'), findsOneWidget);
       expect(find.text('Record Series'), findsNothing);
-      await tester.tap(find.text('Exit'));
+      await tester.tap(find.text('Close'));
       await tester.pumpAndSettle();
       expect(completed, isTrue);
       expect(result, isNull);
       expect(opener.hasFocus, isTrue);
     });
 
-    testWidgets('D-pad Select activates Exit and restores focus', (
+    testWidgets('D-pad Select activates Close and restores focus', (
       tester,
     ) async {
       await open(tester);
@@ -355,14 +349,14 @@ void main() {
       );
       expect(
         find.text(
-          'Series recording scheduled; no upcoming episodes in the guide',
+          'Series recording is scheduled, but the guide has no upcoming episodes',
         ),
         findsOneWidget,
       );
       expect(find.textContaining('Next series recording:'), findsNothing);
     });
 
-    testWidgets('D-pad can choose series recording from the default Exit', (
+    testWidgets('D-pad can choose series recording from the default Close', (
       tester,
     ) async {
       await open(tester);

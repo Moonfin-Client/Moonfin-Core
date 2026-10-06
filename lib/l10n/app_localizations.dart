@@ -4294,6 +4294,36 @@ abstract class AppLocalizations {
   /// **'Record'**
   String get record;
 
+  /// Next scheduled recording for the current series, shown in the Live TV recording dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Next series recording: {dateTime}'**
+  String nextSeriesRecording(String dateTime);
+
+  /// A series recording rule exists but no future episode timer is available
+  ///
+  /// In en, this message translates to:
+  /// **'Series recording is scheduled, but the guide has no upcoming episodes'**
+  String get noUpcomingSeriesRecording;
+
+  /// Live TV player action to record only the current episode
+  ///
+  /// In en, this message translates to:
+  /// **'Record This Episode'**
+  String get recordCurrentEpisode;
+
+  /// Live TV player action to record only the current program
+  ///
+  /// In en, this message translates to:
+  /// **'Record This Program'**
+  String get recordCurrentProgram;
+
+  /// Live TV player action to cancel only the current recording, leaving any series rule intact
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel This Recording'**
+  String get cancelCurrentRecording;
+
   /// Button label to cancel a scheduled live TV recording
   ///
   /// In en, this message translates to:

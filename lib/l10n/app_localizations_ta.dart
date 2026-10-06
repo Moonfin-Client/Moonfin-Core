@@ -2484,6 +2484,24 @@ class AppLocalizationsTa extends AppLocalizations {
   String get record => 'பதிவு செய்';
 
   @override
+  String nextSeriesRecording(String dateTime) {
+    return 'Next series recording: $dateTime';
+  }
+
+  @override
+  String get noUpcomingSeriesRecording =>
+      'Series recording is scheduled, but the guide has no upcoming episodes';
+
+  @override
+  String get recordCurrentEpisode => 'Record This Episode';
+
+  @override
+  String get recordCurrentProgram => 'Record This Program';
+
+  @override
+  String get cancelCurrentRecording => 'Cancel This Recording';
+
+  @override
   String get cancelRecordingAction => 'பதிவை ரத்துசெய்';
 
   @override

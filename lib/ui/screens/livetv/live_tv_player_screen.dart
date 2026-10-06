@@ -115,7 +115,6 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   bool _recordingRefreshInProgress = false;
   int _programRequestRevision = 0;
   Timer? _programRefreshTimer;
-  Timer? _recordingRefreshTimer;
   StreamSubscription<PlayerBackend>? _backendSub;
 
   /// Watches the bringup state for the whole time the screen is up, not just
@@ -271,7 +270,6 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     _carouselPrewarm?.dispose();
     _hideTimer?.cancel();
     _programRefreshTimer?.cancel();
-    _recordingRefreshTimer?.cancel();
     _backendSub?.cancel();
     _liveFailureSub?.cancel();
     _failureCardReconcilePlayingSub?.cancel();
@@ -885,7 +883,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     }
   }
 
-  Future<bool> _fetchCurrentProgram() async {
+  Future<bool> _fetchCurrentProgram({bool withRecording = true}) async {
     final channelId = _currentChannel.id;
     final revision = ++_programRequestRevision;
     try {
@@ -974,6 +972,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
           rawData: selectedMap,
         );
       });
+      if (!withRecording) return true;
       final timers = await _client.liveTvApi.getTimers();
       if (!mounted ||
           _currentChannel.id != channelId ||
@@ -1077,13 +1076,12 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     }
   }
 
+  // The record button only shows while the overlay is up, which refreshes
+  // the timers when it opens, so a hidden overlay skips them.
   void _startProgramRefresh() {
     _programRefreshTimer = Timer.periodic(const Duration(minutes: 1), (_) {
-      if (!_recordingActionInProgress) unawaited(_fetchCurrentProgram());
-    });
-    _recordingRefreshTimer = Timer.periodic(const Duration(seconds: 3), (_) {
-      if (_infoVisible && !_recordingActionInProgress) {
-        unawaited(_refreshRecordingStatus());
+      if (!_recordingActionInProgress) {
+        unawaited(_fetchCurrentProgram(withRecording: _infoVisible));
       }
     });
   }
@@ -1186,8 +1184,11 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
 
   void _showInfo() {
     if (_isCarouselOpen) return;
+    final wasHidden = !_infoVisible;
     setState(() => _infoVisible = true);
-    if (!_recordingActionInProgress) unawaited(_fetchCurrentProgram());
+    if (wasHidden && !_recordingActionInProgress) {
+      unawaited(_refreshRecordingStatus());
+    }
     if (PlatformDetection.isTV) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted || !_infoVisible || _isOverlayInteractionActive) return;

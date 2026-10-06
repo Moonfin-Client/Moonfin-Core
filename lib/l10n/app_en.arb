@@ -3326,6 +3326,9 @@
     "description": "Button label to add a channel to favorites"
   },
   "record": "Record",
+  "@record": {
+    "description": "Button label to schedule a live TV recording"
+  },
   "nextSeriesRecording": "Next series recording: {dateTime}",
   "@nextSeriesRecording": {
     "description": "Next scheduled recording for the current series, shown in the Live TV recording dialog",
@@ -3336,7 +3339,7 @@
       }
     }
   },
-  "noUpcomingSeriesRecording": "Series recording scheduled; no upcoming episodes in the guide",
+  "noUpcomingSeriesRecording": "Series recording is scheduled, but the guide has no upcoming episodes",
   "@noUpcomingSeriesRecording": {
     "description": "A series recording rule exists but no future episode timer is available"
   },
@@ -3351,9 +3354,6 @@
   "cancelCurrentRecording": "Cancel This Recording",
   "@cancelCurrentRecording": {
     "description": "Live TV player action to cancel only the current recording, leaving any series rule intact"
-  },
-  "@record": {
-    "description": "Button label to schedule a live TV recording"
   },
   "cancelRecordingAction": "Cancel Recording",
   "@cancelRecordingAction": {

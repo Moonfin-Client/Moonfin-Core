@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../data/models/live_tv_recording_state.dart';
 import '../../../l10n/app_localizations.dart';
@@ -28,17 +29,19 @@ Future<LiveTvRecordingAction?> showLiveTvRecordingDialog({
   final canCancelSeries = recording.seriesTimerId != null;
   final nextRecording = recording.nextSeriesRecording?.toLocal();
   final locale = Localizations.localeOf(context).toString();
-  final cancelFocusNode = FocusNode(debugLabel: 'LiveTvRecordingDialogCancel');
-  var cancelFocusRequested = false;
+  final closeFocusNode = FocusNode(debugLabel: 'LiveTvRecordingDialogClose');
+  var closeFocusRequested = false;
 
   return showFocusRestoringDialog<LiveTvRecordingAction>(
     context: context,
     builder: (dialogContext) {
-      if (!cancelFocusRequested) {
-        cancelFocusRequested = true;
+      if (!closeFocusRequested) {
+        closeFocusRequested = true;
+        // On TV a navigator observer focuses a new route's first focusable
+        // after autofocus resolves, so Close takes the focus back here.
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (cancelFocusNode.context?.mounted == true) {
-            cancelFocusNode.requestFocus();
+          if (closeFocusNode.context?.mounted == true) {
+            closeFocusNode.requestFocus();
           }
         });
       }
@@ -84,6 +87,7 @@ Future<LiveTvRecordingAction?> showLiveTvRecordingDialog({
         ),
         actions: [
           adaptiveDialogAction(
+            focusRingColor: AppColorScheme.accent,
             onPressed: () => choose(
               canCancelProgram
                   ? LiveTvRecordingAction.cancelProgram
@@ -99,6 +103,7 @@ Future<LiveTvRecordingAction?> showLiveTvRecordingDialog({
           ),
           if (canCancelSeries || isSeries)
             adaptiveDialogAction(
+              focusRingColor: AppColorScheme.accent,
               onPressed: () => choose(
                 canCancelSeries
                     ? LiveTvRecordingAction.cancelSeries
@@ -112,12 +117,13 @@ Future<LiveTvRecordingAction?> showLiveTvRecordingDialog({
             ),
           adaptiveDialogAction(
             autofocus: true,
-            focusNode: cancelFocusNode,
+            focusNode: closeFocusNode,
+            focusRingColor: AppColorScheme.accent,
             onPressed: () => choose(null),
-            child: Text(l10n.exit),
+            child: Text(l10n.close),
           ),
         ],
       );
     },
-  ).whenComplete(cancelFocusNode.dispose);
+  ).whenComplete(closeFocusNode.dispose);
 }
