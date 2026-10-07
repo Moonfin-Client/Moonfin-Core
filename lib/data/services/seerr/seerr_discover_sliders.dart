@@ -96,13 +96,17 @@ class SeerrDiscoverSlider {
   // Only Seerr's discover and search routes are taken from Foreseerr's
   // endpoint, checked after `..` is resolved. The request carries the user's
   // token, and other routes, like the media list behind Recently Added, are
-  // gated by permissions Seerr leaves to its frontend.
+  // gated by permissions Seerr leaves to its frontend. A segment that decodes
+  // to a slash or a dot segment is refused too, so a proxy that decodes the
+  // path again can't climb out of those routes.
   SeerrSliderQuery? get _endpointQuery {
     final uri = Uri.tryParse(endpoint);
     if (uri == null || uri.hasScheme || uri.hasAuthority) return null;
     if (!uri.path.startsWith('/api/v1/')) return null;
     final segments = uri.pathSegments.skip(2).toList();
-    if (segments.isEmpty || segments.any((s) => s.isEmpty)) return null;
+    bool unsafe(String s) =>
+        s.isEmpty || s == '.' || s == '..' || s.contains('/');
+    if (segments.isEmpty || segments.any(unsafe)) return null;
     if (segments.first != 'discover' && segments.first != 'search') {
       return null;
     }

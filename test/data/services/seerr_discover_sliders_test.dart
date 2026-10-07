@@ -336,6 +336,10 @@ void main() {
         '/api/v1/request',
         '/api/v1/user/1/watchlist',
         '/api/v1/discover/../media',
+        '/api/v1/discover/%2e%2e/admin',
+        '/api/v1/discover/%2e%2e%2fadmin',
+        '/api/v1/search/%2e%2e%2f%2e%2e%2fadmin',
+        '/api/v1/discover/a%2Fb',
         '/api/v1/discovery/movies',
       ]) {
         expect(described(endpoint).query, isNull, reason: endpoint);
