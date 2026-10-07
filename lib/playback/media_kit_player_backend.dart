@@ -269,12 +269,16 @@ class MediaKitPlayerBackend extends PlayerBackend {
   VideoParams? _decodedVideoParams;
   StreamSubscription<VideoParams>? _videoParamsSub;
 
-  // mpv reports core-idle=yes while its playback core is inactive during
-  // startup. For Live TV, wait for core-idle=no before trusting MediaKit's
-  // playing=true.
+  /// Bumped by every open, stop and dispose, so a play() still awaiting an
+  /// earlier step can tell it has been overtaken and leave the player alone.
   int _playbackGeneration = 0;
 
-  // null = normal, false = opening/stopped, true = waiting for core-idle=no.
+  /// MediaKit reports playing=true as soon as it asks mpv to play, before mpv
+  /// has loaded anything. On a live video that made the manager treat the
+  /// whole startup as playback and arm its short stall timeout, so the
+  /// playing signal is held until mpv reports core-idle=no. Null is no gate,
+  /// false hides playing while a source opens or stops, true waits for
+  /// core-idle=no.
   bool? _liveStartupGate;
   late final Future<bool> _liveStartupObserverReady;
   final _playingGateChangedController = StreamController<void>.broadcast();
@@ -294,15 +298,12 @@ class MediaKitPlayerBackend extends PlayerBackend {
     if (native is! NativePlayer) return false;
 
     try {
-      final dynamic dyn = native;
-      await dyn.observeProperty('core-idle', (String value) async {
-        if (_liveStartupGate == true && value == 'no') {
-          _releaseLiveStartupGate();
-        }
+      await native.observeProperty('core-idle', (value) async {
+        if (value == 'no') _releaseLiveStartupGate();
       });
       return true;
     } catch (_) {
-      // Fall back to MediaKit's normal startup behavior if observation fails.
+      // Without the observer a live startup runs ungated.
       return false;
     }
   }
@@ -784,13 +785,14 @@ class MediaKitPlayerBackend extends PlayerBackend {
 
     if (gateLiveVideo) {
       _liveStartupGate = true;
+      // The core may have gone active before the gate went up, and the
+      // observer only releases a gate that is already up.
       final platform = _player.platform;
-      if (platform == null) return;
-      final coreIdle = await _tryNativeGetProperty(platform, 'core-idle');
+      final coreIdle = platform == null
+          ? null
+          : await _tryNativeGetProperty(platform, 'core-idle');
       if (!_ownsPlayback(generation)) return;
-      if (_liveStartupGate == true && coreIdle == 'no') {
-        _releaseLiveStartupGate();
-      }
+      if (coreIdle == 'no') _releaseLiveStartupGate();
     }
     _updateStaleState();
     await _applyLinuxHwdecFallbackIfNeeded(media, openPaused: openPaused);
@@ -2683,11 +2685,11 @@ class MediaKitPlayerBackend extends PlayerBackend {
     };
   }
 
-Stream<T> _mergeWithStale<T>(
-  Stream<T> source,
-  T Function() getValue, {
-  Stream<void>? extraTrigger,
-}) {
+  Stream<T> _mergeWithStale<T>(
+    Stream<T> source,
+    T Function() getValue, {
+    Stream<void>? extraTrigger,
+  }) {
     late StreamController<T> controller;
     StreamSubscription<T>? sourceSub;
     StreamSubscription<Playlist>? playlistSub;
