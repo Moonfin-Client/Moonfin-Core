@@ -254,7 +254,7 @@ void main() {
     );
   });
 
-  testWidgets('compact landscape chrome leaves four full guide rows visible', (
+  testWidgets('compact landscape chrome leaves five full guide rows visible', (
     tester,
   ) async {
     const surface = Size(960, 540);
@@ -281,12 +281,12 @@ void main() {
     expect(hero.height, closeTo(EpgHeroPreview.compactHeight, 0.1));
     expect(hero.top - rail.bottom, lessThanOrEqualTo(8));
     expect(now.top - hero.bottom, lessThanOrEqualTo(8));
-    expect(channelCells.evaluate().length, greaterThanOrEqualTo(4));
+    expect(channelCells.evaluate().length, greaterThanOrEqualTo(5));
 
-    final fourth = tester.getRect(channelCells.at(3));
+    final fifth = tester.getRect(channelCells.at(4));
     // The parent row reserves one pixel for its bottom divider.
-    expect(fourth.height, closeTo(profile.rowHeight - 1, 0.1));
-    expect(fourth.bottom, lessThanOrEqualTo(surface.height - 16));
+    expect(fifth.height, closeTo(profile.rowHeight - 1, 0.1));
+    expect(fifth.bottom, lessThanOrEqualTo(surface.height - 16));
   });
 
   /// The canvas every television lays out on, and a panel small enough that
@@ -295,7 +295,7 @@ void main() {
   /// the derivation was aiming at.
   const tvCanvases = {
     'the television canvas': (surface: Size(1324, 745), rows: 8),
-    'a surface below it': (surface: Size(960, 540), rows: 4),
+    'a surface below it': (surface: Size(960, 540), rows: 5),
   };
 
   /// Rows sitting whole inside the screen, which is what a viewer can read

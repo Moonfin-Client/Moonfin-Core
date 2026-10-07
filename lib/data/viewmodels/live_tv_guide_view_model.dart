@@ -143,20 +143,23 @@ class GuideProgram {
   /// The episode title and its `(S1:E5)` numbering, with whichever of the two
   /// the program carries. Listings often name an episode without numbering it,
   /// and movies and news carry neither, so the two have to stand on their own.
-  /// Empty when there's nothing to show.
+  /// A title that only repeats the program name is left out. Empty when
+  /// there's nothing to show.
   String get episodeLine {
     final title = episodeTitle?.trim() ?? '';
     final label = seasonEpisodeLabel;
     return [
-      if (title.isNotEmpty) title,
+      if (title.isNotEmpty && title != name.trim()) title,
       if (label != null) '($label)',
     ].join(' ');
   }
 
-  String get titleWithEpisode => [
-    name,
-    if (episodeLine.isNotEmpty) episodeLine,
-  ].join(' — ');
+  /// The name with [episodeLine] after it, for labels that put both on one
+  /// line.
+  String get titleWithEpisode {
+    final episode = episodeLine;
+    return episode.isEmpty ? name : '$name \u00B7 $episode';
+  }
 
   /// The program's categories in a fixed order, as the same [GuideFilter]
   /// values the guide's filter chips label, so callers localise them once.

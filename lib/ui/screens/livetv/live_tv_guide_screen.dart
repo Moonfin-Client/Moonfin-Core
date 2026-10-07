@@ -3178,7 +3178,7 @@ class _GuideProgramRowState extends State<_GuideProgramRow> {
         listenable: widget.horizontalController,
         builder: (_, _) => EpgProgramCell(
           title: program?.name ?? '',
-          episodeTitle: program?.episodeTitle,
+          episodeLine: program?.episodeLine,
           rating: program?.officialRating,
           tags:
               program?.categoryTags.map(widget.filterLabel).toList() ??

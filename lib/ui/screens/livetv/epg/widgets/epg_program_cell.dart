@@ -17,7 +17,7 @@ class EpgProgramCell extends StatelessWidget {
   static const String _metaSeparator = ' \u00B7 ';
 
   /// Below this content width the metadata line is dropped entirely.
-  static const double _minMetaWidth = 48;
+  static const double _minMetaWidth = 96;
 
   /// Icons set in a line of text take this share of that line's face, so they
   /// keep their weight beside it at any interface size. The genre dot is not
@@ -25,7 +25,9 @@ class EpgProgramCell extends StatelessWidget {
   static const double _inlineIconShare = 0.8;
 
   final String title;
-  final String? episodeTitle;
+
+  /// The episode title and numbering, already joined by the guide model.
+  final String? episodeLine;
 
   final EpgGenre genre;
   final bool isLive;
@@ -54,7 +56,7 @@ class EpgProgramCell extends StatelessWidget {
   const EpgProgramCell({
     super.key,
     required this.title,
-    this.episodeTitle,
+    this.episodeLine,
     required this.genre,
     required this.isLive,
     this.isPast = false,
@@ -391,11 +393,13 @@ class EpgProgramCell extends StatelessWidget {
     );
   }
 
-  /// Prefer the episode title; otherwise fit rating and tags to the width.
+  /// Metadata that fits the given width: the episode line first, then the
+  /// rating and the tags, dropping from the end once the line is full. The
+  /// first item always stays, since the line ellipsises what it can't show.
   List<String> _fittingMeta(double width, TextStyle style, TextScaler scaler) {
-    final episode = episodeTitle?.trim() ?? '';
-    if (episode.isNotEmpty) return [episode];
+    final episode = episodeLine?.trim() ?? '';
     final items = <String>[
+      if (episode.isNotEmpty) episode,
       if (rating != null && rating!.trim().isNotEmpty) rating!.trim(),
       for (final tag in tags)
         if (tag.trim().isNotEmpty) tag.trim(),
@@ -408,7 +412,7 @@ class EpgProgramCell extends StatelessWidget {
     for (final item in items) {
       final piece = fitted.isEmpty ? item : '$_metaSeparator$item';
       final pieceWidth = _textWidth(piece, style, scaler);
-      if (used + pieceWidth > width) break;
+      if (fitted.isNotEmpty && used + pieceWidth > width) break;
       used += pieceWidth;
       fitted.add(item);
     }
