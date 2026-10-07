@@ -330,6 +330,18 @@ void main() {
       }
     });
 
+    test('is ignored outside the discover and search routes', () {
+      for (final endpoint in [
+        '/api/v1/media?filter=allavailable&sort=mediaAdded',
+        '/api/v1/request',
+        '/api/v1/user/1/watchlist',
+        '/api/v1/discover/../media',
+        '/api/v1/discovery/movies',
+      ]) {
+        expect(described(endpoint).query, isNull, reason: endpoint);
+      }
+    });
+
     test('a slider with nowhere to load from is not shown', () {
       expect(described('').isSupported, isFalse);
       expect(

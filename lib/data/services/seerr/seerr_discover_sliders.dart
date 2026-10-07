@@ -93,15 +93,19 @@ class SeerrDiscoverSlider {
   /// types map to the routes Seerr's own discover page uses.
   SeerrSliderQuery? get query => _endpointQuery ?? _seerrQuery;
 
-  // Only a path under the Seerr API is taken from Foreseerr's endpoint,
-  // checked after `..` is resolved, so a server can't point the request,
-  // which carries the user's token, anywhere else.
+  // Only Seerr's discover and search routes are taken from Foreseerr's
+  // endpoint, checked after `..` is resolved. The request carries the user's
+  // token, and other routes, like the media list behind Recently Added, are
+  // gated by permissions Seerr leaves to its frontend.
   SeerrSliderQuery? get _endpointQuery {
     final uri = Uri.tryParse(endpoint);
     if (uri == null || uri.hasScheme || uri.hasAuthority) return null;
     if (!uri.path.startsWith('/api/v1/')) return null;
     final segments = uri.pathSegments.skip(2).toList();
     if (segments.isEmpty || segments.any((s) => s.isEmpty)) return null;
+    if (segments.first != 'discover' && segments.first != 'search') {
+      return null;
+    }
     return SeerrSliderQuery(segments.map(Uri.encodeComponent).join('/'), {
       for (final entry in uri.queryParameters.entries)
         if (entry.key != 'page') entry.key: entry.value,
