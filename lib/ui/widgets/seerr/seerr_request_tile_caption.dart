@@ -11,8 +11,11 @@ import '../marquee_text.dart';
 class SeerrRequestTileCaption extends StatelessWidget {
   final String title;
 
-  /// Sits above [requester] so a long name gets the tile's full width rather
-  /// than being cut out of a sentence.
+  /// The whole "Requested by name" sentence, shown when it fits the tile.
+  final String requestedByLine;
+
+  /// Above [requester] when [requestedByLine] does not fit, so a long name
+  /// gets the tile's full width rather than being cut out of a sentence.
   final String requestedByLabel;
 
   final String requester;
@@ -29,6 +32,7 @@ class SeerrRequestTileCaption extends StatelessWidget {
   const SeerrRequestTileCaption({
     super.key,
     required this.title,
+    required this.requestedByLine,
     required this.requestedByLabel,
     required this.requester,
     required this.date,
@@ -107,17 +111,34 @@ class SeerrRequestTileCaption extends StatelessWidget {
             ),
           ),
           SizedBox(height: 4 * scale),
-          Text(
-            requestedByLabel,
-            style: subtleStyle,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          Text(
-            requester,
-            style: subtleStyle,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+          // One line when the sentence fits. The tile still reserves two, so
+          // a short name leaves a line free under the date.
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final painter = TextPainter(
+                text: TextSpan(text: requestedByLine, style: subtleStyle),
+                textDirection: Directionality.of(context),
+                textScaler: textScaler,
+                maxLines: 1,
+              )..layout(maxWidth: constraints.maxWidth);
+              final fits = !painter.didExceedMaxLines;
+              painter.dispose();
+              final lines = fits
+                  ? [requestedByLine]
+                  : [requestedByLabel, requester];
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  for (final line in lines)
+                    Text(
+                      line,
+                      style: subtleStyle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                ],
+              );
+            },
           ),
           if (date.isNotEmpty)
             Text(

@@ -1578,6 +1578,7 @@ class _RequestCardState extends State<_RequestCard> with FocusStateMixin {
         ),
         SeerrRequestTileCaption(
           title: title,
+          requestedByLine: l10n.requestedByName(requester),
           requestedByLabel: l10n.requestedByLabel,
           requester: requester,
           date: date,

@@ -7,6 +7,7 @@ Widget _caption({
   required double width,
   bool marqueeTitle = false,
   double textScale = 1,
+  String requester = 'Axel Whitfield-Mortensen',
 }) {
   return MaterialApp(
     home: MediaQuery(
@@ -17,8 +18,9 @@ Widget _caption({
             width: width,
             child: SeerrRequestTileCaption(
               title: 'Toy Story 5',
+              requestedByLine: 'Requested by $requester',
               requestedByLabel: 'Requested by',
-              requester: 'Axel Whitfield-Mortensen',
+              requester: requester,
               date: '26 August 2026',
               scale: 1,
               status: const SizedBox.shrink(),
@@ -62,7 +64,16 @@ void main() {
     );
   });
 
-  testWidgets('the requester sits under its own label', (tester) async {
+  testWidgets('a short requester stays on the label line', (tester) async {
+    // The test font draws every glyph a full em wide, so keep it short.
+    await tester.pumpWidget(_caption(width: 220, requester: 'Al'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Requested by Al'), findsOneWidget);
+    expect(find.text('Requested by'), findsNothing);
+  });
+
+  testWidgets('a long requester moves under its own label', (tester) async {
     await tester.pumpWidget(_caption(width: 150));
     await tester.pumpAndSettle();
 
