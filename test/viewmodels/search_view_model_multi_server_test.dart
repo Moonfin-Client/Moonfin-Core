@@ -119,14 +119,17 @@ void main() {
 
   tearDown(() => GetIt.instance.reset());
 
-  Future<SearchViewModel> search({MultiServerRepository? across}) async {
+  Future<SearchViewModel> search({
+    MultiServerRepository? across,
+    String query = 'alien',
+  }) async {
     final vm = SearchViewModel(
       SearchRepository(clients['a']!),
       clients['a']!,
       multiServerRepository: across,
     );
     addTearDown(vm.dispose);
-    vm.searchImmediate('alien');
+    vm.searchImmediate(query);
     while (vm.state == SearchState.loading) {
       await pumpEventQueue();
     }
@@ -136,6 +139,31 @@ void main() {
   List<(String, String)> movieResults(SearchViewModel vm) => [
     for (final item in vm.results.single.items) (item.id, item.serverId),
   ];
+
+  test(
+    'program search keeps the episode name from the server response',
+    () async {
+      when(() => itemsSearch(itemsApis['a']!)).thenAnswer(
+        (_) async => {
+          'Items': [
+            {
+              'Id': 'p1',
+              'Type': 'Program',
+              'Name': 'College Football',
+              'EpisodeTitle': 'South Alabama at Kentucky',
+              'ChannelId': 'c1',
+            },
+          ],
+        },
+      );
+      final vm = await search(query: 'Kentucky');
+      final item = vm.results.single.items.single;
+      expect(vm.results.single.itemTypes, ['Program']);
+      expect(item.name, 'College Football');
+      expect(item.subtitle, 'South Alabama at Kentucky');
+      expect(item.channelId, 'c1');
+    },
+  );
 
   test('results come from every signed-in server, taking turns', () async {
     when(() => itemsSearch(itemsApis['a']!))

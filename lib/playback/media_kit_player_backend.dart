@@ -18,6 +18,8 @@ import 'hdr_output_controller.dart';
 import 'known_defects.dart';
 import 'letterbox_croppers.dart';
 import 'mpv_letterbox_crop.dart';
+import 'mpv_frame_sample.dart';
+import 'mpv_frame_sampler.dart';
 import 'server_transcode_capabilities.dart';
 
 class _ParsedMpvConfCacheEntry {
@@ -194,6 +196,8 @@ class MediaKitPlayerBackend extends PlayerBackend {
   bool _audioPassthroughApplyQueued = false;
   bool _isDisposed = false;
   late final MpvLetterboxCropper _letterboxCropper;
+  late final _MediaKitLetterboxHost _letterboxHost;
+  StreamSubscription<MpvCropGeometry?>? _letterboxGeometrySub;
   String? _appliedCustomMpvConfPath;
   DateTime? _appliedCustomMpvConfMtime;
   static final Map<String, _ParsedMpvConfCacheEntry> _parsedMpvConfCache =
@@ -265,9 +269,52 @@ class MediaKitPlayerBackend extends PlayerBackend {
   VideoParams? _decodedVideoParams;
   StreamSubscription<VideoParams>? _videoParamsSub;
 
+  /// Bumped by every open, stop and dispose, so a play() still awaiting an
+  /// earlier step can tell it has been overtaken and leave the player alone.
+  int _playbackGeneration = 0;
+
+  /// MediaKit reports playing=true as soon as it asks mpv to play, before mpv
+  /// has loaded anything. On a live video that made the manager treat the
+  /// whole startup as playback and arm its short stall timeout, so the
+  /// playing signal is held until mpv reports core-idle=no. Null is no gate,
+  /// false hides playing while a source opens or stops, true waits for
+  /// core-idle=no.
+  bool? _liveStartupGate;
+  late final Future<bool> _liveStartupObserverReady;
+  final _playingGateChangedController = StreamController<void>.broadcast();
+
+  bool _ownsPlayback(int generation) =>
+      !_isDisposed && generation == _playbackGeneration;
+
+  void _releaseLiveStartupGate() {
+    if (_liveStartupGate != true) return;
+    _liveStartupGate = null;
+    // playing=true may have already fired, so refresh the public stream.
+    _playingGateChangedController.add(null);
+  }
+
+  Future<bool> _installLiveStartupObserver() async {
+    final native = _player.platform;
+    if (native is! NativePlayer) return false;
+
+    try {
+      final dynamic dyn = native;
+      await dyn.observeProperty('core-idle', (String value) async {
+        if (value == 'no') _releaseLiveStartupGate();
+      });
+      return true;
+    } catch (_) {
+      // Without the observer a live startup runs ungated.
+      return false;
+    }
+  }
+
   late final Stream<bool> _playingStream = _mergeWithStale<bool>(
     _player.stream.playing,
-    () => _isStale ? false : _player.state.playing,
+    () => _isStale || _liveStartupGate != null
+        ? false
+        : _player.state.playing,
+    extraTrigger: _playingGateChangedController.stream,
   );
 
   late final Stream<bool> _bufferingStream = _mergeWithStale<bool>(
@@ -444,10 +491,20 @@ class MediaKitPlayerBackend extends PlayerBackend {
     this._onNativeHandleReady,
     this._hwDecodingEnabled,
   ) {
+    _liveStartupObserverReady = _installLiveStartupObserver();
+    _letterboxHost = _MediaKitLetterboxHost(this);
     _letterboxCropper = MpvLetterboxCropper(
-      _MediaKitLetterboxHost(this),
+      _letterboxHost,
       supported: letterboxCropAvailable(),
     );
+    // The desktop texture keeps the source size under video-crop, so mpv
+    // letterboxes the cropped picture inside it and the bars come back.
+    // Sizing the texture to the crop lets the picture fit any window.
+    if (!PlatformDetection.useNativeVideoSurface) {
+      _letterboxGeometrySub = _letterboxCropper.geometryStream.listen(
+        (geometry) => unawaited(_sizeTextureToCrop(geometry)),
+      );
+    }
     _prefs.addListener(_onPreferencesChanged);
     _ccTracksSub = _player.stream.tracks.listen(
       (_) => unawaited(_refreshEmbeddedCaptionTracks()),
@@ -679,12 +736,21 @@ class MediaKitPlayerBackend extends PlayerBackend {
         : payload['url']?.toString() ?? '';
     if (url.isEmpty) return;
 
+    final generation = ++_playbackGeneration;
+    _liveStartupGate = null;
+
     _resetSubtitleState();
     final media = Media(url);
     _currentUrl = media.uri;
     _isStale = true;
     _embeddedCaptionTracks = const [];
     _ccTrackSids = const [];
+
+    final gateLiveVideo =
+        payload['isLive'] == true &&
+        payload['mediaType']?.toString().trim().toLowerCase() == 'video' &&
+        (await _liveStartupObserverReady);
+    if (!_ownsPlayback(generation)) return;
 
     await _notifyNativeHandleReady();
     await _configureAppleMobileLibassFont();
@@ -703,11 +769,32 @@ class MediaKitPlayerBackend extends PlayerBackend {
       await _nativeSetProperty(native, 'sub-ass', 'yes');
     }
 
+    if (!_ownsPlayback(generation)) return;
+
     final openPaused = !autoPlay || startPosition > Duration.zero;
+    if (gateLiveVideo) {
+      _liveStartupGate = false;
+      // Hide any playing=true left over from the previous source.
+      _playingGateChangedController.add(null);
+    }
+
     // Whatever mpv reported for the previous title must not answer for this
     // one; the listener repopulates it once this file is loaded.
     _decodedVideoParams = null;
     await _player.open(media, play: !openPaused);
+    if (!_ownsPlayback(generation)) return;
+
+    if (gateLiveVideo) {
+      _liveStartupGate = true;
+      // The core may have gone active before the gate went up, and the
+      // observer only releases a gate that is already up.
+      final platform = _player.platform;
+      final coreIdle = platform == null
+          ? null
+          : await _tryNativeGetProperty(platform, 'core-idle');
+      if (!_ownsPlayback(generation)) return;
+      if (coreIdle == 'no') _releaseLiveStartupGate();
+    }
     _updateStaleState();
     await _applyLinuxHwdecFallbackIfNeeded(media, openPaused: openPaused);
     if (!_useLibass) {
@@ -715,9 +802,7 @@ class MediaKitPlayerBackend extends PlayerBackend {
     }
     await _maybeEngageNativeHdr();
     unawaited(() async {
-      await _letterboxCropper.setEnabled(
-        _prefs.get(UserPreferences.cropBlackBars),
-      );
+      await _configureLetterboxCropper();
       await _letterboxCropper.onSourceOpened(media.uri);
     }());
   }
@@ -1379,14 +1464,33 @@ class MediaKitPlayerBackend extends PlayerBackend {
     } catch (_) {}
   }
 
+  Future<void> _sizeTextureToCrop(MpvCropGeometry? geometry) async {
+    final controller = _videoController;
+    if (controller == null || _isDisposed) return;
+    try {
+      await controller.setSize(
+        width: geometry?.rect.w,
+        height: geometry?.rect.h,
+      );
+    } catch (_) {
+      // The controller can be torn down while a resize is in flight.
+    }
+  }
+
+  Future<void> _configureLetterboxCropper() async {
+    final seconds = _prefs.get(UserPreferences.cropBlackBarsIntervalSeconds);
+    await _letterboxCropper.setRecropInterval(Duration(seconds: seconds));
+    await _letterboxCropper.setEnabled(
+      _prefs.get(UserPreferences.cropBlackBars),
+    );
+  }
+
   void _onPreferencesChanged() {
     if (_isDisposed) {
       return;
     }
 
-    unawaited(
-      _letterboxCropper.setEnabled(_prefs.get(UserPreferences.cropBlackBars)),
-    );
+    unawaited(_configureLetterboxCropper());
 
     if (_audioPassthroughApplyInProgress) {
       _audioPassthroughApplyQueued = true;
@@ -1875,8 +1979,11 @@ class MediaKitPlayerBackend extends PlayerBackend {
 
   @override
   Future<void> stop() async {
+    ++_playbackGeneration;
     _resetSubtitleState();
     _isStale = true;
+    // An earlier open() may still emit playing=true before stop() finishes.
+    _liveStartupGate = false;
     await _player.stop();
   }
 
@@ -1980,6 +2087,16 @@ class MediaKitPlayerBackend extends PlayerBackend {
     return false;
   }
 
+  /// mpv 0.41 logs these when the frame sampler's software screenshot meets
+  /// a frame libswscale can't read. Playback is fine, so they're dropped
+  /// while a sample is in flight. At any other time they're real errors.
+  bool _isScreenshotScalerNoise(String message) {
+    if (!_letterboxHost.sampledRecently) return false;
+    final lower = message.toLowerCase();
+    return lower.contains('libswscale initialization failed') ||
+        lower.contains('not supported by libswscale');
+  }
+
   // A subtitle that fails to load leaves the video playing, so it's reported
   // apart from video errors and the manager only logs it.
   Map<String, dynamic> _errorEvent(String message) {
@@ -2017,7 +2134,10 @@ class MediaKitPlayerBackend extends PlayerBackend {
 
   @override
   Stream<Map<String, dynamic>>? get errorStream => _player.stream.error
-      .where((err) => !_isTransientReconnectError(err))
+      .where(
+        (err) =>
+            !_isTransientReconnectError(err) && !_isScreenshotScalerNoise(err),
+      )
       .map(_errorEvent);
 
   @override
@@ -2481,11 +2601,11 @@ class MediaKitPlayerBackend extends PlayerBackend {
     }
     final backgroundColor = _lastBackgroundColor;
     if (backgroundColor != null) {
-      await _nativeSetProperty(
-        native,
-        'sub-back-color',
-        _argbToMpvColor(backgroundColor),
-      );
+      for (final entry in subtitleBackgroundMpvProperties(
+        backgroundColor,
+      ).entries) {
+        await _nativeSetProperty(native, entry.key, entry.value);
+      }
     }
     final strokeColor = _lastStrokeColor;
     if (strokeColor != null) {
@@ -2553,10 +2673,28 @@ class MediaKitPlayerBackend extends PlayerBackend {
         '${b.toRadixString(16).padLeft(2, '0')}';
   }
 
-  Stream<T> _mergeWithStale<T>(Stream<T> source, T Function() getValue) {
+  /// mpv uses sub-back-color for a shadow until a background box is selected.
+  /// Reset both style and padding when the background becomes transparent.
+  static Map<String, String> subtitleBackgroundMpvProperties(int color) {
+    final hasBackground = ((color >> 24) & 0xff) != 0;
+    return {
+      'sub-back-color': _argbToMpvColor(color),
+      'sub-border-style': hasBackground
+          ? 'background-box'
+          : 'outline-and-shadow',
+      'sub-shadow-offset': hasBackground ? '4' : '0',
+    };
+  }
+
+  Stream<T> _mergeWithStale<T>(
+    Stream<T> source,
+    T Function() getValue, {
+    Stream<void>? extraTrigger,
+  }) {
     late StreamController<T> controller;
     StreamSubscription<T>? sourceSub;
     StreamSubscription<Playlist>? playlistSub;
+    StreamSubscription<void>? extraSub;
 
     controller = StreamController<T>.broadcast(
       onListen: () {
@@ -2569,11 +2707,13 @@ class MediaKitPlayerBackend extends PlayerBackend {
 
         sourceSub = source.listen((_) => checkAndPush());
         playlistSub = _player.stream.playlist.listen((_) => checkAndPush());
+        extraSub = extraTrigger?.listen((_) => checkAndPush());
         checkAndPush();
       },
       onCancel: () {
         sourceSub?.cancel();
         playlistSub?.cancel();
+        extraSub?.cancel();
       },
     );
     return controller.stream;
@@ -2582,17 +2722,48 @@ class MediaKitPlayerBackend extends PlayerBackend {
   @override
   void dispose() {
     _isDisposed = true;
+    ++_playbackGeneration;
+    _liveStartupGate = null;
+    _letterboxGeometrySub?.cancel();
     _letterboxCropper.cancel();
     _prefs.removeListener(_onPreferencesChanged);
     _ccTracksSub?.cancel();
     _videoParamsSub?.cancel();
     _tracksChangedController.close();
+    _playingGateChangedController.close();
     _player.dispose();
   }
 }
 
-class _MediaKitLetterboxHost implements MpvLetterboxHost {
+class _MediaKitLetterboxHost implements MpvLetterboxHost, MpvFrameSampleHost {
   _MediaKitLetterboxHost(this._backend);
+
+  final _frameSampler = MpvFrameSampler();
+  bool _sampling = false;
+  DateTime? _sampleEnded;
+
+  /// A capture is running or just finished. mpv reports a scaler failure a
+  /// moment after the shot, so the window runs past the capture.
+  bool get sampledRecently {
+    if (_sampling) return true;
+    final ended = _sampleEnded;
+    return ended != null &&
+        DateTime.now().difference(ended) < const Duration(seconds: 2);
+  }
+
+  @override
+  Future<MpvFrameSample?> sampleFrame(int width, int height) async {
+    if (_backend._isDisposed) return null;
+    final handle = await _backend._player.handle;
+    if (_backend._isDisposed) return null;
+    _sampling = true;
+    try {
+      return await _frameSampler.capture(handle, width, height);
+    } finally {
+      _sampling = false;
+      _sampleEnded = DateTime.now();
+    }
+  }
 
   final MediaKitPlayerBackend _backend;
 

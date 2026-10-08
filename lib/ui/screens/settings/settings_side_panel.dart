@@ -23,6 +23,7 @@ import '../../../data/services/topshelf_service.dart';
 import '../../../data/models/media_segment.dart';
 import '../../../data/utils/media_segment_actions.dart';
 import '../../../data/repositories/seerr_repository.dart';
+import '../../../data/services/seerr/seerr_discover_sliders.dart';
 import '../../../di/providers.dart';
 import '../../../util/idiom/app_ui_idiom.dart';
 import '../../../util/insecure_certificates.dart';

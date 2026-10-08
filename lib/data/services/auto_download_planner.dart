@@ -79,29 +79,21 @@ AutoDownloadPlan planAutoDownload({
     if (downloadedIds.contains(episode.id) ||
         inFlightIds.contains(episode.id)) {
       held++;
-    } else if (_isDownloadable(episode) && _isNew(episode, newSince)) {
+    } else if (isDownloadableEpisode(episode) && _isNew(episode, newSince)) {
       queueable.add(episode);
     }
   }
-  queueable.sort(_airedOrder);
+  queueable.sort(airedOrder);
 
   final slots = keepUnwatched == null
       ? queueable.length
       : (keepUnwatched - held).clamp(0, queueable.length);
 
-  final wanted = queueable.take(slots).toList();
-  final toQueue = <AggregatedItem>[];
-  var blocked = const <AggregatedItem>[];
-  var budget = storageBudgetBytes;
-  for (var i = 0; i < wanted.length; i++) {
-    final size = sizeOf(wanted[i]);
-    if (budget != null && size > budget) {
-      blocked = wanted.sublist(i);
-      break;
-    }
-    if (budget != null) budget -= size;
-    toQueue.add(wanted[i]);
-  }
+  final (toQueue, blocked) = fitStorageBudget(
+    queueable.take(slots).toList(),
+    budgetBytes: storageBudgetBytes,
+    sizeOf: sizeOf,
+  );
 
   return AutoDownloadPlan(
     toQueue: toQueue,
@@ -110,9 +102,28 @@ AutoDownloadPlan planAutoDownload({
   );
 }
 
+/// Splits [wanted] into what fits [budgetBytes] (null is unlimited) and
+/// what is held back. It stops at the first episode that does not fit
+/// rather than skipping ahead to smaller ones, so the order stays
+/// chronological.
+(List<AggregatedItem>, List<AggregatedItem>) fitStorageBudget(
+  List<AggregatedItem> wanted, {
+  required int? budgetBytes,
+  required int Function(AggregatedItem episode) sizeOf,
+}) {
+  if (budgetBytes == null) return (wanted, const []);
+  var budget = budgetBytes;
+  for (var i = 0; i < wanted.length; i++) {
+    final size = sizeOf(wanted[i]);
+    if (size > budget) return (wanted.sublist(0, i), wanted.sublist(i));
+    budget -= size;
+  }
+  return (wanted, const []);
+}
+
 /// Specials are never queued; placeholders, unaired episodes and episodes
 /// without a playable source use the same rule as next-up.
-bool _isDownloadable(AggregatedItem episode) =>
+bool isDownloadableEpisode(AggregatedItem episode) =>
     !isSpecialEpisode(episode) && isEligibleNextEpisodeCandidate(episode);
 
 /// Played at least [delay] ago. Without a last-played date only an
@@ -132,7 +143,8 @@ bool _isNew(AggregatedItem episode, DateTime since) {
   return added != null && !added.isBefore(since);
 }
 
-int _airedOrder(AggregatedItem a, AggregatedItem b) {
+/// Season, then episode number, with unnumbered episodes last.
+int airedOrder(AggregatedItem a, AggregatedItem b) {
   final season = _compareNullable(a.parentIndexNumber, b.parentIndexNumber);
   if (season != 0) return season;
   final episode = _compareNullable(a.indexNumber, b.indexNumber);

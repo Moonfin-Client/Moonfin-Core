@@ -76,13 +76,8 @@ class SyncService extends ChangeNotifier {
     DownloadedItem row,
     MediaServerClient client,
     String serverId,
-  ) {
-    if (row.serverId == serverId) return true;
-    if (!row.serverId.contains('://')) return false;
-    final rowUrl = normalizeServerBaseUrl(row.serverId);
-    return rowUrl.isNotEmpty &&
-        rowUrl == normalizeServerBaseUrl(client.baseUrl);
-  }
+  ) =>
+      isStoredServer(row.serverId, serverId: serverId, baseUrl: client.baseUrl);
 
   /// Pushes progress recorded offline through [client], furthest progress
   /// winning. Only rows from [serverId] are touched: a server answers a stop

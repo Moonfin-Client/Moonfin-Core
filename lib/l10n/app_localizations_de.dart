@@ -194,6 +194,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get spotlightChaptersExtras => 'Kapitel und Extras';
 
   @override
+  String get spotlightFileDetails => 'File Details';
+
+  @override
   String get spotlightSimilarRecommendations => 'Ähnlich und Vorschläge';
 
   @override
@@ -2175,6 +2178,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get shortcutMpvStats => 'mpv statistics on or off';
 
   @override
+  String get shortcutRecropBlackBars => 'Recrop black bars';
+
+  @override
   String get shortcutLeaveFullscreenOrStop =>
       'Exit fullscreen, or stop if not fullscreen';
 
@@ -2547,6 +2553,24 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get record => 'Aufnehmen';
+
+  @override
+  String nextSeriesRecording(String dateTime) {
+    return 'Next series recording: $dateTime';
+  }
+
+  @override
+  String get noUpcomingSeriesRecording =>
+      'Series recording is scheduled, but the guide has no upcoming episodes';
+
+  @override
+  String get recordCurrentEpisode => 'Record This Episode';
+
+  @override
+  String get recordCurrentProgram => 'Record This Program';
+
+  @override
+  String get cancelCurrentRecording => 'Cancel This Recording';
 
   @override
   String get cancelRecordingAction => 'Aufnahme abbrechen';
@@ -3371,7 +3395,23 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get settingsCropBlackBarsDescription =>
-      'Detect encoded letterbox bars, crop them, then fill the screen.';
+      'Detect encoded letterbox bars after playback starts, crop them, then fill the screen. Recrop from the player zoom button.';
+
+  @override
+  String get cropBlackBarsRecropInterval => 'Recrop interval';
+
+  @override
+  String get cropBlackBarsOnce => 'Once at start';
+
+  @override
+  String get cropBlackBarsEverySecond => 'Every second';
+
+  @override
+  String get settingsCropBlackBarsIntervalDescription =>
+      'Follow aspect ratio changes during playback.';
+
+  @override
+  String get playerRecroppingBlackBars => 'Recropping black bars';
 
   @override
   String get stretch => 'Strecken';
@@ -5192,6 +5232,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get seerrDiscoveryRows => 'Seerr-Entdeckungszeilen';
+
+  @override
+  String get seerrDiscoverSliders => 'Seerr Discover Sliders';
 
   @override
   String get yourWatchlist => 'Deine Watchlist';
@@ -13584,6 +13627,34 @@ class AppLocalizationsDe extends AppLocalizations {
   String autoDownloadStoppedFor(String title) {
     return 'Auto-download stopped for $title';
   }
+
+  @override
+  String get smartDownloadsSection => 'Smart downloads';
+
+  @override
+  String get smartDownloadsEnable => 'Download next episodes';
+
+  @override
+  String get smartDownloadsEnableSubtitle =>
+      'When you finish an episode on any device, Moonfin downloads the next ones. Downloaded episodes are deleted once watched.';
+
+  @override
+  String get smartDownloadsKeepReady => 'Episodes to keep downloaded';
+
+  @override
+  String smartDownloadsKeepReadySubtitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Keeps the next $count episodes downloaded',
+      one: 'Keeps the next episode downloaded',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get smartDownloadsKeepReadyLowered =>
+      'Episodes already downloaded stay on your device. The new number applies to future downloads.';
 
   @override
   String get autoDownloadSection => 'Automatic downloads';

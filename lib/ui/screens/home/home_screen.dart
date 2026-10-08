@@ -4096,6 +4096,9 @@ class _ContentRowsState extends State<_ContentRows>
     if (row.id == 'seasonal') return l10n.seasonalRowSubtitle;
 
     final config = widget.prefs.homeSectionsConfig.firstWhereOrNull((c) => c.stableId == row.id);
+    if (config != null && config.pluginSource == HomeSectionPluginSource.seerr) {
+      return l10n.seerrDiscoveryRows;
+    }
     if (config != null && config.pluginSource == HomeSectionPluginSource.custom) {
       Map<String, dynamic> rowConfig = {};
       try {

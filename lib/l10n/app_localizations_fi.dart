@@ -197,6 +197,9 @@ class AppLocalizationsFi extends AppLocalizations {
   String get spotlightChaptersExtras => 'Kappaleet ja Lisämateriaalit';
 
   @override
+  String get spotlightFileDetails => 'Tiedoston tiedot';
+
+  @override
   String get spotlightSimilarRecommendations => 'Samankaltaiset ja Suositukset';
 
   @override
@@ -2103,6 +2106,9 @@ class AppLocalizationsFi extends AppLocalizations {
       'mpv-tilastojen käyttöönotto tai poistaminen käytöstä';
 
   @override
+  String get shortcutRecropBlackBars => 'Leikkaa mustat palkit';
+
+  @override
   String get shortcutLeaveFullscreenOrStop =>
       'Poistu koko näytön tilasta tai lopeta, jos koko näytön tila ei ole käytössä';
 
@@ -2478,6 +2484,24 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get record => 'Tallenna';
+
+  @override
+  String nextSeriesRecording(String dateTime) {
+    return 'Next series recording: $dateTime';
+  }
+
+  @override
+  String get noUpcomingSeriesRecording =>
+      'Series recording is scheduled, but the guide has no upcoming episodes';
+
+  @override
+  String get recordCurrentEpisode => 'Record This Episode';
+
+  @override
+  String get recordCurrentProgram => 'Record This Program';
+
+  @override
+  String get cancelCurrentRecording => 'Cancel This Recording';
 
   @override
   String get cancelRecordingAction => 'Keskeytä tallennus';
@@ -3157,44 +3181,45 @@ class AppLocalizationsFi extends AppLocalizations {
   String get seasonalDensityHeavy => 'Painava';
 
   @override
-  String get seasonalRow => 'Seasonal Row';
+  String get seasonalRow => 'Lomateema rivi';
 
   @override
   String get seasonalRowDescription =>
-      'Show a row of holiday movies from your library, with Seerr suggestions when available.';
+      'Näytä kirjastostasi lomateemaisia elokuvia, mukaan lukien Seerrin suositukset, jos niitä on saatavilla.';
 
   @override
-  String get seasonalRowSubtitle => 'Seasonal';
+  String get seasonalRowSubtitle => 'Kausiluonteinen';
 
   @override
-  String get seasonalRowCountry => 'Country';
+  String get seasonalRowCountry => 'Maa';
 
   @override
-  String get seasonalRowCountryAuto => 'Automatic';
+  String get seasonalRowCountryAuto => 'Automaattinen';
 
   @override
-  String get countryUnitedStates => 'United States';
+  String get countryUnitedStates => 'Yhdysvallat';
 
   @override
-  String get countryCanada => 'Canada';
+  String get countryCanada => 'Kanada';
 
   @override
-  String get seasonalRowCountryOther => 'Other';
+  String get seasonalRowCountryOther => 'Muu';
 
   @override
-  String get seasonalRowHolidays => 'Holidays';
+  String get seasonalRowHolidays => 'Lomat';
 
   @override
-  String get seasonalRowHolidaysHint => 'Untick a holiday to hide its row.';
+  String get seasonalRowHolidaysHint =>
+      'Poista lomapäivän valinta, jotta sen rivi piilotetaan.';
 
   @override
-  String get holidayNewYear => 'New Year\'s';
+  String get holidayNewYear => 'Uusivuosi';
 
   @override
-  String get holidayValentines => 'Valentine\'s Day';
+  String get holidayValentines => 'Ystävänpäivä';
 
   @override
-  String get holidayEaster => 'Easter';
+  String get holidayEaster => 'Pääsiäinen';
 
   @override
   String get holidayPride => 'Pride';
@@ -3203,16 +3228,16 @@ class AppLocalizationsFi extends AppLocalizations {
   String get holidayHalloween => 'Halloween';
 
   @override
-  String get holidayThanksgiving => 'Thanksgiving';
+  String get holidayThanksgiving => 'Kiitospäivä';
 
   @override
-  String get holidayChristmas => 'Christmas Movies';
+  String get holidayChristmas => 'Jouluelokuvat';
 
   @override
-  String get holidayLunarNewYear => 'Lunar New Year';
+  String get holidayLunarNewYear => 'Lunar Uusi Vuosi';
 
   @override
-  String get holidayDiwali => 'Diwali';
+  String get holidayDiwali => 'Valofestivaali';
 
   @override
   String get themeMusic => 'Teema Musiikki';
@@ -3300,6 +3325,22 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String get settingsCropBlackBarsDescription =>
       'Tunnista koodatut letterbox-palkit, rajaa ne pois ja täytä sitten näyttö.';
+
+  @override
+  String get cropBlackBarsRecropInterval => 'Uudelleen leikkaus väli';
+
+  @override
+  String get cropBlackBarsOnce => 'Kun olet aloittanut';
+
+  @override
+  String get cropBlackBarsEverySecond => 'Joka sekunti';
+
+  @override
+  String get settingsCropBlackBarsIntervalDescription =>
+      'Seuraa kuvasuhteen muutoksia toiston aikana.';
+
+  @override
+  String get playerRecroppingBlackBars => 'Mustien palkkien uudelleenrajaus';
 
   @override
   String get stretch => 'Venytä';
@@ -5116,6 +5157,9 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get seerrDiscoveryRows => 'Seerr Suositusrivit';
+
+  @override
+  String get seerrDiscoverSliders => 'Seerr Discover liukusäätimet';
 
   @override
   String get yourWatchlist => 'Katselulistallasi';
@@ -13460,6 +13504,34 @@ class AppLocalizationsFi extends AppLocalizations {
   }
 
   @override
+  String get smartDownloadsSection => 'Smart downloads';
+
+  @override
+  String get smartDownloadsEnable => 'Download next episodes';
+
+  @override
+  String get smartDownloadsEnableSubtitle =>
+      'When you finish an episode on any device, Moonfin downloads the next ones. Downloaded episodes are deleted once watched.';
+
+  @override
+  String get smartDownloadsKeepReady => 'Episodes to keep downloaded';
+
+  @override
+  String smartDownloadsKeepReadySubtitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Keeps the next $count episodes downloaded',
+      one: 'Keeps the next episode downloaded',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get smartDownloadsKeepReadyLowered =>
+      'Episodes already downloaded stay on your device. The new number applies to future downloads.';
+
+  @override
   String get autoDownloadSection => 'Automaattiset lataukset';
 
   @override
@@ -13722,20 +13794,20 @@ class AppLocalizationsFi extends AppLocalizations {
       'Kuinka paljon tarkennus siirtyy jokaisen Siri Remote -kaukosäätimen kosketuslevyllä tehdyn pyyhkäisyn yhteydessä';
 
   @override
-  String get appleTvHomeScreen => 'Apple TV home screen';
+  String get appleTvHomeScreen => 'Apple TV:n aloitusnäyttö';
 
   @override
-  String get topShelf => 'Top Shelf';
+  String get topShelf => 'Ylähylly';
 
   @override
   String get topShelfDescription =>
-      'What the Apple TV home screen shows above the Moonfin icon when it is selected. This setting stays on this device.';
+      'Se, mitä Apple TV:n aloitusnäytössä näkyy Moonfin-kuvakkeen yläpuolella, kun se on valittuna. Tämä asetus säilyy tällä laitteella.';
 
   @override
-  String get topShelfLatestMedia => 'Latest media';
+  String get topShelfLatestMedia => 'Uusimmat mediat';
 
   @override
-  String get topShelfAppBanner => 'Moonfin banner';
+  String get topShelfAppBanner => 'Moonfin-banneri';
 
   @override
   String get keepVideoClearOfDynamicIsland =>

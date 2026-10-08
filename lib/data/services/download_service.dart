@@ -29,6 +29,7 @@ import '../models/download_quality.dart';
 import '../models/download_source.dart';
 import 'auto_download_downloader.dart';
 import '../repositories/offline_repository.dart';
+import '../utils/next_up_enrichment.dart';
 import 'background_download_coordinator.dart';
 import 'book_reader_service.dart';
 import 'download_notification_service.dart';
@@ -2956,6 +2957,20 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
     );
     return _toItems(data['Items'] as List?);
   }
+
+  @override
+  String get serverBaseUrl => _client.baseUrl;
+
+  @override
+  Future<List<AggregatedItem>> fetchRecentlyPlayedEpisodes({
+    DateTime? playedAfter,
+  }) => readRecentlyPlayedEpisodes((startIndex) async {
+    final raw = await fetchRecentlyPlayedEpisodeItems(
+      _client,
+      startIndex: startIndex,
+    );
+    return (read: raw.length, items: _toItems(raw));
+  }, playedAfter: playedAfter);
 
   List<AggregatedItem> _toItems(List? rawItems) {
     if (rawItems == null) return const [];

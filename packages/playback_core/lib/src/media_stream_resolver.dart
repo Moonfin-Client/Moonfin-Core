@@ -7,6 +7,21 @@ abstract class MediaStreamResolver {
     return mediaItem.id as String;
   }
 
+  /// Whether [mediaItem] is a live TV channel, read from the item's `Type`
+  /// or from a wrapped item's `rawData`.
+  static bool isLiveTvItem(dynamic mediaItem) {
+    if (mediaItem == null) return false;
+    try {
+      final Map? map = mediaItem is Map
+          ? mediaItem
+          : (mediaItem as dynamic).rawData as Map?;
+      final type = map?['Type']?.toString();
+      return type == 'TvChannel' || type == 'LiveTvChannel';
+    } catch (_) {
+      return false;
+    }
+  }
+
   static String? resolveStaticMediaSourceId(
     dynamic mediaItem,
     String? mediaSourceId,

@@ -27,6 +27,12 @@ const _stallTimeout = Duration(seconds: 20);
 /// newest batch first. A slot is taken at admission and given back however
 /// the fetch ends, a body abandoned partway or never read included, so
 /// dart:io never holds more than the scheduler admits.
+///
+/// dart:io hands a connection back to its pool only once the body has been
+/// read, and the cache manager never reads the body of a status it rejects,
+/// so those bodies are read here. So is an answer that lands after the header
+/// timeout gave up on it. Left unread, each one would hold a connection for
+/// good.
 class BoundedImageFileService extends FileService {
   BoundedImageFileService(
     this._client, {
@@ -99,15 +105,34 @@ class BoundedImageFileService extends FileService {
   ) async {
     final request = http.Request('GET', Uri.parse(url));
     if (headers != null) request.headers.addAll(headers);
-    final response = await _client.send(request).timeout(headerTimeout);
+    // The timeout abandons only this await. The request stays with dart:io
+    // and whatever it answers with later has to be read, or it holds its
+    // connection for good.
+    final pending = _client.send(request);
+    final http.StreamedResponse response;
+    try {
+      response = await pending.timeout(headerTimeout);
+    } on TimeoutException {
+      unawaited(pending.then(_discard, onError: (Object _) {}));
+      rethrow;
+    }
     timing?.headers(response.statusCode);
     if (response.statusCode != 200 && response.statusCode != 202) {
-      // Not modified carries no body, and the cache manager reads no body
-      // on any other status either, so the record closes and the slot goes
-      // back here or it never would.
+      // The cache manager reads the status and the headers of these and
+      // never the body, so the body is read here and a twin with an empty
+      // one goes back. The record closes and the slot returns once the
+      // connection is free again.
+      await _discard(response);
       ArtworkTimings.finish(timing);
       release();
-      return _StallBoundedResponse(HttpGetResponse(response), stallTimeout);
+      return HttpGetResponse(
+        http.StreamedResponse(
+          const Stream<List<int>>.empty(),
+          response.statusCode,
+          contentLength: 0,
+          headers: response.headers,
+        ),
+      );
     }
     return _StallBoundedResponse(
       HttpGetResponse(response),
@@ -115,6 +140,37 @@ class BoundedImageFileService extends FileService {
       timing,
       release,
     );
+  }
+
+  /// Reads a body to its end without keeping any of it. Past [stallTimeout]
+  /// the read is cancelled instead, which drops the connection and frees the
+  /// line the same way. Never throws.
+  Future<void> _discard(http.StreamedResponse response) {
+    final done = Completer<void>();
+    Timer? ceiling;
+    void finish() {
+      if (done.isCompleted) return;
+      ceiling?.cancel();
+      done.complete();
+    }
+
+    final StreamSubscription<List<int>> subscription;
+    try {
+      subscription = response.stream.listen(
+        null,
+        onError: (Object _) => finish(),
+        onDone: finish,
+        cancelOnError: true,
+      );
+    } catch (_) {
+      finish();
+      return done.future;
+    }
+    ceiling = Timer(stallTimeout, () {
+      unawaited(subscription.cancel().catchError((Object _) {}));
+      finish();
+    });
+    return done.future;
   }
 }
 

@@ -256,6 +256,10 @@
   "@spotlightChaptersExtras": {
     "description": "Title of the spotlight summary card that opens the chapters and special features modal"
   },
+  "spotlightFileDetails": "File Details",
+  "@spotlightFileDetails": {
+    "description": "Title of the spotlight summary card that opens the file details modal"
+  },
   "spotlightSimilarRecommendations": "Similar and Recommendations",
   "@spotlightSimilarRecommendations": {
     "description": "Title of the spotlight summary card that opens the similar titles and recommendations modal"
@@ -2788,6 +2792,10 @@
   "@shortcutMpvStats": {
     "description": "Player shortcut action, Windows only"
   },
+  "shortcutRecropBlackBars": "Recrop black bars",
+  "@shortcutRecropBlackBars": {
+    "description": "Player shortcut to run letterbox crop detection now"
+  },
   "shortcutLeaveFullscreenOrStop": "Exit fullscreen, or stop if not fullscreen",
   "@shortcutLeaveFullscreenOrStop": {
     "description": "What Esc does in the player"
@@ -3320,6 +3328,32 @@
   "record": "Record",
   "@record": {
     "description": "Button label to schedule a live TV recording"
+  },
+  "nextSeriesRecording": "Next series recording: {dateTime}",
+  "@nextSeriesRecording": {
+    "description": "Next scheduled recording for the current series, shown in the Live TV recording dialog",
+    "placeholders": {
+      "dateTime": {
+        "type": "String",
+        "example": "Oct 5, 2026 · 8:00 PM"
+      }
+    }
+  },
+  "noUpcomingSeriesRecording": "Series recording is scheduled, but the guide has no upcoming episodes",
+  "@noUpcomingSeriesRecording": {
+    "description": "A series recording rule exists but no future episode timer is available"
+  },
+  "recordCurrentEpisode": "Record This Episode",
+  "@recordCurrentEpisode": {
+    "description": "Live TV player action to record only the current episode"
+  },
+  "recordCurrentProgram": "Record This Program",
+  "@recordCurrentProgram": {
+    "description": "Live TV player action to record only the current program"
+  },
+  "cancelCurrentRecording": "Cancel This Recording",
+  "@cancelCurrentRecording": {
+    "description": "Live TV player action to cancel only the current recording, leaving any series rule intact"
   },
   "cancelRecordingAction": "Cancel Recording",
   "@cancelRecordingAction": {
@@ -4437,9 +4471,29 @@
   "@cropBlackBars": {
     "description": "Setting to detect and crop encoded letterbox/pillarbox bars"
   },
-  "settingsCropBlackBarsDescription": "Detect encoded letterbox bars, crop them, then fill the screen.",
+  "settingsCropBlackBarsDescription": "Detect encoded letterbox bars after playback starts, crop them, then fill the screen. Recrop from the player zoom button.",
   "@settingsCropBlackBarsDescription": {
     "description": "Description for the crop black bars playback setting"
+  },
+  "cropBlackBarsRecropInterval": "Recrop interval",
+  "@cropBlackBarsRecropInterval": {
+    "description": "Setting for how often to re-detect encoded letterbox bars"
+  },
+  "cropBlackBarsOnce": "Once at start",
+  "@cropBlackBarsOnce": {
+    "description": "Letterbox recrop interval: detect once after playback starts"
+  },
+  "cropBlackBarsEverySecond": "Every second",
+  "@cropBlackBarsEverySecond": {
+    "description": "Letterbox recrop interval: scan about once a second"
+  },
+  "settingsCropBlackBarsIntervalDescription": "Follow aspect ratio changes during playback.",
+  "@settingsCropBlackBarsIntervalDescription": {
+    "description": "Description for the letterbox recrop-interval setting"
+  },
+  "playerRecroppingBlackBars": "Recropping black bars",
+  "@playerRecroppingBlackBars": {
+    "description": "Toast when the player re-runs letterbox crop detection"
   },
   "stretch": "Stretch",
   "@stretch": {
@@ -6698,6 +6752,10 @@
   "seerrDiscoveryRows": "Seerr Discovery Rows",
   "@seerrDiscoveryRows": {
     "description": "Subtitle shown under Seerr discovery home rows"
+  },
+  "seerrDiscoverSliders": "Seerr Discover Sliders",
+  "@seerrDiscoverSliders": {
+    "description": "Seerr Lists heading for the sliders an admin set up on Seerr's discover page"
   },
   "yourWatchlist": "Your Watchlist",
   "@yourWatchlist": {
@@ -12603,6 +12661,35 @@
         "type": "String"
       }
     }
+  },
+  "smartDownloadsSection": "Smart downloads",
+  "@smartDownloadsSection": {
+    "description": "Settings section header for downloading the next episodes of a series after one is watched"
+  },
+  "smartDownloadsEnable": "Download next episodes",
+  "@smartDownloadsEnable": {
+    "description": "Switch that swaps a watched downloaded episode for the next episodes of the series"
+  },
+  "smartDownloadsEnableSubtitle": "When you finish an episode on any device, Moonfin downloads the next ones. Downloaded episodes are deleted once watched.",
+  "@smartDownloadsEnableSubtitle": {
+    "description": "Explains the smart downloads switch, including that watched episodes are deleted"
+  },
+  "smartDownloadsKeepReady": "Episodes to keep downloaded",
+  "@smartDownloadsKeepReady": {
+    "description": "Setting for how many unwatched episodes of a series stay downloaded after one is watched"
+  },
+  "smartDownloadsKeepReadySubtitle": "{count, plural, =1{Keeps the next episode downloaded} other{Keeps the next {count} episodes downloaded}}",
+  "@smartDownloadsKeepReadySubtitle": {
+    "description": "Subtitle under the episodes to keep ready setting",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "smartDownloadsKeepReadyLowered": "Episodes already downloaded stay on your device. The new number applies to future downloads.",
+  "@smartDownloadsKeepReadyLowered": {
+    "description": "Shown after lowering the episodes to keep downloaded, explaining nothing is deleted"
   },
   "autoDownloadSection": "Automatic downloads",
   "@autoDownloadSection": {

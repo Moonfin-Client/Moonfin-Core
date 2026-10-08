@@ -1360,7 +1360,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
             logoUrl: logoUrl,
             channelName: channel.name,
             channelNumber: channel.number,
-            nowTitle: now?.name,
+            nowTitle: now?.titleWithEpisode,
             nowProgress: now?.progressAt(t) ?? 0,
             remainingLabel: now == null
                 ? null
@@ -1368,7 +1368,8 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
             nextLabel: next == null
                 ? null
                 : AppLocalizations.of(context)
-                      .guideNextProgram(_formatTime(next.startDate), next.name),
+                      .guideNextProgram(
+                        _formatTime(next.startDate), next.titleWithEpisode),
             isLive: isLive,
             apple: _apple,
             onTap: () => _watchChannel(channel.id),
@@ -3177,6 +3178,7 @@ class _GuideProgramRowState extends State<_GuideProgramRow> {
         listenable: widget.horizontalController,
         builder: (_, _) => EpgProgramCell(
           title: program?.name ?? '',
+          episodeLine: program?.episodeLine,
           rating: program?.officialRating,
           tags:
               program?.categoryTags.map(widget.filterLabel).toList() ??

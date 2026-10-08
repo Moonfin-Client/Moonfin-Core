@@ -496,9 +496,6 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
         } else {
           _selectedMediaSourceId = null;
         }
-
-        _viewModel.selectedAudioIndex = null;
-        _viewModel.selectedSubtitleIndex = null;
       }
       if (!_themeMusicStarted) {
         _themeMusicStarted = true;

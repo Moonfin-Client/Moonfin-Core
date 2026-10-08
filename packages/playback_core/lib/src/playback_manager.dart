@@ -2204,16 +2204,7 @@ class PlaybackManager implements AudioOwnable {
   }
 
   /// Whether a queue item is a live TV channel.
-  bool _isLiveTvItem(dynamic item) {
-    if (item == null) return false;
-    try {
-      final Map? map = item is Map ? item : (item as dynamic).rawData as Map?;
-      final type = map?['Type']?.toString();
-      return type == 'TvChannel' || type == 'LiveTvChannel';
-    } catch (_) {
-      return false;
-    }
-  }
+  bool _isLiveTvItem(dynamic item) => MediaStreamResolver.isLiveTvItem(item);
 
   /// Whether what is playing right now is a live stream. The server decides
   /// this, never the container or the URL: a channel can arrive as HLS, as a

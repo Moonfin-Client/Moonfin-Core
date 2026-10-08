@@ -46,6 +46,8 @@ dependencies:
   sqlite3: ^2.7.0
 
   # Media Playback (Android, desktop and web. Apple runs on AetherEngine)
+  # mpv_frame_sampler_native.dart imports media_kit's NativeLibrary and libmpv
+  # bindings from src/, so check that file when moving this pin.
   media_kit: 1.2.6
   media_kit_video: 2.0.1
   # media_kit_libs_video would pull in the Apple libs packages, and

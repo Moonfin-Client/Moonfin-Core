@@ -14,11 +14,17 @@ class LocalAwarePlayerService implements PlayerService {
   final OfflineRepository _offlineRepo;
   final bool Function() _canReachServer;
 
+  /// Told which item stopped once its stop has been reported, so whatever
+  /// reacts to a finished episode reads the server's played state after it.
+  final void Function(dynamic mediaItem)? _onStopped;
+
   LocalAwarePlayerService(
     this._inner,
     this._offlineRepo, {
     required bool Function() canReachServer,
-  }) : _canReachServer = canReachServer;
+    void Function(dynamic mediaItem)? onStopped,
+  }) : _canReachServer = canReachServer,
+       _onStopped = onStopped;
 
   Future<void> _recordLocal(dynamic mediaItem, int positionTicks) async {
     try {
@@ -107,23 +113,27 @@ class LocalAwarePlayerService implements PlayerService {
     Duration position, {
     bool releaseLiveStream = true,
   }) async {
-    if (!resolution.isLocalMedia) {
-      return _inner.onPlaybackStop(
-        mediaItem,
-        resolution,
-        position,
-        releaseLiveStream: releaseLiveStream,
+    try {
+      if (!resolution.isLocalMedia) {
+        return await _inner.onPlaybackStop(
+          mediaItem,
+          resolution,
+          position,
+          releaseLiveStream: releaseLiveStream,
+        );
+      }
+      await _recordLocal(mediaItem, position.inMicroseconds * 10);
+      await _forward(
+        () => _inner.onPlaybackStop(
+          mediaItem,
+          resolution,
+          position,
+          releaseLiveStream: releaseLiveStream,
+        ),
       );
+    } finally {
+      _onStopped?.call(mediaItem);
     }
-    await _recordLocal(mediaItem, position.inMicroseconds * 10);
-    await _forward(
-      () => _inner.onPlaybackStop(
-        mediaItem,
-        resolution,
-        position,
-        releaseLiveStream: releaseLiveStream,
-      ),
-    );
   }
 
   @override

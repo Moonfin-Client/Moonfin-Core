@@ -11,6 +11,7 @@ import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../data/repositories/seerr_repository.dart';
+import 'seerr/seerr_discover_sliders.dart';
 import 'server_messages_service.dart';
 import 'settings_stream_transport.dart';
 import 'storage_path_service.dart';
@@ -1435,6 +1436,18 @@ class PluginSyncService extends ChangeNotifier {
         for (final custom in existingCustom) {
           sections.add(custom.copyWith(order: order++));
         }
+        // Seerr slider rows go missing when a client from before them saves
+        // the layout, since it drops sections it can't read. They can't be
+        // removed by hand, so a missing one was lost rather than deleted.
+        final incomingSliders = sections
+            .where(isSeerrSliderSection)
+            .map((s) => s.stableId)
+            .toSet();
+        for (final slider in _prefs.homeSectionsConfig.where(
+          (c) => isSeerrSliderSection(c) && !incomingSliders.contains(c.stableId),
+        )) {
+          sections.add(slider.copyWith(order: order++));
+        }
         _appendDisabledBuiltinSections(sections, order);
         await _raiseSinceYouWatchedRowCount(sections);
         await _prefs.setHomeSectionsConfig(sections);
@@ -2025,54 +2038,12 @@ class PluginSyncService extends ChangeNotifier {
 
 
 
-  bool _isTmdbSectionType(prefs.HomeSectionType type) {
-    return type == prefs.HomeSectionType.tmdbPopularMovies ||
-        type == prefs.HomeSectionType.tmdbTopRatedMovies ||
-        type == prefs.HomeSectionType.tmdbNowPlayingMovies ||
-        type == prefs.HomeSectionType.tmdbUpcomingMovies ||
-        type == prefs.HomeSectionType.tmdbPopularTv ||
-        type == prefs.HomeSectionType.tmdbTopRatedTv ||
-        type == prefs.HomeSectionType.tmdbAiringTodayTv ||
-        type == prefs.HomeSectionType.tmdbOnTheAirTv ||
-        type == prefs.HomeSectionType.tmdbTrendingMovieDaily ||
-        type == prefs.HomeSectionType.tmdbTrendingMovieWeekly ||
-        type == prefs.HomeSectionType.tmdbTrendingTvDaily ||
-        type == prefs.HomeSectionType.tmdbTrendingTvWeekly ||
-        type == prefs.HomeSectionType.tmdbTrendingAllWeekly;
-  }
+  bool _isTmdbSectionType(prefs.HomeSectionType type) =>
+      UserPreferences.isTmdbSectionType(type);
 
-  Preference<bool> _tmdbPrefForType(prefs.HomeSectionType type) {
-    switch (type) {
-      case prefs.HomeSectionType.tmdbPopularMovies:
-        return UserPreferences.tmdbPopularMoviesEnabled;
-      case prefs.HomeSectionType.tmdbTopRatedMovies:
-        return UserPreferences.tmdbTopRatedMoviesEnabled;
-      case prefs.HomeSectionType.tmdbNowPlayingMovies:
-        return UserPreferences.tmdbNowPlayingMoviesEnabled;
-      case prefs.HomeSectionType.tmdbUpcomingMovies:
-        return UserPreferences.tmdbUpcomingMoviesEnabled;
-      case prefs.HomeSectionType.tmdbPopularTv:
-        return UserPreferences.tmdbPopularTvEnabled;
-      case prefs.HomeSectionType.tmdbTopRatedTv:
-        return UserPreferences.tmdbTopRatedTvEnabled;
-      case prefs.HomeSectionType.tmdbAiringTodayTv:
-        return UserPreferences.tmdbAiringTodayTvEnabled;
-      case prefs.HomeSectionType.tmdbOnTheAirTv:
-        return UserPreferences.tmdbOnTheAirTvEnabled;
-      case prefs.HomeSectionType.tmdbTrendingMovieDaily:
-        return UserPreferences.tmdbTrendingMovieDailyEnabled;
-      case prefs.HomeSectionType.tmdbTrendingMovieWeekly:
-        return UserPreferences.tmdbTrendingMovieWeeklyEnabled;
-      case prefs.HomeSectionType.tmdbTrendingTvDaily:
-        return UserPreferences.tmdbTrendingTvDailyEnabled;
-      case prefs.HomeSectionType.tmdbTrendingTvWeekly:
-        return UserPreferences.tmdbTrendingTvWeeklyEnabled;
-      case prefs.HomeSectionType.tmdbTrendingAllWeekly:
-        return UserPreferences.tmdbTrendingAllWeeklyEnabled;
-      default:
-        throw ArgumentError('Not a TMDB section type: $type');
-    }
-  }
+  Preference<bool> _tmdbPrefForType(prefs.HomeSectionType type) =>
+      UserPreferences.tmdbSectionEnabled[type] ??
+      (throw ArgumentError('Not a TMDB section type: $type'));
 
   Preference<bool>? _rowEnabledPreference(prefs.HomeSectionType type) {
     if (_isTmdbSectionType(type)) return _tmdbPrefForType(type);

@@ -26,6 +26,9 @@ class EpgProgramCell extends StatelessWidget {
 
   final String title;
 
+  /// The episode title and numbering, already joined by the guide model.
+  final String? episodeLine;
+
   final EpgGenre genre;
   final bool isLive;
   final bool isPast;
@@ -53,6 +56,7 @@ class EpgProgramCell extends StatelessWidget {
   const EpgProgramCell({
     super.key,
     required this.title,
+    this.episodeLine,
     required this.genre,
     required this.isLive,
     this.isPast = false,
@@ -278,7 +282,7 @@ class EpgProgramCell extends StatelessWidget {
                         metaItems.join(_metaSeparator),
                         maxLines: 1,
                         softWrap: false,
-                        overflow: TextOverflow.clip,
+                        overflow: TextOverflow.ellipsis,
                         style: metaStyle,
                       ),
                   ],
@@ -389,10 +393,13 @@ class EpgProgramCell extends StatelessWidget {
     );
   }
 
-  /// Metadata that fits the given width, rating first and tags after, dropping
-  /// from the end once the line is full.
+  /// Metadata that fits the given width: the episode line first, then the
+  /// rating and the tags, dropping from the end once the line is full. The
+  /// first item always stays, since the line ellipsises what it can't show.
   List<String> _fittingMeta(double width, TextStyle style, TextScaler scaler) {
+    final episode = episodeLine?.trim() ?? '';
     final items = <String>[
+      if (episode.isNotEmpty) episode,
       if (rating != null && rating!.trim().isNotEmpty) rating!.trim(),
       for (final tag in tags)
         if (tag.trim().isNotEmpty) tag.trim(),
@@ -405,7 +412,7 @@ class EpgProgramCell extends StatelessWidget {
     for (final item in items) {
       final piece = fitted.isEmpty ? item : '$_metaSeparator$item';
       final pieceWidth = _textWidth(piece, style, scaler);
-      if (used + pieceWidth > width) break;
+      if (fitted.isNotEmpty && used + pieceWidth > width) break;
       used += pieceWidth;
       fitted.add(item);
     }

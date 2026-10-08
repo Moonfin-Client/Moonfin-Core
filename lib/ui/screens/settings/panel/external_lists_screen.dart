@@ -1325,10 +1325,49 @@ class _SeerrListsScreenState extends State<_SeerrListsScreen> {
   final _scope = FocusScopeNode(debugLabel: 'SeerrListsScope');
   final _firstFocusNode = FocusNode(debugLabel: 'seerr_display_rows');
 
+  /// The sliders on Seerr's discover page this client can show, or null until
+  /// they are read.
+  List<SeerrDiscoverSlider>? _sliders;
+
   @override
   void initState() {
     super.initState();
     _rows = List.of(_seerrPrefs.homeRowsConfig);
+    _loadSliders();
+  }
+
+  Future<void> _loadSliders() async {
+    try {
+      final repo = await GetIt.instance.getAsync<SeerrRepository>();
+      await repo.ensureInitialized();
+      if (!repo.isAvailable) return;
+      final sliders = await repo.getDiscoverSliders(force: true);
+      if (!mounted) return;
+      setState(() {
+        _sliders = sliders.where((s) => s.isSupported).toList();
+      });
+    } catch (e) {
+      debugPrint('[SeerrLists] Failed to load discover sliders: $e');
+    }
+  }
+
+  HomeSectionConfig _sliderSection(SeerrDiscoverSlider slider) =>
+      seerrSliderSection(
+        slider,
+        serverId: GetIt.instance<MediaServerClient>().baseUrl,
+      );
+
+  bool _isSliderShown(HomeSectionConfig entry) => GetIt.instance<UserPreferences>()
+      .homeSectionsConfig
+      .any((s) => s.stableId == entry.stableId && s.enabled);
+
+  Future<void> _setSliderShown(HomeSectionConfig entry, bool shown) async {
+    final prefs = GetIt.instance<UserPreferences>();
+    await prefs.setHomeSectionsConfig(
+      setSeerrSliderShown(prefs.homeSectionsConfig, entry, shown: shown),
+    );
+    _pushPersonalizationSync();
+    if (mounted) setState(() {});
   }
 
   @override
@@ -1413,6 +1452,19 @@ class _SeerrListsScreenState extends State<_SeerrListsScreen> {
                     );
                   }).toList(),
                 ),
+                if (_sliders case final sliders? when sliders.isNotEmpty) ...[
+                  _SectionHeader(l10n.seerrDiscoverSliders),
+                  adaptiveListSection(
+                    children: [
+                      for (final entry in sliders.map(_sliderSection))
+                        _SeerrRowSwitchTile(
+                          title: entry.pluginDisplayText ?? '',
+                          value: _isSliderShown(entry),
+                          onChanged: (shown) => _setSliderShown(entry, shown),
+                        ),
+                    ],
+                  ),
+                ],
               ],
             ),
           ),

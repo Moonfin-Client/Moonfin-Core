@@ -33,6 +33,7 @@ import '../../widgets/overlay_sheet.dart';
 import '../../widgets/focus/dpad_list_tile.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
+import '../../widgets/settings/preference_tiles.dart';
 
 class DownloadSettingsScreen extends ConsumerWidget {
   const DownloadSettingsScreen({super.key});
@@ -128,6 +129,11 @@ class DownloadSettingsScreen extends ConsumerWidget {
               ],
             ),
             if (GetIt.instance.isRegistered<AutoDownloadService>()) ...[
+              _Section(title: l10n.smartDownloadsSection),
+              _SmartDownloadsSettings(
+                prefs: prefs,
+                service: GetIt.instance<AutoDownloadService>(),
+              ),
               _Section(title: l10n.autoDownloadSection),
               _AutoDownloadSettings(
                 prefs: prefs,
@@ -774,6 +780,62 @@ class _Section extends StatelessWidget {
   }
 }
 
+/// The smart downloads switch and how many episodes it keeps ready. It has
+/// no Check now of its own, since the one in automatic downloads runs both.
+class _SmartDownloadsSettings extends StatelessWidget {
+  const _SmartDownloadsSettings({required this.prefs, required this.service});
+
+  final UserPreferences prefs;
+  final AutoDownloadService service;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final enabled = prefs.get(UserPreferences.smartDownloadsEnabled);
+
+    return adaptiveListSection(
+      children: [
+        DpadSwitchListTile(
+          useSettingsIconShell: true,
+          secondary: const Icon(Icons.skip_next),
+          title: Text(l10n.smartDownloadsEnable),
+          subtitle: Text(l10n.smartDownloadsEnableSubtitle),
+          value: enabled,
+          onChanged: service.setSmartDownloadsEnabled,
+        ),
+        if (enabled)
+          SliderPreferenceTile(
+            preference: UserPreferences.smartDownloadsKeepReady,
+            title: l10n.smartDownloadsKeepReady,
+            icon: Icons.playlist_play,
+            min: 1,
+            max: 10,
+            divisions: 9,
+            labelOf: l10n.smartDownloadsKeepReadySubtitle,
+            onChangeEnd: () => _onKeepReadyChanged(context),
+          ),
+      ],
+    );
+  }
+
+  /// Lowering the number never deletes anything, which a user expecting the
+  /// extra episodes to go would not guess, so it says so.
+  void _onKeepReadyChanged(BuildContext context) {
+    final applied = prefs.get(UserPreferences.smartDownloadsAppliedKeepReady);
+    if (prefs.get(UserPreferences.smartDownloadsKeepReady) <
+        (applied > 0 ? applied : 1)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context).smartDownloadsKeepReadyLowered,
+          ),
+        ),
+      );
+    }
+    service.onKeepReadyChanged();
+  }
+}
+
 /// The auto-download group: global rules, background refresh, a manual check
 /// with the last result, and the followed series.
 class _AutoDownloadSettings extends StatefulWidget {
@@ -883,7 +945,10 @@ class _AutoDownloadSettingsState extends State<_AutoDownloadSettings> {
                       ? l10n.autoDownloadChecking
                       : _lastRunLabel(l10n, service.lastRun),
                 ),
-                enabled: enabled && !service.isRunning,
+                enabled:
+                    (enabled ||
+                        prefs.get(UserPreferences.smartDownloadsEnabled)) &&
+                    !service.isRunning,
                 onTap: () =>
                     service.runCheck(trigger: AutoDownloadTrigger.manual),
               ),

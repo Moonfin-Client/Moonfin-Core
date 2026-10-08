@@ -562,6 +562,12 @@ abstract class AppLocalizations {
   /// **'Chapters and Extras'**
   String get spotlightChaptersExtras;
 
+  /// Title of the spotlight summary card that opens the file details modal
+  ///
+  /// In en, this message translates to:
+  /// **'File Details'**
+  String get spotlightFileDetails;
+
   /// Title of the spotlight summary card that opens the similar titles and recommendations modal
   ///
   /// In en, this message translates to:
@@ -3628,6 +3634,12 @@ abstract class AppLocalizations {
   /// **'mpv statistics on or off'**
   String get shortcutMpvStats;
 
+  /// Player shortcut to run letterbox crop detection now
+  ///
+  /// In en, this message translates to:
+  /// **'Recrop black bars'**
+  String get shortcutRecropBlackBars;
+
   /// What Esc does in the player
   ///
   /// In en, this message translates to:
@@ -4281,6 +4293,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Record'**
   String get record;
+
+  /// Next scheduled recording for the current series, shown in the Live TV recording dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Next series recording: {dateTime}'**
+  String nextSeriesRecording(String dateTime);
+
+  /// A series recording rule exists but no future episode timer is available
+  ///
+  /// In en, this message translates to:
+  /// **'Series recording is scheduled, but the guide has no upcoming episodes'**
+  String get noUpcomingSeriesRecording;
+
+  /// Live TV player action to record only the current episode
+  ///
+  /// In en, this message translates to:
+  /// **'Record This Episode'**
+  String get recordCurrentEpisode;
+
+  /// Live TV player action to record only the current program
+  ///
+  /// In en, this message translates to:
+  /// **'Record This Program'**
+  String get recordCurrentProgram;
+
+  /// Live TV player action to cancel only the current recording, leaving any series rule intact
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel This Recording'**
+  String get cancelCurrentRecording;
 
   /// Button label to cancel a scheduled live TV recording
   ///
@@ -5737,8 +5779,38 @@ abstract class AppLocalizations {
   /// Description for the crop black bars playback setting
   ///
   /// In en, this message translates to:
-  /// **'Detect encoded letterbox bars, crop them, then fill the screen.'**
+  /// **'Detect encoded letterbox bars after playback starts, crop them, then fill the screen. Recrop from the player zoom button.'**
   String get settingsCropBlackBarsDescription;
+
+  /// Setting for how often to re-detect encoded letterbox bars
+  ///
+  /// In en, this message translates to:
+  /// **'Recrop interval'**
+  String get cropBlackBarsRecropInterval;
+
+  /// Letterbox recrop interval: detect once after playback starts
+  ///
+  /// In en, this message translates to:
+  /// **'Once at start'**
+  String get cropBlackBarsOnce;
+
+  /// Letterbox recrop interval: scan about once a second
+  ///
+  /// In en, this message translates to:
+  /// **'Every second'**
+  String get cropBlackBarsEverySecond;
+
+  /// Description for the letterbox recrop-interval setting
+  ///
+  /// In en, this message translates to:
+  /// **'Follow aspect ratio changes during playback.'**
+  String get settingsCropBlackBarsIntervalDescription;
+
+  /// Toast when the player re-runs letterbox crop detection
+  ///
+  /// In en, this message translates to:
+  /// **'Recropping black bars'**
+  String get playerRecroppingBlackBars;
 
   /// Zoom mode: stretch
   ///
@@ -9063,6 +9135,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Seerr Discovery Rows'**
   String get seerrDiscoveryRows;
+
+  /// Seerr Lists heading for the sliders an admin set up on Seerr's discover page
+  ///
+  /// In en, this message translates to:
+  /// **'Seerr Discover Sliders'**
+  String get seerrDiscoverSliders;
 
   /// Seerr row: watchlist
   ///
@@ -23550,6 +23628,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Auto-download stopped for {title}'**
   String autoDownloadStoppedFor(String title);
+
+  /// Settings section header for downloading the next episodes of a series after one is watched
+  ///
+  /// In en, this message translates to:
+  /// **'Smart downloads'**
+  String get smartDownloadsSection;
+
+  /// Switch that swaps a watched downloaded episode for the next episodes of the series
+  ///
+  /// In en, this message translates to:
+  /// **'Download next episodes'**
+  String get smartDownloadsEnable;
+
+  /// Explains the smart downloads switch, including that watched episodes are deleted
+  ///
+  /// In en, this message translates to:
+  /// **'When you finish an episode on any device, Moonfin downloads the next ones. Downloaded episodes are deleted once watched.'**
+  String get smartDownloadsEnableSubtitle;
+
+  /// Setting for how many unwatched episodes of a series stay downloaded after one is watched
+  ///
+  /// In en, this message translates to:
+  /// **'Episodes to keep downloaded'**
+  String get smartDownloadsKeepReady;
+
+  /// Subtitle under the episodes to keep ready setting
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Keeps the next episode downloaded} other{Keeps the next {count} episodes downloaded}}'**
+  String smartDownloadsKeepReadySubtitle(int count);
+
+  /// Shown after lowering the episodes to keep downloaded, explaining nothing is deleted
+  ///
+  /// In en, this message translates to:
+  /// **'Episodes already downloaded stay on your device. The new number applies to future downloads.'**
+  String get smartDownloadsKeepReadyLowered;
 
   /// Settings section header for auto-download subscriptions
   ///

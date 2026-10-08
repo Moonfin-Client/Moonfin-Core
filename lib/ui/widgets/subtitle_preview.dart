@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
+import '../../playback/subtitle_view_config.dart';
 import '../../preference/user_preferences.dart';
 import '../../l10n/app_localizations.dart';
 
@@ -83,22 +84,4 @@ class _SubtitlePreviewState extends State<SubtitlePreview> {
       ),
     );
   }
-}
-
-/// 8-direction scaled shadow ring approximating a text stroke. Width scales
-/// with [fontSize] so the outline stays visible at large sizes and extends
-/// past any [TextStyle.backgroundColor] rectangle behind the glyph.
-List<Shadow>? subtitleStrokeShadows(Color strokeColor, double fontSize) {
-  if (strokeColor.a <= 0) return null;
-  final w = (fontSize / 16.0).clamp(1.0, 3.0);
-  return <Shadow>[
-    Shadow(offset: Offset(-w, -w), color: strokeColor),
-    Shadow(offset: Offset(0, -w), color: strokeColor),
-    Shadow(offset: Offset(w, -w), color: strokeColor),
-    Shadow(offset: Offset(-w, 0), color: strokeColor),
-    Shadow(offset: Offset(w, 0), color: strokeColor),
-    Shadow(offset: Offset(-w, w), color: strokeColor),
-    Shadow(offset: Offset(0, w), color: strokeColor),
-    Shadow(offset: Offset(w, w), color: strokeColor),
-  ];
 }

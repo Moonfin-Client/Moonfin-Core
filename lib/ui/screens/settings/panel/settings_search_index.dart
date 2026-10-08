@@ -1317,14 +1317,18 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         subtitle: l10n.keepVideoClearOfDynamicIslandDescription,
         keywords: ['notch', 'dynamic island', 'camera', 'safe area'],
       ),
-    if (letterboxCropSettingVisible())
-      video.leaf('crop_black_bars', l10n.cropBlackBars, keywords: [
-        'letterbox',
-        'cropdetect',
-        'black bars',
-        'mpv',
-        'android',
-      ]),
+    if (letterboxCropSettingVisible()) ...[
+      video.leaf(
+        'crop_black_bars',
+        l10n.cropBlackBars,
+        keywords: ['letterbox', 'cropdetect', 'black bars', 'mpv', 'android'],
+      ),
+      video.leaf(
+        'crop_black_bars_interval_seconds',
+        l10n.cropBlackBarsRecropInterval,
+        keywords: ['letterbox', 'dynamic crop', 'aspect ratio', 'imax'],
+      ),
+    ],
     playbackTime.screen(keywords: [
       'time left',
       'time remaining',
@@ -1691,6 +1695,19 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       ),
       downloads.leaf('download_storage_limit_mb', l10n.storageLimit),
       if (AutoDownloadService.isSupportedPlatform) ...[
+        downloads.leaf(
+          'smart_downloads_enabled',
+          l10n.smartDownloadsEnable,
+          subtitle: l10n.smartDownloadsEnableSubtitle,
+          keywords: ['smart', 'next episode', 'series', 'automatic', 'delete'],
+          header: l10n.smartDownloadsSection,
+        ),
+        downloads.leaf(
+          'smart_downloads_keep_ready',
+          l10n.smartDownloadsKeepReady,
+          keywords: ['smart', 'episodes', 'ahead'],
+          header: l10n.smartDownloadsSection,
+        ),
         downloads.leaf(
           'auto_download_enabled',
           l10n.autoDownloadEnable,
