@@ -2028,11 +2028,11 @@ class UserPreferences extends ChangeNotifier {
     values: AutoHdrSwitchingBehavior.values,
   );
 
-  /// Sends HDR video to the display untouched, by giving mpv its own D3D11
-  /// window instead of the shared 8-bit texture. Windows only, and only
-  /// engaged when the display is already in HDR mode and the content is HDR.
-  static final nativeHdrOutput = Preference(
-    key: 'native_hdr_output',
+  /// Keeps SDR titles on the shared texture, for setups where the native
+  /// window misbehaves. Windows only. HDR always takes the native window, and
+  /// a failed handover falls back by itself.
+  static final sdrUsesTexturePath = Preference(
+    key: 'sdr_uses_texture_path',
     defaultValue: false,
   );
 

@@ -2188,25 +2188,18 @@ class AppLocalizationsEt extends AppLocalizations {
       'Aktiivne — toonid kaardistatud SDR-ile selle ekraani jaoks';
 
   @override
-  String get hdrOutputDisplayNotHdr =>
-      'Mitteaktiivne — ekraan ei ole HDR režiimis';
-
-  @override
   String get hdrOutputContentSdr => 'Mitteaktiivne — sisu on SDR';
-
-  @override
-  String get hdrOutputDisabled => 'Mitteaktiivne — seadistuses välja lülitatud';
 
   @override
   String get hdrOutputFailed =>
       'Inactive — could not start, using the standard path';
 
   @override
-  String get nativeHdrOutput => 'Native HDR output';
+  String get sdrUsesTexturePath => 'Compatibility mode for SDR';
 
   @override
-  String get nativeHdrOutputDescription =>
-      'Sends HDR video to the display untouched instead of converting it to SDR. Used only when the display is already in HDR mode and the title is HDR.';
+  String get sdrUsesTexturePathDescription =>
+      'Plays SDR video through the older in-app renderer instead of its own window. Try this if SDR video misbehaves; motion may be less smooth. HDR video is not affected.';
 
   @override
   String get codec => 'Kodek';

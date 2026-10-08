@@ -133,17 +133,17 @@ int64_t HdrVideoWindow::Create() {
       hdr_window_support::Log(L"behind Create failed: %lu", GetLastError());
       return 0;
     }
-    const bool composed =
-        hdr_window_support::ApplyTransparencyComposition(top_level_, dwm_mode_);
-    // Shown immediately, black, covering the client area: from here on the
-    // runner is see-through, and Flutter drops its own black background the
-    // moment engagement succeeds - before Dart has claimed this window. With
-    // nothing behind the runner in that gap the desktop shows through.
+    // Shown immediately, black, covering the client area - but the runner
+    // stays opaque until Dart claims the window (SetVisible). Dart engages
+    // before the player screen mounts, so the page still on screen would
+    // otherwise go see-through over the video behind it. Shown rather than
+    // hidden or parked: hiding stalls mpv (see kParkedOrigin), and parking
+    // would negotiate the swapchain against whichever monitor is nearest
+    // the parked spot. The opaque runner covers it entirely meanwhile.
     PlaceBehind(true);
     hdr_window_support::Log(
-        L"behind Create: hwnd=%p at (%ld,%ld)-(%ld,%ld), composition(%d)=%d",
-        window_, screen.left, screen.top, screen.right, screen.bottom,
-        dwm_mode_, composed);
+        L"behind Create: hwnd=%p at (%ld,%ld)-(%ld,%ld), composition deferred",
+        window_, screen.left, screen.top, screen.right, screen.bottom);
     return reinterpret_cast<int64_t>(window_);
   }
 
@@ -207,6 +207,15 @@ void HdrVideoWindow::SetVisible(bool visible) {
   parked_ = !visible;
   if (visible) {
     if (behind()) {
+      // The first claim is when the runner goes see-through - see Create.
+      // Kept for the rest of the window's life, as before; Destroy reverts.
+      if (!composed_) {
+        composed_ = true;
+        const bool composed = hdr_window_support::ApplyTransparencyComposition(
+            top_level_, dwm_mode_);
+        hdr_window_support::Log(L"behind claimed: composition(%d)=%d",
+                                dwm_mode_, composed);
+      }
       // No separate ShowWindow: showing a popup hoists it over the runner and
       // only PlaceBehind's insert-after puts it back, so the one call that
       // does both atomically is the one to use.
@@ -288,9 +297,10 @@ void HdrVideoWindow::SyncPosition() {
 
 void HdrVideoWindow::Destroy() {
   if (window_ == nullptr) return;
-  if (behind()) {
+  if (behind() && composed_) {
     hdr_window_support::RevertTransparencyComposition(top_level_);
   }
+  composed_ = false;
   DestroyWindow(window_);
   window_ = nullptr;
   if (on_window_changed_) on_window_changed_();

@@ -328,10 +328,10 @@ class _VideoPlaybackScreen extends StatelessWidget {
                 ),
               if (PlatformDetection.supportsNativeHdrWindow)
                 SwitchPreferenceTile(
-                  preference: UserPreferences.nativeHdrOutput,
-                  title: l10n.nativeHdrOutput,
-                  subtitle: l10n.nativeHdrOutputDescription,
-                  icon: Icons.hdr_on,
+                  preference: UserPreferences.sdrUsesTexturePath,
+                  title: l10n.sdrUsesTexturePath,
+                  subtitle: l10n.sdrUsesTexturePathDescription,
+                  icon: Icons.layers_outlined,
                 ),
               SwitchPreferenceTile(
                 preference: UserPreferences.liveTvDirectPlayEnabled,

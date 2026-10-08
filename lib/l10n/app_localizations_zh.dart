@@ -2135,23 +2135,17 @@ class AppLocalizationsZh extends AppLocalizations {
   String get hdrOutputActiveTonemapped => '已启用 — 为当前显示器色调映射至 SDR';
 
   @override
-  String get hdrOutputDisplayNotHdr => '未启用 — 显示器未开启 HDR 模式';
-
-  @override
   String get hdrOutputContentSdr => '未启用 — 内容为 SDR';
-
-  @override
-  String get hdrOutputDisabled => '未启用 — 设置中已关闭';
 
   @override
   String get hdrOutputFailed => '未启用 — 启动失败，使用标准输出模式';
 
   @override
-  String get nativeHdrOutput => '原生 HDR 输出';
+  String get sdrUsesTexturePath => 'Compatibility mode for SDR';
 
   @override
-  String get nativeHdrOutputDescription =>
-      '直接向显示器输出原始 HDR 视频，不转换为 SDR。仅当显示器已开启 HDR 且播放内容为 HDR 时生效。';
+  String get sdrUsesTexturePathDescription =>
+      'Plays SDR video through the older in-app renderer instead of its own window. Try this if SDR video misbehaves; motion may be less smooth. HDR video is not affected.';
 
   @override
   String get codec => '编解码器';

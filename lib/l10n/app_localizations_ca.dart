@@ -2205,25 +2205,18 @@ class AppLocalizationsCa extends AppLocalizations {
       'Actiu — amb mapatge de tons a SDR per a aquesta pantalla';
 
   @override
-  String get hdrOutputDisplayNotHdr =>
-      'Inactiu — la pantalla no està en mode HDR';
-
-  @override
   String get hdrOutputContentSdr => 'Inactiu — el contingut és SDR';
-
-  @override
-  String get hdrOutputDisabled => 'Inactiu — desactivat a la configuració';
 
   @override
   String get hdrOutputFailed =>
       'Inactiu — no s\'ha pogut iniciar; s\'utilitza la via estàndard';
 
   @override
-  String get nativeHdrOutput => 'Sortida HDR nativa';
+  String get sdrUsesTexturePath => 'Compatibility mode for SDR';
 
   @override
-  String get nativeHdrOutputDescription =>
-      'Envia el vídeo HDR a la pantalla sense modificar-lo en lloc de convertir-lo a SDR. Només s\'utilitza quan la pantalla ja està en mode HDR i el títol és HDR.';
+  String get sdrUsesTexturePathDescription =>
+      'Plays SDR video through the older in-app renderer instead of its own window. Try this if SDR video misbehaves; motion may be less smooth. HDR video is not affected.';
 
   @override
   String get codec => 'Còdec';

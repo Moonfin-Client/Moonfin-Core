@@ -31,8 +31,40 @@ struct HdrDisplayState {
 
 // Deliberately not guarded with `#if defined(DISPLAYCONFIG_DEVICE_INFO_...)`:
 // those names are enumerators, not macros, so such a guard always fails and
-// silently selects a stub. The APIs have been in the SDK since Windows 10
-// 1703, under this project's floor.
+// silently selects a stub. The legacy APIs have been in the SDK since Windows
+// 10 1703, under this project's floor; the 24H2 ones need SDK 10.0.26100 to
+// build and are only called on a build that has them.
+
+// Windows 11 24H2, the first build with the HDR-specific display requests.
+constexpr DWORD kFirstBuildWithHdrRequests = 26100;
+
+// Whether the HDR-specific requests exist, decided by build: a 24H2 switch
+// failing for a real reason must not fall back to the legacy request, which
+// there can switch WCG instead of HDR. RtlGetVersion, because GetVersionEx
+// reports what the manifest allows.
+bool HasHdrDisplayRequests() {
+  static const bool has_requests = [] {
+    using RtlGetVersionFn = LONG(WINAPI*)(PRTL_OSVERSIONINFOW);
+    HMODULE ntdll = GetModuleHandleW(L"ntdll.dll");
+    if (ntdll == nullptr) {
+      return false;
+    }
+    auto rtl_get_version = reinterpret_cast<RtlGetVersionFn>(
+        GetProcAddress(ntdll, "RtlGetVersion"));
+    if (rtl_get_version == nullptr) {
+      return false;
+    }
+    RTL_OSVERSIONINFOW version = {};
+    version.dwOSVersionInfoSize = sizeof(version);
+    if (rtl_get_version(&version) != 0) {
+      return false;
+    }
+    return version.dwMajorVersion > 10 ||
+           (version.dwMajorVersion == 10 &&
+            version.dwBuildNumber >= kFirstBuildWithHdrRequests);
+  }();
+  return has_requests;
+}
 
 bool GetMonitorDeviceNameFromWindow(HWND hwnd, std::wstring* device_name) {
   if (device_name == nullptr) {
@@ -102,6 +134,24 @@ bool QueryHdrStateForTarget(const DISPLAYCONFIG_PATH_TARGET_INFO& target_info,
     return false;
   }
 
+  // Windows 11 24H2 reports advanced color as enabled for an SDR display
+  // running Auto Color Management or wide color gamut, so the legacy query
+  // alone would call that display HDR. The v2 query names the active mode.
+  if (HasHdrDisplayRequests()) {
+    DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO_2 info2 = {};
+    info2.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_ADVANCED_COLOR_INFO_2;
+    info2.header.size = sizeof(info2);
+    info2.header.adapterId = target_info.adapterId;
+    info2.header.id = target_info.id;
+    if (DisplayConfigGetDeviceInfo(&info2.header) == ERROR_SUCCESS) {
+      state->supported = info2.highDynamicRangeSupported != 0;
+      state->enabled =
+          info2.activeColorMode == DISPLAYCONFIG_ADVANCED_COLOR_MODE_HDR;
+      return true;
+    }
+    // Falls back to the legacy query, made safe by its WCG check.
+  }
+
   DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO info = {};
   info.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_ADVANCED_COLOR_INFO;
   info.header.size = sizeof(info);
@@ -112,25 +162,29 @@ bool QueryHdrStateForTarget(const DISPLAYCONFIG_PATH_TARGET_INFO& target_info,
   }
 
   state->supported = info.advancedColorSupported != 0;
-  state->enabled = info.advancedColorEnabled != 0;
+  // Wide color gamut enforced means an SDR display under Auto Color
+  // Management, not HDR. Builds before 24H2 have such displays too.
+  state->enabled =
+      info.advancedColorEnabled != 0 && info.wideColorEnforced == 0;
   return true;
 }
 
-HdrDisplayState QueryHdrStateForWindow(HWND hwnd) {
-  HdrDisplayState state;
-
+// Empty when the display could not be read, which Dart reports as unknown
+// rather than SDR.
+std::optional<HdrDisplayState> QueryHdrStateForWindow(HWND hwnd) {
   std::wstring device_name;
   if (!GetMonitorDeviceNameFromWindow(hwnd, &device_name)) {
-    return state;
+    return std::nullopt;
   }
 
   DISPLAYCONFIG_PATH_TARGET_INFO target_info = {};
   if (!ResolveTargetForDeviceName(device_name, &target_info)) {
-    return state;
+    return std::nullopt;
   }
 
+  HdrDisplayState state;
   if (!QueryHdrStateForTarget(target_info, &state)) {
-    return {};
+    return std::nullopt;
   }
 
   return state;
@@ -145,6 +199,19 @@ bool SetHdrStateForWindow(HWND hwnd, bool enabled) {
   DISPLAYCONFIG_PATH_TARGET_INFO target_info = {};
   if (!ResolveTargetForDeviceName(device_name, &target_info)) {
     return false;
+  }
+
+  // On 24H2 advanced color also covers wide color gamut, so switching it can
+  // leave an SDR display in WCG rather than HDR. A refusal of the
+  // HDR-specific request is reported as one, not retried the legacy way.
+  if (HasHdrDisplayRequests()) {
+    DISPLAYCONFIG_SET_HDR_STATE hdr_request = {};
+    hdr_request.header.type = DISPLAYCONFIG_DEVICE_INFO_SET_HDR_STATE;
+    hdr_request.header.size = sizeof(hdr_request);
+    hdr_request.header.adapterId = target_info.adapterId;
+    hdr_request.header.id = target_info.id;
+    hdr_request.enableHdr = enabled ? 1 : 0;
+    return DisplayConfigSetDeviceInfo(&hdr_request.header) == ERROR_SUCCESS;
   }
 
   DISPLAYCONFIG_SET_ADVANCED_COLOR_STATE request = {};
@@ -214,11 +281,15 @@ bool FlutterWindow::OnCreate() {
 
         if (method == "getHdrState") {
           const auto state = QueryHdrStateForWindow(GetHandle());
+          if (!state) {
+            result->Success();
+            return;
+          }
           flutter::EncodableMap payload;
           payload[flutter::EncodableValue("supported")] =
-              flutter::EncodableValue(state.supported);
+              flutter::EncodableValue(state->supported);
           payload[flutter::EncodableValue("enabled")] =
-              flutter::EncodableValue(state.enabled);
+              flutter::EncodableValue(state->enabled);
           result->Success(flutter::EncodableValue(payload));
           return;
         }

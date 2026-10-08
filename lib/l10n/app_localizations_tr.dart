@@ -2185,24 +2185,18 @@ class AppLocalizationsTr extends AppLocalizations {
       'Aktif — bu ekran için SDR\'a ton eşlemesi yapıldı';
 
   @override
-  String get hdrOutputDisplayNotHdr => 'Devre dışı — ekran HDR modunda değil';
-
-  @override
   String get hdrOutputContentSdr => 'Devre dışı — içerik SDR';
-
-  @override
-  String get hdrOutputDisabled => 'Devre dışı — ayarlardan kapatıldı';
 
   @override
   String get hdrOutputFailed =>
       'Devre dışı — başlatılamadı, standart yol kullanılıyor';
 
   @override
-  String get nativeHdrOutput => 'Yerel HDR çıkışı';
+  String get sdrUsesTexturePath => 'Compatibility mode for SDR';
 
   @override
-  String get nativeHdrOutputDescription =>
-      'HDR videoyu SDR\'a dönüştürmek yerine ekrana olduğu gibi gönderir. Yalnızca ekran zaten HDR modundayken ve oynatılan içerik HDR olduğunda kullanılır.';
+  String get sdrUsesTexturePathDescription =>
+      'Plays SDR video through the older in-app renderer instead of its own window. Try this if SDR video misbehaves; motion may be less smooth. HDR video is not affected.';
 
   @override
   String get codec => 'Kodek';

@@ -1471,10 +1471,10 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       video.leaf('auto_hdr_switching_behavior', l10n.autoHdrSwitching),
     if (PlatformDetection.supportsNativeHdrWindow)
       video.leaf(
-        'native_hdr_output',
-        l10n.nativeHdrOutput,
-        subtitle: l10n.nativeHdrOutputDescription,
-        keywords: ['hdr10', 'passthrough', 'tone mapping'],
+        'sdr_uses_texture_path',
+        l10n.sdrUsesTexturePath,
+        subtitle: l10n.sdrUsesTexturePathDescription,
+        keywords: ['sdr', 'texture', 'judder', 'stutter', 'compatibility'],
       ),
     video.leaf(
       'pref_live_direct',

@@ -2215,24 +2215,18 @@ class AppLocalizationsRo extends AppLocalizations {
       'Activ — conversie tonală la SDR pentru acest ecran';
 
   @override
-  String get hdrOutputDisplayNotHdr => 'Inactiv — ecranul nu este în modul HDR';
-
-  @override
   String get hdrOutputContentSdr => 'Inactiv — conținutul este SDR';
-
-  @override
-  String get hdrOutputDisabled => 'Inactiv — dezactivat în setări';
 
   @override
   String get hdrOutputFailed =>
       'Inactiv — nu a putut porni, se folosește calea standard';
 
   @override
-  String get nativeHdrOutput => 'Ieșire HDR nativă';
+  String get sdrUsesTexturePath => 'Compatibility mode for SDR';
 
   @override
-  String get nativeHdrOutputDescription =>
-      'Trimite videoclipul HDR către ecran nemodificat, în loc să-l convertească în SDR. Folosit doar când ecranul este deja în modul HDR și titlul este HDR.';
+  String get sdrUsesTexturePathDescription =>
+      'Plays SDR video through the older in-app renderer instead of its own window. Try this if SDR video misbehaves; motion may be less smooth. HDR video is not affected.';
 
   @override
   String get codec => 'Codec';

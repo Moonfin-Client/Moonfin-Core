@@ -402,9 +402,9 @@ class PlatformDetection {
   /// Windows user picking the TV layout would activate this by accident.
   ///
   /// This only says the platform is capable. Whether the window is actually
-  /// used is decided per session from the content, the display's HDR state and
-  /// [UserPreferences.nativeHdrOutput] - see `HdrOutputController`. That
-  /// preference is the off switch; there is deliberately no compile-time one.
+  /// used is decided per session - see `HdrOutputController`. For SDR titles
+  /// [UserPreferences.sdrUsesTexturePath] is the off switch; there is
+  /// deliberately no compile-time one.
   static bool get supportsNativeHdrWindow => isWindows;
 
   /// Apple platforms use the shared AVPlayer-based preview/theme channels

@@ -2203,25 +2203,18 @@ class AppLocalizationsFr extends AppLocalizations {
       'Active : conversion en SDR pour cet écran';
 
   @override
-  String get hdrOutputDisplayNotHdr =>
-      'Inactive : l\'écran n\'est pas en mode HDR';
-
-  @override
   String get hdrOutputContentSdr => 'Inactive : le contenu est en SDR';
-
-  @override
-  String get hdrOutputDisabled => 'Inactive : désactivée dans les paramètres';
 
   @override
   String get hdrOutputFailed =>
       'Inactive : fenêtre HDR indisponible, retour au rendu standard';
 
   @override
-  String get nativeHdrOutput => 'Sortie HDR native';
+  String get sdrUsesTexturePath => 'Compatibility mode for SDR';
 
   @override
-  String get nativeHdrOutputDescription =>
-      'Transmet la vidéo HDR à l\'écran sans la modifier, au lieu de la convertir en SDR. Utilisée uniquement si l\'écran est déjà en mode HDR et si le titre est en HDR.';
+  String get sdrUsesTexturePathDescription =>
+      'Plays SDR video through the older in-app renderer instead of its own window. Try this if SDR video misbehaves; motion may be less smooth. HDR video is not affected.';
 
   @override
   String get codec => 'Codec';

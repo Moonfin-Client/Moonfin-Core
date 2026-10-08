@@ -200,6 +200,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     final backend = _hdrBackend;
     if (backend == null) return null;
     final status = backend.hdrOutput.status.value;
+    // The native window carries SDR titles too; there is no HDR to report.
+    if (status.isActive && !backend.isPlayingHdrContent) {
+      return l10n.hdrOutputContentSdr;
+    }
     // Engaged, but this display is not receiving HDR - the window sits on a
     // monitor without it.
     if (status.isActive && hdrTonemapped) {
@@ -209,9 +213,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       HdrOutputStatus.active => l10n.hdrOutputActive(
         HdrOutputController.activeOutputFormat,
       ),
-      HdrOutputStatus.displayNotInHdrMode => l10n.hdrOutputDisplayNotHdr,
       HdrOutputStatus.contentIsSdr => l10n.hdrOutputContentSdr,
-      HdrOutputStatus.disabledByPreference => l10n.hdrOutputDisabled,
       HdrOutputStatus.failed => l10n.hdrOutputFailed,
     };
   }

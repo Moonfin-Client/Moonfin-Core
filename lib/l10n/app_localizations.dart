@@ -3802,23 +3802,11 @@ abstract class AppLocalizations {
   /// **'Active — tone-mapped to SDR for this display'**
   String get hdrOutputActiveTonemapped;
 
-  /// Stream info value when the display has not been switched into HDR
-  ///
-  /// In en, this message translates to:
-  /// **'Inactive — display is not in HDR mode'**
-  String get hdrOutputDisplayNotHdr;
-
   /// Stream info value when the title itself is not HDR
   ///
   /// In en, this message translates to:
   /// **'Inactive — content is SDR'**
   String get hdrOutputContentSdr;
-
-  /// Stream info value when the native HDR output preference is off
-  ///
-  /// In en, this message translates to:
-  /// **'Inactive — turned off in settings'**
-  String get hdrOutputDisabled;
 
   /// Stream info value when the native HDR window could not be created
   ///
@@ -3826,17 +3814,17 @@ abstract class AppLocalizations {
   /// **'Inactive — could not start, using the standard path'**
   String get hdrOutputFailed;
 
-  /// Settings label for sending HDR to the display untouched
+  /// Settings label for keeping SDR video on the older in-app renderer instead of the native window
   ///
   /// In en, this message translates to:
-  /// **'Native HDR output'**
-  String get nativeHdrOutput;
+  /// **'Compatibility mode for SDR'**
+  String get sdrUsesTexturePath;
 
-  /// Settings description for native HDR output
+  /// Settings description for the SDR compatibility mode
   ///
   /// In en, this message translates to:
-  /// **'Sends HDR video to the display untouched instead of converting it to SDR. Used only when the display is already in HDR mode and the title is HDR.'**
-  String get nativeHdrOutputDescription;
+  /// **'Plays SDR video through the older in-app renderer instead of its own window. Try this if SDR video misbehaves; motion may be less smooth. HDR video is not affected.'**
+  String get sdrUsesTexturePathDescription;
 
   /// Stream info label for codec
   ///

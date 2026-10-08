@@ -2,13 +2,15 @@ import 'package:flutter/foundation.dart';
 
 import 'hdr_video_window.dart';
 
-/// Whether native HDR output is running and, if not, why - for the playback
+/// Whether mpv's native window is running and, if not, why - for the playback
 /// info sheet.
 enum HdrOutputStatus {
-  /// Running: HDR is reaching the display untouched.
+  /// Running: mpv presents into its own window, HDR or SDR. Whether HDR is
+  /// actually reaching the display is a separate question.
   active,
-  disabledByPreference,
-  displayNotInHdrMode,
+
+  /// Undecided (the reset state, also shown while a title loads), or an SDR
+  /// title kept on the texture by the `sdrUsesTexturePath` preference.
   contentIsSdr,
 
   /// The window could not be created, or mpv would not take it. Sticky for
@@ -17,29 +19,22 @@ enum HdrOutputStatus {
 
   bool get isActive => this == active;
 
-  /// Whether the answer came from one of the two expensive checks and may
-  /// have been given too early, so a later fact is allowed to reopen it.
-  ///
-  /// Both are questions whose true answer can arrive after they were asked:
-  /// mpv reports what it decoded only once the file is loaded, and a big
-  /// remux over the network can take longer than any bounded wait; the
-  /// display is switched by the auto-HDR preference asynchronously. The
-  /// preference and a failure, by contrast, are settled for the session.
-  bool get isRevisitable => this == contentIsSdr || this == displayNotInHdrMode;
+  /// Whether a later fact may reopen the decision. Only the undecided state:
+  /// a failure is settled for the session.
+  bool get isRevisitable => this == contentIsSdr;
 }
 
 /// Decides whether mpv gets its own window, and owns that window's lifetime.
 ///
-/// The decision is made once per presenting screen and then sticks. `Player`
-/// and `VideoController` are built once in the `MediaKitPlayerBackend` factory
-/// and registered as a startup singleton, so there is no clean way to swap
-/// paths per item — and there is no need to. Once engaged, SDR content in the
-/// native window is not a regression: mpv renders it, and with `gpu-next`
-/// renders it better than the texture path does.
+/// Once engaged the decision sticks across items: SDR content in the native
+/// window is not a regression - mpv renders it, and with `gpu-next` renders
+/// it better than the texture path does. The one exception is the
+/// `sdrUsesTexturePath` preference, under which the backend hands an SDR
+/// title back to the texture through [reset].
 class HdrOutputController {
   /// [window] is injectable so the decision can be tested without a platform
-  /// channel - every path through [maybeEngage] past the display gate touches
-  /// it, and those are the paths worth pinning down.
+  /// channel - most paths through [maybeEngage] touch it, and those are the
+  /// paths worth pinning down.
   HdrOutputController({HdrVideoWindow? window})
     : window = window ?? HdrVideoWindow();
 
@@ -78,7 +73,9 @@ class HdrOutputController {
   /// player, which render media_kit's texture and know nothing about the
   /// native window - engaging under them would swap mpv onto a window nothing
   /// ever shows and leave a black picture. Only the video player screen sets
-  /// this, and engagement is refused without it.
+  /// this, and engagement is refused without it - except for a main video
+  /// about to open, which [maybeEngage]'s `beforePresenter` lets engage ahead
+  /// of its screen.
   ///
   /// Held by identity, for the same reason [HdrVideoWindow] holds its own: the
   /// player screen is rebuilt on route changes and the incoming state mounts
@@ -88,10 +85,28 @@ class HdrOutputController {
 
   bool get presenterActive => presenter != null;
 
-  /// One decision at a time. The sticky flags are only written after several
-  /// awaits, so without this two overlapping `play()` calls could both pass
-  /// the gates and run the mpv handover concurrently against the same window.
-  bool _deciding = false;
+  /// The decision in flight, or null. One at a time: the sticky flags are
+  /// only written after several awaits, so without this two overlapping
+  /// `play()` calls could both pass the gates and run the mpv handover
+  /// concurrently against the same window.
+  Future<int?>? _decision;
+
+  /// Completes once no decision is in flight.
+  ///
+  /// A release must wait on this before cleaning up. A handover still waiting
+  /// on mpv only reports active at its end, so a release in the middle would
+  /// see nothing engaged, skip the texture restore and destroy the window -
+  /// and the handover would then land on a window that no longer exists,
+  /// leaving mpv on `wid` under Live TV and the mini player.
+  Future<void> get settled async {
+    final decision = _decision;
+    if (decision == null) return;
+    try {
+      await decision;
+    } catch (_) {
+      // Only the decision being over matters here, not its result.
+    }
+  }
 
   /// Back to the undecided state, for when the presenting screen goes away:
   /// the next playback decides afresh instead of inheriting a sticky
@@ -103,67 +118,55 @@ class HdrOutputController {
   /// Decides and, if the answer is yes, creates the window.
   ///
   /// Returns the HWND to hand mpv as `wid`, or null to stay on the texture
-  /// path. Every cheap gate - engaged, failed, no presenter, preference off -
-  /// is answered before either callback runs.
+  /// path. Every title engages, SDR included: mpv then paces frames against
+  /// the display itself, which the texture path cannot - there Flutter samples
+  /// the texture on its own schedule and motion judders.
   ///
-  /// A "no" from either expensive check is not sticky (see
-  /// [HdrOutputStatus.isRevisitable]): calling again decides afresh, which is
-  /// how the backend reopens the question once mpv reports HDR params that
-  /// were not there yet when the first decision was made.
-  ///
-  /// [isHdrContent] and [displayInHdrMode] are callbacks rather than values
-  /// because both are expensive and neither is needed unless everything ahead
-  /// of it passed. Waiting for mpv's video-params costs up to two seconds on
-  /// an audio track, where they never arrive at all - and this backend is the
-  /// singleton for music and audiobooks too. The display query enumerates
-  /// every display path.
+  /// With [sdrUsesTexturePath] only [isHdrContent] engages. That "no" stays
+  /// revisitable, so a later HDR title in the session still engages.
   ///
   /// [engageMpv] must return false if mpv refused the handle, so the failure
   /// is recorded rather than leaving a black window on screen.
+  ///
+  /// [beforePresenter] waives the presenter gate, for a main video about to
+  /// open: `play()` usually runs before the player screen mounts, and waiting
+  /// for it means the first frames go through the texture and the picture
+  /// flashes when mpv moves over. The caller vouches that a player screen is
+  /// coming and stands down if none does.
   Future<int?> maybeEngage({
-    required bool preferenceEnabled,
-    required Future<bool> Function() isHdrContent,
-    required Future<bool> Function() displayInHdrMode,
+    required bool sdrUsesTexturePath,
+    required bool isHdrContent,
     required Future<bool> Function(int handle) engageMpv,
+    bool beforePresenter = false,
   }) async {
     if (isEngaged) {
       return window.handle;
     }
-    if (hasFailed || _deciding || !presenterActive) {
+    if (hasFailed ||
+        _decision != null ||
+        (!beforePresenter && !presenterActive)) {
       return null;
     }
-    _deciding = true;
+    final decision = _decide(
+      sdrUsesTexturePath: sdrUsesTexturePath,
+      isHdrContent: isHdrContent,
+      engageMpv: engageMpv,
+    );
+    _decision = decision;
     try {
-      return await _decide(
-        preferenceEnabled: preferenceEnabled,
-        isHdrContent: isHdrContent,
-        displayInHdrMode: displayInHdrMode,
-        engageMpv: engageMpv,
-      );
+      return await decision;
     } finally {
-      _deciding = false;
+      _decision = null;
     }
   }
 
   Future<int?> _decide({
-    required bool preferenceEnabled,
-    required Future<bool> Function() isHdrContent,
-    required Future<bool> Function() displayInHdrMode,
+    required bool sdrUsesTexturePath,
+    required bool isHdrContent,
     required Future<bool> Function(int handle) engageMpv,
   }) async {
-    if (!preferenceEnabled) {
-      status.value = HdrOutputStatus.disabledByPreference;
-      return null;
-    }
-    if (!await isHdrContent()) {
+    if (sdrUsesTexturePath && !isHdrContent) {
       status.value = HdrOutputStatus.contentIsSdr;
-      return null;
-    }
-    if (!await displayInHdrMode()) {
-      // Switching the display is the auto-HDR preference's job, and it runs
-      // before this. If it is off, or the display refused, there is nothing
-      // useful to send.
-      status.value = HdrOutputStatus.displayNotInHdrMode;
       return null;
     }
 
@@ -184,6 +187,15 @@ class HdrOutputController {
   }
 }
 
+/// Whether the server's `VideoRangeType` calls the title HDR - the only answer
+/// there is before mpv has decoded anything. Dolby Vision with an SDR base
+/// layer counts: gpu-next applies the RPU and the result is HDR. Missing or
+/// `Unknown` is SDR, which mpv corrects once the file has loaded.
+bool isHdrRangeType(String? rangeType) {
+  final range = (rangeType ?? '').trim().toUpperCase();
+  return range.isNotEmpty && range != 'SDR' && range != 'UNKNOWN';
+}
+
 /// Whether what mpv decoded is HDR.
 ///
 /// mpv is the better source than the server's `VideoRangeType`, which can be
@@ -196,9 +208,7 @@ class HdrOutputController {
 ///
 /// BT.2020 primaries break that tie: IPT is carried on them, so they are
 /// present even when the transfer characteristic is not. Wide-gamut SDR also
-/// matches, and the cost of being wrong there is only that mpv tone-maps in
-/// its own window rather than the texture, on a display already in HDR mode
-/// since that is a precondition for reaching this at all.
+/// matches; being wrong there only labels it HDR in the info sheet.
 bool isHdrVideoParams({required String? gamma, required String? primaries}) {
   final transfer = gamma?.toLowerCase() ?? '';
   if (transfer == 'pq' || transfer == 'st2084' || transfer == 'hlg') {

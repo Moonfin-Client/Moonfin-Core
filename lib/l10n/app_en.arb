@@ -2909,29 +2909,21 @@
   "@hdrOutputActiveTonemapped": {
     "description": "Stream info value when native output is engaged but the window sits on a display without HDR, so the renderer is tone-mapping"
   },
-  "hdrOutputDisplayNotHdr": "Inactive — display is not in HDR mode",
-  "@hdrOutputDisplayNotHdr": {
-    "description": "Stream info value when the display has not been switched into HDR"
-  },
   "hdrOutputContentSdr": "Inactive — content is SDR",
   "@hdrOutputContentSdr": {
     "description": "Stream info value when the title itself is not HDR"
-  },
-  "hdrOutputDisabled": "Inactive — turned off in settings",
-  "@hdrOutputDisabled": {
-    "description": "Stream info value when the native HDR output preference is off"
   },
   "hdrOutputFailed": "Inactive — could not start, using the standard path",
   "@hdrOutputFailed": {
     "description": "Stream info value when the native HDR window could not be created"
   },
-  "nativeHdrOutput": "Native HDR output",
-  "@nativeHdrOutput": {
-    "description": "Settings label for sending HDR to the display untouched"
+  "sdrUsesTexturePath": "Compatibility mode for SDR",
+  "@sdrUsesTexturePath": {
+    "description": "Settings label for keeping SDR video on the older in-app renderer instead of the native window"
   },
-  "nativeHdrOutputDescription": "Sends HDR video to the display untouched instead of converting it to SDR. Used only when the display is already in HDR mode and the title is HDR.",
-  "@nativeHdrOutputDescription": {
-    "description": "Settings description for native HDR output"
+  "sdrUsesTexturePathDescription": "Plays SDR video through the older in-app renderer instead of its own window. Try this if SDR video misbehaves; motion may be less smooth. HDR video is not affected.",
+  "@sdrUsesTexturePathDescription": {
+    "description": "Settings description for the SDR compatibility mode"
   },
   "codec": "Codec",
   "@codec": {

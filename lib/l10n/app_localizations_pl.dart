@@ -2330,25 +2330,18 @@ class AppLocalizationsPl extends AppLocalizations {
       'Aktywne — mapowanie tonów do SDR dla tego wyświetlacza';
 
   @override
-  String get hdrOutputDisplayNotHdr =>
-      'Nieaktywne — wyświetlacz nie jest w trybie HDR';
-
-  @override
   String get hdrOutputContentSdr => 'Nieaktywne — materiał jest w SDR';
-
-  @override
-  String get hdrOutputDisabled => 'Nieaktywne — wyłączone w ustawieniach';
 
   @override
   String get hdrOutputFailed =>
       'Nieaktywne — nie udało się uruchomić, używana jest standardowa ścieżka';
 
   @override
-  String get nativeHdrOutput => 'Natywne wyjście HDR';
+  String get sdrUsesTexturePath => 'Compatibility mode for SDR';
 
   @override
-  String get nativeHdrOutputDescription =>
-      'Przesyła wideo HDR do wyświetlacza bez zmian zamiast konwertować je do SDR. Używane tylko wtedy, gdy wyświetlacz jest już w trybie HDR, a materiał jest HDR.';
+  String get sdrUsesTexturePathDescription =>
+      'Plays SDR video through the older in-app renderer instead of its own window. Try this if SDR video misbehaves; motion may be less smooth. HDR video is not affected.';
 
   @override
   String get codec => 'Kodek';

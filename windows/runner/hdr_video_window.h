@@ -87,6 +87,10 @@ class HdrVideoWindow {
   // teardown.
   bool parked_ = false;
 
+  // Whether the runner has been made see-through for this window. Deferred
+  // from Create to the first SetVisible(true), the screen's claim.
+  bool composed_ = false;
+
   // The monitor the runner was on at the last placement. In `wid` mode mpv
   // negotiates the swapchain colorspace once, at creation, and never
   // re-checks; on a crossing Dart is notified and cycles the renderer.
