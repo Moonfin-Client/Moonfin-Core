@@ -26,8 +26,6 @@ class SeerrRequestTileCaption extends StatelessWidget {
   /// Fills the fixed status slot: the download bar or the status pill.
   final Widget status;
 
-  final List<Widget> actions;
-
   const SeerrRequestTileCaption({
     super.key,
     required this.title,
@@ -37,16 +35,24 @@ class SeerrRequestTileCaption extends StatelessWidget {
     required this.scale,
     required this.status,
     this.marqueeTitle = false,
-    this.actions = const [],
   });
 
-  /// Height a tile reserves beyond its poster at scale 1.
+  /// Height a tile reserves beyond its poster at scale 1 and system text
+  /// size 100%.
   ///
-  /// Sized for the fullest caption, which is a pending request a manager can
-  /// approve or decline: inset, title, status slot, the requester over two
-  /// lines, date and the action row, with a few pixels over for font line
-  /// heights.
-  static const double reservedHeight = 165;
+  /// Inset, title, status slot, the requester over two lines and the date,
+  /// with a few pixels over for font line heights.
+  static const double reservedHeight = 127;
+
+  /// The part of [reservedHeight] that is text: the title line and three
+  /// 12px lines. It grows with the system text size, the rest does not.
+  /// Measured: the caption grows by about 71 per 1.0 of text scale.
+  static const double _textHeight = 72;
+
+  /// [reservedHeight] with the text part grown by [textScaler]. Without it a
+  /// TV set to a larger font cut the date off the bottom of every tile.
+  static double heightFor(double scale, TextScaler textScaler) =>
+      (reservedHeight + textScaler.scale(_textHeight) - _textHeight) * scale;
 
   @override
   Widget build(BuildContext context) {
@@ -123,10 +129,6 @@ class SeerrRequestTileCaption extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
-          if (actions.isNotEmpty) ...[
-            SizedBox(height: 6 * scale),
-            Row(children: actions),
-          ],
         ],
       ),
     );
