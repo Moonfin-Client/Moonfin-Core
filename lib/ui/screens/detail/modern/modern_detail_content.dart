@@ -2868,6 +2868,80 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
         ),
       );
     }
+
+    if (targetItem.type == 'Book'){
+      final theme = Theme.of(context);
+      final l10n = AppLocalizations.of(context);
+      final textTheme = theme.textTheme;
+
+      final String path = targetItem.rawData['Path'] ?? '';
+      final String fileName = path.split('/').last.split('\\').last;
+      final String container = fileName.split('.').last.toUpperCase() ?? 'Unknown';
+      // Sent as UTC, so an evening west of UTC would otherwise read as tomorrow.
+      final DateTime? addedOn = item.dateCreated?.toLocal();
+      final String? addedLabel = addedOn == null
+          ? null
+          : DateFormat.yMMMd(
+              Localizations.localeOf(context).toString(),
+            ).format(addedOn);
+
+      return Focus(
+        canRequestFocus: false,
+        onFocusChange: (focused) {
+          if (focused && mounted) {
+            widget.onToggleNavbar?.call(false);
+          } else if (!focused && mounted) {
+            widget.onToggleNavbar?.call(true);
+          }
+        },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l10n.fileInformation,
+              style: textTheme.titleMedium?.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            // File name details card
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.04),
+                borderRadius: AppRadius.circular(8),
+                border: Border.all(color: Colors.white10),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    fileName,
+                    style: textTheme.bodyLarge?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    l10n.formatExtension(container),
+                    style: textTheme.bodySmall?.copyWith(color: Colors.white70),
+                  ),
+                  if (addedLabel != null)
+                    Text(
+                      l10n.dateCreatedFormat(addedLabel),
+                      style: textTheme.bodySmall?.copyWith(color: Colors.white70),
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
     return const SizedBox.shrink();
   }
 
