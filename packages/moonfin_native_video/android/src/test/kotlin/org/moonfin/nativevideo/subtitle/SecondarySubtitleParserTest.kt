@@ -48,6 +48,7 @@ class SecondarySubtitleParserTest {
         ).single()
 
         assertEquals(0.72f, cue.line)
+        assertEquals(0, cue.lineAnchor)
         assertEquals(0.35f, cue.position)
         assertEquals(2, cue.positionAnchor)
         assertEquals(0.6f, cue.size)
@@ -85,6 +86,91 @@ class SecondarySubtitleParserTest {
         )
 
         assertEquals("Look & listen", cues.single().text)
+    }
+
+    @Test
+    fun parsesAssAlignmentEmbeddedInSubRipAndRemovesOnlyOverrideBlocks() {
+        val cue = SecondarySubtitleParser.parse(
+            "1\n00:12:08,750 --> 00:12:11,041\n{\\an8}Faza pierwsza: zwinąć kluczyk. {śmiech}\n",
+            "srt",
+        ).single()
+
+        assertEquals("Faza pierwsza: zwinąć kluczyk. {śmiech}", cue.text)
+        assertEquals(0.08f, cue.line)
+        assertEquals(0, cue.lineAnchor)
+        assertEquals(0.5f, cue.position)
+        assertEquals(1, cue.positionAnchor)
+        assertEquals("center", cue.alignment)
+    }
+
+    @Test
+    fun parsesAllAssAlignmentRowsAndColumns() {
+        val expected = listOf(
+            Triple(0.92f, 0.08f, "left"),
+            Triple(0.92f, 0.5f, "center"),
+            Triple(0.92f, 0.92f, "right"),
+            Triple(0.5f, 0.08f, "left"),
+            Triple(0.5f, 0.5f, "center"),
+            Triple(0.5f, 0.92f, "right"),
+            Triple(0.08f, 0.08f, "left"),
+            Triple(0.08f, 0.5f, "center"),
+            Triple(0.08f, 0.92f, "right"),
+        )
+
+        expected.forEachIndexed { index, (line, position, alignment) ->
+            val cue = SecondarySubtitleParser.parse(
+                "1\n00:00:01,000 --> 00:00:02,000\n{\\an${index + 1}}Caption\n",
+                "srt",
+            ).single()
+            assertEquals("alignment ${index + 1} line", line, cue.line)
+            assertEquals("alignment ${index + 1} position", position, cue.position)
+            assertEquals("alignment ${index + 1} text alignment", alignment, cue.alignment)
+            assertEquals("Caption", cue.text)
+        }
+    }
+
+    @Test
+    fun stripsAssColorBlocksThatStartWithDigitsAndStillReadsAlignment() {
+        val cue = SecondarySubtitleParser.parse(
+            "1\n00:00:01,000 --> 00:00:02,000\n" +
+                "{\\1c&H00FFFF&\\an8}Caption{\\1a&H80&} {śmiech}\n",
+            "srt",
+        ).single()
+
+        assertEquals("Caption {śmiech}", cue.text)
+        assertEquals(0.08f, cue.line)
+        assertEquals("center", cue.alignment)
+    }
+
+    @Test
+    fun parsesWebVttLineAlignmentWithComma() {
+        val cues = SecondarySubtitleParser.parse(
+            "WEBVTT\n\n" +
+                "00:01.000 --> 00:02.000 line:10%,start\nTop\n\n" +
+                "00:02.000 --> 00:03.000 line:50%,center\nMiddle\n\n" +
+                "00:03.000 --> 00:04.000 line:90%,end\nBottom\n",
+            "vtt",
+        )
+
+        assertEquals(listOf(0.1f, 0.5f, 0.9f), cues.map { it.line })
+        assertEquals(listOf(0, 1, 2), cues.map { it.lineAnchor })
+        assertEquals(listOf(0, 0, 0), cues.map { it.lineType })
+    }
+
+    @Test
+    fun removesOtherAssOverrideBlocksAndExplicitWebVttPositionWins() {
+        val cue = SecondarySubtitleParser.parse(
+            "WEBVTT\n\n00:01.000 --> 00:02.000 line:20% position:30%,line-left align:start\n" +
+                "{\\i1\\an8}Placed{\\i0}\n",
+            "vtt",
+        ).single()
+
+        assertEquals("Placed", cue.text)
+        assertEquals(0.2f, cue.line)
+        assertEquals(0, cue.lineAnchor)
+        assertEquals(0.3f, cue.position)
+        assertEquals(0, cue.positionAnchor)
+        assertEquals("start", cue.alignment)
     }
 
     @Test

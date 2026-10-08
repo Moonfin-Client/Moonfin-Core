@@ -93,6 +93,10 @@ internal class SecondarySubtitleOverlay(
                     val content = readSubtitle(url)
                     val cues = SecondarySubtitleParser.parse(content, codec)
                     val parsed = SecondarySubtitleTimeline(cues)
+                    Log.d(
+                        TAG,
+                        "Loaded secondary subtitle ($codec): ${content.length} chars, ${cues.size} cues",
+                    )
                     mainHandler.post {
                         if (requestGeneration != generation || selectedUrl != url) return@post
                         timeline = parsed
@@ -100,7 +104,9 @@ internal class SecondarySubtitleOverlay(
                     }
                 } catch (error: Throwable) {
                     val message = error.message ?: error.javaClass.simpleName
-                    Log.w(TAG, "Could not load secondary subtitle ($codec): $message")
+                    // Preserve the response code/cause chain in release builds too. The short
+                    // message alone is often just an obfuscated exception class name.
+                    Log.w(TAG, "Could not load secondary subtitle ($codec): $error", error)
                     mainHandler.post {
                         if (requestGeneration != generation || selectedUrl != url) return@post
                         selectedUrl = null
@@ -176,7 +182,7 @@ internal class SecondarySubtitleOverlay(
     fun renderAt(playerPositionMs: Long) {
         val active = timeline?.activeCuesAtPlayerPosition(playerPositionMs, delayMs).orEmpty()
         val signature = active.joinToString("\u0000") {
-            "${it.text}|${it.line}|${it.lineType}|${it.position}|${it.positionAnchor}|${it.size}|${it.alignment}"
+            "${it.text}|${it.line}|${it.lineType}|${it.lineAnchor}|${it.position}|${it.positionAnchor}|${it.size}|${it.alignment}"
         }
         if (signature == lastRenderedText) return
         lastRenderedText = signature
@@ -204,18 +210,54 @@ internal class SecondarySubtitleOverlay(
         val automatic = active.filter { it.line == null }
         val rendered = ArrayList<Cue>()
         val occupied = ArrayList<SubtitleBox>(primaryBoxes)
+        val topFallback = ArrayList<Pair<String, Cue>>()
         for (timedCue in fixed) {
-            val cue = buildCue(listOf(timedCue))
+            var cue = buildCue(listOf(timedCue))
             val box = estimateSecondaryBox(
                 cue,
                 width,
                 height,
                 estimateTextHeight(timedCue.text, width * (timedCue.size ?: 0.9f), secondaryFontPx),
             )
-            if (box != null && occupied.none { SubtitleLayoutPlanner.intersects(box, it, gapPx) }) {
+            if (box == null || occupied.none { SubtitleLayoutPlanner.intersects(box, it, gapPx) }) {
                 rendered += cue
-                occupied += box
+                if (box != null) occupied += box
+                continue
             }
+
+            val lineAnchor = timedCue.lineAnchor ?: cue.lineAnchor
+            val verticalAlignment = SubtitleLayoutPlanner.verticalAlignmentFor(box, height)
+            val placed = SubtitleLayoutPlanner.placePositionedSecondary(
+                primary = occupied,
+                viewportWidth = width,
+                viewportHeight = height,
+                desired = box,
+                verticalAlignment = verticalAlignment,
+                gapPx = gapPx,
+                stepPx = gapPx,
+            )
+            if (placed != null) {
+                val line = when (lineAnchor) {
+                    Cue.ANCHOR_TYPE_END -> placed.bottom / height
+                    Cue.ANCHOR_TYPE_MIDDLE -> (placed.top + placed.bottom) / (2f * height)
+                    else -> placed.top / height
+                }
+                cue = cue.buildUpon()
+                    .setLine(line, Cue.LINE_TYPE_FRACTION)
+                    .setLineAnchor(lineAnchor)
+                    .build()
+                rendered += cue
+                occupied += placed
+            } else if (verticalAlignment == SubtitleLayoutPlanner.ALIGN_TOP) {
+                topFallback.add(timedCue.text to cue)
+            }
+        }
+
+        // If top-aligned captions cannot fit in the upper half, keep them
+        // readable by placing them with the normal secondary bottom layout.
+        for ((text, cue) in topFallback) {
+            placeAutomaticCue(cue, text, width, height, secondaryFontPx, occupied, gapPx)
+                ?.let(rendered::add)
         }
 
         val automaticGroups = automatic.groupBy {
@@ -223,33 +265,9 @@ internal class SecondarySubtitleOverlay(
         }.values
         for (group in automaticGroups) {
             val text = group.joinToString("\n") { it.text }
-            val autoWidth = width * (group.first().size ?: 0.9f)
-            val heightPx = estimateTextHeight(text, autoWidth, secondaryFontPx.coerceAtLeast(1f))
-            val topOfLowestPrimary = occupied
-                .filter { it.bottom > height / 2f }
-                .minOfOrNull { it.top }
-            val primaryBottom = height * (1f - primaryBottomPaddingFraction) + primaryOffsetPx()
-            val secondaryOnlyOffset = if (primaryCanShift) 0f else offsetDelta * height
-            val desiredBottom = (topOfLowestPrimary ?: primaryBottom) - gapPx - secondaryOnlyOffset
-            val placement = SubtitleLayoutPlanner.placeSecondary(
-                primary = occupied,
-                viewportWidth = width,
-                viewportHeight = height,
-                secondaryHeight = heightPx,
-                desiredBottom = desiredBottom,
-                gapPx = gapPx,
-                stepPx = gapPx,
-            )
-            if (placement != null) {
-                val cue = buildCue(group).buildUpon()
-                    .setLine((placement.bottom / height).coerceIn(0f, 1f), Cue.LINE_TYPE_FRACTION)
-                    .setLineAnchor(Cue.ANCHOR_TYPE_END)
-                    .build()
-                rendered += cue
-                val cueWidth = if (cue.size == Cue.DIMEN_UNSET) width * 0.9f else cue.size * width
-                val left = cueLeft(cue, width, cueWidth)
-                occupied += SubtitleBox(left, placement.top, left + cueWidth, placement.bottom)
-            }
+            placeAutomaticCue(
+                buildCue(group), text, width, height, secondaryFontPx, occupied, gapPx,
+            )?.let(rendered::add)
         }
 
         view.visibility = if (rendered.isEmpty()) View.INVISIBLE else View.VISIBLE
@@ -264,7 +282,9 @@ internal class SecondarySubtitleOverlay(
                     Cue.LINE_TYPE_NUMBER
                 } else Cue.LINE_TYPE_FRACTION
                 setLine(it, lineType)
-                setLineAnchor(if (it < 0f) Cue.ANCHOR_TYPE_END else Cue.ANCHOR_TYPE_START)
+                setLineAnchor(
+                    settings.lineAnchor ?: if (it < 0f) Cue.ANCHOR_TYPE_END else Cue.ANCHOR_TYPE_START,
+                )
             }
             settings.position?.let {
                 setPosition(it)
@@ -277,6 +297,41 @@ internal class SecondarySubtitleOverlay(
                 "center" -> setTextAlignment(Layout.Alignment.ALIGN_CENTER)
             }
         }.build()
+    }
+
+    private fun placeAutomaticCue(
+        cue: Cue,
+        text: String,
+        width: Int,
+        height: Int,
+        fontPx: Float,
+        occupied: MutableList<SubtitleBox>,
+        gapPx: Float,
+    ): Cue? {
+        val cueWidth = if (cue.size == Cue.DIMEN_UNSET) width * 0.9f else cue.size * width
+        val textHeight = estimateTextHeight(text, cueWidth, fontPx.coerceAtLeast(1f))
+        val topOfLowestPrimary = occupied
+            .filter { it.bottom > height / 2f }
+            .minOfOrNull { it.top }
+        val primaryBottom = height * (1f - primaryBottomPaddingFraction) + primaryOffsetPx()
+        val secondaryOnlyOffset = if (primaryCanShift) 0f else offsetDelta * height
+        val desiredBottom = (topOfLowestPrimary ?: primaryBottom) - gapPx - secondaryOnlyOffset
+        val placement = SubtitleLayoutPlanner.placeSecondary(
+            primary = occupied,
+            viewportWidth = width,
+            viewportHeight = height,
+            secondaryHeight = textHeight,
+            desiredBottom = desiredBottom,
+            gapPx = gapPx,
+            stepPx = gapPx,
+        ) ?: return null
+        val placedCue = cue.buildUpon()
+            .setLine((placement.bottom / height).coerceIn(0f, 1f), Cue.LINE_TYPE_FRACTION)
+            .setLineAnchor(Cue.ANCHOR_TYPE_END)
+            .build()
+        val left = cueLeft(placedCue, width, cueWidth)
+        occupied += SubtitleBox(left, placement.top, left + cueWidth, placement.bottom)
+        return placedCue
     }
 
     private fun estimatePrimaryBox(cue: Cue, width: Int, height: Int, fontPx: Float): SubtitleBox {
@@ -321,10 +376,10 @@ internal class SecondarySubtitleOverlay(
         } else if (cue.lineType == Cue.LINE_TYPE_NUMBER) {
             if (cue.line < 0f) height * (1f - primaryBottomPaddingFraction) + cue.line * (boxHeight / 2f)
             else cue.line * (boxHeight / 2f)
-        } else if (cue.lineAnchor == Cue.ANCHOR_TYPE_END) {
-            cue.line * height - boxHeight
-        } else {
-            cue.line * height
+        } else when (cue.lineAnchor) {
+            Cue.ANCHOR_TYPE_END -> cue.line * height - boxHeight
+            Cue.ANCHOR_TYPE_MIDDLE -> cue.line * height - boxHeight / 2f
+            else -> cue.line * height
         }
         return SubtitleBox(left, top, left + cueWidth, top + boxHeight)
     }
