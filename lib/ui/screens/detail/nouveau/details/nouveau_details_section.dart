@@ -1073,7 +1073,7 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
 
     final foreground = AppColorScheme.onSurface;
 
-    final hasTechnicalDetails = mediaSource != null;
+    final hasTechnicalDetails = mediaSource != null || item.type == 'Book';
 
     final hasStudios = studios.isNotEmpty;
 
@@ -1226,6 +1226,10 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
             : null,
         activeAudioIndex: activeAudioIndex,
       );
+    } else if (item.type == 'Book') {
+      final String path = item.rawData['Path'] ?? '';
+      fileName = path.split('/').last.split('\\').last;
+      container = fileName.split('.').last.toUpperCase() ?? 'Unknown';
     }
 
     final baseBackground = theme.scaffoldBackgroundColor.withValues(alpha: 1.0);
@@ -1623,50 +1627,56 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
           ),
         ),
 
-        _columnDivider(),
+        if (videoDetails.isNotEmpty) ...[
+          _columnDivider(),
 
-        Expanded(
-          flex: 10,
-          child: _buildGroup(
-            context,
-            title: l10n.video,
-            child: _buildVideoContent(context, videoDetails),
-          ),
-        ),
-
-        _columnDivider(),
-
-        Expanded(
-          flex: 11,
-          child: _buildGroup(
-            context,
-            title: l10n.audio,
-            child: _buildTrackList(
+          Expanded(
+            flex: 10,
+            child: _buildGroup(
               context,
-              streams: audioStreams,
-              activeIndex: activeAudioIndex,
-              formatLanguage: formatLanguage,
-              includeForced: false,
+              title: l10n.video,
+              child: _buildVideoContent(context, videoDetails),
             ),
           ),
-        ),
+        ],
 
-        _columnDivider(),
+        if (audioStreams.isNotEmpty) ...[
+          _columnDivider(),
 
-        Expanded(
-          flex: 11,
-          child: _buildGroup(
-            context,
-            title: l10n.subtitles,
-            child: _buildTrackList(
+          Expanded(
+            flex: 11,
+            child: _buildGroup(
               context,
-              streams: subtitleStreams,
-              activeIndex: activeSubtitleIndex,
-              formatLanguage: formatLanguage,
-              includeForced: true,
+              title: l10n.audio,
+              child: _buildTrackList(
+                context,
+                streams: audioStreams,
+                activeIndex: activeAudioIndex,
+                formatLanguage: formatLanguage,
+                includeForced: false,
+              ),
             ),
           ),
-        ),
+        ],
+
+        if (subtitleStreams.isNotEmpty) ...[
+          _columnDivider(),
+
+          Expanded(
+            flex: 11,
+            child: _buildGroup(
+              context,
+              title: l10n.subtitles,
+              child: _buildTrackList(
+                context,
+                streams: subtitleStreams,
+                activeIndex: activeSubtitleIndex,
+                formatLanguage: formatLanguage,
+                includeForced: true,
+              ),
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -1791,13 +1801,23 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
 
         const SizedBox(height: 7),
 
-        Text(
-          l10n.fileSizeFormat(formattedSize, container),
-          style: textTheme.bodySmall?.copyWith(
-            color: foreground.withValues(alpha: 0.5),
-            height: 1.3,
+        if (formattedSize != '')
+          Text(
+            l10n.fileSizeFormat(formattedSize, container),
+            style: textTheme.bodySmall?.copyWith(
+              color: foreground.withValues(alpha: 0.5),
+              height: 1.3,
+            ),
           ),
-        ),
+
+        if (formattedSize == '')
+          Text(
+            l10n.formatExtension(container),
+            style: textTheme.bodySmall?.copyWith(
+              color: foreground.withValues(alpha: 0.5),
+              height: 1.3,
+            ),
+          ),
 
         if (includePlaybackCapability) ...[
           const SizedBox(height: 12),
