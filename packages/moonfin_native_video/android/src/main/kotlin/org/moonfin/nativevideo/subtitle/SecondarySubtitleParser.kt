@@ -7,6 +7,7 @@ internal data class TimedTextCue(
     val text: String,
     val line: Float? = null,
     val lineType: Int? = null,
+    val lineAnchor: Int? = null,
     val position: Float? = null,
     val positionAnchor: Int? = null,
     val size: Float? = null,
@@ -24,6 +25,8 @@ internal object SecondarySubtitleParser {
             "((?:\\d+:)?\\d{2,}:\\d{2}[,.]\\d{1,3})(?:\\s+(.*))?$",
     )
     private val markupTag = Regex("<[^>]*>")
+    private val assOverrideBlock = Regex("\\{\\s*\\\\[A-Za-z0-9][^{}]*\\}")
+    private val assAlignment = Regex("\\\\an([1-9])")
 
     fun parse(content: String, codec: String?): List<TimedTextCue> {
         val format = codec?.trim()?.lowercase()
@@ -58,7 +61,10 @@ internal object SecondarySubtitleParser {
                 index++
             }
             if (start != null && end != null && end > start && textLines.isNotEmpty()) {
-                val text = textLines.joinToString("\n")
+                val rawText = textLines.joinToString("\n")
+                val ass = parseAssAlignment(rawText)
+                val text = rawText
+                    .replace(assOverrideBlock, "")
                     .replace(markupTag, "")
                     .replace("&nbsp;", " ")
                     .replace("&lt;", "<")
@@ -73,12 +79,18 @@ internal object SecondarySubtitleParser {
                         start,
                         end,
                         text,
-                        line = settings["line"] as? Float,
+                        line = settings["line"] as? Float ?: ass?.line,
                         lineType = settings["lineType"] as? Int,
-                        position = settings["position"] as? Float,
-                        positionAnchor = settings["positionAnchor"] as? Int,
+                        lineAnchor = settings["lineAnchor"] as? Int
+                            ?: if (settings.containsKey("line")) null else ass?.lineAnchor,
+                        position = settings["position"] as? Float ?: ass?.position,
+                        positionAnchor = if (settings.containsKey("position")) {
+                            settings["positionAnchor"] as? Int
+                        } else {
+                            ass?.positionAnchor
+                        },
                         size = settings["size"] as? Float,
-                        alignment = settings["align"] as? String,
+                        alignment = settings["align"] as? String ?: ass?.alignment,
                     )
                 }
             }
@@ -89,6 +101,50 @@ internal object SecondarySubtitleParser {
             .map { it.value }
     }
 
+    /** Reads ASS alignment overrides embedded in otherwise SRT/VTT cue text. */
+    private fun parseAssAlignment(text: String): AssAlignment? {
+        val tag = assOverrideBlock.findAll(text)
+            .flatMap { assAlignment.findAll(it.value) }
+            .firstOrNull() ?: return null
+        val alignment = tag.groupValues[1].toIntOrNull() ?: return null
+        val column = (alignment - 1) % 3
+        val row = (alignment - 1) / 3
+        val line = when (row) {
+            0 -> 0.92f
+            1 -> 0.5f
+            else -> 0.08f
+        }
+        val lineAnchor = when (row) {
+            0 -> 2 // end
+            1 -> 1 // middle
+            else -> 0 // start
+        }
+        val position = when (column) {
+            0 -> 0.08f
+            1 -> 0.5f
+            else -> 0.92f
+        }
+        val positionAnchor = when (column) {
+            0 -> 0 // start
+            1 -> 1 // middle
+            else -> 2 // end
+        }
+        val textAlignment = when (column) {
+            0 -> "left"
+            1 -> "center"
+            else -> "right"
+        }
+        return AssAlignment(line, lineAnchor, position, positionAnchor, textAlignment)
+    }
+
+    private data class AssAlignment(
+        val line: Float,
+        val lineAnchor: Int,
+        val position: Float,
+        val positionAnchor: Int,
+        val alignment: String,
+    )
+
     private fun parseWebVttSettings(value: String): Map<String, Any> {
         val settings = mutableMapOf<String, Any>()
         for (part in value.trim().split(Regex("\\s+"))) {
@@ -97,14 +153,23 @@ internal object SecondarySubtitleParser {
             val name = pieces[0]
             val raw = pieces[1]
             when (name) {
-                "line" -> raw.removeSuffix("%").toFloatOrNull()?.let {
-                    if (raw.endsWith('%')) {
-                        settings["line"] = (it / 100f).coerceIn(0f, 1f)
+                "line" -> {
+                    val lineValue = raw.substringBefore(',')
+                    val parsedLine = lineValue.removeSuffix("%").toFloatOrNull() ?: continue
+                    val lineAlignment = when (raw.substringAfter(',', "")) {
+                        "start" -> 0
+                        "center" -> 1
+                        "end" -> 2
+                        else -> if (parsedLine < 0f) 2 else 0
+                    }
+                    if (lineValue.endsWith('%')) {
+                        settings["line"] = (parsedLine / 100f).coerceIn(0f, 1f)
                         settings["lineType"] = 0
                     } else {
-                        settings["line"] = it
+                        settings["line"] = parsedLine
                         settings["lineType"] = 1
                     }
+                    settings["lineAnchor"] = lineAlignment
                 }
                 "position", "size" -> {
                     val percentage = raw.substringBefore(',').removeSuffix("%")
