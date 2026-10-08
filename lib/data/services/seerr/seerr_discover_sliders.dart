@@ -15,6 +15,34 @@ abstract final class SeerrSliderType {
   static const tvStreaming = 21;
 }
 
+/// The slider types Foreseerr, a Seerr fork, adds in its own band from 1001.
+/// Foreseerr says where each one loads from and gives its rows an English
+/// name, so these are only needed to name the rows it ships with in the
+/// user's language. The list types are admin-named and kept for reference.
+/// The numbers skipped are Simkl rows Foreseerr retired.
+abstract final class ForeseerrSliderType {
+  static const traktRecommendations = 1001;
+  static const traktWatchlist = 1002;
+  static const traktList = 1003;
+  static const traktHistory = 1004;
+  static const anilistTrending = 1005;
+  static const anilistSeason = 1006;
+  static const anilistWatching = 1007;
+  static const anilistPlanning = 1008;
+  static const anilistCompleted = 1009;
+  static const anilistList = 1010;
+  static const anilistPopular = 1011;
+  static const anilistTop = 1012;
+  static const anilistNextSeason = 1013;
+  static const mdblistList = 1014;
+  static const simklTrending = 1015;
+  static const simklPlanToWatch = 1016;
+  static const simklWatching = 1023;
+  static const simklOnHold = 1024;
+  static const simklCompleted = 1025;
+  static const simklDropped = 1026;
+}
+
 /// One slider from Seerr's `GET /settings/discover`.
 class SeerrDiscoverSlider {
   final int id;
@@ -23,12 +51,22 @@ class SeerrDiscoverSlider {
   final String title;
   final String data;
 
+  /// Where Foreseerr serves this slider's results: an `/api/v1/` path and
+  /// query, without the page. Stock Seerr doesn't send one.
+  final String endpoint;
+
+  /// The English name Foreseerr gives a row it ships with, which comes without
+  /// a title of its own.
+  final String defaultTitle;
+
   const SeerrDiscoverSlider({
     required this.id,
     required this.type,
     this.enabled = true,
     this.title = '',
     this.data = '',
+    this.endpoint = '',
+    this.defaultTitle = '',
   });
 
   /// Null for an entry missing its id or type, so one bad row is skipped
@@ -38,18 +76,47 @@ class SeerrDiscoverSlider {
     final id = json['id'];
     final type = json['type'];
     if (id is! num || type is! num) return null;
+    String text(String key) => json[key]?.toString().trim() ?? '';
     return SeerrDiscoverSlider(
       id: id.toInt(),
       type: type.toInt(),
       enabled: json['enabled'] != false,
-      title: json['title']?.toString().trim() ?? '',
-      data: json['data']?.toString().trim() ?? '',
+      title: text('title'),
+      data: text('data'),
+      endpoint: text('endpoint'),
+      defaultTitle: text('defaultTitle'),
     );
   }
 
   /// The request behind this slider's results, or null when this client
-  /// doesn't know the type. Mirrors the routes Seerr's own discover page uses.
-  SeerrSliderQuery? get query {
+  /// can't load it. Foreseerr's endpoint wins. Stock Seerr sends none, so its
+  /// types map to the routes Seerr's own discover page uses.
+  SeerrSliderQuery? get query => _endpointQuery ?? _seerrQuery;
+
+  // Only Seerr's discover and search routes are taken from Foreseerr's
+  // endpoint, checked after `..` is resolved. The request carries the user's
+  // token, and other routes, like the media list behind Recently Added, are
+  // gated by permissions Seerr leaves to its frontend. A segment that decodes
+  // to a slash or a dot segment is refused too, so a proxy that decodes the
+  // path again can't climb out of those routes.
+  SeerrSliderQuery? get _endpointQuery {
+    final uri = Uri.tryParse(endpoint);
+    if (uri == null || uri.hasScheme || uri.hasAuthority) return null;
+    if (!uri.path.startsWith('/api/v1/')) return null;
+    final segments = uri.pathSegments.skip(2).toList();
+    bool unsafe(String s) =>
+        s.isEmpty || s == '.' || s == '..' || s.contains('/');
+    if (segments.isEmpty || segments.any(unsafe)) return null;
+    if (segments.first != 'discover' && segments.first != 'search') {
+      return null;
+    }
+    return SeerrSliderQuery(segments.map(Uri.encodeComponent).join('/'), {
+      for (final entry in uri.queryParameters.entries)
+        if (entry.key != 'page') entry.key: entry.value,
+    });
+  }
+
+  SeerrSliderQuery? get _seerrQuery {
     if (data.isEmpty) return null;
     switch (type) {
       case SeerrSliderType.movieKeyword:
@@ -94,9 +161,13 @@ class SeerrDiscoverSlider {
     });
   }
 
-  /// Whether this client can show the slider as a row. An admin slider always
-  /// has a title, and one without has nothing to label its row with.
-  bool get isSupported => enabled && title.isNotEmpty && query != null;
+  /// Whether this client can show the slider as a row, which needs somewhere
+  /// to load it from and a name to label it with. Foreseerr's built-in rows
+  /// have no title and are named by [defaultTitle].
+  bool get isSupported =>
+      enabled &&
+      (title.isNotEmpty || defaultTitle.isNotEmpty) &&
+      query != null;
 }
 
 /// A Seerr API path and the query parameters for one slider's results.
@@ -107,19 +178,48 @@ class SeerrSliderQuery {
   const SeerrSliderQuery(this.path, this.params);
 }
 
+/// Reads one page of a slider's results. Seerr counts its pages, while a
+/// list row that can't know its total, like Foreseerr's, says whether there
+/// is another. Only movies and series are kept, since a search slider also
+/// finds people.
+Map<String, dynamic> readSeerrSliderPage(
+  Map<String, dynamic> body, {
+  required int page,
+}) {
+  final currentPage = (body['page'] as num?)?.toInt() ?? page;
+  var totalPages = (body['totalPages'] as num?)?.toInt() ?? 0;
+  if (totalPages <= 0) {
+    totalPages = body['hasMore'] == true ? currentPage + 1 : currentPage;
+  }
+  return {
+    ...body,
+    'page': currentPage,
+    'totalPages': totalPages,
+    'results': [
+      for (final item in body['results'] as List? ?? const [])
+        if (item is Map &&
+            (item['mediaType'] == 'movie' || item['mediaType'] == 'tv'))
+          Map<String, dynamic>.from(item),
+    ],
+  };
+}
+
 /// Home layout entries for Seerr sliders ride the existing `pluginDynamic`
 /// shape, which every client and the Moonbase admin page already carry
 /// through untouched when they don't recognize the source. The slider id goes
 /// in `pluginSection` and its type in `pluginAdditionalData`, so a slider that
 /// was deleted and replaced by one of another type isn't mistaken for it.
+/// [title] is what other clients label the row with, the name this client
+/// gives it.
 HomeSectionConfig seerrSliderSection(
   SeerrDiscoverSlider slider, {
   required String serverId,
+  required String title,
 }) => HomeSectionConfig.pluginDynamic(
   serverId: serverId,
   pluginSection: '${slider.id}',
   pluginAdditionalData: '${slider.type}',
-  pluginDisplayText: slider.title,
+  pluginDisplayText: title,
   pluginSource: HomeSectionPluginSource.seerr,
 );
 

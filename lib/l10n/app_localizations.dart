@@ -9142,6 +9142,108 @@ abstract class AppLocalizations {
   /// **'Seerr Discover Sliders'**
   String get seerrDiscoverSliders;
 
+  /// Title of a Seerr discover row, served only by the Foreseerr fork, showing Trakt recommendations. Trakt, AniList and Simkl are service names
+  ///
+  /// In en, this message translates to:
+  /// **'Trakt Recommendations'**
+  String get seerrTraktRecommendations;
+
+  /// Title of a Seerr discover row, served only by the Foreseerr fork, showing the Trakt watchlist. Trakt, AniList and Simkl are service names
+  ///
+  /// In en, this message translates to:
+  /// **'Trakt Watchlist'**
+  String get seerrTraktWatchlist;
+
+  /// Title of a Seerr discover row, served only by the Foreseerr fork, showing Trakt watch history. Trakt, AniList and Simkl are service names
+  ///
+  /// In en, this message translates to:
+  /// **'Trakt History'**
+  String get seerrTraktHistory;
+
+  /// Title of a Seerr discover row, served only by the Foreseerr fork, showing anime trending on AniList. Trakt, AniList and Simkl are service names
+  ///
+  /// In en, this message translates to:
+  /// **'AniList Trending'**
+  String get seerrAnilistTrending;
+
+  /// Title of a Seerr discover row, served only by the Foreseerr fork, showing anime airing this season on AniList. Trakt, AniList and Simkl are service names
+  ///
+  /// In en, this message translates to:
+  /// **'AniList This Season'**
+  String get seerrAnilistThisSeason;
+
+  /// Title of a Seerr discover row, served only by the Foreseerr fork, showing popular anime on AniList. Trakt, AniList and Simkl are service names
+  ///
+  /// In en, this message translates to:
+  /// **'AniList Popular'**
+  String get seerrAnilistPopular;
+
+  /// Title of a Seerr discover row, served only by the Foreseerr fork, showing the AniList top 100 anime. Trakt, AniList and Simkl are service names
+  ///
+  /// In en, this message translates to:
+  /// **'AniList Top 100'**
+  String get seerrAnilistTop100;
+
+  /// Title of a Seerr discover row, served only by the Foreseerr fork, showing anime airing next season on AniList. Trakt, AniList and Simkl are service names
+  ///
+  /// In en, this message translates to:
+  /// **'AniList Next Season'**
+  String get seerrAnilistNextSeason;
+
+  /// Title of a Seerr discover row, served only by the Foreseerr fork, showing the user's AniList watching list. Trakt, AniList and Simkl are service names
+  ///
+  /// In en, this message translates to:
+  /// **'AniList Watching'**
+  String get seerrAnilistWatching;
+
+  /// Title of a Seerr discover row, served only by the Foreseerr fork, showing the user's AniList planning list. Trakt, AniList and Simkl are service names
+  ///
+  /// In en, this message translates to:
+  /// **'AniList Planning'**
+  String get seerrAnilistPlanning;
+
+  /// Title of a Seerr discover row, served only by the Foreseerr fork, showing the user's AniList completed list. Trakt, AniList and Simkl are service names
+  ///
+  /// In en, this message translates to:
+  /// **'AniList Completed'**
+  String get seerrAnilistCompleted;
+
+  /// Title of a Seerr discover row, served only by the Foreseerr fork, showing titles trending on Simkl. Trakt, AniList and Simkl are service names
+  ///
+  /// In en, this message translates to:
+  /// **'Simkl Trending'**
+  String get seerrSimklTrending;
+
+  /// Title of a Seerr discover row, served only by the Foreseerr fork, showing the user's Simkl plan to watch list. Trakt, AniList and Simkl are service names
+  ///
+  /// In en, this message translates to:
+  /// **'Simkl Plan to Watch'**
+  String get seerrSimklPlanToWatch;
+
+  /// Title of a Seerr discover row, served only by the Foreseerr fork, showing the user's Simkl watching list. Trakt, AniList and Simkl are service names
+  ///
+  /// In en, this message translates to:
+  /// **'Simkl Watching'**
+  String get seerrSimklWatching;
+
+  /// Title of a Seerr discover row, served only by the Foreseerr fork, showing the user's Simkl on hold list. Trakt, AniList and Simkl are service names
+  ///
+  /// In en, this message translates to:
+  /// **'Simkl On Hold'**
+  String get seerrSimklOnHold;
+
+  /// Title of a Seerr discover row, served only by the Foreseerr fork, showing the user's Simkl completed list. Trakt, AniList and Simkl are service names
+  ///
+  /// In en, this message translates to:
+  /// **'Simkl Completed'**
+  String get seerrSimklCompleted;
+
+  /// Title of a Seerr discover row, served only by the Foreseerr fork, showing the user's Simkl dropped list. Trakt, AniList and Simkl are service names
+  ///
+  /// In en, this message translates to:
+  /// **'Simkl Dropped'**
+  String get seerrSimklDropped;
+
   /// Seerr row: watchlist
   ///
   /// In en, this message translates to:

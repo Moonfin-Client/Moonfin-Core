@@ -13,7 +13,6 @@ void main() {
         'id': 14,
         'type': 13,
         'order': 3,
-        'isBuiltIn': false,
         'enabled': true,
         'title': ' Christmas ',
         'data': '207317',
@@ -105,7 +104,7 @@ void main() {
         expect(_slider(type, 'x').query, isNull, reason: 'type $type');
       }
       expect(_slider(22, 'x').query, isNull);
-      expect(_slider(1001, 'x').query, isNull);
+      expect(_slider(2001, 'x').query, isNull);
     });
 
     test('a slider without data has no query', () {
@@ -150,6 +149,7 @@ void main() {
       final json = seerrSliderSection(
         slider,
         serverId: 'http://jf.test',
+        title: 'Christmas',
       ).toJson();
 
       expect(json, {
@@ -167,7 +167,11 @@ void main() {
 
     test('survives a save and load of the layout', () {
       final saved = HomeSectionConfig.toJsonString([
-        seerrSliderSection(slider, serverId: 'http://jf.test'),
+        seerrSliderSection(
+          slider,
+          serverId: 'http://jf.test',
+          title: 'Christmas',
+        ),
       ]);
 
       final loaded = HomeSectionConfig.fromJsonString(
@@ -180,7 +184,11 @@ void main() {
     });
 
     test('matches the live slider only when id and type agree', () {
-      final cfg = seerrSliderSection(slider, serverId: 'http://jf.test');
+      final cfg = seerrSliderSection(
+        slider,
+        serverId: 'http://jf.test',
+        title: 'Christmas',
+      );
 
       expect(findSeerrSliderFor(cfg, const [slider]), same(slider));
       expect(
@@ -204,7 +212,11 @@ void main() {
     });
 
     group('put on Home or taken off', () {
-      final entry = seerrSliderSection(slider, serverId: 'http://jf.test');
+      final entry = seerrSliderSection(
+        slider,
+        serverId: 'http://jf.test',
+        title: 'Christmas',
+      );
       final resume = HomeSectionConfig(
         type: HomeSectionType.resume,
         enabled: true,
@@ -239,6 +251,180 @@ void main() {
 
         expect(setSeerrSliderShown(sections, entry, shown: false), sections);
       });
+    });
+  });
+
+  group('Foreseerr endpoint', () {
+    SeerrDiscoverSlider described(
+      String endpoint, {
+      int type = 1001,
+      String title = '',
+      String defaultTitle = 'Trakt Recommendations',
+    }) => SeerrDiscoverSlider(
+      id: 1,
+      type: type,
+      title: title,
+      endpoint: endpoint,
+      defaultTitle: defaultTitle,
+    );
+
+    test('reads the endpoint and default title Foreseerr adds', () {
+      final slider = SeerrDiscoverSlider.tryFromJson({
+        'id': 30,
+        'type': 1016,
+        'isBuiltIn': true,
+        'enabled': true,
+        'title': null,
+        'data': null,
+        'endpoint':
+            '/api/v1/discover/simkl/library?status=plantowatch&hideUnmapped=true',
+        'defaultTitle': 'Simkl Plan to Watch',
+      });
+
+      expect(slider?.defaultTitle, 'Simkl Plan to Watch');
+      expect(slider?.query?.path, 'discover/simkl/library');
+      expect(slider?.query?.params, {
+        'status': 'plantowatch',
+        'hideUnmapped': 'true',
+      });
+      expect(slider?.isSupported, isTrue);
+    });
+
+    test('loads a Foreseerr type Moonfin has never heard of', () {
+      final slider = described(
+        '/api/v1/discover/letterboxd/list?url=https%3A%2F%2Fl%2Fx',
+        type: 1500,
+        title: 'Staff Picks',
+        defaultTitle: '',
+      );
+
+      expect(slider.query?.path, 'discover/letterboxd/list');
+      expect(slider.query?.params, {'url': 'https://l/x'});
+      expect(slider.isSupported, isTrue);
+    });
+
+    test('wins over the stock route for the same type', () {
+      final slider = SeerrDiscoverSlider(
+        id: 1,
+        type: SeerrSliderType.movieGenre,
+        title: 'Action',
+        data: '28',
+        endpoint: '/api/v1/discover/movies?genre=28&page=4',
+      );
+
+      expect(slider.query?.path, 'discover/movies');
+      expect(slider.query?.params, {'genre': '28'});
+    });
+
+    test('is ignored outside the Seerr API', () {
+      for (final endpoint in [
+        'https://evil.test/api/v1/discover/movies',
+        '//evil.test/api/v1/discover/movies',
+        '/Users/Me',
+        '/api/v1/../../Users',
+        '/api/v1/../v2/discover/movies',
+        '/api/v1/',
+        'api/v1/discover/movies',
+      ]) {
+        expect(described(endpoint).query, isNull, reason: endpoint);
+      }
+    });
+
+    test('is ignored outside the discover and search routes', () {
+      for (final endpoint in [
+        '/api/v1/media?filter=allavailable&sort=mediaAdded',
+        '/api/v1/request',
+        '/api/v1/user/1/watchlist',
+        '/api/v1/discover/../media',
+        '/api/v1/discover/%2e%2e/admin',
+        '/api/v1/discover/%2e%2e%2fadmin',
+        '/api/v1/search/%2e%2e%2f%2e%2e%2fadmin',
+        '/api/v1/discover/a%2Fb',
+        '/api/v1/discovery/movies',
+      ]) {
+        expect(described(endpoint).query, isNull, reason: endpoint);
+      }
+    });
+
+    test('a slider with nowhere to load from is not shown', () {
+      expect(described('').isSupported, isFalse);
+      expect(
+        const SeerrDiscoverSlider(id: 1, type: 1001).isSupported,
+        isFalse,
+      );
+    });
+
+    test('a slider with no name at all is not shown', () {
+      expect(
+        described(
+          '/api/v1/discover/trakt/recommendations',
+          defaultTitle: '',
+        ).isSupported,
+        isFalse,
+      );
+    });
+  });
+
+  group('readSeerrSliderPage', () {
+    test('keeps a Seerr discover page as it is', () {
+      final page = readSeerrSliderPage({
+        'page': 2,
+        'totalPages': 5,
+        'totalResults': 100,
+        'results': [
+          {'id': 603, 'mediaType': 'movie', 'title': 'The Matrix'},
+          {'id': 1399, 'mediaType': 'tv', 'name': 'Game of Thrones'},
+        ],
+      }, page: 2);
+
+      expect(page['page'], 2);
+      expect(page['totalPages'], 5);
+      expect(page['results'], [
+        {'id': 603, 'mediaType': 'movie', 'title': 'The Matrix'},
+        {'id': 1399, 'mediaType': 'tv', 'name': 'Game of Thrones'},
+      ]);
+    });
+
+    test('turns hasMore into one more page', () {
+      expect(
+        readSeerrSliderPage({
+          'page': 1,
+          'hasMore': true,
+          'results': [],
+        }, page: 1)['totalPages'],
+        2,
+      );
+      expect(
+        readSeerrSliderPage({
+          'page': 3,
+          'hasMore': false,
+          'results': [],
+        }, page: 3)['totalPages'],
+        3,
+      );
+    });
+
+    test('falls back to the page asked for', () {
+      final page = readSeerrSliderPage({'results': []}, page: 4);
+      expect(page['page'], 4);
+      expect(page['totalPages'], 4);
+    });
+
+    test('keeps only movies and series', () {
+      final page = readSeerrSliderPage({
+        'page': 1,
+        'totalPages': 1,
+        'results': [
+          {'id': 1, 'mediaType': 'person', 'name': 'Keanu Reeves'},
+          {'id': 2, 'title': 'No type'},
+          {'id': 603, 'mediaType': 'movie', 'title': 'The Matrix'},
+          'junk',
+        ],
+      }, page: 1);
+
+      expect(page['results'], [
+        {'id': 603, 'mediaType': 'movie', 'title': 'The Matrix'},
+      ]);
     });
   });
 }

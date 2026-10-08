@@ -275,6 +275,15 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
         } else {
           newItems = _filterItems(page.results);
         }
+        if (row.slider != null) {
+          // A list slider can show a title again on a later page, as when two
+          // AniList seasons map to the same series.
+          final shown = {for (final i in row.items) (i.mediaType, i.id)};
+          newItems = [
+            for (final i in newItems)
+              if (!shown.contains((i.mediaType, i.id))) i,
+          ];
+        }
         _rows = List.of(_rows);
         _rows[rowIndex] = row.copyWith(
           items: [...row.items, ...newItems],
