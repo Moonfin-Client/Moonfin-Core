@@ -40,10 +40,6 @@
   "@animeMarkerRecap": {
     "description": "Badge on an anime episode that recaps earlier episodes"
   },
-  "accountPreferences": "ACCOUNT PREFERENCES",
-  "@accountPreferences": {
-    "description": "Section header for account preferences settings"
-  },
   "interfaceLanguage": "Interface Language",
   "@interfaceLanguage": {
     "description": "Label for the app interface language setting"
@@ -256,6 +252,10 @@
   "@spotlightChaptersExtras": {
     "description": "Title of the spotlight summary card that opens the chapters and special features modal"
   },
+  "spotlightFileDetails": "File Details",
+  "@spotlightFileDetails": {
+    "description": "Title of the spotlight summary card that opens the file details modal"
+  },
   "spotlightSimilarRecommendations": "Similar and Recommendations",
   "@spotlightSimilarRecommendations": {
     "description": "Title of the spotlight summary card that opens the similar titles and recommendations modal"
@@ -443,7 +443,7 @@
   "@expandedTabsSubtitle": {
     "description": "Explanation under the expanded tabs setting"
   },
-  "showTechnicalDetails": "Show Technical Details?",
+  "showTechnicalDetails": "Show Technical Details",
   "@showTechnicalDetails": {
     "description": "Label for the detail screen setting to show stream/codec technical details"
   },
@@ -471,7 +471,7 @@
   "@recommendationSystemTmdb": {
     "description": "Recommendation system option: TMDb Similarity"
   },
-  "recommendationsApplyParentalRatingCap": "Apply Parental Rating Cap?",
+  "recommendationsApplyParentalRatingCap": "Apply Rating Limit to Recommendations",
   "@recommendationsApplyParentalRatingCap": {
     "description": "Label for the toggle that controls whether similar suggestions are capped by target media parental rating"
   },
@@ -595,7 +595,7 @@
   "@customThemeSubtitle": {
     "description": "Description under custom themes section"
   },
-  "keyboardPreferSystemIme": "Prefer system keyboard",
+  "keyboardPreferSystemIme": "Prefer System Keyboard",
   "@keyboardPreferSystemIme": {
     "description": "Settings label for preferring the native system keyboard instead of the custom TV keyboard"
   },
@@ -607,7 +607,7 @@
   "@controller": {
     "description": "Settings section header for game controller options"
   },
-  "gamepadNavigation": "Gamepad navigation",
+  "gamepadNavigation": "Gamepad Navigation",
   "@gamepadNavigation": {
     "description": "Settings label for the switch that lets a game controller move focus and select items"
   },
@@ -1985,6 +1985,10 @@
   "@searchingSubtitles": {
     "description": "Shown while a remote subtitle search is running"
   },
+  "fetchingSubtitles": "Fetching subtitles",
+  "@fetchingSubtitles": {
+    "description": "Playback status shown while the selected subtitle file is loading"
+  },
   "downloadingSubtitle": "Downloading subtitle\u2026",
   "@downloadingSubtitle": {
     "description": "Shown while a chosen subtitle is downloaded and the server is picking it up"
@@ -2788,6 +2792,10 @@
   "@shortcutMpvStats": {
     "description": "Player shortcut action, Windows only"
   },
+  "shortcutRecropBlackBars": "Recrop black bars",
+  "@shortcutRecropBlackBars": {
+    "description": "Player shortcut to run letterbox crop detection now"
+  },
   "shortcutLeaveFullscreenOrStop": "Exit fullscreen, or stop if not fullscreen",
   "@shortcutLeaveFullscreenOrStop": {
     "description": "What Esc does in the player"
@@ -2917,7 +2925,7 @@
   "@hdrOutputFailed": {
     "description": "Stream info value when the native HDR window could not be created"
   },
-  "nativeHdrOutput": "Native HDR output",
+  "nativeHdrOutput": "Native HDR Output",
   "@nativeHdrOutput": {
     "description": "Settings label for sending HDR to the display untouched"
   },
@@ -3320,6 +3328,32 @@
   "record": "Record",
   "@record": {
     "description": "Button label to schedule a live TV recording"
+  },
+  "nextSeriesRecording": "Next series recording: {dateTime}",
+  "@nextSeriesRecording": {
+    "description": "Next scheduled recording for the current series, shown in the Live TV recording dialog",
+    "placeholders": {
+      "dateTime": {
+        "type": "String",
+        "example": "Oct 5, 2026 · 8:00 PM"
+      }
+    }
+  },
+  "noUpcomingSeriesRecording": "Series recording is scheduled, but the guide has no upcoming episodes",
+  "@noUpcomingSeriesRecording": {
+    "description": "A series recording rule exists but no future episode timer is available"
+  },
+  "recordCurrentEpisode": "Record This Episode",
+  "@recordCurrentEpisode": {
+    "description": "Live TV player action to record only the current episode"
+  },
+  "recordCurrentProgram": "Record This Program",
+  "@recordCurrentProgram": {
+    "description": "Live TV player action to record only the current program"
+  },
+  "cancelCurrentRecording": "Cancel This Recording",
+  "@cancelCurrentRecording": {
+    "description": "Live TV player action to cancel only the current recording, leaving any series rule intact"
   },
   "cancelRecordingAction": "Cancel Recording",
   "@cancelRecordingAction": {
@@ -3914,10 +3948,6 @@
   "@qualityStorage": {
     "description": "Download settings description"
   },
-  "serverSyncAndPluginStatus": "Server sync and plugin status",
-  "@serverSyncAndPluginStatus": {
-    "description": "Plugin settings description"
-  },
   "mediaRequestIntegration": "Media request integration",
   "@mediaRequestIntegration": {
     "description": "Seerr settings description"
@@ -3961,10 +3991,6 @@
   "videoAndSubtitles": "Video and subtitles",
   "@videoAndSubtitles": {
     "description": "Playback section description variant"
-  },
-  "integrations": "Integrations",
-  "@integrations": {
-    "description": "Integrations section title"
   },
   "pluginAndRequests": "Plugin and requests",
   "@pluginAndRequests": {
@@ -4195,7 +4221,7 @@
   "@loadingAnimationSpeedUltra": {
     "description": "Loading animation speed option: Ultra"
   },
-  "showLoadingAnimationText": "Show Text?",
+  "showLoadingAnimationText": "Show Text",
   "@showLoadingAnimationText": {
     "description": "Setting toggle for showing loading animation text"
   },
@@ -4339,10 +4365,6 @@
   "@themeMusicVolume": {
     "description": "Setting for theme music volume"
   },
-  "themeMusicSettingsSubtitle": "Detail pages, home rows, and volume",
-  "@themeMusicSettingsSubtitle": {
-    "description": "Subtitle for the Theme Music settings sub-category tile"
-  },
   "percentValue": "{value}%",
   "@percentValue": {
     "description": "Percentage display",
@@ -4368,11 +4390,11 @@
   "@loopThemeMusicSubtitle": {
     "description": "Description for the loop theme music setting"
   },
-  "detailsBackgroundBlur": "Details Background Blur",
+  "detailsBackgroundBlur": "Background Blur",
   "@detailsBackgroundBlur": {
     "description": "Setting for details background blur"
   },
-  "detailsBackgroundOpacity": "Details Background Opacity",
+  "detailsBackgroundOpacity": "Background Opacity",
   "@detailsBackgroundOpacity": {
     "description": "Setting for details background opacity on modern screens"
   },
@@ -4401,7 +4423,7 @@
   "@playerZoomMode": {
     "description": "Setting for player zoom mode"
   },
-  "settingsScrollWheelAction": "Mouse scroll wheel",
+  "settingsScrollWheelAction": "Mouse Scroll Wheel",
   "@settingsScrollWheelAction": {
     "description": "Setting title for the mouse scroll wheel action during playback"
   },
@@ -4433,13 +4455,33 @@
   "@autoCrop": {
     "description": "Zoom mode: auto crop"
   },
-  "cropBlackBars": "Crop black bars",
+  "cropBlackBars": "Crop Black Bars",
   "@cropBlackBars": {
     "description": "Setting to detect and crop encoded letterbox/pillarbox bars"
   },
-  "settingsCropBlackBarsDescription": "Detect encoded letterbox bars, crop them, then fill the screen.",
+  "settingsCropBlackBarsDescription": "Detect encoded letterbox bars after playback starts, crop them, then fill the screen. Recrop from the player zoom button.",
   "@settingsCropBlackBarsDescription": {
     "description": "Description for the crop black bars playback setting"
+  },
+  "cropBlackBarsRecropInterval": "Recrop Interval",
+  "@cropBlackBarsRecropInterval": {
+    "description": "Setting for how often to re-detect encoded letterbox bars"
+  },
+  "cropBlackBarsOnce": "Once at start",
+  "@cropBlackBarsOnce": {
+    "description": "Letterbox recrop interval: detect once after playback starts"
+  },
+  "cropBlackBarsEverySecond": "Every second",
+  "@cropBlackBarsEverySecond": {
+    "description": "Letterbox recrop interval: scan about once a second"
+  },
+  "settingsCropBlackBarsIntervalDescription": "Follow aspect ratio changes during playback.",
+  "@settingsCropBlackBarsIntervalDescription": {
+    "description": "Description for the letterbox recrop-interval setting"
+  },
+  "playerRecroppingBlackBars": "Recropping black bars",
+  "@playerRecroppingBlackBars": {
+    "description": "Toast when the player re-runs letterbox crop detection"
   },
   "stretch": "Stretch",
   "@stretch": {
@@ -5110,7 +5152,7 @@
   "settingsAudioPassthroughModeDisabled": "Disabled (always decode on this device)",
   "settingsAudioPassthroughModeAuto": "Auto (match detected device support)",
   "settingsAudioPassthroughModeManual": "Manual (choose formats below)",
-  "settingsAudioPassthroughOutput": "Passthrough output",
+  "settingsAudioPassthroughOutput": "Passthrough Output",
   "@settingsAudioPassthroughOutput": {
     "description": "Title of the RAW-vs-IEC passthrough packer selector (Android TV, Media3 engine)"
   },
@@ -5251,7 +5293,7 @@
   "@unsafeMpvOptionsDescription": {
     "description": "Description for unsafe mpv options"
   },
-  "hardwareDecoding": "Hardware decoding",
+  "hardwareDecoding": "Hardware Decoding",
   "@hardwareDecoding": {
     "description": "Label for hardware decoding toggle"
   },
@@ -5691,7 +5733,7 @@
   "@wifiOnlyDownloads": {
     "description": "Setting for wifi-only downloads"
   },
-  "tvOfflineDownloads": "Enable offline downloads",
+  "tvOfflineDownloads": "Enable Offline Downloads",
   "@tvOfflineDownloads": {
     "description": "TV-only toggle in the Offline Downloads settings: offer download actions on item pages"
   },
@@ -5699,7 +5741,7 @@
   "@tvOfflineDownloadsSubtitle": {
     "description": "Subtitle for the TV-only offline downloads toggle"
   },
-  "reportDownloadsActivity": "Show downloads on the server",
+  "reportDownloadsActivity": "Show Downloads on the Server",
   "reportDownloadsActivitySubtitle": "Let the server admin see your transcoded downloads in the dashboard",
   "onlyDownloadOnWifi": "Only download when connected to WiFi",
   "@onlyDownloadOnWifi": {
@@ -5737,7 +5779,7 @@
   "@downloadLocationLimitedByAndroid": {
     "description": "Note shown when the only download location Android allows is the default one"
   },
-  "saveToDownloadsFolder": "Save to Downloads folder",
+  "saveToDownloadsFolder": "Save to Downloads Folder",
   "@saveToDownloadsFolder": {
     "description": "Setting for saving to downloads folder"
   },
@@ -6038,14 +6080,6 @@
   "@seconds": {
     "description": "Time unit label in seconds"
   },
-  "localPreviews": "Local Previews",
-  "@localPreviews": {
-    "description": "Local previews settings screen title"
-  },
-  "localPreviewsDescription": "Configure trailer, media, and audio previews.",
-  "@localPreviewsDescription": {
-    "description": "Description for local previews settings"
-  },
   "mediaBarMode": "Media Bar Style",
   "@mediaBarMode": {
     "description": "Setting for choosing media bar style"
@@ -6238,10 +6272,6 @@
   "@favoriteChannels": {
     "description": "Home row: favourited live TV channels"
   },
-  "homeSections": "Home Sections",
-  "@homeSections": {
-    "description": "Settings title for home sections"
-  },
   "resetToDefaults": "Reset to defaults",
   "@resetToDefaults": {
     "description": "Tooltip for reset to defaults button"
@@ -6249,10 +6279,6 @@
   "homeRowPosterSize": "Home Row Poster Size",
   "@homeRowPosterSize": {
     "description": "Setting for home row poster size"
-  },
-  "perRowImageTypeSelection": "Per Row Image Type Selection",
-  "@perRowImageTypeSelection": {
-    "description": "Setting for per-row image type selection"
   },
   "configureImageTypeForEachRow": "Configure image type for each enabled home row",
   "@configureImageTypeForEachRow": {
@@ -6281,7 +6307,7 @@
       "days": {"type": "int"}
     }
   },
-  "fullScreenRows": "Expanded Home Rows",
+  "fullScreenRows": "Expanded Rows",
   "@fullScreenRows": {
     "description": "Setting for full screen home rows"
   },
@@ -6289,17 +6315,13 @@
   "@fullScreenRowsDescription": {
     "description": "Description for full screen home rows"
   },
-  "homeRowsPadding": "Home Row Padding",
+  "homeRowsPadding": "Row Padding",
   "@homeRowsPadding": {
     "description": "Title for home rows padding setting"
   },
   "homeRowsPaddingDescription": "Customize padding between home rows",
   "@homeRowsPaddingDescription": {
     "description": "Description for home rows padding setting"
-  },
-  "perRowImageType": "Per Row Image Type",
-  "@perRowImageType": {
-    "description": "Title for per-row image type screen"
   },
   "perRowSettings": "Per-Row Settings",
   "@perRowSettings": {
@@ -6442,10 +6464,6 @@
   "onlyShowRatedContent": "Only show rated content",
   "@onlyShowRatedContent": {
     "description": "Description for require age rating"
-  },
-  "showClock": "Show Clock",
-  "@showClock": {
-    "description": "Setting for showing clock"
   },
   "displayClockDuringScreensaver": "Display clock during screensaver",
   "@displayClockDuringScreensaver": {
@@ -6611,10 +6629,6 @@
   "@ratingSourcesDescription": {
     "description": "Description for rating sources"
   },
-  "pluginLabel": "Moonbase Plugin",
-  "@pluginLabel": {
-    "description": "Settings title for plugin"
-  },
   "pluginDetected": "Plugin Detected",
   "@pluginDetected": {
     "description": "Status when plugin is detected"
@@ -6719,6 +6733,10 @@
   "@seerrDiscoveryRows": {
     "description": "Subtitle shown under Seerr discovery home rows"
   },
+  "seerrDiscoverSliders": "Seerr Discover Sliders",
+  "@seerrDiscoverSliders": {
+    "description": "Seerr Lists heading for the sliders an admin set up on Seerr's discover page"
+  },
   "yourWatchlist": "Your Watchlist",
   "@yourWatchlist": {
     "description": "Seerr row: watchlist"
@@ -6767,7 +6785,7 @@
   "@seerrNotificationsSection": {
     "description": "Header for the Seerr notifications settings section"
   },
-  "seerrNotifyNewRequestsTitle": "New request notifications",
+  "seerrNotifyNewRequestsTitle": "New Request Notifications",
   "@seerrNotifyNewRequestsTitle": {
     "description": "Title for the toggle that notifies approvers of new Seerr requests"
   },
@@ -6775,7 +6793,7 @@
   "@seerrNotifyNewRequestsSubtitle": {
     "description": "Subtitle for the new request notifications toggle"
   },
-  "seerrNotifyLibraryAddedTitle": "Request updates",
+  "seerrNotifyLibraryAddedTitle": "Request Updates",
   "@seerrNotifyLibraryAddedTitle": {
     "description": "Title for the toggle that notifies a requester about approvals, declines, and library availability"
   },
@@ -6783,7 +6801,7 @@
   "@seerrNotifyLibraryAddedSubtitle": {
     "description": "Subtitle for the library-added notifications toggle"
   },
-  "seerrNotifyIssuesTitle": "Issue updates",
+  "seerrNotifyIssuesTitle": "Issue Updates",
   "@seerrNotifyIssuesTitle": {
     "description": "Title for the issue notifications toggle"
   },
@@ -6791,7 +6809,7 @@
   "@seerrNotifyIssuesSubtitle": {
     "description": "Subtitle for the issue notifications toggle"
   },
-  "seerrNotifyNewMediaTitle": "New media added",
+  "seerrNotifyNewMediaTitle": "New Media Added",
   "@seerrNotifyNewMediaTitle": {
     "description": "Title for the toggle that notifies about anything newly added to the server library, not just requested media"
   },
@@ -6951,10 +6969,6 @@
   "@navbarStyleToolbarAppearance": {
     "description": "Navigation settings subtitle"
   },
-  "reorderToggleHomeRows": "Reorder and toggle both library and external-based home rows",
-  "@reorderToggleHomeRows": {
-    "description": "Home sections settings subtitle"
-  },
   "featuredContentAppearance": "Featured content, appearance",
   "@featuredContentAppearance": {
     "description": "Media bar settings subtitle"
@@ -6962,10 +6976,6 @@
   "posterSizeImageTypeFolderView": "Poster size, image type, folder view",
   "@posterSizeImageTypeFolderView": {
     "description": "Library display settings subtitle"
-  },
-  "mdbListTmdbRatingSources": "MDBList, TMDB, and rating sources",
-  "@mdbListTmdbRatingSources": {
-    "description": "Ratings settings subtitle"
   },
   "gbValue": "{value} GB",
   "@gbValue": {
@@ -6985,8 +6995,8 @@
       }
     }
   },
-  "imageCacheLimit": "Image cache limit",
-  "clearImageCache": "Clear image cache",
+  "imageCacheLimit": "Image Cache Limit",
+  "clearImageCache": "Clear Image Cache",
   "imageCacheCleared": "Image cache cleared",
   "clear": "Clear",
   "@clear": {
@@ -9807,25 +9817,13 @@
     "description": "Error shown when removing an item from a collection fails"
   },
   "settingsAdministrationSubtitle": "Access the server administration panel",
-  "settingsAccountSecurity": "Account & Security",
-  "settingsAccountSecuritySubtitle": "Authentication, PIN code, and parental controls",
-  "settingsPersonalization": "Personalization",
-  "settingsPersonalizationSubtitle": "Theme, navigation, home rows, and library visibility",
   "settingsDynamicContent": "Dynamic Content",
   "settingsDynamicContentSubtitle": "Media Bar and visual overlays",
-  "settingsPlaybackSyncplay": "Playback & SyncPlay",
-  "settingsPlaybackSyncplaySubtitle": "Audio/video settings, subtitles, downloads, and SyncPlay controls",
-  "settingsIntegrationsSubtitle": "Plugin sync, Seerr, ratings, and more",
   "settingsAboutSubtitle": "App version, legal information, and credits",
-  "settingsAuthenticationSection": "AUTHENTICATION",
   "settingsSortServersBy": "Sort Servers By",
   "settingsLastUsed": "Last Used",
   "settingsAlphabetical": "Alphabetical",
-  "settingsConnectionSection": "CONNECTION",
-  "@settingsConnectionSection": {
-    "description": "Section header for server connection settings"
-  },
-  "settingsAllowSelfSignedCerts": "Allow self-signed certificates",
+  "settingsAllowSelfSignedCerts": "Allow Self-Signed Certificates",
   "@settingsAllowSelfSignedCerts": {
     "description": "Setting to trust self-signed TLS certificates"
   },
@@ -9837,7 +9835,6 @@
   "@untrustedServerCertificate": {
     "description": "Shown on the sign-in screens when a server's TLS certificate is rejected, above a button that turns on Allow self-signed certificates"
   },
-  "settingsPrivacyAndSafetySection": "PRIVACY & SAFETY",
   "itemBlockedByParentalControls": "This isn't available",
   "@itemBlockedByParentalControls": {
     "description": "Shown instead of a title whose rating the viewer has blocked. Deliberately says nothing about what the title is."
@@ -9850,14 +9847,7 @@
   "@blockedRatingsUnrankedSection": {
     "description": "Heading for ratings the app can't rank, which block only the exact rating rather than everything above it"
   },
-  "settingsBlockedRatings": "Blocked Ratings",
-  "settingsGeneralStyle": "General Style",
-  "settingsGeneralStyleSubtitle": "Theme accents, backdrops, and watched indicators",
-  "settingsDetailsScreen": "Details Screen",
-  "settingsDetailsScreenSubtitle": "Style, background blur, and tab behavior",
   "settingsHomePage": "Home Page",
-  "settingsHomePageSubtitle": "Sections, image types, overlays, and media previews",
-  "settingsLibrariesSubtitle": "Library visibility, folder view, and multi-server behavior",
   "settingsTwentyFourHourClock": "24-Hour Clock",
   "settingsTwentyFourHourClockSubtitle": "Use 24-hour time formatting wherever the clock is shown",
   "settingsShowShuffleButtonInNavigation": "Show the shuffle button in the navigation bar",
@@ -9871,9 +9861,7 @@
   "settingsMediaBarAndLocalPreviews": "Media Bar & Local Previews",
   "settingsVisualOverlays": "Visual Overlays",
   "settingsSeasonalSurprise": "Seasonal Surprise",
-  "settingsMetadataAndRatings": "Metadata & Ratings",
   "settingsPluginScreenDescription": "Moonbase powers server-side integrations including additional rating sources, Seerr requests, and synced preferences.",
-  "settingsOfflineDownloads": "Offline Downloads",
   "useNativeEmulator": "Native Emulation",
   "@useNativeEmulator": {
     "description": "Settings toggle title. When on, retro games run through native libretro emulator cores instead of the EmulatorJS browser-based emulator."
@@ -9971,27 +9959,11 @@
   "settingsPrivacyPolicySubtitle": "How Moonfin handles your data",
   "settingsCheckForUpdates": "Check for Updates",
   "settingsCheckForUpdatesSubtitle": "Check for the latest Moonfin release",
-  "settingsPoweredByFlutter": "Powered by Flutter",
-  "settingsLicenseNoticesCount": "{count, plural, one {# license notice} other {# license notices}}",
-  "@settingsLicenseNoticesCount": {
-    "description": "Plural label for number of license notices",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "settingsBoth": "Both",
   "settingsShuffleContentTypeFilter": "Shuffle Content Type Filter",
-  "settingsVideoPlaybackPreferences": "Video Playback Preferences",
-  "settingsVideoPlaybackPreferencesSubtitle": "Core video engine and streaming quality settings",
-  "settingsAudioPreferences": "Audio Preferences",
   "settingsAudioPreferencesSubtitle": "Audio tracks, processing, and passthrough options",
-  "settingsAutomationAndQueue": "Automation & Queue",
   "settingsAutomationAndQueueSubtitle": "Automated playback and sequencing",
-  "settingsOfflineDownloadsSubtitle": "Download quality, storage limits, and queue size",
   "settingsSyncplaySubtitle": "Synchronization logic for group sessions",
-  "settingsAdvancedOptionsSubtitle": "Specialized player features. Use with caution, as some options may cause playback issues",
   "settingsSkipIntrosAndOutros": "Skip Intros and Outros?",
   "settingsMediaSegmentTypeAction": "{segment} Segments",
   "@settingsMediaSegmentTypeAction": {
@@ -10152,7 +10124,7 @@
     "description": "Setting subtitle for autoplay next episode"
   },
 
-  "skipSilenceTitle": "Skip silence",
+  "skipSilenceTitle": "Skip Silence",
   "@skipSilenceTitle": {
     "description": "Setting title: skip silent audio segments during playback"
   },
@@ -10161,7 +10133,7 @@
     "description": "Setting subtitle for skip silence"
   },
 
-  "allowExternalAudioEffectsTitle": "Allow external audio effects",
+  "allowExternalAudioEffectsTitle": "Allow External Audio Effects",
   "@allowExternalAudioEffectsTitle": {
     "description": "Setting title: allow equalizer apps to attach to Media3"
   },
@@ -10179,7 +10151,7 @@
     "description": "Setting subtitle for disable tunneling"
   },
 
-  "enableTunnelingTitle": "Enable tunneling",
+  "enableTunnelingTitle": "Enable Tunneling",
   "@enableTunnelingTitle": {
     "description": "Setting title: enable tunneled video playback (advanced)"
   },
@@ -10188,7 +10160,7 @@
     "description": "Setting subtitle for enable tunneling"
   },
 
-  "mapDolbyVisionP7Title": "Always play Dolby Vision profile 7 as HDR10",
+  "mapDolbyVisionP7Title": "Always Play Dolby Vision Profile 7 as HDR10",
   "@mapDolbyVisionP7Title": {
     "description": "Setting title: force DV P7 streams to the HDR10 strip path"
   },
@@ -10197,7 +10169,7 @@
     "description": "Setting subtitle for forcing the DV P7 strip path"
   },
 
-  "subtitlesUseEmbeddedStyles": "Use embedded subtitle styles",
+  "subtitlesUseEmbeddedStyles": "Use Embedded Subtitle Styles",
   "@subtitlesUseEmbeddedStyles": {
     "description": "Setting title: apply colours/positioning from the subtitle track"
   },
@@ -10206,7 +10178,7 @@
     "description": "Setting subtitle for embedded styles toggle"
   },
 
-  "subtitlesUseEmbeddedFontSizes": "Use embedded subtitle font sizes",
+  "subtitlesUseEmbeddedFontSizes": "Use Embedded Subtitle Font Sizes",
   "@subtitlesUseEmbeddedFontSizes": {
     "description": "Setting title: apply font sizes from the subtitle track"
   },
@@ -10222,7 +10194,7 @@
   "@showMediaDetailsOnLibraryPageDescription": {
     "description": "Setting description to show/hide focused media details at the top of the library page"
   },
-  "hideBackdropsInLibraries": "Hide Backdrops while Browsing?",
+  "hideBackdropsInLibraries": "Hide Backdrops While Browsing",
   "@hideBackdropsInLibraries": {
     "description": "Setting title to show/hide backdrops when browsing library pages"
   },
@@ -10280,7 +10252,7 @@
       }
     }
   },
-  "savedThemesTitle": "Saved themes",
+  "savedThemesTitle": "Saved Themes",
   "savedThemesDescription": "These are themes downloaded from the Moonfin plugin for the current server. Deleting removes only this local copy.",
   "savedThemesEmpty": "No saved themes were found for this server.",
   "savedThemesCurrentThemeId": "{themeId} • Currently active",
@@ -10301,11 +10273,6 @@
   "homeRowsStyleClassic": "Classic",
   "homeRowsStyleModern": "Modern",
   "homeRowsSection": "Home Rows",
-  "homeRowDisplay": "Home Row Display",
-  "homeRowSections": "Home Row Sections",
-  "homeRowToggles": "Home Row Toggles",
-  "homeRowTogglesSubtitle": "Enable or disable library-based home row categories",
-  "homeRowTogglesDescription": "Enable the following toggles to display the rows in Home Sections.",
   "rowsType": "Row Type",
   "rowsTypeDescription": "Classic keeps per-row image type and info overlay. Modern uses portrait-to-backdrop rows.",
   "modernCardsOnMyMediaRow": "Modern cards on My Media row",
@@ -10367,8 +10334,8 @@
   "navButtons": "Buttons",
   "rendering": "Rendering",
   "mpvConfiguration": "MPV configuration",
-  "cardSize": "Home Row Card Display Size",
-  "externalPlayerApp": "External player app",
+  "cardSize": "Card Size",
+  "externalPlayerApp": "External Player App",
   "externalPlayerAppDescription": "Set external player to enable long-press play option",
   "externalPlayerAskEachTimeSubtitle": "Show app chooser when playback starts.",
   "loadingInstalledPlayers": "Loading installed players...",
@@ -10384,13 +10351,17 @@
   "replaceSkipOutroWithNextUpDisplay": "Replace Skip Outro with Next Up Display",
   "replaceSkipOutroWithNextUpDisplaySubtitle": "Show the Next Up overlay instead of the Skip Outro button.",
   "playerRouting": "Player Routing",
-  "preferSoftwareDecoders": "Prefer software decoders",
+  "preferSoftwareDecoders": "Prefer Software Decoders",
   "preferSoftwareDecodersSubtitle": "Use FFmpeg (audio) and libgav1 (AV1) before hardware decoders. Disable if HDMI audio passthrough breaks.",
-  "useExternalPlayer": "Always use external player",
+  "useExternalPlayer": "Always Use External Player",
   "useExternalPlayerSubtitle": "Open video playback in your selected external app on Android TV.",
   "automaticQueuing": "Automatic Queuing",
-  "preferSdhSubtitles": "Prefer SDH subtitles",
+  "preferSdhSubtitles": "Prefer SDH Subtitles",
   "preferSdhSubtitlesSubtitle": "Prioritize SDH/CC subtitle tracks when auto-selecting.",
+  "preferTextSubtitles": "Prefer Text Subtitles",
+  "preferTextSubtitlesSubtitle": "Prioritize text-based subtitles (SRT, VTT) over image-based formats (PGS, VobSub).",
+  "preferExternalSubtitles": "Prefer External Subtitles",
+  "preferExternalSubtitlesSubtitle": "Prioritize external subtitle files over embedded tracks.",
   "webDiagnostics": "Web diagnostics",
   "webDiagnosticsTitle": "Moonfin Web Diagnostics",
   "webDiagnosticsIntro": "Use this page to diagnose browser connectivity issues (CORS, mixed content, and discovery settings).",
@@ -10491,7 +10462,7 @@
       }
     }
   },
-  "achievementsUnlockToasts": "Unlock notifications",
+  "achievementsUnlockToasts": "Unlock Notifications",
   "@achievementsUnlockToasts": {
     "description": "Switch that shows a notification when the user unlocks a badge"
   },
@@ -11061,7 +11032,7 @@
   "@friendsSubtitle": {
     "description": "Subtitle of the Friends entry"
   },
-  "friendsShowButton": "Show friends button",
+  "friendsShowButton": "Show Friends Button",
   "@friendsShowButton": {
     "description": "Navigation setting that adds a Friends button"
   },
@@ -11286,7 +11257,7 @@
       }
     }
   },
-  "friendsAppearOffline": "Appear offline",
+  "friendsAppearOffline": "Appear Offline",
   "@friendsAppearOffline": {
     "description": "Privacy setting that always shows the user as offline"
   },
@@ -11294,7 +11265,7 @@
   "@friendsAppearOfflineSubtitle": {
     "description": "Subtitle of the Appear offline setting"
   },
-  "friendsHideNowPlaying": "Hide what I'm watching",
+  "friendsHideNowPlaying": "Hide What I'm Watching",
   "@friendsHideNowPlaying": {
     "description": "Privacy setting that hides what is playing"
   },
@@ -11302,7 +11273,7 @@
   "@friendsHideNowPlayingSubtitle": {
     "description": "Subtitle of the Hide what I am watching setting"
   },
-  "friendsHideLastWatched": "Hide my last watched",
+  "friendsHideLastWatched": "Hide My Last Watched",
   "@friendsHideLastWatched": {
     "description": "Privacy setting that hides the last played item while offline"
   },
@@ -11310,7 +11281,7 @@
   "@friendsHideLastWatchedSubtitle": {
     "description": "Subtitle of the Hide my last watched setting"
   },
-  "friendsMessageNotifications": "Message notifications",
+  "friendsMessageNotifications": "Message Notifications",
   "@friendsMessageNotifications": {
     "description": "Setting that shows a banner for new chat messages"
   },
@@ -11318,7 +11289,7 @@
   "@friendsMessageNotificationsSubtitle": {
     "description": "Subtitle of the Message notifications setting"
   },
-  "friendsMuteDuringPlayback": "Mute during playback",
+  "friendsMuteDuringPlayback": "Mute During Playback",
   "@friendsMuteDuringPlayback": {
     "description": "Setting that hides new message banners while a video or game plays"
   },
@@ -11638,7 +11609,6 @@
   "whenFullscreen": "When fullscreen",
   "changeArtwork": "Change Artwork",
   "missing": "Missing",
-  "transcodingLimits": "Transcoding Limits",
   "clearAllArtworkButton": "Clear all artwork?",
   "clearAllArtworkWarning": "Are you sure you want to clear all downloaded artwork?",
   "confirmClear": "Confirm Clear",
@@ -11790,10 +11760,6 @@
   "audiobookSave": "Save",
   "audiobookCancel": "Cancel",
   "audiobookDelete": "Delete",
-  "subtitlePreferences": "Subtitle Preferences",
-  "@subtitlePreferences": {
-    "description": "Title for the subtitle preferences settings section"
-  },
   "subtitlePreferencesDescription": "Change subtitle modes, default languages, appearance, and rendering options.",
   "@subtitlePreferencesDescription": {
     "description": "Description for the subtitle preferences settings section"
@@ -11854,7 +11820,6 @@
   "@libraryWriteAccessReactiveBody": {
     "description": "Reactive error warning message when artwork update fails"
   },
-  "externalLists": "External Lists",
   "replay": "Replay",
   "fileInformation": "File Information",
   "fileSizeFormat": "Size: {size}  •  Format: {format}",
@@ -12222,7 +12187,7 @@
   "@showAlphabeticalFilters": {
     "description": "Checkbox label for toggling alphabetical picker visibility in Sort and Filter options"
   },
-  "personalRatingStyle": "Personal rating style",
+  "personalRatingStyle": "Personal Rating Style",
   "@personalRatingStyle": {
     "description": "Selects how personal ratings are displayed and entered on media details."
   },
@@ -12380,7 +12345,7 @@
   "@openTrailersExternallySubtitle": {
     "description": "Subtitle for the external trailers setting"
   },
-  "hideDetailsMediaDescription": "Hide Media Description on Details Page",
+  "hideDetailsMediaDescription": "Hide Media Description",
   "@hideDetailsMediaDescription": {
     "description": "Setting title to hide media description on details screen"
   },
@@ -12388,7 +12353,7 @@
   "@hideDetailsMediaDescriptionSubtitle": {
     "description": "Description for setting to hide media description on details page"
   },
-  "detailUseSeriesThumbnails": "Use Series Thumbnails on Details Page",
+  "detailUseSeriesThumbnails": "Use Series Thumbnails",
   "@detailUseSeriesThumbnails": {
     "description": "Setting title to replace thumbnails on Classic details page with series thumbnail"
   },
@@ -12396,7 +12361,7 @@
   "@detailUseSeriesThumbnailsSubtitle": {
     "description": "Description for setting to use series thumbnails on Classic details page"
   },
-  "hideHomeMediaDescription": "Hide Media Description on Home Screen",
+  "hideHomeMediaDescription": "Hide Media Description",
   "@hideHomeMediaDescription": {
     "description": "Setting title to hide media description on home screen"
   },
@@ -12548,7 +12513,7 @@
   "@serverMessagesMarkAllRead": {
     "description": "Button in the messages window that marks every message as read"
   },
-  "serverMessagesShowButton": "Show messages button",
+  "serverMessagesShowButton": "Show Messages Button",
   "@serverMessagesShowButton": {
     "description": "Setting that shows or hides the messages button in the menu"
   },
@@ -12624,11 +12589,40 @@
       }
     }
   },
+  "smartDownloadsSection": "Smart downloads",
+  "@smartDownloadsSection": {
+    "description": "Settings section header for downloading the next episodes of a series after one is watched"
+  },
+  "smartDownloadsEnable": "Download Next Episodes",
+  "@smartDownloadsEnable": {
+    "description": "Switch that swaps a watched downloaded episode for the next episodes of the series"
+  },
+  "smartDownloadsEnableSubtitle": "When you finish an episode on any device, Moonfin downloads the next ones. Downloaded episodes are deleted once watched.",
+  "@smartDownloadsEnableSubtitle": {
+    "description": "Explains the smart downloads switch, including that watched episodes are deleted"
+  },
+  "smartDownloadsKeepReady": "Episodes to Keep Downloaded",
+  "@smartDownloadsKeepReady": {
+    "description": "Setting for how many unwatched episodes of a series stay downloaded after one is watched"
+  },
+  "smartDownloadsKeepReadySubtitle": "{count, plural, =1{Keeps the next episode downloaded} other{Keeps the next {count} episodes downloaded}}",
+  "@smartDownloadsKeepReadySubtitle": {
+    "description": "Subtitle under the episodes to keep ready setting",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "smartDownloadsKeepReadyLowered": "Episodes already downloaded stay on your device. The new number applies to future downloads.",
+  "@smartDownloadsKeepReadyLowered": {
+    "description": "Shown after lowering the episodes to keep downloaded, explaining nothing is deleted"
+  },
   "autoDownloadSection": "Automatic downloads",
   "@autoDownloadSection": {
     "description": "Settings section header for auto-download subscriptions"
   },
-  "autoDownloadEnable": "Enable automatic downloads",
+  "autoDownloadEnable": "Enable Automatic Downloads",
   "@autoDownloadEnable": {
     "description": "Master switch for auto-download subscriptions"
   },
@@ -12636,7 +12630,7 @@
   "@autoDownloadEnableSubtitle": {
     "description": "Explains the master switch"
   },
-  "autoDownloadKeepUnwatched": "Keep unwatched episodes",
+  "autoDownloadKeepUnwatched": "Keep Unwatched Episodes",
   "@autoDownloadKeepUnwatched": {
     "description": "Setting that caps how many unwatched episodes per series stay downloaded"
   },
@@ -12644,7 +12638,7 @@
   "@autoDownloadKeepAll": {
     "description": "Option meaning no cap on kept unwatched episodes"
   },
-  "autoDownloadDelete": "Delete downloaded episodes",
+  "autoDownloadDelete": "Delete Downloaded Episodes",
   "@autoDownloadDelete": {
     "description": "Setting that picks how soon an auto-downloaded episode is removed after it was watched"
   },
@@ -12668,7 +12662,7 @@
   "@autoDownloadDeleteAfterWeek": {
     "description": "Delete-after-watching option"
   },
-  "autoDownloadBackgroundRefresh": "Check in the background",
+  "autoDownloadBackgroundRefresh": "Check in the Background",
   "@autoDownloadBackgroundRefresh": {
     "description": "Setting that lets the system wake the app to check for new episodes"
   },
@@ -12684,7 +12678,7 @@
   "@autoDownloadBackgroundRestrictedAndroid": {
     "description": "Shown when Android restricts the app from running in the background"
   },
-  "autoDownloadCheckNow": "Check now",
+  "autoDownloadCheckNow": "Check Now",
   "@autoDownloadCheckNow": {
     "description": "Button that runs a subscription check immediately"
   },
@@ -12890,10 +12884,6 @@
       }
     }
   },
-  "settingsAnimationSpeed": "Animation Speed",
-  "@settingsAnimationSpeed": {
-    "description": "Section header in General Style settings for configuring motion and transition speeds"
-  },
   "pageTransitions": "Page Transitions",
   "@pageTransitions": {
     "description": "Setting title for adjusting the speed of page navigation transitions"
@@ -12962,7 +12952,7 @@
   "@pageTransitionFadeLong": {
     "description": "Option label for long fade page transition"
   },
-  "siriRemoteSwipeSensitivity": "Touchpad swipe sensitivity",
+  "siriRemoteSwipeSensitivity": "Touchpad Swipe Sensitivity",
   "@siriRemoteSwipeSensitivity": {
     "description": "Apple TV settings label for how far a swipe on the Siri Remote touchpad moves the focus highlight"
   },
@@ -12990,7 +12980,7 @@
   "@topShelfAppBanner": {
     "description": "Top Shelf option that shows only the static Moonfin logo banner, nothing from the library"
   },
-  "keepVideoClearOfDynamicIsland": "Keep video clear of the Dynamic Island",
+  "keepVideoClearOfDynamicIsland": "Keep Video Clear of the Dynamic Island",
   "@keepVideoClearOfDynamicIsland": {
     "description": "iPhone playback setting that holds the picture back from the camera housing in landscape"
   },
@@ -13057,5 +13047,161 @@
   "navYou": "You",
   "@navYou": {
     "description": "Bottom bar tab that opens the user's own menu with their profile, extra destinations and settings"
+  },
+  "detailsPage": "Details Page",
+  "@detailsPage": {
+    "description": "Settings entry and screen for options that shape the details page"
+  },
+  "storageAndDownloads": "Storage & Downloads",
+  "@storageAndDownloads": {
+    "description": "Settings root entry and screen for downloads, storage location and the image cache"
+  },
+  "services": "Services",
+  "@services": {
+    "description": "Settings root entry and screen for connected services such as Seerr and Achievement Badges"
+  },
+  "settingsSync": "Settings Sync",
+  "@settingsSync": {
+    "description": "Settings screen for syncing settings through the Moonbase plugin"
+  },
+  "settingsSyncSubtitle": "Moonbase plugin sync and customization profiles",
+  "@settingsSyncSubtitle": {
+    "description": "Subtitle for the Settings Sync entry"
+  },
+  "navigationBar": "Navigation Bar",
+  "@navigationBar": {
+    "description": "Settings screen for the navigation bar style and buttons"
+  },
+  "homeRows": "Rows",
+  "@homeRows": {
+    "description": "Settings entry and screen for turning Home rows on or off and ordering them"
+  },
+  "homeRowsSubtitle": "Turn rows on or off and change their order",
+  "@homeRowsSubtitle": {
+    "description": "Subtitle for the Home rows entry"
+  },
+  "rowOptions": "Row Options",
+  "@rowOptions": {
+    "description": "Settings screen with sorting and content options for each Home row"
+  },
+  "rowOptionsSubtitle": "Sorting and content for each row",
+  "@rowOptionsSubtitle": {
+    "description": "Subtitle for the Row Options entry"
+  },
+  "imageTypePerRow": "Image Type per Row",
+  "@imageTypePerRow": {
+    "description": "Settings entry and screen for choosing the image type of each Home row"
+  },
+  "externalSources": "External Sources",
+  "@externalSources": {
+    "description": "Section header on the Home Screen settings screen for rows that come from IMDb, TMDB, calendars, Seerr and custom lists"
+  },
+  "qualityAndDecoding": "Quality & Decoding",
+  "@qualityAndDecoding": {
+    "description": "Settings screen for streaming limits, decoding, HDR and Dolby Vision"
+  },
+  "qualityAndDecodingSubtitle": "Bitrate, resolution, decoding, HDR, and Dolby Vision",
+  "@qualityAndDecodingSubtitle": {
+    "description": "Subtitle for the Quality & Decoding entry"
+  },
+  "skippingAndAutoplay": "Skipping & Autoplay",
+  "@skippingAndAutoplay": {
+    "description": "Settings screen for media segment skipping, cinema mode and autoplay"
+  },
+  "advancedPlayback": "Advanced Playback",
+  "@advancedPlayback": {
+    "description": "Settings screen for advanced player routing, external players and mpv"
+  },
+  "advancedPlaybackSubtitle": "Player routing, external players, and mpv",
+  "@advancedPlaybackSubtitle": {
+    "description": "Subtitle for the Advanced Playback entry"
+  },
+  "settingsAccountSubtitle": "Sign-in, PIN code, Kids Mode, parental controls, and settings sync",
+  "@settingsAccountSubtitle": {
+    "description": "Subtitle for the Account settings root entry"
+  },
+  "settingsGeneralSubtitle": "Language, clock, input, and performance",
+  "@settingsGeneralSubtitle": {
+    "description": "Subtitle for the General settings root entry"
+  },
+  "settingsAppearanceSubtitle": "Navigation, home screen, libraries, details page, and themes",
+  "@settingsAppearanceSubtitle": {
+    "description": "Subtitle for the Appearance settings root entry"
+  },
+  "settingsHomeScreenSubtitle": "Rows, media bar, looks, and external sources",
+  "@settingsHomeScreenSubtitle": {
+    "description": "Subtitle for the Home Screen entry on the Appearance settings screen"
+  },
+  "settingsLibrariesEntrySubtitle": "Library visibility, order, and library pages",
+  "@settingsLibrariesEntrySubtitle": {
+    "description": "Subtitle for the Libraries entry on the Appearance settings screen"
+  },
+  "settingsDetailsPageSubtitle": "Layout, buttons, sections, ratings, and theme music",
+  "@settingsDetailsPageSubtitle": {
+    "description": "Subtitle for the Details Page entry on the Appearance settings screen"
+  },
+  "settingsPlaybackSubtitle": "Player, quality, audio, subtitles, skipping, and SyncPlay",
+  "@settingsPlaybackSubtitle": {
+    "description": "Subtitle for the Playback settings root entry"
+  },
+  "settingsStorageSubtitle": "Downloads, storage location, and the image cache",
+  "@settingsStorageSubtitle": {
+    "description": "Subtitle for the Storage & Downloads settings root entry"
+  },
+  "settingsServicesSubtitle": "Seerr and Achievement Badges",
+  "@settingsServicesSubtitle": {
+    "description": "Subtitle for the Services settings root entry"
+  },
+  "settingsSignInSection": "Sign-in",
+  "@settingsSignInSection": {
+    "description": "Section header on the Account settings screen"
+  },
+  "settingsFamilySection": "Family",
+  "@settingsFamilySection": {
+    "description": "Section header on the Account settings screen for Kids Mode and parental controls"
+  },
+  "settingsServersSection": "Servers",
+  "@settingsServersSection": {
+    "description": "Section header on the Account settings screen for server list and certificate options"
+  },
+  "settingsLanguageSection": "Language",
+  "@settingsLanguageSection": {
+    "description": "Section header on the General settings screen"
+  },
+  "settingsInputSection": "Input",
+  "@settingsInputSection": {
+    "description": "Section header on the General settings screen for keyboard, remote and pointer options"
+  },
+  "settingsMotionSection": "Motion",
+  "@settingsMotionSection": {
+    "description": "Section header on the Appearance settings screen for animation speeds"
+  },
+  "settingsContentsSection": "Contents",
+  "@settingsContentsSection": {
+    "description": "Section header on the Home Screen settings screen for the rows, row options and media bar"
+  },
+  "settingsLooksSection": "Looks",
+  "@settingsLooksSection": {
+    "description": "Section header on the Home Screen settings screen for how rows and cards look"
+  },
+  "settingsAudioAndSubtitlesSection": "Audio & Subtitles",
+  "@settingsAudioAndSubtitlesSection": {
+    "description": "Section header on the Playback settings screen"
+  },
+  "settingsSkippingAndQueueSection": "Skipping & Queue",
+  "@settingsSkippingAndQueueSection": {
+    "description": "Section header on the Playback settings screen"
+  },
+  "settingsWatchTogetherSection": "Watch Together",
+  "@settingsWatchTogetherSection": {
+    "description": "Section header on the Playback settings screen for SyncPlay"
+  },
+  "settingsAdvancedSection": "Advanced",
+  "@settingsAdvancedSection": {
+    "description": "Section header on the Playback settings screen"
+  },
+  "playerSettingsSubtitle": "Controls, seeking, player buttons, and trick play",
+  "@playerSettingsSubtitle": {
+    "description": "Subtitle for the Player entry on the Playback settings screen"
   }
 }

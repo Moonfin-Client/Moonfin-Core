@@ -167,6 +167,13 @@ class _SectionHeader extends StatelessWidget {
   Widget build(BuildContext context) => SettingsSectionHeader(text);
 }
 
+void _pushPersonalizationSync() {
+  final syncService = GetIt.instance<PluginSyncService>();
+  if (syncService.pluginAvailable) {
+    syncService.pushSettings(GetIt.instance<MediaServerClient>());
+  }
+}
+
 String _formatCamelCaseLabel(String camelCase) {
   final buf = StringBuffer();
   for (var i = 0; i < camelCase.length; i++) {

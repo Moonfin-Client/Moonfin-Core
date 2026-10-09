@@ -1,298 +1,5 @@
 part of '../settings_side_panel.dart';
 
-class _ExternalListsScreen extends StatefulWidget {
-  const _ExternalListsScreen();
-
-  @override
-  State<_ExternalListsScreen> createState() => _ExternalListsScreenState();
-}
-
-class _ExternalListsScreenState extends State<_ExternalListsScreen> {
-  final _externalListsScope = FocusScopeNode(
-    debugLabel: 'ExternalListsScope',
-    traversalEdgeBehavior: TraversalEdgeBehavior.stop,
-  );
-  final _homeSectionsFocusNode = FocusNode(
-    debugLabel: 'home_sections_shortcut_button',
-  );
-  final _refreshFocusNode = FocusNode(
-    debugLabel: 'refresh_lists_button',
-  );
-
-  bool _radarrInstalled = false;
-  bool _sonarrInstalled = false;
-  bool _checkingServices = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _checkServices();
-  }
-
-  Future<void> _checkServices() async {
-    try {
-      final repo = GetIt.instance<SeerrRepository>();
-      final radarr = await repo.getRadarrSettings();
-      final sonarr = await repo.getSonarrSettings();
-      if (mounted) {
-        setState(() {
-          _radarrInstalled = radarr.isNotEmpty;
-          _sonarrInstalled = sonarr.isNotEmpty;
-          _checkingServices = false;
-        });
-      }
-    } catch (_) {
-      if (mounted) {
-        setState(() {
-          _checkingServices = false;
-        });
-      }
-    }
-  }
-
-  @override
-  void dispose() {
-    _externalListsScope.dispose();
-    _homeSectionsFocusNode.dispose();
-    _refreshFocusNode.dispose();
-    super.dispose();
-  }
-
-  String _mediaTypeBadgeBehaviorLabel(
-    AppLocalizations l10n,
-    MediaTypeBadgeBehavior behavior,
-  ) => switch (behavior) {
-    MediaTypeBadgeBehavior.always => l10n.always,
-    MediaTypeBadgeBehavior.mixedRowsOnly => l10n.mixedRowsOnly,
-    MediaTypeBadgeBehavior.never => l10n.never,
-  };
-
-  Future<void> _refreshAllEnabledLists() async {
-    final prefs = GetIt.instance<UserPreferences>();
-    
-    bool dialogDismissed = false;
-    unawaited(
-      showFocusRestoringDialog<void>(
-        context: context,
-        barrierDismissible: false,
-        builder: (ctx) {
-          return withCleanSettingsTypography(
-            ctx,
-            PopScope(
-              canPop: false,
-              child: const AlertDialog(
-                title: Text('Refreshing Lists'),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SizedBox(height: 8),
-                    SizedBox(
-                      width: 50,
-                      height: 50,
-                      child: CircularProgressIndicator(),
-                    ),
-                    SizedBox(height: 24),
-                    Text(
-                      'Refreshing all enabled external lists and updating caches...',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 12, color: Colors.grey),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        },
-      ).then((_) {
-        dialogDismissed = true;
-      }),
-    );
-
-    try {
-      final futures = <Future<void>>[];
-
-      // Custom Enabled Rows
-      final customService = GetIt.instance<CustomExternalListsService>();
-      final configs = prefs.homeSectionsConfig;
-      for (final config in configs) {
-        if (config.pluginSource == HomeSectionPluginSource.custom && config.enabled) {
-          futures.add(() async {
-            try {
-              final items = await customService.fetchCustomRow(config, forceRefresh: true);
-              if (items.isNotEmpty) {
-                await customService.saveCustomRowToCache(config, items);
-              }
-            } catch (e) {
-              debugPrint('[RefreshAll] Failed to refresh custom row ${config.pluginSection}: $e');
-            }
-          }());
-        }
-      }
-
-      if (futures.isNotEmpty) {
-        await Future.wait(futures);
-      }
-
-      await prefs.set(
-        UserPreferences.lastExternalRowsRefreshTime,
-        DateTime.now().millisecondsSinceEpoch,
-      );
-
-      if (GetIt.instance.isRegistered<HomeViewModel>()) {
-        GetIt.instance<HomeViewModel>().load(preserveExisting: true);
-      }
-
-      if (mounted && !dialogDismissed) {
-        Navigator.of(context, rootNavigator: true).pop();
-      }
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Successfully refreshed all enabled lists.')),
-        );
-      }
-    } catch (e) {
-      if (mounted && !dialogDismissed) {
-        Navigator.of(context, rootNavigator: true).pop();
-      }
-      if (mounted) {
-        final detail = describeError(e, AppLocalizations.of(context));
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to refresh lists: $detail')),
-        );
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return withCleanSettingsTypography(
-      context,
-      Builder(
-        builder: (context) {
-          final l10n = AppLocalizations.of(context);
-          final syncService = GetIt.instance<PluginSyncService>();
-          final tmdbAvailable = syncService.tmdbAvailable;
-          final showUpcomingCalendars = !_checkingServices && (_radarrInstalled || _sonarrInstalled);
-
-          return RequestInitialFocus(
-            targetNode: PlatformDetection.isTV ? _homeSectionsFocusNode : null,
-            child: Scaffold(
-              appBar: buildSettingsAppBar(
-                context,
-                Text(l10n.externalLists),
-              ),
-              body: FocusScope(
-                node: _externalListsScope,
-                autofocus: true,
-                child: ListView(
-                  children: [
-                    const _SectionHeader('Home Row Maintenance'),
-                    adaptiveListSection(
-                      children: [
-                        _TvSettingsListTile(
-                          focusNode: _homeSectionsFocusNode,
-                          leading: const Icon(Icons.list),
-                          title: Text(l10n.homeSections),
-                          subtitle: Text(l10n.reorderToggleHomeRows),
-                          onTap: () => context.pushSettingsScreen(
-                            const HomeSectionsScreen(showGeneralOptions: false),
-                          ),
-                        ),
-                        _TvSettingsListTile(
-                          focusNode: _refreshFocusNode,
-                          leading: const Icon(Icons.refresh),
-                          title: const Text('Refresh All Enabled Lists'),
-                          subtitle: const Text('Force a full update of TMDB and fully custom lists cache.'),
-                          onTap: _refreshAllEnabledLists,
-                        ),
-                      ],
-                    ),
-                    const _SectionHeader('External Home Row Display'),
-                    adaptiveListSection(
-                      children: [
-                        EnumPreferenceTile<MediaTypeBadgeBehavior>(
-                          preference: UserPreferences.mediaTypeBadgeBehavior,
-                          title: 'Media type badges',
-                          description:
-                              'Show MOVIE / SERIES labels on external home-row cards',
-                          icon: Icons.info_outline,
-                          labelOf: (behavior) =>
-                              _mediaTypeBadgeBehaviorLabel(l10n, behavior),
-                          onChanged: () {
-                            if (!mounted) return;
-                            setState(() {});
-                          },
-                        ),
-                      ],
-                    ),
-                    const _SectionHeader('External Home Row Configurations'),
-                    adaptiveListSection(
-                      children: [
-                        _TvSettingsListTile(
-                          leading: const Icon(Icons.movie_outlined),
-                          title: const Text('IMDb Lists'),
-                          subtitle: const Text('Configure IMDb Top 250, Popular, and other charts.'),
-                          onTap: () => context.pushSettingsScreen(const _ImdbListsScreen()),
-                        ),
-                        _TvSettingsListTile(
-                          leading: const Icon(Icons.celebration_outlined),
-                          title: Text(l10n.seasonalRow),
-                          subtitle: Text(l10n.seasonalRowDescription),
-                          onTap: () => context.pushSettingsScreen(const _SeasonalRowScreen()),
-                        ),
-                        _TvSettingsListTile(
-                          leading: const Icon(Icons.trending_up),
-                          title: const Text('TMDB Lists'),
-                          subtitle: Text(
-                            tmdbAvailable
-                                ? 'Configure Popular, Top Rated, and Trending TMDB lists.'
-                                : 'TMDB API key must be configured in Moonbase settings to use this feature.',
-                          ),
-                          onTap: tmdbAvailable
-                              ? () => context.pushSettingsScreen(const _TmdbListsScreen())
-                              : null,
-                        ),
-                        if (showUpcomingCalendars)
-                          _TvSettingsListTile(
-                            leading: const Icon(Icons.calendar_month),
-                            title: const Text('Upcoming Calendars'),
-                            subtitle: const Text('Toggle Upcoming Calendars from Radarr/Sonarr.'),
-                            onTap: () => context.pushSettingsScreen(const _UpcomingCalendarsScreen()),
-                          ),
-                        if (syncService.seerrAvailable)
-                          _TvSettingsListTile(
-                            leading: Image.asset(
-                              'assets/icons/seerr.png',
-                              width: 24,
-                              height: 24,
-                            ),
-                            title: const Text('Seerr Lists'),
-                            subtitle: const Text('Configure Seerr Discovery Rows.'),
-                            onTap: () =>
-                                context.pushSettingsScreen(const _SeerrListsScreen()),
-                          ),
-                        _TvSettingsListTile(
-                          leading: const Icon(Icons.tune_outlined),
-                          title: const Text('Custom Home Rows Wizard'),
-                          subtitle: const Text(
-                              'ADVANCED: Configure customized home rows from a variety of sources.'),
-                          onTap: () => context
-                              .pushSettingsScreen(const _CustomListsScreen()),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
-
 class _SeasonalRowScreen extends StatefulWidget {
   const _SeasonalRowScreen();
 
@@ -1207,18 +914,6 @@ class _UpcomingCalendarsScreenState extends State<_UpcomingCalendarsScreen> {
             autofocus: true,
             child: ListView(
               children: [
-                adaptiveListSection(
-                  children: [
-                    SwitchPreferenceTile(
-                      key: const ValueKey('mergeRadarrSonarrCalendars'),
-                      preference: UserPreferences.mergeRadarrSonarrCalendars,
-                      title: "Merge Sonarr and Radarr Calendars?",
-                      icon: Icons.merge_type,
-                      enabled: calendarsCanMerge,
-                      onChanged: () => setState(() {}),
-                    ),
-                  ],
-                ),
                 const _SectionHeader('Radarr'),
                 adaptiveListSection(
                   children: [
@@ -1261,7 +956,7 @@ class _UpcomingCalendarsScreenState extends State<_UpcomingCalendarsScreen> {
                       SwitchPreferenceTile(
                         key: const ValueKey('radarrCalendarShowDate'),
                         preference: UserPreferences.radarrCalendarShowDate,
-                        title: 'Show Release Date on Home Screen?',
+                        title: 'Show Release Date on Home Screen',
                         icon: Icons.calendar_month,
                         onChanged: () => setState(() {}),
                       ),
@@ -1288,18 +983,30 @@ class _UpcomingCalendarsScreenState extends State<_UpcomingCalendarsScreen> {
                       SwitchPreferenceTile(
                         key: const ValueKey('sonarrCalendarShowEpisodeInfo'),
                         preference: UserPreferences.sonarrCalendarShowEpisodeInfo,
-                        title: 'Display Episode Information?',
+                        title: 'Display Episode Information',
                         icon: Icons.info_outline,
                         onChanged: () => setState(() {}),
                       ),
                       SwitchPreferenceTile(
                         key: const ValueKey('sonarrCalendarShowDate'),
                         preference: UserPreferences.sonarrCalendarShowDate,
-                        title: 'Show Release Date on Home Screen?',
+                        title: 'Show Release Date on Home Screen',
                         icon: Icons.calendar_month,
                         onChanged: () => setState(() {}),
                       ),
                     ],
+                  ],
+                ),
+                adaptiveListSection(
+                  children: [
+                    SwitchPreferenceTile(
+                      key: const ValueKey('mergeRadarrSonarrCalendars'),
+                      preference: UserPreferences.mergeRadarrSonarrCalendars,
+                      title: 'Merge Sonarr and Radarr Calendars',
+                      icon: Icons.merge_type,
+                      enabled: calendarsCanMerge,
+                      onChanged: () => setState(() {}),
+                    ),
                   ],
                 ),
               ],
@@ -1325,10 +1032,49 @@ class _SeerrListsScreenState extends State<_SeerrListsScreen> {
   final _scope = FocusScopeNode(debugLabel: 'SeerrListsScope');
   final _firstFocusNode = FocusNode(debugLabel: 'seerr_display_rows');
 
+  /// The sliders on Seerr's discover page this client can show, or null until
+  /// they are read.
+  List<SeerrDiscoverSlider>? _sliders;
+
   @override
   void initState() {
     super.initState();
     _rows = List.of(_seerrPrefs.homeRowsConfig);
+    _loadSliders();
+  }
+
+  Future<void> _loadSliders() async {
+    try {
+      final repo = await GetIt.instance.getAsync<SeerrRepository>();
+      await repo.ensureInitialized();
+      if (!repo.isAvailable) return;
+      final sliders = await repo.getDiscoverSliders(force: true);
+      if (!mounted) return;
+      setState(() {
+        _sliders = sliders.where((s) => s.isSupported).toList();
+      });
+    } catch (e) {
+      debugPrint('[SeerrLists] Failed to load discover sliders: $e');
+    }
+  }
+
+  HomeSectionConfig _sliderSection(SeerrDiscoverSlider slider) =>
+      seerrSliderSection(
+        slider,
+        serverId: GetIt.instance<MediaServerClient>().baseUrl,
+      );
+
+  bool _isSliderShown(HomeSectionConfig entry) => GetIt.instance<UserPreferences>()
+      .homeSectionsConfig
+      .any((s) => s.stableId == entry.stableId && s.enabled);
+
+  Future<void> _setSliderShown(HomeSectionConfig entry, bool shown) async {
+    final prefs = GetIt.instance<UserPreferences>();
+    await prefs.setHomeSectionsConfig(
+      setSeerrSliderShown(prefs.homeSectionsConfig, entry, shown: shown),
+    );
+    _pushPersonalizationSync();
+    if (mounted) setState(() {});
   }
 
   @override
@@ -1388,7 +1134,7 @@ class _SeerrListsScreenState extends State<_SeerrListsScreen> {
         child: Scaffold(
           appBar: buildSettingsAppBar(
             context,
-            const Text('Seerr Lists'),
+            const Text('Seerr Rows'),
           ),
           body: FocusScope(
             node: _scope,
@@ -1413,6 +1159,19 @@ class _SeerrListsScreenState extends State<_SeerrListsScreen> {
                     );
                   }).toList(),
                 ),
+                if (_sliders case final sliders? when sliders.isNotEmpty) ...[
+                  _SectionHeader(l10n.seerrDiscoverSliders),
+                  adaptiveListSection(
+                    children: [
+                      for (final entry in sliders.map(_sliderSection))
+                        _SeerrRowSwitchTile(
+                          title: entry.pluginDisplayText ?? '',
+                          value: _isSliderShown(entry),
+                          onChanged: (shown) => _setSliderShown(entry, shown),
+                        ),
+                    ],
+                  ),
+                ],
               ],
             ),
           ),
@@ -1616,7 +1375,7 @@ class _CustomListsScreenState extends State<_CustomListsScreen> {
         child: Scaffold(
           appBar: buildSettingsAppBar(
             context,
-            const Text('Custom Home Rows Wizard'),
+            const Text('Custom Rows'),
           ),
           body: FocusScope(
             node: _scope,

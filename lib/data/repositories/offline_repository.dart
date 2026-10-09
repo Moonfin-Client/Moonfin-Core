@@ -12,6 +12,15 @@ typedef DownloadRef = ({
   String downloadSource,
 });
 
+/// A completed episode download, with what smart downloads needs to swap it.
+typedef DownloadedEpisodeRef = ({
+  String itemId,
+  String serverId,
+  String seriesId,
+  String qualityPreset,
+  DateTime? downloadedAt,
+});
+
 class OfflineRepository {
   final OfflineDatabase _db;
 
@@ -254,6 +263,35 @@ class OfflineRepository {
           ),
         ))
         .go();
+  }
+
+  /// Every completed episode download that knows its series, without the
+  /// metadata blobs.
+  Future<List<DownloadedEpisodeRef>> getDownloadedEpisodes() async {
+    final t = _db.downloadedItems;
+    final query = _db.selectOnly(t)
+      ..addColumns([
+        t.itemId,
+        t.serverId,
+        t.seriesId,
+        t.qualityPreset,
+        t.downloadedAt,
+      ])
+      ..where(
+        t.downloadStatus.equals(2) &
+            t.type.equals('Episode') &
+            t.seriesId.isNotNull(),
+      );
+    return [
+      for (final row in await query.get())
+        (
+          itemId: row.read(t.itemId)!,
+          serverId: row.read(t.serverId)!,
+          seriesId: row.read(t.seriesId)!,
+          qualityPreset: row.read(t.qualityPreset)!,
+          downloadedAt: row.read(t.downloadedAt),
+        ),
+    ];
   }
 
   /// Id, status and source of every download row, without the metadata

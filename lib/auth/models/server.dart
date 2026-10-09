@@ -4,6 +4,11 @@ class Server {
   final String id;
   final String name;
   final String address;
+
+  /// [address] with the host in the Unicode spelling the user typed, or null
+  /// when they didn't type one. Only for display, since requests always go
+  /// to [address].
+  final String? displayAddress;
   final String version;
   final ServerType serverType;
   final String? loginDisclaimer;
@@ -16,6 +21,7 @@ class Server {
     required this.id,
     required this.name,
     required this.address,
+    this.displayAddress,
     required this.version,
     required this.serverType,
     this.loginDisclaimer,
@@ -28,6 +34,8 @@ class Server {
   Server copyWith({
     String? name,
     String? address,
+    String? displayAddress,
+    bool clearDisplayAddress = false,
     String? version,
     ServerType? serverType,
     String? loginDisclaimer,
@@ -39,6 +47,9 @@ class Server {
       id: id,
       name: name ?? this.name,
       address: address ?? this.address,
+      displayAddress: clearDisplayAddress
+          ? null
+          : displayAddress ?? this.displayAddress,
       version: version ?? this.version,
       serverType: serverType ?? this.serverType,
       loginDisclaimer: loginDisclaimer ?? this.loginDisclaimer,
@@ -52,6 +63,7 @@ class Server {
   Map<String, dynamic> toJson() => {
         'name': name,
         'address': address,
+        'displayAddress': displayAddress,
         'version': version,
         'serverType': serverType.name,
         'loginDisclaimer': loginDisclaimer,
@@ -66,6 +78,7 @@ class Server {
       id: id,
       name: json['name'] as String? ?? '',
       address: json['address'] as String? ?? '',
+      displayAddress: json['displayAddress'] as String?,
       version: json['version'] as String? ?? '',
       serverType: ServerType.values.firstWhere(
         (t) => t.name == json['serverType'],

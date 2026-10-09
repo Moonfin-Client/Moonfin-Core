@@ -36,6 +36,11 @@ class PlatformDetection {
       !kIsWeb && defaultTargetPlatform == TargetPlatform.linux;
   static bool get isWeb => kIsWeb;
 
+  /// The ID this Flatpak was installed under, or null outside a Flatpak.
+  /// Flathub's ID isn't the native org.moonfin.linux.
+  static String? get flatpakAppId => isLinux ? linuxFlatpakAppId() : null;
+  static bool get isFlatpak => flatpakAppId != null;
+
   static String get linuxSessionType => '';
 
   static String get pathSeparator => isWindows ? '\\' : '/';

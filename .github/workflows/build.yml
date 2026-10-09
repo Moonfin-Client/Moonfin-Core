@@ -771,6 +771,26 @@ jobs:
             ${{ matrix.artifact_prefix }}_v*.flatpak
           if-no-files-found: error
 
+  # Web, built at the root base href so the artifact runs from any static server
+  web:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+
+      - name: Build web
+        run: flutter build web --wasm --release
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: web
+          path: build/web
+          if-no-files-found: error
+
   # Analyzer and every test suite, the app plus each package that has one.
   # The platform builds above compile only reachable code, so a broken file
   # nothing imports and a failing test are invisible to them. This job is
@@ -887,7 +907,7 @@ jobs:
   # to report.
   save-pr-results:
     if: always() && github.event_name == 'pull_request'
-    needs: [android, ios, macos, tvos, windows, windows-arm64, linux, tests]
+    needs: [android, ios, macos, tvos, windows, windows-arm64, linux, web, tests]
     runs-on: ubuntu-latest
     steps:
       - name: Write outcomes.json
@@ -903,6 +923,7 @@ jobs:
             "windows": "${{ needs.windows.result }}",
             "windows_arm64": "${{ needs.windows-arm64.result }}",
             "linux": "${{ needs.linux.result }}",
+            "web": "${{ needs.web.result }}",
             "tests": "${{ needs.tests.result }}"
           }
           EOF

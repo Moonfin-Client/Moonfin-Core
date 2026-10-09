@@ -267,7 +267,9 @@ void main() {
     expect(controller.offset, greaterThan(0));
   });
 
-  testWidgets('settings icons use the shared shell on TV only', (tester) async {
+  testWidgets('settings icons use the shared shell on every platform', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       const MaterialApp(
         home: Scaffold(
@@ -326,7 +328,7 @@ void main() {
       find.byWidgetPredicate(
         (widget) => widget is Container && widget.constraints?.maxWidth == 44,
       ),
-      findsNothing,
+      findsNWidgets(2),
     );
   });
 

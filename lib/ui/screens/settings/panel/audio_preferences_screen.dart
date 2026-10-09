@@ -232,7 +232,7 @@ class _AudioPreferencesScreenState extends State<_AudioPreferencesScreen> {
     final fallbackAudioLangOptions = {'': l10n.none, ...languages};
 
     return Scaffold(
-      appBar: buildSettingsAppBar(context, Text(l10n.settingsAudioPreferences)),
+      appBar: buildSettingsAppBar(context, Text(l10n.audio)),
       body: ListView(
         children: [
           _SectionHeader(l10n.mediaPlayerBehavior),

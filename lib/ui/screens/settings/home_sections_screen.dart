@@ -10,6 +10,8 @@ import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../data/models/aggregated_item.dart';
+import '../../../data/repositories/seerr_repository.dart';
+import '../../../data/services/seerr/seerr_discover_sliders.dart';
 import '../../../data/utils/playlist_utils.dart';
 import '../../../data/services/plugin_sync_service.dart';
 import '../../../preference/home_section_config.dart';
@@ -21,8 +23,6 @@ import '../../../util/extensions.dart';
 import '../../../util/focus/scroll_utils.dart';
 import '../../../util/platform_detection.dart';
 import '../../navigation/route_lifecycle_observer.dart';
-import '../../widgets/overlay_sheet.dart';
-import '../../widgets/poster_size_settings_dialog.dart';
 import '../../widgets/skeleton/skeleton_shimmer.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
 import '../../widgets/settings/preference_tiles.dart';
@@ -82,9 +82,7 @@ BoxDecoration _homeSectionTileDecoration(
 }
 
 class HomeSectionsScreen extends StatefulWidget {
-  final bool showGeneralOptions;
-
-  const HomeSectionsScreen({super.key, this.showGeneralOptions = true});
+  const HomeSectionsScreen({super.key});
 
   @override
   State<HomeSectionsScreen> createState() => _HomeSectionsScreenState();
@@ -94,8 +92,6 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
     with RouteAware {
   final _prefs = GetIt.instance<UserPreferences>();
   ModalRoute<dynamic>? _observedRoute;
-  static const _rowsTypeDescription =
-      'Classic keeps per-row image type and info overlay. Modern uses portrait-to-backdrop rows.';
   late List<HomeSectionConfig> _sections;
   HomeSectionConfig? _mediaBarConfig;
   final _focusNodes = <FocusNode>[];
@@ -104,6 +100,10 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
   bool _showOverlay = true;
 
   final Set<String> _emptySectionIds = {};
+
+  /// Seerr slider rows whose slider Seerr still has but this client can't
+  /// show, so they stay in the layout without being offered.
+  Set<String> _unshownSeerrSliderIds = const {};
 
   static FavoriteTypeFilter _favoriteFilterForSection(HomeSectionType type) {
     return switch (type) {
@@ -516,49 +516,11 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
     }
   }
 
-  bool _isAnyTmdbSectionEnabled() {
-    return _prefs.get(UserPreferences.tmdbPopularMoviesEnabled) ||
-        _prefs.get(UserPreferences.tmdbTopRatedMoviesEnabled) ||
-        _prefs.get(UserPreferences.tmdbNowPlayingMoviesEnabled) ||
-        _prefs.get(UserPreferences.tmdbUpcomingMoviesEnabled) ||
-        _prefs.get(UserPreferences.tmdbPopularTvEnabled) ||
-        _prefs.get(UserPreferences.tmdbTopRatedTvEnabled) ||
-        _prefs.get(UserPreferences.tmdbAiringTodayTvEnabled) ||
-        _prefs.get(UserPreferences.tmdbOnTheAirTvEnabled) ||
-        _prefs.get(UserPreferences.tmdbTrendingMovieDailyEnabled) ||
-        _prefs.get(UserPreferences.tmdbTrendingMovieWeeklyEnabled) ||
-        _prefs.get(UserPreferences.tmdbTrendingTvDailyEnabled) ||
-        _prefs.get(UserPreferences.tmdbTrendingTvWeeklyEnabled) ||
-        _prefs.get(UserPreferences.tmdbTrendingAllWeeklyEnabled);
-  }
+  bool _isAnyTmdbSectionEnabled() =>
+      UserPreferences.tmdbSectionEnabled.values.any(_prefs.get);
 
   bool _isTmdbRowEnabled(HomeSectionType type) {
-    final prefKey = switch (type) {
-      HomeSectionType.tmdbPopularMovies =>
-        UserPreferences.tmdbPopularMoviesEnabled,
-      HomeSectionType.tmdbTopRatedMovies =>
-        UserPreferences.tmdbTopRatedMoviesEnabled,
-      HomeSectionType.tmdbNowPlayingMovies =>
-        UserPreferences.tmdbNowPlayingMoviesEnabled,
-      HomeSectionType.tmdbUpcomingMovies =>
-        UserPreferences.tmdbUpcomingMoviesEnabled,
-      HomeSectionType.tmdbPopularTv => UserPreferences.tmdbPopularTvEnabled,
-      HomeSectionType.tmdbTopRatedTv => UserPreferences.tmdbTopRatedTvEnabled,
-      HomeSectionType.tmdbAiringTodayTv =>
-        UserPreferences.tmdbAiringTodayTvEnabled,
-      HomeSectionType.tmdbOnTheAirTv => UserPreferences.tmdbOnTheAirTvEnabled,
-      HomeSectionType.tmdbTrendingMovieDaily =>
-        UserPreferences.tmdbTrendingMovieDailyEnabled,
-      HomeSectionType.tmdbTrendingMovieWeekly =>
-        UserPreferences.tmdbTrendingMovieWeeklyEnabled,
-      HomeSectionType.tmdbTrendingTvDaily =>
-        UserPreferences.tmdbTrendingTvDailyEnabled,
-      HomeSectionType.tmdbTrendingTvWeekly =>
-        UserPreferences.tmdbTrendingTvWeeklyEnabled,
-      HomeSectionType.tmdbTrendingAllWeekly =>
-        UserPreferences.tmdbTrendingAllWeeklyEnabled,
-      _ => null,
-    };
+    final prefKey = UserPreferences.tmdbSectionEnabled[type];
     if (prefKey == null) return false;
     return _prefs.get(prefKey);
   }
@@ -617,21 +579,8 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
         type == HomeSectionType.imdbTopEnglishMovies;
   }
 
-  bool _isTmdbSectionType(HomeSectionType type) {
-    return type == HomeSectionType.tmdbPopularMovies ||
-        type == HomeSectionType.tmdbTopRatedMovies ||
-        type == HomeSectionType.tmdbNowPlayingMovies ||
-        type == HomeSectionType.tmdbUpcomingMovies ||
-        type == HomeSectionType.tmdbPopularTv ||
-        type == HomeSectionType.tmdbTopRatedTv ||
-        type == HomeSectionType.tmdbAiringTodayTv ||
-        type == HomeSectionType.tmdbOnTheAirTv ||
-        type == HomeSectionType.tmdbTrendingMovieDaily ||
-        type == HomeSectionType.tmdbTrendingMovieWeekly ||
-        type == HomeSectionType.tmdbTrendingTvDaily ||
-        type == HomeSectionType.tmdbTrendingTvWeekly ||
-        type == HomeSectionType.tmdbTrendingAllWeekly;
-  }
+  bool _isTmdbSectionType(HomeSectionType type) =>
+      UserPreferences.isTmdbSectionType(type);
 
   bool _isHiddenByRowVisibilityGates(HomeSectionConfig section) {
     final showFavoritesRows = _prefs.get(UserPreferences.displayFavoritesRows);
@@ -662,11 +611,17 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
             (section.isPluginDynamic &&
                 section.pluginSource == HomeSectionPluginSource.playlists));
     final hiddenBySeerr =
-        _isSeerrSectionType(section.type) &&
-        (!showSeerrRows ||
-            !GetIt.instance<SeerrPreferences>().isSeerrHomeRowEnabled(
-              section.type,
-            ));
+        (_isSeerrSectionType(section.type) &&
+            (!showSeerrRows ||
+                !GetIt.instance<SeerrPreferences>().isSeerrHomeRowEnabled(
+                  section.type,
+                ))) ||
+        // Like Seerr's own rows, a slider row switched off goes back to Seerr
+        // Lists, where it's switched on again.
+        (isSeerrSliderSection(section) &&
+            (!showSeerrRows ||
+                !section.enabled ||
+                _unshownSeerrSliderIds.contains(section.stableId)));
     final hiddenByImdb =
         _isImdbSectionType(section.type) &&
         (!showImdbRows || !_isImdbRowEnabled(section.type));
@@ -853,9 +808,11 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
       final collectionsFuture = _fetchCollectionsForHomeSections();
       final genresFuture = _fetchGenresForHomeSections();
       final playlistsFuture = _fetchPlaylistsForHomeSections();
+      final seerrSlidersFuture = _fetchSeerrSlidersForHomeSections();
       final discoveredCollections = await collectionsFuture;
       final discoveredGenres = await genresFuture;
       final discoveredPlaylists = await playlistsFuture;
+      final discoveredSeerrSliders = await seerrSlidersFuture;
       if (!mounted) return;
       var changed = false;
       setState(() {
@@ -867,6 +824,8 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
         final mergedPlaylistSections = _mergePlaylistSections(
           discoveredPlaylists,
         );
+        final mergedSeerrSliderSections = discoveredSeerrSliders != null &&
+            _mergeSeerrSliderSections(discoveredSeerrSliders);
 
         final beforeIds = _sections.map((s) => s.stableId).toList();
         _sortSectionsEnabledAboveDisabled();
@@ -883,6 +842,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
             mergedCollectionSections ||
             mergedGenreSections ||
             mergedPlaylistSections ||
+            mergedSeerrSliderSections ||
             sortChanged;
         _rebuildFocusNodes();
       });
@@ -1252,6 +1212,58 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
     return changed;
   }
 
+  /// Every slider on Seerr's discover page. Null when Seerr can't be reached,
+  /// so a failed read leaves the rows in place instead of reading as every
+  /// slider having been deleted.
+  Future<List<SeerrDiscoverSlider>?> _fetchSeerrSlidersForHomeSections() async {
+    if (!GetIt.instance<PluginSyncService>().seerrAvailable) return null;
+    try {
+      final repo = await GetIt.instance.getAsync<SeerrRepository>();
+      await repo.ensureInitialized();
+      if (!repo.isAvailable) return null;
+      return await repo.getDiscoverSliders(force: true);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Keeps the slider rows put on Home from Seerr Lists in step with Seerr.
+  /// Sliders are picked there, so none are added here.
+  bool _mergeSeerrSliderSections(List<SeerrDiscoverSlider> sliders) {
+    final serverId = GetIt.instance<MediaServerClient>().baseUrl;
+    var changed = false;
+
+    // Another server's Seerr may number its sliders the same way, so only
+    // this server's rows are matched against the list.
+    bool isOwnSlider(HomeSectionConfig s) =>
+        isSeerrSliderSection(s) && s.serverId == serverId;
+
+    for (var i = 0; i < _sections.length; i++) {
+      if (!isOwnSlider(_sections[i])) continue;
+      final slider = findSeerrSliderFor(_sections[i], sliders);
+      if (slider == null) continue;
+      if (_sections[i].pluginDisplayText != slider.title) {
+        _sections[i] = _sections[i].copyWith(pluginDisplayText: slider.title);
+        changed = true;
+      }
+    }
+
+    // Only a slider Seerr no longer has is dropped. One it still has but this
+    // client can't show, switched off for now or of a type a newer client
+    // knows, keeps its entry and state and is just left out of the list.
+    final before = _sections.length;
+    _sections.removeWhere(
+      (s) => isOwnSlider(s) && findSeerrSliderFor(s, sliders) == null,
+    );
+    if (_sections.length != before) changed = true;
+    _unshownSeerrSliderIds = {
+      for (final s in _sections.where(isOwnSlider))
+        if (findSeerrSliderFor(s, sliders)?.isSupported == false) s.stableId,
+    };
+
+    return changed;
+  }
+
   void _rebuildFocusNodes() {
     final activeIds = _sections.map((s) => s.stableId).toSet();
 
@@ -1317,30 +1329,9 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
 
   void _syncIndividualPreferences() {
     Preference<bool>? mapToPref(HomeSectionType type) {
+      final tmdb = UserPreferences.tmdbSectionEnabled[type];
+      if (tmdb != null) return tmdb;
       return switch (type) {
-        HomeSectionType.tmdbPopularMovies =>
-          UserPreferences.tmdbPopularMoviesEnabled,
-        HomeSectionType.tmdbTopRatedMovies =>
-          UserPreferences.tmdbTopRatedMoviesEnabled,
-        HomeSectionType.tmdbNowPlayingMovies =>
-          UserPreferences.tmdbNowPlayingMoviesEnabled,
-        HomeSectionType.tmdbUpcomingMovies =>
-          UserPreferences.tmdbUpcomingMoviesEnabled,
-        HomeSectionType.tmdbPopularTv => UserPreferences.tmdbPopularTvEnabled,
-        HomeSectionType.tmdbTopRatedTv => UserPreferences.tmdbTopRatedTvEnabled,
-        HomeSectionType.tmdbAiringTodayTv =>
-          UserPreferences.tmdbAiringTodayTvEnabled,
-        HomeSectionType.tmdbOnTheAirTv => UserPreferences.tmdbOnTheAirTvEnabled,
-        HomeSectionType.tmdbTrendingMovieDaily =>
-          UserPreferences.tmdbTrendingMovieDailyEnabled,
-        HomeSectionType.tmdbTrendingMovieWeekly =>
-          UserPreferences.tmdbTrendingMovieWeeklyEnabled,
-        HomeSectionType.tmdbTrendingTvDaily =>
-          UserPreferences.tmdbTrendingTvDailyEnabled,
-        HomeSectionType.tmdbTrendingTvWeekly =>
-          UserPreferences.tmdbTrendingTvWeeklyEnabled,
-        HomeSectionType.tmdbTrendingAllWeekly =>
-          UserPreferences.tmdbTrendingAllWeeklyEnabled,
         HomeSectionType.imdbTop250Movies =>
           UserPreferences.imdbTop250MoviesEnabled,
         HomeSectionType.imdbTop250TvShows =>
@@ -1704,35 +1695,8 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
         HomeSectionType.none => l10n.none,
       };
 
-  String _posterSizeLabel(PosterSize size, AppLocalizations l10n) =>
-      switch (size) {
-        PosterSize.small => l10n.small,
-        PosterSize.medium => l10n.medium,
-        PosterSize.large => l10n.large,
-        PosterSize.extraLarge => l10n.extraLarge,
-      };
-
-  String _rowsStyleLabel(HomeRowsStyle style) => switch (style) {
-    HomeRowsStyle.v1 => 'Classic',
-    HomeRowsStyle.v2 => 'Modern',
-  };
-
-  Future<void> _showPosterSizeDialog() async {
-    await showFocusRestoringDialog<void>(
-      context: context,
-      builder: (ctx) => withCleanSettingsTypography(
-        ctx,
-        PosterSizeSettingsDialog(
-          prefs: _prefs,
-          onChanged: () => setState(() {}),
-        ),
-      ),
-    );
-  }
-
   Widget _buildLoadingOverlay(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
     return Positioned.fill(
       child: AnimatedOpacity(
         opacity: _isLoading ? 1.0 : 0.0,
@@ -1752,42 +1716,6 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
               physics: const NeverScrollableScrollPhysics(),
               padding: const EdgeInsets.only(top: 8, bottom: 32),
               children: [
-                if (widget.showGeneralOptions)
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                    child: Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: colorScheme.surfaceContainerLow.withValues(alpha: 0.5),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Column(
-                        children: const [
-                          Row(
-                            children: [
-                              SkeletonBox(width: 24, height: 24, borderRadius: BorderRadius.all(Radius.circular(6))),
-                              SizedBox(width: 16),
-                              Expanded(
-                                child: SkeletonBox(width: 180, height: 16, borderRadius: BorderRadius.all(Radius.circular(4))),
-                              ),
-                              SkeletonBox(width: 44, height: 24, borderRadius: BorderRadius.all(Radius.circular(12))),
-                            ],
-                          ),
-                          SizedBox(height: 16),
-                          Row(
-                            children: [
-                              SkeletonBox(width: 24, height: 24, borderRadius: BorderRadius.all(Radius.circular(6))),
-                              SizedBox(width: 16),
-                              Expanded(
-                                child: SkeletonBox(width: 160, height: 16, borderRadius: BorderRadius.all(Radius.circular(4))),
-                              ),
-                              SkeletonBox(width: 44, height: 24, borderRadius: BorderRadius.all(Radius.circular(12))),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
                 for (int i = 0; i < 9; i++)
                   Padding(
                     padding: _kHomeSectionTileOuterPadding,
@@ -1864,7 +1792,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
       Scaffold(
         appBar: buildSettingsAppBar(
           context,
-          Text(l10n.homeSections),
+          Text(l10n.homeRows),
           actions: [
             IconButton(
               icon: const Icon(Icons.restore),
@@ -1902,71 +1830,11 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
     );
   }
 
-  Widget _buildHeader(AppLocalizations l10n) {
-    return Column(
-      children: [
-        ListTile(
-          leading: const Icon(Icons.photo_size_select_large),
-          title: Text(l10n.cardSize),
-          subtitle: Text(
-            _posterSizeLabel(_prefs.get(UserPreferences.posterSize), l10n),
-          ),
-          trailing: const Icon(Icons.chevron_right),
-          onTap: _showPosterSizeDialog,
-        ),
-        const Divider(),
-        EnumPreferenceTile<HomeRowsStyle>(
-          preference: UserPreferences.homeRowsStyle,
-          title: l10n.rowsType,
-          icon: Icons.view_carousel,
-          description: _rowsTypeDescription,
-          labelOf: _rowsStyleLabel,
-          onChanged: () {
-            setState(() {});
-            _pushSyncSettings();
-          },
-        ),
-        if (_prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2) ...[
-          const Divider(),
-          SwitchListTile.adaptive(
-            secondary: const Icon(Icons.photo_library_outlined),
-            title: Text(l10n.modernCardsOnMyMediaRow),
-            subtitle: Text(l10n.modernCardsOnMyMediaRowDescription),
-            value: _prefs.get(UserPreferences.modernCardsOnMyMediaRow),
-            onChanged: (value) async {
-              await _prefs.set(UserPreferences.modernCardsOnMyMediaRow, value);
-              setState(() {});
-              _pushSyncSettings();
-            },
-          ),
-        ],
-        const Divider(),
-        SwitchListTile.adaptive(
-          secondary: const Icon(Icons.merge_type),
-          title: Text(l10n.mergeContinueWatchingAndNextUp),
-          subtitle: Text(l10n.combineBothRows),
-          value: _prefs.get(UserPreferences.mergeContinueWatchingNextUp),
-          onChanged: (value) {
-            _setMergeContinueWatchingNextUp(value);
-            if (value) {
-              setState(_enforceMergeAdjacency);
-              _save();
-            } else {
-              setState(() {});
-            }
-          },
-        ),
-      ],
-    );
-  }
-
   Widget _buildReorderableList(AppLocalizations l10n) {
     final visibleIndices = _visibleSectionIndices();
     final items = [for (final i in visibleIndices) _sections[i]];
     return CustomScrollView(
       slivers: [
-        if (widget.showGeneralOptions)
-          SliverToBoxAdapter(child: _buildHeader(l10n)),
         ReorderableAnimatedListImpl<HomeSectionConfig>(
           items: items,
           dragStartDelay: PlatformDetection.useMobileUi
@@ -2457,8 +2325,6 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
     return CustomScrollView(
       cacheExtent: 3000.0,
       slivers: [
-        if (widget.showGeneralOptions)
-          SliverToBoxAdapter(child: _buildHeader(l10n)),
         ReorderableAnimatedListImpl<HomeSectionConfig>(
           items: items,
           scrollDirection: Axis.vertical,
@@ -2861,6 +2727,8 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
       HomeSectionPluginSource.collections => 'Collections row',
       HomeSectionPluginSource.genres => 'Genres row',
       HomeSectionPluginSource.playlists => 'Playlists row',
+      HomeSectionPluginSource.seerr =>
+        AppLocalizations.of(context).seerrDiscoveryRows,
       HomeSectionPluginSource.custom => (() {
         Map<String, dynamic> rowConfig = {};
         try {

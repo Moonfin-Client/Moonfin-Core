@@ -19,102 +19,21 @@ class _AdvancedOptionsScreenState extends State<_AdvancedOptionsScreen> {
     super.dispose();
   }
 
-  Future<void> _clearImageCache(BuildContext context) async {
-    final l10n = AppLocalizations.of(context);
-    await clearImageDiskCache();
-    if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(l10n.imageCacheCleared)),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: buildSettingsAppBar(context, Text(l10n.advancedOptions)),
+      appBar: buildSettingsAppBar(context, Text(l10n.advancedPlayback)),
       body: FocusScope(
         node: _advancedScope,
         autofocus: true,
         child: ListView(
           children: [
-            _SectionHeader(l10n.playback),
-            adaptiveListSection(
-              children: [
-                SliderPreferenceTile(
-                  preference: UserPreferences.videoStartDelay,
-                  title: l10n.settingsVideoStartDelay,
-                  icon: Icons.schedule,
-                  min: 0,
-                  max: 5000,
-                  divisions: 20,
-                  labelOf: (v) => l10n.settingsMillisecondsValue(v.round()),
-                  autofocus: true,
-                ),
-              ],
-            ),
-            if (PlatformDetection.isAndroid) ...[
-              _SectionHeader(l10n.performanceMode),
-              adaptiveListSection(
-                children: [
-                  EnumPreferenceTile<DevicePerformanceMode>(
-                    preference: UserPreferences.performanceMode,
-                    title: l10n.performanceMode,
-                    description: l10n.performanceModeSubtitle,
-                    icon: Icons.speed_outlined,
-                    labelOf: (v) => switch (v) {
-                      DevicePerformanceMode.auto => l10n.performanceModeAuto,
-                      DevicePerformanceMode.standard =>
-                        l10n.performanceModeStandard,
-                      DevicePerformanceMode.reduced =>
-                        l10n.performanceModeReduced,
-                    },
-                  ),
-                ],
-              ),
-            ],
-            if (!PlatformDetection.isWeb) ...[
-              _SectionHeader(l10n.storage),
-              adaptiveListSection(
-                children: [
-                  IntPickerPreferenceTile(
-                    preference: UserPreferences.imageCacheLimitMb,
-                    title: l10n.imageCacheLimit,
-                    icon: Icons.image_outlined,
-                    options: {
-                      0: l10n.noLimit,
-                      100: l10n.mbValue(100),
-                      200: l10n.mbValue(200),
-                      350: l10n.mbValue(350),
-                      500: l10n.mbValue(500),
-                      1024: l10n.mbValue(1024),
-                      2048: l10n.mbValue(2048),
-                    },
-                    onChanged: () {
-                      final mb = GetIt.instance<UserPreferences>()
-                          .get(UserPreferences.imageCacheLimitMb);
-                      unawaited(enforceImageCacheBudget(mb * 1024 * 1024));
-                    },
-                  ),
-                  _TvSettingsListTile(
-                    leading: const Icon(Icons.cleaning_services_outlined),
-                    title: Text(l10n.clearImageCache),
-                    onTap: () => _clearImageCache(context),
-                  ),
-                ],
-              ),
-            ],
             if (PlatformDetection.isAndroid) ...[
               _SectionHeader(l10n.playerRouting),
               adaptiveListSection(
                 children: [
                   if (PlatformDetection.isTV) ...[
-                    SwitchPreferenceTile(
-                      preference: UserPreferences.preferExoPlayerFfmpeg,
-                      title: l10n.preferSoftwareDecoders,
-                      subtitle: l10n.preferSoftwareDecodersSubtitle,
-                      icon: Icons.memory,
-                    ),
                     SwitchPreferenceTile(
                       preference: UserPreferences.media3SkipSilence,
                       title: l10n.skipSilenceTitle,
@@ -133,12 +52,6 @@ class _AdvancedOptionsScreenState extends State<_AdvancedOptionsScreen> {
                       title: l10n.enableTunnelingTitle,
                       subtitle: l10n.enableTunnelingSubtitle,
                       icon: Icons.tv,
-                    ),
-                    SwitchPreferenceTile(
-                      preference: UserPreferences.media3MapDolbyVisionProfile7ToHevc,
-                      title: l10n.mapDolbyVisionP7Title,
-                      subtitle: l10n.mapDolbyVisionP7Subtitle,
-                      icon: Icons.hdr_strong,
                     ),
                   ],
                   SwitchPreferenceTile(

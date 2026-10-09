@@ -344,18 +344,39 @@ static void my_application_class_init(MyApplicationClass* klass) {
 
 static void my_application_init(MyApplication* self) {}
 
+// A Flatpak can only own its own app ID on the session bus, and Flathub
+// installs Moonfin under an ID that isn't APPLICATION_ID. Registering
+// APPLICATION_ID there is refused and the app exits, so a Flatpak takes the ID
+// it was installed under. The /app check keeps a native build started from
+// another Flatpak's terminal on APPLICATION_ID.
+static const gchar* my_application_resolve_id() {
+  const gchar* flatpak_id = g_getenv("FLATPAK_ID");
+  if (flatpak_id == nullptr || !g_application_id_is_valid(flatpak_id)) {
+    return APPLICATION_ID;
+  }
+
+  g_autofree gchar* executable = g_file_read_link("/proc/self/exe", nullptr);
+  if (executable == nullptr || !g_str_has_prefix(executable, "/app/")) {
+    return APPLICATION_ID;
+  }
+
+  return flatpak_id;
+}
+
 MyApplication* my_application_new() {
+  const gchar* application_id = my_application_resolve_id();
+
   // Set the program name to the application ID, which helps various systems
   // like GTK and desktop environments map this running application to its
   // corresponding .desktop file. This ensures better integration by allowing
   // the application to be recognized beyond its binary name.
-  g_set_prgname(APPLICATION_ID);
+  g_set_prgname(application_id);
 
   // Single-instance with command-line forwarding, required for app_links to
   // receive moonfin:// URIs (a second launch hands its arguments to the
   // primary instance over D-Bus and exits).
   return MY_APPLICATION(g_object_new(my_application_get_type(),
-                                     "application-id", APPLICATION_ID,
+                                     "application-id", application_id,
                                      "flags",
                                      G_APPLICATION_HANDLES_COMMAND_LINE |
                                          G_APPLICATION_HANDLES_OPEN,

@@ -60,7 +60,7 @@ class _PluginScreenState extends State<_PluginScreen> {
             child: Scaffold(
               appBar: buildSettingsAppBar(
                 context,
-                Text(l10n.pluginLabel),
+                Text(l10n.settingsSync),
                 actions: [
                   IconButton(
                     focusNode: _refreshFocusNode,

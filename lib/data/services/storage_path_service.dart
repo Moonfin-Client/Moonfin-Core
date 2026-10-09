@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 
 import '../../preference/user_preferences.dart';
 import '../../util/platform_detection.dart';
+import '../database/offline_database_location.dart';
 import 'macos_download_dir.dart';
 import 'media_store_service.dart';
 
@@ -167,12 +168,7 @@ class StoragePathService {
     }
   }
 
-  Future<File> getDatabaseFile() async {
-    final docs = await getApplicationDocumentsDirectory();
-    final dbDir = Directory('${docs.path}/Moonfin/DB');
-    if (!await dbDir.exists()) await dbDir.create(recursive: true);
-    return File('${dbDir.path}/offline.db');
-  }
+  Future<File> getDatabaseFile() => offlineDatabaseFile();
 
   Future<Directory> getImageCacheDir() async {
     if (PlatformDetection.isAndroid && _useMediaStore) {

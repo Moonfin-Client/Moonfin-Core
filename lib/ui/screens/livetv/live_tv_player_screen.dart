@@ -14,7 +14,9 @@ import 'package:volume_controller/volume_controller.dart';
 import '../../../data/services/log_service.dart';
 import '../../../data/utils/video_range_label.dart';
 import '../../../playback/subtitle_style.dart';
+import '../../../playback/subtitle_view_config.dart';
 import '../../../data/models/aggregated_item.dart';
+import '../../../data/models/live_tv_recording_state.dart';
 import '../../../data/viewmodels/live_tv_guide_view_model.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../playback/html_video_backend.dart';
@@ -33,9 +35,9 @@ import '../../../util/system_ui.dart';
 import '../../widgets/adaptive/sf_symbol.dart';
 import '../../widgets/aether_video_view.dart';
 import '../../widgets/playback/stream_info_dialog.dart';
-import '../../widgets/subtitle_preview.dart';
 import '../../widgets/track_selector_dialog.dart';
 import '../../widgets/live_tv/channel_carousel_overlay.dart';
+import '../../widgets/live_tv/live_tv_recording_dialog.dart';
 import 'channel_tune_observer.dart';
 import 'live_tv_guide_screen.dart';
 import '../../screensaver/screensaver_controller.dart';
@@ -108,6 +110,10 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   bool _forcedLandscape = true;
 
   GuideProgram? _currentProgram;
+  LiveTvRecordingState? _recordingState;
+  bool _recordingActionInProgress = false;
+  bool _recordingRefreshInProgress = false;
+  int _programRequestRevision = 0;
   Timer? _programRefreshTimer;
   StreamSubscription<PlayerBackend>? _backendSub;
 
@@ -188,6 +194,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   final _tvGuideFocus = FocusNode(debugLabel: 'LiveTvGuide');
   final _tvAudioFocus = FocusNode(debugLabel: 'LiveTvAudio');
   final _tvSubtitleFocus = FocusNode(debugLabel: 'LiveTvSubtitle');
+  final _tvRecordFocus = FocusNode(debugLabel: 'LiveTvRecord');
   final _tvBitrateFocus = FocusNode(debugLabel: 'LiveTvBitrate');
   final _tvPlaybackInfoFocus = FocusNode(debugLabel: 'LiveTvPlaybackInfo');
   // Index of the currently focused OSD control within _osdFocusOrder. Tracked
@@ -233,6 +240,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     _tvGuideFocus.addListener(_onControlFocusChanged);
     _tvAudioFocus.addListener(_onControlFocusChanged);
     _tvSubtitleFocus.addListener(_onControlFocusChanged);
+    _tvRecordFocus.addListener(_onControlFocusChanged);
     _tvBitrateFocus.addListener(_onControlFocusChanged);
     _tvPlaybackInfoFocus.addListener(_onControlFocusChanged);
     _playCurrentChannel();
@@ -301,6 +309,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     _tvGuideFocus.removeListener(_onControlFocusChanged);
     _tvAudioFocus.removeListener(_onControlFocusChanged);
     _tvSubtitleFocus.removeListener(_onControlFocusChanged);
+    _tvRecordFocus.removeListener(_onControlFocusChanged);
     _tvBitrateFocus.removeListener(_onControlFocusChanged);
     _tvPlaybackInfoFocus.removeListener(_onControlFocusChanged);
     _overlayFocus.dispose();
@@ -309,6 +318,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     _tvGuideFocus.dispose();
     _tvAudioFocus.dispose();
     _tvSubtitleFocus.dispose();
+    _tvRecordFocus.dispose();
     _tvBitrateFocus.dispose();
     _tvPlaybackInfoFocus.dispose();
     if (!_isStopping) {
@@ -873,8 +883,9 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     }
   }
 
-  Future<void> _fetchCurrentProgram() async {
+  Future<bool> _fetchCurrentProgram({bool withRecording = true}) async {
     final channelId = _currentChannel.id;
+    final revision = ++_programRequestRevision;
     try {
       final now = DateTime.now();
       final response = await _client.liveTvApi.getGuide(
@@ -886,7 +897,18 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
         userId: _client.userId,
       );
       final items = (response['Items'] as List?) ?? [];
-      if (items.isEmpty || !mounted) return;
+      if (!mounted ||
+          _currentChannel.id != channelId ||
+          revision != _programRequestRevision) {
+        return false;
+      }
+      if (items.isEmpty) {
+        setState(() {
+          _currentProgram = null;
+          _recordingState = null;
+        });
+        return false;
+      }
 
       Map<String, dynamic>? selected;
       DateTime? selectedStart;
@@ -912,18 +934,25 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
       }
 
       if (selected == null || selectedStart == null || selectedEnd == null) {
-        return;
+        return false;
       }
 
       // A channel switch can complete while this request is in flight. Don't
       // let an older response overwrite the newly selected channel's OSD.
-      if (!mounted || _currentChannel.id != channelId) return;
+      if (!mounted ||
+          _currentChannel.id != channelId ||
+          revision != _programRequestRevision) {
+        return false;
+      }
 
       final selectedMap = selected;
       final selectedProgramStart = selectedStart;
       final selectedProgramEnd = selectedEnd;
 
       setState(() {
+        if (_currentProgram?.id != selectedMap['Id']?.toString()) {
+          _recordingState = null;
+        }
         _currentProgram = GuideProgram(
           id: selectedMap['Id']?.toString() ?? '',
           channelId: channelId,
@@ -939,17 +968,153 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
           isKids: selectedMap['IsKids'] == true,
           isPremiere: selectedMap['IsPremiere'] == true,
           hasTimer: selectedMap['TimerId'] != null,
+          hasSeriesTimer: selectedMap['SeriesTimerId'] != null,
           rawData: selectedMap,
         );
       });
-    } catch (_) {}
+      if (!withRecording) return true;
+      final timers = await _client.liveTvApi.getTimers();
+      if (!mounted ||
+          _currentChannel.id != channelId ||
+          revision != _programRequestRevision) {
+        return false;
+      }
+      setState(() {
+        _recordingState = LiveTvRecordingState.fromProgram(
+          selectedMap,
+          (timers['Items'] as List?) ?? const [],
+        );
+      });
+      return true;
+    } catch (_) {
+      return false;
+    }
   }
 
+  bool get _canRecordCurrentProgram {
+    final program = _currentProgram;
+    final now = DateTime.now();
+    return program != null &&
+        program.id.isNotEmpty &&
+        !now.isBefore(program.startDate) &&
+        now.isBefore(program.endDate);
+  }
+
+  Future<void> _showRecordingDialog() async {
+    if (_recordingActionInProgress || _isSwitching || _isStopping) return;
+    final l10n = AppLocalizations.of(context);
+    _recordingActionInProgress = true;
+    _hideTimer?.cancel();
+    String? message;
+    try {
+      final refreshed = await _fetchCurrentProgram();
+      if (!mounted || _isStopping) return;
+      if (!refreshed || !_canRecordCurrentProgram || _recordingState == null) {
+        message = l10n.failedToLoadRecordings;
+        return;
+      }
+      final program = _currentProgram!;
+      final recording = _recordingState!;
+      final action = await showLiveTvRecordingDialog(
+        context: context,
+        programName: program.name,
+        programTime:
+            '${_formatTime(program.startDate)} – ${_formatTime(program.endDate)}',
+        episodeLine: program.episodeLine,
+        isSeries: program.isSeries,
+        recording: recording,
+        use24HourClock: _prefs.get(UserPreferences.use24HourClock),
+      );
+      if (action == null ||
+          !mounted ||
+          _isStopping ||
+          _currentProgram?.id != program.id) {
+        return;
+      }
+      if (!_canRecordCurrentProgram &&
+          (action == LiveTvRecordingAction.recordProgram ||
+              action == LiveTvRecordingAction.recordSeries)) {
+        return;
+      }
+
+      try {
+        switch (action) {
+          case LiveTvRecordingAction.recordProgram:
+            await _client.liveTvApi.createTimer(program.id);
+            message = l10n.programSetToRecord;
+          case LiveTvRecordingAction.recordSeries:
+            await _client.liveTvApi.createSeriesTimer(program.id);
+            message = l10n.seriesSetToRecord;
+          case LiveTvRecordingAction.cancelProgram:
+            await _client.liveTvApi.cancelTimer(recording.timerId!);
+            message = l10n.recordingCancelled;
+          case LiveTvRecordingAction.cancelSeries:
+            await _client.liveTvApi.cancelSeriesTimer(recording.seriesTimerId!);
+            message = l10n.seriesRecordingCancelled;
+        }
+      } catch (_) {
+        message = switch (action) {
+          LiveTvRecordingAction.recordProgram => l10n.unableToCreateRecording,
+          LiveTvRecordingAction.recordSeries =>
+            l10n.unableToCreateSeriesRecording,
+          LiveTvRecordingAction.cancelProgram => l10n.failedToCancelRecording,
+          LiveTvRecordingAction.cancelSeries =>
+            l10n.failedToCancelSeriesRecording,
+        };
+      }
+      await _fetchCurrentProgram();
+    } finally {
+      _recordingActionInProgress = false;
+      if (mounted && !_isStopping) {
+        _suppressBackNavigation();
+        if (message != null) {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(message)));
+        }
+        _scheduleHide();
+      }
+    }
+  }
+
+  // The record button only shows while the overlay is up, which refreshes
+  // the timers when it opens, so a hidden overlay skips them.
   void _startProgramRefresh() {
-    _programRefreshTimer = Timer.periodic(
-      const Duration(minutes: 1),
-      (_) => _fetchCurrentProgram(),
-    );
+    _programRefreshTimer = Timer.periodic(const Duration(minutes: 1), (_) {
+      if (!_recordingActionInProgress) {
+        unawaited(_fetchCurrentProgram(withRecording: _infoVisible));
+      }
+    });
+  }
+
+  Future<void> _refreshRecordingStatus() async {
+    if (_recordingRefreshInProgress) return;
+    final program = _currentProgram;
+    if (program == null) return;
+    if (!DateTime.now().isBefore(program.endDate)) {
+      await _fetchCurrentProgram();
+      return;
+    }
+    final revision = _programRequestRevision;
+    _recordingRefreshInProgress = true;
+    try {
+      final timers = await _client.liveTvApi.getTimers();
+      if (!mounted ||
+          _recordingActionInProgress ||
+          revision != _programRequestRevision ||
+          _currentChannel.id != program.channelId ||
+          _currentProgram?.id != program.id) {
+        return;
+      }
+      setState(() {
+        _recordingState = LiveTvRecordingState.fromProgram(
+          program.rawData,
+          (timers['Items'] as List?) ?? const [],
+        );
+      });
+    } catch (_) {
+    } finally {
+      _recordingRefreshInProgress = false;
+    }
   }
 
   void _scheduleHide() {
@@ -979,10 +1144,12 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     if (_streamsOfType('Audio').length > 1) _tvAudioFocus,
     if (_hasSubtitleChoices) _tvSubtitleFocus,
     _tvBitrateFocus,
+    if (_canRecordCurrentProgram) _tvRecordFocus,
     _tvPlaybackInfoFocus,
   ];
 
   bool get _isOverlayInteractionActive {
+    if (_recordingActionInProgress) return true;
     if (_isGuidePickerOpen) return true;
     if (_isCarouselOpen) return true;
     final route = ModalRoute.of(context);
@@ -1017,7 +1184,11 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
 
   void _showInfo() {
     if (_isCarouselOpen) return;
+    final wasHidden = !_infoVisible;
     setState(() => _infoVisible = true);
+    if (wasHidden && !_recordingActionInProgress) {
+      unawaited(_refreshRecordingStatus());
+    }
     if (PlatformDetection.isTV) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted || !_infoVisible || _isOverlayInteractionActive) return;
@@ -1649,56 +1820,13 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     );
   }
 
-  SubtitleViewConfiguration _buildSubtitleConfig() {
-    final style = SubtitleStyle.forResolution(
-      _prefs,
-      _manager.currentResolution,
-    );
-    final textColor = Color(style.textColor);
-    final bgColor = Color(style.backgroundColor);
-    final strokeColor = Color(style.strokeColor);
-    final prefSize = style.fontSize;
-    final fontWeight = style.fontWeight;
-    final offset = style.verticalOffset;
-
-    final baseSize = PlatformDetection.useMobileUi ? 40.0 : 32.0;
-    final fontSize = (prefSize / 24.0) * baseSize;
-    final basePadding = PlatformDetection.useMobileUi ? 16.0 : 24.0;
-    final bottomPadding =
-        basePadding + (offset * MediaQuery.sizeOf(context).height * 0.5);
-
-    final strokeShadows = subtitleStrokeShadows(strokeColor, fontSize);
-
-    final activeIndex = _manager.subtitleStreamIndex;
-    bool isAssOrPgs = false;
-    if (activeIndex != null && activeIndex >= 0) {
-      final mediaStreams = _manager.currentResolution?.mediaStreams;
-      if (mediaStreams != null) {
-        final activeStream = mediaStreams.firstWhere(
-          (s) => s['Index'] == activeIndex,
-          orElse: () => const <String, dynamic>{},
-        );
-        final codec = activeStream['Codec'] as String?;
-        isAssOrPgs = shouldRenderSubtitleNatively(codec);
-      }
-    }
-
-    return SubtitleViewConfiguration(
-      visible: PlatformDetection.isDesktop ? false : !isAssOrPgs,
-      style: TextStyle(
-        inherit: false,
-        height: 1.4,
-        fontSize: fontSize,
-        color: textColor,
-        fontWeight: fontWeight >= 700 ? FontWeight.bold : FontWeight.normal,
-        backgroundColor: bgColor,
-        fontFamilyFallback: const ['Roboto', 'Noto Sans', 'Arial'],
-        shadows: strokeShadows,
-      ),
-      textAlign: TextAlign.center,
-      padding: EdgeInsets.fromLTRB(16.0, 0.0, 16.0, bottomPadding),
-    );
-  }
+  SubtitleViewConfiguration _buildSubtitleConfig() =>
+      buildSubtitleViewConfiguration(
+        context: context,
+        prefs: _prefs,
+        resolution: _manager.currentResolution,
+        subtitleStreamIndex: _manager.subtitleStreamIndex,
+      );
 
   KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
     if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
@@ -2287,6 +2415,23 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
             tooltip: l10n.bitrate,
             onPressed: _showBitrateSelector,
           ),
+          if (_canRecordCurrentProgram) ...[
+            const SizedBox(width: AppSpacing.spaceSm),
+            _buildOverlayControlButton(
+              focusNode: PlatformDetection.isTV ? _tvRecordFocus : null,
+              icon: _recordingState?.seriesTimerId != null
+                  ? Icons.fiber_smart_record
+                  : Icons.fiber_manual_record,
+              iconColor: _recordingState?.isRecording == true ||
+                      _recordingState?.seriesTimerId != null
+                  ? Colors.red
+                  : Colors.white,
+              tooltip: _recordingState?.timerId != null
+                  ? l10n.cancelRecordingAction
+                  : l10n.record,
+              onPressed: () => unawaited(_showRecordingDialog()),
+            ),
+          ],
           const SizedBox(width: AppSpacing.spaceSm),
           _buildOverlayControlButton(
             focusNode: PlatformDetection.isTV ? _tvPlaybackInfoFocus : null,
@@ -2388,6 +2533,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     required IconData icon,
     required String tooltip,
     required VoidCallback onPressed,
+    Color iconColor = Colors.white,
   }) {
     if (PlatformDetection.isTV) {
       return _LiveTvRoundControlButton(
@@ -2395,6 +2541,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
         onPressed: onPressed,
         tooltip: tooltip,
         icon: icon,
+        iconColor: iconColor,
       );
     }
 
@@ -2409,7 +2556,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
         padding: const EdgeInsets.all(8),
         shape: const CircleBorder(),
       ),
-      icon: Icon(icon, size: 22),
+      icon: Icon(icon, size: 22, color: iconColor),
     );
   }
 
@@ -2426,12 +2573,14 @@ class _LiveTvRoundControlButton extends StatefulWidget {
   final VoidCallback onPressed;
   final String tooltip;
   final IconData icon;
+  final Color iconColor;
 
   const _LiveTvRoundControlButton({
     required this.onPressed,
     required this.tooltip,
     required this.icon,
     this.focusNode,
+    this.iconColor = Colors.white,
   });
 
   @override
@@ -2534,7 +2683,7 @@ class _LiveTvRoundControlButtonState extends State<_LiveTvRoundControlButton> {
                 ),
               ),
             ),
-            child: Icon(widget.icon, size: 24, color: Colors.white),
+            child: Icon(widget.icon, size: 24, color: widget.iconColor),
           ),
         ),
       ),

@@ -88,6 +88,7 @@ jobs:
               { platform: 'Windows ARM64', job: 'windows_arm64', artifact: 'windows-arm64-exe',    files: 'Moonfin_WindowsARM64_v*.exe' },
               { platform: 'Linux x64',     job: 'linux',         artifact: 'linux-packages-x64',   files: 'Moonfin_Linux_v* (deb/rpm/AppImage/snap/flatpak/tar.gz)' },
               { platform: 'Linux ARM64',   job: 'linux',         artifact: 'linux-packages-arm64', files: 'Moonfin_LinuxARM64_v* (deb/rpm/AppImage/snap/flatpak/tar.gz)' },
+              { platform: 'Web',           job: 'web',           artifact: 'web',                  files: 'build/web (static site, serve over HTTP)' },
             ];
 
             // Linux builds both architectures in one matrix job, so a failure on

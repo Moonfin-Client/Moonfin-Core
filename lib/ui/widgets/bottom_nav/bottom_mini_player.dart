@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:playback_core/playback_core.dart';
-import 'package:server_core/server_core.dart';
 
 import '../../../data/models/aggregated_item.dart';
 import '../../../data/services/media_server_client_factory.dart';
+import '../../../util/audio_artwork_url.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../navigation/app_router.dart';
 import '../../navigation/destinations.dart';
@@ -84,27 +84,11 @@ class _BottomMiniPlayerState extends State<BottomMiniPlayer> {
     return raw is AggregatedItem ? raw : null;
   }
 
-  String? _artUrl(AggregatedItem item) {
-    try {
-      final client = GetIt.instance<MediaServerClientFactory>()
-              .getClientIfExists(item.serverId) ??
-          GetIt.instance<MediaServerClient>();
-      final albumTag = item.albumPrimaryImageTag;
-      final albumId = item.albumId;
-      if (item.type == 'Audio' && albumTag != null && albumId != null) {
-        return client.imageApi
-            .getPrimaryImageUrl(albumId, maxHeight: 120, tag: albumTag);
-      }
-      if (item.primaryImageTag != null) {
-        return client.imageApi.getPrimaryImageUrl(
-          item.id,
-          maxHeight: 120,
-          tag: item.primaryImageTag,
-        );
-      }
-    } catch (_) {}
-    return null;
-  }
+  String? _artUrl(AggregatedItem item) => audioArtUrl(
+        item,
+        clientFactory: GetIt.instance<MediaServerClientFactory>(),
+        maxHeight: 120,
+      );
 
   @override
   Widget build(BuildContext context) {

@@ -1,6 +1,7 @@
 import '../models/aggregated_item.dart';
 import '../models/download_quality.dart';
 import '../models/download_source.dart';
+import '../utils/next_up_enrichment.dart' show recentlyPlayedPageSize;
 
 /// A batch handed to the download queue: what was accepted, and a future
 /// for when every transfer in it has finished or failed.
@@ -16,9 +17,19 @@ class DownloadBatch {
 abstract class AutoDownloadDownloader {
   Set<String> get inFlightItemIds;
 
+  /// The URL of the server this downloader fetches from.
+  String get serverBaseUrl;
+
   Future<List<AggregatedItem>> fetchEpisodes(
     String seriesId, {
     String? seasonId,
+  });
+
+  /// The episodes this user played most recently, newest first, with their
+  /// series and user data. With [playedAfter], it reads further back until
+  /// it reaches an episode played at or before it.
+  Future<List<AggregatedItem>> fetchRecentlyPlayedEpisodes({
+    DateTime? playedAfter,
   });
 
   Future<DownloadBatch> queueDownloads(
@@ -45,4 +56,36 @@ abstract class AutoDownloadDownloader {
   /// or has failed, up to [timeout]. Items still waiting for a concurrency
   /// slot are left for the next check.
   Future<void> waitForNativeHandoff({required Duration timeout});
+}
+
+/// Pages [readRecentlyPlayedEpisodes] reads at most, so a long gap between
+/// checks can't turn into an unbounded walk through the watch history.
+const recentlyPlayedMaxPages = 10;
+
+/// The recently played episodes, newest first, read a page at a time. The
+/// first page is always read whole. Later pages are read only while every
+/// episode so far was played after [playedAfter], so nothing played after
+/// it is missed. [fetchPage] returns the page at its index and how many
+/// entries the server sent, counting any it couldn't turn into items.
+Future<List<AggregatedItem>> readRecentlyPlayedEpisodes(
+  Future<({int read, List<AggregatedItem> items})> Function(int startIndex)
+  fetchPage, {
+  DateTime? playedAfter,
+  int pageSize = recentlyPlayedPageSize,
+}) async {
+  final items = <AggregatedItem>[];
+  var read = 0;
+  for (var page = 0; page < recentlyPlayedMaxPages; page++) {
+    final result = await fetchPage(read);
+    read += result.read;
+    items.addAll(result.items);
+    final oldest = items.lastOrNull?.lastPlayedDate;
+    if (playedAfter == null ||
+        result.read < pageSize ||
+        oldest == null ||
+        !oldest.isAfter(playedAfter)) {
+      break;
+    }
+  }
+  return items;
 }

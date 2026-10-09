@@ -170,7 +170,7 @@ class _HomeRowsImageTypeScreenState extends State<HomeRowsImageTypeScreen> {
     return withCleanSettingsTypography(
       context,
       Scaffold(
-        appBar: buildSettingsAppBar(context, Text(l10n.perRowImageType)),
+        appBar: buildSettingsAppBar(context, Text(l10n.imageTypePerRow)),
         body: ListView(
           children: [
             SettingsSectionHeader(l10n.images),

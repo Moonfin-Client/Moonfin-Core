@@ -96,12 +96,6 @@ class _SyncPlaySettingsScreenState extends State<_SyncPlaySettingsScreen> {
                   icon: Icons.groups,
                 ),
                 SwitchPreferenceTile(
-                  preference: UserPreferences.showSyncPlayButton,
-                  title: l10n.settingsSyncplayButton,
-                  subtitle: l10n.settingsSyncplayButtonSubtitle,
-                  icon: Icons.toggle_on,
-                ),
-                SwitchPreferenceTile(
                   preference: UserPreferences.syncPlayAdvancedCorrectionEnabled,
                   title: l10n.settingsSyncplayAdvancedCorrection,
                   subtitle: l10n.settingsSyncplayAdvancedCorrectionSubtitle,

@@ -8,6 +8,7 @@ import 'package:server_core/server_core.dart';
 import '../../../data/repositories/media_bar_repository.dart';
 import '../../../data/services/plugin_sync_service.dart';
 import '../../../preference/user_preferences.dart';
+import '../../../util/device_performance.dart';
 import '../../../util/focus/dpad_keys.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../widgets/settings/settings_section_header.dart';
@@ -343,6 +344,9 @@ class _MediaBarSettingsScreenState extends State<MediaBarSettingsScreen> {
 
   Widget _buildContent(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final trailersHeldBack =
+        GetIt.instance<UserPreferences>().resolveDevicePerformanceTier() ==
+        DevicePerformanceTier.reduced;
     return withCleanSettingsTypography(
       context,
       Scaffold(
@@ -475,6 +479,37 @@ class _MediaBarSettingsScreenState extends State<MediaBarSettingsScreen> {
                     15000: l10n.fifteenSeconds,
                     30000: l10n.thirtySeconds,
                   },
+                  onChanged: _pushSync,
+                ),
+              ],
+            ),
+
+            SettingsSectionHeader(l10n.trailers),
+            adaptiveListSection(
+              children: [
+                SwitchPreferenceTile(
+                  preference: UserPreferences.mediaBarTrailerPreview,
+                  title: l10n.trailerPreview,
+                  // The switch would otherwise read as on while nothing
+                  // plays, so say why.
+                  subtitle: trailersHeldBack
+                      ? l10n.trailerPreviewHeldBack
+                      : l10n.autoPlayTrailers,
+                  icon: Icons.movie_outlined,
+                  onChanged: _pushSync,
+                ),
+                SwitchPreferenceTile(
+                  preference: UserPreferences.mediaBarTrailerAudio,
+                  title: l10n.trailerAudio,
+                  subtitle: l10n.enableTrailerAudio,
+                  icon: Icons.volume_up,
+                  onChanged: _pushSync,
+                ),
+                SwitchPreferenceTile(
+                  preference: UserPreferences.mediaBarTrailerCaptions,
+                  title: l10n.trailerCaptions,
+                  subtitle: l10n.trailerCaptionsDescription,
+                  icon: Icons.closed_caption_outlined,
                   onChanged: _pushSync,
                 ),
               ],

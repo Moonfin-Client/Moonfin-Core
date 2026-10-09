@@ -1,15 +1,15 @@
 part of '../settings_side_panel.dart';
 
-class _IntegrationsScreen extends StatefulWidget {
-  const _IntegrationsScreen();
+class _ServicesScreen extends StatefulWidget {
+  const _ServicesScreen();
 
   @override
-  State<_IntegrationsScreen> createState() => _IntegrationsScreenState();
+  State<_ServicesScreen> createState() => _ServicesScreenState();
 }
 
-class _IntegrationsScreenState extends State<_IntegrationsScreen> {
-  final _integrationsScope = FocusScopeNode(
-    debugLabel: 'IntegrationsSettingsScope',
+class _ServicesScreenState extends State<_ServicesScreen> {
+  final _servicesScope = FocusScopeNode(
+    debugLabel: 'ServicesSettingsScope',
     traversalEdgeBehavior: TraversalEdgeBehavior.stop,
   );
 
@@ -29,7 +29,7 @@ class _IntegrationsScreenState extends State<_IntegrationsScreen> {
 
   @override
   void dispose() {
-    _integrationsScope.dispose();
+    _servicesScope.dispose();
     super.dispose();
   }
 
@@ -40,9 +40,9 @@ class _IntegrationsScreenState extends State<_IntegrationsScreen> {
     return withCleanSettingsTypography(
       context,
       Scaffold(
-        appBar: buildSettingsAppBar(context, Text(l10n.integrations)),
+        appBar: buildSettingsAppBar(context, Text(l10n.services)),
         body: FocusScope(
-          node: _integrationsScope,
+          node: _servicesScope,
           autofocus: true,
           // The plugin probe lands after sign in, so the list waits on it
           // rather than reading the flag once and never hearing the answer.
@@ -61,30 +61,10 @@ class _IntegrationsScreenState extends State<_IntegrationsScreen> {
     );
     return ListView(
       children: [
-        _SectionHeader(l10n.general),
         adaptiveListSection(
           children: [
             _TvSettingsListTile(
               autofocus: true,
-              leading: Image.asset(
-                'assets/icons/moonfin.png',
-                width: 30,
-                height: 30,
-              ),
-              title: Text(l10n.pluginLabel),
-              subtitle: Text(l10n.serverSyncAndPluginStatus),
-              onTap: () =>
-                  context.pushSettingsScreen(const _PluginScreen()),
-            ),
-            _TvSettingsListTile(
-              leading: const Icon(Icons.star, color: Color(0xFFFFC107)),
-              title: Text(l10n.settingsMetadataAndRatings),
-              subtitle: Text(l10n.mdbListTmdbRatingSources),
-              onTap: () => context.pushSettingsScreen(
-                const _MetadataRatingsScreen(),
-              ),
-            ),
-            _TvSettingsListTile(
               leading: Image.asset(
                 'assets/icons/seerr.png',
                 width: 24,
@@ -105,17 +85,6 @@ class _IntegrationsScreenState extends State<_IntegrationsScreen> {
                 subtitle: Text(l10n.achievementBadgesSubtitle),
                 onTap: () => context.pushSettingsScreen(
                   const AchievementsScreen(),
-                ),
-              ),
-            if (GetIt.instance<PluginSyncService>().seerrAvailable)
-              _TvSettingsListTile(
-                leading: const Icon(Icons.list_alt),
-                title: Text(l10n.externalLists),
-                subtitle: const Text(
-                  'Configure external lists for display on the Home Screen.',
-                ),
-                onTap: () => context.pushSettingsScreen(
-                  const _ExternalListsScreen(),
                 ),
               ),
           ],

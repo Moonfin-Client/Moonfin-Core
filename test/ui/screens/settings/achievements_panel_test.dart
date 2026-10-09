@@ -91,7 +91,7 @@ void main() {
       tester,
     ) async {
       await pumpPanel(tester);
-      final toggle = find.text('Unlock notifications');
+      final toggle = find.text('Unlock Notifications');
 
       expect(
         tester.getTopLeft(toggle).dy,
@@ -483,7 +483,7 @@ void main() {
     testWidgets('the switch isn\'t offered', (tester) async {
       await pumpPanel(tester);
 
-      expect(find.text('Unlock notifications'), findsNothing);
+      expect(find.text('Unlock Notifications'), findsNothing);
       expect(find.text('Badges'), findsOneWidget);
     });
   });

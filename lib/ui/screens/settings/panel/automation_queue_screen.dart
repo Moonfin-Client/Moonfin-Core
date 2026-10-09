@@ -67,10 +67,7 @@ class _AutomationQueueScreenState extends State<_AutomationQueueScreen> {
         segmentActions[MediaSegmentType.outro] == MediaSegmentAction.askToSkip;
 
     return Scaffold(
-      appBar: buildSettingsAppBar(
-        context,
-        Text(l10n.settingsAutomationAndQueue),
-      ),
+      appBar: buildSettingsAppBar(context, Text(l10n.skippingAndAutoplay)),
       body: ListView(
         children: [
           _SectionHeader(l10n.playbackEnhancements),

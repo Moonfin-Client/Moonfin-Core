@@ -440,22 +440,22 @@ void main() {
     await pump(tester, const FriendsScreen());
     await tester.tap(find.text('Privacy'));
     await tester.pumpAndSettle();
-    expect(find.text('Mute during playback'), findsOneWidget);
+    expect(find.text('Mute During Playback'), findsOneWidget);
 
     // Drawn like the other switches here, on by default, and saved on tap.
     final prefs = GetIt.instance<UserPreferences>();
     final mute = find.ancestor(
-      of: find.text('Mute during playback'),
+      of: find.text('Mute During Playback'),
       matching: find.byType(DpadSwitchListTile),
     );
     expect(tester.widget<DpadSwitchListTile>(mute).value, isTrue);
-    await tester.tap(find.text('Mute during playback'));
+    await tester.tap(find.text('Mute During Playback'));
     await tester.pumpAndSettle();
     expect(prefs.get(UserPreferences.muteChatBannersDuringPlayback), isFalse);
 
-    await tester.tap(find.text('Message notifications'));
+    await tester.tap(find.text('Message Notifications'));
     await tester.pumpAndSettle();
-    expect(find.text('Mute during playback'), findsNothing);
+    expect(find.text('Mute During Playback'), findsNothing);
   });
 
   testWidgets('opened on its own in the side panel, back closes it', (

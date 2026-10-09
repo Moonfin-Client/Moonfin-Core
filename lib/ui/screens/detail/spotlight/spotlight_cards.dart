@@ -10,13 +10,15 @@ import '../../../../data/viewmodels/seerr_media_detail_view_model.dart'
 import '../../../../l10n/app_localizations.dart';
 import '../../../../preference/detail_section_layout.dart';
 import '../../../../preference/user_preferences.dart';
+import '../../../../util/media_source_summary.dart';
 import '../../../widgets/seerr/seerr_collection_banner.dart';
 import '../../../widgets/seerr/seerr_item_chips.dart';
 import '../../../widgets/seerr/seerr_item_status.dart'
     show SeerrDetailPieces, seerrItemSeasonStatus, seerrItemTabState;
 import '../../../widgets/seerr/seerr_stats_card.dart';
 import '../../../widgets/seerr/seerr_tags_dialog.dart' show SeerrTagsContent;
-import '../item_detail_screen.dart' show DetailTrackList;
+import '../item_detail_screen.dart'
+    show DetailTrackList, selectedMediaSourceForItem;
 import '../modern/modern_detail_content.dart'
     show
         extraCategoriesOrder,
@@ -24,6 +26,7 @@ import '../modern/modern_detail_content.dart'
         getExtraCategoryLabel,
         studioLogoIndex;
 import 'spotlight_images.dart';
+import 'widgets/spotlight_file_details_section.dart';
 import 'widgets/spotlight_modal_grids.dart';
 import 'widgets/spotlight_section_modal.dart';
 
@@ -118,6 +121,7 @@ List<SpotlightCardSpec> spotlightCardsFor({
   String? mainBackdropKey,
   bool seerrAvailable = false,
   Map<String, String?>? personCardBackdrops,
+  String? selectedMediaSourceId,
 }) {
   final builder = _SpotlightCardsBuilder(
     vm: vm,
@@ -132,6 +136,7 @@ List<SpotlightCardSpec> spotlightCardsFor({
     mainBackdropKey: mainBackdropKey,
     seerrAvailable: seerrAvailable,
     personCardBackdrops: personCardBackdrops,
+    selectedMediaSourceId: selectedMediaSourceId,
   );
   return builder.build();
 }
@@ -153,6 +158,7 @@ SpotlightCardSpec? spotlightCardFor({
   String? mainBackdropKey,
   bool seerrAvailable = false,
   Map<String, String?>? personCardBackdrops,
+  String? selectedMediaSourceId,
 }) {
   final builder = _SpotlightCardsBuilder(
     vm: vm,
@@ -167,6 +173,7 @@ SpotlightCardSpec? spotlightCardFor({
     mainBackdropKey: mainBackdropKey,
     seerrAvailable: seerrAvailable,
     personCardBackdrops: personCardBackdrops,
+    selectedMediaSourceId: selectedMediaSourceId,
   );
   return builder.buildOne(id);
 }
@@ -184,6 +191,7 @@ class _SpotlightCardsBuilder {
   final String? mainBackdropKey;
   final bool seerrAvailable;
   final Map<String, String?>? personCardBackdrops;
+  final String? selectedMediaSourceId;
 
   _SpotlightCardsBuilder({
     required this.vm,
@@ -198,6 +206,7 @@ class _SpotlightCardsBuilder {
     this.mainBackdropKey,
     this.seerrAvailable = false,
     this.personCardBackdrops,
+    this.selectedMediaSourceId,
   });
 
   ImageApi get _imageApi => vm.imageApi;
@@ -246,6 +255,7 @@ class _SpotlightCardsBuilder {
         'episodes': _episodeMoreEpisodesCard,
         'people': _peopleCard,
         'chapters_extras': _chaptersExtrasCard,
+        'file_details': _fileDetailsCard,
         'similar': _similarCard,
       },
       'MusicAlbum' || 'AudioBook' || 'Book' => {
@@ -269,6 +279,7 @@ class _SpotlightCardsBuilder {
       _ => {
         'people': _peopleCard,
         'chapters_extras': _chaptersExtrasCard,
+        'file_details': _fileDetailsCard,
         'similar': _similarCard,
         'collections': _collectionsCard,
       },
@@ -387,11 +398,24 @@ class _SpotlightCardsBuilder {
       if (studios.isNotEmpty) l10n.spotlightStudiosCount(studios.length),
     ].join(' · ');
 
+    final tags = item.backdropImageTags;
+    final String? imageUrl;
+    if (tags.length > 1) {
+      imageUrl = _imageApi.getBackdropImageUrl(
+        item.id,
+        maxWidth: 960,
+        index: 1,
+        tag: tags[1],
+      );
+    } else {
+      imageUrl = fallbackImageUrl;
+    }
+
     return SpotlightCardSpec(
       id: 'people',
       title: l10n.spotlightCastCrewStudios,
       subtitle: subtitle,
-      imageUrl: fallbackImageUrl,
+      imageUrl: imageUrl ?? fallbackImageUrl,
       icon: Icons.people_outline,
       sections: [
         if (cast.isNotEmpty) _peopleSection(l10n.castMembers, cast),
@@ -456,6 +480,44 @@ class _SpotlightCardsBuilder {
               landscapeCells: true,
               onTap: actions.playExtra,
             ),
+      ],
+    );
+  }
+
+  SpotlightCardSpec? _fileDetailsCard() {
+    if (!_shows(DetailSection.mediaInfo)) return null;
+    final mediaSource = selectedMediaSourceForItem(item, selectedMediaSourceId);
+    if (mediaSource == null) return null;
+
+    final formattedSize =
+        formatMediaSourceSize(mediaSource['Size'] as int? ?? 0);
+    final String container =
+        mediaSource['Container']?.toString().toUpperCase() ?? '';
+
+    final subtitle = [
+      if (container.isNotEmpty) container,
+      ?formattedSize,
+    ].join(' · ');
+
+    final imageUrl = _fileDetailsImage();
+
+    return SpotlightCardSpec(
+      id: 'file_details',
+      title: l10n.spotlightFileDetails,
+      modalTitle: l10n.fileInformation,
+      subtitle: subtitle.isNotEmpty ? subtitle : l10n.details,
+      imageUrl: imageUrl,
+      icon: Icons.info_outline,
+      sections: [
+        SpotlightModalSection(
+          builder: (context, firstFocusNode) => SpotlightFileDetailsSection(
+            item: item,
+            mediaSource: mediaSource,
+            vm: vm,
+            prefs: prefs,
+            firstFocusNode: firstFocusNode,
+          ),
+        ),
       ],
     );
   }
@@ -1156,5 +1218,55 @@ class _SpotlightCardsBuilder {
       if (url != null) return url;
     }
     return null;
+  }
+
+  String? _fileDetailsImage() {
+    final tags = item.backdropImageTags;
+    if (tags.length > 2) {
+      return _imageApi.getBackdropImageUrl(
+        item.id,
+        maxWidth: 960,
+        index: 2,
+        tag: tags[2],
+      );
+    }
+    if (tags.length == 2) {
+      final seerrState = seerrItemTabState(vm);
+      final seerrBackdrop = spotlightSeerrBackdropUrl(
+        seerrState?.movie?.backdropPath ?? seerrState?.tv?.backdropPath,
+      );
+      if (seerrBackdrop != null) return seerrBackdrop;
+      return _imageApi.getBackdropImageUrl(
+        item.id,
+        maxWidth: 960,
+        index: 1,
+        tag: tags[1],
+      );
+    }
+    if (item.parentBackdropItemId != null &&
+        item.parentBackdropImageTags.isNotEmpty) {
+      final pTags = item.parentBackdropImageTags;
+      final idx = pTags.length > 2 ? 2 : (pTags.length > 1 ? 1 : 0);
+      return _imageApi.getBackdropImageUrl(
+        item.parentBackdropItemId!,
+        maxWidth: 960,
+        index: idx,
+        tag: pTags[idx],
+      );
+    }
+    if (item.thumbImageTag != null) {
+      return _imageApi.getThumbImageUrl(
+        item.id,
+        maxWidth: 960,
+        tag: item.thumbImageTag,
+      );
+    }
+    final seerrState = seerrItemTabState(vm);
+    final seerrBackdrop = spotlightSeerrBackdropUrl(
+      seerrState?.movie?.backdropPath ?? seerrState?.tv?.backdropPath,
+    );
+    if (seerrBackdrop != null) return seerrBackdrop;
+
+    return fallbackImageUrl;
   }
 }

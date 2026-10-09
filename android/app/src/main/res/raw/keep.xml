@@ -8,6 +8,9 @@
   every playback-state push, which aborts before the foreground service starts:
   no media notification, no Android Auto controls, and background audio gets
   killed a few seconds after the app is suspended.
+
+  audio_service_* are the plugin's own icons behind MediaControl.play, pause,
+  skipToNext, skipToPrevious and fastForward, resolved the same way.
 -->
 <resources xmlns:tools="http://schemas.android.com/tools"
-    tools:keep="@drawable/ic_notification,@drawable/ic_shuffle,@drawable/ic_shuffle_on,@drawable/ic_repeat,@drawable/ic_repeat_on,@drawable/ic_repeat_one" />
+    tools:keep="@drawable/ic_notification,@drawable/ic_shuffle,@drawable/ic_shuffle_on,@drawable/ic_repeat,@drawable/ic_repeat_on,@drawable/ic_repeat_one,@drawable/audio_service_*" />

@@ -44,6 +44,9 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
 
     var isPlaying: Bool { state == .playing }
 
+    /// True while the engine downloads and decodes the chosen external subtitle.
+    var isSubtitleLoading: Bool { Self._sharedEngine?.isLoadingSubtitles ?? false }
+
     let nowPlaying = NowPlayingController()
 
     /// Remote transport commands (Siri Remote, Control Center, AirPods stem)

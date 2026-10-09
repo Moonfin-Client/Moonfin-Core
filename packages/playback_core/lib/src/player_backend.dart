@@ -49,6 +49,15 @@ class EmbeddedCaptionTrack {
   }
 }
 
+/// Whether the chosen external subtitle is still being prepared, retries
+/// included. False also covers a canceled or failed load, so it doesn't mean
+/// the subtitle arrived, and it never waits for a cue to show. Backends opt in
+/// by implementing this interface.
+abstract interface class SubtitleLoadingBackend {
+  bool get isSubtitleLoading;
+  Stream<bool> get subtitleLoadingStream;
+}
+
 abstract class PlayerBackend {
   Future<void> play(
     dynamic mediaItem, {
@@ -199,8 +208,8 @@ abstract class PlayerBackend {
 
   /// Detect encoded letterbox and crop it. Cover-zoom is not this.
   ///
-  /// Desktop libmpv ships a cropper. Media3 / Aether / Tizen / HTML return
-  /// [UnsupportedLetterboxCropper] until they implement [LetterboxCropper].
+  /// Desktop libmpv and Android Media3 ship a cropper. Aether / Tizen / HTML
+  /// return [UnsupportedLetterboxCropper] until they implement [LetterboxCropper].
   LetterboxCropper get letterboxCropper => const UnsupportedLetterboxCropper();
 
   bool get supportsLetterboxCrop => letterboxCropper.isSupported;

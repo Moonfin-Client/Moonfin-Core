@@ -142,7 +142,7 @@ class _DiagnosticsSettingsScreenState extends State<DiagnosticsSettingsScreen> {
               const _Section(title: 'Logging'),
               SwitchPreferenceTile(
                 preference: UserPreferences.diagnosticLoggingEnabled,
-                title: 'Enable diagnostic logging',
+                title: 'Diagnostic Logging',
                 subtitle:
                     'Capture media, Seerr login, network and other '
                     'diagnostics so they can be sent to the server as a report.',
@@ -150,7 +150,7 @@ class _DiagnosticsSettingsScreenState extends State<DiagnosticsSettingsScreen> {
               ),
               SwitchPreferenceTile(
                 preference: UserPreferences.crashReportsEnabled,
-                title: 'Send crash reports to server',
+                title: 'Send Crash Reports to Server',
                 subtitle:
                     'Save a report when the app crashes and send it to your '
                     'own server the next time it connects. Nothing is sent '

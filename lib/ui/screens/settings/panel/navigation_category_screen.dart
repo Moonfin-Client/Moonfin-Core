@@ -64,7 +64,7 @@ class _NavigationCategoryScreenState extends State<_NavigationCategoryScreen> {
       });
     }
     return Scaffold(
-      appBar: buildSettingsAppBar(context, Text(l10n.navigation)),
+      appBar: buildSettingsAppBar(context, Text(l10n.navigationBar)),
       body: ListView(
         children: [
           _SectionHeader(l10n.appearance),
@@ -220,6 +220,13 @@ class _NavigationCategoryScreenState extends State<_NavigationCategoryScreen> {
                       icon: Icons.video_library,
                       onChanged: _pushPersonalizationSync,
                     ),
+                  SwitchPreferenceTile(
+                    preference: UserPreferences.showSyncPlayButton,
+                    title: l10n.settingsSyncplayButton,
+                    subtitle: l10n.settingsSyncplayButtonSubtitle,
+                    icon: Icons.groups,
+                    onChanged: _pushPersonalizationSync,
+                  ),
                   if (!onBar.contains(BottomNavTab.folders))
                     SwitchPreferenceTile(
                       key: const ValueKey(BottomNavTab.folders),

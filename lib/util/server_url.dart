@@ -3,6 +3,20 @@ import 'package:server_core/server_core.dart' show MediaServerClient;
 
 final _schemeRegex = RegExp(r'^[a-zA-Z][a-zA-Z0-9+.-]*://');
 
+/// Whether a download row's [stored] server belongs to the server known as
+/// [serverId] at [baseUrl]. Rows keep the app's server id, or the server's
+/// URL when the item came straight from a client.
+bool isStoredServer(
+  String stored, {
+  required String serverId,
+  required String baseUrl,
+}) {
+  if (stored == serverId) return true;
+  if (!stored.contains('://')) return false;
+  final storedUrl = normalizeServerBaseUrl(stored);
+  return storedUrl.isNotEmpty && storedUrl == normalizeServerBaseUrl(baseUrl);
+}
+
 String normalizeServerBaseUrl(String input) {
   final trimmed = input.trim();
   if (trimmed.isEmpty) return '';
@@ -40,6 +54,37 @@ String normalizeServerBaseUrl(String input) {
   return _stripTrailingSlash(
     normalizedPath.isEmpty ? authority : '$authority$normalizedPath',
   );
+}
+
+/// [resolvedAddress] with its host in the Unicode spelling the user typed, or
+/// null when [enteredAddress] doesn't spell that same host in Unicode.
+///
+/// Typed Punycode is never decoded, so a lookalike entered as xn-- stays
+/// encoded.
+String? serverDisplayAddress({
+  required String enteredAddress,
+  required String resolvedAddress,
+}) {
+  final entered = enteredAddress.trim();
+  final enteredUri = Uri.tryParse(
+    _schemeRegex.hasMatch(entered) ? entered : 'https://$entered',
+  );
+  final resolvedUri = Uri.tryParse(resolvedAddress);
+  if (enteredUri == null || resolvedUri == null) return null;
+
+  String enteredHost;
+  try {
+    enteredHost = Uri.decodeComponent(enteredUri.host);
+  } catch (_) {
+    return null;
+  }
+
+  if (!enteredHost.runes.any((rune) => rune > 0x7f) ||
+      _normalizeServerHost(enteredUri.host) != resolvedUri.host) {
+    return null;
+  }
+
+  return resolvedAddress.replaceFirst(resolvedUri.host, enteredHost);
 }
 
 String _normalizeServerHost(String host) {

@@ -863,6 +863,14 @@ class PlaybackManager implements AudioOwnable {
       mediaStreams,
       externalSubtitles,
     );
+    // Seed the requested subtitle before opening the source: mpv's startup
+    // selection waits for the background subtitle add pass to finish.
+    final selectedExternalSubtitleUrl =
+        subtitleStreamIndex != null &&
+            _isSubtitleDeliveredExternally(subtitleStreamIndex) &&
+            !_subtitleIsBurnedIntoVideo(subtitleStreamIndex)
+        ? _externalSubtitleUrlForStream(subtitleStreamIndex)
+        : null;
 
     return <String, dynamic>{
       'url': url,
@@ -916,6 +924,8 @@ class PlaybackManager implements AudioOwnable {
         'secondarySubtitleUrl': secondarySubtitleUrl,
         'secondarySubtitleCodec': secondarySubtitleCodec,
       },
+      if (selectedExternalSubtitleUrl != null)
+        'selectedExternalSubtitleUrl': selectedExternalSubtitleUrl,
     };
   }
 
@@ -1211,6 +1221,15 @@ class PlaybackManager implements AudioOwnable {
   }
 
   void _bindStreams(PlayerBackend backend) {
+    final subtitleLoader = backend is SubtitleLoadingBackend
+        ? backend as SubtitleLoadingBackend
+        : null;
+    state.setSubtitleLoading(subtitleLoader?.isSubtitleLoading ?? false);
+    if (subtitleLoader != null) {
+      _streamSubs.add(
+        subtitleLoader.subtitleLoadingStream.listen(state.setSubtitleLoading),
+      );
+    }
     _streamSubs.addAll([
       backend.positionStream.listen((pos) {
         state.setPosition(pos);
@@ -2249,16 +2268,7 @@ class PlaybackManager implements AudioOwnable {
   }
 
   /// Whether a queue item is a live TV channel.
-  bool _isLiveTvItem(dynamic item) {
-    if (item == null) return false;
-    try {
-      final Map? map = item is Map ? item : (item as dynamic).rawData as Map?;
-      final type = map?['Type']?.toString();
-      return type == 'TvChannel' || type == 'LiveTvChannel';
-    } catch (_) {
-      return false;
-    }
-  }
+  bool _isLiveTvItem(dynamic item) => MediaStreamResolver.isLiveTvItem(item);
 
   /// Whether what is playing right now is a live stream. The server decides
   /// this, never the container or the URL: a channel can arrive as HLS, as a

@@ -1,23 +1,15 @@
 import 'dart:ffi';
-import 'dart:io';
 
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:sqlite3/open.dart';
 
 import '../../util/platform_detection.dart';
+import 'offline_database_location.dart';
 
 QueryExecutor openConnection() {
   return LazyDatabase(() async {
-    final docs = PlatformDetection.isAppleTV
-        ? await getApplicationCacheDirectory()
-        : await getApplicationDocumentsDirectory();
-    final dbDir = Directory('${docs.path}/Moonfin/DB');
-    if (!dbDir.existsSync()) {
-      await dbDir.create(recursive: true);
-    }
-    final file = File('${dbDir.path}/offline.db');
+    final file = await offlineDatabaseFile();
 
     if (PlatformDetection.isAppleTV) {
       open.overrideForAll(_openAppleSqlite);

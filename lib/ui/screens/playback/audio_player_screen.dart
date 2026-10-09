@@ -17,6 +17,7 @@ import '../../../data/repositories/item_mutation_repository.dart';
 import '../../../data/services/cast/cast_service.dart';
 import '../../../data/services/cast/cast_target.dart';
 import '../../../data/services/media_server_client_factory.dart';
+import '../../../util/audio_artwork_url.dart';
 import '../../../playback/media3_player_backend.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/focus/dpad_keys.dart';
@@ -830,26 +831,8 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
     }
   }
 
-  String? _getArtUrl(AggregatedItem item) {
-    final client = _clientForItem(item);
-    final albumTag = item.albumPrimaryImageTag;
-    final albumId = item.albumId;
-    if (item.type == 'Audio' && albumTag != null && albumId != null) {
-      return client.imageApi.getPrimaryImageUrl(
-        albumId,
-        maxHeight: 600,
-        tag: albumTag,
-      );
-    }
-    if (item.primaryImageTag != null) {
-      return client.imageApi.getPrimaryImageUrl(
-        item.id,
-        maxHeight: 600,
-        tag: item.primaryImageTag,
-      );
-    }
-    return null;
-  }
+  String? _getArtUrl(AggregatedItem item) =>
+      audioArtUrl(item, clientFactory: _clientFactory, maxHeight: 600);
 
   bool _shouldUseSplitLyricsLayout(BuildContext context) {
     if (_showQueue || _lyrics == null || _lyrics!.isEmpty) {

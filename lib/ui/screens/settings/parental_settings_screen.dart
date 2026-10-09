@@ -304,6 +304,19 @@ class _ParentalSettingsScreenState extends State<ParentalSettingsScreen> {
                     ),
                   ],
                 ],
+                SettingsSectionHeader(l10n.recommendations),
+                adaptiveListSection(
+                  children: [
+                    SwitchPreferenceTile(
+                      preference:
+                          UserPreferences.recommendationsApplyParentalRatingCap,
+                      title: l10n.recommendationsApplyParentalRatingCap,
+                      subtitle:
+                          l10n.recommendationsApplyParentalRatingCapSubtitle,
+                      icon: Icons.family_restroom,
+                    ),
+                  ],
+                ),
               ],
             );
           },

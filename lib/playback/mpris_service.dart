@@ -8,6 +8,8 @@ import 'package:server_core/server_core.dart';
 
 import '../data/models/aggregated_item.dart';
 import '../data/services/media_server_client_factory.dart';
+import '../util/audio_artwork_url.dart';
+import '../util/platform_detection.dart';
 import 'car_artwork.dart';
 
 const _busName = 'org.mpris.MediaPlayer2.moonfin';
@@ -372,7 +374,10 @@ class _MprisPlayer extends DBusObject {
       case 'Identity':
         return const DBusString('Moonfin');
       case 'DesktopEntry':
-        return const DBusString('org.moonfin.linux');
+        // Flatpak names the desktop entry after the ID it was installed under.
+        return DBusString(
+          PlatformDetection.flatpakAppId ?? 'org.moonfin.linux',
+        );
       case 'SupportedUriSchemes':
         return DBusArray.string(const []);
       case 'SupportedMimeTypes':
@@ -489,22 +494,14 @@ class _MprisPlayer extends DBusObject {
   }
 
   String? _artUrl(AggregatedItem item) {
-    final client = _clientFor(item);
-    String? url;
-    try {
-      final albumTag = item.albumPrimaryImageTag;
-      final albumId = item.albumId;
-      if (item.type == 'Audio' && albumTag != null && albumId != null) {
-        url = client.imageApi
-            .getPrimaryImageUrl(albumId, maxHeight: 300, tag: albumTag);
-      } else if (item.primaryImageTag != null) {
-        url = client.imageApi
-            .getPrimaryImageUrl(item.id, maxHeight: 300, tag: item.primaryImageTag);
-      }
-    } catch (_) {}
+    final url = audioArtUrl(
+      item,
+      clientFactory: _clientFactory,
+      maxHeight: 300,
+    );
     // Self-authenticating URL: the desktop shell fetches the art in its own
     // process with no access to the app's auth header.
-    return carAuthedImageUrl(client, url);
+    return carAuthedImageUrl(_clientFor(item), url);
   }
 
   MediaServerClient _clientFor(AggregatedItem item) =>

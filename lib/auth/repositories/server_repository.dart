@@ -64,6 +64,7 @@ class ServerRepository {
   }
 
   Future<Server?> addServer(String address) async {
+    final enteredAddress = address;
     address = normalizeServerBaseUrl(address.trim());
     if (address.isEmpty) {
       return null;
@@ -90,8 +91,14 @@ class ServerRepository {
         );
         if (existingIndex >= 0) {
           final existing = _servers[existingIndex];
+          final displayAddress = serverDisplayAddress(
+            enteredAddress: enteredAddress,
+            resolvedAddress: existing.address,
+          );
           final updated = existing.copyWith(
             name: info['ServerName'] as String? ?? existing.name,
+            displayAddress: displayAddress,
+            clearDisplayAddress: displayAddress == null,
             version: info['Version'] as String? ?? existing.version,
             serverType: serverType,
             dateLastAccessed: DateTime.now(),
@@ -104,10 +111,15 @@ class ServerRepository {
           return updated;
         }
 
+        final displayAddress = serverDisplayAddress(
+          enteredAddress: enteredAddress,
+          resolvedAddress: serverAddress,
+        );
         final server = Server(
           id: const Uuid().v4(),
-          name: info['ServerName'] as String? ?? address,
+          name: info['ServerName'] as String? ?? displayAddress ?? address,
           address: serverAddress,
+          displayAddress: displayAddress,
           version: info['Version'] as String? ?? '',
           serverType: serverType,
           loginDisclaimer: info['LoginDisclaimer'] as String?,

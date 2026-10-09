@@ -2682,7 +2682,7 @@
     "@focusBorderColor": {
         "description": "Setting for focus border color"
     },
-    "watchedIndicators": "Indicadors observats",
+    "watchedIndicators": "Indicadors de contingut vist",
     "@watchedIndicators": {
         "description": "Setting for watched indicator display"
     },
@@ -3891,7 +3891,7 @@
     "@trakt": {
         "description": "Rating source: Trakt"
     },
-    "letterboxd": "Bústia d",
+    "letterboxd": "Letterboxd",
     "@letterboxd": {
         "description": "Rating source: Letterboxd"
     },
@@ -4211,11 +4211,11 @@
     "@navigation": {
         "description": "Navigation settings title"
     },
-    "watchedIndicatorsBackdrops": "Indicadors observats, telons de fons",
+    "watchedIndicatorsBackdrops": "Indicadors de contingut vist, telons de fons",
     "@watchedIndicatorsBackdrops": {
         "description": "Appearance settings subtitle on mobile"
     },
-    "focusColorWatchedIndicatorsBackdrops": "Color del focus, indicadors observats, fons",
+    "focusColorWatchedIndicatorsBackdrops": "Color del focus, indicadors de contingut vist, fons",
     "@focusColorWatchedIndicatorsBackdrops": {
         "description": "Appearance settings subtitle on desktop"
     },
@@ -6495,7 +6495,7 @@
     "@contextMenuMarkWatched": {
         "description": "Context menu action to mark an item as watched"
     },
-    "contextMenuMarkUnwatched": "Marca com a no observat",
+    "contextMenuMarkUnwatched": "Marca com a no vist",
     "@contextMenuMarkUnwatched": {
         "description": "Context menu action to mark an item as unwatched"
     },
@@ -11501,7 +11501,7 @@
     "@cropBlackBars": {
         "description": "Setting to detect and crop encoded letterbox/pillarbox bars"
     },
-    "settingsCropBlackBarsDescription": "Detecta les bandes negres codificades, retalla-les i omple la pantalla.",
+    "settingsCropBlackBarsDescription": "Detecta les bandes negres codificades quan comença la reproducció, retalla-les i omple la pantalla. Torna-les a retallar des del botó de zoom del reproductor.",
     "@settingsCropBlackBarsDescription": {
         "description": "Description for the crop black bars playback setting"
     },
@@ -13279,5 +13279,220 @@
     "untrustedServerCertificate": "No es confia en el certificat d'aquest servidor. Si és el teu propi servidor i fa servir un certificat autosignat o privat, pots permetre'l aquí.",
     "@untrustedServerCertificate": {
         "description": "Shown on the sign-in screens when a server's TLS certificate is rejected, above a button that turns on Allow self-signed certificates"
+    },
+    "seasonalChristmas": "Nadal",
+    "@seasonalChristmas": {
+        "description": "Seasonal effect: snow with falling baubles and stars"
+    },
+    "seasonalHalloween": "Halloween",
+    "@seasonalHalloween": {
+        "description": "Seasonal effect: bats, ghosts, candy and orange and purple leaves"
+    },
+    "seasonalDensity": "Densitat",
+    "@seasonalDensity": {
+        "description": "Setting for how many seasonal effect particles are on screen at once"
+    },
+    "seasonalDensityLight": "Lleuger",
+    "@seasonalDensityLight": {
+        "description": "Seasonal effect density: fewest particles"
+    },
+    "seasonalDensityNormal": "Normal",
+    "@seasonalDensityNormal": {
+        "description": "Seasonal effect density: the default amount"
+    },
+    "countryUnitedStates": "Estats Units",
+    "@countryUnitedStates": {
+        "description": "Country name"
+    },
+    "countryCanada": "Canada",
+    "@countryCanada": {
+        "description": "Country name"
+    },
+    "seasonalRowCountryOther": "Altres",
+    "@seasonalRowCountryOther": {
+        "description": "Country option for a country the seasonal row does not list"
+    },
+    "holidayNewYear": "Any nou",
+    "@holidayNewYear": {
+        "description": "Seasonal row title for New Year's"
+    },
+    "seasonalPetals": "Pètals de primavera",
+    "@seasonalPetals": {
+        "description": "Seasonal effect: falling cherry blossoms and petals with bees flying by"
+    },
+    "seasonalFireflies": "Cuques de llum",
+    "@seasonalFireflies": {
+        "description": "Seasonal effect: glowing fireflies for summer"
+    },
+    "seasonalDensityHeavy": "Intens",
+    "@seasonalDensityHeavy": {
+        "description": "Seasonal effect density: most particles"
+    },
+    "seasonalRow": "Fila de temporada",
+    "@seasonalRow": {
+        "description": "Name of the Home row that shows holiday movies"
+    },
+    "seasonalRowDescription": "Mostra una fila de pel·lícules de festivitats de la teva biblioteca, amb suggeriments de Seerr quan n'hi hagi.",
+    "@seasonalRowDescription": {
+        "description": "Explains the seasonal Home row setting"
+    },
+    "seasonalRowSubtitle": "De temporada",
+    "@seasonalRowSubtitle": {
+        "description": "Source label shown under the seasonal row's title"
+    },
+    "seasonalRowCountry": "País",
+    "@seasonalRowCountry": {
+        "description": "Setting for which country's holidays the seasonal row follows"
+    },
+    "seasonalRowCountryAuto": "Automàtic",
+    "@seasonalRowCountryAuto": {
+        "description": "Country option that reads the country from the device"
+    },
+    "seasonalRowHolidays": "Festivitats",
+    "@seasonalRowHolidays": {
+        "description": "Heading for the list of holidays the seasonal row can show"
+    },
+    "seasonalRowHolidaysHint": "Desmarca una festivitat per amagar-ne la fila.",
+    "@seasonalRowHolidaysHint": {
+        "description": "Hint under the holiday checklist"
+    },
+    "holidayValentines": "Sant Valentí",
+    "@holidayValentines": {
+        "description": "Seasonal row title for Valentine's Day"
+    },
+    "holidayEaster": "Pasqua",
+    "@holidayEaster": {
+        "description": "Seasonal row title for Easter"
+    },
+    "holidayPride": "Orgull",
+    "@holidayPride": {
+        "description": "Seasonal row title for Pride month"
+    },
+    "holidayHalloween": "Halloween",
+    "@holidayHalloween": {
+        "description": "Seasonal row title for Halloween"
+    },
+    "holidayThanksgiving": "Acció de Gràcies",
+    "@holidayThanksgiving": {
+        "description": "Seasonal row title for Thanksgiving"
+    },
+    "holidayChristmas": "Pel·lícules de Nadal",
+    "@holidayChristmas": {
+        "description": "Seasonal row title for Christmas"
+    },
+    "holidayLunarNewYear": "Any Nou Lunar",
+    "@holidayLunarNewYear": {
+        "description": "Seasonal row title for Lunar New Year"
+    },
+    "holidayDiwali": "Diwali",
+    "@holidayDiwali": {
+        "description": "Seasonal row title for Diwali"
+    },
+    "appleTvHomeScreen": "Pantalla d'inici de l'Apple TV",
+    "@appleTvHomeScreen": {
+        "description": "Section header in Home Screen settings for options that affect the tvOS home screen outside the app"
+    },
+    "topShelf": "Top Shelf",
+    "@topShelf": {
+        "description": "Apple TV settings label for what the tvOS home screen shows above the Moonfin icon. Top Shelf is Apple's name for that area"
+    },
+    "topShelfDescription": "El que mostra la pantalla d'inici de l'Apple TV a sobre de la icona de Moonfin quan està seleccionada. Aquesta configuració només es desa en aquest dispositiu.",
+    "@topShelfDescription": {
+        "description": "Apple TV settings subtitle for the Top Shelf option"
+    },
+    "topShelfLatestMedia": "Contingut més recent",
+    "@topShelfLatestMedia": {
+        "description": "Top Shelf option that shows a carousel of the newest items from the home screen's Latest rows"
+    },
+    "topShelfAppBanner": "Bàner de Moonfin",
+    "@topShelfAppBanner": {
+        "description": "Top Shelf option that shows only the static Moonfin logo banner, nothing from the library"
+    },
+    "spotlightFileDetails": "Detalls del fitxer",
+    "@spotlightFileDetails": {
+        "description": "Title of the spotlight summary card that opens the file details modal"
+    },
+    "shortcutRecropBlackBars": "Torna a retallar les bandes negres",
+    "@shortcutRecropBlackBars": {
+        "description": "Player shortcut to run letterbox crop detection now"
+    },
+    "cropBlackBarsRecropInterval": "Interval per tornar a retallar",
+    "@cropBlackBarsRecropInterval": {
+        "description": "Setting for how often to re-detect encoded letterbox bars"
+    },
+    "cropBlackBarsOnce": "Un cop a l'inici",
+    "@cropBlackBarsOnce": {
+        "description": "Letterbox recrop interval: detect once after playback starts"
+    },
+    "cropBlackBarsEverySecond": "Cada segon",
+    "@cropBlackBarsEverySecond": {
+        "description": "Letterbox recrop interval: scan about once a second"
+    },
+    "settingsCropBlackBarsIntervalDescription": "Segueix els canvis de relació d'aspecte durant la reproducció.",
+    "@settingsCropBlackBarsIntervalDescription": {
+        "description": "Description for the letterbox recrop-interval setting"
+    },
+    "playerRecroppingBlackBars": "S'estan tornant a retallar les bandes negres",
+    "@playerRecroppingBlackBars": {
+        "description": "Toast when the player re-runs letterbox crop detection"
+    },
+    "seerrDiscoverSliders": "Carrusels de Descobreix de Seerr",
+    "@seerrDiscoverSliders": {
+        "description": "Seerr Lists heading for the sliders an admin set up on Seerr's discover page"
+    },
+    "nextSeriesRecording": "Següent enregistrament de la sèrie: {dateTime}",
+    "@nextSeriesRecording": {
+        "description": "Next scheduled recording for the current series, shown in the Live TV recording dialog",
+        "placeholders": {
+            "dateTime": {
+                "type": "String",
+                "example": "Oct 5, 2026 · 8:00 PM"
+            }
+        }
+    },
+    "noUpcomingSeriesRecording": "L'enregistrament de la sèrie està programat, però la guia no té cap episodi pròxim",
+    "@noUpcomingSeriesRecording": {
+        "description": "A series recording rule exists but no future episode timer is available"
+    },
+    "recordCurrentEpisode": "Enregistra aquest episodi",
+    "@recordCurrentEpisode": {
+        "description": "Live TV player action to record only the current episode"
+    },
+    "recordCurrentProgram": "Enregistra aquest programa",
+    "@recordCurrentProgram": {
+        "description": "Live TV player action to record only the current program"
+    },
+    "cancelCurrentRecording": "Cancel·la aquest enregistrament",
+    "@cancelCurrentRecording": {
+        "description": "Live TV player action to cancel only the current recording, leaving any series rule intact"
+    },
+    "smartDownloadsSection": "Baixades intel·ligents",
+    "@smartDownloadsSection": {
+        "description": "Settings section header for downloading the next episodes of a series after one is watched"
+    },
+    "smartDownloadsEnable": "Baixa els episodis següents",
+    "@smartDownloadsEnable": {
+        "description": "Switch that swaps a watched downloaded episode for the next episodes of the series"
+    },
+    "smartDownloadsEnableSubtitle": "Quan acabes un episodi en qualsevol dispositiu, Moonfin baixa els següents. Els episodis baixats se suprimeixen un cop vistos.",
+    "@smartDownloadsEnableSubtitle": {
+        "description": "Explains the smart downloads switch, including that watched episodes are deleted"
+    },
+    "smartDownloadsKeepReady": "Episodis que es mantenen baixats",
+    "@smartDownloadsKeepReady": {
+        "description": "Setting for how many unwatched episodes of a series stay downloaded after one is watched"
+    },
+    "smartDownloadsKeepReadySubtitle": "{count, plural, =1{Manté baixat el següent episodi} other{Manté baixats els {count} episodis següents}}",
+    "@smartDownloadsKeepReadySubtitle": {
+        "description": "Subtitle under the episodes to keep ready setting",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "smartDownloadsKeepReadyLowered": "Els episodis que ja s'han baixat es queden al dispositiu. El nou nombre s'aplica a les baixades futures.",
+    "@smartDownloadsKeepReadyLowered": {
+        "description": "Shown after lowering the episodes to keep downloaded, explaining nothing is deleted"
     }
 }

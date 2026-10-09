@@ -73,8 +73,9 @@ jobs:
             echo "needed=true" >> "$GITHUB_OUTPUT"
           elif ! grep -q 'Moonfin-Client/Moonfin-Core' PKGBUILD \
             || ! grep -q "'mpv'" PKGBUILD \
-            || ! grep -q 'org.moonfin.linux.desktop' PKGBUILD; then
-            echo "PKGBUILD is stale (repo URL, mpv dependency, or desktop entry), re-syncing"
+            || ! grep -q 'org.moonfin.linux.desktop' PKGBUILD \
+            || ! grep -q "'xdg-user-dirs'" PKGBUILD; then
+            echo "PKGBUILD is stale (repo URL, mpv or xdg-user-dirs dependency, or desktop entry), re-syncing"
             echo "needed=true" >> "$GITHUB_OUTPUT"
           else
             echo "No update needed (version: $current_version)"
@@ -125,7 +126,7 @@ jobs:
           arch=('x86_64')
           url='https://github.com/Moonfin-Client/Moonfin-Core'
           license=('GPL-3.0-or-later')
-          depends=('gtk3' 'glib2' 'libsecret' 'webkit2gtk-4.1' 'mpv' 'harfbuzz-icu')
+          depends=('gtk3' 'glib2' 'libsecret' 'webkit2gtk-4.1' 'mpv' 'harfbuzz-icu' 'xdg-user-dirs')
           provides=('moonfin')
           conflicts=('moonfin')
           # The binary and the bundled libraries ship stripped already, and
@@ -192,6 +193,7 @@ jobs:
             "    depends = webkit2gtk-4.1" \
             "    depends = mpv" \
             "    depends = harfbuzz-icu" \
+            "    depends = xdg-user-dirs" \
             "    provides = moonfin" \
             "    conflicts = moonfin" \
             "    source = moonfin-bin-${VERSION}.tar.gz::https://github.com/Moonfin-Client/Moonfin-Core/releases/download/${VERSION}/Moonfin_Linux_v${VERSION}.tar.gz" \

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/io_client.dart';
 import 'package:moonfin/util/artwork_request_scheduler.dart';
 import 'package:moonfin/util/image_fetch_priority.dart';
 import 'package:moonfin/util/image_file_service.dart';
@@ -448,5 +449,86 @@ void main() {
       answer('/newer');
       await drain(await newer);
     });
+
+    /// One connection, so a response left unread shows up as the next
+    /// request never arriving rather than as a second connection opening.
+    BoundedImageFileService oneLine({
+      Duration headerTimeout = const Duration(seconds: 20),
+      Duration stallTimeout = const Duration(seconds: 20),
+    }) => BoundedImageFileService(
+      IOClient(HttpClient()..maxConnectionsPerHost = 1),
+      concurrentFetches: 4096,
+      headerTimeout: headerTimeout,
+      stallTimeout: stallTimeout,
+      scheduler: ArtworkRequestScheduler(slots: 1),
+    );
+
+    test('an error answer with a body frees its connection', () async {
+      final service = oneLine();
+      final failing = service.get('${base()}/missing');
+      await settle();
+      final request = held.remove('/missing')!;
+      request.response
+        ..statusCode = HttpStatus.notFound
+        ..headers.contentType = ContentType.json
+        ..headers.set(HttpHeaders.etagHeader, '"gone"')
+        ..write('{"title":"Not Found","status":404}');
+      await request.response.close();
+      final response = await failing;
+      expect(response.statusCode, HttpStatus.notFound);
+      expect(response.eTag, '"gone"');
+      // The cache manager throws on the status and never reads the body.
+      final next = service.get('${base()}/after-missing');
+      await settle();
+      expect(arrived, ['/missing', '/after-missing']);
+      answer('/after-missing');
+      await drain(await next);
+    });
+
+    test(
+      'an answer that lands after the header timeout frees its connection',
+      () async {
+        final service = oneLine(
+          headerTimeout: const Duration(milliseconds: 100),
+        );
+        await expectLater(
+          service.get('${base()}/late'),
+          throwsA(isA<TimeoutException>()),
+        );
+        answer('/late');
+        await settle();
+        final next = service.get('${base()}/after-late');
+        await settle();
+        expect(arrived, ['/late', '/after-late']);
+        answer('/after-late');
+        await drain(await next);
+      },
+    );
+
+    test(
+      'an error body that never ends is dropped at the stall ceiling',
+      () async {
+        final service = oneLine(
+          stallTimeout: const Duration(milliseconds: 100),
+        );
+        final failing = service.get('${base()}/broken');
+        await settle();
+        final response = held.remove('/broken')!.response
+          ..statusCode = HttpStatus.internalServerError
+          ..bufferOutput = false
+          ..headers.contentType = ContentType.text;
+        response.add(List<int>.filled(8, 0x41));
+        await response.flush();
+        final stopwatch = Stopwatch()..start();
+        final failed = await failing;
+        expect(failed.statusCode, HttpStatus.internalServerError);
+        expect(stopwatch.elapsed, lessThan(const Duration(seconds: 1)));
+        final next = service.get('${base()}/after-broken');
+        await settle();
+        expect(arrived, ['/broken', '/after-broken']);
+        answer('/after-broken');
+        await drain(await next);
+      },
+    );
   });
 }

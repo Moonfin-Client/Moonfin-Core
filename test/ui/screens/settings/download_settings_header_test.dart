@@ -47,7 +47,7 @@ void main() {
     expect(appBar.automaticallyImplyLeading, isFalse);
     expect(appBar.leading, isA<SizedBox>());
     expect(appBar.scrolledUnderElevation, 0);
-    expect(find.text('Offline Downloads'), findsOneWidget);
+    expect(find.text('Storage & Downloads'), findsOneWidget);
   });
 
   testWidgets('TV offers the offline downloads opt-in as the first row', (
@@ -73,7 +73,7 @@ void main() {
     await tester.drag(find.byType(Scrollable), const Offset(0, 800));
     await tester.pumpAndSettle();
 
-    final toggle = find.text('Enable offline downloads');
+    final toggle = find.text('Enable Offline Downloads');
     expect(toggle, findsOneWidget);
 
     await tester.tap(toggle);
@@ -96,7 +96,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Enable offline downloads'), findsNothing);
+    expect(find.text('Enable Offline Downloads'), findsNothing);
   });
 
   testWidgets('TV quality picker scrolls focused options into view', (

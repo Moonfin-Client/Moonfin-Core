@@ -15,8 +15,6 @@ import '../../widgets/adaptive/adaptive_list_section.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/settings/preference_tiles.dart';
-import '../../widgets/settings/settings_panel.dart';
-import 'home_sections_screen.dart';
 import 'settings_app_bar.dart';
 
 class HomeRowTogglesScreen extends StatefulWidget {
@@ -29,20 +27,6 @@ class HomeRowTogglesScreen extends StatefulWidget {
 class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
   final _prefs = GetIt.instance<UserPreferences>();
   late final PluginSyncService _syncService;
-  bool _navigating = false;
-  bool _buttonFocused = false;
-
-  void _pushHomeSectionsScreen(BuildContext context) {
-    if (_navigating) return;
-    _navigating = true;
-    context
-        .pushSettingsScreen(const HomeSectionsScreen(showGeneralOptions: false))
-        .then((_) {
-          if (mounted) {
-            setState(() => _navigating = false);
-          }
-        });
-  }
 
   @override
   void initState() {
@@ -306,8 +290,6 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
 
     final showFavoritesRows = _prefs.get(UserPreferences.displayFavoritesRows);
     final showCollectionsRows = _prefs.get(
@@ -321,94 +303,67 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
     final showRewatchRow = _prefs.get(UserPreferences.displayRewatchRow);
     final showStudiosRows = _prefs.get(UserPreferences.displayStudiosRows);
 
-    final borderTokens = ThemeRegistry.active.borders;
-    final baseBorder = borderTokens.cardBorder.color;
-    final unfocusedBorderColor = baseBorder.a == 0
-        ? AppColorScheme.onSurface.withValues(alpha: 0.16)
-        : baseBorder.withValues(alpha: 0.55);
-
     return RequestInitialFocus(
       child: withCleanSettingsTypography(
         context,
         Scaffold(
-          appBar: buildSettingsAppBar(context, Text(l10n.homeRowToggles)),
+          appBar: buildSettingsAppBar(context, Text(l10n.rowOptions)),
           body: ListView(
             children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
-                child: Container(
-                  padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
-                  decoration: BoxDecoration(
-                    color: colorScheme.surfaceContainerLow.withValues(
-                      alpha: 0.82,
-                    ),
-                    borderRadius: AppRadius.circular(16),
-                    border: Border.fromBorderSide(
-                      borderTokens.cardBorder.copyWith(
-                        color: unfocusedBorderColor,
-                        width: 1.0,
-                      ),
-                    ),
+              _SectionHeader(l10n.continueWatchingAndNextUpHeader),
+              adaptiveListSection(
+                children: [
+                  SwitchPreferenceTile(
+                    preference: UserPreferences.mergeContinueWatchingNextUp,
+                    title: l10n.mergeContinueWatchingAndNextUp,
+                    subtitle: l10n.combineBothRows,
+                    icon: Icons.merge_type,
+                    onChanged: _pushPersonalizationSync,
                   ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          l10n.homeRowTogglesDescription,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Focus(
-                        canRequestFocus: false,
-                        skipTraversal: true,
-                        onFocusChange: (f) =>
-                            setState(() => _buttonFocused = f),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: _buttonFocused
-                                ? AppColorScheme.onSurface.withValues(
-                                    alpha: 0.18,
-                                  )
-                                : theme.colorScheme.primary.withValues(
-                                    alpha: 0.15,
-                                  ),
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: _buttonFocused
-                                  ? AppColorScheme.onSurface
-                                  : theme.colorScheme.primary.withValues(
-                                      alpha: 0.35,
-                                    ),
-                              width: 1.5,
-                            ),
-                            boxShadow: _buttonFocused
-                                ? [
-                                    BoxShadow(
-                                      color: AppColorScheme.onSurface
-                                          .withValues(alpha: 0.22),
-                                      blurRadius: 14,
-                                      spreadRadius: 0.5,
-                                    ),
-                                  ]
-                                : null,
-                          ),
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.list,
-                              color: theme.colorScheme.primary,
-                            ),
-                            tooltip: l10n.homeSections,
-                            onPressed: () => _pushHomeSectionsScreen(context),
-                          ),
-                        ),
-                      ),
-                    ],
+                  IntPickerPreferenceTile(
+                    preference: UserPreferences.nextUpMaxDays,
+                    title: l10n.nextUpMaxDays,
+                    description: l10n.nextUpMaxDaysDescription,
+                    icon: Icons.event_busy,
+                    options: {
+                      0: l10n.noLimit,
+                      30: l10n.daysValue(30),
+                      90: l10n.daysValue(90),
+                      180: l10n.daysValue(180),
+                      365: l10n.daysValue(365),
+                      730: l10n.daysValue(730),
+                    },
+                    onChanged: () {
+                      _pushPersonalizationSync();
+                      _reloadHomeRows();
+                    },
                   ),
-                ),
+                ],
+              ),
+
+              _SectionHeader(l10n.recentlyAdded),
+              adaptiveListSection(
+                children: [
+                  SwitchPreferenceTile(
+                    preference: UserPreferences.mergeRecentRowsByType,
+                    title: l10n.mergeRecentRowsByType,
+                    subtitle: l10n.mergeRecentRowsByTypeDescription,
+                    icon: Icons.library_books,
+                    onChanged: _pushPersonalizationSync,
+                  ),
+                  EnumPreferenceTile<RecentlyReleasedSeriesType>(
+                    preference: UserPreferences.recentlyReleasedSeriesType,
+                    title: l10n.recentlyReleasedSeriesType,
+                    description: l10n.recentlyReleasedSeriesTypeDescription,
+                    icon: Icons.ondemand_video,
+                    labelOf: (v) => switch (v) {
+                      RecentlyReleasedSeriesType.series => l10n.series,
+                      RecentlyReleasedSeriesType.season => l10n.season,
+                      RecentlyReleasedSeriesType.episode => l10n.episode,
+                    },
+                    onChanged: _pushPersonalizationSync,
+                  ),
+                ],
               ),
 
               _SectionHeader(l10n.audio),

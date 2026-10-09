@@ -13,6 +13,7 @@ import '../../widgets/overlay_sheet.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
 import '../../widgets/settings/preference_binding.dart';
 import '../../widgets/settings/preference_tiles.dart';
+import '../../widgets/settings/settings_section_header.dart';
 import '../../widgets/subtitle_preview.dart';
 import 'settings_app_bar.dart';
 import '../../widgets/focus/request_initial_focus.dart';
@@ -219,6 +220,7 @@ class _SubtitleCustomizationScreenState
               step: 0.01,
               labelBuilder: (v) => l10n.percentValue((v * 100).round()),
             ),
+            SettingsSectionHeader(l10n.hdr),
             SwitchPreferenceTile(
               preference: UserPreferences.subtitlesHdrSeparate,
               title: l10n.subtitleHdrSeparate,

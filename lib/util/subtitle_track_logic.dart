@@ -52,6 +52,22 @@ bool shouldRenderSubtitleNatively(String? codec) {
       normalized == 'xsub';
 }
 
+const _textSubtitleCodecs = {
+  'subrip',
+  'srt',
+  'vtt',
+  'webvtt',
+  'ass',
+  'ssa',
+  'ttml',
+};
+
+bool isTextSubtitleStream(Map<String, dynamic> stream) =>
+    stream['IsTextSubtitleStream'] == true ||
+    _textSubtitleCodecs.contains(
+      (stream['Codec'] as String?)?.trim().toLowerCase(),
+    );
+
 /// Internal streams first, external streams last.
 List<Map<String, dynamic>> sortedSubtitleStreams(
   List<Map<String, dynamic>> streams,
@@ -73,6 +89,8 @@ int? computeEffectiveSubtitleIndex({
   required String preferredLanguage,
   required String fallbackLanguage,
   required bool preferSdh,
+  bool preferTextSubtitles = false,
+  bool preferExternalSubtitles = false,
   required bool pgsDirectPlay,
   required bool assDirectPlay,
   required String preferredAudioLanguage,
@@ -197,43 +215,63 @@ int? computeEffectiveSubtitleIndex({
       return aSpecial ? 1 : -1;
     }
 
-    // 2 and 3. SDH match and internal vs external, ordered by preferSdh. With SDH
-    // on we match SDH first, with it off we keep internal tracks first so a bad
-    // external download cannot beat an internal SDH track.
+    // 2. SDH match
     if (preferSdh) {
-      final aSdhMatch = isSdhSubtitleStream(streamA) == preferSdh;
-      final bSdhMatch = isSdhSubtitleStream(streamB) == preferSdh;
-      if (aSdhMatch != bSdhMatch) {
-        return aSdhMatch ? -1 : 1;
-      }
-
-      final aInternal = !isExternalSubtitleStream(streamA);
-      final bInternal = !isExternalSubtitleStream(streamB);
-      if (aInternal != bInternal) {
-        return aInternal ? -1 : 1;
-      }
-    } else {
-      final aInternal = !isExternalSubtitleStream(streamA);
-      final bInternal = !isExternalSubtitleStream(streamB);
-      if (aInternal != bInternal) {
-        return aInternal ? -1 : 1;
-      }
-
-      final aSdhMatch = isSdhSubtitleStream(streamA) == preferSdh;
-      final bSdhMatch = isSdhSubtitleStream(streamB) == preferSdh;
+      final aSdhMatch = isSdhSubtitleStream(streamA);
+      final bSdhMatch = isSdhSubtitleStream(streamB);
       if (aSdhMatch != bSdhMatch) {
         return aSdhMatch ? -1 : 1;
       }
     }
 
-    // 4. Fancy vs Normal
+    // 3. A forced track only carries the foreign dialogue, so neither
+    // preference below may lift one above a full track.
+    if (preferTextSubtitles || preferExternalSubtitles) {
+      final aForced = streamA['IsForced'] == true;
+      final bForced = streamB['IsForced'] == true;
+      if (aForced != bForced) {
+        return aForced ? 1 : -1;
+      }
+    }
+
+    // 4. Text over bitmap
+    if (preferTextSubtitles) {
+      final aText = isTextSubtitleStream(streamA);
+      final bText = isTextSubtitleStream(streamB);
+      if (aText != bText) {
+        return aText ? -1 : 1;
+      }
+    }
+
+    // 5. Internal tracks first, so a bad external download can't beat a good
+    // internal one, unless the viewer prefers external files.
+    final aExt = isExternalSubtitleStream(streamA);
+    final bExt = isExternalSubtitleStream(streamB);
+    if (aExt != bExt) {
+      if (preferExternalSubtitles) {
+        return aExt ? -1 : 1;
+      } else {
+        return aExt ? 1 : -1;
+      }
+    }
+
+    // 6. Non-SDH over SDH
+    if (!preferSdh) {
+      final aSdh = isSdhSubtitleStream(streamA);
+      final bSdh = isSdhSubtitleStream(streamB);
+      if (aSdh != bSdh) {
+        return aSdh ? 1 : -1;
+      }
+    }
+
+    // 7. Fancy vs Normal
     final aFormat = getFormatPriority(streamA);
     final bFormat = getFormatPriority(streamB);
     if (aFormat != bFormat) {
       return aFormat > bFormat ? -1 : 1;
     }
 
-    // 5. Forced flag (prefer non-forced for full subtitles, prefer forced for SubtitleMode.forced)
+    // 8. Forced flag (prefer non-forced for full subtitles, prefer forced for SubtitleMode.forced)
     final aForced = streamA['IsForced'] == true;
     final bForced = streamB['IsForced'] == true;
     if (aForced != bForced) {
@@ -244,14 +282,14 @@ int? computeEffectiveSubtitleIndex({
       }
     }
 
-    // 6. Default flag
+    // 9. Default flag
     final aDefault = streamA['IsDefault'] == true;
     final bDefault = streamB['IsDefault'] == true;
     if (aDefault != bDefault) {
       return aDefault ? -1 : 1;
     }
 
-    // 7. Tie-breaker: earlier stream index in the media container (smaller originalIndex is preferred)
+    // 10. Tie-breaker: earlier stream index in the media container (smaller originalIndex is preferred)
     return a.originalIndex.compareTo(b.originalIndex);
   });
 

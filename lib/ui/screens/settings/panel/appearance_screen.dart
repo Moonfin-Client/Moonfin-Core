@@ -1,21 +1,21 @@
 part of '../settings_side_panel.dart';
 
-class _GeneralStyleScreen extends StatefulWidget {
-  const _GeneralStyleScreen();
+class _AppearanceScreen extends StatefulWidget {
+  const _AppearanceScreen();
 
   @override
-  State<_GeneralStyleScreen> createState() => _GeneralStyleScreenState();
+  State<_AppearanceScreen> createState() => _AppearanceScreenState();
 }
 
-class _GeneralStyleScreenState extends State<_GeneralStyleScreen> {
-  final _generalStyleScope = FocusScopeNode(
-    debugLabel: 'GeneralStyleSettingsScope',
+class _AppearanceScreenState extends State<_AppearanceScreen> {
+  final _appearanceScope = FocusScopeNode(
+    debugLabel: 'AppearanceSettingsScope',
     traversalEdgeBehavior: TraversalEdgeBehavior.stop,
   );
 
   @override
   void dispose() {
-    _generalStyleScope.dispose();
+    _appearanceScope.dispose();
     super.dispose();
   }
 
@@ -26,9 +26,9 @@ class _GeneralStyleScreenState extends State<_GeneralStyleScreen> {
         MediaQuery.paddingOf(context).bottom;
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: buildSettingsAppBar(context, Text(l10n.settingsGeneralStyle)),
+      appBar: buildSettingsAppBar(context, Text(l10n.appearance)),
       body: FocusScope(
-        node: _generalStyleScope,
+        node: _appearanceScope,
         // Rebuild on preference changes so the Glass Quality tile appears or
         // disappears the moment the glass theme is selected or replaced.
         child: ListenableBuilder(
@@ -36,11 +36,60 @@ class _GeneralStyleScreenState extends State<_GeneralStyleScreen> {
           builder: (context, _) => ListView(
             padding: EdgeInsets.only(bottom: bottomPad),
             children: [
+              _SectionHeader(l10n.navigation),
+              adaptiveListSection(
+                children: [
+                  _TvSettingsListTile(
+                    autofocus: true,
+                    leading: const Icon(Icons.view_sidebar),
+                    title: Text(l10n.navigationBar),
+                    subtitle: Text(l10n.navbarStyleToolbarAppearance),
+                    onTap: () => context.pushSettingsScreen(
+                      const _NavigationCategoryScreen(),
+                    ),
+                  ),
+                  if (GamepadNavigationScope.isConfigurable)
+                    SwitchPreferenceTile(
+                      preference: UserPreferences.gamepadNavigationEnabled,
+                      title: l10n.gamepadNavigation,
+                      subtitle: l10n.gamepadNavigationDescription,
+                      icon: Icons.sports_esports_outlined,
+                    ),
+                ],
+              ),
+              _SectionHeader(l10n.layout),
+              adaptiveListSection(
+                children: [
+                  _TvSettingsListTile(
+                    leading: const Icon(Icons.home),
+                    title: Text(l10n.homeScreen),
+                    subtitle: Text(l10n.settingsHomeScreenSubtitle),
+                    onTap: () => context.pushSettingsScreen(
+                      const _HomeScreenCategoryScreen(),
+                    ),
+                  ),
+                  _TvSettingsListTile(
+                    leading: const Icon(Icons.video_library),
+                    title: Text(l10n.libraries),
+                    subtitle: Text(l10n.settingsLibrariesEntrySubtitle),
+                    onTap: () => context.pushSettingsScreen(
+                      const _LibrariesCategoryScreen(),
+                    ),
+                  ),
+                  _TvSettingsListTile(
+                    leading: const Icon(Icons.article_outlined),
+                    title: Text(l10n.detailsPage),
+                    subtitle: Text(l10n.settingsDetailsPageSubtitle),
+                    onTap: () => context.pushSettingsScreen(
+                      const _DetailsScreenSettingsScreen(),
+                    ),
+                  ),
+                ],
+              ),
               _SectionHeader(l10n.theme),
               adaptiveListSection(
                 children: [
                   EnumPreferenceTile<InterfaceStyle>(
-                    autofocus: true,
                     preference: UserPreferences.interfaceStyle,
                     title: l10n.interfaceStyle,
                     description: l10n.interfaceStyleSubtitle,
@@ -51,6 +100,69 @@ class _GeneralStyleScreenState extends State<_GeneralStyleScreen> {
                       InterfaceStyle.material => l10n.interfaceStyleMaterial,
                     },
                   ),
+                  _TvSettingsListTile(
+                    leading: const Icon(Icons.palette_outlined),
+                    title: Text(l10n.settingsAppearanceTheme),
+                    subtitle: Text(l10n.settingsAppearanceThemeSubtitle),
+                    onTap: () => context.pushSettingsScreen(
+                      const AppearanceThemeScreen(),
+                    ),
+                  ),
+                  if (AppColorScheme.isGlass)
+                    EnumPreferenceTile<GlassQualityMode>(
+                      preference: UserPreferences.glassQuality,
+                      title: l10n.glassQuality,
+                      description: l10n.glassQualitySubtitle,
+                      icon: Icons.blur_on,
+                      labelOf: (v) => switch (v) {
+                        GlassQualityMode.auto => l10n.glassQualityAuto,
+                        GlassQualityMode.full => l10n.glassQualityFull,
+                        GlassQualityMode.reduced => l10n.glassQualityReduced,
+                      },
+                    ),
+                  EnumPreferenceTile<AppTheme>(
+                    preference: UserPreferences.focusColor,
+                    title: l10n.focusBorderColor,
+                    icon: Icons.border_color,
+                    labelOf: (v) => _formatCamelCaseLabel(v.name),
+                  ),
+                  _TvSettingsListTile(
+                    leading: const Icon(Icons.storefront_outlined),
+                    title: Text(l10n.themeStore),
+                    subtitle: Text(l10n.themeStoreSubtitle),
+                    onTap: () =>
+                        context.pushSettingsScreen(const ThemeStoreScreen()),
+                  ),
+                  _TvSettingsListTile(
+                    leading: const Icon(Icons.download_outlined),
+                    title: Text(l10n.savedThemesTitle),
+                    subtitle: Text(l10n.savedThemesManageSubtitle),
+                    onTap: () =>
+                        context.pushSettingsScreen(const SavedThemesScreen()),
+                  ),
+                  if (_showThemeEditorEntry)
+                    _TvSettingsListTile(
+                      leading: const Icon(Icons.brush),
+                      title: Text(l10n.themeEditor),
+                      subtitle: Text(l10n.themeEditorSubtitle),
+                      onTap: () => unawaited(_openThemeEditor(context)),
+                    ),
+                ],
+              ),
+              _SectionHeader(l10n.display),
+              if (!PlatformDetection.useMobileUi)
+                adaptiveListSection(
+                  children: [
+                    SwitchPreferenceTile(
+                      preference: UserPreferences.cardFocusExpansion,
+                      title: l10n.focusExpansionAnimation,
+                      subtitle: l10n.scaleFocusedCards,
+                      icon: Icons.zoom_in,
+                    ),
+                  ],
+                ),
+              adaptiveListSection(
+                children: [
                   if (PlatformDetection.canOverrideInterfaceLayout)
                     EnumPreferenceTile<InterfaceLayout>(
                       preference: UserPreferences.interfaceLayout,
@@ -74,122 +186,6 @@ class _GeneralStyleScreenState extends State<_GeneralStyleScreen> {
                         InterfaceLayout.phone => l10n.interfaceLayoutPhone,
                       },
                     ),
-                  _TvSettingsListTile(
-                    leading: const Icon(Icons.palette_outlined),
-                    title: Text(l10n.settingsAppearanceTheme),
-                    subtitle: Text(l10n.settingsAppearanceThemeSubtitle),
-                    onTap: () => context.pushSettingsScreen(
-                      const AppearanceThemeScreen(),
-                    ),
-                  ),
-                  if (AppColorScheme.isGlass)
-                    EnumPreferenceTile<GlassQualityMode>(
-                      preference: UserPreferences.glassQuality,
-                      title: l10n.glassQuality,
-                      description: l10n.glassQualitySubtitle,
-                      icon: Icons.blur_on,
-                      labelOf: (v) => switch (v) {
-                        GlassQualityMode.auto => l10n.glassQualityAuto,
-                        GlassQualityMode.full => l10n.glassQualityFull,
-                        GlassQualityMode.reduced => l10n.glassQualityReduced,
-                      },
-                    ),
-                  _TvSettingsListTile(
-                    leading: const Icon(Icons.storefront_outlined),
-                    title: Text(l10n.themeStore),
-                    subtitle: Text(l10n.themeStoreSubtitle),
-                    onTap: () =>
-                        context.pushSettingsScreen(const ThemeStoreScreen()),
-                  ),
-                  _TvSettingsListTile(
-                    leading: const Icon(Icons.download_outlined),
-                    title: Text(l10n.savedThemesTitle),
-                    subtitle: Text(l10n.savedThemesManageSubtitle),
-                    onTap: () =>
-                        context.pushSettingsScreen(const SavedThemesScreen()),
-                  ),
-                  EnumPreferenceTile<AppTheme>(
-                    preference: UserPreferences.focusColor,
-                    title: l10n.focusBorderColor,
-                    icon: Icons.border_color,
-                    labelOf: (v) => _formatCamelCaseLabel(v.name),
-                  ),
-                ],
-              ),
-              if (PlatformDetection.isTV) ...[
-                _SectionHeader(l10n.keyboard),
-                adaptiveListSection(
-                  children: [
-                    SwitchPreferenceTile(
-                      preference: UserPreferences.preferSystemImeKeyboard,
-                      title: l10n.keyboardPreferSystemIme,
-                      subtitle: l10n.keyboardPreferSystemImeDescription,
-                      icon: Icons.keyboard_alt_outlined,
-                    ),
-                  ],
-                ),
-              ],
-              if (GamepadNavigationScope.isConfigurable) ...[
-                _SectionHeader(l10n.controller),
-                adaptiveListSection(
-                  children: [
-                    SwitchPreferenceTile(
-                      preference: UserPreferences.gamepadNavigationEnabled,
-                      title: l10n.gamepadNavigation,
-                      subtitle: l10n.gamepadNavigationDescription,
-                      icon: Icons.sports_esports_outlined,
-                    ),
-                    if (PlatformDetection.isAppleTV)
-                      EnumPreferenceTile<SiriRemoteSwipeSensitivity>(
-                        preference: UserPreferences.siriRemoteSwipeSensitivity,
-                        title: l10n.siriRemoteSwipeSensitivity,
-                        description:
-                            l10n.siriRemoteSwipeSensitivityDescription,
-                        icon: Icons.swipe,
-                        labelOf: (v) => switch (v) {
-                          SiriRemoteSwipeSensitivity.low => l10n.settingsLow,
-                          SiriRemoteSwipeSensitivity.medium => l10n.medium,
-                          SiriRemoteSwipeSensitivity.high => l10n.settingsHigh,
-                        },
-                      ),
-                  ],
-                ),
-              ],
-              _SectionHeader(l10n.clock),
-              adaptiveListSection(
-                children: [
-                  EnumPreferenceTile<ClockBehavior>(
-                    preference: UserPreferences.clockBehavior,
-                    title: l10n.clockDisplay,
-                    icon: Icons.access_time,
-                    labelOf: (v) => switch (v) {
-                      ClockBehavior.always => l10n.always,
-                      ClockBehavior.inMenus => l10n.inMenus,
-                      ClockBehavior.never => l10n.never,
-                    },
-                  ),
-                  SwitchPreferenceTile(
-                    preference: UserPreferences.use24HourClock,
-                    title: l10n.settingsTwentyFourHourClock,
-                    subtitle: l10n.settingsTwentyFourHourClockSubtitle,
-                    icon: Icons.schedule,
-                  ),
-                ],
-              ),
-              _SectionHeader(l10n.display),
-              if (!PlatformDetection.useMobileUi)
-                adaptiveListSection(
-                  children: [
-                    SwitchPreferenceTile(
-                      preference: UserPreferences.cardFocusExpansion,
-                      title: l10n.focusExpansionAnimation,
-                      subtitle: l10n.scaleFocusedCards,
-                      icon: Icons.zoom_in,
-                    ),
-                  ],
-                ),
-              adaptiveListSection(
-                children: [
                   EnumPreferenceTile<DesktopUiScale>(
                     preference: UserPreferences.desktopUiScale,
                     title: l10n.desktopUiScale,
@@ -205,18 +201,6 @@ class _GeneralStyleScreenState extends State<_GeneralStyleScreen> {
                     },
                     onChanged: _pushPersonalizationSync,
                   ),
-                  if (PlatformDetection.useDesktopUi)
-                    SliderPreferenceTile(
-                      preference: UserPreferences.desktopScrollSensitivity,
-                      title: l10n.scrollSensitivity,
-                      description: l10n.scrollSensitivitySubtitle,
-                      icon: Icons.mouse,
-                      min: 50,
-                      max: 300,
-                      divisions: 25,
-                      labelOf: (v) => '${(v / 100).toStringAsFixed(1)}x',
-                      onChangeEnd: _pushPersonalizationSync,
-                    ),
                   SwitchPreferenceTile(
                     preference: UserPreferences.backdropEnabled,
                     title: l10n.backgroundBackdrops,
@@ -262,7 +246,7 @@ class _GeneralStyleScreenState extends State<_GeneralStyleScreen> {
                 ],
               ),
               if (!PlatformDetection.useMobileUi) ...[
-                _SectionHeader(l10n.settingsAnimationSpeed),
+                _SectionHeader(l10n.settingsMotionSection),
                 adaptiveListSection(
                   children: [
                     EnumPreferenceTile<PageTransitionSpeed>(
@@ -293,39 +277,39 @@ class _GeneralStyleScreenState extends State<_GeneralStyleScreen> {
                           l10n.animationSpeedFast,
                       },
                     ),
-                    if (GetIt.instance<UserPreferences>().get(
-                          UserPreferences.homeRowsStyle,
-                        ) ==
-                        HomeRowsStyle.v2) ...[
-                      EnumPreferenceTile<ModernCardTransitionSpeed>(
-                        preference: UserPreferences.modernCardTransitionSpeed,
-                        title: l10n.modernCardsTransitionSpeed,
-                        description: l10n.modernCardsTransitionSpeedSubtitle,
-                        icon: Icons.auto_awesome_motion_outlined,
-                        labelOf: (v) => switch (v) {
-                          ModernCardTransitionSpeed.extraSlow =>
-                            l10n.animationSpeedExtraSlow,
-                          ModernCardTransitionSpeed.slow =>
-                            l10n.animationSpeedSlow,
-                          ModernCardTransitionSpeed.medium =>
-                            l10n.animationSpeedMedium,
-                          ModernCardTransitionSpeed.fast =>
-                            l10n.animationSpeedFast,
-                          ModernCardTransitionSpeed.off =>
-                            l10n.animationSpeedOff,
-                        },
-                      ),
-                      SwitchPreferenceTile(
-                        preference:
-                            UserPreferences.delayCardExpansionOnRapidScroll,
-                        title: l10n.delayCardExpansionOnRapidScroll,
-                        subtitle: l10n.delayCardExpansionOnRapidScrollSubtitle,
-                        icon: Icons.hourglass_empty_rounded,
-                      ),
-                    ],
                   ],
                 ),
               ],
+              _SectionHeader(l10n.extras),
+              adaptiveListSection(
+                children: [
+                  _TvSettingsListTile(
+                    leading: const Icon(Icons.auto_awesome),
+                    title: Text(l10n.seasonalEffects),
+                    subtitle: Text(l10n.seasonalEffectsDescription),
+                    onTap: () => context.pushSettingsScreen(
+                      const _SeasonalEffectsScreen(),
+                    ),
+                  ),
+                  _TvSettingsListTile(
+                    leading: const Icon(Icons.motion_photos_on_outlined),
+                    title: Text(l10n.loadingAnimation),
+                    subtitle: Text(l10n.loadingAnimationDescription),
+                    onTap: () => context.pushSettingsScreen(
+                      const _LoadingAnimationScreen(),
+                    ),
+                  ),
+                  if (PlatformDetection.isTV)
+                    _TvSettingsListTile(
+                      leading: const Icon(Icons.wallpaper),
+                      title: Text(l10n.screensaver),
+                      subtitle: Text(l10n.enableBuiltInScreensaver),
+                      onTap: () => context.pushSettingsScreen(
+                        const ScreensaverSettingsScreen(),
+                      ),
+                    ),
+                ],
+              ),
             ],
           ),
         ),

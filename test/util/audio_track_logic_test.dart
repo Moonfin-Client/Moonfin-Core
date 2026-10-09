@@ -301,6 +301,49 @@ void main() {
       );
       expect(index, 0); // original index order (0 before 2)
     });
+
+    final List<Map<String, dynamic>> rememberedStreams = [
+      {'Type': 'Audio', 'Index': 0, 'Language': 'jpn', 'Title': 'Stereo', 'Channels': 2},
+      {'Type': 'Audio', 'Index': 1, 'Language': 'jpn', 'Title': 'Surround', 'Channels': 6},
+      {'Type': 'Audio', 'Index': 2, 'Language': 'spa', 'Channels': 2},
+    ];
+
+    test('remembered index wins over ranking', () {
+      final index = computeEffectiveAudioIndex(
+        audioStreams: rememberedStreams,
+        preferredAudioLanguage: 'jpn',
+        fallbackAudioLanguage: 'spa',
+        preferDefaultAudioTrack: false,
+        preferAudioDescription: false,
+        lastExplicitAudioIndex: 0,
+      );
+      expect(index, 0);
+    });
+
+    test('remembered index outside the matched language is ignored', () {
+      final index = computeEffectiveAudioIndex(
+        audioStreams: rememberedStreams,
+        preferredAudioLanguage: 'jpn',
+        fallbackAudioLanguage: 'spa',
+        preferDefaultAudioTrack: false,
+        preferAudioDescription: false,
+        lastExplicitAudioIndex: 2,
+      );
+      expect(index, 1); // surround jpn, not the spa track
+    });
+
+    test('remembered title matches trimmed and case-insensitive when the index moved', () {
+      final index = computeEffectiveAudioIndex(
+        audioStreams: rememberedStreams,
+        preferredAudioLanguage: 'jpn',
+        fallbackAudioLanguage: 'spa',
+        preferDefaultAudioTrack: false,
+        preferAudioDescription: false,
+        lastExplicitAudioIndex: 5,
+        lastExplicitAudioTitle: ' STEREO ',
+      );
+      expect(index, 0);
+    });
   });
 
   group('isAudioDescriptionAudioStream', () {

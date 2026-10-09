@@ -668,7 +668,7 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
                     ),
                   ),
                   Text(
-                    '${server.address} • ${server.version}',
+                    '${server.displayAddress ?? server.address} • ${server.version}',
                     style: TextStyle(
                       fontSize: 13,
                       color: _loginForeground(0.5),
@@ -911,7 +911,9 @@ class _AddServerDialogState extends State<AddServerDialog> {
   List<String> get _recentServerAddresses {
     final servers = [...widget.serverRepo.servers]
       ..sort((a, b) => b.dateLastAccessed.compareTo(a.dateLastAccessed));
-    return [for (final server in servers) server.address];
+    return [
+      for (final server in servers) server.displayAddress ?? server.address,
+    ];
   }
 
   Color _dialogForeground(double alpha) {

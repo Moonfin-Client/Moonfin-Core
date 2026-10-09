@@ -38,11 +38,39 @@ class DpadListTile extends StatelessWidget {
   /// want edge-to-edge highlights pass a tighter EdgeInsets.
   final EdgeInsetsGeometry? outerPadding;
 
-  /// Applies the shared bordered settings icon treatment on TV. Non-TV
-  /// platforms always retain the native [ListTile] leading widget.
+  /// Draws the row as a settings tile, with the bordered icon shell, on every
+  /// platform so it matches the rest of the settings screens.
   final bool useSettingsIconShell;
   final VoidCallback? onTap;
   final VoidCallback? onLongPress;
+
+  Widget _settingsTile() => TvFocusHighlight(
+    enabled: enabled,
+    outerPadding: outerPadding,
+    builder: (context, focused) => ListTile(
+      focusNode: focusNode,
+      autofocus: autofocus,
+      enabled: enabled,
+      focusColor: Colors.transparent,
+      hoverColor: Colors.transparent,
+      leading: leading != null && useSettingsIconShell
+          ? buildSettingsLeadingIconShell(
+              context,
+              icon: leading!,
+              focused: focused,
+              iconColor: focused && settingsTileInvertsOnFocus
+                  ? AppColors.black.withValues(alpha: 0.54)
+                  : AppColorScheme.onSurface.withValues(alpha: 0.78),
+            )
+          : leading,
+      title: title,
+      subtitle: subtitle,
+      trailing: trailing,
+      contentPadding: contentPadding,
+      onTap: enabled ? onTap : null,
+      onLongPress: enabled ? onLongPress : null,
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -57,35 +85,11 @@ class DpadListTile extends StatelessWidget {
           if (event is KeyDownEvent) onTap!();
           return KeyEventResult.handled;
         },
-        child: TvFocusHighlight(
-          enabled: enabled,
-          outerPadding: outerPadding,
-          builder: (context, focused) => ListTile(
-            focusNode: focusNode,
-            autofocus: autofocus,
-            enabled: enabled,
-            focusColor: Colors.transparent,
-            hoverColor: Colors.transparent,
-            leading: leading != null && useSettingsIconShell
-                ? buildSettingsLeadingIconShell(
-                    context,
-                    icon: leading!,
-                    focused: focused,
-                    iconColor: focused && settingsTileInvertsOnFocus
-                        ? AppColors.black.withValues(alpha: 0.54)
-                        : AppColorScheme.onSurface.withValues(alpha: 0.78),
-                  )
-                : leading,
-            title: title,
-            subtitle: subtitle,
-            trailing: trailing,
-            contentPadding: contentPadding,
-            onTap: enabled ? onTap : null,
-            onLongPress: enabled ? onLongPress : null,
-          ),
-        ),
+        child: _settingsTile(),
       );
     }
+
+    if (useSettingsIconShell) return _settingsTile();
 
     return ListTile(
       enabled: enabled,
@@ -123,11 +127,37 @@ class DpadSwitchListTile extends StatelessWidget {
   final Widget title;
   final Widget? subtitle;
 
-  /// Applies the shared bordered settings icon treatment on TV. Non-TV
-  /// platforms always retain the native [SwitchListTile] secondary widget.
+  /// Draws the row as a settings tile, with the bordered icon shell, on every
+  /// platform so it matches the rest of the settings screens.
   final bool useSettingsIconShell;
   final bool value;
   final ValueChanged<bool>? onChanged;
+
+  Widget _settingsTile(bool canToggle) => TvFocusHighlight(
+    enabled: enabled,
+    builder: (context, focused) {
+      final resolvedSecondary = secondary != null && useSettingsIconShell
+          ? buildSettingsLeadingIconShell(
+              context,
+              icon: secondary!,
+              focused: focused,
+              iconColor: focused && settingsTileInvertsOnFocus
+                  ? AppColors.black.withValues(alpha: 0.54)
+                  : (Theme.of(context).iconTheme.color ??
+                        AppColorScheme.onSurface),
+            )
+          : secondary;
+      return SwitchListTile.adaptive(
+        focusNode: focusNode,
+        autofocus: autofocus,
+        secondary: resolvedSecondary,
+        title: title,
+        subtitle: subtitle,
+        value: value,
+        onChanged: canToggle ? onChanged : null,
+      );
+    },
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -143,33 +173,11 @@ class DpadSwitchListTile extends StatelessWidget {
           if (event is KeyDownEvent) onChanged!(!value);
           return KeyEventResult.handled;
         },
-        child: TvFocusHighlight(
-          enabled: enabled,
-          builder: (context, focused) {
-            final resolvedSecondary = secondary != null && useSettingsIconShell
-                ? buildSettingsLeadingIconShell(
-                    context,
-                    icon: secondary!,
-                    focused: focused,
-                    iconColor: focused && settingsTileInvertsOnFocus
-                        ? AppColors.black.withValues(alpha: 0.54)
-                        : (Theme.of(context).iconTheme.color ??
-                              AppColorScheme.onSurface),
-                  )
-                : secondary;
-            return SwitchListTile.adaptive(
-              focusNode: focusNode,
-              autofocus: autofocus,
-              secondary: resolvedSecondary,
-              title: title,
-              subtitle: subtitle,
-              value: value,
-              onChanged: canToggle ? onChanged : null,
-            );
-          },
-        ),
+        child: _settingsTile(canToggle),
       );
     }
+
+    if (useSettingsIconShell) return _settingsTile(canToggle);
 
     return SwitchListTile.adaptive(
       secondary: secondary,

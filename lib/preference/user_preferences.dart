@@ -351,6 +351,14 @@ class UserPreferences extends ChangeNotifier {
     // the device is too full to keep downloading.
     'auto_download_last_run',
     'auto_download_storage_notice_shown',
+    // Per account but never synced: smart downloads follows that account's
+    // watch history, so its switch, its number and the markers the checks
+    // keep against that history belong to it.
+    'smart_downloads_enabled',
+    'smart_downloads_keep_ready',
+    'smart_downloads_enabled_at',
+    'smart_downloads_played_since',
+    'smart_downloads_applied_keep_ready',
     // Newly synced settings. Anything that goes to the server profile has to be stored
     // per server and user, or one server's value is read back on the next.
     'all_genres_image_type',
@@ -547,6 +555,8 @@ class UserPreferences extends ChangeNotifier {
     'subtitles_use_embedded_styles',
     'subtitles_use_embedded_font_sizes',
     'prefer_sdh_subtitles',
+    'prefer_text_subtitles',
+    'prefer_external_subtitles',
     'app_theme_id',
     'pref_custom_theme_id',
     'pref_glass_quality',
@@ -2077,12 +2087,21 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: false,
   );
 
-  /// One-shot encoded-letterbox crop. libmpv on Linux/Windows; Media3
-  /// (and libmpv if selected) on Android phone and TV. Hidden on iOS,
-  /// macOS, web, and tvOS.
+  /// One-shot encoded-letterbox crop at start. libmpv on Linux/Windows;
+  /// Media3 (and libmpv if selected) on Android phone and TV. Hidden on
+  /// iOS, macOS, web, and tvOS. [cropBlackBarsIntervalSeconds] keeps scanning.
   static final cropBlackBars = Preference(
     key: 'crop_black_bars',
     defaultValue: false,
+  );
+
+  /// Seconds between recrops while [cropBlackBars] is on. `0` is once at
+  /// start. `1` / `5` / `10` keep scanning where playback can afford it.
+  /// 4K software/copy-back decode and decoder-mode switches use one scan to
+  /// avoid frame drops. Repeated scans also stop if they begin dropping frames.
+  static final cropBlackBarsIntervalSeconds = Preference<int>(
+    key: 'crop_black_bars_interval_seconds',
+    defaultValue: 0,
   );
 
   static final desktopScrollWheelAction = EnumPreference(
@@ -2426,6 +2445,16 @@ class UserPreferences extends ChangeNotifier {
 
   static final preferSdhSubtitles = Preference(
     key: 'prefer_sdh_subtitles',
+    defaultValue: false,
+  );
+
+  static final preferTextSubtitles = Preference(
+    key: 'prefer_text_subtitles',
+    defaultValue: false,
+  );
+
+  static final preferExternalSubtitles = Preference(
+    key: 'prefer_external_subtitles',
     defaultValue: false,
   );
 
@@ -2891,6 +2920,27 @@ class UserPreferences extends ChangeNotifier {
     key: 'tmdb_trending_all_weekly_enabled',
     defaultValue: false,
   );
+
+  /// Every TMDB home section, against the preference that turns it on.
+  static final Map<HomeSectionType, Preference<bool>> tmdbSectionEnabled = {
+    HomeSectionType.tmdbPopularMovies: tmdbPopularMoviesEnabled,
+    HomeSectionType.tmdbTopRatedMovies: tmdbTopRatedMoviesEnabled,
+    HomeSectionType.tmdbNowPlayingMovies: tmdbNowPlayingMoviesEnabled,
+    HomeSectionType.tmdbUpcomingMovies: tmdbUpcomingMoviesEnabled,
+    HomeSectionType.tmdbPopularTv: tmdbPopularTvEnabled,
+    HomeSectionType.tmdbTopRatedTv: tmdbTopRatedTvEnabled,
+    HomeSectionType.tmdbAiringTodayTv: tmdbAiringTodayTvEnabled,
+    HomeSectionType.tmdbOnTheAirTv: tmdbOnTheAirTvEnabled,
+    HomeSectionType.tmdbTrendingMovieDaily: tmdbTrendingMovieDailyEnabled,
+    HomeSectionType.tmdbTrendingMovieWeekly: tmdbTrendingMovieWeeklyEnabled,
+    HomeSectionType.tmdbTrendingTvDaily: tmdbTrendingTvDailyEnabled,
+    HomeSectionType.tmdbTrendingTvWeekly: tmdbTrendingTvWeeklyEnabled,
+    HomeSectionType.tmdbTrendingAllWeekly: tmdbTrendingAllWeeklyEnabled,
+  };
+
+  /// Whether [type] is one of the TMDB sections.
+  static bool isTmdbSectionType(HomeSectionType type) =>
+      tmdbSectionEnabled.containsKey(type);
 
   static final enableRadarrCalendar = Preference(
     key: 'enable_radarr_calendar',
@@ -3414,6 +3464,44 @@ class UserPreferences extends ChangeNotifier {
   static final autoDownloadEnabled = Preference(
     key: 'auto_download_enabled',
     defaultValue: true,
+  );
+
+  /// Smart downloads: finishing an episode of a series, streamed or
+  /// downloaded, downloads the next ones, and a downloaded episode is
+  /// deleted once watched.
+  static final smartDownloadsEnabled = Preference(
+    key: 'smart_downloads_enabled',
+    defaultValue: false,
+  );
+
+  /// How many unwatched episodes smart downloads keeps downloaded after the
+  /// furthest one watched.
+  static final smartDownloadsKeepReady = Preference(
+    key: 'smart_downloads_keep_ready',
+    defaultValue: 1,
+  );
+
+  /// ISO time smart downloads was turned on; only watches after it count,
+  /// so turning it on doesn't act on the whole watch history. Empty while
+  /// off. Written by AutoDownloadService.
+  static final smartDownloadsEnabledAt = Preference(
+    key: 'smart_downloads_enabled_at',
+    defaultValue: '',
+  );
+
+  /// ISO time of the latest finished episode a check has acted on, so each
+  /// one tops its series up once. Written by AutoDownloadService.
+  static final smartDownloadsPlayedSince = Preference(
+    key: 'smart_downloads_played_since',
+    defaultValue: '',
+  );
+
+  /// The episodes to keep ready the last check filled series up to, so
+  /// raising it tops up the series being watched without waiting for their
+  /// next watch. 0 while off, read as 1. Written by AutoDownloadService.
+  static final smartDownloadsAppliedKeepReady = Preference(
+    key: 'smart_downloads_applied_keep_ready',
+    defaultValue: 0,
   );
 
   /// How many unwatched episodes a subscription keeps downloaded or in

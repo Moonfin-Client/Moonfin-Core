@@ -32,7 +32,7 @@ class SubtitleSettingsScreen extends StatelessWidget {
     return withCleanSettingsTypography(
       context,
       Scaffold(
-        appBar: buildSettingsAppBar(context, Text(l10n.subtitlePreferences)),
+        appBar: buildSettingsAppBar(context, Text(l10n.subtitles)),
         body: ListenableBuilder(
           listenable: prefs,
           builder: (context, _) {
@@ -100,6 +100,18 @@ class SubtitleSettingsScreen extends StatelessWidget {
                         title: l10n.preferSdhSubtitles,
                         subtitle: l10n.preferSdhSubtitlesSubtitle,
                         icon: Icons.hearing,
+                      ),
+                      SwitchPreferenceTile(
+                        preference: UserPreferences.preferTextSubtitles,
+                        title: l10n.preferTextSubtitles,
+                        subtitle: l10n.preferTextSubtitlesSubtitle,
+                        icon: Icons.subtitles,
+                      ),
+                      SwitchPreferenceTile(
+                        preference: UserPreferences.preferExternalSubtitles,
+                        title: l10n.preferExternalSubtitles,
+                        subtitle: l10n.preferExternalSubtitlesSubtitle,
+                        icon: Icons.file_download,
                       ),
                     ],
                   ),
