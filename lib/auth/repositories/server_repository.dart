@@ -36,21 +36,17 @@ class ServerRepository {
     final seenEndpoints = <String, String>{};
 
     for (final server in stored) {
-      final normalizedConnectionAddress = normalizeServerBaseUrl(
-        server.connectionAddress,
-      );
+      final normalizedAddress = normalizeServerBaseUrl(server.address);
       final normalizedServer =
-          normalizedConnectionAddress != server.connectionAddress &&
-              normalizedConnectionAddress.isNotEmpty
-          ? server.copyWith(connectionAddress: normalizedConnectionAddress)
+          normalizedAddress != server.address && normalizedAddress.isNotEmpty
+          ? server.copyWith(address: normalizedAddress)
           : server;
 
-      if (normalizedConnectionAddress != server.connectionAddress &&
-          normalizedConnectionAddress.isNotEmpty) {
+      if (normalizedAddress != server.address && normalizedAddress.isNotEmpty) {
         await _authStore.putServer(normalizedServer);
       }
 
-      final endpointKey = _endpointIdentity(normalizedServer.connectionAddress);
+      final endpointKey = _endpointIdentity(normalizedServer.address);
       final existingServerId = seenEndpoints[endpointKey];
       if (existingServerId != null && existingServerId != normalizedServer.id) {
         await _authStore.removeServer(normalizedServer.id);
@@ -68,8 +64,8 @@ class ServerRepository {
   }
 
   Future<Server?> addServer(String address) async {
-    final enteredAddress = address.trim();
-    address = normalizeServerBaseUrl(enteredAddress);
+    final enteredAddress = address;
+    address = normalizeServerBaseUrl(address.trim());
     if (address.isEmpty) {
       return null;
     }
@@ -87,23 +83,22 @@ class ServerRepository {
       try {
         final (info, serverType, resolvedUrl) = await _probeServer(candidate);
         final serverAddress = resolvedUrl.isNotEmpty ? resolvedUrl : candidate;
-        final displayAddress = serverDisplayAddress(
-          enteredAddress: enteredAddress,
-          resolvedAddress: serverAddress,
-        );
 
         final existingIndex = _servers.indexWhere(
           (s) =>
-              s.connectionAddress == serverAddress ||
-              _endpointIdentity(s.connectionAddress) ==
-                  _endpointIdentity(serverAddress),
+              s.address == serverAddress ||
+              _endpointIdentity(s.address) == _endpointIdentity(serverAddress),
         );
         if (existingIndex >= 0) {
           final existing = _servers[existingIndex];
+          final displayAddress = serverDisplayAddress(
+            enteredAddress: enteredAddress,
+            resolvedAddress: existing.address,
+          );
           final updated = existing.copyWith(
             name: info['ServerName'] as String? ?? existing.name,
-            address: displayAddress,
-            connectionAddress: serverAddress,
+            displayAddress: displayAddress,
+            clearDisplayAddress: displayAddress == null,
             version: info['Version'] as String? ?? existing.version,
             serverType: serverType,
             dateLastAccessed: DateTime.now(),
@@ -116,11 +111,15 @@ class ServerRepository {
           return updated;
         }
 
+        final displayAddress = serverDisplayAddress(
+          enteredAddress: enteredAddress,
+          resolvedAddress: serverAddress,
+        );
         final server = Server(
           id: const Uuid().v4(),
-          name: info['ServerName'] as String? ?? displayAddress,
-          address: displayAddress,
-          connectionAddress: serverAddress,
+          name: info['ServerName'] as String? ?? displayAddress ?? address,
+          address: serverAddress,
+          displayAddress: displayAddress,
           version: info['Version'] as String? ?? '',
           serverType: serverType,
           loginDisclaimer: info['LoginDisclaimer'] as String?,
@@ -192,9 +191,7 @@ class ServerRepository {
     try {
       final result = await probeServerPublicInfo(dio, baseUrl);
       if (result == null) {
-        throw const FormatException(
-          'No Jellyfin or Emby server at this address',
-        );
+        throw const FormatException('No Jellyfin or Emby server at this address');
       }
       return (
         result.info,

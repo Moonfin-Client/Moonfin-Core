@@ -19,7 +19,7 @@ class ServerUserRepository {
   Future<List<PublicUser>> getPublicServerUsers(Server server) async {
     final dio = Dio(
       BaseOptions(
-        baseUrl: server.connectionAddress,
+        baseUrl: server.address,
         connectTimeout: const Duration(seconds: 10),
         receiveTimeout: const Duration(seconds: 15),
       ),

@@ -4,7 +4,11 @@ class Server {
   final String id;
   final String name;
   final String address;
-  final String connectionAddress;
+
+  /// [address] with the host in the Unicode spelling the user typed, or null
+  /// when they didn't type one. Only for display, since requests always go
+  /// to [address].
+  final String? displayAddress;
   final String version;
   final ServerType serverType;
   final String? loginDisclaimer;
@@ -17,7 +21,7 @@ class Server {
     required this.id,
     required this.name,
     required this.address,
-    String? connectionAddress,
+    this.displayAddress,
     required this.version,
     required this.serverType,
     this.loginDisclaimer,
@@ -25,13 +29,13 @@ class Server {
     this.setupCompleted = true,
     required this.dateAdded,
     DateTime? dateLastAccessed,
-  }) : connectionAddress = connectionAddress ?? address,
-       dateLastAccessed = dateLastAccessed ?? dateAdded;
+  }) : dateLastAccessed = dateLastAccessed ?? dateAdded;
 
   Server copyWith({
     String? name,
     String? address,
-    String? connectionAddress,
+    String? displayAddress,
+    bool clearDisplayAddress = false,
     String? version,
     ServerType? serverType,
     String? loginDisclaimer,
@@ -43,7 +47,9 @@ class Server {
       id: id,
       name: name ?? this.name,
       address: address ?? this.address,
-      connectionAddress: connectionAddress ?? this.connectionAddress,
+      displayAddress: clearDisplayAddress
+          ? null
+          : displayAddress ?? this.displayAddress,
       version: version ?? this.version,
       serverType: serverType ?? this.serverType,
       loginDisclaimer: loginDisclaimer ?? this.loginDisclaimer,
@@ -55,25 +61,24 @@ class Server {
   }
 
   Map<String, dynamic> toJson() => {
-    'name': name,
-    'address': address,
-    'connectionAddress': connectionAddress,
-    'version': version,
-    'serverType': serverType.name,
-    'loginDisclaimer': loginDisclaimer,
-    'splashscreenEnabled': splashscreenEnabled,
-    'setupCompleted': setupCompleted,
-    'dateAdded': dateAdded.toIso8601String(),
-    'dateLastAccessed': dateLastAccessed.toIso8601String(),
-  };
+        'name': name,
+        'address': address,
+        'displayAddress': displayAddress,
+        'version': version,
+        'serverType': serverType.name,
+        'loginDisclaimer': loginDisclaimer,
+        'splashscreenEnabled': splashscreenEnabled,
+        'setupCompleted': setupCompleted,
+        'dateAdded': dateAdded.toIso8601String(),
+        'dateLastAccessed': dateLastAccessed.toIso8601String(),
+      };
 
   factory Server.fromJson(String id, Map<String, dynamic> json) {
-    final address = json['address'] as String? ?? '';
     return Server(
       id: id,
       name: json['name'] as String? ?? '',
-      address: address,
-      connectionAddress: json['connectionAddress'] as String? ?? address,
+      address: json['address'] as String? ?? '',
+      displayAddress: json['displayAddress'] as String?,
       version: json['version'] as String? ?? '',
       serverType: ServerType.values.firstWhere(
         (t) => t.name == json['serverType'],
@@ -82,12 +87,10 @@ class Server {
       loginDisclaimer: json['loginDisclaimer'] as String?,
       splashscreenEnabled: json['splashscreenEnabled'] as bool? ?? false,
       setupCompleted: json['setupCompleted'] as bool? ?? true,
-      dateAdded:
-          DateTime.tryParse(json['dateAdded'] as String? ?? '') ??
+      dateAdded: DateTime.tryParse(json['dateAdded'] as String? ?? '') ??
           DateTime.now(),
-      dateLastAccessed: DateTime.tryParse(
-        json['dateLastAccessed'] as String? ?? '',
-      ),
+      dateLastAccessed:
+          DateTime.tryParse(json['dateLastAccessed'] as String? ?? ''),
     );
   }
 }

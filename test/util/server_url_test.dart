@@ -72,6 +72,9 @@ void main() {
       );
     });
 
+    // Punycode is what the user sees as well as what we store. This one
+    // decodes to a Cyrillic lookalike of apple.com, and the address sits on
+    // the screen where someone picks which server to sign in to.
     test('leaves a Punycode hostname encoded', () {
       expect(
         normalizeServerBaseUrl('https://xn--80ak6aa92e.com'),
@@ -170,7 +173,7 @@ void main() {
           enteredAddress: 'https://xn--80ak6aa92e.com',
           resolvedAddress: 'https://xn--80ak6aa92e.com',
         ),
-        'https://xn--80ak6aa92e.com',
+        isNull,
       );
     });
 
@@ -180,7 +183,24 @@ void main() {
           enteredAddress: 'https://bücher.de',
           resolvedAddress: 'https://example.com',
         ),
-        'https://example.com',
+        isNull,
+      );
+    });
+
+    test('has nothing to keep for a plain ASCII address', () {
+      expect(
+        serverDisplayAddress(
+          enteredAddress: '192.168.1.5:8096',
+          resolvedAddress: 'http://192.168.1.5:8096',
+        ),
+        isNull,
+      );
+      expect(
+        serverDisplayAddress(
+          enteredAddress: 'media.example.com',
+          resolvedAddress: 'https://media.example.com',
+        ),
+        isNull,
       );
     });
   });
