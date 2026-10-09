@@ -8,6 +8,7 @@ Widget _caption({
   bool marqueeTitle = false,
   double textScale = 1,
   String requester = 'Axel Whitfield-Mortensen',
+  bool split = true,
 }) {
   return MaterialApp(
     home: MediaQuery(
@@ -21,6 +22,7 @@ Widget _caption({
               requestedByLine: 'Requested by $requester',
               requestedByLabel: 'Requested by',
               requester: requester,
+              splitRequester: split,
               date: '26 August 2026',
               scale: 1,
               status: const SizedBox.shrink(),
@@ -37,17 +39,31 @@ void main() {
   // The grid reserves a fixed height for the caption before layout. Adding a
   // line to the caption without raising the reservation clips the poster on
   // every tile, and nothing else would notice.
-  testWidgets('the caption fits the height the grid reserves', (tester) async {
-    // The widest a tile can ever be.
-    await tester.pumpWidget(_caption(width: 220));
-    await tester.pumpAndSettle();
+  for (final (name, requester, split) in [
+    ('a short requester', 'Al', false),
+    ('a long requester', 'Axel Whitfield-Mortensen', true),
+  ]) {
+    testWidgets('$name fits the height the grid reserves', (tester) async {
+      // The widest a tile can ever be.
+      await tester.pumpWidget(
+        _caption(width: 220, requester: requester, split: split),
+      );
+      await tester.pumpAndSettle();
 
-    final height = tester.getSize(find.byType(SeerrRequestTileCaption)).height;
-    expect(height, lessThanOrEqualTo(SeerrRequestTileCaption.reservedHeight));
-    // And not far under it, or the reservation has drifted above what the
-    // caption draws and every tile carries dead space.
-    expect(height, greaterThan(SeerrRequestTileCaption.reservedHeight - 16));
-  });
+      final reserved = SeerrRequestTileCaption.heightFor(
+        1,
+        TextScaler.noScaling,
+        splitRequester: split,
+      );
+      final height = tester
+          .getSize(find.byType(SeerrRequestTileCaption))
+          .height;
+      expect(height, lessThanOrEqualTo(reserved));
+      // And not far under it, or the reservation has drifted above what the
+      // caption draws and every tile carries dead space.
+      expect(height, greaterThan(reserved - 16));
+    });
+  }
 
   testWidgets('the reservation grows with the system text size', (
     tester,
@@ -59,18 +75,44 @@ void main() {
     expect(
       height,
       lessThanOrEqualTo(
-        SeerrRequestTileCaption.heightFor(1, const TextScaler.linear(1.5)),
+        SeerrRequestTileCaption.heightFor(
+          1,
+          const TextScaler.linear(1.5),
+          splitRequester: true,
+        ),
       ),
     );
   });
 
   testWidgets('a short requester stays on the label line', (tester) async {
     // The test font draws every glyph a full em wide, so keep it short.
-    await tester.pumpWidget(_caption(width: 220, requester: 'Al'));
+    await tester.pumpWidget(
+      _caption(width: 220, requester: 'Al', split: false),
+    );
     await tester.pumpAndSettle();
 
     expect(find.text('Requested by Al'), findsOneWidget);
     expect(find.text('Requested by'), findsNothing);
+  });
+
+  // The grid's call for all tiles. It measures from outside the card, so it
+  // has to match what the caption draws or a tile keeps a blank line.
+  testWidgets('the grid measures the requester at the tile width', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_caption(width: 220));
+    final context = tester.element(find.byType(SeerrRequestTileCaption));
+
+    bool fits(String line, double tileWidth) =>
+        SeerrRequestTileCaption.requesterFitsTile(
+          context,
+          line,
+          tileWidth,
+          1,
+          3,
+        );
+    expect(fits('Requested by Al', 220), isTrue);
+    expect(fits('Requested by Axel Whitfield-Mortensen', 150), isFalse);
   });
 
   testWidgets('a long requester moves under its own label', (tester) async {

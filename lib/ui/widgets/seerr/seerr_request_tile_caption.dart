@@ -11,14 +11,18 @@ import '../marquee_text.dart';
 class SeerrRequestTileCaption extends StatelessWidget {
   final String title;
 
-  /// The whole "Requested by name" sentence, shown when it fits the tile.
+  /// The whole "Requested by name" sentence, shown unless [splitRequester].
   final String requestedByLine;
 
-  /// Above [requester] when [requestedByLine] does not fit, so a long name
-  /// gets the tile's full width rather than being cut out of a sentence.
+  /// Above [requester] when [splitRequester], so a long name gets the tile's
+  /// full width rather than being cut out of a sentence.
   final String requestedByLabel;
 
   final String requester;
+
+  /// Set by the grid for every tile at once, from [requesterFitsTile], so
+  /// the captions in a grid all match its reservation.
+  final bool splitRequester;
   final String date;
   final double scale;
 
@@ -35,6 +39,7 @@ class SeerrRequestTileCaption extends StatelessWidget {
     required this.requestedByLine,
     required this.requestedByLabel,
     required this.requester,
+    this.splitRequester = false,
     required this.date,
     required this.scale,
     required this.status,
@@ -44,19 +49,58 @@ class SeerrRequestTileCaption extends StatelessWidget {
   /// Height a tile reserves beyond its poster at scale 1 and system text
   /// size 100%.
   ///
-  /// Inset, title, status slot, the requester over two lines and the date,
-  /// with a few pixels over for font line heights.
-  static const double reservedHeight = 127;
+  /// Inset, title, status slot, "Requested by name" on one line and the
+  /// date, with a few pixels over for font line heights.
+  static const double reservedHeight = 113;
 
-  /// The part of [reservedHeight] that is text: the title line and three
-  /// 12px lines. It grows with the system text size, the rest does not.
-  /// Measured: the caption grows by about 71 per 1.0 of text scale.
-  static const double _textHeight = 72;
+  /// The part of [reservedHeight] that is text: the title line and two 12px
+  /// lines. It grows with the system text size, the rest does not.
+  static const double _textHeight = 60;
 
-  /// [reservedHeight] with the text part grown by [textScaler]. Without it a
-  /// TV set to a larger font cut the date off the bottom of every tile.
-  static double heightFor(double scale, TextScaler textScaler) =>
-      (reservedHeight + textScaler.scale(_textHeight) - _textHeight) * scale;
+  /// One 12px line, added when a requester has to go under its label.
+  static const double _requesterLine = 15;
+
+  /// [reservedHeight] with the text part grown by [textScaler], plus a line
+  /// when [splitRequester]. Without the text scale a TV set to a larger font
+  /// cut the date off the bottom of every tile.
+  static double heightFor(
+    double scale,
+    TextScaler textScaler, {
+    bool splitRequester = false,
+  }) =>
+      (reservedHeight +
+          textScaler.scale(_textHeight) -
+          _textHeight +
+          (splitRequester ? textScaler.scale(_requesterLine) : 0)) *
+      scale;
+
+  /// Whether [line] fits on one line of a tile [tileWidth] wide, less the
+  /// caption's side insets and the card [border] on both sides.
+  static bool requesterFitsTile(
+    BuildContext context,
+    String line,
+    double tileWidth,
+    double scale,
+    double border,
+  ) {
+    final painter = TextPainter(
+      text: TextSpan(
+        text: line,
+        // The card's Material sets bodyMedium as the default text style, and
+        // the grid asks from outside the card, so name it rather than read
+        // DefaultTextStyle here.
+        style: Theme.of(
+          context,
+        ).textTheme.bodyMedium?.merge(TextStyle(fontSize: 12 * scale)),
+      ),
+      textDirection: Directionality.of(context),
+      textScaler: MediaQuery.textScalerOf(context),
+      maxLines: 1,
+    )..layout(maxWidth: tileWidth - 20 * scale - border * 2);
+    final fits = !painter.didExceedMaxLines;
+    painter.dispose();
+    return fits;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -111,35 +155,16 @@ class SeerrRequestTileCaption extends StatelessWidget {
             ),
           ),
           SizedBox(height: 4 * scale),
-          // One line when the sentence fits. The tile still reserves two, so
-          // a short name leaves a line free under the date.
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final painter = TextPainter(
-                text: TextSpan(text: requestedByLine, style: subtleStyle),
-                textDirection: Directionality.of(context),
-                textScaler: textScaler,
-                maxLines: 1,
-              )..layout(maxWidth: constraints.maxWidth);
-              final fits = !painter.didExceedMaxLines;
-              painter.dispose();
-              final lines = fits
-                  ? [requestedByLine]
-                  : [requestedByLabel, requester];
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  for (final line in lines)
-                    Text(
-                      line,
-                      style: subtleStyle,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                ],
-              );
-            },
-          ),
+          for (final line
+              in splitRequester
+                  ? [requestedByLabel, requester]
+                  : [requestedByLine])
+            Text(
+              line,
+              style: subtleStyle,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
           if (date.isNotEmpty)
             Text(
               date,

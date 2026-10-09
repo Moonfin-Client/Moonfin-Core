@@ -364,6 +364,10 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
   ({int perLine, double lineExtent, double lineSpacing, double leadingPad})?
   _tileGeometry;
 
+  /// Whether the tiles put the requester under its label, from the last
+  /// tile-grid layout.
+  bool _splitRequester = false;
+
   /// Slide the grid so the focused tile's row starts at the top. Runs after
   /// the frame so it settles after the focus system has scrolled.
   void _snapToTileRow(int index) {
@@ -432,6 +436,7 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
           onDecline: () => vm.declineRequest(req.id),
           onRetry: () => vm.retryRequest(req.id),
           onFocusGained: () => _snapToTileRow(index),
+          splitRequester: _splitRequester,
         ),
       );
     }
@@ -458,6 +463,12 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
                 constraints.maxWidth - _leftInset - 16,
                 12,
                 viewportHeight: constraints.maxHeight,
+                requesterLines: [
+                  for (final r in s.requests)
+                    l10n.requestedByName(
+                      r.requestedBy?.bestName ?? l10n.unknown,
+                    ),
+                ],
               ),
               itemCount: s.requests.length + (s.hasMore ? 1 : 0),
               itemBuilder: (context, index) => index >= s.requests.length
@@ -636,18 +647,40 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
     double available,
     double topPad, {
     required double viewportHeight,
+    List<String> requesterLines = const [],
   }) {
     final extent = (PlatformDetection.isTV ? 150.0 : 220.0) * scale;
     final spacing = 16 * scale;
     final rowSpacing = 24 * scale;
-    final caption = SeerrRequestTileCaption.heightFor(
-      scale,
-      MediaQuery.textScalerOf(context),
-    );
+    final textScaler = MediaQuery.textScalerOf(context);
+    final borders = ThemeRegistry.active.borders;
+    // The focus border can be the wider one, and it narrows the caption.
+    final border = math.max(borders.cardBorder.width, borders.focusBorder.width);
     double widthFor(int columns) =>
         (available - spacing * (columns - 1)) / columns;
-    double heightFor(int columns) =>
-        widthFor(columns) * 1.5 + caption + _tileFocusInset * 2;
+    // Any name too long for one line puts every tile's requester under its
+    // label. Decided here once and handed to the tiles, so the reservation
+    // and what the captions draw can never disagree.
+    bool splitFor(int columns) => requesterLines.any(
+      (line) => !SeerrRequestTileCaption.requesterFitsTile(
+        context,
+        line,
+        widthFor(columns),
+        scale,
+        border,
+      ),
+    );
+    double heightFor(int columns) {
+      final width = widthFor(columns);
+      final split = splitFor(columns);
+      return width * 1.5 +
+          SeerrRequestTileCaption.heightFor(
+            scale,
+            textScaler,
+            splitRequester: split,
+          ) +
+          _tileFocusInset * 2;
+    }
     var columns = math.max(
       1,
       ((available + spacing) / (extent + spacing)).ceil(),
@@ -660,8 +693,9 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
     }
     final tileWidth = widthFor(columns);
     final tileHeight = heightFor(columns);
-    // Written during build on purpose. It is a plain field the row snap reads
-    // after the frame, not state the widget rebuilds from.
+    // Written during build on purpose. The row snap reads them after the
+    // frame and the tiles while the grid lays them out, after this runs.
+    _splitRequester = splitFor(columns);
     _tileGeometry = (
       perLine: columns,
       lineExtent: tileHeight,
@@ -1255,7 +1289,10 @@ class _CardActionFocus extends StatelessWidget {
     if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
       return KeyEventResult.ignored;
     }
-    final actions = actionFocuses.where((n) => n.context != null).toList();
+    // A node keeps its context after its button is gone, so check mounted.
+    final actions = actionFocuses
+        .where((n) => n.context?.mounted ?? false)
+        .toList();
     if (actions.isEmpty) return KeyEventResult.ignored;
     final actionIndex = actions.indexWhere((n) => n.hasFocus);
 
@@ -1409,6 +1446,9 @@ class _RequestCard extends StatefulWidget {
   /// whole-row offset instead of leaving the next one half cut.
   final VoidCallback? onFocusGained;
 
+  /// The grid's call for every tile: requester under its label or beside it.
+  final bool splitRequester;
+
   const _RequestCard({
     required this.request,
     this.summary,
@@ -1419,6 +1459,7 @@ class _RequestCard extends StatefulWidget {
     this.onDecline,
     this.onRetry,
     this.onFocusGained,
+    this.splitRequester = false,
   });
 
   @override
@@ -1581,6 +1622,7 @@ class _RequestCardState extends State<_RequestCard> with FocusStateMixin {
           requestedByLine: l10n.requestedByName(requester),
           requestedByLabel: l10n.requestedByLabel,
           requester: requester,
+          splitRequester: widget.splitRequester,
           date: date,
           scale: scale,
           marqueeTitle: showFocusBorder,
