@@ -2874,7 +2874,16 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       final l10n = AppLocalizations.of(context);
       final textTheme = theme.textTheme;
 
-      final String path = targetItem.rawData['Path'] ?? '';
+      final String path = <Object?>[
+          targetItem.rawData['Path'],
+          targetItem.rawData['FileName'],
+          targetItem.rawData['FilePath'],
+          targetItem.rawData['Name'],
+          targetItem.name,
+      ].whereType<String>().firstWhere(
+          (value) => value.trim().isNotEmpty,
+          orElse: () => '',
+      );
       final String fileName = path.split('/').last.split('\\').last;
       final String container = fileName.split('.').last.toUpperCase() ?? 'Unknown';
       // Sent as UTC, so an evening west of UTC would otherwise read as tomorrow.
@@ -2886,7 +2895,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
             ).format(addedOn);
 
       return Focus(
-        canRequestFocus: false,
+        canRequestFocus: true,
         onFocusChange: (focused) {
           if (focused && mounted) {
             widget.onToggleNavbar?.call(false);

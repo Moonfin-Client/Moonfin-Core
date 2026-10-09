@@ -1227,7 +1227,16 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
         activeAudioIndex: activeAudioIndex,
       );
     } else if (item.type == 'Book') {
-      final String path = item.rawData['Path'] ?? '';
+      final String path = <Object?>[
+        targetItem.rawData['Path'],
+        targetItem.rawData['FileName'],
+        targetItem.rawData['FilePath'],
+        targetItem.rawData['Name'],
+        targetItem.name,
+      ].whereType<String>().firstWhere(
+        (value) => value.trim().isNotEmpty,
+        orElse: () => '',
+      );
       fileName = path.split('/').last.split('\\').last;
       container = fileName.split('.').last.toUpperCase() ?? 'Unknown';
     }
@@ -1413,6 +1422,7 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
                                 fileName: fileName,
                                 formattedSize: formattedSize,
                                 container: container,
+                                includePlaybackCapability: mediaSource != null,
                                 videoDetails: videoDetails,
                                 audioStreams: audioStreams,
                                 subtitleStreams: subtitleStreams,
@@ -1426,6 +1436,7 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
                                 fileName: fileName,
                                 formattedSize: formattedSize,
                                 container: container,
+                                includePlaybackCapability: mediaSource != null,
                                 videoDetails: videoDetails,
                                 audioStreams: audioStreams,
                                 subtitleStreams: subtitleStreams,
@@ -1600,6 +1611,7 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
     required String fileName,
     required String formattedSize,
     required String container,
+    required bool includePlaybackCapability,
     required List<String> videoDetails,
     required List<Map<String, dynamic>> audioStreams,
     required List<Map<String, dynamic>> subtitleStreams,
@@ -1622,12 +1634,12 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
               fileName: fileName,
               formattedSize: formattedSize,
               container: container,
-              includePlaybackCapability: true,
+              includePlaybackCapability: includePlaybackCapability,
             ),
           ),
         ),
 
-        if (videoDetails.isNotEmpty) ...[
+        if (videoDetails.isNotEmpty && includePlaybackCapability) ...[
           _columnDivider(),
 
           Expanded(
@@ -1640,7 +1652,7 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
           ),
         ],
 
-        if (audioStreams.isNotEmpty) ...[
+        if (audioStreams.isNotEmpty && includePlaybackCapability) ...[
           _columnDivider(),
 
           Expanded(
@@ -1659,7 +1671,7 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
           ),
         ],
 
-        if (subtitleStreams.isNotEmpty) ...[
+        if (subtitleStreams.isNotEmpty && includePlaybackCapability) ...[
           _columnDivider(),
 
           Expanded(
@@ -1686,6 +1698,7 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
     required String fileName,
     required String formattedSize,
     required String container,
+    required bool includePlaybackCapability,
     required List<String> videoDetails,
     required List<Map<String, dynamic>> audioStreams,
     required List<Map<String, dynamic>> subtitleStreams,
@@ -1704,18 +1717,18 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
           fileName: fileName,
           formattedSize: formattedSize,
           container: container,
-          includePlaybackCapability: true,
+          includePlaybackCapability: includePlaybackCapability,
         ),
       ),
 
-      if (videoDetails.isNotEmpty)
+      if (videoDetails.isNotEmpty && includePlaybackCapability)
         _buildGroup(
           context,
           title: l10n.video,
           child: _buildVideoContent(context, videoDetails),
         ),
 
-      if (audioStreams.isNotEmpty)
+      if (audioStreams.isNotEmpty && includePlaybackCapability)
         _buildGroup(
           context,
           title: l10n.audio,
@@ -1728,7 +1741,7 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
           ),
         ),
 
-      if (subtitleStreams.isNotEmpty)
+      if (subtitleStreams.isNotEmpty && includePlaybackCapability)
         _buildGroup(
           context,
           title: l10n.subtitles,
