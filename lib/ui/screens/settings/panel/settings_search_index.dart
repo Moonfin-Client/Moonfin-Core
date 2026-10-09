@@ -1539,6 +1539,10 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
     ]),
     subtitles.leaf('pref_subtitle_language', l10n.defaultSubtitleLanguage),
     subtitles.leaf(
+      'pref_secondary_subtitle_language',
+      l10n.preferredSecondarySubtitleLanguage,
+    ),
+    subtitles.leaf(
       'pref_fallback_subtitle_language',
       l10n.fallbackSubtitleLanguage,
     ),

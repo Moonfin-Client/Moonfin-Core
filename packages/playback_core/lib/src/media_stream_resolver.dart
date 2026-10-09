@@ -83,7 +83,9 @@ abstract class MediaStreamResolver {
     required bool isManagedLiveStream,
     required String? path,
   }) {
-    if (!enableDirectPlay || isWebPlatform || !isManagedLiveStream) return false;
+    if (!enableDirectPlay || isWebPlatform || !isManagedLiveStream) {
+      return false;
+    }
     return path != null &&
         (path.startsWith('http://') || path.startsWith('https://'));
   }
@@ -228,21 +230,49 @@ abstract class MediaStreamResolver {
 
   static List<ExternalSubtitle> extractExternalSubtitles(
     List<Map<String, dynamic>> mediaStreams,
-    String baseUrl,
-  ) {
+    String baseUrl, {
+    String? itemId,
+    String? mediaSourceId,
+  }) {
     final subs = <ExternalSubtitle>[];
     for (final stream in mediaStreams) {
       if (stream['Type'] != 'Subtitle') continue;
-      final deliveryUrl = stream['DeliveryUrl'] as String?;
+      var deliveryUrl = (stream['DeliveryUrl'] as String?)?.trim();
+      final isExternal = stream['IsExternal'] == true;
+      final supportsExternal = stream['SupportsExternalStream'] == true;
+      if ((deliveryUrl == null || deliveryUrl.isEmpty) &&
+          (isExternal || supportsExternal)) {
+        final codec = (stream['Codec'] as String?)?.trim().toLowerCase();
+        final extension = switch (codec) {
+          'srt' || 'subrip' => 'srt',
+          'vtt' || 'webvtt' => 'vtt',
+          _ => null,
+        };
+        final index = stream['Index'];
+        if (extension != null &&
+            itemId != null &&
+            itemId.isNotEmpty &&
+            mediaSourceId != null &&
+            mediaSourceId.isNotEmpty &&
+            index is int) {
+          final base = Uri.parse(baseUrl.endsWith('/') ? baseUrl : '$baseUrl/');
+          deliveryUrl = base
+              .resolve(
+                'Videos/${Uri.encodeComponent(itemId)}/'
+                '${Uri.encodeComponent(mediaSourceId)}/Subtitles/$index/0/'
+                'Stream.$extension',
+              )
+              .toString();
+        }
+      }
       if (deliveryUrl == null || deliveryUrl.isEmpty) continue;
       // The server has to extract all of an embedded PGS track before it
       // sends the file, which can take minutes.
       if (isEmbeddedPgsSubtitle(stream)) continue;
-      final isExternal = stream['IsExternal'] == true;
-      final supportsExternal = stream['SupportsExternalStream'] == true;
       if (!isExternal && !supportsExternal) continue;
       subs.add(ExternalSubtitle(
-        deliveryUrl: '$baseUrl$deliveryUrl',
+          deliveryUrl: deliveryUrl.startsWith('http')
+              ? deliveryUrl: '$baseUrl$deliveryUrl',
         title: stream['DisplayTitle'] as String? ??
             stream['Title'] as String?,
         language: stream['Language'] as String?,

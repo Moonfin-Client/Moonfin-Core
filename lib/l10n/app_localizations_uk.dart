@@ -4108,6 +4108,10 @@ class AppLocalizationsUk extends AppLocalizations {
   String get defaultSubtitleLanguage => 'Мова субтитрів за замовчуванням';
 
   @override
+  String get preferredSecondarySubtitleLanguage =>
+      'Preferred Secondary Subtitle Language';
+
+  @override
   String get defaultToNoSubtitles => 'За замовчуванням субтитрів немає';
 
   @override
@@ -4115,6 +4119,18 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get subtitleSize => 'Розмір субтитрів';
+
+  @override
+  String get primarySubtitleSlot => 'Primary';
+
+  @override
+  String get secondarySubtitleSlot => 'Secondary';
+
+  @override
+  String get decreaseValue => 'Decrease';
+
+  @override
+  String get increaseValue => 'Increase';
 
   @override
   String get textFillColor => 'Колір заливки тексту';

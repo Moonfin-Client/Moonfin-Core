@@ -4087,6 +4087,10 @@ class AppLocalizationsId extends AppLocalizations {
   String get defaultSubtitleLanguage => 'Bahasa Subtitle Default';
 
   @override
+  String get preferredSecondarySubtitleLanguage =>
+      'Preferred Secondary Subtitle Language';
+
+  @override
   String get defaultToNoSubtitles => 'Default tanpa Subtitle';
 
   @override
@@ -4094,6 +4098,18 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get subtitleSize => 'Ukuran Subtitle';
+
+  @override
+  String get primarySubtitleSlot => 'Primary';
+
+  @override
+  String get secondarySubtitleSlot => 'Secondary';
+
+  @override
+  String get decreaseValue => 'Decrease';
+
+  @override
+  String get increaseValue => 'Increase';
 
   @override
   String get textFillColor => 'Warna Isi Teks';

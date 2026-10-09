@@ -4103,6 +4103,10 @@ class AppLocalizationsSw extends AppLocalizations {
   String get defaultSubtitleLanguage => 'Lugha Chaguomsingi ya Manukuu';
 
   @override
+  String get preferredSecondarySubtitleLanguage =>
+      'Preferred Secondary Subtitle Language';
+
+  @override
   String get defaultToNoSubtitles => 'Chaguomsingi kwa Hakuna Manukuu';
 
   @override
@@ -4110,6 +4114,18 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String get subtitleSize => 'Ukubwa wa Manukuu';
+
+  @override
+  String get primarySubtitleSlot => 'Primary';
+
+  @override
+  String get secondarySubtitleSlot => 'Secondary';
+
+  @override
+  String get decreaseValue => 'Decrease';
+
+  @override
+  String get increaseValue => 'Increase';
 
   @override
   String get textFillColor => 'Rangi ya Kujaza Maandishi';

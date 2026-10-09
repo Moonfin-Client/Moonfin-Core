@@ -224,6 +224,7 @@ final List<SyncedField> syncedFields = <SyncedField>[
   SyncedField('defaultDownloadQuality', UserPreferences.defaultDownloadQuality, SyncCodec.text),
   SyncedField('defaultFavoritesFilter', UserPreferences.defaultFavoritesFilter, SyncCodec.text),
   SyncedField('defaultSubtitleLanguage', UserPreferences.defaultSubtitleLanguage, SyncCodec.text),
+  SyncedField('preferredSecondarySubtitleLanguage', UserPreferences.preferredSecondarySubtitleLanguage, SyncCodec.text),
   SyncedField('desktopScrollSensitivity', UserPreferences.desktopScrollSensitivity, SyncCodec.integer),
   SyncedField('desktopUiScale', UserPreferences.desktopUiScale, SyncCodec.enumName, enumValues: prefs.DesktopUiScale.values),
   SyncedField('diagnosticLoggingEnabled', UserPreferences.diagnosticLoggingEnabled, SyncCodec.boolean),

@@ -4118,6 +4118,10 @@ class AppLocalizationsEl extends AppLocalizations {
   String get defaultSubtitleLanguage => 'Προεπιλεγμένη γλώσσα υπότιτλων';
 
   @override
+  String get preferredSecondarySubtitleLanguage =>
+      'Preferred Secondary Subtitle Language';
+
+  @override
   String get defaultToNoSubtitles => 'Προεπιλογή σε Χωρίς υπότιτλους';
 
   @override
@@ -4126,6 +4130,18 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get subtitleSize => 'Μέγεθος υπότιτλων';
+
+  @override
+  String get primarySubtitleSlot => 'Primary';
+
+  @override
+  String get secondarySubtitleSlot => 'Secondary';
+
+  @override
+  String get decreaseValue => 'Decrease';
+
+  @override
+  String get increaseValue => 'Increase';
 
   @override
   String get textFillColor => 'Χρώμα πλήρωσης κειμένου';

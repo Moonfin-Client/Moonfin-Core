@@ -4019,6 +4019,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get defaultSubtitleLanguage => '기본 자막 언어';
 
   @override
+  String get preferredSecondarySubtitleLanguage =>
+      'Preferred Secondary Subtitle Language';
+
+  @override
   String get defaultToNoSubtitles => '자막 없음이 기본값입니다.';
 
   @override
@@ -4026,6 +4030,18 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get subtitleSize => '자막 크기';
+
+  @override
+  String get primarySubtitleSlot => 'Primary';
+
+  @override
+  String get secondarySubtitleSlot => 'Secondary';
+
+  @override
+  String get decreaseValue => 'Decrease';
+
+  @override
+  String get increaseValue => 'Increase';
 
   @override
   String get textFillColor => '텍스트 채우기 색상';

@@ -24,6 +24,7 @@ import '../../../playback/subtitle_style.dart';
 import '../../../playback/subtitle_view_config.dart';
 import '../../../util/fullscreen_helper.dart';
 import '../../../util/scroll_sensitivity_binding.dart';
+import '../../../util/secondary_subtitle_track_selection.dart';
 import '../../widgets/player_volume_control.dart';
 import '../../widgets/playback/playback_time_row.dart';
 import '../../widgets/playback/player_logo.dart';
@@ -887,6 +888,23 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _themeMusicService.setExternalAudioActive(true);
     _segmentService = _createSegmentService();
     _zoomMode = _prefs.get(UserPreferences.playerZoomMode);
+    final savedSecondaryFontSize = _prefs.get(
+      UserPreferences.secondarySubtitleTextSize,
+    );
+    unawaited(
+      _manager.configureSecondarySubtitleStyle(
+        fontSize: savedSecondaryFontSize > 0 ? savedSecondaryFontSize : null,
+        verticalOffset: _prefs.get(
+          UserPreferences.secondarySubtitleOffsetPosition,
+        ),
+        textColor: switch (_prefs.get(
+          UserPreferences.secondarySubtitleTextColor,
+        )) {
+          -1 => null,
+          final color => color,
+        },
+      ),
+    );
     // Media3 only takes the zoom mode from this call, and the backend change it
     // listens for never fires when it was already the one playing.
     unawaited(_syncMedia3ZoomMode());
@@ -7255,7 +7273,66 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     );
   }
 
-  void _showTrackSelector({required bool audio}) {
+  void _showSubtitleSlotSelector() {
+    final l10n = AppLocalizations.of(context);
+    final resolution = _manager.currentResolution;
+    final streams =
+        (resolution?.mediaStreams ??
+                (_manager.currentOfflineMetadata?['MediaStreams'] as List?)
+                    ?.cast<Map<String, dynamic>>() ??
+                const <Map<String, dynamic>>[])
+            .where((stream) => stream['Type'] == 'Subtitle')
+            .toList();
+
+    String trackLabel(int? index) {
+      if (index == null || index < 0) return l10n.off;
+      final stream = streams
+          .where((entry) => entry['Index'] == index)
+          .firstOrNull;
+      if (stream == null) return l10n.off;
+      final displayTitle = (stream['DisplayTitle'] as String?)?.trim();
+      if (displayTitle != null && displayTitle.isNotEmpty) return displayTitle;
+      final title = (stream['Title'] as String?)?.trim();
+      if (title != null && title.isNotEmpty) return title;
+      final language = (stream['Language'] as String?)?.trim();
+      if (language != null && language.isNotEmpty) return language;
+      return l10n.streamTypeFallback('Subtitle', streams.indexOf(stream) + 1);
+    }
+
+    unawaited(() async {
+      final result = await TrackSelectorDialog.show(
+        context,
+        title: l10n.subtitles,
+        options: [
+          TrackOption(
+            label: l10n.primarySubtitleSlot,
+            subtitle: trackLabel(_manager.subtitleStreamIndex),
+          ),
+          TrackOption(
+            label: l10n.secondarySubtitleSlot,
+            subtitle: trackLabel(_manager.secondarySubtitleStreamIndex),
+          ),
+        ],
+        useRootNavigator: false,
+      );
+      if (result == null || !mounted) return;
+      _showTrackSelector(
+        audio: false,
+        secondary: result == 1,
+        chooseSubtitleSlot: false,
+      );
+    }());
+    _showControls();
+  }
+
+  void _showTrackSelector({required bool audio,
+    bool secondary = false,
+    bool chooseSubtitleSlot = true,
+  }) {
+    if (!audio && chooseSubtitleSlot && _activeBackend is Media3PlayerBackend) {
+      _showSubtitleSlotSelector();
+      return;
+    }
     final l10n = AppLocalizations.of(context);
     final resolution = _manager.currentResolution;
     final streamType = audio ? 'Audio' : 'Subtitle';
@@ -7269,10 +7346,26 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     final displaySubtitleStreams = audio
         ? const <Map<String, dynamic>>[]
         : sortedSubtitleStreams(streams);
-    final optionStreams = audio ? streams : displaySubtitleStreams;
+    final preferredSecondaryLanguage = secondary
+        ? (_prefs.get(UserPreferences.preferredSecondarySubtitleLanguage)
+                  as String? ??
+              '')
+        : '';
+    final optionStreams = audio ? streams : secondary
+        ? rankSecondarySubtitleStreams(
+            displaySubtitleStreams.where((stream) {
+              final index = stream['Index'] as int?;
+              return index != null &&
+                  index != _manager.subtitleStreamIndex &&
+                  _manager.canUseAsSecondarySubtitle(index);
+            }).toList(),
+            preferredSecondaryLanguage,
+          )
+        : displaySubtitleStreams;
     final audioStreams = allStreams.where((s) => s['Type'] == 'Audio').toList();
     final canDownloadRemote =
-        !audio && item is AggregatedItem && _canDownloadRemoteSubtitles(item);
+        !audio &&
+        !secondary && item is AggregatedItem && _canDownloadRemoteSubtitles(item);
 
     unawaited(() async {
       final int? currentStreamIndex;
@@ -7282,11 +7375,15 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
             streams.where((s) => s['IsDefault'] == true).firstOrNull?['Index']
                 as int?;
       } else {
+        if (secondary) {
+          currentStreamIndex = _manager.secondarySubtitleStreamIndex;
+      } else {
         final subIdx = await _manager.getSubtitleStreamIndexAsync();
         currentStreamIndex =
             subIdx ??
             streams.where((s) => s['IsDefault'] == true).firstOrNull?['Index']
                 as int?;
+      }
       }
       final isSubsOff = !audio && currentStreamIndex == -1;
 
@@ -7344,7 +7441,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
             : -1;
         selectedIndex = idx >= 0 ? idx : null;
       } else {
-        if (isSubsOff || (currentStreamIndex == null && streams.isNotEmpty)) {
+        if (secondary && currentStreamIndex == null) {
+          selectedIndex = 0;
+        } else if (isSubsOff || (currentStreamIndex == null && streams.isNotEmpty)) {
           selectedIndex = 0;
         } else if (currentStreamIndex != null) {
           final idx = optionStreams.indexWhere(
@@ -7360,50 +7459,146 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
       final backend = _activeBackend;
       final delayLimits = delayLimitsFor(backend, audio: audio);
+      final footer = audio ? delayLimits==null
+            ? null
+            : DelayFooter(
+                    initialDelay: _audioDelay,
+                    label: l10n.audioDelay,
+        minDelay: delayLimits.$1,
+        maxDelay: delayLimits.$2,
+        onDelayChanged: (d) => _applyDelay(audio: true,
+        delay: d),
+                    formatDelay: _formatDelay,
+                  )
+          : secondary
+          ? Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                DelayFooter(
+                  initialDelay: _manager.secondarySubtitleDelaySeconds,
+                  label: l10n.subtitleDelay,
+                  minDelay: -5,
+                  maxDelay: 5,
+                  onDelayChanged: (d) => _manager.setSecondarySubtitleDelay(d),
+                  formatDelay: _formatDelay,
+                ),
+                SecondarySubtitleAppearanceFooter(
+                  initialFontSize:
+                      _manager.secondarySubtitleFontSize ??
+                      SubtitleStyle.forResolution(
+                        _prefs,
+                        _manager.currentResolution,
+                      ).fontSize,
+                  initialOffset: _manager.secondarySubtitleOffset,
+                  initialTextColor: _manager.secondarySubtitleTextColor,
+                  defaultTextColor: SubtitleStyle.forResolution(
+                    _prefs,
+                    _manager.currentResolution,
+                  ).textColor,
+                  onChanged: (fontSize, offset, textColor) {
+                    unawaited(
+                      _manager.configureSecondarySubtitleStyle(
+                        fontSize: fontSize,
+                        verticalOffset: offset,
+                        textColor: textColor,
+                      ),
+                    );
+                    unawaited(
+                      _prefs.set(
+                        UserPreferences.secondarySubtitleTextSize,
+                        fontSize,
+                      ),
+                    );
+                    unawaited(
+                      _prefs.set(
+                        UserPreferences.secondarySubtitleOffsetPosition,
+                        offset,
+                      ),
+                    );
+                    unawaited(
+                      _prefs.set(
+                        UserPreferences.secondarySubtitleTextColor,
+                        textColor ?? -1,
+                      ),
+                    );
+                  },
+                ),
+              ],
+            )
+          : delayLimits == null
+            ? null
+            : DelayFooter(
+                initialDelay: backend is Media3PlayerBackend
+                    ? backend.subtitleDelaySeconds
+                    : _subtitleDelay,
+                label: l10n.subtitleDelay,
+                minDelay: delayLimits.$1,
+                maxDelay: delayLimits.$2,
+                onDelayChanged: (d) => _applyDelay(audio: false, delay: d),
+                formatDelay: _formatDelay,
+              );
       final result = await TrackSelectorDialog.show(
         context,
-        title: audio ? l10n.audioTrack : l10n.subtitleTrack,
+        title: audio
+            ? l10n.audioTrack
+            : secondary
+            ? '${l10n.secondarySubtitleSlot} ${l10n.subtitleTrack}'
+            : '${l10n.primarySubtitleSlot} ${l10n.subtitleTrack}',
         options: options,
         selectedIndex: selectedIndex,
         useRootNavigator: false,
-        footer: delayLimits == null
-            ? null
-            : DelayFooter(
-                initialDelay: audio
-                    ? _audioDelay
-                    : backend is Media3PlayerBackend
-                    ? backend.subtitleDelaySeconds
-                    : _subtitleDelay,
-                label: audio ? l10n.audioDelay : l10n.subtitleDelay,
-                minDelay: delayLimits.$1,
-                maxDelay: delayLimits.$2,
-                onDelayChanged: (d) => _applyDelay(audio: audio, delay: d),
-                formatDelay: _formatDelay,
-              ),
+        footer: footer,
       );
       if (result == null || !mounted) return;
       if (!audio) {
         if (result == 0) {
-          await _runSinglePlayerMutation(
-            'subtitles_off',
-            _manager.disableSubtitles,
-          );
-          _syncSubtitleActive();
+          if (secondary) {
+            try {
+              await _runSinglePlayerMutation(
+                'secondary_subtitles_off',
+                () => _manager.changeSecondarySubtitleTrack(null),
+              );
+            } catch (error, stackTrace) {
+              debugPrint(
+                'Could not turn off secondary subtitles: $error\n$stackTrace',
+              );
+            }
+          } else {
+            await _runSinglePlayerMutation(
+              'subtitles_off',
+              _manager.disableSubtitles,
+            );
+            _syncSubtitleActive();
+          }
           return;
         }
         final streamIdx = result - 1;
-        if (canDownloadRemote && streamIdx == streams.length) {
+        if (canDownloadRemote && streamIdx == optionStreams.length) {
           await _downloadRemoteSubtitles(item, streams, audioStreams);
           return;
         }
         if (streamIdx < optionStreams.length) {
           final streamIndex =
               optionStreams[streamIdx]['Index'] as int? ?? streamIdx;
-          await _runSinglePlayerMutation(
-            'subtitle_$streamIndex',
-            () => _manager.changeSubtitleTrack(streamIndex),
-          );
-          _syncSubtitleActive();
+          if (secondary) {
+            try {
+              final changed = await _runSinglePlayerMutation(
+                'secondary_subtitle_$streamIndex',
+                () => _manager.changeSecondarySubtitleTrack(streamIndex),
+              );
+              if (changed && mounted) setState(() {});
+            } catch (error, stackTrace) {
+              debugPrint(
+                'Could not change secondary subtitles: $error\n$stackTrace',
+              );
+            }
+          } else {
+            await _runSinglePlayerMutation(
+              'subtitle_$streamIndex',
+              () => _manager.changeSubtitleTrack(streamIndex),
+            );
+            _syncSubtitleActive();
+          }
         }
       } else {
         if (result < streams.length) {
@@ -8376,4 +8571,170 @@ class _CastPersonTileState extends State<_CastPersonTile> {
       ),
     );
   }
+}
+
+class SecondarySubtitleAppearanceFooter extends StatefulWidget {
+  const SecondarySubtitleAppearanceFooter({
+    super.key,
+    required this.initialFontSize,
+    required this.initialOffset,
+    required this.initialTextColor,
+    required this.defaultTextColor,
+    required this.onChanged,
+  });
+
+  final double initialFontSize;
+  final double initialOffset;
+  final int? initialTextColor;
+  final int defaultTextColor;
+  final void Function(double fontSize, double offset, int? textColor) onChanged;
+
+  @override
+  State<SecondarySubtitleAppearanceFooter> createState() =>
+      _SecondarySubtitleAppearanceFooterState();
+}
+
+class _SecondarySubtitleAppearanceFooterState
+    extends State<SecondarySubtitleAppearanceFooter> {
+  late double _fontSize = widget.initialFontSize;
+  late double _offset = widget.initialOffset;
+  late int? _textColor = widget.initialTextColor;
+
+  void _update({double? fontSize, double? offset}) {
+    setState(() {
+      _fontSize = (fontSize ?? _fontSize).clamp(8.0, 72.0).toDouble();
+      _offset = (offset ?? _offset).clamp(0.0, 0.4).toDouble();
+    });
+    widget.onChanged(_fontSize, _offset, _textColor);
+  }
+
+  void _updateTextColor(int? textColor) {
+    setState(() => _textColor = textColor);
+    widget.onChanged(_fontSize, _offset, _textColor);
+  }
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _AppearanceControlRow(
+          label: AppLocalizations.of(context).subtitleSize,
+          value: _fontSize.toStringAsFixed(0),
+          onDecrease: () => _update(fontSize: _fontSize - 2),
+          onIncrease: () => _update(fontSize: _fontSize + 2),
+        ),
+        _AppearanceControlRow(
+          label: AppLocalizations.of(context).verticalOffset,
+          value: '${(_offset * 100).round()}%',
+          onDecrease: () => _update(offset: _offset - 0.02),
+          onIncrease: () => _update(offset: _offset + 0.02),
+        ),
+        _buildColorControl(context),
+      ],
+    ),
+  );
+
+  Widget _buildColorControl(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final colors = <({String label, int? value})>[
+      (label: l10n.defaultLabel, value: null),
+      (label: l10n.white, value: 0xFFFFFFFF),
+      (label: l10n.yellow, value: 0xFFFFFF00),
+      (label: l10n.green, value: 0xFF00FF00),
+      (label: l10n.cyan, value: 0xFF00FFFF),
+      (label: l10n.blue, value: 0xFF0000FF),
+      (label: l10n.magenta, value: 0xFFFF00FF),
+      (label: l10n.red, value: 0xFFFF0000),
+    ];
+    final selectedIndex = colors.indexWhere(
+      (entry) => entry.value == _textColor,
+    );
+    final index = selectedIndex < 0 ? 0 : selectedIndex;
+    final selected = colors[index];
+    int? nextColor(int step) =>
+        colors[(index + step + colors.length) % colors.length].value;
+
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            AppLocalizations.of(context).textFillColor,
+            style: const TextStyle(color: Colors.white70),
+          ),
+        ),
+        IconButton(
+          tooltip: AppLocalizations.of(context).playerTooltipPrevious,
+          onPressed: () => _updateTextColor(nextColor(-1)),
+          icon: const Icon(Icons.remove_circle_outline),
+        ),
+        SizedBox(
+          width: 112,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 16,
+                height: 16,
+                margin: const EdgeInsets.only(right: 6),
+                decoration: BoxDecoration(
+                  color: Color(_textColor ?? widget.defaultTextColor),
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white54),
+                ),
+              ),
+              Flexible(
+                child: Text(
+                  selected.label,
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ),
+        IconButton(
+          tooltip: AppLocalizations.of(context).next,
+          onPressed: () => _updateTextColor(nextColor(1)),
+          icon: const Icon(Icons.add_circle_outline),
+        ),
+      ],
+    );
+  }
+}
+
+class _AppearanceControlRow extends StatelessWidget {
+  const _AppearanceControlRow({
+    required this.label,
+    required this.value,
+    required this.onDecrease,
+    required this.onIncrease,
+  });
+
+  final String label;
+  final String value;
+  final VoidCallback onDecrease;
+  final VoidCallback onIncrease;
+
+  @override
+  Widget build(BuildContext context) => Row(
+    children: [
+      Expanded(
+        child: Text(label, style: const TextStyle(color: Colors.white70)),
+      ),
+      IconButton(
+        tooltip: '${AppLocalizations.of(context).decreaseValue} $label',
+        onPressed: onDecrease,
+        icon: const Icon(Icons.remove_circle_outline),
+      ),
+      SizedBox(width: 48, child: Text(value, textAlign: TextAlign.center)),
+      IconButton(
+        tooltip: '${AppLocalizations.of(context).increaseValue} $label',
+        onPressed: onIncrease,
+        icon: const Icon(Icons.add_circle_outline),
+      ),
+    ],
+  );
 }

@@ -7210,6 +7210,12 @@ abstract class AppLocalizations {
   /// **'Default Subtitle Language'**
   String get defaultSubtitleLanguage;
 
+  /// Preferred language used to sort secondary subtitle tracks in the picker. It does not enable subtitles.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferred Secondary Subtitle Language'**
+  String get preferredSecondarySubtitleLanguage;
+
   /// Setting for defaulting to no subtitles
   ///
   /// In en, this message translates to:
@@ -7227,6 +7233,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Subtitle Size'**
   String get subtitleSize;
+
+  /// Label for the primary subtitle selection slot
+  ///
+  /// In en, this message translates to:
+  /// **'Primary'**
+  String get primarySubtitleSlot;
+
+  /// Label for the secondary subtitle selection slot
+  ///
+  /// In en, this message translates to:
+  /// **'Secondary'**
+  String get secondarySubtitleSlot;
+
+  /// Action that decreases a value in a control
+  ///
+  /// In en, this message translates to:
+  /// **'Decrease'**
+  String get decreaseValue;
+
+  /// Action that increases a value in a control
+  ///
+  /// In en, this message translates to:
+  /// **'Increase'**
+  String get increaseValue;
 
   /// Setting for subtitle text fill color
   ///

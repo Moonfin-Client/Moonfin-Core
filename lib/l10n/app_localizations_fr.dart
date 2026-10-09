@@ -4126,6 +4126,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get defaultSubtitleLanguage => 'Langue des sous-titres par défaut';
 
   @override
+  String get preferredSecondarySubtitleLanguage =>
+      'Preferred Secondary Subtitle Language';
+
+  @override
   String get defaultToNoSubtitles => 'Aucun sous-titre par défaut';
 
   @override
@@ -4134,6 +4138,18 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get subtitleSize => 'Taille des sous-titres';
+
+  @override
+  String get primarySubtitleSlot => 'Primary';
+
+  @override
+  String get secondarySubtitleSlot => 'Secondary';
+
+  @override
+  String get decreaseValue => 'Decrease';
+
+  @override
+  String get increaseValue => 'Increase';
 
   @override
   String get textFillColor => 'Couleur de remplissage du texte';

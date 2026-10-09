@@ -4086,6 +4086,10 @@ class AppLocalizationsMn extends AppLocalizations {
   String get defaultSubtitleLanguage => 'Өгөгдмөл хадмал орчуулгын хэл';
 
   @override
+  String get preferredSecondarySubtitleLanguage =>
+      'Preferred Secondary Subtitle Language';
+
+  @override
   String get defaultToNoSubtitles => 'Өгөгдмөл нь хадмал орчуулгагүй';
 
   @override
@@ -4094,6 +4098,18 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get subtitleSize => 'Хадмал орчуулгын хэмжээ';
+
+  @override
+  String get primarySubtitleSlot => 'Primary';
+
+  @override
+  String get secondarySubtitleSlot => 'Secondary';
+
+  @override
+  String get decreaseValue => 'Decrease';
+
+  @override
+  String get increaseValue => 'Increase';
 
   @override
   String get textFillColor => 'Текст дүүргэх өнгө';

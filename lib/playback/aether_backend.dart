@@ -527,6 +527,19 @@ class AetherBackend implements PlayerBackend, SubtitleLoadingBackend {
   }
 
   @override
+  Future<void> setSecondarySubtitle({String? url, String? codec}) async {}
+
+  @override
+  Future<void> setSecondarySubtitleDelay(double seconds) async {}
+
+  @override
+  Future<void> configureSecondarySubtitleStyle({
+    double? fontSize,
+    double? verticalOffset,
+    int? textColor,
+  }) async {}
+
+  @override
   int? get activeSubtitleTrackIndex => _activeSubtitleTrackIndex;
 
   @override

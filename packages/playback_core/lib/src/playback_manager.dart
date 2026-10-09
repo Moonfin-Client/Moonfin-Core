@@ -164,6 +164,8 @@ class PlaybackManager implements AudioOwnable {
   void Function(String message)? _diagnosticLogger;
   int? Function(List<Map<String, dynamic>> audioStreams, int? explicitIndex)? audioTrackSelector;
   int? Function(List<Map<String, dynamic>> subtitleStreams, List<Map<String, dynamic>> audioStreams, int? explicitIndex)? subtitleTrackSelector;
+  int? Function(String itemId, List<Map<String, dynamic>> subtitleStreams)? secondarySubtitleTrackSelector;
+  Future<void> Function(String itemId, int streamIndex, Map<String, dynamic>? stream)? onSecondarySubtitleTrackSelected;
   final QueueService queueService = QueueService();
   final PlayerState state = PlayerState();
   final Set<PlayerBackend> _retainedBackends = <PlayerBackend>{};
@@ -176,6 +178,11 @@ class PlaybackManager implements AudioOwnable {
   bool _reResolvingForTrackMatch = false;
   int? _audioStreamIndex;
   int? _subtitleStreamIndex;
+  int? _secondarySubtitleStreamIndex;
+  double _secondarySubtitleDelaySeconds = 0;
+  double? _secondarySubtitleFontSize;
+  int? _secondarySubtitleTextColor;
+  double _secondarySubtitleOffset = 0.08;
   bool _audioSelectionExplicit = false;
   bool _subtitleSelectionExplicit = false;
   bool _pendingItemAudioSelectionExplicit = false;
@@ -587,6 +594,27 @@ class PlaybackManager implements AudioOwnable {
 
   void markStreamsOutdated(String itemId) => _streamsOutdatedItemId = itemId;
   int? get audioStreamIndex => _audioStreamIndex;
+  int? get secondarySubtitleStreamIndex => _secondarySubtitleStreamIndex;
+  double get secondarySubtitleDelaySeconds => _secondarySubtitleDelaySeconds;
+  double? get secondarySubtitleFontSize => _secondarySubtitleFontSize;
+  int? get secondarySubtitleTextColor => _secondarySubtitleTextColor;
+  double get secondarySubtitleOffset => _secondarySubtitleOffset;
+
+  bool canUseAsSecondarySubtitle(int streamIndex) {
+    final stream = _currentMediaStreams
+        .where((s) => s['Type'] == 'Subtitle' && s['Index'] == streamIndex)
+        .firstOrNull;
+    if (stream == null) return false;
+    final codec = _subtitleCodecForStream(streamIndex)?.trim().toLowerCase();
+    if (codec != 'srt' &&
+        codec != 'subrip' &&
+        codec != 'vtt' &&
+        codec != 'webvtt') {
+      return false;
+    }
+    return _externalSubtitleUrlForStream(streamIndex)?.isNotEmpty ?? false;
+  }
+
   int? get subtitleStreamIndex {
     if (_subtitleStreamIndex != null) {
       return _subtitleStreamIndex;
@@ -754,6 +782,8 @@ class PlaybackManager implements AudioOwnable {
     bool autoPlay = true,
     List<ExternalSubtitle> externalSubtitles = const [],
     bool audioLike = false,
+    String? secondarySubtitleUrl,
+    String? secondarySubtitleCodec,
   }) {
     // Music and audiobooks are audio whatever their streams say. Media3 only
     // plays audio with no view when the payload says audio, so a stray video
@@ -883,6 +913,17 @@ class PlaybackManager implements AudioOwnable {
           normalizationGainDb ??
           MediaStreamResolver.extractNormalizationGainDb(mediaStreams),
       if (declaredSubtitles.isNotEmpty) 'externalSubtitles': declaredSubtitles,
+      'secondarySubtitleDelayMs': (_secondarySubtitleDelaySeconds * 1000)
+          .round(),
+      'secondarySubtitleOffset': _secondarySubtitleOffset,
+      if (_secondarySubtitleFontSize != null)
+        'secondarySubtitleFontSize': _secondarySubtitleFontSize,
+      if (_secondarySubtitleTextColor != null)
+        'secondarySubtitleTextColor': _secondarySubtitleTextColor,
+      if (secondarySubtitleUrl != null && secondarySubtitleCodec != null) ...{
+        'secondarySubtitleUrl': secondarySubtitleUrl,
+        'secondarySubtitleCodec': secondarySubtitleCodec,
+      },
       if (selectedExternalSubtitleUrl != null)
         'selectedExternalSubtitleUrl': selectedExternalSubtitleUrl,
     };
@@ -2111,6 +2152,8 @@ class PlaybackManager implements AudioOwnable {
     _clearPendingItemOverrides();
     _vetoedAudioCodecs.clear();
     _lastItemId = null;
+    _secondarySubtitleStreamIndex = null;
+    _secondarySubtitleDelaySeconds = 0;
     _lastExplicitAudioLanguage = null;
     _lastExplicitAudioIndex = null;
     _lastExplicitAudioTitle = null;
@@ -2147,6 +2190,8 @@ class PlaybackManager implements AudioOwnable {
       ),
     );
     await _stopAndReportCurrent();
+    _secondarySubtitleStreamIndex = null;
+    _secondarySubtitleDelaySeconds = 0;
     _resetBackendSelectionLock();
     _audioStreamIndex = audioStreamIndex;
     _subtitleStreamIndex = subtitleStreamIndex;
@@ -2296,8 +2341,13 @@ class PlaybackManager implements AudioOwnable {
     _lastKnownPosition = startPosition;
     final sessionToken = ++_playbackSessionToken;
     final itemId = _traceItemId(item);
+    final changedItem = _lastItemId != null && _lastItemId != itemId;
+    if (changedItem) {
+      _secondarySubtitleStreamIndex = null;
+      _secondarySubtitleDelaySeconds = 0;
+    }
     final appliedOverrides = _applyPendingItemOverridesIfNeeded(itemId);
-    if (!appliedOverrides && _lastItemId != null && _lastItemId != itemId) {
+    if (!appliedOverrides && changedItem) {
       _translateTrackSelectionsForNewItem(item);
     }
     _lastItemId = itemId;
@@ -2657,6 +2707,21 @@ class PlaybackManager implements AudioOwnable {
     StackTrace? startupStackTrace;
     final useNativeStart = startTicks != null;
     try {
+      final currentItemId = MediaStreamResolver.extractItemId(item);
+      final secondaryStreams = resolution.mediaStreams
+          .where((s) => s['Type'] == 'Subtitle')
+          .toList();
+      final restoredSecondaryIndex = secondarySubtitleTrackSelector?.call(
+        currentItemId,
+        secondaryStreams,
+      );
+      if (restoredSecondaryIndex != null) {
+        _secondarySubtitleStreamIndex = restoredSecondaryIndex >= 0 &&
+                restoredSecondaryIndex != _subtitleStreamIndex &&
+                canUseAsSecondarySubtitle(restoredSecondaryIndex)
+            ? restoredSecondaryIndex
+            : null;
+      }
       final backendMediaPayload = _buildBackendMediaPayload(
         url: resolution.streamUrl,
         mediaStreams: resolution.mediaStreams,
@@ -2672,6 +2737,14 @@ class PlaybackManager implements AudioOwnable {
         autoPlay: autoPlay,
         externalSubtitles: resolution.externalSubtitles,
         audioLike: _isAudioLikeItem(item),
+        secondarySubtitleUrl:
+            _secondarySubtitleStreamIndex != null &&
+                canUseAsSecondarySubtitle(_secondarySubtitleStreamIndex!)
+            ? _externalSubtitleUrlForStream(_secondarySubtitleStreamIndex!)
+            : null,
+        secondarySubtitleCodec: _secondarySubtitleStreamIndex != null
+            ? _subtitleCodecForStream(_secondarySubtitleStreamIndex!)
+            : null,
       );
       await _arbiter?.acquire(AudioProducer.mainPlayback);
       if (sessionToken != _playbackSessionToken) {
@@ -3476,6 +3549,12 @@ class PlaybackManager implements AudioOwnable {
     if (streamUrl == null || streamUrl.isEmpty) return url;
     final baseUri = Uri.tryParse(streamUrl);
     if (baseUri == null) return url;
+    final resolvedUri = baseUri.resolveUri(uri);
+    if (resolvedUri.scheme != baseUri.scheme ||
+        resolvedUri.host != baseUri.host ||
+        resolvedUri.port != baseUri.port) {
+      return url;
+    }
     final tokenEntry = baseUri.queryParameters.entries.firstWhere(
       (entry) => entry.key.toLowerCase() == 'api_key',
       orElse: () => const MapEntry('', ''),
@@ -3530,11 +3609,84 @@ class PlaybackManager implements AudioOwnable {
     ),
   );
 
+  /// Selects an independently rendered SRT/WebVTT Jellyfin sidecar.
+  /// Tracks without an accessible text delivery URL remain primary-only.
+  Future<void> changeSecondarySubtitleTrack(int? streamIndex) async {
+    final selectedIndex = streamIndex == _subtitleStreamIndex
+        ? null
+        : streamIndex;
+    if (selectedIndex != null && !canUseAsSecondarySubtitle(selectedIndex)) {
+      throw StateError('Selected subtitle has no supported sidecar delivery');
+    }
+    _secondarySubtitleStreamIndex = selectedIndex;
+    final item = queueService.currentItem;
+    if (item != null) {
+      final itemId = MediaStreamResolver.extractItemId(item);
+      if (itemId.isNotEmpty) {
+        final selectedStream = selectedIndex == null
+            ? null
+            : _currentMediaStreams
+                .where((s) => s['Type'] == 'Subtitle' && s['Index'] == selectedIndex)
+                .firstOrNull;
+        await onSecondarySubtitleTrackSelected?.call(
+          itemId,
+          selectedIndex ?? -1,
+          selectedStream,
+        );
+      }
+    }
+    await _pushSecondarySubtitleSelection();
+  }
+
+  Future<void> setSecondarySubtitleDelay(double seconds) async {
+    _secondarySubtitleDelaySeconds = seconds.clamp(-5.0, 5.0).toDouble();
+    await _backend?.setSecondarySubtitleDelay(_secondarySubtitleDelaySeconds);
+  }
+
+  Future<void> configureSecondarySubtitleStyle({
+    double? fontSize,
+    double? verticalOffset,
+    int? textColor,
+  }) async {
+    _secondarySubtitleFontSize = fontSize?.clamp(8.0, 72.0).toDouble();
+    _secondarySubtitleTextColor = textColor;
+    _secondarySubtitleOffset = (verticalOffset ?? 0.08)
+        .clamp(0.0, 0.4)
+        .toDouble();
+    await _backend?.configureSecondarySubtitleStyle(
+      fontSize: _secondarySubtitleFontSize,
+      verticalOffset: _secondarySubtitleOffset,
+      textColor: _secondarySubtitleTextColor,
+    );
+  }
+
+  Future<void> _pushSecondarySubtitleSelection() async {
+    final index = _secondarySubtitleStreamIndex;
+    if (index == null || !canUseAsSecondarySubtitle(index)) {
+      _secondarySubtitleStreamIndex = null;
+      await _backend?.setSecondarySubtitle();
+      return;
+    }
+    await _backend?.setSecondarySubtitle(
+      url: _externalSubtitleUrlForStream(index),
+      codec: _subtitleCodecForStream(index),
+    );
+    await _backend?.setSecondarySubtitleDelay(_secondarySubtitleDelaySeconds);
+    await _backend?.configureSecondarySubtitleStyle(
+      fontSize: _secondarySubtitleFontSize,
+      verticalOffset: _secondarySubtitleOffset,
+      textColor: _secondarySubtitleTextColor,
+    );
+  }
+
   Future<void> _changeSubtitleTrackInner(
     int streamIndex, {
     bool userInitiated = true,
     bool refreshStreams = false,
   }) async {
+    if (_secondarySubtitleStreamIndex == streamIndex) {
+      await changeSecondarySubtitleTrack(null);
+    }
     final previousSubtitleStreamIndex = _subtitleStreamIndex;
     final isBitmap = _isSubtitleBitmap(streamIndex);
     _subtitleStreamIndex = streamIndex;
@@ -4013,8 +4165,7 @@ class PlaybackManager implements AudioOwnable {
   bool _isSubtitleDeliveredExternally(int streamIndex) {
     if (_currentResolution == null) return _isSubtitleExternal(streamIndex);
     return _effectiveExternalSubtitles.any(
-      (s) => s.streamIndex == streamIndex,
-    );
+      (s) => s.streamIndex == streamIndex);
   }
 
   int? _mpvTrackIdForStream(int streamIndex, String type) =>
@@ -4047,6 +4198,8 @@ class PlaybackManager implements AudioOwnable {
     _deferredStartPosition = Duration.zero;
     _deferPlaybackToExternalPlayer = false;
     _lastItemId = null;
+    _secondarySubtitleStreamIndex = null;
+    _secondarySubtitleDelaySeconds = 0;
     _lastExplicitAudioLanguage = null;
     _lastExplicitAudioIndex = null;
     _lastExplicitAudioTitle = null;
@@ -4595,7 +4748,9 @@ String _normalizeLanguage(String? language) {
 }
 
 String _toIso3(String language) {
-  if (_kLanguageKeywords.containsKey(language)) return _kLanguageKeywords[language]!;
+  if (_kLanguageKeywords.containsKey(language)) {
+    return _kLanguageKeywords[language]!;
+  }
   if (language.length == 3) return language;
   return _kIso6391To6392[language] ?? language;
 }

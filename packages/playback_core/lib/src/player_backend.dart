@@ -103,6 +103,16 @@ abstract class PlayerBackend {
     String? externalSubtitleUrl,
   });
   Future<void> disableSubtitleTrack();
+
+  /// Selects an independent text sidecar for the Android Media3 overlay.
+  /// Backends without a separate subtitle layer leave it disabled.
+  Future<void> setSecondarySubtitle({String? url, String? codec}) async {}
+  Future<void> setSecondarySubtitleDelay(double seconds) async {}
+  Future<void> configureSecondarySubtitleStyle({
+    double? fontSize,
+    double? verticalOffset,
+    int? textColor,
+  }) async {}
   Future<void> waitForTracksReady();
   Future<void> waitForEmbeddedSubtitleCount(int count);
   Future<void> setVolume(double volume);
