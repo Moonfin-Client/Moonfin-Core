@@ -12,6 +12,7 @@ struct PromptStrings {
     var stillWatchingBody = "Playback has been paused. Are you still watching?"
     var stillWatchingContinue = "Continue"
     var stillWatchingStop = "Stop"
+    var fetchingSubtitles = "Fetching subtitles"
 
     func endsIn(_ time: String) -> String {
         endsInTemplate.replacingOccurrences(of: "{time}", with: time)
@@ -162,6 +163,12 @@ final class AppleTvPlayerViewController: UIViewController {
     private let loadingOverlay = UIView()
     private let loadingSpinner = UIActivityIndicatorView(style: .large)
     private var loadingDismissed = false
+    private let subtitleLoadingPill = UIView()
+    private let subtitleLoadingSpinner = UIActivityIndicatorView(style: .medium)
+    private let subtitleLoadingLabel = UILabel()
+    private var subtitleLoadingSince: CFTimeInterval?
+    private var subtitleLoadingAboveOsd: NSLayoutConstraint?
+    private var subtitleLoadingInCorner: NSLayoutConstraint?
 
     private var isLive = false
     private var liveProgram:
@@ -401,9 +408,11 @@ final class AppleTvPlayerViewController: UIViewController {
         if let v = args["stillWatchingBody"] as? String { promptStrings.stillWatchingBody = v }
         if let v = args["stillWatchingContinue"] as? String { promptStrings.stillWatchingContinue = v }
         if let v = args["stillWatchingStop"] as? String { promptStrings.stillWatchingStop = v }
+        if let v = args["fetchingSubtitles"] as? String { promptStrings.fetchingSubtitles = v }
         if isViewLoaded {
             upNextLabel.text = promptStrings.upNext.uppercased()
             nextUpPlayLabel.text = promptStrings.playNext
+            subtitleLoadingLabel.text = promptStrings.fetchingSubtitles
         }
     }
 
@@ -558,6 +567,7 @@ final class AppleTvPlayerViewController: UIViewController {
         setupPauseOverlay()
         setupLiveOverlays()
         setupSkipSegment()
+        setupSubtitleLoadingPill()
         setupLoadingOverlay()
     }
 
@@ -578,6 +588,80 @@ final class AppleTvPlayerViewController: UIViewController {
             loadingSpinner.centerYAnchor.constraint(equalTo: loadingOverlay.centerYAnchor),
         ])
         loadingSpinner.startAnimating()
+    }
+
+    // Shown while the chosen external subtitle downloads, which takes a while
+    // when the server has to extract it first. It sits above the controls when
+    // they're up and drops to the corner when they hide, so it stays in view
+    // for the whole wait.
+    private func setupSubtitleLoadingPill() {
+        subtitleLoadingPill.translatesAutoresizingMaskIntoConstraints = false
+        subtitleLoadingPill.backgroundColor = UIColor(white: 0, alpha: 0.55)
+        subtitleLoadingPill.layer.cornerRadius = 16
+        subtitleLoadingPill.isHidden = true
+        view.addSubview(subtitleLoadingPill)
+
+        subtitleLoadingSpinner.color = .white
+        subtitleLoadingSpinner.hidesWhenStopped = true
+        subtitleLoadingLabel.font = .systemFont(ofSize: 26, weight: .semibold)
+        subtitleLoadingLabel.textColor = UIColor(white: 1, alpha: 0.85)
+        subtitleLoadingLabel.text = promptStrings.fetchingSubtitles
+
+        let row = UIStackView(arrangedSubviews: [subtitleLoadingSpinner, subtitleLoadingLabel])
+        row.translatesAutoresizingMaskIntoConstraints = false
+        row.axis = .horizontal
+        row.alignment = .center
+        row.spacing = 12
+        subtitleLoadingPill.addSubview(row)
+
+        let aboveOsd = subtitleLoadingPill.bottomAnchor.constraint(
+            equalTo: aboveRow.topAnchor, constant: -16)
+        subtitleLoadingAboveOsd = aboveOsd
+        subtitleLoadingInCorner = subtitleLoadingPill.bottomAnchor.constraint(
+            equalTo: view.bottomAnchor, constant: -56)
+        NSLayoutConstraint.activate([
+            subtitleLoadingPill.leadingAnchor.constraint(
+                equalTo: view.leadingAnchor, constant: 90),
+            aboveOsd,
+            row.leadingAnchor.constraint(equalTo: subtitleLoadingPill.leadingAnchor, constant: 18),
+            row.trailingAnchor.constraint(
+                equalTo: subtitleLoadingPill.trailingAnchor, constant: -22),
+            row.topAnchor.constraint(equalTo: subtitleLoadingPill.topAnchor, constant: 10),
+            row.bottomAnchor.constraint(equalTo: subtitleLoadingPill.bottomAnchor, constant: -10),
+        ])
+    }
+
+    private func updateSubtitleLoadingPill(osdShown: Bool) {
+        let now = CACurrentMediaTime()
+        if loadingDismissed && player.isSubtitleLoading {
+            if subtitleLoadingSince == nil { subtitleLoadingSince = now }
+        } else {
+            subtitleLoadingSince = nil
+        }
+        // A cached subtitle answers inside half a second and shouldn't flash it.
+        let show = subtitleLoadingSince.map { now - $0 >= 0.5 } ?? false
+        if subtitleLoadingPill.isHidden == show {
+            subtitleLoadingPill.isHidden = !show
+            if show {
+                subtitleLoadingSpinner.startAnimating()
+            } else {
+                subtitleLoadingSpinner.stopAnimating()
+            }
+        }
+        guard let aboveOsd = subtitleLoadingAboveOsd,
+            let inCorner = subtitleLoadingInCorner,
+            aboveOsd.isActive != osdShown
+        else { return }
+        if osdShown {
+            inCorner.isActive = false
+            aboveOsd.isActive = true
+        } else {
+            aboveOsd.isActive = false
+            inCorner.isActive = true
+        }
+        if show {
+            UIView.animate(withDuration: 0.25) { self.view.layoutIfNeeded() }
+        }
     }
 
     private func updateLoadingOverlay() {
@@ -3046,6 +3130,7 @@ final class AppleTvPlayerViewController: UIViewController {
             !osdDismissed && !nextUpVisible
             && (isPaused() || scrubTargetMs != nil || scrubFrozenMs != nil
                 || (CACurrentMediaTime() - lastShowAt < 4.0))
+        updateSubtitleLoadingPill(osdShown: shouldShow)
         let visible = osdContainer.alpha > 0.5
         if shouldShow && !visible {
             setSubtitlesRaised(true)

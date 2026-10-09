@@ -1560,6 +1560,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get searchingSubtitles => 'Altyazı aranıyor…';
 
   @override
+  String get fetchingSubtitles => 'Fetching subtitles';
+
+  @override
   String get downloadingSubtitle => 'Altyazı indiriliyor…';
 
   @override

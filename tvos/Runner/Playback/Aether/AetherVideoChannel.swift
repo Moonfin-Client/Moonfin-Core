@@ -241,6 +241,7 @@ final class AetherVideoChannel: NSObject, FlutterStreamHandler {
             "bufferedMs": Int((p.duration * Double(p.bufferProgress) * 1000).rounded()),
             "isPlaying": isPlaying,
             "isBuffering": isBuffering,
+            "isSubtitleLoading": p.isSubtitleLoading,
         ])
 
         // Captions can turn up part way through a live stream, so a change in

@@ -20,6 +20,7 @@ import 'letterbox_croppers.dart';
 import 'mpv_letterbox_crop.dart';
 import 'mpv_frame_sample.dart';
 import 'mpv_frame_sampler.dart';
+import 'pending_subtitle_choice.dart';
 import 'server_transcode_capabilities.dart';
 
 class _ParsedMpvConfCacheEntry {
@@ -261,7 +262,6 @@ class MediaKitPlayerBackend extends PlayerBackend
   // Bumped by every subtitle choice and every new or stopped source, so a
   // selection or retry still waiting on mpv can tell it was replaced.
   int _subtitleSelectionGeneration = 0;
-  int _subtitleSourceGeneration = 0;
 
   // Retained after a source ends so late mpv failures still read as subtitle
   // errors. The generation distinguishes that history from URLs registered
@@ -269,20 +269,15 @@ class MediaKitPlayerBackend extends PlayerBackend
   final _externalSubtitles =
       <String, ({String? title, String? language, int sourceGeneration})>{};
   final _externalSubtitleLoads = <String, Future<void>>{};
-  ({
-    String url,
-    bool Function() isCurrentSelection,
-    Future<void> Function() selectTrack,
-  })? _pendingExternalSubtitleSelection;
+  final _pendingSubtitleChoice = PendingSubtitleChoice();
 
   static const _externalSubtitleRetries = 5;
   static const _externalSubtitleRetryDelay = Duration(seconds: 10);
 
   void _resetSubtitleState() {
     _subtitleSelectionGeneration++;
-    _subtitleSourceGeneration++;
     _externalSubtitleLoads.clear();
-    _pendingExternalSubtitleSelection = null;
+    _pendingSubtitleChoice.nextSource();
   }
 
   bool _isLatestSubtitleSelection(int generation) =>
@@ -2338,7 +2333,7 @@ class MediaKitPlayerBackend extends PlayerBackend
         await _nativeSetProperty(native, 'secondary-sid', 'no');
         if (!isCurrentSelection()) return;
         if (isExternalSubtitle && externalSubtitleUrl != null) {
-          final selectTrack = () => setSubtitleTrack(
+          Future<void> selectTrack() => setSubtitleTrack(
             mpvTrackId,
             isBitmapSubtitle: isBitmapSubtitle,
             subtitleCodec: subtitleCodec,
@@ -2346,11 +2341,11 @@ class MediaKitPlayerBackend extends PlayerBackend
             externalSubtitleUrl: externalSubtitleUrl,
           );
           if (_externalSubtitles[externalSubtitleUrl]?.sourceGeneration !=
-              _subtitleSourceGeneration) {
-            _pendingExternalSubtitleSelection = (
-              url: externalSubtitleUrl,
-              isCurrentSelection: isCurrentSelection,
-              selectTrack: selectTrack,
+              _pendingSubtitleChoice.source) {
+            _pendingSubtitleChoice.hold(
+              externalSubtitleUrl,
+              isCurrent: isCurrentSelection,
+              select: selectTrack,
             );
           } else {
             unawaited(
@@ -2443,8 +2438,8 @@ class MediaKitPlayerBackend extends PlayerBackend
       return;
     }
     if (!_externalSubtitles.containsKey(url)) {
-      // The selected subtitle has not reached the normal background add yet.
-      // Keep reporting it as loading; selecting it is handled separately.
+      // The background add hasn't reached this subtitle yet. It stays
+      // loading until the held choice selects it.
       return;
     }
     final native = _player.platform as NativePlayer;
@@ -2616,25 +2611,14 @@ class MediaKitPlayerBackend extends PlayerBackend
     String? language,
     String? codec,
   }) async {
-    final sourceGeneration = _subtitleSourceGeneration;
+    final sourceGeneration = _pendingSubtitleChoice.source;
     _externalSubtitles[url] = (
       title: title,
       language: language,
       sourceGeneration: sourceGeneration,
     );
     await _addExternalSubtitle(url);
-
-    // An add from the previous source can finish after the next source starts.
-    // Only the source that registered this URL may consume its pending choice.
-    if (sourceGeneration == _subtitleSourceGeneration) {
-      final pendingSelection = _pendingExternalSubtitleSelection;
-      if (pendingSelection != null && pendingSelection.url == url) {
-        _pendingExternalSubtitleSelection = null;
-        if (pendingSelection.isCurrentSelection()) {
-          await pendingSelection.selectTrack();
-        }
-      }
-    }
+    await _pendingSubtitleChoice.added(url, sourceGeneration);
 
     _subtitleDebug(
       'sub-add title=$title lang=$language codec=$codec '

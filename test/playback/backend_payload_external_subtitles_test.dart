@@ -134,6 +134,7 @@ class _StubResolver extends MediaStreamResolver {
 Future<Map<String, dynamic>> _payloadFor({
   required List<Map<String, dynamic>> mediaStreams,
   required List<ExternalSubtitle> externalSubtitles,
+  int? subtitleStreamIndex,
 }) async {
   final backend = _CapturingBackend();
   final manager = PlaybackManager()
@@ -146,7 +147,7 @@ Future<Map<String, dynamic>> _payloadFor({
     );
   await manager.playItems(<dynamic>[
     <String, dynamic>{'Id': 'movie', 'Type': 'Movie'},
-  ]);
+  ], subtitleStreamIndex: subtitleStreamIndex);
   return backend.payload!;
 }
 
@@ -271,5 +272,63 @@ void main() {
     );
 
     expect(payload.containsKey('externalSubtitles'), isFalse);
+  });
+
+  test('a chosen sidecar goes out with the source', () async {
+    final payload = await _payloadFor(
+      mediaStreams: _transcodedDownloadStreams,
+      externalSubtitles: const [
+        ExternalSubtitle(
+          deliveryUrl: '/downloads/movie_sub_3.ass',
+          codec: 'ass',
+          streamIndex: 3,
+        ),
+        ExternalSubtitle(
+          deliveryUrl: '/downloads/movie_sub_4.ass',
+          codec: 'ass',
+          streamIndex: 4,
+        ),
+      ],
+      subtitleStreamIndex: 4,
+    );
+
+    expect(
+      payload['selectedExternalSubtitleUrl'],
+      '/downloads/movie_sub_4.ass',
+    );
+    expect(
+      _declared(payload).map((s) => s['url']),
+      contains(payload['selectedExternalSubtitleUrl']),
+    );
+  });
+
+  test('no sidecar is chosen when subtitles are turned off', () async {
+    final payload = await _payloadFor(
+      mediaStreams: _transcodedDownloadStreams,
+      externalSubtitles: const [
+        ExternalSubtitle(
+          deliveryUrl: '/downloads/movie_sub_3.ass',
+          codec: 'ass',
+          streamIndex: 3,
+        ),
+      ],
+      subtitleStreamIndex: -1,
+    );
+
+    expect(payload.containsKey('selectedExternalSubtitleUrl'), isFalse);
+  });
+
+  test('an embedded subtitle is not seeded as a sidecar', () async {
+    final payload = await _payloadFor(
+      mediaStreams: const [
+        <String, dynamic>{'Type': 'Video', 'Index': 0},
+        <String, dynamic>{'Type': 'Audio', 'Index': 1},
+        <String, dynamic>{'Type': 'Subtitle', 'Index': 2, 'Codec': 'subrip'},
+      ],
+      externalSubtitles: const [],
+      subtitleStreamIndex: 2,
+    );
+
+    expect(payload.containsKey('selectedExternalSubtitleUrl'), isFalse);
   });
 }

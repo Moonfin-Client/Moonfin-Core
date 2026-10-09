@@ -1180,7 +1180,6 @@ class PlaybackManager implements AudioOwnable {
   }
 
   void _bindStreams(PlayerBackend backend) {
-    // If the new backend can't report subtitle loading, reset the indicator to false.
     final subtitleLoader = backend is SubtitleLoadingBackend
         ? backend as SubtitleLoadingBackend
         : null;

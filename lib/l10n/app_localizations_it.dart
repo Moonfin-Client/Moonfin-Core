@@ -1563,6 +1563,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get searchingSubtitles => 'Ricerca sottotitoli…';
 
   @override
+  String get fetchingSubtitles => 'Fetching subtitles';
+
+  @override
   String get downloadingSubtitle => 'Downloading subtitle…';
 
   @override

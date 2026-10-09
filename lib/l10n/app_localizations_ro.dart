@@ -1584,6 +1584,9 @@ class AppLocalizationsRo extends AppLocalizations {
   String get searchingSubtitles => 'Se caută subtitrări…';
 
   @override
+  String get fetchingSubtitles => 'Fetching subtitles';
+
+  @override
   String get downloadingSubtitle => 'Se descarcă subtitrarea…';
 
   @override

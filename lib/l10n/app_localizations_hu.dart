@@ -1566,6 +1566,9 @@ class AppLocalizationsHu extends AppLocalizations {
   String get searchingSubtitles => 'Feliratok keresése…';
 
   @override
+  String get fetchingSubtitles => 'Fetching subtitles';
+
+  @override
   String get downloadingSubtitle => 'Felirat letöltése…';
 
   @override

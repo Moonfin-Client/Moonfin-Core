@@ -1515,6 +1515,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get searchingSubtitles => '正在搜索字幕…';
 
   @override
+  String get fetchingSubtitles => 'Fetching subtitles';
+
+  @override
   String get downloadingSubtitle => '正在下载字幕…';
 
   @override

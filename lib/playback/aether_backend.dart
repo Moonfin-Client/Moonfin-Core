@@ -23,7 +23,7 @@ import 'server_transcode_capabilities.dart';
 /// music, audiobooks and offline playback. Unlike the tvOS sibling there is
 /// no native player UI: Flutter owns the OSD and the video arrives through
 /// the `moonfin/aether_video` platform view.
-class AetherBackend implements PlayerBackend {
+class AetherBackend implements PlayerBackend, SubtitleLoadingBackend {
   AetherBackend(this._prefs) {
     _eventSub = _events.receiveBroadcastStream().listen(
       _handleEvent,
@@ -48,6 +48,8 @@ class AetherBackend implements PlayerBackend {
   Duration _buffer = Duration.zero;
   bool _isPlaying = false;
   bool _isBuffering = false;
+  bool _isSubtitleLoading = false;
+  final _subtitleLoadingStream = StreamController<bool>.broadcast();
   double _playbackSpeed = 1.0;
   double _volume = 100.0;
   double _audioDelaySeconds = 0.0;
@@ -116,6 +118,18 @@ class AetherBackend implements PlayerBackend {
     }
   }
 
+  @override
+  bool get isSubtitleLoading => _isSubtitleLoading;
+
+  @override
+  Stream<bool> get subtitleLoadingStream => _subtitleLoadingStream.stream;
+
+  void _setSubtitleLoading(bool loading) {
+    if (_disposed || _isSubtitleLoading == loading) return;
+    _isSubtitleLoading = loading;
+    _subtitleLoadingStream.add(loading);
+  }
+
   void _handleEvent(dynamic event) {
     if (_disposed || event is! Map) return;
     final map = event.map((k, v) => MapEntry(k.toString(), v));
@@ -128,6 +142,7 @@ class AetherBackend implements PlayerBackend {
         _buffer = Duration(milliseconds: _toInt(map['bufferedMs']));
         _isPlaying = _toBool(map['isPlaying']);
         _isBuffering = _toBool(map['isBuffering']);
+        _setSubtitleLoading(_toBool(map['isSubtitleLoading']));
         if (_isPlaying) _stallSawPlayback = true;
 
         _positionStream.add(_position);
@@ -163,6 +178,7 @@ class AetherBackend implements PlayerBackend {
       case 'error':
         _logPlaybackError(map);
         _errorStream.add(map.cast<String, dynamic>());
+        _setSubtitleLoading(false);
         _isPlaying = false;
         _isBuffering = false;
         _completed = false;
@@ -249,6 +265,7 @@ class AetherBackend implements PlayerBackend {
         : <String, String>{};
 
     _completed = false;
+    _setSubtitleLoading(false);
     _tracksKnown = false;
     _textTrackCount = 0;
     _activeSubtitleTrackIndex = null;
@@ -307,6 +324,7 @@ class AetherBackend implements PlayerBackend {
       _isBuffering = false;
       _bufferingStream.add(false);
     }
+    _setSubtitleLoading(false);
   }
 
   void _startStallWatchdog() {
@@ -685,5 +703,6 @@ class AetherBackend implements PlayerBackend {
     _errorStream.close();
     _remoteCommandStream.close();
     _tracksChangedController.close();
+    _subtitleLoadingStream.close();
   }
 }

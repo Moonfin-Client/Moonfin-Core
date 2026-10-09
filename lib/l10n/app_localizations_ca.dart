@@ -1569,6 +1569,9 @@ class AppLocalizationsCa extends AppLocalizations {
   String get searchingSubtitles => 'Cercant subtítols…';
 
   @override
+  String get fetchingSubtitles => 'Fetching subtitles';
+
+  @override
   String get downloadingSubtitle => 'Baixant subtítols…';
 
   @override

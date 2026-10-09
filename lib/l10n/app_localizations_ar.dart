@@ -1568,6 +1568,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get searchingSubtitles => 'جارٍ البحث عن الترجمة…';
 
   @override
+  String get fetchingSubtitles => 'Fetching subtitles';
+
+  @override
   String get downloadingSubtitle => 'يتم تحميل الترجمة…';
 
   @override

@@ -1568,6 +1568,9 @@ class AppLocalizationsCs extends AppLocalizations {
   String get searchingSubtitles => 'Hledání titulků…';
 
   @override
+  String get fetchingSubtitles => 'Fetching subtitles';
+
+  @override
   String get downloadingSubtitle => 'Stahování titulků…';
 
   @override

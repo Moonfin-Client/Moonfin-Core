@@ -2764,6 +2764,12 @@ abstract class AppLocalizations {
   /// **'Searching for subtitles…'**
   String get searchingSubtitles;
 
+  /// Playback status shown while the selected subtitle file is loading
+  ///
+  /// In en, this message translates to:
+  /// **'Fetching subtitles'**
+  String get fetchingSubtitles;
+
   /// Shown while a chosen subtitle is downloaded and the server is picking it up
   ///
   /// In en, this message translates to:

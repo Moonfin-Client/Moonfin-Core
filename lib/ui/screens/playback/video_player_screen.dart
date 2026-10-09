@@ -4152,6 +4152,23 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                           ),
                         _buildBottomOverlay(context),
                       ],
+                      // The controls carry the indicator while they're up.
+                      // Once they hide it stays in the corner, since the wait
+                      // can outlast the controls by minutes.
+                      if (_showSubtitleLoading &&
+                          !hideOsdForPreroll &&
+                          (!_controlsVisible || _isOsdLocked) &&
+                          !_isBringupInProgress(_bringupState.phase))
+                        Positioned(
+                          left: AppSpacing.spaceLg,
+                          right: AppSpacing.spaceLg,
+                          bottom:
+                              MediaQuery.of(context).padding.bottom +
+                              AppSpacing.spaceLg,
+                          child: _buildSubtitleLoadingIndicator(
+                            standalone: true,
+                          ),
+                        ),
                       _buildBufferingIndicator(),
                       _buildVolumeOverlay(),
                       if (PlatformDetection.useMobileUi)
@@ -4496,7 +4513,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     if (!loading) {
       if (_showSubtitleLoading) setState(() => _showSubtitleLoading = false);
     } else if (!_showSubtitleLoading) {
-      // Cached subtitles should not make the indicator flash briefly.
+      // A cached subtitle shouldn't flash the indicator.
       _subtitleLoadingTimer = Timer(const Duration(milliseconds: 500), () {
         _subtitleLoadingTimer = null;
         if (mounted) setState(() => _showSubtitleLoading = true);
@@ -4504,35 +4521,53 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     }
   }
 
-  Widget _buildSubtitleLoadingIndicator() {
+  Widget _buildSubtitleLoadingIndicator({bool standalone = false}) {
+    Widget status = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const SizedBox(
+          width: AppTypography.fontSizeLg,
+          height: AppTypography.fontSizeLg,
+          child: _SubtitleLoadingSpinner(),
+        ),
+        const SizedBox(width: AppSpacing.spaceSm),
+        Flexible(
+          child: Text(
+            AppLocalizations.of(context).fetchingSubtitles,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              color: Colors.white70,
+              fontSize: AppTypography.fontSizeXs,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ],
+    );
+    if (standalone) {
+      // Without the controls' gradient behind it, it needs its own backing to
+      // stay readable over a bright picture.
+      status = DecoratedBox(
+        decoration: BoxDecoration(
+          color: Colors.black54,
+          borderRadius: AppRadius.circular(14),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.spaceMd,
+            vertical: AppSpacing.spaceXs,
+          ),
+          child: status,
+        ),
+      );
+    }
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.spaceLg),
       child: IgnorePointer(
         child: Align(
           alignment: AlignmentDirectional.centerStart,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SizedBox(
-                width: AppTypography.fontSizeLg,
-                height: AppTypography.fontSizeLg,
-                child: _SubtitleLoadingSpinner(),
-              ),
-              const SizedBox(width: AppSpacing.spaceSm),
-              Flexible(
-                child: Text(
-                  AppLocalizations.of(context).fetchingSubtitles,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: Colors.white70,
-                    fontSize: AppTypography.fontSizeXs,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ],
-          ),
+          child: status,
         ),
       ),
     );

@@ -1560,6 +1560,9 @@ class AppLocalizationsNb extends AppLocalizations {
   String get searchingSubtitles => 'Søkker etter undertekster…';
 
   @override
+  String get fetchingSubtitles => 'Fetching subtitles';
+
+  @override
   String get downloadingSubtitle => 'Downloading subtitle…';
 
   @override

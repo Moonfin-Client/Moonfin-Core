@@ -205,6 +205,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
         'stillWatchingBody': l10n.stillWatchingContent,
         'stillWatchingContinue': l10n.stillWatchingContinue,
         'stillWatchingStop': l10n.stillWatchingStop,
+        'fetchingSubtitles': l10n.fetchingSubtitles,
       }),
     );
   }

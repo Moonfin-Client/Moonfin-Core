@@ -1565,6 +1565,9 @@ class AppLocalizationsFi extends AppLocalizations {
   String get searchingSubtitles => 'Etsitään tekstityksiä…';
 
   @override
+  String get fetchingSubtitles => 'Fetching subtitles';
+
+  @override
   String get downloadingSubtitle => 'Lataa tekstitys…';
 
   @override

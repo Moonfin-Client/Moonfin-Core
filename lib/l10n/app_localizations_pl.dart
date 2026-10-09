@@ -1675,6 +1675,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get searchingSubtitles => 'Wyszukiwanie napisów…';
 
   @override
+  String get fetchingSubtitles => 'Fetching subtitles';
+
+  @override
   String get downloadingSubtitle => 'Pobieranie napisów…';
 
   @override

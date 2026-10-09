@@ -49,10 +49,10 @@ class EmbeddedCaptionTrack {
   }
 }
 
-/// Reports preparation of the requested external subtitle, including retry waits.
-/// False also covers cancellation or failure; it does not guarantee success.
-/// Readiness does not depend on a subtitle cue being visible.
-/// Backends opt in by implementing this interface.
+/// Whether the chosen external subtitle is still being prepared, retries
+/// included. False also covers a canceled or failed load, so it doesn't mean
+/// the subtitle arrived, and it never waits for a cue to show. Backends opt in
+/// by implementing this interface.
 abstract interface class SubtitleLoadingBackend {
   bool get isSubtitleLoading;
   Stream<bool> get subtitleLoadingStream;
