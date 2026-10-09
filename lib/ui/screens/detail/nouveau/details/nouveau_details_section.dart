@@ -1228,11 +1228,11 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
       );
     } else if (item.type == 'Book') {
       final String path = <Object?>[
-        targetItem.rawData['Path'],
-        targetItem.rawData['FileName'],
-        targetItem.rawData['FilePath'],
-        targetItem.rawData['Name'],
-        targetItem.name,
+        item.rawData['Path'],
+        item.rawData['FileName'],
+        item.rawData['FilePath'],
+        item.rawData['Name'],
+        item.name,
       ].whereType<String>().firstWhere(
         (value) => value.trim().isNotEmpty,
         orElse: () => '',
