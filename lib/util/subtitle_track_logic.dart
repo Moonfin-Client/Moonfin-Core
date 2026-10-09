@@ -52,33 +52,21 @@ bool shouldRenderSubtitleNatively(String? codec) {
       normalized == 'xsub';
 }
 
-bool isBitmapSubtitleStream(Map<String, dynamic> stream) {
-  final codec = (stream['Codec'] as String?)?.trim().toLowerCase() ?? '';
-  return codec == 'pgs' ||
-      codec == 'pgssub' ||
-      codec == 'hdmv_pgs_subtitle' ||
-      codec == 'dvdsub' ||
-      codec == 'vobsub' ||
-      codec == 'dvd_subtitle' ||
-      codec == 'dvbsub' ||
-      codec == 'dvb_subtitle' ||
-      codec == 'xsub';
-}
+const _textSubtitleCodecs = {
+  'subrip',
+  'srt',
+  'vtt',
+  'webvtt',
+  'ass',
+  'ssa',
+  'ttml',
+};
 
-bool isTextSubtitleStream(Map<String, dynamic> stream) {
-  if (stream['IsTextSubtitleStream'] == true) return true;
-  if (isBitmapSubtitleStream(stream)) return false;
-  final codec = (stream['Codec'] as String?)?.trim().toLowerCase() ?? '';
-  if (codec.isEmpty) return false;
-  return codec == 'subrip' ||
-      codec == 'srt' ||
-      codec == 'vtt' ||
-      codec == 'webvtt' ||
-      codec == 'ass' ||
-      codec == 'ssa' ||
-      codec == 'ttml';
-}
-
+bool isTextSubtitleStream(Map<String, dynamic> stream) =>
+    stream['IsTextSubtitleStream'] == true ||
+    _textSubtitleCodecs.contains(
+      (stream['Codec'] as String?)?.trim().toLowerCase(),
+    );
 
 /// Internal streams first, external streams last.
 List<Map<String, dynamic>> sortedSubtitleStreams(
@@ -227,7 +215,7 @@ int? computeEffectiveSubtitleIndex({
       return aSpecial ? 1 : -1;
     }
 
-    // 2. SDH match (when preferSdh is enabled)
+    // 2. SDH match
     if (preferSdh) {
       final aSdhMatch = isSdhSubtitleStream(streamA);
       final bSdhMatch = isSdhSubtitleStream(streamB);
@@ -236,7 +224,17 @@ int? computeEffectiveSubtitleIndex({
       }
     }
 
-    // 3. Text format preference (when preferTextSubtitles is enabled)
+    // 3. A forced track only carries the foreign dialogue, so neither
+    // preference below may lift one above a full track.
+    if (preferTextSubtitles || preferExternalSubtitles) {
+      final aForced = streamA['IsForced'] == true;
+      final bForced = streamB['IsForced'] == true;
+      if (aForced != bForced) {
+        return aForced ? 1 : -1;
+      }
+    }
+
+    // 4. Text over bitmap
     if (preferTextSubtitles) {
       final aText = isTextSubtitleStream(streamA);
       final bText = isTextSubtitleStream(streamB);
@@ -245,7 +243,8 @@ int? computeEffectiveSubtitleIndex({
       }
     }
 
-    // 4. External vs Internal storage origin
+    // 5. Internal tracks first, so a bad external download can't beat a good
+    // internal one, unless the viewer prefers external files.
     final aExt = isExternalSubtitleStream(streamA);
     final bExt = isExternalSubtitleStream(streamB);
     if (aExt != bExt) {
@@ -256,7 +255,7 @@ int? computeEffectiveSubtitleIndex({
       }
     }
 
-    // 5. Non-SDH preference (when preferSdh is disabled)
+    // 6. Non-SDH over SDH
     if (!preferSdh) {
       final aSdh = isSdhSubtitleStream(streamA);
       final bSdh = isSdhSubtitleStream(streamB);
@@ -265,14 +264,14 @@ int? computeEffectiveSubtitleIndex({
       }
     }
 
-    // 6. Fancy vs Normal
+    // 7. Fancy vs Normal
     final aFormat = getFormatPriority(streamA);
     final bFormat = getFormatPriority(streamB);
     if (aFormat != bFormat) {
       return aFormat > bFormat ? -1 : 1;
     }
 
-    // 5. Forced flag (prefer non-forced for full subtitles, prefer forced for SubtitleMode.forced)
+    // 8. Forced flag (prefer non-forced for full subtitles, prefer forced for SubtitleMode.forced)
     final aForced = streamA['IsForced'] == true;
     final bForced = streamB['IsForced'] == true;
     if (aForced != bForced) {
@@ -283,14 +282,14 @@ int? computeEffectiveSubtitleIndex({
       }
     }
 
-    // 6. Default flag
+    // 9. Default flag
     final aDefault = streamA['IsDefault'] == true;
     final bDefault = streamB['IsDefault'] == true;
     if (aDefault != bDefault) {
       return aDefault ? -1 : 1;
     }
 
-    // 7. Tie-breaker: earlier stream index in the media container (smaller originalIndex is preferred)
+    // 10. Tie-breaker: earlier stream index in the media container (smaller originalIndex is preferred)
     return a.originalIndex.compareTo(b.originalIndex);
   });
 

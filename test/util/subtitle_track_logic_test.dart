@@ -51,21 +51,6 @@ void main() {
       expect(isSpecialSubtitleStream({'Title': 'English (SDH)'}), isFalse);
     });
   });
-  group('isBitmapSubtitleStream', () {
-    test('returns true for bitmap codecs', () {
-      expect(isBitmapSubtitleStream({'Codec': 'pgs'}), isTrue);
-      expect(isBitmapSubtitleStream({'Codec': 'PGSSUB'}), isTrue);
-      expect(isBitmapSubtitleStream({'Codec': 'vobsub'}), isTrue);
-      expect(isBitmapSubtitleStream({'Codec': 'dvdsub'}), isTrue);
-    });
-
-    test('returns false for text codecs', () {
-      expect(isBitmapSubtitleStream({'Codec': 'subrip'}), isFalse);
-      expect(isBitmapSubtitleStream({'Codec': 'srt'}), isFalse);
-      expect(isBitmapSubtitleStream({'Codec': 'ass'}), isFalse);
-      expect(isBitmapSubtitleStream({'Codec': 'vtt'}), isFalse);
-    });
-  });
   group('isTextSubtitleStream', () {
     test('returns true for IsTextSubtitleStream flag or text codecs', () {
       expect(isTextSubtitleStream({'IsTextSubtitleStream': true}), isTrue);
@@ -361,6 +346,84 @@ void main() {
           activeAudioLanguage: null,
         ),
         1, // Internal Text beats External Bitmap
+      );
+    });
+    test('a forced external sidecar does not beat the full internal track when preferExternalSubtitles is true', () {
+      final customStreams = [
+        {
+          "Codec": "subrip",
+          "Language": "eng",
+          "DisplayTitle": "English - Internal SRT",
+          "IsDefault": false,
+          "IsForced": false,
+          "IsExternal": false,
+          "Index": 1,
+        },
+        {
+          "Codec": "subrip",
+          "Language": "eng",
+          "DisplayTitle": "English Forced - External SRT",
+          "IsDefault": false,
+          "IsForced": true,
+          "IsExternal": true,
+          "Index": 2,
+        },
+      ];
+      expect(
+        computeEffectiveSubtitleIndex(
+          subtitleStreams: customStreams,
+          selectedSubtitleIndex: null,
+          activePlaybackSubtitleIndex: null,
+          subtitleMode: SubtitleMode.always,
+          preferredLanguage: 'eng',
+          fallbackLanguage: '',
+          preferSdh: false,
+          preferExternalSubtitles: true,
+          pgsDirectPlay: true,
+          assDirectPlay: true,
+          preferredAudioLanguage: '',
+          activeAudioLanguage: null,
+        ),
+        1,
+      );
+    });
+    test('a forced text track does not beat the full default PGS track when preferTextSubtitles is true', () {
+      final customStreams = [
+        {
+          "Codec": "pgssub",
+          "Language": "eng",
+          "DisplayTitle": "English - PGS",
+          "IsDefault": true,
+          "IsForced": false,
+          "IsExternal": false,
+          "Index": 1,
+        },
+        {
+          "Codec": "subrip",
+          "Language": "eng",
+          "DisplayTitle": "English Forced - SRT",
+          "IsDefault": false,
+          "IsForced": true,
+          "IsExternal": false,
+          "Index": 2,
+        },
+      ];
+      expect(
+        computeEffectiveSubtitleIndex(
+          subtitleStreams: customStreams,
+          selectedSubtitleIndex: null,
+          activePlaybackSubtitleIndex: null,
+          subtitleMode: SubtitleMode.flagged,
+          preferredLanguage: 'eng',
+          fallbackLanguage: '',
+          preferSdh: false,
+          preferTextSubtitles: true,
+          pgsDirectPlay: true,
+          assDirectPlay: true,
+          preferredAudioLanguage: '',
+          activeAudioLanguage: null,
+        ),
+        1,
       );
     });
     test('prefers internal SDH track over external non-SDH track when preferSdh is false', () {
