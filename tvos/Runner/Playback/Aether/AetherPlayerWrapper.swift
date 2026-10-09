@@ -1407,8 +1407,9 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         var snapshot: [String: String] = [
             "engine": "AetherEngine",
             "backend": String(describing: engine.playbackBackend),
-            "video_format": String(describing: engine.videoFormat),
-            "source_format": String(describing: engine.sourceVideoFormat),
+            "source_format": Self.videoFormatLabel(engine.sourceVideoFormat),
+            "output_format": Self.outputFormatLabel(
+                source: engine.sourceVideoFormat, presented: engine.videoFormat),
             "is_live": isLiveSession ? "yes" : "no",
         ]
         if let profile = engine.sourceDVProfile {
@@ -1450,6 +1451,28 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             snapshot["last_error"] = message
         }
         return snapshot
+    }
+
+    private static func videoFormatLabel(_ format: VideoFormat) -> String {
+        switch format {
+        case .sdr: return "SDR"
+        case .hdr10: return "HDR10"
+        case .hdr10Plus: return "HDR10+"
+        case .dolbyVision: return "Dolby Vision"
+        case .hlg: return "HLG"
+        }
+    }
+
+    /// tvOS has no reliable way to tell an app the TV is in HDR. The screen's EDR
+    /// headroom can stay at 1.0 while the TV shows HDR or Dolby Vision, so an HDR
+    /// source the engine couldn't confirm on a display that takes HDR isn't called SDR.
+    private static func outputFormatLabel(source: VideoFormat, presented: VideoFormat) -> String {
+        #if os(tvOS)
+            if presented == .sdr, source != .sdr, AetherEngine.displayCapabilities.supportsHDR {
+                return "Not reported by tvOS"
+            }
+        #endif
+        return videoFormatLabel(presented)
     }
 }
 

@@ -2866,16 +2866,11 @@ final class AppleTvPlayerViewController: UIViewController {
             else { return nil }
             return v
         }
-        func pair(_ a: String, _ b: String) -> String? {
-            guard let first = value(a) else { return nil }
-            return "\(first) / \(value(b) ?? "?")"
-        }
 
         var rows: [(label: String, value: String)] = []
         if let v = value("backend") { rows.append(("Playback Path", v)) }
-        if let v = pair("source_format", "video_format") {
-            rows.append(("Source / Output Format", v))
-        }
+        if let v = value("source_format") { rows.append(("Source Format", v)) }
+        if let v = value("output_format") { rows.append(("Output Format", v)) }
         if let v = value("dv_profile") { rows.append(("Dolby Vision", v)) }
         if let v = value("source_fps") { rows.append(("Source FPS", v)) }
         if let v = value("source_bitrate") { rows.append(("Source Bitrate", v)) }
