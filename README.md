@@ -147,11 +147,11 @@ Contributions are welcome. Check the existing issues first, discuss major featur
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guidelines and the pull request process.
 
-## Help translate Moonfin [here](https://translate.moonfin.io/engage/moonfin-core/)
+## Help translate Moonfin [here](https://translate.moonfin.io/engage/moonfin/)
 
 <a href="https://translate.moonfin.io/engage/moonfin/">
   <img
-    src="https://translate.moonfin.io/widgets/moonfin/moonfin-core/multi-auto.svg"
+    src="https://translate.moonfin.io/widget/moonfin/moonfin-core/multi-auto.svg"
     alt="Moonfin Core translation status by language"
   />
 </a>
