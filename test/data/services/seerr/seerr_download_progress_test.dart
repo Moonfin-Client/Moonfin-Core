@@ -29,13 +29,28 @@ void main() {
     expect(summary.percent, 33);
   });
 
-  test('entries without a download id still all count', () {
-    final summary = SeerrDownloadSummary.fromItems(const [
-      SeerrDownloadingItem(size: 4 * gb, sizeLeft: 1 * gb),
-      SeerrDownloadingItem(size: 4 * gb, sizeLeft: 1 * gb),
+  // A release held back by a delay profile is listed once per episode with
+  // the whole release's size and no download id. It read as a 107 GB total
+  // at 0% next to a pack that was really downloading.
+  test('held back releases are left out', () {
+    final summary = SeerrDownloadSummary.fromItems([
+      for (var i = 0; i < 10; i++)
+        const SeerrDownloadingItem(size: 23 * gb, sizeLeft: 23 * gb),
+      const SeerrDownloadingItem(
+        size: 19 * gb,
+        sizeLeft: 5 * gb,
+        downloadId: 'S06',
+      ),
     ])!;
-    expect(summary.totalBytes, 8 * gb);
-    expect(summary.downloadedBytes, 6 * gb);
+    expect(summary.totalBytes, 19 * gb);
+    expect(summary.downloadedBytes, 14 * gb);
+  });
+
+  test('only held back releases draw no bar', () {
+    final summary = SeerrDownloadSummary.fromItems(const [
+      SeerrDownloadingItem(size: 23 * gb, sizeLeft: 23 * gb),
+    ]);
+    expect(summary, isNull);
   });
 
   test('the id is read from the Seerr payload', () {

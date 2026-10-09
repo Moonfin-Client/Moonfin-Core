@@ -175,7 +175,8 @@ class SeerrDownloadingItem {
   final int? sizeLeft;
 
   /// The download client's id. Sonarr lists a season pack once per episode,
-  /// all with the same id and the whole pack's size.
+  /// all with the same id and the whole pack's size. Null for a release held
+  /// back by a delay profile, which is not downloading yet.
   final String? downloadId;
 
   const SeerrDownloadingItem({this.size, this.sizeLeft, this.downloadId});
