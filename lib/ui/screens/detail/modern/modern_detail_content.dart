@@ -2895,7 +2895,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
             ).format(addedOn);
 
       return Focus(
-        canRequestFocus: true,
+        canRequestFocus: false,
         onFocusChange: (focused) {
           if (focused && mounted) {
             widget.onToggleNavbar?.call(false);
@@ -2916,35 +2916,46 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
             const SizedBox(height: 12),
 
             // File name details card
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.04),
-                borderRadius: AppRadius.circular(8),
-                border: Border.all(color: Colors.white10),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    fileName,
-                    style: textTheme.bodyLarge?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    l10n.formatExtension(container),
-                    style: textTheme.bodySmall?.copyWith(color: Colors.white70),
-                  ),
-                  if (addedLabel != null)
+            _DetailsContainer(
+              isScrollable: false,
+              hasAudioButton: false,
+              hasSubtitleButton: false,
+              audioButtonFocusNode: _audioShowAllFocusNode,
+              subtitleButtonFocusNode: _subtitleShowAllFocusNode,
+              canRequestFocus: true,
+              focusNode: _detailsTabFocusNode,
+              onNavigateUp: _focusSelectedTab,
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.04),
+                  borderRadius: AppRadius.circular(8),
+                  border: Border.all(color: Colors.white10),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
                     Text(
-                      l10n.dateCreatedFormat(addedLabel),
+                      fileName,
+                      style: textTheme.bodyLarge?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      l10n.formatExtension(container),
                       style: textTheme.bodySmall?.copyWith(color: Colors.white70),
                     ),
-                ],
+                    if (addedLabel != null)
+                      Text(
+                        l10n.dateCreatedFormat(addedLabel),
+                        style: textTheme.bodySmall?.copyWith(color: Colors.white70),
+                      ),
+                  ],
+                ),
               ),
             ),
           ],
