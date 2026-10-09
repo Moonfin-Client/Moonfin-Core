@@ -167,13 +167,18 @@ class SeerrMedia {
 }
 
 /// One Radarr/Sonarr queue entry, reported by Seerr while a request downloads.
-/// Only the byte counts are kept since that is all the progress bars need.
+/// Only what the progress bars need: the byte counts, and the download id to
+/// count a season pack once.
 @JsonSerializable()
 class SeerrDownloadingItem {
   final int? size;
   final int? sizeLeft;
 
-  const SeerrDownloadingItem({this.size, this.sizeLeft});
+  /// The download client's id. Sonarr lists a season pack once per episode,
+  /// all with the same id and the whole pack's size.
+  final String? downloadId;
+
+  const SeerrDownloadingItem({this.size, this.sizeLeft, this.downloadId});
 
   factory SeerrDownloadingItem.fromJson(Map<String, dynamic> json) =>
       _$SeerrDownloadingItemFromJson(json);
