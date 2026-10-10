@@ -82,10 +82,42 @@ The full list is on the [Features](https://github.com/Moonfin-Client/Moonfin-Cor
 
 ## Screenshots
 
-<img width="48%" height="1200" alt="Tablet and desktop screenshot 1" src="https://github.com/user-attachments/assets/3ff05968-655f-42c7-a9ff-55b08529356c" />
-<img width="48%" height="1200" alt="Tablet and desktop screenshot 2" src="https://github.com/user-attachments/assets/70263c7b-24de-410d-a24f-d8bd1b08f1c6" />
-<img width="23%" height="2244" alt="Phone screenshot 1" src="https://github.com/user-attachments/assets/8bcc0483-a650-43e3-91fb-b9d3b4c57440" />
-<img width="23%" height="2244" alt="Phone screenshot 2" src="https://github.com/user-attachments/assets/1813ac6b-546e-4796-b4a8-15fe006d4c9e" />
+### TV and desktop
+
+<p align="center">
+  <img src="assets/images/tv/1-home.png" width="100%" alt="Home screen with the featured media bar" />
+</p>
+<p align="center">
+  <img src="assets/images/tv/2-playback.png" width="49%" alt="Player with trickplay thumbnails and the subtitle menu" />
+  <img src="assets/images/tv/5-livetv.png" width="49%" alt="Live TV guide, channel changer and player" />
+</p>
+<p align="center">
+  <img src="assets/images/tv/3-details.png" width="49%" alt="The five detail screen styles" />
+  <img src="assets/images/tv/4-mediabars.png" width="49%" alt="The six media bar styles" />
+</p>
+<p align="center">
+  <img src="assets/images/tv/8-home-rows.png" width="49%" alt="Modern and Classic home rows" />
+  <img src="assets/images/tv/6-navigation.png" width="49%" alt="Top and Sidebar navigation" />
+</p>
+<p align="center">
+  <img src="assets/images/tv/7-books-games.png" width="49%" alt="Books library and retro game library" />
+  <img src="assets/images/tv/9-music.png" width="49%" alt="Music player with synced lyrics" />
+</p>
+
+### Mobile
+
+<p align="center">
+  <img src="assets/images/phone/1-home.png" width="24%" alt="Phone home screen with the featured media bar" />
+  <img src="assets/images/phone/2-playback.png" width="24%" alt="Phone player with trickplay and the subtitle menu" />
+  <img src="assets/images/phone/3-details.png" width="24%" alt="The five detail screen styles on a phone" />
+  <img src="assets/images/phone/4-mediabars.png" width="24%" alt="The six media bar styles on a phone" />
+</p>
+<p align="center">
+  <img src="assets/images/phone/7-navigation.png" width="24%" alt="Top, Sidebar and Bottom navigation on a phone" />
+  <img src="assets/images/phone/5-livetv.png" width="24%" alt="Phone Live TV guide and player" />
+  <img src="assets/images/phone/6-books-games.png" width="24%" alt="Phone books and retro game libraries" />
+  <img src="assets/images/phone/8-music.png" width="24%" alt="Phone music player with synced lyrics" />
+</p>
 
 More in the [Screenshots](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Screenshots) gallery.
 
