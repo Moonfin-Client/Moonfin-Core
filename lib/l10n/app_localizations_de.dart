@@ -5057,7 +5057,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get trakt => 'Trakt';
 
   @override
-  String get letterboxd => 'Briefkastend';
+  String get letterboxd => 'Letterboxd';
 
   @override
   String get myAnimeList => 'MeineAnimeListe';

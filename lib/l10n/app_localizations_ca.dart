@@ -2499,21 +2499,21 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String nextSeriesRecording(String dateTime) {
-    return 'Next series recording: $dateTime';
+    return 'Següent enregistrament de la sèrie: $dateTime';
   }
 
   @override
   String get noUpcomingSeriesRecording =>
-      'Series recording is scheduled, but the guide has no upcoming episodes';
+      'L\'enregistrament de la sèrie està programat, però la guia no té cap episodi pròxim';
 
   @override
-  String get recordCurrentEpisode => 'Record This Episode';
+  String get recordCurrentEpisode => 'Enregistra aquest episodi';
 
   @override
-  String get recordCurrentProgram => 'Record This Program';
+  String get recordCurrentProgram => 'Enregistra aquest programa';
 
   @override
-  String get cancelCurrentRecording => 'Cancel This Recording';
+  String get cancelCurrentRecording => 'Cancel·la aquest enregistrament';
 
   @override
   String get cancelRecordingAction => 'Cancel·la la gravació';
@@ -2993,7 +2993,7 @@ class AppLocalizationsCa extends AppLocalizations {
   String get focusBorderColor => 'Color de la vora del focus';
 
   @override
-  String get watchedIndicators => 'Indicadors observats';
+  String get watchedIndicators => 'Indicadors de contingut vist';
 
   @override
   String get always => 'Sempre';
@@ -5344,11 +5344,11 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get watchedIndicatorsBackdrops =>
-      'Indicadors observats, telons de fons';
+      'Indicadors de contingut vist, telons de fons';
 
   @override
   String get focusColorWatchedIndicatorsBackdrops =>
-      'Color del focus, indicadors observats, fons';
+      'Color del focus, indicadors de contingut vist, fons';
 
   @override
   String get navbarStyleToolbarAppearance =>
@@ -10059,7 +10059,7 @@ class AppLocalizationsCa extends AppLocalizations {
   String get contextMenuMarkWatched => 'Marca com a vist';
 
   @override
-  String get contextMenuMarkUnwatched => 'Marca com a no observat';
+  String get contextMenuMarkUnwatched => 'Marca com a no vist';
 
   @override
   String get contextMenuAddToFavorites => 'Afegeix a Preferits';
@@ -13495,32 +13495,32 @@ class AppLocalizationsCa extends AppLocalizations {
   }
 
   @override
-  String get smartDownloadsSection => 'Smart downloads';
+  String get smartDownloadsSection => 'Baixades intel·ligents';
 
   @override
-  String get smartDownloadsEnable => 'Download next episodes';
+  String get smartDownloadsEnable => 'Baixa els episodis següents';
 
   @override
   String get smartDownloadsEnableSubtitle =>
-      'When you finish an episode on any device, Moonfin downloads the next ones. Downloaded episodes are deleted once watched.';
+      'Quan acabes un episodi en qualsevol dispositiu, Moonfin baixa els següents. Els episodis baixats se suprimeixen un cop vistos.';
 
   @override
-  String get smartDownloadsKeepReady => 'Episodes to keep downloaded';
+  String get smartDownloadsKeepReady => 'Episodis que es mantenen baixats';
 
   @override
   String smartDownloadsKeepReadySubtitle(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'Keeps the next $count episodes downloaded',
-      one: 'Keeps the next episode downloaded',
+      other: 'Manté baixats els $count episodis següents',
+      one: 'Manté baixat el següent episodi',
     );
     return '$_temp0';
   }
 
   @override
   String get smartDownloadsKeepReadyLowered =>
-      'Episodes already downloaded stay on your device. The new number applies to future downloads.';
+      'Els episodis que ja s\'han baixat es queden al dispositiu. El nou nombre s\'aplica a les baixades futures.';
 
   @override
   String get autoDownloadSection => 'Baixades automàtiques';
