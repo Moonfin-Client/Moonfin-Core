@@ -54,6 +54,10 @@ const double _cardPosterWidth = 110;
 /// need the same number, one to reserve it and one to spend it.
 const double _tileFocusInset = 12;
 
+/// Behind the action buttons on a poster. Dark enough for the icon colours on
+/// a bright poster.
+const Color _posterActionBackdrop = Color(0xB3000000);
+
 double _uiScale() => PlatformDetection.useDesktopUi
     ? GetIt.instance<UserPreferences>()
           .get(UserPreferences.desktopUiScale)
@@ -360,6 +364,10 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
   ({int perLine, double lineExtent, double lineSpacing, double leadingPad})?
   _tileGeometry;
 
+  /// Whether the tiles put the requester under its label, from the last
+  /// tile-grid layout.
+  bool _splitRequester = false;
+
   /// Slide the grid so the focused tile's row starts at the top. Runs after
   /// the frame so it settles after the focus system has scrolled.
   void _snapToTileRow(int index) {
@@ -428,6 +436,7 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
           onDecline: () => vm.declineRequest(req.id),
           onRetry: () => vm.retryRequest(req.id),
           onFocusGained: () => _snapToTileRow(index),
+          splitRequester: _splitRequester,
         ),
       );
     }
@@ -453,6 +462,13 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
                 scale,
                 constraints.maxWidth - _leftInset - 16,
                 12,
+                viewportHeight: constraints.maxHeight,
+                requesterLines: [
+                  for (final r in s.requests)
+                    l10n.requestedByName(
+                      r.requestedBy?.bestName ?? l10n.unknown,
+                    ),
+                ],
               ),
               itemCount: s.requests.length + (s.hasMore ? 1 : 0),
               itemBuilder: (context, index) => index >= s.requests.length
@@ -623,21 +639,63 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
   ///
   /// The ratio comes from the real tile width: the poster scales with width
   /// but the caption is a fixed height, so no single ratio works everywhere.
-  SliverGridDelegate _tileGrid(double scale, double available, double topPad) {
+  ///
+  /// A row taller than [viewportHeight] never shows its bottom, which is what
+  /// a 1080p TV at 2x did. Columns are added until a whole row fits.
+  SliverGridDelegate _tileGrid(
+    double scale,
+    double available,
+    double topPad, {
+    required double viewportHeight,
+    List<String> requesterLines = const [],
+  }) {
     final extent = (PlatformDetection.isTV ? 150.0 : 220.0) * scale;
     final spacing = 16 * scale;
     final rowSpacing = 24 * scale;
-    final columns = math.max(
+    final textScaler = MediaQuery.textScalerOf(context);
+    final borders = ThemeRegistry.active.borders;
+    // The focus border can be the wider one, and it narrows the caption.
+    final border = math.max(borders.cardBorder.width, borders.focusBorder.width);
+    double widthFor(int columns) =>
+        (available - spacing * (columns - 1)) / columns;
+    // Any name too long for one line puts every tile's requester under its
+    // label. Decided here once and handed to the tiles, so the reservation
+    // and what the captions draw can never disagree.
+    bool splitFor(int columns) => requesterLines.any(
+      (line) => !SeerrRequestTileCaption.requesterFitsTile(
+        context,
+        line,
+        widthFor(columns),
+        scale,
+        border,
+      ),
+    );
+    double heightFor(int columns) {
+      final width = widthFor(columns);
+      final split = splitFor(columns);
+      return width * 1.5 +
+          SeerrRequestTileCaption.heightFor(
+            scale,
+            textScaler,
+            splitRequester: split,
+          ) +
+          _tileFocusInset * 2;
+    }
+    var columns = math.max(
       1,
       ((available + spacing) / (extent + spacing)).ceil(),
     );
-    final tileWidth = (available - spacing * (columns - 1)) / columns;
-    final tileHeight =
-        tileWidth * 1.5 +
-        SeerrRequestTileCaption.reservedHeight * scale +
-        _tileFocusInset * 2;
-    // Written during build on purpose. It is a plain field the row snap reads
-    // after the frame, not state the widget rebuilds from.
+    // ponytail: stops at 110 wide, about what the two compact action buttons
+    // need. A shorter screen than that still cuts the row.
+    while (heightFor(columns) > viewportHeight - topPad &&
+        widthFor(columns + 1) >= 110 * scale) {
+      columns++;
+    }
+    final tileWidth = widthFor(columns);
+    final tileHeight = heightFor(columns);
+    // Written during build on purpose. The row snap reads them after the
+    // frame and the tiles while the grid lays them out, after this runs.
+    _splitRequester = splitFor(columns);
     _tileGeometry = (
       perLine: columns,
       lineExtent: tileHeight,
@@ -662,6 +720,7 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
             _uiScale(),
             constraints.maxWidth - _leftInset - 16,
             12,
+            viewportHeight: constraints.maxHeight,
           ),
           itemCount: 12,
           itemBuilder: (_, _) => const _SkeletonCard(tile: true),
@@ -1130,9 +1189,8 @@ class _CardActionButton extends StatelessWidget {
   final FocusNode? focusNode;
   final VoidCallback? onPressed;
 
-  /// Draw the icon alone and put the label in a tooltip. Two labelled buttons
-  /// want about 190px and a TV tile's caption has about 111, so the second
-  /// fell outside the card shell's ClipRRect but stayed focusable.
+  /// Round icon over the poster, label in a tooltip. Two labelled buttons
+  /// want about 190px and a TV tile is about 130 wide.
   final bool compact;
 
   const _CardActionButton({
@@ -1147,24 +1205,35 @@ class _CardActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scale = _uiScale();
-    final glyph = Icon(icon, size: (compact ? 18 : 16) * scale, color: color);
+    final glyph = Icon(icon, size: (compact ? 22 : 16) * scale, color: color);
     Widget button = TextButton(
       onPressed: onPressed,
       focusNode: focusNode,
       style:
           TextButton.styleFrom(
-            backgroundColor: color.withValues(alpha: 0.12),
-            padding: EdgeInsets.symmetric(
-              horizontal: (compact ? 8 : 10) * scale,
-              vertical: 6 * scale,
-            ),
-            // Same height either way, so the caption's reservation holds.
-            minimumSize: Size(compact ? 36 * scale : 0, 32 * scale),
+            backgroundColor: compact
+                ? _posterActionBackdrop
+                : color.withValues(alpha: 0.12),
+            padding: compact
+                ? EdgeInsets.zero
+                : EdgeInsets.symmetric(
+                    horizontal: 10 * scale,
+                    vertical: 6 * scale,
+                  ),
+            minimumSize: compact
+                ? Size.square(36 * scale)
+                : Size(0, 32 * scale),
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            shape: RoundedRectangleBorder(borderRadius: AppRadius.circular(8)),
+            shape: compact
+                ? const CircleBorder()
+                : RoundedRectangleBorder(borderRadius: AppRadius.circular(8)),
           ).copyWith(
+            // Hover too, so the mouse gets the same coloured ring the remote
+            // gets on focus.
             side: WidgetStateProperty.resolveWith(
-              (states) => states.contains(WidgetState.focused)
+              (states) =>
+                  states.contains(WidgetState.focused) ||
+                      states.contains(WidgetState.hovered)
                   ? BorderSide(color: color, width: 2)
                   : BorderSide.none,
             ),
@@ -1220,7 +1289,10 @@ class _CardActionFocus extends StatelessWidget {
     if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
       return KeyEventResult.ignored;
     }
-    final actions = actionFocuses.where((n) => n.context != null).toList();
+    // A node keeps its context after its button is gone, so check mounted.
+    final actions = actionFocuses
+        .where((n) => n.context?.mounted ?? false)
+        .toList();
     if (actions.isEmpty) return KeyEventResult.ignored;
     final actionIndex = actions.indexWhere((n) => n.hasFocus);
 
@@ -1234,6 +1306,10 @@ class _CardActionFocus extends StatelessWidget {
         return KeyEventResult.handled;
       }
       if (actionIndex == actions.length - 1) {
+        // Leave the tile the way the tile itself would, from its own bounds,
+        // so right moves on to the next request instead of dying on the last
+        // button. At the end of a row there is nothing there and focus stays.
+        cardFocus.focusInDirection(TraversalDirection.right);
         return KeyEventResult.handled;
       }
     }
@@ -1370,6 +1446,9 @@ class _RequestCard extends StatefulWidget {
   /// whole-row offset instead of leaving the next one half cut.
   final VoidCallback? onFocusGained;
 
+  /// The grid's call for every tile: requester under its label or beside it.
+  final bool splitRequester;
+
   const _RequestCard({
     required this.request,
     this.summary,
@@ -1380,6 +1459,7 @@ class _RequestCard extends StatefulWidget {
     this.onDecline,
     this.onRetry,
     this.onFocusGained,
+    this.splitRequester = false,
   });
 
   @override
@@ -1474,6 +1554,7 @@ class _RequestCardState extends State<_RequestCard> with FocusStateMixin {
     final onSurface = AppColorScheme.onSurface;
     final downloadSummary = SeerrDownloadSummary.forRequest(request);
     final (statusLabel, statusColor) = _StatusChip.infoFor(request, l10n);
+    final actions = _actions(l10n);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1519,14 +1600,29 @@ class _RequestCardState extends State<_RequestCard> with FocusStateMixin {
                   bottom: 0,
                   child: _StatusStripe(color: statusColor, scale: scale),
                 ),
+                // On the poster rather than in the caption, so every tile
+                // keeps the same height and a row has no dead space under
+                // the tiles without actions. Approve left, decline right.
+                if (actions.isNotEmpty)
+                  Positioned(
+                    left: 8 * scale,
+                    right: 8 * scale,
+                    bottom: 13 * scale,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: actions,
+                    ),
+                  ),
               ],
             ),
           ),
         ),
         SeerrRequestTileCaption(
           title: title,
+          requestedByLine: l10n.requestedByName(requester),
           requestedByLabel: l10n.requestedByLabel,
           requester: requester,
+          splitRequester: widget.splitRequester,
           date: date,
           scale: scale,
           marqueeTitle: showFocusBorder,
@@ -1538,7 +1634,6 @@ class _RequestCardState extends State<_RequestCard> with FocusStateMixin {
                   scale: scale,
                 )
               : _StatusPill(label: statusLabel, color: statusColor),
-          actions: _actions(l10n, onSurface),
         ),
       ],
     );
@@ -1624,74 +1719,24 @@ class _RequestCardState extends State<_RequestCard> with FocusStateMixin {
                   // Pins the provenance to the foot so it lines up across the
                   // list. The card height is fixed, so the slack is real.
                   const Spacer(),
-                  Row(
-                    children: [
-                      Expanded(
-                        // Who asked, then when. The editor is usually the
-                        // requester, so it is not shown.
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              l10n.requestedByName(requester),
-                              style: TextStyle(
-                                color: onSurface.withValues(alpha: 0.54),
-                                fontSize: 12 * scale,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            if (date.isNotEmpty)
-                              Text(
-                                date,
-                                style: TextStyle(
-                                  color: onSurface.withValues(alpha: 0.38),
-                                  fontSize: 12 * scale,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                          ],
-                        ),
-                      ),
-                      if (widget.isActioning)
-                        SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: onSurface,
-                          ),
-                        )
-                      else if (widget.canManage &&
-                          request.status == SeerrRequest.statusPending) ...[
-                        _CardActionButton(
-                          label: l10n.approve,
-                          icon: Icons.check_circle_outline,
-                          color: AppColorScheme.statusAvailable,
-                          focusNode: _approveFocus,
-                          onPressed: widget.onApprove,
-                        ),
-                        const SizedBox(width: 6),
-                        _CardActionButton(
-                          label: l10n.declineAction,
-                          icon: Icons.cancel_outlined,
-                          color: AppColorScheme.statusError,
-                          focusNode: _declineFocus,
-                          onPressed: widget.onDecline,
-                        ),
-                      ] else if (widget.canManage &&
-                          request.status == SeerrRequest.statusFailed)
-                        _CardActionButton(
-                          label: l10n.retry,
-                          icon: Icons.refresh,
-                          color: AppColorScheme.statusPending,
-                          focusNode: _retryFocus,
-                          onPressed: widget.onRetry,
-                        ),
-                    ],
+                  // Who asked, then when, in one line. The editor is usually
+                  // the requester, so it is not shown.
+                  Text(
+                    [
+                      l10n.requestedByName(requester),
+                      if (date.isNotEmpty) date,
+                    ].join(' · '),
+                    style: TextStyle(
+                      color: onSurface.withValues(alpha: 0.54),
+                      fontSize: 12 * scale,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
+                  // A row of their own, full width and labelled: sharing the
+                  // line with the provenance cut both the names and the date
+                  // on a phone.
+                  ..._phoneActions(l10n, scale, onSurface),
                 ],
               ),
             ),
@@ -1701,16 +1746,87 @@ class _RequestCardState extends State<_RequestCard> with FocusStateMixin {
     );
   }
 
-  /// The tile's action row: approve and decline, retry, or the spinner. Icon
-  /// only, since the caption under a poster is too narrow for two labelled
-  /// buttons. The stacked card builds its own labelled pair inline.
-  List<Widget> _actions(AppLocalizations l10n, Color onSurface) {
+  /// The phone card's action row: approve and decline side by side, each half
+  /// the width with its label, or retry, or the spinner. Empty when there is
+  /// nothing to do, so those cards keep the provenance at the foot.
+  List<Widget> _phoneActions(
+    AppLocalizations l10n,
+    double scale,
+    Color onSurface,
+  ) {
+    final Widget row;
     if (widget.isActioning) {
-      return [
-        SizedBox(
-          width: 18,
-          height: 18,
+      row = Center(
+        child: SizedBox(
+          width: 18 * scale,
+          height: 18 * scale,
           child: CircularProgressIndicator(strokeWidth: 2, color: onSurface),
+        ),
+      );
+    } else if (widget.canManage &&
+        request.status == SeerrRequest.statusPending) {
+      row = Row(
+        children: [
+          Expanded(
+            child: _CardActionButton(
+              label: l10n.approve,
+              icon: Icons.check_circle_outline,
+              color: AppColorScheme.statusAvailable,
+              focusNode: _approveFocus,
+              onPressed: widget.onApprove,
+            ),
+          ),
+          SizedBox(width: 8 * scale),
+          Expanded(
+            child: _CardActionButton(
+              label: l10n.declineAction,
+              icon: Icons.cancel_outlined,
+              color: AppColorScheme.statusError,
+              focusNode: _declineFocus,
+              onPressed: widget.onDecline,
+            ),
+          ),
+        ],
+      );
+    } else if (widget.canManage &&
+        request.status == SeerrRequest.statusFailed) {
+      row = _CardActionButton(
+        label: l10n.retry,
+        icon: Icons.refresh,
+        color: AppColorScheme.statusPending,
+        focusNode: _retryFocus,
+        onPressed: widget.onRetry,
+      );
+    } else {
+      return const [];
+    }
+    // The spinner takes the buttons' height, so the card does not jump when
+    // a tap starts the action.
+    return [
+      SizedBox(height: 10 * scale),
+      SizedBox(height: 36 * scale, child: row),
+    ];
+  }
+
+  /// The buttons over the poster's foot: approve and decline, retry, or the
+  /// spinner. Icon only, since a TV tile is too narrow for two labelled
+  /// buttons. The stacked card builds its own labelled pair inline.
+  List<Widget> _actions(AppLocalizations l10n) {
+    if (widget.isActioning) {
+      final scale = _uiScale();
+      return [
+        Container(
+          width: 36 * scale,
+          height: 36 * scale,
+          padding: EdgeInsets.all(9 * scale),
+          decoration: BoxDecoration(
+            color: _posterActionBackdrop,
+            shape: BoxShape.circle,
+          ),
+          child: const CircularProgressIndicator(
+            strokeWidth: 2,
+            color: Colors.white,
+          ),
         ),
       ];
     }
@@ -1724,7 +1840,6 @@ class _RequestCardState extends State<_RequestCard> with FocusStateMixin {
           onPressed: widget.onApprove,
           compact: true,
         ),
-        const SizedBox(width: 8),
         _CardActionButton(
           label: l10n.declineAction,
           icon: Icons.cancel_outlined,

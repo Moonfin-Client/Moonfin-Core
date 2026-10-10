@@ -339,7 +339,11 @@ void main() {
     });
 
     test('download routes the flavor\'s own status and queue items', () {
-      const item = SeerrDownloadingItem(size: 100, sizeLeft: 50);
+      const item = SeerrDownloadingItem(
+        size: 100,
+        sizeLeft: 50,
+        downloadId: 'dl',
+      );
       const info = SeerrMediaInfo(
         status: 5,
         status4k: 3,

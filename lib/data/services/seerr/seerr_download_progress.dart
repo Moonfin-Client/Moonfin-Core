@@ -63,9 +63,17 @@ class SeerrDownloadSummary {
     if (items == null || items.isEmpty) return null;
     var total = 0;
     var left = 0;
+    final seen = <String>{};
     for (final item in items) {
       final size = item.size;
       if (size == null || size <= 0) continue;
+      // Sonarr lists a season pack once per episode, each with the whole
+      // pack's size, so a 9 episode pack counted 9 times. Count a download
+      // once. No id means a release Sonarr or Radarr is holding back (a
+      // delay profile): nothing is downloading yet, and it may never be the
+      // release that gets grabbed, so it is left out.
+      final id = item.downloadId;
+      if (id == null || id.isEmpty || !seen.add(id)) continue;
       total += size;
       left += (item.sizeLeft ?? 0).clamp(0, size);
     }

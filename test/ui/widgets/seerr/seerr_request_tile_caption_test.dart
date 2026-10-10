@@ -5,23 +5,29 @@ import 'package:moonfin/ui/widgets/seerr/seerr_request_tile_caption.dart';
 
 Widget _caption({
   required double width,
-  required List<Widget> actions,
   bool marqueeTitle = false,
+  double textScale = 1,
+  String requester = 'Axel Whitfield-Mortensen',
+  bool split = true,
 }) {
   return MaterialApp(
-    home: Scaffold(
-      body: Center(
-        child: SizedBox(
-          width: width,
-          child: SeerrRequestTileCaption(
-            title: 'Toy Story 5',
-            requestedByLabel: 'Requested by',
-            requester: 'Axel Whitfield-Mortensen',
-            date: '26 August 2026',
-            scale: 1,
-            status: const SizedBox.shrink(),
-            marqueeTitle: marqueeTitle,
-            actions: actions,
+    home: MediaQuery(
+      data: MediaQueryData(textScaler: TextScaler.linear(textScale)),
+      child: Scaffold(
+        body: Center(
+          child: SizedBox(
+            width: width,
+            child: SeerrRequestTileCaption(
+              title: 'Toy Story 5',
+              requestedByLine: 'Requested by $requester',
+              requestedByLabel: 'Requested by',
+              requester: requester,
+              splitRequester: split,
+              date: '26 August 2026',
+              scale: 1,
+              status: const SizedBox.shrink(),
+              marqueeTitle: marqueeTitle,
+            ),
           ),
         ),
       ),
@@ -33,52 +39,84 @@ void main() {
   // The grid reserves a fixed height for the caption before layout. Adding a
   // line to the caption without raising the reservation clips the poster on
   // every tile, and nothing else would notice.
-  testWidgets('the fullest caption fits the height the grid reserves', (
+  for (final (name, requester, split) in [
+    ('a short requester', 'Al', false),
+    ('a long requester', 'Axel Whitfield-Mortensen', true),
+  ]) {
+    testWidgets('$name fits the height the grid reserves', (tester) async {
+      // The widest a tile can ever be.
+      await tester.pumpWidget(
+        _caption(width: 220, requester: requester, split: split),
+      );
+      await tester.pumpAndSettle();
+
+      final reserved = SeerrRequestTileCaption.heightFor(
+        1,
+        TextScaler.noScaling,
+        splitRequester: split,
+      );
+      final height = tester
+          .getSize(find.byType(SeerrRequestTileCaption))
+          .height;
+      expect(height, lessThanOrEqualTo(reserved));
+      // And not far under it, or the reservation has drifted above what the
+      // caption draws and every tile carries dead space.
+      expect(height, greaterThan(reserved - 16));
+    });
+  }
+
+  testWidgets('the reservation grows with the system text size', (
     tester,
   ) async {
-    await tester.pumpWidget(
-      // The widest a tile can ever be.
-      _caption(
-        width: 220,
-        // The approve and decline buttons set a minimum height
-        // of 32, and the caption gives the status its own slot.
-        actions: const [SizedBox(width: 32, height: 32)],
-      ),
-    );
+    await tester.pumpWidget(_caption(width: 220, textScale: 1.5));
     await tester.pumpAndSettle();
 
     final height = tester.getSize(find.byType(SeerrRequestTileCaption)).height;
-    expect(height, lessThanOrEqualTo(SeerrRequestTileCaption.reservedHeight));
-    // And not far under it, or the reservation has drifted above what the
-    // caption draws and every tile carries dead space.
-    expect(height, greaterThan(SeerrRequestTileCaption.reservedHeight - 16));
+    expect(
+      height,
+      lessThanOrEqualTo(
+        SeerrRequestTileCaption.heightFor(
+          1,
+          const TextScaler.linear(1.5),
+          splitRequester: true,
+        ),
+      ),
+    );
   });
 
-  // The action row is a plain Row inside a card that clips, so an overflow
-  // takes the second button off the tile instead of showing the usual
-  // stripes, and leaves it focusable where nobody can see it.
-  testWidgets('both actions fit the narrowest tile', (tester) async {
+  testWidgets('a short requester stays on the label line', (tester) async {
+    // The test font draws every glyph a full em wide, so keep it short.
     await tester.pumpWidget(
-      // A TV tile, less the widest card border a theme draws on both sides.
-      _caption(
-        width: 150 - 3 * 2,
-        // The compact footprint: a 36 by 32 minimum and the 8 between them.
-        actions: const [
-          SizedBox(width: 36, height: 32),
-          SizedBox(width: 8),
-          SizedBox(width: 36, height: 32),
-        ],
-      ),
+      _caption(width: 220, requester: 'Al', split: false),
     );
     await tester.pumpAndSettle();
 
-    expect(tester.takeException(), isNull);
-    final height = tester.getSize(find.byType(SeerrRequestTileCaption)).height;
-    expect(height, lessThanOrEqualTo(SeerrRequestTileCaption.reservedHeight));
+    expect(find.text('Requested by Al'), findsOneWidget);
+    expect(find.text('Requested by'), findsNothing);
   });
 
-  testWidgets('the requester sits under its own label', (tester) async {
-    await tester.pumpWidget(_caption(width: 150, actions: const []));
+  // The grid's call for all tiles. It measures from outside the card, so it
+  // has to match what the caption draws or a tile keeps a blank line.
+  testWidgets('the grid measures the requester at the tile width', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_caption(width: 220));
+    final context = tester.element(find.byType(SeerrRequestTileCaption));
+
+    bool fits(String line, double tileWidth) =>
+        SeerrRequestTileCaption.requesterFitsTile(
+          context,
+          line,
+          tileWidth,
+          1,
+          3,
+        );
+    expect(fits('Requested by Al', 220), isTrue);
+    expect(fits('Requested by Axel Whitfield-Mortensen', 150), isFalse);
+  });
+
+  testWidgets('a long requester moves under its own label', (tester) async {
+    await tester.pumpWidget(_caption(width: 150));
     await tester.pumpAndSettle();
 
     final label = tester.getTopLeft(find.text('Requested by'));
@@ -90,12 +128,12 @@ void main() {
   testWidgets('the title only scrolls when the tile asks for it', (
     tester,
   ) async {
-    await tester.pumpWidget(_caption(width: 150, actions: const []));
+    await tester.pumpWidget(_caption(width: 150));
     await tester.pumpAndSettle();
     expect(find.byType(MarqueeText), findsNothing);
 
     await tester.pumpWidget(
-      _caption(width: 150, actions: const [], marqueeTitle: true),
+      _caption(width: 150, marqueeTitle: true),
     );
     await tester.pump();
     expect(find.byType(MarqueeText), findsOneWidget);
