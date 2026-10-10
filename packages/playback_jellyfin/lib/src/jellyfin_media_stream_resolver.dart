@@ -58,52 +58,6 @@ class JellyfinMediaStreamResolver implements MediaStreamResolver {
     return false;
   }
 
-  /// Emby's live HLS playlist only comes out right with MPEG-TS segments. Ask
-  /// it for fragmented MP4 and live.m3u8 lists every segment with a zero
-  /// duration and no init section, so AVPlayer never gets playable media. The
-  /// Apple profiles lead with the fMP4 entry so an HEVC transcode lands in
-  /// fMP4, and the server takes the first entry it can satisfy, so an Emby
-  /// channel gets the MPEG-TS entries moved ahead of it. Jellyfin handles fMP4
-  /// live playlists, so it and every item that is not a channel keep the
-  /// profile as sent. The caller's map is left untouched.
-  static Map<String, dynamic>? preferMpegTsHlsForLive(
-    Map<String, dynamic>? deviceProfile, {
-    required bool isLiveChannel,
-    required ServerType serverType,
-  }) {
-    if (deviceProfile == null ||
-        !isLiveChannel ||
-        serverType != ServerType.emby) {
-      return deviceProfile;
-    }
-    final profiles = deviceProfile['TranscodingProfiles'];
-    if (profiles is! List) return deviceProfile;
-
-    bool isVideoHls(dynamic entry) =>
-        entry is Map &&
-        entry['Type']?.toString() == 'Video' &&
-        entry['Protocol']?.toString().toLowerCase() == 'hls';
-    bool isMpegTsVideoHls(dynamic entry) =>
-        isVideoHls(entry) &&
-        entry['Container']?.toString().toLowerCase() == 'ts';
-
-    final firstVideoHls = profiles.indexWhere(isVideoHls);
-    if (firstVideoHls == -1 || isMpegTsVideoHls(profiles[firstVideoHls])) {
-      return deviceProfile;
-    }
-    final mpegTsEntries = profiles.where(isMpegTsVideoHls).toList();
-    if (mpegTsEntries.isEmpty) return deviceProfile;
-    final others = profiles.where((e) => !isMpegTsVideoHls(e)).toList();
-    return <String, dynamic>{
-      ...deviceProfile,
-      'TranscodingProfiles': [
-        ...others.take(firstVideoHls),
-        ...mpegTsEntries,
-        ...others.skip(firstVideoHls),
-      ],
-    };
-  }
-
   @override
   Future<StreamResolutionResult> resolve(
     dynamic mediaItem, {
@@ -121,10 +75,9 @@ class JellyfinMediaStreamResolver implements MediaStreamResolver {
 
     final resolvedMediaSourceId =
         MediaStreamResolver.resolveStaticMediaSourceId(mediaItem, mediaSourceId);
-    final requestProfile = preferMpegTsHlsForLive(
+    final requestProfile = MediaStreamResolver.prepareLiveHlsProfile(
       deviceProfile,
       isLiveChannel: MediaStreamResolver.isLiveTvItem(mediaItem),
-      serverType: _client.serverType,
     );
 
     Future<PlaybackInfoResult> fetchPlaybackInfo(String? sourceId) async {
