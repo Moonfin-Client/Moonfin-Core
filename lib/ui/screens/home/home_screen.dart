@@ -752,6 +752,7 @@ class _ContentRowsState extends State<_ContentRows>
   static const double _wideArtworkModernScale = 2.5;
 
   static const double _kHomeRowLabelInset = 16.0;
+  static const double _kHomeRowTrailingInset = 20.0;
   static const double _focusedRowExtraSpacing = 20.0;
   static const Duration _focusedRowSpacingDuration = Duration(
     milliseconds: 200,
@@ -4919,6 +4920,8 @@ class _ContentRowsState extends State<_ContentRows>
       );
     }
 
+    final itemSpacing = _rowItemSpacing(firstCardWidth, cardExpansion);
+
     return _buildTitledRow(
       key: _rowContainerKey(rowIndex),
       title: _localizedRowTitle(row, l10n),
@@ -4934,13 +4937,13 @@ class _ContentRowsState extends State<_ContentRows>
           controller: _rowHorizontalController(rowIndex),
           height: lockedRowHeight,
           itemExtent: firstCardWidth,
-          itemSpacing: _rowItemSpacing(firstCardWidth, cardExpansion),
+          itemSpacing: itemSpacing,
           leadingPadding: isRowsV2 ? _kHomeRowLabelInset : 0,
           clipBehavior: (isRowsV2 || cardExpansion) ? Clip.none : Clip.hardEdge,
           padding: EdgeInsets.fromLTRB(
             _kHomeRowLabelInset,
             topPadding,
-            20,
+            _kHomeRowTrailingInset,
             rowPadding,
           ),
           onFocusChange: (has) => _onRowFocusTracked(rowIndex, has),
@@ -5323,7 +5326,15 @@ class _ContentRowsState extends State<_ContentRows>
                             // look them up without the row index.
                             _previewKeyFor(item),
                             cardWidth: width,
-                            extendedWidth: v2ExtendedWidth,
+                            detailsWidth: _v2DetailsWidth(
+                              controller: _rowHorizontalController(rowIndex),
+                              index: idx,
+                              itemCount: row.items.length,
+                              itemExtent: firstCardWidth,
+                              itemSpacing: itemSpacing,
+                              focusedWidth: width,
+                              maxWidth: v2ExtendedWidth,
+                            ),
                             isAudioRow: row.isAudio,
                           )
                         : null;
@@ -5360,12 +5371,41 @@ class _ContentRowsState extends State<_ContentRows>
     );
   }
 
+  /// How far the focused card's ratings and overview can run before the row
+  /// ends. Focus parks a card at the leading edge, but the last few cards
+  /// can't scroll that far, so they get less room.
+  double _v2DetailsWidth({
+    required ScrollController controller,
+    required int index,
+    required int itemCount,
+    required double itemExtent,
+    required double itemSpacing,
+    required double focusedWidth,
+    required double maxWidth,
+  }) {
+    if (!controller.hasClients || !controller.position.hasViewportDimension) {
+      return maxWidth;
+    }
+    final viewport = controller.position.viewportDimension;
+    final stride = itemExtent + itemSpacing;
+    final contentWidth = _kHomeRowLabelInset +
+        itemCount * stride -
+        itemSpacing +
+        (focusedWidth - itemExtent) +
+        _kHomeRowTrailingInset;
+    final maxOffset = (contentWidth - viewport).clamp(0.0, double.infinity);
+    final cardStart = _kHomeRowLabelInset + index * stride;
+    final settledLeft = cardStart - cardStart.clamp(0.0, maxOffset);
+    return (viewport - settledLeft - _kHomeRowTrailingInset)
+        .clamp(0.0, maxWidth);
+  }
+
   Widget _buildV2ExtendedSection(
     BuildContext context,
     AggregatedItem item,
     String itemKey, {
     required double cardWidth,
-    required double extendedWidth,
+    required double detailsWidth,
     required bool isAudioRow,
   }) {
     return ValueListenableBuilder<Map<String, Map<String, double>>>(
@@ -5391,52 +5431,58 @@ class _ContentRowsState extends State<_ContentRows>
       height: 1.4,
     );
 
-        return SizedBox(
-          width: cardWidth,
-          child: Stack(
-            clipBehavior: Clip.none,
-            alignment: Alignment.topLeft,
-            children: [
-              SizedBox(
-                width: extendedWidth,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (hasAnyRating)
-                      RatingsRow(
-                        ratings: additionalRatings,
-                        communityRating: item.communityRating,
-                        criticRating: item.criticRating,
-                        personalRating: item.personalRating,
-                        enableAdditionalRatings: widget.prefs.get(
-                          UserPreferences.enableAdditionalRatings,
-                        ),
-                        enabledRatings: widget.prefs.get(
-                          UserPreferences.enabledRatings,
-                        ),
-                        showLabels: widget.prefs.get(
-                          UserPreferences.showRatingLabels,
-                        ),
-                        showBadges: widget.prefs.get(
-                          UserPreferences.showRatingBadges,
-                        ),
-                      ),
-                    if (overview.isNotEmpty && !widget.prefs.get(UserPreferences.hideHomeMediaDescription))
-                      Padding(
-                        padding: const EdgeInsets.only(top: 4),
-                        child: Text(
-                          cleanOverview(overview),
-                          maxLines: 3,
-                          overflow: TextOverflow.ellipsis,
-                          style: overviewStyle,
-                        ),
-                      ),
-                  ],
+        final details = Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (hasAnyRating)
+              RatingsRow(
+                ratings: additionalRatings,
+                communityRating: item.communityRating,
+                criticRating: item.criticRating,
+                personalRating: item.personalRating,
+                enableAdditionalRatings: widget.prefs.get(
+                  UserPreferences.enableAdditionalRatings,
+                ),
+                enabledRatings: widget.prefs.get(
+                  UserPreferences.enabledRatings,
+                ),
+                showLabels: widget.prefs.get(
+                  UserPreferences.showRatingLabels,
+                ),
+                showBadges: widget.prefs.get(
+                  UserPreferences.showRatingBadges,
+                ),
+                singleLine: !PlatformDetection.useMobileUi,
+              ),
+            if (overview.isNotEmpty && !widget.prefs.get(UserPreferences.hideHomeMediaDescription))
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text(
+                  cleanOverview(overview),
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: overviewStyle,
                 ),
               ),
-            ],
-          ),
+          ],
+        );
+
+        // The section is only as wide as the card, so the ratings and overview
+        // break out into the rest of the row. Phones keep the card width.
+        return SizedBox(
+          width: cardWidth,
+          child: PlatformDetection.useMobileUi
+              ? details
+              : OverflowBox(
+                  fit: OverflowBoxFit.deferToChild,
+                  alignment: AlignmentDirectional.topStart,
+                  // The last card's room can come out a hair under the card
+                  // width, and a minimum above the maximum breaks the layout.
+                  minWidth: 0,
+                  maxWidth: detailsWidth,
+                  child: details,
+                ),
         );
       },
     );

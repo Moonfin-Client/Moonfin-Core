@@ -35,6 +35,9 @@ class RatingsRow extends StatelessWidget {
   final bool showLabels;
   final bool showBadges;
 
+  /// Keeps the ratings on one line, scaled down to fit, instead of wrapping.
+  final bool singleLine;
+
   const RatingsRow({
     super.key,
     required this.ratings,
@@ -45,6 +48,7 @@ class RatingsRow extends StatelessWidget {
     this.enabledRatings = 'stars,imdb,tmdb,tomatoes,metacritic',
     this.showLabels = true,
     this.showBadges = true,
+    this.singleLine = false,
   });
 
   /// Null when there is nothing to draw, so the caller skips its spacing too.
@@ -165,22 +169,36 @@ class RatingsRow extends StatelessWidget {
 
     if (filtered.isEmpty) return const SizedBox.shrink();
 
+    final children = [
+      for (final item in filtered)
+        _SingleRating(
+          source: item.key,
+          value: item.value,
+          valueText: item.key == 'personal'
+              ? _formatPersonal(item.value)
+              : null,
+          showLabel: showLabels,
+          showBadge: showBadges,
+        ),
+    ];
+
+    if (singleLine) {
+      return FittedBox(
+        fit: BoxFit.scaleDown,
+        alignment: AlignmentDirectional.centerStart,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          spacing: 6,
+          children: children,
+        ),
+      );
+    }
+
     return Wrap(
       spacing: 6,
       runSpacing: 4,
       crossAxisAlignment: WrapCrossAlignment.center,
-      children: [
-        for (final item in filtered)
-          _SingleRating(
-            source: item.key,
-            value: item.value,
-            valueText: item.key == 'personal'
-                ? _formatPersonal(item.value)
-                : null,
-            showLabel: showLabels,
-            showBadge: showBadges,
-          ),
-      ],
+      children: children,
     );
   }
 }
