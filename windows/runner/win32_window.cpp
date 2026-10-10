@@ -150,6 +150,11 @@ bool Win32Window::Create(const std::wstring& title,
 }
 
 bool Win32Window::Show() {
+  // Showing a parent does not restore WS_VISIBLE on a hidden child. Keep the
+  // Flutter view visible before presenting the runner's first frame.
+  if (child_content_ != nullptr) {
+    ShowWindow(child_content_, SW_SHOW);
+  }
   // SW_SHOW keeps the current placement; SW_SHOWNORMAL would un-maximise.
   return ShowWindow(window_handle_, SW_SHOW);
 }
@@ -204,6 +209,16 @@ Win32Window::MessageHandler(HWND hwnd,
       return 0;
     }
 
+    case WM_SHOWWINDOW:
+      // window_manager can show the runner directly, bypassing Show(). A
+      // Flutter view with a hidden style otherwise leaves a blank client area.
+      // Do not hide the child when the parent is hidden: Windows already hides
+      // descendants, and preserving its style lets a later show work normally.
+      if (wparam != FALSE && child_content_ != nullptr) {
+        ShowWindow(child_content_, SW_SHOW);
+      }
+      break;
+
     case WM_ACTIVATE:
       if (child_content_ != nullptr) {
         SetFocus(child_content_);
@@ -240,6 +255,8 @@ void Win32Window::SetChildContent(HWND content) {
   SetParent(content, window_handle_);
   RECT frame = GetClientArea();
   SizeChildContent(frame.right - frame.left, frame.bottom - frame.top);
+  // The content is a child, so this does not reveal the still-hidden runner.
+  ShowWindow(child_content_, SW_SHOW);
   SetFocus(child_content_);
 }
 
