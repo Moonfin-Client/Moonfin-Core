@@ -594,33 +594,48 @@ class _CircleActionButtonState extends State<_CircleActionButton> {
         }
         return KeyEventResult.ignored;
       },
-      child: GestureDetector(
-        onTap: widget.onPressed,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 120),
-          width: 44,
-          height: 44,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: enabled
-                ? (_focused
-                      ? widget.focusColor.withValues(alpha: 0.16)
-                      : AppColorScheme.onSurface.withValues(alpha: 0.06))
-                : AppColorScheme.onSurface.withValues(alpha: 0.04),
-            border: Border.fromBorderSide(
-              _focused
-                  ? focusBorder.copyWith(color: widget.focusColor)
-                  : baseBorder.copyWith(
-                      color: AppColorScheme.onSurface.withValues(alpha: 0.12),
-                    ),
+      // Focus follows the pointer so hover lights this up the same way
+      // the remote does, and arrow keys carry on from where the mouse is.
+      child: MouseRegion(
+        cursor: widget.onPressed != null
+            ? SystemMouseCursors.click
+            : MouseCursor.defer,
+        onEnter: (_) {
+          if (widget.onPressed != null) _focusNode.requestFocus();
+        },
+        child: GestureDetector(
+          onTap: widget.onPressed == null
+              ? null
+              : () {
+                  _focusNode.requestFocus();
+                  widget.onPressed!();
+                },
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 120),
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: enabled
+                  ? (_focused
+                        ? widget.focusColor.withValues(alpha: 0.16)
+                        : AppColorScheme.onSurface.withValues(alpha: 0.06))
+                  : AppColorScheme.onSurface.withValues(alpha: 0.04),
+              border: Border.fromBorderSide(
+                _focused
+                    ? focusBorder.copyWith(color: widget.focusColor)
+                    : baseBorder.copyWith(
+                        color: AppColorScheme.onSurface.withValues(alpha: 0.12),
+                      ),
+              ),
             ),
-          ),
-          child: Icon(
-            widget.icon,
-            color: enabled
-                ? (_focused ? widget.focusColor : AppColorScheme.onSurface)
-                : AppColorScheme.onSurface.withValues(alpha: 0.45),
-            size: 22,
+            child: Icon(
+              widget.icon,
+              color: enabled
+                  ? (_focused ? widget.focusColor : AppColorScheme.onSurface)
+                  : AppColorScheme.onSurface.withValues(alpha: 0.45),
+              size: 22,
+            ),
           ),
         ),
       ),
@@ -677,50 +692,65 @@ class _ActionButtonState extends State<_ActionButton> {
         }
         return KeyEventResult.ignored;
       },
-      child: GestureDetector(
-        onTap: widget.onPressed,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 120),
-          constraints: const BoxConstraints(minHeight: 52),
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-          decoration: BoxDecoration(
-            color: enabled
-                ? (_focused
-                      ? widget.focusColor.withValues(alpha: 0.16)
-                      : AppColorScheme.onSurface.withValues(alpha: 0.08))
-                : AppColorScheme.onSurface.withValues(alpha: 0.05),
-            borderRadius: AppRadius.circular(8),
-            border: Border.fromBorderSide(
-              enabled
+      // Focus follows the pointer so hover lights this up the same way
+      // the remote does, and arrow keys carry on from where the mouse is.
+      child: MouseRegion(
+        cursor: widget.onPressed != null
+            ? SystemMouseCursors.click
+            : MouseCursor.defer,
+        onEnter: (_) {
+          if (widget.onPressed != null) _focusNode.requestFocus();
+        },
+        child: GestureDetector(
+          onTap: widget.onPressed == null
+              ? null
+              : () {
+                  _focusNode.requestFocus();
+                  widget.onPressed!();
+                },
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 120),
+            constraints: const BoxConstraints(minHeight: 52),
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+            decoration: BoxDecoration(
+              color: enabled
                   ? (_focused
-                        ? focusBorder.copyWith(color: widget.focusColor)
-                        : baseBorder.copyWith(
-                            color: AppColorScheme.onSurface.withValues(alpha: 0.12),
-                          ))
-                  : baseBorder.copyWith(
-                      color: AppColorScheme.onSurface.withValues(alpha: 0.08),
-                    ),
+                        ? widget.focusColor.withValues(alpha: 0.16)
+                        : AppColorScheme.onSurface.withValues(alpha: 0.08))
+                  : AppColorScheme.onSurface.withValues(alpha: 0.05),
+              borderRadius: AppRadius.circular(8),
+              border: Border.fromBorderSide(
+                enabled
+                    ? (_focused
+                          ? focusBorder.copyWith(color: widget.focusColor)
+                          : baseBorder.copyWith(
+                              color: AppColorScheme.onSurface.withValues(alpha: 0.12),
+                            ))
+                    : baseBorder.copyWith(
+                        color: AppColorScheme.onSurface.withValues(alpha: 0.08),
+                      ),
+              ),
+              boxShadow: _focused
+                  ? [
+                      BoxShadow(
+                        color: widget.focusColor.withValues(alpha: 0.35),
+                        blurRadius: 0,
+                        spreadRadius: 3,
+                      ),
+                    ]
+                  : null,
             ),
-            boxShadow: _focused
-                ? [
-                    BoxShadow(
-                      color: widget.focusColor.withValues(alpha: 0.35),
-                      blurRadius: 0,
-                      spreadRadius: 3,
-                    ),
-                  ]
-                : null,
-          ),
-          child: Center(
-            child: Text(
-              widget.label,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w500,
-                color: enabled
-                    ? (_focused ? widget.focusColor : AppColorScheme.onSurface)
-                    : AppColorScheme.onSurface.withValues(alpha: 0.45),
+            child: Center(
+              child: Text(
+                widget.label,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w500,
+                  color: enabled
+                      ? (_focused ? widget.focusColor : AppColorScheme.onSurface)
+                      : AppColorScheme.onSurface.withValues(alpha: 0.45),
+                ),
               ),
             ),
           ),
@@ -798,91 +828,106 @@ class _AccountCardState extends State<_AccountCard> {
         }
         return KeyEventResult.ignored;
       },
-      child: GestureDetector(
-        onTap: widget.onTap,
-        child: AnimatedScale(
-          duration: const Duration(milliseconds: 120),
-          scale: _focused ? 1.06 : 1,
-          child: SizedBox(
-            width: 140,
-            child: Column(
-              children: [
-                Container(
-                  width: 130,
-                  height: 130,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: borderColor, width: 3),
-                    color: AppColorScheme.surfaceVariant,
-                  ),
-                  child: ClipOval(
-                    child: _avatarFailed || widget.avatarUrl == null
-                        ? Icon(
-                            Icons.person,
-                            color: AppColorScheme.onSurface.withValues(alpha: 0.55),
-                            size: 68,
-                          )
-                        : Image.network(
-                            widget.avatarUrl!,
-                            headers: serverImageHeaders,
-                            fit: BoxFit.cover,
-                            cacheWidth: ArtworkDecode.widthFor(
-                              68,
-                              MediaQuery.devicePixelRatioOf(context),
+      // Focus follows the pointer so hover lights this up the same way
+      // the remote does, and arrow keys carry on from where the mouse is.
+      child: MouseRegion(
+        cursor: widget.onTap != null
+            ? SystemMouseCursors.click
+            : MouseCursor.defer,
+        onEnter: (_) {
+          if (widget.onTap != null) _focusNode.requestFocus();
+        },
+        child: GestureDetector(
+          onTap: widget.onTap == null
+              ? null
+              : () {
+                  _focusNode.requestFocus();
+                  widget.onTap!();
+                },
+          child: AnimatedScale(
+            duration: const Duration(milliseconds: 120),
+            scale: _focused ? 1.06 : 1,
+            child: SizedBox(
+              width: 140,
+              child: Column(
+                children: [
+                  Container(
+                    width: 130,
+                    height: 130,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: borderColor, width: 3),
+                      color: AppColorScheme.surfaceVariant,
+                    ),
+                    child: ClipOval(
+                      child: _avatarFailed || widget.avatarUrl == null
+                          ? Icon(
+                              Icons.person,
+                              color: AppColorScheme.onSurface.withValues(alpha: 0.55),
+                              size: 68,
+                            )
+                          : Image.network(
+                              widget.avatarUrl!,
+                              headers: serverImageHeaders,
+                              fit: BoxFit.cover,
+                              cacheWidth: ArtworkDecode.widthFor(
+                                68,
+                                MediaQuery.devicePixelRatioOf(context),
+                              ),
+                              errorBuilder: (_, _, _) {
+                                if (!_avatarFailed) {
+                                  WidgetsBinding.instance
+                                      .addPostFrameCallback((_) {
+                                        if (mounted) {
+                                          setState(() => _avatarFailed = true);
+                                        }
+                                      });
+                                }
+                                return Icon(
+                                  Icons.person,
+                                  color: AppColorScheme.onSurface.withValues(alpha: 0.55),
+                                  size: 68,
+                                );
+                              },
                             ),
-                            errorBuilder: (_, _, _) {
-                              if (!_avatarFailed) {
-                                WidgetsBinding.instance
-                                    .addPostFrameCallback((_) {
-                                      if (mounted) {
-                                        setState(() => _avatarFailed = true);
-                                      }
-                                    });
-                              }
-                              return Icon(
-                                Icons.person,
-                                color: AppColorScheme.onSurface.withValues(alpha: 0.55),
-                                size: 68,
-                              );
-                            },
-                          ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  widget.username,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500,
-                    color: AppColorScheme.onSurface,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  widget.serverName,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppColorScheme.onSurface.withValues(alpha: 0.45),
-                  ),
-                ),
-                const SizedBox(height: 4),
-                if (widget.active)
-                  Text(
-                    'ACTIVE',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 0.5,
-                      color: AppColorScheme.accent,
                     ),
                   ),
-              ],
+                  const SizedBox(height: 12),
+                  Text(
+                    widget.username,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                      color: AppColorScheme.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    widget.serverName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: AppColorScheme.onSurface.withValues(alpha: 0.45),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  if (widget.active)
+                    Text(
+                      'ACTIVE',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.5,
+                        color: AppColorScheme.accent,
+                      ),
+                    ),
+                ],
+              ),
             ),
           ),
         ),
@@ -947,44 +992,59 @@ class _AddUserCardState extends State<_AddUserCard> {
         }
         return KeyEventResult.ignored;
       },
-      child: GestureDetector(
-        onTap: widget.onTap,
-        child: AnimatedScale(
-          duration: const Duration(milliseconds: 120),
-          scale: _focused ? 1.06 : 1,
-          child: SizedBox(
-            width: 140,
-            child: Column(
-              children: [
-                Container(
-                  width: 130,
-                  height: 130,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: bg,
-                    border: Border.all(color: borderColor, width: 3),
+      // Focus follows the pointer so hover lights this up the same way
+      // the remote does, and arrow keys carry on from where the mouse is.
+      child: MouseRegion(
+        cursor: widget.onTap != null
+            ? SystemMouseCursors.click
+            : MouseCursor.defer,
+        onEnter: (_) {
+          if (widget.onTap != null) _focusNode.requestFocus();
+        },
+        child: GestureDetector(
+          onTap: widget.onTap == null
+              ? null
+              : () {
+                  _focusNode.requestFocus();
+                  widget.onTap!();
+                },
+          child: AnimatedScale(
+            duration: const Duration(milliseconds: 120),
+            scale: _focused ? 1.06 : 1,
+            child: SizedBox(
+              width: 140,
+              child: Column(
+                children: [
+                  Container(
+                    width: 130,
+                    height: 130,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: bg,
+                      border: Border.all(color: borderColor, width: 3),
+                    ),
+                    child: Icon(
+                      Icons.add,
+                      size: 48,
+                      color: _focused
+                          ? widget.focusColor
+                          : AppColorScheme.onSurface.withValues(alpha: 0.54),
+                    ),
                   ),
-                  child: Icon(
-                    Icons.add,
-                    size: 48,
-                    color: _focused
-                        ? widget.focusColor
-                        : AppColorScheme.onSurface.withValues(alpha: 0.54),
+                  const SizedBox(height: 12),
+                  Text(
+                    widget.label,
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                      color: AppColorScheme.onSurface,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  widget.label,
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500,
-                    color: AppColorScheme.onSurface,
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

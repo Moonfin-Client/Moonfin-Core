@@ -443,57 +443,67 @@ class _ServerScreenState extends State<ServerScreen> {
               scale: focused ? 1.08 : 1.0,
               duration: const Duration(milliseconds: 120),
               curve: Curves.easeOut,
-              child: InkWell(
-                focusNode: focusNode,
-                onFocusChange: (f) => hasFocus.value = f,
-                onTap: () => _onUserTap(user),
-                borderRadius: AppRadius.circular(12),
-                child: Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: focused
-                              ? Border.all(
-                                  color: Theme.of(context).colorScheme.primary,
-                                  width: 3,
-                                )
-                              : null,
+              // Focus follows the pointer, so the card under the mouse lights
+              // up the way the one under the remote does, and the arrow keys
+              // carry on from wherever the mouse left it.
+              child: MouseRegion(
+                cursor: SystemMouseCursors.click,
+                onEnter: (_) => focusNode.requestFocus(),
+                child: InkWell(
+                  focusNode: focusNode,
+                  onFocusChange: (f) => hasFocus.value = f,
+                  onTap: () {
+                    focusNode.requestFocus();
+                    _onUserTap(user);
+                  },
+                  borderRadius: AppRadius.circular(12),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: focused
+                                ? Border.all(
+                                    color: Theme.of(context).colorScheme.primary,
+                                    width: 3,
+                                  )
+                                : null,
+                          ),
+                          child: CircleAvatar(
+                            radius: 36,
+                            backgroundColor: Colors.white.withValues(alpha: 0.1),
+                            backgroundImage: user.imageTag != null
+                                ? NetworkImage(
+                                    _userImageUrl(user),
+                                    headers: serverImageHeaders,
+                                  )
+                                : null,
+                            child: user.imageTag == null
+                                ? Icon(
+                                    Icons.person,
+                                    size: 32,
+                                    color: Colors.white.withValues(alpha: 0.6),
+                                  )
+                                : null,
+                          ),
                         ),
-                        child: CircleAvatar(
-                          radius: 36,
-                          backgroundColor: Colors.white.withValues(alpha: 0.1),
-                          backgroundImage: user.imageTag != null
-                              ? NetworkImage(
-                                  _userImageUrl(user),
-                                  headers: serverImageHeaders,
-                                )
-                              : null,
-                          child: user.imageTag == null
-                              ? Icon(
-                                  Icons.person,
-                                  size: 32,
-                                  color: Colors.white.withValues(alpha: 0.6),
-                                )
-                              : null,
+                        const SizedBox(height: 8),
+                        Text(
+                          user.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: focused
+                                ? Theme.of(context).colorScheme.primary
+                                : null,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        user.name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: focused
-                              ? Theme.of(context).colorScheme.primary
-                              : null,
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
