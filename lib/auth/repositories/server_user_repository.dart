@@ -17,6 +17,10 @@ class ServerUserRepository {
   }
 
   Future<List<PublicUser>> getPublicServerUsers(Server server) async {
+    // Silo has no public user list: people sign in with their account, then
+    // pick a household profile.
+    if (server.serverType == ServerType.silo) return const [];
+
     final dio = Dio(
       BaseOptions(
         baseUrl: server.address,

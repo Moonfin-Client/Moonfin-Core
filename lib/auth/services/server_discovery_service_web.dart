@@ -375,6 +375,7 @@ class ServerDiscoveryService {
     final normalizedHint = typeHint?.trim().toLowerCase();
     if (normalizedHint == 'emby') return ServerType.emby;
     if (normalizedHint == 'jellyfin') return ServerType.jellyfin;
+    if (siloSupportEnabled && normalizedHint == 'silo') return ServerType.silo;
     return ServerType.detect(productName, version);
   }
 

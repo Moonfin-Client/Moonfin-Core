@@ -2,6 +2,7 @@ import 'package:get_it/get_it.dart';
 import 'package:logger/logger.dart';
 import 'package:playback_core/playback_core.dart';
 import 'package:playback_emby/playback_emby.dart';
+import 'package:playback_silo/playback_silo.dart';
 import 'package:playback_jellyfin/playback_jellyfin.dart';
 import 'package:server_core/server_core.dart';
 
@@ -26,6 +27,7 @@ class DlnaProvider implements CastProvider, CastTransportControls {
     return switch (client.serverType) {
       ServerType.jellyfin => JellyfinPlugin(client).createStreamResolver(),
       ServerType.emby => EmbyPlugin(client).createStreamResolver(),
+      ServerType.silo => SiloPlugin(client).createStreamResolver(),
     };
   }
 

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:logger/logger.dart';
+import 'package:server_core/server_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/server.dart';
@@ -43,20 +44,30 @@ class AuthenticationStore {
     return {};
   }
 
+  /// A Silo server saved while Silo support was on stays on disk but is
+  /// hidden while it is off, so no part of the app builds a Silo client
+  /// outside the rollout. Turning support back on brings it back.
+  static bool _admitted(Server server) =>
+      siloSupportEnabled || server.serverType != ServerType.silo;
+
   List<Server> getServers() {
-    return _servers.entries.map((entry) {
-      return Server.fromJson(
-        entry.key,
-        Map<String, dynamic>.from(entry.value as Map),
-      );
-    }).toList();
+    return _servers.entries
+        .map((entry) {
+          return Server.fromJson(
+            entry.key,
+            Map<String, dynamic>.from(entry.value as Map),
+          );
+        })
+        .where(_admitted)
+        .toList();
   }
 
   Server? getServer(String serverId) {
     final raw = _servers[serverId];
     if (raw == null) return null;
     final serverData = Map<String, dynamic>.from(raw as Map);
-    return Server.fromJson(serverId, serverData);
+    final server = Server.fromJson(serverId, serverData);
+    return _admitted(server) ? server : null;
   }
 
   Future<void> putServer(Server server) async {

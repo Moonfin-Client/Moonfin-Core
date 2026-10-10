@@ -128,12 +128,16 @@ dependencies:
     path: packages/server_jellyfin
   server_emby:
     path: packages/server_emby
+  server_silo:
+    path: packages/server_silo
   playback_core:
     path: packages/playback_core
   playback_jellyfin:
     path: packages/playback_jellyfin
   playback_emby:
     path: packages/playback_emby
+  playback_silo:
+    path: packages/playback_silo
   moonfin_design:
     path: packages/design
   jellyfin_preference:

@@ -1,0 +1,16 @@
+name: server_silo
+description: Silo server API implementation (native /api/v2).
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.11.0
+
+dependencies:
+  server_core:
+    path: ../server_core
+  dio: ^5.9.2
+  logger: ^2.6.2
+
+dev_dependencies:
+  test: ^1.25.0
