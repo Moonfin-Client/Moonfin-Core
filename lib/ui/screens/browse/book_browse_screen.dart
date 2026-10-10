@@ -265,6 +265,8 @@ class _BookBrowseScreenState extends State<BookBrowseScreen> {
     final scopeIndex = showScope ? entryIndex++ : -1;
     final tabsIndex = showDiscover ? entryIndex++ : -1;
     final firstRowIndex = entryIndex;
+    final isSidebar = _prefs.get(UserPreferences.navbarPosition) == NavbarPosition.left;
+    final leftPadding = (isSidebar && !PlatformDetection.useMobileUi) ? 60.0 : 16.0;
 
     return [
       if (featured != null)
@@ -296,7 +298,7 @@ class _BookBrowseScreenState extends State<BookBrowseScreen> {
       if (showDiscover)
         Padding(
           key: _tabsContainerKey,
-          padding: const EdgeInsets.fromLTRB(16, 6, 16, 10),
+          padding: EdgeInsets.fromLTRB(leftPadding, 6, 16, 10),
           child: FocusableWrapper(
             focusNode: _tabsFocusNode,
             borderRadius: 22,
@@ -325,7 +327,10 @@ class _BookBrowseScreenState extends State<BookBrowseScreen> {
       else ...[
         if (rows.isNotEmpty)
           for (var i = 0; i < rows.length; i++)
-            _buildShelf(rows[i], l10n, firstRowIndex + i)
+            Padding(
+              padding: EdgeInsets.only(left: leftPadding),
+              child: _buildShelf(rows[i], l10n, firstRowIndex + i),
+            )
         else
           _buildEmptyState(l10n),
       ],
