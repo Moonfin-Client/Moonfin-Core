@@ -1,4 +1,6 @@
 import Cocoa
+import AVFoundation
+import AetherEngine
 import FlutterMacOS
 import XCTest
 
@@ -318,5 +320,185 @@ final class MoonfinDartProjectTests: XCTestCase {
         XCTAssertEqual(
             impellerEnabled(MoonfinDartProject()), impellerEnabled(FlutterDartProject()))
         #endif
+    }
+}
+
+/// Exercises the production wrapper with whole-file subtitle decoding. No
+/// network server, application account or copyrighted media is needed.
+@MainActor
+final class ExternalASSRenderingTests: XCTestCase {
+    private func makeFixtures() async throws -> URL {
+        let directory = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString, isDirectory: true)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        var completed = false
+        defer { if !completed { try? FileManager.default.removeItem(at: directory) } }
+        let writer = try AVAssetWriter(outputURL: directory.appendingPathComponent("video.mp4"), fileType: .mp4)
+        let input = AVAssetWriterInput(mediaType: .video, outputSettings: [
+            AVVideoCodecKey: AVVideoCodecType.h264,
+            AVVideoWidthKey: 640, AVVideoHeightKey: 360,
+        ])
+        let adaptor = AVAssetWriterInputPixelBufferAdaptor(assetWriterInput: input,
+            sourcePixelBufferAttributes: [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32ARGB])
+        writer.add(input)
+        XCTAssertTrue(writer.startWriting())
+        writer.startSession(atSourceTime: .zero)
+        var pixelBuffer: CVPixelBuffer?
+        XCTAssertEqual(CVPixelBufferCreate(kCFAllocatorDefault, 640, 360,
+            kCVPixelFormatType_32ARGB, nil, &pixelBuffer), kCVReturnSuccess)
+        let buffer = try XCTUnwrap(pixelBuffer)
+        CVPixelBufferLockBaseAddress(buffer, [])
+        memset(CVPixelBufferGetBaseAddress(buffer), 0, CVPixelBufferGetDataSize(buffer))
+        CVPixelBufferUnlockBaseAddress(buffer, [])
+        for second in [0, 30, 60] {
+            for _ in 0..<100 where !input.isReadyForMoreMediaData {
+                try await Task.sleep(for: .milliseconds(10))
+            }
+            XCTAssertTrue(adaptor.append(buffer, withPresentationTime: CMTime(value: Int64(second), timescale: 1)))
+        }
+        input.markAsFinished()
+        await writer.finishWriting()
+        XCTAssertEqual(writer.status, .completed)
+        let header = """
+        [Script Info]
+        ScriptType: v4.00+
+        PlayResX: 1920
+        PlayResY: 1080
+        [V4+ Styles]
+        Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+        Style: Default,Arial,64,&H000000FF,&H000000FF,&H00000000,&H80000000,0,0,0,0,100,100,0,0,1,5,1,8,80,80,80,1
+        [Events]
+        Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+        Dialogue: 0,0:00:00.00,0:01:00.00,Default,,0,0,0,,Synthetic red sign
+        """
+        try header.write(to: directory.appendingPathComponent("red.ass"), atomically: true, encoding: .utf8)
+        try header.replacingOccurrences(of: "&H000000FF", with: "&H0000FF00")
+            .replacingOccurrences(of: "Synthetic red sign", with: "Synthetic green sign")
+            .write(to: directory.appendingPathComponent("green.ass"), atomically: true, encoding: .utf8)
+        try "1\n00:00:00,000 --> 00:01:00,000\nSynthetic plain caption\n"
+            .write(to: directory.appendingPathComponent("plain.srt"), atomically: true, encoding: .utf8)
+        completed = true
+        return directory
+    }
+
+    private func waitUntil(_ condition: () -> Bool) async throws {
+        for _ in 0..<200 {
+            if condition() { return }
+            try await Task.sleep(for: .milliseconds(50))
+        }
+        struct Timeout: Error {}
+        XCTFail("Timed out waiting for the subtitle renderer")
+        throw Timeout()
+    }
+
+    private func styledImage(_ wrapper: AetherPlayerWrapper) -> NSImage? {
+        // The final image view is the ASS overlay, above text and bitmap cues.
+        let view = wrapper.subtitleOverlay.subviews.compactMap { $0 as? NSImageView }.last
+        return view?.isHidden == false ? view?.image : nil
+    }
+
+    private func colorPixels(_ image: NSImage, red: Bool) throws -> Int {
+        let cgImage = try XCTUnwrap(image.cgImage(forProposedRect: nil, context: nil, hints: nil))
+        let bitmap = NSBitmapImageRep(cgImage: cgImage)
+        var count = 0
+        // The authored alignment is top-center. Plain-text fallback is white
+        // and bottom-center, so it cannot satisfy either color/location check.
+        for y in 0..<(bitmap.pixelsHigh / 3) {
+            for x in 0..<bitmap.pixelsWide {
+                guard let color = bitmap.colorAt(x: x, y: y)?.usingColorSpace(.deviceRGB) else { continue }
+                if red ? (color.redComponent > 0.6 && color.greenComponent < 0.2)
+                    : (color.greenComponent > 0.6 && color.redComponent < 0.2) {
+                    count += 1
+                }
+            }
+        }
+        return count
+    }
+
+    func testEmbeddedASSStillUsesItsTrackHeader() async throws {
+        _ = NSApplication.shared
+        let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 960, height: 540),
+            styleMask: [.borderless], backing: .buffered, defer: false)
+        window.isReleasedWhenClosed = false
+        let view = try XCTUnwrap(window.contentView)
+        let wrapper = AetherPlayerWrapper()
+        wrapper.attachVideoView(view)
+        defer { wrapper.shutdown(); window.close() }
+        let fixture = try XCTUnwrap(Bundle(for: Self.self)
+            .url(forResource: "embedded-ass", withExtension: "mkv"))
+        await wrapper.play(url: fixture)
+        try await waitUntil { wrapper.subtitleTracks.count == 1 && wrapper.isPlaying }
+        wrapper.setSubtitleTrack(1)
+        try await waitUntil { self.styledImage(wrapper) != nil }
+        let engine = try XCTUnwrap(AetherPlayerWrapper.sharedEngine())
+        XCTAssertNotNil(engine.subtitleTracks.first?.assHeader)
+        XCTAssertNil(engine.sidecarASSHeader)
+        XCTAssertGreaterThan(try colorPixels(try XCTUnwrap(styledImage(wrapper)), red: true), 100)
+    }
+
+    func testExternalASSStylesSurviveDecodeTrackChangesAndResize() async throws {
+        _ = NSApplication.shared
+        let fixtures = try await makeFixtures()
+        defer { try? FileManager.default.removeItem(at: fixtures) }
+        let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 960, height: 540),
+            styleMask: [.borderless], backing: .buffered, defer: false)
+        window.isReleasedWhenClosed = false
+        let view = NSView(frame: window.contentView!.bounds)
+        window.contentView = view
+        let wrapper = AetherPlayerWrapper()
+        wrapper.attachVideoView(view)
+        defer { wrapper.shutdown(); window.close() }
+        var source = AetherPlayerWrapper.SourceConfiguration()
+        source.externalSubtitles = ["red.ass", "green.ass", "plain.srt"].map {
+            ExternalSubtitleTrack(url: fixtures.appendingPathComponent($0), language: "eng")
+        }
+        wrapper.configureSource(source)
+        await wrapper.play(url: fixtures.appendingPathComponent("video.mp4"))
+        try await waitUntil { wrapper.subtitleTracks.count == 3 && wrapper.isPlaying }
+        try await Task.sleep(for: .milliseconds(200))
+        let engine = try XCTUnwrap(AetherPlayerWrapper.sharedEngine())
+        wrapper.setSubtitleTrack(1)
+        try await waitUntil { self.styledImage(wrapper) != nil }
+        XCTAssertNotNil(engine.sidecarASSHeader)
+        XCTAssertNil(engine.subtitleTracks.first?.assHeader)
+        let first = try XCTUnwrap(styledImage(wrapper))
+        XCTAssertGreaterThan(try colorPixels(first, red: true), 100)
+        XCTAssertTrue(wrapper.subtitleOverlay.subviews.compactMap { $0 as? NSTextField }.allSatisfy(\.isHidden))
+
+        // Both sidecars have the same cue IDs. Old event deduplication must
+        // not prevent the second file's events from reaching libass.
+        wrapper.setSubtitleTrack(2)
+        try await waitUntil { engine.sidecarASSHeader?.contains("&H0000FF00") == true && self.styledImage(wrapper) != nil }
+        XCTAssertGreaterThan(try colorPixels(try XCTUnwrap(styledImage(wrapper)), red: false), 100)
+        wrapper.setSubtitleTrack(3)
+        try await waitUntil {
+            self.styledImage(wrapper) == nil && wrapper.subtitleOverlay.subviews
+                .compactMap { $0 as? NSTextField }.contains { !$0.isHidden && $0.stringValue == "Synthetic plain caption" }
+        }
+        wrapper.setSubtitleTrack(1)
+        try await waitUntil { engine.sidecarASSHeader?.contains("&H000000FF") == true && self.styledImage(wrapper) != nil }
+        XCTAssertGreaterThan(try colorPixels(try XCTUnwrap(styledImage(wrapper)), red: true), 100)
+        for index: Int32 in [1, 2, 3, 2] { wrapper.setSubtitleTrack(index) }
+        try await waitUntil { engine.sidecarASSHeader?.contains("&H0000FF00") == true && self.styledImage(wrapper) != nil }
+        XCTAssertGreaterThan(try colorPixels(try XCTUnwrap(styledImage(wrapper)), red: false), 100)
+        wrapper.disableSubtitles()
+        try await waitUntil { engine.activeSubtitleTrackIndex == nil && self.styledImage(wrapper) == nil }
+        wrapper.setSubtitleTrack(1)
+        try await waitUntil { self.styledImage(wrapper) != nil }
+
+        // The bitmap follows the backing-pixel canvas at both HD and UHD.
+        let scale = window.backingScaleFactor
+        for pixels in [NSSize(width: 1920, height: 1080), NSSize(width: 3840, height: 2160)] {
+            let size = NSSize(width: pixels.width / scale, height: pixels.height / scale)
+            view.setFrameSize(size)
+            view.layoutSubtreeIfNeeded()
+            wrapper.subtitleOverlay.layoutSubtreeIfNeeded()
+            try await waitUntil { self.styledImage(wrapper)?.size == NSSize(
+                width: size.width * scale, height: size.height * scale) }
+            let image = try XCTUnwrap(styledImage(wrapper))
+            XCTAssertEqual(image.size.width, size.width * scale)
+            XCTAssertEqual(image.size.height, size.height * scale)
+            XCTAssertGreaterThan(try colorPixels(image, red: true), 100)
+        }
     }
 }

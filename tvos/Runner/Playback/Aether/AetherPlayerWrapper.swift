@@ -121,6 +121,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
     // ASS rendering (only active when a libass build is linked).
     private let assRenderer = AssRenderer()
     private var assConfiguredForTrackID: Int?
+    private var assConfiguredHeader: String?
     private var assSeenCueIDs = Set<Int>()
 
     // ASS render cadence: engine.clock.$sourceTime arrives on the engine's
@@ -293,13 +294,20 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             .sink { [weak self] id in
                 guard let self else { return }
                 self.currentSubtitleTrackIndex = self.ordinal(for: id, in: self.subtitleTable)
-                if id == nil { self.resetAssState() }
+                self.resetAssState()
             }
             .store(in: &cancellables)
 
         engine.$subtitleCues
+            .combineLatest(engine.$sidecarASSHeader)
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] cues in self?.applySubtitleCues(cues) }
+            .sink { [weak self, weak engine] _ in
+                guard let engine else { return }
+                // Sidecar decoding publishes cues before their ASS header. Read
+                // the current pair after delivery, including when a track switch
+                // has superseded a queued publication.
+                self?.applySubtitleCues(engine.subtitleCues)
+            }
             .store(in: &cancellables)
 
         // Rebind Now Playing on EVERY player republish: the engine swaps
@@ -1162,8 +1170,11 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         let activeTrack = subtitleTable.first { $0.id == engine.activeSubtitleTrackIndex }
 
         #if canImport(Libass)
-            if let track = activeTrack, track.assHeader != nil {
-                configureAssIfNeeded(for: track, engine: engine)
+            if let track = activeTrack,
+                let header = track.isExternal ? engine.sidecarASSHeader : track.assHeader,
+                configureAssIfNeeded(for: track, header: header, engine: engine)
+            {
+                subtitleOverlay.setEvents([])
                 for cue in cues where !assSeenCueIDs.contains(cue.id) {
                     assSeenCueIDs.insert(cue.id)
                     if let line = cue.text {
@@ -1178,6 +1189,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             }
         #endif
 
+        resetAssState()
         let events = cues.map { cue -> SubtitleEvent in
             switch cue.body {
             case .text(let text):
@@ -1227,17 +1239,23 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
     #endif
 
     #if canImport(Libass)
-        private func configureAssIfNeeded(for track: TrackInfo, engine: AetherEngine) {
-            guard assConfiguredForTrackID != track.id else { return }
+        private func configureAssIfNeeded(
+            for track: TrackInfo, header: String, engine: AetherEngine
+        ) -> Bool {
+            if assConfiguredForTrackID == track.id && assConfiguredHeader == header {
+                return true
+            }
+            resetAssState()
             let attachments = engine.fontAttachments.map { ($0.filename, $0.data) }
             let fontsDir = SubtitleFontLocator.materializeFontsDirectory(attachments: attachments)
-            if assRenderer.configure(
-                header: track.assHeader.flatMap { $0.data(using: .utf8) },
+            guard assRenderer.configure(
+                header: header.data(using: .utf8),
                 fontsDir: fontsDir
-            ) {
-                assConfiguredForTrackID = track.id
-                startAssDisplayLinkIfNeeded()
-            }
+            ) else { return false }
+            assConfiguredForTrackID = track.id
+            assConfiguredHeader = header
+            startAssDisplayLinkIfNeeded()
+            return true
         }
 
         /// Drives libass at display rate. See comment on `assDisplayLink`.
@@ -1299,6 +1317,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             stopAssDisplayLink()
         #endif
         assConfiguredForTrackID = nil
+        assConfiguredHeader = nil
         assSeenCueIDs.removeAll()
         subtitleOverlay.showAssImage(nil)
     }

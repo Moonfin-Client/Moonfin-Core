@@ -21,6 +21,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		73CC3B0EE504471A95C6C9E1 /* embedded-ass.mkv in Resources */ = {isa = PBXBuildFile; fileRef = 10F56E72F11141E59C1B2A30 /* embedded-ass.mkv */; };
 		008D0743212489872160F548 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 852AC4308EB5F442743449DD /* Pods_Runner.framework */; };
 		147CC97F1B187B39F508DCA8 /* AetherVideoChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10C04BD1A91A9A76BD9478F8 /* AetherVideoChannel.swift */; };
 		331C80D8294CF71000263BE5 /* RunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331C80D7294CF71000263BE5 /* RunnerTests.swift */; };
@@ -76,6 +77,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		10F56E72F11141E59C1B2A30 /* embedded-ass.mkv */ = {isa = PBXFileReference; lastKnownFileType = file; name = "embedded-ass.mkv"; path = "Fixtures/embedded-ass.mkv"; sourceTree = "<group>"; };
 		10C04BD1A91A9A76BD9478F8 /* AetherVideoChannel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AetherVideoChannel.swift; path = ../../../tvos/Runner/Playback/Aether/AetherVideoChannel.swift; sourceTree = "<group>"; };
 		159DE08E3FAD670AB77FA219 /* PlayerTypes.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PlayerTypes.swift; path = ../../../tvos/Runner/Playback/Aether/PlayerTypes.swift; sourceTree = "<group>"; };
 		331C80D5294CF71000263BE5 /* RunnerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunnerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -143,6 +145,7 @@
 			isa = PBXGroup;
 			children = (
 				331C80D7294CF71000263BE5 /* RunnerTests.swift */,
+				10F56E72F11141E59C1B2A30 /* embedded-ass.mkv */,
 			);
 			path = RunnerTests;
 			sourceTree = "<group>";
@@ -367,6 +370,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				73CC3B0EE504471A95C6C9E1 /* embedded-ass.mkv in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
