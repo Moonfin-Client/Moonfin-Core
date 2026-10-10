@@ -2,6 +2,7 @@ import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 import 'package:server_emby/server_emby.dart';
 import 'package:server_jellyfin/server_jellyfin.dart';
+import 'package:server_silo/server_silo.dart';
 
 import '../../util/server_url.dart';
 import '../offline/connectivity_aware_media_server_client.dart';
@@ -117,6 +118,11 @@ class MediaServerClientFactory {
         );
       case ServerType.emby:
         return EmbyMediaServerClient(
+          baseUrl: baseUrl,
+          deviceInfo: deviceInfo,
+        );
+      case ServerType.silo:
+        return SiloMediaServerClient(
           baseUrl: baseUrl,
           deviceInfo: deviceInfo,
         );

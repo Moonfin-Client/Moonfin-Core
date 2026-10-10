@@ -1,10 +1,12 @@
 /// Server core abstraction layer.
 ///
 /// Provides abstract interfaces for media server communication,
-/// supporting multiple backends (Jellyfin, Emby).
+/// supporting multiple backends (Jellyfin, Emby, Silo).
 library;
 
 export 'src/media_server_client.dart';
+export 'src/profile_aware_client.dart';
+export 'src/silo_support.dart';
 export 'src/models/server_type.dart';
 export 'src/models/device_info.dart';
 export 'src/models/enums.dart';

@@ -427,7 +427,11 @@ class SessionRepository {
       );
     }
 
-    await _pluginSyncService.syncOnLogin(client, serverId: serverId);
+    // Everything syncOnLogin does goes through the Moonfin server plugin,
+    // which Silo never has; asking would only spend retries on a 404.
+    if (client.serverType != ServerType.silo) {
+      await _pluginSyncService.syncOnLogin(client, serverId: serverId);
+    }
 
     // Register the FCM token now that a session exists, and push the current
     // notification prefs so defaults reach the plugin. Startup registration

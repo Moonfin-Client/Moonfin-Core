@@ -36,11 +36,17 @@ class LoginScreen extends StatefulWidget {
   final String? prefillUsername;
   final bool hasPassword;
 
+  /// Set when the server screen sent us here because it had no users to
+  /// show. Going back to it would only bounce straight back here, so back
+  /// goes to the server list instead.
+  final bool noServerUsers;
+
   const LoginScreen({
     super.key,
     required this.serverId,
     this.prefillUsername,
     this.hasPassword = true,
+    this.noServerUsers = false,
   });
 
   @override
@@ -436,7 +442,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _navigateBack() {
     final server = _server;
-    if (server == null) {
+    if (server == null || widget.noServerUsers) {
       context.go(Destinations.serverSelect);
       return;
     }

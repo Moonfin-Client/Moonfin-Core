@@ -167,13 +167,7 @@ class DioRetroArtworkHttpClient implements RetroArtworkHttpClient {
     dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) {
-          options.headers['Authorization'] = buildServerAuthorizationHeader(
-            scheme: client.serverType == ServerType.emby
-                ? 'Emby'
-                : 'MediaBrowser',
-            deviceInfo: client.deviceInfo,
-            accessToken: client.accessToken,
-          );
+          options.headers.addAll(serverAuthHeaders(client));
           handler.next(options);
         },
       ),

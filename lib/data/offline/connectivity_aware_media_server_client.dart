@@ -29,7 +29,8 @@ bool shouldUseOfflineCatalog() {
 /// have their own offline paths and need the raw client untouched. Routing is
 /// per-call, so user-scoped singletons that captured this wrapper at
 /// construction keep working across connectivity flips.
-class ConnectivityAwareMediaServerClient implements MediaServerClient {
+class ConnectivityAwareMediaServerClient
+    implements MediaServerClient, ProfileAwareClient {
   final MediaServerClient _online;
   final bool Function() _useOffline;
 
@@ -109,6 +110,38 @@ class ConnectivityAwareMediaServerClient implements MediaServerClient {
 
   @override
   set userId(String? id) => _online.userId = id;
+
+  // Profile members forward to the wrapped client; on servers without
+  // household profiles they read null and ignore writes.
+  @override
+  String? get profileId => clientProfileId(_online);
+
+  @override
+  set profileId(String? id) {
+    final online = _online;
+    if (online is ProfileAwareClient) {
+      (online as ProfileAwareClient).profileId = id;
+    }
+  }
+
+  @override
+  String? get profileToken {
+    final online = _online;
+    return online is ProfileAwareClient
+        ? (online as ProfileAwareClient).profileToken
+        : null;
+  }
+
+  @override
+  set profileToken(String? token) {
+    final online = _online;
+    if (online is ProfileAwareClient) {
+      (online as ProfileAwareClient).profileToken = token;
+    }
+  }
+
+  @override
+  Map<String, String> authHeaders() => serverAuthHeaders(_online);
 
   @override
   AuthApi get authApi => _online.authApi;

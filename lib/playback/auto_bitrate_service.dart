@@ -55,6 +55,9 @@ class AutoBitrateService {
     // the local file starts.
     if (shouldUseOfflineCatalog()) return Future.value(null);
     final client = _clientFactory.getActiveClient();
+    // Silo has no bitrate test route; it applies its own bandwidth policy
+    // when planning a stream.
+    if (client.serverType == ServerType.silo) return Future.value(null);
 
     final key = client.baseUrl;
     final cached = _cache[key];
@@ -104,15 +107,7 @@ class AutoBitrateService {
         connectTimeout: _requestTimeout,
         // Newer Jellyfin rejects a bare X-Emby-Token, so send the same
         // Authorization header the server clients use.
-        headers: {
-          'Authorization': buildServerAuthorizationHeader(
-            scheme: client.serverType == ServerType.emby
-                ? 'Emby'
-                : 'MediaBrowser',
-            deviceInfo: client.deviceInfo,
-            accessToken: client.accessToken,
-          ),
-        },
+        headers: serverAuthHeaders(client),
       ),
     );
 

@@ -27,6 +27,7 @@ abstract class ServerWebSocketClient {
     return switch (client.serverType) {
       ServerType.jellyfin => JellyfinWebSocketClient(client),
       ServerType.emby => EmbyWebSocketClient(client),
+      ServerType.silo => SiloWebSocketClient(client),
     };
   }
 }
@@ -336,5 +337,39 @@ class SocketHandler {
     disconnect();
     _eventController.close();
     _connectionController.close();
+  }
+}
+
+/// Silo's realtime channel is a ticketed `/api/v2/events/ws` socket with its
+/// own frames, translated into [ServerWebSocketMessage]s in plan §8.1 (build
+/// step 9). Until then this client stays idle: it never connects and emits
+/// nothing, so everything that listens simply hears no server pushes.
+class SiloWebSocketClient implements ServerWebSocketClient {
+  SiloWebSocketClient(this.client);
+
+  final MediaServerClient client;
+
+  final _messages = StreamController<ServerWebSocketMessage>.broadcast();
+  final _connections = StreamController<void>.broadcast();
+
+  @override
+  Stream<ServerWebSocketMessage> get messages => _messages.stream;
+
+  @override
+  Stream<void> get connections => _connections.stream;
+
+  @override
+  Future<void> connect() async {}
+
+  @override
+  Future<void> disconnect() async {}
+
+  @override
+  void retryNow() {}
+
+  @override
+  void dispose() {
+    _messages.close();
+    _connections.close();
   }
 }

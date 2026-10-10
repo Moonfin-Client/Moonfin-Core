@@ -1,0 +1,17 @@
+name: playback_silo
+description: Silo playback plugin (Silo playback protocol v3 over /api/v2).
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.11.0
+
+dependencies:
+  playback_core:
+    path: ../playback_core
+  server_core:
+    path: ../server_core
+  logger: ^2.5.0
+
+dev_dependencies:
+  test: ^1.25.0

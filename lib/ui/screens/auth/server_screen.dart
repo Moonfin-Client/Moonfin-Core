@@ -86,7 +86,7 @@ class _ServerScreenState extends State<ServerScreen> {
       }
 
       if (mounted && merged.isEmpty) {
-        context.go('${Destinations.login}?serverId=${server.id}');
+        context.go('${Destinations.login}?serverId=${server.id}&noUsers=true');
         return;
       }
 

@@ -22,6 +22,7 @@ class ServerTypeIcon extends StatelessWidget {
       painter: switch (serverType) {
         ServerType.jellyfin => _JellyfinLogoPainter(effectiveColor),
         ServerType.emby => _EmbyLogoPainter(effectiveColor),
+        ServerType.silo => _SiloGlyphPainter(effectiveColor),
       },
     );
   }
@@ -120,4 +121,42 @@ class _EmbyLogoPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_EmbyLogoPainter old) => old.color != color;
+}
+
+/// A generic grain-silo glyph (domed cylinder with bands). Deliberately not
+/// the Silo project's logo, which is a trademark of its own.
+class _SiloGlyphPainter extends CustomPainter {
+  final Color color;
+  _SiloGlyphPainter(this.color);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final scale = size.width / 24;
+    canvas.scale(scale);
+
+    final fill = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
+    final cut = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.4
+      ..blendMode = BlendMode.clear;
+
+    canvas.saveLayer(Offset.zero & const Size(24, 24), Paint());
+    final body = Path()
+      ..moveTo(6, 9)
+      ..arcToPoint(const Offset(18, 9), radius: const Radius.circular(6))
+      ..lineTo(18, 21)
+      ..lineTo(6, 21)
+      ..close();
+    canvas.drawPath(body, fill);
+    for (final y in const [11.5, 15.0, 18.5]) {
+      canvas.drawLine(Offset(6, y), Offset(18, y), cut);
+    }
+    canvas.restore();
+  }
+
+  @override
+  bool shouldRepaint(_SiloGlyphPainter old) => old.color != color;
 }

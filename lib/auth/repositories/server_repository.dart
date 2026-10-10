@@ -191,7 +191,11 @@ class ServerRepository {
     try {
       final result = await probeServerPublicInfo(dio, baseUrl);
       if (result == null) {
-        throw const FormatException('No Jellyfin or Emby server at this address');
+        throw FormatException(
+          siloSupportEnabled
+              ? 'No Jellyfin, Emby or Silo server at this address'
+              : 'No Jellyfin or Emby server at this address',
+        );
       }
       return (
         result.info,
