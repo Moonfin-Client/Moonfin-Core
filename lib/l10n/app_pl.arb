@@ -2795,7 +2795,7 @@
     "@playWhenBrowsingHomeScreen": {
         "description": "Description for theme music on home rows"
     },
-    "detailsBackgroundBlur": "Rozmycie tła na stronie szczegółów",
+    "detailsBackgroundBlur": "Rozmycie tła",
     "@detailsBackgroundBlur": {
         "description": "Setting for details background blur"
     },
@@ -7072,7 +7072,7 @@
     "genresRowItems": "Treści w sekcjach gatunków",
     "genresRowItemsDescription": "Pokazuj filmy, seriale lub oba typy treści w sekcjach gatunków.",
     "appearance": "Wygląd",
-    "cardSize": "Rozmiar kart sekcji ekranu głównego",
+    "cardSize": "Rozmiar kart",
     "externalPlayerApp": "Zewnętrzny odtwarzacz",
     "externalPlayerAskEachTimeSubtitle": "Pokazuj wybór aplikacji przy rozpoczęciu odtwarzania.",
     "loadingInstalledPlayers": "Wczytywanie zainstalowanych odtwarzaczy...",
@@ -7366,7 +7366,7 @@
     "@recommendationSystemTmdb": {
         "description": "Recommendation system option: TMDb Similarity"
     },
-    "recommendationsApplyParentalRatingCap": "Zastosować limit klasyfikacji wiekowej?",
+    "recommendationsApplyParentalRatingCap": "Zastosuj limit klasyfikacji wiekowej",
     "@recommendationsApplyParentalRatingCap": {
         "description": "Label for the toggle that controls whether similar suggestions are capped by target media parental rating"
     },
@@ -7829,7 +7829,7 @@
     "@subtitleModeForeignDescription": {
         "description": "Description for foreign subtitle mode"
     },
-    "showTechnicalDetails": "Pokazywać szczegóły techniczne?",
+    "showTechnicalDetails": "Pokazuj szczegóły techniczne",
     "@showTechnicalDetails": {
         "description": "Label for the detail screen setting to show stream/codec technical details"
     },
@@ -7891,7 +7891,7 @@
     "@enableTrailerAudio": {
         "description": "Description for trailer audio"
     },
-    "fullScreenRows": "Rozszerzone sekcje ekranu głównego",
+    "fullScreenRows": "Rozszerzone sekcje",
     "@fullScreenRows": {
         "description": "Setting for full screen home rows"
     },
@@ -8577,7 +8577,7 @@
     "@showMediaDetailsOnLibraryPageDescription": {
         "description": "Setting description to show/hide focused media details at the top of the library page"
     },
-    "hideBackdropsInLibraries": "Ukrywać tła podczas przeglądania?",
+    "hideBackdropsInLibraries": "Ukryj tła podczas przeglądania",
     "@hideBackdropsInLibraries": {
         "description": "Setting title to show/hide backdrops when browsing library pages"
     },
@@ -9070,7 +9070,7 @@
     "@settingsSearchHint": {
         "description": "Hint text in the settings search field"
     },
-    "detailsBackgroundOpacity": "Przezroczystość tła szczegółów",
+    "detailsBackgroundOpacity": "Przezroczystość tła",
     "@detailsBackgroundOpacity": {
         "description": "Setting for details background opacity on modern screens"
     },
@@ -9235,7 +9235,7 @@
             }
         }
     },
-    "homeRowsPadding": "Odstępy między sekcjami ekranu głównego",
+    "homeRowsPadding": "Odstępy między sekcjami",
     "@homeRowsPadding": {
         "description": "Title for home rows padding setting"
     },
@@ -9843,7 +9843,7 @@
     "@mediaDetailsAndSpoilers": {
         "description": "Section header for media details and spoiler settings"
     },
-    "hideDetailsMediaDescription": "Ukryj opis na ekranie szczegółów",
+    "hideDetailsMediaDescription": "Ukryj opis",
     "@hideDetailsMediaDescription": {
         "description": "Setting title to hide media description on details screen"
     },
@@ -9851,7 +9851,7 @@
     "@hideDetailsMediaDescriptionSubtitle": {
         "description": "Description for setting to hide media description on details page"
     },
-    "detailUseSeriesThumbnails": "Używaj miniatur serialu na ekranie szczegółów",
+    "detailUseSeriesThumbnails": "Używaj miniatur serialu",
     "@detailUseSeriesThumbnails": {
         "description": "Setting title to replace thumbnails on Classic details page with series thumbnail"
     },
@@ -9859,7 +9859,7 @@
     "@detailUseSeriesThumbnailsSubtitle": {
         "description": "Description for setting to use series thumbnails on Classic details page"
     },
-    "hideHomeMediaDescription": "Ukryj opis na ekranie głównym",
+    "hideHomeMediaDescription": "Ukryj opis",
     "@hideHomeMediaDescription": {
         "description": "Setting title to hide media description on home screen"
     },
@@ -10887,7 +10887,7 @@
     "@loadingAnimationSpeedUltra": {
         "description": "Loading animation speed option: Ultra"
     },
-    "showLoadingAnimationText": "Pokaż tekst?",
+    "showLoadingAnimationText": "Pokaż tekst",
     "@showLoadingAnimationText": {
         "description": "Setting toggle for showing loading animation text"
     },
@@ -10899,7 +10899,7 @@
     "@cropBlackBars": {
         "description": "Setting to detect and crop encoded letterbox/pillarbox bars"
     },
-    "settingsCropBlackBarsDescription": "Wykrywaj zakodowane czarne pasy, przycinaj je i wypełniaj ekran.",
+    "settingsCropBlackBarsDescription": "Wykrywaj i przycinaj czarne pasy zapisane w obrazie po rozpoczęciu odtwarzania, aby wypełnić ekran. Możesz ponownie wykryć pasy za pomocą przycisku powiększenia w odtwarzaczu.",
     "@settingsCropBlackBarsDescription": {
         "description": "Description for the crop black bars playback setting"
     },
@@ -12945,7 +12945,7 @@
     "@friendsOutgoing": {
         "description": "Section header for friend requests the user sent"
     },
-    "friendsNoRequests": "Brak zaproszeń do znajomych",
+    "friendsNoRequests": "Brak zaproszeń do znajomych.",
     "@friendsNoRequests": {
         "description": "Shown when there are no pending friend requests"
     },
@@ -13056,7 +13056,7 @@
     "@friendsBlocked": {
         "description": "Section header listing blocked users"
     },
-    "friendsProfileHidden": "Profil użytkownika {name} jest prywatny",
+    "friendsProfileHidden": "Profil użytkownika {name} jest prywatny.",
     "@friendsProfileHidden": {
         "description": "Shown when another user hides their profile",
         "placeholders": {
@@ -13105,7 +13105,7 @@
     "@friendsMuteDuringPlaybackSubtitle": {
         "description": "Subtitle of the Mute during playback setting"
     },
-    "friendsSaveFailed": "Nie udało się zapisać ustawień",
+    "friendsSaveFailed": "Nie udało się zapisać ustawień.",
     "@friendsSaveFailed": {
         "description": "Shown when the friends privacy settings fail to save"
     },
@@ -13133,7 +13133,7 @@
     "@chatYou": {
         "description": "Stands for the signed-in user in chats and member lists"
     },
-    "chatYouSaid": "You: {text}",
+    "chatYouSaid": "Ty: {text}",
     "@chatYouSaid": {
         "description": "Preview of the last chat message when the user sent it",
         "placeholders": {
@@ -13243,7 +13243,7 @@
     "@chatAddMember": {
         "description": "Action that adds friends to a group chat"
     },
-    "chatNobodyToAdd": "Brak osób do dodania",
+    "chatNobodyToAdd": "Brak osób do dodania.",
     "@chatNobodyToAdd": {
         "description": "Shown when every friend is already in the group"
     },
@@ -13272,12 +13272,445 @@
             }
         }
     },
-    "chatImageTooLarge": "Ten obraz ma ponad 8 MB",
+    "chatImageTooLarge": "Ten obraz ma ponad 8 MB.",
     "@chatImageTooLarge": {
         "description": "Shown when a picked chat image is too big"
     },
-    "chatImageUnsupported": "Można wysyłać obrazy tylko w formatach PNG, JPEG, GIF i WebP",
+    "chatImageUnsupported": "Można wysyłać obrazy tylko w formatach PNG, JPEG, GIF i WebP.",
     "@chatImageUnsupported": {
         "description": "Shown when a picked chat image has an unsupported type"
+    },
+    "spotlightFileDetails": "Szczegóły pliku",
+    "@spotlightFileDetails": {
+        "description": "Title of the spotlight summary card that opens the file details modal"
+    },
+    "fetchingSubtitles": "Pobieranie napisów",
+    "@fetchingSubtitles": {
+        "description": "Playback status shown while the selected subtitle file is loading"
+    },
+    "shortcutRecropBlackBars": "Ponownie wykryj czarne pasy",
+    "@shortcutRecropBlackBars": {
+        "description": "Player shortcut to run letterbox crop detection now"
+    },
+    "nextSeriesRecording": "Następne nagranie serialu: {dateTime}",
+    "@nextSeriesRecording": {
+        "description": "Next scheduled recording for the current series, shown in the Live TV recording dialog",
+        "placeholders": {
+            "dateTime": {
+                "type": "String",
+                "example": "Oct 5, 2026 · 8:00 PM"
+            }
+        }
+    },
+    "noUpcomingSeriesRecording": "Zaplanowano nagrywanie serialu, ale w programie nie ma nadchodzących odcinków",
+    "@noUpcomingSeriesRecording": {
+        "description": "A series recording rule exists but no future episode timer is available"
+    },
+    "recordCurrentEpisode": "Nagraj ten odcinek",
+    "@recordCurrentEpisode": {
+        "description": "Live TV player action to record only the current episode"
+    },
+    "recordCurrentProgram": "Nagraj ten program",
+    "@recordCurrentProgram": {
+        "description": "Live TV player action to record only the current program"
+    },
+    "cancelCurrentRecording": "Anuluj to nagranie",
+    "@cancelCurrentRecording": {
+        "description": "Live TV player action to cancel only the current recording, leaving any series rule intact"
+    },
+    "seasonalChristmas": "Boże Narodzenie",
+    "@seasonalChristmas": {
+        "description": "Seasonal effect: snow with falling baubles and stars"
+    },
+    "seasonalPetals": "Wiosenne płatki",
+    "@seasonalPetals": {
+        "description": "Seasonal effect: falling cherry blossoms and petals with bees flying by"
+    },
+    "seasonalFireflies": "Świetliki",
+    "@seasonalFireflies": {
+        "description": "Seasonal effect: glowing fireflies for summer"
+    },
+    "seasonalHalloween": "Halloween",
+    "@seasonalHalloween": {
+        "description": "Seasonal effect: bats, ghosts, candy and orange and purple leaves"
+    },
+    "seasonalDensity": "Intensywność",
+    "@seasonalDensity": {
+        "description": "Setting for how many seasonal effect particles are on screen at once"
+    },
+    "seasonalDensityLight": "Niska",
+    "@seasonalDensityLight": {
+        "description": "Seasonal effect density: fewest particles"
+    },
+    "seasonalDensityNormal": "Normalna",
+    "@seasonalDensityNormal": {
+        "description": "Seasonal effect density: the default amount"
+    },
+    "seasonalDensityHeavy": "Wysoka",
+    "@seasonalDensityHeavy": {
+        "description": "Seasonal effect density: most particles"
+    },
+    "seasonalRow": "Wiersz sezonowy",
+    "@seasonalRow": {
+        "description": "Name of the Home row that shows holiday movies"
+    },
+    "seasonalRowDescription": "Wyświetlaj wiersz filmów świątecznych z biblioteki oraz propozycje z Seerr, jeśli są dostępne.",
+    "@seasonalRowDescription": {
+        "description": "Explains the seasonal Home row setting"
+    },
+    "seasonalRowSubtitle": "Sezonowe",
+    "@seasonalRowSubtitle": {
+        "description": "Source label shown under the seasonal row's title"
+    },
+    "seasonalRowCountry": "Kraj",
+    "@seasonalRowCountry": {
+        "description": "Setting for which country's holidays the seasonal row follows"
+    },
+    "seasonalRowCountryAuto": "Automatycznie",
+    "@seasonalRowCountryAuto": {
+        "description": "Country option that reads the country from the device"
+    },
+    "countryUnitedStates": "Stany Zjednoczone",
+    "@countryUnitedStates": {
+        "description": "Country name"
+    },
+    "countryCanada": "Kanada",
+    "@countryCanada": {
+        "description": "Country name"
+    },
+    "seasonalRowCountryOther": "Inny",
+    "@seasonalRowCountryOther": {
+        "description": "Country option for a country the seasonal row does not list"
+    },
+    "seasonalRowHolidays": "Święta",
+    "@seasonalRowHolidays": {
+        "description": "Heading for the list of holidays the seasonal row can show"
+    },
+    "seasonalRowHolidaysHint": "Odznacz święto, aby ukryć jego wiersz.",
+    "@seasonalRowHolidaysHint": {
+        "description": "Hint under the holiday checklist"
+    },
+    "holidayNewYear": "Nowy Rok",
+    "@holidayNewYear": {
+        "description": "Seasonal row title for New Year's"
+    },
+    "holidayValentines": "Walentynki",
+    "@holidayValentines": {
+        "description": "Seasonal row title for Valentine's Day"
+    },
+    "holidayEaster": "Wielkanoc",
+    "@holidayEaster": {
+        "description": "Seasonal row title for Easter"
+    },
+    "holidayPride": "Miesiąc Dumy",
+    "@holidayPride": {
+        "description": "Seasonal row title for Pride month"
+    },
+    "holidayHalloween": "Halloween",
+    "@holidayHalloween": {
+        "description": "Seasonal row title for Halloween"
+    },
+    "holidayThanksgiving": "Święto Dziękczynienia",
+    "@holidayThanksgiving": {
+        "description": "Seasonal row title for Thanksgiving"
+    },
+    "holidayChristmas": "Filmy bożonarodzeniowe",
+    "@holidayChristmas": {
+        "description": "Seasonal row title for Christmas"
+    },
+    "holidayLunarNewYear": "Księżycowy Nowy Rok",
+    "@holidayLunarNewYear": {
+        "description": "Seasonal row title for Lunar New Year"
+    },
+    "holidayDiwali": "Diwali",
+    "@holidayDiwali": {
+        "description": "Seasonal row title for Diwali"
+    },
+    "cropBlackBarsRecropInterval": "Częstotliwość ponownego wykrywania",
+    "@cropBlackBarsRecropInterval": {
+        "description": "Setting for how often to re-detect encoded letterbox bars"
+    },
+    "cropBlackBarsOnce": "Raz na początku",
+    "@cropBlackBarsOnce": {
+        "description": "Letterbox recrop interval: detect once after playback starts"
+    },
+    "cropBlackBarsEverySecond": "Co sekundę",
+    "@cropBlackBarsEverySecond": {
+        "description": "Letterbox recrop interval: scan about once a second"
+    },
+    "settingsCropBlackBarsIntervalDescription": "Dostosowuj obraz do zmian proporcji podczas odtwarzania.",
+    "@settingsCropBlackBarsIntervalDescription": {
+        "description": "Description for the letterbox recrop-interval setting"
+    },
+    "playerRecroppingBlackBars": "Ponowne wykrywanie czarnych pasów",
+    "@playerRecroppingBlackBars": {
+        "description": "Toast when the player re-runs letterbox crop detection"
+    },
+    "pluginConnected": "Połączono",
+    "@pluginConnected": {
+        "description": "Status line on the Settings Sync screen when the server plugin answers"
+    },
+    "pluginConnectedVersion": "Połączono, wersja {version}",
+    "@pluginConnectedVersion": {
+        "description": "Status line on the Settings Sync screen with the server plugin's version",
+        "placeholders": {
+            "version": {
+                "type": "String"
+            }
+        }
+    },
+    "pluginSyncOn": "Synchronizacja włączona",
+    "@pluginSyncOn": {
+        "description": "Caption under the settings sync switch while sync is on"
+    },
+    "pluginSyncOff": "Synchronizacja wyłączona",
+    "@pluginSyncOff": {
+        "description": "Caption under the settings sync switch while sync is off"
+    },
+    "syncProfileDescription": "To urządzenie synchronizuje ustawienia z wybranym profilem, dopóki nie wybierzesz innego.",
+    "@syncProfileDescription": {
+        "description": "Caption above the settings profile cards on the Settings Sync screen"
+    },
+    "profileAppliesEverywhere": "Obowiązuje wszędzie",
+    "@profileAppliesEverywhere": {
+        "description": "Subtitle of the Global settings profile card"
+    },
+    "profileOverridesGlobal": "Zastępuje ustawienia globalne",
+    "@profileOverridesGlobal": {
+        "description": "Subtitle of the Desktop, Mobile and TV settings profile cards"
+    },
+    "profileThisDevice": "To urządzenie",
+    "@profileThisDevice": {
+        "description": "Marks the settings profile card that matches the current device"
+    },
+    "profileLoad": "Wczytaj",
+    "@profileLoad": {
+        "description": "Button that replaces this device's settings with the chosen profile from the server"
+    },
+    "profileLoadSubtitle": "Z serwera na to urządzenie",
+    "@profileLoadSubtitle": {
+        "description": "Line under the Load button saying which way the settings go"
+    },
+    "profileSaveSubtitle": "Z tego urządzenia na serwer",
+    "@profileSaveSubtitle": {
+        "description": "Line under the Save button saying which way the settings go"
+    },
+    "resetNamedProfile": "Zresetuj profil {profile}",
+    "@resetNamedProfile": {
+        "description": "Button that resets the chosen settings profile, for example Reset TV Profile",
+        "placeholders": {
+            "profile": {
+                "type": "String"
+            }
+        }
+    },
+    "seerrDiscoverSliders": "Karuzele odkrywania Seerr",
+    "@seerrDiscoverSliders": {
+        "description": "Seerr Lists heading for the sliders an admin set up on Seerr's discover page"
+    },
+    "preferTextSubtitles": "Preferuj napisy tekstowe",
+    "preferTextSubtitlesSubtitle": "Daj pierwszeństwo napisom tekstowym (SRT, VTT) przed formatami graficznymi (PGS, VobSub).",
+    "preferExternalSubtitles": "Preferuj napisy zewnętrzne",
+    "preferExternalSubtitlesSubtitle": "Daj pierwszeństwo zewnętrznym plikom napisów przed napisami osadzonymi w pliku.",
+    "smartDownloadsSection": "Inteligentne pobieranie",
+    "@smartDownloadsSection": {
+        "description": "Settings section header for downloading the next episodes of a series after one is watched"
+    },
+    "smartDownloadsEnable": "Pobieraj kolejne odcinki",
+    "@smartDownloadsEnable": {
+        "description": "Switch that swaps a watched downloaded episode for the next episodes of the series"
+    },
+    "smartDownloadsEnableSubtitle": "Po obejrzeniu odcinka na dowolnym urządzeniu Moonfin pobierze kolejne. Obejrzane pobrane odcinki zostaną usunięte.",
+    "@smartDownloadsEnableSubtitle": {
+        "description": "Explains the smart downloads switch, including that watched episodes are deleted"
+    },
+    "smartDownloadsKeepReady": "Liczba pobranych odcinków",
+    "@smartDownloadsKeepReady": {
+        "description": "Setting for how many unwatched episodes of a series stay downloaded after one is watched"
+    },
+    "smartDownloadsKeepReadySubtitle": "{count, plural, =1{Zachowuje pobrany następny odcinek} few{Zachowuje pobrane kolejne {count} odcinki} many{Zachowuje pobrane kolejne {count} odcinków} other{Zachowuje pobrane kolejne {count} odcinka}}",
+    "@smartDownloadsKeepReadySubtitle": {
+        "description": "Subtitle under the episodes to keep ready setting",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "smartDownloadsKeepReadyLowered": "Już pobrane odcinki pozostaną na urządzeniu. Nowa liczba będzie obowiązywać przy kolejnych pobraniach.",
+    "@smartDownloadsKeepReadyLowered": {
+        "description": "Shown after lowering the episodes to keep downloaded, explaining nothing is deleted"
+    },
+    "appleTvHomeScreen": "Ekran główny Apple TV",
+    "@appleTvHomeScreen": {
+        "description": "Section header in Home Screen settings for options that affect the tvOS home screen outside the app"
+    },
+    "topShelf": "Top Shelf",
+    "@topShelf": {
+        "description": "Apple TV settings label for what the tvOS home screen shows above the Moonfin icon. Top Shelf is Apple's name for that area"
+    },
+    "topShelfDescription": "Określa, co pojawia się nad ikoną Moonfin na ekranie głównym Apple TV po jej zaznaczeniu. To ustawienie dotyczy tylko tego urządzenia.",
+    "@topShelfDescription": {
+        "description": "Apple TV settings subtitle for the Top Shelf option"
+    },
+    "topShelfLatestMedia": "Najnowsze multimedia",
+    "@topShelfLatestMedia": {
+        "description": "Top Shelf option that shows a carousel of the newest items from the home screen's Latest rows"
+    },
+    "topShelfAppBanner": "Baner Moonfin",
+    "@topShelfAppBanner": {
+        "description": "Top Shelf option that shows only the static Moonfin logo banner, nothing from the library"
+    },
+    "detailsPage": "Strona szczegółów",
+    "@detailsPage": {
+        "description": "Settings entry and screen for options that shape the details page"
+    },
+    "storageAndDownloads": "Pamięć i pobieranie",
+    "@storageAndDownloads": {
+        "description": "Settings root entry and screen for downloads, storage location and the image cache"
+    },
+    "settingsSync": "Synchronizacja ustawień",
+    "@settingsSync": {
+        "description": "Settings screen for syncing settings through the Moonbase plugin"
+    },
+    "settingsSyncSubtitle": "Synchronizacja przez wtyczkę Moonbase i profile ustawień",
+    "@settingsSyncSubtitle": {
+        "description": "Subtitle for the Settings Sync entry"
+    },
+    "navigationBar": "Pasek nawigacji",
+    "@navigationBar": {
+        "description": "Settings screen for the navigation bar style and buttons"
+    },
+    "homeRows": "Wiersze",
+    "@homeRows": {
+        "description": "Settings entry and screen for turning Home rows on or off and ordering them"
+    },
+    "homeRowsSubtitle": "Włączaj i wyłączaj wiersze oraz zmieniaj ich kolejność",
+    "@homeRowsSubtitle": {
+        "description": "Subtitle for the Home rows entry"
+    },
+    "rowOptions": "Opcje wierszy",
+    "@rowOptions": {
+        "description": "Settings screen with sorting and content options for each Home row"
+    },
+    "rowOptionsSubtitle": "Sortowanie i zawartość poszczególnych wierszy",
+    "@rowOptionsSubtitle": {
+        "description": "Subtitle for the Row Options entry"
+    },
+    "imageTypePerRow": "Typ obrazu dla każdego wiersza",
+    "@imageTypePerRow": {
+        "description": "Settings entry and screen for choosing the image type of each Home row"
+    },
+    "externalSources": "Źródła zewnętrzne",
+    "@externalSources": {
+        "description": "Section header on the Home Screen settings screen for rows that come from IMDb, TMDB, calendars, Seerr and custom lists"
+    },
+    "qualityAndDecoding": "Jakość i dekodowanie",
+    "@qualityAndDecoding": {
+        "description": "Settings screen for streaming limits, decoding, HDR and Dolby Vision"
+    },
+    "qualityAndDecodingSubtitle": "Przepływność, rozdzielczość, dekodowanie, HDR i Dolby Vision",
+    "@qualityAndDecodingSubtitle": {
+        "description": "Subtitle for the Quality & Decoding entry"
+    },
+    "skippingAndAutoplay": "Pomijanie i autoodtwarzanie",
+    "@skippingAndAutoplay": {
+        "description": "Settings screen for media segment skipping, cinema mode and autoplay"
+    },
+    "advancedPlayback": "Zaawansowane odtwarzanie",
+    "@advancedPlayback": {
+        "description": "Settings screen for advanced player routing, external players and mpv"
+    },
+    "advancedPlaybackSubtitle": "Wybór odtwarzacza, odtwarzacze zewnętrzne i mpv",
+    "@advancedPlaybackSubtitle": {
+        "description": "Subtitle for the Advanced Playback entry"
+    },
+    "settingsAccountSubtitle": "Logowanie, kod PIN, tryb dziecięcy, kontrola rodzicielska i synchronizacja ustawień",
+    "@settingsAccountSubtitle": {
+        "description": "Subtitle for the Account settings root entry"
+    },
+    "settingsGeneralSubtitle": "Język, zegar, sterowanie i wydajność",
+    "@settingsGeneralSubtitle": {
+        "description": "Subtitle for the General settings root entry"
+    },
+    "settingsAppearanceSubtitle": "Nawigacja, ekran główny, biblioteki, strona szczegółów i motywy",
+    "@settingsAppearanceSubtitle": {
+        "description": "Subtitle for the Appearance settings root entry"
+    },
+    "settingsHomeScreenSubtitle": "Rzędy, pasek multimediów, wygląd i źródła zewnętrzne",
+    "@settingsHomeScreenSubtitle": {
+        "description": "Subtitle for the Home Screen entry on the Appearance settings screen"
+    },
+    "settingsLibrariesEntrySubtitle": "Widoczność i kolejność bibliotek oraz ich strony",
+    "@settingsLibrariesEntrySubtitle": {
+        "description": "Subtitle for the Libraries entry on the Appearance settings screen"
+    },
+    "settingsDetailsPageSubtitle": "Układ, przyciski, sekcje, oceny i muzyka motywu",
+    "@settingsDetailsPageSubtitle": {
+        "description": "Subtitle for the Details Page entry on the Appearance settings screen"
+    },
+    "settingsPlaybackSubtitle": "Odtwarzacz, jakość, dźwięk, napisy, pomijanie i SyncPlay",
+    "@settingsPlaybackSubtitle": {
+        "description": "Subtitle for the Playback settings root entry"
+    },
+    "settingsStorageSubtitle": "Pobieranie, lokalizacja zapisu i pamięć podręczna obrazów",
+    "@settingsStorageSubtitle": {
+        "description": "Subtitle for the Storage & Downloads settings root entry"
+    },
+    "settingsServicesSubtitle": "Seerr i odznaki osiągnięć",
+    "@settingsServicesSubtitle": {
+        "description": "Subtitle for the Services settings root entry"
+    },
+    "settingsSignInSection": "Logowanie",
+    "@settingsSignInSection": {
+        "description": "Section header on the Account settings screen"
+    },
+    "settingsFamilySection": "Rodzina",
+    "@settingsFamilySection": {
+        "description": "Section header on the Account settings screen for Kids Mode and parental controls"
+    },
+    "settingsServersSection": "Serwery",
+    "@settingsServersSection": {
+        "description": "Section header on the Account settings screen for server list and certificate options"
+    },
+    "settingsLanguageSection": "Język",
+    "@settingsLanguageSection": {
+        "description": "Section header on the General settings screen"
+    },
+    "settingsInputSection": "Sterowanie",
+    "@settingsInputSection": {
+        "description": "Section header on the General settings screen for keyboard, remote and pointer options"
+    },
+    "settingsMotionSection": "Animacje",
+    "@settingsMotionSection": {
+        "description": "Section header on the Appearance settings screen for animation speeds"
+    },
+    "settingsContentsSection": "Zawartość",
+    "@settingsContentsSection": {
+        "description": "Section header on the Home Screen settings screen for the rows, row options and media bar"
+    },
+    "settingsLooksSection": "Wygląd",
+    "@settingsLooksSection": {
+        "description": "Section header on the Home Screen settings screen for how rows and cards look"
+    },
+    "settingsAudioAndSubtitlesSection": "Dźwięk i napisy",
+    "@settingsAudioAndSubtitlesSection": {
+        "description": "Section header on the Playback settings screen"
+    },
+    "settingsSkippingAndQueueSection": "Pomijanie i kolejka",
+    "@settingsSkippingAndQueueSection": {
+        "description": "Section header on the Playback settings screen"
+    },
+    "settingsWatchTogetherSection": "Oglądaj razem",
+    "@settingsWatchTogetherSection": {
+        "description": "Section header on the Playback settings screen for SyncPlay"
+    },
+    "settingsAdvancedSection": "Zaawansowane",
+    "@settingsAdvancedSection": {
+        "description": "Section header on the Playback settings screen"
+    },
+    "playerSettingsSubtitle": "Sterowanie, przewijanie, przyciski odtwarzacza i podgląd podczas przewijania",
+    "@playerSettingsSubtitle": {
+        "description": "Subtitle for the Player entry on the Playback settings screen"
     }
 }
