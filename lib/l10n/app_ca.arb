@@ -2795,7 +2795,7 @@
     "@playWhenBrowsingHomeScreen": {
         "description": "Description for theme music on home rows"
     },
-    "detailsBackgroundBlur": "Detalls Desenfocament de fons",
+    "detailsBackgroundBlur": "Desenfocament del fons",
     "@detailsBackgroundBlur": {
         "description": "Setting for details background blur"
     },
@@ -6974,7 +6974,7 @@
     "@disableTunnelingSubtitle": {
         "description": "Setting subtitle for disable tunneling"
     },
-    "mapDolbyVisionP7Title": "Reprodueix el perfil 7 de Dolby Vision com a HDR10",
+    "mapDolbyVisionP7Title": "Reprodueix sempre el perfil 7 de Dolby Vision com a HDR10",
     "@mapDolbyVisionP7Title": {
         "description": "Setting title: play DV P7 as HDR10 HEVC on non-DV devices"
     },
@@ -6982,7 +6982,7 @@
     "@mapDolbyVisionP7Subtitle": {
         "description": "Setting subtitle for DV P7 to HEVC mapping"
     },
-    "subtitlesUseEmbeddedStyles": "Utilitzeu estils de subtítols incrustats",
+    "subtitlesUseEmbeddedStyles": "Utilitza els estils de subtítols incrustats",
     "@subtitlesUseEmbeddedStyles": {
         "description": "Setting title: apply colours/positioning from the subtitle track"
     },
@@ -6990,7 +6990,7 @@
     "@subtitlesUseEmbeddedStylesSubtitle": {
         "description": "Setting subtitle for embedded styles toggle"
     },
-    "subtitlesUseEmbeddedFontSizes": "Utilitzeu mides de lletra de subtítols incrustades",
+    "subtitlesUseEmbeddedFontSizes": "Utilitza les mides de lletra dels subtítols incrustats",
     "@subtitlesUseEmbeddedFontSizes": {
         "description": "Setting title: apply font sizes from the subtitle track"
     },
@@ -7034,7 +7034,7 @@
             }
         }
     },
-    "savedThemesTitle": "Temes guardats",
+    "savedThemesTitle": "Temes desats",
     "savedThemesDescription": "Aquests són temes baixats del connector Moonfin per al servidor actual. En suprimir, només s'elimina aquesta còpia local.",
     "savedThemesEmpty": "No s'ha trobat cap tema desat per a aquest servidor.",
     "savedThemesCurrentThemeId": "{themeId} • Actualment actiu",
@@ -7090,9 +7090,9 @@
     "replaceSkipOutroWithNextUpDisplay": "Substituïu Skip Outro per Next Up Display",
     "replaceSkipOutroWithNextUpDisplaySubtitle": "Mostra la superposició Next Up en lloc del botó Salta Outro.",
     "playerRouting": "Encaminament del reproductor",
-    "preferSoftwareDecoders": "Preferiu els descodificadors de programari",
+    "preferSoftwareDecoders": "Prefereix els descodificadors de programari",
     "preferSoftwareDecodersSubtitle": "Utilitzeu FFmpeg (àudio) i libgav1 (AV1) abans dels descodificadors de maquinari. Desactiveu-lo si es trenca el pas d'àudio HDMI.",
-    "useExternalPlayer": "Utilitzeu un reproductor extern",
+    "useExternalPlayer": "Utilitza sempre un reproductor extern",
     "useExternalPlayerSubtitle": "Obriu la reproducció de vídeo a l'aplicació externa seleccionada a Android TV.",
     "automaticQueuing": "Cua automàtica",
     "preferSdhSubtitles": "Preferiu els subtítols SDH",
@@ -7347,7 +7347,7 @@
     "@writer": {
         "description": "Metadata label for writer"
     },
-    "settingsScrollWheelAction": "rodeta del ratolí",
+    "settingsScrollWheelAction": "Rodeta del ratolí",
     "@settingsScrollWheelAction": {
         "description": "Setting title for the mouse scroll wheel action during playback"
     },
@@ -7443,7 +7443,7 @@
     "@showSeerrButton": {
         "description": "Setting for showing Seerr button"
     },
-    "fullScreenRows": "Files d'inici ampliades",
+    "fullScreenRows": "Files ampliades",
     "@fullScreenRows": {
         "description": "Setting for full screen home rows"
     },
@@ -7643,7 +7643,7 @@
     "@expandedTabsSubtitle": {
         "description": "Explanation under the expanded tabs setting"
     },
-    "showTechnicalDetails": "Mostrar els detalls tècnics?",
+    "showTechnicalDetails": "Mostra els detalls tècnics",
     "@showTechnicalDetails": {
         "description": "Label for the detail screen setting to show stream/codec technical details"
     },
@@ -7655,7 +7655,7 @@
     "@recommendationSystemTmdb": {
         "description": "Recommendation system option: TMDb Similarity"
     },
-    "recommendationsApplyParentalRatingCap": "Aplicar el límit de classificació per edats?",
+    "recommendationsApplyParentalRatingCap": "Aplica el límit de classificació d'edat a les recomanacions",
     "@recommendationsApplyParentalRatingCap": {
         "description": "Label for the toggle that controls whether similar suggestions are capped by target media parental rating"
     },
@@ -8610,7 +8610,7 @@
     "settingsDetailsScreen": "Pantalla de detalls",
     "settingsDetailsScreenSubtitle": "Estil, desenfocament del fons i comportament de les pestanyes",
     "settingsAlwaysExpandNavbarLabels": "Mostra sempre les etiquetes de text a la barra de navegació superior",
-    "hideBackdropsInLibraries": "Amagar les imatges de fons mentre navegues?",
+    "hideBackdropsInLibraries": "Amaga els telons de fons mentre navegues",
     "@hideBackdropsInLibraries": {
         "description": "Setting title to show/hide backdrops when browsing library pages"
     },
@@ -9028,7 +9028,7 @@
     "@settingsSearchHint": {
         "description": "Hint text in the settings search field"
     },
-    "detailsBackgroundOpacity": "Transparència de fons per a detalls",
+    "detailsBackgroundOpacity": "Opacitat del fons",
     "@detailsBackgroundOpacity": {
         "description": "Setting for details background opacity on modern screens"
     },
@@ -9161,7 +9161,7 @@
             }
         }
     },
-    "homeRowsPadding": "Separació de les fileres d'inici",
+    "homeRowsPadding": "Separació de les files",
     "@homeRowsPadding": {
         "description": "Title for home rows padding setting"
     },
@@ -9783,7 +9783,7 @@
     "@personalRatingSaveFailed": {
         "description": "Error shown when saving a personal rating fails."
     },
-    "hideHomeMediaDescription": "Amagar la descripció dels mitjans a la pantalla d'inici",
+    "hideHomeMediaDescription": "Amaga la descripció dels mitjans",
     "@hideHomeMediaDescription": {
         "description": "Setting title to hide media description on home screen"
     },
@@ -9888,7 +9888,7 @@
     "@mediaDetailsAndSpoilers": {
         "description": "Section header for media details and spoiler settings"
     },
-    "hideDetailsMediaDescription": "Amagar la descripció dels mitjans a la pàgina de detalls",
+    "hideDetailsMediaDescription": "Amaga la descripció dels mitjans",
     "@hideDetailsMediaDescription": {
         "description": "Setting title to hide media description on details screen"
     },
@@ -9896,7 +9896,7 @@
     "@hideDetailsMediaDescriptionSubtitle": {
         "description": "Description for setting to hide media description on details page"
     },
-    "detailUseSeriesThumbnails": "Utilitzar miniatures de la sèrie a la pàgina de detalls",
+    "detailUseSeriesThumbnails": "Utilitza les miniatures de la sèrie",
     "@detailUseSeriesThumbnails": {
         "description": "Setting title to replace thumbnails on Classic details page with series thumbnail"
     },
@@ -10017,7 +10017,7 @@
     "@queuedDownload": {
         "description": "Status label for a download waiting in the queue for a free download slot"
     },
-    "tvOfflineDownloads": "Habilita baixades offline",
+    "tvOfflineDownloads": "Habilita les baixades fora de línia",
     "@tvOfflineDownloads": {
         "description": "TV-only toggle in the Offline Downloads settings: offer download actions on item pages"
     },
@@ -10224,7 +10224,7 @@
     "@serverMessagesMarkAllRead": {
         "description": "Button in the messages window that marks every message as read"
     },
-    "serverMessagesShowButton": "Botó de mostrar missatges",
+    "serverMessagesShowButton": "Mostra el botó de missatges",
     "@serverMessagesShowButton": {
         "description": "Setting that shows or hides the messages button in the menu"
     },
@@ -10405,7 +10405,7 @@
     "@loadingAnimationSpeedUltra": {
         "description": "Loading animation speed option: Ultra"
     },
-    "showLoadingAnimationText": "Vols mostrar el text?",
+    "showLoadingAnimationText": "Mostra el text",
     "@showLoadingAnimationText": {
         "description": "Setting toggle for showing loading animation text"
     },
@@ -13494,5 +13494,223 @@
     "smartDownloadsKeepReadyLowered": "Els episodis que ja s'han baixat es queden al dispositiu. El nou nombre s'aplica a les baixades futures.",
     "@smartDownloadsKeepReadyLowered": {
         "description": "Shown after lowering the episodes to keep downloaded, explaining nothing is deleted"
+    },
+    "fetchingSubtitles": "S'estan obtenint els subtítols",
+    "@fetchingSubtitles": {
+        "description": "Playback status shown while the selected subtitle file is loading"
+    },
+    "pluginConnected": "Connectat",
+    "@pluginConnected": {
+        "description": "Status line on the Settings Sync screen when the server plugin answers"
+    },
+    "pluginConnectedVersion": "Connectat, versió {version}",
+    "@pluginConnectedVersion": {
+        "description": "Status line on the Settings Sync screen with the server plugin's version",
+        "placeholders": {
+            "version": {
+                "type": "String"
+            }
+        }
+    },
+    "pluginSyncOn": "Sincronització activada",
+    "@pluginSyncOn": {
+        "description": "Caption under the settings sync switch while sync is on"
+    },
+    "pluginSyncOff": "Sincronització desactivada",
+    "@pluginSyncOff": {
+        "description": "Caption under the settings sync switch while sync is off"
+    },
+    "syncProfileDescription": "Aquest dispositiu se sincronitza amb el perfil que triïs fins que en triïs un altre.",
+    "@syncProfileDescription": {
+        "description": "Caption above the settings profile cards on the Settings Sync screen"
+    },
+    "profileAppliesEverywhere": "S'aplica a tot arreu",
+    "@profileAppliesEverywhere": {
+        "description": "Subtitle of the Global settings profile card"
+    },
+    "profileOverridesGlobal": "Substitueix Global",
+    "@profileOverridesGlobal": {
+        "description": "Subtitle of the Desktop, Mobile and TV settings profile cards"
+    },
+    "profileThisDevice": "Aquest dispositiu",
+    "@profileThisDevice": {
+        "description": "Marks the settings profile card that matches the current device"
+    },
+    "profileLoad": "Carrega",
+    "@profileLoad": {
+        "description": "Button that replaces this device's settings with the chosen profile from the server"
+    },
+    "profileLoadSubtitle": "Del servidor a aquest dispositiu",
+    "@profileLoadSubtitle": {
+        "description": "Line under the Load button saying which way the settings go"
+    },
+    "profileSaveSubtitle": "D'aquest dispositiu al servidor",
+    "@profileSaveSubtitle": {
+        "description": "Line under the Save button saying which way the settings go"
+    },
+    "resetNamedProfile": "Restableix el perfil {profile}",
+    "@resetNamedProfile": {
+        "description": "Button that resets the chosen settings profile, for example Reset TV Profile",
+        "placeholders": {
+            "profile": {
+                "type": "String"
+            }
+        }
+    },
+    "preferTextSubtitles": "Prefereix els subtítols de text",
+    "preferTextSubtitlesSubtitle": "Prioritza els subtítols basats en text (SRT, VTT) per sobre dels formats basats en imatge (PGS, VobSub).",
+    "preferExternalSubtitles": "Prefereix els subtítols externs",
+    "preferExternalSubtitlesSubtitle": "Prioritza els fitxers de subtítols externs per sobre de les pistes incrustades.",
+    "detailsPage": "Pàgina de detalls",
+    "@detailsPage": {
+        "description": "Settings entry and screen for options that shape the details page"
+    },
+    "storageAndDownloads": "Emmagatzematge i baixades",
+    "@storageAndDownloads": {
+        "description": "Settings root entry and screen for downloads, storage location and the image cache"
+    },
+    "settingsSync": "Sincronització de la configuració",
+    "@settingsSync": {
+        "description": "Settings screen for syncing settings through the Moonbase plugin"
+    },
+    "settingsSyncSubtitle": "Sincronització amb el connector Moonbase i perfils de personalització",
+    "@settingsSyncSubtitle": {
+        "description": "Subtitle for the Settings Sync entry"
+    },
+    "navigationBar": "Barra de navegació",
+    "@navigationBar": {
+        "description": "Settings screen for the navigation bar style and buttons"
+    },
+    "homeRows": "Files",
+    "@homeRows": {
+        "description": "Settings entry and screen for turning Home rows on or off and ordering them"
+    },
+    "homeRowsSubtitle": "Activa o desactiva les files i canvia'n l'ordre",
+    "@homeRowsSubtitle": {
+        "description": "Subtitle for the Home rows entry"
+    },
+    "rowOptions": "Opcions de les files",
+    "@rowOptions": {
+        "description": "Settings screen with sorting and content options for each Home row"
+    },
+    "rowOptionsSubtitle": "Ordenació i contingut de cada fila",
+    "@rowOptionsSubtitle": {
+        "description": "Subtitle for the Row Options entry"
+    },
+    "imageTypePerRow": "Tipus d'imatge per fila",
+    "@imageTypePerRow": {
+        "description": "Settings entry and screen for choosing the image type of each Home row"
+    },
+    "externalSources": "Fonts externes",
+    "@externalSources": {
+        "description": "Section header on the Home Screen settings screen for rows that come from IMDb, TMDB, calendars, Seerr and custom lists"
+    },
+    "qualityAndDecoding": "Qualitat i descodificació",
+    "@qualityAndDecoding": {
+        "description": "Settings screen for streaming limits, decoding, HDR and Dolby Vision"
+    },
+    "qualityAndDecodingSubtitle": "Taxa de bits, resolució, descodificació, HDR i Dolby Vision",
+    "@qualityAndDecodingSubtitle": {
+        "description": "Subtitle for the Quality & Decoding entry"
+    },
+    "skippingAndAutoplay": "Salts i reproducció automàtica",
+    "@skippingAndAutoplay": {
+        "description": "Settings screen for media segment skipping, cinema mode and autoplay"
+    },
+    "advancedPlayback": "Reproducció avançada",
+    "@advancedPlayback": {
+        "description": "Settings screen for advanced player routing, external players and mpv"
+    },
+    "advancedPlaybackSubtitle": "Encaminament del reproductor, reproductors externs i mpv",
+    "@advancedPlaybackSubtitle": {
+        "description": "Subtitle for the Advanced Playback entry"
+    },
+    "settingsAccountSubtitle": "Inici de sessió, codi PIN, mode infantil, controls parentals i sincronització de la configuració",
+    "@settingsAccountSubtitle": {
+        "description": "Subtitle for the Account settings root entry"
+    },
+    "settingsGeneralSubtitle": "Llengua, rellotge, entrada i rendiment",
+    "@settingsGeneralSubtitle": {
+        "description": "Subtitle for the General settings root entry"
+    },
+    "settingsAppearanceSubtitle": "Navegació, pantalla d'inici, biblioteques, pàgina de detalls i temes",
+    "@settingsAppearanceSubtitle": {
+        "description": "Subtitle for the Appearance settings root entry"
+    },
+    "settingsHomeScreenSubtitle": "Files, barra de mitjans, aspecte i fonts externes",
+    "@settingsHomeScreenSubtitle": {
+        "description": "Subtitle for the Home Screen entry on the Appearance settings screen"
+    },
+    "settingsLibrariesEntrySubtitle": "Visibilitat i ordre de les biblioteques, i pàgines de biblioteca",
+    "@settingsLibrariesEntrySubtitle": {
+        "description": "Subtitle for the Libraries entry on the Appearance settings screen"
+    },
+    "settingsDetailsPageSubtitle": "Disposició, botons, seccions, valoracions i música del tema",
+    "@settingsDetailsPageSubtitle": {
+        "description": "Subtitle for the Details Page entry on the Appearance settings screen"
+    },
+    "settingsPlaybackSubtitle": "Reproductor, qualitat, àudio, subtítols, salts i SyncPlay",
+    "@settingsPlaybackSubtitle": {
+        "description": "Subtitle for the Playback settings root entry"
+    },
+    "settingsStorageSubtitle": "Baixades, ubicació d'emmagatzematge i memòria cau d'imatges",
+    "@settingsStorageSubtitle": {
+        "description": "Subtitle for the Storage & Downloads settings root entry"
+    },
+    "settingsServicesSubtitle": "Seerr i insígnies de fites",
+    "@settingsServicesSubtitle": {
+        "description": "Subtitle for the Services settings root entry"
+    },
+    "settingsSignInSection": "Inici de sessió",
+    "@settingsSignInSection": {
+        "description": "Section header on the Account settings screen"
+    },
+    "settingsFamilySection": "Família",
+    "@settingsFamilySection": {
+        "description": "Section header on the Account settings screen for Kids Mode and parental controls"
+    },
+    "settingsServersSection": "Servidors",
+    "@settingsServersSection": {
+        "description": "Section header on the Account settings screen for server list and certificate options"
+    },
+    "settingsLanguageSection": "Llengua",
+    "@settingsLanguageSection": {
+        "description": "Section header on the General settings screen"
+    },
+    "settingsInputSection": "Entrada",
+    "@settingsInputSection": {
+        "description": "Section header on the General settings screen for keyboard, remote and pointer options"
+    },
+    "settingsMotionSection": "Moviment",
+    "@settingsMotionSection": {
+        "description": "Section header on the Appearance settings screen for animation speeds"
+    },
+    "settingsContentsSection": "Continguts",
+    "@settingsContentsSection": {
+        "description": "Section header on the Home Screen settings screen for the rows, row options and media bar"
+    },
+    "settingsLooksSection": "Aspecte",
+    "@settingsLooksSection": {
+        "description": "Section header on the Home Screen settings screen for how rows and cards look"
+    },
+    "settingsAudioAndSubtitlesSection": "Àudio i subtítols",
+    "@settingsAudioAndSubtitlesSection": {
+        "description": "Section header on the Playback settings screen"
+    },
+    "settingsSkippingAndQueueSection": "Salts i cua",
+    "@settingsSkippingAndQueueSection": {
+        "description": "Section header on the Playback settings screen"
+    },
+    "settingsWatchTogetherSection": "Veure junts",
+    "@settingsWatchTogetherSection": {
+        "description": "Section header on the Playback settings screen for SyncPlay"
+    },
+    "settingsAdvancedSection": "Avançat",
+    "@settingsAdvancedSection": {
+        "description": "Section header on the Playback settings screen"
+    },
+    "playerSettingsSubtitle": "Controls, avançar i retrocedir, botons del reproductor i previsualització",
+    "@playerSettingsSubtitle": {
+        "description": "Subtitle for the Player entry on the Playback settings screen"
     }
 }
