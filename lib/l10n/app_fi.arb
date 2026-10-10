@@ -2795,7 +2795,7 @@
     "@playWhenBrowsingHomeScreen": {
         "description": "Description for theme music on home rows"
     },
-    "detailsBackgroundBlur": "Tiedot taustan sumennus",
+    "detailsBackgroundBlur": "Taustan sumennus",
     "@detailsBackgroundBlur": {
         "description": "Setting for details background blur"
     },
@@ -3012,7 +3012,7 @@
     "@unsafeMpvOptionsDescription": {
         "description": "Description for unsafe mpv options"
     },
-    "hardwareDecoding": "Laitteiston dekoodaus",
+    "hardwareDecoding": "Laitteisto Dekoodaus",
     "@hardwareDecoding": {
         "description": "Label for hardware decoding toggle"
     },
@@ -3332,7 +3332,7 @@
     "@defaultLabel": {
         "description": "Option: default"
     },
-    "saveToDownloadsFolder": "Tallenna Lataukset-kansioon",
+    "saveToDownloadsFolder": "Tallenna Lataukset Kansioon",
     "@saveToDownloadsFolder": {
         "description": "Setting for saving to downloads folder"
     },
@@ -5364,7 +5364,7 @@
     "adminFallbackFontPath": "Varafontin polku",
     "adminAllowSegmentDeletion": "Salli segmentin poistaminen",
     "adminSegmentKeepSeconds": "Segmentin säilytys (sekuntia)",
-    "adminThrottleBuffering": "Kaasun puskurointi",
+    "adminThrottleBuffering": "Puskuroitu rajoitus",
     "adminTrickplaySaved": "Trickplay-asetukset tallennettu",
     "adminTrickplayLoadFailed": "Trickplay-asetusten lataaminen epäonnistui",
     "adminEnableHardwareAcceleration": "Ota käyttöön laitteistokiihdytys",
@@ -5815,7 +5815,7 @@
             }
         }
     },
-    "adminMetadataUpload": "Lataa",
+    "adminMetadataUpload": "Lähetä",
     "adminMetadataUpdate": "Päivittää",
     "adminMetadataRemoteImage": "Kaukokuva",
     "adminPluginsInstalled": "Asennettu",
@@ -6750,7 +6750,7 @@
     "@mediaPreviewDescription": {
         "description": "Description for media preview"
     },
-    "keyboardPreferSystemIme": "Suosi järjestelmän näppäimistöä",
+    "keyboardPreferSystemIme": "Käytä järjestelmän näppäimistöä",
     "@keyboardPreferSystemIme": {
         "description": "Settings label for preferring the native system keyboard instead of the custom TV keyboard"
     },
@@ -6981,7 +6981,7 @@
     "@mapDolbyVisionP7Subtitle": {
         "description": "Setting subtitle for DV P7 to HEVC mapping"
     },
-    "subtitlesUseEmbeddedStyles": "Käytä upotettuja tekstitystyylejä",
+    "subtitlesUseEmbeddedStyles": "Käytä upotettuja tekstitystyyppejä",
     "@subtitlesUseEmbeddedStyles": {
         "description": "Setting title: apply colours/positioning from the subtitle track"
     },
@@ -6989,7 +6989,7 @@
     "@subtitlesUseEmbeddedStylesSubtitle": {
         "description": "Setting subtitle for embedded styles toggle"
     },
-    "subtitlesUseEmbeddedFontSizes": "Käytä upotettuja tekstityskirjasinkokoja",
+    "subtitlesUseEmbeddedFontSizes": "Käytä upotettujen tekstitysten fonttikokoja",
     "@subtitlesUseEmbeddedFontSizes": {
         "description": "Setting title: apply font sizes from the subtitle track"
     },
@@ -7033,7 +7033,7 @@
             }
         }
     },
-    "savedThemesTitle": "Tallennetut teemat",
+    "savedThemesTitle": "Tallennetut Teemat",
     "savedThemesDescription": "Nämä ovat teemoja, jotka on ladattu nykyisen palvelimen Moonfin-laajennuksesta. Poistaminen poistaa vain tämän paikallisen kopion.",
     "savedThemesEmpty": "Tälle palvelimelle ei löytynyt tallennettuja teemoja.",
     "savedThemesCurrentThemeId": "{themeId} • Tällä hetkellä aktiivinen",
@@ -7071,8 +7071,8 @@
     "genresRowItems": "Kohteet Genre rivillä",
     "genresRowItemsDescription": "Näytä elokuvat, sarjat tai molemmat lajityypit-riveillä.",
     "appearance": "Ulkoasu",
-    "cardSize": "Kortin koko",
-    "externalPlayerApp": "Ulkoinen soitinsovellus",
+    "cardSize": "Kortin Koko",
+    "externalPlayerApp": "Ulkoinen Toistosovellus",
     "externalPlayerAskEachTimeSubtitle": "Näytä sovelluksen valitsin, kun toisto alkaa.",
     "loadingInstalledPlayers": "Ladataan asennettuja soittimia...",
     "connection": "Yhteys",
@@ -7089,12 +7089,12 @@
     "replaceSkipOutroWithNextUpDisplay": "Korvaa Skip Outro Next Up -näytöllä",
     "replaceSkipOutroWithNextUpDisplaySubtitle": "Näytä Next Up -peittokuva Ohita Outro -painikkeen sijaan.",
     "playerRouting": "Soittimen reititys",
-    "preferSoftwareDecoders": "Suosi ohjelmistodekoodeja",
+    "preferSoftwareDecoders": "Suosittele ohjelmistopohjaisia dekoodereita",
     "preferSoftwareDecodersSubtitle": "Käytä FFmpeg (audio) ja libgav1 (AV1) ennen laitteistodekoodeja. Poista käytöstä, jos HDMI-äänen läpivienti katkeaa.",
-    "useExternalPlayer": "Käytä ulkoista soitinta",
+    "useExternalPlayer": "Käytä aina ulkoista soitinta",
     "useExternalPlayerSubtitle": "Avaa videon toisto valitsemallasi ulkoisella sovelluksella Android TV:ssä.",
     "automaticQueuing": "Automaattinen jonotus",
-    "preferSdhSubtitles": "Suosi SDH-tekstitystä",
+    "preferSdhSubtitles": "Suosi SDH tekstityksiä",
     "preferSdhSubtitlesSubtitle": "Priorisoi SDH/CC-tekstitysraidat, kun valitset automaattisen valinnan.",
     "webDiagnostics": "Verkkodiagnostiikka",
     "webDiagnosticsTitle": "Moonfin Verkkodiagnostiikka",
@@ -7349,7 +7349,7 @@
     "@expandedTabsSubtitle": {
         "description": "Explanation under the expanded tabs setting"
     },
-    "showTechnicalDetails": "Näytetäänkö Tekniset Tiedot?",
+    "showTechnicalDetails": "Näytä tekniset tiedot",
     "@showTechnicalDetails": {
         "description": "Label for the detail screen setting to show stream/codec technical details"
     },
@@ -7373,7 +7373,7 @@
     "@recommendationSystemTmdb": {
         "description": "Recommendation system option: TMDb Similarity"
     },
-    "recommendationsApplyParentalRatingCap": "Käytetäänkö Ikärajaluokitusta?",
+    "recommendationsApplyParentalRatingCap": "Käytä arviointirajaa suosituksiin",
     "@recommendationsApplyParentalRatingCap": {
         "description": "Label for the toggle that controls whether similar suggestions are capped by target media parental rating"
     },
@@ -7660,7 +7660,7 @@
     "@loopThemeMusicSubtitle": {
         "description": "Description for the loop theme music setting"
     },
-    "settingsScrollWheelAction": "Hiiren rulla",
+    "settingsScrollWheelAction": "Hiiren vierityspyörä",
     "@settingsScrollWheelAction": {
         "description": "Setting title for the mouse scroll wheel action during playback"
     },
@@ -7856,7 +7856,7 @@
     "@subtitleStream": {
         "description": "Header for subtitle stream settings"
     },
-    "reportDownloadsActivity": "Näytä lataukset palvelimella",
+    "reportDownloadsActivity": "Näytä palvelimella olevat lataukset",
     "reportDownloadsActivitySubtitle": "Anna palvelimen ylläpitäjän nähdä transkoodatut lataukset hallintapaneelissa",
     "navbarAlwaysExpanded": "Näytä Navigointipalkin tekstit aina",
     "@navbarAlwaysExpanded": {
@@ -7890,7 +7890,7 @@
     "@enableTrailerAudio": {
         "description": "Description for trailer audio"
     },
-    "fullScreenRows": "Laajennetut aloitusnäytön rivit",
+    "fullScreenRows": "Laajennetut Rivit",
     "@fullScreenRows": {
         "description": "Setting for full screen home rows"
     },
@@ -7926,7 +7926,7 @@
     "@seerrNotifyNewRequestsSubtitle": {
         "description": "Subtitle for the new request notifications toggle"
     },
-    "seerrNotifyLibraryAddedTitle": "Pyyntöjen päivitykset",
+    "seerrNotifyLibraryAddedTitle": "Pyydä päivityksiä",
     "@seerrNotifyLibraryAddedTitle": {
         "description": "Title for the toggle that notifies a requester about approvals, declines, and library availability"
     },
@@ -7951,7 +7951,7 @@
             }
         }
     },
-    "imageCacheLimit": "Kuvavälimuistin raja",
+    "imageCacheLimit": "Kuvien välimuistin raja",
     "clearImageCache": "Tyhjennä kuvavälimuisti",
     "imageCacheCleared": "Kuvavälimuisti tyhjennetty",
     "seerrDownloadingPercent": "Ladataan · {percent} %",
@@ -8281,7 +8281,7 @@
     "adminLibMetadataTitle": "Metatiedot ja kuvat",
     "adminLibMetadataLangSection": "Ensisijainen metatietojen kieli",
     "adminLibChaptersSection": "Luvut",
-    "adminLibDummyChapterDuration": "Korvikelukujen kesto (sekuntia)",
+    "adminLibDummyChapterDuration": "Valeluvun kesto (sekunteina)",
     "adminLibDummyChapterDurationHint": "Lukujen pituus medialle, jolla ei ole omia lukuja. Poista käytöstä arvolla 0.",
     "adminLibChapterImageResolution": "Lukukuvien tarkkuus",
     "adminLibNfoTitle": "NFO-asetukset",
@@ -8572,7 +8572,7 @@
     "@showMediaDetailsOnLibraryPageDescription": {
         "description": "Setting description to show/hide focused media details at the top of the library page"
     },
-    "hideBackdropsInLibraries": "Piilotetaanko taustakuvat selattaessa?",
+    "hideBackdropsInLibraries": "Piilota taustakuvat selaamisen aikana",
     "@hideBackdropsInLibraries": {
         "description": "Setting title to show/hide backdrops when browsing library pages"
     },
@@ -9059,7 +9059,7 @@
     "@settingsSearchHint": {
         "description": "Hint text in the settings search field"
     },
-    "detailsBackgroundOpacity": "Tiedot Taustan läpikuultavuus",
+    "detailsBackgroundOpacity": "Taustan läpinäkyvyys",
     "@detailsBackgroundOpacity": {
         "description": "Setting for details background opacity on modern screens"
     },
@@ -9224,7 +9224,7 @@
             }
         }
     },
-    "homeRowsPadding": "Etusivu rivien täyttö",
+    "homeRowsPadding": "Rivien Välit",
     "@homeRowsPadding": {
         "description": "Title for home rows padding setting"
     },
@@ -9244,7 +9244,7 @@
     "@yourWatchlist": {
         "description": "Seerr row: watchlist"
     },
-    "seerrNotifyNewMediaTitle": "Uusia tiedostoja lisätty",
+    "seerrNotifyNewMediaTitle": "Uutta Mediaa Lisätty",
     "@seerrNotifyNewMediaTitle": {
         "description": "Title for the toggle that notifies about anything newly added to the server library, not just requested media"
     },
@@ -9489,7 +9489,7 @@
     "@playerSwipeGesturesDescription": {
         "description": "Description for player swipe gestures"
     },
-    "tvOfflineDownloads": "Ota offline-lataukset käyttöön",
+    "tvOfflineDownloads": "Ota offline lataukset käyttöön",
     "@tvOfflineDownloads": {
         "description": "TV-only toggle in the Offline Downloads settings: offer download actions on item pages"
     },
@@ -9940,7 +9940,7 @@
     "@openTrailersExternallySubtitle": {
         "description": "Subtitle for the external trailers setting"
     },
-    "hideDetailsMediaDescription": "Piilota median kuvaus tietosivulla",
+    "hideDetailsMediaDescription": "Piilota median kuvaus",
     "@hideDetailsMediaDescription": {
         "description": "Setting title to hide media description on details screen"
     },
@@ -9948,7 +9948,7 @@
     "@hideDetailsMediaDescriptionSubtitle": {
         "description": "Description for setting to hide media description on details page"
     },
-    "detailUseSeriesThumbnails": "Käytä sarjan pikkukuvia tietosivulla",
+    "detailUseSeriesThumbnails": "Käytä sarjan pikkukuvia",
     "@detailUseSeriesThumbnails": {
         "description": "Setting title to replace thumbnails on Classic details page with series thumbnail"
     },
@@ -9956,7 +9956,7 @@
     "@detailUseSeriesThumbnailsSubtitle": {
         "description": "Description for setting to use series thumbnails on Classic details page"
     },
-    "hideHomeMediaDescription": "Piilota median kuvaus aloitusnäytöltä",
+    "hideHomeMediaDescription": "Piilota median kuvaus",
     "@hideHomeMediaDescription": {
         "description": "Setting title to hide media description on home screen"
     },
@@ -10405,7 +10405,7 @@
     "@loadingAnimationSpeedUltra": {
         "description": "Loading animation speed option: Ultra"
     },
-    "showLoadingAnimationText": "Näytetäänkö teksti?",
+    "showLoadingAnimationText": "Näytä teksti",
     "@showLoadingAnimationText": {
         "description": "Setting toggle for showing loading animation text"
     },
@@ -11672,7 +11672,7 @@
     "@actionButtonsOnScreenAll": {
         "description": "Option showing all action buttons in a horizontal scrollable row"
     },
-    "settingsAudioPassthroughOutput": "Passthrough-lähtö",
+    "settingsAudioPassthroughOutput": "Passthrough Output",
     "@settingsAudioPassthroughOutput": {
         "description": "Title of the RAW-vs-IEC passthrough packer selector (Android TV, Media3 engine)"
     },
@@ -11680,7 +11680,7 @@
     "settingsAudioPassthroughOutputPlatform": "Automaattinen järjestelmäpakkaaja (AudioTrack RAW)",
     "settingsAudioPassthroughOutputIec": "Sovelluspakkaaja (AudioTrack IEC)",
     "settingsAudioPassthroughOutputIecLabel": "App (IEC)",
-    "siriRemoteSwipeSensitivity": "Kosketuslevyn pyyhkäisyherkkyys",
+    "siriRemoteSwipeSensitivity": "Kosketuslevyn pyyhkäisyn herkkyys",
     "@siriRemoteSwipeSensitivity": {
         "description": "Apple TV settings label for how far a swipe on the Siri Remote touchpad moves the focus highlight"
     },
@@ -12449,7 +12449,7 @@
     "@guideRepeatBadge": {
         "description": "Short badge label shown on a rerun in the guide hero band"
     },
-    "keepVideoClearOfDynamicIsland": "Varmista, että video ei peitä Dynamic Islandia",
+    "keepVideoClearOfDynamicIsland": "Varmista että video ei peitä Dynamic Islandia",
     "@keepVideoClearOfDynamicIsland": {
         "description": "iPhone playback setting that holds the picture back from the camera housing in landscape"
     },
@@ -13498,5 +13498,223 @@
     "smartDownloadsKeepReadyLowered": "Jo ladatut jaksot säilyvät laitteellasi. Uusi määrä koskee tulevia latauksia.",
     "@smartDownloadsKeepReadyLowered": {
         "description": "Shown after lowering the episodes to keep downloaded, explaining nothing is deleted"
+    },
+    "fetchingSubtitles": "Tekstitysten lataaminen",
+    "@fetchingSubtitles": {
+        "description": "Playback status shown while the selected subtitle file is loading"
+    },
+    "pluginConnected": "Yhdistetty",
+    "@pluginConnected": {
+        "description": "Status line on the Settings Sync screen when the server plugin answers"
+    },
+    "pluginConnectedVersion": "Yhdistetty, versio {version}",
+    "@pluginConnectedVersion": {
+        "description": "Status line on the Settings Sync screen with the server plugin's version",
+        "placeholders": {
+            "version": {
+                "type": "String"
+            }
+        }
+    },
+    "pluginSyncOn": "Sync on",
+    "@pluginSyncOn": {
+        "description": "Caption under the settings sync switch while sync is on"
+    },
+    "pluginSyncOff": "Sync off",
+    "@pluginSyncOff": {
+        "description": "Caption under the settings sync switch while sync is off"
+    },
+    "syncProfileDescription": "Tämä laite synkronoituu valitsemasi profiilin kanssa, kunnes valitset toisen.",
+    "@syncProfileDescription": {
+        "description": "Caption above the settings profile cards on the Settings Sync screen"
+    },
+    "profileAppliesEverywhere": "Koskee kaikkia paikkoja",
+    "@profileAppliesEverywhere": {
+        "description": "Subtitle of the Global settings profile card"
+    },
+    "profileOverridesGlobal": "Ohittaa yleisen asetuksen",
+    "@profileOverridesGlobal": {
+        "description": "Subtitle of the Desktop, Mobile and TV settings profile cards"
+    },
+    "profileThisDevice": "Tämä laite",
+    "@profileThisDevice": {
+        "description": "Marks the settings profile card that matches the current device"
+    },
+    "profileLoad": "Lataa",
+    "@profileLoad": {
+        "description": "Button that replaces this device's settings with the chosen profile from the server"
+    },
+    "profileLoadSubtitle": "Palvelin tälle laitteelle",
+    "@profileLoadSubtitle": {
+        "description": "Line under the Load button saying which way the settings go"
+    },
+    "profileSaveSubtitle": "Tämä laite palvelimelle",
+    "@profileSaveSubtitle": {
+        "description": "Line under the Save button saying which way the settings go"
+    },
+    "resetNamedProfile": "Nollaa {profile} profiili",
+    "@resetNamedProfile": {
+        "description": "Button that resets the chosen settings profile, for example Reset TV Profile",
+        "placeholders": {
+            "profile": {
+                "type": "String"
+            }
+        }
+    },
+    "preferTextSubtitles": "Ensisijaiset tekstitykset",
+    "preferTextSubtitlesSubtitle": "Aseta tekstipohjaiset tekstitykset (SRT, VTT) etusijalle kuvapohjaisiin muotoihin (PGS, VobSub) nähden.",
+    "preferExternalSubtitles": "Käytä ulkoisia tekstityksiä",
+    "preferExternalSubtitlesSubtitle": "Aseta ulkoiset tekstitystiedostot etusijalle upotettuihin tekstitysraitoihin nähden.",
+    "detailsPage": "Tietosivu",
+    "@detailsPage": {
+        "description": "Settings entry and screen for options that shape the details page"
+    },
+    "storageAndDownloads": "Tallennus & Lataukset",
+    "@storageAndDownloads": {
+        "description": "Settings root entry and screen for downloads, storage location and the image cache"
+    },
+    "settingsSync": "Asetusten synkronointi",
+    "@settingsSync": {
+        "description": "Settings screen for syncing settings through the Moonbase plugin"
+    },
+    "settingsSyncSubtitle": "Moonbase-laajennuksen synkronointi- ja mukautusprofiilit",
+    "@settingsSyncSubtitle": {
+        "description": "Subtitle for the Settings Sync entry"
+    },
+    "navigationBar": "Navigointipalkki",
+    "@navigationBar": {
+        "description": "Settings screen for the navigation bar style and buttons"
+    },
+    "homeRows": "Rivit",
+    "@homeRows": {
+        "description": "Settings entry and screen for turning Home rows on or off and ordering them"
+    },
+    "homeRowsSubtitle": "Ota rivit käyttöön tai poista ne käytöstä ja muuta niiden järjestystä",
+    "@homeRowsSubtitle": {
+        "description": "Subtitle for the Home rows entry"
+    },
+    "rowOptions": "Riviasetukset",
+    "@rowOptions": {
+        "description": "Settings screen with sorting and content options for each Home row"
+    },
+    "rowOptionsSubtitle": "Kunkin rivin lajittelu ja sisältö",
+    "@rowOptionsSubtitle": {
+        "description": "Subtitle for the Row Options entry"
+    },
+    "imageTypePerRow": "Kuvatyyppi riviä kohden",
+    "@imageTypePerRow": {
+        "description": "Settings entry and screen for choosing the image type of each Home row"
+    },
+    "externalSources": "Ulkoiset lähteet",
+    "@externalSources": {
+        "description": "Section header on the Home Screen settings screen for rows that come from IMDb, TMDB, calendars, Seerr and custom lists"
+    },
+    "qualityAndDecoding": "Laatu & Dekoodaus",
+    "@qualityAndDecoding": {
+        "description": "Settings screen for streaming limits, decoding, HDR and Dolby Vision"
+    },
+    "qualityAndDecodingSubtitle": "Bittinopeus, resoluutio, dekoodaus, HDR ja Dolby Vision",
+    "@qualityAndDecodingSubtitle": {
+        "description": "Subtitle for the Quality & Decoding entry"
+    },
+    "skippingAndAutoplay": "Ohitus & Autoplay",
+    "@skippingAndAutoplay": {
+        "description": "Settings screen for media segment skipping, cinema mode and autoplay"
+    },
+    "advancedPlayback": "Edistynyt toisto",
+    "@advancedPlayback": {
+        "description": "Settings screen for advanced player routing, external players and mpv"
+    },
+    "advancedPlaybackSubtitle": "Soittimen reititys, ulkoiset soittimet ja mpv",
+    "@advancedPlaybackSubtitle": {
+        "description": "Subtitle for the Advanced Playback entry"
+    },
+    "settingsAccountSubtitle": "Kirjautuminen, PIN-koodi, Lasten tila, lapsilukko ja asetusten synkronointi",
+    "@settingsAccountSubtitle": {
+        "description": "Subtitle for the Account settings root entry"
+    },
+    "settingsGeneralSubtitle": "Kieli, kello, syöttö ja suorituskyky",
+    "@settingsGeneralSubtitle": {
+        "description": "Subtitle for the General settings root entry"
+    },
+    "settingsAppearanceSubtitle": "Navigointi, aloitusnäyttö, kirjastot, tietosivu ja teemat",
+    "@settingsAppearanceSubtitle": {
+        "description": "Subtitle for the Appearance settings root entry"
+    },
+    "settingsHomeScreenSubtitle": "Rivit, mediapalkki, ulkoasut ja ulkoiset lähteet",
+    "@settingsHomeScreenSubtitle": {
+        "description": "Subtitle for the Home Screen entry on the Appearance settings screen"
+    },
+    "settingsLibrariesEntrySubtitle": "Kirjaston näkyvyys, järjestys ja kirjaston sivut",
+    "@settingsLibrariesEntrySubtitle": {
+        "description": "Subtitle for the Libraries entry on the Appearance settings screen"
+    },
+    "settingsDetailsPageSubtitle": "Ulkoasu, painikkeet, osiot, arviot ja tunnusmusiikki",
+    "@settingsDetailsPageSubtitle": {
+        "description": "Subtitle for the Details Page entry on the Appearance settings screen"
+    },
+    "settingsPlaybackSubtitle": "Toistin, laatu, ääni, tekstitys, kappaleiden ohitus ja SyncPlay",
+    "@settingsPlaybackSubtitle": {
+        "description": "Subtitle for the Playback settings root entry"
+    },
+    "settingsStorageSubtitle": "Lataukset, tallennuspaikka ja kuvavälimuisti",
+    "@settingsStorageSubtitle": {
+        "description": "Subtitle for the Storage & Downloads settings root entry"
+    },
+    "settingsServicesSubtitle": "Seerr ja saavutusmerkit",
+    "@settingsServicesSubtitle": {
+        "description": "Subtitle for the Services settings root entry"
+    },
+    "settingsSignInSection": "Kirjaudu sisään",
+    "@settingsSignInSection": {
+        "description": "Section header on the Account settings screen"
+    },
+    "settingsFamilySection": "Perhe",
+    "@settingsFamilySection": {
+        "description": "Section header on the Account settings screen for Kids Mode and parental controls"
+    },
+    "settingsServersSection": "Palvelimet",
+    "@settingsServersSection": {
+        "description": "Section header on the Account settings screen for server list and certificate options"
+    },
+    "settingsLanguageSection": "Kieli",
+    "@settingsLanguageSection": {
+        "description": "Section header on the General settings screen"
+    },
+    "settingsInputSection": "Syöte",
+    "@settingsInputSection": {
+        "description": "Section header on the General settings screen for keyboard, remote and pointer options"
+    },
+    "settingsMotionSection": "Liike",
+    "@settingsMotionSection": {
+        "description": "Section header on the Appearance settings screen for animation speeds"
+    },
+    "settingsContentsSection": "Sisällysluettelo",
+    "@settingsContentsSection": {
+        "description": "Section header on the Home Screen settings screen for the rows, row options and media bar"
+    },
+    "settingsLooksSection": "Ulkonäkö",
+    "@settingsLooksSection": {
+        "description": "Section header on the Home Screen settings screen for how rows and cards look"
+    },
+    "settingsAudioAndSubtitlesSection": "Ääni & Tekstitys",
+    "@settingsAudioAndSubtitlesSection": {
+        "description": "Section header on the Playback settings screen"
+    },
+    "settingsSkippingAndQueueSection": "Ohitus & Jono",
+    "@settingsSkippingAndQueueSection": {
+        "description": "Section header on the Playback settings screen"
+    },
+    "settingsWatchTogetherSection": "Katso Yhdessä",
+    "@settingsWatchTogetherSection": {
+        "description": "Section header on the Playback settings screen for SyncPlay"
+    },
+    "settingsAdvancedSection": "Edistynyt",
+    "@settingsAdvancedSection": {
+        "description": "Section header on the Playback settings screen"
+    },
+    "playerSettingsSubtitle": "Ohjaus, kohteen etsiminen, pelaajan painikkeet ja temppupeli",
+    "@playerSettingsSubtitle": {
+        "description": "Subtitle for the Player entry on the Playback settings screen"
     }
 }
