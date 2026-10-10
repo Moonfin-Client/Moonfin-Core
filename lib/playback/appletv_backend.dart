@@ -178,6 +178,10 @@ class AppleTvBackend implements PlayerBackend {
       case 'downloadSubtitle':
       case 'syncplayLeave':
       case 'syncplayIgnoreWait':
+      case 'openEpisodes':
+      case 'selectEpisodesSeason':
+      case 'selectEpisode':
+      case 'episodesClosed':
         _uiActionStream.add(map.cast<String, dynamic>());
       case 'tracksChanged':
         _tracksKnown = true;
@@ -530,6 +534,7 @@ class AppleTvBackend implements PlayerBackend {
     List<Map<String, dynamic>> channelList = const [],
     List<Map<String, dynamic>> streamStats = const [],
     List<String>? osdButtons,
+    bool canBrowseEpisodes = false,
   }) async {
     await _invoke<void>('setUiMetadata', {
       'topTitle': topTitle,
@@ -562,7 +567,21 @@ class AppleTvBackend implements PlayerBackend {
       // no row to arrange leaves this out, which reads as no opinion rather
       // than as everything switched off.
       'osdButtons': ?osdButtons,
+      'canBrowseEpisodes': canBrowseEpisodes,
     });
+  }
+
+  Future<void> showEpisodeBrowser(Map<String, dynamic> content) async {
+    await _invoke<void>('showEpisodeBrowser', content);
+  }
+
+  /// New content for an open browser. One the viewer already closed ignores it.
+  Future<void> updateEpisodeBrowser(Map<String, dynamic> content) async {
+    await _invoke<void>('updateEpisodeBrowser', content);
+  }
+
+  Future<void> hideEpisodeBrowser() async {
+    await _invoke<void>('hideEpisodeBrowser');
   }
 
   Future<void> showNextUp({

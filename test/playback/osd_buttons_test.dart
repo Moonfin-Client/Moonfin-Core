@@ -29,6 +29,7 @@ void main() {
       OsdButton.favorite.id,
       OsdButton.speed.id,
       OsdButton.chapters.id,
+      OsdButton.episodes.id,
       OsdButton.subtitles.id,
       OsdButton.audio.id,
       OsdButton.castAndCrew.id,
@@ -63,6 +64,7 @@ void main() {
         // Never placed and declared before anything that was, so they stay put.
         OsdButton.syncPlay.id,
         OsdButton.chapters.id,
+        OsdButton.episodes.id,
         OsdButton.info.id,
         OsdButton.subtitles.id,
         // These follow the button they were declared after.

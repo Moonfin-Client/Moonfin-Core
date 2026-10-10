@@ -123,6 +123,12 @@ final class AppleTvVideoChannel: NSObject, FlutterStreamHandler {
                 segmentEndMs: (args["segmentEndMs"] as? NSNumber)?.intValue ?? 0)
         case "hideSkipSegment":
             playerVC?.hideSkipSegment()
+        case "showEpisodeBrowser":
+            playerVC?.showEpisodeBrowser(args)
+        case "updateEpisodeBrowser":
+            playerVC?.updateEpisodeBrowser(args)
+        case "hideEpisodeBrowser":
+            playerVC?.hideEpisodeBrowser()
         case "showRemoteSubtitles":
             let results = (args["results"] as? [[String: Any]]) ?? []
             playerVC?.presentRemoteSubtitleResults(results)
@@ -321,6 +327,18 @@ final class AppleTvVideoChannel: NSObject, FlutterStreamHandler {
         }
         vc.onOpenCastPerson = { [weak self] personId in
             self?.send(["event": "openCastPerson", "personId": personId])
+        }
+        vc.onOpenEpisodes = { [weak self] in
+            self?.send(["event": "openEpisodes"])
+        }
+        vc.onSelectEpisodesSeason = { [weak self] seasonId in
+            self?.send(["event": "selectEpisodesSeason", "seasonId": seasonId])
+        }
+        vc.onSelectEpisode = { [weak self] episodeId in
+            self?.send(["event": "selectEpisode", "episodeId": episodeId])
+        }
+        vc.onEpisodesClosed = { [weak self] in
+            self?.send(["event": "episodesClosed"])
         }
         if let meta = lastMetadata {
             vc.applyUiMetadata(meta)

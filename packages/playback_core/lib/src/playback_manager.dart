@@ -2105,17 +2105,23 @@ class PlaybackManager implements AudioOwnable {
     // SyncPlay handshake wants the player at the group's position without a
     // frame of playback until the group's own Unpause.
     bool autoPlay = true,
+    // True for a switch made from inside the player, such as picking another
+    // episode, so the audio and subtitle picks carry over the way they do onto
+    // the next episode. The track arguments are ignored then.
+    bool carryTrackSelections = false,
   }) async {
     _abandonLiveRecovery('the viewer tuned somewhere else');
     _viewerPaused = false;
     _clearPendingItemOverrides();
     _vetoedAudioCodecs.clear();
-    _lastItemId = null;
-    _lastExplicitAudioLanguage = null;
-    _lastExplicitAudioIndex = null;
-    _lastExplicitAudioTitle = null;
-    _lastExplicitSubtitleLanguage = null;
-    _lastExplicitSubtitleEnabled = null;
+    if (!carryTrackSelections) {
+      _lastItemId = null;
+      _lastExplicitAudioLanguage = null;
+      _lastExplicitAudioIndex = null;
+      _lastExplicitAudioTitle = null;
+      _lastExplicitSubtitleLanguage = null;
+      _lastExplicitSubtitleEnabled = null;
+    }
     _isAutoNexting = false;
     _isManualNexting = false;
     suppressAutoNext = false;
@@ -2148,10 +2154,12 @@ class PlaybackManager implements AudioOwnable {
     );
     await _stopAndReportCurrent();
     _resetBackendSelectionLock();
-    _audioStreamIndex = audioStreamIndex;
-    _subtitleStreamIndex = subtitleStreamIndex;
-    _audioSelectionExplicit = audioSelectionExplicit;
-    _subtitleSelectionExplicit = subtitleSelectionExplicit;
+    if (!carryTrackSelections) {
+      _audioStreamIndex = audioStreamIndex;
+      _subtitleStreamIndex = subtitleStreamIndex;
+      _audioSelectionExplicit = audioSelectionExplicit;
+      _subtitleSelectionExplicit = subtitleSelectionExplicit;
+    }
     _mediaSourceId = mediaSourceId;
     _forceTranscodeForQueue = !enableDirectPlay && !enableDirectStream;
     _directPlayAllowedForQueue = enableDirectPlay;

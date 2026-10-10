@@ -99,6 +99,8 @@ import '../../../playback/delay_limits.dart';
 import '../../../playback/media3_player_backend.dart';
 import '../../../util/system_ui.dart';
 import 'playback_takeover.dart';
+import 'episode_browser.dart';
+import 'episode_browser_panel.dart';
 import 'osd_buttons.dart';
 import 'trickplay_housing_inset.dart';
 
@@ -387,6 +389,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   String? _trickplayMediaSourceId;
   String? _castPeopleItemId;
   List<Map<String, dynamic>> _castPeople = const [];
+  EpisodeBrowserController? _episodeBrowser;
+  ModalRoute<dynamic>? _episodeBrowserRoute;
   int _trickplayLoadGeneration = 0;
   static const int _trickplayFrameWidth = 320;
 
@@ -991,6 +995,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       }
     }
     _queueSub = _queue.queueChangedStream.listen((_) {
+      _closeEpisodeBrowser();
       _loadSegmentsForCurrentItem();
       _manager.suppressAutoNext = false;
       _consecutiveEpisodes++;
@@ -1139,6 +1144,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     }
     _positionSub?.cancel();
     _queueSub?.cancel();
+    _episodeBrowser?.dispose();
     _backendSub?.cancel();
     _letterboxCropAppliedSub?.cancel();
     _letterboxCropGeometrySub?.cancel();
@@ -3166,16 +3172,23 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   // stale target the next time play is pressed, so it is dropped here and
   // the seek goes straight through.
   Future<void> _seekDirect(Duration target) {
-    if (_pendingScrubSeekTarget != null || _isPausedScrubActive || _isSeeking) {
-      _scrubSeekCommitId++;
-      _pendingScrubSeekTarget = null;
-      _isPausedScrubActive = false;
-      final resume = _wasPlayingBeforeScrubPause;
-      _wasPlayingBeforeScrubPause = false;
-      if (resume) unawaited(_manager.resume());
-      if (mounted) setState(() => _isSeeking = false);
-    }
+    _dropScrubSession(resume: true);
     return _manager.seekTo(target);
+  }
+
+  void _dropScrubSession({required bool resume}) {
+    if (_pendingScrubSeekTarget == null &&
+        !_isPausedScrubActive &&
+        !_isSeeking) {
+      return;
+    }
+    _scrubSeekCommitId++;
+    _pendingScrubSeekTarget = null;
+    _isPausedScrubActive = false;
+    final wasPlaying = _wasPlayingBeforeScrubPause;
+    _wasPlayingBeforeScrubPause = false;
+    if (resume && wasPlaying) unawaited(_manager.resume());
+    if (mounted) setState(() => _isSeeking = false);
   }
 
   void _seekRelative(int ms, {bool showControls = true}) {
@@ -5786,6 +5799,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
             ((_itemIdForQueueItem(item)?.isNotEmpty) ?? false);
         final isFavorite = canFavorite && _queueItemIsFavorite(item);
         final hasChapters = item is AggregatedItem && item.chapters.isNotEmpty;
+        final canBrowse = _canBrowseEpisodes(item);
         final hasCast = _hasCastCrew(item);
         final playbackStreams = _currentPlaybackMediaStreams();
         final hasSubtitleStreams = playbackStreams.any(
@@ -5867,6 +5881,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
               size: secondaryIconSize,
               extent: secondaryExtent,
               tooltip: l10n.chapters,
+            ),
+          if (canBrowse && shows(OsdButton.episodes))
+            OsdButton.episodes: _controlButton(
+              Icons.video_library_outlined,
+              onPressed: _showEpisodes,
+              size: secondaryIconSize,
+              extent: secondaryExtent,
+              tooltip: l10n.episodes,
             ),
           if (showSubtitleButton && shows(OsdButton.subtitles))
             OsdButton.subtitles: _controlButton(
@@ -7623,6 +7645,63 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       _seekDirect(Duration(microseconds: ticks ~/ 10));
     }());
     _showControls();
+  }
+
+  bool _canBrowseEpisodes(dynamic item) => canBrowseEpisodes(
+    item,
+    offline: _manager.isOfflinePlayback,
+    inSyncPlay: _syncPlayManager?.state.enabled == true,
+  );
+
+  void _showEpisodes() {
+    final item = _queue.currentItem;
+    if (item is! AggregatedItem || !_canBrowseEpisodes(item)) return;
+    final client = _clientForItem(item);
+    final existing = _episodeBrowser;
+    final browser = existing != null && existing.isFor(item)
+        ? existing
+        : EpisodeBrowserController(client: client, playing: item);
+    if (!identical(browser, existing)) {
+      existing?.dispose();
+      _episodeBrowser = browser;
+    }
+    browser.open(item);
+    unawaited(() async {
+      final picked = await showStyledPlayerDialog<AggregatedItem>(
+        context,
+        title: item.seriesName ?? AppLocalizations.of(context).episodes,
+        maxWidth: 760,
+        builder: (dialogCtx) {
+          _episodeBrowserRoute = ModalRoute.of(dialogCtx);
+          return EpisodeBrowserPanel(
+            controller: browser,
+            imageApi: client.imageApi,
+            onSelect: (episode) {
+              _episodeBrowserRoute = null;
+              Navigator.of(dialogCtx).pop(episode);
+            },
+          );
+        },
+      );
+      _episodeBrowserRoute = null;
+      browser.close();
+      if (picked == null || !mounted || picked.id == browser.playing.id) return;
+      // A scrub left pending on this episode would commit its target on the
+      // next one the moment play is pressed.
+      _dropScrubSession(resume: false);
+      // The pick was made in the dialog, out of reach of the player's own
+      // key handling, so it counts as the viewer being here now.
+      if (await browser.play(_manager, picked)) _noteViewerActivity();
+    }());
+    _showControls();
+  }
+
+  /// A new item starting takes the browser with it, so it never offers the
+  /// last one as the episode that's playing.
+  void _closeEpisodeBrowser() {
+    final route = _episodeBrowserRoute;
+    _episodeBrowserRoute = null;
+    if (route != null && route.isActive) route.navigator?.removeRoute(route);
   }
 
   bool _hasCastCrew(dynamic item) {

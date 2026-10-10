@@ -50,6 +50,7 @@
 		DD0D4D9E542FAF4E11816368 /* AppleTvPlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA725D51E6DE797D0DDC9C2F /* AppleTvPlayerViewController.swift */; };
 		C0A1E10300000000000000A3 /* ChannelCarouselOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0A1E10400000000000000A4 /* ChannelCarouselOverlay.swift */; };
 		C0A1E10100000000000000A1 /* ChannelCarousel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0A1E10200000000000000A2 /* ChannelCarousel.swift */; };
+		E0B5E10100000000000000B1 /* EpisodeBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0B5E10200000000000000B2 /* EpisodeBrowser.swift */; };
 		DFD4D95C3B71D467770180E3 /* fceumm_libretro.framework in Embed Libretro Cores */ = {isa = PBXBuildFile; fileRef = EBDE8DF681CD2620EB749A48 /* fceumm_libretro.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E86325A97B10B11E8E226CFE /* SubtitleFontLocator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 147184DF7C5FC0873513C3FA /* SubtitleFontLocator.swift */; };
 		F679DA3562E5260D7EB5E8E9 /* snes9x_libretro.framework in Embed Libretro Cores */ = {isa = PBXBuildFile; fileRef = E96043FE795EA6E651493D5F /* snes9x_libretro.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -146,6 +147,7 @@
 		DA725D51E6DE797D0DDC9C2F /* AppleTvPlayerViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppleTvPlayerViewController.swift; sourceTree = "<group>"; };
 		C0A1E10400000000000000A4 /* ChannelCarouselOverlay.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ChannelCarouselOverlay.swift; sourceTree = "<group>"; };
 		C0A1E10200000000000000A2 /* ChannelCarousel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ChannelCarousel.swift; sourceTree = "<group>"; };
+		E0B5E10200000000000000B2 /* EpisodeBrowser.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EpisodeBrowser.swift; sourceTree = "<group>"; };
 		DDC62E8B96B51BBBCBA1EC23 /* EngineTrustPolicy.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = EngineTrustPolicy.swift; path = Aether/EngineTrustPolicy.swift; sourceTree = "<group>"; };
 		E96043FE795EA6E651493D5F /* snes9x_libretro.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = snes9x_libretro.framework; sourceTree = "<group>"; };
 		EBDE8DF681CD2620EB749A48 /* fceumm_libretro.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = fceumm_libretro.framework; sourceTree = "<group>"; };
@@ -249,6 +251,7 @@
 				DA725D51E6DE797D0DDC9C2F /* AppleTvPlayerViewController.swift */,
 				C0A1E10400000000000000A4 /* ChannelCarouselOverlay.swift */,
 				C0A1E10200000000000000A2 /* ChannelCarousel.swift */,
+				E0B5E10200000000000000B2 /* EpisodeBrowser.swift */,
 				D59C7B5CE2E844F445D8B72B /* AppleTvVideoChannel.swift */,
 				7B47F49C774D38D5782E3CF3 /* MoonfinTvosStubs.swift */,
 			);
@@ -581,6 +584,7 @@
 				DD0D4D9E542FAF4E11816368 /* AppleTvPlayerViewController.swift in Sources */,
 				C0A1E10300000000000000A3 /* ChannelCarouselOverlay.swift in Sources */,
 				C0A1E10100000000000000A1 /* ChannelCarousel.swift in Sources */,
+				E0B5E10100000000000000B1 /* EpisodeBrowser.swift in Sources */,
 				69A64DCAF44C6CBA903F3BC4 /* AppleTvVideoChannel.swift in Sources */,
 				0520DB98CE279F2BA3B6E562 /* MoonfinTvosStubs.swift in Sources */,
 			);

@@ -31,8 +31,10 @@ import '../../../l10n/app_localizations.dart';
 import '../../../util/remote_subtitle_labels.dart';
 import '../../../util/subtitle_appearance_schedule.dart';
 import '../../../util/episode_playability.dart';
+import '../../../util/overview_text.dart';
 import '../../../util/play_method_label.dart';
 import 'appletv_playback_prompt_controller.dart';
+import 'episode_browser.dart';
 import 'osd_buttons.dart';
 
 class AppleTvPlayerHostScreen extends StatefulWidget {
@@ -70,6 +72,8 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   ScreensaverController? _screensaverController;
   StreamSubscription<bool>? _screensaverPlayingSub;
   PlaybackBringupState _bringupState = const PlaybackBringupState.idle();
+  EpisodeBrowserController? _episodeBrowser;
+  bool _episodeBrowserShown = false;
 
   AppleTvBackend? get _backend {
     try {
@@ -1418,6 +1422,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
       canDownloadSubtitles: _canDownloadSubtitles(item),
       syncPlay: _syncPlayPayload(),
       osdButtons: _osdButtons(),
+      canBrowseEpisodes: _canBrowseEpisodes(item),
     );
 
     _resolveCastAsync(item);
@@ -1464,6 +1469,126 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     if (mounted) _pushMetadata();
   }
 
+  bool _canBrowseEpisodes(dynamic item) => canBrowseEpisodes(
+    item,
+    offline: _manager?.isOfflinePlayback ?? false,
+    inSyncPlay: _syncPlay?.state.enabled == true,
+  );
+
+  void _openEpisodeBrowser() {
+    final item = _manager?.queueService.currentItem;
+    if (item is! AggregatedItem || !_canBrowseEpisodes(item)) return;
+    final client = _clientForQueueItem(item);
+    if (client == null) return;
+    final existing = _episodeBrowser;
+    final browser = existing != null && existing.isFor(item)
+        ? existing
+        : (EpisodeBrowserController(client: client, playing: item)
+            ..addListener(_onEpisodeBrowserChanged));
+    if (!identical(browser, existing)) {
+      existing?.dispose();
+      _episodeBrowser = browser;
+    }
+    browser.open(item);
+    _episodeBrowserShown = true;
+    unawaited(
+      _backend?.showEpisodeBrowser(_episodeBrowserContent(browser)) ??
+          Future<void>.value(),
+    );
+  }
+
+  void _onEpisodeBrowserChanged() {
+    final browser = _episodeBrowser;
+    if (!_episodeBrowserShown || browser == null || !mounted) return;
+    unawaited(
+      _backend?.updateEpisodeBrowser(_episodeBrowserContent(browser)) ??
+          Future<void>.value(),
+    );
+  }
+
+  void _closeEpisodeBrowser({bool hideNative = false}) {
+    if (!_episodeBrowserShown) return;
+    _episodeBrowserShown = false;
+    _episodeBrowser?.close();
+    if (hideNative) {
+      unawaited(_backend?.hideEpisodeBrowser() ?? Future<void>.value());
+    }
+  }
+
+  Future<void> _playFromEpisodeBrowser(String episodeId) async {
+    final browser = _episodeBrowser;
+    final manager = _manager;
+    _closeEpisodeBrowser();
+    if (browser == null || manager == null) return;
+    final episode = browser.episodes
+        ?.where((candidate) => candidate.id == episodeId)
+        .firstOrNull;
+    if (episode == null) return;
+    // The pick was made on the native panel, which the prompts never hear
+    // about, so it counts as the viewer being here now.
+    if (await browser.play(manager, episode)) {
+      _prompts?.consecutiveEpisodes = 0;
+    }
+  }
+
+  /// The native panel does no fetching and no formatting, so every label is
+  /// built here where the localizations are.
+  Map<String, dynamic> _episodeBrowserContent(
+    EpisodeBrowserController browser,
+  ) {
+    final l10n = AppLocalizations.of(context);
+    final imageApi = browser.client.imageApi;
+    final playing = browser.playing;
+    final episodes = browser.episodes;
+    bool hideOverview;
+    try {
+      hideOverview = GetIt.instance<UserPreferences>()
+          .effectiveHideDetailsMediaDescription;
+    } catch (_) {
+      hideOverview = false;
+    }
+    final String message;
+    if (browser.failed) {
+      message = l10n.errorLoadingEpisodes;
+    } else if (episodes != null && episodes.isEmpty) {
+      message = l10n.noEpisodesLoaded;
+    } else {
+      message = '';
+    }
+    return {
+      'title': playing.seriesName ?? '',
+      'logoUrl': _logoUrlForItem(playing),
+      'seasons': [
+        for (final season in browser.seasons ?? const <AggregatedItem>[])
+          {
+            'id': season.id,
+            'name': episodeBrowserSeasonLabel(l10n, season),
+            'selected': season.id == browser.selectedSeasonId,
+          },
+      ],
+      'episodes': [
+        for (final episode in episodes ?? const <AggregatedItem>[])
+          {
+            'id': episode.id,
+            'line': episodeBrowserLine(l10n, episode),
+            'title': episode.name,
+            'overview': hidesMediaDescription(
+                  itemType: episode.type,
+                  hideMediaDescription: hideOverview,
+                )
+                ? ''
+                : (episode.overview ?? ''),
+            'imageUrl': episodeStillUrl(imageApi, episode, maxWidth: 480) ?? '',
+            'progress': episodeProgress(episode),
+            'played': episode.isPlayed,
+            'playing': episode.id == playing.id,
+          },
+      ],
+      'loading': episodes == null && !browser.failed,
+      'message': message,
+    };
+  }
+
   Map<String, dynamic>? _syncPlayPayload() {
     final sync = _syncPlay;
     if (sync == null || !sync.state.enabled) return null;
@@ -1475,6 +1600,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   }
 
   void _onQueueChanged() {
+    _closeEpisodeBrowser(hideNative: true);
     _prompts?.onQueueChanged();
     _loadSegmentsForCurrentItem();
     _pushMetadata();
@@ -1571,6 +1697,20 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
         unawaited(
           _syncPlay?.requestSetIgnoreWait(value) ?? Future<void>.value(),
         );
+      case 'openEpisodes':
+        _openEpisodeBrowser();
+      case 'selectEpisodesSeason':
+        final seasonId = action['seasonId']?.toString();
+        if (seasonId != null && seasonId.isNotEmpty) {
+          _episodeBrowser?.selectSeason(seasonId);
+        }
+      case 'selectEpisode':
+        final episodeId = action['episodeId']?.toString();
+        if (episodeId != null && episodeId.isNotEmpty) {
+          unawaited(_playFromEpisodeBrowser(episodeId));
+        }
+      case 'episodesClosed':
+        _closeEpisodeBrowser();
     }
     Future<void>.delayed(const Duration(milliseconds: 300), _pushMetadata);
   }
@@ -1595,6 +1735,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     _screensaverPlayingSub?.cancel();
     _positionSub?.cancel();
     _prompts?.dispose();
+    _episodeBrowser?.dispose();
     _screensaverController?.setPlaybackActive(false);
     _screensaverController?.setNativePlayerPresented(false);
     _syncPlay?.removeListener(_onSyncPlayChanged);

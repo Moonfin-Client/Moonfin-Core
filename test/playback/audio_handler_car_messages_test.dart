@@ -68,6 +68,7 @@ class _FailingManager extends PlaybackManager {
     bool enableDirectStream = true,
     bool enableTranscoding = true,
     bool autoPlay = true,
+    bool carryTrackSelections = false,
   }) async =>
       throw error;
 }

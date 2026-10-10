@@ -1,5 +1,11 @@
 import '../data/models/aggregated_item.dart';
 
+/// What an episode needs to stand in a playback queue: its streams, so audio
+/// and subtitle picks carry over onto it, and its chapters for the player.
+const kSeasonQueueEpisodeFields =
+    'Type,UserData,SeriesName,ParentIndexNumber,IndexNumber,SeriesId,SeasonId,'
+    'MediaSources,MediaStreams,RunTimeTicks,Chapters';
+
 /// Servers file specials under season 0, but a special with AirsBefore/AirsAfter
 /// metadata is displayed — and played — inside another season once the library
 /// has DisplaySpecialsWithinSeasons on. Its own SeasonId therefore says nothing

@@ -81,6 +81,10 @@ final class AppleTvPlayerViewController: UIViewController {
     var onSyncplayLeave: (() -> Void)?
     var onSyncplayIgnoreWait: ((Bool) -> Void)?
     var onOpenCastPerson: ((String) -> Void)?
+    var onOpenEpisodes: (() -> Void)?
+    var onSelectEpisodesSeason: ((String) -> Void)?
+    var onSelectEpisode: ((String) -> Void)?
+    var onEpisodesClosed: (() -> Void)?
     var baseSubtitlePos = 92
     private var didAttachSurface = false
     private var updateTimer: Timer?
@@ -99,6 +103,8 @@ final class AppleTvPlayerViewController: UIViewController {
     private var canFavorite = false
     private var isFavorite = false
     private var canDownloadSubtitles = false
+    private var canBrowseEpisodes = false
+    private weak var episodeBrowser: EpisodeBrowserViewController?
     /// The searching / downloading alert. Dart raises and clears it, so both
     /// halves of the flow report their own ending instead of the search one
     /// falling through to "No Subtitles Found" whatever went wrong.
@@ -214,8 +220,8 @@ final class AppleTvPlayerViewController: UIViewController {
     private enum Zone { case scrubber, buttons }
     private enum ControlId {
         case prev, skipBack, playPause, skipForward, next
-        case speed, chapters, subtitles, audio, cast, quality, zoom, info, channels, favorite
-        case guide, syncplay
+        case speed, chapters, episodes, subtitles, audio, cast, quality, zoom, info
+        case channels, favorite, guide, syncplay
     }
     private var focusedZone: Zone = .buttons
     private var focusedControlIndex = 0
@@ -1120,6 +1126,7 @@ final class AppleTvPlayerViewController: UIViewController {
         case .next: return "forward.end.fill"
         case .speed: return "gauge.with.dots.needle.67percent"
         case .chapters: return "list.bullet"
+        case .episodes: return "rectangle.stack"
         case .subtitles: return "captions.bubble"
         case .audio: return "speaker.wave.2"
         case .cast: return "person.2"
@@ -1164,6 +1171,7 @@ final class AppleTvPlayerViewController: UIViewController {
         switch id {
         case .speed: return "speed"
         case .chapters: return "chapters"
+        case .episodes: return "episodes"
         case .subtitles: return "subtitles"
         case .audio: return "audio"
         case .cast: return "castAndCrew"
@@ -1223,6 +1231,7 @@ final class AppleTvPlayerViewController: UIViewController {
             if canFavorite { secondary.append(.favorite) }
             secondary.append(.speed)
             if chapters.count > 1 { secondary.append(.chapters) }
+            if canBrowseEpisodes { secondary.append(.episodes) }
             if !subtitleTracks.isEmpty || canDownloadSubtitles { secondary.append(.subtitles) }
             if audioTracks.count > 1 { secondary.append(.audio) }
             if hasCast { secondary.append(.cast) }
@@ -1274,6 +1283,7 @@ final class AppleTvPlayerViewController: UIViewController {
         canFavorite = (args["canFavorite"] as? Bool) ?? false
         isFavorite = (args["isFavorite"] as? Bool) ?? false
         canDownloadSubtitles = (args["canDownloadSubtitles"] as? Bool) ?? false
+        canBrowseEpisodes = (args["canBrowseEpisodes"] as? Bool) ?? false
         // A push that carries no arrangement leaves the one already in hand
         // alone rather than emptying the row.
         if let osdButtons = args["osdButtons"] as? [String] {
@@ -2027,6 +2037,8 @@ final class AppleTvPlayerViewController: UIViewController {
             presentSpeedMenu()
         case .chapters:
             presentChapterMenu()
+        case .episodes:
+            onOpenEpisodes?()
         case .subtitles:
             presentSubtitleMenu()
         case .audio:
@@ -2163,6 +2175,7 @@ final class AppleTvPlayerViewController: UIViewController {
         case .next: return "Next"
         case .speed: return "Playback Speed"
         case .chapters: return "Chapters"
+        case .episodes: return "Episodes"
         case .subtitles: return "Subtitles"
         case .audio: return "Audio"
         case .cast: return "Cast & Crew"
@@ -2898,6 +2911,42 @@ final class AppleTvPlayerViewController: UIViewController {
         if let v = value("last_error") { rows.append(("Last Error", v)) }
 
         return rows
+    }
+
+    /// Dart's answer to the `openEpisodes` the Episodes button sends.
+    func showEpisodeBrowser(_ args: [String: Any]) {
+        let content = EpisodeBrowserContent(args)
+        if let browser = episodeBrowser {
+            browser.update(content)
+            return
+        }
+        // Something else already holds the screen, so Dart is told the browser
+        // closed rather than left waiting on one that never opened.
+        guard presentedViewController == nil else {
+            onEpisodesClosed?()
+            return
+        }
+        let browser = EpisodeBrowserViewController(content: content, theme: carouselTheme)
+        browser.onSelectSeason = { [weak self] seasonId in
+            self?.onSelectEpisodesSeason?(seasonId)
+        }
+        browser.onSelectEpisode = { [weak self] episodeId in
+            self?.onSelectEpisode?(episodeId)
+        }
+        browser.onClosed = { [weak self] in
+            self?.onEpisodesClosed?()
+        }
+        browser.modalPresentationStyle = .overFullScreen
+        episodeBrowser = browser
+        present(browser, animated: true)
+    }
+
+    func updateEpisodeBrowser(_ args: [String: Any]) {
+        episodeBrowser?.update(EpisodeBrowserContent(args))
+    }
+
+    func hideEpisodeBrowser() {
+        episodeBrowser?.dismiss(animated: true)
     }
 
     private func presentCastPanel() {
