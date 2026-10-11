@@ -55,6 +55,7 @@ import '../../../../data/repositories/seerr_repository.dart';
 import '../../../../data/repositories/tmdb_repository.dart';
 import '../../../../data/services/seerr/seerr_api_models.dart';
 import '../../../../data/services/plugin_sync_service.dart';
+import '../../../../data/services/book_reader_service.dart';
 import '../detail_layout_metrics.dart';
 import '../item_detail_screen.dart'
     show
@@ -2885,9 +2886,9 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           orElse: () => '',
       );
       final String fileName = path.split('/').last.split('\\').last;
-      final String container = fileName.split('.').last.toUpperCase() ?? 'Unknown';
+      final String container = BookReaderService.detectExtension(targetItem)?.toUpperCase() ?? 'Unknown';
       // Sent as UTC, so an evening west of UTC would otherwise read as tomorrow.
-      final DateTime? addedOn = item.dateCreated?.toLocal();
+      final DateTime? addedOn = targetItem.dateCreated?.toLocal();
       final String? addedLabel = addedOn == null
           ? null
           : DateFormat.yMMMd(

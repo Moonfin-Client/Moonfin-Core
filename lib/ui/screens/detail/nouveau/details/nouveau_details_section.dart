@@ -10,6 +10,7 @@ import 'package:server_core/server_core.dart';
 import '../../../../../data/models/aggregated_item.dart';
 import '../../../../../data/viewmodels/item_detail_view_model.dart';
 import '../../../../../data/viewmodels/seerr_media_detail_view_model.dart';
+import '../../../../../data/services/book_reader_service.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../../preference/detail_section_layout.dart';
 import '../../../../../preference/preference_constants.dart';
@@ -1238,7 +1239,7 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
         orElse: () => '',
       );
       fileName = path.split('/').last.split('\\').last;
-      container = fileName.split('.').last.toUpperCase() ?? 'Unknown';
+      container = BookReaderService.detectExtension(item)?.toUpperCase() ?? 'Unknown';
     }
 
     final baseBackground = theme.scaffoldBackgroundColor.withValues(alpha: 1.0);
