@@ -151,7 +151,7 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
         targetItem.type != 'Person';
 
     final hasTechnicalDetails =
-        isPlayable && _mediaSourceFor(targetItem) != null;
+        isPlayable && (_mediaSourceFor(targetItem) != null || targetItem.type == 'Book');
 
     final hasStats = _seerrPieces.stats;
 
@@ -240,7 +240,7 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
         targetItem.type != 'Person';
 
     final hasTechnicalDetails =
-        isPlayable && _mediaSourceFor(targetItem) != null;
+        isPlayable && (_mediaSourceFor(targetItem) != null || targetItem == 'Book');
 
     final hasStats = _seerrPieces.stats;
 
