@@ -119,8 +119,6 @@ The full list is on the [Features](https://github.com/Moonfin-Client/Moonfin-Cor
   <img src="assets/images/phone/8-music.png" width="24%" alt="Phone music player with synced lyrics" />
 </p>
 
-More in the [Screenshots](https://github.com/Moonfin-Client/Moonfin-Core/wiki/Screenshots) gallery.
-
 ## Installation
 
 The store links above are the easy route. To install a file yourself, download it from the [Releases page](https://github.com/Moonfin-Client/Moonfin-Core/releases) and pick the one for your device:
