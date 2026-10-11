@@ -191,7 +191,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get spotlightChaptersExtras => 'Rozdziały i materiały dodatkowe';
 
   @override
-  String get spotlightFileDetails => 'File Details';
+  String get spotlightFileDetails => 'Szczegóły pliku';
 
   @override
   String get spotlightSimilarRecommendations => 'Podobne i polecane';
@@ -429,7 +429,7 @@ class AppLocalizationsPl extends AppLocalizations {
       'Automatycznie pokazuj treść zakładki podczas przeglądania. Wyłącz, aby otwierać i zamykać zakładki ręcznie.';
 
   @override
-  String get showTechnicalDetails => 'Pokazywać szczegóły techniczne?';
+  String get showTechnicalDetails => 'Pokazuj szczegóły techniczne';
 
   @override
   String get showTechnicalDetailsSubtitle =>
@@ -453,7 +453,7 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get recommendationsApplyParentalRatingCap =>
-      'Zastosować limit klasyfikacji wiekowej?';
+      'Zastosuj limit klasyfikacji wiekowej';
 
   @override
   String get recommendationsApplyParentalRatingCapSubtitle =>
@@ -1675,7 +1675,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get searchingSubtitles => 'Wyszukiwanie napisów…';
 
   @override
-  String get fetchingSubtitles => 'Fetching subtitles';
+  String get fetchingSubtitles => 'Pobieranie napisów';
 
   @override
   String get downloadingSubtitle => 'Pobieranie napisów…';
@@ -2242,7 +2242,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get shortcutMpvStats => 'Włącz lub wyłącz statystyki mpv';
 
   @override
-  String get shortcutRecropBlackBars => 'Recrop black bars';
+  String get shortcutRecropBlackBars => 'Ponownie wykryj czarne pasy';
 
   @override
   String get shortcutLeaveFullscreenOrStop =>
@@ -2620,21 +2620,21 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String nextSeriesRecording(String dateTime) {
-    return 'Next series recording: $dateTime';
+    return 'Następne nagranie serialu: $dateTime';
   }
 
   @override
   String get noUpcomingSeriesRecording =>
-      'Series recording is scheduled, but the guide has no upcoming episodes';
+      'Zaplanowano nagrywanie serialu, ale w programie nie ma nadchodzących odcinków';
 
   @override
-  String get recordCurrentEpisode => 'Record This Episode';
+  String get recordCurrentEpisode => 'Nagraj ten odcinek';
 
   @override
-  String get recordCurrentProgram => 'Record This Program';
+  String get recordCurrentProgram => 'Nagraj ten program';
 
   @override
-  String get cancelCurrentRecording => 'Cancel This Recording';
+  String get cancelCurrentRecording => 'Anuluj to nagranie';
 
   @override
   String get cancelRecordingAction => 'Anuluj nagrywanie';
@@ -3298,7 +3298,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get loadingAnimationSpeedUltra => 'Ultra';
 
   @override
-  String get showLoadingAnimationText => 'Pokaż tekst?';
+  String get showLoadingAnimationText => 'Pokaż tekst';
 
   @override
   String get loadingAnimationPreview => 'Podgląd';
@@ -3316,83 +3316,84 @@ class AppLocalizationsPl extends AppLocalizations {
   String get fallingLeaves => 'Spadające liście';
 
   @override
-  String get seasonalChristmas => 'Christmas';
+  String get seasonalChristmas => 'Boże Narodzenie';
 
   @override
-  String get seasonalPetals => 'Spring Petals';
+  String get seasonalPetals => 'Wiosenne płatki';
 
   @override
-  String get seasonalFireflies => 'Fireflies';
+  String get seasonalFireflies => 'Świetliki';
 
   @override
   String get seasonalHalloween => 'Halloween';
 
   @override
-  String get seasonalDensity => 'Density';
+  String get seasonalDensity => 'Intensywność';
 
   @override
-  String get seasonalDensityLight => 'Light';
+  String get seasonalDensityLight => 'Niska';
 
   @override
-  String get seasonalDensityNormal => 'Normal';
+  String get seasonalDensityNormal => 'Normalna';
 
   @override
-  String get seasonalDensityHeavy => 'Heavy';
+  String get seasonalDensityHeavy => 'Wysoka';
 
   @override
-  String get seasonalRow => 'Seasonal Row';
+  String get seasonalRow => 'Wiersz sezonowy';
 
   @override
   String get seasonalRowDescription =>
-      'Show a row of holiday movies from your library, with Seerr suggestions when available.';
+      'Wyświetlaj wiersz filmów świątecznych z biblioteki oraz propozycje z Seerr, jeśli są dostępne.';
 
   @override
-  String get seasonalRowSubtitle => 'Seasonal';
+  String get seasonalRowSubtitle => 'Sezonowe';
 
   @override
-  String get seasonalRowCountry => 'Country';
+  String get seasonalRowCountry => 'Kraj';
 
   @override
-  String get seasonalRowCountryAuto => 'Automatic';
+  String get seasonalRowCountryAuto => 'Automatycznie';
 
   @override
-  String get countryUnitedStates => 'United States';
+  String get countryUnitedStates => 'Stany Zjednoczone';
 
   @override
-  String get countryCanada => 'Canada';
+  String get countryCanada => 'Kanada';
 
   @override
-  String get seasonalRowCountryOther => 'Other';
+  String get seasonalRowCountryOther => 'Inny';
 
   @override
-  String get seasonalRowHolidays => 'Holidays';
+  String get seasonalRowHolidays => 'Święta';
 
   @override
-  String get seasonalRowHolidaysHint => 'Untick a holiday to hide its row.';
+  String get seasonalRowHolidaysHint =>
+      'Odznacz święto, aby ukryć jego wiersz.';
 
   @override
-  String get holidayNewYear => 'New Year\'s';
+  String get holidayNewYear => 'Nowy Rok';
 
   @override
-  String get holidayValentines => 'Valentine\'s Day';
+  String get holidayValentines => 'Walentynki';
 
   @override
-  String get holidayEaster => 'Easter';
+  String get holidayEaster => 'Wielkanoc';
 
   @override
-  String get holidayPride => 'Pride';
+  String get holidayPride => 'Miesiąc Dumy';
 
   @override
   String get holidayHalloween => 'Halloween';
 
   @override
-  String get holidayThanksgiving => 'Thanksgiving';
+  String get holidayThanksgiving => 'Święto Dziękczynienia';
 
   @override
-  String get holidayChristmas => 'Christmas Movies';
+  String get holidayChristmas => 'Filmy bożonarodzeniowe';
 
   @override
-  String get holidayLunarNewYear => 'Lunar New Year';
+  String get holidayLunarNewYear => 'Księżycowy Nowy Rok';
 
   @override
   String get holidayDiwali => 'Diwali';
@@ -3427,10 +3428,10 @@ class AppLocalizationsPl extends AppLocalizations {
       'Powtarzaj utwór zamiast odtwarzać go tylko raz';
 
   @override
-  String get detailsBackgroundBlur => 'Rozmycie tła na stronie szczegółów';
+  String get detailsBackgroundBlur => 'Rozmycie tła';
 
   @override
-  String get detailsBackgroundOpacity => 'Przezroczystość tła szczegółów';
+  String get detailsBackgroundOpacity => 'Przezroczystość tła';
 
   @override
   String pixelValue(int value) {
@@ -3479,23 +3480,24 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get settingsCropBlackBarsDescription =>
-      'Wykrywaj zakodowane czarne pasy, przycinaj je i wypełniaj ekran.';
+      'Wykrywaj i przycinaj czarne pasy zapisane w obrazie po rozpoczęciu odtwarzania, aby wypełnić ekran. Możesz ponownie wykryć pasy za pomocą przycisku powiększenia w odtwarzaczu.';
 
   @override
-  String get cropBlackBarsRecropInterval => 'Recrop Interval';
+  String get cropBlackBarsRecropInterval =>
+      'Częstotliwość ponownego wykrywania';
 
   @override
-  String get cropBlackBarsOnce => 'Once at start';
+  String get cropBlackBarsOnce => 'Raz na początku';
 
   @override
-  String get cropBlackBarsEverySecond => 'Every second';
+  String get cropBlackBarsEverySecond => 'Co sekundę';
 
   @override
   String get settingsCropBlackBarsIntervalDescription =>
-      'Follow aspect ratio changes during playback.';
+      'Dostosowuj obraz do zmian proporcji podczas odtwarzania.';
 
   @override
-  String get playerRecroppingBlackBars => 'Recropping black bars';
+  String get playerRecroppingBlackBars => 'Ponowne wykrywanie czarnych pasów';
 
   @override
   String get stretch => 'Rozciągnij';
@@ -4948,14 +4950,14 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
-  String get fullScreenRows => 'Rozszerzone sekcje ekranu głównego';
+  String get fullScreenRows => 'Rozszerzone sekcje';
 
   @override
   String get fullScreenRowsDescription =>
       'Wyświetlaj tylko jedną sekcję na ekran';
 
   @override
-  String get homeRowsPadding => 'Odstępy między sekcjami ekranu głównego';
+  String get homeRowsPadding => 'Odstępy między sekcjami';
 
   @override
   String get homeRowsPaddingDescription =>
@@ -5208,44 +5210,44 @@ class AppLocalizationsPl extends AppLocalizations {
       'Wtyczka serwera nie jest obecnie wykrywana. Ustawienia lokalne nadal korzystają z zapisanych wartości lub ustawień domyślnych aplikacji.';
 
   @override
-  String get pluginConnected => 'Connected';
+  String get pluginConnected => 'Połączono';
 
   @override
   String pluginConnectedVersion(String version) {
-    return 'Connected, version $version';
+    return 'Połączono, wersja $version';
   }
 
   @override
-  String get pluginSyncOn => 'Sync on';
+  String get pluginSyncOn => 'Synchronizacja włączona';
 
   @override
-  String get pluginSyncOff => 'Sync off';
+  String get pluginSyncOff => 'Synchronizacja wyłączona';
 
   @override
   String get syncProfileDescription =>
-      'This device syncs with the profile you pick until you pick another.';
+      'To urządzenie synchronizuje ustawienia z wybranym profilem, dopóki nie wybierzesz innego.';
 
   @override
-  String get profileAppliesEverywhere => 'Applies everywhere';
+  String get profileAppliesEverywhere => 'Obowiązuje wszędzie';
 
   @override
-  String get profileOverridesGlobal => 'Overrides Global';
+  String get profileOverridesGlobal => 'Zastępuje ustawienia globalne';
 
   @override
-  String get profileThisDevice => 'This device';
+  String get profileThisDevice => 'To urządzenie';
 
   @override
-  String get profileLoad => 'Load';
+  String get profileLoad => 'Wczytaj';
 
   @override
-  String get profileLoadSubtitle => 'Server to this device';
+  String get profileLoadSubtitle => 'Z serwera na to urządzenie';
 
   @override
-  String get profileSaveSubtitle => 'This device to server';
+  String get profileSaveSubtitle => 'Z tego urządzenia na serwer';
 
   @override
   String resetNamedProfile(String profile) {
-    return 'Reset $profile Profile';
+    return 'Zresetuj profil $profile';
   }
 
   @override
@@ -5291,7 +5293,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get seerrDiscoveryRows => 'Sekcje odkrywania Seerr';
 
   @override
-  String get seerrDiscoverSliders => 'Seerr Discover Sliders';
+  String get seerrDiscoverSliders => 'Karuzele odkrywania Seerr';
 
   @override
   String get yourWatchlist => 'Do obejrzenia';
@@ -10863,7 +10865,7 @@ class AppLocalizationsPl extends AppLocalizations {
       'Pokazuj szczegóły wybranej pozycji u góry stron biblioteki.';
 
   @override
-  String get hideBackdropsInLibraries => 'Ukrywać tła podczas przeglądania?';
+  String get hideBackdropsInLibraries => 'Ukryj tła podczas przeglądania';
 
   @override
   String get useDetailedSubHeadings =>
@@ -11179,7 +11181,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get mpvConfiguration => 'Konfiguracja MPV';
 
   @override
-  String get cardSize => 'Rozmiar kart sekcji ekranu głównego';
+  String get cardSize => 'Rozmiar kart';
 
   @override
   String get externalPlayerApp => 'Zewnętrzny odtwarzacz';
@@ -11259,18 +11261,18 @@ class AppLocalizationsPl extends AppLocalizations {
       'Priorytetowo wybieraj ścieżki napisów SDH/CC przy automatycznym wyborze.';
 
   @override
-  String get preferTextSubtitles => 'Prefer Text Subtitles';
+  String get preferTextSubtitles => 'Preferuj napisy tekstowe';
 
   @override
   String get preferTextSubtitlesSubtitle =>
-      'Prioritize text-based subtitles (SRT, VTT) over image-based formats (PGS, VobSub).';
+      'Daj pierwszeństwo napisom tekstowym (SRT, VTT) przed formatami graficznymi (PGS, VobSub).';
 
   @override
-  String get preferExternalSubtitles => 'Prefer External Subtitles';
+  String get preferExternalSubtitles => 'Preferuj napisy zewnętrzne';
 
   @override
   String get preferExternalSubtitlesSubtitle =>
-      'Prioritize external subtitle files over embedded tracks.';
+      'Daj pierwszeństwo zewnętrznym plikom napisów przed napisami osadzonymi w pliku.';
 
   @override
   String get webDiagnostics => 'Diagnostyka przeglądarki';
@@ -12032,7 +12034,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get friendsOutgoing => 'Wysłane przez Ciebie';
 
   @override
-  String get friendsNoRequests => 'Brak zaproszeń do znajomych';
+  String get friendsNoRequests => 'Brak zaproszeń do znajomych.';
 
   @override
   String get friendsAccept => 'Akceptuj';
@@ -12104,7 +12106,7 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String friendsProfileHidden(String name) {
-    return 'Profil użytkownika $name jest prywatny';
+    return 'Profil użytkownika $name jest prywatny.';
   }
 
   @override
@@ -12143,7 +12145,7 @@ class AppLocalizationsPl extends AppLocalizations {
       'Brak banerów z wiadomościami podczas odtwarzania wideo lub gry';
 
   @override
-  String get friendsSaveFailed => 'Nie udało się zapisać ustawień';
+  String get friendsSaveFailed => 'Nie udało się zapisać ustawień.';
 
   @override
   String get chatNew => 'Nowa wiadomość';
@@ -12165,7 +12167,7 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String chatYouSaid(String text) {
-    return 'You: $text';
+    return 'Ty: $text';
   }
 
   @override
@@ -12252,7 +12254,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get chatAddMember => 'Dodaj osoby';
 
   @override
-  String get chatNobodyToAdd => 'Brak osób do dodania';
+  String get chatNobodyToAdd => 'Brak osób do dodania.';
 
   @override
   String get chatLeave => 'Wyjdź z grupy';
@@ -12273,11 +12275,11 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
-  String get chatImageTooLarge => 'Ten obraz ma ponad 8 MB';
+  String get chatImageTooLarge => 'Ten obraz ma ponad 8 MB.';
 
   @override
   String get chatImageUnsupported =>
-      'Można wysyłać obrazy tylko w formatach PNG, JPEG, GIF i WebP';
+      'Można wysyłać obrazy tylko w formatach PNG, JPEG, GIF i WebP.';
 
   @override
   String get embeddedBrowserNotAvailable =>
@@ -13459,22 +13461,21 @@ class AppLocalizationsPl extends AppLocalizations {
       'Otwieraj zwiastuny w aplikacji YouTube lub przeglądarce zamiast we wbudowanym odtwarzaczu';
 
   @override
-  String get hideDetailsMediaDescription => 'Ukryj opis na ekranie szczegółów';
+  String get hideDetailsMediaDescription => 'Ukryj opis';
 
   @override
   String get hideDetailsMediaDescriptionSubtitle =>
       'Ukryj opis filmu lub odcinka.';
 
   @override
-  String get detailUseSeriesThumbnails =>
-      'Używaj miniatur serialu na ekranie szczegółów';
+  String get detailUseSeriesThumbnails => 'Używaj miniatur serialu';
 
   @override
   String get detailUseSeriesThumbnailsSubtitle =>
       'Zastąp wszystkie miniatury na klasycznym ekranie szczegółów miniaturą serialu';
 
   @override
-  String get hideHomeMediaDescription => 'Ukryj opis na ekranie głównym';
+  String get hideHomeMediaDescription => 'Ukryj opis';
 
   @override
   String get hideHomeMediaDescriptionSubtitle =>
@@ -13666,32 +13667,34 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
-  String get smartDownloadsSection => 'Smart downloads';
+  String get smartDownloadsSection => 'Inteligentne pobieranie';
 
   @override
-  String get smartDownloadsEnable => 'Download Next Episodes';
+  String get smartDownloadsEnable => 'Pobieraj kolejne odcinki';
 
   @override
   String get smartDownloadsEnableSubtitle =>
-      'When you finish an episode on any device, Moonfin downloads the next ones. Downloaded episodes are deleted once watched.';
+      'Po obejrzeniu odcinka na dowolnym urządzeniu Moonfin pobierze kolejne. Obejrzane pobrane odcinki zostaną usunięte.';
 
   @override
-  String get smartDownloadsKeepReady => 'Episodes to Keep Downloaded';
+  String get smartDownloadsKeepReady => 'Liczba pobranych odcinków';
 
   @override
   String smartDownloadsKeepReadySubtitle(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'Keeps the next $count episodes downloaded',
-      one: 'Keeps the next episode downloaded',
+      other: 'Zachowuje pobrane kolejne $count odcinka',
+      many: 'Zachowuje pobrane kolejne $count odcinków',
+      few: 'Zachowuje pobrane kolejne $count odcinki',
+      one: 'Zachowuje pobrany następny odcinek',
     );
     return '$_temp0';
   }
 
   @override
   String get smartDownloadsKeepReadyLowered =>
-      'Episodes already downloaded stay on your device. The new number applies to future downloads.';
+      'Już pobrane odcinki pozostaną na urządzeniu. Nowa liczba będzie obowiązywać przy kolejnych pobraniach.';
 
   @override
   String get autoDownloadSection => 'Automatyczne pobieranie';
@@ -13960,20 +13963,20 @@ class AppLocalizationsPl extends AppLocalizations {
       'Określa, jak daleko przesuwa się zaznaczenie po każdym przesunięciu po gładziku Siri Remote';
 
   @override
-  String get appleTvHomeScreen => 'Apple TV home screen';
+  String get appleTvHomeScreen => 'Ekran główny Apple TV';
 
   @override
   String get topShelf => 'Top Shelf';
 
   @override
   String get topShelfDescription =>
-      'What the Apple TV home screen shows above the Moonfin icon when it is selected. This setting stays on this device.';
+      'Określa, co pojawia się nad ikoną Moonfin na ekranie głównym Apple TV po jej zaznaczeniu. To ustawienie dotyczy tylko tego urządzenia.';
 
   @override
-  String get topShelfLatestMedia => 'Latest media';
+  String get topShelfLatestMedia => 'Najnowsze multimedia';
 
   @override
-  String get topShelfAppBanner => 'Moonfin banner';
+  String get topShelfAppBanner => 'Baner Moonfin';
 
   @override
   String get keepVideoClearOfDynamicIsland =>
@@ -14033,131 +14036,132 @@ class AppLocalizationsPl extends AppLocalizations {
   String get navYou => 'Ty';
 
   @override
-  String get detailsPage => 'Details Page';
+  String get detailsPage => 'Strona szczegółów';
 
   @override
-  String get storageAndDownloads => 'Storage & Downloads';
+  String get storageAndDownloads => 'Pamięć i pobieranie';
 
   @override
   String get integrations => 'Integracje';
 
   @override
-  String get settingsSync => 'Settings Sync';
+  String get settingsSync => 'Synchronizacja ustawień';
 
   @override
   String get settingsSyncSubtitle =>
-      'Moonbase plugin sync and customization profiles';
+      'Synchronizacja przez wtyczkę Moonbase i profile ustawień';
 
   @override
-  String get navigationBar => 'Navigation Bar';
+  String get navigationBar => 'Pasek nawigacji';
 
   @override
-  String get homeRows => 'Rows';
+  String get homeRows => 'Wiersze';
 
   @override
-  String get homeRowsSubtitle => 'Turn rows on or off and change their order';
+  String get homeRowsSubtitle =>
+      'Włączaj i wyłączaj wiersze oraz zmieniaj ich kolejność';
 
   @override
-  String get rowOptions => 'Row Options';
+  String get rowOptions => 'Opcje wierszy';
 
   @override
-  String get rowOptionsSubtitle => 'Sorting and content for each row';
+  String get rowOptionsSubtitle =>
+      'Sortowanie i zawartość poszczególnych wierszy';
 
   @override
-  String get imageTypePerRow => 'Image Type per Row';
+  String get imageTypePerRow => 'Typ obrazu dla każdego wiersza';
 
   @override
-  String get externalSources => 'External Sources';
+  String get externalSources => 'Źródła zewnętrzne';
 
   @override
-  String get qualityAndDecoding => 'Quality & Decoding';
+  String get qualityAndDecoding => 'Jakość i dekodowanie';
 
   @override
   String get qualityAndDecodingSubtitle =>
-      'Bitrate, resolution, decoding, HDR, and Dolby Vision';
+      'Przepływność, rozdzielczość, dekodowanie, HDR i Dolby Vision';
 
   @override
-  String get skippingAndAutoplay => 'Skipping & Autoplay';
+  String get skippingAndAutoplay => 'Pomijanie i autoodtwarzanie';
 
   @override
-  String get advancedPlayback => 'Advanced Playback';
+  String get advancedPlayback => 'Zaawansowane odtwarzanie';
 
   @override
   String get advancedPlaybackSubtitle =>
-      'Player routing, external players, and mpv';
+      'Wybór odtwarzacza, odtwarzacze zewnętrzne i mpv';
 
   @override
   String get settingsAccountSubtitle =>
-      'Sign-in, PIN code, Kids Mode, parental controls, and settings sync';
+      'Logowanie, kod PIN, tryb dziecięcy, kontrola rodzicielska i synchronizacja ustawień';
 
   @override
-  String get settingsGeneralSubtitle =>
-      'Language, clock, input, and performance';
+  String get settingsGeneralSubtitle => 'Język, zegar, sterowanie i wydajność';
 
   @override
   String get settingsAppearanceSubtitle =>
-      'Navigation, home screen, libraries, details page, and themes';
+      'Nawigacja, ekran główny, biblioteki, strona szczegółów i motywy';
 
   @override
   String get settingsHomeScreenSubtitle =>
-      'Rows, media bar, looks, and external sources';
+      'Rzędy, pasek multimediów, wygląd i źródła zewnętrzne';
 
   @override
   String get settingsLibrariesEntrySubtitle =>
-      'Library visibility, order, and library pages';
+      'Widoczność i kolejność bibliotek oraz ich strony';
 
   @override
   String get settingsDetailsPageSubtitle =>
-      'Layout, buttons, sections, ratings, and theme music';
+      'Układ, przyciski, sekcje, oceny i muzyka motywu';
 
   @override
   String get settingsPlaybackSubtitle =>
-      'Player, quality, audio, subtitles, skipping, and SyncPlay';
+      'Odtwarzacz, jakość, dźwięk, napisy, pomijanie i SyncPlay';
 
   @override
   String get settingsStorageSubtitle =>
-      'Downloads, storage location, and the image cache';
+      'Pobieranie, lokalizacja zapisu i pamięć podręczna obrazów';
 
   @override
-  String get settingsServicesSubtitle => 'Seerr and Achievement Badges';
+  String get settingsServicesSubtitle => 'Seerr i odznaki osiągnięć';
 
   @override
-  String get settingsSignInSection => 'Sign-in';
+  String get settingsSignInSection => 'Logowanie';
 
   @override
-  String get settingsFamilySection => 'Family';
+  String get settingsFamilySection => 'Rodzina';
 
   @override
-  String get settingsServersSection => 'Servers';
+  String get settingsServersSection => 'Serwery';
 
   @override
-  String get settingsLanguageSection => 'Language';
+  String get settingsLanguageSection => 'Język';
 
   @override
-  String get settingsInputSection => 'Input';
+  String get settingsInputSection => 'Sterowanie';
 
   @override
-  String get settingsMotionSection => 'Motion';
+  String get settingsMotionSection => 'Animacje';
 
   @override
-  String get settingsContentsSection => 'Contents';
+  String get settingsContentsSection => 'Zawartość';
 
   @override
-  String get settingsLooksSection => 'Looks';
+  String get settingsLooksSection => 'Wygląd';
 
   @override
-  String get settingsAudioAndSubtitlesSection => 'Audio & Subtitles';
+  String get settingsAudioAndSubtitlesSection => 'Dźwięk i napisy';
 
   @override
-  String get settingsSkippingAndQueueSection => 'Skipping & Queue';
+  String get settingsSkippingAndQueueSection => 'Pomijanie i kolejka';
 
   @override
-  String get settingsWatchTogetherSection => 'Watch Together';
+  String get settingsWatchTogetherSection => 'Oglądaj razem';
 
   @override
-  String get settingsAdvancedSection => 'Advanced';
+  String get settingsAdvancedSection => 'Zaawansowane';
 
   @override
   String get playerSettingsSubtitle =>
-      'Controls, seeking, player buttons, and trick play';
+      'Sterowanie, przewijanie, przyciski odtwarzacza i podgląd podczas przewijania';
 }
