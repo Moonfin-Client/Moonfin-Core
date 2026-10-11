@@ -479,6 +479,10 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         nowPlaying.registerCommands()
     }
 
+    /// Populate the system Now Playing card from the UI metadata Flutter
+    /// pushes for the on-screen overlay. In audio-only mode the engine's own
+    /// audio host owns the Now Playing session, so route through it instead of
+    /// creating a competing session.
     func applyNowPlayingMetadata(_ args: [String: Any]) {
         let title = (args["topTitle"] as? String) ?? ""
         let subtitle = (args["topSubtitle"] as? String) ?? ""
