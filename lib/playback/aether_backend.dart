@@ -58,6 +58,7 @@ class AetherBackend implements PlayerBackend, SubtitleLoadingBackend {
   int _textTrackCount = 0;
   bool _tracksKnown = false;
   int? _activeSubtitleTrackIndex;
+  Map<String, dynamic>? _pendingEmbeddedSubtitle;
   Completer<void>? _tracksReadyCompleter;
   List<EmbeddedCaptionTrack> _embeddedCaptionTracks = const [];
   final _tracksChangedController = StreamController<void>.broadcast();
@@ -153,6 +154,7 @@ class AetherBackend implements PlayerBackend, SubtitleLoadingBackend {
       case 'tracksChanged':
         _tracksKnown = true;
         _textTrackCount = _toInt(map['textTrackCount']);
+        _applyPendingEmbeddedSubtitle();
         _embeddedCaptionTracks = EmbeddedCaptionTrack.listFromWire(
           map['closedCaptionTracks'],
         );
@@ -269,6 +271,7 @@ class AetherBackend implements PlayerBackend, SubtitleLoadingBackend {
     _tracksKnown = false;
     _textTrackCount = 0;
     _activeSubtitleTrackIndex = null;
+    _pendingEmbeddedSubtitle = null;
     _tracksReadyCompleter = null;
     _embeddedCaptionTracks = const [];
     _startStallWatchdog();
@@ -312,6 +315,7 @@ class AetherBackend implements PlayerBackend, SubtitleLoadingBackend {
 
   @override
   Future<void> stop() async {
+    _pendingEmbeddedSubtitle = null;
     await _invoke<void>('stop');
     _stopStallWatchdog();
     if (_isPlaying) {
@@ -504,23 +508,44 @@ class AetherBackend implements PlayerBackend, SubtitleLoadingBackend {
     bool isExternalSubtitle = false,
     String? externalSubtitleUrl,
   }) async {
+    _pendingEmbeddedSubtitle = null;
     _activeSubtitleTrackIndex = index;
     _log(
       'setSubtitleTrack index=$index external=$isExternalSubtitle '
       'bitmap=$isBitmapSubtitle codec=${subtitleCodec ?? 'none'} '
       'url=${externalSubtitleUrl == null ? 'none' : loggableUrl(externalSubtitleUrl)}',
     );
-    await _invoke<void>('setSubtitleTrack', {
+    final arguments = <String, dynamic>{
       'index': index,
       'isBitmapSubtitle': isBitmapSubtitle,
       'codec': subtitleCodec,
       'isExternalSubtitle': isExternalSubtitle,
       'externalSubtitleUrl': externalSubtitleUrl,
-    });
+    };
+    // Native track discovery can announce zero subtitles before demux ends.
+    // Keep the choice until its ordinal exists instead of losing it in Swift.
+    if (!isExternalSubtitle && index > _textTrackCount) {
+      _pendingEmbeddedSubtitle = arguments;
+      return;
+    }
+    await _invoke<void>('setSubtitleTrack', arguments);
+  }
+
+  void _applyPendingEmbeddedSubtitle() {
+    final pending = _pendingEmbeddedSubtitle;
+    if (_disposed ||
+        pending == null ||
+        (pending['index'] as int) > _textTrackCount) {
+      return;
+    }
+    // Consume before dispatch so repeated track events cannot reselect it.
+    _pendingEmbeddedSubtitle = null;
+    unawaited(_invoke<void>('setSubtitleTrack', pending));
   }
 
   @override
   Future<void> disableSubtitleTrack() async {
+    _pendingEmbeddedSubtitle = null;
     _activeSubtitleTrackIndex = -1;
     _log('disableSubtitleTrack');
     await _invoke<void>('disableSubtitleTrack');
@@ -693,6 +718,7 @@ class AetherBackend implements PlayerBackend, SubtitleLoadingBackend {
 
   @override
   Future<void> setEmbeddedCaptionTrack(int id) async {
+    _pendingEmbeddedSubtitle = null;
     await _invoke<void>('setClosedCaptionTrack', {'id': id});
   }
 
@@ -701,6 +727,7 @@ class AetherBackend implements PlayerBackend, SubtitleLoadingBackend {
 
   @override
   void dispose() {
+    _pendingEmbeddedSubtitle = null;
     _disposed = true;
     _prefs.removeListener(_syncAllowUntrustedTls);
     _prefs.removeListener(_syncEngineLogForwarding);

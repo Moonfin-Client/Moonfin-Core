@@ -262,6 +262,8 @@ class MediaKitPlayerBackend extends PlayerBackend
   // Bumped by every subtitle choice and every new or stopped source, so a
   // selection or retry still waiting on mpv can tell it was replaced.
   int _subtitleSelectionGeneration = 0;
+  ({int ordinal, int generation, Future<void> Function() select})?
+      _pendingEmbeddedSubtitle;
 
   // Retained after a source ends so late mpv failures still read as subtitle
   // errors. The generation distinguishes that history from URLs registered
@@ -276,6 +278,7 @@ class MediaKitPlayerBackend extends PlayerBackend
 
   void _resetSubtitleState() {
     _subtitleSelectionGeneration++;
+    _pendingEmbeddedSubtitle = null;
     _externalSubtitleLoads.clear();
     _pendingSubtitleChoice.nextSource();
   }
@@ -514,6 +517,10 @@ class MediaKitPlayerBackend extends PlayerBackend
 
   static bool get _useNativeSurface => PlatformDetection.useNativeVideoSurface;
 
+  @visibleForTesting
+  MediaKitPlayerBackend.forTesting(Player player, UserPreferences prefs)
+      : this._(player, null, prefs, null, false);
+
   MediaKitPlayerBackend._(
     this._player,
     this._videoController,
@@ -536,9 +543,10 @@ class MediaKitPlayerBackend extends PlayerBackend
       );
     }
     _prefs.addListener(_onPreferencesChanged);
-    _ccTracksSub = _player.stream.tracks.listen(
-      (_) => unawaited(_refreshEmbeddedCaptionTracks()),
-    );
+    _ccTracksSub = _player.stream.tracks.listen((_) {
+      unawaited(_refreshEmbeddedCaptionTracks());
+      unawaited(_retryPendingEmbeddedSubtitle());
+    });
     _videoParamsSub = _player.stream.videoParams.listen(_onVideoParams);
   }
 
@@ -2546,6 +2554,7 @@ class MediaKitPlayerBackend extends PlayerBackend
   }) async {
     if (mpvTrackId < 1) return;
     final generation = ++_subtitleSelectionGeneration;
+    _pendingEmbeddedSubtitle = null;
     bool isCurrentSelection() => _isLatestSubtitleSelection(generation);
     _setSelectedExternalSubtitle(
       isExternalSubtitle ? externalSubtitleUrl : null,
@@ -2581,12 +2590,28 @@ class MediaKitPlayerBackend extends PlayerBackend
       // A track that isn't there stays off. Falling back to a list position
       // can land on another language.
       if (sidToApply == null) {
+        if (!isExternalSubtitle) {
+          _pendingEmbeddedSubtitle = (
+            ordinal: mpvTrackId,
+            generation: generation,
+            select: () => setSubtitleTrack(
+              mpvTrackId,
+              isBitmapSubtitle: isBitmapSubtitle,
+              subtitleCodec: subtitleCodec,
+            ),
+          );
+        }
         await _player.setSubtitleTrack(SubtitleTrack.no());
         if (!isCurrentSelection()) return;
         await _nativeSetProperty(native, 'sid', 'no');
         if (!isCurrentSelection()) return;
         await _nativeSetProperty(native, 'secondary-sid', 'no');
         if (!isCurrentSelection()) return;
+        // Recheck after registering: discovery may have completed while the
+        // original track-list read was in flight.
+        if (!isExternalSubtitle) {
+          unawaited(_retryPendingEmbeddedSubtitle());
+        }
         if (isExternalSubtitle && externalSubtitleUrl != null) {
           Future<void> selectTrack() => setSubtitleTrack(
             mpvTrackId,
@@ -2720,6 +2745,25 @@ class MediaKitPlayerBackend extends PlayerBackend
     }
   }
 
+  Future<void> _retryPendingEmbeddedSubtitle() async {
+    final pending = _pendingEmbeddedSubtitle;
+    if (pending == null || !_isLatestSubtitleSelection(pending.generation)) {
+      return;
+    }
+    final native = _player.platform as NativePlayer;
+    final raw = await _tryNativeGetProperty(native, 'track-list');
+    if (!_isLatestSubtitleSelection(pending.generation) ||
+        _pendingEmbeddedSubtitle != pending) {
+      return;
+    }
+    final embedded = _extractTrackEntries(raw, type: 'sub')
+        .where((entry) => !entry.external && !_isClosedCaptionCodec(entry.codec));
+    if (embedded.length < pending.ordinal) return;
+    // Consume before dispatch so overlapping discovery events select once.
+    _pendingEmbeddedSubtitle = null;
+    await pending.select();
+  }
+
   /// Re-reads mpv's track list for the CC track it creates once caption data
   /// is seen, which on a live channel can be well after playback began.
   Future<void> _refreshEmbeddedCaptionTracks() async {
@@ -2782,6 +2826,7 @@ class MediaKitPlayerBackend extends PlayerBackend
   Future<void> disableSubtitleTrack() async {
     _setSelectedExternalSubtitle(null);
     final generation = ++_subtitleSelectionGeneration;
+    _pendingEmbeddedSubtitle = null;
     _subtitlesDisabled = true;
     await _player.setSubtitleTrack(SubtitleTrack.no());
     if (!_isLatestSubtitleSelection(generation)) return;
@@ -3066,6 +3111,7 @@ class MediaKitPlayerBackend extends PlayerBackend
     _presenterWatchdog?.cancel();
     _renegotiateSettleTimer?.cancel();
     _letterboxGeometrySub?.cancel();
+    _pendingEmbeddedSubtitle = null;
     _letterboxCropper.cancel();
     _prefs.removeListener(_onPreferencesChanged);
     _ccTracksSub?.cancel();

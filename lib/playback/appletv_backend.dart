@@ -50,6 +50,7 @@ class AppleTvBackend implements PlayerBackend {
   int _textTrackCount = 0;
   bool _tracksKnown = false;
   int? _activeSubtitleTrackIndex;
+  Map<String, dynamic>? _pendingEmbeddedSubtitle;
   Completer<void>? _tracksReadyCompleter;
   List<EmbeddedCaptionTrack> _embeddedCaptionTracks = const [];
   final _tracksChangedController = StreamController<void>.broadcast();
@@ -186,6 +187,7 @@ class AppleTvBackend implements PlayerBackend {
       case 'tracksChanged':
         _tracksKnown = true;
         _textTrackCount = _toInt(map['textTrackCount']);
+        _applyPendingEmbeddedSubtitle();
         _embeddedCaptionTracks = EmbeddedCaptionTrack.listFromWire(
           map['closedCaptionTracks'],
         );
@@ -304,6 +306,7 @@ class AppleTvBackend implements PlayerBackend {
     _tracksKnown = false;
     _textTrackCount = 0;
     _activeSubtitleTrackIndex = null;
+    _pendingEmbeddedSubtitle = null;
     _tracksReadyCompleter = null;
     _embeddedCaptionTracks = const [];
 
@@ -379,6 +382,7 @@ class AppleTvBackend implements PlayerBackend {
 
   @override
   Future<void> stop() async {
+    _pendingEmbeddedSubtitle = null;
     await _invoke<void>('stop');
     if (_isPlaying) {
       _isPlaying = false;
@@ -692,23 +696,44 @@ class AppleTvBackend implements PlayerBackend {
     bool isExternalSubtitle = false,
     String? externalSubtitleUrl,
   }) async {
+    _pendingEmbeddedSubtitle = null;
     _activeSubtitleTrackIndex = index;
     _log(
       'setSubtitleTrack index=$index external=$isExternalSubtitle '
       'bitmap=$isBitmapSubtitle codec=${subtitleCodec ?? 'none'} '
       'url=${externalSubtitleUrl == null ? 'none' : loggableUrl(externalSubtitleUrl)}',
     );
-    await _invoke<void>('setSubtitleTrack', {
+    final arguments = <String, dynamic>{
       'index': index,
       'isBitmapSubtitle': isBitmapSubtitle,
       'codec': subtitleCodec,
       'isExternalSubtitle': isExternalSubtitle,
       'externalSubtitleUrl': externalSubtitleUrl,
-    });
+    };
+    // Native track discovery can announce zero subtitles before demux ends.
+    // Keep the choice until its ordinal exists instead of losing it in Swift.
+    if (!isExternalSubtitle && index > _textTrackCount) {
+      _pendingEmbeddedSubtitle = arguments;
+      return;
+    }
+    await _invoke<void>('setSubtitleTrack', arguments);
+  }
+
+  void _applyPendingEmbeddedSubtitle() {
+    final pending = _pendingEmbeddedSubtitle;
+    if (_disposed ||
+        pending == null ||
+        (pending['index'] as int) > _textTrackCount) {
+      return;
+    }
+    // Consume before dispatch so repeated track events cannot reselect it.
+    _pendingEmbeddedSubtitle = null;
+    unawaited(_invoke<void>('setSubtitleTrack', pending));
   }
 
   @override
   Future<void> disableSubtitleTrack() async {
+    _pendingEmbeddedSubtitle = null;
     _activeSubtitleTrackIndex = -1;
     _log('disableSubtitleTrack');
     await _invoke<void>('disableSubtitleTrack');
@@ -900,6 +925,7 @@ class AppleTvBackend implements PlayerBackend {
 
   @override
   Future<void> setEmbeddedCaptionTrack(int id) async {
+    _pendingEmbeddedSubtitle = null;
     await _invoke<void>('setClosedCaptionTrack', {'id': id});
   }
 
@@ -909,6 +935,7 @@ class AppleTvBackend implements PlayerBackend {
   @override
   void dispose() {
     if (_disposed) return;
+    _pendingEmbeddedSubtitle = null;
     _disposed = true;
     _prefs.removeListener(_syncNativePreferences);
     _audioDelayDebounce?.cancel();
