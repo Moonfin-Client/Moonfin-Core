@@ -46,19 +46,20 @@ import 'syncplay/syncplay_player_button.dart';
 /// on Windows, the display's HDR mode, and the autoplay setting.
 class VideoMiniPlayerController {
   VideoMiniPlayerController._() {
+    if (!isSupported) return;
     PlayerRouteObserver.instance.isPlayerActive.addListener(_onPlayerRoute);
     GetIt.instance<PlaybackManager>().sessionEndedStream.listen((_) => clear());
+    appRouter.routerDelegate.addListener(_onLocationChanged);
   }
 
   static final instance = VideoMiniPlayerController._();
 
-  /// Desktop only. macOS draws AetherEngine into whichever view attached last,
-  /// and Windows shows mpv's texture or moves its native HDR window into the
-  /// thumbnail. Phones and tablets have system PiP instead.
+  /// Desktop in its desktop layout only. macOS draws AetherEngine into
+  /// whichever view attached last, and Windows shows mpv's texture or moves
+  /// its native HDR window into the thumbnail. Phones and tablets have system
+  /// PiP instead, and the bar isn't part of the TV layout's remote focus.
   static bool get isSupported =>
-      PlatformDetection.isMacOS ||
-      PlatformDetection.isWindows ||
-      PlatformDetection.isLinux;
+      PlatformDetection.isDesktop && PlatformDetection.useDesktopUi;
 
   /// App lifetime, so the display's HDR mode survives the player screen going
   /// away while the video keeps playing here. The player screen borrows it.
@@ -126,11 +127,33 @@ class VideoMiniPlayerController {
     _sync();
   }
 
-  // Any player taking the screen again, the restored video or something new
-  // started from a detail page, owns playback from then on.
+  // A player that plays through the manager, the restored video or something
+  // new started from a detail page, owns playback from then on. A trailer,
+  // photo, book or game brings its own player, so the video pauses under it
+  // and the bar comes back when it closes. In a SyncPlay group it keeps
+  // playing, since a pause would pause everyone.
   void _onPlayerRoute() {
-    if (PlayerRouteObserver.instance.isPlayerActive.value) _minimized = false;
+    final route = PlayerRouteObserver.instance.activePlayerRoute;
+    if (_minimized && route != null) {
+      final manager = GetIt.instance<PlaybackManager>();
+      if (Destinations.playsThroughPlaybackManager(route)) {
+        _minimized = false;
+      } else if (manager.state.isPlaying && !manager.hasTransportInterceptor) {
+        unawaited(manager.pause());
+      }
+    }
     _sync();
+  }
+
+  // Signing out or switching user lands on a route where the bar isn't shown,
+  // so the old session's video would keep playing with nothing to stop it.
+  void _onLocationChanged() {
+    if (!_minimized) return;
+    final path = appRouter.routerDelegate.currentConfiguration.uri.path;
+    if (!Destinations.isSignedOutRoute(path)) return;
+    final manager = GetIt.instance<PlaybackManager>();
+    clear();
+    unawaited(manager.stop(userInitiated: !manager.hasTransportInterceptor));
   }
 
   // The route observer fires while the navigator builds, and a listener
@@ -205,6 +228,9 @@ class _VideoMiniPlayerBarState extends State<_VideoMiniPlayerBar> {
   MediaSegmentService? _segments;
   MediaSegment? _askSegment;
   Duration? _askSkipTo;
+
+  String? _lastPagePath;
+  DateTime _lastPageAt = DateTime.fromMillisecondsSinceEpoch(0);
 
   PlayerState get _state => _manager.state;
   QueueService get _queue => _manager.queueService;
@@ -393,8 +419,7 @@ class _VideoMiniPlayerBarState extends State<_VideoMiniPlayerBar> {
             width: _trickplayFrameWidth,
           );
         }
-      } catch (_) {
-      }
+      } catch (_) {}
     }
     if (!mounted || generation != _trickplayGeneration) return;
     setState(() {
@@ -469,7 +494,7 @@ class _VideoMiniPlayerBarState extends State<_VideoMiniPlayerBar> {
     super.dispose();
   }
 
-  void _openPlayer() => appRouter.push(Destinations.videoPlayer);
+  void _openPlayer() => unawaited(appRouter.push(Destinations.videoPlayer));
 
   /// Stops this client only. In a SyncPlay group a user stop would end
   /// playback for everyone, while leaving the full player only stops here, so
@@ -546,8 +571,8 @@ class _VideoMiniPlayerBarState extends State<_VideoMiniPlayerBar> {
         subtitlePage: null,
       );
     }
-    final number = episode == null ? null : 'S${season ?? '?'} · E$episode';
-    final subtitle = [?number, if (name.isNotEmpty) name].join(' — ');
+    final number = episode == null ? null : 'S${season ?? '?'}:E$episode';
+    final subtitle = [?number, if (name.isNotEmpty) name].join(' - ');
     return (
       title: series,
       subtitle: subtitle.isEmpty ? null : subtitle,
@@ -574,9 +599,6 @@ class _VideoMiniPlayerBarState extends State<_VideoMiniPlayerBar> {
     unawaited(appRouter.push(route));
   }
 
-  String? _lastPagePath;
-  DateTime _lastPageAt = DateTime.fromMillisecondsSinceEpoch(0);
-
   @override
   Widget build(BuildContext context) {
     final item = _queue.currentItem;
@@ -587,16 +609,16 @@ class _VideoMiniPlayerBarState extends State<_VideoMiniPlayerBar> {
     final info = _describe(item);
     final bottomPad = MediaQuery.of(context).viewPadding.bottom;
 
-    // While the native HDR window shows through the thumbnail, the bar's own
-    // fill must not paint over it.
-    // The bar is outside the navigator, so a picker's barrier does not cover
-    // it. While one is open, a click anywhere on the bar - its own button
-    // included - closes it, the way the barrier would.
+    // The bar is outside the navigator, so a picker's barrier doesn't cover
+    // it. While one is open, a click anywhere on the bar, its own button
+    // included, closes it the way the barrier would.
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTap: _pickerOpen ? _dismissPicker : null,
       child: AbsorbPointer(
         absorbing: _pickerOpen,
+        // While the native HDR window shows through the thumbnail, the bar's
+        // own fill must not paint over it.
         child: _HoleClipPath(
           key: _barKey,
           clipper: _HoleClipper(
@@ -748,14 +770,13 @@ class _VideoMiniPlayerBarState extends State<_VideoMiniPlayerBar> {
                           if (mounted) setState(() => _pickerOpen = open);
                         },
                       ),
-                    if (PlatformDetection.isDesktop &&
-                        constraints.maxWidth >= _rightSideWidth(scale) + 168)
+                    if (constraints.maxWidth >= _rightSideWidth(scale) + 168)
                       PlayerVolumeControl(
                         volume: _volume / 100,
                         onChanged: _setVolume,
                         onToggleMute: _toggleMute,
                       )
-                    else if (PlatformDetection.isDesktop)
+                    else
                       _TransportButton(
                         icon: volumeIconFor(_volume / 100),
                         tooltip: _volume > 0 ? l10n.mute : l10n.unmute,
@@ -896,7 +917,12 @@ class _MpvVideoSurface extends StatelessWidget {
           return const ColoredBox(color: Colors.black);
         }
         return _HdrHole(
-          onGeometry: (rect) => unawaited(hdr.window.claim(controller, rect)),
+          onGeometry: (rect) {
+            // The bar outlives a restore by a frame or two, and a claim then
+            // would take the window back from the player screen.
+            if (!identical(hdr.presenter, controller)) return;
+            unawaited(hdr.window.claim(controller, rect));
+          },
           onDetached: () => unawaited(hdr.window.release(controller)),
         );
       },
@@ -1181,8 +1207,8 @@ class _TitleBlock extends StatelessWidget {
           StreamBuilder<Duration>(
             stream: state.positionStream,
             builder: (context, _) => Text(
-              '${_formatDuration(state.position)} / '
-              '${_formatDuration(state.duration)}',
+              '${formatPlaybackDuration(state.position)} / '
+              '${formatPlaybackDuration(state.duration)}',
               style: TextStyle(
                 color: secondary,
                 fontSize: AppTypography.fontSizeSm,
@@ -1528,13 +1554,4 @@ class _SeekBarPainter extends CustomPainter {
       old.track != track ||
       old.progress != progress ||
       old.thumb != thumb;
-}
-
-String _formatDuration(Duration d) {
-  final h = d.inHours;
-  final m = d.inMinutes.remainder(60);
-  final s = d.inSeconds.remainder(60);
-  final ss = s.toString().padLeft(2, '0');
-  if (h > 0) return '$h:${m.toString().padLeft(2, '0')}:$ss';
-  return '$m:$ss';
 }

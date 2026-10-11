@@ -66,6 +66,26 @@ void main() {
     expect(observer.isPlayerActive.value, isFalse);
   });
 
+  test('names the topmost player route, ignoring other routes', () {
+    final observer = PlayerRouteObserver();
+    expect(observer.activePlayerRoute, isNull);
+
+    final video = _route('/player/video');
+    final trailer = _route('/player/trailer');
+    observer.didPush(video, null);
+    observer.didPush(_route('/item/item1'), video);
+    expect(observer.activePlayerRoute, '/player/video');
+
+    observer.didPush(trailer, null);
+    expect(observer.activePlayerRoute, '/player/trailer');
+
+    observer.didPop(trailer, null);
+    expect(observer.activePlayerRoute, '/player/video');
+
+    observer.didRemove(video, null);
+    expect(observer.activePlayerRoute, isNull);
+  });
+
   test('artwork coverage follows only the effective top route', () {
     final gate = RetroArtworkActivityGate();
     final observer = RetroArtworkRouteObserver(activityGate: gate);
