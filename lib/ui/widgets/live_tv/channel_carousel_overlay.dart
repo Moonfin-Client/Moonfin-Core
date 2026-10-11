@@ -694,6 +694,10 @@ class _ChannelCarouselOverlayState extends State<ChannelCarouselOverlay>
       }
       return KeyEventResult.handled;
     }
+    // The strip only moves sideways. Left unhandled, UP falls through to the
+    // host and then to directional traversal, which pulls focus off the strip
+    // so LEFT, RIGHT and OK stop reaching it and only back gets out.
+    if (event.logicalKey.isUpKey) return KeyEventResult.handled;
     return KeyEventResult.ignored;
   }
 

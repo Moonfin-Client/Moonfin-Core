@@ -647,6 +647,70 @@ void main() {
     },
   );
 
+  testWidgets('UP keeps focus on the strip instead of traversing away', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1000, 600));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final above = FocusNode(debugLabel: 'above');
+    addTearDown(above.dispose);
+    final client = _CarouselClient();
+    final channels = List.generate(
+      20,
+      (i) => GuideChannel(
+        id: 'ch$i',
+        name: 'Channel $i',
+        number: '${i + 1}',
+        rawData: const {},
+      ),
+    );
+    final vm = _CarouselGuide(client, channels);
+    var dismissals = 0;
+    var controls = 0;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.buildTheme(ThemeRegistry.active),
+        home: Scaffold(
+          body: Stack(
+            children: [
+              // Something focusable above the strip, as the player always has.
+              Align(
+                alignment: Alignment.topCenter,
+                child: Focus(
+                  focusNode: above,
+                  child: const SizedBox(width: 100, height: 40),
+                ),
+              ),
+              ChannelCarouselOverlay(
+                client: client,
+                channels: channels,
+                currentChannelId: 'ch10',
+                onChannelSelected: (_) {},
+                onDismiss: () => dismissals++,
+                onShowControls: () => controls++,
+                viewModelFactory: (_) => vm,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pump();
+    expect(FocusManager.instance.primaryFocus?.debugLabel, 'ChannelCarousel');
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
+    await tester.pump();
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
+    await tester.pump();
+
+    expect(above.hasFocus, isFalse);
+    expect(FocusManager.instance.primaryFocus?.debugLabel, 'ChannelCarousel');
+    expect(dismissals, 0);
+    expect(controls, 0);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
   /// Pumps the strip and returns the list of centred channel indices, in the
   /// order the widget reported them.
   Future<List<int>> pumpCarousel(
