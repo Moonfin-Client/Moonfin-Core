@@ -138,7 +138,7 @@ class _BookReaderScreenState extends State<BookReaderScreen>
 
   bool get _epubIsRtl => Directionality.of(context) == TextDirection.rtl;
 
-  ReaderThemeColors get _fixedLayoutChromeColors => const ReaderThemeColors(
+  static const _fixedLayoutChromeColors = ReaderThemeColors(
     background: Color(0xFF0A0A0A),
     foreground: Colors.white,
     link: Color(0xFF6FA8FF),
@@ -1885,7 +1885,7 @@ class _BookReaderScreenState extends State<BookReaderScreen>
     return chapters;
   }
 
-  static const _kFixedLayoutInvertMatrix = <double>[
+  static const _fixedLayoutInvertMatrix = <double>[
     -1, 0, 0, 0, 255,
     0, -1, 0, 0, 255,
     0, 0, -1, 0, 255,
@@ -1898,7 +1898,7 @@ class _BookReaderScreenState extends State<BookReaderScreen>
     }
 
     return ColorFiltered(
-      colorFilter: const ColorFilter.matrix(_kFixedLayoutInvertMatrix),
+      colorFilter: const ColorFilter.matrix(_fixedLayoutInvertMatrix),
       child: child,
     );
   }
@@ -2117,16 +2117,8 @@ class _BookReaderScreenState extends State<BookReaderScreen>
     final l10n = AppLocalizations.of(context);
     final title = item?.name ?? l10n.bookReader;
 
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.light,
-        statusBarBrightness: Brightness.dark,
-        systemNavigationBarColor: Colors.transparent,
-        systemNavigationBarIconBrightness: Brightness.light,
-      ),
-      child: Scaffold(
-      backgroundColor: _invertFixedLayout ? Colors.white : Colors.black,
+    return Scaffold(
+      backgroundColor: Colors.black,
       body: _loadingContent
           ? const Center(child: CircularProgressIndicator())
           : _comicEntries.isEmpty
@@ -2213,7 +2205,6 @@ class _BookReaderScreenState extends State<BookReaderScreen>
                 ),
               ],
             ),
-      ),
     );
   }
 
@@ -2646,15 +2637,7 @@ class _BookReaderScreenState extends State<BookReaderScreen>
 
     final chromeColors = isPdf ? _fixedLayoutChromeColors : _pageColors;
 
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.light,
-        statusBarBrightness: Brightness.dark,
-        systemNavigationBarColor: Colors.transparent,
-        systemNavigationBarIconBrightness: Brightness.light,
-      ),
-      child: Scaffold(
+    return Scaffold(
       backgroundColor: _readerBackgroundColor,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -2695,7 +2678,6 @@ class _BookReaderScreenState extends State<BookReaderScreen>
               onChanged: (value) => _goToPdfPage(value.round()),
             ),
         ],
-      ),
       ),
     );
   }
