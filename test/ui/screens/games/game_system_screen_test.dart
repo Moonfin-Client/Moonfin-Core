@@ -1,7 +1,7 @@
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
@@ -15,6 +15,7 @@ import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/screens/games/game_system_screen.dart';
 import 'package:moonfin/ui/widgets/game/game_poster_card.dart';
 import 'package:moonfin/ui/widgets/game/retro_artwork_image.dart';
+import 'package:moonfin/util/platform_detection.dart';
 import 'package:server_core/server_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -320,4 +321,87 @@ void main() {
       );
     },
   );
+
+  testWidgets('keeps the focused row on screen deep into a large library', (
+    tester,
+  ) async {
+    // Enough rows that a per-row error in the scroll math adds up to more
+    // than a card height before the bottom of the list.
+    final games = [
+      for (var i = 0; i < 600; i++)
+        GameSummary(
+          id: 'game-$i',
+          title: 'Game ${i.toString().padLeft(3, '0')}',
+          system: 'sms',
+          core: 'genesis_plus_gx',
+          fileName: 'Game$i.sms',
+        ),
+    ];
+    when(() => gamesApi.getGames(any(), system: any(named: 'system')))
+        .thenAnswer((_) async => games);
+    when(() => gamesApi.getGame(any(), any())).thenAnswer((_) async => null);
+    // The d-pad layout reserves focus-zoom headroom between rows, which is
+    // what the scroll math has to account for.
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+    addTearDown(
+      () => PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic),
+    );
+    tester.view.physicalSize = const Size(1280, 720);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: const GameSystemScreen(libraryId: 'retro', systemId: 'sms'),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    GamePosterCard focusedCard() => tester
+        .widgetList<GamePosterCard>(find.byType(GamePosterCard))
+        .singleWhere((card) => card.focusNode?.hasFocus ?? false);
+
+    tester
+        .widget<GamePosterCard>(find.byType(GamePosterCard).first)
+        .focusNode!
+        .requestFocus();
+    await tester.pumpAndSettle();
+
+    final viewport = tester.getRect(find.byType(GridView));
+    double? settledTop;
+    for (var press = 1; press <= 40; press++) {
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+      await tester.pumpAndSettle();
+      final card = tester.getRect(find.byWidget(focusedCard()));
+      expect(
+        card.top >= viewport.top && card.bottom <= viewport.bottom,
+        isTrue,
+        reason:
+            'row $press: focused card $card must sit inside the grid '
+            'viewport $viewport',
+      );
+      // Once the grid starts scrolling, every row should land in the same
+      // place; a creeping offset means the scroll math and the real row
+      // stride disagree.
+      if (press == 5) settledTop = card.top;
+      if (settledTop != null) {
+        expect(card.top, moreOrLessEquals(settledTop, epsilon: 1));
+      }
+    }
+
+    for (var press = 1; press <= 40; press++) {
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
+      await tester.pumpAndSettle();
+      final card = tester.getRect(find.byWidget(focusedCard()));
+      expect(
+        card.top >= viewport.top && card.bottom <= viewport.bottom,
+        isTrue,
+        reason:
+            'up $press: focused card $card must sit inside the grid '
+            'viewport $viewport',
+      );
+    }
+  });
 }

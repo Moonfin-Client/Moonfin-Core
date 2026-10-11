@@ -5,7 +5,8 @@ import 'package:custom_tv_text_field/custom_tv_text_field.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart' show ScrollCacheExtent;
+import 'package:flutter/rendering.dart'
+    show RenderAbstractViewport, ScrollCacheExtent;
 import 'package:flutter/services.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart'
     show HttpExceptionWithStatus;
@@ -691,24 +692,32 @@ class _GameSystemScreenState extends State<GameSystemScreen>
     );
   }
 
-  void _scrollToGridRow({
-    required int index,
-    required int crossAxisCount,
-    required double cellHeight,
-    required double mainAxisSpacing,
+  /// Scrolls just enough to show the focused card, plus [topMargin] above it
+  /// and [_gridBottomFocusPeek] of the next row below it.
+  ///
+  /// Reads the card's real position from the viewport instead of recomputing
+  /// it from the grid's spacing and padding, so a layout change to the grid
+  /// can't leave this scrolling to the wrong row.
+  void _scrollFocusedCardIntoView(
+    FocusNode cardNode, {
+    required double topMargin,
   }) {
     if (!_gridScrollController.hasClients) return;
-    final row = index ~/ crossAxisCount;
-    final rowTop = _gridTopPadding + row * (cellHeight + mainAxisSpacing);
-    final rowBottom = rowTop + cellHeight;
+    final card = cardNode.context?.findRenderObject();
+    if (card == null || !card.attached) return;
+    final viewport = RenderAbstractViewport.maybeOf(card);
+    if (viewport == null) return;
     final position = _gridScrollController.position;
     final current = position.pixels;
-    final viewportHeight = position.viewportDimension;
+    // Offsets that put the card's top at the viewport's top edge, and its
+    // bottom at the viewport's bottom edge.
+    final revealTop = viewport.getOffsetToReveal(card, 0.0).offset;
+    final revealBottom = viewport.getOffsetToReveal(card, 1.0).offset;
     var target = current;
-    if (rowTop - _gridTopPadding < current) {
-      target = rowTop - _gridTopPadding;
-    } else if (rowBottom + _gridBottomFocusPeek > current + viewportHeight) {
-      target = rowBottom + _gridBottomFocusPeek - viewportHeight;
+    if (revealTop - topMargin < current) {
+      target = revealTop - topMargin;
+    } else if (revealBottom + _gridBottomFocusPeek > current) {
+      target = revealBottom + _gridBottomFocusPeek;
     }
     target = target.clamp(position.minScrollExtent, position.maxScrollExtent);
     if ((target - current).abs() < 1) return;
@@ -1020,6 +1029,10 @@ class _GameSystemScreenState extends State<GameSystemScreen>
                     ? null
                     : _retroArtworkDataSource?.imageFor(game.id);
                 final source = reference?.source;
+                final cardFocusNode = getGridItemFocusNode(
+                  index,
+                  prefix: 'game_grid',
+                );
                 final column = index % columnCount;
                 final atVisualRightEdge = isRtl
                     ? column == 0
@@ -1062,7 +1075,7 @@ class _GameSystemScreenState extends State<GameSystemScreen>
                   seed: game.id,
                   cacheManager: gameArtworkCacheManagerForScope(_artworkScope),
                   width: cardWidth,
-                  focusNode: getGridItemFocusNode(index, prefix: 'game_grid'),
+                  focusNode: cardFocusNode,
                   focusColor: focusColor,
                   cardFocusExpansion: cardFocusExpansion,
                   suppressFocusGlow: isNeon,
@@ -1074,11 +1087,11 @@ class _GameSystemScreenState extends State<GameSystemScreen>
                       showDetails: showDetails,
                     );
                     _scheduleArtworkPriority(focusedIndex: index);
-                    _scrollToGridRow(
-                      index: index,
-                      crossAxisCount: columnCount,
-                      cellHeight: cardHeight,
-                      mainAxisSpacing: 14,
+                    // topPadding is the room the focus zoom needs above a
+                    // card, so the same margin keeps a zoomed top row whole.
+                    _scrollFocusedCardIntoView(
+                      cardFocusNode,
+                      topMargin: topPadding,
                     );
                   },
                   onFocusLost: () => _browse.deactivateGame(game),
