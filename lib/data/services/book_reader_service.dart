@@ -122,14 +122,9 @@ class BookReaderService {
       return null;
     }
 
-    final clean = _stripUriSuffix(raw);
-    if (clean.isEmpty) {
-      return null;
-    }
-
-    final slash = clean.lastIndexOf('/');
+    final slash = raw.lastIndexOf('/');
     final start = slash >= 0 ? slash + 1 : 0;
-    final filePart = clean.substring(start);
+    final filePart = raw.substring(start);
     final dot = filePart.lastIndexOf('.');
     if (dot < 0 || dot == filePart.length - 1) {
       return null;
