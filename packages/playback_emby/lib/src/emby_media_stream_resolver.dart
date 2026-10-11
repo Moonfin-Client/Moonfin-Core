@@ -24,12 +24,20 @@ class EmbyMediaStreamResolver implements MediaStreamResolver {
 
     final resolvedMediaSourceId =
         MediaStreamResolver.resolveStaticMediaSourceId(mediaItem, mediaSourceId);
+    final isLiveChannel = MediaStreamResolver.isLiveTvItem(mediaItem);
+    final requestProfile = MediaStreamResolver.shortenLiveHlsStartup(
+      MediaStreamResolver.preferMpegTsHlsForLive(
+        deviceProfile,
+        isLiveChannel: isLiveChannel,
+      ),
+      isLiveChannel: isLiveChannel,
+    );
 
     Future<PlaybackInfoResult> fetchPlaybackInfo(String? sourceId) async {
       final request = PlaybackInfoRequest(
         itemId: itemId,
         mediaSourceId: sourceId,
-        deviceProfile: deviceProfile,
+        deviceProfile: requestProfile,
         maxStreamingBitrate: maxStreamingBitrate,
         audioStreamIndex: audioStreamIndex,
         subtitleStreamIndex: subtitleStreamIndex,
@@ -138,7 +146,7 @@ class EmbyMediaStreamResolver implements MediaStreamResolver {
         audioStreamIndex: audioStreamIndex ?? source.defaultAudioStreamIndex,
         subtitleStreamIndex:
             subtitleStreamIndex ?? source.defaultSubtitleStreamIndex,
-        deviceProfile: deviceProfile,
+        deviceProfile: requestProfile,
       ),
       serverOfferedDirectPlay: source.supportsDirectPlay,
       directPlayRequested: enableDirectPlay,

@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:playback_core/playback_core.dart';
+import 'package:playback_emby/playback_emby.dart';
 import 'package:playback_jellyfin/playback_jellyfin.dart';
 import 'package:server_core/server_core.dart';
 
@@ -37,6 +38,11 @@ Map<String, dynamic> _appleStyleProfile() => <String, dynamic>{
 List<String> _containers(Map<String, dynamic>? profile) =>
     (profile!['TranscodingProfiles'] as List)
         .map((e) => '${e['Type']}:${e['Container']}')
+        .toList();
+
+List<String> _segmentFields(Map<String, dynamic>? profile) =>
+    (profile!['TranscodingProfiles'] as List)
+        .map((e) => '${e['Type']}:${e['SegmentLength']}/${e['MinSegments']}')
         .toList();
 
 class _WrappedItem {
@@ -79,10 +85,8 @@ class _FakePlaybackApi extends Fake implements PlaybackApi {
 }
 
 class _FakeClient extends Fake implements MediaServerClient {
-  _FakeClient(this.serverType, this.playbackApi);
+  _FakeClient(this.playbackApi);
 
-  @override
-  final ServerType serverType;
   @override
   final PlaybackApi playbackApi;
   @override
@@ -101,14 +105,13 @@ class _FakeClient extends Fake implements MediaServerClient {
 }
 
 void main() {
-  group('JellyfinMediaStreamResolver.preferMpegTsHlsForLive', () {
-    test('moves the MPEG-TS HLS entry ahead of fMP4 for an Emby channel and '
+  group('MediaStreamResolver.preferMpegTsHlsForLive', () {
+    test('moves the MPEG-TS HLS entry ahead of fMP4 for a channel and '
         'leaves the caller\'s profile in its own order', () {
       final profile = _appleStyleProfile();
-      final result = JellyfinMediaStreamResolver.preferMpegTsHlsForLive(
+      final result = MediaStreamResolver.preferMpegTsHlsForLive(
         profile,
         isLiveChannel: true,
-        serverType: ServerType.emby,
       );
 
       expect(_containers(result), ['Video:ts', 'Video:mp4', 'Audio:ts']);
@@ -116,22 +119,11 @@ void main() {
       expect(_containers(profile), ['Video:mp4', 'Video:ts', 'Audio:ts']);
     });
 
-    test('leaves a Jellyfin channel profile as sent', () {
+    test('leaves the profile as sent for anything but a channel', () {
       final profile = _appleStyleProfile();
-      final result = JellyfinMediaStreamResolver.preferMpegTsHlsForLive(
-        profile,
-        isLiveChannel: true,
-        serverType: ServerType.jellyfin,
-      );
-      expect(result, same(profile));
-    });
-
-    test('leaves an Emby profile as sent for anything but a channel', () {
-      final profile = _appleStyleProfile();
-      final result = JellyfinMediaStreamResolver.preferMpegTsHlsForLive(
+      final result = MediaStreamResolver.preferMpegTsHlsForLive(
         profile,
         isLiveChannel: false,
-        serverType: ServerType.emby,
       );
       expect(result, same(profile));
     });
@@ -140,10 +132,9 @@ void main() {
       final profile = _appleStyleProfile();
       final entries = profile['TranscodingProfiles'] as List;
       entries.insert(0, entries.removeAt(1));
-      final result = JellyfinMediaStreamResolver.preferMpegTsHlsForLive(
+      final result = MediaStreamResolver.preferMpegTsHlsForLive(
         profile,
         isLiveChannel: true,
-        serverType: ServerType.emby,
       );
       expect(result, same(profile));
     });
@@ -151,10 +142,9 @@ void main() {
     test('leaves a profile with no MPEG-TS HLS entry as sent', () {
       final profile = _appleStyleProfile();
       (profile['TranscodingProfiles'] as List).removeAt(1);
-      final result = JellyfinMediaStreamResolver.preferMpegTsHlsForLive(
+      final result = MediaStreamResolver.preferMpegTsHlsForLive(
         profile,
         isLiveChannel: true,
-        serverType: ServerType.emby,
       );
       expect(result, same(profile));
     });
@@ -168,10 +158,9 @@ void main() {
         'Container': 'mp4',
         'Protocol': 'http',
       });
-      final result = JellyfinMediaStreamResolver.preferMpegTsHlsForLive(
+      final result = MediaStreamResolver.preferMpegTsHlsForLive(
         profile,
         isLiveChannel: true,
-        serverType: ServerType.emby,
       );
       expect(
         _containers(result),
@@ -185,11 +174,74 @@ void main() {
 
     test('a missing profile stays missing', () {
       expect(
-        JellyfinMediaStreamResolver.preferMpegTsHlsForLive(
-          null,
-          isLiveChannel: true,
-          serverType: ServerType.emby,
-        ),
+        MediaStreamResolver.preferMpegTsHlsForLive(null, isLiveChannel: true),
+        isNull,
+      );
+    });
+  });
+
+  group('MediaStreamResolver.shortenLiveHlsStartup', () {
+    test('asks for two 3 s segments on every video HLS entry of a channel '
+        'and leaves the caller\'s profile alone', () {
+      final profile = _appleStyleProfile();
+      final result = MediaStreamResolver.shortenLiveHlsStartup(
+        profile,
+        isLiveChannel: true,
+      );
+
+      expect(
+        _segmentFields(result),
+        ['Video:3/2', 'Video:3/2', 'Audio:null/null'],
+      );
+      expect(_containers(result), ['Video:mp4', 'Video:ts', 'Audio:ts']);
+      expect(
+        (result!['TranscodingProfiles'] as List)[1]['AudioCodec'],
+        'aac,ac3,eac3',
+      );
+      expect(result['DirectPlayProfiles'], same(profile['DirectPlayProfiles']));
+      expect(
+        _segmentFields(profile),
+        ['Video:null/null', 'Video:null/null', 'Audio:null/null'],
+      );
+    });
+
+    test('keeps a segment value the profile already carries', () {
+      final profile = _appleStyleProfile();
+      final entries = profile['TranscodingProfiles'] as List;
+      entries[1]['SegmentLength'] = 6;
+      entries[1]['MinSegments'] = 1;
+      final result = MediaStreamResolver.shortenLiveHlsStartup(
+        profile,
+        isLiveChannel: true,
+      );
+      expect(
+        _segmentFields(result),
+        ['Video:3/2', 'Video:6/1', 'Audio:null/null'],
+      );
+    });
+
+    test('leaves the profile as sent for anything but a channel', () {
+      final profile = _appleStyleProfile();
+      final result = MediaStreamResolver.shortenLiveHlsStartup(
+        profile,
+        isLiveChannel: false,
+      );
+      expect(result, same(profile));
+    });
+
+    test('leaves a profile with no video HLS entry as sent', () {
+      final profile = _appleStyleProfile();
+      (profile['TranscodingProfiles'] as List).removeRange(0, 2);
+      final result = MediaStreamResolver.shortenLiveHlsStartup(
+        profile,
+        isLiveChannel: true,
+      );
+      expect(result, same(profile));
+    });
+
+    test('a missing profile stays missing', () {
+      expect(
+        MediaStreamResolver.shortenLiveHlsStartup(null, isLiveChannel: true),
         isNull,
       );
     });
@@ -224,11 +276,11 @@ void main() {
     });
   });
 
-  group('JellyfinMediaStreamResolver.resolve', () {
-    test('sends Emby the MPEG-TS HLS entry first for a channel', () async {
+  group('EmbyMediaStreamResolver.resolve', () {
+    test('sends the MPEG-TS HLS entry first and two 3 s segments for a '
+        'channel', () async {
       final api = _FakePlaybackApi();
-      final resolver =
-          JellyfinMediaStreamResolver(_FakeClient(ServerType.emby, api));
+      final resolver = EmbyMediaStreamResolver(_FakeClient(api));
 
       final result = await resolver.resolve(
         <String, dynamic>{'Id': 'ch1', 'Type': 'TvChannel'},
@@ -238,14 +290,17 @@ void main() {
 
       final sent = api.lastBody!['DeviceProfile'] as Map<String, dynamic>;
       expect(_containers(sent), ['Video:ts', 'Video:mp4', 'Audio:ts']);
+      expect(
+        _segmentFields(sent),
+        ['Video:3/2', 'Video:3/2', 'Audio:null/null'],
+      );
       expect(result.playMethod, StreamPlayMethod.transcode);
       expect(result.liveStreamId, 'ls1');
     });
 
-    test('sends Emby a movie profile unchanged', () async {
+    test('sends a movie profile unchanged', () async {
       final api = _FakePlaybackApi();
-      final resolver =
-          JellyfinMediaStreamResolver(_FakeClient(ServerType.emby, api));
+      final resolver = EmbyMediaStreamResolver(_FakeClient(api));
 
       await resolver.resolve(
         <String, dynamic>{'Id': 'm1', 'Type': 'Movie'},
@@ -255,14 +310,20 @@ void main() {
 
       final sent = api.lastBody!['DeviceProfile'] as Map<String, dynamic>;
       expect(_containers(sent), ['Video:mp4', 'Video:ts', 'Audio:ts']);
+      expect(
+        _segmentFields(sent),
+        ['Video:null/null', 'Video:null/null', 'Audio:null/null'],
+      );
     });
+  });
 
-    test('sends Jellyfin a channel profile unchanged', () async {
+  group('JellyfinMediaStreamResolver.resolve', () {
+    test('sends a channel profile in its own order with two 3 s segments '
+        'asked for', () async {
       final api = _FakePlaybackApi();
-      final resolver =
-          JellyfinMediaStreamResolver(_FakeClient(ServerType.jellyfin, api));
+      final resolver = JellyfinMediaStreamResolver(_FakeClient(api));
 
-      await resolver.resolve(
+      final result = await resolver.resolve(
         <String, dynamic>{'Id': 'ch1', 'Type': 'TvChannel'},
         deviceProfile: _appleStyleProfile(),
         enableDirectPlay: false,
@@ -270,6 +331,29 @@ void main() {
 
       final sent = api.lastBody!['DeviceProfile'] as Map<String, dynamic>;
       expect(_containers(sent), ['Video:mp4', 'Video:ts', 'Audio:ts']);
+      expect(
+        _segmentFields(sent),
+        ['Video:3/2', 'Video:3/2', 'Audio:null/null'],
+      );
+      expect(result.playMethod, StreamPlayMethod.transcode);
+    });
+
+    test('sends a movie profile unchanged', () async {
+      final api = _FakePlaybackApi();
+      final resolver = JellyfinMediaStreamResolver(_FakeClient(api));
+
+      await resolver.resolve(
+        <String, dynamic>{'Id': 'm1', 'Type': 'Movie'},
+        deviceProfile: _appleStyleProfile(),
+        enableDirectPlay: false,
+      );
+
+      final sent = api.lastBody!['DeviceProfile'] as Map<String, dynamic>;
+      expect(_containers(sent), ['Video:mp4', 'Video:ts', 'Audio:ts']);
+      expect(
+        _segmentFields(sent),
+        ['Video:null/null', 'Video:null/null', 'Audio:null/null'],
+      );
     });
   });
 }
