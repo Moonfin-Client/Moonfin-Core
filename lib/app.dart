@@ -268,10 +268,7 @@ class _MoonfinAppState extends State<MoonfinApp> {
                 final hidePlayer =
                     path.startsWith('/player/') ||
                     path == '/live-tv/player' ||
-                    path == '/' ||
-                    path == '/server-select' ||
-                    path == '/server' ||
-                    path == '/login';
+                    Destinations.isSignedOutRoute(path);
 
                 final overlay = Overlay(
                   initialEntries: [

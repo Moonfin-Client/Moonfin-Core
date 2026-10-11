@@ -869,6 +869,10 @@ class PlayerRouteObserver extends NavigatorObserver {
   final ValueNotifier<bool> isPlayerActive = ValueNotifier<bool>(false);
   final List<Route<dynamic>> _playerRoutes = [];
 
+  /// The name of the topmost player route, while one is on screen.
+  String? get activePlayerRoute =>
+      _playerRoutes.isEmpty ? null : _playerRoutes.last.settings.name;
+
   bool _isPlayer(Route<dynamic> route) {
     final name = route.settings.name;
     return name != null && Destinations.isPlayerRoute(name);

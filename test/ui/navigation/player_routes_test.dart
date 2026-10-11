@@ -51,6 +51,63 @@ void main() {
     });
   });
 
+  group('the shared playback manager', () {
+    test('plays the video, audio, external and live TV players', () {
+      for (final path in [
+        Destinations.videoPlayer,
+        Destinations.audioPlayer,
+        Destinations.externalPlayer,
+        Destinations.liveTvPlayer,
+      ]) {
+        expect(
+          Destinations.playsThroughPlaybackManager(path),
+          isTrue,
+          reason: path,
+        );
+      }
+    });
+
+    test('is left alone by the screens with their own player', () {
+      for (final path in [
+        Destinations.trailerPlayer,
+        '/player/book/item1',
+        '/player/photo/item1',
+        '/game-player/lib1/game1',
+      ]) {
+        expect(
+          Destinations.playsThroughPlaybackManager(path),
+          isFalse,
+          reason: path,
+        );
+        expect(Destinations.isPlayerRoute(path), isTrue, reason: path);
+      }
+    });
+  });
+
+  group('a signed out route', () {
+    test('covers where signing out and switching user land', () {
+      for (final path in [
+        Destinations.startup,
+        Destinations.serverSelect,
+        Destinations.server,
+        Destinations.login,
+      ]) {
+        expect(Destinations.isSignedOutRoute(path), isTrue, reason: path);
+      }
+    });
+
+    test('leaves the signed in app out', () {
+      for (final path in [
+        Destinations.home,
+        Destinations.search,
+        Destinations.videoPlayer,
+        '/item/item1',
+      ]) {
+        expect(Destinations.isSignedOutRoute(path), isFalse, reason: path);
+      }
+    });
+  });
+
   group('the back key', () {
     test('is left to the screens that read it themselves', () {
       expect(Destinations.routeReadsBackKey(Destinations.videoPlayer), isTrue);

@@ -387,6 +387,22 @@ class Destinations {
   static bool routeReadsBackKey(String path) =>
       path == videoPlayer || path.startsWith('/game-player/');
 
+  /// The player routes that play through the shared playback manager, so
+  /// opening one replaces whatever it was playing. The trailer, photo, book
+  /// and game screens bring their own players.
+  static bool playsThroughPlaybackManager(String path) =>
+      path == videoPlayer ||
+      path == audioPlayer ||
+      path == externalPlayer ||
+      path == liveTvPlayer;
+
+  /// Where signing out or switching user lands, with nobody signed in yet.
+  static bool isSignedOutRoute(String path) =>
+      path == startup ||
+      path == serverSelect ||
+      path == server ||
+      path == login;
+
   static String seerrBrowseWith({
     required String filterId,
     required String filterName,

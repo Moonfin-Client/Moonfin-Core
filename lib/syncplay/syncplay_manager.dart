@@ -9,6 +9,7 @@ import 'package:server_core/server_core.dart';
 
 import '../data/models/aggregated_item.dart';
 import '../data/services/media_server_client_factory.dart';
+import '../playback/media_kit_player_backend.dart';
 import '../preference/user_preferences.dart';
 import '../ui/navigation/app_router.dart';
 import '../ui/navigation/destinations.dart';
@@ -1304,9 +1305,9 @@ class SyncPlayManager extends ChangeNotifier {
       // Windows recreates mpv's HDR renderer when the window crosses onto a
       // screen with a different HDR state, and the swap stalls the pipeline
       // for a moment. That is not a network stall worth holding the group.
-      if (VideoMiniPlayerController.instance.hdrBackend?.nativeRendererCycling
-              .value ??
-          false) {
+      final backend = _playbackManager.backend;
+      if (backend is MediaKitPlayerBackend &&
+          backend.nativeRendererCycling.value) {
         _armBufferingSuppression();
       }
       final nowMs = DateTime.now().millisecondsSinceEpoch;
