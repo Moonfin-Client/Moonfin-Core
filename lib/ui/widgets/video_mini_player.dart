@@ -208,10 +208,14 @@ class _VideoMiniPlayerBarState extends State<_VideoMiniPlayerBar> {
   final _subs = <StreamSubscription>[];
   final _barKey = GlobalKey();
 
-  /// While a picker opened from here is up. Its barrier covers the
-  /// navigator, not this bar, so the bar stops taking clicks itself instead
-  /// of stacking a second dialog on every press.
+  /// While a picker's dialog opened from here is on screen. Its barrier covers
+  /// the navigator, not this bar, so the bar stops taking clicks itself
+  /// instead of stacking a second dialog on every press.
   bool _pickerOpen = false;
+
+  /// Between a press and the picker's first dialog, while its tracks load.
+  bool _pickerLoading = false;
+
   final _screensaver = GetIt.instance<ScreensaverController>();
 
   static const _trickplayFrameWidth = 320;
@@ -359,21 +363,27 @@ class _VideoMiniPlayerBarState extends State<_VideoMiniPlayerBar> {
   }
 
   Future<void> _pickTrack({required bool audio}) async {
-    if (_pickerOpen) return;
+    if (_pickerOpen || _pickerLoading) return;
     // The bar sits outside the app's navigator, so the dialog opens on it.
     final navigatorContext =
         appRouter.routerDelegate.navigatorKey.currentContext;
     if (navigatorContext == null) return;
-    setState(() => _pickerOpen = true);
+    _pickerLoading = true;
     try {
       await TrackPicker.show(
         navigatorContext,
         manager: _manager,
         audio: audio,
         clientFor: _clientFor,
+        // A subtitle search and download run after the dialog closes, and the
+        // bar has to stay usable through them.
+        onDialogOpenChanged: (open) {
+          _pickerLoading = false;
+          if (mounted) setState(() => _pickerOpen = open);
+        },
       );
     } finally {
-      if (mounted) setState(() => _pickerOpen = false);
+      _pickerLoading = false;
     }
   }
 
