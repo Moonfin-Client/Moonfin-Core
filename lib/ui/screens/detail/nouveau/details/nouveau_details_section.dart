@@ -142,20 +142,21 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
     return _readingContentKey;
   }
 
-  GlobalKey? get bottomRevealKey {
+  bool get _hasTechnicalDetails {
     final targetItem = _getRelevantEpisode(widget.item) ?? widget.item;
 
     final isPlayable =
-        targetItem.type != 'Series' &&
-        targetItem.type != 'Season' &&
-        targetItem.type != 'Person';
+    targetItem.type != 'Series' &&
+    targetItem.type != 'Season' &&
+    targetItem.type != 'Person';
 
-    final hasTechnicalDetails =
-        isPlayable && (_mediaSourceFor(targetItem) != null || targetItem.type == 'Book');
+    return isPlayable && (_mediaSourceFor(targetItem) != null || targetItem.type == 'Book');
+  }
 
+  GlobalKey? get bottomRevealKey {
     final hasStats = _seerrPieces.stats;
 
-    if (hasStats || hasTechnicalDetails) {
+    if (hasStats || _hasTechnicalDetails) {
       return _readingContentKey;
     }
 
@@ -232,19 +233,9 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
   }
 
   bool focusBottom() {
-    final targetItem = _getRelevantEpisode(widget.item) ?? widget.item;
-
-    final isPlayable =
-        targetItem.type != 'Series' &&
-        targetItem.type != 'Season' &&
-        targetItem.type != 'Person';
-
-    final hasTechnicalDetails =
-        isPlayable && (_mediaSourceFor(targetItem) != null || targetItem == 'Book');
-
     final hasStats = _seerrPieces.stats;
 
-    if ((hasStats || hasTechnicalDetails) && _canFocus(_readingFocusNode)) {
+    if ((hasStats || _hasTechnicalDetails) && _canFocus(_readingFocusNode)) {
       _readingFocusNode.requestFocus();
 
       return true;
