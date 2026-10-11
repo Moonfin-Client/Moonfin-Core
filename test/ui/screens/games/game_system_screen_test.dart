@@ -404,4 +404,145 @@ void main() {
       );
     }
   });
+
+  // A 1080p Android TV is 960x540 logical, where the grid shows only about
+  // one and a half rows of posters; the others fit more rows.
+  for (final (physical, ratio) in const [
+    (Size(1920, 1080), 2.0),
+    (Size(1280, 720), 1.0),
+    (Size(1920, 1080), 1.0),
+  ]) {
+    testWidgets('FF/RW page by the full rows on screen at '
+        '${physical.width ~/ ratio}x${physical.height ~/ ratio}', (
+      tester,
+    ) async {
+      final games = [
+        for (var i = 0; i < 600; i++)
+          GameSummary(
+            id: 'game-$i',
+            title: 'Game ${i.toString().padLeft(3, '0')}',
+            system: 'sms',
+            core: 'genesis_plus_gx',
+            fileName: 'Game$i.sms',
+          ),
+      ];
+      when(() => gamesApi.getGames(any(), system: any(named: 'system')))
+          .thenAnswer((_) async => games);
+      when(() => gamesApi.getGame(any(), any())).thenAnswer((_) async => null);
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+      addTearDown(
+        () => PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic),
+      );
+      tester.view.physicalSize = physical;
+      tester.view.devicePixelRatio = ratio;
+      addTearDown(tester.view.reset);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const GameSystemScreen(libraryId: 'retro', systemId: 'sms'),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final cards = find.byType(GamePosterCard);
+      int indexOf(GamePosterCard card) => int.parse(card.seed.split('-').last);
+      final columns = tester
+          .widgetList<GamePosterCard>(cards)
+          .where(
+            (card) =>
+                tester.getRect(find.byWidget(card)).top ==
+                tester.getRect(cards.first).top,
+          )
+          .length;
+      final viewport = tester.getRect(find.byType(GridView));
+
+      // Every built row with its on-screen rect, keyed by row index.
+      Map<int, Rect> rowRects() => {
+        for (final card in tester.widgetList<GamePosterCard>(cards))
+          if (indexOf(card) % columns == 0)
+            indexOf(card) ~/ columns: tester.getRect(find.byWidget(card)),
+      };
+      int firstVisibleRow() => (rowRects().entries.toList()
+            ..sort((a, b) => a.key.compareTo(b.key)))
+          .firstWhere((e) => e.value.top >= viewport.top - 0.5)
+          .key;
+      int firstCutOffRow() {
+        final rows = rowRects().entries.toList()
+          ..sort((a, b) => a.key.compareTo(b.key));
+        // When the rows on screen end exactly at the bottom edge, the next
+        // row may not be built at all.
+        return rows
+            .firstWhere(
+              (e) => e.value.bottom > viewport.bottom + 0.5,
+              orElse: () => MapEntry(rows.last.key + 1, Rect.zero),
+            )
+            .key;
+      }
+      int focusedIndex() => indexOf(
+        tester
+            .widgetList<GamePosterCard>(cards)
+            .singleWhere((card) => card.focusNode?.hasFocus ?? false),
+      );
+
+      // Start one column in, so the test also proves the column is kept.
+      tester.widget<GamePosterCard>(cards.at(1)).focusNode!.requestFocus();
+      await tester.pumpAndSettle();
+
+      for (var page = 0; page < 3; page++) {
+        final top = firstVisibleRow();
+        final cutOff = firstCutOffRow();
+        final pageRows = cutOff - top < 1 ? 1 : cutOff - top;
+        final from = focusedIndex();
+
+        await tester.sendKeyEvent(LogicalKeyboardKey.mediaFastForward);
+        await tester.pumpAndSettle();
+
+        expect(
+          firstVisibleRow(),
+          cutOff,
+          reason: 'FF scrolls the row cut off at the bottom to the top',
+        );
+        expect(focusedIndex(), from + pageRows * columns);
+        final focused = tester.getRect(
+          find.byWidget(
+            tester
+                .widgetList<GamePosterCard>(cards)
+                .singleWhere((card) => card.focusNode?.hasFocus ?? false),
+          ),
+        );
+        expect(
+          focused.top >= viewport.top && focused.bottom <= viewport.bottom,
+          isTrue,
+          reason: 'the focused card $focused stays on screen $viewport',
+        );
+
+        await tester.sendKeyEvent(LogicalKeyboardKey.mediaRewind);
+        await tester.pumpAndSettle();
+        expect(firstVisibleRow(), top, reason: 'RW pages straight back');
+        expect(focusedIndex(), from);
+
+        await tester.sendKeyEvent(LogicalKeyboardKey.mediaFastForward);
+        await tester.pumpAndSettle();
+      }
+
+      for (var press = 0; press < 150; press++) {
+        await tester.sendKeyEvent(LogicalKeyboardKey.mediaRewind);
+        await tester.pumpAndSettle();
+      }
+      expect(focusedIndex(), 1, reason: 'RW stops at the first row');
+
+      for (var press = 0; press < 150; press++) {
+        await tester.sendKeyEvent(LogicalKeyboardKey.mediaFastForward);
+        await tester.pumpAndSettle();
+      }
+      final lastRowStart = (games.length - 1) ~/ columns * columns;
+      expect(
+        focusedIndex(),
+        (lastRowStart + 1).clamp(0, games.length - 1),
+        reason: 'FF stops on the last row, in the same column when it exists',
+      );
+    });
+  }
 }
