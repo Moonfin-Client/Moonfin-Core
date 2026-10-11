@@ -56,8 +56,7 @@ class NouveauDetailsSection extends StatefulWidget {
   });
 
   @override
-  State<NouveauDetailsSection> createState() =>
-      NouveauDetailsSectionState();
+  State<NouveauDetailsSection> createState() => NouveauDetailsSectionState();
 }
 
 class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
@@ -146,11 +145,12 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
     final targetItem = _getRelevantEpisode(widget.item) ?? widget.item;
 
     final isPlayable =
-    targetItem.type != 'Series' &&
-    targetItem.type != 'Season' &&
-    targetItem.type != 'Person';
+        targetItem.type != 'Series' &&
+        targetItem.type != 'Season' &&
+        targetItem.type != 'Person';
 
-    return isPlayable && (_mediaSourceFor(targetItem) != null || targetItem.type == 'Book');
+    return isPlayable &&
+        (_mediaSourceFor(targetItem) != null || targetItem.type == 'Book');
   }
 
   GlobalKey? get bottomRevealKey {
@@ -1219,18 +1219,20 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
         activeAudioIndex: activeAudioIndex,
       );
     } else if (item.type == 'Book') {
-      final String path = <Object?>[
-        item.rawData['Path'],
-        item.rawData['FileName'],
-        item.rawData['FilePath'],
-        item.rawData['Name'],
-        item.name,
-      ].whereType<String>().firstWhere(
-        (value) => value.trim().isNotEmpty,
-        orElse: () => '',
-      );
+      final String path =
+          <Object?>[
+            item.rawData['Path'],
+            item.rawData['FileName'],
+            item.rawData['FilePath'],
+            item.rawData['Name'],
+            item.name,
+          ].whereType<String>().firstWhere(
+            (value) => value.trim().isNotEmpty,
+            orElse: () => '',
+          );
       fileName = path.split('/').last.split('\\').last;
-      container = BookReaderService.detectExtension(item)?.toUpperCase() ?? 'Unknown';
+      container =
+          BookReaderService.detectExtension(item)?.toUpperCase() ?? 'Unknown';
     }
 
     final baseBackground = theme.scaffoldBackgroundColor.withValues(alpha: 1.0);
@@ -2132,9 +2134,8 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
   Widget _emptyValue(BuildContext context) {
     return Text(
       '—',
-      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-        color: AppColorScheme.onSurface.withValues(alpha: 0.28),
-      ),
+      style: Theme.of(context).textTheme.bodySmall
+          ?.copyWith(color: AppColorScheme.onSurface.withValues(alpha: 0.28)),
     );
   }
 
@@ -2151,5 +2152,4 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
       ),
     );
   }
-
 }
