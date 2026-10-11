@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:moonfin/ui/navigation/app_router.dart';
 import 'package:moonfin/ui/widgets/video_mini_player.dart';
+import 'package:moonfin/util/platform_detection.dart';
 import 'package:playback_core/playback_core.dart';
 
 class _TestBackend extends Fake implements PlayerBackend {
@@ -45,12 +46,16 @@ void main() {
   late PlaybackManager manager;
 
   setUpAll(() {
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.desktop);
     backend = _TestBackend();
     manager = PlaybackManager()..setBackend(backend);
     GetIt.instance.registerSingleton<PlaybackManager>(manager);
   });
 
-  tearDownAll(() => GetIt.instance.reset());
+  tearDownAll(() {
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic);
+    GetIt.instance.reset();
+  });
 
   setUp(() {
     backend.pauseCalls = 0;

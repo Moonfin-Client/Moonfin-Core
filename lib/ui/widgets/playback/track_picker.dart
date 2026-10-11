@@ -57,6 +57,8 @@ abstract final class TrackPicker {
   /// [runMutation] wraps each track change (the full player uses it to keep
   /// one change in flight and hold back navigation meanwhile), and
   /// [onSubtitlesChanged] runs after a subtitle change lands.
+  /// [onDialogOpenChanged] reports each dialog opening and closing, for an
+  /// opener outside the navigator that the dialog's barrier doesn't cover.
   static Future<void> show(
     BuildContext context, {
     required PlaybackManager manager,
@@ -65,6 +67,7 @@ abstract final class TrackPicker {
     bool useRootNavigator = true,
     PlayerMutation? runMutation,
     VoidCallback? onSubtitlesChanged,
+    ValueChanged<bool>? onDialogOpenChanged,
   }) async {
     final l10n = AppLocalizations.of(context);
     final item = manager.queueService.currentItem;
@@ -86,29 +89,32 @@ abstract final class TrackPicker {
 
     final backend = manager.backend;
     final delayLimits = delayLimitsFor(backend, audio: audio);
-    final result = await TrackSelectorDialog.show(
-      context,
-      title: audio ? l10n.audioTrack : l10n.subtitleTrack,
-      options: options,
-      selectedIndex: choices.selectedIndex,
-      useRootNavigator: useRootNavigator,
-      footer: delayLimits == null
-          ? null
-          : DelayFooter(
-              initialDelay: audio
-                  ? audioDelay
-                  : backend is Media3PlayerBackend
-                  ? backend.subtitleDelaySeconds
-                  : subtitleDelay,
-              label: audio ? l10n.audioDelay : l10n.subtitleDelay,
-              minDelay: delayLimits.$1,
-              maxDelay: delayLimits.$2,
-              onDelayChanged: (d) =>
-                  _applyDelay(manager, audio: audio, delay: d),
-              formatDelay: (seconds) => seconds == 0
-                  ? l10n.none
-                  : '${seconds >= 0 ? '+' : ''}${(seconds * 1000).round()} ms',
-            ),
+    final result = await _whileOpen(
+      onDialogOpenChanged,
+      () => TrackSelectorDialog.show(
+        context,
+        title: audio ? l10n.audioTrack : l10n.subtitleTrack,
+        options: options,
+        selectedIndex: choices.selectedIndex,
+        useRootNavigator: useRootNavigator,
+        footer: delayLimits == null
+            ? null
+            : DelayFooter(
+                initialDelay: audio
+                    ? audioDelay
+                    : backend is Media3PlayerBackend
+                    ? backend.subtitleDelaySeconds
+                    : subtitleDelay,
+                label: audio ? l10n.audioDelay : l10n.subtitleDelay,
+                minDelay: delayLimits.$1,
+                maxDelay: delayLimits.$2,
+                onDelayChanged: (d) =>
+                    _applyDelay(manager, audio: audio, delay: d),
+                formatDelay: (seconds) => seconds == 0
+                    ? l10n.none
+                    : '${seconds >= 0 ? '+' : ''}${(seconds * 1000).round()} ms',
+              ),
+      ),
     );
     if (result == null || !context.mounted) return;
     final streamIndex = choices.streamIndexFor(result);
@@ -130,6 +136,7 @@ abstract final class TrackPicker {
               .toList(),
           mutate: mutate,
           onSubtitlesChanged: onSubtitlesChanged,
+          onDialogOpenChanged: onDialogOpenChanged,
         );
         return;
       }
@@ -156,6 +163,18 @@ abstract final class TrackPicker {
     return true;
   }
 
+  static Future<int?> _whileOpen(
+    ValueChanged<bool>? onOpenChanged,
+    Future<int?> Function() open,
+  ) async {
+    onOpenChanged?.call(true);
+    try {
+      return await open();
+    } finally {
+      onOpenChanged?.call(false);
+    }
+  }
+
   static void _applyDelay(
     PlaybackManager manager, {
     required bool audio,
@@ -179,6 +198,7 @@ abstract final class TrackPicker {
     required List<Map<String, dynamic>> audioStreams,
     required PlayerMutation mutate,
     VoidCallback? onSubtitlesChanged,
+    ValueChanged<bool>? onDialogOpenChanged,
   }) async {
     final messenger = ScaffoldMessenger.of(context);
     final l10n = AppLocalizations.of(context);
@@ -212,22 +232,25 @@ abstract final class TrackPicker {
       return;
     }
 
-    final result = await TrackSelectorDialog.show(
-      context,
-      title: l10n.downloadSubtitles,
-      options: results.map((subtitle) {
-        final label =
-            subtitle['Name'] as String? ??
-            subtitle['Author'] as String? ??
-            l10n.subtitles;
-        final subtitleText = remoteSubtitleDetails(subtitle, l10n);
-        return TrackOption(
-          label: label,
-          subtitle: subtitleText.isNotEmpty ? subtitleText : null,
-          subtitleMaxLines: 2,
-          badges: remoteSubtitleFlags(subtitle, l10n),
-        );
-      }).toList(),
+    final result = await _whileOpen(
+      onDialogOpenChanged,
+      () => TrackSelectorDialog.show(
+        context,
+        title: l10n.downloadSubtitles,
+        options: results.map((subtitle) {
+          final label =
+              subtitle['Name'] as String? ??
+              subtitle['Author'] as String? ??
+              l10n.subtitles;
+          final subtitleText = remoteSubtitleDetails(subtitle, l10n);
+          return TrackOption(
+            label: label,
+            subtitle: subtitleText.isNotEmpty ? subtitleText : null,
+            subtitleMaxLines: 2,
+            badges: remoteSubtitleFlags(subtitle, l10n),
+          );
+        }).toList(),
+      ),
     );
 
     if (!context.mounted || result == null || result >= results.length) {

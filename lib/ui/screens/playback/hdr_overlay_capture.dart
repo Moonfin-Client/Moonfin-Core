@@ -248,6 +248,8 @@ class _HdrVideoGeometryState extends State<HdrVideoGeometry> {
 
   bool? _lastShown;
 
+  bool _following = false;
+
   void _report() {
     if (!widget.showVideo) {
       if (_lastShown != false) {
@@ -283,14 +285,27 @@ class _HdrVideoGeometryState extends State<HdrVideoGeometry> {
   @override
   void initState() {
     super.initState();
-    if (widget.followsPosition) {
-      WidgetsBinding.instance.addPostFrameCallback(_follow);
-    }
+    if (widget.followsPosition) _startFollowing();
+  }
+
+  @override
+  void didUpdateWidget(HdrVideoGeometry oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.followsPosition) _startFollowing();
+  }
+
+  void _startFollowing() {
+    if (_following) return;
+    _following = true;
+    WidgetsBinding.instance.addPostFrameCallback(_follow);
   }
 
   // Rides frames that happen anyway, so it never schedules one of its own.
   void _follow(Duration _) {
-    if (!mounted) return;
+    if (!mounted || !widget.followsPosition) {
+      _following = false;
+      return;
+    }
     _report();
     WidgetsBinding.instance.addPostFrameCallback(_follow);
   }
