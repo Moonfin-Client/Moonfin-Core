@@ -105,11 +105,11 @@ void main() {
 
     final overlayContainer = containers.firstWhere(
       (c) =>
-          c.decoration is BoxDecoration &&
-          (c.decoration as BoxDecoration).border != null,
+          c.foregroundDecoration is BoxDecoration &&
+          (c.foregroundDecoration as BoxDecoration).border != null,
     );
 
-    final boxDecoration = overlayContainer.decoration as BoxDecoration;
+    final boxDecoration = overlayContainer.foregroundDecoration as BoxDecoration;
     expect(boxDecoration.borderRadius, BorderRadius.circular(28));
     expect(boxDecoration.border, isNotNull);
   });
@@ -145,11 +145,11 @@ void main() {
 
       final overlayContainer = positionedContainers.firstWhere(
         (c) =>
-            c.decoration is BoxDecoration &&
-            (c.decoration as BoxDecoration).border != null,
+            c.foregroundDecoration is BoxDecoration &&
+            (c.foregroundDecoration as BoxDecoration).border != null,
       );
 
-      final boxDecoration = overlayContainer.decoration as BoxDecoration;
+      final boxDecoration = overlayContainer.foregroundDecoration as BoxDecoration;
       expect(
         boxDecoration.borderRadius,
         BorderRadius.zero,
