@@ -51,6 +51,7 @@ import 'nouveau/nouveau_detail_content.dart';
 import 'nouveau/hero/nouveau_action_buttons.dart';
 import 'modern/modern_detail_content.dart';
 import 'spotlight/spotlight_detail_content.dart';
+import 'playlist_sort_filter_bar.dart';
 import '../../widgets/skeleton/skeleton_detail_screen.dart';
 import '../../widgets/skeleton/skeleton_shimmer.dart';
 import '../../../data/repositories/seerr_repository.dart';
@@ -955,6 +956,18 @@ class _DetailContentState extends State<_DetailContent> {
   final FocusNode _seriesNextUpFocusNode = FocusNode(
     debugLabel: 'detailSeriesNextUp',
   );
+  LibrarySortBy _playlistSortBy = LibrarySortBy.playlistOrder;
+  SortDirection _playlistSortDirection = SortDirection.ascending;
+  PlayedStatusFilter _playlistPlayedFilter = PlayedStatusFilter.all;
+  bool _playlistFavoriteFilter = false;
+  String? _playlistMediaTypeFilter;
+  int? _playlistRandomSeed;
+  final FocusNode _playlistSortFocusNode = FocusNode(
+    debugLabel: 'playlistSortPill',
+  );
+  final FocusNode _playlistFilterFocusNode = FocusNode(
+    debugLabel: 'playlistFilterPill',
+  );
   String? _tvAlbumPlayFocusAppliedForItemId;
   List<SeerrDiscoverItem>? _seerrAppearances;
   List<SeerrDiscoverItem>? _seerrCrewCredits;
@@ -1318,6 +1331,12 @@ class _DetailContentState extends State<_DetailContent> {
       _sectionScrollControllers.clear();
       _pendingSectionFocusRetries.clear();
       _loadSeerrAppearances();
+      _playlistSortBy = LibrarySortBy.playlistOrder;
+      _playlistSortDirection = SortDirection.ascending;
+      _playlistPlayedFilter = PlayedStatusFilter.all;
+      _playlistFavoriteFilter = false;
+      _playlistMediaTypeFilter = null;
+      _playlistRandomSeed = null;
     }
   }
 
@@ -1363,6 +1382,8 @@ class _DetailContentState extends State<_DetailContent> {
     _firstChapterFocusNode.dispose();
     _firstFeatureFocusNode.dispose();
     _albumPlayFocusNode.dispose();
+    _playlistSortFocusNode.dispose();
+    _playlistFilterFocusNode.dispose();
     for (final node in _trackFocusNodes.values) {
       node.dispose();
     }
@@ -3138,6 +3159,33 @@ class _DetailContentState extends State<_DetailContent> {
     final canDeleteDownloaded =
         !PlatformDetection.isTV &&
         (item.type == 'MusicAlbum' || item.type == 'AudioBook');
+    final availableMediaTypes = isPlaylist
+        ? viewModel.tracks
+            .map((t) => t.type)
+            .whereType<String>()
+            .toSet()
+            .toList()
+        : const <String>[];
+
+    final displayedTracks = isPlaylist
+        ? sortAndFilterPlaylistTracks(
+            tracks: viewModel.tracks,
+            sortBy: _playlistSortBy,
+            sortDirection: _playlistSortDirection,
+            playedFilter: _playlistPlayedFilter,
+            favoriteOnly: _playlistFavoriteFilter,
+            mediaTypeFilter: _playlistMediaTypeFilter,
+            randomSeed: _playlistRandomSeed,
+          )
+        : viewModel.tracks;
+
+    final isDefaultPlaylistOrder =
+        _playlistSortBy == LibrarySortBy.playlistOrder &&
+        _playlistSortDirection == SortDirection.ascending &&
+        _playlistPlayedFilter == PlayedStatusFilter.all &&
+        !_playlistFavoriteFilter &&
+        (_playlistMediaTypeFilter == null || _playlistMediaTypeFilter == 'all');
+
     return [
       _AlbumHeader(
         item: item,
@@ -3150,15 +3198,21 @@ class _DetailContentState extends State<_DetailContent> {
       const SizedBox(height: 16),
       _AlbumActions(
         item: item,
-        tracks: viewModel.tracks,
+        tracks: displayedTracks,
         playFocusNode: widget.initialFocusNode ?? _albumPlayFocusNode,
         // Do not steal focus onto the media page when a settings panel is open
         // over the details and rebuilds it (detail style or theme change).
         autofocusPlay:
             PlatformDetection.isTV && !SettingsPanel.isOpenNotifier.value,
         onPlayDown: () {
-          if (viewModel.tracks.isNotEmpty) {
-            final node = _getTrackFocusNode(viewModel.tracks.first.id);
+          if (isPlaylist) {
+            if (_playlistSortFocusNode.canRequestFocus) {
+              _playlistSortFocusNode.requestFocus();
+              return;
+            }
+          }
+          if (displayedTracks.isNotEmpty) {
+            final node = _getTrackFocusNode(displayedTracks.first.id);
             if (node.canRequestFocus) {
               node.requestFocus();
             }
@@ -3169,7 +3223,7 @@ class _DetailContentState extends State<_DetailContent> {
             ? () => _downloadTrackList(
                 context,
                 item.name,
-                viewModel.tracks,
+                displayedTracks,
                 itemLabel: isAudiobook ? 'chapters' : 'tracks',
               )
             : null,
@@ -3187,61 +3241,162 @@ class _DetailContentState extends State<_DetailContent> {
               ? l10n.playlist
               : (isAudiobook ? l10n.tableOfContents : l10n.tracklist),
         ),
-        const SizedBox(height: 12),
-        DetailTrackList(
-          tracks: viewModel.tracks,
-          getFocusNode: _getTrackFocusNode,
-          onFirstTrackUp: () {
-            final targetNode = widget.initialFocusNode ?? _albumPlayFocusNode;
-            if (!targetNode.canRequestFocus) return;
-            targetNode.requestFocus();
-          },
-          onTrackFocused: onBackdropItemFocused,
-          isAudiobook: isAudiobook,
-          groupByDisc: item.type == 'MusicAlbum',
-          reorderable: canManagePlaylistTracks,
-          isPlaylist: isPlaylist,
-          imageApi: viewModel.imageApi,
-          onPlayTrack: (index) {
-            final manager = GetIt.instance<PlaybackManager>();
-            unawaited(() async {
-              final isAudio = viewModel.tracks.every(_isAudioItem);
-              await launchPlayerWhilePreparing(
-                context,
-                manager: manager,
-                destination: isAudio
-                    ? Destinations.audioPlayer
-                    : Destinations.videoPlayer,
-                startPlayback: (launchSession) async {
-                  await runPlaybackStart(
-                    launchSession,
-                    () =>
-                        manager.playItems(viewModel.tracks, startIndex: index),
-                  );
-                  return true;
-                },
-              );
-            }());
-          },
-          onReorder: canManagePlaylistTracks
-              ? (oldIndex, newIndex) {
-                  var target = newIndex;
-                  if (target > oldIndex) {
-                    target -= 1;
-                  }
-                  viewModel.reorderPlaylistTrack(oldIndex, target);
+        if (isPlaylist) ...[
+          const SizedBox(height: 10),
+          PlaylistSortFilterBar(
+            sortBy: _playlistSortBy,
+            sortDirection: _playlistSortDirection,
+            onSortChanged: (pair) {
+              setState(() {
+                _playlistSortBy = pair.$1;
+                _playlistSortDirection = pair.$2;
+                if (pair.$1 == LibrarySortBy.random) {
+                  _playlistRandomSeed = DateTime.now().millisecondsSinceEpoch;
                 }
-              : null,
-          onRemoveFromPlaylist: canManagePlaylistTracks
-              ? (track) => viewModel.removeTrackFromPlaylist(track)
-              : null,
-          onMoveUp: canManagePlaylistTracks
-              ? (index) => viewModel.reorderPlaylistTrack(index, index - 1)
-              : null,
-          onMoveDown: canManagePlaylistTracks
-              ? (index) => viewModel.reorderPlaylistTrack(index, index + 1)
-              : null,
-        ),
+              });
+            },
+            playedFilter: _playlistPlayedFilter,
+            favoriteOnly: _playlistFavoriteFilter,
+            mediaTypeFilter: _playlistMediaTypeFilter,
+            availableMediaTypes: availableMediaTypes,
+            onFilterChanged: (played, fav, mediaType) {
+              setState(() {
+                _playlistPlayedFilter = played;
+                _playlistFavoriteFilter = fav;
+                _playlistMediaTypeFilter = mediaType;
+              });
+            },
+            onReset: () {
+              setState(() {
+                _playlistSortBy = LibrarySortBy.playlistOrder;
+                _playlistSortDirection = SortDirection.ascending;
+                _playlistPlayedFilter = PlayedStatusFilter.all;
+                _playlistFavoriteFilter = false;
+                _playlistMediaTypeFilter = null;
+                _playlistRandomSeed = null;
+              });
+            },
+            totalCount: viewModel.tracks.length,
+            filteredCount: displayedTracks.length,
+            sortFocusNode: _playlistSortFocusNode,
+            filterFocusNode: _playlistFilterFocusNode,
+            onSortArrowUp: () {
+              final targetNode = widget.initialFocusNode ?? _albumPlayFocusNode;
+              if (targetNode.canRequestFocus) targetNode.requestFocus();
+            },
+            onSortArrowDown: () {
+              if (displayedTracks.isNotEmpty) {
+                final node = _getTrackFocusNode(displayedTracks.first.id);
+                if (node.canRequestFocus) node.requestFocus();
+              }
+            },
+            onFilterArrowUp: () {
+              final targetNode = widget.initialFocusNode ?? _albumPlayFocusNode;
+              if (targetNode.canRequestFocus) targetNode.requestFocus();
+            },
+            onFilterArrowDown: () {
+              if (displayedTracks.isNotEmpty) {
+                final node = _getTrackFocusNode(displayedTracks.first.id);
+                if (node.canRequestFocus) node.requestFocus();
+              }
+            },
+          ),
+        ],
+        if (displayedTracks.isEmpty) ...[
+          const SizedBox(height: 24),
+          Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.filter_list_off_rounded,
+                  size: 40,
+                  color: Colors.white38,
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'No tracks match the active filters',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Colors.white54,
+                      ),
+                ),
+                const SizedBox(height: 12),
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      _playlistPlayedFilter = PlayedStatusFilter.all;
+                      _playlistFavoriteFilter = false;
+                      _playlistMediaTypeFilter = null;
+                    });
+                  },
+                  child: Text(l10n.clearFilters),
+                ),
+              ],
+            ),
+          ),
+        ] else ...[
+          const SizedBox(height: 12),
+          DetailTrackList(
+            tracks: displayedTracks,
+            getFocusNode: _getTrackFocusNode,
+            onFirstTrackUp: () {
+              if (isPlaylist) {
+                if (_playlistSortFocusNode.canRequestFocus) {
+                  _playlistSortFocusNode.requestFocus();
+                  return;
+                }
+              }
+              final targetNode = widget.initialFocusNode ?? _albumPlayFocusNode;
+              if (!targetNode.canRequestFocus) return;
+              targetNode.requestFocus();
+            },
+            onTrackFocused: onBackdropItemFocused,
+            isAudiobook: isAudiobook,
+            groupByDisc: item.type == 'MusicAlbum',
+            reorderable: canManagePlaylistTracks && isDefaultPlaylistOrder,
+            isPlaylist: isPlaylist,
+            imageApi: viewModel.imageApi,
+            onPlayTrack: (index) {
+              final manager = GetIt.instance<PlaybackManager>();
+              unawaited(() async {
+                final isAudio = displayedTracks.every(_isAudioItem);
+                await launchPlayerWhilePreparing(
+                  context,
+                  manager: manager,
+                  destination: isAudio
+                      ? Destinations.audioPlayer
+                      : Destinations.videoPlayer,
+                  startPlayback: (launchSession) async {
+                    await runPlaybackStart(
+                      launchSession,
+                      () =>
+                          manager.playItems(displayedTracks, startIndex: index),
+                    );
+                    return true;
+                  },
+                );
+              }());
+            },
+            onReorder: canManagePlaylistTracks && isDefaultPlaylistOrder
+                ? (oldIndex, newIndex) {
+                    var target = newIndex;
+                    if (target > oldIndex) {
+                      target -= 1;
+                    }
+                    viewModel.reorderPlaylistTrack(oldIndex, target);
+                  }
+                : null,
+            onRemoveFromPlaylist: canManagePlaylistTracks
+                ? (track) => viewModel.removeTrackFromPlaylist(track)
+                : null,
+            onMoveUp: canManagePlaylistTracks && isDefaultPlaylistOrder
+                ? (index) => viewModel.reorderPlaylistTrack(index, index - 1)
+                : null,
+            onMoveDown: canManagePlaylistTracks && isDefaultPlaylistOrder
+                ? (index) => viewModel.reorderPlaylistTrack(index, index + 1)
+                : null,
+          ),
+        ],
         SizedBox(
           height: PlatformDetection.isTV
               ? MediaQuery.of(context).size.height * 0.2
