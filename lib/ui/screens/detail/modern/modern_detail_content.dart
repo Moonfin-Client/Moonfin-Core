@@ -246,6 +246,19 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       FocusNode(debugLabel: 'modernPlaylistFilter');
   final FocusNode _playlistClearFiltersFocusNode =
       FocusNode(debugLabel: 'modernPlaylistClearFilters');
+
+  List<AggregatedItem> get _displayedPlaylistTracks {
+    if (_vm.item?.type != 'Playlist') return _vm.tracks;
+    return sortAndFilterPlaylistTracks(
+      tracks: _vm.tracks,
+      sortBy: _playlistSortBy,
+      sortDirection: _playlistSortDirection,
+      playedFilter: _playlistPlayedFilter,
+      favoriteOnly: _playlistFavoriteFilter,
+      mediaTypeFilter: _playlistMediaTypeFilter,
+      randomSeed: _playlistRandomSeed,
+    );
+  }
   final FocusNode _moviesFirstFocusNode = FocusNode(debugLabel: 'moviesFirst');
   final FocusNode _seriesFirstFocusNode = FocusNode(debugLabel: 'seriesFirst');
   final FocusNode _otherFirstFocusNode = FocusNode(debugLabel: 'otherFirst');
@@ -3692,17 +3705,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
             .toList()
         : const <String>[];
 
-    final displayedTracks = isPlaylist
-        ? sortAndFilterPlaylistTracks(
-            tracks: _vm.tracks,
-            sortBy: _playlistSortBy,
-            sortDirection: _playlistSortDirection,
-            playedFilter: _playlistPlayedFilter,
-            favoriteOnly: _playlistFavoriteFilter,
-            mediaTypeFilter: _playlistMediaTypeFilter,
-            randomSeed: _playlistRandomSeed,
-          )
-        : _vm.tracks;
+    final displayedTracks = _displayedPlaylistTracks;
 
     final isDefaultPlaylistOrder =
         _playlistSortBy == LibrarySortBy.playlistOrder &&
@@ -3776,7 +3779,6 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
               ),
               const SizedBox(height: 12),
               Focus(
-                focusNode: _playlistClearFiltersFocusNode,
                 onKeyEvent: (node, event) {
                   if (event is KeyDownEvent) {
                     if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
@@ -3785,13 +3787,26 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                         return KeyEventResult.handled;
                       }
                     }
+                    if (isActivateKey(event)) {
+                      setState(() {
+                        _playlistPlayedFilter = PlayedStatusFilter.all;
+                        _playlistFavoriteFilter = false;
+                        _playlistMediaTypeFilter = null;
+                      });
+                      if (_playlistSortFocusNode.canRequestFocus) {
+                        _playlistSortFocusNode.requestFocus();
+                      }
+                      return KeyEventResult.handled;
+                    }
                   }
                   return KeyEventResult.ignored;
                 },
-                child: Builder(
-                  builder: (context) {
-                    final isFocused = Focus.of(context).hasFocus;
+                child: AnimatedBuilder(
+                  animation: _playlistClearFiltersFocusNode,
+                  builder: (context, _) {
+                    final isFocused = _playlistClearFiltersFocusNode.hasFocus;
                     return TextButton(
+                      focusNode: _playlistClearFiltersFocusNode,
                       style: TextButton.styleFrom(
                         side: isFocused
                             ? BorderSide(color: AppColorScheme.accent, width: 2)
@@ -4478,6 +4493,8 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
             child: DetailActionButtons(
               viewModel: _vm,
               itemId: item.id,
+              playlistTracksOverride:
+                  item.type == 'Playlist' ? _displayedPlaylistTracks : null,
               selectedMediaSourceId: widget.selectedMediaSourceId,
               onSelectedMediaSourceChanged: widget.onSelectedMediaSourceChanged,
               tvPlayFocusNode: widget.initialFocusNode,
@@ -4709,6 +4726,8 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           child: DetailActionButtons(
             viewModel: _vm,
             itemId: item.id,
+            playlistTracksOverride:
+                item.type == 'Playlist' ? _displayedPlaylistTracks : null,
             selectedMediaSourceId: widget.selectedMediaSourceId,
             onSelectedMediaSourceChanged: widget.onSelectedMediaSourceChanged,
             tvPlayFocusNode: widget.initialFocusNode,

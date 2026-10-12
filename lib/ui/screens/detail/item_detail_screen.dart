@@ -3343,7 +3343,6 @@ class _DetailContentState extends State<_DetailContent> {
                 ),
                 const SizedBox(height: 12),
                 Focus(
-                  focusNode: _playlistClearFiltersFocusNode,
                   onKeyEvent: (node, event) {
                     if (event is KeyDownEvent) {
                       if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
@@ -3352,13 +3351,26 @@ class _DetailContentState extends State<_DetailContent> {
                           return KeyEventResult.handled;
                         }
                       }
+                      if (isActivateKey(event)) {
+                        setState(() {
+                          _playlistPlayedFilter = PlayedStatusFilter.all;
+                          _playlistFavoriteFilter = false;
+                          _playlistMediaTypeFilter = null;
+                        });
+                        if (_playlistSortFocusNode.canRequestFocus) {
+                          _playlistSortFocusNode.requestFocus();
+                        }
+                        return KeyEventResult.handled;
+                      }
                     }
                     return KeyEventResult.ignored;
                   },
-                  child: Builder(
-                    builder: (context) {
-                      final isFocused = Focus.of(context).hasFocus;
+                  child: AnimatedBuilder(
+                    animation: _playlistClearFiltersFocusNode,
+                    builder: (context, _) {
+                      final isFocused = _playlistClearFiltersFocusNode.hasFocus;
                       return TextButton(
+                        focusNode: _playlistClearFiltersFocusNode,
                         style: TextButton.styleFrom(
                           side: isFocused
                               ? BorderSide(color: AppColorScheme.accent, width: 2)
@@ -4648,6 +4660,10 @@ class DetailActionButtons extends StatefulWidget {
   final bool? actionsExpanded;
   final ValueChanged<bool>? onActionsExpandedChanged;
 
+  /// When set, overrides the tracks played by the primary Play action and
+  /// shuffle action for playlist items (e.g. honoring active sorting or filtering).
+  final List<AggregatedItem>? playlistTracksOverride;
+
   const DetailActionButtons({
     super.key,
     required this.viewModel,
@@ -4671,6 +4687,7 @@ class DetailActionButtons extends StatefulWidget {
     this.onFocusExtra,
     this.actionsExpanded,
     this.onActionsExpandedChanged,
+    this.playlistTracksOverride,
   });
 
   @override
@@ -8471,7 +8488,9 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         return true;
       case 'MusicAlbum':
       case 'Playlist':
-        if (viewModel.tracks.isNotEmpty) return viewModel.tracks.length > 1;
+        final playlistTracks =
+            widget.playlistTracksOverride ?? viewModel.tracks;
+        if (playlistTracks.isNotEmpty) return playlistTracks.length > 1;
         final childCount =
             item.rawData['ChildCount'] ??
             item.rawData['SongCount'] ??
@@ -8678,6 +8697,9 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         );
         return _mapRawItemsForServer(data['Items'], item.serverId);
       case 'Playlist':
+        if (widget.playlistTracksOverride != null) {
+          return widget.playlistTracksOverride!;
+        }
         if (viewModel.tracks.isNotEmpty) {
           return viewModel.tracks;
         }
@@ -9443,8 +9465,8 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
             break;
 
           case 'Playlist':
-            var tracks = viewModel.tracks;
-            if (tracks.isEmpty) {
+            var tracks = widget.playlistTracksOverride ?? viewModel.tracks;
+            if (tracks.isEmpty && widget.playlistTracksOverride == null) {
               final client = _clientForItem(item);
               final data = await client.itemsApi.getPlaylistItems(item.id);
               tracks = _mapRawItemsForServer(data['Items'], item.serverId);
