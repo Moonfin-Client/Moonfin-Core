@@ -142,6 +142,57 @@ void main() {
       // No MediaServerClient is registered, which is the offline path.
       expect(await service.fetchCustomRow(config), hasLength(1));
     });
+
+    test('partitions cache by language code', () async {
+      final itemEn = ImdbExternalListItem(
+        imdbId: 'tt0245429',
+        title: 'Spirited Away',
+        type: 'Movie',
+        backdropUrl: 'http://server/backdrop.jpg',
+      );
+      final itemFr = ImdbExternalListItem(
+        imdbId: 'tt0245429',
+        title: 'Le Voyage de Chihiro',
+        type: 'Movie',
+        backdropUrl: 'http://server/backdrop.jpg',
+      );
+
+      await service.saveCustomRowToCache(config, [itemEn], language: 'en');
+      await service.saveCustomRowToCache(config, [itemFr], language: 'fr');
+
+      final cachedEn = await service.loadCustomRowFromCache(config, language: 'en');
+      expect(cachedEn, hasLength(1));
+      expect(cachedEn.first.title, 'Spirited Away');
+
+      final cachedFr = await service.loadCustomRowFromCache(config, language: 'fr');
+      expect(cachedFr, hasLength(1));
+      expect(cachedFr.first.title, 'Le Voyage de Chihiro');
+
+      // Spanish has no cache saved yet; cache-first caller with maxAge gets empty list to trigger network fetch
+      final cachedEs = await service.loadCustomRowFromCache(
+        config,
+        maxAge: CustomExternalListsService.cacheMaxAge,
+        language: 'es',
+      );
+      expect(cachedEs, isEmpty);
+    });
+
+    test('falls back to legacy unpartitioned cache when offline', () async {
+      final legacyFile = File('${tempDir.path}/custom_chart_custom_row_cache_age.json');
+      final legacyItem = ImdbExternalListItem(
+        imdbId: 'tt_legacy',
+        tmdbId: '999',
+        title: 'Legacy Film',
+        type: 'Movie',
+        backdropUrl: 'http://server/backdrop.jpg',
+      );
+      await legacyFile.writeAsString(jsonEncode([legacyItem.toJson()]));
+
+      // Querying without maxAge (offline fallback path) for a language that has no specific cache
+      final items = await service.loadCustomRowFromCache(config, language: 'de');
+      expect(items, hasLength(1));
+      expect(items.first.title, 'Legacy Film');
+    });
   });
 
   group('CustomExternalLists sorting logic', () {

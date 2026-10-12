@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:server_core/server_core.dart';
+import '../../l10n/current_app_localizations.dart';
 import '../../preference/home_section_config.dart';
 import '../../util/platform_detection.dart';
 
@@ -109,6 +110,7 @@ class CustomExternalListsService {
     HomeSectionConfig config, {
     bool forceRefresh = false,
     bool throwOnError = false,
+    String? language,
   }) async {
     final sectionId = config.pluginSection;
     if (sectionId == null || sectionId.isEmpty) return [];
@@ -134,17 +136,18 @@ class CustomExternalListsService {
         ? GetIt.instance<MediaServerClient>()
         : null;
     if (client == null) {
-      return loadCustomRowFromCache(config);
+      return loadCustomRowFromCache(config, language: language);
     }
 
     final baseUrl = client.baseUrl;
     final token = client.accessToken;
     if (token == null) {
-      return loadCustomRowFromCache(config);
+      return loadCustomRowFromCache(config, language: language);
     }
 
     final paramsJson = jsonEncode(params);
     final url = '$baseUrl/Moonfin/CustomRows/Items';
+    final lang = language ?? currentAppLocale().toLanguageTag();
 
     try {
       final response = await _dio.get(
@@ -153,6 +156,7 @@ class CustomExternalListsService {
           'source': source,
           'type': type,
           'params': paramsJson,
+          if (lang.isNotEmpty) 'language': lang,
           // The plugin bypasses and overwrites its canonical cache entry on
           // refresh=true, so all devices see the refreshed list.
           if (forceRefresh) 'refresh': 'true',
@@ -217,14 +221,14 @@ class CustomExternalListsService {
       }
 
       if (items.isNotEmpty) {
-        await saveCustomRowToCache(config, items);
+        await saveCustomRowToCache(config, items, language: lang);
       }
 
       return _applySorting(items, config);
     } catch (e) {
       if (throwOnError) rethrow;
       debugPrint('[CustomService] Fetch failed from server. Falling back to local cache: $e');
-      return loadCustomRowFromCache(config);
+      return loadCustomRowFromCache(config, language: lang);
     }
   }
 
@@ -232,17 +236,25 @@ class CustomExternalListsService {
 
   static const cacheMaxAge = Duration(hours: 24);
 
-  Future<File> cacheFile(HomeSectionConfig config) async {
+  Future<File> cacheFile(HomeSectionConfig config, [String? language]) async {
     final dir = PlatformDetection.isAppleTV
         ? await getApplicationCacheDirectory()
         : await getApplicationSupportDirectory();
     final sanitizedSection = config.pluginSection!.replaceAll(RegExp(r'[^a-zA-Z0-9]+'), '_');
-    return File('${dir.path}/custom_chart_$sanitizedSection.json');
+    final lang = (language ?? currentAppLocale().toLanguageTag())
+        .replaceAll(RegExp(r'[^a-zA-Z0-9]+'), '_')
+        .toLowerCase();
+    final langSuffix = lang.isNotEmpty ? '_$lang' : '';
+    return File('${dir.path}/custom_chart_$sanitizedSection$langSuffix.json');
   }
 
-  Future<void> saveCustomRowToCache(HomeSectionConfig config, List<ImdbExternalListItem> items) async {
+  Future<void> saveCustomRowToCache(
+    HomeSectionConfig config,
+    List<ImdbExternalListItem> items, {
+    String? language,
+  }) async {
     try {
-      final file = await cacheFile(config);
+      final file = await cacheFile(config, language);
       final jsonList = items.map((item) => item.toJson()).toList();
       await file.writeAsString(jsonEncode(jsonList), flush: true);
     } catch (e) {
@@ -256,9 +268,22 @@ class CustomExternalListsService {
   Future<List<ImdbExternalListItem>> loadCustomRowFromCache(
     HomeSectionConfig config, {
     Duration? maxAge,
+    String? language,
   }) async {
     try {
-      final file = await cacheFile(config);
+      var file = await cacheFile(config, language);
+      if (!file.existsSync() && maxAge == null) {
+        // Fallback for offline mode if localized cache does not exist yet:
+        // Try the legacy unpartitioned file.
+        final dir = PlatformDetection.isAppleTV
+            ? await getApplicationCacheDirectory()
+            : await getApplicationSupportDirectory();
+        final sanitizedSection = config.pluginSection!.replaceAll(RegExp(r'[^a-zA-Z0-9]+'), '_');
+        final legacyFile = File('${dir.path}/custom_chart_$sanitizedSection.json');
+        if (legacyFile.existsSync()) {
+          file = legacyFile;
+        }
+      }
       if (file.existsSync()) {
         try {
           final lastModified = file.lastModifiedSync();
