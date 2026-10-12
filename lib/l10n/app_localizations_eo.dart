@@ -4102,10 +4102,17 @@ class AppLocalizationsEo extends AppLocalizations {
   String get secondarySubtitleSlot => 'Secondary';
 
   @override
-  String get decreaseValue => 'Decrease';
+  String get secondarySubtitleTrack => 'Secondary Subtitle Track';
 
   @override
-  String get increaseValue => 'Increase';
+  String decreaseValue(String setting) {
+    return 'Decrease $setting';
+  }
+
+  @override
+  String increaseValue(String setting) {
+    return 'Increase $setting';
+  }
 
   @override
   String get textFillColor => 'Teksto Plenigkoloro';

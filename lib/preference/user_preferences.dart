@@ -20,10 +20,8 @@ import 'seerr_row_config.dart';
 class UserPreferences extends ChangeNotifier {
   static const _lastServerIdPreferenceKey = 'pref_last_server_id';
   static const _lastUserIdPreferenceKey = 'pref_last_user_id';
-  static const _legacyItemSecondarySubtitleSelectionPrefix =
+  static const _itemSecondarySubtitleSelectionPrefix =
       'pref_item_secondary_subtitle_selection_';
-  static const _scopedItemSecondarySubtitleSelectionPrefix =
-      'pref_scoped_item_secondary_subtitle_selection_';
 
   static const mediaBarModeMoonfin = 'moonfin';
   static const mediaBarModeMakd = 'makd';
@@ -187,7 +185,6 @@ class UserPreferences extends ChangeNotifier {
       }
       _store.remove(key);
     }
-
   }
 
   // The store is typed per getter and doesn't record which type a key holds, so each one is
@@ -3774,18 +3771,9 @@ class UserPreferences extends ChangeNotifier {
 
   String _itemSecondarySubtitleSelectionKey(String itemId) {
     final suffix = _activeProfileScopeSuffix();
-    if (suffix == null) {
-      return '$_legacyItemSecondarySubtitleSelectionPrefix$itemId';
-    }
-    final legacyKey = '$_legacyItemSecondarySubtitleSelectionPrefix$itemId';
-    final scopedKey =
-        '$_scopedItemSecondarySubtitleSelectionPrefix${suffix}_$itemId';
-    // Move the old global choice to the active profile on its first read.
-    if (!_store.containsKey(scopedKey) && _store.containsKey(legacyKey)) {
-      _copyStoredValue(legacyKey, scopedKey);
-    }
-    _store.remove(legacyKey);
-    return scopedKey;
+    return suffix == null
+        ? '$_itemSecondarySubtitleSelectionPrefix$itemId'
+        : '$_itemSecondarySubtitleSelectionPrefix${suffix}_$itemId';
   }
 
   int getItemAudioStreamIndex(String itemId) {

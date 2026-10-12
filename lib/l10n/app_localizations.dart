@@ -7246,17 +7246,23 @@ abstract class AppLocalizations {
   /// **'Secondary'**
   String get secondarySubtitleSlot;
 
-  /// Action that decreases a value in a control
+  /// Title of the picker for the secondary subtitle track
   ///
   /// In en, this message translates to:
-  /// **'Decrease'**
-  String get decreaseValue;
+  /// **'Secondary Subtitle Track'**
+  String get secondarySubtitleTrack;
 
-  /// Action that increases a value in a control
+  /// Tooltip for the button that lowers a setting's value
   ///
   /// In en, this message translates to:
-  /// **'Increase'**
-  String get increaseValue;
+  /// **'Decrease {setting}'**
+  String decreaseValue(String setting);
+
+  /// Tooltip for the button that raises a setting's value
+  ///
+  /// In en, this message translates to:
+  /// **'Increase {setting}'**
+  String increaseValue(String setting);
 
   /// Setting for subtitle text fill color
   ///

@@ -5411,12 +5411,12 @@
     "description": "Info text about subtitle styling"
   },
   "defaultSubtitleLanguage": "Default Subtitle Language",
+  "@defaultSubtitleLanguage": {
+    "description": "Setting for default subtitle language"
+  },
   "preferredSecondarySubtitleLanguage": "Preferred Secondary Subtitle Language",
   "@preferredSecondarySubtitleLanguage": {
     "description": "Preferred language used to sort secondary subtitle tracks in the picker. It does not enable subtitles."
-  },
-  "@defaultSubtitleLanguage": {
-    "description": "Setting for default subtitle language"
   },
   "defaultToNoSubtitles": "Default to No Subtitles",
   "@defaultToNoSubtitles": {
@@ -5438,13 +5438,27 @@
   "@secondarySubtitleSlot": {
     "description": "Label for the secondary subtitle selection slot"
   },
-  "decreaseValue": "Decrease",
-  "@decreaseValue": {
-    "description": "Action that decreases a value in a control"
+  "secondarySubtitleTrack": "Secondary Subtitle Track",
+  "@secondarySubtitleTrack": {
+    "description": "Title of the picker for the secondary subtitle track"
   },
-  "increaseValue": "Increase",
+  "decreaseValue": "Decrease {setting}",
+  "@decreaseValue": {
+    "description": "Tooltip for the button that lowers a setting's value",
+    "placeholders": {
+      "setting": {
+        "type": "String"
+      }
+    }
+  },
+  "increaseValue": "Increase {setting}",
   "@increaseValue": {
-    "description": "Action that increases a value in a control"
+    "description": "Tooltip for the button that raises a setting's value",
+    "placeholders": {
+      "setting": {
+        "type": "String"
+      }
+    }
   },
   "textFillColor": "Text Fill Color",
   "@textFillColor": {

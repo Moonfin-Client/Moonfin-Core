@@ -7,6 +7,7 @@ import 'package:server_core/server_core.dart';
 
 import '../../../auth/repositories/user_repository.dart';
 import '../../../data/models/aggregated_item.dart';
+import '../../../data/services/log_service.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../playback/delay_limits.dart';
 import '../../../playback/media3_player_backend.dart';
@@ -120,8 +121,8 @@ abstract final class TrackPicker {
           DelayFooter(
             initialDelay: manager.secondarySubtitleDelaySeconds,
             label: l10n.subtitleDelay,
-            minDelay: -5,
-            maxDelay: 5,
+            minDelay: -PlaybackManager.secondarySubtitleMaxDelaySeconds,
+            maxDelay: PlaybackManager.secondarySubtitleMaxDelaySeconds,
             onDelayChanged: (d) => manager.setSecondarySubtitleDelay(d),
             formatDelay: formatDelay,
           ),
@@ -181,8 +182,8 @@ abstract final class TrackPicker {
         title: audio
             ? l10n.audioTrack
             : secondary
-            ? '${l10n.secondarySubtitleSlot} ${l10n.subtitleTrack}'
-            : '${l10n.primarySubtitleSlot} ${l10n.subtitleTrack}',
+            ? l10n.secondarySubtitleTrack
+            : l10n.subtitleTrack,
         options: options,
         selectedIndex: choices.selectedIndex,
         useRootNavigator: useRootNavigator,
@@ -191,21 +192,27 @@ abstract final class TrackPicker {
     );
     if (result == null || !context.mounted) return;
     final streamIndex = choices.streamIndexFor(result);
+    if (secondary) {
+      if (streamIndex == null) return;
+      final target = streamIndex == -1 ? null : streamIndex;
+      try {
+        await mutate(
+          target == null
+              ? 'secondary_subtitles_off'
+              : 'secondary_subtitle_$target',
+          () => manager.changeSecondarySubtitleTrack(target),
+        );
+      } catch (error) {
+        GetIt.instance<LogService>().playback(
+          'Could not change the secondary subtitle track',
+          level: LogLevel.warning,
+          error: error,
+        );
+      }
+      return;
+    }
     if (!audio) {
       if (streamIndex == -1) {
-        if (secondary) {
-          try {
-            await mutate(
-              'secondary_subtitles_off',
-              () => manager.changeSecondarySubtitleTrack(null),
-            );
-          } catch (error, stackTrace) {
-            debugPrint(
-              'Could not turn off secondary subtitles: $error\n$stackTrace',
-            );
-          }
-          return;
-        }
         await mutate('subtitles_off', manager.disableSubtitles);
         onSubtitlesChanged?.call();
         return;
@@ -227,20 +234,6 @@ abstract final class TrackPicker {
         return;
       }
       if (streamIndex != null) {
-        if (secondary) {
-          try {
-            final changed = await mutate(
-              'secondary_subtitle_$streamIndex',
-              () => manager.changeSecondarySubtitleTrack(streamIndex),
-            );
-            if (changed && context.mounted) onSubtitlesChanged?.call();
-          } catch (error, stackTrace) {
-            debugPrint(
-              'Could not change secondary subtitles: $error\n$stackTrace',
-            );
-          }
-          return;
-        }
         await mutate(
           'subtitle_$streamIndex',
           () => manager.changeSubtitleTrack(streamIndex),

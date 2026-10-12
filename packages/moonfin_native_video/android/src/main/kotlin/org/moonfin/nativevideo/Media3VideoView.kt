@@ -2317,26 +2317,17 @@ class Media3VideoView(
                 }
 
                 "setSecondarySubtitle" -> {
-                    val args = call.arguments as? Map<*, *>
-                    secondarySubtitleOverlay.select(
-                        args?.get("url")?.toString()?.takeIf { it.isNotBlank() },
-                        args?.get("codec")?.toString(),
-                    )
+                    selectSecondarySubtitle(call.arguments as? Map<*, *>)
                     result.success(null)
                 }
 
                 "setSecondarySubtitleDelay" -> {
-                    secondarySubtitleOverlay.setDelayMs(parseDelayMs(call.arguments))
+                    setSecondarySubtitleDelay(parseDelayMs(call.arguments))
                     result.success(null)
                 }
 
                 "configureSecondarySubtitleStyle" -> {
-                    val args = call.arguments as? Map<*, *>
-                    secondarySubtitleOverlay.configureAppearance(
-                        (args?.get("fontSize") as? Number)?.toFloat(),
-                        (args?.get("verticalOffset") as? Number)?.toFloat(),
-                        (args?.get("textColor") as? Number)?.toInt(),
-                    )
+                    configureSecondarySubtitleStyle(call.arguments as? Map<*, *>)
                     result.success(null)
                 }
 
@@ -2511,24 +2502,15 @@ class Media3VideoView(
                 }
 
                 "setSecondarySubtitle" -> {
-                    val subtitleArgs = args as? Map<*, *>
-                    secondarySubtitleOverlay.select(
-                        subtitleArgs?.get("url")?.toString()?.takeIf { it.isNotBlank() },
-                        subtitleArgs?.get("codec")?.toString(),
-                    )
+                    selectSecondarySubtitle(args as? Map<*, *>)
                 }
 
                 "setSecondarySubtitleDelay" -> {
-                    secondarySubtitleOverlay.setDelayMs(parseDelayMs(args))
+                    setSecondarySubtitleDelay(parseDelayMs(args))
                 }
 
                 "configureSecondarySubtitleStyle" -> {
-                    val styleArgs = args as? Map<*, *>
-                    secondarySubtitleOverlay.configureAppearance(
-                        (styleArgs?.get("fontSize") as? Number)?.toFloat(),
-                        (styleArgs?.get("verticalOffset") as? Number)?.toFloat(),
-                        (styleArgs?.get("textColor") as? Number)?.toInt(),
-                    )
+                    configureSecondarySubtitleStyle(args as? Map<*, *>)
                 }
 
                 "setClosedCaptionTrack" -> {
@@ -3339,6 +3321,43 @@ class Media3VideoView(
         audioPipeline.userBoostMb = level * 200
         emitVolumeBoostState()
         emitState()
+    }
+
+    // A resume from the background or the screensaver reloads
+    // lastSourceArguments, so the secondary track and its settings are kept
+    // there as they change.
+    private fun rememberSourceArguments(vararg entries: Pair<String, Any?>) {
+        val args = lastSourceArguments ?: return
+        lastSourceArguments = args.toMutableMap().apply {
+            for ((key, value) in entries) this[key] = value
+        }
+    }
+
+    private fun selectSecondarySubtitle(args: Map<*, *>?) {
+        val url = args?.get("url")?.toString()?.takeIf { it.isNotBlank() }
+        val codec = args?.get("codec")?.toString()
+        rememberSourceArguments(
+            "secondarySubtitleUrl" to url,
+            "secondarySubtitleCodec" to codec,
+        )
+        secondarySubtitleOverlay.select(url, codec)
+    }
+
+    private fun setSecondarySubtitleDelay(delayMs: Long) {
+        rememberSourceArguments("secondarySubtitleDelayMs" to delayMs)
+        secondarySubtitleOverlay.setDelayMs(delayMs)
+    }
+
+    private fun configureSecondarySubtitleStyle(args: Map<*, *>?) {
+        val fontSize = (args?.get("fontSize") as? Number)?.toFloat()
+        val verticalOffset = (args?.get("verticalOffset") as? Number)?.toFloat()
+        val textColor = (args?.get("textColor") as? Number)?.toInt()
+        rememberSourceArguments(
+            "secondarySubtitleFontSize" to fontSize,
+            "secondarySubtitleOffset" to verticalOffset,
+            "secondarySubtitleTextColor" to textColor,
+        )
+        secondarySubtitleOverlay.configureAppearance(fontSize, verticalOffset, textColor)
     }
 
     private fun parseDelayMs(arguments: Any?): Long {

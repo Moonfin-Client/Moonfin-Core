@@ -1,5 +1,10 @@
 package org.moonfin.nativevideo.subtitle
 
+import java.nio.ByteBuffer
+import java.nio.charset.CharacterCodingException
+import java.nio.charset.Charset
+import java.nio.charset.CodingErrorAction
+
 /** A parsed text cue on the subtitle file's own timeline. */
 internal data class TimedTextCue(
     val startMs: Long,
@@ -21,12 +26,37 @@ internal data class TimedTextCue(
  */
 internal object SecondarySubtitleParser {
     private val timestampLine = Regex(
-        "^\\s*((?:\\d+:)?\\d{2,}:\\d{2}[,.]\\d{1,3})\\s+-->\\s+" +
-            "((?:\\d+:)?\\d{2,}:\\d{2}[,.]\\d{1,3})(?:\\s+(.*))?$",
+        "^\\s*((?:\\d+:)?\\d+:\\d{2}(?:[,.]\\d+)?)\\s*-->\\s*" +
+            "((?:\\d+:)?\\d+:\\d{2}(?:[,.]\\d+)?)(?:\\s+(.*))?$",
     )
-    private val markupTag = Regex("<[^>]*>")
+    private val cueNumber = Regex("^\\s*\\d+\\s*$")
+    private val markupTag = Regex("<[^>\\n]*>")
     private val assOverrideBlock = Regex("\\{\\s*\\\\[A-Za-z0-9][^{}]*\\}")
     private val assAlignment = Regex("\\\\an([1-9])")
+
+    /**
+     * Subtitle files come in whatever encoding they were saved in. A byte order
+     * mark decides first, then strict UTF-8, then Windows-1252, which never
+     * fails.
+     */
+    fun decode(bytes: ByteArray): String {
+        fun startsWith(vararg mark: Int) =
+            bytes.size >= mark.size && mark.indices.all { bytes[it] == mark[it].toByte() }
+        return when {
+            startsWith(0xEF, 0xBB, 0xBF) -> String(bytes, 3, bytes.size - 3, Charsets.UTF_8)
+            startsWith(0xFF, 0xFE) -> String(bytes, 2, bytes.size - 2, Charsets.UTF_16LE)
+            startsWith(0xFE, 0xFF) -> String(bytes, 2, bytes.size - 2, Charsets.UTF_16BE)
+            else -> try {
+                Charsets.UTF_8.newDecoder()
+                    .onMalformedInput(CodingErrorAction.REPORT)
+                    .onUnmappableCharacter(CodingErrorAction.REPORT)
+                    .decode(ByteBuffer.wrap(bytes))
+                    .toString()
+            } catch (_: CharacterCodingException) {
+                String(bytes, Charset.forName("windows-1252"))
+            }
+        }
+    }
 
     fun parse(content: String, codec: String?): List<TimedTextCue> {
         val format = codec?.trim()?.lowercase()
@@ -57,6 +87,15 @@ internal object SecondarySubtitleParser {
             index++
             val textLines = ArrayList<String>()
             while (index < lines.size && lines[index].isNotBlank()) {
+                // A file that skips the blank line still starts its next cue
+                // with a timestamp, or a cue number right before one.
+                if (timestampLine.matches(lines[index])) break
+                if (cueNumber.matches(lines[index]) &&
+                    index + 1 < lines.size &&
+                    timestampLine.matches(lines[index + 1])
+                ) {
+                    break
+                }
                 textLines += lines[index]
                 index++
             }
@@ -65,6 +104,8 @@ internal object SecondarySubtitleParser {
                 val ass = parseAssAlignment(rawText)
                 val text = rawText
                     .replace(assOverrideBlock, "")
+                    .replace("\\N", "\n")
+                    .replace("\\h", " ")
                     .replace(markupTag, "")
                     .replace("&nbsp;", " ")
                     .replace("&lt;", "<")
@@ -211,9 +252,10 @@ internal object SecondarySubtitleParser {
             secondsPart = parts[1]
         }
         val secondsPieces = secondsPart.split('.')
-        if (secondsPieces.size != 2) return null
+        if (secondsPieces.size !in 1..2) return null
         val seconds = secondsPieces[0].toLongOrNull() ?: return null
-        val fraction = secondsPieces[1].take(3).padEnd(3, '0').toLongOrNull() ?: return null
+        val fraction = secondsPieces.getOrElse(1) { "0" }
+            .take(3).padEnd(3, '0').toLongOrNull() ?: return null
         if ((parts.size == 3 && minutes > 59) || seconds > 59) return null
         return (((hours * 60 + minutes) * 60 + seconds) * 1000) + fraction
     }
@@ -247,16 +289,20 @@ internal class SecondarySubtitleTimeline(cues: List<TimedTextCue>) {
         return activeCuesAt(timelinePositionMs)
     }
 
-    private fun activeCuesAt(positionMs: Long): List<TimedTextCue> {
+    /** The index of the first cue that starts after [positionMs]. */
+    private fun firstStartAfter(positionMs: Long): Int {
         var low = 0
         var high = cues.size
         while (low < high) {
             val middle = (low + high) ushr 1
             if (cues[middle].startMs <= positionMs) low = middle + 1 else high = middle
         }
+        return low
+    }
 
+    private fun activeCuesAt(positionMs: Long): List<TimedTextCue> {
         val active = ArrayList<TimedTextCue>()
-        var index = low - 1
+        var index = firstStartAfter(positionMs) - 1
         while (index >= 0 && maxEndMsPrefix[index] > positionMs) {
             val cue = cues[index]
             if (cue.startMs <= positionMs && positionMs < cue.endMs) {
@@ -265,6 +311,19 @@ internal class SecondarySubtitleTimeline(cues: List<TimedTextCue>) {
             index--
         }
         return active
+    }
+
+    /** The next cue start or end after [playerPositionMs], in player time. */
+    fun nextChangeAt(playerPositionMs: Long, delayMs: Long): Long? {
+        val positionMs = playerPositionMs - delayMs
+        val upcoming = firstStartAfter(positionMs)
+        var next = if (upcoming < cues.size) cues[upcoming].startMs else Long.MAX_VALUE
+        if (positionMs >= 0L) {
+            for (cue in activeCuesAt(positionMs)) {
+                if (cue.endMs < next) next = cue.endMs
+            }
+        }
+        return if (next == Long.MAX_VALUE) null else next + delayMs
     }
 
     fun activeTextAtPlayerPosition(playerPositionMs: Long, delayMs: Long): String? {

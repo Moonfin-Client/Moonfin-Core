@@ -7239,12 +7239,31 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _showControls();
   }
 
+  /// Only Media3 draws a secondary track, and only from an SRT or WebVTT file
+  /// other than the primary, so the subtitle button skips the slot question
+  /// when there is nothing to put in the second slot.
+  bool get _offersSecondarySubtitles {
+    if (_activeBackend is! Media3PlayerBackend) return false;
+    if (_manager.secondarySubtitleStreamIndex != null) return true;
+    final primary = _manager.subtitleStreamIndex;
+    final streams =
+        _manager.currentResolution?.mediaStreams ??
+        const <Map<String, dynamic>>[];
+    return streams.any((stream) {
+      final index = stream['Index'];
+      return stream['Type'] == 'Subtitle' &&
+          index is int &&
+          index != primary &&
+          _manager.canUseAsSecondarySubtitle(index);
+    });
+  }
+
   void _showTrackSelector({
     required bool audio,
     bool secondary = false,
     bool chooseSubtitleSlot = true,
   }) {
-    if (!audio && chooseSubtitleSlot && _activeBackend is Media3PlayerBackend) {
+    if (!audio && chooseSubtitleSlot && _offersSecondarySubtitles) {
       _showSubtitleSlotSelector();
       return;
     }

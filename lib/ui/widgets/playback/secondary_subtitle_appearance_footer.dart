@@ -154,13 +154,13 @@ class _AppearanceControlRow extends StatelessWidget {
         child: Text(label, style: const TextStyle(color: Colors.white70)),
       ),
       IconButton(
-        tooltip: '${AppLocalizations.of(context).decreaseValue} $label',
+        tooltip: AppLocalizations.of(context).decreaseValue(label),
         onPressed: onDecrease,
         icon: const Icon(Icons.remove_circle_outline),
       ),
       SizedBox(width: 48, child: Text(value, textAlign: TextAlign.center)),
       IconButton(
-        tooltip: '${AppLocalizations.of(context).increaseValue} $label',
+        tooltip: AppLocalizations.of(context).increaseValue(label),
         onPressed: onIncrease,
         icon: const Icon(Icons.add_circle_outline),
       ),

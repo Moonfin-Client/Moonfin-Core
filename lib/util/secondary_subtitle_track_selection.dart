@@ -75,7 +75,6 @@ Map<String, dynamic> _identity(Map<String, dynamic> stream) => {
     'DisplayTitle',
     'Codec',
     'IsExternal',
-    'DeliveryMethod',
     'IsForced',
     'IsHearingImpaired',
   ])

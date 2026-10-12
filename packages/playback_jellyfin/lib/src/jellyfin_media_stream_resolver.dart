@@ -192,10 +192,13 @@ class JellyfinMediaStreamResolver implements MediaStreamResolver {
     // Append auth token for mpv (which doesn't use our Dio interceptors).
     url = _appendAuth(url);
 
-    final externalSubs = MediaStreamResolver.extractExternalSubtitles(source.mediaStreams, _client.baseUrl,
+    final externalSubs = MediaStreamResolver.extractExternalSubtitles(source.mediaStreams, _client.baseUrl);
+    final embeddedTextSubs = MediaStreamResolver.extractEmbeddedTextSubtitles(
+      source.mediaStreams,
+      _client.baseUrl,
       itemId: itemId,
       mediaSourceId: source.id,
-    );
+    ).map((s) => s.withDeliveryUrl(_appendAuth(s.deliveryUrl))).toList();
     final authedSubs = externalSubs.map((s) => ExternalSubtitle(
       deliveryUrl: _appendAuth(s.deliveryUrl),
       title: s.title,
@@ -244,6 +247,7 @@ class JellyfinMediaStreamResolver implements MediaStreamResolver {
       mediaType: mediaType,
       normalizationGainDb: normalizationGainDb,
       externalSubtitles: authedSubs,
+      embeddedTextSubtitles: embeddedTextSubs,
       mediaStreams: source.mediaStreams,
       selectedAudioStreamIndex: source.defaultAudioStreamIndex,
       selectedSubtitleStreamIndex: source.defaultSubtitleStreamIndex,
@@ -308,9 +312,7 @@ class JellyfinMediaStreamResolver implements MediaStreamResolver {
     if (token == null || token.isEmpty) return url;
     if (!_isServerUrl(url)) return url;
     final lowerUrl = url.toLowerCase();
-    if (lowerUrl.contains('api_key=') || lowerUrl.contains('apikey=')) {
-      return url;
-    }
+    if (lowerUrl.contains('api_key=') || lowerUrl.contains('apikey=')) return url;
     final separator = url.contains('?') ? '&' : '?';
     return '$url${separator}ApiKey=${Uri.encodeComponent(token)}';
   }

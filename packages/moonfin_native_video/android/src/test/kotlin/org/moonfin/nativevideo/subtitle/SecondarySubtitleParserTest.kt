@@ -228,4 +228,83 @@ class SecondarySubtitleParserTest {
         assertNull(timeline.activeTextAtPlayerPosition(999, 1000))
         assertEquals("cue", timeline.activeTextAtPlayerPosition(1000, 1000))
     }
+
+    @Test
+    fun acceptsLooseSubRipTimestamps() {
+        val cues = SecondarySubtitleParser.parse(
+            "1\n00:00:01,000-->00:00:02,000\nTight\n\n" +
+                "2\n00:00:03 --> 00:00:04\nNo fraction\n\n" +
+                "3\n00:00:05,1234 --> 00:00:06,5\nOdd fraction\n",
+            "srt",
+        )
+
+        assertEquals(
+            listOf(1000L to 2000L, 3000L to 4000L, 5123L to 6500L),
+            cues.map { it.startMs to it.endMs },
+        )
+    }
+
+    @Test
+    fun splitsCuesThatSkipTheBlankLine() {
+        val cues = SecondarySubtitleParser.parse(
+            "1\n00:00:01,000 --> 00:00:02,000\nFirst\n" +
+                "2\n00:00:03,000 --> 00:00:04,000\nSecond\n",
+            "srt",
+        )
+
+        assertEquals(listOf("First", "Second"), cues.map { it.text })
+    }
+
+    @Test
+    fun turnsAssLineBreaksIntoNewlinesAndKeepsTagsToOneLine() {
+        val cues = SecondarySubtitleParser.parse(
+            "1\n00:00:01,000 --> 00:00:02,000\nOne\\Ntwo\nI <3 you\n-> go\n",
+            "srt",
+        )
+
+        assertEquals("One\ntwo\nI <3 you\n-> go", cues.single().text)
+    }
+
+    @Test
+    fun decodesByByteOrderMarkThenUtf8ThenWindows1252() {
+        val text = "Zażółć"
+        assertEquals(
+            text,
+            SecondarySubtitleParser.decode(
+                byteArrayOf(0xEF.toByte(), 0xBB.toByte(), 0xBF.toByte()) +
+                    text.toByteArray(Charsets.UTF_8),
+            ),
+        )
+        assertEquals(
+            text,
+            SecondarySubtitleParser.decode(
+                byteArrayOf(0xFF.toByte(), 0xFE.toByte()) + text.toByteArray(Charsets.UTF_16LE),
+            ),
+        )
+        assertEquals(
+            text,
+            SecondarySubtitleParser.decode(
+                byteArrayOf(0xFE.toByte(), 0xFF.toByte()) + text.toByteArray(Charsets.UTF_16BE),
+            ),
+        )
+        assertEquals(text, SecondarySubtitleParser.decode(text.toByteArray(Charsets.UTF_8)))
+        assertEquals(
+            "caf\u00e9",
+            SecondarySubtitleParser.decode("caf\u00e9".toByteArray(charset("windows-1252"))),
+        )
+    }
+
+    @Test
+    fun nextChangeIsTheNearestStartOrEndInPlayerTime() {
+        val timeline = SecondarySubtitleTimeline(
+            listOf(TimedTextCue(1000, 3000, "a"), TimedTextCue(2000, 2500, "b")),
+        )
+
+        assertEquals(1000L, timeline.nextChangeAt(0, 0))
+        assertEquals(2000L, timeline.nextChangeAt(1500, 0))
+        assertEquals(2500L, timeline.nextChangeAt(2100, 0))
+        assertEquals(3000L, timeline.nextChangeAt(2600, 0))
+        assertNull(timeline.nextChangeAt(3000, 0))
+        assertEquals(1500L, timeline.nextChangeAt(0, 500))
+    }
 }

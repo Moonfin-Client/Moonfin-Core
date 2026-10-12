@@ -18,6 +18,16 @@ class ExternalSubtitle {
     this.isForced = false,
     this.streamIndex,
   });
+
+  ExternalSubtitle withDeliveryUrl(String url) => ExternalSubtitle(
+    deliveryUrl: url,
+    title: title,
+    language: language,
+    codec: codec,
+    isDefault: isDefault,
+    isForced: isForced,
+    streamIndex: streamIndex,
+  );
 }
 
 class StreamResolutionResult {
@@ -32,6 +42,10 @@ class StreamResolutionResult {
   final String mediaType;
   final double? normalizationGainDb;
   final List<ExternalSubtitle> externalSubtitles;
+
+  /// Embedded SRT and WebVTT tracks the server can serve as files, offered
+  /// only as a secondary subtitle.
+  final List<ExternalSubtitle> embeddedTextSubtitles;
   final List<Map<String, dynamic>> mediaStreams;
   final int? selectedAudioStreamIndex;
   final int? selectedSubtitleStreamIndex;
@@ -65,6 +79,7 @@ class StreamResolutionResult {
     this.mediaType = 'video',
     this.normalizationGainDb,
     this.externalSubtitles = const [],
+    this.embeddedTextSubtitles = const [],
     this.mediaStreams = const [],
     this.selectedAudioStreamIndex,
     this.selectedSubtitleStreamIndex,

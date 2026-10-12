@@ -31,9 +31,10 @@ internal class SecondarySubtitleOverlay(
 ) {
     companion object {
         private const val TAG = "MoonfinSecondarySubtitle"
-        private const val MAX_SUBTITLE_BYTES = 16 * 1024 * 1024
+        private const val MAX_SUBTITLE_BYTES = 4 * 1024 * 1024
         private const val DEFAULT_OFFSET_DELTA = 0.08f
         private const val MIN_GAP_DP = 8f
+        private const val TICK_MS = 250L
     }
 
     private val executor: ExecutorService = Executors.newSingleThreadExecutor { task ->
@@ -60,6 +61,7 @@ internal class SecondarySubtitleOverlay(
     private var primaryCues: List<Cue> = emptyList()
     private var primaryCanShift = false
     @Volatile private var timeline: SecondarySubtitleTimeline? = null
+    private val changeRender = Runnable { render(positionMs()) }
 
     init {
         view.setApplyEmbeddedStyles(false)
@@ -83,6 +85,7 @@ internal class SecondarySubtitleOverlay(
         selectedCodec = codec
         timeline = null
         lastRenderedText = null
+        updatePrimaryOffset()
         view.visibility = View.VISIBLE
         view.setCues(emptyList())
         if (url.isNullOrBlank()) return
@@ -92,6 +95,7 @@ internal class SecondarySubtitleOverlay(
                 try {
                     val content = readSubtitle(url)
                     val cues = SecondarySubtitleParser.parse(content, codec)
+                    require(cues.isNotEmpty()) { "Secondary subtitle has no cues" }
                     val parsed = SecondarySubtitleTimeline(cues)
                     Log.d(
                         TAG,
@@ -100,6 +104,8 @@ internal class SecondarySubtitleOverlay(
                     mainHandler.post {
                         if (requestGeneration != generation || selectedUrl != url) return@post
                         timeline = parsed
+                        updatePrimaryOffset()
+                        lastRenderedText = null
                         renderAt(positionMs())
                     }
                 } catch (error: Throwable) {
@@ -113,6 +119,7 @@ internal class SecondarySubtitleOverlay(
                         selectedCodec = null
                         timeline = null
                         lastRenderedText = null
+                        updatePrimaryOffset()
                         view.setCues(emptyList())
                         onFailure(message)
                     }
@@ -178,8 +185,19 @@ internal class SecondarySubtitleOverlay(
         renderAt(positionMs())
     }
 
-    /** Called from the existing 250 ms player ticker and immediately after seeks. */
+    /**
+     * Called from the 250 ms player ticker and right after seeks. A cue that
+     * starts or ends before the next tick gets its own render at that moment.
+     */
     fun renderAt(playerPositionMs: Long) {
+        mainHandler.removeCallbacks(changeRender)
+        val next = timeline?.nextChangeAt(playerPositionMs, delayMs)
+        val wait = if (next == null) 0L else next - playerPositionMs
+        if (wait in 1 until TICK_MS) mainHandler.postDelayed(changeRender, wait)
+        render(playerPositionMs)
+    }
+
+    private fun render(playerPositionMs: Long) {
         val active = timeline?.activeCuesAtPlayerPosition(playerPositionMs, delayMs).orEmpty()
         val signature = active.joinToString("\u0000") {
             "${it.text}|${it.line}|${it.lineType}|${it.lineAnchor}|${it.position}|${it.positionAnchor}|${it.size}|${it.alignment}"
@@ -402,14 +420,18 @@ internal class SecondarySubtitleOverlay(
         return lines * fontPx * 1.25f
     }
 
-    private fun primaryOffsetPx(): Float =
-        if (primaryCanShift) -offsetDelta * view.height else 0f
+    // Only while a secondary is loaded, and never past the bottom edge.
+    private fun primaryOffsetPx(): Float {
+        if (!primaryCanShift || timeline == null) return 0f
+        return -offsetDelta.coerceAtLeast(-primaryBottomPaddingFraction) * view.height
+    }
 
     private fun updatePrimaryOffset() {
         onPrimaryVerticalOffset(primaryOffsetPx())
     }
 
     fun clear() {
+        mainHandler.removeCallbacks(changeRender)
         generation++
         selectedUrl = null
         selectedCodec = null
@@ -430,10 +452,16 @@ internal class SecondarySubtitleOverlay(
         val source = synchronized(activeDataSourceLock) {
             activeDataSource.also { activeDataSource = null }
         }
-        try {
-            source?.close()
-        } catch (error: IOException) {
-            Log.w(TAG, "Could not close secondary subtitle source: ${error.message}")
+        // Closing unblocks a read in flight, but it can touch the network, so
+        // it runs off the main thread.
+        if (source != null) {
+            Thread {
+                try {
+                    source.close()
+                } catch (error: IOException) {
+                    Log.w(TAG, "Could not close secondary subtitle source: ${error.message}")
+                }
+            }.start()
         }
         executor.shutdownNow()
     }
@@ -482,7 +510,7 @@ internal class SecondarySubtitleOverlay(
                 if (read == C.RESULT_END_OF_INPUT) break
                 if (read <= 0) continue
                 if (output.size() + read > MAX_SUBTITLE_BYTES) {
-                    throw IllegalArgumentException("Subtitle file exceeds 16 MiB")
+                    throw IllegalArgumentException("Subtitle file exceeds 4 MiB")
                 }
                 output.write(buffer, 0, read)
             }
@@ -497,6 +525,6 @@ internal class SecondarySubtitleOverlay(
             }
             if (closeSource) source.close()
         }
-        return output.toString(Charsets.UTF_8.name())
+        return SecondarySubtitleParser.decode(output.toByteArray())
     }
 }

@@ -187,25 +187,42 @@ void main() {
     });
   });
 
-  group('extractExternalSubtitles', () {
-    test('builds a delivery URL for extractable embedded text subtitles', () {
-      final subs = MediaStreamResolver.extractExternalSubtitles(
-        <Map<String, dynamic>>[
-          {
-            'Type': 'Subtitle',
-            'Index': 3,
-            'Codec': 'subrip',
-            'IsExternal': false,
-            'SupportsExternalStream': true,
-          },
-          {
-            'Type': 'Subtitle',
-            'Index': 4,
-            'Codec': 'webvtt',
-            'IsExternal': false,
-            'SupportsExternalStream': true,
-          },
-        ],
+  const embeddedText = <Map<String, dynamic>>[
+    {
+      'Type': 'Subtitle',
+      'Index': 3,
+      'Codec': 'subrip',
+      'IsExternal': false,
+      'SupportsExternalStream': true,
+    },
+    {
+      'Type': 'Subtitle',
+      'Index': 4,
+      'Codec': 'webvtt',
+      'IsExternal': false,
+      'SupportsExternalStream': true,
+    },
+    {
+      'Type': 'Subtitle',
+      'Index': 5,
+      'Codec': 'ass',
+      'IsExternal': false,
+      'SupportsExternalStream': true,
+    },
+    {
+      'Type': 'Subtitle',
+      'Index': 6,
+      'Codec': 'subrip',
+      'IsExternal': true,
+      'SupportsExternalStream': true,
+      'DeliveryUrl': '/Videos/item/source/Subtitles/6/0/Stream.srt',
+    },
+  ];
+
+  group('extractEmbeddedTextSubtitles', () {
+    test('builds a file URL for embedded SRT and WebVTT tracks only', () {
+      final subs = MediaStreamResolver.extractEmbeddedTextSubtitles(
+        embeddedText,
         'https://example.test/jellyfin',
         itemId: 'item id',
         mediaSourceId: 'source',
@@ -217,8 +234,20 @@ void main() {
         'https://example.test/jellyfin/Videos/item%20id/source/'
             'Subtitles/4/0/Stream.vtt',
       ]);
+      expect(subs.map((subtitle) => subtitle.streamIndex), [3, 4]);
     });
 
+    test('leaves the primary sidecars to the server delivery URLs', () {
+      final subs = MediaStreamResolver.extractExternalSubtitles(
+        embeddedText,
+        'https://example.test/jellyfin',
+      );
+
+      expect(subs.map((subtitle) => subtitle.streamIndex), [6]);
+    });
+  });
+
+  group('extractExternalSubtitles', () {
     test(
       'keeps a .sup file and skips a PGS track the server would extract',
       () {

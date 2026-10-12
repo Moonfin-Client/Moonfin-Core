@@ -182,7 +182,7 @@ class PlaybackManager implements AudioOwnable {
   double _secondarySubtitleDelaySeconds = 0;
   double? _secondarySubtitleFontSize;
   int? _secondarySubtitleTextColor;
-  double _secondarySubtitleOffset = 0.08;
+  double _secondarySubtitleOffset = defaultSecondarySubtitleOffset;
   bool _audioSelectionExplicit = false;
   bool _subtitleSelectionExplicit = false;
   bool _pendingItemAudioSelectionExplicit = false;
@@ -594,6 +594,14 @@ class PlaybackManager implements AudioOwnable {
 
   void markStreamsOutdated(String itemId) => _streamsOutdatedItemId = itemId;
   int? get audioStreamIndex => _audioStreamIndex;
+
+  /// How far the secondary track can be shifted against the video, either
+  /// way.
+  static const secondarySubtitleMaxDelaySeconds = 5.0;
+
+  /// Where the secondary track sits by default, as a fraction of the height.
+  static const defaultSecondarySubtitleOffset = 0.08;
+
   int? get secondarySubtitleStreamIndex => _secondarySubtitleStreamIndex;
   double get secondarySubtitleDelaySeconds => _secondarySubtitleDelaySeconds;
   double? get secondarySubtitleFontSize => _secondarySubtitleFontSize;
@@ -612,7 +620,7 @@ class PlaybackManager implements AudioOwnable {
         codec != 'webvtt') {
       return false;
     }
-    return _externalSubtitleUrlForStream(streamIndex)?.isNotEmpty ?? false;
+    return _secondarySubtitleUrlForStream(streamIndex)?.isNotEmpty ?? false;
   }
 
   int? get subtitleStreamIndex {
@@ -2748,7 +2756,7 @@ class PlaybackManager implements AudioOwnable {
         secondarySubtitleUrl:
             _secondarySubtitleStreamIndex != null &&
                 canUseAsSecondarySubtitle(_secondarySubtitleStreamIndex!)
-            ? _externalSubtitleUrlForStream(_secondarySubtitleStreamIndex!)
+            ? _secondarySubtitleUrlForStream(_secondarySubtitleStreamIndex!)
             : null,
         secondarySubtitleCodec: _secondarySubtitleStreamIndex != null
             ? _subtitleCodecForStream(_secondarySubtitleStreamIndex!)
@@ -3546,6 +3554,22 @@ class PlaybackManager implements AudioOwnable {
     return null;
   }
 
+  /// The sidecar the server offers for [streamIndex], or else the file it can
+  /// serve from an embedded SRT or WebVTT track. Only the secondary overlay
+  /// takes the second kind.
+  String? _secondarySubtitleUrlForStream(int streamIndex) {
+    final sidecar = _externalSubtitleUrlForStream(streamIndex);
+    if (sidecar != null && sidecar.isNotEmpty) return sidecar;
+    final embedded =
+        _currentResolution?.embeddedTextSubtitles ?? const <ExternalSubtitle>[];
+    for (final sub in embedded) {
+      if (sub.streamIndex == streamIndex) {
+        return _ensureSubtitleApiKey(sub.deliveryUrl);
+      }
+    }
+    return null;
+  }
+
   String _ensureSubtitleApiKey(String url) {
     final uri = Uri.tryParse(url);
     if (uri == null) return url;
@@ -3617,8 +3641,8 @@ class PlaybackManager implements AudioOwnable {
     ),
   );
 
-  /// Selects an independently rendered SRT/WebVTT Jellyfin sidecar.
-  /// Tracks without an accessible text delivery URL remain primary-only.
+  /// Picks the SRT or WebVTT track the secondary overlay draws, or none for
+  /// null. A track the server can't serve as a file stays primary-only.
   Future<void> changeSecondarySubtitleTrack(int? streamIndex) async {
     final selectedIndex = streamIndex == _subtitleStreamIndex
         ? null
@@ -3647,7 +3671,12 @@ class PlaybackManager implements AudioOwnable {
   }
 
   Future<void> setSecondarySubtitleDelay(double seconds) async {
-    _secondarySubtitleDelaySeconds = seconds.clamp(-5.0, 5.0).toDouble();
+    _secondarySubtitleDelaySeconds = seconds
+        .clamp(
+          -secondarySubtitleMaxDelaySeconds,
+          secondarySubtitleMaxDelaySeconds,
+        )
+        .toDouble();
     await _backend?.setSecondarySubtitleDelay(_secondarySubtitleDelaySeconds);
   }
 
@@ -3658,9 +3687,8 @@ class PlaybackManager implements AudioOwnable {
   }) async {
     _secondarySubtitleFontSize = fontSize?.clamp(8.0, 72.0).toDouble();
     _secondarySubtitleTextColor = textColor;
-    _secondarySubtitleOffset = (verticalOffset ?? 0.08)
-        .clamp(0.0, 0.4)
-        .toDouble();
+    final offset = verticalOffset ?? defaultSecondarySubtitleOffset;
+    _secondarySubtitleOffset = offset.clamp(0.0, 0.4).toDouble();
     await _backend?.configureSecondarySubtitleStyle(
       fontSize: _secondarySubtitleFontSize,
       verticalOffset: _secondarySubtitleOffset,
@@ -3676,7 +3704,7 @@ class PlaybackManager implements AudioOwnable {
       return;
     }
     await _backend?.setSecondarySubtitle(
-      url: _externalSubtitleUrlForStream(index),
+      url: _secondarySubtitleUrlForStream(index),
       codec: _subtitleCodecForStream(index),
     );
     await _backend?.setSecondarySubtitleDelay(_secondarySubtitleDelaySeconds);
@@ -4173,7 +4201,8 @@ class PlaybackManager implements AudioOwnable {
   bool _isSubtitleDeliveredExternally(int streamIndex) {
     if (_currentResolution == null) return _isSubtitleExternal(streamIndex);
     return _effectiveExternalSubtitles.any(
-      (s) => s.streamIndex == streamIndex);
+      (s) => s.streamIndex == streamIndex,
+    );
   }
 
   int? _mpvTrackIdForStream(int streamIndex, String type) =>
@@ -4756,9 +4785,7 @@ String _normalizeLanguage(String? language) {
 }
 
 String _toIso3(String language) {
-  if (_kLanguageKeywords.containsKey(language)) {
-    return _kLanguageKeywords[language]!;
-  }
+  if (_kLanguageKeywords.containsKey(language)) return _kLanguageKeywords[language]!;
   if (language.length == 3) return language;
   return _kIso6391To6392[language] ?? language;
 }

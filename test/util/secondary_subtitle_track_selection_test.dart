@@ -47,6 +47,19 @@ void main() {
     },
   );
 
+  test('keeps the pick when a re-resolve changes how the track is delivered', () {
+    final embedded = {...french, 'DeliveryMethod': 'Embed'};
+    final saved = secondarySubtitleTrackSelection([embedded, english], 3);
+
+    expect(
+      restoreSecondarySubtitleTrack(saved, [
+        {...french, 'DeliveryMethod': 'External'},
+        english,
+      ], isCompatible: (_) => true),
+      3,
+    );
+  });
+
   test('restores by metadata when the selected stream index changes', () {
     final saved = secondarySubtitleTrackSelection([french, frenchDub], 4);
     final shiftedFrenchDub = {...frenchDub, 'Index': 17};

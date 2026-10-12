@@ -96,10 +96,13 @@ class EmbyMediaStreamResolver implements MediaStreamResolver {
 
     url = _appendAuth(url);
 
-    final externalSubs = MediaStreamResolver.extractExternalSubtitles(source.mediaStreams, _client.baseUrl,
+    final externalSubs = MediaStreamResolver.extractExternalSubtitles(source.mediaStreams, _client.baseUrl);
+    final embeddedTextSubs = MediaStreamResolver.extractEmbeddedTextSubtitles(
+      source.mediaStreams,
+      _client.baseUrl,
       itemId: itemId,
       mediaSourceId: source.id,
-    );
+    ).map((s) => s.withDeliveryUrl(_appendAuth(s.deliveryUrl))).toList();
     final authedSubs = externalSubs
         .map(
           (s) => ExternalSubtitle(
@@ -136,6 +139,7 @@ class EmbyMediaStreamResolver implements MediaStreamResolver {
       mediaType: mediaType,
       normalizationGainDb: normalizationGainDb,
       externalSubtitles: authedSubs,
+      embeddedTextSubtitles: embeddedTextSubs,
       mediaStreams: source.mediaStreams,
       selectedAudioStreamIndex: source.defaultAudioStreamIndex,
       selectedSubtitleStreamIndex: source.defaultSubtitleStreamIndex,
