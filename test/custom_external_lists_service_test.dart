@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:moonfin/preference/home_section_config.dart';
 import 'package:moonfin/data/services/custom_external_lists_service.dart';
+import 'package:moonfin/l10n/current_app_localizations.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -340,6 +342,19 @@ void main() {
       expect(sorted[0].imdbId, '1');
       expect(sorted[1].imdbId, '2');
       expect(sorted[2].imdbId, '3');
+    });
+  });
+
+  group('currentAppLocale resolution', () {
+    test('resolves supported locales', () {
+      expect(currentAppLocale(const Locale('fr')).languageCode, 'fr');
+      expect(currentAppLocale(const Locale('es')).languageCode, 'es');
+      expect(currentAppLocale(const Locale('de', 'DE')).languageCode, 'de');
+    });
+
+    test('falls back to English for unsupported device locales', () {
+      expect(currentAppLocale(const Locale('is')).languageCode, 'en');
+      expect(currentAppLocale(const Locale('tlh')).languageCode, 'en');
     });
   });
 }

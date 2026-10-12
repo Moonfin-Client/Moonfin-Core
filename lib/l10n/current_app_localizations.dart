@@ -7,9 +7,26 @@ import 'app_localizations.dart';
 
 /// The active [Locale] for code that runs without a [BuildContext].
 /// Respects the user's language override in preferences, falling back
-/// to the device locale.
-Locale currentAppLocale() =>
-    _overrideLocale() ?? PlatformDispatcher.instance.locale;
+/// to the device locale resolved against supported locales.
+Locale currentAppLocale([Locale? deviceLocale]) =>
+    _overrideLocale() ?? _resolveSupportedLocale(deviceLocale ?? PlatformDispatcher.instance.locale);
+
+Locale _resolveSupportedLocale(Locale target) {
+  // Prefer exact match (language + country/script)
+  for (final supported in AppLocalizations.supportedLocales) {
+    if (supported == target) {
+      return supported;
+    }
+  }
+  // Fall back to language-only match
+  for (final supported in AppLocalizations.supportedLocales) {
+    if (supported.languageCode == target.languageCode) {
+      return supported;
+    }
+  }
+  // Fall back to English if unsupported
+  return const Locale('en');
+}
 
 /// Localizations for code that runs without a [BuildContext]. The language
 /// override wins over the device language, the same way MaterialApp resolves
