@@ -968,6 +968,9 @@ class _DetailContentState extends State<_DetailContent> {
   final FocusNode _playlistFilterFocusNode = FocusNode(
     debugLabel: 'playlistFilterPill',
   );
+  final FocusNode _playlistClearFiltersFocusNode = FocusNode(
+    debugLabel: 'playlistClearFiltersButton',
+  );
   String? _tvAlbumPlayFocusAppliedForItemId;
   List<SeerrDiscoverItem>? _seerrAppearances;
   List<SeerrDiscoverItem>? _seerrCrewCredits;
@@ -1384,6 +1387,7 @@ class _DetailContentState extends State<_DetailContent> {
     _albumPlayFocusNode.dispose();
     _playlistSortFocusNode.dispose();
     _playlistFilterFocusNode.dispose();
+    _playlistClearFiltersFocusNode.dispose();
     for (final node in _trackFocusNodes.values) {
       node.dispose();
     }
@@ -3286,8 +3290,15 @@ class _DetailContentState extends State<_DetailContent> {
             },
             onSortArrowDown: () {
               if (displayedTracks.isNotEmpty) {
-                final node = _getTrackFocusNode(displayedTracks.first.id);
-                if (node.canRequestFocus) node.requestFocus();
+                final first = displayedTracks.first;
+                final rawId = first.rawData['PlaylistItemId']?.toString();
+                final firstId = (rawId != null && rawId.isNotEmpty)
+                    ? rawId
+                    : first.id;
+                final node = _getTrackFocusNode(firstId);
+                if (node.context?.mounted == true) node.requestFocus();
+              } else if (_playlistClearFiltersFocusNode.canRequestFocus) {
+                _playlistClearFiltersFocusNode.requestFocus();
               }
             },
             onSortArrowLeft: () {
@@ -3299,8 +3310,15 @@ class _DetailContentState extends State<_DetailContent> {
             },
             onFilterArrowDown: () {
               if (displayedTracks.isNotEmpty) {
-                final node = _getTrackFocusNode(displayedTracks.first.id);
-                if (node.canRequestFocus) node.requestFocus();
+                final first = displayedTracks.first;
+                final rawId = first.rawData['PlaylistItemId']?.toString();
+                final firstId = (rawId != null && rawId.isNotEmpty)
+                    ? rawId
+                    : first.id;
+                final node = _getTrackFocusNode(firstId);
+                if (node.context?.mounted == true) node.requestFocus();
+              } else if (_playlistClearFiltersFocusNode.canRequestFocus) {
+                _playlistClearFiltersFocusNode.requestFocus();
               }
             },
           ),
@@ -3324,15 +3342,45 @@ class _DetailContentState extends State<_DetailContent> {
                       ),
                 ),
                 const SizedBox(height: 12),
-                TextButton(
-                  onPressed: () {
-                    setState(() {
-                      _playlistPlayedFilter = PlayedStatusFilter.all;
-                      _playlistFavoriteFilter = false;
-                      _playlistMediaTypeFilter = null;
-                    });
+                Focus(
+                  focusNode: _playlistClearFiltersFocusNode,
+                  onKeyEvent: (node, event) {
+                    if (event is KeyDownEvent) {
+                      if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+                        if (_playlistSortFocusNode.canRequestFocus) {
+                          _playlistSortFocusNode.requestFocus();
+                          return KeyEventResult.handled;
+                        }
+                      }
+                    }
+                    return KeyEventResult.ignored;
                   },
-                  child: Text(l10n.clearFilters),
+                  child: Builder(
+                    builder: (context) {
+                      final isFocused = Focus.of(context).hasFocus;
+                      return TextButton(
+                        style: TextButton.styleFrom(
+                          side: isFocused
+                              ? BorderSide(color: AppColorScheme.accent, width: 2)
+                              : null,
+                          backgroundColor: isFocused
+                              ? AppColorScheme.accent.withValues(alpha: 0.15)
+                              : null,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _playlistPlayedFilter = PlayedStatusFilter.all;
+                            _playlistFavoriteFilter = false;
+                            _playlistMediaTypeFilter = null;
+                          });
+                          if (_playlistSortFocusNode.canRequestFocus) {
+                            _playlistSortFocusNode.requestFocus();
+                          }
+                        },
+                        child: Text(l10n.clearFilters),
+                      );
+                    },
+                  ),
                 ),
               ],
             ),
