@@ -53,6 +53,7 @@ class RetroArtworkDataSourceFactory {
           activityGate: activityGate,
           transport: transport,
           supportsPriorityHints: capabilities.supportsPriorityHints,
+          reportsDimensions: capabilities.supportsDimensions,
           priorityDebounce: priorityDebounce,
         ),
       );
@@ -141,6 +142,25 @@ class RetroArtworkSystemSnapshot {
     String role = 'boxart',
   }) => _images[gameId]?[role];
 
+  /// Width over height, when the server reported the artwork's size.
+  double? aspectRatioFor(String gameId, {String role = 'boxart'}) =>
+      _descriptors[gameId]?[role]?.aspectRatio;
+
+  /// Median box art shape, so one odd box can't reshape a whole system grid.
+  late final double? medianBoxartAspectRatio = () {
+    final ratios = <double>[
+      for (final roles in _descriptors.values)
+        if (roles['boxart'] case final descriptor?
+            when descriptor.isRenderable && descriptor.aspectRatio != null)
+          descriptor.aspectRatio!,
+    ]..sort();
+    if (ratios.isEmpty) return null;
+    final mid = ratios.length ~/ 2;
+    return ratios.length.isOdd
+        ? ratios[mid]
+        : (ratios[mid - 1] + ratios[mid]) / 2;
+  }();
+
   List<GameArtworkPriorityItem> pendingPriorityItems(
     Iterable<String> orderedGameIds, {
     required Iterable<String> roles,
@@ -174,6 +194,9 @@ class RetroArtworkSystemSnapshot {
 abstract interface class RetroArtworkDataSource {
   RetroArtworkProtocol get protocol;
   RetroArtworkSystemSnapshot? get snapshot;
+
+  /// Whether the server reports artwork sizes (protocol 3).
+  bool get reportsDimensions;
 
   void addSnapshotListener(RetroArtworkSnapshotListener listener);
   void removeSnapshotListener(RetroArtworkSnapshotListener listener);
@@ -226,6 +249,7 @@ class ManifestArtworkAdapter implements RetroArtworkDataSource {
     required RetroArtworkActivityGate activityGate,
     required RetroArtworkTransport transport,
     required bool supportsPriorityHints,
+    this.reportsDimensions = false,
     this.priorityDebounce = const Duration(milliseconds: 180),
     this.imageRetryBackoff = const Duration(milliseconds: 750),
   }) : _gamesApi = gamesApi,
@@ -251,6 +275,9 @@ class ManifestArtworkAdapter implements RetroArtworkDataSource {
 
   @override
   RetroArtworkProtocol get protocol => RetroArtworkProtocol.manifest;
+
+  @override
+  final bool reportsDimensions;
 
   @override
   RetroArtworkSystemSnapshot? get snapshot => _snapshot;
@@ -742,6 +769,9 @@ class LegacyArtworkAdapter implements RetroArtworkDataSource {
 
   @override
   RetroArtworkProtocol get protocol => RetroArtworkProtocol.legacy;
+
+  @override
+  bool get reportsDimensions => false;
 
   @override
   RetroArtworkSystemSnapshot? get snapshot => _snapshot;

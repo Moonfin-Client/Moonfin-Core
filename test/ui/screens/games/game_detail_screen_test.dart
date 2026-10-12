@@ -27,6 +27,9 @@ class _MockGamesApi extends Mock implements GamesApi {}
 /// test simulate an async artwork update completing while the widget tree is
 /// otherwise idle, without a real network round trip.
 class _FakeArtworkDataSource implements RetroArtworkDataSource {
+  @override
+  bool reportsDimensions = false;
+
   final Map<String, RetroArtworkImageReference> _images =
       <String, RetroArtworkImageReference>{};
   final Set<RetroArtworkSnapshotListener> _listeners =

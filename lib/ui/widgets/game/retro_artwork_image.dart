@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:ui' show ImageFilter;
+
 import 'package:flutter/material.dart';
 
 import '../../../data/services/retro_artwork/retro_artwork_activity_gate.dart';
@@ -19,6 +21,7 @@ class RetroArtworkImage extends StatefulWidget {
     required this.maxDecodeWidth,
     this.fit = BoxFit.cover,
     this.alignment = Alignment.center,
+    this.fillBehind = false,
     this.settleDelay = defaultSettleDelay,
     this.onLoadFinished,
     this.errorBuilder,
@@ -39,6 +42,9 @@ class RetroArtworkImage extends StatefulWidget {
   final Duration settleDelay;
   final BoxFit fit;
   final Alignment alignment;
+
+  /// Paints a blurred copy of the same decoded image behind contained art.
+  final bool fillBehind;
   final VoidCallback? onLoadFinished;
   final Widget Function(BuildContext context, Object error)? errorBuilder;
 
@@ -254,7 +260,7 @@ class _RetroArtworkImageState extends State<RetroArtworkImage> {
     }
     final provider = _decodedProvider;
     if (provider == null) return const SizedBox.shrink();
-    return Image(
+    final image = Image(
       image: provider,
       fit: widget.fit,
       alignment: widget.alignment,
@@ -271,5 +277,29 @@ class _RetroArtworkImageState extends State<RetroArtworkImage> {
             const SizedBox.shrink();
       },
     );
+    if (!widget.fillBehind) return image;
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        ClipRect(
+          child: ImageFiltered(
+            imageFilter: ImageFilter.blur(
+              sigmaX: _fillBlurSigma,
+              sigmaY: _fillBlurSigma,
+              tileMode: TileMode.decal,
+            ),
+            child: Image(
+              image: provider,
+              fit: BoxFit.cover,
+              filterQuality: FilterQuality.low,
+            ),
+          ),
+        ),
+        const ColoredBox(color: Color(0x73000000)),
+        image,
+      ],
+    );
   }
+
+  static const double _fillBlurSigma = 12;
 }

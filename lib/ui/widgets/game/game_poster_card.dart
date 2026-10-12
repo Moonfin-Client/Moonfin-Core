@@ -11,6 +11,7 @@ import '../../../util/platform_detection.dart';
 import '../bounded_network_image.dart';
 import '../media_card.dart';
 import 'game_card_focus_frame.dart';
+import 'retro_artwork_shape.dart';
 
 /// A box-art card for one game, with a seeded color + controller-icon fallback
 /// for the many games that have no art, and a title caption. Always focusable
@@ -31,6 +32,8 @@ class GamePosterCard extends StatefulWidget {
     required this.seed,
     required this.onTap,
     this.width = 108,
+    this.imageHeight,
+    this.artworkSlotHeight,
     this.autofocus = false,
     this.focusColor,
     this.cardFocusExpansion = true,
@@ -56,6 +59,12 @@ class GamePosterCard extends StatefulWidget {
   final String seed;
   final VoidCallback onTap;
   final double width;
+
+  /// Art height; null is the portrait card.
+  final double? imageHeight;
+
+  /// Bottom-aligns the art in a slot this tall, so mixed shapes share a baseline.
+  final double? artworkSlotHeight;
   final bool autofocus;
   final Color? focusColor;
   final bool cardFocusExpansion;
@@ -185,61 +194,69 @@ class _GamePosterCardState extends State<GamePosterCard> {
       shadows: const [Shadow(blurRadius: 4, color: Colors.black54)],
     );
 
+    Widget art = AnimatedScale(
+      scale: scale,
+      duration: const Duration(milliseconds: 150),
+      curve: PlatformDetection.isAppleTV ? Curves.easeOutCubic : Curves.linear,
+      alignment: Alignment.bottomCenter,
+      child: GameCardFocusFrame(
+        active: active,
+        focusColor: widget.focusColor,
+        suppressFocusGlow: widget.suppressFocusGlow,
+        child: SizedBox(
+          width: widget.width,
+          height:
+              widget.imageHeight ??
+              widget.width * RetroArtworkShape.portraitHeightRatio,
+          child: ClipRRect(
+            borderRadius: borders.cardRadius,
+            child:
+                !widget.loadArtwork || (url == null && widget.artwork == null)
+                ? _Fallback(seed: widget.seed, iconSize: widget.width * 0.3)
+                : Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      // Keep the seeded game fallback visible while artwork
+                      // fetches and decodes for newly built rows.
+                      _Fallback(
+                        seed: widget.seed,
+                        iconSize: widget.width * 0.3,
+                      ),
+                      if (widget.artwork != null)
+                        widget.artwork!
+                      else
+                        BoundedNetworkImage(
+                          imageUrl: url!,
+                          cacheManager:
+                              widget.cacheManager ?? gameArtworkCacheManager,
+                          fit: BoxFit.cover,
+                          maxWidth: 1024,
+                          onLoadFinished: widget.onArtworkLoadFinished,
+                          // The fallback underneath remains visible on error.
+                          errorBuilder: (_, _, error) {
+                            widget.onArtworkError?.call(error);
+                            return const SizedBox.shrink();
+                          },
+                        ),
+                    ],
+                  ),
+          ),
+        ),
+      ),
+    );
+    if (widget.artworkSlotHeight case final slot?) {
+      art = SizedBox(
+        height: slot,
+        child: Align(alignment: Alignment.bottomCenter, child: art),
+      );
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
         // The single focus border + glow lives here and nowhere else.
-        AnimatedScale(
-          scale: scale,
-          duration: const Duration(milliseconds: 150),
-          curve: PlatformDetection.isAppleTV
-              ? Curves.easeOutCubic
-              : Curves.linear,
-          alignment: Alignment.bottomCenter,
-          child: GameCardFocusFrame(
-            active: active,
-            focusColor: widget.focusColor,
-            suppressFocusGlow: widget.suppressFocusGlow,
-            child: SizedBox(
-              width: widget.width,
-              height: widget.width * 1.34,
-              child: ClipRRect(
-                borderRadius: borders.cardRadius,
-                child:
-                    !widget.loadArtwork || (url == null && widget.artwork == null)
-                    ? _Fallback(seed: widget.seed, iconSize: widget.width * 0.3)
-                    : Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        // Keep the seeded game fallback visible while artwork
-                        // fetches and decodes for newly built rows.
-                        _Fallback(
-                          seed: widget.seed,
-                          iconSize: widget.width * 0.3,
-                        ),
-                        if (widget.artwork != null)
-                          widget.artwork!
-                        else
-                          BoundedNetworkImage(
-                            imageUrl: url!,
-                            cacheManager:
-                                widget.cacheManager ?? gameArtworkCacheManager,
-                            fit: BoxFit.cover,
-                            maxWidth: 1024,
-                            onLoadFinished: widget.onArtworkLoadFinished,
-                            // The fallback underneath remains visible on error.
-                            errorBuilder: (_, _, error) {
-                              widget.onArtworkError?.call(error);
-                              return const SizedBox.shrink();
-                            },
-                          ),
-                      ],
-                    ),
-              ),
-            ),
-          ),
-        ),
+        art,
         const SizedBox(height: 6),
         SizedBox(
           width: widget.width,

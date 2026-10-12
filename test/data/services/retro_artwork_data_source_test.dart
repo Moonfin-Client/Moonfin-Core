@@ -119,6 +119,113 @@ void main() {
     expect(adapter.imageFor('zelda', role: 'title'), isNull);
   });
 
+  test(
+    'snapshot reports per-game shape and the median box art shape',
+    () async {
+      GameArtworkDescriptor ready(int width, int height) =>
+          GameArtworkDescriptor(
+            state: 'thumbnailReady',
+            revision: 'v1',
+            url: '/art/$width-$height',
+            width: width,
+            height: height,
+          );
+      _stubManifestFor(
+        gamesApi,
+        libraryId: 'retro',
+        systemId: 'n64',
+        manifest: GameArtworkManifest(
+          generation: 'g1',
+          entries: [
+            GameArtworkManifestEntry(
+              gameId: 'mario',
+              artwork: {'boxart': ready(512, 357)},
+            ),
+            GameArtworkManifestEntry(
+              gameId: 'hydro',
+              artwork: {'boxart': ready(512, 374)},
+            ),
+            // A portrait Japanese release must not move the median.
+            GameArtworkManifestEntry(
+              gameId: 'shogi',
+              artwork: {'boxart': ready(256, 354)},
+            ),
+            GameArtworkManifestEntry(
+              gameId: 'pending',
+              artwork: {
+                'boxart': const GameArtworkDescriptor(
+                  state: 'pending',
+                  width: 100,
+                  height: 1000,
+                ),
+              },
+            ),
+            GameArtworkManifestEntry(
+              gameId: 'unsized',
+              artwork: {
+                'boxart': const GameArtworkDescriptor(
+                  state: 'thumbnailReady',
+                  revision: 'v1',
+                  url: '/art/unsized',
+                ),
+              },
+            ),
+          ],
+        ),
+      );
+      final adapter = _buildAdapter(gamesApi, activityGate, transport);
+      addTearDown(adapter.dispose);
+      final snapshot = await adapter.refreshSystem(
+        libraryId: 'retro',
+        systemId: 'n64',
+      );
+
+      expect(snapshot.aspectRatioFor('hydro'), closeTo(1.369, 0.001));
+      expect(snapshot.aspectRatioFor('unsized'), isNull);
+      expect(snapshot.medianBoxartAspectRatio, closeTo(1.369, 0.001));
+    },
+  );
+
+  test('median is null when no box art reports a size', () {
+    final snapshot = RetroArtworkSystemSnapshot(
+      libraryId: 'retro',
+      systemId: 'nes',
+      generation: 'g1',
+      descriptors: {
+        'zelda': {
+          'boxart': const GameArtworkDescriptor(
+            state: 'thumbnailReady',
+            url: '/art/zelda',
+          ),
+        },
+      },
+    );
+
+    expect(snapshot.medianBoxartAspectRatio, isNull);
+  });
+
+  test('reports dimensions only when the server advertises them', () async {
+    when(() => gamesApi.getArtworkCapabilities()).thenAnswer(
+      (_) async => const GameArtworkCapabilities(
+        protocolVersion: 3,
+        manifest: true,
+        versionedAssets: true,
+        dimensions: true,
+      ),
+    );
+    when(() => client.accessToken).thenReturn('protocol-3-token');
+
+    final dataSource = await RetroArtworkDataSourceFactory.create(
+      client: client,
+      activityGate: activityGate,
+      transport: transport,
+    );
+    addTearDown(() => dataSource?.dispose());
+
+    expect(dataSource?.reportsDimensions, isTrue);
+    expect(LegacyArtworkAdapter(gamesApi: gamesApi).reportsDimensions, isFalse);
+  });
+
   test('manifest image transfer failure is retried once, then latches until '
       'route re-entry', () async {
     _stubManifestFor(

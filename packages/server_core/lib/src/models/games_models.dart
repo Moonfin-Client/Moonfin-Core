@@ -66,18 +66,23 @@ class GameArtworkCapabilities {
   final bool priorityHints;
   final bool systemPreviews;
 
+  /// Protocol 3: descriptors carry artwork width/height.
+  final bool dimensions;
+
   const GameArtworkCapabilities({
     this.protocolVersion = 1,
     this.manifest = false,
     this.versionedAssets = false,
     this.priorityHints = false,
     this.systemPreviews = false,
+    this.dimensions = false,
   });
 
   bool get supportsManifest => protocolVersion >= 2 && manifest;
   bool get supportsVersionedAssets => protocolVersion >= 2 && versionedAssets;
   bool get supportsPriorityHints => protocolVersion >= 2 && priorityHints;
   bool get supportsSystemPreviews => protocolVersion >= 2 && systemPreviews;
+  bool get supportsDimensions => protocolVersion >= 3 && dimensions;
 
   factory GameArtworkCapabilities.fromJson(Map<String, dynamic> json) =>
       GameArtworkCapabilities(
@@ -92,6 +97,9 @@ class GameArtworkCapabilities {
         systemPreviews: json['systemPreviews'] is bool
             ? json['systemPreviews'] as bool
             : false,
+        dimensions: json['dimensions'] is bool
+            ? json['dimensions'] as bool
+            : false,
       );
 }
 
@@ -103,13 +111,26 @@ class GameArtworkDescriptor {
   final int? retryAfterSeconds;
   final int? refreshAfterSeconds;
 
+  /// Source artwork size; use for shape only, the served thumbnail may be smaller.
+  final int? width;
+  final int? height;
+
   const GameArtworkDescriptor({
     required this.state,
     this.url,
     this.revision,
     this.retryAfterSeconds,
     this.refreshAfterSeconds,
+    this.width,
+    this.height,
   });
+
+  double? get aspectRatio {
+    final w = width;
+    final h = height;
+    if (w == null || h == null || w <= 0 || h <= 0) return null;
+    return w / h;
+  }
 
   bool get isRenderable =>
       (state == 'thumbnailReady' || state == 'originalReady') &&
@@ -123,6 +144,8 @@ class GameArtworkDescriptor {
         revision: _stringValue(json['revision']),
         retryAfterSeconds: _intValue(json['retryAfterSeconds']),
         refreshAfterSeconds: _intValue(json['refreshAfterSeconds']),
+        width: _intValue(json['width']),
+        height: _intValue(json['height']),
       );
 }
 

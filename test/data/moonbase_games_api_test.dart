@@ -158,6 +158,40 @@ void main() {
     },
   );
 
+  test('protocol 3 descriptors carry artwork dimensions', () {
+    final descriptor = GameArtworkDescriptor.fromJson({
+      'state': 'thumbnailReady',
+      'url': '/art/box',
+      'width': 512,
+      'height': 374,
+    });
+    final protocol3 = GameArtworkCapabilities.fromJson({
+      'protocolVersion': 3,
+      'manifest': true,
+      'dimensions': true,
+    });
+
+    expect(descriptor.aspectRatio, closeTo(1.369, 0.001));
+    expect(
+      GameArtworkDescriptor.fromJson({'state': 'pending'}).aspectRatio,
+      isNull,
+    );
+    expect(
+      GameArtworkDescriptor.fromJson({'state': 'x', 'width': 512, 'height': 0})
+          .aspectRatio,
+      isNull,
+    );
+    expect(protocol3.supportsDimensions, isTrue);
+    expect(protocol3.supportsManifest, isTrue);
+    expect(
+      GameArtworkCapabilities.fromJson({
+        'protocolVersion': 2,
+        'dimensions': true,
+      }).supportsDimensions,
+      isFalse,
+    );
+  });
+
   test('versioned artwork URLs retain the authenticated server origin', () {
     final artwork = Uri.parse(
       createApi().artworkUrl('/Moonfin/Games/retro/Artwork/zelda/boxart/rev-1'),

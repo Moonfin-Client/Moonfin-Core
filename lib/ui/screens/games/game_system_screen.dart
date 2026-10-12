@@ -38,6 +38,7 @@ import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/game/game_alpha_picker_bar.dart';
 import '../../widgets/game/game_poster_card.dart';
 import '../../widgets/game/retro_artwork_image.dart';
+import '../../widgets/game/retro_artwork_shape.dart';
 import '../../widgets/media_card.dart';
 
 import '../../widgets/local_search_field.dart';
@@ -129,6 +130,11 @@ class _GameSystemScreenState extends State<GameSystemScreen>
   bool _allowTvPop = false;
   bool _routeIsCovered = false;
   bool _artworkRefreshQueued = false;
+  // Fixed for the visit once adopted; null is the portrait cell.
+  double? _gridCellAspect;
+  bool _gridCellAspectLocked = false;
+  int? _focusedGridIndex;
+  double _lastGridTopPadding = _gridTopPadding;
   ModalRoute<dynamic>? _observedRoute;
 
   @override
@@ -136,6 +142,7 @@ class _GameSystemScreenState extends State<GameSystemScreen>
     super.initState();
     _artworkScope = gameArtworkScope(widget.libraryId, widget.systemId);
     _activateArtworkScope();
+    _restoreGridCellAspect();
     _browse = GameSystemBrowseViewModel(
       gamesApi: GetIt.instance<MediaServerClient>().gamesApi,
       libraryId: widget.libraryId,
@@ -164,9 +171,69 @@ class _GameSystemScreenState extends State<GameSystemScreen>
       );
     }
     if (mounted) {
-      setState(() {});
+      setState(_adoptGridCellAspect);
       _scheduleArtworkPriority();
     }
+  }
+
+  void _restoreGridCellAspect() {
+    _gridCellAspect = _prefs.gameGridCellAspect(_artworkScope);
+    _gridCellAspectLocked = _gridCellAspect != null;
+  }
+
+  /// Adopts the median box art shape once per visit. Call inside setState.
+  void _adoptGridCellAspect() {
+    final dataSource = _retroArtworkDataSource;
+    if (dataSource == null) return;
+    final before = _gridCellAspect;
+    if (!dataSource.reportsDimensions) {
+      _gridCellAspect = null;
+      _gridCellAspectLocked = true;
+    } else {
+      final median = dataSource.snapshot?.medianBoxartAspectRatio;
+      if (median == null) return;
+      if (!_gridCellAspectLocked) {
+        _gridCellAspect = median;
+        _gridCellAspectLocked = true;
+      }
+      final stored = _prefs.gameGridCellAspect(_artworkScope);
+      if (stored == null || (stored - median).abs() > 0.01) {
+        unawaited(_prefs.setGameGridCellAspect(_artworkScope, median));
+      }
+    }
+    if (before != _gridCellAspect) _keepFocusedGameAfterReshape();
+  }
+
+  // Two frames: the grid relays out, then [_artworkGridLayout] catches up.
+  void _keepFocusedGameAfterReshape() {
+    final index = _focusedGridIndex;
+    if (index == null) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final layout = _artworkGridLayout;
+        if (!mounted || layout == null || !_gridScrollController.hasClients) {
+          return;
+        }
+        if (index >= layout.games.length) return;
+        final position = _gridScrollController.position;
+        final row = index ~/ layout.crossAxisCount;
+        _gridScrollController.jumpTo(
+          (row * layout.rowStride - _lastGridTopPadding).clamp(
+            position.minScrollExtent,
+            position.maxScrollExtent,
+          ),
+        );
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted || _focusedGridIndex != index) return;
+          final node = getGridItemFocusNode(index, prefix: 'game_grid');
+          if (node.hasFocus) {
+            _scrollFocusedCardIntoView(node, topMargin: _lastGridTopPadding);
+          } else {
+            node.requestFocus();
+          }
+        });
+      });
+    });
   }
 
   Future<void> _initializeArtworkDataSource() async {
@@ -230,7 +297,7 @@ class _GameSystemScreenState extends State<GameSystemScreen>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _artworkRefreshQueued = false;
       if (!mounted) return;
-      setState(() {});
+      setState(_adoptGridCellAspect);
       if (recenter) _scheduleArtworkPriority(force: true);
     });
     // addPostFrameCallback only fires once a frame is already scheduled. If
@@ -290,6 +357,7 @@ class _GameSystemScreenState extends State<GameSystemScreen>
       releaseGameArtworkCacheScope(_artworkScope);
       _artworkScope = gameArtworkScope(widget.libraryId, widget.systemId);
       _activateArtworkScope();
+      _restoreGridCellAspect();
     }
   }
 
@@ -561,12 +629,16 @@ class _GameSystemScreenState extends State<GameSystemScreen>
         Expanded(
           child: _browse.visibleGames.isEmpty
               ? Center(child: Text(AppLocalizations.of(context).noItemsFound))
-              : _buildGrid(
-                  _browse.visibleGames,
-                  desktopScale: desktopScale,
-                  horizontalPadding: horizontalPadding,
-                  showDetails: showDetails,
-                  showBackdrop: showBackdrop,
+              // Rows scrolled above the grid would otherwise paint over the header.
+              : ClipRect(
+                  clipper: const _ClipTopEdge(),
+                  child: _buildGrid(
+                    _browse.visibleGames,
+                    desktopScale: desktopScale,
+                    horizontalPadding: horizontalPadding,
+                    showDetails: showDetails,
+                    showBackdrop: showBackdrop,
+                  ),
                 ),
         ),
       ],
@@ -982,15 +1054,17 @@ class _GameSystemScreenState extends State<GameSystemScreen>
   }) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        const imageHeightRatio = 1.34;
         const captionGap = 6.0;
         const captionHeight = 42.0;
 
+        final cellAspect = _gridCellAspect;
+        final cell = RetroArtworkShape.cellFor(cellAspect);
         final availableWidth = constraints.maxWidth - horizontalPadding * 2;
-        final preferredCardWidth =
+        final portraitCardWidth =
             _prefs.resolveLibraryPosterSize().portraitHeight *
             (2 / 3) *
             desktopScale;
+        final preferredCardWidth = portraitCardWidth * cell.width;
         final cardFocusExpansion = _prefs.get(
           UserPreferences.cardFocusExpansion,
         );
@@ -1013,13 +1087,12 @@ class _GameSystemScreenState extends State<GameSystemScreen>
             : 12.0;
         final textScale = MediaQuery.textScalerOf(context).scale(1.0);
         final isRtl = Directionality.of(context) == TextDirection.rtl;
-        final cardHeight =
-            cardWidth * imageHeightRatio +
-            captionGap +
-            captionHeight * textScale;
-        final upwardGrowth = (cardWidth * imageHeightRatio) * expansionFactor;
+        final imageHeight = cardWidth / cell.aspectRatio;
+        final cardHeight = imageHeight + captionGap + captionHeight * textScale;
+        final upwardGrowth = imageHeight * expansionFactor;
         final gridMainAxisSpacing = 14.0 + upwardGrowth;
         final topPadding = _gridTopPadding + upwardGrowth;
+        _lastGridTopPadding = topPadding;
         final rowStride = cardHeight + gridMainAxisSpacing;
         final layout = _ArtworkGridLayout(
           games: games,
@@ -1091,6 +1164,15 @@ class _GameSystemScreenState extends State<GameSystemScreen>
                 final atVisualRightEdge = isRtl
                     ? column == 0
                     : column == columnCount - 1 || index == games.length - 1;
+                final artAspect = _retroArtworkDataSource?.snapshot
+                    ?.aspectRatioFor(game.id);
+                final containArt =
+                    cellAspect != null &&
+                    (artAspect == null ||
+                        RetroArtworkShape.needsFill(
+                          artAspect,
+                          cell.aspectRatio,
+                        ));
                 return GamePosterCard(
                   imageUrl: reference?.legacyUrl,
                   artwork:
@@ -1113,7 +1195,8 @@ class _GameSystemScreenState extends State<GameSystemScreen>
                             cardWidth,
                             MediaQuery.devicePixelRatioOf(context),
                           ),
-                          fit: BoxFit.cover,
+                          fit: containArt ? BoxFit.contain : BoxFit.cover,
+                          fillBehind: containArt,
                           onLoadFinished: () => _retroArtworkDataSource
                               ?.reportImageLoaded(game.id),
                           errorBuilder: (_, error) {
@@ -1127,14 +1210,18 @@ class _GameSystemScreenState extends State<GameSystemScreen>
                   title: game.title,
                   fileName: game.fileName,
                   seed: game.id,
-                  cacheManager: gameArtworkCacheManagerForScope(_artworkScope),
+                  cacheManager: gameArtworkCacheManagerForScope(
+                    _artworkScope,
+                  ),
                   width: cardWidth,
+                  imageHeight: imageHeight,
                   focusNode: cardFocusNode,
                   focusColor: focusColor,
                   cardFocusExpansion: cardFocusExpansion,
                   suppressFocusGlow: isNeon,
                   autoScroll: false,
                   onFocus: () {
+                    _focusedGridIndex = index;
                     _activateBrowseGame(
                       game,
                       showBackdrop: showBackdrop,
@@ -1148,7 +1235,10 @@ class _GameSystemScreenState extends State<GameSystemScreen>
                       topMargin: topPadding,
                     );
                   },
-                  onFocusLost: () => _browse.deactivateGame(game),
+                  onFocusLost: () {
+                    if (_focusedGridIndex == index) _focusedGridIndex = null;
+                    _browse.deactivateGame(game);
+                  },
                   onHoverStart: () => _activateHoveredGame(
                     game,
                     showBackdrop: showBackdrop,
@@ -1206,6 +1296,17 @@ class _GameSystemScreenState extends State<GameSystemScreen>
       },
     );
   }
+}
+
+class _ClipTopEdge extends CustomClipper<Rect> {
+  const _ClipTopEdge();
+
+  @override
+  Rect getClip(Size size) =>
+      Rect.fromLTRB(-size.width, 0, size.width * 2, size.height * 2);
+
+  @override
+  bool shouldReclip(_ClipTopEdge oldClipper) => false;
 }
 
 class _ArtworkGridLayout {

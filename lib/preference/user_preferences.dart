@@ -774,6 +774,15 @@ class UserPreferences extends ChangeNotifier {
 
   Future<void> flushPendingWrites() => _store.flushPendingWrites();
 
+  static const String _gameGridCellAspectPrefix = 'game_grid_cell_aspect:';
+
+  /// Last retro grid cell shape for a `libraryId/systemId` scope.
+  double? gameGridCellAspect(String scope) =>
+      _store.getDouble('$_gameGridCellAspectPrefix$scope');
+
+  Future<void> setGameGridCellAspect(String scope, double aspectRatio) =>
+      _store.setDouble('$_gameGridCellAspectPrefix$scope', aspectRatio);
+
   bool containsPreferenceKey(String key) => _store.containsKey(key);
 
   bool containsPreference<T>(Preference<T> pref, {bool scopedOnly = false}) {

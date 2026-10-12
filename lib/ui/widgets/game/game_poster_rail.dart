@@ -16,6 +16,7 @@ import '../../../data/services/retro_artwork/retro_artwork_data_source.dart';
 import '../../../data/services/retro_artwork/retro_artwork_transport.dart';
 import 'game_poster_card.dart';
 import 'retro_artwork_image.dart';
+import 'retro_artwork_shape.dart';
 
 /// A titled horizontal row of game box art (one system's games, or a "more like this" rail).
 class GamePosterRail extends StatelessWidget {
@@ -57,8 +58,9 @@ class GamePosterRail extends StatelessWidget {
     final cardFocusExpansion = prefs.get(UserPreferences.cardFocusExpansion);
     final isMobile = PlatformDetection.useMobileUi;
     final textScale = MediaQuery.textScalerOf(context).scale(1);
+    final maxImageHeight = cardWidth * RetroArtworkShape.portraitHeightRatio;
     final upwardGrowth = cardFocusExpansion && !isMobile
-        ? (cardWidth * 1.34) * (MediaCard.focusScale - 1.0)
+        ? maxImageHeight * (MediaCard.focusScale - 1.0)
         : 0.0;
     final itemSpacing = cardFocusExpansion && !isMobile
         ? MediaCard.focusGap(cardWidth, minimum: 12.0)
@@ -89,7 +91,7 @@ class GamePosterRail extends StatelessWidget {
           ),
         ),
         SizedBox(
-          height: cardWidth * 1.34 + 6 + 42 * textScale + upwardGrowth,
+          height: maxImageHeight + 6 + 42 * textScale + upwardGrowth,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             clipBehavior: Clip.none,
@@ -105,6 +107,14 @@ class GamePosterRail extends StatelessWidget {
               final source = reference?.source;
               final transport = retroArtworkTransport;
               final gate = retroArtworkActivityGate;
+              final artAspect = artworkDataSource?.snapshot?.aspectRatioFor(
+                game.id,
+              );
+              final cell = RetroArtworkShape.cellFor(artAspect);
+              final width = cardWidth * cell.width;
+              final containArt =
+                  artAspect != null &&
+                  RetroArtworkShape.needsFill(artAspect, cell.aspectRatio);
               return GamePosterCard(
                 imageUrl: reference?.legacyUrl,
                 artwork: source == null || transport == null || gate == null
@@ -116,10 +126,11 @@ class GamePosterRail extends StatelessWidget {
                         // Decode to the pixels actually painted, the rule the
                         // rest of the app's bounded images already follow.
                         maxDecodeWidth: BoundedNetworkImage.cacheWidthFor(
-                          cardWidth,
+                          width,
                           MediaQuery.devicePixelRatioOf(context),
                         ),
-                        fit: BoxFit.cover,
+                        fit: containArt ? BoxFit.contain : BoxFit.cover,
+                        fillBehind: containArt,
                         onLoadFinished: () => artworkDataSource
                             ?.reportImageLoaded(game.id, role: 'boxart'),
                         errorBuilder: (_, error) {
@@ -134,7 +145,9 @@ class GamePosterRail extends StatelessWidget {
                 title: game.title,
                 fileName: game.fileName,
                 seed: game.id,
-                width: cardWidth,
+                width: width,
+                imageHeight: cardWidth * cell.height,
+                artworkSlotHeight: maxImageHeight,
                 autofocus: autofocusFirst && i == 0,
                 focusColor: focusColor,
                 cardFocusExpansion: cardFocusExpansion,
