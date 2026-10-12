@@ -98,6 +98,24 @@ class EmbyMediaServerClient extends MediaServerClient {
   }
 
   @override
+  Future<CinemaMedia?> resolveCinemaMedia(
+    String itemId, {
+    CinemaMediaType? expectedMediaType,
+  }) async {
+    final response = await _dio.get(
+      '/Moonfin/Cinema/ResolveMedia',
+      queryParameters: {
+        'itemId': itemId,
+        if (expectedMediaType != null)
+          'expectedMediaType': expectedMediaType.name,
+      },
+      options: Options(receiveTimeout: const Duration(seconds: 10)),
+    );
+    final data = response.data;
+    return data is Map ? CinemaMedia.fromJson(data) : null;
+  }
+
+  @override
   ServerType get serverType => ServerType.emby;
 
   @override

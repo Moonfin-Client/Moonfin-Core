@@ -8348,7 +8348,8 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           continue;
         }
         final prerollRaw = Map<String, dynamic>.from(raw)
-          ..['__moonfinIsPreroll'] = true;
+          ..['__moonfinIsPreroll'] = true
+          ..['__moonfinCinemaFeatureType'] = item.type;
         prerolls.add(
           AggregatedItem(id: id, serverId: item.serverId, rawData: prerollRaw),
         );

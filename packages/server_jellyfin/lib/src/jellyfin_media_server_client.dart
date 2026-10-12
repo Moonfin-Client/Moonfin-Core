@@ -28,6 +28,21 @@ import 'api/jellyfin_client_log_api.dart';
 import 'api/jellyfin_syncplay_api.dart';
 
 class JellyfinMediaServerClient extends MediaServerClient {
+  @override
+  Future<CinemaMedia?> resolveCinemaMedia(String itemId, {
+    CinemaMediaType? expectedMediaType,
+  }) async {
+    final response = await _dio.get('/Moonfin/Cinema/ResolveMedia',
+      queryParameters: {
+        'itemId': itemId,
+        if (expectedMediaType != null) 'expectedMediaType': expectedMediaType.name,
+      },
+      options: Options(receiveTimeout: const Duration(seconds: 10)),
+    );
+    final data = response.data;
+    return data is Map ? CinemaMedia.fromJson(data) : null;
+  }
+
   final Dio _dio;
 
   @override

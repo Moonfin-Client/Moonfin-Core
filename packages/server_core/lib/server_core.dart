@@ -5,6 +5,7 @@
 library;
 
 export 'src/media_server_client.dart';
+export 'src/models/cinema_media.dart';
 export 'src/models/server_type.dart';
 export 'src/models/device_info.dart';
 export 'src/models/enums.dart';
