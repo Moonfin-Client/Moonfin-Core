@@ -2058,7 +2058,9 @@ class _ContentRowsState extends State<_ContentRows>
       'maxHeight': '720',
       'audioBitRate': '96000',
       'audioChannels': '2',
-      'subtitleMethod': 'Drop',
+      // Emby has no Drop and answers the whole request with a 400 for naming
+      // it. With no subtitle index asked for it burns nothing in anyway.
+      if (client.serverType != ServerType.emby) 'subtitleMethod': 'Drop',
       if (kIsWeb) 'container': 'mp4',
       if (kIsWeb) 'TranscodingContainer': 'mp4',
       // The server copies this into the segment urls it writes and then refuses
@@ -2067,7 +2069,9 @@ class _ContentRowsState extends State<_ContentRows>
       if (startTicks > 0 && !usesHlsPreview) 'StartTimeTicks': '$startTicks',
       'MediaSourceId': ?mediaSourceId,
       'AudioStreamIndex': ?audioIndex?.toString(),
-      if (client.accessToken != null) 'ApiKey': client.accessToken!,
+      // Emby answers 401 to ApiKey and only takes api_key.
+      if (client.accessToken != null)
+        client.serverType.tokenQueryParam: client.accessToken!,
     };
 
     final normalizedBasePath = baseUri.path.endsWith('/')
