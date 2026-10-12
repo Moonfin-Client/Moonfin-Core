@@ -9,6 +9,14 @@ import 'package:moonfin_design/moonfin_design.dart';
 import 'package:playback_core/playback_core.dart';
 import 'package:server_core/server_core.dart';
 
+import '../../../auth/repositories/session_repository.dart';
+import '../../../data/repositories/seerr_repository.dart';
+import '../../../data/services/cinema_media_resolver.dart';
+import '../../../data/services/seerr/seerr_api_models.dart';
+import '../../../playback/cinema_mode_controller.dart';
+import '../../../playback/cinema_playback_source_guard.dart';
+import '../../../playback/cinema_request_picker_session.dart';
+import '../../widgets/playback/cinema_mode_actions_overlay.dart';
 import '../../../playback/subtitle_style.dart';
 import '../../../data/models/aggregated_item.dart';
 import '../../../data/utils/chapter_markers.dart';
@@ -75,6 +83,259 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   EpisodeBrowserController? _episodeBrowser;
   bool _episodeBrowserShown = false;
 
+  late final CinemaModeController _cinema;
+  final _cinemaSource = CinemaPlaybackSourceGuard();
+  CinemaRequestPickerSession? _cinemaPicker;
+  int _cinemaPickerId = DateTime.now().microsecondsSinceEpoch;
+
+  bool get _isCinema =>
+      _rawDataForQueueItem(
+        _manager?.queueService.currentItem,
+      )?['__moonfinIsPreroll'] ==
+      true;
+
+  Object _cinemaAccountKey() {
+    final session = GetIt.instance<SessionRepository>();
+    final client = _clientForQueueItem(_manager?.queueService.currentItem);
+    return (
+      session.activeServerId,
+      session.activeUserId,
+      client?.baseUrl,
+      client?.userId,
+      client?.accessToken,
+    );
+  }
+
+  void _configureCinema() {
+    final prefs = _prefsListened;
+    if (prefs == null) return;
+    _cinema.configure(
+      minimumSeconds: prefs.get(
+        UserPreferences.cinemaModeSkipMinDurationSeconds,
+      ),
+      autoHideSeconds: prefs
+          .get(UserPreferences.cinemaModeSkipAutoHide)
+          .seconds,
+    );
+  }
+
+  void _startCinemaItem() {
+    final queue = _manager?.queueService;
+    final item = queue?.currentItem;
+    if (!_cinemaSource.enter(item, queue?.currentIndex ?? -1)) return;
+    _cinemaPicker?.beginGrace();
+    final raw = _isCinema ? _rawDataForQueueItem(item) : null;
+    final client = raw == null ? null : _clientForQueueItem(item);
+    _cinema.enter(
+      item: raw,
+      resolveMedia: () => client == null
+          ? Future.value()
+          : CinemaMediaResolver.resolve(
+              client: client,
+              itemId: _itemIdForQueueItem(item) ?? '',
+              item: raw!,
+            ),
+    );
+    _updateCinemaPlayback();
+  }
+
+  void _updateCinemaPlayback() {
+    final manager = _manager;
+    if (manager == null || !_isCinema) return;
+    final item = manager.queueService.currentItem;
+    if (!_cinemaSource.observeReady(
+      item: item,
+      index: manager.queueService.currentIndex,
+      itemId: _itemIdForQueueItem(item),
+      source: manager.bringupState,
+    )) {
+      return;
+    }
+    _cinema.updatePlayback(
+      duration: manager.backend?.duration ?? Duration.zero,
+      playing: manager.state.isPlaying,
+    );
+  }
+
+  void _onCinemaChanged() {
+    WidgetsBinding.instance.addPostFrameCallback((_) => _pushCinemaActions());
+    WidgetsBinding.instance.ensureVisualUpdate();
+  }
+
+  void _pushCinemaActions() {
+    final backend = _backend;
+    if (!mounted || backend == null) return;
+    final l10n = AppLocalizations.of(context);
+    unawaited(
+      backend.setCinemaActions({
+        'active': _isCinema,
+        'generation': _cinema.generation,
+        'visible': _cinema.visible,
+        'requestFocused': _cinema.focusedAction == CinemaAction.request,
+        'canRequest': _cinema.canRequest,
+        'requestLabel': cinemaRequestLabel(_cinema, l10n),
+        'skipLabel': _cinema.media == null
+            ? l10n.settingsSkip
+            : l10n.skipSegment(l10n.trailer),
+        'durationMs': _cinema.duration.inMilliseconds,
+        'countdownStyle':
+            (_prefsListened?.get(UserPreferences.cinemaModeSkipCountdown) ??
+                    MediaSegmentCountdown.progressBar)
+                .name,
+      }),
+    );
+  }
+
+  Future<void> _skipCinema() {
+    if (_cinemaPicker?.closeForSkip() == true) {
+      _cinemaPicker = null;
+    }
+    return _manager?.nextInQueue() ?? Future.value();
+  }
+
+  Future<SeerrTvDetails?> _showCinemaNativePicker(
+    SeerrRepository repository,
+    SeerrUser user,
+    bool Function() isCurrent,
+    Map<String, Object?> options,
+    CinemaTvSubmit submit,
+  ) async {
+    final backend = _backend;
+    if (!mounted || backend == null || !isCurrent()) return null;
+    _cinemaPicker?.close();
+    final requestId = ++_cinemaPickerId;
+    final session = CinemaRequestPickerSession(
+      accountKey: _cinemaAccountKey,
+      isMounted: () => mounted && !_exiting,
+    );
+    _cinemaPicker = session;
+    session.dismissDialog = () => unawaited(
+      backend.dismissCinemaRequestOptions(requestId: requestId),
+    );
+    final l10n = AppLocalizations.of(context);
+    final isMovie = options['isMovie'] == true;
+    try {
+      final pickerResult = backend.showCinemaRequestOptions({
+        ...options,
+        'requestId': requestId,
+        'submitLabel': l10n.submitRequest,
+        'cancelLabel': l10n.cancel,
+        'quotaBlockedLabel': l10n.requestErrorQuota,
+      });
+
+      SeerrQuotaDetail? quotaDetail;
+      // Load quota without delaying the picker.
+      unawaited(() async {
+        try {
+          final quota = await repository
+              .getUserQuota(user.id)
+              .timeout(const Duration(seconds: 5));
+          if (!session.isCurrent || !identical(_cinemaPicker, session)) {
+            return;
+          }
+          final detail = isMovie ? quota.movie : quota.tv;
+          if (detail == null || detail.isUnlimited) return;
+          quotaDetail = detail;
+          final remaining = detail.remaining;
+          final label = detail.restricted
+              ? l10n.requestErrorQuota
+              : remaining == null
+                  ? null
+                  : isMovie
+                      ? l10n.movieQuotaRemaining(remaining, detail.limit ?? 0)
+                      : l10n.seasonQuotaRemaining(remaining, detail.limit ?? 0);
+          if (label == null) return;
+          await backend.updateCinemaRequestQuota({
+            'requestId': requestId,
+            'quotaLabel': label,
+            'quotaRemaining': remaining,
+            'quotaRestricted': detail.restricted,
+          });
+        } catch (_) {
+          // A quota lookup failure must not prevent a request.
+        }
+      }());
+
+      final selected = await pickerResult;
+      if (!session.isCurrent ||
+          selected == null ||
+          selected['requestId'] != requestId) {
+        return null;
+      }
+      session.markSubmitting();
+      // A submitted request continues even if the next trailer starts.
+      if (identical(_cinemaPicker, session)) _cinemaPicker = null;
+      return await submit(selected, quotaDetail, () => session.isCurrent);
+    } finally {
+      session.dispose();
+      if (identical(_cinemaPicker, session)) _cinemaPicker = null;
+    }
+  }
+
+  Future<SeerrTvDetails?> _requestCinemaSeries(
+    SeerrRepository repository,
+    SeerrTvDetails details,
+    SeerrUser user,
+    CinemaTvQualityOptions options,
+    bool Function() isCurrent,
+    CinemaTvSubmit submit,
+  ) {
+    final standard = cinemaRequestableSeasons(details)
+        .difference(options.excludedStandard).toList()..sort();
+    final fourK = cinemaRequestableSeasons(details, is4k: true)
+        .difference(options.excluded4k).toList()..sort();
+    final l10n = AppLocalizations.of(context);
+    return _showCinemaNativePicker(
+      repository,
+      user,
+      isCurrent,
+      {
+        'title': options.standard
+            ? l10n.requestSeriesOrMovie(l10n.series)
+            : l10n.requestSeriesOrMovie4k(l10n.series),
+        'isMovie': false,
+        'is4k': !options.standard,
+        'qualityToggle': options.standard && options.fourK,
+        'qualityLabel': l10n.uhd4k,
+        'seasons': standard,
+        'labels': [for (final number in standard) l10n.seasonChip(number)],
+        'seasons4k': fourK,
+        'labels4k': [for (final number in fourK) l10n.seasonChip(number)],
+        'allLabel': l10n.allSeasons,
+        'allEnabled': options.standard && options.excludedStandard.isEmpty,
+        'all4kEnabled': options.fourK && options.excluded4k.isEmpty,
+      },
+      submit,
+    );
+  }
+
+  Future<void> _requestCinemaMovie(
+    SeerrRepository repository,
+    SeerrMovieDetails details,
+    SeerrUser user,
+    bool Function() isCurrent,
+    CinemaMovieSubmit submit,
+  ) async {
+    final l10n = AppLocalizations.of(context);
+    await _showCinemaNativePicker(
+      repository,
+      user,
+      isCurrent,
+      {
+        'title': l10n.requestSeriesOrMovie(l10n.movie),
+        'isMovie': true,
+        'is4k': false,
+        'qualityToggle': true,
+        'qualityLabel': l10n.uhd4k,
+      },
+      (selection, quota, isAllowed) async {
+        if (selection['is4k'] is! bool) return null;
+        await submit(selection['is4k'] as bool, isAllowed);
+        return null;
+      },
+    );
+  }
+
   AppleTvBackend? get _backend {
     try {
       return GetIt.instance<AppleTvBackend>();
@@ -94,6 +355,13 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   @override
   void initState() {
     super.initState();
+    _cinema = CinemaModeController(
+      seerr: () => GetIt.instance.getAsync<SeerrRepository>(),
+      accountKey: _cinemaAccountKey,
+      onSkip: _skipCinema,
+      onRequestSeries: _requestCinemaSeries,
+      onRequestMovie: _requestCinemaMovie,
+    )..addListener(_onCinemaChanged);
     try {
       _screensaverController = GetIt.instance<ScreensaverController>();
     } catch (_) {}
@@ -115,6 +383,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
           setState(() => _bringupState = state);
         }
         _pushMetadata();
+        _updateCinemaPlayback();
         if (state.phase == PlaybackBringupPhase.ready) {
           _pushSubtitleStyle(force: true);
         }
@@ -122,12 +391,16 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
         // here. The per-item guard makes repeat events a no-op.
         _loadSegmentsForCurrentItem();
       });
-      _screensaverPlayingSub = manager.state.playingStream.listen(
-        (playing) => _screensaverController?.setPlaybackActive(playing),
-      );
-      _positionSub = manager.state.positionStream.listen(
-        (position) => _prompts?.onPositionTick(position, manager.state.duration),
-      );
+      _screensaverPlayingSub = manager.state.playingStream.listen((playing) {
+        _screensaverController?.setPlaybackActive(playing);
+        _updateCinemaPlayback();
+      });
+      _positionSub = manager.state.positionStream.listen((position) {
+        if (!_isCinema) {
+          _prompts?.onPositionTick(position, manager.state.duration);
+        }
+        _updateCinemaPlayback();
+      });
     }
     try {
       final prefs = GetIt.instance<UserPreferences>();
@@ -145,6 +418,8 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
       _lastTimeSlots = _timeSlotsSnapshot(prefs);
       prefs.addListener(_onPrefsChanged);
     } catch (_) {}
+    _configureCinema();
+    _startCinemaItem();
     _loadSegmentsForCurrentItem();
     if (GetIt.instance.isRegistered<SyncPlayManager>()) {
       _syncPlay = GetIt.instance<SyncPlayManager>();
@@ -156,6 +431,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
       _pushThemeConfig();
       _pushPromptStrings();
       _pushTimeSlots();
+      _pushCinemaActions();
     });
   }
 
@@ -741,6 +1017,8 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
       _timeSlotArgs(prefs).values.join('|');
 
   void _onPrefsChanged() {
+    _configureCinema();
+    _pushCinemaActions();
     final prefs = _prefsListened;
     if (prefs == null) return;
     _pushSubtitleStyle();
@@ -1602,6 +1880,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   void _onQueueChanged() {
     _closeEpisodeBrowser(hideNative: true);
     _prompts?.onQueueChanged();
+    _startCinemaItem();
     _loadSegmentsForCurrentItem();
     _pushMetadata();
   }
@@ -1610,6 +1889,19 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     final manager = _manager;
     if (manager == null) return;
     switch (action['event']?.toString()) {
+      case 'cinemaAction':
+        if (!_isCinema || action['generation'] != _cinema.generation) return;
+        switch (action['action']) {
+          case 'select':
+            _cinema.activate();
+          case 'left':
+            _cinema.moveLeft();
+          case 'right':
+            _cinema.moveRight();
+          case 'hide':
+            _cinema.hide();
+        }
+        return;
       case 'play':
         unawaited(manager.resume());
       case 'pause':
@@ -1718,6 +2010,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   void _handleExit() {
     if (_exiting || !mounted) return;
     _exiting = true;
+    _cinemaPicker?.close();
     unawaited(_backend?.dismissPlayer() ?? Future<void>.value());
     if (context.canPop()) {
       context.pop();
@@ -1726,6 +2019,9 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
 
   @override
   void dispose() {
+    _cinemaPicker?.close();
+    _cinema.removeListener(_onCinemaChanged);
+    _cinema.dispose();
     _trickplayLoadGeneration++;
     _exitSub?.cancel();
     _queueSub?.cancel();

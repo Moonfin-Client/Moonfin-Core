@@ -22,6 +22,9 @@ final class AppleTvVideoChannel: NSObject, FlutterStreamHandler {
     private var lastThemeConfig: [String: Any]?
     private var lastPromptStrings: [String: Any]?
     private var lastTimeSlots: [String: Any]?
+    private var lastCinemaActions: [String: Any]?
+    private var pendingCinemaRequestQuota: [String: Any]?
+    private var pendingCinemaRequestDismissId: Int?
     static var lastCommand = "-"
 
     init(messenger: FlutterBinaryMessenger, rootViewController: UIViewController) {
@@ -41,6 +44,27 @@ final class AppleTvVideoChannel: NSObject, FlutterStreamHandler {
                 // the modal is actually on screen before it starts waiting.
                 Task { @MainActor in
                     result(self?.playerVC?.presentStillWatching() ?? false)
+                }
+                return
+            }
+            if call.method == "showCinemaRequestOptions" {
+                Task { @MainActor in
+                    guard let vc = self?.playerVC else { result(nil); return }
+                    let options = call.arguments as? [String: Any] ?? [:]
+                    let requestId = (options["requestId"] as? NSNumber)?.intValue
+                    if requestId != nil && self?.pendingCinemaRequestDismissId == requestId {
+                        self?.pendingCinemaRequestDismissId = nil
+                        result(nil)
+                        return
+                    }
+                    vc.presentCinemaRequestOptions(options) {
+                        result($0)
+                    }
+                    if let pending = self?.pendingCinemaRequestQuota,
+                       (pending["requestId"] as? NSNumber)?.intValue == requestId {
+                        _ = vc.updateCinemaRequestQuota(pending)
+                        self?.pendingCinemaRequestQuota = nil
+                    }
                 }
                 return
             }
@@ -105,6 +129,26 @@ final class AppleTvVideoChannel: NSObject, FlutterStreamHandler {
             lastMetadata = args
             playerVC?.applyUiMetadata(args)
             player?.applyNowPlayingMetadata(args)
+        case "setCinemaActions":
+            lastCinemaActions = args
+            playerVC?.applyCinemaActions(args)
+        case "updateCinemaRequestQuota":
+            // A quota update may arrive before the picker opens. Save it for the matching
+            // request.
+            if args["requestId"] is NSNumber,
+               playerVC?.updateCinemaRequestQuota(args) != true {
+                pendingCinemaRequestQuota = args
+            }
+        case "dismissCinemaRequestOptions":
+            let id = (args["requestId"] as? NSNumber)?.intValue
+            if id == nil ||
+                (pendingCinemaRequestQuota?["requestId"] as? NSNumber)?.intValue == id {
+                pendingCinemaRequestQuota = nil
+            }
+            if playerVC?.dismissCinemaRequestOptions(requestId: id) != true,
+               let id {
+                pendingCinemaRequestDismissId = id
+            }
         case "showNextUp":
             playerVC?.showNextUpCard(
                 title: (args["title"] as? String) ?? "",
@@ -307,6 +351,9 @@ final class AppleTvVideoChannel: NSObject, FlutterStreamHandler {
         vc.onNextUpDismiss = { [weak self] in
             self?.send(["event": "nextUpDismiss"])
         }
+        vc.onCinemaAction = { [weak self] action, generation in
+            self?.send(["event": "cinemaAction", "action": action, "generation": generation])
+        }
         vc.onSkipSegmentSelect = { [weak self] in
             self?.send(["event": "skipSegment"])
         }
@@ -355,6 +402,7 @@ final class AppleTvVideoChannel: NSObject, FlutterStreamHandler {
         if let slots = lastTimeSlots {
             vc.applyTimeSlots(slots)
         }
+        if let cinema = lastCinemaActions { vc.applyCinemaActions(cinema) }
         playerVC = vc
         rootViewController?.present(vc, animated: false) { [weak self] in
             Task { @MainActor in
@@ -365,6 +413,10 @@ final class AppleTvVideoChannel: NSObject, FlutterStreamHandler {
     }
 
     private func dismiss() {
+        pendingCinemaRequestQuota = nil
+        pendingCinemaRequestDismissId = nil
+        playerVC?.dismissCinemaRequestOptions()
+        lastCinemaActions = nil
         stopStateTimer()
         player?.shutdown()
         let vc = playerVC
