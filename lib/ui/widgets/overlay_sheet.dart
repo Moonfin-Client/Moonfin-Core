@@ -111,8 +111,13 @@ Future<T?> showFocusRestoringDialog<T>({
                   null) {
             return KeyEventResult.ignored;
           }
-          DialogBackSuppressor.markDismissed();
-          Navigator.of(dialogContext).pop();
+          // Only mark Back as dismissed when the dialog can close.
+          // Submitting a request may block it.
+          if (ModalRoute.of(dialogContext)?.popDisposition ==
+              RoutePopDisposition.pop) {
+            DialogBackSuppressor.markDismissed();
+          }
+          unawaited(Navigator.of(dialogContext).maybePop());
           return KeyEventResult.handled;
         }
         if (event is KeyUpEvent) {
@@ -129,6 +134,20 @@ Future<T?> showFocusRestoringDialog<T>({
     routeSettings: routeSettings,
     barrierLabel: barrierLabel,
   ).whenComplete(() {
+    final focusedContext = FocusManager.instance.primaryFocus?.context;
+    final previousContext = previousFocus?.context;
+    if (focusedContext != null &&
+        previousContext != null &&
+        focusedContext.mounted &&
+        previousContext.mounted) {
+      final focusedRoute = ModalRoute.of(focusedContext);
+      if (focusedRoute != null &&
+          focusedRoute.isCurrent &&
+          !identical(focusedRoute, ModalRoute.of(previousContext))) {
+        // Another dialog owns focus; don't restore focus behind it.
+        return;
+      }
+    }
     _safeRestoreFocus(previousFocus);
   });
 }

@@ -40,6 +40,17 @@ import '../../widgets/aether_video_view.dart';
 import '../../../playback/playback_lifecycle_handler.dart';
 import '../../../playback/playback_profile_diagnostics.dart';
 import '../../../playback/hdr_stream_capability.dart';
+import '../../../auth/repositories/session_repository.dart';
+import '../../../data/repositories/seerr_repository.dart';
+import '../../../data/services/cinema_media_resolver.dart';
+import '../../../data/services/seerr/seerr_api_models.dart';
+import '../../../data/viewmodels/seerr_media_detail_view_model.dart';
+import '../../../preference/seerr_preferences.dart';
+import '../../widgets/seerr/seerr_request_dialog.dart';
+import '../../../playback/cinema_mode_controller.dart';
+import '../../../playback/cinema_playback_source_guard.dart';
+import '../../../playback/cinema_request_picker_session.dart';
+import '../../widgets/playback/cinema_mode_actions_overlay.dart';
 import '../../../data/models/aggregated_item.dart';
 import '../../../data/repositories/item_mutation_repository.dart';
 import '../../../data/models/media_segment.dart';
@@ -348,6 +359,13 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   MediaSegment? _skipSegment;
   Duration? _skipTo;
+  late final CinemaModeController _cinema;
+  final _cinemaRequestFocus = FocusNode(debugLabel: 'cinema-request');
+  StreamSubscription<Duration>? _cinemaDurationSub;
+  bool _cinemaWasVisible = false;
+  CinemaAction _cinemaLastFocus = CinemaAction.skip;
+  final _cinemaSource = CinemaPlaybackSourceGuard();
+  CinemaRequestPickerSession? _cinemaPickerSession;
 
   /// True when the auto-hide setting is on for the current segment.
   bool _skipSegmentAutoHideEnabled = false;
@@ -502,6 +520,182 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   bool get _isCurrentPreroll => _isPrerollQueueItem(_queue.currentItem);
+
+  bool get _isPrerollSkipButtonVisible => _isCurrentPreroll && _cinema.visible;
+
+  Object _cinemaAccountKey() {
+    final session = GetIt.instance<SessionRepository>();
+    final client = _clientForQueueItem(_queue.currentItem);
+    return (session.activeServerId, session.activeUserId,
+      client.baseUrl, client.userId, client.accessToken);
+  }
+
+  void _configureCinema() => _cinema.configure(
+    minimumSeconds: _prefs.get(UserPreferences.cinemaModeSkipMinDurationSeconds),
+    autoHideSeconds: _prefs.get(UserPreferences.cinemaModeSkipAutoHide).seconds,
+  );
+
+  void _startCinemaItem({bool initial = false}) {
+    final item = _queue.currentItem;
+    if (!_cinemaSource.enter(item, _queue.currentIndex, initial: initial)) {
+      return;
+    }
+    if (!initial) _cinemaPickerSession?.beginGrace();
+    final raw = _isCurrentPreroll ? _rawDataForQueueItem(item) : null;
+    final client = raw == null ? null : _clientForQueueItem(item);
+    final id = _itemIdForQueueItem(item) ?? '';
+    _cinema.enter(
+      item: raw,
+      resolveMedia: () => client == null
+          ? Future<CinemaMedia?>.value()
+          : CinemaMediaResolver.resolve(
+              client: client,
+              itemId: id,
+              item: raw!,
+            ),
+    );
+    _armPrerollSkipAfterPlaybackStarts();
+  }
+
+  void _onCinemaChanged() {
+    if (!mounted) return;
+    final visible = _isPrerollSkipButtonVisible;
+    final focusChanged = _cinemaLastFocus != _cinema.focusedAction;
+    final shown = visible && !_cinemaWasVisible;
+    final hidden = !visible && _cinemaWasVisible;
+    _cinemaWasVisible = visible;
+    _cinemaLastFocus = _cinema.focusedAction;
+    setState(() {});
+    if (PlatformDetection.isTV) {
+      if (shown || (visible && focusChanged)) _focusCinemaAction();
+      if (hidden) _restoreOverlayFocus();
+    }
+  }
+
+  Future<void> _skipCinemaPreroll() {
+    if (_cinemaPickerSession?.closeForSkip() == true) {
+      _cinemaPickerSession = null;
+    }
+    return _manager.nextInQueue();
+  }
+
+  Future<SeerrTvDetails?> _showCinemaSeriesRequest(
+    SeerrRepository repository,
+    SeerrTvDetails details,
+    SeerrUser user,
+    CinemaTvQualityOptions options,
+    bool Function() isCurrent,
+    CinemaTvSubmit submit,
+  ) => _showCinemaRequest(
+    repository, user, isCurrent, submit, tv: details, options: options,
+  );
+
+  Future<void> _showCinemaMovieRequest(
+    SeerrRepository repository,
+    SeerrMovieDetails details,
+    SeerrUser user,
+    bool Function() isCurrent,
+    CinemaMovieSubmit submit,
+  ) async {
+    await _showCinemaRequest(
+      repository, user, isCurrent,
+      (selection, _, isAllowed) async {
+        await submit(selection['is4k'] == true, isAllowed);
+        return null;
+      },
+      movie: details,
+    );
+  }
+
+  Future<SeerrTvDetails?> _showCinemaRequest(
+    SeerrRepository repository,
+    SeerrUser user,
+    bool Function() isCurrent,
+    CinemaTvSubmit submit, {
+    SeerrTvDetails? tv,
+    SeerrMovieDetails? movie,
+    CinemaTvQualityOptions? options,
+  }) async {
+    if (!mounted || !isCurrent()) return null;
+    _cinemaPickerSession?.closeForSkip();
+    final session = CinemaRequestPickerSession(
+      accountKey: _cinemaAccountKey,
+      isMounted: () => mounted && !_isStopping,
+    );
+    _cinemaPickerSession = session;
+    SeerrMediaDetailViewModel? vm;
+    SeerrTvDetails? confirmed;
+    try {
+      vm = SeerrMediaDetailViewModel.forCinema(
+        repository,
+        GetIt.instance<SeerrPreferences>(),
+        tv: tv,
+        movie: movie,
+        user: user,
+      );
+      await showSeerrRequestDialog(
+        context: context,
+        vm: vm,
+        is4k: options?.standard == false,
+        qualityToggle: options == null || (options.standard && options.fourK),
+        isContinuing: tv != null && cinemaSeriesIsContinuing(tv),
+        cinemaExcludedSeasons: options?.excludedStandard ?? const {},
+        cinemaExcluded4kSeasons: options?.excluded4k ?? const {},
+        selectAllSeasons: false,
+        showAdvancedOptions: false,
+        onDismissReady: (dismiss) => session.dismissDialog = dismiss,
+        cinemaSubmit: (selection, quota) async {
+          session.markSubmitting();
+          confirmed = await submit(selection, quota, () => session.isCurrent);
+        },
+      );
+      return confirmed;
+    } finally {
+      vm?.dispose();
+      session.dispose();
+      if (identical(_cinemaPickerSession, session)) {
+        _cinemaPickerSession = null;
+      }
+      if (mounted && isCurrent()) _focusCinemaAction();
+    }
+  }
+
+  void _focusCinemaAction() {
+    if (!PlatformDetection.isTV || !_isPrerollSkipButtonVisible) return;
+    final generation = _cinema.generation;
+    final action = _cinema.focusedAction;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _routeCovered || !_isPrerollSkipButtonVisible || generation != _cinema.generation ||
+          action != _cinema.focusedAction) {
+        return;
+      }
+      (action == CinemaAction.request ? _cinemaRequestFocus : _tvSkipSegmentFocus).requestFocus();
+    });
+  }
+
+  void _hidePrerollSkip({bool suppressBack = false}) {
+    if (suppressBack) {
+      _suppressBackNavigation(duration: const Duration(milliseconds: 500));
+    }
+    _cinema.hide();
+  }
+
+  void _armPrerollSkipAfterPlaybackStarts() {
+    final item = _queue.currentItem;
+    if (!_isCurrentPreroll ||
+        !_cinemaSource.observeReady(
+          item: item,
+          index: _queue.currentIndex,
+          itemId: _itemIdForQueueItem(item),
+          source: _manager.bringupState,
+        )) {
+      return;
+    }
+    // After a trailer change, PlayerState may still have the previous item's duration.
+    // Use the new backend duration once playback is ready.
+    _cinema.updatePlayback(duration: _manager.backend?.duration ?? Duration.zero,
+      playing: _state.isPlaying);
+  }
 
   bool _queueItemIsFavorite(dynamic item) {
     if (item is AggregatedItem) {
@@ -684,6 +878,15 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   @override
   void initState() {
     super.initState();
+    _cinema = CinemaModeController(
+      seerr: () => GetIt.instance.getAsync<SeerrRepository>(), accountKey: _cinemaAccountKey,
+      onSkip: _skipCinemaPreroll,
+      onRequestSeries: _showCinemaSeriesRequest,
+      onRequestMovie: _showCinemaMovieRequest,
+    )..addListener(_onCinemaChanged);
+    _configureCinema();
+    _startCinemaItem(initial: true);
+    _cinemaDurationSub = _state.durationStream.listen((_) => _armPrerollSkipAfterPlaybackStarts());
     FocusManager.instance.addListener(_restoreOverlayFocus);
     if (PlatformDetection.isTV || PlatformDetection.isMobile) {
       // The decoder wants every megabyte a constrained box has, and a stale
@@ -730,6 +933,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       setState(() {
         _bringupState = state;
       });
+      _armPrerollSkipAfterPlaybackStarts();
       _showBringupFailureIfAny(state);
       unawaited(_syncAutoHdrSwitching());
       unawaited(_syncMedia3ZoomMode());
@@ -793,6 +997,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _showControls(focusSeekbar: true);
+      if (_isCurrentPreroll) {
+        _focusTvSkipSegment();
+        _armPrerollSkipAfterPlaybackStarts();
+      }
       if (PlatformDetection.useNativeVideoSurface) {
         _syncSubtitleActive();
       }
@@ -834,6 +1042,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       unawaited(_syncAutoHdrSwitching());
       final isPreroll = _isCurrentPreroll;
       _resetSkipSegmentAutoHide();
+      _startCinemaItem();
       setState(() {
         _nextUpDismissed = false;
         _showNextUp = false;
@@ -848,6 +1057,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       });
       if (isPreroll) {
         _hideTimer?.cancel();
+        _focusTvSkipSegment();
       }
     });
 
@@ -867,6 +1077,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _onSubtitleLoadingChanged(_state.isSubtitleLoading);
     _playingSub = _state.playingStream.listen((playing) {
       _updateDisplayPlaying(playing);
+      _armPrerollSkipAfterPlaybackStarts();
       // The hide timer passes over a player that hasn't started yet, so a
       // start or resume slower than its delay needs it armed again here.
       if (playing && _controlsVisible && !_isSeeking) {
@@ -947,6 +1158,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _cancelTvTemporarySpeedHold();
     _hideTimer?.cancel();
     _skipSegmentAutoHideTimer?.cancel();
+    _cinemaPickerSession?.dispose();
+    _cinemaPickerSession = null;
+    _cinemaDurationSub?.cancel();
+    _cinema.removeListener(_onCinemaChanged);
+    _cinema.dispose();
+    _cinemaRequestFocus.dispose();
     _displayPlayingDebounce?.cancel();
     _endsAtTicker?.cancel();
     _volumeOverlayTimer?.cancel();
@@ -2396,6 +2613,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   void _onPlaybackPrefsChanged() {
+    _configureCinema();
     _syncMediaQueuingPreference();
     if (!mounted) return;
     _applySubtitleStyle();
@@ -2771,6 +2989,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   /// runs it stays up on its own; afterwards it rides along with the OSD.
   /// With auto-hide off it stays up until the segment ends.
   bool get _isSkipSegmentButtonVisible =>
+      !_isCurrentPreroll &&
       _skipSegment != null &&
       (!_skipSegmentAutoHideEnabled ||
           _skipSegmentAutoHidePending ||
@@ -2800,6 +3019,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   Future<void> _exitPlayback() async {
     if (_isStopping) return;
+    _cinemaPickerSession?.dispose();
+    _cinemaPickerSession = null;
     setState(() {
       _isStopping = true;
     });
@@ -2978,6 +3199,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   void _focusTvSkipSegment({int attempt = 0}) {
+    if (_isCurrentPreroll) {
+      _focusCinemaAction();
+      return;
+    }
     if (!PlatformDetection.isTV || _skipSegment == null) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || _skipSegment == null) return;
@@ -3024,6 +3249,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   void _toggleControls() {
     if (_isCurrentPreroll) {
       _syncPrerollOsdState();
+      if (!_isPrerollSkipButtonVisible) {
+        _cinema.reveal();
+      }
       return;
     }
     if (_isOsdLocked) {
@@ -3457,80 +3685,57 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
+    if (_routeCovered) return KeyEventResult.ignored;
     if (_isCurrentPreroll) {
       if (event is KeyUpEvent) {
-        final isBackKey = event.logicalKey.isBackKey;
-        if (isBackKey) {
+        return event.logicalKey.isBackKey
+            ? KeyEventResult.handled
+            : KeyEventResult.ignored;
+      }
+      if (event is KeyRepeatEvent) return KeyEventResult.handled;
+      if (event is! KeyDownEvent) return KeyEventResult.ignored;
+
+      if (event.logicalKey.isBackKey) {
+        if (_isPrerollSkipButtonVisible) {
+          _hidePrerollSkip(suppressBack: true);
+        } else if (!_isBackNavigationSuppressed()) {
+          _exitPlayback();
+        }
+        return KeyEventResult.handled;
+      }
+
+      switch (event.logicalKey) {
+        case LogicalKeyboardKey.mediaPlay:
+          unawaited(_resumeWithConfiguredRewind());
           return KeyEventResult.handled;
-        }
-        return KeyEventResult.ignored;
-      }
-
-      if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
-        return KeyEventResult.ignored;
-      }
-
-      if (event is KeyDownEvent) {
-        final isBackKey = event.logicalKey.isBackKey;
-
-        if (isBackKey) {
-          if (!_isBackNavigationSuppressed()) {
-            _exitPlayback();
-          }
+        case LogicalKeyboardKey.mediaPause:
+          _manager.pause();
           return KeyEventResult.handled;
-        }
-
-        switch (event.logicalKey) {
-          case LogicalKeyboardKey.mediaPlay:
-            unawaited(_resumeWithConfiguredRewind());
-            return KeyEventResult.handled;
-          case LogicalKeyboardKey.mediaPause:
-            _manager.pause();
-            return KeyEventResult.handled;
-          case LogicalKeyboardKey.mediaPlayPause:
-          case LogicalKeyboardKey.space:
-          case LogicalKeyboardKey.enter:
-          case LogicalKeyboardKey.select:
-            _togglePlayPause();
-            return KeyEventResult.handled;
-
-          case LogicalKeyboardKey.mediaFastForward:
-            unawaited(_manager.next());
-            return KeyEventResult.handled;
-
-          case LogicalKeyboardKey.mediaRewind:
-            unawaited(_seekDirect(Duration.zero));
-            _lastSeekTime = DateTime.now();
-            unawaited(_manager.resume());
-            return KeyEventResult.handled;
-
-          default:
-            return KeyEventResult.handled;
-        }
-      }
-
-      if (event is KeyRepeatEvent) {
-        final isBackKey = event.logicalKey.isBackKey;
-        if (isBackKey) {
+        case LogicalKeyboardKey.mediaPlayPause:
+        case LogicalKeyboardKey.space:
+          _togglePlayPause();
           return KeyEventResult.handled;
-        }
-
-        switch (event.logicalKey) {
-          case LogicalKeyboardKey.mediaPlay:
-          case LogicalKeyboardKey.mediaPause:
-          case LogicalKeyboardKey.mediaPlayPause:
-          case LogicalKeyboardKey.space:
-          case LogicalKeyboardKey.enter:
-          case LogicalKeyboardKey.select:
-          case LogicalKeyboardKey.mediaFastForward:
-          case LogicalKeyboardKey.mediaRewind:
-            return KeyEventResult.handled;
-          default:
-            return KeyEventResult.handled;
-        }
+        case LogicalKeyboardKey.enter:
+        case LogicalKeyboardKey.select:
+          _cinema.activate();
+          return KeyEventResult.handled;
+        case LogicalKeyboardKey.arrowLeft:
+          _cinema.moveLeft();
+          return KeyEventResult.handled;
+        case LogicalKeyboardKey.arrowRight:
+          _cinema.moveRight();
+          return KeyEventResult.handled;
+        case LogicalKeyboardKey.mediaFastForward:
+          _cinema.skip();
+          return KeyEventResult.handled;
+        case LogicalKeyboardKey.mediaRewind:
+          unawaited(_seekDirect(Duration.zero));
+          _lastSeekTime = DateTime.now();
+          unawaited(_manager.resume());
+          return KeyEventResult.handled;
+        default:
+          return KeyEventResult.handled;
       }
-
-      return KeyEventResult.ignored;
     }
 
     if (event is KeyUpEvent) {
@@ -3923,6 +4128,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         if (_isBackNavigationSuppressed()) {
           return;
         }
+        if (_isPrerollSkipButtonVisible) {
+          _hidePrerollSkip(suppressBack: true);
+          return;
+        }
         if (_showNextUp) {
           _handleNextUpDismiss();
           return;
@@ -3974,12 +4183,15 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                   ? _handleScrollSignal
                   : null,
               child: MouseRegion(
-                cursor: PlatformDetection.useDesktopUi && !_controlsVisible
+                cursor: PlatformDetection.useDesktopUi &&
+                        !_controlsVisible && !_isPrerollSkipButtonVisible
                     ? SystemMouseCursors.none
                     : SystemMouseCursors.basic,
                 onHover: (_) {
                   if (PlatformDetection.useDesktopUi) {
-                    if (_controlsVisible) {
+                    if (_isCurrentPreroll) {
+                      _cinema.reveal();
+                    } else if (_controlsVisible) {
                       _scheduleHide();
                     } else {
                       _showControls();
@@ -4084,6 +4296,16 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                                   TrickplayPreviewLayout
                                       .verticalTravelBottomMargin) +
                               AppSpacing.spaceXs,
+                        ),
+                      if (_isPrerollSkipButtonVisible)
+                        CinemaModeActionsOverlay(
+                          controller: _cinema,
+                          skipFocus: _tvSkipSegmentFocus,
+                          requestFocus: _cinemaRequestFocus,
+                          positionStream: _state.positionStream,
+                          position: _state.position,
+                          countdownStyle: _prefs.get(UserPreferences.cinemaModeSkipCountdown),
+                          onDismiss: _hidePrerollSkip,
                         ),
                       if (_showNextUp && _nextUpItem != null)
                         NextUpOverlay(
