@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:moonfin/data/services/seerr/seerr_seasons.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../data/services/seerr/seerr_api_models.dart';

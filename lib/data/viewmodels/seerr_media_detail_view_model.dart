@@ -8,6 +8,7 @@ import '../repositories/seerr_repository.dart';
 import '../services/seerr/seerr_api_models.dart';
 import '../services/seerr/seerr_download_progress.dart';
 import '../services/seerr/seerr_error.dart';
+import '../services/seerr/seerr_seasons.dart';
 
 /// Reads one flag out of Seerr's public settings.
 ///
@@ -127,29 +128,11 @@ class SeerrQualityStatus {
   /// A completed request isn't one of them. It says the season arrived once,
   /// not that it is still there, so a season that has since been removed can
   /// be requested again.
-  Set<int> get requestedSeasons {
-    final seasons = <int>{};
-    for (final r in requests) {
-      if (r.status == SeerrRequest.statusDeclined ||
-          r.status == SeerrRequest.statusFailed ||
-          r.status == SeerrRequest.statusCompleted) {
-        continue;
-      }
-      if (r.seasons != null) {
-        for (final s in r.seasons!) {
-          seasons.add(s.seasonNumber);
-        }
-      }
-    }
-    return seasons;
-  }
+  Set<int> get requestedSeasons => seerrRequestedSeasons(requests);
 
   /// Seasons the library already holds for this track, fully or partially.
-  Set<int> get availableSeasons => {
-        for (final s in seasonAvailability)
-          if (SeerrMediaStatus.isAvailable(is4k ? s.status4k : s.status))
-            s.seasonNumber,
-      };
+  Set<int> get availableSeasons =>
+      seerrAvailableSeasons(seasonAvailability, is4k: is4k);
 
   /// Seasons the request sheet may not offer: already in the library or
   /// already spoken for by an open request.
@@ -378,6 +361,17 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
   bool _isDisposed = false;
 
   SeerrMediaDetailViewModel(this._repo, this._prefs);
+
+  /// Use the details Cinema Mode already loaded, without fetching them again.
+  SeerrMediaDetailViewModel.forCinema(
+    this._repo,
+    this._prefs, {
+    SeerrTvDetails? tv,
+    SeerrMovieDetails? movie,
+    required SeerrUser user,
+  }) {
+    _state = SeerrMediaDetailState(tv: tv, movie: movie, currentUser: user);
+  }
 
   @override
   void notifyListeners() {
@@ -627,18 +621,19 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
     String? rootFolder,
     int? serverId,
   }) async {
-    if (_state.isRequesting) {
-      return;
-    }
+    if (_isDisposed || _state.isRequesting) return;
 
-    _state = _state.copyWith(isRequesting: true, requestError: null, requestSuccess: null);
+    _state = _state.copyWith(
+      isRequesting: true,
+      requestError: null,
+      requestSuccess: null,
+    );
     notifyListeners();
 
     try {
-      final mediaType = _state.isTv ? 'tv' : 'movie';
       await _repo.createRequest(
         mediaId: _state.tmdbId,
-        mediaType: mediaType,
+        mediaType: _state.isTv ? 'tv' : 'movie',
         seasons: seasons,
         allSeasons: allSeasons,
         is4k: is4k,
@@ -646,10 +641,9 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
         rootFolder: rootFolder,
         serverId: serverId,
       );
-
       await _reloadDetails('Request submitted');
-    } catch (e) {
-      _setRequestFailure(e);
+    } catch (error) {
+      _setRequestFailure(error);
     }
     notifyListeners();
   }
@@ -659,7 +653,12 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
     if (user == null || _state.quota != null) return;
     try {
       final quota = await _repo.getUserQuota(user.id);
-      _state = _state.copyWith(quota: quota);
+      _state = _state.copyWith(
+        quota: quota,
+        requestError: _state.requestError,
+        requestErrorKind: _state.requestErrorKind,
+        requestSuccess: _state.requestSuccess,
+      );
       notifyListeners();
     } catch (_) {}
   }
