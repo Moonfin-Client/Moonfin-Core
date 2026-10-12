@@ -561,10 +561,19 @@ class HtmlVideoBackend extends PlayerBackend {
         // Safari only draws cues for a track that carries the default
         // attribute when the page supplies its own controls, as this one does.
         if (i == position) {
+          if (element.parentNode == null) {
+            _videoElement.appendChild(element);
+          }
           element.setAttribute('default', '');
           element.track.mode = 'showing';
         } else {
           element.removeAttribute('default');
+          // Chromium turns on any subtitle track the page has never set a
+          // mode on once another one is showing, and setting a track that is
+          // already disabled to disabled does not count. Only the picked track
+          // stays on the element, so the browser has nothing to add under it
+          // and nothing to bring back after Off.
+          element.remove();
         }
       }
     } catch (_) {}
@@ -657,8 +666,10 @@ class HtmlVideoBackend extends PlayerBackend {
     _showTrackAt(_addTrack(url, codec: codec));
   }
 
-  /// Puts a hidden track for [url] on the element, or finds the one already
-  /// there, and returns its position in add order.
+  /// Makes a track for [url], or finds the one already made, and returns its
+  /// position in add order. The track only goes on the element once it is
+  /// picked, which also keeps the browser from fetching a file nobody asked
+  /// for.
   int _addTrack(String url, {String? title, String? language, String? codec}) {
     final existing = _externalTracks.indexWhere((track) => track.url == url);
     if (existing >= 0) return existing;
@@ -673,7 +684,6 @@ class HtmlVideoBackend extends PlayerBackend {
       element.setAttribute('data-codec', codec);
     }
 
-    _videoElement.appendChild(element);
     _externalTracks.add((url: url, element: element));
     _watchCuesFor(element.track);
     return _externalTracks.length - 1;
