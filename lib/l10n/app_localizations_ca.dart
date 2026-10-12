@@ -10056,10 +10056,10 @@ class AppLocalizationsCa extends AppLocalizations {
   String get playerTooltipSeekForward => 'Busca endavant';
 
   @override
-  String get playerTooltipMinimize => 'Minimize player';
+  String get playerTooltipMinimize => 'Minimitza el reproductor';
 
   @override
-  String get miniPlayerOpenPlayer => 'Open player';
+  String get miniPlayerOpenPlayer => 'Obre el reproductor';
 
   @override
   String get contextMenuMarkWatched => 'Marca com a vist';

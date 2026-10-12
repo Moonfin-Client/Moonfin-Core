@@ -37,7 +37,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get animeMarkerPending => 'Pending';
 
   @override
-  String get animeMarkerRecap => 'Recap';
+  String get animeMarkerRecap => 'Rückblick';
 
   @override
   String get interfaceLanguage => 'Sprache der App-Oberfläche';
@@ -179,10 +179,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get detailScreenStyleModern => 'Modern';
 
   @override
-  String get detailScreenStyleSpotlight => 'Spotlight';
+  String get detailScreenStyleSpotlight => 'Rampenlicht';
 
   @override
-  String get spotlightMoreActions => 'More Actions';
+  String get spotlightMoreActions => 'Mehr Aktionen';
 
   @override
   String get spotlightCastCrewStudios => 'Schauspieler, Crew und Studio';
@@ -191,7 +191,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get spotlightChaptersExtras => 'Kapitel und Extras';
 
   @override
-  String get spotlightFileDetails => 'File Details';
+  String get spotlightFileDetails => 'Dateidetails';
 
   @override
   String get spotlightSimilarRecommendations => 'Ähnlich und Vorschläge';
@@ -389,7 +389,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get detailScreenStyleNouveau => 'Nouveau';
 
   @override
-  String get detailScreenStyleMinimalist => 'Minimalist';
+  String get detailScreenStyleMinimalist => 'minimal';
 
   @override
   String get expandedTabs => 'Erweiterte Tabs';
@@ -812,10 +812,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get extraLarge => 'Sehr groß';
 
   @override
-  String get uiScaleGrandparents => 'Grandparents';
+  String get uiScaleGrandparents => 'Großeltern';
 
   @override
-  String get uiScaleGreatGrandparents => 'Great-Grandparents';
+  String get uiScaleGreatGrandparents => 'Urgroßeltern';
 
   @override
   String get scrollDirection => 'Scrollrichtung';
@@ -1636,7 +1636,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get searchingSubtitles => 'Suche nach passenden Untertiteln…';
 
   @override
-  String get fetchingSubtitles => 'Fetching subtitles';
+  String get fetchingSubtitles => 'Untertitel werden geladen';
 
   @override
   String get downloadingSubtitle => 'Lade passende Untertitel herunter…';
@@ -1723,7 +1723,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String downloadSizeTotal(String size) {
-    return '$size total';
+    return '$size insgesamt';
   }
 
   @override
@@ -2064,7 +2064,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get keyboardShortcutsPlayerHint =>
-      'Press ? or F1 while a video plays to see this list without leaving the player.';
+      'Drücke ? oder F1 währen ein video läuft um diese Liste zu sehen ohne das Video zu beenden';
 
   @override
   String get keyboardShortcutsSectionApp => 'Überall';
@@ -2077,14 +2077,14 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get keyboardShortcutsSectionPlayerScope =>
-      'While a video is open, playing or paused';
+      'Während ein Video offen ist, beim abspielen oder Pause.';
 
   @override
-  String get keyboardShortcutsSectionReader => 'Book and comic reader';
+  String get keyboardShortcutsSectionReader => 'Buch und Comic Leser';
 
   @override
   String get keyboardShortcutsSectionReaderScope =>
-      'While reading a book or comic';
+      'Während des lesens von Buch oder Comic';
 
   @override
   String get keyNameArrowKeys => 'Pfeiltasten';
@@ -2126,10 +2126,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get keyNameScrollWheel => 'Mausrad';
 
   @override
-  String get shortcutMoveFocus => 'Move between items';
+  String get shortcutMoveFocus => 'Zwischen Dingen hin und her wechseln';
 
   @override
-  String get shortcutActivate => 'Open the selected item';
+  String get shortcutActivate => 'Öffne das ausgewählte';
 
   @override
   String get shortcutGoBack => 'Zurück gehen';
@@ -2175,17 +2175,17 @@ class AppLocalizationsDe extends AppLocalizations {
   String get shortcutPlaybackInfo => 'Zeige Wiedergabeinformationen';
 
   @override
-  String get shortcutMpvStats => 'mpv statistics on or off';
+  String get shortcutMpvStats => 'MPV Statistiken an oder aus';
 
   @override
-  String get shortcutRecropBlackBars => 'Recrop black bars';
+  String get shortcutRecropBlackBars => 'Schwarze Balken zuschneiden';
 
   @override
   String get shortcutLeaveFullscreenOrStop =>
-      'Exit fullscreen, or stop if not fullscreen';
+      'Vollbild verlassen oder Stop wenn nicht Vollbild';
 
   @override
-  String get shortcutStopPlayback => 'Stop playback';
+  String get shortcutStopPlayback => 'Stop wiedergabe';
 
   @override
   String get shortcutNextItem => 'Next item';
@@ -2194,13 +2194,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get shortcutPreviousItem => 'Previous item';
 
   @override
-  String get shortcutShowShortcuts => 'Show this list';
+  String get shortcutShowShortcuts => 'Zeige diese Liste';
 
   @override
-  String get shortcutNextPage => 'Next page';
+  String get shortcutNextPage => 'Nächste Seite';
 
   @override
-  String get shortcutPreviousPage => 'Previous page';
+  String get shortcutPreviousPage => 'Vorherige Seite';
 
   @override
   String get shortcutScrollPage => 'Scroll the page (ebooks)';
@@ -2209,13 +2209,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get shortcutFirstPage => 'First page, or start of chapter';
 
   @override
-  String get shortcutLastPage => 'Last page, or end of chapter';
+  String get shortcutLastPage => 'Letzte Seite, Oder Ende vom Kapitel';
 
   @override
   String get shortcutZoom => 'Zoom in or out (comics)';
 
   @override
-  String get shortcutResetZoom => 'Reset zoom (comics)';
+  String get shortcutResetZoom => 'Zoom Zurücksetzen (comics)';
 
   @override
   String get playback => 'Wiedergabe';
@@ -2254,11 +2254,11 @@ class AppLocalizationsDe extends AppLocalizations {
   String get hdr => 'HDR';
 
   @override
-  String get hdrOutput => 'HDR output';
+  String get hdrOutput => 'HDR Ausgabe';
 
   @override
   String hdrOutputActive(String format) {
-    return 'Active — $format';
+    return 'Aktiv — $format';
   }
 
   @override
@@ -2266,7 +2266,8 @@ class AppLocalizationsDe extends AppLocalizations {
       'Active — tone-mapped to SDR for this display';
 
   @override
-  String get hdrOutputDisplayNotHdr => 'Inactive — display is not in HDR mode';
+  String get hdrOutputDisplayNotHdr =>
+      'Inaktiv — Display ist nicht im HDR Modus';
 
   @override
   String get hdrOutputContentSdr => 'Inactive — content is SDR';
@@ -2279,7 +2280,7 @@ class AppLocalizationsDe extends AppLocalizations {
       'Inactive — could not start, using the standard path';
 
   @override
-  String get nativeHdrOutput => 'Native HDR Output';
+  String get nativeHdrOutput => 'Native HDR Ausgabe';
 
   @override
   String get nativeHdrOutputDescription =>
@@ -2493,7 +2494,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get premiere => 'Premiere';
 
   @override
-  String get guideRepeatBadge => 'Repeat';
+  String get guideRepeatBadge => 'Wiederholen';
 
   @override
   String get guideTimeline => 'Programminfo-Zeitleiste';
@@ -2564,7 +2565,7 @@ class AppLocalizationsDe extends AppLocalizations {
       'Series recording is scheduled, but the guide has no upcoming episodes';
 
   @override
-  String get recordCurrentEpisode => 'Record This Episode';
+  String get recordCurrentEpisode => 'Diese Folge aufnehmen';
 
   @override
   String get recordCurrentProgram => 'Record This Program';
@@ -2839,7 +2840,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get downloadedItems => 'Heruntergeladene Elemente';
 
   @override
-  String get activeDownloads => 'Active Downloads';
+  String get activeDownloads => 'Aktive Downloads';
 
   @override
   String savedMediaCount(int count) {
@@ -2861,7 +2862,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get savedMediaSelectItems => 'Select items';
 
   @override
-  String get savedMediaNoDownloads => 'Nothing saved yet';
+  String get savedMediaNoDownloads => 'Noch nichts gespeichert';
 
   @override
   String get savedMediaNoDownloadsDetail =>

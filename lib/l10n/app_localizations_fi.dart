@@ -2971,7 +2971,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get themeAndAppearance => 'Teema ja ulkoasu';
 
   @override
-  String get focusBorderColor => 'Keskitä reunaväri';
+  String get focusBorderColor => 'Fokusreunuksen väri';
 
   @override
   String get watchedIndicators => 'Katsotut indikaattorit';
@@ -3031,11 +3031,11 @@ class AppLocalizationsFi extends AppLocalizations {
   String get inVideo => 'Videossa';
 
   @override
-  String get seasonalEffects => 'Kausivaikutuksia';
+  String get seasonalEffects => 'Vuodenaikailmiöt';
 
   @override
   String get seasonalEffectsDescription =>
-      'Visuaaliset tehosteet ja kausittaiset efektit';
+      'Visuaaliset tehosteet ja vuodenaika efektit';
 
   @override
   String get loadingAnimation => 'Latausanimaatio';
@@ -4801,7 +4801,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get autoLogin => 'Automaattinen sisäänkirjautuminen';
 
   @override
-  String get lastUser => 'Viimeinen käyttäjä';
+  String get lastUser => 'Viimeisin käyttäjä';
 
   @override
   String get currentUser => 'Nykyinen käyttäjä';
@@ -5083,7 +5083,7 @@ class AppLocalizationsFi extends AppLocalizations {
   }
 
   @override
-  String get recentRequests => 'Viimeaikaiset pyynnöt';
+  String get recentRequests => 'Viimeisimmät pyynnöt';
 
   @override
   String get recentlyAdded => 'Äskettäin lisätyt';
@@ -5113,7 +5113,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get upcomingSeries => 'Tuleva sarja';
 
   @override
-  String get networks => 'Verkot';
+  String get networks => 'Suoratoistopalvelut';
 
   @override
   String get tags => 'Tunnisteet';
@@ -5869,7 +5869,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get update => 'Päivittää';
 
   @override
-  String get upload => 'Lataa';
+  String get upload => 'Lähetä';
 
   @override
   String get unmute => 'Poista mykistys';
@@ -6104,7 +6104,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get uhd4k => '4K';
 
   @override
-  String get nowPlaying => 'Nyt toistetaan';
+  String get nowPlaying => 'Nyt esityksessä';
 
   @override
   String get volume => 'Äänenvoimakkuus';
@@ -6125,7 +6125,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get completion => 'Valmistuminen';
 
   @override
-  String get direct => 'Suoraan';
+  String get direct => 'Suoratoistossa';
 
   @override
   String get adminDisconnect => 'Katkaise yhteys';
@@ -6200,7 +6200,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get adminSearchDevices => 'Etsi laitteita';
 
   @override
-  String get adminThisDevice => 'Tämä laite';
+  String get adminThisDevice => 'This Device';
 
   @override
   String get adminEditName => 'Muokkaa nimeä';
@@ -9454,7 +9454,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get syncPlayJoin => 'Liity';
 
   @override
-  String get syncPlayStateIdle => 'Tyhjäkäynti';
+  String get syncPlayStateIdle => 'Toimeton';
 
   @override
   String get syncPlayStateWaiting => 'Odottaa';
@@ -9942,10 +9942,10 @@ class AppLocalizationsFi extends AppLocalizations {
   String get playerTooltipSeekForward => 'Etsi eteenpäin';
 
   @override
-  String get playerTooltipMinimize => 'Minimize player';
+  String get playerTooltipMinimize => 'Pienennä soitin';
 
   @override
-  String get miniPlayerOpenPlayer => 'Open player';
+  String get miniPlayerOpenPlayer => 'Avaa soitin';
 
   @override
   String get contextMenuMarkWatched => 'Merkitse katsotuksi';
@@ -11991,7 +11991,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get internal => 'Sisäinen';
 
   @override
-  String get idle => 'Tyhjäkäynti';
+  String get idle => 'Toimeton';
 
   @override
   String get os => 'OS';
@@ -12858,13 +12858,13 @@ class AppLocalizationsFi extends AppLocalizations {
       'IMDb:n parhaat englanninkieliset elokuvat';
 
   @override
-  String get addToWatchlist => 'Lisää seurantaan';
+  String get addToWatchlist => 'Seurantalistalle';
 
   @override
-  String get removeFromWatchlist => 'Poista seurannasta';
+  String get removeFromWatchlist => 'Poista Seurannasta';
 
   @override
-  String get watchlistUpdateFailed => 'Seurantaluetteloa ei voitu päivittää';
+  String get watchlistUpdateFailed => 'Seurantalistaa ei voitu päivittää';
 
   @override
   String get adminSearchParameters => 'Hakuparametrit';

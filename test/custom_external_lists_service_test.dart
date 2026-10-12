@@ -144,6 +144,77 @@ void main() {
     });
   });
 
+  group('CustomExternalLists cache scope', () {
+    HomeSectionConfig config() => HomeSectionConfig.pluginDynamic(
+          serverId: 'custom',
+          pluginSection: 'custom_row_cache_scope',
+          pluginDisplayText: 'Trending',
+          pluginAdditionalData: jsonEncode({'source': 'tmdb_chart', 'type': 'trending/all/week'}),
+          pluginSource: HomeSectionPluginSource.custom,
+          enabled: true,
+          order: 1,
+        );
+
+    List<ImdbExternalListItem> row(String title) => [
+          ImdbExternalListItem(imdbId: 'tt1', tmdbId: '1', title: title, type: 'Movie', backdropUrl: 'http://server/b.jpg'),
+        ];
+
+    setUp(() async {
+      SharedPreferences.setMockInitialValues({});
+      final store = PreferenceStore();
+      await store.init();
+    });
+
+    test('a row cached for one account is not read back by another', () async {
+      final adult = CustomExternalListsService(cacheScope: () => 'adult');
+      final child = CustomExternalListsService(cacheScope: () => 'child');
+      await adult.saveCustomRowToCache(config(), row('Carrie'));
+
+      expect(await child.loadCustomRowFromCache(config()), isEmpty);
+      expect((await adult.loadCustomRowFromCache(config())).single.title, 'Carrie');
+      expect((await adult.cacheFile(config())).path, endsWith('custom_chart_custom_row_cache_scope_adult.json'));
+    });
+
+    test('with nobody signed in the row keeps its plain name', () async {
+      final nobody = CustomExternalListsService(cacheScope: () => null);
+      expect((await nobody.cacheFile(config())).path, endsWith('custom_chart_custom_row_cache_scope.json'));
+    });
+
+    test('a row from before the cache was scoped goes when a scoped one is written', () async {
+      final nobody = CustomExternalListsService(cacheScope: () => null);
+      final adult = CustomExternalListsService(cacheScope: () => 'adult');
+      await nobody.saveCustomRowToCache(config(), row('Carrie'));
+      final legacy = await nobody.cacheFile(config());
+      expect(legacy.existsSync(), isTrue);
+
+      await adult.saveCustomRowToCache(config(), row('Elf'));
+
+      expect(legacy.existsSync(), isFalse);
+      expect((await adult.loadCustomRowFromCache(config())).single.title, 'Elf');
+    });
+
+    test('a row from before the cache was scoped goes when a scoped fetch starts, before any answer', () async {
+      final nobody = CustomExternalListsService(cacheScope: () => null);
+      final child = CustomExternalListsService(cacheScope: () => 'child');
+      await nobody.saveCustomRowToCache(config(), row('Carrie'));
+      final legacy = await nobody.cacheFile(config());
+
+      await child.dropLegacyCache(config());
+
+      expect(legacy.existsSync(), isFalse);
+      expect(await child.loadCustomRowFromCache(config()), isEmpty);
+    });
+
+    test('with nobody signed in the plain file is the live one and stays', () async {
+      final nobody = CustomExternalListsService(cacheScope: () => null);
+      await nobody.saveCustomRowToCache(config(), row('Carrie'));
+
+      await nobody.dropLegacyCache(config());
+
+      expect((await nobody.loadCustomRowFromCache(config())).single.title, 'Carrie');
+    });
+  });
+
   group('CustomExternalLists sorting logic', () {
     late CustomExternalListsService service;
 
