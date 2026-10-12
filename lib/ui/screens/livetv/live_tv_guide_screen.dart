@@ -56,20 +56,6 @@ const _kMiniPlayerHeight = 168.0;
 // never moves under an in-progress navigation.
 const _kReanchorInputQuiet = Duration(seconds: 1);
 
-/// The transport keys a TV remote offers for paging; `lib/util/focus/` has no
-/// shared helper for them.
-final Set<LogicalKeyboardKey> _kPageForwardKeys = <LogicalKeyboardKey>{
-  LogicalKeyboardKey.mediaFastForward,
-  LogicalKeyboardKey.mediaTrackNext,
-  LogicalKeyboardKey.pageDown,
-};
-
-final Set<LogicalKeyboardKey> _kPageBackKeys = <LogicalKeyboardKey>{
-  LogicalKeyboardKey.mediaRewind,
-  LogicalKeyboardKey.mediaTrackPrevious,
-  LogicalKeyboardKey.pageUp,
-};
-
 /// Indices of the controls row's buttons, left to right. LEFT/RIGHT walk this
 /// range, so a button added to the row must take the next index in order.
 const int _kWindowBarPrevious = 0;
@@ -79,13 +65,6 @@ const int _kWindowBarSort = 3;
 const int _kWindowBarDate = 4;
 const int _kWindowBarRecordings = 5;
 const int _kWindowBarLast = _kWindowBarRecordings;
-
-/// 1 pages a viewport of rows forward, -1 back, 0 when the key doesn't page.
-int _pageRowDirection(LogicalKeyboardKey key) {
-  if (_kPageForwardKeys.contains(key)) return 1;
-  if (_kPageBackKeys.contains(key)) return -1;
-  return 0;
-}
 
 /// Handed to an embedded [LiveTvGuideScreen] so its host's [PopScope] can
 /// offer it a back press before closing the guide outright.
@@ -1824,7 +1803,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
       onPressed: () => _watchChannel(channel.id),
       onKeyEvent: (_, event) {
         if (!event.isActionable) return KeyEventResult.ignored;
-        final pageDirection = _pageRowDirection(event.logicalKey);
+        final pageDirection = event.logicalKey.pageDirection;
         if (pageDirection != 0) {
           _onNavigationKey();
           _focusChannelRow(
@@ -3059,7 +3038,7 @@ class _GuideProgramRowState extends State<_GuideProgramRow> {
     if (!event.isActionable) return KeyEventResult.ignored;
 
     final key = event.logicalKey;
-    final pageDirection = _pageRowDirection(key);
+    final pageDirection = key.pageDirection;
     if (pageDirection != 0) {
       widget.onNavigationKey();
       widget.onPageRows(widget.rowIndex, pageDirection);

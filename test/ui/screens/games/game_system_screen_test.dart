@@ -1,7 +1,7 @@
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
@@ -15,6 +15,7 @@ import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/screens/games/game_system_screen.dart';
 import 'package:moonfin/ui/widgets/game/game_poster_card.dart';
 import 'package:moonfin/ui/widgets/game/retro_artwork_image.dart';
+import 'package:moonfin/util/platform_detection.dart';
 import 'package:server_core/server_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -320,4 +321,228 @@ void main() {
       );
     },
   );
+
+  testWidgets('keeps the focused row on screen deep into a large library', (
+    tester,
+  ) async {
+    // Enough rows that a per-row error in the scroll math adds up to more
+    // than a card height before the bottom of the list.
+    final games = [
+      for (var i = 0; i < 600; i++)
+        GameSummary(
+          id: 'game-$i',
+          title: 'Game ${i.toString().padLeft(3, '0')}',
+          system: 'sms',
+          core: 'genesis_plus_gx',
+          fileName: 'Game$i.sms',
+        ),
+    ];
+    when(() => gamesApi.getGames(any(), system: any(named: 'system')))
+        .thenAnswer((_) async => games);
+    when(() => gamesApi.getGame(any(), any())).thenAnswer((_) async => null);
+    // The d-pad layout reserves focus-zoom headroom between rows, which is
+    // what the scroll math has to account for.
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+    addTearDown(
+      () => PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic),
+    );
+    tester.view.physicalSize = const Size(1280, 720);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: const GameSystemScreen(libraryId: 'retro', systemId: 'sms'),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    GamePosterCard focusedCard() => tester
+        .widgetList<GamePosterCard>(find.byType(GamePosterCard))
+        .singleWhere((card) => card.focusNode?.hasFocus ?? false);
+
+    tester
+        .widget<GamePosterCard>(find.byType(GamePosterCard).first)
+        .focusNode!
+        .requestFocus();
+    await tester.pumpAndSettle();
+
+    final viewport = tester.getRect(find.byType(GridView));
+    double? settledTop;
+    for (var press = 1; press <= 40; press++) {
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+      await tester.pumpAndSettle();
+      final card = tester.getRect(find.byWidget(focusedCard()));
+      expect(
+        card.top >= viewport.top && card.bottom <= viewport.bottom,
+        isTrue,
+        reason:
+            'row $press: focused card $card must sit inside the grid '
+            'viewport $viewport',
+      );
+      // Once the grid starts scrolling, every row should land in the same
+      // place; a creeping offset means the scroll math and the real row
+      // stride disagree.
+      if (press == 5) settledTop = card.top;
+      if (settledTop != null) {
+        expect(card.top, moreOrLessEquals(settledTop, epsilon: 1));
+      }
+    }
+
+    for (var press = 1; press <= 40; press++) {
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
+      await tester.pumpAndSettle();
+      final card = tester.getRect(find.byWidget(focusedCard()));
+      expect(
+        card.top >= viewport.top && card.bottom <= viewport.bottom,
+        isTrue,
+        reason:
+            'up $press: focused card $card must sit inside the grid '
+            'viewport $viewport',
+      );
+    }
+  });
+
+  // A 1080p Android TV is 960x540 logical, where the grid shows only about
+  // one and a half rows of posters; the others fit more rows.
+  for (final (physical, ratio) in const [
+    (Size(1920, 1080), 2.0),
+    (Size(1280, 720), 1.0),
+    (Size(1920, 1080), 1.0),
+  ]) {
+    testWidgets('FF/RW page by the full rows on screen at '
+        '${physical.width ~/ ratio}x${physical.height ~/ ratio}', (
+      tester,
+    ) async {
+      final games = [
+        for (var i = 0; i < 600; i++)
+          GameSummary(
+            id: 'game-$i',
+            title: 'Game ${i.toString().padLeft(3, '0')}',
+            system: 'sms',
+            core: 'genesis_plus_gx',
+            fileName: 'Game$i.sms',
+          ),
+      ];
+      when(() => gamesApi.getGames(any(), system: any(named: 'system')))
+          .thenAnswer((_) async => games);
+      when(() => gamesApi.getGame(any(), any())).thenAnswer((_) async => null);
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.tv);
+      addTearDown(
+        () => PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic),
+      );
+      tester.view.physicalSize = physical;
+      tester.view.devicePixelRatio = ratio;
+      addTearDown(tester.view.reset);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const GameSystemScreen(libraryId: 'retro', systemId: 'sms'),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final cards = find.byType(GamePosterCard);
+      int indexOf(GamePosterCard card) => int.parse(card.seed.split('-').last);
+      final columns = tester
+          .widgetList<GamePosterCard>(cards)
+          .where(
+            (card) =>
+                tester.getRect(find.byWidget(card)).top ==
+                tester.getRect(cards.first).top,
+          )
+          .length;
+      final viewport = tester.getRect(find.byType(GridView));
+
+      // Every built row with its on-screen rect, keyed by row index.
+      Map<int, Rect> rowRects() => {
+        for (final card in tester.widgetList<GamePosterCard>(cards))
+          if (indexOf(card) % columns == 0)
+            indexOf(card) ~/ columns: tester.getRect(find.byWidget(card)),
+      };
+      int firstVisibleRow() => (rowRects().entries.toList()
+            ..sort((a, b) => a.key.compareTo(b.key)))
+          .firstWhere((e) => e.value.top >= viewport.top - 0.5)
+          .key;
+      int firstCutOffRow() {
+        final rows = rowRects().entries.toList()
+          ..sort((a, b) => a.key.compareTo(b.key));
+        // When the rows on screen end exactly at the bottom edge, the next
+        // row may not be built at all.
+        return rows
+            .firstWhere(
+              (e) => e.value.bottom > viewport.bottom + 0.5,
+              orElse: () => MapEntry(rows.last.key + 1, Rect.zero),
+            )
+            .key;
+      }
+      int focusedIndex() => indexOf(
+        tester
+            .widgetList<GamePosterCard>(cards)
+            .singleWhere((card) => card.focusNode?.hasFocus ?? false),
+      );
+
+      // Start one column in, so the test also proves the column is kept.
+      tester.widget<GamePosterCard>(cards.at(1)).focusNode!.requestFocus();
+      await tester.pumpAndSettle();
+
+      for (var page = 0; page < 3; page++) {
+        final top = firstVisibleRow();
+        final cutOff = firstCutOffRow();
+        final pageRows = cutOff - top < 1 ? 1 : cutOff - top;
+        final from = focusedIndex();
+
+        await tester.sendKeyEvent(LogicalKeyboardKey.mediaFastForward);
+        await tester.pumpAndSettle();
+
+        expect(
+          firstVisibleRow(),
+          cutOff,
+          reason: 'FF scrolls the row cut off at the bottom to the top',
+        );
+        expect(focusedIndex(), from + pageRows * columns);
+        final focused = tester.getRect(
+          find.byWidget(
+            tester
+                .widgetList<GamePosterCard>(cards)
+                .singleWhere((card) => card.focusNode?.hasFocus ?? false),
+          ),
+        );
+        expect(
+          focused.top >= viewport.top && focused.bottom <= viewport.bottom,
+          isTrue,
+          reason: 'the focused card $focused stays on screen $viewport',
+        );
+
+        await tester.sendKeyEvent(LogicalKeyboardKey.mediaRewind);
+        await tester.pumpAndSettle();
+        expect(firstVisibleRow(), top, reason: 'RW pages straight back');
+        expect(focusedIndex(), from);
+
+        await tester.sendKeyEvent(LogicalKeyboardKey.mediaFastForward);
+        await tester.pumpAndSettle();
+      }
+
+      for (var press = 0; press < 150; press++) {
+        await tester.sendKeyEvent(LogicalKeyboardKey.mediaRewind);
+        await tester.pumpAndSettle();
+      }
+      expect(focusedIndex(), 1, reason: 'RW stops at the first row');
+
+      for (var press = 0; press < 150; press++) {
+        await tester.sendKeyEvent(LogicalKeyboardKey.mediaFastForward);
+        await tester.pumpAndSettle();
+      }
+      final lastRowStart = (games.length - 1) ~/ columns * columns;
+      expect(
+        focusedIndex(),
+        (lastRowStart + 1).clamp(0, games.length - 1),
+        reason: 'FF stops on the last row, in the same column when it exists',
+      );
+    });
+  }
 }
