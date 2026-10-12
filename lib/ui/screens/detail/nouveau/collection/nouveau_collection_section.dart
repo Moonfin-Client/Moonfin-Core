@@ -280,7 +280,15 @@ class NouveauCollectionSectionState
   }
 
   void _prunePlaylistCardKeys() {
-    _playlistCardKeys.clear();
+    final validKeys = <String>{};
+    for (var i = 0; i < _playlistItems.length; i++) {
+      final item = _playlistItems[i];
+      final entryId = item.rawData['PlaylistItemId']?.toString();
+      validKeys.add(
+        (entryId != null && entryId.isNotEmpty) ? '${entryId}_$i' : '${item.id}_$i',
+      );
+    }
+    _playlistCardKeys.removeWhere((key, _) => !validKeys.contains(key));
   }
 
   bool get canFocusTop {

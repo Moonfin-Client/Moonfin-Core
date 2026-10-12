@@ -358,7 +358,11 @@ class NouveauEpisodesSectionState extends State<NouveauEpisodesSection> {
   }
 
   void _pruneEpisodeCardKeys() {
-    _episodeCardKeys.clear();
+    final validKeys = <String>{};
+    for (var i = 0; i < _sourceEpisodes.length; i++) {
+      validKeys.add('${_sourceEpisodes[i].id}_$i');
+    }
+    _episodeCardKeys.removeWhere((key, _) => !validKeys.contains(key));
   }
 
   bool get canFocusTop {

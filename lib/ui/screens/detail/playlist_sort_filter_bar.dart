@@ -31,14 +31,13 @@ String playlistSortLabel(LibrarySortBy sortBy, AppLocalizations l10n) {
     LibrarySortBy.playlistOrder => l10n.spotlightPlaylistOrder,
     LibrarySortBy.name => l10n.sortByName,
     LibrarySortBy.dateAdded => l10n.sortByDateAdded,
-    LibrarySortBy.premiereDate => 'Release Date',
-    LibrarySortBy.communityRating => 'Community Rating',
-    LibrarySortBy.criticRating => 'Critic Rating',
-    LibrarySortBy.runtime => 'Runtime',
-    LibrarySortBy.datePlayed => 'Last Played',
-    LibrarySortBy.playCount => 'Play Count',
-    LibrarySortBy.myRating => 'My Rating',
-    LibrarySortBy.random => 'Random',
+    LibrarySortBy.premiereDate => l10n.playlistSortReleaseDate,
+    LibrarySortBy.communityRating => l10n.communityRating,
+    LibrarySortBy.criticRating => l10n.playlistSortCriticRating,
+    LibrarySortBy.runtime => l10n.playlistSortRuntime,
+    LibrarySortBy.datePlayed => l10n.playlistSortLastPlayed,
+    LibrarySortBy.playCount => l10n.playlistSortPlayCount,
+    LibrarySortBy.random => l10n.playlistSortRandom,
     _ => sortBy.displayName,
   };
 }
@@ -258,7 +257,7 @@ class PlaylistSortFilterBar extends StatelessWidget {
     if (parts.length == 1) {
       return parts.first;
     }
-    return '${parts.length} active';
+    return l10n.playlistFilterActiveCount(parts.length);
   }
 
   void _openSortDialog(BuildContext context) {
@@ -572,6 +571,7 @@ class _PlaylistSortDialogState extends State<PlaylistSortDialog> {
               _DialogRadioRow(
                 label: playlistSortLabel(option, l10n),
                 selected: _selectedSort == option,
+                autofocus: _selectedSort == option,
                 accent: accent,
                 onSurface: onSurface,
                 trailing: _selectedSort == option &&
@@ -691,6 +691,7 @@ class _PlaylistFilterDialogState extends State<PlaylistFilterDialog> {
                 _DialogRadioRow(
                   label: playlistPlayedStatusLabel(status, l10n),
                   selected: _playedFilter == status,
+                  autofocus: _playedFilter == status,
                   accent: accent,
                   onSurface: onSurface,
                   onTap: () {
@@ -729,7 +730,7 @@ class _PlaylistFilterDialogState extends State<PlaylistFilterDialog> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(20, 4, 20, 6),
                   child: Text(
-                    'Media Type',
+                    l10n.type,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
                           color: Colors.white70,
                           fontWeight: FontWeight.w600,
@@ -781,7 +782,7 @@ class _PlaylistFilterDialogState extends State<PlaylistFilterDialog> {
           ),
         FilledButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Done'),
+          child: Text(l10n.done),
         ),
       ],
     );
@@ -791,6 +792,7 @@ class _PlaylistFilterDialogState extends State<PlaylistFilterDialog> {
 class _DialogRadioRow extends StatefulWidget {
   final String label;
   final bool selected;
+  final bool autofocus;
   final VoidCallback onTap;
   final Widget? trailing;
   final Color? accent;
@@ -799,6 +801,7 @@ class _DialogRadioRow extends StatefulWidget {
   const _DialogRadioRow({
     required this.label,
     required this.selected,
+    this.autofocus = false,
     required this.onTap,
     this.trailing,
     this.accent,
@@ -821,6 +824,7 @@ class _DialogRadioRowState extends State<_DialogRadioRow> with FocusStateMixin {
       onEnter: (_) => setHovered(true),
       onExit: (_) => setHovered(false),
       child: Focus(
+        autofocus: widget.autofocus,
         onFocusChange: (f) => setFocused(f),
         onKeyEvent: (_, event) {
           if (isActivateKey(event)) {

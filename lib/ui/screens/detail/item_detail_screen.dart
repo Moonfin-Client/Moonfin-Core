@@ -16377,11 +16377,9 @@ class DetailTrackList extends StatelessWidget {
           final keyId = (playlistItemId != null && playlistItemId.isNotEmpty)
               ? '${playlistItemId}_$index'
               : '${track.id}_$index';
-          final focusId = (index == 0)
-              ? track.id
-              : ((playlistItemId != null && playlistItemId.isNotEmpty)
-                  ? playlistItemId
-                  : '${track.id}_$index');
+          final focusId = (playlistItemId != null && playlistItemId.isNotEmpty)
+              ? playlistItemId
+              : track.id;
           return TrackTile(
             key: ValueKey('playlist-track-$keyId'),
             track: track,
@@ -16438,11 +16436,9 @@ class DetailTrackList extends StatelessWidget {
       final keyId = (playlistItemId != null && playlistItemId.isNotEmpty)
           ? '${playlistItemId}_$index'
           : '${track.id}_$index';
-      final focusId = (index == 0)
-          ? track.id
-          : ((playlistItemId != null && playlistItemId.isNotEmpty)
-              ? playlistItemId
-              : '${track.id}_$index');
+      final focusId = (playlistItemId != null && playlistItemId.isNotEmpty)
+          ? playlistItemId
+          : track.id;
 
       children.add(
         TrackTile(

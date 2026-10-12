@@ -549,7 +549,9 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       if (event is KeyDownEvent) {
         if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
           if (_vm.playlistItems.isNotEmpty) {
-            final firstTrackId = _vm.playlistItems.first.id;
+            final firstTrack = _vm.playlistItems.first;
+            final firstTrackId =
+                firstTrack.rawData['PlaylistItemId']?.toString() ?? firstTrack.id;
             final firstNode = _trackFocusNodes.putIfAbsent(firstTrackId, () => FocusNode());
             if (firstNode.canRequestFocus) {
               firstNode.requestFocus();
@@ -3859,8 +3861,11 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                               widget.initialFocusNode?.requestFocus(),
                           onSortArrowDown: () {
                             if (displayedTracks.isNotEmpty) {
+                              final first = displayedTracks.first;
+                              final firstId =
+                                  first.rawData['PlaylistItemId']?.toString() ?? first.id;
                               _trackFocusNodes
-                                  .putIfAbsent(displayedTracks.first.id, () => FocusNode())
+                                  .putIfAbsent(firstId, () => FocusNode())
                                   .requestFocus();
                             }
                           },
@@ -3871,8 +3876,11 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                               widget.initialFocusNode?.requestFocus(),
                           onFilterArrowDown: () {
                             if (displayedTracks.isNotEmpty) {
+                              final first = displayedTracks.first;
+                              final firstId =
+                                  first.rawData['PlaylistItemId']?.toString() ?? first.id;
                               _trackFocusNodes
-                                  .putIfAbsent(displayedTracks.first.id, () => FocusNode())
+                                  .putIfAbsent(firstId, () => FocusNode())
                                   .requestFocus();
                             }
                           },
@@ -4427,7 +4435,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
               selectedMediaSourceId: widget.selectedMediaSourceId,
               onSelectedMediaSourceChanged: widget.onSelectedMediaSourceChanged,
               tvPlayFocusNode: widget.initialFocusNode,
-              downTarget: (item.type == 'Playlist')
+              downTarget: (item.type == 'Playlist' && _vm.tracks.isNotEmpty)
                   ? _playlistSortFocusNode
                   : (_vm.tracks.isNotEmpty
                       ? _trackFocusNodes.putIfAbsent(_vm.tracks.first.id, () => FocusNode())

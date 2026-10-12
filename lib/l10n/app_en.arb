@@ -13234,5 +13234,38 @@
   "playerSettingsSubtitle": "Controls, seeking, player buttons, and trick play",
   "@playerSettingsSubtitle": {
     "description": "Subtitle for the Player entry on the Playback settings screen"
+  },
+  "playlistSortReleaseDate": "Release Date",
+  "@playlistSortReleaseDate": {
+    "description": "Label for sorting playlist items by release date"
+  },
+  "playlistSortCriticRating": "Critic Rating",
+  "@playlistSortCriticRating": {
+    "description": "Label for sorting playlist items by critic rating"
+  },
+  "playlistSortRuntime": "Runtime",
+  "@playlistSortRuntime": {
+    "description": "Label for sorting playlist items by runtime"
+  },
+  "playlistSortLastPlayed": "Last Played",
+  "@playlistSortLastPlayed": {
+    "description": "Label for sorting playlist items by last played date"
+  },
+  "playlistSortPlayCount": "Play Count",
+  "@playlistSortPlayCount": {
+    "description": "Label for sorting playlist items by play count"
+  },
+  "playlistSortRandom": "Random",
+  "@playlistSortRandom": {
+    "description": "Label for sorting playlist items randomly"
+  },
+  "playlistFilterActiveCount": "{count, plural, =1{1 active} other{{count} active}}",
+  "@playlistFilterActiveCount": {
+    "description": "Indicator of how many filters are currently active on a playlist",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

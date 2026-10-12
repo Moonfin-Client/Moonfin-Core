@@ -24196,6 +24196,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Controls, seeking, player buttons, and trick play'**
   String get playerSettingsSubtitle;
+
+  /// Label for sorting playlist items by release date
+  ///
+  /// In en, this message translates to:
+  /// **'Release Date'**
+  String get playlistSortReleaseDate;
+
+  /// Label for sorting playlist items by critic rating
+  ///
+  /// In en, this message translates to:
+  /// **'Critic Rating'**
+  String get playlistSortCriticRating;
+
+  /// Label for sorting playlist items by runtime
+  ///
+  /// In en, this message translates to:
+  /// **'Runtime'**
+  String get playlistSortRuntime;
+
+  /// Label for sorting playlist items by last played date
+  ///
+  /// In en, this message translates to:
+  /// **'Last Played'**
+  String get playlistSortLastPlayed;
+
+  /// Label for sorting playlist items by play count
+  ///
+  /// In en, this message translates to:
+  /// **'Play Count'**
+  String get playlistSortPlayCount;
+
+  /// Label for sorting playlist items randomly
+  ///
+  /// In en, this message translates to:
+  /// **'Random'**
+  String get playlistSortRandom;
+
+  /// Indicator of how many filters are currently active on a playlist
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 active} other{{count} active}}'**
+  String playlistFilterActiveCount(int count);
 }
 
 class _AppLocalizationsDelegate

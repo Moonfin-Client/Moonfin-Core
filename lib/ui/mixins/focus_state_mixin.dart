@@ -16,13 +16,20 @@ mixin FocusStateMixin<T extends StatefulWidget> on State<T> {
     if (activeTheme.id == ThemeRegistry.neonPulseId) {
       return activeTheme.borders.focusBorder.color;
     }
-    return Color(
-      GetIt.instance<UserPreferences>().get(UserPreferences.focusColor).colorValue,
-    );
+    if (GetIt.instance.isRegistered<UserPreferences>()) {
+      return Color(
+        GetIt.instance<UserPreferences>().get(UserPreferences.focusColor).colorValue,
+      );
+    }
+    return AppColorScheme.accent;
   }
 
-  bool get cardFocusExpansion =>
-      GetIt.instance<UserPreferences>().get(UserPreferences.cardFocusExpansion);
+  bool get cardFocusExpansion {
+    if (GetIt.instance.isRegistered<UserPreferences>()) {
+      return GetIt.instance<UserPreferences>().get(UserPreferences.cardFocusExpansion);
+    }
+    return true;
+  }
 
   void setFocused(bool value) => setState(() => _focused = value);
   void setHovered(bool value) => setState(() => _hovered = value);
