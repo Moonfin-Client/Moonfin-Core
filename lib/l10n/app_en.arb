@@ -13037,6 +13037,10 @@
   "@navYou": {
     "description": "Bottom bar tab that opens the user's own menu with their profile, extra destinations and settings"
   },
+  "cinemaMinimumIntroLength": "Minimum clip length to show buttons",
+  "cinemaMinimumIntroLengthDescription": "Show Skip and Request buttons only for trailers or pre-rolls at least this long. Auto-hide is a separate setting.",
+  "cinemaAutoHideButtons": "Auto-hide Cinema buttons",
+  "cinemaAutoHideButtonsDescription": "Once visible, hide Skip and Request buttons after this many seconds of playback. Off disables automatic hiding.",
   "detailsPage": "Details Page",
   "@detailsPage": {
     "description": "Settings entry and screen for options that shape the details page"
