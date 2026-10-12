@@ -196,8 +196,11 @@ class PlaylistSortFilterBar extends StatelessWidget {
 
   final FocusNode? sortFocusNode;
   final FocusNode? filterFocusNode;
+  final FocusNode? resetFocusNode;
   final VoidCallback? onSortArrowUp;
   final VoidCallback? onSortArrowDown;
+  final VoidCallback? onSortArrowLeft;
+  final VoidCallback? onSortArrowRight;
   final VoidCallback? onFilterArrowUp;
   final VoidCallback? onFilterArrowDown;
 
@@ -216,8 +219,11 @@ class PlaylistSortFilterBar extends StatelessWidget {
     required this.filteredCount,
     this.sortFocusNode,
     this.filterFocusNode,
+    this.resetFocusNode,
     this.onSortArrowUp,
     this.onSortArrowDown,
+    this.onSortArrowLeft,
+    this.onSortArrowRight,
     this.onFilterArrowUp,
     this.onFilterArrowDown,
   });
@@ -284,6 +290,14 @@ class PlaylistSortFilterBar extends StatelessWidget {
     );
   }
 
+  void _handleReset() {
+    sortFocusNode?.requestFocus();
+    onReset();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      sortFocusNode?.requestFocus();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -315,6 +329,8 @@ class PlaylistSortFilterBar extends StatelessWidget {
             onTap: () => _openSortDialog(context),
             onArrowUp: onSortArrowUp,
             onArrowDown: onSortArrowDown,
+            onArrowLeft: onSortArrowLeft,
+            onArrowRight: onSortArrowRight,
           ),
 
           // Filter Pill
@@ -332,15 +348,16 @@ class PlaylistSortFilterBar extends StatelessWidget {
             onArrowDown: onFilterArrowDown,
           ),
 
-          // Reset pill/icon if modified
+          // Reset pill if modified
           if (isAnyModified)
-            IconButton(
-              icon: const Icon(Icons.restart_alt_rounded, size: 18),
-              tooltip: l10n.resetSort,
-              color: Colors.white70,
-              onPressed: onReset,
-              padding: const EdgeInsets.all(6),
-              constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+            _PlaylistPillButton(
+              focusNode: resetFocusNode,
+              icon: Icons.restart_alt_rounded,
+              label: l10n.reset,
+              isActive: false,
+              onTap: _handleReset,
+              onArrowUp: onSortArrowUp,
+              onArrowDown: onSortArrowDown,
             ),
 
           // Track count summary when filtered
@@ -369,6 +386,8 @@ class _PlaylistPillButton extends StatefulWidget {
   final FocusNode? focusNode;
   final VoidCallback? onArrowUp;
   final VoidCallback? onArrowDown;
+  final VoidCallback? onArrowLeft;
+  final VoidCallback? onArrowRight;
 
   const _PlaylistPillButton({
     required this.icon,
@@ -379,6 +398,8 @@ class _PlaylistPillButton extends StatefulWidget {
     this.focusNode,
     this.onArrowUp,
     this.onArrowDown,
+    this.onArrowLeft,
+    this.onArrowRight,
   });
 
   @override
@@ -394,8 +415,15 @@ class _PlaylistPillButtonState extends State<_PlaylistPillButton>
     final isHovered = hovered;
     final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
 
+    Color effectiveFocusColor;
+    try {
+      effectiveFocusColor = focusColor;
+    } catch (_) {
+      effectiveFocusColor = accent;
+    }
+
     final borderColor = isFocused
-        ? focusColor
+        ? effectiveFocusColor
         : widget.isActive
             ? accent.withValues(alpha: 0.9)
             : isHovered
@@ -403,7 +431,7 @@ class _PlaylistPillButtonState extends State<_PlaylistPillButton>
                 : Colors.white24;
 
     final bgColor = isFocused
-        ? focusColor.withValues(alpha: 0.22)
+        ? effectiveFocusColor.withValues(alpha: 0.22)
         : widget.isActive
             ? accent.withValues(alpha: 0.18)
             : isHovered
@@ -431,6 +459,14 @@ class _PlaylistPillButtonState extends State<_PlaylistPillButton>
             }
             if (event.logicalKey.isDownKey && widget.onArrowDown != null) {
               widget.onArrowDown!();
+              return KeyEventResult.handled;
+            }
+            if (event.logicalKey.isLeftKey && widget.onArrowLeft != null) {
+              widget.onArrowLeft!();
+              return KeyEventResult.handled;
+            }
+            if (event.logicalKey.isRightKey && widget.onArrowRight != null) {
+              widget.onArrowRight!();
               return KeyEventResult.handled;
             }
           }

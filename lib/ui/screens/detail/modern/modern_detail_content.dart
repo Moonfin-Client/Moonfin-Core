@@ -3855,18 +3855,25 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                           filteredCount: displayedTracks.length,
                           sortFocusNode: _playlistSortFocusNode,
                           filterFocusNode: _playlistFilterFocusNode,
-                          onSortArrowUp: _focusSelectedTab,
+                          onSortArrowUp: () =>
+                              widget.initialFocusNode?.requestFocus(),
                           onSortArrowDown: () {
                             if (displayedTracks.isNotEmpty) {
-                              _trackFocusNodes[displayedTracks.first.id]
-                                  ?.requestFocus();
+                              _trackFocusNodes
+                                  .putIfAbsent(displayedTracks.first.id, () => FocusNode())
+                                  .requestFocus();
                             }
                           },
-                          onFilterArrowUp: _focusSelectedTab,
+                          onSortArrowLeft: () {
+                            NavigationLayout.focusNavbarNotifier.value?.call();
+                          },
+                          onFilterArrowUp: () =>
+                              widget.initialFocusNode?.requestFocus(),
                           onFilterArrowDown: () {
                             if (displayedTracks.isNotEmpty) {
-                              _trackFocusNodes[displayedTracks.first.id]
-                                  ?.requestFocus();
+                              _trackFocusNodes
+                                  .putIfAbsent(displayedTracks.first.id, () => FocusNode())
+                                  .requestFocus();
                             }
                           },
                         ),
@@ -4420,9 +4427,11 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
               selectedMediaSourceId: widget.selectedMediaSourceId,
               onSelectedMediaSourceChanged: widget.onSelectedMediaSourceChanged,
               tvPlayFocusNode: widget.initialFocusNode,
-              downTarget: _vm.tracks.isNotEmpty
-                  ? _trackFocusNodes.putIfAbsent(_vm.tracks.first.id, () => FocusNode())
-                  : null,
+              downTarget: (item.type == 'Playlist')
+                  ? _playlistSortFocusNode
+                  : (_vm.tracks.isNotEmpty
+                      ? _trackFocusNodes.putIfAbsent(_vm.tracks.first.id, () => FocusNode())
+                      : null),
               upTarget:
                   authorOrArtistName != null && authorOrArtistName.trim().isNotEmpty
                       ? _artistFocusNode

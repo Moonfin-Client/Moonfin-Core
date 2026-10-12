@@ -347,18 +347,18 @@ class NouveauEpisodesSectionState extends State<NouveauEpisodesSection> {
   }
 
   GlobalKey<NouveauLandscapeMediaCardState> _episodeCardKey(
-    AggregatedItem episode,
-  ) {
+    AggregatedItem episode, [
+    int? index,
+  ]) {
+    final keyId = index != null ? '${episode.id}_$index' : episode.id;
     return _episodeCardKeys.putIfAbsent(
-      episode.id,
+      keyId,
       () => GlobalKey<NouveauLandscapeMediaCardState>(),
     );
   }
 
   void _pruneEpisodeCardKeys() {
-    final episodeIds = _sourceEpisodes.map((episode) => episode.id).toSet();
-
-    _episodeCardKeys.removeWhere((id, _) => !episodeIds.contains(id));
+    _episodeCardKeys.clear();
   }
 
   bool get canFocusTop {
@@ -440,7 +440,7 @@ class NouveauEpisodesSectionState extends State<NouveauEpisodesSection> {
     );
 
     final episode = episodes[index];
-    final card = _episodeCardKey(episode).currentState;
+    final card = _episodeCardKey(episode, index).currentState;
 
     if (card?.requestDetailsFocus() ?? false) {
       return true;
@@ -535,7 +535,7 @@ class NouveauEpisodesSectionState extends State<NouveauEpisodesSection> {
       return true;
     }
 
-    final card = _episodeCardKey(episode).currentState;
+    final card = _episodeCardKey(episode, index).currentState;
 
     if (card == null) {
       return false;
@@ -1036,7 +1036,7 @@ class NouveauEpisodesSectionState extends State<NouveauEpisodesSection> {
                 child: MouseRegion(
                   cursor: SystemMouseCursors.click,
                   child: NouveauLandscapeMediaCard(
-                    key: _episodeCardKey(episode),
+                    key: _episodeCardKey(episode, index),
                     item: episode,
                     imageUrl: _imageUrl(episode),
                     width: layout.cardWidth,

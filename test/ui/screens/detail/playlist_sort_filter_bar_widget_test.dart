@@ -48,6 +48,7 @@ void main() {
 
     testWidgets('displays reset button and active indicator when sort is non-default', (tester) async {
       bool resetCalled = false;
+      final sortNode = FocusNode();
 
       await tester.pumpWidget(
         buildTestWidget(
@@ -61,6 +62,7 @@ void main() {
             onReset: () => resetCalled = true,
             totalCount: 10,
             filteredCount: 10,
+            sortFocusNode: sortNode,
           ),
         ),
       );
@@ -70,8 +72,10 @@ void main() {
       expect(find.byIcon(Icons.restart_alt_rounded), findsOneWidget);
 
       await tester.tap(find.byIcon(Icons.restart_alt_rounded));
-      await tester.pump();
+      await tester.pumpAndSettle();
       expect(resetCalled, isTrue);
+      expect(sortNode.hasFocus, isTrue);
+      sortNode.dispose();
     });
 
     testWidgets('tapping sort pill opens sort dialog and selects new sort', (tester) async {

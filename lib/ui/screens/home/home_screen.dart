@@ -2648,7 +2648,9 @@ class _ContentRowsState extends State<_ContentRows>
 
   String _rowIdForIndex(int rowIndex) {
     final rows = widget.viewModel.rows;
-    if (rowIndex >= 0 && rowIndex < rows.length) return rows[rowIndex].id;
+    if (rowIndex >= 0 && rowIndex < rows.length) {
+      return '${rows[rowIndex].id}_$rowIndex';
+    }
     return '__row_$rowIndex';
   }
 

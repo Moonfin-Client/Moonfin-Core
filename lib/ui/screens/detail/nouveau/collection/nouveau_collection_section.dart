@@ -266,18 +266,21 @@ class NouveauCollectionSectionState
   }
 
   GlobalKey<NouveauLandscapeMediaCardState> _playlistCardKey(
-    AggregatedItem item,
-  ) {
+    AggregatedItem item, [
+    int? index,
+  ]) {
+    final entryId = item.rawData['PlaylistItemId']?.toString();
+    final keyId = (entryId != null && entryId.isNotEmpty)
+        ? (index != null ? '${entryId}_$index' : entryId)
+        : (index != null ? '${item.id}_$index' : item.id);
     return _playlistCardKeys.putIfAbsent(
-      item.id,
+      keyId,
       () => GlobalKey<NouveauLandscapeMediaCardState>(),
     );
   }
 
   void _prunePlaylistCardKeys() {
-    final ids = _playlistItems.map((item) => item.id).toSet();
-
-    _playlistCardKeys.removeWhere((id, _) => !ids.contains(id));
+    _playlistCardKeys.clear();
   }
 
   bool get canFocusTop {
@@ -340,7 +343,8 @@ class NouveauCollectionSectionState
           _playlistItems.length - 1,
         );
 
-        final card = _playlistCardKey(_playlistItems[index]).currentState;
+        final card =
+            _playlistCardKey(_playlistItems[index], index).currentState;
 
         if (card?.requestDetailsFocus() ?? false) {
           _revealPlaylistSection();
@@ -457,7 +461,7 @@ class NouveauCollectionSectionState
 
     final index = row.focusedIndex.clamp(0, items.length - 1);
 
-    final card = _playlistCardKey(items[index]).currentState;
+    final card = _playlistCardKey(items[index], index).currentState;
 
     if (card?.requestDetailsFocus() ?? false) {
       _revealPlaylistSection();
@@ -1296,7 +1300,7 @@ class NouveauCollectionSectionState
                       right: hasNext ? layout.cardSpacing : 0,
                     ),
                     child: NouveauLandscapeMediaCard(
-                      key: _playlistCardKey(item),
+                      key: _playlistCardKey(item, index),
                       item: item,
                       imageUrl: _playlistImageUrl(item),
                       width: layout.cardWidth,

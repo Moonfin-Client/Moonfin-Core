@@ -3290,6 +3290,9 @@ class _DetailContentState extends State<_DetailContent> {
                 if (node.canRequestFocus) node.requestFocus();
               }
             },
+            onSortArrowLeft: () {
+              NavigationLayout.focusNavbarNotifier.value?.call();
+            },
             onFilterArrowUp: () {
               final targetNode = widget.initialFocusNode ?? _albumPlayFocusNode;
               if (targetNode.canRequestFocus) targetNode.requestFocus();
@@ -16361,7 +16364,7 @@ class DetailTrackList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (reorderable && onReorder != null) {
+    if (!PlatformDetection.isTV && reorderable && onReorder != null) {
       return ReorderableListView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
@@ -16370,11 +16373,19 @@ class DetailTrackList extends StatelessWidget {
         onReorder: onReorder!,
         itemBuilder: (context, index) {
           final track = tracks[index];
-          final keyId = track.rawData['PlaylistItemId']?.toString() ?? track.id;
+          final playlistItemId = track.rawData['PlaylistItemId']?.toString();
+          final keyId = (playlistItemId != null && playlistItemId.isNotEmpty)
+              ? '${playlistItemId}_$index'
+              : '${track.id}_$index';
+          final focusId = (index == 0)
+              ? track.id
+              : ((playlistItemId != null && playlistItemId.isNotEmpty)
+                  ? playlistItemId
+                  : '${track.id}_$index');
           return TrackTile(
             key: ValueKey('playlist-track-$keyId'),
             track: track,
-            focusNode: getFocusNode(track.id),
+            focusNode: getFocusNode(focusId),
             onArrowUp: index == 0 ? onFirstTrackUp : null,
             onFocused: onTrackFocused == null
                 ? null
@@ -16423,10 +16434,21 @@ class DetailTrackList extends StatelessWidget {
         );
       }
 
+      final playlistItemId = track.rawData['PlaylistItemId']?.toString();
+      final keyId = (playlistItemId != null && playlistItemId.isNotEmpty)
+          ? '${playlistItemId}_$index'
+          : '${track.id}_$index';
+      final focusId = (index == 0)
+          ? track.id
+          : ((playlistItemId != null && playlistItemId.isNotEmpty)
+              ? playlistItemId
+              : '${track.id}_$index');
+
       children.add(
         TrackTile(
+          key: ValueKey('playlist-track-$keyId'),
           track: track,
-          focusNode: getFocusNode(track.id),
+          focusNode: getFocusNode(focusId),
           onArrowUp: index == 0 ? onFirstTrackUp : null,
           onFocused: onTrackFocused == null
               ? null
@@ -16434,7 +16456,7 @@ class DetailTrackList extends StatelessWidget {
           index: index + 1,
           totalCount: tracks.length,
           currentIndex: index,
-          reorderable: false,
+          reorderable: reorderable,
           reorderIndex: index,
           onTap: () => onPlayTrack(index),
           onRemoveFromPlaylist: onRemoveFromPlaylist,
