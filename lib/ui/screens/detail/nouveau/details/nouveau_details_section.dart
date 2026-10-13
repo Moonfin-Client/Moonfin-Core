@@ -56,7 +56,8 @@ class NouveauDetailsSection extends StatefulWidget {
   });
 
   @override
-  State<NouveauDetailsSection> createState() => NouveauDetailsSectionState();
+  State<NouveauDetailsSection> createState() =>
+      NouveauDetailsSectionState();
 }
 
 class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
@@ -141,6 +142,11 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
     return _readingContentKey;
   }
 
+  /// A book has a file but no media source, so it shows its file details on
+  /// its own, under the same Media Info setting.
+  bool _showsBookFile(AggregatedItem item) =>
+      item.type == 'Book' && widget.visibility.shows(DetailSection.mediaInfo);
+
   bool get _hasTechnicalDetails {
     final targetItem = _getRelevantEpisode(widget.item) ?? widget.item;
 
@@ -150,7 +156,7 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
         targetItem.type != 'Person';
 
     return isPlayable &&
-        (_mediaSourceFor(targetItem) != null || targetItem.type == 'Book');
+        (_mediaSourceFor(targetItem) != null || _showsBookFile(targetItem));
   }
 
   GlobalKey? get bottomRevealKey {
@@ -1014,7 +1020,8 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
 
     final mediaSource = isPlayable ? _mediaSourceFor(targetItem) : null;
 
-    final hasTechnicalDetails = mediaSource != null;
+    final hasTechnicalDetails =
+        mediaSource != null || _showsBookFile(targetItem);
 
     final seerrState = _seerrState;
 
@@ -1065,7 +1072,7 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
 
     final foreground = AppColorScheme.onSurface;
 
-    final hasTechnicalDetails = mediaSource != null || item.type == 'Book';
+    final hasTechnicalDetails = mediaSource != null || _showsBookFile(item);
 
     final hasStudios = studios.isNotEmpty;
 
@@ -1218,19 +1225,9 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
             : null,
         activeAudioIndex: activeAudioIndex,
       );
-    } else if (item.type == 'Book') {
-      final String path =
-          <Object?>[
-            item.rawData['Path'],
-            item.rawData['FileName'],
-            item.rawData['FilePath'],
-            item.rawData['Name'],
-            item.name,
-          ].whereType<String>().firstWhere(
-            (value) => value.trim().isNotEmpty,
-            orElse: () => '',
-          );
-      fileName = path.split('/').last.split('\\').last;
+    } else if (_showsBookFile(item)) {
+      fileName = BookReaderService.fileName(item);
+
       container =
           BookReaderService.detectExtension(item)?.toUpperCase() ?? 'Unknown';
     }
@@ -1633,7 +1630,8 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
           ),
         ),
 
-        if (videoDetails.isNotEmpty && includePlaybackCapability) ...[
+        // A book has no streams, so its file details take the whole row.
+        if (includePlaybackCapability) ...[
           _columnDivider(),
 
           Expanded(
@@ -1644,9 +1642,7 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
               child: _buildVideoContent(context, videoDetails),
             ),
           ),
-        ],
 
-        if (audioStreams.isNotEmpty && includePlaybackCapability) ...[
           _columnDivider(),
 
           Expanded(
@@ -1663,9 +1659,7 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
               ),
             ),
           ),
-        ],
 
-        if (subtitleStreams.isNotEmpty && includePlaybackCapability) ...[
           _columnDivider(),
 
           Expanded(
@@ -1715,14 +1709,14 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
         ),
       ),
 
-      if (videoDetails.isNotEmpty && includePlaybackCapability)
+      if (videoDetails.isNotEmpty)
         _buildGroup(
           context,
           title: l10n.video,
           child: _buildVideoContent(context, videoDetails),
         ),
 
-      if (audioStreams.isNotEmpty && includePlaybackCapability)
+      if (audioStreams.isNotEmpty)
         _buildGroup(
           context,
           title: l10n.audio,
@@ -1735,7 +1729,7 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
           ),
         ),
 
-      if (subtitleStreams.isNotEmpty && includePlaybackCapability)
+      if (subtitleStreams.isNotEmpty)
         _buildGroup(
           context,
           title: l10n.subtitles,
@@ -1808,23 +1802,15 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
 
         const SizedBox(height: 7),
 
-        if (formattedSize != '')
-          Text(
-            l10n.fileSizeFormat(formattedSize, container),
-            style: textTheme.bodySmall?.copyWith(
-              color: foreground.withValues(alpha: 0.5),
-              height: 1.3,
-            ),
+        Text(
+          formattedSize.isEmpty
+              ? l10n.formatExtension(container)
+              : l10n.fileSizeFormat(formattedSize, container),
+          style: textTheme.bodySmall?.copyWith(
+            color: foreground.withValues(alpha: 0.5),
+            height: 1.3,
           ),
-
-        if (formattedSize == '')
-          Text(
-            l10n.formatExtension(container),
-            style: textTheme.bodySmall?.copyWith(
-              color: foreground.withValues(alpha: 0.5),
-              height: 1.3,
-            ),
-          ),
+        ),
 
         if (includePlaybackCapability) ...[
           const SizedBox(height: 12),
@@ -2134,8 +2120,9 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
   Widget _emptyValue(BuildContext context) {
     return Text(
       '—',
-      style: Theme.of(context).textTheme.bodySmall
-          ?.copyWith(color: AppColorScheme.onSurface.withValues(alpha: 0.28)),
+      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+        color: AppColorScheme.onSurface.withValues(alpha: 0.28),
+      ),
     );
   }
 
@@ -2152,4 +2139,5 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
       ),
     );
   }
+
 }

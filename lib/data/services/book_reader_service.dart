@@ -16,16 +16,25 @@ class BookReaderService {
     'zip',
   };
 
-  static String? detectExtension(AggregatedItem item) {
-    final directCandidates = <Object?>[
-      item.rawData['Path'],
-      item.rawData['FileName'],
-      item.rawData['FilePath'],
-      item.rawData['Name'],
-      item.name,
-    ];
+  static List<Object?> _directCandidates(AggregatedItem item) => [
+        item.rawData['Path'],
+        item.rawData['FileName'],
+        item.rawData['FilePath'],
+        item.rawData['Name'],
+        item.name,
+      ];
 
-    for (final candidate in directCandidates) {
+  /// The file name from the first of the same fields [detectExtension] reads.
+  static String fileName(AggregatedItem item) {
+    final path = _directCandidates(item).whereType<String>().firstWhere(
+          (value) => value.trim().isNotEmpty,
+          orElse: () => '',
+        );
+    return path.split('/').last.split('\\').last;
+  }
+
+  static String? detectExtension(AggregatedItem item) {
+    for (final candidate in _directCandidates(item)) {
       final value = _extractExtension(candidate);
       if (value != null) {
         return value;
