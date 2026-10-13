@@ -216,7 +216,7 @@ void main() {
       expect(cachedEs, isEmpty);
     });
 
-    test('falls back to legacy unpartitioned cache when offline', () async {
+    test('never reads the shared row from before the cache was scoped, even offline', () async {
       final legacyFile = File('${tempDir.path}/custom_chart_custom_row_cache_age.json');
       final legacyItem = ImdbExternalListItem(
         imdbId: 'tt_legacy',
@@ -227,10 +227,8 @@ void main() {
       );
       await legacyFile.writeAsString(jsonEncode([legacyItem.toJson()]));
 
-      // Querying without maxAge (offline fallback path) for a language that has no specific cache
-      final items = await service.loadCustomRowFromCache(config, language: 'de');
-      expect(items, hasLength(1));
-      expect(items.first.title, 'Legacy Film');
+      // It may have been written for another account, so an empty row beats it.
+      expect(await service.loadCustomRowFromCache(config, language: 'de'), isEmpty);
     });
   });
 
@@ -249,6 +247,12 @@ void main() {
           ImdbExternalListItem(imdbId: 'tt1', tmdbId: '1', title: title, type: 'Movie', backdropUrl: 'http://server/b.jpg'),
         ];
 
+    Future<File> legacyRow() async {
+      final file = File('${tempDir.path}/custom_chart_custom_row_cache_scope.json');
+      await file.writeAsString(jsonEncode(row('Carrie').map((item) => item.toJson()).toList()));
+      return file;
+    }
+
     setUp(() async {
       SharedPreferences.setMockInitialValues({});
       final store = PreferenceStore();
@@ -262,20 +266,17 @@ void main() {
 
       expect(await child.loadCustomRowFromCache(config()), isEmpty);
       expect((await adult.loadCustomRowFromCache(config())).single.title, 'Carrie');
-      expect((await adult.cacheFile(config())).path, endsWith('custom_chart_custom_row_cache_scope_adult.json'));
+      expect((await adult.cacheFile(config(), 'en')).path, endsWith('custom_chart_custom_row_cache_scope_adult_en.json'));
     });
 
-    test('with nobody signed in the row keeps its plain name', () async {
+    test('with nobody signed in the name leaves the user out', () async {
       final nobody = CustomExternalListsService(cacheScope: () => null);
-      expect((await nobody.cacheFile(config())).path, endsWith('custom_chart_custom_row_cache_scope.json'));
+      expect((await nobody.cacheFile(config(), 'en')).path, endsWith('custom_chart_custom_row_cache_scope_en.json'));
     });
 
     test('a row from before the cache was scoped goes when a scoped one is written', () async {
-      final nobody = CustomExternalListsService(cacheScope: () => null);
       final adult = CustomExternalListsService(cacheScope: () => 'adult');
-      await nobody.saveCustomRowToCache(config(), row('Carrie'));
-      final legacy = await nobody.cacheFile(config());
-      expect(legacy.existsSync(), isTrue);
+      final legacy = await legacyRow();
 
       await adult.saveCustomRowToCache(config(), row('Elf'));
 
@@ -284,24 +285,13 @@ void main() {
     });
 
     test('a row from before the cache was scoped goes when a scoped fetch starts, before any answer', () async {
-      final nobody = CustomExternalListsService(cacheScope: () => null);
       final child = CustomExternalListsService(cacheScope: () => 'child');
-      await nobody.saveCustomRowToCache(config(), row('Carrie'));
-      final legacy = await nobody.cacheFile(config());
+      final legacy = await legacyRow();
 
       await child.dropLegacyCache(config());
 
       expect(legacy.existsSync(), isFalse);
       expect(await child.loadCustomRowFromCache(config()), isEmpty);
-    });
-
-    test('with nobody signed in the plain file is the live one and stays', () async {
-      final nobody = CustomExternalListsService(cacheScope: () => null);
-      await nobody.saveCustomRowToCache(config(), row('Carrie'));
-
-      await nobody.dropLegacyCache(config());
-
-      expect((await nobody.loadCustomRowFromCache(config())).single.title, 'Carrie');
     });
 
     test('an answer is saved under the account that fetched it', () async {

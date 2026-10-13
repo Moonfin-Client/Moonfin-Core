@@ -75,8 +75,8 @@ class CustomExternalListsService {
   /// Who the cached rows belong to. The server holds a row to the user's parental limit and
   /// leaves the cache alone when nothing passes, so a row written for one account must not be
   /// read back by the next one on a shared device: the signed-in user on the signed-in server
-  /// names the file. Null when nobody is signed in, which keeps the plain name for an offline
-  /// start. Tests hand in their own.
+  /// names the file. Null when nobody is signed in, which leaves the user out of the name.
+  /// Tests hand in their own.
   final String? Function() _cacheScope;
 
   CustomExternalListsService({String? Function()? cacheScope, Dio? dio})
@@ -201,8 +201,8 @@ class CustomExternalListsService {
       );
 
       if (_cacheScope() != scope) {
-        debugPrint('[CustomService] Another account signed in during the fetch; answer dropped');
-        return await loadCustomRowFromCache(config);
+        debugPrint('[CustomService] Another account signed in during the fetch, answer dropped');
+        return await loadCustomRowFromCache(config, language: lang);
       }
 
       if (response.statusCode != 200) {
@@ -276,7 +276,7 @@ class CustomExternalListsService {
   static String _sectionName(HomeSectionConfig config) =>
       config.pluginSection!.replaceAll(RegExp(r'[^a-zA-Z0-9]+'), '_');
 
-  /// The row's file for whoever is signed in; the plain name when nobody is.
+  /// The row's file for whoever is signed in, in the given or current language.
   Future<File> cacheFile(HomeSectionConfig config, [String? language]) =>
       _cacheFileFor(config, _cacheScope(), language);
 
@@ -320,9 +320,6 @@ class CustomExternalListsService {
     }
   }
 
-  /// Removes the row's file from before the cache was scoped per user, when
-  /// the row is read under a scoped name. With nobody signed in the plain
-  /// name is the live file and stays.
   @visibleForTesting
   Future<void> dropLegacyCache(HomeSectionConfig config) => _dropLegacyCacheFor(config, _cacheScope());
 
@@ -347,19 +344,7 @@ class CustomExternalListsService {
     String? language,
   }) async {
     try {
-      var file = await cacheFile(config, language);
-      if (!file.existsSync() && maxAge == null) {
-        // Fallback for offline mode if localized cache does not exist yet:
-        // Try the legacy unpartitioned file.
-        final dir = PlatformDetection.isAppleTV
-            ? await getApplicationCacheDirectory()
-            : await getApplicationSupportDirectory();
-        final sanitizedSection = config.pluginSection!.replaceAll(RegExp(r'[^a-zA-Z0-9]+'), '_');
-        final legacyFile = File('${dir.path}/custom_chart_$sanitizedSection.json');
-        if (legacyFile.existsSync()) {
-          file = legacyFile;
-        }
-      }
+      final file = await cacheFile(config, language);
       if (file.existsSync()) {
         try {
           final lastModified = file.lastModifiedSync();
