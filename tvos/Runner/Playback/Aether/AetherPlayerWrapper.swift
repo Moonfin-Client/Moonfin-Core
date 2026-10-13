@@ -498,8 +498,12 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
                 return
             }
             // Flutter sends the first song's info before its play(audioOnly:),
-            // so hold it until the music session opens.
-            pendingAudioMetadata = args
+            // so hold it until the music session opens. Info that comes in
+            // while a video plays belongs to that video.
+            switch state {
+            case .idle, .stopped, .ended, .error: pendingAudioMetadata = args
+            default: break
+            }
         #endif
         guard Self.drivesNowPlaying else { return }
         nowPlaying.updateMetadata(
