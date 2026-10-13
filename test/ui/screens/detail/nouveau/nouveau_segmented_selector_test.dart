@@ -10,6 +10,13 @@ void main() {
 
   final seasons = [for (var i = 1; i <= 20; i++) i];
 
+  Widget host(Widget selector) => MaterialApp(
+    theme: AppTheme.buildTheme(ThemeRegistry.active),
+    home: Scaffold(
+      body: Center(child: SizedBox(width: 400, child: selector)),
+    ),
+  );
+
   Future<GlobalKey<NouveauSegmentedSelectorState<int>>> pumpSelector(
     WidgetTester tester, {
     int initial = 1,
@@ -18,28 +25,20 @@ void main() {
     var selected = initial;
 
     await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.buildTheme(ThemeRegistry.active),
-        home: Scaffold(
-          body: Center(
-            child: SizedBox(
-              width: 400,
-              child: StatefulBuilder(
-                builder: (context, setState) {
-                  return NouveauSegmentedSelector<int>(
-                    key: key,
-                    values: seasons,
-                    selectedValue: selected,
-                    labelBuilder: (value) => 'Season $value',
-                    onValueActivated: (value) {
-                      setState(() => selected = value);
-                    },
-                    selectOnFocus: true,
-                  );
-                },
-              ),
-            ),
-          ),
+      host(
+        StatefulBuilder(
+          builder: (context, setState) {
+            return NouveauSegmentedSelector<int>(
+              key: key,
+              values: seasons,
+              selectedValue: selected,
+              labelBuilder: (value) => 'Season $value',
+              onValueActivated: (value) {
+                setState(() => selected = value);
+              },
+              selectOnFocus: true,
+            );
+          },
         ),
       ),
     );
@@ -98,6 +97,32 @@ void main() {
     await tester.pumpAndSettle();
 
     expectSegmentVisible(tester, 16);
+  });
+
+  testWidgets('a new list of the same length brings the selection back', (
+    tester,
+  ) async {
+    Widget row(List<int> values) => host(
+      NouveauSegmentedSelector<int>(
+        values: values,
+        selectedValue: 1,
+        labelBuilder: (value) => 'Season $value',
+        onValueActivated: (_) {},
+      ),
+    );
+
+    await tester.pumpWidget(row(seasons));
+    await tester.pumpAndSettle();
+    await tester.drag(
+      find.byType(SingleChildScrollView),
+      const Offset(-4000, 0),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.pumpWidget(row([1, for (var i = 22; i <= 40; i++) i]));
+    await tester.pumpAndSettle();
+
+    expectSegmentVisible(tester, 1);
   });
 
   testWidgets('clips segments scrolled past the edge of the pill', (

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -57,18 +58,23 @@ class NouveauSegmentedSelectorState<T>
   @override
   void didUpdateWidget(NouveauSegmentedSelector<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Seasons can arrive after the selection, so a new list length counts too.
-    if (widget.selectedValue != oldWidget.selectedValue ||
-        widget.values.length != oldWidget.values.length) {
-      _revealSelectedAfterLayout();
+    // Seasons can arrive after the selection, and a new list can move the
+    // selected segment without its focus changing.
+    final valuesChanged = !listEquals(widget.values, oldWidget.values);
+    if (valuesChanged || widget.selectedValue != oldWidget.selectedValue) {
+      _revealSelectedAfterLayout(evenIfFocused: valuesChanged);
     }
   }
 
   // A selected segment can start off screen with nothing focused, like a
-  // series opening on a late season. A focused one already scrolls itself.
-  void _revealSelectedAfterLayout({bool animate = true}) {
+  // series opening on a late season. A focus move already scrolls itself.
+  void _revealSelectedAfterLayout({
+    bool animate = true,
+    bool evenIfFocused = false,
+  }) {
     final selected = widget.selectedValue;
-    if (selected == null || (_focusNodes[selected]?.hasFocus ?? false)) {
+    if (selected == null ||
+        (!evenIfFocused && (_focusNodes[selected]?.hasFocus ?? false))) {
       return;
     }
 
