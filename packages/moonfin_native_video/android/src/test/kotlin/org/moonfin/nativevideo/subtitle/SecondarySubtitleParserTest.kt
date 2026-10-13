@@ -8,11 +8,11 @@ class SecondarySubtitleParserTest {
     @Test
     fun parsesSimpleSubRipAndUtf8Text() {
         val cues = SecondarySubtitleParser.parse(
-            "1\n00:00:01,000 --> 00:00:02,500\nZażółć gęślą jaźń — acción\n",
+            "1\n00:00:01,000 --> 00:00:02,500\nZażółć gęślą jaźń, acción\n",
             "srt",
         )
 
-        assertEquals(listOf(TimedTextCue(1000, 2500, "Zażółć gęślą jaźń — acción")), cues)
+        assertEquals(listOf(TimedTextCue(1000, 2500, "Zażółć gęślą jaźń, acción")), cues)
     }
 
     @Test
@@ -200,33 +200,33 @@ class SecondarySubtitleParserTest {
             ),
         )
 
-        assertNull(timeline.activeTextAt(999))
-        assertEquals("first", timeline.activeTextAt(1000))
-        assertEquals("first\noverlap", timeline.activeTextAt(2500))
-        assertEquals("overlap", timeline.activeTextAt(3000))
-        assertNull(timeline.activeTextAt(4000))
-        assertEquals("later", timeline.activeTextAt(5500))
-        assertEquals("first", timeline.activeTextAt(1500)) // backward seek
+        assertEquals(emptyList<String>(), timeline.textsAt(999))
+        assertEquals(listOf("first"), timeline.textsAt(1000))
+        assertEquals(listOf("first", "overlap"), timeline.textsAt(2500))
+        assertEquals(listOf("overlap"), timeline.textsAt(3000))
+        assertEquals(emptyList<String>(), timeline.textsAt(4000))
+        assertEquals(listOf("later"), timeline.textsAt(5500))
+        assertEquals(listOf("first"), timeline.textsAt(1500)) // backward seek
     }
 
     @Test
     fun positiveAndNegativeDelayUseTheSameLaterOrEarlierCueConvention() {
         val timeline = SecondarySubtitleTimeline(listOf(TimedTextCue(1000, 2000, "cue")))
 
-        assertEquals("cue", timeline.activeTextAtPlayerPosition(1500, 500))
-        assertNull(timeline.activeTextAtPlayerPosition(1499, 500))
-        assertNull(timeline.activeTextAtPlayerPosition(1000, 500))
-        assertEquals("cue", timeline.activeTextAtPlayerPosition(1400, -500))
-        assertNull(timeline.activeTextAtPlayerPosition(1500, -500))
-        assertNull(timeline.activeTextAtPlayerPosition(2000, -500))
+        assertEquals(listOf("cue"), timeline.textsAt(1500, 500))
+        assertEquals(emptyList<String>(), timeline.textsAt(1499, 500))
+        assertEquals(emptyList<String>(), timeline.textsAt(1000, 500))
+        assertEquals(listOf("cue"), timeline.textsAt(1400, -500))
+        assertEquals(emptyList<String>(), timeline.textsAt(1500, -500))
+        assertEquals(emptyList<String>(), timeline.textsAt(2000, -500))
     }
 
     @Test
     fun positiveDelayDoesNotShowAZeroStartCueBeforeTheDelayExpires() {
         val timeline = SecondarySubtitleTimeline(listOf(TimedTextCue(0, 2000, "cue")))
 
-        assertNull(timeline.activeTextAtPlayerPosition(999, 1000))
-        assertEquals("cue", timeline.activeTextAtPlayerPosition(1000, 1000))
+        assertEquals(emptyList<String>(), timeline.textsAt(999, 1000))
+        assertEquals(listOf("cue"), timeline.textsAt(1000, 1000))
     }
 
     @Test
@@ -307,4 +307,7 @@ class SecondarySubtitleParserTest {
         assertNull(timeline.nextChangeAt(3000, 0))
         assertEquals(1500L, timeline.nextChangeAt(0, 500))
     }
+
+    private fun SecondarySubtitleTimeline.textsAt(playerPositionMs: Long, delayMs: Long = 0L) =
+        activeCuesAtPlayerPosition(playerPositionMs, delayMs).map { it.text }
 }

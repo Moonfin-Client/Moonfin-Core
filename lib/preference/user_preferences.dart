@@ -543,6 +543,9 @@ class UserPreferences extends ChangeNotifier {
     'subtitles_text_stroke_color',
     'subtitles_text_size',
     'subtitles_offset_position',
+    'secondary_subtitle_text_size',
+    'secondary_subtitle_offset_position',
+    'secondary_subtitle_text_color',
     'subtitles_default_to_none',
     'subtitles_hdr_separate',
     'subtitles_hdr_background_color',
@@ -2372,7 +2375,7 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: 0.08,
   );
 
-  /// -1 means that Secondary inherits the active primary subtitle color.
+  /// -1 means the secondary track uses the primary subtitle color.
   static final secondarySubtitleTextColor = Preference<int>(
     key: 'secondary_subtitle_text_color',
     defaultValue: -1,

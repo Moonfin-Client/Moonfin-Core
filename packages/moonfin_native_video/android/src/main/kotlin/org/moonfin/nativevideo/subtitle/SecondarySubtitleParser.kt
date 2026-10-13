@@ -19,11 +19,7 @@ internal data class TimedTextCue(
     val alignment: String? = null,
 )
 
-/**
- * Parses the text formats the secondary overlay supports. Cues are sorted once
- * at load time; lookups use binary search and a prefix end-time index so seeks
- * and normal playback do not scan the full subtitle file.
- */
+/** Parses the SRT and WebVTT files the secondary overlay supports. */
 internal object SecondarySubtitleParser {
     private val timestampLine = Regex(
         "^\\s*((?:\\d+:)?\\d+:\\d{2}(?:[,.]\\d+)?)\\s*-->\\s*" +
@@ -67,13 +63,7 @@ internal object SecondarySubtitleParser {
         val normalized = content.removePrefix("\uFEFF").replace("\r\n", "\n").replace('\r', '\n')
         val lines = normalized.lines()
         val cues = ArrayList<TimedTextCue>()
-        var index = if (format == "vtt" || format == "webvtt") {
-            // The WEBVTT header can carry metadata on following lines. Cues
-            // begin at the first timestamp rather than at a blank block only.
-            lines.indexOfFirst { timestampLine.matches(it) }.coerceAtLeast(0)
-        } else {
-            0
-        }
+        var index = 0
 
         while (index < lines.size) {
             val match = timestampLine.matchEntire(lines[index])
@@ -137,9 +127,7 @@ internal object SecondarySubtitleParser {
             }
         }
 
-        return cues.withIndex()
-            .sortedWith(compareBy<IndexedValue<TimedTextCue>> { it.value.startMs }.thenBy { it.index })
-            .map { it.value }
+        return cues.sortedBy { it.startMs }
     }
 
     /** Reads ASS alignment overrides embedded in otherwise SRT/VTT cue text. */
@@ -222,7 +210,6 @@ internal object SecondarySubtitleParser {
                         settings["positionAnchor"] = when (raw.substringAfter(',', "")) {
                             "line-left" -> 0
                             "line-right" -> 2
-                            "line-center" -> 1
                             else -> 1
                         }
                     }
@@ -274,22 +261,12 @@ internal class SecondarySubtitleTimeline(cues: List<TimedTextCue>) {
         }
     }
 
-    fun activeTextAt(positionMs: Long): String? {
-        val active = activeCuesAt(positionMs)
-        return when (active.size) {
-            0 -> null
-            1 -> active.single().text
-            else -> active.joinToString("\n") { it.text }
-        }
-    }
-
     fun activeCuesAtPlayerPosition(playerPositionMs: Long, delayMs: Long): List<TimedTextCue> {
         val timelinePositionMs = playerPositionMs - delayMs
         if (timelinePositionMs < 0L) return emptyList()
         return activeCuesAt(timelinePositionMs)
     }
 
-    /** The index of the first cue that starts after [positionMs]. */
     private fun firstStartAfter(positionMs: Long): Int {
         var low = 0
         var high = cues.size
@@ -324,11 +301,5 @@ internal class SecondarySubtitleTimeline(cues: List<TimedTextCue>) {
             }
         }
         return if (next == Long.MAX_VALUE) null else next + delayMs
-    }
-
-    fun activeTextAtPlayerPosition(playerPositionMs: Long, delayMs: Long): String? {
-        val timelinePositionMs = playerPositionMs - delayMs
-        if (timelinePositionMs < 0L) return null
-        return activeTextAt(timelinePositionMs)
     }
 }

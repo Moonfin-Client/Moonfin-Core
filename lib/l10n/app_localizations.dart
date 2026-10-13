@@ -7210,7 +7210,7 @@ abstract class AppLocalizations {
   /// **'Default Subtitle Language'**
   String get defaultSubtitleLanguage;
 
-  /// Preferred language used to sort secondary subtitle tracks in the picker. It does not enable subtitles.
+  /// Preferred language used to sort secondary subtitle tracks in the picker. It doesn't turn subtitles on.
   ///
   /// In en, this message translates to:
   /// **'Preferred Secondary Subtitle Language'**

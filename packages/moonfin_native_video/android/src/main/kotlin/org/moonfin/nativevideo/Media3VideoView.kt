@@ -803,8 +803,6 @@ class Media3VideoView(
             ),
         )
         container.addView(subtitleView, subtitleLayoutParams)
-        // This text layer is independent from Media3's primary SubtitleView
-        // and sits above the existing SurfaceView video output.
         container.addView(
             secondarySubtitleView,
             FrameLayout.LayoutParams(

@@ -1126,8 +1126,10 @@ class Media3PlayerBackend extends PlayerBackend
         'secondarySubtitleUrl': payload['secondarySubtitleUrl'],
       if (payload['secondarySubtitleCodec'] is String)
         'secondarySubtitleCodec': payload['secondarySubtitleCodec'],
-      'secondarySubtitleDelayMs': payload['secondarySubtitleDelayMs'] ?? 0,
-      'secondarySubtitleOffset': payload['secondarySubtitleOffset'] ?? 0.08,
+      if (payload['secondarySubtitleDelayMs'] is int)
+        'secondarySubtitleDelayMs': payload['secondarySubtitleDelayMs'],
+      if (payload['secondarySubtitleOffset'] is num)
+        'secondarySubtitleOffset': payload['secondarySubtitleOffset'],
       if (payload['secondarySubtitleFontSize'] is num)
         'secondarySubtitleFontSize': payload['secondarySubtitleFontSize'],
       if (payload['secondarySubtitleTextColor'] is int)

@@ -41,7 +41,6 @@ void main() {
     'defaultDownloadQuality',
     'defaultFavoritesFilter',
     'defaultSubtitleLanguage',
-    'preferredSecondarySubtitleLanguage',
     'desktopScrollSensitivity',
     'desktopUiScale',
     'detailButtonOrderDesktop',

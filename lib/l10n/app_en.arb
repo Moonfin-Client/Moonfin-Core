@@ -5416,7 +5416,7 @@
   },
   "preferredSecondarySubtitleLanguage": "Preferred Secondary Subtitle Language",
   "@preferredSecondarySubtitleLanguage": {
-    "description": "Preferred language used to sort secondary subtitle tracks in the picker. It does not enable subtitles."
+    "description": "Preferred language used to sort secondary subtitle tracks in the picker. It doesn't turn subtitles on."
   },
   "defaultToNoSubtitles": "Default to No Subtitles",
   "@defaultToNoSubtitles": {

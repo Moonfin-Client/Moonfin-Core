@@ -75,7 +75,7 @@ internal class SecondarySubtitleOverlay(
         view.setCues(emptyList())
     }
 
-    /** Loads each selected sidecar once; a repeated style or delay update reuses its cues. */
+    /** Selecting the track that's already loaded keeps its cues instead of fetching it again. */
     fun select(url: String?, codec: String?) {
         if (disposed) return
         if (url == selectedUrl && codec == selectedCodec) return
@@ -97,10 +97,6 @@ internal class SecondarySubtitleOverlay(
                     val cues = SecondarySubtitleParser.parse(content, codec)
                     require(cues.isNotEmpty()) { "Secondary subtitle has no cues" }
                     val parsed = SecondarySubtitleTimeline(cues)
-                    Log.d(
-                        TAG,
-                        "Loaded secondary subtitle ($codec): ${content.length} chars, ${cues.size} cues",
-                    )
                     mainHandler.post {
                         if (requestGeneration != generation || selectedUrl != url) return@post
                         timeline = parsed
@@ -110,8 +106,8 @@ internal class SecondarySubtitleOverlay(
                     }
                 } catch (error: Throwable) {
                     val message = error.message ?: error.javaClass.simpleName
-                    // Preserve the response code/cause chain in release builds too. The short
-                    // message alone is often just an obfuscated exception class name.
+                    // Log the whole throwable, since in release builds the message alone
+                    // is often just an obfuscated class name.
                     Log.w(TAG, "Could not load secondary subtitle ($codec): $error", error)
                     mainHandler.post {
                         if (requestGeneration != generation || selectedUrl != url) return@post
@@ -169,7 +165,7 @@ internal class SecondarySubtitleOverlay(
         renderAt(positionMs())
     }
 
-    /** Font size and vertical offset use Moonfin's existing subtitle style units. */
+    /** Font size and vertical offset use the same units as the primary subtitle style. */
     fun configureAppearance(
         fontSize: Float?,
         verticalOffset: Float?,
@@ -237,9 +233,9 @@ internal class SecondarySubtitleOverlay(
                 height,
                 estimateTextHeight(timedCue.text, width * (timedCue.size ?: 0.9f), secondaryFontPx),
             )
-            if (box == null || occupied.none { SubtitleLayoutPlanner.intersects(box, it, gapPx) }) {
+            if (occupied.none { SubtitleLayoutPlanner.intersects(box, it, gapPx) }) {
                 rendered += cue
-                if (box != null) occupied += box
+                occupied += box
                 continue
             }
 
@@ -271,8 +267,8 @@ internal class SecondarySubtitleOverlay(
             }
         }
 
-        // If top-aligned captions cannot fit in the upper half, keep them
-        // readable by placing them with the normal secondary bottom layout.
+        // Top-aligned captions that don't fit in the upper half fall back to
+        // the normal bottom placement.
         for ((text, cue) in topFallback) {
             placeAutomaticCue(cue, text, width, height, secondaryFontPx, occupied, gapPx)
                 ?.let(rendered::add)
@@ -362,8 +358,6 @@ internal class SecondarySubtitleOverlay(
         }
         val cueWidth = if (bitmap != null) {
             (boxHeight * bitmap.width / bitmap.height).coerceAtMost(width.toFloat())
-        } else if (cue.size != Cue.DIMEN_UNSET) {
-            nominalWidth
         } else {
             nominalWidth
         }
@@ -386,7 +380,7 @@ internal class SecondarySubtitleOverlay(
         width: Int,
         height: Int,
         boxHeight: Float,
-    ): SubtitleBox? {
+    ): SubtitleBox {
         val cueWidth = if (cue.size != Cue.DIMEN_UNSET) cue.size * width else width * 0.9f
         val left = cueLeft(cue, width, cueWidth)
         val top = if (cue.line == Cue.DIMEN_UNSET) {
@@ -458,8 +452,7 @@ internal class SecondarySubtitleOverlay(
             Thread {
                 try {
                     source.close()
-                } catch (error: IOException) {
-                    Log.w(TAG, "Could not close secondary subtitle source: ${error.message}")
+                } catch (_: IOException) {
                 }
             }.start()
         }
