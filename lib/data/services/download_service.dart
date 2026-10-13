@@ -1857,7 +1857,8 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
       if (isStatic) 'Static': 'true',
       if (includeMediaSourceId && mediaSourceId != null)
         'MediaSourceId': mediaSourceId,
-      if (_client.accessToken != null) 'ApiKey': _client.accessToken!,
+      if (_client.accessToken != null)
+        _client.serverType.tokenQueryParam: _client.accessToken!,
     };
   }
 

@@ -5,6 +5,9 @@ enum ServerType {
   /// Jellyfin 12 drops the lowercase api_key param while Emby still requires it.
   String get tokenQueryParam => this == ServerType.emby ? 'api_key' : 'ApiKey';
 
+  /// Emby has no Drop subtitle method and rejects a stream request naming it.
+  bool get supportsSubtitleDrop => this != ServerType.emby;
+
   static ServerType detect(String? productName, String? version) {
     if (productName != null) {
       final lower = productName.toLowerCase();
