@@ -13,6 +13,7 @@ import 'package:moonfin/data/services/plugin_sync_service.dart';
 import 'package:moonfin/data/services/row_data_source.dart';
 import 'package:moonfin/data/services/server_messages_service.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
+import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/preference/seerr_preferences.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/screens/browse/book_browse_screen.dart';
@@ -171,5 +172,22 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(BookSegmentedControl), findsOneWidget);
+  });
+
+  testWidgets('the sidebar moves the tab control past it on wide layouts',
+      (tester) async {
+    PlatformDetection.setInterfaceLayout(InterfaceLayout.desktop);
+    await prefs.set(UserPreferences.navbarPosition, NavbarPosition.left);
+    await pumpScreen(tester);
+
+    expect(tester.getTopLeft(find.byType(BookSegmentedControl)).dx, 60);
+  });
+
+  testWidgets('phones keep the tab control at the edge with the sidebar on',
+      (tester) async {
+    await prefs.set(UserPreferences.navbarPosition, NavbarPosition.left);
+    await pumpScreen(tester);
+
+    expect(tester.getTopLeft(find.byType(BookSegmentedControl)).dx, 16);
   });
 }

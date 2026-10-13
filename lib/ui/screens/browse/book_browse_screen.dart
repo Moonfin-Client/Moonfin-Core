@@ -174,6 +174,14 @@ class _BookBrowseScreenState extends State<BookBrowseScreen> {
     NavigationLayout.focusNavbarNotifier.value?.call();
   }
 
+  // The sidebar draws over the screen, so content moves past it to 60, where
+  // the Discover tab already starts.
+  double get _sidebarInset {
+    final sidebar =
+        _prefs.get(UserPreferences.navbarPosition) == NavbarPosition.left;
+    return sidebar && !PlatformDetection.useMobileUi ? 44 : 0;
+  }
+
   GlobalKey<LockedFocusRowState> _rowKey(String rowId) =>
       _rowKeys.putIfAbsent(rowId, GlobalKey<LockedFocusRowState>.new);
 
@@ -265,8 +273,6 @@ class _BookBrowseScreenState extends State<BookBrowseScreen> {
     final scopeIndex = showScope ? entryIndex++ : -1;
     final tabsIndex = showDiscover ? entryIndex++ : -1;
     final firstRowIndex = entryIndex;
-    final isSidebar = _prefs.get(UserPreferences.navbarPosition) == NavbarPosition.left;
-    final leftPadding = (isSidebar && !PlatformDetection.useMobileUi) ? 60.0 : 16.0;
 
     return [
       if (featured != null)
@@ -276,7 +282,10 @@ class _BookBrowseScreenState extends State<BookBrowseScreen> {
         )
       else
         SizedBox(height: topReserve),
-      BookStatsBand(stats: _stats(l10n)),
+      Padding(
+        padding: EdgeInsets.only(left: _sidebarInset),
+        child: BookStatsBand(stats: _stats(l10n)),
+      ),
       if (showScope)
         Padding(
           key: _scopeContainerKey,
@@ -298,7 +307,7 @@ class _BookBrowseScreenState extends State<BookBrowseScreen> {
       if (showDiscover)
         Padding(
           key: _tabsContainerKey,
-          padding: EdgeInsets.fromLTRB(leftPadding, 6, 16, 10),
+          padding: EdgeInsets.fromLTRB(16 + _sidebarInset, 6, 16, 10),
           child: FocusableWrapper(
             focusNode: _tabsFocusNode,
             borderRadius: 22,
@@ -327,10 +336,7 @@ class _BookBrowseScreenState extends State<BookBrowseScreen> {
       else ...[
         if (rows.isNotEmpty)
           for (var i = 0; i < rows.length; i++)
-            Padding(
-              padding: EdgeInsets.only(left: leftPadding),
-              child: _buildShelf(rows[i], l10n, firstRowIndex + i),
-            )
+            _buildShelf(rows[i], l10n, firstRowIndex + i)
         else
           _buildEmptyState(l10n),
       ],
@@ -410,6 +416,7 @@ class _BookBrowseScreenState extends State<BookBrowseScreen> {
       imageUrl: _vm.bookImageUrl(featured),
       progress: started ? (pct / 100).clamp(0.0, 1.0) : null,
       topInset: topReserve,
+      leftInset: _sidebarInset,
       onPrimary: () => _openItem(featured),
       ctaFocusNode: _heroCtaFocusNode,
       onVerticalNavigation: (isUp) => _moveVertical(heroIndex, isUp),
@@ -427,6 +434,7 @@ class _BookBrowseScreenState extends State<BookBrowseScreen> {
       rowKey: _rowKey(row.id),
       containerKey: _rowContainerKey(row.id),
       cardWidth: _cardWidth,
+      leadingInset: 16 + _sidebarInset,
       showFormatBadges: _vm.rowCanMixFormats(row),
       onVerticalNavigation: (isUp) => _moveVertical(entryIndex, isUp),
       onLeftEdge: _onRowLeftEdge,

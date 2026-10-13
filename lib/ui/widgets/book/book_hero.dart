@@ -30,6 +30,9 @@ class BookHero extends StatefulWidget {
   final String? imageUrl;
   final double? progress;
   final double topInset;
+
+  /// Extra room on the left on wide layouts, for a sidebar drawn over them.
+  final double leftInset;
   final VoidCallback onPrimary;
   final FocusNode? ctaFocusNode;
   final bool Function(bool isUp)? onVerticalNavigation;
@@ -45,6 +48,7 @@ class BookHero extends StatefulWidget {
     this.imageUrl,
     this.progress,
     this.topInset = 0,
+    this.leftInset = 0,
     this.ctaFocusNode,
     this.onVerticalNavigation,
   });
@@ -282,7 +286,7 @@ class _BookHeroState extends State<BookHero> {
           _backdrop(),
           _scrim(),
           Positioned(
-            left: 48,
+            left: 48 + widget.leftInset,
             right: 48,
             bottom: 24,
             child: Row(
@@ -410,7 +414,7 @@ class _BookHeroState extends State<BookHero> {
           _backdrop(),
           _scrim(),
           Positioned(
-            left: 24,
+            left: 24 + widget.leftInset,
             right: 24,
             bottom: 16,
             child: Row(

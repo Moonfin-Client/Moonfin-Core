@@ -52,6 +52,9 @@ class BookShelfRow extends StatelessWidget {
 
   final double cardWidth;
 
+  /// Where the title and the first card start.
+  final double leadingInset;
+
   const BookShelfRow({
     super.key,
     required this.row,
@@ -72,6 +75,7 @@ class BookShelfRow extends StatelessWidget {
     this.remainingFor,
     this.showFormatBadges = false,
     this.cardWidth = 132,
+    this.leadingInset = 16,
   });
 
   static const _chipWidth = 150.0;
@@ -105,7 +109,7 @@ class BookShelfRow extends StatelessWidget {
         padding: const EdgeInsets.only(top: 10),
         child: HorizontalScrollSection(
           title: title,
-          headerPadding: const EdgeInsets.symmetric(horizontal: 16),
+          headerPadding: EdgeInsets.only(left: leadingInset, right: 16),
           contentSpacing: 6,
           trailing: onSeeAll == null
               ? null
@@ -129,8 +133,8 @@ class BookShelfRow extends StatelessWidget {
             height: _rowHeight,
             itemExtent: _itemExtent,
             itemSpacing: 12,
-            leadingPadding: 16,
-            padding: const EdgeInsets.fromLTRB(16, 5, 20, 5),
+            leadingPadding: leadingInset,
+            padding: EdgeInsets.fromLTRB(leadingInset, 5, 20, 5),
             onVerticalNavigation: onVerticalNavigation,
             onLeftEdge: onLeftEdge,
             onTap: (_, item) => onItemTap(item),
