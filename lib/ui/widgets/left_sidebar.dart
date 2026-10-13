@@ -23,6 +23,7 @@ import '../../l10n/app_localizations.dart';
 import '../../util/audio_artwork_url.dart';
 import '../../util/clock_format.dart';
 import '../../util/focus/dpad_keys.dart';
+import '../../util/focus/input_mode_tracker.dart';
 import '../../util/game_library.dart';
 import '../../util/live_tv_library.dart';
 import '../../util/overlay_color_palette.dart';
@@ -178,11 +179,9 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
       _armTvFocusGate();
       _sidebarFocus.addListener(_onSidebarFocusNodeChanged);
     }
-    if (PlatformDetection.isTV) {
-      _profileFocusNode.addListener(() {
-        if (mounted) setState(() {});
-      });
-    }
+    _profileFocusNode.addListener(() {
+      if (mounted) setState(() {});
+    });
   }
 
   ModalRoute<dynamic>? _observedRoute;
@@ -497,12 +496,24 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
           }
         }
       }
-      if (PlatformDetection.isTV &&
-          event.logicalKey == LogicalKeyboardKey.arrowUp &&
+      if (event.logicalKey == LogicalKeyboardKey.arrowUp &&
           _homeFocusNode.hasFocus) {
         if (_profileFocusNode.context != null) {
           _profileFocusNode.requestFocus();
         }
+        return KeyEventResult.handled;
+      }
+    }
+    // A browser maps Up and Down to scrolling, not focus traversal, so move
+    // focus here to keep the menu usable from a keyboard.
+    if (!PlatformDetection.isTV && event.isActionable) {
+      final primary = FocusManager.instance.primaryFocus;
+      if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+        primary?.focusInDirection(TraversalDirection.up);
+        return KeyEventResult.handled;
+      }
+      if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+        primary?.focusInDirection(TraversalDirection.down);
         return KeyEventResult.handled;
       }
     }
@@ -1314,7 +1325,12 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
 
     final tvCompact = PlatformDetection.isTV && !_showLabels;
     final innerPad = tvCompact ? 0.0 : 6.0;
-    final isFocused = _profileFocusNode.hasFocus;
+    final isFocused = InputModeTracker.showFocusVisuals(
+      context,
+      _profileFocusNode.hasFocus,
+    );
+    final tvFocused = PlatformDetection.isTV && isFocused;
+    final focusColor = Color(_prefs.get(UserPreferences.focusColor).colorValue);
 
     final avatar = Container(
       width: 40,
@@ -1356,8 +1372,10 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
       duration: const Duration(milliseconds: 150),
       padding: EdgeInsets.all(innerPad),
       decoration: BoxDecoration(
-        color: (PlatformDetection.isTV && isFocused && _showLabels)
+        color: (tvFocused && _showLabels)
             ? Colors.white
+            : (isFocused && !tvFocused)
+            ? focusColor.withValues(alpha: 0.12)
             : Colors.transparent,
         borderRadius: AppRadius.circular(24),
       ),
@@ -1370,8 +1388,10 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
               child: Text(
                 user?.name ?? '',
                 style: TextStyle(
-                  color: (PlatformDetection.isTV && isFocused)
+                  color: tvFocused
                       ? Colors.black
+                      : isFocused
+                      ? focusColor
                       : Colors.white.withValues(alpha: 0.9),
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -1386,39 +1406,31 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(8, 16, 8, 8),
-      child: PlatformDetection.isTV
-          ? Focus(
-              focusNode: _profileFocusNode,
-              onKeyEvent: (_, event) {
-                if (event is KeyDownEvent) {
-                  if (event.logicalKey == LogicalKeyboardKey.select ||
-                      event.logicalKey == LogicalKeyboardKey.enter) {
-                    _onNavigate();
-                    showUserMenu(context);
-                    return KeyEventResult.handled;
-                  }
-                  if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-                    _homeFocusNode.requestFocus();
-                    return KeyEventResult.handled;
-                  }
-                }
-                return KeyEventResult.ignored;
-              },
-              child: GestureDetector(
-                onTap: () {
-                  _onNavigate();
-                  showUserMenu(context);
-                },
-                child: content,
-              ),
-            )
-          : GestureDetector(
-              onTap: () {
-                _onNavigate();
-                showUserMenu(context);
-              },
-              child: content,
-            ),
+      child: Focus(
+        focusNode: _profileFocusNode,
+        onKeyEvent: (_, event) {
+          if (event is KeyDownEvent) {
+            if (event.logicalKey == LogicalKeyboardKey.select ||
+                event.logicalKey == LogicalKeyboardKey.enter) {
+              _onNavigate();
+              showUserMenu(context);
+              return KeyEventResult.handled;
+            }
+            if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+              _homeFocusNode.requestFocus();
+              return KeyEventResult.handled;
+            }
+          }
+          return KeyEventResult.ignored;
+        },
+        child: GestureDetector(
+          onTap: () {
+            _onNavigate();
+            showUserMenu(context);
+          },
+          child: content,
+        ),
+      ),
     );
   }
 }
@@ -1500,7 +1512,7 @@ class _SidebarItemState extends State<_SidebarItem> {
     final useBaseForFocus = widget.baseColor != null;
     final highlighted =
         (desktopSidebar && _isHovered) ||
-        (PlatformDetection.isTV && _isFocused);
+        InputModeTracker.showFocusVisuals(context, _isFocused);
     final focusColor = Color(_prefs.get(UserPreferences.focusColor).colorValue);
     final tvFocused = PlatformDetection.isTV && _isFocused;
     final baseColor = widget.baseColor ?? Colors.white.withValues(alpha: 0.6);
@@ -1639,7 +1651,7 @@ class _SidebarLibraryItemState extends State<_SidebarLibraryItem> {
     final useBaseForFocus = widget.baseColor != null;
     final highlighted =
         (desktopSidebar && _isHovered) ||
-        (PlatformDetection.isTV && _isFocused);
+        InputModeTracker.showFocusVisuals(context, _isFocused);
     final tvFocused = PlatformDetection.isTV && _isFocused;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 1),

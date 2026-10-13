@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
@@ -15,6 +16,7 @@ import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/widgets/left_sidebar.dart';
 import 'package:moonfin/ui/widgets/navigation_layout.dart';
 import 'package:moonfin/ui/widgets/top_toolbar.dart';
+import 'package:moonfin/util/focus/input_mode_tracker.dart';
 import 'package:moonfin/util/game_library.dart';
 import 'package:playback_core/playback_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -73,6 +75,51 @@ Widget _host(Widget chrome) {
   );
 }
 
+/// Hosts the sidebar the way a browser does, where the arrow keys scroll
+/// instead of moving focus.
+Widget _webLikeHost() {
+  return MaterialApp(
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    supportedLocales: AppLocalizations.supportedLocales,
+    shortcuts: <ShortcutActivator, Intent>{
+      ...WidgetsApp.defaultShortcuts,
+      const SingleActivator(LogicalKeyboardKey.arrowUp): const ScrollIntent(
+        direction: AxisDirection.up,
+      ),
+      const SingleActivator(LogicalKeyboardKey.arrowDown): const ScrollIntent(
+        direction: AxisDirection.down,
+      ),
+    },
+    home: const InputModeTracker(child: Scaffold(body: LeftSidebar())),
+  );
+}
+
+/// Opens the desktop rail with the Home item focused.
+Future<void> _openDesktopSidebar(WidgetTester tester) async {
+  await tester.pumpWidget(_webLikeHost());
+  // The rail ignores focus for a moment after it mounts.
+  await tester.pump(const Duration(milliseconds: 700));
+  NavigationLayout.focusNavbarNotifier.value!();
+  // Let the rail start widening before the labels arrive, as it does on a
+  // real frame clock.
+  await tester.pump();
+  await tester.pump(const Duration(milliseconds: 50));
+  await tester.pumpAndSettle();
+}
+
+String? _focusedLabel() => FocusManager.instance.primaryFocus?.debugLabel;
+
+Color? _backgroundOf(WidgetTester tester, Finder within) {
+  final container = tester.widget<AnimatedContainer>(
+    find.descendant(of: within, matching: find.byType(AnimatedContainer)),
+  );
+  return (container.decoration as BoxDecoration?)?.color;
+}
+
+Finder _focusLabelled(String label) => find.byWidgetPredicate(
+  (widget) => widget is Focus && widget.focusNode?.debugLabel == label,
+);
+
 void main() {
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
@@ -113,5 +160,88 @@ void main() {
 
     await tester.pumpWidget(_host(const SizedBox.shrink()));
     expect(NavigationLayout.chromeFocusRoots, isEmpty);
+  });
+
+  final linux = TargetPlatformVariant.only(TargetPlatform.linux);
+
+  group('desktop sidebar keyboard navigation', () {
+    testWidgets('Up and Down move focus between the menu items', (
+      tester,
+    ) async {
+      await _openDesktopSidebar(tester);
+      expect(_focusedLabel(), 'LeftSidebarHome');
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+      await tester.pumpAndSettle();
+      expect(_focusedLabel(), isNot('LeftSidebarHome'));
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
+      await tester.pumpAndSettle();
+      expect(_focusedLabel(), 'LeftSidebarHome');
+    }, variant: linux);
+
+    testWidgets('holding Down keeps moving focus', (tester) async {
+      await _openDesktopSidebar(tester);
+
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowDown);
+      await tester.pumpAndSettle();
+      final afterPress = FocusManager.instance.primaryFocus;
+      expect(afterPress?.debugLabel, isNot('LeftSidebarHome'));
+
+      await tester.sendKeyRepeatEvent(LogicalKeyboardKey.arrowDown);
+      await tester.pumpAndSettle();
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.arrowDown);
+      expect(FocusManager.instance.primaryFocus, isNot(afterPress));
+    }, variant: linux);
+
+    testWidgets('Up and Down stop at the ends without leaving the menu', (
+      tester,
+    ) async {
+      await _openDesktopSidebar(tester);
+      final sidebar = NavigationLayout.chromeFocusRoots.single;
+
+      for (var i = 0; i < 12; i++) {
+        await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+        await tester.pumpAndSettle();
+      }
+      expect(sidebar.hasFocus, isTrue);
+
+      for (var i = 0; i < 12; i++) {
+        await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
+        await tester.pumpAndSettle();
+      }
+      expect(_focusedLabel(), 'LeftSidebarProfile');
+    }, variant: linux);
+
+    testWidgets('the focused menu item is highlighted', (tester) async {
+      await _openDesktopSidebar(tester);
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
+      await tester.pumpAndSettle();
+
+      expect(_focusedLabel(), 'LeftSidebarHome');
+      expect(
+        _backgroundOf(tester, _focusLabelled('LeftSidebarHome')),
+        isNot(Colors.transparent),
+      );
+    }, variant: linux);
+
+    testWidgets('Up from Home reaches the profile button and highlights it', (
+      tester,
+    ) async {
+      await _openDesktopSidebar(tester);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
+      await tester.pumpAndSettle();
+      expect(_focusedLabel(), 'LeftSidebarProfile');
+      expect(
+        _backgroundOf(tester, _focusLabelled('LeftSidebarProfile')),
+        isNot(Colors.transparent),
+      );
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+      await tester.pumpAndSettle();
+      expect(_focusedLabel(), 'LeftSidebarHome');
+    }, variant: linux);
   });
 }
