@@ -270,13 +270,8 @@ class ConnectivityService extends ChangeNotifier {
       try {
         await _pingDio.get(
           '${client.baseUrl}/System/Ping',
-          // Nothing reads this body, and Emby does not always send JSON: a
-          // server can answer the bare text `Emby Server` while labelling it
-          // `application/json`, which the default transformer decodes and
-          // throws a FormatException on. That parse failure used to land here
-          // as a failed probe, marking a perfectly healthy server unreachable,
-          // which sends every browse call to the downloads catalog and leaves
-          // the home screen empty with nothing to show for it.
+          // Only the status matters. A proxy can label the plain text body as
+          // json, and failing to decode it would mark a healthy server down.
           options: Options(responseType: ResponseType.plain),
         );
         failure = null;

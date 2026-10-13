@@ -21,8 +21,7 @@ void main() {
   var probes = 0;
   var answer = HttpStatus.ok;
 
-  // The ping body, sent as json the way Emby sends its own. Empty means no
-  // body at all, which is what every other case here answers with.
+  // A ping body labelled json. Empty means no body, as in every other case.
   var pingBody = '';
 
   setUp(() async {
@@ -132,10 +131,8 @@ void main() {
     expect(probes, 1);
   });
 
-  // Emby labels its bare text ping `application/json`, so decoding it throws.
-  // That parse failure used to read as a failed probe, which sent every browse
-  // call to the downloads catalog and left the home empty on a server that was
-  // answering every request normally.
+  // A proxy can label Emby's plain text ping as json. Decoding it used to fail
+  // the probe and send every browse call to the downloads catalog.
   test('a ping body that is not json still counts as reachable', () async {
     pingBody = 'Emby Server';
     final service = serviceOnline(online: true);

@@ -21,9 +21,8 @@ class EmbySystemApi implements SystemApi {
   @override
   Future<bool> ping() async {
     try {
-      // The body is only ever thrown away, and Emby answers with the bare text
-      // `Emby Server` under a json content type, which the default transformer
-      // would fail to decode.
+      // Only the status matters, and a proxy can label the plain text body
+      // as json, which would fail to decode.
       final response = await _dio.get(
         '/System/Ping',
         options: Options(responseType: ResponseType.plain),

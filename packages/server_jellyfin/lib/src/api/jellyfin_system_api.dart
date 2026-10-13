@@ -21,9 +21,6 @@ class JellyfinSystemApi implements SystemApi {
   @override
   Future<bool> ping() async {
     try {
-      // The body is only ever thrown away, and Jellyfin answers with the bare
-      // text `Jellyfin Server` under a json content type, which the default
-      // transformer would fail to decode.
       final response = await _dio.get(
         '/System/Ping',
         options: Options(responseType: ResponseType.plain),
