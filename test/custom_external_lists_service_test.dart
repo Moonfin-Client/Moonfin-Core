@@ -356,5 +356,20 @@ void main() {
       expect(currentAppLocale(const Locale('is')).languageCode, 'en');
       expect(currentAppLocale(const Locale('tlh')).languageCode, 'en');
     });
+
+    test('keeps the script and country the app supports', () {
+      expect(
+        currentAppLocale(
+          const Locale.fromSubtags(
+            languageCode: 'zh',
+            scriptCode: 'Hant',
+            countryCode: 'TW',
+          ),
+        ),
+        const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'),
+      );
+      expect(currentAppLocale(const Locale('pt', 'BR')), const Locale('pt', 'BR'));
+      expect(currentAppLocale(const Locale('es', 'CO')), const Locale('es'));
+    });
   });
 }

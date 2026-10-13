@@ -11,21 +11,23 @@ import 'app_localizations.dart';
 Locale currentAppLocale([Locale? deviceLocale]) =>
     _overrideLocale() ?? _resolveSupportedLocale(deviceLocale ?? PlatformDispatcher.instance.locale);
 
+/// Matches the way Flutter resolves the app locale: exact, then language with
+/// script, then language with country, then language alone. Without the
+/// script step a `zh-Hant-TW` device would land on Simplified Chinese.
 Locale _resolveSupportedLocale(Locale target) {
-  // Prefer exact match (language + country/script)
-  for (final supported in AppLocalizations.supportedLocales) {
-    if (supported == target) {
-      return supported;
-    }
-  }
-  // Fall back to language-only match
-  for (final supported in AppLocalizations.supportedLocales) {
-    if (supported.languageCode == target.languageCode) {
-      return supported;
-    }
-  }
-  // Fall back to English if unsupported
-  return const Locale('en');
+  const supported = AppLocalizations.supportedLocales;
+  bool sameLanguage(Locale l) => l.languageCode == target.languageCode;
+  final script = target.scriptCode;
+  final country = target.countryCode;
+  return supported.where((l) => l == target).firstOrNull ??
+      supported
+          .where((l) => script != null && sameLanguage(l) && l.scriptCode == script)
+          .firstOrNull ??
+      supported
+          .where((l) => country != null && sameLanguage(l) && l.countryCode == country)
+          .firstOrNull ??
+      supported.where(sameLanguage).firstOrNull ??
+      const Locale('en');
 }
 
 /// Localizations for code that runs without a [BuildContext]. The language
