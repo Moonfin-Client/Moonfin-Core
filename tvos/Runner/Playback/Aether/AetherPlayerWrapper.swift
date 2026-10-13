@@ -80,15 +80,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         private var audioNowPlayingInfo: [String: Any] = [:]
         private var audioArtworkURL: String?
         private var audioArtwork: MPMediaItemArtwork?
-        private var pendingAudioTitle = ""
-        private var pendingAudioSubtitle = ""
-        private var pendingAudioLogo: String?
-        private var hasPendingAudioMetadata = false
-    #else
-        private var macPendingAudioTitle = ""
-        private var macPendingAudioSubtitle = ""
-        private var macPendingAudioLogo: String?
-        private var hasMacPendingAudioMetadata = false
+        private var pendingAudioMetadata: [String: Any]?
     #endif
     private var isLiveSession = false
     private var forceSubtitlesDisabledOnStart = false
@@ -158,7 +150,9 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
 
     override init() {
         super.init()
-        #if os(iOS) || os(tvOS) || os(macOS)
+        #if os(iOS) || os(tvOS)
+            // On iOS the handlers only ever land on the engine's music
+            // session, which audio_service has no way to reach.
             wireNowPlaying()
         #endif
         subscribeToEngine()
@@ -244,7 +238,6 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             .sink { [weak self] value in
                 guard let self else { return }
                 self.duration = self.isLiveSession ? 0 : value
-                self.refreshSystemPlaybackState()
             }
             .store(in: &cancellables)
 
@@ -252,16 +245,12 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] value in
                 guard let self else { return }
-                let wasPlaying = self.isPlaying
                 if value != self.currentTime {
                     self.lastClockAdvanceAt = CACurrentMediaTime()
                 }
                 self.currentTime = value
                 self.position =
                     self.duration > 0 ? Float(value / self.duration) : 0
-                if !wasPlaying {
-                    self.refreshSystemPlaybackState()
-                }
             }
             .store(in: &cancellables)
 
@@ -378,7 +367,6 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             nowPlaying.updatePlaybackState(
                 isPlaying: isPlaying, elapsed: currentTime, duration: duration, rate: rate)
         }
-        refreshSystemPlaybackState()
     }
 
     /// A stall means the engine lost its connection to the server, not that
@@ -487,44 +475,31 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         let title = (args["topTitle"] as? String) ?? ""
         let subtitle = (args["topSubtitle"] as? String) ?? ""
         let logo = args["logoUrl"] as? String
-        let hasNext = (args["hasNext"] as? Bool) ?? false
-        let hasPrevious = (args["hasPrevious"] as? Bool) ?? false
-        nowPlaying.setQueueCapabilities(hasNext: hasNext, hasPrevious: hasPrevious)
+        // The engine's music session only exists on iOS and tvOS, and only tvOS
+        // drives Now Playing for video.
         #if os(iOS) || os(tvOS)
-            pendingAudioTitle = title
-            pendingAudioSubtitle = subtitle
-            pendingAudioLogo = logo
-            hasPendingAudioMetadata = true
+            nowPlaying.setQueueCapabilities(
+                hasNext: (args["hasNext"] as? Bool) ?? false,
+                hasPrevious: (args["hasPrevious"] as? Bool) ?? false)
             if isAudioOnlySession {
-                applyPendingAudioMetadata()
+                var info: [String: Any] = [
+                    MPMediaItemPropertyTitle: title,
+                    MPMediaItemPropertyArtist: subtitle,
+                    MPMediaItemPropertyAlbumTitle: subtitle,
+                    MPNowPlayingInfoPropertyMediaType:
+                        MPNowPlayingInfoMediaType.audio.rawValue,
+                ]
+                if duration > 0 {
+                    info[MPMediaItemPropertyPlaybackDuration] = duration
+                }
+                audioNowPlayingInfo = info
+                loadAudioArtwork(logo)
+                publishAudioNowPlaying()
                 return
             }
-        #else
-            macPendingAudioTitle = title
-            macPendingAudioSubtitle = subtitle
-            macPendingAudioLogo = logo
-            hasMacPendingAudioMetadata = true
-            if isAudioOnlySession {
-                hasMacPendingAudioMetadata = false
-                nowPlaying.updateMetadata(
-                    title: title,
-                    subtitle: subtitle,
-                    durationSeconds: duration,
-                    artworkURL: (logo?.isEmpty ?? true) ? nil : logo,
-                    mediaType: .audio)
-                nowPlaying.updatePlaybackState(
-                    isPlaying: isPlaying, elapsed: currentTime, duration: duration, rate: rate)
-                return
-            }
-            nowPlaying.updateMetadata(
-                title: title,
-                subtitle: subtitle,
-                durationSeconds: duration,
-                artworkURL: (logo?.isEmpty ?? true) ? nil : logo,
-                mediaType: .video)
-            nowPlaying.updatePlaybackState(
-                isPlaying: isPlaying, elapsed: currentTime, duration: duration, rate: rate)
-            return
+            // Flutter sends the first song's info before its play(audioOnly:),
+            // so hold it until the music session opens.
+            pendingAudioMetadata = args
         #endif
         guard Self.drivesNowPlaying else { return }
         nowPlaying.updateMetadata(
@@ -537,85 +512,9 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
     }
 
     #if os(iOS) || os(tvOS)
-        private func applyPendingAudioMetadata() {
-            guard hasPendingAudioMetadata, isAudioOnlySession else { return }
-            hasPendingAudioMetadata = false
-            var info: [String: Any] = [
-                MPMediaItemPropertyTitle: pendingAudioTitle,
-                MPMediaItemPropertyArtist: pendingAudioSubtitle,
-                MPMediaItemPropertyAlbumTitle: pendingAudioSubtitle,
-                MPNowPlayingInfoPropertyMediaType:
-                    MPNowPlayingInfoMediaType.audio.rawValue,
-            ]
-            if duration > 0 {
-                info[MPMediaItemPropertyPlaybackDuration] = duration
-            }
-            audioNowPlayingInfo = info
-            loadAudioArtwork(pendingAudioLogo)
-            publishAudioNowPlaying()
-        }
-    #else
-        private func flushMacPendingAudioMetadata() {
-            guard hasMacPendingAudioMetadata, isAudioOnlySession else { return }
-            hasMacPendingAudioMetadata = false
-            nowPlaying.updateMetadata(
-                title: macPendingAudioTitle,
-                subtitle: macPendingAudioSubtitle,
-                durationSeconds: duration,
-                artworkURL: (macPendingAudioLogo?.isEmpty ?? true) ? nil : macPendingAudioLogo,
-                mediaType: .audio)
-            nowPlaying.updatePlaybackState(
-                isPlaying: isPlaying, elapsed: currentTime, duration: duration, rate: rate)
-        }
-    #endif
-
-    private func refreshSystemPlaybackState() {
-        #if os(iOS) || os(tvOS)
-            if isAudioOnlySession {
-                publishAudioNowPlaying()
-                return
-            }
-        #else
-            nowPlaying.updatePlaybackState(
-                isPlaying: isPlaying, elapsed: currentTime, duration: duration, rate: rate)
-            return
-        #endif
-        guard Self.drivesNowPlaying, isPlaying || state == .paused else { return }
-        nowPlaying.updatePlaybackState(
-            isPlaying: isPlaying, elapsed: currentTime, duration: duration, rate: rate)
-    }
-
-    private func clearSystemPlaybackState() {
-        #if os(iOS) || os(tvOS)
-            if isAudioOnlySession {
-                audioNowPlayingInfo = [:]
-                audioArtwork = nil
-                audioArtworkURL = nil
-                Self.sharedEngine()?.setAudioNowPlayingInfo([:])
-                return
-            }
-        #endif
-        #if os(macOS)
-            nowPlaying.clear()
-            return
-        #endif
-        if Self.drivesNowPlaying {
-            nowPlaying.clear()
-        }
-    }
-
-    #if os(iOS) || os(tvOS)
         private func publishAudioNowPlaying() {
-            guard isAudioOnlySession, !audioNowPlayingInfo.isEmpty else { return }
             var info = audioNowPlayingInfo
-            if duration > 0 {
-                info[MPMediaItemPropertyPlaybackDuration] = duration
-            }
-            info[MPNowPlayingInfoPropertyElapsedPlaybackTime] = max(0, currentTime)
-            info[MPNowPlayingInfoPropertyPlaybackRate] = isPlaying ? Double(rate <= 0 ? 1 : rate) : 0
-            if let artwork = audioArtwork {
-                info[MPMediaItemPropertyArtwork] = artwork
-            }
+            info[MPMediaItemPropertyArtwork] = audioArtwork
             Self.sharedEngine()?.setAudioNowPlayingInfo(info)
         }
 
@@ -841,17 +740,10 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         }
         isAudioOnlySession = audioOnly
         #if os(iOS) || os(tvOS)
-            if audioOnly {
-                applyPendingAudioMetadata()
-            } else {
-                hasPendingAudioMetadata = false
+            if audioOnly, let pending = pendingAudioMetadata {
+                applyNowPlayingMetadata(pending)
             }
-        #else
-            if audioOnly {
-                flushMacPendingAudioMetadata()
-            } else {
-                hasMacPendingAudioMetadata = false
-            }
+            pendingAudioMetadata = nil
         #endif
         isLiveSession = sourceConfiguration.isLive
         didEmitLoadError = false
@@ -927,8 +819,8 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
                 if audioOnly {
                     nowPlaying.adopt(session: engine.audioNowPlayingSession)
                 }
+                nowPlaying.setIntervalSkipsEnabled(!audioOnly)
             #endif
-            nowPlaying.setIntervalSkipsEnabled(!audioOnly)
             seatDeclaredSubtitles(engine)
             if forceSubtitlesDisabledOnStart {
                 engine.clearSubtitle()
@@ -1022,7 +914,6 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         state = .stopped
         subtitleOverlay.clear()
         resetAssState()
-        clearSystemPlaybackState()
     }
 
     /// Full teardown on dismiss: resets display criteria, releases the view
@@ -1059,7 +950,6 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         let clamped = min(max(newRate, 0), engine.maxSupportedRate)
         engine.setRate(clamped)
         rate = clamped == 0 ? rate : clamped
-        refreshSystemPlaybackState()
     }
 
     // MARK: - Volume / ReplayGain

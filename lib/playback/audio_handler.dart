@@ -273,11 +273,11 @@ class MoonfinAudioHandler extends BaseAudioHandler
     } catch (_) {}
   }
 
-  // iOS/macOS music plays on the engine's own Now Playing session, which the
-  // system shows in place of this handler's entry. Its presses come back here
-  // so they do what ours would. Like the listener above, this outlives stop().
+  // iOS music plays on the engine's own Now Playing session, which the system
+  // shows in place of this handler's entry. Its presses come back here so they
+  // do what ours would. Like the listener above, this outlives stop().
   void _attachEngineNowPlaying() {
-    if ((!PlatformDetection.isIOS && !PlatformDetection.isMacOS) ||
+    if (!PlatformDetection.isIOS ||
         !GetIt.instance.isRegistered<AetherBackend>()) {
       return;
     }
