@@ -3153,13 +3153,6 @@ class _DetailContentState extends State<_DetailContent> {
     final canManagePlaylistTracks =
         isPlaylist && viewModel.canManagePlaylistTracks;
     final canDeleteItem = item.canDelete;
-    final canDownloadAll =
-        userCanDownload() &&
-        (item.type == 'MusicAlbum' ||
-            item.type == 'AudioBook' ||
-            (item.type == 'Playlist' &&
-                viewModel.tracks.isNotEmpty &&
-                viewModel.tracks.every(_isAudioItem)));
     final canDeleteDownloaded =
         !PlatformDetection.isTV &&
         (item.type == 'MusicAlbum' || item.type == 'AudioBook');
@@ -3182,6 +3175,14 @@ class _DetailContentState extends State<_DetailContent> {
             randomSeed: _playlistRandomSeed,
           )
         : viewModel.tracks;
+
+    final canDownloadAll =
+        userCanDownload() &&
+        (item.type == 'MusicAlbum' ||
+            item.type == 'AudioBook' ||
+            (item.type == 'Playlist' &&
+                displayedTracks.isNotEmpty &&
+                displayedTracks.every(_isAudioItem)));
 
     final isDefaultPlaylistOrder =
         _playlistSortBy == LibrarySortBy.playlistOrder &&
