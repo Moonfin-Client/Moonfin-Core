@@ -2876,25 +2876,25 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
 
   Widget _buildBookFileInformation(BuildContext context, AggregatedItem item) {
     final l10n = AppLocalizations.of(context);
-    final format = BookReaderService.detectExtension(item)?.toUpperCase() ?? 'Unknown';
+    final extension = BookReaderService.detectExtension(item);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: _fileSummary(
         context,
         item,
         BookReaderService.fileName(item),
-        l10n.formatExtension(format),
+        extension == null ? null : l10n.formatExtension(extension),
       ),
     );
   }
 
-  /// The section heading and the card with the file name, [detail] under it,
-  /// and the date the item was added.
+  /// The section heading and the card with the file name, [detail] under it
+  /// when there is one, and the date the item was added.
   List<Widget> _fileSummary(
     BuildContext context,
     AggregatedItem item,
     String fileName,
-    String detail,
+    String? detail,
   ) {
     final l10n = AppLocalizations.of(context);
     final textTheme = Theme.of(context).textTheme;
@@ -2934,10 +2934,11 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
               ),
             ),
             const SizedBox(height: 4),
-            Text(
-              detail,
-              style: textTheme.bodySmall?.copyWith(color: Colors.white70),
-            ),
+            if (detail != null)
+              Text(
+                detail,
+                style: textTheme.bodySmall?.copyWith(color: Colors.white70),
+              ),
             if (addedLabel != null)
               Text(
                 l10n.dateCreatedFormat(addedLabel),

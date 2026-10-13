@@ -531,6 +531,34 @@ void main() {
     );
   });
 
+  testWidgets('a book shows its file details under the Media Info setting', (
+    tester,
+  ) async {
+    final vm = viewModel(
+      'Book',
+      data: {...itemData('Book'), 'Path': '/books/Dune.epub'},
+    );
+    await pumpContent(tester, vm);
+    expect(find.text('Dune.epub'), findsOneWidget);
+    expect(find.text('Format: .epub'), findsOneWidget);
+
+    await prefs.set(detailSectionLayout.hiddenPreference, 'mediaInfo');
+    await pumpContent(tester, vm);
+    expect(find.text('Dune.epub'), findsNothing);
+  });
+
+  testWidgets('a book without an extension has no format line', (
+    tester,
+  ) async {
+    final vm = viewModel(
+      'Book',
+      data: {...itemData('Book'), 'Path': '/books/Dune'},
+    );
+    await pumpContent(tester, vm);
+    expect(find.text('Dune'), findsOneWidget);
+    expect(find.textContaining('Format:'), findsNothing);
+  });
+
   // The screen rebuilds its content when the hidden list changes, so these
   // flip the preference and rebuild in place.
   group('hidden sections', () {

@@ -1228,8 +1228,7 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
     } else if (_showsBookFile(item)) {
       fileName = BookReaderService.fileName(item);
 
-      container =
-          BookReaderService.detectExtension(item)?.toUpperCase() ?? 'Unknown';
+      container = BookReaderService.detectExtension(item) ?? '';
     }
 
     final baseBackground = theme.scaffoldBackgroundColor.withValues(alpha: 1.0);
@@ -1802,15 +1801,17 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
 
         const SizedBox(height: 7),
 
-        Text(
-          formattedSize.isEmpty
-              ? l10n.formatExtension(container)
-              : l10n.fileSizeFormat(formattedSize, container),
-          style: textTheme.bodySmall?.copyWith(
-            color: foreground.withValues(alpha: 0.5),
-            height: 1.3,
+        // A book whose file name has no extension has nothing to show here.
+        if (formattedSize.isNotEmpty || container.isNotEmpty)
+          Text(
+            formattedSize.isEmpty
+                ? l10n.formatExtension(container)
+                : l10n.fileSizeFormat(formattedSize, container),
+            style: textTheme.bodySmall?.copyWith(
+              color: foreground.withValues(alpha: 0.5),
+              height: 1.3,
+            ),
           ),
-        ),
 
         if (includePlaybackCapability) ...[
           const SizedBox(height: 12),
