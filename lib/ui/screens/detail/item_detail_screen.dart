@@ -3341,7 +3341,7 @@ class _DetailContentState extends State<_DetailContent> {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'No tracks match the active filters',
+                  l10n.playlistNoMatchingTracks,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: Colors.white54,
                       ),
@@ -8493,6 +8493,9 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         return true;
       case 'MusicAlbum':
       case 'Playlist':
+        if (item.type == 'Playlist' && widget.playlistTracksOverride != null) {
+          return widget.playlistTracksOverride!.length > 1;
+        }
         final playlistTracks =
             widget.playlistTracksOverride ?? viewModel.tracks;
         if (playlistTracks.isNotEmpty) return playlistTracks.length > 1;
@@ -16239,29 +16242,33 @@ class _AlbumActions extends StatelessWidget {
     bool hasDownloadedTracks,
   ) {
     final l10n = AppLocalizations.of(context);
+    final hasPlay = tracks.isNotEmpty;
     final rawButtons = <_DetailActionButton>[
-      _DetailActionButton(
-        label: l10n.play,
-        icon: Icons.play_arrow,
-        focusNode: playFocusNode,
-        autofocus: autofocusPlay,
-        onArrowDown: onPlayDown,
-        onPressed: () {
-          if (tracks.isEmpty) return;
-          _playAndOpen(context, manager, tracks);
-        },
-      ),
-      _DetailActionButton(
-        label: l10n.shuffle,
-        icon: Icons.shuffle,
-        onArrowDown: onPlayDown,
-        onPressed: () {
-          if (tracks.isEmpty) return;
-          final shuffled = List<AggregatedItem>.from(tracks)..shuffle();
-          _playAndOpen(context, manager, shuffled);
-        },
-      ),
-      if (onDownloadAll != null)
+      if (hasPlay) ...[
+        _DetailActionButton(
+          label: l10n.play,
+          icon: Icons.play_arrow,
+          focusNode: playFocusNode,
+          autofocus: autofocusPlay,
+          onArrowDown: onPlayDown,
+          onPressed: () {
+            if (tracks.isEmpty) return;
+            _playAndOpen(context, manager, tracks);
+          },
+        ),
+        if (tracks.length > 1)
+          _DetailActionButton(
+            label: l10n.shuffle,
+            icon: Icons.shuffle,
+            onArrowDown: onPlayDown,
+            onPressed: () {
+              if (tracks.isEmpty) return;
+              final shuffled = List<AggregatedItem>.from(tracks)..shuffle();
+              _playAndOpen(context, manager, shuffled);
+            },
+          ),
+      ],
+      if (onDownloadAll != null && hasPlay)
         _DetailActionButton(
           label: l10n.download,
           icon: Icons.download_for_offline,
@@ -16294,6 +16301,28 @@ class _AlbumActions extends StatelessWidget {
           ),
         ),
     ];
+
+    if (!hasPlay && rawButtons.isNotEmpty) {
+      final first = rawButtons.first;
+      rawButtons[0] = _DetailActionButton(
+        label: first.label,
+        icon: first.icon,
+        iconBuilder: first.iconBuilder,
+        onPressed: first.onPressed,
+        onLongPress: first.onLongPress,
+        onFocused: first.onFocused,
+        onArrowUp: first.onArrowUp,
+        onArrowDown: first.onArrowDown,
+        onArrowLeft: first.onArrowLeft,
+        onArrowRight: first.onArrowRight,
+        isActive: first.isActive,
+        activeColor: first.activeColor,
+        neonAccentColor: first.neonAccentColor,
+        focusNode: playFocusNode,
+        autofocus: autofocusPlay,
+        suppressAutoScrollToTop: first.suppressAutoScrollToTop,
+      );
+    }
 
     final processedButtons = <Widget>[];
     for (var i = 0; i < rawButtons.length; i++) {

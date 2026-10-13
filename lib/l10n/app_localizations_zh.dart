@@ -13379,6 +13379,9 @@ class AppLocalizationsZh extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get playlistNoMatchingTracks => 'No tracks match the active filters';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).

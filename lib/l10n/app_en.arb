@@ -13267,5 +13267,9 @@
         "type": "int"
       }
     }
+  },
+  "playlistNoMatchingTracks": "No tracks match the active filters",
+  "@playlistNoMatchingTracks": {
+    "description": "Empty state message shown when playlist filters match no items"
   }
 }

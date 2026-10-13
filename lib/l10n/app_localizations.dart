@@ -24238,6 +24238,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 active} other{{count} active}}'**
   String playlistFilterActiveCount(int count);
+
+  /// Empty state message shown when playlist filters match no items
+  ///
+  /// In en, this message translates to:
+  /// **'No tracks match the active filters'**
+  String get playlistNoMatchingTracks;
 }
 
 class _AppLocalizationsDelegate

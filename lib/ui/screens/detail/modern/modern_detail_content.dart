@@ -3772,7 +3772,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
               ),
               const SizedBox(height: 12),
               Text(
-                'No tracks match the active filters',
+                l10n.playlistNoMatchingTracks,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Colors.white54,
                     ),

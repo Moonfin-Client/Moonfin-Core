@@ -13845,4 +13845,7 @@ class AppLocalizationsEt extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get playlistNoMatchingTracks => 'No tracks match the active filters';
 }

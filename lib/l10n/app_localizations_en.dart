@@ -13754,6 +13754,9 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get playlistNoMatchingTracks => 'No tracks match the active filters';
 }
 
 /// The translations for English, as used in the United Kingdom (`en_GB`).
