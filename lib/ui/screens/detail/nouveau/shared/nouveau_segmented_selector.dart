@@ -48,6 +48,35 @@ class NouveauSegmentedSelectorState<T>
 
   T? _hoveredValue;
 
+  @override
+  void initState() {
+    super.initState();
+    _revealSelectedAfterLayout(animate: false);
+  }
+
+  @override
+  void didUpdateWidget(NouveauSegmentedSelector<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Seasons can arrive after the selection, so a new list length counts too.
+    if (widget.selectedValue != oldWidget.selectedValue ||
+        widget.values.length != oldWidget.values.length) {
+      _revealSelectedAfterLayout();
+    }
+  }
+
+  // A selected segment can start off screen with nothing focused, like a
+  // series opening on a late season. A focused one already scrolls itself.
+  void _revealSelectedAfterLayout({bool animate = true}) {
+    final selected = widget.selectedValue;
+    if (selected == null || (_focusNodes[selected]?.hasFocus ?? false)) {
+      return;
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollSegmentIntoView(selected, animate: animate);
+    });
+  }
+
   FocusNode _focusNodeFor(T value) {
     return _focusNodes.putIfAbsent(
       value,
@@ -98,7 +127,7 @@ class NouveauSegmentedSelectorState<T>
 
   // Moves only this row, by the least amount that shows the whole segment.
   // Scrollable.ensureVisible would also scroll the page the row sits in.
-  void _scrollSegmentIntoView(T value) {
+  void _scrollSegmentIntoView(T value, {bool animate = true}) {
     if (!mounted || !_scrollController.hasClients) {
       return;
     }
@@ -126,8 +155,17 @@ class NouveauSegmentedSelectorState<T>
       return;
     }
 
+    final offset = target.clamp(
+      position.minScrollExtent,
+      position.maxScrollExtent,
+    );
+    if (!animate) {
+      _scrollController.jumpTo(offset);
+      return;
+    }
+
     _scrollController.animateTo(
-      target.clamp(position.minScrollExtent, position.maxScrollExtent),
+      offset,
       duration: const Duration(milliseconds: 180),
       curve: Curves.easeOutCubic,
     );

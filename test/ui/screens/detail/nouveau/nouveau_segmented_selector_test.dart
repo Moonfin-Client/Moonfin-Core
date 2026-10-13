@@ -11,10 +11,11 @@ void main() {
   final seasons = [for (var i = 1; i <= 20; i++) i];
 
   Future<GlobalKey<NouveauSegmentedSelectorState<int>>> pumpSelector(
-    WidgetTester tester,
-  ) async {
+    WidgetTester tester, {
+    int initial = 1,
+  }) async {
     final key = GlobalKey<NouveauSegmentedSelectorState<int>>();
-    var selected = 1;
+    var selected = initial;
 
     await tester.pumpWidget(
       MaterialApp(
@@ -88,6 +89,15 @@ void main() {
     await tester.pumpAndSettle();
 
     expectSegmentVisible(tester, 20);
+  });
+
+  testWidgets('opens on a selected segment off screen with nothing focused', (
+    tester,
+  ) async {
+    await pumpSelector(tester, initial: 16);
+    await tester.pumpAndSettle();
+
+    expectSegmentVisible(tester, 16);
   });
 
   testWidgets('clips segments scrolled past the edge of the pill', (
