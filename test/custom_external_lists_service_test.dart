@@ -1,11 +1,48 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
+import 'package:server_core/server_core.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:moonfin/preference/home_section_config.dart';
 import 'package:moonfin/data/services/custom_external_lists_service.dart';
+
+/// Answers one custom row, when the test lets it.
+class _HeldAnswer implements HttpClientAdapter {
+  final Completer<void> release = Completer<void>();
+
+  @override
+  Future<ResponseBody> fetch(RequestOptions options, Stream<Uint8List>? requestStream, Future<void>? cancelFuture) async {
+    await release.future;
+    final body = {
+      'success': true,
+      'items': [
+        {'name': 'Carrie', 'type': 'Movie', 'providerIds': {'Tmdb': '7340'}},
+      ],
+    };
+    return ResponseBody.fromString(jsonEncode(body), 200, headers: {
+      Headers.contentTypeHeader: [Headers.jsonContentType],
+    });
+  }
+
+  @override
+  void close({bool force = false}) {}
+}
+
+class _SignedIn extends Fake implements MediaServerClient {
+  @override
+  String get baseUrl => 'http://server';
+  @override
+  String? get accessToken => 'token';
+  @override
+  String? get userId => 'adult';
+  @override
+  DeviceInfo get deviceInfo => const DeviceInfo(id: 'phone', name: 'Phone', appName: 'Moonfin', appVersion: 'test');
+}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -145,9 +182,9 @@ void main() {
   });
 
   group('CustomExternalLists cache scope', () {
-    HomeSectionConfig config() => HomeSectionConfig.pluginDynamic(
+    HomeSectionConfig config([String section = 'custom_row_cache_scope']) => HomeSectionConfig.pluginDynamic(
           serverId: 'custom',
-          pluginSection: 'custom_row_cache_scope',
+          pluginSection: section,
           pluginDisplayText: 'Trending',
           pluginAdditionalData: jsonEncode({'source': 'tmdb_chart', 'type': 'trending/all/week'}),
           pluginSource: HomeSectionPluginSource.custom,
@@ -212,6 +249,36 @@ void main() {
       await nobody.dropLegacyCache(config());
 
       expect((await nobody.loadCustomRowFromCache(config())).single.title, 'Carrie');
+    });
+
+    test('an answer is saved under the account that fetched it', () async {
+      final answer = _HeldAnswer();
+      final service = CustomExternalListsService(cacheScope: () => 'adult', dio: Dio()..httpClientAdapter = answer);
+      GetIt.instance.registerSingleton<MediaServerClient>(_SignedIn());
+      addTearDown(() => GetIt.instance.unregister<MediaServerClient>());
+
+      final fetch = service.fetchCustomRow(config('custom_row_fetched'));
+      answer.release.complete();
+
+      expect((await fetch).single.title, 'Carrie');
+      expect((await service.loadCustomRowFromCache(config('custom_row_fetched'))).single.title, 'Carrie');
+    });
+
+    test('an answer that arrives after another account signed in is dropped', () async {
+      var scope = 'adult';
+      final answer = _HeldAnswer();
+      final service = CustomExternalListsService(cacheScope: () => scope, dio: Dio()..httpClientAdapter = answer);
+      GetIt.instance.registerSingleton<MediaServerClient>(_SignedIn());
+      addTearDown(() => GetIt.instance.unregister<MediaServerClient>());
+
+      final fetch = service.fetchCustomRow(config('custom_row_switched'));
+      await Future<void>.delayed(Duration.zero);
+      scope = 'child';
+      answer.release.complete();
+
+      expect(await fetch, isEmpty);
+      expect(await service.loadCustomRowFromCache(config('custom_row_switched')), isEmpty);
+      expect(await CustomExternalListsService(cacheScope: () => 'adult').loadCustomRowFromCache(config('custom_row_switched')), isEmpty);
     });
   });
 

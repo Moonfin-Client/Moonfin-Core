@@ -69,10 +69,7 @@ class ImdbExternalListItem {
 }
 
 class CustomExternalListsService {
-  final Dio _dio = Dio(BaseOptions(
-    connectTimeout: const Duration(seconds: 15),
-    receiveTimeout: const Duration(seconds: 45),
-  ));
+  final Dio _dio;
 
   /// Who the cached rows belong to. The server holds a row to the user's parental limit and
   /// leaves the cache alone when nothing passes, so a row written for one account must not be
@@ -81,7 +78,13 @@ class CustomExternalListsService {
   /// start. Tests hand in their own.
   final String? Function() _cacheScope;
 
-  CustomExternalListsService({String? Function()? cacheScope}) : _cacheScope = cacheScope ?? _signedInScope;
+  CustomExternalListsService({String? Function()? cacheScope, Dio? dio})
+      : _cacheScope = cacheScope ?? _signedInScope,
+        _dio = dio ??
+            Dio(BaseOptions(
+              connectTimeout: const Duration(seconds: 15),
+              receiveTimeout: const Duration(seconds: 45),
+            ));
 
   static String? _signedInScope() {
     if (!GetIt.instance.isRegistered<MediaServerClient>()) return null;
@@ -162,9 +165,14 @@ class CustomExternalListsService {
     final paramsJson = jsonEncode(params);
     final url = '$baseUrl/Moonfin/CustomRows/Items';
 
-    // Before the request rather than after the answer: an empty or failed
-    // answer saves nothing, and the row from before must not outlive it.
-    await dropLegacyCache(config);
+    // The account that starts the fetch owns the answer: the scope is taken
+    // before anything is awaited, the answer is dropped when another account
+    // is signed in by the time it arrives, and the file is named by this
+    // scope and no later one. The row from before goes before the request
+    // rather than after the answer, since an empty or failed answer saves
+    // nothing and the old row must not outlive it.
+    final scope = _cacheScope();
+    await _dropLegacyCacheFor(config, scope);
 
     try {
       final response = await _dio.get(
@@ -187,6 +195,11 @@ class CustomExternalListsService {
           },
         ),
       );
+
+      if (_cacheScope() != scope) {
+        debugPrint('[CustomService] Another account signed in during the fetch; answer dropped');
+        return await loadCustomRowFromCache(config);
+      }
 
       if (response.statusCode != 200) {
         throw Exception('Custom rows controller returned status ${response.statusCode}');
@@ -237,7 +250,7 @@ class CustomExternalListsService {
       }
 
       if (items.isNotEmpty) {
-        await saveCustomRowToCache(config, items);
+        await _saveCustomRowToCacheFor(config, items, scope);
       }
 
       return _applySorting(items, config);
@@ -260,9 +273,10 @@ class CustomExternalListsService {
       config.pluginSection!.replaceAll(RegExp(r'[^a-zA-Z0-9]+'), '_');
 
   /// The row's file for whoever is signed in; the plain name when nobody is.
-  Future<File> cacheFile(HomeSectionConfig config) async {
+  Future<File> cacheFile(HomeSectionConfig config) => _cacheFileFor(config, _cacheScope());
+
+  Future<File> _cacheFileFor(HomeSectionConfig config, String? scope) async {
     final dir = await _cacheDir();
-    final scope = _cacheScope();
     final suffix = scope == null ? '' : '_$scope';
     return File('${dir.path}/custom_chart_${_sectionName(config)}$suffix.json');
   }
@@ -274,12 +288,15 @@ class CustomExternalListsService {
     return File('${dir.path}/custom_chart_${_sectionName(config)}.json');
   }
 
-  Future<void> saveCustomRowToCache(HomeSectionConfig config, List<ImdbExternalListItem> items) async {
+  Future<void> saveCustomRowToCache(HomeSectionConfig config, List<ImdbExternalListItem> items) =>
+      _saveCustomRowToCacheFor(config, items, _cacheScope());
+
+  Future<void> _saveCustomRowToCacheFor(HomeSectionConfig config, List<ImdbExternalListItem> items, String? scope) async {
     try {
-      final file = await cacheFile(config);
+      final file = await _cacheFileFor(config, scope);
       final jsonList = items.map((item) => item.toJson()).toList();
       await file.writeAsString(jsonEncode(jsonList), flush: true);
-      await dropLegacyCache(config);
+      await _dropLegacyCacheFor(config, scope);
     } catch (e) {
       debugPrint('[CustomService] Failed to save custom row cache: $e');
     }
@@ -289,9 +306,11 @@ class CustomExternalListsService {
   /// the row is read under a scoped name. With nobody signed in the plain
   /// name is the live file and stays.
   @visibleForTesting
-  Future<void> dropLegacyCache(HomeSectionConfig config) async {
+  Future<void> dropLegacyCache(HomeSectionConfig config) => _dropLegacyCacheFor(config, _cacheScope());
+
+  Future<void> _dropLegacyCacheFor(HomeSectionConfig config, String? scope) async {
     try {
-      final file = await cacheFile(config);
+      final file = await _cacheFileFor(config, scope);
       final legacy = await _legacyCacheFile(config);
       if (legacy.path != file.path && legacy.existsSync()) {
         await legacy.delete();
