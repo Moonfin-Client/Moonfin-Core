@@ -9001,5 +9001,9 @@
     "imdbMostPopularMovies": "IMDb Pinakasikat na Mga Pelikula",
     "imdbMostPopularTvShows": "IMDb Pinakasikat na Mga TV Show",
     "imdbLowestRatedMovies": "IMDb Pinakamababang Rating na Mga Pelikula",
-    "imdbTopEnglishMovies": "IMDb Pinakamataas na Rating na Mga Pelikulang Ingles"
+    "imdbTopEnglishMovies": "IMDb Pinakamataas na Rating na Mga Pelikulang Ingles",
+    "noBooksFoundForAuthor": "Walang nakitang mga aklat para sa may-akda na ito.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
+    }
 }

@@ -9001,5 +9001,9 @@
     "imdbMostPopularMovies": "IMDb सबसे लोकप्रिय फ़िल्में",
     "imdbMostPopularTvShows": "IMDb सबसे लोकप्रिय टीवी शो",
     "imdbLowestRatedMovies": "IMDb सबसे कम रेटेड फ़िल्में",
-    "imdbTopEnglishMovies": "IMDb टॉप रेटेड अंग्रेज़ी फ़िल्में"
+    "imdbTopEnglishMovies": "IMDb टॉप रेटेड अंग्रेज़ी फ़िल्में",
+    "noBooksFoundForAuthor": "इस लेखक के लिए कोई पुस्तक नहीं मिली.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
+    }
 }

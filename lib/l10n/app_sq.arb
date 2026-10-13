@@ -9001,5 +9001,9 @@
     "imdbMostPopularMovies": "Filmat më popullorë në IMDb",
     "imdbMostPopularTvShows": "Serialet më popullore në IMDb",
     "imdbLowestRatedMovies": "Filmat me vlerësimin më të ulët në IMDb",
-    "imdbTopEnglishMovies": "Filmat anglisht më të vlerësuar në IMDb"
+    "imdbTopEnglishMovies": "Filmat anglisht më të vlerësuar në IMDb",
+    "noBooksFoundForAuthor": "Nuk u gjetën libra për këtë autor.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
+    }
 }

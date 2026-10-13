@@ -367,13 +367,13 @@ abstract class AppLocalizations {
   /// Quick Connect generic error message
   ///
   /// In en, this message translates to:
-  /// **'QuickConnect unavailable: {detail}'**
+  /// **'Quick Connect unavailable: {detail}'**
   String quickConnectUnavailable(String detail);
 
   /// Quick Connect error message with HTTP status info
   ///
   /// In en, this message translates to:
-  /// **'QuickConnect unavailable ({status}): {detail}'**
+  /// **'Quick Connect unavailable ({status}): {detail}'**
   String quickConnectUnavailableWithStatus(String status, String detail);
 
   /// Server user selection heading
@@ -517,7 +517,7 @@ abstract class AppLocalizations {
   /// Explanation under the detail screen style setting
   ///
   /// In en, this message translates to:
-  /// **'Classic is the original centered moonfin layout. Modern is a responsive cinematic layout. Spotlight is a hero-first layout with pop-up content cards. Nouveau is a full-screen layout with sections stacked down the page. Minimalist is artwork, one play button and the episodes.'**
+  /// **'Classic uses Moonfin\'s original centered layout. Modern adapts a cinematic layout to your screen. Spotlight highlights the artwork, with pop-up content cards. Nouveau stacks sections vertically on a full-screen page. Minimalist shows the artwork, one play button, and the episodes.'**
   String get detailScreenStyleSubtitle;
 
   /// Detail screen style option: the classic centered layout
@@ -565,7 +565,7 @@ abstract class AppLocalizations {
   /// Title of the spotlight summary card that opens the similar titles and recommendations modal
   ///
   /// In en, this message translates to:
-  /// **'Similar and Recommendations'**
+  /// **'Similar Titles and Recommendations'**
   String get spotlightSimilarRecommendations;
 
   /// Title of the spotlight summary card that opens the seasons grid modal for a series
@@ -739,7 +739,7 @@ abstract class AppLocalizations {
   /// Explanation under the show technical details setting
   ///
   /// In en, this message translates to:
-  /// **'Show codec, resolution, and stream information in banner summary'**
+  /// **'Show codec, resolution, and stream information in the banner summary'**
   String get showTechnicalDetailsSubtitle;
 
   /// Label for the Recommendation System setting
@@ -751,7 +751,7 @@ abstract class AppLocalizations {
   /// Explanation under the recommendation system setting
   ///
   /// In en, this message translates to:
-  /// **'Use the Moonfin Recommends local-library algorithm, Jellyfin Recommends server engine, or the online TMDb\'s Similarity Metrics. Note: Online recommendations require Seerr integration.'**
+  /// **'Use the Moonfin Recommends local-library algorithm, the Jellyfin Recommends server engine, or TMDb\'s online similarity metrics. Note: Online recommendations require Seerr integration.'**
   String get recommendationSystemSubtitle;
 
   /// Recommendation system option: Moonfin Recommends
@@ -775,13 +775,13 @@ abstract class AppLocalizations {
   /// Label for the toggle that controls whether similar suggestions are capped by target media parental rating
   ///
   /// In en, this message translates to:
-  /// **'Apply Rating Limit to Recommendations'**
+  /// **'Apply Age Rating Limit to Recommendations'**
   String get recommendationsApplyParentalRatingCap;
 
   /// Explanation under the parental rating cap setting toggle
   ///
   /// In en, this message translates to:
-  /// **'Limit Moonfin Recommends suggestions by parental rating of target media'**
+  /// **'Limit Moonfin Recommends suggestions to the age rating of the reference title'**
   String get recommendationsApplyParentalRatingCapSubtitle;
 
   /// Label for the Automatic/Apple/Material interface style setting
@@ -793,7 +793,7 @@ abstract class AppLocalizations {
   /// Explanation under the interface style setting
   ///
   /// In en, this message translates to:
-  /// **'Automatic matches your device. Choose Apple or Material to force a look.'**
+  /// **'Automatic matches your device. Choose Apple or Material to use a specific interface style.'**
   String get interfaceStyleSubtitle;
 
   /// Interface style option: follow the platform
@@ -823,7 +823,7 @@ abstract class AppLocalizations {
   /// Subtitle for the interface layout setting
   ///
   /// In en, this message translates to:
-  /// **'Override the detected layout when this device is read wrong. Restart Moonfin for changes to take effect.'**
+  /// **'Override the detected layout if it is incorrect for this device. Restart Moonfin for changes to take effect.'**
   String get interfaceLayoutSubtitle;
 
   /// Interface layout option: detect from the device
@@ -883,7 +883,7 @@ abstract class AppLocalizations {
   /// Explanation under the glass quality setting
   ///
   /// In en, this message translates to:
-  /// **'Auto picks the best glass effect for this device. Full forces real blur; Reduced uses a lightweight glass that saves GPU power.'**
+  /// **'Auto chooses the best glass effect for this device. Full uses real blur; Reduced uses a lighter effect to reduce GPU usage.'**
   String get glassQualitySubtitle;
 
   /// Glass quality option: per-device default
@@ -913,7 +913,7 @@ abstract class AppLocalizations {
   /// Explanation under the device performance setting
   ///
   /// In en, this message translates to:
-  /// **'Auto measures this device and holds back on the ones short on memory, which keeps fewer images in memory and leaves trailers as still images. Takes full effect on the next launch.'**
+  /// **'Auto assesses this device and reduces effects when memory is limited, keeping fewer images in memory and showing trailers as still images. Fully applied on the next launch.'**
   String get performanceModeSubtitle;
 
   /// Performance option: measure the device
@@ -943,7 +943,7 @@ abstract class AppLocalizations {
   /// Subtitle for the theme selection screen and theme settings entry
   ///
   /// In en, this message translates to:
-  /// **'Apply a fully custom theme and switch between an Apple or Material inspired user interface.'**
+  /// **'Apply a custom theme and choose an Apple-inspired or Material-inspired interface.'**
   String get settingsAppearanceThemeSubtitle;
 
   /// Title for the custom theme settings section
@@ -967,7 +967,7 @@ abstract class AppLocalizations {
   /// Settings subtitle for the system keyboard preference
   ///
   /// In en, this message translates to:
-  /// **'Use your device input method by default for text entry'**
+  /// **'Use your device\'s input method by default for text entry'**
   String get keyboardPreferSystemImeDescription;
 
   /// Settings section header for game controller options
@@ -997,7 +997,7 @@ abstract class AppLocalizations {
   /// Preview description for the Moonfin theme
   ///
   /// In en, this message translates to:
-  /// **'The original clean Moonfin default.'**
+  /// **'Moonfin\'s original clean theme, used by default.'**
   String get themeMoonfinSubtitle;
 
   /// Display name for the Neon Pulse theme
@@ -1183,19 +1183,19 @@ abstract class AppLocalizations {
   /// Shown when a game core exposes no settings
   ///
   /// In en, this message translates to:
-  /// **'This core has no adjustable options.'**
+  /// **'This emulator core has no adjustable options.'**
   String get gameNoCoreOptions;
 
   /// Hint shown while holding the gamepad combo to open the in-game menu
   ///
   /// In en, this message translates to:
-  /// **'Hold to open menu'**
+  /// **'Press and hold to open the menu'**
   String get gameHoldToOpenMenu;
 
   /// Shown when the device cannot run the retro-game emulator
   ///
   /// In en, this message translates to:
-  /// **'Game playback is not supported on this device yet.'**
+  /// **'Games are not yet supported on this device.'**
   String get gamePlaybackUnsupported;
 
   /// Heading when home screen has no rows to display
@@ -1213,7 +1213,7 @@ abstract class AppLocalizations {
   /// Button to retry loading home rows after failure
   ///
   /// In en, this message translates to:
-  /// **'Retry Home Rows'**
+  /// **'Reload Home Rows'**
   String get retryHomeRows;
 
   /// Live TV guide button label
@@ -1831,7 +1831,7 @@ abstract class AppLocalizations {
   /// Panel subtitle showing total titles
   ///
   /// In en, this message translates to:
-  /// **'{count} titles arranged for reading-first browsing.'**
+  /// **'{count} titles organized to help you find your next read.'**
   String titlesArrangedForBrowsing(int count);
 
   /// Stat card label for total titles
@@ -1921,7 +1921,7 @@ abstract class AppLocalizations {
   /// Section header for played status filter
   ///
   /// In en, this message translates to:
-  /// **'Played Status'**
+  /// **'Playback Status'**
   String get playedStatus;
 
   /// Filter label for read/watched items in book libraries
@@ -2014,10 +2014,10 @@ abstract class AppLocalizations {
   /// **'Comic'**
   String get bookFormatComic;
 
-  /// Placeholder when no books are found for an author
+  /// Title shown when a books library has no items
   ///
   /// In en, this message translates to:
-  /// **'No books found for this author.'**
+  /// **'No Books Found'**
   String get noBooksFound;
 
   /// Description shown when a books library has no items
@@ -2113,7 +2113,7 @@ abstract class AppLocalizations {
   /// Button label for zip download external link
   ///
   /// In en, this message translates to:
-  /// **'Download Zip'**
+  /// **'Download ZIP'**
   String get downloadZip;
 
   /// Detail chip showing number of sections in audiobook
@@ -2125,7 +2125,7 @@ abstract class AppLocalizations {
   /// Publication year for a book
   ///
   /// In en, this message translates to:
-  /// **'First published {year}'**
+  /// **'First published in {year}'**
   String firstPublished(int year);
 
   /// Fallback when Open Library has no description
@@ -2326,6 +2326,12 @@ abstract class AppLocalizations {
   /// **'No biography available for this author.'**
   String get noBiographyAvailable;
 
+  /// Placeholder when no books are found for an author
+  ///
+  /// In en, this message translates to:
+  /// **'No books found for this author.'**
+  String get noBooksFoundForAuthor;
+
   /// Error message when author details fail to load
   ///
   /// In en, this message translates to:
@@ -2335,7 +2341,7 @@ abstract class AppLocalizations {
   /// Publication year for an author book tile
   ///
   /// In en, this message translates to:
-  /// **'Published {year}'**
+  /// **'Published in {year}'**
   String published(int year);
 
   /// Placeholder when publication date is unknown
@@ -2575,7 +2581,7 @@ abstract class AppLocalizations {
   /// Action button label to delete downloaded album tracks
   ///
   /// In en, this message translates to:
-  /// **'Delete Downloaded'**
+  /// **'Delete Download'**
   String get deleteDownloaded;
 
   /// Action button label to navigate to the parent series
@@ -2641,7 +2647,7 @@ abstract class AppLocalizations {
   /// Error message when item deletion fails, including the specific error details
   ///
   /// In en, this message translates to:
-  /// **'Deletion operation failed with the following error: {error}'**
+  /// **'Could not delete the item: {error}'**
   String failedToDeleteItemWithError(String error);
 
   /// Dialog title for renaming a playlist
@@ -3031,19 +3037,19 @@ abstract class AppLocalizations {
   /// Person birth date label
   ///
   /// In en, this message translates to:
-  /// **'Born {date}'**
+  /// **'Born on {date}'**
   String born(String date);
 
   /// Person death date label
   ///
   /// In en, this message translates to:
-  /// **'Died {date}'**
+  /// **'Died on {date}'**
   String died(String date);
 
   /// Person age label
   ///
   /// In en, this message translates to:
-  /// **'Age {age}'**
+  /// **'Age: {age}'**
   String age(int age);
 
   /// Toggle label to collapse expanded biography
@@ -3145,31 +3151,31 @@ abstract class AppLocalizations {
   /// Error message when user lacks subtitle management permission
   ///
   /// In en, this message translates to:
-  /// **'Remote subtitle {action} requires the Jellyfin subtitle management permission for this user.'**
+  /// **'You need Jellyfin subtitle management permission to perform this action: {action}.'**
   String remoteSubtitlePermissionError(String action);
 
   /// Error message when item not found for subtitle operation
   ///
   /// In en, this message translates to:
-  /// **'This item could not be found on the server for remote subtitle {action}.'**
+  /// **'The server could not find this item for the subtitle action: {action}.'**
   String remoteSubtitleNotFoundError(String action);
 
   /// Error message with detail for subtitle operation
   ///
   /// In en, this message translates to:
-  /// **'Remote subtitle {action} failed: {detail}'**
+  /// **'Subtitle action ({action}) failed: {detail}'**
   String remoteSubtitleDetailError(String action, String detail);
 
   /// Error message with HTTP status for subtitle operation
   ///
   /// In en, this message translates to:
-  /// **'Remote subtitle {action} failed (HTTP {status}).'**
+  /// **'Subtitle action ({action}) failed (HTTP {status}).'**
   String remoteSubtitleHttpError(String action, int status);
 
   /// Generic error message for subtitle operation
   ///
   /// In en, this message translates to:
-  /// **'Failed to {action} remote subtitles.'**
+  /// **'Subtitle action ({action}) failed.'**
   String remoteSubtitleGenericError(String action);
 
   /// Type label for series file deletion
@@ -3313,7 +3319,7 @@ abstract class AppLocalizations {
   /// OSD lock overlay hint
   ///
   /// In en, this message translates to:
-  /// **'Long press to unlock'**
+  /// **'Press and hold to unlock'**
   String get longPressToUnlock;
 
   /// Label for subtitle off option
@@ -3571,7 +3577,7 @@ abstract class AppLocalizations {
   /// What Enter does in the player
   ///
   /// In en, this message translates to:
-  /// **'Show controls, or play/pause if shown'**
+  /// **'Show controls, or play/pause if they are already visible'**
   String get shortcutShowControlsOrPlayPause;
 
   /// Player shortcut action. The step is the skip back length from settings
@@ -3643,7 +3649,7 @@ abstract class AppLocalizations {
   /// What Esc does in the player
   ///
   /// In en, this message translates to:
-  /// **'Exit fullscreen, or stop if not fullscreen'**
+  /// **'Exit fullscreen, or stop playback if fullscreen is off'**
   String get shortcutLeaveFullscreenOrStop;
 
   /// Player shortcut action
@@ -4009,7 +4015,7 @@ abstract class AppLocalizations {
   /// Button or menu item to mark as unread
   ///
   /// In en, this message translates to:
-  /// **'Mark Unread'**
+  /// **'Mark as Unread'**
   String get markUnread;
 
   /// Button or menu item to mark as read
@@ -4291,13 +4297,13 @@ abstract class AppLocalizations {
   /// Button label to remove a channel from favorites
   ///
   /// In en, this message translates to:
-  /// **'Unfavorite Channel'**
+  /// **'Remove Channel from Favorites'**
   String get unfavoriteChannel;
 
   /// Button label to add a channel to favorites
   ///
   /// In en, this message translates to:
-  /// **'Favorite Channel'**
+  /// **'Add Channel to Favorites'**
   String get favoriteChannel;
 
   /// Button label to schedule a live TV recording
@@ -4345,13 +4351,13 @@ abstract class AppLocalizations {
   /// Snackbar confirmation after scheduling a live TV program recording
   ///
   /// In en, this message translates to:
-  /// **'Program set to record'**
+  /// **'Recording scheduled'**
   String get programSetToRecord;
 
   /// Snackbar confirmation after cancelling a live TV recording
   ///
   /// In en, this message translates to:
-  /// **'Recording cancelled'**
+  /// **'Recording canceled'**
   String get recordingCancelled;
 
   /// Error when creating a live TV recording fails
@@ -4375,7 +4381,7 @@ abstract class AppLocalizations {
   /// Snackbar confirmation after cancelling a live TV series recording
   ///
   /// In en, this message translates to:
-  /// **'Series recording cancelled'**
+  /// **'Series recording canceled'**
   String get seriesRecordingCancelled;
 
   /// Error when creating a live TV series recording fails
@@ -4597,7 +4603,7 @@ abstract class AppLocalizations {
   /// Shown when no items match the selected filter
   ///
   /// In en, this message translates to:
-  /// **'No media in this filter'**
+  /// **'No media matches this filter'**
   String get noMediaInFilter;
 
   /// Shown when no media has been downloaded
@@ -4807,7 +4813,7 @@ abstract class AppLocalizations {
   /// Empty state body when no downloads are on the device
   ///
   /// In en, this message translates to:
-  /// **'Downloads you start appear here and play without a connection.'**
+  /// **'Your downloads appear here and can be played without an internet connection.'**
   String get savedMediaNoDownloadsDetail;
 
   /// Empty state for the active downloads tab
@@ -4861,7 +4867,7 @@ abstract class AppLocalizations {
   /// Row menu action that plays the earliest unwatched saved episode of a show
   ///
   /// In en, this message translates to:
-  /// **'Play next unwatched'**
+  /// **'Play next unwatched episode'**
   String get savedMediaPlayNextUnwatched;
 
   /// Row menu action that opens a downloaded book in the reader
@@ -4981,7 +4987,7 @@ abstract class AppLocalizations {
   /// Auth settings description
   ///
   /// In en, this message translates to:
-  /// **'Auto login, server management'**
+  /// **'Automatic sign-in, server management'**
   String get autoLoginServerManagement;
 
   /// PIN code settings title
@@ -5173,13 +5179,13 @@ abstract class AppLocalizations {
   /// Description for focus expansion animation
   ///
   /// In en, this message translates to:
-  /// **'Scale focused or hovered cards and tiles'**
+  /// **'Enlarge cards and tiles when focused or hovered over'**
   String get scaleFocusedCards;
 
   /// Setting for background backdrops
   ///
   /// In en, this message translates to:
-  /// **'Background Backdrops'**
+  /// **'Background Images'**
   String get backgroundBackdrops;
 
   /// Description for background backdrops
@@ -5575,7 +5581,7 @@ abstract class AppLocalizations {
   /// Seasonal row title for New Year's
   ///
   /// In en, this message translates to:
-  /// **'New Year\'s'**
+  /// **'New Year'**
   String get holidayNewYear;
 
   /// Seasonal row title for Valentine's Day
@@ -5725,7 +5731,7 @@ abstract class AppLocalizations {
   /// Description for the mouse scroll wheel action setting
   ///
   /// In en, this message translates to:
-  /// **'Choose what scrolling the mouse wheel over the video does during playback.'**
+  /// **'Choose what the mouse wheel does when scrolled over the video during playback.'**
   String get settingsScrollWheelActionDescription;
 
   /// Scroll wheel action option: do nothing
@@ -5893,7 +5899,7 @@ abstract class AppLocalizations {
   /// Setting for the vertical position of the trickplay seek preview relative to the seekbar
   ///
   /// In en, this message translates to:
-  /// **'Distance From Seekbar'**
+  /// **'Distance from Seek Bar'**
   String get trickplayVerticalOffset;
 
   /// Setting for whether the trickplay preview horizontally tracks the scrub handle
@@ -5905,7 +5911,7 @@ abstract class AppLocalizations {
   /// Description for the trickplay follow-scrub-position setting
   ///
   /// In en, this message translates to:
-  /// **'Preview slides along the seekbar as you scrub, instead of staying centered'**
+  /// **'The preview follows your position along the seek bar instead of staying centered'**
   String get trickplayFollowScrubPositionSubtitle;
 
   /// Setting for whether seeking pauses playback so the trickplay preview holds still
@@ -5953,7 +5959,7 @@ abstract class AppLocalizations {
   /// Description for OSD lock button
   ///
   /// In en, this message translates to:
-  /// **'Show a lock button that blocks touch input until long-pressed'**
+  /// **'Show a button that blocks touch input until you press and hold it'**
   String get osdLockButtonDescription;
 
   /// Setting for player swipe gestures
@@ -5965,7 +5971,7 @@ abstract class AppLocalizations {
   /// Description for player swipe gestures
   ///
   /// In en, this message translates to:
-  /// **'Slide up or down on the player to change brightness on the left and volume on the right'**
+  /// **'Swipe up or down on the left side of the player to adjust brightness, or on the right side to adjust volume'**
   String get playerSwipeGesturesDescription;
 
   /// Settings screen for choosing which buttons the player shows
@@ -6013,7 +6019,7 @@ abstract class AppLocalizations {
   /// Subtitle explaining how action buttons overflow into More Actions
   ///
   /// In en, this message translates to:
-  /// **'Customize how many action buttons appear before folding into the More Actions menu.'**
+  /// **'Choose how many action buttons are visible before the rest move into the More Actions menu.'**
   String get actionButtonsOnScreenDescription;
 
   /// Option showing theme default number of action buttons
@@ -6079,7 +6085,7 @@ abstract class AppLocalizations {
   /// Subtitle explaining the series status metadata badge
   ///
   /// In en, this message translates to:
-  /// **'Shows whether the series is continuing, ended, or returning'**
+  /// **'Show whether the series is continuing, ended, or returning'**
   String get detailMetadataStatusSubtitle;
 
   /// Item label for genre tags in metadata row
@@ -6097,7 +6103,7 @@ abstract class AppLocalizations {
   /// Subtitle explaining the Seerr availability metadata badge
   ///
   /// In en, this message translates to:
-  /// **'Shows request and media availability status from Seerr'**
+  /// **'Show request status and media availability from Seerr'**
   String get detailMetadataSeerrAvailabilitySubtitle;
 
   /// Item label for upcoming episode air date badge in metadata row
@@ -6127,7 +6133,7 @@ abstract class AppLocalizations {
   /// Explanatory text at the top of the Details screen sections list
   ///
   /// In en, this message translates to:
-  /// **'Only the sections the current Details screen style can show are listed. Hiding one hides it in every style that has it.'**
+  /// **'Only sections supported by the current details screen style are listed. Hiding a section hides it in every style that includes it.'**
   String get detailSectionsScreenDescription;
 
   /// Group heading for the title area of the Details screen
@@ -6451,7 +6457,7 @@ abstract class AppLocalizations {
   /// Description for preferring default audio track setting
   ///
   /// In en, this message translates to:
-  /// **'Prefer original audio track over localized dub.'**
+  /// **'Prioritize the audio track marked as default in the file metadata before matching your preferred languages.'**
   String get preferDefaultAudioTrackDescription;
 
   /// Setting for preferring audio description tracks
@@ -6697,7 +6703,7 @@ abstract class AppLocalizations {
   /// Description for maximum audio channels setting
   ///
   /// In en, this message translates to:
-  /// **'Configure the maximum channels of your audio setup. Multichannel streams exceeding this limit will downmix or transcode.'**
+  /// **'Set the maximum number of channels in your audio setup. Streams with more channels will be downmixed or transcoded.'**
   String get settingsMaxAudioChannelsDescription;
 
   /// Option: Auto detect channels
@@ -6829,7 +6835,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsAudioPassthroughOutputDescription.
   ///
   /// In en, this message translates to:
-  /// **'Who packs bitstreams for the HDMI link. Try the app packer if passthrough is silent or glitchy on this device.'**
+  /// **'Choose whether the system or the app packages bitstreams for HDMI. Try the app option if passthrough is silent or unstable on this device.'**
   String get settingsAudioPassthroughOutputDescription;
 
   /// No description provided for @settingsAudioPassthroughOutputPlatform.
@@ -6889,7 +6895,7 @@ abstract class AppLocalizations {
   /// Message shown when runtime audio capability snapshot is missing
   ///
   /// In en, this message translates to:
-  /// **'No runtime capability snapshot available yet.'**
+  /// **'No detected audio capability information is available yet.'**
   String get settingsDetectedAudioCapabilitiesUnavailable;
 
   /// Label for active audio route row
@@ -7057,7 +7063,7 @@ abstract class AppLocalizations {
   /// Description for unsafe mpv options
   ///
   /// In en, this message translates to:
-  /// **'Allow a wider set of mpv options. May break playback behavior.'**
+  /// **'Allow more mpv options. These may cause playback problems.'**
   String get unsafeMpvOptionsDescription;
 
   /// Label for hardware decoding toggle
@@ -7561,7 +7567,7 @@ abstract class AppLocalizations {
   /// Message after a profile was reset
   ///
   /// In en, this message translates to:
-  /// **'Reset {profile} profile to defaults.'**
+  /// **'{profile} profile reset to defaults.'**
   String profileReset(String profile);
 
   /// Title of the dialog confirming a ratings reset
@@ -7579,7 +7585,7 @@ abstract class AppLocalizations {
   /// Message after the ratings settings were reset
   ///
   /// In en, this message translates to:
-  /// **'Reset ratings to defaults.'**
+  /// **'Ratings reset to defaults.'**
   String get ratingsReset;
 
   /// Message when a profile reset failed
@@ -7621,7 +7627,7 @@ abstract class AppLocalizations {
   /// Setting for wifi-only downloads
   ///
   /// In en, this message translates to:
-  /// **'WiFi-Only Downloads'**
+  /// **'Wi-Fi-Only Downloads'**
   String get wifiOnlyDownloads;
 
   /// TV-only toggle in the Offline Downloads settings: offer download actions on item pages
@@ -7651,7 +7657,7 @@ abstract class AppLocalizations {
   /// Description for wifi-only downloads
   ///
   /// In en, this message translates to:
-  /// **'Only download when connected to WiFi'**
+  /// **'Only download when connected to Wi-Fi'**
   String get onlyDownloadOnWifi;
 
   /// Section title for storage settings
@@ -8023,7 +8029,7 @@ abstract class AppLocalizations {
   /// Description for grouping items into collections
   ///
   /// In en, this message translates to:
-  /// **'Hide Collection associated library items when browsing libraries'**
+  /// **'Hide items that belong to collections when browsing libraries'**
   String get hideCollectionAssociatedItems;
 
   /// Title of the alert dialog explaining server settings requirement
@@ -8077,7 +8083,7 @@ abstract class AppLocalizations {
   /// Explanation shown at the top of the Library Order settings screen
   ///
   /// In en, this message translates to:
-  /// **'Your libraries appear in this order on My Media, the recently added rows and the navigation bar. The order is saved to your server account, so other apps you sign in to use it too.'**
+  /// **'Your libraries appear in this order in My Media, recently added rows, and the navigation bar. The order is saved to your server account and used by other apps you sign in to.'**
   String get libraryOrderDescription;
 
   /// Remote control hint on the Library Order settings screen
@@ -8371,13 +8377,13 @@ abstract class AppLocalizations {
   /// Setting for sorting series in recently released series row
   ///
   /// In en, this message translates to:
-  /// **'Recently Released Series Sort By'**
+  /// **'Sort Recently Released Series By'**
   String get recentlyReleasedSeriesType;
 
   /// Description for recently released series type setting
   ///
   /// In en, this message translates to:
-  /// **'Sort Recently Released Series home rows by series, latest season, or latest episode air date'**
+  /// **'Sort recently released series rows by the premiere date of the series, latest season, or latest episode'**
   String get recentlyReleasedSeriesTypeDescription;
 
   /// Home section: my media
@@ -8461,7 +8467,7 @@ abstract class AppLocalizations {
   /// Description for merge continue watching and next up
   ///
   /// In en, this message translates to:
-  /// **'Combine both rows into a single home section'**
+  /// **'Combine both rows into one home section'**
   String get combineBothRows;
 
   /// Setting for how far back the Next Up row reaches
@@ -8491,7 +8497,7 @@ abstract class AppLocalizations {
   /// Description for full screen home rows
   ///
   /// In en, this message translates to:
-  /// **'Limit home rows to 1 row per screen'**
+  /// **'Show one home row per screen'**
   String get fullScreenRowsDescription;
 
   /// Title for home rows padding setting
@@ -8515,7 +8521,7 @@ abstract class AppLocalizations {
   /// Setting for auto login
   ///
   /// In en, this message translates to:
-  /// **'Auto Login'**
+  /// **'Automatic Sign-In'**
   String get autoLogin;
 
   /// Option: last user
@@ -8563,7 +8569,7 @@ abstract class AppLocalizations {
   /// Shown when no ratings exist on server
   ///
   /// In en, this message translates to:
-  /// **'No content ratings were found on this server yet.'**
+  /// **'No content ratings have been found on this server yet.'**
   String get noContentRatingsFound;
 
   /// Shown when ratings fail to load
@@ -8701,7 +8707,7 @@ abstract class AppLocalizations {
   /// Description for require age rating
   ///
   /// In en, this message translates to:
-  /// **'Only show rated content'**
+  /// **'Only show content with an age rating'**
   String get onlyShowRatedContent;
 
   /// Description for show clock
@@ -9157,7 +9163,7 @@ abstract class AppLocalizations {
   /// Description when Seerr is unavailable
   ///
   /// In en, this message translates to:
-  /// **'Unavailable because server plugin Seerr support is disabled.'**
+  /// **'Unavailable because Seerr support is disabled in the server plugin.'**
   String get seerrUnavailable;
 
   /// Setting for NSFW filter
@@ -9265,13 +9271,13 @@ abstract class AppLocalizations {
   /// Description for discover rows with plugin
   ///
   /// In en, this message translates to:
-  /// **'Enable rows to see on Seerr mainpage. Drag to reorder. Custom order syncs with Moonbase.'**
+  /// **'Enable the rows you want to see on the Seerr main page. Drag to reorder. Your custom order syncs with Moonbase.'**
   String get discoverRowsDescriptionPlugin;
 
   /// Description for discover rows without plugin
   ///
   /// In en, this message translates to:
-  /// **'Enable rows to see on Seerr mainpage. Drag to reorder. Custom order syncs with Moonbase.'**
+  /// **'Enable the rows you want to see on the Seerr main page. Drag to reorder. Your custom order syncs with Moonbase.'**
   String get discoverRowsDescription;
 
   /// Status: enabled
@@ -9325,7 +9331,7 @@ abstract class AppLocalizations {
   /// Description for check for updates
   ///
   /// In en, this message translates to:
-  /// **'Checks latest desktop release for this platform'**
+  /// **'Check the latest desktop release for this platform'**
   String get checksLatestDesktopRelease;
 
   /// Message when app is up to date
@@ -9367,7 +9373,7 @@ abstract class AppLocalizations {
   /// Message when update was already shown
   ///
   /// In en, this message translates to:
-  /// **'Latest update was already shown.'**
+  /// **'The latest update has already been shown.'**
   String get latestUpdateAlreadyShown;
 
   /// Message when an update is available
@@ -9391,7 +9397,7 @@ abstract class AppLocalizations {
   /// Description for update notifications
   ///
   /// In en, this message translates to:
-  /// **'Show when updates are available'**
+  /// **'Notify me when updates are available'**
   String get showWhenUpdatesAvailable;
 
   /// Title of the update dialog showing the new version
@@ -10711,7 +10717,7 @@ abstract class AppLocalizations {
   /// No description provided for @analyticsNoData.
   ///
   /// In en, this message translates to:
-  /// **'No Data Available.'**
+  /// **'No data available.'**
   String get analyticsNoData;
 
   /// No description provided for @adminServerInfo.
@@ -10777,7 +10783,7 @@ abstract class AppLocalizations {
   /// No description provided for @adminServerRebootMessage.
   ///
   /// In en, this message translates to:
-  /// **'Server reboot in progress, please restart Moonfin'**
+  /// **'The server is restarting. Please restart Moonfin.'**
   String get adminServerRebootMessage;
 
   /// No description provided for @adminActiveSessions.
@@ -11269,7 +11275,7 @@ abstract class AppLocalizations {
   /// No description provided for @adminLibNoDownloaders.
   ///
   /// In en, this message translates to:
-  /// **'This server exposes no downloaders for this library type.'**
+  /// **'No download providers are available for this library type.'**
   String get adminLibNoDownloaders;
 
   /// No description provided for @adminLibrarySectionGeneral.
@@ -11455,7 +11461,7 @@ abstract class AppLocalizations {
   /// No description provided for @adminLibDummyChapterDuration.
   ///
   /// In en, this message translates to:
-  /// **'Dummy chapter duration (seconds)'**
+  /// **'Generated chapter duration (seconds)'**
   String get adminLibDummyChapterDuration;
 
   /// No description provided for @adminLibDummyChapterDurationHint.
@@ -11641,7 +11647,7 @@ abstract class AppLocalizations {
   /// No description provided for @adminLibPreferNonstandardArtist.
   ///
   /// In en, this message translates to:
-  /// **'Prefer non-standard artists tag'**
+  /// **'Prefer non-standard artist tags'**
   String get adminLibPreferNonstandardArtist;
 
   /// No description provided for @adminLibAutoAddToCollection.
@@ -12385,7 +12391,7 @@ abstract class AppLocalizations {
   /// No description provided for @adminApiKeyCreatedNoToken.
   ///
   /// In en, this message translates to:
-  /// **'Key created successfully. The server did not return the token. Check server API keys.'**
+  /// **'The key was created, but the server did not return its token. Check the server\'s API keys.'**
   String get adminApiKeyCreatedNoToken;
 
   /// No description provided for @adminKeyCopied.
@@ -12463,7 +12469,7 @@ abstract class AppLocalizations {
   /// No description provided for @adminApiKeyTokenCreated.
   ///
   /// In en, this message translates to:
-  /// **'Token: {token}\\nCreated: {created}'**
+  /// **'Token: {token}\nCreated: {created}'**
   String adminApiKeyTokenCreated(String token, String created);
 
   /// No description provided for @adminBackupOptionsTitle.
@@ -12745,7 +12751,7 @@ abstract class AppLocalizations {
   /// No description provided for @adminHours.
   ///
   /// In en, this message translates to:
-  /// **'{hours} hour(s)'**
+  /// **'{hours} h'**
   String adminHours(String hours);
 
   /// No description provided for @adminDayOfWeek.
@@ -13111,7 +13117,7 @@ abstract class AppLocalizations {
   /// No description provided for @adminLeaveEmptyForUnlimited.
   ///
   /// In en, this message translates to:
-  /// **'Leave empty or 0 for unlimited'**
+  /// **'Leave empty or set to 0 for no limit'**
   String get adminLeaveEmptyForUnlimited;
 
   /// No description provided for @adminPlaybackSaved.
@@ -13195,7 +13201,7 @@ abstract class AppLocalizations {
   /// No description provided for @adminSegmentKeepSeconds.
   ///
   /// In en, this message translates to:
-  /// **'Segment keep (seconds)'**
+  /// **'Segment retention (seconds)'**
   String get adminSegmentKeepSeconds;
 
   /// No description provided for @adminThrottleBuffering.
@@ -13225,7 +13231,7 @@ abstract class AppLocalizations {
   /// No description provided for @adminEnableKeyFrameExtraction.
   ///
   /// In en, this message translates to:
-  /// **'Enable key frame only extraction'**
+  /// **'Extract keyframes only'**
   String get adminEnableKeyFrameExtraction;
 
   /// No description provided for @adminKeyFrameSubtitle.
@@ -13267,7 +13273,7 @@ abstract class AppLocalizations {
   /// No description provided for @adminWidthResolutions.
   ///
   /// In en, this message translates to:
-  /// **'Width resolutions'**
+  /// **'Image widths (pixels)'**
   String get adminWidthResolutions;
 
   /// No description provided for @adminTileWidth.
@@ -13345,7 +13351,7 @@ abstract class AppLocalizations {
   /// No description provided for @adminMinResumeDurationSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Items shorter than this are not resumable'**
+  /// **'Progress is not saved for items shorter than this duration'**
   String get adminMinResumeDurationSubtitle;
 
   /// No description provided for @adminMinAudiobookResume.
@@ -13735,7 +13741,7 @@ abstract class AppLocalizations {
   /// No description provided for @adminTunerCountHelp.
   ///
   /// In en, this message translates to:
-  /// **'The maximum number of streams the tuner allows at once. Set to 0 for unlimited.'**
+  /// **'Maximum number of streams the tuner allows at once. Set to 0 for no limit.'**
   String get adminTunerCountHelp;
 
   /// No description provided for @adminTunerFallbackBitrate.
@@ -13975,13 +13981,13 @@ abstract class AppLocalizations {
   /// No description provided for @adminPrePadding.
   ///
   /// In en, this message translates to:
-  /// **'Pre-padding (minutes)'**
+  /// **'Start recording early (minutes)'**
   String get adminPrePadding;
 
   /// No description provided for @adminPostPadding.
   ///
   /// In en, this message translates to:
-  /// **'Post-padding (minutes)'**
+  /// **'Continue recording after the end (minutes)'**
   String get adminPostPadding;
 
   /// No description provided for @adminRecordingPath.
@@ -14095,7 +14101,7 @@ abstract class AppLocalizations {
   /// No description provided for @adminMappingJsonHint.
   ///
   /// In en, this message translates to:
-  /// **'Example: mappings JSON payload'**
+  /// **'Example: channel mappings in JSON'**
   String get adminMappingJsonHint;
 
   /// No description provided for @adminChannelMappingsUpdated.
@@ -14179,13 +14185,13 @@ abstract class AppLocalizations {
   /// No description provided for @adminPrePaddingDisplay.
   ///
   /// In en, this message translates to:
-  /// **'Pre-padding: {minutes} min'**
+  /// **'Start recording early: {minutes} min'**
   String adminPrePaddingDisplay(int minutes);
 
   /// No description provided for @adminPostPaddingDisplay.
   ///
   /// In en, this message translates to:
-  /// **'Post-padding: {minutes} min'**
+  /// **'Continue after the end: {minutes} min'**
   String adminPostPaddingDisplay(int minutes);
 
   /// No description provided for @adminTunerDiscovery.
@@ -14245,7 +14251,7 @@ abstract class AppLocalizations {
   /// No description provided for @adminRestoreRequested.
   ///
   /// In en, this message translates to:
-  /// **'Restore requested. Server restart may disconnect this session.'**
+  /// **'Restore requested. The server restart may disconnect this session.'**
   String get adminRestoreRequested;
 
   /// No description provided for @adminBackupsTitle.
@@ -14431,7 +14437,7 @@ abstract class AppLocalizations {
   /// No description provided for @adminMetadataFieldOfficialRating.
   ///
   /// In en, this message translates to:
-  /// **'Official rating'**
+  /// **'Official age rating'**
   String get adminMetadataFieldOfficialRating;
 
   /// No description provided for @adminMetadataFieldCommunityRating.
@@ -14575,7 +14581,7 @@ abstract class AppLocalizations {
   /// No description provided for @adminMetadataInheritHelp.
   ///
   /// In en, this message translates to:
-  /// **'Leave this on Default to inherit the setting from a parent item, or from the server default.'**
+  /// **'Keep Default to inherit this setting from a parent item or the server\'s default.'**
   String get adminMetadataInheritHelp;
 
   /// No description provided for @adminMetadataField3DFormat.
@@ -15139,13 +15145,13 @@ abstract class AppLocalizations {
   /// No description provided for @adminPluginDetailToggle404.
   ///
   /// In en, this message translates to:
-  /// **'Failed to toggle plugin. The server could not find this plugin version. Try refreshing plugins, then retry.'**
+  /// **'Could not change the plugin\'s state. The server could not find this version. Refresh the plugin list and try again.'**
   String get adminPluginDetailToggle404;
 
   /// No description provided for @adminPluginDetailToggleDioError.
   ///
   /// In en, this message translates to:
-  /// **'Failed to toggle plugin. Please check server logs for details.'**
+  /// **'Could not change the plugin\'s state. Check the server logs for details.'**
   String get adminPluginDetailToggleDioError;
 
   /// No description provided for @adminPluginDetailSettingsTitle.
@@ -15199,7 +15205,7 @@ abstract class AppLocalizations {
   /// No description provided for @adminPluginDetailMalfunctioned.
   ///
   /// In en, this message translates to:
-  /// **'This plugin has malfunctioned and may not work correctly.'**
+  /// **'This plugin encountered an error and may not work correctly.'**
   String get adminPluginDetailMalfunctioned;
 
   /// No description provided for @adminPluginDetailNotSupported.
@@ -15547,7 +15553,7 @@ abstract class AppLocalizations {
   /// No description provided for @adminPlaybackPreferNativeDecoder.
   ///
   /// In en, this message translates to:
-  /// **'Prefer system native hardware decoder'**
+  /// **'Prefer the system\'s native hardware decoder'**
   String get adminPlaybackPreferNativeDecoder;
 
   /// No description provided for @adminPlaybackColorDepth.
@@ -15817,7 +15823,7 @@ abstract class AppLocalizations {
   /// No description provided for @adminStreamingBitrateLimitHint.
   ///
   /// In en, this message translates to:
-  /// **'Leave empty or 0 for unlimited'**
+  /// **'Leave empty or set to 0 for no limit'**
   String get adminStreamingBitrateLimitHint;
 
   /// No description provided for @adminTrickplayHwAccel.
@@ -15835,7 +15841,7 @@ abstract class AppLocalizations {
   /// No description provided for @adminTrickplayKeyFrameOnly.
   ///
   /// In en, this message translates to:
-  /// **'Enable key frame only extraction'**
+  /// **'Extract keyframes only'**
   String get adminTrickplayKeyFrameOnly;
 
   /// No description provided for @adminTrickplayKeyFrameOnlySubtitle.
@@ -15955,7 +15961,7 @@ abstract class AppLocalizations {
   /// No description provided for @adminTaskCancelling.
   ///
   /// In en, this message translates to:
-  /// **'Cancelling...'**
+  /// **'Canceling...'**
   String get adminTaskCancelling;
 
   /// No description provided for @adminTaskRunning.
@@ -16057,7 +16063,7 @@ abstract class AppLocalizations {
   /// No description provided for @adminTaskTriggerTypeInterval.
   ///
   /// In en, this message translates to:
-  /// **'On an interval'**
+  /// **'At regular intervals'**
   String get adminTaskTriggerTypeInterval;
 
   /// No description provided for @adminTaskTriggerIntervalLabel.
@@ -16279,7 +16285,7 @@ abstract class AppLocalizations {
   /// No description provided for @adminNetworkingLocalSubnetsHint.
   ///
   /// In en, this message translates to:
-  /// **'Comma or line separated list of IP addresses or CIDR subnets treated as being on the local network.'**
+  /// **'IP addresses or CIDR subnets to treat as part of the local network, separated by commas or line breaks.'**
   String get adminNetworkingLocalSubnetsHint;
 
   /// No description provided for @adminNetworkingPublishedUris.
@@ -16339,7 +16345,7 @@ abstract class AppLocalizations {
   /// No description provided for @adminPlaybackSegmentKeep.
   ///
   /// In en, this message translates to:
-  /// **'Segment keep (seconds)'**
+  /// **'Segment retention (seconds)'**
   String get adminPlaybackSegmentKeep;
 
   /// No description provided for @adminPlaybackThrottleBuffering.
@@ -16393,7 +16399,7 @@ abstract class AppLocalizations {
   /// No description provided for @adminResumeMinDurationSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Items shorter than this are not resumable'**
+  /// **'Progress is not saved for items shorter than this duration'**
   String get adminResumeMinDurationSubtitle;
 
   /// No description provided for @adminTrickplayScanBehavior.
@@ -16429,7 +16435,7 @@ abstract class AppLocalizations {
   /// No description provided for @adminTrickplayWidthResolutions.
   ///
   /// In en, this message translates to:
-  /// **'Width resolutions'**
+  /// **'Image widths (pixels)'**
   String get adminTrickplayWidthResolutions;
 
   /// No description provided for @adminMetadataDefault.
@@ -16609,13 +16615,13 @@ abstract class AppLocalizations {
   /// No description provided for @syncPlayIgnoreWaitSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Don\'t hold the group up while this device buffers'**
+  /// **'Don\'t make the group wait while this device buffers'**
   String get syncPlayIgnoreWaitSubtitle;
 
   /// No description provided for @syncPlayContinueLocallyNoWait.
   ///
   /// In en, this message translates to:
-  /// **'Continue locally without waiting for slow members'**
+  /// **'Continue locally without waiting for members who are buffering'**
   String get syncPlayContinueLocallyNoWait;
 
   /// No description provided for @syncPlayRepeat.
@@ -16627,7 +16633,7 @@ abstract class AppLocalizations {
   /// No description provided for @syncPlayRepeatOne.
   ///
   /// In en, this message translates to:
-  /// **'One'**
+  /// **'One item'**
   String get syncPlayRepeatOne;
 
   /// No description provided for @syncPlayShuffleModeShuffled.
@@ -16639,7 +16645,7 @@ abstract class AppLocalizations {
   /// No description provided for @syncPlayShuffleModeSorted.
   ///
   /// In en, this message translates to:
-  /// **'Sorted'**
+  /// **'In order'**
   String get syncPlayShuffleModeSorted;
 
   /// No description provided for @syncPlaySyncCurrentQueue.
@@ -16819,7 +16825,7 @@ abstract class AppLocalizations {
   /// No description provided for @dolbyVisionNotSupportedMessage.
   ///
   /// In en, this message translates to:
-  /// **'This device cannot decode Dolby Vision content directly. Use HDR10 fallback or request server transcoding.'**
+  /// **'This device cannot decode Dolby Vision directly. Use HDR10 as a fallback or request server transcoding.'**
   String get dolbyVisionNotSupportedMessage;
 
   /// No description provided for @rememberMyChoice.
@@ -16891,7 +16897,7 @@ abstract class AppLocalizations {
   /// No description provided for @offlineNoInternet.
   ///
   /// In en, this message translates to:
-  /// **'You are offline. Only downloaded content is available.'**
+  /// **'You\'re offline. Only downloaded content is available.'**
   String get offlineNoInternet;
 
   /// No description provided for @offlineFileNotAvailable.
@@ -16939,7 +16945,7 @@ abstract class AppLocalizations {
   /// No description provided for @serverUnreachableBannerSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Playing from downloads until it\'s back'**
+  /// **'Playing from downloads until the server is available again'**
   String get serverUnreachableBannerSubtitle;
 
   /// No description provided for @castGoogleCast.
@@ -17053,7 +17059,7 @@ abstract class AppLocalizations {
   /// Explanation under the Kids Mode setting
   ///
   /// In en, this message translates to:
-  /// **'Simplify the app and lock the way out with a PIN'**
+  /// **'Simplify the app and require a PIN to exit this mode'**
   String get kidsModeSubtitle;
 
   /// Settings entry that turns Kids Mode off, shown while Kids Mode is on
@@ -17269,7 +17275,7 @@ abstract class AppLocalizations {
   /// No description provided for @trackActionDeleteFromPlaylist.
   ///
   /// In en, this message translates to:
-  /// **'Delete from Playlist'**
+  /// **'Remove from Playlist'**
   String get trackActionDeleteFromPlaylist;
 
   /// No description provided for @trackActionMoveUp.
@@ -17551,19 +17557,19 @@ abstract class AppLocalizations {
   /// Tooltip label for enabling always-on-top in desktop player
   ///
   /// In en, this message translates to:
-  /// **'Float on top'**
+  /// **'Always on Top'**
   String get playerTooltipFloatOnTop;
 
   /// Tooltip label for disabling always-on-top in desktop player
   ///
   /// In en, this message translates to:
-  /// **'Disable float on top'**
+  /// **'Turn off Always on Top'**
   String get playerTooltipExitFloatOnTop;
 
   /// Tooltip label for locking landscape orientation in player
   ///
   /// In en, this message translates to:
-  /// **'Lock landscape'**
+  /// **'Lock landscape orientation'**
   String get playerTooltipLockLandscape;
 
   /// Tooltip label for unlocking orientation lock in player
@@ -17737,13 +17743,13 @@ abstract class AppLocalizations {
   /// Explains that the blocked ratings list works as a ceiling
   ///
   /// In en, this message translates to:
-  /// **'Blocking a rating also blocks everything stronger than it.'**
+  /// **'Blocking an age rating also blocks all higher age ratings.'**
   String get blockedRatingsCeilingHint;
 
   /// Heading for ratings the app can't rank, which block only the exact rating rather than everything above it
   ///
   /// In en, this message translates to:
-  /// **'Only blocks itself'**
+  /// **'Blocks only this rating'**
   String get blockedRatingsUnrankedSection;
 
   /// No description provided for @settingsHomePage.
@@ -18025,7 +18031,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsSupportMoonfinSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Donate a coffee to the developer'**
+  /// **'Buy the developer a coffee'**
   String get settingsSupportMoonfinSubtitle;
 
   /// No description provided for @settingsLegal.
@@ -18169,13 +18175,13 @@ abstract class AppLocalizations {
   /// No description provided for @settingsMaxBitrateDescription.
   ///
   /// In en, this message translates to:
-  /// **'Cap the streaming bitrate. Content above this threshold will be transcoded to fit.'**
+  /// **'Limit the streaming bitrate. Content above this limit will be transcoded to fit.'**
   String get settingsMaxBitrateDescription;
 
   /// No description provided for @settingsMaxResolutionDescription.
   ///
   /// In en, this message translates to:
-  /// **'Limit the maximum resolution the player will request. Higher-resolution content will be transcoded down.'**
+  /// **'Limit the resolution requested by the player. Higher-resolution content will be transcoded to a lower resolution.'**
   String get settingsMaxResolutionDescription;
 
   /// No description provided for @settingsPlayerZoomDescription.
@@ -18289,7 +18295,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsDolbyVisionProfile7DirectPlayDescription.
   ///
   /// In en, this message translates to:
-  /// **'Controls whether Dolby Vision profile 7 enhancement-layer streams should direct play.'**
+  /// **'Choose whether to play Dolby Vision profile 7 streams with an enhancement layer directly.'**
   String get settingsDolbyVisionProfile7DirectPlayDescription;
 
   /// No description provided for @settingsAutoAftkrtEnabled.
@@ -18319,13 +18325,13 @@ abstract class AppLocalizations {
   /// No description provided for @settingsUnpauseRewindDescription.
   ///
   /// In en, this message translates to:
-  /// **'When resuming playback after pressing the pause button, how many seconds should be rewound?'**
+  /// **'How many seconds to rewind when resuming after a pause.'**
   String get settingsUnpauseRewindDescription;
 
   /// No description provided for @settingsSkipBackLengthDescription.
   ///
   /// In en, this message translates to:
-  /// **'How many seconds to jump back after pressing the rewind button.'**
+  /// **'How many seconds to jump back when you press the rewind button.'**
   String get settingsSkipBackLengthDescription;
 
   /// No description provided for @settingsOneSecond.
@@ -18355,7 +18361,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsSkipForwardLengthDescription.
   ///
   /// In en, this message translates to:
-  /// **'How many seconds to jump forward after pressing the fast forward button.'**
+  /// **'How many seconds to jump forward when you press the fast-forward button.'**
   String get settingsSkipForwardLengthDescription;
 
   /// No description provided for @settingsBitstreamAc3ToExternalDecoder.
@@ -18391,7 +18397,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsNextUpDisplayDescription.
   ///
   /// In en, this message translates to:
-  /// **'Extended shows a full card with episode artwork and description. Minimal shows a compact countdown overlay. Disabled hides the prompt entirely.'**
+  /// **'Extended shows a full card with episode artwork and a description. Minimal shows a compact countdown. Disabled hides the prompt entirely.'**
   String get settingsNextUpDisplayDescription;
 
   /// No description provided for @settingsShort.
@@ -18457,7 +18463,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsSyncplayEnabledSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Enable group watching features'**
+  /// **'Enable synchronized group watching'**
   String get settingsSyncplayEnabledSubtitle;
 
   /// No description provided for @settingsSyncplayButton.
@@ -18481,7 +18487,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsSyncplayAdvancedCorrectionSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Enable fine-grained sync logic'**
+  /// **'Enable more precise synchronization'**
   String get settingsSyncplayAdvancedCorrectionSubtitle;
 
   /// No description provided for @settingsSyncplaySyncCorrection.
@@ -18517,7 +18523,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsSyncplaySkipToSyncSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Use seeking to sync'**
+  /// **'Adjust the playback position to stay in sync'**
   String get settingsSyncplaySkipToSyncSubtitle;
 
   /// No description provided for @settingsSyncplayMinimumSpeedDelay.
@@ -18631,7 +18637,7 @@ abstract class AppLocalizations {
   /// Setting subtitle for disable tunneling
   ///
   /// In en, this message translates to:
-  /// **'Force non-tunneled playback. Useful on devices with tunneling audio/video discontinuities.'**
+  /// **'Use playback without tunneling. Useful on devices with audio or video interruptions when tunneling is enabled.'**
   String get disableTunnelingSubtitle;
 
   /// Setting title: enable tunneled video playback (advanced)
@@ -18643,7 +18649,7 @@ abstract class AppLocalizations {
   /// Setting subtitle for enable tunneling
   ///
   /// In en, this message translates to:
-  /// **'Advanced. Routes audio and video through a coupled hardware path. Off by default because it causes audio/video dropouts on some devices.'**
+  /// **'Advanced. Routes audio and video through a shared hardware path. Off by default because it causes audio or video interruptions on some devices.'**
   String get enableTunnelingSubtitle;
 
   /// Setting title: force DV P7 streams to the HDR10 strip path
@@ -18655,7 +18661,7 @@ abstract class AppLocalizations {
   /// Setting subtitle for forcing the DV P7 strip path
   ///
   /// In en, this message translates to:
-  /// **'Skip the profile 8 conversion and strip Dolby Vision profile 7 streams to HDR10-compatible HEVC. Use this if converted streams look wrong.'**
+  /// **'Skip conversion to profile 8 and remove the Dolby Vision data from profile 7 streams to produce HDR10-compatible HEVC. Use this if converted streams look wrong.'**
   String get mapDolbyVisionP7Subtitle;
 
   /// Setting title: apply colours/positioning from the subtitle track
@@ -18667,7 +18673,7 @@ abstract class AppLocalizations {
   /// Setting subtitle for embedded styles toggle
   ///
   /// In en, this message translates to:
-  /// **'Apply colours, fonts, and positioning embedded in the subtitle track. Disable to use your caption style preferences instead.'**
+  /// **'Apply colors, fonts, and positioning embedded in the subtitle track. Disable to use your subtitle style preferences instead.'**
   String get subtitlesUseEmbeddedStylesSubtitle;
 
   /// Setting title: apply font sizes from the subtitle track
@@ -18709,7 +18715,7 @@ abstract class AppLocalizations {
   /// Subtitle for the use detailed sub headings setting
   ///
   /// In en, this message translates to:
-  /// **'Show detailed or minimal subrow on Library pages.'**
+  /// **'Choose detailed or minimal secondary information on library pages.'**
   String get useDetailedSubHeadingsDescription;
 
   /// No description provided for @savedThemesDeleteDialogTitle.
@@ -18721,7 +18727,7 @@ abstract class AppLocalizations {
   /// Confirmation message for deleting a saved custom theme
   ///
   /// In en, this message translates to:
-  /// **'Remove \"{themeName}\" from this device cache?'**
+  /// **'Remove \"{themeName}\" from this device\'s cache?'**
   String savedThemesDeleteDialogMessage(String themeName);
 
   /// No description provided for @themeStore.
@@ -18895,7 +18901,7 @@ abstract class AppLocalizations {
   /// No description provided for @modernCardsOnMyMediaRowDescription.
   ///
   /// In en, this message translates to:
-  /// **'Display customizable posters that expand on focus. Disable to always show landscape thumbnail.'**
+  /// **'Show customizable posters that expand when focused. Disable to always show landscape thumbnails.'**
   String get modernCardsOnMyMediaRowDescription;
 
   /// No description provided for @sortOrder.
@@ -19051,7 +19057,7 @@ abstract class AppLocalizations {
   /// No description provided for @studiosRowSortingDescription.
   ///
   /// In en, this message translates to:
-  /// **'Studio row by name, recently added, and more.'**
+  /// **'Sort the studio row by name, date added, and other criteria.'**
   String get studiosRowSortingDescription;
 
   /// No description provided for @studiosRowSortOrderDescription.
@@ -19237,7 +19243,7 @@ abstract class AppLocalizations {
   /// No description provided for @mpvConfiguration.
   ///
   /// In en, this message translates to:
-  /// **'MPV configuration'**
+  /// **'mpv Configuration'**
   String get mpvConfiguration;
 
   /// No description provided for @cardSize.
@@ -19255,7 +19261,7 @@ abstract class AppLocalizations {
   /// No description provided for @externalPlayerAppDescription.
   ///
   /// In en, this message translates to:
-  /// **'Set external player to enable long-press play option'**
+  /// **'Choose an external player to enable playback by pressing and holding'**
   String get externalPlayerAppDescription;
 
   /// No description provided for @externalPlayerAskEachTimeSubtitle.
@@ -19303,7 +19309,7 @@ abstract class AppLocalizations {
   /// No description provided for @notSupportedOnThisDevice.
   ///
   /// In en, this message translates to:
-  /// **'Not Supported on this device'**
+  /// **'Not supported on this device'**
   String get notSupportedOnThisDevice;
 
   /// No description provided for @mediaPlayerBehavior.
@@ -19567,7 +19573,7 @@ abstract class AppLocalizations {
   /// No description provided for @webDiagnosticsCorsChecklistItem4.
   ///
   /// In en, this message translates to:
-  /// **'• Return 204 to OPTIONS preflight requests.'**
+  /// **'• Return a successful response to OPTIONS preflight requests, such as HTTP 204.'**
   String get webDiagnosticsCorsChecklistItem4;
 
   /// No description provided for @webDiagnosticsHeaderSnippetTitle.
@@ -19603,7 +19609,7 @@ abstract class AppLocalizations {
   /// No description provided for @voiceSearchPermissionPermanentlyDenied.
   ///
   /// In en, this message translates to:
-  /// **'Microphone permission is permanently denied. Enable it in system settings.'**
+  /// **'Microphone access is blocked. Allow it in your device\'s settings.'**
   String get voiceSearchPermissionPermanentlyDenied;
 
   /// No description provided for @voiceSearchPermissionRequired.
@@ -19633,7 +19639,7 @@ abstract class AppLocalizations {
   /// No description provided for @voiceSearchNeedsInternet.
   ///
   /// In en, this message translates to:
-  /// **'Voice search needs internet.'**
+  /// **'Voice search requires an internet connection.'**
   String get voiceSearchNeedsInternet;
 
   /// No description provided for @voiceSearchServiceBusy.
@@ -19645,7 +19651,7 @@ abstract class AppLocalizations {
   /// No description provided for @microphonePermissionPermanentlyDenied.
   ///
   /// In en, this message translates to:
-  /// **'Microphone permission is permanently denied.'**
+  /// **'Microphone access is blocked in your device\'s settings.'**
   String get microphonePermissionPermanentlyDenied;
 
   /// No description provided for @microphonePermissionDenied.
@@ -19897,7 +19903,7 @@ abstract class AppLocalizations {
   /// The current watch streak
   ///
   /// In en, this message translates to:
-  /// **'{days} day streak'**
+  /// **'{days}-day streak'**
   String achievementsCurrentStreak(int days);
 
   /// The best watch streak
@@ -19987,13 +19993,13 @@ abstract class AppLocalizations {
   /// Subtitle on the reroll row once the daily reroll is spent
   ///
   /// In en, this message translates to:
-  /// **'Used today, comes back at midnight UTC'**
+  /// **'Used today; available again at midnight UTC'**
   String get achievementsRerollSpentDaily;
 
   /// Subtitle on the reroll row once the weekly reroll is spent
   ///
   /// In en, this message translates to:
-  /// **'Used this week, comes back Monday UTC'**
+  /// **'Used this week; available again on Monday (UTC)'**
   String get achievementsRerollSpentWeekly;
 
   /// Title of the dialog confirming a quest reroll
@@ -20005,7 +20011,7 @@ abstract class AppLocalizations {
   /// Body of the dialog confirming a quest reroll
   ///
   /// In en, this message translates to:
-  /// **'You get one daily and one weekly reroll, and this spends it.'**
+  /// **'You can reroll daily quests once per day and weekly quests once per week. This uses the corresponding reroll.'**
   String get achievementsRerollConfirmBody;
 
   /// Message shown when a quest reroll did not go through
@@ -20083,13 +20089,13 @@ abstract class AppLocalizations {
   /// What a user has to reach to unlock a cosmetic without paying
   ///
   /// In en, this message translates to:
-  /// **'Earned at {score} lifetime score'**
+  /// **'Earned at {score} lifetime points'**
   String achievementsEarnedAt(int score);
 
   /// Shown when the plugin carries no cosmetics this panel can draw
   ///
   /// In en, this message translates to:
-  /// **'This server has no avatars or titles to wear.'**
+  /// **'This server has no avatars or profile titles available.'**
   String get achievementsAppearanceEmpty;
 
   /// Shown when equipping or removing an avatar or title fails
@@ -20125,7 +20131,7 @@ abstract class AppLocalizations {
   /// Section of a user's highest counters
   ///
   /// In en, this message translates to:
-  /// **'Bests'**
+  /// **'Personal bests'**
   String get achievementsStatsBests;
 
   /// Section of counters for when a user watches
@@ -20161,7 +20167,7 @@ abstract class AppLocalizations {
   /// Counter label
   ///
   /// In en, this message translates to:
-  /// **'Films watched'**
+  /// **'Movies watched'**
   String get achievementsStatMovies;
 
   /// Counter label
@@ -20209,7 +20215,7 @@ abstract class AppLocalizations {
   /// Counter label
   ///
   /// In en, this message translates to:
-  /// **'Most films in a day'**
+  /// **'Most movies in a day'**
   String get achievementsStatMostMovies;
 
   /// Counter label, a run time in minutes
@@ -20227,7 +20233,7 @@ abstract class AppLocalizations {
   /// Counter label
   ///
   /// In en, this message translates to:
-  /// **'Late night sessions'**
+  /// **'Late-night sessions'**
   String get achievementsStatLateNight;
 
   /// Counter label
@@ -20353,13 +20359,13 @@ abstract class AppLocalizations {
   /// Body of the dialog confirming a purchase
   ///
   /// In en, this message translates to:
-  /// **'It comes straight out of your score bank.'**
+  /// **'The cost is deducted from your points balance.'**
   String get achievementsBuyConfirmBody;
 
   /// Message shown when a purchase did not go through
   ///
   /// In en, this message translates to:
-  /// **'Could not buy that.'**
+  /// **'Could not complete the purchase.'**
   String get achievementsBuyFailed;
 
   /// Label for the score a user still has to spend
@@ -20377,7 +20383,7 @@ abstract class AppLocalizations {
   /// What the XP Boost power-up does
   ///
   /// In en, this message translates to:
-  /// **'Doubles score for an hour. Using it again restarts the hour.'**
+  /// **'Double your points for one hour. Using it again restarts the one-hour timer.'**
   String get achievementsBoostBody;
 
   /// Power-up that makes the next item count twice
@@ -20389,7 +20395,7 @@ abstract class AppLocalizations {
   /// What the Double Credit power-up does
   ///
   /// In en, this message translates to:
-  /// **'The next thing you finish counts twice towards badges.'**
+  /// **'The next item you finish counts twice toward badges.'**
   String get achievementsDoubleCreditBody;
 
   /// Power-up that protects a watch streak
@@ -20401,7 +20407,7 @@ abstract class AppLocalizations {
   /// What the Streak Freeze power-up does
   ///
   /// In en, this message translates to:
-  /// **'Covers one missed day. Only one can be banked.'**
+  /// **'Protects your streak for one missed day. You can hold only one.'**
   String get achievementsStreakFreezeBody;
 
   /// How many of a power-up the user owns
@@ -20725,7 +20731,7 @@ abstract class AppLocalizations {
   /// Body of the dialog blocking a user
   ///
   /// In en, this message translates to:
-  /// **'Block {name}? Neither of you will be able to message the other directly. Group chats you share stay open.'**
+  /// **'Block {name}? Neither of you will be able to send direct messages to the other. Shared group chats remain available.'**
   String friendsBlockBody(String name);
 
   /// Body of the dialog unblocking a user
@@ -20983,7 +20989,7 @@ abstract class AppLocalizations {
   /// Action that takes admin away from a group member
   ///
   /// In en, this message translates to:
-  /// **'Remove admin'**
+  /// **'Revoke admin role'**
   String get chatRemoveAdmin;
 
   /// Action that removes someone from a group chat
@@ -21043,7 +21049,7 @@ abstract class AppLocalizations {
   /// Shown when a picked chat image has an unsupported type
   ///
   /// In en, this message translates to:
-  /// **'Only PNG, JPEG, GIF and WebP images can be sent.'**
+  /// **'Only PNG, JPEG, GIF, and WebP images can be sent.'**
   String get chatImageUnsupported;
 
   /// No description provided for @embeddedBrowserNotAvailable.
@@ -21499,7 +21505,7 @@ abstract class AppLocalizations {
   /// Confirmation message when clearing a specific artwork
   ///
   /// In en, this message translates to:
-  /// **'Are you sure you would like to clear this {itemType}?'**
+  /// **'Are you sure you want to clear the {itemType}?'**
   String confirmClearMessage(String itemType);
 
   /// No description provided for @uploadButton.
@@ -22027,7 +22033,7 @@ abstract class AppLocalizations {
   /// Troubleshooting steps for write access issues
   ///
   /// In en, this message translates to:
-  /// **'1. Grant write permissions to the Jellyfin service user (e.g., jellyfin or Docker PUID/PGID) for your media library folders on the server.\n\n2. Or, go to your Jellyfin Dashboard -> Libraries, edit this library, and disable \'Save artwork into media folders\' to store artwork in Jellyfin\'s internal database.'**
+  /// **'1. Grant write access to the media folders on the server for the user running Jellyfin. For Docker, check that the configured UID/GID can access those folders.\n\n2. Alternatively, go to Jellyfin Dashboard > Libraries, edit this library, and disable \'Save artwork into media folders\' so Jellyfin stores images in its internal metadata folders.'**
   String get libraryWriteAccessFixSteps;
 
   /// Dismiss button text
@@ -22123,7 +22129,7 @@ abstract class AppLocalizations {
   /// No description provided for @transcodeSubtitleCodecNotSupported.
   ///
   /// In en, this message translates to:
-  /// **'Subtitle format is not supported (requires burning).'**
+  /// **'The subtitle format is not supported and must be burned into the video.'**
   String get transcodeSubtitleCodecNotSupported;
 
   /// No description provided for @transcodeAudioProfileNotSupported.
@@ -22159,7 +22165,7 @@ abstract class AppLocalizations {
   /// No description provided for @transcodeVideoFramerateNotSupported.
   ///
   /// In en, this message translates to:
-  /// **'Video framerate is not supported.'**
+  /// **'The video frame rate is not supported.'**
   String get transcodeVideoFramerateNotSupported;
 
   /// No description provided for @transcodeContainerBitrateExceedsLimit.
@@ -22195,19 +22201,19 @@ abstract class AppLocalizations {
   /// No description provided for @transcodeAudioCodecHintPassthrough.
   ///
   /// In en, this message translates to:
-  /// **'Tip: If your audio receiver or soundbar supports {codec}, enable Audio Passthrough in Audio settings.'**
+  /// **'Tip: If your audio receiver or soundbar supports {codec}, set \'Passthrough\' to Auto or Manual in Playback > Audio.'**
   String transcodeAudioCodecHintPassthrough(String codec);
 
   /// No description provided for @transcodeAudioChannelsExceeded.
   ///
   /// In en, this message translates to:
-  /// **'Audio channel count ({channels}ch) exceeds the player limit.'**
+  /// **'The audio channel count ({channels} channels) exceeds the player limit.'**
   String transcodeAudioChannelsExceeded(int channels);
 
   /// No description provided for @transcodeAudioChannelsHint.
   ///
   /// In en, this message translates to:
-  /// **'Tip: Adjust \'Max Audio Channels\' or multichannel downmixing in Audio settings.'**
+  /// **'Tip: Adjust \'Max Audio Channels\' or \'Downmix to Stereo\' in Playback > Audio.'**
   String get transcodeAudioChannelsHint;
 
   /// No description provided for @transcodeSubtitleBurnInAssDisabled.
@@ -22219,7 +22225,7 @@ abstract class AppLocalizations {
   /// No description provided for @transcodeSubtitleBurnInAssHint.
   ///
   /// In en, this message translates to:
-  /// **'Tip: Enable \'ASS/SSA Direct Play\' in Playback settings to play directly without transcoding.'**
+  /// **'Tip: Enable \'ASS/SSA Direct Play\' in Playback > Subtitles to play directly without transcoding.'**
   String get transcodeSubtitleBurnInAssHint;
 
   /// No description provided for @transcodeSubtitleBurnInPgsDisabled.
@@ -22231,7 +22237,7 @@ abstract class AppLocalizations {
   /// No description provided for @transcodeSubtitleBurnInPgsHint.
   ///
   /// In en, this message translates to:
-  /// **'Tip: Enable \'PGS Direct Play\' in Playback settings to play directly without transcoding.'**
+  /// **'Tip: Enable \'PGS Direct Play\' in Playback > Subtitles to play directly without transcoding.'**
   String get transcodeSubtitleBurnInPgsHint;
 
   /// No description provided for @transcodeSubtitleNotSupportedWithCodec.
@@ -22252,13 +22258,13 @@ abstract class AppLocalizations {
   /// No description provided for @transcodeBitrateHint.
   ///
   /// In en, this message translates to:
-  /// **'Tip: Increase \'Maximum Bitrate\' in Playback settings to allow direct streaming.'**
+  /// **'Tip: Increase \'Max Streaming Bitrate\' in Playback > Quality & Decoding to allow direct streaming.'**
   String get transcodeBitrateHint;
 
   /// No description provided for @transcodeResolutionHint.
   ///
   /// In en, this message translates to:
-  /// **'Tip: Increase \'Maximum Resolution\' in Playback settings to allow direct streaming.'**
+  /// **'Tip: Increase \'Max Resolution\' in Playback > Quality & Decoding to allow direct streaming.'**
   String get transcodeResolutionHint;
 
   /// No description provided for @transcodeVideoRangeNotSupported.
@@ -22276,7 +22282,7 @@ abstract class AppLocalizations {
   /// No description provided for @transcodeDolbyVisionProfile7ElHint.
   ///
   /// In en, this message translates to:
-  /// **'Tip: Enable \'Dolby Vision Profile 7 Direct Play\' in Playback settings if your display supports it.'**
+  /// **'Tip: Enable \'Dolby Vision Profile 7 Direct Play\' in Playback > Quality & Decoding if your display supports it.'**
   String get transcodeDolbyVisionProfile7ElHint;
 
   /// No description provided for @transcodeDolbyVisionFallbackPreferenceTranscode.
@@ -22288,7 +22294,7 @@ abstract class AppLocalizations {
   /// No description provided for @transcodeDolbyVisionFallbackHint.
   ///
   /// In en, this message translates to:
-  /// **'Tip: Set \'Dolby Vision Fallback\' to \'Play as HDR10\' in Playback settings to avoid transcoding.'**
+  /// **'Tip: Set \'Dolby Vision Fallback\' to \'Prefer HDR10 fallback\' in Playback > Quality & Decoding to avoid transcoding.'**
   String get transcodeDolbyVisionFallbackHint;
 
   /// No description provided for @transcodeDisplayReportsNoHdr.
@@ -22576,37 +22582,37 @@ abstract class AppLocalizations {
   /// Label for the IMDb identifier field in the Identify dialog. IMDb is a brand name and is normally left untranslated
   ///
   /// In en, this message translates to:
-  /// **'IMDb Id'**
+  /// **'IMDb ID'**
   String get adminLabelImdbId;
 
   /// Label for the TheMovieDb movie identifier field in the Identify dialog. TheMovieDb is a brand name and is normally left untranslated
   ///
   /// In en, this message translates to:
-  /// **'TheMovieDb Movie Id'**
+  /// **'TMDB Movie ID'**
   String get adminLabelTmdbMovieId;
 
   /// Label for the TheMovieDb collection identifier field in the Identify dialog. TheMovieDb is a brand name and is normally left untranslated
   ///
   /// In en, this message translates to:
-  /// **'TheMovieDb Box Set Id'**
+  /// **'TMDB Collection ID'**
   String get adminLabelTmdbBoxSetId;
 
   /// Label for the TheTVDB collection identifier field in the Identify dialog. TheTVDB is a brand name and is normally left untranslated
   ///
   /// In en, this message translates to:
-  /// **'TheTVDB Box Set Id'**
+  /// **'TheTVDB Collection ID'**
   String get adminLabelTvdbBoxSetId;
 
   /// Label for the numeric TheTVDB identifier field in the Identify dialog. TheTVDB is a brand name and is normally left untranslated
   ///
   /// In en, this message translates to:
-  /// **'TheTVDB Numerical Id'**
+  /// **'TheTVDB Numeric ID'**
   String get adminLabelTvdbId;
 
   /// Label for the TheTVDB slug identifier field in the Identify dialog. TheTVDB is a brand name and is normally left untranslated
   ///
   /// In en, this message translates to:
-  /// **'TheTVDB Slug Movie Id'**
+  /// **'TheTVDB Movie Slug'**
   String get adminLabelTvdbSlug;
 
   /// Checkbox label in the confirmation dialog shown before applying an identified metadata match
@@ -23110,7 +23116,7 @@ abstract class AppLocalizations {
   /// Description for setting to use series thumbnails on Classic details page
   ///
   /// In en, this message translates to:
-  /// **'Replace all thumbnails on Classic details page with series thumbnail'**
+  /// **'Replace all thumbnails on the Classic details page with the series thumbnail'**
   String get detailUseSeriesThumbnailsSubtitle;
 
   /// Setting title to hide media description on home screen
@@ -23164,7 +23170,7 @@ abstract class AppLocalizations {
   /// Heading of the final setup wizard screen
   ///
   /// In en, this message translates to:
-  /// **'You\'re set. Here\'s what else is in here.'**
+  /// **'You\'re all set. Discover what else is available.'**
   String get setupTourQuestion;
 
   /// Heading of the optional audio and subtitle language section on the last setup wizard screen
@@ -23206,7 +23212,7 @@ abstract class AppLocalizations {
   /// What the classic detail screen style gives you
   ///
   /// In en, this message translates to:
-  /// **'Everything centred in one stack.'**
+  /// **'Everything centered in one stack.'**
   String get setupDetailClassicHint;
 
   /// What the modern detail screen style gives you
@@ -23224,7 +23230,7 @@ abstract class AppLocalizations {
   /// What the spotlight detail screen style gives you
   ///
   /// In en, this message translates to:
-  /// **'Hero-first, with pop-up cards for cast and extras.'**
+  /// **'Artwork first, with pop-up cards for cast and extras.'**
   String get setupDetailSpotlightHint;
 
   /// Name of the full-screen stacked detail layout, offered in the setup wizard
@@ -23260,7 +23266,7 @@ abstract class AppLocalizations {
   /// What the Dock bottom bar style gives you
   ///
   /// In en, this message translates to:
-  /// **'A floating pill with labels under every tab.'**
+  /// **'A floating rounded bar with labels below each tab.'**
   String get setupNavbarStyleDockHint;
 
   /// What the Split bottom bar style gives you
@@ -23392,13 +23398,13 @@ abstract class AppLocalizations {
   /// Shown under transcoded options when choosing the quality of an auto-download subscription
   ///
   /// In en, this message translates to:
-  /// **'Transcoded qualities only download while Moonfin is open. Original quality also downloads in the background.'**
+  /// **'Transcoded downloads run only while Moonfin is open. Downloads in Original quality can also run in the background.'**
   String get autoDownloadTranscodedForegroundNote;
 
   /// Shown under a running transcoded download that a subscription queued
   ///
   /// In en, this message translates to:
-  /// **'Transcoded downloads can\'t resume after an interruption and start over from the beginning. Original quality can resume.'**
+  /// **'Interrupted transcoded downloads restart from the beginning. Downloads in Original quality can resume.'**
   String get autoDownloadTranscodedRunningNote;
 
   /// Short note next to a followed series in a transcoded quality
@@ -23608,7 +23614,7 @@ abstract class AppLocalizations {
   /// Last-check summary when Wi-Fi only is on and the device was on mobile data
   ///
   /// In en, this message translates to:
-  /// **'Waiting for WiFi'**
+  /// **'Waiting for Wi-Fi'**
   String get autoDownloadWaitingForWifi;
 
   /// System notification title while a download transfers
@@ -23654,13 +23660,13 @@ abstract class AppLocalizations {
   /// System notification body for one finished download; name is the item label (for example Series S1E1)
   ///
   /// In en, this message translates to:
-  /// **'{name} saved for offline'**
+  /// **'{name} saved for offline use'**
   String downloadNotificationSaved(String name);
 
   /// System notification body for a finished batch of mixed items
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =1{1 item saved for offline} other{{count} items saved for offline}}'**
+  /// **'{count, plural, =1{1 item saved for offline use} other{{count} items saved for offline use}}'**
   String downloadNotificationSavedCount(int count);
 
   /// System notification body for a finished batch that all belongs to one series
@@ -23846,7 +23852,7 @@ abstract class AppLocalizations {
   /// Apple TV settings subtitle for the Top Shelf option
   ///
   /// In en, this message translates to:
-  /// **'What the Apple TV home screen shows above the Moonfin icon when it is selected. This setting stays on this device.'**
+  /// **'Choose what appears above the selected Moonfin icon on the Apple TV home screen. This setting is saved only on this device.'**
   String get topShelfDescription;
 
   /// Top Shelf option that shows a carousel of the newest items from the home screen's Latest rows
@@ -23870,7 +23876,7 @@ abstract class AppLocalizations {
   /// Description for the iPhone setting that keeps video clear of the Dynamic Island
   ///
   /// In en, this message translates to:
-  /// **'In landscape the camera housing covers one edge of the screen. This holds the picture back from it, which only changes anything for video wide enough to reach that far.'**
+  /// **'In landscape orientation, the camera cutout covers part of the screen. Keep the video clear of it. This only affects videos wide enough to reach that area.'**
   String get keepVideoClearOfDynamicIslandDescription;
 
   /// Settings title for choosing how the mobile bottom navigation bar looks
@@ -24196,6 +24202,234 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Controls, seeking, player buttons, and trick play'**
   String get playerSettingsSubtitle;
+
+  /// Localized interface label for mediaSegmentIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Intro'**
+  String get mediaSegmentIntro;
+
+  /// Localized interface label for mediaSegmentOutro.
+  ///
+  /// In en, this message translates to:
+  /// **'Outro'**
+  String get mediaSegmentOutro;
+
+  /// Localized interface label for mediaSegmentPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get mediaSegmentPreview;
+
+  /// Localized interface label for mediaSegmentRecap.
+  ///
+  /// In en, this message translates to:
+  /// **'Recap'**
+  String get mediaSegmentRecap;
+
+  /// Localized interface label for mediaSegmentCommercial.
+  ///
+  /// In en, this message translates to:
+  /// **'Commercial'**
+  String get mediaSegmentCommercial;
+
+  /// Localized interface label for settingsAudioStreamSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio Stream'**
+  String get settingsAudioStreamSection;
+
+  /// Localized interface label for settingsAudioOutputSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio Output'**
+  String get settingsAudioOutputSection;
+
+  /// Localized interface label for settingsPassthroughSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Passthrough Settings'**
+  String get settingsPassthroughSection;
+
+  /// Localized interface label for settingsSyncplayOptionsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'SyncPlay Options'**
+  String get settingsSyncplayOptionsSection;
+
+  /// Localized interface label for settingsDecodingRenderingSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Decoding & Rendering'**
+  String get settingsDecodingRenderingSection;
+
+  /// Localized interface label for settingsSeerrHomeRowsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Seerr Home Page Rows'**
+  String get settingsSeerrHomeRowsSection;
+
+  /// Localized interface label for settingsSavedCustomRowsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved Custom Home Rows'**
+  String get settingsSavedCustomRowsSection;
+
+  /// Localized interface label for sortDateEpisodeAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Episode Added'**
+  String get sortDateEpisodeAdded;
+
+  /// Localized interface label for sortPremiereDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Premiere Date'**
+  String get sortPremiereDate;
+
+  /// Localized interface label for sortRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating'**
+  String get sortRating;
+
+  /// Localized interface label for sortPlayCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Play Count'**
+  String get sortPlayCount;
+
+  /// Localized interface label for sortTrackNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Number'**
+  String get sortTrackNumber;
+
+  /// Localized interface label for sortFoldersFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Folders First'**
+  String get sortFoldersFirst;
+
+  /// Localized interface label for popularity.
+  ///
+  /// In en, this message translates to:
+  /// **'Popularity'**
+  String get popularity;
+
+  /// Localized interface label for seerrStatusReturning.
+  ///
+  /// In en, this message translates to:
+  /// **'Returning'**
+  String get seerrStatusReturning;
+
+  /// Localized interface label for seerrStatusPlanned.
+  ///
+  /// In en, this message translates to:
+  /// **'Planned'**
+  String get seerrStatusPlanned;
+
+  /// Localized interface label for seerrStatusInProduction.
+  ///
+  /// In en, this message translates to:
+  /// **'In Production'**
+  String get seerrStatusInProduction;
+
+  /// Localized interface label for seerrStatusCanceled.
+  ///
+  /// In en, this message translates to:
+  /// **'Canceled'**
+  String get seerrStatusCanceled;
+
+  /// Localized interface label for seerrStatusPilot.
+  ///
+  /// In en, this message translates to:
+  /// **'Pilot'**
+  String get seerrStatusPilot;
+
+  /// Localized interface label for seerrRuntimeUnderHalfHour.
+  ///
+  /// In en, this message translates to:
+  /// **'Under 30m'**
+  String get seerrRuntimeUnderHalfHour;
+
+  /// Localized interface label for seerrRuntimeHalfToFullHour.
+  ///
+  /// In en, this message translates to:
+  /// **'30m to 1h'**
+  String get seerrRuntimeHalfToFullHour;
+
+  /// Localized interface label for seerrRuntimeOneToTwoHours.
+  ///
+  /// In en, this message translates to:
+  /// **'1h to 2h'**
+  String get seerrRuntimeOneToTwoHours;
+
+  /// Localized interface label for seerrRuntimeOverTwoHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Over 2h'**
+  String get seerrRuntimeOverTwoHours;
+
+  /// Localized interface label for seerrReleasedBefore1980.
+  ///
+  /// In en, this message translates to:
+  /// **'Before 1980'**
+  String get seerrReleasedBefore1980;
+
+  /// Localized interface label for libraryFeatureSubtitles.
+  ///
+  /// In en, this message translates to:
+  /// **'With Subtitles'**
+  String get libraryFeatureSubtitles;
+
+  /// Localized interface label for libraryFeatureTrailer.
+  ///
+  /// In en, this message translates to:
+  /// **'With Trailer'**
+  String get libraryFeatureTrailer;
+
+  /// Localized interface label for libraryFeatureExtras.
+  ///
+  /// In en, this message translates to:
+  /// **'With Extras'**
+  String get libraryFeatureExtras;
+
+  /// Localized interface label for libraryFeatureThemeSong.
+  ///
+  /// In en, this message translates to:
+  /// **'With Theme Song'**
+  String get libraryFeatureThemeSong;
+
+  /// Localized interface label for libraryFeatureThemeVideo.
+  ///
+  /// In en, this message translates to:
+  /// **'With Theme Video'**
+  String get libraryFeatureThemeVideo;
+
+  /// Localized interface label for libraryFilterLiked.
+  ///
+  /// In en, this message translates to:
+  /// **'Liked'**
+  String get libraryFilterLiked;
+
+  /// Localized interface label for libraryFilterDisliked.
+  ///
+  /// In en, this message translates to:
+  /// **'Disliked'**
+  String get libraryFilterDisliked;
+
+  /// Localized interface label for libraryStartingWith.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting with {letter}'**
+  String libraryStartingWith(String letter);
+
+  /// Localized interface label for libraryBrowseStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing {filter} from \'{library}\' sorted by {sort}'**
+  String libraryBrowseStatus(String filter, String library, String sort);
 }
 
 class _AppLocalizationsDelegate

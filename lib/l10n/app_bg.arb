@@ -9001,5 +9001,9 @@
     "imdbMostPopularMovies": "IMDb Най-популярни филми",
     "imdbMostPopularTvShows": "IMDb Най-популярни сериали",
     "imdbLowestRatedMovies": "IMDb Най-ниско оценени филми",
-    "imdbTopEnglishMovies": "IMDb Най-високо оценени филми на английски"
+    "imdbTopEnglishMovies": "IMDb Най-високо оценени филми на английски",
+    "noBooksFoundForAuthor": "Няма намерени книги за този автор.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
+    }
 }

@@ -9001,5 +9001,9 @@
     "imdbMostPopularTvShows": "Najbolj priljubljene serije na IMDb",
     "imdbLowestRatedMovies": "Najslabše ocenjeni filmi na IMDb",
     "imdbTopEnglishMovies": "Najbolje ocenjeni angleški filmi na IMDb",
-    "adminGeneralQuickConnect": "Omogoči Quick Connect"
+    "adminGeneralQuickConnect": "Omogoči Quick Connect",
+    "noBooksFoundForAuthor": "Za tega avtorja ni bilo najdenih knjig.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
+    }
 }

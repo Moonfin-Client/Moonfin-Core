@@ -9001,5 +9001,9 @@
     "imdbMostPopularMovies": "IMDb Plej Popularaj Filmoj",
     "imdbMostPopularTvShows": "IMDb Plej Popularaj TV-Serioj",
     "imdbLowestRatedMovies": "IMDb Plej Malalte Taksitaj Filmoj",
-    "imdbTopEnglishMovies": "IMDb Plej Bone Taksitaj Anglaj Filmoj"
+    "imdbTopEnglishMovies": "IMDb Plej Bone Taksitaj Anglaj Filmoj",
+    "noBooksFoundForAuthor": "Neniuj libroj trovitaj por ĉi tiu aŭtoro.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
+    }
 }

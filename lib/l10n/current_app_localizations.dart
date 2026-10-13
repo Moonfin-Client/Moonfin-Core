@@ -1,16 +1,15 @@
 import 'dart:ui';
-
 import 'package:get_it/get_it.dart';
-
 import '../preference/user_preferences.dart';
+import '../util/interface_locale.dart';
 import 'app_localizations.dart';
 
-/// Localizations for code that runs without a [BuildContext]. The language
-/// override wins over the device language, the same way MaterialApp resolves
-/// it, so these strings read in the language the user picked rather than the
-/// one the OS is set to.
+/// Resolve contextless strings using the same language as MaterialApp.
 AppLocalizations currentAppLocalizations() {
-  final locale = _overrideLocale() ?? PlatformDispatcher.instance.locale;
+  final locale = resolveInterfaceLocale(
+    _overrideLocale() ?? PlatformDispatcher.instance.locale,
+    AppLocalizations.supportedLocales,
+  );
   try {
     return lookupAppLocalizations(locale);
   } catch (_) {
@@ -19,20 +18,12 @@ AppLocalizations currentAppLocalizations() {
 }
 
 Locale? _overrideLocale() {
-  final String override;
   try {
-    override = GetIt.instance<UserPreferences>().get(
-      UserPreferences.languageOverride,
+    return interfaceLocaleOverride(
+      GetIt.instance<UserPreferences>().get(UserPreferences.languageOverride),
+      AppLocalizations.supportedLocales,
     );
   } catch (_) {
     return null;
   }
-  if (override == 'system') return null;
-
-  for (final locale in AppLocalizations.supportedLocales) {
-    if (locale.toLanguageTag() == override || locale.toString() == override) {
-      return locale;
-    }
-  }
-  return null;
 }

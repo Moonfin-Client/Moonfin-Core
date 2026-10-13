@@ -9001,5 +9001,9 @@
     "imdbMostPopularTvShows": "Najpopulárnejšie seriály na IMDb",
     "imdbLowestRatedMovies": "Najhoršie hodnotené filmy na IMDb",
     "imdbTopEnglishMovies": "Najlepšie hodnotené anglické filmy na IMDb",
-    "adminGeneralQuickConnect": "Povoliť Quick Connect"
+    "adminGeneralQuickConnect": "Povoliť Quick Connect",
+    "noBooksFoundForAuthor": "Pre tohto autora sa nenašli žiadne knihy.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
+    }
 }

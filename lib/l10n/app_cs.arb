@@ -9178,5 +9178,9 @@
     "keyboardShortcutsTitle": "Klávesové zkratky",
     "@keyboardShortcutsTitle": {
         "description": "Title of the screen and dialog that list every keyboard shortcut"
+    },
+    "noBooksFoundForAuthor": "Pro tohoto autora nebyly nalezeny žádné knihy.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
     }
 }

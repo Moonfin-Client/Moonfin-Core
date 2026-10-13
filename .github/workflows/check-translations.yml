@@ -11,12 +11,14 @@ on:
     paths:
       - 'lib/l10n/*.arb'
       - 'l10n.yaml'
+      - 'scripts/sync_portuguese_locale.py'
   pull_request:
     branches:
       - main
     paths:
       - 'lib/l10n/*.arb'
       - 'l10n.yaml'
+      - 'scripts/sync_portuguese_locale.py'
 
 permissions:
   contents: read
@@ -38,6 +40,7 @@ jobs:
         id: gen
         run: |
           set -o pipefail
+          python3 scripts/sync_portuguese_locale.py
           flutter gen-l10n 2>&1 | tee gen-l10n.log
 
       - name: Annotate broken strings

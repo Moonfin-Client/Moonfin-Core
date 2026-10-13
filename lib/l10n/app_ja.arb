@@ -9011,5 +9011,9 @@
                 "example": "Permission denied"
             }
         }
+    },
+    "noBooksFoundForAuthor": "この著者の書籍は見つかりませんでした。",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
     }
 }

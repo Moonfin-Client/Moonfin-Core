@@ -10077,5 +10077,9 @@
     "settingsSearchHint": "검색 설정",
     "@settingsSearchHint": {
         "description": "Hint text in the settings search field"
+    },
+    "noBooksFoundForAuthor": "이 저자에 대한 도서를 찾을 수 없습니다.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
     }
 }

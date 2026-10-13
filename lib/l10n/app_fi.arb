@@ -13724,5 +13724,9 @@
     "miniPlayerOpenPlayer": "Avaa soitin",
     "@miniPlayerOpenPlayer": {
         "description": "Tooltip label for returning from the video mini player bar to the full player"
+    },
+    "noBooksFoundForAuthor": "Tälle kirjailijalle ei löytynyt kirjoja.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
     }
 }

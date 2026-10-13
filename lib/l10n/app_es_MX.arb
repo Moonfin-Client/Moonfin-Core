@@ -7287,5 +7287,9 @@
     "accountPreferences": "PREFERENCIAS DE LA CUENTA",
     "@accountPreferences": {
         "description": "Section header for account preferences settings"
+    },
+    "noBooksFoundForAuthor": "No se encontraron libros para este autor.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
     }
 }

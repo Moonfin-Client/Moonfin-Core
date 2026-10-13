@@ -9019,5 +9019,9 @@
     "homeRowsPaddingDescription": "Personalizar el espaciado entre filas de inicio",
     "@homeRowsPaddingDescription": {
         "description": "Description for home rows padding setting"
+    },
+    "noBooksFoundForAuthor": "No se encontraron libros para este autor.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
     }
 }

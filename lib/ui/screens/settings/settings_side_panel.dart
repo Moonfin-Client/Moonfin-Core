@@ -46,6 +46,8 @@ import '../../widgets/app_update_dialog.dart';
 import '../../../auth/store/authentication_preferences.dart';
 import '../../../auth/repositories/session_repository.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../util/media_segment_localizer.dart';
+import '../../../util/interface_locale.dart';
 import '../../util/error_message.dart';
 import '../../../playback/audio_capability_profile.dart';
 import '../../../playback/audio_capability_probe.dart';

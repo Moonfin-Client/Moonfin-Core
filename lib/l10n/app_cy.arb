@@ -9001,5 +9001,9 @@
     "imdbMostPopularMovies": "Ffilmiau Mwyaf Poblogaidd IMDb",
     "imdbMostPopularTvShows": "Cyfresi Teledu Mwyaf Poblogaidd IMDb",
     "imdbLowestRatedMovies": "Ffilmiau â'r Sgôr Isaf ar IMDb",
-    "imdbTopEnglishMovies": "Ffilmiau Saesneg â'r Sgôr Uchaf ar IMDb"
+    "imdbTopEnglishMovies": "Ffilmiau Saesneg â'r Sgôr Uchaf ar IMDb",
+    "noBooksFoundForAuthor": "Ni chafwyd hyd i lyfrau ar gyfer yr awdur hwn.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
+    }
 }

@@ -9001,5 +9001,9 @@
     "imdbMostPopularMovies": "IMDb populārākās filmas",
     "imdbMostPopularTvShows": "IMDb populārākie seriāli",
     "imdbLowestRatedMovies": "IMDb zemāk novērtētās filmas",
-    "imdbTopEnglishMovies": "IMDb augstāk novērtētās filmas angļu valodā"
+    "imdbTopEnglishMovies": "IMDb augstāk novērtētās filmas angļu valodā",
+    "noBooksFoundForAuthor": "Šim autoram nav atrasta neviena grāmata.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
+    }
 }

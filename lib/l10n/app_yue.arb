@@ -9001,5 +9001,9 @@
     "imdbMostPopularMovies": "IMDb 最受歡迎電影",
     "imdbMostPopularTvShows": "IMDb 最受歡迎電視劇",
     "imdbLowestRatedMovies": "IMDb 評分最低電影",
-    "imdbTopEnglishMovies": "IMDb 評分最高英語電影"
+    "imdbTopEnglishMovies": "IMDb 評分最高英語電影",
+    "noBooksFoundForAuthor": "沒有找到該作者的書籍。",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
+    }
 }

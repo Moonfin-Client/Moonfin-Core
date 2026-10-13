@@ -10729,5 +10729,9 @@
                 "type": "String"
             }
         }
+    },
+    "noBooksFoundForAuthor": "未找到该作者的图书。",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
     }
 }

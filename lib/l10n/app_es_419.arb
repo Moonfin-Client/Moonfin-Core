@@ -7449,5 +7449,9 @@
     "@recommendationsApplyParentalRatingCap": {
         "description": "Label for the toggle that controls whether similar suggestions are capped by target media parental rating"
     },
-    "trickplay": "Trickplay"
+    "trickplay": "Trickplay",
+    "noBooksFoundForAuthor": "No se encontraron libros para este autor.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
+    }
 }

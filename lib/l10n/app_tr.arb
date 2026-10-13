@@ -11401,5 +11401,9 @@
                 "type": "int"
             }
         }
+    },
+    "noBooksFoundForAuthor": "Bu yazara ait kitap bulunamadı.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
     }
 }

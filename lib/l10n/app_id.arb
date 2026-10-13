@@ -9001,5 +9001,9 @@
     "imdbMostPopularMovies": "Film Terpopuler IMDb",
     "imdbMostPopularTvShows": "Serial TV Terpopuler IMDb",
     "imdbLowestRatedMovies": "Film dengan Rating Terendah IMDb",
-    "imdbTopEnglishMovies": "Film Berbahasa Inggris dengan Rating Tertinggi IMDb"
+    "imdbTopEnglishMovies": "Film Berbahasa Inggris dengan Rating Tertinggi IMDb",
+    "noBooksFoundForAuthor": "Tidak ada buku yang ditemukan untuk penulis ini.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
+    }
 }

@@ -9001,5 +9001,9 @@
     "imdbMostPopularMovies": "IMDb-ийн хамгийн алдартай кино",
     "imdbMostPopularTvShows": "IMDb-ийн хамгийн алдартай ТВ цуврал",
     "imdbLowestRatedMovies": "IMDb-ийн хамгийн бага үнэлгээтэй кино",
-    "imdbTopEnglishMovies": "IMDb-ийн шилдэг үнэлгээтэй англи кино"
+    "imdbTopEnglishMovies": "IMDb-ийн шилдэг үнэлгээтэй англи кино",
+    "noBooksFoundForAuthor": "Энэ зохиолчийн ном олдсонгүй.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
+    }
 }

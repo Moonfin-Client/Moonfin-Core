@@ -9260,5 +9260,9 @@
     "hdrOutputFailed": "غير نشط — لم يتمكن من البدء، جاري استخدام المسار الافتراضي",
     "@hdrOutputFailed": {
         "description": "Stream info value when the native HDR window could not be created"
+    },
+    "noBooksFoundForAuthor": "لم يتم العثور على كتب لهذا المؤلف.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
     }
 }

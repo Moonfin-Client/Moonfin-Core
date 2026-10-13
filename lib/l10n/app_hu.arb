@@ -9516,5 +9516,9 @@
     "setupDetailNouveauHint": "Teljesképernyő, fülek helyett rendezett szekciókkal.",
     "@setupDetailNouveauHint": {
         "description": "What the nouveau detail screen style gives you"
+    },
+    "noBooksFoundForAuthor": "Nem található könyv ehhez a szerzőhöz.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
     }
 }

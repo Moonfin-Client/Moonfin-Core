@@ -10750,5 +10750,9 @@
     "savedMediaNoDownloads": "Noch nichts gespeichert",
     "@savedMediaNoDownloads": {
         "description": "Empty state title when no downloads are on the device"
+    },
+    "noBooksFoundForAuthor": "Keine Bücher von diesem Autor gefunden.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
     }
 }

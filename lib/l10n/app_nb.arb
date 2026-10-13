@@ -9271,5 +9271,9 @@
     "searchingSubtitles": "Søkker etter undertekster…",
     "@searchingSubtitles": {
         "description": "Shown while a remote subtitle search is running"
+    },
+    "noBooksFoundForAuthor": "Fant ingen bøker for denne forfatteren.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
     }
 }

@@ -9001,5 +9001,9 @@
     "imdbMostPopularMovies": "ภาพยนตร์ยอดนิยมที่สุดของ IMDb",
     "imdbMostPopularTvShows": "รายการทีวียอดนิยมที่สุดของ IMDb",
     "imdbLowestRatedMovies": "ภาพยนตร์คะแนนต่ำสุดของ IMDb",
-    "imdbTopEnglishMovies": "ภาพยนตร์ภาษาอังกฤษคะแนนสูงสุดของ IMDb"
+    "imdbTopEnglishMovies": "ภาพยนตร์ภาษาอังกฤษคะแนนสูงสุดของ IMDb",
+    "noBooksFoundForAuthor": "ไม่พบหนังสือสำหรับผู้แต่งคนนี้",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
+    }
 }

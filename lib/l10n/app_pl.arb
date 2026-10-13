@@ -13712,5 +13712,9 @@
     "playerSettingsSubtitle": "Sterowanie, przewijanie, przyciski odtwarzacza i podgląd podczas przewijania",
     "@playerSettingsSubtitle": {
         "description": "Subtitle for the Player entry on the Playback settings screen"
+    },
+    "noBooksFoundForAuthor": "Nie znaleziono książek tego autora.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
     }
 }

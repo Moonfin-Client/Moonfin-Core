@@ -7223,5 +7223,9 @@
     "autoHdrSwitchingDescription": "Automatically enable HDR for HDR video playback and restore display mode on exit.",
     "whenFullscreen": "When fullscreen",
     "transcodingLimits": "Transcoding Limits",
-    "settingsSupportMoonfinSubtitle": "Donate a coffee to the developer"
+    "settingsSupportMoonfinSubtitle": "Donate a coffee to the developer",
+    "noBooksFoundForAuthor": "沒有找到該作者的書籍。",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
+    }
 }

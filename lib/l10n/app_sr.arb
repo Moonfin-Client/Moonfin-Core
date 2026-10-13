@@ -13403,5 +13403,9 @@
     "navYou": "Ви",
     "@navYou": {
         "description": "Bottom bar tab that opens the user's own menu with their profile, extra destinations and settings"
+    },
+    "noBooksFoundForAuthor": "Нису пронађене књиге овог аутора.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
     }
 }

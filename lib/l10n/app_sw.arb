@@ -9001,5 +9001,9 @@
     "imdbMostPopularMovies": "Filamu Maarufu Zaidi za IMDb",
     "imdbMostPopularTvShows": "Vipindi Maarufu Zaidi vya TV vya IMDb",
     "imdbLowestRatedMovies": "Filamu Zenye Ukadiriaji wa Chini Zaidi za IMDb",
-    "imdbTopEnglishMovies": "Filamu Bora za Kiingereza za IMDb"
+    "imdbTopEnglishMovies": "Filamu Bora za Kiingereza za IMDb",
+    "noBooksFoundForAuthor": "Hakuna vitabu vilivyopatikana vya mwandishi huyu.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
+    }
 }

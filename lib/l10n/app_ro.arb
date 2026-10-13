@@ -12576,5 +12576,9 @@
     "uiScaleGreatGrandparents": "Străbunici",
     "@uiScaleGreatGrandparents": {
         "description": "UI scaling option above Grandparents"
+    },
+    "noBooksFoundForAuthor": "Nu s-au găsit cărți pentru acest autor.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
     }
 }

@@ -29,7 +29,7 @@ class _GeneralScreenState extends State<_GeneralScreen> {
     final Map<String, String> langOptions = {
       'system': l10n.systemLanguageDefault,
     };
-    final sortedLocales = List<Locale>.from(AppLocalizations.supportedLocales);
+    final sortedLocales = AppLocalizations.supportedLocales.where(isVisibleInterfaceLocale).toList();
     sortedLocales.sort((a, b) {
       final nameA = kLocaleDisplayNames[a.toLanguageTag()] ?? a.toLanguageTag();
       final nameB = kLocaleDisplayNames[b.toLanguageTag()] ?? b.toLanguageTag();

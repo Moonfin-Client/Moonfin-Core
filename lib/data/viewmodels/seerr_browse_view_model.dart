@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import '../../l10n/current_app_localizations.dart';
 
 import '../repositories/seerr_repository.dart';
 import '../services/seerr/seerr_api_models.dart';
@@ -8,17 +9,27 @@ enum SeerrBrowseFilter { all, available, requested }
 /// The six states TMDB files a series under, sent to seerr pipe joined the
 /// way its own filter panel does.
 enum SeerrTvStatus {
-  returningSeries(0, 'Returning'),
-  planned(1, 'Planned'),
-  inProduction(2, 'In Production'),
-  ended(3, 'Ended'),
-  canceled(4, 'Canceled'),
-  pilot(5, 'Pilot');
+  returningSeries(0),
+  planned(1),
+  inProduction(2),
+  ended(3),
+  canceled(4),
+  pilot(5);
 
-  const SeerrTvStatus(this.apiValue, this.displayName);
+  const SeerrTvStatus(this.apiValue);
 
   final int apiValue;
-  final String displayName;
+  String get displayName {
+    final l10n = currentAppLocalizations();
+    return switch (this) {
+      returningSeries => l10n.seerrStatusReturning,
+      planned => l10n.seerrStatusPlanned,
+      inProduction => l10n.seerrStatusInProduction,
+      ended => l10n.ended,
+      canceled => l10n.seerrStatusCanceled,
+      pilot => l10n.seerrStatusPilot,
+    };
+  }
 }
 
 /// Score floor choices standing in for seerr's rating slider, since a slider
@@ -35,7 +46,7 @@ enum SeerrMinRating {
 
   final int? value;
 
-  String get displayName => this == any ? 'Any' : '$value+';
+  String get displayName => this == any ? currentAppLocalizations().any : '$value+';
 }
 
 /// Vote count floors, standing in for seerr's vote count slider.
@@ -51,22 +62,31 @@ enum SeerrMinVotes {
 
   final int? value;
 
-  String get displayName => this == any ? 'Any' : '$value+';
+  String get displayName => this == any ? currentAppLocalizations().any : '$value+';
 }
 
 /// Runtime windows standing in for seerr's runtime slider, in minutes.
 enum SeerrRuntimeFilter {
-  any(null, null, 'Any'),
-  underHalfHour(null, 30, 'Under 30m'),
-  halfToFullHour(30, 60, '30m to 1h'),
-  oneToTwoHours(60, 120, '1h to 2h'),
-  overTwoHours(120, null, 'Over 2h');
+  any(null, null),
+  underHalfHour(null, 30),
+  halfToFullHour(30, 60),
+  oneToTwoHours(60, 120),
+  overTwoHours(120, null);
 
-  const SeerrRuntimeFilter(this.gte, this.lte, this.displayName);
+  const SeerrRuntimeFilter(this.gte, this.lte);
 
   final int? gte;
   final int? lte;
-  final String displayName;
+  String get displayName {
+    final l10n = currentAppLocalizations();
+    return switch (this) {
+      any => l10n.any,
+      underHalfHour => l10n.seerrRuntimeUnderHalfHour,
+      halfToFullHour => l10n.seerrRuntimeHalfToFullHour,
+      oneToTwoHours => l10n.seerrRuntimeOneToTwoHours,
+      overTwoHours => l10n.seerrRuntimeOverTwoHours,
+    };
+  }
 }
 
 /// Release windows standing in for seerr's date pickers. Each maps to the
@@ -80,20 +100,36 @@ enum SeerrReleaseWindow {
   eighties(1980, 1989, '1980s'),
   older(null, 1979, 'Before 1980');
 
-  const SeerrReleaseWindow(this.fromYear, this.toYear, this.displayName);
+  const SeerrReleaseWindow(this.fromYear, this.toYear, this._label);
 
   final int? fromYear;
   final int? toYear;
-  final String displayName;
+  final String _label;
+  String get displayName => switch (this) {
+    any => currentAppLocalizations().any,
+    older => currentAppLocalizations().seerrReleasedBefore1980,
+    _ => _label,
+  };
 
   String? get dateGte => fromYear == null ? null : '$fromYear-01-01';
   String? get dateLte => toYear == null ? null : '$toYear-12-31';
 }
 
 class SeerrSortOption {
-  final String label;
+  final String _fallbackLabel;
   final String value;
-  const SeerrSortOption(this.label, this.value);
+  const SeerrSortOption(this._fallbackLabel, this.value);
+  String get label {
+    final l10n = currentAppLocalizations();
+    return switch (value.split('.').first) {
+      'popularity' => l10n.popularity,
+      'vote_average' => l10n.sortRating,
+      'first_air_date' || 'primary_release_date' => l10n.releaseDateLabel,
+      'name' || 'original_title' => l10n.adminMetadataFieldTitle,
+      'revenue' => l10n.revenueLabel,
+      _ => _fallbackLabel,
+    };
+  }
 }
 
 List<SeerrSortOption> getSortOptionsFor(String mediaType) {

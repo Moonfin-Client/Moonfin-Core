@@ -12463,5 +12463,9 @@
     "keepVideoClearOfDynamicIslandDescription": "In landscape the camera housing covers one edge of the screen. This holds the picture back from it, which only changes anything for video wide enough to reach that far.",
     "@keepVideoClearOfDynamicIslandDescription": {
         "description": "Description for the iPhone setting that keeps video clear of the Dynamic Island"
+    },
+    "noBooksFoundForAuthor": "No books found for this author.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
     }
 }

@@ -9001,5 +9001,9 @@
     "imdbMostPopularMovies": "محبوب‌ترین فیلم‌های IMDb",
     "imdbMostPopularTvShows": "محبوب‌ترین سریال‌های IMDb",
     "imdbLowestRatedMovies": "کم‌امتیازترین فیلم‌های IMDb",
-    "imdbTopEnglishMovies": "برترین فیلم‌های انگلیسی‌زبان IMDb"
+    "imdbTopEnglishMovies": "برترین فیلم‌های انگلیسی‌زبان IMDb",
+    "noBooksFoundForAuthor": "هیچ کتابی برای این نویسنده یافت نشد.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
+    }
 }

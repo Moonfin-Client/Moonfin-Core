@@ -9017,5 +9017,9 @@
     "oledModeVivid": "Levende",
     "@oledModeVivid": {
         "description": "OLED Mode level that uses pure black surfaces and the strongest artwork enrichment"
+    },
+    "noBooksFoundForAuthor": "Ingen bøger fundet for denne forfatter.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
     }
 }

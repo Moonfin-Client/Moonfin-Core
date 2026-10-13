@@ -9009,5 +9009,9 @@
     "oledModeSubtitle": "Перевод: Углубляет чёрный цвет и делает изображение насыщеннее. Лучше всего работает на OLED-дисплеях.",
     "@oledModeSubtitle": {
         "description": "Explanation under the OLED Mode setting"
+    },
+    "noBooksFoundForAuthor": "Книг этого автора не найдено.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
     }
 }

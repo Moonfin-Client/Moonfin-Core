@@ -9001,5 +9001,9 @@
     "imdbMostPopularMovies": "IMDb Найпопулярніші фільми",
     "imdbMostPopularTvShows": "IMDb Найпопулярніші серіали",
     "imdbLowestRatedMovies": "IMDb Фільми з найнижчим рейтингом",
-    "imdbTopEnglishMovies": "IMDb Найкращі англомовні фільми"
+    "imdbTopEnglishMovies": "IMDb Найкращі англомовні фільми",
+    "noBooksFoundForAuthor": "Книг цього автора не знайдено.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
+    }
 }

@@ -38,7 +38,7 @@ void main() {
 
       expect(item.description, contains('TRUEHD'));
       expect(item.hint, isNotNull);
-      expect(item.hint, contains('Audio Passthrough'));
+      expect(item.hint, contains("'Passthrough' to Auto or Manual in Playback > Audio"));
       expect(item.hint, contains('TRUEHD'));
     });
 
@@ -65,7 +65,7 @@ void main() {
         prefs,
       );
 
-      expect(item.description, contains('8ch'));
+      expect(item.description, contains('8 channels'));
       expect(item.hint, equals(l10n.transcodeAudioChannelsHint));
     });
 

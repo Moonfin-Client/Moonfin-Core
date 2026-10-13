@@ -9001,5 +9001,9 @@
     "imdbMostPopularMovies": "IMDb ഏറ്റവും ജനപ്രിയ സിനിമകൾ",
     "imdbMostPopularTvShows": "IMDb ഏറ്റവും ജനപ്രിയ ടിവി ഷോകൾ",
     "imdbLowestRatedMovies": "IMDb ഏറ്റവും കുറഞ്ഞ റേറ്റിംഗുള്ള സിനിമകൾ",
-    "imdbTopEnglishMovies": "IMDb ഏറ്റവും ഉയർന്ന റേറ്റിംഗുള്ള ഇംഗ്ലീഷ് സിനിമകൾ"
+    "imdbTopEnglishMovies": "IMDb ഏറ്റവും ഉയർന്ന റേറ്റിംഗുള്ള ഇംഗ്ലീഷ് സിനിമകൾ",
+    "noBooksFoundForAuthor": "ഈ രചയിതാവിനായി പുസ്‌തകങ്ങളൊന്നും കണ്ടെത്തിയില്ല.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
+    }
 }

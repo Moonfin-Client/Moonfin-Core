@@ -13720,5 +13720,9 @@
     "miniPlayerOpenPlayer": "Obre el reproductor",
     "@miniPlayerOpenPlayer": {
         "description": "Tooltip label for returning from the video mini player bar to the full player"
+    },
+    "noBooksFoundForAuthor": "No s'han trobat llibres per a aquest autor.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
     }
 }

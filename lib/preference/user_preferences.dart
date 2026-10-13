@@ -12,6 +12,7 @@ import '../playback/audio_capability_profile.dart';
 import '../util/device_performance.dart';
 import '../util/idiom/app_ui_idiom.dart';
 import '../util/language_matching.dart';
+import '../util/interface_locale.dart';
 import '../util/platform_detection.dart';
 import 'home_section_config.dart';
 import 'preference_constants.dart';
@@ -113,6 +114,7 @@ class UserPreferences extends ChangeNotifier {
 
   UserPreferences(this._store) {
     _adoptNewlyScopedPreferences();
+    _migrateInterfaceLanguagePreferences();
     _repairMediaBarContentType();
     _migrateDefaultAudioLanguagePreference();
     _migrateSeerrPreferenceKeys();
@@ -120,6 +122,17 @@ class UserPreferences extends ChangeNotifier {
     _enforceMediaQueuingAlwaysOn();
     _seedClockFormatFromSystem();
     _migrateScreensaverPreferences();
+  }
+
+  // Migrate saved UI language tags in every account scope, including inactive ones.
+  void _migrateInterfaceLanguagePreferences() {
+    for (final key in _store.keys.toList()) {
+      if (key != languageOverride.key && !key.startsWith('${languageOverride.key}_')) continue;
+      final value = _store.getString(key);
+      if (value == null) continue;
+      final normalized = normalizeInterfaceLanguageTag(value);
+      if (value != normalized) _store.setString(key, normalized);
+    }
   }
 
   // Carry over the pre-rename jellyseerr* preference keys to their seerr* names.
@@ -719,15 +732,21 @@ class UserPreferences extends ChangeNotifier {
     if (_isScopedPreference(pref)) {
       final scoped = _scopedPreference(pref);
       if (scoped != null && _store.containsKey(scoped.key)) {
-        return _store.get(scoped);
+        return _normalizeInterfaceLanguagePreference(pref, _store.get(scoped));
       }
-      return _store.get(pref);
+      return _normalizeInterfaceLanguagePreference(pref, _store.get(pref));
     }
 
-    return _store.get(pref);
+    return _normalizeInterfaceLanguagePreference(pref, _store.get(pref));
   }
 
+  T _normalizeInterfaceLanguagePreference<T>(Preference<T> pref, T value) =>
+      (pref.key == languageOverride.key || pref.key.startsWith('${languageOverride.key}_'))
+          ? normalizeInterfaceLanguageTag(value as String) as T
+          : value;
+
   Future<void> set<T>(Preference<T> pref, T value) async {
+    value = _normalizeInterfaceLanguagePreference(pref, value);
     if (pref.key == subtitleMode.key) {
       final prevMode = get(subtitleMode);
       final newMode = value as SubtitleMode;

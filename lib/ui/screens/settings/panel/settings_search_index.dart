@@ -1622,7 +1622,7 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
     for (final type in configurableMediaSegmentTypes)
       automation.leaf(
         'media_segment_actions_${type.name}',
-        l10n.settingsMediaSegmentTypeAction(type.displayName),
+        l10n.settingsMediaSegmentTypeAction(localizedMediaSegmentName(type, l10n)),
         keywords: [
           'skip',
           'segments',

@@ -54,7 +54,7 @@ class _QualityDecodingScreen extends StatelessWidget {
             ],
           ),
 
-          const _SectionHeader('Decoding & Rendering'),
+          _SectionHeader(l10n.settingsDecodingRenderingSection),
           adaptiveListSection(
             children: [
               if (PlatformDetection.isAndroid)

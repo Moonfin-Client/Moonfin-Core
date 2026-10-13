@@ -96,7 +96,7 @@ class _AutomationQueueScreenState extends State<_AutomationQueueScreen> {
                     'segmentAction_${type.name}_$mediaSegmentActions',
                   ),
                   preference: UserPreferences.mediaSegmentActions,
-                  title: l10n.settingsMediaSegmentTypeAction(type.displayName),
+                  title: l10n.settingsMediaSegmentTypeAction(localizedMediaSegmentName(type, l10n)),
                   icon: Icons.content_cut,
                   options: _segmentActionOptions(
                     l10n,

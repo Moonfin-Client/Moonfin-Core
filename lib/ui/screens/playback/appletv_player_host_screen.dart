@@ -1,3 +1,6 @@
+import '../../../l10n/current_app_localizations.dart';
+import '../../util/media_segment_localizer.dart';
+import '../../../data/models/media_segment.dart';
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
@@ -1823,12 +1826,12 @@ class _HostPromptCommands implements AppleTvPromptCommands {
     required int segmentStartMs,
     required int segmentEndMs,
   }) {
-    var label = 'Skip $segmentDisplayName';
-    if (_host.mounted) {
-      label = AppLocalizations.of(_host.context).skipSegment(
-        segmentDisplayName,
-      );
-    }
+    final l10n = _host.mounted
+        ? AppLocalizations.of(_host.context)
+        : currentAppLocalizations();
+    final label = l10n.skipSegment(localizedMediaSegmentName(
+      MediaSegmentType.fromServerString(segmentDisplayName), l10n,
+    ));
     return _host._backend?.showSkipSegment(
           label,
           countdownStyle: countdownStyle,

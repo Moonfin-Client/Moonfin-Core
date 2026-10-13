@@ -1,3 +1,4 @@
+import '../../util/media_segment_localizer.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -204,7 +205,7 @@ class _SkipSegmentOverlayState extends State<SkipSegmentOverlay> {
                               const SizedBox(width: 9),
                               Text(
                                 l10n.skipSegment(
-                                  widget.segment.type.displayName,
+                                  localizedMediaSegmentName(widget.segment.type, l10n),
                                 ),
                                 style: TextStyle(
                                   color: AppColorScheme.onSurface,

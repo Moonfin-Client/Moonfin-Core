@@ -70,6 +70,7 @@ import 'util/focus/key_event_utils.dart';
 import 'util/focus/gamepad/gamepad_navigation_scope.dart';
 import 'util/focus/gamepad/gamepad_key_synthesizer.dart';
 import 'util/focus/open_popup.dart';
+import 'util/interface_locale.dart';
 import 'package:custom_tv_text_field/custom_tv_text_field.dart';
 
 class MoonfinApp extends StatefulWidget {
@@ -201,18 +202,10 @@ class _MoonfinAppState extends State<MoonfinApp> {
     }
   }
 
-  Locale? _resolveLocale() {
-    final override = _prefs.get(UserPreferences.languageOverride);
-    if (override == 'system') {
-      return null;
-    }
-    for (final locale in AppLocalizations.supportedLocales) {
-      if (locale.toLanguageTag() == override || locale.toString() == override) {
-        return locale;
-      }
-    }
-    return null;
-  }
+  Locale? _resolveLocale() => interfaceLocaleOverride(
+    _prefs.get(UserPreferences.languageOverride),
+    AppLocalizations.supportedLocales,
+  );
 
   @override
   void dispose() {
@@ -243,21 +236,7 @@ class _MoonfinAppState extends State<MoonfinApp> {
               localizationsDelegates: AppLocalizations.localizationsDelegates,
               supportedLocales: AppLocalizations.supportedLocales,
               locale: _lastResolvedLocale,
-              localeResolutionCallback: (locale, supportedLocales) {
-                // Prefer exact match (language + country/script)
-                for (final supported in supportedLocales) {
-                  if (supported == locale) {
-                    return supported;
-                  }
-                }
-                // Fall back to language-only match
-                for (final supported in supportedLocales) {
-                  if (supported.languageCode == locale?.languageCode) {
-                    return supported;
-                  }
-                }
-                return const Locale('en');
-              },
+              localeResolutionCallback: resolveInterfaceLocale,
               builder: (context, child) {
                 var path =
                     appRouter.routerDelegate.currentConfiguration.uri.path;

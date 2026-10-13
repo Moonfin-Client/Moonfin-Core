@@ -9001,5 +9001,9 @@
     "imdbMostPopularMovies": "IMDb అత్యంత జనాదరణ పొందిన సినిమాలు",
     "imdbMostPopularTvShows": "IMDb అత్యంత జనాదరణ పొందిన TV షోలు",
     "imdbLowestRatedMovies": "IMDb అత్యల్ప రేటింగ్ సినిమాలు",
-    "imdbTopEnglishMovies": "IMDb టాప్ రేటెడ్ ఇంగ్లీష్ సినిమాలు"
+    "imdbTopEnglishMovies": "IMDb టాప్ రేటెడ్ ఇంగ్లీష్ సినిమాలు",
+    "noBooksFoundForAuthor": "ఈ రచయిత కోసం పుస్తకాలు ఏవీ కనుగొనబడలేదు.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
+    }
 }

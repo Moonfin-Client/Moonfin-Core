@@ -1403,6 +1403,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get noBiographyAvailable => 'Brak biografii tego autora.';
 
   @override
+  String get noBooksFoundForAuthor => 'Nie znaleziono książek tego autora.';
+
+  @override
   String get unableToLoadAuthorDetails =>
       'Nie można teraz wczytać danych autora.';
 
@@ -14192,4 +14195,122 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String get playerSettingsSubtitle =>
       'Sterowanie, przewijanie, przyciski odtwarzacza i podgląd podczas przewijania';
+
+  @override
+  String get mediaSegmentIntro => 'Intro';
+
+  @override
+  String get mediaSegmentOutro => 'Outro';
+
+  @override
+  String get mediaSegmentPreview => 'Preview';
+
+  @override
+  String get mediaSegmentRecap => 'Recap';
+
+  @override
+  String get mediaSegmentCommercial => 'Commercial';
+
+  @override
+  String get settingsAudioStreamSection => 'Audio Stream';
+
+  @override
+  String get settingsAudioOutputSection => 'Audio Output';
+
+  @override
+  String get settingsPassthroughSection => 'Passthrough Settings';
+
+  @override
+  String get settingsSyncplayOptionsSection => 'SyncPlay Options';
+
+  @override
+  String get settingsDecodingRenderingSection => 'Decoding & Rendering';
+
+  @override
+  String get settingsSeerrHomeRowsSection => 'Seerr Home Page Rows';
+
+  @override
+  String get settingsSavedCustomRowsSection => 'Saved Custom Home Rows';
+
+  @override
+  String get sortDateEpisodeAdded => 'Last Episode Added';
+
+  @override
+  String get sortPremiereDate => 'Premiere Date';
+
+  @override
+  String get sortRating => 'Rating';
+
+  @override
+  String get sortPlayCount => 'Play Count';
+
+  @override
+  String get sortTrackNumber => 'Number';
+
+  @override
+  String get sortFoldersFirst => 'Folders First';
+
+  @override
+  String get popularity => 'Popularity';
+
+  @override
+  String get seerrStatusReturning => 'Returning';
+
+  @override
+  String get seerrStatusPlanned => 'Planned';
+
+  @override
+  String get seerrStatusInProduction => 'In Production';
+
+  @override
+  String get seerrStatusCanceled => 'Canceled';
+
+  @override
+  String get seerrStatusPilot => 'Pilot';
+
+  @override
+  String get seerrRuntimeUnderHalfHour => 'Under 30m';
+
+  @override
+  String get seerrRuntimeHalfToFullHour => '30m to 1h';
+
+  @override
+  String get seerrRuntimeOneToTwoHours => '1h to 2h';
+
+  @override
+  String get seerrRuntimeOverTwoHours => 'Over 2h';
+
+  @override
+  String get seerrReleasedBefore1980 => 'Before 1980';
+
+  @override
+  String get libraryFeatureSubtitles => 'With Subtitles';
+
+  @override
+  String get libraryFeatureTrailer => 'With Trailer';
+
+  @override
+  String get libraryFeatureExtras => 'With Extras';
+
+  @override
+  String get libraryFeatureThemeSong => 'With Theme Song';
+
+  @override
+  String get libraryFeatureThemeVideo => 'With Theme Video';
+
+  @override
+  String get libraryFilterLiked => 'Liked';
+
+  @override
+  String get libraryFilterDisliked => 'Disliked';
+
+  @override
+  String libraryStartingWith(String letter) {
+    return 'Starting with $letter';
+  }
+
+  @override
+  String libraryBrowseStatus(String filter, String library, String sort) {
+    return 'Showing $filter from \'$library\' sorted by $sort';
+  }
 }

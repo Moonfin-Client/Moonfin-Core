@@ -4839,7 +4839,7 @@ class _BookAuthorDetailScreenState extends State<_BookAuthorDetailScreen> {
                     const SizedBox(height: 8),
                     if (data.books.isEmpty)
                       Text(
-                        AppLocalizations.of(context).noBooksFound,
+                        AppLocalizations.of(context).noBooksFoundForAuthor,
                         style: const TextStyle(
                           color: Color(0xFFD7E8F6),
                           fontSize: 14,

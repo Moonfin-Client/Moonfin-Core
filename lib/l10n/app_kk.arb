@@ -9001,5 +9001,9 @@
     "imdbMostPopularMovies": "IMDb ең танымал фильмдер",
     "imdbMostPopularTvShows": "IMDb ең танымал сериалдар",
     "imdbLowestRatedMovies": "IMDb ең төмен бағаланған фильмдер",
-    "imdbTopEnglishMovies": "IMDb ең жоғары бағаланған ағылшын фильмдері"
+    "imdbTopEnglishMovies": "IMDb ең жоғары бағаланған ағылшын фильмдері",
+    "noBooksFoundForAuthor": "Бұл авторға арналған кітаптар табылмады.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
+    }
 }

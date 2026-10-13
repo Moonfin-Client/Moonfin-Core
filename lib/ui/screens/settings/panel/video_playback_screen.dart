@@ -11,7 +11,7 @@ class _VideoPlaybackScreen extends StatelessWidget {
       appBar: buildSettingsAppBar(context, Text(l10n.player)),
       body: ListView(
         children: [
-          const _SectionHeader('Media Player Behavior'),
+          _SectionHeader(l10n.mediaPlayerBehavior),
           adaptiveListSection(
             children: [
               SwitchPreferenceTile(

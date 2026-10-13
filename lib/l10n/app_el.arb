@@ -9227,5 +9227,9 @@
     "adminBackToSearch": "Επιστροφή στα Κριτήρια Αναζήτησης",
     "@adminBackToSearch": {
         "description": "Tooltip on the button that returns from the Identify results list to the search form"
+    },
+    "noBooksFoundForAuthor": "Δεν βρέθηκαν βιβλία για αυτόν τον συγγραφέα.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
     }
 }

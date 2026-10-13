@@ -9001,5 +9001,9 @@
     "imdbMostPopularMovies": "הסרטים הפופולריים ביותר ב-IMDb",
     "imdbMostPopularTvShows": "סדרות הטלוויזיה הפופולריות ביותר ב-IMDb",
     "imdbLowestRatedMovies": "הסרטים בעלי הדירוג הנמוך ביותר ב-IMDb",
-    "imdbTopEnglishMovies": "הסרטים באנגלית עם הדירוג הגבוה ביותר ב-IMDb"
+    "imdbTopEnglishMovies": "הסרטים באנגלית עם הדירוג הגבוה ביותר ב-IMDb",
+    "noBooksFoundForAuthor": "לא נמצאו ספרים עבור מחבר זה.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
+    }
 }

@@ -9001,5 +9001,9 @@
     "imdbMostPopularMovies": "IMDb වඩාත් ජනප්‍රිය චිත්‍රපට",
     "imdbMostPopularTvShows": "IMDb වඩාත් ජනප්‍රිය රූපවාහිනී වැඩසටහන්",
     "imdbLowestRatedMovies": "IMDb අඩුම ශ්‍රේණිගත චිත්‍රපට",
-    "imdbTopEnglishMovies": "IMDb හොඳම ශ්‍රේණිගත ඉංග්‍රීසි චිත්‍රපට"
+    "imdbTopEnglishMovies": "IMDb හොඳම ශ්‍රේණිගත ඉංග්‍රීසි චිත්‍රපට",
+    "noBooksFoundForAuthor": "මෙම කතුවරයා සඳහා පොත් කිසිවක් හමු නොවීය.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
+    }
 }

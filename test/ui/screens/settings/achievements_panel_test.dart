@@ -173,7 +173,7 @@ void main() {
       expect(find.text('A fresh day'), findsOneWidget);
       expect(find.text('Watch something'), findsNothing);
       expect(
-        find.text('Used today, comes back at midnight UTC'),
+        find.text('Used today; available again at midnight UTC'),
         findsOneWidget,
       );
     });
@@ -204,7 +204,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(
-        find.text('Used today, comes back at midnight UTC'),
+        find.text('Used today; available again at midnight UTC'),
         findsOneWidget,
       );
       expect(find.text('Swap this set for a different one'), findsNothing);
@@ -415,7 +415,7 @@ void main() {
       await tester.tap(find.text('Titles'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Earned at 1000 lifetime score'), findsOneWidget);
+      expect(find.text('Earned at 1000 lifetime points'), findsOneWidget);
 
       await tester.tap(find.text('Cinephile'));
       await tester.pumpAndSettle();

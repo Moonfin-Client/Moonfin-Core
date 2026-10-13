@@ -9001,5 +9001,9 @@
     "imdbMostPopularMovies": "IMDb Најпопуларни филмови",
     "imdbMostPopularTvShows": "IMDb Најпопуларни ТВ серии",
     "imdbLowestRatedMovies": "IMDb Најниско оценети филмови",
-    "imdbTopEnglishMovies": "IMDb Најдобро оценети филмови на англиски"
+    "imdbTopEnglishMovies": "IMDb Најдобро оценети филмови на англиски",
+    "noBooksFoundForAuthor": "Не се пронајдени книги за овој автор.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
+    }
 }

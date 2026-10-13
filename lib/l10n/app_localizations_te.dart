@@ -194,7 +194,8 @@ class AppLocalizationsTe extends AppLocalizations {
   String get spotlightFileDetails => 'File Details';
 
   @override
-  String get spotlightSimilarRecommendations => 'Similar and Recommendations';
+  String get spotlightSimilarRecommendations =>
+      'Similar Titles and Recommendations';
 
   @override
   String get spotlightSeasonsEpisodes => 'Seasons and Episodes';
@@ -450,7 +451,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get interfaceLayoutSubtitle =>
-      'Override the detected layout when this device is read wrong. Restart Moonfin for changes to take effect.';
+      'Override the detected layout if it is incorrect for this device. Restart Moonfin for changes to take effect.';
 
   @override
   String get interfaceLayoutAutomatic => 'Automatic';
@@ -498,7 +499,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get performanceModeSubtitle =>
-      'Auto measures this device and holds back on the ones short on memory, which keeps fewer images in memory and leaves trailers as still images. Takes full effect on the next launch.';
+      'Auto assesses this device and reduces effects when memory is limited, keeping fewer images in memory and showing trailers as still images. Fully applied on the next launch.';
 
   @override
   String get performanceModeAuto => 'Auto';
@@ -1303,6 +1304,10 @@ class AppLocalizationsTe extends AppLocalizations {
   String get noBiographyAvailable => 'ఈ రచయితకు జీవిత చరిత్ర అందుబాటులో లేదు.';
 
   @override
+  String get noBooksFoundForAuthor =>
+      'ఈ రచయిత కోసం పుస్తకాలు ఏవీ కనుగొనబడలేదు.';
+
+  @override
   String get unableToLoadAuthorDetails =>
       'ప్రస్తుతం రచయిత వివరాలను లోడ్ చేయడం సాధ్యపడలేదు.';
 
@@ -1487,7 +1492,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String failedToDeleteItemWithError(String error) {
-    return 'Deletion operation failed with the following error: $error';
+    return 'Could not delete the item: $error';
   }
 
   @override
@@ -2067,7 +2072,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get shortcutShowControlsOrPlayPause =>
-      'Show controls, or play/pause if shown';
+      'Show controls, or play/pause if they are already visible';
 
   @override
   String get shortcutSeekBack => 'Seek back (hold for bigger jumps)';
@@ -2104,7 +2109,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get shortcutLeaveFullscreenOrStop =>
-      'Exit fullscreen, or stop if not fullscreen';
+      'Exit fullscreen, or stop playback if fullscreen is off';
 
   @override
   String get shortcutStopPlayback => 'Stop playback';
@@ -2522,7 +2527,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get seriesSetToRecord => 'Series set to record';
 
   @override
-  String get seriesRecordingCancelled => 'Series recording cancelled';
+  String get seriesRecordingCancelled => 'Series recording canceled';
 
   @override
   String get unableToCreateSeriesRecording =>
@@ -2797,7 +2802,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get savedMediaNoDownloadsDetail =>
-      'Downloads you start appear here and play without a connection.';
+      'Your downloads appear here and can be played without an internet connection.';
 
   @override
   String get savedMediaNoActiveDownloads => 'Nothing downloading right now';
@@ -2834,7 +2839,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get savedMediaOpenShow => 'Open show';
 
   @override
-  String get savedMediaPlayNextUnwatched => 'Play next unwatched';
+  String get savedMediaPlayNextUnwatched => 'Play next unwatched episode';
 
   @override
   String get savedMediaRead => 'Read';
@@ -3207,7 +3212,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get seasonalRowHolidaysHint => 'Untick a holiday to hide its row.';
 
   @override
-  String get holidayNewYear => 'New Year\'s';
+  String get holidayNewYear => 'New Year';
 
   @override
   String get holidayValentines => 'Valentine\'s Day';
@@ -3378,14 +3383,14 @@ class AppLocalizationsTe extends AppLocalizations {
   String get trickplayPreviewScale => 'Preview Size';
 
   @override
-  String get trickplayVerticalOffset => 'Distance From Seekbar';
+  String get trickplayVerticalOffset => 'Distance from Seek Bar';
 
   @override
   String get trickplayFollowScrubPosition => 'Follow Scrub Position';
 
   @override
   String get trickplayFollowScrubPositionSubtitle =>
-      'Preview slides along the seekbar as you scrub, instead of staying centered';
+      'The preview follows your position along the seek bar instead of staying centered';
 
   @override
   String get trickplayPauseWhileScrubbing => 'Pause While Scrubbing';
@@ -3420,7 +3425,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get playerSwipeGesturesDescription =>
-      'Slide up or down on the player to change brightness on the left and volume on the right';
+      'Swipe up or down on the left side of the player to adjust brightness, or on the right side to adjust volume';
 
   @override
   String get osdButtons => 'Player Buttons';
@@ -3448,7 +3453,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get actionButtonsOnScreenDescription =>
-      'Customize how many action buttons appear before folding into the More Actions menu.';
+      'Choose how many action buttons are visible before the rest move into the More Actions menu.';
 
   @override
   String get actionButtonsOnScreenAuto => 'Auto (Theme Default)';
@@ -3484,7 +3489,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get detailMetadataStatusSubtitle =>
-      'Shows whether the series is continuing, ended, or returning';
+      'Show whether the series is continuing, ended, or returning';
 
   @override
   String get detailMetadataGenres => 'Genres';
@@ -3494,7 +3499,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get detailMetadataSeerrAvailabilitySubtitle =>
-      'Shows request and media availability status from Seerr';
+      'Show request status and media availability from Seerr';
 
   @override
   String get detailMetadataUpcomingEpisodeDate => 'Upcoming Episodes';
@@ -3512,7 +3517,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get detailSectionsScreenDescription =>
-      'Only the sections the current Details screen style can show are listed. Hiding one hides it in every style that has it.';
+      'Only sections supported by the current details screen style are listed. Hiding a section hides it in every style that includes it.';
 
   @override
   String get detailSectionGroupHeader => 'Header';
@@ -3884,7 +3889,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get settingsAudioPassthroughOutputDescription =>
-      'Who packs bitstreams for the HDMI link. Try the app packer if passthrough is silent or glitchy on this device.';
+      'Choose whether the system or the app packages bitstreams for HDMI. Try the app option if passthrough is silent or unstable on this device.';
 
   @override
   String get settingsAudioPassthroughOutputPlatform =>
@@ -4298,7 +4303,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String profileReset(String profile) {
-    return 'Reset $profile profile to defaults.';
+    return '$profile profile reset to defaults.';
   }
 
   @override
@@ -4309,7 +4314,7 @@ class AppLocalizationsTe extends AppLocalizations {
       'This puts every ratings setting back to its default, including which sources show and the order they appear in.';
 
   @override
-  String get ratingsReset => 'Reset ratings to defaults.';
+  String get ratingsReset => 'Ratings reset to defaults.';
 
   @override
   String failedToResetProfile(String profile) {
@@ -4581,7 +4586,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get libraryOrderDescription =>
-      'Your libraries appear in this order on My Media, the recently added rows and the navigation bar. The order is saved to your server account, so other apps you sign in to use it too.';
+      'Your libraries appear in this order in My Media, recently added rows, and the navigation bar. The order is saved to your server account and used by other apps you sign in to.';
 
   @override
   String get libraryOrderTvHint =>
@@ -4739,11 +4744,11 @@ class AppLocalizationsTe extends AppLocalizations {
   String get recentlyReleased => 'ఇటీవలే విడుదలైంది';
 
   @override
-  String get recentlyReleasedSeriesType => 'Recently Released Series Sort By';
+  String get recentlyReleasedSeriesType => 'Sort Recently Released Series By';
 
   @override
   String get recentlyReleasedSeriesTypeDescription =>
-      'Sort Recently Released Series home rows by series, latest season, or latest episode air date';
+      'Sort recently released series rows by the premiere date of the series, latest season, or latest episode';
 
   @override
   String get myMedia => 'నా మీడియా';
@@ -8278,7 +8283,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get adminMetadataInheritHelp =>
-      'Leave this on Default to inherit the setting from a parent item, or from the server default.';
+      'Keep Default to inherit this setting from a parent item or the server\'s default.';
 
   @override
   String get adminMetadataField3DFormat => '3D format';
@@ -9690,7 +9695,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get kidsModeSubtitle =>
-      'Simplify the app and lock the way out with a PIN';
+      'Simplify the app and require a PIN to exit this mode';
 
   @override
   String get kidsModeExit => 'Exit Kids Mode';
@@ -10070,10 +10075,10 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get blockedRatingsCeilingHint =>
-      'Blocking a rating also blocks everything stronger than it.';
+      'Blocking an age rating also blocks all higher age ratings.';
 
   @override
-  String get blockedRatingsUnrankedSection => 'Only blocks itself';
+  String get blockedRatingsUnrankedSection => 'Blocks only this rating';
 
   @override
   String get settingsHomePage => 'హోమ్ పేజీ';
@@ -10759,7 +10764,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get modernCardsOnMyMediaRowDescription =>
-      'Display customizable posters that expand on focus. Disable to always show landscape thumbnail.';
+      'Show customizable posters that expand when focused. Disable to always show landscape thumbnails.';
 
   @override
   String get sortOrder => 'Sort Order';
@@ -10849,7 +10854,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get studiosRowSortingDescription =>
-      'Studio row by name, recently added, and more.';
+      'Sort the studio row by name, date added, and other criteria.';
 
   @override
   String get studiosRowSortOrderDescription =>
@@ -11339,7 +11344,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String achievementsCurrentStreak(int days) {
-    return '$days day streak';
+    return '$days-day streak';
   }
 
   @override
@@ -11394,18 +11399,18 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get achievementsRerollSpentDaily =>
-      'Used today, comes back at midnight UTC';
+      'Used today; available again at midnight UTC';
 
   @override
   String get achievementsRerollSpentWeekly =>
-      'Used this week, comes back Monday UTC';
+      'Used this week; available again on Monday (UTC)';
 
   @override
   String get achievementsRerollConfirm => 'Reroll these quests?';
 
   @override
   String get achievementsRerollConfirmBody =>
-      'You get one daily and one weekly reroll, and this spends it.';
+      'You can reroll daily quests once per day and weekly quests once per week. This uses the corresponding reroll.';
 
   @override
   String get achievementsRerollFailed => 'Could not reroll those quests.';
@@ -11447,12 +11452,12 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String achievementsEarnedAt(int score) {
-    return 'Earned at $score lifetime score';
+    return 'Earned at $score lifetime points';
   }
 
   @override
   String get achievementsAppearanceEmpty =>
-      'This server has no avatars or titles to wear.';
+      'This server has no avatars or profile titles available.';
 
   @override
   String get achievementsAppearanceFailed =>
@@ -11472,7 +11477,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get achievementsStatsWatched => 'Watched';
 
   @override
-  String get achievementsStatsBests => 'Bests';
+  String get achievementsStatsBests => 'Personal bests';
 
   @override
   String get achievementsStatsHabits => 'Habits';
@@ -11490,7 +11495,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get achievementsStatItems => 'Items watched';
 
   @override
-  String get achievementsStatMovies => 'Films watched';
+  String get achievementsStatMovies => 'Movies watched';
 
   @override
   String get achievementsStatSeries => 'Series finished';
@@ -11514,7 +11519,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get achievementsStatMostEpisodes => 'Most episodes in a day';
 
   @override
-  String get achievementsStatMostMovies => 'Most films in a day';
+  String get achievementsStatMostMovies => 'Most movies in a day';
 
   @override
   String get achievementsStatLongestItem => 'Longest single item';
@@ -11523,7 +11528,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get achievementsStatBestCombo => 'Best combo';
 
   @override
-  String get achievementsStatLateNight => 'Late night sessions';
+  String get achievementsStatLateNight => 'Late-night sessions';
 
   @override
   String get achievementsStatEarlyMorning => 'Early morning sessions';
@@ -11592,10 +11597,10 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get achievementsBuyConfirmBody =>
-      'It comes straight out of your score bank.';
+      'The cost is deducted from your points balance.';
 
   @override
-  String get achievementsBuyFailed => 'Could not buy that.';
+  String get achievementsBuyFailed => 'Could not complete the purchase.';
 
   @override
   String get achievementsScoreBank => 'Score bank';
@@ -11605,21 +11610,21 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get achievementsBoostBody =>
-      'Doubles score for an hour. Using it again restarts the hour.';
+      'Double your points for one hour. Using it again restarts the one-hour timer.';
 
   @override
   String get achievementsDoubleCredit => 'Double Credit';
 
   @override
   String get achievementsDoubleCreditBody =>
-      'The next thing you finish counts twice towards badges.';
+      'The next item you finish counts twice toward badges.';
 
   @override
   String get achievementsStreakFreeze => 'Streak Freeze';
 
   @override
   String get achievementsStreakFreezeBody =>
-      'Covers one missed day. Only one can be banked.';
+      'Protects your streak for one missed day. You can hold only one.';
 
   @override
   String achievementsPowerUpHeld(int count) {
@@ -11834,7 +11839,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String friendsBlockBody(String name) {
-    return 'Block $name? Neither of you will be able to message the other directly. Group chats you share stay open.';
+    return 'Block $name? Neither of you will be able to send direct messages to the other. Shared group chats remain available.';
   }
 
   @override
@@ -11984,7 +11989,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get chatMakeAdmin => 'Make admin';
 
   @override
-  String get chatRemoveAdmin => 'Remove admin';
+  String get chatRemoveAdmin => 'Revoke admin role';
 
   @override
   String get chatRemoveMember => 'Remove from group';
@@ -12018,7 +12023,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get chatImageUnsupported =>
-      'Only PNG, JPEG, GIF and WebP images can be sent.';
+      'Only PNG, JPEG, GIF, and WebP images can be sent.';
 
   @override
   String get embeddedBrowserNotAvailable =>
@@ -12698,17 +12703,17 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String transcodeAudioCodecHintPassthrough(String codec) {
-    return 'Tip: If your audio receiver or soundbar supports $codec, enable Audio Passthrough in Audio settings.';
+    return 'Tip: If your audio receiver or soundbar supports $codec, set \'Passthrough\' to Auto or Manual in Playback > Audio.';
   }
 
   @override
   String transcodeAudioChannelsExceeded(int channels) {
-    return 'Audio channel count (${channels}ch) exceeds the player limit.';
+    return 'The audio channel count ($channels channels) exceeds the player limit.';
   }
 
   @override
   String get transcodeAudioChannelsHint =>
-      'Tip: Adjust \'Max Audio Channels\' or multichannel downmixing in Audio settings.';
+      'Tip: Adjust \'Max Audio Channels\' or \'Downmix to Stereo\' in Playback > Audio.';
 
   @override
   String get transcodeSubtitleBurnInAssDisabled =>
@@ -12716,7 +12721,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get transcodeSubtitleBurnInAssHint =>
-      'Tip: Enable \'ASS/SSA Direct Play\' in Playback settings to play directly without transcoding.';
+      'Tip: Enable \'ASS/SSA Direct Play\' in Playback > Subtitles to play directly without transcoding.';
 
   @override
   String get transcodeSubtitleBurnInPgsDisabled =>
@@ -12724,7 +12729,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get transcodeSubtitleBurnInPgsHint =>
-      'Tip: Enable \'PGS Direct Play\' in Playback settings to play directly without transcoding.';
+      'Tip: Enable \'PGS Direct Play\' in Playback > Subtitles to play directly without transcoding.';
 
   @override
   String transcodeSubtitleNotSupportedWithCodec(String codec) {
@@ -12741,11 +12746,11 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get transcodeBitrateHint =>
-      'Tip: Increase \'Maximum Bitrate\' in Playback settings to allow direct streaming.';
+      'Tip: Increase \'Max Streaming Bitrate\' in Playback > Quality & Decoding to allow direct streaming.';
 
   @override
   String get transcodeResolutionHint =>
-      'Tip: Increase \'Maximum Resolution\' in Playback settings to allow direct streaming.';
+      'Tip: Increase \'Max Resolution\' in Playback > Quality & Decoding to allow direct streaming.';
 
   @override
   String get transcodeVideoRangeNotSupported =>
@@ -12757,7 +12762,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get transcodeDolbyVisionProfile7ElHint =>
-      'Tip: Enable \'Dolby Vision Profile 7 Direct Play\' in Playback settings if your display supports it.';
+      'Tip: Enable \'Dolby Vision Profile 7 Direct Play\' in Playback > Quality & Decoding if your display supports it.';
 
   @override
   String get transcodeDolbyVisionFallbackPreferenceTranscode =>
@@ -12765,7 +12770,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get transcodeDolbyVisionFallbackHint =>
-      'Tip: Set \'Dolby Vision Fallback\' to \'Play as HDR10\' in Playback settings to avoid transcoding.';
+      'Tip: Set \'Dolby Vision Fallback\' to \'Prefer HDR10 fallback\' in Playback > Quality & Decoding to avoid transcoding.';
 
   @override
   String get transcodeDisplayReportsNoHdr =>
@@ -12924,22 +12929,22 @@ class AppLocalizationsTe extends AppLocalizations {
   String get adminLabelYear => 'Year';
 
   @override
-  String get adminLabelImdbId => 'IMDb Id';
+  String get adminLabelImdbId => 'IMDb ID';
 
   @override
-  String get adminLabelTmdbMovieId => 'TheMovieDb Movie Id';
+  String get adminLabelTmdbMovieId => 'TMDB Movie ID';
 
   @override
-  String get adminLabelTmdbBoxSetId => 'TheMovieDb Box Set Id';
+  String get adminLabelTmdbBoxSetId => 'TMDB Collection ID';
 
   @override
-  String get adminLabelTvdbBoxSetId => 'TheTVDB Box Set Id';
+  String get adminLabelTvdbBoxSetId => 'TheTVDB Collection ID';
 
   @override
-  String get adminLabelTvdbId => 'TheTVDB Numerical Id';
+  String get adminLabelTvdbId => 'TheTVDB Numeric ID';
 
   @override
-  String get adminLabelTvdbSlug => 'TheTVDB Slug Movie Id';
+  String get adminLabelTvdbSlug => 'TheTVDB Movie Slug';
 
   @override
   String get adminReplaceImages => 'Replace existing images';
@@ -13203,7 +13208,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get detailUseSeriesThumbnailsSubtitle =>
-      'Replace all thumbnails on Classic details page with series thumbnail';
+      'Replace all thumbnails on the Classic details page with the series thumbnail';
 
   @override
   String get hideHomeMediaDescription => 'Hide Media Description';
@@ -13233,7 +13238,8 @@ class AppLocalizationsTe extends AppLocalizations {
       'How should a movie or show look when you open it?';
 
   @override
-  String get setupTourQuestion => 'You\'re set. Here\'s what else is in here.';
+  String get setupTourQuestion =>
+      'You\'re all set. Discover what else is available.';
 
   @override
   String get setupPlaybackLanguages => 'Playback languages';
@@ -13254,7 +13260,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get setupRowsModernHint => 'Larger cards with titles underneath.';
 
   @override
-  String get setupDetailClassicHint => 'Everything centred in one stack.';
+  String get setupDetailClassicHint => 'Everything centered in one stack.';
 
   @override
   String get setupDetailModernHint =>
@@ -13265,7 +13271,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get setupDetailSpotlightHint =>
-      'Hero-first, with pop-up cards for cast and extras.';
+      'Artwork first, with pop-up cards for cast and extras.';
 
   @override
   String get setupStyleNouveau => 'Nouveau';
@@ -13286,7 +13292,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get setupNavbarStyleDockHint =>
-      'A floating pill with labels under every tab.';
+      'A floating rounded bar with labels below each tab.';
 
   @override
   String get setupNavbarStyleSplitHint =>
@@ -13368,11 +13374,11 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get autoDownloadTranscodedForegroundNote =>
-      'Transcoded qualities only download while Moonfin is open. Original quality also downloads in the background.';
+      'Transcoded downloads run only while Moonfin is open. Downloads in Original quality can also run in the background.';
 
   @override
   String get autoDownloadTranscodedRunningNote =>
-      'Transcoded downloads can\'t resume after an interruption and start over from the beginning. Original quality can resume.';
+      'Interrupted transcoded downloads restart from the beginning. Downloads in Original quality can resume.';
 
   @override
   String get autoDownloadForegroundOnly =>
@@ -13509,7 +13515,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get autoDownloadStorageFull => 'Not enough storage';
 
   @override
-  String get autoDownloadWaitingForWifi => 'Waiting for WiFi';
+  String get autoDownloadWaitingForWifi => 'Waiting for Wi-Fi';
 
   @override
   String get downloadNotificationRunning => 'Downloading';
@@ -13551,7 +13557,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String downloadNotificationSaved(String name) {
-    return '$name saved for offline';
+    return '$name saved for offline use';
   }
 
   @override
@@ -13559,8 +13565,8 @@ class AppLocalizationsTe extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count items saved for offline',
-      one: '1 item saved for offline',
+      other: '$count items saved for offline use',
+      one: '1 item saved for offline use',
     );
     return '$_temp0';
   }
@@ -13685,7 +13691,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get topShelfDescription =>
-      'What the Apple TV home screen shows above the Moonfin icon when it is selected. This setting stays on this device.';
+      'Choose what appears above the selected Moonfin icon on the Apple TV home screen. This setting is saved only on this device.';
 
   @override
   String get topShelfLatestMedia => 'Latest media';
@@ -13699,7 +13705,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get keepVideoClearOfDynamicIslandDescription =>
-      'In landscape the camera housing covers one edge of the screen. This holds the picture back from it, which only changes anything for video wide enough to reach that far.';
+      'In landscape orientation, the camera cutout covers part of the screen. Keep the video clear of it. This only affects videos wide enough to reach that area.';
 
   @override
   String get bottomNavbarStyle => 'Bottom Bar Style';
@@ -13878,4 +13884,122 @@ class AppLocalizationsTe extends AppLocalizations {
   @override
   String get playerSettingsSubtitle =>
       'Controls, seeking, player buttons, and trick play';
+
+  @override
+  String get mediaSegmentIntro => 'Intro';
+
+  @override
+  String get mediaSegmentOutro => 'Outro';
+
+  @override
+  String get mediaSegmentPreview => 'Preview';
+
+  @override
+  String get mediaSegmentRecap => 'Recap';
+
+  @override
+  String get mediaSegmentCommercial => 'Commercial';
+
+  @override
+  String get settingsAudioStreamSection => 'Audio Stream';
+
+  @override
+  String get settingsAudioOutputSection => 'Audio Output';
+
+  @override
+  String get settingsPassthroughSection => 'Passthrough Settings';
+
+  @override
+  String get settingsSyncplayOptionsSection => 'SyncPlay Options';
+
+  @override
+  String get settingsDecodingRenderingSection => 'Decoding & Rendering';
+
+  @override
+  String get settingsSeerrHomeRowsSection => 'Seerr Home Page Rows';
+
+  @override
+  String get settingsSavedCustomRowsSection => 'Saved Custom Home Rows';
+
+  @override
+  String get sortDateEpisodeAdded => 'Last Episode Added';
+
+  @override
+  String get sortPremiereDate => 'Premiere Date';
+
+  @override
+  String get sortRating => 'Rating';
+
+  @override
+  String get sortPlayCount => 'Play Count';
+
+  @override
+  String get sortTrackNumber => 'Number';
+
+  @override
+  String get sortFoldersFirst => 'Folders First';
+
+  @override
+  String get popularity => 'Popularity';
+
+  @override
+  String get seerrStatusReturning => 'Returning';
+
+  @override
+  String get seerrStatusPlanned => 'Planned';
+
+  @override
+  String get seerrStatusInProduction => 'In Production';
+
+  @override
+  String get seerrStatusCanceled => 'Canceled';
+
+  @override
+  String get seerrStatusPilot => 'Pilot';
+
+  @override
+  String get seerrRuntimeUnderHalfHour => 'Under 30m';
+
+  @override
+  String get seerrRuntimeHalfToFullHour => '30m to 1h';
+
+  @override
+  String get seerrRuntimeOneToTwoHours => '1h to 2h';
+
+  @override
+  String get seerrRuntimeOverTwoHours => 'Over 2h';
+
+  @override
+  String get seerrReleasedBefore1980 => 'Before 1980';
+
+  @override
+  String get libraryFeatureSubtitles => 'With Subtitles';
+
+  @override
+  String get libraryFeatureTrailer => 'With Trailer';
+
+  @override
+  String get libraryFeatureExtras => 'With Extras';
+
+  @override
+  String get libraryFeatureThemeSong => 'With Theme Song';
+
+  @override
+  String get libraryFeatureThemeVideo => 'With Theme Video';
+
+  @override
+  String get libraryFilterLiked => 'Liked';
+
+  @override
+  String get libraryFilterDisliked => 'Disliked';
+
+  @override
+  String libraryStartingWith(String letter) {
+    return 'Starting with $letter';
+  }
+
+  @override
+  String libraryBrowseStatus(String filter, String library, String sort) {
+    return 'Showing $filter from \'$library\' sorted by $sort';
+  }
 }

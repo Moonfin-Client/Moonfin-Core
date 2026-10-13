@@ -8,6 +8,8 @@ import 'package:server_core/server_core.dart' hide ImageType;
 import '../../preference/preference_constants.dart';
 import '../../preference/user_preferences.dart';
 import '../../util/accent_folding.dart';
+import '../../l10n/current_app_localizations.dart';
+import '../../util/library_sort_labels.dart';
 import '../../util/network_errors.dart';
 import '../../util/parental_rating_severity.dart';
 import '../models/aggregated_item.dart';
@@ -1771,29 +1773,30 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   }
 
   String get statusText {
+    final l10n = currentAppLocalizations();
     final parts = <String>[];
-    if (_favoriteFilter) parts.add('Favorites');
+    if (_favoriteFilter) parts.add(l10n.favorites);
     if (_playedFilter == PlayedStatusFilter.watched) {
-      parts.add(isBookLibrary ? 'Read' : 'Watched');
+      parts.add(isBookLibrary ? l10n.readStatus : l10n.watched);
     }
     if (_playedFilter == PlayedStatusFilter.unwatched) {
-      parts.add(isBookLibrary ? 'Unread' : 'Unwatched');
+      parts.add(isBookLibrary ? l10n.unread : l10n.unwatched);
     }
     if (_playedFilter == PlayedStatusFilter.inProgress) {
-      parts.add('In Progress');
+      parts.add(l10n.filterInProgress);
     }
-    if (_likedFilter == LikedStatusFilter.liked) parts.add('Liked');
-    if (_likedFilter == LikedStatusFilter.disliked) parts.add('Disliked');
-    if (_seriesFilter == SeriesStatusFilter.continuing) parts.add('Continuing');
-    if (_seriesFilter == SeriesStatusFilter.ended) parts.add('Ended');
-    if (_seriesFilter == SeriesStatusFilter.unreleased) parts.add('Unreleased');
+    if (_likedFilter == LikedStatusFilter.liked) parts.add(l10n.libraryFilterLiked);
+    if (_likedFilter == LikedStatusFilter.disliked) parts.add(l10n.libraryFilterDisliked);
+    if (_seriesFilter == SeriesStatusFilter.continuing) parts.add(l10n.continuing);
+    if (_seriesFilter == SeriesStatusFilter.ended) parts.add(l10n.ended);
+    if (_seriesFilter == SeriesStatusFilter.unreleased) parts.add(l10n.filterUnreleased);
     for (final feature in _featureFilters) {
       parts.add(switch (feature) {
-        LibraryFeatureFilter.subtitles => 'With Subtitles',
-        LibraryFeatureFilter.trailer => 'With Trailer',
-        LibraryFeatureFilter.extras => 'With Extras',
-        LibraryFeatureFilter.themeSong => 'With Theme Song',
-        LibraryFeatureFilter.themeVideo => 'With Theme Video',
+        LibraryFeatureFilter.subtitles => l10n.libraryFeatureSubtitles,
+        LibraryFeatureFilter.trailer => l10n.libraryFeatureTrailer,
+        LibraryFeatureFilter.extras => l10n.libraryFeatureExtras,
+        LibraryFeatureFilter.themeSong => l10n.libraryFeatureThemeSong,
+        LibraryFeatureFilter.themeVideo => l10n.libraryFeatureThemeVideo,
       });
     }
     for (final quality in _videoQualityFilters) {
@@ -1811,9 +1814,9 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     parts.addAll(_officialRatingFilters);
     parts.addAll(_tagFilters);
     parts.addAll(_yearFilters);
-    if (_letterFilter.isNotEmpty) parts.add('Starting with $_letterFilter');
-    final filterDesc = parts.isEmpty ? 'All items' : parts.join(' ');
-    return "Showing $filterDesc from '$_libraryName' sorted by ${_sortBy.displayName}";
+    if (_letterFilter.isNotEmpty) parts.add(l10n.libraryStartingWith(_letterFilter));
+    final filterDesc = parts.isEmpty ? l10n.all : parts.join(', ');
+    return l10n.libraryBrowseStatus(filterDesc, _libraryName, localizedLibrarySortName(_sortBy, l10n));
   }
 
   String get counterText => '${_items.length} | $_totalCount';

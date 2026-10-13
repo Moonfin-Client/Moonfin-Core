@@ -9001,5 +9001,9 @@
     "imdbMostPopularMovies": "Películas máis populares de IMDb",
     "imdbMostPopularTvShows": "Series de TV máis populares de IMDb",
     "imdbLowestRatedMovies": "Películas peor valoradas de IMDb",
-    "imdbTopEnglishMovies": "Mellores películas en inglés de IMDb"
+    "imdbTopEnglishMovies": "Mellores películas en inglés de IMDb",
+    "noBooksFoundForAuthor": "Non se atoparon libros para este autor.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
+    }
 }

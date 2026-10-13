@@ -45,11 +45,11 @@ void main() {
       );
       expect(
         DetailMetadataItem.status.subtitle(l10n),
-        'Shows whether the series is continuing, ended, or returning',
+        'Show whether the series is continuing, ended, or returning',
       );
       expect(
         DetailMetadataItem.seerrAvailability.subtitle(l10n),
-        'Shows request and media availability status from Seerr',
+        'Show request status and media availability from Seerr',
       );
       expect(DetailMetadataItem.year.subtitle(l10n), isNull);
       expect(DetailMetadataItem.genres.subtitle(l10n), isNull);

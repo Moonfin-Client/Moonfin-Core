@@ -21,6 +21,7 @@ import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../ui/mixins/focus_state_mixin.dart';
 import '../../../util/accent_folding.dart';
+import '../../../util/library_sort_labels.dart';
 import '../../../util/artwork_request_size.dart';
 import '../home/home_row_prefetch.dart';
 import '../../../util/focus/dpad_keys.dart';
@@ -2518,13 +2519,13 @@ class _FilterSortDialogState extends State<_FilterSortDialog> {
     String sortLabel(LibrarySortBy option) {
       if (option == LibrarySortBy.runtime &&
           (vm.isMusicBrowse || vm.isSongsBrowse)) {
-        return 'Length';
+        return l10n.runtimeLabel;
       }
       if (option == LibrarySortBy.premiereDate &&
           (vm.isMusicBrowse || vm.isSongsBrowse)) {
-        return 'Release Date';
+        return l10n.releaseDateLabel;
       }
-      return option.displayName;
+      return localizedLibrarySortName(option, l10n);
     }
 
     String playedLabel(PlayedStatusFilter status) => switch (status) {

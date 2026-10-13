@@ -9001,5 +9001,9 @@
     "imdbMostPopularMovies": "IMDb se gewildste flieks",
     "imdbMostPopularTvShows": "IMDb se gewildste TV-reekse",
     "imdbLowestRatedMovies": "IMDb se laagsgegradeerde flieks",
-    "imdbTopEnglishMovies": "IMDb se topgegradeerde Engelse flieks"
+    "imdbTopEnglishMovies": "IMDb se topgegradeerde Engelse flieks",
+    "noBooksFoundForAuthor": "Geen boeke vir hierdie skrywer gevind nie.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
+    }
 }

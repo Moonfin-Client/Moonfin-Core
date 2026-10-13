@@ -9053,5 +9053,9 @@
     "settingsAudioPassthroughMode": "直通",
     "@settingsAudioPassthroughMode": {
         "description": "Title of the audio passthrough mode selector"
+    },
+    "noBooksFoundForAuthor": "沒有找到該作者的書籍。",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
     }
 }

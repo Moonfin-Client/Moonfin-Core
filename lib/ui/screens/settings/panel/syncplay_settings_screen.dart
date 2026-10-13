@@ -70,7 +70,7 @@ class _SyncPlaySettingsScreenState extends State<_SyncPlaySettingsScreen> {
         child: ListView(
           padding: EdgeInsets.only(bottom: bottomPad),
           children: [
-            const _SectionHeader('Active Sessions'),
+            _SectionHeader(l10n.adminActiveSessions),
             adaptiveListSection(
               children: [
                 _TvSettingsListTile(
@@ -86,7 +86,7 @@ class _SyncPlaySettingsScreenState extends State<_SyncPlaySettingsScreen> {
                 ),
               ],
             ),
-            const _SectionHeader('SyncPlay Options'),
+            _SectionHeader(l10n.settingsSyncplayOptionsSection),
             adaptiveListSection(
               children: [
                 SwitchPreferenceTile(

@@ -1141,7 +1141,7 @@ class _SeerrListsScreenState extends State<_SeerrListsScreen> {
             autofocus: true,
             child: ListView(
               children: [
-                const _SectionHeader('Seerr Home Page Rows'),
+                _SectionHeader(l10n.settingsSeerrHomeRowsSection),
                 adaptiveListSection(
                   children: _rows.asMap().entries.map((entry) {
                     final rowIndex = entry.key;
@@ -1394,7 +1394,7 @@ class _CustomListsScreenState extends State<_CustomListsScreen> {
                   ],
                 ),
                 if (customConfigs.isNotEmpty) ...[
-                  const _SectionHeader('Saved Custom Home Rows'),
+                  _SectionHeader(AppLocalizations.of(context).settingsSavedCustomRowsSection),
                   adaptiveListSection(
                     children: customConfigs.map((config) {
                       Map<String, dynamic> rowConfig = {};

@@ -9001,5 +9001,9 @@
     "imdbMostPopularMovies": "Phim phổ biến nhất trên IMDb",
     "imdbMostPopularTvShows": "Chương trình TV phổ biến nhất trên IMDb",
     "imdbLowestRatedMovies": "Phim bị đánh giá thấp nhất trên IMDb",
-    "imdbTopEnglishMovies": "Phim tiếng Anh được đánh giá cao nhất trên IMDb"
+    "imdbTopEnglishMovies": "Phim tiếng Anh được đánh giá cao nhất trên IMDb",
+    "noBooksFoundForAuthor": "Không tìm thấy sách nào cho tác giả này.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
+    }
 }

@@ -9081,5 +9081,9 @@
     "increase": "Öka",
     "@increase": {
         "description": "Action that increases a numeric personal rating."
+    },
+    "noBooksFoundForAuthor": "Inga böcker hittades för denna författare.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
     }
 }

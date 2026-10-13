@@ -9001,5 +9001,9 @@
     "imdbMostPopularMovies": "IMDb ಅತ್ಯಂತ ಜನಪ್ರಿಯ ಚಲನಚಿತ್ರಗಳು",
     "imdbMostPopularTvShows": "IMDb ಅತ್ಯಂತ ಜನಪ್ರಿಯ ಟಿವಿ ಶೋಗಳು",
     "imdbLowestRatedMovies": "IMDb ಅತ್ಯಂತ ಕಡಿಮೆ ರೇಟ್ ಮಾಡಿದ ಚಲನಚಿತ್ರಗಳು",
-    "imdbTopEnglishMovies": "IMDb ಅತ್ಯುತ್ತಮ ರೇಟ್ ಮಾಡಿದ ಇಂಗ್ಲಿಷ್ ಚಲನಚಿತ್ರಗಳು"
+    "imdbTopEnglishMovies": "IMDb ಅತ್ಯುತ್ತಮ ರೇಟ್ ಮಾಡಿದ ಇಂಗ್ಲಿಷ್ ಚಲನಚಿತ್ರಗಳು",
+    "noBooksFoundForAuthor": "ಈ ಲೇಖಕರಿಗೆ ಯಾವುದೇ ಪುಸ್ತಕಗಳು ಕಂಡುಬಂದಿಲ್ಲ.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
+    }
 }

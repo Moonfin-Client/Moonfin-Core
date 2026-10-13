@@ -9001,5 +9001,9 @@
     "imdbMostPopularMovies": "IMDb மிகவும் பிரபலமான திரைப்படங்கள்",
     "imdbMostPopularTvShows": "IMDb மிகவும் பிரபலமான டிவி நிகழ்ச்சிகள்",
     "imdbLowestRatedMovies": "IMDb குறைந்த மதிப்பிடப்பட்ட திரைப்படங்கள்",
-    "imdbTopEnglishMovies": "IMDb சிறந்த மதிப்பிடப்பட்ட ஆங்கிலத் திரைப்படங்கள்"
+    "imdbTopEnglishMovies": "IMDb சிறந்த மதிப்பிடப்பட்ட ஆங்கிலத் திரைப்படங்கள்",
+    "noBooksFoundForAuthor": "இந்த ஆசிரியருக்கு புத்தகங்கள் எதுவும் கிடைக்கவில்லை.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
+    }
 }

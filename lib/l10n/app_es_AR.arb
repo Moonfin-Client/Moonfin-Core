@@ -7206,5 +7206,9 @@
     "autoHdrSwitchingDescription": "Habilite HDR automáticamente para la reproducción de video HDR y restaure el modo de visualización al salir.",
     "whenFullscreen": "Cuando pantalla completa",
     "transcodingLimits": "Límites de transcodificación",
-    "settingsSupportMoonfinSubtitle": "Dona un café al desarrollador"
+    "settingsSupportMoonfinSubtitle": "Dona un café al desarrollador",
+    "noBooksFoundForAuthor": "No se encontraron libros para este autor.",
+    "@noBooksFoundForAuthor": {
+        "description": "Placeholder when no books are found for an author"
+    }
 }
