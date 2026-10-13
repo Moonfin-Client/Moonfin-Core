@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
@@ -74,7 +75,22 @@ class CustomExternalListsService {
     receiveTimeout: const Duration(seconds: 45),
   ));
 
-  CustomExternalListsService();
+  /// Who the cached rows belong to. The server holds a row to the user's parental limit and
+  /// leaves the cache alone when nothing passes, so a row written for one account must not be
+  /// read back by the next one on a shared device: the signed-in user on the signed-in server
+  /// names the file. Null when nobody is signed in, which keeps the plain name for an offline
+  /// start. Tests hand in their own.
+  final String? Function() _cacheScope;
+
+  CustomExternalListsService({String? Function()? cacheScope}) : _cacheScope = cacheScope ?? _signedInScope;
+
+  static String? _signedInScope() {
+    if (!GetIt.instance.isRegistered<MediaServerClient>()) return null;
+    final client = GetIt.instance<MediaServerClient>();
+    final userId = client.userId;
+    if (userId == null || userId.isEmpty) return null;
+    return sha1.convert(utf8.encode('${client.baseUrl}|$userId')).toString().substring(0, 16);
+  }
 
   String constructSourceUrl(String source, String type, Map<String, dynamic> params) {
     switch (source) {
@@ -148,6 +164,10 @@ class CustomExternalListsService {
     final paramsJson = jsonEncode(params);
     final url = '$baseUrl/Moonfin/CustomRows/Items';
     final lang = language ?? currentAppLocale().toLanguageTag();
+
+    // Before the request rather than after the answer: an empty or failed
+    // answer saves nothing, and the row from before must not outlive it.
+    await dropLegacyCache(config);
 
     try {
       final response = await _dio.get(
@@ -236,16 +256,30 @@ class CustomExternalListsService {
 
   static const cacheMaxAge = Duration(hours: 24);
 
+  Future<Directory> _cacheDir() async => PlatformDetection.isAppleTV
+      ? await getApplicationCacheDirectory()
+      : await getApplicationSupportDirectory();
+
+  static String _sectionName(HomeSectionConfig config) =>
+      config.pluginSection!.replaceAll(RegExp(r'[^a-zA-Z0-9]+'), '_');
+
+  /// The row's file for whoever is signed in; the plain name when nobody is.
   Future<File> cacheFile(HomeSectionConfig config, [String? language]) async {
-    final dir = PlatformDetection.isAppleTV
-        ? await getApplicationCacheDirectory()
-        : await getApplicationSupportDirectory();
-    final sanitizedSection = config.pluginSection!.replaceAll(RegExp(r'[^a-zA-Z0-9]+'), '_');
+    final dir = await _cacheDir();
+    final scope = _cacheScope();
+    final suffix = scope == null ? '' : '_$scope';
     final lang = (language ?? currentAppLocale().toLanguageTag())
         .replaceAll(RegExp(r'[^a-zA-Z0-9]+'), '_')
         .toLowerCase();
     final langSuffix = lang.isNotEmpty ? '_$lang' : '';
-    return File('${dir.path}/custom_chart_$sanitizedSection$langSuffix.json');
+    return File('${dir.path}/custom_chart_${_sectionName(config)}$suffix$langSuffix.json');
+  }
+
+  /// The row's file from before the cache was scoped per user, which an upgrade must not keep
+  /// handing to the next account.
+  Future<File> _legacyCacheFile(HomeSectionConfig config) async {
+    final dir = await _cacheDir();
+    return File('${dir.path}/custom_chart_${_sectionName(config)}.json');
   }
 
   Future<void> saveCustomRowToCache(
@@ -257,8 +291,25 @@ class CustomExternalListsService {
       final file = await cacheFile(config, language);
       final jsonList = items.map((item) => item.toJson()).toList();
       await file.writeAsString(jsonEncode(jsonList), flush: true);
+      await dropLegacyCache(config);
     } catch (e) {
       debugPrint('[CustomService] Failed to save custom row cache: $e');
+    }
+  }
+
+  /// Removes the row's file from before the cache was scoped per user, when
+  /// the row is read under a scoped name. With nobody signed in the plain
+  /// name is the live file and stays.
+  @visibleForTesting
+  Future<void> dropLegacyCache(HomeSectionConfig config) async {
+    try {
+      final file = await cacheFile(config);
+      final legacy = await _legacyCacheFile(config);
+      if (legacy.path != file.path && legacy.existsSync()) {
+        await legacy.delete();
+      }
+    } catch (e) {
+      debugPrint('[CustomService] Failed to drop the unscoped custom row cache: $e');
     }
   }
 
