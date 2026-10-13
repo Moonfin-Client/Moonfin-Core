@@ -3216,8 +3216,13 @@ class _DetailContentState extends State<_DetailContent> {
             }
           }
           if (displayedTracks.isNotEmpty) {
-            final node = _getTrackFocusNode(displayedTracks.first.id);
-            if (node.canRequestFocus) {
+            final first = displayedTracks.first;
+            final rawId = first.rawData['PlaylistItemId']?.toString();
+            final firstId = (rawId != null && rawId.isNotEmpty)
+                ? rawId
+                : first.id;
+            final node = _getTrackFocusNode(firstId);
+            if (node.context?.mounted == true) {
               node.requestFocus();
             }
           }
