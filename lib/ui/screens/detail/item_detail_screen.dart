@@ -3211,7 +3211,7 @@ class _DetailContentState extends State<_DetailContent> {
             PlatformDetection.isTV && !SettingsPanel.isOpenNotifier.value,
         onPlayDown: () {
           if (isPlaylist) {
-            if (_playlistSortFocusNode.canRequestFocus) {
+            if (_playlistSortFocusNode.context?.mounted == true) {
               _playlistSortFocusNode.requestFocus();
               return;
             }
@@ -3303,7 +3303,7 @@ class _DetailContentState extends State<_DetailContent> {
                     : first.id;
                 final node = _getTrackFocusNode(firstId);
                 if (node.context?.mounted == true) node.requestFocus();
-              } else if (_playlistClearFiltersFocusNode.canRequestFocus) {
+              } else if (_playlistClearFiltersFocusNode.context?.mounted == true) {
                 _playlistClearFiltersFocusNode.requestFocus();
               }
             },
@@ -3323,7 +3323,7 @@ class _DetailContentState extends State<_DetailContent> {
                     : first.id;
                 final node = _getTrackFocusNode(firstId);
                 if (node.context?.mounted == true) node.requestFocus();
-              } else if (_playlistClearFiltersFocusNode.canRequestFocus) {
+              } else if (_playlistClearFiltersFocusNode.context?.mounted == true) {
                 _playlistClearFiltersFocusNode.requestFocus();
               }
             },
@@ -3352,7 +3352,7 @@ class _DetailContentState extends State<_DetailContent> {
                   onKeyEvent: (node, event) {
                     if (event is KeyDownEvent) {
                       if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-                        if (_playlistSortFocusNode.canRequestFocus) {
+                        if (_playlistSortFocusNode.context?.mounted == true) {
                           _playlistSortFocusNode.requestFocus();
                           return KeyEventResult.handled;
                         }
@@ -3363,7 +3363,7 @@ class _DetailContentState extends State<_DetailContent> {
                           _playlistFavoriteFilter = false;
                           _playlistMediaTypeFilter = null;
                         });
-                        if (_playlistSortFocusNode.canRequestFocus) {
+                        if (_playlistSortFocusNode.context?.mounted == true) {
                           _playlistSortFocusNode.requestFocus();
                         }
                         return KeyEventResult.handled;
@@ -3391,7 +3391,7 @@ class _DetailContentState extends State<_DetailContent> {
                             _playlistFavoriteFilter = false;
                             _playlistMediaTypeFilter = null;
                           });
-                          if (_playlistSortFocusNode.canRequestFocus) {
+                          if (_playlistSortFocusNode.context?.mounted == true) {
                             _playlistSortFocusNode.requestFocus();
                           }
                         },
@@ -3410,7 +3410,7 @@ class _DetailContentState extends State<_DetailContent> {
             getFocusNode: _getTrackFocusNode,
             onFirstTrackUp: () {
               if (isPlaylist) {
-                if (_playlistSortFocusNode.canRequestFocus) {
+                if (_playlistSortFocusNode.context?.mounted == true) {
                   _playlistSortFocusNode.requestFocus();
                   return;
                 }

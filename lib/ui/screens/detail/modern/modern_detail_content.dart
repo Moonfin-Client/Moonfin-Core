@@ -3747,7 +3747,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           : null,
       onFirstTrackUp: () {
         if (isPlaylist) {
-          if (_playlistSortFocusNode.canRequestFocus) {
+          if (_playlistSortFocusNode.context?.mounted == true) {
             _playlistSortFocusNode.requestFocus();
             return;
           }
@@ -3782,7 +3782,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                 onKeyEvent: (node, event) {
                   if (event is KeyDownEvent) {
                     if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-                      if (_playlistSortFocusNode.canRequestFocus) {
+                      if (_playlistSortFocusNode.context?.mounted == true) {
                         _playlistSortFocusNode.requestFocus();
                         return KeyEventResult.handled;
                       }
@@ -3793,7 +3793,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                         _playlistFavoriteFilter = false;
                         _playlistMediaTypeFilter = null;
                       });
-                      if (_playlistSortFocusNode.canRequestFocus) {
+                      if (_playlistSortFocusNode.context?.mounted == true) {
                         _playlistSortFocusNode.requestFocus();
                       }
                       return KeyEventResult.handled;
@@ -3821,7 +3821,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                           _playlistFavoriteFilter = false;
                           _playlistMediaTypeFilter = null;
                         });
-                        if (_playlistSortFocusNode.canRequestFocus) {
+                        if (_playlistSortFocusNode.context?.mounted == true) {
                           _playlistSortFocusNode.requestFocus();
                         }
                       },
@@ -3920,7 +3920,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                               if (node != null && node.context?.mounted == true) {
                                 node.requestFocus();
                               }
-                            } else if (_playlistClearFiltersFocusNode.canRequestFocus) {
+                            } else if (_playlistClearFiltersFocusNode.context?.mounted == true) {
                               _playlistClearFiltersFocusNode.requestFocus();
                             }
                           },
@@ -3941,7 +3941,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                               if (node != null && node.context?.mounted == true) {
                                 node.requestFocus();
                               }
-                            } else if (_playlistClearFiltersFocusNode.canRequestFocus) {
+                            } else if (_playlistClearFiltersFocusNode.context?.mounted == true) {
                               _playlistClearFiltersFocusNode.requestFocus();
                             }
                           },
