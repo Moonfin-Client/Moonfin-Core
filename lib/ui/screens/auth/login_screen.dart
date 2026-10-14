@@ -74,7 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
   List<String> _recentUsernames = const [];
 
   bool _supportsQuickConnect = false;
-  bool _showQuickConnect = true;
+  bool _showQuickConnect = false;
   bool _tvKeyboardVisible = false;
 
   Timer? _quickConnectTimer;
@@ -256,7 +256,7 @@ class _LoginScreenState extends State<LoginScreen> {
         _server = server;
         _client = client;
         _supportsQuickConnect = supportsQC;
-        _showQuickConnect = supportsQC;
+        _showQuickConnect = false;
       });
       if (supportsQC) {
         _startQuickConnect(isInitial: true);
