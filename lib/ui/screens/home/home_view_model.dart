@@ -189,6 +189,7 @@ class HomeViewModel extends ChangeNotifier {
     if (!c.isBuiltin) return false;
     return switch (c.type) {
       HomeSectionType.liveTv ||
+      HomeSectionType.onNow ||
       HomeSectionType.activeRecordings ||
       HomeSectionType.playlists ||
       HomeSectionType.audioPlaylists ||
@@ -764,8 +765,10 @@ class HomeViewModel extends ChangeNotifier {
         return row.rowType == HomeRowType.audioPlaylists;
       case HomeSectionType.liveTv:
         return row.rowType == HomeRowType.liveTv ||
-            row.rowType == HomeRowType.liveTvOnNow ||
+            (row.rowType == HomeRowType.liveTvOnNow && row.id != 'onNow') ||
             row.rowType == HomeRowType.liveTvFavorites;
+      case HomeSectionType.onNow:
+        return row.rowType == HomeRowType.liveTvOnNow && row.id == 'onNow';
       case HomeSectionType.activeRecordings:
         return row.rowType == HomeRowType.activeRecordings;
       case HomeSectionType.seerrShortcuts:
@@ -1050,6 +1053,8 @@ class HomeViewModel extends ChangeNotifier {
         return const {'nextUp'};
       case HomeSectionType.liveTv:
         return const {'liveTv'};
+      case HomeSectionType.onNow:
+        return const {'onNow'};
       case HomeSectionType.libraryTilesSmall:
         return const {'libraryTiles'};
       case HomeSectionType.libraryButtons:
@@ -1411,6 +1416,8 @@ class HomeViewModel extends ChangeNotifier {
           if (favorites.items.isNotEmpty) rows.add(favorites);
         } catch (_) {}
         return rows;
+      case HomeSectionType.onNow:
+        return [(await _dataSource.loadOnNow(_serverId)).copyWith(id: 'onNow')];
       case HomeSectionType.activeRecordings:
         return [
           HomeRow(
@@ -2072,6 +2079,13 @@ class HomeViewModel extends ChangeNotifier {
           id: 'seasonal',
           title: l10n.seasonalRow,
           rowType: HomeRowType.pluginDynamic,
+          isLoading: true,
+        );
+      case HomeSectionType.onNow:
+        return HomeRow(
+          id: 'onNow',
+          title: l10n.onNow,
+          rowType: HomeRowType.liveTvOnNow,
           isLoading: true,
         );
       case HomeSectionType.liveTv:

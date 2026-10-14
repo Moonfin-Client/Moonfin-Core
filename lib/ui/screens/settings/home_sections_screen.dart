@@ -312,6 +312,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
             }());
             break;
           case HomeSectionType.liveTv:
+          case HomeSectionType.onNow:
             tasks.add(() async {
               try {
                 final response = await client.liveTvApi.getChannels(
@@ -1651,6 +1652,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
         HomeSectionType.genres => l10n.genres,
         HomeSectionType.studios => l10n.studios,
         HomeSectionType.liveTv => l10n.liveTV,
+        HomeSectionType.onNow => l10n.onNow,
         HomeSectionType.seerrShortcuts => l10n.seerrShortcutsRow,
         HomeSectionType.seerrRecentRequests => l10n.recentRequests,
         HomeSectionType.seerrWatchlist => l10n.yourWatchlist,

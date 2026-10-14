@@ -70,6 +70,7 @@ String localizeHomeRowTitle({
       return l10n.myMedia;
     case 'liveTv':
       return l10n.liveTv;
+    case 'onNow':
     case 'liveTvOnNow':
       return l10n.onNow;
     case 'liveTvFavorites':

@@ -391,6 +391,11 @@ class HomeSectionConfig {
       enabled: false,
       order: 46,
     ),
+    HomeSectionConfig(
+      type: HomeSectionType.onNow,
+      enabled: false,
+      order: 47,
+    ),
   ];
 
   static bool isSupportedJson(Map<String, dynamic> json) {

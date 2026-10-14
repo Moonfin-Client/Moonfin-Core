@@ -71,6 +71,7 @@ void main() {
           HomeSectionType.libraryButtons,
       _row('liveTv', HomeRowType.liveTv): HomeSectionType.liveTv,
       _row('liveTvOnNow', HomeRowType.liveTvOnNow): HomeSectionType.liveTv,
+      _row('onNow', HomeRowType.liveTvOnNow): HomeSectionType.onNow,
       _row('liveTvFavorites', HomeRowType.liveTvFavorites):
           HomeSectionType.liveTv,
       _row('activeRecordings', HomeRowType.activeRecordings):
@@ -191,6 +192,7 @@ void main() {
         HomeSectionType.tmdbPopularMovies: _row('tmdb_popular_movies'),
         HomeSectionType.radarrCalendar: _row('radarr_calendar'),
         HomeSectionType.liveTv: _row('liveTvOnNow', HomeRowType.liveTvOnNow),
+        HomeSectionType.onNow: _row('onNow', HomeRowType.liveTvOnNow),
       };
 
       for (final row in rows.values) {
@@ -204,6 +206,45 @@ void main() {
         expect(imageType(row, prefs), ImageType.banner, reason: row.id);
       }
     });
+
+    for (final style in HomeRowsStyle.values) {
+      test('On Now follows shared artwork behavior in ${style.name} home style', () async {
+        final prefs = await createPreferences();
+        await prefs.set(UserPreferences.homeRowsStyle, style);
+        final standalone = _row('onNow', HomeRowType.liveTvOnNow);
+        final bundled = _row('liveTvOnNow', HomeRowType.liveTvOnNow);
+        final resume = _row('resume', HomeRowType.resume);
+        await prefs.set(
+          UserPreferences.homeRowImageType(HomeSectionType.liveTv),
+          ImageType.banner,
+        );
+
+        for (final selected in ImageType.values) {
+          await prefs.set(
+            UserPreferences.homeRowImageType(HomeSectionType.onNow),
+            selected,
+          );
+          expect(
+            HomeScreen.isRowModern(standalone, prefs),
+            HomeScreen.isRowModern(resume, prefs),
+          );
+          expect(imageType(standalone, prefs), selected);
+          expect(
+            HomeScreen.isRowModern(bundled, prefs),
+            HomeScreen.isRowModern(resume, prefs),
+          );
+          expect(imageType(bundled, prefs), ImageType.banner);
+        }
+
+        await prefs.set(UserPreferences.homeRowsUniversalOverride, true);
+        await prefs.set(
+          UserPreferences.homeRowsUniversalImageType,
+          ImageType.thumb,
+        );
+        expect(imageType(standalone, prefs), ImageType.thumb);
+        expect(imageType(bundled, prefs), ImageType.thumb);
+      });
+    }
 
     test('Since You Watched and Rewatch follow their own rows, not Latest Media',
         () async {
