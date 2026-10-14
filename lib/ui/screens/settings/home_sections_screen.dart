@@ -312,12 +312,23 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
             }());
             break;
           case HomeSectionType.liveTv:
-          case HomeSectionType.onNow:
             tasks.add(() async {
               try {
                 final response = await client.liveTvApi.getChannels(
                   userId: userId,
                   limit: 1,
+                );
+                final items = response['Items'] as List? ?? [];
+                setEmpty(stableId, items.isEmpty);
+              } catch (_) {}
+            }());
+            break;
+          case HomeSectionType.onNow:
+            tasks.add(() async {
+              try {
+                final response = await client.liveTvApi.getRecommendedPrograms(
+                  limit: 1,
+                  isAiring: true,
                 );
                 final items = response['Items'] as List? ?? [];
                 setEmpty(stableId, items.isEmpty);
