@@ -1183,7 +1183,7 @@ class _SearchScreenState extends State<SearchScreen>
   }
 
   GlobalKey _allRowKey(int row) =>
-      _allRowKeys.putIfAbsent('${_allRowIds[row]}_$row', () => GlobalKey());
+      _allRowKeys.putIfAbsent(_allRowIds[row], () => GlobalKey());
 
   void _focusAllCard(int row, int col, {bool changedRow = true}) {
     if (row >= _allRowIds.length) return;

@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
+import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/preference/preference_constants.dart';
+import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/screens/detail/playlist_sort_filter_bar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Widget buildTestWidget({required Widget child}) {
   return MaterialApp(
@@ -19,6 +23,15 @@ Widget buildTestWidget({required Widget child}) {
 }
 
 void main() {
+  setUp(() async {
+    SharedPreferences.setMockInitialValues({});
+    final store = PreferenceStore();
+    await store.init();
+    GetIt.instance.registerSingleton<UserPreferences>(UserPreferences(store));
+  });
+
+  tearDown(() => GetIt.instance.reset());
+
   group('PlaylistSortFilterBar Widget Tests', () {
     testWidgets('renders sort and filter pill buttons with default state', (tester) async {
       await tester.pumpWidget(

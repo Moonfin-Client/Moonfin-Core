@@ -91,8 +91,8 @@ class LockedFocusRowState<T> extends State<LockedFocusRow<T>> {
   bool _ownsFocusNode = false;
   late ScrollController _scrollController;
   bool _ownsScrollController = false;
-  List<Key> _itemKeys = const [];
-  Map<Object, Key> _keyByIdentity = const {};
+  List<GlobalKey> _itemKeys = const [];
+  Map<Object, GlobalKey> _keyByIdentity = const {};
   Map<Key, int> _indexByKey = const {};
 
   // Focus is broadcast rather than set with setState. A D-pad step used to
@@ -173,14 +173,14 @@ class LockedFocusRowState<T> extends State<LockedFocusRow<T>> {
   /// ones, so appending a page leaves the existing elements alone.
   void _syncItemKeys() {
     final identityOf = widget.itemKey;
-    final next = <Object, Key>{};
+    final next = <Object, GlobalKey>{};
     final indexByKey = <Key, int>{};
-    _itemKeys = List<Key>.generate(widget.items.length, (index) {
+    _itemKeys = List<GlobalKey>.generate(widget.items.length, (index) {
       var identity = identityOf?.call(widget.items[index], index) ?? index;
-      // A hub can list one item twice and a key may appear once, so
+      // A hub can list one item twice and a GlobalKey may appear once, so
       // the second copy falls back to its position.
       if (next.containsKey(identity)) identity = (position: index);
-      final key = _keyByIdentity[identity] ?? ValueKey(identity);
+      final key = _keyByIdentity[identity] ?? GlobalKey();
       next[identity] = key;
       indexByKey[key] = index;
       return key;

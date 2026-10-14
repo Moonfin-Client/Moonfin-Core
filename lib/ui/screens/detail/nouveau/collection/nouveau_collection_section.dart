@@ -266,29 +266,18 @@ class NouveauCollectionSectionState
   }
 
   GlobalKey<NouveauLandscapeMediaCardState> _playlistCardKey(
-    AggregatedItem item, [
-    int? index,
-  ]) {
-    final entryId = item.rawData['PlaylistItemId']?.toString();
-    final keyId = (entryId != null && entryId.isNotEmpty)
-        ? (index != null ? '${entryId}_$index' : entryId)
-        : (index != null ? '${item.id}_$index' : item.id);
+    AggregatedItem item,
+  ) {
     return _playlistCardKeys.putIfAbsent(
-      keyId,
+      item.id,
       () => GlobalKey<NouveauLandscapeMediaCardState>(),
     );
   }
 
   void _prunePlaylistCardKeys() {
-    final validKeys = <String>{};
-    for (var i = 0; i < _playlistItems.length; i++) {
-      final item = _playlistItems[i];
-      final entryId = item.rawData['PlaylistItemId']?.toString();
-      validKeys.add(
-        (entryId != null && entryId.isNotEmpty) ? '${entryId}_$i' : '${item.id}_$i',
-      );
-    }
-    _playlistCardKeys.removeWhere((key, _) => !validKeys.contains(key));
+    final ids = _playlistItems.map((item) => item.id).toSet();
+
+    _playlistCardKeys.removeWhere((id, _) => !ids.contains(id));
   }
 
   bool get canFocusTop {
@@ -351,8 +340,7 @@ class NouveauCollectionSectionState
           _playlistItems.length - 1,
         );
 
-        final card =
-            _playlistCardKey(_playlistItems[index], index).currentState;
+        final card = _playlistCardKey(_playlistItems[index]).currentState;
 
         if (card?.requestDetailsFocus() ?? false) {
           _revealPlaylistSection();
@@ -469,7 +457,7 @@ class NouveauCollectionSectionState
 
     final index = row.focusedIndex.clamp(0, items.length - 1);
 
-    final card = _playlistCardKey(items[index], index).currentState;
+    final card = _playlistCardKey(items[index]).currentState;
 
     if (card?.requestDetailsFocus() ?? false) {
       _revealPlaylistSection();
@@ -1308,7 +1296,7 @@ class NouveauCollectionSectionState
                       right: hasNext ? layout.cardSpacing : 0,
                     ),
                     child: NouveauLandscapeMediaCard(
-                      key: _playlistCardKey(item, index),
+                      key: _playlistCardKey(item),
                       item: item,
                       imageUrl: _playlistImageUrl(item),
                       width: layout.cardWidth,

@@ -2648,9 +2648,7 @@ class _ContentRowsState extends State<_ContentRows>
 
   String _rowIdForIndex(int rowIndex) {
     final rows = widget.viewModel.rows;
-    if (rowIndex >= 0 && rowIndex < rows.length) {
-      return '${rows[rowIndex].id}_$rowIndex';
-    }
+    if (rowIndex >= 0 && rowIndex < rows.length) return rows[rowIndex].id;
     return '__row_$rowIndex';
   }
 
@@ -2660,9 +2658,9 @@ class _ContentRowsState extends State<_ContentRows>
       final controller = ScrollController(
         initialScrollOffset: _rowHorizontalOffsetsById[rowId] ?? 0.0,
       );
-      controller.addListener(() => _onRowScrolled(rowIndex, controller));
+      controller.addListener(() => _onRowScrolled(rowId, controller));
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) _maybeLoadMoreForRow(rowIndex, controller);
+        if (mounted) _maybeLoadMoreForRow(rowId, controller);
       });
       return controller;
     });
@@ -2684,15 +2682,16 @@ class _ContentRowsState extends State<_ContentRows>
     });
   }
 
-  void _onRowScrolled(int rowIndex, ScrollController controller) {
+  void _onRowScrolled(String rowId, ScrollController controller) {
     if (!controller.hasClients) return;
-    _rowHorizontalOffsetsById[_rowIdForIndex(rowIndex)] = controller.offset;
-    _maybeLoadMoreForRow(rowIndex, controller);
+    _rowHorizontalOffsetsById[rowId] = controller.offset;
+    _maybeLoadMoreForRow(rowId, controller);
   }
 
-  void _maybeLoadMoreForRow(int rowIndex, ScrollController controller) {
+  void _maybeLoadMoreForRow(String rowId, ScrollController controller) {
     if (!controller.hasClients) return;
-    if (rowIndex < 0 || rowIndex >= widget.viewModel.rows.length) return;
+    final rowIndex = widget.viewModel.rows.indexWhere((r) => r.id == rowId);
+    if (rowIndex < 0) return;
     if (!widget.viewModel.rows[rowIndex].hasMore) return;
     final remaining = controller.position.maxScrollExtent - controller.offset;
     if (remaining <= _loadMoreTriggerDistance) {
@@ -2701,11 +2700,8 @@ class _ContentRowsState extends State<_ContentRows>
   }
 
   void _checkAllRowsFillViewport() {
-    for (var i = 0; i < widget.viewModel.rows.length; i++) {
-      final controller = _rowHorizontalControllers[_rowIdForIndex(i)];
-      if (controller != null) {
-        _maybeLoadMoreForRow(i, controller);
-      }
+    for (final entry in _rowHorizontalControllers.entries) {
+      _maybeLoadMoreForRow(entry.key, entry.value);
     }
   }
 
