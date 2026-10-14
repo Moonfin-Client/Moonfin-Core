@@ -229,8 +229,8 @@ enum WatchedIndicatorBehavior {
 enum ZoomMode {
   fit,
 
-  /// Zoom to Fill: cover-scales the frame and clips the overflow. The legacy
-  /// name is kept because it is the stored and server-synced value.
+  /// Shown as Zoom to Fill. The name stays autoCrop because it's the value
+  /// saved and synced to the server.
   autoCrop,
   stretch,
 }

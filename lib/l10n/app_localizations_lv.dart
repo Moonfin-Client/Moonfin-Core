@@ -3312,7 +3312,7 @@ class AppLocalizationsLv extends AppLocalizations {
   String get fit => 'Fit';
 
   @override
-  String get zoomToFill => 'Zoom to Fill';
+  String get autoCrop => 'Automātiskā apgriešana';
 
   @override
   String get cropBlackBars => 'Crop Black Bars';

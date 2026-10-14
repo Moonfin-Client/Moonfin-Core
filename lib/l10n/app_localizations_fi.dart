@@ -3311,7 +3311,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get fit => 'Sopiva';
 
   @override
-  String get zoomToFill => 'Zoom to Fill';
+  String get autoCrop => 'Automaattinen rajaus';
 
   @override
   String get cropBlackBars => 'Leikkaa mustat palkit pois';

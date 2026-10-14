@@ -3319,7 +3319,7 @@ class AppLocalizationsSl extends AppLocalizations {
   String get fit => 'Fit';
 
   @override
-  String get zoomToFill => 'Zoom to Fill';
+  String get autoCrop => 'Samodejno obrezovanje';
 
   @override
   String get cropBlackBars => 'Crop Black Bars';

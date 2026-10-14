@@ -2828,6 +2828,10 @@
     "@fit": {
         "description": "Zoom mode: fit"
     },
+    "autoCrop": "Αυτόματη περικοπή",
+    "@autoCrop": {
+        "description": "Zoom mode: auto crop"
+    },
     "stretch": "Τέντωμα",
     "@stretch": {
         "description": "Zoom mode: stretch"

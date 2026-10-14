@@ -3308,7 +3308,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get fit => 'ఫిట్';
 
   @override
-  String get zoomToFill => 'Zoom to Fill';
+  String get autoCrop => 'ఆటో క్రాప్';
 
   @override
   String get cropBlackBars => 'Crop Black Bars';

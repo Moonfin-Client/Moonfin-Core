@@ -3251,7 +3251,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get fit => 'フィット';
 
   @override
-  String get zoomToFill => 'Zoom to Fill';
+  String get autoCrop => '自動トリミング';
 
   @override
   String get cropBlackBars => 'Crop Black Bars';

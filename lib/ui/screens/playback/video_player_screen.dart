@@ -7453,7 +7453,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   String _zoomModeLabel(AppLocalizations l10n, ZoomMode mode) =>
       switch (mode) {
         ZoomMode.fit => l10n.fit,
-        ZoomMode.autoCrop => l10n.zoomToFill,
+        ZoomMode.autoCrop => l10n.autoCrop,
         ZoomMode.stretch => l10n.stretch,
       };
 

@@ -3329,7 +3329,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get fit => 'Ajuster';
 
   @override
-  String get zoomToFill => 'Zoom to Fill';
+  String get autoCrop => 'Recadrage auto';
 
   @override
   String get cropBlackBars => 'Rogner les bandes noires';

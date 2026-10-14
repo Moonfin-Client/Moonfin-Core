@@ -3283,7 +3283,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get fit => 'مناسب';
 
   @override
-  String get zoomToFill => 'Zoom to Fill';
+  String get autoCrop => 'برش خودکار';
 
   @override
   String get cropBlackBars => 'Crop Black Bars';

@@ -2828,6 +2828,10 @@
     "@fit": {
         "description": "Zoom mode: fit"
     },
+    "autoCrop": "தானியங்கு பயிர்",
+    "@autoCrop": {
+        "description": "Zoom mode: auto crop"
+    },
     "stretch": "நீட்டவும்",
     "@stretch": {
         "description": "Zoom mode: stretch"

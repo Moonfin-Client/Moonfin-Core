@@ -2828,6 +2828,10 @@
     "@fit": {
         "description": "Zoom mode: fit"
     },
+    "autoCrop": "Prirje automatike",
+    "@autoCrop": {
+        "description": "Zoom mode: auto crop"
+    },
     "stretch": "Shtrihu",
     "@stretch": {
         "description": "Zoom mode: stretch"

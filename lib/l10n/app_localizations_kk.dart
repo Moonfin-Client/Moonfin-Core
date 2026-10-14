@@ -3303,7 +3303,7 @@ class AppLocalizationsKk extends AppLocalizations {
   String get fit => 'Сәйкес';
 
   @override
-  String get zoomToFill => 'Zoom to Fill';
+  String get autoCrop => 'Автоматты қию';
 
   @override
   String get cropBlackBars => 'Crop Black Bars';

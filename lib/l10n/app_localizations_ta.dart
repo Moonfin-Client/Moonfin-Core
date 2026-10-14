@@ -3312,7 +3312,7 @@ class AppLocalizationsTa extends AppLocalizations {
   String get fit => 'பொருத்தம்';
 
   @override
-  String get zoomToFill => 'Zoom to Fill';
+  String get autoCrop => 'தானியங்கு பயிர்';
 
   @override
   String get cropBlackBars => 'Crop Black Bars';

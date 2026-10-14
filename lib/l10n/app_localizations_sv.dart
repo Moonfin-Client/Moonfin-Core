@@ -3303,7 +3303,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get fit => 'Färdig';
 
   @override
-  String get zoomToFill => 'Zoom to Fill';
+  String get autoCrop => 'Autobeskärning';
 
   @override
   String get cropBlackBars => 'Crop Black Bars';

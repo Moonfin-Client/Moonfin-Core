@@ -3248,7 +3248,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get fit => '맞다';
 
   @override
-  String get zoomToFill => 'Zoom to Fill';
+  String get autoCrop => '자동 자르기';
 
   @override
   String get cropBlackBars => 'Crop Black Bars';

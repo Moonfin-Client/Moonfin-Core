@@ -3300,7 +3300,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get fit => 'Phù hợp';
 
   @override
-  String get zoomToFill => 'Zoom to Fill';
+  String get autoCrop => 'Tự động cắt';
 
   @override
   String get cropBlackBars => 'Crop Black Bars';

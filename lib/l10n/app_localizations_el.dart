@@ -3325,7 +3325,7 @@ class AppLocalizationsEl extends AppLocalizations {
   String get fit => 'Κατάλληλος';
 
   @override
-  String get zoomToFill => 'Zoom to Fill';
+  String get autoCrop => 'Αυτόματη περικοπή';
 
   @override
   String get cropBlackBars => 'Crop Black Bars';

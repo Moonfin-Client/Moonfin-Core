@@ -3310,7 +3310,7 @@ class AppLocalizationsMl extends AppLocalizations {
   String get fit => 'അനുയോജ്യം';
 
   @override
-  String get zoomToFill => 'Zoom to Fill';
+  String get autoCrop => 'ഓട്ടോ ക്രോപ്പ്';
 
   @override
   String get cropBlackBars => 'Crop Black Bars';

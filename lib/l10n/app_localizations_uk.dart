@@ -3317,7 +3317,7 @@ class AppLocalizationsUk extends AppLocalizations {
   String get fit => 'Fit';
 
   @override
-  String get zoomToFill => 'Zoom to Fill';
+  String get autoCrop => 'Автоматичне обрізання';
 
   @override
   String get cropBlackBars => 'Crop Black Bars';

@@ -3310,7 +3310,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get fit => 'ملائم';
 
   @override
-  String get zoomToFill => 'Zoom to Fill';
+  String get autoCrop => 'الاقتصاص التلقائي';
 
   @override
   String get cropBlackBars => 'Crop Black Bars';

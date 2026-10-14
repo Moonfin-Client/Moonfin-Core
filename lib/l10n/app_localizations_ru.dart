@@ -3319,7 +3319,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get fit => 'Соответствовать';
 
   @override
-  String get zoomToFill => 'Zoom to Fill';
+  String get autoCrop => 'Автоматическая обрезка';
 
   @override
   String get cropBlackBars => 'Crop Black Bars';

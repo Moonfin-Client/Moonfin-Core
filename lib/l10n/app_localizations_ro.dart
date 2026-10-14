@@ -3341,7 +3341,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get fit => 'Fit';
 
   @override
-  String get zoomToFill => 'Zoom to Fill';
+  String get autoCrop => 'Decupare automată';
 
   @override
   String get cropBlackBars => 'Decupează barele negre';

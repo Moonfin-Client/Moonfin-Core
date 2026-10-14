@@ -3313,7 +3313,7 @@ class AppLocalizationsSq extends AppLocalizations {
   String get fit => 'Përshtatet';
 
   @override
-  String get zoomToFill => 'Zoom to Fill';
+  String get autoCrop => 'Prirje automatike';
 
   @override
   String get cropBlackBars => 'Crop Black Bars';

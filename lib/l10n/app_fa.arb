@@ -2828,6 +2828,10 @@
     "@fit": {
         "description": "Zoom mode: fit"
     },
+    "autoCrop": "برش خودکار",
+    "@autoCrop": {
+        "description": "Zoom mode: auto crop"
+    },
     "stretch": "کشش",
     "@stretch": {
         "description": "Zoom mode: stretch"

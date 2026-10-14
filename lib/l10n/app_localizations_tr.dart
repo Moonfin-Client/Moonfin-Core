@@ -3292,7 +3292,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get fit => 'Sığdır';
 
   @override
-  String get zoomToFill => 'Zoom to Fill';
+  String get autoCrop => 'Otomatik Kırp';
 
   @override
   String get cropBlackBars => 'Siyah bantları kırp';

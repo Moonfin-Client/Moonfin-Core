@@ -3322,7 +3322,7 @@ class AppLocalizationsCy extends AppLocalizations {
   String get fit => 'Ffit';
 
   @override
-  String get zoomToFill => 'Zoom to Fill';
+  String get autoCrop => 'Cnwd Auto';
 
   @override
   String get cropBlackBars => 'Crop Black Bars';

@@ -3383,7 +3383,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get fit => 'Einpassen';
 
   @override
-  String get zoomToFill => 'Zoom to Fill';
+  String get autoCrop => 'Automatisch zuschneiden';
 
   @override
   String get cropBlackBars => 'Crop Black Bars';

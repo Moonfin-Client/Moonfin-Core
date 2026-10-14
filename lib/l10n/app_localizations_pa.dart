@@ -3293,7 +3293,7 @@ class AppLocalizationsPa extends AppLocalizations {
   String get fit => 'ਫਿੱਟ';
 
   @override
-  String get zoomToFill => 'Zoom to Fill';
+  String get autoCrop => 'ਆਟੋ ਕ੍ਰੌਪ';
 
   @override
   String get cropBlackBars => 'Crop Black Bars';

@@ -3289,7 +3289,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get fit => 'उपयुक्त';
 
   @override
-  String get zoomToFill => 'Zoom to Fill';
+  String get autoCrop => 'ऑटो क्रॉप';
 
   @override
   String get cropBlackBars => 'Crop Black Bars';

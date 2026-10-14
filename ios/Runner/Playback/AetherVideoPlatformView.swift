@@ -135,11 +135,11 @@ final class AetherVideoPlatformView: NSObject, FlutterPlatformView {
     }
 
     /// Accepts the Dart enum names (fit/autoCrop/stretch) and the native raw
-    /// values (Fit/Zoom to Fill/Stretch), plus the legacy "Auto Crop" raw value.
+    /// values (Fit/Zoom to Fill/Stretch).
     private static func zoomMode(fromWire value: String) -> ZoomMode? {
         switch value {
         case "fit", "Fit": return .fit
-        case "autoCrop", "Zoom to Fill", "Auto Crop": return .zoomToFill
+        case "autoCrop", "Zoom to Fill": return .zoomToFill
         case "stretch", "Stretch": return .stretch
         default: return nil
         }
