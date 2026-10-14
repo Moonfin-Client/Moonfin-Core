@@ -77,6 +77,84 @@ void main() {
     await GetIt.instance.reset();
   });
 
+  Future<HomeRow> loadPopulatedRow() async {
+    when(() => source.hasLiveTvChannels()).thenAnswer((_) async => true);
+    when(() => source.loadOnNow('http://server.test')).thenAnswer(
+      (_) async => HomeRow(
+        id: 'liveTvOnNow',
+        title: 'On Now',
+        rowType: HomeRowType.liveTvOnNow,
+        items: [
+          AggregatedItem(
+            id: 'program',
+            serverId: 'http://server.test',
+            rawData: {'Type': 'Program'},
+          ),
+        ],
+      ),
+    );
+    await model.load();
+    return model.rows.single;
+  }
+
+  test(
+    'a failed channel check preserves the visible row during refresh',
+    () async {
+      final existing = await loadPopulatedRow();
+      when(() => source.hasLiveTvChannels())
+          .thenThrow(Exception('unavailable'));
+
+      await model.load(preserveExisting: true);
+
+      expect(model.rows.single, same(existing));
+      expect(model.isLoading, isFalse);
+    },
+  );
+
+  test(
+    'a failed program request preserves the visible row during refresh',
+    () async {
+      final existing = await loadPopulatedRow();
+      when(() => source.loadOnNow('http://server.test'))
+          .thenThrow(Exception('EPG unavailable'));
+
+      await model.load(preserveExisting: true);
+
+      expect(model.rows.single, same(existing));
+      expect(model.isLoading, isFalse);
+    },
+  );
+
+  test(
+    'confirmed absence of channels removes the visible row during refresh',
+    () async {
+      await loadPopulatedRow();
+      when(() => source.hasLiveTvChannels()).thenAnswer((_) async => false);
+
+      await model.load(preserveExisting: true);
+
+      expect(model.rows, isEmpty);
+    },
+  );
+
+  test(
+    'a successful empty EPG response removes the visible row during refresh',
+    () async {
+      await loadPopulatedRow();
+      when(() => source.loadOnNow('http://server.test')).thenAnswer(
+        (_) async => const HomeRow(
+          id: 'liveTvOnNow',
+          title: 'On Now',
+          rowType: HomeRowType.liveTvOnNow,
+        ),
+      );
+
+      await model.load(preserveExisting: true);
+
+      expect(model.rows, isEmpty);
+    },
+  );
+
   test(
     'no Live TV channels skips program loading and clears the placeholder',
     () async {

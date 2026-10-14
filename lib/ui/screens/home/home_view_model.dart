@@ -1417,11 +1417,7 @@ class HomeViewModel extends ChangeNotifier {
         } catch (_) {}
         return rows;
       case HomeSectionType.onNow:
-        try {
-          if (!await _dataSource.hasLiveTvChannels()) return [];
-        } catch (_) {
-          return [];
-        }
+        if (!await _dataSource.hasLiveTvChannels()) return [];
         return [(await _dataSource.loadOnNow(_serverId)).copyWith(id: 'onNow')];
       case HomeSectionType.activeRecordings:
         return [
