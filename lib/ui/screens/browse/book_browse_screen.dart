@@ -200,7 +200,7 @@ class _BookBrowseScreenState extends State<BookBrowseScreen> {
   double get _sidebarInset {
     final sidebar =
         _prefs.get(UserPreferences.navbarPosition) == NavbarPosition.left;
-    return sidebar && !PlatformDetection.useMobileUi ? 44 : 0;
+    return sidebar && !PlatformDetection.useMobileUi ? 52 : 0;
   }
 
   GlobalKey<LockedFocusRowState> _rowKey(String rowId) =>

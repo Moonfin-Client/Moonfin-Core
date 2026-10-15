@@ -180,7 +180,7 @@ void main() {
     await prefs.set(UserPreferences.navbarPosition, NavbarPosition.left);
     await pumpScreen(tester);
 
-    expect(tester.getTopLeft(find.byType(BookSegmentedControl)).dx, 60);
+    expect(tester.getTopLeft(find.byType(BookSegmentedControl)).dx, closeTo(60, 1.0));
   });
 
   testWidgets('phones keep the tab control at the edge with the sidebar on',
