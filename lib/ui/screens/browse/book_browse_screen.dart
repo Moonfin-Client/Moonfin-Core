@@ -23,8 +23,11 @@ import '../../widgets/book/book_shelf_row.dart';
 import '../../widgets/book/book_stats_band.dart';
 import '../../widgets/book/discover/book_discover_tab.dart';
 import '../../widgets/focus/context_menu_sheet.dart';
+import '../../widgets/focus/can_claim_initial_focus.dart';
 import '../../widgets/focus/focusable_wrapper.dart';
 import '../../widgets/skeleton/skeleton_library_grid.dart';
+import '../../widgets/left_sidebar.dart';
+import '../../widgets/top_toolbar.dart';
 import '../../widgets/focus/locked_focus_row.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/bottom_nav/bottom_navbar.dart';
@@ -89,8 +92,11 @@ class _BookBrowseScreenState extends State<BookBrowseScreen> {
   void _onChanged() {
     if (!mounted) return;
     setState(() {});
-    if (!PlatformDetection.useMobileUi) {
+    if (!PlatformDetection.useMobileUi && !_vm.isLoading) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted || _vm.isLoading || !canClaimInitialFocus(context)
+          || LeftSidebar.isFocusedNotifier.value
+          || TopToolbar.isFocusedNotifier.value) return;
         // Once content loads, the topmost focusable item should request focus so
         // navigation has somewhere to start
         final featured = _vm.featuredItem;
