@@ -33,13 +33,14 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   late _MockDataSource source;
   late HomeViewModel model;
+  late UserPreferences prefs;
 
   setUp(() async {
     debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
     SharedPreferences.setMockInitialValues({});
     final store = PreferenceStore();
     await store.init();
-    final prefs = UserPreferences(store);
+    prefs = UserPreferences(store);
     await prefs.setHomeSectionsConfig([
       for (final config in HomeSectionConfig.defaults())
         config.copyWith(enabled: config.type == HomeSectionType.onNow),
@@ -77,7 +78,7 @@ void main() {
     await GetIt.instance.reset();
   });
 
-  Future<HomeRow> loadPopulatedRow() async {
+  void stubLiveTvRows() {
     when(() => source.hasLiveTvChannels()).thenAnswer((_) async => true);
     when(() => source.loadOnNow('http://server.test')).thenAnswer(
       (_) async => HomeRow(
@@ -93,6 +94,17 @@ void main() {
         ],
       ),
     );
+    when(() => source.loadFavoritesChannels('http://server.test')).thenAnswer(
+      (_) async => const HomeRow(
+        id: 'liveTvFavorites',
+        title: 'Favorite Channels',
+        rowType: HomeRowType.liveTvFavorites,
+      ),
+    );
+  }
+
+  Future<HomeRow> loadPopulatedRow() async {
+    stubLiveTvRows();
     await model.load();
     return model.rows.single;
   }
@@ -179,6 +191,37 @@ void main() {
     expect(model.rows, isEmpty);
     expect(model.isLoading, isFalse);
   });
+
+  Future<void> enableSections(Set<HomeSectionType> types) =>
+      prefs.setHomeSectionsConfig([
+        for (final config in HomeSectionConfig.defaults())
+          config.copyWith(enabled: types.contains(config.type)),
+      ]);
+
+  test(
+    'Live TV leaves On Now to the standalone section when both are on',
+    () async {
+      await enableSections({HomeSectionType.liveTv, HomeSectionType.onNow});
+      stubLiveTvRows();
+
+      await model.load();
+
+      expect(model.rows.map((row) => row.id), ['liveTv', 'onNow']);
+      verify(() => source.loadOnNow('http://server.test')).called(1);
+    },
+  );
+
+  test(
+    'Live TV keeps its own On Now row when the standalone section is off',
+    () async {
+      await enableSections({HomeSectionType.liveTv});
+      stubLiveTvRows();
+
+      await model.load();
+
+      expect(model.rows.map((row) => row.id), ['liveTv', 'liveTvOnNow']);
+    },
+  );
 
   test(
     'available channels load airing programs as the standalone row',
