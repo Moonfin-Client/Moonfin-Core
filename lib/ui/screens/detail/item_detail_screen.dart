@@ -11481,9 +11481,20 @@ class _DownloadButtonState extends State<_DownloadButton> {
     if (quality == null || !context.mounted) return;
     int? burnInSubtitleIndex;
     if (!isMulti && quality.isTranscoded) {
-      final candidates = burnInSubtitleCandidates(item.mediaStreams);
+      // The download is taken from the first media source, so its streams
+      // decide which tracks can be burned in.
+      final streams = mediaStreamsForItem(
+        item,
+        item.mediaSources.isEmpty ? null : item.mediaSources.first,
+      );
+      final candidates = burnInSubtitleCandidates(streams);
       if (candidates.isNotEmpty) {
-        final picked = await _pickBurnInSubtitle(context, item, candidates);
+        final picked = await _pickBurnInSubtitle(
+          context,
+          item,
+          streams,
+          candidates,
+        );
         if (picked == null || !context.mounted) return;
         burnInSubtitleIndex = picked < 0 ? null : picked;
       }
@@ -11505,31 +11516,50 @@ class _DownloadButtonState extends State<_DownloadButton> {
   static Future<int?> _pickBurnInSubtitle(
     BuildContext context,
     AggregatedItem item,
+    List<Map<String, dynamic>> streams,
     List<Map<String, dynamic>> candidates,
   ) {
     final l10n = AppLocalizations.of(context);
     final prefs = GetIt.instance<UserPreferences>();
+    final subtitleStreams = streams
+        .where((s) => s['Type'] == 'Subtitle')
+        .toList();
+    // A per-series choice, including None, wins over the global settings,
+    // the same as for playback.
+    final seriesId = item.seriesId;
+    final seriesIndex = seriesId == null || seriesId.isEmpty
+        ? null
+        : matchSeriesTrackIndex(
+            streams: subtitleStreams,
+            pref: prefs.getSeriesSubtitlePreference(seriesId),
+          );
     final preselected = defaultBurnInSubtitleIndex(
       candidates: candidates,
-      effectiveIndex: computeEffectiveSubtitleIndex(
-        subtitleStreams: item.mediaStreams
-            .where((s) => s['Type'] == 'Subtitle')
-            .toList(),
-        selectedSubtitleIndex: null,
-        activePlaybackSubtitleIndex: null,
-        subtitleMode: prefs.get(UserPreferences.subtitleMode),
-        preferredLanguage: prefs.get(UserPreferences.defaultSubtitleLanguage),
-        fallbackLanguage: prefs.get(UserPreferences.fallbackSubtitleLanguage),
-        preferSdh: prefs.get(UserPreferences.preferSdhSubtitles),
-        preferTextSubtitles: prefs.get(UserPreferences.preferTextSubtitles),
-        preferExternalSubtitles: prefs.get(
-          UserPreferences.preferExternalSubtitles,
-        ),
-        pgsDirectPlay: prefs.get(UserPreferences.pgsDirectPlay),
-        assDirectPlay: prefs.get(UserPreferences.assDirectPlay),
-        preferredAudioLanguage: prefs.get(UserPreferences.defaultAudioLanguage),
-        activeAudioLanguage: null,
-      ),
+      effectiveIndex:
+          seriesIndex ??
+          computeEffectiveSubtitleIndex(
+            subtitleStreams: subtitleStreams,
+            selectedSubtitleIndex: null,
+            activePlaybackSubtitleIndex: null,
+            subtitleMode: prefs.get(UserPreferences.subtitleMode),
+            preferredLanguage: prefs.get(
+              UserPreferences.defaultSubtitleLanguage,
+            ),
+            fallbackLanguage: prefs.get(
+              UserPreferences.fallbackSubtitleLanguage,
+            ),
+            preferSdh: prefs.get(UserPreferences.preferSdhSubtitles),
+            preferTextSubtitles: prefs.get(UserPreferences.preferTextSubtitles),
+            preferExternalSubtitles: prefs.get(
+              UserPreferences.preferExternalSubtitles,
+            ),
+            pgsDirectPlay: prefs.get(UserPreferences.pgsDirectPlay),
+            assDirectPlay: prefs.get(UserPreferences.assDirectPlay),
+            preferredAudioLanguage: prefs.get(
+              UserPreferences.defaultAudioLanguage,
+            ),
+            activeAudioLanguage: null,
+          ),
     );
     final options = <(int, String)>[
       (-1, l10n.none),
@@ -11563,7 +11593,7 @@ class _DownloadButtonState extends State<_DownloadButton> {
           // sheet has finished sliding in.
           ModalRoute.of(sheetContext)?.animation?.addStatusListener((status) {
             if (status == AnimationStatus.completed &&
-                selectedFocus.context != null) {
+                selectedFocus.context?.mounted == true) {
               selectedFocus.requestFocus();
             }
           });
