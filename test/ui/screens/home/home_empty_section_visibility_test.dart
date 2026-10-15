@@ -7,6 +7,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:moonfin/data/models/aggregated_item.dart';
 import 'package:moonfin/data/models/home_row.dart';
 import 'package:moonfin/data/repositories/multi_server_repository.dart';
+import 'package:moonfin/data/services/home_row_cache_store.dart';
 import 'package:moonfin/data/services/plugin_sync_service.dart';
 import 'package:moonfin/data/services/row_data_source.dart';
 import 'package:moonfin/data/viewmodels/media_bar_view_model.dart';
@@ -30,173 +31,225 @@ class _PluginSync extends Mock implements PluginSyncService {}
 
 class _SeerrPrefs extends Mock implements SeerrPreferences {}
 
-HomeRow placeholder(String id) => HomeRow(
+class _Cache extends Fake implements HomeRowCacheStore {
+  _Cache(this.cached);
+
+  final List<HomeRow>? cached;
+
+  @override
+  Future<List<HomeRow>?> read(String cacheKey) async => cached;
+
+  @override
+  Future<void> write(String cacheKey, List<HomeRow> rows) async {}
+}
+
+HomeRow populated(String id, HomeRowType type, {int totalCount = 0}) => HomeRow(
   id: id,
   title: id,
-  rowType: HomeRowType.pluginDynamic,
-  isLoading: true,
-);
-
-HomeRow populated(String id) => placeholder(id).copyWith(
-  isLoading: false,
+  rowType: type,
+  totalCount: totalCount,
   items: [
-    AggregatedItem(id: id, serverId: 'server', rawData: {'Name': id}),
+    AggregatedItem(id: '$id-item', serverId: 'server', rawData: {'Name': id}),
   ],
 );
 
-List<String> visibleIds(List<HomeRow> rows) =>
-    HomeViewModel.rowsForDisplay(rows).map((row) => row.id).toList();
+const emptyResume = HomeRow(
+  id: 'resume',
+  title: 'Continue Watching',
+  rowType: HomeRowType.resume,
+);
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  test(
-    'public rows getter hides placeholders during load and focus refresh',
-    () async {
-      SharedPreferences.setMockInitialValues({});
-      final store = PreferenceStore();
-      await store.init();
-      final prefs = UserPreferences(store);
-      await prefs.setHomeSectionsConfig(
-        HomeSectionConfig.defaults()
-            .map(
-              (cfg) => cfg.copyWith(
-                enabled:
-                    cfg.type == HomeSectionType.resume ||
-                    cfg.type == HomeSectionType.nextUp,
-              ),
-            )
-            .toList(),
-      );
-      await prefs.set(UserPreferences.mergeContinueWatchingNextUp, false);
-      await prefs.set(UserPreferences.enableMultiServerLibraries, false);
-      await prefs.set(
-        UserPreferences.lastExternalRowsRefreshTime,
-        DateTime.now().millisecondsSinceEpoch,
-      );
+  late UserPreferences prefs;
+  late _DataSource source;
+  late Completer<HomeRow> resume;
+  late Completer<void> resumeStarted;
 
-      final pluginSync = _PluginSync();
-      when(() => pluginSync.seerrAvailable).thenReturn(false);
-      when(() => pluginSync.pluginAvailable).thenReturn(false);
-      GetIt.instance.registerSingleton<PluginSyncService>(pluginSync);
-      GetIt.instance.registerSingleton<SeerrPreferences>(_SeerrPrefs());
-      addTearDown(() => GetIt.instance.reset());
+  void expectResumeLoad() {
+    resume = Completer<HomeRow>();
+    resumeStarted = Completer<void>();
+  }
 
-      final client = _Client();
-      when(() => client.userId).thenReturn('user');
-      when(() => client.baseUrl).thenReturn('http://server');
-      final mediaBar = _MediaBar();
-      when(() => mediaBar.load(force: any(named: 'force')))
-          .thenAnswer((_) async {});
-      final source = _DataSource();
-      var resume = Completer<HomeRow>();
-      var resumeStarted = Completer<void>();
-      when(() => source.loadResume('http://server')).thenAnswer((_) {
-        resumeStarted.complete();
-        return resume.future;
-      });
-      final nextUp = populated('nextUp').copyWith(rowType: HomeRowType.nextUp);
-      when(() => source.loadNextUp('http://server'))
-          .thenAnswer((_) async => nextUp);
-      final vm = HomeViewModel(
-        dataSource: source,
-        prefs: prefs,
-        client: client,
-        mediaBarViewModel: mediaBar,
-        multiServerRepo: _MultiServer(),
-      );
-      addTearDown(vm.dispose);
+  setUpAll(() => registerFallbackValue(emptyResume));
 
-      final visibleSnapshots = <List<String>>[];
-      vm.addListener(() {
-        visibleSnapshots.add(vm.rows.map((row) => row.id).toList());
-      });
-      final loading = vm.load();
-      await resumeStarted.future;
-      // The resume request is outstanding, so its internal placeholder exists.
-      expect(vm.rows.any((row) => row.id == 'resume'), isFalse);
-      resume.complete(
-        const HomeRow(
-          id: 'resume',
-          title: 'Continue Watching',
-          rowType: HomeRowType.resume,
+  setUp(() async {
+    SharedPreferences.setMockInitialValues({});
+    final store = PreferenceStore();
+    await store.init();
+    prefs = UserPreferences(store);
+    await prefs.setHomeSectionsConfig([
+      for (final cfg in HomeSectionConfig.defaults())
+        cfg.copyWith(
+          enabled:
+              cfg.type == HomeSectionType.resume ||
+              cfg.type == HomeSectionType.nextUp,
         ),
-      );
-      await loading;
-      expect(vm.rows.map((row) => row.id), ['nextUp']);
-      expect(vm.rows.single.items, nextUp.items);
-      expect(visibleSnapshots.every((ids) => !ids.contains('resume')), isTrue);
+    ]);
+    await prefs.set(UserPreferences.mergeContinueWatchingNextUp, false);
+    await prefs.set(UserPreferences.enableMultiServerLibraries, false);
+    await prefs.set(
+      UserPreferences.lastExternalRowsRefreshTime,
+      DateTime.now().millisecondsSinceEpoch,
+    );
 
-      resume = Completer<HomeRow>();
-      resumeStarted = Completer<void>();
-      final refreshing = vm.refresh(preserveExisting: true);
+    final pluginSync = _PluginSync();
+    when(() => pluginSync.seerrAvailable).thenReturn(false);
+    when(() => pluginSync.pluginAvailable).thenReturn(false);
+    GetIt.instance.registerSingleton<PluginSyncService>(pluginSync);
+    GetIt.instance.registerSingleton<SeerrPreferences>(_SeerrPrefs());
+
+    source = _DataSource();
+    expectResumeLoad();
+    when(() => source.loadResume('http://server')).thenAnswer((_) {
+      resumeStarted.complete();
+      return resume.future;
+    });
+    when(() => source.loadNextUp('http://server')).thenAnswer(
+      (_) async => populated('nextUp', HomeRowType.nextUp, totalCount: 10),
+    );
+  });
+
+  tearDown(() => GetIt.instance.reset());
+
+  HomeViewModel model({List<HomeRow>? cached}) {
+    final client = _Client();
+    when(() => client.userId).thenReturn('user');
+    when(() => client.baseUrl).thenReturn('http://server');
+    final mediaBar = _MediaBar();
+    when(() => mediaBar.load(force: any(named: 'force')))
+        .thenAnswer((_) async {});
+    final vm = HomeViewModel(
+      dataSource: source,
+      prefs: prefs,
+      client: client,
+      mediaBarViewModel: mediaBar,
+      multiServerRepo: _MultiServer(),
+      cacheStore: _Cache(cached),
+    );
+    addTearDown(vm.dispose);
+    return vm;
+  }
+
+  List<String> ids(HomeViewModel vm) => vm.rows.map((row) => row.id).toList();
+
+  Future<HomeViewModel> loadedWithEmptyResume() async {
+    final vm = model();
+    final loading = vm.load();
+    await resumeStarted.future;
+    resume.complete(emptyResume);
+    await loading;
+    expectResumeLoad();
+    return vm;
+  }
+
+  test('a section keeps its placeholder until a load finds it empty', () async {
+    final vm = model();
+    final loading = vm.load();
+    await resumeStarted.future;
+    expect(vm.rows.first.id, 'resume');
+    expect(vm.rows.first.isLoading, isTrue);
+
+    resume.complete(emptyResume);
+    await loading;
+    expect(ids(vm), ['nextUp']);
+  });
+
+  test(
+    'a section that came back empty stays hidden while it refreshes',
+    () async {
+      final vm = await loadedWithEmptyResume();
+
+      final refreshing = vm.refresh();
       await resumeStarted.future;
-      expect(vm.rows.map((row) => row.id), ['nextUp']);
-      final newResume = populated('resume')
-          .copyWith(rowType: HomeRowType.resume);
-      resume.complete(newResume);
+      expect(ids(vm), ['nextUp']);
+
+      resume.complete(populated('resume', HomeRowType.resume));
       await refreshing;
-      expect(vm.rows.map((row) => row.id), ['resume', 'nextUp']);
-      expect(vm.rows.first.items, newResume.items);
+      expect(ids(vm), ['resume', 'nextUp']);
     },
   );
 
-  group('empty Home sections on Web and native clients', () {
-    test('never appear while a fresh load resolves', () {
-      expect(
-        visibleIds([placeholder('empty'), placeholder('latest')]),
-        isEmpty,
-      );
-      expect(visibleIds([placeholder('empty'), populated('latest')]), [
-        'latest',
-      ]);
-      expect(visibleIds([populated('latest')]), ['latest']);
-    });
+  test('paging reaches the row on screen past a hidden placeholder', () async {
+    final vm = await loadedWithEmptyResume();
+    when(
+      () => source.loadMore(
+        row: any(named: 'row'),
+        serverId: any(named: 'serverId'),
+        offset: any(named: 'offset'),
+      ),
+    ).thenAnswer((_) async => (const <AggregatedItem>[], 10));
 
-    test('stay hidden when focus regain recreates their placeholders', () {
-      final latest = populated('latest');
-      expect(visibleIds([latest]), ['latest']);
-      expect(visibleIds([placeholder('empty'), latest]), ['latest']);
-      expect(visibleIds([latest]), ['latest']);
-    });
+    final refreshing = vm.refresh();
+    await resumeStarted.future;
+    await vm.loadMoreForRow(0);
 
-    test('hides loaded empty sections, including Continue Watching', () {
-      for (final type in HomeRowType.values) {
-        if (type == HomeRowType.liveTv) continue;
-        final empty = HomeRow(id: type.name, title: type.name, rowType: type);
-        expect(visibleIds([empty, populated('latest')]), ['latest']);
-      }
-    });
+    verify(
+      () => source.loadMore(
+        row: any(
+          named: 'row',
+          that: predicate<HomeRow>((row) => row.id == 'nextUp'),
+        ),
+        serverId: any(named: 'serverId'),
+        offset: any(named: 'offset'),
+      ),
+    ).called(1);
 
-    test('a formerly empty section can gain content in configured order', () {
-      final latest = populated('latest');
-      expect(visibleIds([placeholder('resume'), latest]), ['latest']);
-      expect(visibleIds([populated('resume'), latest]), ['resume', 'latest']);
-    });
+    resume.complete(emptyResume);
+    await refreshing;
+  });
 
-    test('keeps cached content and loaded action rows without media items', () {
-      final liveTv = HomeRow(
-        id: 'liveTv',
-        title: 'Live TV',
-        rowType: HomeRowType.liveTv,
-      );
-      expect(visibleIds([placeholder('empty'), populated('cached'), liveTv]), [
-        'cached',
-        'liveTv',
-      ]);
-      expect(visibleIds([populated('cached').copyWith(isLoading: true)]), [
-        'cached',
-      ]);
-    });
+  test('a failed load is not taken for an empty section', () async {
+    final vm = model();
+    final loading = vm.load();
+    await resumeStarted.future;
+    resume.completeError(Exception('offline'));
+    await loading;
+    expectResumeLoad();
 
-    test('all clients hide titled Continue Watching loading placeholders', () {
-      final resume = HomeRow(
-        id: 'resume',
-        title: 'Continue Watching',
-        rowType: HomeRowType.resume,
-        isLoading: true,
-      );
-      expect(visibleIds([resume, populated('latest')]), ['latest']);
-    });
+    final refreshing = vm.refresh();
+    await resumeStarted.future;
+    expect(ids(vm), ['resume', 'nextUp']);
+
+    resume.complete(emptyResume);
+    await refreshing;
+  });
+
+  test('a cold start hides sections the cache had nothing for', () async {
+    final vm = model(cached: [populated('nextUp', HomeRowType.nextUp)]);
+    final loading = vm.load();
+    await resumeStarted.future;
+    expect(ids(vm), ['nextUp']);
+
+    resume.complete(populated('resume', HomeRowType.resume));
+    await loading;
+    expect(ids(vm), ['resume', 'nextUp']);
+  });
+
+  test('merged Continue Watching that came back empty stays hidden while it refreshes', () async {
+    await prefs.set(UserPreferences.mergeContinueWatchingNextUp, true);
+    when(() => source.loadNextUp('http://server')).thenAnswer(
+      (_) async => const HomeRow(
+        id: 'nextUp',
+        title: 'Next Up',
+        rowType: HomeRowType.nextUp,
+      ),
+    );
+    final vm = model();
+    await vm.load();
+    await resumeStarted.future;
+    resume.complete(emptyResume);
+    await pumpEventQueue();
+    expect(ids(vm), isEmpty);
+    expectResumeLoad();
+
+    await vm.refresh();
+    await resumeStarted.future;
+    expect(ids(vm), isEmpty);
+
+    resume.complete(populated('resume', HomeRowType.resume));
+    await pumpEventQueue();
+    expect(ids(vm), ['resume']);
   });
 }

@@ -54,7 +54,7 @@ class HomeViewModel extends ChangeNotifier {
   final MediaBarViewModel _mediaBarViewModel;
   final MultiServerRepository _multiServerRepo;
   final String _ownerUserId;
-  final HomeRowCacheStore _cacheStore = HomeRowCacheStore();
+  final HomeRowCacheStore _cacheStore;
   final Set<String> _inFlightPagingRowIds = {};
   final Map<String, int> _rowOffsets = {};
   final Set<String> _rowsPagedThisLoad = {};
@@ -68,19 +68,18 @@ class HomeViewModel extends ChangeNotifier {
   final TvChannelsService _tvChannels = TvChannelsService();
 
   List<HomeRow> _rows = [];
-  List<HomeRow> get rows => rowsForDisplay(_rows);
+  List<HomeRow> get rows => _emptySectionIds.isEmpty
+      ? _rows
+      : _rows.where((row) => !_isEmptySectionPlaceholder(row)).toList();
 
-  /// Sections only appear once their content arrives. Keep placeholders
-  /// internally to anchor concurrent results in the configured order, but
-  /// don't paint sections that may turn out to be empty on load or focus regain.
-  @visibleForTesting
-  static List<HomeRow> rowsForDisplay(List<HomeRow> rows) => rows
-      .where(
-        (row) =>
-            row.items.isNotEmpty ||
-            (!row.isLoading && row.rowType == HomeRowType.liveTv),
-      )
-      .toList();
+  /// Placeholder ids of sections expected to come back empty, because their
+  /// last load did or a cold start found nothing cached for them. Their
+  /// placeholders still hold their place in the order, but aren't shown, so
+  /// an empty section doesn't flash its title on every load.
+  final Set<String> _emptySectionIds = {};
+
+  bool _isEmptySectionPlaceholder(HomeRow row) =>
+      row.isLoading && row.items.isEmpty && _emptySectionIds.contains(row.id);
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -289,11 +288,13 @@ class HomeViewModel extends ChangeNotifier {
     required MediaServerClient client,
     required MediaBarViewModel mediaBarViewModel,
     required MultiServerRepository multiServerRepo,
+    HomeRowCacheStore? cacheStore,
   }) : _dataSource = dataSource,
        _prefs = prefs,
        _client = client,
        _mediaBarViewModel = mediaBarViewModel,
        _multiServerRepo = multiServerRepo,
+       _cacheStore = cacheStore ?? HomeRowCacheStore(),
        _ownerUserId = client.userId ?? '';
 
   /// Whether a section whose load threw keeps what is already on screen.
@@ -506,7 +507,10 @@ class HomeViewModel extends ChangeNotifier {
         _rows = placeholders;
         notifyListeners();
       } else {
-        final reconciledRows = _reconcilePreservedRows(effectiveConfigs);
+        final reconciledRows = _reconcilePreservedRows(
+          effectiveConfigs,
+          hydratedFromCache: hydratedFromCache,
+        );
         if (!listEquals(_rows, reconciledRows)) {
           _rows = reconciledRows;
           notifyListeners();
@@ -515,9 +519,11 @@ class HomeViewModel extends ChangeNotifier {
 
       Future<void> loadConfigItem(HomeSectionConfig cfg) async {
         List<HomeRow> sectionRows;
+        var failed = false;
         try {
           sectionRows = await _loadConfig(cfg, forceRefresh: forceRefresh);
         } catch (e) {
+          failed = true;
           debugPrint('[Home] Failed to load section $cfg: $e');
           final hasVisibleRow = _rowsForConfig(
             _rows,
@@ -558,6 +564,13 @@ class HomeViewModel extends ChangeNotifier {
             })
             .toList();
         final placeholder = _placeholderForConfig(cfg);
+        if (placeholder != null && !failed) {
+          if (loadedRows.isEmpty) {
+            _emptySectionIds.add(placeholder.id);
+          } else {
+            _emptySectionIds.remove(placeholder.id);
+          }
+        }
         final loadedIds = loadedRows.map((r) => r.id).toSet();
         // Find the row that immediately follows this section's placeholder /
         // existing rows, so we can re-anchor after removals.
@@ -653,8 +666,9 @@ class HomeViewModel extends ChangeNotifier {
   }
 
   List<HomeRow> _reconcilePreservedRows(
-    List<HomeSectionConfig> effectiveConfigs,
-  ) {
+    List<HomeSectionConfig> effectiveConfigs, {
+    bool hydratedFromCache = false,
+  }) {
     final currentRows = _rows;
     final reconciledRows = <HomeRow>[];
 
@@ -667,6 +681,12 @@ class HomeViewModel extends ChangeNotifier {
 
       final placeholder = _placeholderForConfig(cfg);
       if (placeholder != null) {
+        // The cache holds every section that had something to show, apart
+        // from rows too short lived to keep.
+        if (hydratedFromCache &&
+            !HomeRowCacheStore.isTimeBound(placeholder.rowType)) {
+          _emptySectionIds.add(placeholder.id);
+        }
         reconciledRows.add(placeholder);
       }
     }
@@ -955,8 +975,8 @@ class HomeViewModel extends ChangeNotifier {
   Future<void> loadMoreForRow(int rowIndex) async {
     final displayedRows = rows;
     if (rowIndex < 0 || rowIndex >= displayedRows.length) return;
-    // Loading placeholders are hidden, so the visible index can differ from
-    // the internal index used by the paging loaders.
+    // Placeholders of sections expected to be empty are hidden, so the index
+    // on screen can differ from the one the paging loaders use.
     rowIndex = _rows.indexWhere((row) => row.id == displayedRows[rowIndex].id);
     if (rowIndex < 0) return;
     final row = _rows[rowIndex];
@@ -2302,8 +2322,10 @@ class HomeViewModel extends ChangeNotifier {
     if (resumeIndex < 0) return;
     _rows = List.of(_rows);
     if (mergedItems.isEmpty) {
+      _emptySectionIds.add('resume');
       _rows.removeAt(resumeIndex);
     } else {
+      _emptySectionIds.remove('resume');
       _rows[resumeIndex] = _rows[resumeIndex].copyWith(
         items: mergedItems,
         isLoading: false,

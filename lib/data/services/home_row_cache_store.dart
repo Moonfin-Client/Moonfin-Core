@@ -21,7 +21,7 @@ class HomeRowCacheStore {
 
   /// Rows whose items are only true for the minutes they describe. Replaying
   /// them from disk paints programs that already ended.
-  static bool _isTimeBound(HomeRowType rowType) =>
+  static bool isTimeBound(HomeRowType rowType) =>
       rowType == HomeRowType.liveTvOnNow;
 
   Future<File> _file() async {
@@ -54,7 +54,7 @@ class HomeRowCacheStore {
         if (raw is! Map) continue;
         final row = _rowFromJson(raw.cast<String, dynamic>());
         // Drop time-bound rows a build before this one may have written.
-        if (row != null && !_isTimeBound(row.rowType)) rows.add(row);
+        if (row != null && !isTimeBound(row.rowType)) rows.add(row);
       }
       return rows.isEmpty ? null : rows;
     } catch (_) {
@@ -73,8 +73,7 @@ class HomeRowCacheStore {
   Future<void> write(String cacheKey, List<HomeRow> rows) {
     final serializable = rows
         .where(
-          (r) =>
-              !r.isLoading && r.items.isNotEmpty && !_isTimeBound(r.rowType),
+          (r) => !r.isLoading && r.items.isNotEmpty && !isTimeBound(r.rowType),
         )
         .map(_rowToJson)
         .toList(growable: false);
