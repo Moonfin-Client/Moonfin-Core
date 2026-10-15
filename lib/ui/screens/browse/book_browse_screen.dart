@@ -50,6 +50,7 @@ class _BookBrowseScreenState extends State<BookBrowseScreen> {
   int _tab = 0;
 
   final _coordinator = RowFocusCoordinator();
+  final _initialFocusNode = FocusNode(debugLabel: 'bookInitialContent');
   final _heroCtaFocusNode = FocusNode(debugLabel: 'bookHeroCta');
   final _scopeFocusNode = FocusNode(debugLabel: 'bookScopeFilter');
   final _tabsFocusNode = FocusNode(debugLabel: 'bookTabs');
@@ -78,6 +79,7 @@ class _BookBrowseScreenState extends State<BookBrowseScreen> {
     _prefs.removeListener(_onChanged);
     _vm.removeListener(_onChanged);
     _vm.dispose();
+    _initialFocusNode.dispose();
     _heroCtaFocusNode.dispose();
     _scopeFocusNode.dispose();
     _tabsFocusNode.dispose();
@@ -215,7 +217,10 @@ class _BookBrowseScreenState extends State<BookBrowseScreen> {
 
   @override
   Widget build(BuildContext context) =>
-      RequestInitialFocus(child: _buildContent(context));
+      RequestInitialFocus(
+        targetNode: _initialFocusNode,
+        child: _buildContent(context),
+      );
 
   Widget _buildContent(BuildContext context) {
     return Scaffold(
