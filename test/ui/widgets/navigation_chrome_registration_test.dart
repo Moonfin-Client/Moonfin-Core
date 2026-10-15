@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -242,6 +243,25 @@ void main() {
       await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
       await tester.pumpAndSettle();
       expect(_focusedLabel(), 'LeftSidebarHome');
+    }, variant: linux);
+
+    testWidgets('a mouse user gets no focus highlight', (tester) async {
+      await _openDesktopSidebar(tester);
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
+      await tester.pumpAndSettle();
+      expect(_focusedLabel(), 'LeftSidebarProfile');
+
+      final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
+      await mouse.addPointer(location: Offset.zero);
+      await mouse.moveTo(const Offset(600, 400));
+      await tester.pumpAndSettle();
+
+      expect(_focusedLabel(), 'LeftSidebarProfile');
+      expect(
+        _backgroundOf(tester, _focusLabelled('LeftSidebarProfile')),
+        Colors.transparent,
+      );
+      await mouse.removePointer();
     }, variant: linux);
   });
 }
