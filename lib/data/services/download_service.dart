@@ -18,6 +18,7 @@ import '../../l10n/current_app_localizations.dart';
 import '../../platform/device_storage.dart';
 import '../../platform/ios_storage.dart';
 import '../../playback/subtitle_formats.dart';
+import '../../util/download_subtitle_logic.dart';
 import '../../preference/user_preferences.dart';
 import '../../util/disk_free_space.dart';
 import '../../util/download_grouping.dart' show downloadNotificationLabel;
@@ -279,11 +280,17 @@ class _NeverStartedException implements Exception {}
 enum _DownloadActivityPhase { start, progress, stop }
 
 class _QueuedDownload {
-  _QueuedDownload(this.item, this.quality, this.source);
+  _QueuedDownload(
+    this.item,
+    this.quality,
+    this.source, {
+    this.burnInSubtitleIndex,
+  });
 
   final AggregatedItem item;
   final DownloadQuality quality;
   final DownloadSource source;
+  final int? burnInSubtitleIndex;
   final Completer<void> completer = Completer<void>();
 }
 
@@ -596,6 +603,7 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
         queued.item,
         quality: queued.quality,
         source: queued.source,
+        burnInSubtitleIndex: queued.burnInSubtitleIndex,
       );
       if (!queued.completer.isCompleted) queued.completer.complete();
     } catch (error, stackTrace) {
@@ -2124,6 +2132,7 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
     AggregatedItem item,
     DownloadQuality quality, {
     String? playSessionId,
+    int? burnInSubtitleIndex,
   }) {
     if (!quality.isTranscoded || !_supportsTranscodedDownload(item.type)) {
       return _buildDirectItemDownloadUrl(itemId, item);
@@ -2145,6 +2154,7 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
       params['maxWidth'] = quality.maxWidth.toString();
     }
     params['container'] = quality.container;
+    params.addAll(burnInSubtitleParams(burnInSubtitleIndex));
     if (quality.audioChannels != null) {
       params['audioChannels'] = quality.audioChannels.toString();
     }
@@ -2178,15 +2188,23 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
     }
   }
 
+  /// [burnInSubtitleIndex] names an image subtitle track to draw into the
+  /// video of a transcoded download, which otherwise carries no subtitles.
   Future<void> downloadItem(
     AggregatedItem item, {
     DownloadQuality quality = DownloadQuality.original,
     DownloadSource source = DownloadSource.manual,
+    int? burnInSubtitleIndex,
   }) {
     // Browser downloads are delegated to the platform and do not have a
     // process-owned transfer to schedule.
     if (PlatformDetection.isWeb) {
-      return _downloadItemNow(item, quality: quality, source: source);
+      return _downloadItemNow(
+        item,
+        quality: quality,
+        source: source,
+        burnInSubtitleIndex: burnInSubtitleIndex,
+      );
     }
 
     if (_cancelAllRequested) {
@@ -2203,7 +2221,12 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
     final active = _activeDownloads[item.id];
     if (active != null && active.error == null) return Future.value();
 
-    final queued = _QueuedDownload(item, quality, source);
+    final queued = _QueuedDownload(
+      item,
+      quality,
+      source,
+      burnInSubtitleIndex: burnInSubtitleIndex,
+    );
     _sources[item.id] = source;
     _pendingDownloadByItemId[item.id] = queued;
     _pendingDownloads.addLast(queued);
@@ -2225,11 +2248,17 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
     AggregatedItem item, {
     DownloadQuality quality = DownloadQuality.original,
     DownloadSource source = DownloadSource.manual,
+    int? burnInSubtitleIndex,
   }) async {
     if (PlatformDetection.isWeb) {
       try {
         final fullItem = await _ensureFullItem(item);
-        final url = _buildDownloadUrl(item.id, fullItem, quality);
+        final url = _buildDownloadUrl(
+          item.id,
+          fullItem,
+          quality,
+          burnInSubtitleIndex: burnInSubtitleIndex,
+        );
         final fileName = _buildFileName(fullItem, quality);
         triggerBrowserDownload(url, fileName);
       } catch (e) {
@@ -2454,6 +2483,7 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
         fullItem,
         quality,
         playSessionId: transcodePlaySessionId,
+        burnInSubtitleIndex: burnInSubtitleIndex,
       );
       if (transcodePlaySessionId != null) {
         _startTranscodeStatusPolling(item.id, transcodePlaySessionId);
@@ -3377,13 +3407,11 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
 
     final authOptions = Options(headers: _buildAuthHeaders());
     for (final stream in streams) {
-      if (stream['Type'] != 'Subtitle') continue;
       // External files download as-is. Embedded text subs that the server can
-      // extract also get saved as sidecars, which is the only subtitle path a
-      // transcoded download has since the transcoded file carries none.
-      final isExternal = stream['IsExternal'] == true;
-      final supportsExternal = stream['SupportsExternalStream'] == true;
-      if (!isExternal && !supportsExternal) continue;
+      // extract also get saved as sidecars, which is the only text subtitle
+      // path a transcoded download has since the transcoded file carries none.
+      // Image subs can only be kept there by burning them in.
+      if (!downloadsAsSubtitleSidecar(stream)) continue;
       final index = stream['Index'] as int? ?? 0;
       final ext = canonicalSubtitleCodec(stream['Codec'] as String?);
       // DeliveryUrl is computed by the server during PlaybackInfo and is often

@@ -113,6 +113,7 @@ import '../../../playback/known_defects.dart';
 import '../../../syncplay/syncplay_manager.dart';
 import '../../../util/audio_labels.dart';
 import '../../../util/detail_trailer.dart';
+import '../../../util/download_subtitle_logic.dart';
 import '../../../util/download_utils.dart';
 import '../../../util/episode_playability.dart';
 import '../../../util/item_watch_state.dart';
@@ -11478,7 +11479,132 @@ class _DownloadButtonState extends State<_DownloadButton> {
       items: items ?? const [],
     );
     if (quality == null || !context.mounted) return;
-    _startDownload(context, item, service, quality, items: items);
+    int? burnInSubtitleIndex;
+    if (!isMulti && quality.isTranscoded) {
+      final candidates = burnInSubtitleCandidates(item.mediaStreams);
+      if (candidates.isNotEmpty) {
+        final picked = await _pickBurnInSubtitle(context, item, candidates);
+        if (picked == null || !context.mounted) return;
+        burnInSubtitleIndex = picked < 0 ? null : picked;
+      }
+    }
+    _startDownload(
+      context,
+      item,
+      service,
+      quality,
+      items: items,
+      burnInSubtitleIndex: burnInSubtitleIndex,
+    );
+  }
+
+  /// Asks which image subtitle track, if any, to burn into a transcoded
+  /// download of [item]. The track normal playback would show is
+  /// preselected. Returns the stream index, -1 for none, or null when the
+  /// sheet is dismissed.
+  static Future<int?> _pickBurnInSubtitle(
+    BuildContext context,
+    AggregatedItem item,
+    List<Map<String, dynamic>> candidates,
+  ) {
+    final l10n = AppLocalizations.of(context);
+    final prefs = GetIt.instance<UserPreferences>();
+    final preselected = defaultBurnInSubtitleIndex(
+      candidates: candidates,
+      effectiveIndex: computeEffectiveSubtitleIndex(
+        subtitleStreams: item.mediaStreams
+            .where((s) => s['Type'] == 'Subtitle')
+            .toList(),
+        selectedSubtitleIndex: null,
+        activePlaybackSubtitleIndex: null,
+        subtitleMode: prefs.get(UserPreferences.subtitleMode),
+        preferredLanguage: prefs.get(UserPreferences.defaultSubtitleLanguage),
+        fallbackLanguage: prefs.get(UserPreferences.fallbackSubtitleLanguage),
+        preferSdh: prefs.get(UserPreferences.preferSdhSubtitles),
+        preferTextSubtitles: prefs.get(UserPreferences.preferTextSubtitles),
+        preferExternalSubtitles: prefs.get(
+          UserPreferences.preferExternalSubtitles,
+        ),
+        pgsDirectPlay: prefs.get(UserPreferences.pgsDirectPlay),
+        assDirectPlay: prefs.get(UserPreferences.assDirectPlay),
+        preferredAudioLanguage: prefs.get(UserPreferences.defaultAudioLanguage),
+        activeAudioLanguage: null,
+      ),
+    );
+    final options = <(int, String)>[
+      (-1, l10n.none),
+      for (final stream in candidates)
+        (
+          stream['Index'] as int? ?? 0,
+          (stream['DisplayTitle'] ??
+                  stream['Title'] ??
+                  stream['Language'] ??
+                  stream['Codec'] ??
+                  '')
+              .toString(),
+        ),
+    ];
+    final selected = preselected ?? -1;
+    final selectedFocus = FocusNode();
+    var focusScheduled = false;
+
+    return showFocusRestoringModalBottomSheet<int>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: const Color(0xFF1E1E1E),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (sheetContext) {
+        if (!focusScheduled) {
+          focusScheduled = true;
+          // Autofocus loses to the focus handed back by the quality sheet
+          // that just closed, so the preselected row asks again once this
+          // sheet has finished sliding in.
+          ModalRoute.of(sheetContext)?.animation?.addStatusListener((status) {
+            if (status == AnimationStatus.completed &&
+                selectedFocus.context != null) {
+              selectedFocus.requestFocus();
+            }
+          });
+        }
+        return SafeArea(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.sizeOf(sheetContext).height * 0.9,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _sheetTitle(sheetContext, l10n.downloadBurnInSubtitles),
+                _sheetNote(sheetContext, l10n.downloadBurnInSubtitlesNote),
+                Flexible(
+                  child: ListView(
+                    shrinkWrap: true,
+                    padding: const EdgeInsets.only(bottom: 8),
+                    children: [
+                      for (final (index, label) in options)
+                        DpadListTile(
+                          autofocus: index == selected,
+                          focusNode: index == selected ? selectedFocus : null,
+                          leading: AdaptiveIcon(
+                            index == selected
+                                ? Icons.radio_button_checked
+                                : Icons.radio_button_unchecked,
+                          ),
+                          title: Text(label),
+                          onTap: () => Navigator.pop(sheetContext, index),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    ).whenComplete(selectedFocus.dispose);
   }
 
   static bool _supportsTranscoding(String? type) =>
@@ -11627,6 +11753,7 @@ class _DownloadButtonState extends State<_DownloadButton> {
     DownloadService service,
     DownloadQuality quality, {
     List<AggregatedItem>? items,
+    int? burnInSubtitleIndex,
   }) {
     final l10n = AppLocalizations.of(context);
     final String message;
@@ -11643,7 +11770,11 @@ class _DownloadButtonState extends State<_DownloadButton> {
       if (item.type == 'MusicAlbum') {
         service.downloadAlbum(item.id, quality: quality);
       } else {
-        service.downloadItem(item, quality: quality);
+        service.downloadItem(
+          item,
+          quality: quality,
+          burnInSubtitleIndex: burnInSubtitleIndex,
+        );
       }
       message = l10n.downloadingItem(item.name, quality.label);
     }

@@ -1618,6 +1618,13 @@ class AppLocalizationsTh extends AppLocalizations {
   String get downloadQuality => 'คุณภาพการดาวน์โหลด';
 
   @override
+  String get downloadBurnInSubtitles => 'Burn In Subtitles';
+
+  @override
+  String get downloadBurnInSubtitlesNote =>
+      'Image subtitles like PGS can\'t be kept in a re-encoded download. The track you pick is drawn into the video and can\'t be turned off.';
+
+  @override
   String get originalFileNoReencoding => 'ไฟล์ต้นฉบับไม่มีการเข้ารหัสซ้ำ';
 
   @override

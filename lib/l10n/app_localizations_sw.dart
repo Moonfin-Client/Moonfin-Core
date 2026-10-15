@@ -1636,6 +1636,13 @@ class AppLocalizationsSw extends AppLocalizations {
   String get downloadQuality => 'Ubora wa Kupakua';
 
   @override
+  String get downloadBurnInSubtitles => 'Burn In Subtitles';
+
+  @override
+  String get downloadBurnInSubtitlesNote =>
+      'Image subtitles like PGS can\'t be kept in a re-encoded download. The track you pick is drawn into the video and can\'t be turned off.';
+
+  @override
   String get originalFileNoReencoding => 'Faili asili, hakuna usimbaji upya';
 
   @override

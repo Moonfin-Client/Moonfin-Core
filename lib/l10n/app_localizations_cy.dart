@@ -1636,6 +1636,13 @@ class AppLocalizationsCy extends AppLocalizations {
   String get downloadQuality => 'Ansawdd Lawrlwytho';
 
   @override
+  String get downloadBurnInSubtitles => 'Burn In Subtitles';
+
+  @override
+  String get downloadBurnInSubtitlesNote =>
+      'Image subtitles like PGS can\'t be kept in a re-encoded download. The track you pick is drawn into the video and can\'t be turned off.';
+
+  @override
   String get originalFileNoReencoding => 'Ffeil wreiddiol, dim ail-godio';
 
   @override

@@ -1629,6 +1629,13 @@ class AppLocalizationsEt extends AppLocalizations {
   String get downloadQuality => 'Allalaadimise kvaliteet';
 
   @override
+  String get downloadBurnInSubtitles => 'Burn In Subtitles';
+
+  @override
+  String get downloadBurnInSubtitlesNote =>
+      'Image subtitles like PGS can\'t be kept in a re-encoded download. The track you pick is drawn into the video and can\'t be turned off.';
+
+  @override
   String get originalFileNoReencoding =>
       'Originaalfail, uuesti kodeerimist pole';
 

@@ -2878,6 +2878,18 @@ abstract class AppLocalizations {
   /// **'Download Quality'**
   String get downloadQuality;
 
+  /// Title for the picker that chooses an image subtitle track (PGS, VobSub) to draw into a transcoded download
+  ///
+  /// In en, this message translates to:
+  /// **'Burn In Subtitles'**
+  String get downloadBurnInSubtitles;
+
+  /// Explanation under the burn-in subtitle picker for transcoded downloads
+  ///
+  /// In en, this message translates to:
+  /// **'Image subtitles like PGS can\'t be kept in a re-encoded download. The track you pick is drawn into the video and can\'t be turned off.'**
+  String get downloadBurnInSubtitlesNote;
+
   /// Subtitle for original quality download option
   ///
   /// In en, this message translates to:

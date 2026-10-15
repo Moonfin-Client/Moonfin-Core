@@ -1635,6 +1635,13 @@ class AppLocalizationsCa extends AppLocalizations {
   String get downloadQuality => 'Qualitat de baixada';
 
   @override
+  String get downloadBurnInSubtitles => 'Burn In Subtitles';
+
+  @override
+  String get downloadBurnInSubtitlesNote =>
+      'Image subtitles like PGS can\'t be kept in a re-encoded download. The track you pick is drawn into the video and can\'t be turned off.';
+
+  @override
   String get originalFileNoReencoding => 'Fitxer original, sense recodificació';
 
   @override
