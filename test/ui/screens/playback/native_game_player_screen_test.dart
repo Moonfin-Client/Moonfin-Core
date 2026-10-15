@@ -258,8 +258,15 @@ class _FakeNativeGamePlayer implements NativeGamePlayer {
     stopCount++;
   }
 
+  /// Null captures nothing; a completer lets a test hold the save in flight.
+  Completer<Uint8List?>? pendingSaveState;
+  int saveStateCount = 0;
+
   @override
-  Future<Uint8List?> saveState() async => null;
+  Future<Uint8List?> saveState() {
+    saveStateCount++;
+    return pendingSaveState?.future ?? Future.value(null);
+  }
   @override
   Future<bool> loadState(Uint8List data) async => false;
   @override
@@ -778,6 +785,82 @@ void main() {
             'warning is about',
       );
       expect(find.byType(NativeGamePlayerScreen), findsOneWidget);
+    } finally {
+      debugDefaultTargetPlatformOverride = null;
+    }
+  });
+
+  testWidgets('Save & exit shows a saving indicator and saves the state once', (
+    tester,
+  ) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
+    try {
+      final router = GoRouter(
+        initialLocation: '/home',
+        routes: [
+          GoRoute(
+            path: '/home',
+            builder: (context, state) => const Scaffold(body: Text('home')),
+          ),
+          GoRoute(
+            path: '/game',
+            builder: (context, state) => NativeGamePlayerScreen(
+              libraryId: 'lib1',
+              gameId: 'game1',
+              core: 'snes',
+              startFresh: true,
+              player: player,
+            ),
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        MaterialApp.router(
+          routerConfig: router,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      router.push('/game');
+      await tester.pump();
+      for (var i = 0; i < 60 && find.byType(Texture).evaluate().isEmpty; i++) {
+        await tester.runAsync(
+          () => Future<void>.delayed(const Duration(milliseconds: 20)),
+        );
+        await tester.pump(const Duration(milliseconds: 20));
+      }
+      expect(find.byType(Texture), findsOneWidget);
+
+      player.emitMenuPressed();
+      await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(
+        find.text('Exit'),
+        200,
+        scrollable: find.byType(Scrollable).last,
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Exit'));
+      await tester.pumpAndSettle();
+
+      final pending = Completer<Uint8List?>();
+      player.pendingSaveState = pending;
+      await tester.tap(find.text('Save & exit'));
+      await tester.pump();
+
+      expect(find.text('Saving…'), findsOneWidget);
+      expect(find.byType(NativeGamePlayerScreen), findsOneWidget);
+
+      pending.complete(Uint8List.fromList([1, 2, 3]));
+      // The indicator's spinner never settles, so pump in steps.
+      for (var i = 0; i < 20 && find.text('home').evaluate().isEmpty; i++) {
+        await tester.pump(const Duration(milliseconds: 100));
+      }
+
+      expect(find.text('home'), findsOneWidget);
+      expect(player.saveStateCount, 1);
     } finally {
       debugDefaultTargetPlatformOverride = null;
     }

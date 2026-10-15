@@ -196,6 +196,8 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
   // wakes, which would otherwise re-fire controllersChanged repeatedly.
   bool _notifiedNavigationOnly = false;
   bool _exiting = false;
+  // Shows the saving indicator and holds the menu while an exit saves.
+  bool _savingForExit = false;
   // True once the native session has been told to stop. Separate from
   // _exiting so a fatal error can tear the core down without also
   // suppressing the route pop that the user still needs.
@@ -885,6 +887,7 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
   // Steps back one overlay level: the value picker returns to the settings
   // list, the settings list to the pause menu, and the pause menu resumes.
   void _overlayBack() {
+    if (_savingForExit) return;
     // Back out of the confirmation before any other level, so a stray Back
     // never falls through to something that ends the session.
     if (_confirmingExit) {
@@ -1490,7 +1493,7 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
   }
 
   void _toggleOverlay() {
-    if (_textureId == null) return;
+    if (_textureId == null || _savingForExit) return;
     if (_overlayOpen) {
       _overlayBack();
     } else {
@@ -1559,6 +1562,7 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
   }
 
   void _confirm() {
+    if (_savingForExit) return;
     if (_pickerOpen) {
       _applyPicker();
     } else if (_settingsOpen) {
@@ -1747,6 +1751,8 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
   /// exact outcome the exit warning exists to prevent, so a failure keeps the
   /// game running and says so.
   Future<void> _saveAndExit() async {
+    if (_exiting || _savingForExit) return;
+    setState(() => _savingForExit = true);
     var saved = false;
     try {
       saved = await _persistState();
@@ -1754,10 +1760,12 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
       saved = false;
     }
     if (saved) {
-      await _exit();
+      await _exit(stateSaved: true);
       return;
     }
-    if (mounted) _showTransientMessage('Could not save state. Still playing.');
+    if (!mounted) return;
+    setState(() => _savingForExit = false);
+    _showTransientMessage('Could not save state. Still playing.');
   }
 
   Future<void> _loadState() async {
@@ -2482,15 +2490,18 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
     unawaited(_refreshInputDescriptors());
   }
 
-  Future<void> _exit() async {
+  Future<void> _exit({bool stateSaved = false}) async {
     if (_exiting) return;
     _exiting = true;
     final games = _client.gamesApi;
     try {
       if (_textureId != null && games != null) {
-        final state = await _player.saveState();
-        if (state != null && state.isNotEmpty) {
-          await games.putSave(_stateKey, state);
+        if (!_savingForExit) setState(() => _savingForExit = true);
+        if (!stateSaved) {
+          final state = await _player.saveState();
+          if (state != null && state.isNotEmpty) {
+            await games.putSave(_stateKey, state);
+          }
         }
         final options = await _player.getCurrentOptions();
         final coreId = libretroCoreId(widget.core);
@@ -2840,7 +2851,32 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
           if (_startHeld && !_overlayOpen)
             _buildHoldIndicator(top: padBelow ? pictureRect.bottom + 8 : null),
           if (_overlayOpen) _buildOverlay(),
+          if (_savingForExit) _buildSavingIndicator(),
         ],
+      ),
+    );
+  }
+
+  Widget _buildSavingIndicator() {
+    // Also absorbs taps so the menu underneath cannot be used mid-save.
+    return const Positioned.fill(
+      child: AbsorbPointer(
+        child: ColoredBox(
+          color: Colors.black54,
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: 20),
+                Text(
+                  'Saving…',
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
