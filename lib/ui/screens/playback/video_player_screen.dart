@@ -6732,48 +6732,52 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         behavior: HitTestBehavior.opaque,
         onTap: _showControls,
         child: SafeArea(
-          child: Center(
-            child: IgnorePointer(
-              ignoring: !_controlsVisible,
-              child: GestureDetector(
-                onLongPress: () {
-                  setState(() {
-                    _isOsdLocked = false;
-                    _controlsVisible = true;
-                  });
-                  _scheduleHide();
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.spaceLg,
-                    vertical: AppSpacing.spaceMd,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.72),
-                    borderRadius: AppRadius.circular(20),
-                    border: Border.fromBorderSide(
-                      ThemeRegistry.active.borders.cardBorder.copyWith(
-                        color: Colors.white.withValues(alpha: 0.18),
-                      ),
+          child: Align(
+            alignment: Alignment.topRight,
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(0,10,15,0),
+              child: IgnorePointer(
+                ignoring: !_controlsVisible,
+                child: GestureDetector(
+                  onLongPress: () {
+                    setState(() {
+                      _isOsdLocked = false;
+                      _controlsVisible = true;
+                    });
+                    _scheduleHide();
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.spaceLg,
+                      vertical: AppSpacing.spaceMd,
                     ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const AdaptiveIcon(
-                        Icons.lock,
-                        color: Colors.white70,
-                        size: 18,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        AppLocalizations.of(context).longPressToUnlock,
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 13,
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.72),
+                      borderRadius: AppRadius.circular(20),
+                      border: Border.fromBorderSide(
+                        ThemeRegistry.active.borders.cardBorder.copyWith(
+                          color: Colors.white.withValues(alpha: 0.18),
                         ),
                       ),
-                    ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const AdaptiveIcon(
+                          Icons.lock,
+                          color: Colors.white70,
+                          size: 18,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          AppLocalizations.of(context).longPressToUnlock,
+                          style: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
