@@ -20,6 +20,7 @@ import '../../../playback/native_game_player.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/game_cores.dart';
+import '../../navigation/destinations.dart';
 import '../../../util/touch_gamepad_layout.dart';
 import 'touch_gamepad.dart';
 import '../settings/emulator_core_settings_screen.dart';
@@ -2518,7 +2519,18 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
     try {
       await _restoreSystemUi();
     } finally {
-      if (mounted) context.pop();
+      _leave();
+    }
+  }
+
+  // Popping the last route finishes the activity, and MainActivity.onDestroy
+  // then kills the process, so an empty stack goes home instead.
+  void _leave() {
+    if (!mounted) return;
+    if (context.canPop()) {
+      context.pop();
+    } else {
+      context.go(Destinations.home);
     }
   }
 
@@ -2534,7 +2546,7 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
       unawaited(_player.stop());
     }
     unawaited(_restoreSystemUi());
-    if (mounted) context.pop();
+    _leave();
   }
 
   // Phones and tablets play full screen in the orientation the user picked.
