@@ -4174,6 +4174,9 @@ class _ContentRowsState extends State<_ContentRows>
     final useSeriesThumbs = prefs.get(UserPreferences.seriesThumbnailsEnabled);
 
     if (widget.viewModel.isLoading && rows.isEmpty) {
+      if (kIsWeb) {
+        return const Center(child: CircularProgressIndicator());
+      }
       return _buildHomeInitialLoadingSkeleton(
         context: context,
         prefs: prefs,

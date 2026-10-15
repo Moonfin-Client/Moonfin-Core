@@ -68,7 +68,19 @@ class HomeViewModel extends ChangeNotifier {
   final TvChannelsService _tvChannels = TvChannelsService();
 
   List<HomeRow> _rows = [];
-  List<HomeRow> get rows => _rows;
+  List<HomeRow> get rows => rowsForDisplay(_rows);
+
+  /// Sections only appear once their content arrives. Keep placeholders
+  /// internally to anchor concurrent results in the configured order, but
+  /// don't paint sections that may turn out to be empty on load or focus regain.
+  @visibleForTesting
+  static List<HomeRow> rowsForDisplay(List<HomeRow> rows) => rows
+      .where(
+        (row) =>
+            row.items.isNotEmpty ||
+            (!row.isLoading && row.rowType == HomeRowType.liveTv),
+      )
+      .toList();
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -941,7 +953,12 @@ class HomeViewModel extends ChangeNotifier {
   }
 
   Future<void> loadMoreForRow(int rowIndex) async {
-    if (rowIndex < 0 || rowIndex >= _rows.length) return;
+    final displayedRows = rows;
+    if (rowIndex < 0 || rowIndex >= displayedRows.length) return;
+    // Loading placeholders are hidden, so the visible index can differ from
+    // the internal index used by the paging loaders.
+    rowIndex = _rows.indexWhere((row) => row.id == displayedRows[rowIndex].id);
+    if (rowIndex < 0) return;
     final row = _rows[rowIndex];
     if (!row.hasMore || _inFlightPagingRowIds.contains(row.id)) return;
 
