@@ -685,6 +685,22 @@ class AppLocalizationsVi extends AppLocalizations {
   String get gameHoldToOpenMenu => 'Giữ để mở menu';
 
   @override
+  String get gameKeepPlaying => 'Keep playing';
+
+  @override
+  String get gameSaveAndExit => 'Save & exit';
+
+  @override
+  String get gameExitGame => 'Exit game';
+
+  @override
+  String get gameSavingBeforeExit => 'Saving…';
+
+  @override
+  String get gameSaveFailedStillPlaying =>
+      'Could not save state. Still playing.';
+
+  @override
   String get gamePlaybackUnsupported =>
       'Thiết bị này chưa hỗ trợ chơi trò chơi.';
 

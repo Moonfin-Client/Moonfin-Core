@@ -682,6 +682,22 @@ class AppLocalizationsBg extends AppLocalizations {
   String get gameHoldToOpenMenu => 'Задръжте за меню';
 
   @override
+  String get gameKeepPlaying => 'Keep playing';
+
+  @override
+  String get gameSaveAndExit => 'Save & exit';
+
+  @override
+  String get gameExitGame => 'Exit game';
+
+  @override
+  String get gameSavingBeforeExit => 'Saving…';
+
+  @override
+  String get gameSaveFailedStillPlaying =>
+      'Could not save state. Still playing.';
+
+  @override
   String get gamePlaybackUnsupported =>
       'Възпроизвеждането на игри още не се поддържа на това устройство.';
 

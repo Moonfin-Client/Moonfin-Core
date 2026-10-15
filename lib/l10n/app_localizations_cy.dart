@@ -684,6 +684,22 @@ class AppLocalizationsCy extends AppLocalizations {
   String get gameHoldToOpenMenu => 'Daliwch i agor y ddewislen';
 
   @override
+  String get gameKeepPlaying => 'Keep playing';
+
+  @override
+  String get gameSaveAndExit => 'Save & exit';
+
+  @override
+  String get gameExitGame => 'Exit game';
+
+  @override
+  String get gameSavingBeforeExit => 'Saving…';
+
+  @override
+  String get gameSaveFailedStillPlaying =>
+      'Could not save state. Still playing.';
+
+  @override
   String get gamePlaybackUnsupported =>
       'Nid yw chwarae gemau\'n cael ei gefnogi ar y ddyfais hon eto.';
 

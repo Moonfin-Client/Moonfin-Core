@@ -680,6 +680,22 @@ class AppLocalizationsFa extends AppLocalizations {
   String get gameHoldToOpenMenu => 'برای باز کردن منو نگه دارید';
 
   @override
+  String get gameKeepPlaying => 'Keep playing';
+
+  @override
+  String get gameSaveAndExit => 'Save & exit';
+
+  @override
+  String get gameExitGame => 'Exit game';
+
+  @override
+  String get gameSavingBeforeExit => 'Saving…';
+
+  @override
+  String get gameSaveFailedStillPlaying =>
+      'Could not save state. Still playing.';
+
+  @override
   String get gamePlaybackUnsupported =>
       'اجرای بازی هنوز روی این دستگاه پشتیبانی نمی‌شود.';
 

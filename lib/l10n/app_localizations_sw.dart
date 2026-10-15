@@ -685,6 +685,22 @@ class AppLocalizationsSw extends AppLocalizations {
   String get gameHoldToOpenMenu => 'Shikilia ili kufungua menyu';
 
   @override
+  String get gameKeepPlaying => 'Keep playing';
+
+  @override
+  String get gameSaveAndExit => 'Save & exit';
+
+  @override
+  String get gameExitGame => 'Exit game';
+
+  @override
+  String get gameSavingBeforeExit => 'Saving…';
+
+  @override
+  String get gameSaveFailedStillPlaying =>
+      'Could not save state. Still playing.';
+
+  @override
   String get gamePlaybackUnsupported =>
       'Kucheza michezo hakutumiki kwenye kifaa hiki bado.';
 

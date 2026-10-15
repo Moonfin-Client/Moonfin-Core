@@ -666,6 +666,22 @@ class AppLocalizationsYue extends AppLocalizations {
   String get gameHoldToOpenMenu => '撳住開選單';
 
   @override
+  String get gameKeepPlaying => 'Keep playing';
+
+  @override
+  String get gameSaveAndExit => 'Save & exit';
+
+  @override
+  String get gameExitGame => 'Exit game';
+
+  @override
+  String get gameSavingBeforeExit => 'Saving…';
+
+  @override
+  String get gameSaveFailedStillPlaying =>
+      'Could not save state. Still playing.';
+
+  @override
   String get gamePlaybackUnsupported => '呢部裝置暫時仲未支援玩遊戲。';
 
   @override

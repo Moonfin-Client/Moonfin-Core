@@ -685,6 +685,22 @@ class AppLocalizationsMl extends AppLocalizations {
   String get gameHoldToOpenMenu => 'മെനു തുറക്കാൻ അമർത്തിപ്പിടിക്കുക';
 
   @override
+  String get gameKeepPlaying => 'Keep playing';
+
+  @override
+  String get gameSaveAndExit => 'Save & exit';
+
+  @override
+  String get gameExitGame => 'Exit game';
+
+  @override
+  String get gameSavingBeforeExit => 'Saving…';
+
+  @override
+  String get gameSaveFailedStillPlaying =>
+      'Could not save state. Still playing.';
+
+  @override
   String get gamePlaybackUnsupported =>
       'ഈ ഉപകരണത്തിൽ ഗെയിം കളിക്കുന്നത് ഇതുവരെ പിന്തുണയ്ക്കുന്നില്ല.';
 

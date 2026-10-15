@@ -674,6 +674,22 @@ class AppLocalizationsKo extends AppLocalizations {
   String get gameHoldToOpenMenu => '길게 눌러 메뉴 열기';
 
   @override
+  String get gameKeepPlaying => 'Keep playing';
+
+  @override
+  String get gameSaveAndExit => 'Save & exit';
+
+  @override
+  String get gameExitGame => 'Exit game';
+
+  @override
+  String get gameSavingBeforeExit => 'Saving…';
+
+  @override
+  String get gameSaveFailedStillPlaying =>
+      'Could not save state. Still playing.';
+
+  @override
   String get gamePlaybackUnsupported => '이 기기에서는 아직 게임 플레이를 지원하지 않습니다.';
 
   @override

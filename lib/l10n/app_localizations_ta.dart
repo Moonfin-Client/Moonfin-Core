@@ -683,6 +683,22 @@ class AppLocalizationsTa extends AppLocalizations {
   String get gameHoldToOpenMenu => 'மெனுவைத் திறக்க அழுத்திப் பிடிக்கவும்';
 
   @override
+  String get gameKeepPlaying => 'Keep playing';
+
+  @override
+  String get gameSaveAndExit => 'Save & exit';
+
+  @override
+  String get gameExitGame => 'Exit game';
+
+  @override
+  String get gameSavingBeforeExit => 'Saving…';
+
+  @override
+  String get gameSaveFailedStillPlaying =>
+      'Could not save state. Still playing.';
+
+  @override
   String get gamePlaybackUnsupported =>
       'இந்தச் சாதனத்தில் விளையாட்டுகளை விளையாட இன்னும் ஆதரவு இல்லை.';
 

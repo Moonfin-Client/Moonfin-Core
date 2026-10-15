@@ -684,6 +684,22 @@ class AppLocalizationsNb extends AppLocalizations {
   String get gameHoldToOpenMenu => 'Hold inne for å åpne menyen';
 
   @override
+  String get gameKeepPlaying => 'Keep playing';
+
+  @override
+  String get gameSaveAndExit => 'Save & exit';
+
+  @override
+  String get gameExitGame => 'Exit game';
+
+  @override
+  String get gameSavingBeforeExit => 'Saving…';
+
+  @override
+  String get gameSaveFailedStillPlaying =>
+      'Could not save state. Still playing.';
+
+  @override
   String get gamePlaybackUnsupported =>
       'Spillavspilling støttes ikke på denne enheten ennå.';
 

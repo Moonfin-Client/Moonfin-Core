@@ -682,6 +682,22 @@ class AppLocalizationsBn extends AppLocalizations {
   String get gameHoldToOpenMenu => 'মেনু খুলতে চেপে ধরে রাখুন';
 
   @override
+  String get gameKeepPlaying => 'Keep playing';
+
+  @override
+  String get gameSaveAndExit => 'Save & exit';
+
+  @override
+  String get gameExitGame => 'Exit game';
+
+  @override
+  String get gameSavingBeforeExit => 'Saving…';
+
+  @override
+  String get gameSaveFailedStillPlaying =>
+      'Could not save state. Still playing.';
+
+  @override
   String get gamePlaybackUnsupported => 'এই ডিভাইসে এখনও গেম খেলা সমর্থিত নয়।';
 
   @override

@@ -699,6 +699,22 @@ class AppLocalizationsRo extends AppLocalizations {
   String get gameHoldToOpenMenu => 'Ține apăsat pentru meniu';
 
   @override
+  String get gameKeepPlaying => 'Keep playing';
+
+  @override
+  String get gameSaveAndExit => 'Save & exit';
+
+  @override
+  String get gameExitGame => 'Exit game';
+
+  @override
+  String get gameSavingBeforeExit => 'Saving…';
+
+  @override
+  String get gameSaveFailedStillPlaying =>
+      'Could not save state. Still playing.';
+
+  @override
   String get gamePlaybackUnsupported =>
       'Rularea jocurilor nu este încă acceptată pe acest dispozitiv.';
 

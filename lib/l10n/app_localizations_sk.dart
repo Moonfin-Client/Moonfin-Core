@@ -684,6 +684,22 @@ class AppLocalizationsSk extends AppLocalizations {
   String get gameHoldToOpenMenu => 'Podržaním otvoríte ponuku';
 
   @override
+  String get gameKeepPlaying => 'Keep playing';
+
+  @override
+  String get gameSaveAndExit => 'Save & exit';
+
+  @override
+  String get gameExitGame => 'Exit game';
+
+  @override
+  String get gameSavingBeforeExit => 'Saving…';
+
+  @override
+  String get gameSaveFailedStillPlaying =>
+      'Could not save state. Still playing.';
+
+  @override
   String get gamePlaybackUnsupported =>
       'Hranie hier zatiaľ nie je na tomto zariadení podporované.';
 

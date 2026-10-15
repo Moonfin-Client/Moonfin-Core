@@ -683,6 +683,22 @@ class AppLocalizationsKn extends AppLocalizations {
   String get gameHoldToOpenMenu => 'ಮೆನು ತೆರೆಯಲು ಒತ್ತಿ ಹಿಡಿಯಿರಿ';
 
   @override
+  String get gameKeepPlaying => 'Keep playing';
+
+  @override
+  String get gameSaveAndExit => 'Save & exit';
+
+  @override
+  String get gameExitGame => 'Exit game';
+
+  @override
+  String get gameSavingBeforeExit => 'Saving…';
+
+  @override
+  String get gameSaveFailedStillPlaying =>
+      'Could not save state. Still playing.';
+
+  @override
   String get gamePlaybackUnsupported =>
       'ಈ ಸಾಧನದಲ್ಲಿ ಆಟ ಆಡುವುದನ್ನು ಇನ್ನೂ ಬೆಂಬಲಿಸಲಾಗಿಲ್ಲ.';
 

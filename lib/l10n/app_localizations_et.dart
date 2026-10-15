@@ -685,6 +685,22 @@ class AppLocalizationsEt extends AppLocalizations {
   String get gameHoldToOpenMenu => 'Hoia all, et avada menüü';
 
   @override
+  String get gameKeepPlaying => 'Keep playing';
+
+  @override
+  String get gameSaveAndExit => 'Save & exit';
+
+  @override
+  String get gameExitGame => 'Exit game';
+
+  @override
+  String get gameSavingBeforeExit => 'Saving…';
+
+  @override
+  String get gameSaveFailedStillPlaying =>
+      'Could not save state. Still playing.';
+
+  @override
   String get gamePlaybackUnsupported =>
       'See seade ei toeta veel mängude mängimist.';
 

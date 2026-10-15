@@ -661,6 +661,22 @@ class AppLocalizationsZh extends AppLocalizations {
   String get gameHoldToOpenMenu => '按住打开菜单';
 
   @override
+  String get gameKeepPlaying => 'Keep playing';
+
+  @override
+  String get gameSaveAndExit => 'Save & exit';
+
+  @override
+  String get gameExitGame => 'Exit game';
+
+  @override
+  String get gameSavingBeforeExit => 'Saving…';
+
+  @override
+  String get gameSaveFailedStillPlaying =>
+      'Could not save state. Still playing.';
+
+  @override
   String get gamePlaybackUnsupported => '此设备暂不支持游戏播放。';
 
   @override

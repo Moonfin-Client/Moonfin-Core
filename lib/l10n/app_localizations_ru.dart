@@ -683,6 +683,22 @@ class AppLocalizationsRu extends AppLocalizations {
   String get gameHoldToOpenMenu => 'Удерживайте, чтобы открыть меню';
 
   @override
+  String get gameKeepPlaying => 'Keep playing';
+
+  @override
+  String get gameSaveAndExit => 'Save & exit';
+
+  @override
+  String get gameExitGame => 'Exit game';
+
+  @override
+  String get gameSavingBeforeExit => 'Saving…';
+
+  @override
+  String get gameSaveFailedStillPlaying =>
+      'Could not save state. Still playing.';
+
+  @override
   String get gamePlaybackUnsupported =>
       'Запуск игр пока не поддерживается на этом устройстве.';
 

@@ -1240,6 +1240,36 @@ abstract class AppLocalizations {
   /// **'Hold to open menu'**
   String get gameHoldToOpenMenu;
 
+  /// Exit confirmation choice that returns to the game
+  ///
+  /// In en, this message translates to:
+  /// **'Keep playing'**
+  String get gameKeepPlaying;
+
+  /// Exit confirmation choice that saves the game state and then leaves, staying in the game if the save fails
+  ///
+  /// In en, this message translates to:
+  /// **'Save & exit'**
+  String get gameSaveAndExit;
+
+  /// Exit confirmation choice that leaves the game
+  ///
+  /// In en, this message translates to:
+  /// **'Exit game'**
+  String get gameExitGame;
+
+  /// Shown over the paused game while it saves on the way out
+  ///
+  /// In en, this message translates to:
+  /// **'Saving…'**
+  String get gameSavingBeforeExit;
+
+  /// Message shown when Save & exit could not save, so the game keeps running
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save state. Still playing.'**
+  String get gameSaveFailedStillPlaying;
+
   /// Shown when the device cannot run the retro-game emulator
   ///
   /// In en, this message translates to:

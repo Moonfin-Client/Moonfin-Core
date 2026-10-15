@@ -788,6 +788,26 @@
   "@gameHoldToOpenMenu": {
     "description": "Hint shown while holding the gamepad combo to open the in-game menu"
   },
+  "gameKeepPlaying": "Keep playing",
+  "@gameKeepPlaying": {
+    "description": "Exit confirmation choice that returns to the game"
+  },
+  "gameSaveAndExit": "Save & exit",
+  "@gameSaveAndExit": {
+    "description": "Exit confirmation choice that saves the game state and then leaves, staying in the game if the save fails"
+  },
+  "gameExitGame": "Exit game",
+  "@gameExitGame": {
+    "description": "Exit confirmation choice that leaves the game"
+  },
+  "gameSavingBeforeExit": "Saving…",
+  "@gameSavingBeforeExit": {
+    "description": "Shown over the paused game while it saves on the way out"
+  },
+  "gameSaveFailedStillPlaying": "Could not save state. Still playing.",
+  "@gameSaveFailedStillPlaying": {
+    "description": "Message shown when Save & exit could not save, so the game keeps running"
+  },
   "gamePlaybackUnsupported": "Game playback is not supported on this device yet.",
   "@gamePlaybackUnsupported": {
     "description": "Shown when the device cannot run the retro-game emulator"

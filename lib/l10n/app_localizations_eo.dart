@@ -683,6 +683,22 @@ class AppLocalizationsEo extends AppLocalizations {
   String get gameHoldToOpenMenu => 'Tenu por malfermi la menuon';
 
   @override
+  String get gameKeepPlaying => 'Keep playing';
+
+  @override
+  String get gameSaveAndExit => 'Save & exit';
+
+  @override
+  String get gameExitGame => 'Exit game';
+
+  @override
+  String get gameSavingBeforeExit => 'Saving…';
+
+  @override
+  String get gameSaveFailedStillPlaying =>
+      'Could not save state. Still playing.';
+
+  @override
   String get gamePlaybackUnsupported =>
       'Ludado ankoraŭ ne estas subtenata sur ĉi tiu aparato.';
 

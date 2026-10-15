@@ -684,6 +684,22 @@ class AppLocalizationsAf extends AppLocalizations {
   String get gameHoldToOpenMenu => 'Hou in om die kieslys oop te maak';
 
   @override
+  String get gameKeepPlaying => 'Keep playing';
+
+  @override
+  String get gameSaveAndExit => 'Save & exit';
+
+  @override
+  String get gameExitGame => 'Exit game';
+
+  @override
+  String get gameSavingBeforeExit => 'Saving…';
+
+  @override
+  String get gameSaveFailedStillPlaying =>
+      'Could not save state. Still playing.';
+
+  @override
   String get gamePlaybackUnsupported =>
       'Speletjies word nog nie op hierdie toestel ondersteun nie.';
 

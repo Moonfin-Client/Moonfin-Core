@@ -682,6 +682,22 @@ class AppLocalizationsSi extends AppLocalizations {
   String get gameHoldToOpenMenu => 'මෙනුව විවෘත කිරීමට තදින් අල්ලාගෙන සිටින්න';
 
   @override
+  String get gameKeepPlaying => 'Keep playing';
+
+  @override
+  String get gameSaveAndExit => 'Save & exit';
+
+  @override
+  String get gameExitGame => 'Exit game';
+
+  @override
+  String get gameSavingBeforeExit => 'Saving…';
+
+  @override
+  String get gameSaveFailedStillPlaying =>
+      'Could not save state. Still playing.';
+
+  @override
   String get gamePlaybackUnsupported =>
       'මෙම උපාංගයේ ක්‍රීඩා ධාවනයට තවම සහාය නොදක්වයි.';
 

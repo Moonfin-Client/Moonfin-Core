@@ -20,7 +20,6 @@ import '../../../playback/native_game_player.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/game_cores.dart';
-import '../../navigation/destinations.dart';
 import '../../../util/touch_gamepad_layout.dart';
 import 'touch_gamepad.dart';
 import '../settings/emulator_core_settings_screen.dart';
@@ -33,6 +32,7 @@ import '../../../util/settings_save_retry.dart';
 import '../../../util/focus/gamepad/android_gamepad_channel.dart';
 import '../../../util/focus/gamepad/gamepad_suppressor.dart';
 import '../../../util/system_ui.dart';
+import '../../navigation/destinations.dart';
 import '../../screensaver/screensaver_controller.dart';
 import 'game_playback_ui.dart';
 import 'playback_takeover.dart';
@@ -1386,10 +1386,11 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
   // safe choice.
   List<_OverlayAction> _actions() {
     if (_confirmingExit) {
+      final l10n = AppLocalizations.of(context);
       return [
-        _OverlayAction('Keep playing', _cancelExitConfirmation),
-        _OverlayAction('Save & exit', _saveAndExit),
-        _OverlayAction('Exit game', _exit, danger: true),
+        _OverlayAction(l10n.gameKeepPlaying, _cancelExitConfirmation),
+        _OverlayAction(l10n.gameSaveAndExit, _saveAndExit),
+        _OverlayAction(l10n.gameExitGame, _exit, danger: true),
       ];
     }
     if (_confirmingControllerMappingExit) {
@@ -1765,7 +1766,9 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
     }
     if (!mounted) return;
     setState(() => _savingForExit = false);
-    _showTransientMessage('Could not save state. Still playing.');
+    _showTransientMessage(
+      AppLocalizations.of(context).gameSaveFailedStillPlaying,
+    );
   }
 
   Future<void> _loadState() async {
@@ -2858,8 +2861,8 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
   }
 
   Widget _buildSavingIndicator() {
-    // Also absorbs taps so the menu underneath cannot be used mid-save.
-    return const Positioned.fill(
+    // Also absorbs taps so the menu underneath can't be used mid-save.
+    return Positioned.fill(
       child: AbsorbPointer(
         child: ColoredBox(
           color: Colors.black54,
@@ -2867,11 +2870,11 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                CircularProgressIndicator(),
-                SizedBox(height: 20),
+                const CircularProgressIndicator(),
+                const SizedBox(height: 20),
                 Text(
-                  'Saving…',
-                  style: TextStyle(color: Colors.white, fontSize: 20),
+                  AppLocalizations.of(context).gameSavingBeforeExit,
+                  style: const TextStyle(color: Colors.white, fontSize: 20),
                 ),
               ],
             ),

@@ -684,6 +684,22 @@ class AppLocalizationsSq extends AppLocalizations {
   String get gameHoldToOpenMenu => 'Mbaj shtypur për të hapur menynë';
 
   @override
+  String get gameKeepPlaying => 'Keep playing';
+
+  @override
+  String get gameSaveAndExit => 'Save & exit';
+
+  @override
+  String get gameExitGame => 'Exit game';
+
+  @override
+  String get gameSavingBeforeExit => 'Saving…';
+
+  @override
+  String get gameSaveFailedStillPlaying =>
+      'Could not save state. Still playing.';
+
+  @override
   String get gamePlaybackUnsupported =>
       'Luajtja e lojërave nuk mbështetet ende në këtë pajisje.';
 

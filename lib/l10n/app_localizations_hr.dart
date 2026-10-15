@@ -683,6 +683,22 @@ class AppLocalizationsHr extends AppLocalizations {
   String get gameHoldToOpenMenu => 'Držite za otvaranje izbornika';
 
   @override
+  String get gameKeepPlaying => 'Keep playing';
+
+  @override
+  String get gameSaveAndExit => 'Save & exit';
+
+  @override
+  String get gameExitGame => 'Exit game';
+
+  @override
+  String get gameSavingBeforeExit => 'Saving…';
+
+  @override
+  String get gameSaveFailedStillPlaying =>
+      'Could not save state. Still playing.';
+
+  @override
   String get gamePlaybackUnsupported =>
       'Pokretanje igara još nije podržano na ovom uređaju.';
 

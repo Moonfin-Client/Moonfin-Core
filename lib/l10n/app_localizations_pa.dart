@@ -684,6 +684,22 @@ class AppLocalizationsPa extends AppLocalizations {
   String get gameHoldToOpenMenu => 'ਮੀਨੂ ਖੋਲ੍ਹਣ ਲਈ ਦਬਾ ਕੇ ਰੱਖੋ';
 
   @override
+  String get gameKeepPlaying => 'Keep playing';
+
+  @override
+  String get gameSaveAndExit => 'Save & exit';
+
+  @override
+  String get gameExitGame => 'Exit game';
+
+  @override
+  String get gameSavingBeforeExit => 'Saving…';
+
+  @override
+  String get gameSaveFailedStillPlaying =>
+      'Could not save state. Still playing.';
+
+  @override
   String get gamePlaybackUnsupported =>
       'ਇਸ ਡਿਵਾਈਸ \'ਤੇ ਗੇਮ ਪਲੇਬੈਕ ਅਜੇ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ।';
 

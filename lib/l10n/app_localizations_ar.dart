@@ -682,6 +682,22 @@ class AppLocalizationsAr extends AppLocalizations {
   String get gameHoldToOpenMenu => 'استمر بالضغط لفتح القائمة';
 
   @override
+  String get gameKeepPlaying => 'Keep playing';
+
+  @override
+  String get gameSaveAndExit => 'Save & exit';
+
+  @override
+  String get gameExitGame => 'Exit game';
+
+  @override
+  String get gameSavingBeforeExit => 'Saving…';
+
+  @override
+  String get gameSaveFailedStillPlaying =>
+      'Could not save state. Still playing.';
+
+  @override
   String get gamePlaybackUnsupported =>
       'تشغيل الألعاب غير مدعوم على هذا الجهاز بعد.';
 
