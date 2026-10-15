@@ -112,6 +112,44 @@ void main() {
     await tester.pumpWidget(const SizedBox());
   });
 
+  // Issue #1751: the unlock prompt sits at the end of the top bar, where the
+  // lock button was, instead of over the middle of the picture.
+  for (final direction in TextDirection.values) {
+    testWidgets('locking puts the unlock prompt at the top end in $direction', (
+      tester,
+    ) async {
+      await GetIt.instance<UserPreferences>().set(
+        UserPreferences.osdLockEnabled,
+        true,
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: const [Locale('en')],
+          builder: (context, child) =>
+              Directionality(textDirection: direction, child: child!),
+          home: const VideoPlayerScreen(),
+        ),
+      );
+      await tester.pump();
+
+      // The player holds a single tap until its double-tap timeout runs out.
+      await tester.tap(find.byIcon(Icons.lock_outline));
+      await tester.pump(const Duration(milliseconds: 500));
+
+      final prompt = tester.getRect(find.text('Long press to unlock'));
+      final screen = tester.getRect(find.byType(VideoPlayerScreen));
+      expect(prompt.top, lessThan(screen.height / 4));
+      if (direction == TextDirection.ltr) {
+        expect(prompt.left, greaterThan(screen.width / 2));
+      } else {
+        expect(prompt.right, lessThan(screen.width / 2));
+      }
+
+      await tester.pumpWidget(const SizedBox());
+    });
+  }
+
   // Issue #985: a double-click toggles fullscreen without delaying a single
   // click, which still hides the controls at once.
   testWidgets('desktop double-click toggles fullscreen', (tester) async {

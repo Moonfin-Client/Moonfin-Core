@@ -6733,9 +6733,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         onTap: _showControls,
         child: SafeArea(
           child: Align(
-            alignment: Alignment.topRight,
+            alignment: AlignmentDirectional.topEnd,
             child: Padding(
-              padding: EdgeInsets.fromLTRB(0,10,15,0),
+              padding: const EdgeInsetsDirectional.only(
+                top: AppSpacing.spaceSm,
+                end: AppSpacing.spaceLg,
+              ),
               child: IgnorePointer(
                 ignoring: !_controlsVisible,
                 child: GestureDetector(
