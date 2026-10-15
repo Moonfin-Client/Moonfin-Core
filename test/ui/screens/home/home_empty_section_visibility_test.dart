@@ -200,6 +200,58 @@ void main() {
     await refreshing;
   });
 
+  test('a page lands on its row after an earlier section settles', () async {
+    final page = Completer<(List<AggregatedItem>, int)>();
+    when(
+      () => source.loadMore(
+        row: any(named: 'row'),
+        serverId: any(named: 'serverId'),
+        offset: any(named: 'offset'),
+      ),
+    ).thenAnswer((_) => page.future);
+    final vm = model();
+    final loading = vm.load();
+    await resumeStarted.future;
+    await pumpEventQueue();
+    expect(ids(vm), ['resume', 'nextUp']);
+
+    final paging = vm.loadMoreForRow(1);
+    resume.complete(emptyResume);
+    await loading;
+    final more = populated('more', HomeRowType.nextUp).items;
+    page.complete((more, 10));
+    await paging;
+
+    expect(ids(vm), ['nextUp']);
+    expect(vm.rows.single.items, more);
+  });
+
+  test(
+    'a row the quick refresh empties stays hidden on the next refresh',
+    () async {
+      final vm = model();
+      final loading = vm.load();
+      await resumeStarted.future;
+      resume.complete(populated('resume', HomeRowType.resume));
+      await loading;
+      expectResumeLoad();
+
+      final quick = vm.refreshResumeAndNextUp();
+      await resumeStarted.future;
+      resume.complete(emptyResume);
+      await quick;
+      expect(ids(vm), ['nextUp']);
+      expectResumeLoad();
+
+      final refreshing = vm.refresh();
+      await resumeStarted.future;
+      expect(ids(vm), ['nextUp']);
+
+      resume.complete(emptyResume);
+      await refreshing;
+    },
+  );
+
   test('a failed load is not taken for an empty section', () async {
     final vm = model();
     final loading = vm.load();

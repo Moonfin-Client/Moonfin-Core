@@ -965,8 +965,10 @@ class HomeViewModel extends ChangeNotifier {
     final items = _filterEmptyElements(filter(fresh.items));
     _rows = List.of(_rows);
     if (items.isEmpty) {
+      _emptySectionIds.add(rowId);
       _rows.removeAt(index);
     } else {
+      _emptySectionIds.remove(rowId);
       _rows[index] = _rows[index].copyWith(items: items, isLoading: false);
     }
     notifyListeners();
@@ -1022,16 +1024,22 @@ class HomeViewModel extends ChangeNotifier {
       final newTotalCount = filteredItems.length <= row.items.length
           ? filteredItems.length
           : (result.$2 - (result.$1.length - filteredItems.length));
-      _rows = List.of(_rows);
-      _rows[rowIndex] = row.copyWith(
-        items: filteredItems,
-        totalCount: newTotalCount,
+      _replaceRowById(
+        row.copyWith(items: filteredItems, totalCount: newTotalCount),
       );
-      notifyListeners();
     } catch (_) {
     } finally {
       _inFlightPagingRowIds.remove(row.id);
     }
+  }
+
+  /// Puts a paged [row] back wherever its id sits now. A section that
+  /// finished loading during the page request can have moved it.
+  void _replaceRowById(HomeRow row) {
+    final index = _rows.indexWhere((r) => r.id == row.id);
+    if (index < 0) return;
+    _rows = List.of(_rows)..[index] = row;
+    notifyListeners();
   }
 
   Future<List<HomeRow>> _loadConfig(HomeSectionConfig cfg, {bool forceRefresh = false}) async {
@@ -2435,7 +2443,6 @@ class HomeViewModel extends ChangeNotifier {
     final page = await repo.getSliderPage(slider, page: nextPage);
     _seerrRowPages[row.id] = nextPage;
     _appendSeerrRowItems(
-      rowIndex,
       row,
       page.results,
       null,
@@ -2632,12 +2639,11 @@ class HomeViewModel extends ChangeNotifier {
     // empty a whole page, and holding the pointer back would refetch that same
     // page on every scroll instead of moving on.
     _seerrRowPages[row.id] = nextPage;
-    _appendSeerrRowItems(rowIndex, row, rawItems, type, exhausted: exhausted);
+    _appendSeerrRowItems(row, rawItems, type, exhausted: exhausted);
   }
 
   /// Adds a fetched page to a Seerr row, skipping what it already shows.
   void _appendSeerrRowItems(
-    int rowIndex,
     HomeRow row,
     List<SeerrDiscoverItem> rawItems,
     SeerrRowType? type, {
@@ -2653,12 +2659,12 @@ class HomeViewModel extends ChangeNotifier {
       ).where((item) => !existingIds.contains(item.id)),
     ];
 
-    _rows = List.of(_rows);
-    _rows[rowIndex] = row.copyWith(
-      items: items,
-      totalCount: exhausted ? items.length : items.length + 1,
+    _replaceRowById(
+      row.copyWith(
+        items: items,
+        totalCount: exhausted ? items.length : items.length + 1,
+      ),
     );
-    notifyListeners();
   }
 
   /// Row ids are the prefix followed by the type's serialized name, so deriving
