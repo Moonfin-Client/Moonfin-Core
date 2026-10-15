@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:archive/archive.dart';
 import 'package:archive_extract/archive_extract.dart';
@@ -302,6 +303,16 @@ class _BookReaderScreenState extends State<BookReaderScreen>
 
     return factory.getClientIfExists(widget.serverId!) ??
         GetIt.instance<MediaServerClient>();
+  }
+
+  double _getServerProgress() {
+    final playedPercentage = _item?.playedPercentage ?? 0;
+    return switch (_mode) {
+      _ReaderMode.epub => playedPercentage / 100.0 * _epubChapterHtml.length - 1,
+      _ReaderMode.pdf => playedPercentage / 100.0 * _pdfPageCount - 1,
+      _ReaderMode.comic => playedPercentage / 100.0 * _comicPageCount - 1,
+      _ => 0,
+    };
   }
 
   @override
@@ -1438,11 +1449,12 @@ class _BookReaderScreenState extends State<BookReaderScreen>
 
   Future<void> _restoreComicState() async {
     final prefs = await SharedPreferences.getInstance();
-    final initialPage =
+    final loacalInitialPage =
         (widget.initialMode == 'comic' && widget.initialPosition != null)
         ? widget.initialPosition!
         : (prefs.getInt('${_comicProgressKeyPrefix}_page') ?? 0);
-    final savedPage = initialPage;
+    final serverInitialPage = _getServerProgress().toInt();
+    final savedPage = max(serverInitialPage, loacalInitialPage);
     final savedZoom = prefs.getDouble('${_comicProgressKeyPrefix}_zoom') ?? 1.0;
 
     final clampedPage = savedPage.clamp(0, _comicPageCount - 1);
