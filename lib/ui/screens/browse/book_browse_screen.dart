@@ -87,7 +87,20 @@ class _BookBrowseScreenState extends State<BookBrowseScreen> {
   }
 
   void _onChanged() {
-    if (mounted) setState(() {});
+    if (!mounted) return;
+    setState(() {});
+    if (!PlatformDetection.useMobileUi) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        // Once content loads, the topmost focusable item should request focus so
+        // navigation has somewhere to start
+        final featured = _vm.featuredItem;
+        if (featured != null) {
+          _heroCtaFocusNode.requestFocus();
+        } else {
+          _coordinator.focusFirst();
+        }
+      });
+    }
   }
 
   double get _cardWidth {
