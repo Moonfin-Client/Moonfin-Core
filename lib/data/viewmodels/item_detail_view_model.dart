@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
+import 'package:playback_core/playback_core.dart';
 import 'package:server_core/server_core.dart';
 import 'package:dio/dio.dart';
 
@@ -458,6 +459,10 @@ class ItemDetailViewModel extends ChangeNotifier {
   final String? _serverId;
   bool _isDisposed = false;
 
+  /// What the server probed in place of the item's placeholder source, kept so
+  /// a reload of the item doesn't put the placeholder back.
+  List<Map<String, dynamic>>? _probedMediaSources;
+
   /// The Seerr side of this title, when there is one. Null until the lookup
   /// lands, and null forever when Seerr is off or doesn't know the title.
   SeerrMediaDetailViewModel? _seerr;
@@ -912,9 +917,73 @@ class ItemDetailViewModel extends ChangeNotifier {
     }
   }
 
+  static const _probedSourceTypes = {
+    'Movie',
+    'Episode',
+    'Video',
+    'MusicVideo',
+    'Trailer',
+  };
+
+  bool _hasPlaceholderSource(Map<String, dynamic> data) {
+    if (!_probedSourceTypes.contains(data['Type'])) return false;
+    final sources = data['MediaSources'];
+    if (sources is! List || sources.length != 1) return false;
+    final first = sources.first;
+    return first is Map &&
+        MediaStreamResolver.isStreamlessStaticSource(
+          data,
+          first['Id']?.toString(),
+        );
+  }
+
+  /// [data] with its placeholder source swapped for the probed ones, once
+  /// they are known.
+  Map<String, dynamic> _withProbedSources(Map<String, dynamic> data) {
+    final probed = _probedMediaSources;
+    if (probed == null || !_hasPlaceholderSource(data)) return data;
+    return <String, dynamic>{...data, 'MediaSources': probed};
+  }
+
+  /// A channel item, like one from a plugin's virtual library, comes with a
+  /// bare placeholder source: no streams, no size, a link for a file name.
+  /// The server only probes the real file for PlaybackInfo, so the page asks
+  /// for it and shows that source instead.
+  Future<void> _loadProbedMediaSources() async {
+    final item = _item;
+    if (item == null || !_hasPlaceholderSource(item.rawData)) return;
+    try {
+      final info = await _client.playbackApi.getPlaybackInfo(
+        itemId,
+        requestBody: PlaybackInfoRequest(
+          itemId: itemId,
+          autoOpenLiveStream: false,
+        ).toJson(),
+        userId: _client.userId,
+      );
+      final probed = (info['MediaSources'] as List?)
+              ?.whereType<Map>()
+              .map((e) => e.cast<String, dynamic>())
+              .where((s) => (s['MediaStreams'] as List?)?.isNotEmpty ?? false)
+              .toList() ??
+          const <Map<String, dynamic>>[];
+      if (probed.isEmpty || _isDisposed) return;
+      _probedMediaSources = probed;
+      final current = _item;
+      if (current == null || current.id != item.id) return;
+      _item = AggregatedItem(
+        id: current.id,
+        serverId: current.serverId,
+        rawData: _withProbedSources(current.rawData),
+      );
+      notifyListeners();
+    } catch (_) {}
+  }
+
   Future<void> _loadSecondary() async {
     final type = _item?.type;
     final futures = <Future>[];
+    unawaited(_loadProbedMediaSources());
     // Deliberately outside the Future.wait below, so a slow Seerr server never
     // holds up library content that is already here.
     unawaited(_loadSeerrOverlay());
@@ -2445,7 +2514,7 @@ class ItemDetailViewModel extends ChangeNotifier {
       _item = AggregatedItem(
         id: itemId,
         serverId: _serverId ?? _client.baseUrl,
-        rawData: data,
+        rawData: _withProbedSources(data),
       );
       notifyListeners();
     } catch (_) {}

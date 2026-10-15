@@ -123,6 +123,34 @@ abstract class MediaStreamResolver {
     return sources.map(_mediaSourceId).toSet();
   }
 
+  /// Whether [mediaSourceId] names the item's only cached source and that
+  /// source lists no media streams.
+  ///
+  /// An Emby channel item, like one from a plugin's virtual library, caches a
+  /// bare placeholder source. PlaybackInfo probes the real file and returns it
+  /// under a different id, while asking for the placeholder by id gets back
+  /// only the placeholder, which the server can do nothing with but transcode,
+  /// and that transcode fails. With a single version there is no pick to keep,
+  /// so the id is better left off for the server to answer with its default.
+  static bool isStreamlessStaticSource(
+    dynamic mediaItem,
+    String? mediaSourceId,
+  ) {
+    if (mediaSourceId == null || mediaSourceId.isEmpty) return false;
+    final sources = _staticMediaSources(mediaItem);
+    if (sources == null || sources.length != 1) return false;
+    final source = sources.first;
+    if (_mediaSourceId(source) != mediaSourceId) return false;
+    try {
+      final streams = source is Map
+          ? source['MediaStreams'] as List<dynamic>?
+          : source.mediaStreams as List<dynamic>?;
+      return streams == null || streams.isEmpty;
+    } catch (_) {
+      return false;
+    }
+  }
+
   static List<dynamic>? _staticMediaSources(dynamic mediaItem) {
     if (mediaItem is Map) return mediaItem['MediaSources'] as List<dynamic>?;
     try {

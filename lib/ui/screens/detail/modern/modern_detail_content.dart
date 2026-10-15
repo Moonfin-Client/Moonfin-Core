@@ -378,6 +378,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
         mediaSourceId: mediaSource?['Id']?.toString(),
         audioStreamIndex: _vm.selectedAudioIndex ?? effectiveAudio,
         subtitleStreamIndex: _vm.selectedSubtitleIndex ?? effectiveSubtitle,
+        hasOtherVersions: item.mediaSources.length > 1,
       );
       if (mounted) {
         // Drop the result if the track selection changed mid-request.
