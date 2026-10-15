@@ -19,6 +19,7 @@ import 'package:moonfin/ui/widgets/navigation_layout.dart';
 import 'package:moonfin/ui/widgets/top_toolbar.dart';
 import 'package:moonfin/util/focus/input_mode_tracker.dart';
 import 'package:moonfin/util/game_library.dart';
+import 'package:moonfin/util/platform_detection.dart';
 import 'package:playback_core/playback_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -166,6 +167,13 @@ void main() {
   final linux = TargetPlatformVariant.only(TargetPlatform.linux);
 
   group('desktop sidebar keyboard navigation', () {
+    setUp(
+      () => PlatformDetection.setInterfaceLayout(InterfaceLayout.desktop),
+    );
+    tearDown(
+      () => PlatformDetection.setInterfaceLayout(InterfaceLayout.automatic),
+    );
+
     testWidgets('Up and Down move focus between the menu items', (
       tester,
     ) async {
@@ -206,6 +214,7 @@ void main() {
         await tester.pumpAndSettle();
       }
       expect(sidebar.hasFocus, isTrue);
+      expect(_focusedLabel(), 'LeftSidebarSettings');
 
       for (var i = 0; i < 12; i++) {
         await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
