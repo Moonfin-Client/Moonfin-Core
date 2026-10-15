@@ -22,16 +22,16 @@ import '../../widgets/book/book_segmented_control.dart';
 import '../../widgets/book/book_shelf_row.dart';
 import '../../widgets/book/book_stats_band.dart';
 import '../../widgets/book/discover/book_discover_tab.dart';
-import '../../widgets/focus/context_menu_sheet.dart';
 import '../../widgets/focus/can_claim_initial_focus.dart';
+import '../../widgets/focus/context_menu_sheet.dart';
 import '../../widgets/focus/focusable_wrapper.dart';
 import '../../widgets/skeleton/skeleton_library_grid.dart';
-import '../../widgets/left_sidebar.dart';
-import '../../widgets/top_toolbar.dart';
 import '../../widgets/focus/locked_focus_row.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/bottom_nav/bottom_navbar.dart';
+import '../../widgets/left_sidebar.dart';
 import '../../widgets/navigation_layout.dart';
+import '../../widgets/top_toolbar.dart';
 
 class BookBrowseScreen extends StatefulWidget {
   final String libraryId;
@@ -53,7 +53,11 @@ class _BookBrowseScreenState extends State<BookBrowseScreen> {
   int _tab = 0;
 
   final _coordinator = RowFocusCoordinator();
+  // Never attached. As the initial focus target it keeps RequestInitialFocus
+  // from parking focus in the sidebar before the shelves load, and
+  // _onChanged lands focus on the content once they do.
   final _initialFocusNode = FocusNode(debugLabel: 'bookInitialContent');
+  bool _landedOnContent = false;
   final _heroCtaFocusNode = FocusNode(debugLabel: 'bookHeroCta');
   final _scopeFocusNode = FocusNode(debugLabel: 'bookScopeFilter');
   final _tabsFocusNode = FocusNode(debugLabel: 'bookTabs');
@@ -94,19 +98,32 @@ class _BookBrowseScreenState extends State<BookBrowseScreen> {
     setState(() {});
     if (!PlatformDetection.useMobileUi && !_vm.isLoading) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted || _vm.isLoading || !canClaimInitialFocus(context)
-          || LeftSidebar.isFocusedNotifier.value
-          || TopToolbar.isFocusedNotifier.value) return;
-        // Once content loads, the topmost focusable item should request focus so
-        // navigation has somewhere to start
-        final featured = _vm.featuredItem;
-        if (featured != null) {
+        if (!mounted ||
+            _vm.isLoading ||
+            !canClaimInitialFocus(context) ||
+            LeftSidebar.isFocusedNotifier.value ||
+            TopToolbar.isFocusedNotifier.value) {
+          return;
+        }
+        // The first load lands on the top of the content. After that, an
+        // update only steps in when a rebuild took the focused card away,
+        // never while the viewer is somewhere on the page.
+        if (_landedOnContent && !_focusIsLost) return;
+        _landedOnContent = true;
+        if (_vm.featuredItem != null) {
           _heroCtaFocusNode.requestFocus();
         } else {
           _coordinator.focusFirst();
         }
       });
     }
+  }
+
+  /// Nothing has focus, or it fell back to a scope because the focused node
+  /// left the tree.
+  static bool get _focusIsLost {
+    final primary = FocusManager.instance.primaryFocus;
+    return primary == null || primary is FocusScopeNode;
   }
 
   double get _cardWidth {
@@ -235,11 +252,10 @@ class _BookBrowseScreenState extends State<BookBrowseScreen> {
 
 
   @override
-  Widget build(BuildContext context) =>
-      RequestInitialFocus(
-        targetNode: _initialFocusNode,
-        child: _buildContent(context),
-      );
+  Widget build(BuildContext context) => RequestInitialFocus(
+    targetNode: _initialFocusNode,
+    child: _buildContent(context),
+  );
 
   Widget _buildContent(BuildContext context) {
     return Scaffold(

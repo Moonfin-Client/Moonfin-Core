@@ -19,6 +19,7 @@ import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/screens/browse/book_browse_screen.dart';
 import 'package:moonfin/ui/widgets/book/book_segmented_control.dart';
 import 'package:moonfin/ui/widgets/book/discover/book_discover_tab.dart';
+import 'package:moonfin/ui/widgets/left_sidebar.dart';
 import 'package:moonfin/ui/widgets/navigation_layout.dart';
 import 'package:moonfin/util/game_library.dart';
 import 'package:moonfin/util/platform_detection.dart';
@@ -90,6 +91,16 @@ class _FakeItemsApi extends Fake implements ItemsApi {
   @override
   dynamic noSuchMethod(Invocation invocation) =>
       Future.value(const {'Items': <dynamic>[], 'TotalRecordCount': 0});
+}
+
+class _OneBookItemsApi extends Fake implements ItemsApi {
+  @override
+  dynamic noSuchMethod(Invocation invocation) => Future.value(const {
+    'Items': [
+      {'Id': 'book-1', 'Name': 'Dune', 'Type': 'Book', 'ServerId': 'server'},
+    ],
+    'TotalRecordCount': 1,
+  });
 }
 
 void main() {
@@ -180,7 +191,10 @@ void main() {
     await prefs.set(UserPreferences.navbarPosition, NavbarPosition.left);
     await pumpScreen(tester);
 
-    expect(tester.getTopLeft(find.byType(BookSegmentedControl)).dx, closeTo(60, 1.0));
+    expect(
+      tester.getTopLeft(find.byType(BookSegmentedControl)).dx,
+      closeTo(60, 1.0),
+    );
   });
 
   testWidgets('phones keep the tab control at the edge with the sidebar on',
@@ -189,5 +203,57 @@ void main() {
     await pumpScreen(tester);
 
     expect(tester.getTopLeft(find.byType(BookSegmentedControl)).dx, 16);
+  });
+
+  group('focus on wide layouts', () {
+    Future<void> pumpWithBook(WidgetTester tester) async {
+      when(() => GetIt.instance<MediaServerClient>().itemsApi)
+          .thenReturn(_OneBookItemsApi());
+      PlatformDetection.setInterfaceLayout(InterfaceLayout.desktop);
+      await prefs.set(UserPreferences.navbarPosition, NavbarPosition.left);
+      await pumpScreen(tester);
+    }
+
+    String? focused() => FocusManager.instance.primaryFocus?.debugLabel;
+
+    Future<void> somethingChanges(WidgetTester tester) async {
+      await prefs.set(UserPreferences.osdLockEnabled, true);
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('the content takes focus once it loads, not the sidebar', (
+      tester,
+    ) async {
+      await pumpWithBook(tester);
+
+      expect(focused(), 'bookHeroCta');
+      expect(LeftSidebar.isFocusedNotifier.value, isFalse);
+    });
+
+    testWidgets('an update leaves focus where the viewer put it', (
+      tester,
+    ) async {
+      await pumpWithBook(tester);
+      FocusManager.instance.rootScope.descendants
+          .firstWhere((node) => node.debugLabel == 'bookTabs')
+          .requestFocus();
+      await tester.pump();
+
+      await somethingChanges(tester);
+
+      expect(focused(), 'bookTabs');
+    });
+
+    testWidgets('focus that falls off the page comes back to the content', (
+      tester,
+    ) async {
+      await pumpWithBook(tester);
+      FocusManager.instance.primaryFocus!.unfocus();
+      await tester.pump();
+
+      await somethingChanges(tester);
+
+      expect(focused(), 'bookHeroCta');
+    });
   });
 }
