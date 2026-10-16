@@ -1,9 +1,6 @@
-import 'dart:convert';
-
-import 'package:cryptography/cryptography.dart';
 import 'package:dio/dio.dart';
 import 'package:server_core/server_core.dart';
-import 'package:uuid/uuid.dart';
+import 'package:server_plex/server_plex.dart';
 
 /// A plex.tv sign-in code the user approves at plex.tv/link.
 class PlexPin {
@@ -14,19 +11,10 @@ class PlexPin {
   /// as soon as it arrives.
   final DateTime expiresAt;
 
-  final SimpleKeyPair _keyPair;
-  final String _keyId;
-
-  /// plex.tv time minus device time, for the JWT timestamps.
-  final Duration _clockOffset;
-
-  PlexPin._({
+  const PlexPin({
     required this.id,
     required this.code,
     required this.expiresAt,
-    required this._keyPair,
-    required this._keyId,
-    required this._clockOffset,
   });
 
   /// plex.tv/link fills in the code from the pin parameter.
@@ -34,31 +22,61 @@ class PlexPin {
 }
 
 class PlexServer {
+  /// The server's machineIdentifier.
+  final String id;
   final String name;
+  final String version;
+  final String accessToken;
 
-  /// host:port of the best connection, local first and relay last, or null
-  /// when plex.tv lists none.
-  final String? address;
+  /// Best first: local, then remote, relay last. [address] is host:port for
+  /// display, since a plex.direct uri hides the IP behind a long host name.
+  final List<({String uri, String address})> connections;
 
-  const PlexServer({required this.name, this.address});
+  const PlexServer({
+    required this.id,
+    required this.name,
+    required this.version,
+    required this.accessToken,
+    required this.connections,
+  });
 
   factory PlexServer.fromJson(Map<String, dynamic> json) {
     int rank(Map c) => c['relay'] == true ? 2 : (c['local'] == true ? 0 : 1);
     final connections =
         (json['connections'] as List? ?? const []).whereType<Map>().toList()
           ..sort((a, b) => rank(a).compareTo(rank(b)));
-    final best = connections.firstOrNull;
     return PlexServer(
+      id: json['clientIdentifier'] as String? ?? '',
       name: json['name'] as String? ?? '',
-      address: best == null ? null : '${best['address']}:${best['port']}',
+      version: json['productVersion'] as String? ?? '',
+      accessToken: json['accessToken'] as String? ?? '',
+      connections: [
+        for (final c in connections)
+          if (c['uri'] is String)
+            (uri: c['uri'] as String, address: '${c['address']}:${c['port']}'),
+      ],
     );
   }
+
+  /// [lanUris] answered GDM on this network, which plex.tv can't see past a
+  /// container or NAT, so they go first.
+  PlexServer withLanUris(Iterable<String> lanUris) => PlexServer(
+    id: id,
+    name: name,
+    version: version,
+    accessToken: accessToken,
+    connections: [
+      for (final uri in lanUris) (uri: uri, address: Uri.parse(uri).authority),
+      ...connections,
+    ],
+  );
+
+  String? get address => connections.firstOrNull?.address;
 }
 
 class PlexTvService {
   final DeviceInfo _deviceInfo;
   final Dio _dio;
-  final _ed25519 = Ed25519();
 
   PlexTvService({required this._deviceInfo})
     : _dio = Dio(
@@ -71,53 +89,45 @@ class PlexTvService {
     configureServerDio(_dio);
   }
 
-  // Plex takes any X-Plex- header as a query parameter too, which keeps
-  // non-ASCII device names out of the headers.
-  Map<String, String> get _identity => {
-    'X-Plex-Product': _deviceInfo.appName,
-    'X-Plex-Version': _deviceInfo.appVersion,
-    'X-Plex-Client-Identifier': _deviceInfo.id,
-    'X-Plex-Device-Name': _deviceInfo.name,
-  };
+  Map<String, String> get _identity => plexIdentity(_deviceInfo);
 
-  /// Registers a new device key with the PIN, so the token plex.tv hands
-  /// back is a JWT.
   Future<PlexPin> createPin() async {
-    final keyPair = await _ed25519.newKeyPair();
-    final publicKey = await keyPair.extractPublicKey();
-    final keyId = const Uuid().v4();
     final response = await _dio.post<Map<String, dynamic>>(
-      'https://clients.plex.tv/api/v2/pins',
+      'https://plex.tv/api/v2/pins',
       queryParameters: _identity,
-      data: {
-        'jwk': {
-          'kty': 'OKP',
-          'crv': 'Ed25519',
-          'x': _base64Url(publicKey.bytes),
-          'kid': keyId,
-          'alg': 'EdDSA',
-        },
-      },
     );
     final json = response.data!;
-    final now = DateTime.now();
-    return PlexPin._(
+    return PlexPin(
       id: json['id'] as int,
       code: json['code'] as String,
-      expiresAt: now.add(Duration(seconds: json['expiresIn'] as int)),
-      keyPair: keyPair,
-      keyId: keyId,
-      clockOffset: DateTime.parse(json['createdAt'] as String).difference(now),
+      expiresAt: DateTime.now().add(
+        Duration(seconds: json['expiresIn'] as int),
+      ),
     );
   }
 
-  /// The account's JWT once the user approves [pin], else null.
-  Future<String?> checkPin(PlexPin pin) async {
+  /// The account token once the user approves [pinId], else null.
+  Future<String?> checkPin(int pinId) async {
     final response = await _dio.get<Map<String, dynamic>>(
-      'https://clients.plex.tv/api/v2/pins/${pin.id}',
-      queryParameters: {..._identity, 'deviceJWT': await _deviceJwt(pin)},
+      'https://plex.tv/api/v2/pins/$pinId',
+      queryParameters: _identity,
     );
     return response.data!['authToken'] as String?;
+  }
+
+  /// The account's uuid, which is also the key to its public avatar, and its
+  /// display name.
+  Future<({String id, String name})> getAccount(String authToken) async {
+    final response = await _dio.get<Map<String, dynamic>>(
+      'https://plex.tv/api/v2/user',
+      queryParameters: _identity,
+      options: Options(headers: {'X-Plex-Token': authToken}),
+    );
+    final user = response.data!;
+    return (
+      id: user['uuid'] as String,
+      name: (user['title'] ?? user['username']) as String,
+    );
   }
 
   Future<List<PlexServer>> getServers(String authToken) async {
@@ -133,20 +143,27 @@ class PlexTvService {
         .toList(growable: false);
   }
 
-  Future<String> _deviceJwt(PlexPin pin) async {
-    final iat =
-        DateTime.now().add(pin._clockOffset).millisecondsSinceEpoch ~/ 1000;
-    final unsigned = [
-      {'kid': pin._keyId, 'alg': 'EdDSA', 'typ': 'JWT'},
-      {'aud': 'plex.tv', 'iss': _deviceInfo.id, 'iat': iat, 'exp': iat + 300},
-    ].map((part) => _base64Url(utf8.encode(jsonEncode(part)))).join('.');
-    final signature = await _ed25519.sign(
-      utf8.encode(unsigned),
-      keyPair: pin._keyPair,
-    );
-    return '$unsigned.${_base64Url(signature.bytes)}';
+  /// The first of [server]'s connections that answers as that server. They
+  /// are all tried at once, so dead addresses cost one timeout in total.
+  Future<String?> findReachableUri(PlexServer server) async {
+    final probes = [
+      for (final c in server.connections) _answersAs(c.uri, server.id),
+    ];
+    for (var i = 0; i < probes.length; i++) {
+      if (await probes[i]) return server.connections[i].uri;
+    }
+    return null;
   }
 
-  static String _base64Url(List<int> bytes) =>
-      base64Url.encode(bytes).replaceAll('=', '');
+  Future<bool> _answersAs(String uri, String machineId) async {
+    try {
+      final response = await _dio
+          .get<Map<String, dynamic>>('$uri/identity')
+          .timeout(const Duration(seconds: 4));
+      final identity = response.data?['MediaContainer'] as Map?;
+      return identity?['machineIdentifier'] == machineId;
+    } catch (_) {
+      return false;
+    }
+  }
 }

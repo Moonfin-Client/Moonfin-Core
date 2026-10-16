@@ -403,6 +403,11 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
 
   Future<void> _connectToDiscovered(DiscoveredServer discovered) async {
     if (_isConnecting) return;
+    // A Plex server is saved from its plex.tv sign-in.
+    if (discovered.serverType == ServerType.plex) {
+      context.go(Destinations.plexSignIn);
+      return;
+    }
     if (mounted) {
       setState(() {
         _isConnecting = true;
@@ -608,7 +613,10 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
                     onPressed: _isConnecting
                         ? null
                         : () => context.go(Destinations.plexSignIn),
-                    icon: const PlexLogoIcon(size: 16),
+                    icon: const ServerTypeIcon(
+                      serverType: ServerType.plex,
+                      size: 16,
+                    ),
                     label: l10n.signInWithPlex,
                   ),
                 );

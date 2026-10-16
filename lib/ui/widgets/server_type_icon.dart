@@ -22,21 +22,8 @@ class ServerTypeIcon extends StatelessWidget {
       painter: switch (serverType) {
         ServerType.jellyfin => _JellyfinLogoPainter(effectiveColor),
         ServerType.emby => _EmbyLogoPainter(effectiveColor),
+        ServerType.plex => _PlexLogoPainter(effectiveColor),
       },
-    );
-  }
-}
-
-class PlexLogoIcon extends StatelessWidget {
-  final double size;
-
-  const PlexLogoIcon({super.key, this.size = 24});
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomPaint(
-      size: Size.square(size),
-      painter: _PlexLogoPainter(AppColorScheme.onSurface),
     );
   }
 }

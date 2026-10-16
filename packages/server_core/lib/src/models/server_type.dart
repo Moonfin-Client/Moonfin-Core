@@ -1,9 +1,14 @@
 enum ServerType {
   jellyfin,
-  emby;
+  emby,
+  plex;
 
   /// Jellyfin 12 drops the lowercase api_key param while Emby still requires it.
-  String get tokenQueryParam => this == ServerType.emby ? 'api_key' : 'ApiKey';
+  String get tokenQueryParam => switch (this) {
+    ServerType.jellyfin => 'ApiKey',
+    ServerType.emby => 'api_key',
+    ServerType.plex => 'X-Plex-Token',
+  };
 
   /// Emby has no Drop subtitle method and rejects a stream request naming it.
   bool get supportsSubtitleDrop => this != ServerType.emby;

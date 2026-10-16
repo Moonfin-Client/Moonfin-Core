@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:playback_core/playback_core.dart';
 
+import '../../auth/repositories/server_repository.dart';
 import '../../auth/repositories/session_repository.dart';
 import '../../auth/repositories/user_repository.dart';
 import '../../data/services/connectivity_service.dart';
@@ -243,6 +244,16 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: Destinations.login,
+      // A Plex server has no password sign-in of its own, only plex.tv's.
+      redirect: (context, state) {
+        final serverId = state.uri.queryParameters['serverId'];
+        final server = serverId == null
+            ? null
+            : GetIt.instance<ServerRepository>().getServer(serverId);
+        return server?.serverType == ServerType.plex
+            ? Destinations.plexSignIn
+            : null;
+      },
       builder: (context, state) {
         final serverId = state.uri.queryParameters['serverId'] ?? '';
         final username = state.uri.queryParameters['username'];

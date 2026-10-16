@@ -64,6 +64,7 @@ class _FakeServer {
     final items = _MockItemsApi();
     final library = _MockUserLibraryApi();
     when(() => client.baseUrl).thenReturn(baseUrl);
+    when(() => client.serverType).thenReturn(ServerType.jellyfin);
     when(() => client.itemsApi).thenReturn(items);
     when(() => client.playbackApi).thenReturn(playback);
     when(() => client.userLibraryApi).thenReturn(library);

@@ -6,8 +6,10 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:server_core/server_core.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../auth/repositories/plex_repository.dart';
 import '../../../data/services/plex_tv_service.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../util/platform_detection.dart';
@@ -26,9 +28,12 @@ class PlexSignInScreen extends StatefulWidget {
 
 class _PlexSignInScreenState extends State<PlexSignInScreen> {
   final _plexTv = GetIt.instance<PlexTvService>();
+  final _plexRepository = GetIt.instance<PlexRepository>();
 
   PlexPin? _pin;
+  String? _token;
   List<PlexServer>? _servers;
+  PlexServer? _connecting;
   String? _errorMessage;
   Timer? _pollTimer;
   bool _polling = false;
@@ -69,7 +74,7 @@ class _PlexSignInScreenState extends State<PlexSignInScreen> {
     _polling = true;
     String? token;
     try {
-      token = await _plexTv.checkPin(pin);
+      token = await _plexTv.checkPin(pin.id);
     } on DioException catch (e) {
       // Dropped connections, 429 and 5xx usually clear up, so the next tick
       // retries those. Any other answer won't fix itself.
@@ -82,10 +87,42 @@ class _PlexSignInScreenState extends State<PlexSignInScreen> {
     if (token == null || !mounted) return;
 
     _pollTimer?.cancel();
+    _token = token;
+    await _loadServers(token);
+  }
+
+  Future<void> _loadServers(String token) async {
     try {
-      final servers = await _plexTv.getServers(token);
-      if (mounted) setState(() => _servers = servers);
+      final servers = await _plexRepository.loadServers(token);
+      if (!mounted) return;
+      setState(() => _servers = servers);
+      if (servers.length == 1) await _connect(servers.first);
     } catch (e) {
+      _showError(e);
+    }
+  }
+
+  Future<void> _connect(PlexServer server) async {
+    final token = _token;
+    if (token == null || _connecting != null) return;
+    setState(() {
+      _connecting = server;
+      _errorMessage = null;
+    });
+    try {
+      final connected = await _plexRepository.connect(server, token);
+      if (!mounted) return;
+      if (connected) {
+        context.go(Destinations.home);
+        return;
+      }
+      setState(() {
+        _connecting = null;
+        _errorMessage = AppLocalizations.of(context)
+            .unableToConnectTo(server.name);
+      });
+    } catch (e) {
+      _connecting = null;
       _showError(e);
     }
   }
@@ -98,13 +135,19 @@ class _PlexSignInScreenState extends State<PlexSignInScreen> {
     );
   }
 
+  /// An approved code stays approved, so only a failure before approval
+  /// needs a new one.
   void _retry() {
+    final token = _token;
     setState(() {
       _errorMessage = null;
-      _pin = null;
-      _servers = null;
+      if (token == null) _pin = null;
     });
-    _requestPin();
+    if (token == null) {
+      _requestPin();
+    } else if (_servers == null) {
+      _loadServers(token);
+    }
   }
 
   @override
@@ -123,7 +166,7 @@ class _PlexSignInScreenState extends State<PlexSignInScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const PlexLogoIcon(size: 28),
+                const ServerTypeIcon(serverType: ServerType.plex, size: 28),
                 const SizedBox(width: 10),
                 Text(
                   l10n.signInWithPlex,
@@ -182,6 +225,10 @@ class _PlexSignInScreenState extends State<PlexSignInScreen> {
       );
     }
 
+    if (_connecting != null) {
+      return _buildLoading(l10n.connectingToServerEllipsis);
+    }
+
     final servers = _servers;
     if (servers != null) {
       if (servers.isEmpty) {
@@ -192,9 +239,8 @@ class _PlexSignInScreenState extends State<PlexSignInScreen> {
         children: [
           Text(
             l10n.selectAServer,
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+            style: Theme.of(context).textTheme.titleMedium
+                ?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           ...servers.map(_buildServerTile),
@@ -203,13 +249,7 @@ class _PlexSignInScreenState extends State<PlexSignInScreen> {
     }
 
     final pin = _pin;
-    if (pin == null) {
-      return const SizedBox(
-        height: 28,
-        width: 28,
-        child: CircularProgressIndicator(strokeWidth: 2),
-      );
-    }
+    if (pin == null || _token != null) return _buildLoading();
 
     return Column(
       children: [
@@ -265,41 +305,78 @@ class _PlexSignInScreenState extends State<PlexSignInScreen> {
     );
   }
 
+  Widget _buildLoading([String? message]) {
+    return Column(
+      children: [
+        const SizedBox(
+          height: 28,
+          width: 28,
+          child: CircularProgressIndicator(strokeWidth: 2),
+        ),
+        if (message != null) ...[
+          const SizedBox(height: 12),
+          Text(
+            message,
+            style: TextStyle(
+              color: AppColorScheme.onSurface.withValues(alpha: 0.7),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
   Widget _buildServerTile(PlexServer server) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 6),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Material(
         color: AppColorScheme.surface.withValues(alpha: 0.5),
         borderRadius: AppRadius.circular(12),
-      ),
-      child: Row(
-        children: [
-          const PlexLogoIcon(size: 22),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        child: InkWell(
+          borderRadius: AppRadius.circular(12),
+          onTap: () => _connect(server),
+          focusColor: AppColorScheme.accent,
+          hoverColor: AppColorScheme.onSurface.withValues(alpha: 0.08),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Row(
               children: [
-                Text(
-                  server.name,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: AppColorScheme.onSurface.withValues(alpha: 0.9),
+                const ServerTypeIcon(serverType: ServerType.plex, size: 22),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        server.name,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: AppColorScheme.onSurface.withValues(
+                            alpha: 0.9,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        server.address ??
+                            AppLocalizations.of(context).noReachableAddress,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: AppColorScheme.onSurface.withValues(
+                            alpha: 0.5,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                Text(
-                  server.address ??
-                      AppLocalizations.of(context).noReachableAddress,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: AppColorScheme.onSurface.withValues(alpha: 0.5),
-                  ),
+                Icon(
+                  Icons.chevron_right,
+                  color: AppColorScheme.onSurface.withValues(alpha: 0.6),
                 ),
               ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }

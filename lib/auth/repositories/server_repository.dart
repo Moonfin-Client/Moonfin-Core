@@ -172,6 +172,14 @@ class ServerRepository {
     return null;
   }
 
+  /// Adds [server] as is, or replaces the one with its id, for servers that
+  /// can't go through the [addServer] probe.
+  Future<void> saveServer(Server server) async {
+    _servers.removeWhere((s) => s.id == server.id);
+    _servers.add(server);
+    await _authStore.putServer(server);
+  }
+
   Future<void> updateServer(Server server) async {
     final index = _servers.indexWhere((s) => s.id == server.id);
     if (index >= 0) {

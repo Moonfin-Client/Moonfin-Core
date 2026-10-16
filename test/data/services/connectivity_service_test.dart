@@ -48,6 +48,7 @@ void main() {
     });
 
     final client = _MockMediaServerClient();
+    when(() => client.serverType).thenReturn(ServerType.jellyfin);
     when(
       () => client.baseUrl,
     ).thenReturn('http://${server.address.address}:${server.port}');

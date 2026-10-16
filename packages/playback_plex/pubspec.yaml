@@ -1,0 +1,11 @@
+name: playback_plex
+description: Plex playback plugin.
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.11.0
+
+dependencies:
+  playback_core:
+    path: ../playback_core

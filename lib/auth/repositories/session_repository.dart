@@ -430,6 +430,10 @@ class SessionRepository {
       );
     }
 
+    // Plugin sync, push enrollment and Seerr all need the Moonbase plugin,
+    // which only runs on Jellyfin and Emby.
+    if (client.serverType == ServerType.plex) return;
+
     await _pluginSyncService.syncOnLogin(client, serverId: serverId);
 
     // Register the FCM token now that a session exists, and push the current

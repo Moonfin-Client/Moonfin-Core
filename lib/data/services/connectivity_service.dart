@@ -282,7 +282,9 @@ class ConnectivityService extends ChangeNotifier {
     for (var attempt = 0; attempt < _probeAttempts; attempt++) {
       try {
         await _pingDio.get(
-          '${client.baseUrl}/System/Ping',
+          client.serverType == ServerType.plex
+              ? '${client.baseUrl}/identity'
+              : '${client.baseUrl}/System/Ping',
           // Only the status matters. A proxy can label the plain text body as
           // json, and failing to decode it would mark a healthy server down.
           options: Options(responseType: ResponseType.plain),

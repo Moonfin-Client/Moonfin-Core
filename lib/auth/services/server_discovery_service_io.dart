@@ -13,6 +13,8 @@ class ServerDiscoveryService {
   static const _discoveryPort = 7359;
   static const _jellyfinMessage = 'who is JellyfinServer?';
   static const _embyMessage = 'who is EmbyServer?';
+  static const _plexDiscoveryPort = 32414;
+  static const _plexMessage = 'M-SEARCH * HTTP/1.1\r\n\r\n';
   static const _listenDuration = Duration(milliseconds: 2500);
   static const _rebroadcastInterval = Duration(milliseconds: 800);
 
@@ -30,12 +32,14 @@ class ServerDiscoveryService {
       final broadcastAddresses = await _getBroadcastAddresses();
       final jellyfinData = utf8.encode(_jellyfinMessage);
       final embyData = utf8.encode(_embyMessage);
+      final plexData = utf8.encode(_plexMessage);
 
       void sendBroadcasts() {
         for (final addr in broadcastAddresses) {
           try {
             socket!.send(jellyfinData, addr, _discoveryPort);
             socket.send(embyData, addr, _discoveryPort);
+            socket.send(plexData, addr, _plexDiscoveryPort);
           } catch (_) {}
         }
       }
@@ -45,7 +49,9 @@ class ServerDiscoveryService {
         final datagram = socket!.receive();
         if (datagram == null) return;
         final response = utf8.decode(datagram.data);
-        final server = _parseResponse(response);
+        final server = response.startsWith('HTTP/')
+            ? parsePlexGdmResponse(response, datagram.address.address)
+            : _parseResponse(response);
         if (server == null) return;
         if (seen.add(server.id)) {
           controller.add(server);
@@ -125,4 +131,23 @@ class ServerDiscoveryService {
     } catch (_) {}
     return addresses;
   }
+}
+
+/// Plex answers GDM with HTTP style headers instead of JSON.
+DiscoveredServer? parsePlexGdmResponse(String response, String host) {
+  final headers = <String, String>{
+    for (final line in response.split('\r\n'))
+      if (line.indexOf(':') case final i when i > 0)
+        line.substring(0, i).toLowerCase(): line.substring(i + 1).trim(),
+  };
+  final id = headers['resource-identifier'];
+  if (id == null || headers['content-type'] != 'plex/media-server') {
+    return null;
+  }
+  return DiscoveredServer(
+    id: id,
+    name: headers['name'] ?? id,
+    address: 'http://$host:${headers['port'] ?? '32400'}',
+    serverType: ServerType.plex,
+  );
 }

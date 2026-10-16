@@ -81,7 +81,6 @@ dependencies:
 
   # Crypto
   crypto: ^3.0.6
-  cryptography: ^2.9.0
 
   # Connectivity
   connectivity_plus: ^7.1.1
@@ -131,12 +130,16 @@ dependencies:
     path: packages/server_jellyfin
   server_emby:
     path: packages/server_emby
+  server_plex:
+    path: packages/server_plex
   playback_core:
     path: packages/playback_core
   playback_jellyfin:
     path: packages/playback_jellyfin
   playback_emby:
     path: packages/playback_emby
+  playback_plex:
+    path: packages/playback_plex
   moonfin_design:
     path: packages/design
   jellyfin_preference:

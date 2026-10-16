@@ -30,8 +30,30 @@ abstract class ServerWebSocketClient {
     return switch (client.serverType) {
       ServerType.jellyfin => JellyfinWebSocketClient(client),
       ServerType.emby => EmbyWebSocketClient(client),
+      ServerType.plex => _NoWebSocketClient(),
     };
   }
+}
+
+/// Plex has no Jellyfin style socket, so its sessions run without one.
+class _NoWebSocketClient implements ServerWebSocketClient {
+  @override
+  Stream<ServerWebSocketMessage> get messages => const Stream.empty();
+
+  @override
+  Stream<void> get connections => const Stream.empty();
+
+  @override
+  Future<void> connect() async {}
+
+  @override
+  Future<void> disconnect() async {}
+
+  @override
+  void retryNow() {}
+
+  @override
+  void dispose() {}
 }
 
 /// The reconnect, keep alive and logging machinery both server types share.

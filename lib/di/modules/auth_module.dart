@@ -2,6 +2,7 @@ import 'package:get_it/get_it.dart';
 
 import '../../auth/repositories/auth_repository.dart';
 import '../../auth/repositories/emby_connect_repository.dart';
+import '../../auth/repositories/plex_repository.dart';
 import '../../auth/repositories/server_repository.dart';
 import '../../auth/repositories/server_user_repository.dart';
 import '../../auth/repositories/session_repository.dart';
@@ -47,5 +48,8 @@ void registerAuthModule() {
   );
   _getIt.registerLazySingleton(
     () => EmbyConnectRepository(_getIt(), _getIt(), _getIt(), _getIt()),
+  );
+  _getIt.registerLazySingleton(
+    () => PlexRepository(_getIt(), _getIt(), _getIt(), _getIt()),
   );
 }

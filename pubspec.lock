@@ -344,14 +344,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.7"
-  cryptography:
-    dependency: "direct main"
-    description:
-      name: cryptography
-      sha256: "3eda3029d34ec9095a27a198ac9785630fe525c0eb6a49f3d575272f8e792ef0"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.9.0"
   csslib:
     dependency: transitive
     description:
@@ -1442,6 +1434,13 @@ packages:
       relative: true
     source: path
     version: "0.1.0"
+  playback_plex:
+    dependency: "direct main"
+    description:
+      path: "packages/playback_plex"
+      relative: true
+    source: path
+    version: "0.1.0"
   plugin_platform_interface:
     dependency: "direct dev"
     description:
@@ -1683,6 +1682,13 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/server_jellyfin"
+      relative: true
+    source: path
+    version: "0.1.0"
+  server_plex:
+    dependency: "direct main"
+    description:
+      path: "packages/server_plex"
       relative: true
     source: path
     version: "0.1.0"
