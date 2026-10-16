@@ -1489,9 +1489,14 @@ class _BookReaderScreenState extends State<BookReaderScreen>
     await prefs.setInt('${_comicProgressKeyPrefix}_page', _currentComicPage);
     await prefs.setDouble('${_comicProgressKeyPrefix}_zoom', _comicZoom);
 
-    final newPlayedPosition = _currentComicPage * 10000;
     final client = _resolveClient();
-    await client.userLibraryApi.updatePlayedPosition(item.id, playedPosition: newPlayedPosition.toInt());
+    final newPlayedPercentage = _currentComicPage / _comicPageCount;
+    if (newPlayedPercentage >= 0.98) {
+      await client.userLibraryApi.markPlayed(item.id);
+    } else {
+      final newPlayedPosition = (_currentComicPage + 1) * 10000;
+      await client.userLibraryApi.updatePlayedPosition(item.id, playedPosition: newPlayedPosition.toInt());
+    }
   }
 
   void _scheduleComicStateSave() {
