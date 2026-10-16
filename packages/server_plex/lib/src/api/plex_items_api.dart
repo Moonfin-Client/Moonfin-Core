@@ -468,9 +468,36 @@ class PlexItemsApi implements ItemsApi {
     List<String>? includeItemTypes,
   }) async => plexItemsResult([]);
 
+  /// Plex lists a track's lyric file as stream type 4 and reads it into lines
+  /// with millisecond offsets, which become Jellyfin's lines with start ticks.
   @override
-  Future<Map<String, dynamic>> getLyrics(String itemId) async =>
-      throw UnsupportedError("Lyrics aren't supported on Plex");
+  Future<Map<String, dynamic>> getLyrics(String itemId) async {
+    final container = await plexContainer(_dio, '/library/metadata/$itemId');
+    final lyricStream = [
+      for (final item in container['Metadata'] as List? ?? const [])
+        for (final media in item['Media'] as List? ?? const [])
+          for (final part in media['Part'] as List? ?? const [])
+            for (final stream in part['Stream'] as List? ?? const [])
+              if (stream['streamType'] == 4) stream,
+    ].firstOrNull;
+    if (lyricStream == null) return {'Lyrics': const []};
+
+    final lyrics = await plexContainer(_dio, '${lyricStream['key']}');
+    final lyric = (lyrics['Lyrics'] as List?)?.firstOrNull;
+    final timed = lyric?['timed'] == true;
+    return {
+      'Lyrics': [
+        for (final line in lyric?['Line'] as List? ?? const [])
+          {
+            if (timed) 'Start': (line['startOffset'] as int? ?? 0) * 10000,
+            'Text': [
+              for (final span in line['Span'] as List? ?? const [])
+                span['text'],
+            ].join(),
+          },
+      ],
+    };
+  }
 
   @override
   Future<List<Map<String, dynamic>>> getLocalTrailers(String itemId) async =>

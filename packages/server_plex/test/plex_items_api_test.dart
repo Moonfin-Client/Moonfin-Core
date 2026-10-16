@@ -149,6 +149,72 @@ void main() {
     expect(view['CollectionType'], 'tvshows');
   });
 
+  test('lyrics turn into timed lines, and none into an empty list', () async {
+    Map<String, dynamic> track(List<Map<String, dynamic>> streams) => {
+      'Metadata': [
+        {
+          'Media': [
+            {
+              'Part': [
+                {'Stream': streams},
+              ],
+            },
+          ],
+        },
+      ],
+    };
+    final dio = Dio()
+      ..interceptors.add(
+        _FakeServer(
+          (options, handler) => handler.resolve(
+            Response(
+              requestOptions: options,
+              data: {
+                'MediaContainer': switch (options.path) {
+                  '/library/metadata/23025' => track([
+                    {'streamType': 2, 'codec': 'mp3'},
+                    {'streamType': 4, 'key': '/library/streams/149652'},
+                  ]),
+                  '/library/streams/149652' => {
+                    'Lyrics': [
+                      {
+                        'timed': true,
+                        'Line': [
+                          {
+                            'startOffset': 1070,
+                            'Span': [
+                              {'text': 'Yo, yo, your dog is here'},
+                            ],
+                          },
+                          {
+                            'startOffset': 9820,
+                            'Span': [
+                              {'text': 'Where '},
+                              {'text': 'the hood at'},
+                            ],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                  _ => track([
+                    {'streamType': 2, 'codec': 'mp3'},
+                  ]),
+                },
+              },
+            ),
+          ),
+        ),
+      );
+    final api = PlexItemsApi(dio);
+
+    expect((await api.getLyrics('23025'))['Lyrics'], [
+      {'Start': 10700000, 'Text': 'Yo, yo, your dog is here'},
+      {'Start': 98200000, 'Text': 'Where the hood at'},
+    ]);
+    expect((await api.getLyrics('23010'))['Lyrics'], isEmpty);
+  });
+
   group('PlexImageApi', () {
     final images = PlexImageApi(() => 'http://plex:32400', () => 'tok');
 
