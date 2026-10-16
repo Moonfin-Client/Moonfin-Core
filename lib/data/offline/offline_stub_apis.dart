@@ -2,6 +2,7 @@ import 'package:server_core/server_core.dart';
 
 import '../repositories/offline_repository.dart';
 import '../services/pending_rating_store.dart';
+import '../services/pending_playbackposition_store.dart';
 import 'offline_catalog.dart';
 import 'offline_errors.dart';
 
@@ -58,13 +59,16 @@ class OfflineUsersApi implements UsersApi {
 class OfflineUserLibraryApi implements UserLibraryApi {
   final OfflineCatalog _catalog;
   final PendingRatingStore _pendingRatings;
+  final PendingPlaybackPositionStore _pendingPlaybackPosition;
   final OfflineRepository _offlineRepo;
 
   OfflineUserLibraryApi(
     this._catalog, {
     required PendingRatingStore pendingRatings,
+    required PendingPlaybackPositionStore pendingPlaybackPosition,
     required OfflineRepository offlineRepo,
   }) : _pendingRatings = pendingRatings,
+       _pendingPlaybackPosition = pendingPlaybackPosition,
        _offlineRepo = offlineRepo;
 
   // Both server types take a numeric value once the queue replays, so the
@@ -103,6 +107,8 @@ class OfflineUserLibraryApi implements UserLibraryApi {
   Future<void> updatePlayedPosition(String itemId, {required int playedPosition}) async {
     await _queueUserData(
       itemId,
+      entryOf: (serverId) =>
+          PendingPlaybackPosition(serverId: serverId, itemId: itemId, value: playedPosition),
       userDataPatch: {'PlaybackPositionTicks': playedPosition},
       unavailablePath: '/UserItems/$itemId/UserData',
     );
@@ -167,6 +173,7 @@ class OfflineUserLibraryApi implements UserLibraryApi {
   /// Same as _queueRating, but works for all user data, not just ratings
   Future<void> _queueUserData(
     String itemId, {
+    required PendingPlaybackPosition Function(String serverId) entryOf,
     required Map<String, dynamic> userDataPatch,
     required String unavailablePath,
   }) async {
@@ -174,6 +181,7 @@ class OfflineUserLibraryApi implements UserLibraryApi {
     if (serverId == null || serverId.isEmpty) {
       throw offlineUnavailable(unavailablePath);
     }
+    await _pendingPlaybackPosition.put(entryOf(serverId));
     await _offlineRepo.patchUserData(itemId, userDataPatch);
   }
 }

@@ -15,6 +15,7 @@ import 'package:moonfin/data/database/offline_database.dart';
 import 'package:moonfin/data/repositories/offline_repository.dart';
 import 'package:moonfin/data/services/connectivity_service.dart';
 import 'package:moonfin/data/services/pending_rating_store.dart';
+import 'package:moonfin/data/services/pending_playbackposition_store.dart';
 import 'package:moonfin/data/services/sync_service.dart';
 import 'package:server_core/server_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -126,7 +127,7 @@ void main() {
     await prefStore.init();
     db = OfflineDatabase(DatabaseConnection(NativeDatabase.memory()));
     repo = OfflineRepository(db);
-    sync = SyncService(repo, PendingRatingStore(prefStore));
+    sync = SyncService(repo, PendingRatingStore(prefStore), PendingPlaybackPositionStore(prefStore));
   });
 
   tearDown(() async {

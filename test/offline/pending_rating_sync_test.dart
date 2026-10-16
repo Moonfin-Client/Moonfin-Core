@@ -10,6 +10,7 @@ import 'package:moonfin/data/offline/offline_catalog.dart';
 import 'package:moonfin/data/offline/offline_stub_apis.dart';
 import 'package:moonfin/data/repositories/offline_repository.dart';
 import 'package:moonfin/data/services/pending_rating_store.dart';
+import 'package:moonfin/data/services/pending_playbackposition_store.dart';
 import 'package:moonfin/data/services/sync_service.dart';
 import 'package:server_core/server_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -23,12 +24,14 @@ void main() {
 
   late PreferenceStore prefStore;
   late PendingRatingStore store;
+  late PendingPlaybackPositionStore dummyStore;
 
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
     prefStore = PreferenceStore();
     await prefStore.init();
     store = PendingRatingStore(prefStore);
+    dummyStore = PendingPlaybackPositionStore(prefStore);
   });
 
   group('PendingRatingStore', () {
@@ -77,6 +80,7 @@ void main() {
       api = OfflineUserLibraryApi(
         catalog,
         pendingRatings: store,
+        pendingPlaybackPosition: dummyStore,
         offlineRepo: repo,
       );
 
@@ -156,7 +160,7 @@ void main() {
       client = _MockClient();
       userLibrary = _MockUserLibraryApi();
       when(() => client.userLibraryApi).thenReturn(userLibrary);
-      sync = SyncService(OfflineRepository(db), store);
+      sync = SyncService(OfflineRepository(db), store, dummyStore);
     });
 
     tearDown(() async {

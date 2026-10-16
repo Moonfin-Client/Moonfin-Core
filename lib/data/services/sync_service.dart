@@ -9,6 +9,7 @@ import '../../util/server_url.dart';
 import '../database/offline_database.dart';
 import '../repositories/offline_repository.dart';
 import 'pending_rating_store.dart';
+import 'pending_playbackposition_store.dart';
 
 enum SyncState { idle, syncing, done, error }
 
@@ -21,13 +22,14 @@ class SyncResult {
 class SyncService extends ChangeNotifier {
   final OfflineRepository _offlineRepo;
   final PendingRatingStore _pendingRatings;
+  final PendingPlaybackPositionStore _pendingPlaybackPosition;
 
   SyncState _state = SyncState.idle;
   SyncState get state => _state;
 
   Timer? _doneResetTimer;
 
-  SyncService(this._offlineRepo, this._pendingRatings);
+  SyncService(this._offlineRepo, this._pendingRatings, this._pendingPlaybackPosition);
 
   /// Pushes ratings queued while offline through [client]. Item ids are only
   /// unique within one server, so [serverId] scopes the replay to the server
@@ -67,6 +69,31 @@ class SyncService extends ChangeNotifier {
     }
     return SyncResult(synced: synced, failed: failed);
   }
+
+  Future<SyncResult> syncPendingPlaybackPosition(
+    MediaServerClient client, {
+      required String? serverId,
+    }) async {
+      if (serverId == null) return const SyncResult(synced: 0, failed: 0);
+
+      var synced = 0, failed = 0;
+      for (final entry in _pendingPlaybackPosition.all) {
+        if (entry.serverId != serverId) continue;
+        try {
+          final value = entry.value ?? 0;
+          await client.userLibraryApi.updatePlayedPosition(
+            entry.itemId,
+            playedPosition: value.toInt(),
+          );
+          await _pendingPlaybackPosition.remove(entry.serverId, entry.itemId);
+          synced++;
+        } catch (e) {
+          debugPrint('[Sync] Failed to push progress for ${entry.itemId}: $e');
+          failed++;
+        }
+      }
+      return SyncResult(synced: synced, failed: failed);
+    }
 
   /// Whether [row] was downloaded from the server [client] talks to, whose
   /// app server id is [serverId]. Most writers store that id, a few store the
