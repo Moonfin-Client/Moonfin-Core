@@ -1488,6 +1488,10 @@ class _BookReaderScreenState extends State<BookReaderScreen>
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('${_comicProgressKeyPrefix}_page', _currentComicPage);
     await prefs.setDouble('${_comicProgressKeyPrefix}_zoom', _comicZoom);
+
+    final newPlayedPosition = _currentComicPage * 10000;
+    final client = _resolveClient();
+    await client.userLibraryApi.updatePlayedPosition(item.id, playedPosition: newPlayedPosition.toInt());
   }
 
   void _scheduleComicStateSave() {

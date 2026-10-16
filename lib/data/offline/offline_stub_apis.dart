@@ -100,6 +100,15 @@ class OfflineUserLibraryApi implements UserLibraryApi {
   }
 
   @override
+  Future<void> updatePlayedPosition(String itemId, {required int playedPosition}) async {
+    await _queueUserData(
+      itemId,
+      userDataPatch: {'PlaybackPositionTicks': playedPosition},
+      unavailablePath: '/UserItems/$itemId/UserData',
+    );
+  }
+
+  @override
   Future<void> updateUserRating(String itemId, {required bool likes}) async {
     await _queueRating(
       itemId,
@@ -152,6 +161,19 @@ class OfflineUserLibraryApi implements UserLibraryApi {
       throw offlineUnavailable(unavailablePath);
     }
     await _pendingRatings.put(entryOf(serverId));
+    await _offlineRepo.patchUserData(itemId, userDataPatch);
+  }
+
+  /// Same as _queueRating, but works for all user data, not just ratings
+  Future<void> _queueUserData(
+    String itemId, {
+    required Map<String, dynamic> userDataPatch,
+    required String unavailablePath,
+  }) async {
+    final serverId = _catalog.byId(itemId)?.row.serverId;
+    if (serverId == null || serverId.isEmpty) {
+      throw offlineUnavailable(unavailablePath);
+    }
     await _offlineRepo.patchUserData(itemId, userDataPatch);
   }
 }

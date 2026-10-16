@@ -34,6 +34,12 @@ class EmbyUserLibraryApi implements UserLibraryApi {
     await _dio.delete('/Users/$userId/PlayedItems/$itemId');
   }
 
+  @override
+  Future<void> updatePlayedPosition(String itemId, {required int playedPosition}) async {
+    final userId = _getUserId();
+    await _dio.post('/Users/$userId/Items/$itemId/UserData', data: {'PlaybackPositionTicks': playedPosition});
+  }
+
   // Emby's own rating routes answer 200 and store nothing, and it leaves the
   // rating out of the item it hands back, so a rating written through them is
   // lost. These go through Moonbase, which writes the user data store the

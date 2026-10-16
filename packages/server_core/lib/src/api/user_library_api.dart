@@ -4,6 +4,7 @@ abstract class UserLibraryApi {
   Future<void> unmarkFavorite(String itemId);
   Future<void> markPlayed(String itemId);
   Future<void> unmarkPlayed(String itemId);
+  Future<void> updatePlayedPosition(String itemId, {required int playedPosition});
   Future<void> updateUserRating(String itemId, {required bool likes});
   Future<void> updateNumericUserRating(String itemId, {required double rating});
   Future<void> deleteUserRating(String itemId);
