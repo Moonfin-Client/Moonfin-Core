@@ -45,15 +45,17 @@ const _item = {
   ],
 };
 
-(PlexPlaybackApi, _FakeServer) _api(String decision) {
+(PlexPlaybackApi, _FakeServer) _api(String decision, {String type = 'movie'}) {
   final server = _FakeServer(
     (options) => switch (options.path) {
       '/library/metadata/1715' => {
         'MediaContainer': {
-          'Metadata': [_item],
+          'Metadata': [
+            {..._item, 'type': type},
+          ],
         },
       },
-      '/video/:/transcode/universal/decision' => {
+      final path when path.endsWith('/transcode/universal/decision') => {
         'MediaContainer': {
           'generalDecisionText':
               'Neither direct play nor conversion is available.',
@@ -94,7 +96,7 @@ void main() {
           'AudioCodec': 'aac,dts',
         },
         {'Type': 'Video', 'Container': 'webm'},
-        {'Type': 'Audio', 'Container': 'mp3'},
+        {'Type': 'Audio', 'Container': 'm4a,flac', 'AudioCodec': 'alac,flac'},
       ],
       'TranscodingProfiles': [
         {
@@ -110,6 +112,12 @@ void main() {
           'VideoCodec': 'h264',
           'AudioCodec': 'aac,ac3',
         },
+        {
+          'Type': 'Audio',
+          'Container': 'ts',
+          'Protocol': 'hls',
+          'AudioCodec': 'mp3',
+        },
       ],
     });
 
@@ -119,8 +127,12 @@ void main() {
       'add-direct-play-profile(type=videoProfile&container=webm'
           '&videoCodec=h264,hevc,mpeg1video,mpeg2video,mpeg4,vc1,vp8,vp9,av1'
           '&audioCodec=aac,ac3,eac3,mp3,dca,truehd,flac,opus,vorbis,pcm)',
+      'add-direct-play-profile(type=musicProfile&container=mp4,flac'
+          '&audioCodec=alac,flac)',
       'add-transcode-target(type=videoProfile&context=streaming&protocol=hls'
           '&container=mpegts&videoCodec=h264&audioCodec=aac,ac3)',
+      'add-transcode-target(type=musicProfile&context=streaming&protocol=hls'
+          '&container=mpegts&audioCodec=mp3)',
     ]);
   });
 
@@ -194,6 +206,23 @@ void main() {
       expect(burned['DeliveryMethod'], 'Encode');
     },
   );
+
+  test('a track transcodes through the music transcoder', () async {
+    final (api, server) = _api('transcode', type: 'track');
+
+    final info = await api.getPlaybackInfo(
+      '1715',
+      requestBody: {'EnableDirectPlay': false},
+    );
+
+    final decision = _request(server, '/music/:/transcode/universal/decision');
+    expect(decision.queryParameters['directPlay'], '0');
+    final source = (info['MediaSources'] as List).single as Map;
+    expect(
+      Uri.parse(source['TranscodingUrl'] as String).path,
+      '/music/:/transcode/universal/start.m3u8',
+    );
+  });
 
   test('turning subtitles off clears the Plex selection', () async {
     final (api, server) = _api('directplay');

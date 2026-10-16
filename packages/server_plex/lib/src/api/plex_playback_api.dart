@@ -10,14 +10,19 @@ const _plexNames = {
   'ts': 'mpegts',
   'm2ts': 'mpegts',
   'm4v': 'mp4',
+  'm4a': 'mp4',
+  'm4b': 'mp4',
   'ogm': 'ogg',
   'ogv': 'ogg',
+  'oga': 'ogg',
   'wmv': 'asf',
+  'wma': 'asf',
   'vob': 'mpeg',
   'dts': 'dca',
   'mpeg': 'mpeg1video',
 };
 const _anyContainer = 'mkv,mp4,mov,avi,mpegts,webm,asf,ogg,mpeg';
+const _anyMusicContainer = 'mp3,flac,mp4,ogg,wav,aac';
 const _anyVideoCodec = 'h264,hevc,mpeg1video,mpeg2video,mpeg4,vc1,vp8,vp9,av1';
 const _anyAudioCodec = 'aac,ac3,eac3,mp3,dca,truehd,flac,opus,vorbis,pcm';
 
@@ -33,25 +38,35 @@ String plexClientProfile(Map<String, dynamic>? profile) {
     return mapped.isEmpty ? any : mapped.join(',');
   }
 
-  final hls = (profile?['TranscodingProfiles'] as List? ?? const [])
-      .whereType<Map>()
-      .where(
-        (p) =>
-            p['Type'] == 'Video' &&
-            p['Protocol'] == 'hls' &&
-            p['Container'] == 'ts',
-      )
-      .firstOrNull;
+  Map? hls(String type) =>
+      (profile?['TranscodingProfiles'] as List? ?? const [])
+          .whereType<Map>()
+          .where(
+            (p) =>
+                p['Type'] == type &&
+                p['Protocol'] == 'hls' &&
+                p['Container'] == 'ts',
+          )
+          .firstOrNull;
+  final videoHls = hls('Video');
   return [
     for (final p in profile?['DirectPlayProfiles'] as List? ?? const [])
       if (p is Map && p['Type'] == 'Video')
         'add-direct-play-profile(type=videoProfile'
             '&container=${names(p['Container'], _anyContainer)}'
             '&videoCodec=${names(p['VideoCodec'], _anyVideoCodec)}'
+            '&audioCodec=${names(p['AudioCodec'], _anyAudioCodec)})'
+      else if (p is Map && p['Type'] == 'Audio')
+        'add-direct-play-profile(type=musicProfile'
+            '&container=${names(p['Container'], _anyMusicContainer)}'
             '&audioCodec=${names(p['AudioCodec'], _anyAudioCodec)})',
     'add-transcode-target(type=videoProfile&context=streaming&protocol=hls'
-        '&container=mpegts&videoCodec=${names(hls?['VideoCodec'], 'h264')}'
-        '&audioCodec=${names(hls?['AudioCodec'], 'aac')})',
+        '&container=mpegts'
+        '&videoCodec=${names(videoHls?['VideoCodec'], 'h264')}'
+        '&audioCodec=${names(videoHls?['AudioCodec'], 'aac')})',
+    'add-transcode-target(type=musicProfile&context=streaming&protocol=hls'
+        '&container=mpegts'
+        '&audioCodec=${names(hls('Audio')?['AudioCodec'], 'aac')})',
   ].join('+');
 }
 
@@ -149,11 +164,11 @@ class PlexPlaybackApi implements PlaybackApi {
         request['DeviceProfile'] as Map<String, dynamic>?,
       ),
     };
-    final decision = await plexContainer(
-      _dio,
-      '/video/:/transcode/universal/decision',
-      params,
-    );
+    // Plex turns down an HLS start for a track on the video transcoder.
+    final transcoder = item['type'] == 'track'
+        ? '/music/:/transcode/universal'
+        : '/video/:/transcode/universal';
+    final decision = await plexContainer(_dio, '$transcoder/decision', params);
     final decided = _first(
       _first(_first(decision['Metadata'])?['Media'])?['Part'],
     );
@@ -178,7 +193,7 @@ class PlexPlaybackApi implements PlaybackApi {
           'SupportsTranscoding': !directPlay,
           if (!directPlay)
             'TranscodingUrl': Uri(
-              path: '/video/:/transcode/universal/start.m3u8',
+              path: '$transcoder/start.m3u8',
               queryParameters: {
                 ...params,
                 if (burnSubtitle) 'subtitles': 'burn',
@@ -246,6 +261,7 @@ class PlexPlaybackApi implements PlaybackApi {
     String? playSessionId,
   }) async {
     if (playSessionId == null) return;
+    // This ends a track's transcode too.
     await _dio.get<dynamic>(
       '/video/:/transcode/universal/stop',
       queryParameters: {'session': playSessionId},
