@@ -361,7 +361,8 @@ class _BookReaderScreenState extends State<BookReaderScreen>
     };
 
     final newPlayedPercentage = currentPage / pageCount;
-    if (newPlayedPercentage >= 0.98) {
+    final lastPage = (currentPage + 2) >= pageCount;
+    if (newPlayedPercentage >= 0.98 || lastPage) {
       await client.userLibraryApi.markPlayed(item.id);
       await client.userLibraryApi.updatePlayedPosition(item.id, playedPosition: 0);
     } else {
@@ -2934,6 +2935,7 @@ class _BookReaderScreenState extends State<BookReaderScreen>
                   () async {
                     final prefs = await SharedPreferences.getInstance();
                     await prefs.setInt(_pdfProgressPrefKey, pageNumber);
+                    await _reportServerProgress();
                   },
                 );
               },
