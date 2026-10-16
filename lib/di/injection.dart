@@ -392,14 +392,13 @@ Future<void> migrateTrickplayPreferenceConsolidation(
 /// worker's headless engine, so the two cannot drift.
 void registerOfflineStorage() {
   final storagePath = StoragePathService();
-  final prefs = getIt<PreferenceStore>();
   getIt.registerSingleton<StoragePathService>(storagePath);
   getIt.registerSingleton<OfflineDatabase>(OfflineDatabase(openConnection()));
   final offlineRepo = OfflineRepository(getIt<OfflineDatabase>());
   getIt.registerSingleton<OfflineRepository>(offlineRepo);
   getIt.registerSingleton<OfflineCatalog>(OfflineCatalog(offlineRepo));
   getIt.registerLazySingleton<PendingRatingStore>(
-    () => PendingRatingStore(prefs),
+    () => PendingRatingStore(getIt<PreferenceStore>()),
   );
 }
 
