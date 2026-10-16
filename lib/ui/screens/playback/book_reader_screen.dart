@@ -360,14 +360,13 @@ class _BookReaderScreenState extends State<BookReaderScreen>
       _ => 1,
     };
 
+    final newPlayedPosition = (currentPage + 1) * 10000;
+    await client.userLibraryApi.updatePlayedPosition(item.id, playedPosition: newPlayedPosition.toInt());
+
     final newPlayedPercentage = currentPage / pageCount;
     final lastPage = (currentPage + 2) >= pageCount;
     if (newPlayedPercentage >= 0.98 || lastPage) {
       await client.userLibraryApi.markPlayed(item.id);
-      await client.userLibraryApi.updatePlayedPosition(item.id, playedPosition: 0);
-    } else {
-      final newPlayedPosition = (currentPage + 1) * 10000;
-      await client.userLibraryApi.updatePlayedPosition(item.id, playedPosition: newPlayedPosition.toInt());
     }
   }
 
