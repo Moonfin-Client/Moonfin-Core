@@ -91,6 +91,9 @@ class _ErrorBackend extends Fake implements PlayerBackend {
 }
 
 class _TestResolver extends MediaStreamResolver {
+  _TestResolver({this.error});
+
+  final Object? error;
   int calls = 0;
 
   @override
@@ -107,6 +110,7 @@ class _TestResolver extends MediaStreamResolver {
     bool enableTranscoding = true,
   }) async {
     calls++;
+    if (error case final error?) throw error;
     return StreamResolutionResult(
       streamUrl: 'https://example.test/session-$calls',
       mediaSourceId: 'source-$calls',
@@ -157,10 +161,10 @@ class _TestService implements PlayerService {
 }
 
 class _Harness {
-  _Harness() {
+  _Harness({Object? resolveError}) {
     manager = PlaybackManager()
       ..setBackend(backend)
-      ..setResolver(_TestResolver())
+      ..setResolver(_TestResolver(error: resolveError))
       ..setPlayerService(_TestService())
       ..setDiagnosticLogger(notes.add);
     _states = manager.bringupStateStream.listen(phases.add);
@@ -227,6 +231,41 @@ void main() {
       expect(h.manager.bringupState.phase, PlaybackBringupPhase.failed);
       expect(h.manager.bringupState.error, 'Unexpected runtime error');
       expect(h.drops, isEmpty);
+    } finally {
+      await h.dispose();
+    }
+  });
+
+  test('a play the server turns down fails the bring-up with its reason', () async {
+    final h = _Harness(
+      resolveError: StateError('Remote playback requires a Remote Watch Pass'),
+    );
+    try {
+      await expectLater(
+        h.manager.playItems(<dynamic>[_item]),
+        throwsStateError,
+      );
+
+      expect(h.manager.bringupState.phase, PlaybackBringupPhase.failed);
+      expect(
+        h.manager.bringupState.error,
+        'Remote playback requires a Remote Watch Pass',
+      );
+    } finally {
+      await h.dispose();
+    }
+  });
+
+  test('any other resolve failure fails the bring-up with a plain message', () async {
+    final h = _Harness(resolveError: Exception('Connection reset by peer'));
+    try {
+      await expectLater(
+        h.manager.playItems(<dynamic>[_item]),
+        throwsException,
+      );
+
+      expect(h.manager.bringupState.phase, PlaybackBringupPhase.failed);
+      expect(h.manager.bringupState.error, 'Playback failed.');
     } finally {
       await h.dispose();
     }

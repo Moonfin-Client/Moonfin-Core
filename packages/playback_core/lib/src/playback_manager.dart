@@ -2482,18 +2482,38 @@ class PlaybackManager implements AudioOwnable {
       }
     }
 
-    Future<StreamResolutionResult> resolve(int? cap) => _resolver!.resolve(
-      item,
-      deviceProfile: profile,
-      maxStreamingBitrate: cap,
-      audioStreamIndex: _audioStreamIndex,
-      subtitleStreamIndex: _subtitleStreamIndex,
-      startTimeTicks: startTicks,
-      mediaSourceId: _mediaSourceId,
-      enableDirectPlay: enableDirectPlay,
-      enableDirectStream: enableDirectStream,
-      enableTranscoding: enableTranscoding,
-    );
+    Future<StreamResolutionResult> resolve(int? cap) async {
+      try {
+        return await _resolver!.resolve(
+          item,
+          deviceProfile: profile,
+          maxStreamingBitrate: cap,
+          audioStreamIndex: _audioStreamIndex,
+          subtitleStreamIndex: _subtitleStreamIndex,
+          startTimeTicks: startTicks,
+          mediaSourceId: _mediaSourceId,
+          enableDirectPlay: enableDirectPlay,
+          enableDirectStream: enableDirectStream,
+          enableTranscoding: enableTranscoding,
+        );
+      } catch (e) {
+        // A server can turn a play down outright, and its reason is all the
+        // player has to show before it closes. Other errors carry text meant
+        // for a log, not a viewer.
+        if (sessionToken == _playbackSessionToken) {
+          _setBringupState(
+            PlaybackBringupState(
+              phase: PlaybackBringupPhase.failed,
+              sessionToken: sessionToken,
+              itemId: itemId,
+              backend: _traceBackendName(_backend),
+              error: e is StateError ? e.message : 'Playback failed.',
+            ),
+          );
+        }
+        rethrow;
+      }
+    }
 
     var resolution = await resolve(maxBitrate);
 
