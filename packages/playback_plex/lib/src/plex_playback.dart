@@ -1,6 +1,11 @@
 import 'package:playback_core/playback_core.dart';
+import 'package:server_core/server_core.dart';
 
 class PlexMediaStreamResolver implements MediaStreamResolver {
+  final MediaServerClient _client;
+
+  PlexMediaStreamResolver(this._client);
+
   @override
   Future<StreamResolutionResult> resolve(
     dynamic mediaItem, {
@@ -14,11 +19,93 @@ class PlexMediaStreamResolver implements MediaStreamResolver {
     bool enableDirectStream = true,
     bool enableTranscoding = true,
   }) async {
-    throw UnsupportedError("Plex servers can't play media in Moonfin");
+    final itemId = MediaStreamResolver.extractItemId(mediaItem);
+    final info = PlaybackInfoResult.fromJson(
+      await _client.playbackApi.getPlaybackInfo(
+        itemId,
+        requestBody: PlaybackInfoRequest(
+          itemId: itemId,
+          mediaSourceId: mediaSourceId,
+          audioStreamIndex: audioStreamIndex,
+          subtitleStreamIndex: subtitleStreamIndex,
+          maxStreamingBitrate: maxStreamingBitrate,
+          deviceProfile: deviceProfile,
+          enableDirectPlay: enableDirectPlay,
+          enableDirectStream: enableDirectStream,
+          enableTranscoding: enableTranscoding,
+        ).toJson(),
+      ),
+    );
+    final source = info.mediaSources.first;
+    final directPlay = source.supportsDirectPlay;
+    final path = directPlay ? source.path : source.transcodingUrl;
+    if (path == null) throw StateError('Plex has no stream for $itemId');
+
+    final streams = source.mediaStreams;
+    return StreamResolutionResult(
+      streamUrl: _withToken('${_client.baseUrl}$path'),
+      mediaSourceId: source.id,
+      playSessionId: info.playSessionId,
+      playMethod: directPlay
+          ? StreamPlayMethod.directPlay
+          : StreamPlayMethod.transcode,
+      container: directPlay ? source.container : 'ts',
+      mediaType: MediaStreamResolver.detectMediaType(streams),
+      mediaStreams: streams,
+      externalSubtitles: [
+        for (final subtitle in MediaStreamResolver.extractExternalSubtitles(
+          streams,
+          _client.baseUrl,
+        ))
+          subtitle.withDeliveryUrl(_withToken(subtitle.deliveryUrl)),
+      ],
+      selectedAudioStreamIndex: source.defaultAudioStreamIndex,
+      selectedSubtitleStreamIndex: source.defaultSubtitleStreamIndex,
+      serverOfferedDirectPlay: directPlay,
+      directPlayRequested: enableDirectPlay,
+      sourceBitrate: source.bitrate,
+    );
+  }
+
+  /// Players load these URLs without the client's headers, so the token
+  /// rides in the query.
+  String _withToken(String url) {
+    final token = _client.accessToken;
+    if (token == null) return url;
+    return '$url${url.contains('?') ? '&' : '?'}'
+        'X-Plex-Token=${Uri.encodeQueryComponent(token)}';
   }
 }
 
 class PlexPlaySessionService implements PlayerService {
+  final MediaServerClient _client;
+
+  PlexPlaySessionService(this._client);
+
+  Map<String, dynamic> _report(
+    dynamic mediaItem,
+    StreamResolutionResult resolution,
+    int positionTicks, {
+    bool isPaused = false,
+  }) => {
+    'ItemId': MediaStreamResolver.extractItemId(mediaItem),
+    'PlaySessionId': resolution.playSessionId,
+    'PositionTicks': positionTicks,
+    'IsPaused': isPaused,
+    'RunTimeTicks': ?_runTimeTicks(mediaItem),
+  };
+
+  static int? _runTimeTicks(dynamic mediaItem) {
+    try {
+      final Map? raw = mediaItem is Map
+          ? mediaItem
+          : (mediaItem as dynamic).rawData as Map?;
+      return raw?['RunTimeTicks'] as int?;
+    } catch (_) {
+      return null;
+    }
+  }
+
   @override
   Future<void> onPlaybackStart(
     dynamic mediaItem,
@@ -26,7 +113,9 @@ class PlexPlaySessionService implements PlayerService {
     int? positionTicks,
     int? audioStreamIndex,
     int? subtitleStreamIndex,
-  }) async {}
+  }) => _client.playbackApi.reportPlaybackStart(
+    _report(mediaItem, resolution, positionTicks ?? 0),
+  );
 
   @override
   Future<void> onPlaybackProgress(
@@ -38,7 +127,14 @@ class PlexPlaySessionService implements PlayerService {
     int? subtitleStreamIndex,
     int? volumeLevel,
     bool? isMuted,
-  }) async {}
+  }) => _client.playbackApi.reportPlaybackProgress(
+    _report(
+      mediaItem,
+      resolution,
+      position.inMicroseconds * 10,
+      isPaused: isPaused,
+    ),
+  );
 
   @override
   Future<void> onPlaybackStop(
@@ -46,13 +142,24 @@ class PlexPlaySessionService implements PlayerService {
     StreamResolutionResult resolution,
     Duration position, {
     bool releaseLiveStream = true,
-  }) async {}
+  }) => _client.playbackApi.reportPlaybackStopped(
+    _report(mediaItem, resolution, position.inMicroseconds * 10),
+  );
 
   @override
   Future<void> closeLiveStream(String liveStreamId) async {}
 
   @override
-  Future<void> stopTranscoding(StreamResolutionResult resolution) async {}
+  Future<void> stopTranscoding(StreamResolutionResult resolution) async {
+    try {
+      await _client.playbackApi.stopActiveEncodings(
+        deviceId: _client.deviceInfo.id,
+        playSessionId: resolution.playSessionId,
+      );
+    } catch (_) {
+      // A transcode Plex already ended has nothing left to stop.
+    }
+  }
 
   @override
   void dispose() {}

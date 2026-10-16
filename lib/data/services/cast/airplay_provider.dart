@@ -27,7 +27,7 @@ class AirPlayProvider implements CastProvider, CastTransportControls {
     return switch (client.serverType) {
       ServerType.jellyfin => JellyfinPlugin(client).createStreamResolver(),
       ServerType.emby => EmbyPlugin(client).createStreamResolver(),
-      ServerType.plex => PlexMediaStreamResolver(),
+      ServerType.plex => PlexMediaStreamResolver(client),
     };
   }
 

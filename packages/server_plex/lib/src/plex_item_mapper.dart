@@ -240,6 +240,11 @@ List<Map<String, dynamic>> _streams(Map? part) {
           'IsDefault': stream['default'] == true,
           'IsForced': stream['forced'] == true,
           'IsExternal': stream['key'] != null,
+          if (stream['key'] case final String key) ...{
+            'DeliveryUrl': key,
+            'DeliveryMethod': 'External',
+            'SupportsExternalStream': true,
+          },
           if (stream['width'] != null) 'Width': stream['width'],
           if (stream['height'] != null) 'Height': stream['height'],
           if (stream['channels'] != null) 'Channels': stream['channels'],

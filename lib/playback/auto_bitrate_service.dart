@@ -55,6 +55,8 @@ class AutoBitrateService {
     // the local file starts.
     if (shouldUseOfflineCatalog()) return Future.value(null);
     final client = _clientFactory.getActiveClient();
+    // Plex has no BitrateTest route to time.
+    if (client.serverType == ServerType.plex) return Future.value(_fallbackBps);
 
     final key = client.baseUrl;
     final cached = _cache[key];

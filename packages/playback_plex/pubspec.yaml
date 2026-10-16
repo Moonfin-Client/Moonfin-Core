@@ -9,3 +9,8 @@ environment:
 dependencies:
   playback_core:
     path: ../playback_core
+  server_core:
+    path: ../server_core
+
+dev_dependencies:
+  test: ^1.25.0

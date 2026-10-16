@@ -318,47 +318,6 @@ class PlexAuthApi implements AuthApi {
   Future<void> logout() async {}
 }
 
-class PlexPlaybackApi implements PlaybackApi {
-  static Never _noPlayback() =>
-      throw UnsupportedError("Plex servers can't play media in Moonfin");
-
-  @override
-  Future<void> reportPlaybackStart(Map<String, dynamic> info) async {}
-
-  @override
-  Future<void> reportPlaybackProgress(Map<String, dynamic> info) async {}
-
-  @override
-  Future<void> reportPlaybackStopped(Map<String, dynamic> info) async {}
-
-  @override
-  Future<void> closeLiveStream(String liveStreamId) async {}
-
-  @override
-  Future<void> stopActiveEncodings({
-    required String deviceId,
-    String? playSessionId,
-  }) async {}
-
-  @override
-  Future<Map<String, dynamic>> getPlaybackInfo(
-    String itemId, {
-    Map<String, dynamic>? requestBody,
-    String? userId,
-    int? startTimeTicks,
-    bool waitForMediaProbe = false,
-  }) async => _noPlayback();
-
-  @override
-  String getStreamUrl(
-    String itemId, {
-    String? mediaSourceId,
-    String? audioStreamIndex,
-    String? subtitleStreamIndex,
-    String? liveStreamId,
-  }) => _noPlayback();
-}
-
 class PlexLiveTvApi implements LiveTvApi {
   static Never _noLiveTv() =>
       throw UnsupportedError("Live TV isn't supported on Plex");

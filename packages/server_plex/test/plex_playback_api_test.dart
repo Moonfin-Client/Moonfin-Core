@@ -1,0 +1,260 @@
+import 'package:dio/dio.dart';
+import 'package:server_plex/src/api/plex_playback_api.dart';
+import 'package:test/test.dart';
+
+class _FakeServer extends Interceptor {
+  _FakeServer(this.answer);
+
+  final Object? Function(RequestOptions options) answer;
+  final requests = <RequestOptions>[];
+
+  @override
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+    requests.add(options);
+    handler.resolve(Response(requestOptions: options, data: answer(options)));
+  }
+}
+
+const _item = {
+  'ratingKey': '1715',
+  'type': 'movie',
+  'title': '10 Cloverfield Lane',
+  'duration': 6213916,
+  'Media': [
+    {
+      'id': 3720,
+      'container': 'mkv',
+      'Part': [
+        {
+          'id': 3720,
+          'key': '/library/parts/3720/1786486459/file.mkv',
+          'Stream': [
+            {'id': 8880, 'streamType': 1, 'index': 0, 'codec': 'h264'},
+            {'id': 8881, 'streamType': 2, 'index': 1, 'selected': true},
+            {'id': 8882, 'streamType': 3, 'index': 2, 'codec': 'srt'},
+            {
+              'id': 9001,
+              'streamType': 3,
+              'codec': 'srt',
+              'key': '/library/streams/9001',
+            },
+          ],
+        },
+      ],
+    },
+  ],
+};
+
+(PlexPlaybackApi, _FakeServer) _api(String decision) {
+  final server = _FakeServer(
+    (options) => switch (options.path) {
+      '/library/metadata/1715' => {
+        'MediaContainer': {
+          'Metadata': [_item],
+        },
+      },
+      '/video/:/transcode/universal/decision' => {
+        'MediaContainer': {
+          'generalDecisionText':
+              'Neither direct play nor conversion is available.',
+          'Metadata': [
+            {
+              'Media': [
+                {
+                  'Part': [
+                    {'decision': decision},
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      },
+      _ => null,
+    },
+  );
+  final dio = Dio()..interceptors.add(server);
+  return (
+    PlexPlaybackApi(dio, const {'X-Plex-Client-Identifier': 'device'}),
+    server,
+  );
+}
+
+RequestOptions _request(_FakeServer server, String path) =>
+    server.requests.lastWhere((r) => r.path == path);
+
+void main() {
+  test('the app profile turns into Plex names, with codecs filled in', () {
+    final profile = plexClientProfile({
+      'DirectPlayProfiles': [
+        {
+          'Type': 'Video',
+          'Container': 'mkv,ts,m4v',
+          'VideoCodec': 'h264,mpeg',
+          'AudioCodec': 'aac,dts',
+        },
+        {'Type': 'Video', 'Container': 'webm'},
+        {'Type': 'Audio', 'Container': 'mp3'},
+      ],
+      'TranscodingProfiles': [
+        {
+          'Type': 'Video',
+          'Container': 'mp4',
+          'Protocol': 'hls',
+          'VideoCodec': 'hevc',
+        },
+        {
+          'Type': 'Video',
+          'Container': 'ts',
+          'Protocol': 'hls',
+          'VideoCodec': 'h264',
+          'AudioCodec': 'aac,ac3',
+        },
+      ],
+    });
+
+    expect(profile.split('+'), [
+      'add-direct-play-profile(type=videoProfile&container=mkv,mpegts,mp4'
+          '&videoCodec=h264,mpeg1video&audioCodec=aac,dca)',
+      'add-direct-play-profile(type=videoProfile&container=webm'
+          '&videoCodec=h264,hevc,mpeg1video,mpeg2video,mpeg4,vc1,vp8,vp9,av1'
+          '&audioCodec=aac,ac3,eac3,mp3,dca,truehd,flac,opus,vorbis,pcm)',
+      'add-transcode-target(type=videoProfile&context=streaming&protocol=hls'
+          '&container=mpegts&videoCodec=h264&audioCodec=aac,ac3)',
+    ]);
+  });
+
+  test(
+    'a direct play hands back the file part and keeps subtitles off',
+    () async {
+      final (api, server) = _api('directplay');
+
+      final info = await api.getPlaybackInfo(
+        '1715',
+        requestBody: {'MaxStreamingBitrate': 120000000},
+      );
+
+      expect(server.requests.where((r) => r.method == 'PUT'), isEmpty);
+      final decision = _request(
+        server,
+        '/video/:/transcode/universal/decision',
+      );
+      expect(decision.queryParameters['maxVideoBitrate'], '120000');
+      expect(decision.queryParameters['directPlay'], '1');
+      expect(decision.queryParameters['subtitles'], 'none');
+      expect(decision.queryParameters['X-Plex-Client-Identifier'], 'device');
+      expect(decision.queryParameters.containsKey('session'), isFalse);
+      expect(info['PlaySessionId'], matches(RegExp(r'^[0-9a-f]{32}$')));
+      final source = (info['MediaSources'] as List).single as Map;
+      expect(source['Id'], '3720');
+      expect(source['Path'], '/library/parts/3720/1786486459/file.mkv');
+      expect(source['SupportsDirectPlay'], isTrue);
+      expect(source.containsKey('TranscodingUrl'), isFalse);
+      expect(source['DefaultAudioStreamIndex'], 1);
+      expect(source['DefaultSubtitleStreamIndex'], -1);
+      final sidecar = (source['MediaStreams'] as List).last as Map;
+      expect(sidecar['DeliveryUrl'], '/library/streams/9001');
+    },
+  );
+
+  test(
+    'an embedded subtitle on a transcode is selected and burned in',
+    () async {
+      final (api, server) = _api('transcode');
+
+      final info = await api.getPlaybackInfo(
+        '1715',
+        requestBody: {
+          'SubtitleStreamIndex': 2,
+          'EnableDirectPlay': false,
+          'EnableDirectStream': false,
+        },
+      );
+
+      final put = _request(server, '/library/parts/3720');
+      expect(put.method, 'PUT');
+      expect(put.queryParameters, {'subtitleStreamID': 8882, 'allParts': 1});
+      final decision = _request(
+        server,
+        '/video/:/transcode/universal/decision',
+      );
+      expect(decision.queryParameters['subtitles'], 'none');
+      expect(decision.queryParameters['directPlay'], '0');
+      expect(decision.queryParameters['directStream'], '0');
+      final source = (info['MediaSources'] as List).single as Map;
+      expect(source['SupportsDirectPlay'], isFalse);
+      final url = Uri.parse(source['TranscodingUrl'] as String);
+      expect(url.path, '/video/:/transcode/universal/start.m3u8');
+      expect(url.queryParameters['session'], info['PlaySessionId']);
+      expect(url.queryParameters['subtitles'], 'burn');
+      expect(source['DefaultSubtitleStreamIndex'], 2);
+      final burned = (source['MediaStreams'] as List).firstWhere(
+        (s) => s['Index'] == 2,
+      );
+      expect(burned['DeliveryMethod'], 'Encode');
+    },
+  );
+
+  test('turning subtitles off clears the Plex selection', () async {
+    final (api, server) = _api('directplay');
+
+    final info = await api.getPlaybackInfo(
+      '1715',
+      requestBody: {'SubtitleStreamIndex': -1},
+    );
+
+    expect(_request(server, '/library/parts/3720').queryParameters, {
+      'subtitleStreamID': 0,
+      'allParts': 1,
+    });
+    final source = (info['MediaSources'] as List).single as Map;
+    expect(source['DefaultSubtitleStreamIndex'], -1);
+  });
+
+  test('a decision with no way to play throws its reason', () async {
+    final (api, _) = _api('');
+
+    await expectLater(
+      api.getPlaybackInfo('1715'),
+      throwsA(
+        isA<StateError>().having(
+          (e) => e.message,
+          'message',
+          'Neither direct play nor conversion is available.',
+        ),
+      ),
+    );
+  });
+
+  test('progress goes to the timeline in milliseconds', () async {
+    final (api, server) = _api('directplay');
+
+    await api.reportPlaybackProgress({
+      'ItemId': '1715',
+      'PositionTicks': 1200000000,
+      'IsPaused': true,
+      'RunTimeTicks': 62139160000,
+      'PlaySessionId': 'abc',
+    });
+
+    expect(_request(server, '/:/timeline').queryParameters, {
+      'ratingKey': '1715',
+      'key': '/library/metadata/1715',
+      'state': 'paused',
+      'time': 120000,
+      'duration': 6213916,
+      'X-Plex-Session-Identifier': 'abc',
+    });
+  });
+
+  test('stopping a transcode ends its Plex session', () async {
+    final (api, server) = _api('transcode');
+
+    await api.stopActiveEncodings(deviceId: 'device', playSessionId: 'abc');
+
+    expect(
+      _request(server, '/video/:/transcode/universal/stop').queryParameters,
+      {'session': 'abc'},
+    );
+  });
+}
