@@ -344,6 +344,31 @@ class _BookReaderScreenState extends State<BookReaderScreen>
     }
   }
 
+  Future<void> _reportServerProgress() async {
+    final client = _resolveClient();
+    final item = _item;
+    if (client == null || item == null) return;
+
+    final currentPage = switch (_mode) {
+      _ReaderMode.pdf => _currentPdfPage,
+      _ReaderMode.comic => _currentComicPage,
+      _ => 0,
+    };
+    final pageCount = switch (_mode) {
+      _ReaderMode.pdf => _pdfPageCount,
+      _ReaderMode.comic => _comicPageCount,
+      _ => 1,
+    };
+
+    final newPlayedPercentage = currentPage / pageCount;
+    if (newPlayedPercentage >= 0.98) {
+      await client.userLibraryApi.markPlayed(item.id);
+    } else {
+      final newPlayedPosition = (currentPage + 1) * 10000;
+      await client.userLibraryApi.updatePlayedPosition(item.id, playedPosition: newPlayedPosition.toInt());
+    }
+  }
+
   Future<void> _loadAndPrepare() async {
     await _loadItem();
     if (_item != null && _error == null) {
@@ -928,6 +953,8 @@ class _BookReaderScreenState extends State<BookReaderScreen>
     setState(() {
       _currentPdfPage = clamped;
     });
+
+    await _reportServerProgress();
   }
 
   Future<void> _nextPdfPage() => _goToPdfPage(_currentPdfPage + 1);
@@ -1489,14 +1516,7 @@ class _BookReaderScreenState extends State<BookReaderScreen>
     await prefs.setInt('${_comicProgressKeyPrefix}_page', _currentComicPage);
     await prefs.setDouble('${_comicProgressKeyPrefix}_zoom', _comicZoom);
 
-    final client = _resolveClient();
-    final newPlayedPercentage = _currentComicPage / _comicPageCount;
-    if (newPlayedPercentage >= 0.98) {
-      await client.userLibraryApi.markPlayed(item.id);
-    } else {
-      final newPlayedPosition = (_currentComicPage + 1) * 10000;
-      await client.userLibraryApi.updatePlayedPosition(item.id, playedPosition: newPlayedPosition.toInt());
-    }
+    await _reportServerProgress();
   }
 
   void _scheduleComicStateSave() {
@@ -2874,13 +2894,19 @@ class _BookReaderScreenState extends State<BookReaderScreen>
                   return;
                 }
                 final pageCount = controller.pageCount;
+                if (mounted) {
+                  setState(() {
+                    _pdfPageCount = pageCount;
+                  });
+                }
                 final prefs = await SharedPreferences.getInstance();
-                final initialPage =
+                final localInitialPage =
                     (widget.initialMode == 'pdf' &&
                         widget.initialPosition != null)
                     ? widget.initialPosition!
                     : (prefs.getInt(_pdfProgressPrefKey) ?? 1);
-                final savedPage = initialPage.clamp(1, pageCount);
+                final serverInitialPage = _getServerProgress().toInt();
+                final savedPage = max(localInitialPage, serverInitialPage).clamp(1, pageCount);
                 final outline = await document.loadOutline();
                 if (mounted) {
                   final flat = _flattenPdfOutline(outline, 0);
