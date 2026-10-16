@@ -247,9 +247,8 @@ class NouveauHeroState extends State<NouveauHero> {
 
     final hideOverview = hidesMediaDescription(
       itemType: item.type,
-      hideMediaDescription: widget.prefs.get(
-        UserPreferences.hideDetailsMediaDescription,
-      ),
+      prefs: widget.prefs,
+      isSeerr: viewModel.isSeerrOnly,
     );
 
     final hiddenMetadata = detailMetadataLayout.hidden(widget.prefs);

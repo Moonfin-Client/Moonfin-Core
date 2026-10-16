@@ -9,6 +9,7 @@ import '../../../data/services/seerr/seerr_error.dart';
 import '../../../data/viewmodels/seerr_collection_view_model.dart';
 import '../../../preference/seerr_preferences.dart';
 import '../../../preference/user_preferences.dart';
+import '../../../util/overview_text.dart';
 import '../../../util/platform_detection.dart';
 import '../../navigation/destinations.dart';
 import '../../widgets/library_row.dart';
@@ -289,7 +290,12 @@ class _SeerrCollectionScreenState extends State<SeerrCollectionScreen> {
                   ),
                 ),
                 if (collection.overview != null &&
-                    collection.overview!.isNotEmpty) ...[
+                    collection.overview!.isNotEmpty &&
+                    !hidesMediaDescription(
+                      itemType: 'BoxSet',
+                      prefs: GetIt.instance<UserPreferences>(),
+                      isSeerr: true,
+                    )) ...[
                   const SizedBox(height: 10),
                   Text(
                     collection.overview!,

@@ -13245,6 +13245,100 @@ class AppLocalizationsHi extends AppLocalizations {
       'Hide the movie or episode descriptive text.';
 
   @override
+  String get toggleMediaDescriptionVisibility =>
+      'Toggle Media Description Visibility';
+
+  @override
+  String get toggleMediaDescriptionVisibilityDescription =>
+      'Hide media descriptions from various detail pages.';
+
+  @override
+  String get mediaDescriptionVisibilityTitle => 'Media Description Visibility';
+
+  @override
+  String get localContent => 'Local Content';
+
+  @override
+  String get seerrContent => 'Seerr Content';
+
+  @override
+  String get hideMediaDescriptionMovie => 'Movie Pages';
+
+  @override
+  String get hideMediaDescriptionMovieSubtitle =>
+      'Hide descriptions on movie detail pages';
+
+  @override
+  String get hideMediaDescriptionShow => 'Show Pages';
+
+  @override
+  String get hideMediaDescriptionShowSubtitle =>
+      'Hide descriptions on TV show detail pages';
+
+  @override
+  String get hideMediaDescriptionSeason => 'Season Pages';
+
+  @override
+  String get hideMediaDescriptionSeasonSubtitle =>
+      'Hide descriptions on season detail pages';
+
+  @override
+  String get hideMediaDescriptionEpisode => 'Episode Pages';
+
+  @override
+  String get hideMediaDescriptionEpisodeSubtitle =>
+      'Hide descriptions on episode detail pages, season episode lists, and player drawer';
+
+  @override
+  String get hideMediaDescriptionBoxSet => 'Collection Pages';
+
+  @override
+  String get hideMediaDescriptionBoxSetSubtitle =>
+      'Hide descriptions on collection and box set pages';
+
+  @override
+  String get hideMediaDescriptionBook => 'Book Pages';
+
+  @override
+  String get hideMediaDescriptionBookSubtitle =>
+      'Hide descriptions on book and audiobook detail pages';
+
+  @override
+  String get hideMediaDescriptionPerson => 'Person Pages';
+
+  @override
+  String get hideMediaDescriptionPersonSubtitle =>
+      'Hide biography descriptions on actor and crew pages';
+
+  @override
+  String get hideMediaDescriptionMusic => 'Music Pages';
+
+  @override
+  String get hideMediaDescriptionMusicSubtitle =>
+      'Hide descriptions on music album and artist pages';
+
+  @override
+  String get hideMediaDescriptionSeerrMovie => 'Movie Pages';
+
+  @override
+  String get hideMediaDescriptionSeerrMovieSubtitle =>
+      'Hide descriptions on Seerr movie discovery pages';
+
+  @override
+  String get hideMediaDescriptionSeerrShow => 'Show Pages';
+
+  @override
+  String get hideMediaDescriptionSeerrShowSubtitle =>
+      'Hide descriptions on Seerr TV show discovery pages';
+
+  @override
+  String get hideMediaDescriptionSeerrCollection => 'Collection Pages';
+
+  @override
+  String get hideMediaDescriptionSeerrCollectionSubtitle =>
+      'Hide descriptions on Seerr collection pages';
+
+  @override
   String get detailUseSeriesThumbnails => 'Use Series Thumbnails';
 
   @override

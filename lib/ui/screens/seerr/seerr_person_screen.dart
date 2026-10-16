@@ -10,6 +10,7 @@ import '../../../data/repositories/seerr_repository.dart';
 import '../../../data/services/seerr/seerr_api_models.dart';
 import '../../../data/viewmodels/seerr_person_view_model.dart';
 import '../../../preference/user_preferences.dart';
+import '../../../util/overview_text.dart';
 import '../../navigation/destinations.dart';
 import '../../widgets/library_row.dart';
 import '../../widgets/media_card.dart';
@@ -249,7 +250,13 @@ class _SeerrPersonScreenState extends State<SeerrPersonScreen> {
             ),
           ),
         ),
-        if (person.biography != null && person.biography!.isNotEmpty)
+        if (person.biography != null &&
+            person.biography!.isNotEmpty &&
+            !hidesMediaDescription(
+              itemType: 'Person',
+              prefs: GetIt.instance<UserPreferences>(),
+              isSeerr: true,
+            ))
           SliverToBoxAdapter(child: _buildBiography(person.biography!)),
         if (s.castCredits.isNotEmpty)
           SliverToBoxAdapter(

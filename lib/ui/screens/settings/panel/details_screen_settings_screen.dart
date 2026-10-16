@@ -168,12 +168,13 @@ class _DetailsScreenSettingsScreenState
                     icon: Icons.open_in_new,
                     onChanged: _pushPersonalizationSync,
                   ),
-                  SwitchPreferenceTile(
-                    preference: UserPreferences.hideDetailsMediaDescription,
-                    title: l10n.hideDetailsMediaDescription,
-                    subtitle: l10n.hideDetailsMediaDescriptionSubtitle,
-                    icon: Icons.description_outlined,
-                    onChanged: _pushPersonalizationSync,
+                  _TvSettingsListTile(
+                    leading: const Icon(Icons.description_outlined),
+                    title: Text(l10n.toggleMediaDescriptionVisibility),
+                    subtitle: Text(l10n.toggleMediaDescriptionVisibilityDescription),
+                    onTap: () => context.pushSettingsScreen(
+                      const _MediaDescriptionVisibilityScreen(),
+                    ),
                   ),
                   if (prefs.get(UserPreferences.detailScreenStyle) == DetailScreenStyle.classic)
                     SwitchPreferenceTile(

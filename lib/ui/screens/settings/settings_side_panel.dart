@@ -139,6 +139,7 @@ part 'panel/osd_buttons_screen.dart';
 part 'panel/detail_buttons_screen.dart';
 part 'panel/detail_metadata_screen.dart';
 part 'panel/detail_sections_screen.dart';
+part 'panel/media_description_visibility_screen.dart';
 part 'panel/audio_preferences_screen.dart';
 part 'panel/automation_queue_screen.dart';
 part 'panel/advanced_options_screen.dart';

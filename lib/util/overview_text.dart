@@ -1,3 +1,4 @@
+import '../preference/user_preferences.dart';
 
 final _htmlTag = RegExp(r'<\/?[a-z0-9]*\b[^>]*>', caseSensitive: false);
 final _htmlEntity = RegExp(
@@ -34,11 +35,53 @@ String cleanOverview(String? input) {
   });
 }
 
-/// Whether the plot summary is being held back from someone avoiding spoilers.
-/// Only a film or an episode gives the story away, so a series or a season
-/// keeps its description whatever the setting says.
+/// Whether the plot summary is being held back from someone avoiding spoilers
+/// or opting out of descriptions on detail pages.
 bool hidesMediaDescription({
   required String? itemType,
-  required bool hideMediaDescription,
-}) =>
-    hideMediaDescription && (itemType == 'Movie' || itemType == 'Episode');
+  UserPreferences? prefs,
+  bool? hideMediaDescription,
+  bool isSeerr = false,
+}) {
+  if (prefs != null) {
+    if (prefs.get(UserPreferences.kidsModeEnabled)) {
+      return true;
+    }
+    if (isSeerr) {
+      return switch (itemType) {
+        'Movie' =>
+          prefs.get(UserPreferences.hideDetailsMediaDescriptionSeerrMovie),
+        'Series' || 'Show' || 'Tv' =>
+          prefs.get(UserPreferences.hideDetailsMediaDescriptionSeerrShow),
+        'BoxSet' || 'Collection' =>
+          prefs.get(UserPreferences.hideDetailsMediaDescriptionSeerrCollection),
+        'Person' =>
+          prefs.get(UserPreferences.hideDetailsMediaDescriptionPerson),
+        _ => false,
+      };
+    }
+    return switch (itemType) {
+      'Movie' => prefs.get(UserPreferences.hideDetailsMediaDescriptionMovie) ||
+          prefs.get(UserPreferences.hideDetailsMediaDescription),
+      'Series' || 'Show' =>
+        prefs.get(UserPreferences.hideDetailsMediaDescriptionShow),
+      'Season' =>
+        prefs.get(UserPreferences.hideDetailsMediaDescriptionSeason),
+      'Episode' =>
+        prefs.get(UserPreferences.hideDetailsMediaDescriptionEpisode) ||
+            prefs.get(UserPreferences.hideDetailsMediaDescription),
+      'BoxSet' =>
+        prefs.get(UserPreferences.hideDetailsMediaDescriptionBoxSet),
+      'Book' || 'AudioBook' =>
+        prefs.get(UserPreferences.hideDetailsMediaDescriptionBook),
+      'Person' =>
+        prefs.get(UserPreferences.hideDetailsMediaDescriptionPerson),
+      'MusicAlbum' || 'MusicArtist' || 'Audio' =>
+        prefs.get(UserPreferences.hideDetailsMediaDescriptionMusic),
+      _ => false,
+    };
+  }
+
+  return (hideMediaDescription ?? false) &&
+      (itemType == 'Movie' || itemType == 'Episode');
+}

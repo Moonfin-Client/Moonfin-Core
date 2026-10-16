@@ -1110,9 +1110,8 @@ class _DetailContentState extends State<_DetailContent> {
   FocusNode? _headerOverviewFocusNode(AggregatedItem item) {
     if (hidesMediaDescription(
       itemType: item.type,
-      hideMediaDescription: prefs.get(
-        UserPreferences.hideDetailsMediaDescription,
-      ),
+      prefs: prefs,
+      isSeerr: viewModel.isSeerrOnly,
     )) {
       return null;
     }
@@ -2820,7 +2819,12 @@ class _DetailContentState extends State<_DetailContent> {
     final hasBio =
         item.overview != null &&
         item.overview!.isNotEmpty &&
-        _visibility.shows(DetailSection.biography);
+        _visibility.shows(DetailSection.biography) &&
+        !hidesMediaDescription(
+          itemType: item.type,
+          prefs: prefs,
+          isSeerr: viewModel.isSeerrOnly,
+        );
 
     final hasSeerrButton =
         item.tmdbId != null &&
@@ -3995,9 +3999,8 @@ class _HeaderSection extends StatelessWidget {
             item.overview!.isNotEmpty &&
             !hidesMediaDescription(
               itemType: item.type,
-              hideMediaDescription: prefs.get(
-                UserPreferences.hideDetailsMediaDescription,
-              ),
+              prefs: prefs,
+              isSeerr: viewModel.isSeerrOnly,
             )) ...[
           const SizedBox(height: 8),
           _OverviewText(
@@ -5052,7 +5055,11 @@ class _BookAuthorDetailScreenState extends State<_BookAuthorDetailScreen> {
                     ),
                     const SizedBox(height: 8),
                     if (data.biography != null &&
-                        data.biography!.trim().isNotEmpty)
+                        data.biography!.trim().isNotEmpty &&
+                        !hidesMediaDescription(
+                          itemType: 'Person',
+                          prefs: GetIt.instance<UserPreferences>(),
+                        ))
                       ExpandableBiography(
                         text: data.biography!,
                         onCollapse: () => setState(() {}),
@@ -10832,9 +10839,8 @@ bool _showsEpisodeOverview(AggregatedItem episode, UserPreferences prefs) =>
     episode.overview != null &&
     !hidesMediaDescription(
       itemType: episode.type,
-      hideMediaDescription: prefs.get(
-        UserPreferences.hideDetailsMediaDescription,
-      ),
+      prefs: prefs,
+      isSeerr: episode.serverId == 'seerr',
     );
 
 bool _isReadableBookItem(AggregatedItem item) {
