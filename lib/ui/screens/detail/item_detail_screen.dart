@@ -1825,7 +1825,13 @@ class _DetailContentState extends State<_DetailContent> {
     final author = _bookAuthorName(item);
     final authorDisplay = author ?? l10n.unknownAuthor;
     final overview = item.overview?.trim();
-    final hasOverview = overview != null && overview.isNotEmpty;
+    final hasOverview = overview != null &&
+        overview.isNotEmpty &&
+        !hidesMediaDescription(
+          itemType: item.type,
+          prefs: prefs,
+          isSeerr: viewModel.isSeerrOnly,
+        );
     final overviewFocusNode = hasOverview
         ? _sectionFocusNode('detailBookOverview')
         : null;
@@ -3080,7 +3086,13 @@ class _DetailContentState extends State<_DetailContent> {
 
   List<Widget> _buildArtistContent(BuildContext context, AggregatedItem item) {
     final l10n = AppLocalizations.of(context);
-    final hasOverview = item.overview != null && item.overview!.isNotEmpty;
+    final hasOverview = item.overview != null &&
+        item.overview!.isNotEmpty &&
+        !hidesMediaDescription(
+          itemType: item.type,
+          prefs: prefs,
+          isSeerr: viewModel.isSeerrOnly,
+        );
     final overviewFocusNode = hasOverview
         ? _sectionFocusNode('detailArtistOverview')
         : null;
