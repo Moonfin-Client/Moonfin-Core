@@ -63,14 +63,14 @@ bool hidesMediaDescription({
     return switch (itemType) {
       'Movie' => prefs.get(UserPreferences.hideDetailsMediaDescriptionMovie) ||
           prefs.get(UserPreferences.hideDetailsMediaDescription),
-      'Series' || 'Show' =>
+      'Series' || 'Show' || 'Tv' =>
         prefs.get(UserPreferences.hideDetailsMediaDescriptionShow),
       'Season' =>
         prefs.get(UserPreferences.hideDetailsMediaDescriptionSeason),
       'Episode' =>
         prefs.get(UserPreferences.hideDetailsMediaDescriptionEpisode) ||
             prefs.get(UserPreferences.hideDetailsMediaDescription),
-      'BoxSet' =>
+      'BoxSet' || 'Collection' =>
         prefs.get(UserPreferences.hideDetailsMediaDescriptionBoxSet),
       'Book' || 'AudioBook' =>
         prefs.get(UserPreferences.hideDetailsMediaDescriptionBook),

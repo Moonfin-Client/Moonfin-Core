@@ -9,8 +9,6 @@ class _MediaDescriptionVisibilityScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final syncService = GetIt.instance<PluginSyncService>();
-    final showSeerr = syncService.seerrAvailable;
-
     return RequestInitialFocus(
       child: withCleanSettingsTypography(
         context,
@@ -19,9 +17,13 @@ class _MediaDescriptionVisibilityScreen extends StatelessWidget {
             context,
             Text(l10n.mediaDescriptionVisibilityTitle),
           ),
-          body: ListView(
-            children: [
-              _SectionHeader(l10n.localContent),
+          body: ListenableBuilder(
+            listenable: syncService,
+            builder: (context, _) {
+              final showSeerr = syncService.seerrAvailable;
+              return ListView(
+                children: [
+                  _SectionHeader(l10n.localContent),
               adaptiveListSection(
                 children: [
                   SwitchPreferenceTile(
@@ -123,9 +125,11 @@ class _MediaDescriptionVisibilityScreen extends StatelessWidget {
                 ),
               ],
             ],
-          ),
-        ),
+          );
+        },
       ),
-    );
+    ),
+  ),
+);
   }
 }

@@ -74,6 +74,7 @@ void main() {
       await prefs.set(UserPreferences.hideDetailsMediaDescriptionShow, true);
       expect(hidesMediaDescription(itemType: 'Series', prefs: prefs), isTrue);
       expect(hidesMediaDescription(itemType: 'Show', prefs: prefs), isTrue);
+      expect(hidesMediaDescription(itemType: 'Tv', prefs: prefs), isTrue);
 
       await prefs.set(UserPreferences.hideDetailsMediaDescriptionSeason, true);
       expect(hidesMediaDescription(itemType: 'Season', prefs: prefs), isTrue);
@@ -83,6 +84,7 @@ void main() {
 
       await prefs.set(UserPreferences.hideDetailsMediaDescriptionBoxSet, true);
       expect(hidesMediaDescription(itemType: 'BoxSet', prefs: prefs), isTrue);
+      expect(hidesMediaDescription(itemType: 'Collection', prefs: prefs), isTrue);
 
       await prefs.set(UserPreferences.hideDetailsMediaDescriptionBook, true);
       expect(hidesMediaDescription(itemType: 'Book', prefs: prefs), isTrue);

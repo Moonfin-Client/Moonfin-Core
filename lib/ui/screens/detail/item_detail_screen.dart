@@ -4723,6 +4723,7 @@ class _BookAuthorDetailScreen extends StatefulWidget {
 }
 
 class _BookAuthorDetailScreenState extends State<_BookAuthorDetailScreen> {
+  final _prefs = GetIt.instance<UserPreferences>();
   _BookAuthorDetailData? _data;
   bool _loading = true;
 
@@ -5054,11 +5055,12 @@ class _BookAuthorDetailScreenState extends State<_BookAuthorDetailScreen> {
                       title: AppLocalizations.of(context).biography,
                     ),
                     const SizedBox(height: 8),
+                    // Library authors are local items; omit isSeerr (defaults to false).
                     if (data.biography != null &&
                         data.biography!.trim().isNotEmpty &&
                         !hidesMediaDescription(
                           itemType: 'Person',
-                          prefs: GetIt.instance<UserPreferences>(),
+                          prefs: _prefs,
                         ))
                       ExpandableBiography(
                         text: data.biography!,

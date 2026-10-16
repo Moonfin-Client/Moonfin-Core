@@ -1757,7 +1757,9 @@ class UserPreferences extends ChangeNotifier {
       get(kidsModeEnabled) ? false : get(detailTrailersExternal);
 
   /// True means hidden. The preference is named for hiding, so Kids Mode
-  /// forces it on rather than off to leave the description out.
+  /// forces it on rather than off to leave the description out. Otherwise,
+  /// true if either [hideDetailsMediaDescriptionEpisode] or the legacy
+  /// [hideDetailsMediaDescription] toggle is enabled.
   bool get effectiveHideDetailsMediaDescription =>
       get(kidsModeEnabled)
           ? true
