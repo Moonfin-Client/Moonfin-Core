@@ -155,11 +155,15 @@ class PlexItemsApi implements ItemsApi {
           : '/library/metadata/$parentId/children';
     }
 
-    final sort = [
-      for (final field in (sortBy ?? '').split(','))
-        if (_sortFields[field.trim()] case final plexField?)
-          sortOrder == 'Descending' ? '$plexField:desc' : plexField,
-    ].join(',');
+    // Later fields only break ties, so the sort stops at the first one Plex
+    // can't do. With nothing left, Plex keeps its own order, which is disc
+    // and track order for an album.
+    final sort = (sortBy ?? '')
+        .split(',')
+        .map((field) => _sortFields[field.trim()])
+        .takeWhile((field) => field != null)
+        .map((field) => sortOrder == 'Descending' ? '$field:desc' : field)
+        .join(',');
     final container = await plexContainer(_dio, path, {
       if (types.isNotEmpty && path.endsWith('/all')) 'type': types.join(','),
       if (sort.isNotEmpty) 'sort': sort,

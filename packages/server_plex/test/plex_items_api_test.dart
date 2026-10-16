@@ -68,6 +68,18 @@ void main() {
     },
   );
 
+  test('an album keeps Plex track order over a title sort', () async {
+    final (dio, requests) = _recordingDio(const {'Metadata': []});
+
+    await PlexItemsApi(dio).getItems(
+      parentId: '22999',
+      sortBy: 'ParentIndexNumber,IndexNumber,SortName',
+    );
+
+    expect(requests.single.path, '/library/metadata/22999/children');
+    expect(requests.single.queryParameters.containsKey('sort'), isFalse);
+  });
+
   test('a filter Plex has no answer for returns nothing', () async {
     final (dio, requests) = _recordingDio(const {});
 

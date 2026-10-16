@@ -155,6 +155,38 @@ void main() {
     expect(userData['Played'], isFalse);
   });
 
+  test('gives a track its album and artists, and an album its artist', () {
+    final track = plexItemToJellyfin({
+      'ratingKey': '23100',
+      'type': 'track',
+      'title': 'What These Bitches Want',
+      'parentRatingKey': '23090',
+      'grandparentRatingKey': '23089',
+      'parentTitle': 'The Best of DMX',
+      'grandparentTitle': 'DMX',
+      'originalTitle': 'DMX feat. Sisqó',
+      'parentThumb': '/library/metadata/23090/thumb/1',
+    });
+    final album = plexItemToJellyfin({
+      'ratingKey': '23090',
+      'type': 'album',
+      'title': 'The Best of DMX',
+      'parentRatingKey': '23089',
+      'parentTitle': 'DMX',
+    });
+
+    expect(track['Album'], 'The Best of DMX');
+    expect(track['AlbumId'], '23090');
+    expect(track['AlbumPrimaryImageTag'], '/library/metadata/23090/thumb/1');
+    expect(track['AlbumArtist'], 'DMX');
+    expect(track['Artists'], ['DMX feat. Sisqó']);
+    expect(album['AlbumArtists'], [
+      {'Name': 'DMX', 'Id': '23089'},
+    ]);
+    expect(album['Artists'], ['DMX']);
+    expect(album.containsKey('Album'), isFalse);
+  });
+
   test('turns a library section into a view', () {
     expect(plexSectionToView({'key': '2', 'type': 'show', 'title': 'TV'}), {
       'Id': 'section-2',

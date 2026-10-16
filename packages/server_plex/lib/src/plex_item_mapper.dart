@@ -95,6 +95,12 @@ Map<String, dynamic> plexItemToJellyfin(Map<String, dynamic> m) {
   ];
   final ratingImage = m['ratingImage'] as String? ?? '';
   final rating = (m['rating'] as num?)?.toDouble();
+  final isTrack = type == 'track';
+  final (albumArtist, albumArtistId) = switch (type) {
+    'album' => (m['parentTitle'], m['parentRatingKey']),
+    'track' => (m['grandparentTitle'], m['grandparentRatingKey']),
+    _ => (null, null),
+  };
 
   return {
     'Id': id,
@@ -140,6 +146,20 @@ Map<String, dynamic> plexItemToJellyfin(Map<String, dynamic> m) {
     if (type == 'episode') ...{
       'SeasonId': '${m['parentRatingKey']}',
       'SeasonName': m['parentTitle'],
+    },
+    if (albumArtist is String) ...{
+      'AlbumArtist': albumArtist,
+      'AlbumArtists': [
+        {'Name': albumArtist, 'Id': '$albumArtistId'},
+      ],
+      // A track only names its own artist, in originalTitle, when it differs
+      // from the album's.
+      'Artists': [isTrack ? m['originalTitle'] ?? albumArtist : albumArtist],
+    },
+    if (isTrack) ...{
+      'Album': m['parentTitle'],
+      'AlbumId': '${m['parentRatingKey']}',
+      'AlbumPrimaryImageTag': ?m['parentThumb'],
     },
     if (type == 'show' && m['childCount'] != null)
       'ChildCount': m['childCount'],
