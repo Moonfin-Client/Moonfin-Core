@@ -648,6 +648,22 @@ class AppLocalizationsHi extends AppLocalizations {
       'Emby कनेक्ट या चयनित सर्वर से संपर्क करते समय नेटवर्क त्रुटि';
 
   @override
+  String get signInWithPlex => 'Sign in with Plex';
+
+  @override
+  String get plexLinkInstructions =>
+      'Go to plex.tv/link on any device and enter this code';
+
+  @override
+  String get plexOpenLink => 'Open plex.tv/link';
+
+  @override
+  String get plexWaitingForApproval => 'Waiting for you to approve the code...';
+
+  @override
+  String get plexNoServers => 'No Plex servers found on this account';
+
+  @override
   String get loadingLinkedServers => 'लिंक किए गए सर्वर लोड हो रहे हैं...';
 
   @override

@@ -633,6 +633,22 @@ class AppLocalizationsYue extends AppLocalizations {
   String get embyConnectNetworkError => '聯絡 Emby Connect 或所選伺服器時發生網路錯誤';
 
   @override
+  String get signInWithPlex => 'Sign in with Plex';
+
+  @override
+  String get plexLinkInstructions =>
+      'Go to plex.tv/link on any device and enter this code';
+
+  @override
+  String get plexOpenLink => 'Open plex.tv/link';
+
+  @override
+  String get plexWaitingForApproval => 'Waiting for you to approve the code...';
+
+  @override
+  String get plexNoServers => 'No Plex servers found on this account';
+
+  @override
   String get loadingLinkedServers => '正在載入連結伺服器...';
 
   @override

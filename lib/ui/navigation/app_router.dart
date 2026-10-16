@@ -19,6 +19,7 @@ import '../../util/platform_detection.dart';
 import '../screens/admin/admin_nav.dart';
 import '../screens/admin/admin_routes.dart';
 import '../screens/auth/emby_connect_screen.dart';
+import '../screens/auth/plex_sign_in_screen.dart';
 import '../screens/auth/login_screen.dart';
 import '../screens/auth/server_screen.dart';
 import '../screens/auth/server_select_screen.dart';
@@ -78,6 +79,7 @@ const _authRoutes = {
   Destinations.startup,
   Destinations.serverSelect,
   Destinations.embyConnect,
+  Destinations.plexSignIn,
   Destinations.webDiagnostics,
   Destinations.server,
   Destinations.login,
@@ -219,6 +221,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: Destinations.embyConnect,
       builder: (context, state) => const EmbyConnectScreen(),
+    ),
+    GoRoute(
+      path: Destinations.plexSignIn,
+      builder: (context, state) => const PlexSignInScreen(),
     ),
     GoRoute(
       path: Destinations.webDiagnostics,

@@ -602,6 +602,16 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
                     label: l10n.embyConnect,
                   ),
                 );
+
+                actions.add(
+                  _buildFooterActionButton(
+                    onPressed: _isConnecting
+                        ? null
+                        : () => context.go(Destinations.plexSignIn),
+                    icon: const PlexLogoIcon(size: 16),
+                    label: l10n.signInWithPlex,
+                  ),
+                );
               }
 
               if (PlatformDetection.isWeb) {

@@ -648,6 +648,22 @@ class AppLocalizationsPt extends AppLocalizations {
       'Erro de rede ao contatar o Emby Connect ou o servidor selecionado';
 
   @override
+  String get signInWithPlex => 'Sign in with Plex';
+
+  @override
+  String get plexLinkInstructions =>
+      'Go to plex.tv/link on any device and enter this code';
+
+  @override
+  String get plexOpenLink => 'Open plex.tv/link';
+
+  @override
+  String get plexWaitingForApproval => 'Waiting for you to approve the code...';
+
+  @override
+  String get plexNoServers => 'No Plex servers found on this account';
+
+  @override
   String get loadingLinkedServers => 'Carregando servidores vinculados...';
 
   @override

@@ -650,6 +650,22 @@ class AppLocalizationsTl extends AppLocalizations {
       'Error sa network habang nakikipag-ugnayan sa Emby Connect o sa napiling server';
 
   @override
+  String get signInWithPlex => 'Sign in with Plex';
+
+  @override
+  String get plexLinkInstructions =>
+      'Go to plex.tv/link on any device and enter this code';
+
+  @override
+  String get plexOpenLink => 'Open plex.tv/link';
+
+  @override
+  String get plexWaitingForApproval => 'Waiting for you to approve the code...';
+
+  @override
+  String get plexNoServers => 'No Plex servers found on this account';
+
+  @override
   String get loadingLinkedServers => 'Nilo-load ang mga naka-link na server...';
 
   @override

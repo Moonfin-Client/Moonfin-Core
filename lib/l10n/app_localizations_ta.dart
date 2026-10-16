@@ -648,6 +648,22 @@ class AppLocalizationsTa extends AppLocalizations {
       'Emby இணைப்பு அல்லது தேர்ந்தெடுக்கப்பட்ட சேவையகத்தைத் தொடர்பு கொள்ளும்போது நெட்வொர்க் பிழை';
 
   @override
+  String get signInWithPlex => 'Sign in with Plex';
+
+  @override
+  String get plexLinkInstructions =>
+      'Go to plex.tv/link on any device and enter this code';
+
+  @override
+  String get plexOpenLink => 'Open plex.tv/link';
+
+  @override
+  String get plexWaitingForApproval => 'Waiting for you to approve the code...';
+
+  @override
+  String get plexNoServers => 'No Plex servers found on this account';
+
+  @override
   String get loadingLinkedServers => 'இணைக்கப்பட்ட சேவையகங்களை ஏற்றுகிறது...';
 
   @override

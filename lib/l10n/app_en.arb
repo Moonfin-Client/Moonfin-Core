@@ -749,6 +749,26 @@
   "@embyConnectNetworkError": {
     "description": "Generic network error during Emby Connect flow"
   },
+  "signInWithPlex": "Sign in with Plex",
+  "@signInWithPlex": {
+    "description": "Plex sign-in option label and title of the Plex sign-in screen"
+  },
+  "plexLinkInstructions": "Go to plex.tv/link on any device and enter this code",
+  "@plexLinkInstructions": {
+    "description": "Instructions above the code on the Plex sign-in screen"
+  },
+  "plexOpenLink": "Open plex.tv/link",
+  "@plexOpenLink": {
+    "description": "Button that opens plex.tv/link in the browser with the code filled in"
+  },
+  "plexWaitingForApproval": "Waiting for you to approve the code...",
+  "@plexWaitingForApproval": {
+    "description": "Status shown while the app waits for the Plex code to be approved"
+  },
+  "plexNoServers": "No Plex servers found on this account",
+  "@plexNoServers": {
+    "description": "Shown when the Plex account has no servers"
+  },
   "loadingLinkedServers": "Loading linked servers...",
   "@loadingLinkedServers": {
     "description": "Status text while fetching Emby Connect server list"

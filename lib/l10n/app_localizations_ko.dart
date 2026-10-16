@@ -639,6 +639,22 @@ class AppLocalizationsKo extends AppLocalizations {
       'Emby Connect 또는 선택한 서버에 접속하는 중 네트워크 오류가 발생했습니다';
 
   @override
+  String get signInWithPlex => 'Sign in with Plex';
+
+  @override
+  String get plexLinkInstructions =>
+      'Go to plex.tv/link on any device and enter this code';
+
+  @override
+  String get plexOpenLink => 'Open plex.tv/link';
+
+  @override
+  String get plexWaitingForApproval => 'Waiting for you to approve the code...';
+
+  @override
+  String get plexNoServers => 'No Plex servers found on this account';
+
+  @override
   String get loadingLinkedServers => '연결된 서버를 로드하는 중...';
 
   @override

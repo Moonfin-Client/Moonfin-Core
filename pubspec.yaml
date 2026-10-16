@@ -81,6 +81,7 @@ dependencies:
 
   # Crypto
   crypto: ^3.0.6
+  cryptography: ^2.9.0
 
   # Connectivity
   connectivity_plus: ^7.1.1

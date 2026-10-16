@@ -648,6 +648,22 @@ class AppLocalizationsKn extends AppLocalizations {
       'Emby ಸಂಪರ್ಕ ಅಥವಾ ಆಯ್ಕೆಮಾಡಿದ ಸರ್ವರ್ ಅನ್ನು ಸಂಪರ್ಕಿಸುವಾಗ ನೆಟ್‌ವರ್ಕ್ ದೋಷ';
 
   @override
+  String get signInWithPlex => 'Sign in with Plex';
+
+  @override
+  String get plexLinkInstructions =>
+      'Go to plex.tv/link on any device and enter this code';
+
+  @override
+  String get plexOpenLink => 'Open plex.tv/link';
+
+  @override
+  String get plexWaitingForApproval => 'Waiting for you to approve the code...';
+
+  @override
+  String get plexNoServers => 'No Plex servers found on this account';
+
+  @override
   String get loadingLinkedServers =>
       'ಲಿಂಕ್ ಮಾಡಲಾದ ಸರ್ವರ್‌ಗಳನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ...';
 

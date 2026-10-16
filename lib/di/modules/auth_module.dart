@@ -9,6 +9,7 @@ import '../../auth/repositories/user_repository.dart';
 import '../../auth/store/authentication_preferences.dart';
 import '../../auth/store/authentication_store.dart';
 import '../../data/services/emby_connect_service.dart';
+import '../../data/services/plex_tv_service.dart';
 import '../../auth/store/credential_store.dart';
 import '../../auth/store/client_certificate_store.dart';
 import '../../data/services/plugin_sync_service.dart';
@@ -21,6 +22,7 @@ void registerAuthModule() {
   _getIt.registerLazySingleton(() => AuthenticationStore());
   _getIt.registerLazySingleton(() => AuthenticationPreferences(_getIt()));
   _getIt.registerLazySingleton(() => EmbyConnectService(deviceInfo: _getIt()));
+  _getIt.registerLazySingleton(() => PlexTvService(deviceInfo: _getIt()));
   _getIt.registerLazySingleton(() => UserRepository());
   _getIt.registerLazySingleton(
     () => ServerRepository(_getIt(), _getIt(), _getIt()),

@@ -647,6 +647,22 @@ class AppLocalizationsPa extends AppLocalizations {
       'Emby ਕਨੈਕਟ ਜਾਂ ਚੁਣੇ ਹੋਏ ਸਰਵਰ ਨਾਲ ਸੰਪਰਕ ਕਰਨ ਦੌਰਾਨ ਨੈੱਟਵਰਕ ਗੜਬੜ';
 
   @override
+  String get signInWithPlex => 'Sign in with Plex';
+
+  @override
+  String get plexLinkInstructions =>
+      'Go to plex.tv/link on any device and enter this code';
+
+  @override
+  String get plexOpenLink => 'Open plex.tv/link';
+
+  @override
+  String get plexWaitingForApproval => 'Waiting for you to approve the code...';
+
+  @override
+  String get plexNoServers => 'No Plex servers found on this account';
+
+  @override
   String get loadingLinkedServers =>
       'ਲਿੰਕ ਕੀਤੇ ਸਰਵਰਾਂ ਨੂੰ ਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...';
 
