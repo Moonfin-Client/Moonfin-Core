@@ -218,9 +218,6 @@ class ConnectivityService extends ChangeNotifier {
     _inFlightSync = syncService
         .syncPendingRatings(client, serverId: serverId)
         .then(
-         (_) => syncService.syncPendingPlaybackPosition(client, serverId: serverId),
-        )
-        .then(
           (_) => syncService.syncPlaybackProgress(client, serverId: serverId),
         )
         .then((_) => syncService.refreshMetadata(client, serverId: serverId))

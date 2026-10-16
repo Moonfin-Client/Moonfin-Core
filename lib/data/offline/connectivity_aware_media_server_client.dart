@@ -6,7 +6,6 @@ import '../services/connectivity_service.dart';
 import '../services/storage_path_service.dart';
 import '../repositories/offline_repository.dart';
 import '../services/pending_rating_store.dart';
-import '../services/pending_playbackposition_store.dart';
 import 'offline_catalog.dart';
 import 'offline_image_api.dart';
 import 'offline_items_api.dart';
@@ -47,7 +46,6 @@ class ConnectivityAwareMediaServerClient implements MediaServerClient {
     required OfflineCatalog catalog,
     required StoragePathService storagePath,
     required PendingRatingStore pendingRatings,
-    required PendingPlaybackPositionStore pendingPlaybackPosition,
     required OfflineRepository offlineRepo,
   }) : _useOffline = useOffline,
        _offlineItems = OfflineItemsApi(catalog, storagePath),
@@ -56,7 +54,6 @@ class ConnectivityAwareMediaServerClient implements MediaServerClient {
        _offlineUserLibrary = OfflineUserLibraryApi(
          catalog,
          pendingRatings: pendingRatings,
-         pendingPlaybackPosition: pendingPlaybackPosition,
          offlineRepo: offlineRepo,
        );
 

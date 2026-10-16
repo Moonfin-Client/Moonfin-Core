@@ -8,7 +8,6 @@ import '../offline/connectivity_aware_media_server_client.dart';
 import '../offline/offline_catalog.dart';
 import '../repositories/offline_repository.dart';
 import 'pending_rating_store.dart';
-import 'pending_playbackposition_store.dart';
 import 'storage_path_service.dart';
 
 class MediaServerClientFactory {
@@ -93,8 +92,7 @@ class MediaServerClientFactory {
     // to and the raw client is all they need.
     if (!getIt.isRegistered<OfflineCatalog>() ||
         !getIt.isRegistered<StoragePathService>() ||
-        !getIt.isRegistered<PendingRatingStore>() ||
-        !getIt.isRegistered<PendingPlaybackPositionStore>()) {
+        !getIt.isRegistered<PendingRatingStore>()) {
       return raw;
     }
     return ConnectivityAwareMediaServerClient(
@@ -103,7 +101,6 @@ class MediaServerClientFactory {
       catalog: getIt<OfflineCatalog>(),
       storagePath: getIt<StoragePathService>(),
       pendingRatings: getIt<PendingRatingStore>(),
-      pendingPlaybackPosition: getIt<PendingPlaybackPositionStore>(),
       offlineRepo: getIt<OfflineRepository>(),
     );
   }

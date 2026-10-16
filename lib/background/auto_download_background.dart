@@ -5,7 +5,6 @@ import 'package:server_core/server_core.dart';
 import '../data/repositories/offline_repository.dart';
 import '../data/services/auto_download_service.dart';
 import '../data/services/pending_rating_store.dart';
-import '../data/services/pending_playbackposition_store.dart';
 import '../data/services/sync_service.dart';
 import '../preference/user_preferences.dart';
 import '../playback/headless_session_bootstrap.dart';
@@ -66,7 +65,7 @@ Future<void> _pushOfflineProgress(String serverId) async {
   }
   final sync = getIt.isRegistered<SyncService>()
       ? getIt<SyncService>()
-      : SyncService(getIt<OfflineRepository>(), getIt<PendingRatingStore>(), getIt<PendingPlaybackPositionStore>());
+      : SyncService(getIt<OfflineRepository>(), getIt<PendingRatingStore>());
   try {
     await sync.syncPlaybackProgress(
       getIt<MediaServerClient>(),

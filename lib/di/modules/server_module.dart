@@ -9,7 +9,6 @@ import '../../data/offline/connectivity_aware_media_server_client.dart';
 import '../../data/offline/offline_catalog.dart';
 import '../../data/repositories/offline_repository.dart';
 import '../../data/services/pending_rating_store.dart';
-import '../../data/services/pending_playbackposition_store.dart';
 import '../../data/services/auto_download_service.dart';
 import '../../data/services/background_download_coordinator.dart';
 import '../../data/services/connectivity_service.dart';
@@ -89,7 +88,6 @@ void setActiveServerClient(
     catalog: _getIt<OfflineCatalog>(),
     storagePath: _getIt<StoragePathService>(),
     pendingRatings: _getIt<PendingRatingStore>(),
-    pendingPlaybackPosition: _getIt<PendingPlaybackPositionStore>(),
     offlineRepo: _getIt<OfflineRepository>(),
   );
 

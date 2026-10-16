@@ -345,9 +345,9 @@ class _BookReaderScreenState extends State<BookReaderScreen>
   }
 
   Future<void> _reportServerProgress() async {
-    final client = _resolveClient();
     final item = _item;
-    if (client == null || item == null) return;
+    if (item == null) return;
+    final client = _resolveClient();
 
     final currentPage = switch (_mode) {
       _ReaderMode.pdf => _currentPdfPage,
@@ -361,12 +361,16 @@ class _BookReaderScreenState extends State<BookReaderScreen>
     };
 
     final newPlayedPosition = (currentPage + 1) * 10000;
-    await client.userLibraryApi.updatePlayedPosition(item.id, playedPosition: newPlayedPosition.toInt());
+    try {
+      await client.userLibraryApi.updatePlayedPosition(item.id, playedPosition: newPlayedPosition.toInt());
+    } catch (_) { }
 
     final newPlayedPercentage = currentPage / pageCount;
     final lastPage = (currentPage + 2) >= pageCount;
     if (newPlayedPercentage >= 0.98 || lastPage) {
-      await client.userLibraryApi.markPlayed(item.id);
+      try {
+        await client.userLibraryApi.markPlayed(item.id);
+      } catch (_) { }
     }
   }
 
