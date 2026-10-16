@@ -363,6 +363,7 @@ class _BookReaderScreenState extends State<BookReaderScreen>
     final newPlayedPercentage = currentPage / pageCount;
     if (newPlayedPercentage >= 0.98) {
       await client.userLibraryApi.markPlayed(item.id);
+      await client.userLibraryApi.updatePlayedPosition(item.id, playedPosition: 0);
     } else {
       final newPlayedPosition = (currentPage + 1) * 10000;
       await client.userLibraryApi.updatePlayedPosition(item.id, playedPosition: newPlayedPosition.toInt());
