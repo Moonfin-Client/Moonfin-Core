@@ -994,15 +994,12 @@ class _AddServerDialogState extends State<AddServerDialog> {
         return;
       }
       // A proxy that turns a missing certificate away with a plain error page
-      // looks like any other failure, so the import is offered anyway. Over
-      // TLS 1.3 Android often sees a broken pipe instead of the
-      // certificate_required alert, and the last candidate tried is usually
-      // plain http, so the first https candidate is the one to offer.
-      final firstHttps = failure?.candidatesTried
-          .where((c) => c.startsWith('https:'))
-          .firstOrNull;
-      if (!PlatformDetection.isWeb && firstHttps != null) {
-        _clientCertAddress = firstHttps;
+      // looks like any other failure, so the import is offered anyway, for
+      // the https address that failed that way rather than the last one tried,
+      // which is usually plain http.
+      final possible = failure?.possibleClientCertCandidate;
+      if (!PlatformDetection.isWeb && possible != null) {
+        _clientCertAddress = possible;
       }
       final untrusted = failure?.untrustedCandidate;
       if (untrusted == null) {

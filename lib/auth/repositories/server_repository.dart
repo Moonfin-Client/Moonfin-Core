@@ -82,6 +82,7 @@ class ServerRepository {
     String? lastErrorMessage;
     String? untrustedCandidate;
     String? clientCertCandidate;
+    String? possibleClientCertCandidate;
 
     for (final candidate in candidates) {
       try {
@@ -145,6 +146,9 @@ class ServerRepository {
         lastErrorMessage = detail;
         if (isUntrustedCertificate(e)) untrustedCandidate ??= candidate;
         if (isClientCertificateRejected(e)) clientCertCandidate ??= candidate;
+        if (candidate.startsWith('https:') && _reachedServer(e)) {
+          possibleClientCertCandidate ??= candidate;
+        }
       } catch (e) {
         lastCandidate = candidate;
         lastErrorType = 'exception';
@@ -161,6 +165,7 @@ class ServerRepository {
       lastErrorMessage: lastErrorMessage,
       untrustedCandidate: untrustedCandidate,
       clientCertCandidate: clientCertCandidate,
+      possibleClientCertCandidate: possibleClientCertCandidate,
     );
     _lastFailure = failure;
     _stateController.add(failure);
@@ -217,6 +222,29 @@ class ServerRepository {
       dio.close();
     }
   }
+
+  /// Whether [e] came after something answered at the address. A refused,
+  /// unreachable, timed out or unresolved connection means nothing is
+  /// listening there. The OS message is localised, so it goes by errno.
+  static bool _reachedServer(DioException e) {
+    if (e.type == DioExceptionType.connectionTimeout) return false;
+    final reason = '${e.error}';
+    if (reason.contains('Failed host lookup')) return false;
+    final errno = int.tryParse(
+      _errnoPattern.firstMatch(reason)?.group(1) ?? '',
+    );
+    return errno == null || !_unreachableErrnos.contains(errno);
+  }
+
+  static final _errnoPattern = RegExp(r'errno = (\d+)');
+
+  /// Connection refused, network or host unreachable and timed out, as Linux
+  /// and Android, Apple platforms and Windows number them.
+  static const _unreachableErrnos = {
+    111, 101, 113, 110, // Linux, Android
+    61, 51, 65, 60, // macOS, iOS
+    10061, 10051, 10065, 10060, 1225, 1231, 1232, // Windows
+  };
 
   List<String> _buildCandidates(String address) {
     final candidates = <String>{};
