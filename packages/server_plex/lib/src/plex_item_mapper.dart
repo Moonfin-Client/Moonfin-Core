@@ -209,6 +209,8 @@ Map<String, dynamic> plexItemToJellyfin(Map<String, dynamic> m) {
             'StartPositionTicks':
                 max(0, chapter['startTimeOffset'] as int? ?? 0) * 10000,
             if (chapter['tag'] case final String name) 'Name': name,
+            // Only a chapter Plex has made a picture for has a thumb.
+            if (chapter['thumb'] case final String thumb) 'ImageTag': thumb,
           },
       ],
     // An extra's index is only its place among the extras.

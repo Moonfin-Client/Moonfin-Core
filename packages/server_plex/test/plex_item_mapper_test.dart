@@ -355,19 +355,25 @@ void main() {
     expect(plexSourceOf('23070'), ('23070', 0));
   });
 
-  test('chapters keep their names and never start before zero', () {
+  test('chapters keep names and pictures and never start before zero', () {
     final movie = plexItemToJellyfin({
       'ratingKey': '823',
       'type': 'movie',
       'Chapter': [
         {'tag': 'Chapter 1 Opening Titles', 'startTimeOffset': -1},
-        {'startTimeOffset': 61853},
+        {
+          'startTimeOffset': 61853,
+          'thumb': '/library/media/1773/chapterImages/2',
+        },
       ],
     });
 
     expect(movie['Chapters'], [
       {'StartPositionTicks': 0, 'Name': 'Chapter 1 Opening Titles'},
-      {'StartPositionTicks': 618530000},
+      {
+        'StartPositionTicks': 618530000,
+        'ImageTag': '/library/media/1773/chapterImages/2',
+      },
     ]);
   });
 }
