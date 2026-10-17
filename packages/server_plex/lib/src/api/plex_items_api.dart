@@ -574,8 +574,20 @@ class PlexItemsApi implements ItemsApi {
     String? nameStartsWith,
     String? nameLessThan,
     bool? isFavorite,
-  }) async => plexItemsResult([]);
+  }) => getItems(
+    parentId: parentId,
+    includeItemTypes: const ['MusicArtist'],
+    sortBy: sortBy,
+    sortOrder: sortOrder,
+    startIndex: startIndex,
+    limit: limit,
+    nameStartsWith: nameStartsWith,
+    nameLessThan: nameLessThan,
+    isFavorite: isFavorite,
+  );
 
+  /// Plex has only album artists. A featured artist is just a name on the
+  /// track, so both lists are the same.
   @override
   Future<Map<String, dynamic>> getAlbumArtists({
     String? parentId,
@@ -589,7 +601,16 @@ class PlexItemsApi implements ItemsApi {
     String? nameStartsWith,
     String? nameLessThan,
     bool? isFavorite,
-  }) async => plexItemsResult([]);
+  }) => getArtists(
+    parentId: parentId,
+    sortBy: sortBy,
+    sortOrder: sortOrder,
+    startIndex: startIndex,
+    limit: limit,
+    nameStartsWith: nameStartsWith,
+    nameLessThan: nameLessThan,
+    isFavorite: isFavorite,
+  );
 
   @override
   Future<Map<String, dynamic>> getPlaylistItems(

@@ -803,6 +803,33 @@ void main() {
     expect((await api.getLyrics('23010'))['Lyrics'], isEmpty);
   });
 
+  test(
+    "a music library's artists and album artists are its Plex artists",
+    () async {
+      final (dio, requests) = _recordingDio({
+        'Metadata': [
+          {'ratingKey': '22990', 'type': 'artist', 'title': 'DMX'},
+        ],
+      });
+      final api = PlexItemsApi(dio);
+
+      final artists = await api.getArtists(
+        parentId: 'section-3',
+        sortBy: 'SortName',
+      );
+      final albumArtists = await api.getAlbumArtists(parentId: 'section-3');
+
+      expect(requests.map((r) => (r.path, r.queryParameters['type'])), [
+        ('/library/sections/3/all', '8'),
+        ('/library/sections/3/all', '8'),
+      ]);
+      expect(requests.first.queryParameters['sort'], 'titleSort');
+      for (final result in [artists, albumArtists]) {
+        expect((result['Items'] as List).single['Type'], 'MusicArtist');
+      }
+    },
+  );
+
   test('intro and credits markers become skip segments', () async {
     final (dio, requests) = _recordingDio({
       'Metadata': [
