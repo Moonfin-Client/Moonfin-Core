@@ -20,7 +20,10 @@ import '../../widgets/login_scaffold.dart';
 import '../../widgets/server_type_icon.dart';
 
 class PlexSignInScreen extends StatefulWidget {
-  const PlexSignInScreen({super.key});
+  /// A server address typed in by hand, tried before the ones plex.tv knows.
+  final String? address;
+
+  const PlexSignInScreen({super.key, this.address});
 
   @override
   State<PlexSignInScreen> createState() => _PlexSignInScreenState();
@@ -93,7 +96,10 @@ class _PlexSignInScreenState extends State<PlexSignInScreen> {
 
   Future<void> _loadServers(String token) async {
     try {
-      final servers = await _plexRepository.loadServers(token);
+      final servers = await _plexRepository.loadServers(
+        token,
+        address: widget.address,
+      );
       if (!mounted) return;
       setState(() => _servers = servers);
       if (servers.length == 1) await _connect(servers.first);

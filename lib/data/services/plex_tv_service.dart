@@ -2,6 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:server_core/server_core.dart';
 import 'package:server_plex/server_plex.dart';
 
+import '../../util/server_url.dart';
+
 /// A plex.tv sign-in code the user approves at plex.tv/link.
 class PlexPin {
   final int id;
@@ -146,24 +148,45 @@ class PlexTvService {
   /// The first of [server]'s connections that answers as that server. They
   /// are all tried at once, so dead addresses cost one timeout in total.
   Future<String?> findReachableUri(PlexServer server) async {
-    final probes = [
-      for (final c in server.connections) _answersAs(c.uri, server.id),
-    ];
+    final probes = [for (final c in server.connections) machineIdAt(c.uri)];
     for (var i = 0; i < probes.length; i++) {
-      if (await probes[i]) return server.connections[i].uri;
+      if (await probes[i] == server.id) return server.connections[i].uri;
     }
     return null;
   }
 
-  Future<bool> _answersAs(String uri, String machineId) async {
+  /// Where a Plex server answers at a typed [address], or null when nothing
+  /// there is one.
+  Future<String?> findServerAt(String address) async {
+    final candidates = plexAddressCandidates(address);
+    final ids = await Future.wait(candidates.map(machineIdAt));
+    final index = ids.indexWhere((id) => id != null);
+    return index < 0 ? null : candidates[index];
+  }
+
+  /// The machineIdentifier of the Plex server at [uri], or null when nothing
+  /// there answers as one.
+  Future<String?> machineIdAt(String uri) async {
     try {
       final response = await _dio
           .get<Map<String, dynamic>>('$uri/identity')
           .timeout(const Duration(seconds: 4));
       final identity = response.data?['MediaContainer'] as Map?;
-      return identity?['machineIdentifier'] == machineId;
+      return identity?['machineIdentifier'] as String?;
     } catch (_) {
-      return false;
+      return null;
     }
   }
+}
+
+/// The uris to look for a Plex server at for a typed [address]. Plex's own
+/// port goes first when none was typed, and a bare address means http, since
+/// a LAN IP has no certificate to match.
+List<String> plexAddressCandidates(String address) {
+  final typed = normalizeServerBaseUrl(
+    address.contains('://') ? address : 'http://$address',
+  );
+  final uri = Uri.tryParse(typed);
+  if (uri == null || uri.host.isEmpty) return const [];
+  return [if (!uri.hasPort) uri.replace(port: 32400).toString(), typed];
 }

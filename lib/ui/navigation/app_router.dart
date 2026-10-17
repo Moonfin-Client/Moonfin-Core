@@ -225,7 +225,8 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: Destinations.plexSignIn,
-      builder: (context, state) => const PlexSignInScreen(),
+      builder: (context, state) =>
+          PlexSignInScreen(address: state.uri.queryParameters['address']),
     ),
     GoRoute(
       path: Destinations.webDiagnostics,

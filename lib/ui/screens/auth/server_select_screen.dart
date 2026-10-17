@@ -17,6 +17,7 @@ import '../../../auth/services/jellyfin_credentials_bridge.dart';
 import '../../../auth/store/authentication_preferences.dart';
 import '../../../auth/store/authentication_store.dart';
 import '../../../data/services/media_server_client_factory.dart';
+import '../../../data/services/plex_tv_service.dart';
 import '../../../auth/services/server_discovery_service.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../platform/web_runtime_config.dart';
@@ -1002,6 +1003,23 @@ class _AddServerDialogState extends State<AddServerDialog> {
       if (!mounted) return;
       if (server != null) {
         _dismissDialog();
+        return;
+      }
+      // Only Jellyfin and Emby answer that probe, so a Plex server goes to its
+      // plex.tv sign-in.
+      final plexUri = await GetIt.instance<PlexTvService>().findServerAt(
+        address,
+      );
+      if (!mounted) return;
+      if (plexUri != null) {
+        final router = GoRouter.of(context);
+        _dismissDialog();
+        router.go(
+          Uri(
+            path: Destinations.plexSignIn,
+            queryParameters: {'address': plexUri},
+          ).toString(),
+        );
         return;
       }
       final failure = widget.serverRepo.lastFailure;

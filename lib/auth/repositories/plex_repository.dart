@@ -22,16 +22,24 @@ class PlexRepository {
   );
 
   /// The account's servers, each with the addresses GDM found for it on this
-  /// network put first.
-  Future<List<PlexServer>> loadServers(String authToken) async {
+  /// network put first, and a typed [address] ahead of those on the server
+  /// that answers there.
+  Future<List<PlexServer>> loadServers(
+    String authToken, {
+    String? address,
+  }) async {
     final lanUris = <String, List<String>>{};
-    final (servers, _) = await (
+    final (servers, _, typedId) = await (
       _plexTv.getServers(authToken),
       ServerDiscoveryService()
           .discoverLocalServers()
           .where((s) => s.serverType == ServerType.plex)
           .forEach((s) => lanUris.putIfAbsent(s.id, () => []).add(s.address)),
+      address == null ? Future<String?>.value() : _plexTv.machineIdAt(address),
     ).wait;
+    if (typedId != null) {
+      lanUris.putIfAbsent(typedId, () => []).insert(0, address!);
+    }
     return [
       for (final server in servers)
         server.withLanUris(lanUris[server.id] ?? []),

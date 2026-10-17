@@ -53,4 +53,27 @@ void main() {
       expect(server(const []).address, isNull);
     });
   });
+
+  group('plexAddressCandidates', () {
+    test('tries Plex port first over http when only a host is typed', () {
+      expect(plexAddressCandidates('192.168.50.45'), [
+        'http://192.168.50.45:32400',
+        'http://192.168.50.45',
+      ]);
+    });
+
+    test('keeps a typed port and scheme', () {
+      expect(plexAddressCandidates('192.168.50.45:32400'), [
+        'http://192.168.50.45:32400',
+      ]);
+      expect(plexAddressCandidates('https://plex.example.com/'), [
+        'https://plex.example.com:32400',
+        'https://plex.example.com',
+      ]);
+    });
+
+    test('has nothing to try without a host', () {
+      expect(plexAddressCandidates('http://'), isEmpty);
+    });
+  });
 }
