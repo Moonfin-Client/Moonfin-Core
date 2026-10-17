@@ -50,6 +50,13 @@ const plexTypeNumbers = {
   'MusicArtist': 8,
   'MusicAlbum': 9,
   'Audio': 10,
+  'BoxSet': 18,
+};
+
+const _playlistMediaTypes = {
+  'video': 'Video',
+  'audio': 'Audio',
+  'photo': 'Photo',
 };
 
 const _streamTypes = {1: 'Video', 2: 'Audio', 3: 'Subtitle'};
@@ -127,6 +134,11 @@ Map<String, dynamic> plexItemToJellyfin(Map<String, dynamic> m) {
     'IsFolder': _folderTypes.contains(type),
     if (type == 'movie' || type == 'episode') 'MediaType': 'Video',
     if (type == 'track') 'MediaType': 'Audio',
+    if (type == 'playlist')
+      'MediaType': ?_playlistMediaTypes[m['playlistType']],
+    if (m['playlistItemID'] != null) 'PlaylistItemId': '${m['playlistItemID']}',
+    // Removing either only drops the list, never the media in it.
+    if (type == 'playlist' || type == 'collection') 'CanDelete': true,
     if (m['summary'] != null) 'Overview': m['summary'],
     if (m['year'] != null) 'ProductionYear': m['year'],
     'PremiereDate': ?_date(m['originallyAvailableAt']),
@@ -178,12 +190,15 @@ Map<String, dynamic> plexItemToJellyfin(Map<String, dynamic> m) {
       'AlbumId': '${m['parentRatingKey']}',
       'AlbumPrimaryImageTag': ?m['parentThumb'],
     },
-    if (type == 'show' && m['childCount'] != null)
+    if ((type == 'show' || type == 'collection') && m['childCount'] != null)
       'ChildCount': m['childCount'],
-    if (type == 'season' && leafCount != null) 'ChildCount': leafCount,
+    if ((type == 'season' || type == 'playlist') && leafCount != null)
+      'ChildCount': leafCount,
     'RecursiveItemCount': ?leafCount,
     'ImageTags': {
-      if (m['thumb'] case final String thumb) 'Primary': thumb,
+      // A playlist has no poster, only Plex's tiles of what's in it.
+      if (m['thumb'] ?? m['composite'] case final String thumb)
+        'Primary': thumb,
       if (logo != null && owns(logo)) 'Logo': logo,
     },
     'BackdropImageTags': [if (art != null && owns(art)) art],
@@ -202,7 +217,9 @@ Map<String, dynamic> plexItemToJellyfin(Map<String, dynamic> m) {
       'Played': leafCount != null
           ? leafCount > 0 && viewedLeafCount >= leafCount
           : viewCount > 0,
-      if (leafCount != null) 'UnplayedItemCount': leafCount - viewedLeafCount,
+      // Plex doesn't count what's been watched in a playlist.
+      if (leafCount != null && type != 'playlist')
+        'UnplayedItemCount': leafCount - viewedLeafCount,
       if (viewOffset != null && duration != null && duration > 0)
         'PlayedPercentage': viewOffset * 100 / duration,
       if (m['lastViewedAt'] case final int lastViewedAt)

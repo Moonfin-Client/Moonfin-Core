@@ -118,7 +118,11 @@ void main() {
     );
 
     expect(requests.first.path, '/hubs/search');
-    expect(requests.first.queryParameters, {'query': 'des', 'limit': 24});
+    expect(requests.first.queryParameters, {
+      'query': 'des',
+      'includeCollections': 1,
+      'limit': 24,
+    });
     expect((all['Items'] as List).map((i) => i['Name']), [
       'Despicable Me 3',
       'The Office (US)',
@@ -201,7 +205,7 @@ void main() {
 
     expect(requests.single.path, '/library/all');
     expect(requests.single.queryParameters, {
-      'type': '1,2,3,4,8,9,10',
+      'type': '1,2,3,4,8,9,10,18',
       'userRating': '10',
     });
   });
@@ -513,6 +517,154 @@ void main() {
         '6',
       ]);
       expect(unknown['Items'], isEmpty);
+    });
+  });
+
+  group('playlists and collections', () {
+    (PlexItemsApi, List<RequestOptions>) server() {
+      final requests = <RequestOptions>[];
+      Map<String, dynamic> item(
+        String key,
+        String type, [
+        Map<String, dynamic>? extra,
+      ]) => {
+        'Metadata': [
+          {'ratingKey': key, 'type': type, ...?extra},
+        ],
+      };
+      final dio = Dio()
+        ..interceptors.add(
+          _FakeServer((options, handler) {
+            requests.add(options);
+            handler.resolve(
+              Response(
+                requestOptions: options,
+                data: {
+                  'MediaContainer': switch (options.path) {
+                    '/identity' => {'machineIdentifier': 'abc'},
+                    '/playlists' => item('23065', 'playlist', {
+                      'title': 'Road Trip',
+                      'playlistType': 'audio',
+                      'leafCount': 4,
+                      'composite': '/playlists/23065/composite/1',
+                    }),
+                    '/library/collections' => item('23069', 'collection'),
+                    '/playlists/9/items' => {
+                      'Metadata': [
+                        for (final entry in [1, 2, 3])
+                          {
+                            'ratingKey': '$entry',
+                            'type': 'movie',
+                            'playlistItemID': entry,
+                          },
+                      ],
+                    },
+                    '/library/metadata/23010' => item('23010', 'track'),
+                    '/library/metadata/863' => item('863', 'movie', {
+                      'librarySectionID': 1,
+                    }),
+                    '/library/metadata/23065' => item('23065', 'playlist'),
+                    '/library/metadata/23062' => item('23062', 'collection'),
+                    _ => const <String, dynamic>{},
+                  },
+                },
+              ),
+            );
+          }),
+        );
+      return (PlexItemsApi(dio), requests);
+    }
+
+    test("a library's playlists come from Plex's playlist list", () async {
+      final (api, requests) = server();
+
+      final result = await api.getItems(
+        parentId: 'section-3',
+        includeItemTypes: ['Playlist'],
+        sortBy: 'SortName',
+      );
+
+      expect(requests.single.path, '/playlists');
+      expect(requests.single.queryParameters, {
+        'sectionID': '3',
+        'sort': 'titleSort',
+      });
+      final playlist = (result['Items'] as List).single as Map;
+      expect(playlist['MediaType'], 'Audio');
+      expect(playlist['ChildCount'], 4);
+      expect(playlist['CanDelete'], isTrue);
+      expect(playlist['ImageTags'], {
+        'Primary': '/playlists/23065/composite/1',
+      });
+      expect(playlist['UserData'], isNot(contains('UnplayedItemCount')));
+    });
+
+    test('a new playlist takes its kind from its first item', () async {
+      final (api, requests) = server();
+
+      final created = await api.createPlaylist(
+        name: 'Road Trip',
+        itemIds: ['23010', '23011'],
+      );
+
+      final post = requests.last;
+      expect((post.method, post.path), ('POST', '/playlists'));
+      expect(post.queryParameters, {
+        'type': 'audio',
+        'title': 'Road Trip',
+        'smart': 0,
+        'uri':
+            'server://abc/com.plexapp.plugins.library/library/metadata/23010,23011',
+      });
+      expect(created['Id'], '23065');
+    });
+
+    test('an entry moves to just after the one before its new spot', () async {
+      final (api, requests) = server();
+
+      await api.movePlaylistItem('9', '3', 1);
+      await api.movePlaylistItem('9', '2', 0);
+
+      final moves = requests.where((r) => r.method == 'PUT').toList();
+      expect(moves.map((r) => r.path), [
+        '/playlists/9/items/3/move',
+        '/playlists/9/items/2/move',
+      ]);
+      expect(moves.map((r) => r.queryParameters), [
+        {'after': '1'},
+        isEmpty,
+      ]);
+    });
+
+    test('an empty collection is made once its first items arrive', () async {
+      final (api, requests) = server();
+
+      final pending = await api.createCollection(name: 'Scratch Set');
+      expect(requests, isEmpty);
+      await api.addToCollection(pending['Id'] as String, ['863']);
+
+      final post = requests.last;
+      expect((post.method, post.path), ('POST', '/library/collections'));
+      expect(post.queryParameters, {
+        'type': 1,
+        'title': 'Scratch Set',
+        'smart': 0,
+        'sectionId': 1,
+        'uri': 'server://abc/com.plexapp.plugins.library/library/metadata/863',
+      });
+    });
+
+    test('only playlists and collections can be deleted', () async {
+      final (api, requests) = server();
+
+      await api.deleteItem('23065');
+      await api.deleteItem('23062');
+      await expectLater(api.deleteItem('863'), throwsUnsupportedError);
+
+      expect(requests.where((r) => r.method == 'DELETE').map((r) => r.path), [
+        '/playlists/23065',
+        '/library/collections/23062',
+      ]);
     });
   });
 

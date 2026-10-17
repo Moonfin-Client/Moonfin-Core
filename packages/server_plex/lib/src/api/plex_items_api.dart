@@ -6,8 +6,12 @@ import 'plex_apis.dart';
 
 class PlexItemsApi implements ItemsApi {
   final Dio _dio;
+  String? _machineId;
 
   PlexItemsApi(this._dio);
+
+  /// Stands in for a collection made with nothing in it yet.
+  static const _newCollectionPrefix = 'new-collection:';
 
   static const _sortFields = {
     'SortName': 'titleSort',
@@ -171,8 +175,10 @@ class PlexItemsApi implements ItemsApi {
     // carry a reason and are left out, so only titles that match the query
     // stay.
     if (parent == null && searchTerm != null && searchTerm.isNotEmpty) {
+      // Without the flag, a collection comes back as a tag and not the item.
       final container = await plexContainer(_dio, '/hubs/search', {
         'query': searchTerm,
+        'includeCollections': 1,
         'limit': ?limit,
       });
       final matches = _items([
@@ -190,7 +196,10 @@ class PlexItemsApi implements ItemsApi {
         : [for (final type in includeItemTypes) ?plexTypeNumbers[type]];
     final sectionKey = _sectionKey(parent);
     final String path;
-    if (parent == null) {
+    // Playlists sit outside the libraries, filed by where their items live.
+    if (includeItemTypes?.singleOrNull == 'Playlist') {
+      path = '/playlists';
+    } else if (parent == null) {
       if (types.isEmpty) return plexItemsResult([]);
       path = '/library/all';
     } else if (sectionKey != null) {
@@ -219,6 +228,7 @@ class PlexItemsApi implements ItemsApi {
     ];
     final container = await plexContainer(_dio, path, {
       if (types.isNotEmpty && path.endsWith('/all')) 'type': types.join(','),
+      if (path == '/playlists') 'sectionID': ?sectionKey,
       if (sort.isNotEmpty) 'sort': sort,
       if (searchTerm != null && searchTerm.isNotEmpty) 'title': searchTerm,
       for (final filter in filters ?? const <String>[]) ..._filters[filter]!,
@@ -539,8 +549,13 @@ class PlexItemsApi implements ItemsApi {
     bool inheritFromParent = true,
   }) async => {};
 
+  /// The playlists something can be added to, which leaves out smart ones
+  /// since Plex fills those itself.
   @override
-  Future<Map<String, dynamic>> getPlaylists() async => plexItemsResult([]);
+  Future<Map<String, dynamic>> getPlaylists() async {
+    final container = await plexContainer(_dio, '/playlists', {'smart': 0});
+    return plexItemsResult(_items(container['Metadata']));
+  }
 
   @override
   Future<Map<String, dynamic>> getArtists({
@@ -577,7 +592,18 @@ class PlexItemsApi implements ItemsApi {
     String playlistId, {
     int? startIndex,
     int? limit,
-  }) async => plexItemsResult([]);
+  }) async {
+    final container = await plexContainer(
+      _dio,
+      '/playlists/$playlistId/items',
+      _paging(startIndex, limit),
+    );
+    return plexItemsResult(
+      _items(container['Metadata']),
+      total: container['totalSize'] as int?,
+      startIndex: startIndex ?? 0,
+    );
+  }
 
   @override
   Future<Map<String, dynamic>> getGenres({
@@ -749,56 +775,155 @@ class PlexItemsApi implements ItemsApi {
   static Never _readOnly() =>
       throw UnsupportedError('Plex libraries are read only in Moonfin');
 
+  Future<Map<String, dynamic>> _plexItem(String id) async =>
+      (await plexContainer(_dio, '/library/metadata/$id'))['Metadata'][0]
+          as Map<String, dynamic>;
+
+  /// Plex takes the items to add as one URI naming them on this server.
+  Future<String> _itemsUri(List<String> itemIds) async {
+    _machineId ??=
+        (await plexContainer(_dio, '/identity'))['machineIdentifier'] as String;
+    return 'server://$_machineId/com.plexapp.plugins.library'
+        '/library/metadata/${itemIds.join(',')}';
+  }
+
+  Future<Map<String, dynamic>> _create(
+    String path,
+    Map<String, dynamic> query,
+  ) async {
+    final response = await _dio.post<Map<String, dynamic>>(
+      path,
+      queryParameters: query,
+    );
+    return _items(response.data?['MediaContainer']?['Metadata']).first;
+  }
+
+  /// A Plex playlist holds one kind of media, which its first item decides.
   @override
   Future<Map<String, dynamic>> createPlaylist({
     required String name,
     List<String>? itemIds,
-  }) async => _readOnly();
+  }) async {
+    final ids = itemIds ?? const [];
+    final first = ids.isEmpty ? null : await _plexItem(ids.first);
+    return _create('/playlists', {
+      'type': switch (first?['type']) {
+        'artist' || 'album' || 'track' => 'audio',
+        'photo' => 'photo',
+        _ => 'video',
+      },
+      'title': name,
+      'smart': 0,
+      if (ids.isNotEmpty) 'uri': await _itemsUri(ids),
+    });
+  }
 
+  /// Plex files a collection under the library and type of what's in it, so
+  /// one made empty is only created once its first items arrive.
   @override
   Future<Map<String, dynamic>> createCollection({
     required String name,
     List<String>? itemIds,
-  }) async => _readOnly();
+  }) async => itemIds == null || itemIds.isEmpty
+      ? {'Id': '$_newCollectionPrefix$name'}
+      : _createCollection(name, itemIds);
+
+  Future<Map<String, dynamic>> _createCollection(
+    String name,
+    List<String> itemIds,
+  ) async {
+    final first = await _plexItem(itemIds.first);
+    return _create('/library/collections', {
+      'type': plexTypeNumbers[plexItemToJellyfin(first)['Type']],
+      'title': name,
+      'smart': 0,
+      'sectionId': first['librarySectionID'],
+      'uri': await _itemsUri(itemIds),
+    });
+  }
 
   @override
-  Future<void> addToPlaylist(String playlistId, List<String> itemIds) async =>
-      _readOnly();
+  Future<void> addToPlaylist(String playlistId, List<String> itemIds) async {
+    await _dio.put(
+      '/playlists/$playlistId/items',
+      queryParameters: {'uri': await _itemsUri(itemIds)},
+    );
+  }
 
   @override
   Future<void> addToCollection(
     String collectionId,
     List<String> itemIds,
-  ) async => _readOnly();
+  ) async {
+    if (_keyOf(collectionId, _newCollectionPrefix) case final name?) {
+      await _createCollection(name, itemIds);
+      return;
+    }
+    await _dio.put(
+      '/library/collections/$collectionId/items',
+      queryParameters: {'uri': await _itemsUri(itemIds)},
+    );
+  }
 
   @override
   Future<void> removeFromCollection(
     String collectionId,
     List<String> itemIds,
-  ) async => _readOnly();
+  ) async {
+    for (final id in itemIds) {
+      await _dio.delete('/library/collections/$collectionId/items/$id');
+    }
+  }
 
   @override
   Future<void> removeFromPlaylist(
     String playlistId,
     List<String> entryIds,
-  ) async => _readOnly();
+  ) async {
+    for (final entry in entryIds) {
+      await _dio.delete('/playlists/$playlistId/items/$entry');
+    }
+  }
 
+  /// Plex moves an entry to just after another one, or to the top without one.
   @override
   Future<void> movePlaylistItem(
     String playlistId,
     String playlistItemId,
     int newIndex,
-  ) async => _readOnly();
+  ) async {
+    final others = [
+      for (final item in (await getPlaylistItems(playlistId))['Items'] as List)
+        if (item['PlaylistItemId'] != playlistItemId) item['PlaylistItemId'],
+    ];
+    await _dio.put(
+      '/playlists/$playlistId/items/$playlistItemId/move',
+      queryParameters: {if (newIndex > 0) 'after': others[newIndex - 1]},
+    );
+  }
 
   @override
-  Future<void> renamePlaylist(String playlistId, String name) async =>
-      _readOnly();
+  Future<void> renamePlaylist(String playlistId, String name) async {
+    await _dio.put('/playlists/$playlistId', queryParameters: {'title': name});
+  }
+
+  /// Only playlists and collections can go, never the media itself.
+  @override
+  Future<void> deleteItem(String itemId) async {
+    switch ((await _plexItem(itemId))['type']) {
+      case 'playlist':
+        await deletePlaylist(itemId);
+      case 'collection':
+        await _dio.delete('/library/collections/$itemId');
+      default:
+        _readOnly();
+    }
+  }
 
   @override
-  Future<void> deleteItem(String itemId) async => _readOnly();
-
-  @override
-  Future<void> deletePlaylist(String playlistId) async => _readOnly();
+  Future<void> deletePlaylist(String playlistId) async {
+    await _dio.delete('/playlists/$playlistId');
+  }
 
   @override
   Future<void> downloadRemoteSubtitle(String itemId, String subtitleId) async =>
