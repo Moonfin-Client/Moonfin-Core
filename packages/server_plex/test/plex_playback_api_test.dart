@@ -236,7 +236,7 @@ void main() {
       expect(decision.uri.queryParameters.containsKey('session'), isFalse);
       expect(info['PlaySessionId'], matches(RegExp(r'^[0-9a-f]{32}$')));
       final source = (info['MediaSources'] as List).single as Map;
-      expect(source['Id'], '3720');
+      expect(source['Id'], '1715-0');
       expect(source['Path'], '/library/parts/3720/1786486459/file.mkv');
       expect(source['SupportsDirectPlay'], isTrue);
       expect(source.containsKey('TranscodingUrl'), isFalse);
@@ -415,6 +415,88 @@ void main() {
       'X-Plex-Session-Identifier': 'abc',
     });
   });
+
+  test(
+    'a later file of a split movie plays itself and reports into the whole',
+    () async {
+      final server = _FakeServer(
+        (options) => switch (options.uri.path) {
+          '/library/metadata/23070' => {
+            'MediaContainer': {
+              'Metadata': [
+                {
+                  'ratingKey': '23070',
+                  'type': 'movie',
+                  'duration': 180046,
+                  'Media': [
+                    {
+                      'id': 31042,
+                      'duration': 180046,
+                      'Part': [
+                        for (final id in [31042, 31043])
+                          {
+                            'id': id,
+                            'duration': 90023,
+                            'key': '/library/parts/$id/1/file.mkv',
+                          },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+          final path when path.endsWith('/transcode/universal/decision') => {
+            'MediaContainer': {
+              'Metadata': [
+                {
+                  'Media': [
+                    {
+                      'Part': [
+                        {'decision': 'directplay'},
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+          _ => null,
+        },
+      );
+      final api = PlexPlaybackApi(Dio()..interceptors.add(server), const {});
+
+      final info = await api.getPlaybackInfo('part-23070-0-1');
+      await api.reportPlaybackStopped({
+        'ItemId': 'part-23070-0-1',
+        'PositionTicks': 300000000,
+        'RunTimeTicks': 900230000,
+        'PlaySessionId': info['PlaySessionId'],
+      });
+
+      final source = (info['MediaSources'] as List).single as Map;
+      expect(source['Path'], '/library/parts/31043/1/file.mkv');
+      expect(source['RunTimeTicks'], 900230000);
+      expect(
+        _request(
+          server,
+          '/video/:/transcode/universal/decision',
+        ).uri.queryParameters,
+        allOf(
+          containsPair('path', '/library/metadata/23070'),
+          containsPair('partIndex', '1'),
+        ),
+      );
+      expect(
+        _request(server, '/:/timeline').queryParameters,
+        allOf(
+          containsPair('ratingKey', '23070'),
+          containsPair('time', 120023),
+          containsPair('duration', 180046),
+        ),
+      );
+    },
+  );
 
   test('stopping a transcode ends its Plex session', () async {
     final (api, server) = _api('transcode');

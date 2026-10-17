@@ -83,7 +83,7 @@ void main() {
     expect(userData['LastPlayedDate'], '2026-10-16T04:06:57.000Z');
     expect(userData['IsFavorite'], isFalse);
     final source = (movie['MediaSources'] as List).single as Map;
-    expect(source['Id'], '3720');
+    expect(source['Id'], '1715-0');
     expect(source['Bitrate'], 9536000);
     expect(source['Path'], '/media/Movies/10 Cloverfield Lane (2016).mkv');
     expect((movie['MediaStreams'] as List).map((s) => (s as Map)['Type']), [
@@ -319,5 +319,39 @@ void main() {
       'IsFolder': true,
       'ImageTags': <String, dynamic>{},
     });
+  });
+
+  test('a split movie counts its files and lists the later ones as parts', () {
+    const movie = <String, dynamic>{
+      'ratingKey': '23070',
+      'type': 'movie',
+      'title': 'Stack Test',
+      'duration': 180046,
+      'Media': [
+        {
+          'id': 31042,
+          'duration': 180046,
+          'Part': [
+            {'id': 31042, 'duration': 90023, 'file': '/m/Stack - pt1.mkv'},
+            {'id': 31043, 'duration': 90023, 'file': '/m/Stack - pt2.mkv'},
+          ],
+        },
+      ],
+    };
+
+    final item = plexItemToJellyfin(movie);
+    final part = plexAdditionalParts(movie, 0).single;
+
+    expect(item['PartCount'], 2);
+    expect(item['RunTimeTicks'], 1800460000);
+    expect(part['Id'], 'part-23070-0-1');
+    expect(part['Name'], 'Stack - pt2');
+    expect(part['RunTimeTicks'], 900230000);
+    expect(part, isNot(contains('PartCount')));
+    expect((part['MediaSources'] as List).single['Path'], '/m/Stack - pt2.mkv');
+    expect(plexPartOf('part-23070-0-1'), ('23070', 0, 1));
+    expect(plexPartOf('23070'), isNull);
+    expect(plexSourceOf('23070-1'), ('23070', 1));
+    expect(plexSourceOf('23070'), ('23070', 0));
   });
 }

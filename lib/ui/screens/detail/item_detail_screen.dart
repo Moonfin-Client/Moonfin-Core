@@ -8707,12 +8707,25 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     bool audioSelectionExplicit = false,
     bool subtitleSelectionExplicit = false,
   }) async {
-    queue = queueWithAdditionalParts(
+    final parts = await _additionalPartsFor(target, mediaSourceId);
+    final withParts = queueWithAdditionalParts(
       queue,
       startIndex: startIndex,
       target: target,
-      parts: await _additionalPartsFor(target, mediaSourceId),
+      parts: parts,
     );
+    if (!identical(withParts, queue)) {
+      (startIndex, startPosition) = startInParts(
+        startIndex: startIndex,
+        startPosition: startPosition,
+        firstFile: _runtimeForItem(
+          target,
+          selectedMediaSourceForItem(target, mediaSourceId),
+        ),
+        parts: parts,
+      );
+    }
+    queue = withParts;
     final applyNow = prerolls.isEmpty;
     Future<void> playItems() => manager.playItems(
       applyNow
@@ -10662,6 +10675,27 @@ List<AggregatedItem> queueWithAdditionalParts(
     ...parts,
     ...queue.skip(startIndex + 1),
   ];
+}
+
+/// Where [startPosition] lands once [parts] follow the started item. A server
+/// that keeps one resume point for a whole split movie can hand back a time
+/// past the first file, and that time belongs to a later part.
+(int, Duration) startInParts({
+  required int startIndex,
+  required Duration startPosition,
+  required Duration? firstFile,
+  required List<AggregatedItem> parts,
+}) {
+  var index = startIndex;
+  var position = startPosition;
+  var length = firstFile;
+  for (final part in parts) {
+    if (length == null || position < length) break;
+    position -= length;
+    index++;
+    length = part.runtime;
+  }
+  return (index, position);
 }
 
 /// Whether Android TV playback of [queue] must stream a Dolby Vision

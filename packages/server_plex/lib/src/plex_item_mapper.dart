@@ -8,6 +8,27 @@ const plexPersonPrefix = 'person-';
 /// Genre ids are Plex tag ids, which also overlap item ratingKeys.
 const plexGenrePrefix = 'genre-';
 
+/// A movie split over several files plays one file at a time, and every file
+/// after the first is an item of its own under this prefix.
+const plexPartPrefix = 'part-';
+
+/// The item, version and file a part id points at.
+(String, int, int)? plexPartOf(String id) {
+  final match = RegExp('^$plexPartPrefix(\\d+)-(\\d+)-(\\d+)\$').firstMatch(id);
+  return match == null
+      ? null
+      : (match[1]!, int.parse(match[2]!), int.parse(match[3]!));
+}
+
+/// The item and version behind a media source id, which is the ratingKey and
+/// the version's place among the item's Media. A bare ratingKey is the first.
+(String, int) plexSourceOf(String id) {
+  final dash = id.lastIndexOf('-');
+  return dash < 0
+      ? (id, 0)
+      : (id.substring(0, dash), int.tryParse(id.substring(dash + 1)) ?? 0);
+}
+
 /// Plex has no favorites, so a 10 rating stands in, the "loved" mark Plex's
 /// own apps give.
 const plexFavoriteRating = 10;
@@ -113,10 +134,12 @@ Map<String, dynamic> plexItemToJellyfin(Map<String, dynamic> m) {
 
   final art = m['art'] as String?;
   final logo = images['clearLogo'];
+  final medias = (m['Media'] as List? ?? const []).whereType<Map>().toList();
   final sources = [
-    for (final media in m['Media'] as List? ?? const [])
-      if (media is Map) _mediaSource(media, id),
+    for (final (index, media) in medias.indexed)
+      _mediaSource('$id-$index', id, media, _parts(media).firstOrNull),
   ];
+  final partCount = _parts(medias.firstOrNull).length;
   final ratingImage = m['ratingImage'] as String? ?? '';
   final rating = (m['rating'] as num?)?.toDouble();
   final isTrack = type == 'track';
@@ -230,6 +253,7 @@ Map<String, dynamic> plexItemToJellyfin(Map<String, dynamic> m) {
       'MediaSources': sources,
       'MediaStreams': sources.first['MediaStreams'],
     },
+    if (partCount > 1) 'PartCount': partCount,
   };
 }
 
@@ -262,16 +286,58 @@ Map<String, String> _providerIds(Object? guids) {
   return ids;
 }
 
-Map<String, dynamic> _mediaSource(Map media, String itemId) {
-  final part = (media['Part'] as List? ?? const [])
-      .whereType<Map>()
-      .firstOrNull;
+List<Map> _parts(Map? media) =>
+    (media?['Part'] as List? ?? const []).whereType<Map>().toList();
+
+/// One file of a movie split over several, as an item that plays just that
+/// file. It has no parts of its own, so it never queues the others again.
+Map<String, dynamic> plexPartItem(
+  Map<String, dynamic> m,
+  int mediaIndex,
+  int partIndex,
+) {
+  final item = plexItemToJellyfin(m)..remove('PartCount');
+  final media = (m['Media'] as List).whereType<Map>().elementAt(mediaIndex);
+  final part = _parts(media)[partIndex];
+  final id = '$plexPartPrefix${item['Id']}-$mediaIndex-$partIndex';
+  final source = _mediaSource(id, id, media, part);
+  final file = '${part['file']}'.split('/').last;
   return {
-    'Id': '${media['id']}',
+    ...item,
+    'Id': id,
+    'Name': file.contains('.')
+        ? file.substring(0, file.lastIndexOf('.'))
+        : file,
+    'RunTimeTicks': ?source['RunTimeTicks'],
+    'MediaSources': [source],
+    'MediaStreams': source['MediaStreams'],
+    'UserData': <String, dynamic>{},
+  };
+}
+
+/// Every file after the first of the item's version at [mediaIndex].
+List<Map<String, dynamic>> plexAdditionalParts(
+  Map<String, dynamic> m,
+  int mediaIndex,
+) {
+  final medias = (m['Media'] as List? ?? const []).whereType<Map>();
+  final count = _parts(medias.elementAtOrNull(mediaIndex)).length;
+  return [for (var p = 1; p < count; p++) plexPartItem(m, mediaIndex, p)];
+}
+
+Map<String, dynamic> _mediaSource(
+  String id,
+  String itemId,
+  Map media,
+  Map? part,
+) {
+  return {
+    'Id': id,
     'ItemId': itemId,
     if (media['container'] != null) 'Container': media['container'],
     if (media['bitrate'] case final int bitrate) 'Bitrate': bitrate * 1000,
-    if (media['duration'] case final int duration)
+    // A split movie's source plays one file, so it runs that file's length.
+    if (part?['duration'] ?? media['duration'] case final int duration)
       'RunTimeTicks': duration * 10000,
     if (part?['size'] != null) 'Size': part!['size'],
     'Path': ?part?['file'],

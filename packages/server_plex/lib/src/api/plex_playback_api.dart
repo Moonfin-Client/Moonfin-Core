@@ -115,6 +115,11 @@ class PlexPlaybackApi implements PlaybackApi {
 
   static final _random = Random.secure();
 
+  /// Plex keeps one resume point for a movie split over several files, so a
+  /// file's progress goes out as time into the whole movie. These say where
+  /// each playing file sits, by play session.
+  final _spans = <String, ({String key, int offset, int total})>{};
+
   /// Answers in Jellyfin's PlaybackInfo shape from Plex's own transcode
   /// decision, with the original file as Path for direct play.
   @override
@@ -126,7 +131,11 @@ class PlexPlaybackApi implements PlaybackApi {
     bool waitForMediaProbe = false,
   }) async {
     final request = requestBody ?? const <String, dynamic>{};
-    final container = await plexContainer(_dio, '/library/metadata/$itemId');
+    // A part id names its own file. Anything else plays the first file of
+    // the version its source id names.
+    final target = plexPartOf(itemId);
+    final key = target?.$1 ?? itemId;
+    final container = await plexContainer(_dio, '/library/metadata/$key');
     final item = _first(container['Metadata']);
     final medias = (item?['Media'] as List? ?? const [])
         .whereType<Map<String, dynamic>>()
@@ -134,12 +143,16 @@ class PlexPlaybackApi implements PlaybackApi {
     if (item == null || medias.isEmpty) {
       throw StateError('Plex item $itemId has no media');
     }
-    final mediaIndex = max(
-      0,
-      medias.indexWhere((m) => '${m['id']}' == request['MediaSourceId']),
+    final mediaIndex = min(
+      target?.$2 ?? plexSourceOf('${request['MediaSourceId'] ?? key}').$2,
+      medias.length - 1,
     );
     final media = medias[mediaIndex];
-    final part = _first(media['Part'])!;
+    final parts = (media['Part'] as List)
+        .whereType<Map<String, dynamic>>()
+        .toList();
+    final partIndex = target?.$3 ?? 0;
+    final part = parts[partIndex];
     // Closed captions stay out here too, as they do in the item's streams.
     final streams = (part['Stream'] as List? ?? const [])
         .whereType<Map<String, dynamic>>()
@@ -179,6 +192,15 @@ class PlexPlaybackApi implements PlaybackApi {
       for (var i = 0; i < 16; i++)
         _random.nextInt(256).toRadixString(16).padLeft(2, '0'),
     ].join();
+    if (parts.length > 1) {
+      _spans[session] = (
+        key: key,
+        offset: parts
+            .take(partIndex)
+            .fold(0, (sum, p) => sum + (p['duration'] as int? ?? 0)),
+        total: media['duration'] as int? ?? 0,
+      );
+    }
     // Burning an embedded subtitle in rules out a direct play, so only the
     // transcode asks for it. Plex can't decode a track it lists as codec none
     // (WebVTT), and burning one kills its transcoder, so a transcode leaves
@@ -190,9 +212,9 @@ class PlexPlaybackApi implements PlaybackApi {
     final directStream = request['EnableDirectStream'] == false ? '0' : '1';
     final params = {
       ..._identity,
-      'path': '/library/metadata/$itemId',
+      'path': '/library/metadata/$key',
       'mediaIndex': '$mediaIndex',
-      'partIndex': '0',
+      'partIndex': '$partIndex',
       'protocol': 'hls',
       'fastSeek': '1',
       'directPlay': request['EnableDirectPlay'] == false ? '0' : '1',
@@ -240,9 +262,11 @@ class PlexPlaybackApi implements PlaybackApi {
     // Plex can refuse a start whose session has no decision of its own.
     if (!directPlay) await decide(start);
 
-    final source = (plexItemToJellyfin(item)['MediaSources'] as List)
-        .cast<Map<String, dynamic>>()
-        .firstWhere((s) => s['Id'] == '${media['id']}');
+    final source =
+        (target == null
+                ? plexItemToJellyfin(item)['MediaSources'][mediaIndex]
+                : plexPartItem(item, mediaIndex, partIndex)['MediaSources'][0])
+            as Map<String, dynamic>;
     return {
       'PlaySessionId': session,
       'MediaSources': [
@@ -284,20 +308,25 @@ class PlexPlaybackApi implements PlaybackApi {
 
   /// Plex keeps resume points and watched state through its timeline, which
   /// ignores a report that has no runtime.
-  Future<void> _timeline(Map<String, dynamic> info, String state) =>
-      _dio.get<dynamic>(
-        '/:/timeline',
-        queryParameters: {
-          'ratingKey': info['ItemId'],
-          'key': '/library/metadata/${info['ItemId']}',
-          'state': state,
-          'time': (info['PositionTicks'] as int? ?? 0) ~/ 10000,
-          if (info['RunTimeTicks'] case final int runTime)
-            'duration': runTime ~/ 10000,
-          if (info['PlaySessionId'] case final String session)
-            'X-Plex-Session-Identifier': session,
-        },
-      );
+  Future<void> _timeline(Map<String, dynamic> info, String state) {
+    final session = info['PlaySessionId'];
+    final span = state == 'stopped' ? _spans.remove(session) : _spans[session];
+    final key = span?.key ?? info['ItemId'];
+    final runTime = info['RunTimeTicks'] as int?;
+    return _dio.get<dynamic>(
+      '/:/timeline',
+      queryParameters: {
+        'ratingKey': key,
+        'key': '/library/metadata/$key',
+        'state': state,
+        'time':
+            (span?.offset ?? 0) + (info['PositionTicks'] as int? ?? 0) ~/ 10000,
+        'duration':
+            ?(span?.total ?? (runTime == null ? null : runTime ~/ 10000)),
+        if (session is String) 'X-Plex-Session-Identifier': session,
+      },
+    );
+  }
 
   @override
   Future<void> reportPlaybackStart(Map<String, dynamic> info) =>

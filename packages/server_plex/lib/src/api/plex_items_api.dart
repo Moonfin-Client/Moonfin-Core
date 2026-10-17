@@ -365,6 +365,9 @@ class PlexItemsApi implements ItemsApi {
       if (person is! Map) throw StateError('No Plex person $key');
       return plexPersonToJellyfin(person);
     }
+    if (plexPartOf(itemId) case (final key, final mediaIndex, final part)) {
+      return plexPartItem(await _plexItem(key), mediaIndex, part);
+    }
     final container = await plexContainer(_dio, '/library/metadata/$itemId', {
       'includeGuids': 1,
     });
@@ -758,8 +761,10 @@ class PlexItemsApi implements ItemsApi {
       [];
 
   @override
-  Future<List<Map<String, dynamic>>> getAdditionalParts(String itemId) async =>
-      [];
+  Future<List<Map<String, dynamic>>> getAdditionalParts(String itemId) async {
+    final (key, mediaIndex) = plexSourceOf(itemId);
+    return plexAdditionalParts(await _plexItem(key), mediaIndex);
+  }
 
   @override
   Future<List<Map<String, dynamic>>> getMediaSegments(String itemId) async =>
