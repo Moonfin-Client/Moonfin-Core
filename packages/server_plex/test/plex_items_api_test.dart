@@ -278,6 +278,26 @@ void main() {
     },
   );
 
+  test('a saved position becomes the Plex resume point', () async {
+    final (dio, requests) = _recordingDio(const {});
+
+    await PlexUserLibraryApi(
+      dio,
+      PlexItemsApi(dio),
+    ).updatePlayedPosition('1715', positionTicks: 1200000000);
+
+    expect(
+      (requests.single.method, requests.single.path),
+      ('PUT', '/:/progress'),
+    );
+    expect(requests.single.queryParameters, {
+      'key': '1715',
+      'identifier': 'com.plexapp.plugins.library',
+      'time': 120000,
+      'state': 'stopped',
+    });
+  });
+
   group('people', () {
     (Dio, List<RequestOptions>) server() {
       final requests = <RequestOptions>[];

@@ -196,6 +196,20 @@ class PlexUserLibraryApi implements UserLibraryApi {
   Future<void> unmarkPlayed(String itemId) =>
       _scrobble('/:/unscrobble', itemId);
 
+  @override
+  Future<void> updatePlayedPosition(
+    String itemId, {
+    required int positionTicks,
+  }) => _dio.put<dynamic>(
+    '/:/progress',
+    queryParameters: {
+      'key': itemId,
+      'identifier': 'com.plexapp.plugins.library',
+      'time': positionTicks ~/ 10000,
+      'state': 'stopped',
+    },
+  );
+
   Future<void> _rate(String itemId, int rating) => _dio.put<dynamic>(
     '/:/rate',
     queryParameters: {
@@ -263,6 +277,7 @@ class PlexSessionApi implements SessionApi {
   @override
   Future<List<Map<String, dynamic>>> getSessions({
     String? controllableByUserId,
+    int? activeWithinSeconds,
   }) async => [];
 
   @override

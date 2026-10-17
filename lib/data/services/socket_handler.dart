@@ -53,6 +53,9 @@ class _NoWebSocketClient implements ServerWebSocketClient {
   void retryNow() {}
 
   @override
+  void send(String messageType, [Object? data]) {}
+
+  @override
   void dispose() {}
 }
 
