@@ -74,6 +74,26 @@ class BookReaderService {
     return extension != null && supportedExtensions.contains(extension);
   }
 
+  /// Comic and PDF positions on the server are the zero-based page index
+  /// times this, the same scale jellyfin-web uses.
+  static const int ticksPerPage = 10000;
+
+  /// The zero-based page [item]'s server position points at, or null when it
+  /// has none or this device saved its own page more recently.
+  static int? newerServerPageIndex(
+    AggregatedItem item, {
+    DateTime? localSavedAt,
+  }) {
+    final ticks = item.playbackPositionTicks ?? 0;
+    if (ticks <= 0) return null;
+    final serverSavedAt = item.lastPlayedDate;
+    if (localSavedAt != null &&
+        (serverSavedAt == null || !serverSavedAt.isAfter(localSavedAt))) {
+      return null;
+    }
+    return (ticks / ticksPerPage).round();
+  }
+
   static List<Uri> buildDownloadUris(MediaServerClient client, AggregatedItem item) {
     final itemId = Uri.encodeComponent(item.id);
     final sourceId = _firstMediaSourceId(item);

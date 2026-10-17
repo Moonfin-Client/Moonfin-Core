@@ -35,9 +35,15 @@ class EmbyUserLibraryApi implements UserLibraryApi {
   }
 
   @override
-  Future<void> updatePlayedPosition(String itemId, {required int playedPosition}) async {
+  Future<void> updatePlayedPosition(
+    String itemId, {
+    required int positionTicks,
+  }) async {
     final userId = _getUserId();
-    await _dio.post('/Users/$userId/Items/$itemId/UserData', data: {'PlaybackPositionTicks': playedPosition});
+    await _dio.post('/Users/$userId/Items/$itemId/UserData', data: {
+      'PlaybackPositionTicks': positionTicks,
+      'LastPlayedDate': DateTime.now().toUtc().toIso8601String(),
+    });
   }
 
   // Emby's own rating routes answer 200 and store nothing, and it leaves the

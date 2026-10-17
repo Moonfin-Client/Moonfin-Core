@@ -30,8 +30,14 @@ class JellyfinUserLibraryApi implements UserLibraryApi {
   }
 
   @override
-  Future<void> updatePlayedPosition(String itemId, {required int playedPosition}) async {
-    await _dio.post('/UserItems/$itemId/UserData', data: {'PlaybackPositionTicks': playedPosition});
+  Future<void> updatePlayedPosition(
+    String itemId, {
+    required int positionTicks,
+  }) async {
+    await _dio.post('/UserItems/$itemId/UserData', data: {
+      'PlaybackPositionTicks': positionTicks,
+      'LastPlayedDate': DateTime.now().toUtc().toIso8601String(),
+    });
   }
 
   @override

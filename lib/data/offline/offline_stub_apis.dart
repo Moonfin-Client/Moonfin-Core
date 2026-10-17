@@ -100,12 +100,16 @@ class OfflineUserLibraryApi implements UserLibraryApi {
   }
 
   @override
-  Future<void> updatePlayedPosition(String itemId, {required int playedPosition}) async {
-    await _queueUserData(
-      itemId,
-      playbackPositionTicks: playedPosition,
-      unavailablePath: '/UserItems/$itemId/UserData',
-    );
+  Future<void> updatePlayedPosition(
+    String itemId, {
+    required int positionTicks,
+  }) async {
+    // The progress sync pushes this to the server on reconnect.
+    final serverId = _catalog.byId(itemId)?.row.serverId;
+    if (serverId == null || serverId.isEmpty) {
+      throw offlineUnavailable('/UserItems/$itemId/UserData');
+    }
+    await _offlineRepo.updatePlaybackPosition(itemId, positionTicks);
   }
 
   @override
@@ -162,18 +166,5 @@ class OfflineUserLibraryApi implements UserLibraryApi {
     }
     await _pendingRatings.put(entryOf(serverId));
     await _offlineRepo.patchUserData(itemId, userDataPatch);
-  }
-
-  /// Same as _queueRating, but works for all user data, not just ratings
-  Future<void> _queueUserData(
-    String itemId, {
-    required int playbackPositionTicks,
-    required String unavailablePath,
-  }) async {
-    final serverId = _catalog.byId(itemId)?.row.serverId;
-    if (serverId == null || serverId.isEmpty) {
-      throw offlineUnavailable(unavailablePath);
-    }
-    await _offlineRepo.updatePlaybackPosition(itemId, playbackPositionTicks);
   }
 }

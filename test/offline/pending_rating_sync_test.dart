@@ -143,6 +143,19 @@ void main() {
       );
       expect(store.all, isEmpty);
     });
+
+    test('a reader position lands on the row for the reconnect sync',
+        () async {
+      await api.updatePlayedPosition('m1', positionTicks: 30000);
+
+      final row = await repo.getItem('m1');
+      expect(row!.playbackPositionTicks, 30000);
+      expect(row.progressSynced, isFalse);
+      await expectLater(
+        api.updatePlayedPosition('missing', positionTicks: 30000),
+        throwsA(anything),
+      );
+    });
   });
 
   group('SyncService.syncPendingRatings', () {
