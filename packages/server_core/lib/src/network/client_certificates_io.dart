@@ -14,13 +14,15 @@ final _contexts = Expando<SecurityContext>();
 void applyClientCertificates(HttpClient client, {SecurityContext? fallback}) {
   client.connectionFactory = (uri, proxyHost, proxyPort) {
     if (proxyHost != null) return Socket.startConnect(proxyHost, proxyPort!);
-    if (!uri.isScheme('https') && !uri.isScheme('wss')) {
-      return Socket.startConnect(uri.host, uri.port);
-    }
+    final secure = uri.isScheme('https') || uri.isScheme('wss');
+    // WebSocket upgrades arrive here as https://host:0, and dart:io only fills
+    // in the default port on its own connect path.
+    final port = uri.port != 0 ? uri.port : (secure ? 443 : 80);
+    if (!secure) return Socket.startConnect(uri.host, port);
     final certificate = clientCertificateFor(uri.host);
     return SecureSocket.startConnect(
       uri.host,
-      uri.port,
+      port,
       context: certificate == null
           ? fallback
           : _contexts[certificate] ??= _contextFor(certificate),
