@@ -69,7 +69,7 @@ void main() {
     expect(movie['ProviderIds'], {'Imdb': 'tt1179933', 'Tmdb': '333371'});
     expect(movie['People'], [
       {
-        'Id': '3053',
+        'Id': 'person-3053',
         'Name': 'John Goodman',
         'Type': 'Actor',
         'Role': 'Howard',

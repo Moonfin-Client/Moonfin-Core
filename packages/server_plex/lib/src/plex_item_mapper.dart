@@ -2,6 +2,9 @@
 /// library views carry this prefix to keep the two apart.
 const plexSectionPrefix = 'section-';
 
+/// Cast and crew are Plex tags, whose ids also overlap item ratingKeys.
+const plexPersonPrefix = 'person-';
+
 /// Plex has no favorites, so a 10 rating stands in, the "loved" mark Plex's
 /// own apps give.
 const plexFavoriteRating = 10;
@@ -56,6 +59,13 @@ Map<String, dynamic> plexItemsResult(
   'Items': items,
   'TotalRecordCount': total ?? items.length,
   'StartIndex': startIndex,
+};
+
+Map<String, dynamic> plexPersonToJellyfin(Map person) => {
+  'Id': '$plexPersonPrefix${person['id']}',
+  'Name': person['tag'],
+  'Type': 'Person',
+  'ImageTags': {if (person['thumb'] case final String thumb) 'Primary': thumb},
 };
 
 Map<String, dynamic> plexSectionToView(Map<String, dynamic> section) => {
@@ -211,9 +221,9 @@ List<String> _tags(Object? list) => [
 /// Plex people come with full image URLs, which the image API passes through.
 List<Map<String, dynamic>> _people(Object? list, String type) => [
   for (final person in list as List? ?? const [])
-    if (person is Map && person['tag'] is String)
+    if (person is Map && person['tag'] is String && person['id'] != null)
       {
-        'Id': '${person['id'] ?? person['tag']}',
+        'Id': '$plexPersonPrefix${person['id']}',
         'Name': person['tag'],
         'Type': type,
         if (person['role'] != null) 'Role': person['role'],

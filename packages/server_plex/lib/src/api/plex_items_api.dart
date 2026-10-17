@@ -54,10 +54,12 @@ class PlexItemsApi implements ItemsApi {
     },
   };
 
-  static String? _sectionKey(String? id) =>
-      id != null && id.startsWith(plexSectionPrefix)
-      ? id.substring(plexSectionPrefix.length)
-      : null;
+  static String? _keyOf(String? id, String prefix) =>
+      id != null && id.startsWith(prefix) ? id.substring(prefix.length) : null;
+
+  static String? _sectionKey(String? id) => _keyOf(id, plexSectionPrefix);
+
+  static String? _personKey(String? id) => _keyOf(id, plexPersonPrefix);
 
   @override
   Future<Map<String, dynamic>> getItems({
@@ -110,7 +112,6 @@ class PlexItemsApi implements ItemsApi {
     // would show items the filter was meant to leave out.
     final unsupported =
         [
-          personIds,
           seriesStatus,
           genreIds,
           videoTypes,
@@ -131,6 +132,7 @@ class PlexItemsApi implements ItemsApi {
         ].any((value) => value != null) ||
         (is4K == true && isHd == false) ||
         (artistIds?.length ?? 0) > 1 ||
+        (personIds ?? const []).any((id) => _personKey(id) == null) ||
         (filters ?? const []).any((f) => !_filters.containsKey(f));
     if (unsupported) return plexItemsResult([]);
 
@@ -140,6 +142,23 @@ class PlexItemsApi implements ItemsApi {
         '/library/metadata/${ids.join(',')}',
       );
       return plexItemsResult(_items(container['Metadata']));
+    }
+
+    // Everything a person is in, acting or not. This list ignores sorting, so
+    // the newest come first here.
+    final personKey = _personKey(personIds?.singleOrNull);
+    if (parentId == null && personKey != null) {
+      final container = await plexContainer(
+        _dio,
+        '/library/people/$personKey/media',
+      );
+      final items = _ofTypes(_items(container['Metadata']), includeItemTypes)
+        ..sort(
+          (a, b) => (b['ProductionYear'] as int? ?? 0).compareTo(
+            a['ProductionYear'] as int? ?? 0,
+          ),
+        );
+      return plexItemsResult(items);
     }
 
     // An artist's albums are its children and its tracks are its leaves.
@@ -201,6 +220,7 @@ class PlexItemsApi implements ItemsApi {
       'contentRating': ?_anyOf(officialRatings),
       'label': ?_anyOf(tags),
       'studio': ?_anyOf(studios),
+      'actor': ?_anyOf(personIds?.map(_personKey).nonNulls.toList()),
       'audioLanguage': ?_anyOf(audioLanguages),
       'subtitleLanguage': ?_anyOf(subtitleLanguages),
       if (is4K == true)
@@ -289,7 +309,21 @@ class PlexItemsApi implements ItemsApi {
     int? limit,
     String? fields,
     String? enableImageTypes,
-  }) async => plexItemsResult([]);
+  }) async {
+    final container = await plexContainer(_dio, '/hubs/search', {
+      'query': searchTerm,
+      'limit': ?limit,
+    });
+    // Plex lists a person once per library and role, so each name is kept once.
+    final names = <Object?>{};
+    return plexItemsResult([
+      for (final hub in container['Hub'] as List? ?? const [])
+        if (const {'actor', 'director', 'writer'}.contains(hub['type']))
+          for (final person in hub['Directory'] as List? ?? const [])
+            if (person is Map && names.add(person['tag']))
+              plexPersonToJellyfin(person),
+    ]);
+  }
 
   @override
   Future<Map<String, dynamic>> getItem(
@@ -307,6 +341,12 @@ class PlexItemsApi implements ItemsApi {
         }
       }
       throw StateError('No Plex library $sectionKey');
+    }
+    if (_personKey(itemId) case final key?) {
+      final people = await plexContainer(_dio, '/library/people/$key');
+      final person = (people['Directory'] as List? ?? const []).firstOrNull;
+      if (person is! Map) throw StateError('No Plex person $key');
+      return plexPersonToJellyfin(person);
     }
     final container = await plexContainer(_dio, '/library/metadata/$itemId', {
       'includeGuids': 1,

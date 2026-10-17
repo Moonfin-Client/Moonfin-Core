@@ -2824,9 +2824,13 @@ class _DetailContentState extends State<_DetailContent> {
     final musicVideos = sortJellyfinItems(viewModel.filmographyMusicVideos);
     final useSplit = _useDesktopDetailLayout(context);
 
+    final canFavorite = viewModel.supportsPersonFavorites;
     final favoriteFocusNode =
         initialFocusNode ?? _sectionFocusNode('detailPersonFavorite');
-    final displayFocusNode = _sectionFocusNode('detailPersonDisplayButton');
+    // With no heart, Display takes over its focus.
+    final displayFocusNode = canFavorite
+        ? _sectionFocusNode('detailPersonDisplayButton')
+        : favoriteFocusNode;
     final bioFocusNode = _sectionFocusNode('detailPersonBio');
     final firstFocus = bioFocusNode;
     final hasBio =
@@ -2996,30 +3000,32 @@ class _DetailContentState extends State<_DetailContent> {
               ? MainAxisAlignment.start
               : MainAxisAlignment.center,
           children: [
-            _DetailActionButton(
-              label: item.isFavorite ? l10n.favorited : l10n.favorite,
-              icon: Icons.favorite,
-              onPressed: viewModel.toggleFavorite,
-              isActive: item.isFavorite,
-              activeColor: const Color(0xFFFF4757),
-              focusNode: favoriteFocusNode,
-              suppressAutoScrollToTop: true,
-              onArrowUp: () {
-                if (hasBio && firstFocus.canRequestFocus) {
-                  _requestSectionFocus(firstFocus);
-                } else {
-                  _tryFocusNavbar();
-                }
-              },
-              onArrowDown: focusFirstRow,
-              onArrowRight: () {
-                _requestSectionFocus(displayFocusNode);
-              },
-              onArrowLeft: () {
-                _tryFocusSidebar();
-              },
-            ),
-            const SizedBox(width: 16),
+            if (canFavorite) ...[
+              _DetailActionButton(
+                label: item.isFavorite ? l10n.favorited : l10n.favorite,
+                icon: Icons.favorite,
+                onPressed: viewModel.toggleFavorite,
+                isActive: item.isFavorite,
+                activeColor: const Color(0xFFFF4757),
+                focusNode: favoriteFocusNode,
+                suppressAutoScrollToTop: true,
+                onArrowUp: () {
+                  if (hasBio && firstFocus.canRequestFocus) {
+                    _requestSectionFocus(firstFocus);
+                  } else {
+                    _tryFocusNavbar();
+                  }
+                },
+                onArrowDown: focusFirstRow,
+                onArrowRight: () {
+                  _requestSectionFocus(displayFocusNode);
+                },
+                onArrowLeft: () {
+                  _tryFocusSidebar();
+                },
+              ),
+              const SizedBox(width: 16),
+            ],
             _DetailActionButton(
               label: l10n.display,
               icon: Icons.tune,
@@ -3036,7 +3042,11 @@ class _DetailContentState extends State<_DetailContent> {
               },
               onArrowDown: focusFirstRow,
               onArrowLeft: () {
-                _requestSectionFocus(favoriteFocusNode);
+                if (canFavorite) {
+                  _requestSectionFocus(favoriteFocusNode);
+                } else {
+                  _tryFocusSidebar();
+                }
               },
               onArrowRight: hasSeerrButton
                   ? () {
@@ -6746,31 +6756,37 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         !PlatformDetection.useMobileUi && !SettingsPanel.isOpenNotifier.value;
 
     if (item.type == 'Person') {
+      final canFavorite = viewModel.supportsPersonFavorites;
       final normalizedPrimaryButtons = [
-        _DetailActionButton(
-          label: item.isFavorite ? l10n.favorited : l10n.favorite,
-          icon: Icons.favorite,
-          isPrimary: true,
-          focusNode: widget.tvPlayFocusNode ?? _primaryFocusNode(0),
-          autofocus: autofocusPlay,
-          onPressed: viewModel.toggleFavorite,
-          isActive: item.isFavorite,
-          activeColor: const Color(0xFFFF4757),
-          onArrowUp:
-              NavigationLayout.focusNavbarNotifier.value != null ||
-                  widget.upTarget != null
-              ? _focusUpTarget
-              : null,
-          onArrowDown: widget.downTarget != null ? _focusDownTarget : null,
-          onArrowLeft: _focusSidebar,
-          onArrowRight: () {
-            _primaryFocusNode(1).requestFocus();
-          },
-        ),
+        if (canFavorite)
+          _DetailActionButton(
+            label: item.isFavorite ? l10n.favorited : l10n.favorite,
+            icon: Icons.favorite,
+            isPrimary: true,
+            focusNode: widget.tvPlayFocusNode ?? _primaryFocusNode(0),
+            autofocus: autofocusPlay,
+            onPressed: viewModel.toggleFavorite,
+            isActive: item.isFavorite,
+            activeColor: const Color(0xFFFF4757),
+            onArrowUp:
+                NavigationLayout.focusNavbarNotifier.value != null ||
+                    widget.upTarget != null
+                ? _focusUpTarget
+                : null,
+            onArrowDown: widget.downTarget != null ? _focusDownTarget : null,
+            onArrowLeft: _focusSidebar,
+            onArrowRight: () {
+              _primaryFocusNode(1).requestFocus();
+            },
+          ),
         _DetailActionButton(
           label: l10n.display,
           icon: Icons.tune,
-          focusNode: _primaryFocusNode(1),
+          // With no heart, Display takes over its focus.
+          focusNode: canFavorite
+              ? _primaryFocusNode(1)
+              : widget.tvPlayFocusNode ?? _primaryFocusNode(0),
+          autofocus: !canFavorite && autofocusPlay,
           onPressed: () {
             showFocusRestoringDialog(
               context: context,
@@ -6786,9 +6802,12 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
               ? _focusUpTarget
               : null,
           onArrowDown: widget.downTarget != null ? _focusDownTarget : null,
-          onArrowLeft: () {
-            (widget.tvPlayFocusNode ?? _primaryFocusNode(0)).requestFocus();
-          },
+          onArrowLeft: canFavorite
+              ? () {
+                  (widget.tvPlayFocusNode ?? _primaryFocusNode(0))
+                      .requestFocus();
+                }
+              : _focusSidebar,
           onArrowRight: widget.onArrowRightAtEnd ?? () {},
         ),
       ];

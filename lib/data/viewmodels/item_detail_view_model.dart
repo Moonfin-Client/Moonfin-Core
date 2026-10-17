@@ -456,6 +456,9 @@ class ItemDetailViewModel extends ChangeNotifier {
   /// Plex has no likes, and its own rating already stands in for favorites.
   bool get supportsPersonalRating => _client.serverType != ServerType.plex;
 
+  /// Plex can only favorite media, never people.
+  bool get supportsPersonFavorites => _client.serverType != ServerType.plex;
+
   bool _isRatingMutationInProgress = false;
   bool get isRatingMutationInProgress => _isRatingMutationInProgress;
 

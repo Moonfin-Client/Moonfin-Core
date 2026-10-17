@@ -273,6 +273,141 @@ void main() {
     },
   );
 
+  group('people', () {
+    (Dio, List<RequestOptions>) server() {
+      final requests = <RequestOptions>[];
+      final dio = Dio()
+        ..interceptors.add(
+          _FakeServer((options, handler) {
+            requests.add(options);
+            handler.resolve(
+              Response(
+                requestOptions: options,
+                data: {
+                  'MediaContainer': switch (options.path) {
+                    '/library/people/2027' => {
+                      'Directory': [
+                        {
+                          'id': 2027,
+                          'tag': 'Steve Carell',
+                          'thumb': 'https://metadata-static.plex.tv/carell.jpg',
+                        },
+                      ],
+                    },
+                    '/library/people/2027/media' => {
+                      'Metadata': [
+                        {
+                          'ratingKey': '139',
+                          'type': 'movie',
+                          'title': 'Bruce Almighty',
+                          'year': 2003,
+                        },
+                        {
+                          'ratingKey': '863',
+                          'type': 'movie',
+                          'title': 'Despicable Me 4',
+                          'year': 2024,
+                        },
+                        {
+                          'ratingKey': '15887',
+                          'type': 'show',
+                          'title': 'The Office (US)',
+                          'year': 2005,
+                        },
+                      ],
+                    },
+                    '/hubs/search' => {
+                      'Hub': [
+                        {
+                          'type': 'movie',
+                          'Metadata': [
+                            {
+                              'ratingKey': '139',
+                              'type': 'movie',
+                              'title': 'Bruce Almighty',
+                            },
+                          ],
+                        },
+                        {
+                          'type': 'actor',
+                          'Directory': [
+                            {'id': 2027, 'tag': 'Steve Carell'},
+                            {'id': 2027, 'tag': 'Steve Carell'},
+                          ],
+                        },
+                        {
+                          'type': 'director',
+                          'Directory': [
+                            {'id': 16991, 'tag': 'Kyle Balda'},
+                          ],
+                        },
+                      ],
+                    },
+                    _ => const <String, dynamic>{'Metadata': []},
+                  },
+                },
+              ),
+            );
+          }),
+        );
+      return (dio, requests);
+    }
+
+    test('a person opens as a Person item', () async {
+      final (dio, _) = server();
+
+      final person = await PlexItemsApi(dio).getItem('person-2027');
+
+      expect(person, {
+        'Id': 'person-2027',
+        'Name': 'Steve Carell',
+        'Type': 'Person',
+        'ImageTags': {'Primary': 'https://metadata-static.plex.tv/carell.jpg'},
+      });
+    });
+
+    test('a person lists their titles newest first', () async {
+      final (dio, _) = server();
+
+      final result = await PlexItemsApi(dio).getItems(
+        personIds: ['person-2027'],
+        includeItemTypes: ['Movie', 'Series'],
+        recursive: true,
+      );
+
+      expect((result['Items'] as List).map((i) => i['Name']), [
+        'Despicable Me 4',
+        'The Office (US)',
+        'Bruce Almighty',
+      ]);
+    });
+
+    test('people inside a library filter on Plex actors', () async {
+      final (dio, requests) = server();
+      final api = PlexItemsApi(dio);
+
+      await api.getItems(
+        parentId: 'section-1',
+        personIds: ['person-2027', 'person-16991'],
+      );
+      final unknown = await api.getItems(personIds: ['2027']);
+
+      expect(requests.single.queryParameters['actor'], '2027,16991');
+      expect(unknown['Items'], isEmpty);
+    });
+
+    test('search finds each person once', () async {
+      final (dio, _) = server();
+
+      final result = await PlexItemsApi(dio).getPersons(searchTerm: 'carell');
+
+      expect((result['Items'] as List).map((i) => (i['Id'], i['Type'])), [
+        ('person-2027', 'Person'),
+        ('person-16991', 'Person'),
+      ]);
+    });
+  });
+
   test('a filter Plex has no answer for returns nothing', () async {
     final (dio, requests) = _recordingDio(const {});
 
