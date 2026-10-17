@@ -178,10 +178,14 @@ class PlexUserLibraryApi implements UserLibraryApi {
 
   PlexUserLibraryApi(this._dio, this._itemsApi);
 
+  /// Plex keeps one watched state and rating for a movie split over several
+  /// files, so a file's id stands for the movie.
+  static String _key(String itemId) => plexPartOf(itemId)?.$1 ?? itemId;
+
   Future<void> _scrobble(String path, String itemId) => _dio.get<dynamic>(
     path,
     queryParameters: {
-      'key': itemId,
+      'key': _key(itemId),
       'identifier': 'com.plexapp.plugins.library',
     },
   );
@@ -213,7 +217,7 @@ class PlexUserLibraryApi implements UserLibraryApi {
   Future<void> _rate(String itemId, int rating) => _dio.put<dynamic>(
     '/:/rate',
     queryParameters: {
-      'key': itemId,
+      'key': _key(itemId),
       'identifier': 'com.plexapp.plugins.library',
       'rating': rating,
     },

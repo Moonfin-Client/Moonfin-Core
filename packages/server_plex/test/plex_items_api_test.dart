@@ -278,6 +278,16 @@ void main() {
     },
   );
 
+  test("a split movie's file is watched and loved as the movie", () async {
+    final (dio, requests) = _recordingDio(const {});
+    final library = PlexUserLibraryApi(dio, PlexItemsApi(dio));
+
+    await library.markPlayed('part-23070-0-1');
+    await library.markFavorite('part-23070-0-1');
+
+    expect(requests.map((r) => r.queryParameters['key']), ['23070', '23070']);
+  });
+
   test('a saved position becomes the Plex resume point', () async {
     final (dio, requests) = _recordingDio(const {});
 
