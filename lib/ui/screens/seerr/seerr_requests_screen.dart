@@ -109,6 +109,10 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
   bool _issuesLoaded = false;
   final _requestsScroll = ScrollController();
   final _issuesScroll = ScrollController();
+  // Never attached. As the initial focus target it keeps RequestInitialFocus
+  // from parking focus in the sidebar before the items load. Once items load
+  // the selected tab header automatically grabs focus at that time
+  final _initialFocusNode = FocusNode(debugLabel: 'seerrInitialContent');
   final _animatedRequestIds = <int>{};
   final _animatedIssueIds = <int>{};
 
@@ -209,7 +213,10 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
 
   @override
   Widget build(BuildContext context) =>
-      RequestInitialFocus(child: _buildContent(context));
+      RequestInitialFocus(
+        targetNode: _initialFocusNode,
+        child: _buildContent(context),
+      );
 
   Widget _buildContent(BuildContext context) {
     return Scaffold(
@@ -1017,6 +1024,7 @@ class _HubTabState extends State<_HubTab> with FocusStateMixin {
     final scale = _uiScale();
     return Focus(
       onFocusChange: setFocused,
+      autofocus: widget.selected,
       onKeyEvent: (node, event) {
         if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
           return KeyEventResult.ignored;

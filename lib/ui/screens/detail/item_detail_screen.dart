@@ -396,7 +396,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
 
     // A pushed child screen (e.g. a similar item) clears the shared play-button
     // notifier on its way out; reclaim it so focus restoration finds this screen.
-    if (PlatformDetection.isTV && _initialContentFocusNode != null) {
+    if (!PlatformDetection.useMobileUi && _initialContentFocusNode != null) {
       NavigationLayout.focusDetailsPlayButtonNotifier.value =
           _initialContentFocusNode;
     }
@@ -563,7 +563,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
   /// focus. Focus then falls back to the scope around it, where a remote has
   /// nothing to move from, so it goes back to the top of the page.
   void _recoverFocusAfterSectionChange() {
-    if (!PlatformDetection.isTV) return;
+    if (PlatformDetection.useMobileUi) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       if (ModalRoute.of(context)?.isCurrent == false) return;
@@ -1347,7 +1347,7 @@ class _DetailContentState extends State<_DetailContent> {
   }
 
   void _ensureTvAlbumPlayFocus(AggregatedItem item) {
-    if (!PlatformDetection.isTV) return;
+    if (PlatformDetection.useMobileUi) return;
     if (item.type != 'MusicAlbum' && item.type != 'Playlist') return;
     if (_tvAlbumPlayFocusAppliedForItemId == item.id) return;
     _tryRequestTvAlbumPlayFocus(item.id, 0);
@@ -1430,7 +1430,7 @@ class _DetailContentState extends State<_DetailContent> {
   /// widgets listen to, and the nodes it names have no context until the
   /// frame is done anyway.
   void _publishTopNavbarTarget(AggregatedItem item, FocusNode? overview) {
-    if (!PlatformDetection.isTV) return;
+    if (PlatformDetection.useMobileUi) return;
     final target = _topNavbarFocusTarget(item, overview);
     _publishedNavbarTarget = target;
     if (NavigationLayout.focusDetailsPlayButtonNotifier.value == target) return;
@@ -3211,7 +3211,7 @@ class _DetailContentState extends State<_DetailContent> {
         // Do not steal focus onto the media page when a settings panel is open
         // over the details and rebuilds it (detail style or theme change).
         autofocusPlay:
-            PlatformDetection.isTV && !SettingsPanel.isOpenNotifier.value,
+            !PlatformDetection.useMobileUi && !SettingsPanel.isOpenNotifier.value,
         onPlayDown: () {
           if (isPlaylist) {
             if (_playlistSortFocusNode.context?.mounted == true) {
@@ -6244,7 +6244,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
   }
 
   void _ensureTvPlayFocus(String itemId) {
-    if (!PlatformDetection.isTV) return;
+    if (PlatformDetection.useMobileUi) return;
     if (_tvPlayFocusAppliedForItemId == itemId) return;
     _tryRequestPlayFocus(itemId, 0);
   }
@@ -6263,6 +6263,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           return;
         }
       }
+      if (!PlatformDetection.isTV) return;
       if (attempt + 1 >= 60) return;
       Future<void>.delayed(const Duration(milliseconds: 50), () {
         if (!mounted) return;
@@ -6712,7 +6713,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     // open panel, and without this guard the play button would autofocus and
     // pull focus off the panel and onto the media page.
     final autofocusPlay =
-        PlatformDetection.isTV && !SettingsPanel.isOpenNotifier.value;
+        !PlatformDetection.useMobileUi && !SettingsPanel.isOpenNotifier.value;
 
     if (item.type == 'Person') {
       final normalizedPrimaryButtons = [
