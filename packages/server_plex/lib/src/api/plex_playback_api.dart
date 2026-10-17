@@ -25,6 +25,26 @@ const _anyContainer = 'mkv,mp4,mov,avi,mpegts,webm,asf,ogg,mpeg';
 const _anyMusicContainer = 'mp3,flac,mp4,ogg,wav,aac';
 const _anyVideoCodec = 'h264,hevc,mpeg1video,mpeg2video,mpeg4,vc1,vp8,vp9,av1';
 const _anyAudioCodec = 'aac,ac3,eac3,mp3,dca,truehd,flac,opus,vorbis,pcm';
+const _plexBounds = {
+  'Width': 'video.width',
+  'Height': 'video.height',
+  'VideoLevel': 'video.level',
+  'VideoBitDepth': 'video.bitDepth',
+};
+
+/// A device profile condition as a Plex limitation, or null for one Plex has
+/// no way to say. Plex ignores notMatch, so a NotEquals is left out.
+String? _plexLimitation(Map condition) {
+  final value = condition['Value'];
+  return switch ((condition['Condition'], condition['Property'])) {
+    ('LessThanEqual', final String property)
+        when _plexBounds[property] != null =>
+      'type=upperBound&name=${_plexBounds[property]}&value=$value',
+    ('Equals' || 'EqualsAny', 'VideoProfile') =>
+      'type=match&name=video.profile&list=$value',
+    _ => null,
+  };
+}
 
 /// The app's Jellyfin device profile in Plex's client profile terms, so Plex
 /// makes the direct play and transcode calls Jellyfin would. Plex reads a
@@ -63,6 +83,20 @@ String plexClientProfile(Map<String, dynamic>? profile) {
         'add-direct-play-profile(type=musicProfile'
             '&container=${names(p['Container'], _anyMusicContainer)}'
             '&audioCodec=${names(p['AudioCodec'], _anyAudioCodec)})',
+    // The decoder's limits, like its largest size or a missing Main 10, so
+    // Plex doesn't direct play what the device can't decode. A limit that
+    // only holds for some streams of a codec is skipped, since a Plex
+    // limitation can't be narrowed that way.
+    for (final p in profile?['CodecProfiles'] as List? ?? const [])
+      if (p is Map &&
+          p['Type'] == 'Video' &&
+          (p['ApplyConditions'] as List? ?? const []).isEmpty)
+        for (final codec in names(p['Codec'], '*').split(','))
+          for (final condition in p['Conditions'] as List? ?? const [])
+            if (condition is Map)
+              if (_plexLimitation(condition) case final limit?)
+                'add-limitation(scope=videoCodec&scopeName=$codec&$limit'
+                    '${condition['IsRequired'] == true ? '&isRequired=true' : ''})',
     'add-transcode-target(type=videoProfile&context=streaming&protocol=hls'
         '&container=mpegts'
         '&videoCodec=${names(videoHls?['VideoCodec'], 'h264')}'
@@ -177,7 +211,10 @@ class PlexPlaybackApi implements PlaybackApi {
         ? '/music/:/transcode/universal'
         : '/video/:/transcode/universal';
     Future<bool> decide(Map<String, String> query) async {
-      final decision = await plexContainer(_dio, '$transcoder/decision', query);
+      final decision = await plexContainer(
+        _dio,
+        '$transcoder/decision?${_query(query)}',
+      );
       final decided = _first(
         _first(_first(decision['Metadata'])?['Media'])?['Part'],
       )?['decision'];
@@ -215,10 +252,7 @@ class PlexPlaybackApi implements PlaybackApi {
           'SupportsDirectPlay': directPlay,
           'SupportsTranscoding': !directPlay,
           if (!directPlay)
-            'TranscodingUrl': Uri(
-              path: '$transcoder/start.m3u8',
-              queryParameters: start,
-            ).toString(),
+            'TranscodingUrl': '$transcoder/start.m3u8?${_query(start)}',
           'DefaultAudioStreamIndex': audio?['index'] ?? audio?['id'],
           'DefaultSubtitleStreamIndex': shownSubtitle,
           if (!directPlay && burnSubtitle)
@@ -235,6 +269,13 @@ class PlexPlaybackApi implements PlaybackApi {
       ],
     };
   }
+
+  /// Plex reads a + in the profile as the break between two directives, so a
+  /// space has to go as %20, where Dio and Uri would send it as +.
+  static String _query(Map<String, String> query) => [
+    for (final MapEntry(:key, :value) in query.entries)
+      '${Uri.encodeComponent(key)}=${Uri.encodeComponent(value)}',
+  ].join('&');
 
   static Map<String, dynamic>? _first(Object? list) =>
       list is List && list.isNotEmpty && list.first is Map<String, dynamic>

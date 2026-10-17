@@ -48,7 +48,7 @@ const _item = {
 
 (PlexPlaybackApi, _FakeServer) _api(String decision, {String type = 'movie'}) {
   final server = _FakeServer(
-    (options) => switch (options.path) {
+    (options) => switch (options.uri.path) {
       '/library/metadata/1715' => {
         'MediaContainer': {
           'Metadata': [
@@ -84,7 +84,7 @@ const _item = {
 }
 
 RequestOptions _request(_FakeServer server, String path) =>
-    server.requests.lastWhere((r) => r.path == path);
+    server.requests.lastWhere((r) => r.uri.path == path);
 
 void main() {
   test('the app profile turns into Plex names, with codecs filled in', () {
@@ -120,6 +120,71 @@ void main() {
           'AudioCodec': 'mp3',
         },
       ],
+      'CodecProfiles': [
+        {
+          'Type': 'Video',
+          'Codec': 'hevc',
+          'Conditions': [
+            {
+              'Condition': 'LessThanEqual',
+              'Property': 'Width',
+              'Value': '1920',
+              'IsRequired': true,
+            },
+            {
+              'Condition': 'EqualsAny',
+              'Property': 'VideoProfile',
+              'Value': 'main',
+              'IsRequired': false,
+            },
+            {
+              'Condition': 'NotEquals',
+              'Property': 'VideoProfile',
+              'Value': 'none',
+            },
+          ],
+        },
+        {
+          'Type': 'Video',
+          'Codec': 'vc1,mpeg',
+          'Conditions': [
+            {
+              'Condition': 'Equals',
+              'Property': 'VideoProfile',
+              'Value': 'none',
+            },
+          ],
+        },
+        {
+          'Type': 'Video',
+          'Codec': 'h264',
+          'Conditions': [
+            {
+              'Condition': 'LessThanEqual',
+              'Property': 'VideoLevel',
+              'Value': '41',
+            },
+          ],
+          'ApplyConditions': [
+            {
+              'Condition': 'Equals',
+              'Property': 'VideoProfile',
+              'Value': 'high',
+            },
+          ],
+        },
+        {
+          'Type': 'VideoAudio',
+          'Codec': 'ac3',
+          'Conditions': [
+            {
+              'Condition': 'LessThanEqual',
+              'Property': 'AudioChannels',
+              'Value': '6',
+            },
+          ],
+        },
+      ],
     });
 
     expect(profile.split('+'), [
@@ -131,6 +196,14 @@ void main() {
           '&audioCodec=aac,ac3,eac3,mp3,dca,truehd,flac,opus,vorbis,pcm)',
       'add-direct-play-profile(type=musicProfile&container=mp4,flac'
           '&audioCodec=alac,flac)',
+      'add-limitation(scope=videoCodec&scopeName=hevc&type=upperBound'
+          '&name=video.width&value=1920&isRequired=true)',
+      'add-limitation(scope=videoCodec&scopeName=hevc&type=match'
+          '&name=video.profile&list=main)',
+      'add-limitation(scope=videoCodec&scopeName=vc1&type=match'
+          '&name=video.profile&list=none)',
+      'add-limitation(scope=videoCodec&scopeName=mpeg1video&type=match'
+          '&name=video.profile&list=none)',
       'add-transcode-target(type=videoProfile&context=streaming&protocol=hls'
           '&container=mpegts&videoCodec=h264&audioCodec=aac,ac3)',
       'add-transcode-target(type=musicProfile&context=streaming&protocol=hls'
@@ -153,11 +226,14 @@ void main() {
         server,
         '/video/:/transcode/universal/decision',
       );
-      expect(decision.queryParameters['maxVideoBitrate'], '120000');
-      expect(decision.queryParameters['directPlay'], '1');
-      expect(decision.queryParameters['subtitles'], 'none');
-      expect(decision.queryParameters['X-Plex-Client-Identifier'], 'device');
-      expect(decision.queryParameters.containsKey('session'), isFalse);
+      expect(decision.uri.queryParameters['maxVideoBitrate'], '120000');
+      expect(decision.uri.queryParameters['directPlay'], '1');
+      expect(decision.uri.queryParameters['subtitles'], 'none');
+      expect(
+        decision.uri.queryParameters['X-Plex-Client-Identifier'],
+        'device',
+      );
+      expect(decision.uri.queryParameters.containsKey('session'), isFalse);
       expect(info['PlaySessionId'], matches(RegExp(r'^[0-9a-f]{32}$')));
       final source = (info['MediaSources'] as List).single as Map;
       expect(source['Id'], '3720');
@@ -189,20 +265,23 @@ void main() {
       expect(put.method, 'PUT');
       expect(put.queryParameters, {'subtitleStreamID': 8882, 'allParts': 1});
       final decisions = server.requests
-          .where((r) => r.path == '/video/:/transcode/universal/decision')
+          .where((r) => r.uri.path == '/video/:/transcode/universal/decision')
           .toList();
       expect(decisions, hasLength(2));
-      expect(decisions.first.queryParameters['subtitles'], 'none');
-      expect(decisions.first.queryParameters['directPlay'], '0');
-      expect(decisions.first.queryParameters['directStream'], '0');
-      expect(decisions.first.queryParameters.containsKey('session'), isFalse);
+      expect(decisions.first.uri.queryParameters['subtitles'], 'none');
+      expect(decisions.first.uri.queryParameters['directPlay'], '0');
+      expect(decisions.first.uri.queryParameters['directStream'], '0');
+      expect(
+        decisions.first.uri.queryParameters.containsKey('session'),
+        isFalse,
+      );
       final source = (info['MediaSources'] as List).single as Map;
       expect(source['SupportsDirectPlay'], isFalse);
       final url = Uri.parse(source['TranscodingUrl'] as String);
       expect(url.path, '/video/:/transcode/universal/start.m3u8');
       expect(url.queryParameters['session'], info['PlaySessionId']);
       expect(url.queryParameters['subtitles'], 'burn');
-      expect(decisions.last.queryParameters, url.queryParameters);
+      expect(decisions.last.uri.queryParameters, url.queryParameters);
       expect(source['DefaultSubtitleStreamIndex'], 2);
       final burned = (source['MediaStreams'] as List).firstWhere(
         (s) => s['Index'] == 2,
@@ -210,6 +289,43 @@ void main() {
       expect(burned['DeliveryMethod'], 'Encode');
     },
   );
+
+  test('a space in the profile goes to Plex as %20, not +', () async {
+    final (api, server) = _api('transcode');
+
+    final info = await api.getPlaybackInfo(
+      '1715',
+      requestBody: {
+        'DeviceProfile': {
+          'CodecProfiles': [
+            {
+              'Type': 'Video',
+              'Codec': 'h264',
+              'Conditions': [
+                {
+                  'Condition': 'EqualsAny',
+                  'Property': 'VideoProfile',
+                  'Value': 'high|constrained baseline',
+                },
+              ],
+            },
+          ],
+        },
+      },
+    );
+
+    final source = (info['MediaSources'] as List).single as Map;
+    for (final uri in [
+      _request(server, '/video/:/transcode/universal/decision').uri,
+      Uri.parse(source['TranscodingUrl'] as String),
+    ]) {
+      expect(uri.query, isNot(contains('+')));
+      expect(
+        uri.queryParameters['X-Plex-Client-Profile-Extra'],
+        contains('list=high|constrained baseline)+'),
+      );
+    }
+  });
 
   test('a codec none subtitle is never burned', () async {
     final (api, server) = _api('transcode');
@@ -226,7 +342,7 @@ void main() {
       _request(
         server,
         '/video/:/transcode/universal/decision',
-      ).queryParameters['subtitles'],
+      ).uri.queryParameters['subtitles'],
       'none',
     );
   });
@@ -240,7 +356,7 @@ void main() {
     );
 
     final decision = _request(server, '/music/:/transcode/universal/decision');
-    expect(decision.queryParameters['directPlay'], '0');
+    expect(decision.uri.queryParameters['directPlay'], '0');
     final source = (info['MediaSources'] as List).single as Map;
     expect(
       Uri.parse(source['TranscodingUrl'] as String).path,
