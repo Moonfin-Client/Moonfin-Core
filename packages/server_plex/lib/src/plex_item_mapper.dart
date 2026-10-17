@@ -240,6 +240,7 @@ Map<String, dynamic> _mediaSource(Map media, String itemId) {
     if (media['duration'] case final int duration)
       'RunTimeTicks': duration * 10000,
     if (part?['size'] != null) 'Size': part!['size'],
+    'Path': ?part?['file'],
     'MediaStreams': _streams(part),
   };
 }
@@ -263,6 +264,7 @@ List<Map<String, dynamic>> _streams(Map? part) {
           if (stream['title'] != null) 'Title': stream['title'],
           'IsDefault': stream['default'] == true,
           'IsForced': stream['forced'] == true,
+          'IsHearingImpaired': stream['hearingImpaired'] == true,
           'IsExternal': stream['key'] != null,
           if (stream['key'] case final String key) ...{
             'DeliveryUrl': key,
@@ -275,8 +277,74 @@ List<Map<String, dynamic>> _streams(Map? part) {
           if (stream['bitrate'] case final int bitrate)
             'BitRate': bitrate * 1000,
           if (stream['profile'] != null) 'Profile': stream['profile'],
+          if (stream['frameRate'] case final num rate) ...{
+            'RealFrameRate': rate.toDouble(),
+            'AverageFrameRate': rate.toDouble(),
+          },
+          'BitDepth': ?stream['bitDepth'],
+          'Level': ?stream['level'],
+          'SampleRate': ?stream['samplingRate'],
+          'ChannelLayout': ?stream['audioChannelLayout'],
+          'DvProfile': ?stream['DOVIProfile'],
+          'DvBlSignalCompatibilityId': ?stream['DOVIBLCompatID'],
+          if (stream['streamType'] == 1) ...{
+            'IsInterlaced': stream['scanType'] == 'interlaced',
+            ..._videoRange(stream),
+          },
         },
   ];
+}
+
+/// The dynamic range in the names Jellyfin uses, worked out by Jellyfin's
+/// rules, since the app's HDR and Dolby Vision handling reads those names.
+Map<String, String> _videoRange(Map stream) {
+  String lower(String key) => '${stream[key] ?? ''}'.toLowerCase();
+  const pq = 'smpte2084';
+  const hlg = 'arib-std-b67';
+  final transfer = lower('colorTrc');
+  final base = transfer == pq || transfer == hlg ? 'HDR' : 'SDR';
+  final hdr10Plus = stream['HDR10PlusPresent'] == true;
+  final profile = stream['DOVIProfile'];
+  final compat = stream['DOVIBLCompatID'];
+
+  final (String, String) range;
+  if (const {5, 7, 8, 10}.contains(profile) &&
+      const {0, 1, 2, 4, 6}.contains(compat) &&
+      stream['DOVIRPUPresent'] == true &&
+      stream['DOVIBLPresent'] == true) {
+    final dolby = switch ((profile, compat)) {
+      (5, _) || (10, 0) => ('HDR', 'DOVI'),
+      (7, _) => ('HDR', 'DOVIWithEL'),
+      (8 || 10, 1) => ('HDR', 'DOVIWithHDR10'),
+      (8 || 10, 4) => ('HDR', 'DOVIWithHLG'),
+      (8 || 10, 2) => ('SDR', 'DOVIWithSDR'),
+      _ => (base, 'DOVIInvalid'),
+    };
+    // A base layer whose colors don't match what it claims is out of spec.
+    final expected = switch (dolby.$2) {
+      'DOVIWithHDR10' || 'DOVIWithEL' => pq,
+      'DOVIWithHLG' => hlg,
+      _ => null,
+    };
+    range =
+        expected != null &&
+            (lower('colorSpace') != 'bt2020nc' ||
+                transfer != expected ||
+                lower('colorPrimaries') != 'bt2020')
+        ? (base, 'DOVIInvalid')
+        : switch (dolby.$2) {
+            'DOVIWithHDR10' when hdr10Plus => ('HDR', 'DOVIWithHDR10Plus'),
+            'DOVIWithEL' when hdr10Plus => ('HDR', 'DOVIWithELHDR10Plus'),
+            _ => dolby,
+          };
+  } else {
+    range = switch (transfer) {
+      pq => ('HDR', hdr10Plus ? 'HDR10Plus' : 'HDR10'),
+      hlg => ('HDR', 'HLG'),
+      _ => ('SDR', 'SDR'),
+    };
+  }
+  return {'VideoRange': range.$1, 'VideoRangeType': range.$2};
 }
 
 String? _date(Object? value) {

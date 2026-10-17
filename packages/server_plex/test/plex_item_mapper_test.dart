@@ -41,6 +41,7 @@ void main() {
           'Part': [
             {
               'size': 7407252142,
+              'file': '/media/Movies/10 Cloverfield Lane (2016).mkv',
               'Stream': [
                 {'streamType': 1, 'index': 0, 'codec': 'h264', 'width': 1920},
                 {'streamType': 2, 'index': 1, 'codec': 'eac3', 'channels': 6},
@@ -83,6 +84,7 @@ void main() {
     final source = (movie['MediaSources'] as List).single as Map;
     expect(source['Id'], '3720');
     expect(source['Bitrate'], 9536000);
+    expect(source['Path'], '/media/Movies/10 Cloverfield Lane (2016).mkv');
     expect((movie['MediaStreams'] as List).map((s) => (s as Map)['Type']), [
       'Video',
       'Audio',
@@ -187,6 +189,90 @@ void main() {
       (movie['MediaStreams'] as List).map((s) => (s['Index'], s['Codec'])),
       [(0, 'h264'), (1, 'eac3'), (2, 'srt')],
     );
+  });
+
+  group('video details', () {
+    Map<String, dynamic> video(Map<String, dynamic> stream) {
+      final item = plexItemToJellyfin({
+        'ratingKey': '55',
+        'type': 'movie',
+        'title': 'Avatar',
+        'Media': [
+          {
+            'id': 1,
+            'Part': [
+              {
+                'Stream': [
+                  {'id': 1, 'index': 0, 'streamType': 1, ...stream},
+                ],
+              },
+            ],
+          },
+        ],
+      });
+      return (item['MediaStreams'] as List).single as Map<String, dynamic>;
+    }
+
+    const dolbyVision81 = {
+      'codec': 'hevc',
+      'DOVIPresent': true,
+      'DOVIProfile': 8,
+      'DOVIBLCompatID': 1,
+      'DOVIBLPresent': true,
+      'DOVIRPUPresent': true,
+      'colorPrimaries': 'bt2020',
+      'colorSpace': 'bt2020nc',
+      'colorTrc': 'smpte2084',
+    };
+
+    test('carries frame rate, bit depth, level and scan type', () {
+      final stream = video({
+        'codec': 'h264',
+        'frameRate': 23.976,
+        'bitDepth': 8,
+        'level': 40,
+        'scanType': 'progressive',
+        'colorTrc': 'bt709',
+      });
+
+      expect(stream['RealFrameRate'], 23.976);
+      expect(stream['AverageFrameRate'], 23.976);
+      expect(stream['BitDepth'], 8);
+      expect(stream['Level'], 40);
+      expect(stream['IsInterlaced'], isFalse);
+      expect(stream['VideoRange'], 'SDR');
+      expect(stream['VideoRangeType'], 'SDR');
+    });
+
+    test('names the HDR type the way Jellyfin does', () {
+      String type(Map<String, dynamic> stream) =>
+          video(stream)['VideoRangeType'] as String;
+
+      expect(type({'colorTrc': 'smpte2084'}), 'HDR10');
+      expect(
+        type({'colorTrc': 'smpte2084', 'HDR10PlusPresent': true}),
+        'HDR10Plus',
+      );
+      expect(type({'colorTrc': 'arib-std-b67'}), 'HLG');
+      expect(type(dolbyVision81), 'DOVIWithHDR10');
+      expect(
+        type({...dolbyVision81, 'HDR10PlusPresent': true}),
+        'DOVIWithHDR10Plus',
+      );
+      expect(
+        type({
+          'DOVIProfile': 5,
+          'DOVIBLCompatID': 0,
+          'DOVIBLPresent': true,
+          'DOVIRPUPresent': true,
+        }),
+        'DOVI',
+      );
+      expect(type({...dolbyVision81, 'colorSpace': 'bt709'}), 'DOVIInvalid');
+      expect(video(dolbyVision81)['DvProfile'], 8);
+      expect(video(dolbyVision81)['DvBlSignalCompatibilityId'], 1);
+      expect(video(dolbyVision81)['VideoRange'], 'HDR');
+    });
   });
 
   test('gives a track its album and artists, and an album its artist', () {
