@@ -8,7 +8,9 @@ import '../../../data/models/aggregated_item.dart';
 import '../../../data/services/media_server_client_factory.dart';
 import '../../../data/viewmodels/folder_browse_view_model.dart';
 import '../../../preference/user_preferences.dart';
+import '../../../preference/preference_constants.dart';
 import '../../../util/focus/dpad_keys.dart';
+import '../../../util/platform_detection.dart';
 import '../../navigation/destinations.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/media_card.dart';
@@ -33,6 +35,9 @@ class _FolderBrowseScreenState extends State<FolderBrowseScreen> {
   late final FolderBrowseViewModel _vm;
   final _scrollController = ScrollController();
   final Map<int, FocusNode> _gridItemFocusNodes = {};
+  // Never attached. As the initial focus target it keeps RequestInitialFocus
+  // from parking focus in the sidebar before the items load
+  final _initialFocusNode = FocusNode(debugLabel: 'folderInitialContent');
   DateTime? _lastItemTapAt;
   String? _lastTappedItemId;
 
@@ -212,9 +217,17 @@ class _FolderBrowseScreenState extends State<FolderBrowseScreen> {
     }
   }
 
+  // The sidebar draws over the screen, so content moves past it to 60
+  double get _sidebarInset {
+    final prefs = GetIt.instance<UserPreferences>();
+    final sidebar =
+        prefs.get(UserPreferences.navbarPosition) == NavbarPosition.left;
+    return sidebar && !PlatformDetection.useMobileUi ? 60 : 0;
+  }
+
   @override
   Widget build(BuildContext context) => RequestInitialFocus(
-        targetNode: _vm.items.isNotEmpty ? _getGridItemFocusNode(0) : null,
+        targetNode: _vm.items.isNotEmpty ? _getGridItemFocusNode(0) : _initialFocusNode,
         child: _buildContent(context),
       );
 
@@ -232,17 +245,20 @@ class _FolderBrowseScreenState extends State<FolderBrowseScreen> {
           scrollController: _scrollController,
           topFocusNode: _vm.items.isNotEmpty ? _getGridItemFocusNode(0) : null,
           child: SafeArea(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 80),
-                if (_vm.breadcrumbs.isNotEmpty) _buildBreadcrumbs(),
-                Divider(
-                  color: ThemeRegistry.active.borders.chipBorder.color,
-                  height: 1,
-                ),
-                Expanded(child: _buildBody()),
-              ],
+            child: Padding(
+              padding: EdgeInsets.only(left: _sidebarInset),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 80),
+                  if (_vm.breadcrumbs.isNotEmpty) _buildBreadcrumbs(),
+                  Divider(
+                    color: ThemeRegistry.active.borders.chipBorder.color,
+                    height: 1,
+                  ),
+                  Expanded(child: _buildBody()),
+                ],
+              ),
             ),
           ),
         ),
