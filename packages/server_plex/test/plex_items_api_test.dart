@@ -803,6 +803,37 @@ void main() {
     expect((await api.getLyrics('23010'))['Lyrics'], isEmpty);
   });
 
+  test('intro and credits markers become skip segments', () async {
+    final (dio, requests) = _recordingDio({
+      'Metadata': [
+        {
+          'Marker': [
+            {'type': 'intro', 'startTimeOffset': 5000, 'endTimeOffset': 60000},
+            {'type': 'bookmark', 'startTimeOffset': 70000},
+            {'type': 'commercial', 'startTimeOffset': 90000},
+            {
+              'type': 'credits',
+              'startTimeOffset': 1380000,
+              'endTimeOffset': 1420512,
+              'final': true,
+            },
+          ],
+        },
+      ],
+    });
+    final api = PlexItemsApi(dio);
+
+    final segments = await api.getMediaSegments('3060');
+
+    expect(requests.single.queryParameters, {'includeMarkers': 1});
+    expect(segments.map((s) => (s['Type'], s['StartTicks'], s['EndTicks'])), [
+      ('Intro', 50000000, 600000000),
+      ('Outro', 13800000000, 14205120000),
+    ]);
+    expect(await api.getMediaSegments('part-23070-0-1'), isEmpty);
+    expect(requests, hasLength(1));
+  });
+
   group('PlexImageApi', () {
     final images = PlexImageApi(() => 'http://plex:32400', () => 'tok');
 

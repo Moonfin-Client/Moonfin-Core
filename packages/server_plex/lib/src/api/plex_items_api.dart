@@ -370,6 +370,7 @@ class PlexItemsApi implements ItemsApi {
     }
     final container = await plexContainer(_dio, '/library/metadata/$itemId', {
       'includeGuids': 1,
+      'includeChapters': 1,
     });
     final items = _items(container['Metadata']);
     if (items.isEmpty) throw StateError('No Plex item $itemId');
@@ -767,8 +768,36 @@ class PlexItemsApi implements ItemsApi {
   }
 
   @override
-  Future<List<Map<String, dynamic>>> getMediaSegments(String itemId) async =>
-      [];
+  Future<List<Map<String, dynamic>>> getMediaSegments(String itemId) async {
+    // A split movie's markers count from the start of the whole movie.
+    if (plexPartOf(itemId) != null) return const [];
+    final container = await plexContainer(_dio, '/library/metadata/$itemId', {
+      'includeMarkers': 1,
+    });
+    final item = (container['Metadata'] as List? ?? const []).firstOrNull;
+    return [
+      for (final marker in item?['Marker'] as List? ?? const [])
+        if ((_segmentTypes[marker['type']], marker) case (
+          final type?,
+          {'startTimeOffset': final int start, 'endTimeOffset': final int end},
+        ))
+          {
+            'Id': '$itemId-${marker['type']}-$start',
+            'ItemId': itemId,
+            'Type': type,
+            'StartTicks': start * 10000,
+            'EndTicks': end * 10000,
+          },
+    ];
+  }
+
+  /// Plex's markers as the app's segment types. A bookmark is a spot a user
+  /// saved, not something to skip.
+  static const _segmentTypes = {
+    'intro': 'Intro',
+    'credits': 'Outro',
+    'commercial': 'Commercial',
+  };
 
   @override
   Future<List<Map<String, dynamic>>> searchRemoteSubtitles(

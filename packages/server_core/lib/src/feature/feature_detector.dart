@@ -14,10 +14,10 @@ class FeatureDetector {
   bool get supportsLyrics => serverType == ServerType.jellyfin;
   bool get supportsMediaSegments => serverType == ServerType.jellyfin;
 
-  /// Both servers can surface intro and credits segments for skip overlays,
-  /// Jellyfin through the MediaSegments API and Emby through chapter markers.
-  bool get supportsSkipSegments =>
-      serverType == ServerType.jellyfin || serverType == ServerType.emby;
+  /// Every server can surface intro and credits segments for skip overlays,
+  /// Jellyfin through the MediaSegments API, Emby through chapter markers and
+  /// Plex through its own markers.
+  bool get supportsSkipSegments => true;
 
   bool get supportsQuickConnect => serverType == ServerType.jellyfin;
 

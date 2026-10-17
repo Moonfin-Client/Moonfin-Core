@@ -1,3 +1,5 @@
+import 'dart:math';
+
 /// Plex library section keys share a number space with item ratingKeys, so
 /// library views carry this prefix to keep the two apart.
 const plexSectionPrefix = 'section-';
@@ -186,6 +188,16 @@ Map<String, dynamic> plexItemToJellyfin(Map<String, dynamic> m) {
       ..._people(m['Writer'], 'Writer'),
     ],
     'ProviderIds': _providerIds(m['Guid']),
+    if (m['Chapter'] case final List chapters)
+      'Chapters': [
+        for (final chapter in chapters.whereType<Map>())
+          {
+            // Some files put their first chapter a moment before the start.
+            'StartPositionTicks':
+                max(0, chapter['startTimeOffset'] as int? ?? 0) * 10000,
+            if (chapter['tag'] case final String name) 'Name': name,
+          },
+      ],
     if (m['index'] != null) 'IndexNumber': m['index'],
     if (m['parentIndex'] != null) 'ParentIndexNumber': m['parentIndex'],
     if (m['parentRatingKey'] != null) 'ParentId': '${m['parentRatingKey']}',
