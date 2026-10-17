@@ -128,6 +128,29 @@ void main() {
     ]);
   });
 
+  test('an artist lists its albums and all its tracks', () async {
+    final (dio, requests) = _recordingDio(const {'Metadata': []});
+    final api = PlexItemsApi(dio);
+
+    await api.getItems(
+      artistIds: ['23023'],
+      includeItemTypes: ['MusicAlbum'],
+      recursive: true,
+    );
+    await api.getItems(
+      artistIds: ['23023'],
+      includeItemTypes: ['Audio'],
+      recursive: true,
+    );
+    final both = await api.getItems(artistIds: ['23023', '22998']);
+
+    expect(requests.map((r) => r.path), [
+      '/library/metadata/23023/children',
+      '/library/metadata/23023/allLeaves',
+    ]);
+    expect(both['Items'], isEmpty);
+  });
+
   test('a filter Plex has no answer for returns nothing', () async {
     final (dio, requests) = _recordingDio(const {});
 

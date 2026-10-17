@@ -108,7 +108,6 @@ class PlexItemsApi implements ItemsApi {
     final unsupported =
         [
           personIds,
-          artistIds,
           seriesStatus,
           genreIds,
           genres,
@@ -137,6 +136,7 @@ class PlexItemsApi implements ItemsApi {
           is3D,
         ].any((value) => value != null) ||
         isFavorite == true ||
+        (artistIds?.length ?? 0) > 1 ||
         (filters ?? const []).any((f) => !_filters.containsKey(f));
     if (unsupported) return plexItemsResult([]);
 
@@ -148,11 +148,14 @@ class PlexItemsApi implements ItemsApi {
       return plexItemsResult(_items(container['Metadata']));
     }
 
+    // An artist's albums are its children and its tracks are its leaves.
+    final parent = artistIds?.singleOrNull ?? parentId;
+
     // A search across every library goes through Plex's hub search, which
     // also lists titles it matched through their cast, artist or genre. Those
     // carry a reason and are left out, so only titles that match the query
     // stay.
-    if (parentId == null && searchTerm != null && searchTerm.isNotEmpty) {
+    if (parent == null && searchTerm != null && searchTerm.isNotEmpty) {
       final container = await plexContainer(_dio, '/hubs/search', {
         'query': searchTerm,
         'limit': ?limit,
@@ -169,17 +172,19 @@ class PlexItemsApi implements ItemsApi {
       for (final type in includeItemTypes ?? const <String>[])
         ?plexTypeNumbers[type],
     ];
-    final sectionKey = _sectionKey(parentId);
+    final sectionKey = _sectionKey(parent);
     final String path;
-    if (parentId == null) {
+    if (parent == null) {
       if (types.isEmpty) return plexItemsResult([]);
       path = '/library/all';
     } else if (sectionKey != null) {
       path = '/library/sections/$sectionKey/all';
     } else {
-      path = recursive == true && types.contains(plexTypeNumbers['Episode'])
-          ? '/library/metadata/$parentId/allLeaves'
-          : '/library/metadata/$parentId/children';
+      final leaves =
+          recursive == true &&
+          (types.contains(plexTypeNumbers['Episode']) ||
+              types.contains(plexTypeNumbers['Audio']));
+      path = '/library/metadata/$parent/${leaves ? 'allLeaves' : 'children'}';
     }
 
     // Later fields only break ties, so the sort stops at the first one Plex
