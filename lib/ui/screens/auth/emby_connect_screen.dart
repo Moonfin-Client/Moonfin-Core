@@ -1,6 +1,4 @@
-import 'package:custom_tv_text_field/custom_tv_text_field.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonfin_design/moonfin_design.dart';
@@ -10,10 +8,9 @@ import '../../../auth/repositories/emby_connect_repository.dart';
 import '../../../data/services/emby_connect_service.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../util/error_message.dart';
-import '../../../preference/user_preferences.dart';
 import '../../../util/platform_detection.dart';
-import '../../../util/focus/dpad_keys.dart';
 import '../../navigation/destinations.dart';
+import '../../widgets/credential_field.dart';
 import '../../widgets/login_scaffold.dart';
 import '../../widgets/server_type_icon.dart';
 import '../../widgets/focus/request_initial_focus.dart';
@@ -37,10 +34,7 @@ class _EmbyConnectScreenState extends State<EmbyConnectScreen> {
   final _passwordController = TextEditingController();
   final _usernameFocus = FocusNode();
   final _passwordFocus = FocusNode();
-  final _usernameTvFieldKey = GlobalKey<CustomTVTextFieldState>();
-  final _passwordTvFieldKey = GlobalKey<CustomTVTextFieldState>();
   final _connectRepository = GetIt.instance<EmbyConnectRepository>();
-  final _userPreferences = GetIt.instance<UserPreferences>();
 
   _EmbyConnectPhase _phase = _EmbyConnectPhase.credentials;
   List<EmbyConnectServer> _servers = const [];
@@ -183,27 +177,12 @@ class _EmbyConnectScreenState extends State<EmbyConnectScreen> {
     });
   }
 
-  void _handleTvKeyboardVisibility(
-    bool visible,
-    GlobalKey<CustomTVTextFieldState> fieldKey,
-  ) {
+  void _handleTvKeyboardVisibility(bool visible) {
     if (_tvKeyboardVisible != visible) {
       setState(() {
         _tvKeyboardVisible = visible;
       });
     }
-    if (!visible) return;
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final fieldContext = fieldKey.currentContext;
-      if (fieldContext == null || !mounted) return;
-      Scrollable.ensureVisible(
-        fieldContext,
-        alignment: 0.12,
-        duration: const Duration(milliseconds: 220),
-        curve: Curves.easeOut,
-      );
-    });
   }
 
   @override
@@ -281,21 +260,24 @@ class _EmbyConnectScreenState extends State<EmbyConnectScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _buildCredentialsInput(
+        CredentialField(
           controller: _usernameController,
           focusNode: _usernameFocus,
           label: l10n.emailOrUsername,
-          isBusy: isBusy,
+          enabled: !isBusy,
           down: _passwordFocus,
+          onKeyboardVisibilityChanged: _handleTvKeyboardVisibility,
         ),
         const SizedBox(height: 16),
-        _buildCredentialsInput(
+        CredentialField(
           controller: _passwordController,
           focusNode: _passwordFocus,
           label: l10n.password,
-          isBusy: isBusy,
+          enabled: !isBusy,
           isPassword: true,
           up: _usernameFocus,
+          onSubmitted: _signIn,
+          onKeyboardVisibilityChanged: _handleTvKeyboardVisibility,
         ),
         if (_errorMessage != null) ...[
           const SizedBox(height: 12),
@@ -339,109 +321,6 @@ class _EmbyConnectScreenState extends State<EmbyConnectScreen> {
           ],
         ),
       ],
-    );
-  }
-
-  Widget _buildCredentialsInput({
-    required TextEditingController controller,
-    required FocusNode focusNode,
-    required String label,
-    required bool isBusy,
-    bool isPassword = false,
-    FocusNode? up,
-    FocusNode? down,
-  }) {
-    final tvFieldKey = identical(controller, _usernameController)
-        ? _usernameTvFieldKey
-        : _passwordTvFieldKey;
-
-    if (!PlatformDetection.isTV) {
-      return TextField(
-        controller: controller,
-        focusNode: focusNode,
-        enabled: !isBusy,
-        obscureText: isPassword,
-        textInputAction: isPassword
-            ? TextInputAction.done
-            : TextInputAction.next,
-        onSubmitted: isPassword ? (_) => _signIn() : null,
-        style: TextStyle(color: AppColorScheme.onSurface),
-        decoration: _inputDecoration(label),
-      );
-    }
-
-    return Focus(
-      focusNode: focusNode,
-      onKeyEvent: (node, event) {
-        if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
-          return KeyEventResult.ignored;
-        }
-        if (event.logicalKey.isBackKey) {
-          if (event is KeyDownEvent &&
-              (tvFieldKey.currentState?.isKeyboardVisible ?? false)) {
-            tvFieldKey.currentState?.closeKeyboard();
-            return KeyEventResult.handled;
-          }
-          return KeyEventResult.ignored;
-        }
-        if (event.logicalKey == LogicalKeyboardKey.arrowUp && up != null) {
-          up.requestFocus();
-          return KeyEventResult.handled;
-        }
-        if (event.logicalKey == LogicalKeyboardKey.arrowDown && down != null) {
-          down.requestFocus();
-          return KeyEventResult.handled;
-        }
-        if (event.logicalKey == LogicalKeyboardKey.enter ||
-            event.logicalKey == LogicalKeyboardKey.select) {
-          if (!focusNode.hasFocus) focusNode.requestFocus();
-          tvFieldKey.currentState?.openKeyboard();
-          return KeyEventResult.handled;
-        }
-        return KeyEventResult.ignored;
-      },
-      child: ListenableBuilder(
-        listenable: focusNode,
-        builder: (_, _) {
-          final focused = focusNode.hasFocus;
-          return CustomTVTextField(
-            key: tvFieldKey,
-            controller: controller,
-            isFocused: focused,
-            inputPurpose: isPassword
-                ? InputPurpose.password
-                : InputPurpose.username,
-            preferSystemIme: _userPreferences.get(
-              UserPreferences.preferSystemImeKeyboard,
-            ),
-            hint: label,
-            filled: true,
-            fillColor: focused
-                ? AppColorScheme.buttonFocused
-                : AppColorScheme.surfaceVariant.scaleAlpha(0.6),
-            borderRadius: 12,
-            borderColor: AppColorScheme.onSurface.withValues(alpha: 0.1),
-            focusedBorderColor: AppColorScheme.buttonFocused,
-            hintStyle: TextStyle(
-              color: focused
-                  ? AppColorScheme.onButtonFocused.withValues(alpha: 0.5)
-                  : AppColorScheme.onSurface.withValues(alpha: 0.5),
-            ),
-            textStyle: TextStyle(
-              color: focused
-                  ? AppColorScheme.onButtonFocused
-                  : AppColorScheme.onSurface,
-            ),
-            textFieldType: isPassword
-                ? TextFieldType.password
-                : TextFieldType.other,
-            popParentOnKeyboardClose: false,
-            onFieldSubmitted: isPassword ? (_) => _signIn() : null,
-            onVisibilityChanged: (visible) =>
-                _handleTvKeyboardVisibility(visible, tvFieldKey),
-          );
-        },
-      ),
     );
   }
 
@@ -568,33 +447,6 @@ class _EmbyConnectScreenState extends State<EmbyConnectScreen> {
           ),
         ),
       ],
-    );
-  }
-
-  InputDecoration _inputDecoration(String label) {
-    return InputDecoration(
-      labelText: label,
-      labelStyle: TextStyle(
-        color: AppColorScheme.onSurface.withValues(alpha: 0.5),
-      ),
-      filled: true,
-      fillColor: AppColorScheme.surfaceVariant.scaleAlpha(0.6),
-      border: OutlineInputBorder(
-        borderRadius: AppRadius.circular(12),
-        borderSide: BorderSide(
-          color: AppColorScheme.onSurface.withValues(alpha: 0.1),
-        ),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: AppRadius.circular(12),
-        borderSide: BorderSide(
-          color: AppColorScheme.onSurface.withValues(alpha: 0.1),
-        ),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: AppRadius.circular(12),
-        borderSide: BorderSide(color: AppColorScheme.accent, width: 2),
-      ),
     );
   }
 

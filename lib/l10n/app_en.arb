@@ -765,6 +765,14 @@
   "@plexWaitingForApproval": {
     "description": "Status shown while the app waits for the Plex code to be approved"
   },
+  "plexSignInWithPassword": "Sign in with a password",
+  "@plexSignInWithPassword": {
+    "description": "Button on the Plex sign-in screen that swaps the code for an email or username and password form"
+  },
+  "plexVerificationCode": "Verification code",
+  "@plexVerificationCode": {
+    "description": "Field for the account's two-step verification code, shown once Plex asks for it"
+  },
   "plexNoServers": "No Plex servers found on this account",
   "@plexNoServers": {
     "description": "Shown when the Plex account has no servers"

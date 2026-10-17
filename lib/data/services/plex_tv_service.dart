@@ -117,6 +117,23 @@ class PlexTvService {
     return response.data!['authToken'] as String?;
   }
 
+  /// The account token for an email or username and password. [code] is the
+  /// account's two-step verification code, when it has one.
+  Future<String> signIn(String login, String password, {String? code}) async {
+    final response = await _dio.post<Map<String, dynamic>>(
+      'https://plex.tv/api/v2/users/signin',
+      queryParameters: _identity,
+      data: {
+        'login': login,
+        'password': password,
+        'rememberMe': true,
+        'verificationCode': ?code,
+      },
+      options: Options(contentType: Headers.formUrlEncodedContentType),
+    );
+    return response.data!['authToken'] as String;
+  }
+
   /// The account's uuid, which is also the key to its public avatar, and its
   /// display name.
   Future<({String id, String name})> getAccount(String authToken) async {
@@ -178,6 +195,14 @@ class PlexTvService {
     }
   }
 }
+
+/// Whether plex.tv turned a password sign-in down because the account's
+/// two-step verification code was missing.
+bool plexNeedsVerificationCode(Object error) => switch (error) {
+  DioException(response: Response(data: {'errors': [{'code': 1029}, ...]})) =>
+    true,
+  _ => false,
+};
 
 /// The uris to look for a Plex server at for a typed [address]. Plex's own
 /// port goes first when none was typed, and a bare address means http, since

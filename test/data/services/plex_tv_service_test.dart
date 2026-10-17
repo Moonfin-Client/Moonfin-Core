@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:moonfin/data/services/plex_tv_service.dart';
 
@@ -51,6 +52,31 @@ void main() {
 
     test('has no address without connections', () {
       expect(server(const []).address, isNull);
+    });
+  });
+
+  group('plexNeedsVerificationCode', () {
+    DioException refused(int code) {
+      final request = RequestOptions(path: '/api/v2/users/signin');
+      return DioException(
+        requestOptions: request,
+        type: DioExceptionType.badResponse,
+        response: Response(
+          requestOptions: request,
+          statusCode: 401,
+          data: {
+            'errors': [
+              {'code': code, 'message': 'refused', 'status': 401},
+            ],
+          },
+        ),
+      );
+    }
+
+    test("asks for the code only when plex.tv says it's missing", () {
+      expect(plexNeedsVerificationCode(refused(1029)), isTrue);
+      expect(plexNeedsVerificationCode(refused(1001)), isFalse);
+      expect(plexNeedsVerificationCode(StateError('offline')), isFalse);
     });
   });
 

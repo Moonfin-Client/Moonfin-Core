@@ -1186,6 +1186,18 @@ abstract class AppLocalizations {
   /// **'Waiting for you to approve the code...'**
   String get plexWaitingForApproval;
 
+  /// Button on the Plex sign-in screen that swaps the code for an email or username and password form
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with a password'**
+  String get plexSignInWithPassword;
+
+  /// Field for the account's two-step verification code, shown once Plex asks for it
+  ///
+  /// In en, this message translates to:
+  /// **'Verification code'**
+  String get plexVerificationCode;
+
   /// Shown when the Plex account has no servers
   ///
   /// In en, this message translates to:

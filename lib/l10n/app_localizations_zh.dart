@@ -641,6 +641,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get plexWaitingForApproval => 'Waiting for you to approve the code...';
 
   @override
+  String get plexSignInWithPassword => 'Sign in with a password';
+
+  @override
+  String get plexVerificationCode => 'Verification code';
+
+  @override
   String get plexNoServers => 'No Plex servers found on this account';
 
   @override

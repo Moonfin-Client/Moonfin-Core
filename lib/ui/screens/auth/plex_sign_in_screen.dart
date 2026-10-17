@@ -15,6 +15,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../../util/platform_detection.dart';
 import '../../navigation/destinations.dart';
 import '../../util/error_message.dart';
+import '../../widgets/credential_field.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/login_scaffold.dart';
 import '../../widgets/server_type_icon.dart';
@@ -40,6 +41,8 @@ class _PlexSignInScreenState extends State<PlexSignInScreen> {
   String? _errorMessage;
   Timer? _pollTimer;
   bool _polling = false;
+  bool _usePassword = false;
+  bool _tvKeyboardVisible = false;
 
   @override
   void initState() {
@@ -88,9 +91,12 @@ class _PlexSignInScreenState extends State<PlexSignInScreen> {
       _polling = false;
     }
     if (token == null || !mounted) return;
+    await _signedIn(token);
+  }
 
+  Future<void> _signedIn(String token) async {
     _pollTimer?.cancel();
-    _token = token;
+    setState(() => _token = token);
     await _loadServers(token);
   }
 
@@ -166,6 +172,10 @@ class _PlexSignInScreenState extends State<PlexSignInScreen> {
           padding: const EdgeInsets.only(bottom: 24),
           child: Image.asset('assets/images/logo_and_text.png', height: 80),
         ),
+        footer: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          height: PlatformDetection.isTV && _tvKeyboardVisible ? 280 : 0,
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -190,7 +200,9 @@ class _PlexSignInScreenState extends State<PlexSignInScreen> {
               children: [
                 Expanded(
                   child: OutlinedButton.icon(
-                    onPressed: () => context.go(Destinations.serverSelect),
+                    onPressed: _usePassword && _token == null
+                        ? () => setState(() => _usePassword = false)
+                        : () => context.go(Destinations.serverSelect),
                     icon: const Icon(Icons.arrow_back, size: 18),
                     label: FittedBox(
                       fit: BoxFit.scaleDown,
@@ -254,6 +266,17 @@ class _PlexSignInScreenState extends State<PlexSignInScreen> {
       );
     }
 
+    if (_usePassword && _token == null) {
+      return _PasswordForm(
+        onSignedIn: _signedIn,
+        onKeyboardVisibilityChanged: (visible) {
+          if (_tvKeyboardVisible != visible) {
+            setState(() => _tvKeyboardVisible = visible);
+          }
+        },
+      );
+    }
+
     final pin = _pin;
     if (pin == null || _token != null) return _buildLoading();
 
@@ -306,6 +329,13 @@ class _PlexSignInScreenState extends State<PlexSignInScreen> {
               style: TextStyle(color: secondary),
             ),
           ],
+        ),
+        const SizedBox(height: 16),
+        OutlinedButton.icon(
+          onPressed: () => setState(() => _usePassword = true),
+          icon: const Icon(Icons.password, size: 18),
+          label: Text(l10n.plexSignInWithPassword),
+          style: _focusableButtonStyle(),
         ),
       ],
     );
@@ -386,25 +416,163 @@ class _PlexSignInScreenState extends State<PlexSignInScreen> {
       ),
     );
   }
+}
 
-  ButtonStyle _focusableButtonStyle() {
-    return ButtonStyle(
-      side: WidgetStateProperty.resolveWith((states) {
-        if (states.contains(WidgetState.focused) ||
-            states.contains(WidgetState.hovered)) {
-          return BorderSide(color: AppColorScheme.accent, width: 2);
-        }
-        return BorderSide(
-          color: AppColorScheme.onSurface.withValues(alpha: 0.2),
-        );
-      }),
-      foregroundColor: WidgetStateProperty.resolveWith((states) {
-        if (states.contains(WidgetState.focused) ||
-            states.contains(WidgetState.hovered)) {
-          return AppColorScheme.accent;
-        }
-        return AppColorScheme.onSurface.withValues(alpha: 0.8);
-      }),
+ButtonStyle _focusableButtonStyle() {
+  return ButtonStyle(
+    side: WidgetStateProperty.resolveWith((states) {
+      if (states.contains(WidgetState.focused) ||
+          states.contains(WidgetState.hovered)) {
+        return BorderSide(color: AppColorScheme.accent, width: 2);
+      }
+      return BorderSide(color: AppColorScheme.onSurface.withValues(alpha: 0.2));
+    }),
+    foregroundColor: WidgetStateProperty.resolveWith((states) {
+      if (states.contains(WidgetState.focused) ||
+          states.contains(WidgetState.hovered)) {
+        return AppColorScheme.accent;
+      }
+      return AppColorScheme.onSurface.withValues(alpha: 0.8);
+    }),
+  );
+}
+
+/// Signs in with the account's email or username and password, for anyone
+/// who'd rather not approve a code.
+class _PasswordForm extends StatefulWidget {
+  final Future<void> Function(String token) onSignedIn;
+  final ValueChanged<bool> onKeyboardVisibilityChanged;
+
+  const _PasswordForm({
+    required this.onSignedIn,
+    required this.onKeyboardVisibilityChanged,
+  });
+
+  @override
+  State<_PasswordForm> createState() => _PasswordFormState();
+}
+
+class _PasswordFormState extends State<_PasswordForm> {
+  final _plexTv = GetIt.instance<PlexTvService>();
+  final _login = TextEditingController();
+  final _password = TextEditingController();
+  final _code = TextEditingController();
+  final _loginFocus = FocusNode();
+  final _passwordFocus = FocusNode();
+  final _codeFocus = FocusNode();
+  bool _busy = false;
+  bool _needsCode = false;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _loginFocus.requestFocus();
+    });
+  }
+
+  @override
+  void dispose() {
+    _login.dispose();
+    _password.dispose();
+    _code.dispose();
+    _loginFocus.dispose();
+    _passwordFocus.dispose();
+    _codeFocus.dispose();
+    super.dispose();
+  }
+
+  Future<void> _signIn() async {
+    final login = _login.text.trim();
+    if (login.isEmpty || _busy) return;
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
+    try {
+      final token = await _plexTv.signIn(
+        login,
+        _password.text,
+        code: _needsCode ? _code.text.trim() : null,
+      );
+      if (mounted) await widget.onSignedIn(token);
+    } catch (e) {
+      if (!mounted) return;
+      final askForCode = !_needsCode && plexNeedsVerificationCode(e);
+      setState(() {
+        _busy = false;
+        _needsCode = _needsCode || askForCode;
+        _error = describeError(e, AppLocalizations.of(context));
+      });
+      if (askForCode) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) _codeFocus.requestFocus();
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        CredentialField(
+          controller: _login,
+          focusNode: _loginFocus,
+          label: l10n.emailOrUsername,
+          enabled: !_busy,
+          down: _passwordFocus,
+          onKeyboardVisibilityChanged: widget.onKeyboardVisibilityChanged,
+        ),
+        const SizedBox(height: 16),
+        CredentialField(
+          controller: _password,
+          focusNode: _passwordFocus,
+          label: l10n.password,
+          enabled: !_busy,
+          isPassword: true,
+          up: _loginFocus,
+          down: _needsCode ? _codeFocus : null,
+          onSubmitted: _needsCode ? null : _signIn,
+          onKeyboardVisibilityChanged: widget.onKeyboardVisibilityChanged,
+        ),
+        if (_needsCode) ...[
+          const SizedBox(height: 16),
+          CredentialField(
+            controller: _code,
+            focusNode: _codeFocus,
+            label: l10n.plexVerificationCode,
+            enabled: !_busy,
+            up: _passwordFocus,
+            onSubmitted: _signIn,
+            onKeyboardVisibilityChanged: widget.onKeyboardVisibilityChanged,
+          ),
+        ],
+        if (_error != null) ...[
+          const SizedBox(height: 12),
+          Text(
+            _error!,
+            style: TextStyle(color: AppColorScheme.statusRequested),
+            textAlign: TextAlign.center,
+          ),
+        ],
+        const SizedBox(height: 16),
+        OutlinedButton.icon(
+          onPressed: _busy ? null : _signIn,
+          icon: _busy
+              ? const SizedBox(
+                  height: 16,
+                  width: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Icon(Icons.login, size: 18),
+          label: Text(l10n.signIn),
+          style: _focusableButtonStyle(),
+        ),
+      ],
     );
   }
 }
