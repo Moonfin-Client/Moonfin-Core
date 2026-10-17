@@ -1110,9 +1110,8 @@ class _DetailContentState extends State<_DetailContent> {
   FocusNode? _headerOverviewFocusNode(AggregatedItem item) {
     if (hidesMediaDescription(
       itemType: item.type,
-      hideMediaDescription: prefs.get(
-        UserPreferences.hideDetailsMediaDescription,
-      ),
+      prefs: prefs,
+      isSeerr: viewModel.isSeerrOnly,
     )) {
       return null;
     }
@@ -1827,7 +1826,12 @@ class _DetailContentState extends State<_DetailContent> {
     final authorDisplay = author ?? l10n.unknownAuthor;
     final overview = item.overview?.trim();
     final hasOverview = overview != null && overview.isNotEmpty;
-    final overviewFocusNode = hasOverview
+    final hideOverview = hidesMediaDescription(
+      itemType: item.type,
+      prefs: prefs,
+      isSeerr: viewModel.isSeerrOnly,
+    );
+    final overviewFocusNode = (hasOverview && !hideOverview)
         ? _sectionFocusNode('detailBookOverview')
         : null;
     final actionButtonsFocusNode =
@@ -1953,34 +1957,36 @@ class _DetailContentState extends State<_DetailContent> {
         onRequestFocus: _requestSectionFocus,
         autoPlay: widget.autoPlay,
       ),
-      const SizedBox(height: 28),
-      _SectionHeader(title: l10n.overview),
-      const SizedBox(height: 8),
-      if (hasOverview)
-        _OverviewText(
-          text: overview,
-          focusNode: overviewFocusNode,
-          onArrowUp: () => _requestSectionFocus(actionButtonsFocusNode),
-          onArrowDown: similarFocusNode != null
-              ? () => _requestSectionFocus(similarFocusNode)
-              : null,
-          onArrowLeft: () => _tryFocusSidebar(),
-          onCollapse: () => setState(() {}),
-          style: const TextStyle(
-            color: Color(0xFFD7E8F6),
-            fontSize: 14,
-            height: 1.5,
+      if (!hideOverview) ...[
+        const SizedBox(height: 28),
+        _SectionHeader(title: l10n.overview),
+        const SizedBox(height: 8),
+        if (hasOverview)
+          _OverviewText(
+            text: overview,
+            focusNode: overviewFocusNode,
+            onArrowUp: () => _requestSectionFocus(actionButtonsFocusNode),
+            onArrowDown: similarFocusNode != null
+                ? () => _requestSectionFocus(similarFocusNode)
+                : null,
+            onArrowLeft: () => _tryFocusSidebar(),
+            onCollapse: () => setState(() {}),
+            style: const TextStyle(
+              color: Color(0xFFD7E8F6),
+              fontSize: 14,
+              height: 1.5,
+            ),
+          )
+        else
+          Text(
+            l10n.noOverviewAvailable,
+            style: const TextStyle(
+              color: Color(0xFFD7E8F6),
+              fontSize: 14,
+              height: 1.5,
+            ),
           ),
-        )
-      else
-        Text(
-          l10n.noOverviewAvailable,
-          style: const TextStyle(
-            color: Color(0xFFD7E8F6),
-            fontSize: 14,
-            height: 1.5,
-          ),
-        ),
+      ],
       if (item.genres.isNotEmpty &&
           _visibility.shows(DetailSection.bookGenres)) ...[
         const SizedBox(height: 20),
@@ -2820,7 +2826,12 @@ class _DetailContentState extends State<_DetailContent> {
     final hasBio =
         item.overview != null &&
         item.overview!.isNotEmpty &&
-        _visibility.shows(DetailSection.biography);
+        _visibility.shows(DetailSection.biography) &&
+        !hidesMediaDescription(
+          itemType: item.type,
+          prefs: prefs,
+          isSeerr: viewModel.isSeerrOnly,
+        );
 
     final hasSeerrButton =
         item.tmdbId != null &&
@@ -3076,7 +3087,13 @@ class _DetailContentState extends State<_DetailContent> {
 
   List<Widget> _buildArtistContent(BuildContext context, AggregatedItem item) {
     final l10n = AppLocalizations.of(context);
-    final hasOverview = item.overview != null && item.overview!.isNotEmpty;
+    final hasOverview = item.overview != null &&
+        item.overview!.isNotEmpty &&
+        !hidesMediaDescription(
+          itemType: item.type,
+          prefs: prefs,
+          isSeerr: viewModel.isSeerrOnly,
+        );
     final overviewFocusNode = hasOverview
         ? _sectionFocusNode('detailArtistOverview')
         : null;
@@ -3995,9 +4012,8 @@ class _HeaderSection extends StatelessWidget {
             item.overview!.isNotEmpty &&
             !hidesMediaDescription(
               itemType: item.type,
-              hideMediaDescription: prefs.get(
-                UserPreferences.hideDetailsMediaDescription,
-              ),
+              prefs: prefs,
+              isSeerr: viewModel.isSeerrOnly,
             )) ...[
           const SizedBox(height: 8),
           _OverviewText(
@@ -4720,13 +4736,29 @@ class _BookAuthorDetailScreen extends StatefulWidget {
 }
 
 class _BookAuthorDetailScreenState extends State<_BookAuthorDetailScreen> {
+  final _prefs = GetIt.instance<UserPreferences>();
   _BookAuthorDetailData? _data;
   bool _loading = true;
 
   @override
   void initState() {
     super.initState();
+    _prefs.addListener(_onPrefsChanged);
+    GetIt.instance<PluginSyncService>().addListener(_onPrefsChanged);
     _loadData();
+  }
+
+  @override
+  void dispose() {
+    _prefs.removeListener(_onPrefsChanged);
+    try {
+      GetIt.instance<PluginSyncService>().removeListener(_onPrefsChanged);
+    } catch (_) {}
+    super.dispose();
+  }
+
+  void _onPrefsChanged() {
+    if (mounted) setState(() {});
   }
 
   Future<void> _loadData() async {
@@ -5009,6 +5041,12 @@ class _BookAuthorDetailScreenState extends State<_BookAuthorDetailScreen> {
         : 3;
     const gridSpacing = 10.0;
     final data = _data;
+    final hideBiography = hidesMediaDescription(
+      itemType: 'Person',
+      prefs: _prefs,
+    );
+    final hasBiography = data?.biography != null &&
+        data!.biography!.trim().isNotEmpty;
 
     return Scaffold(
       backgroundColor: const Color(0xFF0F182A),
@@ -5046,26 +5084,28 @@ class _BookAuthorDetailScreenState extends State<_BookAuthorDetailScreen> {
                       name: data.authorName,
                       photoUrl: data.photoUrl,
                     ),
-                    const SizedBox(height: 20),
-                    _SectionHeader(
-                      title: AppLocalizations.of(context).biography,
-                    ),
-                    const SizedBox(height: 8),
-                    if (data.biography != null &&
-                        data.biography!.trim().isNotEmpty)
-                      ExpandableBiography(
-                        text: data.biography!,
-                        onCollapse: () => setState(() {}),
-                      )
-                    else
-                      Text(
-                        AppLocalizations.of(context).noBiographyAvailable,
-                        style: const TextStyle(
-                          color: Color(0xFFD7E8F6),
-                          fontSize: 14,
-                          height: 1.5,
-                        ),
+                    if (!hideBiography) ...[
+                      const SizedBox(height: 20),
+                      _SectionHeader(
+                        title: AppLocalizations.of(context).biography,
                       ),
+                      const SizedBox(height: 8),
+                      // Library authors are local items; omit isSeerr (defaults to false).
+                      if (hasBiography)
+                        ExpandableBiography(
+                          text: data.biography!,
+                          onCollapse: () => setState(() {}),
+                        )
+                      else
+                        Text(
+                          AppLocalizations.of(context).noBiographyAvailable,
+                          style: const TextStyle(
+                            color: Color(0xFFD7E8F6),
+                            fontSize: 14,
+                            height: 1.5,
+                          ),
+                        ),
+                    ],
                     const SizedBox(height: 28),
                     _SectionHeader(title: AppLocalizations.of(context).books),
                     const SizedBox(height: 8),
@@ -10837,9 +10877,8 @@ bool _showsEpisodeOverview(AggregatedItem episode, UserPreferences prefs) =>
     episode.overview != null &&
     !hidesMediaDescription(
       itemType: episode.type,
-      hideMediaDescription: prefs.get(
-        UserPreferences.hideDetailsMediaDescription,
-      ),
+      prefs: prefs,
+      isSeerr: episode.serverId == 'seerr',
     );
 
 bool _isReadableBookItem(AggregatedItem item) {

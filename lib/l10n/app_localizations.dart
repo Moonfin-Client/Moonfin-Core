@@ -24085,6 +24085,168 @@ abstract class AppLocalizations {
   /// **'Hide the movie or episode descriptive text.'**
   String get hideDetailsMediaDescriptionSubtitle;
 
+  /// Setting title to open media description visibility subpage
+  ///
+  /// In en, this message translates to:
+  /// **'Toggle Media Description Visibility'**
+  String get toggleMediaDescriptionVisibility;
+
+  /// Setting description to open media description visibility subpage
+  ///
+  /// In en, this message translates to:
+  /// **'Hide media descriptions from various detail pages.'**
+  String get toggleMediaDescriptionVisibilityDescription;
+
+  /// Title for the media description visibility settings screen
+  ///
+  /// In en, this message translates to:
+  /// **'Media Description Visibility'**
+  String get mediaDescriptionVisibilityTitle;
+
+  /// Section header for local media content in settings
+  ///
+  /// In en, this message translates to:
+  /// **'Local Content'**
+  String get localContent;
+
+  /// Section header for Seerr media content in settings
+  ///
+  /// In en, this message translates to:
+  /// **'Seerr Content'**
+  String get seerrContent;
+
+  /// Setting title to hide descriptions on movie pages
+  ///
+  /// In en, this message translates to:
+  /// **'Movie Pages'**
+  String get hideMediaDescriptionMovie;
+
+  /// Setting description to hide descriptions on movie detail pages
+  ///
+  /// In en, this message translates to:
+  /// **'Hide descriptions on movie detail pages'**
+  String get hideMediaDescriptionMovieSubtitle;
+
+  /// Setting title to hide descriptions on show pages
+  ///
+  /// In en, this message translates to:
+  /// **'Show Pages'**
+  String get hideMediaDescriptionShow;
+
+  /// Setting description to hide descriptions on TV show detail pages
+  ///
+  /// In en, this message translates to:
+  /// **'Hide descriptions on TV show detail pages'**
+  String get hideMediaDescriptionShowSubtitle;
+
+  /// Setting title to hide descriptions on season pages
+  ///
+  /// In en, this message translates to:
+  /// **'Season Pages'**
+  String get hideMediaDescriptionSeason;
+
+  /// Setting description to hide descriptions on season detail pages
+  ///
+  /// In en, this message translates to:
+  /// **'Hide descriptions on season detail pages'**
+  String get hideMediaDescriptionSeasonSubtitle;
+
+  /// Setting title to hide descriptions on episode pages
+  ///
+  /// In en, this message translates to:
+  /// **'Episode Pages'**
+  String get hideMediaDescriptionEpisode;
+
+  /// Setting description to hide descriptions on episode detail pages, season episode lists, and player drawer
+  ///
+  /// In en, this message translates to:
+  /// **'Hide descriptions on episode detail pages, season episode lists, and player drawer'**
+  String get hideMediaDescriptionEpisodeSubtitle;
+
+  /// Setting title to hide descriptions on collection pages
+  ///
+  /// In en, this message translates to:
+  /// **'Collection Pages'**
+  String get hideMediaDescriptionBoxSet;
+
+  /// Setting description to hide descriptions on collection and box set pages
+  ///
+  /// In en, this message translates to:
+  /// **'Hide descriptions on collection and box set pages'**
+  String get hideMediaDescriptionBoxSetSubtitle;
+
+  /// Setting title to hide descriptions on book pages
+  ///
+  /// In en, this message translates to:
+  /// **'Book Pages'**
+  String get hideMediaDescriptionBook;
+
+  /// Setting description to hide descriptions on book and audiobook detail pages
+  ///
+  /// In en, this message translates to:
+  /// **'Hide descriptions on book and audiobook detail pages'**
+  String get hideMediaDescriptionBookSubtitle;
+
+  /// Setting title to hide biography descriptions on person pages
+  ///
+  /// In en, this message translates to:
+  /// **'Person Pages'**
+  String get hideMediaDescriptionPerson;
+
+  /// Setting description to hide biography descriptions on actor and crew pages
+  ///
+  /// In en, this message translates to:
+  /// **'Hide biography descriptions on actor and crew pages'**
+  String get hideMediaDescriptionPersonSubtitle;
+
+  /// Setting title to hide descriptions on music pages
+  ///
+  /// In en, this message translates to:
+  /// **'Music Pages'**
+  String get hideMediaDescriptionMusic;
+
+  /// Setting description to hide descriptions on music album and artist pages
+  ///
+  /// In en, this message translates to:
+  /// **'Hide descriptions on music album and artist pages'**
+  String get hideMediaDescriptionMusicSubtitle;
+
+  /// Setting title to hide descriptions on Seerr movie discovery pages
+  ///
+  /// In en, this message translates to:
+  /// **'Movie Pages'**
+  String get hideMediaDescriptionSeerrMovie;
+
+  /// Setting description to hide descriptions on Seerr movie discovery pages
+  ///
+  /// In en, this message translates to:
+  /// **'Hide descriptions on Seerr movie discovery pages'**
+  String get hideMediaDescriptionSeerrMovieSubtitle;
+
+  /// Setting title to hide descriptions on Seerr TV show discovery pages
+  ///
+  /// In en, this message translates to:
+  /// **'Show Pages'**
+  String get hideMediaDescriptionSeerrShow;
+
+  /// Setting description to hide descriptions on Seerr TV show discovery pages
+  ///
+  /// In en, this message translates to:
+  /// **'Hide descriptions on Seerr TV show discovery pages'**
+  String get hideMediaDescriptionSeerrShowSubtitle;
+
+  /// Setting title to hide descriptions on Seerr collection pages
+  ///
+  /// In en, this message translates to:
+  /// **'Collection Pages'**
+  String get hideMediaDescriptionSeerrCollection;
+
+  /// Setting description to hide descriptions on Seerr collection pages
+  ///
+  /// In en, this message translates to:
+  /// **'Hide descriptions on Seerr collection pages'**
+  String get hideMediaDescriptionSeerrCollectionSubtitle;
+
   /// Setting title to replace thumbnails on Classic details page with series thumbnail
   ///
   /// In en, this message translates to:

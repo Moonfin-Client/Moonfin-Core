@@ -4264,7 +4264,12 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
             ],
           ),
           if (_sections.shows(DetailSection.biography) &&
-              overview.isNotEmpty) ...[
+              overview.isNotEmpty &&
+              !hidesMediaDescription(
+                itemType: item.type,
+                prefs: widget.prefs,
+                isSeerr: _vm.isSeerrOnly,
+              )) ...[
             const SizedBox(height: 24),
             _buildOverviewText(context, overview, maxWidth: 850),
           ],
@@ -4470,7 +4475,13 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           ),
           // Albums rarely carry a summary so this layout never showed one, but
           // for a book it is the point of the page.
-          if (isAudiobookOrBook && overview.isNotEmpty) ...[
+          if (isAudiobookOrBook &&
+              overview.isNotEmpty &&
+              !hidesMediaDescription(
+                itemType: item.type,
+                prefs: widget.prefs,
+                isSeerr: _vm.isSeerrOnly,
+              )) ...[
             const SizedBox(height: 16),
             _buildOverviewText(context, overview),
           ],
@@ -4694,9 +4705,8 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
         if (overview.isNotEmpty &&
             !hidesMediaDescription(
               itemType: item.type,
-              hideMediaDescription: widget.prefs.get(
-                UserPreferences.hideDetailsMediaDescription,
-              ),
+              prefs: widget.prefs,
+              isSeerr: _vm.isSeerrOnly,
             )) ...[
           if (!hideTitleAndLogo || tagline.isNotEmpty)
             const SizedBox(height: 8),
@@ -5043,9 +5053,8 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     final progress = (episode.playedPercentage ?? 0) / 100.0;
     final hideOverview = hidesMediaDescription(
       itemType: episode.type,
-      hideMediaDescription: widget.prefs.get(
-        UserPreferences.hideDetailsMediaDescription,
-      ),
+      prefs: widget.prefs,
+      isSeerr: episode.serverId == 'seerr',
     );
     return UpNextCard(
       label: combinedLabel,

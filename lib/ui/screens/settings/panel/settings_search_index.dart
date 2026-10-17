@@ -319,6 +319,16 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
     icon: Icons.dashboard_customize_outlined,
     open: () => push(const _DetailSectionsScreen()),
   );
+  final mediaDescriptionVisibility = _SearchSection(
+    slug: 'media-description-visibility',
+    path: [
+      l10n.appearance,
+      l10n.detailsPage,
+      l10n.toggleMediaDescriptionVisibility,
+    ],
+    icon: Icons.description_outlined,
+    open: () => push(const _MediaDescriptionVisibilityScreen()),
+  );
   final ratingSources = _SearchSection(
     slug: 'rating-sources',
     path: [l10n.appearance, l10n.detailsPage, l10n.ratingSources],
@@ -679,12 +689,6 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       keywords: ['youtube', 'trailer', 'external app'],
     ),
     details.leaf(
-      'pref_hide_details_media_description',
-      l10n.hideDetailsMediaDescription,
-      subtitle: l10n.hideDetailsMediaDescriptionSubtitle,
-      keywords: ['spoiler', 'description', 'overview'],
-    ),
-    details.leaf(
       'pref_detail_use_series_thumbnails',
       l10n.detailUseSeriesThumbnails,
       subtitle: l10n.detailUseSeriesThumbnailsSubtitle,
@@ -775,6 +779,16 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       'seerr',
       'recommendations',
       'biography',
+    ]),
+    mediaDescriptionVisibility.screen(keywords: [
+      'spoilers',
+      'descriptions',
+      'overview',
+      'synopsis',
+      'movie description',
+      'show description',
+      'episode description',
+      'season description',
     ]),
 
     navigation.screen(keywords: ['navbar', 'toolbar', 'sidebar']),

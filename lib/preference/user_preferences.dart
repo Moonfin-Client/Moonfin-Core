@@ -485,6 +485,17 @@ class UserPreferences extends ChangeNotifier {
     'pref_detail_show_technical_details',
     'pref_detail_trailers_external',
     'pref_hide_details_media_description',
+    'pref_hide_details_media_description_movie',
+    'pref_hide_details_media_description_show',
+    'pref_hide_details_media_description_season',
+    'pref_hide_details_media_description_episode',
+    'pref_hide_details_media_description_box_set',
+    'pref_hide_details_media_description_book',
+    'pref_hide_details_media_description_person',
+    'pref_hide_details_media_description_music',
+    'pref_hide_details_media_description_seerr_movie',
+    'pref_hide_details_media_description_seerr_show',
+    'pref_hide_details_media_description_seerr_collection',
     'pref_detail_use_series_thumbnails',
     'pref_hide_home_media_description',
     'pref_display_audio_rows',
@@ -1660,6 +1671,72 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: false,
   );
 
+  /// When on, media description paragraph on movie details pages is hidden.
+  static final hideDetailsMediaDescriptionMovie = Preference(
+    key: 'pref_hide_details_media_description_movie',
+    defaultValue: false,
+  );
+
+  /// When on, media description paragraph on TV show details pages is hidden.
+  static final hideDetailsMediaDescriptionShow = Preference(
+    key: 'pref_hide_details_media_description_show',
+    defaultValue: false,
+  );
+
+  /// When on, media description paragraph on season details pages is hidden.
+  static final hideDetailsMediaDescriptionSeason = Preference(
+    key: 'pref_hide_details_media_description_season',
+    defaultValue: false,
+  );
+
+  /// When on, media description paragraph on episode details pages and episode lists is hidden.
+  static final hideDetailsMediaDescriptionEpisode = Preference(
+    key: 'pref_hide_details_media_description_episode',
+    defaultValue: false,
+  );
+
+  /// When on, media description paragraph on collection / box set details pages is hidden.
+  static final hideDetailsMediaDescriptionBoxSet = Preference(
+    key: 'pref_hide_details_media_description_box_set',
+    defaultValue: false,
+  );
+
+  /// When on, media description paragraph on book and audiobook details pages is hidden.
+  static final hideDetailsMediaDescriptionBook = Preference(
+    key: 'pref_hide_details_media_description_book',
+    defaultValue: false,
+  );
+
+  /// When on, biography description paragraph on actor and crew details pages is hidden.
+  static final hideDetailsMediaDescriptionPerson = Preference(
+    key: 'pref_hide_details_media_description_person',
+    defaultValue: false,
+  );
+
+  /// When on, media description paragraph on music album and artist details pages is hidden.
+  static final hideDetailsMediaDescriptionMusic = Preference(
+    key: 'pref_hide_details_media_description_music',
+    defaultValue: false,
+  );
+
+  /// When on, media description paragraph on Seerr movie discovery pages is hidden.
+  static final hideDetailsMediaDescriptionSeerrMovie = Preference(
+    key: 'pref_hide_details_media_description_seerr_movie',
+    defaultValue: false,
+  );
+
+  /// When on, media description paragraph on Seerr TV show discovery pages is hidden.
+  static final hideDetailsMediaDescriptionSeerrShow = Preference(
+    key: 'pref_hide_details_media_description_seerr_show',
+    defaultValue: false,
+  );
+
+  /// When on, media description paragraph on Seerr collection pages is hidden.
+  static final hideDetailsMediaDescriptionSeerrCollection = Preference(
+    key: 'pref_hide_details_media_description_seerr_collection',
+    defaultValue: false,
+  );
+
   /// When on, thumbnails on Classic details page are replaced with series thumbnail.
   static final detailUseSeriesThumbnails = Preference(
     key: 'pref_detail_use_series_thumbnails',
@@ -1711,9 +1788,14 @@ class UserPreferences extends ChangeNotifier {
       get(kidsModeEnabled) ? false : get(detailTrailersExternal);
 
   /// True means hidden. The preference is named for hiding, so Kids Mode
-  /// forces it on rather than off to leave the description out.
+  /// forces it on rather than off to leave the description out. Otherwise,
+  /// true if either [hideDetailsMediaDescriptionEpisode] or the legacy
+  /// [hideDetailsMediaDescription] toggle is enabled.
   bool get effectiveHideDetailsMediaDescription =>
-      get(kidsModeEnabled) ? true : get(hideDetailsMediaDescription);
+      get(kidsModeEnabled)
+          ? true
+          : (get(hideDetailsMediaDescriptionEpisode) ||
+              get(hideDetailsMediaDescription));
 
   bool get effectiveDetailUseSeriesThumbnails =>
       get(kidsModeEnabled) ? false : get(detailUseSeriesThumbnails);

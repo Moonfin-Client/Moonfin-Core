@@ -8,6 +8,7 @@ import '../../../../../data/viewmodels/item_detail_view_model.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../../preference/detail_section_layout.dart';
 import '../../../../../preference/user_preferences.dart';
+import '../../../../../util/overview_text.dart';
 import '../../../../../util/platform_detection.dart';
 import '../../../../widgets/focus/focusable_wrapper.dart';
 import '../../../../widgets/navigation_layout.dart';
@@ -412,7 +413,12 @@ class NouveauPersonHeroState extends State<NouveauPersonHero> {
 
     final visibility = widget.visibility;
 
-    final overview = visibility.shows(DetailSection.biography)
+    final overview = visibility.shows(DetailSection.biography) &&
+            !hidesMediaDescription(
+              itemType: widget.item.type,
+              prefs: widget.prefs,
+              isSeerr: widget.viewModel.isSeerrOnly,
+            )
         ? widget.item.overview?.trim() ?? ''
         : '';
 
