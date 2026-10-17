@@ -32,6 +32,7 @@ const _item = {
             {'id': 8880, 'streamType': 1, 'index': 0, 'codec': 'h264'},
             {'id': 8881, 'streamType': 2, 'index': 1, 'selected': true},
             {'id': 8882, 'streamType': 3, 'index': 2, 'codec': 'srt'},
+            {'id': 8883, 'streamType': 3, 'index': 3, 'codec': 'none'},
             {
               'id': 9001,
               'streamType': 3,
@@ -122,6 +123,7 @@ void main() {
     });
 
     expect(profile.split('+'), [
+      'add-settings(DirectPlayStreamSelection=true)',
       'add-direct-play-profile(type=videoProfile&container=mkv,mpegts,mp4'
           '&videoCodec=h264,mpeg1video&audioCodec=aac,dca)',
       'add-direct-play-profile(type=videoProfile&container=webm'
@@ -186,19 +188,21 @@ void main() {
       final put = _request(server, '/library/parts/3720');
       expect(put.method, 'PUT');
       expect(put.queryParameters, {'subtitleStreamID': 8882, 'allParts': 1});
-      final decision = _request(
-        server,
-        '/video/:/transcode/universal/decision',
-      );
-      expect(decision.queryParameters['subtitles'], 'none');
-      expect(decision.queryParameters['directPlay'], '0');
-      expect(decision.queryParameters['directStream'], '0');
+      final decisions = server.requests
+          .where((r) => r.path == '/video/:/transcode/universal/decision')
+          .toList();
+      expect(decisions, hasLength(2));
+      expect(decisions.first.queryParameters['subtitles'], 'none');
+      expect(decisions.first.queryParameters['directPlay'], '0');
+      expect(decisions.first.queryParameters['directStream'], '0');
+      expect(decisions.first.queryParameters.containsKey('session'), isFalse);
       final source = (info['MediaSources'] as List).single as Map;
       expect(source['SupportsDirectPlay'], isFalse);
       final url = Uri.parse(source['TranscodingUrl'] as String);
       expect(url.path, '/video/:/transcode/universal/start.m3u8');
       expect(url.queryParameters['session'], info['PlaySessionId']);
       expect(url.queryParameters['subtitles'], 'burn');
+      expect(decisions.last.queryParameters, url.queryParameters);
       expect(source['DefaultSubtitleStreamIndex'], 2);
       final burned = (source['MediaStreams'] as List).firstWhere(
         (s) => s['Index'] == 2,
@@ -206,6 +210,26 @@ void main() {
       expect(burned['DeliveryMethod'], 'Encode');
     },
   );
+
+  test('a codec none subtitle is never burned', () async {
+    final (api, server) = _api('transcode');
+
+    final info = await api.getPlaybackInfo(
+      '1715',
+      requestBody: {'SubtitleStreamIndex': 3, 'EnableDirectPlay': false},
+    );
+
+    final source = (info['MediaSources'] as List).single as Map;
+    final url = Uri.parse(source['TranscodingUrl'] as String);
+    expect(url.queryParameters['subtitles'], 'none');
+    expect(
+      _request(
+        server,
+        '/video/:/transcode/universal/decision',
+      ).queryParameters['subtitles'],
+      'none',
+    );
+  });
 
   test('a track transcodes through the music transcoder', () async {
     final (api, server) = _api('transcode', type: 'track');

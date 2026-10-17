@@ -155,6 +155,40 @@ void main() {
     expect(userData['Played'], isFalse);
   });
 
+  test('leaves out closed captions carried in the video', () {
+    final movie = plexItemToJellyfin({
+      'ratingKey': '1804',
+      'type': 'movie',
+      'title': 'Despicable Me 3',
+      'Media': [
+        {
+          'id': 3720,
+          'Part': [
+            {
+              'Stream': [
+                {'id': 9480, 'index': 0, 'streamType': 1, 'codec': 'h264'},
+                {'id': 9481, 'index': 1, 'streamType': 2, 'codec': 'eac3'},
+                {
+                  'id': 9482,
+                  'index': 0,
+                  'streamType': 3,
+                  'codec': 'eia_608',
+                  'embeddedInVideo': '1',
+                },
+                {'id': 9483, 'index': 2, 'streamType': 3, 'codec': 'srt'},
+              ],
+            },
+          ],
+        },
+      ],
+    });
+
+    expect(
+      (movie['MediaStreams'] as List).map((s) => (s['Index'], s['Codec'])),
+      [(0, 'h264'), (1, 'eac3'), (2, 'srt')],
+    );
+  });
+
   test('gives a track its album and artists, and an album its artist', () {
     final track = plexItemToJellyfin({
       'ratingKey': '23100',

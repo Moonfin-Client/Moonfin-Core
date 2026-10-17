@@ -550,6 +550,7 @@ class MediaKitPlayerBackend extends PlayerBackend
       unawaited(_retryPendingEmbeddedSubtitle());
     });
     _videoParamsSub = _player.stream.videoParams.listen(_onVideoParams);
+    hdrOutput.status.addListener(_refreshSubtitleFontSize);
   }
 
   factory MediaKitPlayerBackend(
@@ -1042,6 +1043,7 @@ class MediaKitPlayerBackend extends PlayerBackend
   void _onVideoParams(VideoParams params) {
     final loaded = params.gamma != null || params.primaries != null;
     _decodedVideoParams = loaded ? params : null;
+    if (loaded) _refreshSubtitleFontSize();
     if (!loaded || !PlatformDetection.supportsNativeHdrWindow) return;
     final status = hdrOutput.status.value;
     final engagedCheckDue =
@@ -1790,6 +1792,7 @@ class MediaKitPlayerBackend extends PlayerBackend
     } catch (_) {
       // The controller can be torn down while a resize is in flight.
     }
+    _refreshSubtitleFontSize();
   }
 
   Future<void> _configureLetterboxCropper() async {
@@ -3011,11 +3014,7 @@ class MediaKitPlayerBackend extends PlayerBackend
       );
       await _nativeSetProperty(native, 'sub-border-size', '2');
     }
-    final fontSize = _lastFontSize;
-    if (fontSize != null) {
-      final mpvSize = ((fontSize / 24.0) * 55.0).round().clamp(24, 120);
-      await _nativeSetProperty(native, 'sub-font-size', mpvSize.toString());
-    }
+    await _writeSubtitleFontSize(native);
     final fontWeight = _lastFontWeight;
     if (fontWeight != null) {
       // mpv holds this across titles, so it has to be written either way or a
@@ -3034,6 +3033,67 @@ class MediaKitPlayerBackend extends PlayerBackend
     // Last, because it decides whether the colors above reach an ASS subtitle
     // at all.
     await _applyAssOverrideMode();
+  }
+
+  Future<void> _writeSubtitleFontSize(NativePlayer native) async {
+    final fontSize = _lastFontSize;
+    if (fontSize == null) return;
+    final mpvSize =
+        (fontSize / 24.0 * 55.0).clamp(24.0, 120.0) * _textSubtitleScale;
+    await _nativeSetProperty(
+      native,
+      'sub-font-size',
+      mpvSize.round().toString(),
+    );
+  }
+
+  void _refreshSubtitleFontSize() {
+    if (_isDisposed) return;
+    unawaited(() async {
+      try {
+        await _writeSubtitleFontSize(_player.platform as NativePlayer);
+      } catch (_) {}
+    }());
+  }
+
+  /// A native window or surface draws the black bars too, so mpv already
+  /// sizes text against the screen there. A crop is left alone because mpv
+  /// lays subtitles out on the uncropped frame.
+  double get _textSubtitleScale {
+    final params = _decodedVideoParams;
+    final width = params?.dw;
+    final height = params?.dh;
+    if (_useNativeSurface ||
+        hdrOutput.isEngaged ||
+        _letterboxCropper.geometry != null ||
+        width == null ||
+        height == null ||
+        height <= 0) {
+      return 1;
+    }
+    // The screen shape is only read when the size is written, so a window
+    // resized wider than 16:9 waits for the next title or style change.
+    final screen = PlatformDispatcher.instance.implicitView?.physicalSize;
+    return textSubtitleFrameScale(
+      frameAspect: width / height,
+      screenAspect: screen == null || screen.height <= 0
+          ? 16 / 9
+          : screen.width / screen.height,
+    );
+  }
+
+  /// How much to enlarge text subtitles on a frame wider than the screen.
+  ///
+  /// mpv sizes text subtitles against the frame it draws into, and the
+  /// texture is the video alone, so a scope title gets smaller text than a
+  /// 16:9 one. This brings it back to the size a 16:9 title gets on the same
+  /// screen, and leaves frames no wider than that alone.
+  static double textSubtitleFrameScale({
+    required double frameAspect,
+    required double screenAspect,
+  }) {
+    final reference = screenAspect > 16 / 9 ? screenAspect : 16 / 9;
+    return frameAspect > reference ? frameAspect / reference : 1;
   }
 
   @override
@@ -3123,6 +3183,7 @@ class MediaKitPlayerBackend extends PlayerBackend
     _presenterWatchdog?.cancel();
     _renegotiateSettleTimer?.cancel();
     _letterboxGeometrySub?.cancel();
+    hdrOutput.status.removeListener(_refreshSubtitleFontSize);
     _pendingEmbeddedSubtitle = null;
     _letterboxCropper.cancel();
     _prefs.removeListener(_onPreferencesChanged);

@@ -244,10 +244,14 @@ Map<String, dynamic> _mediaSource(Map media, String itemId) {
   };
 }
 
+/// Closed captions ride inside the video stream and share its index, so
+/// they're left out.
 List<Map<String, dynamic>> _streams(Map? part) {
   return [
     for (final stream in part?['Stream'] as List? ?? const [])
-      if (stream is Map && _streamTypes[stream['streamType']] != null)
+      if (stream is Map &&
+          _streamTypes[stream['streamType']] != null &&
+          stream['embeddedInVideo'] == null)
         {
           'Index': stream['index'] ?? stream['id'],
           'Type': _streamTypes[stream['streamType']],

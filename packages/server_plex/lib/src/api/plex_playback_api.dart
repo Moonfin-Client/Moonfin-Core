@@ -50,6 +50,9 @@ String plexClientProfile(Map<String, dynamic>? profile) {
           .firstOrNull;
   final videoHls = hls('Video');
   return [
+    // The player switches audio tracks itself, so a file whose chosen track
+    // isn't the first can still direct play.
+    'add-settings(DirectPlayStreamSelection=true)',
     for (final p in profile?['DirectPlayProfiles'] as List? ?? const [])
       if (p is Map && p['Type'] == 'Video')
         'add-direct-play-profile(type=videoProfile'
@@ -103,8 +106,10 @@ class PlexPlaybackApi implements PlaybackApi {
     );
     final media = medias[mediaIndex];
     final part = _first(media['Part'])!;
+    // Closed captions stay out here too, as they do in the item's streams.
     final streams = (part['Stream'] as List? ?? const [])
         .whereType<Map<String, dynamic>>()
+        .where((s) => s['embeddedInVideo'] == null)
         .toList();
 
     // The app picks tracks by the Index the mapper gave them, while Plex
@@ -141,10 +146,13 @@ class PlexPlaybackApi implements PlaybackApi {
         _random.nextInt(256).toRadixString(16).padLeft(2, '0'),
     ].join();
     // Burning an embedded subtitle in rules out a direct play, so only the
-    // transcode URL asks for it. The decision goes without a session because
-    // Plex keeps a session's first answer. A sidecar file reaches the player
-    // on its own.
-    final burnSubtitle = subtitle != null && subtitle['key'] == null;
+    // transcode asks for it. Plex can't decode a track it lists as codec none
+    // (WebVTT), and burning one kills its transcoder, so a transcode leaves
+    // it out. A sidecar file reaches the player on its own.
+    final burnSubtitle =
+        subtitle != null &&
+        subtitle['key'] == null &&
+        subtitle['codec'] != 'none';
     final directStream = request['EnableDirectStream'] == false ? '0' : '1';
     final params = {
       ..._identity,
@@ -168,17 +176,32 @@ class PlexPlaybackApi implements PlaybackApi {
     final transcoder = item['type'] == 'track'
         ? '/music/:/transcode/universal'
         : '/video/:/transcode/universal';
-    final decision = await plexContainer(_dio, '$transcoder/decision', params);
-    final decided = _first(
-      _first(_first(decision['Metadata'])?['Media'])?['Part'],
-    );
-    final directPlay = decided?['decision'] == 'directplay';
-    if (!directPlay && decided?['decision'] != 'transcode') {
-      throw StateError(
-        decision['generalDecisionText'] as String? ??
-            "Plex can't play item $itemId",
-      );
+    Future<bool> decide(Map<String, String> query) async {
+      final decision = await plexContainer(_dio, '$transcoder/decision', query);
+      final decided = _first(
+        _first(_first(decision['Metadata'])?['Media'])?['Part'],
+      )?['decision'];
+      if (decided != 'directplay' && decided != 'transcode') {
+        throw StateError(
+          decision['generalDecisionText'] as String? ??
+              "Plex can't play item $itemId",
+        );
+      }
+      return decided == 'directplay';
     }
+
+    // The first decision goes without a session or a burn, because Plex keeps
+    // a session's first answer and a burn would rule out direct play.
+    final directPlay = await decide(params);
+    final start = {
+      ...params,
+      'directPlay': '0',
+      if (burnSubtitle) 'subtitles': 'burn',
+      'session': session,
+      'X-Plex-Session-Identifier': session,
+    };
+    // Plex can refuse a start whose session has no decision of its own.
+    if (!directPlay) await decide(start);
 
     final source = (plexItemToJellyfin(item)['MediaSources'] as List)
         .cast<Map<String, dynamic>>()
@@ -194,12 +217,7 @@ class PlexPlaybackApi implements PlaybackApi {
           if (!directPlay)
             'TranscodingUrl': Uri(
               path: '$transcoder/start.m3u8',
-              queryParameters: {
-                ...params,
-                if (burnSubtitle) 'subtitles': 'burn',
-                'session': session,
-                'X-Plex-Session-Identifier': session,
-              },
+              queryParameters: start,
             ).toString(),
           'DefaultAudioStreamIndex': audio?['index'] ?? audio?['id'],
           'DefaultSubtitleStreamIndex': shownSubtitle,
