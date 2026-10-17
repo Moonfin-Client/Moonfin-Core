@@ -16,9 +16,12 @@ AutoDownloadPlan _plan(
   bool finished = false,
   DateTime? since,
   DateTime? playedSince,
+  Set<String> kept = const {},
+  Set<String>? autoOwned,
 }) => planSmartDownload(
   episodes: episodes,
   downloadedAt: {for (final id in downloaded) id: downloadedOn ?? downloadedAt},
+  autoOwnedIds: autoOwned ?? downloaded,
   inFlightIds: inFlight,
   keepReady: keepReady,
   storageBudgetBytes: budget,
@@ -27,6 +30,7 @@ AutoDownloadPlan _plan(
   finishedRecently: finished,
   since: since ?? _enabledAt,
   playedSince: playedSince,
+  keptIds: kept,
 );
 
 /// When smart downloads was turned on in these tests.
@@ -42,6 +46,58 @@ List<AggregatedItem> _season({int count = 6, Set<int> finished = const {}}) => [
 ];
 
 void main() {
+  test('a kept episode stays, frees no room, and is still replaced', () {
+    final kept = _plan(
+      _season(finished: {1}),
+      downloaded: {'e1', 'e2'},
+      kept: {'e1'},
+    );
+    expect(kept.toDelete, isEmpty);
+    expect(_ids(kept.toQueue), ['e3']);
+
+    // With no room left, deleting e1 would have made space for e3.
+    final full = _plan(
+      _season(finished: {1}),
+      downloaded: {'e1', 'e2'},
+      kept: {'e1'},
+      budget: 0,
+    );
+    expect(full.toQueue, isEmpty);
+    expect(_ids(full.blocked), ['e3']);
+  });
+
+  test('never deletes an episode the user downloaded by hand', () {
+    final result = _plan(
+      _season(finished: {1}),
+      downloaded: {'e1', 'e2'},
+      autoOwned: {'e2'},
+      finished: true,
+    );
+    expect(result.toDelete, isEmpty);
+  });
+
+  test('a watched download of their own still tops up on a later check', () {
+    // The check right after the finish already ran; this one is not told
+    // about it, and e1 stays because the user downloaded it.
+    final result = _plan(
+      _season(finished: {1}),
+      downloaded: {'e1'},
+      autoOwned: const {},
+      keepReady: 2,
+    );
+    expect(result.toDelete, isEmpty);
+    expect(_ids(result.toQueue), ['e2', 'e3']);
+  });
+
+  test('a kept series keeps every watched episode', () {
+    final result = _plan(
+      _season(finished: {1, 2}),
+      downloaded: {'e1', 'e2', 'e3'},
+      kept: {'series-1'},
+    );
+    expect(result.toDelete, isEmpty);
+  });
+
   test('swaps a watched download for the next episode', () {
     final result = _plan(_season(finished: {1}), downloaded: {'e1', 'e2'});
     expect(_ids(result.toDelete), ['e1']);

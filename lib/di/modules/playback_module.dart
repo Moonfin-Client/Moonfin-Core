@@ -18,6 +18,8 @@ import '../../data/services/log_service.dart';
 import '../../data/services/blocked_content_gate.dart';
 import '../../data/services/media_server_client_factory.dart';
 import '../../data/services/offline_playback_tracker.dart';
+import '../../data/services/remove_watched_planner.dart';
+import '../../data/services/remove_watched_service.dart';
 import '../../playback/local_aware_player_service.dart';
 import '../../playback/local_first_media_stream_resolver.dart';
 
@@ -830,13 +832,17 @@ void setActiveStreamResolver(MediaServerClient client) {
   _currentActiveResolverClient = client;
 }
 
-/// Smart downloads reacts as soon as an episode stops, rather than
-/// waiting for the server's debounced user data event.
+/// Smart downloads and the remove-watched rule react as soon as an item
+/// stops, rather than waiting for the server's debounced user data event or
+/// the next reconnect.
 void _onItemStopped(dynamic item) {
-  if (item is AggregatedItem &&
-      item.type == 'Episode' &&
-      _getIt.isRegistered<AutoDownloadService>()) {
+  if (item is! AggregatedItem) return;
+  if (item.type == 'Episode' && _getIt.isRegistered<AutoDownloadService>()) {
     _getIt<AutoDownloadService>().onEpisodeStopped(item.serverId);
+  }
+  if (removeWatchedTypes.contains(item.type) &&
+      _getIt.isRegistered<RemoveWatchedService>()) {
+    _getIt<RemoveWatchedService>().onItemStopped(item.id);
   }
 }
 

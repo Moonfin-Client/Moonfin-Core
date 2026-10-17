@@ -25498,8 +25498,8 @@ abstract class AppLocalizations {
   /// Explains the smart downloads switch, including that watched episodes are deleted
   ///
   /// In en, this message translates to:
-  /// **'When you finish an episode on any device, Moonfin downloads the next ones. Downloaded episodes are deleted once watched.'**
-  String get smartDownloadsEnableSubtitle;
+  /// **'When you finish an episode on any device, Moonfin downloads the next ones. Episodes it downloads are deleted once watched.'**
+  String get smartDownloadsEnableDescription;
 
   /// Setting for how many unwatched episodes of a series stay downloaded after one is watched
   ///
@@ -25558,8 +25558,32 @@ abstract class AppLocalizations {
   /// Explains the delete-after-watching setting
   ///
   /// In en, this message translates to:
-  /// **'When to remove automatically downloaded episodes after you watch them'**
-  String get autoDownloadDeleteSubtitle;
+  /// **'When to remove episodes downloaded for series you follow, after you watch them'**
+  String get autoDownloadDeleteFollowedSubtitle;
+
+  /// Storage setting that picks how soon an episode or movie the user downloaded themselves is removed after it was watched
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Watched Downloads'**
+  String get removeWatchedDownloads;
+
+  /// Explains the remove-watched-downloads setting
+  ///
+  /// In en, this message translates to:
+  /// **'When to remove episodes and movies you downloaded yourself. Only those you watch after turning this on are removed'**
+  String get removeWatchedDownloadsSubtitle;
+
+  /// Toggle on the download sheet that stops watched downloads of this title from being removed automatically
+  ///
+  /// In en, this message translates to:
+  /// **'Keep Downloaded'**
+  String get keepDownloaded;
+
+  /// Explains the keep-downloaded toggle
+  ///
+  /// In en, this message translates to:
+  /// **'Never remove this automatically after watching'**
+  String get keepDownloadedSubtitle;
 
   /// Delete-after-watching option: keep episodes
   ///

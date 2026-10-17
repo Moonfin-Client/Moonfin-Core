@@ -14,6 +14,7 @@ AutoDownloadPlan _plan(
   Set<String> autoOwned = const {},
   int? budget,
   String? playing,
+  Set<String> kept = const {},
 }) => planAutoDownload(
   episodes: episodes,
   keepUnwatched: keep,
@@ -26,6 +27,7 @@ AutoDownloadPlan _plan(
   sizeOf: sizeOf,
   newSince: followedAt,
   playingItemId: playing,
+  keptIds: kept,
 );
 
 List<String> _ids(List<AggregatedItem> items) => [for (final i in items) i.id];
@@ -34,6 +36,23 @@ List<String> _ids(List<AggregatedItem> items) => [for (final i in items) i.id];
 final _checkedAt = DateTime(2026, 9, 7, 12);
 
 void main() {
+  test('never deletes a kept episode or one of a kept series', () {
+    final episodes = [
+      watched('kept', number: 1),
+      watched('other', number: 2),
+      watched('kept-series', series: 'series-2', number: 1),
+    ];
+    final ids = {'kept', 'other', 'kept-series'};
+    final result = _plan(
+      episodes,
+      deleteAfter: Duration.zero,
+      downloaded: ids,
+      autoOwned: ids,
+      kept: {'kept', 'series-2'},
+    );
+    expect(_ids(result.toDelete), ['other']);
+  });
+
   test('queues unwatched episodes oldest first and skips played ones', () {
     final result = _plan([
       episode('s2e1', season: 2, number: 1),

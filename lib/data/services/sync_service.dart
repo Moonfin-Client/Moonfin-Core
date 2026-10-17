@@ -127,7 +127,7 @@ class SyncService extends ChangeNotifier {
             await _offlineRepo.setSyncedPlaybackPosition(
               item.itemId,
               0,
-              metadataJson: _mergeUserData(item.metadataJson, userData),
+              metadataJson: mergeServerUserData(item.metadataJson, userData),
             );
             synced++;
             continue;
@@ -139,7 +139,7 @@ class SyncService extends ChangeNotifier {
             await _offlineRepo.setSyncedPlaybackPosition(
               item.itemId,
               serverTicks,
-              metadataJson: _mergeUserData(item.metadataJson, userData),
+              metadataJson: mergeServerUserData(item.metadataJson, userData),
             );
             synced++;
             continue;
@@ -172,7 +172,10 @@ class SyncService extends ChangeNotifier {
   /// Returns [metadataJson] with its `UserData` replaced by the server's, so
   /// the offline UI (which reads played/position from metadata) reflects the
   /// adopted progress immediately rather than waiting for a metadata refresh.
-  String _mergeUserData(String metadataJson, Map<String, dynamic> userData) {
+  static String mergeServerUserData(
+    String metadataJson,
+    Map<String, dynamic> userData,
+  ) {
     try {
       final decoded = jsonDecode(metadataJson) as Map<String, dynamic>;
       decoded['UserData'] = userData;

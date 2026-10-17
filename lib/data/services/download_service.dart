@@ -23,6 +23,7 @@ import '../../util/disk_free_space.dart';
 import '../../util/download_grouping.dart' show downloadNotificationLabel;
 import '../../util/download_utils.dart';
 import '../../util/platform_detection.dart';
+import '../../util/server_url.dart';
 import '../database/offline_database.dart';
 import '../models/aggregated_item.dart';
 import '../models/download_quality.dart';
@@ -35,6 +36,7 @@ import 'book_reader_service.dart';
 import 'download_notification_service.dart';
 import 'legacy_download_engine.dart';
 import 'media3_transmux_downloader.dart';
+import 'media_server_client_factory.dart';
 import 'media_store_service.dart';
 import 'storage_path_service.dart';
 import 'web_download_helper.dart';
@@ -3056,6 +3058,37 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
 
   @override
   Future<bool> deleteDownloadedFiles(AggregatedItem item) async {
+    // Read before the rows go: a season or series takes its episodes along.
+    final removedIds = await _relatedImageIds(item);
+    final deleted = await _deleteDownloadedFiles(item);
+    if (deleted) {
+      final serverId = GetIt.instance<MediaServerClientFactory>().serverIdOf(
+        _client,
+      );
+      for (final id in removedIds) {
+        await _prefs.forgetDownloadKept(serverId, id);
+      }
+      // Open detail screens drop their Downloaded state.
+      notifyListeners();
+    }
+    return deleted;
+  }
+
+  /// [deleteDownloadedFiles] for a download of [serverId], refused when this
+  /// service talks to another server: a pass planned before a server switch
+  /// must not act on the new server's rows.
+  Future<bool> deleteServerDownload(
+    AggregatedItem item, {
+    required String serverId,
+  }) async {
+    final ownServerId = GetIt.instance<MediaServerClientFactory>().serverIdOf(
+      _client,
+    );
+    if (ownServerId != serverId) return false;
+    return deleteDownloadedFiles(item);
+  }
+
+  Future<bool> _deleteDownloadedFiles(AggregatedItem item) async {
     // Drop any finished (complete or errored) active entry so a fresh
     // downloadItem call isn't blocked by stale in-memory state.
     final active = _activeDownloads[item.id];
@@ -3067,10 +3100,17 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
       final subFolder = _buildSubFolder(item);
       final targetDir = Directory('${downloadsDir.path}/$subFolder');
       final imageDir = await _storagePath.getImageCacheDir();
+      final ownRow = await _ownRow(item.id);
+      if (item.type != 'Season' && item.type != 'Series') {
+        await _deleteStoredFile(ownRow);
+      }
 
       switch (item.type) {
         case 'Movie':
-          if (await targetDir.exists()) await targetDir.delete(recursive: true);
+          if (await targetDir.exists() &&
+              !await _holdsOtherDownloads(targetDir, item.id)) {
+            await targetDir.delete(recursive: true);
+          }
           await _deleteItemImages(item.id, imageDir);
           await _offlineRepo.deleteItem(item.id);
           return true;
@@ -3126,6 +3166,48 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
     } catch (_) {
       return false;
     }
+  }
+
+  /// This server's row for [itemId]. Emby ids are plain numbers, so another
+  /// server's download can share one.
+  Future<DownloadedItem?> _ownRow(String itemId) async {
+    for (final row in await _offlineRepo.getItemsWithId(itemId)) {
+      if (isStoredServer(
+        row.serverId,
+        serverId: GetIt.instance<MediaServerClientFactory>().serverIdOf(
+          _client,
+        ),
+        baseUrl: _client.baseUrl,
+      )) {
+        return row;
+      }
+    }
+    return null;
+  }
+
+  /// Deletes the file the row says it downloaded, with its subtitles and the
+  /// folders it leaves empty. The other paths are built from the item's
+  /// current metadata, which a refresh may have renamed since (a "TBA"
+  /// episode title, a corrected year). A failure fails the delete, so the
+  /// row stays and a later delete can retry the file.
+  Future<void> _deleteStoredFile(DownloadedItem? row) async {
+    final path = row?.localFilePath;
+    if (path == null || path.isEmpty) return;
+    await _deleteFileArtifacts(path);
+  }
+
+  /// Whether another download's file sits under [dir], which a movie's
+  /// folder can share: the same title and year from a second server or a
+  /// second library.
+  Future<bool> _holdsOtherDownloads(Directory dir, String itemId) async {
+    final prefix = '${dir.path}/';
+    for (final row in await _offlineRepo.getItems()) {
+      final path = row.localFilePath;
+      if (row.itemId != itemId && path != null && path.startsWith(prefix)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   Future<void> _deleteItemImages(String itemId, Directory imageDir) async {

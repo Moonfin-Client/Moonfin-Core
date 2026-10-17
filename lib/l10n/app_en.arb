@@ -13089,8 +13089,8 @@
   "@smartDownloadsEnable": {
     "description": "Switch that swaps a watched downloaded episode for the next episodes of the series"
   },
-  "smartDownloadsEnableSubtitle": "When you finish an episode on any device, Moonfin downloads the next ones. Downloaded episodes are deleted once watched.",
-  "@smartDownloadsEnableSubtitle": {
+  "smartDownloadsEnableDescription": "When you finish an episode on any device, Moonfin downloads the next ones. Episodes it downloads are deleted once watched.",
+  "@smartDownloadsEnableDescription": {
     "description": "Explains the smart downloads switch, including that watched episodes are deleted"
   },
   "smartDownloadsKeepReady": "Episodes to Keep Downloaded",
@@ -13134,9 +13134,25 @@
   "@autoDownloadDelete": {
     "description": "Setting that picks how soon an auto-downloaded episode is removed after it was watched"
   },
-  "autoDownloadDeleteSubtitle": "When to remove automatically downloaded episodes after you watch them",
-  "@autoDownloadDeleteSubtitle": {
+  "autoDownloadDeleteFollowedSubtitle": "When to remove episodes downloaded for series you follow, after you watch them",
+  "@autoDownloadDeleteFollowedSubtitle": {
     "description": "Explains the delete-after-watching setting"
+  },
+  "removeWatchedDownloads": "Remove Watched Downloads",
+  "@removeWatchedDownloads": {
+    "description": "Storage setting that picks how soon an episode or movie the user downloaded themselves is removed after it was watched"
+  },
+  "removeWatchedDownloadsSubtitle": "When to remove episodes and movies you downloaded yourself. Only those you watch after turning this on are removed",
+  "@removeWatchedDownloadsSubtitle": {
+    "description": "Explains the remove-watched-downloads setting"
+  },
+  "keepDownloaded": "Keep Downloaded",
+  "@keepDownloaded": {
+    "description": "Toggle on the download sheet that stops watched downloads of this title from being removed automatically"
+  },
+  "keepDownloadedSubtitle": "Never remove this automatically after watching",
+  "@keepDownloadedSubtitle": {
+    "description": "Explains the keep-downloaded toggle"
   },
   "autoDownloadDeleteNever": "Never",
   "@autoDownloadDeleteNever": {

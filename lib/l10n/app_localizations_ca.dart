@@ -14721,8 +14721,8 @@ class AppLocalizationsCa extends AppLocalizations {
   String get smartDownloadsEnable => 'Baixa els episodis següents';
 
   @override
-  String get smartDownloadsEnableSubtitle =>
-      'Quan acabes un episodi en qualsevol dispositiu, Moonfin baixa els següents. Els episodis baixats se suprimeixen un cop vistos.';
+  String get smartDownloadsEnableDescription =>
+      'When you finish an episode on any device, Moonfin downloads the next ones. Episodes it downloads are deleted once watched.';
 
   @override
   String get smartDownloadsKeepReady => 'Episodis que es mantenen baixats';
@@ -14762,8 +14762,22 @@ class AppLocalizationsCa extends AppLocalizations {
   String get autoDownloadDelete => 'Elimina els episodis baixats';
 
   @override
-  String get autoDownloadDeleteSubtitle =>
-      'Quan s\'han d\'eliminar els episodis baixats automàticament després de veure\'ls';
+  String get autoDownloadDeleteFollowedSubtitle =>
+      'When to remove episodes downloaded for series you follow, after you watch them';
+
+  @override
+  String get removeWatchedDownloads => 'Remove Watched Downloads';
+
+  @override
+  String get removeWatchedDownloadsSubtitle =>
+      'When to remove episodes and movies you downloaded yourself. Only those you watch after turning this on are removed';
+
+  @override
+  String get keepDownloaded => 'Keep Downloaded';
+
+  @override
+  String get keepDownloadedSubtitle =>
+      'Never remove this automatically after watching';
 
   @override
   String get autoDownloadDeleteNever => 'Mai';

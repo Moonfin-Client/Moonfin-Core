@@ -11,6 +11,7 @@ import 'package:server_core/server_core.dart';
 import '../../auth/repositories/session_repository.dart';
 import '../../util/platform_detection.dart';
 import 'sync_service.dart';
+import 'remove_watched_service.dart';
 
 class ConnectivityService extends ChangeNotifier {
   final Connectivity _connectivity;
@@ -44,6 +45,10 @@ class ConnectivityService extends ChangeNotifier {
   bool get serverReachable => _serverReachable;
 
   bool get canReachServer => _isOnline && _serverReachable;
+
+  /// Whether the reconnect sync (ratings, progress, metadata, then removing
+  /// watched downloads) is running.
+  bool get isSyncing => _inFlightSync != null;
 
   /// Whether the only link is mobile data. Read by prefetchers that should
   /// not spend a metered connection on artwork the user may never scroll to.
@@ -221,6 +226,14 @@ class ConnectivityService extends ChangeNotifier {
           (_) => syncService.syncPlaybackProgress(client, serverId: serverId),
         )
         .then((_) => syncService.refreshMetadata(client, serverId: serverId))
+        // Last, so it judges the played state the refresh just pulled in.
+        .then((_) async {
+          if (!getIt.isRegistered<RemoveWatchedService>()) return;
+          await getIt<RemoveWatchedService>().runSafely(
+            client,
+            serverId: serverId,
+          );
+        })
         .catchError((Object e) {
           ServerLog.network(
             'Progress sync failed',

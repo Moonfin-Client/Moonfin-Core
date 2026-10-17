@@ -12133,10 +12133,6 @@
     "@autoDownloadDelete": {
         "description": "Setting that picks how soon an auto-downloaded episode is removed after it was watched"
     },
-    "autoDownloadDeleteSubtitle": "When to remove automatically downloaded episodes after you watch them",
-    "@autoDownloadDeleteSubtitle": {
-        "description": "Explains the delete-after-watching setting"
-    },
     "autoDownloadDeleteNever": "Never",
     "@autoDownloadDeleteNever": {
         "description": "Delete-after-watching option: keep episodes"

@@ -18,9 +18,15 @@ import 'auto_download_planner.dart';
 ///   finished. A download is swapped out once the server says it was played
 ///   after that and after [since] (when smart downloads was turned on), so a
 ///   download of something already watched, kept to rewatch, stays.
+/// - Only downloads in [autoOwnedIds], those the app queued itself, are ever
+///   swapped out. One the user queued by hand is left to the remove-watched
+///   setting.
 /// - The episode in [playingItemId] counts as unwatched until the next
 ///   check: servers flip Played near the end of playback, while the file is
 ///   open. Specials are left alone.
+/// - Episodes in [keptIds], or of a series in it, are never swapped out.
+///   Like the user's own downloads they stay, free no room, and still count
+///   as watched for the top-up.
 /// - The series is topped up to [keepReady] unwatched episodes downloaded or
 ///   in flight after the furthest episode watched, and each download watched
 ///   after [playedSince] (the last top-up) is replaced at least one for one;
@@ -28,6 +34,7 @@ import 'auto_download_planner.dart';
 AutoDownloadPlan planSmartDownload({
   required List<AggregatedItem> episodes,
   required Map<String, DateTime?> downloadedAt,
+  required Set<String> autoOwnedIds,
   required Set<String> inFlightIds,
   required int keepReady,
   required int? storageBudgetBytes,
@@ -36,6 +43,7 @@ AutoDownloadPlan planSmartDownload({
   DateTime? playedSince,
   bool finishedRecently = false,
   String? playingItemId,
+  Set<String> keptIds = const {},
 }) {
   final ordered = [
     for (final episode in episodes)
@@ -43,6 +51,8 @@ AutoDownloadPlan planSmartDownload({
   ]..sort(airedOrder);
   bool played(AggregatedItem e) => e.isPlayed && e.id != playingItemId;
 
+  // Every download watched since it was downloaded counts toward the
+  // top-up; only the ones the app queued, and not kept, are swapped out.
   final watched = [
     for (final episode in ordered)
       if (played(episode) &&
@@ -50,12 +60,18 @@ AutoDownloadPlan planSmartDownload({
           watchedSinceDownload(episode, downloadedAt[episode.id], since))
         episode,
   ];
+  final deletable = [
+    for (final episode in watched)
+      if (autoOwnedIds.contains(episode.id) &&
+          !isKeptDownload(episode, keptIds))
+        episode,
+  ];
   final replacing = playedSince == null
       ? watched.length
       : watched.where((e) => e.lastPlayedDate!.isAfter(playedSince)).length;
   final furthest = ordered.lastIndexWhere(played);
   if (furthest < 0 || (watched.isEmpty && !finishedRecently)) {
-    return AutoDownloadPlan(toDelete: watched);
+    return AutoDownloadPlan(toDelete: deletable);
   }
 
   var held = 0;
@@ -70,11 +86,11 @@ AutoDownloadPlan planSmartDownload({
     }
   }
 
-  // The swapped episodes are deleted before anything is queued, so their
-  // space counts toward the budget.
+  // The deletable episodes go before anything is queued, so their space
+  // counts toward the budget.
   final budget = storageBudgetBytes == null
       ? null
-      : storageBudgetBytes + watched.fold<int>(0, (sum, e) => sum + sizeOf(e));
+      : storageBudgetBytes + deletable.fold<int>(0, (sum, e) => sum + sizeOf(e));
   final (toQueue, blocked) = fitStorageBudget(
     queueable.take(math.max(replacing, keepReady - held)).toList(),
     budgetBytes: budget,
@@ -83,7 +99,7 @@ AutoDownloadPlan planSmartDownload({
 
   return AutoDownloadPlan(
     toQueue: toQueue,
-    toDelete: watched,
+    toDelete: deletable,
     blocked: blocked,
   );
 }

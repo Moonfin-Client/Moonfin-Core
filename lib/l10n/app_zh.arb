@@ -10487,10 +10487,6 @@
     "@autoDownloadDelete": {
         "description": "Setting that picks how soon an auto-downloaded episode is removed after it was watched"
     },
-    "autoDownloadDeleteSubtitle": "观看后何时自动删除已下载剧集",
-    "@autoDownloadDeleteSubtitle": {
-        "description": "Explains the delete-after-watching setting"
-    },
     "autoDownloadDeleteNever": "永不删除",
     "@autoDownloadDeleteNever": {
         "description": "Delete-after-watching option: keep episodes"

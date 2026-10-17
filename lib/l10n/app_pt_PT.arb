@@ -13072,10 +13072,6 @@
     "@smartDownloadsEnable": {
         "description": "Switch that swaps a watched downloaded episode for the next episodes of the series"
     },
-    "smartDownloadsEnableSubtitle": "Quando terminas um episódio em qualquer dispositivo, o Moonfin transfere os seguintes. Os episódios transferidos são eliminados depois de vistos.",
-    "@smartDownloadsEnableSubtitle": {
-        "description": "Explains the smart downloads switch, including that watched episodes are deleted"
-    },
     "smartDownloadsKeepReady": "Episódios a manter transferidos",
     "@smartDownloadsKeepReady": {
         "description": "Setting for how many unwatched episodes of a series stay downloaded after one is watched"
@@ -13116,10 +13112,6 @@
     "autoDownloadDelete": "Eliminar episódios transferidos",
     "@autoDownloadDelete": {
         "description": "Setting that picks how soon an auto-downloaded episode is removed after it was watched"
-    },
-    "autoDownloadDeleteSubtitle": "Quando remover os episódios transferidos automaticamente depois de os veres",
-    "@autoDownloadDeleteSubtitle": {
-        "description": "Explains the delete-after-watching setting"
     },
     "autoDownloadDeleteNever": "Nunca",
     "@autoDownloadDeleteNever": {

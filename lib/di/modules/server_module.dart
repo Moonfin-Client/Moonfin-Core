@@ -1,10 +1,8 @@
 import 'dart:async';
 
 import 'package:get_it/get_it.dart';
-import 'package:playback_core/playback_core.dart';
 import 'package:server_core/server_core.dart';
 
-import '../../data/models/aggregated_item.dart';
 import '../../data/offline/connectivity_aware_media_server_client.dart';
 import '../../data/offline/offline_catalog.dart';
 import '../../data/repositories/offline_repository.dart';
@@ -21,6 +19,7 @@ import '../../data/services/seerr_notification_service.dart';
 import '../../data/services/socket_handler.dart';
 import '../../data/services/storage_path_service.dart';
 import '../../platform/auto_download_background_binding.dart';
+import '../../playback/current_playing_item.dart';
 import '../../playback/server_transcode_capabilities.dart';
 import '../../util/download_grouping.dart' show downloadNotificationLabel;
 import '../../util/download_utils.dart' show formatBytes;
@@ -184,7 +183,7 @@ void _replaceAutoDownloadService(
         ? _getIt<SocketHandler>().events
         : null,
     ready: recovered,
-    playingItemId: _playingItemId,
+    playingItemId: currentPlayingItemId,
     onStorageFull: _notifyStorageFull,
   )..start();
   _getIt.registerSingleton<AutoDownloadService>(service);
@@ -217,10 +216,4 @@ void _notifyStorageFull(List<BlockedEpisode> blocked) {
       firstSize: formatBytes(blocked.first.bytes),
     ),
   );
-}
-
-String? _playingItemId() {
-  if (!_getIt.isRegistered<PlaybackManager>()) return null;
-  final current = _getIt<PlaybackManager>().queueService.currentItem;
-  return current is AggregatedItem ? current.id : null;
 }

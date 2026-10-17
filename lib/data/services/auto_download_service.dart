@@ -481,6 +481,7 @@ class AutoDownloadService extends ChangeNotifier {
     await ready;
     final state = await _SharedState.load(_repository, downloader);
     final playing = playingItemId?.call();
+    final kept = _prefs.downloadKeptIdsFor(serverId);
     final keepSetting = _prefs.get(UserPreferences.autoDownloadKeepUnwatched);
     final keepUnwatched = keepSetting <= 0 ? null : keepSetting;
     final deleteAfterHours = _prefs.get(
@@ -546,6 +547,7 @@ class AutoDownloadService extends ChangeNotifier {
               sizeOf: sizeOf,
               newSince: subscription.createdAt,
               playingItemId: playing,
+              keptIds: kept,
             ),
           ),
       ],
@@ -646,6 +648,7 @@ class AutoDownloadService extends ChangeNotifier {
     final stored = _prefs.get(UserPreferences.smartDownloadsAppliedKeepReady);
     final applied = stored > 0 ? stored : 1;
     final isRaise = keepReady > applied;
+    final kept = _prefs.downloadKeptIdsFor(serverId);
     final downloadsBySeries = <String, List<DownloadedEpisodeRef>>{};
     final downloadById = <String, DownloadedEpisodeRef>{};
     for (final row in await _repository.getDownloadedEpisodes()) {
@@ -711,6 +714,7 @@ class AutoDownloadService extends ChangeNotifier {
                 for (final row in downloadsBySeries[seriesId] ?? const [])
                   row.itemId: row.downloadedAt,
               },
+              autoOwnedIds: state.autoOwnedIds,
               inFlightIds: state.inFlightIds,
               keepReady: keepReady,
               storageBudgetBytes: state.budget,
@@ -721,6 +725,7 @@ class AutoDownloadService extends ChangeNotifier {
                   finishedSeries.contains(seriesId) ||
                   raised.contains(seriesId),
               playingItemId: playingItemId,
+              keptIds: kept,
             ),
           ),
       ],

@@ -46,6 +46,7 @@ class AutoDownloadPlan {
 ///   are played, once [deleteAfter] has passed since the last play (null
 ///   never deletes). The one in [playingItemId] waits for the next check:
 ///   servers flip Played near the end of playback, while the file is open.
+///   Episodes in [keptIds], or of a series in it, are never deleted.
 AutoDownloadPlan planAutoDownload({
   required List<AggregatedItem> episodes,
   required int? keepUnwatched,
@@ -58,6 +59,7 @@ AutoDownloadPlan planAutoDownload({
   required int Function(AggregatedItem episode) sizeOf,
   required DateTime newSince,
   String? playingItemId,
+  Set<String> keptIds = const {},
 }) {
   final toDelete = <AggregatedItem>[];
   if (deleteAfter != null) {
@@ -66,7 +68,8 @@ AutoDownloadPlan planAutoDownload({
           episode.id != playingItemId &&
           autoOwnedIds.contains(episode.id) &&
           downloadedIds.contains(episode.id) &&
-          _watchedLongEnough(episode, deleteAfter, now)) {
+          !isKeptDownload(episode, keptIds) &&
+          watchedLongEnough(episode, deleteAfter, now)) {
         toDelete.add(episode);
       }
     }
@@ -126,11 +129,17 @@ AutoDownloadPlan planAutoDownload({
 bool isDownloadableEpisode(AggregatedItem episode) =>
     !isSpecialEpisode(episode) && isEligibleNextEpisodeCandidate(episode);
 
+/// Whether [item] or its series is in [keptIds], the user's Keep list for
+/// the item's server. No rule deletes a kept download.
+bool isKeptDownload(AggregatedItem item, Set<String> keptIds) =>
+    keptIds.contains(item.id) ||
+    (item.seriesId != null && keptIds.contains(item.seriesId));
+
 /// Played at least [delay] ago. Without a last-played date only an
 /// immediate delete can be decided; a delayed one waits for the date.
-bool _watchedLongEnough(AggregatedItem episode, Duration delay, DateTime now) {
+bool watchedLongEnough(AggregatedItem item, Duration delay, DateTime now) {
   if (delay == Duration.zero) return true;
-  final playedAt = episode.lastPlayedDate;
+  final playedAt = item.lastPlayedDate;
   return playedAt != null &&
       !now.difference(playedAt).isNegative &&
       now.difference(playedAt) >= delay;

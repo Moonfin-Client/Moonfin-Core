@@ -14583,8 +14583,8 @@ class AppLocalizationsFi extends AppLocalizations {
   String get smartDownloadsEnable => 'Lataa seuraavat jaksot';
 
   @override
-  String get smartDownloadsEnableSubtitle =>
-      'Kun olet katsonut jakson loppuun millä tahansa laitteella, Moonfin lataa seuraavat jaksot. Ladatut jaksot poistetaan, kun ne on katsottu.';
+  String get smartDownloadsEnableDescription =>
+      'When you finish an episode on any device, Moonfin downloads the next ones. Episodes it downloads are deleted once watched.';
 
   @override
   String get smartDownloadsKeepReady => 'Lataa tallennettavat jaksot';
@@ -14624,8 +14624,22 @@ class AppLocalizationsFi extends AppLocalizations {
   String get autoDownloadDelete => 'Poista ladatut jaksot';
 
   @override
-  String get autoDownloadDeleteSubtitle =>
-      'Milloin automaattisesti ladatut jaksot poistetaan katsomisen jälkeen';
+  String get autoDownloadDeleteFollowedSubtitle =>
+      'When to remove episodes downloaded for series you follow, after you watch them';
+
+  @override
+  String get removeWatchedDownloads => 'Remove Watched Downloads';
+
+  @override
+  String get removeWatchedDownloadsSubtitle =>
+      'When to remove episodes and movies you downloaded yourself. Only those you watch after turning this on are removed';
+
+  @override
+  String get keepDownloaded => 'Keep Downloaded';
+
+  @override
+  String get keepDownloadedSubtitle =>
+      'Never remove this automatically after watching';
 
   @override
   String get autoDownloadDeleteNever => 'Ei koskaan';

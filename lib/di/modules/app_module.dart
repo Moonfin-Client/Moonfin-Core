@@ -38,7 +38,10 @@ import '../../data/services/server_messages_service.dart';
 import '../../data/services/retro_artwork/retro_artwork_activity_gate.dart';
 import '../../data/services/retro_artwork/retro_artwork_cache.dart';
 import '../../data/services/retro_artwork/retro_artwork_disk_cache.dart';
+import '../../data/services/connectivity_service.dart';
 import '../../data/services/custom_external_lists_service.dart';
+import '../../data/services/download_service.dart';
+import '../../data/services/remove_watched_service.dart';
 import '../../data/services/row_data_source.dart';
 import '../../data/services/socket_handler.dart';
 import '../../data/services/pending_rating_store.dart';
@@ -47,6 +50,7 @@ import '../../data/services/user_data_sync.dart';
 import '../../data/services/theme_music_service.dart';
 import '../../data/viewmodels/media_bar_view_model.dart';
 import '../../data/viewmodels/seerr_discover_view_model.dart';
+import '../../playback/current_playing_item.dart';
 import '../../playback/external_player_service.dart';
 import '../../preference/seerr_preferences.dart';
 import '../../preference/user_preferences.dart';
@@ -165,6 +169,37 @@ void registerAppModule() {
   );
   _getIt.registerLazySingleton<SyncService>(
     () => SyncService(_getIt<OfflineRepository>(), _getIt<PendingRatingStore>()),
+  );
+  _getIt.registerLazySingleton(
+    () => RemoveWatchedService(
+      repository: _getIt<OfflineRepository>(),
+      prefs: _getIt<UserPreferences>(),
+      // Resolved per delete: the download service is replaced on every
+      // server or account switch.
+      deleteDownload: (item, {required serverId}) async =>
+          _getIt.isRegistered<DownloadService>() &&
+          await _getIt<DownloadService>().deleteServerDownload(
+            item,
+            serverId: serverId,
+          ),
+      signedInServer: () {
+        if (!_getIt.isRegistered<MediaServerClient>()) return null;
+        if (_getIt.isRegistered<ConnectivityService>() &&
+            !_getIt<ConnectivityService>().canReachServer) {
+          return null;
+        }
+        final client = _getIt<MediaServerClient>();
+        return (
+          client: client,
+          serverId: _getIt<MediaServerClientFactory>().serverIdOf(client),
+        );
+      },
+      syncInFlight: () =>
+          _getIt.isRegistered<ConnectivityService>() &&
+          _getIt<ConnectivityService>().isSyncing,
+      playingItemId: currentPlayingItemId,
+    )..start(),
+    dispose: (service) => service.dispose(),
   );
   _getIt.registerLazySingleton(() => const ExternalPlayerService());
 

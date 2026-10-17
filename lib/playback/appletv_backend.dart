@@ -304,6 +304,10 @@ class AppleTvBackend implements PlayerBackend {
         : <String, String>{};
 
     _completed = false;
+    // Until the new session ticks, the previous item's end would stand in
+    // for this one's position, and a stop then reports it as watched.
+    _position = startPosition;
+    _positionStream.add(_position);
     _tracksKnown = false;
     _textTrackCount = 0;
     _activeSubtitleTrackIndex = null;

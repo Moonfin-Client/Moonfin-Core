@@ -1708,11 +1708,18 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         keywords: ['parallel', 'simultaneous'],
       ),
       downloads.leaf('download_storage_limit_mb', l10n.storageLimit),
+      downloads.leaf(
+        'download_remove_watched_after_hours',
+        l10n.removeWatchedDownloads,
+        subtitle: l10n.removeWatchedDownloadsSubtitle,
+        keywords: ['delete', 'watched', 'automatic', 'cleanup', 'space'],
+        header: l10n.storage,
+      ),
       if (AutoDownloadService.isSupportedPlatform) ...[
         downloads.leaf(
           'smart_downloads_enabled',
           l10n.smartDownloadsEnable,
-          subtitle: l10n.smartDownloadsEnableSubtitle,
+          subtitle: l10n.smartDownloadsEnableDescription,
           keywords: ['smart', 'next episode', 'series', 'automatic', 'delete'],
           header: l10n.smartDownloadsSection,
         ),
@@ -1738,7 +1745,7 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         downloads.leaf(
           'auto_download_delete_after_hours',
           l10n.autoDownloadDelete,
-          subtitle: l10n.autoDownloadDeleteSubtitle,
+          subtitle: l10n.autoDownloadDeleteFollowedSubtitle,
           keywords: ['watched', 'remove'],
           header: l10n.autoDownloadSection,
         ),

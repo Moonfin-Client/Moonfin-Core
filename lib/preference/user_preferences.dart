@@ -3660,6 +3660,74 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: 0,
   );
 
+  /// Hours after an episode or movie the user downloaded by hand was watched
+  /// before it is removed: 0 right away, -1 never. Smart downloads and
+  /// followed series remove what they queued by their own settings. One
+  /// setting for the device, like the downloads themselves.
+  static final downloadRemoveWatchedAfterHours = Preference(
+    key: 'download_remove_watched_after_hours',
+    defaultValue: -1,
+  );
+
+  /// When the remove-watched setting was last turned on. Only what is watched
+  /// after it is removed, so turning it on never empties the downloads the
+  /// user already watched and kept.
+  static final downloadRemoveWatchedSince = Preference(
+    key: 'download_remove_watched_since',
+    defaultValue: '',
+  );
+
+  /// Sets the remove-watched delay, stamping when it was turned on.
+  Future<void> setRemoveWatchedAfterHours(int hours) async {
+    final wasOff = get(downloadRemoveWatchedAfterHours) < 0;
+    if (wasOff && hours >= 0) {
+      await set(
+        downloadRemoveWatchedSince,
+        DateTime.now().toUtc().toIso8601String(),
+      );
+    }
+    await set(downloadRemoveWatchedAfterHours, hours);
+  }
+
+  /// Downloads the remove-watched rules leave alone, as `serverId:itemId`
+  /// entries. A series id keeps all of its episodes. Per server like the
+  /// downloads, not per account.
+  static final downloadKeptIds = Preference<List<String>>(
+    key: 'download_kept_ids',
+    defaultValue: const [],
+  );
+
+  static String _downloadKeptKey(String serverId, String itemId) =>
+      '$serverId:$itemId';
+
+  /// The kept item and series ids of [serverId].
+  Set<String> downloadKeptIdsFor(String serverId) {
+    final prefix = '$serverId:';
+    return {
+      for (final key in get(downloadKeptIds))
+        if (key.startsWith(prefix)) key.substring(prefix.length),
+    };
+  }
+
+  bool isDownloadKept(String serverId, String itemId) =>
+      get(downloadKeptIds).contains(_downloadKeptKey(serverId, itemId));
+
+  Future<void> setDownloadKept(
+    String serverId,
+    String itemId, {
+    required bool keep,
+  }) async {
+    final keys = get(downloadKeptIds).toSet();
+    final key = _downloadKeptKey(serverId, itemId);
+    final changed = keep ? keys.add(key) : keys.remove(key);
+    if (changed) await set(downloadKeptIds, keys.toList()..sort());
+  }
+
+  /// Drops [itemId] of [serverId] from the Keep list once its download is
+  /// deleted, so the list does not outgrow what is on disk.
+  Future<void> forgetDownloadKept(String serverId, String itemId) =>
+      setDownloadKept(serverId, itemId, keep: false);
+
   static final downloadConcurrentCount = Preference(
     key: 'download_concurrent_count',
     defaultValue: 2,

@@ -20,6 +20,7 @@ import 'data/models/aggregated_item.dart';
 import 'data/services/achievements_service.dart';
 import 'data/services/cast/cast_service.dart';
 import 'data/services/connectivity_service.dart';
+import 'data/services/remove_watched_service.dart';
 import 'data/services/download_service.dart';
 import 'data/services/seerr_notification_service.dart';
 import 'data/services/plugin_sync_service.dart';
@@ -1119,6 +1120,11 @@ class _ConnectivityListenerState extends ConsumerState<_ConnectivityListener>
       _backgroundAwareSession?.onAppResumed();
       if (GetIt.instance.isRegistered<ConnectivityService>()) {
         GetIt.instance<ConnectivityService>().onAppResumed();
+      }
+      if (GetIt.instance.isRegistered<RemoveWatchedService>()) {
+        unawaited(
+          GetIt.instance<RemoveWatchedService>().runForSignedInServer(),
+        );
       }
     }
   }

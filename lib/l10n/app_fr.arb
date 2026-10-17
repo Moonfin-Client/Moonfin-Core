@@ -11345,10 +11345,6 @@
     "@autoDownloadDelete": {
         "description": "Setting that picks how soon an auto-downloaded episode is removed after it was watched"
     },
-    "autoDownloadDeleteSubtitle": "Quand supprimer les épisodes téléchargés automatiquement une fois que vous les avez vus",
-    "@autoDownloadDeleteSubtitle": {
-        "description": "Explains the delete-after-watching setting"
-    },
     "autoDownloadDeleteNever": "Jamais",
     "@autoDownloadDeleteNever": {
         "description": "Delete-after-watching option: keep episodes"
@@ -13600,10 +13596,6 @@
     "smartDownloadsEnable": "Télécharger les épisodes suivants",
     "@smartDownloadsEnable": {
         "description": "Switch that swaps a watched downloaded episode for the next episodes of the series"
-    },
-    "smartDownloadsEnableSubtitle": "Lorsque vous terminez un épisode sur n'importe quel appareil, Moonfin télécharge les suivants. Les épisodes téléchargés sont supprimés une fois vus.",
-    "@smartDownloadsEnableSubtitle": {
-        "description": "Explains the smart downloads switch, including that watched episodes are deleted"
     },
     "smartDownloadsKeepReady": "Épisodes à garder téléchargés",
     "@smartDownloadsKeepReady": {

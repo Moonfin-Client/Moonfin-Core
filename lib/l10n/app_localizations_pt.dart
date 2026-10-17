@@ -14605,8 +14605,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get smartDownloadsEnable => 'Download Next Episodes';
 
   @override
-  String get smartDownloadsEnableSubtitle =>
-      'When you finish an episode on any device, Moonfin downloads the next ones. Downloaded episodes are deleted once watched.';
+  String get smartDownloadsEnableDescription =>
+      'When you finish an episode on any device, Moonfin downloads the next ones. Episodes it downloads are deleted once watched.';
 
   @override
   String get smartDownloadsKeepReady => 'Episodes to Keep Downloaded';
@@ -14646,8 +14646,22 @@ class AppLocalizationsPt extends AppLocalizations {
   String get autoDownloadDelete => 'Delete Downloaded Episodes';
 
   @override
-  String get autoDownloadDeleteSubtitle =>
-      'When to remove automatically downloaded episodes after you watch them';
+  String get autoDownloadDeleteFollowedSubtitle =>
+      'When to remove episodes downloaded for series you follow, after you watch them';
+
+  @override
+  String get removeWatchedDownloads => 'Remove Watched Downloads';
+
+  @override
+  String get removeWatchedDownloadsSubtitle =>
+      'When to remove episodes and movies you downloaded yourself. Only those you watch after turning this on are removed';
+
+  @override
+  String get keepDownloaded => 'Keep Downloaded';
+
+  @override
+  String get keepDownloadedSubtitle =>
+      'Never remove this automatically after watching';
 
   @override
   String get autoDownloadDeleteNever => 'Never';
@@ -27736,10 +27750,6 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get autoDownloadDelete => 'Excluir automaticamente';
-
-  @override
-  String get autoDownloadDeleteSubtitle =>
-      'Escolha quando os downloads assistidos serão removidos';
 
   @override
   String get autoDownloadDeleteNever => 'Nunca';
@@ -41004,10 +41014,6 @@ class AppLocalizationsPtPt extends AppLocalizationsPt {
   String get smartDownloadsEnable => 'Transferir próximos episódios';
 
   @override
-  String get smartDownloadsEnableSubtitle =>
-      'Quando terminas um episódio em qualquer dispositivo, o Moonfin transfere os seguintes. Os episódios transferidos são eliminados depois de vistos.';
-
-  @override
   String get smartDownloadsKeepReady => 'Episódios a manter transferidos';
 
   @override
@@ -41043,10 +41049,6 @@ class AppLocalizationsPtPt extends AppLocalizationsPt {
 
   @override
   String get autoDownloadDelete => 'Eliminar episódios transferidos';
-
-  @override
-  String get autoDownloadDeleteSubtitle =>
-      'Quando remover os episódios transferidos automaticamente depois de os veres';
 
   @override
   String get autoDownloadDeleteNever => 'Nunca';

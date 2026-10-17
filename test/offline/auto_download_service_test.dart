@@ -217,6 +217,24 @@ void main() {
       },
     );
 
+    test('never deletes a download marked Keep', () async {
+      await subscribe('series-1');
+      await addDownloaded('kept', source: DownloadSource.auto);
+      await addDownloaded('auto', source: DownloadSource.auto);
+      downloader.episodesBySeries['series-1'] = [
+        episode('kept', number: 1, played: true),
+        episode('auto', number: 2, played: true),
+      ];
+      await prefs.set(UserPreferences.autoDownloadDeleteAfterHours, 0);
+      await prefs.setDownloadKept(server, 'kept', keep: true);
+
+      final summary = await service.runCheck(
+        trigger: AutoDownloadTrigger.manual,
+      );
+      expect(downloader.deleted, ['auto']);
+      expect(summary.deleted, 1);
+    });
+
     test('master switch off checks nothing', () async {
       await prefs.set(UserPreferences.autoDownloadEnabled, false);
       await subscribe('series-1');
@@ -562,10 +580,27 @@ void main() {
       await prefs.set(UserPreferences.smartDownloadsPlayedSince, enabledAt);
     });
 
+    test('leaves a watched episode the user downloaded by hand', () async {
+      await addDownloaded('e1');
+      downloader.episodesBySeries['series-1'] = [
+        watched('e1', number: 1),
+        episode('e2', number: 2),
+      ];
+
+      await service.runCheck(trigger: AutoDownloadTrigger.playbackStopped);
+      expect(downloader.deleted, isEmpty);
+      // Finishing it still tops the series up.
+      expect(downloader.queuedIds, ['e2']);
+    });
+
     test('swaps a watched download without any subscription', () async {
       await prefs.set(UserPreferences.defaultDownloadQuality, 'medium720p');
       // An earlier download's quality never overrides the setting.
-      await addDownloaded('e1', quality: DownloadQuality.high1080p);
+      await addDownloaded(
+        'e1',
+        quality: DownloadQuality.high1080p,
+        source: DownloadSource.auto,
+      );
       await addDownloaded('e2', quality: DownloadQuality.high1080p);
       downloader.episodesBySeries['series-1'] = [
         watched('e1', number: 1),
@@ -912,7 +947,7 @@ void main() {
         playingItemId: () => playing,
         now: () => now,
       );
-      await addDownloaded('e1');
+      await addDownloaded('e1', source: DownloadSource.auto);
       downloader.episodesBySeries['series-1'] = [
         watched('e1', number: 1),
         episode('e2', number: 2),

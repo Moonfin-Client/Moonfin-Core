@@ -105,6 +105,16 @@ class Media3PlayerBackend extends PlayerBackend
   StreamSubscription<dynamic>? _eventSub;
 
   Duration _position = Duration.zero;
+
+  /// Where the previous item stopped, while the native ticker may still
+  /// report it for the item that just started.
+  Duration? _previousItemPosition;
+
+  /// How close a tick has to be to [_previousItemPosition] to count as the
+  /// previous item's, and how far a new item has to start from it for the
+  /// check to apply at all: a resume of the same spot is not checked.
+  static const _previousItemTolerance = Duration(milliseconds: 500);
+  static const _newItemJump = Duration(seconds: 1);
   Duration _duration = Duration.zero;
   Duration _buffer = Duration.zero;
   bool _isPlaying = false;
@@ -225,6 +235,16 @@ class Media3PlayerBackend extends PlayerBackend
     await _stopActivity();
   }
 
+  /// A tick still describing the previous item. The first tick that does
+  /// not ends the wait, so a real one is never held back for long.
+  bool _isPreviousItemTick(Duration reported) {
+    final previous = _previousItemPosition;
+    if (previous == null) return false;
+    if ((reported - previous).abs() <= _previousItemTolerance) return true;
+    _previousItemPosition = null;
+    return false;
+  }
+
   void _handleEvent(dynamic event) {
     if (_disposed || event is! Map) return;
     final map = event.map((k, v) => MapEntry(k.toString(), v));
@@ -232,9 +252,13 @@ class Media3PlayerBackend extends PlayerBackend
 
     switch (eventType) {
       case 'state':
+        final reported = Duration(milliseconds: _toInt(map['positionMs']));
+        // Its duration and play state are the previous item's too: taken
+        // here, a resume past that length would count as finished.
+        if (_isPreviousItemTick(reported)) return;
         final wasPlaying = _isPlaying;
         final wasBuffering = _isBuffering;
-        _position = Duration(milliseconds: _toInt(map['positionMs']));
+        _position = reported;
         _duration = Duration(milliseconds: _toInt(map['durationMs']));
         _buffer = Duration(milliseconds: _toInt(map['bufferedMs']));
         _isPlaying = _toBool(map['isPlaying']);
@@ -1042,6 +1066,17 @@ class Media3PlayerBackend extends PlayerBackend
     final isPreview = payload['preview'] == true;
 
     _completed = false;
+    // The native ticker keeps reporting the previous item's frozen position
+    // until the new source is set. Left in place, a stop in the first second
+    // reports where the last episode ended, which marks this one watched.
+    // A play before the new source's first tick keeps the previous item's
+    // position: [_position] is only the start position set below.
+    final previous = _previousItemPosition ?? _position;
+    _previousItemPosition = (previous - startPosition).abs() > _newItemJump
+        ? previous
+        : null;
+    _position = startPosition;
+    _positionStream.add(_position);
     _tracksKnown = false;
     _textTrackCount = 0;
     _embeddedCaptionTracks = const [];

@@ -6,6 +6,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
+import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -17,6 +18,7 @@ import '../../../data/services/background_download_coordinator.dart';
 import '../../../data/services/download_service.dart';
 import '../../../data/services/macos_download_dir.dart';
 import '../../../data/services/storage_path_service.dart';
+import '../../../data/services/remove_watched_service.dart';
 import '../../../di/providers.dart';
 import '../../../platform/background_refresh.dart';
 import '../../../preference/user_preferences.dart';
@@ -49,6 +51,9 @@ class DownloadSettingsScreen extends ConsumerWidget {
     final wifiOnly = prefs.get(UserPreferences.downloadWifiOnly);
     final reportActivity = prefs.get(UserPreferences.reportDownloadsAsActivity);
     final storageLimitMb = prefs.get(UserPreferences.downloadStorageLimitMb);
+    final removeWatchedHours = prefs.get(
+      UserPreferences.downloadRemoveWatchedAfterHours,
+    );
     final imageCacheLimitMb = prefs.get(UserPreferences.imageCacheLimitMb);
     final concurrentCount = prefs.get(UserPreferences.downloadConcurrentCount);
     final customPath = prefs.get(UserPreferences.customDownloadPath);
@@ -175,6 +180,26 @@ class DownloadSettingsScreen extends ConsumerWidget {
                     ),
                     onTap: () =>
                         showStorageLimitPicker(context, prefs, storageLimitMb),
+                  ),
+                  DpadListTile(
+                    useSettingsIconShell: true,
+                    leading: const Icon(Icons.auto_delete_outlined),
+                    title: Text(l10n.removeWatchedDownloads),
+                    subtitle: Text(l10n.removeWatchedDownloadsSubtitle),
+                    trailing: Text(_deleteAfterLabel(l10n, removeWatchedHours)),
+                    onTap: () => _pickDeleteAfter(
+                      context,
+                      prefs,
+                      UserPreferences.downloadRemoveWatchedAfterHours,
+                      save: (hours) async {
+                        await prefs.setRemoveWatchedAfterHours(hours);
+                        // A shorter delay applies to what is already watched.
+                        if (GetIt.instance.isRegistered<RemoveWatchedService>()) {
+                          await GetIt.instance<RemoveWatchedService>()
+                              .runForSignedInServer();
+                        }
+                      },
+                    ),
                   ),
                   if (PlatformDetection.isAndroid)
                     DpadSwitchListTile(
@@ -778,7 +803,7 @@ class _SmartDownloadsSettings extends StatelessWidget {
           useSettingsIconShell: true,
           secondary: const Icon(Icons.skip_next),
           title: Text(l10n.smartDownloadsEnable),
-          subtitle: Text(l10n.smartDownloadsEnableSubtitle),
+          subtitle: Text(l10n.smartDownloadsEnableDescription),
           value: enabled,
           onChanged: service.setSmartDownloadsEnabled,
         ),
@@ -829,9 +854,6 @@ class _AutoDownloadSettings extends StatefulWidget {
 
 class _AutoDownloadSettingsState extends State<_AutoDownloadSettings> {
   static const _keepChoices = [1, 2, 3, 5, 10, 0];
-
-  /// Never, right away, a day, a week: the choices Plex offers.
-  static const _deleteAfterChoices = [-1, 0, 24, 24 * 7];
 
   late Future<String> _refreshStatus;
   late Stream<List<AutoDownloadSubscription>> _subscriptions;
@@ -885,9 +907,13 @@ class _AutoDownloadSettingsState extends State<_AutoDownloadSettings> {
               useSettingsIconShell: true,
               leading: const Icon(Icons.delete_sweep_outlined),
               title: Text(l10n.autoDownloadDelete),
-              subtitle: Text(l10n.autoDownloadDeleteSubtitle),
+              subtitle: Text(l10n.autoDownloadDeleteFollowedSubtitle),
               trailing: Text(_deleteAfterLabel(l10n, deleteAfterHours)),
-              onTap: () => _pickDeleteAfter(context, deleteAfterHours),
+              onTap: () => _pickDeleteAfter(
+                context,
+                prefs,
+                UserPreferences.autoDownloadDeleteAfterHours,
+              ),
             ),
             FutureBuilder<String>(
               future: _refreshStatus,
@@ -1017,42 +1043,6 @@ class _AutoDownloadSettingsState extends State<_AutoDownloadSettings> {
         : l10n.autoDownloadLastCheck(when, queued);
   }
 
-  String _deleteAfterLabel(AppLocalizations l10n, int hours) => switch (hours) {
-    < 0 => l10n.autoDownloadDeleteNever,
-    0 => l10n.autoDownloadDeleteImmediately,
-    < 24 * 7 => l10n.autoDownloadDeleteAfterDay,
-    _ => l10n.autoDownloadDeleteAfterWeek,
-  };
-
-  void _pickDeleteAfter(BuildContext context, int current) {
-    final l10n = AppLocalizations.of(context);
-    showFocusRestoringModalBottomSheet(
-      context: context,
-      builder: (ctx) => SafeArea(
-        child: DpadRadioGroup<int>(
-          groupValue: current,
-          onChanged: (v) {
-            if (v != null) {
-              widget.prefs.set(UserPreferences.autoDownloadDeleteAfterHours, v);
-            }
-            Navigator.pop(ctx);
-          },
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              for (final hours in _deleteAfterChoices)
-                DpadRadioListTile<int>(
-                  autofocus: hours == current,
-                  title: Text(_deleteAfterLabel(l10n, hours)),
-                  value: hours,
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   void _pickKeepUnwatched(BuildContext context, int current) {
     final l10n = AppLocalizations.of(context);
     showFocusRestoringModalBottomSheet(
@@ -1081,4 +1071,50 @@ class _AutoDownloadSettingsState extends State<_AutoDownloadSettings> {
       ),
     );
   }
+}
+
+/// Never, right away, a day, a week.
+const _deleteAfterChoices = [-1, 0, 24, 24 * 7];
+
+String _deleteAfterLabel(AppLocalizations l10n, int hours) => switch (hours) {
+  < 0 => l10n.autoDownloadDeleteNever,
+  0 => l10n.autoDownloadDeleteImmediately,
+  < 24 * 7 => l10n.autoDownloadDeleteAfterDay,
+  _ => l10n.autoDownloadDeleteAfterWeek,
+};
+
+/// Picks how long after watching a download is removed, into [pref], or
+/// through [save] when the choice needs more than storing it.
+void _pickDeleteAfter(
+  BuildContext context,
+  UserPreferences prefs,
+  Preference<int> pref, {
+  Future<void> Function(int hours)? save,
+}) {
+  final l10n = AppLocalizations.of(context);
+  final current = prefs.get(pref);
+  showFocusRestoringModalBottomSheet(
+    context: context,
+    builder: (ctx) => SafeArea(
+      child: DpadRadioGroup<int>(
+        groupValue: current,
+        onChanged: (v) {
+          Navigator.pop(ctx);
+          if (v == null || v == current) return;
+          unawaited(save != null ? save(v) : prefs.set(pref, v));
+        },
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (final hours in _deleteAfterChoices)
+              DpadRadioListTile<int>(
+                autofocus: hours == current,
+                title: Text(_deleteAfterLabel(l10n, hours)),
+                value: hours,
+              ),
+          ],
+        ),
+      ),
+    ),
+  );
 }

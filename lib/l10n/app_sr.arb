@@ -12997,10 +12997,6 @@
     "@autoDownloadDelete": {
         "description": "Setting that picks how soon an auto-downloaded episode is removed after it was watched"
     },
-    "autoDownloadDeleteSubtitle": "Изаберите када ће се аутоматски преузете епизоде уклонити након гледања",
-    "@autoDownloadDeleteSubtitle": {
-        "description": "Explains the delete-after-watching setting"
-    },
     "autoDownloadDeleteNever": "Никада",
     "@autoDownloadDeleteNever": {
         "description": "Delete-after-watching option: keep episodes"

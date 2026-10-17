@@ -10689,10 +10689,6 @@
     "@autoDownloadDelete": {
         "description": "Setting that picks how soon an auto-downloaded episode is removed after it was watched"
     },
-    "autoDownloadDeleteSubtitle": "Când să se elimine automat episoadele descărcate automat după ce le vizionezi",
-    "@autoDownloadDeleteSubtitle": {
-        "description": "Explains the delete-after-watching setting"
-    },
     "autoDownloadDeleteNever": "Niciodată",
     "@autoDownloadDeleteNever": {
         "description": "Delete-after-watching option: keep episodes"

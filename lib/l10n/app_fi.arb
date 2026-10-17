@@ -10689,10 +10689,6 @@
     "@autoDownloadDelete": {
         "description": "Setting that picks how soon an auto-downloaded episode is removed after it was watched"
     },
-    "autoDownloadDeleteSubtitle": "Milloin automaattisesti ladatut jaksot poistetaan katsomisen jälkeen",
-    "@autoDownloadDeleteSubtitle": {
-        "description": "Explains the delete-after-watching setting"
-    },
     "autoDownloadDeleteNever": "Ei koskaan",
     "@autoDownloadDeleteNever": {
         "description": "Delete-after-watching option: keep episodes"
@@ -13476,10 +13472,6 @@
     "smartDownloadsEnable": "Lataa seuraavat jaksot",
     "@smartDownloadsEnable": {
         "description": "Switch that swaps a watched downloaded episode for the next episodes of the series"
-    },
-    "smartDownloadsEnableSubtitle": "Kun olet katsonut jakson loppuun millä tahansa laitteella, Moonfin lataa seuraavat jaksot. Ladatut jaksot poistetaan, kun ne on katsottu.",
-    "@smartDownloadsEnableSubtitle": {
-        "description": "Explains the smart downloads switch, including that watched episodes are deleted"
     },
     "smartDownloadsKeepReady": "Lataa tallennettavat jaksot",
     "@smartDownloadsKeepReady": {

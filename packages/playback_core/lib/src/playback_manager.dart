@@ -2388,7 +2388,10 @@ class PlaybackManager implements AudioOwnable {
     // path does. If the backend never starts, every position source stays at
     // zero and the stop report tells the server the item was left at the very
     // beginning, wiping the resume point the user was about to return to.
+    // The shown position is seeded too: an auto-advance keeps the queue, so
+    // nothing resets it, and the stop report takes the furthest of the two.
     _lastKnownPosition = startPosition;
+    state.setPosition(startPosition);
     final sessionToken = ++_playbackSessionToken;
     final itemId = _traceItemId(item);
     final changedItem = _lastItemId != null && _lastItemId != itemId;
@@ -4289,6 +4292,7 @@ class PlaybackManager implements AudioOwnable {
     _itemKnownDuration = itemDuration;
     _currentResolution = null;
     _lastKnownPosition = startPosition;
+    state.setPosition(startPosition);
 
     if (queueUrls.isNotEmpty) {
       queueService.setQueue(queueUrls, startIndex: startIndex);
