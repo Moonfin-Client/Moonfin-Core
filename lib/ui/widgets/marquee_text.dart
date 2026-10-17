@@ -5,6 +5,10 @@ import 'package:flutter/material.dart';
 /// Shared speed for the long-form program descriptions in Live TV.
 const double kLiveTvDescriptionMarqueeMillisPerPixel = 55.0;
 
+/// Speed for the program description in the quick channel changer overlay,
+/// half as fast as [kLiveTvDescriptionMarqueeMillisPerPixel].
+const double kChannelCarouselDescriptionMarqueeMillisPerPixel = 110.0;
+
 class MarqueeText extends StatefulWidget {
   final String text;
   final TextStyle style;
