@@ -40,6 +40,24 @@ class _Overrides extends HttpOverrides {
         };
 }
 
+// Every connection fails before reaching anything, as when the network is
+// down, with the given OS error number.
+class _NetworkDownOverrides extends HttpOverrides {
+  _NetworkDownOverrides(this.errno);
+
+  final int errno;
+
+  @override
+  HttpClient createHttpClient(SecurityContext? context) =>
+      super.createHttpClient(context)
+        ..connectionFactory = (uri, proxyHost, proxyPort) => Future.error(
+          SocketException(
+            'Connection failed',
+            osError: OSError('Network is down', errno),
+          ),
+        );
+}
+
 void main() {
   late ServerSocket hangUp;
   late int closedPort;
@@ -91,4 +109,18 @@ void main() {
 
     expect(repo.lastFailure!.possibleClientCertCandidate, isNull);
   });
+
+  // ENETDOWN as Linux and Android, Apple platforms and Windows number it.
+  for (final errno in [100, 50, 10050]) {
+    test('a network that is down (errno $errno) is not counted as reached',
+        () async {
+      final repo = ServerRepository(_AuthStore(), _ClientFactory());
+      await HttpOverrides.runWithHttpOverrides(
+        () => repo.addServer('https://media.example.com'),
+        _NetworkDownOverrides(errno),
+      );
+
+      expect(repo.lastFailure!.possibleClientCertCandidate, isNull);
+    });
+  }
 }

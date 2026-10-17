@@ -238,12 +238,12 @@ class ServerRepository {
 
   static final _errnoPattern = RegExp(r'errno = (\d+)');
 
-  /// Connection refused, network or host unreachable and timed out, as Linux
-  /// and Android, Apple platforms and Windows number them.
+  /// Connection refused, network down, network or host unreachable and timed
+  /// out, as Linux and Android, Apple platforms and Windows number them.
   static const _unreachableErrnos = {
-    111, 101, 113, 110, // Linux, Android
-    61, 51, 65, 60, // macOS, iOS
-    10061, 10051, 10065, 10060, 1225, 1231, 1232, // Windows
+    111, 100, 101, 113, 110, // Linux, Android
+    61, 50, 51, 65, 60, // macOS, iOS
+    10061, 10050, 10051, 10065, 10060, 1225, 1231, 1232, // Windows
   };
 
   List<String> _buildCandidates(String address) {
