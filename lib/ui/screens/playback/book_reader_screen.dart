@@ -366,8 +366,10 @@ class _BookReaderScreenState extends State<BookReaderScreen>
     } catch (_) { }
 
     final newPlayedPercentage = currentPage / pageCount;
-    final lastPage = (currentPage + 1) >= pageCount;
-    if (newPlayedPercentage >= 0.98 || lastPage) {
+    final lastPage = _mode == _ReaderMode.comic
+            ? currentPage + (_twoPageSpreadActive ? 2 : 1)
+            : currentPage;
+    if (newPlayedPercentage >= 0.98 || lastPage >= pageCount) {
       try {
         await client.userLibraryApi.markPlayed(item.id);
       } catch (_) { }
