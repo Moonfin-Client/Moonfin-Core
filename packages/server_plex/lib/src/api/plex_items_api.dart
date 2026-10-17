@@ -810,8 +810,25 @@ class PlexItemsApi implements ItemsApi {
       if (extra['ExtraType'] == 'Trailer') extra,
   ];
 
+  /// Plex hands out its cinema trailers and the server's pre-roll only in a
+  /// play queue that asks for them, where they come ahead of the item.
   @override
-  Future<List<Map<String, dynamic>>> getIntros(String itemId) async => [];
+  Future<List<Map<String, dynamic>>> getIntros(String itemId) async {
+    final response = await _dio.post<Map<String, dynamic>>(
+      '/playQueues',
+      queryParameters: {
+        'type': 'video',
+        'uri': await _itemsUri([itemId]),
+        'extrasPrefixCount': _cinemaTrailerCount,
+      },
+    );
+    return _items(
+      response.data?['MediaContainer']?['Metadata'],
+    ).takeWhile((item) => item['Id'] != itemId).toList();
+  }
+
+  /// How many cinema trailers come before a movie, on top of any pre-roll.
+  static const _cinemaTrailerCount = 2;
 
   /// Trailers stay in, since the app finds an item's trailer in this list.
   @override

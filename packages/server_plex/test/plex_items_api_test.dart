@@ -891,6 +891,28 @@ void main() {
     expect((await api.getLocalTrailers('17098')).single['Id'], '17160');
   });
 
+  test("a movie's pre-rolls are what Plex queues ahead of it", () async {
+    final (dio, requests) = _recordingDio({
+      'machineIdentifier': 'abc',
+      'Metadata': [
+        {'ratingKey': '6564', 'type': 'clip', 'subtype': 'trailer'},
+        {'ratingKey': '23076', 'type': 'clip'},
+        {'ratingKey': '1804', 'type': 'movie'},
+      ],
+    });
+
+    final intros = await PlexItemsApi(dio).getIntros('1804');
+
+    final queue = requests.last;
+    expect((queue.method, queue.path), ('POST', '/playQueues'));
+    expect(queue.queryParameters, {
+      'type': 'video',
+      'uri': 'server://abc/com.plexapp.plugins.library/library/metadata/1804',
+      'extrasPrefixCount': 2,
+    });
+    expect(intros.map((i) => i['Id']), ['6564', '23076']);
+  });
+
   test("a show's theme song plays from its own path", () async {
     final (dio, _) = _recordingDio({
       'Metadata': [
