@@ -82,6 +82,17 @@ const _playlistMediaTypes = {
   'photo': 'Photo',
 };
 
+/// Plex's kinds of extra as the app's, which sorts extras into rows by them.
+const _extraTypes = {
+  'trailer': 'Trailer',
+  'deletedScene': 'DeletedScene',
+  'interview': 'Interview',
+  'behindTheScenes': 'BehindTheScenes',
+  'sceneOrSample': 'Scene',
+  'featurette': 'Featurette',
+  'short': 'Short',
+};
+
 const _streamTypes = {1: 'Video', 2: 'Audio', 3: 'Subtitle'};
 
 Map<String, dynamic> plexItemsResult(
@@ -157,7 +168,9 @@ Map<String, dynamic> plexItemToJellyfin(Map<String, dynamic> m) {
     if (m['titleSort'] != null) 'SortName': m['titleSort'],
     'Type': _itemTypes[type] ?? 'Video',
     'IsFolder': _folderTypes.contains(type),
-    if (type == 'movie' || type == 'episode') 'MediaType': 'Video',
+    if (type == 'movie' || type == 'episode' || type == 'clip')
+      'MediaType': 'Video',
+    if (type == 'clip') 'ExtraType': ?_extraTypes[m['subtype']],
     if (type == 'track') 'MediaType': 'Audio',
     if (type == 'playlist')
       'MediaType': ?_playlistMediaTypes[m['playlistType']],
@@ -198,7 +211,8 @@ Map<String, dynamic> plexItemToJellyfin(Map<String, dynamic> m) {
             if (chapter['tag'] case final String name) 'Name': name,
           },
       ],
-    if (m['index'] != null) 'IndexNumber': m['index'],
+    // An extra's index is only its place among the extras.
+    if (m['index'] != null && type != 'clip') 'IndexNumber': m['index'],
     if (m['parentIndex'] != null) 'ParentIndexNumber': m['parentIndex'],
     if (m['parentRatingKey'] != null) 'ParentId': '${m['parentRatingKey']}',
     if (isChild) ...{

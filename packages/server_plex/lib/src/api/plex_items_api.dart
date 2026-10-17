@@ -785,16 +785,38 @@ class PlexItemsApi implements ItemsApi {
     };
   }
 
+  /// What Plex keeps alongside an item. A trailer Plex streams itself, like a
+  /// show's, only comes as the item's primary extra.
+  Future<List<Map<String, dynamic>>> _extras(String itemId) async {
+    final container = await plexContainer(_dio, '/library/metadata/$itemId', {
+      'includeExtras': 1,
+    });
+    final item = (container['Metadata'] as List?)?.firstOrNull as Map?;
+    final extras = _items((item?['Extras'] as Map?)?['Metadata']);
+    final primary = item?['primaryExtraKey'];
+    if (primary is String &&
+        !extras.any((e) => primary == '/library/metadata/${e['Id']}')) {
+      extras.insertAll(
+        0,
+        _items((await plexContainer(_dio, primary))['Metadata']),
+      );
+    }
+    return extras;
+  }
+
   @override
-  Future<List<Map<String, dynamic>>> getLocalTrailers(String itemId) async =>
-      [];
+  Future<List<Map<String, dynamic>>> getLocalTrailers(String itemId) async => [
+    for (final extra in await _extras(itemId))
+      if (extra['ExtraType'] == 'Trailer') extra,
+  ];
 
   @override
   Future<List<Map<String, dynamic>>> getIntros(String itemId) async => [];
 
+  /// Trailers stay in, since the app finds an item's trailer in this list.
   @override
-  Future<List<Map<String, dynamic>>> getSpecialFeatures(String itemId) async =>
-      [];
+  Future<List<Map<String, dynamic>>> getSpecialFeatures(String itemId) =>
+      _extras(itemId);
 
   @override
   Future<List<Map<String, dynamic>>> getAdditionalParts(String itemId) async {

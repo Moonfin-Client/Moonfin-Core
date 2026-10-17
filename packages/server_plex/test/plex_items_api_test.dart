@@ -830,6 +830,67 @@ void main() {
     },
   );
 
+  test("an item's extras come typed, with trailers among them", () async {
+    Map<String, dynamic> clip(String key, String subtype) => {
+      'ratingKey': key,
+      'type': 'clip',
+      'subtype': subtype,
+      'index': 1,
+    };
+    final dio = Dio()
+      ..interceptors.add(
+        _FakeServer(
+          (options, handler) => handler.resolve(
+            Response(
+              requestOptions: options,
+              data: {
+                'MediaContainer': switch (options.path) {
+                  '/library/metadata/23071' => {
+                    'Metadata': [
+                      {
+                        'ratingKey': '23071',
+                        'primaryExtraKey': '/library/metadata/23072',
+                        'Extras': {
+                          'Metadata': [
+                            clip('23072', 'trailer'),
+                            clip('23075', 'featurette'),
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                  '/library/metadata/17098' => {
+                    'Metadata': [
+                      {
+                        'ratingKey': '17098',
+                        'primaryExtraKey': '/library/metadata/17160',
+                        'Extras': {'size': 0},
+                      },
+                    ],
+                  },
+                  '/library/metadata/17160' => {
+                    'Metadata': [clip('17160', 'trailer')],
+                  },
+                  _ => const <String, dynamic>{},
+                },
+              },
+            ),
+          ),
+        ),
+      );
+    final api = PlexItemsApi(dio);
+
+    final extras = await api.getSpecialFeatures('23071');
+
+    expect(extras.map((e) => (e['Id'], e['ExtraType'])), [
+      ('23072', 'Trailer'),
+      ('23075', 'Featurette'),
+    ]);
+    expect(extras.first, isNot(contains('IndexNumber')));
+    expect((await api.getLocalTrailers('23071')).single['Id'], '23072');
+    expect((await api.getLocalTrailers('17098')).single['Id'], '17160');
+  });
+
   test("a show's theme song plays from its own path", () async {
     final (dio, _) = _recordingDio({
       'Metadata': [
