@@ -830,6 +830,97 @@ void main() {
     },
   );
 
+  test("a show's theme song plays from its own path", () async {
+    final (dio, _) = _recordingDio({
+      'Metadata': [
+        {
+          'ratingKey': '17100',
+          'type': 'episode',
+          'grandparentTheme': '/library/metadata/17098/theme/1',
+        },
+      ],
+    });
+    final api = PlexItemsApi(dio);
+
+    final inherited = await api.getThemeMedia('17100');
+    final own = await api.getThemeMedia('17100', inheritFromParent: false);
+
+    expect(inherited['ThemeSongsResult']['Items'], [
+      {'Id': '/library/metadata/17098/theme/1', 'Type': 'Audio'},
+    ]);
+    expect(own['ThemeSongsResult']['Items'], isEmpty);
+  });
+
+  test(
+    "an instant mix is random tracks sharing the seed's album genres",
+    () async {
+      final requests = <RequestOptions>[];
+      final dio = Dio()
+        ..interceptors.add(
+          _FakeServer(
+            (options, handler) => handler.resolve(
+              Response(
+                requestOptions: options,
+                data: {
+                  'MediaContainer': switch (options.path) {
+                    '/library/metadata/23013' => {
+                      'Metadata': [
+                        {
+                          'ratingKey': '23013',
+                          'type': 'track',
+                          'librarySectionID': 3,
+                          'parentRatingKey': '22999',
+                        },
+                      ],
+                    },
+                    '/library/metadata/22999' => {
+                      'Metadata': [
+                        {
+                          'ratingKey': '22999',
+                          'type': 'album',
+                          'Genre': [
+                            {'id': 90805, 'tag': 'Electronic'},
+                          ],
+                        },
+                      ],
+                    },
+                    _ => {
+                      'Metadata': [
+                        {'ratingKey': '23029', 'type': 'track'},
+                      ],
+                    },
+                  },
+                },
+              ),
+            ),
+          ),
+        )
+        ..interceptors.insert(
+          0,
+          InterceptorsWrapper(
+            onRequest: (options, handler) {
+              requests.add(options);
+              handler.next(options);
+            },
+          ),
+        );
+
+      final mix = await PlexInstantMixApi(
+        dio,
+      ).getInstantMix('23013', limit: 25);
+
+      expect(requests.last.path, '/library/sections/3/all');
+      expect(requests.last.queryParameters, {
+        'type': 10,
+        'sort': 'random',
+        'album.genre': '90805',
+        'X-Plex-Container-Start': 0,
+        'X-Plex-Container-Size': 25,
+      });
+      expect((mix['Items'] as List).single['Id'], '23029');
+    },
+  );
+
   test('intro and credits markers become skip segments', () async {
     final (dio, requests) = _recordingDio({
       'Metadata': [

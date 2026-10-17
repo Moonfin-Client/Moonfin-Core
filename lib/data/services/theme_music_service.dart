@@ -202,6 +202,10 @@ class ThemeMusicService implements AudioOwnable {
 
   String _buildAudioUrl(String songId) {
     final token = _client.accessToken ?? '';
+    // A Plex theme song's id is the path it plays from.
+    if (_client.serverType == ServerType.plex) {
+      return '${_client.baseUrl}$songId?X-Plex-Token=$token';
+    }
     return '${_client.baseUrl}/Audio/$songId/stream?static=true&audioCodec=mp3&audioBitrate=128000&${_client.serverType.tokenQueryParam}=$token';
   }
 

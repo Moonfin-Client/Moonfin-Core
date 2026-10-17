@@ -129,7 +129,7 @@ class PlexMediaServerClient extends MediaServerClient {
   late final LiveTvApi liveTvApi = PlexLiveTvApi();
 
   @override
-  late final InstantMixApi instantMixApi = PlexInstantMixApi();
+  late final InstantMixApi instantMixApi = PlexInstantMixApi(_dio);
 
   @override
   late final DisplayPreferencesApi displayPreferencesApi =

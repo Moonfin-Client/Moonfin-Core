@@ -547,11 +547,25 @@ class PlexItemsApi implements ItemsApi {
     return plexItemsResult(_items(container['Metadata']));
   }
 
+  /// A Plex show keeps one theme song, played straight from its own path,
+  /// which is what the song's id holds.
   @override
   Future<Map<String, dynamic>> getThemeMedia(
     String itemId, {
     bool inheritFromParent = true,
-  }) async => {};
+  }) async {
+    final item = await _plexItem(itemId);
+    final theme =
+        item['theme'] ??
+        (inheritFromParent
+            ? item['grandparentTheme'] ?? item['parentTheme']
+            : null);
+    return {
+      'ThemeSongsResult': plexItemsResult([
+        if (theme is String) {'Id': theme, 'Type': 'Audio'},
+      ]),
+    };
+  }
 
   /// The playlists something can be added to, which leaves out smart ones
   /// since Plex fills those itself.

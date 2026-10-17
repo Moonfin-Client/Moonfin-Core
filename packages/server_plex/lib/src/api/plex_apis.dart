@@ -404,10 +404,46 @@ class PlexLiveTvApi implements LiveTvApi {
   Future<void> cancelSeriesTimer(String seriesTimerId) async => _noLiveTv();
 }
 
+/// Plex's own mixes need Plex Pass, so this one is random tracks from the
+/// seed's library that share its genres.
 class PlexInstantMixApi implements InstantMixApi {
+  final Dio _dio;
+
+  PlexInstantMixApi(this._dio);
+
+  Future<Map?> _metadata(Object? key) async {
+    final container = await plexContainer(_dio, '/library/metadata/$key');
+    return (container['Metadata'] as List?)?.firstOrNull as Map?;
+  }
+
+  static List<Object?> _genres(Map? item) => [
+    for (final genre in item?['Genre'] as List? ?? const []) genre['id'],
+  ];
+
   @override
   Future<Map<String, dynamic>> getInstantMix(
     String itemId, {
     int? limit,
-  }) async => plexItemsResult([]);
+  }) async {
+    final seed = await _metadata(itemId);
+    final section = seed?['librarySectionID'];
+    if (section == null) return plexItemsResult([]);
+    // A track often has no genre of its own, while its album does.
+    var genres = _genres(seed);
+    if (genres.isEmpty && seed!['parentRatingKey'] != null) {
+      genres = _genres(await _metadata(seed['parentRatingKey']));
+    }
+    final container =
+        await plexContainer(_dio, '/library/sections/$section/all', {
+          'type': plexTypeNumbers['Audio'],
+          'sort': 'random',
+          if (genres.isNotEmpty) 'album.genre': genres.join(','),
+          'X-Plex-Container-Start': 0,
+          'X-Plex-Container-Size': limit ?? 100,
+        });
+    return plexItemsResult([
+      for (final track in container['Metadata'] as List? ?? const [])
+        plexItemToJellyfin(track as Map<String, dynamic>),
+    ]);
+  }
 }
