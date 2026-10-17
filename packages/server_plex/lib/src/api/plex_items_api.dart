@@ -34,6 +34,16 @@ class PlexItemsApi implements ItemsApi {
       if (m is Map<String, dynamic>) plexItemToJellyfin(m),
   ];
 
+  static List<Map<String, dynamic>> _ofTypes(
+    List<Map<String, dynamic>> items,
+    List<String>? types,
+  ) => types == null || types.isEmpty
+      ? items
+      : [
+          for (final item in items)
+            if (types.contains(item['Type'])) item,
+        ];
+
   static Map<String, dynamic> _paging(int? startIndex, int? limit) => {
     if (limit != null) ...{
       'X-Plex-Container-Start': startIndex ?? 0,
@@ -138,6 +148,23 @@ class PlexItemsApi implements ItemsApi {
       return plexItemsResult(_items(container['Metadata']));
     }
 
+    // A search across every library goes through Plex's hub search, which
+    // also lists titles it matched through their cast, artist or genre. Those
+    // carry a reason and are left out, so only titles that match the query
+    // stay.
+    if (parentId == null && searchTerm != null && searchTerm.isNotEmpty) {
+      final container = await plexContainer(_dio, '/hubs/search', {
+        'query': searchTerm,
+        'limit': ?limit,
+      });
+      final matches = _items([
+        for (final hub in container['Hub'] as List? ?? const [])
+          for (final item in hub['Metadata'] as List? ?? const [])
+            if (item['reason'] == null) item,
+      ]);
+      return plexItemsResult(_ofTypes(matches, includeItemTypes));
+    }
+
     final types = [
       for (final type in includeItemTypes ?? const <String>[])
         ?plexTypeNumbers[type],
@@ -172,14 +199,8 @@ class PlexItemsApi implements ItemsApi {
       ..._paging(startIndex, limit),
     });
 
-    var items = _items(container['Metadata']);
     // Children and leaves come back unfiltered, so the type check happens here.
-    if (includeItemTypes != null && includeItemTypes.isNotEmpty) {
-      items = [
-        for (final item in items)
-          if (includeItemTypes.contains(item['Type'])) item,
-      ];
-    }
+    final items = _ofTypes(_items(container['Metadata']), includeItemTypes);
     return plexItemsResult(
       items,
       total: container['totalSize'] as int?,

@@ -80,6 +80,54 @@ void main() {
     expect(requests.single.queryParameters.containsKey('sort'), isFalse);
   });
 
+  test('a search across libraries keeps only titles that match', () async {
+    final (dio, requests) = _recordingDio({
+      'Hub': [
+        {
+          'type': 'movie',
+          'Metadata': [
+            {'ratingKey': '1804', 'type': 'movie', 'title': 'Despicable Me 3'},
+            {
+              'ratingKey': '139',
+              'type': 'movie',
+              'title': 'Bruce Almighty',
+              'reason': 'actor',
+            },
+          ],
+        },
+        {
+          'type': 'show',
+          'Metadata': [
+            {'ratingKey': '15887', 'type': 'show', 'title': 'The Office (US)'},
+          ],
+        },
+        {
+          'type': 'actor',
+          'Directory': [
+            {'id': 2027, 'tag': 'Steve Carell'},
+          ],
+        },
+      ],
+    });
+    final api = PlexItemsApi(dio);
+
+    final all = await api.getItems(searchTerm: 'des', limit: 24);
+    final movies = await api.getItems(
+      searchTerm: 'des',
+      includeItemTypes: ['Movie'],
+    );
+
+    expect(requests.first.path, '/hubs/search');
+    expect(requests.first.queryParameters, {'query': 'des', 'limit': 24});
+    expect((all['Items'] as List).map((i) => i['Name']), [
+      'Despicable Me 3',
+      'The Office (US)',
+    ]);
+    expect((movies['Items'] as List).map((i) => i['Name']), [
+      'Despicable Me 3',
+    ]);
+  });
+
   test('a filter Plex has no answer for returns nothing', () async {
     final (dio, requests) = _recordingDio(const {});
 
