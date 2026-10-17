@@ -61,6 +61,8 @@ class PlexItemsApi implements ItemsApi {
 
   static String? _personKey(String? id) => _keyOf(id, plexPersonPrefix);
 
+  static String? _genreKey(String? id) => _keyOf(id, plexGenrePrefix);
+
   @override
   Future<Map<String, dynamic>> getItems({
     bool? serverWide,
@@ -113,7 +115,6 @@ class PlexItemsApi implements ItemsApi {
     final unsupported =
         [
           seriesStatus,
-          genreIds,
           videoTypes,
         ].any((list) => list != null && list.isNotEmpty) ||
         [
@@ -133,6 +134,7 @@ class PlexItemsApi implements ItemsApi {
         (is4K == true && isHd == false) ||
         (artistIds?.length ?? 0) > 1 ||
         (personIds ?? const []).any((id) => _personKey(id) == null) ||
+        (genreIds ?? const []).any((id) => _genreKey(id) == null) ||
         (filters ?? const []).any((f) => !_filters.containsKey(f));
     if (unsupported) return plexItemsResult([]);
 
@@ -210,12 +212,17 @@ class PlexItemsApi implements ItemsApi {
         .takeWhile((field) => field != null)
         .map((field) => sortOrder == 'Descending' ? '$field:desc' : field)
         .join(',');
+    // Each repeated genre param must match, while commas match any one.
+    final genreFilters = [
+      ?_anyOf(genres),
+      ?_anyOf(genreIds?.map(_genreKey).nonNulls.toList()),
+    ];
     final container = await plexContainer(_dio, path, {
       if (types.isNotEmpty && path.endsWith('/all')) 'type': types.join(','),
       if (sort.isNotEmpty) 'sort': sort,
       if (searchTerm != null && searchTerm.isNotEmpty) 'title': searchTerm,
       for (final filter in filters ?? const <String>[]) ..._filters[filter]!,
-      'genre': ?_anyOf(genres),
+      if (genreFilters.isNotEmpty) 'genre': genreFilters,
       'year': ?_anyOf(years),
       'contentRating': ?_anyOf(officialRatings),
       'label': ?_anyOf(tags),
@@ -583,8 +590,21 @@ class PlexItemsApi implements ItemsApi {
     bool? recursive,
     String? fields,
     List<String>? includeItemTypes,
-  }) async => plexItemsResult([]);
+  }) => _libraryTags(
+    'genre',
+    plexGenrePrefix,
+    'Genre',
+    parentId: parentId,
+    includeItemTypes: includeItemTypes,
+    sortBy: sortBy,
+    sortOrder: sortOrder,
+    startIndex: startIndex,
+    limit: limit,
+  );
 
+  /// Studio pages filter by name, so the id just has to be unique and free of
+  /// commas, since the home row saves its picked studios as a comma list.
+  /// Plex's encoded key is both.
   @override
   Future<Map<String, dynamic>> getStudios({
     String? parentId,
@@ -596,7 +616,78 @@ class PlexItemsApi implements ItemsApi {
     bool? recursive,
     String? fields,
     List<String>? includeItemTypes,
-  }) async => plexItemsResult([]);
+  }) => _libraryTags(
+    'studio',
+    'studio-',
+    'Studio',
+    parentId: parentId,
+    includeItemTypes: includeItemTypes,
+    sortBy: sortBy,
+    sortOrder: sortOrder,
+    startIndex: startIndex,
+    limit: limit,
+  );
+
+  /// Plex lists genres and studios per library, under the same key in every
+  /// library, so a server-wide list merges each library's list. Only name
+  /// and random order apply, since these tags carry nothing else to sort by.
+  Future<Map<String, dynamic>> _libraryTags(
+    String filter,
+    String prefix,
+    String type, {
+    String? parentId,
+    List<String>? includeItemTypes,
+    String? sortBy,
+    String? sortOrder,
+    int? startIndex,
+    int? limit,
+  }) async {
+    final sections = parentId != null
+        ? [?_sectionKey(parentId)]
+        : [
+            for (final s
+                in (await plexContainer(_dio, '/library/sections'))['Directory']
+                        as List? ??
+                    const [])
+              if (s is Map) s['key'],
+          ];
+    // A library with none of these types answers with an empty list.
+    final types = [
+      for (final t in includeItemTypes ?? const <String>[]) ?plexTypeNumbers[t],
+    ];
+    final lists = await Future.wait([
+      for (final key in sections)
+        plexContainer(_dio, '/library/sections/$key/$filter', {
+          'type': ?_anyOf(types),
+        }),
+    ]);
+    final byId = {
+      for (final list in lists)
+        for (final tag in list['Directory'] as List? ?? const [])
+          if (tag is Map && tag['title'] is String)
+            '$prefix${tag['key']}': <String, dynamic>{
+              'Id': '$prefix${tag['key']}',
+              'Name': tag['title'],
+              'Type': type,
+            },
+    };
+    final direction = sortOrder == 'Descending' ? -1 : 1;
+    final items = byId.values.toList()
+      ..sort(
+        (a, b) =>
+            direction *
+            (a['Name'] as String).toLowerCase().compareTo(
+              (b['Name'] as String).toLowerCase(),
+            ),
+      );
+    if (sortBy == 'Random') items.shuffle();
+    final start = startIndex ?? 0;
+    return plexItemsResult(
+      items.skip(start).take(limit ?? items.length).toList(),
+      total: items.length,
+      startIndex: start,
+    );
+  }
 
   /// Plex lists a track's lyric file as stream type 4 and reads it into lines
   /// with millisecond offsets, which become Jellyfin's lines with start ticks.

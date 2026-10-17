@@ -178,7 +178,7 @@ void main() {
 
     expect(requests.first.queryParameters, {
       'type': '1',
-      'genre': 'Action,Comedy',
+      'genre': ['Action,Comedy'],
       'year': '2009',
       'contentRating': 'PG-13',
       'label': 'Kids',
@@ -405,6 +405,114 @@ void main() {
         ('person-2027', 'Person'),
         ('person-16991', 'Person'),
       ]);
+    });
+  });
+
+  group('genres and studios', () {
+    (Dio, List<RequestOptions>) server() {
+      final requests = <RequestOptions>[];
+      final dio = Dio()
+        ..interceptors.add(
+          _FakeServer((options, handler) {
+            requests.add(options);
+            handler.resolve(
+              Response(
+                requestOptions: options,
+                data: {
+                  'MediaContainer': switch (options.path) {
+                    '/library/sections' => {
+                      'Directory': [
+                        {'key': '1'},
+                        {'key': '2'},
+                      ],
+                    },
+                    '/library/sections/1/genre' => {
+                      'Directory': [
+                        {'key': '7', 'title': 'Action'},
+                        {'key': '6', 'title': 'Comedy'},
+                      ],
+                    },
+                    '/library/sections/2/genre' => {
+                      'Directory': [
+                        {'key': '49839', 'title': 'Action/Adventure'},
+                        {'key': '6', 'title': 'Comedy'},
+                      ],
+                    },
+                    '/library/sections/1/studio' => {
+                      'Directory': [
+                        {'key': 'Illumination', 'title': 'Illumination'},
+                        {
+                          'key': 'Universal%2520Pictures',
+                          'title': 'Universal Pictures',
+                        },
+                      ],
+                    },
+                    _ => const <String, dynamic>{'Metadata': []},
+                  },
+                },
+              ),
+            );
+          }),
+        );
+      return (dio, requests);
+    }
+
+    test("every library's genres merge into one list", () async {
+      final (dio, requests) = server();
+
+      final result = await PlexItemsApi(dio).getGenres(
+        includeItemTypes: ['Movie', 'Series'],
+        startIndex: 1,
+        limit: 2,
+      );
+
+      expect(
+        requests.where((r) => r.path.endsWith('/genre')).map((r) => r.uri),
+        everyElement(
+          predicate<Uri>((uri) => uri.queryParameters['type'] == '1,2'),
+        ),
+      );
+      expect(result['TotalRecordCount'], 3);
+      expect(result['Items'], [
+        {'Id': 'genre-49839', 'Name': 'Action/Adventure', 'Type': 'Genre'},
+        {'Id': 'genre-6', 'Name': 'Comedy', 'Type': 'Genre'},
+      ]);
+    });
+
+    test("a library's studios come from that library alone", () async {
+      final (dio, requests) = server();
+      final api = PlexItemsApi(dio);
+
+      final result = await api.getStudios(
+        parentId: 'section-1',
+        sortOrder: 'Descending',
+      );
+      final collection = await api.getStudios(parentId: '4410');
+
+      expect(requests.single.path, '/library/sections/1/studio');
+      expect((result['Items'] as List).map((i) => (i['Id'], i['Name'])), [
+        ('studio-Universal%2520Pictures', 'Universal Pictures'),
+        ('studio-Illumination', 'Illumination'),
+      ]);
+      expect(collection['Items'], isEmpty);
+    });
+
+    test('a genre id must match on top of any picked genres', () async {
+      final (dio, requests) = server();
+      final api = PlexItemsApi(dio);
+
+      await api.getItems(
+        parentId: 'section-1',
+        genreIds: ['genre-6'],
+        genres: ['Action', 'Horror'],
+      );
+      final unknown = await api.getItems(genreIds: ['6']);
+
+      expect(requests.single.uri.queryParametersAll['genre'], [
+        'Action,Horror',
+        '6',
+      ]);
+      expect(unknown['Items'], isEmpty);
     });
   });
 

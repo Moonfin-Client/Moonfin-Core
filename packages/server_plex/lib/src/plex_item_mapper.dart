@@ -5,6 +5,9 @@ const plexSectionPrefix = 'section-';
 /// Cast and crew are Plex tags, whose ids also overlap item ratingKeys.
 const plexPersonPrefix = 'person-';
 
+/// Genre ids are Plex tag ids, which also overlap item ratingKeys.
+const plexGenrePrefix = 'genre-';
+
 /// Plex has no favorites, so a 10 rating stands in, the "loved" mark Plex's
 /// own apps give.
 const plexFavoriteRating = 10;
