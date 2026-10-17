@@ -36,7 +36,8 @@ class _FolderBrowseScreenState extends State<FolderBrowseScreen> {
   final _scrollController = ScrollController();
   final Map<int, FocusNode> _gridItemFocusNodes = {};
   // Never attached. As the initial focus target it keeps RequestInitialFocus
-  // from parking focus in the sidebar before the items load
+  // from parking focus in the sidebar before the items load. Once items load
+  // the first grid item automatically grabs focus at that time
   final _initialFocusNode = FocusNode(debugLabel: 'folderInitialContent');
   DateTime? _lastItemTapAt;
   String? _lastTappedItemId;
@@ -85,6 +86,7 @@ class _FolderBrowseScreenState extends State<FolderBrowseScreen> {
       fn.dispose();
     }
     _gridItemFocusNodes.clear();
+    _initialFocusNode.dispose();
     _vm.removeListener(_onChanged);
     _vm.dispose();
     _scrollController.dispose();
