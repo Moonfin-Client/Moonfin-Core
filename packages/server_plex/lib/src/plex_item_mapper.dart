@@ -2,6 +2,10 @@
 /// library views carry this prefix to keep the two apart.
 const plexSectionPrefix = 'section-';
 
+/// Plex has no favorites, so a 10 rating stands in, the "loved" mark Plex's
+/// own apps give.
+const plexFavoriteRating = 10;
+
 const _itemTypes = {
   'movie': 'Movie',
   'show': 'Series',
@@ -181,7 +185,7 @@ Map<String, dynamic> plexItemToJellyfin(Map<String, dynamic> m) {
     'UserData': {
       'PlaybackPositionTicks': (viewOffset ?? 0) * 10000,
       'PlayCount': viewCount,
-      'IsFavorite': false,
+      'IsFavorite': m['userRating'] == plexFavoriteRating,
       'Played': leafCount != null
           ? leafCount > 0 && viewedLeafCount >= leafCount
           : viewCount > 0,

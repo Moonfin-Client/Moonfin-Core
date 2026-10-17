@@ -29,6 +29,9 @@ class PlexItemsApi implements ItemsApi {
     'IsResumable': {'inProgress': '1'},
   };
 
+  static String? _anyOf(List<Object>? values) =>
+      values == null || values.isEmpty ? null : values.join(',');
+
   static List<Map<String, dynamic>> _items(Object? metadata) => [
     for (final m in metadata as List? ?? const [])
       if (m is Map<String, dynamic>) plexItemToJellyfin(m),
@@ -110,14 +113,7 @@ class PlexItemsApi implements ItemsApi {
           personIds,
           seriesStatus,
           genreIds,
-          genres,
-          tags,
-          studios,
-          officialRatings,
-          years,
           videoTypes,
-          audioLanguages,
-          subtitleLanguages,
         ].any((list) => list != null && list.isNotEmpty) ||
         [
           nameStartsWith,
@@ -131,11 +127,9 @@ class PlexItemsApi implements ItemsApi {
           hasSpecialFeature,
           hasThemeSong,
           hasThemeVideo,
-          isHd,
-          is4K,
           is3D,
         ].any((value) => value != null) ||
-        isFavorite == true ||
+        (is4K == true && isHd == false) ||
         (artistIds?.length ?? 0) > 1 ||
         (filters ?? const []).any((f) => !_filters.containsKey(f));
     if (unsupported) return plexItemsResult([]);
@@ -168,10 +162,11 @@ class PlexItemsApi implements ItemsApi {
       return plexItemsResult(_ofTypes(matches, includeItemTypes));
     }
 
-    final types = [
-      for (final type in includeItemTypes ?? const <String>[])
-        ?plexTypeNumbers[type],
-    ];
+    // Plex lists across libraries only by type, so favorites of every kind
+    // ask for every type.
+    final types = includeItemTypes == null || includeItemTypes.isEmpty
+        ? [if (isFavorite == true) ...plexTypeNumbers.values]
+        : [for (final type in includeItemTypes) ?plexTypeNumbers[type]];
     final sectionKey = _sectionKey(parent);
     final String path;
     if (parent == null) {
@@ -201,6 +196,18 @@ class PlexItemsApi implements ItemsApi {
       if (sort.isNotEmpty) 'sort': sort,
       if (searchTerm != null && searchTerm.isNotEmpty) 'title': searchTerm,
       for (final filter in filters ?? const <String>[]) ..._filters[filter]!,
+      'genre': ?_anyOf(genres),
+      'year': ?_anyOf(years),
+      'contentRating': ?_anyOf(officialRatings),
+      'label': ?_anyOf(tags),
+      'studio': ?_anyOf(studios),
+      'audioLanguage': ?_anyOf(audioLanguages),
+      'subtitleLanguage': ?_anyOf(subtitleLanguages),
+      if (is4K == true)
+        'resolution': '4k'
+      else if (isHd != null)
+        'resolution': isHd ? '720,1080,4k' : 'sd,480,576',
+      if (isFavorite == true) 'userRating': '$plexFavoriteRating',
       ..._paging(startIndex, limit),
     });
 
@@ -213,11 +220,68 @@ class PlexItemsApi implements ItemsApi {
     );
   }
 
+  /// The values a library's filter picker offers, read from Plex's own lists
+  /// for that library.
   @override
   Future<QueryFilterValues> getQueryFilters({
     String? parentId,
     List<String>? includeItemTypes,
-  }) async => QueryFilterValues.empty;
+  }) async {
+    final section = _sectionKey(parentId);
+    if (section == null) return QueryFilterValues.empty;
+    final type = plexTypeNumbers[includeItemTypes?.firstOrNull];
+    Future<List<Map>> values(String filter) async {
+      try {
+        final container = await plexContainer(
+          _dio,
+          '/library/sections/$section/$filter',
+          {'type': ?type},
+        );
+        return (container['Directory'] as List? ?? const [])
+            .whereType<Map>()
+            .toList();
+      } catch (_) {
+        // A library without this filter just leaves its section hidden.
+        return const [];
+      }
+    }
+
+    final [
+      genres,
+      years,
+      ratings,
+      labels,
+      audio,
+      subtitles,
+    ] = await Future.wait([
+      for (final filter in const [
+        'genre',
+        'year',
+        'contentRating',
+        'label',
+        'audioLanguage',
+        'subtitleLanguage',
+      ])
+        values(filter),
+    ]);
+    List<String> titles(List<Map> list) => [
+      for (final value in list)
+        if (value['title'] case final String title) title,
+    ];
+    List<NamedFilterValue> languages(List<Map> list) => [
+      for (final value in list)
+        if (value['key'] case final String key)
+          NamedFilterValue(name: '${value['title'] ?? key}', value: key),
+    ];
+    return QueryFilterValues(
+      genres: titles(genres),
+      years: [for (final year in years) ?int.tryParse('${year['key']}')],
+      officialRatings: titles(ratings),
+      tags: titles(labels),
+      audioLanguages: languages(audio),
+      subtitleLanguages: languages(subtitles),
+    );
+  }
 
   @override
   Future<Map<String, dynamic>> getPersons({

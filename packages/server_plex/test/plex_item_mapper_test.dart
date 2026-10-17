@@ -81,6 +81,7 @@ void main() {
     expect(userData['Played'], isFalse);
     expect(userData['PlayedPercentage'], closeTo(28.97, 0.01));
     expect(userData['LastPlayedDate'], '2026-10-16T04:06:57.000Z');
+    expect(userData['IsFavorite'], isFalse);
     final source = (movie['MediaSources'] as List).single as Map;
     expect(source['Id'], '3720');
     expect(source['Bitrate'], 9536000);
@@ -144,6 +145,7 @@ void main() {
       'childCount': 1,
       'leafCount': 8,
       'viewedLeafCount': 1,
+      'userRating': 10.0,
       'art': '/library/metadata/17098/art/1',
     });
 
@@ -154,6 +156,7 @@ void main() {
     expect(show['BackdropImageTags'], ['/library/metadata/17098/art/1']);
     final userData = show['UserData'] as Map;
     expect(userData['UnplayedItemCount'], 7);
+    expect(userData['IsFavorite'], isTrue);
     expect(userData['Played'], isFalse);
   });
 

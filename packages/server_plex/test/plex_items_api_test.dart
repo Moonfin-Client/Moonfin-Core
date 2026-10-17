@@ -151,12 +151,134 @@ void main() {
     expect(both['Items'], isEmpty);
   });
 
+  test('library filters become Plex filters', () async {
+    final (dio, requests) = _recordingDio(const {'Metadata': []});
+    final api = PlexItemsApi(dio);
+
+    await api.getItems(
+      parentId: 'section-1',
+      includeItemTypes: ['Movie'],
+      genres: ['Action', 'Comedy'],
+      years: [2009],
+      officialRatings: ['PG-13'],
+      tags: ['Kids'],
+      studios: ['Columbia Pictures'],
+      audioLanguages: ['ja'],
+      subtitleLanguages: ['es'],
+      isHd: true,
+      isFavorite: true,
+    );
+    await api.getItems(parentId: 'section-1', isHd: false);
+    await api.getItems(parentId: 'section-1', is4K: true, isHd: true);
+    final contradiction = await api.getItems(
+      parentId: 'section-1',
+      is4K: true,
+      isHd: false,
+    );
+
+    expect(requests.first.queryParameters, {
+      'type': '1',
+      'genre': 'Action,Comedy',
+      'year': '2009',
+      'contentRating': 'PG-13',
+      'label': 'Kids',
+      'studio': 'Columbia Pictures',
+      'audioLanguage': 'ja',
+      'subtitleLanguage': 'es',
+      'resolution': '720,1080,4k',
+      'userRating': '10',
+    });
+    expect(requests[1].queryParameters['resolution'], 'sd,480,576');
+    expect(requests[2].queryParameters['resolution'], '4k');
+    expect(requests, hasLength(3));
+    expect(contradiction['Items'], isEmpty);
+  });
+
+  test('favorites of every kind name every kind for Plex', () async {
+    final (dio, requests) = _recordingDio(const {'Metadata': []});
+
+    await PlexItemsApi(dio).getItems(isFavorite: true, recursive: true);
+
+    expect(requests.single.path, '/library/all');
+    expect(requests.single.queryParameters, {
+      'type': '1,2,3,4,8,9,10',
+      'userRating': '10',
+    });
+  });
+
+  test("a library's filter values come from Plex's own lists", () async {
+    final dio = Dio()
+      ..interceptors.add(
+        _FakeServer(
+          (options, handler) => handler.resolve(
+            Response(
+              requestOptions: options,
+              data: {
+                'MediaContainer': switch (options.path) {
+                  '/library/sections/1/genre' => {
+                    'Directory': [
+                      {'key': '7', 'title': 'Action'},
+                    ],
+                  },
+                  '/library/sections/1/year' => {
+                    'Directory': [
+                      {'key': '2009', 'title': '2009'},
+                    ],
+                  },
+                  '/library/sections/1/contentRating' => {
+                    'Directory': [
+                      {'key': 'Not%20Rated', 'title': 'Not Rated'},
+                    ],
+                  },
+                  '/library/sections/1/audioLanguage' => {
+                    'Directory': [
+                      {'key': 'ja', 'title': '日本語'},
+                    ],
+                  },
+                  _ => const <String, dynamic>{},
+                },
+              },
+            ),
+          ),
+        ),
+      );
+
+    final values = await PlexItemsApi(
+      dio,
+    ).getQueryFilters(parentId: 'section-1', includeItemTypes: ['Movie']);
+
+    expect(values.genres, ['Action']);
+    expect(values.years, [2009]);
+    expect(values.officialRatings, ['Not Rated']);
+    expect(values.tags, isEmpty);
+    expect(values.audioLanguages.single.value, 'ja');
+    expect(values.audioLanguages.single.name, '日本語');
+  });
+
+  test(
+    'a favorite is a 10 rating, and clearing it clears the rating',
+    () async {
+      final (dio, requests) = _recordingDio(const {});
+      final library = PlexUserLibraryApi(dio, PlexItemsApi(dio));
+
+      await library.markFavorite('1715');
+      await library.unmarkFavorite('1715');
+
+      expect(requests.map((r) => (r.method, r.path)), [
+        ('PUT', '/:/rate'),
+        ('PUT', '/:/rate'),
+      ]);
+      expect(requests.map((r) => r.queryParameters['rating']), [10, -1]);
+      expect(requests.first.queryParameters['key'], '1715');
+    },
+  );
+
   test('a filter Plex has no answer for returns nothing', () async {
     final (dio, requests) = _recordingDio(const {});
 
     final result = await PlexItemsApi(
       dio,
-    ).getItems(parentId: 'section-1', genres: ['Horror']);
+    ).getItems(parentId: 'section-1', hasTrailer: true);
 
     expect(requests, isEmpty);
     expect(result['Items'], isEmpty);

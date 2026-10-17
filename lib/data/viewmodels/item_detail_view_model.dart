@@ -453,6 +453,9 @@ class ItemDetailViewModel extends ChangeNotifier {
   bool get supportsNumericUserRatings =>
       _client.userLibraryApi.supportsNumericUserRatings;
 
+  /// Plex has no likes, and its own rating already stands in for favorites.
+  bool get supportsPersonalRating => _client.serverType != ServerType.plex;
+
   bool _isRatingMutationInProgress = false;
   bool get isRatingMutationInProgress => _isRatingMutationInProgress;
 

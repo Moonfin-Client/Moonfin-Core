@@ -1643,7 +1643,11 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   /// Emby's items query takes no 4K flag and its series status holds only
   /// continuing and ended, so those two options stay out of the picker rather
   /// than sitting there doing nothing.
-  bool get supportsUhdFilter => _client.serverType == ServerType.jellyfin;
+  bool get supportsUhdFilter => _client.serverType != ServerType.emby;
+
+  /// Plex keeps no series status, likes, 3D, extras or disc source to filter
+  /// on, so those stay out of the picker for the same reason.
+  bool get supportsExtraFilters => _client.serverType != ServerType.plex;
 
   bool get supportsUnreleasedSeriesFilter =>
       _client.serverType == ServerType.jellyfin;

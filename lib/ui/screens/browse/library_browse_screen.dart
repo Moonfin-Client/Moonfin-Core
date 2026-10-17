@@ -2969,24 +2969,25 @@ class _FilterSortDialogState extends State<_FilterSortDialog> {
                     ),
                 ],
               ),
-            ...section(
-              key: 'liked',
-              title: l10n.personalRatingMine,
-              summary: vm.likedFilter == LikedStatusFilter.all
-                  ? null
-                  : likedLabel(vm.likedFilter),
-              body: () => [
-                for (final status in LikedStatusFilter.values)
-                  _DialogRadioTile(
-                    label: likedLabel(status),
-                    selected: vm.likedFilter == status,
-                    onTap: () => vm.setLikedFilter(status),
-                    accent: accent,
-                    onSurface: onSurface,
-                  ),
-              ],
-            ),
-            if (vm.isSeriesLibrary)
+            if (vm.supportsExtraFilters)
+              ...section(
+                key: 'liked',
+                title: l10n.personalRatingMine,
+                summary: vm.likedFilter == LikedStatusFilter.all
+                    ? null
+                    : likedLabel(vm.likedFilter),
+                body: () => [
+                  for (final status in LikedStatusFilter.values)
+                    _DialogRadioTile(
+                      label: likedLabel(status),
+                      selected: vm.likedFilter == status,
+                      onTap: () => vm.setLikedFilter(status),
+                      accent: accent,
+                      onSurface: onSurface,
+                    ),
+                ],
+              ),
+            if (vm.isSeriesLibrary && vm.supportsExtraFilters)
               ...section(
                 key: 'series',
                 title: l10n.seriesStatus,
@@ -3007,23 +3008,24 @@ class _FilterSortDialogState extends State<_FilterSortDialog> {
                 ],
               ),
             if (vm.supportsVideoFilters) ...[
-              ...section(
-                key: 'features',
-                title: l10n.features,
-                summary: countSummary(vm.featureFilters.length),
-                body: () => [
-                  if (vm.featureFilters.isNotEmpty)
-                    clearGroupTile('features', LibraryFilterGroup.features),
-                  for (final option in LibraryFeatureFilter.values)
-                    _DialogCheckboxTile(
-                      label: featureLabel(option),
-                      checked: vm.featureFilters.contains(option),
-                      onTap: () => vm.toggleFeatureFilter(option),
-                      accent: accent,
-                      onSurface: onSurface,
-                    ),
-                ],
-              ),
+              if (vm.supportsExtraFilters)
+                ...section(
+                  key: 'features',
+                  title: l10n.features,
+                  summary: countSummary(vm.featureFilters.length),
+                  body: () => [
+                    if (vm.featureFilters.isNotEmpty)
+                      clearGroupTile('features', LibraryFilterGroup.features),
+                    for (final option in LibraryFeatureFilter.values)
+                      _DialogCheckboxTile(
+                        label: featureLabel(option),
+                        checked: vm.featureFilters.contains(option),
+                        onTap: () => vm.toggleFeatureFilter(option),
+                        accent: accent,
+                        onSurface: onSurface,
+                      ),
+                  ],
+                ),
               ...section(
                 key: 'quality',
                 title: l10n.quality,
@@ -3032,8 +3034,10 @@ class _FilterSortDialogState extends State<_FilterSortDialog> {
                   if (vm.videoQualityFilters.isNotEmpty)
                     clearGroupTile('quality', LibraryFilterGroup.quality),
                   for (final option in LibraryVideoQualityFilter.values)
-                    if (option != LibraryVideoQualityFilter.uhd ||
-                        vm.supportsUhdFilter)
+                    if ((option != LibraryVideoQualityFilter.uhd ||
+                            vm.supportsUhdFilter) &&
+                        (option != LibraryVideoQualityFilter.threeD ||
+                            vm.supportsExtraFilters))
                       _DialogCheckboxTile(
                         label: qualityLabel(option),
                         checked: vm.videoQualityFilters.contains(option),
@@ -3043,23 +3047,24 @@ class _FilterSortDialogState extends State<_FilterSortDialog> {
                       ),
                 ],
               ),
-              ...section(
-                key: 'source',
-                title: l10n.source,
-                summary: countSummary(vm.videoSourceFilters.length),
-                body: () => [
-                  if (vm.videoSourceFilters.isNotEmpty)
-                    clearGroupTile('source', LibraryFilterGroup.source),
-                  for (final option in LibraryVideoSourceFilter.values)
-                    _DialogCheckboxTile(
-                      label: option.displayName,
-                      checked: vm.videoSourceFilters.contains(option),
-                      onTap: () => vm.toggleVideoSourceFilter(option),
-                      accent: accent,
-                      onSurface: onSurface,
-                    ),
-                ],
-              ),
+              if (vm.supportsExtraFilters)
+                ...section(
+                  key: 'source',
+                  title: l10n.source,
+                  summary: countSummary(vm.videoSourceFilters.length),
+                  body: () => [
+                    if (vm.videoSourceFilters.isNotEmpty)
+                      clearGroupTile('source', LibraryFilterGroup.source),
+                    for (final option in LibraryVideoSourceFilter.values)
+                      _DialogCheckboxTile(
+                        label: option.displayName,
+                        checked: vm.videoSourceFilters.contains(option),
+                        onTap: () => vm.toggleVideoSourceFilter(option),
+                        accent: accent,
+                        onSurface: onSurface,
+                      ),
+                  ],
+                ),
             ],
             ...facetSection(
               key: 'genres',

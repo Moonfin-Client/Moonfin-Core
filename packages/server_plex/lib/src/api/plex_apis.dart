@@ -196,27 +196,39 @@ class PlexUserLibraryApi implements UserLibraryApi {
   Future<void> unmarkPlayed(String itemId) =>
       _scrobble('/:/unscrobble', itemId);
 
-  static Never _noFavorites() =>
-      throw UnsupportedError('Plex has no favorites or likes');
+  Future<void> _rate(String itemId, int rating) => _dio.put<dynamic>(
+    '/:/rate',
+    queryParameters: {
+      'key': itemId,
+      'identifier': 'com.plexapp.plugins.library',
+      'rating': rating,
+    },
+  );
+
+  static Never _noRatings() => throw UnsupportedError(
+    'Plex has no likes, and its rating stands in for favorites',
+  );
 
   @override
-  Future<void> markFavorite(String itemId) async => _noFavorites();
+  Future<void> markFavorite(String itemId) => _rate(itemId, plexFavoriteRating);
 
+  /// Clearing the rating is all Plex offers, so a rating given in another
+  /// Plex app goes too.
   @override
-  Future<void> unmarkFavorite(String itemId) async => _noFavorites();
+  Future<void> unmarkFavorite(String itemId) => _rate(itemId, -1);
 
   @override
   Future<void> updateUserRating(String itemId, {required bool likes}) async =>
-      _noFavorites();
+      _noRatings();
 
   @override
   Future<void> updateNumericUserRating(
     String itemId, {
     required double rating,
-  }) async => _noFavorites();
+  }) async => _noRatings();
 
   @override
-  Future<void> deleteUserRating(String itemId) async => _noFavorites();
+  Future<void> deleteUserRating(String itemId) async => _noRatings();
 
   @override
   Future<Map<String, dynamic>> getItem(String itemId) =>
