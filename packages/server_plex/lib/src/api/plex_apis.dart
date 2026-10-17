@@ -404,8 +404,9 @@ class PlexLiveTvApi implements LiveTvApi {
   Future<void> cancelSeriesTimer(String seriesTimerId) async => _noLiveTv();
 }
 
-/// Plex's own mixes need Plex Pass, so this one is random tracks from the
-/// seed's library that share its genres.
+/// The tracks that sound most like the seed, when a Plex Pass server has
+/// analyzed them. Otherwise random tracks from the seed's library that share
+/// its genres.
 class PlexInstantMixApi implements InstantMixApi {
   final Dio _dio;
 
@@ -420,11 +421,26 @@ class PlexInstantMixApi implements InstantMixApi {
     for (final genre in item?['Genre'] as List? ?? const []) genre['id'],
   ];
 
+  static Map<String, dynamic> _tracks(Map container) => plexItemsResult([
+    for (final track in container['Metadata'] as List? ?? const [])
+      plexItemToJellyfin(track as Map<String, dynamic>),
+  ]);
+
   @override
   Future<Map<String, dynamic>> getInstantMix(
     String itemId, {
     int? limit,
   }) async {
+    try {
+      final nearest = _tracks(
+        await plexContainer(_dio, '/library/metadata/$itemId/nearest', {
+          'limit': limit ?? 100,
+        }),
+      );
+      if ((nearest['Items'] as List).isNotEmpty) return nearest;
+    } on DioException {
+      // A server without Plex Pass refuses, so the genre mix stands in.
+    }
     final seed = await _metadata(itemId);
     final section = seed?['librarySectionID'];
     if (section == null) return plexItemsResult([]);
@@ -441,9 +457,6 @@ class PlexInstantMixApi implements InstantMixApi {
           'X-Plex-Container-Start': 0,
           'X-Plex-Container-Size': limit ?? 100,
         });
-    return plexItemsResult([
-      for (final track in container['Metadata'] as List? ?? const [])
-        plexItemToJellyfin(track as Map<String, dynamic>),
-    ]);
+    return _tracks(container);
   }
 }

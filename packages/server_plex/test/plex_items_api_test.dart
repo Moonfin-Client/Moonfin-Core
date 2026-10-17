@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:server_plex/src/api/plex_apis.dart';
 import 'package:server_plex/src/api/plex_items_api.dart';
+import 'package:server_plex/src/api/plex_trickplay_api.dart';
 import 'package:test/test.dart';
 
 class _FakeServer extends Interceptor {
@@ -967,6 +968,9 @@ void main() {
                         },
                       ],
                     },
+                    // Not analyzed yet, so nothing sounds alike.
+                    '/library/metadata/23013/nearest' =>
+                      const <String, dynamic>{},
                     _ => {
                       'Metadata': [
                         {'ratingKey': '23029', 'type': 'track'},
@@ -1004,6 +1008,25 @@ void main() {
     },
   );
 
+  test(
+    'an analyzed track mixes with the tracks that sound most like it',
+    () async {
+      final (dio, requests) = _recordingDio({
+        'Metadata': [
+          {'ratingKey': '23012', 'type': 'track'},
+        ],
+      });
+
+      final mix = await PlexInstantMixApi(
+        dio,
+      ).getInstantMix('23013', limit: 25);
+
+      expect(requests.single.path, '/library/metadata/23013/nearest');
+      expect(requests.single.queryParameters, {'limit': 25});
+      expect((mix['Items'] as List).single['Id'], '23012');
+    },
+  );
+
   test('intro and credits markers become skip segments', () async {
     final (dio, requests) = _recordingDio({
       'Metadata': [
@@ -1033,6 +1056,52 @@ void main() {
     ]);
     expect(await api.getMediaSegments('part-23070-0-1'), isEmpty);
     expect(requests, hasLength(1));
+  });
+
+  test('a file with built previews has one every ten seconds', () async {
+    Map<String, dynamic> movie(String? indexes) => {
+      'Metadata': [
+        {
+          'Media': [
+            {
+              'aspectRatio': 1.78,
+              'Part': [
+                {'id': 3930, 'duration': 25000, 'indexes': ?indexes},
+              ],
+            },
+          ],
+        },
+      ],
+    };
+    final (built, _) = _recordingDio(movie('sd'));
+    final (missing, _) = _recordingDio(movie(null));
+    final api = PlexTrickplayApi(built, () => 'http://plex:32400', () => 'tok');
+
+    final set = await api.getThumbnailSet('1804', width: 320);
+
+    expect(set!.aspectRatio, 1.78);
+    expect(set.thumbnails.map((t) => (t.positionTicks, t.imageTag)), [
+      (0, '3930'),
+      (100000000, '3930'),
+      (200000000, '3930'),
+    ]);
+    expect(
+      api.getFrameImageUrl(
+        '1804',
+        width: 320,
+        positionTicks: 100000000,
+        imageTag: '3930',
+      ),
+      'http://plex:32400/library/parts/3930/indexes/sd/10000?X-Plex-Token=tok',
+    );
+    expect(
+      await PlexTrickplayApi(
+        missing,
+        () => '',
+        () => null,
+      ).getThumbnailSet('1804', width: 320),
+      isNull,
+    );
   });
 
   group('PlexImageApi', () {

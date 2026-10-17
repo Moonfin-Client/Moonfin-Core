@@ -313,16 +313,19 @@ class PlexPlaybackApi implements PlaybackApi {
     final span = state == 'stopped' ? _spans.remove(session) : _spans[session];
     final key = span?.key ?? info['ItemId'];
     final runTime = info['RunTimeTicks'] as int?;
+    final duration = span?.total ?? (runTime == null ? null : runTime ~/ 10000);
+    final time =
+        (span?.offset ?? 0) + (info['PositionTicks'] as int? ?? 0) ~/ 10000;
     return _dio.get<dynamic>(
       '/:/timeline',
       queryParameters: {
         'ratingKey': key,
         'key': '/library/metadata/$key',
         'state': state,
-        'time':
-            (span?.offset ?? 0) + (info['PositionTicks'] as int? ?? 0) ~/ 10000,
-        'duration':
-            ?(span?.total ?? (runTime == null ? null : runTime ~/ 10000)),
+        // Plex turns down a report past the end, and the last report of a
+        // file often runs a frame over, which would leave the session open.
+        'time': duration == null ? time : min(time, duration),
+        'duration': ?duration,
         if (session is String) 'X-Plex-Session-Identifier': session,
       },
     );

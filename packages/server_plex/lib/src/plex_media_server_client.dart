@@ -4,6 +4,7 @@ import 'package:server_core/server_core.dart';
 import 'api/plex_apis.dart';
 import 'api/plex_items_api.dart';
 import 'api/plex_playback_api.dart';
+import 'api/plex_trickplay_api.dart';
 
 /// The X-Plex identity every Plex request carries. Plex takes it as query
 /// parameters too, which keeps non-ASCII device names out of the headers.
@@ -105,6 +106,13 @@ class PlexMediaServerClient extends MediaServerClient {
   late final PlaybackApi playbackApi = PlexPlaybackApi(
     _dio,
     plexIdentity(deviceInfo),
+  );
+
+  @override
+  late final TrickplayApi trickplayApi = PlexTrickplayApi(
+    _dio,
+    () => _baseUrl,
+    () => _accessToken,
   );
 
   @override

@@ -498,6 +498,22 @@ void main() {
     },
   );
 
+  test('a stop that runs past the end reports the end', () async {
+    final (api, server) = _api('directplay');
+
+    await api.reportPlaybackStopped({
+      'ItemId': '5509',
+      'PositionTicks': 303410000,
+      'RunTimeTicks': 300000000,
+      'PlaySessionId': 'abc',
+    });
+
+    expect(
+      _request(server, '/:/timeline').queryParameters,
+      allOf(containsPair('time', 30000), containsPair('duration', 30000)),
+    );
+  });
+
   test('stopping a transcode ends its Plex session', () async {
     final (api, server) = _api('transcode');
 
