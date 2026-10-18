@@ -84,6 +84,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get loginFailed => 'ログインに失敗しました';
 
   @override
+  String get loginForbidden =>
+      'This account can\'t sign in right now. It may be outside its allowed hours, locked or disabled. Try again later or ask an administrator.';
+
+  @override
   String quickConnectUnavailable(String detail) {
     return 'QuickConnect を利用できません: $detail';
   }

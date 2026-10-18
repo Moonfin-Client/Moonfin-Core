@@ -84,6 +84,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get loginFailed => '登录失败';
 
   @override
+  String get loginForbidden =>
+      'This account can\'t sign in right now. It may be outside its allowed hours, locked or disabled. Try again later or ask an administrator.';
+
+  @override
   String quickConnectUnavailable(String detail) {
     return '快速连接不可用：$detail';
   }

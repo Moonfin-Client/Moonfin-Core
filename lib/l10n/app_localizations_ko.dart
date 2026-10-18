@@ -84,6 +84,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get loginFailed => '로그인 실패';
 
   @override
+  String get loginForbidden =>
+      'This account can\'t sign in right now. It may be outside its allowed hours, locked or disabled. Try again later or ask an administrator.';
+
+  @override
   String quickConnectUnavailable(String detail) {
     return 'Quick Connect를 사용할 수 없습니다: $detail';
   }

@@ -364,6 +364,12 @@ abstract class AppLocalizations {
   /// **'Login failed'**
   String get loginFailed;
 
+  /// Sign in error when the server refuses the account with a 403, which Jellyfin does for an access schedule, a lockout or a disabled account without saying which
+  ///
+  /// In en, this message translates to:
+  /// **'This account can\'t sign in right now. It may be outside its allowed hours, locked or disabled. Try again later or ask an administrator.'**
+  String get loginForbidden;
+
   /// Quick Connect generic error message
   ///
   /// In en, this message translates to:

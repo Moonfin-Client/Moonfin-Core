@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 import 'package:server_core/server_core.dart';
 
+import '../../util/network_errors.dart';
 import '../models/login_state.dart';
 import '../models/user.dart';
 import '../store/authentication_store.dart';
@@ -142,6 +143,11 @@ class AuthRepository {
     }
     if (isUntrustedCertificate(e)) {
       const state = UntrustedCertificate();
+      _stateController.add(state);
+      return state;
+    }
+    if (isSignInForbidden(e)) {
+      const state = SignInForbidden();
       _stateController.add(state);
       return state;
     }

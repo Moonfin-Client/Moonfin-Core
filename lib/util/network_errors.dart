@@ -13,3 +13,13 @@ bool isNetworkException(Object? error) {
     _ => false,
   };
 }
+
+/// Whether [error] is the server refusing a sign in outright, which is a 403
+/// where a wrong password is a 401.
+///
+/// Jellyfin only puts the reason in the body when it runs in development and
+/// answers "Error processing request." otherwise, so the status is all there is
+/// to go on. It covers an access schedule that doesn't allow the current time,
+/// a disabled account and a lockout alike.
+bool isSignInForbidden(DioException error) =>
+    error.response?.statusCode == 403;

@@ -85,6 +85,10 @@ class AppLocalizationsTa extends AppLocalizations {
   String get loginFailed => 'உள்நுழைவு தோல்வியடைந்தது';
 
   @override
+  String get loginForbidden =>
+      'This account can\'t sign in right now. It may be outside its allowed hours, locked or disabled. Try again later or ask an administrator.';
+
+  @override
   String quickConnectUnavailable(String detail) {
     return 'QuickConnect கிடைக்கவில்லை: $detail';
   }

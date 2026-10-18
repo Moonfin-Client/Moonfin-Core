@@ -101,6 +101,10 @@
   "@loginFailed": {
     "description": "Generic login failure message"
   },
+  "loginForbidden": "This account can't sign in right now. It may be outside its allowed hours, locked or disabled. Try again later or ask an administrator.",
+  "@loginForbidden": {
+    "description": "Sign in error when the server refuses the account with a 403, which Jellyfin does for an access schedule, a lockout or a disabled account without saying which"
+  },
   "quickConnectUnavailable": "QuickConnect unavailable: {detail}",
   "@quickConnectUnavailable": {
     "description": "Quick Connect generic error message",
