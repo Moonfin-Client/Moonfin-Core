@@ -37,6 +37,7 @@ import '../../data/services/tv_channels_service.dart';
 import '../../data/services/watch_next_service.dart';
 import '../../data/services/media_server_client_factory.dart';
 import '../../data/services/achievements_service.dart';
+import '../../data/services/plex_tv_service.dart';
 import '../../data/services/plugin_sync_service.dart';
 import '../../data/services/push_messaging_service.dart';
 import '../../data/services/remote_search_session.dart';
@@ -60,6 +61,7 @@ import '../../util/focus/gamepad/gamepad_key_synthesizer.dart';
 import '../store/authentication_preferences.dart';
 import '../store/authentication_store.dart';
 import '../store/credential_store.dart';
+import '../models/server.dart';
 import '../models/user.dart';
 import 'server_repository.dart';
 import 'user_repository.dart';
@@ -277,11 +279,14 @@ class SessionRepository {
       return false;
     }
 
+    final address = await _bestPlexAddress(server);
     final client = _clientFactory.getClient(
       serverId: serverId,
       serverType: server.serverType,
-      baseUrl: server.address,
+      baseUrl: address,
     );
+    // A client kept from an earlier session still has the old address.
+    if (address != server.address) client.baseUrl = address;
 
     client.accessToken = accessToken;
     client.userId = userId;
@@ -360,6 +365,22 @@ class SessionRepository {
     _setState(SessionState.ready);
 
     return true;
+  }
+
+  /// The best address a Plex server answers at right now, saved when it
+  /// changed. Without an answer the saved one stays.
+  Future<String> _bestPlexAddress(Server server) async {
+    if (server.candidateAddresses.length < 2 ||
+        !GetIt.instance.isRegistered<PlexTvService>()) {
+      return server.address;
+    }
+    final best = await GetIt.instance<PlexTvService>().findReachableUri(
+      server.candidateAddresses,
+      server.id,
+    );
+    if (best == null || best == server.address) return server.address;
+    await _serverRepository.saveServer(server.copyWith(address: best));
+    return best;
   }
 
   Future<void> _postLoginSync(

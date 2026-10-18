@@ -50,7 +50,8 @@ class PlexRepository {
   /// it as the [authToken] account. False when no address answered or the
   /// session didn't start.
   Future<bool> connect(PlexServer server, String authToken) async {
-    final uri = await _plexTv.findReachableUri(server);
+    final uris = [for (final c in server.connections) c.uri];
+    final uri = await _plexTv.findReachableUri(uris, server.id);
     if (uri == null) return false;
 
     final account = await _plexTv.getAccount(authToken);
@@ -60,6 +61,7 @@ class PlexRepository {
         id: server.id,
         name: server.name,
         address: uri,
+        candidateAddresses: uris,
         version: server.version,
         serverType: ServerType.plex,
         dateAdded: now,

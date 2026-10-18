@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:server_core/server_core.dart';
 import 'package:server_plex/server_plex.dart';
@@ -47,6 +49,7 @@ class PlexServer {
     final connections =
         (json['connections'] as List? ?? const []).whereType<Map>().toList()
           ..sort((a, b) => rank(a).compareTo(rank(b)));
+    final plainAllowed = json['httpsRequired'] != true;
     return PlexServer(
       id: json['clientIdentifier'] as String? ?? '',
       name: json['name'] as String? ?? '',
@@ -54,8 +57,25 @@ class PlexServer {
       accessToken: json['accessToken'] as String? ?? '',
       connections: [
         for (final c in connections)
-          if (c['uri'] is String)
-            (uri: c['uri'] as String, address: '${c['address']}:${c['port']}'),
+          if (c['uri'] case final String uri) ...[
+            (uri: uri, address: '${c['address']}:${c['port']}'),
+            // Some routers block plex.direct names because they point at
+            // private IPs, so the plain local address comes next, the same
+            // fallback Plex's own apps use.
+            if (c['address'] case final String address
+                when plainAllowed &&
+                    c['local'] == true &&
+                    c['relay'] != true &&
+                    uri.startsWith('https:'))
+              (
+                uri: Uri(
+                  scheme: 'http',
+                  host: address,
+                  port: c['port'] as int?,
+                ).toString(),
+                address: '$address:${c['port']}',
+              ),
+          ],
       ],
     );
   }
@@ -162,15 +182,9 @@ class PlexTvService {
         .toList(growable: false);
   }
 
-  /// The first of [server]'s connections that answers as that server. They
-  /// are all tried at once, so dead addresses cost one timeout in total.
-  Future<String?> findReachableUri(PlexServer server) async {
-    final probes = [for (final c in server.connections) machineIdAt(c.uri)];
-    for (var i = 0; i < probes.length; i++) {
-      if (await probes[i] == server.id) return server.connections[i].uri;
-    }
-    return null;
-  }
+  /// The best of [uris] where the Plex server [machineId] answers.
+  Future<String?> findReachableUri(List<String> uris, String machineId) =>
+      firstAnswering(uris, (uri) async => await machineIdAt(uri) == machineId);
 
   /// Where a Plex server answers at a typed [address], or null when nothing
   /// there is one.
@@ -194,6 +208,33 @@ class PlexTvService {
       return null;
     }
   }
+}
+
+/// The first of [uris], in their order, that [answers]. They're all tried at
+/// once, and after one answers, the ones ahead of it only get [grace] more,
+/// so an address that never answers, like a container's, doesn't hold things
+/// up for its whole timeout.
+Future<String?> firstAnswering(
+  List<String> uris,
+  Future<bool> Function(String uri) answers, {
+  Duration grace = const Duration(seconds: 1),
+}) async {
+  final answered = <int>{};
+  final anyAnswered = Completer<void>();
+  final probes = [
+    for (var i = 0; i < uris.length; i++)
+      answers(uris[i]).then((ok) {
+        if (!ok) return;
+        answered.add(i);
+        if (!anyAnswered.isCompleted) anyAnswered.complete();
+      }),
+  ];
+  final graceOver = anyAnswered.future.then((_) => Future<void>.delayed(grace));
+  for (var i = 0; i < uris.length; i++) {
+    await Future.any([probes[i], graceOver]);
+    if (answered.contains(i)) return uris[i];
+  }
+  return null;
 }
 
 /// Whether plex.tv turned a password sign-in down because the account's
