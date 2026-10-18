@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:playback_core/playback_core.dart';
+import 'package:server_core/server_core.dart' show ServerType;
 
 import '../../auth/repositories/server_repository.dart';
 import '../../auth/repositories/session_repository.dart';
