@@ -204,4 +204,51 @@ void main() {
       );
     });
   });
+
+  group('quickConnectApprovalUrl', () {
+    test('points at the web client with the code filled in', () {
+      expect(
+        quickConnectApprovalUrl('https://media.example.com', '123456'),
+        'https://media.example.com/web/#/quickconnect?code=123456',
+      );
+    });
+
+    test('drops the spaces the screen puts in the code', () {
+      expect(
+        quickConnectApprovalUrl('https://media.example.com', '123 456'),
+        'https://media.example.com/web/#/quickconnect?code=123456',
+      );
+    });
+
+    test('keeps a reverse proxy base path', () {
+      expect(
+        quickConnectApprovalUrl('https://example.com/jellyfin/', '123456'),
+        'https://example.com/jellyfin/web/#/quickconnect?code=123456',
+      );
+    });
+
+    test('does not double a web client path already on the address', () {
+      expect(
+        quickConnectApprovalUrl(
+          'https://media.example.com/web/index.html',
+          '123456',
+        ),
+        'https://media.example.com/web/#/quickconnect?code=123456',
+      );
+    });
+
+    test('keeps a non default port', () {
+      expect(
+        quickConnectApprovalUrl('http://192.168.1.10:8096', '123456'),
+        'http://192.168.1.10:8096/web/#/quickconnect?code=123456',
+      );
+    });
+
+    test('is null without an address or a code', () {
+      expect(quickConnectApprovalUrl('', '123456'), isNull);
+      expect(quickConnectApprovalUrl('  ', '123456'), isNull);
+      expect(quickConnectApprovalUrl('https://media.example.com', ''), isNull);
+      expect(quickConnectApprovalUrl('https://media.example.com', ' '), isNull);
+    });
+  });
 }

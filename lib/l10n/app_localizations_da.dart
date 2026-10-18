@@ -73,6 +73,14 @@ class AppLocalizationsDa extends AppLocalizations {
       'Indtast denne kode på din servers web-dashboard:';
 
   @override
+  String get quickConnectScanHint =>
+      'Or scan this with a phone that\'s signed in to your server';
+
+  @override
+  String get quickConnectTapOrScanHint =>
+      'Tap to approve in your browser, or scan this with another device';
+
+  @override
   String get waitingForAuthorization => 'Venter på godkendelse...';
 
   @override

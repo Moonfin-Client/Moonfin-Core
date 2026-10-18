@@ -73,6 +73,14 @@ class AppLocalizationsHi extends AppLocalizations {
       'इस कोड को अपने सर्वर के वेब डैशबोर्ड पर दर्ज करें:';
 
   @override
+  String get quickConnectScanHint =>
+      'Or scan this with a phone that\'s signed in to your server';
+
+  @override
+  String get quickConnectTapOrScanHint =>
+      'Tap to approve in your browser, or scan this with another device';
+
+  @override
   String get waitingForAuthorization => 'प्राधिकरण के लिए इंतजार करो...';
 
   @override

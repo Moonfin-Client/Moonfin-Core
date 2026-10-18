@@ -340,6 +340,18 @@ abstract class AppLocalizations {
   /// **'Enter this code on your server\'s web dashboard:'**
   String get quickConnectInstruction;
 
+  /// Caption under the Quick Connect QR code that opens the server's web page with the code filled in
+  ///
+  /// In en, this message translates to:
+  /// **'Or scan this with a phone that\'s signed in to your server'**
+  String get quickConnectScanHint;
+
+  /// Caption under the Quick Connect QR code on a phone or tablet, where tapping the code opens the server's web page with the code filled in
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to approve in your browser, or scan this with another device'**
+  String get quickConnectTapOrScanHint;
+
   /// Quick Connect polling status text
   ///
   /// In en, this message translates to:

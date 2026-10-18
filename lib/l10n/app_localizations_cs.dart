@@ -73,6 +73,14 @@ class AppLocalizationsCs extends AppLocalizations {
       'Zadejte tento kód na webový panel vašeho serveru:';
 
   @override
+  String get quickConnectScanHint =>
+      'Or scan this with a phone that\'s signed in to your server';
+
+  @override
+  String get quickConnectTapOrScanHint =>
+      'Tap to approve in your browser, or scan this with another device';
+
+  @override
   String get waitingForAuthorization => 'Čekání na autorizaci...';
 
   @override

@@ -73,6 +73,14 @@ class AppLocalizationsTl extends AppLocalizations {
       'Ilagay ang code na ito sa web dashboard ng iyong server:';
 
   @override
+  String get quickConnectScanHint =>
+      'Or scan this with a phone that\'s signed in to your server';
+
+  @override
+  String get quickConnectTapOrScanHint =>
+      'Tap to approve in your browser, or scan this with another device';
+
+  @override
   String get waitingForAuthorization => 'Naghihintay ng awtorisasyon...';
 
   @override

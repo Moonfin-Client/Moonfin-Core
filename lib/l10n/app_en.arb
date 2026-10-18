@@ -85,6 +85,14 @@
   "@quickConnectInstruction": {
     "description": "Instruction text for Quick Connect code entry"
   },
+  "quickConnectScanHint": "Or scan this with a phone that's signed in to your server",
+  "@quickConnectScanHint": {
+    "description": "Caption under the Quick Connect QR code that opens the server's web page with the code filled in"
+  },
+  "quickConnectTapOrScanHint": "Tap to approve in your browser, or scan this with another device",
+  "@quickConnectTapOrScanHint": {
+    "description": "Caption under the Quick Connect QR code on a phone or tablet, where tapping the code opens the server's web page with the code filled in"
+  },
   "waitingForAuthorization": "Waiting for authorization...",
   "@waitingForAuthorization": {
     "description": "Quick Connect polling status text"

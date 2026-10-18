@@ -73,6 +73,14 @@ class AppLocalizationsMl extends AppLocalizations {
       'നിങ്ങളുടെ സെർവറിൻ്റെ വെബ് ഡാഷ്‌ബോർഡിൽ ഈ കോഡ് നൽകുക:';
 
   @override
+  String get quickConnectScanHint =>
+      'Or scan this with a phone that\'s signed in to your server';
+
+  @override
+  String get quickConnectTapOrScanHint =>
+      'Tap to approve in your browser, or scan this with another device';
+
+  @override
   String get waitingForAuthorization => 'അംഗീകാരത്തിനായി കാത്തിരിക്കുന്നു...';
 
   @override

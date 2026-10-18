@@ -73,6 +73,14 @@ class AppLocalizationsRo extends AppLocalizations {
       'Introdu acest cod în panoul web al serverului tău:';
 
   @override
+  String get quickConnectScanHint =>
+      'Or scan this with a phone that\'s signed in to your server';
+
+  @override
+  String get quickConnectTapOrScanHint =>
+      'Tap to approve in your browser, or scan this with another device';
+
+  @override
   String get waitingForAuthorization => 'Se așteaptă autorizația...';
 
   @override

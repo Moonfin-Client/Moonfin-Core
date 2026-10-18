@@ -72,6 +72,14 @@ class AppLocalizationsKo extends AppLocalizations {
   String get quickConnectInstruction => '서버의 웹 대시보드에 다음 코드를 입력하세요.';
 
   @override
+  String get quickConnectScanHint =>
+      'Or scan this with a phone that\'s signed in to your server';
+
+  @override
+  String get quickConnectTapOrScanHint =>
+      'Tap to approve in your browser, or scan this with another device';
+
+  @override
   String get waitingForAuthorization => '승인을 기다리는 중...';
 
   @override

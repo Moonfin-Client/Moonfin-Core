@@ -133,6 +133,19 @@ String _stripTrailingSlash(String value) {
   return value;
 }
 
+/// The jellyfin-web page that approves a Quick Connect [code], or null when
+/// there is no server address or code to build it from.
+///
+/// Concatenated rather than resolved, which keeps a reverse proxy's base path.
+/// The page reads the code from the query string, so a phone that is already
+/// signed in approves with one tap instead of typing it.
+String? quickConnectApprovalUrl(String baseUrl, String code) {
+  final base = normalizeServerBaseUrl(baseUrl);
+  final digits = code.replaceAll(RegExp(r'\s'), '');
+  if (base.isEmpty || digits.isEmpty) return null;
+  return '$base/web/#/quickconnect?code=${Uri.encodeQueryComponent(digits)}';
+}
+
 /// Appends the access token query parameter so the URL authenticates itself.
 ///
 /// For fetches that go out without the app's Authorization header. Emby URLs
