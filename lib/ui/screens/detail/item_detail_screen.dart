@@ -939,6 +939,9 @@ class _DetailContentState extends State<_DetailContent> {
   final Map<String, FocusNode> _trackFocusNodes = <String, FocusNode>{};
   final Map<String, FocusNode> _featureFocusNodes = <String, FocusNode>{};
 
+  FocusNode get _albumPlayButtonNode =>
+      widget.initialFocusNode ?? _albumPlayFocusNode;
+
   FocusNode _featureFocusNodeFor(String categoryKey) {
     return _featureFocusNodes.putIfAbsent(
       categoryKey,
@@ -1358,7 +1361,7 @@ class _DetailContentState extends State<_DetailContent> {
       if (!mounted) return;
       if (!canClaimInitialFocus(context)) return;
       if (_tvAlbumPlayFocusAppliedForItemId == itemId) return;
-      final node = _albumPlayFocusNode;
+      final node = _albumPlayButtonNode;
       if (node.context != null && node.canRequestFocus) {
         node.requestFocus();
         if (node.hasFocus) {
@@ -1418,7 +1421,7 @@ class _DetailContentState extends State<_DetailContent> {
     return switch (item.type) {
       'Person' =>
         widget.initialFocusNode ?? _sectionFocusNode('detailPersonFavorite'),
-      'MusicAlbum' || 'Playlist' => _albumPlayFocusNode,
+      'MusicAlbum' || 'Playlist' => _albumPlayButtonNode,
       'BoxSet' => _sectionFocusNode('detailBoxSetActionButtons'),
       _ => widget.initialFocusNode ?? _sectionFocusNode('detailActionButtons'),
     };
@@ -3207,7 +3210,7 @@ class _DetailContentState extends State<_DetailContent> {
       _AlbumActions(
         item: item,
         tracks: displayedTracks,
-        playFocusNode: widget.initialFocusNode ?? _albumPlayFocusNode,
+        playFocusNode: _albumPlayButtonNode,
         // Do not steal focus onto the media page when a settings panel is open
         // over the details and rebuilds it (detail style or theme change).
         autofocusPlay:
@@ -3294,7 +3297,7 @@ class _DetailContentState extends State<_DetailContent> {
             sortFocusNode: _playlistSortFocusNode,
             filterFocusNode: _playlistFilterFocusNode,
             onSortArrowUp: () {
-              final targetNode = widget.initialFocusNode ?? _albumPlayFocusNode;
+              final targetNode = _albumPlayButtonNode;
               if (targetNode.canRequestFocus) targetNode.requestFocus();
             },
             onSortArrowDown: () {
@@ -3314,7 +3317,7 @@ class _DetailContentState extends State<_DetailContent> {
               NavigationLayout.focusNavbarNotifier.value?.call();
             },
             onFilterArrowUp: () {
-              final targetNode = widget.initialFocusNode ?? _albumPlayFocusNode;
+              final targetNode = _albumPlayButtonNode;
               if (targetNode.canRequestFocus) targetNode.requestFocus();
             },
             onFilterArrowDown: () {
@@ -3418,7 +3421,7 @@ class _DetailContentState extends State<_DetailContent> {
                   return;
                 }
               }
-              final targetNode = widget.initialFocusNode ?? _albumPlayFocusNode;
+              final targetNode = _albumPlayButtonNode;
               if (!targetNode.canRequestFocus) return;
               targetNode.requestFocus();
             },

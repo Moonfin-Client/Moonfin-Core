@@ -183,6 +183,7 @@ class _SeerrRequestsScreenState extends State<SeerrRequestsScreen>
     _requestsVm?.dispose();
     _issuesVm?.removeListener(_onChanged);
     _issuesVm?.dispose();
+    _initialFocusNode.dispose();
     super.dispose();
   }
 
@@ -1024,7 +1025,7 @@ class _HubTabState extends State<_HubTab> with FocusStateMixin {
     final scale = _uiScale();
     return Focus(
       onFocusChange: setFocused,
-      autofocus: widget.selected,
+      autofocus: widget.selected && !PlatformDetection.useMobileUi,
       onKeyEvent: (node, event) {
         if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
           return KeyEventResult.ignored;
@@ -1048,10 +1049,10 @@ class _HubTabState extends State<_HubTab> with FocusStateMixin {
             decoration: BoxDecoration(
               border: Border(
                 bottom: BorderSide(
-                  color: widget.selected
-                      ? AppColorScheme.accent
-                      : showFocusBorder
+                  color: showFocusBorder
                       ? focusColor
+                      : widget.selected
+                      ? AppColorScheme.accent
                       : Colors.transparent,
                   width: 2,
                 ),
