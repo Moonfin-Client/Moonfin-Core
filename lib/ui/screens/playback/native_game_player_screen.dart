@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:archive/archive_io.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -143,15 +144,20 @@ class NativeGamePlayerScreen extends StatefulWidget {
     required this.gameId,
     required this.core,
     this.gameName,
+    this.romFileName,
+    this.biosId,
     this.startFresh = false,
     this.hardwareRenderingEnabled = true,
     @visibleForTesting this.player,
+    @visibleForTesting this.coreDownloads,
   });
 
   final String libraryId;
   final String gameId;
   final String core;
   final String? gameName;
+  final String? romFileName;
+  final String? biosId;
   final bool startFresh;
 
   /// Whether Android should register its experimental EGL backend.
@@ -163,6 +169,9 @@ class NativeGamePlayerScreen extends StatefulWidget {
   @visibleForTesting
   final NativeGamePlayer? player;
 
+  @visibleForTesting
+  final CoreDownloadService? coreDownloads;
+
   @override
   State<NativeGamePlayerScreen> createState() => _NativeGamePlayerScreenState();
 }
@@ -171,9 +180,15 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
     with GameAudioOwner, WidgetsBindingObserver, ImmersiveSystemUi {
   final MediaServerClient _client = GetIt.instance<MediaServerClient>();
   late final NativeGamePlayer _player;
-  late final CoreDownloadService _cores = CoreDownloadService(
-    GetIt.instance<PreferenceStore>(),
-  );
+  late final CoreDownloadService _cores =
+      widget.coreDownloads ??
+      CoreDownloadService(GetIt.instance<PreferenceStore>());
+  CancelToken? _coreDownloadToken;
+  bool _coreInstallFailed = false;
+  GameDetail? _gameDetail;
+  Future<void>? _pendingStop;
+  Future<void>? _systemUiRestoration;
+  bool _switchingBackend = false;
 
   String get _stateKey => gameStateKey(widget.gameId, widget.core);
 
@@ -375,6 +390,7 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
 
   @override
   void dispose() {
+    _coreDownloadToken?.cancel('Game player closed');
     WidgetsBinding.instance.removeObserver(this);
     _releaseGameplayArtworkBlock();
     _releaseScreensaverBlock();
@@ -491,7 +507,12 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
       // stays available: _exiting is deliberately left alone here, so the
       // user is never stranded on the error screen behind a dead back button.
       _sessionStopped = true;
-      unawaited(_player.stop());
+      _pendingStop = _player.stop();
+      unawaited(
+        _pendingStop!.catchError((Object error) {
+          debugPrint('[NativeGamePlayerScreen] Native teardown failed: $error');
+        }),
+      );
     }
   }
 
@@ -959,8 +980,16 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
         _controllerMappings = const {};
       }
 
-      // tvOS and macOS bundle their cores, so the native side loads them from
-      // the app. Android, Windows, and Linux load a downloaded file.
+      final detail = await games.getGame(widget.libraryId, widget.gameId);
+      if (detail == null || !mounted) {
+        _releaseGameplayArtworkBlock();
+        if (mounted) setState(() => _error = 'Game not found.');
+        return;
+      }
+      _gameDetail = detail;
+
+      // Apple resolves signed frameworks natively. Other runners receive the
+      // downloaded core path, installing it automatically when missing.
       String? corePath;
       if (!bundlesGameCores) {
         if (!supportsCoreDownloads) {
@@ -974,23 +1003,15 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
         }
         corePath = await installedCorePath(coreId);
         if (corePath == null) {
-          _releaseGameplayArtworkBlock();
-          if (mounted) {
-            setState(
-              () => _error =
-                  'The core for this system is not installed. Add it in Settings > Playback > Emulator Cores.',
-            );
+          if (!await _installCore(coreId)) return;
+          corePath = await installedCorePath(coreId);
+          if (corePath == null) {
+            throw StateError('Core installation incomplete');
           }
-          return;
         }
       }
 
-      final detail = await games.getGame(widget.libraryId, widget.gameId);
-      if (detail == null || !mounted) {
-        _releaseGameplayArtworkBlock();
-        if (mounted) setState(() => _error = 'Game not found.');
-        return;
-      }
+      if (!mounted) return;
 
       await GameStorage.migrateOffCache();
       if (!await _installSupportFiles(coreId)) return;
@@ -1093,6 +1114,10 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
       // screen was unmounted while settings were loading, starting it now
       // would leave a session running with nothing left to tear it down.
       if (!mounted) return;
+      await _pendingStop;
+      if (!mounted) return;
+      _pendingStop = null;
+      _sessionStopped = false;
       final info = await _player.load(
         core: coreId,
         corePath: corePath,
@@ -1148,12 +1173,90 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
     }
   }
 
+  Future<void> _useEmulatorJsForSession() async {
+    if (_switchingBackend || _exiting || !emulatorJsAvailable) return;
+    setState(() => _switchingBackend = true);
+    try {
+      // A fatal error may already be stopping the native host asynchronously.
+      // Wait for it before handing audio and input ownership to the WebView.
+      if (!_sessionStopped) {
+        _sessionStopped = true;
+        _pendingStop = _player.stop();
+      }
+      await _pendingStop;
+      if (!mounted || _exiting) return;
+      // Release this screen's UI state before the replacement acquires it.
+      // Disposal happens after the new player initializes and must not clear
+      // its screensaver protection or reset its landscape orientation.
+      await _restoreSystemUi();
+      if (!mounted || _exiting) return;
+      _releaseScreensaverBlock();
+      final detail = _gameDetail;
+      context.replace(
+        Destinations.gamePlayerOf(
+          widget.libraryId,
+          widget.gameId,
+          core: widget.core,
+          romFileName: detail?.fileName ?? widget.romFileName,
+          biosId: detail != null && detail.bios.isNotEmpty
+              ? detail.bios.first.id
+              : widget.biosId,
+          name: widget.gameName ?? detail?.title,
+          startFresh: widget.startFresh,
+          forceEmulatorJs: true,
+        ),
+      );
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _switchingBackend = false;
+          _error = AppLocalizations.of(context).gameEmulatorSwitchFailed;
+        });
+      }
+    }
+  }
+
+  Future<bool> _installCore(String coreId) async {
+    if (!mounted) return false;
+    final token = CancelToken();
+    _coreDownloadToken = token;
+    setState(() {
+      _status = AppLocalizations.of(context).gameInstallingEmulator;
+      _progress = 0;
+    });
+    try {
+      await _cores.download(
+        coreId,
+        cancelToken: token,
+        onProgress: (progress) {
+          if (mounted) setState(() => _progress = progress);
+        },
+      );
+    } catch (_) {
+      _releaseGameplayArtworkBlock();
+      if (mounted && !token.isCancelled) {
+        setState(() {
+          _coreInstallFailed = true;
+          _error = AppLocalizations.of(context).gameEmulatorInstallFailed;
+        });
+      }
+      return false;
+    } finally {
+      if (identical(_coreDownloadToken, token)) _coreDownloadToken = null;
+    }
+    if (mounted) setState(() => _progress = null);
+    return mounted && !token.isCancelled;
+  }
+
   /// Makes sure the core's support files are in the system directory, fetching
   /// them if they are missing. PSP is the case that matters, since the core
   /// boots straight into a failure without them. Returns false once the error
   /// is on screen.
   Future<bool> _installSupportFiles(String coreId) async {
-    if (await coreSupportFilesInstalled(coreId)) return true;
+    if (await coreSupportFilesInstalled(coreId)) {
+      return true;
+    }
+    if (coreSupportFilesFor(coreId) == null) return true;
     if (!mounted) return false;
     setState(() {
       _status = 'Installing system files...';
@@ -1168,11 +1271,12 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
       );
     } catch (_) {
       if (mounted) {
-        setState(
-          () => _error =
-              'The system files for this core could not be installed. Check your connection and try again.',
-        );
+        setState(() {
+          _coreInstallFailed = true;
+          _error = 'The system files for this core could not be installed. Check your connection and try again.';
+        });
       }
+      _releaseGameplayArtworkBlock();
       return false;
     }
     if (mounted) setState(() => _progress = null);
@@ -1207,8 +1311,7 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
     var available = false;
     try {
       final coreId = _settingsCoreId;
-      final corePath =
-          coreId == null ? null : await installedCorePath(coreId);
+      final corePath = coreId == null ? null : await installedCorePath(coreId);
       if (corePath != null) {
         final systemDir = await GameStorage.systemDir();
         final probed = await _player.probeOptions(corePath, systemDir.path);
@@ -1225,10 +1328,8 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
     if (coreId == null) return;
     await Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (_) => EmulatorCoreSettingsScreen(
-          coreId: coreId,
-          system: widget.core,
-        ),
+        builder: (_) =>
+            EmulatorCoreSettingsScreen(coreId: coreId, system: widget.core),
       ),
     );
   }
@@ -1239,6 +1340,7 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
     setState(() {
       _error = null;
       _progress = null;
+      _coreInstallFailed = false;
     });
     await _prepare();
   }
@@ -2461,17 +2563,17 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
                   source.bindingsForGame(widget.gameId),
                 )
                 .withControllerType(
-              coreId,
-              target.port != null &&
-                      _isControllerTypeSupportedAtPort(
-                        coreId,
-                        target.port!,
-                        sourceType,
-                        _controllerTypesByPort,
-                      )
-                  ? sourceType
-                  : retroDeviceJoypad,
-            ),
+                  coreId,
+                  target.port != null &&
+                          _isControllerTypeSupportedAtPort(
+                            coreId,
+                            target.port!,
+                            sourceType,
+                            _controllerTypesByPort,
+                          )
+                      ? sourceType
+                      : retroDeviceJoypad,
+                ),
     };
     if (mounted) {
       setState(() => _controllerMappings = Map.unmodifiable(next));
@@ -2613,7 +2715,8 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
       setState(() => _orientation = cycleGamePlaybackOrientation(_orientation));
 
   Future<void> _restoreSystemUi() =>
-      GamePlaybackSystemUi.restore(this, immersive: usesOnScreenControls);
+      _systemUiRestoration ??=
+          GamePlaybackSystemUi.restore(this, immersive: usesOnScreenControls);
 
   @override
   Widget build(BuildContext context) {
@@ -2699,7 +2802,7 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
             ),
           if (_error != null)
             Center(
-              child: Padding(
+              child: SingleChildScrollView(
                 padding: const EdgeInsets.all(48),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -2710,7 +2813,17 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
                       style: const TextStyle(color: Colors.white, fontSize: 24),
                     ),
                     // TODO: Localize this.
-                    if (_coreOptionsAvailable == true) ...[
+                    if (_coreInstallFailed) ...[
+                      const SizedBox(height: 28),
+                      FilledButton.icon(
+                        autofocus: true,
+                        onPressed: _switchingBackend
+                            ? null
+                            : _retryAfterSettings,
+                        icon: const Icon(Icons.refresh),
+                        label: Text(AppLocalizations.of(context).retry),
+                      ),
+                    ] else if (_coreOptionsAvailable == true) ...[
                       const SizedBox(height: 16),
                       const Text(
                         'The emulator settings may be reached below. You can reset to defaults and/or '
@@ -2724,52 +2837,42 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
                         alignment: WrapAlignment.center,
                         children: [
                           FilledButton.icon(
-                            onPressed: _openCoreSettings,
+                            onPressed: _switchingBackend
+                                ? null
+                                : _openCoreSettings,
                             icon: const Icon(Icons.tune),
                             label: const Text('Emulator settings'),
                           ),
                           OutlinedButton.icon(
-                            onPressed: _retryAfterSettings,
+                            onPressed: _switchingBackend
+                                ? null
+                                : _retryAfterSettings,
                             icon: const Icon(Icons.refresh),
                             label: const Text('Try again'),
                           ),
                         ],
                       ),
-                      // Settings only reach a core that needs a different
-                      // renderer, so content this core will never run still
-                      // needs the fallback.
-                      if (emulatorJsAvailable) ...[
-                        const SizedBox(height: 20),
-                        const Text(
-                          'If that does not help, open the game\'s details '
-                          'screen and switch it to "EmulatorJS (WebView)".',
-                          textAlign: TextAlign.center,
-                          style: _errorAdviceStyle,
-                        ),
-                      ],
-                    ] else if (_coreOptionsAvailable == false) ...[
+                    ] else if (_coreOptionsAvailable == false &&
+                        !emulatorJsAvailable) ...[
                       const SizedBox(height: 16),
-                      Text(
-                        emulatorJsAvailable
-                            ? 'This core\'s settings cannot be changed on this '
-                                'device. Open the game\'s details screen and '
-                                'switch it to "EmulatorJS (WebView)".'
-                            : 'This core\'s settings cannot be changed on this '
-                                'device, and this game has no other player '
-                                'here.',
+                      const Text(
+                        'This core\'s settings cannot be changed on this '
+                        'device, and this game has no other player here.',
                         textAlign: TextAlign.center,
                         style: _errorAdviceStyle,
                       ),
-                    ] else if (emulatorJsAvailable) ...[
-                      // Still unanswered: the probe is running, or it never
-                      // ran because the core is missing rather than failing
-                      // to load.
-                      const SizedBox(height: 16),
-                      const Text(
-                        'Open the game\'s details screen and switch it to '
-                        '"EmulatorJS (WebView)" if this keeps failing.',
-                        textAlign: TextAlign.center,
-                        style: _errorAdviceStyle,
+                    ],
+                    if (emulatorJsAvailable) ...[
+                      const SizedBox(height: 20),
+                      OutlinedButton.icon(
+                        onPressed: _switchingBackend
+                            ? null
+                            : _useEmulatorJsForSession,
+                        icon: const Icon(Icons.web_asset),
+                        label: Text(
+                          AppLocalizations.of(context)
+                              .gameUseEmulatorJsForSession,
+                        ),
                       ),
                     ],
                   ],
@@ -3076,15 +3179,11 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
           shrinkWrap: true,
           itemExtent: _rowExtent,
           itemCount: opt.choices.length,
-          itemBuilder: (context, i) => _overlayRow(
-            opt.choices[i],
-            i == _pickerSelected,
-            () {
-              setState(() => _pickerSelected = i);
-              _applyPicker();
-            },
-            trailing: opt.choices[i] == opt.current ? Icons.check : null,
-          ),
+          itemBuilder: (context, i) =>
+              _overlayRow(opt.choices[i], i == _pickerSelected, () {
+                setState(() => _pickerSelected = i);
+                _applyPicker();
+              }, trailing: opt.choices[i] == opt.current ? Icons.check : null),
         ),
       );
     }
