@@ -37,6 +37,11 @@ class OfflineUsersApi implements UsersApi {
     throw offlineUnavailable('/Users/Me');
   }
 
+  @override
+  Future<ServerUser> getUser(String userId) async {
+    throw offlineUnavailable('/Users/$userId');
+  }
+
   // Answering with an empty configuration reads as a user who excludes
   // nothing, and a caller that caches the answer keeps that long after the
   // server is back. Failing lets them ask again.

@@ -1,3 +1,5 @@
+import 'access_schedule.dart';
+
 class UserPolicy {
   final bool isAdministrator;
   final bool isHidden;
@@ -192,6 +194,18 @@ class UserPolicy {
         'AuthenticationProviderId': authenticationProviderId,
         'PasswordResetProviderId': passwordResetProviderId,
       };
+
+  /// The hours the user may use the server, empty for no limit. Read from the
+  /// server's own policy, so entries this client can't read are left out.
+  List<AccessSchedule> get accessSchedules {
+    final entries = _raw['AccessSchedules'];
+    if (entries is! List) return const [];
+    return [
+      for (final entry in entries)
+        if (entry is Map)
+          AccessSchedule.fromJson(Map<String, dynamic>.from(entry)),
+    ];
+  }
 
   /// Whether the user may search for and pull in subtitles from a provider.
   ///

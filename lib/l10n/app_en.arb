@@ -93,6 +93,44 @@
   "@quickConnectTapOrScanHint": {
     "description": "Caption under the Quick Connect QR code on a phone or tablet, where tapping the code opens the server's web page with the code filled in"
   },
+  "timesUpTitle": "Time's up",
+  "@timesUpTitle": {
+    "description": "Title of the screen that covers the app when the user's access schedule doesn't allow the current time"
+  },
+  "timesUpMessage": "This account isn't available right now.",
+  "@timesUpMessage": {
+    "description": "Explanation on the Time's up screen"
+  },
+  "timesUpResumesToday": "You can use it again today at {time}.",
+  "@timesUpResumesToday": {
+    "description": "When access returns, on the Time's up screen, for a time later today",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "timesUpResumesTomorrow": "You can use it again tomorrow at {time}.",
+  "@timesUpResumesTomorrow": {
+    "description": "When access returns, on the Time's up screen, for a time tomorrow",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "timesUpResumesOn": "You can use it again on {day} at {time}.",
+  "@timesUpResumesOn": {
+    "description": "When access returns, on the Time's up screen, for a time on a later day",
+    "placeholders": {
+      "day": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
   "waitingForAuthorization": "Waiting for authorization...",
   "@waitingForAuthorization": {
     "description": "Quick Connect polling status text"

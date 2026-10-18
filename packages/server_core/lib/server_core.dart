@@ -11,6 +11,7 @@ export 'src/models/enums.dart';
 export 'src/models/server_models.dart';
 export 'src/models/playback_models.dart';
 export 'src/models/system_models.dart';
+export 'src/models/access_schedule.dart';
 export 'src/models/user_policy.dart';
 export 'src/models/websocket_models.dart';
 export 'src/models/syncplay_models.dart';

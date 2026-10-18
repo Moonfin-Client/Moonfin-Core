@@ -1,9 +1,13 @@
+import 'dart:async';
+
 import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:playback_core/playback_core.dart';
 import 'package:server_core/server_core.dart';
 
+import '../../auth/models/user.dart';
 import '../../auth/repositories/session_repository.dart';
+import '../../auth/repositories/user_repository.dart';
 import '../../auth/store/authentication_store.dart';
 import '../../auth/store/credential_store.dart';
 import '../../data/repositories/anime_marker_repository.dart';
@@ -21,6 +25,7 @@ import '../../data/repositories/search_repository.dart';
 import '../../data/repositories/item_mutation_repository.dart';
 import '../../util/game_library.dart';
 import '../../data/services/background_service.dart';
+import '../../data/services/access_schedule_service.dart';
 import '../../data/services/app_update_service.dart';
 import '../../data/services/upcoming_episode_service.dart';
 import '../../data/services/cast/airplay_provider.dart';
@@ -54,6 +59,8 @@ import '../../playback/current_playing_item.dart';
 import '../../playback/external_player_service.dart';
 import '../../preference/seerr_preferences.dart';
 import '../../preference/user_preferences.dart';
+import '../../ui/navigation/app_router.dart';
+import '../../ui/navigation/destinations.dart';
 import '../../ui/screensaver/screensaver_controller.dart';
 import '../../ui/screens/home/home_view_model.dart';
 import '../../ui/screens/setup/setup_wizard_gate.dart';
@@ -92,6 +99,29 @@ void resetUserScopedSingletons() {
   _registerUserScopedSingletons();
 }
 
+StreamSubscription<User?>? _accessScheduleUserSubscription;
+
+/// The signed in user's access schedule, or null when it can't be read. Only
+/// Jellyfin enforces one the way the app reads it, so other servers have none.
+Future<List<AccessSchedule>?> _loadAccessSchedules(String userId) async {
+  final client = _getIt<MediaServerClient>();
+  if (client.serverType != ServerType.jellyfin) return const [];
+  final user = await client.usersApi.getUser(userId);
+  return user.policy?.accessSchedules;
+}
+
+/// Stops whatever is playing when the user's access schedule closes.
+Future<void> _stopPlaybackForAccessSchedule() async {
+  await _getIt<PlaybackManager>().stop(userInitiated: false);
+  if (_getIt.isRegistered<ThemeMusicService>()) {
+    _getIt<ThemeMusicService>().stop();
+  }
+  // A trailer, a photo or a game plays in its own screen, which only leaving
+  // that screen stops.
+  final path = appRouter.routerDelegate.currentConfiguration.uri.path;
+  if (Destinations.isPlayerRoute(path)) appRouter.go(Destinations.home);
+}
+
 void registerAppModule() {
   _getIt.registerLazySingleton(() => RetroArtworkActivityGate());
   _getIt.registerLazySingletonAsync<RetroArtworkByteCache>(
@@ -115,6 +145,24 @@ void registerAppModule() {
     ),
     dispose: (controller) => controller.dispose(),
   );
+  _getIt.registerLazySingleton(() {
+    final users = _getIt<UserRepository>();
+    final service = AccessScheduleService(
+      loadSchedules: _loadAccessSchedules,
+      onBlocked: _stopPlaybackForAccessSchedule,
+    );
+    // An administrator has no schedule to enforce.
+    String? watched(User? user) =>
+        user == null || user.isAdministrator ? null : user.id;
+    service.setUser(watched(users.currentUser));
+    _accessScheduleUserSubscription = users.currentUserStream.listen(
+      (user) => service.setUser(watched(user)),
+    );
+    return service;
+  }, dispose: (service) {
+    unawaited(_accessScheduleUserSubscription?.cancel());
+    service.dispose();
+  });
   _getIt.registerLazySingleton(() => SetupWizardGate(_getIt<UserPreferences>()));
   _getIt.registerLazySingleton(() => const NativeCastChannel());
   _getIt.registerLazySingleton(() => const NativeDlnaChannel());

@@ -74,11 +74,32 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get quickConnectScanHint =>
-      'Or scan this with a phone that\'s signed in to your server';
+      'Tai skannaa tämä puhelimella, joka on kirjautunut palvelimellesi';
 
   @override
   String get quickConnectTapOrScanHint =>
-      'Tap to approve in your browser, or scan this with another device';
+      'Hyväksy napauttamalla selaimessasi tai skannaa tämä toisella laitteella';
+
+  @override
+  String get timesUpTitle => 'Time\'s up';
+
+  @override
+  String get timesUpMessage => 'This account isn\'t available right now.';
+
+  @override
+  String timesUpResumesToday(String time) {
+    return 'You can use it again today at $time.';
+  }
+
+  @override
+  String timesUpResumesTomorrow(String time) {
+    return 'You can use it again tomorrow at $time.';
+  }
+
+  @override
+  String timesUpResumesOn(String day, String time) {
+    return 'You can use it again on $day at $time.';
+  }
 
   @override
   String get waitingForAuthorization => 'Odotetaan valtuutusta…';
@@ -712,7 +733,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get gameSaveFailedStillPlaying =>
-      'Tilaa ei voitu tallentaa. Peli jatkuu.';
+      'Tilaa ei voitu tallentaa. Peli jatkuu edelleen.';
 
   @override
   String get gamePlaybackUnsupported =>
@@ -784,7 +805,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get allGenres => 'Kaikki Genret';
 
   @override
-  String get noGenresFound => 'Mitään genrejä ei löytynyt';
+  String get noGenresFound => 'Tyylilajeja ei löytynyt';
 
   @override
   String failedToLoadFolderError(String error) {
@@ -4625,7 +4646,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get libraryView => 'Kirjastonäkymä';
 
   @override
-  String get libraryStyle => 'Pääkirjaston tyyli';
+  String get libraryStyle => 'Videokirjaston tyyli';
 
   @override
   String get libraryStyleDescription =>
@@ -4661,32 +4682,32 @@ class AppLocalizationsFi extends AppLocalizations {
   String get bookLibraryStyleBookstore => 'Kirjakauppa';
 
   @override
-  String get musicLibraryStyle => 'Music Library Style';
+  String get musicLibraryStyle => 'Musiikkikirjaston tyyli';
 
   @override
   String get musicLibraryStyleDescription =>
-      'Classic is the original rows under a Jump Back In card. Quick Access starts with a grid of your recent albums and playlists. Immersive leads with the album you\'re listening to.';
+      'Classic-näkymässä näkyvät alkuperäiset rivit ”Jump Back In” -kortin alla. Quick Access -näkymä avautuu ruudukolla, jossa näkyvät viimeisimmät albumisi ja soittolistasi. Immersive-näkymä avautuu sillä albumilla, jota olet parhaillaan kuuntelemassa.';
 
   @override
   String get musicLibraryStyleClassic => 'Classic';
 
   @override
-  String get musicLibraryStyleQuickAccess => 'Quick Access';
+  String get musicLibraryStyleQuickAccess => 'Pikavalikko';
 
   @override
-  String get musicLibraryStyleImmersive => 'Immersive';
+  String get musicLibraryStyleImmersive => 'Immersiivinen';
 
   @override
-  String get jumpBackIn => 'Jump Back In';
+  String get jumpBackIn => 'Palaa takaisin';
 
   @override
-  String get yourPlaylists => 'Your Playlists';
+  String get yourPlaylists => 'Soittolistasi';
 
   @override
-  String get fromThisAlbum => 'From This Album';
+  String get fromThisAlbum => 'Tältä albumilta';
 
   @override
-  String get searchMusic => 'Search Music';
+  String get searchMusic => 'Etsi musiikkia';
 
   @override
   String bookSeriesCount(int count) {
@@ -12154,10 +12175,10 @@ class AppLocalizationsFi extends AppLocalizations {
       'Laajenna TV-sarjoja, jotta jokainen jakso näkyy erikseen.';
 
   @override
-  String get displayGenresRows => 'Näytä lajityypit rivit';
+  String get displayGenresRows => 'Näytä Genrerivit';
 
   @override
-  String get displayGenresRowsSubtitle => 'Näytä Genre rivit Kotiosioissa.';
+  String get displayGenresRowsSubtitle => 'Näytä Genrerivit Kotiosioissa.';
 
   @override
   String get genresRowSorting => 'Genret Rivilajittelu';
@@ -12175,27 +12196,27 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get genresRowItemsDescription =>
-      'Näytä elokuvat, sarjat tai molemmat lajityypit-riveillä.';
+      'Näytä elokuvat, sarjat tai molemmat Genret riveillä.';
 
   @override
-  String get displayStudiosRows => 'Display Studio -rivi';
+  String get displayStudiosRows => 'Display Studiorivi';
 
   @override
   String get displayStudiosRowsSubtitle => 'Näytä Studiorivi Kotiosiossa.';
 
   @override
-  String get studiosRowSorting => 'Studio Row -lajittelu';
+  String get studiosRowSorting => 'Studiorivi -lajittelu';
 
   @override
   String get studiosRowSortingDescription =>
-      '”Studio row” -nimiset, äskettäin lisätyt ja paljon muuta.';
+      '”Studiorivi” -nimiset, äskettäin lisätyt ja paljon muuta.';
 
   @override
   String get studiosRowSortOrderDescription =>
       'Valitse lajittelujärjestys: nouseva tai laskeva.';
 
   @override
-  String get selectStudiosToInclude => 'Valitse sisällytettävät studiot';
+  String get selectStudiosToInclude => 'Valitse sisällytettävät Studiot';
 
   @override
   String get selectStudiosToIncludeDescription =>
@@ -14708,7 +14729,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get smartDownloadsEnableDescription =>
-      'When you finish an episode on any device, Moonfin downloads the next ones. Episodes it downloads are deleted once watched.';
+      'Kun olet katsonut jakson loppuun millä tahansa laitteella, Moonfin lataa seuraavat jaksot. Ladatut jaksot poistetaan, kun ne on katsottu.';
 
   @override
   String get smartDownloadsKeepReady => 'Lataa tallennettavat jaksot';
@@ -14749,21 +14770,21 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get autoDownloadDeleteFollowedSubtitle =>
-      'When to remove episodes downloaded for series you follow, after you watch them';
+      'Milloin kannattaa poistaa seuraamiesi sarjojen ladatut jaksot, kun olet katsonut ne';
 
   @override
-  String get removeWatchedDownloads => 'Remove Watched Downloads';
+  String get removeWatchedDownloads => 'Poista seurattavat lataukset';
 
   @override
   String get removeWatchedDownloadsSubtitle =>
-      'When to remove episodes and movies you downloaded yourself. Only those you watch after turning this on are removed';
+      'Milloin itse ladatut jaksot ja elokuvat poistetaan. Vain ne, jotka katsot tämän toiminnon käyttöönoton jälkeen, poistetaan';
 
   @override
-  String get keepDownloaded => 'Keep Downloaded';
+  String get keepDownloaded => 'Tallenna ladatut tiedostot';
 
   @override
   String get keepDownloadedSubtitle =>
-      'Never remove this automatically after watching';
+      'Älä koskaan poista tätä automaattisesti katsomisen jälkeen';
 
   @override
   String get autoDownloadDeleteNever => 'Ei koskaan';

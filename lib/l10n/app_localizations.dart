@@ -352,6 +352,36 @@ abstract class AppLocalizations {
   /// **'Tap to approve in your browser, or scan this with another device'**
   String get quickConnectTapOrScanHint;
 
+  /// Title of the screen that covers the app when the user's access schedule doesn't allow the current time
+  ///
+  /// In en, this message translates to:
+  /// **'Time\'s up'**
+  String get timesUpTitle;
+
+  /// Explanation on the Time's up screen
+  ///
+  /// In en, this message translates to:
+  /// **'This account isn\'t available right now.'**
+  String get timesUpMessage;
+
+  /// When access returns, on the Time's up screen, for a time later today
+  ///
+  /// In en, this message translates to:
+  /// **'You can use it again today at {time}.'**
+  String timesUpResumesToday(String time);
+
+  /// When access returns, on the Time's up screen, for a time tomorrow
+  ///
+  /// In en, this message translates to:
+  /// **'You can use it again tomorrow at {time}.'**
+  String timesUpResumesTomorrow(String time);
+
+  /// When access returns, on the Time's up screen, for a time on a later day
+  ///
+  /// In en, this message translates to:
+  /// **'You can use it again on {day} at {time}.'**
+  String timesUpResumesOn(String day, String time);
+
   /// Quick Connect polling status text
   ///
   /// In en, this message translates to:
