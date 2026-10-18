@@ -10,8 +10,7 @@ import '../ui/navigation/destinations.dart';
 /// The Moonbase plugin decides which libraries are game libraries: an admin can select any
 /// library, and the plugin exposes that list at /Moonfin/Games/Libraries. The client mirrors
 /// it through [GameLibraryRegistry]. Until that list has loaded (offline, or a server without
-/// the updated plugin) we fall back to the plugin's own auto-detect, which matches a Mixed
-/// Content library by name.
+/// the updated plugin) we fall back to matching Mixed Content or Books libraries by name.
 final RegExp _gameLibraryName = RegExp('game|rom|emulat', caseSensitive: false);
 
 /// Caches the game-library ids the Moonbase plugin reports, so routing can tell a game
@@ -66,7 +65,10 @@ bool isGameLibrary(String id, String? collectionType, String? name) {
   if (name == null || name.isEmpty) return false;
   final ct = (collectionType ?? '').toLowerCase();
   // Mixed Content libraries report an empty/unknown/mixed collection type.
-  if (ct.isNotEmpty && ct != 'mixed' && ct != 'unknown') return false;
+  // Books libraries use the same ROM name matching as Mixed Content libraries.
+  if (ct.isNotEmpty && ct != 'mixed' && ct != 'unknown' && ct != 'books') {
+    return false;
+  }
   return _gameLibraryName.hasMatch(name);
 }
 
