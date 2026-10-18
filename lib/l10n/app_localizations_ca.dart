@@ -15364,6 +15364,20 @@ class AppLocalizationsCa extends AppLocalizations {
   }
 
   @override
+  String get gameInstallingEmulator => 'Installing emulator…';
+
+  @override
+  String get gameUseEmulatorJsForSession => 'Use EmulatorJS';
+
+  @override
+  String get gameEmulatorSwitchFailed =>
+      'The native emulator could not be stopped. Go back and try launching the game again.';
+
+  @override
+  String get gameEmulatorInstallFailed =>
+      'The emulator could not be installed. Check your internet connection and available storage, then try again.';
+
+  @override
   String get playlistNoMatchingTracks =>
       'Cap pista coincideix amb els filtres actius';
 

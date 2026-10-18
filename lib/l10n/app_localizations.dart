@@ -26441,6 +26441,30 @@ abstract class AppLocalizations {
   /// **'{count, plural, =1{1 active} other{{count} active}}'**
   String playlistFilterActiveCount(int count);
 
+  /// Progress message while installing a missing native emulator core on first play
+  ///
+  /// In en, this message translates to:
+  /// **'Installing emulator…'**
+  String get gameInstallingEmulator;
+
+  /// Button on a native emulator error screen that uses the WebView emulator for this launch only
+  ///
+  /// In en, this message translates to:
+  /// **'Use EmulatorJS'**
+  String get gameUseEmulatorJsForSession;
+
+  /// Error when the native emulator cannot be stopped before switching to the WebView emulator
+  ///
+  /// In en, this message translates to:
+  /// **'The native emulator could not be stopped. Go back and try launching the game again.'**
+  String get gameEmulatorSwitchFailed;
+
+  /// Error when automatic native core installation fails; a Retry button follows
+  ///
+  /// In en, this message translates to:
+  /// **'The emulator could not be installed. Check your internet connection and available storage, then try again.'**
+  String get gameEmulatorInstallFailed;
+
   /// Empty state message shown when playlist filters match no items
   ///
   /// In en, this message translates to:
