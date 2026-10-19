@@ -38,8 +38,11 @@ class OfflineUsersApi implements UsersApi {
   }
 
   @override
-  Future<List<AccessSchedule>?> getAccessSchedules(String userId) async =>
-      const [];
+  Future<List<AccessSchedule>?> getAccessSchedules(String userId) async {
+    // An empty list reads as unrestricted, so answering with one would lift a
+    // closed schedule while offline. Failing keeps the last schedule read.
+    throw offlineUnavailable('/Users/$userId');
+  }
 
   // Answering with an empty configuration reads as a user who excludes
   // nothing, and a caller that caches the answer keeps that long after the
