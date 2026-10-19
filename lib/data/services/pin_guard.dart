@@ -75,6 +75,26 @@ class PinGuard {
     }
   }
 
+  /// Sets the PIN on the server when there is a plugin to keep it, and keeps a
+  /// copy here either way, for when the server cannot be asked. [currentPin]
+  /// is the PIN being replaced, which the server wants when it holds one. A PIN
+  /// the server turned down is not kept, or this device would hold one nobody
+  /// else has. Returns whether it was kept.
+  Future<bool> savePin(String pinToSet, {String? currentPin}) async {
+    final asking = account;
+    if (asking != null) {
+      final verdict = await service.setPin(
+        asking,
+        pinToSet,
+        currentPin: currentPin,
+      );
+      if (verdict is ServerPinWrong || verdict is ServerPinLocked) return false;
+      if (verdict is ServerPinValid) await pin.setServerBacked(true);
+    }
+    await pin.setPin(pinToSet);
+    return true;
+  }
+
   /// Clears a PIN the user says they forgot, after a sign in that proved who
   /// they are. A PIN on the server can only be cleared by an administrator, so
   /// for anyone else it stays and this says so.

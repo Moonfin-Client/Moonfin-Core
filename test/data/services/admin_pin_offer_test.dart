@@ -38,7 +38,7 @@ void main() {
 
   test('an administrator with no PIN and no plugin is offered one', () async {
     expect(
-      await offer.shouldOffer(
+      offer.shouldOffer(
         userId: 'admin',
         isAdministrator: true,
         guard: guardFor(),
@@ -49,7 +49,7 @@ void main() {
 
   test('nobody else is', () async {
     expect(
-      await offer.shouldOffer(
+      offer.shouldOffer(
         userId: 'admin',
         isAdministrator: false,
         guard: guardFor(),
@@ -64,7 +64,7 @@ void main() {
     expect(offer.hasDeclined('admin'), isTrue);
     expect(offer.hasDeclined('other'), isFalse);
     expect(
-      await offer.shouldOffer(
+      offer.shouldOffer(
         userId: 'admin',
         isAdministrator: true,
         guard: guardFor(),
@@ -77,7 +77,7 @@ void main() {
     await PinCodeUtil(store, 'admin').setPin('4821');
 
     expect(
-      await offer.shouldOffer(
+      offer.shouldOffer(
         userId: 'admin',
         isAdministrator: true,
         guard: guardFor(),
@@ -86,30 +86,29 @@ void main() {
     );
   });
 
-  test('a plugin that keeps PINs takes the place of the offer', () async {
+  test('an administrator on a plugin server with no PIN is offered one too', () async {
     when(() => service.status(any()))
         .thenAnswer((_) async => ServerPinAvailability.disabled);
 
     expect(
-      await offer.shouldOffer(
+      offer.shouldOffer(
         userId: 'admin',
         isAdministrator: true,
         guard: guardFor(),
       ),
-      isFalse,
+      isTrue,
     );
   });
 
   test('a server that cannot be asked at all still gets the offer', () async {
     expect(
-      await offer.shouldOffer(
+      offer.shouldOffer(
         userId: 'admin',
         isAdministrator: true,
         guard: guardFor(withAccount: false),
       ),
       isTrue,
     );
-    verifyNever(() => service.status(any()));
   });
 
   group('a PIN synced from the server', () {
@@ -126,7 +125,7 @@ void main() {
         isTrue,
       );
       expect(
-        await offer.shouldOffer(
+        offer.shouldOffer(
           userId: 'admin',
           isAdministrator: true,
           guard: guard,

@@ -77,22 +77,8 @@ class _PinCodeSettingsScreenState extends State<PinCodeSettingsScreen> {
     );
   }
 
-  /// Sets the PIN on the server when there is one to ask, and keeps a copy here
-  /// either way, for when the server cannot be asked. A PIN the server turned
-  /// down is not kept, or this device would hold one nobody else has.
-  Future<void> _storePin(String pin, {String? currentPin}) async {
-    final account = _guard.account;
-    if (account != null) {
-      final verdict = await _server.setPin(
-        account,
-        pin,
-        currentPin: currentPin,
-      );
-      if (verdict is ServerPinWrong || verdict is ServerPinLocked) return;
-      if (verdict is ServerPinValid) await _pinUtil.setServerBacked(true);
-    }
-    await _pinUtil.setPin(pin);
-  }
+  Future<void> _storePin(String pin, {String? currentPin}) =>
+      _guard.savePin(pin, currentPin: currentPin);
 
   Future<void> _dropPin(String? currentPin) async {
     final account = _guard.account;

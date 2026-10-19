@@ -200,4 +200,58 @@ void main() {
       verifyNever(() => service.removePinFor(any(), any()));
     });
   });
+
+  group('savePin', () {
+    setUp(() {
+      when(
+        () => service.setPin(any(), any(), currentPin: any(named: 'currentPin')),
+      ).thenAnswer((_) async => const ServerPinValid());
+    });
+
+    test('a PIN the server keeps is kept here too', () async {
+      expect(await guard.savePin('4821'), isTrue);
+
+      expect(pin.isServerBacked, isTrue);
+      expect(pin.verifyPin('4821'), isTrue);
+      verify(() => service.setPin(account, '4821')).called(1);
+    });
+
+    test('the PIN being replaced goes to the server', () async {
+      await guard.savePin('1111', currentPin: '4821');
+
+      verify(() => service.setPin(account, '1111', currentPin: '4821')).called(1);
+    });
+
+    test('a PIN the server turned down is not kept', () async {
+      when(
+        () => service.setPin(any(), any(), currentPin: any(named: 'currentPin')),
+      ).thenAnswer((_) async => const ServerPinWrong());
+
+      expect(await guard.savePin('1111', currentPin: '0000'), isFalse);
+
+      expect(pin.isPinEnabled, isFalse);
+    });
+
+    test('a server that cannot be reached leaves the PIN on the device', () async {
+      when(
+        () => service.setPin(any(), any(), currentPin: any(named: 'currentPin')),
+      ).thenAnswer((_) async => const ServerPinUnavailable());
+
+      expect(await guard.savePin('4821'), isTrue);
+
+      expect(pin.isServerBacked, isFalse);
+      expect(pin.verifyPin('4821'), isTrue);
+    });
+
+    test('without an account it is kept on the device alone', () async {
+      final offline = PinGuard(pin: pin, service: service);
+
+      expect(await offline.savePin('4821'), isTrue);
+
+      expect(pin.verifyPin('4821'), isTrue);
+      verifyNever(
+        () => service.setPin(any(), any(), currentPin: any(named: 'currentPin')),
+      );
+    });
+  });
 }

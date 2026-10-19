@@ -1328,7 +1328,7 @@ class _ConnectivityListenerState extends ConsumerState<_ConnectivityListener>
       await showAdminPinSyncedDialog(noteContext);
       return;
     }
-    if (!await offer.shouldOffer(
+    if (!offer.shouldOffer(
       userId: userId,
       isAdministrator: user.isAdministrator,
       guard: guard,
@@ -1349,7 +1349,7 @@ class _ConnectivityListenerState extends ConsumerState<_ConnectivityListener>
     await PinEntryDialog.show(
       setContext,
       mode: PinEntryMode.set,
-      onPinSet: guard.pin.setPin,
+      onPinSet: guard.savePin,
     );
   }
 
