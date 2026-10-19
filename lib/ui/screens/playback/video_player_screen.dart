@@ -1284,6 +1284,20 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     return DateTime.now().isBefore(until);
   }
 
+  DateTime? _suppressHoverControlsUntil;
+
+  void _suppressHoverControls({
+    Duration duration = const Duration(seconds: 1),
+  }) {
+    _suppressHoverControlsUntil = DateTime.now().add(duration);
+  }
+
+  bool _isHoverControlsSuppressed() {
+    final until = _suppressHoverControlsUntil;
+    if (until == null) return false;
+    return DateTime.now().isBefore(until);
+  }
+
   Future<bool> _runSinglePlayerMutation(
     String label,
     FutureOr<void> Function() action, {
@@ -3099,6 +3113,27 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     return dismissed;
   }
 
+  bool _dismissControlsOrOverlays() {
+    if (_showNextUp) {
+      _handleNextUpDismiss();
+      return true;
+    }
+    if (_isSkipSegmentButtonVisible) {
+      _dismissSkipSegment();
+      return true;
+    }
+    if (_dismissTopOverlayRouteIfAny()) {
+      return true;
+    }
+    if (_controlsVisible) {
+      _suppressBackNavigation(duration: const Duration(milliseconds: 500));
+      _hideTimer?.cancel();
+      setState(() => _controlsVisible = false);
+      return true;
+    }
+    return false;
+  }
+
   // A skip, a chapter jump or a segment skip lands somewhere the scrub
   // session knows nothing about. Left alone, the session would commit its
   // stale target the next time play is pressed, so it is dropped here and
@@ -3720,23 +3755,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
           if (_isBackNavigationSuppressed()) {
             return KeyEventResult.handled;
           }
-          if (_showNextUp) {
-            _handleNextUpDismiss();
-            return KeyEventResult.handled;
-          }
-          if (_isSkipSegmentButtonVisible) {
-            _dismissSkipSegment();
-            return KeyEventResult.handled;
-          }
-          if (_dismissTopOverlayRouteIfAny()) {
-            return KeyEventResult.handled;
-          }
-          if (_controlsVisible) {
-            _suppressBackNavigation(
-              duration: const Duration(milliseconds: 500),
-            );
-            _hideTimer?.cancel();
-            setState(() => _controlsVisible = false);
+          if (_dismissControlsOrOverlays()) {
             return KeyEventResult.handled;
           }
           _exitPlayback();
@@ -3929,6 +3948,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         if (event is KeyRepeatEvent) {
           return KeyEventResult.handled;
         }
+        if (_dismissControlsOrOverlays()) {
+          _suppressHoverControls();
+          return KeyEventResult.handled;
+        }
         if (PlatformDetection.useDesktopUi) {
           unawaited(_leaveFullscreenOrPlayback());
           return KeyEventResult.handled;
@@ -3976,21 +3999,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         if (_isBackNavigationSuppressed()) {
           return;
         }
-        if (_showNextUp) {
-          _handleNextUpDismiss();
-          return;
-        }
-        if (_isSkipSegmentButtonVisible) {
-          _dismissSkipSegment();
-          return;
-        }
-        if (_dismissTopOverlayRouteIfAny()) {
-          return;
-        }
-        if (_controlsVisible) {
-          _suppressBackNavigation(duration: const Duration(milliseconds: 500));
-          _hideTimer?.cancel();
-          setState(() => _controlsVisible = false);
+        if (_dismissControlsOrOverlays()) {
           return;
         }
         _exitPlayback();
@@ -4009,6 +4018,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
           onKeyEvent: _handleKeyEvent,
           child: GestureDetector(
             onTap: PlatformDetection.isTV ? null : _onSurfaceTap,
+            onSecondaryTap: PlatformDetection.isTV
+                ? null
+                : _onSurfaceSecondaryTap,
             onDoubleTapDown: PlatformDetection.isTV
                 ? null
                 : PlatformDetection.useMobileUi && !_isOsdLocked
@@ -4026,12 +4038,22 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
               onPointerSignal: PlatformDetection.useDesktopUi
                   ? _handleScrollSignal
                   : null,
+              onPointerDown: PlatformDetection.useDesktopUi
+                  ? (event) {
+                      if ((event.buttons & kSecondaryMouseButton) != 0) {
+                        if (_dismissControlsOrOverlays()) {
+                          _suppressHoverControls();
+                        }
+                      }
+                    }
+                  : null,
               child: MouseRegion(
                 cursor: PlatformDetection.useDesktopUi && !_controlsVisible
                     ? SystemMouseCursors.none
                     : SystemMouseCursors.basic,
                 onHover: (_) {
                   if (PlatformDetection.useDesktopUi) {
+                    if (_isHoverControlsSuppressed()) return;
                     if (_controlsVisible) {
                       _scheduleHide();
                     } else {
@@ -6452,6 +6474,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _wasPlayingBeforeDesktopClick = _state.isPlaying;
     _togglePlayPause();
     _showControls();
+  }
+
+  void _onSurfaceSecondaryTap() {
+    if (_dismissControlsOrOverlays()) {
+      _suppressHoverControls();
+    }
   }
 
   void _onDoubleTapDown(TapDownDetails details) {

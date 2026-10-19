@@ -232,6 +232,8 @@ String keyBindingLabel(KeyBinding binding, AppLocalizations l10n) {
     LogicalKeyboardKey.space => l10n.keyNameSpace,
     LogicalKeyboardKey.enter || LogicalKeyboardKey.select => l10n.keyNameEnter,
     LogicalKeyboardKey.escape => l10n.keyNameEsc,
+    LogicalKeyboardKey.backspace => 'Backspace',
+    LogicalKeyboardKey.delete => 'Delete',
     LogicalKeyboardKey.arrowLeft => '←',
     LogicalKeyboardKey.arrowRight => '→',
     LogicalKeyboardKey.arrowUp => '↑',

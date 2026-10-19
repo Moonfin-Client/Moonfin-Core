@@ -45,6 +45,8 @@ void main() {
     expect(of(LogicalKeyboardKey.keyH), PlayerAction.stop);
     expect(of(LogicalKeyboardKey.keyB), PlayerAction.recropBlackBars);
     expect(of(LogicalKeyboardKey.escape), PlayerAction.escape);
+    expect(of(LogicalKeyboardKey.backspace), PlayerAction.escape);
+    expect(of(LogicalKeyboardKey.delete), PlayerAction.escape);
     expect(of(LogicalKeyboardKey.mediaStop), PlayerAction.stop);
     expect(of(LogicalKeyboardKey.mediaTrackNext), PlayerAction.next);
   });

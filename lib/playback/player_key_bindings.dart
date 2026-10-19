@@ -100,7 +100,11 @@ class PlayerKeyBindings {
     // Same key as in mpv itself.
     PlayerAction.mpvStats: [KeyBinding(LogicalKeyboardKey.keyI, shift: true)],
     PlayerAction.toggleFullscreen: [KeyBinding(LogicalKeyboardKey.keyF)],
-    PlayerAction.escape: [KeyBinding(LogicalKeyboardKey.escape)],
+    PlayerAction.escape: [
+      KeyBinding(LogicalKeyboardKey.escape),
+      KeyBinding(LogicalKeyboardKey.backspace),
+      KeyBinding(LogicalKeyboardKey.delete),
+    ],
     PlayerAction.showControlsOrPlayPause: [
       KeyBinding(LogicalKeyboardKey.enter),
       KeyBinding(LogicalKeyboardKey.select),
