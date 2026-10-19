@@ -2974,6 +2974,19 @@ class AppLocalizationsSv extends AppLocalizations {
   String get pinCode => 'PIN-kod';
 
   @override
+  String get adminPinOfferTitle => 'Protect this account with a PIN?';
+
+  @override
+  String get adminPinOfferBody =>
+      'An administrator can change settings and reach every account on this server. A PIN keeps anyone else using this device from signing in as you.';
+
+  @override
+  String get adminPinOfferSet => 'Set PIN';
+
+  @override
+  String get adminPinOfferLater => 'Not now';
+
+  @override
   String get setUpPinCodeProtection => 'Ställ in PIN-kodsskydd';
 
   @override

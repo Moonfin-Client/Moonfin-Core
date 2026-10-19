@@ -5122,6 +5122,30 @@ abstract class AppLocalizations {
   /// **'PIN Code'**
   String get pinCode;
 
+  /// Title of the offer to set a PIN, shown to an administrator after signing in
+  ///
+  /// In en, this message translates to:
+  /// **'Protect this account with a PIN?'**
+  String get adminPinOfferTitle;
+
+  /// Explains the offer to set a PIN, shown to an administrator after signing in
+  ///
+  /// In en, this message translates to:
+  /// **'An administrator can change settings and reach every account on this server. A PIN keeps anyone else using this device from signing in as you.'**
+  String get adminPinOfferBody;
+
+  /// Button that starts setting a PIN
+  ///
+  /// In en, this message translates to:
+  /// **'Set PIN'**
+  String get adminPinOfferSet;
+
+  /// Button that turns down the offer to set a PIN, which then is not made again
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get adminPinOfferLater;
+
   /// PIN code settings description
   ///
   /// In en, this message translates to:

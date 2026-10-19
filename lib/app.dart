@@ -10,6 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tvos/flutter_tvos.dart'
     show TvRemoteController, TvRemoteConfig, FlutterTvosPlatform;
 import 'package:get_it/get_it.dart';
+import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:go_router/go_router.dart';
 import 'package:playback_core/playback_core.dart';
 import 'package:window_manager/window_manager.dart';
@@ -17,7 +18,11 @@ import 'package:window_manager/window_manager.dart';
 import 'auth/repositories/session_repository.dart';
 import 'data/models/achievement_models.dart';
 import 'data/models/aggregated_item.dart';
+import 'auth/models/user.dart';
+import 'auth/repositories/user_repository.dart';
 import 'data/services/achievements_service.dart';
+import 'data/services/active_session_pin_guard.dart';
+import 'data/services/admin_pin_offer.dart';
 import 'data/services/cast/cast_service.dart';
 import 'data/services/connectivity_service.dart';
 import 'data/services/remove_watched_service.dart';
@@ -49,6 +54,8 @@ import 'ui/screens/settings/achievements_screen.dart';
 import 'ui/widgets/floating_notification.dart';
 import 'ui/widgets/offline_banner.dart';
 import 'ui/widgets/settings/settings_panel.dart';
+import 'ui/widgets/admin_pin_offer_dialog.dart';
+import 'ui/widgets/pin_entry_dialog.dart';
 import 'ui/widgets/server_messages_dialog.dart';
 import 'ui/widgets/exit_confirmation_dialog.dart';
 import 'ui/widgets/keyboard_shortcuts/keyboard_shortcut_reference.dart';
@@ -1049,6 +1056,11 @@ class _ConnectivityListenerState extends ConsumerState<_ConnectivityListener>
   StreamSubscription<ChatThread>? _chatMessageSub;
   StreamSubscription<AchievementUnlocks>? _unlockSub;
   StreamSubscription<SeerrNotificationEvent>? _seerrNotificationSub;
+  StreamSubscription<User?>? _adminPinOfferSub;
+
+  /// Users already offered a PIN in this run, so switching back to one does
+  /// not ask again.
+  final _offeredPinTo = <String>{};
 
   @override
   void initState() {
@@ -1077,6 +1089,11 @@ class _ConnectivityListenerState extends ConsumerState<_ConnectivityListener>
         _handleServerMessagesChanged,
       );
     }
+    if (GetIt.instance.isRegistered<UserRepository>()) {
+      final users = GetIt.instance<UserRepository>();
+      _adminPinOfferSub = users.currentUserStream.listen(_offerAdminPin);
+      _offerAdminPin(users.currentUser);
+    }
     if (GetIt.instance.isRegistered<DownloadService>()) {
       _downloadErrorSub = GetIt.instance<DownloadService>().errors.listen(
         _handleDownloadError,
@@ -1099,6 +1116,7 @@ class _ConnectivityListenerState extends ConsumerState<_ConnectivityListener>
     _chatMessageSub?.cancel();
     _unlockSub?.cancel();
     _seerrNotificationSub?.cancel();
+    _adminPinOfferSub?.cancel();
     if (GetIt.instance.isRegistered<ServerMessagesService>()) {
       GetIt.instance<ServerMessagesService>().removeListener(
         _handleServerMessagesChanged,
@@ -1258,6 +1276,57 @@ class _ConnectivityListenerState extends ConsumerState<_ConnectivityListener>
         ),
       );
     }
+  }
+
+  /// Suggests a PIN to an administrator who signed in without one, when the
+  /// server has no plugin to keep PINs. Asked once per run for each user, and
+  /// never again after a no.
+  void _offerAdminPin(User? user) {
+    if (user == null || !user.isAdministrator) return;
+    if (!_offeredPinTo.add(user.id)) return;
+    unawaited(_runAdminPinOffer(user.id));
+  }
+
+  Future<void> _runAdminPinOffer(String userId) async {
+    // Home gets a moment to appear first, and a sign in still settling is
+    // finished by then.
+    await Future<void>.delayed(const Duration(seconds: 3));
+    if (!mounted) return;
+    final users = GetIt.instance<UserRepository>();
+    final user = users.currentUser;
+    if (user == null || user.id != userId) {
+      _offeredPinTo.remove(userId);
+      return;
+    }
+    final guard = activeSessionPinGuard();
+    if (guard == null) return;
+
+    // A PIN the server keeps on the user's behalf is learned of first.
+    await guard.refresh();
+    final offer = AdminPinOffer(GetIt.instance<PreferenceStore>());
+    if (!await offer.shouldOffer(
+      userId: userId,
+      isAdministrator: user.isAdministrator,
+      guard: guard,
+    )) {
+      return;
+    }
+
+    final navContext = _navigatorContext();
+    if (navContext == null || !navContext.mounted) return;
+    final wantsPin = await showAdminPinOfferDialog(navContext);
+    if (!wantsPin) {
+      await offer.decline(userId);
+      return;
+    }
+
+    final setContext = _navigatorContext();
+    if (setContext == null || !setContext.mounted) return;
+    await PinEntryDialog.show(
+      setContext,
+      mode: PinEntryMode.set,
+      onPinSet: guard.pin.setPin,
+    );
   }
 
   BuildContext? _navigatorContext() {

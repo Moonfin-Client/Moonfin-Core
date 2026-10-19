@@ -4020,6 +4020,22 @@
   "@pinCode": {
     "description": "PIN code settings title"
   },
+  "adminPinOfferTitle": "Protect this account with a PIN?",
+  "@adminPinOfferTitle": {
+    "description": "Title of the offer to set a PIN, shown to an administrator after signing in"
+  },
+  "adminPinOfferBody": "An administrator can change settings and reach every account on this server. A PIN keeps anyone else using this device from signing in as you.",
+  "@adminPinOfferBody": {
+    "description": "Explains the offer to set a PIN, shown to an administrator after signing in"
+  },
+  "adminPinOfferSet": "Set PIN",
+  "@adminPinOfferSet": {
+    "description": "Button that starts setting a PIN"
+  },
+  "adminPinOfferLater": "Not now",
+  "@adminPinOfferLater": {
+    "description": "Button that turns down the offer to set a PIN, which then is not made again"
+  },
   "setUpPinCodeProtection": "Set up PIN code protection",
   "@setUpPinCodeProtection": {
     "description": "PIN code settings description"
