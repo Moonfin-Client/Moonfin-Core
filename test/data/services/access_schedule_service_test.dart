@@ -322,6 +322,33 @@ void main() {
     });
   });
 
+  test('an answer is kept when a look started after it fails', () {
+    fakeAsync((async) {
+      final slow = Completer<List<AccessSchedule>?>();
+      final clock = async.getClock(_at(19, 21));
+      var calls = 0;
+      final service = AccessScheduleService(
+        now: () => clock.now(),
+        loadSchedules: (userId) {
+          calls++;
+          return calls == 1 ? slow.future : Future.error(Exception('offline'));
+        },
+        onBlocked: () async {},
+      );
+
+      service.setUser('child');
+      service.noteRefused();
+      async.flushMicrotasks();
+      expect(service.status.allowed, isTrue);
+
+      slow.complete([_entry('Monday', 8, 20)]);
+      async.flushMicrotasks();
+
+      expect(service.status.allowed, isFalse);
+      service.dispose();
+    });
+  });
+
   test('coming back to the app looks at the schedule again', () {
     fakeAsync((async) {
       final h = _Harness(async, _at(19, 12), schedules: (_) => const []);

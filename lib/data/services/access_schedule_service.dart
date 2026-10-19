@@ -77,6 +77,9 @@ class AccessScheduleService extends ChangeNotifier {
   /// user can't apply its older answer over the newer one.
   int _lookCount = 0;
 
+  /// The newest look whose answer has been applied.
+  int _appliedLook = 0;
+
   AccessScheduleStatus get status => _status;
 
   bool get isBlocked => !_status.allowed;
@@ -128,11 +131,20 @@ class AccessScheduleService extends ChangeNotifier {
     } catch (_) {
       fresh = null;
     }
-    if (generation != _generation || look != _lookCount) return;
+    if (generation != _generation) return;
 
-    // A schedule that couldn't be read leaves the last one in place.
-    if (fresh != null) _schedules = fresh;
-    _apply(failed: fresh == null);
+    if (fresh == null) {
+      // A schedule that couldn't be read leaves the last one in place. A look
+      // that was overtaken has nothing to say about the newer one's outcome.
+      if (look == _lookCount) _apply(failed: true);
+      return;
+    }
+    // An answer is as good as the newest one applied, even if a later look
+    // failed, but never replaces the answer of a look started after it.
+    if (look < _appliedLook) return;
+    _appliedLook = look;
+    _schedules = fresh;
+    _apply(failed: false);
   }
 
   void _apply({required bool failed}) {
