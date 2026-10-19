@@ -4038,15 +4038,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
               onPointerSignal: PlatformDetection.useDesktopUi
                   ? _handleScrollSignal
                   : null,
-              onPointerDown: PlatformDetection.useDesktopUi
-                  ? (event) {
-                      if ((event.buttons & kSecondaryMouseButton) != 0) {
-                        if (_dismissControlsOrOverlays()) {
-                          _suppressHoverControls();
-                        }
-                      }
-                    }
-                  : null,
               child: MouseRegion(
                 cursor: PlatformDetection.useDesktopUi && !_controlsVisible
                     ? SystemMouseCursors.none
