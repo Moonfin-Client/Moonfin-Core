@@ -73,6 +73,10 @@ class AccessScheduleService extends ChangeNotifier {
   /// previous one can't apply its answer to the next.
   int _generation = 0;
 
+  /// Counts the looks, so one that is overtaken by a later look for the same
+  /// user can't apply its older answer over the newer one.
+  int _lookCount = 0;
+
   AccessScheduleStatus get status => _status;
 
   bool get isBlocked => !_status.allowed;
@@ -93,9 +97,7 @@ class AccessScheduleService extends ChangeNotifier {
       _lifecycle = null;
       return;
     }
-    _lifecycle ??= AppLifecycleListener(
-      onResume: () => unawaited(refresh()),
-    );
+    _lifecycle ??= AppLifecycleListener(onResume: () => unawaited(refresh()));
     unawaited(refresh());
   }
 
@@ -118,6 +120,7 @@ class AccessScheduleService extends ChangeNotifier {
     final userId = _userId;
     if (userId == null) return;
     final generation = _generation;
+    final look = ++_lookCount;
 
     List<AccessSchedule>? fresh;
     try {
@@ -125,7 +128,7 @@ class AccessScheduleService extends ChangeNotifier {
     } catch (_) {
       fresh = null;
     }
-    if (generation != _generation) return;
+    if (generation != _generation || look != _lookCount) return;
 
     // A schedule that couldn't be read leaves the last one in place.
     if (fresh != null) _schedules = fresh;
@@ -150,9 +153,7 @@ class AccessScheduleService extends ChangeNotifier {
       unawaited(_runOnBlocked());
     }
 
-    var delay = failed
-        ? retryInterval
-        : pollInterval;
+    var delay = failed ? retryInterval : pollInterval;
     final boundary = AccessScheduleEvaluator.nextBoundary(_schedules, moment);
     if (boundary != null) {
       final until = boundary.difference(moment);

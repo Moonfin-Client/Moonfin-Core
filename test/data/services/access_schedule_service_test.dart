@@ -233,9 +233,7 @@ void main() {
       h.settle();
       expect(h.service.isBlocked, isTrue);
 
-      h.elapse(
-        AccessScheduleService.pollInterval + const Duration(seconds: 1),
-      );
+      h.elapse(AccessScheduleService.pollInterval + const Duration(seconds: 1));
       expect(h.service.status.allowed, isTrue);
       h.service.dispose();
     });
@@ -289,6 +287,37 @@ void main() {
       async.flushMicrotasks();
 
       expect(service.status.allowed, isTrue);
+      service.dispose();
+    });
+  });
+
+  test('an older look finishing late does not undo a newer one', () {
+    fakeAsync((async) {
+      final slow = Completer<List<AccessSchedule>?>();
+      final clock = async.getClock(_at(19, 21));
+      var calls = 0;
+      final service = AccessScheduleService(
+        now: () => clock.now(),
+        loadSchedules: (userId) {
+          calls++;
+          // The first look is slow and still sees the longer window. The
+          // look a refusal starts sees it shortened, and answers first.
+          return calls == 1
+              ? slow.future
+              : Future.value([_entry('Monday', 8, 20)]);
+        },
+        onBlocked: () async {},
+      );
+
+      service.setUser('child');
+      service.noteRefused();
+      async.flushMicrotasks();
+      expect(service.status.allowed, isFalse);
+
+      slow.complete([_entry('Monday', 8, 22)]);
+      async.flushMicrotasks();
+
+      expect(service.status.allowed, isFalse);
       service.dispose();
     });
   });
