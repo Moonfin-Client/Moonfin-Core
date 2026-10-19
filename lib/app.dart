@@ -27,6 +27,7 @@ import 'data/services/cast/cast_service.dart';
 import 'data/services/connectivity_service.dart';
 import 'data/services/remove_watched_service.dart';
 import 'data/services/download_service.dart';
+import 'data/services/media_server_client_factory.dart';
 import 'data/services/seerr_notification_service.dart';
 import 'data/services/plugin_sync_service.dart';
 import 'data/services/server_messages_service.dart';
@@ -44,6 +45,7 @@ import 'ui/navigation/app_router.dart';
 import 'ui/navigation/deferred_route_pop.dart';
 import 'ui/navigation/deep_link_navigator.dart';
 import 'ui/navigation/destinations.dart';
+import 'ui/screens/setup/setup_wizard_gate.dart';
 import 'ui/navigation/home_refresh_bus.dart';
 import 'ui/theme/app_theme.dart';
 import 'ui/theme/app_theme_controller.dart';
@@ -1298,6 +1300,16 @@ class _ConnectivityListenerState extends ConsumerState<_ConnectivityListener>
       _offeredPinTo.remove(userId);
       return;
     }
+    // First-run setup takes over the screen right after a first sign in, and
+    // would sweep the dialog away, so the offer waits for it to finish.
+    for (var waited = 0; _setupWizardPending() && waited < 600; waited++) {
+      await Future<void>.delayed(const Duration(seconds: 1));
+      if (!mounted || users.currentUser?.id != userId) {
+        _offeredPinTo.remove(userId);
+        return;
+      }
+    }
+
     final guard = activeSessionPinGuard();
     if (guard == null) return;
 
@@ -1327,6 +1339,21 @@ class _ConnectivityListenerState extends ConsumerState<_ConnectivityListener>
       mode: PinEntryMode.set,
       onPinSet: guard.pin.setPin,
     );
+  }
+
+  /// Whether first-run setup is showing or is about to.
+  bool _setupWizardPending() {
+    try {
+      if (appRouter.routerDelegate.currentConfiguration.uri.path ==
+          Destinations.setup) {
+        return true;
+      }
+      final client = GetIt.instance<MediaServerClientFactory>()
+          .getActiveClient();
+      return GetIt.instance<SetupWizardGate>().shouldRun(client);
+    } catch (_) {
+      return false;
+    }
   }
 
   BuildContext? _navigatorContext() {
