@@ -1316,6 +1316,18 @@ class _ConnectivityListenerState extends ConsumerState<_ConnectivityListener>
     // A PIN the server keeps on the user's behalf is learned of first.
     await guard.refresh();
     final offer = AdminPinOffer(GetIt.instance<PreferenceStore>());
+    if (offer.shouldNoteSyncedPin(
+      userId: userId,
+      isAdministrator: user.isAdministrator,
+      guard: guard,
+    )) {
+      final noteContext = _navigatorContext();
+      if (noteContext == null || !noteContext.mounted) return;
+      await offer.markSyncedPinNoted(userId);
+      if (!noteContext.mounted) return;
+      await showAdminPinSyncedDialog(noteContext);
+      return;
+    }
     if (!await offer.shouldOffer(
       userId: userId,
       isAdministrator: user.isAdministrator,

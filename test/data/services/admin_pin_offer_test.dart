@@ -111,4 +111,66 @@ void main() {
     );
     verifyNever(() => service.status(any()));
   });
+
+  group('a PIN synced from the server', () {
+    test('an administrator is told once, in place of the offer', () async {
+      final guard = guardFor();
+      await guard.pin.setServerBacked(true);
+
+      expect(
+        offer.shouldNoteSyncedPin(
+          userId: 'admin',
+          isAdministrator: true,
+          guard: guard,
+        ),
+        isTrue,
+      );
+      expect(
+        await offer.shouldOffer(
+          userId: 'admin',
+          isAdministrator: true,
+          guard: guard,
+        ),
+        isFalse,
+      );
+
+      await offer.markSyncedPinNoted('admin');
+
+      expect(
+        offer.shouldNoteSyncedPin(
+          userId: 'admin',
+          isAdministrator: true,
+          guard: guard,
+        ),
+        isFalse,
+      );
+    });
+
+    test('nobody is told about a PIN that is only on the device', () async {
+      await PinCodeUtil(store, 'admin').setPin('4821');
+
+      expect(
+        offer.shouldNoteSyncedPin(
+          userId: 'admin',
+          isAdministrator: true,
+          guard: guardFor(),
+        ),
+        isFalse,
+      );
+    });
+
+    test('only administrators are told', () async {
+      final guard = guardFor();
+      await guard.pin.setServerBacked(true);
+
+      expect(
+        offer.shouldNoteSyncedPin(
+          userId: 'admin',
+          isAdministrator: false,
+          guard: guard,
+        ),
+        isFalse,
+      );
+    });
+  });
 }

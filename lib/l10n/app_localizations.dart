@@ -5122,6 +5122,18 @@ abstract class AppLocalizations {
   /// **'PIN Code'**
   String get pinCode;
 
+  /// Title of the notice that this account's PIN is kept on the server, shown once to an administrator after signing in on a device that had not seen it
+  ///
+  /// In en, this message translates to:
+  /// **'A PIN is enabled'**
+  String get adminPinSyncedTitle;
+
+  /// Explains that the PIN is kept on the server
+  ///
+  /// In en, this message translates to:
+  /// **'This account\'s PIN is synced from the server, so it applies on every device. You will be asked for it when signing in.'**
+  String get adminPinSyncedBody;
+
   /// Title of the offer to set a PIN, shown to an administrator after signing in
   ///
   /// In en, this message translates to:

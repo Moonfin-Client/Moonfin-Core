@@ -44,3 +44,32 @@ Future<bool> showAdminPinOfferDialog(BuildContext context) async {
   );
   return result ?? false;
 }
+
+/// Tells an administrator that their PIN is kept on the server and now applies
+/// here, instead of offering to set one.
+Future<void> showAdminPinSyncedDialog(BuildContext context) async {
+  final l10n = AppLocalizations.of(context);
+  await showFocusRestoringDialog<void>(
+    context: context,
+    builder: (context) => AlertDialog(
+      backgroundColor: AppColorScheme.surface,
+      title: Text(l10n.adminPinSyncedTitle),
+      content: Text(l10n.adminPinSyncedBody),
+      actions: [
+        FocusableWrapper(
+          autofocus: true,
+          borderRadius: 8,
+          suppressFocusGlow: true,
+          onSelect: () => Navigator.of(context).pop(),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Text(
+              l10n.ok,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}

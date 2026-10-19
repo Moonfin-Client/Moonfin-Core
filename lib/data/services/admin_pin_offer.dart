@@ -23,6 +23,23 @@ class AdminPinOffer {
   Future<void> decline(String userId) =>
       _store.setBool(_declinedKey(userId), true);
 
+  static String _syncedNoticeKey(String userId) =>
+      'admin_pin_synced_notice_seen_$userId';
+
+  /// Whether to tell [userId] that a PIN kept on the server is now enabled on
+  /// this device, in place of offering one. Said once per user on a device.
+  bool shouldNoteSyncedPin({
+    required String userId,
+    required bool isAdministrator,
+    required PinGuard guard,
+  }) =>
+      isAdministrator &&
+      guard.pin.isServerBacked &&
+      !(_store.getBool(_syncedNoticeKey(userId)) ?? false);
+
+  Future<void> markSyncedPinNoted(String userId) =>
+      _store.setBool(_syncedNoticeKey(userId), true);
+
   /// Whether to make the offer to [userId] now. [guard] is for their account,
   /// and tells whether the server has a place to keep a PIN.
   Future<bool> shouldOffer({

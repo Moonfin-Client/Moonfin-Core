@@ -2976,6 +2976,13 @@ class AppLocalizationsIt extends AppLocalizations {
   String get pinCode => 'Codice PIN';
 
   @override
+  String get adminPinSyncedTitle => 'A PIN is enabled';
+
+  @override
+  String get adminPinSyncedBody =>
+      'This account\'s PIN is synced from the server, so it applies on every device. You will be asked for it when signing in.';
+
+  @override
   String get adminPinOfferTitle => 'Protect this account with a PIN?';
 
   @override
