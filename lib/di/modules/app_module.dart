@@ -101,24 +101,27 @@ void resetUserScopedSingletons() {
 
 StreamSubscription<User?>? _accessScheduleUserSubscription;
 
-/// The signed in user's access schedule, or null when it can't be read. Only
-/// Jellyfin enforces one the way the app reads it, so other servers have none.
-Future<List<AccessSchedule>?> _loadAccessSchedules(String userId) async {
-  final client = _getIt<MediaServerClient>();
-  if (client.serverType != ServerType.jellyfin) return const [];
-  final user = await client.usersApi.getUser(userId);
-  return user.policy?.accessSchedules;
-}
+/// The signed in user's access schedule, or null when it can't be read.
+Future<List<AccessSchedule>?> _loadAccessSchedules(String userId) =>
+    _getIt<MediaServerClient>().usersApi.getAccessSchedules(userId);
 
 /// Stops whatever is playing when the user's access schedule closes.
 Future<void> _stopPlaybackForAccessSchedule() async {
-  await _getIt<PlaybackManager>().stop(userInitiated: false);
-  if (_getIt.isRegistered<ThemeMusicService>()) {
-    _getIt<ThemeMusicService>().stop();
-  }
+  // Each step is best effort, so one that fails doesn't leave the rest undone.
+  try {
+    await _getIt<PlaybackManager>().stop(userInitiated: false);
+  } catch (_) {}
+  try {
+    if (_getIt.isRegistered<ThemeMusicService>()) {
+      _getIt<ThemeMusicService>().stop();
+    }
+  } catch (_) {}
   // A trailer, a photo or a game plays in its own screen, which only leaving
-  // that screen stops.
-  final path = appRouter.routerDelegate.currentConfiguration.uri.path;
+  // that screen stops. A player is pushed over whichever tab launched it, so
+  // the router's uri stays on that tab and only the match list names what is
+  // on screen.
+  final matches = appRouter.routerDelegate.currentConfiguration.matches;
+  final path = matches.isEmpty ? '' : matches.last.matchedLocation;
   if (Destinations.isPlayerRoute(path)) appRouter.go(Destinations.home);
 }
 

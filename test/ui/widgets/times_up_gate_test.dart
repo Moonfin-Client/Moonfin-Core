@@ -34,6 +34,7 @@ Widget _app(
   Future<void> Function()? onSwitch,
   ValueNotifier<String>? path,
   Widget underneath = const Center(child: Text('the app')),
+  DateTime Function()? clock,
 }) {
   final route = path ?? ValueNotifier('/home');
   return MaterialApp(
@@ -46,7 +47,7 @@ Widget _app(
         TimesUpGate(
           service: service,
           onSwitchUser: onSwitch,
-          now: () => _at(19, 21),
+          now: clock ?? () => _at(19, 21),
           currentPath: () => route.value,
           routeChanges: route,
         ),
@@ -309,6 +310,36 @@ void main() {
         reason: '$key took the focus off Switch User',
       );
     }
+    await _done(tester, service);
+  });
+
+  testWidgets('turns tomorrow into today when midnight passes', (tester) async {
+    var moment = _at(19, 21);
+    final service = AccessScheduleService(
+      now: () => moment,
+      loadSchedules: (_) async => [
+        _entry('Monday', 8, 20),
+        _entry('Tuesday', 8, 20),
+      ],
+      onBlocked: () async {},
+    );
+    service.setUser('child');
+    await tester.pumpWidget(_app(service, clock: () => moment));
+    await tester.pump();
+    final opening = _time(_at(20, 8));
+    expect(
+      find.text('You can use it again tomorrow at $opening.'),
+      findsOneWidget,
+    );
+
+    // Nothing about the opening changes overnight, only what to call the day.
+    moment = _at(20, 0, 30);
+    await tester.pump(const Duration(hours: 3));
+
+    expect(
+      find.text('You can use it again today at $opening.'),
+      findsOneWidget,
+    );
     await _done(tester, service);
   });
 

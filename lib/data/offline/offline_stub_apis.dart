@@ -38,9 +38,8 @@ class OfflineUsersApi implements UsersApi {
   }
 
   @override
-  Future<ServerUser> getUser(String userId) async {
-    throw offlineUnavailable('/Users/$userId');
-  }
+  Future<List<AccessSchedule>?> getAccessSchedules(String userId) async =>
+      const [];
 
   // Answering with an empty configuration reads as a user who excludes
   // nothing, and a caller that caches the answer keeps that long after the

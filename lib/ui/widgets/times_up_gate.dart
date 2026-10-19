@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
@@ -73,7 +75,7 @@ class TimesUpGate extends StatelessWidget {
         }
         return _TimesUp(
           nextAccess: watched.status.nextAccess,
-          now: now(),
+          now: now,
           onSwitchUser: onSwitchUser ?? _openUserPicker,
         );
       },
@@ -142,7 +144,7 @@ class _TimesUp extends StatefulWidget {
   });
 
   final DateTime? nextAccess;
-  final DateTime now;
+  final DateTime Function() now;
   final Future<void> Function() onSwitchUser;
 
   @override
@@ -151,10 +153,12 @@ class _TimesUp extends StatefulWidget {
 
 class _TimesUpState extends State<_TimesUp> {
   final _button = FocusNode(debugLabel: 'Time\'s up Switch User');
+  Timer? _midnight;
 
   @override
   void initState() {
     super.initState();
+    _scheduleMidnight();
     // With the app underneath out of the focus tree (TimesUpFocusGuard) nothing
     // else can hold the focus, so the remote's select key reaches this button.
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -162,8 +166,21 @@ class _TimesUpState extends State<_TimesUp> {
     });
   }
 
+  /// "Tomorrow" turns into "today" at midnight with nothing else changing, so
+  /// the screen is drawn again then. It can stay up all night.
+  void _scheduleMidnight() {
+    final moment = widget.now();
+    final next = DateTime(moment.year, moment.month, moment.day + 1);
+    _midnight = Timer(next.difference(moment), () {
+      if (!mounted) return;
+      setState(() {});
+      _scheduleMidnight();
+    });
+  }
+
   @override
   void dispose() {
+    _midnight?.cancel();
     _button.dispose();
     super.dispose();
   }
@@ -174,7 +191,7 @@ class _TimesUpState extends State<_TimesUp> {
     final resumes = timesUpResumeMessage(
       l10n: l10n,
       nextAccess: widget.nextAccess,
-      now: widget.now,
+      now: widget.now(),
       use24Hour: MediaQuery.alwaysUse24HourFormatOf(context),
     );
     final text = Theme.of(context).textTheme;
