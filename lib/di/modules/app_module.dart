@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:playback_core/playback_core.dart';
@@ -105,6 +106,17 @@ StreamSubscription<User?>? _accessScheduleUserSubscription;
 Future<List<AccessSchedule>?> _loadAccessSchedules(String userId) =>
     _getIt<MediaServerClient>().usersApi.getAccessSchedules(userId);
 
+/// Whether the server is turning the signed in user away right now. Jellyfin
+/// answers /Users/Me with 403 outside the user's schedule, by its own clock.
+Future<bool?> _serverRefusesUser() async {
+  try {
+    await _getIt<MediaServerClient>().usersApi.getCurrentUser();
+    return false;
+  } on DioException catch (e) {
+    return e.response?.statusCode == 403 ? true : null;
+  }
+}
+
 /// Stops whatever is playing when the user's access schedule closes.
 Future<void> _stopPlaybackForAccessSchedule() async {
   // Each step is best effort, so one that fails doesn't leave the rest undone.
@@ -153,6 +165,7 @@ void registerAppModule() {
     final service = AccessScheduleService(
       loadSchedules: _loadAccessSchedules,
       onBlocked: _stopPlaybackForAccessSchedule,
+      serverRefuses: _serverRefusesUser,
     );
     // An administrator has no schedule to enforce.
     String? watched(User? user) =>

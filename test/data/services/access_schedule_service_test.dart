@@ -24,6 +24,7 @@ class _Harness {
     this.async,
     DateTime start, {
     List<AccessSchedule>? Function(int call)? schedules,
+    bool? refuses,
   }) : clock = async.getClock(start) {
     service = AccessScheduleService(
       now: () => clock.now(),
@@ -32,6 +33,10 @@ class _Harness {
         return schedules == null ? const [] : schedules(loads.length);
       },
       onBlocked: () async => blocked++,
+      serverRefuses: () async {
+        asks++;
+        return refuses;
+      },
     );
   }
 
@@ -40,6 +45,7 @@ class _Harness {
   late final AccessScheduleService service;
   final loads = <String>[];
   int blocked = 0;
+  int asks = 0;
 
   void settle() => async.flushMicrotasks();
 
@@ -379,6 +385,114 @@ void main() {
       h.settle();
 
       expect(h.loads, hasLength(1));
+      h.service.dispose();
+    });
+  });
+
+  test('the server turning the user away decides, whatever the clock says', () {
+    fakeAsync((async) {
+      // Open by this device's clock, but the server keeps another time zone.
+      final h = _Harness(
+        async,
+        _at(19, 15),
+        schedules: (_) => [_entry('Monday', 8, 20)],
+        refuses: true,
+      );
+      h.service.setUser('child');
+      h.settle();
+
+      expect(h.service.isBlocked, isTrue);
+      expect(h.blocked, 1);
+      expect(
+        h.service.status.nextAccess,
+        isNull,
+        reason: "this device's clock can't say when the server opens",
+      );
+      h.service.dispose();
+    });
+  });
+
+  test('a server still answering keeps it open, whatever the clock says', () {
+    fakeAsync((async) {
+      final h = _Harness(
+        async,
+        _at(19, 15),
+        schedules: (_) => [_entry('Monday', 8, 14)],
+        refuses: false,
+      );
+      h.service.setUser('child');
+      h.settle();
+
+      expect(h.service.status.allowed, isTrue);
+      expect(h.blocked, 0);
+      h.service.dispose();
+    });
+  });
+
+  test('a server and clock that agree name the time to come back', () {
+    fakeAsync((async) {
+      final h = _Harness(
+        async,
+        _at(19, 21),
+        schedules: (_) => [_entry('Everyday', 8, 20)],
+        refuses: true,
+      );
+      h.service.setUser('child');
+      h.settle();
+
+      expect(h.service.status.nextAccess, _at(20, 8));
+      h.service.dispose();
+    });
+  });
+
+  test("a server that can't be asked leaves it to the clock", () {
+    fakeAsync((async) {
+      final h = _Harness(
+        async,
+        _at(19, 21),
+        schedules: (_) => [_entry('Monday', 8, 20)],
+      );
+      h.service.setUser('child');
+      h.settle();
+
+      expect(h.asks, 1);
+      expect(h.service.isBlocked, isTrue);
+      h.service.dispose();
+    });
+  });
+
+  test('without a schedule the server is not asked and looks are rarer', () {
+    fakeAsync((async) {
+      final h = _Harness(async, _at(19, 12), refuses: true);
+      h.service.setUser('child');
+      h.settle();
+      expect(h.loads.length, 1);
+
+      h.elapse(AccessScheduleService.pollInterval + const Duration(seconds: 1));
+      expect(h.loads.length, 1);
+      h.elapse(AccessScheduleService.idlePollInterval);
+      expect(h.loads.length, 2);
+      expect(h.asks, 0);
+      expect(h.service.status.allowed, isTrue);
+      h.service.dispose();
+    });
+  });
+
+  test('a refused request while blocked does not look again', () {
+    fakeAsync((async) {
+      final h = _Harness(
+        async,
+        _at(19, 21),
+        schedules: (_) => [_entry('Monday', 8, 20)],
+        refuses: true,
+      );
+      h.service.setUser('child');
+      h.settle();
+      expect(h.service.isBlocked, isTrue);
+
+      h.service.noteRefused();
+      h.settle();
+      expect(h.loads.length, 1);
       h.service.dispose();
     });
   });

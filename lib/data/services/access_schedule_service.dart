@@ -30,16 +30,20 @@ class AccessScheduleStatus {
 /// Jellyfin turns a user away outside their schedule: sign in fails and nearly
 /// every request fails with it. This keeps the schedule to hand, so the app can
 /// say so and stop playback at the moment it closes instead of having things
-/// start failing. It reads the schedule from the server and compares it with
-/// this device's clock, so a device whose clock is wrong is off by as much.
+/// start failing. Jellyfin checks the schedule against its own clock, which
+/// can be in a different time zone from this device, so for a user with a
+/// schedule the server is asked whether it's turning them away and its answer
+/// decides. The schedule times the looks and says when they can come back.
 ///
 /// It looks again just before an opening or closing, when the app comes back
-/// to the foreground, when the server turns a request away, and every minute
-/// in between, so a change a parent makes on the server is picked up.
+/// to the foreground and when the server turns a request away. In between it
+/// looks every minute for a user with a schedule and every 15 minutes for one
+/// without, so a change a parent makes on the server is picked up.
 class AccessScheduleService extends ChangeNotifier {
   AccessScheduleService({
     required this.loadSchedules,
     required this.onBlocked,
+    this.serverRefuses,
     this.now = DateTime.now,
   });
 
@@ -47,6 +51,11 @@ class AccessScheduleService extends ChangeNotifier {
   /// parent can change the schedule at any time, and a user waiting for more
   /// time or about to lose it shouldn't find out much later.
   static const pollInterval = Duration(minutes: 1);
+
+  /// How long to wait between looks for a user with no schedule. A schedule
+  /// a parent adds that's already closed shows up sooner, through the
+  /// requests the server turns away.
+  static const idlePollInterval = Duration(minutes: 15);
 
   /// The least time between looks prompted by the server turning a request
   /// away, which can come in bursts.
@@ -60,6 +69,11 @@ class AccessScheduleService extends ChangeNotifier {
 
   /// Runs once each time the user is turned away, to stop what is playing.
   final Future<void> Function() onBlocked;
+
+  /// Whether the server is turning the user away right now: true when it
+  /// refuses, false when it answers, null when it can't tell. Without one the
+  /// schedule is checked against this device's clock alone.
+  final Future<bool?> Function()? serverRefuses;
 
   final DateTime Function() now;
 
@@ -110,7 +124,9 @@ class AccessScheduleService extends ChangeNotifier {
   /// user sees when a parent ends their hours while they are using the app,
   /// so the schedule is read at once instead of at the next poll.
   void noteRefused() {
-    if (_userId == null) return;
+    // While blocked every request is refused, the server check included, and
+    // each refusal would start another look.
+    if (_userId == null || isBlocked) return;
     final moment = now();
     final last = _lastRefusalLook;
     if (last != null && moment.difference(last) < refusalInterval) return;
@@ -142,16 +158,28 @@ class AccessScheduleService extends ChangeNotifier {
     // An answer is as good as the newest one applied, even if a later look
     // failed, but never replaces the answer of a look started after it.
     if (look < _appliedLook) return;
+    // Only a schedule can close, so only then is the server asked.
+    bool? refused;
+    final ask = serverRefuses;
+    if (fresh.isNotEmpty && ask != null) {
+      try {
+        refused = await ask();
+      } catch (_) {}
+      if (generation != _generation || look < _appliedLook) return;
+    }
     _appliedLook = look;
     _schedules = fresh;
-    _apply(failed: false);
+    _apply(failed: false, refused: refused);
   }
 
-  void _apply({required bool failed}) {
+  void _apply({required bool failed, bool? refused}) {
     _timer?.cancel();
     final moment = now();
-    final allowed = AccessScheduleEvaluator.isAllowed(_schedules, moment);
-    final next = allowed
+    final byClock = AccessScheduleEvaluator.isAllowed(_schedules, moment);
+    final allowed = refused == null ? byClock : !refused;
+    // The time to come back is worked out on this device's clock, so it's only
+    // named when that clock agrees with the server.
+    final next = allowed || byClock
         ? null
         : AccessScheduleEvaluator.nextAccessStart(_schedules, moment);
 
@@ -165,7 +193,11 @@ class AccessScheduleService extends ChangeNotifier {
       unawaited(_runOnBlocked());
     }
 
-    var delay = failed ? retryInterval : pollInterval;
+    var delay = failed
+        ? retryInterval
+        : _schedules.isEmpty
+        ? idlePollInterval
+        : pollInterval;
     final boundary = AccessScheduleEvaluator.nextBoundary(_schedules, moment);
     if (boundary != null) {
       final until = boundary.difference(moment);
