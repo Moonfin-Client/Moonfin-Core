@@ -27,6 +27,16 @@ class ClientCertificateStoreImpl implements ClientCertificateStore {
 
   String _key(String host) => '${ClientCertificateStore.keyPrefix}$host';
 
+  // Saves and removals update the index by read-modify-write, so they run one
+  // at a time or one could drop a host another just added.
+  static Future<void> _pending = Future.value();
+
+  Future<void> _serialized(Future<void> Function() action) {
+    final result = _pending.then((_) => action());
+    _pending = result.catchError((Object _) {});
+    return result;
+  }
+
   Future<List<String>> _readHosts() async {
     final raw = await _storage.read(key: _hostsKey);
     if (raw == null) return [];
@@ -40,11 +50,15 @@ class ClientCertificateStoreImpl implements ClientCertificateStore {
   @override
   Future<void> save(StoredClientCertificate certificate) async {
     try {
-      await _storage.write(
-        key: _key(certificate.host),
-        value: jsonEncode(certificate.toJson()),
-      );
-      await _writeHosts({...await _readHosts(), certificate.host});
+      // The index is written first: a host listed without a certificate is
+      // skipped by getAll, a certificate missing from the index is lost.
+      await _serialized(() async {
+        await _writeHosts({...await _readHosts(), certificate.host});
+        await _storage.write(
+          key: _key(certificate.host),
+          value: jsonEncode(certificate.toJson()),
+        );
+      });
     } on Exception {
       _unavailable = true;
     }
@@ -92,8 +106,10 @@ class ClientCertificateStoreImpl implements ClientCertificateStore {
   @override
   Future<void> remove(String host) async {
     try {
-      await _storage.delete(key: _key(host));
-      await _writeHosts({...await _readHosts()}..remove(host));
+      await _serialized(() async {
+        await _storage.delete(key: _key(host));
+        await _writeHosts({...await _readHosts()}..remove(host));
+      });
     } on Exception {
       _unavailable = true;
     }
