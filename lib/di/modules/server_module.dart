@@ -7,6 +7,7 @@ import '../../data/offline/connectivity_aware_media_server_client.dart';
 import '../../data/offline/offline_catalog.dart';
 import '../../data/repositories/offline_repository.dart';
 import '../../data/services/pending_rating_store.dart';
+import '../../data/services/access_schedule_service.dart';
 import '../../data/services/auto_download_service.dart';
 import '../../data/services/background_download_coordinator.dart';
 import '../../data/services/connectivity_service.dart';
@@ -33,7 +34,11 @@ AutoDownloadBackgroundBinding? _autoDownloadBinding;
 
 void registerServerModule() {
   _getIt.registerLazySingleton<MediaServerClientFactory>(
-    () => MediaServerClientFactory(deviceInfo: _getIt<DeviceInfo>()),
+    () => MediaServerClientFactory(
+      deviceInfo: _getIt<DeviceInfo>(),
+      // A user whose access schedule just ended is turned away from every request.
+      onForbidden: () => _getIt<AccessScheduleService>().noteRefused(),
+    ),
   );
 
   if (!_getIt.isRegistered<DownloadNotificationService>()) {

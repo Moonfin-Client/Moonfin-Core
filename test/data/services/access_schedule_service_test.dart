@@ -175,15 +175,48 @@ void main() {
       final h = _Harness(
         async,
         _at(19, 15),
-        schedules: (call) => [_entry('Monday', 8, call == 1 ? 20 : 15.1)],
+        schedules: (call) => [_entry('Monday', 8, call == 1 ? 20 : 14.9)],
       );
       h.service.setUser('child');
       h.settle();
       expect(h.service.status.allowed, isTrue);
 
-      h.elapse(AccessScheduleService.pollInterval + const Duration(minutes: 1));
+      h.elapse(AccessScheduleService.pollInterval + const Duration(seconds: 1));
       expect(h.service.status.allowed, isFalse);
       expect(h.blocked, 1);
+      h.service.dispose();
+    });
+  });
+
+  test('a refused request makes it look at once, but not in a burst', () {
+    fakeAsync((async) {
+      final h = _Harness(
+        async,
+        _at(19, 15),
+        schedules: (call) => [_entry('Monday', 8, call == 1 ? 20 : 14.9)],
+      );
+      h.service.setUser('child');
+      h.settle();
+      expect(h.loads.length, 1);
+
+      h.service.noteRefused();
+      h.service.noteRefused();
+      h.service.noteRefused();
+      h.settle();
+
+      expect(h.loads.length, 2);
+      expect(h.service.isBlocked, isTrue);
+      h.service.dispose();
+    });
+  });
+
+  test('a refused request with nobody signed in does nothing', () {
+    fakeAsync((async) {
+      final h = _Harness(async, _at(19, 15));
+      h.service.noteRefused();
+      h.settle();
+
+      expect(h.loads, isEmpty);
       h.service.dispose();
     });
   });
@@ -201,7 +234,7 @@ void main() {
       expect(h.service.isBlocked, isTrue);
 
       h.elapse(
-        AccessScheduleService.blockedPollInterval + const Duration(seconds: 1),
+        AccessScheduleService.pollInterval + const Duration(seconds: 1),
       );
       expect(h.service.status.allowed, isTrue);
       h.service.dispose();

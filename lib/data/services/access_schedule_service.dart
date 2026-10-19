@@ -34,8 +34,8 @@ class AccessScheduleStatus {
 /// this device's clock, so a device whose clock is wrong is off by as much.
 ///
 /// It looks again just before an opening or closing, when the app comes back
-/// to the foreground, and now and then in between, so a change a parent makes
-/// on the server is picked up.
+/// to the foreground, when the server turns a request away, and every minute
+/// in between, so a change a parent makes on the server is picked up.
 class AccessScheduleService extends ChangeNotifier {
   AccessScheduleService({
     required this.loadSchedules,
@@ -43,13 +43,14 @@ class AccessScheduleService extends ChangeNotifier {
     this.now = DateTime.now,
   });
 
-  /// How long to wait between looks when no opening or closing is nearer.
-  static const pollInterval = Duration(minutes: 15);
+  /// How long to wait between looks when no opening or closing is nearer. A
+  /// parent can change the schedule at any time, and a user waiting for more
+  /// time or about to lose it shouldn't find out much later.
+  static const pollInterval = Duration(minutes: 1);
 
-  /// The same while the user is turned away. Someone waiting on a parent to
-  /// give them more time shouldn't wait as long as a quarter of an hour to
-  /// find out it was given.
-  static const blockedPollInterval = Duration(minutes: 1);
+  /// The least time between looks prompted by the server turning a request
+  /// away, which can come in bursts.
+  static const refusalInterval = Duration(seconds: 5);
 
   /// How long to wait before asking again after a look that failed.
   static const retryInterval = Duration(seconds: 15);
@@ -98,6 +99,20 @@ class AccessScheduleService extends ChangeNotifier {
     unawaited(refresh());
   }
 
+  DateTime? _lastRefusalLook;
+
+  /// Tells the service the server turned a request away. That is what the
+  /// user sees when a parent ends their hours while they are using the app,
+  /// so the schedule is read at once instead of at the next poll.
+  void noteRefused() {
+    if (_userId == null) return;
+    final moment = now();
+    final last = _lastRefusalLook;
+    if (last != null && moment.difference(last) < refusalInterval) return;
+    _lastRefusalLook = moment;
+    unawaited(refresh());
+  }
+
   /// Reads the schedule again and applies it.
   Future<void> refresh() async {
     final userId = _userId;
@@ -137,7 +152,7 @@ class AccessScheduleService extends ChangeNotifier {
 
     var delay = failed
         ? retryInterval
-        : (allowed ? pollInterval : blockedPollInterval);
+        : pollInterval;
     final boundary = AccessScheduleEvaluator.nextBoundary(_schedules, moment);
     if (boundary != null) {
       final until = boundary.difference(moment);
