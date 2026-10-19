@@ -12,6 +12,12 @@ class ClientCertificateStoreImpl implements ClientCertificateStore {
   );
   bool _unavailable = false;
 
+  // The file based keychain rejects readAll (a match-all query that returns
+  // data fails with errSecParam), so the hosts are also listed under their
+  // own key and getAll falls back to reading them one by one. The key sits
+  // outside keyPrefix, so getAll never takes it for a certificate.
+  static const _hostsKey = 'mtls_client_cert_hosts';
+
   @override
   bool consumeSecureStorageUnavailable() {
     final value = _unavailable;
@@ -21,6 +27,16 @@ class ClientCertificateStoreImpl implements ClientCertificateStore {
 
   String _key(String host) => '${ClientCertificateStore.keyPrefix}$host';
 
+  Future<List<String>> _readHosts() async {
+    final raw = await _storage.read(key: _hostsKey);
+    if (raw == null) return [];
+    final decoded = jsonDecode(raw);
+    return decoded is List ? [for (final host in decoded) '$host'] : [];
+  }
+
+  Future<void> _writeHosts(Set<String> hosts) =>
+      _storage.write(key: _hostsKey, value: jsonEncode(hosts.toList()));
+
   @override
   Future<void> save(StoredClientCertificate certificate) async {
     try {
@@ -28,6 +44,7 @@ class ClientCertificateStoreImpl implements ClientCertificateStore {
         key: _key(certificate.host),
         value: jsonEncode(certificate.toJson()),
       );
+      await _writeHosts({...await _readHosts(), certificate.host});
     } on Exception {
       _unavailable = true;
     }
@@ -60,6 +77,14 @@ class ClientCertificateStoreImpl implements ClientCertificateStore {
             ),
       ];
     } on Exception {
+      return _getAllFromIndex();
+    }
+  }
+
+  Future<List<StoredClientCertificate>> _getAllFromIndex() async {
+    try {
+      return [for (final host in await _readHosts()) ?await get(host)];
+    } on Exception {
       return const [];
     }
   }
@@ -68,6 +93,7 @@ class ClientCertificateStoreImpl implements ClientCertificateStore {
   Future<void> remove(String host) async {
     try {
       await _storage.delete(key: _key(host));
+      await _writeHosts({...await _readHosts()}..remove(host));
     } on Exception {
       _unavailable = true;
     }
