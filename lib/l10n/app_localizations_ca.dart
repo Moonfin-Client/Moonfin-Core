@@ -2095,6 +2095,9 @@ class AppLocalizationsCa extends AppLocalizations {
   String get keyNameBackspace => 'Backspace';
 
   @override
+  String get keyNameDelete => 'Delete';
+
+  @override
   String get keyNamePageUp => 'Page Up';
 
   @override
@@ -2179,6 +2182,9 @@ class AppLocalizationsCa extends AppLocalizations {
   @override
   String get shortcutLeaveFullscreenOrStop =>
       'Surt de la pantalla completa; si no hi ets, atura la reproducció';
+
+  @override
+  String get shortcutHideControls => 'Hide controls';
 
   @override
   String get shortcutStopPlayback => 'Atura la reproducció';

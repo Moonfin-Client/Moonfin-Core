@@ -36,6 +36,10 @@ enum PlayerAction {
   /// Leave fullscreen where there is one to leave, otherwise stop.
   escape,
 
+  /// Hide the Next Up card, a skip prompt, an open panel or the controls,
+  /// one at a time.
+  hideControls,
+
   /// Show the controls, or play/pause while they are showing.
   showControlsOrPlayPause,
 
@@ -100,8 +104,8 @@ class PlayerKeyBindings {
     // Same key as in mpv itself.
     PlayerAction.mpvStats: [KeyBinding(LogicalKeyboardKey.keyI, shift: true)],
     PlayerAction.toggleFullscreen: [KeyBinding(LogicalKeyboardKey.keyF)],
-    PlayerAction.escape: [
-      KeyBinding(LogicalKeyboardKey.escape),
+    PlayerAction.escape: [KeyBinding(LogicalKeyboardKey.escape)],
+    PlayerAction.hideControls: [
       KeyBinding(LogicalKeyboardKey.backspace),
       KeyBinding(LogicalKeyboardKey.delete),
     ],

@@ -2103,6 +2103,9 @@ class AppLocalizationsSr extends AppLocalizations {
   String get keyNameBackspace => 'Бекспејс';
 
   @override
+  String get keyNameDelete => 'Delete';
+
+  @override
   String get keyNamePageUp => 'Страница нагоре';
 
   @override
@@ -2187,6 +2190,9 @@ class AppLocalizationsSr extends AppLocalizations {
   @override
   String get shortcutLeaveFullscreenOrStop =>
       'Изађи из приказа преко целог екрана или заустави репродукцију ако тај приказ није активан';
+
+  @override
+  String get shortcutHideControls => 'Hide controls';
 
   @override
   String get shortcutStopPlayback => 'Заустави репродукцију';

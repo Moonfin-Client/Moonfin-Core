@@ -36,6 +36,7 @@ void main() {
       containsAll([
         'K', 'J', 'L', 'M', 'C', 'H', 'I', ',', '.',
         'S', 'Shift+N', 'Shift+P',
+        l10n.keyNameBackspace, l10n.keyNameDelete,
       ]),
     );
     if (letterboxCropAvailable()) {

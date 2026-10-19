@@ -2760,6 +2760,10 @@
   "@keyNameBackspace": {
     "description": "Key cap label for the Backspace key"
   },
+  "keyNameDelete": "Delete",
+  "@keyNameDelete": {
+    "description": "Key cap label for the Delete key"
+  },
   "keyNamePageUp": "Page Up",
   "@keyNamePageUp": {
     "description": "Key cap label for the Page Up key"
@@ -2867,6 +2871,10 @@
   "shortcutLeaveFullscreenOrStop": "Exit fullscreen, or stop if not fullscreen",
   "@shortcutLeaveFullscreenOrStop": {
     "description": "What Esc does in the player"
+  },
+  "shortcutHideControls": "Hide controls",
+  "@shortcutHideControls": {
+    "description": "What Backspace and Delete do in the player: hide the controls or the panel on top of them"
   },
   "shortcutStopPlayback": "Stop playback",
   "@shortcutStopPlayback": {

@@ -2084,6 +2084,9 @@ class AppLocalizationsHu extends AppLocalizations {
   String get keyNameBackspace => 'Backspace';
 
   @override
+  String get keyNameDelete => 'Delete';
+
+  @override
   String get keyNamePageUp => 'Page Up';
 
   @override
@@ -2167,6 +2170,9 @@ class AppLocalizationsHu extends AppLocalizations {
   @override
   String get shortcutLeaveFullscreenOrStop =>
       'Teljesképernyő kikapcsolása vagy megállítás, ha teljesképernyős mód aktív';
+
+  @override
+  String get shortcutHideControls => 'Hide controls';
 
   @override
   String get shortcutStopPlayback => 'Lejátszás megállítása';

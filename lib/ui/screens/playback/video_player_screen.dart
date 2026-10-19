@@ -690,6 +690,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   void initState() {
     super.initState();
     FocusManager.instance.addListener(_restoreOverlayFocus);
+    // A right-click hides the controls, so the browser's own menu stays shut.
+    if (kIsWeb) unawaited(BrowserContextMenu.disableContextMenu());
     if (PlatformDetection.isTV || PlatformDetection.isMobile) {
       // The decoder wants every megabyte a constrained box has, and a stale
       // IME binding swallows d-pad presses mid-playback. Desktop keeps its
@@ -943,6 +945,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   @override
   void dispose() {
+    if (kIsWeb) unawaited(BrowserContextMenu.enableContextMenu());
     _cancelPopAfterBackKeyUp?.call();
     _trickplayLoadGeneration++;
     _hdrStatus?.removeListener(_onHdrStatusChanged);
@@ -1286,10 +1289,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   DateTime? _suppressHoverControlsUntil;
 
-  void _suppressHoverControls({
-    Duration duration = const Duration(seconds: 1),
-  }) {
-    _suppressHoverControlsUntil = DateTime.now().add(duration);
+  void _suppressHoverControls() {
+    _suppressHoverControlsUntil = DateTime.now().add(
+      const Duration(seconds: 1),
+    );
   }
 
   bool _isHoverControlsSuppressed() {
@@ -3948,15 +3951,16 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         if (event is KeyRepeatEvent) {
           return KeyEventResult.handled;
         }
-        if (_dismissControlsOrOverlays()) {
-          _suppressHoverControls();
-          return KeyEventResult.handled;
-        }
         if (PlatformDetection.useDesktopUi) {
           unawaited(_leaveFullscreenOrPlayback());
           return KeyEventResult.handled;
         }
         _exitPlayback();
+        return KeyEventResult.handled;
+      case PlayerAction.hideControls:
+        if (event is! KeyRepeatEvent && _dismissControlsOrOverlays()) {
+          _suppressHoverControls();
+        }
         return KeyEventResult.handled;
       case PlayerAction.showControlsOrPlayPause:
         if (_isSkipSegmentButtonVisible) {

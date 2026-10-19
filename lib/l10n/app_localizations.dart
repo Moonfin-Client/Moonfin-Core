@@ -3586,6 +3586,12 @@ abstract class AppLocalizations {
   /// **'Backspace'**
   String get keyNameBackspace;
 
+  /// Key cap label for the Delete key
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get keyNameDelete;
+
   /// Key cap label for the Page Up key
   ///
   /// In en, this message translates to:
@@ -3747,6 +3753,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Exit fullscreen, or stop if not fullscreen'**
   String get shortcutLeaveFullscreenOrStop;
+
+  /// What Backspace and Delete do in the player: hide the controls or the panel on top of them
+  ///
+  /// In en, this message translates to:
+  /// **'Hide controls'**
+  String get shortcutHideControls;
 
   /// Player shortcut action
   ///

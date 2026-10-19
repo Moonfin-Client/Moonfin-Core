@@ -2036,6 +2036,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get keyNameBackspace => 'Backspace';
 
   @override
+  String get keyNameDelete => 'Delete';
+
+  @override
   String get keyNamePageUp => 'Page Up';
 
   @override
@@ -2115,6 +2118,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get shortcutLeaveFullscreenOrStop => '전체 화면 종료(전체 화면이 아니면 정지)';
+
+  @override
+  String get shortcutHideControls => 'Hide controls';
 
   @override
   String get shortcutStopPlayback => '재생 정지';

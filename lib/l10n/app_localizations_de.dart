@@ -2159,6 +2159,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get keyNameBackspace => 'Rücktaste';
 
   @override
+  String get keyNameDelete => 'Delete';
+
+  @override
   String get keyNamePageUp => 'Seite nach oben';
 
   @override
@@ -2240,6 +2243,9 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get shortcutLeaveFullscreenOrStop =>
       'Vollbild verlassen oder Stop wenn nicht Vollbild';
+
+  @override
+  String get shortcutHideControls => 'Hide controls';
 
   @override
   String get shortcutStopPlayback => 'Stop wiedergabe';

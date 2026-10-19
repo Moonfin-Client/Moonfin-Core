@@ -2094,6 +2094,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get keyNameBackspace => 'Retour arrière';
 
   @override
+  String get keyNameDelete => 'Delete';
+
+  @override
   String get keyNamePageUp => 'Page Up';
 
   @override
@@ -2177,6 +2180,9 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get shortcutLeaveFullscreenOrStop =>
       'Quitter le plein écran, ou arrêter la lecture si déjà quitté';
+
+  @override
+  String get shortcutHideControls => 'Hide controls';
 
   @override
   String get shortcutStopPlayback => 'Arrêter la lecture';

@@ -2106,6 +2106,9 @@ class AppLocalizationsRo extends AppLocalizations {
   String get keyNameBackspace => 'Backspace';
 
   @override
+  String get keyNameDelete => 'Delete';
+
+  @override
   String get keyNamePageUp => 'Page Up';
 
   @override
@@ -2189,6 +2192,9 @@ class AppLocalizationsRo extends AppLocalizations {
   @override
   String get shortcutLeaveFullscreenOrStop =>
       'Ieși din ecranul complet sau oprește dacă nu ești în ecran complet';
+
+  @override
+  String get shortcutHideControls => 'Hide controls';
 
   @override
   String get shortcutStopPlayback => 'Oprește redarea';

@@ -131,6 +131,7 @@ List<KeyboardShortcutSection> keyboardShortcutSections(
                   ? l10n.shortcutLeaveFullscreenOrStop
                   : l10n.shortcutStopPlayback,
             ),
+            player([PlayerAction.hideControls], l10n.shortcutHideControls),
             player([PlayerAction.next], l10n.shortcutNextItem),
             player([PlayerAction.previous], l10n.shortcutPreviousItem),
             // Enter presses the skip button too while one is showing.
@@ -232,8 +233,8 @@ String keyBindingLabel(KeyBinding binding, AppLocalizations l10n) {
     LogicalKeyboardKey.space => l10n.keyNameSpace,
     LogicalKeyboardKey.enter || LogicalKeyboardKey.select => l10n.keyNameEnter,
     LogicalKeyboardKey.escape => l10n.keyNameEsc,
-    LogicalKeyboardKey.backspace => 'Backspace',
-    LogicalKeyboardKey.delete => 'Delete',
+    LogicalKeyboardKey.backspace => l10n.keyNameBackspace,
+    LogicalKeyboardKey.delete => l10n.keyNameDelete,
     LogicalKeyboardKey.arrowLeft => '←',
     LogicalKeyboardKey.arrowRight => '→',
     LogicalKeyboardKey.arrowUp => '↑',
