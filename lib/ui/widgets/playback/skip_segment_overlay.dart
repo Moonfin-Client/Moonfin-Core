@@ -19,6 +19,8 @@ class SkipSegmentOverlay extends StatefulWidget {
   final MediaSegment segment;
   final VoidCallback onSkip;
   final VoidCallback onDismiss;
+  final String? actionLabel;
+  final MediaSegmentCountdown? countdownStyle;
   final FocusNode? focusNode;
   final Stream<Duration>? positionStream;
 
@@ -35,16 +37,22 @@ class SkipSegmentOverlay extends StatefulWidget {
   /// time row instead of landing on top of it.
   final double bottomInset;
 
+  /// Distance from the right edge. Cinema Mode adjusts this for touch safe areas.
+  final double rightInset;
+
   const SkipSegmentOverlay({
     super.key,
     required this.segment,
     required this.onSkip,
     required this.onDismiss,
+    this.actionLabel,
+    this.countdownStyle,
     this.focusNode,
     this.positionStream,
     this.initialPosition,
     this.nextItem,
     this.bottomInset = _fallbackBottomInset,
+    this.rightInset = 24,
   });
 
   @override
@@ -65,12 +73,11 @@ class _SkipSegmentOverlayState extends State<SkipSegmentOverlay> {
   @override
   void didUpdateWidget(SkipSegmentOverlay oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.positionStream != widget.positionStream ||
-        oldWidget.segment != widget.segment) {
+    if (oldWidget.segment != widget.segment) {
+      _currentPosition = widget.initialPosition ?? widget.segment.start;
+    }
+    if (oldWidget.positionStream != widget.positionStream) {
       _unsubscribe();
-      if (widget.segment != oldWidget.segment) {
-        _currentPosition = widget.initialPosition ?? widget.segment.start;
-      }
       _subscribe();
     }
     // Keep the countdown in sync when the parent rebuilds with a fresh
@@ -109,7 +116,8 @@ class _SkipSegmentOverlayState extends State<SkipSegmentOverlay> {
     final l10n = AppLocalizations.of(context);
 
     final prefs = GetIt.instance<UserPreferences>();
-    final mediaSegmentCountdown = prefs.get(UserPreferences.mediaSegmentCountdown);
+    final mediaSegmentCountdown =
+        widget.countdownStyle ?? prefs.get(UserPreferences.mediaSegmentCountdown);
     final showProgressBar = mediaSegmentCountdown == MediaSegmentCountdown.progressBar ||
         mediaSegmentCountdown == MediaSegmentCountdown.both;
     final showTimer = mediaSegmentCountdown == MediaSegmentCountdown.timer ||
@@ -141,7 +149,7 @@ class _SkipSegmentOverlayState extends State<SkipSegmentOverlay> {
     final borders = ThemeRegistry.active.borders;
 
     return Positioned(
-      right: 24,
+      right: widget.rightInset,
       bottom: widget.bottomInset,
       child: Material(
         color: Colors.transparent,
@@ -203,9 +211,10 @@ class _SkipSegmentOverlayState extends State<SkipSegmentOverlay> {
                               ),
                               const SizedBox(width: 9),
                               Text(
-                                l10n.skipSegment(
-                                  widget.segment.type.displayName,
-                                ),
+                                widget.actionLabel ??
+                                    l10n.skipSegment(
+                                      widget.segment.type.displayName,
+                                    ),
                                 style: TextStyle(
                                   color: AppColorScheme.onSurface,
                                   fontSize: 15,
