@@ -67,6 +67,20 @@ void main() {
     await root.delete(recursive: true);
   });
 
+  test('prompt decisions persist per core across service instances', () async {
+    expect(service.downloadPromptChoice('snes9x'), isNull);
+    await service.recordDownloadPromptChoice('snes9x', CoreDownloadPromptChoice.download);
+    expect(CoreDownloadService(store).downloadPromptChoice('snes9x'),
+        CoreDownloadPromptChoice.download);
+    await service.recordDownloadPromptChoice('snes9x', CoreDownloadPromptChoice.emulatorJs);
+    final reopenedStore = PreferenceStore();
+    await reopenedStore.init();
+    expect(CoreDownloadService(reopenedStore).downloadPromptChoice('snes9x'),
+        CoreDownloadPromptChoice.emulatorJs);
+    expect(service.downloadPromptChoice('mupen64plus_next'), isNull);
+    expect(adapter.requests, isEmpty);
+  });
+
   test(
     'installs the downloaded core and records it only when complete',
     () async {

@@ -14286,6 +14286,25 @@
     }
   },
   "gameInstallingEmulator": "Installing emulator…",
+  "gameCoreDownloadTitle": "Download native core for {system}?",
+  "@gameCoreDownloadTitle": {
+    "description": "Consent prompt to download a missing native emulator core",
+    "placeholders": { "system": { "type": "String" } }
+  },
+  "gameCoreDownloadPrompt": "Native emulation for {system} needs a core from the Libretro project. Download it now?",
+  "@gameCoreDownloadPrompt": {
+    "description": "Explains the source of a native core download and asks for consent",
+    "placeholders": { "system": { "type": "String" } }
+  },
+  "gameCoreDownloadLater": "You can download the native core later in {settingsPath}.",
+  "@gameCoreDownloadLater": {
+    "description": "Location of manual native core downloads, shown in the consent dialog and errors",
+    "placeholders": { "settingsPath": { "type": "String" } }
+  },
+  "gameCoreDownloadDontShowAgain": "Don’t show this again for this missing core",
+  "@gameCoreDownloadDontShowAgain": {
+    "description": "Unchecked by default; checking remembers this core's download or fallback choice"
+  },
   "gameUseEmulatorJsForSession": "Use EmulatorJS",
   "@gameUseEmulatorJsForSession": {
     "description": "Button on a native emulator error screen that uses the WebView emulator for this launch only"
@@ -14299,7 +14318,7 @@
   },
   "gameEmulatorInstallFailed": "The emulator could not be installed. Check your internet connection and available storage, then try again.",
   "@gameEmulatorInstallFailed": {
-    "description": "Error when automatic native core installation fails; a Retry button follows"
+    "description": "Error when a consented native core installation fails; a Retry button and download settings location follow"
   },
   "playlistNoMatchingTracks": "No tracks match the active filters",
   "@playlistNoMatchingTracks": {

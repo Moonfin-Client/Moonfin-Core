@@ -7,14 +7,38 @@ import 'package:jellyfin_preference/jellyfin_preference.dart';
 
 import '../../util/game_cores.dart';
 
-/// Downloads and installs libretro cores from the libretro buildbot on Android
-/// and desktop. Missing cores are installed on first play, or manually from
-/// the emulator cores settings screen.
+/// Downloads and installs libretro cores from the Libretro buildbot on Android
+/// and non-Apple desktop platforms, where cores are not bundled with the app.
+/// Users choose which systems to add from the emulator cores settings screen
+/// or consent to downloading a missing core when launching a game.
 class CoreDownloadService {
   CoreDownloadService(this._store, {Dio? dio}) : _dio = dio ?? Dio();
 
   final PreferenceStore _store;
   final Dio _dio;
+
+  CoreDownloadPromptChoice? downloadPromptChoice(String coreId) {
+    final value = _store.getString(coreDownloadPromptPreferenceKey(coreId));
+    if (value == null) return null;
+    for (final choice in CoreDownloadPromptChoice.values) {
+      if (choice.name == value) return choice;
+    }
+    return null;
+  }
+
+  /// Save a response only when the user selects "Don't show this again".
+  /// Persist before acting so a download error still respects that choice.
+  Future<void> recordDownloadPromptChoice(
+    String coreId,
+    CoreDownloadPromptChoice choice,
+  ) async {
+    if (!await _store.setString(
+      coreDownloadPromptPreferenceKey(coreId),
+      choice.name,
+    )) {
+      throw StateError('Could not save the core download choice');
+    }
+  }
 
   /// The core ids recorded as installed.
   List<String> get installed =>
