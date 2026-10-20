@@ -9,6 +9,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:gamepads/gamepads.dart';
+// Transitive through gamepads; used to inject real plugin-stream events.
+// ignore: depend_on_referenced_packages
+import 'package:gamepads_platform_interface/gamepads_platform_interface.dart';
 import 'package:playback_core/playback_core.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
@@ -25,6 +28,8 @@ import 'package:moonfin/ui/screens/playback/native_game_player_screen.dart';
 import 'package:moonfin/ui/screensaver/screensaver_controller.dart';
 import 'package:moonfin/util/core_input_descriptors.dart';
 import 'package:moonfin/util/game_cores.dart';
+import 'package:moonfin/util/focus/gamepad/gamepad_navigation_scope.dart';
+import 'package:moonfin/util/focus/gamepad/gamepad_suppressor.dart';
 import 'package:moonfin/util/native_controller_mapping.dart';
 import 'package:moonfin/util/platform_detection.dart';
 // Transitive via path_provider; not worth promoting to a direct pubspec.yaml
@@ -212,6 +217,7 @@ class _FakeNativeGamePlayer implements NativeGamePlayer {
   int loadCount = 0;
   int pauseCount = 0;
   int resumeCount = 0;
+  final inputMasks = <int>[];
 
   @override
   Stream<Map<String, dynamic>> get events => _eventsController.stream;
@@ -328,7 +334,7 @@ class _FakeNativeGamePlayer implements NativeGamePlayer {
   @override
   Future<void> pulseButton(int index, {int durationMs = 150}) async {}
   @override
-  Future<void> setInput(int port, int mask) async {}
+  Future<void> setInput(int port, int mask) async => inputMasks.add(mask);
   @override
   Future<List<GameCoreOption>> getOptions() async => options;
   @override
@@ -530,6 +536,144 @@ void main() {
   );
 
   const fallbackLabel = 'Use EmulatorJS';
+
+  Future<void> pressPad(WidgetTester tester, String key) async {
+    for (final value in [1.0, 0.0]) {
+      GamepadsPlatformInterface.instance.emitGamepadEvent(GamepadEvent(
+        gamepadId: 'pad-1', timestamp: 0,
+        type: KeyType.button, key: key, value: value,
+      ));
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+  }
+
+  for (final platform in [TargetPlatform.windows, TargetPlatform.linux]) {
+    testWidgets('gamepad navigates consent and returns to gameplay on $platform', (tester) async {
+      debugDefaultTargetPlatformOverride = platform;
+      final prefs = UserPreferences(GetIt.instance<PreferenceStore>());
+      GetIt.instance.registerSingleton<UserPreferences>(prefs);
+      await prefs.set(UserPreferences.gamepadNavigationEnabled, true);
+      final previousNormalizer = Gamepads.normalizer;
+      // Use named Windows button events on both host-independent test paths.
+      Gamepads.normalizer = GamepadNormalizer.forPlatform(GamepadPlatform.windows);
+      final downloads = _FakeCoreDownloads();
+      final suppressionDepth = GamepadSuppressor.depth.value;
+      try {
+        await tester.pumpWidget(MaterialApp(
+          builder: (context, child) => GamepadNavigationScope(child: child!),
+          home: NativeGamePlayerScreen(
+            libraryId: 'lib1', gameId: 'game1', core: 'n64',
+            player: player, coreDownloads: downloads,
+          ),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        ));
+        await advanceStartup(tester, () => find.byType(AlertDialog).evaluate().isNotEmpty);
+        await tester.pump(const Duration(milliseconds: 500));
+        expect(GamepadSuppressor.depth.value, suppressionDepth);
+        final downloadFocus = FocusManager.instance.primaryFocus;
+        await pressPad(tester, 'dpadUp');
+        expect(FocusManager.instance.primaryFocus, isNot(same(downloadFocus)));
+        await pressPad(tester, 'a');
+        expect(tester.widget<CheckboxListTile>(find.byType(CheckboxListTile)).value, isTrue);
+        expect(player.inputMasks, isEmpty,
+          reason: 'Dialog navigation must not also reach gameplay input');
+        expect(downloads.downloads, 0);
+
+        await pressPad(tester, 'dpadDown');
+        if (platform == TargetPlatform.windows) {
+          // With two actions, Down reaches Use EmulatorJS; Right reaches Download.
+          expect(FocusManager.instance.primaryFocus, isNot(same(downloadFocus)));
+          await pressPad(tester, 'dpadRight');
+        }
+        expect(FocusManager.instance.primaryFocus, same(downloadFocus));
+        await pressPad(tester, 'a');
+        await advanceStartup(tester, () => find.byType(Texture).evaluate().isNotEmpty);
+        expect(downloads.downloads, 1);
+        expect(GamepadSuppressor.depth.value, suppressionDepth + 1);
+        player.inputMasks.clear();
+        await pressPad(tester, 'x');
+        expect(player.inputMasks, contains(1 << 1),
+          reason: 'Gamepad input must resume after the dialog closes');
+      } finally {
+        await tester.pumpWidget(const SizedBox());
+        Gamepads.normalizer = previousNormalizer;
+        debugDefaultTargetPlatformOverride = null;
+      }
+      expect(GamepadSuppressor.depth.value, suppressionDepth);
+    });
+  }
+
+  for (final (platform, action) in [
+    (TargetPlatform.windows, 'Use EmulatorJS'),
+    (TargetPlatform.windows, 'Back'),
+    (TargetPlatform.linux, 'Back'),
+  ]) {
+    testWidgets('gamepad can choose $action in consent on $platform', (tester) async {
+      debugDefaultTargetPlatformOverride = platform;
+      final prefs = UserPreferences(GetIt.instance<PreferenceStore>());
+      GetIt.instance.registerSingleton<UserPreferences>(prefs);
+      await prefs.set(UserPreferences.gamepadNavigationEnabled, true);
+      final previousNormalizer = Gamepads.normalizer;
+      Gamepads.normalizer = GamepadNormalizer.forPlatform(GamepadPlatform.windows);
+      final downloads = _FakeCoreDownloads();
+      final router = sessionRouter(downloads);
+      final suppressionDepth = GamepadSuppressor.depth.value;
+      try {
+        await tester.pumpWidget(MaterialApp.router(
+          routerConfig: router,
+          builder: (context, child) => GamepadNavigationScope(child: child!),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        ));
+        unawaited(router.push<void>(Destinations.gamePlayerOf('lib1', 'game1', core: 'n64')));
+        await tester.pump();
+        await advanceStartup(tester, () => find.byType(AlertDialog).evaluate().isNotEmpty);
+        await tester.pump(const Duration(milliseconds: 500));
+        if (action == 'Use EmulatorJS') {
+          await pressPad(tester, 'dpadLeft');
+          await pressPad(tester, 'a');
+        } else {
+          await pressPad(tester, 'b');
+        }
+        await tester.pumpAndSettle();
+        expect(find.byType(AlertDialog), findsNothing);
+        expect(find.text(action == 'Back' ? 'game details' : 'fallback session'), findsOneWidget);
+        expect(downloads.downloads, 0);
+        expect(downloads.downloadPromptChoice('mupen64plus_next'), isNull);
+        expect(player.inputMasks, isEmpty);
+        expect(GamepadSuppressor.depth.value, suppressionDepth);
+      } finally {
+        await tester.pumpWidget(const SizedBox());
+        router.dispose();
+        Gamepads.normalizer = previousNormalizer;
+        debugDefaultTargetPlatformOverride = null;
+      }
+    });
+  }
+
+  testWidgets('disposing with consent open preserves another suppression owner', (tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.linux;
+    final suppressionDepth = GamepadSuppressor.depth.value;
+    try {
+      await pumpInstallingPlayer(tester, _FakeCoreDownloads());
+      await advanceStartup(tester, () => find.byType(AlertDialog).evaluate().isNotEmpty);
+      expect(GamepadSuppressor.depth.value, suppressionDepth);
+      // Another screen can take ownership while this player's dialog is open.
+      GamepadSuppressor.push();
+      try {
+        await tester.pumpWidget(const SizedBox());
+        await tester.pump();
+        expect(GamepadSuppressor.depth.value, suppressionDepth + 1);
+      } finally {
+        GamepadSuppressor.pop();
+      }
+    } finally {
+      await tester.pumpWidget(const SizedBox());
+      debugDefaultTargetPlatformOverride = null;
+    }
+    expect(GamepadSuppressor.depth.value, suppressionDepth);
+  });
 
   for (final platform in [TargetPlatform.macOS, TargetPlatform.iOS]) {
     testWidgets('bundled platforms never offer downloads on $platform', (tester) async {

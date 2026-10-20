@@ -185,6 +185,8 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
   CancelToken? _coreDownloadToken;
   bool _coreInstallFailed = false;
   bool _coreDownloadConsented = false;
+  bool _coreDownloadDialogOpen = false;
+  bool _holdsGamepadSuppression = false;
   bool _showCoreDownloadHelp = false;
   GameDetail? _gameDetail;
   Future<void>? _pendingStop;
@@ -333,8 +335,8 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
     // screen's search field would otherwise sit in front of the d-pad.
     detachTextInputForPlayback();
     // The pad belongs to the libretro core while a game is running, so UI level
-    // pad navigation stays suppressed for the lifetime of this screen.
-    GamepadSuppressor.push();
+    // pad navigation stays suppressed except while the download dialog owns it.
+    _acquireGamepadSuppression();
     claimGameAudio();
     _events = _player.events.listen(
       _onEvent,
@@ -385,6 +387,18 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
     controller.setPlaybackActive(false);
   }
 
+  void _acquireGamepadSuppression() {
+    if (_holdsGamepadSuppression) return;
+    _holdsGamepadSuppression = true;
+    GamepadSuppressor.push();
+  }
+
+  void _releaseGamepadSuppression() {
+    if (!_holdsGamepadSuppression) return;
+    _holdsGamepadSuppression = false;
+    GamepadSuppressor.pop();
+  }
+
   @override
   Future<void> pauseForAudioClaim() => _player.pause();
 
@@ -403,7 +417,7 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
     _overlayScroll.dispose();
     _settingsScroll.dispose();
     _pickerScroll.dispose();
-    GamepadSuppressor.pop();
+    _releaseGamepadSuppression();
     // Best-effort restore if disposed without going through an exit path.
     unawaited(_restoreSystemUi());
     // _exit() and _backOut() already await/queue their own stop() before
@@ -593,6 +607,9 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
   }
 
   void _onGamepadEvent(NormalizedGamepadEvent event) {
+    // The same stream drives dialog focus while UI navigation is enabled.
+    // Do not also send those presses to the core or the gameplay overlay.
+    if (_coreDownloadDialogOpen || _exiting || _switchingBackend) return;
     final button = event.button;
     if (button != null) {
       final pressed = event.value != 0;
@@ -1225,6 +1242,38 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
   String _coreDownloadSettingsPath(AppLocalizations l10n) =>
       '${l10n.settings} > ${l10n.playback} > ${l10n.emulatorCores}';
 
+  Future<CoreDownloadPromptChoice?> _showCoreDownloadPrompt(
+    WidgetBuilder builder,
+  ) async {
+    _coreDownloadDialogOpen = true;
+    _releaseGamepadSuppression();
+    try {
+      return await showDialog<CoreDownloadPromptChoice>(
+        context: context,
+        barrierDismissible: false,
+        // Controller Back is synthesized as Escape on desktop. The default
+        // dialog dismissal action ignores it when barrier dismissal is off.
+        builder: (dialogContext) => Focus(
+          onKeyEvent: (_, event) {
+            if (event is! KeyDownEvent ||
+                (event.logicalKey != LogicalKeyboardKey.escape &&
+                    event.logicalKey != LogicalKeyboardKey.goBack)) {
+              return KeyEventResult.ignored;
+            }
+            Navigator.of(dialogContext).pop();
+            return KeyEventResult.handled;
+          },
+          child: builder(dialogContext),
+        ),
+      );
+    } finally {
+      _coreDownloadDialogOpen = false;
+      // The whole player can be removed while the dialog is open. Reacquiring
+      // after disposal would leak suppression into the next screen.
+      if (mounted) _acquireGamepadSuppression();
+    }
+  }
+
   Future<bool> _offerCoreDownload(String coreId) async {
     if (!mounted) return false;
     _showCoreDownloadHelp = true;
@@ -1246,10 +1295,8 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
     final system = gameCoreCatalog
         .firstWhere((core) => core.coreId == coreId)
         .system;
-    final choice = await showDialog<CoreDownloadPromptChoice>(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => StatefulBuilder(
+    final choice = await _showCoreDownloadPrompt(
+      (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
           title: Text(l10n.gameCoreDownloadTitle(system)),
           content: SingleChildScrollView(
