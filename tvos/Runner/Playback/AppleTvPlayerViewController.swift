@@ -71,6 +71,8 @@ final class AppleTvPlayerViewController: UIViewController {
     var onNextUpCancel: (() -> Void)?
     var onNextUpDismiss: (() -> Void)?
     var onSkipSegmentSelect: (() -> Void)?
+    /// Sends remote Skip actions back to Dart.
+    var onCinemaSkipAction: ((String, Int) -> Void)?
     /// Fires with the target after a scrub or a direct jump the user made.
     /// Carrying the position lets the host hand it to SyncPlay, which is the
     /// only way a seek made on this player reaches the rest of the group.
@@ -150,6 +152,9 @@ final class AppleTvPlayerViewController: UIViewController {
     private var pauseMeta: (overview: String, imageUrl: String)?
 
     private var skipSegmentActive = false
+    private var cinemaSkipActive = false
+    private var cinemaSkipGeneration = 0
+    private var skipBottomConstraint: NSLayoutConstraint?
     private let skipSegmentButton = UIView()
     private let skipSegmentGlass = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
     private let skipSegmentRow = UIStackView()
@@ -748,11 +753,13 @@ final class AppleTvPlayerViewController: UIViewController {
         skipSegmentRow.setCustomSpacing(16, after: skipSegmentLabel)
         skipSegmentRow.setCustomSpacing(26, after: skipSegmentTimerLabel)
 
+        let bottom = skipSegmentButton.bottomAnchor.constraint(
+            equalTo: view.bottomAnchor, constant: -240)
+        skipBottomConstraint = bottom
         NSLayoutConstraint.activate([
             skipSegmentButton.trailingAnchor.constraint(
                 equalTo: view.trailingAnchor, constant: -48),
-            skipSegmentButton.bottomAnchor.constraint(
-                equalTo: view.bottomAnchor, constant: -240),
+            bottom,
             skipSegmentGlass.topAnchor.constraint(equalTo: skipSegmentButton.topAnchor),
             skipSegmentGlass.bottomAnchor.constraint(equalTo: skipSegmentButton.bottomAnchor),
             skipSegmentGlass.leadingAnchor.constraint(equalTo: skipSegmentButton.leadingAnchor),
@@ -1439,6 +1446,35 @@ final class AppleTvPlayerViewController: UIViewController {
         pauseMeta = (overview: overview, imageUrl: (dict["imageUrl"] as? String) ?? "")
     }
 
+    /// Apply the latest Cinema Skip state, even if the button is hidden or
+    /// the player view hasn't appeared yet.
+    func applyCinemaSkipState(_ args: [String: Any]) {
+        loadViewIfNeeded()
+        let wasActive = cinemaSkipActive
+        cinemaSkipActive = (args["active"] as? Bool) ?? false
+        cinemaSkipGeneration = (args["generation"] as? NSNumber)?.intValue ?? 0
+        skipBottomConstraint?.constant = cinemaSkipActive ? -48 : -240
+        view.layoutIfNeeded()
+
+        guard cinemaSkipActive else {
+            if wasActive { hideSkipSegment() }
+            return
+        }
+        if !wasActive {
+            hideOsd()
+            updatePauseOverlay()
+        }
+        if (args["visible"] as? Bool) == true {
+            showSkipSegment(
+                label: (args["skipLabel"] as? String) ?? "Skip",
+                countdownStyle: (args["countdownStyle"] as? String) ?? "progressBar",
+                segmentStartMs: 0,
+                segmentEndMs: (args["durationMs"] as? NSNumber)?.intValue ?? 0)
+        } else {
+            hideSkipSegment()
+        }
+    }
+
     func showSkipSegment(
         label: String, countdownStyle: String, segmentStartMs: Int, segmentEndMs: Int
     ) {
@@ -1448,7 +1484,8 @@ final class AppleTvPlayerViewController: UIViewController {
         skipSegmentStartMs = segmentStartMs
         skipSegmentEndMs = segmentEndMs
         updateSkipSegmentCountdown()
-        guard skipSegmentButton.isHidden else { return }
+        guard skipSegmentButton.isHidden || skipSegmentButton.alpha < 1 else { return }
+        skipSegmentButton.layer.removeAllAnimations()
         skipSegmentButton.alpha = 0
         skipSegmentButton.isHidden = false
         UIView.animate(withDuration: 0.2) { self.skipSegmentButton.alpha = 1 }
@@ -1495,10 +1532,12 @@ final class AppleTvPlayerViewController: UIViewController {
     func hideSkipSegment() {
         skipSegmentActive = false
         guard !skipSegmentButton.isHidden else { return }
+        skipSegmentButton.layer.removeAllAnimations()
         UIView.animate(withDuration: 0.15) {
             self.skipSegmentButton.alpha = 0
         } completion: { _ in
-            self.skipSegmentButton.isHidden = true
+            // Don't let an old fade-out hide the next trailer's Skip button.
+            self.skipSegmentButton.isHidden = !self.skipSegmentActive
         }
     }
 
@@ -1631,6 +1670,15 @@ final class AppleTvPlayerViewController: UIViewController {
     }
 
     @objc private func handleMenuTap() {
+        if cinemaSkipActive {
+            if skipSegmentActive {
+                hideSkipSegment()
+                onCinemaSkipAction?("hide", cinemaSkipGeneration)
+            } else {
+                dismiss(animated: true)
+            }
+            return
+        }
         if nextUpVisible {
             hideNextUpCard()
             onNextUpDismiss?()
@@ -1663,6 +1711,12 @@ final class AppleTvPlayerViewController: UIViewController {
 
     @objc private func handleSwipe(_ recognizer: UISwipeGestureRecognizer) {
         guard presentedViewController == nil, !nextUpVisible else { return }
+        if cinemaSkipActive {
+            if recognizer.direction == .right {
+                onCinemaSkipAction?("reveal", cinemaSkipGeneration)
+            }
+            return
+        }
         switch recognizer.direction {
         case .up:
             if isLive {
@@ -1697,7 +1751,7 @@ final class AppleTvPlayerViewController: UIViewController {
         default:
             break
         }
-        guard presentedViewController == nil, !nextUpVisible, !isLive else { return }
+        guard presentedViewController == nil, !nextUpVisible, !isLive, !cinemaSkipActive else { return }
         switch recognizer.state {
         case .began:
             panScrubEngaged = false
@@ -1768,6 +1822,19 @@ final class AppleTvPlayerViewController: UIViewController {
     }
 
     private func handleNavigationPress(_ type: UIPress.PressType) -> Bool {
+        if cinemaSkipActive {
+            switch type {
+            case .select:
+                onCinemaSkipAction?("activate", cinemaSkipGeneration)
+            case .rightArrow:
+                onCinemaSkipAction?("reveal", cinemaSkipGeneration)
+            case .playPause:
+                togglePlayPause()
+            default:
+                break
+            }
+            return true
+        }
         // While the Next Up card is up it owns the remote. Every press is
         // consumed here so nothing falls through to scrubbing, OSD handling,
         // or the default menu behavior underneath the card.
@@ -3107,7 +3174,7 @@ final class AppleTvPlayerViewController: UIViewController {
     }
 
     private func updatePauseOverlay() {
-        let shouldShow = isPaused() && pauseMeta != nil
+        let shouldShow = !cinemaSkipActive && isPaused() && pauseMeta != nil
         let visible = pauseOverlay.alpha > 0.5
         if shouldShow && !visible, let meta = pauseMeta {
             pauseTitleLabel.text = hasLogo ? headerPrimary : (headerPrimary.isEmpty ? headerSecondary : headerPrimary)
@@ -3123,6 +3190,7 @@ final class AppleTvPlayerViewController: UIViewController {
     }
 
     private func showOsd() {
+        guard !cinemaSkipActive else { return }
         lastShowAt = CACurrentMediaTime()
         osdDismissed = false
         setSubtitlesRaised(true)
@@ -3241,7 +3309,7 @@ final class AppleTvPlayerViewController: UIViewController {
         updateLoadingOverlay()
 
         let shouldShow =
-            !osdDismissed && !nextUpVisible
+            !cinemaSkipActive && !osdDismissed && !nextUpVisible
             && (isPaused() || scrubTargetMs != nil || scrubFrozenMs != nil
                 || (CACurrentMediaTime() - lastShowAt < 4.0))
         updateSubtitleLoadingPill(osdShown: shouldShow)

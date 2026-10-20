@@ -481,6 +481,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             self.onNowPlayingCommand?([
                 "event": "seek",
                 "positionMs": Int((target * 1000).rounded()),
+                "isForwardSkip": delta > 0,
             ])
         }
         nowPlaying.onNext = { [weak self] in
