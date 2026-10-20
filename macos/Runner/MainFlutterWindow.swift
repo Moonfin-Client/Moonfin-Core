@@ -8,6 +8,12 @@ import moonfin_game_host
 /// per-architecture switch since the FLTEnableImpeller plist key applies to
 /// every Mac and release builds ignore engine switches.
 final class MoonfinDartProject: FlutterDartProject {
+  /// The engine looks for icudtl.dat in the bundle of [self class], which is
+  /// the app bundle once subclassed. Without ICU data, text wraps mid-word.
+  @objc var ICUDataPath: String? {
+    Bundle(for: FlutterDartProject.self).path(forResource: "icudtl", ofType: "dat")
+  }
+
   #if arch(x86_64)
   @objc var enableImpeller: Bool { false }
   #endif
