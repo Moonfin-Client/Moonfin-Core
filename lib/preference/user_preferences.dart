@@ -505,6 +505,10 @@ class UserPreferences extends ChangeNotifier {
     'pref_enable_tv_queuing',
     'pref_enable_cinema_mode',
     'pref_enable_cinema_mode_episodes',
+    'pref_cinema_mode_skip_enabled',
+    'pref_cinema_mode_skip_countdown',
+    'pref_cinema_mode_skip_auto_hide',
+    'pref_cinema_mode_skip_min_duration_seconds',
     'pref_resume_preroll',
     'media_segment_actions',
     'pref_autoplay_next_episode',
@@ -2011,6 +2015,28 @@ class UserPreferences extends ChangeNotifier {
   static final cinemaModeEpisodesEnabled = Preference(
     key: 'pref_enable_cinema_mode_episodes',
     defaultValue: false,
+  );
+
+  static final cinemaModeSkipEnabled = Preference(
+    key: 'pref_cinema_mode_skip_enabled',
+    defaultValue: false,
+  );
+
+  static final cinemaModeSkipCountdown = EnumPreference(
+    key: 'pref_cinema_mode_skip_countdown',
+    defaultValue: MediaSegmentCountdown.progressBar,
+    values: MediaSegmentCountdown.values,
+  );
+
+  static final cinemaModeSkipMinDurationSeconds = Preference(
+    key: 'pref_cinema_mode_skip_min_duration_seconds',
+    defaultValue: 26,
+  );
+
+  static final cinemaModeSkipAutoHide = EnumPreference(
+    key: 'pref_cinema_mode_skip_auto_hide',
+    defaultValue: MediaSegmentAutoHide.s10,
+    values: MediaSegmentAutoHide.values,
   );
 
   static final stillWatchingBehavior = EnumPreference(

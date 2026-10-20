@@ -13695,6 +13695,14 @@
   "@navYou": {
     "description": "Bottom bar tab that opens the user's own menu with their profile, extra destinations and settings"
   },
+  "cinemaSkipPrerolls": "Cinema Mode Skip Button",
+  "cinemaSkipPrerollsDescription": "Show a Skip button during Cinema Mode trailers, commercials, and other pre-rolls.",
+  "cinemaMinimumIntroLength": "Cinema Mode Minimum Pre-Roll Length to Show Skip",
+  "cinemaMinimumIntroLengthDescription": "Only show the Skip button for pre-rolls that are at least this long.",
+  "cinemaSkipCountdown": "Cinema Mode Skip Countdown",
+  "cinemaSkipCountdownDescription": "Choose whether to display a progress bar, countdown timer, both, or neither on the Skip button.",
+  "cinemaAutoHideButtons": "Cinema Mode Auto Hide Skip Button",
+  "cinemaAutoHideButtonsDescription": "Automatically dismiss the Skip button after a few seconds. Select Off to disable automatic hiding.",
   "detailsPage": "Details Page",
   "@detailsPage": {
     "description": "Settings entry and screen for options that shape the details page"
