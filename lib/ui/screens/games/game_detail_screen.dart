@@ -1227,9 +1227,9 @@ class _MetaPills extends StatelessWidget {
 }
 
 /// Reports the selected route for this game, including an explicit override
-/// to EmulatorJS. Purely
-/// informational -- changing the core happens through the core button in
-/// [_ActionRow] or the details panel, not by tapping this pill.
+/// or a remembered choice to use EmulatorJS while a native core is missing.
+/// Purely informational -- changing the core happens through the core button
+/// in [_ActionRow] or the details panel, not by tapping this pill.
 class _BackendPill extends StatelessWidget {
   const _BackendPill({required this.native, required this.core});
 

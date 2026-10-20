@@ -149,9 +149,25 @@ void main() {
       await GetIt.instance.reset();
     });
 
-    test('routes missing cores to native for automatic installation', () {
+    test('routes missing cores to native for a consent prompt', () {
       expect(usesNativeGameBackendFor('atari2600'), isTrue);
       expect(usesNativeGameBackendFor('n64'), isTrue);
+    });
+
+    test('remembered fallback uses WebView saves until manual installation', () async {
+      final store = GetIt.instance<PreferenceStore>();
+      await store.setString(
+        coreDownloadPromptPreferenceKey('mupen64plus_next'),
+        CoreDownloadPromptChoice.emulatorJs.name,
+      );
+      expect(usesNativeGameBackendFor('n64'), isFalse);
+      expect(gameStateKey('game1', 'n64'), 'ejs-n64-game1');
+      expect(usesNativeGameBackendFor('snes'), isTrue);
+      expect(GetIt.instance<UserPreferences>().get(UserPreferences.useNativeEmulator), isTrue);
+
+      await store.setStringList(installedCoresPreferenceKey, ['mupen64plus_next']);
+      expect(usesNativeGameBackendFor('n64'), isTrue);
+      expect(gameStateKey('game1', 'n64'), 'lr-n64-game1');
     });
 
     test('uses the native Atari 2600 core after installation', () async {

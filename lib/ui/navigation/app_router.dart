@@ -477,9 +477,13 @@ final appRouter = GoRouter(
         final hardwareRenderingEnabled = state.uri.queryParameters['hw'] != '0';
         return _opaqueFullScreenPage<void>(
           state: state,
-          // Respect the selected backend. The native player installs missing
-          // cores or reports unsupported systems; only an explicit WebView
-          // choice may switch away from native emulation.
+          // Native libretro or the EmulatorJS WebView: forced where only one
+          // backend works (tvOS and Linux native), the user's choice elsewhere.
+          // Native remains selected for missing or unsupported cores, including
+          // systems outside the fixed Apple bundles; users can explicitly
+          // switch this session to EmulatorJS where that backend is available.
+          // A remembered opt-out uses EmulatorJS until the missing core is
+          // installed. Otherwise, downloadable cores require launch consent.
           child: !forceEmulatorJs && usesNativeGameBackendFor(core)
               ? NativeGamePlayerScreen(
                   libraryId: libraryId,

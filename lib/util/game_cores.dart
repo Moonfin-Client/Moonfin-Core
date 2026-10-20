@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:get_it/get_it.dart';
+import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:server_core/server_core.dart';
 
@@ -20,6 +21,12 @@ bool isArcadeFamilyCore(String core) => core == 'arcade' || core == 'mame';
 /// Preference key holding the list of downloaded core ids on Android and
 /// desktop.
 const String installedCoresPreferenceKey = 'installed_libretro_cores';
+
+/// Device-local choice remembered through the prompt's opt-out checkbox.
+enum CoreDownloadPromptChoice { download, emulatorJs }
+
+String coreDownloadPromptPreferenceKey(String coreId) =>
+    'native_core_download_prompt_$coreId';
 
 /// Runtime files a core needs in the system directory before it can boot.
 class CoreSupportFiles {
@@ -304,14 +311,20 @@ bool get usesNativeGameBackend {
   );
 }
 
-/// Apple runners resolve their signed frameworks and seed assets natively.
+/// Whether this platform ships its cores inside the app and loads them from the
+/// bundle rather than downloading them. tvOS, iOS, and macOS resolve signed
+/// core frameworks and seed support assets natively. These targets do not offer
+/// core downloads or the download manager; App Store targets must ship their
+/// executable cores with the app.
 bool get bundlesGameCores =>
     PlatformDetection.isAppleTV ||
     PlatformDetection.isIOS ||
     PlatformDetection.isMacOS;
 
-/// Whether this device can download and run cores, and should offer the cores
-/// manager. Apple targets use only signed bundles.
+/// Whether this device can download and run cores, and so should offer the
+/// emulator cores manager and missing-core consent prompt. Apple targets use
+/// signed bundles instead. Android, Windows, and Linux also require an
+/// architecture for which the Libretro buildbot publishes binaries.
 bool get supportsCoreDownloads =>
     !bundlesGameCores &&
     (PlatformDetection.isAndroid || PlatformDetection.isDesktop) &&
@@ -486,14 +499,35 @@ bool nativeCanPlay(String core) {
   return true;
 }
 
-/// The selected backend is authoritative for every core. The native player
-/// installs missing downloadable cores and reports unsupported systems instead
-/// of silently launching a potentially much slower WebView emulator.
-bool usesNativeGameBackendFor(String core) => usesNativeGameBackend;
+/// Whether a specific game uses the native backend, shared by routing, backend
+/// labels, and save keys. Native stays selected for missing or unsupported
+/// cores so its player can offer a consented download or an explicit session
+/// fallback, rather than silently starting the WebView.
+///
+/// Platforms without EmulatorJS retain the native route to report unsupported
+/// systems. Apple targets use only bundled cores and never offer downloads.
+/// On download-capable platforms, an explicit opt-out from the missing-core
+/// prompt uses EmulatorJS while the core is missing; manually installing it
+/// restores native playback and its save namespace. The downloader records a
+/// core as installed only after its binary and required assets are complete.
+bool usesNativeGameBackendFor(String core) {
+  if (!usesNativeGameBackend) return false;
+  if (bundlesGameCores || !emulatorJsAvailable) return true;
+  if (!GetIt.instance.isRegistered<PreferenceStore>()) return true;
+  final coreId = libretroCoreId(core);
+  if (coreId == null) return true;
+  final store = GetIt.instance<PreferenceStore>();
+  final choice = store.getString(coreDownloadPromptPreferenceKey(coreId));
+  final installed = store.getStringList(installedCoresPreferenceKey) ?? const [];
+  return choice == null || installed.contains(coreId);
+}
 
 /// Whether [core] is bundled or can be installed on this device, ignoring the
-/// current backend preference. Missing downloadable cores remain selectable;
-/// the native player installs them on first launch.
+/// current native/EmulatorJS preference. The core picker needs this so it can
+/// offer a forceable native option even when EmulatorJS is currently preferred.
+/// Missing downloadable cores remain selectable; the native player offers
+/// installation unless that offer was hidden. Apple targets can only offer
+/// cores included in their fixed bundles.
 bool nativeCoreReachable(String core) {
   if (!nativeGameBackendSupported || !nativeCanPlay(core)) return false;
   if (PlatformDetection.isMacOS) {
@@ -546,8 +580,9 @@ Future<Directory> coresDirectory() async {
   return Directory('${support.path}/cores/$abi');
 }
 
-/// Resolve a downloaded core. Apple runners resolve signed frameworks
-/// natively instead.
+/// The path to an installed libretro core file, or null when its downloaded
+/// binary is missing. This resolves downloaded files on Android, Windows, and
+/// Linux; Apple runners resolve their bundled signed frameworks natively.
 Future<String?> installedCorePath(String coreId) async {
   final dir = await coresDirectory();
   final file = File('${dir.path}/${coreFileName(coreId)}');

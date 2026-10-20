@@ -184,6 +184,8 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
       CoreDownloadService(GetIt.instance<PreferenceStore>());
   CancelToken? _coreDownloadToken;
   bool _coreInstallFailed = false;
+  bool _coreDownloadConsented = false;
+  bool _showCoreDownloadHelp = false;
   GameDetail? _gameDetail;
   Future<void>? _pendingStop;
   Future<void>? _systemUiRestoration;
@@ -986,8 +988,10 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
       }
       _gameDetail = detail;
 
-      // Apple resolves signed frameworks natively. Other runners receive the
-      // downloaded core path, installing it automatically when missing.
+      // tvOS, iOS, and macOS bundle their signed cores, so the native side loads
+      // them from the app. Android, Windows, and Linux load a downloaded file.
+      // Offer a missing-core download only on supported devices, with consent
+      // unless the user explicitly chose to hide that core's prompt.
       String? corePath;
       if (!bundlesGameCores) {
         if (!supportsCoreDownloads) {
@@ -999,9 +1003,19 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
           }
           return;
         }
+        _showCoreDownloadHelp = _cores.downloadPromptChoice(coreId) != null;
         corePath = await installedCorePath(coreId);
         if (corePath == null) {
-          if (!await _installCore(coreId)) return;
+          if (!_cores.isAvailable(coreId)) {
+            _releaseGameplayArtworkBlock();
+            if (mounted) {
+              setState(
+                () => _error = 'This system is not supported on this device.',
+              );
+            }
+            return;
+          }
+          if (!await _offerCoreDownload(coreId)) return;
           corePath = await installedCorePath(coreId);
           if (corePath == null) {
             throw StateError('Core installation incomplete');
@@ -1206,6 +1220,99 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
         });
       }
     }
+  }
+
+  String _coreDownloadSettingsPath(AppLocalizations l10n) =>
+      '${l10n.settings} > ${l10n.playback} > ${l10n.emulatorCores}';
+
+  Future<bool> _offerCoreDownload(String coreId) async {
+    if (!mounted) return false;
+    _showCoreDownloadHelp = true;
+    if (_coreDownloadConsented) return _installCore(coreId);
+    final previous = _cores.downloadPromptChoice(coreId);
+    if (previous != null) {
+      if (emulatorJsAvailable) {
+        _releaseGameplayArtworkBlock();
+        await _useEmulatorJsForSession();
+      } else {
+        _backOut();
+      }
+      return false;
+    }
+
+    if (!mounted || _exiting) return false;
+    var dontShowAgain = false;
+    final l10n = AppLocalizations.of(context);
+    final system = gameCoreCatalog
+        .firstWhere((core) => core.coreId == coreId)
+        .system;
+    final choice = await showDialog<CoreDownloadPromptChoice>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: Text(l10n.gameCoreDownloadTitle(system)),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text([
+                  l10n.gameCoreDownloadPrompt(system),
+                  l10n.gameCoreDownloadLater(_coreDownloadSettingsPath(l10n)),
+                ].join('\n\n')),
+                const SizedBox(height: 12),
+                CheckboxListTile(
+                  contentPadding: EdgeInsets.zero,
+                  controlAffinity: ListTileControlAffinity.leading,
+                  title: Text(l10n.gameCoreDownloadDontShowAgain),
+                  value: dontShowAgain,
+                  onChanged: (value) => setDialogState(
+                    () => dontShowAgain = value ?? false,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            if (emulatorJsAvailable)
+              OutlinedButton(
+                onPressed: () => Navigator.pop(
+                  context,
+                  CoreDownloadPromptChoice.emulatorJs,
+                ),
+                child: Text(l10n.gameUseEmulatorJsForSession),
+              ),
+            FilledButton(
+              autofocus: true,
+              onPressed: () => Navigator.pop(
+                context,
+                CoreDownloadPromptChoice.download,
+              ),
+              child: Text(l10n.download),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (!mounted || _exiting) return false;
+    if (dontShowAgain && choice != null) {
+      await _cores.recordDownloadPromptChoice(
+        coreId,
+        choice,
+      );
+      if (!mounted || _exiting) return false;
+    }
+    if (choice == null) {
+      _backOut();
+      return false;
+    }
+    if (choice == CoreDownloadPromptChoice.emulatorJs) {
+      _releaseGameplayArtworkBlock();
+      await _useEmulatorJsForSession();
+      return false;
+    }
+    _coreDownloadConsented = true;
+    return _installCore(coreId);
   }
 
   Future<bool> _installCore(String coreId) async {
@@ -2778,6 +2885,16 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
                       textAlign: TextAlign.center,
                       style: const TextStyle(color: Colors.white, fontSize: 24),
                     ),
+                    if (_showCoreDownloadHelp) ...[
+                      const SizedBox(height: 16),
+                      Text(
+                        AppLocalizations.of(context).gameCoreDownloadLater(
+                          _coreDownloadSettingsPath(AppLocalizations.of(context)),
+                        ),
+                        textAlign: TextAlign.center,
+                        style: _errorAdviceStyle,
+                      ),
+                    ],
                     // TODO: Localize this.
                     if (_coreInstallFailed) ...[
                       const SizedBox(height: 28),
@@ -2828,6 +2945,10 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
                         style: _errorAdviceStyle,
                       ),
                     ],
+                    // Changing a renderer can fix some core failures, but
+                    // cannot make unsupported content run. Offer an explicit
+                    // session fallback whether the settings probe succeeded,
+                    // is still pending, or never ran because a core is missing.
                     if (emulatorJsAvailable) ...[
                       const SizedBox(height: 20),
                       OutlinedButton.icon(
