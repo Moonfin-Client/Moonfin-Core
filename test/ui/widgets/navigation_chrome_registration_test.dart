@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:moonfin/auth/models/user.dart';
 import 'package:moonfin/auth/repositories/session_repository.dart';
@@ -14,6 +15,7 @@ import 'package:moonfin/data/services/plugin_sync_service.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/preference/seerr_preferences.dart';
 import 'package:moonfin/preference/user_preferences.dart';
+import 'package:moonfin/ui/navigation/route_lifecycle_observer.dart';
 import 'package:moonfin/ui/widgets/left_sidebar.dart';
 import 'package:moonfin/ui/widgets/navigation_layout.dart';
 import 'package:moonfin/ui/widgets/top_toolbar.dart';
@@ -121,6 +123,97 @@ Color? _backgroundOf(WidgetTester tester, Finder within) {
 Finder _focusLabelled(String label) => find.byWidgetPredicate(
   (widget) => widget is Focus && widget.focusNode?.debugLabel == label,
 );
+
+bool _railHasFocus() =>
+    NavigationLayout.chromeFocusRoots.any((root) => root.hasFocus);
+
+/// Home screen with the rail, plus a Search screen it can push.
+class _RailHost {
+  _RailHost._(this.router, this.content);
+
+  final GoRouter router;
+  final FocusNode content;
+
+  /// Mounts the host with the rail open on Home.
+  static Future<_RailHost> pump(
+    WidgetTester tester, {
+    bool searchHasRail = false,
+    bool instantFocusedSearch = false,
+  }) async {
+    final content = FocusNode(debugLabel: 'Content');
+    addTearDown(content.dispose);
+    final router = GoRouter(
+      initialLocation: '/home',
+      observers: [routeLifecycleObserver],
+      routes: [
+        GoRoute(
+          path: '/home',
+          builder: (_, _) => Scaffold(
+            body: Row(
+              children: [
+                SizedBox(
+                  width: 280,
+                  child: LeftSidebar(
+                    activeRoute: '/home',
+                    contentFocusNode: content,
+                  ),
+                ),
+                Expanded(
+                  child: Focus(focusNode: content, child: const SizedBox()),
+                ),
+              ],
+            ),
+          ),
+        ),
+        GoRoute(
+          path: '/search',
+          // go_router uses builder when pageBuilder is null.
+          pageBuilder: instantFocusedSearch
+              ? (_, state) => CustomTransitionPage<void>(
+                  key: state.pageKey,
+                  transitionDuration: Duration.zero,
+                  reverseTransitionDuration: Duration.zero,
+                  transitionsBuilder: (_, _, _, child) => child,
+                  child: const Scaffold(
+                    body: Focus(autofocus: true, child: SizedBox()),
+                  ),
+                )
+              : null,
+          builder: (_, _) => Scaffold(
+            body: searchHasRail
+                ? const SizedBox(
+                    width: 280,
+                    child: LeftSidebar(activeRoute: '/search'),
+                  )
+                : null,
+          ),
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
+    await tester.pumpWidget(
+      MaterialApp.router(
+        routerConfig: router,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+      ),
+    );
+    // The rail ignores focus for a moment after it mounts.
+    await tester.pump(const Duration(milliseconds: 700));
+    NavigationLayout.focusNavbarNotifier.value!();
+    await tester.pumpAndSettle();
+    return _RailHost._(router, content);
+  }
+
+  /// Opens Search from the rail.
+  Future<void> openSearchFromRail(WidgetTester tester) async {
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+    await tester.pumpAndSettle();
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pumpAndSettle();
+    expect(router.state.uri.path, '/search');
+  }
+}
 
 void main() {
   setUp(() async {
@@ -271,6 +364,106 @@ void main() {
         Colors.transparent,
       );
       await mouse.removePointer();
+    }, variant: linux);
+
+    testWidgets('the first Left press opens the rail after backing out of a '
+        'pushed screen that left focus on the content', (tester) async {
+      final rail = await _RailHost.pump(tester);
+      await rail.openSearchFromRail(tester);
+
+      // Back restores focus to the content, not the rail.
+      rail.content.requestFocus();
+      rail.router.pop();
+      await tester.pumpAndSettle();
+      expect(rail.content.hasFocus, isTrue);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
+      await tester.pumpAndSettle();
+      expect(_railHasFocus(), isTrue);
+    }, variant: linux);
+
+    testWidgets('Left right after Back opens the rail', (tester) async {
+      final rail = await _RailHost.pump(tester);
+      await rail.openSearchFromRail(tester);
+
+      rail.content.requestFocus();
+      rail.router.pop();
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
+      await tester.pumpAndSettle();
+      expect(_railHasFocus(), isTrue);
+      expect(find.text('Search'), findsOneWidget);
+    }, variant: linux);
+
+    testWidgets('Back onto the rail item hands focus to the content instead '
+        'of opening the rail', (tester) async {
+      final rail = await _RailHost.pump(tester);
+      await rail.openSearchFromRail(tester);
+
+      rail.router.pop();
+      await tester.pumpAndSettle();
+      expect(rail.content.hasFocus, isTrue);
+      expect(find.text('Search'), findsNothing);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
+      await tester.pumpAndSettle();
+      expect(_railHasFocus(), isTrue);
+    }, variant: linux);
+
+    testWidgets('the navbar handoff opens the rail after Back', (
+      tester,
+    ) async {
+      final rail = await _RailHost.pump(tester);
+      await rail.openSearchFromRail(tester);
+
+      rail.content.requestFocus();
+      rail.router.pop();
+      await tester.pumpAndSettle();
+
+      NavigationLayout.focusNavbarNotifier.value!();
+      await tester.pumpAndSettle();
+      expect(_focusedLabel(), 'LeftSidebarHome');
+      expect(_railHasFocus(), isTrue);
+    }, variant: linux);
+
+    testWidgets('Back from a screen the rail did not open still opens the '
+        'rail when focus returns to it', (tester) async {
+      final rail = await _RailHost.pump(tester);
+      rail.router.push('/search');
+      await tester.pumpAndSettle();
+
+      rail.router.pop();
+      await tester.pumpAndSettle();
+      expect(_focusedLabel(), 'LeftSidebarHome');
+      expect(find.text('Search'), findsOneWidget);
+    }, variant: linux);
+
+    testWidgets('Home in a pushed screen\'s rail lands on the content with '
+        'the home rail closed', (tester) async {
+      final rail = await _RailHost.pump(tester, searchHasRail: true);
+      await rail.openSearchFromRail(tester);
+
+      NavigationLayout.focusNavbarNotifier.value!();
+      await tester.pumpAndSettle();
+      expect(_focusedLabel(), 'LeftSidebarHome');
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+
+      expect(rail.router.state.uri.path, '/home');
+      expect(rail.content.hasFocus, isTrue);
+      expect(find.text('Search'), findsNothing);
+    }, variant: linux);
+
+    testWidgets('Back with no transition skips the closed screen\'s focus', (
+      tester,
+    ) async {
+      final rail = await _RailHost.pump(tester, instantFocusedSearch: true);
+      await rail.openSearchFromRail(tester);
+
+      rail.router.pop();
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      expect(rail.content.hasFocus, isTrue);
     }, variant: linux);
   });
 }

@@ -107,7 +107,10 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
   bool _showLabels = false;
   bool _librariesExpanded = false;
   bool _canExpandViaFocus = false;
-  bool _skipExpandOnNextFocusFromNavigation = false;
+  // Set when a rail item opens a screen.
+  bool _openedRouteFromRail = false;
+  // Armed on Back; the next focus change uses or clears it.
+  bool _awaitingPopFocusRestore = false;
   // Tracked per instance instead of reading the shared isFocusedNotifier,
   // where a stale value from another route's sidebar would break focus-gain
   // detection and leave focus stuck in a collapsed rail.
@@ -205,6 +208,8 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
     // that it targets this live one.
     NavigationLayout.focusNavbarNotifier.value = _focusNavbarCallback;
     NavigationLayout.focusNavbarAvatarNotifier.value = _focusAvatarCallback;
+    _awaitingPopFocusRestore = _openedRouteFromRail;
+    _openedRouteFromRail = false;
   }
 
   @override
@@ -406,8 +411,8 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
   void _onSidebarFocusNodeChanged() {
     final hasFocus = _sidebarFocus.hasFocus;
     if (hasFocus && !_sidebarHadFocus) {
-      if (_skipExpandOnNextFocusFromNavigation) {
-        _skipExpandOnNextFocusFromNavigation = false;
+      if (_awaitingPopFocusRestore) {
+        _awaitingPopFocusRestore = false;
         _focusHomeTimer?.cancel();
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (!mounted) return;
@@ -439,7 +444,7 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
 
   void _markNavigationAwayFromSidebar() {
     if (PlatformDetection.isTV || (PlatformDetection.isDesktop || (PlatformDetection.isWeb && !PlatformDetection.useMobileUi))) {
-      _skipExpandOnNextFocusFromNavigation = true;
+      _openedRouteFromRail = true;
     }
   }
 
@@ -530,6 +535,8 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
   }
 
   void _trackPreviousFocus() {
+    // Runs after the rail's listener, so a restore into it is already handled.
+    _awaitingPopFocusRestore = false;
     final primary = FocusManager.instance.primaryFocus;
     if (primary == null || _sidebarFocus.hasFocus) return;
     _previousFocus = primary;
@@ -560,7 +567,7 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
       return false;
     }
     final context = node.context;
-    if (context == null) {
+    if (context == null || !context.mounted) {
       return false;
     }
     final renderObject = context.findRenderObject();
@@ -893,7 +900,6 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
           _onNavigate();
           await showServerMessagesDialog(context);
           if (!mounted) return;
-          _markNavigationAwayFromSidebar();
           _serverMessagesFocusNode.requestFocus();
         },
       ),
@@ -918,7 +924,6 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
           _onNavigate();
           await FriendsNavSlot.open(context);
           if (!mounted) return;
-          _markNavigationAwayFromSidebar();
           _friendsFocusNode.requestFocus();
         },
       ),
@@ -1234,7 +1239,6 @@ class _LeftSidebarState extends State<LeftSidebar> with RouteAware {
                       const SettingsSidePanel(),
                     );
                     if (!mounted) return;
-                    _markNavigationAwayFromSidebar();
                     _settingsFocusNode.requestFocus();
                   },
                 ),
