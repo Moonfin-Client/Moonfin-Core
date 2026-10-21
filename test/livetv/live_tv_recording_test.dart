@@ -1,11 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
+import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:moonfin/data/models/live_tv_recording_state.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
+import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/widgets/live_tv/live_tv_recording_dialog.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  setUp(() async {
+    await GetIt.instance.reset();
+    SharedPreferences.setMockInitialValues(const {});
+    final store = PreferenceStore();
+    await store.init();
+    GetIt.instance.registerSingleton<UserPreferences>(UserPreferences(store));
+  });
+
+  tearDown(() => GetIt.instance.reset());
+
   group('current program recording state', () {
     const program = {'Id': 'program-1', 'TimerId': 'timer-1'};
 
@@ -292,6 +306,60 @@ void main() {
       await tester.pumpAndSettle();
       expect(result, LiveTvRecordingAction.recordSeries);
       expect(opener.hasFocus, isTrue);
+    });
+
+    testWidgets('a series rule that skips this showing says so', (
+      tester,
+    ) async {
+      await open(
+        tester,
+        recording: const LiveTvRecordingState(seriesTimerId: 'series-1'),
+      );
+      expect(
+        find.text('The series recording will skip this showing'),
+        findsOneWidget,
+      );
+      expect(find.text('Series Settings'), findsOneWidget);
+    });
+
+    testWidgets('a showing the series rule will record has no skip note', (
+      tester,
+    ) async {
+      await open(
+        tester,
+        recording: const LiveTvRecordingState(
+          timerId: 'timer-1',
+          seriesTimerId: 'series-1',
+        ),
+      );
+      expect(
+        find.text('The series recording will skip this showing'),
+        findsNothing,
+      );
+      expect(find.text('Series Settings'), findsOneWidget);
+    });
+
+    testWidgets('Series Settings is offered only with a series rule', (
+      tester,
+    ) async {
+      await open(tester);
+      expect(find.text('Series Settings'), findsNothing);
+      expect(
+        find.text('The series recording will skip this showing'),
+        findsNothing,
+      );
+    });
+
+    testWidgets('choosing Series Settings returns the change action', (
+      tester,
+    ) async {
+      await open(
+        tester,
+        recording: const LiveTvRecordingState(seriesTimerId: 'series-1'),
+      );
+      await tester.tap(find.text('Series Settings'));
+      await tester.pumpAndSettle();
+      expect(result, LiveTvRecordingAction.changeSeries);
     });
 
     testWidgets('a non-series program offers only current-program recording', (

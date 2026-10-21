@@ -44,6 +44,7 @@ Map<String, dynamic> _programRaw({
   required DateTime end,
   bool isSeries = false,
   bool hasTimer = false,
+  bool hasSeriesTimer = false,
 }) => <String, dynamic>{
   'Id': '$channelId-p',
   'ChannelId': channelId,
@@ -52,6 +53,7 @@ Map<String, dynamic> _programRaw({
   'EndDate': end.toIso8601String(),
   'IsSeries': isSeries,
   if (hasTimer) 'TimerId': '$channelId-t',
+  if (hasSeriesTimer) 'SeriesTimerId': '$channelId-s',
 };
 
 /// Every focus node in the guide carries a debug label, the only handle a
@@ -284,6 +286,71 @@ void main() {
     final l10n = AppLocalizations.of(tester.element(_alertDialog));
     expect(_primaryFocusHasText(l10n.cancelRecordingAction), isTrue);
     expect(_primaryFocusHasText(l10n.watch), isFalse);
+  });
+
+  testWidgets('a series rule that skips this showing says so and offers '
+      'Series Settings', (tester) async {
+    channels = [_channelRaw('cF', 'Channel F')];
+    programs = [
+      _programRaw(
+        channelId: 'cF',
+        start: _windowStart.subtract(const Duration(minutes: 30)),
+        end: _windowStart.add(const Duration(hours: 13)),
+        isSeries: true,
+        hasSeriesTimer: true,
+      ),
+    ];
+
+    await pumpGuide(tester);
+    await openDialogOnRow0(tester);
+
+    final l10n = AppLocalizations.of(tester.element(_alertDialog));
+    expect(find.text(l10n.seriesRecordingSkipsShowing), findsOneWidget);
+    expect(find.text(l10n.seriesRecordingSettings), findsOneWidget);
+    expect(find.text(l10n.cancelSeriesRecording), findsOneWidget);
+  });
+
+  testWidgets('a showing the series rule will record offers Series Settings '
+      'without the skip note', (tester) async {
+    channels = [_channelRaw('cG', 'Channel G')];
+    programs = [
+      _programRaw(
+        channelId: 'cG',
+        start: _windowStart.subtract(const Duration(minutes: 30)),
+        end: _windowStart.add(const Duration(hours: 13)),
+        isSeries: true,
+        hasTimer: true,
+        hasSeriesTimer: true,
+      ),
+    ];
+
+    await pumpGuide(tester);
+    await openDialogOnRow0(tester);
+
+    final l10n = AppLocalizations.of(tester.element(_alertDialog));
+    expect(find.text(l10n.seriesRecordingSkipsShowing), findsNothing);
+    expect(find.text(l10n.seriesRecordingSettings), findsOneWidget);
+  });
+
+  testWidgets('a series without a recording rule offers no Series Settings '
+      'and no skip note', (tester) async {
+    channels = [_channelRaw('cH', 'Channel H')];
+    programs = [
+      _programRaw(
+        channelId: 'cH',
+        start: _windowStart.subtract(const Duration(minutes: 30)),
+        end: _windowStart.add(const Duration(hours: 13)),
+        isSeries: true,
+      ),
+    ];
+
+    await pumpGuide(tester);
+    await openDialogOnRow0(tester);
+
+    final l10n = AppLocalizations.of(tester.element(_alertDialog));
+    expect(find.text(l10n.recordSeries), findsOneWidget);
+    expect(find.text(l10n.seriesRecordingSettings), findsNothing);
+    expect(find.text(l10n.seriesRecordingSkipsShowing), findsNothing);
   });
 
   testWidgets('arrow keys move between sort options instead of committing one '

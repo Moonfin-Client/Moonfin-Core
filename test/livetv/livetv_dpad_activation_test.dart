@@ -189,8 +189,10 @@ void main() {
       await focusCardShowing(tester, _seriesTimerName);
       await pressKey(tester, LogicalKeyboardKey.enter);
 
-      expect(find.text((await l10n()).cancelSeriesRecordingQuestion),
-          findsOneWidget);
+      expect(find.text((await l10n()).seriesRecordingSettings),
+          findsOneWidget,
+          reason: 'Enter should open the series recording options');
+      expect(find.text((await l10n()).cancelSeriesRecording), findsOneWidget);
     });
 
     testWidgets('the recordings header fits a phone screen', (tester) async {
