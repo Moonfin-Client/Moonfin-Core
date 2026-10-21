@@ -15,6 +15,7 @@ import 'anime_marker_badge.dart';
 import 'bounded_network_image.dart';
 import 'focus/glass_focus_halo.dart';
 import 'marquee_text.dart';
+import 'live_tv/incomplete_recording.dart';
 import 'media_badge.dart';
 import 'seerr/seerr_status_dot.dart';
 import '../mixins/focus_state_mixin.dart';
@@ -125,6 +126,10 @@ class MediaCard extends StatefulWidget {
   /// movies, which have no series to inherit a verdict from.
   final String? animeMarkerItemId;
 
+  /// The item behind the Incomplete badge, for cards that can show a Live TV
+  /// recording. The badge draws nothing unless the item is incomplete.
+  final String? recordingItemId;
+
   /// Extra widgets layered over the poster image (inside its clip), e.g.
   /// format badges. Position each with [Positioned].
   final List<Widget> imageOverlays;
@@ -172,6 +177,7 @@ class MediaCard extends StatefulWidget {
     this.isGenreFallback = false,
     this.isBanner = false,
     this.animeMarkerItemId,
+    this.recordingItemId,
   });
 
   /// The genre name grows with the card, so it reads well both on a poster
@@ -422,6 +428,7 @@ class _MediaCardState extends State<MediaCard> with FocusStateMixin {
                       imageOverlays: widget.imageOverlays,
                       overlayOccupiesTopLeft: widget.overlayOccupiesTopLeft,
                       animeMarkerItemId: widget.animeMarkerItemId,
+                      recordingItemId: widget.recordingItemId,
                       isGenreFallback: widget.isGenreFallback,
                     ),
                   ),
@@ -677,6 +684,7 @@ class _CardImage extends StatelessWidget {
   final bool overlayOccupiesTopLeft;
   final bool isGenreFallback;
   final String? animeMarkerItemId;
+  final String? recordingItemId;
 
   const _CardImage({
     this.imageUrl,
@@ -700,6 +708,7 @@ class _CardImage extends StatelessWidget {
     this.overlayOccupiesTopLeft = false,
     this.isGenreFallback = false,
     this.animeMarkerItemId,
+    this.recordingItemId,
   });
 
   /// How far the focus ring sits outside the artwork. The ring is 3px thick
@@ -828,7 +837,8 @@ class _CardImage extends StatelessWidget {
                 ),
                 if (isFavorite ||
                     _showSeerrMediaTypeBadge ||
-                    animeMarkerItemId != null)
+                    animeMarkerItemId != null ||
+                    recordingItemId != null)
                   Positioned(
                     top: overlayOccupiesTopLeft ? 32 : 6,
                     left: 6,
@@ -848,6 +858,14 @@ class _CardImage extends StatelessWidget {
                           AnimeItemAudioBadge(
                             itemId: animeMarkerItemId!,
                             scale: 0.85,
+                            padding: isFavorite || recordingItemId != null
+                                ? const EdgeInsets.only(bottom: 4)
+                                : EdgeInsets.zero,
+                          ),
+                        // Takes no space until the item turns out incomplete.
+                        if (recordingItemId != null)
+                          IncompleteRecordingBadge(
+                            itemId: recordingItemId,
                             padding: isFavorite
                                 ? const EdgeInsets.only(bottom: 4)
                                 : EdgeInsets.zero,

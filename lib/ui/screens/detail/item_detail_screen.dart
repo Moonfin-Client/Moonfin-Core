@@ -35,6 +35,7 @@ import '../../../data/services/book_reader_service.dart';
 import '../../../data/services/theme_music_service.dart';
 import '../../../data/viewmodels/item_detail_view_model.dart';
 import '../../../data/viewmodels/seerr_media_detail_view_model.dart';
+import '../../../data/services/incomplete_recordings_service.dart';
 import '../../../data/services/plugin_sync_service.dart';
 import '../../navigation/route_lifecycle_observer.dart';
 import '../../navigation/home_refresh_bus.dart';
@@ -105,6 +106,7 @@ import '../../widgets/seerr_icons.dart';
 import '../../widgets/focus/can_claim_initial_focus.dart';
 import '../../widgets/focus/context_action.dart';
 import '../../widgets/focus/context_menu_sheet.dart';
+import '../../widgets/live_tv/incomplete_recording.dart';
 import '../../widgets/focus/dpad_list_tile.dart';
 import '../../widgets/focus/focusable_button.dart';
 import '../../widgets/focus/menu_action_row.dart';
@@ -345,6 +347,9 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
     _sectionVisibility = DetailSectionVisibility.of(_prefs);
     _prefs.addListener(_onPrefsChanged);
     GetIt.instance<PluginSyncService>().addListener(_onPrefsChanged);
+    if (GetIt.instance.isRegistered<IncompleteRecordingsService>()) {
+      GetIt.instance<IncompleteRecordingsService>().addListener(_onPrefsChanged);
+    }
     _viewModel.load();
 
     _backdropUrl.value = _backgroundService.currentUrl;
@@ -453,6 +458,11 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
     _prefs.removeListener(_onPrefsChanged);
     try {
       GetIt.instance<PluginSyncService>().removeListener(_onPrefsChanged);
+      if (GetIt.instance.isRegistered<IncompleteRecordingsService>()) {
+        GetIt.instance<IncompleteRecordingsService>().removeListener(
+          _onPrefsChanged,
+        );
+      }
     } catch (_) {}
     _viewModel.dispose();
     _initialContentFocusNode?.dispose();
@@ -3967,6 +3977,10 @@ class _HeaderSection extends StatelessWidget {
           upcomingEpisode: viewModel.upcomingEpisode,
           seerrStatus: seerrStatus,
         ),
+        IncompleteRecordingDetailLine(
+          itemId: item.id,
+          textAlign: isMobile ? TextAlign.center : null,
+        ),
         if (viewModel.ratings.isNotEmpty ||
             item.communityRating != null ||
             item.criticRating != null ||
@@ -7187,6 +7201,14 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           icon: Icons.rule,
           onPressed: () =>
               showSeerrManageRequestsSheet(context: context, vm: seerr),
+        ),
+      if (canManageLiveTv() &&
+          incompleteRecordingFor(item.id) != null &&
+          shows(DetailButton.keepAsComplete))
+        DetailButton.keepAsComplete: _DetailActionButton(
+          label: l10n.keepAsComplete,
+          icon: DetailButton.keepAsComplete.icon,
+          onPressed: () => keepRecordingAsComplete(context, item.id),
         ),
       if (_adminActionsFor(item).isNotEmpty && shows(DetailButton.admin))
         DetailButton.admin: _DetailActionButton(
@@ -14715,6 +14737,11 @@ class _EpisodeListCardState extends State<_EpisodeListCard>
                             scale: 0.9,
                             padding: const EdgeInsets.only(left: 6),
                           ),
+                          IncompleteRecordingBadge(
+                            itemId: widget.episode.id,
+                            height: 18,
+                            padding: const EdgeInsets.only(left: 6),
+                          ),
                         ],
                       ),
                     ),
@@ -15239,6 +15266,11 @@ class DetailEpisodeCardState extends State<DetailEpisodeCard>
                                         ),
                                     maxLines: 1,
                                   ),
+                                ),
+                                IncompleteRecordingBadge(
+                                  itemId: episode.id,
+                                  height: 18,
+                                  padding: const EdgeInsets.only(top: 4),
                                 ),
                               ],
                               AnimeMarkerBadge(

@@ -386,16 +386,20 @@ class SessionRepository {
           serverUser.policy?.canFetchRemoteSubtitles ?? false;
       final canManageCollections =
           serverUser.policy?.enableCollectionManagement ?? false;
+      final canManageLiveTv =
+          serverUser.policy?.enableLiveTvManagement ?? false;
 
       if (isAdmin != user.isAdministrator ||
           canDownload != user.canDownload ||
           canManageSubtitles != user.canManageSubtitles ||
-          canManageCollections != user.canManageCollections) {
+          canManageCollections != user.canManageCollections ||
+          canManageLiveTv != user.canManageLiveTv) {
         final updatedUser = user.copyWith(
           isAdministrator: isAdmin,
           canDownload: canDownload,
           canManageSubtitles: canManageSubtitles,
           canManageCollections: canManageCollections,
+          canManageLiveTv: canManageLiveTv,
         );
         await _authStore.putUser(updatedUser);
         _userRepository.setCurrentUser(updatedUser);

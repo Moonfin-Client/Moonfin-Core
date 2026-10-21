@@ -38,6 +38,7 @@ import '../../../../util/focus/focus_scroll.dart';
 import '../../../navigation/destinations.dart';
 import '../../../navigation/playback_launcher.dart';
 import '../../../widgets/horizontal_scroll_section.dart';
+import '../../../widgets/live_tv/incomplete_recording.dart';
 import '../../../widgets/logo_view.dart';
 import '../../../widgets/marquee_text.dart';
 import '../../../widgets/media_card.dart';
@@ -4673,6 +4674,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           ],
           const SizedBox(height: 6),
           _metadataRow(context, item, selectedSource),
+          IncompleteRecordingDetailLine(itemId: item.id),
           if (techRow != null) ...[
             const SizedBox(height: 6),
             techRow,
@@ -5503,6 +5505,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                 const SizedBox(height: 6),
               ],
               _metadataRow(context, item, selectedSource),
+              IncompleteRecordingDetailLine(itemId: item.id),
               if (showRatings) ...[
                 const SizedBox(height: 6),
                 RatingsRow(

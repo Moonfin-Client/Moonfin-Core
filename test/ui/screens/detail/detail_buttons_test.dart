@@ -75,6 +75,7 @@ void main() {
         'seerrWatchlist',
         'seerrReportIssue',
         'seerrManage',
+        'keepAsComplete',
         'admin',
       ]);
     });

@@ -15,6 +15,7 @@ import '../../../util/focus/dpad_keys.dart';
 import '../../navigation/destinations.dart';
 import '../../widgets/adaptive/adaptive_dialog.dart';
 import '../../widgets/focus/request_initial_focus.dart';
+import '../../widgets/live_tv/incomplete_recording.dart';
 import '../../widgets/live_tv/series_recording_dialog.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/offline_aware_image.dart';
@@ -737,7 +738,19 @@ class _RecordingCardState extends State<_RecordingCard> with FocusStateMixin {
                             : null,
                       ),
                       clipBehavior: Clip.antiAlias,
-                      child: _buildImage(),
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          _buildImage(),
+                          Positioned(
+                            top: 6,
+                            left: 6,
+                            child: IncompleteRecordingBadge(
+                              itemId: widget.item.id,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 5),
                     Text(

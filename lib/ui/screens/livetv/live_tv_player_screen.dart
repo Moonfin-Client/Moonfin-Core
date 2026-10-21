@@ -37,6 +37,7 @@ import '../../widgets/aether_video_view.dart';
 import '../../widgets/playback/stream_info_dialog.dart';
 import '../../widgets/track_selector_dialog.dart';
 import '../../widgets/live_tv/channel_carousel_overlay.dart';
+import '../../widgets/live_tv/incomplete_recording.dart';
 import '../../widgets/live_tv/live_tv_recording_dialog.dart';
 import '../../widgets/live_tv/live_tv_recording_icon.dart';
 import '../../widgets/live_tv/series_recording_dialog.dart';
@@ -1087,8 +1088,18 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
       try {
         switch (action) {
           case LiveTvRecordingAction.recordProgram:
-            await _client.liveTvApi.createTimer(program.id);
-            message = l10n.programSetToRecord;
+            final outcome = await recordAiring(
+              context: context,
+              programId: program.id,
+              programName: program.name,
+              programStart: program.startDate,
+              rawProgram: program.rawData,
+              createTimer: () => _client.liveTvApi.createTimer(program.id),
+              stillValid: () =>
+                  mounted && !_isStopping && _currentProgram?.id == program.id,
+            );
+            if (outcome == RecordAiringOutcome.cancelled) return;
+            message = recordAiringMessage(l10n, outcome);
           case LiveTvRecordingAction.recordSeries:
             final episodes = await showSeriesRecordingEpisodesDialog(
               context: context,

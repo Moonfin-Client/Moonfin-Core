@@ -20,6 +20,7 @@ import '../../navigation/destinations.dart';
 import '../../widgets/adaptive/adaptive_dialog.dart';
 import '../../widgets/bounded_network_image.dart';
 import '../../widgets/horizontal_scroll_section.dart';
+import '../../widgets/live_tv/incomplete_recording.dart';
 import '../../widgets/live_tv/live_tv_mini_player.dart';
 import '../../widgets/live_tv/live_tv_recording_icon.dart';
 import '../../widgets/live_tv/series_recording_dialog.dart';
@@ -2604,18 +2605,31 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
                   if (dialogActionInProgress) return;
                   dialogActionInProgress = true;
                   try {
-                    await _vm.toggleProgramRecording(program);
+                    final String? message;
+                    if (hasTimer) {
+                      await _vm.toggleProgramRecording(program);
+                      message = l10n.recordingCancelled;
+                    } else {
+                      final outcome = await recordAiring(
+                        context: dialogContext,
+                        programId: program.id,
+                        programName: program.name,
+                        programStart: program.startDate,
+                        rawProgram: program.rawData,
+                        createTimer: () => _vm.toggleProgramRecording(program),
+                        stillValid: () => dialogContext.mounted,
+                      );
+                      message = recordAiringMessage(l10n, outcome);
+                    }
+                    if (message == null) {
+                      dialogActionInProgress = false;
+                      return;
+                    }
                     if (!pageContext.mounted || !dialogContext.mounted) return;
                     Navigator.of(dialogContext).pop();
-                    ScaffoldMessenger.of(pageContext).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          hasTimer
-                              ? l10n.recordingCancelled
-                              : l10n.programSetToRecord,
-                        ),
-                      ),
-                    );
+                    ScaffoldMessenger.of(
+                      pageContext,
+                    ).showSnackBar(SnackBar(content: Text(message)));
                   } catch (_) {
                     dialogActionInProgress = false;
                     if (!pageContext.mounted) return;

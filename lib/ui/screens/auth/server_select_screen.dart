@@ -252,6 +252,8 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
             false,
         canManageCollections:
           currentUser.policy?.enableCollectionManagement ?? false,
+        canManageLiveTv:
+          currentUser.policy?.enableLiveTvManagement ?? false,
       );
 
       await _authStore.putUser(user);

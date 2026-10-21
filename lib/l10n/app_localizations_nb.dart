@@ -15455,4 +15455,52 @@ class AppLocalizationsNb extends AppLocalizations {
 
   @override
   String get playerTransportDocked => 'Docked';
+
+  @override
+  String get incompleteRecording => 'Incomplete';
+
+  @override
+  String incompleteRecordingMinutes(int recorded, int expected) {
+    return '$recorded of $expected min';
+  }
+
+  @override
+  String completeShowingScheduled(String dateTime) {
+    return 'Complete showing scheduled $dateTime';
+  }
+
+  @override
+  String completeCopyRecorded(String dateTime) {
+    return 'Complete copy recorded $dateTime';
+  }
+
+  @override
+  String get noCompleteShowingFound => 'No complete showing found';
+
+  @override
+  String get keepAsComplete => 'Keep as Complete';
+
+  @override
+  String get keptAsComplete => 'Marked as complete';
+
+  @override
+  String get unableToKeepAsComplete => 'Unable to mark as complete';
+
+  @override
+  String get recordPromptAlreadyStarted =>
+      'This program has already started. Also record a later showing?';
+
+  @override
+  String get alsoRecordLaterShowing => 'Also Record a Later Showing';
+
+  @override
+  String get justRecordNow => 'Just Record Now';
+
+  @override
+  String get laterShowingRequested =>
+      'Recording started. A later showing will be recorded too.';
+
+  @override
+  String get unableToRequestLaterShowing =>
+      'Recording started; couldn\'t request a later showing.';
 }

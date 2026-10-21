@@ -27,6 +27,7 @@ import '../../../../util/platform_detection.dart';
 import '../../../navigation/destinations.dart';
 import '../../../navigation/playback_launcher.dart';
 import '../../../widgets/focus/can_claim_initial_focus.dart';
+import '../../../widgets/live_tv/incomplete_recording.dart';
 import '../../../widgets/logo_view.dart';
 import '../../../widgets/navigation_layout.dart';
 import '../../../widgets/offline_aware_image.dart';
@@ -1152,7 +1153,10 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
             showVersionBadge: visibility.shows(DetailSection.versionBadge),
           ),
         const SizedBox(height: 8),
-        if (!isPerson) _metadataRow(context, item, selectedSource),
+        if (!isPerson) ...[
+          _metadataRow(context, item, selectedSource),
+          IncompleteRecordingDetailLine(itemId: item.id),
+        ],
         if (techRow != null) ...[const SizedBox(height: 8), techRow],
         if (showRatings) ...[
           const SizedBox(height: 8),

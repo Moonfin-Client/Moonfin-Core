@@ -9,6 +9,7 @@ import '../../../../data/viewmodels/item_detail_view_model.dart';
 import '../../../../preference/detail_section_layout.dart';
 import '../../../../preference/user_preferences.dart';
 import '../../../widgets/fullscreen_backdrop_switcher.dart';
+import '../../../widgets/live_tv/incomplete_recording.dart';
 import '../../../widgets/logo_view.dart';
 import '../../../widgets/offline_aware_image.dart';
 import '../../../widgets/rating_display.dart';
@@ -246,9 +247,11 @@ class _MinimalistDetailContentState extends State<MinimalistDetailContent> {
     }
 
     if (!isEpisode) {
-      return KeyedSubtree(
+      return Column(
         key: const ValueKey('minimalist-branding'),
-        child: showMark,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [showMark, IncompleteRecordingDetailLine(itemId: item.id)],
       );
     }
 
@@ -269,6 +272,7 @@ class _MinimalistDetailContentState extends State<MinimalistDetailContent> {
             fontWeight: FontWeight.w600,
           ),
         ),
+        IncompleteRecordingDetailLine(itemId: item.id),
       ],
     );
   }

@@ -16,6 +16,7 @@ import '../../../../widgets/navigation_layout.dart';
 import '../../../../widgets/offline_aware_image.dart';
 import '../../../../widgets/rating_display.dart';
 import '../../../../widgets/seerr/seerr_item_status.dart';
+import '../../../../widgets/live_tv/incomplete_recording.dart';
 import '../../../../widgets/seerr/seerr_status_dot.dart';
 import '../../../../widgets/seerr/seerr_status_pill.dart';
 import '../../detail_layout_metrics.dart';
@@ -491,6 +492,9 @@ class NouveauHeroState extends State<NouveauHero> {
     );
   }
 
+  Widget _incompleteLine() =>
+      IncompleteRecordingDetailLine(itemId: widget.viewModel.item?.id ?? '');
+
   Widget _buildPhoneContent({
     required BuildContext context,
     required Widget branding,
@@ -558,6 +562,8 @@ class NouveauHeroState extends State<NouveauHero> {
             crossAxisAlignment: WrapCrossAlignment.center,
             children: metadata,
           ),
+
+        _incompleteLine(),
 
         if (ratingsRow != null) ...[
           const SizedBox(height: 12),
@@ -668,6 +674,7 @@ class NouveauHeroState extends State<NouveauHero> {
               children: metadata,
             ),
 
+          _incompleteLine(),
         ],
       ),
     );

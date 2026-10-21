@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../../data/services/incomplete_recordings_service.dart';
 import '../../../data/services/plugin_sync_service.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../preference/button_layout.dart';
@@ -37,6 +38,7 @@ enum DetailButton {
   seerrWatchlist('seerrWatchlist'),
   seerrReportIssue('seerrReportIssue'),
   seerrManage('seerrManage'),
+  keepAsComplete('keepAsComplete'),
   admin('admin');
 
   const DetailButton(this.id, {this.canHide = true});
@@ -76,6 +78,7 @@ enum DetailButton {
       DetailButton.seerrManage =>
         GetIt.instance<PluginSyncService>().seerrAvailable,
       DetailButton.watchWithGroup => _syncPlayAvailable,
+      DetailButton.keepAsComplete => _incompleteRecordingsSupported,
       _ => true,
     };
   }
@@ -106,6 +109,16 @@ enum DetailButton {
       return GetIt.instance<UserPreferences>().get(
         UserPreferences.kidsModeEnabled,
       );
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Only the Moonfin plugin's Jellyfin build can mark recordings incomplete.
+  static bool get _incompleteRecordingsSupported {
+    try {
+      return GetIt.instance.isRegistered<IncompleteRecordingsService>() &&
+          GetIt.instance<IncompleteRecordingsService>().supported;
     } catch (_) {
       return false;
     }
@@ -142,6 +155,7 @@ enum DetailButton {
     DetailButton.seerrWatchlist => Icons.bookmark_border,
     DetailButton.seerrReportIssue => Icons.report_problem_outlined,
     DetailButton.seerrManage => Icons.rule,
+    DetailButton.keepAsComplete => Icons.task_alt,
     DetailButton.admin => Icons.settings,
   };
 
@@ -166,6 +180,7 @@ enum DetailButton {
     DetailButton.seerrWatchlist => l10n.watchlist,
     DetailButton.seerrReportIssue => l10n.reportIssue,
     DetailButton.seerrManage => l10n.manageRequests,
+    DetailButton.keepAsComplete => l10n.keepAsComplete,
     DetailButton.admin => l10n.admin,
   };
 }

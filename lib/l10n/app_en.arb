@@ -14304,5 +14304,79 @@
   "playerTransportDocked": "Docked",
   "@playerTransportDocked": {
     "description": "Option that puts the play, skip and seek buttons in the bottom bar with the other player buttons"
+  },
+  "incompleteRecording": "Incomplete",
+  "@incompleteRecording": {
+    "description": "Badge and detail label for a Live TV recording that was written for less than its scheduled length"
+  },
+  "incompleteRecordingMinutes": "{recorded} of {expected} min",
+  "@incompleteRecordingMinutes": {
+    "description": "How many minutes of an incomplete Live TV recording were written, out of its scheduled length with padding",
+    "placeholders": {
+      "recorded": {
+        "type": "int",
+        "example": "23"
+      },
+      "expected": {
+        "type": "int",
+        "example": "37"
+      }
+    }
+  },
+  "completeShowingScheduled": "Complete showing scheduled {dateTime}",
+  "@completeShowingScheduled": {
+    "description": "Detail line status: a later complete showing of the incomplete episode will be recorded",
+    "placeholders": {
+      "dateTime": {
+        "type": "String",
+        "example": "Thu 8:00 PM"
+      }
+    }
+  },
+  "completeCopyRecorded": "Complete copy recorded {dateTime}",
+  "@completeCopyRecorded": {
+    "description": "Detail line status: a complete copy of the incomplete episode has since been recorded",
+    "placeholders": {
+      "dateTime": {
+        "type": "String",
+        "example": "Thu 8:00 PM"
+      }
+    }
+  },
+  "noCompleteShowingFound": "No complete showing found",
+  "@noCompleteShowingFound": {
+    "description": "Detail line status: no later complete showing of the incomplete episode was found in the guide"
+  },
+  "keepAsComplete": "Keep as Complete",
+  "@keepAsComplete": {
+    "description": "Action that clears the Incomplete mark on a Live TV recording for everyone on the server"
+  },
+  "keptAsComplete": "Marked as complete",
+  "@keptAsComplete": {
+    "description": "Snackbar confirmation after Keep as Complete"
+  },
+  "unableToKeepAsComplete": "Unable to mark as complete",
+  "@unableToKeepAsComplete": {
+    "description": "Snackbar shown when Keep as Complete fails"
+  },
+  "recordPromptAlreadyStarted": "This program has already started. Also record a later showing?",
+  "@recordPromptAlreadyStarted": {
+    "description": "Record prompt shown when recording a program that is already airing"
+  },
+  "alsoRecordLaterShowing": "Also Record a Later Showing",
+  "@alsoRecordLaterShowing": {
+    "description": "Record prompt choice: record now and also record a later showing of the same episode"
+  },
+  "justRecordNow": "Just Record Now",
+  "@justRecordNow": {
+    "description": "Record prompt choice: only record the program that is already airing"
+  },
+  "laterShowingRequested": "Recording started. A later showing will be recorded too.",
+  "@laterShowingRequested": {
+    "description": "Snackbar after recording now and asking for a later showing"
+  },
+  "unableToRequestLaterShowing": "Recording started; couldn't request a later showing.",
+  "@unableToRequestLaterShowing": {
+    "description": "Snackbar when the recording started but asking for a later showing failed"
   }
 }
