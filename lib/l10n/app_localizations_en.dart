@@ -7761,7 +7761,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String adminRemoveDeviceConfirm(String name) {
-    return 'Remove device \'$name\'? The user will need to sign in again on this device.';
+    return 'Remove device \"$name\"? The user will need to sign in again on this device.';
   }
 
   @override
@@ -13773,7 +13773,7 @@ class AppLocalizationsEn extends AppLocalizations {
     String libraryName,
     String failedPath,
   ) {
-    return 'Your \'$libraryName\' library is configured to save artwork directly into the media folders (\'Save artwork into media folders\' is enabled). However, Jellyfin has tested write access and does not have permission to write files into this directory:\n\n$failedPath';
+    return 'Your \"$libraryName\" library is configured to save artwork directly into the media folders (\'Save artwork into media folders\' is enabled). However, Jellyfin has tested write access and does not have permission to write files into this directory:\n\n$failedPath';
   }
 
   @override

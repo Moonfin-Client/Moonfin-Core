@@ -8495,7 +8495,7 @@
   "adminDeleteDevice": "Delete Device",
   "adminDeviceDeleted": "Device deleted",
   "adminDeviceDeleteFailed": "Failed to delete device: {error}",
-  "adminRemoveDeviceConfirm": "Remove device '{name}'? The user will need to sign in again on this device.",
+  "adminRemoveDeviceConfirm": "Remove device \"{name}\"? The user will need to sign in again on this device.",
   "@adminRemoveDeviceConfirm": {
     "placeholders": {
       "name": {
@@ -12459,7 +12459,7 @@
   "@dismiss": {
     "description": "Dismiss button text"
   },
-  "libraryWriteAccessProactiveBody": "Your '{libraryName}' library is configured to save artwork directly into the media folders ('Save artwork into media folders' is enabled). However, Jellyfin has tested write access and does not have permission to write files into this directory:\n\n{failedPath}",
+  "libraryWriteAccessProactiveBody": "Your \"{libraryName}\" library is configured to save artwork directly into the media folders ('Save artwork into media folders' is enabled). However, Jellyfin has tested write access and does not have permission to write files into this directory:\n\n{failedPath}",
   "@libraryWriteAccessProactiveBody": {
     "description": "Proactive warning message about server write access",
     "placeholders": {

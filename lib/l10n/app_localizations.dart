@@ -13789,7 +13789,7 @@ abstract class AppLocalizations {
   /// No description provided for @adminRemoveDeviceConfirm.
   ///
   /// In en, this message translates to:
-  /// **'Remove device \'{name}\'? The user will need to sign in again on this device.'**
+  /// **'Remove device \"{name}\"? The user will need to sign in again on this device.'**
   String adminRemoveDeviceConfirm(String name);
 
   /// No description provided for @adminDeleteAllDevices.
@@ -24301,7 +24301,7 @@ abstract class AppLocalizations {
   /// Proactive warning message about server write access
   ///
   /// In en, this message translates to:
-  /// **'Your \'{libraryName}\' library is configured to save artwork directly into the media folders (\'Save artwork into media folders\' is enabled). However, Jellyfin has tested write access and does not have permission to write files into this directory:\n\n{failedPath}'**
+  /// **'Your \"{libraryName}\" library is configured to save artwork directly into the media folders (\'Save artwork into media folders\' is enabled). However, Jellyfin has tested write access and does not have permission to write files into this directory:\n\n{failedPath}'**
   String libraryWriteAccessProactiveBody(String libraryName, String failedPath);
 
   /// Reactive error warning message when artwork update fails
