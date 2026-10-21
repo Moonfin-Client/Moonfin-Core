@@ -8,6 +8,7 @@ import 'package:server_core/server_core.dart';
 
 import '../../preference/preference_constants.dart';
 import '../../preference/user_preferences.dart';
+import '../models/series_recording_episodes.dart';
 
 class GuideChannel {
   final String id;
@@ -545,9 +546,17 @@ class LiveTvGuideViewModel extends ChangeNotifier {
     await _reloadPrograms();
   }
 
-  /// Records every showing of this program's series, or drops the rule if one
-  /// is already in place.
-  Future<void> toggleSeriesRecording(GuideProgram program) async {
+  LiveTvApi get liveTvApi => _client.liveTvApi;
+
+  /// Shows a series rule change made outside [toggleSeriesRecording].
+  Future<void> refreshPrograms() => _reloadPrograms();
+
+  /// Records the showings of this program's series that [episodes] picks, or
+  /// drops the rule if one is already in place.
+  Future<void> toggleSeriesRecording(
+    GuideProgram program, {
+    SeriesRecordingEpisodes? episodes,
+  }) async {
     if (program.hasSeriesTimer) {
       final seriesTimerId = program.rawData['SeriesTimerId']?.toString();
       if (seriesTimerId == null || seriesTimerId.isEmpty) {
@@ -557,7 +566,10 @@ class LiveTvGuideViewModel extends ChangeNotifier {
       }
       await _client.liveTvApi.cancelSeriesTimer(seriesTimerId);
     } else {
-      await _client.liveTvApi.createSeriesTimer(program.id);
+      await _client.liveTvApi.createSeriesTimer(
+        program.id,
+        settings: episodes?.settings,
+      );
     }
     await _reloadPrograms();
   }

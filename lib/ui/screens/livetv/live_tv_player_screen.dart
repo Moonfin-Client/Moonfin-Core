@@ -39,6 +39,7 @@ import '../../widgets/track_selector_dialog.dart';
 import '../../widgets/live_tv/channel_carousel_overlay.dart';
 import '../../widgets/live_tv/live_tv_recording_dialog.dart';
 import '../../widgets/live_tv/live_tv_recording_icon.dart';
+import '../../widgets/live_tv/series_recording_dialog.dart';
 import '../../widgets/emby_premiere_dialog.dart';
 import '../../util/error_message.dart';
 import 'channel_tune_observer.dart';
@@ -1089,8 +1090,29 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
             await _client.liveTvApi.createTimer(program.id);
             message = l10n.programSetToRecord;
           case LiveTvRecordingAction.recordSeries:
-            await _client.liveTvApi.createSeriesTimer(program.id);
+            final episodes = await showSeriesRecordingEpisodesDialog(
+              context: context,
+            );
+            if (episodes == null ||
+                !mounted ||
+                _isStopping ||
+                _currentProgram?.id != program.id ||
+                !_canRecordCurrentProgram) {
+              return;
+            }
+            await _client.liveTvApi.createSeriesTimer(
+              program.id,
+              settings: episodes.settings,
+            );
             message = l10n.seriesSetToRecord;
+          case LiveTvRecordingAction.changeSeries:
+            final changed = await changeSeriesRecordingEpisodes(
+              context: context,
+              liveTvApi: _client.liveTvApi,
+              seriesTimerId: recording.seriesTimerId!,
+            );
+            if (!changed) return;
+            message = l10n.seriesRecordingUpdated;
           case LiveTvRecordingAction.cancelProgram:
             await _client.liveTvApi.cancelTimer(recording.timerId!);
             message = l10n.recordingCancelled;
@@ -1107,6 +1129,8 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
           LiveTvRecordingAction.recordProgram => l10n.unableToCreateRecording,
           LiveTvRecordingAction.recordSeries =>
             l10n.unableToCreateSeriesRecording,
+          LiveTvRecordingAction.changeSeries =>
+            l10n.failedToUpdateSeriesRecording,
           LiveTvRecordingAction.cancelProgram => l10n.failedToCancelRecording,
           LiveTvRecordingAction.cancelSeries =>
             l10n.failedToCancelSeriesRecording,

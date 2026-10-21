@@ -244,6 +244,13 @@ class _TrackRowState extends State<_TrackRow> {
   void initState() {
     super.initState();
     _focusNode.addListener(() => setState(() => _isFocused = _focusNode.hasFocus));
+    if (widget.autofocus) {
+      // On TV a navigator observer focuses a new route's first focusable
+      // after autofocus resolves, so the selected row takes it back here.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _focusNode.requestFocus();
+      });
+    }
   }
 
   @override

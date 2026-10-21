@@ -4420,6 +4420,66 @@ abstract class AppLocalizations {
   /// **'The series recording will skip this showing'**
   String get seriesRecordingSkipsShowing;
 
+  /// Prompt in the dialog that chooses which episodes a series recording takes
+  ///
+  /// In en, this message translates to:
+  /// **'Which episodes should be recorded?'**
+  String get seriesRecordingEpisodesQuestion;
+
+  /// Series recording choice that records every showing, repeats included
+  ///
+  /// In en, this message translates to:
+  /// **'All Episodes'**
+  String get seriesRecordingAllEpisodes;
+
+  /// Explains the All Episodes series recording choice
+  ///
+  /// In en, this message translates to:
+  /// **'Every showing, including repeats'**
+  String get seriesRecordingAllEpisodesDescription;
+
+  /// Series recording choice that skips episodes already in the library
+  ///
+  /// In en, this message translates to:
+  /// **'Episodes Not Already Recorded'**
+  String get seriesRecordingNotRecordedEpisodes;
+
+  /// Explains the Episodes Not Already Recorded series recording choice
+  ///
+  /// In en, this message translates to:
+  /// **'Skips episodes already in your library and records each episode once'**
+  String get seriesRecordingNotRecordedEpisodesDescription;
+
+  /// Series recording choice that records only first airings
+  ///
+  /// In en, this message translates to:
+  /// **'New Episodes Only'**
+  String get seriesRecordingNewEpisodesOnly;
+
+  /// Explains the New Episodes Only series recording choice
+  ///
+  /// In en, this message translates to:
+  /// **'First airings only, no repeats'**
+  String get seriesRecordingNewEpisodesOnlyDescription;
+
+  /// Action that changes which episodes an existing series recording takes
+  ///
+  /// In en, this message translates to:
+  /// **'Series Settings'**
+  String get seriesRecordingSettings;
+
+  /// Confirmation after changing a series recording's settings
+  ///
+  /// In en, this message translates to:
+  /// **'Series recording updated'**
+  String get seriesRecordingUpdated;
+
+  /// Error after changing a series recording's settings failed
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to update series recording'**
+  String get failedToUpdateSeriesRecording;
+
   /// Live TV player action to record only the current episode
   ///
   /// In en, this message translates to:

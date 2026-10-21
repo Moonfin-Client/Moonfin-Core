@@ -3427,6 +3427,46 @@
   "@seriesRecordingSkipsShowing": {
     "description": "A series recording rule exists, but this showing won't record, for example because it is a repeat or the episode is already in the library"
   },
+  "seriesRecordingEpisodesQuestion": "Which episodes should be recorded?",
+  "@seriesRecordingEpisodesQuestion": {
+    "description": "Prompt in the dialog that chooses which episodes a series recording takes"
+  },
+  "seriesRecordingAllEpisodes": "All Episodes",
+  "@seriesRecordingAllEpisodes": {
+    "description": "Series recording choice that records every showing, repeats included"
+  },
+  "seriesRecordingAllEpisodesDescription": "Every showing, including repeats",
+  "@seriesRecordingAllEpisodesDescription": {
+    "description": "Explains the All Episodes series recording choice"
+  },
+  "seriesRecordingNotRecordedEpisodes": "Episodes Not Already Recorded",
+  "@seriesRecordingNotRecordedEpisodes": {
+    "description": "Series recording choice that skips episodes already in the library"
+  },
+  "seriesRecordingNotRecordedEpisodesDescription": "Skips episodes already in your library and records each episode once",
+  "@seriesRecordingNotRecordedEpisodesDescription": {
+    "description": "Explains the Episodes Not Already Recorded series recording choice"
+  },
+  "seriesRecordingNewEpisodesOnly": "New Episodes Only",
+  "@seriesRecordingNewEpisodesOnly": {
+    "description": "Series recording choice that records only first airings"
+  },
+  "seriesRecordingNewEpisodesOnlyDescription": "First airings only, no repeats",
+  "@seriesRecordingNewEpisodesOnlyDescription": {
+    "description": "Explains the New Episodes Only series recording choice"
+  },
+  "seriesRecordingSettings": "Series Settings",
+  "@seriesRecordingSettings": {
+    "description": "Action that changes which episodes an existing series recording takes"
+  },
+  "seriesRecordingUpdated": "Series recording updated",
+  "@seriesRecordingUpdated": {
+    "description": "Confirmation after changing a series recording's settings"
+  },
+  "failedToUpdateSeriesRecording": "Unable to update series recording",
+  "@failedToUpdateSeriesRecording": {
+    "description": "Error after changing a series recording's settings failed"
+  },
   "recordCurrentEpisode": "Record This Episode",
   "@recordCurrentEpisode": {
     "description": "Live TV player action to record only the current episode"

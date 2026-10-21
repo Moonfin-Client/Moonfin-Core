@@ -2560,6 +2560,42 @@ class AppLocalizationsFi extends AppLocalizations {
       'The series recording will skip this showing';
 
   @override
+  String get seriesRecordingEpisodesQuestion =>
+      'Which episodes should be recorded?';
+
+  @override
+  String get seriesRecordingAllEpisodes => 'All Episodes';
+
+  @override
+  String get seriesRecordingAllEpisodesDescription =>
+      'Every showing, including repeats';
+
+  @override
+  String get seriesRecordingNotRecordedEpisodes =>
+      'Episodes Not Already Recorded';
+
+  @override
+  String get seriesRecordingNotRecordedEpisodesDescription =>
+      'Skips episodes already in your library and records each episode once';
+
+  @override
+  String get seriesRecordingNewEpisodesOnly => 'New Episodes Only';
+
+  @override
+  String get seriesRecordingNewEpisodesOnlyDescription =>
+      'First airings only, no repeats';
+
+  @override
+  String get seriesRecordingSettings => 'Series Settings';
+
+  @override
+  String get seriesRecordingUpdated => 'Series recording updated';
+
+  @override
+  String get failedToUpdateSeriesRecording =>
+      'Unable to update series recording';
+
+  @override
   String get recordCurrentEpisode => 'Tallenna tämä jakso';
 
   @override

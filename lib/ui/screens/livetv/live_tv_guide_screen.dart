@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
 
+import '../../../data/models/series_recording_episodes.dart';
 import '../../../data/viewmodels/live_tv_guide_view_model.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../widgets/emby_premiere_dialog.dart';
@@ -21,6 +22,7 @@ import '../../widgets/bounded_network_image.dart';
 import '../../widgets/horizontal_scroll_section.dart';
 import '../../widgets/live_tv/live_tv_mini_player.dart';
 import '../../widgets/live_tv/live_tv_recording_icon.dart';
+import '../../widgets/live_tv/series_recording_dialog.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../../util/focus/dpad_keys.dart';
@@ -2631,13 +2633,62 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
                   hasTimer ? l10n.cancelRecordingAction : l10n.record,
                 ),
               ),
+            if (hasSeriesTimer)
+              adaptiveDialogAction(
+                onPressed: () async {
+                  if (dialogActionInProgress) return;
+                  final seriesTimerId = program.rawData['SeriesTimerId']
+                      ?.toString();
+                  if (seriesTimerId == null || seriesTimerId.isEmpty) return;
+                  dialogActionInProgress = true;
+                  try {
+                    final changed = await changeSeriesRecordingEpisodes(
+                      context: dialogContext,
+                      liveTvApi: _vm.liveTvApi,
+                      seriesTimerId: seriesTimerId,
+                    );
+                    if (!changed) {
+                      dialogActionInProgress = false;
+                      return;
+                    }
+                    await _vm.refreshPrograms();
+                    if (!pageContext.mounted || !dialogContext.mounted) return;
+                    Navigator.of(dialogContext).pop();
+                    ScaffoldMessenger.of(pageContext).showSnackBar(
+                      SnackBar(content: Text(l10n.seriesRecordingUpdated)),
+                    );
+                  } catch (_) {
+                    dialogActionInProgress = false;
+                    if (!pageContext.mounted) return;
+                    ScaffoldMessenger.of(pageContext).showSnackBar(
+                      SnackBar(
+                        content: Text(l10n.failedToUpdateSeriesRecording),
+                      ),
+                    );
+                  }
+                },
+                child: Text(l10n.seriesRecordingSettings),
+              ),
             if (program.isSeries)
               adaptiveDialogAction(
                 onPressed: () async {
                   if (dialogActionInProgress) return;
                   dialogActionInProgress = true;
                   try {
-                    await _vm.toggleSeriesRecording(program);
+                    SeriesRecordingEpisodes? episodes;
+                    if (!hasSeriesTimer) {
+                      episodes = await showSeriesRecordingEpisodesDialog(
+                        context: dialogContext,
+                      );
+                      if (episodes == null) {
+                        dialogActionInProgress = false;
+                        return;
+                      }
+                    }
+                    await _vm.toggleSeriesRecording(
+                      program,
+                      episodes: episodes,
+                    );
                     if (!pageContext.mounted || !dialogContext.mounted) return;
                     Navigator.of(dialogContext).pop();
                     ScaffoldMessenger.of(pageContext).showSnackBar(
