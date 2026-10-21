@@ -11,6 +11,69 @@ enum CarouselIndex {
     }
 }
 
+/// The recording mark for one airing, matching the Flutter guide. A one-off
+/// recording is a single dot. A series rule is three overlapping dots. Red when
+/// the airing will record, grey when the series rule skips it.
+final class RecordingMarkView: UIView {
+    static let recordColor = UIColor(red: 0.88, green: 0.41, blue: 0.36, alpha: 1)
+    static let skippedColor = UIColor(white: 0.62, alpha: 1)
+
+    /// Each series dot sits this share of a diameter right of the one before.
+    private static let seriesStep: CGFloat = 0.45
+
+    let diameter: CGFloat
+
+    /// The airing has a timer of its own, so it will record.
+    private(set) var hasTimer = false
+
+    /// The airing belongs to a series rule, whether or not it will record.
+    private(set) var hasSeriesTimer = false
+
+    var shows: Bool { hasTimer || hasSeriesTimer }
+
+    init(diameter: CGFloat) {
+        self.diameter = diameter
+        super.init(frame: .zero)
+        isOpaque = false
+        backgroundColor = .clear
+        contentMode = .redraw
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    func update(hasTimer: Bool, hasSeriesTimer: Bool) {
+        guard hasTimer != self.hasTimer || hasSeriesTimer != self.hasSeriesTimer else { return }
+        self.hasTimer = hasTimer
+        self.hasSeriesTimer = hasSeriesTimer
+        invalidateIntrinsicContentSize()
+        setNeedsDisplay()
+    }
+
+    override var intrinsicContentSize: CGSize {
+        let count: CGFloat = hasSeriesTimer ? 3 : 1
+        return CGSize(
+            width: diameter * (1 + (count - 1) * Self.seriesStep), height: diameter)
+    }
+
+    override func draw(_ rect: CGRect) {
+        let color = hasTimer ? Self.recordColor : Self.skippedColor
+        let y = (bounds.height - diameter) / 2
+        guard hasSeriesTimer else {
+            color.setFill()
+            UIBezierPath(ovalIn: CGRect(x: 0, y: y, width: diameter, height: diameter)).fill()
+            return
+        }
+        // Back to front, the rear dots dimmer so each edge stays visible.
+        for (index, alpha) in [CGFloat(0.5), 0.75, 1].enumerated() {
+            color.withAlphaComponent(alpha).setFill()
+            let x = CGFloat(index) * diameter * Self.seriesStep
+            UIBezierPath(ovalIn: CGRect(x: x, y: y, width: diameter, height: diameter)).fill()
+        }
+    }
+}
+
 /// One channel's already resolved presentation data. The strip does no
 /// fetching and no formatting: the host precomputes every field.
 struct ChannelCarouselEntry {
@@ -30,6 +93,7 @@ struct ChannelCarouselEntry {
     let isLive: Bool
     let progress: Double
     let hasTimer: Bool
+    let hasSeriesTimer: Bool
     let seasonEpisode: String
 
     /// No program yet because the channel's schedule is still unfetched, as
@@ -52,6 +116,7 @@ struct ChannelCarouselEntry {
         isLive = (entry["isLive"] as? Bool) ?? false
         progress = (entry["progress"] as? NSNumber)?.doubleValue ?? 0
         hasTimer = (entry["hasTimer"] as? Bool) ?? false
+        hasSeriesTimer = (entry["hasSeriesTimer"] as? Bool) ?? false
         programLoading = (entry["programLoading"] as? Bool) ?? false
         genreColor = ChannelCarouselEntry.color(
             forGenre: (entry["genre"] as? String) ?? "", accent: accent)
@@ -136,7 +201,7 @@ final class ChannelCarouselCardView: UIView {
     private let favoriteIcon = UIImageView()
     private let numberLabel = UILabel()
     private let nameLabel = UILabel()
-    private let timerDot = UIView()
+    private let timerDot = RecordingMarkView(diameter: 20)
     private let logoView = UIImageView()
     private let titleLabel = UILabel()
     private let metaLabel = UILabel()
@@ -184,8 +249,6 @@ final class ChannelCarouselCardView: UIView {
         nameLabel.font = .systemFont(ofSize: 32, weight: .semibold)
         body.addSubview(nameLabel)
 
-        timerDot.backgroundColor = UIColor(red: 0.88, green: 0.41, blue: 0.36, alpha: 1)
-        timerDot.layer.cornerRadius = 10
         body.addSubview(timerDot)
 
         logoView.contentMode = .scaleAspectFit
@@ -262,7 +325,8 @@ final class ChannelCarouselCardView: UIView {
         numberLabel.text = entry.channelNumber
         numberLabel.isHidden = entry.channelNumber.isEmpty
         nameLabel.text = entry.channelName
-        timerDot.isHidden = !entry.hasTimer
+        timerDot.update(hasTimer: entry.hasTimer, hasSeriesTimer: entry.hasSeriesTimer)
+        timerDot.isHidden = !timerDot.shows
 
         titleLabel.text = entry.programTitle
         titleLabel.isHidden = entry.programTitle.isEmpty
@@ -322,10 +386,11 @@ final class ChannelCarouselCardView: UIView {
             rightEdge -= Self.logoMaxWidth + 16
         }
         if !timerDot.isHidden {
+            let mark = timerDot.intrinsicContentSize
             timerDot.frame = CGRect(
-                x: rightEdge - 20, y: content.minY + (headerHeight - 20) / 2,
-                width: 20, height: 20)
-            rightEdge -= 20 + Self.statusGap
+                x: rightEdge - mark.width, y: content.minY + (headerHeight - mark.height) / 2,
+                width: mark.width, height: mark.height)
+            rightEdge -= mark.width + Self.statusGap
         }
         nameLabel.frame = CGRect(
             x: x, y: content.minY, width: max(0, rightEdge - x), height: headerHeight)
