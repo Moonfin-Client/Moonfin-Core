@@ -20,7 +20,6 @@ class SkipSegmentOverlay extends StatefulWidget {
   final VoidCallback onSkip;
   final VoidCallback onDismiss;
   final String? actionLabel;
-  final MediaSegmentCountdown? countdownStyle;
   final FocusNode? focusNode;
   final Stream<Duration>? positionStream;
 
@@ -46,7 +45,6 @@ class SkipSegmentOverlay extends StatefulWidget {
     required this.onSkip,
     required this.onDismiss,
     this.actionLabel,
-    this.countdownStyle,
     this.focusNode,
     this.positionStream,
     this.initialPosition,
@@ -116,8 +114,7 @@ class _SkipSegmentOverlayState extends State<SkipSegmentOverlay> {
     final l10n = AppLocalizations.of(context);
 
     final prefs = GetIt.instance<UserPreferences>();
-    final mediaSegmentCountdown =
-        widget.countdownStyle ?? prefs.get(UserPreferences.mediaSegmentCountdown);
+    final mediaSegmentCountdown = prefs.get(UserPreferences.mediaSegmentCountdown);
     final showProgressBar = mediaSegmentCountdown == MediaSegmentCountdown.progressBar ||
         mediaSegmentCountdown == MediaSegmentCountdown.both;
     final showTimer = mediaSegmentCountdown == MediaSegmentCountdown.timer ||

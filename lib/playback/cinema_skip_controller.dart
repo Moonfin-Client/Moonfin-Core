@@ -8,6 +8,9 @@ class CinemaSkipController extends ChangeNotifier {
   CinemaSkipController({required Future<void> Function() onSkip})
       : _onSkip = onSkip;
 
+  /// The button shows for this long, so only clips longer than that get one.
+  static const _showFor = Duration(seconds: 10);
+
   final Future<void> Function() _onSkip;
   Timer? _hideTimer;
   Timer? _skipCooldown;
@@ -17,8 +20,6 @@ class CinemaSkipController extends ChangeNotifier {
   int? _previousReadyToken;
   Duration _duration = Duration.zero;
   int _generation = 0;
-  int _minimumSeconds = 26;
-  int _autoHideSeconds = 10;
   bool _active = false;
   bool _enabled = false;
   bool _wanted = false;
@@ -28,27 +29,12 @@ class CinemaSkipController extends ChangeNotifier {
   int get generation => _generation;
   bool get enabled => _enabled;
   Duration get duration => _duration;
-  bool get eligible =>
-      _active &&
-      _enabled &&
-      (_minimumSeconds == 0 ||
-          duration >= Duration(seconds: _minimumSeconds));
+  bool get eligible => _active && _enabled && duration > _showFor;
   bool get visible => eligible && _wanted && !_skipping;
 
-  void configure({
-    required bool enabled,
-    required int minimumSeconds,
-    required int autoHideSeconds,
-  }) {
-    final minimum = minimumSeconds.clamp(0, 60);
-    if (_enabled == enabled &&
-        _minimumSeconds == minimum &&
-        _autoHideSeconds == autoHideSeconds) {
-      return;
-    }
+  void configure({required bool enabled}) {
+    if (_enabled == enabled) return;
     _enabled = enabled;
-    _minimumSeconds = minimum;
-    _autoHideSeconds = autoHideSeconds;
     _restartTimer();
     notifyListeners();
   }
@@ -175,8 +161,8 @@ class CinemaSkipController extends ChangeNotifier {
   void _restartTimer() {
     _hideTimer?.cancel();
     _hideTimer = null;
-    if (!visible || !_playing || _autoHideSeconds <= 0) return;
-    _hideTimer = Timer(Duration(seconds: _autoHideSeconds), hide);
+    if (!visible || !_playing) return;
+    _hideTimer = Timer(_showFor, hide);
   }
 
   @override

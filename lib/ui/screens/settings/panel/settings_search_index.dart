@@ -1657,24 +1657,6 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       subtitle: l10n.cinemaSkipPrerollsDescription,
       keywords: ['cinema mode trailer preroll pre-roll skip'],
     ),
-    automation.leaf(
-      'pref_cinema_mode_skip_min_duration_seconds',
-      l10n.cinemaMinimumIntroLength,
-      subtitle: l10n.cinemaMinimumIntroLengthDescription,
-      keywords: ['cinema trailer preroll minimum seconds duration'],
-    ),
-    automation.leaf(
-      'pref_cinema_mode_skip_auto_hide',
-      l10n.cinemaAutoHideButtons,
-      subtitle: l10n.cinemaAutoHideButtonsDescription,
-      keywords: ['cinema trailer preroll auto hide skip timeout'],
-    ),
-    automation.leaf(
-      'pref_cinema_mode_skip_countdown',
-      l10n.cinemaSkipCountdown,
-      subtitle: l10n.cinemaSkipCountdownDescription,
-      keywords: ['cinema trailer preroll skip countdown progress timer'],
-    ),
     for (final type in configurableMediaSegmentTypes)
       automation.leaf(
         'media_segment_actions_${type.name}',

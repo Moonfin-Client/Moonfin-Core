@@ -284,7 +284,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   bool _controlsVisible = true;
   Timer? _hideTimer;
-  bool _shortPrerollCursorVisible = false;
   bool _displayPlaying = false;
   Timer? _displayPlayingDebounce;
   Timer? _endsAtTicker;
@@ -517,8 +516,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   void _configureCinemaSkip() => _cinemaSkip.configure(
     enabled: _prefs.get(UserPreferences.cinemaModeSkipEnabled),
-    minimumSeconds: _prefs.get(UserPreferences.cinemaModeSkipMinDurationSeconds),
-    autoHideSeconds: _prefs.get(UserPreferences.cinemaModeSkipAutoHide).seconds,
   );
 
   void _syncCinemaSkip() {
@@ -539,6 +536,16 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     if (!mounted) return;
     setState(() {});
     if (_isCinemaSkipVisible) _focusTvSkipSegment();
+  }
+
+  // A dismissed button stays hidden on hover until the next clip, so moving
+  // the mouse off the X doesn't bring it straight back.
+  int? _cinemaSkipDismissedGeneration;
+
+  void _dismissCinemaSkip() {
+    _suppressBackNavigation(duration: const Duration(milliseconds: 500));
+    _cinemaSkipDismissedGeneration = _cinemaSkip.generation;
+    _cinemaSkip.hide();
   }
 
   bool _queueItemIsFavorite(dynamic item) {
@@ -594,7 +601,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   void _syncPrerollOsdState() {
     if (!_isCurrentPreroll) return;
-    if (!_shortPrerollCursorVisible) _hideTimer?.cancel();
+    _hideTimer?.cancel();
     if (!_controlsVisible && !_isOsdLocked) return;
     setState(() {
       _controlsVisible = false;
@@ -901,14 +908,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       _syncMedia3VolumeBoostLevel();
       unawaited(_syncAutoHdrSwitching());
       final isPreroll = _isCurrentPreroll;
-      final hadShortPrerollCursor = _shortPrerollCursorVisible;
       _syncCinemaSkip();
       _resetSkipSegmentAutoHide();
       setState(() {
         _nextUpDismissed = false;
         _showNextUp = false;
         _skipSegment = null;
-        _shortPrerollCursorVisible = false;
         // Stream indexes belong to the file they came from, so the next item
         // must not have a track from the last one put back on it.
         _subtitleIndexBeforeQuickOff = null;
@@ -917,7 +922,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
           _isOsdLocked = false;
         }
       });
-      if (isPreroll || hadShortPrerollCursor) {
+      if (isPreroll) {
         _hideTimer?.cancel();
       }
     });
@@ -3040,14 +3045,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _hideTimer = Timer(hideDelay, () {
       if (!mounted) return;
       final playing = _state.isPlaying;
-      if (!playing &&
-          !_hasPausedDescriptionCard &&
-          !_shortPrerollCursorVisible) {
-        return;
-      }
+      if (!playing && !_hasPausedDescriptionCard) return;
       setState(() {
         _controlsVisible = false;
-        _shortPrerollCursorVisible = false;
         if (playing &&
             PlatformDetection.isMobile &&
             _prefs.get(UserPreferences.osdLockEnabled)) {
@@ -3191,8 +3191,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   bool _dismissControlsOrOverlays() {
     if (_isCinemaSkipVisible) {
-      _suppressBackNavigation(duration: const Duration(milliseconds: 500));
-      _cinemaSkip.hide();
+      _dismissCinemaSkip();
       return true;
     }
     if (_showNextUp) {
@@ -3620,11 +3619,13 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
-    if (_routeCovered) return KeyEventResult.ignored;
     if (_isCurrentPreroll) {
+      if (_routeCovered && _cinemaSkip.enabled) return KeyEventResult.ignored;
       // A desktop keyboard uses the regular Escape and dismiss shortcuts.
       // Remote Back still hides Cinema Skip before leaving playback.
-      if (PlatformDetection.useDesktopUi && event is KeyDownEvent) {
+      if (_cinemaSkip.enabled &&
+          PlatformDetection.useDesktopUi &&
+          event is KeyDownEvent) {
         final desktopAction = _keyBindings.actionFor(
           event.logicalKey,
           shift: HardwareKeyboard.instance.isShiftPressed,
@@ -3656,8 +3657,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
         if (isBackKey) {
           if (_isCinemaSkipVisible) {
-            _suppressBackNavigation(duration: const Duration(milliseconds: 500));
-            _cinemaSkip.hide();
+            _dismissCinemaSkip();
           } else if (!_isBackNavigationSuppressed()) {
             _exitPlayback();
           }
@@ -4141,20 +4141,15 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
               child: MouseRegion(
                 cursor: PlatformDetection.useDesktopUi &&
                         !_controlsVisible &&
-                        !_isCinemaSkipVisible &&
-                        !_shortPrerollCursorVisible
+                        !_isCinemaSkipVisible
                     ? SystemMouseCursors.none
                     : SystemMouseCursors.basic,
                 onHover: (_) {
                   if (PlatformDetection.useDesktopUi) {
                     if (_isHoverControlsSuppressed()) return;
-                    if (_isCurrentPreroll) {
-                      if (_cinemaSkip.enabled && !_cinemaSkip.eligible) {
-                        if (!_shortPrerollCursorVisible) {
-                          setState(() => _shortPrerollCursorVisible = true);
-                        }
-                        _scheduleHide(delay: const Duration(seconds: 2));
-                      } else {
+                    if (_isCurrentPreroll && _cinemaSkip.eligible) {
+                      if (_cinemaSkipDismissedGeneration !=
+                          _cinemaSkip.generation) {
                         _cinemaSkip.reveal();
                       }
                     } else if (_controlsVisible) {
@@ -4273,10 +4268,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                             end: _cinemaSkip.duration,
                           ),
                           actionLabel: AppLocalizations.of(context).settingsSkip,
-                          countdownStyle: _prefs.get(UserPreferences.cinemaModeSkipCountdown),
                           focusNode: _tvSkipSegmentFocus,
                           onSkip: _cinemaSkip.skip,
-                          onDismiss: _cinemaSkip.hide,
+                          onDismiss: _dismissCinemaSkip,
                           positionStream: _state.positionStream,
                           initialPosition: _state.position,
                           rightInset: 24.0 +

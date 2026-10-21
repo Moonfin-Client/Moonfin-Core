@@ -1,7 +1,9 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:playback_core/playback_core.dart';
 import 'package:server_core/server_core.dart';
@@ -189,6 +191,89 @@ void main() {
       await tester.pump();
       expect(skip, findsOneWidget);
     }
+    await tester.pumpWidget(const SizedBox());
+  }, variant: TargetPlatformVariant.only(TargetPlatform.windows));
+
+  testWidgets('moving the mouse after the X keeps Cinema Skip hidden', (
+    tester,
+  ) async {
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      const MethodChannel('window_manager'),
+      (call) async {
+        if (call.method == 'isVisible') return true;
+        return call.method.startsWith('is') ? false : null;
+      },
+    );
+    addTearDown(() => tester.binding.defaultBinaryMessenger
+        .setMockMethodCallHandler(const MethodChannel('window_manager'), null));
+    await GetIt.instance<UserPreferences>()
+        .set(UserPreferences.cinemaModeSkipEnabled, true);
+    manager.queueService.setQueue([
+      {'Id': 'trailer', '__moonfinIsPreroll': true, 'RunTimeTicks': 900000000},
+    ]);
+    await mountPlayer(tester);
+    final skip = find.byType(SkipSegmentOverlay);
+
+    await tester.tap(find.byIcon(Icons.close_rounded));
+    await tester.pump();
+    expect(skip, findsNothing);
+
+    final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
+    await mouse.addPointer(location: const Offset(100, 300));
+    await tester.pump(const Duration(seconds: 2));
+    await mouse.moveTo(const Offset(300, 300));
+    await tester.pump();
+    expect(skip, findsNothing);
+    await mouse.removePointer();
+    await tester.pumpWidget(const SizedBox());
+  }, variant: TargetPlatformVariant.only(TargetPlatform.windows));
+
+  testWidgets('with Cinema Skip off, Escape in a pre-roll still exits', (
+    tester,
+  ) async {
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      const MethodChannel('window_manager'),
+      (call) async {
+        if (call.method == 'isFullScreen' || call.method == 'isVisible') {
+          return true;
+        }
+        return call.method.startsWith('is') ? false : null;
+      },
+    );
+    addTearDown(() => tester.binding.defaultBinaryMessenger
+        .setMockMethodCallHandler(const MethodChannel('window_manager'), null));
+    // Leaving playback resets the orientations, which waits on this channel.
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      SystemChannels.platform,
+      (_) async => null,
+    );
+    addTearDown(() => tester.binding.defaultBinaryMessenger
+        .setMockMethodCallHandler(SystemChannels.platform, null));
+    manager.queueService.setQueue([
+      {'Id': 'trailer', '__moonfinIsPreroll': true, 'RunTimeTicks': 900000000},
+    ]);
+    final router = GoRouter(
+      initialLocation: '/home',
+      routes: [
+        GoRoute(path: '/home', builder: (_, _) => const SizedBox()),
+        GoRoute(path: '/play', builder: (_, _) => const VideoPlayerScreen()),
+      ],
+    );
+    addTearDown(router.dispose);
+    await tester.pumpWidget(
+      MaterialApp.router(
+        routerConfig: router,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: const [Locale('en')],
+      ),
+    );
+    router.push('/play');
+    await tester.pumpAndSettle();
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    await tester.pumpAndSettle();
+    expect(manager.stopCalls, 1);
+    expect(find.byType(VideoPlayerScreen), findsNothing);
     await tester.pumpWidget(const SizedBox());
   }, variant: TargetPlatformVariant.only(TargetPlatform.windows));
 

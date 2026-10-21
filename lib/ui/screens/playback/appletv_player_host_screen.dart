@@ -86,8 +86,6 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     if (prefs == null) return;
     _cinemaSkip.configure(
       enabled: prefs.get(UserPreferences.cinemaModeSkipEnabled),
-      minimumSeconds: prefs.get(UserPreferences.cinemaModeSkipMinDurationSeconds),
-      autoHideSeconds: prefs.get(UserPreferences.cinemaModeSkipAutoHide).seconds,
     );
   }
 
@@ -114,8 +112,8 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     final active = _isCinemaPreroll && _cinemaSkip.enabled;
     final prefs = _prefsListened;
     final countdown = prefs == null
-        ? MediaSegmentCountdown.progressBar.name
-        : prefs.get(UserPreferences.cinemaModeSkipCountdown).name;
+        ? MediaSegmentCountdown.both.name
+        : prefs.get(UserPreferences.mediaSegmentCountdown).name;
     unawaited(backend.setCinemaSkipState({
       'active': active,
       'visible': active && _cinemaSkip.visible,
@@ -173,8 +171,8 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
         if (state.phase == PlaybackBringupPhase.ready) {
           _pushSubtitleStyle(force: true);
         }
-        // The queue might not be ready at startup. Try loading segments again;
-        // duplicate loads are ignored.
+        // The initState load can run before the queue item resolves, so retry
+        // here. The per-item guard makes repeat events a no-op.
         _loadSegmentsForCurrentItem();
       });
       _screensaverPlayingSub = manager.state.playingStream.listen((playing) {
@@ -1683,8 +1681,8 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
       case 'pause':
         unawaited(manager.pause());
       case 'seek':
-        // Treat system Forward Skip as Skip Trailer. Regular seeks and
-        // Backward Skip work as usual.
+        // System Forward Skip skips the pre-roll. Regular seeks and Backward
+        // Skip work as usual.
         if (action['isForwardSkip'] == true &&
             _isCinemaPreroll &&
             _cinemaSkip.enabled) {

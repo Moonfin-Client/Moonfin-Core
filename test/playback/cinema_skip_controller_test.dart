@@ -6,10 +6,10 @@ import 'package:moonfin/playback/cinema_skip_controller.dart';
 import 'package:playback_core/playback_core.dart';
 
 void main() {
-  test('stale readiness cannot overwrite a new trailer; reindex is harmless', () {
+  test("stale readiness can't overwrite a new trailer, and reindexing is harmless", () {
     final skip = CinemaSkipController(onSkip: () async {});
     addTearDown(skip.dispose);
-    skip.configure(enabled: true, minimumSeconds: 15, autoHideSeconds: 0);
+    skip.configure(enabled: true);
     final first = Object(), second = Object();
 
     void sync(Object item, int index, int token, int seconds) {
@@ -46,11 +46,11 @@ void main() {
     fakeAsync((time) {
       final skip = CinemaSkipController(onSkip: () async {});
       skip.enter({'Id': 'clip'});
-      skip.configure(enabled: true, minimumSeconds: 26, autoHideSeconds: 10);
+      skip.configure(enabled: true);
       expect(skip.visible, isFalse);
-      skip.updatePlayback(duration: const Duration(seconds: 25), playing: true);
+      skip.updatePlayback(duration: const Duration(seconds: 10), playing: true);
       expect(skip.visible, isFalse);
-      skip.updatePlayback(duration: const Duration(seconds: 26), playing: true);
+      skip.updatePlayback(duration: const Duration(seconds: 11), playing: true);
       expect(skip.visible, isTrue);
       time.elapse(const Duration(seconds: 9));
       skip.updatePlayback(duration: Duration.zero, playing: false);
@@ -80,7 +80,7 @@ void main() {
       skip.enter({'RunTimeTicks': 50000000});
       skip.skip(requireVisible: false);
       expect(attempts, 0);
-      skip.configure(enabled: true, minimumSeconds: 15, autoHideSeconds: 0);
+      skip.configure(enabled: true);
       skip.skip();
       expect(attempts, 0);
       skip.skip(requireVisible: false);
