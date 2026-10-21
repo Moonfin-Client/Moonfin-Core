@@ -38,6 +38,7 @@ import '../../widgets/playback/stream_info_dialog.dart';
 import '../../widgets/track_selector_dialog.dart';
 import '../../widgets/live_tv/channel_carousel_overlay.dart';
 import '../../widgets/live_tv/live_tv_recording_dialog.dart';
+import '../../widgets/live_tv/live_tv_recording_icon.dart';
 import '../../widgets/emby_premiere_dialog.dart';
 import '../../util/error_message.dart';
 import 'channel_tune_observer.dart';
@@ -2475,10 +2476,13 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
               icon: _recordingState?.seriesTimerId != null
                   ? Icons.fiber_smart_record
                   : Icons.fiber_manual_record,
-              iconColor: _recordingState?.isRecording == true ||
-                      _recordingState?.seriesTimerId != null
-                  ? Colors.red
-                  : Colors.white,
+              iconColor: _recordingState?.seriesTimerId != null
+                  ? (_recordingState?.timerId != null
+                        ? Colors.red
+                        : LiveTvRecordingIcon.skippedColor)
+                  : (_recordingState?.isRecording == true
+                        ? Colors.red
+                        : Colors.white),
               tooltip: _recordingState?.timerId != null
                   ? l10n.cancelRecordingAction
                   : l10n.record,

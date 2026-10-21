@@ -3423,6 +3423,10 @@
   "@noUpcomingSeriesRecording": {
     "description": "A series recording rule exists but no future episode timer is available"
   },
+  "seriesRecordingSkipsShowing": "The series recording will skip this showing",
+  "@seriesRecordingSkipsShowing": {
+    "description": "A series recording rule exists, but this showing won't record, for example because it is a repeat or the episode is already in the library"
+  },
   "recordCurrentEpisode": "Record This Episode",
   "@recordCurrentEpisode": {
     "description": "Live TV player action to record only the current episode"

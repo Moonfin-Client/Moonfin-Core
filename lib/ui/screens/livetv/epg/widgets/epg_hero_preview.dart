@@ -3,6 +3,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../../widgets/adaptive/adaptive_glass.dart';
 import '../../../../widgets/bounded_network_image.dart';
+import '../../../../widgets/live_tv/live_tv_recording_icon.dart';
 import '../../../../widgets/marquee_text.dart';
 
 /// Landscape hero band that previews the focused program. Pure presentation.
@@ -48,6 +49,11 @@ class EpgHeroPreview extends StatelessWidget {
   final String? badgeLabel;
   final String? synopsis;
   final bool isLive;
+
+  /// Recording state of the focused program, shown at the end of the
+  /// call-sign line with the same mark as the guide cell.
+  final bool hasTimer;
+  final bool hasSeriesTimer;
   final bool apple;
   final bool compact;
 
@@ -65,6 +71,8 @@ class EpgHeroPreview extends StatelessWidget {
     this.badgeLabel,
     required this.synopsis,
     required this.isLive,
+    this.hasTimer = false,
+    this.hasSeriesTimer = false,
     required this.apple,
     this.compact = false,
   });
@@ -138,6 +146,17 @@ class EpgHeroPreview extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: metaStyle,
             ),
+          ),
+        ],
+        if (LiveTvRecordingIcon.shows(
+          hasTimer: hasTimer,
+          hasSeriesTimer: hasSeriesTimer,
+        )) ...[
+          const SizedBox(width: 10),
+          LiveTvRecordingIcon(
+            hasTimer: hasTimer,
+            hasSeriesTimer: hasSeriesTimer,
+            size: (metaStyle.fontSize ?? AppTypography.fontSizeSm) * 1.2,
           ),
         ],
       ],

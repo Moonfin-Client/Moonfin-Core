@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
+import '../../../../widgets/live_tv/live_tv_recording_icon.dart';
 import '../../../../widgets/marquee_text.dart';
 import '../epg_genre.dart';
 
 /// A single program in the guide grid. Pure presentation: the host positions it
 /// (left/width along the timeline) and owns focus, passing [focused]. The genre
 /// shows as a colored left bar on Material and a subtle dot on Apple; the on-now
-/// program gets a progress bar, scheduled recordings a red dot.
+/// program gets a progress bar, scheduled recordings a recording mark.
 ///
 /// [placeholderLabel] renders centered muted text over neutral filler, for a
 /// real schedule gap. Leave it null for a genre-filtered hole, which must stay
@@ -34,6 +35,7 @@ class EpgProgramCell extends StatelessWidget {
   final bool isPast;
   final double progress; // 0..1
   final bool hasTimer;
+  final bool hasSeriesTimer;
   final bool focused;
   final bool apple;
 
@@ -62,6 +64,7 @@ class EpgProgramCell extends StatelessWidget {
     this.isPast = false,
     required this.progress,
     required this.hasTimer,
+    this.hasSeriesTimer = false,
     required this.focused,
     required this.apple,
     this.placeholderLabel,
@@ -220,7 +223,8 @@ class EpgProgramCell extends StatelessWidget {
                   metaItems.isNotEmpty && innerHeight >= titleLine + metaLine;
               // The dot and the timer marker are dropped before the title is:
               // a cell this narrow has no room for either.
-              final ornaments = (apple ? 12.0 : 0.0) + (hasTimer ? 15.0 : 0.0);
+              final ornaments =
+                  (apple ? 12.0 : 0.0) + (_showsRecording ? 15.0 : 0.0);
               final showOrnaments =
                   !innerWidth.isFinite || innerWidth >= ornaments + 12;
               final wrapTitle =
@@ -268,7 +272,7 @@ class EpgProgramCell extends StatelessWidget {
                                         style: titleStyle,
                                       ),
                               ),
-                              if (hasTimer && showOrnaments) ...[
+                              if (_showsRecording && showOrnaments) ...[
                                 const SizedBox(width: 6),
                                 Padding(
                                   padding: const EdgeInsets.only(top: 2),
@@ -320,10 +324,15 @@ class EpgProgramCell extends StatelessWidget {
     decoration: BoxDecoration(color: genre.color, shape: BoxShape.circle),
   );
 
-  Widget _timerDot(double size) => Icon(
-    Icons.fiber_manual_record,
+  bool get _showsRecording => LiveTvRecordingIcon.shows(
+    hasTimer: hasTimer,
+    hasSeriesTimer: hasSeriesTimer,
+  );
+
+  Widget _timerDot(double size) => LiveTvRecordingIcon(
+    hasTimer: hasTimer,
+    hasSeriesTimer: hasSeriesTimer,
     size: size,
-    color: const Color(0xFFE0685C),
   );
 
   /// Width-priority title row for a program that started before the window:
@@ -348,7 +357,7 @@ class EpgProgramCell extends StatelessWidget {
         final dot = apple ? take(12) : 0.0;
         final marker = take(inlineIconSize);
         final gap = take(4);
-        final timer = hasTimer ? take(inlineIconSize) : 0.0;
+        final timer = _showsRecording ? take(inlineIconSize) : 0.0;
         final titleWidth = remaining.isFinite ? remaining : double.infinity;
 
         return Row(
@@ -382,7 +391,7 @@ class EpgProgramCell extends StatelessWidget {
                       style: titleStyle,
                     ),
             ),
-            if (hasTimer)
+            if (_showsRecording)
               SizedBox(
                 width: timer,
                 child: _timerDot(timer),

@@ -4414,6 +4414,12 @@ abstract class AppLocalizations {
   /// **'Series recording is scheduled, but the guide has no upcoming episodes'**
   String get noUpcomingSeriesRecording;
 
+  /// A series recording rule exists, but this showing won't record, for example because it is a repeat or the episode is already in the library
+  ///
+  /// In en, this message translates to:
+  /// **'The series recording will skip this showing'**
+  String get seriesRecordingSkipsShowing;
+
   /// Live TV player action to record only the current episode
   ///
   /// In en, this message translates to:

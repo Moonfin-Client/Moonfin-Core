@@ -2556,6 +2556,10 @@ class AppLocalizationsFi extends AppLocalizations {
       'Sarjan tallennus on ajoitettu, mutta ohjelmaoppaassa ei näy tulevia jaksoja';
 
   @override
+  String get seriesRecordingSkipsShowing =>
+      'The series recording will skip this showing';
+
+  @override
   String get recordCurrentEpisode => 'Tallenna tämä jakso';
 
   @override

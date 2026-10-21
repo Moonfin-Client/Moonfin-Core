@@ -67,6 +67,16 @@ Future<LiveTvRecordingAction?> showLiveTvRecordingDialog({
                   style: const TextStyle(color: Colors.white70),
                 ),
               ],
+              if (canCancelSeries && !canCancelProgram) ...[
+                const SizedBox(height: 12),
+                Text(
+                  l10n.seriesRecordingSkipsShowing,
+                  style: const TextStyle(
+                    color: Colors.white70,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ],
               if (canCancelSeries) ...[
                 const SizedBox(height: 12),
                 Text(

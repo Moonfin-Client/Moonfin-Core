@@ -2567,6 +2567,10 @@ class AppLocalizationsFr extends AppLocalizations {
       'L\'enregistrement de la série est programmé, mais le guide n\'annonce aucun épisode à venir';
 
   @override
+  String get seriesRecordingSkipsShowing =>
+      'The series recording will skip this showing';
+
+  @override
   String get recordCurrentEpisode => 'Enregistrer cet épisode';
 
   @override

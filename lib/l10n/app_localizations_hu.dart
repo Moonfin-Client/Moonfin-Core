@@ -2557,6 +2557,10 @@ class AppLocalizationsHu extends AppLocalizations {
       'A sorozat felvétele be van ütemezve, de a műsorújságban nem szerepelnek közelgő epizódok';
 
   @override
+  String get seriesRecordingSkipsShowing =>
+      'The series recording will skip this showing';
+
+  @override
   String get recordCurrentEpisode => 'Epizód felvétele';
 
   @override

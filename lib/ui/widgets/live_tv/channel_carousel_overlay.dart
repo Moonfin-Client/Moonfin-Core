@@ -756,7 +756,8 @@ class _ChannelCarouselOverlayState extends State<ChannelCarouselOverlay>
       genre: program == null ? null : epgGenreFor(program),
       isLive: program != null,
       progress: program?.progressAt(now) ?? 0,
-      hasTimer: program?.hasTimer == true || program?.hasSeriesTimer == true,
+      hasTimer: program?.hasTimer == true,
+      hasSeriesTimer: program?.hasSeriesTimer == true,
       programLoading:
           program == null &&
           _vm.loadStateFor(channel.id) != GuideChannelLoadState.loaded,

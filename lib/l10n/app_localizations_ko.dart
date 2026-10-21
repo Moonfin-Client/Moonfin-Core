@@ -2495,6 +2495,10 @@ class AppLocalizationsKo extends AppLocalizations {
       '시리즈 녹화가 예약되어 있지만 편성표에 예정된 에피소드가 없습니다';
 
   @override
+  String get seriesRecordingSkipsShowing =>
+      'The series recording will skip this showing';
+
+  @override
   String get recordCurrentEpisode => '이 에피소드 녹화';
 
   @override

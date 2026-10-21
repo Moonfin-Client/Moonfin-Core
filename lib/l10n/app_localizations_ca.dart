@@ -2562,6 +2562,10 @@ class AppLocalizationsCa extends AppLocalizations {
       'L\'enregistrament de la sèrie està programat, però la guia no té cap episodi pròxim';
 
   @override
+  String get seriesRecordingSkipsShowing =>
+      'The series recording will skip this showing';
+
+  @override
   String get recordCurrentEpisode => 'Enregistra aquest episodi';
 
   @override

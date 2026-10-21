@@ -53,6 +53,7 @@ class ChannelCarouselEntry {
   final bool isLive;
   final double progress;
   final bool hasTimer;
+  final bool hasSeriesTimer;
 
   /// No program yet because the channel's schedule is still unfetched, as
   /// opposed to a channel whose schedule is loaded and simply has no entry.
@@ -72,6 +73,7 @@ class ChannelCarouselEntry {
     this.isLive = false,
     this.progress = 0,
     this.hasTimer = false,
+    this.hasSeriesTimer = false,
     this.programLoading = false,
   });
 
@@ -91,6 +93,7 @@ class ChannelCarouselEntry {
           other.isLive == isLive &&
           other.progress == progress &&
           other.hasTimer == hasTimer &&
+          other.hasSeriesTimer == hasSeriesTimer &&
           other.programLoading == programLoading &&
           listEquals(other.tags, tags);
 
@@ -108,6 +111,7 @@ class ChannelCarouselEntry {
     isLive,
     progress,
     hasTimer,
+    hasSeriesTimer,
     programLoading,
     Object.hashAll(tags),
   );
@@ -474,6 +478,7 @@ class _ChannelCarouselState extends State<ChannelCarousel> {
       isLive: entry.isLive,
       progress: entry.progress,
       hasTimer: entry.hasTimer,
+      hasSeriesTimer: entry.hasSeriesTimer,
       programLoading: entry.programLoading,
       centered: centered,
       width: _cardWidth,
