@@ -147,7 +147,11 @@ class _TestUserRepository extends Fake implements UserRepository {
 
 class _TestPluginSyncService extends Fake implements PluginSyncService {
   @override
-  void resetState({bool notify = true, bool stopStream = true}) {}
+  void resetState({
+    bool notify = true,
+    bool stopStream = true,
+    bool keepIncompleteRecordings = false,
+  }) {}
 }
 
 class _RecordingManager extends PlaybackManager {

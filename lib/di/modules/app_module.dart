@@ -40,6 +40,7 @@ import '../../data/services/cast/native_cast_channel.dart';
 import '../../data/services/cast/remote_session_cast_provider.dart';
 import '../../data/services/achievements_service.dart';
 import '../../data/services/plugin_sync_service.dart';
+import '../../data/services/incomplete_recordings_service.dart';
 import '../../data/services/server_messages_service.dart';
 import '../../data/services/server_pin_service.dart';
 import '../../data/services/retro_artwork/retro_artwork_activity_gate.dart';
@@ -227,6 +228,14 @@ void registerAppModule() {
   );
   _getIt.registerLazySingleton(
     () => ServerMessagesService(_getIt<PreferenceStore>()),
+    dispose: (service) => service.dispose(),
+  );
+  _getIt.registerLazySingleton(
+    () => IncompleteRecordingsService(
+      client: () => _getIt.isRegistered<MediaServerClient>()
+          ? _getIt<MediaServerClient>()
+          : null,
+    ),
     dispose: (service) => service.dispose(),
   );
   _getIt.registerLazySingleton(
