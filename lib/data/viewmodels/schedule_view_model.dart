@@ -41,11 +41,12 @@ class ScheduleViewModel extends ChangeNotifier {
     try {
       final response = await _client.liveTvApi.getTimers();
       final items = (response['Items'] as List?) ?? [];
+      final now = DateTime.now();
 
       final timerItems = items
           .cast<Map<String, dynamic>>()
           .map((json) => TimerItem.fromJson(json))
-          .where((t) => t.startDate != null)
+          .where((t) => t.startDate != null && t.isUpcoming(now))
           .toList();
 
       final grouped = <String, List<RecordingItem>>{};

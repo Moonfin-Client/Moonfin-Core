@@ -118,6 +118,18 @@ class TimerItem {
       rawData: json,
     );
   }
+
+  /// `/LiveTv/Timers` returns every timer the server keeps, including
+  /// showings a series rule or the user cancelled and recordings that already
+  /// finished or failed. Only the rest will still record.
+  bool isUpcoming(DateTime now) {
+    final status = rawData['Status']?.toString();
+    if (status == 'Cancelled' || status == 'Completed' || status == 'Error') {
+      return false;
+    }
+    final end = endDate;
+    return end == null || end.isAfter(now);
+  }
 }
 
 enum RecordingsState { loading, ready, error }
@@ -214,12 +226,18 @@ class RecordingsViewModel extends ChangeNotifier {
     try {
       final response = await _client.liveTvApi.getTimers();
       final items = (response['Items'] as List?) ?? [];
-      final next24h = DateTime.now().add(const Duration(days: 1));
+      final now = DateTime.now();
+      final next24h = now.add(const Duration(days: 1));
 
       _scheduledNext24h = items
           .cast<Map<String, dynamic>>()
           .map((json) => TimerItem.fromJson(json))
-          .where((t) => t.startDate != null && t.startDate!.isBefore(next24h))
+          .where(
+            (t) =>
+                t.startDate != null &&
+                t.startDate!.isBefore(next24h) &&
+                t.isUpcoming(now),
+          )
           .map((timer) {
             final programData = timer.programInfo;
             if (programData != null) {
