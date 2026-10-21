@@ -7,6 +7,7 @@ import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:moonfin/auth/repositories/session_repository.dart';
+import 'package:moonfin/data/services/incomplete_recordings_service.dart';
 import 'package:moonfin/data/services/plugin_sync_service.dart';
 import 'package:moonfin/preference/seerr_preferences.dart';
 import 'package:moonfin/preference/user_preferences.dart';
@@ -31,6 +32,9 @@ class _RecordingAdapter implements HttpClientAdapter {
   /// Set when nothing is left to resolve after a delete.
   bool failResolved = false;
 
+  /// What the ping says about incomplete recordings.
+  bool incompleteRecordingsSupported = false;
+
   @override
   Future<ResponseBody> fetch(
     RequestOptions options,
@@ -46,7 +50,11 @@ class _RecordingAdapter implements HttpClientAdapter {
 
     Map<String, dynamic>? body;
     if (path.endsWith('/Moonfin/Ping')) {
-      body = {'installed': true, 'settingsSyncEnabled': true};
+      body = {
+        'installed': true,
+        'settingsSyncEnabled': true,
+        'incompleteRecordingsSupported': incompleteRecordingsSupported,
+      };
     } else if (path.contains('/Moonfin/Settings/Resolved/')) {
       body = failResolved ? null : resolvedProfile;
     } else if (path.contains('/Moonfin/Settings/Profile/')) {
@@ -200,5 +208,31 @@ void main() {
 
     expect(ok, isFalse);
     expect(prefs.get(UserPreferences.use24HourClock), isTrue);
+  });
+
+  test('a re-ping keeps the incomplete recordings it already has', () async {
+    final incomplete = IncompleteRecordingsService(
+      client: () => client,
+      dio: Dio()..httpClientAdapter = adapter,
+    );
+    GetIt.instance.registerSingleton<IncompleteRecordingsService>(incomplete);
+    int reads() => adapter.requests
+        .where((r) => r == 'GET /Moonfin/LiveTv/Recordings/Incomplete')
+        .length;
+
+    adapter.incompleteRecordingsSupported = true;
+    await service.refreshAvailability(client);
+    await pumpEventQueue();
+    await service.refreshAvailability(client);
+    await pumpEventQueue();
+
+    expect(incomplete.supported, isTrue);
+    expect(reads(), 1);
+
+    adapter.incompleteRecordingsSupported = false;
+    await service.refreshAvailability(client);
+
+    expect(incomplete.supported, isFalse);
+    incomplete.dispose();
   });
 }
