@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:server_core/server_core.dart';
 
+import '../models/live_tv_recording_state.dart';
+
 class SeriesTimerItem {
   final String id;
   final String name;
@@ -81,6 +83,7 @@ class SeriesRecordingsViewModel extends ChangeNotifier {
 
   Future<void> cancelSeriesTimer(String id) async {
     await _client.liveTvApi.cancelSeriesTimer(id);
+    notifyLiveTvRecordingsChanged();
     _seriesTimers = _seriesTimers.where((t) => t.id != id).toList();
     if (_focusedTimer?.id == id) _focusedTimer = null;
     notifyListeners();

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
 
+import '../../../data/models/live_tv_recording_state.dart';
 import '../../../data/viewmodels/recordings_view_model.dart';
 import '../../../data/viewmodels/schedule_view_model.dart';
 import '../../../data/viewmodels/series_recordings_view_model.dart';
@@ -45,14 +46,24 @@ class _LiveTvRecordingsScreenState extends State<LiveTvRecordingsScreen> {
     _vm.load();
     _scheduleVm.load();
     _seriesVm.load();
+    liveTvRecordingRevision.addListener(_onRecordingsChanged);
   }
 
   void _onChanged() {
     if (mounted) setState(() {});
   }
 
+  /// Cancelling a series rule also cancels its scheduled showings, so the
+  /// other tabs re-read their timers rather than keep the old ones.
+  void _onRecordingsChanged() {
+    if (!mounted) return;
+    _scheduleVm.load();
+    _vm.refreshScheduled();
+  }
+
   @override
   void dispose() {
+    liveTvRecordingRevision.removeListener(_onRecordingsChanged);
     _vm.removeListener(_onChanged);
     _scheduleVm.removeListener(_onChanged);
     _seriesVm.removeListener(_onChanged);

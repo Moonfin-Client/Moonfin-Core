@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:server_core/server_core.dart';
 
+import '../models/live_tv_recording_state.dart';
 import 'recordings_view_model.dart';
 
 class ScheduleGroup {
@@ -89,6 +90,7 @@ class ScheduleViewModel extends ChangeNotifier {
 
   Future<void> cancelTimer(String timerId) async {
     await _client.liveTvApi.cancelTimer(timerId);
+    notifyLiveTvRecordingsChanged();
     for (var i = 0; i < _groups.length; i++) {
       final filtered =
           _groups[i].items.where((item) => item.id != timerId).toList();

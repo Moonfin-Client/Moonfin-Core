@@ -222,6 +222,12 @@ class RecordingsViewModel extends ChangeNotifier {
     }
   }
 
+  /// Re-reads only the Scheduled in Next 24 Hours row, after a timer changed.
+  Future<void> refreshScheduled() async {
+    await _loadScheduledTimers();
+    notifyListeners();
+  }
+
   Future<void> _loadScheduledTimers() async {
     try {
       final response = await _client.liveTvApi.getTimers();

@@ -1,3 +1,11 @@
+import 'package:flutter/foundation.dart';
+
+/// Counts the recordings this app has created, changed or cancelled, so a Live
+/// TV surface holding programs from before the change can re-read them.
+final liveTvRecordingRevision = ValueNotifier<int>(0);
+
+void notifyLiveTvRecordingsChanged() => liveTvRecordingRevision.value++;
+
 class LiveTvRecordingState {
   final String? timerId;
   final String? seriesTimerId;
