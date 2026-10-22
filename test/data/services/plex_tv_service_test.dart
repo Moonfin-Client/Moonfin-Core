@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:moonfin/data/services/plex_tv_service.dart';
+import 'package:server_core/server_core.dart' show DeviceInfo;
 
 void main() {
   group('PlexServer', () {
@@ -115,6 +118,47 @@ void main() {
         async.elapse(const Duration(seconds: 5));
         expect(picked, isNull);
       });
+    });
+  });
+
+  group('findReachableUri', () {
+    late HttpServer live;
+    late HttpServer silent;
+
+    setUp(() async {
+      live = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+      live.listen((request) {
+        request.response
+          ..headers.contentType = ContentType.json
+          ..write('{"MediaContainer":{"machineIdentifier":"machine"}}')
+          ..close();
+      });
+      // Accepts connections and never answers, so every request to it hangs.
+      silent = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+      silent.listen((_) {});
+    });
+
+    tearDown(() async {
+      await live.close(force: true);
+      await silent.close(force: true);
+    });
+
+    test('reaches a live address behind more dead ones than the request '
+        'slots hold', () async {
+      final service = PlexTvService(
+        deviceInfo: const DeviceInfo(
+          id: 'device',
+          name: 'Test',
+          appName: 'Moonfin',
+          appVersion: '1.0.0',
+        ),
+      );
+      final liveUri = 'http://127.0.0.1:${live.port}';
+      final picked = await service.findReachableUri([
+        for (var i = 0; i < 10; i++) 'http://127.0.0.1:${silent.port}/dead$i',
+        liveUri,
+      ], 'machine');
+      expect(picked, liveUri);
     });
   });
 

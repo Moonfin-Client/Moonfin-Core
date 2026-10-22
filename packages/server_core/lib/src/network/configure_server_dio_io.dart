@@ -28,36 +28,41 @@ const _requestSlots = 6;
 /// reports progress every five seconds.
 const _idleTimeout = Duration(seconds: 15);
 
-void configureServerDio(Dio dio, {Duration? idleTimeout}) {
+/// [limitRequests] off is for requests that each go to a different host, like
+/// probing a server's addresses, where the slots only queue them up.
+void configureServerDio(
+  Dio dio, {
+  Duration? idleTimeout,
+  bool limitRequests = true,
+}) {
   dio.transformer = FusedTransformer(contentLengthIsolateThreshold: 50 * 1024);
 
-  dio.httpClientAdapter = _SlotLimitedAdapter(
-    IOHttpClientAdapter(
-      createHttpClient: () {
-        final client = HttpClient();
+  final adapter = IOHttpClientAdapter(
+    createHttpClient: () {
+      final client = HttpClient();
 
-        client.userAgent = serverUserAgent;
+      client.userAgent = serverUserAgent;
 
-        client.badCertificateCallback = (_, _, _) =>
-            gAllowSelfSignedCertificates;
+      client.badCertificateCallback = (_, _, _) => gAllowSelfSignedCertificates;
 
-        // The app's HttpOverrides already do this, and replacing their
-        // connection factory would undo any other override.
-        if (HttpOverrides.current == null) applyClientCertificates(client);
+      // The app's HttpOverrides already do this, and replacing their
+      // connection factory would undo any other override.
+      if (HttpOverrides.current == null) applyClientCertificates(client);
 
-        client.idleTimeout = idleTimeout ?? _idleTimeout;
+      client.idleTimeout = idleTimeout ?? _idleTimeout;
 
-        // Deliberately above the slot count. A slot frees as soon as the
-        // headers land but dart:io keeps the connection until the body has
-        // drained, so matching the two sends the overflow into a queue inside
-        // dart:io that nothing times out and Dio bills to its connect timeout.
-        client.maxConnectionsPerHost = _requestSlots * 2;
+      // Deliberately above the slot count. A slot frees as soon as the
+      // headers land but dart:io keeps the connection until the body has
+      // drained, so matching the two sends the overflow into a queue inside
+      // dart:io that nothing times out and Dio bills to its connect timeout.
+      client.maxConnectionsPerHost = _requestSlots * 2;
 
-        return client;
-      },
-    ),
-    _requestSlots,
+      return client;
+    },
   );
+  dio.httpClientAdapter = limitRequests
+      ? _SlotLimitedAdapter(adapter, _requestSlots)
+      : adapter;
 
   dio.interceptors.add(_retryDeadConnection(dio));
 }

@@ -97,8 +97,15 @@ class PlexServer {
 }
 
 class PlexTvService {
+  static const _probeTimeout = Duration(seconds: 4);
+
   final DeviceInfo _deviceInfo;
   final Dio _dio;
+
+  /// A server can list dozens of addresses, each its own host, so the probes
+  /// skip the request slots and all go out at once. A dead one gives up at
+  /// the timeout instead of keeping its connection.
+  final Dio _probeDio;
 
   PlexTvService({required this._deviceInfo})
     : _dio = Dio(
@@ -107,8 +114,16 @@ class PlexTvService {
           receiveTimeout: const Duration(seconds: 15),
           headers: {'Accept': 'application/json'},
         ),
+      ),
+      _probeDio = Dio(
+        BaseOptions(
+          connectTimeout: _probeTimeout,
+          receiveTimeout: _probeTimeout,
+          headers: {'Accept': 'application/json'},
+        ),
       ) {
     configureServerDio(_dio);
+    configureServerDio(_probeDio, limitRequests: false);
   }
 
   Map<String, String> get _identity => plexIdentity(_deviceInfo);
@@ -199,9 +214,9 @@ class PlexTvService {
   /// there answers as one.
   Future<String?> machineIdAt(String uri) async {
     try {
-      final response = await _dio
+      final response = await _probeDio
           .get<Map<String, dynamic>>('$uri/identity')
-          .timeout(const Duration(seconds: 4));
+          .timeout(_probeTimeout);
       final identity = response.data?['MediaContainer'] as Map?;
       return identity?['machineIdentifier'] as String?;
     } catch (_) {

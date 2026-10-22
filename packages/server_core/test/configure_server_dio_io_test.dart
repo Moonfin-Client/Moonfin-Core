@@ -107,14 +107,14 @@ void main() {
 
     tearDown(() => server.close(force: true));
 
-    Dio dioWith(Duration connectTimeout) {
+    Dio dioWith(Duration connectTimeout, {bool limitRequests = true}) {
       final dio = Dio(
         BaseOptions(
           baseUrl: 'http://${server.address.address}:${server.port}',
           connectTimeout: connectTimeout,
         ),
       );
-      configureServerDio(dio);
+      configureServerDio(dio, limitRequests: limitRequests);
       return dio;
     }
 
@@ -141,6 +141,13 @@ void main() {
       // past that is what a proxy reads as a flood.
       expect(mostInFlight, lessThanOrEqualTo(6));
       expect(mostInFlight, greaterThan(1));
+    });
+
+    test('lets them all through when told not to limit', () async {
+      await fireConcurrently(
+        dioWith(const Duration(seconds: 30), limitRequests: false),
+      );
+      expect(mostInFlight, greaterThan(6));
     });
 
     test('hands a slot back when the request fails', () async {
