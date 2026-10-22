@@ -5046,6 +5046,19 @@ class AppLocalizationsEl extends AppLocalizations {
       'Συνδυάστε και τις δύο σειρές σε ένα ενιαίο αρχικό τμήμα';
 
   @override
+  String get continueWatchingDefaultAction => 'Default Action';
+
+  @override
+  String get continueWatchingDefaultActionDescription =>
+      'Change what single clicking on a CW&NU item does';
+
+  @override
+  String get goToDetailsScreen => 'Go to Details screen';
+
+  @override
+  String get playImmediately => 'Play immediately';
+
+  @override
   String get nextUpMaxDays => 'Μέγιστος αριθμός ημερών στο Next Up';
 
   @override

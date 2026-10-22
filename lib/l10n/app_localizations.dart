@@ -8854,6 +8854,30 @@ abstract class AppLocalizations {
   /// **'Combine both rows into a single home section'**
   String get combineBothRows;
 
+  /// Setting for default click action on Continue Watching and Next Up items
+  ///
+  /// In en, this message translates to:
+  /// **'Default Action'**
+  String get continueWatchingDefaultAction;
+
+  /// Description for Continue Watching and Next Up default click action setting
+  ///
+  /// In en, this message translates to:
+  /// **'Change what single clicking on a CW&NU item does'**
+  String get continueWatchingDefaultActionDescription;
+
+  /// Option to navigate to the details screen for an item
+  ///
+  /// In en, this message translates to:
+  /// **'Go to Details screen'**
+  String get goToDetailsScreen;
+
+  /// Option to play an item immediately
+  ///
+  /// In en, this message translates to:
+  /// **'Play immediately'**
+  String get playImmediately;
+
   /// Setting for how far back the Next Up row reaches
   ///
   /// In en, this message translates to:

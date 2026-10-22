@@ -321,6 +321,17 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                     icon: Icons.merge_type,
                     onChanged: _pushPersonalizationSync,
                   ),
+                  EnumPreferenceTile<ContinueWatchingDefaultAction>(
+                    preference: UserPreferences.continueWatchingDefaultAction,
+                    title: l10n.continueWatchingDefaultAction,
+                    description: l10n.continueWatchingDefaultActionDescription,
+                    icon: Icons.play_circle_outline,
+                    labelOf: (v) => switch (v) {
+                      ContinueWatchingDefaultAction.details => l10n.goToDetailsScreen,
+                      ContinueWatchingDefaultAction.play => l10n.playImmediately,
+                    },
+                    onChanged: _pushPersonalizationSync,
+                  ),
                   IntPickerPreferenceTile(
                     preference: UserPreferences.nextUpMaxDays,
                     title: l10n.nextUpMaxDays,

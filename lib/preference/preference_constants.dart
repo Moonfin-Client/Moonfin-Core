@@ -1055,6 +1055,9 @@ enum RewatchSortBy {
 /// surfacing. The row shows series cards whichever of these is picked.
 enum RecentlyReleasedSeriesType { series, season, episode }
 
+/// What single-clicking on a Continue Watching or Next Up home card does.
+enum ContinueWatchingDefaultAction { details, play }
+
 /// When a home row card shows its MOVIE or SERIES label. Only external rows
 /// carry a media type, so the rest are unaffected either way.
 enum MediaTypeBadgeBehavior { always, mixedRowsOnly, never }

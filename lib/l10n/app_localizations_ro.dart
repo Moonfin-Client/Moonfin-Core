@@ -5064,6 +5064,19 @@ class AppLocalizationsRo extends AppLocalizations {
       'Combină ambele rânduri într-o singură secțiune a ecranului principal';
 
   @override
+  String get continueWatchingDefaultAction => 'Default Action';
+
+  @override
+  String get continueWatchingDefaultActionDescription =>
+      'Change what single clicking on a CW&NU item does';
+
+  @override
+  String get goToDetailsScreen => 'Go to Details screen';
+
+  @override
+  String get playImmediately => 'Play immediately';
+
+  @override
   String get nextUpMaxDays => 'Numărul maxim de zile în „Urmează”';
 
   @override

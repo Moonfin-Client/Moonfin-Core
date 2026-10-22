@@ -5016,6 +5016,19 @@ class AppLocalizationsTr extends AppLocalizations {
       'Her iki satırı tek bir ana bölümde birleştirin';
 
   @override
+  String get continueWatchingDefaultAction => 'Default Action';
+
+  @override
+  String get continueWatchingDefaultActionDescription =>
+      'Change what single clicking on a CW&NU item does';
+
+  @override
+  String get goToDetailsScreen => 'Go to Details screen';
+
+  @override
+  String get playImmediately => 'Play immediately';
+
+  @override
   String get nextUpMaxDays => 'Sıradaki Bölümler için maksimum gün';
 
   @override

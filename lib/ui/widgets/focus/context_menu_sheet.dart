@@ -14,12 +14,14 @@ Future<void> showContextMenu(
   AggregatedItem item, {
   VoidCallback? onChanged,
   CollectionRemovalContext? collectionRemoval,
+  bool isContinueWatchingOrNextUp = false,
 }) {
   final actions = contextActionsFor(
     context,
     item,
     onChanged: onChanged,
     collectionRemoval: collectionRemoval,
+    isContinueWatchingOrNextUp: isContinueWatchingOrNextUp,
   );
   if (actions.isEmpty) return Future<void>.value();
   // A pointer opened this from a spot on screen, so put it there. A remote or

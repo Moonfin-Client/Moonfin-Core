@@ -4897,6 +4897,19 @@ class AppLocalizationsKo extends AppLocalizations {
   String get combineBothRows => '두 행을 단일 홈 섹션으로 결합';
 
   @override
+  String get continueWatchingDefaultAction => 'Default Action';
+
+  @override
+  String get continueWatchingDefaultActionDescription =>
+      'Change what single clicking on a CW&NU item does';
+
+  @override
+  String get goToDetailsScreen => 'Go to Details screen';
+
+  @override
+  String get playImmediately => 'Play immediately';
+
+  @override
   String get nextUpMaxDays => '다음 볼 항목 최대 일수';
 
   @override

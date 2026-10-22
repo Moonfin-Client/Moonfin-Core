@@ -5017,6 +5017,19 @@ class AppLocalizationsAr extends AppLocalizations {
   String get combineBothRows => 'ادمج كلا الصفين في قسم رئيسي واحد';
 
   @override
+  String get continueWatchingDefaultAction => 'Default Action';
+
+  @override
+  String get continueWatchingDefaultActionDescription =>
+      'Change what single clicking on a CW&NU item does';
+
+  @override
+  String get goToDetailsScreen => 'Go to Details screen';
+
+  @override
+  String get playImmediately => 'Play immediately';
+
+  @override
   String get nextUpMaxDays => 'Max days in Next Up';
 
   @override

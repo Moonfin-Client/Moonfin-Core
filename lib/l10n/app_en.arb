@@ -6581,6 +6581,22 @@
   "@combineBothRows": {
     "description": "Description for merge continue watching and next up"
   },
+  "continueWatchingDefaultAction": "Default Action",
+  "@continueWatchingDefaultAction": {
+    "description": "Setting for default click action on Continue Watching and Next Up items"
+  },
+  "continueWatchingDefaultActionDescription": "Change what single clicking on a CW&NU item does",
+  "@continueWatchingDefaultActionDescription": {
+    "description": "Description for Continue Watching and Next Up default click action setting"
+  },
+  "goToDetailsScreen": "Go to Details screen",
+  "@goToDetailsScreen": {
+    "description": "Option to navigate to the details screen for an item"
+  },
+  "playImmediately": "Play immediately",
+  "@playImmediately": {
+    "description": "Option to play an item immediately"
+  },
   "nextUpMaxDays": "Max days in Next Up",
   "@nextUpMaxDays": {
     "description": "Setting for how far back the Next Up row reaches"

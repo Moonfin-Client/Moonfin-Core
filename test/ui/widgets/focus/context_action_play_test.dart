@@ -12,6 +12,7 @@ import 'package:moonfin/auth/repositories/user_repository.dart';
 import 'package:moonfin/data/models/aggregated_item.dart';
 import 'package:moonfin/data/repositories/item_mutation_repository.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
+import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/widgets/focus/context_action.dart';
 
@@ -68,8 +69,9 @@ void main() {
 
   Future<({List<ItemContextAction> actions, GoRouter router})> buildActions(
     WidgetTester tester,
-    AggregatedItem item,
-  ) async {
+    AggregatedItem item, {
+    bool isContinueWatchingOrNextUp = false,
+  }) async {
     late List<ItemContextAction> actions;
     final router = GoRouter(
       initialLocation: '/home',
@@ -77,7 +79,11 @@ void main() {
         GoRoute(
           path: '/home',
           builder: (context, state) {
-            actions = contextActionsFor(context, item);
+            actions = contextActionsFor(
+              context,
+              item,
+              isContinueWatchingOrNextUp: isContinueWatchingOrNextUp,
+            );
             return const SizedBox.shrink();
           },
         ),
@@ -178,4 +184,32 @@ void main() {
           'press play themselves',
     );
   });
+
+  testWidgets(
+    'flipping default action to play shows Go to Details screen in Continue Watching',
+    (tester) async {
+      final prefs = GetIt.instance<UserPreferences>();
+      await prefs.set(
+        UserPreferences.continueWatchingDefaultAction,
+        ContinueWatchingDefaultAction.play,
+      );
+
+      final built = await buildActions(
+        tester,
+        _item('Episode', id: 'ep-9'),
+        isContinueWatchingOrNextUp: true,
+      );
+
+      expect(built.actions.first.label, 'Go to Details screen');
+      expect(built.actions.first.icon, Icons.info_outline);
+
+      await built.actions.first.onSelect();
+      await tester.pumpAndSettle();
+
+      expect(
+        built.router.state.uri.toString(),
+        '/item/ep-9?serverId=server-1',
+      );
+    },
+  );
 }

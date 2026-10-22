@@ -10,6 +10,7 @@ import '../../../data/models/aggregated_item.dart';
 import '../../../data/repositories/item_mutation_repository.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../util/error_message.dart';
+import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/home_refresh_helper.dart';
 import '../../../util/item_watch_state.dart';
@@ -89,6 +90,7 @@ List<ItemContextAction> contextActionsFor(
   AggregatedItem item, {
   VoidCallback? onChanged,
   CollectionRemovalContext? collectionRemoval,
+  bool isContinueWatchingOrNextUp = false,
 }) {
   final l10n = AppLocalizations.of(context);
   final mutations = GetIt.instance<ItemMutationRepository>();
@@ -115,19 +117,44 @@ List<ItemContextAction> contextActionsFor(
       type == 'BoxSet';
 
   if (isMediaType) {
-    // First so a remote lands on it with no extra presses. The detail screen
-    // does the playing, which keeps the next episode lookup for a series and
-    // the external player preference working the way the Play button does.
-    actions.add(ItemContextAction(
-      icon: Icons.play_arrow,
-      label: watchStateOf(item).hasProgress ? l10n.resume : l10n.play,
-      onSelect: () async {
-        if (!context.mounted) return;
-        context.push(
-          Destinations.item(item.id, serverId: item.serverId, autoPlay: true),
-        );
-      },
-    ));
+    final prefs = GetIt.instance<UserPreferences>();
+    final defaultAction =
+        prefs.get(UserPreferences.continueWatchingDefaultAction);
+    final flipTopAction =
+        isContinueWatchingOrNextUp &&
+        defaultAction == ContinueWatchingDefaultAction.play;
+
+    if (flipTopAction) {
+      actions.add(ItemContextAction(
+        icon: Icons.info_outline,
+        label: l10n.goToDetailsScreen,
+        onSelect: () async {
+          if (!context.mounted) return;
+          context.push(
+            Destinations.itemOrPhoto(
+              item.id,
+              serverId: item.serverId,
+              type: item.type,
+              channelId: item.channelId,
+            ),
+          );
+        },
+      ));
+    } else {
+      // First so a remote lands on it with no extra presses. The detail screen
+      // does the playing, which keeps the next episode lookup for a series and
+      // the external player preference working the way the Play button does.
+      actions.add(ItemContextAction(
+        icon: Icons.play_arrow,
+        label: watchStateOf(item).hasProgress ? l10n.resume : l10n.play,
+        onSelect: () async {
+          if (!context.mounted) return;
+          context.push(
+            Destinations.item(item.id, serverId: item.serverId, autoPlay: true),
+          );
+        },
+      ));
+    }
 
     actions.add(ItemContextAction(
       icon: item.isPlayed

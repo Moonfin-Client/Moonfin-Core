@@ -5065,6 +5065,19 @@ class AppLocalizationsSr extends AppLocalizations {
       'Обједини оба реда у један одељак на почетној страници';
 
   @override
+  String get continueWatchingDefaultAction => 'Default Action';
+
+  @override
+  String get continueWatchingDefaultActionDescription =>
+      'Change what single clicking on a CW&NU item does';
+
+  @override
+  String get goToDetailsScreen => 'Go to Details screen';
+
+  @override
+  String get playImmediately => 'Play immediately';
+
+  @override
   String get nextUpMaxDays => 'Највећи број дана у одељку „Следеће“';
 
   @override

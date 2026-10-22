@@ -4975,11 +4975,30 @@ class _ContentRowsState extends State<_ContentRows>
             widget.viewModel.loadMoreForRow(rowIndex);
           }
         },
-        onLongPress: (_, item) =>
-            showContextMenu(context, item, onChanged: () => setState(() {})),
+        onLongPress: (_, item) => showContextMenu(
+          context,
+          item,
+          onChanged: () => setState(() {}),
+          isContinueWatchingOrNextUp:
+              row.rowType == HomeRowType.resume ||
+              row.rowType == HomeRowType.nextUp,
+        ),
         onTap: (_, item) {
           _finishSharedPreview(releaseResources: true);
-          if (row.rowType == HomeRowType.libraryTiles) {
+          final isCWNU =
+              row.rowType == HomeRowType.resume ||
+              row.rowType == HomeRowType.nextUp;
+          final defaultAction =
+              prefs.get(UserPreferences.continueWatchingDefaultAction);
+          if (isCWNU && defaultAction == ContinueWatchingDefaultAction.play) {
+            context.push(
+              Destinations.item(
+                item.id,
+                serverId: item.serverId,
+                autoPlay: true,
+              ),
+            );
+          } else if (row.rowType == HomeRowType.libraryTiles) {
             _navigateToLibrary(context, item);
           } else if (row.rowType == HomeRowType.genres && row.id == 'genres') {
             context.push(Destinations.genre(item.name, genreId: item.id));
@@ -5089,7 +5108,21 @@ class _ContentRowsState extends State<_ContentRows>
                   final showPreviewVideo = activePreviewKey == previewKey && previewReady;
 
                   void navigateToItem() {
-                    if (row.rowType == HomeRowType.libraryTiles) {
+                    final isCWNU =
+                        row.rowType == HomeRowType.resume ||
+                        row.rowType == HomeRowType.nextUp;
+                    final defaultAction =
+                        prefs.get(UserPreferences.continueWatchingDefaultAction);
+                    if (isCWNU &&
+                        defaultAction == ContinueWatchingDefaultAction.play) {
+                      context.push(
+                        Destinations.item(
+                          item.id,
+                          serverId: item.serverId,
+                          autoPlay: true,
+                        ),
+                      );
+                    } else if (row.rowType == HomeRowType.libraryTiles) {
                       _navigateToLibrary(context, item);
                     } else if (row.rowType == HomeRowType.genres && row.id == 'genres') {
                       context.push(Destinations.genre(item.name, genreId: item.id));
@@ -5258,6 +5291,9 @@ class _ContentRowsState extends State<_ContentRows>
                       context,
                       item,
                       onChanged: () => setState(() {}),
+                      isContinueWatchingOrNextUp:
+                          row.rowType == HomeRowType.resume ||
+                          row.rowType == HomeRowType.nextUp,
                     ),
                     onTap: () {
                       if (isV2MobileTouch) {

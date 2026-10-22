@@ -37,6 +37,7 @@ void main() {
     'collectionsRowSortBy',
     'collectionsRowSortOrder',
     'confirmExit',
+    'continueWatchingDefaultAction',
     'crashReportsEnabled',
     'customThemeId',
     'defaultAudioLanguage',
