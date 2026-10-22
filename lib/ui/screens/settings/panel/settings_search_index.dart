@@ -981,6 +981,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       keywords: ['continue watching', 'next up'],
     ),
     rowToggles.leaf(
+      'pref_continue_watching_default_action',
+      l10n.continueWatchingDefaultAction,
+      subtitle: l10n.continueWatchingDefaultActionDescription,
+      keywords: ['continue watching', 'next up', 'play', 'details'],
+    ),
+    rowToggles.leaf(
       'pref_next_up_max_days',
       l10n.nextUpMaxDays,
       subtitle: l10n.nextUpMaxDaysDescription,
