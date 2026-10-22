@@ -25,6 +25,7 @@ class _Harness {
     DateTime start, {
     List<AccessSchedule>? Function(int call)? schedules,
     bool? refuses,
+    Future<ServerTime?> Function(int call)? serverTime,
   }) : clock = async.getClock(start) {
     service = AccessScheduleService(
       now: () => clock.now(),
@@ -37,6 +38,12 @@ class _Harness {
         asks++;
         return refuses;
       },
+      loadServerTime: serverTime == null
+          ? null
+          : () {
+              timeAsks++;
+              return serverTime(timeAsks);
+            },
     );
   }
 
@@ -46,6 +53,7 @@ class _Harness {
   final loads = <String>[];
   int blocked = 0;
   int asks = 0;
+  int timeAsks = 0;
 
   void settle() => async.flushMicrotasks();
 
@@ -494,6 +502,153 @@ void main() {
       h.settle();
       expect(h.loads.length, 1);
       h.service.dispose();
+    });
+  });
+
+  group('with the server clock', () {
+    // The device says Monday 21:00, after the window. What the server says is
+    // its UTC time and offset, so the wall clock the tests want is the first
+    // plus the second, whatever zone the machine running them is in.
+    Future<ServerTime?> serverAt(int day, int utcHour, int offsetHours) async =>
+        ServerTime(
+          utcTime: DateTime.utc(2026, 10, day, utcHour),
+          utcOffset: Duration(hours: offsetHours),
+        );
+
+    test('stays open when the server clock says the window is open', () {
+      fakeAsync((async) {
+        final h = _Harness(
+          async,
+          _at(19, 21),
+          schedules: (_) => [_entry('Monday', 8, 20)],
+          serverTime: (_) => serverAt(19, 21, -8),
+        );
+        h.service.setUser('child');
+        h.settle();
+
+        expect(h.service.status.allowed, isTrue);
+        expect(h.blocked, 0);
+        expect(h.service.scheduleNow.hour, 13);
+        h.service.dispose();
+      });
+    });
+
+    test(
+      'blocks when the server clock says closed though the device says open',
+      () {
+        fakeAsync((async) {
+          final h = _Harness(
+            async,
+            _at(19, 12),
+            schedules: (_) => [_entry('Monday', 8, 20)],
+            serverTime: (_) => serverAt(19, 12, 9),
+          );
+          h.service.setUser('child');
+          h.settle();
+
+          expect(h.service.status.allowed, isFalse);
+          expect(h.blocked, 1);
+          expect(h.service.status.nextAccess, _at(26, 8));
+          h.service.dispose();
+        });
+      },
+    );
+
+    test('lets the server answer of the user still decide', () {
+      fakeAsync((async) {
+        final h = _Harness(
+          async,
+          _at(19, 21),
+          schedules: (_) => [_entry('Monday', 8, 20)],
+          refuses: true,
+          serverTime: (_) => serverAt(19, 21, -8),
+        );
+        h.service.setUser('child');
+        h.settle();
+
+        expect(h.service.status.allowed, isFalse);
+        h.service.dispose();
+      });
+    });
+
+    test(
+      'goes by the device clock and stops asking when the server has no time',
+      () {
+        fakeAsync((async) {
+          final h = _Harness(
+            async,
+            _at(19, 21),
+            schedules: (_) => [_entry('Monday', 8, 20)],
+            serverTime: (_) async => null,
+          );
+          h.service.setUser('child');
+          h.settle();
+
+          expect(h.service.status.allowed, isFalse);
+          expect(h.service.scheduleNow, _at(19, 21));
+          h.elapse(const Duration(minutes: 5));
+          expect(h.timeAsks, 1);
+          h.service.dispose();
+        });
+      },
+    );
+
+    test('keeps the last server clock when a later read fails', () {
+      fakeAsync((async) {
+        final h = _Harness(
+          async,
+          _at(19, 21),
+          schedules: (_) => [_entry('Monday', 8, 20)],
+          serverTime: (call) => call == 1
+              ? serverAt(19, 21, -8)
+              : Future.error(StateError('offline')),
+        );
+        h.service.setUser('child');
+        h.settle();
+        h.elapse(const Duration(minutes: 2));
+
+        expect(h.timeAsks, greaterThan(1));
+        expect(h.service.status.allowed, isTrue);
+        expect(h.service.scheduleNow.hour, 13);
+        h.service.dispose();
+      });
+    });
+
+    test(
+      'is not asked once the time is up, when the server refuses it too',
+      () {
+        fakeAsync((async) {
+          final h = _Harness(
+            async,
+            _at(19, 21),
+            schedules: (_) => [_entry('Monday', 8, 20)],
+            serverTime: (_) => serverAt(19, 21, 0),
+          );
+          h.service.setUser('child');
+          h.settle();
+          expect(h.service.isBlocked, isTrue);
+          expect(h.timeAsks, 1);
+
+          h.elapse(const Duration(minutes: 5));
+          expect(h.timeAsks, 1);
+          h.service.dispose();
+        });
+      },
+    );
+
+    test('is not asked of a user without a schedule', () {
+      fakeAsync((async) {
+        final h = _Harness(
+          async,
+          _at(19, 12),
+          serverTime: (_) => serverAt(19, 12, 0),
+        );
+        h.service.setUser('child');
+        h.settle();
+
+        expect(h.timeAsks, 0);
+        h.service.dispose();
+      });
     });
   });
 

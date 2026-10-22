@@ -28,7 +28,7 @@ class TimesUpGate extends StatelessWidget {
     super.key,
     this.service,
     this.onSwitchUser,
-    this.now = DateTime.now,
+    this.now,
     this.currentPath,
     this.routeChanges,
   });
@@ -39,8 +39,10 @@ class TimesUpGate extends StatelessWidget {
   /// What Switch User does, for a test. Defaults to opening the user picker.
   final Future<void> Function()? onSwitchUser;
 
-  /// The clock "today" and "tomorrow" are read against, for a test.
-  final DateTime Function() now;
+  /// The clock "today" and "tomorrow" are read against, for a test. Defaults
+  /// to the clock the schedule is judged by, the server's when it is known,
+  /// which is the one the next opening is on.
+  final DateTime Function()? now;
 
   /// The page the app is on and what tells this it changed, for a test.
   /// Default to the app's router.
@@ -76,7 +78,7 @@ class TimesUpGate extends StatelessWidget {
         }
         return _TimesUp(
           nextAccess: watched.status.nextAccess,
-          now: now,
+          now: now ?? () => watched.scheduleNow,
           onSwitchUser: onSwitchUser ?? _openUserPicker,
         );
       },

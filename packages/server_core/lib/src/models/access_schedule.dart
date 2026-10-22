@@ -112,3 +112,64 @@ class AccessScheduleEvaluator {
     return earliest;
   }
 }
+
+/// The server's clock and time zone as the Moonfin plugin reports them at
+/// `Moonfin/Time`. Jellyfin judges an access schedule against its own wall
+/// clock, which no stock endpoint reports.
+class ServerTime {
+  /// The instant the server answered.
+  final DateTime utcTime;
+
+  /// The server's offset from UTC then, east positive.
+  final Duration utcOffset;
+
+  const ServerTime({required this.utcTime, required this.utcOffset});
+
+  /// Null when the answer doesn't carry a UTC time and an offset.
+  static ServerTime? tryParse(Object? json) {
+    if (json is! Map<String, dynamic>) return null;
+    final utc = DateTime.tryParse(json['utcTime'] as String? ?? '');
+    final offset = json['utcOffsetSeconds'];
+    if (utc == null || offset is! num || !offset.isFinite) return null;
+    return ServerTime(
+      utcTime: utc.toUtc(),
+      utcOffset: Duration(seconds: offset.round()),
+    );
+  }
+}
+
+/// How the server's clock differs from this device's. Kept instead of a moment
+/// so it stays right as time passes.
+class ServerClock {
+  /// How far the server's UTC clock is ahead of this device's.
+  final Duration skew;
+
+  /// The server's offset from UTC.
+  final Duration offset;
+
+  const ServerClock({required this.skew, required this.offset});
+
+  /// The clock as [time] says it was when this device's clock read [deviceNow].
+  factory ServerClock.from(ServerTime time, DateTime deviceNow) => ServerClock(
+    skew: time.utcTime.difference(deviceNow.toUtc()),
+    offset: time.utcOffset,
+  );
+
+  /// A date whose fields are the server's wall clock when this device's clock
+  /// reads [deviceNow], whatever zone this device is in, so [AccessScheduleEvaluator]
+  /// can read it as it reads any other date. It's for reading the fields and
+  /// not an instant. A wall time this device skips for daylight saving lands
+  /// an hour later.
+  DateTime wallClock(DateTime deviceNow) {
+    final wall = deviceNow.toUtc().add(skew + offset);
+    return DateTime(
+      wall.year,
+      wall.month,
+      wall.day,
+      wall.hour,
+      wall.minute,
+      wall.second,
+      wall.millisecond,
+    );
+  }
+}

@@ -106,4 +106,46 @@ void main() {
       );
     });
   });
+
+  group('getServerTime', () {
+    test('reads the plugin clock', () async {
+      final server = _FakeServer(200, {
+        'utcTime': '2026-10-19T23:30:00Z',
+        'localTime': '2026-10-19T15:30:00',
+        'utcOffsetSeconds': -28800,
+        'timeZoneId': 'America/Los_Angeles',
+        'isDaylightSavingTime': true,
+      });
+
+      final time = await JellyfinUsersApi(_dio(server)).getServerTime();
+
+      expect(server.requests.single.path, '/Moonfin/Time');
+      expect(time!.utcTime, DateTime.utc(2026, 10, 19, 23, 30));
+      expect(time.utcOffset, const Duration(hours: -8));
+    });
+
+    test('is null for a server without the endpoint', () async {
+      final server = _FakeServer(404, 'Not Found');
+
+      expect(await JellyfinUsersApi(_dio(server)).getServerTime(), isNull);
+    });
+
+    test('is null for an answer without a time', () async {
+      final server = _FakeServer(200, {'timeZoneId': 'UTC'});
+
+      expect(await JellyfinUsersApi(_dio(server)).getServerTime(), isNull);
+    });
+
+    test(
+      'lets any other failure through, the server refusing it too',
+      () async {
+        final server = _FakeServer(403, 'Error processing request.');
+
+        expect(
+          JellyfinUsersApi(_dio(server)).getServerTime(),
+          throwsA(isA<DioException>()),
+        );
+      },
+    );
+  });
 }
