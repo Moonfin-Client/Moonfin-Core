@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:moonfin/data/models/live_tv_recording_state.dart';
 import 'package:moonfin/data/viewmodels/live_tv_guide_view_model.dart';
 import 'package:moonfin/ui/theme/app_theme.dart';
 import 'package:moonfin/ui/widgets/live_tv/channel_carousel.dart';
@@ -65,6 +66,8 @@ class _CarouselGuide extends LiveTvGuideViewModel {
     DateTime? windowStart,
     bool livePosition = true,
   }) async {
+    _loadedRevision = liveTvRecordingRevision.value;
+    duringLoad?.call();
     ready = true;
     requests.add(initialChannelIds!);
     notifyListeners();
@@ -79,6 +82,16 @@ class _CarouselGuide extends LiveTvGuideViewModel {
   Future<void> refreshCarouselPrograms() async {
     refreshCalls++;
     notifyListeners();
+  }
+
+  /// Runs inside [load] before the guide turns ready.
+  void Function()? duringLoad;
+  int recordingCatchUps = 0;
+  int _loadedRevision = 0;
+
+  @override
+  Future<void> reloadIfRecordingsChanged() async {
+    if (liveTvRecordingRevision.value != _loadedRevision) recordingCatchUps++;
   }
 
   @override
@@ -368,6 +381,36 @@ void main() {
     expect(vm.requests.single, channels.map((channel) => channel.id));
     expect(vm.schedules, greaterThanOrEqualTo(1));
     expect(prewarm.hourlyDueAt, now.add(const Duration(seconds: 2)));
+    prewarm.dispose();
+  });
+
+  testWidgets('prewarm catches up on a recording changed during its first load', (
+    tester,
+  ) async {
+    final client = _CarouselClient();
+    final channels = List.generate(
+      4,
+      (i) => GuideChannel(
+        id: 'ch$i',
+        name: 'Channel $i',
+        number: '${i + 1}',
+        rawData: const {},
+      ),
+    );
+    final vm = _CarouselGuide(client, channels)
+      ..duringLoad = notifyLiveTvRecordingsChanged;
+    final prewarm = ChannelCarouselPrewarm(
+      client,
+      viewModelFactory: (_) => vm,
+      now: () => DateTime(2026, 9, 13, 18),
+    );
+
+    prewarm.tuned(channels, 'ch1');
+    await tester.pump(ChannelCarouselPrewarm.settleDelay);
+    await tester.pump();
+
+    expect(vm.refreshCalls, 0);
+    expect(vm.recordingCatchUps, 1);
     prewarm.dispose();
   });
 

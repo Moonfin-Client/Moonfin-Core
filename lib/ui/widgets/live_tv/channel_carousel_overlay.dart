@@ -122,7 +122,13 @@ class ChannelCarouselPrewarm {
   Future<void> _warm() async {
     if (_disposed || _channels.isEmpty) return;
     final ids = _channels.map((channel) => channel.id).toSet().toList();
-    await _runExclusive(() => _warmPrograms(ids));
+    final wasCold = !isWarm;
+    await _runExclusive(() async {
+      await _warmPrograms(ids);
+      // A recording changed during the first load was ignored, since nothing
+      // was warm yet to refresh.
+      if (wasCold && isWarm) await viewModel.reloadIfRecordingsChanged();
+    });
     if (_disposed) return;
     viewModel.scheduleBoundaryRefresh();
     if (_hourlyDueAt == null) _armHourly();
