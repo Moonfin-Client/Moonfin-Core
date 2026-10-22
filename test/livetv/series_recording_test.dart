@@ -267,6 +267,18 @@ void main() {
       expect(ids, unorderedEquals(['new', 'running']));
     });
 
+    test('a refresh re-reads the schedule without showing it loading', () async {
+      final vm = ScheduleViewModel(client);
+      await vm.load();
+      final states = <ScheduleState>[];
+      vm.addListener(() => states.add(vm.state));
+
+      await vm.refresh();
+
+      expect(states, isNot(contains(ScheduleState.loading)));
+      expect(vm.state, ScheduleState.ready);
+    });
+
     test('the Recordings scheduled row lists only timers still to record', () async {
       final vm = RecordingsViewModel(client);
       await vm.load();

@@ -57,7 +57,7 @@ class _LiveTvRecordingsScreenState extends State<LiveTvRecordingsScreen> {
   /// other tabs re-read their timers rather than keep the old ones.
   void _onRecordingsChanged() {
     if (!mounted) return;
-    _scheduleVm.load();
+    _scheduleVm.refresh();
     _vm.refreshScheduled();
   }
 

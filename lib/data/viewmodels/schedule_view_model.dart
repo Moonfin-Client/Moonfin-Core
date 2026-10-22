@@ -35,9 +35,17 @@ class ScheduleViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> load() async {
-    _state = ScheduleState.loading;
-    notifyListeners();
+  Future<void> load() => _read(showLoading: true);
+
+  /// Re-reads the timers without the loading state, so the tiles and the
+  /// focused one stay in place. A failed read keeps the last list.
+  Future<void> refresh() => _read(showLoading: false);
+
+  Future<void> _read({required bool showLoading}) async {
+    if (showLoading) {
+      _state = ScheduleState.loading;
+      notifyListeners();
+    }
 
     try {
       final response = await _client.liveTvApi.getTimers();
@@ -83,7 +91,7 @@ class ScheduleViewModel extends ChangeNotifier {
 
       _state = ScheduleState.ready;
     } catch (_) {
-      _state = ScheduleState.error;
+      if (showLoading) _state = ScheduleState.error;
     }
     notifyListeners();
   }
