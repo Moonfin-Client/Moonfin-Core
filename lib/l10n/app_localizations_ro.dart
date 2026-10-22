@@ -3508,6 +3508,19 @@ class AppLocalizationsRo extends AppLocalizations {
       'Glisează în sus sau în jos pe player pentru a schimba luminozitatea în stânga și volumul în dreapta';
 
   @override
+  String get invertGestureIndicators => 'Invert Gesture Indicators';
+
+  @override
+  String get invertGestureIndicatorsDescription =>
+      'Place brightness and volume visual indicators on same or opposite side of screen from swipe';
+
+  @override
+  String get gestureIndicatorSame => 'Same';
+
+  @override
+  String get gestureIndicatorInverted => 'Inverted';
+
+  @override
   String get osdButtons => 'Butoanele playerului';
 
   @override

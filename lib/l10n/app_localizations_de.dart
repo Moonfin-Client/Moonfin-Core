@@ -3544,6 +3544,19 @@ class AppLocalizationsDe extends AppLocalizations {
       'Auf der linken Seite des Players nach oben oder unten wischen, um die Helligkeit zu ändern, und auf der rechten Seite, um die Lautstärke anzupassen.';
 
   @override
+  String get invertGestureIndicators => 'Invert Gesture Indicators';
+
+  @override
+  String get invertGestureIndicatorsDescription =>
+      'Place brightness and volume visual indicators on same or opposite side of screen from swipe';
+
+  @override
+  String get gestureIndicatorSame => 'Same';
+
+  @override
+  String get gestureIndicatorInverted => 'Inverted';
+
+  @override
   String get osdButtons => 'Bedienelemente des Players';
 
   @override

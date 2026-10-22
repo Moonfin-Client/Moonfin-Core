@@ -3399,6 +3399,19 @@ class AppLocalizationsKo extends AppLocalizations {
       '플레이어에서 위아래로 밀어 왼쪽은 밝기, 오른쪽은 음량을 조절합니다';
 
   @override
+  String get invertGestureIndicators => 'Invert Gesture Indicators';
+
+  @override
+  String get invertGestureIndicatorsDescription =>
+      'Place brightness and volume visual indicators on same or opposite side of screen from swipe';
+
+  @override
+  String get gestureIndicatorSame => 'Same';
+
+  @override
+  String get gestureIndicatorInverted => 'Inverted';
+
+  @override
   String get osdButtons => '플레이어 버튼';
 
   @override

@@ -3485,6 +3485,19 @@ class AppLocalizationsSk extends AppLocalizations {
       'Slide up or down on the player to change brightness on the left and volume on the right';
 
   @override
+  String get invertGestureIndicators => 'Invert Gesture Indicators';
+
+  @override
+  String get invertGestureIndicatorsDescription =>
+      'Place brightness and volume visual indicators on same or opposite side of screen from swipe';
+
+  @override
+  String get gestureIndicatorSame => 'Same';
+
+  @override
+  String get gestureIndicatorInverted => 'Inverted';
+
+  @override
   String get osdButtons => 'Player Buttons';
 
   @override

@@ -3470,6 +3470,19 @@ class AppLocalizationsNl extends AppLocalizations {
       'Schuif links naar boven of naar beneden in de speler om helderheid te veranderen en rechts om volume te veranderen';
 
   @override
+  String get invertGestureIndicators => 'Invert Gesture Indicators';
+
+  @override
+  String get invertGestureIndicatorsDescription =>
+      'Place brightness and volume visual indicators on same or opposite side of screen from swipe';
+
+  @override
+  String get gestureIndicatorSame => 'Same';
+
+  @override
+  String get gestureIndicatorInverted => 'Inverted';
+
+  @override
   String get osdButtons => 'Afspeelknoppen';
 
   @override

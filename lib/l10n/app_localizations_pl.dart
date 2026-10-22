@@ -3639,6 +3639,19 @@ class AppLocalizationsPl extends AppLocalizations {
       'Przesuwaj palcem w górę lub w dół: po lewej stronie, aby zmienić jasność, a po prawej - głośność';
 
   @override
+  String get invertGestureIndicators => 'Invert Gesture Indicators';
+
+  @override
+  String get invertGestureIndicatorsDescription =>
+      'Place brightness and volume visual indicators on same or opposite side of screen from swipe';
+
+  @override
+  String get gestureIndicatorSame => 'Same';
+
+  @override
+  String get gestureIndicatorInverted => 'Inverted';
+
+  @override
   String get osdButtons => 'Przyciski odtwarzacza';
 
   @override

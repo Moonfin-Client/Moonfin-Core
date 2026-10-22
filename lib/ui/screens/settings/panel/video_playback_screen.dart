@@ -156,6 +156,26 @@ class _VideoPlaybackScreen extends StatelessWidget {
                   subtitle: l10n.playerSwipeGesturesDescription,
                   icon: Icons.swipe_vertical,
                 ),
+                ListenableBuilder(
+                  listenable: prefs,
+                  builder: (context, _) =>
+                      !prefs.get(UserPreferences.playerSwipeGestures)
+                          ? const SizedBox.shrink()
+                          : EnumPreferenceTile<GestureIndicatorPlacement>(
+                              preference:
+                                  UserPreferences.gestureIndicatorPlacement,
+                              title: l10n.invertGestureIndicators,
+                              description:
+                                  l10n.invertGestureIndicatorsDescription,
+                              icon: Icons.swap_horiz,
+                              labelOf: (v) => switch (v) {
+                                GestureIndicatorPlacement.same =>
+                                  l10n.gestureIndicatorSame,
+                                GestureIndicatorPlacement.inverted =>
+                                  l10n.gestureIndicatorInverted,
+                              },
+                            ),
+                ),
               ],
               _TvSettingsListTile(
                 leading: const Icon(Icons.tune),

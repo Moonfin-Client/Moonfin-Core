@@ -3500,6 +3500,19 @@ class AppLocalizationsFr extends AppLocalizations {
       'Glissez vers le haut ou le bas sur le lecteur : à gauche pour la luminosité, à droite pour le volume';
 
   @override
+  String get invertGestureIndicators => 'Invert Gesture Indicators';
+
+  @override
+  String get invertGestureIndicatorsDescription =>
+      'Place brightness and volume visual indicators on same or opposite side of screen from swipe';
+
+  @override
+  String get gestureIndicatorSame => 'Same';
+
+  @override
+  String get gestureIndicatorInverted => 'Inverted';
+
+  @override
   String get osdButtons => 'Boutons du lecteur';
 
   @override
@@ -7831,7 +7844,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String adminRemoveDeviceConfirm(String name) {
-    return 'Supprimer l\'appareil « $name » ? L\'utilisateur devra se reconnecter sur cet appareil.';
+    return 'Supprimer l\'appareil « $name » ? L\'utilisateur devra se reconnecter sur cet appareil.';
   }
 
   @override
@@ -13978,7 +13991,7 @@ class AppLocalizationsFr extends AppLocalizations {
     String libraryName,
     String failedPath,
   ) {
-    return 'Votre bibliothèque « $libraryName » est configurée pour enregistrer les visuels directement dans les dossiers multimédias (l\'option « Enregistrer les visuels dans les dossiers multimédias » est activée). Cependant, Jellyfin a testé l\'accès en écriture et n\'a pas la permission d\'écrire des fichiers dans ce répertoire :\n\n$failedPath';
+    return 'Votre bibliothèque « $libraryName » est configurée pour enregistrer les visuels directement dans les dossiers multimédias (l\'option « Enregistrer les visuels dans les dossiers multimédias » est activée). Cependant, Jellyfin a testé l\'accès en écriture et n\'a pas la permission d\'écrire des fichiers dans ce répertoire :\n\n$failedPath';
   }
 
   @override

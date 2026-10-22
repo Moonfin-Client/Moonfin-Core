@@ -3502,6 +3502,19 @@ class AppLocalizationsSr extends AppLocalizations {
       'Превуците нагоре или надоле преко плејера да бисте мењали осветљеност са леве стране и јачину звука са десне стране';
 
   @override
+  String get invertGestureIndicators => 'Invert Gesture Indicators';
+
+  @override
+  String get invertGestureIndicatorsDescription =>
+      'Place brightness and volume visual indicators on same or opposite side of screen from swipe';
+
+  @override
+  String get gestureIndicatorSame => 'Same';
+
+  @override
+  String get gestureIndicatorInverted => 'Inverted';
+
+  @override
   String get osdButtons => 'Дугмад плејера';
 
   @override

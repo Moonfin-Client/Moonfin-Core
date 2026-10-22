@@ -282,6 +282,14 @@ enum DesktopScrollWheelAction {
   volume,
 }
 
+/// Where brightness and volume swipe gesture indicators are placed on the screen.
+/// [same] places the indicator on the side being swiped (brightness left, volume right).
+/// [inverted] places the indicator on the opposite side (brightness right, volume left).
+enum GestureIndicatorPlacement {
+  same,
+  inverted,
+}
+
 /// Glass rendering budget. `auto` picks per-device (real blur on capable
 /// hardware, zero-blur sheen on TV boxes/web); `full` forces real blur;
 /// `reduced` forces the zero-blur sheen everywhere.

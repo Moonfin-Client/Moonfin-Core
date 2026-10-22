@@ -6468,13 +6468,17 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     final overlayLabel = usingMedia3Boost && _media3VolumeBoostLevel > 0
         ? 'Volume +$_media3VolumeBoostLevel'
         : '${(displayVolume * 100).round()}%';
+    final inverted =
+        _prefs.get(UserPreferences.gestureIndicatorPlacement) ==
+        GestureIndicatorPlacement.inverted;
+    final alignmentX = inverted ? -0.85 : 0.85;
     return Positioned.fill(
       child: AnimatedOpacity(
         opacity: _showVolumeOverlay ? 1.0 : 0.0,
         duration: const Duration(milliseconds: 200),
         child: IgnorePointer(
           child: Align(
-            alignment: const Alignment(0.85, 0.0),
+            alignment: Alignment(alignmentX, 0.0),
             child: _buildGestureIndicator(
               icon: displayVolume <= 0
                   ? Icons.volume_off_rounded
@@ -6491,13 +6495,17 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   Widget _buildBrightnessOverlay() {
+    final inverted =
+        _prefs.get(UserPreferences.gestureIndicatorPlacement) ==
+        GestureIndicatorPlacement.inverted;
+    final alignmentX = inverted ? 0.85 : -0.85;
     return Positioned.fill(
       child: AnimatedOpacity(
         opacity: _showBrightnessOverlay ? 1.0 : 0.0,
         duration: const Duration(milliseconds: 200),
         child: IgnorePointer(
           child: Align(
-            alignment: const Alignment(-0.85, 0.0),
+            alignment: Alignment(alignmentX, 0.0),
             child: _buildGestureIndicator(
               icon: _brightnessValue <= 0.25
                   ? Icons.brightness_low_rounded

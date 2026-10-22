@@ -1416,6 +1416,20 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         subtitle: l10n.playerSwipeGesturesDescription,
         keywords: ['swipe', 'gestures', 'volume', 'brightness'],
       ),
+      video.leaf(
+        'pref_gesture_indicator_placement',
+        l10n.invertGestureIndicators,
+        subtitle: l10n.invertGestureIndicatorsDescription,
+        keywords: [
+          'gesture',
+          'indicator',
+          'invert',
+          'brightness',
+          'volume',
+          'swipe',
+          'opposite',
+        ],
+      ),
     ],
     osdButtons.screen(keywords: [
       'player buttons',

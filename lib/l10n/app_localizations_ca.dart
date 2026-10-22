@@ -3498,6 +3498,19 @@ class AppLocalizationsCa extends AppLocalizations {
       'Desplaça el controlador cap amunt o cap avall per canviar la brillantor a l\'esquerra i el volum a la dreta';
 
   @override
+  String get invertGestureIndicators => 'Invert Gesture Indicators';
+
+  @override
+  String get invertGestureIndicatorsDescription =>
+      'Place brightness and volume visual indicators on same or opposite side of screen from swipe';
+
+  @override
+  String get gestureIndicatorSame => 'Same';
+
+  @override
+  String get gestureIndicatorInverted => 'Inverted';
+
+  @override
   String get osdButtons => 'Botons del reproductor';
 
   @override
@@ -5036,11 +5049,11 @@ class AppLocalizationsCa extends AppLocalizations {
   String get enablePinCode => 'Activa el codi PIN';
 
   @override
-  String get pinSynced => 'PIN synced';
+  String get pinSynced => 'PIN sincronitzat';
 
   @override
   String get pinResetFailed =>
-      'The PIN on the server could not be cleared. If it is still set, ask a server administrator to remove it.';
+      'No s\'ha pogut esborrar el PIN del servidor. Si encara està definit, demana a un administrador del servidor que l\'elimini.';
 
   @override
   String get requirePinToAccess => 'Requereix un PIN per accedir al teu compte';
@@ -7835,7 +7848,7 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String adminRemoveDeviceConfirm(String name) {
-    return 'Vols eliminar el dispositiu \'$name\'? L\'usuari haurà d\'iniciar la sessió de nou en aquest dispositiu.';
+    return 'Vols eliminar el dispositiu «$name»? L\'usuari haurà d\'iniciar la sessió de nou en aquest dispositiu.';
   }
 
   @override
@@ -14015,7 +14028,7 @@ class AppLocalizationsCa extends AppLocalizations {
     String libraryName,
     String failedPath,
   ) {
-    return 'La teva biblioteca \'$libraryName\' està configurada per desar les il·lustracions directament a les carpetes multimèdia (\'Desa les il·lustracions a les carpetes multimèdia\' està activat). Tanmateix, Jellyfin ha comprovat l\'accés d\'escriptura i no té permís per escriure fitxers en aquest directori:\n\n$failedPath';
+    return 'La teva biblioteca «$libraryName» està configurada per desar les il·lustracions directament a les carpetes multimèdia (\'Desa les il·lustracions a les carpetes multimèdia\' està activat). Tanmateix, Jellyfin ha comprovat l\'accés d\'escriptura i no té permís per escriure fitxers en aquest directori:\n\n$failedPath';
   }
 
   @override
@@ -15185,11 +15198,11 @@ class AppLocalizationsCa extends AppLocalizations {
   String get navYou => 'Tu';
 
   @override
-  String get cinemaSkipPrerolls => 'Cinema Mode Skip Button';
+  String get cinemaSkipPrerolls => 'Botó per saltar del mode cinema';
 
   @override
   String get cinemaSkipPrerollsDescription =>
-      'Show a Skip button during Cinema Mode trailers, commercials, and other pre-rolls.';
+      'Mostra un botó «Salta» durant els tràilers, els anuncis i altres vídeos previs del mode cinema.';
 
   @override
   String get detailsPage => 'Pàgina de detalls';

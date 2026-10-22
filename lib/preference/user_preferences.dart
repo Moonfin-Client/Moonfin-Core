@@ -2674,6 +2674,14 @@ class UserPreferences extends ChangeNotifier {
     key: 'playerSwipeGestures',
     defaultValue: true,
   );
+
+  /// Where brightness and volume swipe gesture indicators appear relative to the swipe side.
+  /// Belongs to the device, since it tunes the local touch screen, so it isn't synced.
+  static final gestureIndicatorPlacement = EnumPreference(
+    key: 'pref_gesture_indicator_placement',
+    defaultValue: GestureIndicatorPlacement.same,
+    values: GestureIndicatorPlacement.values,
+  );
   static final detailButtonOrderTv = Preference(
     key: 'detailButtonOrderTv',
     defaultValue: '',

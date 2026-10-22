@@ -3485,6 +3485,19 @@ class AppLocalizationsHu extends AppLocalizations {
       'Húzd az ujjad felfelé vagy lefelé a lejátszó bal oldalán a fényerő, a jobb oldalán pedig a hangerő szabályozásához';
 
   @override
+  String get invertGestureIndicators => 'Invert Gesture Indicators';
+
+  @override
+  String get invertGestureIndicatorsDescription =>
+      'Place brightness and volume visual indicators on same or opposite side of screen from swipe';
+
+  @override
+  String get gestureIndicatorSame => 'Same';
+
+  @override
+  String get gestureIndicatorInverted => 'Inverted';
+
+  @override
   String get osdButtons => 'Lejátszó gombok';
 
   @override

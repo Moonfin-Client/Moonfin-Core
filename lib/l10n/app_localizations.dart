@@ -6058,6 +6058,30 @@ abstract class AppLocalizations {
   /// **'Slide up or down on the player to change brightness on the left and volume on the right'**
   String get playerSwipeGesturesDescription;
 
+  /// Setting title for inverting placement of brightness and volume gesture indicators
+  ///
+  /// In en, this message translates to:
+  /// **'Invert Gesture Indicators'**
+  String get invertGestureIndicators;
+
+  /// Description explaining gesture indicator placement relative to the swipe side
+  ///
+  /// In en, this message translates to:
+  /// **'Place brightness and volume visual indicators on same or opposite side of screen from swipe'**
+  String get invertGestureIndicatorsDescription;
+
+  /// Option to display gesture indicators on the same side as the swipe
+  ///
+  /// In en, this message translates to:
+  /// **'Same'**
+  String get gestureIndicatorSame;
+
+  /// Option to display gesture indicators on the opposite side from the swipe
+  ///
+  /// In en, this message translates to:
+  /// **'Inverted'**
+  String get gestureIndicatorInverted;
+
   /// Settings screen for choosing which buttons the player shows
   ///
   /// In en, this message translates to:

@@ -4667,6 +4667,22 @@
   "@playerSwipeGesturesDescription": {
     "description": "Description for player swipe gestures"
   },
+  "invertGestureIndicators": "Invert Gesture Indicators",
+  "@invertGestureIndicators": {
+    "description": "Setting title for inverting placement of brightness and volume gesture indicators"
+  },
+  "invertGestureIndicatorsDescription": "Place brightness and volume visual indicators on same or opposite side of screen from swipe",
+  "@invertGestureIndicatorsDescription": {
+    "description": "Description explaining gesture indicator placement relative to the swipe side"
+  },
+  "gestureIndicatorSame": "Same",
+  "@gestureIndicatorSame": {
+    "description": "Option to display gesture indicators on the same side as the swipe"
+  },
+  "gestureIndicatorInverted": "Inverted",
+  "@gestureIndicatorInverted": {
+    "description": "Option to display gesture indicators on the opposite side from the swipe"
+  },
   "osdButtons": "Player Buttons",
   "@osdButtons": {
     "description": "Settings screen for choosing which buttons the player shows"
