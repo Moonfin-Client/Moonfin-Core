@@ -1120,7 +1120,10 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
             await _client.liveTvApi.cancelSeriesTimer(recording.seriesTimerId!);
             message = l10n.seriesRecordingCancelled;
         }
-        notifyLiveTvRecordingsChanged();
+        // Changing a series rule already announced itself.
+        if (action != LiveTvRecordingAction.changeSeries) {
+          notifyLiveTvRecordingsChanged();
+        }
       } catch (e) {
         if (isPremiereError(e) && mounted) {
           await showPremiereRequiredDialog(context);
