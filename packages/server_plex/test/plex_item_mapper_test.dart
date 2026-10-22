@@ -40,6 +40,7 @@ void main() {
           'bitrate': 9536,
           'Part': [
             {
+              'key': '/library/parts/3721/1700000000/file.mkv',
               'size': 7407252142,
               'file': '/media/Movies/10 Cloverfield Lane (2016).mkv',
               'Stream': [
@@ -86,6 +87,10 @@ void main() {
     expect(source['Id'], '1715-0');
     expect(source['Bitrate'], 9536000);
     expect(source['Path'], '/media/Movies/10 Cloverfield Lane (2016).mkv');
+    expect(
+      source['DirectStreamUrl'],
+      '/library/parts/3721/1700000000/file.mkv',
+    );
     expect((movie['MediaStreams'] as List).map((s) => (s as Map)['Type']), [
       'Video',
       'Audio',

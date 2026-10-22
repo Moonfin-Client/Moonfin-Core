@@ -514,6 +514,30 @@ void main() {
     );
   });
 
+  test('progress saved offline is watched once it passes 90%', () async {
+    final (api, server) = _api('directplay');
+
+    await api.reportPlaybackStopped({
+      'ItemId': '23071',
+      'PositionTicks': 599580000,
+      'RunTimeTicks': 600230000,
+    });
+    await api.reportPlaybackStopped({
+      'ItemId': '786',
+      'PositionTicks': 14998720000,
+      'RunTimeTicks': 71337920000,
+    });
+
+    expect(
+      _request(server, '/:/scrobble').queryParameters,
+      containsPair('key', '23071'),
+    );
+    expect(
+      _request(server, '/:/timeline').queryParameters,
+      allOf(containsPair('ratingKey', '786'), containsPair('time', 1499872)),
+    );
+  });
+
   test('stopping a transcode ends its Plex session', () async {
     final (api, server) = _api('transcode');
 

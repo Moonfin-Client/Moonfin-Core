@@ -153,6 +153,7 @@ class SyncService extends ChangeNotifier {
             itemId: item.itemId,
             mediaSourceId: item.itemId,
             positionTicks: item.playbackPositionTicks,
+            runTimeTicks: _runTimeTicks(item.metadataJson),
           );
           await client.playbackApi.reportPlaybackStopped(report.toJson());
         }
@@ -167,6 +168,14 @@ class SyncService extends ChangeNotifier {
     _setState(failed > 0 && synced == 0 ? SyncState.error : SyncState.done);
     _scheduleDoneReset();
     return SyncResult(synced: synced, failed: failed);
+  }
+
+  static int? _runTimeTicks(String metadataJson) {
+    try {
+      return (jsonDecode(metadataJson) as Map)['RunTimeTicks'] as int?;
+    } catch (_) {
+      return null;
+    }
   }
 
   /// Returns [metadataJson] with its `UserData` replaced by the server's, so

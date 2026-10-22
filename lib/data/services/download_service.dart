@@ -1720,6 +1720,7 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
     if (token == null || token.isEmpty) {
       return const {};
     }
+    if (_client.serverType == ServerType.plex) return {'X-Plex-Token': token};
 
     return {
       'X-Emby-Token': token,
@@ -1813,21 +1814,11 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
     notifyListeners();
   }
 
-  Map<String, String> _buildDownloadRequestHeaders() {
-    final token = _client.accessToken;
-    if (token == null || token.isEmpty) {
-      return {
-        'Accept': 'application/octet-stream',
-        'User-Agent': serverUserAgent,
-      };
-    }
-    return {
-      'Accept': 'application/octet-stream',
-      'User-Agent': serverUserAgent,
-      'X-Emby-Token': token,
-      'Authorization': 'MediaBrowser Token="$token"',
-    };
-  }
+  Map<String, String> _buildDownloadRequestHeaders() => {
+    'Accept': 'application/octet-stream',
+    'User-Agent': serverUserAgent,
+    ..._buildAuthHeaders(),
+  };
 
   bool _usesAudioDownloadEndpoint(AggregatedItem item) {
     final mediaType = item.rawData['MediaType'] as String?;
@@ -1910,6 +1901,8 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
     AggregatedItem item, {
     required String primaryUrl,
   }) {
+    // The other routes are all Jellyfin's.
+    if (_client.serverType == ServerType.plex) return const [];
     final candidates = <String>[
       if (item.type == 'Book')
         ...BookReaderService.buildDownloadUris(
@@ -2144,6 +2137,14 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
   }
 
   String _buildDirectItemDownloadUrl(AggregatedItem item) {
+    if (_client.serverType == ServerType.plex) {
+      final part = item.mediaSources.firstOrNull?['DirectStreamUrl'];
+      final query = _encodeQuery({
+        'download': '1',
+        ..._baseDownloadParams(item, includeMediaSourceId: false),
+      });
+      return '${_client.baseUrl}$part?$query';
+    }
     // Emby picks the version from MediaSourceId, not from the path.
     final query = _encodeQuery(
       _baseDownloadParams(
@@ -2220,6 +2221,10 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
     }
   }
 
+  /// Plex's transcoder makes streams rather than files, so Plex only
+  /// downloads originals.
+  bool get canDownloadTranscoded => _client.serverType != ServerType.plex;
+
   /// [mediaSourceId] picks one version of a multi-version item, the server's
   /// default when null. [audioStreamIndex] picks the audio track a transcode
   /// keeps, the audio language settings' choice when null.
@@ -2230,6 +2235,7 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
     String? mediaSourceId,
     int? audioStreamIndex,
   }) {
+    if (!canDownloadTranscoded) quality = DownloadQuality.original;
     // Browser downloads are delegated to the platform and do not have a
     // process-owned transfer to schedule.
     if (PlatformDetection.isWeb) {
@@ -2287,6 +2293,15 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
     String? mediaSourceId,
     int? audioStreamIndex,
   }) async {
+    // Plex items don't name their server, and a row without one never syncs
+    // its offline progress back.
+    if (item.serverId.isEmpty) {
+      item = AggregatedItem(
+        id: item.id,
+        serverId: _serverId,
+        rawData: item.rawData,
+      );
+    }
     if (PlatformDetection.isWeb) {
       try {
         final fullItem = withPreferredMediaSource(

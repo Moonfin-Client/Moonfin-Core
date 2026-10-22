@@ -340,8 +340,25 @@ class PlexPlaybackApi implements PlaybackApi {
       _timeline(info, info['IsPaused'] == true ? 'paused' : 'playing');
 
   @override
-  Future<void> reportPlaybackStopped(Map<String, dynamic> info) =>
-      _timeline(info, 'stopped');
+  Future<void> reportPlaybackStopped(Map<String, dynamic> info) {
+    // A stop without a play session, like progress saved offline, stays a
+    // resume point on Plex even at the very end, so one past 90% is marked
+    // watched instead.
+    final runTime = info['RunTimeTicks'] as int? ?? 0;
+    final position = info['PositionTicks'] as int? ?? 0;
+    if (info['PlaySessionId'] == null &&
+        runTime > 0 &&
+        position >= runTime * 0.9) {
+      return _dio.get<dynamic>(
+        '/:/scrobble',
+        queryParameters: {
+          'key': info['ItemId'],
+          'identifier': 'com.plexapp.plugins.library',
+        },
+      );
+    }
+    return _timeline(info, 'stopped');
+  }
 
   @override
   Future<void> closeLiveStream(String liveStreamId) async {}

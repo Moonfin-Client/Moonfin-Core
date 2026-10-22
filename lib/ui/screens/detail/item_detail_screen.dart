@@ -11658,8 +11658,15 @@ class _DownloadButtonState extends State<_DownloadButton> {
     int? audioStreamIndex,
   }) async {
     final isMulti = _isBatchType(item.type);
-    if (!isMulti && !_supportsTranscoding(item.type)) {
-      _startDownload(context, item, service, DownloadQuality.original);
+    if (!service.canDownloadTranscoded ||
+        (!isMulti && !_supportsTranscoding(item.type))) {
+      _startDownload(
+        context,
+        item,
+        service,
+        DownloadQuality.original,
+        items: items,
+      );
       return;
     }
     final keepRow = isMulti || !await service.hasDownloadedFiles(item)

@@ -369,6 +369,8 @@ Map<String, dynamic> _mediaSource(
       'RunTimeTicks': duration * 10000,
     if (part?['size'] != null) 'Size': part!['size'],
     'Path': ?part?['file'],
+    // The part's own address, which serves the original file.
+    'DirectStreamUrl': ?part?['key'],
     'MediaStreams': _streams(part),
   };
 }

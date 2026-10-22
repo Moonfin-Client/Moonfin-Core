@@ -288,6 +288,16 @@ void main() {
     expect(requests.map((r) => r.queryParameters['key']), ['23070', '23070']);
   });
 
+  test("downloads follow the server's allowSync", () async {
+    for (final allowSync in [true, false]) {
+      final (dio, _) = _recordingDio({'allowSync': allowSync});
+      final user = await PlexUsersApi(dio, () => 'account').getCurrentUser();
+      expect(user.id, 'account');
+      expect(user.policy?.enableContentDownloading, allowSync);
+      expect(user.policy?.enableAllFolders, isTrue);
+    }
+  });
+
   test('a saved position becomes the Plex resume point', () async {
     final (dio, requests) = _recordingDio(const {});
 

@@ -138,10 +138,14 @@ class PlexUsersApi implements UsersApi {
 
   /// Plex has no route for the signed in user, so this checks the token
   /// against the server and answers with the id the session already has.
+  /// The server's allowSync is whether this account may download.
   @override
   Future<ServerUser> getCurrentUser() async {
-    await _dio.get<dynamic>('/');
-    return ServerUser(id: _userId());
+    final root = await plexContainer(_dio, '/');
+    return ServerUser(
+      id: _userId(),
+      policy: UserPolicy(enableContentDownloading: root['allowSync'] == true),
+    );
   }
 
   @override
