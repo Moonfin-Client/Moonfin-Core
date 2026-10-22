@@ -8,7 +8,6 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:moonfin_design/moonfin_design.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 import 'package:server_core/server_core.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -36,6 +35,7 @@ import '../../widgets/allow_self_signed_dialog.dart';
 import '../../widgets/client_certificate_dialog.dart';
 import '../../widgets/login_scaffold.dart';
 import '../../widgets/pin_entry_dialog.dart';
+import '../../widgets/sign_in_qr_code.dart';
 
 final _kAccent = AppColorScheme.accent;
 
@@ -911,26 +911,9 @@ class _LoginScreenState extends State<LoginScreen> {
     // QR is also a button, since the device showing it can approve the code
     // itself in its own browser.
     final tappable = !PlatformDetection.isTV;
-    final qr = Container(
-      decoration: BoxDecoration(
-        color: AppColorScheme.onSurface,
-        borderRadius: AppRadius.circular(12),
-      ),
-      padding: const EdgeInsets.all(10),
-      child: QrImageView(
-        data: approvalUrl,
-        version: QrVersions.auto,
-        size: _quickConnectQrBeside ? 200 : 140,
-        backgroundColor: AppColorScheme.onSurface,
-        eyeStyle: QrEyeStyle(
-          eyeShape: QrEyeShape.square,
-          color: AppColorScheme.background,
-        ),
-        dataModuleStyle: QrDataModuleStyle(
-          dataModuleShape: QrDataModuleShape.square,
-          color: AppColorScheme.background,
-        ),
-      ),
+    final qr = SignInQrCode(
+      data: approvalUrl,
+      size: _quickConnectQrBeside ? 200 : 140,
     );
     return Column(
       mainAxisSize: MainAxisSize.min,

@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonfin_design/moonfin_design.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 import 'package:server_core/server_core.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -19,6 +18,7 @@ import '../../widgets/credential_field.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/login_scaffold.dart';
 import '../../widgets/server_type_icon.dart';
+import '../../widgets/sign_in_qr_code.dart';
 
 class PlexSignInScreen extends StatefulWidget {
   /// A server address typed in by hand, tried before the ones plex.tv knows.
@@ -165,9 +165,10 @@ class _PlexSignInScreenState extends State<PlexSignInScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final qrPin = PlatformDetection.isTV ? _shownPin : null;
     return RequestInitialFocus(
       child: LoginScaffold(
-        maxWidth: 700,
+        maxWidth: qrPin == null ? 700 : 900,
         header: Padding(
           padding: const EdgeInsets.only(bottom: 24),
           child: Image.asset('assets/images/logo_and_text.png', height: 80),
@@ -176,62 +177,89 @@ class _PlexSignInScreenState extends State<PlexSignInScreen> {
           duration: const Duration(milliseconds: 180),
           height: PlatformDetection.isTV && _tvKeyboardVisible ? 280 : 0,
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const ServerTypeIcon(serverType: ServerType.plex, size: 28),
-                const SizedBox(width: 10),
-                Text(
-                  l10n.signInWithPlex,
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            _buildBody(l10n),
-            const SizedBox(height: 24),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: _usePassword && _token == null
-                        ? () => setState(() => _usePassword = false)
-                        : () => context.go(Destinations.serverSelect),
-                    icon: const Icon(Icons.arrow_back, size: 18),
-                    label: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: Text(l10n.back),
+        child: _withQrBeside(
+          qrPin,
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const ServerTypeIcon(serverType: ServerType.plex, size: 28),
+                  const SizedBox(width: 10),
+                  Text(
+                    l10n.signInWithPlex,
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
                     ),
-                    style: _focusableButtonStyle(),
                   ),
-                ),
-                if (_errorMessage != null) ...[
-                  const SizedBox(width: 12),
+                ],
+              ),
+              const SizedBox(height: 24),
+              _buildBody(l10n),
+              const SizedBox(height: 24),
+              Row(
+                children: [
                   Expanded(
                     child: OutlinedButton.icon(
-                      onPressed: _retry,
-                      icon: const Icon(Icons.refresh, size: 18),
+                      onPressed: _usePassword && _token == null
+                          ? () => setState(() => _usePassword = false)
+                          : () => context.go(Destinations.serverSelect),
+                      icon: const Icon(Icons.arrow_back, size: 18),
                       label: FittedBox(
                         fit: BoxFit.scaleDown,
-                        child: Text(l10n.tryAgain),
+                        child: Text(l10n.back),
                       ),
                       style: _focusableButtonStyle(),
                     ),
                   ),
+                  if (_errorMessage != null) ...[
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: _retry,
+                        icon: const Icon(Icons.refresh, size: 18),
+                        label: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(l10n.tryAgain),
+                        ),
+                        style: _focusableButtonStyle(),
+                      ),
+                    ),
+                  ],
                 ],
-              ],
-            ),
-          ],
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
+
+  /// The code on screen, or null while something else shows.
+  PlexPin? get _shownPin =>
+      _errorMessage == null &&
+          _connecting == null &&
+          _servers == null &&
+          !_usePassword &&
+          _token == null
+      ? _pin
+      : null;
+
+  /// A TV has no browser, so the code's QR sits beside everything else for a
+  /// phone to scan. The row stays without it, so the buttons keep their focus
+  /// as the code view comes and goes.
+  Widget _withQrBeside(PlexPin? pin, Widget content) => Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Flexible(child: content),
+      if (pin != null) ...[
+        const SizedBox(width: 40),
+        SignInQrCode(data: pin.linkUrl, size: 200),
+      ],
+    ],
+  );
 
   Widget _buildBody(AppLocalizations l10n) {
     final secondary = AppColorScheme.onSurface.withValues(alpha: 0.7);
@@ -277,8 +305,8 @@ class _PlexSignInScreenState extends State<PlexSignInScreen> {
       );
     }
 
-    final pin = _pin;
-    if (pin == null || _token != null) return _buildLoading();
+    final pin = _shownPin;
+    if (pin == null) return _buildLoading();
 
     return Column(
       children: [
@@ -296,15 +324,8 @@ class _PlexSignInScreenState extends State<PlexSignInScreen> {
             letterSpacing: 8,
           ),
         ),
-        const SizedBox(height: 16),
-        // A TV has no browser, so it offers a QR for a phone instead.
-        if (PlatformDetection.isTV)
-          QrImageView(
-            data: pin.linkUrl,
-            size: 160,
-            backgroundColor: Colors.white,
-          )
-        else
+        if (!PlatformDetection.isTV) ...[
+          const SizedBox(height: 16),
           OutlinedButton.icon(
             onPressed: () => launchUrl(
               Uri.parse(pin.linkUrl),
@@ -314,6 +335,7 @@ class _PlexSignInScreenState extends State<PlexSignInScreen> {
             label: Text(l10n.plexOpenLink),
             style: _focusableButtonStyle(),
           ),
+        ],
         const SizedBox(height: 16),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
