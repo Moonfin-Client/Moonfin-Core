@@ -288,6 +288,25 @@ void main() {
     expect(requests.map((r) => r.queryParameters['key']), ['23070', '23070']);
   });
 
+  test('Continue Watching drops an item through Plex, a split movie as the '
+      'movie', () async {
+    final (dio, requests) = _recordingDio(const {});
+    final library = PlexUserLibraryApi(dio, PlexItemsApi(dio));
+
+    await library.setHiddenFromResume('part-23070-0-1', hidden: true);
+
+    expect(
+      (requests.single.method, requests.single.path),
+      ('PUT', '/actions/removeFromContinueWatching'),
+    );
+    expect(requests.single.queryParameters, {'ratingKey': '23070'});
+    await expectLater(
+      library.setHiddenFromResume('23070', hidden: false),
+      throwsUnsupportedError,
+    );
+    expect(requests, hasLength(1));
+  });
+
   test("downloads follow the server's allowSync", () async {
     for (final allowSync in [true, false]) {
       final (dio, _) = _recordingDio({'allowSync': allowSync});

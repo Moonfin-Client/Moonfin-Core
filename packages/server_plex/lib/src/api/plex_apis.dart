@@ -195,7 +195,7 @@ class PlexUserViewsApi implements UserViewsApi {
   }
 }
 
-class PlexUserLibraryApi implements UserLibraryApi {
+class PlexUserLibraryApi implements UserLibraryApi, ResumeVisibilityApi {
   final Dio _dio;
   final ItemsApi _itemsApi;
 
@@ -222,6 +222,24 @@ class PlexUserLibraryApi implements UserLibraryApi {
   @override
   Future<void> unmarkPlayed(String itemId) =>
       _scrobble('/:/unscrobble', itemId);
+
+  /// Plex keeps the resume position. Nothing but playing the item again
+  /// brings it back.
+  @override
+  Future<void> setHiddenFromResume(
+    String itemId, {
+    required bool hidden,
+  }) async {
+    if (!hidden) {
+      throw UnsupportedError(
+        "Plex can't put an item back on Continue Watching",
+      );
+    }
+    await _dio.put<dynamic>(
+      '/actions/removeFromContinueWatching',
+      queryParameters: {'ratingKey': _key(itemId)},
+    );
+  }
 
   @override
   Future<void> updatePlayedPosition(
