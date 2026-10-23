@@ -9,6 +9,7 @@ import 'package:moonfin/data/models/live_tv_recording_state.dart';
 import 'package:moonfin/data/models/series_recording_episodes.dart';
 import 'package:moonfin/data/viewmodels/recordings_view_model.dart';
 import 'package:moonfin/data/viewmodels/schedule_view_model.dart';
+import 'package:moonfin/data/viewmodels/series_recordings_view_model.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/l10n/app_localizations_en.dart';
 import 'package:moonfin/preference/user_preferences.dart';
@@ -340,6 +341,55 @@ void main() {
         vm.scheduledNext24h.map((r) => r.id),
         unorderedEquals(['new', 'running']),
       );
+    });
+  });
+
+  group('series rules', () {
+    late _MockClient client;
+    late _MockLiveTvApi liveTv;
+
+    Map<String, dynamic> rules(List<String> ids) => {
+      'Items': [
+        for (final id in ids) {'Id': id, 'Name': 'Rule $id'},
+      ],
+    };
+
+    setUp(() {
+      client = _MockClient();
+      liveTv = _MockLiveTvApi();
+      when(() => client.liveTvApi).thenReturn(liveTv);
+      when(() => liveTv.getSeriesTimers()).thenAnswer((_) async => rules(['a']));
+    });
+
+    test('a refresh re-reads the rules without showing them loading', () async {
+      final vm = SeriesRecordingsViewModel(client);
+      await vm.load();
+      when(() => liveTv.getSeriesTimers()).thenAnswer((_) async => rules(['a', 'b']));
+      final states = <SeriesRecordingsState>[];
+      vm.addListener(() => states.add(vm.state));
+
+      await vm.refresh();
+
+      expect(states, isNot(contains(SeriesRecordingsState.loading)));
+      expect(vm.seriesTimers.map((t) => t.id), ['a', 'b']);
+    });
+
+    test('a read finishing after a newer one does not bring back its list', () async {
+      final vm = SeriesRecordingsViewModel(client);
+      await vm.load();
+      final older = Completer<Map<String, dynamic>>();
+      final newer = Completer<Map<String, dynamic>>();
+      final replies = [older, newer];
+      when(() => liveTv.getSeriesTimers()).thenAnswer((_) => replies.removeAt(0).future);
+
+      final first = vm.refresh();
+      final second = vm.refresh();
+      newer.complete(rules(['a']));
+      await second;
+      older.complete(rules(['a', 'since-cancelled']));
+      await first;
+
+      expect(vm.seriesTimers.map((t) => t.id), ['a']);
     });
   });
 

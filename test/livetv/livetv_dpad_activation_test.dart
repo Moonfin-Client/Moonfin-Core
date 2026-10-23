@@ -7,6 +7,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:moonfin/data/models/live_tv_recording_state.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/navigation/destinations.dart';
@@ -193,6 +194,26 @@ void main() {
           findsOneWidget,
           reason: 'Enter should open the series recording options');
       expect(find.text((await l10n()).cancelSeriesRecording), findsOneWidget);
+    });
+
+    testWidgets('the Series tab picks up a rule added while it is open',
+        (tester) async {
+      await pumpScreen(tester, const LiveTvRecordingsScreen());
+      await tester.tap(find.textContaining((await l10n()).seriesRecordings));
+      await tester.pumpAndSettle();
+
+      when(() => liveTvApi.getSeriesTimers()).thenAnswer(
+        (_) async => <String, dynamic>{
+          'Items': <dynamic>[
+            <String, dynamic>{'Id': 'st-1', 'Name': _seriesTimerName},
+            <String, dynamic>{'Id': 'st-2', 'Name': 'Added Series'},
+          ],
+        },
+      );
+      notifyLiveTvRecordingsChanged();
+      await tester.pumpAndSettle();
+
+      expect(find.text('Added Series'), findsOneWidget);
     });
 
     testWidgets('the recordings header fits a phone screen', (tester) async {

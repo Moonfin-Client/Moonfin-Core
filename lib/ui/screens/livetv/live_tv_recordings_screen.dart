@@ -53,11 +53,13 @@ class _LiveTvRecordingsScreenState extends State<LiveTvRecordingsScreen> {
     if (mounted) setState(() {});
   }
 
-  /// Cancelling a series rule also cancels its scheduled showings, so the
-  /// other tabs re-read their timers rather than keep the old ones.
+  /// Cancelling a series rule also cancels its scheduled showings, and a rule
+  /// can be added or changed from a screen opened over this one, so every tab
+  /// re-reads rather than keep the old list.
   void _onRecordingsChanged() {
     if (!mounted) return;
     _scheduleVm.refresh();
+    _seriesVm.refresh();
     _vm.refreshScheduled();
   }
 

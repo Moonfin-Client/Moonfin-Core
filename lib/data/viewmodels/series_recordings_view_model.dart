@@ -63,20 +63,38 @@ class SeriesRecordingsViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> load() async {
-    _state = SeriesRecordingsState.loading;
-    notifyListeners();
+  // Reads can overlap and finish in any order, so each is numbered and only
+  // one newer than the last applied replaces the list.
+  int _reads = 0;
+  int _applied = 0;
+
+  Future<void> load() => _read(showLoading: true);
+
+  /// Re-reads the rules without the loading state, so the tiles and the
+  /// focused one stay in place. A failed read keeps the last list.
+  Future<void> refresh() => _read(showLoading: false);
+
+  Future<void> _read({required bool showLoading}) async {
+    final read = ++_reads;
+    if (showLoading) {
+      _state = SeriesRecordingsState.loading;
+      notifyListeners();
+    }
 
     try {
       final response = await _client.liveTvApi.getSeriesTimers();
+      if (read < _applied) return;
       final items = (response['Items'] as List?) ?? [];
       _seriesTimers = items
           .cast<Map<String, dynamic>>()
           .map((json) => SeriesTimerItem.fromJson(json))
           .toList();
+      _applied = read;
       _state = SeriesRecordingsState.ready;
     } catch (_) {
-      _state = SeriesRecordingsState.error;
+      if (showLoading && read > _applied) {
+        _state = SeriesRecordingsState.error;
+      }
     }
     notifyListeners();
   }
