@@ -305,6 +305,24 @@ void main() {
       expect(ids, ['new']);
     });
 
+    test('a read started before a cancel does not bring the timer back', () async {
+      final vm = ScheduleViewModel(client);
+      await vm.load();
+      final older = Completer<Map<String, dynamic>>();
+      when(() => liveTv.getTimers()).thenAnswer((_) => older.future);
+      when(() => liveTv.cancelTimer(any())).thenAnswer((_) async {});
+
+      final stale = vm.refresh();
+      await vm.cancelTimer('running');
+      older.complete({
+        'Items': [_timer('new', 'New'), _timer('running', 'InProgress')],
+      });
+      await stale;
+
+      final ids = [for (final g in vm.groups) for (final i in g.items) i.id];
+      expect(ids, ['new']);
+    });
+
     test('a failed refresh does not stop the first load finishing', () async {
       final vm = ScheduleViewModel(client);
       final initial = Completer<Map<String, dynamic>>();
@@ -388,6 +406,22 @@ void main() {
       await second;
       older.complete(rules(['a', 'since-cancelled']));
       await first;
+
+      expect(vm.seriesTimers.map((t) => t.id), ['a']);
+    });
+
+    test('a read started before a cancel does not bring the rule back', () async {
+      when(() => liveTv.getSeriesTimers()).thenAnswer((_) async => rules(['a', 'b']));
+      final vm = SeriesRecordingsViewModel(client);
+      await vm.load();
+      final older = Completer<Map<String, dynamic>>();
+      when(() => liveTv.getSeriesTimers()).thenAnswer((_) => older.future);
+      when(() => liveTv.cancelSeriesTimer(any())).thenAnswer((_) async {});
+
+      final stale = vm.refresh();
+      await vm.cancelSeriesTimer('b');
+      older.complete(rules(['a', 'b']));
+      await stale;
 
       expect(vm.seriesTimers.map((t) => t.id), ['a']);
     });

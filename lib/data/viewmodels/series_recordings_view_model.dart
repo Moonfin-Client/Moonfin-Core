@@ -101,6 +101,8 @@ class SeriesRecordingsViewModel extends ChangeNotifier {
 
   Future<void> cancelSeriesTimer(String id) async {
     await _client.liveTvApi.cancelSeriesTimer(id);
+    // A read started before the cancel can still return the cancelled rule.
+    _applied = ++_reads;
     notifyLiveTvRecordingsChanged();
     _seriesTimers = _seriesTimers.where((t) => t.id != id).toList();
     if (_focusedTimer?.id == id) _focusedTimer = null;

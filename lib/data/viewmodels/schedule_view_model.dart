@@ -106,6 +106,8 @@ class ScheduleViewModel extends ChangeNotifier {
 
   Future<void> cancelTimer(String timerId) async {
     await _client.liveTvApi.cancelTimer(timerId);
+    // A read started before the cancel can still return the cancelled timer.
+    _applied = ++_reads;
     notifyLiveTvRecordingsChanged();
     for (var i = 0; i < _groups.length; i++) {
       final filtered =
