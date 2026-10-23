@@ -1254,7 +1254,7 @@ class _SpotlightCardsBuilder {
                       focusNode: focusNode,
                       size: 30,
                       iconSize: 18,
-                      tooltip: l10n.resetSort,
+                      tooltip: l10n.playlistSortOptions,
                       onTap: () => showCollectionSortDialog(context, vm: vm),
                     ),
                     const SizedBox(width: 8),
@@ -1274,26 +1274,35 @@ class _SpotlightCardsBuilder {
             if (vm.playlistIndexBuilding && items.isEmpty) {
               return const Center(child: CircularProgressIndicator());
             }
-            final effectiveTracks = items.isNotEmpty ? items : vm.collectionItems;
+            final hasPlaylistItems = items.isNotEmpty;
+            final effectiveTracks = hasPlaylistItems ? items : vm.collectionItems;
             return DetailTrackList(
               tracks: effectiveTracks,
               imageApi: _imageApi,
               isPlaylist: true,
               showAlbum: true,
               getFocusNode: actions.trackFocusNode,
-              onPlayTrack: actions.playPlaylistTrack,
-              reorderable: vm.collectionSort == CollectionSortOption.custom,
-              onReorder: (oldIndex, newIndex) {
-                var target = newIndex;
-                if (target > oldIndex) {
-                  target -= 1;
-                }
-                vm.reorderCollectionPlaylistItem(oldIndex, target);
-              },
-              onMoveUp: (index) =>
-                  vm.reorderCollectionPlaylistItem(index, index - 1),
-              onMoveDown: (index) =>
-                  vm.reorderCollectionPlaylistItem(index, index + 1),
+              onPlayTrack: (index) => hasPlaylistItems
+                  ? actions.playPlaylistTrack(index)
+                  : actions.openItem(effectiveTracks[index]),
+              reorderable: hasPlaylistItems && vm.collectionSort == CollectionSortOption.custom,
+              onReorder: hasPlaylistItems
+                  ? (oldIndex, newIndex) {
+                      var target = newIndex;
+                      if (target > oldIndex) {
+                        target -= 1;
+                      }
+                      vm.reorderCollectionPlaylistItem(oldIndex, target);
+                    }
+                  : null,
+              onMoveUp: hasPlaylistItems
+                  ? (index) =>
+                      vm.reorderCollectionPlaylistItem(index, index - 1)
+                  : null,
+              onMoveDown: hasPlaylistItems
+                  ? (index) =>
+                      vm.reorderCollectionPlaylistItem(index, index + 1)
+                  : null,
               onFirstTrackUp: () => actions.collectionSortFocusNode?.requestFocus(),
             );
           },

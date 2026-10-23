@@ -100,8 +100,6 @@ void main() {
       () => itemsApi.getItems(
         parentId: 'boxset-1',
         limit: any(named: 'limit'),
-        sortBy: any(named: 'sortBy'),
-        sortOrder: any(named: 'sortOrder'),
         fields: 'BasicSyncInfo',
       ),
     ).thenAnswer(
@@ -158,8 +156,6 @@ void main() {
       () => itemsApi.getItems(
         parentId: 'boxset-1',
         limit: any(named: 'limit'),
-        sortBy: 'PremiereDate,ProductionYear,SortName',
-        sortOrder: 'Ascending',
         fields: 'BasicSyncInfo',
       ),
     ).called(1);

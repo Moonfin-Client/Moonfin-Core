@@ -359,6 +359,7 @@ class ItemDetailViewModel extends ChangeNotifier {
   /// True while the index is being built. The playlist area shows a spinner.
   bool _playlistIndexBuilding = false;
   bool get playlistIndexBuilding => _playlistIndexBuilding;
+  bool _playlistFallbackTriggered = false;
 
   /// The id and sort keys of every playable item in the order the server lists
   /// them, kept so the order can change without fetching anything again. Null
@@ -828,6 +829,7 @@ class ItemDetailViewModel extends ChangeNotifier {
     _collectionHasMore = false;
     _collectionLoadingMore = false;
     _playlistIndexBuilding = false;
+    _playlistFallbackTriggered = false;
     _playlistFetchedCount = 0;
     _playlistHasMore = false;
     _playlistLoadingMore = false;
@@ -1583,11 +1585,10 @@ class ItemDetailViewModel extends ChangeNotifier {
         : newItems.length == _collectionPageSize;
     _collectionItems = [..._collectionItems, ...newItems];
     if ((_playlistIndexEntries == null || _playlistIndexEntries!.isEmpty) &&
-        !_playlistIndexBuilding) {
-      _ensurePlaylistIndexEntries();
-      _rebuildFlattenedIds();
-      _resetPlaylistPaging();
-      loadMorePlaylistItems();
+        !_playlistIndexBuilding &&
+        !_playlistFallbackTriggered) {
+      _playlistFallbackTriggered = true;
+      _buildPlaylistIndex();
     }
     notifyListeners();
   }
@@ -1744,9 +1745,9 @@ class ItemDetailViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // A saved order already lists movie and episode ids in story order, so it
-      // can stand in for the index and skip enumerating the collection. The
-      // entries only get built if the user later picks a different sort.
+      // When a saved order exists, scan the collection to locate any new
+      // members, appending them to the custom order in release order so
+      // newly added titles are not dropped.
       final syncService = GetIt.instance<PluginSyncService>();
       if (syncService.pluginAvailable) {
         try {
@@ -1766,6 +1767,7 @@ class ItemDetailViewModel extends ChangeNotifier {
               ...customOrder,
               ...remaining.map((e) => e.id),
             ];
+            _customOrderIds = _flattenedIds;
             _collectionSort = CollectionSortOption.custom;
           }
         } catch (_) {}
@@ -1800,8 +1802,6 @@ class ItemDetailViewModel extends ChangeNotifier {
       final allData = await _client.itemsApi.getItems(
         parentId: itemId,
         limit: _indexScanLimit,
-        sortBy: 'PremiereDate,ProductionYear,SortName',
-        sortOrder: 'Ascending',
         fields: 'BasicSyncInfo',
       );
       final allTopLevel = _mapItems((allData['Items'] as List?) ?? []);
