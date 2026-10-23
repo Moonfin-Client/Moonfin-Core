@@ -35,6 +35,11 @@ class ScheduleViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Reads can overlap and finish in any order, so each is numbered and only
+  // one newer than the last applied replaces the list.
+  int _reads = 0;
+  int _applied = 0;
+
   Future<void> load() => _read(showLoading: true);
 
   /// Re-reads the timers without the loading state, so the tiles and the
@@ -42,6 +47,7 @@ class ScheduleViewModel extends ChangeNotifier {
   Future<void> refresh() => _read(showLoading: false);
 
   Future<void> _read({required bool showLoading}) async {
+    final read = ++_reads;
     if (showLoading) {
       _state = ScheduleState.loading;
       notifyListeners();
@@ -49,6 +55,7 @@ class ScheduleViewModel extends ChangeNotifier {
 
     try {
       final response = await _client.liveTvApi.getTimers();
+      if (read < _applied) return;
       final items = (response['Items'] as List?) ?? [];
       final now = DateTime.now();
 
@@ -89,9 +96,10 @@ class ScheduleViewModel extends ChangeNotifier {
         );
       }).toList();
 
+      _applied = read;
       _state = ScheduleState.ready;
     } catch (_) {
-      if (showLoading) _state = ScheduleState.error;
+      if (showLoading && read > _applied) _state = ScheduleState.error;
     }
     notifyListeners();
   }

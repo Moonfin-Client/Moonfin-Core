@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
@@ -277,6 +279,46 @@ void main() {
 
       expect(states, isNot(contains(ScheduleState.loading)));
       expect(vm.state, ScheduleState.ready);
+    });
+
+    test('a read finishing after a newer one does not bring back its list', () async {
+      final vm = ScheduleViewModel(client);
+      await vm.load();
+      final older = Completer<Map<String, dynamic>>();
+      final newer = Completer<Map<String, dynamic>>();
+      final replies = [older, newer];
+      when(() => liveTv.getTimers()).thenAnswer((_) => replies.removeAt(0).future);
+
+      final first = vm.refresh();
+      final second = vm.refresh();
+      newer.complete({
+        'Items': [_timer('new', 'New')],
+      });
+      await second;
+      older.complete({
+        'Items': [_timer('new', 'New'), _timer('since-cancelled', 'New')],
+      });
+      await first;
+
+      final ids = [for (final g in vm.groups) for (final i in g.items) i.id];
+      expect(ids, ['new']);
+    });
+
+    test('a failed refresh does not stop the first load finishing', () async {
+      final vm = ScheduleViewModel(client);
+      final initial = Completer<Map<String, dynamic>>();
+      final replies = [initial.future, Future<Map<String, dynamic>>.error(Exception('offline'))];
+      when(() => liveTv.getTimers()).thenAnswer((_) => replies.removeAt(0));
+
+      final loading = vm.load();
+      await vm.refresh();
+      initial.complete({
+        'Items': [_timer('new', 'New')],
+      });
+      await loading;
+
+      expect(vm.state, ScheduleState.ready);
+      expect(vm.groups.single.items.single.id, 'new');
     });
 
     test('the Recordings scheduled row lists only timers still to record', () async {
