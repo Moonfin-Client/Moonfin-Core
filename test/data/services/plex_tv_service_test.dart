@@ -162,7 +162,7 @@ void main() {
     });
   });
 
-  group('plexNeedsVerificationCode', () {
+  group('plex.tv refusals', () {
     DioException refused(int code) {
       final request = RequestOptions(path: '/api/v2/users/signin');
       return DioException(
@@ -184,6 +184,12 @@ void main() {
       expect(plexNeedsVerificationCode(refused(1029)), isTrue);
       expect(plexNeedsVerificationCode(refused(1001)), isFalse);
       expect(plexNeedsVerificationCode(StateError('offline')), isFalse);
+    });
+
+    test('a Plex Home switch is a wrong PIN only when plex.tv says so', () {
+      expect(plexWrongPin(refused(1041)), isTrue);
+      expect(plexWrongPin(refused(1029)), isFalse);
+      expect(plexWrongPin(StateError('offline')), isFalse);
     });
   });
 

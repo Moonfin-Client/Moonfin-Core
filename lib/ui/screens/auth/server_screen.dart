@@ -8,6 +8,7 @@ import 'package:server_core/server_core.dart';
 import '../../../auth/models/login_state.dart';
 import '../../../auth/models/server.dart';
 import '../../../auth/repositories/auth_repository.dart';
+import '../../../auth/repositories/plex_repository.dart';
 import '../../../auth/repositories/server_repository.dart';
 import '../../../auth/repositories/server_user_repository.dart';
 import '../../../auth/repositories/session_repository.dart';
@@ -36,6 +37,7 @@ class _ServerScreenState extends State<ServerScreen> {
   final _userRepo = GetIt.instance<ServerUserRepository>();
   final _authRepo = GetIt.instance<AuthRepository>();
   final _sessionRepo = GetIt.instance<SessionRepository>();
+  final _plexRepo = GetIt.instance<PlexRepository>();
   final _clientFactory = GetIt.instance<MediaServerClientFactory>();
 
   Server? _server;
@@ -61,7 +63,9 @@ class _ServerScreenState extends State<ServerScreen> {
       }
 
       final stored = _userRepo.getStoredServerUsers(server.id);
-      final publicUsers = await _userRepo.getPublicServerUsers(server);
+      final publicUsers = server.serverType == ServerType.plex
+          ? await _plexRepo.homeUsers(server)
+          : await _userRepo.getPublicServerUsers(server);
 
       final merged = <String, _MergedUser>{};
       for (final u in stored) {
@@ -200,6 +204,11 @@ class _ServerScreenState extends State<ServerScreen> {
       return;
     }
 
+    if (server.serverType == ServerType.plex) {
+      await _switchPlexHomeUser(server, user);
+      return;
+    }
+
     if (!user.hasPassword && !alwaysAuthenticate) {
       final result = await _tryPasswordlessAuth(server, user);
       if (result is Authenticated && mounted) {
@@ -220,6 +229,48 @@ class _ServerScreenState extends State<ServerScreen> {
 
     if (mounted) {
       context.go(_buildUserLoginRoute(server, user));
+    }
+  }
+
+  /// Plex Home members sign in through plex.tv, with their PIN when they have
+  /// one, and get a server token of their own.
+  Future<void> _switchPlexHomeUser(Server server, _MergedUser user) async {
+    String? plexToken;
+    try {
+      if (user.hasPassword) {
+        final verified = await PinEntryDialog.show(
+          context,
+          mode: PinEntryMode.verify,
+          onVerifyAsync: (pin) async {
+            plexToken = await _plexRepo.homeUserToken(
+              server.id,
+              user.id,
+              pin: pin,
+            );
+            return plexToken == null
+                ? const PinRejected()
+                : const PinAccepted();
+          },
+        );
+        if (!verified) return;
+      } else {
+        plexToken = await _plexRepo.homeUserToken(server.id, user.id);
+      }
+      final signedIn =
+          plexToken != null &&
+          await _plexRepo.signInHomeUser(
+            server,
+            userId: user.id,
+            name: user.name,
+            plexToken: plexToken!,
+          );
+      if (signedIn && mounted) {
+        context.go(Destinations.home);
+        return;
+      }
+    } catch (_) {}
+    if (mounted) {
+      setState(() => _errorMessage = AppLocalizations.of(context).loginFailed);
     }
   }
 
@@ -452,12 +503,18 @@ class _ServerScreenState extends State<ServerScreen> {
     );
   }
 
-  String _userImageUrl(_MergedUser user) {
+  /// Plex keeps every account's avatar on plex.tv, under its uuid.
+  String? _userImageUrl(_MergedUser user) {
     final server = _server!;
+    if (server.serverType == ServerType.plex) {
+      return 'https://plex.tv/users/${user.id}/avatar';
+    }
+    if (user.imageTag == null) return null;
     return '${server.address}/Users/${user.id}/Images/Primary?tag=${user.imageTag}';
   }
 
   Widget _buildUserCard(_MergedUser user, int index) {
+    final imageUrl = _userImageUrl(user);
     final hasFocus = ValueNotifier(false);
     final focusNode = index < _userFocusNodes.length
         ? _userFocusNodes[index]
@@ -506,13 +563,13 @@ class _ServerScreenState extends State<ServerScreen> {
                           child: CircleAvatar(
                             radius: 36,
                             backgroundColor: Colors.white.withValues(alpha: 0.1),
-                            backgroundImage: user.imageTag != null
+                            backgroundImage: imageUrl != null
                                 ? NetworkImage(
-                                    _userImageUrl(user),
+                                    imageUrl,
                                     headers: serverImageHeaders,
                                   )
                                 : null,
-                            child: user.imageTag == null
+                            child: imageUrl == null
                                 ? Icon(
                                     Icons.person,
                                     size: 32,

@@ -184,6 +184,43 @@ class PlexTvService {
     );
   }
 
+  /// The members of the account's Plex Home, each by uuid, and whether a PIN
+  /// guards it.
+  Future<List<({String id, String name, bool hasPin})>> getHomeUsers(
+    String authToken,
+  ) async {
+    final response = await _dio.get<Map<String, dynamic>>(
+      'https://plex.tv/api/v2/home/users',
+      queryParameters: _identity,
+      options: Options(headers: {'X-Plex-Token': authToken}),
+    );
+    return [
+      for (final user in response.data?['users'] as List? ?? const [])
+        if (user case {'uuid': final String id, 'title': final String name})
+          (id: id, name: name, hasPin: user['protected'] == true),
+    ];
+  }
+
+  /// The plex.tv token of the Home member [userId], or null when [pin] is
+  /// wrong.
+  Future<String?> switchHomeUser(
+    String authToken,
+    String userId, {
+    String? pin,
+  }) async {
+    try {
+      final response = await _dio.post<Map<String, dynamic>>(
+        'https://plex.tv/api/v2/home/users/$userId/switch',
+        queryParameters: {..._identity, 'pin': ?pin},
+        options: Options(headers: {'X-Plex-Token': authToken}),
+      );
+      return response.data!['authToken'] as String;
+    } catch (e) {
+      if (plexWrongPin(e)) return null;
+      rethrow;
+    }
+  }
+
   Future<List<PlexServer>> getServers(String authToken) async {
     final response = await _dio.get<List<dynamic>>(
       'https://clients.plex.tv/api/v2/resources',
@@ -252,13 +289,20 @@ Future<String?> firstAnswering(
   return null;
 }
 
+int? _plexErrorCode(Object error) => switch (error) {
+  DioException(
+    response: Response(data: {'errors': [{'code': final int code}, ...]}),
+  ) =>
+    code,
+  _ => null,
+};
+
 /// Whether plex.tv turned a password sign-in down because the account's
 /// two-step verification code was missing.
-bool plexNeedsVerificationCode(Object error) => switch (error) {
-  DioException(response: Response(data: {'errors': [{'code': 1029}, ...]})) =>
-    true,
-  _ => false,
-};
+bool plexNeedsVerificationCode(Object error) => _plexErrorCode(error) == 1029;
+
+/// Whether plex.tv turned a Plex Home switch down for a wrong or missing PIN.
+bool plexWrongPin(Object error) => _plexErrorCode(error) == 1041;
 
 /// The uris to look for a Plex server at for a typed [address]. Plex's own
 /// port goes first when none was typed, and a bare address means http, since

@@ -19,6 +19,10 @@ class PrivateUser extends User {
   @override
   final String serverId;
   final String accessToken;
+
+  /// A Plex user's own plex.tv token, which lists and switches Plex Home
+  /// members. Their server token is [accessToken].
+  final String? plexToken;
   final DateTime lastUsed;
   @override
   final String? imageTag;
@@ -37,6 +41,7 @@ class PrivateUser extends User {
     required this.serverId,
     required this.accessToken,
     required this.lastUsed,
+    this.plexToken,
     this.imageTag,
     this.isAdministrator = false,
     this.canDownload = false,
@@ -47,6 +52,7 @@ class PrivateUser extends User {
   Map<String, dynamic> toJson() => {
         'name': name,
         'accessToken': accessToken,
+        'plexToken': ?plexToken,
         'lastUsed': lastUsed.toIso8601String(),
         'imageTag': imageTag,
         'isAdministrator': isAdministrator,
@@ -65,6 +71,7 @@ class PrivateUser extends User {
       name: json['name'] as String? ?? '',
       serverId: serverId,
       accessToken: json['accessToken'] as String? ?? '',
+      plexToken: json['plexToken'] as String?,
       lastUsed: DateTime.tryParse(json['lastUsed'] as String? ?? '') ??
           DateTime.now(),
       imageTag: json['imageTag'] as String?,
@@ -80,6 +87,7 @@ class PrivateUser extends User {
     String? name,
     String? serverId,
     String? accessToken,
+    String? plexToken,
     DateTime? lastUsed,
     String? imageTag,
     bool? isAdministrator,
@@ -92,6 +100,7 @@ class PrivateUser extends User {
       name: name ?? this.name,
       serverId: serverId ?? this.serverId,
       accessToken: accessToken ?? this.accessToken,
+      plexToken: plexToken ?? this.plexToken,
       lastUsed: lastUsed ?? this.lastUsed,
       imageTag: imageTag ?? this.imageTag,
       isAdministrator: isAdministrator ?? this.isAdministrator,

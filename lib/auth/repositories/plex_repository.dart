@@ -73,6 +73,7 @@ class PlexRepository {
         name: account.name,
         serverId: server.id,
         accessToken: server.accessToken,
+        plexToken: authToken,
         lastUsed: now,
       ),
     );
@@ -80,5 +81,68 @@ class PlexRepository {
       serverId: server.id,
       userId: account.id,
     );
+  }
+
+  /// The Plex Home members someone signed in to [server] can switch to.
+  Future<List<PublicUser>> homeUsers(Server server) async {
+    final token = _plexToken(server.id);
+    if (token == null) return const [];
+    try {
+      return [
+        for (final user in await _plexTv.getHomeUsers(token))
+          PublicUser(
+            id: user.id,
+            name: user.name,
+            serverId: server.id,
+            hasPassword: user.hasPin,
+          ),
+      ];
+    } catch (_) {
+      return const [];
+    }
+  }
+
+  /// [PlexTvService.switchHomeUser], asked as whoever used [serverId] last.
+  Future<String?> homeUserToken(String serverId, String userId, {String? pin}) {
+    final token = _plexToken(serverId);
+    if (token == null) throw StateError('No Plex account on $serverId');
+    return _plexTv.switchHomeUser(token, userId, pin: pin);
+  }
+
+  /// Opens a session on [server] as the Home member [userId], with the server
+  /// token plex.tv gives that member. False when the member can't reach it.
+  Future<bool> signInHomeUser(
+    Server server, {
+    required String userId,
+    required String name,
+    required String plexToken,
+  }) async {
+    final servers = await _plexTv.getServers(plexToken);
+    final match = servers.where((s) => s.id == server.id).firstOrNull;
+    if (match == null) return false;
+    await _authStore.putUser(
+      PrivateUser(
+        id: userId,
+        name: name,
+        serverId: server.id,
+        accessToken: match.accessToken,
+        plexToken: plexToken,
+        lastUsed: DateTime.now(),
+      ),
+    );
+    return _sessionRepository.switchCurrentSession(
+      serverId: server.id,
+      userId: userId,
+    );
+  }
+
+  /// The plex.tv token of whoever used [serverId] last. An owner's server
+  /// token is their plex.tv token, which covers users saved before the
+  /// plex.tv one was kept.
+  String? _plexToken(String serverId) {
+    final users = _authStore.getUsers(serverId)
+      ..sort((a, b) => b.lastUsed.compareTo(a.lastUsed));
+    final user = users.firstOrNull;
+    return user == null ? null : user.plexToken ?? user.accessToken;
   }
 }
