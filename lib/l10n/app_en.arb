@@ -14375,7 +14375,7 @@
   "@laterShowingRequested": {
     "description": "Snackbar after recording now and asking for a later showing"
   },
-  "unableToRequestLaterShowing": "Recording started; couldn't request a later showing.",
+  "unableToRequestLaterShowing": "Recording started, but couldn't request a later showing.",
   "@unableToRequestLaterShowing": {
     "description": "Snackbar when the recording started but asking for a later showing failed"
   }

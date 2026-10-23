@@ -15507,5 +15507,5 @@ class AppLocalizationsDa extends AppLocalizations {
 
   @override
   String get unableToRequestLaterShowing =>
-      'Recording started; couldn\'t request a later showing.';
+      'Recording started, but couldn\'t request a later showing.';
 }

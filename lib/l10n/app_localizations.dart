@@ -27054,7 +27054,7 @@ abstract class AppLocalizations {
   /// Snackbar when the recording started but asking for a later showing failed
   ///
   /// In en, this message translates to:
-  /// **'Recording started; couldn\'t request a later showing.'**
+  /// **'Recording started, but couldn\'t request a later showing.'**
   String get unableToRequestLaterShowing;
 }
 

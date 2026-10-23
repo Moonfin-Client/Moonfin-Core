@@ -2619,6 +2619,12 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
                         createTimer: () => _vm.toggleProgramRecording(program),
                         stillValid: () => dialogContext.mounted,
                       );
+                      // The guide refreshed before the later showing was
+                      // added, so refresh again to show it.
+                      if (outcome ==
+                          RecordAiringOutcome.recordedWithLaterShowing) {
+                        await _vm.recordingChanged();
+                      }
                       message = recordAiringMessage(l10n, outcome);
                     }
                     if (message == null) {
