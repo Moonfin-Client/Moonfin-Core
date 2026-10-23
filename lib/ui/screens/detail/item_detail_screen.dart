@@ -15250,29 +15250,44 @@ class DetailEpisodeCardState extends State<DetailEpisodeCard>
                               ),
                               if (runtimeText != null) ...[
                                 const SizedBox(height: 2),
-                                // The runtime and the pills share a line, and the pills
-                                // wrap underneath it when the row runs out of room.
-                                AnimeMarkerBadge(
-                                  seriesId: episode.seriesId,
-                                  episodeId: episode.id,
-                                  scale: desktopScale,
-                                  slot: AnimeMarkerPlacement.beside,
-                                  leading: Text(
-                                    runtimeText,
-                                    style: Theme.of(context).textTheme.bodySmall
-                                        ?.copyWith(
-                                          color: AppColorScheme.onSurface
-                                              .withValues(alpha: 0.8),
+                                // A phone's card is a fixed height with no room for the
+                                // Incomplete badge on a line of its own.
+                                Row(
+                                  children: [
+                                    Flexible(
+                                      // The runtime and the pills share a line, and the pills
+                                      // wrap underneath it when the row runs out of room.
+                                      child: AnimeMarkerBadge(
+                                        seriesId: episode.seriesId,
+                                        episodeId: episode.id,
+                                        scale: desktopScale,
+                                        slot: AnimeMarkerPlacement.beside,
+                                        leading: Text(
+                                          runtimeText,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall
+                                              ?.copyWith(
+                                                color: AppColorScheme.onSurface
+                                                    .withValues(alpha: 0.8),
+                                              ),
+                                          maxLines: 1,
                                         ),
-                                    maxLines: 1,
-                                  ),
+                                      ),
+                                    ),
+                                    IncompleteRecordingBadge(
+                                      itemId: episode.id,
+                                      height: 18,
+                                      padding: const EdgeInsets.only(left: 6),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                              IncompleteRecordingBadge(
-                                itemId: episode.id,
-                                height: 18,
-                                padding: const EdgeInsets.only(top: 4),
-                              ),
+                              ] else
+                                IncompleteRecordingBadge(
+                                  itemId: episode.id,
+                                  height: 18,
+                                  padding: const EdgeInsets.only(top: 4),
+                                ),
                               AnimeMarkerBadge(
                                 seriesId: episode.seriesId,
                                 episodeId: episode.id,

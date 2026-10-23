@@ -10,14 +10,18 @@ import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:moonfin/auth/models/user.dart';
 import 'package:moonfin/auth/repositories/user_repository.dart';
+import 'package:moonfin/data/models/aggregated_item.dart';
 import 'package:moonfin/data/services/incomplete_recordings_service.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/preference/user_preferences.dart';
+import 'package:moonfin/ui/screens/detail/item_detail_screen.dart';
 import 'package:moonfin/ui/widgets/live_tv/incomplete_recording.dart';
 import 'package:server_core/server_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class _MockClient extends Mock implements MediaServerClient {}
+
+class _MockImageApi extends Mock implements ImageApi {}
 
 /// Answers the plugin's endpoints with [incomplete] and records each request.
 class _PluginAdapter implements HttpClientAdapter {
@@ -267,6 +271,44 @@ void main() {
     );
 
     expect(find.byType(IncompleteRecordingPill), findsOneWidget);
+  });
+
+  // A phone's episode card is a fixed 90 pixels tall, so a badge on a line of
+  // its own would push a two line overview out of it.
+  testWidgets('a phone episode card fits the badge with or without a runtime', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await load(tester, [_incomplete('ep1'), _incomplete('ep2')]);
+
+    Widget card(String id, {int? runTimeTicks}) => DetailEpisodeCard(
+      episode: AggregatedItem(
+        id: id,
+        serverId: 's1',
+        rawData: {
+          'Id': id,
+          'Name': 'Pilot',
+          'Type': 'Episode',
+          'IndexNumber': 1,
+          'RunTimeTicks': ?runTimeTicks,
+          'Overview':
+              'A long overview that runs well past two lines on a phone, so '
+              'the card has to cut it off at its limit.',
+        },
+      ),
+      imageApi: _MockImageApi(),
+    );
+
+    await tester.pumpWidget(
+      app(
+        Column(children: [card('ep1', runTimeTicks: 22200000000), card('ep2')]),
+      ),
+    );
+
+    expect(tester.takeException(), isNull);
+    expect(find.byType(IncompleteRecordingPill), findsNWidgets(2));
   });
 
   testWidgets('nothing draws without the plugin', (tester) async {
