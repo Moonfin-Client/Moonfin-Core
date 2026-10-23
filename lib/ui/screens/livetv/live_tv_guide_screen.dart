@@ -2652,7 +2652,9 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
                       dialogActionInProgress = false;
                       return;
                     }
-                    await _vm.recordingChanged();
+                    // Changing the rule already announced itself, so only
+                    // this guide's programs need reading again.
+                    await _vm.reloadIfRecordingsChanged();
                     if (!pageContext.mounted || !dialogContext.mounted) return;
                     Navigator.of(dialogContext).pop();
                     ScaffoldMessenger.of(pageContext).showSnackBar(

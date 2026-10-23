@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 /// The recording mark for one airing. A one-off recording is a single red
-/// dot. A series rule is three dots: red when this airing will record, grey
-/// when the rule has an airing it won't record, such as a repeat or an
+/// dot. A series rule is the series record icon: red when this airing will
+/// record, grey when the rule won't record it, such as a repeat or an
 /// episode already in the library.
 class LiveTvRecordingIcon extends StatelessWidget {
   static const recordColor = Color(0xFFE0685C);

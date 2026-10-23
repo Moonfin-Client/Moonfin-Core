@@ -145,7 +145,7 @@ void main() {
       );
     });
 
-    testWidgets('a series rule with a timer draws three dots in red', (
+    testWidgets('a series rule with a timer draws the series icon in red', (
       tester,
     ) async {
       final icon = await pumpIcon(tester, hasTimer: true, hasSeriesTimer: true);
@@ -153,7 +153,7 @@ void main() {
       expect(icon.color, LiveTvRecordingIcon.recordColor);
     });
 
-    testWidgets('a series rule that skips this airing draws three grey dots', (
+    testWidgets('a series rule that skips this airing draws it in grey', (
       tester,
     ) async {
       final icon = await pumpIcon(

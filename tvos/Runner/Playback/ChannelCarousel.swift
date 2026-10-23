@@ -11,15 +11,20 @@ enum CarouselIndex {
     }
 }
 
-/// The recording mark for one airing, matching the Flutter guide. A one-off
-/// recording is a single dot. A series rule is three overlapping dots. Red when
+/// The recording mark for one airing, matching the Flutter guide's
+/// `LiveTvRecordingIcon`. A one-off recording is a dot. A series rule is the dot
+/// with an arc beside it, the shape of Material's `fiber_smart_record`. Red when
 /// the airing will record, grey when the series rule skips it.
 final class RecordingMarkView: UIView {
     static let recordColor = UIColor(red: 0.88, green: 0.41, blue: 0.36, alpha: 1)
     static let skippedColor = UIColor(white: 0.62, alpha: 1)
 
-    /// Each series dot sits this share of a diameter right of the one before.
-    private static let seriesStep: CGFloat = 0.45
+    // Measured from fiber_smart_record's grid, shifted so the dot starts at 0.
+    private static let dotUnits: CGFloat = 16
+    private static let seriesWidthUnits: CGFloat = 22
+    private static let arcCenterUnits: CGFloat = 16.3
+    private static let arcRadiusUnits: CGFloat = 4.71
+    private static let arcWidthUnits: CGFloat = 2.08
 
     let diameter: CGFloat
 
@@ -52,25 +57,27 @@ final class RecordingMarkView: UIView {
     }
 
     override var intrinsicContentSize: CGSize {
-        let count: CGFloat = hasSeriesTimer ? 3 : 1
-        return CGSize(
-            width: diameter * (1 + (count - 1) * Self.seriesStep), height: diameter)
+        let width = hasSeriesTimer
+            ? diameter * Self.seriesWidthUnits / Self.dotUnits : diameter
+        return CGSize(width: width, height: diameter)
     }
 
     override func draw(_ rect: CGRect) {
         let color = hasTimer ? Self.recordColor : Self.skippedColor
-        let y = (bounds.height - diameter) / 2
-        guard hasSeriesTimer else {
-            color.setFill()
-            UIBezierPath(ovalIn: CGRect(x: 0, y: y, width: diameter, height: diameter)).fill()
-            return
-        }
-        // Back to front, the rear dots dimmer so each edge stays visible.
-        for (index, alpha) in [CGFloat(0.5), 0.75, 1].enumerated() {
-            color.withAlphaComponent(alpha).setFill()
-            let x = CGFloat(index) * diameter * Self.seriesStep
-            UIBezierPath(ovalIn: CGRect(x: x, y: y, width: diameter, height: diameter)).fill()
-        }
+        color.setFill()
+        let midY = bounds.midY
+        UIBezierPath(
+            ovalIn: CGRect(x: 0, y: midY - diameter / 2, width: diameter, height: diameter)
+        ).fill()
+        guard hasSeriesTimer else { return }
+        color.setStroke()
+        let unit = diameter / Self.dotUnits
+        let arc = UIBezierPath(
+            arcCenter: CGPoint(x: Self.arcCenterUnits * unit, y: midY),
+            radius: Self.arcRadiusUnits * unit,
+            startAngle: -.pi / 2, endAngle: .pi / 2, clockwise: true)
+        arc.lineWidth = Self.arcWidthUnits * unit
+        arc.stroke()
     }
 }
 
