@@ -13357,7 +13357,7 @@ class DetailFeaturesRow extends StatelessWidget {
     final isMobile = _isCompact(context);
     final desktopScale = _desktopUiScale(prefs: prefs);
     final cardWidth = isMobile ? 140.0 : 170.0 * desktopScale;
-    const padding = EdgeInsets.fromLTRB(4, _kDetailRowTopInset, 4, 4);
+    const padding = EdgeInsets.fromLTRB(0, _kDetailRowTopInset, 0, 4);
 
     var tallestCard = 0.0;
     for (final item in items) {
@@ -13464,7 +13464,7 @@ class DetailChaptersRow extends StatelessWidget {
         controller: scrollController,
         scrollDirection: Axis.horizontal,
         clipBehavior: Clip.none,
-        padding: const EdgeInsets.fromLTRB(4, _kDetailRowTopInset, 4, 4),
+        padding: const EdgeInsets.only(top: _kDetailRowTopInset),
         itemCount: chapters.length,
         separatorBuilder: (_, _) =>
             SizedBox(width: isMobile ? 8 : 12 * desktopScale),
@@ -14448,7 +14448,7 @@ class DetailSeasonsRow extends StatelessWidget {
         controller: scrollController,
         scrollDirection: Axis.horizontal,
         clipBehavior: Clip.none,
-        padding: const EdgeInsets.fromLTRB(4, _kDetailRowTopInset, 4, 4),
+        padding: const EdgeInsets.only(top: _kDetailRowTopInset),
         itemCount: seasons.length,
         separatorBuilder: (_, _) =>
             SizedBox(width: isMobile ? 8 : 12 * desktopScale),
