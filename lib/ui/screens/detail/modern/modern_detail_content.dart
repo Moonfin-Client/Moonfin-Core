@@ -569,8 +569,10 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     _collectionSortFocusNode.onKeyEvent = (node, event) {
       if (event is KeyDownEvent) {
         if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-          if (_vm.playlistItems.isNotEmpty) {
-            final firstTrack = _vm.playlistItems.first;
+          final effectiveTracks =
+              _vm.playlistItems.isNotEmpty ? _vm.playlistItems : _vm.collectionItems;
+          if (effectiveTracks.isNotEmpty) {
+            final firstTrack = effectiveTracks.first;
             final rawId = firstTrack.rawData['PlaylistItemId']?.toString();
             final firstTrackId =
                 (rawId != null && rawId.isNotEmpty) ? rawId : firstTrack.id;
@@ -838,10 +840,17 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
 
   // Moves D-pad focus into the first track of the track list, using the same
   // focus node the DetailTrackList attaches to that row.
-  void _focusFirstTrack() {
-    if (_vm.tracks.isEmpty) return;
-    final id = _vm.tracks.first.id;
-    _trackFocusNodes.putIfAbsent(id, () => FocusNode()).requestFocus();
+  void _focusFirstTrack([List<AggregatedItem>? tracksOverride]) {
+    final list = tracksOverride ?? _vm.tracks;
+    if (list.isEmpty) return;
+    final firstTrack = list.first;
+    final rawId = firstTrack.rawData['PlaylistItemId']?.toString();
+    final firstTrackId =
+        (rawId != null && rawId.isNotEmpty) ? rawId : firstTrack.id;
+    final node = _trackFocusNodes.putIfAbsent(firstTrackId, () => FocusNode());
+    if (node.context?.mounted == true) {
+      node.requestFocus();
+    }
   }
 
   void _onTabBarNavigateDown(int tabIndex) {
@@ -935,10 +944,14 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
               _focusFirstTrack();
               break;
             case 'playlist':
-              if (_vm.item?.type == 'BoxSet' && _vm.playlistItems.isNotEmpty) {
+              final effectiveTracks = _vm.playlistItems.isNotEmpty
+                  ? _vm.playlistItems
+                  : (_vm.item?.type == 'BoxSet' ? _vm.collectionItems : _vm.tracks);
+              if (_vm.item?.type == 'BoxSet' &&
+                  _collectionSortFocusNode.context?.mounted == true) {
                 _collectionSortFocusNode.requestFocus();
               } else {
-                _focusFirstTrack();
+                _focusFirstTrack(effectiveTracks);
               }
               break;
           }
