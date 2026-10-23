@@ -1183,23 +1183,31 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                   return const Center(child: CircularProgressIndicator());
                 }
 
+                final hasPlaylistItems = _vm.playlistItems.isNotEmpty;
+                final tracks = hasPlaylistItems ? _vm.playlistItems : _vm.collectionItems;
                 final listWidget = DetailTrackList(
-                  tracks: _vm.playlistItems.isNotEmpty ? _vm.playlistItems : _vm.collectionItems,
+                  tracks: tracks,
                   imageApi: _vm.imageApi,
                   isPlaylist: true,
                   getFocusNode: (id) =>
                       _trackFocusNodes.putIfAbsent(id, () => FocusNode()),
                   onPlayTrack: (index) => _playPlaylistTrack(context, index),
-                  reorderable: _vm.collectionSort == CollectionSortOption.custom,
-                  onReorder: (oldIndex, newIndex) {
-                    var target = newIndex;
-                    if (target > oldIndex) {
-                      target -= 1;
-                    }
-                    _vm.reorderCollectionPlaylistItem(oldIndex, target);
-                  },
-                  onMoveUp: (index) => _vm.reorderCollectionPlaylistItem(index, index - 1),
-                  onMoveDown: (index) => _vm.reorderCollectionPlaylistItem(index, index + 1),
+                  reorderable: hasPlaylistItems && _vm.collectionSort == CollectionSortOption.custom,
+                  onReorder: hasPlaylistItems
+                      ? (oldIndex, newIndex) {
+                          var target = newIndex;
+                          if (target > oldIndex) {
+                            target -= 1;
+                          }
+                          _vm.reorderCollectionPlaylistItem(oldIndex, target);
+                        }
+                      : null,
+                  onMoveUp: hasPlaylistItems
+                      ? (index) => _vm.reorderCollectionPlaylistItem(index, index - 1)
+                      : null,
+                  onMoveDown: hasPlaylistItems
+                      ? (index) => _vm.reorderCollectionPlaylistItem(index, index + 1)
+                      : null,
                   onFirstTrackUp: () => _collectionSortFocusNode.requestFocus(),
                   onTrackFocused: widget.onBackdropItemFocused,
                 );
@@ -1230,7 +1238,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                                 FocusableToolbarButton(
                                   icon: Icons.sort_rounded,
                                   focusNode: _collectionSortFocusNode,
-                                  tooltip: l10n.resetSort,
+                                  tooltip: l10n.playlistSortOptions,
                                   onTap: () => _showCollectionSortDialog(context),
                                 ),
                                 const SizedBox(width: 12),
@@ -3998,7 +4006,8 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
 
   Future<void> _playPlaylistTrack(BuildContext context, int index) async {
     final manager = GetIt.instance<PlaybackManager>();
-    final isAudio = _vm.playlistItems.every(_isAudioItem);
+    final tracks = _vm.playlistItems.isNotEmpty ? _vm.playlistItems : _vm.collectionItems;
+    final isAudio = tracks.every(_isAudioItem);
     await launchPlayerWhilePreparing(
       context,
       manager: manager,
@@ -4008,7 +4017,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       startPlayback: (launchSession) async {
         await runPlaybackStart(
           launchSession,
-          () => manager.playItems(_vm.playlistItems, startIndex: index),
+          () => manager.playItems(tracks, startIndex: index),
         );
         return true;
       },

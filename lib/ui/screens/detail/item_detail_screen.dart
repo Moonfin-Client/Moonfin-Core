@@ -9160,6 +9160,33 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     return true;
   }
 
+  /// Sorts [queue] in-place according to [flattenedIds], falling back to each
+  /// item's original position in the queue to break ties for missing items.
+  static void _sortQueueByFlattenedIds(
+    List<AggregatedItem> queue,
+    List<String>? flattenedIds,
+  ) {
+    if (flattenedIds == null || flattenedIds.isEmpty || queue.length < 2) return;
+    final idOrder = {
+      for (var i = 0; i < flattenedIds.length; i++) flattenedIds[i]: i,
+    };
+    final originalIndices = {
+      for (var i = 0; i < queue.length; i++) queue[i].id: i,
+    };
+    queue.sort((a, b) {
+      final aRank = idOrder[a.id];
+      final bRank = idOrder[b.id];
+      if (aRank != null && bRank != null) {
+        return aRank.compareTo(bRank);
+      }
+      if (aRank != null) return -1;
+      if (bRank != null) return 1;
+      final aOrig = originalIndices[a.id] ?? 0;
+      final bOrig = originalIndices[b.id] ?? 0;
+      return aOrig.compareTo(bOrig);
+    });
+  }
+
   /// Resolves where a mixed video queue should start playing. Resumes an item
   /// left partway through, otherwise the first unwatched one, and the top when
   /// everything is watched or nothing has been started.
@@ -9555,17 +9582,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
                 fields: 'Overview,RunTimeTicks,UserData',
               );
               if (playableQueue.isNotEmpty) {
-                final flattened = viewModel.flattenedIds;
-                if (flattened != null && flattened.isNotEmpty) {
-                  final idOrder = {
-                    for (var i = 0; i < flattened.length; i++) flattened[i]: i,
-                  };
-                  playableQueue.sort((a, b) {
-                    final aIdx = idOrder[a.id] ?? idOrder.length;
-                    final bIdx = idOrder[b.id] ?? idOrder.length;
-                    return aIdx.compareTo(bIdx);
-                  });
-                }
+                _sortQueueByFlattenedIds(playableQueue, viewModel.flattenedIds);
                 final startIndex = playableQueue.indexWhere(
                   (e) => e.id == item.id,
                 );
@@ -9655,17 +9672,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
               throw PlaybackStartupRecoveryAbortedException();
             }
 
-            final flattened = viewModel.flattenedIds;
-            if (flattened != null && flattened.isNotEmpty) {
-              final idOrder = {
-                for (var i = 0; i < flattened.length; i++) flattened[i]: i,
-              };
-              playableQueue.sort((a, b) {
-                final aIdx = idOrder[a.id] ?? idOrder.length;
-                final bIdx = idOrder[b.id] ?? idOrder.length;
-                return aIdx.compareTo(bIdx);
-              });
-            }
+            _sortQueueByFlattenedIds(playableQueue, viewModel.flattenedIds);
 
             final (startIndex, startPosition) = _resolveQueueResumeStart(
               playableQueue,

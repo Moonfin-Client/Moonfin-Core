@@ -4,6 +4,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 import '../../../data/viewmodels/item_detail_view_model.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../util/focus/dpad_keys.dart';
+import '../../widgets/overlay_sheet.dart';
 
 /// Returns a localized display label for a collection sort option.
 String getCollectionSortLabel(
@@ -25,7 +26,7 @@ Future<void> showCollectionSortDialog(
   required ItemDetailViewModel vm,
 }) async {
   final l10n = AppLocalizations.of(context);
-  return showDialog<void>(
+  return showFocusRestoringDialog<void>(
     context: context,
     builder: (dialogContext) {
       return AlertDialog(
