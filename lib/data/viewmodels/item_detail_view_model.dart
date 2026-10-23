@@ -354,7 +354,7 @@ class ItemDetailViewModel extends ChangeNotifier {
   static const _indexScanBatchSize = 8;
 
   /// Member types that play on their own. A series is swapped for its episodes.
-  static const _playableTypes = {'Movie', 'Audio', 'Video', 'MusicVideo'};
+  static const _playableTypes = {'Movie', 'Audio', 'Video', 'MusicVideo', 'Episode'};
 
   /// True while the index is being built. The playlist area shows a spinner.
   bool _playlistIndexBuilding = false;
@@ -437,6 +437,10 @@ class ItemDetailViewModel extends ChangeNotifier {
 
   List<AggregatedItem> _playlistItems = const [];
   List<AggregatedItem> get playlistItems => _playlistItems;
+
+  /// Playable members from [_collectionItems] for playlist fallback.
+  List<AggregatedItem> get collectionPlayableItems =>
+      _collectionItems.where((i) => _playableTypes.contains(i.type)).toList();
 
   CollectionSortOption _collectionSort = CollectionSortOption.releaseAscending;
   CollectionSortOption get collectionSort => _collectionSort;
