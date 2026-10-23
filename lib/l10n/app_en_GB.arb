@@ -1283,7 +1283,7 @@
     "@downloadSubtitlesLabel": {
         "description": "Label for the download subtitles option"
     },
-    "searchOpenSubtitlesPlugin": "Search using the OpenSubtitles plugin",
+    "searchOpenSubtitlesPlugin": "Search using OpenSubtitles",
     "@searchOpenSubtitlesPlugin": {
         "description": "Subtitle for the download subtitles option"
     },

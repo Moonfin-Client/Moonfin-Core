@@ -138,13 +138,18 @@ class PlexUsersApi implements UsersApi {
 
   /// Plex has no route for the signed in user, so this checks the token
   /// against the server and answers with the id the session already has.
-  /// The server's allowSync is whether this account may download.
+  /// The server's allowSync is whether this account may download. Plex says
+  /// nothing about subtitle search up front, so it's offered and the server
+  /// answers for the account when it runs.
   @override
   Future<ServerUser> getCurrentUser() async {
     final root = await plexContainer(_dio, '/');
     return ServerUser(
       id: _userId(),
-      policy: UserPolicy(enableContentDownloading: root['allowSync'] == true),
+      policy: UserPolicy(
+        enableContentDownloading: root['allowSync'] == true,
+        enableSubtitleDownloading: true,
+      ),
     );
   }
 

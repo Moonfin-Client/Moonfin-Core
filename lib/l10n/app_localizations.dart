@@ -2923,7 +2923,7 @@ abstract class AppLocalizations {
   /// Subtitle for the download subtitles option
   ///
   /// In en, this message translates to:
-  /// **'Search using the OpenSubtitles plugin'**
+  /// **'Search using OpenSubtitles'**
   String get searchOpenSubtitlesPlugin;
 
   /// Dialog title for downloading remote subtitles

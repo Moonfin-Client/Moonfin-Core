@@ -873,12 +873,36 @@ class PlexItemsApi implements ItemsApi {
     'commercial': 'Commercial',
   };
 
+  static final _twoLetterLanguages = {
+    for (final entry in kIso6391To6392.entries) entry.value: entry.key,
+  };
+
+  /// Plex searches OpenSubtitles itself. It only takes two letter language
+  /// codes and fails outright on three.
   @override
   Future<List<Map<String, dynamic>>> searchRemoteSubtitles(
     String itemId, {
     required String language,
     bool? isPerfectMatch,
-  }) async => [];
+  }) async {
+    final container = await plexContainer(
+      _dio,
+      '/library/metadata/$itemId/subtitles',
+      {'language': _twoLetterLanguages[language] ?? language},
+    );
+    return [
+      for (final result in container['Stream'] as List? ?? const [])
+        if (result is Map)
+          {
+            'Id': '${result['id']}',
+            'Name': ?result['title'],
+            'ThreeLetterISOLanguageName': ?result['languageCode'],
+            'ProviderName': ?result['providerTitle'],
+            'Format': ?result['format'],
+            'HearingImpaired': result['hearingImpaired'] == true,
+          },
+    ];
+  }
 
   static Never _readOnly() =>
       throw UnsupportedError('Plex libraries are read only in Moonfin');
@@ -1033,7 +1057,12 @@ class PlexItemsApi implements ItemsApi {
     await _dio.delete('/playlists/$playlistId');
   }
 
+  /// Plex fetches the result and adds it to the item as a sidecar stream.
   @override
-  Future<void> downloadRemoteSubtitle(String itemId, String subtitleId) async =>
-      _readOnly();
+  Future<void> downloadRemoteSubtitle(String itemId, String subtitleId) async {
+    await _dio.put<void>(
+      '/library/metadata/$itemId/subtitles',
+      queryParameters: {'key': '/library/streams/$subtitleId'},
+    );
+  }
 }

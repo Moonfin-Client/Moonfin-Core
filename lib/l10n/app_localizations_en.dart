@@ -1645,8 +1645,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get downloadSubtitlesLabel => 'Download subtitles...';
 
   @override
-  String get searchOpenSubtitlesPlugin =>
-      'Search using the OpenSubtitles plugin';
+  String get searchOpenSubtitlesPlugin => 'Search using OpenSubtitles';
 
   @override
   String get downloadSubtitles => 'Download Subtitles';
@@ -16942,8 +16941,7 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
   String get downloadSubtitlesLabel => 'Download subtitles…';
 
   @override
-  String get searchOpenSubtitlesPlugin =>
-      'Search using the OpenSubtitles plugin';
+  String get searchOpenSubtitlesPlugin => 'Search using OpenSubtitles';
 
   @override
   String get downloadSubtitles => 'Download Subtitles';

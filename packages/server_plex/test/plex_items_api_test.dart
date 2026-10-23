@@ -1067,6 +1067,42 @@ void main() {
     },
   );
 
+  test(
+    'subtitle search asks Plex in two letters, and a pick is fetched',
+    () async {
+      final (dio, requests) = _recordingDio({
+        'Stream': [
+          {
+            'id': 149730,
+            'title': 'Despicable Me 3 (2017) Bluray-1080p.en',
+            'languageCode': 'eng',
+            'format': 'srt',
+            'providerTitle': 'OpenSubtitles',
+            'hearingImpaired': true,
+          },
+        ],
+      });
+      final api = PlexItemsApi(dio);
+
+      final results = await api.searchRemoteSubtitles('1804', language: 'eng');
+      await api.downloadRemoteSubtitle('1804', '149730');
+
+      expect(requests.first.path, '/library/metadata/1804/subtitles');
+      expect(requests.first.queryParameters, {'language': 'en'});
+      expect(results.single, {
+        'Id': '149730',
+        'Name': 'Despicable Me 3 (2017) Bluray-1080p.en',
+        'ThreeLetterISOLanguageName': 'eng',
+        'ProviderName': 'OpenSubtitles',
+        'Format': 'srt',
+        'HearingImpaired': true,
+      });
+      expect(requests.last.method, 'PUT');
+      expect(requests.last.path, '/library/metadata/1804/subtitles');
+      expect(requests.last.queryParameters, {'key': '/library/streams/149730'});
+    },
+  );
+
   test('intro and credits markers become skip segments', () async {
     final (dio, requests) = _recordingDio({
       'Metadata': [
