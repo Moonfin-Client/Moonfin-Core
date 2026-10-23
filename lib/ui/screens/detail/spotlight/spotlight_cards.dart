@@ -1271,7 +1271,8 @@ class _SpotlightCardsBuilder {
             );
           },
           builder: (context, firstFocusNode) {
-            if (vm.playlistIndexBuilding && items.isEmpty) {
+            if (vm.playlistSortRefreshing ||
+                (vm.playlistIndexBuilding && items.isEmpty)) {
               return const Center(child: CircularProgressIndicator());
             }
             final hasPlaylistItems = items.isNotEmpty;

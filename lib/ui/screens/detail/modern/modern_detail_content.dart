@@ -1203,8 +1203,9 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
               'playlist',
               l10n.playlist,
               (context, item) {
-                // Phase 1: flat ID index still building — show full spinner.
-                if (_vm.playlistIndexBuilding && _vm.playlistItems.isEmpty) {
+                // Phase 1: flat ID index still building or sort refreshing — show full spinner.
+                if (_vm.playlistSortRefreshing ||
+                    (_vm.playlistIndexBuilding && _vm.playlistItems.isEmpty)) {
                   return const Center(child: CircularProgressIndicator());
                 }
 
@@ -4037,6 +4038,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   }
 
   Future<void> _playPlaylistTrack(BuildContext context, int index) async {
+    if (_vm.playlistSortRefreshing) return;
     final manager = GetIt.instance<PlaybackManager>();
     final tracks = _vm.playlistItems.isNotEmpty ? _vm.playlistItems : _vm.collectionPlayableItems;
     final isAudio = tracks.every(_isAudioItem);
