@@ -15267,12 +15267,12 @@ class DetailEpisodeCardState extends State<DetailEpisodeCard>
                                     maxLines: 1,
                                   ),
                                 ),
-                                IncompleteRecordingBadge(
-                                  itemId: episode.id,
-                                  height: 18,
-                                  padding: const EdgeInsets.only(top: 4),
-                                ),
                               ],
+                              IncompleteRecordingBadge(
+                                itemId: episode.id,
+                                height: 18,
+                                padding: const EdgeInsets.only(top: 4),
+                              ),
                               AnimeMarkerBadge(
                                 seriesId: episode.seriesId,
                                 episodeId: episode.id,
