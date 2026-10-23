@@ -279,7 +279,11 @@ class SessionRepository {
       return false;
     }
 
-    final address = await _bestPlexAddress(server);
+    // An address that never answers would hold startup for the whole probe,
+    // so the saved one is used past a short wait. The probe carries on and
+    // saves a better one for next time.
+    final address = await _bestPlexAddress(server)
+        .timeout(const Duration(seconds: 2), onTimeout: () => server.address);
     final client = _clientFactory.getClient(
       serverId: serverId,
       serverType: server.serverType,

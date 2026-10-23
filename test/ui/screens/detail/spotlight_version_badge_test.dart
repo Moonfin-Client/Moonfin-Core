@@ -184,6 +184,7 @@ void main() {
     when(() => vm.ratings).thenReturn({});
     when(() => vm.supportsNumericUserRatings).thenReturn(false);
     when(() => vm.supportsPersonalRating).thenReturn(true);
+    when(() => vm.searchesYouTubeForTrailer).thenReturn(false);
     when(() => vm.isRatingMutationInProgress).thenReturn(false);
     when(() => vm.contextSeasonId).thenReturn(null);
   });

@@ -101,6 +101,7 @@ class _CredentialFieldState extends State<CredentialField> {
         }
         if (event.logicalKey == LogicalKeyboardKey.enter ||
             event.logicalKey == LogicalKeyboardKey.select) {
+          if (!widget.enabled) return KeyEventResult.handled;
           if (!widget.focusNode.hasFocus) widget.focusNode.requestFocus();
           _tvFieldKey.currentState?.openKeyboard();
           return KeyEventResult.handled;
@@ -143,7 +144,9 @@ class _CredentialFieldState extends State<CredentialField> {
                 ? TextFieldType.password
                 : TextFieldType.other,
             popParentOnKeyboardClose: false,
-            onFieldSubmitted: onSubmitted == null ? null : (_) => onSubmitted(),
+            onFieldSubmitted: onSubmitted == null || !widget.enabled
+                ? null
+                : (_) => onSubmitted(),
             onVisibilityChanged: _onKeyboardVisibilityChanged,
           );
         },

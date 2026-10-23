@@ -83,6 +83,7 @@ void main() {
     liveTvApi = _MockLiveTvApi();
     imageApi = _MockImageApi();
     when(() => client.liveTvApi).thenReturn(liveTvApi);
+    when(() => client.serverType).thenReturn(ServerType.jellyfin);
     when(() => client.imageApi).thenReturn(imageApi);
     when(
       () => imageApi.getPrimaryImageUrl(

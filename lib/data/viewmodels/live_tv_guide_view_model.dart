@@ -391,6 +391,18 @@ class LiveTvGuideViewModel extends ChangeNotifier {
   GuideFilter _filter = GuideFilter.all;
   GuideFilter get filter => _filter;
 
+  /// The filters the guide offers. Plex programs never carry the sports,
+  /// news or kids flags, so those would always come up empty there.
+  List<GuideFilter> get filters => _client.serverType == ServerType.plex
+      ? const [
+          GuideFilter.all,
+          GuideFilter.movies,
+          GuideFilter.series,
+          GuideFilter.premiere,
+          GuideFilter.favorites,
+        ]
+      : GuideFilter.values;
+
   // Seeded from the injected clock in the constructor, so the initial value
   // is testable rather than tied to the real wall clock.
   DateTime _guideDate;

@@ -216,6 +216,9 @@ class _FakeClient implements MediaServerClient {
   String get baseUrl => 'http://127.0.0.1:1';
 
   @override
+  ServerType get serverType => ServerType.jellyfin;
+
+  @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 

@@ -114,6 +114,7 @@ void main() {
     client = _MockMediaServerClient();
     liveTvApi = _MockLiveTvApi();
     when(() => client.liveTvApi).thenReturn(liveTvApi);
+    when(() => client.serverType).thenReturn(ServerType.jellyfin);
     when(() => client.userId).thenReturn('user');
 
     when(

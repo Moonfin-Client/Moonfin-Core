@@ -1215,7 +1215,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
     EdgeInsetsGeometry padding = const EdgeInsets.fromLTRB(16, 6, 16, 6),
     VoidCallback? onNavigateDown,
   }) {
-    final filters = GuideFilter.values;
+    final filters = _vm.filters;
     return Padding(
       padding: padding,
       child: EpgFilterRail(

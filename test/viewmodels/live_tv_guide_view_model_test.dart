@@ -116,6 +116,25 @@ void main() {
     when(() => _guide(liveTv)).thenAnswer((_) async => {'Items': <dynamic>[]});
   });
 
+  test('Plex leaves out the genre filters its programs never carry', () {
+    when(() => client.serverType).thenReturn(ServerType.plex);
+    expect(
+      LiveTvGuideViewModel(client).filters,
+      isNot(
+        anyOf(
+          contains(GuideFilter.sports),
+          contains(GuideFilter.news),
+          contains(GuideFilter.kids),
+        ),
+      ),
+    );
+
+    for (final type in [ServerType.jellyfin, ServerType.emby]) {
+      when(() => client.serverType).thenReturn(type);
+      expect(LiveTvGuideViewModel(client).filters, GuideFilter.values);
+    }
+  });
+
   test('load() fetches only the first batch; loadMorePrograms() paginates the rest', () async {
     // 120 channels → batches of 50 (never one giant all-channels request).
     final channels = List.generate(120, (i) => _channel('c$i'));

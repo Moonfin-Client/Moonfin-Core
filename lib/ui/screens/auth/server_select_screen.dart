@@ -1007,9 +1007,9 @@ class _AddServerDialogState extends State<AddServerDialog> {
       }
       // Only Jellyfin and Emby answer that probe, so a Plex server goes to its
       // plex.tv sign-in.
-      final plexUri = await GetIt.instance<PlexTvService>().findServerAt(
-        address,
-      );
+      final plexUri = GetIt.instance.isRegistered<PlexTvService>()
+          ? await GetIt.instance<PlexTvService>().findServerAt(address)
+          : null;
       if (!mounted) return;
       if (plexUri != null) {
         final router = GoRouter.of(context);

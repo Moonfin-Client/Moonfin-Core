@@ -851,11 +851,16 @@ void _onItemStopped(dynamic item) {
     _getIt<RemoveWatchedService>().onItemStopped(item.id);
   }
   // Plex sends no user data events, so the new resume point and watched state
-  // have to be asked for.
-  final client = _getIt<MediaServerClientFactory>().getClientIfExists(
+  // have to be asked for. Plex items don't name their server, so one without
+  // an id belongs to the active client.
+  if (!_getIt.isRegistered<MediaServerClientFactory>() ||
+      !_getIt.isRegistered<MediaServerClient>()) {
+    return;
+  }
+  final client = _getIt<MediaServerClientFactory>().clientForServerOrActive(
     item.serverId,
   );
-  if (client != null && client.serverType == ServerType.plex) {
+  if (client.serverType == ServerType.plex) {
     unawaited(
       userDataSync.refreshFromServer(client, [
         item.id,
