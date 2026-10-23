@@ -2350,7 +2350,6 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
       onRightEdge: () =>
           unawaited(_shiftGuideWindow(const Duration(minutes: 30))),
       noProgramDataLabel: AppLocalizations.of(context).noProgramData,
-      filterLabel: _filterLabel,
       // Per A3: a gap or filtered hole tunes live, never opens the recording
       // dialog. Loading is inert. Failed has no retry producer yet.
       onProgramSelected: (cell) {
@@ -3017,7 +3016,6 @@ class _GuideProgramRow extends StatefulWidget {
 
   /// Label for a real schedule gap. A genre-filtered hole never shows it.
   final String noProgramDataLabel;
-  final String Function(GuideFilter) filterLabel;
 
   const _GuideProgramRow({
     required this.cells,
@@ -3041,7 +3039,6 @@ class _GuideProgramRow extends StatefulWidget {
     required this.onProgramFocused,
     this.onHorizontalMove,
     required this.noProgramDataLabel,
-    required this.filterLabel,
   });
 
   @override
@@ -3270,10 +3267,6 @@ class _GuideProgramRowState extends State<_GuideProgramRow> {
         builder: (_, _) => EpgProgramCell(
           title: program?.name ?? '',
           episodeLine: program?.episodeLine,
-          rating: program?.officialRating,
-          tags:
-              program?.categoryTags.map(widget.filterLabel).toList() ??
-              const [],
           // The geometry clips a cell to the window, so the program's own
           // start is the only thing that says it began before the left edge.
           startsBeforeWindow:

@@ -15,9 +15,7 @@ import '../epg_genre.dart';
 /// unlabelled. [loading] and [failed] override everything else with their own
 /// treatment for a non-program placeholder cell spanning the whole row.
 class EpgProgramCell extends StatelessWidget {
-  static const String _metaSeparator = ' \u00B7 ';
-
-  /// Below this content width the metadata line is dropped entirely.
+  /// Below this content width the episode line is dropped entirely.
   static const double _minMetaWidth = 96;
 
   /// Icons set in a line of text take this share of that line's face, so they
@@ -49,12 +47,6 @@ class EpgProgramCell extends StatelessWidget {
   /// no room at all.
   final bool startsBeforeWindow;
 
-  /// Official rating (`TV-G`, `PG-13`). First item of the metadata line.
-  final String? rating;
-
-  /// Category labels (`Sports`, `News`) shown after the rating.
-  final List<String> tags;
-
   const EpgProgramCell({
     super.key,
     required this.title,
@@ -72,8 +64,6 @@ class EpgProgramCell extends StatelessWidget {
     this.failed = false,
     this.textLeftPadding = 0,
     this.startsBeforeWindow = false,
-    this.rating,
-    this.tags = const [],
   });
 
   @override
@@ -162,13 +152,20 @@ class EpgProgramCell extends StatelessWidget {
     // Structural boundary marker: full-bleed, hard-edged, genre-tinted.
     const separatorWidth = 3.0;
 
+    // The focus border is painted over the content: as a decoration border it
+    // would inset the content and squeeze the episode line out of a focused cell.
     final programCell = Container(
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: bg,
         borderRadius: AppRadius.circular(radius),
-        border: focusBorder,
       ),
+      foregroundDecoration: focusBorder == null
+          ? null
+          : BoxDecoration(
+              borderRadius: AppRadius.circular(radius),
+              border: focusBorder,
+            ),
       child: Stack(
         children: [
           if (!apple)
@@ -213,14 +210,14 @@ class EpgProgramCell extends StatelessWidget {
                   ? cell.maxHeight - padding.vertical
                   : double.infinity;
 
-              // Metadata earns a line only when the row is tall enough for it
-              // on top of a full title line. The title is never given up.
-              final metaItems =
-                  placeholderLabel == null && innerWidth >= _minMetaWidth
-                  ? _fittingMeta(innerWidth, metaStyle, scaler)
-                  : const <String>[];
+              // The episode line earns a line only when the row is tall enough
+              // for it on top of a full title line. The title is never given up.
+              final episode = episodeLine?.trim() ?? '';
               final showMetaLine =
-                  metaItems.isNotEmpty && innerHeight >= titleLine + metaLine;
+                  placeholderLabel == null &&
+                  episode.isNotEmpty &&
+                  innerWidth >= _minMetaWidth &&
+                  innerHeight >= titleLine + metaLine;
               // The dot and the timer marker are dropped before the title is:
               // a cell this narrow has no room for either.
               final ornaments =
@@ -233,64 +230,73 @@ class EpgProgramCell extends StatelessWidget {
                   innerHeight >=
                       2 * titleLine + (showMetaLine ? metaLine : 0.0);
 
+              final lines = Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                // Programs read from the top down. A gap label stays centred.
+                mainAxisAlignment: placeholderLabel != null
+                    ? MainAxisAlignment.center
+                    : MainAxisAlignment.start,
+                children: [
+                  showMarker
+                      ? _markerRow(titleStyle, markerStyle, inlineIconSize)
+                      : Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (apple && showOrnaments) ...[
+                              Padding(
+                                padding: const EdgeInsets.only(top: 4),
+                                child: _genreDot(),
+                              ),
+                              const SizedBox(width: 6),
+                            ],
+                            Flexible(
+                              child:
+                                  focused &&
+                                      !wrapTitle &&
+                                      placeholderLabel == null
+                                  ? MarqueeText(
+                                      text: title,
+                                      style: titleStyle,
+                                      showDotSeparator: false,
+                                    )
+                                  : Text(
+                                      placeholderLabel ?? title,
+                                      maxLines: wrapTitle ? 2 : 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: titleStyle,
+                                    ),
+                            ),
+                            if (_showsRecording && showOrnaments) ...[
+                              const SizedBox(width: 6),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 2),
+                                child: _timerDot(inlineIconSize),
+                              ),
+                            ],
+                          ],
+                        ),
+                  if (showMetaLine)
+                    focused
+                        ? MarqueeText(
+                            text: episode,
+                            style: metaStyle,
+                            showDotSeparator: false,
+                          )
+                        : Text(
+                            episode,
+                            maxLines: 1,
+                            softWrap: false,
+                            overflow: TextOverflow.ellipsis,
+                            style: metaStyle,
+                          ),
+                ],
+              );
+
               return Padding(
                 padding: padding,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  // Programs read from the top down. A gap label stays centred.
-                  mainAxisAlignment: placeholderLabel != null
-                      ? MainAxisAlignment.center
-                      : MainAxisAlignment.start,
-                  children: [
-                    showMarker
-                        ? _markerRow(titleStyle, markerStyle, inlineIconSize)
-                        : Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              if (apple && showOrnaments) ...[
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 4),
-                                  child: _genreDot(),
-                                ),
-                                const SizedBox(width: 6),
-                              ],
-                              Flexible(
-                                child:
-                                    focused &&
-                                        !wrapTitle &&
-                                        placeholderLabel == null
-                                    ? MarqueeText(
-                                        text: title,
-                                        style: titleStyle,
-                                        showDotSeparator: false,
-                                      )
-                                    : Text(
-                                        placeholderLabel ?? title,
-                                        maxLines: wrapTitle ? 2 : 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: titleStyle,
-                                      ),
-                              ),
-                              if (_showsRecording && showOrnaments) ...[
-                                const SizedBox(width: 6),
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 2),
-                                  child: _timerDot(inlineIconSize),
-                                ),
-                              ],
-                            ],
-                          ),
-                    if (showMetaLine)
-                      Text(
-                        metaItems.join(_metaSeparator),
-                        maxLines: 1,
-                        softWrap: false,
-                        overflow: TextOverflow.ellipsis,
-                        style: metaStyle,
-                      ),
-                  ],
-                ),
+                // A focused cell's overflowing lines scroll in step.
+                child: focused ? MarqueeGroup(child: lines) : lines,
               );
             },
           ),
@@ -402,32 +408,6 @@ class EpgProgramCell extends StatelessWidget {
     );
   }
 
-  /// Metadata that fits the given width: the episode line first, then the
-  /// rating and the tags, dropping from the end once the line is full. The
-  /// first item always stays, since the line ellipsises what it can't show.
-  List<String> _fittingMeta(double width, TextStyle style, TextScaler scaler) {
-    final episode = episodeLine?.trim() ?? '';
-    final items = <String>[
-      if (episode.isNotEmpty) episode,
-      if (rating != null && rating!.trim().isNotEmpty) rating!.trim(),
-      for (final tag in tags)
-        if (tag.trim().isNotEmpty) tag.trim(),
-    ];
-    if (items.isEmpty) return const [];
-    if (!width.isFinite) return items;
-
-    final fitted = <String>[];
-    var used = 0.0;
-    for (final item in items) {
-      final piece = fitted.isEmpty ? item : '$_metaSeparator$item';
-      final pieceWidth = _textWidth(piece, style, scaler);
-      if (fitted.isNotEmpty && used + pieceWidth > width) break;
-      used += pieceWidth;
-      fitted.add(item);
-    }
-    return fitted;
-  }
-
   static double _lineHeight(TextStyle style, TextScaler scaler) {
     final painter = TextPainter(
       text: TextSpan(text: 'Ag', style: style),
@@ -438,17 +418,5 @@ class EpgProgramCell extends StatelessWidget {
     final height = painter.height;
     painter.dispose();
     return height.ceilToDouble();
-  }
-
-  static double _textWidth(String text, TextStyle style, TextScaler scaler) {
-    final painter = TextPainter(
-      text: TextSpan(text: text, style: style),
-      textDirection: TextDirection.ltr,
-      textScaler: scaler,
-      maxLines: 1,
-    )..layout();
-    final width = painter.width;
-    painter.dispose();
-    return width;
   }
 }
