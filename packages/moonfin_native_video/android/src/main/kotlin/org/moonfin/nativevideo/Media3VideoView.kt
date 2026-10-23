@@ -986,6 +986,7 @@ class Media3VideoView(
     private var resumeWedgeCheck: Runnable? = null
     private var pausedWhileReady = false
     private var skipSilenceEnabled = false
+    private var isTvDevice = false
     // The delay the user set. Positive shows subtitles later.
     private var manualSubtitleDelayMs = 0L
     private var sidecarOffsetSources: List<TimeOffsetMediaSource> = emptyList()
@@ -2645,6 +2646,7 @@ class Media3VideoView(
         applyStereoDownmix(effectiveStereoDownmix())
         currentNormalizationGainDb = (args["normalizationGainDb"] as? Number)?.toFloat()
         skipSilenceEnabled = args["skipSilenceEnabled"] as? Boolean ?: false
+        isTvDevice = args["isTv"] as? Boolean ?: false
         manualSubtitleDelayMs = clampManualDelayMs((args["subtitleDelayMs"] as? Number)?.toLong() ?: 0L)
         sidecarOffsetSources = emptyList()
         embeddedOffsetSource = null
@@ -3107,8 +3109,11 @@ class Media3VideoView(
         tunnelingActive = shouldEnableTunneling
 
         // Offloaded audio bypasses the PCM processors, so skip silence would
-        // quietly do nothing there.
-        val offloadMode = if (isAudioContent && !audioOffloadDisabled && !skipSilenceEnabled) {
+        // quietly do nothing there. 
+        // Audio offload also stalls audio-only playback on Android TV
+        // which causes a bug where audiobooks never start.
+        // The workaround current workaround is to gate it with isTvDevice
+        val offloadMode = if (isAudioContent && !isTvDevice && !audioOffloadDisabled && !skipSilenceEnabled) {
             TrackSelectionParameters.AudioOffloadPreferences.AUDIO_OFFLOAD_MODE_ENABLED
         } else {
             TrackSelectionParameters.AudioOffloadPreferences.AUDIO_OFFLOAD_MODE_DISABLED

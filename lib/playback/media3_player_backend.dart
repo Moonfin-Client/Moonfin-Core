@@ -1170,6 +1170,7 @@ class Media3PlayerBackend extends PlayerBackend
       'isLive': _sourceIsLive,
       'normalizationGainDb': normalizationGainDb,
       'skipSilenceEnabled': _skipSilenceEnabled,
+      'isTv': PlatformDetection.isTV,
       'preferredAudioLanguage': preferredAudioLanguage,
       'preferredTextLanguage': preferredSubtitleLanguage,
       'externalSubtitles': payload['externalSubtitles'] ?? const [],
