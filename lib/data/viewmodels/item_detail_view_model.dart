@@ -357,6 +357,8 @@ class ItemDetailViewModel extends ChangeNotifier {
   bool _playlistIndexBuilding = false;
   bool get playlistIndexBuilding => _playlistIndexBuilding;
   bool _playlistFallbackTriggered = false;
+  bool _playlistSortRefreshing = false;
+  bool get playlistSortRefreshing => _playlistSortRefreshing;
 
   /// The id and sort keys of every playable item in the order the server lists
   /// them, kept so the order can change without fetching anything again. Null
@@ -830,6 +832,7 @@ class ItemDetailViewModel extends ChangeNotifier {
     _collectionLoadingMore = false;
     _playlistIndexBuilding = false;
     _playlistFallbackTriggered = false;
+    _playlistSortRefreshing = false;
     _playlistFetchedCount = 0;
     _playlistHasMore = false;
     _playlistLoadingMore = false;
@@ -1375,15 +1378,22 @@ class ItemDetailViewModel extends ChangeNotifier {
   Future<void> setCollectionSort(CollectionSortOption option) async {
     if (_collectionSort == option) return;
     _collectionSort = option;
-    // A saved order arrives ready to use, so the scan is only worth paying for
-    // when the sort actually needs the keys.
-    if (option != CollectionSortOption.custom) {
-      await _ensurePlaylistIndexEntries();
-    }
-    _rebuildFlattenedIds();
-    _resetPlaylistPaging();
+    _playlistSortRefreshing = true;
     notifyListeners();
-    await loadMorePlaylistItems();
+    try {
+      // A saved order arrives ready to use, so the scan is only worth paying for
+      // when the sort actually needs the keys.
+      if (option != CollectionSortOption.custom) {
+        await _ensurePlaylistIndexEntries();
+      }
+      _rebuildFlattenedIds();
+      _resetPlaylistPaging();
+      notifyListeners();
+      await loadMorePlaylistItems();
+    } finally {
+      _playlistSortRefreshing = false;
+      notifyListeners();
+    }
   }
 
   /// Points [_flattenedIds] at the active sort. Every option lands here, so the
