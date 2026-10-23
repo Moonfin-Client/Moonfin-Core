@@ -2074,6 +2074,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
                       if (index >= items.length) return null;
                       final item = items[index];
                       return MediaCard(
+                        recordingItemId: item.id,
                         title: item.name,
                         subtitle: _cardSubtitle(item),
                         imageUrl: _imageUrl(item, cellWidth: actualCellWidth),
