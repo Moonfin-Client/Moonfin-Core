@@ -132,7 +132,26 @@ const _teletubbies = {
                     {'id': 'lineupChannel', 'value': ''},
                   ],
                 },
-                {'type': 2, 'parameters': 'hints%5Btype%5D=2'},
+                {
+                  'type': 2,
+                  'parameters': 'hints%5Btype%5D=2',
+                  'Setting': [
+                    {'id': 'onlyNewAirings', 'value': '1'},
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      },
+      '/media/subscriptions/8' => {
+        'MediaContainer': {
+          'MediaSubscription': [
+            {
+              'key': '8',
+              'type': 2,
+              'Setting': [
+                {'id': 'onlyNewAirings', 'value': '1'},
               ],
             },
           ],
@@ -261,6 +280,31 @@ void main() {
         containsPair('prefs[startTimeslot]', '1792699380'),
       ),
     );
+  });
+
+  test('a series rule takes repeats or not, and can be changed', () async {
+    final (dio, server) = _server();
+    final api = PlexLiveTvApi(dio);
+
+    await api.createSeriesTimer(
+      'airing-2-1792699380-4',
+      settings: {'RecordNewOnly': false, 'SkipEpisodesInLibrary': true},
+    );
+    final rule = await api.getSeriesTimer('8');
+    await api.updateSeriesTimer('8', {...rule, 'RecordNewOnly': false});
+
+    final post = server.requests.singleWhere((r) => r.method == 'POST');
+    expect(
+      post.uri.queryParameters,
+      allOf(
+        containsPair('type', '2'),
+        containsPair('prefs[onlyNewAirings]', '0'),
+      ),
+    );
+    expect(rule, containsPair('RecordNewOnly', true));
+    final put = server.requests.singleWhere((r) => r.method == 'PUT');
+    expect(put.uri.path, '/media/subscriptions/8');
+    expect(put.uri.queryParameters, {'prefs[onlyNewAirings]': '0'});
   });
 
   test('scheduled showings are timers, and each cancels its own way', () async {

@@ -547,13 +547,55 @@ class PlexLiveTvApi implements LiveTvApi {
   Future<void> createTimer(String programId) => _record(programId);
 
   @override
-  Future<void> createSeriesTimer(String programId) =>
-      _record(programId, series: true);
+  Future<void> createSeriesTimer(
+    String programId, {
+    Map<String, dynamic>? settings,
+  }) => _record(programId, series: true, prefs: _seriesPrefs(settings));
+
+  /// Plex has no setting for episodes already recorded, so a rule reads back
+  /// as skipping them, the choice a new recording starts on.
+  @override
+  Future<Map<String, dynamic>> getSeriesTimer(String seriesTimerId) async {
+    final container = await plexContainer(
+      _dio,
+      '/media/subscriptions/$seriesTimerId',
+    );
+    final rule = (container['MediaSubscription'] as List?)?.firstOrNull;
+    if (rule is! Map) throw StateError('No Plex series rule $seriesTimerId');
+    return {
+      'RecordNewOnly': (rule['Setting'] as List? ?? const []).any(
+        (s) =>
+            s is Map && s['id'] == 'onlyNewAirings' && '${s['value']}' == '1',
+      ),
+      'SkipEpisodesInLibrary': true,
+    };
+  }
+
+  @override
+  Future<void> updateSeriesTimer(
+    String seriesTimerId,
+    Map<String, dynamic> seriesTimer,
+  ) => _dio.put<void>(
+    '/media/subscriptions/$seriesTimerId',
+    queryParameters: _seriesPrefs(seriesTimer),
+  );
+
+  /// Repeats are the only part of which showings a series takes that Plex
+  /// lets a rule choose.
+  static Map<String, Object> _seriesPrefs(Map<String, dynamic>? settings) => {
+    if (settings?['RecordNewOnly'] case final bool newOnly)
+      'prefs[onlyNewAirings]': newOnly ? 1 : 0,
+  };
 
   /// Subscribes to the showing the way Plex's own apps do, from the template
   /// the server offers for it. A one-off is held to that channel and time, or
-  /// Plex would take whichever airing comes first.
-  Future<void> _record(String programId, {bool series = false}) async {
+  /// Plex would take whichever airing comes first. [prefs] replace the
+  /// template's own settings.
+  Future<void> _record(
+    String programId, {
+    bool series = false,
+    Map<String, Object> prefs = const {},
+  }) async {
     final airing = plexAiringOf(programId);
     if (airing == null || airing.source == plexCloudSource) {
       throw UnsupportedError("Plex's free channels can't be recorded");
@@ -591,6 +633,7 @@ class PlexLiveTvApi implements LiveTvApi {
         'type': subscription['type'],
         for (final setting in subscription['Setting'] as List? ?? const [])
           if (setting is Map) 'prefs[${setting['id']}]': setting['value'],
+        ...prefs,
         if (!series) ...{
           'prefs[lineupChannel]': airing.channel,
           'prefs[startTimeslot]': airing.beginsAt,
