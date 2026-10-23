@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:moonfin/playback/auto_bitrate_service.dart';
 import 'package:playback_core/playback_core.dart';
+import 'package:server_core/server_core.dart' show ItemsApi;
 
 class _Backend extends Fake implements PlayerBackend {
   @override
@@ -222,4 +223,76 @@ void main() {
       expect(asked, [500000]);
     });
   });
+
+  group('AutoBitrateService.plexSampleFile', () {
+    test('reads the first movie file', () async {
+      final items = _Items({
+        'Movie': '/library/parts/3720/1786486459/file.mkv',
+        'Episode': '/library/parts/21205/1/file.mkv',
+      });
+
+      expect(
+        await AutoBitrateService.plexSampleFile(items),
+        '/library/parts/3720/1786486459/file.mkv',
+      );
+      expect(
+        items.asked.single,
+        allOf(
+          containsPair(#includeItemTypes, ['Movie']),
+          containsPair(#limit, 1),
+        ),
+      );
+    });
+
+    test('a library without movies reads an episode', () async {
+      final items = _Items({'Episode': '/library/parts/21205/1/file.mkv'});
+
+      expect(
+        await AutoBitrateService.plexSampleFile(items),
+        '/library/parts/21205/1/file.mkv',
+      );
+      expect(items.asked.map((args) => args[#includeItemTypes]), [
+        ['Movie'],
+        ['Episode'],
+      ]);
+    });
+
+    test('an empty library or a failed request has nothing to read', () async {
+      expect(await AutoBitrateService.plexSampleFile(_Items({})), isNull);
+      expect(await AutoBitrateService.plexSampleFile(_Items(null)), isNull);
+    });
+  });
+}
+
+/// Answers `getItems` with the file [files] lists for the type asked for, or
+/// fails when [files] is null.
+class _Items implements ItemsApi {
+  _Items(this.files);
+
+  final Map<String, String>? files;
+  final asked = <Map<Symbol, dynamic>>[];
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) {
+    if (invocation.memberName != #getItems) {
+      return super.noSuchMethod(invocation);
+    }
+    asked.add(invocation.namedArguments);
+    final byType = files;
+    if (byType == null) {
+      return Future<Map<String, dynamic>>.error(StateError('offline'));
+    }
+    final type = (invocation.namedArguments[#includeItemTypes] as List).single;
+    final path = byType[type];
+    return Future.value(<String, dynamic>{
+      'Items': [
+        if (path != null)
+          {
+            'MediaSources': [
+              {'DirectStreamUrl': path},
+            ],
+          },
+      ],
+    });
+  }
 }

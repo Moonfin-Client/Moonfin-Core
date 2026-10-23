@@ -16,7 +16,9 @@ import '../data/services/media_server_client_factory.dart';
 /// smallest size it knows.
 ///
 /// Jellyfin and Emby both serve a throwaway body from BitrateTest, and the
-/// time it takes to arrive gives bits per second.
+/// time it takes to arrive gives bits per second. Plex has no such route, so
+/// the start of a file in its library is read instead, a probe's size at a
+/// time.
 class AutoBitrateService {
   AutoBitrateService(this._clientFactory);
 
@@ -54,9 +56,9 @@ class AutoBitrateService {
     // Offline playback would otherwise wait out the probe's timeout before
     // the local file starts.
     if (shouldUseOfflineCatalog()) return Future.value(null);
-    final client = _clientFactory.getActiveClient();
-    // Plex has no BitrateTest route to time.
-    if (client.serverType == ServerType.plex) return Future.value(_fallbackBps);
+    // The signed in server, since the newest client the factory made can be
+    // another saved server's.
+    final client = _clientFactory.clientForServerOrActive(null);
 
     final key = client.baseUrl;
     final cached = _cache[key];
@@ -90,6 +92,31 @@ class AutoBitrateService {
     return bps;
   }
 
+  /// The path of a movie or episode file to read, or null when the library
+  /// has none or can't be asked. Movies are asked for on their own first,
+  /// since listing episodes across every show takes Plex seconds.
+  @visibleForTesting
+  static Future<String?> plexSampleFile(ItemsApi itemsApi) async {
+    try {
+      for (final type in const ['Movie', 'Episode']) {
+        final result = await itemsApi.getItems(
+          includeItemTypes: [type],
+          limit: 1,
+          enableTotalRecordCount: false,
+        );
+        if (result case {
+          'Items': [
+            {'MediaSources': [{'DirectStreamUrl': final String path}, ...]},
+            ...,
+          ],
+        }) {
+          return path;
+        }
+      }
+    } catch (_) {}
+    return null;
+  }
+
   Future<int> _measure(MediaServerClient client) async {
     // The probe runs on its own client, so without these lines it is
     // invisible in the network log and a start waiting on it looks hung.
@@ -99,28 +126,48 @@ class AutoBitrateService {
         ? client.baseUrl.substring(0, client.baseUrl.length - 1)
         : client.baseUrl;
 
+    final plex = client.serverType == ServerType.plex;
+    final plexFile = plex ? await plexSampleFile(client.itemsApi) : null;
+    if (plex && plexFile == null) {
+      log.log(
+        LogCategory.playback,
+        'Auto bitrate: no Plex file to read, using ${_fallbackBps}bps',
+      );
+      return _fallbackBps;
+    }
+
     final dio = Dio(
       BaseOptions(
         responseType: ResponseType.stream,
         receiveTimeout: _requestTimeout,
         connectTimeout: _requestTimeout,
-        // Newer Jellyfin rejects a bare X-Emby-Token, so send the same
-        // Authorization header the server clients use.
-        headers: {
-          'Authorization': buildServerAuthorizationHeader(
-            scheme: client.serverType == ServerType.emby
-                ? 'Emby'
-                : 'MediaBrowser',
-            deviceInfo: client.deviceInfo,
-            accessToken: client.accessToken,
-          ),
-        },
+        headers: plex
+            ? {'X-Plex-Token': ?client.accessToken}
+            : {
+                // Newer Jellyfin rejects a bare X-Emby-Token, so send the
+                // same Authorization header the server clients use.
+                'Authorization': buildServerAuthorizationHeader(
+                  scheme: client.serverType == ServerType.emby
+                      ? 'Emby'
+                      : 'MediaBrowser',
+                  deviceInfo: client.deviceInfo,
+                  accessToken: client.accessToken,
+                ),
+              },
       ),
     );
 
     try {
       final measured = await stepThroughProbes(
-        (bytes) => _sample(dio, base, bytes, log),
+        (bytes) => plexFile == null
+            ? _sample(dio, '$base/Playback/BitrateTest?size=$bytes', bytes, log)
+            : _sample(
+                dio,
+                '$base$plexFile',
+                bytes,
+                log,
+                headers: {'Range': 'bytes=0-${bytes - 1}'},
+              ),
       );
       if (measured == null) {
         log.log(
@@ -141,10 +188,17 @@ class AutoBitrateService {
   /// Times one body from the moment its headers arrive, so the connection
   /// setup and the server's own turnaround don't count against the link.
   /// Past [_probeBudget] it stops reading and times what came.
-  Future<int?> _sample(Dio dio, String base, int bytes, LogService log) async {
+  Future<int?> _sample(
+    Dio dio,
+    String url,
+    int bytes,
+    LogService log, {
+    Map<String, String>? headers,
+  }) async {
     try {
       final response = await dio.get<ResponseBody>(
-        '$base/Playback/BitrateTest?size=$bytes',
+        url,
+        options: Options(headers: headers),
       );
       final body = response.data;
       if (body == null) return null;
