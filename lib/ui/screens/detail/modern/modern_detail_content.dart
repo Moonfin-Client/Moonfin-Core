@@ -57,6 +57,7 @@ import '../../../../data/repositories/tmdb_repository.dart';
 import '../../../../data/services/seerr/seerr_api_models.dart';
 import '../../../../data/services/plugin_sync_service.dart';
 import '../../../../data/services/book_reader_service.dart';
+import '../collection_sort_dialog.dart';
 import '../detail_layout_metrics.dart';
 import '../playlist_sort_filter_bar.dart';
 import '../item_detail_screen.dart'
@@ -1172,19 +1173,18 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           // Show the Playlist tab while the index is building (spinner) OR
           // once items are available (the list). Placed last so simple
           // movie-only collections land on Movies by default.
-          if (sections.shows(DetailSection.playlistOrder) &&
-              (_vm.playlistItems.isNotEmpty || _vm.playlistIndexBuilding))
+          if (sections.shows(DetailSection.playlistOrder))
             _ModernTab(
               'playlist',
               l10n.playlist,
               (context, item) {
                 // Phase 1: flat ID index still building — show full spinner.
-                if (_vm.playlistIndexBuilding) {
+                if (_vm.playlistIndexBuilding && _vm.playlistItems.isEmpty) {
                   return const Center(child: CircularProgressIndicator());
                 }
 
                 final listWidget = DetailTrackList(
-                  tracks: _vm.playlistItems,
+                  tracks: _vm.playlistItems.isNotEmpty ? _vm.playlistItems : _vm.collectionItems,
                   imageApi: _vm.imageApi,
                   isPlaylist: true,
                   getFocusNode: (id) =>
@@ -4015,100 +4015,11 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     );
   }
 
-  String _getCollectionSortLabel(CollectionSortOption option, AppLocalizations l10n) {
-    return switch (option) {
-      CollectionSortOption.server => l10n.sortServerOrder,
-      CollectionSortOption.alphabetical => l10n.sortAlphabetical,
-      CollectionSortOption.releaseAscending => l10n.sortReleaseAscending,
-      CollectionSortOption.releaseDescending => l10n.sortReleaseDescending,
-      CollectionSortOption.custom => l10n.sortCustomDragDrop,
-    };
-  }
+  String _getCollectionSortLabel(CollectionSortOption option, AppLocalizations l10n) =>
+      getCollectionSortLabel(option, l10n);
 
-  void _showCollectionSortDialog(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          backgroundColor: const Color(0xFF1E1E24),
-          title: Text(
-            l10n.playlistSortOptions,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: CollectionSortOption.values.map((option) {
-              final active = _vm.collectionSort == option;
-              return Focus(
-                onKeyEvent: (_, event) {
-                  if (isActivateKey(event)) {
-                    _vm.setCollectionSort(option);
-                    Navigator.of(context).pop();
-                    return KeyEventResult.handled;
-                  }
-                  return KeyEventResult.ignored;
-                },
-                child: Builder(
-                  builder: (context) {
-                    final focused = Focus.of(context).hasFocus;
-                    return InkWell(
-                      onTap: () {
-                        _vm.setCollectionSort(option);
-                        Navigator.of(context).pop();
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 12.0,
-                          horizontal: 16.0,
-                        ),
-                        decoration: BoxDecoration(
-                          color: focused
-                              ? Colors.white12
-                              : Colors.transparent,
-                          borderRadius: AppRadius.circular(8),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              active
-                                  ? Icons.radio_button_checked
-                                  : Icons.radio_button_off,
-                              color: active
-                                  ? AppColorScheme.accent
-                                  : Colors.white54,
-                            ),
-                            const SizedBox(width: 16),
-                            Text(
-                              _getCollectionSortLabel(option, l10n),
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge
-                                  ?.copyWith(
-                                    color: active
-                                        ? AppColorScheme.accent
-                                        : Colors.white,
-                                    fontWeight: active
-                                        ? FontWeight.bold
-                                        : FontWeight.normal,
-                                  ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              );
-            }).toList(),
-          ),
-        );
-      },
-    );
-  }
+  void _showCollectionSortDialog(BuildContext context) =>
+      showCollectionSortDialog(context, vm: _vm);
 
   Color get _titleColor =>
       ThemeRegistry.active.id == ThemeRegistry.neonPulseId
