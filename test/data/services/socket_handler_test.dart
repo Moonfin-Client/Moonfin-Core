@@ -22,6 +22,43 @@ class _FakeClient implements MediaServerClient {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
+/// Answers `getItems` with an episode that has a season and show above it.
+class _FakeItems implements ItemsApi {
+  final asked = <List<String>>[];
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) {
+    if (invocation.memberName != #getItems) {
+      return super.noSuchMethod(invocation);
+    }
+    final ids = invocation.namedArguments[#ids] as List<String>? ?? const [];
+    asked.add(ids);
+    return Future.value(<String, dynamic>{
+      'Items': [
+        for (final id in ids)
+          {
+            'Id': id,
+            if (id == '18799') ...{'SeasonId': '18798', 'SeriesId': '18797'},
+            'UserData': {'Played': id == '18799'},
+          },
+      ],
+    });
+  }
+}
+
+class _FakePlexClient extends _FakeClient {
+  _FakePlexClient(String baseUrl) : super(baseUrl: baseUrl);
+
+  @override
+  final _FakeItems itemsApi = _FakeItems();
+
+  @override
+  ServerType get serverType => ServerType.plex;
+
+  @override
+  String? get userId => 'user';
+}
+
 class _FakeSocket implements ServerWebSocketClient {
   final _messages = StreamController<ServerWebSocketMessage>.broadcast();
   final _connections = StreamController<void>.broadcast();
@@ -162,6 +199,48 @@ void main() {
     await Future<void>.delayed(const Duration(milliseconds: 200));
 
     expect(received, ['ScheduledTasksInfoStart']);
+  });
+
+  test('a Plex pause or stop anywhere refreshes that item and its parents', () async {
+    final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    addTearDown(() => server.close(force: true));
+    Uri? opened;
+    String playing(String state) => jsonEncode({
+      'NotificationContainer': {
+        'type': 'playing',
+        'PlaySessionStateNotification': [
+          {'sessionKey': '5', 'ratingKey': '18799', 'state': state},
+        ],
+      },
+    });
+    server.listen((request) async {
+      opened = request.uri;
+      final socket = await WebSocketTransformer.upgrade(request);
+      for (final state in ['playing', 'paused', 'paused', 'stopped']) {
+        socket.add(playing(state));
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+      }
+    });
+    final plex = _FakePlexClient('http://127.0.0.1:${server.port}');
+    final client = PlexWebSocketClient(plex);
+    addTearDown(client.dispose);
+    final changes = <UserDataChangedMessage>[];
+    client.messages.listen((m) => changes.add(m as UserDataChangedMessage));
+
+    await client.connect();
+    await Future<void>.delayed(const Duration(milliseconds: 400));
+
+    expect(opened?.path, '/:/websockets/notifications');
+    expect(opened?.queryParameters['filters'], 'playing');
+    expect(opened?.queryParameters['X-Plex-Token'], 'token');
+    expect(changes, hasLength(2), reason: 'a repeated pause asks only once');
+    expect(changes.first.userId, 'user');
+    expect(changes.first.itemIds, ['18799', '18798', '18797']);
+    expect(
+      changes.first.userDataList.first,
+      allOf(containsPair('Played', true), containsPair('PlayedPercentage', null)),
+    );
+    expect(plex.itemsApi.asked.first, ['18799']);
   });
 
   group('a server that accepts and never answers', () {

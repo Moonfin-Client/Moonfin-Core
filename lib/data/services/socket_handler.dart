@@ -30,36 +30,12 @@ abstract class ServerWebSocketClient {
     return switch (client.serverType) {
       ServerType.jellyfin => JellyfinWebSocketClient(client),
       ServerType.emby => EmbyWebSocketClient(client),
-      ServerType.plex => _NoWebSocketClient(),
+      ServerType.plex => PlexWebSocketClient(client),
     };
   }
 }
 
-/// Plex has no Jellyfin style socket, so its sessions run without one.
-class _NoWebSocketClient implements ServerWebSocketClient {
-  @override
-  Stream<ServerWebSocketMessage> get messages => const Stream.empty();
-
-  @override
-  Stream<void> get connections => const Stream.empty();
-
-  @override
-  Future<void> connect() async {}
-
-  @override
-  Future<void> disconnect() async {}
-
-  @override
-  void retryNow() {}
-
-  @override
-  void send(String messageType, [Object? data]) {}
-
-  @override
-  void dispose() {}
-}
-
-/// The reconnect, keep alive and logging machinery both server types share.
+/// The reconnect, keep alive and logging machinery every server type shares.
 /// Only the handshake and what counts as a keep alive differ between them.
 abstract class _ReconnectingWebSocketClient implements ServerWebSocketClient {
   _ReconnectingWebSocketClient(
@@ -326,6 +302,107 @@ class EmbyWebSocketClient extends _ReconnectingWebSocketClient {
     } catch (e) {
       warn('Emby WebSocket message could not be parsed', e);
     }
+  }
+}
+
+/// Plex's socket announces playback on every device but never a watched
+/// toggle, so when a session pauses or stops, the item's user data is asked
+/// for again, along with its season and show for their unwatched counts.
+class PlexWebSocketClient extends _ReconnectingWebSocketClient {
+  PlexWebSocketClient(MediaServerClient client, {Duration? connectTimeout})
+    : super(client, 'Plex', connectTimeout: connectTimeout);
+
+  /// The last state each playback session reported. A paused player repeats
+  /// itself every few seconds, and only the change is worth a refresh.
+  final _sessionStates = <String, String>{};
+
+  @override
+  Uri? buildUri() {
+    final token = client.accessToken;
+    if (token == null) return null;
+    final wsUrl = client.baseUrl.replaceFirst('http', 'ws');
+    return Uri.parse(
+      '$wsUrl/:/websockets/notifications?filters=playing'
+      '&X-Plex-Token=${Uri.encodeQueryComponent(token)}',
+    );
+  }
+
+  /// Plex's socket only talks one way.
+  @override
+  void send(String messageType, [Object? data]) {}
+
+  @override
+  void handleMessage(dynamic data) {
+    try {
+      final json = jsonDecode(data.toString()) as Map<String, dynamic>;
+      final container = json['NotificationContainer'] as Map?;
+      final sessions =
+          container?['PlaySessionStateNotification'] as List? ?? const [];
+      final changed = <String>{};
+      for (final session in sessions) {
+        if (session is! Map) continue;
+        final key = '${session['sessionKey']}';
+        final state = session['state']?.toString();
+        final previous = _sessionStates[key];
+        if (state == 'stopped' || state == null) {
+          _sessionStates.remove(key);
+        } else {
+          _sessionStates[key] = state;
+        }
+        if (state != previous &&
+            (state == 'paused' || state == 'stopped') &&
+            session['ratingKey'] != null) {
+          changed.add('${session['ratingKey']}');
+        }
+      }
+      if (changed.isNotEmpty) unawaited(_refresh(changed));
+    } catch (e) {
+      warn('Plex WebSocket message could not be parsed', e);
+    }
+  }
+
+  Future<void> _refresh(Set<String> ids) async {
+    try {
+      final items = await _withUserData(ids);
+      final parents = {
+        for (final item in items)
+          for (final key in const ['SeasonId', 'SeriesId'])
+            if (item[key] case final String id) id,
+      }..removeAll(ids);
+      if (parents.isNotEmpty) items.addAll(await _withUserData(parents));
+      if (_disposed) return;
+      emit(
+        UserDataChangedMessage(
+          userId: client.userId ?? '',
+          userDataList: [
+            for (final item in items)
+              if (item['UserData'] case final Map userData)
+                {
+                  // Plex drops the percentage once an item is finished, and a
+                  // missing key would leave the old progress bar up.
+                  'PlayedPercentage': null,
+                  ...userData.cast<String, dynamic>(),
+                  'ItemId': item['Id'],
+                },
+          ],
+        ),
+      );
+    } catch (e) {
+      warn('Plex watch state could not be refreshed', e);
+    }
+  }
+
+  Future<List<Map>> _withUserData(Set<String> ids) async {
+    final result = await client.itemsApi.getItems(
+      ids: ids.toList(),
+      fields: 'UserData',
+      limit: ids.length,
+      enableTotalRecordCount: false,
+    );
+    return [
+      for (final item in result['Items'] as List? ?? const [])
+        if (item is Map) item,
+    ];
   }
 }
 
