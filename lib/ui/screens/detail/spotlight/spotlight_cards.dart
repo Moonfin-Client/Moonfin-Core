@@ -1170,7 +1170,7 @@ class _SpotlightCardsBuilder {
   SpotlightCardSpec? _boxSetPlaylistOrderCard() {
     if (!_shows(DetailSection.playlistOrder)) return null;
     final items = vm.playlistItems;
-    final count = items.isNotEmpty ? items.length : vm.collectionItems.length;
+    final count = items.isNotEmpty ? items.length : vm.collectionPlayableItems.length;
     final collectionImageUrl =
         spotlightLandscapeImageUrl(
           _imageApi,
@@ -1181,7 +1181,7 @@ class _SpotlightCardsBuilder {
 
     // Pick an artwork from the playlist items that avoids duplicating the collection card
     String? playlistImageUrl;
-    final candidateItems = items.isNotEmpty ? items : vm.collectionItems;
+    final candidateItems = items.isNotEmpty ? items : vm.collectionPlayableItems;
     for (final candidate in candidateItems) {
       final url = spotlightLandscapeImageUrl(_imageApi, candidate);
       if (url != null && url != collectionImageUrl) {

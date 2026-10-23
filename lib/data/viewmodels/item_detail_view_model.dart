@@ -1413,7 +1413,11 @@ class ItemDetailViewModel extends ChangeNotifier {
       case CollectionSortOption.server || CollectionSortOption.custom:
         break;
     }
-    _flattenedIds = sorted.map((e) => e.id).toList();
+    final seenIds = <String>{};
+    _flattenedIds = [
+      for (final e in sorted)
+        if (seenIds.add(e.id)) e.id,
+    ];
   }
 
   /// Drops the loaded pages so the next fetch starts at the head of the index.
@@ -1761,9 +1765,10 @@ class ItemDetailViewModel extends ChangeNotifier {
                 .where((e) => !customSet.contains(e.id))
                 .toList()
               ..sort(_PlaylistItemIndexEntry.compareReleaseAscending);
+            final seenIds = <String>{};
             _flattenedIds = [
-              ...customOrder,
-              ...remaining.map((e) => e.id),
+              for (final id in [...customOrder, ...remaining.map((e) => e.id)])
+                if (seenIds.add(id)) id,
             ];
             _customOrderIds = _flattenedIds;
             _collectionSort = CollectionSortOption.custom;
@@ -1842,7 +1847,13 @@ class ItemDetailViewModel extends ChangeNotifier {
             item,
       ];
 
-      _playlistIndexEntries = flat
+      final seenIds = <String>{};
+      final uniqueFlat = [
+        for (final item in flat)
+          if (seenIds.add(item.id)) item,
+      ];
+
+      _playlistIndexEntries = uniqueFlat
           .map(
             (i) => _PlaylistItemIndexEntry(
               id: i.id,
@@ -1855,8 +1866,9 @@ class ItemDetailViewModel extends ChangeNotifier {
     } catch (_) {}
     if (_playlistIndexEntries == null || _playlistIndexEntries!.isEmpty) {
       if (_collectionItems.isNotEmpty) {
+        final seenIds = <String>{};
         _playlistIndexEntries = _collectionItems
-            .where((i) => _playableTypes.contains(i.type))
+            .where((i) => _playableTypes.contains(i.type) && seenIds.add(i.id))
             .map(
               (i) => _PlaylistItemIndexEntry(
                 id: i.id,
