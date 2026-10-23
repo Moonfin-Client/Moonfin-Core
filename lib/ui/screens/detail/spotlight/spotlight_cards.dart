@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../../data/models/aggregated_item.dart';
@@ -11,6 +13,8 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../../preference/detail_section_layout.dart';
 import '../../../../preference/user_preferences.dart';
 import '../../../../util/media_source_summary.dart';
+import '../../../../util/focus/dpad_keys.dart';
+import '../../../widgets/focus/focusable_toolbar_button.dart';
 import '../../../widgets/seerr/seerr_collection_banner.dart';
 import '../../../widgets/seerr/seerr_item_chips.dart';
 import '../../../widgets/seerr/seerr_item_status.dart'
@@ -18,6 +22,7 @@ import '../../../widgets/seerr/seerr_item_status.dart'
 import '../../../widgets/seerr/seerr_stats_card.dart';
 import '../../../widgets/seerr/seerr_streaming_row.dart';
 import '../../../widgets/seerr/seerr_tags_dialog.dart' show SeerrTagsContent;
+import '../collection_sort_dialog.dart';
 import '../item_detail_screen.dart'
     show DetailTrackList, selectedMediaSourceForItem;
 import '../modern/modern_detail_content.dart'
@@ -54,6 +59,7 @@ class SpotlightCardActions {
   final void Function(int index) playTrack;
   final void Function(int index) playPlaylistTrack;
   final FocusNode Function(String trackId) trackFocusNode;
+  final FocusNode? collectionSortFocusNode;
 
   const SpotlightCardActions({
     required this.openItem,
@@ -67,6 +73,7 @@ class SpotlightCardActions {
     required this.playTrack,
     required this.playPlaylistTrack,
     required this.trackFocusNode,
+    this.collectionSortFocusNode,
   });
 }
 
@@ -1099,7 +1106,13 @@ class _SpotlightCardsBuilder {
       title: l10n.spotlightMoviesAndShows,
       subtitle: subtitle,
       imageUrl:
-          _firstItemLandscape(items) ?? fallbackImageUrl,
+          spotlightLandscapeImageUrl(
+            _imageApi,
+            item,
+            fallbackUrl: fallbackImageUrl,
+          ) ??
+          fallbackImageUrl ??
+          _firstItemLandscape(items),
       icon: Icons.collections_bookmark_outlined,
       sections: [
         if (movies.isNotEmpty) _mediaSection(l10n.movies, movies),
@@ -1157,29 +1170,118 @@ class _SpotlightCardsBuilder {
   SpotlightCardSpec? _boxSetPlaylistOrderCard() {
     if (!_shows(DetailSection.playlistOrder)) return null;
     final items = vm.playlistItems;
-    if (items.isEmpty) return null;
+    final count = items.isNotEmpty ? items.length : vm.collectionPlayableItems.length;
+    final collectionImageUrl =
+        spotlightLandscapeImageUrl(
+          _imageApi,
+          item,
+          fallbackUrl: fallbackImageUrl,
+        ) ??
+        fallbackImageUrl;
+
+    // Pick an artwork from the playlist items that avoids duplicating the collection card
+    String? playlistImageUrl;
+    final candidateItems = items.isNotEmpty ? items : vm.collectionPlayableItems;
+    for (final candidate in candidateItems) {
+      final url = spotlightLandscapeImageUrl(_imageApi, candidate);
+      if (url != null && url != collectionImageUrl) {
+        playlistImageUrl = url;
+        break;
+      }
+    }
+    playlistImageUrl ??= candidateItems.isNotEmpty
+        ? spotlightLandscapeImageUrl(_imageApi, candidateItems.first)
+        : null;
+
     return SpotlightCardSpec(
       id: 'playlist_order',
       title: l10n.spotlightPlaylistOrder,
-      subtitle: l10n.spotlightItemsCount(items.length),
-      imageUrl:
-          spotlightLandscapeImageUrl(
-            _imageApi,
-            items.first,
-            fallbackUrl: fallbackImageUrl,
-          ),
+      subtitle: l10n.spotlightItemsCount(count),
+      imageUrl: playlistImageUrl ?? fallbackImageUrl,
       icon: Icons.format_list_numbered,
       sections: [
         SpotlightModalSection(
           title: l10n.spotlightPlaylistOrder,
-          count: items.length,
-          builder: (context, firstFocusNode) => DetailTrackList(
-            tracks: items,
-            imageApi: _imageApi,
-            showAlbum: true,
-            getFocusNode: actions.trackFocusNode,
-            onPlayTrack: actions.playPlaylistTrack,
-          ),
+          count: count,
+          headerActionBuilder: (context) {
+            final sortLabel = getCollectionSortLabel(vm.collectionSort, l10n);
+            final focusNode = actions.collectionSortFocusNode;
+            final effectiveTracks = items.isNotEmpty ? items : vm.collectionPlayableItems;
+            final firstTrackId = effectiveTracks.firstOrNull?.id;
+            return Focus(
+              onKeyEvent: (_, event) {
+                if (firstTrackId != null &&
+                    event is KeyDownEvent &&
+                    event.logicalKey.isDownKey) {
+                  actions.trackFocusNode(firstTrackId).requestFocus();
+                  return KeyEventResult.handled;
+                }
+                return KeyEventResult.ignored;
+              },
+              child: InkWell(
+                onTap: () => showCollectionSortDialog(context, vm: vm),
+                borderRadius: AppRadius.circular(8),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    FocusableToolbarButton(
+                      icon: Icons.sort_rounded,
+                      focusNode: focusNode,
+                      size: 30,
+                      iconSize: 18,
+                      tooltip: l10n.playlistSortOptions,
+                      onTap: () => showCollectionSortDialog(context, vm: vm),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Sort: $sortLabel',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Colors.white70,
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+          builder: (context, firstFocusNode) {
+            if (vm.playlistSortRefreshing ||
+                (vm.playlistIndexBuilding && items.isEmpty)) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            final hasPlaylistItems = items.isNotEmpty;
+            final effectiveTracks = hasPlaylistItems ? items : vm.collectionPlayableItems;
+            return DetailTrackList(
+              tracks: effectiveTracks,
+              imageApi: _imageApi,
+              isPlaylist: true,
+              showAlbum: true,
+              getFocusNode: actions.trackFocusNode,
+              onPlayTrack: (index) => hasPlaylistItems
+                  ? actions.playPlaylistTrack(index)
+                  : actions.openItem(effectiveTracks[index]),
+              reorderable: hasPlaylistItems && vm.collectionSort == CollectionSortOption.custom,
+              onReorder: hasPlaylistItems
+                  ? (oldIndex, newIndex) {
+                      var target = newIndex;
+                      if (target > oldIndex) {
+                        target -= 1;
+                      }
+                      vm.reorderCollectionPlaylistItem(oldIndex, target);
+                    }
+                  : null,
+              onMoveUp: hasPlaylistItems
+                  ? (index) =>
+                      vm.reorderCollectionPlaylistItem(index, index - 1)
+                  : null,
+              onMoveDown: hasPlaylistItems
+                  ? (index) =>
+                      vm.reorderCollectionPlaylistItem(index, index + 1)
+                  : null,
+              onFirstTrackUp: () => actions.collectionSortFocusNode?.requestFocus(),
+            );
+          },
         ),
       ],
     );

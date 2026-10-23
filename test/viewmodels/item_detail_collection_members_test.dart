@@ -52,6 +52,8 @@ void main() {
         parentId: 'boxset-1',
         startIndex: 0,
         limit: any(named: 'limit'),
+        sortBy: any(named: 'sortBy'),
+        sortOrder: any(named: 'sortOrder'),
         fields: 'PrimaryImageAspectRatio,BasicSyncInfo,People',
       ),
     ).thenAnswer(
@@ -90,7 +92,7 @@ void main() {
     expect(vm.collectionItems.first.name, 'Flash vs. Arrow');
   });
 
-  test('the playlist keeps the server order until another sort is picked',
+  test('the playlist defaults to release order with server order available',
       () async {
     when(() => GetIt.instance<PluginSyncService>().pluginAvailable)
         .thenReturn(false);
@@ -143,13 +145,19 @@ void main() {
     }
     List<String> order() => vm.playlistItems.map((i) => i.id).toList();
 
-    expect(vm.collectionSort, CollectionSortOption.server);
-    expect(order(), ['late', 'ep', 'early']);
-
-    await vm.setCollectionSort(CollectionSortOption.releaseAscending);
+    expect(vm.collectionSort, CollectionSortOption.releaseAscending);
     expect(order(), ['early', 'ep', 'late']);
 
     await vm.setCollectionSort(CollectionSortOption.server);
     expect(order(), ['late', 'ep', 'early']);
+    expect(vm.flattenedIds, ['late', 'ep', 'early']);
+
+    verify(
+      () => itemsApi.getItems(
+        parentId: 'boxset-1',
+        limit: any(named: 'limit'),
+        fields: 'BasicSyncInfo',
+      ),
+    ).called(1);
   });
 }

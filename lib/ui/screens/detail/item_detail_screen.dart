@@ -8943,11 +8943,13 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
   }) async {
     final client = _clientForItem(item);
     try {
+      final isBoxSet = item.type == 'BoxSet';
       final data = await client.itemsApi.getItems(
         parentId: item.id,
         recursive: true,
         includeItemTypes: const ['Episode', 'Movie', 'Video', 'Audio'],
-        sortBy: 'SortName',
+        sortBy: isBoxSet ? 'PremiereDate,ProductionYear,SortName' : 'SortName',
+        sortOrder: isBoxSet ? 'Ascending' : null,
         fields: fields,
       );
       return _mapRawItemsForServer(data['Items'], item.serverId);
@@ -9156,6 +9158,33 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       viewModel.load();
     }
     return true;
+  }
+
+  /// Sorts [queue] in-place according to [flattenedIds], falling back to each
+  /// item's original position in the queue to break ties for missing items.
+  static void _sortQueueByFlattenedIds(
+    List<AggregatedItem> queue,
+    List<String>? flattenedIds,
+  ) {
+    if (flattenedIds == null || flattenedIds.isEmpty || queue.length < 2) return;
+    final idOrder = {
+      for (var i = 0; i < flattenedIds.length; i++) flattenedIds[i]: i,
+    };
+    final originalIndices = {
+      for (var i = 0; i < queue.length; i++) queue[i].id: i,
+    };
+    queue.sort((a, b) {
+      final aRank = idOrder[a.id];
+      final bRank = idOrder[b.id];
+      if (aRank != null && bRank != null) {
+        return aRank.compareTo(bRank);
+      }
+      if (aRank != null) return -1;
+      if (bRank != null) return 1;
+      final aOrig = originalIndices[a.id] ?? 0;
+      final bOrig = originalIndices[b.id] ?? 0;
+      return aOrig.compareTo(bOrig);
+    });
   }
 
   /// Resolves where a mixed video queue should start playing. Resumes an item
@@ -9545,6 +9574,86 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
             }
             continue defaultCase;
 
+          case 'Movie':
+          case 'Video':
+            if (viewModel.item?.type == 'BoxSet') {
+              final playableQueue = await _loadFolderPlayableItemsForShuffle(
+                viewModel.item!,
+                fields: 'Overview,RunTimeTicks,UserData',
+              );
+              if (playableQueue.isNotEmpty) {
+                _sortQueueByFlattenedIds(playableQueue, viewModel.flattenedIds);
+                final startIndex = playableQueue.indexWhere(
+                  (e) => e.id == item.id,
+                );
+                if (startIndex >= 0) {
+                  ensureLaunchStillWanted(launchSession);
+                  var targetItem = playableQueue[startIndex];
+                  targetItem = await _ensureHydrated(targetItem);
+                  playableQueue[startIndex] = targetItem;
+                  ensureLaunchStillWanted(launchSession);
+
+                  final startPosition = resume
+                      ? (targetItem.playbackPosition ??
+                            item.playbackPosition ??
+                            Duration.zero)
+                      : Duration.zero;
+                  final prerolls = await _prerollsForStart(
+                    targetItem,
+                    startPosition,
+                    useExternalPlayer: useExternalPlayer,
+                  );
+                  ensureLaunchStillWanted(launchSession);
+
+                  final selectedMediaSourceId = widget.selectedMediaSourceId;
+                  final dvForceTranscode =
+                      !isAudio &&
+                      context.mounted &&
+                      await _shouldForceTranscodeForDolbyVision(context, [
+                        targetItem,
+                      ], mediaSourceId: selectedMediaSourceId);
+                  final directAllowed = !dvForceTranscode && !forceTranscode;
+
+                  final epMediaStreams =
+                      _mediaStreamsForCurrentSelection(targetItem);
+                  final epAudioStreams = epMediaStreams
+                      .where((s) => s['Type'] == 'Audio')
+                      .toList();
+                  final epSubtitleStreams = epMediaStreams
+                      .where((s) => s['Type'] == 'Subtitle')
+                      .toList();
+                  final epAudioStreamIndex = _effectiveAudioStreamIndex(
+                    epAudioStreams,
+                  );
+                  final epSubtitleStreamIndex = _effectiveSubtitleStreamIndex(
+                    epSubtitleStreams,
+                    epAudioStreams,
+                    item: targetItem,
+                  );
+
+                  await _playQueueWithPrerolls(
+                    manager,
+                    launchSession: launchSession,
+                    queue: playableQueue,
+                    prerolls: prerolls,
+                    target: targetItem,
+                    startIndex: startIndex,
+                    startPosition: startPosition,
+                    audioStreamIndex: epAudioStreamIndex,
+                    subtitleStreamIndex: epSubtitleStreamIndex,
+                    mediaSourceId: selectedMediaSourceId,
+                    audioSelectionExplicit:
+                        viewModel.selectedAudioIndex != null,
+                    subtitleSelectionExplicit:
+                        viewModel.selectedSubtitleIndex != null,
+                    directAllowed: directAllowed,
+                  );
+                  break;
+                }
+              }
+            }
+            continue defaultCase;
+
           case 'BoxSet':
             final playableQueue = await _loadFolderPlayableItemsForShuffle(
               item,
@@ -9562,6 +9671,8 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
               }
               throw PlaybackStartupRecoveryAbortedException();
             }
+
+            _sortQueueByFlattenedIds(playableQueue, viewModel.flattenedIds);
 
             final (startIndex, startPosition) = _resolveQueueResumeStart(
               playableQueue,

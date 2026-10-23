@@ -57,6 +57,7 @@ import '../../../../data/repositories/tmdb_repository.dart';
 import '../../../../data/services/seerr/seerr_api_models.dart';
 import '../../../../data/services/plugin_sync_service.dart';
 import '../../../../data/services/book_reader_service.dart';
+import '../collection_sort_dialog.dart';
 import '../detail_layout_metrics.dart';
 import '../playlist_sort_filter_bar.dart';
 import '../item_detail_screen.dart'
@@ -568,8 +569,10 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     _collectionSortFocusNode.onKeyEvent = (node, event) {
       if (event is KeyDownEvent) {
         if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-          if (_vm.playlistItems.isNotEmpty) {
-            final firstTrack = _vm.playlistItems.first;
+          final effectiveTracks =
+              _vm.playlistItems.isNotEmpty ? _vm.playlistItems : _vm.collectionPlayableItems;
+          if (effectiveTracks.isNotEmpty) {
+            final firstTrack = effectiveTracks.first;
             final rawId = firstTrack.rawData['PlaylistItemId']?.toString();
             final firstTrackId =
                 (rawId != null && rawId.isNotEmpty) ? rawId : firstTrack.id;
@@ -837,10 +840,17 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
 
   // Moves D-pad focus into the first track of the track list, using the same
   // focus node the DetailTrackList attaches to that row.
-  void _focusFirstTrack() {
-    if (_vm.tracks.isEmpty) return;
-    final id = _vm.tracks.first.id;
-    _trackFocusNodes.putIfAbsent(id, () => FocusNode()).requestFocus();
+  void _focusFirstTrack([List<AggregatedItem>? tracksOverride]) {
+    final list = tracksOverride ?? _vm.tracks;
+    if (list.isEmpty) return;
+    final firstTrack = list.first;
+    final rawId = firstTrack.rawData['PlaylistItemId']?.toString();
+    final firstTrackId =
+        (rawId != null && rawId.isNotEmpty) ? rawId : firstTrack.id;
+    final node = _trackFocusNodes.putIfAbsent(firstTrackId, () => FocusNode());
+    if (node.context?.mounted == true) {
+      node.requestFocus();
+    }
   }
 
   void _onTabBarNavigateDown(int tabIndex) {
@@ -934,10 +944,14 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
               _focusFirstTrack();
               break;
             case 'playlist':
-              if (_vm.item?.type == 'BoxSet' && _vm.playlistItems.isNotEmpty) {
+              final effectiveTracks = _vm.playlistItems.isNotEmpty
+                  ? _vm.playlistItems
+                  : (_vm.item?.type == 'BoxSet' ? _vm.collectionPlayableItems : _vm.tracks);
+              if (_vm.item?.type == 'BoxSet' &&
+                  _collectionSortFocusNode.context?.mounted == true) {
                 _collectionSortFocusNode.requestFocus();
               } else {
-                _focusFirstTrack();
+                _focusFirstTrack(effectiveTracks);
               }
               break;
           }
@@ -1172,34 +1186,42 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           // Show the Playlist tab while the index is building (spinner) OR
           // once items are available (the list). Placed last so simple
           // movie-only collections land on Movies by default.
-          if (sections.shows(DetailSection.playlistOrder) &&
-              (_vm.playlistItems.isNotEmpty || _vm.playlistIndexBuilding))
+          if (sections.shows(DetailSection.playlistOrder))
             _ModernTab(
               'playlist',
               l10n.playlist,
               (context, item) {
-                // Phase 1: flat ID index still building — show full spinner.
-                if (_vm.playlistIndexBuilding) {
+                // Phase 1: flat ID index still building or sort refreshing — show full spinner.
+                if (_vm.playlistSortRefreshing ||
+                    (_vm.playlistIndexBuilding && _vm.playlistItems.isEmpty)) {
                   return const Center(child: CircularProgressIndicator());
                 }
 
+                final hasPlaylistItems = _vm.playlistItems.isNotEmpty;
+                final tracks = hasPlaylistItems ? _vm.playlistItems : _vm.collectionPlayableItems;
                 final listWidget = DetailTrackList(
-                  tracks: _vm.playlistItems,
+                  tracks: tracks,
                   imageApi: _vm.imageApi,
                   isPlaylist: true,
                   getFocusNode: (id) =>
                       _trackFocusNodes.putIfAbsent(id, () => FocusNode()),
                   onPlayTrack: (index) => _playPlaylistTrack(context, index),
-                  reorderable: _vm.collectionSort == CollectionSortOption.custom,
-                  onReorder: (oldIndex, newIndex) {
-                    var target = newIndex;
-                    if (target > oldIndex) {
-                      target -= 1;
-                    }
-                    _vm.reorderCollectionPlaylistItem(oldIndex, target);
-                  },
-                  onMoveUp: (index) => _vm.reorderCollectionPlaylistItem(index, index - 1),
-                  onMoveDown: (index) => _vm.reorderCollectionPlaylistItem(index, index + 1),
+                  reorderable: hasPlaylistItems && _vm.collectionSort == CollectionSortOption.custom,
+                  onReorder: hasPlaylistItems
+                      ? (oldIndex, newIndex) {
+                          var target = newIndex;
+                          if (target > oldIndex) {
+                            target -= 1;
+                          }
+                          _vm.reorderCollectionPlaylistItem(oldIndex, target);
+                        }
+                      : null,
+                  onMoveUp: hasPlaylistItems
+                      ? (index) => _vm.reorderCollectionPlaylistItem(index, index - 1)
+                      : null,
+                  onMoveDown: hasPlaylistItems
+                      ? (index) => _vm.reorderCollectionPlaylistItem(index, index + 1)
+                      : null,
                   onFirstTrackUp: () => _collectionSortFocusNode.requestFocus(),
                   onTrackFocused: widget.onBackdropItemFocused,
                 );
@@ -1230,7 +1252,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                                 FocusableToolbarButton(
                                   icon: Icons.sort_rounded,
                                   focusNode: _collectionSortFocusNode,
-                                  tooltip: l10n.resetSort,
+                                  tooltip: l10n.playlistSortOptions,
                                   onTap: () => _showCollectionSortDialog(context),
                                 ),
                                 const SizedBox(width: 12),
@@ -3997,8 +4019,10 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   }
 
   Future<void> _playPlaylistTrack(BuildContext context, int index) async {
+    if (_vm.playlistSortRefreshing) return;
     final manager = GetIt.instance<PlaybackManager>();
-    final isAudio = _vm.playlistItems.every(_isAudioItem);
+    final tracks = _vm.playlistItems.isNotEmpty ? _vm.playlistItems : _vm.collectionPlayableItems;
+    final isAudio = tracks.every(_isAudioItem);
     await launchPlayerWhilePreparing(
       context,
       manager: manager,
@@ -4008,107 +4032,18 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       startPlayback: (launchSession) async {
         await runPlaybackStart(
           launchSession,
-          () => manager.playItems(_vm.playlistItems, startIndex: index),
+          () => manager.playItems(tracks, startIndex: index),
         );
         return true;
       },
     );
   }
 
-  String _getCollectionSortLabel(CollectionSortOption option, AppLocalizations l10n) {
-    return switch (option) {
-      CollectionSortOption.server => l10n.sortServerOrder,
-      CollectionSortOption.alphabetical => l10n.sortAlphabetical,
-      CollectionSortOption.releaseAscending => l10n.sortReleaseAscending,
-      CollectionSortOption.releaseDescending => l10n.sortReleaseDescending,
-      CollectionSortOption.custom => l10n.sortCustomDragDrop,
-    };
-  }
+  String _getCollectionSortLabel(CollectionSortOption option, AppLocalizations l10n) =>
+      getCollectionSortLabel(option, l10n);
 
-  void _showCollectionSortDialog(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          backgroundColor: const Color(0xFF1E1E24),
-          title: Text(
-            l10n.playlistSortOptions,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: CollectionSortOption.values.map((option) {
-              final active = _vm.collectionSort == option;
-              return Focus(
-                onKeyEvent: (_, event) {
-                  if (isActivateKey(event)) {
-                    _vm.setCollectionSort(option);
-                    Navigator.of(context).pop();
-                    return KeyEventResult.handled;
-                  }
-                  return KeyEventResult.ignored;
-                },
-                child: Builder(
-                  builder: (context) {
-                    final focused = Focus.of(context).hasFocus;
-                    return InkWell(
-                      onTap: () {
-                        _vm.setCollectionSort(option);
-                        Navigator.of(context).pop();
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 12.0,
-                          horizontal: 16.0,
-                        ),
-                        decoration: BoxDecoration(
-                          color: focused
-                              ? Colors.white12
-                              : Colors.transparent,
-                          borderRadius: AppRadius.circular(8),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              active
-                                  ? Icons.radio_button_checked
-                                  : Icons.radio_button_off,
-                              color: active
-                                  ? AppColorScheme.accent
-                                  : Colors.white54,
-                            ),
-                            const SizedBox(width: 16),
-                            Text(
-                              _getCollectionSortLabel(option, l10n),
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge
-                                  ?.copyWith(
-                                    color: active
-                                        ? AppColorScheme.accent
-                                        : Colors.white,
-                                    fontWeight: active
-                                        ? FontWeight.bold
-                                        : FontWeight.normal,
-                                  ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              );
-            }).toList(),
-          ),
-        );
-      },
-    );
-  }
+  void _showCollectionSortDialog(BuildContext context) =>
+      showCollectionSortDialog(context, vm: _vm);
 
   Color get _titleColor =>
       ThemeRegistry.active.id == ThemeRegistry.neonPulseId

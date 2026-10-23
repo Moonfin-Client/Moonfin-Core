@@ -103,6 +103,7 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
   final _scrollController = ScrollController();
   final _cardsScrollController = ScrollController();
   final _overviewFocusNode = FocusNode(debugLabel: 'SpotlightOverview');
+  final _collectionSortFocusNode = FocusNode(debugLabel: 'SpotlightCollectionSort');
   final _cardFocusNodes = <String, FocusNode>{};
   final _trackFocusNodes = <String, FocusNode>{};
 
@@ -274,6 +275,7 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
     _scrollController.dispose();
     _cardsScrollController.dispose();
     _overviewFocusNode.dispose();
+    _collectionSortFocusNode.dispose();
     for (final node in _cardFocusNodes.values) {
       node.dispose();
     }
@@ -428,6 +430,7 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
           _closeModalThen(() => _playItems(_vm.playlistItems, index)),
       trackFocusNode: (id) =>
           _trackFocusNodes.putIfAbsent(id, () => FocusNode()),
+      collectionSortFocusNode: _collectionSortFocusNode,
     );
   }
 

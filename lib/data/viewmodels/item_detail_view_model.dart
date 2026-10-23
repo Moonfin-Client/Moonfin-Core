@@ -351,11 +351,14 @@ class ItemDetailViewModel extends ChangeNotifier {
   static const _indexScanBatchSize = 8;
 
   /// Member types that play on their own. A series is swapped for its episodes.
-  static const _playableTypes = {'Movie', 'Audio', 'Video', 'MusicVideo'};
+  static const _playableTypes = {'Movie', 'Audio', 'Video', 'MusicVideo', 'Episode'};
 
   /// True while the index is being built. The playlist area shows a spinner.
   bool _playlistIndexBuilding = false;
   bool get playlistIndexBuilding => _playlistIndexBuilding;
+  bool _playlistFallbackTriggered = false;
+  bool _playlistSortRefreshing = false;
+  bool get playlistSortRefreshing => _playlistSortRefreshing;
 
   /// The id and sort keys of every playable item in the order the server lists
   /// them, kept so the order can change without fetching anything again. Null
@@ -364,6 +367,7 @@ class ItemDetailViewModel extends ChangeNotifier {
 
   /// Ids in the order the playlist currently shows, which pages are read from.
   List<String>? _flattenedIds;
+  List<String>? get flattenedIds => _flattenedIds;
 
   /// Ids in the order the user arranged them, either dragged here or saved on
   /// the server. Kept apart from [_flattenedIds] so switching to another sort
@@ -433,7 +437,11 @@ class ItemDetailViewModel extends ChangeNotifier {
   List<AggregatedItem> _playlistItems = const [];
   List<AggregatedItem> get playlistItems => _playlistItems;
 
-  CollectionSortOption _collectionSort = CollectionSortOption.server;
+  /// Playable members from [_collectionItems] for playlist fallback.
+  List<AggregatedItem> get collectionPlayableItems =>
+      _collectionItems.where((i) => _playableTypes.contains(i.type)).toList();
+
+  CollectionSortOption _collectionSort = CollectionSortOption.releaseAscending;
   CollectionSortOption get collectionSort => _collectionSort;
 
   List<ParentCollection> _parentCollections = const [];
@@ -823,6 +831,8 @@ class ItemDetailViewModel extends ChangeNotifier {
     _collectionHasMore = false;
     _collectionLoadingMore = false;
     _playlistIndexBuilding = false;
+    _playlistFallbackTriggered = false;
+    _playlistSortRefreshing = false;
     _playlistFetchedCount = 0;
     _playlistHasMore = false;
     _playlistLoadingMore = false;
@@ -1368,15 +1378,22 @@ class ItemDetailViewModel extends ChangeNotifier {
   Future<void> setCollectionSort(CollectionSortOption option) async {
     if (_collectionSort == option) return;
     _collectionSort = option;
-    // A saved order arrives ready to use, so the scan is only worth paying for
-    // when the sort actually needs the keys.
-    if (option != CollectionSortOption.custom) {
-      await _ensurePlaylistIndexEntries();
-    }
-    _rebuildFlattenedIds();
-    _resetPlaylistPaging();
+    _playlistSortRefreshing = true;
     notifyListeners();
-    await loadMorePlaylistItems();
+    try {
+      // A saved order arrives ready to use, so the scan is only worth paying for
+      // when the sort actually needs the keys.
+      if (option != CollectionSortOption.custom) {
+        await _ensurePlaylistIndexEntries();
+      }
+      _rebuildFlattenedIds();
+      _resetPlaylistPaging();
+      notifyListeners();
+      await loadMorePlaylistItems();
+    } finally {
+      _playlistSortRefreshing = false;
+      notifyListeners();
+    }
   }
 
   /// Points [_flattenedIds] at the active sort. Every option lands here, so the
@@ -1406,7 +1423,11 @@ class ItemDetailViewModel extends ChangeNotifier {
       case CollectionSortOption.server || CollectionSortOption.custom:
         break;
     }
-    _flattenedIds = sorted.map((e) => e.id).toList();
+    final seenIds = <String>{};
+    _flattenedIds = [
+      for (final e in sorted)
+        if (seenIds.add(e.id)) e.id,
+    ];
   }
 
   /// Drops the loaded pages so the next fetch starts at the head of the index.
@@ -1561,6 +1582,8 @@ class ItemDetailViewModel extends ChangeNotifier {
       parentId: itemId,
       startIndex: _collectionFetchedCount,
       limit: _collectionPageSize,
+      sortBy: 'PremiereDate,ProductionYear,SortName',
+      sortOrder: 'Ascending',
       fields: 'PrimaryImageAspectRatio,BasicSyncInfo,People',
     );
     final newItems = _mapItems((data['Items'] as List?) ?? []);
@@ -1573,6 +1596,12 @@ class ItemDetailViewModel extends ChangeNotifier {
         ? _collectionFetchedCount < _collectionTotalCount
         : newItems.length == _collectionPageSize;
     _collectionItems = [..._collectionItems, ...newItems];
+    if ((_playlistIndexEntries == null || _playlistIndexEntries!.isEmpty) &&
+        !_playlistIndexBuilding &&
+        !_playlistFallbackTriggered) {
+      _playlistFallbackTriggered = true;
+      _buildPlaylistIndex();
+    }
     notifyListeners();
   }
 
@@ -1728,9 +1757,9 @@ class ItemDetailViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // A saved order already lists movie and episode ids in story order, so it
-      // can stand in for the index and skip enumerating the collection. The
-      // entries only get built if the user later picks a different sort.
+      // When a saved order exists, scan the collection to locate any new
+      // members, appending them to the custom order in release order so
+      // newly added titles are not dropped.
       final syncService = GetIt.instance<PluginSyncService>();
       if (syncService.pluginAvailable) {
         try {
@@ -1740,7 +1769,18 @@ class ItemDetailViewModel extends ChangeNotifier {
           );
           if (customOrder != null && customOrder.isNotEmpty) {
             _customOrderIds = customOrder;
-            _flattenedIds = List<String>.from(customOrder);
+            await _ensurePlaylistIndexEntries();
+            final customSet = customOrder.toSet();
+            final remaining = (_playlistIndexEntries ?? [])
+                .where((e) => !customSet.contains(e.id))
+                .toList()
+              ..sort(_PlaylistItemIndexEntry.compareReleaseAscending);
+            final seenIds = <String>{};
+            _flattenedIds = [
+              for (final id in [...customOrder, ...remaining.map((e) => e.id)])
+                if (seenIds.add(id)) id,
+            ];
+            _customOrderIds = _flattenedIds;
             _collectionSort = CollectionSortOption.custom;
           }
         } catch (_) {}
@@ -1748,7 +1788,7 @@ class ItemDetailViewModel extends ChangeNotifier {
 
       if (_flattenedIds == null) {
         await _ensurePlaylistIndexEntries();
-        _collectionSort = CollectionSortOption.server;
+        _collectionSort = CollectionSortOption.releaseAscending;
         _rebuildFlattenedIds();
       }
 
@@ -1817,7 +1857,13 @@ class ItemDetailViewModel extends ChangeNotifier {
             item,
       ];
 
-      _playlistIndexEntries = flat
+      final seenIds = <String>{};
+      final uniqueFlat = [
+        for (final item in flat)
+          if (seenIds.add(item.id)) item,
+      ];
+
+      _playlistIndexEntries = uniqueFlat
           .map(
             (i) => _PlaylistItemIndexEntry(
               id: i.id,
@@ -1828,6 +1874,22 @@ class ItemDetailViewModel extends ChangeNotifier {
           )
           .toList();
     } catch (_) {}
+    if (_playlistIndexEntries == null || _playlistIndexEntries!.isEmpty) {
+      if (_collectionItems.isNotEmpty) {
+        final seenIds = <String>{};
+        _playlistIndexEntries = _collectionItems
+            .where((i) => _playableTypes.contains(i.type) && seenIds.add(i.id))
+            .map(
+              (i) => _PlaylistItemIndexEntry(
+                id: i.id,
+                name: i.name,
+                premiereDate: i.premiereDate,
+                productionYear: i.productionYear,
+              ),
+            )
+            .toList();
+      }
+    }
   }
 
   /// Reads the next run of ids into [_playlistItems].
