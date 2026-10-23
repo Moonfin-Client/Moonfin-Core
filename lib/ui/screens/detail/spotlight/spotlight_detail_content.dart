@@ -1128,9 +1128,8 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
         (!isPerson || visibility.shows(DetailSection.biography)) &&
         !hidesMediaDescription(
           itemType: item.type,
-          hideMediaDescription: widget.prefs.get(
-            UserPreferences.hideDetailsMediaDescription,
-          ),
+          prefs: widget.prefs,
+          isSeerr: _vm.isSeerrOnly,
         );
     final tagline = isPerson || !visibility.shows(DetailSection.tagline)
         ? null
