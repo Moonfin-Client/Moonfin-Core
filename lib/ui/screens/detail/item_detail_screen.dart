@@ -13266,7 +13266,7 @@ class DetailSimilarRow extends StatelessWidget {
         controller: scrollController,
         scrollDirection: Axis.horizontal,
         clipBehavior: Clip.none,
-        padding: const EdgeInsets.fromLTRB(6, _kDetailRowTopInset, 6, 4),
+        padding: const EdgeInsets.only(top: _kDetailRowTopInset),
         itemCount: items.length,
         separatorBuilder: (_, _) => SizedBox(width: separatorWidth),
         itemBuilder: (context, index) {
