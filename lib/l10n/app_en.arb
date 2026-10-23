@@ -14407,15 +14407,23 @@
   "@unableToKeepAsComplete": {
     "description": "Snackbar shown when Keep as Complete fails"
   },
-  "recordPromptAlreadyStarted": "This program has already started. Also record a later showing?",
+  "possibleFutureShowing": "Possible future airing",
+  "@possibleFutureShowing": {
+    "description": "Heading identifying the following title, description, time and channel as an uncertain matching future airing"
+  },
+  "knownFutureShowing": "Next airing",
+  "@knownFutureShowing": {
+    "description": "Heading identifying the following title, description, time and channel as the next matching airing"
+  },
+  "recordPromptAlreadyStarted": "This program has already started.",
   "@recordPromptAlreadyStarted": {
     "description": "Record prompt shown when recording a program that is already airing"
   },
-  "alsoRecordLaterShowing": "Also Record a Later Showing",
+  "alsoRecordLaterShowing": "Record Both Showings",
   "@alsoRecordLaterShowing": {
     "description": "Record prompt choice: record now and also record a later showing of the same episode"
   },
-  "justRecordNow": "Just Record Now",
+  "justRecordNow": "Just Record This One",
   "@justRecordNow": {
     "description": "Record prompt choice: only record the program that is already airing"
   },
@@ -14543,5 +14551,13 @@
   "readOnTmdb": "Read on TMDB",
   "@readOnTmdb": {
     "description": "Button in an opened review that opens the review on the TMDB website"
+  },
+  "recordCompleteShowingQuestion": "Would you like to also record a later showing to get a complete recording?",
+  "@recordCompleteShowingQuestion": {
+    "description": "Final question immediately above the buttons when no future airing is currently known"
+  },
+  "recordThisShowingQuestion": "Would you like to also record this showing to get a complete recording?",
+  "@recordThisShowingQuestion": {
+    "description": "Final question immediately above the buttons after the future airing details"
   }
 }

@@ -84,6 +84,27 @@ class IncompleteRecording {
   );
 }
 
+/// A specific airing offered for confirmation, tied to the current server session.
+class SuggestedShowing {
+  final Map<String, dynamic> payload;
+  final int generation;
+  final DateTime start;
+
+  SuggestedShowing(this.payload, this.generation, this.start);
+
+  String get name => payload['name'] as String;
+  String get description => payload['description'] as String;
+  String? get channelName => payload['channelName'] as String?;
+  String? get channelNumber => payload['channelNumber'] as String?;
+}
+
+class CompleteShowingOptions {
+  final bool canSearch;
+  final SuggestedShowing? showing;
+
+  const CompleteShowingOptions({this.canSearch = false, this.showing});
+}
+
 /// The incomplete Live TV recordings the Moonfin plugin tracks, for the badge,
 /// the detail line and the Record prompt.
 ///
@@ -98,11 +119,13 @@ class IncompleteRecordingsService extends ChangeNotifier {
 
   Map<String, IncompleteRecording> _byItem = const {};
   bool _supported = false;
+  bool _extendedSupported = false;
   DateTime? _loadedAt;
   Future<void>? _inFlight;
   // Bumped when support changes or an item is dismissed, so a read started
   // before either can't fill the set once it lands.
   int _generation = 0;
+  int _sessionGeneration = 0;
 
   IncompleteRecordingsService({
     required MediaServerClient? Function() client,
@@ -120,10 +143,14 @@ class IncompleteRecordingsService extends ChangeNotifier {
   /// plugins.
   bool get supported => _supported;
 
-  void setSupported(bool value) {
-    if (_supported == value) return;
+  bool get extendedSupported => _supported && _extendedSupported;
+
+  void setSupported(bool value, {bool extended = false}) {
+    if (_supported == value && _extendedSupported == extended) return;
     _supported = value;
+    _extendedSupported = value && extended;
     _generation++;
+    _sessionGeneration++;
     _inFlight = null;
     _byItem = const {};
     _loadedAt = null;
@@ -213,8 +240,67 @@ class IncompleteRecordingsService extends ChangeNotifier {
 
   /// Asks the plugin to record a complete showing of the program's episode
   /// later. Returns false when it couldn't.
-  Future<bool> requestCompleteShowing(String programId) =>
-      _send('POST', '/Moonfin/LiveTv/CompleteShowing', {'programId': programId});
+  Future<bool> requestCompleteShowing(String programId) => _send(
+    'POST',
+    '/Moonfin/LiveTv/CompleteShowing',
+    {'programId': programId},
+  );
+
+  Future<CompleteShowingOptions> completeShowingOptions(
+    String programId,
+  ) async {
+    if (!extendedSupported) return const CompleteShowingOptions();
+    final generation = _sessionGeneration;
+    final response = await _raw(
+      'GET',
+      '/Moonfin/LiveTv/CompleteShowing/Options?programId=${Uri.encodeQueryComponent(programId)}',
+      null,
+    );
+    if (generation != _sessionGeneration || response?.statusCode != 200) {
+      return const CompleteShowingOptions();
+    }
+    final data = response?.data;
+    if (data is! Map) return const CompleteShowingOptions();
+    final showing = data['showing'];
+    SuggestedShowing? parsed;
+    if (showing is Map &&
+        showing['programId'] is String &&
+        (showing['programId'] as String).isNotEmpty &&
+        showing['name'] is String &&
+        (showing['name'] as String).trim().isNotEmpty &&
+        showing['description'] is String &&
+        (data['canSearch'] == true ||
+            (showing['description'] as String).trim().isNotEmpty) &&
+        (showing['channelName'] == null || showing['channelName'] is String) &&
+        (showing['channelNumber'] == null ||
+            showing['channelNumber'] is String)) {
+      final start = _date(showing['startDate']);
+      if (start != null && start.isAfter(DateTime.now())) {
+        parsed = SuggestedShowing(
+          Map<String, dynamic>.from(showing),
+          generation,
+          start,
+        );
+      }
+    }
+    return CompleteShowingOptions(
+      canSearch: data['canSearch'] == true,
+      showing: parsed,
+    );
+  }
+
+  Future<bool> scheduleSuggestedShowing(
+    String programId,
+    SuggestedShowing showing,
+  ) {
+    if (!extendedSupported || showing.generation != _sessionGeneration) {
+      return Future.value(false);
+    }
+    return _send('POST', '/Moonfin/LiveTv/CompleteShowing/Suggestion', {
+      'programId': programId,
+      'showing': showing.payload,
+    });
+  }
 
   // Ids are compared without dashes or case, so either GUID spelling matches.
   static String _normalize(String id) => id.replaceAll('-', '').toLowerCase();
@@ -225,7 +311,11 @@ class IncompleteRecordingsService extends ChangeNotifier {
     return status >= 200 && status < 300;
   }
 
-  Future<Response<Object?>?> _raw(String method, String path, Object? body) async {
+  Future<Response<Object?>?> _raw(
+    String method,
+    String path,
+    Object? body,
+  ) async {
     final client = _client();
     final token = client?.accessToken;
     if (client == null || token == null || token.isEmpty) return null;

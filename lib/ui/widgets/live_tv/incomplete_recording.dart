@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart' show CupertinoAlertDialog;
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 import 'package:moonfin_design/moonfin_design.dart';
@@ -8,6 +9,7 @@ import '../../../data/services/incomplete_recordings_service.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/clock_format.dart';
+import '../../../util/idiom/app_ui_idiom.dart';
 import '../adaptive/adaptive_dialog.dart';
 import '../media_badge.dart';
 import '../overlay_sheet.dart';
@@ -117,7 +119,8 @@ class IncompleteRecordingPill extends StatelessWidget {
 /// "Thu 8:00 PM", in the user's clock format.
 String formatShowingTime(BuildContext context, DateTime time) {
   final locale = Localizations.localeOf(context).toLanguageTag();
-  final use24Hour = GetIt.instance.isRegistered<UserPreferences>() &&
+  final use24Hour =
+      GetIt.instance.isRegistered<UserPreferences>() &&
       GetIt.instance<UserPreferences>().get(UserPreferences.use24HourClock);
   return '${DateFormat.E(locale).format(time)} '
       '${formatClockTime(time, use24Hour: use24Hour)}';
@@ -125,18 +128,26 @@ String formatShowingTime(BuildContext context, DateTime time) {
 
 /// The one-line status under an incomplete recording's title, such as
 /// "Incomplete · 23 of 37 min · Complete showing scheduled Thu 8:00 PM".
-String incompleteRecordingLine(BuildContext context, IncompleteRecording state) {
+String incompleteRecordingLine(
+  BuildContext context,
+  IncompleteRecording state,
+) {
   final l10n = AppLocalizations.of(context);
   final parts = [
     l10n.incompleteRecording,
-    l10n.incompleteRecordingMinutes(state.recordedMinutes, state.expectedMinutes),
+    l10n.incompleteRecordingMinutes(
+      state.recordedMinutes,
+      state.expectedMinutes,
+    ),
     switch (state.status) {
       CompleteShowingStatus.scheduled when state.scheduledStart != null =>
         l10n.completeShowingScheduled(
           formatShowingTime(context, state.scheduledStart!),
         ),
       CompleteShowingStatus.recorded when state.recordedAt != null =>
-        l10n.completeCopyRecorded(formatShowingTime(context, state.recordedAt!)),
+        l10n.completeCopyRecorded(
+          formatShowingTime(context, state.recordedAt!),
+        ),
       CompleteShowingStatus.notFound => l10n.noCompleteShowingFound,
       _ => null,
     },
@@ -182,7 +193,10 @@ class IncompleteRecordingDetailLine extends StatelessWidget {
 }
 
 /// Keep as Complete for one item, with a snackbar either way.
-Future<void> keepRecordingAsComplete(BuildContext context, String itemId) async {
+Future<void> keepRecordingAsComplete(
+  BuildContext context,
+  String itemId,
+) async {
   final service = _service;
   if (service == null) return;
   final l10n = AppLocalizations.of(context);
@@ -239,8 +253,20 @@ enum RecordPromptChoice { alsoRecordLaterShowing, justRecordNow }
 Future<RecordPromptChoice?> showRecordPrompt({
   required BuildContext context,
   required String programName,
+  SuggestedShowing? suggestion,
+  bool searchForCompleteShowing = true,
 }) {
   final l10n = AppLocalizations.of(context);
+  final suggestedTime = suggestion == null
+      ? null
+      : '${DateFormat.yMMMd(Localizations.localeOf(context).toLanguageTag()).format(suggestion.start)} · ${formatShowingTime(context, suggestion.start)}';
+  final uncertain = suggestion != null && !searchForCompleteShowing;
+  final channel = suggestion == null
+      ? ''
+      : [
+          suggestion.channelNumber,
+          suggestion.channelName,
+        ].whereType<String>().where((part) => part.trim().isNotEmpty).join(' ');
   final defaultFocusNode = FocusNode(debugLabel: 'RecordPromptDefault');
   var focusRequested = false;
 
@@ -260,34 +286,105 @@ Future<RecordPromptChoice?> showRecordPrompt({
       void choose(RecordPromptChoice choice) =>
           Navigator.of(dialogContext).pop(choice);
 
-      return AlertDialog.adaptive(
-        title: Text(
-          programName,
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
+      final details = Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.recordPromptAlreadyStarted,
+            style: const TextStyle(color: Colors.white70),
           ),
-        ),
-        content: Text(
-          l10n.recordPromptAlreadyStarted,
-          style: const TextStyle(color: Colors.white70),
-        ),
-        actions: [
-          adaptiveDialogAction(
-            focusNode: defaultFocusNode,
-            autofocus: true,
-            isDefault: true,
-            focusRingColor: AppColorScheme.accent,
-            onPressed: () => choose(RecordPromptChoice.alsoRecordLaterShowing),
-            child: Text(l10n.alsoRecordLaterShowing),
-          ),
-          adaptiveDialogAction(
-            focusRingColor: AppColorScheme.accent,
-            onPressed: () => choose(RecordPromptChoice.justRecordNow),
-            child: Text(l10n.justRecordNow),
-          ),
+          if (suggestion != null) ...[
+            const SizedBox(height: 20),
+            Text(
+              uncertain ? l10n.possibleFutureShowing : l10n.knownFutureShowing,
+              style: const TextStyle(
+                color: Colors.white70,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              '$suggestedTime${channel.isEmpty ? '' : ' ($channel)'}',
+              style: const TextStyle(color: Colors.white),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              suggestion.name,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+            if (suggestion.description.trim().isNotEmpty) ...[
+              const SizedBox(height: 6),
+              Text(
+                suggestion.description,
+                style: const TextStyle(
+                  color: Colors.white70,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            ],
+          ],
         ],
       );
+      final question = Text(
+        suggestion == null
+            ? l10n.recordCompleteShowingQuestion
+            : l10n.recordThisShowingQuestion,
+        style: const TextStyle(color: Colors.white),
+      );
+      final title = Text(
+        programName,
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
+      );
+      final content = Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (AppUiIdiomResolver.isApple)
+            details
+          else
+            Flexible(child: SingleChildScrollView(child: details)),
+          const SizedBox(height: 24),
+          question,
+        ],
+      );
+      final actions = [
+        adaptiveDialogAction(
+          focusNode: uncertain ? null : defaultFocusNode,
+          autofocus: !uncertain,
+          isDefault: !uncertain,
+          focusRingColor: AppColorScheme.accent,
+          onPressed: () => choose(RecordPromptChoice.alsoRecordLaterShowing),
+          child: Text(l10n.alsoRecordLaterShowing),
+        ),
+        adaptiveDialogAction(
+          focusNode: uncertain ? defaultFocusNode : null,
+          autofocus: uncertain,
+          isDefault: uncertain,
+          focusRingColor: AppColorScheme.accent,
+          onPressed: () => choose(RecordPromptChoice.justRecordNow),
+          child: Text(l10n.justRecordNow),
+        ),
+      ];
+      return AppUiIdiomResolver.isApple
+          ? CupertinoAlertDialog(
+              title: title,
+              content: content,
+              actions: actions,
+            )
+          : AlertDialog(
+              constraints: const BoxConstraints(maxWidth: 640),
+              title: title,
+              content: content,
+              actions: actions,
+            );
     },
   ).whenComplete(defaultFocusNode.dispose);
 }
@@ -324,9 +421,42 @@ Future<RecordAiringOutcome> recordAiring({
   bool Function()? stillValid,
 }) async {
   RecordPromptChoice? choice;
-  if (offersCompleteShowingFor(rawProgram, programStart)) {
-    choice = await showRecordPrompt(context: context, programName: programName);
-    if (choice == null || !(stillValid?.call() ?? true)) {
+  SuggestedShowing? suggestion;
+  var offerSearch = offersCompleteShowingFor(rawProgram, programStart);
+  if ((_service?.extendedSupported ?? false) &&
+      canManageLiveTv() &&
+      DateTime.now().isAfter(programStart.add(recordPromptGrace))) {
+    final navigator = Navigator.of(context, rootNavigator: true);
+    final loading = DialogRoute<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const PopScope(
+        canPop: false,
+        child: Center(child: CircularProgressIndicator()),
+      ),
+    );
+    navigator.push(loading);
+    final options = await _service!
+        .completeShowingOptions(programId)
+        .timeout(
+          const Duration(seconds: 3),
+          onTimeout: () => const CompleteShowingOptions(),
+        );
+    if (loading.isActive) navigator.removeRoute(loading);
+    if (!context.mounted || !(stillValid?.call() ?? true)) {
+      return RecordAiringOutcome.cancelled;
+    }
+    offerSearch = offerSearch || options.canSearch;
+    suggestion = options.showing;
+  }
+  if (offerSearch || suggestion != null) {
+    choice = await showRecordPrompt(
+      context: context,
+      programName: programName,
+      suggestion: suggestion,
+      searchForCompleteShowing: offerSearch,
+    );
+    if (choice == null || !context.mounted || !(stillValid?.call() ?? true)) {
       return RecordAiringOutcome.cancelled;
     }
   }
@@ -335,17 +465,22 @@ Future<RecordAiringOutcome> recordAiring({
   if (choice != RecordPromptChoice.alsoRecordLaterShowing) {
     return RecordAiringOutcome.recorded;
   }
-  return await askForLaterShowing(programId)
+  final scheduled = suggestion != null
+      ? await _service?.scheduleSuggestedShowing(programId, suggestion) ?? false
+      : await askForLaterShowing(programId);
+  return scheduled
       ? RecordAiringOutcome.recordedWithLaterShowing
       : RecordAiringOutcome.recordedLaterShowingFailed;
 }
 
 /// The snackbar for a finished [recordAiring], or null after a cancel.
-String? recordAiringMessage(AppLocalizations l10n, RecordAiringOutcome outcome) =>
-    switch (outcome) {
-      RecordAiringOutcome.cancelled => null,
-      RecordAiringOutcome.recorded => l10n.programSetToRecord,
-      RecordAiringOutcome.recordedWithLaterShowing => l10n.laterShowingRequested,
-      RecordAiringOutcome.recordedLaterShowingFailed =>
-        l10n.unableToRequestLaterShowing,
-    };
+String? recordAiringMessage(
+  AppLocalizations l10n,
+  RecordAiringOutcome outcome,
+) => switch (outcome) {
+  RecordAiringOutcome.cancelled => null,
+  RecordAiringOutcome.recorded => l10n.programSetToRecord,
+  RecordAiringOutcome.recordedWithLaterShowing => l10n.laterShowingRequested,
+  RecordAiringOutcome.recordedLaterShowingFailed =>
+    l10n.unableToRequestLaterShowing,
+};

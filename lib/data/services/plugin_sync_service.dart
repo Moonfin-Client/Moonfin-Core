@@ -330,6 +330,7 @@ class PluginSyncService extends ChangeNotifier {
       // The Emby port and older plugins leave this out, which hides the feature.
       _incompleteRecordings?.setSupported(
         _readBool(pingResult, 'incompleteRecordingsSupported') ?? false,
+        extended: _readBool(pingResult, 'extendedCompleteShowingsSupported') ?? false,
       );
 
       final seerrConfig = await _fetchSeerrConfig(client);
