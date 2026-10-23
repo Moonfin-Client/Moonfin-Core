@@ -570,7 +570,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       if (event is KeyDownEvent) {
         if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
           final effectiveTracks =
-              _vm.playlistItems.isNotEmpty ? _vm.playlistItems : _vm.collectionItems;
+              _vm.playlistItems.isNotEmpty ? _vm.playlistItems : _vm.collectionPlayableItems;
           if (effectiveTracks.isNotEmpty) {
             final firstTrack = effectiveTracks.first;
             final rawId = firstTrack.rawData['PlaylistItemId']?.toString();
@@ -946,7 +946,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
             case 'playlist':
               final effectiveTracks = _vm.playlistItems.isNotEmpty
                   ? _vm.playlistItems
-                  : (_vm.item?.type == 'BoxSet' ? _vm.collectionItems : _vm.tracks);
+                  : (_vm.item?.type == 'BoxSet' ? _vm.collectionPlayableItems : _vm.tracks);
               if (_vm.item?.type == 'BoxSet' &&
                   _collectionSortFocusNode.context?.mounted == true) {
                 _collectionSortFocusNode.requestFocus();
@@ -1197,7 +1197,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                 }
 
                 final hasPlaylistItems = _vm.playlistItems.isNotEmpty;
-                final tracks = hasPlaylistItems ? _vm.playlistItems : _vm.collectionItems;
+                final tracks = hasPlaylistItems ? _vm.playlistItems : _vm.collectionPlayableItems;
                 final listWidget = DetailTrackList(
                   tracks: tracks,
                   imageApi: _vm.imageApi,
@@ -4019,7 +4019,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
 
   Future<void> _playPlaylistTrack(BuildContext context, int index) async {
     final manager = GetIt.instance<PlaybackManager>();
-    final tracks = _vm.playlistItems.isNotEmpty ? _vm.playlistItems : _vm.collectionItems;
+    final tracks = _vm.playlistItems.isNotEmpty ? _vm.playlistItems : _vm.collectionPlayableItems;
     final isAudio = tracks.every(_isAudioItem);
     await launchPlayerWhilePreparing(
       context,

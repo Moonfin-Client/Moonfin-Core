@@ -1206,7 +1206,7 @@ class _SpotlightCardsBuilder {
           headerActionBuilder: (context) {
             final sortLabel = getCollectionSortLabel(vm.collectionSort, l10n);
             final focusNode = actions.collectionSortFocusNode;
-            final effectiveTracks = items.isNotEmpty ? items : vm.collectionItems;
+            final effectiveTracks = items.isNotEmpty ? items : vm.collectionPlayableItems;
             final firstTrackId = effectiveTracks.firstOrNull?.id;
             return Focus(
               onKeyEvent: (_, event) {
@@ -1250,7 +1250,7 @@ class _SpotlightCardsBuilder {
               return const Center(child: CircularProgressIndicator());
             }
             final hasPlaylistItems = items.isNotEmpty;
-            final effectiveTracks = hasPlaylistItems ? items : vm.collectionItems;
+            final effectiveTracks = hasPlaylistItems ? items : vm.collectionPlayableItems;
             return DetailTrackList(
               tracks: effectiveTracks,
               imageApi: _imageApi,
