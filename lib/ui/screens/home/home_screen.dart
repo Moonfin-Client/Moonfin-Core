@@ -4985,26 +4985,12 @@ class _ContentRowsState extends State<_ContentRows>
           context,
           item,
           onChanged: () => setState(() {}),
-          isContinueWatchingOrNextUp:
-              row.rowType == HomeRowType.resume ||
-              row.rowType == HomeRowType.nextUp,
+          isContinueWatchingOrNextUp: _isContinueWatchingOrNextUp(row),
         ),
         onTap: (_, item) {
           _finishSharedPreview(releaseResources: true);
-          final isCWNU =
-              row.rowType == HomeRowType.resume ||
-              row.rowType == HomeRowType.nextUp;
-          final defaultAction =
-              prefs.get(UserPreferences.continueWatchingDefaultAction);
-          if (isCWNU && defaultAction == ContinueWatchingDefaultAction.play) {
-            context.push(
-              Destinations.item(
-                item.id,
-                serverId: item.serverId,
-                autoPlay: true,
-              ),
-            );
-          } else if (row.rowType == HomeRowType.libraryTiles) {
+          if (_playedOnSelect(row, item)) return;
+          if (row.rowType == HomeRowType.libraryTiles) {
             _navigateToLibrary(context, item);
           } else if (row.rowType == HomeRowType.genres && row.id == 'genres') {
             context.push(Destinations.genre(item.name, genreId: item.id));
@@ -5114,21 +5100,8 @@ class _ContentRowsState extends State<_ContentRows>
                   final showPreviewVideo = activePreviewKey == previewKey && previewReady;
 
                   void navigateToItem() {
-                    final isCWNU =
-                        row.rowType == HomeRowType.resume ||
-                        row.rowType == HomeRowType.nextUp;
-                    final defaultAction =
-                        prefs.get(UserPreferences.continueWatchingDefaultAction);
-                    if (isCWNU &&
-                        defaultAction == ContinueWatchingDefaultAction.play) {
-                      context.push(
-                        Destinations.item(
-                          item.id,
-                          serverId: item.serverId,
-                          autoPlay: true,
-                        ),
-                      );
-                    } else if (row.rowType == HomeRowType.libraryTiles) {
+                    if (_playedOnSelect(row, item)) return;
+                    if (row.rowType == HomeRowType.libraryTiles) {
                       _navigateToLibrary(context, item);
                     } else if (row.rowType == HomeRowType.genres && row.id == 'genres') {
                       context.push(Destinations.genre(item.name, genreId: item.id));
@@ -5298,8 +5271,7 @@ class _ContentRowsState extends State<_ContentRows>
                       item,
                       onChanged: () => setState(() {}),
                       isContinueWatchingOrNextUp:
-                          row.rowType == HomeRowType.resume ||
-                          row.rowType == HomeRowType.nextUp,
+                          _isContinueWatchingOrNextUp(row),
                     ),
                     onTap: () {
                       if (isV2MobileTouch) {
@@ -5639,6 +5611,23 @@ class _ContentRowsState extends State<_ContentRows>
         ),
       );
     }
+  }
+
+  static bool _isContinueWatchingOrNextUp(HomeRow row) =>
+      row.rowType == HomeRowType.resume || row.rowType == HomeRowType.nextUp;
+
+  /// Plays a Continue Watching or Next Up card when the user set those rows
+  /// to play on select, and says whether it did.
+  bool _playedOnSelect(HomeRow row, AggregatedItem item) {
+    if (!_isContinueWatchingOrNextUp(row) ||
+        widget.prefs.get(UserPreferences.continueWatchingDefaultAction) !=
+            ContinueWatchingDefaultAction.play) {
+      return false;
+    }
+    context.push(
+      Destinations.item(item.id, serverId: item.serverId, autoPlay: true),
+    );
+    return true;
   }
 
   static void _navigateToLibrary(BuildContext context, AggregatedItem item) {

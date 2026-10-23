@@ -6459,11 +6459,11 @@
   "@continueWatchingDefaultAction": {
     "description": "Setting for default click action on Continue Watching and Next Up items"
   },
-  "continueWatchingDefaultActionDescription": "Change what single clicking on a CW&NU item does",
+  "continueWatchingDefaultActionDescription": "What selecting a Continue Watching or Next Up item does",
   "@continueWatchingDefaultActionDescription": {
     "description": "Description for Continue Watching and Next Up default click action setting"
   },
-  "goToDetailsScreen": "Go to Details screen",
+  "goToDetailsScreen": "Go to Details",
   "@goToDetailsScreen": {
     "description": "Option to navigate to the details screen for an item"
   },

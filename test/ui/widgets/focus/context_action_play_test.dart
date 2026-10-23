@@ -200,7 +200,7 @@ void main() {
         isContinueWatchingOrNextUp: true,
       );
 
-      expect(built.actions.first.label, 'Go to Details screen');
+      expect(built.actions.first.label, 'Go to Details');
       expect(built.actions.first.icon, Icons.info_outline);
 
       await built.actions.first.onSelect();

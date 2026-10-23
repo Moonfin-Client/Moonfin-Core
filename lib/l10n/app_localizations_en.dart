@@ -4895,10 +4895,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get continueWatchingDefaultActionDescription =>
-      'Change what single clicking on a CW&NU item does';
+      'What selecting a Continue Watching or Next Up item does';
 
   @override
-  String get goToDetailsScreen => 'Go to Details screen';
+  String get goToDetailsScreen => 'Go to Details';
 
   @override
   String get playImmediately => 'Play immediately';

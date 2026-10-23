@@ -8689,13 +8689,13 @@ abstract class AppLocalizations {
   /// Description for Continue Watching and Next Up default click action setting
   ///
   /// In en, this message translates to:
-  /// **'Change what single clicking on a CW&NU item does'**
+  /// **'What selecting a Continue Watching or Next Up item does'**
   String get continueWatchingDefaultActionDescription;
 
   /// Option to navigate to the details screen for an item
   ///
   /// In en, this message translates to:
-  /// **'Go to Details screen'**
+  /// **'Go to Details'**
   String get goToDetailsScreen;
 
   /// Option to play an item immediately
