@@ -29,6 +29,7 @@ class YouTubeStreamResolver {
   static void setDioForTesting(Dio dio) {
     _dio = dio;
     _visitorData = null;
+    _searches.clear();
   }
 
   static const _youtubeOrigin = 'https://www.youtube.com';
@@ -139,6 +140,77 @@ class YouTubeStreamResolver {
       return YouTubeStream(trailerUrl);
     }
     return resolve(videoId);
+  }
+
+  static final _searches = <String, Future<String?>>{};
+
+  /// A YouTube link to the top search hit for [title]'s trailer, for a server
+  /// that keeps no trailer links of its own. Asked as the web client, whose
+  /// top hit is usually the studio's own upload. Kept per title, since the
+  /// media bar comes back to the same slides, but a failed search isn't kept
+  /// so the next try asks again.
+  static Future<String?> searchTrailer(String title, {int? year}) {
+    final query = [title, ?year, 'trailer'].join(' ');
+    return _searches.putIfAbsent(
+      query,
+      () => _searchVideoId(query).then((id) {
+        if (id == null) _searches.remove(query);
+        return id == null ? null : 'https://www.youtube.com/watch?v=$id';
+      }),
+    );
+  }
+
+  static Future<String?> _searchVideoId(String query) async {
+    try {
+      final response = await _dio
+          .post<Map<String, dynamic>>(
+            'https://www.youtube.com/youtubei/v1/search?prettyPrint=false',
+            data: {
+              'context': {
+                'client': {
+                  'clientName': 'WEB',
+                  'clientVersion': '2.20260101.00.00',
+                  'hl': 'en',
+                  'gl': 'US',
+                },
+              },
+              'query': query,
+              // Videos only, leaving out channels and playlists.
+              'params': 'EgIQAQ%3D%3D',
+            },
+            options: Options(
+              sendTimeout: _requestTimeout,
+              receiveTimeout: _requestTimeout,
+              headers: {
+                'Content-Type': 'application/json',
+                'Origin': _youtubeOrigin,
+                'Referer': _youtubeReferer,
+              },
+            ),
+          )
+          .timeout(_resolveTimeout);
+      return firstSearchVideoId(response.data);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// The first video in a search answer, in the order YouTube ranked them.
+  @visibleForTesting
+  static String? firstSearchVideoId(Object? node) {
+    if (node is Map) {
+      final video = node['videoRenderer'];
+      if (video is Map && video['videoId'] is String) {
+        return video['videoId'] as String;
+      }
+      node = node.values;
+    }
+    if (node is Iterable) {
+      for (final child in node) {
+        if (firstSearchVideoId(child) case final id?) return id;
+      }
+    }
+    return null;
   }
 
   /// Points mpv at [YouTubeStream.audioLanguage]. mpv keeps the choice across

@@ -317,6 +317,72 @@ void main() {
     });
   });
 
+  test('a trailer search links the top hit, once per title', () async {
+    Map<String, dynamic> section(List<Map<String, dynamic>> contents) => {
+      'itemSectionRenderer': {'contents': contents},
+    };
+    final adapter = _PlayerAdapter([
+      {
+        'contents': {
+          'twoColumnSearchResultsRenderer': {
+            'primaryContents': {
+              'sectionListRenderer': {
+                'contents': [
+                  section([
+                    {
+                      'channelRenderer': {'channelId': 'UCillumination'},
+                    },
+                    {
+                      'videoRenderer': {'videoId': '6DBi41reeF0'},
+                    },
+                  ]),
+                  section([
+                    {
+                      'videoRenderer': {'videoId': 'uApRZVgOvxc'},
+                    },
+                  ]),
+                ],
+              },
+            },
+          },
+        },
+      },
+    ]);
+    YouTubeStreamResolver.setDioForTesting(Dio()..httpClientAdapter = adapter);
+
+    final first = await YouTubeStreamResolver.searchTrailer(
+      'Despicable Me 3',
+      year: 2017,
+    );
+    final again = await YouTubeStreamResolver.searchTrailer(
+      'Despicable Me 3',
+      year: 2017,
+    );
+
+    expect(first, 'https://www.youtube.com/watch?v=6DBi41reeF0');
+    expect(again, first);
+    expect(adapter.urls.single.path, '/youtubei/v1/search');
+    expect(adapter.bodies.single['query'], 'Despicable Me 3 2017 trailer');
+    expect(_clientName(adapter.bodies.single), 'WEB');
+  });
+
+  test('a trailer search that found nothing asks again next time', () async {
+    final adapter = _PlayerAdapter([
+      const {'contents': {}},
+      {
+        'videoRenderer': {'videoId': 'eqPrO-ZZqCI'},
+      },
+    ]);
+    YouTubeStreamResolver.setDioForTesting(Dio()..httpClientAdapter = adapter);
+
+    final missed = await YouTubeStreamResolver.searchTrailer('Good Morning');
+    final found = await YouTubeStreamResolver.searchTrailer('Good Morning');
+
+    expect(missed, isNull);
+    expect(found, 'https://www.youtube.com/watch?v=eqPrO-ZZqCI');
+    expect(adapter.urls, hasLength(2));
+  });
+
   test('passes a trailer that isnt on YouTube through untouched', () async {
     final stream = await YouTubeStreamResolver.resolveFromUrl(
       'https://example.com/trailer.mp4',

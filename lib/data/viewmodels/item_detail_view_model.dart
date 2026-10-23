@@ -459,6 +459,10 @@ class ItemDetailViewModel extends ChangeNotifier {
   /// Plex can only favorite media, never people.
   bool get supportsPersonFavorites => _client.serverType != ServerType.plex;
 
+  /// Plex keeps no YouTube links, so a trailer it doesn't have is searched
+  /// for on YouTube instead.
+  bool get searchesYouTubeForTrailer => _client.serverType == ServerType.plex;
+
   bool _isRatingMutationInProgress = false;
   bool get isRatingMutationInProgress => _isRatingMutationInProgress;
 

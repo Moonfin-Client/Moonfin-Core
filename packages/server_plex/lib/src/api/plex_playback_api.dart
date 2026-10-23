@@ -327,7 +327,9 @@ class PlexPlaybackApi implements PlaybackApi {
     final transcoder = item['type'] == 'track'
         ? '/music/:/transcode/universal'
         : '/video/:/transcode/universal';
-    Future<bool> decide(Map<String, String> query) async {
+    Future<({bool directPlay, String? why})> decide(
+      Map<String, String> query,
+    ) async {
       final decision = await plexContainer(
         _dio,
         '$transcoder/decision?${_query(query)}',
@@ -341,12 +343,17 @@ class PlexPlaybackApi implements PlaybackApi {
               "Plex can't play item $itemId",
         );
       }
-      return decided == 'directplay';
+      return (
+        directPlay: decided == 'directplay',
+        why: decision['directPlayDecisionText'] as String?,
+      );
     }
 
     // The first decision goes without a session or a burn, because Plex keeps
-    // a session's first answer and a burn would rule out direct play.
-    final directPlay = await decide(params);
+    // a session's first answer and a burn would rule out direct play. It's
+    // also the one whose reason counts, since the start always turns direct
+    // play off.
+    final (:directPlay, :why) = await decide(params);
     final start = {
       ...params,
       'directPlay': '0',
@@ -370,8 +377,10 @@ class PlexPlaybackApi implements PlaybackApi {
           'Path': part['key'],
           'SupportsDirectPlay': directPlay,
           'SupportsTranscoding': !directPlay,
-          if (!directPlay)
+          if (!directPlay) ...{
             'TranscodingUrl': '$transcoder/start.m3u8?${_query(start)}',
+            'TranscodeReasons': [?why],
+          },
           'DefaultAudioStreamIndex': audio?['index'] ?? audio?['id'],
           'DefaultSubtitleStreamIndex': shownSubtitle,
           if (!directPlay && burnSubtitle)

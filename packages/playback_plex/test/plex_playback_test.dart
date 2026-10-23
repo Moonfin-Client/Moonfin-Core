@@ -75,8 +75,10 @@ Map<String, dynamic> _info({required bool directPlay}) => {
       'Path': '/library/parts/3720/1/file.mkv',
       'SupportsDirectPlay': directPlay,
       'SupportsTranscoding': !directPlay,
-      if (!directPlay)
+      if (!directPlay) ...{
         'TranscodingUrl': '/video/:/transcode/universal/start.m3u8?session=session',
+        'TranscodeReasons': ['App cannot direct play this item.'],
+      },
       'DefaultAudioStreamIndex': 1,
       'DefaultSubtitleStreamIndex': -1,
       'MediaStreams': [
@@ -136,6 +138,7 @@ void main() {
       '?session=session&X-Plex-Token=tok',
     );
     expect(result.container, 'ts');
+    expect(result.transcodingReasons, ['App cannot direct play this item.']);
   });
 
   test('the session reports carry the runtime Plex needs', () async {

@@ -34,6 +34,7 @@ import '../../../data/repositories/offline_repository.dart';
 import '../../../data/services/media_server_client_factory.dart';
 import '../../../data/services/book_reader_service.dart';
 import '../../../data/services/theme_music_service.dart';
+import '../../../data/services/youtube_stream_resolver.dart';
 import '../../../data/viewmodels/item_detail_view_model.dart';
 import '../../../data/viewmodels/seerr_media_detail_view_model.dart';
 import '../../../data/services/plugin_sync_service.dart';
@@ -7064,7 +7065,10 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           // A series keeps the button even when nothing was counted for it,
           // since a trailer in a season folder belongs to that season and
           // isn't counted against the series it came from.
-          : (item.type == 'Series' || hasTrailer(item, viewModel.features)) &&
+          : (item.type == 'Series' ||
+                    hasTrailer(item, viewModel.features) ||
+                    (item.type == 'Movie' &&
+                        viewModel.searchesYouTubeForTrailer)) &&
                 shows(DetailButton.trailer))
         DetailButton.trailer: _DetailActionButton(
           label: l10n.trailer,
@@ -10050,10 +10054,18 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       return;
     }
 
-    final trailerUrl = item.remoteTrailers
+    var trailerUrl = item.remoteTrailers
         .map((t) => t['Url'] as String?)
         .whereType<String>()
         .firstWhere((u) => u.isNotEmpty, orElse: () => '');
+    if (trailerUrl.isEmpty && viewModel.searchesYouTubeForTrailer) {
+      trailerUrl =
+          await YouTubeStreamResolver.searchTrailer(
+            item.name,
+            year: item.productionYear,
+          ) ??
+          '';
+    }
 
     if (trailerUrl.isEmpty) {
       if (!context.mounted) return;

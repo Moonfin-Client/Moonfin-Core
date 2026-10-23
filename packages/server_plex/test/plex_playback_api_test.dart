@@ -60,6 +60,10 @@ const _item = {
         'MediaContainer': {
           'generalDecisionText':
               'Neither direct play nor conversion is available.',
+          'directPlayDecisionText':
+              options.uri.queryParameters.containsKey('session')
+              ? 'Direct play is disabled.'
+              : 'No direct play video profile exists.',
           'Metadata': [
             {
               'Media': [
@@ -277,6 +281,9 @@ void main() {
       );
       final source = (info['MediaSources'] as List).single as Map;
       expect(source['SupportsDirectPlay'], isFalse);
+      expect(source['TranscodeReasons'], [
+        'No direct play video profile exists.',
+      ]);
       final url = Uri.parse(source['TranscodingUrl'] as String);
       expect(url.path, '/video/:/transcode/universal/start.m3u8');
       expect(url.queryParameters['session'], info['PlaySessionId']);

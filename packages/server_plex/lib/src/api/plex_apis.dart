@@ -92,6 +92,11 @@ class PlexImageApi implements ImageApi {
   }) => '';
 }
 
+/// Plex ends its version with the build's hash, which means nothing to a
+/// reader.
+String? plexVersion(Object? version) =>
+    version is String ? version.split('-').first : null;
+
 class PlexSystemApi implements SystemApi {
   final Dio _dio;
 
@@ -102,7 +107,7 @@ class PlexSystemApi implements SystemApi {
     final identity = await plexContainer(_dio, '/identity');
     return {
       'Id': identity['machineIdentifier'],
-      'Version': identity['version'],
+      'Version': plexVersion(identity['version']),
       'ProductName': 'Plex Media Server',
     };
   }
@@ -113,7 +118,7 @@ class PlexSystemApi implements SystemApi {
     return {
       'Id': root['machineIdentifier'],
       'ServerName': root['friendlyName'],
-      'Version': root['version'],
+      'Version': plexVersion(root['version']),
       'OperatingSystem': root['platform'],
       'ProductName': 'Plex Media Server',
     };

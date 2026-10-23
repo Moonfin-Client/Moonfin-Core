@@ -66,6 +66,7 @@ class PlexMediaStreamResolver implements MediaStreamResolver {
       selectedSubtitleStreamIndex: source.defaultSubtitleStreamIndex,
       serverOfferedDirectPlay: directPlay,
       directPlayRequested: enableDirectPlay,
+      transcodingReasons: source.transcodingReasons,
       sourceBitrate: source.bitrate,
     );
   }

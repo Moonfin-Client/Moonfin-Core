@@ -1067,7 +1067,22 @@ class _MediaBarState extends State<MediaBar>
     }
 
     List<Map<String, dynamic>> remoteTrailers = item.remoteTrailers;
-    if (remoteTrailers.isEmpty) {
+    // Plex items never carry trailer links, so there's nothing to fetch and
+    // one is searched for instead.
+    if (client.serverType == ServerType.plex) {
+      if (streamUrl == null) {
+        final url = await YouTubeStreamResolver.searchTrailer(
+          item.title,
+          year: item.year,
+        );
+        if (!mounted || resolveId != _trailerResolveId) return;
+        if (url != null) {
+          remoteTrailers = [
+            {'Url': url},
+          ];
+        }
+      }
+    } else if (remoteTrailers.isEmpty) {
       try {
         final fullItem = await client.itemsApi.getItem(item.itemId);
         if (!mounted || resolveId != _trailerResolveId) return;

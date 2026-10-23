@@ -53,7 +53,7 @@ class PlexServer {
     return PlexServer(
       id: json['clientIdentifier'] as String? ?? '',
       name: json['name'] as String? ?? '',
-      version: json['productVersion'] as String? ?? '',
+      version: plexVersion(json['productVersion']) ?? '',
       accessToken: json['accessToken'] as String? ?? '',
       connections: [
         for (final c in connections)

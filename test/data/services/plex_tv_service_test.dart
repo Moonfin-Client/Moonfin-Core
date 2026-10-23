@@ -24,7 +24,7 @@ void main() {
         PlexServer.fromJson({
           'clientIdentifier': 'machine',
           'name': 'Basement',
-          'productVersion': '1.43.4',
+          'productVersion': '1.43.4.10903-e5521bd8c',
           'accessToken': 'token',
           'connections': connections,
         });
@@ -36,6 +36,7 @@ void main() {
         connection('192.168.50.45', local: true),
       ]);
       expect(basement.id, 'machine');
+      expect(basement.version, '1.43.4.10903');
       expect(basement.accessToken, 'token');
       expect(basement.connections.map((c) => c.uri), [
         'https://192-168-50-45.hash.plex.direct:32400',
