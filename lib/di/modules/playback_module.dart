@@ -573,24 +573,7 @@ void registerPlaybackModule() {
     },
   );
 
-  manager.setExternalPlaybackDecider((items) {
-    if (!PlatformDetection.isAndroid) {
-      return false;
-    }
-
-    if (!prefs.get(UserPreferences.useExternalPlayer)) {
-      return false;
-    }
-
-    if (_getIt.isRegistered<SyncPlayManager>()) {
-      final syncPlayManager = _getIt<SyncPlayManager>();
-      if (syncPlayManager.state.enabled) {
-        return false;
-      }
-    }
-
-    return ExternalPlayerPolicy.isEligibleQueue(items);
-  });
+  manager.setExternalPlaybackDecider(ExternalPlayerPolicy.coversQueue);
   manager.setNextSeasonItemsProvider(_nextSeasonItemsProvider);
   manager.setResolverConfigurator(_ensureResolverForItem);
   final audioArbiter = PlaybackArbiter();
@@ -807,6 +790,7 @@ void setActiveStreamResolver(MediaServerClient client) {
   final resolver = LocalFirstMediaStreamResolver(
     inner: serverResolver,
     offline: _getIt<OfflineStreamResolver>(),
+    streamFromServer: () => _getIt<PlaybackManager>().streamsFromServer,
     restoreSubtitles: (itemId) async {
       if (_getIt.isRegistered<DownloadService>()) {
         await _getIt<DownloadService>().restoreMissingSubtitles(itemId);

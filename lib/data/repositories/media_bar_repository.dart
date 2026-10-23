@@ -11,6 +11,7 @@ import '../models/media_bar_slide_item.dart';
 import '../models/media_bar_state.dart';
 import '../services/library_scope_service.dart';
 import '../utils/blocked_ratings.dart';
+import '../utils/bounded_concurrency.dart';
 
 class MediaBarRepository {
 
@@ -113,28 +114,44 @@ class MediaBarRepository {
     }
 
     try {
-      final allItems = <Map<String, dynamic>>[];
-
       if (allParentIds.isEmpty) {
         return const MediaBarDisabled();
-      } else {
-        for (final parentId in allParentIds) {
-          if (!GetIt.instance.isRegistered<MediaBarRepository>() ||
-              GetIt.instance<MediaBarRepository>() != this) {
-            return const MediaBarDisabled();
-          }
+      }
+
+      final allItems = <Map<String, dynamic>>[];
+      final seenIds = <String>{};
+      final usable = _usableFor(excludedGenres);
+      var usableCount = 0;
+      // A source still waiting for a slot is skipped once the pool holds twice
+      // the item count to choose from. The order is shuffled so the skipped
+      // ones change from one load to the next.
+      final enough = maxItems * 2;
+      await mapBounded(
+        allParentIds.toList()..shuffle(_random),
+        _sourceConcurrency,
+        (parentId) async {
+          if (usableCount >= enough) return null;
           try {
-            final targetTypes = allParentItemTypes[parentId] ?? includeTypes;
             final batch = await _fetchItems(
-              targetTypes,
+              allParentItemTypes[parentId] ?? includeTypes,
               fetchLimit,
               parentId: parentId,
             );
-            allItems.addAll(batch);
+            for (final item in batch) {
+              final id = item['Id']?.toString();
+              if (id != null && !seenIds.add(id)) continue;
+              allItems.add(item);
+              if (usable(item)) usableCount++;
+            }
           } catch (_) {
             // Keep fetching remaining libraries if one fails
           }
-        }
+          return null;
+        },
+      );
+      if (!GetIt.instance.isRegistered<MediaBarRepository>() ||
+          GetIt.instance<MediaBarRepository>() != this) {
+        return const MediaBarDisabled();
       }
 
       var selected = _selectItemsWithBackdrops(
@@ -205,19 +222,19 @@ class MediaBarRepository {
     int maxItems,
     Set<String> excludedGenres,
   ) {
-    final filter = activeParentalFilter;
-    final withBackdrops =
-        source
-            .where(
-              (item) =>
-                  _hasBackdrop(item) &&
-                  !_isBoxSet(item) &&
-                  !_hasExcludedGenre(item, excludedGenres) &&
-                  !filter.isBlockedRaw(item),
-            )
-            .toList()
-          ..shuffle();
+    final withBackdrops = source.where(_usableFor(excludedGenres)).toList()
+      ..shuffle();
     return withBackdrops.take(maxItems).toList();
+  }
+
+  /// The check an item has to pass to go on the bar.
+  bool Function(Map<String, dynamic>) _usableFor(Set<String> excludedGenres) {
+    final filter = activeParentalFilter;
+    return (item) =>
+        _hasBackdrop(item) &&
+        !_isBoxSet(item) &&
+        !_hasExcludedGenre(item, excludedGenres) &&
+        !filter.isBlockedRaw(item);
   }
 
   List<String> _splitCsv(Preference<String> pref) =>
@@ -296,6 +313,9 @@ class MediaBarRepository {
   /// this many from a random place in the library, and the dated ones read
   /// this many of the newest.
   static const _poolSize = 40;
+
+  /// How many libraries and collections are read at once.
+  static const _sourceConcurrency = 6;
 
   Future<List<Map<String, dynamic>>> _fetchItems(
     List<String>? itemTypes,

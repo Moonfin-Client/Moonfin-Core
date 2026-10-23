@@ -44,6 +44,7 @@ import '../item_detail_screen.dart'
         PersonDates,
         selectedMediaSourceForItem,
         technicalDetailsFor;
+import '../play_item_on_screen.dart';
 import 'spotlight_cards.dart';
 import 'spotlight_images.dart';
 import 'spotlight_landscape_layout.dart';
@@ -356,7 +357,9 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
   SpotlightCardActions _cardActions(AggregatedItem item) {
     return SpotlightCardActions(
       openItem: (entry) => _closeModalThen(() {
-        if (entry.serverId == 'seerr') {
+        if (item.type == 'Episode' && entry.id == item.id) {
+          playItemOnScreen(context);
+        } else if (entry.serverId == 'seerr') {
           final mediaType = entry.seerrMediaType ??
               (entry.type == 'Series' || entry.type == 'tv' ? 'tv' : 'movie');
           final tmdbId = entry.tmdbId;

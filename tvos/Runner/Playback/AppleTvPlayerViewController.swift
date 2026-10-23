@@ -1,4 +1,4 @@
-import AVFoundation
+import CoreText
 import QuartzCore
 import UIKit
 
@@ -99,6 +99,8 @@ final class AppleTvPlayerViewController: UIViewController {
     private var audioTracks: [(index: Int, label: String, subtitle: String, selected: Bool)] = []
     private var subtitleTracks: [(index: Int, label: String, subtitle: String, selected: Bool)] = []
     private var streamInfoSections: [[String: Any]] = []
+    private var streamInfoTitle = "Playback Information"
+    private var streamInfoDroppedFramesLabel = "Dropped Frames"
     private var hasCast = false
     private var castPeople:
         [(name: String, subtitle: String, imageUrl: String, personId: String)] = []
@@ -1292,6 +1294,12 @@ final class AppleTvPlayerViewController: UIViewController {
         audioTracks = parseTracks(args["audioTracks"])
         subtitleTracks = parseTracks(args["subtitleTracks"])
         streamInfoSections = (args["streamInfoSections"] as? [[String: Any]]) ?? []
+        streamInfoTitle =
+            (args["streamInfoTitle"] as? String).flatMap { $0.isEmpty ? nil : $0 }
+            ?? "Playback Information"
+        streamInfoDroppedFramesLabel =
+            (args["streamInfoDroppedFramesLabel"] as? String).flatMap { $0.isEmpty ? nil : $0 }
+            ?? "Dropped Frames"
         selectedBitrateMbps = (args["selectedBitrateMbps"] as? NSNumber)?.intValue ?? -1
         hasCast = (args["hasCast"] as? Bool) ?? false
         canFavorite = (args["canFavorite"] as? Bool) ?? false
@@ -2916,115 +2924,19 @@ final class AppleTvPlayerViewController: UIViewController {
     }
 
     private func presentInfoPanel() {
-        var sections: [(title: String, rows: [(label: String, value: String)])] = []
-        for section in streamInfoSections {
-            let title = (section["title"] as? String) ?? ""
-            var rows: [(label: String, value: String)] = []
-            for row in (section["rows"] as? [[String: Any]]) ?? [] {
-                rows.append(
-                    (
-                        label: (row["label"] as? String) ?? "",
-                        value: (row["value"] as? String) ?? ""
-                    ))
-            }
-            if !rows.isEmpty { sections.append((title: title, rows: rows)) }
+        // Dart sends every row except the dropped frame count, which only the
+        // engine knows.
+        var sections = streamInfoSections
+        if let dropped = player.droppedFrameCount,
+            let index = sections.firstIndex(where: { ($0["id"] as? String) == "technical" })
+        {
+            let row: [String: Any] = ["label": streamInfoDroppedFramesLabel, "value": "\(dropped)"]
+            let rows = (sections[index]["rows"] as? [[String: Any]]) ?? []
+            sections[index]["rows"] = rows + [row]
         }
-
-        let colorRows = colorTelemetryRows()
-        if let idx = sections.firstIndex(where: { $0.title == "Video" }) {
-            sections[idx].rows += colorRows
-        } else if !colorRows.isEmpty {
-            sections.append((title: "Color & HDR", rows: colorRows))
-        }
-
-        let deviceRows = deviceDiagnosticRows()
-        if let idx = sections.firstIndex(where: { $0.title == "Diagnostics" }) {
-            sections[idx].rows = deviceRows + sections[idx].rows
-        } else if !deviceRows.isEmpty {
-            sections.append((title: "Diagnostics", rows: deviceRows))
-        }
-
-        let panel = InfoPanelViewController(sections: sections)
+        let panel = InfoPanelViewController(sections: sections, heading: streamInfoTitle)
         panel.modalPresentationStyle = .overFullScreen
         present(panel, animated: true)
-    }
-
-    private func deviceDiagnosticRows() -> [(label: String, value: String)] {
-        var rows: [(label: String, value: String)] = [
-            ("OS", UIDevice.current.systemVersion),
-            ("Model", VideoCapabilityDetector.deviceModelIdentifier()),
-            ("Generation", VideoCapabilityDetector.currentGeneration().rawValue),
-            ("Engine", "AetherEngine"),
-        ]
-        if let screen = view.window?.screen {
-            if let mode = screen.currentMode {
-                rows.append(
-                    ("Sink Mode", "\(Int(mode.size.width))x\(Int(mode.size.height))"))
-            }
-            rows.append(("Sink Max FPS", "\(screen.maximumFramesPerSecond)"))
-            rows.append(
-                ("EDR Potential", String(format: "%.2f", screen.potentialEDRHeadroom)))
-            rows.append(
-                ("EDR Current", String(format: "%.2f", screen.currentEDRHeadroom)))
-        }
-
-        // Display-criteria switching is engine-owned, with AetherEngine as
-        // the sole writer. The panel-mode outcome shows in the EDR rows.
-        if let window = view.window {
-            rows.append(
-                ("Match Dynamic Range",
-                 window.avDisplayManager.isDisplayCriteriaMatchingEnabled ? "on" : "off"))
-        }
-
-        let session = AVAudioSession.sharedInstance()
-        rows.append(("Max Output Channels", "\(session.maximumOutputNumberOfChannels)"))
-        let routeChannels = session.currentRoute.outputs.reduce(0) {
-            $0 + ($1.channels?.count ?? 0)
-        }
-        rows.append(("Route Channels", "\(routeChannels)"))
-        return rows
-    }
-
-    private func colorTelemetryRows() -> [(label: String, value: String)] {
-        let telemetry = player.dynamicRangeTelemetrySnapshot()
-        func value(_ key: String) -> String? {
-            guard let v = telemetry[key], !v.isEmpty,
-                v != "unknown", v != "no_engine"
-            else { return nil }
-            return v
-        }
-
-        var rows: [(label: String, value: String)] = []
-        if let v = value("backend") { rows.append(("Playback Path", v)) }
-        if let v = value("source_format") { rows.append(("Source Format", v)) }
-        if let v = value("output_format") { rows.append(("Output Format", v)) }
-        if let v = value("dv_profile") { rows.append(("Dolby Vision", v)) }
-        if let v = value("source_fps") { rows.append(("Source FPS", v)) }
-        if let v = value("source_bitrate") { rows.append(("Source Bitrate", v)) }
-        if let v = value("video_decoder") { rows.append(("Video Decoder", v)) }
-        if let v = value("audio_decoder") { rows.append(("Audio Decoder", v)) }
-        if let v = value("indicated_bitrate") {
-            rows.append(("Indicated Bitrate", v))
-        }
-        if let v = value("dropped_frames") { rows.append(("Frames Dropped", v)) }
-        if let v = value("stalls") { rows.append(("Stalls", v)) }
-        if let v = value("telemetry_observedFps") {
-            rows.append(("Observed FPS", v))
-        }
-        if let v = value("telemetry_avSyncGapMs") {
-            rows.append(("A/V Sync Gap (ms)", v))
-        }
-        if let v = value("telemetry_forwardBufferSeconds") {
-            rows.append(("Forward Buffer (s)", v))
-        }
-        if let v = value("telemetry_networkThroughputMbps") {
-            rows.append(("Network (Mbps)", v))
-        }
-        if let v = value("telemetry_rssMb") { rows.append(("Memory (MB)", v)) }
-        if let v = value("is_live") { rows.append(("Live", v)) }
-        if let v = value("last_error") { rows.append(("Last Error", v)) }
-
-        return rows
     }
 
     /// Dart's answer to the `openEpisodes` the Episodes button sends.
@@ -3350,17 +3262,46 @@ extension AppleTvPlayerViewController: UIGestureRecognizerDelegate {
     }
 }
 
-private let kInfoAccentColor = UIColor(red: 0.42, green: 0.49, blue: 0.96, alpha: 1)
+/// Roboto only ships in the Flutter assets, so it's registered with Core Text
+/// once before the panel uses it.
+private let robotoRegistered: Void = {
+    guard let fonts = SubtitleFontLocator.bundledFontsDirectory() else { return }
+    for name in ["Roboto-Regular", "Roboto-Bold"] {
+        let url = URL(fileURLWithPath: fonts).appendingPathComponent("\(name).ttf")
+        _ = CTFontManagerRegisterFontsForURL(url as CFURL, .process, nil)
+    }
+}()
 
-private final class InfoPanelViewController: UIViewController, RemotePlayerNavigable, UITableViewDataSource,
-    UITableViewDelegate
+private func infoFont(_ size: CGFloat, bold: Bool = false) -> UIFont {
+    _ = robotoRegistered
+    return UIFont(name: bold ? "Roboto-Bold" : "Roboto-Regular", size: size)
+        ?? .systemFont(ofSize: size, weight: bold ? .semibold : .regular)
+}
+
+/// The Playback Information panel. Its rows aren't focusable, so Up and Down
+/// scroll the list and Select or Back close it.
+private final class InfoPanelViewController: UIViewController, RemotePlayerNavigable,
+    UIScrollViewDelegate
 {
-    private let sections: [(title: String, rows: [(label: String, value: String)])]
-    private let tableView = UITableView(frame: .zero, style: .grouped)
-    private let closeButton = UIButton(type: .system)
+    private static let panelWidth: CGFloat = 935
+    private static let border: CGFloat = 2
+    private static let side: CGFloat = 27
+    private static let textWidth: CGFloat = panelWidth - 2 * border - 2 * side
+    private static let scrollStep: CGFloat = 200
+    private static let labelGap: CGFloat = 20
 
-    init(sections: [(title: String, rows: [(label: String, value: String)])]) {
+    private let sections: [[String: Any]]
+    private let heading: String
+    private let panel = UIView()
+    private let scrollView = UIScrollView()
+    private let thumb = UIView()
+    private let dimText = UIColor(white: 1, alpha: 0.54)
+    private var holdTimer: Timer?
+    private var panStartY: CGFloat = 0
+
+    init(sections: [[String: Any]], heading: String) {
         self.sections = sections
+        self.heading = heading
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -3370,236 +3311,290 @@ private final class InfoPanelViewController: UIViewController, RemotePlayerNavig
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor(white: 0, alpha: 0.4)
+        view.backgroundColor = UIColor(white: 0, alpha: 0.54)
 
-        // Glass panel.
-        let panel = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
+        // The system dismisses presented controllers on menu through its own
+        // window level recognizer. Owning one here wins the arbitration.
+        let menuTap = UITapGestureRecognizer(target: self, action: #selector(closePanel))
+        menuTap.allowedPressTypes = [NSNumber(value: UIPress.PressType.menu.rawValue)]
+        view.addGestureRecognizer(menuTap)
+
+        let pan = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
+        pan.allowedTouchTypes = [NSNumber(value: UITouch.TouchType.indirect.rawValue)]
+        view.addGestureRecognizer(pan)
+
         panel.translatesAutoresizingMaskIntoConstraints = false
-        panel.layer.cornerRadius = 28
+        panel.backgroundColor = UIColor(white: 26.0 / 255.0, alpha: 0.9)
+        panel.layer.cornerRadius = 33
+        panel.layer.borderWidth = Self.border
+        panel.layer.borderColor =
+            UIColor(red: 142.0 / 255.0, green: 200.0 / 255.0, blue: 240.0 / 255.0, alpha: 0.33)
+            .cgColor
         panel.clipsToBounds = true
         view.addSubview(panel)
-        let content = panel.contentView
+
+        // The layer border draws inside the bounds, so the content lays out
+        // inside this guide to stay clear of it.
+        let inner = UILayoutGuide()
+        panel.addLayoutGuide(inner)
 
         let title = UILabel()
         title.translatesAutoresizingMaskIntoConstraints = false
-        title.text = "Playback Information"
-        title.font = .systemFont(ofSize: 26, weight: .bold)
+        title.text = heading
+        title.font = infoFont(33, bold: true)
         title.textColor = .white
-        content.addSubview(title)
+        panel.addSubview(title)
 
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.backgroundColor = .clear
-        tableView.dataSource = self
-        tableView.delegate = self
-        tableView.rowHeight = UITableView.automaticDimension
-        tableView.estimatedRowHeight = 40
-        tableView.register(InfoCell.self, forCellReuseIdentifier: "cell")
-        content.addSubview(tableView)
+        let rule = UIView()
+        rule.translatesAutoresizingMaskIntoConstraints = false
+        rule.backgroundColor = UIColor(white: 1, alpha: 0.08)
+        panel.addSubview(rule)
 
-        closeButton.translatesAutoresizingMaskIntoConstraints = false
-        closeButton.setTitle("Close", for: .normal)
-        closeButton.titleLabel?.font = .systemFont(ofSize: 22, weight: .semibold)
-        closeButton.addAction(
-            UIAction { [weak self] _ in self?.dismiss(animated: true) }, for: .primaryActionTriggered)
-        content.addSubview(closeButton)
+        let list = UIStackView(arrangedSubviews: listViews())
+        list.translatesAutoresizingMaskIntoConstraints = false
+        list.axis = .vertical
+
+        // Scrolling is driven from the presses and the pan below, so the scroll
+        // view's own pan stays out of it.
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.isScrollEnabled = false
+        scrollView.showsVerticalScrollIndicator = false
+        scrollView.showsHorizontalScrollIndicator = false
+        scrollView.contentInsetAdjustmentBehavior = .never
+        scrollView.delegate = self
+        scrollView.addSubview(list)
+        panel.addSubview(scrollView)
+
+        thumb.backgroundColor = UIColor(white: 1, alpha: 0.3)
+        thumb.layer.cornerRadius = 2.5
+        thumb.isHidden = true
+        panel.addSubview(thumb)
+
+        // Below the labels' compression resistance, so a long list scrolls
+        // inside the capped panel instead of squeezing its rows.
+        let fitList = scrollView.frameLayoutGuide.heightAnchor.constraint(
+            equalTo: scrollView.contentLayoutGuide.heightAnchor)
+        fitList.priority = UILayoutPriority(500)
 
         NSLayoutConstraint.activate([
             panel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            panel.topAnchor.constraint(
-                equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 48),
-            panel.bottomAnchor.constraint(
-                equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -48),
-            panel.widthAnchor.constraint(equalToConstant: 1240),
+            panel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            panel.widthAnchor.constraint(equalToConstant: Self.panelWidth),
+            panel.heightAnchor.constraint(lessThanOrEqualToConstant: 1000),
 
-            title.topAnchor.constraint(equalTo: content.topAnchor, constant: 28),
-            title.leadingAnchor.constraint(equalTo: content.leadingAnchor, constant: 36),
+            inner.topAnchor.constraint(equalTo: panel.topAnchor, constant: Self.border),
+            inner.bottomAnchor.constraint(equalTo: panel.bottomAnchor, constant: -Self.border),
+            inner.leadingAnchor.constraint(equalTo: panel.leadingAnchor, constant: Self.border),
+            inner.trailingAnchor.constraint(equalTo: panel.trailingAnchor, constant: -Self.border),
 
-            tableView.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 8),
-            tableView.leadingAnchor.constraint(equalTo: content.leadingAnchor, constant: 12),
-            tableView.trailingAnchor.constraint(equalTo: content.trailingAnchor, constant: -12),
-            tableView.bottomAnchor.constraint(
-                equalTo: closeButton.topAnchor, constant: -4),
+            title.topAnchor.constraint(equalTo: inner.topAnchor, constant: 33),
+            title.leadingAnchor.constraint(equalTo: inner.leadingAnchor, constant: 40),
+            title.trailingAnchor.constraint(lessThanOrEqualTo: inner.trailingAnchor, constant: -40),
 
-            closeButton.centerXAnchor.constraint(equalTo: content.centerXAnchor),
-            closeButton.bottomAnchor.constraint(
-                equalTo: content.bottomAnchor, constant: -18),
+            rule.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 20),
+            rule.leadingAnchor.constraint(equalTo: inner.leadingAnchor),
+            rule.trailingAnchor.constraint(equalTo: inner.trailingAnchor),
+            rule.heightAnchor.constraint(equalToConstant: 2),
+
+            scrollView.topAnchor.constraint(equalTo: rule.bottomAnchor, constant: 13),
+            scrollView.leadingAnchor.constraint(equalTo: inner.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: inner.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: inner.bottomAnchor, constant: -33),
+
+            list.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
+            list.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
+            list.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
+            list.bottomAnchor.constraint(
+                equalTo: scrollView.contentLayoutGuide.bottomAnchor, constant: -27),
+            list.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor),
+            fitList,
         ])
     }
 
-    func numberOfSections(in tableView: UITableView) -> Int { sections.count }
-
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        (sections[section].rows.count + 1) / 2
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        // The panel's own subviews take their frames after this pass, so they
+        // are laid out first to place the thumb against the final list size.
+        panel.layoutIfNeeded()
+        layoutThumb()
     }
 
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int)
-        -> UIView?
-    {
-        let header = UIView()
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        endHold()
+    }
+
+    private func listViews() -> [UIView] {
+        var views: [UIView] = []
+        for section in sections {
+            let rows = ((section["rows"] as? [[String: Any]]) ?? []).compactMap { rowView($0) }
+            guard !rows.isEmpty else { continue }
+            let header = makeLabel((section["title"] as? String) ?? "", size: 27, bold: true)
+            views.append(padded(header, top: 20, bottom: 7))
+            views += rows
+        }
+        return views
+    }
+
+    private func rowView(_ row: [String: Any]) -> UIView? {
+        if let note = row["note"] as? String {
+            guard !note.isEmpty else { return nil }
+            return padded(makeLabel(note, size: 20, color: dimText), top: 0, bottom: 7)
+        }
+        guard let value = row["value"] as? String, !value.isEmpty else { return nil }
+        let name = makeLabel((row["label"] as? String) ?? "", size: 22, color: dimText)
+        name.setContentHuggingPriority(.required, for: .horizontal)
+        name.setContentCompressionResistancePriority(.required, for: .horizontal)
+        let valueLabel = makeLabel(
+            value, size: 22, bold: (row["bold"] as? Bool) ?? false,
+            width: Self.textWidth - ceil(name.intrinsicContentSize.width) - Self.labelGap)
+        valueLabel.textAlignment = .right
+        let line = UIStackView(arrangedSubviews: [name, valueLabel])
+        line.alignment = .top
+        line.spacing = Self.labelGap
+        return padded(line, top: 5, bottom: 5)
+    }
+
+    /// The wrap width is set up front so each row's height is right on the
+    /// first layout pass, which the panel height and the thumb depend on.
+    private func makeLabel(
+        _ text: String, size: CGFloat, bold: Bool = false, color: UIColor = .white,
+        width: CGFloat? = nil
+    ) -> UILabel {
         let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = sections[section].title.uppercased()
-        label.font = .systemFont(ofSize: 17, weight: .semibold)
-        label.textColor = kInfoAccentColor
-        header.addSubview(label)
+        label.text = text
+        label.font = infoFont(size, bold: bold)
+        label.textColor = color
+        label.numberOfLines = 0
+        label.preferredMaxLayoutWidth = width ?? Self.textWidth
+        return label
+    }
+
+    private func padded(_ child: UIView, top: CGFloat, bottom: CGFloat) -> UIView {
+        let box = UIView()
+        child.translatesAutoresizingMaskIntoConstraints = false
+        box.addSubview(child)
         NSLayoutConstraint.activate([
-            label.leadingAnchor.constraint(equalTo: header.leadingAnchor, constant: 12),
-            label.bottomAnchor.constraint(equalTo: header.bottomAnchor, constant: -6),
+            child.topAnchor.constraint(equalTo: box.topAnchor, constant: top),
+            child.bottomAnchor.constraint(equalTo: box.bottomAnchor, constant: -bottom),
+            child.leadingAnchor.constraint(equalTo: box.leadingAnchor, constant: Self.side),
+            child.trailingAnchor.constraint(equalTo: box.trailingAnchor, constant: -Self.side),
         ])
-        return header
+        return box
     }
 
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int)
-        -> CGFloat
-    {
-        section == 0 ? 36 : 48
+    private func scroll(by delta: CGFloat) {
+        scroll(to: scrollView.contentOffset.y + delta, animated: true)
     }
 
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath)
-        -> UITableViewCell
-    {
-        let cell =
-            tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! InfoCell
-        let rows = sections[indexPath.section].rows
-        let leftIndex = indexPath.row * 2
-        let rightIndex = leftIndex + 1
-        let left = rows[leftIndex]
-        let right = rightIndex < rows.count ? rows[rightIndex] : nil
-        cell.configure(
-            leftLabel: left.label,
-            leftValue: left.value,
-            rightLabel: right?.label,
-            rightValue: right?.value)
-        return cell
+    private func scroll(to y: CGFloat, animated: Bool) {
+        let maxY = max(0, scrollView.contentSize.height - scrollView.bounds.height)
+        let target = min(maxY, max(0, y))
+        guard target != scrollView.contentOffset.y else { return }
+        guard animated else {
+            scrollView.contentOffset.y = target
+            return
+        }
+        UIView.animate(
+            withDuration: 0.12, delay: 0, options: [.curveEaseOut, .beginFromCurrentState]
+        ) {
+            self.scrollView.contentOffset.y = target
+        }
+    }
+
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        layoutThumb()
+    }
+
+    private func layoutThumb() {
+        let track = scrollView.frame
+        let content = scrollView.contentSize.height
+        thumb.isHidden = content <= track.height + 0.5
+        guard !thumb.isHidden else { return }
+        let length = max(40, track.height * track.height / content)
+        let progress = min(1, max(0, scrollView.contentOffset.y / (content - track.height)))
+        thumb.frame = CGRect(
+            x: track.maxX - 8 - 5, y: track.minY + (track.height - length) * progress,
+            width: 5, height: length)
+    }
+
+    /// A swipe down moves down the list, the same direction a swipe moves focus.
+    @objc private func handlePan(_ recognizer: UIPanGestureRecognizer) {
+        switch recognizer.state {
+        case .began:
+            panStartY = scrollView.contentOffset.y
+        case .changed:
+            scroll(to: panStartY + recognizer.translation(in: view).y, animated: false)
+        default:
+            break
+        }
+    }
+
+    @objc private func closePanel() {
+        endHold()
+        guard !isBeingDismissed else { return }
+        dismiss(animated: true)
+    }
+
+    /// One step per press, then the timer repeats while the key is held. When
+    /// tvOS repeats the press itself, each one restarts the timer first.
+    private func beginHold(_ direction: CGFloat) {
+        holdTimer?.invalidate()
+        let delta = direction * Self.scrollStep
+        scroll(by: delta)
+        let timer = Timer(
+            fire: Date().addingTimeInterval(0.35), interval: 0.12, repeats: true
+        ) { [weak self] _ in
+            Task { @MainActor in self?.scroll(by: delta) }
+        }
+        RunLoop.main.add(timer, forMode: .common)
+        holdTimer = timer
+    }
+
+    private func endHold() {
+        holdTimer?.invalidate()
+        holdTimer = nil
     }
 
     func handleRemoteNavigation(_ command: String) {
-        if command == "back" { dismiss(animated: true); return }
-        let system = UIFocusSystem.focusSystem(for: view)
-        if command == "select" {
-            if system?.focusedItem === closeButton { closeButton.sendActions(for: .primaryActionTriggered) }
-            return
+        switch command {
+        case "moveup": scroll(by: -Self.scrollStep)
+        case "movedown": scroll(by: Self.scrollStep)
+        case "select", "back": closePanel()
+        default: break
         }
-        guard command == "moveup" || command == "movedown" else { return }
-        let onClose = system?.focusedItem === closeButton
-        if onClose && command == "movedown" { return }
-        let paths = sections.indices.flatMap { section in
-            (0..<tableView.numberOfRows(inSection: section)).map { IndexPath(row: $0, section: section) }
-        }
-        let focused = (system?.focusedItem as? UITableViewCell).flatMap { tableView.indexPath(for: $0) }
-        let index = focused.flatMap { paths.firstIndex(of: $0) }
-        let next = index.map { $0 + (command == "moveup" ? -1 : 1) }
-            ?? (onClose ? paths.count - 1 : 0)
-        if next >= paths.count || paths.isEmpty {
-            system?.requestFocusUpdate(to: closeButton)
-        } else {
-            let path = paths[max(0, next)]
-            tableView.scrollToRow(at: path, at: .middle, animated: false)
-            tableView.layoutIfNeeded()
-            if let cell = tableView.cellForRow(at: path) { system?.requestFocusUpdate(to: cell) }
-        }
-        system?.updateFocusIfNeeded()
     }
 
     override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
-        for press in presses where press.type == .menu {
-            dismiss(animated: true)
-            return
+        for press in presses {
+            switch press.type {
+            case .upArrow, .downArrow:
+                beginHold(press.type == .downArrow ? 1 : -1)
+                return
+            case .select:
+                closePanel()
+                return
+            case .menu, .leftArrow, .rightArrow:
+                // Menu is consumed so the down press can't reach the system
+                // while the recognizer decides on release.
+                return
+            default:
+                break
+            }
         }
         super.pressesBegan(presses, with: event)
     }
-}
 
-private final class InfoCell: UITableViewCell {
-    private let leftName = UILabel()
-    private let leftValue = UILabel()
-    private let rightName = UILabel()
-    private let rightValue = UILabel()
-
-    private let highlight = UIView()
-
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        backgroundColor = UIColor(white: 1, alpha: 0.05)
-        selectionStyle = .none
-        focusStyle = .custom
-
-        highlight.translatesAutoresizingMaskIntoConstraints = false
-        highlight.backgroundColor = .clear
-        highlight.layer.cornerRadius = 10
-        contentView.addSubview(highlight)
-
-        for label in [leftName, rightName] {
-            label.translatesAutoresizingMaskIntoConstraints = false
-            label.font = .systemFont(ofSize: 20, weight: .regular)
-            label.textColor = UIColor(white: 1, alpha: 0.55)
-            label.numberOfLines = 1
-            label.lineBreakMode = .byTruncatingTail
-            contentView.addSubview(label)
+    override func pressesEnded(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+        if presses.contains(where: { $0.type == .upArrow || $0.type == .downArrow }) {
+            endHold()
         }
-        for label in [leftValue, rightValue] {
-            label.translatesAutoresizingMaskIntoConstraints = false
-            label.font = .systemFont(ofSize: 20, weight: .medium)
-            label.textColor = .white
-            label.numberOfLines = 1
-            label.lineBreakMode = .byTruncatingTail
-            contentView.addSubview(label)
-        }
-
-        let divider = contentView.centerXAnchor
-
-        NSLayoutConstraint.activate([
-            highlight.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 4),
-            highlight.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -4),
-            highlight.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 2),
-            highlight.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -2),
-
-            leftName.leadingAnchor.constraint(
-                equalTo: contentView.leadingAnchor, constant: 16),
-            leftName.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 9),
-            leftName.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -9),
-            leftName.widthAnchor.constraint(equalToConstant: 190),
-
-            leftValue.leadingAnchor.constraint(
-                equalTo: leftName.trailingAnchor, constant: 16),
-            leftValue.trailingAnchor.constraint(equalTo: divider, constant: -16),
-            leftValue.centerYAnchor.constraint(equalTo: leftName.centerYAnchor),
-
-            rightName.leadingAnchor.constraint(equalTo: divider, constant: 16),
-            rightName.centerYAnchor.constraint(equalTo: leftName.centerYAnchor),
-            rightName.widthAnchor.constraint(equalToConstant: 190),
-
-            rightValue.leadingAnchor.constraint(
-                equalTo: rightName.trailingAnchor, constant: 16),
-            rightValue.trailingAnchor.constraint(
-                equalTo: contentView.trailingAnchor, constant: -16),
-            rightValue.centerYAnchor.constraint(equalTo: leftName.centerYAnchor),
-        ])
+        super.pressesEnded(presses, with: event)
     }
 
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    func configure(
-        leftLabel: String, leftValue: String, rightLabel: String?, rightValue: String?
-    ) {
-        leftName.text = leftLabel
-        self.leftValue.text = leftValue
-        let hasRight = rightLabel != nil
-        rightName.text = rightLabel
-        self.rightValue.text = rightValue
-        rightName.isHidden = !hasRight
-        self.rightValue.isHidden = !hasRight
-    }
-
-    override func didUpdateFocus(
-        in context: UIFocusUpdateContext, with coordinator: UIFocusAnimationCoordinator
-    ) {
-        coordinator.addCoordinatedAnimations {
-            self.highlight.backgroundColor =
-                self.isFocused ? kInfoAccentColor.withAlphaComponent(0.30) : .clear
-        }
+    override func pressesCancelled(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+        endHold()
+        super.pressesCancelled(presses, with: event)
     }
 }
 

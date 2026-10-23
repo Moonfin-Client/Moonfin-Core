@@ -15,6 +15,7 @@ import '../../../../widgets/focus/locked_focus_row.dart';
 import '../../../../widgets/sliding_pill_tabs.dart';
 import '../../detail_episode_images.dart';
 import '../../detail_layout_metrics.dart';
+import '../../play_item_on_screen.dart';
 import 'minimalist_episode_card.dart';
 
 /// The gap between the season tabs and the rail under them.
@@ -128,6 +129,10 @@ class _MinimalistEpisodesSectionState extends State<MinimalistEpisodesSection> {
   // From an episode the one picked takes its page, so Back leaves the run of
   // episodes in one press.
   void _openEpisode(BuildContext context, AggregatedItem episode) {
+    if (episode.id == _vm.item?.id) {
+      playItemOnScreen(context);
+      return;
+    }
     final location = Destinations.item(
       episode.id,
       serverId: episode.serverId,

@@ -201,6 +201,7 @@ class _ExternalPlayerHostScreenState extends State<ExternalPlayerHostScreen> {
           ),
           startPosition: startPosition,
           runtime: currentItem.runtime,
+          detached: resolution.liveStreamId != null,
           subtitles: resolution.externalSubtitles
               .map(
                 (subtitle) => ExternalPlayerSubtitle(
@@ -215,6 +216,11 @@ class _ExternalPlayerHostScreenState extends State<ExternalPlayerHostScreen> {
         final launchResult = useChooser
             ? await _externalPlayer.chooseAndLaunch(request)
             : await _externalPlayer.launch(request);
+        // A player can answer while it is still playing, as VLC does once
+        // its own player takes over and as every detached launch does.
+        // Reporting the stop then would close a live channel under it, so
+        // the stop waits for the viewer to come back to Moonfin.
+        await _untilBackFromPlayer(detached: request.detached);
 
         final runtime = currentItem.runtime;
         final endPosition = launchResult.endPosition;
@@ -268,6 +274,37 @@ class _ExternalPlayerHostScreenState extends State<ExternalPlayerHostScreen> {
       if (!_handoffToInternalPlayer) {
         await _finishAndExit();
       }
+    }
+  }
+
+  Future<void> _untilBackFromPlayer({required bool detached}) async {
+    final left = Completer<void>();
+    final back = Completer<void>();
+    final listener = AppLifecycleListener(
+      onHide: () {
+        if (!left.isCompleted) left.complete();
+      },
+      onResume: () {
+        if (left.isCompleted && !back.isCompleted) back.complete();
+      },
+    );
+    try {
+      if (WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed) {
+        left.complete();
+      } else if (!detached) {
+        return;
+      } else {
+        // A detached launch answers before Moonfin has left the screen, and
+        // one that never takes it away, like a dismissed chooser, is over.
+        try {
+          await left.future.timeout(const Duration(seconds: 5));
+        } on TimeoutException {
+          return;
+        }
+      }
+      await back.future;
+    } finally {
+      listener.dispose();
     }
   }
 

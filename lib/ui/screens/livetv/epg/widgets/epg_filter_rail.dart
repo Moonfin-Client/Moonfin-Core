@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../../widgets/adaptive/adaptive_glass.dart';
+import '../../../../widgets/focus/focus_theme.dart';
 import '../../../../widgets/focus/focusable_wrapper.dart';
 
 /// Horizontal genre filter rail. Focusable pill chips (full d-pad on every
@@ -141,13 +142,7 @@ class _EpgFilterRailState extends State<EpgFilterRail> {
                   ? () => widget.focusNodeFor(i + 1).requestFocus()
                   : null,
               onNavigateDown: widget.onNavigateDown,
-              // Rebuild the chip on focus change so the focused-but-unselected
-              // pill can show an accent border.
-              child: ListenableBuilder(
-                listenable: widget.focusNodeFor(i),
-                builder: (context, _) =>
-                    _chip(context, i, widget.focusNodeFor(i).hasFocus),
-              ),
+              child: Builder(builder: (context) => _chip(context, i)),
             ),
           ),
       ],
@@ -187,13 +182,18 @@ class _EpgFilterRailState extends State<EpgFilterRail> {
     );
   }
 
-  Widget _chip(BuildContext context, int i, bool focused) {
+  Widget _chip(BuildContext context, int i) {
     final selected = i == widget.selectedIndex;
+    final highlighted = FocusableWrapper.isHighlighted(context);
     final textTheme = Theme.of(context).textTheme;
     final apple = widget.apple;
     final Color bg;
     final Color fg;
-    if (selected) {
+    if (highlighted) {
+      // Clear so the wrapper's focus fill shows through.
+      bg = Colors.transparent;
+      fg = FocusTheme.solidFocusForeground;
+    } else if (selected) {
       bg = apple ? const Color(0xFFF4F8FC) : AppColorScheme.accent;
       fg = const Color(0xFF10242E);
     } else {
@@ -202,16 +202,11 @@ class _EpgFilterRailState extends State<EpgFilterRail> {
           : AppColorScheme.surface.withValues(alpha: 0.55);
       fg = AppColorScheme.onSurface.withValues(alpha: 0.85);
     }
-    // A constant-width border avoids layout shift: accent when focused-but-not-
-    // selected, faint on Material's idle pills, otherwise transparent.
-    final Color borderColor;
-    if (focused && !selected) {
-      borderColor = AppColorScheme.accent;
-    } else if (!apple && !selected) {
-      borderColor = AppColorScheme.onSurface.withValues(alpha: 0.12);
-    } else {
-      borderColor = Colors.transparent;
-    }
+    // A constant-width border avoids layout shift: faint on Material's idle
+    // pills, otherwise transparent.
+    final borderColor = !apple && !selected && !highlighted
+        ? AppColorScheme.onSurface.withValues(alpha: 0.12)
+        : Colors.transparent;
     return AnimatedContainer(
       duration: const Duration(milliseconds: 150),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),

@@ -11,6 +11,7 @@ import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:path/path.dart' as p;
+import 'package:playback_core/playback_core.dart' show MediaStreamResolver;
 import 'package:server_core/server_core.dart';
 import 'package:uuid/uuid.dart';
 
@@ -1860,9 +1861,15 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
   }
 
   String? _primaryMediaSourceId(AggregatedItem item) {
-    return item.mediaSources.isNotEmpty
+    final id = item.mediaSources.isNotEmpty
         ? item.mediaSources.first['Id']?.toString()
         : null;
+    // A channel item's lone placeholder source fails every download endpoint
+    // when named, while the server finds the real file on its own without it.
+    if (MediaStreamResolver.isStreamlessStaticSource(item.rawData, id)) {
+      return null;
+    }
+    return id;
   }
 
   String _encodeQuery(Map<String, String> params) {

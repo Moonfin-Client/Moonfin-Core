@@ -19,7 +19,6 @@ import 'package:volume_controller/volume_controller.dart';
 import 'package:window_manager/window_manager.dart';
 
 import '../../../data/utils/chapter_markers.dart';
-import '../../../data/utils/video_range_label.dart';
 import '../../../playback/subtitle_style.dart';
 import '../../../playback/subtitle_view_config.dart';
 import '../../../playback/system_volume.dart';
@@ -40,7 +39,7 @@ import '../../../playback/media_kit_player_backend.dart';
 import '../../../playback/mpv_letterbox_crop.dart';
 import '../../widgets/aether_video_view.dart';
 import '../../../playback/playback_lifecycle_handler.dart';
-import '../../../playback/playback_profile_diagnostics.dart';
+import '../../../playback/playback_info_sections.dart';
 import '../../../playback/hdr_stream_capability.dart';
 import '../../../playback/cinema_skip_controller.dart';
 import '../../../data/models/aggregated_item.dart';
@@ -61,7 +60,6 @@ import '../../../platform/pip_service.dart';
 import '../../widgets/video_mini_player.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
-import '../../../util/audio_labels.dart';
 import '../../../util/episode_playability.dart';
 import '../../../util/player_edge_drag.dart';
 import '../../../playback/hdr_composition.dart';
@@ -71,7 +69,6 @@ import 'hdr_overlay_capture.dart';
 import '../../../util/focus/back_key_release.dart';
 import '../../../util/focus/dpad_keys.dart';
 import '../../../util/focus/gamepad/gamepad_key_synthesizer.dart';
-import '../../../util/play_method_label.dart';
 import '../../../util/platform_detection.dart';
 import '../../../util/playback_time_label.dart';
 import '../../../util/server_url.dart';
@@ -152,7 +149,6 @@ class VideoPlayerScreen extends StatefulWidget {
 
 class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     with WidgetsBindingObserver, WindowListener, ImmersiveSystemUi {
-  static final _camelCaseSpaceRe = RegExp(r'(?<=[a-z])(?=[A-Z])');
   static const _streamLoadingLabel = 'Loading Stream...';
 
   /// How long away counts as having moved on rather than stepped out.
@@ -236,29 +232,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   bool get _videoShowsThrough =>
       _nativeHdrEngaged && !(_hdrRendererCycling?.value ?? false);
 
-  /// The HDR-output line for the playback info sheet, or null on platforms
-  /// where there is nothing to say. Reports the outcome and, when it did not
-  /// engage, why.
-  String? _hdrOutputRow(AppLocalizations l10n, {bool hdrTonemapped = false}) {
+  /// Null unless this display gets an HDR title as SDR.
+  String? _hdrOutputRange({bool hdrTonemapped = false}) {
     final backend = _hdrBackend;
-    if (backend == null) return null;
-    final status = backend.hdrOutput.status.value;
-    // The native window carries SDR titles too; there is no HDR to report.
-    if (status.isActive && !backend.isPlayingHdrContent) {
-      return l10n.hdrOutputContentSdr;
-    }
-    // Engaged, but this display is not receiving HDR - the window sits on a
-    // monitor without it.
-    if (status.isActive && hdrTonemapped) {
-      return l10n.hdrOutputActiveTonemapped;
-    }
-    return switch (status) {
-      HdrOutputStatus.active => l10n.hdrOutputActive(
-        HdrOutputController.activeOutputFormat,
-      ),
-      HdrOutputStatus.contentIsSdr => l10n.hdrOutputContentSdr,
-      HdrOutputStatus.disabledByPreference => l10n.hdrOutputDisabled,
-      HdrOutputStatus.failed => l10n.hdrOutputFailed,
+    if (backend == null || !backend.isPlayingHdrContent) return null;
+    return switch (backend.hdrOutput.status.value) {
+      HdrOutputStatus.disabledByPreference || HdrOutputStatus.failed => 'SDR',
+      HdrOutputStatus.active when hdrTonemapped => 'SDR',
+      _ => null,
     };
   }
 
@@ -1671,360 +1652,58 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     unawaited(_pushMedia3UiMetadata());
   }
 
-  /// [hdrTonemapped] is what the display is receiving right now, resolved at
-  /// sheet-open time; callers that never show the HDR row can leave it.
+  /// [hdrTonemapped], [transcodingInfo] and [device] are only read when the
+  /// dialog opens, so the Media3 metadata push goes without them.
   List<Map<String, dynamic>> _buildMedia3StreamInfoSections({
     bool hdrTonemapped = false,
+    Map<String, dynamic>? transcodingInfo,
+    String? device,
   }) {
-    final l10n = AppLocalizations.of(context);
     final resolution = _manager.currentResolution;
-    final playMethod = resolution?.playMethod;
-    final bringupPlayMethod = _manager.bringupState.playMethod;
-    final methodLabel = _manager.isOfflinePlayback
-        ? l10n.directPlay
-        : playbackMethodLabel(
-            l10n: l10n,
-            playMethod: playMethod,
-            transcodingReasons:
-                resolution?.transcodingReasons ?? const <String>[],
-            fallbackPlayMethod: bringupPlayMethod,
-          );
-
     final item = _queue.currentItem;
     Map<String, dynamic>? mediaSource;
-    Map<String, dynamic>? videoStream;
-    Map<String, dynamic>? audioStream;
-    Map<String, dynamic>? subtitleStream;
-
-    Map<String, dynamic>? pickStream(
-      List<Map<String, dynamic>> streams,
-      String type,
-      int? preferredIndex,
-    ) {
-      if (preferredIndex != null && preferredIndex >= 0) {
-        final preferred = streams
-            .where((s) => s['Type'] == type)
-            .firstWhere(
-              (s) => s['Index'] == preferredIndex,
-              orElse: () => const <String, dynamic>{},
-            );
-        if (preferred.isNotEmpty) {
-          return preferred;
-        }
-      }
-
-      return streams
-              .where((s) => s['Type'] == type && s['IsDefault'] == true)
-              .firstOrNull ??
-          streams.where((s) => s['Type'] == type).firstOrNull;
-    }
-
-    void populateStreams(List<Map<String, dynamic>> streams) {
-      videoStream = streams.where((s) => s['Type'] == 'Video').firstOrNull;
-      audioStream = pickStream(streams, 'Audio', _manager.audioStreamIndex);
-      subtitleStream = _manager.subtitleStreamIndex == -1
-          ? null
-          : pickStream(streams, 'Subtitle', _manager.subtitleStreamIndex);
-    }
-
+    var streams = const <Map<String, dynamic>>[];
     if (item is AggregatedItem) {
-      final streams = resolution?.mediaStreams ?? item.mediaStreams;
-      populateStreams(streams);
-
-      final sourceId = resolution?.mediaSourceId;
+      streams = resolution?.mediaStreams ?? item.mediaStreams;
       final sources = item.mediaSources;
-      if (sourceId != null && sources.isNotEmpty) {
-        mediaSource = sources.firstWhere(
-          (s) => s['Id'] == sourceId,
-          orElse: () => sources.first,
-        );
-      } else if (sources.isNotEmpty) {
-        mediaSource = sources.first;
-      }
+      mediaSource =
+          sources
+              .where((s) => s['Id'] == resolution?.mediaSourceId)
+              .firstOrNull ??
+          sources.firstOrNull;
     } else if (item is String) {
       final meta = _manager.currentOfflineMetadata;
-      if (meta != null) {
-        final streams =
-            (meta['MediaStreams'] as List?)?.cast<Map<String, dynamic>>() ?? [];
-        populateStreams(streams);
-        final sources = meta['MediaSources'] as List?;
-        if (sources != null && sources.isNotEmpty) {
-          mediaSource = sources.first as Map<String, dynamic>?;
-        }
-      }
+      streams =
+          (meta?['MediaStreams'] as List?)?.cast<Map<String, dynamic>>() ??
+          const <Map<String, dynamic>>[];
+      mediaSource =
+          (meta?['MediaSources'] as List?)?.firstOrNull
+              as Map<String, dynamic>?;
     }
 
-    final container =
-        (mediaSource?['Container'] as String?)?.toUpperCase() ?? l10n.unknown;
-    String resolveFileName() {
-      String? basenameFromPath(String? rawPath) {
-        final path = rawPath?.trim();
-        if (path == null || path.isEmpty) {
-          return null;
-        }
-        final segments = path.split(RegExp(r'[\\/]'));
-        final last = segments.isNotEmpty ? segments.last.trim() : '';
-        return last.isEmpty ? null : last;
-      }
-
-      final sourcePathName = basenameFromPath(mediaSource?['Path'] as String?);
-      if (sourcePathName != null) {
-        return sourcePathName;
-      }
-
-      if (item is String) {
-        final offlinePathName = basenameFromPath(item);
-        if (offlinePathName != null) {
-          return offlinePathName;
-        }
-      }
-
-      final sourceName = (mediaSource?['Name'] as String?)?.trim();
-      if (sourceName != null && sourceName.isNotEmpty) {
-        return sourceName;
-      }
-
-      return l10n.unknown;
-    }
-
-    final fileName = resolveFileName();
-    final bitrate = mediaSource?['Bitrate'] as int?;
-    final overrideMbps = _manager.maxBitrateOverrideMbps;
-    final delivered = resolution?.deliveredFormat;
-
-    String effectiveBitrateText() {
-      // The override is the user's cap rather than what the server settled on,
-      // so it only stands in when the stream URL is silent.
-      final total = delivered?.totalBitrate;
-      if (total != null) {
-        return _formatBitrate(total);
-      }
-      if (overrideMbps != null) {
-        return l10n.bitrateValueMbps(overrideMbps);
-      }
-      return _formatBitrate(bitrate);
-    }
-
-    Map<String, dynamic> row(
-      String label,
-      String value, {
-      bool highlight = false,
-    }) {
-      return {'label': label, 'value': value, 'highlight': highlight};
-    }
-
-    final sections = <Map<String, dynamic>>[];
-
-    void addSection(String title, List<Map<String, dynamic>> rows) {
-      if (rows.isEmpty) return;
-      sections.add({'title': title, 'rows': rows});
-    }
-
-    final playbackRows = <Map<String, dynamic>>[
-      row('File Name', fileName),
-      row(l10n.playMethod, methodLabel, highlight: true),
-      if (resolution != null &&
-          playMethod == StreamPlayMethod.transcode &&
-          resolution.transcodingReasons.isNotEmpty)
-        row(
-          l10n.transcodeReasons,
-          resolution.transcodingReasons
-              .map((r) => r.replaceAllMapped(_camelCaseSpaceRe, (_) => ' '))
-              .join(', '),
-        ),
-      row(l10n.player, switch (_activeBackend) {
-        Media3PlayerBackend _ => 'Media3 (ExoPlayer)',
-        HtmlVideoBackend _ => 'HTML5 (browser)',
-        AetherBackend _ => 'AetherEngine',
-        MediaKitPlayerBackend _ => 'media_kit (libmpv)',
-        _ => l10n.unknown,
-      }),
-      row(l10n.container, container),
-      row(
-        l10n.bitrate,
-        effectiveBitrateText(),
-        highlight: overrideMbps != null,
+    return buildPlaybackInfoSections(
+      l10n: AppLocalizations.of(context),
+      resolution: resolution,
+      mediaStreams: streams,
+      mediaSource: mediaSource,
+      fallbackPlayMethod: _manager.bringupState.playMethod,
+      audioStreamIndex: _manager.audioStreamIndex,
+      subtitleStreamIndex: _manager.subtitleStreamIndex,
+      transcodingInfo: transcodingInfo,
+      offline: _manager.isOfflinePlayback,
+      transcodeForced: transcodeForcedBySettings(_manager),
+      qualityLimitMbps: userQualityLimitMbps(
+        _manager.maxBitrateOverrideMbps,
+        _prefs.get(UserPreferences.maxBitrate),
       ),
-      if (overrideMbps != null)
-        row(
-          l10n.bitrateOverride,
-          l10n.bitrateValueMbps(overrideMbps),
-          highlight: true,
-        ),
-    ];
-    addSection(l10n.playback, playbackRows);
-
-    // Its own section rather than overwriting the source rows below, which
-    // are what the transcode reasons above are about.
-    if (delivered != null) {
-      addSection(l10n.transcoding, [
-        if (delivered.container case final container?)
-          row(l10n.container, container.toUpperCase()),
-        if (delivered.videoCodec case final codec?)
-          row(l10n.video, codec.toUpperCase()),
-        if (delivered.videoBitrate case final rate?)
-          row(l10n.videoBitrate, _formatBitrate(rate)),
-        if (delivered.audioCodec case final codec?)
-          row(l10n.audio, codec.toUpperCase()),
-        if (delivered.audioBitrate case final rate?)
-          row(l10n.audioBitrate, _formatBitrate(rate)),
-      ]);
-    }
-
-    if (videoStream case final video?) {
-      final fps = video['RealFrameRate'] as num?;
-      final width = video['Width'];
-      final height = video['Height'];
-      final videoRows = <Map<String, dynamic>>[
-        row(
-          l10n.resolution,
-          '${width ?? '?'}×${height ?? '?'}${fps != null ? ' @ ${fps.round()}fps' : ''}',
-        ),
-        row(l10n.hdr, videoRangeLabel(video)),
-        if (_hdrOutputRow(l10n, hdrTonemapped: hdrTonemapped)
-            case final hdrOutput?)
-          row(l10n.hdrOutput, hdrOutput),
-        row(l10n.codec, _formatVideoCodec(video)),
-        if (video['BitRate'] != null)
-          row(l10n.videoBitrate, _formatBitrate(video['BitRate'] as int?)),
-      ];
-      addSection(l10n.video, videoRows);
-    }
-
-    if (audioStream case final audio?) {
-      final audioRows = <Map<String, dynamic>>[
-        row(
-          l10n.track,
-          audio['DisplayTitle'] as String? ??
-              audio['Language'] as String? ??
-              l10n.unknown,
-        ),
-        row(l10n.codec, _formatAudioCodec(audio)),
-        row(l10n.channels, _formatChannels(audio['Channels'] as int?)),
-        if (audio['BitRate'] != null)
-          row(l10n.audioBitrate, _formatBitrate(audio['BitRate'] as int?)),
-        if (audio['SampleRate'] != null)
-          row(
-            l10n.sampleRate,
-            '${((audio['SampleRate'] as num) / 1000).toStringAsFixed(1)} kHz',
-          ),
-      ];
-      addSection(l10n.audio, audioRows);
-    }
-
-    if (subtitleStream case final subtitle?) {
-      final subtitleRows = <Map<String, dynamic>>[
-        row(
-          l10n.track,
-          subtitle['DisplayTitle'] as String? ??
-              subtitle['Language'] as String? ??
-              l10n.unknown,
-        ),
-        row(
-          l10n.format,
-          ((subtitle['Codec'] as String?) ?? l10n.unknown).toUpperCase(),
-        ),
-        row(
-          l10n.type,
-          subtitle['IsExternal'] == true ? l10n.external : l10n.embedded,
-        ),
-      ];
-      addSection(l10n.subtitles, subtitleRows);
-    }
-
-    final diagnostics = PlaybackProfileDiagnostics.instance.lastDecision;
-    if (diagnostics != null) {
-      final diagnosticsMediaSourceId = diagnostics['mediaSourceId']?.toString();
-      final currentMediaSourceId =
-          resolution?.mediaSourceId ?? mediaSource?['Id']?.toString();
-      final matchesCurrentMediaSource =
-          diagnosticsMediaSourceId == null ||
-          currentMediaSourceId == null ||
-          diagnosticsMediaSourceId == currentMediaSourceId;
-
-      if (matchesCurrentMediaSource) {
-        String listValue(String key) {
-          final raw = diagnostics[key];
-          if (raw is List) {
-            final values = raw
-                .map((entry) => entry.toString().trim())
-                .where((entry) => entry.isNotEmpty)
-                .toList(growable: false);
-            return values.isEmpty ? l10n.unknown : values.join(', ');
-          }
-          final text = raw?.toString().trim() ?? '';
-          return text.isEmpty ? l10n.unknown : text;
-        }
-
-        String scalarValue(String key) {
-          final text = diagnostics[key]?.toString().trim() ?? '';
-          return text.isEmpty ? l10n.unknown : text;
-        }
-
-        final maxStreamingBitrate =
-            switch (diagnostics['maxStreamingBitrate']) {
-              int value => value,
-              num value => value.toInt(),
-              _ => null,
-            };
-
-        final diagnosticsRows = <Map<String, dynamic>>[
-          row(l10n.player, scalarValue('backend')),
-          row(l10n.playMethod, scalarValue('playMethod')),
-          row(l10n.transcodeReasons, listValue('transcodingReasons')),
-          row(l10n.container, scalarValue('container')),
-          row(l10n.videoCodec, scalarValue('videoCodec')),
-          row(l10n.profile, scalarValue('videoProfile')),
-          row(
-            l10n.settingsAudioDiagnosticsVideoLevel,
-            scalarValue('videoLevel'),
-          ),
-          row(
-            l10n.settingsAudioDiagnosticsVideoRange,
-            scalarValue('videoRange'),
-          ),
-          row(l10n.audioCodec, scalarValue('audioCodec')),
-          row(l10n.profile, scalarValue('audioProfile')),
-          row(l10n.channels, scalarValue('audioChannels')),
-          row(
-            l10n.settingsAudioDiagnosticsSubtitleCodec,
-            scalarValue('subtitleCodec'),
-          ),
-          row(
-            l10n.settingsAudioDiagnosticsAllowedAudioCodecs,
-            listValue('allowedAudioCodecs'),
-          ),
-          row(
-            l10n.settingsAudioDiagnosticsHlsMpegTsAudioCodecs,
-            listValue('hlsMpegTsAudioCodecs'),
-          ),
-          row(
-            l10n.settingsAudioDiagnosticsHlsFmp4AudioCodecs,
-            listValue('hlsFmp4AudioCodecs'),
-          ),
-          row(
-            l10n.settingsAudioDiagnosticsAudioSpdifPassthrough,
-            listValue('audioSpdifCodecs'),
-          ),
-          row(
-            l10n.settingsAudioDiagnosticsActiveAudioRoute,
-            scalarValue('activeRouteType'),
-          ),
-          row(
-            l10n.settingsAudioDiagnosticsRouteHdAudioSupport,
-            diagnostics['routeSupportsHdAudio'] == true
-                ? l10n.settingsEnabledOnThisDevice
-                : l10n.no,
-          ),
-          if (maxStreamingBitrate != null)
-            row(l10n.maxStreamingBitrate, _formatBitrate(maxStreamingBitrate)),
-        ];
-
-        addSection(l10n.settingsAudioDiagnostics, diagnosticsRows);
-      }
-    }
-
-    return sections;
+      localFile: item is String ? item : null,
+      player: playerEngineName(_activeBackend),
+      device: device,
+      audioRoute: playbackAudioRoute(
+        resolution?.mediaSourceId ?? mediaSource?['Id']?.toString(),
+      ),
+      hdrOutput: _hdrOutputRange(hdrTonemapped: hdrTonemapped),
+    );
   }
 
   String _castKindLabel(CastTargetKind kind, AppLocalizations l10n) {
@@ -3045,6 +2724,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
             : const Duration(seconds: 5));
     _hideTimer = Timer(hideDelay, () {
       if (!mounted) return;
+      // Closing a dialog gives focus back to the button that opened it, so the
+      // controls stay up while one is open.
+      if (_routeCovered) {
+        _scheduleHide(delay: hideDelay);
+        return;
+      }
       final playing = _state.isPlaying;
       if (!playing && !_hasPausedDescriptionCard) return;
       setState(() {
@@ -8116,73 +7801,30 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     }
   }
 
-  String _formatBitrate(int? bitrate) {
-    if (bitrate == null) {
-      return AppLocalizations.of(context).unknown;
-    }
-    if (bitrate >= 1000000) {
-      return '${(bitrate / 1000000).toStringAsFixed(1)} Mbps';
-    }
-    if (bitrate >= 1000) {
-      return '${(bitrate / 1000).toStringAsFixed(0)} Kbps';
-    }
-    return '$bitrate bps';
-  }
-
-  String _formatVideoCodec(Map<String, dynamic> stream) {
-    var codec = switch (((stream['Codec'] as String?) ?? '').toUpperCase()) {
-      'HEVC' => 'HEVC (H.265)',
-      'H264' || 'AVC' => 'AVC (H.264)',
-      final c => c,
-    };
-
-    final profile = stream['Profile'] as String?;
-    if (profile != null) codec += ' $profile';
-    final level = stream['Level'] as num?;
-    if (level != null) codec += '@L$level';
-    return codec;
-  }
-
-  String _formatAudioCodec(Map<String, dynamic> stream) {
-    final label = audioLabelFromProfileCodec(
-      stream['Profile'] as String?,
-      stream['Codec'] as String?,
-    );
-    if (label != null) {
-      return switch (label) {
-        'EAC3' => 'E-AC3 (Dolby Digital Plus)',
-        'AC3' => 'AC3 (Dolby Digital)',
-        'TRUEHD' => 'TrueHD',
-        _ => label,
-      };
-    }
-    return ((stream['Codec'] as String?) ?? '').toUpperCase();
-  }
-
-  String _formatChannels(int? channels) {
-    if (channels == null) return AppLocalizations.of(context).unknown;
-    final l10n = AppLocalizations.of(context);
-    return switch (channels) {
-      8 => '7.1',
-      6 => '5.1',
-      2 => l10n.stereo,
-      1 => l10n.mono,
-      _ => l10n.channelsCount(channels),
-    };
-  }
-
   void _showStreamInfo() {
     unawaited(_showStreamInfoAsync());
   }
 
   Future<void> _showStreamInfoAsync() async {
+    final item = _queue.currentItem;
     // Live display state: the session stays "active" on an SDR monitor, so
     // the row must not claim HDR while the screen shows SDR.
-    final live = await _hdrBackend?.isCurrentOutputHdr();
+    final (live, transcodingInfo, device) = await (
+      _hdrBackend?.isCurrentOutputHdr() ?? Future<bool?>.value(),
+      item is AggregatedItem
+          ? fetchOwnTranscodingInfo(
+              _clientForQueueItem(item),
+              _manager.currentResolution,
+            )
+          : Future<Map<String, dynamic>?>.value(),
+      playbackDeviceLabel(),
+    ).wait;
     if (!mounted) return;
     final l10n = AppLocalizations.of(context);
     final streamInfoSections = _buildMedia3StreamInfoSections(
       hdrTonemapped: live == false,
+      transcodingInfo: transcodingInfo,
+      device: device,
     );
     // mpv's own statistics overlay, the Shift+I one, offered as a button so
     // it can be found without knowing the key.

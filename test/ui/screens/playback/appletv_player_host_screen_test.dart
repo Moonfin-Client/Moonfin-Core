@@ -103,6 +103,7 @@ void main() {
     ];
     GetIt.instance.registerSingleton<MediaServerClient>(client);
     when(() => manager.isOfflinePlayback).thenReturn(false);
+    when(() => manager.isTranscodeForced).thenReturn(false);
     when(() => manager.playbackDeferredToExternalPlayer).thenReturn(false);
     when(() => manager.seekTo(any())).thenAnswer((_) async {});
     when(() => manager.nextInQueue()).thenAnswer((_) async => queue.next());

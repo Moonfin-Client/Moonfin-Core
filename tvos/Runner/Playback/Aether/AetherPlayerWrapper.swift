@@ -89,7 +89,6 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
     private var forceSubtitlesDisabledOnStart = false
     private var didEmitLoadError = false
     private var didEmitAudioDrop = false
-    private var lastErrorMessage: String?
     private var lastPhase: PlaybackPhase = .idle
     private var sawPlaybackThisLoad = false
     private var lastClockAdvanceAt = CACurrentMediaTime()
@@ -379,7 +378,6 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         case .ended: state = .ended
         case .error(let message):
             state = .error
-            lastErrorMessage = message
             if !didEmitLoadError {
                 let info = Self.sharedEngine()?.errorInfo
                 let kind = Self.classifySessionError(
@@ -1471,77 +1469,10 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
 
     // MARK: - Telemetry
 
-    func dynamicRangeTelemetrySnapshot() -> [String: String] {
-        guard let engine = Self.sharedEngine() else { return [:] }
-        var snapshot: [String: String] = [
-            "engine": "AetherEngine",
-            "backend": String(describing: engine.playbackBackend),
-            "source_format": Self.videoFormatLabel(engine.sourceVideoFormat),
-            "output_format": Self.outputFormatLabel(
-                source: engine.sourceVideoFormat, presented: engine.videoFormat),
-            "is_live": isLiveSession ? "yes" : "no",
-        ]
-        if let profile = engine.sourceDVProfile {
-            snapshot["dv_profile"] = profile == 7 ? "P7 converted to P8.1" : "P\(profile)"
-        }
-        if let fps = engine.sourceVideoFrameRate {
-            snapshot["source_fps"] = String(format: "%.3f", fps)
-        }
-        if engine.sourceVideoBitrate > 0 {
-            snapshot["source_bitrate"] = String(
-                format: "%.1f Mbps", Double(engine.sourceVideoBitrate) / 1_000_000)
-        }
-        if let decoder = engine.activeVideoDecoder {
-            snapshot["video_decoder"] = decoder
-        }
-        if let decoder = engine.activeAudioDecoder {
-            snapshot["audio_decoder"] = decoder
-        }
-        if let telemetry = engine.diagnostics.liveTelemetry {
-            let mirror = Mirror(reflecting: telemetry)
-            for child in mirror.children {
-                guard let label = child.label else { continue }
-                snapshot["telemetry_\(label)"] = "\(child.value)"
-            }
-        }
-        if let item = engine.currentAVPlayer?.currentItem,
-            let access = item.accessLog()?.events.last
-        {
-            snapshot["indicated_bitrate"] = String(
-                format: "%.1f Mbps", access.indicatedBitrate / 1_000_000)
-            snapshot["observed_bitrate"] = String(
-                format: "%.1f Mbps", access.observedBitrateStandardDeviation.isNaN
-                    ? access.indicatedBitrate / 1_000_000
-                    : access.averageVideoBitrate / 1_000_000)
-            snapshot["dropped_frames"] = "\(access.numberOfDroppedVideoFrames)"
-            snapshot["stalls"] = "\(access.numberOfStalls)"
-        }
-        if let message = lastErrorMessage {
-            snapshot["last_error"] = message
-        }
-        return snapshot
-    }
-
-    private static func videoFormatLabel(_ format: VideoFormat) -> String {
-        switch format {
-        case .sdr: return "SDR"
-        case .hdr10: return "HDR10"
-        case .hdr10Plus: return "HDR10+"
-        case .dolbyVision: return "Dolby Vision"
-        case .hlg: return "HLG"
-        }
-    }
-
-    /// tvOS has no reliable way to tell an app the TV is in HDR. The screen's EDR
-    /// headroom can stay at 1.0 while the TV shows HDR or Dolby Vision, so an HDR
-    /// source the engine couldn't confirm on a display that takes HDR isn't called SDR.
-    private static func outputFormatLabel(source: VideoFormat, presented: VideoFormat) -> String {
-        #if os(tvOS)
-            if presented == .sdr, source != .sdr, AetherEngine.displayCapabilities.supportsHDR {
-                return "Not reported by tvOS"
-            }
-        #endif
-        return videoFormatLabel(presented)
+    /// Frames dropped this session on either render path, nil when the engine
+    /// can't count them.
+    var droppedFrameCount: Int? {
+        Self.sharedEngine()?.liveTelemetry?.droppedFrameCount
     }
 }
 

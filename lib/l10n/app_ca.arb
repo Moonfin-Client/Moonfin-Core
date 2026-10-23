@@ -8279,7 +8279,7 @@
     "adminDrawerNfo": "Configuració NFO",
     "adminActivitySeverityAll": "Totes les gravetats",
     "adminActivityDateRange": "Interval de dates",
-    "adminRemoveDeviceConfirm": "Vols eliminar el dispositiu '{name}'? L'usuari haurà d'iniciar la sessió de nou en aquest dispositiu.",
+    "adminRemoveDeviceConfirm": "Vols eliminar el dispositiu «{name}»? L'usuari haurà d'iniciar la sessió de nou en aquest dispositiu.",
     "@adminRemoveDeviceConfirm": {
         "placeholders": {
             "name": {
@@ -8858,7 +8858,7 @@
     "@dismiss": {
         "description": "Dismiss button text"
     },
-    "libraryWriteAccessProactiveBody": "La teva biblioteca '{libraryName}' està configurada per desar les il·lustracions directament a les carpetes multimèdia ('Desa les il·lustracions a les carpetes multimèdia' està activat). Tanmateix, Jellyfin ha comprovat l'accés d'escriptura i no té permís per escriure fitxers en aquest directori:\n\n{failedPath}",
+    "libraryWriteAccessProactiveBody": "La teva biblioteca «{libraryName}» està configurada per desar les il·lustracions directament a les carpetes multimèdia ('Desa les il·lustracions a les carpetes multimèdia' està activat). Tanmateix, Jellyfin ha comprovat l'accés d'escriptura i no té permís per escriure fitxers en aquest directori:\n\n{failedPath}",
     "@libraryWriteAccessProactiveBody": {
         "description": "Proactive warning message about server write access",
         "placeholders": {
@@ -14816,5 +14816,15 @@
                 "type": "String"
             }
         }
-    }
+    },
+    "pinSynced": "PIN sincronitzat",
+    "@pinSynced": {
+        "description": "Shown under the PIN switch when the PIN is kept on the server, so it applies on every device"
+    },
+    "pinResetFailed": "No s'ha pogut esborrar el PIN del servidor. Si encara està definit, demana a un administrador del servidor que l'elimini.",
+    "@pinResetFailed": {
+        "description": "Shown on sign in when Forgot PIN could not clear a PIN kept on the server"
+    },
+    "cinemaSkipPrerolls": "Botó per saltar del mode cinema",
+    "cinemaSkipPrerollsDescription": "Mostra un botó «Salta» durant els tràilers, els anuncis i altres vídeos previs del mode cinema."
 }

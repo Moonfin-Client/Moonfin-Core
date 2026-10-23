@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
-import '../../../l10n/app_localizations.dart';
 import '../../../util/focus/key_event_utils.dart';
 import '../track_selector_dialog.dart';
 
@@ -17,8 +16,6 @@ Future<void> showStreamInfoDialog({
   List<({String label, IconData icon, VoidCallback onPressed})> actions =
       const [],
 }) async {
-  final l10n = AppLocalizations.of(context);
-
   const headerStyle = TextStyle(
     color: Colors.white,
     fontSize: AppTypography.fontSizeMd,
@@ -26,17 +23,30 @@ Future<void> showStreamInfoDialog({
   );
   const labelStyle = TextStyle(color: Colors.white54, fontSize: 13);
   const valueStyle = TextStyle(color: Colors.white, fontSize: 13);
-  const highlightValue = TextStyle(
+  const boldValueStyle = TextStyle(
     color: Colors.white,
     fontSize: 13,
     fontWeight: FontWeight.w600,
   );
+  const noteStyle = TextStyle(color: Colors.white54, fontSize: 12);
   final actionStyle = OutlinedButton.styleFrom(
     foregroundColor: Colors.white,
     side: ThemeRegistry.active.borders.chipBorder,
   );
 
-  Widget infoRow(String label, String value, {bool highlight = false}) {
+  Widget infoRow(Map<String, dynamic> row) {
+    final note = row['note']?.toString();
+    if (note != null) {
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.spaceLg,
+          0,
+          AppSpacing.spaceLg,
+          4,
+        ),
+        child: Text(note, style: noteStyle),
+      );
+    }
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.spaceLg,
@@ -44,12 +54,14 @@ Future<void> showStreamInfoDialog({
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: labelStyle),
+          Text(row['label']?.toString() ?? '', style: labelStyle),
+          const SizedBox(width: 12),
           Flexible(
             child: Text(
-              value,
-              style: highlight ? highlightValue : valueStyle,
+              row['value']?.toString() ?? '',
+              style: row['bold'] == true ? boldValueStyle : valueStyle,
               textAlign: TextAlign.end,
             ),
           ),
@@ -70,52 +82,71 @@ Future<void> showStreamInfoDialog({
     );
   }
 
-  Widget body(ScrollController controller) {
+  Widget body(BuildContext dialogContext, ScrollController controller) {
+    final scroll = arrowScrollHandler(controller);
     return Focus(
       autofocus: true,
-      onKeyEvent: arrowScrollHandler(controller),
-      child: ListView(
-        controller: controller,
-        children: [
-          for (final section in streamInfoSections) ...[
-            sectionHeader((section['title'] as String?) ?? l10n.unknown),
-            ...(((section['rows'] as List?) ?? const <dynamic>[])
-                .whereType<Map>()
-                .map((rawRow) {
-                  final row = rawRow.map(
-                    (key, value) => MapEntry(key.toString(), value),
-                  );
-                  return infoRow(
-                    row['label']?.toString() ?? l10n.unknown,
-                    row['value']?.toString() ?? l10n.unknown,
-                    highlight: row['highlight'] == true,
-                  );
-                })),
-          ],
-          if (actions.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.spaceLg,
-                AppSpacing.spaceMd,
-                AppSpacing.spaceLg,
-                0,
-              ),
-              child: Wrap(
-                spacing: AppSpacing.spaceMd,
-                runSpacing: AppSpacing.spaceSm,
-                children: [
-                  for (final action in actions)
-                    OutlinedButton.icon(
-                      onPressed: action.onPressed,
-                      icon: Icon(action.icon),
-                      label: Text(action.label),
-                      style: actionStyle,
-                    ),
+      onKeyEvent: (node, event) {
+        // OK closes like Back, unless a desktop button below has focus.
+        if (node.hasPrimaryFocus) {
+          final result = handleOneShotSelect(
+            event,
+            () => Navigator.of(dialogContext).pop(),
+          );
+          if (result != KeyEventResult.ignored) return result;
+        }
+        return scroll(node, event);
+      },
+      child: ScrollConfiguration(
+        behavior: ScrollConfiguration.of(
+          dialogContext,
+        ).copyWith(scrollbars: false),
+        child: RawScrollbar(
+          controller: controller,
+          thumbVisibility: true,
+          thickness: 3,
+          radius: const Radius.circular(2),
+          thumbColor: Colors.white30,
+          crossAxisMargin: 5,
+          minThumbLength: 24,
+          child: ListView(
+            controller: controller,
+            shrinkWrap: true,
+            children: [
+              for (final section in streamInfoSections)
+                if (((section['rows'] as List?) ?? const <dynamic>[])
+                        .whereType<Map>()
+                        .toList()
+                    case final rows when rows.isNotEmpty) ...[
+                  sectionHeader(section['title']?.toString() ?? ''),
+                  for (final row in rows) infoRow(row.cast<String, dynamic>()),
                 ],
-              ),
-            ),
-          const SizedBox(height: AppSpacing.spaceLg),
-        ],
+              if (actions.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.spaceLg,
+                    AppSpacing.spaceMd,
+                    AppSpacing.spaceLg,
+                    0,
+                  ),
+                  child: Wrap(
+                    spacing: AppSpacing.spaceMd,
+                    runSpacing: AppSpacing.spaceSm,
+                    children: [
+                      for (final action in actions)
+                        OutlinedButton.icon(
+                          onPressed: action.onPressed,
+                          icon: Icon(action.icon),
+                          label: Text(action.label),
+                          style: actionStyle,
+                        ),
+                    ],
+                  ),
+                ),
+              const SizedBox(height: AppSpacing.spaceLg),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -126,7 +157,7 @@ Future<void> showStreamInfoDialog({
       context,
       title: title,
       maxWidth: maxWidth,
-      builder: (_) => body(controller),
+      builder: (dialogContext) => body(dialogContext, controller),
     );
   } finally {
     controller.dispose();

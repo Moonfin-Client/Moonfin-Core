@@ -645,7 +645,8 @@ class UserPreferences extends ChangeNotifier {
     'homeRowsUniversalImageType',
     'pref_enable_series_thumbnails',
     'pref_media_type_badge_behavior',
-    'pref_show_backdrop',
+    'pref_show_home_backdrop',
+    'pref_show_details_backdrop',
     'detailsBackgroundBlurAmount',
     'browsingBackgroundBlurAmount',
     'enableAdditionalRatings',
@@ -1220,8 +1221,13 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: true,
   );
 
-  static final backdropEnabled = Preference(
-    key: 'pref_show_backdrop',
+  static final homeBackdropEnabled = Preference(
+    key: 'pref_show_home_backdrop',
+    defaultValue: true,
+  );
+
+  static final detailsBackdropEnabled = Preference(
+    key: 'pref_show_details_backdrop',
     defaultValue: true,
   );
 
@@ -2131,6 +2137,13 @@ class UserPreferences extends ChangeNotifier {
 
   static final useExternalPlayer = Preference(
     key: 'external_player',
+    defaultValue: false,
+  );
+
+  /// Narrows [useExternalPlayer] to Live TV, so everything else stays in the
+  /// built-in player.
+  static final externalPlayerLiveTvOnly = Preference(
+    key: 'external_player_live_tv_only',
     defaultValue: false,
   );
 

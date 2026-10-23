@@ -12,7 +12,6 @@ import 'package:screen_brightness_platform_interface/screen_brightness_platform_
 import 'package:volume_controller/volume_controller.dart';
 
 import '../../../data/services/log_service.dart';
-import '../../../data/utils/video_range_label.dart';
 import '../../../playback/subtitle_style.dart';
 import '../../../playback/subtitle_view_config.dart';
 import '../../../playback/system_volume.dart';
@@ -22,13 +21,13 @@ import '../../../data/viewmodels/live_tv_guide_view_model.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../playback/html_video_backend.dart';
 import '../../../playback/media_kit_player_backend.dart';
+import '../../../playback/playback_info_sections.dart';
 import '../../../platform/pip_service.dart';
 import '../../../playback/media3_player_backend.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/clock_format.dart';
 import '../../../util/subtitle_track_logic.dart';
-import '../../../util/play_method_label.dart';
 import '../../../util/platform_detection.dart';
 import '../../../util/playback_time_label.dart';
 import '../../../util/player_edge_drag.dart';
@@ -1479,15 +1478,21 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   }
 
   void _showPlaybackInfo() {
-    final l10n = AppLocalizations.of(context);
-    final streamInfoSections = _buildLiveTvStreamInfoSections();
-    unawaited(
-      showStreamInfoDialog(
+    unawaited(() async {
+      final (transcodingInfo, device) = await (
+        fetchOwnTranscodingInfo(_client, _manager.currentResolution),
+        playbackDeviceLabel(),
+      ).wait;
+      if (!mounted) return;
+      await showStreamInfoDialog(
         context: context,
-        title: l10n.playbackInformation,
-        streamInfoSections: streamInfoSections,
-      ),
-    );
+        title: AppLocalizations.of(context).playbackInformation,
+        streamInfoSections: _buildLiveTvStreamInfoSections(
+          transcodingInfo: transcodingInfo,
+          device: device,
+        ),
+      );
+    }());
     _showInfo();
   }
 
@@ -1681,205 +1686,35 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     _showInfo();
   }
 
-  List<Map<String, dynamic>> _buildLiveTvStreamInfoSections() {
-    final l10n = AppLocalizations.of(context);
+  List<Map<String, dynamic>> _buildLiveTvStreamInfoSections({
+    Map<String, dynamic>? transcodingInfo,
+    String? device,
+  }) {
     final resolution = _manager.currentResolution;
-    final streamPlayMethod = resolution?.playMethod;
-    final playMethod = playbackMethodLabel(
-      l10n: l10n,
-      playMethod: streamPlayMethod,
-      transcodingReasons: resolution?.transcodingReasons ?? const <String>[],
-    );
-    final backendLabel = _activeMedia3Backend != null
-        ? 'Media3 (ExoPlayer)'
-        : 'Media Kit (MPV)';
-    final channelLabel = _currentChannel.number == null
-        ? _currentChannel.name
-        : '${_currentChannel.number} ${_currentChannel.name}';
-    final duration = _state.duration;
-    final durationLabel = duration > Duration.zero
-        ? formatPlaybackDuration(duration)
-        : 'Live';
-    final streams = resolution?.mediaStreams ?? const <Map<String, dynamic>>[];
-
-    Map<String, dynamic>? pickStream(String type, int? preferredIndex) {
-      if (preferredIndex != null && preferredIndex >= 0) {
-        final preferred = streams
-            .where((s) => s['Type'] == type)
-            .firstWhere(
-              (s) => s['Index'] == preferredIndex,
-              orElse: () => const <String, dynamic>{},
-            );
-        if (preferred.isNotEmpty) {
-          return preferred;
-        }
-      }
-      return streams
-              .where((s) => s['Type'] == type && s['IsDefault'] == true)
-              .firstOrNull ??
-          streams.where((s) => s['Type'] == type).firstOrNull;
-    }
-
-    final videoStream = streams.where((s) => s['Type'] == 'Video').firstOrNull;
-    final audioStream = pickStream('Audio', _manager.audioStreamIndex);
-    final subtitleStream = _manager.subtitleStreamIndex == -1
-        ? null
-        : pickStream('Subtitle', _manager.subtitleStreamIndex);
-
-    Map<String, dynamic> row(
-      String label,
-      String value, {
-      bool highlight = false,
-    }) {
-      return {'label': label, 'value': value, 'highlight': highlight};
-    }
-
-    final sections = <Map<String, dynamic>>[];
-
-    void addSection(String title, List<Map<String, dynamic>> rows) {
-      if (rows.isEmpty) return;
-      sections.add({'title': title, 'rows': rows});
-    }
-
-    final playbackRows = <Map<String, dynamic>>[
-      row('Channel', channelLabel, highlight: true),
-      if (_currentProgram?.name.isNotEmpty == true)
-        row('Program', _currentProgram!.name),
-      row(l10n.playMethod, playMethod, highlight: true),
-      if (resolution != null &&
-          streamPlayMethod == StreamPlayMethod.transcode &&
-          resolution.transcodingReasons.isNotEmpty)
-        row(
-          l10n.transcodeReasons,
-          resolution.transcodingReasons
-              .map(
-                (r) => r.replaceAllMapped(
-                  RegExp(r'(?<=[a-z])(?=[A-Z])'),
-                  (_) => ' ',
-                ),
-              )
-              .join(', '),
-        ),
-      row(l10n.player, backendLabel),
-      row(
-        l10n.container,
-        (() {
-          final container = (resolution?.container ?? '').trim().toUpperCase();
-          return container.isEmpty ? l10n.unknown : container;
-        })(),
+    final channel = _currentChannel;
+    return buildPlaybackInfoSections(
+      l10n: AppLocalizations.of(context),
+      resolution: resolution,
+      mediaStreams: resolution?.mediaStreams ?? const <Map<String, dynamic>>[],
+      audioStreamIndex: _manager.audioStreamIndex,
+      // A caption track isn't a server stream, so it gets no Subtitles section.
+      subtitleStreamIndex: _captionTrackId == null
+          ? _manager.subtitleStreamIndex
+          : -1,
+      transcodingInfo: transcodingInfo,
+      transcodeForced: transcodeForcedBySettings(_manager),
+      qualityLimitMbps: userQualityLimitMbps(
+        _manager.maxBitrateOverrideMbps,
+        _prefs.get(UserPreferences.maxBitrate),
       ),
-      row('Playing', _state.isPlaying ? 'Yes' : 'No'),
-      row('Buffering', _state.isBuffering ? 'Yes' : 'No'),
-      row('Position', formatPlaybackDuration(_state.position)),
-      row('Duration', durationLabel),
-    ];
-    addSection(l10n.playback, playbackRows);
-
-    if (videoStream != null) {
-      final fps = videoStream['RealFrameRate'] as num?;
-      final width = videoStream['Width'];
-      final height = videoStream['Height'];
-      final videoRows = <Map<String, dynamic>>[
-        row(
-          l10n.resolution,
-          '${width ?? '?'}x${height ?? '?'}${fps != null ? ' @ ${fps.round()}fps' : ''}',
-        ),
-        row(l10n.hdr, videoRangeLabel(videoStream)),
-        row(l10n.codec, _formatVideoCodec(videoStream)),
-        if (videoStream['BitRate'] != null)
-          row(
-            l10n.videoBitrate,
-            _formatBitrate(videoStream['BitRate'] as int?),
-          ),
-      ];
-      addSection(l10n.video, videoRows);
-    }
-
-    if (audioStream != null) {
-      final audioRows = <Map<String, dynamic>>[
-        row(
-          l10n.track,
-          audioStream['DisplayTitle'] as String? ??
-              audioStream['Language'] as String? ??
-              l10n.unknown,
-        ),
-        row(l10n.codec, _formatAudioCodec(audioStream)),
-        row(l10n.channels, _formatChannels(audioStream['Channels'] as int?)),
-        if (audioStream['BitRate'] != null)
-          row(
-            l10n.audioBitrate,
-            _formatBitrate(audioStream['BitRate'] as int?),
-          ),
-        if (audioStream['SampleRate'] != null)
-          row(
-            l10n.sampleRate,
-            '${((audioStream['SampleRate'] as num) / 1000).toStringAsFixed(1)} kHz',
-          ),
-      ];
-      addSection(l10n.audio, audioRows);
-    }
-
-    if (subtitleStream != null) {
-      final subtitleRows = <Map<String, dynamic>>[
-        row(
-          l10n.track,
-          subtitleStream['DisplayTitle'] as String? ??
-              subtitleStream['Language'] as String? ??
-              l10n.unknown,
-        ),
-        row(
-          l10n.format,
-          ((subtitleStream['Codec'] as String?) ?? l10n.unknown).toUpperCase(),
-        ),
-        row(
-          l10n.type,
-          subtitleStream['IsExternal'] == true ? l10n.external : l10n.embedded,
-        ),
-      ];
-      addSection(l10n.subtitles, subtitleRows);
-    }
-
-    return sections;
-  }
-
-  String _formatBitrate(int? bitrate) {
-    final l10n = AppLocalizations.of(context);
-    if (bitrate == null || bitrate <= 0) {
-      return l10n.unknown;
-    }
-    return '${(bitrate / 1000000).toStringAsFixed(1)} Mbps';
-  }
-
-  String _formatVideoCodec(Map<String, dynamic> stream) {
-    final codec = ((stream['Codec'] as String?) ?? '').trim().toUpperCase();
-    final profile = ((stream['Profile'] as String?) ?? '').trim();
-    if (codec.isEmpty) {
-      return AppLocalizations.of(context).unknown;
-    }
-    if (profile.isEmpty) {
-      return codec;
-    }
-    return '$codec $profile';
-  }
-
-  String _formatAudioCodec(Map<String, dynamic> stream) {
-    final codec = ((stream['Codec'] as String?) ?? '').trim().toUpperCase();
-    if (codec.isNotEmpty) {
-      return codec;
-    }
-    return AppLocalizations.of(context).unknown;
-  }
-
-  String _formatChannels(int? channels) {
-    final l10n = AppLocalizations.of(context);
-    if (channels == null) return l10n.unknown;
-    return switch (channels) {
-      8 => '7.1',
-      6 => '5.1',
-      2 => l10n.stereo,
-      1 => l10n.mono,
-      _ => l10n.channelsCount(channels),
-    };
+      channel: channel.number == null
+          ? channel.name
+          : '${channel.number} ${channel.name}',
+      program: _currentProgram?.name,
+      player: playerEngineName(_manager.backend),
+      device: device,
+      audioRoute: playbackAudioRoute(resolution?.mediaSourceId),
+    );
   }
 
   // Opens the channel guide as an in-player overlay (not a separate route) so

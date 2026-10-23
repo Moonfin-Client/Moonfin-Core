@@ -226,6 +226,8 @@ class PlaybackManager implements AudioOwnable {
   // defaults enableDirectPlay to true, and without this it would silently
   // switch a viewer who had direct play off back on.
   bool _directPlayAllowedForQueue = true;
+  String? _streamFromServerItemId;
+  bool _streamFromServerForQueue = false;
   bool _backendSelectionLockedForSession = false;
   PlayerBackend? _sessionLockedBackend;
   Future<void> Function()? _onOfflineStop;
@@ -702,17 +704,29 @@ class PlaybackManager implements AudioOwnable {
     _forceExternalChooserOnce = true;
   }
 
+  /// The next queue that starts on [itemId] streams from the server even
+  /// where a downloaded copy exists.
+  void streamFromServerOnce(String itemId) {
+    _streamFromServerItemId = itemId;
+  }
+
   bool consumeForceExternalChooserOnce() {
     final shouldForce = _forceExternalChooserOnce;
     _forceExternalChooserOnce = false;
     return shouldForce;
   }
 
+  bool get streamsFromServer => _streamFromServerForQueue;
+
   void setBitrateOverride(int? mbps) {
     _maxBitrateOverrideMbps = mbps;
   }
 
   int? get maxBitrateOverrideMbps => _maxBitrateOverrideMbps;
+
+  /// True when this queue was started with direct play and direct stream both
+  /// turned off.
+  bool get isTranscodeForced => _forceTranscodeForQueue;
   bool get isOfflinePlayback => _isOfflinePlayback;
 
   /// Completes when any in-flight stop operation (including the offline
@@ -2250,6 +2264,10 @@ class PlaybackManager implements AudioOwnable {
     _mediaSourceId = mediaSourceId;
     _forceTranscodeForQueue = !enableDirectPlay && !enableDirectStream;
     _directPlayAllowedForQueue = enableDirectPlay;
+    _streamFromServerForQueue =
+        pendingItem != null &&
+        _traceItemId(pendingItem) == _streamFromServerItemId;
+    _streamFromServerItemId = null;
     final adjuster = _startPositionAdjuster;
     if (adjuster != null && startPosition > Duration.zero && items.isNotEmpty) {
       final currentItem = items[startIndex.clamp(0, items.length - 1)];
@@ -4427,6 +4445,7 @@ class PlaybackManager implements AudioOwnable {
         if (!skipQueueChange) {
           _forceTranscodeForQueue = false;
           _directPlayAllowedForQueue = true;
+          _streamFromServerForQueue = false;
           _resetBackendSelectionLock();
           queueService.clear();
           state.reset();
@@ -4447,6 +4466,7 @@ class PlaybackManager implements AudioOwnable {
           _isOfflinePlayback = false;
           _forceTranscodeForQueue = false;
           _directPlayAllowedForQueue = true;
+          _streamFromServerForQueue = false;
           _resetBackendSelectionLock();
           queueService.clear();
           state.reset();
@@ -4505,6 +4525,7 @@ class PlaybackManager implements AudioOwnable {
       if (!skipQueueChange) {
         _forceTranscodeForQueue = false;
         _directPlayAllowedForQueue = true;
+        _streamFromServerForQueue = false;
         _resetBackendSelectionLock();
         queueService.clear();
         state.reset();

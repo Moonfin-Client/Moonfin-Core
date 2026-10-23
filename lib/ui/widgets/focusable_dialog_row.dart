@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get_it/get_it.dart';
 import 'package:moonfin_design/moonfin_design.dart';
-import 'package:moonfin/preference/user_preferences.dart';
 
 import '../../util/focus/dpad_keys.dart';
+import '../../util/focus/input_mode_tracker.dart';
+import 'focus/focus_theme.dart';
 
 class FocusableDialogRow extends StatefulWidget {
   final IconData? icon;
@@ -35,7 +35,6 @@ class FocusableDialogRow extends StatefulWidget {
 }
 
 class _FocusableDialogRowState extends State<FocusableDialogRow> {
-  final _prefs = GetIt.instance<UserPreferences>();
   final _focusNode = FocusNode();
   bool _isFocused = false;
   bool _isHovered = false;
@@ -79,12 +78,15 @@ class _FocusableDialogRowState extends State<FocusableDialogRow> {
 
   @override
   Widget build(BuildContext context) {
-    final focusColor = Color(_prefs.get(UserPreferences.focusColor).colorValue);
-    final showActive = _isFocused || _isHovered;
+    // A touch leaves focus parked on the row it hit, which shouldn't read as a
+    // pick, so only a remote, a keyboard or the mouse lights a row.
+    final showActive = InputModeTracker.of(context) == InputMode.keyboard
+        ? _isFocused
+        : _isHovered;
     final baseColor = widget.dimmed
       ? AppColorScheme.onSurface.withValues(alpha: 0.5)
       : AppColorScheme.onSurface.withValues(alpha: 0.8);
-    final color = showActive ? focusColor : baseColor;
+    final color = showActive ? FocusTheme.solidFocusForeground : baseColor;
 
     return Focus(
       focusNode: _focusNode,
@@ -135,28 +137,31 @@ class _FocusableDialogRowState extends State<FocusableDialogRow> {
         child: GestureDetector(
           onTap: widget.onTap,
           onLongPress: widget.onLongPress ?? widget.onTap,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 120),
-            width: double.infinity,
-            color: showActive ? focusColor.withValues(alpha: 0.2) : Colors.transparent,
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-            child: Row(
-              children: [
-                if (widget.icon != null || widget.iconBuilder != null) ...[
-                  widget.iconBuilder != null
-                      ? widget.iconBuilder!(20, color)
-                      : Icon(widget.icon, size: 20, color: color),
-                  const SizedBox(width: 16),
-                ],
-                Expanded(
-                  child: Text(
-                    widget.label,
-                    style: TextStyle(fontSize: 16, color: color),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 120),
+              width: double.infinity,
+              decoration: FocusTheme.solidFocusDecoration(active: showActive),
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 13),
+              child: Row(
+                children: [
+                  if (widget.icon != null || widget.iconBuilder != null) ...[
+                    widget.iconBuilder != null
+                        ? widget.iconBuilder!(20, color)
+                        : Icon(widget.icon, size: 20, color: color),
+                    const SizedBox(width: 16),
+                  ],
+                  Expanded(
+                    child: Text(
+                      widget.label,
+                      style: TextStyle(fontSize: 16, color: color),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

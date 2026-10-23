@@ -16,14 +16,17 @@ class LocalFirstMediaStreamResolver extends MediaStreamResolver {
   final MediaStreamResolver _inner;
   final OfflineStreamResolver _offline;
   final Future<void> Function(String itemId)? _restoreSubtitles;
+  final bool Function()? _streamFromServer;
 
   LocalFirstMediaStreamResolver({
     required MediaStreamResolver inner,
     required OfflineStreamResolver offline,
     Future<void> Function(String itemId)? restoreSubtitles,
+    bool Function()? streamFromServer,
   }) : _inner = inner,
        _offline = offline,
-       _restoreSubtitles = restoreSubtitles;
+       _restoreSubtitles = restoreSubtitles,
+       _streamFromServer = streamFromServer;
 
   @override
   Future<StreamResolutionResult> resolve(
@@ -41,7 +44,13 @@ class LocalFirstMediaStreamResolver extends MediaStreamResolver {
     // Only substitute the local copy on direct-play-eligible requests.
     // Force-transcode requests disable direct play and should keep streaming.
     if (enableDirectPlay) {
-      final local = await _tryResolveLocal(mediaItem, mediaSourceId);
+      // A play from server pick skips the download, unless the server is out
+      // of reach and the download is the only copy left.
+      final skipLocal =
+          (_streamFromServer?.call() ?? false) && !shouldUseOfflineCatalog();
+      final local = skipLocal
+          ? null
+          : await _tryResolveLocal(mediaItem, mediaSourceId);
       if (local != null) return local;
       // With no local copy and no server, the network resolve below just
       // burns through its timeouts before failing anyway. TV now has both

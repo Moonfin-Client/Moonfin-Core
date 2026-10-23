@@ -165,9 +165,9 @@ void main() {
     late List<Map<String, dynamic>> members;
 
     /// The grid reads the collection in server order, m00 first. The years run
-    /// the other way, so the release sort behind the playlist tab starts at
-    /// m59. One card can then sit inside the loaded grid page and outside the
-    /// loaded playlist page at the same time.
+    /// the other way, so switching the playlist tab to the release sort starts
+    /// it at m59. One card can then sit inside the loaded grid page and outside
+    /// the loaded playlist page at the same time.
     Future<ItemDetailViewModel> pagedVm() async {
       members = [
         for (var i = 0; i < memberCount; i++)
@@ -243,6 +243,7 @@ void main() {
         }
         await Future<void>.delayed(const Duration(milliseconds: 5));
       }
+      await vm.setCollectionSort(CollectionSortOption.releaseAscending);
       return vm;
     }
 

@@ -90,4 +90,50 @@ void main() {
     await pickNextThenGoBack(tester, replacePage: false);
     expect(find.text('page episode-1'), findsOneWidget);
   });
+
+  testWidgets('the episode on screen picked from its own list plays in place', (
+    tester,
+  ) async {
+    final router = GoRouter(
+      routes: [
+        GoRoute(path: '/', builder: (_, _) => const Text('home')),
+        GoRoute(
+          path: '/item/:id',
+          builder: (_, state) => DetailEpisodeCard(
+            episode: AggregatedItem(
+              id: 'episode-1',
+              serverId: 'server-1',
+              rawData: const {
+                'Id': 'episode-1',
+                'Name': 'Episode 1',
+                'Type': 'Episode',
+              },
+            ),
+            imageApi: MockImageApi(),
+            replacePage: true,
+            isOnScreen: true,
+          ),
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
+
+    await tester.pumpWidget(
+      MaterialApp.router(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        routerConfig: router,
+      ),
+    );
+    router.push('/item/episode-1');
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byType(DetailEpisodeCard));
+    await tester.pumpAndSettle();
+    expect(router.state.uri.toString(), '/item/episode-1?autoPlay=true');
+
+    router.pop();
+    await tester.pumpAndSettle();
+    expect(find.text('home'), findsOneWidget);
+  });
 }

@@ -4,7 +4,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 import '../../../../util/focus/input_mode_tracker.dart';
 import '../../../../util/platform_detection.dart';
 import '../../../widgets/focus/focus_theme.dart';
-import '../../../widgets/focus/focusable_button.dart';
+import '../../../widgets/focus/menu_action_row.dart';
 import '../../../widgets/overlay_sheet.dart';
 
 /// One entry in a saved media row's action menu.
@@ -85,69 +85,20 @@ class _SavedMediaMenu extends StatelessWidget {
                   ),
                 ),
               for (var i = 0; i < actions.length; i++)
-                _ActionRow(action: actions[i], autofocus: i == 0),
+                MenuActionRow(
+                  icon: actions[i].icon,
+                  label: actions[i].label,
+                  autofocus: i == 0,
+                  color: actions[i].isDestructive
+                      ? AppColorScheme.statusRequested
+                      : null,
+                  onPressed: () async {
+                    await OverlaySheetController.closeAdaptive<void>(context);
+                    await actions[i].onSelect();
+                  },
+                ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ActionRow extends StatefulWidget {
-  const _ActionRow({required this.action, required this.autofocus});
-
-  final SavedMediaAction action;
-  final bool autofocus;
-
-  @override
-  State<_ActionRow> createState() => _ActionRowState();
-}
-
-class _ActionRowState extends State<_ActionRow> {
-  final FocusNode _focusNode = FocusNode(debugLabel: 'SavedMediaMenuAction');
-
-  @override
-  void dispose() {
-    _focusNode.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final action = widget.action;
-    final color = action.isDestructive
-        ? AppColorScheme.statusRequested
-        : theme.colorScheme.onSurface;
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      // Focus follows the pointer so the row under the mouse lights up the way
-      // the row under the remote does, rather than the menu sitting inert.
-      onEnter: (_) => _focusNode.requestFocus(),
-      child: FocusableButton(
-        focusNode: _focusNode,
-        autofocus: widget.autofocus,
-        borderRadius: 6,
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-        onPressed: () async {
-          await OverlaySheetController.closeAdaptive<void>(
-            context,
-            restoreFocus: true,
-          );
-          await action.onSelect();
-        },
-        child: Row(
-          children: [
-            Icon(action.icon, size: 22, color: color),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Text(
-                action.label,
-                style: theme.textTheme.bodyLarge?.copyWith(color: color),
-              ),
-            ),
-          ],
         ),
       ),
     );

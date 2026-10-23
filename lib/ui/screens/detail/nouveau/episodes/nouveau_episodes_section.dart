@@ -551,6 +551,11 @@ class NouveauEpisodesSectionState extends State<NouveauEpisodesSection> {
   }
 
   void _openEpisodeDetails(BuildContext context, AggregatedItem episode) {
+    // This episode's own page is already open, so it plays as its artwork does.
+    if (episode.id == _vm.item?.id) {
+      _playEpisode(context, episode);
+      return;
+    }
     context.push(
       Destinations.item(
         episode.id,

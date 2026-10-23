@@ -1063,8 +1063,6 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
       borderRadius: 4,
       disableScale: true,
       useBackgroundFocus: true,
-      focusColor: AppColorScheme.accent,
-      suppressFocusGlow: true,
       onSelect: () => _navigateToItem(targetId),
       onNavigateLeft: onNavigateLeft,
       onNavigateRight: onNavigateRight,

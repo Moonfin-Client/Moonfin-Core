@@ -61,6 +61,7 @@ void main() {
     when(() => manager.pause()).thenAnswer((_) async {});
     when(() => manager.seekTo(any())).thenAnswer((_) async {});
     when(() => manager.hasTransportInterceptor).thenReturn(false);
+    when(() => manager.playbackDeferredToExternalPlayer).thenReturn(false);
     handler = PlaybackLifecycleHandler(manager);
   });
 
@@ -93,6 +94,20 @@ void main() {
       });
     }
   }
+
+  testWidgets('a channel handed to an external player is never stopped', (
+    tester,
+  ) async {
+    await asAndroidTv(() async {
+      when(() => manager.playbackDeferredToExternalPlayer).thenReturn(true);
+      queue.setQueue(<dynamic>[item('TvChannel')]);
+
+      handler.didChangeAppLifecycleState(AppLifecycleState.paused);
+      await tester.pump(const Duration(seconds: 5));
+
+      verifyNever(() => manager.stopForBackground(any()));
+    });
+  });
 
   testWidgets('duplicate background events schedule and report one stop', (
     tester,

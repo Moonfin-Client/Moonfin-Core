@@ -89,4 +89,67 @@ void main() {
     expect(vm.collectionItems.map((i) => i.type), everyElement('Episode'));
     expect(vm.collectionItems.first.name, 'Flash vs. Arrow');
   });
+
+  test('the playlist keeps the server order until another sort is picked',
+      () async {
+    when(() => GetIt.instance<PluginSyncService>().pluginAvailable)
+        .thenReturn(false);
+    when(
+      () => itemsApi.getItems(
+        parentId: 'boxset-1',
+        limit: any(named: 'limit'),
+        fields: 'BasicSyncInfo',
+      ),
+    ).thenAnswer(
+      (_) async => {
+        'Items': [
+          {'Id': 'late', 'Type': 'Movie', 'Name': 'Late', 'ProductionYear': 2010},
+          {'Id': 'show', 'Type': 'Series', 'Name': 'Show'},
+          {'Id': 'early', 'Type': 'Movie', 'Name': 'Early', 'ProductionYear': 1990},
+        ],
+      },
+    );
+    when(() => itemsApi.getEpisodes('show')).thenAnswer(
+      (_) async => {
+        'Items': [
+          {'Id': 'ep', 'Type': 'Episode', 'Name': 'Pilot', 'ProductionYear': 2000},
+        ],
+      },
+    );
+    when(
+      () => itemsApi.getItems(
+        ids: any(named: 'ids'),
+        fields: 'PrimaryImageAspectRatio,BasicSyncInfo,People,Overview',
+      ),
+    ).thenAnswer((invocation) async {
+      final ids = invocation.namedArguments[#ids] as List<String>;
+      return {
+        'Items': [for (final id in ids) {'Id': id, 'Type': 'Movie', 'Name': id}],
+      };
+    });
+
+    final tmdb = TmdbRepository(client);
+    final vm = ItemDetailViewModel(
+      itemId: 'boxset-1',
+      client: client,
+      mutations: ItemMutationRepository(client),
+      mdbListRepository: MdbListRepository(client, tmdb),
+      tmdbRepository: tmdb,
+    );
+
+    await vm.load();
+    for (var i = 0; i < 100 && vm.playlistItems.isEmpty; i++) {
+      await Future<void>.delayed(const Duration(milliseconds: 5));
+    }
+    List<String> order() => vm.playlistItems.map((i) => i.id).toList();
+
+    expect(vm.collectionSort, CollectionSortOption.server);
+    expect(order(), ['late', 'ep', 'early']);
+
+    await vm.setCollectionSort(CollectionSortOption.releaseAscending);
+    expect(order(), ['early', 'ep', 'late']);
+
+    await vm.setCollectionSort(CollectionSortOption.server);
+    expect(order(), ['late', 'ep', 'early']);
+  });
 }

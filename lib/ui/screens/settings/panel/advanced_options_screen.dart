@@ -60,6 +60,12 @@ class _AdvancedOptionsScreenState extends State<_AdvancedOptionsScreen> {
                     subtitle: l10n.useExternalPlayerSubtitle,
                     icon: Icons.open_in_new,
                   ),
+                  SwitchPreferenceTile(
+                    preference: UserPreferences.externalPlayerLiveTvOnly,
+                    title: l10n.externalPlayerLiveTvOnly,
+                    subtitle: l10n.externalPlayerLiveTvOnlySubtitle,
+                    icon: Icons.live_tv,
+                  ),
                   const _ExternalPlayerAppPickerTile(),
                 ],
               ),

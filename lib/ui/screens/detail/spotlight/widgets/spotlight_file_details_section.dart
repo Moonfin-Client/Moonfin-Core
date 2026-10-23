@@ -116,6 +116,7 @@ class _SpotlightFileDetailsSectionState
         audioStreamIndex: widget.vm.selectedAudioIndex ?? effectiveAudio,
         subtitleStreamIndex:
             widget.vm.selectedSubtitleIndex ?? effectiveSubtitle,
+        hasOtherVersions: widget.item.mediaSources.length > 1,
       );
       if (mounted) {
         setState(() {

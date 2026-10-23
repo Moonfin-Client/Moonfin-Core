@@ -92,10 +92,25 @@ class UserViewsRepository extends ChangeNotifier {
         _client,
       ).whenComplete(() => _inFlightViews = null);
 
-  Future<Map<String, dynamic>> _hiddenResponse() =>
-      _inFlightHiddenResponse ??= _client.userViewsApi
-          .getUserViews(includeHidden: true)
-          .whenComplete(() => _inFlightHiddenResponse = null);
+  // Kept for the session, since every screen's nav chrome asks for the views
+  // when it mounts. [invalidateViews] and a configuration change drop it.
+  Map<String, dynamic>? _hiddenResponseCache;
+
+  Future<Map<String, dynamic>> _hiddenResponse() {
+    final cached = _hiddenResponseCache;
+    if (cached != null) return Future.value(cached);
+    return _inFlightHiddenResponse ??= _client.userViewsApi
+        .getUserViews(includeHidden: true)
+        .then((response) => _hiddenResponseCache = response)
+        .whenComplete(() => _inFlightHiddenResponse = null);
+  }
+
+  /// Has the next read ask the server again, and tells the nav chrome to
+  /// reload its libraries.
+  void invalidateViews() {
+    _hiddenResponseCache = null;
+    notifyListeners();
+  }
 
   Future<List<AggregatedLibrary>> getAllViewsIncludingHidden() async =>
       _parseUserViews(await _hiddenResponse());
@@ -139,7 +154,8 @@ class UserViewsRepository extends ChangeNotifier {
   Future<void> updateUserConfiguration(UserConfiguration config) async {
     await _client.usersApi.updateUserConfiguration(config);
     _cachedConfig = config;
-    notifyListeners();
+    // The server orders the views by this configuration.
+    invalidateViews();
   }
 
   void invalidateConfigCache() => _cachedConfig = null;

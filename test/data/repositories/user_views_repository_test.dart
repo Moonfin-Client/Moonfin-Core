@@ -70,6 +70,54 @@ void main() {
     verify(() => views.getUserViews(includeHidden: true)).called(1);
   });
 
+  group('the views are kept for the session', () {
+    setUpAll(() => registerFallbackValue(const UserConfiguration()));
+
+    setUp(() {
+      when(
+        () => users.getUserConfiguration(),
+      ).thenAnswer((_) => later(const UserConfiguration()));
+      when(() => views.getUserViews(includeHidden: true)).thenAnswer(
+        (_) => later({
+          'Items': [
+            {'Id': 'movies', 'Name': 'Movies'},
+          ],
+        }),
+      );
+    });
+
+    test('a later screen reads them without a request', () async {
+      await repo.getUserViews();
+      await repo.getUserViews();
+
+      verify(() => views.getUserViews(includeHidden: true)).called(1);
+    });
+
+    test('invalidating reads them again and tells the nav chrome', () async {
+      var notified = 0;
+      repo.addListener(() => notified++);
+      await repo.getUserViews();
+
+      repo.invalidateViews();
+      await repo.getUserViews();
+
+      expect(notified, 1);
+      verify(() => views.getUserViews(includeHidden: true)).called(2);
+    });
+
+    test('saving the configuration reads them again', () async {
+      when(() => users.updateUserConfiguration(any())).thenAnswer((_) async {});
+      await repo.getUserViews();
+
+      await repo.updateUserConfiguration(
+        const UserConfiguration(orderedViews: ['movies']),
+      );
+      await repo.getUserViews();
+
+      verify(() => views.getUserViews(includeHidden: true)).called(2);
+    });
+  });
+
   test(
     'a forced configuration read still collapses while one is in flight',
     () async {

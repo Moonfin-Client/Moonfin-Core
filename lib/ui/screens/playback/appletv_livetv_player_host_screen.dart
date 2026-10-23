@@ -12,9 +12,9 @@ import '../../../data/models/aggregated_item.dart';
 import '../../../data/viewmodels/live_tv_guide_view_model.dart';
 import '../../../playback/appletv_backend.dart';
 import '../../../playback/appletv_preview_player.dart';
+import '../../../playback/playback_info_sections.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../l10n/app_localizations.dart';
-import '../../../util/play_method_label.dart';
 import '../livetv/live_tv_guide_screen.dart';
 import '../../screensaver/screensaver_controller.dart';
 import '../../theme/app_theme_controller.dart';
@@ -42,6 +42,7 @@ class _AppleTvLiveTvPlayerHostScreenState
   final _manager = GetIt.instance<PlaybackManager>();
   final _client = GetIt.instance<MediaServerClient>();
   final _prefs = GetIt.instance<UserPreferences>();
+  String? _deviceLabel;
 
   StreamSubscription<void>? _exitSub;
   StreamSubscription<Map<String, dynamic>>? _actionSub;
@@ -87,6 +88,7 @@ class _AppleTvLiveTvPlayerHostScreenState
   @override
   void initState() {
     super.initState();
+    unawaited(playbackDeviceLabel().then((label) => _deviceLabel = label));
     try {
       _screensaverController = GetIt.instance<ScreensaverController>();
     } catch (_) {}
@@ -538,102 +540,30 @@ class _AppleTvLiveTvPlayerHostScreenState
 
   List<Map<String, dynamic>> _liveStreamInfoSections() {
     final resolution = _manager.currentResolution;
-    final streams = resolution?.mediaStreams ?? const <Map<String, dynamic>>[];
     final channel = _currentChannel;
-    final channelLabel = channel.number == null
-        ? channel.name
-        : '${channel.number} ${channel.name}';
-
-    Map<String, dynamic> row(String label, String value) {
-      return {'label': label, 'value': value};
-    }
-
-    final sections = <Map<String, dynamic>>[];
-    void addSection(String title, List<Map<String, dynamic>> rows) {
-      if (rows.isEmpty) return;
-      sections.add({'title': title, 'rows': rows});
-    }
-
-    Map<String, dynamic>? pickStream(String type, int? preferredIndex) {
-      if (preferredIndex != null && preferredIndex >= 0) {
-        final preferred = streams
-            .where((s) => s['Type'] == type)
-            .firstWhere(
-              (s) => s['Index'] == preferredIndex,
-              orElse: () => const <String, dynamic>{},
-            );
-        if (preferred.isNotEmpty) return preferred;
-      }
-      return streams
-              .where((s) => s['Type'] == type && s['IsDefault'] == true)
-              .firstOrNull ??
-          streams.where((s) => s['Type'] == type).firstOrNull;
-    }
-
-    final videoStream = streams.where((s) => s['Type'] == 'Video').firstOrNull;
-    final audioStream = pickStream('Audio', _manager.audioStreamIndex);
-
-    final playMethod = playbackMethodLabel(
-          l10n: AppLocalizations.of(context),
-          playMethod: resolution?.playMethod,
-          transcodingReasons: resolution?.transcodingReasons ?? const [],
-        );
-    final container = (resolution?.container ?? '').trim().toUpperCase().isEmpty
-        ? 'Unknown'
-        : (resolution?.container ?? '').trim().toUpperCase();
-
-    addSection('Playback', [
-      row('Channel', channelLabel),
-      if (_currentProgram?.name.isNotEmpty == true)
-        row('Program', _currentProgram!.name),
-      row('Play Method', playMethod),
-      if (resolution != null && resolution.transcodingReasons.isNotEmpty)
-        row('Transcode Reasons', resolution.transcodingReasons.join(', ')),
-      row('Player', 'AetherEngine'),
-      row('Container', container),
-    ]);
-
-    if (videoStream != null) {
-      final fps = videoStream['RealFrameRate'] as num?;
-      final width = videoStream['Width'];
-      final height = videoStream['Height'];
-      final codec = ((videoStream['Codec'] as String?) ?? 'Unknown')
-          .toUpperCase();
-      addSection('Video', [
-        row(
-          'Resolution',
-          '${width ?? '?'}x${height ?? '?'}${fps != null ? ' @ ${fps.round()}fps' : ''}',
-        ),
-        row(
-          'HDR',
-          (videoStream['VideoRangeType'] as String?) ??
-              (videoStream['VideoRange'] as String?) ??
-              'SDR',
-        ),
-        row('Codec', codec),
-      ]);
-    }
-
-    if (audioStream != null) {
-      addSection('Audio', [
-        row(
-          'Track',
-          audioStream['DisplayTitle'] as String? ??
-              audioStream['Language'] as String? ??
-              'Unknown',
-        ),
-        row(
-          'Codec',
-          ((audioStream['Codec'] as String?) ?? 'Unknown').toUpperCase(),
-        ),
-        row('Channels', _formatChannels(audioStream['Channels'] as int?)),
-      ]);
-    }
-
-    return sections;
+    return buildPlaybackInfoSections(
+      l10n: AppLocalizations.of(context),
+      resolution: resolution,
+      mediaStreams: resolution?.mediaStreams ?? const <Map<String, dynamic>>[],
+      audioStreamIndex: _manager.audioStreamIndex,
+      // A caption track isn't a server stream, so it gets no Subtitles section.
+      subtitleStreamIndex: _captionTrackId == null
+          ? _manager.subtitleStreamIndex
+          : -1,
+      transcodeForced: transcodeForcedBySettings(_manager),
+      qualityLimitMbps: userQualityLimitMbps(
+        _manager.maxBitrateOverrideMbps,
+        _prefs.get(UserPreferences.maxBitrate),
+      ),
+      channel: channel.number == null
+          ? channel.name
+          : '${channel.number} ${channel.name}',
+      program: _currentProgram?.name,
+      player: 'AetherEngine',
+      device: _deviceLabel,
+      audioRoute: playbackAudioRoute(resolution?.mediaSourceId),
+    );
   }
-
-
 
   void _pushMetadata() {
     final backend = _backend;
@@ -670,6 +600,10 @@ class _AppleTvLiveTvPlayerHostScreenState
         ..._captionTrackOptions(),
       ],
       streamInfoSections: _liveStreamInfoSections(),
+      streamInfoTitle: AppLocalizations.of(context).playbackInformation,
+      streamInfoDroppedFramesLabel: AppLocalizations.of(
+        context,
+      ).playbackInfoDroppedFrames,
       isLive: true,
       liveProgram: _liveProgramPayload(),
       liveChannelNumber: channel.number ?? '',

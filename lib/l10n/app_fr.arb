@@ -7784,7 +7784,7 @@
     "@dismiss": {
         "description": "Dismiss button text"
     },
-    "libraryWriteAccessProactiveBody": "Votre bibliothèque « {libraryName} » est configurée pour enregistrer les visuels directement dans les dossiers multimédias (l'option « Enregistrer les visuels dans les dossiers multimédias » est activée). Cependant, Jellyfin a testé l'accès en écriture et n'a pas la permission d'écrire des fichiers dans ce répertoire :\n\n{failedPath}",
+    "libraryWriteAccessProactiveBody": "Votre bibliothèque « {libraryName} » est configurée pour enregistrer les visuels directement dans les dossiers multimédias (l'option « Enregistrer les visuels dans les dossiers multimédias » est activée). Cependant, Jellyfin a testé l'accès en écriture et n'a pas la permission d'écrire des fichiers dans ce répertoire :\n\n{failedPath}",
     "@libraryWriteAccessProactiveBody": {
         "description": "Proactive warning message about server write access",
         "placeholders": {
@@ -8549,7 +8549,7 @@
     "adminDrawerNfo": "Paramètres NFO",
     "adminActivitySeverityAll": "Toutes les gravités",
     "adminActivityDateRange": "Plage de dates",
-    "adminRemoveDeviceConfirm": "Supprimer l'appareil « {name} » ? L'utilisateur devra se reconnecter sur cet appareil.",
+    "adminRemoveDeviceConfirm": "Supprimer l'appareil « {name} » ? L'utilisateur devra se reconnecter sur cet appareil.",
     "@adminRemoveDeviceConfirm": {
         "placeholders": {
             "name": {

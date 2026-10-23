@@ -13,7 +13,6 @@ import '../../di/injection.dart';
 import '../../playback/external_player_policy.dart';
 import '../../preference/user_preferences.dart';
 import '../../preference/preference_constants.dart';
-import '../../syncplay/syncplay_manager.dart';
 import '../../util/game_cores.dart';
 import '../../util/platform_detection.dart';
 import '../screens/admin/admin_nav.dart';
@@ -120,23 +119,7 @@ bool _shouldRedirectVideoToExternalPlayer(String path) {
     return false;
   }
 
-  if (!PlatformDetection.isAndroid) {
-    return false;
-  }
-
-  final prefs = GetIt.instance<UserPreferences>();
-  if (!prefs.get(UserPreferences.useExternalPlayer)) {
-    return false;
-  }
-
-  if (GetIt.instance.isRegistered<SyncPlayManager>()) {
-    final syncPlay = GetIt.instance<SyncPlayManager>();
-    if (syncPlay.state.enabled) {
-      return false;
-    }
-  }
-
-  return ExternalPlayerPolicy.isEligibleItem(manager.queueService.currentItem);
+  return ExternalPlayerPolicy.coversQueue([manager.queueService.currentItem]);
 }
 
 CustomTransitionPage<T> _opaqueFullScreenPage<T>({

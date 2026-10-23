@@ -75,7 +75,7 @@ String remoteSubtitleDetails(
 
   final frameRate = subtitle['FrameRate'] as num?;
   if (frameRate != null && frameRate > 0) {
-    details.add(l10n.framerateFps(_frameRateLabel(frameRate)));
+    details.add(l10n.framerateFps(frameRateLabel(frameRate)));
   }
 
   return details.join(' | ');
@@ -84,7 +84,7 @@ String remoteSubtitleDetails(
 // 23.976 stays as it is, 25.000 reads better as 25.
 final RegExp _trailingZeros = RegExp(r'\.?0+$');
 
-String _frameRateLabel(num value) =>
+String frameRateLabel(num value) =>
     value.toStringAsFixed(3).replaceFirst(_trailingZeros, '');
 
 /// Turns a failed search or download into something worth reading.

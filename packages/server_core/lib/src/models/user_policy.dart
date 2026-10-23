@@ -211,9 +211,10 @@ class UserPolicy {
   ///
   /// Two flags mean the same thing here and servers disagree on which to
   /// grant. Emby hands out downloading by default and leaves management off,
-  /// so reading management alone locks out every ordinary Emby account.
+  /// so reading management alone locks out every ordinary Emby account. An
+  /// administrator may either way, and Jellyfin leaves both off for them.
   bool get canFetchRemoteSubtitles =>
-      enableSubtitleManagement || enableSubtitleDownloading;
+      isAdministrator || enableSubtitleManagement || enableSubtitleDownloading;
 
   static List<String> _stringList(dynamic value) {
     if (value is List) return value.cast<String>();

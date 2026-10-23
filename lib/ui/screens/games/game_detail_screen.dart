@@ -1337,7 +1337,6 @@ class _ActionRow extends StatelessWidget {
         : failed
         ? onRetrySave
         : onPlay;
-    final accent = Theme.of(context).colorScheme.primary;
     final native = _usesNativeBackend(game);
     final coreFill = _coreButtonFillColor(native);
 
@@ -1348,7 +1347,6 @@ class _ActionRow extends StatelessWidget {
           FocusableButton(
             focusNode: primaryFocusNode,
             autofocus: true,
-            focusColor: accent,
             autoScroll: true,
             padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
             onPressed: primaryAction,

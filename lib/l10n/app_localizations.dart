@@ -3256,12 +3256,6 @@ abstract class AppLocalizations {
   /// **'{rate} fps'**
   String framerateFps(String rate);
 
-  /// Audio channel count label
-  ///
-  /// In en, this message translates to:
-  /// **'{count}ch'**
-  String channelsCount(int count);
-
   /// Audio channel layout label for mono
   ///
   /// In en, this message translates to:
@@ -3471,12 +3465,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{mbps} Mbps'**
   String bitrateValueMbps(int mbps);
-
-  /// Label shown in stream info when a manual bitrate override is active
-  ///
-  /// In en, this message translates to:
-  /// **'Bitrate Override'**
-  String get bitrateOverride;
 
   /// Title for audio delay adjuster
   ///
@@ -3934,42 +3922,6 @@ abstract class AppLocalizations {
   /// **'HDR'**
   String get hdr;
 
-  /// Stream info label for whether HDR is reaching the display untouched
-  ///
-  /// In en, this message translates to:
-  /// **'HDR output'**
-  String get hdrOutput;
-
-  /// Stream info value when HDR passthrough is running, e.g. 'Active — HDR10 (PQ, BT.2020)'
-  ///
-  /// In en, this message translates to:
-  /// **'Active — {format}'**
-  String hdrOutputActive(String format);
-
-  /// Stream info value when native output is engaged but the window sits on a display without HDR, so the renderer is tone-mapping
-  ///
-  /// In en, this message translates to:
-  /// **'Active — tone-mapped to SDR for this display'**
-  String get hdrOutputActiveTonemapped;
-
-  /// Stream info value when the title itself is not HDR
-  ///
-  /// In en, this message translates to:
-  /// **'Inactive — content is SDR'**
-  String get hdrOutputContentSdr;
-
-  /// Stream info value when the video renderer setting keeps video inside the app
-  ///
-  /// In en, this message translates to:
-  /// **'Inactive — turned off in settings'**
-  String get hdrOutputDisabled;
-
-  /// Stream info value when the native HDR window could not be created
-  ///
-  /// In en, this message translates to:
-  /// **'Inactive — could not start, using the standard path'**
-  String get hdrOutputFailed;
-
   /// Settings label for choosing where Windows draws video, in its own window or inside the app
   ///
   /// In en, this message translates to:
@@ -4000,18 +3952,6 @@ abstract class AppLocalizations {
   /// **'In-app (legacy)'**
   String get videoRendererInApp;
 
-  /// Stream info label for codec
-  ///
-  /// In en, this message translates to:
-  /// **'Codec'**
-  String get codec;
-
-  /// Stream info label for video bitrate
-  ///
-  /// In en, this message translates to:
-  /// **'Video Bitrate'**
-  String get videoBitrate;
-
   /// Stream info label for track name
   ///
   /// In en, this message translates to:
@@ -4023,18 +3963,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Channels'**
   String get channels;
-
-  /// Stream info label for audio bitrate
-  ///
-  /// In en, this message translates to:
-  /// **'Audio Bitrate'**
-  String get audioBitrate;
-
-  /// Stream info label for audio sample rate
-  ///
-  /// In en, this message translates to:
-  /// **'Sample Rate'**
-  String get sampleRate;
 
   /// Stream info label for subtitle format
   ///
@@ -5350,18 +5278,6 @@ abstract class AppLocalizations {
   /// **'Scale focused or hovered cards and tiles'**
   String get scaleFocusedCards;
 
-  /// Setting for background backdrops
-  ///
-  /// In en, this message translates to:
-  /// **'Background Backdrops'**
-  String get backgroundBackdrops;
-
-  /// Description for background backdrops
-  ///
-  /// In en, this message translates to:
-  /// **'Show backdrop images behind content'**
-  String get showBackdropImages;
-
   /// Setting for series thumbnails
   ///
   /// In en, this message translates to:
@@ -6646,36 +6562,6 @@ abstract class AppLocalizations {
   /// **'Prefer audio description tracks over normal tracks.'**
   String get preferAudioDescriptionDescription;
 
-  /// Label for audio-only transcode playback method
-  ///
-  /// In en, this message translates to:
-  /// **'Transcoding (Audio)'**
-  String get transcodingAudio;
-
-  /// Play method label for direct stream with remuxing
-  ///
-  /// In en, this message translates to:
-  /// **'Direct Stream (Remux)'**
-  String get directStreamRemux;
-
-  /// Play method label for transcoding due to bitrate or resolution
-  ///
-  /// In en, this message translates to:
-  /// **'Transcoding (Bitrate or Resolution)'**
-  String get transcodingBitrateOrResolution;
-
-  /// Play method label for transcoding both video and audio
-  ///
-  /// In en, this message translates to:
-  /// **'Transcoding (Video & Audio)'**
-  String get transcodingVideoAndAudio;
-
-  /// Play method label for transcoding video
-  ///
-  /// In en, this message translates to:
-  /// **'Transcoding (Video)'**
-  String get transcodingVideo;
-
   /// Option: auto server default
   ///
   /// In en, this message translates to:
@@ -7149,66 +7035,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count}ch PCM'**
   String settingsAudioPcmChannels(int count);
-
-  /// Section title for playback diagnostics
-  ///
-  /// In en, this message translates to:
-  /// **'Diagnostics'**
-  String get settingsAudioDiagnostics;
-
-  /// Diagnostics label for video level
-  ///
-  /// In en, this message translates to:
-  /// **'Video Level'**
-  String get settingsAudioDiagnosticsVideoLevel;
-
-  /// Diagnostics label for video range
-  ///
-  /// In en, this message translates to:
-  /// **'Video Range'**
-  String get settingsAudioDiagnosticsVideoRange;
-
-  /// Diagnostics label for subtitle codec
-  ///
-  /// In en, this message translates to:
-  /// **'Subtitle Codec'**
-  String get settingsAudioDiagnosticsSubtitleCodec;
-
-  /// Diagnostics label for allowed audio codecs
-  ///
-  /// In en, this message translates to:
-  /// **'Allowed Audio Codecs'**
-  String get settingsAudioDiagnosticsAllowedAudioCodecs;
-
-  /// Diagnostics label for HLS MPEG-TS audio codecs
-  ///
-  /// In en, this message translates to:
-  /// **'HLS MPEG-TS Audio Codecs'**
-  String get settingsAudioDiagnosticsHlsMpegTsAudioCodecs;
-
-  /// Diagnostics label for HLS fMP4 audio codecs
-  ///
-  /// In en, this message translates to:
-  /// **'HLS fMP4 Audio Codecs'**
-  String get settingsAudioDiagnosticsHlsFmp4AudioCodecs;
-
-  /// Diagnostics label for audio-spdif passthrough codecs
-  ///
-  /// In en, this message translates to:
-  /// **'audio-spdif passthrough'**
-  String get settingsAudioDiagnosticsAudioSpdifPassthrough;
-
-  /// Diagnostics label for active audio route
-  ///
-  /// In en, this message translates to:
-  /// **'Active Audio Route'**
-  String get settingsAudioDiagnosticsActiveAudioRoute;
-
-  /// Diagnostics label for route HD audio support
-  ///
-  /// In en, this message translates to:
-  /// **'Route HD Audio Support'**
-  String get settingsAudioDiagnosticsRouteHdAudioSupport;
 
   /// Setting for night mode
   ///
@@ -21088,12 +20914,6 @@ abstract class AppLocalizations {
   /// **'Show details of the selected item at the top of Library pages.'**
   String get showMediaDetailsOnLibraryPageDescription;
 
-  /// Setting title to show/hide backdrops when browsing library pages
-  ///
-  /// In en, this message translates to:
-  /// **'Hide Backdrops While Browsing'**
-  String get hideBackdropsInLibraries;
-
   /// Label for setting to toggle detailed or minimal subrow on library pages
   ///
   /// In en, this message translates to:
@@ -21759,6 +21579,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open video playback in your selected external app on Android TV.'**
   String get useExternalPlayerSubtitle;
+
+  /// Setting that limits the external player to Live TV channels
+  ///
+  /// In en, this message translates to:
+  /// **'Live TV Only'**
+  String get externalPlayerLiveTvOnly;
+
+  /// Description for the Live TV Only external player setting
+  ///
+  /// In en, this message translates to:
+  /// **'Use the external player for Live TV and keep everything else in the built-in player.'**
+  String get externalPlayerLiveTvOnlySubtitle;
 
   /// No description provided for @automaticQueuing.
   ///
@@ -24691,6 +24523,12 @@ abstract class AppLocalizations {
   /// **'Direct play is not supported for this media format.'**
   String get transcodeDirectPlayError;
 
+  /// No description provided for @sortServerOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Server Order'**
+  String get sortServerOrder;
+
   /// No description provided for @sortAlphabetical.
   ///
   /// In en, this message translates to:
@@ -26662,6 +26500,346 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Length'**
   String get librarySortLength;
+
+  /// Setting to show or hide the backdrop image behind the home screen
+  ///
+  /// In en, this message translates to:
+  /// **'Home Screen Backdrop'**
+  String get homeScreenBackdrop;
+
+  /// Setting to show or hide the backdrop image behind the item details screen
+  ///
+  /// In en, this message translates to:
+  /// **'Details Screen Backdrop'**
+  String get detailsScreenBackdrop;
+
+  /// Setting to show or hide backdrop images while browsing library pages
+  ///
+  /// In en, this message translates to:
+  /// **'Library Backdrops'**
+  String get libraryBackdrops;
+
+  /// Playback information row label: the Live TV channel being watched
+  ///
+  /// In en, this message translates to:
+  /// **'Channel'**
+  String get playbackInfoChannel;
+
+  /// Playback information row label: the Live TV program on now
+  ///
+  /// In en, this message translates to:
+  /// **'Program'**
+  String get playbackInfoProgram;
+
+  /// Playback information row label: why the server isn't sending the original file as is
+  ///
+  /// In en, this message translates to:
+  /// **'Why'**
+  String get playbackInfoWhy;
+
+  /// Playback information row label: the maximum streaming bitrate the user picked
+  ///
+  /// In en, this message translates to:
+  /// **'Quality Limit'**
+  String get playbackInfoQualityLimit;
+
+  /// Playback information row label: video frames per second
+  ///
+  /// In en, this message translates to:
+  /// **'Frame Rate'**
+  String get playbackInfoFrameRate;
+
+  /// Playback information row label: how the subtitles reach the player (embedded, external, burned in)
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery'**
+  String get playbackInfoDelivery;
+
+  /// Playback information section header for the media file
+  ///
+  /// In en, this message translates to:
+  /// **'File'**
+  String get playbackInfoFile;
+
+  /// Playback information section header for details aimed at developers and testers
+  ///
+  /// In en, this message translates to:
+  /// **'Technical'**
+  String get playbackInfoTechnical;
+
+  /// Playback information row label: this device's model and operating system
+  ///
+  /// In en, this message translates to:
+  /// **'Device'**
+  String get playbackInfoDevice;
+
+  /// Playback information row label: where the sound goes, like HDMI or Bluetooth
+  ///
+  /// In en, this message translates to:
+  /// **'Audio Route'**
+  String get playbackInfoAudioRoute;
+
+  /// Playback information value: six channel surround audio
+  ///
+  /// In en, this message translates to:
+  /// **'5.1 surround'**
+  String get playbackInfoSurround51;
+
+  /// Playback information value: eight channel surround audio
+  ///
+  /// In en, this message translates to:
+  /// **'7.1 surround'**
+  String get playbackInfoSurround71;
+
+  /// Playback information value: an audio channel count with no common layout name
+  ///
+  /// In en, this message translates to:
+  /// **'{count} channels'**
+  String playbackInfoChannelCount(int count);
+
+  /// Playback information value: the server draws the subtitles into the video picture
+  ///
+  /// In en, this message translates to:
+  /// **'Burned in by the server'**
+  String get playbackInfoBurnedIn;
+
+  /// Playback information value: the bitrate being sent, with the file's own bitrate after it
+  ///
+  /// In en, this message translates to:
+  /// **'{value} (original {original})'**
+  String playbackInfoOriginal(String value, String original);
+
+  /// Playback information value: what the player gets, with what the file had before the server converted it
+  ///
+  /// In en, this message translates to:
+  /// **'{value} (converted from {source})'**
+  String playbackInfoConvertedFrom(String value, String source);
+
+  /// Playback information value: the resolution being sent, like 1080p (1920x1080, converted from 4K)
+  ///
+  /// In en, this message translates to:
+  /// **'{name} ({size}, converted from {source})'**
+  String playbackInfoResolutionConverted(
+    String name,
+    String size,
+    String source,
+  );
+
+  /// Playback information note under the play method for direct play
+  ///
+  /// In en, this message translates to:
+  /// **'Playing the original file as is.'**
+  String get playbackInfoNoteDirectPlay;
+
+  /// Playback information note under the play method for direct stream
+  ///
+  /// In en, this message translates to:
+  /// **'The server is repackaging the file without converting it.'**
+  String get playbackInfoNoteDirectStream;
+
+  /// Playback information note under the play method when only the video is transcoded
+  ///
+  /// In en, this message translates to:
+  /// **'The server is converting the video so this device can play it.'**
+  String get playbackInfoNoteTranscodeVideo;
+
+  /// Playback information note under the play method when only the audio is transcoded
+  ///
+  /// In en, this message translates to:
+  /// **'The server is converting the audio so this device can play it.'**
+  String get playbackInfoNoteTranscodeAudio;
+
+  /// Playback information note under the play method when the video and the audio are transcoded
+  ///
+  /// In en, this message translates to:
+  /// **'The server is converting the video and audio so this device can play it.'**
+  String get playbackInfoNoteTranscodeBoth;
+
+  /// Playback information note under the play method for a transcode when it isn't known what is converted
+  ///
+  /// In en, this message translates to:
+  /// **'The server is converting this file so this device can play it.'**
+  String get playbackInfoNoteTranscodeUnknown;
+
+  /// Playback information note under the play method when a download plays
+  ///
+  /// In en, this message translates to:
+  /// **'Playing a downloaded copy.'**
+  String get playbackInfoNoteOffline;
+
+  /// Playback information reason: a setting turned off direct play, so the server has to transcode
+  ///
+  /// In en, this message translates to:
+  /// **'Transcoding is forced in settings'**
+  String get playbackInfoWhyForced;
+
+  /// Playback information reason: the file's bitrate is over the streaming limit, used when the two numbers can't be shown
+  ///
+  /// In en, this message translates to:
+  /// **'The bitrate is above the streaming limit'**
+  String get playbackInfoWhyBitrate;
+
+  /// Playback information reason: the container format isn't supported, used when the file type isn't known
+  ///
+  /// In en, this message translates to:
+  /// **'This device can\'t play this file type'**
+  String get playbackInfoWhyContainer;
+
+  /// Playback information reason: the video format isn't supported, used when the server gives no detail or the detail isn't known
+  ///
+  /// In en, this message translates to:
+  /// **'This device can\'t play this video format'**
+  String get playbackInfoWhyVideo;
+
+  /// Playback information reason: the HDR format isn't supported, used when the HDR type isn't known
+  ///
+  /// In en, this message translates to:
+  /// **'This device can\'t display this HDR format'**
+  String get playbackInfoWhyHdr;
+
+  /// Playback information reason: the audio format isn't supported, used when the server gives no detail or the detail isn't known
+  ///
+  /// In en, this message translates to:
+  /// **'This device can\'t play this audio format'**
+  String get playbackInfoWhyAudio;
+
+  /// Playback information reason: the player can't show the subtitles, so the server draws them into the video, used when the subtitle format isn't known
+  ///
+  /// In en, this message translates to:
+  /// **'Subtitles are being burned into the video'**
+  String get playbackInfoWhySubtitles;
+
+  /// Playback information reason: any other server reason
+  ///
+  /// In en, this message translates to:
+  /// **'The file couldn\'t be played directly'**
+  String get playbackInfoWhyOther;
+
+  /// Playback information reason: the file's bitrate, like 68.4 Mbps, is over the streaming limit, like 20 Mbps
+  ///
+  /// In en, this message translates to:
+  /// **'{bitrate} is above the {limit} streaming limit'**
+  String playbackInfoWhyBitrateLimit(String bitrate, String limit);
+
+  /// Playback information reason: the container format, like MKV, isn't supported
+  ///
+  /// In en, this message translates to:
+  /// **'This device can\'t open {container} files'**
+  String playbackInfoWhyContainerName(String container);
+
+  /// Playback information reason: the video codec, like HEVC or AV1, isn't supported
+  ///
+  /// In en, this message translates to:
+  /// **'This device can\'t play {codec} video'**
+  String playbackInfoWhyVideoCodec(String codec);
+
+  /// Playback information reason: the video codec's profile, like HEVC Main 10, isn't supported
+  ///
+  /// In en, this message translates to:
+  /// **'This device can\'t play {codec} {profile} video'**
+  String playbackInfoWhyVideoProfile(String codec, String profile);
+
+  /// Playback information reason: the video codec's level, like HEVC level 5.1, isn't supported
+  ///
+  /// In en, this message translates to:
+  /// **'This device can\'t play {codec} level {level} video'**
+  String playbackInfoWhyVideoLevel(String codec, String level);
+
+  /// Playback information reason: the video bit depth, like 10-bit, isn't supported
+  ///
+  /// In en, this message translates to:
+  /// **'This device can\'t play {bits}-bit video'**
+  String playbackInfoWhyVideoBitDepth(int bits);
+
+  /// Playback information reason: the video resolution, like 4K or 1080p, isn't supported
+  ///
+  /// In en, this message translates to:
+  /// **'This device can\'t play {resolution} video'**
+  String playbackInfoWhyVideoResolution(String resolution);
+
+  /// Playback information reason: the video frame rate in frames per second, like 59.94, isn't supported
+  ///
+  /// In en, this message translates to:
+  /// **'This device can\'t play {fps} fps video'**
+  String playbackInfoWhyVideoFrameRate(String fps);
+
+  /// Playback information reason: interlaced video isn't supported
+  ///
+  /// In en, this message translates to:
+  /// **'This device can\'t play interlaced video'**
+  String get playbackInfoWhyInterlaced;
+
+  /// Playback information reason: anamorphic video isn't supported
+  ///
+  /// In en, this message translates to:
+  /// **'This device can\'t play anamorphic video'**
+  String get playbackInfoWhyAnamorphic;
+
+  /// Playback information reason: the HDR format, like Dolby Vision Profile 7 or HDR10+, isn't supported
+  ///
+  /// In en, this message translates to:
+  /// **'This device can\'t display {range}'**
+  String playbackInfoWhyHdrName(String range);
+
+  /// Playback information reason: the audio codec, like Dolby TrueHD or DTS, isn't supported
+  ///
+  /// In en, this message translates to:
+  /// **'This device can\'t play {format} audio'**
+  String playbackInfoWhyAudioCodec(String format);
+
+  /// Playback information reason: the full audio format, like Dolby TrueHD with Atmos or DTS-HD Master Audio, isn't supported
+  ///
+  /// In en, this message translates to:
+  /// **'This device can\'t play {fullFormat}'**
+  String playbackInfoWhyAudioProfile(String fullFormat);
+
+  /// Playback information reason: the audio channel layout, like 7.1 or 3-channel, isn't supported
+  ///
+  /// In en, this message translates to:
+  /// **'This device can\'t play {channels} audio'**
+  String playbackInfoWhyAudioChannels(String channels);
+
+  /// Playback information reason: the audio sample rate in kilohertz, like 96 or 44.1, isn't supported
+  ///
+  /// In en, this message translates to:
+  /// **'This device can\'t play {rate} kHz audio'**
+  String playbackInfoWhyAudioSampleRate(String rate);
+
+  /// Playback information reason: the audio bit depth, like 24-bit, isn't supported
+  ///
+  /// In en, this message translates to:
+  /// **'This device can\'t play {bits}-bit audio'**
+  String playbackInfoWhyAudioBitDepth(int bits);
+
+  /// Playback information reason: the picked audio track is an external file
+  ///
+  /// In en, this message translates to:
+  /// **'The audio track is in a separate file'**
+  String get playbackInfoWhyAudioExternal;
+
+  /// Playback information reason: the device can't switch to an audio track other than the first
+  ///
+  /// In en, this message translates to:
+  /// **'This device can only play the first audio track'**
+  String get playbackInfoWhySecondaryAudio;
+
+  /// Playback information reason: the player can't show this subtitle format, like PGS or ASS, so the server draws the subtitles into the video
+  ///
+  /// In en, this message translates to:
+  /// **'{format} subtitles are being burned into the video'**
+  String playbackInfoWhySubtitleFormat(String format);
+
+  /// Playback information row label: how many video frames the player skipped
+  ///
+  /// In en, this message translates to:
+  /// **'Dropped Frames'**
+  String get playbackInfoDroppedFrames;
+
+  /// Long-press menu action on a downloaded video: play it by streaming from the server instead of the downloaded copy, for example to get a higher quality than the download
+  ///
+  /// In en, this message translates to:
+  /// **'Play from Server'**
+  String get playFromServer;
 }
 
 class _AppLocalizationsDelegate

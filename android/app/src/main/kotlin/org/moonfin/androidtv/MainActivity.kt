@@ -1786,7 +1786,7 @@ class MainActivity : AudioServiceActivity(), GamepadsCompatibleActivity {
             return
         }
 
-        startExternalPlayerProxy(launchIntent, result)
+        startExternalPlayer(launchIntent, args, result)
     }
 
     private fun chooseAndLaunchExternalPlayer(args: Map<*, *>, result: MethodChannel.Result) {
@@ -1816,7 +1816,36 @@ class MainActivity : AudioServiceActivity(), GamepadsCompatibleActivity {
         }
 
         val chooserIntent = Intent.createChooser(baseIntent, EXTERNAL_PLAYER_CHOOSER_TITLE)
-        startExternalPlayerProxy(chooserIntent, result)
+        startExternalPlayer(chooserIntent, args, result)
+    }
+
+    // A player that relaunches itself, as VLC does for a live stream, answers
+    // a waiting proxy at once and brings Moonfin back over it. A detached
+    // launch runs in its own task instead and the app waits for the viewer
+    // to come back.
+    private fun startExternalPlayer(
+        intent: Intent,
+        args: Map<*, *>,
+        result: MethodChannel.Result,
+    ) {
+        if (args["detached"] != true) {
+            startExternalPlayerProxy(intent, result)
+            return
+        }
+        try {
+            startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+            result.success(
+                mapOf(
+                    "completed" to false,
+                    "hasError" to false,
+                    "resultCode" to Activity.RESULT_OK,
+                ),
+            )
+        } catch (error: ActivityNotFoundException) {
+            result.error("PLAYER_NOT_FOUND", error.message, null)
+        } catch (error: Exception) {
+            result.error("LAUNCH_FAILED", error.message, null)
+        }
     }
 
     private fun startExternalPlayerProxy(

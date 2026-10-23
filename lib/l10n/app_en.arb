@@ -2453,15 +2453,6 @@
       }
     }
   },
-  "channelsCount": "{count}ch",
-  "@channelsCount": {
-    "description": "Audio channel count label",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "mono": "Mono",
   "@mono": {
     "description": "Audio channel layout label for mono"
@@ -2691,10 +2682,6 @@
         "type": "int"
       }
     }
-  },
-  "bitrateOverride": "Bitrate Override",
-  "@bitrateOverride": {
-    "description": "Label shown in stream info when a manual bitrate override is active"
   },
   "audioDelay": "Audio Delay",
   "@audioDelay": {
@@ -3010,35 +2997,6 @@
   "@hdr": {
     "description": "Stream info label for HDR type"
   },
-  "hdrOutput": "HDR output",
-  "@hdrOutput": {
-    "description": "Stream info label for whether HDR is reaching the display untouched"
-  },
-  "hdrOutputActive": "Active — {format}",
-  "@hdrOutputActive": {
-    "description": "Stream info value when HDR passthrough is running, e.g. 'Active — HDR10 (PQ, BT.2020)'",
-    "placeholders": {
-      "format": {
-        "type": "String"
-      }
-    }
-  },
-  "hdrOutputActiveTonemapped": "Active — tone-mapped to SDR for this display",
-  "@hdrOutputActiveTonemapped": {
-    "description": "Stream info value when native output is engaged but the window sits on a display without HDR, so the renderer is tone-mapping"
-  },
-  "hdrOutputContentSdr": "Inactive — content is SDR",
-  "@hdrOutputContentSdr": {
-    "description": "Stream info value when the title itself is not HDR"
-  },
-  "hdrOutputDisabled": "Inactive — turned off in settings",
-  "@hdrOutputDisabled": {
-    "description": "Stream info value when the video renderer setting keeps video inside the app"
-  },
-  "hdrOutputFailed": "Inactive — could not start, using the standard path",
-  "@hdrOutputFailed": {
-    "description": "Stream info value when the native HDR window could not be created"
-  },
   "videoRenderer": "Video Renderer",
   "@videoRenderer": {
     "description": "Settings label for choosing where Windows draws video, in its own window or inside the app"
@@ -3059,14 +3017,6 @@
   "@videoRendererInApp": {
     "description": "Video renderer option that draws every title inside the app and converts HDR to SDR"
   },
-  "codec": "Codec",
-  "@codec": {
-    "description": "Stream info label for codec"
-  },
-  "videoBitrate": "Video Bitrate",
-  "@videoBitrate": {
-    "description": "Stream info label for video bitrate"
-  },
   "track": "Track",
   "@track": {
     "description": "Stream info label for track name"
@@ -3074,14 +3024,6 @@
   "channels": "Channels",
   "@channels": {
     "description": "Stream info label for audio channels"
-  },
-  "audioBitrate": "Audio Bitrate",
-  "@audioBitrate": {
-    "description": "Stream info label for audio bitrate"
-  },
-  "sampleRate": "Sample Rate",
-  "@sampleRate": {
-    "description": "Stream info label for audio sample rate"
   },
   "format": "Format",
   "@format": {
@@ -4195,14 +4137,6 @@
   "@scaleFocusedCards": {
     "description": "Description for focus expansion animation"
   },
-  "backgroundBackdrops": "Background Backdrops",
-  "@backgroundBackdrops": {
-    "description": "Setting for background backdrops"
-  },
-  "showBackdropImages": "Show backdrop images behind content",
-  "@showBackdropImages": {
-    "description": "Description for background backdrops"
-  },
   "seriesThumbnails": "Display Series Thumbnails",
   "@seriesThumbnails": {
     "description": "Setting for series thumbnails"
@@ -5074,26 +5008,6 @@
   "@preferAudioDescriptionDescription": {
     "description": "Description for preferring audio description tracks setting"
   },
-  "transcodingAudio": "Transcoding (Audio)",
-  "@transcodingAudio": {
-    "description": "Label for audio-only transcode playback method"
-  },
-  "directStreamRemux": "Direct Stream (Remux)",
-  "@directStreamRemux": {
-    "description": "Play method label for direct stream with remuxing"
-  },
-  "transcodingBitrateOrResolution": "Transcoding (Bitrate or Resolution)",
-  "@transcodingBitrateOrResolution": {
-    "description": "Play method label for transcoding due to bitrate or resolution"
-  },
-  "transcodingVideoAndAudio": "Transcoding (Video & Audio)",
-  "@transcodingVideoAndAudio": {
-    "description": "Play method label for transcoding both video and audio"
-  },
-  "transcodingVideo": "Transcoding (Video)",
-  "@transcodingVideo": {
-    "description": "Play method label for transcoding video"
-  },
   "autoServerDefault": "Auto (Server Default)",
   "@autoServerDefault": {
     "description": "Option: auto server default"
@@ -5378,46 +5292,6 @@
         "type": "int"
       }
     }
-  },
-  "settingsAudioDiagnostics": "Diagnostics",
-  "@settingsAudioDiagnostics": {
-    "description": "Section title for playback diagnostics"
-  },
-  "settingsAudioDiagnosticsVideoLevel": "Video Level",
-  "@settingsAudioDiagnosticsVideoLevel": {
-    "description": "Diagnostics label for video level"
-  },
-  "settingsAudioDiagnosticsVideoRange": "Video Range",
-  "@settingsAudioDiagnosticsVideoRange": {
-    "description": "Diagnostics label for video range"
-  },
-  "settingsAudioDiagnosticsSubtitleCodec": "Subtitle Codec",
-  "@settingsAudioDiagnosticsSubtitleCodec": {
-    "description": "Diagnostics label for subtitle codec"
-  },
-  "settingsAudioDiagnosticsAllowedAudioCodecs": "Allowed Audio Codecs",
-  "@settingsAudioDiagnosticsAllowedAudioCodecs": {
-    "description": "Diagnostics label for allowed audio codecs"
-  },
-  "settingsAudioDiagnosticsHlsMpegTsAudioCodecs": "HLS MPEG-TS Audio Codecs",
-  "@settingsAudioDiagnosticsHlsMpegTsAudioCodecs": {
-    "description": "Diagnostics label for HLS MPEG-TS audio codecs"
-  },
-  "settingsAudioDiagnosticsHlsFmp4AudioCodecs": "HLS fMP4 Audio Codecs",
-  "@settingsAudioDiagnosticsHlsFmp4AudioCodecs": {
-    "description": "Diagnostics label for HLS fMP4 audio codecs"
-  },
-  "settingsAudioDiagnosticsAudioSpdifPassthrough": "audio-spdif passthrough",
-  "@settingsAudioDiagnosticsAudioSpdifPassthrough": {
-    "description": "Diagnostics label for audio-spdif passthrough codecs"
-  },
-  "settingsAudioDiagnosticsActiveAudioRoute": "Active Audio Route",
-  "@settingsAudioDiagnosticsActiveAudioRoute": {
-    "description": "Diagnostics label for active audio route"
-  },
-  "settingsAudioDiagnosticsRouteHdAudioSupport": "Route HD Audio Support",
-  "@settingsAudioDiagnosticsRouteHdAudioSupport": {
-    "description": "Diagnostics label for route HD audio support"
   },
   "nightMode": "Night Mode",
   "@nightMode": {
@@ -10906,10 +10780,6 @@
   "@showMediaDetailsOnLibraryPageDescription": {
     "description": "Setting description to show/hide focused media details at the top of the library page"
   },
-  "hideBackdropsInLibraries": "Hide Backdrops While Browsing",
-  "@hideBackdropsInLibraries": {
-    "description": "Setting title to show/hide backdrops when browsing library pages"
-  },
   "useDetailedSubHeadings": "Use Detailed Sub-Headings",
   "@useDetailedSubHeadings": {
     "description": "Label for setting to toggle detailed or minimal subrow on library pages"
@@ -11067,6 +10937,14 @@
   "preferSoftwareDecodersSubtitle": "Use FFmpeg (audio) and libgav1 (AV1) before hardware decoders. Disable if HDMI audio passthrough breaks.",
   "useExternalPlayer": "Always Use External Player",
   "useExternalPlayerSubtitle": "Open video playback in your selected external app on Android TV.",
+  "externalPlayerLiveTvOnly": "Live TV Only",
+  "@externalPlayerLiveTvOnly": {
+    "description": "Setting that limits the external player to Live TV channels"
+  },
+  "externalPlayerLiveTvOnlySubtitle": "Use the external player for Live TV and keep everything else in the built-in player.",
+  "@externalPlayerLiveTvOnlySubtitle": {
+    "description": "Description for the Live TV Only external player setting"
+  },
   "automaticQueuing": "Automatic Queuing",
   "preferSdhSubtitles": "Prefer SDH Subtitles",
   "preferSdhSubtitlesSubtitle": "Prioritize SDH/CC subtitle tracks when auto-selecting.",
@@ -12607,6 +12485,7 @@
   "transcodeInterlacedVideoNotSupported": "Interlaced video is not supported.",
   "transcodeSecondaryAudioNotSupported": "Secondary audio stream requires transcoding.",
   "transcodeDirectPlayError": "Direct play is not supported for this media format.",
+  "sortServerOrder": "Server Order",
   "sortAlphabetical": "Alphabetical",
   "sortReleaseAscending": "Release Order (Ascending)",
   "sortReleaseDescending": "Release Order (Descending)",
@@ -13993,5 +13872,345 @@
   "librarySortLength": "Length",
   "@librarySortLength": {
     "description": "Sort option for music: by track or album length"
+  },
+  "homeScreenBackdrop": "Home Screen Backdrop",
+  "@homeScreenBackdrop": {
+    "description": "Setting to show or hide the backdrop image behind the home screen"
+  },
+  "detailsScreenBackdrop": "Details Screen Backdrop",
+  "@detailsScreenBackdrop": {
+    "description": "Setting to show or hide the backdrop image behind the item details screen"
+  },
+  "libraryBackdrops": "Library Backdrops",
+  "@libraryBackdrops": {
+    "description": "Setting to show or hide backdrop images while browsing library pages"
+  },
+  "playbackInfoChannel": "Channel",
+  "@playbackInfoChannel": {
+    "description": "Playback information row label: the Live TV channel being watched"
+  },
+  "playbackInfoProgram": "Program",
+  "@playbackInfoProgram": {
+    "description": "Playback information row label: the Live TV program on now"
+  },
+  "playbackInfoWhy": "Why",
+  "@playbackInfoWhy": {
+    "description": "Playback information row label: why the server isn't sending the original file as is"
+  },
+  "playbackInfoQualityLimit": "Quality Limit",
+  "@playbackInfoQualityLimit": {
+    "description": "Playback information row label: the maximum streaming bitrate the user picked"
+  },
+  "playbackInfoFrameRate": "Frame Rate",
+  "@playbackInfoFrameRate": {
+    "description": "Playback information row label: video frames per second"
+  },
+  "playbackInfoDelivery": "Delivery",
+  "@playbackInfoDelivery": {
+    "description": "Playback information row label: how the subtitles reach the player (embedded, external, burned in)"
+  },
+  "playbackInfoFile": "File",
+  "@playbackInfoFile": {
+    "description": "Playback information section header for the media file"
+  },
+  "playbackInfoTechnical": "Technical",
+  "@playbackInfoTechnical": {
+    "description": "Playback information section header for details aimed at developers and testers"
+  },
+  "playbackInfoDevice": "Device",
+  "@playbackInfoDevice": {
+    "description": "Playback information row label: this device's model and operating system"
+  },
+  "playbackInfoAudioRoute": "Audio Route",
+  "@playbackInfoAudioRoute": {
+    "description": "Playback information row label: where the sound goes, like HDMI or Bluetooth"
+  },
+  "playbackInfoSurround51": "5.1 surround",
+  "@playbackInfoSurround51": {
+    "description": "Playback information value: six channel surround audio"
+  },
+  "playbackInfoSurround71": "7.1 surround",
+  "@playbackInfoSurround71": {
+    "description": "Playback information value: eight channel surround audio"
+  },
+  "playbackInfoChannelCount": "{count} channels",
+  "@playbackInfoChannelCount": {
+    "description": "Playback information value: an audio channel count with no common layout name",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "playbackInfoBurnedIn": "Burned in by the server",
+  "@playbackInfoBurnedIn": {
+    "description": "Playback information value: the server draws the subtitles into the video picture"
+  },
+  "playbackInfoOriginal": "{value} (original {original})",
+  "@playbackInfoOriginal": {
+    "description": "Playback information value: the bitrate being sent, with the file's own bitrate after it",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "original": {
+        "type": "String"
+      }
+    }
+  },
+  "playbackInfoConvertedFrom": "{value} (converted from {source})",
+  "@playbackInfoConvertedFrom": {
+    "description": "Playback information value: what the player gets, with what the file had before the server converted it",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "source": {
+        "type": "String"
+      }
+    }
+  },
+  "playbackInfoResolutionConverted": "{name} ({size}, converted from {source})",
+  "@playbackInfoResolutionConverted": {
+    "description": "Playback information value: the resolution being sent, like 1080p (1920x1080, converted from 4K)",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "size": {
+        "type": "String"
+      },
+      "source": {
+        "type": "String"
+      }
+    }
+  },
+  "playbackInfoNoteDirectPlay": "Playing the original file as is.",
+  "@playbackInfoNoteDirectPlay": {
+    "description": "Playback information note under the play method for direct play"
+  },
+  "playbackInfoNoteDirectStream": "The server is repackaging the file without converting it.",
+  "@playbackInfoNoteDirectStream": {
+    "description": "Playback information note under the play method for direct stream"
+  },
+  "playbackInfoNoteTranscodeVideo": "The server is converting the video so this device can play it.",
+  "@playbackInfoNoteTranscodeVideo": {
+    "description": "Playback information note under the play method when only the video is transcoded"
+  },
+  "playbackInfoNoteTranscodeAudio": "The server is converting the audio so this device can play it.",
+  "@playbackInfoNoteTranscodeAudio": {
+    "description": "Playback information note under the play method when only the audio is transcoded"
+  },
+  "playbackInfoNoteTranscodeBoth": "The server is converting the video and audio so this device can play it.",
+  "@playbackInfoNoteTranscodeBoth": {
+    "description": "Playback information note under the play method when the video and the audio are transcoded"
+  },
+  "playbackInfoNoteTranscodeUnknown": "The server is converting this file so this device can play it.",
+  "@playbackInfoNoteTranscodeUnknown": {
+    "description": "Playback information note under the play method for a transcode when it isn't known what is converted"
+  },
+  "playbackInfoNoteOffline": "Playing a downloaded copy.",
+  "@playbackInfoNoteOffline": {
+    "description": "Playback information note under the play method when a download plays"
+  },
+  "playbackInfoWhyForced": "Transcoding is forced in settings",
+  "@playbackInfoWhyForced": {
+    "description": "Playback information reason: a setting turned off direct play, so the server has to transcode"
+  },
+  "playbackInfoWhyBitrate": "The bitrate is above the streaming limit",
+  "@playbackInfoWhyBitrate": {
+    "description": "Playback information reason: the file's bitrate is over the streaming limit, used when the two numbers can't be shown"
+  },
+  "playbackInfoWhyContainer": "This device can't play this file type",
+  "@playbackInfoWhyContainer": {
+    "description": "Playback information reason: the container format isn't supported, used when the file type isn't known"
+  },
+  "playbackInfoWhyVideo": "This device can't play this video format",
+  "@playbackInfoWhyVideo": {
+    "description": "Playback information reason: the video format isn't supported, used when the server gives no detail or the detail isn't known"
+  },
+  "playbackInfoWhyHdr": "This device can't display this HDR format",
+  "@playbackInfoWhyHdr": {
+    "description": "Playback information reason: the HDR format isn't supported, used when the HDR type isn't known"
+  },
+  "playbackInfoWhyAudio": "This device can't play this audio format",
+  "@playbackInfoWhyAudio": {
+    "description": "Playback information reason: the audio format isn't supported, used when the server gives no detail or the detail isn't known"
+  },
+  "playbackInfoWhySubtitles": "Subtitles are being burned into the video",
+  "@playbackInfoWhySubtitles": {
+    "description": "Playback information reason: the player can't show the subtitles, so the server draws them into the video, used when the subtitle format isn't known"
+  },
+  "playbackInfoWhyOther": "The file couldn't be played directly",
+  "@playbackInfoWhyOther": {
+    "description": "Playback information reason: any other server reason"
+  },
+  "playbackInfoWhyBitrateLimit": "{bitrate} is above the {limit} streaming limit",
+  "@playbackInfoWhyBitrateLimit": {
+    "description": "Playback information reason: the file's bitrate, like 68.4 Mbps, is over the streaming limit, like 20 Mbps",
+    "placeholders": {
+      "bitrate": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "playbackInfoWhyContainerName": "This device can't open {container} files",
+  "@playbackInfoWhyContainerName": {
+    "description": "Playback information reason: the container format, like MKV, isn't supported",
+    "placeholders": {
+      "container": {
+        "type": "String"
+      }
+    }
+  },
+  "playbackInfoWhyVideoCodec": "This device can't play {codec} video",
+  "@playbackInfoWhyVideoCodec": {
+    "description": "Playback information reason: the video codec, like HEVC or AV1, isn't supported",
+    "placeholders": {
+      "codec": {
+        "type": "String"
+      }
+    }
+  },
+  "playbackInfoWhyVideoProfile": "This device can't play {codec} {profile} video",
+  "@playbackInfoWhyVideoProfile": {
+    "description": "Playback information reason: the video codec's profile, like HEVC Main 10, isn't supported",
+    "placeholders": {
+      "codec": {
+        "type": "String"
+      },
+      "profile": {
+        "type": "String"
+      }
+    }
+  },
+  "playbackInfoWhyVideoLevel": "This device can't play {codec} level {level} video",
+  "@playbackInfoWhyVideoLevel": {
+    "description": "Playback information reason: the video codec's level, like HEVC level 5.1, isn't supported",
+    "placeholders": {
+      "codec": {
+        "type": "String"
+      },
+      "level": {
+        "type": "String"
+      }
+    }
+  },
+  "playbackInfoWhyVideoBitDepth": "This device can't play {bits}-bit video",
+  "@playbackInfoWhyVideoBitDepth": {
+    "description": "Playback information reason: the video bit depth, like 10-bit, isn't supported",
+    "placeholders": {
+      "bits": {
+        "type": "int"
+      }
+    }
+  },
+  "playbackInfoWhyVideoResolution": "This device can't play {resolution} video",
+  "@playbackInfoWhyVideoResolution": {
+    "description": "Playback information reason: the video resolution, like 4K or 1080p, isn't supported",
+    "placeholders": {
+      "resolution": {
+        "type": "String"
+      }
+    }
+  },
+  "playbackInfoWhyVideoFrameRate": "This device can't play {fps} fps video",
+  "@playbackInfoWhyVideoFrameRate": {
+    "description": "Playback information reason: the video frame rate in frames per second, like 59.94, isn't supported",
+    "placeholders": {
+      "fps": {
+        "type": "String"
+      }
+    }
+  },
+  "playbackInfoWhyInterlaced": "This device can't play interlaced video",
+  "@playbackInfoWhyInterlaced": {
+    "description": "Playback information reason: interlaced video isn't supported"
+  },
+  "playbackInfoWhyAnamorphic": "This device can't play anamorphic video",
+  "@playbackInfoWhyAnamorphic": {
+    "description": "Playback information reason: anamorphic video isn't supported"
+  },
+  "playbackInfoWhyHdrName": "This device can't display {range}",
+  "@playbackInfoWhyHdrName": {
+    "description": "Playback information reason: the HDR format, like Dolby Vision Profile 7 or HDR10+, isn't supported",
+    "placeholders": {
+      "range": {
+        "type": "String"
+      }
+    }
+  },
+  "playbackInfoWhyAudioCodec": "This device can't play {format} audio",
+  "@playbackInfoWhyAudioCodec": {
+    "description": "Playback information reason: the audio codec, like Dolby TrueHD or DTS, isn't supported",
+    "placeholders": {
+      "format": {
+        "type": "String"
+      }
+    }
+  },
+  "playbackInfoWhyAudioProfile": "This device can't play {fullFormat}",
+  "@playbackInfoWhyAudioProfile": {
+    "description": "Playback information reason: the full audio format, like Dolby TrueHD with Atmos or DTS-HD Master Audio, isn't supported",
+    "placeholders": {
+      "fullFormat": {
+        "type": "String"
+      }
+    }
+  },
+  "playbackInfoWhyAudioChannels": "This device can't play {channels} audio",
+  "@playbackInfoWhyAudioChannels": {
+    "description": "Playback information reason: the audio channel layout, like 7.1 or 3-channel, isn't supported",
+    "placeholders": {
+      "channels": {
+        "type": "String"
+      }
+    }
+  },
+  "playbackInfoWhyAudioSampleRate": "This device can't play {rate} kHz audio",
+  "@playbackInfoWhyAudioSampleRate": {
+    "description": "Playback information reason: the audio sample rate in kilohertz, like 96 or 44.1, isn't supported",
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "playbackInfoWhyAudioBitDepth": "This device can't play {bits}-bit audio",
+  "@playbackInfoWhyAudioBitDepth": {
+    "description": "Playback information reason: the audio bit depth, like 24-bit, isn't supported",
+    "placeholders": {
+      "bits": {
+        "type": "int"
+      }
+    }
+  },
+  "playbackInfoWhyAudioExternal": "The audio track is in a separate file",
+  "@playbackInfoWhyAudioExternal": {
+    "description": "Playback information reason: the picked audio track is an external file"
+  },
+  "playbackInfoWhySecondaryAudio": "This device can only play the first audio track",
+  "@playbackInfoWhySecondaryAudio": {
+    "description": "Playback information reason: the device can't switch to an audio track other than the first"
+  },
+  "playbackInfoWhySubtitleFormat": "{format} subtitles are being burned into the video",
+  "@playbackInfoWhySubtitleFormat": {
+    "description": "Playback information reason: the player can't show this subtitle format, like PGS or ASS, so the server draws the subtitles into the video",
+    "placeholders": {
+      "format": {
+        "type": "String"
+      }
+    }
+  },
+  "playbackInfoDroppedFrames": "Dropped Frames",
+  "@playbackInfoDroppedFrames": {
+    "description": "Playback information row label: how many video frames the player skipped"
+  },
+  "playFromServer": "Play from Server",
+  "@playFromServer": {
+    "description": "Long-press menu action on a downloaded video: play it by streaming from the server instead of the downloaded copy, for example to get a higher quality than the download"
   }
 }

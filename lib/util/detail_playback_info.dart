@@ -11,31 +11,60 @@ Future<PlaybackInfoResult> fetchDetailPlaybackInfo({
   required String? mediaSourceId,
   required int? audioStreamIndex,
   required int? subtitleStreamIndex,
+  bool hasOtherVersions = false,
 }) async {
   final client = GetIt.instance<MediaServerClient>();
   final profile =
       GetIt.instance<PlaybackManager>().backend?.getDeviceProfile() ??
       <String, dynamic>{};
 
-  final request = PlaybackInfoRequest(
-    itemId: itemId,
-    mediaSourceId: mediaSourceId,
-    audioStreamIndex: audioStreamIndex,
-    subtitleStreamIndex: subtitleStreamIndex,
-    deviceProfile: profile,
-    // Cast receiver profiles can carry this as a double, so read it as a
-    // number rather than an int.
-    maxStreamingBitrate: (profile['MaxStreamingBitrate'] as num?)?.toInt(),
-    enableDirectPlay: true,
-    enableDirectStream: true,
-    enableTranscoding: true,
-  );
+  Future<PlaybackInfoResult> fetch(String? sourceId) async {
+    final request = PlaybackInfoRequest(
+      itemId: itemId,
+      mediaSourceId: sourceId,
+      audioStreamIndex: audioStreamIndex,
+      subtitleStreamIndex: subtitleStreamIndex,
+      deviceProfile: profile,
+      // Cast receiver profiles can carry this as a double, so read it as a
+      // number rather than an int.
+      maxStreamingBitrate: (profile['MaxStreamingBitrate'] as num?)?.toInt(),
+      enableDirectPlay: true,
+      enableDirectStream: true,
+      enableTranscoding: true,
+    );
 
-  final raw = await client.playbackApi.getPlaybackInfo(
-    itemId,
-    requestBody: request.toJson(),
-    userId: client.userId,
-  );
+    final raw = await client.playbackApi.getPlaybackInfo(
+      itemId,
+      requestBody: request.toJson(),
+      userId: client.userId,
+    );
 
-  return PlaybackInfoResult.fromJson(raw);
+    return PlaybackInfoResult.fromJson(raw);
+  }
+
+  final result = await fetch(mediaSourceId);
+  if (mediaSourceId == null ||
+      hasOtherVersions ||
+      !result.mediaSources.every((s) => s.isUnprobedPlaceholder)) {
+    return result;
+  }
+
+  // Asked for by id, a channel item's placeholder source comes back alone and
+  // fit only for a transcode, while playback gets the source the server
+  // probes. Report on that one, the same as the resolver plays it. With other
+  // versions on the item the sources that come back would be those, so the
+  // picked one is reported as it is.
+  try {
+    final retry = await fetch(null);
+    final probed =
+        retry.mediaSources.where((s) => s.mediaStreams.isNotEmpty).toList();
+    if (probed.isEmpty) return result;
+    return PlaybackInfoResult(
+      mediaSources: probed,
+      playSessionId: retry.playSessionId,
+      errorCode: retry.errorCode,
+    );
+  } catch (_) {
+    return result;
+  }
 }

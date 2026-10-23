@@ -20,7 +20,7 @@ import '../../../data/repositories/item_mutation_repository.dart';
 import '../../../auth/repositories/user_repository.dart';
 import '../../../playback/cinema_skip_controller.dart';
 import '../../../playback/appletv_backend.dart';
-import '../../../playback/playback_profile_diagnostics.dart';
+import '../../../playback/playback_info_sections.dart';
 import '../../../syncplay/syncplay_manager.dart';
 import '../../theme/app_theme_controller.dart';
 import '../../screensaver/screensaver_controller.dart';
@@ -33,7 +33,6 @@ import '../../../util/remote_subtitle_labels.dart';
 import '../../../util/subtitle_appearance_schedule.dart';
 import '../../../util/episode_playability.dart';
 import '../../../util/overview_text.dart';
-import '../../../util/play_method_label.dart';
 import 'appletv_playback_prompt_controller.dart';
 import 'episode_browser.dart';
 import 'osd_buttons.dart';
@@ -58,6 +57,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   AppleTvPlaybackPromptController? _prompts;
   MediaSegmentService? _segmentService;
   String? _segmentsLoadedForItemId;
+  String? _deviceLabel;
   final _chaptersFetchedItemIds = <String>{};
   StreamSubscription<Duration>? _positionSub;
   UserPreferences? _prefsListened;
@@ -143,6 +143,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   @override
   void initState() {
     super.initState();
+    unawaited(playbackDeviceLabel().then((label) => _deviceLabel = label));
     _cinemaSkip = CinemaSkipController(
       onSkip: () => _manager?.nextInQueue() ?? Future<void>.value(),
     );
@@ -452,256 +453,42 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     return '';
   }
 
-  String _formatBitrate(int? bitrate) {
-    if (bitrate == null) return 'Unknown';
-    if (bitrate >= 1000000) {
-      return '${(bitrate / 1000000).toStringAsFixed(1)} Mbps';
-    }
-    if (bitrate >= 1000) {
-      return '${(bitrate / 1000).toStringAsFixed(0)} Kbps';
-    }
-    return '$bitrate bps';
-  }
-
-  String _formatChannels(int? channels) {
-    return switch (channels) {
-      null => 'Unknown',
-      1 => 'Mono (1)',
-      2 => 'Stereo (2)',
-      6 => '5.1 (6)',
-      8 => '7.1 (8)',
-      _ => '$channels channels',
-    };
-  }
-
   List<Map<String, dynamic>> _streamInfoSections(PlaybackManager manager) {
     final res = manager.currentResolution;
-    final item = manager.queueService.currentItem;
-
-    Map<String, dynamic>? mediaSource;
-    Map<String, dynamic>? videoStream;
-    Map<String, dynamic>? audioStream;
-    Map<String, dynamic>? subtitleStream;
-
-    Map<String, dynamic>? pickStream(
-      List<Map<String, dynamic>> streams,
-      String type,
-      int? preferredIndex,
-    ) {
-      if (preferredIndex != null && preferredIndex >= 0) {
-        final preferred = streams
-            .where((s) => s['Type'] == type)
-            .firstWhere(
-              (s) => s['Index'] == preferredIndex,
-              orElse: () => const <String, dynamic>{},
-            );
-        if (preferred.isNotEmpty) return preferred;
-      }
-      final defaults = streams
-          .where((s) => s['Type'] == type && s['IsDefault'] == true)
-          .toList();
-      if (defaults.isNotEmpty) return defaults.first;
-      final any = streams.where((s) => s['Type'] == type).toList();
-      return any.isNotEmpty ? any.first : null;
-    }
-
-    final raw = _rawDataForQueueItem(item);
-    final allStreams =
-        res?.mediaStreams ??
-        (raw?['MediaStreams'] as List?)?.cast<Map<String, dynamic>>() ??
-        const <Map<String, dynamic>>[];
-    videoStream = allStreams.where((s) => s['Type'] == 'Video').firstOrNull;
-    audioStream = pickStream(allStreams, 'Audio', manager.audioStreamIndex);
-    subtitleStream = manager.subtitleStreamIndex == -1
-        ? null
-        : pickStream(allStreams, 'Subtitle', manager.subtitleStreamIndex);
-
+    final raw = _rawDataForQueueItem(manager.queueService.currentItem);
     final sources = (raw?['MediaSources'] as List?)
         ?.cast<Map<String, dynamic>>();
-    final sourceId = res?.mediaSourceId;
-    if (sources != null && sources.isNotEmpty) {
-      mediaSource = sourceId != null
-          ? sources.firstWhere(
-              (s) => s['Id'] == sourceId,
-              orElse: () => sources.first,
-            )
-          : sources.first;
-    }
+    final mediaSource =
+        sources?.where((s) => s['Id'] == res?.mediaSourceId).firstOrNull ??
+        sources?.firstOrNull;
+    int? qualityLimitMbps = manager.maxBitrateOverrideMbps;
+    try {
+      qualityLimitMbps = userQualityLimitMbps(
+        qualityLimitMbps,
+        GetIt.instance<UserPreferences>().get(UserPreferences.maxBitrate),
+      );
+    } catch (_) {}
 
-    String fileName() {
-      final path = (mediaSource?['Path'] as String?)?.trim();
-      if (path != null && path.isNotEmpty) {
-        final segments = path.split(RegExp(r'[\\/]'));
-        if (segments.isNotEmpty && segments.last.trim().isNotEmpty) {
-          return segments.last.trim();
-        }
-      }
-      final name = (mediaSource?['Name'] as String?)?.trim();
-      return (name != null && name.isNotEmpty) ? name : 'Unknown';
-    }
-
-    Map<String, dynamic> rowEntry(String label, String value) {
-      return {'label': label, 'value': value};
-    }
-
-    final sections = <Map<String, dynamic>>[];
-    void addSection(String title, List<Map<String, dynamic>> rows) {
-      if (rows.isEmpty) return;
-      sections.add({'title': title, 'rows': rows});
-    }
-
-    final overrideMbps = manager.maxBitrateOverrideMbps;
-    final container =
-        (mediaSource?['Container'] as String?)?.toUpperCase() ??
-        res?.container?.toUpperCase() ??
-        'Unknown';
-
-    addSection('Playback', [
-      rowEntry('File Name', fileName()),
-      rowEntry(
-        'Play Method',
-        playbackMethodLabel(
-          l10n: AppLocalizations.of(context),
-          playMethod: res?.playMethod,
-          transcodingReasons: res?.transcodingReasons ?? const [],
-        ),
+    return buildPlaybackInfoSections(
+      l10n: AppLocalizations.of(context),
+      resolution: res,
+      mediaStreams:
+          res?.mediaStreams ??
+          (raw?['MediaStreams'] as List?)?.cast<Map<String, dynamic>>() ??
+          const <Map<String, dynamic>>[],
+      mediaSource: mediaSource,
+      fallbackPlayMethod: manager.bringupState.playMethod,
+      audioStreamIndex: manager.audioStreamIndex,
+      subtitleStreamIndex: manager.subtitleStreamIndex,
+      offline: manager.isOfflinePlayback,
+      transcodeForced: transcodeForcedBySettings(manager),
+      qualityLimitMbps: qualityLimitMbps,
+      player: 'AetherEngine',
+      device: _deviceLabel,
+      audioRoute: playbackAudioRoute(
+        res?.mediaSourceId ?? mediaSource?['Id']?.toString(),
       ),
-      if (res != null && res.transcodingReasons.isNotEmpty)
-        rowEntry('Transcode Reasons', res.transcodingReasons.join(', ')),
-      rowEntry('Player', 'AetherEngine'),
-      rowEntry('Container', container),
-      rowEntry(
-        'Bitrate',
-        _formatBitrate(
-          res?.deliveredBitrate ?? mediaSource?['Bitrate'] as int?,
-        ),
-      ),
-      rowEntry(
-        'Max Bitrate',
-        overrideMbps != null ? '$overrideMbps Mbps' : 'Auto',
-      ),
-      rowEntry('Max Resolution', _maxResolutionLabel()),
-    ]);
-
-    if (videoStream != null) {
-      final video = videoStream;
-      final fps = video['RealFrameRate'] as num?;
-      final width = video['Width'];
-      final height = video['Height'];
-      final range =
-          (video['VideoRangeType'] as String?) ??
-          (video['VideoRange'] as String?) ??
-          'SDR';
-      final codec = ((video['Codec'] as String?) ?? 'Unknown').toUpperCase();
-      final profile = (video['Profile'] as String?) ?? '';
-      final level = video['Level'];
-      final bitDepth = video['BitDepth'];
-      addSection('Video', [
-        rowEntry(
-          'Resolution',
-          '${width ?? '?'}×${height ?? '?'}${fps != null ? ' @ ${fps.round()}fps' : ''}',
-        ),
-        rowEntry('HDR', range),
-        rowEntry(
-          'Codec',
-          [
-            codec,
-            if (profile.isNotEmpty) profile,
-            if (level != null) 'L$level',
-          ].join(' '),
-        ),
-        if (bitDepth != null) rowEntry('Bit Depth', '$bitDepth-bit'),
-        if (video['BitRate'] != null)
-          rowEntry('Video Bitrate', _formatBitrate(video['BitRate'] as int?)),
-      ]);
-    }
-
-    if (audioStream != null) {
-      final audio = audioStream;
-      final codec = ((audio['Codec'] as String?) ?? 'Unknown').toUpperCase();
-      final profile = (audio['Profile'] as String?) ?? '';
-      addSection('Audio', [
-        rowEntry(
-          'Track',
-          audio['DisplayTitle'] as String? ??
-              audio['Language'] as String? ??
-              'Unknown',
-        ),
-        rowEntry('Codec', profile.isEmpty ? codec : '$codec ($profile)'),
-        rowEntry('Channels', _formatChannels(audio['Channels'] as int?)),
-        if (audio['BitRate'] != null)
-          rowEntry('Audio Bitrate', _formatBitrate(audio['BitRate'] as int?)),
-        if (audio['SampleRate'] != null)
-          rowEntry(
-            'Sample Rate',
-            '${((audio['SampleRate'] as num) / 1000).toStringAsFixed(1)} kHz',
-          ),
-      ]);
-    }
-
-    if (subtitleStream != null) {
-      final subtitle = subtitleStream;
-      addSection('Subtitles', [
-        rowEntry(
-          'Track',
-          subtitle['DisplayTitle'] as String? ??
-              subtitle['Language'] as String? ??
-              'Unknown',
-        ),
-        rowEntry(
-          'Format',
-          ((subtitle['Codec'] as String?) ?? 'Unknown').toUpperCase(),
-        ),
-        rowEntry(
-          'Type',
-          subtitle['IsExternal'] == true ? 'External' : 'Embedded',
-        ),
-      ]);
-    }
-
-    final diagnostics = PlaybackProfileDiagnostics.instance.lastDecision;
-    if (diagnostics != null) {
-      final diagSourceId = diagnostics['mediaSourceId']?.toString();
-      final currentSourceId =
-          res?.mediaSourceId ?? mediaSource?['Id']?.toString();
-      final matches =
-          diagSourceId == null ||
-          currentSourceId == null ||
-          diagSourceId == currentSourceId;
-      if (matches) {
-        String value(String key) {
-          final v = diagnostics[key];
-          if (v is List) {
-            final values = v
-                .map((e) => e.toString().trim())
-                .where((e) => e.isNotEmpty)
-                .toList();
-            return values.isEmpty ? 'Unknown' : values.join(', ');
-          }
-          final text = v?.toString().trim() ?? '';
-          return text.isEmpty ? 'Unknown' : text;
-        }
-
-        addSection('Diagnostics', [
-          rowEntry('Backend', value('backend')),
-          rowEntry('Play Method', value('playMethod')),
-          rowEntry('Transcode Reasons', value('transcodingReasons')),
-          rowEntry('Container', value('container')),
-          rowEntry('Video Codec', value('videoCodec')),
-          rowEntry('Video Profile', value('videoProfile')),
-          rowEntry('Video Level', value('videoLevel')),
-          rowEntry('Video Range', value('videoRange')),
-          rowEntry('Audio Codec', value('audioCodec')),
-          rowEntry('Audio Profile', value('audioProfile')),
-          rowEntry('Audio Channels', value('audioChannels')),
-          rowEntry('Subtitle Codec', value('subtitleCodec')),
-          rowEntry('Allowed Audio Codecs', value('allowedAudioCodecs')),
-          rowEntry('Audio Route', value('activeRouteType')),
-        ]);
-      }
-    }
-
-    return sections;
+    );
   }
 
   Map<String, dynamic>? _trickplayPayload(
@@ -1477,6 +1264,10 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
       ),
       logoUrl: _logoUrlForItem(item),
       streamInfoSections: _streamInfoSections(manager),
+      streamInfoTitle: AppLocalizations.of(context).playbackInformation,
+      streamInfoDroppedFramesLabel: AppLocalizations.of(
+        context,
+      ).playbackInfoDroppedFrames,
       trickplay: _trickplayPayload(item, manager),
       hasCast: _hasCastCrew(item),
       castPeople: _castPeople(item),
@@ -1491,17 +1282,6 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     );
 
     _resolveCastAsync(item);
-  }
-
-  String _maxResolutionLabel() {
-    try {
-      final res = GetIt.instance<UserPreferences>().get(
-        UserPreferences.maxVideoResolution,
-      );
-      return res == MaxVideoResolution.auto ? 'Auto' : '${res.height}p';
-    } catch (_) {
-      return 'Auto';
-    }
   }
 
   int _prefInt(Preference<int> pref, {required int defaultValue}) {

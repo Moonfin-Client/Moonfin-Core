@@ -99,9 +99,12 @@ class PlaybackLifecycleHandler with WidgetsBindingObserver {
   }
 
   void _scheduleVideoStop(dynamic currentItem) {
+    // An external player in front is what took Moonfin away, and stopping
+    // here would close a live channel it is still playing.
     if (!PlatformDetection.isAndroid ||
         !PlatformDetection.isTV ||
-        currentItem is! AggregatedItem) {
+        currentItem is! AggregatedItem ||
+        _manager.playbackDeferredToExternalPlayer) {
       return;
     }
 

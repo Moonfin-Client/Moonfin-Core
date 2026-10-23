@@ -917,6 +917,7 @@ class NouveauDetailsSectionState extends State<NouveauDetailsSection> {
         mediaSourceId: requestedMediaSourceId,
         audioStreamIndex: requestedAudioIndex,
         subtitleStreamIndex: requestedSubtitleIndex,
+        hasOtherVersions: item.mediaSources.length > 1,
       );
 
       if (!mounted || requestSerial != _playbackInfoRequestSerial) {

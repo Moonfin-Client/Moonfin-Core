@@ -385,6 +385,34 @@ void main() {
     await tester.pumpWidget(const SizedBox());
   });
 
+  testWidgets('controls stay up while a dialog covers the player', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: const [Locale('en')],
+        home: const VideoPlayerScreen(),
+      ),
+    );
+    await tester.pump();
+    manager.state.setPlaying(true);
+    await tester.pump();
+
+    final player = tester.element(find.byType(VideoPlayerScreen));
+    showDialog<void>(context: player, builder: (_) => const SizedBox());
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 10));
+    expect(find.byType(Slider), findsOneWidget);
+
+    Navigator.of(player).pop();
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 10));
+    expect(find.byType(Slider), findsNothing);
+
+    await tester.pumpWidget(const SizedBox());
+  });
+
   // Issue #1751: the unlock prompt sits at the end of the top bar, where the
   // lock button was, instead of over the middle of the picture.
   for (final direction in TextDirection.values) {

@@ -3,10 +3,13 @@ import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonfin_design/moonfin_design.dart';
+import 'package:playback_core/playback_core.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../auth/repositories/user_repository.dart';
 import '../../../data/models/aggregated_item.dart';
+import '../../../data/offline/connectivity_aware_media_server_client.dart';
+import '../../../data/offline/offline_catalog.dart';
 import '../../../data/repositories/item_mutation_repository.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../util/error_message.dart';
@@ -63,6 +66,13 @@ const _identifiableTypes = <String>{
 };
 
 bool canIdentifyItemType(String? type) => _identifiableTypes.contains(type);
+
+/// Whether [item] is a downloaded video the server can stream instead.
+bool canPlayFromServer(AggregatedItem item) =>
+    const {'Movie', 'Episode', 'Video', 'MusicVideo'}.contains(item.type) &&
+    GetIt.instance.isRegistered<OfflineCatalog>() &&
+    GetIt.instance<OfflineCatalog>().byId(item.id) != null &&
+    !shouldUseOfflineCatalog();
 
 /// Takes [item] off the server's resume list and keeps its progress where the
 /// server can do that (Emby), or clears the progress that keeps it there where
@@ -149,6 +159,20 @@ List<ItemContextAction> contextActionsFor(
         label: watchStateOf(item).hasProgress ? l10n.resume : l10n.play,
         onSelect: () async {
           if (!context.mounted) return;
+          context.push(
+            Destinations.item(item.id, serverId: item.serverId, autoPlay: true),
+          );
+        },
+      ));
+    }
+
+    if (canPlayFromServer(item)) {
+      actions.add(ItemContextAction(
+        icon: Icons.cloud_outlined,
+        label: l10n.playFromServer,
+        onSelect: () async {
+          if (!context.mounted) return;
+          GetIt.instance<PlaybackManager>().streamFromServerOnce(item.id);
           context.push(
             Destinations.item(item.id, serverId: item.serverId, autoPlay: true),
           );

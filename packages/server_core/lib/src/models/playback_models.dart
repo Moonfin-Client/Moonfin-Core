@@ -161,6 +161,15 @@ class PlaybackMediaSource {
         transcodingReasons: _parseTranscodingReasons(json),
       );
 
+  /// Nothing probed and nothing to offer but a transcode, which is how an Emby
+  /// channel item's placeholder source comes back. A live stream is left out,
+  /// since its streams only show up once it's tuned.
+  bool get isUnprobedPlaceholder =>
+      mediaStreams.isEmpty &&
+      !supportsDirectPlay &&
+      !supportsDirectStream &&
+      (liveStreamId?.isEmpty ?? true);
+
   static List<String> _parseTranscodingReasons(Map<String, dynamic> json) {
     // Jellyfin may return this as 'TranscodingReasons' or 'TranscodeReasons'.
     final raw = json['TranscodingReasons'] ?? json['TranscodeReasons'];

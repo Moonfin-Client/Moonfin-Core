@@ -68,6 +68,10 @@ class ExternalPlayerLaunchRequest {
   final Map<String, String> headers;
   final List<ExternalPlayerSubtitle> subtitles;
 
+  /// Starts the player in its own task and answers at once, for a live
+  /// stream that has no position to hand back.
+  final bool detached;
+
   const ExternalPlayerLaunchRequest({
     required this.url,
     this.mimeType = 'video/*',
@@ -78,6 +82,7 @@ class ExternalPlayerLaunchRequest {
     this.runtime,
     this.headers = const {},
     this.subtitles = const [],
+    this.detached = false,
   });
 
   Map<String, dynamic> toMap() => {
@@ -91,6 +96,7 @@ class ExternalPlayerLaunchRequest {
     if (headers.isNotEmpty) 'headers': headers,
     if (subtitles.isNotEmpty)
       'subtitles': subtitles.map((subtitle) => subtitle.toMap()).toList(),
+    if (detached) 'detached': true,
   };
 }
 

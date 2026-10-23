@@ -608,10 +608,19 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       'scaling',
     ]),
     style.leaf(
-      'pref_show_backdrop',
-      l10n.backgroundBackdrops,
-      subtitle: l10n.showBackdropImages,
+      'pref_show_home_backdrop',
+      l10n.homeScreenBackdrop,
       keywords: ['background images'],
+    ),
+    style.leaf(
+      'pref_show_details_backdrop',
+      l10n.detailsScreenBackdrop,
+      keywords: ['background images'],
+    ),
+    style.leaf(
+      'pref_hide_backdrops_in_libraries',
+      l10n.libraryBackdrops,
+      keywords: ['background images', 'browsing'],
     ),
     style.leaf(
       'pref_oled_mode',
@@ -1201,11 +1210,6 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       'pref_use_detailed_sub_headings',
       l10n.useDetailedSubHeadings,
       subtitle: l10n.useDetailedSubHeadingsDescription,
-    ),
-    libraries.leaf(
-      'pref_hide_backdrops_in_libraries',
-      l10n.hideBackdropsInLibraries,
-      keywords: ['background'],
     ),
 
     mediaBar.screen(keywords: ['featured', 'carousel', 'banner', 'hero']),
@@ -1855,6 +1859,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
         l10n.useExternalPlayer,
         subtitle: l10n.useExternalPlayerSubtitle,
         keywords: ['vlc', 'just player'],
+      ),
+      advanced.leaf(
+        'external_player_live_tv_only',
+        l10n.externalPlayerLiveTvOnly,
+        subtitle: l10n.externalPlayerLiveTvOnlySubtitle,
+        keywords: ['vlc', 'channel'],
       ),
     ],
     if (!PlatformDetection.isTV &&

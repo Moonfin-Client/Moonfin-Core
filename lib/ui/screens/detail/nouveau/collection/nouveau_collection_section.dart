@@ -695,18 +695,6 @@ class NouveauCollectionSectionState
     }
   }
 
-  String _sortLabel(AppLocalizations l10n, CollectionSortOption option) {
-    return switch (option) {
-      CollectionSortOption.alphabetical => l10n.sortAlphabetical,
-
-      CollectionSortOption.releaseAscending => l10n.sortReleaseAscending,
-
-      CollectionSortOption.releaseDescending => l10n.sortReleaseDescending,
-
-      CollectionSortOption.custom => l10n.sortCustomDragDrop,
-    };
-  }
-
   _CollectionPosterLayout _collectionLayoutFor(
     BuildContext context,
     double availableWidth,
@@ -1397,18 +1385,6 @@ class _NouveauCollectionSortDialogState
     super.dispose();
   }
 
-  String _label(AppLocalizations l10n, CollectionSortOption option) {
-    return switch (option) {
-      CollectionSortOption.alphabetical => l10n.sortAlphabetical,
-
-      CollectionSortOption.releaseAscending => l10n.sortReleaseAscending,
-
-      CollectionSortOption.releaseDescending => l10n.sortReleaseDescending,
-
-      CollectionSortOption.custom => l10n.sortCustomDragDrop,
-    };
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -1529,7 +1505,7 @@ class _NouveauCollectionSortDialogState
 
                             Expanded(
                               child: Text(
-                                _label(l10n, option),
+                                _sortLabel(l10n, option),
                                 style: theme.textTheme.bodyLarge?.copyWith(
                                   color: foreground.withValues(
                                     alpha: focused || active ? 1.0 : 0.78,
@@ -1641,4 +1617,14 @@ class _PlaylistLayout {
   });
 
   double get itemExtent => cardWidth + cardSpacing;
+}
+
+String _sortLabel(AppLocalizations l10n, CollectionSortOption option) {
+  return switch (option) {
+    CollectionSortOption.server => l10n.sortServerOrder,
+    CollectionSortOption.alphabetical => l10n.sortAlphabetical,
+    CollectionSortOption.releaseAscending => l10n.sortReleaseAscending,
+    CollectionSortOption.releaseDescending => l10n.sortReleaseDescending,
+    CollectionSortOption.custom => l10n.sortCustomDragDrop,
+  };
 }

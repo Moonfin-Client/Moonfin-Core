@@ -7,7 +7,7 @@ import '../../../util/platform_detection.dart';
 import '../overlay_sheet.dart';
 import 'context_action.dart';
 import 'focus_theme.dart';
-import 'focusable_button.dart';
+import 'menu_action_row.dart';
 
 Future<void> showContextMenu(
   BuildContext context,
@@ -79,69 +79,17 @@ class _ContextMenu extends StatelessWidget {
                   ),
                 ),
               for (var i = 0; i < actions.length; i++)
-                _ActionRow(
-                  action: actions[i],
+                MenuActionRow(
+                  icon: actions[i].icon,
+                  label: actions[i].label,
                   autofocus: i == 0,
+                  onPressed: () async {
+                    await OverlaySheetController.closeAdaptive<void>(context);
+                    await actions[i].onSelect();
+                  },
                 ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ActionRow extends StatefulWidget {
-  final ItemContextAction action;
-  final bool autofocus;
-
-  const _ActionRow({required this.action, required this.autofocus});
-
-  @override
-  State<_ActionRow> createState() => _ActionRowState();
-}
-
-class _ActionRowState extends State<_ActionRow> {
-  final FocusNode _focusNode = FocusNode();
-
-  @override
-  void dispose() {
-    _focusNode.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final action = widget.action;
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      // Focus follows the pointer so the row under the mouse lights up the way
-      // the row under the remote does, rather than the menu sitting inert.
-      onEnter: (_) => _focusNode.requestFocus(),
-      child: FocusableButton(
-        focusNode: _focusNode,
-        autofocus: widget.autofocus,
-        borderRadius: 6,
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-        onPressed: () async {
-          await OverlaySheetController.closeAdaptive<void>(
-            context,
-            restoreFocus: true,
-          );
-          await action.onSelect();
-        },
-        child: Row(
-          children: [
-            Icon(action.icon, size: 22, color: theme.colorScheme.onSurface),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Text(
-                action.label,
-                style: theme.textTheme.bodyLarge,
-              ),
-            ),
-          ],
         ),
       ),
     );

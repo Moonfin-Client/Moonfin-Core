@@ -56,6 +56,16 @@ void main() {
       expect(policy.canFetchRemoteSubtitles, isTrue);
     });
 
+    test('an administrator may fetch without either flag', () {
+      final policy = UserPolicy.fromJson({
+        'IsAdministrator': true,
+        'EnableSubtitleManagement': false,
+        'EnableSubtitleDownloading': false,
+      });
+
+      expect(policy.canFetchRemoteSubtitles, isTrue);
+    });
+
     test('an account granted neither may not', () {
       final policy = UserPolicy.fromJson({
         'EnableSubtitleManagement': false,
@@ -92,6 +102,39 @@ void main() {
 
       expect(json['OrderedViews'], ['a', 'b']);
       expect(json.containsKey('orderedViews'), isFalse);
+    });
+  });
+
+  group('PlaybackMediaSource placeholder', () {
+    test('a source with no streams that only transcodes is one', () {
+      final source = PlaybackMediaSource.fromJson({
+        'Id': '3',
+        'SupportsTranscoding': true,
+      });
+
+      expect(source.isUnprobedPlaceholder, isTrue);
+    });
+
+    test('a probed source is not', () {
+      final source = PlaybackMediaSource.fromJson({
+        'Id': '12:1:0',
+        'SupportsDirectPlay': true,
+        'MediaStreams': [
+          {'Type': 'Video', 'Codec': 'h264'},
+        ],
+      });
+
+      expect(source.isUnprobedPlaceholder, isFalse);
+    });
+
+    test('a live stream waiting to be tuned is not', () {
+      final source = PlaybackMediaSource.fromJson({
+        'Id': 'live',
+        'LiveStreamId': 'abc',
+        'SupportsTranscoding': true,
+      });
+
+      expect(source.isUnprobedPlaceholder, isFalse);
     });
   });
 

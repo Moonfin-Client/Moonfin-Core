@@ -269,19 +269,15 @@ class _SpotlightModalShellState extends State<_SpotlightModalShell> {
       return row;
     }
 
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      child: FocusableWrapper(
-        onSelect: () => _toggleSection(section, index),
-        borderRadius: 8,
-        disableScale: true,
-        useBackgroundFocus: true,
-        autoScroll: true,
-        suppressFocusGlow: true,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-          child: row,
-        ),
+    return FocusableWrapper(
+      onSelect: () => _toggleSection(section, index),
+      borderRadius: 8,
+      disableScale: true,
+      useBackgroundFocus: true,
+      autoScroll: true,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+        child: row,
       ),
     );
   }

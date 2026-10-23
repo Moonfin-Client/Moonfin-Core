@@ -10,7 +10,6 @@ class FocusableButton extends StatelessWidget {
   final bool autofocus;
   final double borderRadius;
   final EdgeInsetsGeometry padding;
-  final Color? focusColor;
   final ValueChanged<bool>? onFocusChange;
   final VoidCallback? onNavigateUp;
   final VoidCallback? onNavigateDown;
@@ -28,7 +27,6 @@ class FocusableButton extends StatelessWidget {
     this.autofocus = false,
     this.borderRadius = FocusTheme.defaultBorderRadius,
     this.padding = const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-    this.focusColor,
     this.onFocusChange,
     this.onNavigateUp,
     this.onNavigateDown,
@@ -46,7 +44,6 @@ class FocusableButton extends StatelessWidget {
       focusNode: focusNode,
       autofocus: autofocus,
       borderRadius: borderRadius,
-      focusColor: focusColor,
       disableScale: true,
       useBackgroundFocus: true,
       autoScroll: autoScroll,
@@ -58,19 +55,7 @@ class FocusableButton extends StatelessWidget {
       onNavigateRight: onNavigateRight,
       onBack: onBack,
       semanticLabel: semanticLabel,
-      child: Builder(
-        builder: (innerContext) {
-          // Dimming on focus alone rather than on the remote's focus ring, so a
-          // pointer that moves focus onto a button brightens it instead of
-          // leaving every button in a menu equally dim.
-          final isFocused = Focus.of(innerContext).hasPrimaryFocus;
-          return AnimatedOpacity(
-            opacity: isFocused ? 1.0 : 0.6,
-            duration: FocusTheme.animationDuration,
-            child: Padding(padding: padding, child: child),
-          );
-        },
-      ),
+      child: Padding(padding: padding, child: child),
     );
   }
 }

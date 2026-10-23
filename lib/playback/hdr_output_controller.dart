@@ -44,14 +44,6 @@ class HdrOutputController {
 
   final HdrVideoWindow window;
 
-  /// What is actually going to the display while [HdrOutputStatus.active].
-  ///
-  /// Always HDR10: DXGI carries only static HDR10 metadata, so there is no
-  /// HDR10+ or Dolby Vision passthrough on Windows for a normal application.
-  /// libplacebo applies the dynamic metadata or the RPU and folds the result
-  /// into HDR10, which is the best available - not a shortcut.
-  static const String activeOutputFormat = 'HDR10 (PQ, BT.2020)';
-
   /// The single source of truth for engagement; [isEngaged] and [hasFailed]
   /// are views of it.
   ///

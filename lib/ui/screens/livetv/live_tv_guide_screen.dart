@@ -24,6 +24,7 @@ import '../../widgets/overlay_sheet.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../../util/focus/dpad_keys.dart';
 import '../../../util/focus/key_event_utils.dart';
+import '../../../playback/external_player_policy.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../util/clock_format.dart';
@@ -37,6 +38,7 @@ import 'guide/guide_cell.dart';
 import 'guide/guide_layout_profile.dart';
 import 'guide/guide_selection.dart';
 import 'guide/guide_window.dart';
+import 'live_tv_channel_player_loader.dart';
 
 // Start fetching the next batch of channel programs this many rows before the
 // lazily-loaded edge, so rows are usually populated by the time they're visible.
@@ -2406,9 +2408,15 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen>
     final index = channels.indexWhere((channel) => channel.id == channelId);
     if (index < 0) return;
     _vm.resetWindowOnExit(windowStart: guideLeftEdge(DateTime.now()));
+    // With the setting off nothing is awaited, so the built-in player still
+    // opens on this frame.
+    final external =
+        ExternalPlayerPolicy.isEnabled &&
+        await queueChannelForExternalPlayer(channels[index]);
+    if (!mounted) return;
     await context.push(
-      Destinations.liveTvPlayer,
-      extra: {'channels': channels, 'startIndex': index},
+      external ? Destinations.externalPlayer : Destinations.liveTvPlayer,
+      extra: external ? null : {'channels': channels, 'startIndex': index},
     );
     if (!mounted) return;
     await _vm.reloadIfStale(

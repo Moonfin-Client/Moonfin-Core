@@ -15,21 +15,29 @@ import '../ui/navigation/destinations.dart';
 final RegExp _gameLibraryName = RegExp('game|rom|emulat', caseSensitive: false);
 
 /// Caches the game-library ids the Moonbase plugin reports, so routing can tell a game
-/// library from a normal one synchronously. Refreshed when the library list loads.
+/// library from a normal one synchronously. Read once and again when Home is refreshed.
 class GameLibraryRegistry {
   final Set<String> _ids = <String>{};
   bool _loaded = false;
+  bool _stale = false;
   Future<void>? _inFlightRefresh;
 
   bool get loaded => _loaded;
   bool contains(String id) => _ids.contains(id);
 
-  /// Concurrent callers share a single request instead of each hitting the
-  /// server.
-  Future<void> refresh() =>
-      _inFlightRefresh ??= _refreshNow().whenComplete(
-        () => _inFlightRefresh = null,
-      );
+  /// Reads the list the first time and after [invalidate], so every screen's
+  /// nav chrome can ask without a request each. Concurrent callers share a
+  /// single request.
+  Future<void> refresh() {
+    if (_loaded && !_stale) return Future.value();
+    return _inFlightRefresh ??= _refreshNow().whenComplete(
+      () => _inFlightRefresh = null,
+    );
+  }
+
+  /// Has the next [refresh] read the list again. The current ids keep routing
+  /// until it does.
+  void invalidate() => _stale = true;
 
   /// Populates the registry directly. Tests have no [MediaServerClient] to
   /// refresh from, and both `_ids` and `_loaded` are private.
@@ -51,6 +59,7 @@ class GameLibraryRegistry {
         ..clear()
         ..addAll(libraries.map((l) => l.id));
       _loaded = true;
+      _stale = false;
     } catch (_) {
       // Keep the previous ids so routing stays stable. The name fallback covers
       // the case where the list never loads.
