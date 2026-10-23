@@ -175,6 +175,16 @@ class PlexUserViewsApi implements UserViewsApi {
         if (section is Map<String, dynamic> &&
             (includeHidden || (section['hidden'] ?? 0) == 0))
           plexSectionToView(section),
+      // Every Plex account has the free channels, and the app opens the guide
+      // from a livetv view.
+      {
+        'Id': 'livetv',
+        'Name': 'Live TV',
+        'Type': 'CollectionFolder',
+        'CollectionType': 'livetv',
+        'IsFolder': true,
+        'ImageTags': <String, dynamic>{},
+      },
     ];
     return plexItemsResult(views);
   }
@@ -355,80 +365,6 @@ class PlexAuthApi implements AuthApi {
 
   @override
   Future<void> logout() async {}
-}
-
-class PlexLiveTvApi implements LiveTvApi {
-  static Never _noLiveTv() =>
-      throw UnsupportedError("Live TV isn't supported on Plex");
-
-  @override
-  Future<Map<String, dynamic>> getChannels({
-    int? startIndex,
-    int? limit,
-    String? sortBy,
-    String? sortOrder,
-    String? fields,
-    bool? enableTotalRecordCount,
-    String? userId,
-  }) async => plexItemsResult([]);
-
-  @override
-  Future<Map<String, dynamic>> getGuide({
-    DateTime? startDate,
-    DateTime? endDate,
-    List<String>? channelIds,
-    bool? isMovie,
-    bool? isSeries,
-    bool? isSports,
-    bool? isNews,
-    bool? isKids,
-    String? fields,
-    bool? enableTotalRecordCount,
-    bool? enableImages,
-    bool? enableUserData,
-    String? userId,
-  }) async => plexItemsResult([]);
-
-  @override
-  Future<Map<String, dynamic>> getRecommendedPrograms({
-    int? limit,
-    bool? isAiring,
-  }) async => plexItemsResult([]);
-
-  @override
-  Future<Map<String, dynamic>> getProgram(
-    String programId, {
-    String? userId,
-  }) async => _noLiveTv();
-
-  @override
-  Future<Map<String, dynamic>> getRecordings({
-    int? limit,
-    String? fields,
-    bool? enableImages,
-    bool? isSeries,
-    bool? isMovie,
-    bool? isSports,
-    bool? isKids,
-  }) async => plexItemsResult([]);
-
-  @override
-  Future<Map<String, dynamic>> getTimers() async => plexItemsResult([]);
-
-  @override
-  Future<Map<String, dynamic>> getSeriesTimers() async => plexItemsResult([]);
-
-  @override
-  Future<void> createTimer(String programId) async => _noLiveTv();
-
-  @override
-  Future<void> createSeriesTimer(String programId) async => _noLiveTv();
-
-  @override
-  Future<void> cancelTimer(String timerId) async => _noLiveTv();
-
-  @override
-  Future<void> cancelSeriesTimer(String seriesTimerId) async => _noLiveTv();
 }
 
 /// The tracks that sound most like the seed, when a Plex Pass server has

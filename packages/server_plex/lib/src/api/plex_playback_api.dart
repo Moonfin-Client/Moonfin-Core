@@ -5,6 +5,7 @@ import 'package:server_core/server_core.dart';
 
 import '../plex_item_mapper.dart';
 import 'plex_apis.dart';
+import 'plex_live_tv_api.dart';
 
 const _plexNames = {
   'ts': 'mpegts',
@@ -115,6 +116,100 @@ class PlexPlaybackApi implements PlaybackApi {
 
   static final _random = Random.secure();
 
+  static String _newSession() => [
+    for (var i = 0; i < 16; i++)
+      _random.nextInt(256).toRadixString(16).padLeft(2, '0'),
+  ].join();
+
+  /// The tuned session each live play session watches, which its timeline
+  /// reports have to name to keep the tuner.
+  final _live = <String, ({Object? ratingKey, String key})>{};
+
+  /// Plex doesn't know a tuner stream's bitrate, so any cap makes it convert
+  /// the video. Broadcast HD tops out at 19.4 Mbps, so only a cap below that
+  /// is sent.
+  static const _broadcastBitrate = 20000000;
+
+  /// A free channel plays plex.tv's own stream. A DVR channel is tuned
+  /// first, which can take a while as the tuner starts, and then plays
+  /// through the transcoder like any other stream.
+  Future<Map<String, dynamic>> _livePlaybackInfo(
+    String itemId,
+    ({String source, String channel}) channel,
+    Map<String, dynamic> request,
+  ) async {
+    Map<String, dynamic> source(String url) => {
+      'Id': itemId,
+      'SupportsDirectPlay': false,
+      'SupportsTranscoding': true,
+      'TranscodingUrl': url,
+      'Container': 'ts',
+      'MediaStreams': const <Map<String, dynamic>>[],
+    };
+    if (channel.source == plexCloudSource) {
+      return {
+        'MediaSources': [
+          source(
+            '$plexCloudEpg/library/parts/${channel.channel}.m3u8'
+            '?${_query({'includeAllStreams': '1', ..._identity})}',
+          ),
+        ],
+      };
+    }
+
+    final session = _newSession();
+    final tune = await _dio.post<Map<String, dynamic>>(
+      '/livetv/dvrs/${channel.source}/channels/'
+      '${Uri.encodeComponent(channel.channel)}/tune',
+      queryParameters: {'X-Plex-Session-Identifier': session},
+      options: Options(receiveTimeout: const Duration(minutes: 5)),
+    );
+    final container = tune.data?['MediaContainer'] as Map?;
+    final grab = _first(
+      _first(container?['MediaSubscription'])?['MediaGrabOperation'],
+    );
+    final metadata = grab?['Metadata'] as Map?;
+    final path = metadata?['key'];
+    if (path is! String) {
+      throw StateError(
+        container?['message'] as String? ?? "Plex couldn't tune $itemId",
+      );
+    }
+    final params = {
+      ..._identity,
+      'path': path,
+      'hasMDE': '1',
+      'mediaIndex': '0',
+      'partIndex': '0',
+      'protocol': 'hls',
+      'fastSeek': '1',
+      'directPlay': '0',
+      'directStream': '1',
+      'directStreamAudio': '1',
+      'X-Plex-Incomplete-Segments': '1',
+      if (request['MaxStreamingBitrate'] case final int bitrate
+          when bitrate < _broadcastBitrate)
+        'maxVideoBitrate': '${bitrate ~/ 1000}',
+      'session': session,
+      'X-Plex-Session-Identifier': session,
+      'X-Plex-Platform': 'Generic',
+      'X-Plex-Client-Profile-Extra': plexClientProfile(
+        request['DeviceProfile'] as Map<String, dynamic>?,
+      ),
+    };
+    // Plex refuses a start whose session has no decision of its own.
+    await _dio.get<dynamic>(
+      '/video/:/transcode/universal/decision?${_query(params)}',
+    );
+    _live[session] = (ratingKey: metadata?['ratingKey'], key: path);
+    return {
+      'PlaySessionId': session,
+      'MediaSources': [
+        source('/video/:/transcode/universal/start.m3u8?${_query(params)}'),
+      ],
+    };
+  }
+
   /// Plex keeps one resume point for a movie split over several files, so a
   /// file's progress goes out as time into the whole movie. These say where
   /// each playing file sits, by play session.
@@ -131,6 +226,9 @@ class PlexPlaybackApi implements PlaybackApi {
     bool waitForMediaProbe = false,
   }) async {
     final request = requestBody ?? const <String, dynamic>{};
+    if (plexChannelOf(itemId) case final channel?) {
+      return _livePlaybackInfo(itemId, channel, request);
+    }
     // A part id names its own file. Anything else plays the first file of
     // the version its source id names.
     final target = plexPartOf(itemId);
@@ -188,10 +286,7 @@ class PlexPlaybackApi implements PlaybackApi {
         ? -1
         : subtitle['index'] ?? subtitle['id'];
 
-    final session = [
-      for (var i = 0; i < 16; i++)
-        _random.nextInt(256).toRadixString(16).padLeft(2, '0'),
-    ].join();
+    final session = _newSession();
     if (parts.length > 1) {
       _spans[session] = (
         key: key,
@@ -310,6 +405,22 @@ class PlexPlaybackApi implements PlaybackApi {
   /// ignores a report that has no runtime.
   Future<void> _timeline(Map<String, dynamic> info, String state) {
     final session = info['PlaySessionId'];
+    final live = state == 'stopped' ? _live.remove(session) : _live[session];
+    if (live != null) {
+      return _dio.get<dynamic>(
+        '/:/timeline',
+        queryParameters: {
+          'ratingKey': live.ratingKey,
+          'key': live.key,
+          'state': state,
+          'hasMDE': 1,
+          'time': (info['PositionTicks'] as int? ?? 0) ~/ 10000,
+          'X-Plex-Session-Identifier': session,
+        },
+      );
+    }
+    // A free channel has nothing on the server to report to.
+    if (plexChannelOf('${info['ItemId']}') != null) return Future.value();
     final span = state == 'stopped' ? _spans.remove(session) : _spans[session];
     final key = span?.key ?? info['ItemId'];
     final runTime = info['RunTimeTicks'] as int?;

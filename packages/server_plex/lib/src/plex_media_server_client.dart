@@ -3,6 +3,7 @@ import 'package:server_core/server_core.dart';
 
 import 'api/plex_apis.dart';
 import 'api/plex_items_api.dart';
+import 'api/plex_live_tv_api.dart';
 import 'api/plex_playback_api.dart';
 import 'api/plex_trickplay_api.dart';
 
@@ -134,7 +135,7 @@ class PlexMediaServerClient extends MediaServerClient {
   late final UserViewsApi userViewsApi = PlexUserViewsApi(_dio);
 
   @override
-  late final LiveTvApi liveTvApi = PlexLiveTvApi();
+  late final LiveTvApi liveTvApi = PlexLiveTvApi(_dio);
 
   @override
   late final InstantMixApi instantMixApi = PlexInstantMixApi(_dio);

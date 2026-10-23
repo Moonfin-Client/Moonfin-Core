@@ -43,7 +43,10 @@ class PlexMediaStreamResolver implements MediaStreamResolver {
 
     final streams = source.mediaStreams;
     return StreamResolutionResult(
-      streamUrl: _withToken('${_client.baseUrl}$path'),
+      // Free Live TV channels stream straight from plex.tv.
+      streamUrl: _withToken(
+        path.startsWith('http') ? path : '${_client.baseUrl}$path',
+      ),
       mediaSourceId: source.id,
       playSessionId: info.playSessionId,
       playMethod: directPlay
