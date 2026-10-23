@@ -360,6 +360,33 @@ void main() {
     expect(plexSourceOf('23070'), ('23070', 0));
   });
 
+  test('a second version split over files still has them queued', () {
+    const movie = <String, dynamic>{
+      'ratingKey': '23071',
+      'type': 'movie',
+      'title': 'Extras Test',
+      'Media': [
+        {
+          'id': 31044,
+          'Part': [
+            {'id': 31044, 'file': '/m/Extras.mkv'},
+          ],
+        },
+        {
+          'id': 31042,
+          'Part': [
+            {'id': 31042, 'file': '/m/Stack - pt1.mkv'},
+            {'id': 31043, 'file': '/m/Stack - pt2.mkv'},
+          ],
+        },
+      ],
+    };
+
+    expect(plexItemToJellyfin(movie)['PartCount'], 2);
+    expect(plexAdditionalParts(movie, 0), isEmpty);
+    expect(plexAdditionalParts(movie, 1).single['Id'], 'part-23071-1-1');
+  });
+
   test('chapters keep names and pictures and never start before zero', () {
     final movie = plexItemToJellyfin({
       'ratingKey': '823',

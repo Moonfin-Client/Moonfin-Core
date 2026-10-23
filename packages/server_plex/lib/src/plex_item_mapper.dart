@@ -152,7 +152,9 @@ Map<String, dynamic> plexItemToJellyfin(Map<String, dynamic> m) {
     for (final (index, media) in medias.indexed)
       _mediaSource('$id-$index', id, media, _parts(media).firstOrNull),
   ];
-  final partCount = _parts(medias.firstOrNull).length;
+  // The most files any version has, so a split version that isn't the first
+  // still gets its other files queued.
+  final partCount = medias.map((media) => _parts(media).length).fold(0, max);
   final ratingImage = m['ratingImage'] as String? ?? '';
   final rating = (m['rating'] as num?)?.toDouble();
   final isTrack = type == 'track';
