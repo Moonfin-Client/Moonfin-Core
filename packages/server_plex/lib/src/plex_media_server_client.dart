@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:server_core/server_core.dart';
 
+import 'api/plex_admin_items_api.dart';
 import 'api/plex_apis.dart';
 import 'api/plex_items_api.dart';
 import 'api/plex_live_tv_api.dart';
@@ -100,8 +101,14 @@ class PlexMediaServerClient extends MediaServerClient {
   @override
   late final AuthApi authApi = PlexAuthApi();
 
+  /// Set each time the user is checked, since a Home member can't delete.
+  bool _mayDeleteMedia = false;
+
   @override
-  late final ItemsApi itemsApi = PlexItemsApi(_dio);
+  late final ItemsApi itemsApi = PlexItemsApi(
+    _dio,
+    mayDeleteMedia: () => _mayDeleteMedia,
+  );
 
   @override
   late final PlaybackApi playbackApi = PlexPlaybackApi(
@@ -145,7 +152,11 @@ class PlexMediaServerClient extends MediaServerClient {
       PlexDisplayPreferencesApi();
 
   @override
-  late final UsersApi usersApi = PlexUsersApi(_dio, _requireUserId);
+  late final UsersApi usersApi = PlexUsersApi(
+    _dio,
+    _requireUserId,
+    (policy) => _mayDeleteMedia = policy.enableContentDeletion,
+  );
 
   static Never _noAdmin() =>
       throw UnsupportedError("Admin isn't supported on Plex");
@@ -181,7 +192,7 @@ class PlexMediaServerClient extends MediaServerClient {
   AdminLiveTvApi get adminLiveTvApi => _noAdmin();
 
   @override
-  AdminItemsApi get adminItemsApi => _noAdmin();
+  late final AdminItemsApi adminItemsApi = PlexAdminItemsApi(_dio, imageApi);
 
   @override
   void dispose() {

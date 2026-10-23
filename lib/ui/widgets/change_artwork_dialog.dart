@@ -487,8 +487,23 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
 
   String _getCurrentImageUrl(String category, String tag, {int? imageIndex}) {
     final client = GetIt.instance<MediaServerClient>();
-    final indexParam = imageIndex != null ? '&imageIndex=$imageIndex' : '';
-    return '${client.baseUrl}/Items/${_item.id}/Images/$category?tag=$tag&maxWidth=300$indexParam';
+    final images = client.imageApi;
+    final id = _item.id;
+    return switch (category) {
+      'Primary' => images.getPrimaryImageUrl(id, maxWidth: 300, tag: tag),
+      'Backdrop' => images.getBackdropImageUrl(
+        id,
+        maxWidth: 300,
+        index: imageIndex,
+        tag: tag,
+      ),
+      'Logo' => images.getLogoImageUrl(id, maxWidth: 300, tag: tag),
+      'Banner' => images.getBannerImageUrl(id, maxWidth: 300, tag: tag),
+      'Thumb' => images.getThumbImageUrl(id, maxWidth: 300, tag: tag),
+      _ =>
+        '${client.baseUrl}/Items/$id/Images/$category?tag=$tag&maxWidth=300'
+            '${imageIndex != null ? '&imageIndex=$imageIndex' : ''}',
+    };
   }
 
   Future<void> _checkLibrariesWriteAccess() async {

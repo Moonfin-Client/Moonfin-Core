@@ -8,6 +8,7 @@ import '../../widgets/anime_marker_badge.dart';
 import '../../../data/repositories/anime_marker_repository.dart';
 import '../../widgets/identify_dialog.dart';
 import '../../widgets/media_badge.dart';
+import '../admin/admin_nav.dart' show adminServerSupported;
 import 'detail_admin_actions.dart';
 
 import 'package:flutter/foundation.dart';
@@ -7971,6 +7972,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         isTV: PlatformDetection.isTV,
         itemType: item.type,
         canDelete: item.canDelete,
+        adminPanel: adminServerSupported(),
       );
 
   void _showAdminDialog(BuildContext context, AggregatedItem item) {

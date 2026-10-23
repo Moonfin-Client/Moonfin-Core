@@ -1,4 +1,7 @@
 import 'package:dio/dio.dart';
+import 'package:server_core/server_core.dart'
+    show ImageType, MetadataRefreshMode, UserPolicy;
+import 'package:server_plex/src/api/plex_admin_items_api.dart';
 import 'package:server_plex/src/api/plex_apis.dart';
 import 'package:server_plex/src/api/plex_items_api.dart';
 import 'package:server_plex/src/api/plex_trickplay_api.dart';
@@ -310,11 +313,213 @@ void main() {
   test("downloads follow the server's allowSync", () async {
     for (final allowSync in [true, false]) {
       final (dio, _) = _recordingDio({'allowSync': allowSync});
-      final user = await PlexUsersApi(dio, () => 'account').getCurrentUser();
+      final user = await PlexUsersApi(
+        dio,
+        () => 'account',
+        (_) {},
+      ).getCurrentUser();
       expect(user.id, 'account');
       expect(user.policy?.enableContentDownloading, allowSync);
       expect(user.policy?.enableAllFolders, isTrue);
     }
+  });
+
+  test('only the owner edits the library, and deletes only when the server '
+      'allows it, while a dead token still fails as a plain 401', () async {
+    Future<UserPolicy> policyFor({
+      required int accountStatus,
+      bool allowDeletion = true,
+    }) async {
+      UserPolicy? told;
+      final dio = Dio()
+        ..interceptors.add(
+          _FakeServer((options, handler) {
+            if (options.path == '/myplex/account' && accountStatus != 200) {
+              handler.reject(
+                DioException(
+                  requestOptions: options,
+                  response: Response(
+                    requestOptions: options,
+                    statusCode: accountStatus,
+                  ),
+                  type: DioExceptionType.badResponse,
+                ),
+              );
+              return;
+            }
+            handler.resolve(
+              Response(
+                requestOptions: options,
+                data: {
+                  'MediaContainer': {'allowMediaDeletion': allowDeletion},
+                },
+              ),
+            );
+          }),
+        );
+      final user = await PlexUsersApi(
+        dio,
+        () => 'account',
+        (policy) => told = policy,
+      ).getCurrentUser();
+      expect(told, same(user.policy));
+      return user.policy!;
+    }
+
+    final owner = await policyFor(accountStatus: 200);
+    expect((owner.isAdministrator, owner.enableContentDeletion), (true, true));
+    final locked = await policyFor(accountStatus: 200, allowDeletion: false);
+    expect(
+      (locked.isAdministrator, locked.enableContentDeletion),
+      (true, false),
+    );
+    final member = await policyFor(accountStatus: 403);
+    expect(
+      (member.isAdministrator, member.enableContentDeletion),
+      (false, false),
+    );
+    await expectLater(
+      policyFor(accountStatus: 401),
+      throwsA(
+        isA<DioException>().having(
+          (e) => e.response?.statusCode,
+          'status',
+          401,
+        ),
+      ),
+    );
+  });
+
+  group('PlexAdminItemsApi', () {
+    PlexAdminItemsApi admin(Dio dio) =>
+        PlexAdminItemsApi(dio, PlexImageApi(() => 'http://plex', () => null));
+
+    test('identify searches Plex matches and applies the guid', () async {
+      final (dio, requests) = _recordingDio({
+        'SearchResult': [
+          {
+            'guid': 'plex://movie/5d776b74594b2b001e6da7ac',
+            'name': 'Despicable Me 3',
+            'year': 2017,
+            'thumb': 'https://images.plex.tv/photo?url=poster',
+          },
+        ],
+      });
+      final api = admin(dio);
+
+      final results = await api.searchRemote('Movie', {
+        'ItemId': '1804',
+        'SearchInfo': {'Name': 'Despicable Me 3', 'Year': 2017},
+      });
+      await api.applyRemoteSearchResult('1804', results.single);
+
+      expect(requests.first.path, '/library/metadata/1804/matches');
+      expect(requests.first.queryParameters, {
+        'manual': 1,
+        'title': 'Despicable Me 3',
+        'year': 2017,
+      });
+      expect(results.single, containsPair('ProductionYear', 2017));
+      expect(
+        (requests.last.method, requests.last.path),
+        ('PUT', '/library/metadata/1804/match'),
+      );
+      expect(
+        requests.last.queryParameters,
+        containsPair('guid', 'plex://movie/5d776b74594b2b001e6da7ac'),
+      );
+    });
+
+    test('artwork lists every choice and picks one by its key', () async {
+      final (dio, requests) = _recordingDio({
+        'Metadata': [
+          {
+            'ratingKey': 'metadata://art/9ff1',
+            'thumb': '/library/metadata/1804/file?url=metadata://art/9ff1',
+            'provider': 'local',
+          },
+          {
+            'ratingKey': 'https://image.tmdb.org/t/p/original/e72K.jpg',
+            'thumb': 'https://images.plex.tv/photo?url=e72K',
+            'provider': 'tmdb',
+          },
+        ],
+      });
+      final api = admin(dio);
+
+      final images =
+          (await api.getRemoteImages(
+                '1804',
+                imageType: ImageType.backdrop,
+              ))['Images']
+              as List;
+      await api.downloadRemoteImage(
+        '1804',
+        imageType: ImageType.backdrop,
+        imageUrl: 'https://image.tmdb.org/t/p/original/e72K.jpg',
+      );
+
+      expect(requests.first.path, '/library/metadata/1804/arts');
+      expect(images.first, {
+        'Url': 'metadata://art/9ff1',
+        'ThumbnailUrl':
+            'http://plex/photo/:/transcode?width=300&height=1200&url='
+            '${Uri.encodeQueryComponent('/library/metadata/1804/file?url=metadata://art/9ff1')}',
+        'ProviderName': 'local',
+        'Type': 'backdrop',
+      });
+      expect(
+        images.last['ThumbnailUrl'],
+        'https://images.plex.tv/photo?url=e72K',
+      );
+      expect(
+        (requests.last.method, requests.last.path),
+        ('PUT', '/library/metadata/1804/art'),
+      );
+      expect(requests.last.queryParameters, {
+        'url': 'https://image.tmdb.org/t/p/original/e72K.jpg',
+      });
+      expect(
+        (await api.getRemoteImages(
+          '1804',
+          imageType: ImageType.banner,
+        ))['Images'],
+        isEmpty,
+      );
+    });
+
+    test('a full refresh forces Plex to ask its agents again', () async {
+      final (dio, requests) = _recordingDio(const {});
+      final api = admin(dio);
+
+      await api.refreshItem('1804');
+      await api.refreshItem(
+        '1804',
+        metadataRefreshMode: MetadataRefreshMode.fullRefresh,
+      );
+
+      expect(requests.map((r) => (r.method, r.path)).toSet(), {
+        ('PUT', '/library/metadata/1804/refresh'),
+      });
+      expect(requests.map((r) => r.queryParameters), [
+        <String, dynamic>{},
+        {'force': 1},
+      ]);
+    });
+  });
+
+  test('media is deletable only when the account may delete', () async {
+    final (dio, _) = _recordingDio({
+      'Metadata': [
+        {'ratingKey': '23091', 'type': 'movie', 'title': 'Extras Test'},
+      ],
+    });
+    var mayDelete = false;
+    final api = PlexItemsApi(dio, mayDeleteMedia: () => mayDelete);
+
+    expect((await api.getItem('23091')).containsKey('CanDelete'), isFalse);
+    mayDelete = true;
+    expect((await api.getItem('23091'))['CanDelete'], isTrue);
   });
 
   test('a saved position becomes the Plex resume point', () async {
@@ -714,16 +919,18 @@ void main() {
       });
     });
 
-    test('only playlists and collections can be deleted', () async {
+    test('deleting a playlist or collection drops the list, anything else '
+        'the media', () async {
       final (api, requests) = server();
 
       await api.deleteItem('23065');
       await api.deleteItem('23062');
-      await expectLater(api.deleteItem('863'), throwsUnsupportedError);
+      await api.deleteItem('863');
 
       expect(requests.where((r) => r.method == 'DELETE').map((r) => r.path), [
         '/playlists/23065',
         '/library/collections/23062',
+        '/library/metadata/863',
       ]);
     });
   });

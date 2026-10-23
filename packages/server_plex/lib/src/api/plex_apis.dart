@@ -133,24 +133,40 @@ class PlexSystemApi implements SystemApi {
 class PlexUsersApi implements UsersApi {
   final Dio _dio;
   final String Function() _userId;
+  final void Function(UserPolicy policy) _onPolicy;
 
-  PlexUsersApi(this._dio, this._userId);
+  PlexUsersApi(this._dio, this._userId, this._onPolicy);
 
   /// Plex has no route for the signed in user, so this checks the token
   /// against the server and answers with the id the session already has.
   /// The server's allowSync is whether this account may download. Plex says
   /// nothing about subtitle search up front, so it's offered and the server
-  /// answers for the account when it runs.
+  /// answers for the account when it runs. Only the owner can edit the
+  /// library or open the server's account route, and deleting media also
+  /// needs the server's own setting on. The two requests go one after the
+  /// other so a dead token reaches sign in as the plain 401 it watches for.
   @override
   Future<ServerUser> getCurrentUser() async {
     final root = await plexContainer(_dio, '/');
-    return ServerUser(
-      id: _userId(),
-      policy: UserPolicy(
-        enableContentDownloading: root['allowSync'] == true,
-        enableSubtitleDownloading: true,
-      ),
+    final owner = await _owner();
+    final policy = UserPolicy(
+      isAdministrator: owner,
+      enableContentDownloading: root['allowSync'] == true,
+      enableContentDeletion: owner && root['allowMediaDeletion'] == true,
+      enableSubtitleDownloading: true,
     );
+    _onPolicy(policy);
+    return ServerUser(id: _userId(), policy: policy);
+  }
+
+  Future<bool> _owner() async {
+    try {
+      await _dio.get<dynamic>('/myplex/account');
+      return true;
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 403) return false;
+      rethrow;
+    }
   }
 
   @override

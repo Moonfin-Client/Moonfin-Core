@@ -6,9 +6,11 @@ import 'plex_apis.dart';
 
 class PlexItemsApi implements ItemsApi {
   final Dio _dio;
+  final bool Function() _mayDeleteMedia;
   String? _machineId;
 
-  PlexItemsApi(this._dio);
+  PlexItemsApi(this._dio, {bool Function()? mayDeleteMedia})
+    : _mayDeleteMedia = mayDeleteMedia ?? (() => false);
 
   /// Stands in for a collection made with nothing in it yet.
   static const _newCollectionPrefix = 'new-collection:';
@@ -374,7 +376,7 @@ class PlexItemsApi implements ItemsApi {
     });
     final items = _items(container['Metadata']);
     if (items.isEmpty) throw StateError('No Plex item $itemId');
-    return items.first;
+    return {...items.first, if (_mayDeleteMedia()) 'CanDelete': true};
   }
 
   @override
@@ -904,9 +906,6 @@ class PlexItemsApi implements ItemsApi {
     ];
   }
 
-  static Never _readOnly() =>
-      throw UnsupportedError('Plex libraries are read only in Moonfin');
-
   Future<Map<String, dynamic>> _plexItem(String id) async =>
       (await plexContainer(_dio, '/library/metadata/$id'))['Metadata'][0]
           as Map<String, dynamic>;
@@ -1039,7 +1038,9 @@ class PlexItemsApi implements ItemsApi {
     await _dio.put('/playlists/$playlistId', queryParameters: {'title': name});
   }
 
-  /// Only playlists and collections can go, never the media itself.
+  /// Removing a playlist or collection only drops the list. Anything else
+  /// deletes its files, which Plex allows only the owner with the server's
+  /// own setting on.
   @override
   Future<void> deleteItem(String itemId) async {
     switch ((await _plexItem(itemId))['type']) {
@@ -1048,7 +1049,7 @@ class PlexItemsApi implements ItemsApi {
       case 'collection':
         await _dio.delete('/library/collections/$itemId');
       default:
-        _readOnly();
+        await _dio.delete('/library/metadata/$itemId');
     }
   }
 

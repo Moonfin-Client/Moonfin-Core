@@ -6,11 +6,13 @@ Set<DetailAdminAction> actions({
   bool isTV = false,
   String? itemType = 'Movie',
   bool canDelete = true,
+  bool adminPanel = true,
 }) => detailAdminActions(
   isAdministrator: isAdministrator,
   isTV: isTV,
   itemType: itemType,
   canDelete: canDelete,
+  adminPanel: adminPanel,
 );
 
 void main() {
@@ -36,6 +38,12 @@ void main() {
       final result = actions(isTV: true);
       expect(result, isNot(contains(DetailAdminAction.editMetadata)));
       expect(result, contains(DetailAdminAction.changeArtwork));
+    });
+
+    test("metadata editing is left out where the admin panel can't open", () {
+      final result = actions(adminPanel: false);
+      expect(result, isNot(contains(DetailAdminAction.editMetadata)));
+      expect(result, contains(DetailAdminAction.identify));
     });
 
     test('identify is only offered for types it knows how to look up', () {
