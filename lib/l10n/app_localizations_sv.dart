@@ -14129,6 +14129,11 @@ class AppLocalizationsSv extends AppLocalizations {
   String get sortCustomDragDrop => 'Anpassad (dra och släpp)';
 
   @override
+  String sortCurrent(String option) {
+    return 'Sort: $option';
+  }
+
+  @override
   String get playlistSortOptions => 'Sorteringsalternativ för spellistor';
 
   @override

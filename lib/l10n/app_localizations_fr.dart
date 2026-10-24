@@ -14307,6 +14307,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get sortCustomDragDrop => 'Personnalisé (Drag-and-Drop)';
 
   @override
+  String sortCurrent(String option) {
+    return 'Sort: $option';
+  }
+
+  @override
   String get playlistSortOptions => 'Options de tri de la playlist';
 
   @override

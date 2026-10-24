@@ -14093,6 +14093,11 @@ class AppLocalizationsHi extends AppLocalizations {
   String get sortCustomDragDrop => 'कस्टम (ड्रैग-एंड-ड्रॉप)';
 
   @override
+  String sortCurrent(String option) {
+    return 'Sort: $option';
+  }
+
+  @override
   String get playlistSortOptions => 'प्लेलिस्ट क्रम विकल्प';
 
   @override

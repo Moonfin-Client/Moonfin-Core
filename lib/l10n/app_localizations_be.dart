@@ -14183,6 +14183,11 @@ class AppLocalizationsBe extends AppLocalizations {
   String get sortCustomDragDrop => 'Уласны (перацягванне)';
 
   @override
+  String sortCurrent(String option) {
+    return 'Sort: $option';
+  }
+
+  @override
   String get playlistSortOptions => 'Параметры сартавання плэйліста';
 
   @override

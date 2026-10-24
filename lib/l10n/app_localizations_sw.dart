@@ -14187,6 +14187,11 @@ class AppLocalizationsSw extends AppLocalizations {
   String get sortCustomDragDrop => 'Maalum (Buruta-na-Dondosha)';
 
   @override
+  String sortCurrent(String option) {
+    return 'Sort: $option';
+  }
+
+  @override
   String get playlistSortOptions => 'Chaguo za Kupanga Orodha ya Kucheza';
 
   @override

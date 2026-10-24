@@ -3,6 +3,7 @@
 // the counts on the card subtitles. Cards whose every section would be empty
 // are omitted.
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
@@ -71,7 +72,10 @@ const TmdbReview _review = (
   url: null,
 );
 
-SpotlightCardActions _actions() => SpotlightCardActions(
+SpotlightCardActions _actions({
+  FocusNode Function(String trackId)? trackFocusNode,
+  FocusNode? collectionSortFocusNode,
+}) => SpotlightCardActions(
   openItem: (_) {},
   openSeerrItem: (_) {},
   openSeerrBrowse: (_, _, _, _) {},
@@ -82,7 +86,8 @@ SpotlightCardActions _actions() => SpotlightCardActions(
   playExtra: (_) {},
   playTrack: (_) {},
   playPlaylistTrack: (_) {},
-  trackFocusNode: (_) => FocusNode(),
+  trackFocusNode: trackFocusNode ?? (_) => FocusNode(),
+  collectionSortFocusNode: collectionSortFocusNode,
 );
 
 void main() {
@@ -158,7 +163,7 @@ void main() {
     when(() => vm.filmographyMovies).thenReturn(const []);
     when(() => vm.filmographySeries).thenReturn(const []);
     when(() => vm.collectionItems).thenReturn(const []);
-    when(() => vm.collectionPlayableItems).thenReturn(const []);
+    when(() => vm.collectionPlaylistItems).thenReturn(const []);
     when(() => vm.missingCollectionItems).thenReturn(const []);
     when(() => vm.playlistItems).thenReturn(const []);
     when(() => vm.parentCollections).thenReturn(const []);
@@ -1171,5 +1176,72 @@ void main() {
       ),
     ).called(1);
   });
-}
 
+  testWidgets('the playlist sort button is the only focus stop in its header', (
+    tester,
+  ) async {
+    PlatformDetection.setTvMode(true);
+    addTearDown(() => PlatformDetection.setTvMode(false));
+    GetIt.instance.registerSingleton<UserPreferences>(prefs);
+    when(() => vm.playlistItems).thenReturn([_child('m1', 'Movie')]);
+    when(() => vm.collectionPlaylistItems).thenReturn([_child('m1', 'Movie')]);
+    when(() => vm.collectionSort).thenReturn(CollectionSortOption.server);
+    when(() => vm.playlistSortRefreshing).thenReturn(false);
+    when(() => vm.playlistIndexBuilding).thenReturn(false);
+    final sortNode = FocusNode(debugLabel: 'sort');
+    addTearDown(sortNode.dispose);
+    final trackNodes = <String, FocusNode>{};
+    final card = spotlightCardFor(
+      id: 'playlist_order',
+      vm: vm,
+      item: _item('BoxSet'),
+      prefs: prefs,
+      l10n: _l10n,
+      tmdbStudios: const [],
+      actions: _actions(
+        trackFocusNode: (id) => trackNodes.putIfAbsent(id, FocusNode.new),
+        collectionSortFocusNode: sortNode,
+      ),
+    )!;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: Builder(
+            builder: (context) => ElevatedButton(
+              onPressed: () => SpotlightSectionModal.show(
+                context,
+                title: card.effectiveModalTitle,
+                sections: card.sections,
+              ),
+              child: const Text('open'),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+
+    for (final key in [
+      LogicalKeyboardKey.arrowRight,
+      LogicalKeyboardKey.arrowLeft,
+    ]) {
+      sortNode.requestFocus();
+      await tester.pump();
+      await tester.sendKeyEvent(key);
+      await tester.pumpAndSettle();
+      // The wrappers around the button sit above it in the focus tree, and
+      // landing on one leaves the remote on something with no focus ring.
+      expect(sortNode.ancestors, isNot(contains(FocusManager.instance.primaryFocus)));
+    }
+
+    sortNode.requestFocus();
+    await tester.pump();
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+    await tester.pump();
+    expect(trackNodes['m1']?.hasPrimaryFocus, isTrue);
+  });
+}

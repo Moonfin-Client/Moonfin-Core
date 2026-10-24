@@ -14110,6 +14110,11 @@ class AppLocalizationsId extends AppLocalizations {
   String get sortCustomDragDrop => 'Kustom (Seret dan Lepas)';
 
   @override
+  String sortCurrent(String option) {
+    return 'Sort: $option';
+  }
+
+  @override
   String get playlistSortOptions => 'Opsi Urutan Playlist';
 
   @override

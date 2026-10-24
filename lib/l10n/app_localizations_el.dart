@@ -14270,6 +14270,11 @@ class AppLocalizationsEl extends AppLocalizations {
   String get sortCustomDragDrop => 'Προσαρμοσμένη (μεταφορά και απόθεση)';
 
   @override
+  String sortCurrent(String option) {
+    return 'Sort: $option';
+  }
+
+  @override
   String get playlistSortOptions => 'Επιλογές ταξινόμησης λίστας αναπαραγωγής';
 
   @override

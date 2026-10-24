@@ -24715,6 +24715,12 @@ abstract class AppLocalizations {
   /// **'Custom (Drag-and-Drop)'**
   String get sortCustomDragDrop;
 
+  /// Label beside a sort button showing the sort that is active
+  ///
+  /// In en, this message translates to:
+  /// **'Sort: {option}'**
+  String sortCurrent(String option);
+
   /// No description provided for @playlistSortOptions.
   ///
   /// In en, this message translates to:

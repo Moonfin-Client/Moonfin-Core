@@ -14251,6 +14251,11 @@ class AppLocalizationsRo extends AppLocalizations {
   String get sortCustomDragDrop => 'Personalizat (trage și plasează)';
 
   @override
+  String sortCurrent(String option) {
+    return 'Sort: $option';
+  }
+
+  @override
   String get playlistSortOptions => 'Opțiuni de sortare a listei de redare';
 
   @override

@@ -14119,6 +14119,11 @@ class AppLocalizationsAf extends AppLocalizations {
   String get sortCustomDragDrop => 'Pasgemaak (sleep-en-los)';
 
   @override
+  String sortCurrent(String option) {
+    return 'Sort: $option';
+  }
+
+  @override
   String get playlistSortOptions => 'Snitlys-sorteeropsies';
 
   @override

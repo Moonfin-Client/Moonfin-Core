@@ -14143,6 +14143,11 @@ class AppLocalizationsUg extends AppLocalizations {
   String get sortCustomDragDrop => 'ئىختىيارى (سۆرەپ-تاشلاش)';
 
   @override
+  String sortCurrent(String option) {
+    return 'Sort: $option';
+  }
+
+  @override
   String get playlistSortOptions => 'قويۇش تىزىملىكى تەرتىپلەش تاللانمىلىرى';
 
   @override

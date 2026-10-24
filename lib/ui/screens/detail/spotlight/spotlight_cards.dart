@@ -1194,8 +1194,8 @@ class _SpotlightCardsBuilder {
 
   SpotlightCardSpec? _boxSetPlaylistOrderCard() {
     if (!_shows(DetailSection.playlistOrder)) return null;
-    final items = vm.playlistItems;
-    final count = items.isNotEmpty ? items.length : vm.collectionPlayableItems.length;
+    final hasPlaylistItems = vm.playlistItems.isNotEmpty;
+    final tracks = vm.collectionPlaylistItems;
     final collectionImageUrl =
         spotlightLandscapeImageUrl(
           _imageApi,
@@ -1203,37 +1203,28 @@ class _SpotlightCardsBuilder {
           fallbackUrl: fallbackImageUrl,
         ) ??
         fallbackImageUrl;
-
-    // Pick an artwork from the playlist items that avoids duplicating the collection card
-    String? playlistImageUrl;
-    final candidateItems = items.isNotEmpty ? items : vm.collectionPlayableItems;
-    for (final candidate in candidateItems) {
-      final url = spotlightLandscapeImageUrl(_imageApi, candidate);
-      if (url != null && url != collectionImageUrl) {
-        playlistImageUrl = url;
-        break;
-      }
-    }
-    playlistImageUrl ??= candidateItems.isNotEmpty
-        ? spotlightLandscapeImageUrl(_imageApi, candidateItems.first)
-        : null;
+    final trackImageUrls = tracks
+        .map((t) => spotlightLandscapeImageUrl(_imageApi, t))
+        .whereType<String>();
 
     return SpotlightCardSpec(
       id: 'playlist_order',
       title: l10n.spotlightPlaylistOrder,
-      subtitle: l10n.spotlightItemsCount(count),
-      imageUrl: playlistImageUrl ?? fallbackImageUrl,
+      subtitle: l10n.spotlightItemsCount(tracks.length),
+      // Prefers art that differs from the Movies & Shows card beside it.
+      imageUrl:
+          trackImageUrls.where((url) => url != collectionImageUrl).firstOrNull ??
+          trackImageUrls.firstOrNull ??
+          fallbackImageUrl,
       icon: Icons.format_list_numbered,
       sections: [
         SpotlightModalSection(
           title: l10n.spotlightPlaylistOrder,
-          count: count,
+          count: tracks.length,
           headerActionBuilder: (context) {
-            final sortLabel = getCollectionSortLabel(vm.collectionSort, l10n);
-            final focusNode = actions.collectionSortFocusNode;
-            final effectiveTracks = items.isNotEmpty ? items : vm.collectionPlayableItems;
-            final firstTrackId = effectiveTracks.firstOrNull?.id;
+            final firstTrackId = tracks.firstOrNull?.id;
             return Focus(
+              canRequestFocus: false,
               onKeyEvent: (_, event) {
                 if (firstTrackId != null &&
                     event is KeyDownEvent &&
@@ -1244,6 +1235,7 @@ class _SpotlightCardsBuilder {
                 return KeyEventResult.ignored;
               },
               child: InkWell(
+                canRequestFocus: false,
                 onTap: () => showCollectionSortDialog(context, vm: vm),
                 borderRadius: AppRadius.circular(8),
                 child: Row(
@@ -1251,7 +1243,7 @@ class _SpotlightCardsBuilder {
                   children: [
                     FocusableToolbarButton(
                       icon: Icons.sort_rounded,
-                      focusNode: focusNode,
+                      focusNode: actions.collectionSortFocusNode,
                       size: 30,
                       iconSize: 18,
                       tooltip: l10n.playlistSortOptions,
@@ -1259,7 +1251,9 @@ class _SpotlightCardsBuilder {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      'Sort: $sortLabel',
+                      l10n.sortCurrent(
+                        getCollectionSortLabel(vm.collectionSort, l10n),
+                      ),
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: Colors.white70,
                             fontWeight: FontWeight.bold,
@@ -1272,20 +1266,18 @@ class _SpotlightCardsBuilder {
           },
           builder: (context, firstFocusNode) {
             if (vm.playlistSortRefreshing ||
-                (vm.playlistIndexBuilding && items.isEmpty)) {
+                (vm.playlistIndexBuilding && !hasPlaylistItems)) {
               return const Center(child: CircularProgressIndicator());
             }
-            final hasPlaylistItems = items.isNotEmpty;
-            final effectiveTracks = hasPlaylistItems ? items : vm.collectionPlayableItems;
             return DetailTrackList(
-              tracks: effectiveTracks,
+              tracks: tracks,
               imageApi: _imageApi,
               isPlaylist: true,
               showAlbum: true,
               getFocusNode: actions.trackFocusNode,
               onPlayTrack: (index) => hasPlaylistItems
                   ? actions.playPlaylistTrack(index)
-                  : actions.openItem(effectiveTracks[index]),
+                  : actions.openItem(tracks[index]),
               reorderable: hasPlaylistItems && vm.collectionSort == CollectionSortOption.custom,
               onReorder: hasPlaylistItems
                   ? (oldIndex, newIndex) {

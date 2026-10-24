@@ -14194,6 +14194,11 @@ class AppLocalizationsPt extends AppLocalizations {
   String get sortCustomDragDrop => 'Personalizada (Arrastar e Soltar)';
 
   @override
+  String sortCurrent(String option) {
+    return 'Sort: $option';
+  }
+
+  @override
   String get playlistSortOptions =>
       'Opções de Ordenação da Lista de Reprodução';
 

@@ -6,7 +6,6 @@ import '../../../l10n/app_localizations.dart';
 import '../../../util/focus/dpad_keys.dart';
 import '../../widgets/overlay_sheet.dart';
 
-/// Returns a localized display label for a collection sort option.
 String getCollectionSortLabel(
   CollectionSortOption option,
   AppLocalizations l10n,
@@ -20,11 +19,10 @@ String getCollectionSortLabel(
   };
 }
 
-/// Displays the collection playlist sort options dialog.
 Future<void> showCollectionSortDialog(
   BuildContext context, {
   required ItemDetailViewModel vm,
-}) async {
+}) {
   final l10n = AppLocalizations.of(context);
   return showFocusRestoringDialog<void>(
     context: context,
@@ -42,12 +40,16 @@ Future<void> showCollectionSortDialog(
           mainAxisSize: MainAxisSize.min,
           children: CollectionSortOption.values.map((option) {
             final active = vm.collectionSort == option;
+            void pick() {
+              vm.setCollectionSort(option);
+              Navigator.of(dialogContext).pop();
+            }
+
             return Focus(
               autofocus: active,
               onKeyEvent: (_, event) {
                 if (isActivateKey(event)) {
-                  vm.setCollectionSort(option);
-                  Navigator.of(dialogContext).pop();
+                  pick();
                   return KeyEventResult.handled;
                 }
                 return KeyEventResult.ignored;
@@ -56,10 +58,7 @@ Future<void> showCollectionSortDialog(
                 builder: (optionContext) {
                   final focused = Focus.of(optionContext).hasFocus;
                   return InkWell(
-                    onTap: () {
-                      vm.setCollectionSort(option);
-                      Navigator.of(dialogContext).pop();
-                    },
+                    onTap: pick,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                         vertical: 12.0,

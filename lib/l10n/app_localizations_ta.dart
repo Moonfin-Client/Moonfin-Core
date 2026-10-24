@@ -14189,6 +14189,11 @@ class AppLocalizationsTa extends AppLocalizations {
   String get sortCustomDragDrop => 'தனிப்பயன் (இழுத்து விடு)';
 
   @override
+  String sortCurrent(String option) {
+    return 'Sort: $option';
+  }
+
+  @override
   String get playlistSortOptions => 'பிளேலிஸ்ட் வரிசை விருப்பங்கள்';
 
   @override

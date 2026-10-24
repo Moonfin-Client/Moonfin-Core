@@ -14158,6 +14158,11 @@ class AppLocalizationsKk extends AppLocalizations {
   String get sortCustomDragDrop => 'Реттелетін (сүйреп апару)';
 
   @override
+  String sortCurrent(String option) {
+    return 'Sort: $option';
+  }
+
+  @override
   String get playlistSortOptions => 'Ойнату тізімін сұрыптау параметрлері';
 
   @override

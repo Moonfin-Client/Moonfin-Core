@@ -14178,6 +14178,11 @@ class AppLocalizationsSk extends AppLocalizations {
   String get sortCustomDragDrop => 'Vlastné (ťahaním myšou)';
 
   @override
+  String sortCurrent(String option) {
+    return 'Sort: $option';
+  }
+
+  @override
   String get playlistSortOptions => 'Možnosti zoradenia playlistu';
 
   @override

@@ -13748,6 +13748,11 @@ class AppLocalizationsYue extends AppLocalizations {
   String get sortCustomDragDrop => '自訂（拖放）';
 
   @override
+  String sortCurrent(String option) {
+    return 'Sort: $option';
+  }
+
+  @override
   String get playlistSortOptions => '播放清單排序選項';
 
   @override

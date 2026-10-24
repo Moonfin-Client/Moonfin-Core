@@ -14100,6 +14100,11 @@ class AppLocalizationsBn extends AppLocalizations {
   String get sortCustomDragDrop => 'কাস্টম (ড্র্যাগ-অ্যান্ড-ড্রপ)';
 
   @override
+  String sortCurrent(String option) {
+    return 'Sort: $option';
+  }
+
+  @override
   String get playlistSortOptions => 'প্লেলিস্ট সাজানোর অপশন';
 
   @override

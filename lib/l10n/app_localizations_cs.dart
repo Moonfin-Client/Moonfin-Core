@@ -14154,6 +14154,11 @@ class AppLocalizationsCs extends AppLocalizations {
   String get sortCustomDragDrop => 'Vlastní (přetažením)';
 
   @override
+  String sortCurrent(String option) {
+    return 'Sort: $option';
+  }
+
+  @override
   String get playlistSortOptions => 'Možnosti řazení playlistu';
 
   @override

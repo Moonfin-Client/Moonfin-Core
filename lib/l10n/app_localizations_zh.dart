@@ -13696,6 +13696,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get sortCustomDragDrop => '自定义（拖放）';
 
   @override
+  String sortCurrent(String option) {
+    return 'Sort: $option';
+  }
+
+  @override
   String get playlistSortOptions => '播放列表排序选项';
 
   @override

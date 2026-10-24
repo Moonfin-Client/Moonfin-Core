@@ -440,11 +440,13 @@ class ItemDetailViewModel extends ChangeNotifier {
   List<AggregatedItem> _playlistItems = const [];
   List<AggregatedItem> get playlistItems => _playlistItems;
 
-  /// Playable members from [_collectionItems] for playlist fallback.
-  List<AggregatedItem> get collectionPlayableItems =>
-      _collectionItems.where((i) => _playableTypes.contains(i.type)).toList();
+  /// What the collection's Playlist tab shows. Until the playlist has items,
+  /// that's the collection's own playable members.
+  List<AggregatedItem> get collectionPlaylistItems => _playlistItems.isNotEmpty
+      ? _playlistItems
+      : _collectionItems.where((i) => _playableTypes.contains(i.type)).toList();
 
-  CollectionSortOption _collectionSort = CollectionSortOption.releaseAscending;
+  CollectionSortOption _collectionSort = CollectionSortOption.server;
   CollectionSortOption get collectionSort => _collectionSort;
 
   List<ParentCollection> _parentCollections = const [];
@@ -1588,8 +1590,6 @@ class ItemDetailViewModel extends ChangeNotifier {
       parentId: itemId,
       startIndex: _collectionFetchedCount,
       limit: _collectionPageSize,
-      sortBy: 'PremiereDate,ProductionYear,SortName',
-      sortOrder: 'Ascending',
       fields: 'PrimaryImageAspectRatio,BasicSyncInfo,People',
     );
     final newItems = _mapItems((data['Items'] as List?) ?? []);
@@ -1763,9 +1763,8 @@ class ItemDetailViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // When a saved order exists, scan the collection to locate any new
-      // members, appending them to the custom order in release order so
-      // newly added titles are not dropped.
+      // A saved order still needs the scan to find members added since it was
+      // saved. They go on the end in release order so they aren't lost.
       final syncService = GetIt.instance<PluginSyncService>();
       if (syncService.pluginAvailable) {
         try {
@@ -1794,7 +1793,7 @@ class ItemDetailViewModel extends ChangeNotifier {
 
       if (_flattenedIds == null) {
         await _ensurePlaylistIndexEntries();
-        _collectionSort = CollectionSortOption.releaseAscending;
+        _collectionSort = CollectionSortOption.server;
         _rebuildFlattenedIds();
       }
 

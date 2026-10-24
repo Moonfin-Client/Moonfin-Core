@@ -14041,6 +14041,11 @@ class AppLocalizationsTh extends AppLocalizations {
   String get sortCustomDragDrop => 'กำหนดเอง (ลากและวาง)';
 
   @override
+  String sortCurrent(String option) {
+    return 'Sort: $option';
+  }
+
+  @override
   String get playlistSortOptions => 'ตัวเลือกการเรียงเพลย์ลิสต์';
 
   @override

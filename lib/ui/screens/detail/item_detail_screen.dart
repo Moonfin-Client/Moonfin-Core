@@ -9201,8 +9201,8 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     return true;
   }
 
-  /// Sorts [queue] in-place according to [flattenedIds], falling back to each
-  /// item's original position in the queue to break ties for missing items.
+  /// Puts [queue] in playlist order. Items the playlist doesn't list go last,
+  /// in the order they arrived.
   static void _sortQueueByFlattenedIds(
     List<AggregatedItem> queue,
     List<String>? flattenedIds,

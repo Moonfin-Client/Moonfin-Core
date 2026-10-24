@@ -14110,6 +14110,11 @@ class AppLocalizationsEo extends AppLocalizations {
   String get sortCustomDragDrop => 'Propra (treni kaj demeti)';
 
   @override
+  String sortCurrent(String option) {
+    return 'Sort: $option';
+  }
+
+  @override
   String get playlistSortOptions => 'Ordigopcioj de ludlisto';
 
   @override

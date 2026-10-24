@@ -14058,6 +14058,11 @@ class AppLocalizationsFa extends AppLocalizations {
   String get sortCustomDragDrop => 'سفارشی (کشیدن و رها کردن)';
 
   @override
+  String sortCurrent(String option) {
+    return 'Sort: $option';
+  }
+
+  @override
   String get playlistSortOptions => 'گزینه‌های مرتب‌سازی لیست پخش';
 
   @override

@@ -14096,6 +14096,11 @@ class AppLocalizationsAr extends AppLocalizations {
   String get sortCustomDragDrop => 'مخصص (سحب وإفلات)';
 
   @override
+  String sortCurrent(String option) {
+    return 'Sort: $option';
+  }
+
+  @override
   String get playlistSortOptions => 'خيارات ترتيب قائمة التشغيل';
 
   @override

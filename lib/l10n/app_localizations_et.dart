@@ -14122,6 +14122,11 @@ class AppLocalizationsEt extends AppLocalizations {
   String get sortCustomDragDrop => 'Kohandatud (lohistamisega)';
 
   @override
+  String sortCurrent(String option) {
+    return 'Sort: $option';
+  }
+
+  @override
   String get playlistSortOptions => 'Esitusloendi sortimisvalikud';
 
   @override

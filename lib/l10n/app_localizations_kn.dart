@@ -14179,6 +14179,11 @@ class AppLocalizationsKn extends AppLocalizations {
   String get sortCustomDragDrop => 'ಕಸ್ಟಮ್ (ಎಳೆದು-ಬಿಡಿ)';
 
   @override
+  String sortCurrent(String option) {
+    return 'Sort: $option';
+  }
+
+  @override
   String get playlistSortOptions => 'ಪ್ಲೇಪಟ್ಟಿ ವಿಂಗಡಣೆ ಆಯ್ಕೆಗಳು';
 
   @override

@@ -14128,6 +14128,11 @@ class AppLocalizationsTr extends AppLocalizations {
   String get sortCustomDragDrop => 'Özel (Sürükle-Bırak)';
 
   @override
+  String sortCurrent(String option) {
+    return 'Sort: $option';
+  }
+
+  @override
   String get playlistSortOptions => 'Oynatma Listesi Sıralama Seçenekleri';
 
   @override

@@ -14106,6 +14106,11 @@ class AppLocalizationsSi extends AppLocalizations {
   String get sortCustomDragDrop => 'අභිරුචි (ඇදගෙන-දමන්න)';
 
   @override
+  String sortCurrent(String option) {
+    return 'Sort: $option';
+  }
+
+  @override
   String get playlistSortOptions => 'ධාවන ලැයිස්තු වර්ග කිරීමේ විකල්ප';
 
   @override

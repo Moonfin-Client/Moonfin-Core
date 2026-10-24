@@ -14171,6 +14171,11 @@ class AppLocalizationsLv extends AppLocalizations {
   String get sortCustomDragDrop => 'Pielāgota (velkot un nometot)';
 
   @override
+  String sortCurrent(String option) {
+    return 'Sort: $option';
+  }
+
+  @override
   String get playlistSortOptions => 'Atskaņošanas saraksta kārtošanas opcijas';
 
   @override

@@ -572,18 +572,8 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     _collectionSortFocusNode.onKeyEvent = (node, event) {
       if (event is KeyDownEvent) {
         if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-          final effectiveTracks =
-              _vm.playlistItems.isNotEmpty ? _vm.playlistItems : _vm.collectionPlayableItems;
-          if (effectiveTracks.isNotEmpty) {
-            final firstTrack = effectiveTracks.first;
-            final rawId = firstTrack.rawData['PlaylistItemId']?.toString();
-            final firstTrackId =
-                (rawId != null && rawId.isNotEmpty) ? rawId : firstTrack.id;
-            final firstNode = _trackFocusNodes[firstTrackId];
-            if (firstNode != null && firstNode.context?.mounted == true) {
-              firstNode.requestFocus();
-              return KeyEventResult.handled;
-            }
+          if (_focusFirstTrack(_vm.collectionPlaylistItems)) {
+            return KeyEventResult.handled;
           }
         } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
           _focusSelectedTab();
@@ -843,18 +833,19 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       tabs.isEmpty ? null : _tabNode(_selectedTab >= 0 ? _selectedTab : 0);
 
   // Moves D-pad focus into the first track of the track list, using the same
-  // focus node the DetailTrackList attaches to that row.
-  void _focusFirstTrack([List<AggregatedItem>? tracksOverride]) {
+  // focus node the DetailTrackList attaches to that row. Returns false when
+  // that row isn't on screen.
+  bool _focusFirstTrack([List<AggregatedItem>? tracksOverride]) {
     final list = tracksOverride ?? _vm.tracks;
-    if (list.isEmpty) return;
+    if (list.isEmpty) return false;
     final firstTrack = list.first;
     final rawId = firstTrack.rawData['PlaylistItemId']?.toString();
     final firstTrackId =
         (rawId != null && rawId.isNotEmpty) ? rawId : firstTrack.id;
     final node = _trackFocusNodes.putIfAbsent(firstTrackId, () => FocusNode());
-    if (node.context?.mounted == true) {
-      node.requestFocus();
-    }
+    if (node.context?.mounted != true) return false;
+    node.requestFocus();
+    return true;
   }
 
   void _onTabBarNavigateDown(int tabIndex) {
@@ -951,14 +942,10 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
               _focusFirstTrack();
               break;
             case 'playlist':
-              final effectiveTracks = _vm.playlistItems.isNotEmpty
-                  ? _vm.playlistItems
-                  : (_vm.item?.type == 'BoxSet' ? _vm.collectionPlayableItems : _vm.tracks);
-              if (_vm.item?.type == 'BoxSet' &&
-                  _collectionSortFocusNode.context?.mounted == true) {
+              if (_collectionSortFocusNode.context?.mounted == true) {
                 _collectionSortFocusNode.requestFocus();
               } else {
-                _focusFirstTrack(effectiveTracks);
+                _focusFirstTrack(_vm.collectionPlaylistItems);
               }
               break;
           }
@@ -1195,24 +1182,20 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           if (hasCast) _ModernTab('cast', l10n.castMembers, _boxSetCastTab),
           if (hasCrew) _ModernTab('crew', l10n.crewSection, _boxSetCrewTab),
           if (hasStudios) studios,
-          // Show the Playlist tab while the index is building (spinner) OR
-          // once items are available (the list). Placed last so simple
-          // movie-only collections land on Movies by default.
+          // Placed last so movie-only collections still open on Movies.
           if (sections.shows(DetailSection.playlistOrder))
             _ModernTab(
               'playlist',
               l10n.playlist,
               (context, item) {
-                // Phase 1: flat ID index still building or sort refreshing — show full spinner.
+                final hasPlaylistItems = _vm.playlistItems.isNotEmpty;
                 if (_vm.playlistSortRefreshing ||
-                    (_vm.playlistIndexBuilding && _vm.playlistItems.isEmpty)) {
+                    (_vm.playlistIndexBuilding && !hasPlaylistItems)) {
                   return const Center(child: CircularProgressIndicator());
                 }
 
-                final hasPlaylistItems = _vm.playlistItems.isNotEmpty;
-                final tracks = hasPlaylistItems ? _vm.playlistItems : _vm.collectionPlayableItems;
                 final listWidget = DetailTrackList(
-                  tracks: tracks,
+                  tracks: _vm.collectionPlaylistItems,
                   imageApi: _vm.imageApi,
                   isPlaylist: true,
                   getFocusNode: (id) =>
@@ -1265,11 +1248,11 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                                   icon: Icons.sort_rounded,
                                   focusNode: _collectionSortFocusNode,
                                   tooltip: l10n.playlistSortOptions,
-                                  onTap: () => _showCollectionSortDialog(context),
+                                  onTap: () => showCollectionSortDialog(context, vm: _vm),
                                 ),
                                 const SizedBox(width: 12),
                                 Text(
-                                  'Sort: ${_getCollectionSortLabel(_vm.collectionSort, l10n)}',
+                                  l10n.sortCurrent(getCollectionSortLabel(_vm.collectionSort, l10n)),
                                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                         color: Colors.white70,
                                         fontWeight: FontWeight.bold,
@@ -4040,7 +4023,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   Future<void> _playPlaylistTrack(BuildContext context, int index) async {
     if (_vm.playlistSortRefreshing) return;
     final manager = GetIt.instance<PlaybackManager>();
-    final tracks = _vm.playlistItems.isNotEmpty ? _vm.playlistItems : _vm.collectionPlayableItems;
+    final tracks = _vm.collectionPlaylistItems;
     final isAudio = tracks.every(_isAudioItem);
     await launchPlayerWhilePreparing(
       context,
@@ -4057,12 +4040,6 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       },
     );
   }
-
-  String _getCollectionSortLabel(CollectionSortOption option, AppLocalizations l10n) =>
-      getCollectionSortLabel(option, l10n);
-
-  void _showCollectionSortDialog(BuildContext context) =>
-      showCollectionSortDialog(context, vm: _vm);
 
   Color get _titleColor =>
       ThemeRegistry.active.id == ThemeRegistry.neonPulseId

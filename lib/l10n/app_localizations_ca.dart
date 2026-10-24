@@ -14347,6 +14347,11 @@ class AppLocalizationsCa extends AppLocalizations {
   String get sortCustomDragDrop => 'Personalitzat (arrossega i deixa anar)';
 
   @override
+  String sortCurrent(String option) {
+    return 'Sort: $option';
+  }
+
+  @override
   String get playlistSortOptions =>
       'Opcions d\'ordenació de la llista de reproducció';
 

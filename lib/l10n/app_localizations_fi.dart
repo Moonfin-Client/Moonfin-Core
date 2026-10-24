@@ -14208,6 +14208,11 @@ class AppLocalizationsFi extends AppLocalizations {
   String get sortCustomDragDrop => 'Mukautettu (vedä ja pudota)';
 
   @override
+  String sortCurrent(String option) {
+    return 'Sort: $option';
+  }
+
+  @override
   String get playlistSortOptions => 'Soittolistan järjestysasetukset';
 
   @override

@@ -13677,6 +13677,11 @@ class AppLocalizationsKo extends AppLocalizations {
   String get sortCustomDragDrop => '사용자 지정(끌어서 놓기)';
 
   @override
+  String sortCurrent(String option) {
+    return 'Sort: $option';
+  }
+
+  @override
   String get playlistSortOptions => '재생목록 정렬 옵션';
 
   @override

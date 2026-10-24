@@ -14202,6 +14202,11 @@ class AppLocalizationsSq extends AppLocalizations {
   String get sortCustomDragDrop => 'E personalizuar (Tërhiq dhe lësho)';
 
   @override
+  String sortCurrent(String option) {
+    return 'Sort: $option';
+  }
+
+  @override
   String get playlistSortOptions =>
       'Opsionet e renditjes së listës së luajtjes';
 

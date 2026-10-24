@@ -14230,6 +14230,11 @@ class AppLocalizationsMl extends AppLocalizations {
   String get sortCustomDragDrop => 'ഇഷ്ടാനുസൃതം (വലിച്ചിടുക)';
 
   @override
+  String sortCurrent(String option) {
+    return 'Sort: $option';
+  }
+
+  @override
   String get playlistSortOptions => 'പ്ലേലിസ്റ്റ് അടുക്കൽ ഓപ്ഷനുകൾ';
 
   @override

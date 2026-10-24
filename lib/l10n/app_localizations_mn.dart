@@ -14133,6 +14133,11 @@ class AppLocalizationsMn extends AppLocalizations {
   String get sortCustomDragDrop => 'Захиалгат (чирж буулгах)';
 
   @override
+  String sortCurrent(String option) {
+    return 'Sort: $option';
+  }
+
+  @override
   String get playlistSortOptions => 'Тоглуулах жагсаалтын эрэмбийн сонголт';
 
   @override

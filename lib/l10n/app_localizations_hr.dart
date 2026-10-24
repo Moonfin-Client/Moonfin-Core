@@ -14329,6 +14329,11 @@ class AppLocalizationsHr extends AppLocalizations {
   String get sortCustomDragDrop => 'Prilagođeno (povuci i ispusti)';
 
   @override
+  String sortCurrent(String option) {
+    return 'Sort: $option';
+  }
+
+  @override
   String get playlistSortOptions => 'Opcije sortiranja popisa za reprodukciju';
 
   @override

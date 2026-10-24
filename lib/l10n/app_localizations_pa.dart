@@ -14077,6 +14077,11 @@ class AppLocalizationsPa extends AppLocalizations {
   String get sortCustomDragDrop => 'ਕਸਟਮ (ਖਿੱਚੋ-ਅਤੇ-ਛੱਡੋ)';
 
   @override
+  String sortCurrent(String option) {
+    return 'Sort: $option';
+  }
+
+  @override
   String get playlistSortOptions => 'ਪਲੇਲਿਸਟ ਕ੍ਰਮਬੱਧ ਵਿਕਲਪ';
 
   @override

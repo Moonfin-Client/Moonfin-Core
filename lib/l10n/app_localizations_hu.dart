@@ -14220,6 +14220,11 @@ class AppLocalizationsHu extends AppLocalizations {
   String get sortCustomDragDrop => 'Egyéni (fogd és vidd)';
 
   @override
+  String sortCurrent(String option) {
+    return 'Sort: $option';
+  }
+
+  @override
   String get playlistSortOptions => 'Lejátszási lista rendezési opciói';
 
   @override

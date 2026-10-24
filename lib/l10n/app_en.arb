@@ -12598,6 +12598,15 @@
   "sortReleaseAscending": "Release Order (Ascending)",
   "sortReleaseDescending": "Release Order (Descending)",
   "sortCustomDragDrop": "Custom (Drag-and-Drop)",
+  "sortCurrent": "Sort: {option}",
+  "@sortCurrent": {
+    "description": "Label beside a sort button showing the sort that is active",
+    "placeholders": {
+      "option": {
+        "type": "String"
+      }
+    }
+  },
   "playlistSortOptions": "Playlist Sort Options",
   "resetSort": "Reset Sort",
   "rewatchSeasonEpisode": "Rewatch S{season}:E{episode}",

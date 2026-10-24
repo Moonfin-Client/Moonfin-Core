@@ -14171,6 +14171,11 @@ class AppLocalizationsCy extends AppLocalizations {
   String get sortCustomDragDrop => 'Personol (Llusgo a Gollwng)';
 
   @override
+  String sortCurrent(String option) {
+    return 'Sort: $option';
+  }
+
+  @override
   String get playlistSortOptions => 'Opsiynau Trefnu\'r Rhestr Chwarae';
 
   @override

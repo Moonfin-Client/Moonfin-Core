@@ -62,8 +62,6 @@ void main() {
         parentId: 'boxset-1',
         startIndex: 0,
         limit: any(named: 'limit'),
-        sortBy: any(named: 'sortBy'),
-        sortOrder: any(named: 'sortOrder'),
         fields: any(named: 'fields'),
       ),
     ).thenAnswer(
@@ -185,8 +183,6 @@ void main() {
           ids: any(named: 'ids'),
           startIndex: any(named: 'startIndex'),
           limit: any(named: 'limit'),
-          sortBy: any(named: 'sortBy'),
-          sortOrder: any(named: 'sortOrder'),
           fields: any(named: 'fields'),
         ),
       ).thenAnswer((invocation) async {

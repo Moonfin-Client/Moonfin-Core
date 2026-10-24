@@ -14120,6 +14120,11 @@ class AppLocalizationsVi extends AppLocalizations {
   String get sortCustomDragDrop => 'Tùy chỉnh (Kéo và thả)';
 
   @override
+  String sortCurrent(String option) {
+    return 'Sort: $option';
+  }
+
+  @override
   String get playlistSortOptions => 'Tùy chọn sắp xếp danh sách phát';
 
   @override

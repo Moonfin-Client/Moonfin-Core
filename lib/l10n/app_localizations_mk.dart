@@ -14187,6 +14187,11 @@ class AppLocalizationsMk extends AppLocalizations {
   String get sortCustomDragDrop => 'Прилагоден (со влечење)';
 
   @override
+  String sortCurrent(String option) {
+    return 'Sort: $option';
+  }
+
+  @override
   String get playlistSortOptions => 'Опции за подредување на плејлистата';
 
   @override
