@@ -1,3 +1,4 @@
+import '../data/models/aggregated_item.dart';
 import '../data/repositories/seerr_repository.dart';
 import '../data/services/seerr/seerr_api_models.dart';
 
@@ -129,6 +130,41 @@ List<SeerrDiscoverItem> sortSeerrCredits(
 
     final comparison = dateA.compareTo(dateB);
 
+    return ascending ? comparison : -comparison;
+  });
+
+  return sorted;
+}
+
+/// Orders a person's Jellyfin filmography items by the person page sort preference.
+/// Items with no date at all sink to the bottom whichever way the dates run.
+List<AggregatedItem> sortJellyfinFilmography(
+  List<AggregatedItem> items,
+  String sortOption,
+) {
+  final sorted = List<AggregatedItem>.from(items);
+  if (sortOption == 'alphabetical') {
+    return sorted..sort(
+      (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
+    );
+  }
+
+  final ascending = sortOption == 'releaseDateAsc';
+  sorted.sort((a, b) {
+    final dateA =
+        a.premiereDate ??
+        (a.productionYear != null ? DateTime(a.productionYear!) : null);
+    final dateB =
+        b.premiereDate ??
+        (b.productionYear != null ? DateTime(b.productionYear!) : null);
+
+    if (dateA == null && dateB == null) {
+      return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+    }
+    if (dateA == null) return 1;
+    if (dateB == null) return -1;
+
+    final comparison = dateA.compareTo(dateB);
     return ascending ? comparison : -comparison;
   });
 

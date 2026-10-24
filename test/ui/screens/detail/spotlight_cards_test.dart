@@ -19,12 +19,15 @@ import 'package:moonfin/preference/detail_section_layout.dart';
 import 'package:moonfin/preference/seerr_preferences.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/screens/detail/spotlight/spotlight_cards.dart';
+import 'package:moonfin/ui/screens/detail/spotlight/widgets/spotlight_modal_grids.dart';
 import 'package:moonfin/ui/screens/detail/spotlight/widgets/spotlight_section_modal.dart';
 import 'package:moonfin/ui/widgets/detail_reviews.dart';
 import 'package:moonfin/ui/widgets/seerr/seerr_collection_banner.dart';
 import 'package:moonfin/util/platform_detection.dart';
 import 'package:server_core/server_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+class _Context extends Mock implements BuildContext {}
 
 class _Vm extends Mock implements ItemDetailViewModel {}
 
@@ -478,6 +481,135 @@ void main() {
     expect(crew.title, _l10n.crewContributionsSeerr);
     expect(crew.subtitle, _l10n.spotlightItemsCount(1));
     expect(crew.sections.single.title, _l10n.crewContributionsSeerr);
+  });
+
+  test('a person filmography card sorts movies and series according to sort preference', () async {
+    when(() => vm.filmographyMovies).thenReturn([
+      AggregatedItem(
+        id: 'm1',
+        serverId: 's',
+        rawData: const {'Id': 'm1', 'Name': 'Zeta Movie', 'PremiereDate': '2020-01-01T00:00:00.000Z'},
+      ),
+      AggregatedItem(
+        id: 'm2',
+        serverId: 's',
+        rawData: const {'Id': 'm2', 'Name': 'Alpha Movie', 'PremiereDate': '2024-01-01T00:00:00.000Z'},
+      ),
+    ]);
+    when(() => vm.filmographySeries).thenReturn([
+      AggregatedItem(
+        id: 's1',
+        serverId: 's',
+        rawData: const {'Id': 's1', 'Name': 'Zeta Series', 'PremiereDate': '2015-01-01T00:00:00.000Z'},
+      ),
+      AggregatedItem(
+        id: 's2',
+        serverId: 's',
+        rawData: const {'Id': 's2', 'Name': 'Beta Series', 'PremiereDate': '2022-01-01T00:00:00.000Z'},
+      ),
+    ]);
+
+    final ctx = _Context();
+
+    // Default alphabetical
+    var cards = cardsFor(_item('Person'));
+    var filmography = cards.first;
+    expect(
+      (filmography.sections[0].builder(ctx, null) as SpotlightMediaGridSection).items.map((i) => i.name),
+      ['Alpha Movie', 'Zeta Movie'],
+    );
+    expect(
+      (filmography.sections[1].builder(ctx, null) as SpotlightMediaGridSection).items.map((i) => i.name),
+      ['Beta Series', 'Zeta Series'],
+    );
+
+    // Release date descending (newest first)
+    await prefs.set(UserPreferences.personPageSortOption, 'releaseDateDesc');
+    cards = cardsFor(_item('Person'));
+    filmography = cards.first;
+    expect(
+      (filmography.sections[0].builder(ctx, null) as SpotlightMediaGridSection).items.map((i) => i.name),
+      ['Alpha Movie', 'Zeta Movie'],
+    );
+    expect(
+      (filmography.sections[1].builder(ctx, null) as SpotlightMediaGridSection).items.map((i) => i.name),
+      ['Beta Series', 'Zeta Series'],
+    );
+
+    // Release date ascending (oldest first)
+    await prefs.set(UserPreferences.personPageSortOption, 'releaseDateAsc');
+    cards = cardsFor(_item('Person'));
+    filmography = cards.first;
+    expect(
+      (filmography.sections[0].builder(ctx, null) as SpotlightMediaGridSection).items.map((i) => i.name),
+      ['Zeta Movie', 'Alpha Movie'],
+    );
+    expect(
+      (filmography.sections[1].builder(ctx, null) as SpotlightMediaGridSection).items.map((i) => i.name),
+      ['Zeta Series', 'Beta Series'],
+    );
+  });
+
+  test('a person Seerr cards sort and group credits according to preferences', () async {
+    const rawAppearances = [
+      SeerrDiscoverItem(id: 1, title: 'Zeta Show', releaseDate: '2020-01-01'),
+      SeerrDiscoverItem(id: 2, title: 'Alpha Show', releaseDate: '2024-01-01'),
+    ];
+    const rawCrew = [
+      SeerrDiscoverItem(id: 10, title: 'Film A', job: 'Director', releaseDate: '2018-01-01'),
+      SeerrDiscoverItem(id: 10, title: 'Film A', job: 'Writer', releaseDate: '2018-01-01'),
+      SeerrDiscoverItem(id: 20, title: 'Film B', job: 'Producer', releaseDate: '2023-01-01'),
+    ];
+
+    final ctx = _Context();
+
+    // Default: alphabetical, group=false
+    await prefs.set(UserPreferences.personPageSortOption, 'alphabetical');
+    await prefs.set(UserPreferences.personPageGroupItems, false);
+    var cards = cardsFor(
+      _item('Person'),
+      seerrAppearances: rawAppearances,
+      seerrCrewCredits: rawCrew,
+      seerrAvailable: true,
+    );
+    var appearancesCard = cards.firstWhere((c) => c.id == 'appearances');
+    var crewCard = cards.firstWhere((c) => c.id == 'crew');
+
+    expect(
+      (appearancesCard.sections.single.builder(ctx, null) as SpotlightSeerrGridSection).items.map((i) => i.title),
+      ['Alpha Show', 'Zeta Show'],
+    );
+    // Ungrouped crew: has length 3
+    var crewItems = (crewCard.sections.single.builder(ctx, null) as SpotlightSeerrGridSection).items;
+    expect(crewItems, hasLength(3));
+    expect(crewItems.map((i) => i.title), ['Film A', 'Film A', 'Film B']);
+
+    // Group items enabled: joins roles
+    await prefs.set(UserPreferences.personPageGroupItems, true);
+    cards = cardsFor(
+      _item('Person'),
+      seerrAppearances: rawAppearances,
+      seerrCrewCredits: rawCrew,
+      seerrAvailable: true,
+    );
+    crewCard = cards.firstWhere((c) => c.id == 'crew');
+    crewItems = (crewCard.sections.single.builder(ctx, null) as SpotlightSeerrGridSection).items;
+    expect(crewItems, hasLength(2));
+    expect(crewItems.first.job, 'Director, Writer');
+
+    // Release date ascending
+    await prefs.set(UserPreferences.personPageSortOption, 'releaseDateAsc');
+    cards = cardsFor(
+      _item('Person'),
+      seerrAppearances: rawAppearances,
+      seerrCrewCredits: rawCrew,
+      seerrAvailable: true,
+    );
+    appearancesCard = cards.firstWhere((c) => c.id == 'appearances');
+    expect(
+      (appearancesCard.sections.single.builder(ctx, null) as SpotlightSeerrGridSection).items.map((i) => i.title),
+      ['Zeta Show', 'Alpha Show'],
+    );
   });
 
   test('a person assigns unique backdrops across main backdrop and cards', () {

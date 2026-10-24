@@ -7,6 +7,7 @@ import '../../../../../l10n/app_localizations.dart';
 import '../../../../../preference/detail_section_layout.dart';
 import '../../../../../preference/user_preferences.dart';
 import '../../../../../util/platform_detection.dart';
+import '../../../../../util/seerr_credits.dart';
 import '../shared/nouveau_segmented_selector.dart';
 import 'nouveau_filmography_section.dart';
 import 'nouveau_seerr_filmography_section.dart';
@@ -487,49 +488,11 @@ class NouveauPersonContentState extends State<NouveauPersonContent> {
     }
   }
 
-  List<AggregatedItem> _sortJellyfinItems(List<AggregatedItem> items) {
-    final sortOption = widget.prefs.get(UserPreferences.personPageSortOption);
-
-    final sorted = List<AggregatedItem>.from(items);
-
-    if (sortOption == 'alphabetical') {
-      sorted.sort(
-        (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
+  List<AggregatedItem> _sortJellyfinItems(List<AggregatedItem> items) =>
+      sortJellyfinFilmography(
+        items,
+        widget.prefs.get(UserPreferences.personPageSortOption),
       );
-
-      return sorted;
-    }
-
-    final ascending = sortOption == 'releaseDateAsc';
-
-    sorted.sort((a, b) {
-      final dateA =
-          a.premiereDate ??
-          (a.productionYear != null ? DateTime(a.productionYear!) : null);
-
-      final dateB =
-          b.premiereDate ??
-          (b.productionYear != null ? DateTime(b.productionYear!) : null);
-
-      if (dateA == null && dateB == null) {
-        return a.name.toLowerCase().compareTo(b.name.toLowerCase());
-      }
-
-      if (dateA == null) {
-        return 1;
-      }
-
-      if (dateB == null) {
-        return -1;
-      }
-
-      final comparison = dateA.compareTo(dateB);
-
-      return ascending ? comparison : -comparison;
-    });
-
-    return sorted;
-  }
 
   @override
   Widget build(BuildContext context) {

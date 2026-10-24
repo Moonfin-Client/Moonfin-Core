@@ -467,27 +467,11 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     }
   }
 
-  List<AggregatedItem> _sortJellyfinItems(List<AggregatedItem> list) {
-    final sortOpt = widget.prefs.get(UserPreferences.personPageSortOption);
-    final sorted = List<AggregatedItem>.from(list);
-    if (sortOpt == 'alphabetical') {
-      sorted.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
-    } else {
-      final asc = sortOpt == 'releaseDateAsc';
-      sorted.sort((a, b) {
-        final dateA = a.premiereDate ?? (a.productionYear != null ? DateTime(a.productionYear!) : null);
-        final dateB = b.premiereDate ?? (b.productionYear != null ? DateTime(b.productionYear!) : null);
-        if (dateA == null && dateB == null) {
-          return a.name.toLowerCase().compareTo(b.name.toLowerCase());
-        }
-        if (dateA == null) return 1;
-        if (dateB == null) return -1;
-        final comp = dateA.compareTo(dateB);
-        return asc ? comp : -comp;
-      });
-    }
-    return sorted;
-  }
+  List<AggregatedItem> _sortJellyfinItems(List<AggregatedItem> list) =>
+      sortJellyfinFilmography(
+        list,
+        widget.prefs.get(UserPreferences.personPageSortOption),
+      );
 
   List<SeerrDiscoverItem> _groupSeerrItems(List<SeerrDiscoverItem> list, bool isCrew) {
     if (!widget.prefs.get(UserPreferences.personPageGroupItems)) return list;

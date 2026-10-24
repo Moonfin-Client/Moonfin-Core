@@ -2718,155 +2718,17 @@ class _DetailContentState extends State<_DetailContent> {
     final sortOpt = widget.prefs.get(UserPreferences.personPageSortOption);
     final groupOpt = widget.prefs.get(UserPreferences.personPageGroupItems);
 
-    List<AggregatedItem> sortJellyfinItems(List<AggregatedItem> list) {
-      final sorted = List<AggregatedItem>.from(list);
-      if (sortOpt == 'alphabetical') {
-        sorted.sort(
-          (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
-        );
-      } else {
-        final asc = sortOpt == 'releaseDateAsc';
-        sorted.sort((a, b) {
-          final dateA =
-              a.premiereDate ??
-              (a.productionYear != null ? DateTime(a.productionYear!) : null);
-          final dateB =
-              b.premiereDate ??
-              (b.productionYear != null ? DateTime(b.productionYear!) : null);
-          if (dateA == null && dateB == null) {
-            return a.name.toLowerCase().compareTo(b.name.toLowerCase());
-          }
-          if (dateA == null) return 1;
-          if (dateB == null) return -1;
-          final comp = dateA.compareTo(dateB);
-          return asc ? comp : -comp;
-        });
-      }
-      return sorted;
-    }
+    List<AggregatedItem> sortJellyfinItems(List<AggregatedItem> list) =>
+        sortJellyfinFilmography(list, sortOpt);
 
     List<SeerrDiscoverItem> groupSeerrItems(
       List<SeerrDiscoverItem> list,
       bool isCrew,
-    ) {
-      if (!groupOpt) return list;
-      final grouped = <int, List<SeerrDiscoverItem>>{};
-      for (final item in list) {
-        grouped.putIfAbsent(item.id, () => []).add(item);
-      }
+    ) =>
+        groupOpt ? groupSeerrCredits(list, isCrew: isCrew) : list;
 
-      final result = <SeerrDiscoverItem>[];
-      for (final entries in grouped.values) {
-        final first = entries.first;
-        if (entries.length == 1) {
-          result.add(first);
-          continue;
-        }
-
-        if (isCrew) {
-          final jobs = entries
-              .map((e) => e.job ?? e.department)
-              .where((j) => j != null && j.isNotEmpty)
-              .map((j) => j!)
-              .toSet();
-          final combinedJobs = jobs.join(', ');
-          result.add(
-            SeerrDiscoverItem(
-              id: first.id,
-              mediaType: first.mediaType,
-              title: first.title,
-              name: first.name,
-              originalTitle: first.originalTitle,
-              originalName: first.originalName,
-              posterPath: first.posterPath,
-              backdropPath: first.backdropPath,
-              overview: first.overview,
-              releaseDate: first.releaseDate,
-              firstAirDate: first.firstAirDate,
-              originalLanguage: first.originalLanguage,
-              genreIds: first.genreIds,
-              voteAverage: first.voteAverage,
-              voteCount: first.voteCount,
-              popularity: first.popularity,
-              adult: first.adult,
-              mediaInfo: first.mediaInfo,
-              character: first.character,
-              job: combinedJobs.isNotEmpty ? combinedJobs : null,
-              department: first.department,
-            ),
-          );
-        } else {
-          final characters = entries
-              .map((e) => e.character)
-              .where((c) => c != null && c.isNotEmpty)
-              .map((c) => c!)
-              .toSet();
-          final combinedCharacters = characters.join(', ');
-          result.add(
-            SeerrDiscoverItem(
-              id: first.id,
-              mediaType: first.mediaType,
-              title: first.title,
-              name: first.name,
-              originalTitle: first.originalTitle,
-              originalName: first.originalName,
-              posterPath: first.posterPath,
-              backdropPath: first.backdropPath,
-              overview: first.overview,
-              releaseDate: first.releaseDate,
-              firstAirDate: first.firstAirDate,
-              originalLanguage: first.originalLanguage,
-              genreIds: first.genreIds,
-              voteAverage: first.voteAverage,
-              voteCount: first.voteCount,
-              popularity: first.popularity,
-              adult: first.adult,
-              mediaInfo: first.mediaInfo,
-              character: combinedCharacters.isNotEmpty
-                  ? combinedCharacters
-                  : null,
-              job: first.job,
-              department: first.department,
-            ),
-          );
-        }
-      }
-      return result;
-    }
-
-    List<SeerrDiscoverItem> sortSeerrItems(List<SeerrDiscoverItem> list) {
-      final sorted = List<SeerrDiscoverItem>.from(list);
-      if (sortOpt == 'alphabetical') {
-        sorted.sort(
-          (a, b) => a.displayTitle.toLowerCase().compareTo(
-            b.displayTitle.toLowerCase(),
-          ),
-        );
-      } else {
-        final asc = sortOpt == 'releaseDateAsc';
-        sorted.sort((a, b) {
-          final dateStrA = a.releaseDate ?? a.firstAirDate;
-          final dateStrB = b.releaseDate ?? b.firstAirDate;
-          if (dateStrA == null && dateStrB == null) {
-            return a.displayTitle.toLowerCase().compareTo(
-              b.displayTitle.toLowerCase(),
-            );
-          }
-          if (dateStrA == null) return 1;
-          if (dateStrB == null) return -1;
-          final dateA = DateTime.tryParse(dateStrA);
-          final dateB = DateTime.tryParse(dateStrB);
-          if (dateA == null && dateB == null) {
-            return dateStrA.compareTo(dateStrB);
-          }
-          if (dateA == null) return 1;
-          if (dateB == null) return -1;
-          final comp = dateA.compareTo(dateB);
-          return asc ? comp : -comp;
-        });
-      }
-      return sorted;
-    }
+    List<SeerrDiscoverItem> sortSeerrItems(List<SeerrDiscoverItem> list) =>
+        sortSeerrCredits(list, sortOpt);
 
     final movies = sortJellyfinItems(viewModel.filmographyMovies);
     final series = sortJellyfinItems(viewModel.filmographySeries);

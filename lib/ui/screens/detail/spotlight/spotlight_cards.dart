@@ -14,6 +14,7 @@ import '../../../../preference/detail_section_layout.dart';
 import '../../../../preference/user_preferences.dart';
 import '../../../../util/media_source_summary.dart';
 import '../../../../util/focus/dpad_keys.dart';
+import '../../../../util/seerr_credits.dart';
 import '../../../widgets/detail_reviews.dart';
 import '../../../widgets/focus/focusable_toolbar_button.dart';
 import '../../../widgets/seerr/seerr_collection_banner.dart';
@@ -226,6 +227,22 @@ class _SpotlightCardsBuilder {
   );
 
   bool _shows(DetailSection section) => _visibility.shows(section);
+
+  String get _personSortOption =>
+      prefs.get(UserPreferences.personPageSortOption);
+  bool get _personGroupItems =>
+      prefs.get(UserPreferences.personPageGroupItems);
+
+  List<AggregatedItem> _sortJellyfin(List<AggregatedItem> list) =>
+      sortJellyfinFilmography(list, _personSortOption);
+
+  List<SeerrDiscoverItem> _prepareSeerr(
+    List<SeerrDiscoverItem> list, {
+    required bool isCrew,
+  }) {
+    final grouped = _personGroupItems ? groupSeerrCredits(list, isCrew: isCrew) : list;
+    return sortSeerrCredits(grouped, _personSortOption);
+  }
 
   late final SeerrMediaDetailState? _seerrState = seerrItemTabState(vm);
 
@@ -1013,9 +1030,9 @@ class _SpotlightCardsBuilder {
         );
 
   SpotlightCardSpec? _personFilmographyCard() {
-    final movies = vm.filmographyMovies;
-    final series = vm.filmographySeries;
-    final other = vm.filmography;
+    final movies = _sortJellyfin(vm.filmographyMovies);
+    final series = _sortJellyfin(vm.filmographySeries);
+    final other = _sortJellyfin(vm.filmography);
     final hasLibrary = movies.isNotEmpty || series.isNotEmpty;
     if (!hasLibrary && other.isEmpty) {
       return null;
@@ -1050,22 +1067,23 @@ class _SpotlightCardsBuilder {
 
   SpotlightCardSpec? _personAppearancesCard() {
     if (!_shows(DetailSection.seerrPersonAppearances)) return null;
-    if (seerrAppearances.isEmpty) return null;
+    final items = _prepareSeerr(seerrAppearances, isCrew: false);
+    if (items.isEmpty) return null;
 
     final imageUrl = _personCardBackdrops['appearances'] ??
-        _firstSeerrPoster(seerrAppearances) ??
+        _firstSeerrPoster(items) ??
         fallbackImageUrl;
 
     return SpotlightCardSpec(
       id: 'appearances',
       title: l10n.appearancesSeerr,
-      subtitle: l10n.spotlightItemsCount(seerrAppearances.length),
+      subtitle: l10n.spotlightItemsCount(items.length),
       imageUrl: imageUrl,
       icon: Icons.star_outline,
       sections: [
         _seerrSection(
           l10n.appearancesSeerr,
-          seerrAppearances,
+          items,
           showCredit: true,
         ),
       ],
@@ -1074,22 +1092,23 @@ class _SpotlightCardsBuilder {
 
   SpotlightCardSpec? _personCrewCard() {
     if (!_shows(DetailSection.seerrPersonCrew)) return null;
-    if (seerrCrewCredits.isEmpty) return null;
+    final items = _prepareSeerr(seerrCrewCredits, isCrew: true);
+    if (items.isEmpty) return null;
 
     final imageUrl = _personCardBackdrops['crew'] ??
-        _firstSeerrPoster(seerrCrewCredits) ??
+        _firstSeerrPoster(items) ??
         fallbackImageUrl;
 
     return SpotlightCardSpec(
       id: 'crew',
       title: l10n.crewContributionsSeerr,
-      subtitle: l10n.spotlightItemsCount(seerrCrewCredits.length),
+      subtitle: l10n.spotlightItemsCount(items.length),
       imageUrl: imageUrl,
       icon: Icons.movie_creation_outlined,
       sections: [
         _seerrSection(
           l10n.crewContributionsSeerr,
-          seerrCrewCredits,
+          items,
           showCredit: true,
         ),
       ],

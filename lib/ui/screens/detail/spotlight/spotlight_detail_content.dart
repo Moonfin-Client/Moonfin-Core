@@ -331,10 +331,8 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
       final credits = await loadSeerrPersonCredits(repo, personId);
       if (!mounted) return;
       setState(() {
-        // Seerr lists a title once per credit, so a title has to be folded
-        // into a single entry before it reaches a keyed grid.
-        _seerrAppearances = groupSeerrCredits(credits.cast, isCrew: false);
-        _seerrCrewCredits = groupSeerrCredits(credits.crew, isCrew: true);
+        _seerrAppearances = credits.cast;
+        _seerrCrewCredits = credits.crew;
       });
       _selectPersonBackdrop();
     } catch (_) {
@@ -485,7 +483,7 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
         // before that lands would otherwise keep the sections it was built
         // with and never gain its Seerr rows, which is most visible on the
         // similar card. Re-derive the card while the modal is open instead.
-        refreshOn: _vm,
+        refreshOn: Listenable.merge([_vm, widget.prefs]),
         refresh: () => _liveCardContent(spec),
         // The collection grid arrives a page at a time, and this modal is the
         // only place Spotlight shows it, so it has to ask for the rest.
