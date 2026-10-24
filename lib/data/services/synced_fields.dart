@@ -113,6 +113,7 @@ final List<SyncedField> syncedFields = <SyncedField>[
   SyncedField('detailTrailersExternal', UserPreferences.detailTrailersExternal, SyncCodec.boolean),
   SyncedField('hideDetailsMediaDescription', UserPreferences.hideDetailsMediaDescription, SyncCodec.boolean),
   SyncedField('detailUseSeriesThumbnails', UserPreferences.detailUseSeriesThumbnails, SyncCodec.boolean),
+  SyncedField('detailCollectionsDisplay', UserPreferences.detailCollectionsDisplay, SyncCodec.enumName, enumValues: prefs.DetailCollectionsDisplay.values),
   SyncedField('hideHomeMediaDescription', UserPreferences.hideHomeMediaDescription, SyncCodec.boolean),
   SyncedField('fullScreenRows', UserPreferences.fullScreenRows, SyncCodec.boolean),
   SyncedField('homeImageTypeContinueWatching', UserPreferences.homeRowImageType(prefs.HomeSectionType.resume), SyncCodec.enumName, enumValues: prefs.ImageType.values),

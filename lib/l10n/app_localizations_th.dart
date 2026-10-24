@@ -15491,4 +15491,22 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get subtitled => 'Subtitled';
+
+  @override
+  String get detailCollectionsDisplay => 'Collections';
+
+  @override
+  String get detailCollectionsDisplaySubtitle =>
+      'What the Collections section shows for a title in a collection. As collection cards, each card opens its collection and the other titles in it move in with the similar titles.';
+
+  @override
+  String get detailCollectionsDisplayItems => 'Titles in the collection';
+
+  @override
+  String get detailCollectionsDisplayCards => 'Collection cards';
+
+  @override
+  String moreFromCollection(String collectionName) {
+    return 'More from $collectionName';
+  }
 }

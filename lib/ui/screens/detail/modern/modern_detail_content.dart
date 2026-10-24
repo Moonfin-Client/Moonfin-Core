@@ -879,10 +879,11 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
               _similarFirstFocusNode.requestFocus();
               break;
             case 'collections':
-              if (_vm.parentCollections.length == 1) {
+              final collections = _shownParentCollections(_vm.item!.id);
+              if (_showCollectionCards || collections.length == 1) {
                 _collectionFirstFocusNode.requestFocus();
-              } else if (_vm.parentCollections.isNotEmpty) {
-                _collectionRowFocusNodeFor(_vm.parentCollections.first.id).requestFocus();
+              } else if (collections.isNotEmpty) {
+                _collectionRowFocusNodeFor(collections.first.id).requestFocus();
               }
               break;
             case 'seasons':
@@ -1017,7 +1018,18 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     final hasSimilar =
         sections.shows(DetailSection.moreLikeThis) && _vm.similar.isNotEmpty;
     final hasCollections = sections.shows(DetailSection.collections) &&
-        _vm.parentCollections.isNotEmpty;
+        _shownParentCollections(item.id).isNotEmpty;
+    // As cards, the collections hand their other titles to the Similar tab,
+    // ahead of the titles that are only alike.
+    final collectionRelated = hasCollections && _showCollectionCards
+        ? _collectionRelatedItems(item.id)
+        : const <AggregatedItem>[];
+    final collectionRelatedIds = {for (final r in collectionRelated) r.id};
+    final relatedItems = [
+      ...collectionRelated,
+      if (hasSimilar)
+        ..._vm.similar.where((s) => !collectionRelatedIds.contains(s.id)),
+    ];
     final showDetails = sections.shows(DetailSection.mediaInfo);
 
     final groupedFeatures = <String, List<AggregatedItem>>{};
@@ -1045,6 +1057,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     final chapters = _ModernTab('chapters', l10n.chapters, _chaptersTab);
     final details = _ModernTab('details', l10n.details, _detailsTab);
     final similar = _ModernTab('similar', l10n.similar, (_, _) => _similarTab(context, _vm.similar));
+    final related = _ModernTab('similar', l10n.similar, (_, _) => _similarTab(context, relatedItems));
 
     switch (item.type) {
       case 'Series':
@@ -1062,7 +1075,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
               l10n.collections,
               (context, item) => _collectionsTab(context, item),
             ),
-          if (hasSimilar) similar,
+          if (relatedItems.isNotEmpty) related,
           ?seerrTab,
         ];
       case 'Season':
@@ -1274,7 +1287,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
               l10n.collections,
               (context, item) => _collectionsTab(context, item),
             ),
-          if (hasSimilar) similar,
+          if (relatedItems.isNotEmpty) related,
           ?seerrTab,
         ];
     }
@@ -2741,14 +2754,48 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           ),
         );
 
+  bool get _showCollectionCards =>
+      widget.prefs.get(UserPreferences.detailCollectionsDisplay) ==
+      DetailCollectionsDisplay.cards;
+
+  /// The parent collections the Collections tab lists. As cards that is all of
+  /// them. As rows of titles it is the ones holding a title besides [itemId],
+  /// since a row of just the open title leads nowhere.
+  List<ParentCollection> _shownParentCollections(String itemId) =>
+      _showCollectionCards
+          ? _vm.parentCollections
+          : [
+              for (final collection in _vm.parentCollections)
+                if (collection.itemsExcept(itemId).isNotEmpty) collection,
+            ];
+
+  /// Every parent collection's titles besides [itemId], each listed once
+  /// however many of the collections hold it.
+  List<AggregatedItem> _collectionRelatedItems(String itemId) {
+    final seen = <String>{};
+    return [
+      for (final collection in _vm.parentCollections)
+        for (final member in collection.itemsExcept(itemId))
+          if (seen.add(member.id)) member,
+    ];
+  }
+
   Widget _collectionsTab(BuildContext context, AggregatedItem item) {
-    final collections = _vm.parentCollections;
+    final collections = _shownParentCollections(item.id);
     if (collections.isEmpty) {
       return const SizedBox.shrink();
     }
 
+    if (_showCollectionCards) {
+      return _mediaGrid(
+        context,
+        [for (final collection in collections) collection.boxSetItem],
+        firstFocusNode: _collectionFirstFocusNode,
+      );
+    }
+
     if (collections.length == 1) {
-      return _mediaGrid(context, collections.first.items,
+      return _mediaGrid(context, collections.first.itemsExcept(item.id),
           firstFocusNode: _collectionFirstFocusNode);
     }
 
@@ -2779,6 +2826,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
         separatorBuilder: (_, _) => const SizedBox(height: 32),
         itemBuilder: (context, index) {
           final col = collections[index];
+          final colItems = col.itemsExcept(item.id);
           final rowFocusNode = _collectionRowFocusNodeFor(col.id);
 
           return Builder(
@@ -2806,7 +2854,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                     ),
                     const SizedBox(height: 12),
                     DetailSimilarRow(
-                      items: col.items,
+                      items: colItems,
                       imageApi: _vm.imageApi,
                       prefs: widget.prefs,
                       customCardWidth: isMobile ? 96.0 : 120.0 * desktopScale,
@@ -2829,7 +2877,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                             }
                           }
                           if (event.logicalKey == LogicalKeyboardKey.arrowRight &&
-                              itemIndex == col.items.length - 1) {
+                              itemIndex == colItems.length - 1) {
                             return KeyEventResult.handled;
                           }
                           if (event.logicalKey == LogicalKeyboardKey.arrowUp) {

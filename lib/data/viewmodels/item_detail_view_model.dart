@@ -114,6 +114,17 @@ class ParentCollection {
   List<AggregatedItem> get itemsWithMissing =>
       mergeMissingByReleaseOrder(items, missingItems);
 
+  /// [items] less the title whose page is open. A page listing the
+  /// collection it sits in has no reason to offer the title it is already on.
+  List<AggregatedItem> itemsExcept(String itemId) => [
+    for (final member in items)
+      if (member.id != itemId) member,
+  ];
+
+  /// [itemsWithMissing] less the title whose page is open.
+  List<AggregatedItem> itemsWithMissingExcept(String itemId) =>
+      mergeMissingByReleaseOrder(itemsExcept(itemId), missingItems);
+
   ParentCollection withMissingItems(List<AggregatedItem> missing) =>
       ParentCollection(
         id: id,

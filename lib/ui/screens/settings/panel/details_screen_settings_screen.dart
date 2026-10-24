@@ -210,6 +210,22 @@ class _DetailsScreenSettingsScreenState
                     },
                     onChanged: _pushPersonalizationSync,
                   ),
+                  if (DetailSection.collections.styles.contains(
+                    prefs.get(UserPreferences.detailScreenStyle),
+                  ))
+                    EnumPreferenceTile<DetailCollectionsDisplay>(
+                      preference: UserPreferences.detailCollectionsDisplay,
+                      title: l10n.detailCollectionsDisplay,
+                      description: l10n.detailCollectionsDisplaySubtitle,
+                      icon: Icons.collections_bookmark_outlined,
+                      labelOf: (v) => switch (v) {
+                        DetailCollectionsDisplay.items =>
+                          l10n.detailCollectionsDisplayItems,
+                        DetailCollectionsDisplay.cards =>
+                          l10n.detailCollectionsDisplayCards,
+                      },
+                      onChanged: _pushPersonalizationSync,
+                    ),
                 ],
               ),
               _SectionHeader(l10n.ratings),

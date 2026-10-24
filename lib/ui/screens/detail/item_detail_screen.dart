@@ -2272,22 +2272,44 @@ class _DetailContentState extends State<_DetailContent> {
   List<Widget> _buildMovieContent(BuildContext context, AggregatedItem item) {
     final actionButtonsFocusNode =
         widget.initialFocusNode ?? _sectionFocusNode('detailActionButtons');
-    final collections = [
-      if (_visibility.shows(DetailSection.collections))
-        for (final collection in viewModel.parentCollections)
-          if (collection.items.isNotEmpty) collection,
-    ];
+    final l10n = AppLocalizations.of(context);
+    final collections = _visibility.shows(DetailSection.collections)
+        ? viewModel.parentCollections
+        : const <ParentCollection>[];
+    final showCollectionCards =
+        prefs.get(UserPreferences.detailCollectionsDisplay) ==
+        DetailCollectionsDisplay.cards;
+    final collectionMembers = [
+      for (final collection in collections)
+        (collection: collection, items: collection.itemsExcept(item.id)),
+    ].where((entry) => entry.items.isNotEmpty);
 
     final specs = <_SectionSpec>[
       ?_metadataSpec(item, 'detailMovieMetadata'),
       ..._chapterAndExtraSpecs(context, item),
       ?_castSpec(context, 'detailMovieCast'),
-      for (final collection in collections)
+      if (showCollectionCards && collections.isNotEmpty)
         _itemRowSpec(
-          label: 'detailMovieCollection:${collection.id}',
-          title: collection.name,
-          items: collection.items,
+          label: 'detailMovieCollections',
+          title: l10n.collections,
+          items: [for (final collection in collections) collection.boxSetItem],
         ),
+      if (!showCollectionCards)
+        for (final entry in collectionMembers)
+          _itemRowSpec(
+            label: 'detailMovieCollection:${entry.collection.id}',
+            title: entry.collection.name,
+            items: entry.items,
+          ),
+      // With the collections shown as cards, their other titles sit with
+      // the rest of the related titles.
+      if (showCollectionCards)
+        for (final entry in collectionMembers)
+          _itemRowSpec(
+            label: 'detailMovieMoreFrom:${entry.collection.id}',
+            title: l10n.moreFromCollection(entry.collection.name),
+            items: entry.items,
+          ),
       ?_similarSpec(context, 'detailMovieSimilar'),
       ..._seerrSpecs(context),
     ];

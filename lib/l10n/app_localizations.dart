@@ -27146,6 +27146,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Subtitled'**
   String get subtitled;
+
+  /// Setting for what the Collections section of a details screen shows
+  ///
+  /// In en, this message translates to:
+  /// **'Collections'**
+  String get detailCollectionsDisplay;
+
+  /// Explanation under the Collections setting on the details screen settings
+  ///
+  /// In en, this message translates to:
+  /// **'What the Collections section shows for a title in a collection. As collection cards, each card opens its collection and the other titles in it move in with the similar titles.'**
+  String get detailCollectionsDisplaySubtitle;
+
+  /// Option for the Collections section to list the other titles in each collection the title belongs to
+  ///
+  /// In en, this message translates to:
+  /// **'Titles in the collection'**
+  String get detailCollectionsDisplayItems;
+
+  /// Option for the Collections section to show a card for each collection the title belongs to, which opens that collection
+  ///
+  /// In en, this message translates to:
+  /// **'Collection cards'**
+  String get detailCollectionsDisplayCards;
+
+  /// Heading over the other titles in a collection the open title belongs to, shown with the related titles
+  ///
+  /// In en, this message translates to:
+  /// **'More from {collectionName}'**
+  String moreFromCollection(String collectionName);
 }
 
 class _AppLocalizationsDelegate

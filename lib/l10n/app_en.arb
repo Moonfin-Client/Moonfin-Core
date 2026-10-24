@@ -14448,5 +14448,31 @@
   "subtitled": "Subtitled",
   "@subtitled": {
     "description": "Chip in the trailer picker on a trailer that has subtitles burned into the video"
+  },
+  "detailCollectionsDisplay": "Collections",
+  "@detailCollectionsDisplay": {
+    "description": "Setting for what the Collections section of a details screen shows"
+  },
+  "detailCollectionsDisplaySubtitle": "What the Collections section shows for a title in a collection. As collection cards, each card opens its collection and the other titles in it move in with the similar titles.",
+  "@detailCollectionsDisplaySubtitle": {
+    "description": "Explanation under the Collections setting on the details screen settings"
+  },
+  "detailCollectionsDisplayItems": "Titles in the collection",
+  "@detailCollectionsDisplayItems": {
+    "description": "Option for the Collections section to list the other titles in each collection the title belongs to"
+  },
+  "detailCollectionsDisplayCards": "Collection cards",
+  "@detailCollectionsDisplayCards": {
+    "description": "Option for the Collections section to show a card for each collection the title belongs to, which opens that collection"
+  },
+  "moreFromCollection": "More from {collectionName}",
+  "@moreFromCollection": {
+    "description": "Heading over the other titles in a collection the open title belongs to, shown with the related titles",
+    "placeholders": {
+      "collectionName": {
+        "type": "String",
+        "example": "James Bond Collection"
+      }
+    }
   }
 }

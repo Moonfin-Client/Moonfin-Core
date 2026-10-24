@@ -413,6 +413,12 @@ enum MusicLibraryStyle {
   immersive;
 }
 
+/// What the Collections section of a details screen shows for a title that
+/// belongs to collections. [items] lists each collection's other titles.
+/// [cards] shows the collections themselves, so each one opens its own page,
+/// and moves their other titles in with the similar titles.
+enum DetailCollectionsDisplay { items, cards }
+
 /// Selectable algorithm source for similarity recommendation system.
 enum RecommendationSystemSource {
   local,

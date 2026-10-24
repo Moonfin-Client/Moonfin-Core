@@ -14,6 +14,7 @@ import 'package:moonfin/data/viewmodels/seerr_media_detail_view_model.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/l10n/app_localizations_en.dart';
 import 'package:moonfin/preference/detail_section_layout.dart';
+import 'package:moonfin/preference/preference_constants.dart';
 import 'package:moonfin/preference/seerr_preferences.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/screens/detail/spotlight/spotlight_cards.dart';
@@ -618,6 +619,89 @@ void main() {
         .sections
         .single;
     expect(section.count, 3);
+  });
+
+  test('collections card leaves out the title whose page is open', () {
+    when(() => vm.parentCollections).thenReturn([
+      ParentCollection(
+        id: 'box-1',
+        name: 'Alien Anthology',
+        boxSetItem: _child('box-1', 'BoxSet'),
+        items: [_child('item-1', 'Movie'), _child('m2', 'Movie')],
+      ),
+    ]);
+
+    final section = cardsFor(_item('Movie'))
+        .singleWhere((c) => c.id == 'collections')
+        .sections
+        .single;
+    // The collection itself and the one other title.
+    expect(section.count, 2);
+  });
+
+  test('as collection cards, the other titles move to recommendations', () async {
+    await prefs.set(
+      UserPreferences.detailCollectionsDisplay,
+      DetailCollectionsDisplay.cards,
+    );
+    when(() => vm.parentCollections).thenReturn([
+      ParentCollection(
+        id: 'box-1',
+        name: 'Alien Anthology',
+        boxSetItem: _child('box-1', 'BoxSet'),
+        items: [_child('item-1', 'Movie'), _child('m2', 'Movie')],
+      ),
+      // Nothing in it but the open title, so it adds no section.
+      ParentCollection(
+        id: 'box-2',
+        name: 'Director Picks',
+        boxSetItem: _child('box-2', 'BoxSet'),
+        items: [_child('item-1', 'Movie')],
+      ),
+    ]);
+    when(() => vm.similar).thenReturn([
+      _child('m2', 'Movie'),
+      _child('s1', 'Movie'),
+    ]);
+    final cards = cardsFor(_item('Movie'));
+
+    final collections = cards
+        .singleWhere((c) => c.id == 'collections')
+        .sections
+        .single;
+    expect(collections.title, _l10n.collections);
+    expect(collections.count, 2);
+
+    final similar = cards.singleWhere((c) => c.id == 'similar');
+    expect(similar.sections.map((s) => s.title), [
+      _l10n.moreFromCollection('Alien Anthology'),
+      _l10n.similar,
+    ]);
+    // m2 is listed under its collection, not again as a similar title.
+    expect(similar.sections.map((s) => s.count), [1, 1]);
+    expect(similar.subtitle, '2 titles');
+  });
+
+  test('as collection cards, a collection of only the open title still opens', () async {
+    await prefs.set(
+      UserPreferences.detailCollectionsDisplay,
+      DetailCollectionsDisplay.cards,
+    );
+    when(() => vm.parentCollections).thenReturn([
+      ParentCollection(
+        id: 'box-1',
+        name: 'James Bond Collection',
+        boxSetItem: _child('box-1', 'BoxSet'),
+        items: [_child('item-1', 'Movie')],
+      ),
+    ]);
+    final cards = cardsFor(_item('Movie'));
+
+    expect(
+      cards.singleWhere((c) => c.id == 'collections').sections.single.count,
+      1,
+    );
+    expect(cards.where((c) => c.id == 'similar'), isEmpty);
   });
 
   test('boxset items card combines library items and missing seerr items', () {

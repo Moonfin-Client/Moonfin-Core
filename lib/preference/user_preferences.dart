@@ -488,6 +488,7 @@ class UserPreferences extends ChangeNotifier {
     'pref_detail_trailers_external',
     'pref_hide_details_media_description',
     'pref_detail_use_series_thumbnails',
+    'pref_detail_collections_display',
     'pref_hide_home_media_description',
     'pref_display_audio_rows',
     'pref_display_since_you_watched_rows',
@@ -1695,6 +1696,14 @@ class UserPreferences extends ChangeNotifier {
   static final hideHomeMediaDescription = Preference(
     key: 'pref_hide_home_media_description',
     defaultValue: false,
+  );
+
+  /// What a details screen's Collections section shows. Stored per server
+  /// like [detailScreenStyle].
+  static final detailCollectionsDisplay = EnumPreference(
+    key: 'pref_detail_collections_display',
+    defaultValue: DetailCollectionsDisplay.items,
+    values: DetailCollectionsDisplay.values,
   );
 
   /// Algorithm source for the similar items recommendation system. Stored per server and

@@ -9,6 +9,7 @@ import '../../../../data/viewmodels/seerr_media_detail_view_model.dart'
     show SeerrMediaDetailState;
 import '../../../../l10n/app_localizations.dart';
 import '../../../../preference/detail_section_layout.dart';
+import '../../../../preference/preference_constants.dart';
 import '../../../../preference/user_preferences.dart';
 import '../../../../util/media_source_summary.dart';
 import '../../../widgets/seerr/seerr_collection_banner.dart';
@@ -629,8 +630,15 @@ class _SpotlightCardsBuilder {
   }
 
   SpotlightCardSpec? _similarCard() {
+    final collectionRelated = _collectionRelated();
+    final collectionRelatedIds = {
+      for (final entry in collectionRelated)
+        for (final member in entry.items) member.id,
+    };
     final similar = _shows(DetailSection.moreLikeThis)
         ? vm.similar
+              .where((s) => !collectionRelatedIds.contains(s.id))
+              .toList()
         : const <AggregatedItem>[];
     final seerrState = _seerrState;
     final pieces = _seerrPieces;
@@ -640,15 +648,22 @@ class _SpotlightCardsBuilder {
     final seerrSimilar = pieces.similar
         ? seerrState!.similar
         : const <SeerrDiscoverItem>[];
-    if (similar.isEmpty &&
+    if (collectionRelated.isEmpty &&
+        similar.isEmpty &&
         seerrRecommendations.isEmpty &&
         seerrSimilar.isEmpty) {
       return null;
     }
-    final imageUrl = similar.isNotEmpty
+    // Library titles only, since a missing title has no server artwork.
+    final firstLibraryItem = [
+      for (final entry in collectionRelated)
+        ...entry.collection.itemsExcept(item.id),
+      ...similar,
+    ].firstOrNull;
+    final imageUrl = firstLibraryItem != null
         ? spotlightLandscapeImageUrl(
             _imageApi,
-            similar.first,
+            firstLibraryItem,
             fallbackUrl: fallbackImageUrl,
           )
         : (_firstSeerrBackdrop(
@@ -670,7 +685,10 @@ class _SpotlightCardsBuilder {
       id: 'similar',
       title: l10n.recommendations,
       subtitle: l10n.spotlightTitlesCount(
-        similar.length + seerrRecommendations.length + seerrSimilar.length,
+        collectionRelatedIds.length +
+            similar.length +
+            seerrRecommendations.length +
+            seerrSimilar.length,
       ),
       imageUrl: imageUrl ?? fallbackImageUrl,
       icon: Icons.auto_awesome_outlined,
@@ -698,6 +716,11 @@ class _SpotlightCardsBuilder {
                   SeerrStreamingRow(providers: seerrState.streamingProviders),
             ),
         ],
+        for (final entry in collectionRelated)
+          _mediaSection(
+            l10n.moreFromCollection(entry.collection.name),
+            entry.items,
+          ),
         if (similar.isNotEmpty) _mediaSection(librarySectionTitle, similar),
         if (seerrRecommendations.isNotEmpty)
           _seerrSection(
@@ -713,27 +736,54 @@ class _SpotlightCardsBuilder {
     );
   }
 
+  bool get _showCollectionCards =>
+      prefs.get(UserPreferences.detailCollectionsDisplay) ==
+      DetailCollectionsDisplay.cards;
+
+  /// A parent collection's titles besides the one whose page is open, with
+  /// the ones the library lacks when the viewer asked for those.
+  List<AggregatedItem> _collectionMembers(ParentCollection collection) =>
+      prefs.get(UserPreferences.seerrShowMissingCollectionItems)
+      ? collection.itemsWithMissingExcept(item.id)
+      : collection.itemsExcept(item.id);
+
+  /// With the collections shown as cards, their other titles go to the
+  /// Recommendations card instead, one section per collection that has any.
+  List<({ParentCollection collection, List<AggregatedItem> items})>
+  _collectionRelated() {
+    if (!_showCollectionCards || !_shows(DetailSection.collections)) {
+      return const [];
+    }
+    return [
+      for (final collection in vm.parentCollections)
+        (collection: collection, items: _collectionMembers(collection)),
+    ].where((entry) => entry.items.isNotEmpty).toList();
+  }
+
   SpotlightCardSpec? _collectionsCard() {
     if (!_shows(DetailSection.collections)) return null;
     final collections = vm.parentCollections;
     if (collections.isEmpty) return null;
     final imageUrl = _firstCollectionImage(collections) ?? fallbackImageUrl;
-    final showMissing = prefs.get(
-      UserPreferences.seerrShowMissingCollectionItems,
-    );
     return SpotlightCardSpec(
       id: 'collections',
       title: l10n.spotlightCollectionsCard,
       subtitle: l10n.spotlightCollectionsCount(collections.length),
       imageUrl: imageUrl,
       icon: Icons.collections_bookmark_outlined,
-      sections: [
-        for (final collection in collections)
-          _mediaSection(collection.name, [
-            collection.boxSetItem,
-            ...(showMissing ? collection.itemsWithMissing : collection.items),
-          ]),
-      ],
+      sections: _showCollectionCards
+          ? [
+              _mediaSection(l10n.collections, [
+                for (final collection in collections) collection.boxSetItem,
+              ]),
+            ]
+          : [
+              for (final collection in collections)
+                _mediaSection(collection.name, [
+                  collection.boxSetItem,
+                  ..._collectionMembers(collection),
+                ]),
+            ],
     );
   }
 

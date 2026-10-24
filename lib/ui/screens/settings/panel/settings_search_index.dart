@@ -711,6 +711,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       keywords: ['similar', 'suggestions'],
     ),
     details.leaf(
+      'pref_detail_collections_display',
+      l10n.detailCollectionsDisplay,
+      subtitle: l10n.detailCollectionsDisplaySubtitle,
+      keywords: ['collection', 'box set', 'more like this'],
+    ),
+    details.leaf(
       'enableAdditionalRatings',
       l10n.additionalRatings,
       subtitle: l10n.showMdbListAndTmdbRatings,

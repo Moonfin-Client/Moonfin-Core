@@ -48,6 +48,7 @@ void main() {
     'detailButtonOrderDesktop',
     'detailButtonOrderMobile',
     'detailButtonOrderTv',
+    'detailCollectionsDisplay',
     'detailExpandedTabs',
     'detailMetadataOrderDesktop',
     'detailMetadataOrderMobile',

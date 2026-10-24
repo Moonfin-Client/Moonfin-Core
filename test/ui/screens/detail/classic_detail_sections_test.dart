@@ -15,6 +15,8 @@ import 'package:moonfin/data/services/row_data_source.dart';
 import 'package:moonfin/data/viewmodels/item_detail_view_model.dart';
 import 'package:moonfin/l10n/app_localizations.dart';
 import 'package:moonfin/preference/detail_section_layout.dart';
+import 'package:moonfin/preference/preference_constants.dart'
+    show DetailCollectionsDisplay;
 import 'package:moonfin/preference/seerr_preferences.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/screens/detail/item_detail_screen.dart';
@@ -144,6 +146,30 @@ void main() {
     sections.map((s) => s.id).join(','),
   );
 
+  /// Files the movie under one collection holding it and [others].
+  void inCollection(List<String> others) {
+    when(() => itemsApi.getAncestors('item-1')).thenAnswer(
+      (_) async => [
+        {'Id': 'box-1', 'Type': 'BoxSet', 'Name': 'James Bond Collection'},
+      ],
+    );
+    when(
+      () => itemsApi.getItems(
+        parentId: 'box-1',
+        sortBy: any(named: 'sortBy'),
+        sortOrder: any(named: 'sortOrder'),
+        fields: any(named: 'fields'),
+      ),
+    ).thenAnswer(
+      (_) async => {
+        'Items': [
+          for (final id in ['item-1', ...others])
+            {'Id': id, 'Type': 'Movie', 'Name': id},
+        ],
+      },
+    );
+  }
+
   Future<FocusNode> pumpMovie(WidgetTester tester) async {
     tester.view.physicalSize = const Size(1920, 1080);
     tester.view.devicePixelRatio = 1.0;
@@ -255,5 +281,63 @@ void main() {
       await press(tester, LogicalKeyboardKey.arrowDown),
       'detailMovieCast',
     );
+  });
+
+  testWidgets('a collection row lists the other titles, not the open movie', (
+    tester,
+  ) async {
+    inCollection(const ['movie-2']);
+    await pumpMovie(tester);
+
+    for (var i = 0; i < 3; i++) {
+      await press(tester, LogicalKeyboardKey.arrowDown);
+    }
+    expect(
+      await press(tester, LogicalKeyboardKey.arrowDown),
+      'detailMovieCollection:box-1',
+    );
+    expect(find.text('James Bond Collection'), findsOneWidget);
+    expect(find.text('movie-2'), findsWidgets);
+    expect(find.text('item-1'), findsNothing);
+  });
+
+  testWidgets('a collection holding only the open movie gets no row', (
+    tester,
+  ) async {
+    inCollection(const []);
+    await pumpMovie(tester);
+
+    for (var i = 0; i < 3; i++) {
+      await press(tester, LogicalKeyboardKey.arrowDown);
+    }
+    expect(
+      await press(tester, LogicalKeyboardKey.arrowDown),
+      'detailMovieCast',
+    );
+    expect(find.text('James Bond Collection'), findsNothing);
+  });
+
+  testWidgets('as collection cards, the collection opens from its own row', (
+    tester,
+  ) async {
+    await prefs.set(
+      UserPreferences.detailCollectionsDisplay,
+      DetailCollectionsDisplay.cards,
+    );
+    inCollection(const ['movie-2']);
+    await pumpMovie(tester);
+
+    for (var i = 0; i < 3; i++) {
+      await press(tester, LogicalKeyboardKey.arrowDown);
+    }
+    expect(
+      await press(tester, LogicalKeyboardKey.arrowDown),
+      'detailMovieCollections',
+    );
+    expect(
+      await press(tester, LogicalKeyboardKey.arrowDown),
+      'detailMovieMoreFrom:box-1',
+    );
+    expect(find.text('More from James Bond Collection'), findsOneWidget);
   });
 }
