@@ -14,6 +14,7 @@ class _MockMediaServerClient extends Mock implements MediaServerClient {}
 class _FakeTasksApi extends Fake implements AdminTasksApi {
   final hiddenArgs = <bool?>[];
   final started = <String>[];
+  var extraCategories = <String>[];
 
   @override
   Future<List<Map<String, dynamic>>> getTasks({bool? isHidden}) async {
@@ -35,6 +36,8 @@ class _FakeTasksApi extends Fake implements AdminTasksApi {
       },
       // A task without a category is left out.
       {'Id': 'loose', 'Name': 'No category task', 'State': 'Idle'},
+      for (final category in extraCategories)
+        {'Id': category, 'Name': category, 'Category': category, 'State': 'Idle'},
     ];
   }
 
@@ -62,8 +65,8 @@ void main() {
     await GetIt.instance.reset();
   });
 
-  Future<void> pump(WidgetTester tester) async {
-    tester.view.physicalSize = const Size(1200, 1600);
+  Future<void> pump(WidgetTester tester, {Size size = const Size(1200, 1600)}) async {
+    tester.view.physicalSize = size;
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
     await tester.pumpWidget(
@@ -100,5 +103,20 @@ void main() {
     await tester.tap(find.byTooltip(l10n.adminTaskRun));
     await tester.pumpAndSettle();
     expect(api.started, ['scan']);
+  });
+  testWidgets('many categories stay on one scrolling row', (tester) async {
+    api.extraCategories = [for (var i = 0; i < 20; i++) 'Plugin category $i'];
+    await pump(tester, size: const Size(390, 844));
+
+    final chips = find.byType(FilterChip);
+    expect(chips, findsNWidgets(22));
+    final rows = {
+      for (var i = 0; i < 22; i++) tester.getTopLeft(chips.at(i)).dy,
+    };
+    expect(rows, hasLength(1));
+
+    final position = Scrollable.of(tester.element(chips.first)).position;
+    expect(position.axis, Axis.horizontal);
+    expect(position.maxScrollExtent, greaterThan(0));
   });
 }
