@@ -158,6 +158,7 @@ void main() {
     when(() => vm.filmographyMovies).thenReturn(const []);
     when(() => vm.filmographySeries).thenReturn(const []);
     when(() => vm.collectionItems).thenReturn(const []);
+    when(() => vm.collectionPlayableItems).thenReturn(const []);
     when(() => vm.missingCollectionItems).thenReturn(const []);
     when(() => vm.playlistItems).thenReturn(const []);
     when(() => vm.parentCollections).thenReturn(const []);
