@@ -14407,33 +14407,122 @@
   "@unableToKeepAsComplete": {
     "description": "Snackbar shown when Keep as Complete fails"
   },
-  "possibleFutureShowing": "Possible future airing",
-  "@possibleFutureShowing": {
-    "description": "Heading identifying the following title, description, time and channel as an uncertain matching future airing"
+  "recordPromptTitle": "Record {name}",
+  "@recordPromptTitle": {
+    "description": "Title of the Record prompt for a program that is already airing",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
-  "knownFutureShowing": "Next airing",
-  "@knownFutureShowing": {
-    "description": "Heading identifying the following title, description, time and channel as the next matching airing"
+  "recordPromptStarted": "{minutes, plural, =1{This showing started 1 minute ago, so the recording will miss the start.} other{This showing started {minutes} minutes ago, so the recording will miss the start.}}",
+  "@recordPromptStarted": {
+    "description": "First line of the Record prompt, saying how long ago the program started",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
   },
-  "recordPromptAlreadyStarted": "This program has already started.",
-  "@recordPromptAlreadyStarted": {
-    "description": "Record prompt shown when recording a program that is already airing"
+  "recordPromptAlsoRecordLater": "Also record the future showing to get a complete recording?",
+  "@recordPromptAlsoRecordLater": {
+    "description": "Record prompt question when a future showing is shown below it"
   },
-  "alsoRecordLaterShowing": "Record Both Showings",
-  "@alsoRecordLaterShowing": {
-    "description": "Record prompt choice: record now and also record a later showing of the same episode"
+  "recordPromptSearchLater": "Also record a future showing automatically once one is found, to get a complete recording?",
+  "@recordPromptSearchLater": {
+    "description": "Record prompt question when no future showing is known yet and Moonfin will look for one"
   },
-  "justRecordNow": "Just Record This One",
-  "@justRecordNow": {
-    "description": "Record prompt choice: only record the program that is already airing"
+  "recordPromptNow": "Now",
+  "@recordPromptNow": {
+    "description": "Label of the Record prompt card for the program that is airing now"
   },
-  "laterShowingRequested": "Recording started. A later showing will be recorded too.",
+  "recordPromptLater": "Future showing",
+  "@recordPromptLater": {
+    "description": "Label of the Record prompt card for the future showing that would also be recorded"
+  },
+  "recordPromptAired": "{minutes, plural, =1{1 min already aired} other{{minutes} min already aired}}",
+  "@recordPromptAired": {
+    "description": "Beside the progress bar on the Record prompt's Now card",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "recordPromptUncertainMatch": "Matched by title and description only. Check it's the same program.",
+  "@recordPromptUncertainMatch": {
+    "description": "Caution under the future showing when it has no season and episode numbers to confirm it is the same program"
+  },
+  "recordPromptDescriptionsDiffer": "The descriptions differ, so this may be a different program.",
+  "@recordPromptDescriptionsDiffer": {
+    "description": "Caution under the future showing when its description differs from the program airing now"
+  },
+  "recordPromptSameEpisode": "Same episode (S{season}E{episode})",
+  "@recordPromptSameEpisode": {
+    "description": "Note under the future showing when its season and episode match the program airing now",
+    "placeholders": {
+      "season": {
+        "type": "int"
+      },
+      "episode": {
+        "type": "int"
+      }
+    }
+  },
+  "recordPromptAlreadyScheduled": "Already set to record",
+  "@recordPromptAlreadyScheduled": {
+    "description": "Note in the future showing's card when a recording is already scheduled for it, by anyone"
+  },
+  "recordPromptTomorrow": "Tomorrow",
+  "@recordPromptTomorrow": {
+    "description": "When the future showing airs, used in the Record Now and ... button"
+  },
+  "recordNowOnly": "Record Now Only",
+  "@recordNowOnly": {
+    "description": "Record prompt choice: only record the program that is airing now"
+  },
+  "recordNowAnd": "Record Now and {when}",
+  "@recordNowAnd": {
+    "description": "Record prompt choice: record now and the future showing. The placeholder is a time today, Tomorrow, a weekday or a short date",
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "recordNowAndLater": "Record Now and Future Showing",
+  "@recordNowAndLater": {
+    "description": "Record prompt choice when no future showing is known yet: record now and let Moonfin find a future showing"
+  },
+  "recordOnlyLater": "Record {when} Only",
+  "@recordOnlyLater": {
+    "description": "Record prompt choice: skip the airing now and record only the future showing. The placeholder is a time today, Tomorrow, a weekday or a short date",
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "recordLaterShowingOnly": "Record Future Showing Only",
+  "@recordLaterShowingOnly": {
+    "description": "Record prompt choice when no future showing is known yet: skip the airing now and let Moonfin record a future showing"
+  },
+  "laterShowingOnlyRequested": "The future showing will be recorded.",
+  "@laterShowingOnlyRequested": {
+    "description": "Snackbar after choosing to record only the future showing"
+  },
+  "unableToRequestLaterShowingOnly": "Couldn't request the future showing, so nothing will be recorded.",
+  "@unableToRequestLaterShowingOnly": {
+    "description": "Snackbar when only the future showing was chosen and asking for it failed"
+  },
+  "laterShowingRequested": "Recording started. A future showing will be recorded too.",
   "@laterShowingRequested": {
-    "description": "Snackbar after recording now and asking for a later showing"
+    "description": "Snackbar after recording now and asking for a future showing"
   },
-  "unableToRequestLaterShowing": "Recording started, but couldn't request a later showing.",
+  "unableToRequestLaterShowing": "Recording started, but couldn't request a future showing.",
   "@unableToRequestLaterShowing": {
-    "description": "Snackbar when the recording started but asking for a later showing failed"
+    "description": "Snackbar when the recording started but asking for a future showing failed"
   },
   "trailerCount": "{count, plural, =1{1 trailer} other{{count} trailers}}",
   "@trailerCount": {
@@ -14551,13 +14640,5 @@
   "readOnTmdb": "Read on TMDB",
   "@readOnTmdb": {
     "description": "Button in an opened review that opens the review on the TMDB website"
-  },
-  "recordCompleteShowingQuestion": "Would you like to also record a later showing to get a complete recording?",
-  "@recordCompleteShowingQuestion": {
-    "description": "Final question immediately above the buttons when no future airing is currently known"
-  },
-  "recordThisShowingQuestion": "Would you like to also record this showing to get a complete recording?",
-  "@recordThisShowingQuestion": {
-    "description": "Final question immediately above the buttons after the future airing details"
   }
 }

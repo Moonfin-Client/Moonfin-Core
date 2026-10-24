@@ -1097,6 +1097,10 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
               createTimer: () => _client.liveTvApi.createTimer(program.id),
               stillValid: () =>
                   mounted && !_isStopping && _currentProgram?.id == program.id,
+              channel: recordPromptChannel(
+                _currentChannel.number,
+                _currentChannel.name,
+              ),
             );
             if (outcome == RecordAiringOutcome.cancelled) return;
             message = recordAiringMessage(l10n, outcome);

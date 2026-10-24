@@ -11,8 +11,10 @@ import '../../../preference/user_preferences.dart';
 import '../../../util/clock_format.dart';
 import '../../../util/idiom/app_ui_idiom.dart';
 import '../adaptive/adaptive_dialog.dart';
+import '../marquee_text.dart';
 import '../media_badge.dart';
 import '../overlay_sheet.dart';
+import 'live_tv_recording_icon.dart';
 
 /// Amber, so it reads as a warning next to the watched and favorite badges
 /// without looking like the red recording mark.
@@ -116,14 +118,17 @@ class IncompleteRecordingPill extends StatelessWidget {
   }
 }
 
+String _clock(DateTime time) => formatClockTime(
+  time,
+  use24Hour:
+      GetIt.instance.isRegistered<UserPreferences>() &&
+      GetIt.instance<UserPreferences>().get(UserPreferences.use24HourClock),
+);
+
 /// "Thu 8:00 PM", in the user's clock format.
 String formatShowingTime(BuildContext context, DateTime time) {
   final locale = Localizations.localeOf(context).toLanguageTag();
-  final use24Hour =
-      GetIt.instance.isRegistered<UserPreferences>() &&
-      GetIt.instance<UserPreferences>().get(UserPreferences.use24HourClock);
-  return '${DateFormat.E(locale).format(time)} '
-      '${formatClockTime(time, use24Hour: use24Hour)}';
+  return '${DateFormat.E(locale).format(time)} ${_clock(time)}';
 }
 
 /// The one-line status under an incomplete recording's title, such as
@@ -246,27 +251,99 @@ bool offersCompleteShowingFor(
   );
 }
 
-enum RecordPromptChoice { alsoRecordLaterShowing, justRecordNow }
+enum RecordPromptChoice {
+  alsoRecordLaterShowing,
+  justRecordNow,
+  justRecordLater,
+}
+
+/// The airing the user pressed Record on, as the Record prompt shows it.
+class RecordPromptAiring {
+  final DateTime start;
+  final DateTime? end;
+  final String channel;
+  final String description;
+  final int? season;
+  final int? episode;
+
+  const RecordPromptAiring({
+    required this.start,
+    this.end,
+    this.channel = '',
+    this.description = '',
+    this.season,
+    this.episode,
+  });
+
+  /// Reads a guide program's raw item. Guide items carry only the channel's
+  /// id, so the caller passes the channel's number and name when it has them.
+  factory RecordPromptAiring.fromProgram(
+    Map<String, dynamic> program,
+    DateTime start, {
+    String? channel,
+  }) => RecordPromptAiring(
+    start: start,
+    end: DateTime.tryParse(program['EndDate'] as String? ?? '')?.toLocal(),
+    channel:
+        channel ??
+        recordPromptChannel(program['ChannelNumber'], program['ChannelName']),
+    description: (program['Overview'] as String?)?.trim() ?? '',
+    season: (program['ParentIndexNumber'] as num?)?.toInt(),
+    episode: (program['IndexNumber'] as num?)?.toInt(),
+  );
+}
+
+/// "16.1 WPTODT": a channel's number and name, skipping whichever is missing.
+String recordPromptChannel(Object? number, Object? name) => [number, name]
+    .whereType<Object>()
+    .map((part) => part.toString().trim())
+    .where((part) => part.isNotEmpty)
+    .join(' ');
+
+/// When a later showing airs, as the Record prompt's button names it: a time
+/// today, Tomorrow, a weekday within the week, otherwise a short date.
+String laterShowingWhen(BuildContext context, DateTime start, {DateTime? now}) {
+  final locale = Localizations.localeOf(context).toLanguageTag();
+  final from = DateUtils.dateOnly(now ?? DateTime.now());
+  // Rounded so a daylight saving change doesn't shorten a day to 23 hours.
+  final days = (DateUtils.dateOnly(start).difference(from).inHours / 24)
+      .round();
+  if (days <= 0) return _clock(start);
+  if (days == 1) return AppLocalizations.of(context).recordPromptTomorrow;
+  if (days < 7) return DateFormat.EEEE(locale).format(start);
+  return DateFormat.MMMd(locale).format(start);
+}
+
+/// Whether two program descriptions say different things, ignoring case and
+/// spacing. A missing description proves nothing either way.
+bool descriptionsDiffer(String a, String b) {
+  String normalized(String text) =>
+      text.trim().replaceAll(RegExp(r'\s+'), ' ').toLowerCase();
+  final left = normalized(a);
+  final right = normalized(b);
+  return left.isNotEmpty && right.isNotEmpty && left != right;
+}
 
 /// Asks whether to also record a later showing of a program that has already
-/// started. Back records nothing and returns null.
+/// started, showing the airing now and the later one as labelled cards so it
+/// is clear which is which. Back records nothing and returns null.
 Future<RecordPromptChoice?> showRecordPrompt({
   required BuildContext context,
   required String programName,
+  required RecordPromptAiring airing,
   SuggestedShowing? suggestion,
   bool searchForCompleteShowing = true,
 }) {
   final l10n = AppLocalizations.of(context);
-  final suggestedTime = suggestion == null
-      ? null
-      : '${DateFormat.yMMMd(Localizations.localeOf(context).toLanguageTag()).format(suggestion.start)} · ${formatShowingTime(context, suggestion.start)}';
+  final locale = Localizations.localeOf(context).toLanguageTag();
+  final now = DateTime.now();
   final uncertain = suggestion != null && !searchForCompleteShowing;
-  final channel = suggestion == null
-      ? ''
-      : [
-          suggestion.channelNumber,
-          suggestion.channelName,
-        ].whereType<String>().where((part) => part.trim().isNotEmpty).join(' ');
+  final differ =
+      suggestion != null &&
+      descriptionsDiffer(airing.description, suggestion.description);
+  final cautious = uncertain || differ;
+  final elapsed = now.difference(airing.start);
+  final length = airing.end?.difference(airing.start);
   final defaultFocusNode = FocusNode(debugLabel: 'RecordPromptDefault');
   var focusRequested = false;
 
@@ -286,91 +363,174 @@ Future<RecordPromptChoice?> showRecordPrompt({
       void choose(RecordPromptChoice choice) =>
           Navigator.of(dialogContext).pop(choice);
 
+      final nowCard = _ShowingCard(
+        label: l10n.recordPromptNow,
+        when: [
+          '${formatShowingTime(context, airing.start)}'
+              '${airing.end == null ? '' : ' – ${_clock(airing.end!)}'}',
+          if (airing.channel.isNotEmpty) airing.channel,
+        ].join(' · '),
+        progress: length == null || length.inSeconds <= 0
+            ? null
+            : (elapsed.inSeconds / length.inSeconds).clamp(0.0, 1.0),
+        progressLabel: l10n.recordPromptAired(elapsed.inMinutes),
+        description: airing.description,
+      );
+      final laterChannel = suggestion == null
+          ? ''
+          : recordPromptChannel(
+              suggestion.channelNumber,
+              suggestion.channelName,
+            );
+      final notes = [
+        if (uncertain)
+          _PromptNote(
+            icon: Icons.warning_amber_rounded,
+            text: l10n.recordPromptUncertainMatch,
+            color: _incompleteColor,
+          ),
+        if (differ)
+          _PromptNote(
+            icon: Icons.compare_arrows_rounded,
+            text: l10n.recordPromptDescriptionsDiffer,
+            color: _incompleteColor,
+          ),
+        if (suggestion != null &&
+            !cautious &&
+            airing.season != null &&
+            airing.episode != null)
+          _PromptNote(
+            icon: Icons.check_circle_outline_rounded,
+            text: l10n.recordPromptSameEpisode(airing.season!, airing.episode!),
+            color: Colors.white70,
+          ),
+      ];
+      final laterCard = suggestion == null
+          ? null
+          : _ShowingCard(
+              label: l10n.recordPromptLater,
+              when: [
+                '${DateFormat.MMMEd(locale).format(suggestion.start)} · '
+                    '${_clock(suggestion.start)}',
+                if (laterChannel.isNotEmpty) laterChannel,
+              ].join(' · '),
+              description: suggestion.description,
+              // Beside the label, in the guide's recording red, so it reads as
+              // a fact about this showing rather than a note to act on.
+              status: suggestion.alreadyScheduled
+                  ? l10n.recordPromptAlreadyScheduled
+                  : null,
+            );
+      // The notes and the question sit under the cards, outside anything that
+      // scrolls: a remote can't scroll dialog content, and a caution about the
+      // match must never be out of reach.
+      final pinned = [
+        for (final note in notes) ...[const SizedBox(height: 10), note],
+        const SizedBox(height: 18),
+        // The decision, so it reads a size up from the details above it.
+        Text(
+          suggestion == null
+              ? l10n.recordPromptSearchLater
+              : l10n.recordPromptAlsoRecordLater,
+          style: Theme.of(context).textTheme.titleMedium
+              ?.copyWith(color: Colors.white, fontWeight: FontWeight.w600),
+        ),
+      ];
+
       final details = Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            l10n.recordPromptAlreadyStarted,
+            l10n.recordPromptStarted(
+              elapsed.inMinutes < 1 ? 1 : elapsed.inMinutes,
+            ),
             style: const TextStyle(color: Colors.white70),
           ),
-          if (suggestion != null) ...[
-            const SizedBox(height: 20),
-            Text(
-              uncertain ? l10n.possibleFutureShowing : l10n.knownFutureShowing,
-              style: const TextStyle(
-                color: Colors.white70,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              '$suggestedTime${channel.isEmpty ? '' : ' ($channel)'}',
-              style: const TextStyle(color: Colors.white),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              suggestion.name,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontStyle: FontStyle.italic,
-              ),
-            ),
-            if (suggestion.description.trim().isNotEmpty) ...[
-              const SizedBox(height: 6),
-              Text(
-                suggestion.description,
-                style: const TextStyle(
-                  color: Colors.white70,
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-            ],
-          ],
+          const SizedBox(height: 16),
+          nowCard,
+          if (laterCard != null) ...[const SizedBox(height: 10), laterCard],
         ],
       );
-      final question = Text(
-        suggestion == null
-            ? l10n.recordCompleteShowingQuestion
-            : l10n.recordThisShowingQuestion,
-        style: const TextStyle(color: Colors.white),
-      );
       final title = Text(
-        programName,
+        l10n.recordPromptTitle(programName),
         style: const TextStyle(
           color: Colors.white,
           fontWeight: FontWeight.bold,
         ),
       );
-      final content = Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (AppUiIdiomResolver.isApple)
-            details
-          else
-            Flexible(child: SingleChildScrollView(child: details)),
-          const SizedBox(height: 24),
-          question,
-        ],
-      );
+      // The UI scale setting only scales text, so the dialog widens with it to
+      // keep its layout, up to the screen's width.
+      final textScale = MediaQuery.textScalerOf(dialogContext).scale(1);
+      // AlertDialog sizes itself by its content's intrinsic width, which the
+      // marquee can't report, so the content gets a fixed width that still
+      // fits a phone (the dialog's insets plus its content padding).
+      final content = AppUiIdiomResolver.isApple
+          ? Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [details, ...pinned],
+            )
+          : SizedBox(
+              width: (MediaQuery.sizeOf(dialogContext).width - 128).clamp(
+                0.0,
+                680.0 * textScale,
+              ),
+              // The cards scroll and the notes and question stay above the
+              // buttons, scrolling too only on a screen too short for them.
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Flexible(child: SingleChildScrollView(child: details)),
+                  ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxHeight: MediaQuery.sizeOf(dialogContext).height / 3,
+                    ),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: pinned,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
       final actions = [
         adaptiveDialogAction(
-          focusNode: uncertain ? null : defaultFocusNode,
-          autofocus: !uncertain,
-          isDefault: !uncertain,
-          focusRingColor: AppColorScheme.accent,
-          onPressed: () => choose(RecordPromptChoice.alsoRecordLaterShowing),
-          child: Text(l10n.alsoRecordLaterShowing),
-        ),
-        adaptiveDialogAction(
-          focusNode: uncertain ? defaultFocusNode : null,
-          autofocus: uncertain,
-          isDefault: uncertain,
+          focusNode: cautious ? defaultFocusNode : null,
+          autofocus: cautious,
+          isDefault: cautious,
           focusRingColor: AppColorScheme.accent,
           onPressed: () => choose(RecordPromptChoice.justRecordNow),
-          child: Text(l10n.justRecordNow),
+          child: Text(l10n.recordNowOnly),
+        ),
+        adaptiveDialogAction(
+          focusRingColor: AppColorScheme.accent,
+          onPressed: () => choose(RecordPromptChoice.justRecordLater),
+          child: Text(
+            suggestion == null
+                ? l10n.recordLaterShowingOnly
+                : l10n.recordOnlyLater(
+                    laterShowingWhen(context, suggestion.start, now: now),
+                  ),
+          ),
+        ),
+        adaptiveDialogAction(
+          focusNode: cautious ? null : defaultFocusNode,
+          autofocus: !cautious,
+          isDefault: !cautious,
+          focusRingColor: AppColorScheme.accent,
+          onPressed: () => choose(RecordPromptChoice.alsoRecordLaterShowing),
+          child: Text(
+            suggestion == null
+                ? l10n.recordNowAndLater
+                : l10n.recordNowAnd(
+                    laterShowingWhen(context, suggestion.start, now: now),
+                  ),
+          ),
         ),
       ];
       return AppUiIdiomResolver.isApple
@@ -380,13 +540,191 @@ Future<RecordPromptChoice?> showRecordPrompt({
               actions: actions,
             )
           : AlertDialog(
-              constraints: const BoxConstraints(maxWidth: 640),
+              // Wide enough on a TV for all three choices on one row.
+              constraints: BoxConstraints(maxWidth: 760 * textScale),
               title: title,
               content: content,
               actions: actions,
             );
     },
   ).whenComplete(defaultFocusNode.dispose);
+}
+
+/// One airing on the Record prompt: a label, when and where it airs, its
+/// description, scrolling when it runs past two lines.
+class _ShowingCard extends StatelessWidget {
+  static const _descriptionStyle = TextStyle(color: Colors.white70);
+  static const _descriptionLines = 2;
+
+  final String label;
+  final String when;
+  final double? progress;
+  final String? progressLabel;
+  final String description;
+
+  /// Shown beside [label] with the recording mark, such as "Already set to
+  /// record".
+  final String? status;
+
+  const _ShowingCard({
+    required this.label,
+    required this.when,
+    required this.description,
+    this.progress,
+    this.progressLabel,
+    this.status,
+  });
+
+  // The marquee keeps its full height even for one line, so it is used only
+  // for a description that doesn't fit.
+  Widget _description(BuildContext context, String text) {
+    // The Cupertino dialog measures its content and scrolls it, which the
+    // marquee can't take part in, so it gets the full text there.
+    if (AppUiIdiomResolver.isApple) return Text(text, style: _descriptionStyle);
+    // The marquee sizes its lines from the style it is given, so it gets the
+    // dialog's full text style, not just the colour.
+    final style = DefaultTextStyle.of(context).style.merge(_descriptionStyle);
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final painter = TextPainter(
+          text: TextSpan(text: text, style: style),
+          maxLines: _descriptionLines,
+          textDirection: Directionality.of(context),
+          textScaler: MediaQuery.textScalerOf(context),
+        )..layout(maxWidth: constraints.maxWidth);
+        final fits = !painter.didExceedMaxLines;
+        painter.dispose();
+        return fits
+            ? Text(text, style: style)
+            : MarqueeText(
+                text: text,
+                maxLines: _descriptionLines,
+                style: style,
+                millisPerPixel: kLiveTvDescriptionMarqueeMillisPerPixel,
+                pauseDurationMs: 1600,
+                showDotSeparator: false,
+              );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    const accent = Colors.white70;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.06),
+        borderRadius: AppRadius.circular(12),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Wrap(
+            spacing: 14,
+            runSpacing: 4,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              // Not upper-cased in code: that isn't locale-aware.
+              Text(
+                label,
+                style: const TextStyle(
+                  color: accent,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.6,
+                ),
+              ),
+              if (status != null)
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.event_available_rounded,
+                      size: 16,
+                      color: LiveTvRecordingIcon.recordColor,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      status!,
+                      style: const TextStyle(color: accent, fontSize: 13),
+                    ),
+                  ],
+                ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(
+            when,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          if (progress != null) ...[
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: ClipRRect(
+                    borderRadius: AppRadius.circular(2),
+                    child: LinearProgressIndicator(
+                      value: progress,
+                      minHeight: 4,
+                      color: accent,
+                      backgroundColor: Colors.white.withValues(alpha: 0.15),
+                    ),
+                  ),
+                ),
+                if (progressLabel != null) ...[
+                  const SizedBox(width: 10),
+                  Text(
+                    progressLabel!,
+                    style: const TextStyle(color: Colors.white70, fontSize: 13),
+                  ),
+                ],
+              ],
+            ),
+          ],
+          if (description.trim().isNotEmpty) ...[
+            const SizedBox(height: 8),
+            _description(context, description.trim()),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+/// A line under the future showing's card: a caution about the match, or a
+/// confirmation.
+class _PromptNote extends StatelessWidget {
+  final IconData icon;
+  final String text;
+  final Color color;
+
+  const _PromptNote({
+    required this.icon,
+    required this.text,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, size: 18, color: color),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(text, style: TextStyle(color: color)),
+        ),
+      ],
+    );
+  }
 }
 
 /// Asks the plugin for a later showing of a program's episode. False when it
@@ -403,6 +741,13 @@ enum RecordAiringOutcome {
 
   /// The airing records, but the later showing couldn't be requested.
   recordedLaterShowingFailed,
+
+  /// Only the later showing was asked for, and it will record.
+  laterShowingOnly,
+
+  /// Only the later showing was asked for, and it couldn't be requested, so
+  /// nothing records.
+  laterShowingOnlyFailed,
 }
 
 /// The Record workflow for one airing, shared by the guide and the player.
@@ -419,6 +764,7 @@ Future<RecordAiringOutcome> recordAiring({
   required Map<String, dynamic> rawProgram,
   required Future<void> Function() createTimer,
   bool Function()? stillValid,
+  String? channel,
 }) async {
   RecordPromptChoice? choice;
   SuggestedShowing? suggestion;
@@ -436,23 +782,36 @@ Future<RecordAiringOutcome> recordAiring({
       ),
     );
     navigator.push(loading);
-    final options = await _service!
-        .completeShowingOptions(programId)
-        .timeout(
-          const Duration(seconds: 3),
-          onTimeout: () => const CompleteShowingOptions(),
-        );
-    if (loading.isActive) navigator.removeRoute(loading);
+    CompleteShowingOptions options;
+    try {
+      options = await _service!
+          .completeShowingOptions(programId)
+          .timeout(
+            const Duration(seconds: 3),
+            onTimeout: () => const CompleteShowingOptions(),
+          );
+    } catch (_) {
+      options = const CompleteShowingOptions();
+    } finally {
+      if (loading.isActive) navigator.removeRoute(loading);
+    }
     if (!context.mounted || !(stillValid?.call() ?? true)) {
       return RecordAiringOutcome.cancelled;
     }
-    offerSearch = offerSearch || options.canSearch;
+    // The server's answer decides how the showing was matched; the guide's
+    // own episode numbers are only a fallback when it didn't answer.
+    offerSearch = options.answered ? options.canSearch : offerSearch;
     suggestion = options.showing;
   }
   if (offerSearch || suggestion != null) {
     choice = await showRecordPrompt(
       context: context,
       programName: programName,
+      airing: RecordPromptAiring.fromProgram(
+        rawProgram,
+        programStart,
+        channel: channel,
+      ),
       suggestion: suggestion,
       searchForCompleteShowing: offerSearch,
     );
@@ -461,13 +820,21 @@ Future<RecordAiringOutcome> recordAiring({
     }
   }
 
-  await createTimer();
-  if (choice != RecordPromptChoice.alsoRecordLaterShowing) {
-    return RecordAiringOutcome.recorded;
+  final laterOnly = choice == RecordPromptChoice.justRecordLater;
+  if (!laterOnly) {
+    await createTimer();
+    if (choice != RecordPromptChoice.alsoRecordLaterShowing) {
+      return RecordAiringOutcome.recorded;
+    }
   }
   final scheduled = suggestion != null
       ? await _service?.scheduleSuggestedShowing(programId, suggestion) ?? false
       : await askForLaterShowing(programId);
+  if (laterOnly) {
+    return scheduled
+        ? RecordAiringOutcome.laterShowingOnly
+        : RecordAiringOutcome.laterShowingOnlyFailed;
+  }
   return scheduled
       ? RecordAiringOutcome.recordedWithLaterShowing
       : RecordAiringOutcome.recordedLaterShowingFailed;
@@ -483,4 +850,7 @@ String? recordAiringMessage(
   RecordAiringOutcome.recordedWithLaterShowing => l10n.laterShowingRequested,
   RecordAiringOutcome.recordedLaterShowingFailed =>
     l10n.unableToRequestLaterShowing,
+  RecordAiringOutcome.laterShowingOnly => l10n.laterShowingOnlyRequested,
+  RecordAiringOutcome.laterShowingOnlyFailed =>
+    l10n.unableToRequestLaterShowingOnly,
 };

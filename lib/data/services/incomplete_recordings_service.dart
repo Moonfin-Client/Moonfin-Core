@@ -96,13 +96,25 @@ class SuggestedShowing {
   String get description => payload['description'] as String;
   String? get channelName => payload['channelName'] as String?;
   String? get channelNumber => payload['channelNumber'] as String?;
+
+  /// A recording is already scheduled for this showing, by anyone. Confirming
+  /// it adopts that timer rather than making another.
+  bool get alreadyScheduled => payload['alreadyScheduled'] == true;
 }
 
 class CompleteShowingOptions {
   final bool canSearch;
   final SuggestedShowing? showing;
 
-  const CompleteShowingOptions({this.canSearch = false, this.showing});
+  /// The server replied, so [canSearch] is its answer rather than a default
+  /// left by a timeout or an older plugin.
+  final bool answered;
+
+  const CompleteShowingOptions({
+    this.canSearch = false,
+    this.showing,
+    this.answered = false,
+  });
 }
 
 /// The incomplete Live TV recordings the Moonfin plugin tracks, for the badge,
@@ -146,7 +158,9 @@ class IncompleteRecordingsService extends ChangeNotifier {
   bool get extendedSupported => _supported && _extendedSupported;
 
   void setSupported(bool value, {bool extended = false}) {
-    if (_supported == value && _extendedSupported == extended) return;
+    if (_supported == value && _extendedSupported == (value && extended)) {
+      return;
+    }
     _supported = value;
     _extendedSupported = value && extended;
     _generation++;
@@ -286,6 +300,7 @@ class IncompleteRecordingsService extends ChangeNotifier {
     return CompleteShowingOptions(
       canSearch: data['canSearch'] == true,
       showing: parsed,
+      answered: true,
     );
   }
 

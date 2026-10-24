@@ -296,6 +296,10 @@ void main() {
               onPressed: () => showRecordPrompt(
                 context: context,
                 programName: 'Current program',
+                airing: RecordPromptAiring(
+                  start: DateTime.now().subtract(const Duration(minutes: 5)),
+                  description: 'A long description. ' * 20,
+                ),
                 suggestion: SuggestedShowing(
                   candidate(),
                   0,
@@ -313,14 +317,265 @@ void main() {
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
       expect(find.byType(CupertinoAlertDialog), findsOneWidget);
-      expect(find.byType(CupertinoDialogAction), findsNWidgets(2));
-      expect(find.text('Record Both Showings'), findsOneWidget);
-      await tester.ensureVisible(find.text('Just Record This One'));
-      await tester.tap(find.text('Just Record This One'));
+      expect(find.byType(CupertinoDialogAction), findsNWidgets(3));
+      expect(find.text('Record Tomorrow Only'), findsOneWidget);
+      expect(find.text('Record Now and Tomorrow'), findsOneWidget);
+      await tester.ensureVisible(find.text('Record Now Only'));
+      await tester.tap(find.text('Record Now Only'));
       await tester.pumpAndSettle();
       expect(find.byType(CupertinoAlertDialog), findsNothing);
     });
   }
+
+  for (final differ in [false, true]) {
+    testWidgets(
+      'the prompt shows both descriptions and flags a difference: $differ',
+      (tester) async {
+        await tester.pumpWidget(
+          app(
+            Builder(
+              builder: (context) => TextButton(
+                onPressed: () => showRecordPrompt(
+                  context: context,
+                  programName: 'Insight',
+                  airing: RecordPromptAiring(
+                    start: DateTime.now().subtract(const Duration(minutes: 12)),
+                    end: DateTime.now().add(const Duration(minutes: 18)),
+                    channel: '25.9 WBQCLD9',
+                    description: differ
+                        ? 'Tonight a historian talks about bridges.'
+                        : 'interviews explore  the author and his work.',
+                    season: 4,
+                    episode: 2,
+                  ),
+                  suggestion: SuggestedShowing(
+                    {...candidate(), 'alreadyScheduled': !differ},
+                    0,
+                    DateTime.now().add(const Duration(days: 1)),
+                  ),
+                ),
+                child: const Text('Record'),
+              ),
+            ),
+          ),
+        );
+        await tester.tap(find.text('Record'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Record Insight'), findsOneWidget);
+        expect(
+          find.text('Already set to record'),
+          differ ? findsNothing : findsOneWidget,
+        );
+        expect(find.text('12 min already aired'), findsOneWidget);
+        expect(find.textContaining('25.9 WBQCLD9'), findsOneWidget);
+        expect(
+          find.textContaining(differ ? 'historian' : 'interviews explore'),
+          findsOneWidget,
+        );
+        expect(find.textContaining('Interviews explore'), findsOneWidget);
+        expect(
+          find.text(
+            'The descriptions differ, so this may be a different program.',
+          ),
+          differ ? findsOneWidget : findsNothing,
+        );
+        expect(
+          find.text('Same episode (S4E2)'),
+          differ ? findsNothing : findsOneWidget,
+        );
+        // A doubtful match defaults to recording only the airing now.
+        final defaultChoice = find.text(
+          differ ? 'Record Now Only' : 'Record Now and Tomorrow',
+        );
+        expect(Focus.of(tester.element(defaultChoice)).hasFocus, isTrue);
+      },
+    );
+  }
+
+  testWidgets(
+    'at the largest UI scale on the TV canvas the question stays above the buttons',
+    (tester) async {
+      tester.view
+        ..physicalSize = const Size(1150, 647)
+        ..devicePixelRatio = 1;
+      tester.platformDispatcher.textScaleFactorTestValue = 1.6;
+      addTearDown(tester.view.reset);
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      await tester.pumpWidget(
+        app(
+          Builder(
+            builder: (context) => TextButton(
+              onPressed: () => showRecordPrompt(
+                context: context,
+                programName: 'Modern Marvels',
+                airing: RecordPromptAiring(
+                  start: DateTime.now().subtract(const Duration(minutes: 6)),
+                  end: DateTime.now().add(const Duration(minutes: 54)),
+                  channel: '5.4 WLWTDT4',
+                  description: 'A jet truck that can travel 300 mph. ' * 6,
+                  season: 9,
+                  episode: 37,
+                ),
+                suggestion: SuggestedShowing(
+                  {
+                    ...candidate(),
+                    'description': 'A jet truck that can travel 300 mph. ' * 6,
+                  },
+                  0,
+                  DateTime.now().add(const Duration(days: 1)),
+                ),
+              ),
+              child: const Text('Record'),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Record'));
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+      final question = find.text(
+        'Also record the future showing to get a complete recording?',
+      );
+      expect(tester.getBottomLeft(question).dy, lessThanOrEqualTo(647));
+      expect(
+        tester.getBottomLeft(find.text('Same episode (S9E37)')).dy,
+        lessThan(tester.getTopLeft(question).dy),
+      );
+      expect(
+        tester.getBottomLeft(question).dy,
+        lessThan(tester.getTopLeft(find.text('Record Now Only')).dy),
+      );
+    },
+  );
+
+  testWidgets('the button names when the future showing airs', (tester) async {
+    late BuildContext context;
+    await tester.pumpWidget(
+      app(
+        Builder(
+          builder: (c) {
+            context = c;
+            return const SizedBox();
+          },
+        ),
+      ),
+    );
+    final now = DateTime(2026, 10, 23, 18);
+    expect(
+      laterShowingWhen(context, DateTime(2026, 10, 24, 9, 30), now: now),
+      'Tomorrow',
+    );
+    expect(
+      laterShowingWhen(context, DateTime(2026, 10, 26, 9, 30), now: now),
+      'Monday',
+    );
+    expect(
+      laterShowingWhen(context, DateTime(2026, 11, 5, 9, 30), now: now),
+      'Nov 5',
+    );
+    expect(
+      laterShowingWhen(context, DateTime(2026, 10, 23, 21, 30), now: now),
+      isNot(anyOf('Tomorrow', 'Friday')),
+    );
+  });
+
+  for (final answered in [true, false]) {
+    testWidgets(
+      'the server decides how the showing matched when it answers: $answered',
+      (tester) async {
+        final payload = candidate();
+        final fake = _WorkflowService(
+          CompleteShowingOptions(
+            answered: answered,
+            showing: SuggestedShowing(
+              payload,
+              0,
+              DateTime.parse(payload['startDate'] as String).toLocal(),
+            ),
+          ),
+        );
+        await GetIt.instance.unregister<IncompleteRecordingsService>();
+        GetIt.instance.registerSingleton<IncompleteRecordingsService>(fake);
+        await tester.pumpWidget(
+          app(
+            Builder(
+              builder: (context) => TextButton(
+                onPressed: () => recordAiring(
+                  context: context,
+                  programId: 'source-id',
+                  programName: payload['name'] as String,
+                  programStart: DateTime.now().subtract(
+                    const Duration(minutes: 5),
+                  ),
+                  rawProgram: const {'ParentIndexNumber': 1, 'IndexNumber': 2},
+                  createTimer: () async {},
+                ),
+                child: const Text('Record'),
+              ),
+            ),
+          ),
+        );
+        await tester.tap(find.text('Record'));
+        await tester.pumpAndSettle();
+
+        // The guide's own numbers only stand in when the server didn't answer.
+        expect(
+          find.textContaining('Matched by title'),
+          answered ? findsOneWidget : findsNothing,
+        );
+        expect(
+          find.text('Same episode (S1E2)'),
+          answered ? findsNothing : findsOneWidget,
+        );
+        await tester.ensureVisible(find.text('Record Now Only'));
+        await tester.tap(find.text('Record Now Only'));
+        await tester.pumpAndSettle();
+      },
+    );
+  }
+
+  testWidgets('the prompt fits a narrow phone', (tester) async {
+    tester.view
+      ..physicalSize = const Size(360, 640)
+      ..devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      app(
+        Builder(
+          builder: (context) => TextButton(
+            onPressed: () => showRecordPrompt(
+              context: context,
+              programName: 'Current program',
+              airing: RecordPromptAiring(
+                start: DateTime.now().subtract(const Duration(minutes: 5)),
+                description: 'A long description. ' * 20,
+              ),
+              suggestion: SuggestedShowing(
+                candidate(),
+                0,
+                DateTime.now().add(const Duration(days: 1)),
+              ),
+            ),
+            child: const Text('Record'),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('Record'));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    await tester.ensureVisible(find.text('Record Now Only'));
+    await tester.tap(find.text('Record Now Only'));
+    await tester.pumpAndSettle();
+  });
+
+  test('descriptions differ only when both say something different', () {
+    expect(descriptionsDiffer('Same  words.', 'same words.'), isFalse);
+    expect(descriptionsDiffer('', 'Anything.'), isFalse);
+    expect(descriptionsDiffer('One plot.', 'Another plot.'), isTrue);
+  });
 
   for (final changed in [false, true]) {
     testWidgets(
@@ -388,6 +643,7 @@ void main() {
   for (final action in [
     'accept',
     'decline',
+    'later only',
     'back',
     'movie',
     'known movie',
@@ -398,6 +654,7 @@ void main() {
       final payload = candidate();
       final fake = _WorkflowService(
         CompleteShowingOptions(
+          answered: true,
           canSearch: action == 'movie' || action.startsWith('known'),
           showing: action == 'movie' || action == 'no match'
               ? null
@@ -444,33 +701,63 @@ void main() {
         expect(recordings, 1);
       } else {
         expect(recordings, 0);
+        expect(find.text('Now'), findsOneWidget);
         if (action.startsWith('known')) {
-          expect(find.text('Next airing'), findsOneWidget);
+          expect(find.text('Future showing'), findsOneWidget);
           expect(find.textContaining('WPTODT'), findsOneWidget);
+          expect(find.textContaining('Matched by title'), findsNothing);
+          expect(
+            find.text('Same episode (S1E2)'),
+            action == 'known episode' ? findsOneWidget : findsNothing,
+          );
         } else if (action == 'movie') {
           expect(
-            find.textContaining(
-              'also record a later showing to get a complete recording?',
+            find.text(
+              'Also record a future showing automatically once one is found, to get a complete recording?',
             ),
             findsOneWidget,
           );
-          expect(find.text('Next airing'), findsNothing);
+          expect(find.text('Future showing'), findsNothing);
+          expect(find.text('Record Now and Future Showing'), findsOneWidget);
         } else {
-          expect(find.text('Possible future airing'), findsOneWidget);
+          expect(find.text('Future showing'), findsOneWidget);
           expect(find.textContaining('Interviews explore'), findsOneWidget);
-          final question = find.text(
-            'Would you like to also record this showing to get a complete recording?',
+          expect(
+            find.text(
+              "Matched by title and description only. Check it's the same program.",
+            ),
+            findsOneWidget,
           );
+          // The caution and the question stay out of the scrolling cards, in
+          // that order, just above the buttons.
+          final note = find.textContaining('Matched by title');
+          final question = find.text(
+            'Also record the future showing to get a complete recording?',
+          );
+          // The notes and question never scroll with the cards.
+          final cardsScroll = find.ancestor(
+            of: find.text('Future showing'),
+            matching: find.byType(SingleChildScrollView),
+          );
+          for (final pinned in [note, question]) {
+            expect(
+              find.ancestor(of: pinned, matching: cardsScroll),
+              findsNothing,
+            );
+            expect(
+              find.descendant(of: cardsScroll, matching: pinned),
+              findsNothing,
+            );
+          }
           expect(
             tester.getTopLeft(question).dy,
-            greaterThan(
-              tester
-                  .getBottomLeft(find.textContaining('Interviews explore'))
-                  .dy,
-            ),
+            greaterThan(tester.getBottomLeft(note).dy),
           );
-          expect(find.textContaining('(16.1 WPTODT)'), findsOneWidget);
-          expect(find.textContaining('WPTODT'), findsOneWidget);
+          expect(
+            tester.getBottomLeft(question).dy,
+            lessThan(tester.getTopLeft(find.text('Record Now Only')).dy),
+          );
+          expect(find.textContaining('16.1 WPTODT'), findsOneWidget);
         }
         if (action == 'back') {
           await tester.binding.handlePopRoute();
@@ -478,16 +765,24 @@ void main() {
           await tester.tap(
             find.text(
               action == 'decline'
-                  ? 'Just Record This One'
-                  : 'Record Both Showings',
+                  ? 'Record Now Only'
+                  : action == 'later only'
+                  ? 'Record Tomorrow Only'
+                  : action == 'movie'
+                  ? 'Record Now and Future Showing'
+                  : 'Record Now and Tomorrow',
             ),
           );
         }
         await tester.pumpAndSettle();
-        expect(recordings, action == 'back' ? 0 : 1);
+        expect(recordings, action == 'back' || action == 'later only' ? 0 : 1);
         expect(
           fake.scheduled,
-          action == 'accept' || action.startsWith('known') ? 1 : 0,
+          action == 'accept' ||
+                  action == 'later only' ||
+                  action.startsWith('known')
+              ? 1
+              : 0,
         );
         expect(fake.searches, action == 'movie' ? 1 : 0);
         expect(
@@ -496,6 +791,8 @@ void main() {
               ? RecordAiringOutcome.cancelled
               : action == 'decline'
               ? RecordAiringOutcome.recorded
+              : action == 'later only'
+              ? RecordAiringOutcome.laterShowingOnly
               : RecordAiringOutcome.recordedWithLaterShowing,
         );
       }
@@ -529,7 +826,7 @@ void main() {
     },
   );
 
-  testWidgets('choosing the later showing records now and asks the plugin', (
+  testWidgets('choosing the future showing records now and asks the plugin', (
     tester,
   ) async {
     service.setSupported(true);
@@ -557,8 +854,8 @@ void main() {
     await tester.pumpAndSettle();
 
     final l10n = AppLocalizations.of(context);
-    expect(find.text(l10n.recordPromptAlreadyStarted), findsOneWidget);
-    await tester.tap(find.text(l10n.alsoRecordLaterShowing));
+    expect(find.text(l10n.recordPromptStarted(10)), findsOneWidget);
+    await tester.tap(find.text(l10n.recordNowAndLater));
     await tester.pumpAndSettle();
 
     final result = await tester.runAsync(() => outcome);
@@ -621,6 +918,16 @@ void main() {
 
     expect(service.stateFor('a')?.recordedMinutes, 23);
     expect(service.stateFor('b')?.recordedMinutes, 0);
+  });
+
+  test('reporting the same unsupported state again notifies nobody', () {
+    service.setSupported(false, extended: true);
+    var notified = 0;
+    service.addListener(() => notified++);
+
+    service.setSupported(false, extended: true);
+
+    expect(notified, 0);
   });
 
   test('a read that changes nothing notifies nobody', () async {
