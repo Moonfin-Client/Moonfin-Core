@@ -495,6 +495,11 @@ void main() {
         serverId: 's',
         rawData: const {'Id': 'm2', 'Name': 'Alpha Movie', 'PremiereDate': '2024-01-01T00:00:00.000Z'},
       ),
+      AggregatedItem(
+        id: 'm3',
+        serverId: 's',
+        rawData: const {'Id': 'm3', 'Name': 'Beta Movie', 'PremiereDate': '2026-01-01T00:00:00.000Z'},
+      ),
     ]);
     when(() => vm.filmographySeries).thenReturn([
       AggregatedItem(
@@ -507,6 +512,11 @@ void main() {
         serverId: 's',
         rawData: const {'Id': 's2', 'Name': 'Beta Series', 'PremiereDate': '2022-01-01T00:00:00.000Z'},
       ),
+      AggregatedItem(
+        id: 's3',
+        serverId: 's',
+        rawData: const {'Id': 's3', 'Name': 'Delta Series', 'PremiereDate': '2025-01-01T00:00:00.000Z'},
+      ),
     ]);
 
     final ctx = _Context();
@@ -516,11 +526,11 @@ void main() {
     var filmography = cards.first;
     expect(
       (filmography.sections[0].builder(ctx, null) as SpotlightMediaGridSection).items.map((i) => i.name),
-      ['Alpha Movie', 'Zeta Movie'],
+      ['Alpha Movie', 'Beta Movie', 'Zeta Movie'],
     );
     expect(
       (filmography.sections[1].builder(ctx, null) as SpotlightMediaGridSection).items.map((i) => i.name),
-      ['Beta Series', 'Zeta Series'],
+      ['Beta Series', 'Delta Series', 'Zeta Series'],
     );
 
     // Release date descending (newest first)
@@ -529,11 +539,11 @@ void main() {
     filmography = cards.first;
     expect(
       (filmography.sections[0].builder(ctx, null) as SpotlightMediaGridSection).items.map((i) => i.name),
-      ['Alpha Movie', 'Zeta Movie'],
+      ['Beta Movie', 'Alpha Movie', 'Zeta Movie'],
     );
     expect(
       (filmography.sections[1].builder(ctx, null) as SpotlightMediaGridSection).items.map((i) => i.name),
-      ['Beta Series', 'Zeta Series'],
+      ['Delta Series', 'Beta Series', 'Zeta Series'],
     );
 
     // Release date ascending (oldest first)
@@ -542,23 +552,24 @@ void main() {
     filmography = cards.first;
     expect(
       (filmography.sections[0].builder(ctx, null) as SpotlightMediaGridSection).items.map((i) => i.name),
-      ['Zeta Movie', 'Alpha Movie'],
+      ['Zeta Movie', 'Alpha Movie', 'Beta Movie'],
     );
     expect(
       (filmography.sections[1].builder(ctx, null) as SpotlightMediaGridSection).items.map((i) => i.name),
-      ['Zeta Series', 'Beta Series'],
+      ['Zeta Series', 'Beta Series', 'Delta Series'],
     );
   });
 
   test('a person Seerr cards sort and group credits according to preferences', () async {
     const rawAppearances = [
-      SeerrDiscoverItem(id: 1, title: 'Zeta Show', releaseDate: '2020-01-01'),
-      SeerrDiscoverItem(id: 2, title: 'Alpha Show', releaseDate: '2024-01-01'),
+      SeerrDiscoverItem(id: 1, mediaType: 'tv', title: 'Zeta Show', releaseDate: '2020-01-01'),
+      SeerrDiscoverItem(id: 2, mediaType: 'movie', title: 'Alpha Show', releaseDate: '2024-01-01'),
+      SeerrDiscoverItem(id: 1, mediaType: 'movie', title: 'Alpha Movie Same ID', releaseDate: '2024-01-01'),
     ];
     const rawCrew = [
-      SeerrDiscoverItem(id: 10, title: 'Film A', job: 'Director', releaseDate: '2018-01-01'),
-      SeerrDiscoverItem(id: 10, title: 'Film A', job: 'Writer', releaseDate: '2018-01-01'),
-      SeerrDiscoverItem(id: 20, title: 'Film B', job: 'Producer', releaseDate: '2023-01-01'),
+      SeerrDiscoverItem(id: 10, mediaType: 'movie', title: 'Film A', job: 'Director', releaseDate: '2018-01-01'),
+      SeerrDiscoverItem(id: 10, mediaType: 'movie', title: 'Film A', job: 'Writer', releaseDate: '2018-01-01'),
+      SeerrDiscoverItem(id: 20, mediaType: 'movie', title: 'Film B', job: 'Producer', releaseDate: '2023-01-01'),
     ];
 
     final ctx = _Context();
@@ -577,14 +588,14 @@ void main() {
 
     expect(
       (appearancesCard.sections.single.builder(ctx, null) as SpotlightSeerrGridSection).items.map((i) => i.title),
-      ['Alpha Show', 'Zeta Show'],
+      ['Alpha Movie Same ID', 'Alpha Show', 'Zeta Show'],
     );
     // Ungrouped crew: has length 3
     var crewItems = (crewCard.sections.single.builder(ctx, null) as SpotlightSeerrGridSection).items;
     expect(crewItems, hasLength(3));
     expect(crewItems.map((i) => i.title), ['Film A', 'Film A', 'Film B']);
 
-    // Group items enabled: joins roles
+    // Group items enabled: joins roles, keeps movie & tv separate even with same ID
     await prefs.set(UserPreferences.personPageGroupItems, true);
     cards = cardsFor(
       _item('Person'),
@@ -592,6 +603,11 @@ void main() {
       seerrCrewCredits: rawCrew,
       seerrAvailable: true,
     );
+    appearancesCard = cards.firstWhere((c) => c.id == 'appearances');
+    final appearanceItems = (appearancesCard.sections.single.builder(ctx, null) as SpotlightSeerrGridSection).items;
+    expect(appearanceItems, hasLength(3)); // id:1 tv and id:1 movie are separate
+    expect(appearanceItems.map((i) => i.mediaType), containsAll(['tv', 'movie']));
+
     crewCard = cards.firstWhere((c) => c.id == 'crew');
     crewItems = (crewCard.sections.single.builder(ctx, null) as SpotlightSeerrGridSection).items;
     expect(crewItems, hasLength(2));
@@ -608,7 +624,21 @@ void main() {
     appearancesCard = cards.firstWhere((c) => c.id == 'appearances');
     expect(
       (appearancesCard.sections.single.builder(ctx, null) as SpotlightSeerrGridSection).items.map((i) => i.title),
-      ['Zeta Show', 'Alpha Show'],
+      ['Zeta Show', 'Alpha Movie Same ID', 'Alpha Show'],
+    );
+
+    // Release date descending with tie-break
+    await prefs.set(UserPreferences.personPageSortOption, 'releaseDateDesc');
+    cards = cardsFor(
+      _item('Person'),
+      seerrAppearances: rawAppearances,
+      seerrCrewCredits: rawCrew,
+      seerrAvailable: true,
+    );
+    appearancesCard = cards.firstWhere((c) => c.id == 'appearances');
+    expect(
+      (appearancesCard.sections.single.builder(ctx, null) as SpotlightSeerrGridSection).items.map((i) => i.title),
+      ['Alpha Show', 'Alpha Movie Same ID', 'Zeta Show'],
     );
   });
 

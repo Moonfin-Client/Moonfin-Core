@@ -44,9 +44,10 @@ List<SeerrDiscoverItem> groupSeerrCredits(
   List<SeerrDiscoverItem> list, {
   required bool isCrew,
 }) {
-  final grouped = <int, List<SeerrDiscoverItem>>{};
+  final grouped = <String, List<SeerrDiscoverItem>>{};
   for (final item in list) {
-    grouped.putIfAbsent(item.id, () => []).add(item);
+    final key = '${item.mediaType ?? ''}:${item.id}';
+    grouped.putIfAbsent(key, () => []).add(item);
   }
 
   return [
@@ -129,8 +130,12 @@ List<SeerrDiscoverItem> sortSeerrCredits(
     if (dateB == null) return -1;
 
     final comparison = dateA.compareTo(dateB);
+    if (comparison != 0) {
+      return ascending ? comparison : -comparison;
+    }
 
-    return ascending ? comparison : -comparison;
+    final titleComparison = byTitle(a, b);
+    return ascending ? titleComparison : -titleComparison;
   });
 
   return sorted;
@@ -165,7 +170,12 @@ List<AggregatedItem> sortJellyfinFilmography(
     if (dateB == null) return -1;
 
     final comparison = dateA.compareTo(dateB);
-    return ascending ? comparison : -comparison;
+    if (comparison != 0) {
+      return ascending ? comparison : -comparison;
+    }
+
+    final nameComparison = a.name.toLowerCase().compareTo(b.name.toLowerCase());
+    return ascending ? nameComparison : -nameComparison;
   });
 
   return sorted;
