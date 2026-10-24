@@ -15079,6 +15079,39 @@ class AppLocalizationsHe extends AppLocalizations {
   }
 
   @override
+  String get gameInstallingEmulator => 'Installing emulator…';
+
+  @override
+  String gameCoreDownloadTitle(String system) {
+    return 'Download native core for $system?';
+  }
+
+  @override
+  String gameCoreDownloadPrompt(String system) {
+    return 'Native emulation for $system needs a core from the Libretro project. Download it now?';
+  }
+
+  @override
+  String gameCoreDownloadLater(String settingsPath) {
+    return 'You can download the native core later in $settingsPath.';
+  }
+
+  @override
+  String get gameCoreDownloadDontShowAgain =>
+      'Don’t show this again for this missing core';
+
+  @override
+  String get gameUseEmulatorJsForSession => 'Use EmulatorJS';
+
+  @override
+  String get gameEmulatorSwitchFailed =>
+      'The native emulator could not be stopped. Go back and try launching the game again.';
+
+  @override
+  String get gameEmulatorInstallFailed =>
+      'The emulator could not be installed. Check your internet connection and available storage, then try again.';
+
+  @override
   String get playlistNoMatchingTracks => 'No tracks match the active filters';
 
   @override

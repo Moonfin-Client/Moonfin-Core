@@ -481,9 +481,12 @@ final appRouter = GoRouter(
         return _opaqueFullScreenPage<void>(
           state: state,
           // Native libretro or the EmulatorJS WebView: forced where only one
-          // backend works (tvOS and Linux native), the user's choice elsewhere,
-          // and per game where native can't play the system but the WebView can
-          // (a PSP or N64 title on the bundled Apple targets).
+          // backend works (tvOS and Linux native), the user's choice elsewhere.
+          // Native remains selected for missing or unsupported cores, including
+          // systems outside the fixed Apple bundles; users can explicitly
+          // switch this session to EmulatorJS where that backend is available.
+          // A remembered opt-out uses EmulatorJS until the missing core is
+          // installed. Otherwise, downloadable cores require launch consent.
           child: !forceEmulatorJs && usesNativeGameBackendFor(core)
               ? NativeGamePlayerScreen(
                   libraryId: libraryId,
@@ -492,6 +495,8 @@ final appRouter = GoRouter(
                   gameName: state.uri.queryParameters['name'],
                   startFresh: startFresh,
                   hardwareRenderingEnabled: hardwareRenderingEnabled,
+                  romFileName: state.uri.queryParameters['romFile'],
+                  biosId: state.uri.queryParameters['bios'],
                 )
               : GameEmulatorScreen(
                   libraryId: libraryId,

@@ -26585,6 +26585,54 @@ abstract class AppLocalizations {
   /// **'{count, plural, =1{1 active} other{{count} active}}'**
   String playlistFilterActiveCount(int count);
 
+  /// Progress message while installing a missing native emulator core on first play
+  ///
+  /// In en, this message translates to:
+  /// **'Installing emulator…'**
+  String get gameInstallingEmulator;
+
+  /// Consent prompt to download a missing native emulator core
+  ///
+  /// In en, this message translates to:
+  /// **'Download native core for {system}?'**
+  String gameCoreDownloadTitle(String system);
+
+  /// Explains the source of a native core download and asks for consent
+  ///
+  /// In en, this message translates to:
+  /// **'Native emulation for {system} needs a core from the Libretro project. Download it now?'**
+  String gameCoreDownloadPrompt(String system);
+
+  /// Location of manual native core downloads, shown in the consent dialog and errors
+  ///
+  /// In en, this message translates to:
+  /// **'You can download the native core later in {settingsPath}.'**
+  String gameCoreDownloadLater(String settingsPath);
+
+  /// Unchecked by default; checking remembers this core's download or fallback choice
+  ///
+  /// In en, this message translates to:
+  /// **'Don’t show this again for this missing core'**
+  String get gameCoreDownloadDontShowAgain;
+
+  /// Button on a native emulator error screen that uses the WebView emulator for this launch only
+  ///
+  /// In en, this message translates to:
+  /// **'Use EmulatorJS'**
+  String get gameUseEmulatorJsForSession;
+
+  /// Error when the native emulator cannot be stopped before switching to the WebView emulator
+  ///
+  /// In en, this message translates to:
+  /// **'The native emulator could not be stopped. Go back and try launching the game again.'**
+  String get gameEmulatorSwitchFailed;
+
+  /// Error when a consented native core installation fails; a Retry button and download settings location follow
+  ///
+  /// In en, this message translates to:
+  /// **'The emulator could not be installed. Check your internet connection and available storage, then try again.'**
+  String get gameEmulatorInstallFailed;
+
   /// Empty state message shown when playlist filters match no items
   ///
   /// In en, this message translates to:
