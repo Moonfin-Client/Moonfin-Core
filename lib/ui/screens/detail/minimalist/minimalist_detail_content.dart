@@ -13,10 +13,18 @@ import '../../../widgets/live_tv/incomplete_recording.dart';
 import '../../../widgets/logo_view.dart';
 import '../../../widgets/offline_aware_image.dart';
 import '../../../widgets/rating_display.dart';
+import 'package:get_it/get_it.dart';
+import 'package:playback_core/playback_core.dart';
+
+import '../../../../l10n/app_localizations.dart';
+import '../../../navigation/destinations.dart';
+import '../../../navigation/playback_launcher.dart';
 import '../detail_layout_metrics.dart';
 import '../item_detail_screen.dart';
 import '../modern/modern_detail_content.dart';
 import '../spotlight/spotlight_detail_content.dart';
+import '../spotlight/widgets/spotlight_modal_grids.dart';
+import '../spotlight/widgets/spotlight_section_modal.dart';
 import 'minimalist_landscape_layout.dart';
 import 'minimalist_portrait_layout.dart';
 import 'widgets/minimalist_episodes_section.dart';
@@ -76,6 +84,7 @@ class _MinimalistDetailContentState extends State<MinimalistDetailContent> {
   void initState() {
     super.initState();
     widget.viewModel.addListener(_onVmChanged);
+    widget.prefs.addListener(_onVmChanged);
   }
 
   @override
@@ -85,11 +94,16 @@ class _MinimalistDetailContentState extends State<MinimalistDetailContent> {
       oldWidget.viewModel.removeListener(_onVmChanged);
       widget.viewModel.addListener(_onVmChanged);
     }
+    if (oldWidget.prefs != widget.prefs) {
+      oldWidget.prefs.removeListener(_onVmChanged);
+      widget.prefs.addListener(_onVmChanged);
+    }
   }
 
   @override
   void dispose() {
     widget.viewModel.removeListener(_onVmChanged);
+    widget.prefs.removeListener(_onVmChanged);
     _episodesFocusNode.dispose();
     super.dispose();
   }
@@ -148,7 +162,7 @@ class _MinimalistDetailContentState extends State<MinimalistDetailContent> {
             branding: branding,
             actions: actions,
             ratings: ratings,
-            episodes: _hasEpisodesOrExtras(item)
+            episodes: _hasEpisodes(item)
                 ? (maxHeight) =>
                       _buildEpisodes(item, landscape, maxHeight: maxHeight)!
                 : null,
@@ -375,6 +389,15 @@ class _MinimalistDetailContentState extends State<MinimalistDetailContent> {
     required int? maxVisible,
     required bool overflowAsMenu,
   }) {
+    final item = _vm.item;
+    final hasEpisodes = item != null && _hasEpisodes(item);
+    final showExtras =
+        !hasEpisodes &&
+        DetailSectionVisibility.of(
+          widget.prefs,
+        ).shows(DetailSection.extras) &&
+        _vm.features.isNotEmpty;
+
     return DetailActionButtons(
       key: const ValueKey('minimalist-actions'),
       viewModel: _vm,
@@ -382,7 +405,7 @@ class _MinimalistDetailContentState extends State<MinimalistDetailContent> {
       selectedMediaSourceId: widget.selectedMediaSourceId,
       onSelectedMediaSourceChanged: widget.onSelectedMediaSourceChanged,
       tvPlayFocusNode: widget.initialFocusNode,
-      downTarget: _episodesFocusNode,
+      downTarget: hasEpisodes ? _episodesFocusNode : null,
       autoPlay: widget.autoPlay,
       modernStyle: true,
       fullWidthPrimary: !landscape,
@@ -390,6 +413,91 @@ class _MinimalistDetailContentState extends State<MinimalistDetailContent> {
       maxVisibleButtonsOverride: maxVisible,
       actionsExpanded: widget.actionsExpanded,
       onActionsExpandedChanged: widget.onActionsExpandedChanged,
+      onExtrasPressed: showExtras ? _openExtrasModal : null,
+    );
+  }
+
+  Future<void> _openExtrasModal() async {
+    final l10n = AppLocalizations.of(context);
+    final item = _vm.item;
+    if (item == null) return;
+
+    SpotlightModalContent buildContent() {
+      final features = List<AggregatedItem>.from(_vm.features)
+        ..sort(ItemDetailViewModel.compareEpisodes);
+      final byCategory = <String, List<AggregatedItem>>{};
+      for (final extra in features) {
+        byCategory.putIfAbsent(getExtraCategory(extra), () => []).add(extra);
+      }
+      final orderedCategories = extraCategoriesOrder
+          .where(byCategory.containsKey)
+          .toList();
+      for (final cat in byCategory.keys) {
+        if (!orderedCategories.contains(cat)) orderedCategories.add(cat);
+      }
+
+      return (
+        title: l10n.detailSectionExtras,
+        icon: Icons.video_library_outlined,
+        sections: [
+          for (final category in orderedCategories)
+            SpotlightModalSection(
+              id: 'extras_$category',
+              title: getExtraCategoryLabel(category, l10n),
+              count: byCategory[category]!.length,
+              builder: (context, firstFocusNode) => SpotlightMediaGridSection(
+                items: byCategory[category]!,
+                imageApi: _vm.imageApi,
+                prefs: widget.prefs,
+                aspectRatio: 16 / 9,
+                landscapeCells: true,
+                firstFocusNode: firstFocusNode,
+                onItemTap: (extra) {
+                  Navigator.of(context).pop(
+                    () => _playExtra(extra),
+                  );
+                },
+              ),
+            ),
+        ],
+      );
+    }
+
+    final initialContent = buildContent();
+    if (initialContent.sections.isEmpty) return;
+
+    final focusedNode = FocusManager.instance.primaryFocus;
+    final action = await SpotlightSectionModal.show<VoidCallback>(
+      context,
+      title: initialContent.title,
+      icon: initialContent.icon,
+      sections: initialContent.sections,
+      returnFocus: focusedNode,
+      refreshOn: _vm,
+      refresh: buildContent,
+    );
+    if (mounted && action != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          action();
+        }
+      });
+    }
+  }
+
+  Future<void> _playExtra(AggregatedItem extra) async {
+    final manager = GetIt.instance<PlaybackManager>();
+    await launchPlayerWhilePreparing(
+      context,
+      manager: manager,
+      destination: Destinations.videoPlayer,
+      startPlayback: (launchSession) async {
+        await runPlaybackStart(
+          launchSession,
+          () => manager.playItems([extra], startIndex: 0),
+        );
+        return true;
+      },
     );
   }
 
@@ -398,20 +506,12 @@ class _MinimalistDetailContentState extends State<MinimalistDetailContent> {
   static bool _hasEpisodes(AggregatedItem item) =>
       const {'Series', 'Season', 'Episode'}.contains(item.type);
 
-  bool _hasEpisodesOrExtras(AggregatedItem item) {
-    if (_hasEpisodes(item)) return true;
-    final showExtras = DetailSectionVisibility.of(
-      widget.prefs,
-    ).shows(DetailSection.extras);
-    return showExtras && _vm.features.isNotEmpty;
-  }
-
   Widget? _buildEpisodes(
     AggregatedItem item,
     bool landscape, {
     double? maxHeight,
   }) {
-    if (!_hasEpisodesOrExtras(item)) return null;
+    if (!_hasEpisodes(item)) return null;
     return MinimalistEpisodesSection(
       viewModel: _vm,
       prefs: widget.prefs,

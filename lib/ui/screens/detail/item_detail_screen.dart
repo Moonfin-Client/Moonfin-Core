@@ -4659,6 +4659,10 @@ class DetailActionButtons extends StatefulWidget {
   /// shuffle action for playlist items (e.g. honoring active sorting or filtering).
   final List<AggregatedItem>? playlistTracksOverride;
 
+  /// Callback when the Extras action button is pressed. When non-null, an Extras
+  /// button is included in the actions row.
+  final VoidCallback? onExtrasPressed;
+
   const DetailActionButtons({
     super.key,
     required this.viewModel,
@@ -4683,6 +4687,7 @@ class DetailActionButtons extends StatefulWidget {
     this.actionsExpanded,
     this.onActionsExpandedChanged,
     this.playlistTracksOverride,
+    this.onExtrasPressed,
   });
 
   @override
@@ -7320,8 +7325,17 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       primaryAction = playButton;
     }
 
+    final extrasButton = widget.onExtrasPressed != null
+        ? _DetailActionButton(
+            label: l10n.detailSectionExtras,
+            icon: Icons.video_library_outlined,
+            onPressed: widget.onExtrasPressed!,
+          )
+        : null;
+
     var allButtons = <Widget>[
       ?primaryAction,
+      ?extrasButton,
       for (final button in _orderedButtons(prefs)) ...[
         ?byButton[button],
         ?cancelByButton[button],

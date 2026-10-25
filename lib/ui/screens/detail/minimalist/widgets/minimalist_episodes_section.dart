@@ -15,8 +15,6 @@ import '../../../../widgets/focus/locked_focus_row.dart';
 import '../../../../widgets/sliding_pill_tabs.dart';
 import '../../detail_episode_images.dart';
 import '../../detail_layout_metrics.dart';
-import '../../modern/modern_detail_content.dart'
-    show extraCategoriesOrder, getExtraCategory, getExtraCategoryLabel;
 import '../../play_item_on_screen.dart';
 import 'minimalist_episode_card.dart';
 
@@ -67,41 +65,23 @@ class _MinimalistEpisodesSectionState extends State<MinimalistEpisodesSection> {
   final _railKey = GlobalKey<LockedFocusRowState<AggregatedItem>>();
   final _railController = ScrollController();
   int? _selectedSeason;
-  String? _selectedCategory;
   bool _loadStarted = false;
 
   ItemDetailViewModel get _vm => widget.viewModel;
   bool get _isSeries => _vm.item?.type == 'Series';
   bool get _isSeason => _vm.item?.type == 'Season';
   bool get _isEpisode => _vm.item?.type == 'Episode';
-  bool get _isMovieLike => !_isSeries && !_isSeason && !_isEpisode;
 
   @override
   void initState() {
     super.initState();
     _beginEpisodesLoad();
-    widget.viewModel.addListener(_onVmChanged);
-  }
-
-  @override
-  void didUpdateWidget(MinimalistEpisodesSection oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.viewModel != widget.viewModel) {
-      oldWidget.viewModel.removeListener(_onVmChanged);
-      widget.viewModel.addListener(_onVmChanged);
-      _beginEpisodesLoad();
-    }
   }
 
   @override
   void dispose() {
-    widget.viewModel.removeListener(_onVmChanged);
     _railController.dispose();
     super.dispose();
-  }
-
-  void _onVmChanged() {
-    if (mounted) setState(() {});
   }
 
   /// A Season already carries its own episodes. A Series, or one episode of
@@ -120,11 +100,8 @@ class _MinimalistEpisodesSectionState extends State<MinimalistEpisodesSection> {
     );
   }
 
-  List<AggregatedItem> get _allEpisodes {
-    if (_isSeason) return _vm.episodes;
-    if (_isSeries || _isEpisode) return _vm.seriesEpisodes;
-    return _vm.features;
-  }
+  List<AggregatedItem> get _allEpisodes =>
+      _isSeason ? _vm.episodes : _vm.seriesEpisodes;
 
   List<int> _seasonNumbers(List<AggregatedItem> episodes) => episodes
       .map((episode) => episode.parentIndexNumber)
@@ -132,15 +109,6 @@ class _MinimalistEpisodesSectionState extends State<MinimalistEpisodesSection> {
       .toSet()
       .toList()
     ..sort();
-
-  List<String> _featureCategories(List<AggregatedItem> features) {
-    final present = features.map(getExtraCategory).toSet();
-    final ordered = extraCategoriesOrder.where(present.contains).toList();
-    for (final cat in present) {
-      if (!ordered.contains(cat)) ordered.add(cat);
-    }
-    return ordered;
-  }
 
   String _seasonLabel(AppLocalizations l10n, int number) =>
       number == 0 ? l10n.specials : l10n.seasonNumber(number);
@@ -151,12 +119,6 @@ class _MinimalistEpisodesSectionState extends State<MinimalistEpisodesSection> {
     // Back to the start of the rail, but the tabs keep focus. Left and right
     // change the season as you pass over it, so pulling focus down here would
     // strand you on the first season you touched.
-    if (_railController.hasClients) _railController.jumpTo(0);
-  }
-
-  void _selectCategory(String category) {
-    if (_selectedCategory == category) return;
-    setState(() => _selectedCategory = category);
     if (_railController.hasClients) _railController.jumpTo(0);
   }
 
@@ -216,36 +178,25 @@ class _MinimalistEpisodesSectionState extends State<MinimalistEpisodesSection> {
     final all = _allEpisodes;
     if (all.isEmpty) return const SizedBox.shrink();
 
-    final isMovie = _isMovieLike;
-    final List<String> categories = isMovie ? _featureCategories(all) : const [];
-    final selectedCategory = isMovie
-        ? (_selectedCategory != null && categories.contains(_selectedCategory)
-            ? _selectedCategory!
-            : (categories.isEmpty ? null : categories.first))
-        : null;
-
-    final seasons = isMovie ? const <int>[] : _seasonNumbers(all);
+    final seasons = _seasonNumbers(all);
+    // Landing on an episode opens its own season rather than the first one.
     final arrivedIn = _isEpisode ? _vm.item?.parentIndexNumber : null;
-    final fallbackSeason = arrivedIn != null && seasons.contains(arrivedIn)
+    final fallback = arrivedIn != null && seasons.contains(arrivedIn)
         ? arrivedIn
         : (seasons.isEmpty ? null : seasons.first);
-    final selectedSeason = !isMovie && _selectedSeason != null && seasons.contains(_selectedSeason)
+    final selected = _selectedSeason != null && seasons.contains(_selectedSeason)
         ? _selectedSeason!
-        : fallbackSeason;
+        : fallback;
 
-    final episodes = isMovie
-        ? (selectedCategory == null
-            ? (List<AggregatedItem>.from(all)
-              ..sort(ItemDetailViewModel.compareEpisodes))
-            : (all.where((e) => getExtraCategory(e) == selectedCategory).toList()
-              ..sort(ItemDetailViewModel.compareEpisodes)))
-        : (selectedSeason == null
-            ? (List<AggregatedItem>.from(all)
-              ..sort(ItemDetailViewModel.compareEpisodes))
-            : (all.where((e) => e.parentIndexNumber == selectedSeason).toList()
-              ..sort(ItemDetailViewModel.compareEpisodes)));
+    final episodes = selected == null
+        ? (List<AggregatedItem>.from(all)
+          ..sort(ItemDetailViewModel.compareEpisodes))
+        : (all.where((e) => e.parentIndexNumber == selected).toList()
+          ..sort(ItemDetailViewModel.compareEpisodes));
 
-    final showTabs = isMovie ? categories.isNotEmpty : seasons.length > 1;
+    // One season is no choice at all, so the strip only earns its space when
+    // there's somewhere else to go, and the rail takes over as the way in.
+    final showTabs = seasons.length > 1;
 
     // Sized from the width the rail actually has, after whatever insets the
     // layout put either side of it, rather than the width of the screen.
@@ -266,15 +217,9 @@ class _MinimalistEpisodesSectionState extends State<MinimalistEpisodesSection> {
             if (showTabs) ...[
               SlidingPillTabs(
                 key: const ValueKey('minimalist-season-tabs'),
-                labels: isMovie
-                    ? [for (final c in categories) getExtraCategoryLabel(c, l10n)]
-                    : [for (final n in seasons) _seasonLabel(l10n, n)],
-                selectedIndex: isMovie
-                    ? (selectedCategory == null ? 0 : categories.indexOf(selectedCategory))
-                    : (selectedSeason == null ? 0 : seasons.indexOf(selectedSeason)),
-                onChanged: (index) => isMovie
-                    ? _selectCategory(categories[index])
-                    : _selectSeason(seasons[index]),
+                labels: [for (final n in seasons) _seasonLabel(l10n, n)],
+                selectedIndex: selected == null ? 0 : seasons.indexOf(selected),
+                onChanged: (index) => _selectSeason(seasons[index]),
                 focusNode: widget.episodesFocusNode,
                 onVerticalNavigation: (isUp) {
                   if (!isUp) {
@@ -293,8 +238,7 @@ class _MinimalistEpisodesSectionState extends State<MinimalistEpisodesSection> {
                 key: _railKey,
                 items: episodes,
                 itemKey: (item, _) => '${item.serverId}|${item.id}',
-                hubKey:
-                    'minimalist-episodes-${_vm.item?.id ?? ''}-${isMovie ? selectedCategory : selectedSeason}',
+                hubKey: 'minimalist-episodes-${_vm.item?.id ?? ''}-$selected',
                 itemExtent: cardWidth,
                 itemSpacing: minimalistEpisodeRailGap(
                   landscape: widget.landscape,
@@ -376,15 +320,6 @@ String? minimalistEpisodeImageUrl(
       episode.id,
       maxWidth: maxWidth,
       tag: ownTag,
-    );
-  }
-
-  final parentBackdrop = viewModel.item?.backdropImageTags.firstOrNull;
-  if (parentBackdrop != null && parentBackdrop.isNotEmpty) {
-    return imageApi.getBackdropImageUrl(
-      viewModel.item!.id,
-      maxWidth: maxWidth,
-      tag: parentBackdrop,
     );
   }
 

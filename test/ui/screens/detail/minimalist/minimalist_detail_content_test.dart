@@ -266,14 +266,7 @@ void main() {
     expect(find.byKey(const ValueKey('minimalist-actions')), findsOneWidget);
   });
 
-  testWidgets('a movie without extras gets no episode rail and no season tabs', (tester) async {
-    await pumpContent(tester, viewModel('Movie'));
-
-    expect(find.byKey(const ValueKey('minimalist-episode-rail')), findsNothing);
-    expect(find.byType(SlidingPillTabs), findsNothing);
-  });
-
-  testWidgets('a movie with extras shows the extras tabs and rail', (tester) async {
+  testWidgets('a movie gets no episode rail and no season tabs, even with extras', (tester) async {
     when(() => itemsApi.getSpecialFeatures('item-1')).thenAnswer(
       (_) async => [
         {'Id': 'bts-1', 'Type': 'Video', 'ExtraType': 'BehindTheScenes', 'Name': 'Making of'},
@@ -283,10 +276,41 @@ void main() {
     await pumpContent(tester, vm);
     await tester.pump(const Duration(milliseconds: 500));
 
-    expect(find.byKey(const ValueKey('minimalist-episode-rail')), findsOneWidget);
-    expect(find.byType(SlidingPillTabs), findsOneWidget);
+    expect(find.byKey(const ValueKey('minimalist-episode-rail')), findsNothing);
+    expect(find.byType(SlidingPillTabs), findsNothing);
+  });
+
+  testWidgets('a movie with extras shows the Extras action button which opens the modal', (tester) async {
+    when(() => itemsApi.getSpecialFeatures('item-1')).thenAnswer(
+      (_) async => [
+        {'Id': 'bts-1', 'Type': 'Video', 'ExtraType': 'BehindTheScenes', 'Name': 'Making of'},
+      ],
+    );
+    final vm = viewModel('Movie');
+    await pumpContent(tester, vm);
+    await tester.pump(const Duration(milliseconds: 500));
+
+    expect(find.byIcon(Icons.video_library_outlined), findsOneWidget);
+
+    await tester.tap(find.byIcon(Icons.video_library_outlined));
+    await tester.pumpAndSettle();
+
     expect(find.text('Behind the Scenes'), findsOneWidget);
     expect(find.text('Making of'), findsOneWidget);
+  });
+
+  testWidgets('hiding DetailSection.extras removes the Extras action button', (tester) async {
+    when(() => itemsApi.getSpecialFeatures('item-1')).thenAnswer(
+      (_) async => [
+        {'Id': 'bts-1', 'Type': 'Video', 'ExtraType': 'BehindTheScenes', 'Name': 'Making of'},
+      ],
+    );
+    prefs.set(detailSectionLayout.hiddenPreference, 'extras');
+    final vm = viewModel('Movie');
+    await pumpContent(tester, vm);
+    await tester.pump(const Duration(milliseconds: 500));
+
+    expect(find.byIcon(Icons.video_library_outlined), findsNothing);
   });
 
   testWidgets('what it leaves out, it leaves out for good', (tester) async {
