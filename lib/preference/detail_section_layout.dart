@@ -79,6 +79,7 @@ enum DetailSection {
     _modern,
     _spotlight,
     _nouveau,
+    _minimalist,
   }),
   collections(
     'collections',

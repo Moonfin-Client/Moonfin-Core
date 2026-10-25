@@ -73,9 +73,29 @@ class _MinimalistDetailContentState extends State<MinimalistDetailContent> {
   ItemDetailViewModel get _vm => widget.viewModel;
 
   @override
+  void initState() {
+    super.initState();
+    widget.viewModel.addListener(_onVmChanged);
+  }
+
+  @override
+  void didUpdateWidget(MinimalistDetailContent oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.viewModel != widget.viewModel) {
+      oldWidget.viewModel.removeListener(_onVmChanged);
+      widget.viewModel.addListener(_onVmChanged);
+    }
+  }
+
+  @override
   void dispose() {
+    widget.viewModel.removeListener(_onVmChanged);
     _episodesFocusNode.dispose();
     super.dispose();
+  }
+
+  void _onVmChanged() {
+    if (mounted) setState(() {});
   }
 
   @override
@@ -128,7 +148,7 @@ class _MinimalistDetailContentState extends State<MinimalistDetailContent> {
             branding: branding,
             actions: actions,
             ratings: ratings,
-            episodes: _hasEpisodes(item)
+            episodes: _hasEpisodesOrExtras(item)
                 ? (maxHeight) =>
                       _buildEpisodes(item, landscape, maxHeight: maxHeight)!
                 : null,
@@ -378,12 +398,20 @@ class _MinimalistDetailContentState extends State<MinimalistDetailContent> {
   static bool _hasEpisodes(AggregatedItem item) =>
       const {'Series', 'Season', 'Episode'}.contains(item.type);
 
+  bool _hasEpisodesOrExtras(AggregatedItem item) {
+    if (_hasEpisodes(item)) return true;
+    final showExtras = DetailSectionVisibility.of(
+      widget.prefs,
+    ).shows(DetailSection.extras);
+    return showExtras && _vm.features.isNotEmpty;
+  }
+
   Widget? _buildEpisodes(
     AggregatedItem item,
     bool landscape, {
     double? maxHeight,
   }) {
-    if (!_hasEpisodes(item)) return null;
+    if (!_hasEpisodesOrExtras(item)) return null;
     return MinimalistEpisodesSection(
       viewModel: _vm,
       prefs: widget.prefs,

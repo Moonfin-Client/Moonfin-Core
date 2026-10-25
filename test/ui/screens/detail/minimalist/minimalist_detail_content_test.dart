@@ -266,11 +266,27 @@ void main() {
     expect(find.byKey(const ValueKey('minimalist-actions')), findsOneWidget);
   });
 
-  testWidgets('a movie gets no episode rail and no season tabs', (tester) async {
+  testWidgets('a movie without extras gets no episode rail and no season tabs', (tester) async {
     await pumpContent(tester, viewModel('Movie'));
 
     expect(find.byKey(const ValueKey('minimalist-episode-rail')), findsNothing);
     expect(find.byType(SlidingPillTabs), findsNothing);
+  });
+
+  testWidgets('a movie with extras shows the extras tabs and rail', (tester) async {
+    when(() => itemsApi.getSpecialFeatures('item-1')).thenAnswer(
+      (_) async => [
+        {'Id': 'bts-1', 'Type': 'Video', 'ExtraType': 'BehindTheScenes', 'Name': 'Making of'},
+      ],
+    );
+    final vm = viewModel('Movie');
+    await pumpContent(tester, vm);
+    await tester.pump(const Duration(milliseconds: 500));
+
+    expect(find.byKey(const ValueKey('minimalist-episode-rail')), findsOneWidget);
+    expect(find.byType(SlidingPillTabs), findsOneWidget);
+    expect(find.text('Behind the Scenes'), findsOneWidget);
+    expect(find.text('Making of'), findsOneWidget);
   });
 
   testWidgets('what it leaves out, it leaves out for good', (tester) async {
