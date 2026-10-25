@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:server_core/server_core.dart';
@@ -57,7 +58,7 @@ class ScheduleViewModel extends ChangeNotifier {
       final response = await _client.liveTvApi.getTimers();
       if (read < _applied) return;
       final items = (response['Items'] as List?) ?? [];
-      final now = DateTime.now();
+      final now = clock.now();
 
       final timerItems = items
           .cast<Map<String, dynamic>>()
@@ -73,25 +74,16 @@ class ScheduleViewModel extends ChangeNotifier {
         final dateKey = DateFormat('yyyy-MM-dd').format(date);
         dateLabelMap.putIfAbsent(dateKey, () => date);
 
-        final item = timer.programInfo != null
-            ? RecordingItem.fromJson(timer.programInfo!)
-            : RecordingItem(
-                id: timer.id,
-                name: timer.name,
-                channelName: timer.channelName,
-                startDate: timer.startDate,
-                endDate: timer.endDate,
-                rawData: timer.rawData,
-              );
-
-        grouped.putIfAbsent(dateKey, () => []).add(item);
+        grouped
+            .putIfAbsent(dateKey, () => [])
+            .add(RecordingItem.fromTimer(timer));
       }
 
       final sortedKeys = grouped.keys.toList()..sort();
       _groups = sortedKeys.map((key) {
         final date = dateLabelMap[key]!;
         return ScheduleGroup(
-          dateLabel: _friendlyDate(date),
+          dateLabel: _friendlyDate(date, now),
           items: grouped[key]!,
         );
       }).toList();
@@ -111,7 +103,7 @@ class ScheduleViewModel extends ChangeNotifier {
     notifyLiveTvRecordingsChanged();
     for (var i = 0; i < _groups.length; i++) {
       final filtered =
-          _groups[i].items.where((item) => item.id != timerId).toList();
+          _groups[i].items.where((item) => item.timerId != timerId).toList();
       if (filtered.length != _groups[i].items.length) {
         _groups[i] = ScheduleGroup(
           dateLabel: _groups[i].dateLabel,
@@ -120,15 +112,16 @@ class ScheduleViewModel extends ChangeNotifier {
       }
     }
     _groups = _groups.where((g) => g.items.isNotEmpty).toList();
-    if (_focusedItem?.id == timerId) _focusedItem = null;
+    if (_focusedItem?.timerId == timerId) _focusedItem = null;
     notifyListeners();
   }
 
-  String _friendlyDate(DateTime date) {
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final dateOnly = DateTime(date.year, date.month, date.day);
-    final diff = dateOnly.difference(today).inDays;
+  String _friendlyDate(DateTime date, DateTime now) {
+    // Calendar days in UTC, so a daylight saving change can't make a day 23
+    // hours long.
+    final diff = DateTime.utc(date.year, date.month, date.day)
+        .difference(DateTime.utc(now.year, now.month, now.day))
+        .inDays;
 
     if (diff == 0) return 'Today';
     if (diff == 1) return 'Tomorrow';

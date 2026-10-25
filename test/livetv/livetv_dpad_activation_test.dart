@@ -260,6 +260,61 @@ void main() {
     });
   });
 
+  group('cancelling a scheduled recording', () {
+    // Jellyfin includes the timer's program under the program's own id.
+    void serveTimerWithProgram() {
+      final start = DateTime.now().add(const Duration(hours: 1));
+      when(() => liveTvApi.getTimers()).thenAnswer(
+        (_) async => <String, dynamic>{
+          'Items': <dynamic>[
+            <String, dynamic>{
+              'Id': 'timer-1',
+              'Name': _scheduledName,
+              'StartDate': start.toUtc().toIso8601String(),
+              'ProgramInfo': <String, dynamic>{
+                'Id': 'program-1',
+                'Name': _scheduledName,
+                'TimerId': 'timer-1',
+                'StartDate': start.toUtc().toIso8601String(),
+              },
+            },
+          ],
+        },
+      );
+      when(() => liveTvApi.cancelTimer(any())).thenAnswer((_) async {});
+    }
+
+    Future<void> cancel(WidgetTester tester) async {
+      await focusCardShowing(tester, _scheduledName);
+      await pressKey(tester, LogicalKeyboardKey.enter);
+      await tester.tap(find.text((await l10n()).yesCancel));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('the Schedule screen cancels by the timer id', (tester) async {
+      serveTimerWithProgram();
+      await pumpScreen(tester, const LiveTvScheduleScreen());
+
+      await cancel(tester);
+
+      verify(() => liveTvApi.cancelTimer('timer-1')).called(1);
+      expect(find.text((await l10n()).failedToCancelRecording), findsNothing);
+    });
+
+    testWidgets('the Recordings Schedule tab cancels by the timer id',
+        (tester) async {
+      serveTimerWithProgram();
+      await pumpScreen(tester, const LiveTvRecordingsScreen());
+      await tester.tap(find.text('${(await l10n()).schedule} (1)'));
+      await tester.pumpAndSettle();
+
+      await cancel(tester);
+
+      verify(() => liveTvApi.cancelTimer('timer-1')).called(1);
+      expect(find.text((await l10n()).failedToCancelRecording), findsNothing);
+    });
+  });
+
   group('series recordings screen', () {
     testWidgets('a series tile activates on Enter from a remote',
         (tester) async {

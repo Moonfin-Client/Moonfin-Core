@@ -1,8 +1,21 @@
 import 'package:flutter/foundation.dart';
 import 'package:server_core/server_core.dart';
 
+/// A server date in local time. Jellyfin sends .NET's `DateTime.MinValue`
+/// (year 1) for a timer date it doesn't have, which counts as missing: in local
+/// time west of UTC it falls in year 0, a date .NET can't read back.
+DateTime? _serverDate(Object? value) {
+  final date = value is String ? DateTime.tryParse(value) : null;
+  if (date == null || date.year <= 1) return null;
+  return date.toLocal();
+}
+
 class RecordingItem {
   final String id;
+
+  /// The timer that records this, for a scheduled item. Its [id] is the
+  /// program's, since the program carries the artwork.
+  final String? timerId;
   final String name;
   final String? channelName;
   final String? episodeTitle;
@@ -18,6 +31,7 @@ class RecordingItem {
 
   const RecordingItem({
     required this.id,
+    this.timerId,
     required this.name,
     this.channelName,
     this.episodeTitle,
@@ -32,25 +46,42 @@ class RecordingItem {
     required this.rawData,
   });
 
-  factory RecordingItem.fromJson(Map<String, dynamic> json) {
+  factory RecordingItem.fromJson(
+    Map<String, dynamic> json, {
+    String? timerId,
+  }) {
     return RecordingItem(
       id: json['Id']?.toString() ?? '',
+      timerId: timerId,
       name: json['Name'] as String? ?? '',
       channelName: json['ChannelName'] as String?,
       episodeTitle: json['EpisodeTitle'] as String?,
       seriesName: json['SeriesName'] as String?,
-      startDate: json['StartDate'] != null
-          ? DateTime.tryParse(json['StartDate'] as String)
-          : null,
-      endDate: json['EndDate'] != null
-          ? DateTime.tryParse(json['EndDate'] as String)
-          : null,
+      startDate: _serverDate(json['StartDate']),
+      endDate: _serverDate(json['EndDate']),
       overview: json['Overview'] as String?,
       imageTags: json['ImageTags'] as Map<String, dynamic>?,
       parentThumbItemId: json['ParentThumbItemId']?.toString(),
       parentThumbImageTag: json['ParentThumbImageTag'] as String?,
       seriesId: json['SeriesId']?.toString(),
       rawData: json,
+    );
+  }
+
+  /// A scheduled timer, shown as its program when the server includes one.
+  factory RecordingItem.fromTimer(TimerItem timer) {
+    final program = timer.programInfo;
+    if (program != null) {
+      return RecordingItem.fromJson(program, timerId: timer.id);
+    }
+    return RecordingItem(
+      id: timer.id,
+      timerId: timer.id,
+      name: timer.name,
+      channelName: timer.channelName,
+      startDate: timer.startDate,
+      endDate: timer.endDate,
+      rawData: timer.rawData,
     );
   }
 
@@ -108,12 +139,8 @@ class TimerItem {
       name: json['Name'] as String? ?? '',
       channelName: json['ChannelName'] as String?,
       seriesTimerId: json['SeriesTimerId']?.toString(),
-      startDate: json['StartDate'] != null
-          ? DateTime.tryParse(json['StartDate'] as String)
-          : null,
-      endDate: json['EndDate'] != null
-          ? DateTime.tryParse(json['EndDate'] as String)
-          : null,
+      startDate: _serverDate(json['StartDate']),
+      endDate: _serverDate(json['EndDate']),
       programInfo: json['ProgramInfo'] as Map<String, dynamic>?,
       rawData: json,
     );
@@ -244,20 +271,7 @@ class RecordingsViewModel extends ChangeNotifier {
                 t.startDate!.isBefore(next24h) &&
                 t.isUpcoming(now),
           )
-          .map((timer) {
-            final programData = timer.programInfo;
-            if (programData != null) {
-              return RecordingItem.fromJson(programData);
-            }
-            return RecordingItem(
-              id: timer.id,
-              name: timer.name,
-              channelName: timer.channelName,
-              startDate: timer.startDate,
-              endDate: timer.endDate,
-              rawData: timer.rawData,
-            );
-          })
+          .map(RecordingItem.fromTimer)
           .toList();
     } catch (_) {}
   }

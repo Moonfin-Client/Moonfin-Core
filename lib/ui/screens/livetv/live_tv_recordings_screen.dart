@@ -313,7 +313,9 @@ class _LiveTvRecordingsScreenState extends State<LiveTvRecordingsScreen> {
     );
     if (confirmed == true) {
       try {
-        await _scheduleVm.cancelTimer(item.id);
+        await _scheduleVm.cancelTimer(
+          item.timerId ?? (throw StateError('No timer for ${item.name}')),
+        );
       } catch (_) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(

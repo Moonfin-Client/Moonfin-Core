@@ -145,7 +145,9 @@ class _LiveTvScheduleScreenState extends State<LiveTvScheduleScreen> {
 
     if (confirmed == true) {
       try {
-        await _vm.cancelTimer(item.id);
+        await _vm.cancelTimer(
+          item.timerId ?? (throw StateError('No timer for ${item.name}')),
+        );
       } catch (_) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
