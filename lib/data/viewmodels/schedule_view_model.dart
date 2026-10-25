@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:server_core/server_core.dart';
 
+import '../../util/calendar_days.dart';
 import '../models/live_tv_recording_state.dart';
 import 'recordings_view_model.dart';
 
@@ -117,11 +118,7 @@ class ScheduleViewModel extends ChangeNotifier {
   }
 
   String _friendlyDate(DateTime date, DateTime now) {
-    // Calendar days in UTC, so a daylight saving change can't make a day 23
-    // hours long.
-    final diff = DateTime.utc(date.year, date.month, date.day)
-        .difference(DateTime.utc(now.year, now.month, now.day))
-        .inDays;
+    final diff = calendarDaysBetween(now, date);
 
     if (diff == 0) return 'Today';
     if (diff == 1) return 'Tomorrow';

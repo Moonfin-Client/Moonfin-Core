@@ -3,6 +3,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../../util/calendar_days.dart';
 
 String activityBucketLabel(DateTime date, AppLocalizations l10n, {DateTime? now}) {
   final reference = now ?? DateTime.now();
@@ -15,13 +16,11 @@ String activityBucketLabel(DateTime date, AppLocalizations l10n, {DateTime? now}
     return l10n.adminActivityLastHour;
   }
 
-  final local = date.toLocal();
-  final today = DateTime(reference.year, reference.month, reference.day);
-  final entryDay = DateTime(local.year, local.month, local.day);
-  if (!entryDay.isBefore(today)) {
+  final daysAgo = calendarDaysBetween(date.toLocal(), reference.toLocal());
+  if (daysAgo <= 0) {
     return l10n.adminActivityToday;
   }
-  if (diff.inDays < 2) {
+  if (daysAgo == 1) {
     return l10n.adminActivityYesterday;
   }
   return l10n.adminActivityOlder;
@@ -55,7 +54,8 @@ String activityTimeAgo(DateTime date, AppLocalizations l10n, {bool compact = tru
     if (diff.inMinutes < 60) return l10n.adminActivityMinutesShort(diff.inMinutes);
     if (diff.inHours < 24) return l10n.adminActivityHoursShort(diff.inHours);
     if (diff.inDays < 7) return l10n.adminActivityDaysShort(diff.inDays);
-    return l10n.adminActivityDateShort(date.month, date.day);
+    final local = date.toLocal();
+    return l10n.adminActivityDateShort(local.month, local.day);
   }
 
   if (diff.inDays > 0) return l10n.adminActivityDaysAgo(diff.inDays);
