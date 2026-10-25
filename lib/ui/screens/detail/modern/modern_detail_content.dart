@@ -2749,8 +2749,17 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       return const SizedBox.shrink();
     }
 
+    final showMissing = widget.prefs.get(
+      UserPreferences.seerrShowMissingCollectionItems,
+    );
+
     if (collections.length == 1) {
-      return _mediaGrid(context, collections.first.items,
+      final col = collections.first;
+      final items = [
+        col.boxSetItem,
+        ...(showMissing ? col.itemsWithMissing : col.items),
+      ];
+      return _mediaGrid(context, items,
           firstFocusNode: _collectionFirstFocusNode);
     }
 
@@ -2782,6 +2791,10 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
         itemBuilder: (context, index) {
           final col = collections[index];
           final rowFocusNode = _collectionRowFocusNodeFor(col.id);
+          final items = [
+            col.boxSetItem,
+            ...(showMissing ? col.itemsWithMissing : col.items),
+          ];
 
           return Builder(
             builder: (rowContext) {
@@ -2808,7 +2821,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                     ),
                     const SizedBox(height: 12),
                     DetailSimilarRow(
-                      items: col.items,
+                      items: items,
                       imageApi: _vm.imageApi,
                       prefs: widget.prefs,
                       customCardWidth: isMobile ? 96.0 : 120.0 * desktopScale,
@@ -2831,7 +2844,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                             }
                           }
                           if (event.logicalKey == LogicalKeyboardKey.arrowRight &&
-                              itemIndex == col.items.length - 1) {
+                              itemIndex == items.length - 1) {
                             return KeyEventResult.handled;
                           }
                           if (event.logicalKey == LogicalKeyboardKey.arrowUp) {

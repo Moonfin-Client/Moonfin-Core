@@ -152,7 +152,7 @@ class NouveauDetailContentState extends State<NouveauDetailContent> {
       _ when key == _episodesSectionKey =>
         item.type == 'Series' || item.type == 'Season',
       _ when key == _collectionSectionKey =>
-        NouveauCollectionSection.shouldInclude(_vm),
+        NouveauCollectionSection.shouldInclude(_vm, _visibility),
       _ when key == _chaptersSectionKey =>
         _visibility.shows(DetailSection.chapters) && item.chapters.isNotEmpty,
       _ when key == _extrasSectionKey =>
@@ -1221,9 +1221,9 @@ class NouveauDetailContentState extends State<NouveauDetailContent> {
   List<GlobalKey> _orderedMediaSectionKeys(AggregatedItem item) {
     return <GlobalKey>[
       _episodesSectionKey,
-      _collectionSectionKey,
       _chaptersSectionKey,
       _extrasSectionKey,
+      _collectionSectionKey,
       _discoverySectionKey,
       _reviewsSectionKey,
       _peopleSectionKey,

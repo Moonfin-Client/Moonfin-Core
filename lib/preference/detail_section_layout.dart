@@ -84,7 +84,7 @@ enum DetailSection {
     'collections',
     Icons.collections_bookmark_outlined,
     DetailSectionGroup.sections,
-    {_classic, _modern, _spotlight},
+    {_classic, _modern, _spotlight, _nouveau},
   ),
   moreLikeThis(
     'moreLikeThis',

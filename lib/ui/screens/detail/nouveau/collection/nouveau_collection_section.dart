@@ -21,6 +21,7 @@ import '../../../../widgets/focus/locked_focus_row.dart';
 import '../../../../widgets/navigation_layout.dart';
 import '../../../../widgets/overlay_sheet.dart';
 import '../../../../widgets/seerr/seerr_image_urls.dart';
+import '../../../../widgets/seerr_icons.dart';
 import '../../item_detail_screen.dart';
 import '../shared/nouveau_landscape_media_card.dart';
 import '../shared/nouveau_poster_card.dart';
@@ -48,8 +49,13 @@ class NouveauCollectionSection extends StatefulWidget {
     this.onRevealRequested,
   });
 
-  static bool shouldInclude(ItemDetailViewModel viewModel) {
-    return viewModel.item?.type == 'BoxSet';
+  static bool shouldInclude(
+    ItemDetailViewModel viewModel, [
+    DetailSectionVisibility visibility = DetailSectionVisibility.all,
+  ]) {
+    if (viewModel.item?.type == 'BoxSet') return true;
+    return visibility.shows(DetailSection.collections) &&
+        viewModel.parentCollections.isNotEmpty;
   }
 
   @override
@@ -65,6 +71,12 @@ class NouveauCollectionSectionState
 
   final ScrollController _collectionScrollController = ScrollController();
   final ScrollController _playlistScrollController = ScrollController();
+
+  final Map<String, ScrollController> _parentScrollControllers = {};
+  final Map<String, GlobalKey<LockedFocusRowState<AggregatedItem>>>
+  _parentRowKeys = {};
+  final Map<String, GlobalKey> _parentRevealKeys = {};
+  final Map<String, String> _parentHubKeys = {};
 
   final GlobalKey<LockedFocusRowState<AggregatedItem>> _collectionRowKey =
       GlobalKey<LockedFocusRowState<AggregatedItem>>();
@@ -97,9 +109,15 @@ class NouveauCollectionSectionState
 
   List<AggregatedItem> get _collectionItems {
     final live = _vm.collectionItems;
+    final showMissing = widget.prefs.get(
+      UserPreferences.seerrShowMissingCollectionItems,
+    );
+    final missing = _vm.missingCollectionItems;
 
-    if (live.isNotEmpty) {
-      return live;
+    if (live.isNotEmpty || missing.isNotEmpty) {
+      return showMissing
+          ? mergeMissingByReleaseOrder(live, missing)
+          : live;
     }
 
     return _stableCollectionItems;
@@ -110,7 +128,7 @@ class NouveauCollectionSectionState
       return const [];
     }
 
-    final live = _vm.playlistItems;
+    final live = _vm.collectionPlaylistItems;
 
     if (live.isNotEmpty) {
       return live;
@@ -134,7 +152,56 @@ class NouveauCollectionSectionState
     return !PlatformDetection.isTV && size.shortestSide < 600;
   }
 
+  bool get _isBoxSet => _vm.item?.type == 'BoxSet';
+
+  List<ParentCollection> get _parentCollections {
+    if (_isBoxSet || !widget.visibility.shows(DetailSection.collections)) {
+      return const [];
+    }
+    return _vm.parentCollections;
+  }
+
+  List<AggregatedItem> _parentCollectionItems(ParentCollection col) {
+    final showMissing = widget.prefs.get(
+      UserPreferences.seerrShowMissingCollectionItems,
+    );
+    return [
+      col.boxSetItem,
+      ...(showMissing ? col.itemsWithMissing : col.items),
+    ];
+  }
+
+  ScrollController _parentControllerFor(String id) {
+    return _parentScrollControllers.putIfAbsent(id, () => ScrollController());
+  }
+
+  GlobalKey<LockedFocusRowState<AggregatedItem>> _parentRowKeyFor(String id) {
+    return _parentRowKeys.putIfAbsent(
+      id,
+      () => GlobalKey<LockedFocusRowState<AggregatedItem>>(),
+    );
+  }
+
+  GlobalKey _parentRevealKeyFor(String id) {
+    return _parentRevealKeys.putIfAbsent(id, () => GlobalKey());
+  }
+
+  String _parentHubKeyFor(String id) {
+    return _parentHubKeys.putIfAbsent(
+      id,
+      () => 'nouveau-parent-collection-$id-${_hubSession++}',
+    );
+  }
+
   GlobalKey? get topRevealKey {
+    if (!_isBoxSet) {
+      final cols = _parentCollections;
+      if (cols.isNotEmpty) {
+        return _parentRevealKeyFor(cols.first.id);
+      }
+      return null;
+    }
+
     if (_collectionItems.isNotEmpty) {
       return _collectionRailRevealKey;
     }
@@ -147,6 +214,14 @@ class NouveauCollectionSectionState
   }
 
   GlobalKey? get bottomRevealKey {
+    if (!_isBoxSet) {
+      final cols = _parentCollections;
+      if (cols.isNotEmpty) {
+        return _parentRevealKeyFor(cols.last.id);
+      }
+      return null;
+    }
+
     if (_playlistItems.isNotEmpty) {
       return _playlistSectionRevealKey;
     }
@@ -192,6 +267,14 @@ class NouveauCollectionSectionState
 
     _sortInProgress = false;
 
+    for (final controller in _parentScrollControllers.values) {
+      controller.dispose();
+    }
+    _parentScrollControllers.clear();
+    _parentRowKeys.clear();
+    _parentRevealKeys.clear();
+    _parentHubKeys.clear();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) {
         return;
@@ -219,6 +302,10 @@ class NouveauCollectionSectionState
 
     _collectionScrollController.dispose();
     _playlistScrollController.dispose();
+
+    for (final controller in _parentScrollControllers.values) {
+      controller.dispose();
+    }
 
     super.dispose();
   }
@@ -285,6 +372,16 @@ class NouveauCollectionSectionState
       return false;
     }
 
+    if (!_isBoxSet) {
+      final cols = _parentCollections;
+      if (cols.isEmpty) {
+        return false;
+      }
+      final first = cols.first;
+      return _parentRowKeys[first.id]?.currentState != null ||
+          _parentCollectionItems(first).isNotEmpty;
+    }
+
     if (_collectionItems.isNotEmpty && _collectionRowKey.currentState != null) {
       return true;
     }
@@ -299,6 +396,19 @@ class NouveauCollectionSectionState
   bool focusTop() {
     if (!mounted) {
       return false;
+    }
+
+    if (!_isBoxSet) {
+      final cols = _parentCollections;
+      if (cols.isEmpty) {
+        return false;
+      }
+      final first = cols.first;
+      final moved = _focusParentCollectionFromMemory(first);
+      if (moved) {
+        widget.onRevealRequested?.call(_parentRevealKeyFor(first.id));
+      }
+      return moved;
     }
 
     if (_collectionItems.isNotEmpty && _focusCollectionFromMemory()) {
@@ -327,6 +437,19 @@ class NouveauCollectionSectionState
   bool focusBottom() {
     if (!mounted) {
       return false;
+    }
+
+    if (!_isBoxSet) {
+      final cols = _parentCollections;
+      if (cols.isEmpty) {
+        return false;
+      }
+      final last = cols.last;
+      final moved = _focusParentCollectionFromMemory(last);
+      if (moved) {
+        widget.onRevealRequested?.call(_parentRevealKeyFor(last.id));
+      }
+      return moved;
     }
 
     if (_playlistItems.isNotEmpty) {
@@ -363,6 +486,41 @@ class NouveauCollectionSectionState
     }
 
     return moved;
+  }
+
+  bool _focusParentCollectionFromMemory(ParentCollection col) {
+    final items = _parentCollectionItems(col);
+    final row = _parentRowKeys[col.id]?.currentState;
+    if (items.isEmpty || row == null) {
+      return false;
+    }
+    row.requestFocusFromMemory();
+    return true;
+  }
+
+  bool _handleParentCollectionVerticalNavigation(int colIndex, bool isUp) {
+    final cols = _parentCollections;
+    if (isUp) {
+      if (colIndex > 0) {
+        final prevCol = cols[colIndex - 1];
+        final moved = _focusParentCollectionFromMemory(prevCol);
+        if (moved) {
+          widget.onRevealRequested?.call(_parentRevealKeyFor(prevCol.id));
+        }
+        return moved;
+      }
+      return widget.onNavigateUp?.call() ?? false;
+    } else {
+      if (colIndex < cols.length - 1) {
+        final nextCol = cols[colIndex + 1];
+        final moved = _focusParentCollectionFromMemory(nextCol);
+        if (moved) {
+          widget.onRevealRequested?.call(_parentRevealKeyFor(nextCol.id));
+        }
+        return moved;
+      }
+      return widget.onNavigateDown?.call() ?? false;
+    }
   }
 
   bool _focusCollectionFromMemory() {
@@ -555,6 +713,23 @@ class NouveauCollectionSectionState
   }
 
   void _openItem(BuildContext context, AggregatedItem item) {
+    if (item.serverId == 'seerr') {
+      final mediaType = item.seerrMediaType ??
+          (item.type == 'Series' ? 'tv' : 'movie');
+      final tmdbId = item.tmdbId;
+      final targetId = (tmdbId != null && tmdbId.isNotEmpty)
+          ? tmdbId
+          : item.id.replaceAll(RegExp(r'^tmdb:(?:movie:|tv:)?'), '');
+      context.push(
+        Destinations.seerrMedia(
+          targetId,
+          mediaType: mediaType,
+          title: item.name,
+        ),
+      );
+      return;
+    }
+
     context.push(
       Destinations.itemOrPhoto(
         item.id,
@@ -582,15 +757,23 @@ class NouveauCollectionSectionState
   }
 
   void _showItemContextMenu(BuildContext context, AggregatedItem item) {
+    if (item.serverId == 'seerr' || item.id.startsWith('tmdb:')) {
+      return;
+    }
+
     showContextMenu(
       context,
       item,
-      collectionRemoval: CollectionRemovalContext(
-        collectionName: _vm.item?.name ?? '',
-        remove: _vm.removeFromCollection,
-      ),
+      collectionRemoval: _isBoxSet
+          ? CollectionRemovalContext(
+              collectionName: _vm.item?.name ?? '',
+              remove: _vm.removeFromCollection,
+            )
+          : null,
       onChanged: () {
-        unawaited(_refreshCollectionAfterMutation());
+        if (_isBoxSet) {
+          unawaited(_refreshCollectionAfterMutation());
+        }
       },
     );
   }
@@ -715,11 +898,9 @@ class NouveauCollectionSectionState
       );
     }
 
-    final cardSpacing = PlatformDetection.isTV
-        ? NouveauSpacing.tvRailItemGap
-        : NouveauSpacing.railItemGap;
+    final cardSpacing = NouveauSpacing.railItemGap;
 
-    final visibleItemCount = PlatformDetection.isTV ? 5.5 : 4.5;
+    final visibleItemCount = NouveauSpacing.discoveryVisibleItemCount;
 
     final cardWidth =
         (availableWidth - visibleItemCount.floor() * cardSpacing) /
@@ -883,6 +1064,50 @@ class NouveauCollectionSectionState
 
   @override
   Widget build(BuildContext context) {
+    if (!_isBoxSet) {
+      final parentCollections = _parentCollections;
+      if (parentCollections.isEmpty) {
+        return const SizedBox.shrink();
+      }
+
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          final availableWidth = constraints.maxWidth.isFinite
+              ? constraints.maxWidth
+              : MediaQuery.sizeOf(context).width;
+
+          final layout = _collectionLayoutFor(context, availableWidth);
+
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              for (var i = 0; i < parentCollections.length; i++) ...[
+                if (i > 0)
+                  SizedBox(
+                    height: layout.compact
+                        ? NouveauSpacing.mobileSectionGap
+                        : NouveauSpacing.sectionGap,
+                  ),
+                _buildCollectionRail(
+                  context,
+                  _parentCollectionItems(parentCollections[i]),
+                  layout,
+                  title: parentCollections[i].name,
+                  revealKey: _parentRevealKeyFor(parentCollections[i].id),
+                  rowKey: _parentRowKeyFor(parentCollections[i].id),
+                  hubKey: _parentHubKeyFor(parentCollections[i].id),
+                  controller: _parentControllerFor(parentCollections[i].id),
+                  onVerticalNavigation: (isUp) =>
+                      _handleParentCollectionVerticalNavigation(i, isUp),
+                ),
+              ],
+            ],
+          );
+        },
+      );
+    }
+
     _prunePlaylistCardKeys();
 
     if (_vm.collectionItems.isNotEmpty) {
@@ -942,8 +1167,15 @@ class NouveauCollectionSectionState
   Widget _buildCollectionRail(
     BuildContext context,
     List<AggregatedItem> items,
-    _CollectionPosterLayout layout,
-  ) {
+    _CollectionPosterLayout layout, {
+    String? title,
+    Key? revealKey,
+    Key? rowKey,
+    String? hubKey,
+    ScrollController? controller,
+    bool Function(bool isUp)? onVerticalNavigation,
+    void Function(int index, AggregatedItem item)? onIndexChanged,
+  }) {
     final l10n = AppLocalizations.of(context);
 
     final textTheme = Theme.of(context).textTheme;
@@ -953,7 +1185,7 @@ class NouveauCollectionSectionState
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          l10n.collection,
+          title ?? l10n.collection,
           style: layout.compact
               ? textTheme.titleLarge?.copyWith(
                   fontSize: 22,
@@ -970,7 +1202,7 @@ class NouveauCollectionSectionState
         ),
 
         SizedBox(
-          key: _collectionRailRevealKey,
+          key: revealKey ?? _collectionRailRevealKey,
           width: double.infinity,
           height: layout.cardHeight,
           child: items.isEmpty
@@ -987,10 +1219,10 @@ class NouveauCollectionSectionState
                     width: layout.viewportWidth,
                     height: layout.cardHeight,
                     child: LockedFocusRow<AggregatedItem>(
-                      key: _collectionRowKey,
+                      key: rowKey ?? _collectionRowKey,
                       items: items,
-                      hubKey: _collectionHubKey,
-                      controller: _collectionScrollController,
+                      hubKey: hubKey ?? _collectionHubKey,
+                      controller: controller ?? _collectionScrollController,
                       height: layout.cardHeight,
                       itemExtent: layout.itemExtent,
                       clipBehavior: Clip.none,
@@ -1000,11 +1232,14 @@ class NouveauCollectionSectionState
                       onLongPress: (_, item) {
                         _showItemContextMenu(context, item);
                       },
-                      onIndexChanged: _handleCollectionIndexChanged,
-                      onVerticalNavigation: _handleCollectionVerticalNavigation,
+                      onIndexChanged: onIndexChanged ?? _handleCollectionIndexChanged,
+                      onVerticalNavigation: onVerticalNavigation ??
+                          _handleCollectionVerticalNavigation,
                       onLeftEdge: _navbarIsLeft ? _handleLeftEdge : null,
                       itemBuilder: (context, item, index, isFocused) {
                         final hasNext = index < items.length - 1;
+                        final isSeerrItem = item.serverId == 'seerr' ||
+                            item.id.startsWith('tmdb:');
 
                         return Padding(
                           padding: EdgeInsets.only(
@@ -1017,16 +1252,21 @@ class NouveauCollectionSectionState
                             width: layout.cardWidth,
                             height: layout.cardHeight,
                             isFocused: isFocused,
-                            isFavorite: item.isFavorite,
-                            isPlayed: item.isPlayed,
-                            progress: _progressFor(item),
+                            isFavorite: isSeerrItem ? false : item.isFavorite,
+                            isPlayed: isSeerrItem ? false : item.isPlayed,
+                            progress: isSeerrItem ? 0 : _progressFor(item),
                             placeholderIcon: _placeholderIconFor(item),
+                            topRightOverlay: isSeerrItem
+                                ? const SeerrBadge(size: 18)
+                                : null,
                             onTap: () {
                               _openItem(context, item);
                             },
-                            onLongPress: () {
-                              _showItemContextMenu(context, item);
-                            },
+                            onLongPress: isSeerrItem
+                                ? null
+                                : () {
+                                    _showItemContextMenu(context, item);
+                                  },
                           ),
                         );
                       },

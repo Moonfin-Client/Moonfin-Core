@@ -2294,10 +2294,13 @@ class _DetailContentState extends State<_DetailContent> {
   List<Widget> _buildMovieContent(BuildContext context, AggregatedItem item) {
     final actionButtonsFocusNode =
         widget.initialFocusNode ?? _sectionFocusNode('detailActionButtons');
+    final showMissing = prefs.get(
+      UserPreferences.seerrShowMissingCollectionItems,
+    );
     final collections = [
       if (_visibility.shows(DetailSection.collections))
         for (final collection in viewModel.parentCollections)
-          if (collection.items.isNotEmpty) collection,
+          collection,
     ];
 
     final specs = <_SectionSpec>[
@@ -2308,7 +2311,10 @@ class _DetailContentState extends State<_DetailContent> {
         _itemRowSpec(
           label: 'detailMovieCollection:${collection.id}',
           title: collection.name,
-          items: collection.items,
+          items: [
+            collection.boxSetItem,
+            ...(showMissing ? collection.itemsWithMissing : collection.items),
+          ],
         ),
       ?_similarSpec(context, 'detailMovieSimilar'),
       ?_reviewsSpec(context, 'detailMovieReviews'),
@@ -2436,6 +2442,14 @@ class _DetailContentState extends State<_DetailContent> {
     final actionButtonsFocusNode =
         widget.initialFocusNode ?? _sectionFocusNode('detailActionButtons');
     final seasonsFocusNode = _sectionFocusNode('detailSeriesSeasons');
+    final showMissing = prefs.get(
+      UserPreferences.seerrShowMissingCollectionItems,
+    );
+    final collections = [
+      if (_visibility.shows(DetailSection.collections))
+        for (final collection in viewModel.parentCollections)
+          collection,
+    ];
 
     final specs = <_SectionSpec>[
       ?_metadataSpec(item, 'detailSeriesMetadata'),
@@ -2472,6 +2486,15 @@ class _DetailContentState extends State<_DetailContent> {
           ),
         ),
       ?_castSpec(context, 'detailSeriesCast'),
+      for (final collection in collections)
+        _itemRowSpec(
+          label: 'detailSeriesCollection:${collection.id}',
+          title: collection.name,
+          items: [
+            collection.boxSetItem,
+            ...(showMissing ? collection.itemsWithMissing : collection.items),
+          ],
+        ),
       ?_similarSpec(context, 'detailSeriesSimilar'),
       ?_reviewsSpec(context, 'detailSeriesReviews'),
       ..._chapterAndExtraSpecs(context, item),
@@ -3619,12 +3642,29 @@ class _DetailContentState extends State<_DetailContent> {
       return a.name.toLowerCase().compareTo(b.name.toLowerCase());
     }
 
-    final movies =
+    final showMissing = prefs.get(
+      UserPreferences.seerrShowMissingCollectionItems,
+    );
+    final libraryMovies =
         viewModel.collectionItems.where((i) => i.type == 'Movie').toList()
           ..sort(releaseSort);
-    final series =
+    final missingMovies = viewModel.missingCollectionItems
+        .where((i) => i.type == 'Movie')
+        .toList();
+    final movies = showMissing
+        ? mergeMissingByReleaseOrder(libraryMovies, missingMovies)
+        : libraryMovies;
+
+    final librarySeries =
         viewModel.collectionItems.where((i) => i.type == 'Series').toList()
           ..sort(releaseSort);
+    final missingSeries = viewModel.missingCollectionItems
+        .where((i) => i.type == 'Series')
+        .toList();
+    final series = showMissing
+        ? mergeMissingByReleaseOrder(librarySeries, missingSeries)
+        : librarySeries;
+
     final other =
         viewModel.collectionItems
             .where((i) => i.type != 'Movie' && i.type != 'Series')
@@ -13358,6 +13398,8 @@ class DetailSimilarRow extends StatelessWidget {
         itemBuilder: (context, index) {
           final item = items[index];
           final ar = MediaCard.aspectRatioForType(item.type);
+          final isSeerrItem =
+              item.id.startsWith('tmdb:') || item.serverId == 'seerr';
           return MediaCard(
             title: item.name,
             titleColor: isNeon ? AppColorScheme.accent : null,
@@ -13378,16 +13420,26 @@ class DetailSimilarRow extends StatelessWidget {
                 : Color(prefs.get(UserPreferences.focusColor).colorValue),
             cardFocusExpansion: cardExpansion,
             suppressFocusGlow: isNeon,
-            isFavorite: item.isFavorite,
-            isPlayed: item.isPlayed,
-            playedPercentage: item.playedPercentage,
-            watchedBehavior: watchedBehavior,
+            isFavorite: isSeerrItem ? false : item.isFavorite,
+            isPlayed: isSeerrItem ? false : item.isPlayed,
+            playedPercentage: isSeerrItem ? null : item.playedPercentage,
+            watchedBehavior: isSeerrItem
+                ? WatchedIndicatorBehavior.never
+                : watchedBehavior,
             itemType: item.type,
+            imageOverlays: [
+              if (isSeerrItem)
+                const Positioned(
+                  top: 4,
+                  right: 4,
+                  child: SeerrBadge(size: 18),
+                ),
+            ],
             focusNode: index == 0 ? firstItemFocusNode : null,
             onKeyEvent: onItemKeyEvent == null
                 ? null
                 : (_, event) => onItemKeyEvent!(index, event),
-            onLongPress: onItemLongPress == null
+            onLongPress: isSeerrItem || onItemLongPress == null
                 ? null
                 : () => onItemLongPress!(item),
             onTap: () {
@@ -13395,8 +13447,19 @@ class DetailSimilarRow extends StatelessWidget {
                 final mediaType =
                     item.seerrMediaType ??
                     (item.type == 'Series' ? 'tv' : 'movie');
+                final tmdbId = item.tmdbId;
+                final targetId = (tmdbId != null && tmdbId.isNotEmpty)
+                    ? tmdbId
+                    : item.id.replaceAll(
+                        RegExp(r'^tmdb:(?:movie:|tv:)?'),
+                        '',
+                      );
                 context.push(
-                  Destinations.seerrMedia(item.id, mediaType: mediaType),
+                  Destinations.seerrMedia(
+                    targetId,
+                    mediaType: mediaType,
+                    title: item.name,
+                  ),
                 );
               } else {
                 context.push(
