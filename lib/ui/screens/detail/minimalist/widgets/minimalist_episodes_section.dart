@@ -189,8 +189,10 @@ class _MinimalistEpisodesSectionState extends State<MinimalistEpisodesSection> {
         : fallback;
 
     final episodes = selected == null
-        ? all
-        : all.where((e) => e.parentIndexNumber == selected).toList();
+        ? (List<AggregatedItem>.from(all)
+          ..sort(ItemDetailViewModel.compareEpisodes))
+        : (all.where((e) => e.parentIndexNumber == selected).toList()
+          ..sort(ItemDetailViewModel.compareEpisodes));
 
     // One season is no choice at all, so the strip only earns its space when
     // there's somewhere else to go, and the rail takes over as the way in.

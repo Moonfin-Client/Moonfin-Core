@@ -313,9 +313,22 @@ class ItemDetailViewModel extends ChangeNotifier {
   /// turns true on a fetch that worked, because a failed one is tried again.
   bool get seriesEpisodesLoaded => _seriesEpisodesLoaded;
 
-  /// All episodes of a Series across every season, in the server's
-  /// season/episode order. Empty until [loadAllSeriesEpisodes] completes.
+  /// All episodes of a Series across every season, sorted in season and episode
+  /// order. Empty until [loadAllSeriesEpisodes] completes.
   List<AggregatedItem> get seriesEpisodes => _seriesEpisodes;
+
+  /// Compares two episodes by season ([AggregatedItem.parentIndexNumber]),
+  /// episode number ([AggregatedItem.indexNumber]), and finally [AggregatedItem.name]
+  /// as a tie-breaker.
+  static int compareEpisodes(AggregatedItem a, AggregatedItem b) {
+    final sa = a.parentIndexNumber ?? 0;
+    final sb = b.parentIndexNumber ?? 0;
+    if (sa != sb) return sa.compareTo(sb);
+    final ea = a.indexNumber ?? 0;
+    final eb = b.indexNumber ?? 0;
+    if (ea != eb) return ea.compareTo(eb);
+    return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+  }
 
   AggregatedItem? _nextUp;
   AggregatedItem? get nextUp => _nextUp;
@@ -1108,10 +1121,11 @@ class ItemDetailViewModel extends ChangeNotifier {
           seasonId: seasonId,
           fields: _episodeOverviewFields,
         );
-        return _mapItems(
+        final items = _mapItems(
           (data['Items'] as List?) ?? [],
           fallbackRating: _item?.officialRating,
         );
+        return items..sort(compareEpisodes);
       }
 
       var seasonId = requestedSeasonId;
@@ -1158,7 +1172,7 @@ class ItemDetailViewModel extends ChangeNotifier {
       _seriesEpisodes = _mapItems(
         items,
         fallbackRating: _item?.officialRating,
-      );
+      )..sort(compareEpisodes);
       _seriesEpisodesLoaded = true;
       notifyListeners();
     } catch (_) {
@@ -1839,10 +1853,11 @@ class ItemDetailViewModel extends ChangeNotifier {
           batch.map((series) async {
             try {
               final epData = await _client.itemsApi.getEpisodes(series.id);
-              return _mapItems(
+              final items = _mapItems(
                 (epData['Items'] as List?) ?? [],
                 fallbackRating: _item?.officialRating,
               );
+              return items..sort(compareEpisodes);
             } catch (_) {
               return const <AggregatedItem>[];
             }
@@ -2280,9 +2295,16 @@ class ItemDetailViewModel extends ChangeNotifier {
     final parts = _loadAdditionalParts();
     try {
       final items = await _client.itemsApi.getSpecialFeatures(itemId);
+      final mapped = _mapItems(items).where((item) => item.id != itemId).toList()
+        ..sort((a, b) {
+          final ea = a.indexNumber ?? 0;
+          final eb = b.indexNumber ?? 0;
+          if (ea != eb) return ea.compareTo(eb);
+          return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+        });
       _features = [
         ...await parts,
-        ..._mapItems(items).where((item) => item.id != itemId),
+        ...mapped,
       ];
       notifyListeners();
     } catch (_) {
