@@ -3450,17 +3450,16 @@ class HomeViewModel extends ChangeNotifier {
       final airDateUtcStr = item.rawData['CalendarDate'] as String?;
       final airDateUtc = airDateUtcStr != null ? DateTime.tryParse(airDateUtcStr) : null;
       if (airDateUtc == null) return item;
+      final airDay = sonarrAirDay(airDateUtc);
 
       final sNum = item.rawData['SeasonNumber'] as String? ?? '0';
       final eNum = item.rawData['EpisodeNumber'] as String? ?? '0';
 
       String? subtitleText;
       if (showDate && showEpisodeInfo) {
-        final dateStr = _formatDateHuman(airDateUtc);
-        subtitleText = 'Next Episode: $dateStr (S$sNum:E$eNum)';
+        subtitleText = 'Next Episode: $airDay (S$sNum:E$eNum)';
       } else if (showDate) {
-        final dateStr = _formatDateHuman(airDateUtc);
-        subtitleText = 'Next Episode: $dateStr';
+        subtitleText = 'Next Episode: $airDay';
       } else if (showEpisodeInfo) {
         subtitleText = 'Next Episode: (S$sNum:E$eNum)';
       }
@@ -3915,7 +3914,13 @@ class HomeViewModel extends ChangeNotifier {
     return 'https://image.tmdb.org/t/p/w$width$path';
   }
 
-  String _formatDateHuman(DateTime date) {
+  /// The day a Sonarr episode airs, such as "Oct. 24th". Sonarr gives the
+  /// moment in UTC, so the day is the viewer's local one.
+  @visibleForTesting
+  static String sonarrAirDay(DateTime airDateUtc) =>
+      _formatDateHuman(airDateUtc.toLocal());
+
+  static String _formatDateHuman(DateTime date) {
     final months = [
       'Jan.',
       'Feb.',
