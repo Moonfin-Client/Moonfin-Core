@@ -260,6 +260,91 @@ void main() {
     });
   });
 
+  group('moving up the schedule brings each row title back into view', () {
+    // Five rows, a day apart, so the list scrolls.
+    void serveFiveDays() {
+      final first = DateTime.now().add(const Duration(hours: 1));
+      when(() => liveTvApi.getTimers()).thenAnswer(
+        (_) async => <String, dynamic>{
+          'Items': <dynamic>[
+            for (var day = 0; day < 5; day++)
+              <String, dynamic>{
+                'Id': 'timer-$day',
+                'Name': 'Show $day',
+                'StartDate': first
+                    .add(Duration(days: day))
+                    .toUtc()
+                    .toIso8601String(),
+              },
+          ],
+        },
+      );
+    }
+
+    Future<void> moveDownAndBackUp(WidgetTester tester) async {
+      final list = find.byWidgetPredicate(
+        (w) => w is Scrollable && w.axisDirection == AxisDirection.down,
+      );
+      double offset() =>
+          tester.state<ScrollableState>(list.first).position.pixels;
+
+      await focusCardShowing(tester, 'Show 0');
+      for (var i = 0; i < 4; i++) {
+        await pressKey(tester, LogicalKeyboardKey.arrowDown);
+      }
+      expect(offset(), greaterThan(0));
+
+      for (var i = 0; i < 4; i++) {
+        await pressKey(tester, LogicalKeyboardKey.arrowUp);
+      }
+
+      expect(offset(), 0);
+    }
+
+    testWidgets('on the Recordings Schedule tab', (tester) async {
+      serveFiveDays();
+      await pumpScreen(tester, const LiveTvRecordingsScreen());
+      await tester.tap(find.text('${(await l10n()).schedule} (5)'));
+      await tester.pumpAndSettle();
+
+      await moveDownAndBackUp(tester);
+    });
+
+    testWidgets('on the Schedule screen', (tester) async {
+      serveFiveDays();
+      await pumpScreen(tester, const LiveTvScheduleScreen());
+
+      await moveDownAndBackUp(tester);
+    });
+
+    testWidgets('keeps the card in view when a row is taller than the list',
+        (tester) async {
+      // A large UI scale on a short screen.
+      tester.view.physicalSize = const Size(800, 300);
+      tester.view.devicePixelRatio = 1;
+      tester.platformDispatcher.textScaleFactorTestValue = 1.6;
+      addTearDown(tester.view.reset);
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      serveFiveDays();
+      await pumpScreen(tester, const LiveTvScheduleScreen());
+
+      final list = find.byWidgetPredicate(
+        (w) => w is Scrollable && w.axisDirection == AxisDirection.down,
+      );
+      final viewport = tester.getRect(list.first);
+      await focusCardShowing(tester, 'Show 0');
+      await pressKey(tester, LogicalKeyboardKey.arrowDown);
+      await pressKey(tester, LogicalKeyboardKey.arrowDown);
+      await pressKey(tester, LogicalKeyboardKey.arrowUp);
+
+      final card = tester.getRect(
+        find.descendant(of: list.first, matching: find.text('Show 1')),
+      );
+      expect(card.top, greaterThanOrEqualTo(viewport.top));
+      expect(card.bottom, lessThanOrEqualTo(viewport.bottom));
+    });
+  });
+
   group('cancelling a scheduled recording', () {
     // Jellyfin includes the timer's program under the program's own id.
     void serveTimerWithProgram() {
