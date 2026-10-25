@@ -1270,6 +1270,25 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
     );
   }
 
+  static const _cardsScrollStep = 480.0;
+  static const _cardsScrollDuration = Duration(milliseconds: 380);
+  static const _cardsScrollCurve = Curves.easeInOut;
+
+  void _scrollCardsBy(double delta) {
+    if (!_cardsScrollController.hasClients) return;
+    final current = _cardsScrollController.offset;
+    final target = (current + delta).clamp(
+      0.0,
+      _cardsScrollController.position.maxScrollExtent,
+    );
+    if ((target - current).abs() < 0.5) return;
+    _cardsScrollController.animateTo(
+      target,
+      duration: _cardsScrollDuration,
+      curve: _cardsScrollCurve,
+    );
+  }
+
   Widget _buildCards(BuildContext context, List<SpotlightCardSpec> cards) {
     if (cards.isEmpty) return const SizedBox.shrink();
     // Taller cards show more of the artwork through the scrim. The landscape
@@ -1354,6 +1373,7 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
             },
           ),
           child: ListView.separated(
+            controller: _cardsScrollController,
             scrollDirection: Axis.horizontal,
             clipBehavior: Clip.none,
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -1366,6 +1386,56 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
       );
     }
 
+    final showDesktopControls =
+        PlatformDetection.useDesktopUi && !PlatformDetection.isTV && cards.length > 1;
+
+    final Widget content;
+    if (showDesktopControls) {
+      content = Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Align(
+            alignment: Alignment.centerRight,
+            child: Padding(
+              padding: EdgeInsets.only(
+                right: _landscape ? 0 : 20,
+                bottom: 4,
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Focus(
+                    canRequestFocus: false,
+                    skipTraversal: true,
+                    descendantsAreFocusable: false,
+                    child: IconButton(
+                      icon: const Icon(Icons.chevron_left),
+                      onPressed: () => _scrollCardsBy(-_cardsScrollStep),
+                      visualDensity: VisualDensity.compact,
+                    ),
+                  ),
+                  Focus(
+                    canRequestFocus: false,
+                    skipTraversal: true,
+                    descendantsAreFocusable: false,
+                    child: IconButton(
+                      icon: const Icon(Icons.chevron_right),
+                      onPressed: () => _scrollCardsBy(_cardsScrollStep),
+                      visualDensity: VisualDensity.compact,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          band,
+        ],
+      );
+    } else {
+      content = band;
+    }
+
     return Focus(
       canRequestFocus: false,
       skipTraversal: true,
@@ -1374,7 +1444,7 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
           widget.onToggleNavbar?.call(!focused);
         }
       },
-      child: band,
+      child: content,
     );
   }
 
