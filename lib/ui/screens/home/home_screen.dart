@@ -588,6 +588,7 @@ class _HomeShellState extends State<_HomeShell>
                 if (seasonalEffect != UserPreferences.seasonalNone)
                   Positioned.fill(
                     child: SeasonalEffectsHost(
+                      followFocus: PlatformDetection.isTV,
                       effect: seasonalEffect,
                       density: _userPrefs.get(UserPreferences.seasonalDensity),
                       reducedFrameRate:
