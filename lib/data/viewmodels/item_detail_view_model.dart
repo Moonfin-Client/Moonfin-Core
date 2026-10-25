@@ -330,6 +330,15 @@ class ItemDetailViewModel extends ChangeNotifier {
     return a.name.toLowerCase().compareTo(b.name.toLowerCase());
   }
 
+  /// Compares two special features by index number ([AggregatedItem.indexNumber]),
+  /// and finally [AggregatedItem.name] as a tie-breaker.
+  static int compareFeatures(AggregatedItem a, AggregatedItem b) {
+    final ea = a.indexNumber ?? 0;
+    final eb = b.indexNumber ?? 0;
+    if (ea != eb) return ea.compareTo(eb);
+    return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+  }
+
   AggregatedItem? _nextUp;
   AggregatedItem? get nextUp => _nextUp;
 
@@ -2296,12 +2305,7 @@ class ItemDetailViewModel extends ChangeNotifier {
     try {
       final items = await _client.itemsApi.getSpecialFeatures(itemId);
       final mapped = _mapItems(items).where((item) => item.id != itemId).toList()
-        ..sort((a, b) {
-          final ea = a.indexNumber ?? 0;
-          final eb = b.indexNumber ?? 0;
-          if (ea != eb) return ea.compareTo(eb);
-          return a.name.toLowerCase().compareTo(b.name.toLowerCase());
-        });
+        ..sort(compareFeatures);
       _features = [
         ...await parts,
         ...mapped,

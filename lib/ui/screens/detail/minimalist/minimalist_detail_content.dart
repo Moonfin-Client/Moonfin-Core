@@ -424,7 +424,7 @@ class _MinimalistDetailContentState extends State<MinimalistDetailContent> {
 
     SpotlightModalContent buildContent() {
       final features = List<AggregatedItem>.from(_vm.features)
-        ..sort(ItemDetailViewModel.compareEpisodes);
+        ..sort(ItemDetailViewModel.compareFeatures);
       final byCategory = <String, List<AggregatedItem>>{};
       for (final extra in features) {
         byCategory.putIfAbsent(getExtraCategory(extra), () => []).add(extra);

@@ -97,6 +97,24 @@ void main() {
     });
   });
 
+  group('ItemDetailViewModel.compareFeatures', () {
+    test('sorts by index number first, ignoring parentIndexNumber', () {
+      final f1 = makeEpisode(id: 'f1', season: 2, episode: 1, name: 'Feature B');
+      final f2 = makeEpisode(id: 'f2', season: 1, episode: 2, name: 'Feature A');
+      final list = [f2, f1]..sort(ItemDetailViewModel.compareFeatures);
+
+      expect(list.map((f) => f.id), ['f1', 'f2']);
+    });
+
+    test('breaks ties by feature name case-insensitively', () {
+      final a = makeEpisode(id: 'a', episode: 1, name: 'Behind the Scenes');
+      final b = makeEpisode(id: 'b', episode: 1, name: 'making of');
+      final list = [b, a]..sort(ItemDetailViewModel.compareFeatures);
+
+      expect(list.map((f) => f.id), ['a', 'b']);
+    });
+  });
+
   group('loadAllSeriesEpisodes ordering', () {
     test('orders unordered server payload by season and episode', () async {
       when(
