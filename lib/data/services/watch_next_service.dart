@@ -151,7 +151,7 @@ class WatchNextService {
         item.runTimeTicks != null ? item.runTimeTicks! ~/ 10000 : null;
 
     final lastPlayed =
-        DateTime.tryParse(item.rawData['UserData']?['LastPlayedDate'] as String? ?? '');
+        parseServerDate(item.rawData['UserData']?['LastPlayedDate']);
     final lastEngagementMs = lastPlayed?.millisecondsSinceEpoch ??
         (DateTime.now().millisecondsSinceEpoch - index);
 

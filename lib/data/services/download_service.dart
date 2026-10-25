@@ -1767,7 +1767,7 @@ class DownloadService extends ChangeNotifier implements AutoDownloadDownloader {
     final percent = (job['CompletionPercentage'] as num?)?.toDouble();
     final positionTicks = (job['PositionTicks'] as num?)?.toInt();
     final runtimeTicks = (job['RuntimeTicks'] as num?)?.toInt();
-    final start = DateTime.tryParse(job['StartTime'] as String? ?? '');
+    final start = parseServerDate(job['StartTime']);
     final elapsed = start == null
         ? null
         : DateTime.now().toUtc().difference(start.toUtc()).inSeconds;

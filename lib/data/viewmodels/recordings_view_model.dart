@@ -1,14 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:server_core/server_core.dart';
 
-/// A server date in local time. Jellyfin sends .NET's `DateTime.MinValue`
-/// (year 1) for a timer date it doesn't have, which counts as missing: in local
-/// time west of UTC it falls in year 0, a date .NET can't read back.
-DateTime? _serverDate(Object? value) {
-  final date = value is String ? DateTime.tryParse(value) : null;
-  if (date == null || date.year <= 1) return null;
-  return date.toLocal();
-}
+/// A server date in local time, or null when the server has none.
+DateTime? _serverDate(Object? value) => parseServerDate(value)?.toLocal();
 
 class RecordingItem {
   final String id;

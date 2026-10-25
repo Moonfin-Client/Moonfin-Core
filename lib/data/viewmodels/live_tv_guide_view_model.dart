@@ -1392,16 +1392,16 @@ class LiveTvGuideViewModel extends ChangeNotifier {
     final channelId = raw['ChannelId']?.toString();
     if (channelId == null) return null;
 
-    final startStr = raw['StartDate'] as String?;
-    final endStr = raw['EndDate'] as String?;
-    if (startStr == null || endStr == null) return null;
+    final start = parseServerDate(raw['StartDate']);
+    final end = parseServerDate(raw['EndDate']);
+    if (start == null || end == null) return null;
 
     return GuideProgram(
       id: raw['Id']?.toString() ?? '',
       channelId: channelId,
       name: raw['Name'] as String? ?? '',
-      startDate: DateTime.parse(startStr).toLocal(),
-      endDate: DateTime.parse(endStr).toLocal(),
+      startDate: start.toLocal(),
+      endDate: end.toLocal(),
       overview: raw['Overview'] as String?,
       // Some guide sources deliver EpisodeTitle with literal backslash-escaped
       // quotes (`\"Raygun\"`) even though the same program's Overview does

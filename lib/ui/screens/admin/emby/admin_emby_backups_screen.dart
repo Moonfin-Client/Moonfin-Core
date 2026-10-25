@@ -191,7 +191,7 @@ class _AdminEmbyBackupsScreenState extends State<AdminEmbyBackupsScreen> {
   }
 
   String? _formatDate(Object? raw) {
-    final date = raw is String ? DateTime.tryParse(raw)?.toLocal() : null;
+    final date = parseServerDate(raw)?.toLocal();
     if (date == null) return null;
     String two(int n) => n.toString().padLeft(2, '0');
     return '${date.year}-${two(date.month)}-${two(date.day)} '

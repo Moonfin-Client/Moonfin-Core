@@ -963,11 +963,8 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
       DateTime? selectedEnd;
       for (final item in items) {
         final raw = item as Map<String, dynamic>;
-        final startStr = raw['StartDate']?.toString();
-        final endStr = raw['EndDate']?.toString();
-        if (startStr == null || endStr == null) continue;
-        final start = DateTime.tryParse(startStr)?.toLocal();
-        final end = DateTime.tryParse(endStr)?.toLocal();
+        final start = parseServerDate(raw['StartDate'])?.toLocal();
+        final end = parseServerDate(raw['EndDate'])?.toLocal();
         if (start == null || end == null) continue;
 
         selected ??= raw;

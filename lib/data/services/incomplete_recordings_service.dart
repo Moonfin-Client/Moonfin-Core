@@ -23,8 +23,7 @@ int _minutes(Object? value) => switch (value) {
   _ => 0,
 };
 
-DateTime? _date(Object? value) =>
-    value is String ? DateTime.tryParse(value)?.toLocal() : null;
+DateTime? _date(Object? value) => parseServerDate(value)?.toLocal();
 
 /// A recording the Moonfin plugin judged incomplete.
 @immutable

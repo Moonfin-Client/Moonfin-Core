@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart' show CupertinoAlertDialog;
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 import 'package:moonfin_design/moonfin_design.dart';
+import 'package:server_core/server_core.dart';
 
 import '../../../auth/repositories/user_repository.dart';
 import '../../../data/services/incomplete_recordings_service.dart';
@@ -283,7 +284,7 @@ class RecordPromptAiring {
     String? channel,
   }) => RecordPromptAiring(
     start: start,
-    end: DateTime.tryParse(program['EndDate'] as String? ?? '')?.toLocal(),
+    end: parseServerDate(program['EndDate'])?.toLocal(),
     channel:
         channel ??
         recordPromptChannel(program['ChannelNumber'], program['ChannelName']),

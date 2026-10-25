@@ -71,12 +71,10 @@ class _AdminApiKeysScreenState extends State<AdminApiKeysScreen> {
 
   String _createdAt(Map<String, dynamic> item, AppLocalizations l10n) {
     final raw = item['DateCreated'] ?? item['DateLastActivity'];
-    if (raw is String && raw.isNotEmpty) {
-      final dt = DateTime.tryParse(raw);
-      if (dt != null) {
-        final local = dt.toLocal();
-        return '${local.year}-${local.month.toString().padLeft(2, '0')}-${local.day.toString().padLeft(2, '0')} ${local.hour.toString().padLeft(2, '0')}:${local.minute.toString().padLeft(2, '0')}';
-      }
+    final dt = parseServerDate(raw);
+    if (dt != null) {
+      final local = dt.toLocal();
+      return '${local.year}-${local.month.toString().padLeft(2, '0')}-${local.day.toString().padLeft(2, '0')} ${local.hour.toString().padLeft(2, '0')}:${local.minute.toString().padLeft(2, '0')}';
     }
     return l10n.unknown;
   }

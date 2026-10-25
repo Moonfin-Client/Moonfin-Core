@@ -20,4 +20,21 @@ void main() {
     expect(itemWith(const {}).dateCreated, isNull);
     expect(itemWith(const {'DateCreated': 'not a date'}).dateCreated, isNull);
   });
+
+  test('the server sending no date as the .NET minimum is null', () {
+    // Shown as "Dec 31, 0" west of UTC otherwise, and auto-download never
+    // fell back to the premiere date.
+    const min = '0001-01-01T00:00:00.0000000Z';
+    final item = itemWith(const {
+      'DateCreated': min,
+      'PremiereDate': min,
+      'EndDate': min,
+      'UserData': {'LastPlayedDate': min},
+    });
+
+    expect(item.dateCreated, isNull);
+    expect(item.premiereDate, isNull);
+    expect(item.endDate, isNull);
+    expect(item.lastPlayedDate, isNull);
+  });
 }

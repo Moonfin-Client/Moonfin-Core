@@ -41,10 +41,8 @@ class OfflineItemsApi implements ItemsApi {
 
   String? _str(Map<String, dynamic> m, String key) => m[key]?.toString();
 
-  DateTime? _date(Map<String, dynamic> m, String key) {
-    final v = m[key] as String?;
-    return v != null ? DateTime.tryParse(v) : null;
-  }
+  DateTime? _date(Map<String, dynamic> m, String key) =>
+      parseServerDate(m[key]);
 
   /// Resolves a parentId to the entries inside it.
   List<OfflineEntry> _scope(

@@ -61,12 +61,8 @@ Future<List<AggregatedItem>> enrichNextUpItemsWithSeriesLastPlayed(
       final seriesLastPlayed = sId != null ? seriesLastPlayedMap[sId] : null;
       final episodeDateCreated = item.rawData['DateCreated'] as String?;
 
-      final lastPlayedDate = seriesLastPlayed != null
-          ? DateTime.tryParse(seriesLastPlayed)
-          : null;
-      final dateCreated = episodeDateCreated != null
-          ? DateTime.tryParse(episodeDateCreated)
-          : null;
+      final lastPlayedDate = parseServerDate(seriesLastPlayed);
+      final dateCreated = parseServerDate(episodeDateCreated);
 
       DateTime? effectiveDate;
       if (lastPlayedDate != null && dateCreated != null) {
