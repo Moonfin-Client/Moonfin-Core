@@ -855,12 +855,16 @@ class _SpotlightCardsBuilder {
     final episodes = allEpisodes.isNotEmpty ? allEpisodes : vm.episodes;
     if (episodes.isEmpty) return null;
 
-    final defaultSeason = item.parentIndexNumber ?? 1;
+    final defaultSeason =
+        allEpisodes.isNotEmpty ? 0 : (item.parentIndexNumber ?? 1);
     final sorted = [...episodes]..sort((a, b) {
       final sa = a.parentIndexNumber ?? defaultSeason;
       final sb = b.parentIndexNumber ?? defaultSeason;
       if (sa != sb) return sa.compareTo(sb);
-      return (a.indexNumber ?? 0).compareTo(b.indexNumber ?? 0);
+      final ea = a.indexNumber ?? 0;
+      final eb = b.indexNumber ?? 0;
+      if (ea != eb) return ea.compareTo(eb);
+      return a.name.toLowerCase().compareTo(b.name.toLowerCase());
     });
 
     final Map<int, List<AggregatedItem>> seasonGroups = {};

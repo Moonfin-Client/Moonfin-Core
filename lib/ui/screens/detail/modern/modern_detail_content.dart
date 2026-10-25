@@ -1584,12 +1584,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
         heightRatio: 9 / 16,
       );
     }
-    final sorted = [...episodes]..sort((a, b) {
-        final sa = a.parentIndexNumber ?? 0;
-        final sb = b.parentIndexNumber ?? 0;
-        if (sa != sb) return sa.compareTo(sb);
-        return (a.indexNumber ?? 0).compareTo(b.indexNumber ?? 0);
-      });
+    final sorted = [...episodes]..sort(ItemDetailViewModel.compareEpisodes);
 
     // Group by season
     final Map<int, List<AggregatedItem>> seasonGroups = {};
