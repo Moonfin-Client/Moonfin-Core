@@ -89,8 +89,8 @@ void main() {
     });
 
     test('breaks ties by episode name case-insensitively', () {
-      final a = makeEpisode(id: 'a', season: 0, episode: 1, name: 'Alpha');
-      final b = makeEpisode(id: 'b', season: 0, episode: 1, name: 'beta');
+      final a = makeEpisode(id: 'a', season: 0, episode: 1, name: 'alpha');
+      final b = makeEpisode(id: 'b', season: 0, episode: 1, name: 'Beta');
       final list = [b, a]..sort(ItemDetailViewModel.compareEpisodes);
 
       expect(list.map((e) => e.id), ['a', 'b']);
@@ -107,8 +107,8 @@ void main() {
     });
 
     test('breaks ties by feature name case-insensitively', () {
-      final a = makeEpisode(id: 'a', episode: 1, name: 'Behind the Scenes');
-      final b = makeEpisode(id: 'b', episode: 1, name: 'making of');
+      final a = makeEpisode(id: 'a', episode: 1, name: 'alpha');
+      final b = makeEpisode(id: 'b', episode: 1, name: 'Beta');
       final list = [b, a]..sort(ItemDetailViewModel.compareFeatures);
 
       expect(list.map((f) => f.id), ['a', 'b']);
