@@ -76,6 +76,30 @@ void main() {
     expect(find.text('newtoken12345678'), findsOneWidget);
   });
 
+  testWidgets('a key with no created date shows its last activity', (
+    tester,
+  ) async {
+    // The server sends .NET's minimum date for a date it doesn't have.
+    api.keys
+      ..clear()
+      ..add({
+        'AccessToken': 'cccc3333dddd4444',
+        'AppName': 'Old',
+        'DateCreated': '0001-01-01T00:00:00.0000000Z',
+        'DateLastActivity': '2026-10-20T14:05:00Z',
+      });
+    final local = DateTime.utc(2026, 10, 20, 14, 5).toLocal();
+    String two(int n) => n.toString().padLeft(2, '0');
+    final shown =
+        '${local.year}-${two(local.month)}-${two(local.day)} '
+        '${two(local.hour)}:${two(local.minute)}';
+
+    await pump(tester);
+
+    expect(find.textContaining(shown), findsOneWidget);
+    expect(find.textContaining(l10n.unknown), findsNothing);
+  });
+
   testWidgets('revoke asks first and revokes that token', (tester) async {
     await pump(tester);
     await tester.tap(find.byTooltip(l10n.revoke));
