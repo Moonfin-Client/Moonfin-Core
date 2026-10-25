@@ -2655,6 +2655,12 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: 30000,
   );
 
+  static final appleTvClickpadSeekMode = EnumPreference(
+    key: 'appleTvClickpadSeekMode',
+    defaultValue: AppleTvClickpadSeekMode.always,
+    values: AppleTvClickpadSeekMode.values,
+  );
+
   static final unpauseRewindDuration = Preference(
     key: 'unpauseRewindDuration',
     defaultValue: 0,

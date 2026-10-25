@@ -53,6 +53,7 @@ class _AppleTvLiveTvPlayerHostScreenState
   StreamSubscription<bool>? _screensaverPlayingSub;
 
   SubtitleStyle? _lastSubtitleStyle;
+  String _lastClickpadPrefs = '';
 
   late int _currentIndex;
   bool _exiting = false;
@@ -123,7 +124,8 @@ class _AppleTvLiveTvPlayerHostScreenState
         _pushSubtitleStyle(force: true);
       }
     });
-    _prefs.addListener(_pushSubtitleStyle);
+    _lastClickpadPrefs = _clickpadPrefsSnapshot();
+    _prefs.addListener(_onPrefsChanged);
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _pushSubtitleStyle();
@@ -184,7 +186,7 @@ class _AppleTvLiveTvPlayerHostScreenState
     _carouselPrewarm?.dispose();
     _screensaverController?.setNativePlayerPresented(false);
     _themeController?.removeListener(_onThemeChanged);
-    _prefs.removeListener(_pushSubtitleStyle);
+    _prefs.removeListener(_onPrefsChanged);
     unawaited(_pipPlayer?.dispose());
     if (PlatformDetection.isIOS) {
       _screensaverController?.setPlaybackActive(false);
@@ -195,6 +197,17 @@ class _AppleTvLiveTvPlayerHostScreenState
       GetIt.instance<PlaybackManager>().stop(userInitiated: true);
     } catch (_) {}
     super.dispose();
+  }
+
+  String _clickpadPrefsSnapshot() =>
+      _prefs.get(UserPreferences.appleTvClickpadSeekMode).name;
+
+  void _onPrefsChanged() {
+    _pushSubtitleStyle();
+    final next = _clickpadPrefsSnapshot();
+    if (next == _lastClickpadPrefs) return;
+    _lastClickpadPrefs = next;
+    _pushMetadata();
   }
 
   /// [force] pushes even when nothing changed, for a new stream or backend.
@@ -612,6 +625,7 @@ class _AppleTvLiveTvPlayerHostScreenState
       hasNext: false,
       skipForwardMs: _prefs.get(UserPreferences.skipForwardLength),
       skipBackMs: _prefs.get(UserPreferences.skipBackLength),
+      clickpadSeekMode: _prefs.get(UserPreferences.appleTvClickpadSeekMode),
       audioTracks: _trackOptions(audioStreams, _manager.audioStreamIndex),
       subtitleTracks: [
         ..._trackOptions(
