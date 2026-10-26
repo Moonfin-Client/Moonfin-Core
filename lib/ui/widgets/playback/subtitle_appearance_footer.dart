@@ -1,45 +1,90 @@
 import 'package:flutter/material.dart';
 
 import '../../../l10n/app_localizations.dart';
+import '../../../playback/subtitle_style.dart';
 
-class SecondarySubtitleAppearanceFooter extends StatefulWidget {
-  const SecondarySubtitleAppearanceFooter({
+class SubtitleAppearanceFooter extends StatefulWidget {
+  const SubtitleAppearanceFooter({
     super.key,
     required this.initialFontSize,
     required this.initialOffset,
     required this.initialTextColor,
     required this.defaultTextColor,
-    required this.onChanged,
+    required this.onFontSizeChanged,
+    required this.onOffsetChanged,
+    required this.onTextColorChanged,
+    this.secondary = false,
+    this.showStyle = true,
+    this.showPosition = true,
+    this.showColor = true,
+    this.minOffset = 0.0,
+    this.maxOffset = primarySubtitleMaxOffset,
+    this.offsetStep = 0.02,
   });
 
   final double initialFontSize;
+  final bool secondary;
   final double initialOffset;
   final int? initialTextColor;
   final int defaultTextColor;
-  final void Function(double fontSize, double offset, int? textColor) onChanged;
+  final bool showStyle;
+  final bool showPosition;
+  final bool showColor;
+  final double minOffset;
+  final double maxOffset;
+  final double offsetStep;
+  final ValueChanged<double> onFontSizeChanged;
+  final ValueChanged<double> onOffsetChanged;
+  final ValueChanged<int?> onTextColorChanged;
 
   @override
-  State<SecondarySubtitleAppearanceFooter> createState() =>
-      _SecondarySubtitleAppearanceFooterState();
+  State<SubtitleAppearanceFooter> createState() =>
+      _SubtitleAppearanceFooterState();
 }
 
-class _SecondarySubtitleAppearanceFooterState
-    extends State<SecondarySubtitleAppearanceFooter> {
-  late double _fontSize = widget.initialFontSize;
-  late double _offset = widget.initialOffset;
+class _SubtitleAppearanceFooterState extends State<SubtitleAppearanceFooter> {
+  late double _fontSize = _clampFontSize(widget.initialFontSize);
+  late double _storedOffset = widget.initialOffset;
+  late double _offset = _clampOffset(widget.initialOffset);
   late int? _textColor = widget.initialTextColor;
 
+  double _clampFontSize(double value) => value
+      .clamp(widget.secondary ? -50.0 : 12.0, widget.secondary ? 50.0 : 48.0)
+      .toDouble();
+
+  double _clampOffset(double value) =>
+      value.clamp(widget.minOffset, widget.maxOffset).toDouble();
+
+  String _relativeLabel(double value) => value == 0
+      ? AppLocalizations.of(context).defaultLabel
+      : '${value > 0 ? '+' : ''}${value.round()}%';
+
   void _update({double? fontSize, double? offset}) {
-    setState(() {
-      _fontSize = (fontSize ?? _fontSize).clamp(8.0, 72.0).toDouble();
-      _offset = (offset ?? _offset).clamp(0.0, 0.4).toDouble();
-    });
-    widget.onChanged(_fontSize, _offset, _textColor);
+    if (fontSize != null) {
+      final next = _clampFontSize(fontSize);
+      if (next == _fontSize) return;
+      setState(() => _fontSize = next);
+      widget.onFontSizeChanged(next);
+    } else if (offset != null) {
+      final next = normalizeSteppedSubtitleOffsetChange(
+        storedValue: _storedOffset,
+        proposedValue: offset,
+        min: widget.minOffset,
+        max: widget.maxOffset,
+        step: widget.offsetStep,
+      );
+      if (next == _storedOffset && next == _offset) return;
+      setState(() {
+        _storedOffset = next;
+        _offset = _clampOffset(next);
+      });
+      widget.onOffsetChanged(next);
+    }
   }
 
   void _updateTextColor(int? textColor) {
     setState(() => _textColor = textColor);
-    widget.onChanged(_fontSize, _offset, _textColor);
+    widget.onTextColorChanged(_textColor);
   }
 
   @override
@@ -49,19 +94,31 @@ class _SecondarySubtitleAppearanceFooterState
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        _AppearanceControlRow(
-          label: AppLocalizations.of(context).subtitleSize,
-          value: _fontSize.toStringAsFixed(0),
-          onDecrease: () => _update(fontSize: _fontSize - 2),
-          onIncrease: () => _update(fontSize: _fontSize + 2),
-        ),
-        _AppearanceControlRow(
-          label: AppLocalizations.of(context).verticalOffset,
-          value: '${(_offset * 100).round()}%',
-          onDecrease: () => _update(offset: _offset - 0.02),
-          onIncrease: () => _update(offset: _offset + 0.02),
-        ),
-        _buildColorControl(context),
+        if (widget.showStyle)
+          _AppearanceControlRow(
+            label: AppLocalizations.of(context).subtitleSize,
+            value: widget.secondary
+                ? _relativeLabel(_fontSize)
+                : _fontSize.toStringAsFixed(0),
+            onDecrease: () =>
+                _update(fontSize: _fontSize - (widget.secondary ? 10 : 2)),
+            onIncrease: () =>
+                _update(fontSize: _fontSize + (widget.secondary ? 10 : 2)),
+            valueWidth: widget.secondary ? 80 : 48,
+          ),
+        if (widget.showColor) _buildColorControl(context),
+        if (widget.showPosition)
+          _AppearanceControlRow(
+            label: AppLocalizations.of(context).verticalOffset,
+            value: widget.secondary
+                ? _relativeLabel(_offset * 100)
+                : '${(_offset * 100).round()}%',
+            valueWidth: widget.secondary ? 80 : 48,
+            onDecrease: () =>
+                _update(offset: _offset - widget.offsetStep),
+            onIncrease: () =>
+                _update(offset: _offset + widget.offsetStep),
+          ),
       ],
     ),
   );
@@ -140,12 +197,14 @@ class _AppearanceControlRow extends StatelessWidget {
     required this.value,
     required this.onDecrease,
     required this.onIncrease,
+    this.valueWidth = 48,
   });
 
   final String label;
   final String value;
   final VoidCallback onDecrease;
   final VoidCallback onIncrease;
+  final double valueWidth;
 
   @override
   Widget build(BuildContext context) => Row(
@@ -158,7 +217,10 @@ class _AppearanceControlRow extends StatelessWidget {
         onPressed: onDecrease,
         icon: const Icon(Icons.remove_circle_outline),
       ),
-      SizedBox(width: 48, child: Text(value, textAlign: TextAlign.center)),
+      SizedBox(
+        width: valueWidth,
+        child: Text(value, textAlign: TextAlign.center),
+      ),
       IconButton(
         tooltip: AppLocalizations.of(context).increaseValue(label),
         onPressed: onIncrease,

@@ -5610,15 +5610,19 @@
   "@subtitleSize": {
     "description": "Setting for subtitle size"
   },
-  "primarySubtitleSlot": "Primary",
+  "primarySubtitleSlot": "Primary Track",
   "@primarySubtitleSlot": {
     "description": "Label for the primary subtitle selection slot"
   },
-  "secondarySubtitleSlot": "Secondary",
+  "secondarySubtitleSlot": "Secondary Track",
   "@secondarySubtitleSlot": {
     "description": "Label for the secondary subtitle selection slot"
   },
-  "secondarySubtitleTrack": "Secondary Subtitle Track",
+  "secondarySubtitleTrack": "Secondary Subtitles",
+  "secondaryDelayAdjustment": "Secondary Delay Adjustment",
+  "@secondaryDelayAdjustment": {
+    "description": "Title of the secondary subtitle delay menu. This adjustment is added to the primary subtitle delay."
+  },
   "@secondarySubtitleTrack": {
     "description": "Title of the picker for the secondary subtitle track"
   },

@@ -201,6 +201,7 @@ void main() {
     'preferAudioDescription',
     'preferDefaultAudioTrack',
     'preferExternalSubtitles',
+    'preferredSecondarySubtitleLanguage',
     'preferSdhSubtitles',
     'preferTextSubtitles',
     'previewAudioEnabled',

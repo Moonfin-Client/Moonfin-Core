@@ -7507,8 +7507,14 @@ abstract class AppLocalizations {
   /// Title of the picker for the secondary subtitle track
   ///
   /// In en, this message translates to:
-  /// **'Secondary Subtitle Track'**
+  /// **'Secondary Subtitles'**
   String get secondarySubtitleTrack;
+
+  /// Title of the secondary subtitle delay menu. This adjustment is added to the primary subtitle delay.
+  ///
+  /// In en, this message translates to:
+  /// **'Secondary Delay Adjustment'**
+  String get secondaryDelayAdjustment => 'Secondary Delay Adjustment';
 
   /// Tooltip for the button that lowers a setting's value
   ///

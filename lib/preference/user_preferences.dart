@@ -565,8 +565,8 @@ class UserPreferences extends ChangeNotifier {
     'subtitles_text_stroke_color',
     'subtitles_text_size',
     'subtitles_offset_position',
-    'secondary_subtitle_text_size',
-    'secondary_subtitle_offset_position',
+    'secondary_subtitle_size_adjustment',
+    'secondary_subtitle_offset_adjustment',
     'secondary_subtitle_text_color',
     'subtitles_default_to_none',
     'subtitles_hdr_separate',
@@ -2541,14 +2541,14 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: 0.04,
   );
 
-  static final secondarySubtitleTextSize = Preference<double>(
-    key: 'secondary_subtitle_text_size',
+  static final secondarySubtitleSizeAdjustment = Preference<double>(
+    key: 'secondary_subtitle_size_adjustment',
     defaultValue: 0.0,
   );
 
   static final secondarySubtitleOffsetPosition = Preference<double>(
-    key: 'secondary_subtitle_offset_position',
-    defaultValue: 0.08,
+    key: 'secondary_subtitle_offset_adjustment',
+    defaultValue: 0.0,
   );
 
   /// -1 means the secondary track uses the primary subtitle color.

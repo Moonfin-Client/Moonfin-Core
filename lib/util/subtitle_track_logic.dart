@@ -71,6 +71,8 @@ const _textSubtitleCodecs = {
   'srt',
   'vtt',
   'webvtt',
+  'mov_text',
+  'tx3g',
   'ass',
   'ssa',
   'ttml',

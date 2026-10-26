@@ -1,6 +1,7 @@
 import 'package:playback_core/playback_core.dart';
 
 import 'aether_backend.dart';
+import 'html_video_backend.dart';
 import 'media3_player_backend.dart';
 import 'media_kit_player_backend.dart';
 
@@ -15,5 +16,6 @@ import 'media_kit_player_backend.dart';
     return audio ? (-2.0, 2.0) : (-5.0, 5.0);
   }
   if (backend is AetherBackend) return audio ? null : (null, null);
+  if (backend is HtmlVideoBackend) return audio ? null : (-5.0, 5.0);
   return null;
 }
