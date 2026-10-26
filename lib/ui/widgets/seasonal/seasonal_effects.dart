@@ -38,18 +38,20 @@ class SeasonalEffectsHost extends StatelessWidget {
 
   /// Run at about 30 fps, for devices on the reduced performance tier.
   final bool reducedFrameRate;
+
+  /// Lets the Halloween planchette follow focus. Home turns it on for TV.
   final bool followFocus;
 
   @override
   Widget build(BuildContext context) {
-    final resolved = SeasonalEffect.values
-        .asNameMap()[UserPreferences.normalizeSeasonalSurprise(effect)];
+    final resolved = SeasonalEffect.values.asNameMap()[
+        UserPreferences.normalizeSeasonalSurprise(effect)];
     if (resolved == null) return const SizedBox.shrink();
     if (MediaQuery.maybeDisableAnimationsOf(context) ?? false) {
       return const SizedBox.shrink();
     }
-    final resolvedDensity = SeasonalDensity.values
-        .asNameMap()[UserPreferences.normalizeSeasonalDensity(density)]!;
+    final resolvedDensity = SeasonalDensity.values.asNameMap()[
+        UserPreferences.normalizeSeasonalDensity(density)]!;
 
     Widget layer() => SeasonalEffectsLayer(
       key: ValueKey((resolved, resolvedDensity, reducedFrameRate, followFocus)),
@@ -105,6 +107,16 @@ class _SeasonalEffectsLayerState extends State<SeasonalEffectsLayer>
       ? HalloweenPlanchette()
       : null;
 
+  // What focus resolves to, worked out again only when the focused node changes.
+  ModalRoute<Object?>? _route;
+  FocusNode? _primary;
+  LockedFocusRowState? _row;
+  RenderBox? _sidebar;
+  var _landing = PlanchetteLanding.card;
+  var _focusOnRoute = false;
+  RenderObject? _focusedRoot;
+  RenderObject? _focused;
+
   SeasonalSpriteAtlas? _atlas;
   double _atlasPixelRatio = 0;
 
@@ -121,8 +133,6 @@ class _SeasonalEffectsLayerState extends State<SeasonalEffectsLayer>
   @override
   void initState() {
     super.initState();
-    final planchette = _planchette;
-    if (planchette != null) unawaited(planchette.load());
     if (!widget.reducedFrameRate) {
       _ticker = createTicker(_onTick)..start();
     }
@@ -135,7 +145,15 @@ class _SeasonalEffectsLayerState extends State<SeasonalEffectsLayer>
     if (pixelRatio != _atlasPixelRatio) {
       _atlas?.dispose();
       _atlas = SeasonalSpriteAtlas.build(pixelRatio);
+      _planchette?.rasterize(pixelRatio);
       _atlasPixelRatio = pixelRatio;
+    }
+    if (_planchette != null) {
+      final route = ModalRoute.of(context);
+      if (route != _route) {
+        _route = route;
+        _primary = null;
+      }
     }
     if (widget.reducedFrameRate) {
       // A timer isn't muted like a ticker when a route covers Home, so it follows the
@@ -161,8 +179,8 @@ class _SeasonalEffectsLayerState extends State<SeasonalEffectsLayer>
   }
 
   void _onTick(Duration elapsed) {
-    final dt =
-        (elapsed - _lastTick).inMicroseconds / Duration.microsecondsPerSecond;
+    final dt = (elapsed - _lastTick).inMicroseconds /
+        Duration.microsecondsPerSecond;
     _lastTick = elapsed;
     _advance(dt);
   }
@@ -176,8 +194,7 @@ class _SeasonalEffectsLayerState extends State<SeasonalEffectsLayer>
         // No frames are drawn while the app is in the background, so don't step either.
         if (!SchedulerBinding.instance.framesEnabled) return;
         final now = _clock.elapsed;
-        final dt =
-            (now - _lastTimerTick).inMicroseconds /
+        final dt = (now - _lastTimerTick).inMicroseconds /
             Duration.microsecondsPerSecond;
         _lastTimerTick = now;
         _advance(dt);
@@ -192,63 +209,79 @@ class _SeasonalEffectsLayerState extends State<SeasonalEffectsLayer>
     _sim.step(dt);
     if (_planchette case final planchette?) {
       final overlay = context.findRenderObject();
-      final primaryContext = FocusManager.instance.primaryFocus?.context;
-      final row = primaryContext
-          ?.findAncestorStateOfType<LockedFocusRowState>();
-      final focusedContext = row == null
-          ? primaryContext
-          : row.focusedItemContext;
-      final focusedRoot = focusedContext?.findRenderObject();
-      final focused = row != null && focusedRoot is RenderBox
-          ? _artworkBox(focusedRoot)
-          : focusedRoot;
-      Rect? target;
-      Rect? navigationBounds;
-      var landing = PlanchetteLanding.card;
       if (overlay is RenderBox && overlay.hasSize && overlay.attached) {
-        final route = ModalRoute.of(context);
-        if (focused is RenderBox &&
-            focused.hasSize &&
-            focused.attached &&
-            (route == null ||
-                (route.isCurrent && ModalRoute.of(focusedContext!) == route))) {
-          primaryContext?.visitAncestorElements((element) {
-            final navigation = element.widget;
-            if (navigation is! TopToolbar && navigation is! LeftSidebar) {
-              return true;
-            }
-            landing = navigation is TopToolbar
-                ? PlanchetteLanding.below
-                : PlanchetteLanding.right;
-            final box = element.findRenderObject();
-            if (box is RenderBox && box.attached && box.hasSize) {
-              navigationBounds = Rect.fromPoints(
-                overlay.globalToLocal(box.localToGlobal(Offset.zero)),
-                overlay.globalToLocal(
-                  box.localToGlobal(box.size.bottomRight(Offset.zero)),
-                ),
-              );
-            }
-            return false;
-          });
-          target = Rect.fromPoints(
-            overlay.globalToLocal(focused.localToGlobal(Offset.zero)),
-            overlay.globalToLocal(
-              focused.localToGlobal(focused.size.bottomRight(Offset.zero)),
-            ),
-          );
+        final primary = FocusManager.instance.primaryFocus;
+        if (!identical(primary, _primary)) _resolveFocus(primary);
+        final route = _route;
+        final row = _row;
+        final focusedRoot = _focusOnRoute && (route == null || route.isCurrent)
+            ? (row == null ? primary?.context : row.focusedItemContext)
+                ?.findRenderObject()
+            : null;
+        // A row keeps primary focus while its selected card changes, so the
+        // card is looked up each frame and searched only when it's a new one,
+        // or when a growing card swapped out the artwork found last time.
+        if (!identical(focusedRoot, _focusedRoot) ||
+            _focused?.attached == false) {
+          _focusedRoot = focusedRoot;
+          _focused = row != null && focusedRoot is RenderBox
+              ? _artworkBox(focusedRoot)
+              : focusedRoot;
         }
+        final focused = _focused;
+        final sidebar = _sidebar;
         planchette.step(
           dt,
-          target,
+          focused is RenderBox && focused.attached && focused.hasSize
+              ? _boundsIn(overlay, focused)
+              : null,
           overlay.size,
-          landing: landing,
-          navigationBounds: navigationBounds,
+          landing: _landing,
+          navigationBounds:
+              sidebar != null && sidebar.attached && sidebar.hasSize
+              ? _boundsIn(overlay, sidebar)
+              : null,
         );
       }
     }
     _frame.tick();
   }
+
+  void _resolveFocus(FocusNode? primary) {
+    _primary = primary;
+    _row = null;
+    _sidebar = null;
+    _landing = PlanchetteLanding.card;
+    final subtree = _route?.subtreeContext;
+    _focusOnRoute = _route == null;
+    primary?.context?.visitAncestorElements((element) {
+      final widget = element.widget;
+      if (_row == null &&
+          element is StatefulElement &&
+          element.state is LockedFocusRowState) {
+        _row = element.state as LockedFocusRowState;
+      }
+      if (_landing == PlanchetteLanding.card) {
+        if (widget is TopToolbar) _landing = PlanchetteLanding.below;
+        if (widget is LeftSidebar) {
+          _landing = PlanchetteLanding.right;
+          final box = element.findRenderObject();
+          if (box is RenderBox) _sidebar = box;
+        }
+      }
+      // Reaching Home's own page means focus isn't in a dialog or sheet on top.
+      if (identical(element, subtree)) {
+        _focusOnRoute = true;
+        return false;
+      }
+      return true;
+    });
+  }
+
+  static Rect _boundsIn(RenderBox overlay, RenderBox box) => Rect.fromPoints(
+    overlay.globalToLocal(box.localToGlobal(Offset.zero)),
+    overlay.globalToLocal(box.localToGlobal(box.size.bottomRight(Offset.zero))),
+  );
 
   RenderBox _artworkBox(RenderBox root) {
     RenderBox? artwork;

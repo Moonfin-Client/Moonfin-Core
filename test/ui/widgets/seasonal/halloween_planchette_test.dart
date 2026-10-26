@@ -19,20 +19,23 @@ void main() {
         home: Scaffold(
           body: Stack(
             children: [
-              LockedFocusRow<int>(
-                key: rowKey,
-                focusNode: rowNode,
-                items: const [0, 1, 2],
-                hubKey: 'halloween-regression',
-                itemExtent: 120,
-                height: 200,
-                itemBuilder: (_, item, index, focused) => SizedBox(
-                  width: 120,
-                  child: Column(
-                    children: [
-                      AspectRatio(aspectRatio: 1, child: Text('Card $item')),
-                      const SizedBox(height: 30, child: Text('Title')),
-                    ],
+              Padding(
+                padding: const EdgeInsets.only(left: 100, top: 100),
+                child: LockedFocusRow<int>(
+                  key: rowKey,
+                  focusNode: rowNode,
+                  items: const [0, 1, 2],
+                  hubKey: 'halloween-regression',
+                  itemExtent: 120,
+                  height: 200,
+                  itemBuilder: (_, item, index, focused) => SizedBox(
+                    width: 120,
+                    child: Column(
+                      children: [
+                        AspectRatio(aspectRatio: 1, child: Text('Card $item')),
+                        const SizedBox(height: 30, child: Text('Title')),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -62,7 +65,10 @@ void main() {
     final follower = painter.planchette as HalloweenPlanchette;
     expect(follower.position, isNotNull);
     expect(follower.opacity, greaterThan(0));
-    expect(follower.position!.dy, closeTo(60, 0.1));
+    // The artwork's left edge is at 100 and its middle at 160, and the tip
+    // reaches 4 into it.
+    expect(follower.position!.dx, closeTo(80, 0.1));
+    expect(follower.position!.dy, closeTo(160, 0.1));
     final firstPosition = follower.position!;
     await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
     await tester.pump();
@@ -124,7 +130,78 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
-  test('glides toward the latest focus and rests its tip at the center', () {
+  testWidgets('fades out while focus is in a sheet over Home', (tester) async {
+    final button = FocusNode();
+    addTearDown(button.dispose);
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Stack(
+            children: [
+              Center(
+                child: TextButton(
+                  focusNode: button,
+                  onPressed: () {},
+                  child: const Text('Card'),
+                ),
+              ),
+              const Positioned.fill(
+                child: SeasonalEffectsHost(
+                  effect: 'halloween',
+                  density: 'light',
+                  followFocus: true,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    Future<void> settle() async {
+      for (var i = 0; i < 40; i++) {
+        await tester.pump(const Duration(milliseconds: 33));
+      }
+    }
+
+    button.requestFocus();
+    await settle();
+    final dynamic painter = tester
+        .widget<CustomPaint>(
+          find.descendant(
+            of: find.byType(SeasonalEffectsLayer),
+            matching: find.byType(CustomPaint),
+          ),
+        )
+        .painter;
+    final follower = painter.planchette as HalloweenPlanchette;
+    expect(follower.opacity, 1);
+
+    // Like OverlaySheet, an entry on the root overlay rather than a route, so
+    // Home's route stays current underneath it.
+    final sheetButton = FocusNode();
+    addTearDown(sheetButton.dispose);
+    final sheet = OverlayEntry(
+      builder: (_) => Align(
+        alignment: Alignment.bottomCenter,
+        child: TextButton(
+          focusNode: sheetButton,
+          onPressed: () {},
+          child: const Text('Sheet'),
+        ),
+      ),
+    );
+    Overlay.of(tester.element(find.text('Card')), rootOverlay: true)
+        .insert(sheet);
+    await tester.pump();
+    sheetButton.requestFocus();
+    await settle();
+    expect(button.hasPrimaryFocus, isFalse);
+    expect(follower.opacity, 0);
+    sheet.remove();
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  test('glides toward the latest focus and rests its tip on the left edge', () {
     final planchette = HalloweenPlanchette();
     const size = Size(960, 540);
     planchette.step(0.03, const Rect.fromLTWH(100, 100, 100, 150), size);
@@ -136,8 +213,9 @@ void main() {
     for (var i = 0; i < 200; i++) {
       planchette.step(0.03, next, size);
     }
-    expect(planchette.position!.dx, closeTo(next.center.dx + 34, 0.1));
-    expect(math.sin(planchette.angle), closeTo(-1, 0.01));
+    expect(planchette.position!.dx, closeTo(next.left - 20, 0.1));
+    expect(planchette.position!.dy, closeTo(next.center.dy, 0.1));
+    expect(math.sin(planchette.angle), closeTo(1, 0.01));
   });
 
   for (final fps in [30, 60]) {
@@ -159,7 +237,7 @@ void main() {
             planchette.step(dt, target, size);
             expect((planchette.angle - before).abs(), lessThan(6 / fps));
           }
-          expect(math.sin(planchette.angle), closeTo(-1, 0.01));
+          expect(math.sin(planchette.angle), closeTo(1, 0.01));
         }
       },
     );
@@ -172,26 +250,13 @@ void main() {
       final dt = 1 / fps;
       const first = Rect.fromLTWH(600, 20, 100, 50);
       const next = Rect.fromLTWH(100, 20, 100, 50);
-      const panel = Rect.fromLTWH(0, 0, 960, 95);
-      planchette.step(
-        dt,
-        first,
-        size,
-        landing: PlanchetteLanding.below,
-        navigationBounds: panel,
-      );
+      planchette.step(dt, first, size, landing: PlanchetteLanding.below);
       var checkedApproach = false;
       for (var i = 0; i < fps * 6; i++) {
         final before = planchette.position!;
-        planchette.step(
-          dt,
-          next,
-          size,
-          landing: PlanchetteLanding.below,
-          navigationBounds: panel,
-        );
+        planchette.step(dt, next, size, landing: PlanchetteLanding.below);
         final remaining =
-            (planchette.position! - const Offset(150, 143)).distance;
+            (planchette.position! - const Offset(150, 100)).distance;
         final speed = (planchette.position! - before).distance / dt;
         if (!checkedApproach && remaining < 5 && speed > 5) {
           // It should already face up while approaching, not wait at the
@@ -206,7 +271,7 @@ void main() {
   }
 
   test(
-    'rests outside top and side navigation, using the whole panel bounds',
+    'rests just under a top bar button and outside the whole side panel',
     () {
       const size = Size(960, 540);
       final top = HalloweenPlanchette();
@@ -215,10 +280,10 @@ void main() {
         const Rect.fromLTWH(100, 20, 120, 48),
         size,
         landing: PlanchetteLanding.below,
-        navigationBounds: const Rect.fromLTWH(0, 0, 960, 95),
       );
+      // The tip, 24 above the center, sits 6 under the button.
       expect(top.position!.dx, 160);
-      expect(top.position!.dy - 38, greaterThan(95));
+      expect(top.position!.dy, 98);
       final side = HalloweenPlanchette();
       side.step(
         0.03,
@@ -236,10 +301,10 @@ void main() {
     final planchette = HalloweenPlanchette();
     const size = Size(960, 540);
     for (var i = 0; i < 40; i++) {
-      planchette.step(0.03, const Rect.fromLTWH(850, 470, 100, 60), size);
+      planchette.step(0.03, const Rect.fromLTWH(0, 490, 100, 60), size);
     }
-    expect(planchette.position!.dx, lessThanOrEqualTo(914));
-    expect(planchette.position!.dy, lessThanOrEqualTo(494));
+    expect(planchette.position!.dx, greaterThanOrEqualTo(32));
+    expect(planchette.position!.dy, lessThanOrEqualTo(508));
     expect(planchette.opacity, 1);
     for (var i = 0; i < 40; i++) {
       planchette.step(0.03, null, size);
