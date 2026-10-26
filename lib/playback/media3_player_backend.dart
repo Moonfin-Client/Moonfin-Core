@@ -17,7 +17,15 @@ import 'media3_letterbox_crop.dart';
 import 'server_transcode_capabilities.dart';
 
 class Media3PlayerBackend extends PlayerBackend
-    implements SubtitleLoadingBackend {
+    with SubtitleDelayState
+    implements SubtitleLoadingBackend, SecondarySubtitleBackend {
+  @override
+  bool get supportsSecondarySubtitleDelay => true;
+  @override
+  bool get supportsSecondarySubtitlePosition => true;
+  @override
+  bool get supportsSecondarySubtitleStyle => true;
+
   static const _discontinuityWindowMs = 15000;
   static const _discontinuityThreshold = 3;
   static const _audioSinkErrorThreshold = 2;
@@ -123,8 +131,6 @@ class Media3PlayerBackend extends PlayerBackend
   Duration? _liveEdge;
   double _volume = 100.0;
   double _audioDelaySeconds = 0.0;
-  double _subtitleDelaySeconds = 0.0;
-  int? _subtitleDelaySessionId;
   int _volumeBoostLevel = 0;
   bool _skipSilenceEnabled = false;
   RepeatMode _repeatMode = RepeatMode.none;
@@ -203,8 +209,6 @@ class Media3PlayerBackend extends PlayerBackend
 
   @override
   bool? get playWhenReady => _playWhenReady;
-
-  double get subtitleDelaySeconds => _subtitleDelaySeconds;
 
   Future<T?> _invoke<T>(String method, [dynamic arguments]) async {
     if (_disposed) return null;
@@ -403,7 +407,7 @@ class Media3PlayerBackend extends PlayerBackend
         _completedStream.add(false);
       case 'syncDelays':
         _audioDelaySeconds = _toInt(map['audioDelayMs']) / 1000.0;
-        _subtitleDelaySeconds = _toInt(map['subtitleDelayMs']) / 1000.0;
+        subtitleDelaySeconds = _toInt(map['subtitleDelayMs']) / 1000.0;
       case 'volumeBoost':
         _volumeBoostLevel = (_toInt(map['level']).clamp(0, 10)).toInt();
       case 'repeatModeChanged':
@@ -440,6 +444,9 @@ class Media3PlayerBackend extends PlayerBackend
               ? LogLevel.warning
               : LogLevel.debug,
         );
+      case 'secondarySubtitleSelection':
+        _diag('Media3: secondary subtitle ${map['mode']} '
+            '(track=${map['trackId'] ?? 'none'})');
       case 'secondarySubtitleError':
         _diag(
           'Media3: secondary subtitle failed: ${map['message'] ?? 'unknown error'}',
@@ -1147,14 +1154,7 @@ class Media3PlayerBackend extends PlayerBackend
     _lastFrameRateLine = null;
     _liveEdge = null;
     _sourceIsLive = payload['isLive'] == true;
-    // Reset for a new viewing session, but keep the adjustment when the
-    // same session changes quality or restores playback after backgrounding.
-    final subtitleDelaySessionId = payload['subtitleDelaySessionId'] as int?;
-    if (subtitleDelaySessionId == null ||
-        subtitleDelaySessionId != _subtitleDelaySessionId) {
-      _subtitleDelaySeconds = 0.0;
-    }
-    _subtitleDelaySessionId = subtitleDelaySessionId;
+    updateSubtitleDelaySession(payload['subtitleDelaySessionId'] as int?);
     await _invoke<void>('setSource', {
       'url': url,
       'headers': headers,
@@ -1173,6 +1173,8 @@ class Media3PlayerBackend extends PlayerBackend
       'preferredAudioLanguage': preferredAudioLanguage,
       'preferredTextLanguage': preferredSubtitleLanguage,
       'externalSubtitles': payload['externalSubtitles'] ?? const [],
+      if (payload['secondarySubtitleTrackId'] is int)
+        'secondarySubtitleTrackId': payload['secondarySubtitleTrackId'],
       if (payload['secondarySubtitleUrl'] is String)
         'secondarySubtitleUrl': payload['secondarySubtitleUrl'],
       if (payload['secondarySubtitleCodec'] is String)
@@ -1180,7 +1182,9 @@ class Media3PlayerBackend extends PlayerBackend
       if (payload['secondarySubtitleDelayMs'] is int)
         'secondarySubtitleDelayMs': payload['secondarySubtitleDelayMs'],
       if (payload['secondarySubtitleOffset'] is num)
-        'secondarySubtitleOffset': payload['secondarySubtitleOffset'],
+        'secondarySubtitleOffset': PlaybackManager.clampSecondarySubtitleOffset(
+          (payload['secondarySubtitleOffset'] as num).toDouble(),
+        ),
       if (payload['secondarySubtitleFontSize'] is num)
         'secondarySubtitleFontSize': payload['secondarySubtitleFontSize'],
       if (payload['secondarySubtitleTextColor'] is int)
@@ -1191,7 +1195,7 @@ class Media3PlayerBackend extends PlayerBackend
       'forceSubtitlesDisabledOnStart':
           _prefs.get(UserPreferences.subtitleMode) == SubtitleMode.none,
       'audioDelayMs': (_audioDelaySeconds * 1000).round(),
-      'subtitleDelayMs': (_subtitleDelaySeconds * 1000).round(),
+      'subtitleDelayMs': (subtitleDelaySeconds * 1000).round(),
       'volumeBoostLevel': _volumeBoostLevel,
       'preview': isPreview,
     });
@@ -1489,8 +1493,15 @@ class Media3PlayerBackend extends PlayerBackend
   }
 
   @override
-  Future<void> setSecondarySubtitle({String? url, String? codec}) async {
-    await _invoke<void>('setSecondarySubtitle', {'url': url, 'codec': codec});
+  Future<void> setSecondarySubtitle({
+    String? url,
+    String? codec,
+    String? language,
+    int? embeddedTrackId,
+  }) async {
+    await _invoke<void>('setSecondarySubtitle', {
+      'url': url, 'codec': codec, 'embeddedTrackId': embeddedTrackId,
+    });
   }
 
   @override
@@ -1509,7 +1520,9 @@ class Media3PlayerBackend extends PlayerBackend
   }) async {
     await _invoke<void>('configureSecondarySubtitleStyle', {
       'fontSize': fontSize,
-      'verticalOffset': verticalOffset,
+      'verticalOffset': verticalOffset == null
+          ? null
+          : PlaybackManager.clampSecondarySubtitleOffset(verticalOffset),
       'textColor': textColor,
     });
   }
@@ -1568,7 +1581,7 @@ class Media3PlayerBackend extends PlayerBackend
 
   @override
   Future<void> setSubtitleDelay(double seconds) async {
-    _subtitleDelaySeconds = seconds;
+    subtitleDelaySeconds = seconds;
     await _invoke<void>('setSubtitleDelay', {
       'seconds': seconds,
       'delayMs': (seconds * 1000).round(),

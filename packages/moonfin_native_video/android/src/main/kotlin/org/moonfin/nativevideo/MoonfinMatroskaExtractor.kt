@@ -40,6 +40,7 @@ import java.util.regex.Pattern
 class MoonfinMatroskaExtractor(
     subtitleParserFactory: SubtitleParser.Factory,
     private val assHandler: AssHandler,
+    private val onAssDialogueLoaded: (() -> Unit)? = null,
 ) : MatroskaExtractor(subtitleParserFactory) {
 
     /**
@@ -118,7 +119,9 @@ class MoonfinMatroskaExtractor(
                     if (currentOutput !is AssDialogueExtractorOutput) {
                         extractorOutputField.set(
                             this,
-                            AssDialogueExtractorOutput(currentOutput, assHandler, this),
+                            AssDialogueExtractorOutput(
+                                currentOutput, assHandler, this, onAssDialogueLoaded,
+                            ),
                         )
                     }
                 }
@@ -217,13 +220,16 @@ class MoonfinMatroskaExtractor(
 fun ExtractorsFactory.withMoonfinMkvSupport(
     assSubtitleParserFactory: SubtitleParser.Factory,
     assHandler: AssHandler,
+    onAssDialogueLoaded: (() -> Unit)? = null,
 ): ExtractorsFactory {
     return ExtractorsFactory {
         val extractors = createExtractors()
         extractors.forEachIndexed { index, extractor ->
             if (extractor is MatroskaExtractor) {
                 // Must keep the extractor order.
-                extractors[index] = MoonfinMatroskaExtractor(assSubtitleParserFactory, assHandler)
+                extractors[index] = MoonfinMatroskaExtractor(
+                    assSubtitleParserFactory, assHandler, onAssDialogueLoaded,
+                )
             }
         }
         extractors
@@ -240,12 +246,15 @@ private class AssDialogueExtractorOutput(
     private val delegate: ExtractorOutput,
     private val assHandler: AssHandler,
     private val extractor: MoonfinMatroskaExtractor,
+    private val onAssDialogueLoaded: (() -> Unit)?,
 ) : ExtractorOutput by delegate {
     override fun track(id: Int, type: Int): TrackOutput {
         return if (type == C.TRACK_TYPE_TEXT) {
             // Whether the subtitle track is ASS is unknown at this point, so
             // every subtitle track gets wrapped.
-            AssDialogueTrackOutput(delegate.track(id, type), assHandler, extractor)
+            AssDialogueTrackOutput(
+                delegate.track(id, type), assHandler, extractor, onAssDialogueLoaded,
+            )
         } else {
             delegate.track(id, type)
         }
@@ -262,6 +271,7 @@ private class AssDialogueTrackOutput(
     private val delegate: TrackOutput,
     private val assHandler: AssHandler,
     private val extractor: MoonfinMatroskaExtractor,
+    private val onAssDialogueLoaded: (() -> Unit)?,
 ) : TrackOutput by delegate {
 
     private var isAss = false
@@ -303,6 +313,9 @@ private class AssDialogueTrackOutput(
                     length = sample.limit() - lineIndex,
                 )
             }
+            // The native track now has the new dialogue. Schedule outside the
+            // lock so the overlay renderer can safely acquire it.
+            onAssDialogueLoaded?.invoke()
         }
         delegate.sampleMetadata(timeUs, flags, size, offset, cryptoData)
     }

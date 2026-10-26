@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
+import android.os.Looper
 import android.view.View
 import androidx.media3.common.Format
 import androidx.media3.common.MediaItem
@@ -78,28 +79,145 @@ class MoonfinAssOverlayView(
 
     // Bounds the executor queue to one task. Cleared by the task itself.
     private val renderScheduled = AtomicBoolean(false)
+    // A newer time can arrive while that task is already rendering.
+    private val renderPending = AtomicBoolean(false)
+
+    // After a paused seek, embedded dialogue may arrive after the first
+    // destination render. Keep requesting that position until playback resumes.
+    @Volatile private var awaitingPausedSeekDialogue = false
+
+    // libass reports differences from its last actual render, not from the
+    // selected track. Retain that image and its owner across unrendered switches.
+    private data class CachedFrame(
+        val track: Any,
+        val frame: AssFrame,
+        val visible: Boolean = true,
+    )
 
     @Volatile
-    private var currentFrame: AssFrame? = null
+    private var cachedFrame: CachedFrame? = null
+
+    @Volatile
+    private var primaryTrackGeneration = 0
+    @Volatile
+    private var primaryNativeTrack: Any? = null
+    @Volatile
+    private var primaryAssTrackActive = false
+
+    @Volatile
+    private var lastPresentationTimeUs: Long? = null
+
+    // Hiding the cached image on Primary Off must not discard it: libass can
+    // return changed=0 if the same subtitle is selected again while paused.
+    @Volatile private var primaryVisible = true
+
+    fun setPrimaryVisible(visible: Boolean) {
+        if (primaryVisible == visible) return
+        primaryVisible = visible
+        invalidate()
+    }
+
+    // Called while holding the assHandler lock, both from its track listener
+    // and before rendering. Off keeps the last native track identity so
+    // reselecting it while paused can reuse an unchanged libass image.
+    fun syncNativeAssTrack(track: Any?): Boolean {
+        val wasActive = primaryAssTrackActive
+        primaryAssTrackActive = track != null
+        if (track == null) return false
+        // Off retains the previous native identity, but re-enabling the same
+        // track still needs a render at the current (possibly later) playhead.
+        if (primaryNativeTrack === track) {
+            if (wasActive) return false
+            // An Off-time render may still be in flight. Invalidate its
+            // generation without dropping this track's cached bitmap.
+            primaryTrackGeneration++
+            return true
+        }
+        primaryNativeTrack = track
+        primaryTrackGeneration++
+        // Hide the previous track immediately, but don't discard its bitmap:
+        // A -> B -> A can complete without libass ever rendering B.
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            invalidate()
+        } else {
+            postInvalidate()
+        }
+        return true
+    }
+
+    fun redrawCurrentAssFrame() {
+        lastPresentationTimeUs?.let(::requestRender)
+    }
+
+    fun rememberPlaybackPosition(positionMs: Long) {
+        if (positionMs < 0L) return
+        val presentationTimeUs = positionMs * 1000L
+        lastPresentationTimeUs = presentationTimeUs
+        pendingTimeUs = presentationTimeUs - timeOffsetUs
+    }
+
+    // Paused seeks may not produce a clock callback: ass-media forwards only
+    // every third distinct timestamp. Render the destination explicitly.
+    fun renderAtPlaybackPosition(positionMs: Long, waitForDialogue: Boolean = false) {
+        if (positionMs < 0L) return
+        awaitingPausedSeekDialogue = waitForDialogue
+        requestRender(positionMs * 1000L)
+    }
+
+    // The MKV loader calls this after adding a dialogue chunk under the native
+    // lock. A paused player may never produce another clock callback.
+    fun onAssDialogueLoaded() {
+        if (awaitingPausedSeekDialogue && primaryAssTrackActive && primaryVisible) {
+            redrawCurrentAssFrame()
+        }
+    }
+
+    fun stopAwaitingPausedSeekDialogue() {
+        awaitingPausedSeekDialogue = false
+    }
+
+    private fun visibleFrame(): AssFrame? {
+        if (!primaryVisible || !primaryAssTrackActive) return null
+        val cached = cachedFrame ?: return null
+        return cached.frame.takeIf { cached.visible && cached.track === primaryNativeTrack }
+    }
 
     private val renderTask = Runnable {
+        // Clear before sampling the time so a request arriving mid-render is
+        // never mistaken for one already handled by this task.
+        renderPending.set(false)
+        var generation = -1
         try {
             val timeUs = pendingTimeUs
-            val frame = try {
-                synchronized(assHandler) {
-                    if (released) {
+            synchronized(assHandler) {
+                // Render and publish under the same lock as track activation.
+                // Otherwise Off -> same-track can discard the new image and
+                // libass's unchanged-frame retry cannot reconstruct it.
+                val track = assHandler.track
+                syncNativeAssTrack(track)
+                generation = primaryTrackGeneration
+                val hasActiveTrack = track != null
+                val frame = try {
+                    if (released || !hasActiveTrack) {
                         null
                     } else {
                         assHandler.render?.renderFrame(timeUs / 1000, AssTexType.BITMAP_ALPHA)
                     }
+                } catch (error: Throwable) {
+                    // A dropped frame beats taking the process down.
+                    null
                 }
-            } catch (error: Throwable) {
-                // A dropped frame beats taking the process down.
-                null
+                publishFrame(frame, generation, hasActiveTrack)
             }
-            publishFrame(frame)
         } finally {
             renderScheduled.set(false)
+            // A paused seek can change the time without changing the track.
+            // Also retry any native track switch made during this render.
+            val trackChanged = generation >= 0 &&
+                generation != primaryTrackGeneration && primaryAssTrackActive
+            if (!released && (renderPending.get() || trackChanged)) {
+                scheduleRender()
+            }
         }
     }
 
@@ -119,7 +237,8 @@ class MoonfinAssOverlayView(
         // The renderer is rebuilt per media item, so the frames drawn from the
         // previous one have to go with it.
         assHandler.renderCallback = {
-            currentFrame = null
+            // A rebuilt native renderer no longer owns the last bitmap.
+            cachedFrame = null
             postInvalidate()
         }
     }
@@ -161,18 +280,26 @@ class MoonfinAssOverlayView(
             }
         }
         renderScheduled.set(false)
-        currentFrame = null
+        renderPending.set(false)
+        awaitingPausedSeekDialogue = false
+        cachedFrame = null
     }
 
     // Called on the ExoPlayer playback thread for every video frame, so it
     // stays off the lock and never blocks.
     private fun requestRender(presentationTimeUs: Long) {
         if (released) return
+        lastPresentationTimeUs = presentationTimeUs
+        pendingTimeUs = presentationTimeUs - timeOffsetUs
         // The renderer only exists once a track has been created, so this keeps
         // content without ASS from waking the render thread on every frame.
         if (assHandler.render == null) return
-        pendingTimeUs = presentationTimeUs - timeOffsetUs
-        if (!renderScheduled.compareAndSet(false, true)) return
+        renderPending.set(true)
+        scheduleRender()
+    }
+
+    private fun scheduleRender() {
+        if (released || !renderScheduled.compareAndSet(false, true)) return
         val executor = this.executor
         if (executor == null) {
             renderScheduled.set(false)
@@ -185,19 +312,29 @@ class MoonfinAssOverlayView(
         }
     }
 
-    private fun publishFrame(frame: AssFrame?) {
-        // changed == 0 means libass produced the same content again, so the
-        // frame already on screen stands and redrawing it is wasted work.
-        if (frame != null && frame.changed == 0) return
-        if (frame == null && currentFrame == null) return
-        frame?.images?.forEach { it.bitmap?.prepareToDraw() }
-        currentFrame = frame
+    private fun publishFrame(frame: AssFrame?, generation: Int, hasActiveTrack: Boolean) {
+        if (!hasActiveTrack || generation != primaryTrackGeneration) return
+        val retained = cachedFrame
+        if (frame?.changed == 0) {
+            // Identical pixels may come from another track. The native render
+            // confirms they are valid for the newly selected track as well.
+            if (retained == null || (retained.visible && retained.track === primaryNativeTrack)) return
+            cachedFrame = retained.copy(track = requireNotNull(primaryNativeTrack), visible = true)
+        } else if (frame == null || frame.images.isNullOrEmpty()) {
+            // No current cue (or no dialogue loaded yet): hide the image but
+            // keep its pixels. An unchanged render can still need them later.
+            if (retained == null || !retained.visible) return
+            cachedFrame = retained.copy(visible = false)
+        } else {
+            frame.images?.forEach { it.bitmap?.prepareToDraw() }
+            cachedFrame = CachedFrame(requireNotNull(primaryNativeTrack), frame)
+        }
         postInvalidate()
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        val frame = currentFrame ?: return
+        val frame = visibleFrame() ?: return
         frame.images?.forEach { image ->
             val bitmap = image.bitmap ?: return@forEach
             // libass packs RGBA with an inverted alpha byte.
@@ -284,14 +421,24 @@ private class MoonfinAssParser(
  * thread, so they take the same lock the render itself takes.
  */
 @UnstableApi
-class MoonfinAssPlayerListener(private val assHandler: AssHandler) : Player.Listener {
+class MoonfinAssPlayerListener(
+    private val assHandler: AssHandler,
+    private val overlay: MoonfinAssOverlayView,
+) : Player.Listener {
 
     override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+        overlay.stopAwaitingPausedSeekDialogue()
         synchronized(assHandler) { assHandler.onMediaItemTransition(mediaItem, reason) }
     }
 
     override fun onTracksChanged(tracks: Tracks) {
-        synchronized(assHandler) { assHandler.onTracksChanged(tracks) }
+        val changed = synchronized(assHandler) {
+            assHandler.onTracksChanged(tracks)
+            // Publish ownership before the render executor can read the new
+            // libass track. An unchanged-frame retry has no bitmap to recover.
+            overlay.syncNativeAssTrack(assHandler.track)
+        }
+        if (changed) overlay.redrawCurrentAssFrame()
     }
 
     override fun onSurfaceSizeChanged(width: Int, height: Int) {

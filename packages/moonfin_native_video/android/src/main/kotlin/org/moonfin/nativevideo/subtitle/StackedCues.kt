@@ -2,6 +2,11 @@ package org.moonfin.nativevideo.subtitle
 
 import android.text.Layout
 import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.style.CharacterStyle
+import android.text.style.StrikethroughSpan
+import android.text.style.StyleSpan
+import android.text.style.UnderlineSpan
 import androidx.media3.common.text.Cue
 
 /**
@@ -54,13 +59,31 @@ internal fun joinStackedCues(
 }
 
 /** Keeps each part's spans, so italics and colours survive the join. */
-private fun joinKeepingSpans(parts: List<CharSequence>): CharSequence {
+internal fun joinKeepingSpans(parts: List<CharSequence>): CharSequence {
     val builder = SpannableStringBuilder()
     parts.forEachIndexed { index, part ->
         if (index > 0) builder.append('\n')
         builder.append(part)
     }
     return builder
+}
+
+/** Keep dialogue emphasis but leave colours, fonts and sizes to the user's settings. */
+internal fun keepSubtitleEmphasis(text: CharSequence): CharSequence {
+    val source = text as? Spanned ?: return text
+    val result = SpannableStringBuilder(text.toString())
+    for (span in source.getSpans(0, source.length, CharacterStyle::class.java)) {
+        val emphasis = when (span) {
+            is StyleSpan -> StyleSpan(span.style)
+            is UnderlineSpan -> UnderlineSpan()
+            is StrikethroughSpan -> StrikethroughSpan()
+            else -> continue
+        }
+        val start = source.getSpanStart(span)
+        val end = source.getSpanEnd(span)
+        if (start < end) result.setSpan(emphasis, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+    }
+    return result
 }
 
 /** Every field of a text cue that decides where and how it paints, minus the text itself. */
