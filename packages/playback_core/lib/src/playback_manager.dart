@@ -605,12 +605,18 @@ class PlaybackManager implements AudioOwnable {
   void markStreamsOutdated(String itemId) => _streamsOutdatedItemId = itemId;
   int? get audioStreamIndex => _audioStreamIndex;
 
-  /// How far the secondary track can be shifted against the video, either
-  /// way.
+  /// Maximum extra secondary delay in either direction, in seconds, added to the
+  /// primary delay.
   static const secondarySubtitleMaxDelaySeconds = 5.0;
 
-  /// Where the secondary track sits by default, as a fraction of the height.
-  static const defaultSecondarySubtitleOffset = 0.08;
+  /// Default extra gap between primary and secondary subtitles, as a fraction of player
+  /// height. Zero keeps the normal gap.
+  static const defaultSecondarySubtitleOffset = 0.0;
+  static const secondarySubtitleMinOffset = 0.0;
+  static const secondarySubtitleMaxOffset = 0.06;
+
+  static double clampSecondarySubtitleOffset(double value) =>
+      value.clamp(secondarySubtitleMinOffset, secondarySubtitleMaxOffset).toDouble();
 
   int? get secondarySubtitleStreamIndex => _secondarySubtitleStreamIndex;
   double get secondarySubtitleDelaySeconds => _secondarySubtitleDelaySeconds;
@@ -619,6 +625,7 @@ class PlaybackManager implements AudioOwnable {
   double get secondarySubtitleOffset => _secondarySubtitleOffset;
 
   bool canUseAsSecondarySubtitle(int streamIndex) {
+    if (_backend is! SecondarySubtitleBackend) return false;
     final stream = _currentMediaStreams
         .where((s) => s['Type'] == 'Subtitle' && s['Index'] == streamIndex)
         .firstOrNull;
@@ -630,7 +637,8 @@ class PlaybackManager implements AudioOwnable {
         codec != 'webvtt') {
       return false;
     }
-    return _secondarySubtitleUrlForStream(streamIndex)?.isNotEmpty ?? false;
+    return _secondaryEmbeddedTrackId(streamIndex) != null ||
+        (_secondarySubtitleUrlForStream(streamIndex)?.isNotEmpty ?? false);
   }
 
   int? get subtitleStreamIndex {
@@ -814,6 +822,8 @@ class PlaybackManager implements AudioOwnable {
     bool audioLike = false,
     String? secondarySubtitleUrl,
     String? secondarySubtitleCodec,
+    String? secondarySubtitleLanguage,
+    int? secondarySubtitleTrackId,
   }) {
     // Music and audiobooks are audio whatever their streams say. Media3 only
     // plays audio with no view when the payload says audio, so a stray video
@@ -943,6 +953,8 @@ class PlaybackManager implements AudioOwnable {
           normalizationGainDb ??
           MediaStreamResolver.extractNormalizationGainDb(mediaStreams),
       if (declaredSubtitles.isNotEmpty) 'externalSubtitles': declaredSubtitles,
+      if (secondarySubtitleTrackId != null)
+        'secondarySubtitleTrackId': secondarySubtitleTrackId,
       'secondarySubtitleDelayMs': (_secondarySubtitleDelaySeconds * 1000)
           .round(),
       'secondarySubtitleOffset': _secondarySubtitleOffset,
@@ -953,6 +965,8 @@ class PlaybackManager implements AudioOwnable {
       if (secondarySubtitleUrl != null && secondarySubtitleCodec != null) ...{
         'secondarySubtitleUrl': secondarySubtitleUrl,
         'secondarySubtitleCodec': secondarySubtitleCodec,
+        if (secondarySubtitleLanguage != null)
+          'secondarySubtitleLanguage': secondarySubtitleLanguage,
       },
       if (selectedExternalSubtitleUrl != null)
         'selectedExternalSubtitleUrl': selectedExternalSubtitleUrl,
@@ -2886,8 +2900,14 @@ class PlaybackManager implements AudioOwnable {
                 canUseAsSecondarySubtitle(_secondarySubtitleStreamIndex!)
             ? _secondarySubtitleUrlForStream(_secondarySubtitleStreamIndex!)
             : null,
+        secondarySubtitleTrackId: _secondarySubtitleStreamIndex != null
+            ? _secondaryEmbeddedTrackId(_secondarySubtitleStreamIndex!)
+            : null,
         secondarySubtitleCodec: _secondarySubtitleStreamIndex != null
             ? _subtitleCodecForStream(_secondarySubtitleStreamIndex!)
+            : null,
+        secondarySubtitleLanguage: _secondarySubtitleStreamIndex != null
+            ? _subtitleLanguageForStream(_secondarySubtitleStreamIndex!)
             : null,
       );
       await _arbiter?.acquire(AudioProducer.mainPlayback);
@@ -3660,6 +3680,12 @@ class PlaybackManager implements AudioOwnable {
     return false;
   }
 
+  String? _subtitleLanguageForStream(int streamIndex) => _extractLanguage(
+    _currentMediaStreams
+        .where((s) => s['Type'] == 'Subtitle' && s['Index'] == streamIndex)
+        .firstOrNull,
+  );
+
   String? _subtitleCodecForStream(int streamIndex) {
     final streams = _currentMediaStreams;
     if (streams.isNotEmpty) {
@@ -3724,9 +3750,17 @@ class PlaybackManager implements AudioOwnable {
     return null;
   }
 
-  /// The sidecar the server offers for [streamIndex], or else the file it can
-  /// serve from an embedded SRT or WebVTT track. Only the secondary overlay
-  /// takes the second kind.
+  /// Use original embedded track numbers only during direct play.
+  int? _secondaryEmbeddedTrackId(int streamIndex) {
+    if (_currentResolution?.playMethod != StreamPlayMethod.directPlay ||
+        _embeddedSubtitlesUnavailable || _isSubtitleExternal(streamIndex)) {
+      return null;
+    }
+    return _mpvTrackIdForStream(streamIndex, 'Subtitle');
+  }
+
+  /// Returns the server's subtitle file URL for this stream, using an extracted
+  /// embedded text track when no external file URL is available.
   String? _secondarySubtitleUrlForStream(int streamIndex) {
     final sidecar = _externalSubtitleUrlForStream(streamIndex);
     if (sidecar != null && sidecar.isNotEmpty) return sidecar;
@@ -3811,8 +3845,8 @@ class PlaybackManager implements AudioOwnable {
     ),
   );
 
-  /// Picks the SRT or WebVTT track the secondary overlay draws, or none for
-  /// null. A track the server can't serve as a file stays primary-only.
+  /// Selects a secondary SRT or WebVTT track. Passing null, or the current primary
+  /// track, turns secondary subtitles off.
   Future<void> changeSecondarySubtitleTrack(int? streamIndex) async {
     final selectedIndex = streamIndex == _subtitleStreamIndex
         ? null
@@ -3855,10 +3889,10 @@ class PlaybackManager implements AudioOwnable {
     double? verticalOffset,
     int? textColor,
   }) async {
-    _secondarySubtitleFontSize = fontSize?.clamp(8.0, 72.0).toDouble();
+    _secondarySubtitleFontSize = fontSize?.clamp(6.0, 72.0).toDouble();
     _secondarySubtitleTextColor = textColor;
     final offset = verticalOffset ?? defaultSecondarySubtitleOffset;
-    _secondarySubtitleOffset = offset.clamp(0.0, 0.4).toDouble();
+    _secondarySubtitleOffset = clampSecondarySubtitleOffset(offset);
     await _backend?.configureSecondarySubtitleStyle(
       fontSize: _secondarySubtitleFontSize,
       verticalOffset: _secondarySubtitleOffset,
@@ -3876,6 +3910,8 @@ class PlaybackManager implements AudioOwnable {
     await _backend?.setSecondarySubtitle(
       url: _secondarySubtitleUrlForStream(index),
       codec: _subtitleCodecForStream(index),
+      language: _subtitleLanguageForStream(index),
+      embeddedTrackId: _secondaryEmbeddedTrackId(index),
     );
     await _backend?.setSecondarySubtitleDelay(_secondarySubtitleDelaySeconds);
     await _backend?.configureSecondarySubtitleStyle(
@@ -4466,6 +4502,11 @@ class PlaybackManager implements AudioOwnable {
     }
   }
 
+  void _resetSubtitleDelaySession() {
+    _subtitleDelaySessionId++;
+    _secondarySubtitleDelaySeconds = 0;
+  }
+
   Future<bool> _stopAndReportCurrent({
     bool skipQueueChange = false,
     dynamic expectedItem,
@@ -4475,7 +4516,7 @@ class PlaybackManager implements AudioOwnable {
     final existingStop = _stopInFlight;
     if (existingStop != null) {
       await existingStop;
-      if (!preserveSubtitleDelay) _subtitleDelaySessionId++;
+      if (!preserveSubtitleDelay) _resetSubtitleDelaySession();
       return false;
     }
 
@@ -4492,7 +4533,7 @@ class PlaybackManager implements AudioOwnable {
         'releaseServerResources=$releaseServerResources '
         'position=${_lastKnownPosition.inMilliseconds}ms',
       );
-      if (!preserveSubtitleDelay) _subtitleDelaySessionId++;
+      if (!preserveSubtitleDelay) _resetSubtitleDelaySession();
       _deferredStartPosition = Duration.zero;
       _deferPlaybackToExternalPlayer = false;
       _endLiveStallWatch();
