@@ -47,8 +47,11 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
 
     var isPlaying: Bool { state == .playing }
 
-    /// True while the engine downloads and decodes the chosen external subtitle.
-    var isSubtitleLoading: Bool { Self._sharedEngine?.isLoadingSubtitles ?? false }
+    /// True while the primary or secondary subtitle file is loading.
+    var isSubtitleLoading: Bool {
+        guard let engine = Self._sharedEngine else { return false }
+        return engine.isLoadingSubtitles || engine.isLoadingSecondarySubtitles
+    }
 
     let nowPlaying = NowPlayingController()
 
@@ -79,6 +82,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         /// only the owner stops it, reloads it or reports its errors, so the
         /// idle wrapper can't act on a session that isn't its own.
         private static weak var engineOwner: AetherPlayerWrapper?
+        static var activePlaybackOwner: AetherPlayerWrapper? { engineOwner }
         private var isShutDown = false
         private var ownsEngine: Bool {
             Self.engineOwner == nil || Self.engineOwner === self
@@ -90,6 +94,33 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
 
     private let playerView = AetherPlayerView()
     let subtitleOverlay = SubtitleOverlay()
+    let secondarySubtitleOverlay = SubtitleOverlay()
+    private var pendingSecondarySubtitle: SecondarySubtitleSelection?
+    // Aether can restore the subtitle selections it captured before an internal
+    // reload. Keep the host's latest choices (including Off) as the authority.
+    private var secondaryReloadSelection = SubtitleReloadState<SecondarySubtitleSelection>()
+    private var primaryReloadSelection = SubtitleReloadState<PrimarySubtitleChoice>()
+    private var lastReadyPrimaryActive = false
+    private var lastReadySecondaryActive = false
+    // Audio switching snapshots the old selection before its async rebuild
+    // makes readiness fall. An Off choice can arrive between those steps.
+    private var audioSwitchSecondarySnapshotActive: Bool?
+    private var audioSwitchPrimarySnapshotActive: Bool?
+    private var secondarySubtitlesReady = false
+    private(set) var secondaryDelayAdjustment: Double = 0
+    private var secondaryFontSize: Double?
+    private var secondaryTextColor: Int?
+    // During HLS playback, AVPlayer normally displays the external primary subtitles
+    // supplied at startup. With dual subtitles enabled, render the primary in our overlay.
+    // Keep its track ID so the picker still shows the selection and native playback can
+    // restore it.
+    private var primarySidecarTrackID: Int?
+    private var nativePrimaryBridge: NativePrimarySubtitleBridge?
+    private var nativePrimaryBridgeFailure: (item: AVPlayerItem, trackID: Int, hideSecondary: Bool)?
+    private var nativeSubtitleItem: AVPlayerItem?
+    private var nativeSubtitleSelectionObserver: NSObjectProtocol?
+    private var externalPlaybackSubscription: AnyCancellable?
+    private var nativeSubtitlePresentationRequired = false
     private var cancellables = Set<AnyCancellable>()
     private var surfaceAttachedContinuations: [CheckedContinuation<Void, Never>] = []
     private var audioSessionActive = false
@@ -155,6 +186,18 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
     private var lastKnownSourceTime: Double = 0
     private var lastKnownSourceTimeHostTime: CFTimeInterval = 0
 
+    private static func isAssSubtitleCodec(_ codec: String?) -> Bool {
+        guard let value = codec?.lowercased() else { return false }
+        return value == "ass" || value == "ssa"
+    }
+
+    private func primaryUsesAssTopFallback(_ id: Int?) -> Bool {
+        guard let id else { return false }
+        let track = subtitleTable.first { $0.id == id }
+            ?? closedCaptionTable.first { $0.id == id }
+        return track.map { Self.isAssSubtitleCodec($0.codec) } ?? false
+    }
+
     /// Video gets a Now Playing session bound to its AVPlayer. On iOS the
     /// shared centers stay with `audio_service`, but they can't win Now Playing
     /// back once Picture in Picture or another app has taken it.
@@ -168,6 +211,8 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
 
     override init() {
         super.init()
+        secondarySubtitleOverlay.primaryForStacking = subtitleOverlay
+        subtitleOverlay.secondaryForStacking = secondarySubtitleOverlay
         #if os(iOS) || os(tvOS)
             // On iOS the handlers only ever land on a session, the video
             // player's or the engine's music one, never the shared center.
@@ -218,8 +263,16 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         guard let engine = Self.sharedEngine(),
             engine.playbackBackend == .none
         else { return }
+        // The engine's reload restores an older subtitle snapshot after its
+        // async load. Re-assert the latest host choice only once that completes.
+        let generation = loadGeneration
+        secondaryReloadSelection.beginReload(previouslyActive: lastReadySecondaryActive)
+        primaryReloadSelection.beginReload(previouslyActive: lastReadyPrimaryActive)
         do {
             try await engine.reloadAtCurrentPosition()
+            guard ownsEngine, generation == loadGeneration else { return }
+            reapplySecondaryAfterReload(force: true)
+            if engine.isSessionReady { reapplyPrimaryAfterReload(force: true) }
             engine.pause()
         } catch {
             // Every recovery downstream re-resolves against the server, which
@@ -249,6 +302,41 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         engine.$isBuffering
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in self?.applyStalledState() }
+            .store(in: &cancellables)
+
+        // Audio-track reconstruction does not go through our load() or the
+        // foreground reload method. Track its readiness edge and wait for
+        // Aether's stale secondary restoration before replaying the latest
+        // host request. A previously-Off selection has no restoration event.
+        engine.$isSessionReady
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self, weak engine] ready in
+                guard let self, let engine, self.ownsEngine, self.secondarySubtitlesReady,
+                      !self.isAudioOnlySession else { return }
+                if !ready {
+                    self.secondaryReloadSelection.beginReload(
+                        previouslyActive: self.audioSwitchSecondarySnapshotActive
+                            ?? self.lastReadySecondaryActive)
+                    self.primaryReloadSelection.beginReload(
+                        previouslyActive: self.audioSwitchPrimarySnapshotActive
+                            ?? self.lastReadyPrimaryActive)
+                    self.audioSwitchSecondarySnapshotActive = nil
+                    self.audioSwitchPrimarySnapshotActive = nil
+                } else {
+                    // Aether can restore an old selection before AVPlayer is
+                    // ready. The active flags retain that event until readiness.
+                    if self.secondaryReloadSelection.shouldReapplyAtReadiness(
+                        active: engine.isSecondarySubtitleActive
+                    ) {
+                        self.reapplySecondaryAfterReload()
+                    }
+                    if self.primaryReloadSelection.shouldReapplyAtReadiness(
+                        active: engine.isSubtitleActive
+                    ) {
+                        self.reapplyPrimaryAfterReload()
+                    }
+                }
+            }
             .store(in: &cancellables)
 
         engine.$duration
@@ -295,6 +383,19 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             .sink { [weak self] value in self?.tickSubtitles(at: value) }
             .store(in: &cancellables)
 
+        // Native controls can seek without going through this wrapper. Wait for
+        // a landing so rejected or superseded seeks do not erase placement.
+        engine.seekEvents
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self, weak engine] event in
+                guard case .landed = event.outcome, let self, let engine else { return }
+                self.subtitleOverlay.resetPlacement()
+                self.tickSubtitles(at: engine.sourceTime)
+                // libass may keep the same image without publishing it again.
+                self.subtitleOverlay.rememberPrimaryPlacement()
+            }
+            .store(in: &cancellables)
+
         engine.$audioTracks
             .receive(on: DispatchQueue.main)
             .sink { [weak self] tracks in self?.rebuildAudioTable(tracks) }
@@ -313,26 +414,98 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             }
             .store(in: &cancellables)
 
+        engine.$isSubtitleActive
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self, weak engine] active in
+                guard let self, let engine else { return }
+                if self.ownsEngine,
+                   self.primaryReloadSelection.shouldReapplyAfterRestoration(
+                       active: active, ready: engine.isSessionReady
+                   ) {
+                    self.reapplyPrimaryAfterReload()
+                }
+                if engine.isSessionReady && !self.primaryReloadSelection.needsReapply {
+                    self.lastReadyPrimaryActive = engine.isSubtitleActive
+                }
+            }
+            .store(in: &cancellables)
+
         engine.$activeSubtitleTrackIndex
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] id in
-                guard let self else { return }
+            .sink { [weak self, weak engine] _ in
+                guard let self, let engine else { return }
+                // Sidecar decoding publishes nil. Read the current selection,
+                // not an older publication queued before a track switch.
+                if let id = engine.activeSubtitleTrackIndex,
+                   let retained = self.primarySidecarTrackID, id != retained {
+                    self.endNativePrimaryBridge(restoreNative: false)
+                }
+                let id = self.effectivePrimaryTrackID(engine)
                 self.currentSubtitleTrackIndex = self.ordinal(for: id, in: self.subtitleTable)
                 self.subtitleOverlay.keepsVideoComposited = id != nil
                 self.resetAssState()
+                self.subtitleOverlay.secondaryUsesTopFallback =
+                    self.primaryUsesAssTopFallback(id)
+                self.updateNativePrimaryBridge()
             }
             .store(in: &cancellables)
 
         engine.$subtitleCues
-            .combineLatest(engine.$sidecarASSHeader)
+            .combineLatest(engine.$sidecarASSHeader, engine.$isLoadingSubtitles)
             .receive(on: DispatchQueue.main)
             .sink { [weak self, weak engine] _ in
                 guard let engine else { return }
-                // Sidecar decoding publishes cues before their ASS header. Read
-                // the current pair after delivery, including when a track switch
-                // has superseded a queued publication.
+                // Read the complete decode result after delivery. Loading also
+                // publishes a failure, which has no new cues or ASS header.
                 self?.applySubtitleCues(engine.subtitleCues)
             }
+            .store(in: &cancellables)
+
+        engine.$secondarySubtitleCues
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self, weak engine] _ in
+                guard let self, let engine else { return }
+                // A stale decode completion after Secondary Off must never
+                // repaint the overlay while engine reconstruction settles.
+                guard self.secondaryReloadSelection.latestChoice?.isEnabled == true else {
+                    self.secondarySubtitleOverlay.clear()
+                    return
+                }
+                Self.presentSubtitleEvents(
+                    Self.subtitleEvents(from: engine.secondarySubtitleCues),
+                    in: self.secondarySubtitleOverlay, at: engine.sourceTime)
+            }
+            .store(in: &cancellables)
+
+        engine.$isSecondarySubtitleActive
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self, weak engine] active in
+                guard let self, let engine else { return }
+                if self.ownsEngine,
+                   self.secondaryReloadSelection.shouldReapplyAfterRestoration(
+                       active: active, ready: engine.isSessionReady
+                   ) {
+                    self.reapplySecondaryAfterReload()
+                }
+                if engine.isSessionReady && !self.secondaryReloadSelection.needsReapply {
+                    self.lastReadySecondaryActive = engine.isSecondarySubtitleActive
+                }
+                self.secondarySubtitleOverlay.keepsVideoComposited =
+                    self.secondaryReloadSelection.latestChoice?.isEnabled == true
+                        && engine.isSecondarySubtitleActive
+            }
+            .store(in: &cancellables)
+
+        engine.$currentAVPlayerItem
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self, weak engine] _ in
+                self?.observeNativeSubtitleItem(engine?.currentAVPlayerItem)
+            }
+            .store(in: &cancellables)
+
+        engine.$videoRoute.combineLatest(engine.$isSessionReady)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in self?.updateNativePrimaryBridge() }
             .store(in: &cancellables)
 
         // Rebind Now Playing on EVERY player republish: the engine swaps
@@ -342,6 +515,10 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         engine.$currentAVPlayer
             .receive(on: DispatchQueue.main)
             .sink { [weak self] player in
+                self?.externalPlaybackSubscription = player?
+                    .publisher(for: \.isExternalPlaybackActive, options: [.initial, .new])
+                    .receive(on: DispatchQueue.main)
+                    .sink { [weak self] _ in self?.updateNativePrimaryBridge() }
                 // The idle wrapper on iOS would otherwise build a second session
                 // on the same AVPlayer and could take Now Playing from the owner.
                 guard let self, Self.drivesNowPlaying, !self.isAudioOnlySession,
@@ -600,21 +777,28 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         withExtendedLifetime(previous) {}
         playerView.frame = view.bounds
         subtitleOverlay.frame = view.bounds
+        secondarySubtitleOverlay.frame = view.bounds
         #if canImport(UIKit)
             playerView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
             view.insertSubview(playerView, at: 0)
             subtitleOverlay.autoresizingMask = [.flexibleWidth, .flexibleHeight]
             view.insertSubview(subtitleOverlay, aboveSubview: playerView)
+            secondarySubtitleOverlay.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+            view.insertSubview(secondarySubtitleOverlay, aboveSubview: subtitleOverlay)
         #elseif canImport(AppKit)
             playerView.autoresizingMask = [.width, .height]
             view.addSubview(playerView, positioned: .below, relativeTo: nil)
             subtitleOverlay.autoresizingMask = [.width, .height]
             view.addSubview(subtitleOverlay, positioned: .above, relativeTo: playerView)
+            secondarySubtitleOverlay.autoresizingMask = [.width, .height]
+            view.addSubview(secondarySubtitleOverlay, positioned: .above, relativeTo: subtitleOverlay)
         #endif
         subtitleOverlay.videoRectProvider = { [weak self] in
             self?.currentVideoRect() ?? .zero
         }
+        secondarySubtitleOverlay.videoRectProvider = subtitleOverlay.videoRectProvider
         Self.sharedEngine()?.bind(view: playerView)
+        updateNativePrimaryBridge()
         if view.window != nil {
             resumeSurfaceWaiters()
         }
@@ -650,6 +834,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
 
     func notifySurfaceReady() {
         resumeSurfaceWaiters()
+        updateNativePrimaryBridge()
     }
 
     /// Platform-view lifecycle (iOS): the Flutter view is disposed on route
@@ -658,9 +843,12 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
     /// the same playerView. No-op if another view has attached since.
     func detachVideoView(from view: PlatformView) {
         guard videoView === view else { return }
+        endNativePrimaryBridge(restoreNative: true)
         playerView.removeFromSuperview()
         subtitleOverlay.removeFromSuperview()
         subtitleOverlay.videoRectProvider = nil
+        secondarySubtitleOverlay.videoRectProvider = nil
+        secondarySubtitleOverlay.removeFromSuperview()
         videoView = nil
     }
 
@@ -713,6 +901,36 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         /// arriving after it, because the engine clears its external registry
         /// when a load begins and only re-seats what the load itself declared.
         var externalSubtitles: [ExternalSubtitleTrack] = []
+        var subtitleDelay: Double = 0
+        var secondarySubtitle = SecondarySubtitleConfiguration()
+    }
+
+    struct SecondarySubtitleSelection: Equatable {
+        var embeddedTrackId: Int?
+        var url: URL?
+        var isEnabled: Bool { embeddedTrackId != nil || url != nil }
+    }
+
+    struct SecondarySubtitleConfiguration {
+        var selection = SecondarySubtitleSelection()
+        var delay: Double = 0
+        var offset: Double = 0
+        var fontSize: Double?
+        var textColor: Int?
+    }
+
+    static func secondarySubtitleConfiguration(from args: [String: Any]) -> SecondarySubtitleConfiguration {
+        let url = (args["secondarySubtitleUrl"] as? String).flatMap {
+            $0.hasPrefix("/") ? URL(fileURLWithPath: $0) : URL(string: $0)
+        }
+        return SecondarySubtitleConfiguration(
+            selection: .init(
+                embeddedTrackId: (args["secondarySubtitleTrackId"] as? NSNumber)?.intValue,
+                url: url),
+            delay: ((args["secondarySubtitleDelayMs"] as? NSNumber)?.doubleValue ?? 0) / 1000,
+            offset: (args["secondarySubtitleOffset"] as? NSNumber)?.doubleValue ?? 0,
+            fontSize: (args["secondarySubtitleFontSize"] as? NSNumber)?.doubleValue,
+            textColor: (args["secondarySubtitleTextColor"] as? NSNumber)?.intValue)
     }
 
     /// Reads the sidecars out of a `setSource` payload. Anything without a
@@ -776,12 +994,15 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         }
         #if os(iOS)
             if Self.engineOwner !== self {
+                Self.engineOwner?.endNativePrimaryBridge(restoreNative: false)
                 // The other wrapper deactivates the shared audio session when
                 // it shuts down, so this one can't trust its own flag.
                 audioSessionActive = false
                 Self.engineOwner = self
             }
         #endif
+        endNativePrimaryBridge(restoreNative: false)
+        nativePrimaryBridgeFailure = nil
         // A load from a healthy or just ended session goes straight to
         // engine.load, whose internal supersede keeps the AVPlayer instance
         // and current item alive across the seam for PiP and Control Center.
@@ -805,6 +1026,22 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         resetStallTracking()
         resetAssState()
         subtitleOverlay.clear()
+        secondarySubtitleOverlay.clear()
+        secondarySubtitlesReady = false
+        setSubtitleDelay(sourceConfiguration.subtitleDelay)
+        let secondary = sourceConfiguration.secondarySubtitle
+        pendingSecondarySubtitle = secondary.selection
+        primaryReloadSelection.reset()
+        lastReadyPrimaryActive = false
+        audioSwitchPrimarySnapshotActive = nil
+        secondaryReloadSelection.startSource(secondary.selection)
+        lastReadySecondaryActive = false
+        audioSwitchSecondarySnapshotActive = nil
+        secondarySubtitleOverlay.stackingEnabled = secondary.selection.isEnabled
+        setSecondarySubtitleDelay(secondary.delay)
+        configureSecondarySubtitleStyle(
+            fontSize: secondary.fontSize, verticalOffset: secondary.offset,
+            textColor: secondary.textColor)
         externalSubIDsByURL.removeAll()
         declaredSubtitleURLs = Set(
             sourceConfiguration.externalSubtitles.map { $0.url.absoluteString })
@@ -820,6 +1057,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             // otherwise start playback with nothing on screen to stop it.
             guard !isShutDown else { return }
         #endif
+        guard loadGeneration == generation else { return }
         activateAudioSession()
 
         let isRemotePlaylist = url.path.lowercased().hasSuffix(".m3u8")
@@ -892,6 +1130,9 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             if forceSubtitlesDisabledOnStart {
                 engine.clearSubtitle()
             }
+            secondarySubtitlesReady = true
+            applyPendingSecondarySubtitle()
+            updateNativePrimaryBridge()
         } catch {
             guard loadGeneration == generation, !didEmitLoadError else { return }
             declaredSubtitleURLs.removeAll()
@@ -977,6 +1218,8 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
     /// Dart-initiated stops go through here so back to back DV episodes don't bounce
     /// through SDR.
     func stop() {
+        loadGeneration &+= 1
+        resetSecondarySubtitle()
         #if os(iOS)
             // A stop from a wrapper that was shut down, or that another one has
             // taken the engine from, would land on whatever plays next.
@@ -995,6 +1238,8 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
     /// Full teardown on dismiss: resets display criteria, releases the view
     /// binding and the audio session. The engine itself stays alive.
     func shutdown() {
+        loadGeneration &+= 1
+        resetSecondarySubtitle()
         stopObservingForegroundReturn()
         guard let engine = Self.sharedEngine() else { return }
         #if os(iOS)
@@ -1008,6 +1253,12 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             engine.stop(resetDisplayCriteria: true)
         #endif
         cancellables.removeAll()
+        externalPlaybackSubscription = nil
+        if let observer = nativeSubtitleSelectionObserver {
+            NotificationCenter.default.removeObserver(observer)
+            nativeSubtitleSelectionObserver = nil
+        }
+        nativeSubtitleItem = nil
         resetStallTracking()
         engine.unbind(view: playerView)
         subtitleOverlay.clear()
@@ -1136,8 +1387,10 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         }
         if let engine = Self.sharedEngine() {
             currentSubtitleTrackIndex = ordinal(
-                for: engine.activeSubtitleTrackIndex, in: subtitleTable)
+                for: effectivePrimaryTrackID(engine), in: subtitleTable)
         }
+        applyPendingSecondarySubtitle()
+        updateNativePrimaryBridge()
     }
 
     private func externalFilename(forTrackID id: Int) -> String? {
@@ -1153,12 +1406,33 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
 
     func setAudioTrack(_ trackIndex: Int32) {
         let index = Int(trackIndex) - 1
-        guard index >= 0, index < audioTable.count else { return }
-        Self.sharedEngine()?.selectAudioTrack(index: audioTable[index].id)
+        guard index >= 0, index < audioTable.count,
+              let engine = Self.sharedEngine() else { return }
+        // Capture before Aether schedules the rebuild: a newer Off/B choice
+        // can land before the old session actually begins tearing down.
+        if engine.isSessionReady, engine.videoRoute != .remoteBypass,
+           engine.activeAudioTrackIndex != audioTable[index].id {
+            audioSwitchSecondarySnapshotActive = engine.isSecondarySubtitleActive
+            audioSwitchPrimarySnapshotActive = engine.isSubtitleActive
+        }
+        engine.selectAudioTrack(index: audioTable[index].id)
     }
 
     func setSubtitleTrack(_ trackIndex: Int32) {
         selectSubtitleTrack(trackIndex, externalUrl: nil)
+    }
+
+    /// A new primary track must not inherit the previous track's placement.
+    /// Ordinary dialogue gaps still keep that placement inside SubtitleOverlay.
+    private func selectResolvedSubtitleTrack(_ id: Int, engine: AetherEngine) {
+        if effectivePrimaryTrackID(engine) != id {
+            subtitleOverlay.clear()
+        }
+        subtitleOverlay.secondaryUsesTopFallback = primaryUsesAssTopFallback(id)
+        endNativePrimaryBridge(restoreNative: false)
+        nativePrimaryBridgeFailure = nil
+        engine.selectSubtitleTrack(index: id)
+        updateNativePrimaryBridge()
     }
 
     func selectSubtitleTrack(_ trackIndex: Int32, externalUrl: String?) {
@@ -1167,10 +1441,11 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             disableSubtitles()
             return
         }
+        primaryReloadSelection.remember(.text(trackIndex, externalUrl))
         resetAssState()
         if let externalUrl, let id = externalSubIDsByURL[externalUrl] {
             logSubtitleSelection(requested: trackIndex, route: "urlMap", resolvedID: id)
-            engine.selectSubtitleTrack(index: id)
+            selectResolvedSubtitleTrack(id, engine: engine)
             return
         }
         if let externalUrl,
@@ -1181,7 +1456,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             })
         {
             logSubtitleSelection(requested: trackIndex, route: "filename", resolvedID: match.id)
-            engine.selectSubtitleTrack(index: match.id)
+            selectResolvedSubtitleTrack(match.id, engine: engine)
             return
         }
         let index = Int(trackIndex) - 1
@@ -1191,7 +1466,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         }
         logSubtitleSelection(
             requested: trackIndex, route: "ordinal", resolvedID: subtitleTable[index].id)
-        engine.selectSubtitleTrack(index: subtitleTable[index].id)
+        selectResolvedSubtitleTrack(subtitleTable[index].id, engine: engine)
     }
 
     private func hostLog(_ line: String) {
@@ -1221,11 +1496,16 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         guard let engine = Self.sharedEngine() else { return }
         let index = Int(id) - 1
         guard index >= 0, index < closedCaptionTable.count else { return }
+        primaryReloadSelection.remember(.caption(id))
         resetAssState()
-        engine.selectSubtitleTrack(index: closedCaptionTable[index].id)
+        selectResolvedSubtitleTrack(closedCaptionTable[index].id, engine: engine)
     }
 
     func disableSubtitles() {
+        primaryReloadSelection.remember(.off)
+        subtitleOverlay.secondaryUsesTopFallback = false
+        endNativePrimaryBridge(restoreNative: false)
+        nativePrimaryBridgeFailure = nil
         Self.sharedEngine()?.clearSubtitle()
         subtitleOverlay.clear()
         resetAssState()
@@ -1272,11 +1552,369 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
                 + "tableCount=\(subtitleTable.count)")
     }
 
+    // MARK: - Native HLS primary while dual subtitles are on screen
+
+    private func effectivePrimaryTrackID(_ engine: AetherEngine) -> Int? {
+        engine.activeSubtitleTrackIndex ?? primarySidecarTrackID
+    }
+
+    /// PiP needs AVPlayer's selected rendition; the on-screen overlay cannot
+    /// travel with its video layer. The existing native track remains the source.
+    func setNativeSubtitlePresentationRequired(_ required: Bool) {
+        nativeSubtitlePresentationRequired = required
+        updateNativePrimaryBridge()
+    }
+
+    private func observeNativeSubtitleItem(_ item: AVPlayerItem?) {
+        guard nativeSubtitleItem !== item else { return }
+        endNativePrimaryBridge(restoreNative: false, retainTrackID: true)
+        nativePrimaryBridgeFailure = nil
+        if let observer = nativeSubtitleSelectionObserver {
+            NotificationCenter.default.removeObserver(observer)
+        }
+        nativeSubtitleItem = item
+        nativeSubtitleSelectionObserver = item.map { item in
+            NotificationCenter.default.addObserver(
+                forName: AVPlayerItem.mediaSelectionDidChangeNotification,
+                object: item, queue: .main
+            ) { [weak self, weak item] _ in
+                Task { @MainActor in
+                    guard let self, let item, self.nativeSubtitleItem === item else { return }
+                    self.nativeSubtitleSelectionDidChange()
+                }
+            }
+        }
+        updateNativePrimaryBridge()
+    }
+
+    /// Only declared text sidecars can be injected into the VOD HLS master.
+    /// Ordinary file playback, live TV and runtime-added sidecars keep their
+    /// existing subtitle path.
+    private func declaredPrimarySidecar(_ id: Int) -> ExternalSubtitleTrack? {
+        guard let track = subtitleTable.first(where: { $0.id == id && $0.isExternal }),
+              ["srt", "subrip", "vtt", "webvtt", "ass", "ssa"].contains(track.codec.lowercased()),
+              let rawURL = externalFilename(forTrackID: id),
+              declaredSubtitleURLs.contains(rawURL) else { return nil }
+        return sourceConfiguration.externalSubtitles.first {
+            $0.url.absoluteString == rawURL && $0.sourceStreamIndex == nil
+        }
+    }
+
+    private func updateNativePrimaryBridge() {
+        guard ownsEngine, let engine = Self._sharedEngine else {
+            endNativePrimaryBridge(restoreNative: false)
+            return
+        }
+        // Internal reloads temporarily clear the player item and playback route. Keep the
+        // primary track ID while Aether restores the subtitle URL.
+        guard engine.isSessionReady, engine.videoRoute != .none else {
+            endNativePrimaryBridge(restoreNative: false, retainTrackID: true)
+            return
+        }
+        let nativePresentation = nativeSubtitlePresentationRequired || engine.pictureInPictureActive
+            || (engine.currentAVPlayer?.isExternalPlaybackActive ?? false)
+        guard secondarySubtitlesReady, secondarySubtitleOverlay.stackingEnabled,
+              !isLiveSession, !engine.isLive, engine.videoRoute == .remoteBypass,
+              videoView != nil, !nativePresentation else {
+            endNativePrimaryBridge(restoreNative: true)
+            secondarySubtitleOverlay.isHidden = nativePresentation
+            return
+        }
+        guard let id = effectivePrimaryTrackID(engine), let sidecar = declaredPrimarySidecar(id),
+              let item = engine.currentAVPlayerItem else {
+            endNativePrimaryBridge(restoreNative: true)
+            secondarySubtitleOverlay.isHidden = false
+            return
+        }
+        if let failure = nativePrimaryBridgeFailure,
+           failure.item === item, failure.trackID == id {
+            secondarySubtitleOverlay.isHidden = failure.hideSecondary
+            return
+        }
+        if let bridge = nativePrimaryBridge, bridge.item === item, bridge.trackID == id {
+            prepareNativePrimaryBridgeIfDecoded()
+            return
+        }
+        // If proxy injection fell back to the engine's ordinary sidecar route,
+        // it already supplies primary geometry and needs no native suppression.
+        if primarySidecarTrackID == nil,
+           engine.isLoadingSubtitles || !engine.subtitleCues.isEmpty { return }
+
+        endNativePrimaryBridge(restoreNative: false, retainTrackID: true)
+        let bridge = NativePrimarySubtitleBridge(
+            item: item, trackID: id, sidecar: sidecar, generation: loadGeneration)
+        nativePrimaryBridge = bridge
+        secondarySubtitleOverlay.isHidden = true
+        if primarySidecarTrackID != nil, engine.activeSubtitleTrackIndex == nil {
+            // Reloading the same session restores the subtitle URL but not AVPlayer's
+            // subtitle selection. Select the track again before decoding it for the
+            // overlay.
+            engine.selectSubtitleTrack(index: id)
+        }
+        bridge.groupTask = Task { @MainActor [weak self, weak bridge] in
+            let group = try? await item.asset.loadMediaSelectionGroup(for: .legible)
+            guard let self, let bridge, self.isCurrentNativePrimaryBridge(bridge),
+                  !Task.isCancelled else { return }
+            guard let group else {
+                // A failed proxy injection keeps the normal engine sidecar path.
+                self.nativePrimaryBridgeFailure = (item, id, false)
+                self.endNativePrimaryBridge(restoreNative: true)
+                self.secondarySubtitleOverlay.isHidden = false
+                return
+            }
+            bridge.group = group
+            self.nativeSubtitleSelectionDidChange()
+        }
+    }
+
+    private func isCurrentNativePrimaryBridge(_ bridge: NativePrimarySubtitleBridge) -> Bool {
+        ownsEngine && nativePrimaryBridge === bridge && loadGeneration == bridge.generation
+            && Self._sharedEngine?.currentAVPlayerItem === bridge.item
+    }
+
+    private func nativeSubtitleSelectionDidChange() {
+        guard let bridge = nativePrimaryBridge, isCurrentNativePrimaryBridge(bridge),
+              let group = bridge.group, let engine = Self._sharedEngine else {
+            updateNativePrimaryBridge()
+            return
+        }
+        let selected = bridge.item.currentMediaSelection.selectedMediaOption(in: group)
+        switch bridge.phase {
+        case .waitingForSelection:
+            // No native option means there is no native caption to replace.
+            // A late injected selection will call us again through the observer.
+            guard let selected else { return }
+            bridge.option = selected
+            bridge.phase = .decoding
+            primarySidecarTrackID = bridge.trackID
+            engine.selectSidecarSubtitle(url: bridge.sidecar.url, httpHeaders: bridge.sidecar.httpHeaders)
+        case .waitingForClear:
+            guard selected == nil else {
+                // A queued engine selection can finish after our clear request.
+                // Wait for the observed empty selection before suppressing it.
+                bridge.option = selected
+                bridge.item.select(nil, in: group)
+                return
+            }
+            activateNativePrimaryBridge(bridge)
+        default:
+            break
+        }
+    }
+
+    private func prepareNativePrimaryBridgeIfDecoded() {
+        guard let bridge = nativePrimaryBridge, isCurrentNativePrimaryBridge(bridge),
+              bridge.phase == .decoding, let engine = Self._sharedEngine,
+              !engine.isLoadingSubtitles else { return }
+        guard !engine.subtitleCues.isEmpty else {
+            // Keep the previously working native primary if the extra decode
+            // fails. Do not retry on every state publication or overlap it with
+            // a secondary for which we still have no primary geometry.
+            nativePrimaryBridgeFailure = (bridge.item, bridge.trackID, true)
+            endNativePrimaryBridge(restoreNative: true)
+            secondarySubtitleOverlay.isHidden = true
+            hostLog("primary sidecar unavailable for dual HLS subtitles; native primary restored")
+            return
+        }
+        guard let group = bridge.group else { return }
+        bridge.phase = .waitingForClear
+        if let option = bridge.item.currentMediaSelection.selectedMediaOption(in: group) {
+            bridge.option = option
+            engine.currentAVPlayer?.appliesMediaSelectionCriteriaAutomatically = false
+            // Wait for AVPlayer to confirm that subtitles are off before suppressing its
+            // subtitle rendering. Suppressing rendering too early can leave the last native
+            // subtitle stuck on screen.
+            bridge.item.select(nil, in: group)
+        } else {
+            // No selected option: there is no clear notification to wait for.
+            activateNativePrimaryBridge(bridge)
+        }
+    }
+
+    private func activateNativePrimaryBridge(_ bridge: NativePrimarySubtitleBridge) {
+        guard isCurrentNativePrimaryBridge(bridge), let group = bridge.group,
+              let engine = Self._sharedEngine else { return }
+        let output = AVPlayerItemLegibleOutput()
+        output.suppressesPlayerRendering = true
+        bridge.item.add(output)
+        bridge.output = output
+        bridge.phase = .overlay
+        // Keep the native subtitle track selected so Aether can use its timing callbacks to
+        // align the source clock. Render the overlays from the complete decoded cue lists
+        // so delays and paused seeks still work.
+        bridge.item.select(bridge.option, in: group)
+        resetAssState()
+        subtitleOverlay.clear()
+        applySubtitleCues(engine.subtitleCues)
+        tickSubtitles(at: engine.sourceTime)
+        secondarySubtitleOverlay.isHidden = false
+    }
+
+    private func endNativePrimaryBridge(restoreNative: Bool, retainTrackID: Bool = false) {
+        let id = primarySidecarTrackID
+        let bridge = nativePrimaryBridge
+        bridge?.groupTask?.cancel()
+        nativePrimaryBridge = nil
+        if let bridge {
+            let ownsItem = ownsEngine && Self._sharedEngine?.currentAVPlayerItem === bridge.item
+            // Off and a new primary must also clear AVMediaSelection: the
+            // engine's one-shot sidecar has no active registered ID to clear.
+            if id != nil, !restoreNative, !retainTrackID, ownsItem,
+               let group = bridge.group {
+                bridge.item.select(nil, in: group)
+            }
+            if let output = bridge.output { bridge.item.remove(output) }
+            if restoreNative, id != nil, ownsItem,
+               let group = bridge.group, let option = bridge.option {
+                // Restore the actual item immediately for PiP; the engine call
+                // below synchronizes the registered identity asynchronously.
+                bridge.item.select(option, in: group)
+            }
+        }
+        if !retainTrackID { primarySidecarTrackID = nil }
+        if id != nil || bridge != nil {
+            subtitleOverlay.clear()
+            resetAssState()
+        }
+        if restoreNative, ownsEngine, let id, let engine = Self._sharedEngine,
+           engine.subtitleTracks.contains(where: { $0.id == id }) {
+            engine.selectSubtitleTrack(index: id)
+        }
+    }
+
+    // MARK: - Secondary subtitles
+
+    func setSecondarySubtitle(embeddedTrackId: Int?, url: URL?) {
+        nativePrimaryBridgeFailure = nil
+        let selection = SecondarySubtitleSelection(embeddedTrackId: embeddedTrackId, url: url)
+        secondaryReloadSelection.remember(selection)
+        stageSecondarySelection(selection)
+    }
+
+    private func stageSecondarySelection(_ selection: SecondarySubtitleSelection) {
+        Self.sharedEngine()?.clearSecondarySubtitle()
+        secondarySubtitleOverlay.clear()
+        secondarySubtitleOverlay.stackingEnabled = selection.isEnabled
+        pendingSecondarySubtitle = selection
+        applyPendingSecondarySubtitle()
+        updateNativePrimaryBridge()
+    }
+
+    /// Reapply after an internal rebuild instead of accepting Aether's older
+    /// selection snapshot. Consumes the replay before touching the engine, so
+    /// the activity publications from our own selection cannot retrigger it.
+    private func reapplySecondaryAfterReload(force: Bool = false) {
+        guard ownsEngine, secondarySubtitlesReady,
+              let choice = secondaryReloadSelection.takeLatest(force: force)
+        else { return }
+        stageSecondarySelection(choice)
+    }
+
+    /// Aether's own primary restore runs after its async rebuild. Reapply the
+    /// latest explicit host choice rather than an earlier source snapshot.
+    private func reapplyPrimaryAfterReload(force: Bool = false) {
+        guard ownsEngine, secondarySubtitlesReady, let engine = Self._sharedEngine,
+              engine.isSessionReady,
+              let choice = primaryReloadSelection.takeLatest(force: force)
+        else { return }
+        switch choice {
+        case .off:
+            disableSubtitles()
+        case .text(let index, let url):
+            selectSubtitleTrack(index, externalUrl: url)
+        case .caption(let id):
+            setClosedCaptionTrack(id)
+        }
+    }
+
+    private func applyPendingSecondarySubtitle() {
+        guard secondarySubtitlesReady, let pending = pendingSecondarySubtitle,
+            let engine = Self.sharedEngine()
+        else { return }
+        // A track switch made while rebuilding must wait for the new source,
+        // not resolve against the outgoing file's subtitle table.
+        if secondaryReloadSelection.needsReapply && !engine.isSessionReady { return }
+
+        // The server's embedded ordinal is 1-based and excludes external
+        // subtitles and broadcast captions. A missing ordinal may still arrive
+        // from the demuxer, so only fall back to a supplied sidecar once ready.
+        let tracks = engine.subtitleTracks.filter {
+            !$0.isExternal && !Self.isClosedCaptionCodec($0.codec)
+        }
+        if let ordinal = pending.embeddedTrackId, ordinal > 0 {
+            if ordinal <= tracks.count {
+                let track = tracks[ordinal - 1]
+                engine.selectSecondarySubtitleTrack(index: track.id)
+                hostLog("secondary subtitle ordinal=\(ordinal) stream=\(track.id)")
+            } else if let url = pending.url {
+                engine.selectSecondarySidecarSubtitle(url: url)
+                hostLog("secondary subtitle ordinal=\(ordinal) unavailable; using sidecar")
+            } else {
+                return
+            }
+        } else if let url = pending.url {
+            engine.selectSecondarySidecarSubtitle(url: url)
+            hostLog("secondary subtitle sidecar selected")
+        } else {
+            engine.clearSecondarySubtitle()
+        }
+        pendingSecondarySubtitle = nil
+    }
+
+    private func resetSecondarySubtitle() {
+        endNativePrimaryBridge(restoreNative: false)
+        nativePrimaryBridgeFailure = nil
+        secondarySubtitlesReady = false
+        pendingSecondarySubtitle = nil
+        secondaryReloadSelection.reset()
+        primaryReloadSelection.reset()
+        lastReadyPrimaryActive = false
+        lastReadySecondaryActive = false
+        audioSwitchSecondarySnapshotActive = nil
+        audioSwitchPrimarySnapshotActive = nil
+        secondarySubtitleOverlay.clear()
+        secondarySubtitleOverlay.stackingEnabled = false
+        secondarySubtitleOverlay.keepsVideoComposited = false
+        secondarySubtitleOverlay.isHidden = false
+    }
+
+    func setSecondarySubtitleDelay(_ seconds: Double) {
+        secondaryDelayAdjustment = min(max(seconds, -5), 5)
+        secondarySubtitleOverlay.delaySeconds = subtitleOverlay.delaySeconds + secondaryDelayAdjustment
+        secondarySubtitleOverlay.update(currentTime: Self._sharedEngine?.sourceTime ?? 0)
+    }
+
+    func configureSecondarySubtitleStyle(
+        fontSize: Double?, verticalOffset: Double?, textColor: Int?
+    ) {
+        if let verticalOffset {
+            secondarySubtitleOverlay.secondaryVerticalAdjustment = verticalOffset
+        }
+        secondaryFontSize = fontSize
+        secondaryTextColor = textColor
+        secondarySubtitleOverlay.applySecondaryStyle(
+            from: subtitleOverlay, fontSize: fontSize, textColor: textColor)
+    }
+
     // MARK: - Subtitles (cues, ASS, style)
 
     private func applySubtitleCues(_ cues: [SubtitleCue]) {
         guard let engine = Self.sharedEngine() else { return }
-        let activeTrack = subtitleTable.first { $0.id == engine.activeSubtitleTrackIndex }
+        if let bridge = nativePrimaryBridge, bridge.phase != .overlay {
+            if !cues.isEmpty, engine.activeSubtitleTrackIndex != nil,
+               bridge.phase == .waitingForSelection {
+                // The bypass proxy can decline injection and leave the registered
+                // track on Aether's usual overlay path. Keep those complete cues.
+                endNativePrimaryBridge(restoreNative: false)
+                secondarySubtitleOverlay.isHidden = false
+            } else {
+                prepareNativePrimaryBridgeIfDecoded()
+                return
+            }
+        }
+        let activeTrack = subtitleTable.first { $0.id == effectivePrimaryTrackID(engine) }
+        subtitleOverlay.secondaryUsesTopFallback =
+            activeTrack.map { Self.isAssSubtitleCodec($0.codec) } ?? false
 
         #if canImport(Libass)
             if let track = activeTrack,
@@ -1294,23 +1932,50 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
                                 (max(0, cue.endTime - cue.startTime) * 1000).rounded()))
                     }
                 }
+                // A sidecar can finish decoding while paused, with no display tick.
+                renderAss(atSeconds: engine.sourceTime - subtitleOverlay.delaySeconds)
                 return
             }
         #endif
 
         resetAssState()
-        let events = cues.map { cue -> SubtitleEvent in
+        Self.presentSubtitleEvents(
+            Self.subtitleEvents(from: cues), in: subtitleOverlay, at: engine.sourceTime)
+    }
+
+    /// Shared by both engine cue publishers: a paused player sends no further clock tick.
+    static func presentSubtitleEvents(
+        _ events: [SubtitleEvent], in overlay: SubtitleOverlay, at sourceTime: Double
+    ) {
+        overlay.setEvents(events)
+        overlay.update(currentTime: sourceTime)
+    }
+
+    private static func subtitleEvents(from cues: [SubtitleCue]) -> [SubtitleEvent] {
+        cues.map { cue -> SubtitleEvent in
             switch cue.body {
             case .text(let text):
                 return SubtitleEvent(
                     startTime: cue.startTime, endTime: cue.endTime,
                     text: plainTextFromAssMarkup(text),
-                    bitmap: nil, bitmapWidth: 0, bitmapHeight: 0)
+                    bitmap: nil, bitmapWidth: 0, bitmapHeight: 0,
+                    alignment: cue.placement?.alignment,
+                    position: cue.placement?.position)
             case .richText(let runs):
+                let styled = runs.map { run in
+                    SubtitleStyledRun(
+                        text: plainTextFromAssMarkup(run.text),
+                        isBold: run.isBold, isItalic: run.isItalic,
+                        isUnderlined: run.isUnderlined,
+                        isStruckThrough: run.isStruckThrough)
+                }
                 return SubtitleEvent(
                     startTime: cue.startTime, endTime: cue.endTime,
-                    text: plainTextFromAssMarkup(runs.map(\.text).joined()),
-                    bitmap: nil, bitmapWidth: 0, bitmapHeight: 0)
+                    text: styled.map(\.text).joined(),
+                    bitmap: nil, bitmapWidth: 0, bitmapHeight: 0,
+                    alignment: cue.placement?.alignment,
+                    position: cue.placement?.position,
+                    styledRuns: styled)
             case .image(let image):
                 return SubtitleEvent(
                     startTime: cue.startTime, endTime: cue.endTime, text: nil,
@@ -1320,11 +1985,11 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
                     canvasSize: image.canvasSize == .zero ? nil : image.canvasSize)
             }
         }
-        subtitleOverlay.setEvents(events)
     }
 
     private func tickSubtitles(at sourceTime: Double) {
         subtitleOverlay.update(currentTime: sourceTime)
+        secondarySubtitleOverlay.update(currentTime: sourceTime)
         #if canImport(Libass)
             lastKnownSourceTime = sourceTime
             lastKnownSourceTimeHostTime = CACurrentMediaTime()
@@ -1439,6 +2104,8 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             textColor: textColor, backgroundColor: backgroundColor,
             strokeColor: strokeColor, fontSize: fontSize,
             fontWeight: fontWeight, verticalOffset: verticalOffset)
+        secondarySubtitleOverlay.applySecondaryStyle(
+            from: subtitleOverlay, fontSize: secondaryFontSize, textColor: secondaryTextColor)
         if let verticalOffset {
             baseSubtitlePosition = 100 - Int((verticalOffset * 60).rounded())
         }
@@ -1448,12 +2115,21 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
     /// while transport controls are visible.
     func setSubtitlePosition(_ pos: Int) {
         subtitleOverlay.setSubtitlePosition(basePosition: pos)
+        secondarySubtitleOverlay.setSubtitlePosition(basePosition: pos)
     }
 
     var baseSubtitlePos: Int { baseSubtitlePosition }
 
     func setSubtitleDelay(_ interval: TimeInterval) {
         subtitleOverlay.delaySeconds = interval
+        let sourceTime = Self._sharedEngine?.sourceTime ?? 0
+        subtitleOverlay.update(currentTime: sourceTime)
+        setSecondarySubtitleDelay(secondaryDelayAdjustment)
+        #if canImport(Libass)
+        if assConfiguredForTrackID != nil {
+            renderAss(atSeconds: sourceTime - interval)
+        }
+        #endif
     }
 
     /// No audio-delay control exists on the AVFoundation path.
@@ -1469,6 +2145,8 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         case .zoomToFill: engine.videoGravity = .resizeAspectFill
         case .stretch: engine.videoGravity = .resize
         }
+        subtitleOverlay.refreshVideoGeometry()
+        secondarySubtitleOverlay.refreshVideoGeometry()
     }
 
     func cycleZoomMode() {
@@ -1535,6 +2213,74 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
     var droppedFrameCount: Int? {
         Self.sharedEngine()?.liveTelemetry?.droppedFrameCount
     }
+}
+
+/// Tracks a primary subtitle selection for a specific source and player item. Discarding
+/// this state prevents queued callbacks and media-group loads from changing a newer
+/// selection.
+@MainActor
+private final class NativePrimarySubtitleBridge {
+    enum Phase { case waitingForSelection, decoding, waitingForClear, overlay }
+    let item: AVPlayerItem
+    let trackID: Int
+    let sidecar: ExternalSubtitleTrack
+    let generation: UInt64
+    var phase = Phase.waitingForSelection
+    var groupTask: Task<Void, Never>?
+    var group: AVMediaSelectionGroup?
+    var option: AVMediaSelectionOption?
+    var output: AVPlayerItemLegibleOutput?
+
+    init(item: AVPlayerItem, trackID: Int, sidecar: ExternalSubtitleTrack, generation: UInt64) {
+        self.item = item
+        self.trackID = trackID
+        self.sidecar = sidecar
+        self.generation = generation
+    }
+}
+
+
+enum PrimarySubtitleChoice: Equatable {
+    case off
+    case text(Int32, String?)
+    case caption(Int32)
+}
+
+/// Host-authoritative subtitle intent through Aether's asynchronous
+/// session-preserving reloads.
+struct SubtitleReloadState<Choice: Equatable> {
+    private(set) var latestChoice: Choice?
+    private(set) var needsReapply = false
+    private var wasActiveBeforeReload = false
+
+    mutating func remember(_ choice: Choice) { latestChoice = choice }
+
+    mutating func startSource(_ choice: Choice) {
+        self = Self()
+        latestChoice = choice
+    }
+
+    mutating func beginReload(previouslyActive: Bool) {
+        guard latestChoice != nil, !needsReapply else { return }
+        wasActiveBeforeReload = previouslyActive
+        needsReapply = true
+    }
+
+    func shouldReapplyAtReadiness(active: Bool) -> Bool {
+        needsReapply && (!wasActiveBeforeReload || active)
+    }
+
+    func shouldReapplyAfterRestoration(active: Bool, ready: Bool) -> Bool {
+        needsReapply && wasActiveBeforeReload && active && ready
+    }
+
+    mutating func takeLatest(force: Bool = false) -> Choice? {
+        guard force || needsReapply else { return nil }
+        needsReapply = false
+        return latestChoice
+    }
+
+    mutating func reset() { self = Self() }
 }
 
 #if canImport(UIKit) && canImport(Libass)

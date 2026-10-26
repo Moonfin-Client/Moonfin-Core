@@ -12,6 +12,7 @@ import '../preference/user_preferences.dart';
 import '../util/loggable_url.dart';
 import '../util/platform_detection.dart';
 
+import 'apple_secondary_subtitle_controls.dart';
 import 'device_profile_builder.dart';
 import 'dolby_vision_av1.dart';
 import 'engine_trust.dart';
@@ -25,7 +26,8 @@ import 'server_transcode_capabilities.dart';
 /// music, audiobooks and offline playback. Unlike the tvOS sibling there is
 /// no native player UI: Flutter owns the OSD and the video arrives through
 /// the `moonfin/aether_video` platform view.
-class AetherBackend implements PlayerBackend, SubtitleLoadingBackend {
+class AetherBackend with SubtitleDelayState, AppleSecondarySubtitleControls
+    implements PlayerBackend, SubtitleLoadingBackend, SecondarySubtitleBackend {
   AetherBackend(this._prefs) {
     _eventSub = _events.receiveBroadcastStream().listen(
       _handleEvent,
@@ -125,6 +127,13 @@ class AetherBackend implements PlayerBackend, SubtitleLoadingBackend {
       return null;
     }
   }
+
+  @override
+  Future<T?> invokeAppleSecondaryControl<T>(
+    String method, [
+    dynamic arguments,
+  ]) =>
+      _invoke<T>(method, arguments);
 
   @override
   bool get isSubtitleLoading => _isSubtitleLoading;
@@ -275,6 +284,7 @@ class AetherBackend implements PlayerBackend, SubtitleLoadingBackend {
         ? mediaItem
         : payload['url']?.toString() ?? '';
     if (_disposed || url.isEmpty) return;
+    updateSubtitleDelaySession(payload['subtitleDelaySessionId'] as int?);
 
     final headers = payload['headers'] is Map
         ? (payload['headers'] as Map).map(
@@ -322,6 +332,16 @@ class AetherBackend implements PlayerBackend, SubtitleLoadingBackend {
           _prefs.get(UserPreferences.subtitleMode) == SubtitleMode.none,
       'dolbyVisionBaseLayerOnly': needsBaseLayerOnlyForDolbyVisionAv1(payload),
       'externalSubtitles': payload['externalSubtitles'] ?? const [],
+      'secondarySubtitleTrackId': payload['secondarySubtitleTrackId'],
+      'secondarySubtitleUrl': payload['secondarySubtitleUrl'],
+      'subtitleDelayMs': (subtitleDelaySeconds * 1000).round(),
+      'secondarySubtitleDelayMs': payload['secondarySubtitleDelayMs'] ?? 0,
+      'secondarySubtitleOffset': PlaybackManager.clampSecondarySubtitleOffset(
+        (payload['secondarySubtitleOffset'] as num?)?.toDouble() ??
+            PlaybackManager.defaultSecondarySubtitleOffset,
+      ),
+      'secondarySubtitleFontSize': payload['secondarySubtitleFontSize'],
+      'secondarySubtitleTextColor': payload['secondarySubtitleTextColor'],
     });
   }
 
@@ -588,19 +608,6 @@ class AetherBackend implements PlayerBackend, SubtitleLoadingBackend {
   }
 
   @override
-  Future<void> setSecondarySubtitle({String? url, String? codec}) async {}
-
-  @override
-  Future<void> setSecondarySubtitleDelay(double seconds) async {}
-
-  @override
-  Future<void> configureSecondarySubtitleStyle({
-    double? fontSize,
-    double? verticalOffset,
-    int? textColor,
-  }) async {}
-
-  @override
   int? get activeSubtitleTrackIndex => _activeSubtitleTrackIndex;
 
   @override
@@ -660,6 +667,7 @@ class AetherBackend implements PlayerBackend, SubtitleLoadingBackend {
 
   @override
   Future<void> setSubtitleDelay(double seconds) async {
+    subtitleDelaySeconds = seconds;
     await _invoke<void>('setSubtitleDelay', {
       'delayMs': (seconds * 1000).round(),
     });
