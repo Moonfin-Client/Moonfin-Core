@@ -374,6 +374,7 @@ class _AdminActivityScreenState extends State<AdminActivityScreen> {
       itemBuilder: (context) => [
         PopupMenuItem<String?>(
           value: null,
+          onTap: () => _reload(() => _severityFilter = null),
           child: Text(l10n.adminActivitySeverityAll),
         ),
         for (final s in activitySeverities)
@@ -403,6 +404,7 @@ class _AdminActivityScreenState extends State<AdminActivityScreen> {
       itemBuilder: (context) => [
         PopupMenuItem<String?>(
           value: null,
+          onTap: () => _reload(() => _userFilter = null),
           child: Text(l10n.adminActivityAllUsers),
         ),
         for (final name in names)
