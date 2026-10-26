@@ -215,6 +215,17 @@ final class NativeApplePlayerChannel: NSObject, FlutterStreamHandler {
             player?.setClosedCaptionTrack((args["id"] as? NSNumber)?.int32Value ?? 0)
         case "disableSubtitleTrack":
             player?.disableSubtitles()
+        case "setSecondarySubtitle":
+            player?.setSecondarySubtitle(
+                embeddedTrackId: (args["embeddedTrackId"] as? NSNumber)?.intValue,
+                url: (args["url"] as? String).flatMap { urlFrom($0) })
+        case "setSecondarySubtitleDelay":
+            player?.setSecondarySubtitleDelay(ms(args["delayMs"]))
+        case "configureSecondarySubtitleStyle":
+            player?.configureSecondarySubtitleStyle(
+                fontSize: (args["fontSize"] as? NSNumber)?.doubleValue,
+                verticalOffset: (args["verticalOffset"] as? NSNumber)?.doubleValue,
+                textColor: (args["textColor"] as? NSNumber)?.intValue)
         case "setAudioDelay":
             player?.setAudioDelay(ms(args["delayMs"]))
         case "setSubtitleDelay":
@@ -263,6 +274,7 @@ final class NativeApplePlayerChannel: NSObject, FlutterStreamHandler {
             fontWeight: (args["fontWeight"] as? NSNumber)?.intValue,
             verticalOffset: (args["verticalOffset"] as? NSNumber)?.doubleValue)
         vc?.baseSubtitlePos = player.baseSubtitlePos
+        vc?.reapplySubtitleClearance()
     }
 
     private func present(audioOnly: Bool) {
@@ -293,6 +305,9 @@ final class NativeApplePlayerChannel: NSObject, FlutterStreamHandler {
         }
         vc.onSelectSubtitle = { [weak self] index in
             self?.send(["event": "selectSubtitle", "index": index])
+        }
+        vc.onSubtitleAction = { [weak self] action in
+            self?.send(action)
         }
         // Keeps the stored delay on the Dart side in step with what the user
         // set here. Audio delay has no control on this path, so it stays zero.
@@ -508,7 +523,9 @@ final class NativeApplePlayerChannel: NSObject, FlutterStreamHandler {
                 audioBridgeLossless: (args["audioBridgeLossless"] as? Bool) ?? false,
                 dolbyVisionBaseLayerOnly: (args["dolbyVisionBaseLayerOnly"] as? Bool) ?? false,
                 externalSubtitles: AetherPlayerWrapper.externalSubtitleTracks(
-                    from: args["externalSubtitles"])))
+                    from: args["externalSubtitles"]),
+                subtitleDelay: ((args["subtitleDelayMs"] as? NSNumber)?.doubleValue ?? 0) / 1000,
+                secondarySubtitle: AetherPlayerWrapper.secondarySubtitleConfiguration(from: args)))
         player.setForceSubtitlesDisabledOnStart(
             (args["forceSubtitlesDisabledOnStart"] as? Bool) ?? false)
         player.setReplayGainDb((args["normalizationGainDb"] as? NSNumber)?.doubleValue)
@@ -527,11 +544,6 @@ final class NativeApplePlayerChannel: NSObject, FlutterStreamHandler {
                     + "subtitleTracks=\(player.subtitleTracks.count)")
             if let speed = (args["speed"] as? NSNumber)?.floatValue, speed != 1.0 {
                 player.setRate(speed)
-            }
-            if let delayMs = (args["subtitleDelayMs"] as? NSNumber)?.doubleValue,
-                delayMs != 0
-            {
-                player.setSubtitleDelay(delayMs / 1000.0)
             }
         }
     }

@@ -11,6 +11,7 @@ import '../preference/user_preferences.dart';
 import '../util/loggable_url.dart';
 import '../util/platform_detection.dart';
 
+import 'apple_secondary_subtitle_controls.dart';
 import 'device_profile_builder.dart';
 import 'dolby_vision_av1.dart';
 import 'engine_trust.dart';
@@ -19,7 +20,9 @@ import 'letterbox_croppers.dart';
 import 'lossless_audio_bridge.dart';
 import 'server_transcode_capabilities.dart';
 
-class NativeApplePlayerBackend implements PlayerBackend {
+class NativeApplePlayerBackend
+    with SubtitleDelayState, AppleSecondarySubtitleControls
+    implements PlayerBackend, SecondarySubtitleBackend {
   NativeApplePlayerBackend(this._prefs) {
     _eventSub = _events.receiveBroadcastStream().listen(
       _handleEvent,
@@ -44,7 +47,6 @@ class NativeApplePlayerBackend implements PlayerBackend {
   double _playbackSpeed = 1.0;
   double _volume = 100.0;
   double _audioDelaySeconds = 0.0;
-  double _subtitleDelaySeconds = 0.0;
   bool _completed = false;
   SubtitleRendererMode _requestedSubtitleRendererMode =
       SubtitleRendererMode.native;
@@ -97,6 +99,13 @@ class NativeApplePlayerBackend implements PlayerBackend {
       return null;
     }
   }
+
+  @override
+  Future<T?> invokeAppleSecondaryControl<T>(
+    String method, [
+    dynamic arguments,
+  ]) =>
+      _invoke<T>(method, arguments);
 
   void _log(String message, {LogLevel level = LogLevel.debug, Object? error}) {
     if (!GetIt.instance.isRegistered<LogService>()) return;
@@ -165,6 +174,11 @@ class NativeApplePlayerBackend implements PlayerBackend {
       case 'previous':
       case 'selectAudio':
       case 'selectSubtitle':
+      case 'setSubtitleSize':
+      case 'setSubtitlePosition':
+      case 'selectSecondarySubtitle':
+      case 'setSecondarySubtitleDelay':
+      case 'configureSecondarySubtitleStyle':
       case 'setSpeed':
       case 'setBitrate':
       case 'selectChannel':
@@ -206,7 +220,7 @@ class NativeApplePlayerBackend implements PlayerBackend {
         _completedStream.add(_completed);
       case 'syncDelays':
         _audioDelaySeconds = _toInt(map['audioDelayMs']) / 1000.0;
-        _subtitleDelaySeconds = _toInt(map['subtitleDelayMs']) / 1000.0;
+        subtitleDelaySeconds = _toInt(map['subtitleDelayMs']) / 1000.0;
       case 'engineLog':
         _logEngineLine(map['line']);
       case 'playerError':
@@ -296,6 +310,7 @@ class NativeApplePlayerBackend implements PlayerBackend {
         ? mediaItem
         : payload['url']?.toString() ?? '';
     if (_disposed || url.isEmpty) return;
+    updateSubtitleDelaySession(payload['subtitleDelaySessionId'] as int?);
 
     final autoPlay = payload['autoPlay'] != false;
 
@@ -342,6 +357,15 @@ class NativeApplePlayerBackend implements PlayerBackend {
       'videoDvProfile': payload['videoDvProfile'],
       'dolbyVisionBaseLayerOnly': needsBaseLayerOnlyForDolbyVisionAv1(payload),
       'externalSubtitles': payload['externalSubtitles'] ?? const [],
+      'secondarySubtitleTrackId': payload['secondarySubtitleTrackId'],
+      'secondarySubtitleUrl': payload['secondarySubtitleUrl'],
+      'secondarySubtitleDelayMs': payload['secondarySubtitleDelayMs'] ?? 0,
+      'secondarySubtitleOffset': PlaybackManager.clampSecondarySubtitleOffset(
+        (payload['secondarySubtitleOffset'] as num?)?.toDouble() ??
+            PlaybackManager.defaultSecondarySubtitleOffset,
+      ),
+      'secondarySubtitleFontSize': payload['secondarySubtitleFontSize'],
+      'secondarySubtitleTextColor': payload['secondarySubtitleTextColor'],
       'videoFrameRate': payload['videoFrameRate'],
       'videoWidth': payload['videoWidth'],
       'videoHeight': payload['videoHeight'],
@@ -370,7 +394,7 @@ class NativeApplePlayerBackend implements PlayerBackend {
       'speed': _playbackSpeed,
       'volume': _volume,
       'audioDelayMs': (_audioDelaySeconds * 1000).round(),
-      'subtitleDelayMs': (_subtitleDelaySeconds * 1000).round(),
+      'subtitleDelayMs': (subtitleDelaySeconds * 1000).round(),
       'subtitleRendererMode': _modeToWire(_requestedSubtitleRendererMode),
       'forceSubtitlesDisabledOnStart':
           !audioOnly && _prefs.get(UserPreferences.subtitleMode) == SubtitleMode.none,
@@ -554,6 +578,7 @@ class NativeApplePlayerBackend implements PlayerBackend {
     required int skipBackMs,
     required List<Map<String, dynamic>> audioTracks,
     required List<Map<String, dynamic>> subtitleTracks,
+    Map<String, dynamic>? subtitleControls,
     String logoUrl = '',
     List<Map<String, dynamic>> streamInfoSections = const [],
     String streamInfoTitle = '',
@@ -587,6 +612,7 @@ class NativeApplePlayerBackend implements PlayerBackend {
       'skipBackMs': skipBackMs,
       'audioTracks': audioTracks,
       'subtitleTracks': subtitleTracks,
+      'subtitleControls': ?subtitleControls,
       'logoUrl': logoUrl,
       'streamInfoSections': streamInfoSections,
       'streamInfoTitle': streamInfoTitle,
@@ -783,19 +809,6 @@ class NativeApplePlayerBackend implements PlayerBackend {
   }
 
   @override
-  Future<void> setSecondarySubtitle({String? url, String? codec}) async {}
-
-  @override
-  Future<void> setSecondarySubtitleDelay(double seconds) async {}
-
-  @override
-  Future<void> configureSecondarySubtitleStyle({
-    double? fontSize,
-    double? verticalOffset,
-    int? textColor,
-  }) async {}
-
-  @override
   int? get activeSubtitleTrackIndex => _activeSubtitleTrackIndex;
 
   @override
@@ -859,7 +872,7 @@ class NativeApplePlayerBackend implements PlayerBackend {
 
   @override
   Future<void> setSubtitleDelay(double seconds) async {
-    _subtitleDelaySeconds = seconds;
+    subtitleDelaySeconds = seconds;
     await _invoke<void>('setSubtitleDelay', {
       'delayMs': (seconds * 1000).round(),
     });
