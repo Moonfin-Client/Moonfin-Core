@@ -1880,13 +1880,19 @@ class _BookReaderScreenState extends State<BookReaderScreen>
     }
 
     final key = event.logicalKey;
-    if (key == LogicalKeyboardKey.arrowRight ||
+    // The arrows follow the reading direction, like the tap zones do.
+    final rtl = _comicDirection == _ComicDirection.rtl;
+    final forwardArrow =
+        rtl ? LogicalKeyboardKey.arrowLeft : LogicalKeyboardKey.arrowRight;
+    final backArrow =
+        rtl ? LogicalKeyboardKey.arrowRight : LogicalKeyboardKey.arrowLeft;
+    if (key == forwardArrow ||
         key == LogicalKeyboardKey.pageDown ||
         key == LogicalKeyboardKey.space) {
       _nextComicPage();
       return KeyEventResult.handled;
     }
-    if (key == LogicalKeyboardKey.arrowLeft ||
+    if (key == backArrow ||
         key == LogicalKeyboardKey.pageUp) {
       _previousComicPage();
       return KeyEventResult.handled;
