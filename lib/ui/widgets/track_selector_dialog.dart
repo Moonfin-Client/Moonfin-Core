@@ -188,6 +188,7 @@ class TrackSelectorDialog {
     required String title,
     required List<TrackOption> options,
     int? selectedIndex,
+    int? dividerBefore,
     Widget? footer,
     bool useRootNavigator = true,
   }) {
@@ -204,12 +205,25 @@ class TrackSelectorDialog {
         itemCount: options.length + (footer == null ? 0 : 1),
         itemBuilder: (_, i) => i == options.length
             ? footer!
-            : _TrackRow(
-                option: options[i],
-                isSelected: selectedIndex == i,
-                autofocus:
-                    selectedIndex == i || (selectedIndex == null && i == 0),
-                onTap: () => Navigator.pop(dialogCtx, i),
+            : Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (i == dividerBefore)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Divider(
+                        height: 1,
+                        color: Colors.white.withValues(alpha: 0.08),
+                      ),
+                    ),
+                  _TrackRow(
+                    option: options[i],
+                    isSelected: selectedIndex == i,
+                    autofocus:
+                        selectedIndex == i || (selectedIndex == null && i == 0),
+                    onTap: () => Navigator.pop(dialogCtx, i),
+                  ),
+                ],
               ),
       ),
     );

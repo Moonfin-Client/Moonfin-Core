@@ -772,23 +772,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _themeMusicService.setExternalAudioActive(true);
     _segmentService = _createSegmentService();
     _zoomMode = _prefs.get(UserPreferences.playerZoomMode);
-    final savedSecondaryFontSize = _prefs.get(
-      UserPreferences.secondarySubtitleTextSize,
-    );
-    unawaited(
-      _manager.configureSecondarySubtitleStyle(
-        fontSize: savedSecondaryFontSize > 0 ? savedSecondaryFontSize : null,
-        verticalOffset: _prefs.get(
-          UserPreferences.secondarySubtitleOffsetPosition,
-        ),
-        textColor: switch (_prefs.get(
-          UserPreferences.secondarySubtitleTextColor,
-        )) {
-          -1 => null,
-          final color => color,
-        },
-      ),
-    );
+    unawaited(syncSecondarySubtitleStyle(_manager, _prefs));
     // Media3 only takes the zoom mode from this call, and the backend change it
     // listens for never fires when it was already the one playing.
     unawaited(_syncMedia3ZoomMode());
@@ -3319,6 +3303,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         ),
       );
     } else {
+      // MediaKit caches the primary font size synchronously before its first
+      // native await. Start the primary update first so the relative secondary
+      // scale is calculated against the new size rather than the previous one.
       unawaited(
         backend.configureSubtitleStyle(
           textColor: style.textColor,
@@ -3330,6 +3317,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         ),
       );
     }
+    unawaited(syncSecondarySubtitleStyle(_manager, _prefs));
   }
 
   KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
@@ -7170,86 +7158,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     );
   }
 
-  void _showSubtitleSlotSelector() {
-    final l10n = AppLocalizations.of(context);
-    final resolution = _manager.currentResolution;
-    final streams =
-        (resolution?.mediaStreams ??
-                (_manager.currentOfflineMetadata?['MediaStreams'] as List?)
-                    ?.cast<Map<String, dynamic>>() ??
-                const <Map<String, dynamic>>[])
-            .where((stream) => stream['Type'] == 'Subtitle')
-            .toList();
-
-    String trackLabel(int? index) {
-      if (index == null || index < 0) return l10n.off;
-      final stream = streams
-          .where((entry) => entry['Index'] == index)
-          .firstOrNull;
-      if (stream == null) return l10n.off;
-      final displayTitle = (stream['DisplayTitle'] as String?)?.trim();
-      if (displayTitle != null && displayTitle.isNotEmpty) return displayTitle;
-      final title = (stream['Title'] as String?)?.trim();
-      if (title != null && title.isNotEmpty) return title;
-      final language = (stream['Language'] as String?)?.trim();
-      if (language != null && language.isNotEmpty) return language;
-      return l10n.streamTypeFallback('Subtitle', streams.indexOf(stream) + 1);
-    }
-
-    unawaited(() async {
-      final result = await TrackSelectorDialog.show(
-        context,
-        title: l10n.subtitles,
-        options: [
-          TrackOption(
-            label: l10n.primarySubtitleSlot,
-            subtitle: trackLabel(_manager.subtitleStreamIndex),
-          ),
-          TrackOption(
-            label: l10n.secondarySubtitleSlot,
-            subtitle: trackLabel(_manager.secondarySubtitleStreamIndex),
-          ),
-        ],
-        useRootNavigator: false,
-      );
-      if (result == null || !mounted) return;
-      _showTrackSelector(
-        audio: false,
-        secondary: result == 1,
-        chooseSubtitleSlot: false,
-      );
-    }());
-    _showControls();
-  }
-
-  /// Only Media3 draws a secondary track, and only from an SRT or WebVTT file
-  /// other than the primary, so the subtitle button skips the slot question
-  /// when there is nothing to put in the second slot.
-  bool get _offersSecondarySubtitles {
-    if (_activeBackend is! Media3PlayerBackend) return false;
-    if (_manager.secondarySubtitleStreamIndex != null) return true;
-    final primary = _manager.subtitleStreamIndex;
-    final streams =
-        _manager.currentResolution?.mediaStreams ??
-        const <Map<String, dynamic>>[];
-    return streams.any((stream) {
-      final index = stream['Index'];
-      return stream['Type'] == 'Subtitle' &&
-          index is int &&
-          index != primary &&
-          _manager.canUseAsSecondarySubtitle(index);
-    });
-  }
-
   void _showTrackSelector({
     required bool audio,
     bool secondary = false,
-    bool chooseSubtitleSlot = true,
   }) {
-    if (!audio && chooseSubtitleSlot && _offersSecondarySubtitles) {
-      _showSubtitleSlotSelector();
-      return;
-    }
     unawaited(
       TrackPicker.show(
         context,
