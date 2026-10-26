@@ -5,7 +5,9 @@ import 'dart:js_interop_unsafe';
 import 'package:web/web.dart' as web;
 
 class WebSubtitleOverlay {
-  WebSubtitleOverlay(this._video);
+  WebSubtitleOverlay(this._video, {this.onError});
+
+  final void Function(String message)? onError;
 
   static String _localUrl(String path) {
     final base = web.document.baseURI;
@@ -57,11 +59,20 @@ class WebSubtitleOverlay {
   final web.HTMLVideoElement _video;
 
   _Jassub? _assRenderer;
+  Timer? _assFontRedraw;
   _PgsRenderer? _pgsRenderer;
+  double _delaySeconds = 0;
   bool _disposed = false;
+  int _rendererGeneration = 0;
 
   static Future<void>? _jassubLoad;
   static Future<void>? _libpgsLoad;
+
+  void _reportFailure(int generation, String format, Object error) {
+    if (!_disposed && generation == _rendererGeneration) {
+      onError?.call('$format subtitle renderer failed: $error');
+    }
+  }
 
   static bool isOverlayCodec(String? codec) =>
       _isAssCodec(codec) || _isPgsCodec(codec);
@@ -87,10 +98,17 @@ class WebSubtitleOverlay {
 
   Future<void> _showAss(String url) async {
     clear();
-    await _ensureJassub();
-    if (_disposed) return;
+    final generation = _rendererGeneration;
+    try {
+      await _ensureJassub();
+    } catch (error) {
+      _reportFailure(generation, 'ASS', error);
+      return;
+    }
+    if (_disposed || generation != _rendererGeneration) return;
     final options = JSObject()
       ..setProperty('video'.toJS, _video)
+      ..setProperty('timeOffset'.toJS, (-_delaySeconds).toJS)
       ..setProperty('subUrl'.toJS, url.toJS)
       ..setProperty('workerUrl'.toJS, '$_jassubBase/jassub-worker.js'.toJS)
       ..setProperty('wasmUrl'.toJS, '$_jassubBase/jassub-worker.wasm'.toJS)
@@ -102,9 +120,35 @@ class WebSubtitleOverlay {
       ..setProperty('fallbackFont'.toJS, 'Noto Sans'.toJS)
       ..setProperty('availableFonts'.toJS, _cjkAvailableFonts());
     try {
-      _assRenderer = _Jassub(options);
-    } catch (_) {
+      final renderer = _Jassub(options);
+      if (_disposed || generation != _rendererGeneration) {
+        renderer.destroy();
+        return;
+      }
+      _assRenderer = renderer;
+      // JASSUB reports worker readiness before asynchronously loaded fonts
+      // are registered. A paused video has no subsequent frame callback, so
+      // repaint after registration instead of trusting the initial clock tick.
+      renderer.addEventListener('fontAdded', ((JSAny? _) {
+        if (_disposed || generation != _rendererGeneration ||
+            !identical(_assRenderer, renderer) || !_video.paused) {
+          return;
+        }
+        _assFontRedraw?.cancel();
+        _assFontRedraw = Timer(const Duration(milliseconds: 100), () {
+          _assFontRedraw = null;
+          if (_disposed || generation != _rendererGeneration ||
+              !identical(_assRenderer, renderer) || !_video.paused) {
+            return;
+          }
+          _redrawAssAtCurrentTime(renderer);
+        });
+      }).toJS);
+      _redrawAssAtCurrentTime(renderer);
+    } catch (error) {
+      _assRenderer?.destroy();
       _assRenderer = null;
+      _reportFailure(generation, 'ASS', error);
     }
   }
 
@@ -136,23 +180,58 @@ class WebSubtitleOverlay {
 
   Future<void> _showPgs(String url) async {
     clear();
-    await _ensureLibpgs();
-    if (_disposed) return;
+    final generation = _rendererGeneration;
+    try {
+      await _ensureLibpgs();
+    } catch (error) {
+      _reportFailure(generation, 'PGS', error);
+      return;
+    }
+    if (_disposed || generation != _rendererGeneration) return;
     final options = JSObject()
       ..setProperty('video'.toJS, _video)
+      ..setProperty('timeOffset'.toJS, (-_delaySeconds).toJS)
       ..setProperty('subUrl'.toJS, url.toJS)
       ..setProperty('workerUrl'.toJS, '$_libpgsBase/libpgs.worker.js'.toJS);
     try {
       final ctor = _libpgsRendererCtor();
-      if (ctor != null) {
-        _pgsRenderer = ctor.callAsConstructor<_PgsRenderer>(options);
+      if (ctor == null) {
+        _reportFailure(generation, 'PGS', StateError('renderer unavailable'));
+        return;
       }
-    } catch (_) {
+      _pgsRenderer = ctor.callAsConstructor<_PgsRenderer>(options);
+      // Prime the empty timeline before loading completes so libpgs does not
+      // mistake the first active cue for one it has already drawn.
+      _pgsRenderer!.renderAtTimestamp(_video.currentTime - _delaySeconds);
+    } catch (error) {
       _pgsRenderer = null;
+      _reportFailure(generation, 'PGS', error);
     }
   }
 
+  void _redrawAssAtCurrentTime(_Jassub renderer) {
+    // Request one frame, not a predictive playback clock. JASSUB already
+    // follows video frames via requestVideoFrameCallback when available;
+    // starting its own clock here makes captions advance after video pauses.
+    renderer.setCurrentTime(true, _video.currentTime - _delaySeconds);
+  }
+
+  void setDelay(double seconds) {
+    _delaySeconds = seconds;
+    // These renderers offset their clock, so a positive delay moves it back.
+    final ass = _assRenderer;
+    if (ass != null) {
+      ass.timeOffset = -seconds;
+      _redrawAssAtCurrentTime(ass);
+    }
+    _pgsRenderer?.timeOffset = -seconds;
+  }
+
   void clear() {
+    // Ignore pending load results after this subtitle selection is cleared or replaced.
+    _rendererGeneration++;
+    _assFontRedraw?.cancel();
+    _assFontRedraw = null;
     final ass = _assRenderer;
     _assRenderer = null;
     if (ass != null) {
@@ -178,10 +257,14 @@ class WebSubtitleOverlay {
     final existing = _jassubLoad;
     if (existing != null) return existing;
     final completer = Completer<void>();
-    _jassubLoad = completer.future;
+    final load = completer.future.catchError((Object error, StackTrace stack) {
+      _jassubLoad = null;
+      Error.throwWithStackTrace(error, stack);
+    });
+    _jassubLoad = load;
     if (web.window.has('JASSUB')) {
       completer.complete();
-      return completer.future;
+      return load;
     }
     final script = web.HTMLScriptElement()
       ..type = 'module'
@@ -189,22 +272,32 @@ class WebSubtitleOverlay {
           "import JASSUB from '$_jassubBase/jassub.es.js'; window.JASSUB = JASSUB;";
     (web.document.head ?? web.document.documentElement)?.appendChild(script);
     _pollFor('JASSUB', completer);
-    return completer.future;
+    return load;
   }
 
   static Future<void> _ensureLibpgs() {
     final existing = _libpgsLoad;
     if (existing != null) return existing;
     final completer = Completer<void>();
-    _libpgsLoad = completer.future;
+    final load = completer.future.catchError((Object error, StackTrace stack) {
+      _libpgsLoad = null;
+      Error.throwWithStackTrace(error, stack);
+    });
+    _libpgsLoad = load;
     if (web.window.has('libpgs')) {
       completer.complete();
-      return completer.future;
+      return load;
     }
-    final script = web.HTMLScriptElement()..src = '$_libpgsBase/libpgs.js';
+    // The bundled libpgs file exports PgsRenderer as an ES module; loading it
+    // as a classic script fails before the constructor can be published.
+    final script = web.HTMLScriptElement()
+      ..type = 'module'
+      ..text =
+          "import { PgsRenderer } from '$_libpgsBase/libpgs.js'; "
+          "window.libpgs = { PgsRenderer };";
     (web.document.head ?? web.document.documentElement)?.appendChild(script);
     _pollFor('libpgs', completer);
-    return completer.future;
+    return load;
   }
 
   static void _pollFor(String global, Completer<void> completer) {
@@ -236,9 +329,14 @@ class WebSubtitleOverlay {
 @JS('JASSUB')
 extension type _Jassub._(JSObject _) implements JSObject {
   external factory _Jassub(JSObject options);
+  external void addEventListener(String type, JSFunction listener);
+  external set timeOffset(double seconds);
+  external void setCurrentTime(bool paused, double seconds);
   external void destroy();
 }
 
 extension type _PgsRenderer._(JSObject _) implements JSObject {
+  external set timeOffset(double seconds);
+  external void renderAtTimestamp(double seconds);
   external void dispose();
 }
