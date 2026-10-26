@@ -202,4 +202,30 @@ class SubtitleLayoutPlannerTest {
         assertEquals(-40f, shifted.bottom - normal.bottom)
         assertEquals(8f, shiftedPrimary.top - shifted.bottom)
     }
+
+    @Test
+    fun positionedCueClampsIntoItsHalfAndFindsExactCollisionBoundary() {
+        for (alignment in listOf(SubtitleLayoutPlanner.ALIGN_TOP, SubtitleLayoutPlanner.ALIGN_BOTTOM)) {
+            val topAligned = alignment == SubtitleLayoutPlanner.ALIGN_TOP
+            val primary = if (topAligned) SubtitleBox(0f, 0f, 1000f, 372f)
+                else SubtitleBox(0f, 628f, 1000f, 1000f)
+            val desired = if (topAligned) SubtitleBox(50f, 410f, 950f, 510f)
+                else SubtitleBox(50f, 490f, 950f, 590f)
+            val clamped = SubtitleLayoutPlanner.placePositionedSecondary(
+                listOf(primary), 1000, 1000, desired, alignment, 8f, 8f)!!
+            assertEquals(if (topAligned) 400f else 500f, clamped.top)
+
+            // Neither 8px step reaches the only valid position between the
+            // primary and the middle boundary.
+            val tightPrimary = if (topAligned) primary.copy(bottom = 392f)
+                else primary.copy(top = 608f)
+            val inside = if (topAligned) desired.copy(top = 390f, bottom = 490f)
+                else desired.copy(top = 510f, bottom = 610f)
+            val placed = SubtitleLayoutPlanner.placePositionedSecondary(
+                listOf(tightPrimary), 1000, 1000, inside, alignment, 8f, 8f)!!
+            assertEquals(clamped, placed)
+            assertTrue(!SubtitleLayoutPlanner.intersects(placed, tightPrimary, 8f))
+        }
+    }
+
 }

@@ -11,19 +11,78 @@ import 'package:playback_core/playback_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class _Backend extends Fake implements MediaKitPlayerBackend {
+  @override
+  double subtitleDelaySeconds = 0;
+  _Backend({
+    this.secondaryStyle = false,
+    this.secondarySize = false,
+    this.secondaryColor = false,
+  });
+  final bool secondaryStyle;
+  final bool secondarySize;
+  final bool secondaryColor;
   final audioDelays = <double>[];
+  final primaryOffsets = <double>[];
+
+  @override
+  bool get supportsSecondarySubtitleDelay => true;
+  @override
+  bool get supportsSecondarySubtitleStyle => secondaryStyle;
+  @override
+  bool get supportsSecondarySubtitleSize => secondaryStyle || secondarySize;
+  @override
+  bool get supportsSecondarySubtitleColor => secondaryStyle || secondaryColor;
+  @override
+  bool get supportsSecondarySubtitlePosition => true;
+
+  @override
+  Future<void> configureSubtitleStyle({
+    int? textColor,
+    int? backgroundColor,
+    int? strokeColor,
+    double? fontSize,
+    int? fontWeight,
+    double? verticalOffset,
+  }) async {
+    if (verticalOffset != null) primaryOffsets.add(verticalOffset);
+  }
+
+  @override
+  Future<void> configureSecondarySubtitleStyle({
+    double? fontSize,
+    double? verticalOffset,
+    int? textColor,
+  }) async {}
 
   @override
   Future<void> setAudioDelay(double seconds) async => audioDelays.add(seconds);
 }
 
 class _Manager extends PlaybackManager {
-  _Manager(this._backend);
+  _Manager(this._backend, {this.resolution, this.primaryIndex, this.secondaryIndex});
 
   final PlayerBackend _backend;
+  final StreamResolutionResult? resolution;
+  final int? primaryIndex;
+  final int? secondaryIndex;
+
+  @override
+  int? get subtitleStreamIndex => primaryIndex;
+
+  @override
+  int? get secondarySubtitleStreamIndex => secondaryIndex;
+
+  @override
+  StreamResolutionResult? get currentResolution => resolution;
 
   @override
   PlayerBackend? get backend => _backend;
+
+  @override
+  bool canUseAsSecondarySubtitle(int index) =>
+      resolution?.mediaStreams.any((stream) => stream['Index'] == index &&
+          {'srt', 'subrip', 'vtt', 'webvtt'}.contains(stream['Codec'])) ??
+      false;
 }
 
 void main() {
@@ -48,6 +107,7 @@ void main() {
     WidgetTester tester,
     PlaybackManager manager, {
     bool secondary = false,
+    bool audio = true,
     ValueChanged<bool>? onDialogOpenChanged,
   }) async {
     await tester.pumpWidget(
@@ -59,7 +119,7 @@ void main() {
             onPressed: () => TrackPicker.show(
               context,
               manager: manager,
-              audio: !secondary,
+              audio: audio && !secondary,
               secondary: secondary,
               clientFor: (_) => throw UnimplementedError(),
               onDialogOpenChanged: onDialogOpenChanged,
@@ -115,7 +175,8 @@ void main() {
   testWidgets('the secondary subtitle delay opens in the same bar', (
     tester,
   ) async {
-    final manager = PlaybackManager();
+    final manager = _Manager(_Backend());
+    addTearDown(manager.dispose);
     await openPicker(tester, manager, secondary: true);
 
     await tester.tap(find.text(l10n.subtitleDelay));
@@ -124,6 +185,18 @@ void main() {
     await tester.tap(find.byTooltip(l10n.delayPlusMs(100)));
     await tester.pump();
     expect(manager.secondarySubtitleDelaySeconds, 0.1);
+  });
+
+  testWidgets('secondary size can be exposed without a color override', (
+    tester,
+  ) async {
+    final manager = _Manager(_Backend(secondarySize: true));
+    addTearDown(manager.dispose);
+    await openPicker(tester, manager, secondary: true);
+
+    expect(find.text(l10n.subtitleSize), findsOneWidget);
+    expect(find.text(l10n.verticalOffset), findsOneWidget);
+    expect(find.text(l10n.textFillColor), findsNothing);
   });
 
   testWidgets('the delay bar starts with Reset focused for a remote', (
@@ -141,4 +214,154 @@ void main() {
     await tester.pump();
     expect(backend.audioDelays, [0.1]);
   });
+
+  testWidgets('unnamed subtitle slots show labels and keep controls above the track list', (tester) async {
+    final manager = _Manager(
+      _Backend(secondaryStyle: true)..subtitleDelaySeconds = 1.25,
+      primaryIndex: 2,
+      secondaryIndex: 3,
+      resolution: StreamResolutionResult(
+        streamUrl: 'https://host/stream',
+        mediaSourceId: 'source',
+        playMethod: StreamPlayMethod.directPlay,
+        mediaStreams: [
+          {'Type': 'Subtitle', 'Index': 2, 'Codec': 'subrip'},
+          {'Type': 'Subtitle', 'Index': 3, 'Codec': 'subrip'},
+        ],
+      ),
+    );
+    addTearDown(manager.dispose);
+    await openPicker(tester, manager, audio: false);
+    expect(find.text(l10n.streamTypeFallback('Subtitle', 1)), findsOneWidget);
+    expect(find.text(l10n.streamTypeFallback('Subtitle', 2)), findsOneWidget);
+    expect(find.text(l10n.off), findsNothing);
+    expect(find.text('+1250 ms'), findsOneWidget);
+    expect(find.text(l10n.subtitleSize), findsOneWidget);
+    expect(find.text(l10n.verticalOffset), findsOneWidget);
+    expect(find.byIcon(Icons.av_timer), findsOneWidget);
+    await tester.tap(find.text(l10n.primarySubtitleSlot));
+    await tester.pumpAndSettle();
+    expect(find.text(l10n.subtitleSize), findsNothing);
+    expect(find.text(l10n.subtitleDelay), findsNothing);
+    expect(find.textContaining(l10n.streamTypeFallback('Subtitle', 1)), findsOneWidget);
+  });
+
+  testWidgets('appearance follows available text tracks, while delay stays visible', (tester) async {
+    for (final (codecs, showAppearance) in [
+      (<String>[], false), (['pgssub'], false), (['pgs', 'dvdsub'], false),
+      (['pgssub', 'subrip'], true), (['ass', 'ssa'], true), (['webvtt'], true),
+      (['mov_text'], true), (['tx3g'], true),
+    ]) {
+      for (final method in [StreamPlayMethod.directPlay, StreamPlayMethod.transcode]) {
+        for (final selected in [-1, 2]) {
+          final manager = _Manager(
+            _Backend()..subtitleDelaySeconds = 1.25,
+            primaryIndex: selected,
+            resolution: StreamResolutionResult(
+              streamUrl: 'https://host/stream', mediaSourceId: 'source', playMethod: method,
+              mediaStreams: [for (var i = 0; i < codecs.length; i++)
+                {'Type': 'Subtitle', 'Index': i + 2, 'Codec': codecs[i]}],
+            ),
+          );
+          addTearDown(manager.dispose);
+          await openPicker(tester, manager, audio: false);
+          expect(find.text(l10n.subtitleSize), showAppearance ? findsOneWidget : findsNothing);
+          expect(find.text(l10n.verticalOffset), showAppearance ? findsOneWidget : findsNothing);
+          expect(find.text(l10n.subtitleDelay), findsOneWidget);
+          expect(find.text('+1250 ms'), findsOneWidget);
+          if (!showAppearance) expect(find.text(l10n.secondarySubtitleSlot), findsNothing);
+          Navigator.of(tester.element(find.byType(Dialog))).pop();
+          await tester.pumpAndSettle();
+        }
+      }
+    }
+  });
+
+  testWidgets('primary offset uses 2% steps and stops at 36%', (tester) async {
+    final prefs = GetIt.instance<UserPreferences>();
+    final backend = _Backend();
+    final manager = _Manager(
+      backend,
+      primaryIndex: 2,
+      resolution: StreamResolutionResult(
+        streamUrl: 'https://host/stream',
+        mediaSourceId: 'source',
+        playMethod: StreamPlayMethod.directPlay,
+        mediaStreams: [
+          {'Type': 'Subtitle', 'Index': 2, 'Codec': 'subrip'},
+        ],
+      ),
+    );
+    addTearDown(manager.dispose);
+    await openPicker(tester, manager, audio: false);
+    final increase = find.byTooltip(l10n.increaseValue(l10n.verticalOffset));
+    for (var i = 0; i < 17; i++) {
+      await tester.tap(increase);
+      await tester.pumpAndSettle();
+    }
+    expect(prefs.get(UserPreferences.subtitlesOffsetPosition), 0.36);
+    expect(backend.primaryOffsets.last, 0.36);
+    expect(find.text('36%'), findsOneWidget);
+  });
+
+  testWidgets('legacy primary offset snaps to the 2% grid on first edit', (
+    tester,
+  ) async {
+    final prefs = GetIt.instance<UserPreferences>();
+    final backend = _Backend();
+    final manager = _Manager(
+      backend,
+      primaryIndex: 2,
+      resolution: StreamResolutionResult(
+        streamUrl: 'https://host/stream',
+        mediaSourceId: 'source',
+        playMethod: StreamPlayMethod.directPlay,
+        mediaStreams: [
+          {'Type': 'Subtitle', 'Index': 2, 'Codec': 'subrip'},
+        ],
+      ),
+    );
+    addTearDown(manager.dispose);
+
+    await prefs.set(UserPreferences.subtitlesOffsetPosition, 0.05);
+    await openPicker(tester, manager, audio: false);
+    expect(find.text('5%'), findsOneWidget);
+    await tester.tap(find.byTooltip(l10n.increaseValue(l10n.verticalOffset)));
+    await tester.pumpAndSettle();
+    expect(prefs.get(UserPreferences.subtitlesOffsetPosition), 0.06);
+
+    Navigator.of(tester.element(find.byType(Dialog))).pop();
+    await tester.pumpAndSettle();
+    await prefs.set(UserPreferences.subtitlesOffsetPosition, 0.50);
+    await openPicker(tester, manager, audio: false);
+    expect(find.text('36%'), findsOneWidget);
+    await tester.tap(find.byTooltip(l10n.decreaseValue(l10n.verticalOffset)));
+    await tester.pumpAndSettle();
+    expect(prefs.get(UserPreferences.subtitlesOffsetPosition), 0.36);
+  });
+
+  testWidgets('secondary offset runs from Default through +6% in 2% steps', (
+    tester,
+  ) async {
+    final prefs = GetIt.instance<UserPreferences>();
+    final manager = _Manager(_Backend(secondaryStyle: true));
+    addTearDown(manager.dispose);
+    await openPicker(tester, manager, secondary: true);
+    for (final (increase, expected) in [
+      (false, 0), (true, 2), (true, 4), (true, 6), (true, 6),
+    ]) {
+      final tooltip = increase ? l10n.increaseValue(l10n.verticalOffset)
+          : l10n.decreaseValue(l10n.verticalOffset);
+      await tester.tap(find.byTooltip(tooltip));
+      await tester.pumpAndSettle();
+      expect(prefs.get(UserPreferences.secondarySubtitleOffsetPosition), expected / 100);
+      expect(manager.secondarySubtitleOffset, expected / 100);
+      if (expected == 0) {
+        expect(find.text(l10n.defaultLabel), findsWidgets);
+      } else {
+        expect(find.text('+$expected%'), findsOneWidget);
+      }
+    }
+  });
+
 }

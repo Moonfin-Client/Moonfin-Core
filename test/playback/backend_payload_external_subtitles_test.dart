@@ -18,8 +18,10 @@ const _transcodedDownloadStreams = <Map<String, dynamic>>[
   },
 ];
 
-class _CapturingBackend extends Fake implements PlayerBackend {
+class _CapturingBackend extends Fake
+    implements PlayerBackend, SecondarySubtitleBackend {
   Map<String, dynamic>? payload;
+  String? selectedSecondaryLanguage;
 
   @override
   Duration get position => Duration.zero;
@@ -90,6 +92,23 @@ class _CapturingBackend extends Fake implements PlayerBackend {
   @override
   Future<void> setAudioTrack(int trackId) async {}
   @override
+  Future<void> setSecondarySubtitle({
+    String? url,
+    String? codec,
+    String? language,
+    int? embeddedTrackId,
+  }) async {
+    selectedSecondaryLanguage = language;
+  }
+  @override
+  Future<void> setSecondarySubtitleDelay(double seconds) async {}
+  @override
+  Future<void> configureSecondarySubtitleStyle({
+    double? fontSize,
+    double? verticalOffset,
+    int? textColor,
+  }) async {}
+  @override
   Future<void> addExternalSubtitle(
     String url, {
     String? title,
@@ -103,7 +122,13 @@ class _CapturingBackend extends Fake implements PlayerBackend {
 }
 
 class _StubResolver extends MediaStreamResolver {
-  _StubResolver({required this.mediaStreams, required this.externalSubtitles});
+  _StubResolver({
+    required this.mediaStreams,
+    required this.externalSubtitles,
+    this.playMethod = StreamPlayMethod.directPlay,
+  });
+
+  final StreamPlayMethod playMethod;
 
   final List<Map<String, dynamic>> mediaStreams;
   final List<ExternalSubtitle> externalSubtitles;
@@ -124,7 +149,7 @@ class _StubResolver extends MediaStreamResolver {
     streamUrl: '/downloads/movie.mp4',
     mediaSourceId: 'source-1',
     playSessionId: 'session-1',
-    playMethod: StreamPlayMethod.directPlay,
+    playMethod: playMethod,
     mediaStreams: mediaStreams,
     externalSubtitles: externalSubtitles,
     isLocalMedia: true,
@@ -135,19 +160,26 @@ Future<Map<String, dynamic>> _payloadFor({
   required List<Map<String, dynamic>> mediaStreams,
   required List<ExternalSubtitle> externalSubtitles,
   int? subtitleStreamIndex,
+  int? secondarySubtitleStreamIndex,
+  Future<void> Function(PlaybackManager, _CapturingBackend)? onStarted,
+  StreamPlayMethod playMethod = StreamPlayMethod.directPlay,
 }) async {
   final backend = _CapturingBackend();
   final manager = PlaybackManager()
+    ..secondarySubtitleTrackSelector = ((_, _) => secondarySubtitleStreamIndex)
     ..setBackend(backend)
     ..setResolver(
       _StubResolver(
         mediaStreams: mediaStreams,
         externalSubtitles: externalSubtitles,
+        playMethod: playMethod,
       ),
     );
   await manager.playItems(<dynamic>[
     <String, dynamic>{'Id': 'movie', 'Type': 'Movie'},
   ], subtitleStreamIndex: subtitleStreamIndex);
+  await onStarted?.call(manager, backend);
+  manager.dispose();
   return backend.payload!;
 }
 
@@ -156,6 +188,32 @@ List<Map<String, dynamic>> _declared(Map<String, dynamic> payload) =>
         .cast<Map<String, dynamic>>();
 
 void main() {
+  for (final remux in [false, true]) {
+    test('secondary startup uses ${remux ? "server file" : "embedded ordinal"} and retains language', () async {
+      const url = 'https://server/sub.srt';
+      final payload = await _payloadFor(
+        mediaStreams: const [
+          {'Type': 'Video', 'Index': 0},
+          {'Type': 'Subtitle', 'Index': 2, 'Codec': 'srt', 'IsExternal': true},
+          {'Type': 'Subtitle', 'Index': 4, 'Codec': 'subrip'},
+          {'Type': 'Subtitle', 'Index': 7, 'Codec': 'subrip', 'Language': 'fr-CA'},
+        ],
+        externalSubtitles: remux ? const [ExternalSubtitle(deliveryUrl: url, codec: 'subrip', streamIndex: 7)] : const [],
+        subtitleStreamIndex: remux ? -1 : 4,
+        secondarySubtitleStreamIndex: 7,
+        playMethod: remux ? StreamPlayMethod.directStream : StreamPlayMethod.directPlay,
+        onStarted: (manager, backend) async {
+          await manager.changeSecondarySubtitleTrack(null);
+          await manager.changeSecondarySubtitleTrack(7);
+          expect(backend.selectedSecondaryLanguage, 'fr-CA');
+        },
+      );
+      expect(payload['secondarySubtitleTrackId'], remux ? null : 2);
+      expect(payload['secondarySubtitleUrl'], remux ? url : null);
+      expect(payload['secondarySubtitleLanguage'], remux ? 'fr-CA' : null);
+    });
+  }
+
   test('a transcoded download declares its sidecars with the source', () async {
     final payload = await _payloadFor(
       mediaStreams: _transcodedDownloadStreams,
@@ -331,4 +389,5 @@ void main() {
 
     expect(payload.containsKey('selectedExternalSubtitleUrl'), isFalse);
   });
+
 }
