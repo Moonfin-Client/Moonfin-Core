@@ -4293,6 +4293,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get secondarySubtitleTrack => 'Piste de sous-titres secondaire';
 
   @override
+  String get secondaryDelayAdjustment => 'Secondary Delay Adjustment';
+
+  @override
   String decreaseValue(String setting) {
     return 'Diminuer : $setting';
   }

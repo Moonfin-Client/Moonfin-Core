@@ -4428,6 +4428,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get secondarySubtitleTrack => 'Ścieżka dodatkowych napisów';
 
   @override
+  String get secondaryDelayAdjustment => 'Secondary Delay Adjustment';
+
+  @override
   String decreaseValue(String setting) {
     return 'Zmniejsz: $setting';
   }

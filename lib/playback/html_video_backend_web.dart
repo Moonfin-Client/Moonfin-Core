@@ -175,8 +175,12 @@ class HtmlVideoBackend extends PlayerBackend
   double _playbackSpeed = 1.0;
   double _volume = 100.0;
   bool _disposed = false;
+  int _sourceGeneration = 0;
   int _playbackGeneration = 0;
   bool _tracksKnown = false;
+
+  bool _isCurrentSource(int generation) =>
+      !_disposed && generation == _sourceGeneration;
 
   bool _isCurrentPlaybackRequest(int generation) =>
       !_disposed && generation == _playbackGeneration;
@@ -491,6 +495,7 @@ class HtmlVideoBackend extends PlayerBackend
         : payload['url']?.toString() ?? '';
     final container = payload['container']?.toString();
     if (url.isEmpty) return;
+    final source = ++_sourceGeneration;
     final generation = ++_playbackGeneration;
     updateSubtitleDelaySession(payload['subtitleDelaySessionId'] as int?);
 
@@ -501,50 +506,54 @@ class HtmlVideoBackend extends PlayerBackend
     _completedStream.add(false);
 
     await _applySource(url, container: container, startPosition: startPosition);
-    if (!_isCurrentPlaybackRequest(generation)) return;
+    if (!_isCurrentSource(source)) return;
     // Style the first cue even if it arrives before the initial viewport poll.
     _applySubtitleAppearance();
     await setSubtitleDelay(subtitleDelaySeconds);
-    if (!_isCurrentPlaybackRequest(generation)) return;
+    if (!_isCurrentSource(source)) return;
     await setSecondarySubtitleDelay(
       ((payload['secondarySubtitleDelayMs'] as num?) ?? 0) / 1000,
     );
-    if (!_isCurrentPlaybackRequest(generation)) return;
+    if (!_isCurrentSource(source)) return;
     await configureSecondarySubtitleStyle(
       fontSize: (payload['secondarySubtitleFontSize'] as num?)?.toDouble(),
       verticalOffset: (payload['secondarySubtitleOffset'] as num?)?.toDouble(),
       textColor: (payload['secondarySubtitleTextColor'] as num?)?.toInt(),
     );
-    if (!_isCurrentPlaybackRequest(generation)) return;
+    if (!_isCurrentSource(source)) return;
     await setSecondarySubtitle(
       url: payload['secondarySubtitleUrl'] as String?,
       codec: payload['secondarySubtitleCodec'] as String?,
       language: payload['secondarySubtitleLanguage'] as String?,
     );
-    if (!_isCurrentPlaybackRequest(generation)) return;
+    if (!_isCurrentSource(source)) return;
 
-    if (autoPlay) {
-      _setBuffering(true);
-      try {
-        await _videoElement.play().toDart;
-        if (!_isCurrentPlaybackRequest(generation)) return;
-        _setPlaying(true);
-      } catch (error) {
-        if (!_isCurrentPlaybackRequest(generation)) return;
+    // A pause or resume since this started has already settled whether it
+    // plays, but the new source still needs polling either way.
+    if (_isCurrentPlaybackRequest(generation)) {
+      if (autoPlay) {
+        _setBuffering(true);
+        try {
+          await _videoElement.play().toDart;
+          if (_isCurrentPlaybackRequest(generation)) _setPlaying(true);
+        } catch (error) {
+          if (_isCurrentPlaybackRequest(generation)) {
+            _setPlaying(false);
+            _errorStream.add(<String, dynamic>{
+              'event': 'playerError',
+              'message': error.toString(),
+            });
+          }
+        } finally {
+          if (_isCurrentPlaybackRequest(generation)) _setBuffering(false);
+        }
+      } else {
         _setPlaying(false);
-        _errorStream.add(<String, dynamic>{
-          'event': 'playerError',
-          'message': error.toString(),
-        });
-      } finally {
-        if (_isCurrentPlaybackRequest(generation)) _setBuffering(false);
+        _setBuffering(false);
       }
-    } else {
-      _setPlaying(false);
-      _setBuffering(false);
     }
 
-    if (_isCurrentPlaybackRequest(generation)) _startStatePolling();
+    if (_isCurrentSource(source)) _startStatePolling();
   }
 
   @override
@@ -578,6 +587,7 @@ class HtmlVideoBackend extends PlayerBackend
   @override
   Future<void> stop() async {
     if (_disposed) return;
+    ++_sourceGeneration;
     ++_playbackGeneration;
     _videoElement.pause();
     _detachHlsJsSource();
@@ -862,7 +872,9 @@ class HtmlVideoBackend extends PlayerBackend
       }
       if (preferredUrl != url && response?.ok != true) {
         if (_disposed || generation != _secondaryGeneration ||
-            abort.signal.aborted) return;
+            abort.signal.aborted) {
+          return;
+        }
         response = await web.window
             .fetch(url.toJS, web.RequestInit(signal: abort.signal))
             .toDart;

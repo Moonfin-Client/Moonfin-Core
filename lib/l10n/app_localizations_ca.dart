@@ -4291,6 +4291,9 @@ class AppLocalizationsCa extends AppLocalizations {
   String get secondarySubtitleTrack => 'Pista de subtítols secundària';
 
   @override
+  String get secondaryDelayAdjustment => 'Secondary Delay Adjustment';
+
+  @override
   String decreaseValue(String setting) {
     return 'Redueix $setting';
   }

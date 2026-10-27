@@ -4242,13 +4242,16 @@ class AppLocalizationsId extends AppLocalizations {
   String get subtitleSize => 'Ukuran Subtitle';
 
   @override
-  String get primarySubtitleSlot => 'Primary';
+  String get primarySubtitleSlot => 'Primary Track';
 
   @override
-  String get secondarySubtitleSlot => 'Secondary';
+  String get secondarySubtitleSlot => 'Secondary Track';
 
   @override
-  String get secondarySubtitleTrack => 'Secondary Subtitle Track';
+  String get secondarySubtitleTrack => 'Secondary Subtitles';
+
+  @override
+  String get secondaryDelayAdjustment => 'Secondary Delay Adjustment';
 
   @override
   String decreaseValue(String setting) {

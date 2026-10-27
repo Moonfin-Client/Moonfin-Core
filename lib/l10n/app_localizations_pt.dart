@@ -4252,13 +4252,16 @@ class AppLocalizationsPt extends AppLocalizations {
   String get subtitleSize => 'Tamanho da Legenda';
 
   @override
-  String get primarySubtitleSlot => 'Primary';
+  String get primarySubtitleSlot => 'Legenda principal';
 
   @override
-  String get secondarySubtitleSlot => 'Secondary';
+  String get secondarySubtitleSlot => 'Legenda secundária';
 
   @override
-  String get secondarySubtitleTrack => 'Secondary Subtitle Track';
+  String get secondarySubtitleTrack => 'Faixa de legenda secundária';
+
+  @override
+  String get secondaryDelayAdjustment => 'Secondary Delay Adjustment';
 
   @override
   String decreaseValue(String setting) {

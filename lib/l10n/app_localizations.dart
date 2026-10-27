@@ -7495,13 +7495,13 @@ abstract class AppLocalizations {
   /// Label for the primary subtitle selection slot
   ///
   /// In en, this message translates to:
-  /// **'Primary'**
+  /// **'Primary Track'**
   String get primarySubtitleSlot;
 
   /// Label for the secondary subtitle selection slot
   ///
   /// In en, this message translates to:
-  /// **'Secondary'**
+  /// **'Secondary Track'**
   String get secondarySubtitleSlot;
 
   /// Title of the picker for the secondary subtitle track
@@ -7514,7 +7514,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Secondary Delay Adjustment'**
-  String get secondaryDelayAdjustment => 'Secondary Delay Adjustment';
+  String get secondaryDelayAdjustment;
 
   /// Tooltip for the button that lowers a setting's value
   ///

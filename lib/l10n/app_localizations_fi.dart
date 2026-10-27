@@ -4271,6 +4271,9 @@ class AppLocalizationsFi extends AppLocalizations {
   String get secondarySubtitleTrack => 'Toissijainen tekstitysraita';
 
   @override
+  String get secondaryDelayAdjustment => 'Secondary Delay Adjustment';
+
+  @override
   String decreaseValue(String setting) {
     return 'Pienennä $setting';
   }

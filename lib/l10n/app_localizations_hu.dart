@@ -4277,6 +4277,9 @@ class AppLocalizationsHu extends AppLocalizations {
   String get secondarySubtitleTrack => 'Másodlagos feliratsáv';
 
   @override
+  String get secondaryDelayAdjustment => 'Secondary Delay Adjustment';
+
+  @override
   String decreaseValue(String setting) {
     return '$setting csökkentése';
   }

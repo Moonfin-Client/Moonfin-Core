@@ -4168,6 +4168,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get secondarySubtitleTrack => '보조 자막 트랙';
 
   @override
+  String get secondaryDelayAdjustment => 'Secondary Delay Adjustment';
+
+  @override
   String decreaseValue(String setting) {
     return '$setting 줄이기';
   }
