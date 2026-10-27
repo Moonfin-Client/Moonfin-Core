@@ -190,14 +190,18 @@ void main() {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
-            body: MinimalistDetailContent(
-              viewModel: vm,
-              prefs: prefs,
-              backdropUrl: ValueNotifier<String?>(null),
-              selectedMediaSourceId: null,
-              onSelectedMediaSourceChanged: (_) {},
-              actionsExpanded: false,
-              onActionsExpandedChanged: (_) {},
+            // The detail screen rebuilds this whenever either one changes.
+            body: ListenableBuilder(
+              listenable: Listenable.merge([vm, prefs]),
+              builder: (context, _) => MinimalistDetailContent(
+                viewModel: vm,
+                prefs: prefs,
+                backdropUrl: ValueNotifier<String?>(null),
+                selectedMediaSourceId: null,
+                onSelectedMediaSourceChanged: (_) {},
+                actionsExpanded: false,
+                onActionsExpandedChanged: (_) {},
+              ),
             ),
           ),
         ),
@@ -452,6 +456,44 @@ void main() {
     ).thenAnswer((_) async => {'Items': episodes});
     return vm;
   }
+
+  testWidgets('the Specials tab puts specials in number order', (
+    tester,
+  ) async {
+    // The server's order, with each special where it aired.
+    final vm = viewModel('Series');
+    Map<String, dynamic> episode(int season, int number) => {
+      'Id': 's${season}e$number',
+      'Name': 'Episode $number',
+      'Type': 'Episode',
+      'IndexNumber': number,
+      'ParentIndexNumber': season,
+      'SeriesId': 'item-1',
+    };
+    when(
+      () => itemsApi.getEpisodes(
+        any(),
+        seasonId: any(named: 'seasonId'),
+        fields: any(named: 'fields'),
+      ),
+    ).thenAnswer(
+      (_) async => {
+        'Items': [episode(1, 1), episode(0, 2), episode(1, 2), episode(0, 1)],
+      },
+    );
+
+    await pumpContent(tester, vm);
+    await tester.pump(const Duration(milliseconds: 500));
+
+    final rail = tester.widget<LockedFocusRow<AggregatedItem>>(
+      find.byType(LockedFocusRow<AggregatedItem>),
+    );
+    expect(rail.items.map((e) => e.id), ['s0e1', 's0e2']);
+    expect(
+      vm.seriesEpisodes.map((e) => e.id),
+      ['s1e1', 's0e2', 's1e2', 's0e1'],
+    );
+  });
 
   testWidgets('one season hides the tabs and still shows the episodes', (
     tester,

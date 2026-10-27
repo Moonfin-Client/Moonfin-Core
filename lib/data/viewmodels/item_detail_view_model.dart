@@ -313,8 +313,8 @@ class ItemDetailViewModel extends ChangeNotifier {
   /// turns true on a fetch that worked, because a failed one is tried again.
   bool get seriesEpisodesLoaded => _seriesEpisodesLoaded;
 
-  /// All episodes of a Series across every season, sorted in season and episode
-  /// order. Empty until [loadAllSeriesEpisodes] completes.
+  /// All episodes of a Series across every season, in the server's
+  /// season/episode order. Empty until [loadAllSeriesEpisodes] completes.
   List<AggregatedItem> get seriesEpisodes => _seriesEpisodes;
 
   /// Compares two episodes by season ([AggregatedItem.parentIndexNumber]),
@@ -1130,11 +1130,10 @@ class ItemDetailViewModel extends ChangeNotifier {
           seasonId: seasonId,
           fields: _episodeOverviewFields,
         );
-        final items = _mapItems(
+        return _mapItems(
           (data['Items'] as List?) ?? [],
           fallbackRating: _item?.officialRating,
         );
-        return items..sort(compareEpisodes);
       }
 
       var seasonId = requestedSeasonId;
@@ -1181,7 +1180,7 @@ class ItemDetailViewModel extends ChangeNotifier {
       _seriesEpisodes = _mapItems(
         items,
         fallbackRating: _item?.officialRating,
-      )..sort(compareEpisodes);
+      );
       _seriesEpisodesLoaded = true;
       notifyListeners();
     } catch (_) {
@@ -1862,11 +1861,10 @@ class ItemDetailViewModel extends ChangeNotifier {
           batch.map((series) async {
             try {
               final epData = await _client.itemsApi.getEpisodes(series.id);
-              final items = _mapItems(
+              return _mapItems(
                 (epData['Items'] as List?) ?? [],
                 fallbackRating: _item?.officialRating,
               );
-              return items..sort(compareEpisodes);
             } catch (_) {
               return const <AggregatedItem>[];
             }

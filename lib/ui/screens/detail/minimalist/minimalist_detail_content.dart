@@ -2,23 +2,22 @@ import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:moonfin_design/moonfin_design.dart';
+import 'package:playback_core/playback_core.dart';
 
 import '../../../../data/models/aggregated_item.dart';
 import '../../../../data/viewmodels/item_detail_view_model.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../preference/detail_section_layout.dart';
 import '../../../../preference/user_preferences.dart';
+import '../../../navigation/destinations.dart';
+import '../../../navigation/playback_launcher.dart';
 import '../../../widgets/fullscreen_backdrop_switcher.dart';
 import '../../../widgets/live_tv/incomplete_recording.dart';
 import '../../../widgets/logo_view.dart';
 import '../../../widgets/offline_aware_image.dart';
 import '../../../widgets/rating_display.dart';
-import 'package:get_it/get_it.dart';
-import 'package:playback_core/playback_core.dart';
-
-import '../../../../l10n/app_localizations.dart';
-import '../../../navigation/destinations.dart';
-import '../../../navigation/playback_launcher.dart';
 import '../detail_layout_metrics.dart';
 import '../item_detail_screen.dart';
 import '../modern/modern_detail_content.dart';
@@ -81,35 +80,9 @@ class _MinimalistDetailContentState extends State<MinimalistDetailContent> {
   ItemDetailViewModel get _vm => widget.viewModel;
 
   @override
-  void initState() {
-    super.initState();
-    widget.viewModel.addListener(_onVmChanged);
-    widget.prefs.addListener(_onVmChanged);
-  }
-
-  @override
-  void didUpdateWidget(MinimalistDetailContent oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.viewModel != widget.viewModel) {
-      oldWidget.viewModel.removeListener(_onVmChanged);
-      widget.viewModel.addListener(_onVmChanged);
-    }
-    if (oldWidget.prefs != widget.prefs) {
-      oldWidget.prefs.removeListener(_onVmChanged);
-      widget.prefs.addListener(_onVmChanged);
-    }
-  }
-
-  @override
   void dispose() {
-    widget.viewModel.removeListener(_onVmChanged);
-    widget.prefs.removeListener(_onVmChanged);
     _episodesFocusNode.dispose();
     super.dispose();
-  }
-
-  void _onVmChanged() {
-    if (mounted) setState(() {});
   }
 
   @override
@@ -423,10 +396,8 @@ class _MinimalistDetailContentState extends State<MinimalistDetailContent> {
     if (item == null) return;
 
     SpotlightModalContent buildContent() {
-      final features = List<AggregatedItem>.from(_vm.features)
-        ..sort(ItemDetailViewModel.compareFeatures);
       final byCategory = <String, List<AggregatedItem>>{};
-      for (final extra in features) {
+      for (final extra in _vm.features) {
         byCategory.putIfAbsent(getExtraCategory(extra), () => []).add(extra);
       }
       final orderedCategories = extraCategoriesOrder

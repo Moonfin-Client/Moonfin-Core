@@ -115,74 +115,60 @@ void main() {
     });
   });
 
-  group('loadAllSeriesEpisodes ordering', () {
-    test('orders unordered server payload by season and episode', () async {
+  // Jellyfin puts each special in the season it aired in. Without a Next Up,
+  // the detail screens pick the first unwatched episode in this order, so the
+  // view model keeps it as sent.
+  group('episode lists keep the server order', () {
+    final airedOrder = [
+      {'Id': 's1e1', 'Type': 'Episode', 'ParentIndexNumber': 1, 'IndexNumber': 1},
+      {'Id': 's0e2', 'Type': 'Episode', 'ParentIndexNumber': 0, 'IndexNumber': 2},
+      {'Id': 's1e2', 'Type': 'Episode', 'ParentIndexNumber': 1, 'IndexNumber': 2},
+      {'Id': 's0e1', 'Type': 'Episode', 'ParentIndexNumber': 0, 'IndexNumber': 1},
+    ];
+    const expected = ['s1e1', 's0e2', 's1e2', 's0e1'];
+
+    test('for every episode of a series', () async {
       when(
         () => itemsApi.getItem('series-1', mediaSourceId: any(named: 'mediaSourceId')),
       ).thenAnswer((_) async => {'Id': 'series-1', 'Type': 'Series'});
-
-      when(() => itemsApi.getEpisodes('series-1', fields: any(named: 'fields'))).thenAnswer(
-        (_) async => {
-          'Items': [
-            {'Id': 's0e2', 'Type': 'Episode', 'ParentIndexNumber': 0, 'IndexNumber': 2, 'Name': 'Behind the Scenes'},
-            {'Id': 's0e1', 'Type': 'Episode', 'ParentIndexNumber': 0, 'IndexNumber': 1, 'Name': 'Premiere in Normandy'},
-            {'Id': 's1e2', 'Type': 'Episode', 'ParentIndexNumber': 1, 'IndexNumber': 2, 'Name': 'Day of Days'},
-            {'Id': 's1e1', 'Type': 'Episode', 'ParentIndexNumber': 1, 'IndexNumber': 1, 'Name': 'Currahee'},
-          ],
-        },
-      );
+      when(
+        () => itemsApi.getEpisodes('series-1', fields: any(named: 'fields')),
+      ).thenAnswer((_) async => {'Items': airedOrder});
 
       final vm = createViewModel('series-1');
       await vm.load();
       await vm.loadAllSeriesEpisodes();
 
-      expect(
-        vm.seriesEpisodes.map((e) => e.id).toList(),
-        ['s0e1', 's0e2', 's1e1', 's1e2'],
-      );
+      expect(vm.seriesEpisodes.map((e) => e.id), expected);
     });
-  });
 
-  group('_loadEpisodes ordering for Season', () {
-    test('orders unordered season episodes by episode number', () async {
+    test('for one season', () async {
       when(
-        () => itemsApi.getItem('season-0', mediaSourceId: any(named: 'mediaSourceId')),
+        () => itemsApi.getItem('season-1', mediaSourceId: any(named: 'mediaSourceId')),
       ).thenAnswer(
         (_) async => {
-          'Id': 'season-0',
+          'Id': 'season-1',
           'Type': 'Season',
           'SeriesId': 'series-1',
-          'IndexNumber': 0,
+          'IndexNumber': 1,
         },
       );
-
       when(
         () => itemsApi.getEpisodes(
           'series-1',
-          seasonId: 'season-0',
+          seasonId: 'season-1',
           fields: any(named: 'fields'),
         ),
-      ).thenAnswer(
-        (_) async => {
-          'Items': [
-            {'Id': 's0e2', 'Type': 'Episode', 'ParentIndexNumber': 0, 'IndexNumber': 2},
-            {'Id': 's0e1', 'Type': 'Episode', 'ParentIndexNumber': 0, 'IndexNumber': 1},
-            {'Id': 's0e3', 'Type': 'Episode', 'ParentIndexNumber': 0, 'IndexNumber': 3},
-          ],
-        },
-      );
+      ).thenAnswer((_) async => {'Items': airedOrder});
 
-      final vm = createViewModel('season-0');
+      final vm = createViewModel('season-1');
       await vm.load();
 
       for (var i = 0; i < 100 && vm.episodes.isEmpty; i++) {
         await Future<void>.delayed(const Duration(milliseconds: 5));
       }
 
-      expect(
-        vm.episodes.map((e) => e.id).toList(),
-        ['s0e1', 's0e2', 's0e3'],
-      );
+      expect(vm.episodes.map((e) => e.id), expected);
     });
   });
 
