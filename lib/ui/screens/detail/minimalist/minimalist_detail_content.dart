@@ -364,8 +364,10 @@ class _MinimalistDetailContentState extends State<MinimalistDetailContent> {
   }) {
     final item = _vm.item;
     final hasEpisodes = item != null && _hasEpisodes(item);
+    // Kids Mode keeps to its own fixed set of buttons.
     final showExtras =
         !hasEpisodes &&
+        !widget.prefs.get(UserPreferences.kidsModeEnabled) &&
         DetailSectionVisibility.of(
           widget.prefs,
         ).shows(DetailSection.extras) &&

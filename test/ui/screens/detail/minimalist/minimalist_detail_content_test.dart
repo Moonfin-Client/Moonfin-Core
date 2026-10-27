@@ -317,6 +317,20 @@ void main() {
     expect(find.byIcon(Icons.video_library_outlined), findsNothing);
   });
 
+  testWidgets('Kids Mode leaves the Extras action button out', (tester) async {
+    when(() => itemsApi.getSpecialFeatures('item-1')).thenAnswer(
+      (_) async => [
+        {'Id': 'bts-1', 'Type': 'Video', 'ExtraType': 'BehindTheScenes', 'Name': 'Making of'},
+      ],
+    );
+    await prefs.set(UserPreferences.kidsModeEnabled, true);
+    final vm = viewModel('Movie');
+    await pumpContent(tester, vm);
+    await tester.pump(const Duration(milliseconds: 500));
+
+    expect(find.byIcon(Icons.video_library_outlined), findsNothing);
+  });
+
   testWidgets('what it leaves out, it leaves out for good', (tester) async {
     // The whole point of the style. A movie carrying people, chapters and
     // studios still renders none of them, so this fails the day someone adds
