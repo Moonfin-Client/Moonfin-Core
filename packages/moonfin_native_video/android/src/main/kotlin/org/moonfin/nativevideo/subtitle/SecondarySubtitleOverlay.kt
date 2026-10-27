@@ -496,15 +496,22 @@ internal class SecondarySubtitleOverlay(
                         height.toFloat() else 0f,
                 )
             }
-        } else SubtitleLayoutPlanner.placeSecondary(
-            primary = occupied,
-            viewportWidth = width,
-            viewportHeight = height,
-            secondaryHeight = textHeight,
-            desiredBottom = desiredBottom,
-            gapPx = gapPx,
-            stepPx = gapPx,
-        )
+        } else {
+            // A primary filling the lower half's free space, like a centered
+            // bitmap at a high offset, can leave room only above it.
+            listOf(height / 2f, 0f).firstNotNullOfOrNull { lowerHalfTop ->
+                SubtitleLayoutPlanner.placeSecondary(
+                    primary = occupied,
+                    viewportWidth = width,
+                    viewportHeight = height,
+                    secondaryHeight = textHeight,
+                    desiredBottom = desiredBottom,
+                    gapPx = gapPx,
+                    stepPx = gapPx,
+                    lowerHalfTop = lowerHalfTop,
+                )
+            }
+        }
         if (placement == null) return null
         val topAligned = reference != null &&
             SubtitleLayoutPlanner.verticalAlignmentFor(refBox!!, height) == SubtitleLayoutPlanner.ALIGN_TOP

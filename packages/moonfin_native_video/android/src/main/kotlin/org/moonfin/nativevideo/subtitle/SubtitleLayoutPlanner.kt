@@ -31,7 +31,9 @@ internal object SubtitleLayoutPlanner {
         gapPx: Float,
         adjustment: Float,
     ): Float {
-        val topAligned = (primary.top + primary.bottom) / 2f < viewportHeight / 3f
+        // The same half the placement search uses, so the secondary doesn't
+        // flip above a top primary that a large offset has pushed down.
+        val topAligned = verticalAlignmentFor(primary, viewportHeight) == ALIGN_TOP
         val anchor = if (topAligned)
             primary.bottom + gapPx + secondaryHeight
         else primary.top - gapPx

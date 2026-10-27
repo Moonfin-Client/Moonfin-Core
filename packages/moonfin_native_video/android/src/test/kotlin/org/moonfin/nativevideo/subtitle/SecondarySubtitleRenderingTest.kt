@@ -444,8 +444,10 @@ class SecondarySubtitleRenderingTest {
         for ((line, anchor, shift) in listOf(
             Triple(0.08f, Cue.ANCHOR_TYPE_START, 0.32f),
             Triple(0.92f, Cue.ANCHOR_TYPE_END, -0.32f),
-            Triple(0.5f, Cue.ANCHOR_TYPE_MIDDLE, -0.03f),
-            Triple(0f, Cue.ANCHOR_TYPE_START, 0.16f), Triple(-1f, Cue.ANCHOR_TYPE_END, -0.16f),
+            // A wider gap around a centered primary is split evenly, so 0.04 of
+            // spacing lifts the secondary by half of it.
+            Triple(0.5f, Cue.ANCHOR_TYPE_MIDDLE, -0.02f),
+            Triple(0f, Cue.ANCHOR_TYPE_START, 0.32f), Triple(-1f, Cue.ANCHOR_TYPE_END, -0.32f),
         )) {
             val f = Scene()
             val numbered = line <= 0f
