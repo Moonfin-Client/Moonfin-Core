@@ -215,6 +215,15 @@ internal class SecondarySubtitleOverlay(
         resetPrimaryCues()
     }
 
+    // Where an ASS primary is drawn right now, in this view's coordinates.
+    private var primaryInk: List<SubtitleBox> = emptyList()
+
+    fun updatePrimaryInk(boxes: List<SubtitleBox>) {
+        if (boxes == primaryInk) return
+        primaryInk = boxes
+        if (primaryUsesTopFallback && !secondaryCues.isNullOrEmpty()) renderCues()
+    }
+
     fun updatePrimaryCues(cues: List<Cue>) {
         if (!primaryEnabled) return
         unmodifiedPrimaryCues = cues
@@ -336,10 +345,17 @@ internal class SecondarySubtitleOverlay(
                 .build()
             val measured = measureTextHeights(fallback, width, height, secondaryFontPx)
             val desiredTop = (primaryBottomPaddingFraction + offsetDelta) * height
-            val top = desiredTop.coerceIn(
+            val laneTop = desiredTop.coerceIn(
                 0f,
                 (height - measured.drawn).coerceAtLeast(0f),
             )
+            // ASS lines can move every frame, so the lane only gives way while
+            // they actually cover it, like a sign or top-aligned dialogue.
+            val lane = SubtitleBox(0f, laneTop, width.toFloat(), laneTop + measured.drawn)
+            val top = if (primaryInk.none { SubtitleLayoutPlanner.intersects(lane, it, gapPx) }) laneTop
+                else SubtitleLayoutPlanner.placePositionedSecondary(
+                    primaryInk, width, height, lane, SubtitleLayoutPlanner.ALIGN_MIDDLE, gapPx, gapPx,
+                )?.top ?: laneTop
             view.visibility = View.VISIBLE
             view.setCues(listOf(
                 fallback.buildUpon()

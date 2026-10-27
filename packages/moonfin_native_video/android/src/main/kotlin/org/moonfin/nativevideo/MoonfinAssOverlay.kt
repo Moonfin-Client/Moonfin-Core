@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
+import android.graphics.Rect
 import android.os.Looper
 import android.view.View
 import androidx.media3.common.Format
@@ -332,9 +333,24 @@ class MoonfinAssOverlayView(
         postInvalidate()
     }
 
+    // Where the primary was last drawn, so a secondary can keep clear of it.
+    var onInkChanged: ((List<Rect>) -> Unit)? = null
+    private var lastInk: List<Rect> = emptyList()
+
+    private fun reportInk(frame: AssFrame?) {
+        val ink = frame?.images.orEmpty().mapNotNull { image ->
+            image.bitmap?.let { Rect(image.x, image.y, image.x + it.width, image.y + it.height) }
+        }
+        if (ink == lastInk) return
+        lastInk = ink
+        onInkChanged?.let { report -> post { report(ink) } }
+    }
+
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        val frame = visibleFrame() ?: return
+        val frame = visibleFrame()
+        reportInk(frame)
+        if (frame == null) return
         frame.images?.forEach { image ->
             val bitmap = image.bitmap ?: return@forEach
             // libass packs RGBA with an inverted alpha byte.

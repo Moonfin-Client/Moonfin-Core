@@ -214,6 +214,22 @@ class SecondarySubtitleRenderingTest {
     }
 
     @Test
+    fun assTopFallbackGivesWayOnlyWhileAssTextCoversIt() {
+        val f = Scene().configurePrimary(offset = 0.04f)
+        f.overlay.setPrimaryUsesTopFallback(true)
+        f.show(emptyList(), "English translation")
+
+        f.overlay.updatePrimaryInk(listOf(SubtitleBox(200f, 620f, 1080f, 700f)))
+        assertEquals(0.04f, f.caption.line, 0.0001f)
+
+        f.overlay.updatePrimaryInk(listOf(SubtitleBox(300f, 10f, 980f, 90f)))
+        assertTrue(inkBounds(f.secondary).top > 90)
+
+        f.overlay.updatePrimaryInk(emptyList())
+        assertEquals(0.04f, f.caption.line, 0.0001f)
+    }
+
+    @Test
     fun wrappedChinesePrimaryDoesNotOverlapTheSecondary() {
         val f = Scene().configurePrimary()
         f.show(listOf(cue("我们今天要一起讨论如何让中文字幕和英文翻译同时清晰地显示在屏幕上。")))

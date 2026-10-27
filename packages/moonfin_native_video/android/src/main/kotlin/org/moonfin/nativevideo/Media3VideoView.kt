@@ -112,6 +112,7 @@ import org.moonfin.nativevideo.subtitle.DualSubtitleTrackSelector
 import org.moonfin.nativevideo.subtitle.SidecarSourceFactory
 import org.moonfin.nativevideo.subtitle.SecondarySubtitleOverlay
 import org.moonfin.nativevideo.subtitle.SourceTree
+import org.moonfin.nativevideo.subtitle.SubtitleBox
 import org.moonfin.nativevideo.subtitle.SupAwareSubtitleParserFactory
 import org.moonfin.nativevideo.subtitle.TextStreamOffsetMediaSource
 import org.moonfin.nativevideo.subtitle.TimeOffsetMediaSource
@@ -2137,6 +2138,14 @@ class Media3VideoView(
     private fun attachAssOverlay(assHandler: AssHandler) {
         releaseAssOverlay()
         val overlay = MoonfinAssOverlayView(context, assHandler)
+        overlay.onInkChanged = { ink ->
+            // The ASS canvas follows the video box, the secondary the full frame.
+            val dx = (subtitleView.left - secondarySubtitleView.left).toFloat()
+            val dy = (subtitleView.top - secondarySubtitleView.top).toFloat()
+            secondarySubtitleOverlay.updatePrimaryInk(ink.map {
+                SubtitleBox(it.left + dx, it.top + dy, it.right + dx, it.bottom + dy)
+            })
+        }
         subtitleView.addView(
             overlay,
             FrameLayout.LayoutParams(
@@ -2152,10 +2161,15 @@ class Media3VideoView(
     // the last references to the handler's native objects.
     private fun releaseAssOverlay() {
         assOverlayView?.let { overlay ->
+            overlay.onInkChanged = null
             subtitleView.removeView(overlay)
             overlay.release()
         }
         assOverlayView = null
+        // createPlayer() attaches the first overlay before init builds this.
+        if (::secondarySubtitleOverlay.isInitialized) {
+            secondarySubtitleOverlay.updatePrimaryInk(emptyList())
+        }
     }
 
     private fun rebuildPlayerForDecoderPreference() {
