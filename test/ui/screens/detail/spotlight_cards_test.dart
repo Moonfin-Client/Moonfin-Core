@@ -388,6 +388,37 @@ void main() {
     expect(cards.single.sections[1].initiallyExpanded, isTrue);
   });
 
+  test('an episode in seriesEpisodes with null season groups under Specials', () {
+    when(() => vm.seriesEpisodes).thenReturn([
+      AggregatedItem(
+        id: 'ep-s1-1',
+        serverId: 'server-1',
+        rawData: const {
+          'Id': 'ep-s1-1',
+          'Type': 'Episode',
+          'Name': 'S1E1',
+          'ParentIndexNumber': 1,
+          'IndexNumber': 1,
+        },
+      ),
+      AggregatedItem(
+        id: 'ep-spec-1',
+        serverId: 'server-1',
+        rawData: const {
+          'Id': 'ep-spec-1',
+          'Type': 'Episode',
+          'Name': 'Special 1',
+          'IndexNumber': 1,
+        },
+      ),
+    ]);
+    final cards = cardsFor(_item('Episode', {'ParentIndexNumber': 1}));
+
+    expect(cards.single.sections.length, 2);
+    expect(cards.single.sections[0].title, 'Specials');
+    expect(cards.single.sections[1].title, 'Season 1');
+  });
+
   test('a music album gets the track list card', () {
     when(() => vm.tracks).thenReturn([
       AggregatedItem(

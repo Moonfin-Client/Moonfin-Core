@@ -2279,20 +2279,9 @@ class RowDataSource {
               id: item.imdbId.isNotEmpty ? item.imdbId : item.tmdbId,
               serverId: 'seerr',
               rawData: {
-                'Name': item.title,
-                'Type': item.type,
-                'Overview': '',
-                'PosterPath': item.posterUrl ?? '',
-                'BackdropPath': item.backdropUrl ?? '',
-                'ProductionYear': item.year,
-                'SeerrMediaType': item.type == 'Series' ? 'tv' : 'movie',
+                ...item.cardData,
                 'UserRating': item.userRating ?? '',
                 'ShowUserRatings': showUserRatings,
-                'OfficialRating': item.officialRating,
-                'ProviderIds': {
-                  if (item.imdbId.isNotEmpty) 'Imdb': item.imdbId,
-                  if (item.tmdbId.isNotEmpty) 'Tmdb': item.tmdbId,
-                },
               },
             );
           }).toList();

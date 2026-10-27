@@ -217,12 +217,17 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     skipTraversal: true,
   );
 
+  /// The node keeps its context after the bar goes away, for instance when a
+  /// sort without letters replaces the one it opened with, so only a mounted
+  /// one is on screen.
+  bool get _alphabetBarShown => _allLetterFocusNode.context?.mounted ?? false;
+
   /// On TV, Back from the grid moves up to the alphabet bar when it's shown,
   /// and the next Back leaves the library. It has to run before the route
   /// pops, which a card's key handler can't do.
   bool _backToAlphabet() {
     if (!PlatformDetection.isTV ||
-        _allLetterFocusNode.context == null ||
+        !_alphabetBarShown ||
         !_gridAreaFocusNode.hasFocus) {
       return false;
     }
@@ -936,6 +941,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
       !_isSongsBrowse &&
       (_vm.isMusicBrowse ||
           _vm.sortBy == LibrarySortBy.name ||
+          _vm.sortBy == LibrarySortBy.foldersFirst ||
           _vm.sortBy == LibrarySortBy.albumArtist ||
           _vm.sortBy == LibrarySortBy.album);
 
@@ -1129,7 +1135,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
             showMediaDetails: _prefs.get(
               UserPreferences.showMediaDetailsOnLibraryPage,
             ),
-            sortBy: _vm.sortBy,
+            alphabetApplies: _alphabetApplies,
             letterFilter: _vm.letterFilter,
             allLetterFocusNode: _allLetterFocusNode,
             homeFocusNode: _homeButtonFocusNode,
@@ -1144,7 +1150,6 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
             isMovieOrSeriesLibrary: _vm.isMovieOrSeriesLibrary,
             onSettings: () => _showSettingsDialog(context),
             onShuffle: _isSongsBrowse ? () => _shuffleSongsLibrary() : null,
-            isSongsBrowse: _isSongsBrowse,
             onLetterChanged: (l) => _jumpToLetter(l),
           ),
           Expanded(child: _buildGridArea(context)),
@@ -1763,7 +1768,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
   void _focusAboveGrid() {
     if (_usesDockedPanel) {
       _focusDockedPanel();
-    } else if (_allLetterFocusNode.context != null) {
+    } else if (_alphabetBarShown) {
       _allLetterFocusNode.requestFocus();
     } else {
       _homeButtonFocusNode.requestFocus();
@@ -2250,7 +2255,7 @@ class _LibraryHeader extends StatelessWidget {
   final bool showLabels;
   final bool showBadges;
   final bool showMediaDetails;
-  final LibrarySortBy sortBy;
+  final bool alphabetApplies;
   final String letterFilter;
   final FocusNode? allLetterFocusNode;
   final bool isMusicBrowse;
@@ -2267,10 +2272,6 @@ class _LibraryHeader extends StatelessWidget {
   final FocusNode? searchFocusNode;
   final ValueChanged<String>? onSearchChanged;
 
-  /// Songs render as one flat track list where a letter jump has nowhere
-  /// sensible to land, so the alphabet bar stays hidden there.
-  final bool isSongsBrowse;
-
   const _LibraryHeader({
     required this.libraryName,
     required this.totalCount,
@@ -2281,7 +2282,7 @@ class _LibraryHeader extends StatelessWidget {
     this.showLabels = true,
     this.showBadges = true,
     required this.showMediaDetails,
-    required this.sortBy,
+    required this.alphabetApplies,
     required this.letterFilter,
     this.allLetterFocusNode,
     this.homeFocusNode,
@@ -2297,7 +2298,6 @@ class _LibraryHeader extends StatelessWidget {
     this.searchController,
     this.searchFocusNode,
     this.onSearchChanged,
-    this.isSongsBrowse = false,
   });
 
   @override
@@ -2306,12 +2306,7 @@ class _LibraryHeader extends StatelessWidget {
     final desktopScale = _desktopUiScaleFactor();
     final prefs = GetIt.instance<UserPreferences>();
     final showAlpha =
-        !isSongsBrowse &&
-        prefs.get(UserPreferences.showAlphabeticalFilters) &&
-        (isMusicBrowse ||
-            sortBy == LibrarySortBy.name ||
-            sortBy == LibrarySortBy.albumArtist ||
-            sortBy == LibrarySortBy.album);
+        alphabetApplies && prefs.get(UserPreferences.showAlphabeticalFilters);
     // Phones draw the scrub rail along the grid instead.
     final showInlineAlpha = showAlpha && !isMobile;
     final topPad = (isMobile ? MediaQuery.of(context).padding.top : 0.0) + 8.0;

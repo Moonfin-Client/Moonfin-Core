@@ -35,6 +35,7 @@ import '../../../util/system_ui.dart';
 import '../../widgets/adaptive/sf_symbol.dart';
 import '../../widgets/aether_video_view.dart';
 import '../../widgets/playback/stream_info_dialog.dart';
+import '../../widgets/player_volume_control.dart';
 import '../../widgets/track_selector_dialog.dart';
 import '../../widgets/live_tv/channel_carousel_overlay.dart';
 import '../../widgets/live_tv/incomplete_recording.dart';
@@ -176,6 +177,12 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
   bool _verticalDragIgnored = false;
   int _media3VolumeBoostLevel = 0;
 
+  // Desktop and web drive the player's own volume, from 0 to 100, instead of
+  // the system one.
+  double _playerVolume = 100;
+  double _volumeBeforeMute = 100;
+  Timer? _persistVolumeTimer;
+
   // Android Picture-in-Picture wiring. iOS Live TV PiP needs the separate
   // sample-buffer bridge and is not wired here.
   final _pipService = GetIt.instance<PipService>();
@@ -243,6 +250,8 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     _applySubtitleStyle();
     _prefs.addListener(_applySubtitleStyle);
     _backendSub = _manager.backendChangedStream.listen((backend) {
+      // A new backend starts at its own default, so it gets the level back.
+      if (_usesPlayerVolume) unawaited(backend.setVolume(_playerVolume));
       if (!mounted) return;
       _applySubtitleStyle(force: true);
       _listenForPlayerTrackChanges();
@@ -289,6 +298,8 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     if (PlatformDetection.isMobile) {
       _initBrightness();
       _initSystemVolume();
+    } else if (_usesPlayerVolume) {
+      _initPlayerVolume();
     }
     if (PlatformDetection.isAndroid && !PlatformDetection.isTV) {
       _pipService.enableAutoPiP(true, owner: this);
@@ -329,8 +340,12 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     if (PlatformDetection.isAndroid && !PlatformDetection.isTV) {
       _pipService.enableAutoPiP(false, owner: this);
     }
+    _volumeListenerSub?.cancel();
+    if (_persistVolumeTimer?.isActive ?? false) {
+      _persistVolumeTimer!.cancel();
+      unawaited(_prefs.set(UserPreferences.playerVolume, _playerVolume));
+    }
     if (PlatformDetection.isMobile) {
-      _volumeListenerSub?.cancel();
       VolumeController.instance.removeListener();
       _brightnessListenerSub?.cancel();
       Future.microtask(() async {
@@ -501,6 +516,51 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
           _activeMedia3Backend != null) {
         unawaited(_setMedia3VolumeBoostLevel(0));
       }
+    });
+  }
+
+  bool get _usesPlayerVolume =>
+      !PlatformDetection.isMobile && !PlatformDetection.isTV;
+
+  void _initPlayerVolume() {
+    _playerVolume = _prefs
+        .get(UserPreferences.playerVolume)
+        .clamp(0.0, 100.0)
+        .toDouble();
+    unawaited(_manager.backend?.setVolume(_playerVolume));
+    _manager.reportVolumeState(
+      volume: _playerVolume,
+      isMuted: _playerVolume <= 0,
+    );
+    // A session remote sets the level without coming through here.
+    _volumeListenerSub = _manager.volumeStream.listen((level) {
+      if (!mounted || (level - _playerVolume).abs() < 0.5) return;
+      setState(() => _playerVolume = level);
+      _persistPlayerVolume();
+    });
+  }
+
+  void _setPlayerVolume(double fraction) {
+    final level = (fraction * 100).clamp(0.0, 100.0).toDouble();
+    setState(() => _playerVolume = level);
+    unawaited(_manager.backend?.setVolume(level));
+    _manager.reportVolumeState(volume: level, isMuted: level <= 0);
+    _persistPlayerVolume();
+  }
+
+  void _togglePlayerMute() {
+    if (_playerVolume > 0) {
+      _volumeBeforeMute = _playerVolume;
+      _setPlayerVolume(0);
+    } else {
+      _setPlayerVolume(_volumeBeforeMute / 100);
+    }
+  }
+
+  void _persistPlayerVolume() {
+    _persistVolumeTimer?.cancel();
+    _persistVolumeTimer = Timer(const Duration(milliseconds: 400), () {
+      unawaited(_prefs.set(UserPreferences.playerVolume, _playerVolume));
     });
   }
 
@@ -2541,7 +2601,45 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
             tooltip: l10n.playbackInformation,
             onPressed: _showPlaybackInfo,
           ),
-          const Spacer(),
+          if (_usesPlayerVolume && PlatformDetection.useDesktopUi)
+            Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  _buildOverlayControlButton(
+                    icon: volumeIconFor(_playerVolume / 100),
+                    tooltip: _playerVolume > 0 ? l10n.mute : l10n.unmute,
+                    onPressed: _togglePlayerMute,
+                  ),
+                  const SizedBox(width: AppSpacing.spaceSm),
+                  // Shrinks before the row overflows in a narrow window.
+                  Flexible(
+                    child: SizedBox(
+                      width: 120,
+                      child: SliderTheme(
+                        data: SliderTheme.of(context).copyWith(
+                          trackHeight: 3,
+                          overlayShape: SliderComponentShape.noOverlay,
+                          thumbShape: const RoundSliderThumbShape(
+                            enabledThumbRadius: 6,
+                          ),
+                        ),
+                        child: Slider(
+                          value: _playerVolume / 100,
+                          activeColor: AppColorScheme.accent,
+                          inactiveColor: Colors.white24,
+                          onChangeStart: (_) => _hideTimer?.cancel(),
+                          onChanged: _setPlayerVolume,
+                          onChangeEnd: (_) => _scheduleHide(),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )
+          else
+            const Spacer(),
         ],
       ),
     );

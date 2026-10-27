@@ -81,6 +81,19 @@ class _DetailsScreenSettingsScreenState
                     icon: Icons.photo,
                     onChanged: _pushPersonalizationSync,
                   ),
+                  if (PlatformDetection.useMobileUi)
+                    StringPickerPreferenceTile(
+                      preference: UserPreferences.detailsBackdropSize,
+                      title: l10n.detailsBackdropSize,
+                      icon: Icons.fit_screen,
+                      options: {
+                        UserPreferences.detailsBackdropFullScreen:
+                            l10n.detailsBackdropFullScreen,
+                        UserPreferences.detailsBackdropFit:
+                            l10n.detailsBackdropFit,
+                      },
+                      onChanged: _pushPersonalizationSync,
+                    ),
                   if (prefs.get(UserPreferences.detailScreenStyle) == DetailScreenStyle.classic)
                     SliderPreferenceTile(
                       preference: UserPreferences.detailsBackgroundBlurAmount,

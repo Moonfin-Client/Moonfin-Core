@@ -13398,5 +13398,29 @@
     "navYou": "Ви",
     "@navYou": {
         "description": "Bottom bar tab that opens the user's own menu with their profile, extra destinations and settings"
+    },
+    "animeMarkerSubbedShort": "Саб",
+    "@animeMarkerSubbedShort": {
+        "description": "Short form of the Subbed badge"
+    },
+    "animeMarkerDubbedShort": "Даб",
+    "@animeMarkerDubbedShort": {
+        "description": "Short form of the Dubbed badge"
+    },
+    "animeMarkerSubbedAndDubbedShort": "Саб/Даб",
+    "@animeMarkerSubbedAndDubbedShort": {
+        "description": "Short form of the Subbed/Dubbed badge"
+    },
+    "quickConnectScanHint": "Или скенирајте ово телефоном који је пријављен на ваш сервер",
+    "@quickConnectScanHint": {
+        "description": "Caption under the Quick Connect QR code that opens the server's web page with the code filled in"
+    },
+    "quickConnectTapOrScanHint": "Додирните да бисте одобрили у прегледачу или скенирајте ово другим уређајем",
+    "@quickConnectTapOrScanHint": {
+        "description": "Caption under the Quick Connect QR code on a phone or tablet, where tapping the code opens the server's web page with the code filled in"
+    },
+    "timesUpTitle": "Време је истекло",
+    "@timesUpTitle": {
+        "description": "Title of the screen that covers the app when the user's access schedule doesn't allow the current time"
     }
 }

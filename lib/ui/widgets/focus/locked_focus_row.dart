@@ -170,6 +170,12 @@ class LockedFocusRowState<T> extends State<LockedFocusRow<T>> {
   bool get hasFocusedItem => _hasRowFocus;
   int get focusedIndex => _focusedIndex;
 
+  /// The selected card's layout, while keyboard focus remains on the row.
+  BuildContext? get focusedItemContext =>
+      _hasRowFocus && _focusedIndex >= 0 && _focusedIndex < _itemKeys.length
+          ? _itemKeys[_focusedIndex].currentContext
+          : null;
+
   /// Keeps the key of every item still present and allocates only for new
   /// ones, so appending a page leaves the existing elements alone.
   void _syncItemKeys() {

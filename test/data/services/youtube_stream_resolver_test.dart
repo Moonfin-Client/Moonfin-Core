@@ -430,4 +430,39 @@ void main() {
     expect(stream?.url, 'https://example.com/trailer.mp4');
     expect(stream?.audioLanguage, isNull);
   });
+
+  group('pickVariant', () {
+    const master = """#EXTM3U
+#EXT-X-MEDIA:URI="https://cdn/a/de",TYPE=AUDIO,GROUP-ID="234",LANGUAGE="de",NAME="German (dubbed)",DEFAULT=NO
+#EXT-X-MEDIA:URI="https://cdn/a/en",TYPE=AUDIO,GROUP-ID="234",LANGUAGE="en",NAME="English - original",DEFAULT=NO
+#EXT-X-MEDIA:URI="https://cdn/a/low",TYPE=AUDIO,GROUP-ID="233",LANGUAGE="en",NAME="English",DEFAULT=NO
+#EXT-X-STREAM-INF:BANDWIDTH=263086,CODECS="avc1.4D400D,mp4a.40.5",RESOLUTION=426x178,AUDIO="233"
+https://cdn/v/240
+#EXT-X-STREAM-INF:BANDWIDTH=1905744,CODECS="avc1.64001F,mp4a.40.2",RESOLUTION=1280x534,AUDIO="234"
+https://cdn/v/720
+#EXT-X-STREAM-INF:BANDWIDTH=3993245,CODECS="avc1.640028,mp4a.40.2",RESOLUTION=1920x1080,AUDIO="234"
+https://cdn/v/1080
+#EXT-X-STREAM-INF:BANDWIDTH=2213928,CODECS="vp09.00.40.08,mp4a.40.2",RESOLUTION=1920x1080,AUDIO="234"
+https://cdn/v/1080vp9
+#EXT-X-STREAM-INF:BANDWIDTH=18663073,CODECS="vp09.00.50.08,mp4a.40.2",RESOLUTION=3840x2160,AUDIO="234"
+https://cdn/v/2160
+""";
+    final base = Uri.parse('https://manifest/api/manifest/hls_variant/x');
+
+    test('takes the best H.264 variant that fits, with the original audio', () {
+      final picked = YouTubeStreamResolver.pickVariant(master, base, maxHeight: 1080);
+      expect(picked?.video, 'https://cdn/v/1080');
+      expect(picked?.audio, 'https://cdn/a/en');
+    });
+
+    test('stays under a smaller cap', () {
+      final picked = YouTubeStreamResolver.pickVariant(master, base, maxHeight: 720);
+      expect(picked?.video, 'https://cdn/v/720');
+    });
+
+    test('takes the smallest variant when nothing fits and reads nothing from a playlist that has none', () {
+      expect(YouTubeStreamResolver.pickVariant(master, base, maxHeight: 100)?.video, 'https://cdn/v/240');
+      expect(YouTubeStreamResolver.pickVariant('#EXTM3U\n#EXTINF:5,\nseg.ts', base, maxHeight: 1080), isNull);
+    });
+  });
 }

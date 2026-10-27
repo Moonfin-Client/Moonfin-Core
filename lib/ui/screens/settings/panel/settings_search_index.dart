@@ -667,6 +667,12 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       l10n.detailsScreenBackdrop,
       keywords: ['background images'],
     ),
+    if (PlatformDetection.useMobileUi)
+      details.leaf(
+        'pref_details_backdrop_size',
+        l10n.detailsBackdropSize,
+        keywords: ['fit', 'zoom', 'crop'],
+      ),
     details.leaf('detailsBackgroundBlurAmount', l10n.detailsBackgroundBlur),
     details.leaf(
       'pref_detail_expanded_tabs',
@@ -951,9 +957,10 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       keywords: ['spoiler', 'description', 'overview'],
     ),
     home.leaf(
-      'episodePreviewEnabled',
+      'mediaPreviewMode',
       l10n.mediaPreview,
       subtitle: l10n.mediaPreviewDescription,
+      keywords: ['trailer'],
     ),
     home.leaf(
       'previewAudioEnabled',
@@ -1067,6 +1074,8 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
     ],
     if (pluginAvailable) ...[
       imdbLists.screen(keywords: ['top 250', 'popular', 'charts']),
+      imdbLists.leaf('imdb_rows_sort_by', l10n.imdbRowsSorting),
+      imdbLists.leaf('imdb_rows_sort_order', l10n.sortOrder),
       imdbLists.leaf('imdb_top_250_movies_enabled', l10n.imdbTop250Movies),
       imdbLists.leaf('imdb_top_250_tv_shows_enabled', l10n.imdbTop250TvShows),
       imdbLists.leaf(
@@ -1087,6 +1096,8 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       ),
       if (tmdbAvailable) ...[
         tmdbLists.screen(keywords: ['popular', 'top rated', 'trending']),
+        tmdbLists.leaf('tmdb_rows_sort_by', l10n.tmdbRowsSorting),
+        tmdbLists.leaf('tmdb_rows_sort_order', l10n.sortOrder),
         tmdbLists.leaf('tmdb_popular_movies_enabled', 'Popular Movies'),
         tmdbLists.leaf('tmdb_top_rated_movies_enabled', 'Top Rated Movies'),
         tmdbLists.leaf('tmdb_now_playing_movies_enabled', 'Now Playing Movies'),
@@ -1160,6 +1171,8 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
           header: 'Sonarr',
         ),
         seerrLists.screen(keywords: ['discovery rows', 'watchlist', 'trending']),
+        seerrLists.leaf('seerr_rows_sort_by', l10n.seerrRowsSorting),
+        seerrLists.leaf('seerr_rows_sort_order', l10n.sortOrder),
       ],
       customRows.screen(keywords: ['letterboxd', 'mdblist', 'tmdb', 'custom']),
     ],
@@ -1242,6 +1255,13 @@ List<_SettingsSearchEntry> _buildSettingsSearchIndex({
       'recently released',
       'newest',
     ]),
+    if (!PlatformDetection.useMobileUi)
+      mediaBar.leaf(
+        'mediaBarRowPeek',
+        l10n.peekHomeRows,
+        subtitle: l10n.peekHomeRowsDescription,
+        keywords: ['peek', 'first row'],
+      ),
     mediaBar.leaf('mediaBarItemCount', l10n.itemCount),
     mediaBar.leaf('mediaBarLibraryIds', l10n.sourceLibraries),
     mediaBar.leaf('mediaBarCollectionIds', l10n.sourceCollections),

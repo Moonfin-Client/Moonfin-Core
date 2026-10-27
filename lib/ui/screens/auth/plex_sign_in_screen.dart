@@ -56,6 +56,14 @@ class _PlexSignInScreenState extends State<PlexSignInScreen> {
     super.dispose();
   }
 
+  void _goBack() {
+    if (_usePassword && _token == null) {
+      setState(() => _usePassword = false);
+    } else {
+      context.go(Destinations.serverSelect);
+    }
+  }
+
   Future<void> _requestPin() async {
     _pollTimer?.cancel();
     try {
@@ -163,7 +171,10 @@ class _PlexSignInScreenState extends State<PlexSignInScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) =>
+      SignInBackScope(onBack: _goBack, child: _buildContent(context));
+
+  Widget _buildContent(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final qrPin = PlatformDetection.isTV ? _shownPin : null;
     return RequestInitialFocus(
@@ -203,9 +214,7 @@ class _PlexSignInScreenState extends State<PlexSignInScreen> {
                 children: [
                   Expanded(
                     child: OutlinedButton.icon(
-                      onPressed: _usePassword && _token == null
-                          ? () => setState(() => _usePassword = false)
-                          : () => context.go(Destinations.serverSelect),
+                      onPressed: _goBack,
                       icon: const Icon(Icons.arrow_back, size: 18),
                       label: FittedBox(
                         fit: BoxFit.scaleDown,

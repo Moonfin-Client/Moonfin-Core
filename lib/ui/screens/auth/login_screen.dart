@@ -738,17 +738,16 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     if (_server == null) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return SignInBackScope(
+        onBack: _navigateBack,
+        child: const Scaffold(body: Center(child: CircularProgressIndicator())),
+      );
     }
 
     final l10n = AppLocalizations.of(context);
 
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, _) {
-        if (didPop) return;
-        _navigateBack();
-      },
+    return SignInBackScope(
+      onBack: _navigateBack,
       child: LoginScaffold(
         maxWidth: _quickConnectQrBeside ? 900 : 600,
         header: Padding(

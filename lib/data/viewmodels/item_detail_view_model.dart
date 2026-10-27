@@ -317,6 +317,28 @@ class ItemDetailViewModel extends ChangeNotifier {
   /// season/episode order. Empty until [loadAllSeriesEpisodes] completes.
   List<AggregatedItem> get seriesEpisodes => _seriesEpisodes;
 
+  /// Compares two episodes by season ([AggregatedItem.parentIndexNumber]),
+  /// episode number ([AggregatedItem.indexNumber]), and finally [AggregatedItem.name]
+  /// as a tie-breaker.
+  static int compareEpisodes(AggregatedItem a, AggregatedItem b) {
+    final sa = a.parentIndexNumber ?? 0;
+    final sb = b.parentIndexNumber ?? 0;
+    if (sa != sb) return sa.compareTo(sb);
+    final ea = a.indexNumber ?? 0;
+    final eb = b.indexNumber ?? 0;
+    if (ea != eb) return ea.compareTo(eb);
+    return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+  }
+
+  /// Compares two special features by index number ([AggregatedItem.indexNumber]),
+  /// and finally [AggregatedItem.name] as a tie-breaker.
+  static int compareFeatures(AggregatedItem a, AggregatedItem b) {
+    final ea = a.indexNumber ?? 0;
+    final eb = b.indexNumber ?? 0;
+    if (ea != eb) return ea.compareTo(eb);
+    return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+  }
+
   AggregatedItem? _nextUp;
   AggregatedItem? get nextUp => _nextUp;
 
@@ -2280,9 +2302,11 @@ class ItemDetailViewModel extends ChangeNotifier {
     final parts = _loadAdditionalParts();
     try {
       final items = await _client.itemsApi.getSpecialFeatures(itemId);
+      final mapped = _mapItems(items).where((item) => item.id != itemId).toList()
+        ..sort(compareFeatures);
       _features = [
         ...await parts,
-        ..._mapItems(items).where((item) => item.id != itemId),
+        ...mapped,
       ];
       notifyListeners();
     } catch (_) {

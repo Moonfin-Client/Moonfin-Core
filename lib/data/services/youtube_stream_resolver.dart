@@ -234,6 +234,161 @@ class YouTubeStreamResolver {
     } catch (_) {}
   }
 
+  /// What mpv opens for a preview, with [player] set up to match. A YouTube
+  /// master is cut down to one variant, since mpv reads every variant of a
+  /// master before it starts, which takes several seconds on a TV where one
+  /// variant starts in about one. A master that can't be read keeps a 5 Mbps
+  /// cap, which lands on YouTube's 1080p H.264 variant rather than 4K VP9. The
+  /// player is reused, so anything else clears both settings.
+  static Future<Media> previewMedia(
+    Player player,
+    String url, {
+    required bool youTube,
+    Map<String, String> headers = const {},
+    int maxHeight = 1080,
+    String? audioLanguage,
+  }) async {
+    final variant = youTube
+        ? await _singleVariant(
+            url,
+            maxHeight: maxHeight,
+            audioLanguage: audioLanguage,
+          )
+        : null;
+    final platform = player.platform;
+    if (platform is NativePlayer) {
+      try {
+        final dynamic mpv = platform;
+        await mpv.setProperty('hls-bitrate', youTube ? '5000000' : 'max');
+        // A path list splits on colons, so a URL goes in through change-list.
+        await mpv.command(['change-list', 'audio-files', 'clr', '']);
+        final audio = variant?.audio;
+        if (audio != null) {
+          await mpv.command([
+            'change-list',
+            'audio-files',
+            'append',
+            audio,
+          ]);
+        }
+      } catch (_) {}
+    }
+    final mediaUrl = variant?.video ?? url;
+    final mediaHeaders = youTube ? youtubeHeaders : headers;
+    return mediaHeaders.isEmpty
+        ? Media(mediaUrl)
+        : Media(mediaUrl, httpHeaders: mediaHeaders);
+  }
+
+  /// One H.264 variant of a YouTube HLS master no taller than [maxHeight], and
+  /// the audio that goes with it. Null when [url] isn't a master or can't be
+  /// read.
+  static Future<({String video, String? audio})?> _singleVariant(
+    String url, {
+    int maxHeight = 1080,
+    String? audioLanguage,
+  }) async {
+    if (!url.contains('/hls_variant/')) return null;
+    try {
+      final response = await _dio
+          .get<String>(
+            url,
+            options: Options(
+              headers: youtubeHeaders,
+              responseType: ResponseType.plain,
+            ),
+          )
+          .timeout(_requestTimeout);
+      return pickVariant(
+        response.data ?? '',
+        Uri.parse(url),
+        maxHeight: maxHeight,
+        audioLanguage: audioLanguage,
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// The best variant in [master] no taller than [maxHeight], H.264 first,
+  /// with its original soundtrack. YouTube lists machine dubs ahead of the
+  /// original and marks none as the default, so the original is looked for by
+  /// name before [audioLanguage].
+  @visibleForTesting
+  static ({String video, String? audio})? pickVariant(
+    String master,
+    Uri base, {
+    required int maxHeight,
+    String? audioLanguage,
+  }) {
+    final lines = master.split('\n').map((line) => line.trim()).toList();
+    final audioGroups = <String, List<Map<String, String>>>{};
+    final variants = <({Map<String, String> attrs, String uri})>[];
+    for (var i = 0; i < lines.length; i++) {
+      final line = lines[i];
+      if (line.startsWith('#EXT-X-MEDIA:')) {
+        final attrs = _hlsAttributes(line);
+        if (attrs['TYPE'] == 'AUDIO' && attrs['URI'] != null) {
+          audioGroups.putIfAbsent(attrs['GROUP-ID'] ?? '', () => []).add(attrs);
+        }
+      } else if (line.startsWith('#EXT-X-STREAM-INF:') &&
+          i + 1 < lines.length &&
+          lines[i + 1].isNotEmpty &&
+          !lines[i + 1].startsWith('#')) {
+        variants.add((attrs: _hlsAttributes(line), uri: lines[i + 1]));
+      }
+    }
+    if (variants.isEmpty) return null;
+
+    int height(Map<String, String> attrs) =>
+        int.tryParse(attrs['RESOLUTION']?.split('x').last ?? '') ?? 0;
+    int bandwidth(Map<String, String> attrs) =>
+        int.tryParse(attrs['BANDWIDTH'] ?? '') ?? 0;
+    bool h264(Map<String, String> attrs) =>
+        (attrs['CODECS'] ?? '').contains('avc1');
+
+    final fitting = variants
+        .where((v) => height(v.attrs) > 0 && height(v.attrs) <= maxHeight)
+        .toList();
+    final pool = fitting.any((v) => h264(v.attrs))
+        ? fitting.where((v) => h264(v.attrs)).toList()
+        : fitting;
+    final chosen = pool.isNotEmpty
+        ? pool.reduce(
+            (a, b) => bandwidth(b.attrs) > bandwidth(a.attrs) ? b : a,
+          )
+        : variants.reduce(
+            (a, b) => height(b.attrs) < height(a.attrs) ? b : a,
+          );
+
+    final group = audioGroups[chosen.attrs['AUDIO']] ?? const [];
+    final language = audioLanguage?.toLowerCase();
+    bool isOriginal(Map<String, String> track) =>
+        (track['NAME'] ?? '').toLowerCase().contains('original');
+    bool inLanguage(Map<String, String> track) =>
+        language != null &&
+        (track['LANGUAGE'] ?? '').toLowerCase().startsWith(language);
+    final track =
+        group.where(isOriginal).firstOrNull ??
+        group.where(inLanguage).firstOrNull ??
+        group.firstOrNull;
+    final audioUri = track?['URI'];
+    return (
+      video: base.resolve(chosen.uri).toString(),
+      audio: audioUri == null ? null : base.resolve(audioUri).toString(),
+    );
+  }
+
+  static final _hlsAttribute = RegExp(r'([A-Z0-9-]+)=("[^"]*"|[^,]*)');
+
+  static Map<String, String> _hlsAttributes(String line) {
+    final list = line.substring(line.indexOf(':') + 1);
+    return {
+      for (final match in _hlsAttribute.allMatches(list))
+        match.group(1)!: match.group(2)!.replaceAll('"', ''),
+    };
+  }
+
   static final _details = <String, Future<YouTubeVideoDetails?>>{};
 
   /// A video's title, length and channel, for listing it before it plays.

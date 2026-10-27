@@ -307,7 +307,12 @@ class _ServerScreenState extends State<ServerScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => SignInBackScope(
+    onBack: () => context.go(Destinations.serverSelect),
+    child: _buildContent(context),
+  );
+
+  Widget _buildContent(BuildContext context) {
     if (_isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }

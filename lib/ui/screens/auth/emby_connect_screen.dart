@@ -51,6 +51,15 @@ class _EmbyConnectScreenState extends State<EmbyConnectScreen> {
     super.dispose();
   }
 
+  /// Waits out a sign-in or connection in progress, like the Back button.
+  void _goBack() {
+    if (_phase == _EmbyConnectPhase.authenticating ||
+        _phase == _EmbyConnectPhase.connectingToServer) {
+      return;
+    }
+    context.go(Destinations.serverSelect);
+  }
+
   Future<void> _signIn() async {
     final username = _usernameController.text.trim();
     if (username.isEmpty) return;
@@ -190,9 +199,12 @@ class _EmbyConnectScreenState extends State<EmbyConnectScreen> {
     final showingCredentials =
         _phase == _EmbyConnectPhase.credentials ||
         _phase == _EmbyConnectPhase.authenticating;
-    return RequestInitialFocus(
-      targetNode: showingCredentials ? _usernameFocus : null,
-      child: _buildContent(context),
+    return SignInBackScope(
+      onBack: _goBack,
+      child: RequestInitialFocus(
+        targetNode: showingCredentials ? _usernameFocus : null,
+        child: _buildContent(context),
+      ),
     );
   }
 

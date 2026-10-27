@@ -396,6 +396,7 @@ class SeerrMovieDetails {
   final int? revenue;
   final double? voteAverage;
   final int? voteCount;
+  final double? popularity;
   final List<SeerrGenre> genres;
   final SeerrCredits? credits;
   final SeerrExternalIds? externalIds;
@@ -420,6 +421,7 @@ class SeerrMovieDetails {
     this.revenue,
     this.voteAverage,
     this.voteCount,
+    this.popularity,
     this.genres = const [],
     this.credits,
     this.externalIds,
@@ -453,6 +455,7 @@ class SeerrTvDetails {
   final int? numberOfEpisodes;
   final double? voteAverage;
   final int? voteCount;
+  final double? popularity;
   final List<SeerrGenre> genres;
   final SeerrCredits? credits;
   final List<SeerrNetwork> networks;
@@ -479,6 +482,7 @@ class SeerrTvDetails {
     this.numberOfEpisodes,
     this.voteAverage,
     this.voteCount,
+    this.popularity,
     this.genres = const [],
     this.credits,
     this.networks = const [],

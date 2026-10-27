@@ -1232,6 +1232,12 @@ class _BookReaderScreenState extends State<BookReaderScreen>
   }
 
   Future<List<ArchiveFile>> _extractCbrEntries(Uint8List bytes) async {
+    // A browser has no temp folder to extract into.
+    if (kIsWeb) {
+      throw UnsupportedError(
+        currentAppLocalizations().cbrExtractionPluginUnavailable,
+      );
+    }
     final workspace = await Directory.systemTemp.createTemp('moonfin_cbr_');
     try {
       final archiveFile = File('${workspace.path}/archive.cbr');
@@ -1240,18 +1246,16 @@ class _BookReaderScreenState extends State<BookReaderScreen>
       final outputDir = Directory('${workspace.path}/out');
       await outputDir.create(recursive: true);
 
-      if (!kIsWeb) {
-        try {
-          await ArchiveExtract.extract7z(
-            archivePath: archiveFile.path,
-            destinationPath: outputDir.path,
-          );
-          final entries = await _readExtractedComicEntries(outputDir);
-          if (entries.isNotEmpty) {
-            return entries;
-          }
-        } catch (_) {}
-      }
+      try {
+        await ArchiveExtract.extract7z(
+          archivePath: archiveFile.path,
+          destinationPath: outputDir.path,
+        );
+        final entries = await _readExtractedComicEntries(outputDir);
+        if (entries.isNotEmpty) {
+          return entries;
+        }
+      } catch (_) {}
 
       if (!_supportsRarExtraction) {
         throw UnsupportedError(

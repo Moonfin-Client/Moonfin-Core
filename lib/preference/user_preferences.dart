@@ -51,6 +51,11 @@ class UserPreferences extends ChangeNotifier {
   static const seasonalPetals = 'petals';
   static const seasonalFireflies = 'fireflies';
   static const seasonalHalloween = 'halloween';
+  static const seasonalValentines = 'valentines';
+  static const seasonalEaster = 'easter';
+  static const seasonalPride = 'pride';
+  static const seasonalLunar = 'lunar';
+  static const seasonalDiwali = 'diwali';
   static const seasonalSurpriseValues = <String>{
     seasonalNone,
     seasonalSnow,
@@ -61,6 +66,11 @@ class UserPreferences extends ChangeNotifier {
     seasonalPetals,
     seasonalFireflies,
     seasonalHalloween,
+    seasonalValentines,
+    seasonalEaster,
+    seasonalPride,
+    seasonalLunar,
+    seasonalDiwali,
   };
 
   // The original Android TV client and older Smart-TV builds sync these names.
@@ -110,6 +120,25 @@ class UserPreferences extends ChangeNotifier {
   static const mediaBarSourceRandom = 'random';
   static const mediaBarSourceRecentlyAdded = 'recentlyAdded';
   static const mediaBarSourceRecentlyReleased = 'recentlyReleased';
+
+  // What a focused home card plays. episodePreviewEnabled says whether it
+  // plays anything, which older apps also read, and mediaPreviewMode says
+  // which kind.
+  static const mediaPreviewOff = 'off';
+  static const mediaPreviewMedia = 'media';
+  static const mediaPreviewTrailer = 'trailer';
+
+  // How the home screen shows the focused item's backdrop. homeBackdropEnabled
+  // says whether it shows one, which other apps also read, and
+  // homeBackdropStyle says how.
+  static const homeBackdropOff = 'off';
+  static const homeBackdropFullScreen = 'fullScreen';
+  static const homeBackdropCorner = 'corner';
+
+  // How a phone sizes the details backdrop: zoomed to fill the screen, or the
+  // whole picture across the top.
+  static const detailsBackdropFullScreen = 'fullScreen';
+  static const detailsBackdropFit = 'fit';
 
   final PreferenceStore _store;
 
@@ -437,6 +466,8 @@ class UserPreferences extends ChangeNotifier {
     'pref_favorites_view_style',
     'pref_group_items_into_collections',
     'pref_home_row_info_overlay',
+    'pref_imdb_rows_sort_by',
+    'pref_imdb_rows_sort_order',
     'pref_interface_style',
     'pref_live_direct',
     'pref_max_bitrate',
@@ -462,10 +493,14 @@ class UserPreferences extends ChangeNotifier {
     'pref_screensaver_require_rating',
     'pref_screensaver_size',
     'pref_screensaver_timeout',
+    'pref_seerr_rows_sort_by',
+    'pref_seerr_rows_sort_order',
     'pref_studios_row_selected_ids',
     'pref_studios_row_sort_by',
     'pref_studios_row_sort_order',
     'pref_syncplay_enabled',
+    'pref_tmdb_rows_sort_by',
+    'pref_tmdb_rows_sort_order',
     'showChapterMarkers',
     'showDescriptionOnPause',
     'since_you_watched_1_enabled',
@@ -642,16 +677,19 @@ class UserPreferences extends ChangeNotifier {
     'navbarColor',
     'mediaBarAutoAdvance',
     'mediaBarIntervalMs',
+    'mediaBarRowPeek',
     'mediaBarTrailerPreview',
     'mediaBarTrailerAudio',
     'trailerVolume',
     'mediaBarTrailerCaptions',
     'episodePreviewEnabled',
+    'mediaPreviewMode',
     'previewAudioEnabled',
     'previewVolume',
     'mediaBarLibraryIds',
     'mediaBarCollectionIds',
     'mediaBarExcludedGenres',
+    'mediaBarExternalLists',
     'themeMusicEnabled',
     'themeMusicVolume',
     'themeMusicOnHomeRows',
@@ -661,7 +699,9 @@ class UserPreferences extends ChangeNotifier {
     'pref_enable_series_thumbnails',
     'pref_media_type_badge_behavior',
     'pref_show_home_backdrop',
+    'pref_home_backdrop_style',
     'pref_show_details_backdrop',
+    'pref_details_backdrop_size',
     'detailsBackgroundBlurAmount',
     'browsingBackgroundBlurAmount',
     'enableAdditionalRatings',
@@ -1132,6 +1172,13 @@ class UserPreferences extends ChangeNotifier {
     return normalizeMediaBarMode(mode) != mediaBarModeOff;
   }
 
+  /// Banner already leaves the first row on screen, so only the other styles
+  /// let it peek over the bar.
+  static bool mediaBarModeAllowsRowPeek(String? mode) {
+    final normalized = normalizeMediaBarMode(mode);
+    return normalized != mediaBarModeOff && normalized != mediaBarModeBanner;
+  }
+
   /// Item types the media bar can show.
   ///
   /// Separate from where it draws items, which other clients call the source type. The two
@@ -1205,7 +1252,7 @@ class UserPreferences extends ChangeNotifier {
 
   static final modernHomeRowsPadding = Preference<int>(
     key: 'pref_modern_home_rows_padding',
-    defaultValue: 420,
+    defaultValue: 360,
   );
 
   static final classicHomeRowsPadding = Preference<int>(
@@ -1241,9 +1288,36 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: true,
   );
 
+  static final homeBackdropStyle = Preference(
+    key: 'pref_home_backdrop_style',
+    defaultValue: homeBackdropFullScreen,
+  );
+
+  /// How the home screen draws the backdrop, off when the switch is off.
+  String resolveHomeBackdropStyle() {
+    if (!get(homeBackdropEnabled)) return homeBackdropOff;
+    return get(homeBackdropStyle) == homeBackdropCorner
+        ? homeBackdropCorner
+        : homeBackdropFullScreen;
+  }
+
+  /// Brings the stored style in line with the switch, so the picker shows what
+  /// the home screen draws. A sync can flip the switch on its own.
+  Future<void> reconcileHomeBackdropStyle() async {
+    final resolved = resolveHomeBackdropStyle();
+    if (get(homeBackdropStyle) != resolved) {
+      await set(homeBackdropStyle, resolved);
+    }
+  }
+
   static final detailsBackdropEnabled = Preference(
     key: 'pref_show_details_backdrop',
     defaultValue: true,
+  );
+
+  static final detailsBackdropSize = Preference(
+    key: 'pref_details_backdrop_size',
+    defaultValue: detailsBackdropFullScreen,
   );
 
   /// Plays retro games through the native libretro backend instead of the
@@ -1489,6 +1563,42 @@ class UserPreferences extends ChangeNotifier {
   static final studiosRowSelectedIds = Preference<String>(
     key: 'pref_studios_row_selected_ids',
     defaultValue: '',
+  );
+
+  static final imdbRowsSortBy = EnumPreference(
+    key: 'pref_imdb_rows_sort_by',
+    defaultValue: ExternalRowSortBy.none,
+    values: ExternalRowSortBy.values,
+  );
+
+  static final imdbRowsSortOrder = EnumPreference(
+    key: 'pref_imdb_rows_sort_order',
+    defaultValue: SortDirection.ascending,
+    values: SortDirection.values,
+  );
+
+  static final tmdbRowsSortBy = EnumPreference(
+    key: 'pref_tmdb_rows_sort_by',
+    defaultValue: ExternalRowSortBy.none,
+    values: ExternalRowSortBy.values,
+  );
+
+  static final tmdbRowsSortOrder = EnumPreference(
+    key: 'pref_tmdb_rows_sort_order',
+    defaultValue: SortDirection.ascending,
+    values: SortDirection.values,
+  );
+
+  static final seerrRowsSortBy = EnumPreference(
+    key: 'pref_seerr_rows_sort_by',
+    defaultValue: ExternalRowSortBy.none,
+    values: ExternalRowSortBy.values,
+  );
+
+  static final seerrRowsSortOrder = EnumPreference(
+    key: 'pref_seerr_rows_sort_order',
+    defaultValue: SortDirection.ascending,
+    values: SortDirection.values,
   );
 
   static final genresRowItemFilter = EnumPreference(
@@ -2876,6 +2986,13 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: 10000,
   );
 
+  /// Shows the top half of the first home row over the bottom of the media
+  /// bar on TV and desktop.
+  static final mediaBarRowPeek = Preference(
+    key: 'mediaBarRowPeek',
+    defaultValue: false,
+  );
+
   static final mediaBarTrailerPreview = Preference(
     key: 'mediaBarTrailerPreview',
     defaultValue: true,
@@ -2912,10 +3029,40 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: '',
   );
 
+  /// The outside lists the media bar also draws from, by the id each one's
+  /// home row has.
+  static final mediaBarExternalLists = Preference(
+    key: 'mediaBarExternalLists',
+    defaultValue: '',
+  );
+
   static final episodePreviewEnabled = Preference(
     key: 'episodePreviewEnabled',
     defaultValue: false,
   );
+
+  static final mediaPreviewMode = Preference(
+    key: 'mediaPreviewMode',
+    defaultValue: mediaPreviewMedia,
+  );
+
+  /// The preview a focused home card plays, off when the switch is off.
+  String resolveMediaPreviewMode() {
+    if (!get(episodePreviewEnabled)) return mediaPreviewOff;
+    return get(mediaPreviewMode) == mediaPreviewTrailer
+        ? mediaPreviewTrailer
+        : mediaPreviewMedia;
+  }
+
+  /// Brings the stored mode in line with the switch, so the picker shows what
+  /// plays. An app that only knows the switch can flip it on its own, and
+  /// settings from before the mode existed only have the switch.
+  Future<void> reconcileMediaPreviewMode() async {
+    final resolved = resolveMediaPreviewMode();
+    if (get(mediaPreviewMode) != resolved) {
+      await set(mediaPreviewMode, resolved);
+    }
+  }
 
   static final previewAudioEnabled = Preference(
     key: 'previewAudioEnabled',

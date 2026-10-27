@@ -27,6 +27,11 @@ class _SeasonalEffectsScreen extends StatelessWidget {
                   UserPreferences.seasonalFireflies: l10n.seasonalFireflies,
                   UserPreferences.seasonalLeaves: l10n.fallingLeaves,
                   UserPreferences.seasonalHalloween: l10n.seasonalHalloween,
+                  UserPreferences.seasonalValentines: l10n.holidayValentines,
+                  UserPreferences.seasonalEaster: l10n.holidayEaster,
+                  UserPreferences.seasonalPride: l10n.holidayPride,
+                  UserPreferences.seasonalLunar: l10n.holidayLunarNewYear,
+                  UserPreferences.seasonalDiwali: l10n.holidayDiwali,
                 },
               ),
               StringPickerPreferenceTile(

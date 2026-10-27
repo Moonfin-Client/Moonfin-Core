@@ -6383,6 +6383,14 @@
   "@mediaBarModeDescription": {
     "description": "Description for media bar style setting"
   },
+  "peekHomeRows": "Peek Home Rows",
+  "@peekHomeRows": {
+    "description": "Title of the media bar setting that lets the first home row show over the bottom of the media bar"
+  },
+  "peekHomeRowsDescription": "Show the top half of the first row along the bottom of the media bar",
+  "@peekHomeRowsDescription": {
+    "description": "Description of the Peek Home Rows media bar setting"
+  },
   "mediaBarModeMoonfin": "Moonfin",
   "@mediaBarModeMoonfin": {
     "description": "Media bar style option: Moonfin"
@@ -11056,6 +11064,22 @@
   "audioRowsSorting": "Audio Rows sorting",
   "audioRowsSortingDescription": "Sort Audio rows by date added, release date, alphabetically, and more.",
   "audioRowsSortOrderDescription": "Sort Audio rows in ascending or descending order.",
+  "sorting": "Sorting",
+  "imdbRowsSorting": "IMDb Row Sorting",
+  "imdbRowsSortingDescription": "Sort IMDb rows by name, release date, rating, and more.",
+  "imdbRowsSortOrderDescription": "Sort IMDb rows in ascending or descending order.",
+  "tmdbRowsSorting": "TMDB Row Sorting",
+  "tmdbRowsSortingDescription": "Sort TMDB rows by name, release date, rating, and more.",
+  "tmdbRowsSortOrderDescription": "Sort TMDB rows in ascending or descending order.",
+  "seerrRowsSorting": "Seerr Row Sorting",
+  "seerrRowsSortingDescription": "Sort Seerr rows by name, release date, rating, and more.",
+  "seerrRowsSortOrderDescription": "Sort Seerr rows in ascending or descending order.",
+  "externalRowSortDefault": "Default (List Order)",
+  "externalRowSortName": "Name",
+  "externalRowSortReleaseDate": "Release Date",
+  "externalRowSortRating": "Rating",
+  "externalRowSortPopularity": "Popularity",
+  "externalRowSortShuffle": "Shuffle",
   "audioPlaylists": "Audio Playlists",
   "appearance": "Appearance",
   "layout": "Layout",
@@ -14040,9 +14064,29 @@
   "@homeScreenBackdrop": {
     "description": "Setting to show or hide the backdrop image behind the home screen"
   },
+  "homeScreenBackdropFullScreen": "Full Screen",
+  "@homeScreenBackdropFullScreen": {
+    "description": "Home Screen Backdrop option that fills the whole screen with the focused item's backdrop"
+  },
+  "homeScreenBackdropCorner": "Corner",
+  "@homeScreenBackdropCorner": {
+    "description": "Home Screen Backdrop option that shows the focused item's backdrop in the top right corner, fading into the background like the Google TV home screen"
+  },
   "detailsScreenBackdrop": "Details Screen Backdrop",
   "@detailsScreenBackdrop": {
     "description": "Setting to show or hide the backdrop image behind the item details screen"
+  },
+  "detailsBackdropSize": "Backdrop Size",
+  "@detailsBackdropSize": {
+    "description": "Setting on phones for how big the backdrop image behind the item details screen is drawn"
+  },
+  "detailsBackdropFullScreen": "Full Screen",
+  "@detailsBackdropFullScreen": {
+    "description": "Backdrop Size option that zooms the backdrop to fill the whole details screen"
+  },
+  "detailsBackdropFit": "Fit",
+  "@detailsBackdropFit": {
+    "description": "Backdrop Size option that shows the whole backdrop across the top of the details screen, fading into the page below it"
   },
   "libraryBackdrops": "Library Backdrops",
   "@libraryBackdrops": {

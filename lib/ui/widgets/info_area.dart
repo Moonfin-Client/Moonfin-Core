@@ -56,7 +56,7 @@ class InfoArea extends StatelessWidget {
     required bool isMobile,
     double desktopScale = 1.0,
   }) {
-    return (isMobile ? 184.0 : 212.0) * desktopScale;
+    return (isMobile ? 184.0 : 198.0) * desktopScale;
   }
 
   @override
@@ -510,9 +510,9 @@ class _InfoAreaContentState extends State<_InfoAreaContent> {
               shadows: _textShadows,
             );
     final infoRowHeight = isMobile ? 22.0 : 24.0;
-    final spacing = isMobile ? 6.0 : 8.0;
-    final overviewTopSpacing = showRatings ? (isMobile ? 12.0 : 14.0) : spacing;
-    final titleToMetaSpacing = isMobile ? 4.0 : 6.0;
+    final spacing = isMobile ? 6.0 : 4.0;
+    final overviewTopSpacing = showRatings ? (isMobile ? 12.0 : 8.0) : spacing;
+    final titleToMetaSpacing = isMobile ? 4.0 : 2.0;
     final logoHeight = isMobile ? 40.0 : 50.0;
 
     final clientFactory = GetIt.instance<MediaServerClientFactory>();
@@ -538,33 +538,38 @@ class _InfoAreaContentState extends State<_InfoAreaContent> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.max,
         children: [
+          // A text title sits at the bottom of the logo's room, right above
+          // the info line, so nothing moves between items with and without logos.
           SizedBox(
             height: logoHeight,
-            child: hasLogo
-                ? Image(
-                    image: offlineAwareImageProvider(
-                      imageApi.getLogoImageUrl(
-                        logoItemId,
-                        maxWidth: isMobile ? 300 : 400,
-                        tag: logoTag,
+            child: Align(
+              alignment: Alignment.bottomLeft,
+              child: hasLogo
+                  ? Image(
+                      image: offlineAwareImageProvider(
+                        imageApi.getLogoImageUrl(
+                          logoItemId,
+                          maxWidth: isMobile ? 300 : 400,
+                          tag: logoTag,
+                        ),
                       ),
-                    ),
-                    fit: BoxFit.contain,
-                    height: logoHeight,
-                    alignment: Alignment.centerLeft,
-                    errorBuilder: (_, _, _) => Text(
+                      fit: BoxFit.contain,
+                      height: logoHeight,
+                      alignment: Alignment.centerLeft,
+                      errorBuilder: (_, _, _) => Text(
+                        title,
+                        style: titleStyle,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    )
+                  : Text(
                       title,
                       style: titleStyle,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                  )
-                : Text(
-                    title,
-                    style: titleStyle,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+            ),
           ),
           SizedBox(height: titleToMetaSpacing),
           SizedBox(

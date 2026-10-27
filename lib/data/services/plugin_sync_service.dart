@@ -102,6 +102,11 @@ class PluginSyncService extends ChangeNotifier {
       _pluginAvailable && _tmdbPersonLinksSupported;
   bool _tmdbReviewsSupported = false;
   bool get tmdbReviewsAvailable => _pluginAvailable && _tmdbReviewsSupported;
+
+  /// Whether the plugin can fill in a title the server doesn't have with its
+  /// TMDB overview, score, logo and trailer.
+  bool _tmdbDetailsSupported = false;
+  bool get tmdbDetailsAvailable => _pluginAvailable && _tmdbDetailsSupported;
   bool _recommendationsSupported = false;
   bool get recommendationsSupported =>
       _pluginAvailable && _recommendationsSupported;
@@ -246,6 +251,7 @@ class PluginSyncService extends ChangeNotifier {
     _tmdbThumbsSupported = false;
     _tmdbPersonLinksSupported = false;
     _tmdbReviewsSupported = false;
+    _tmdbDetailsSupported = false;
     _recommendationsSupported = false;
     _clientLogSupported = false;
     if (!keepIncompleteRecordings) _incompleteRecordings?.setSupported(false);
@@ -320,6 +326,8 @@ class PluginSyncService extends ChangeNotifier {
           _readBool(pingResult, 'tmdbPersonLinksSupported') ?? false;
       _tmdbReviewsSupported =
           _readBool(pingResult, 'tmdbReviewsSupported') ?? false;
+      _tmdbDetailsSupported =
+          _readBool(pingResult, 'tmdbDetailsSupported') ?? false;
       _recommendationsSupported =
           _readBool(pingResult, 'recommendationsSupported') ?? false;
       // Older plugins leave this out, which reads as false and hides the button.
@@ -1629,6 +1637,9 @@ class PluginSyncService extends ChangeNotifier {
       }
     }
 
+    // A profile written by an app that only knows the preview switch can
+    // carry a mode that disagrees with it.
+    await _prefs.reconcileMediaPreviewMode();
     _prefs.notifyPreferenceChanged();
 
     final currentNavbarPos = _prefs.get(UserPreferences.navbarPosition);

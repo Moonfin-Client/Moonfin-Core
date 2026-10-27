@@ -303,7 +303,7 @@ class _SeerrBrowseScreenState extends State<SeerrBrowseScreen> {
                       if (PlatformDetection.isTV &&
                           event.isActionable &&
                           event.logicalKey.isBackKey &&
-                          _allLetterFocusNode.context != null) {
+                          _allLetterFocusNode.context?.mounted == true) {
                         _allLetterFocusNode.requestFocus();
                         return KeyEventResult.handled;
                       }

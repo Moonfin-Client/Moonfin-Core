@@ -109,6 +109,9 @@ Future<void> showStreamInfoDialog({
           thumbColor: Colors.white30,
           crossAxisMargin: 5,
           minThumbLength: 24,
+          // The default is the screen's safe area, which on a landscape
+          // iPhone pushes the thumb in by the notch width.
+          padding: EdgeInsets.zero,
           child: ListView(
             controller: controller,
             shrinkWrap: true,

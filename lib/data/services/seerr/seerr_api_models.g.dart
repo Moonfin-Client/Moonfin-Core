@@ -287,6 +287,7 @@ SeerrMovieDetails _$SeerrMovieDetailsFromJson(
   revenue: (json['revenue'] as num?)?.toInt(),
   voteAverage: (json['voteAverage'] as num?)?.toDouble(),
   voteCount: (json['voteCount'] as num?)?.toInt(),
+  popularity: (json['popularity'] as num?)?.toDouble(),
   genres:
       (json['genres'] as List<dynamic>?)
           ?.map((e) => SeerrGenre.fromJson(e as Map<String, dynamic>))
@@ -337,6 +338,7 @@ Map<String, dynamic> _$SeerrMovieDetailsToJson(SeerrMovieDetails instance) =>
       'revenue': instance.revenue,
       'voteAverage': instance.voteAverage,
       'voteCount': instance.voteCount,
+      'popularity': instance.popularity,
       'genres': instance.genres,
       'credits': instance.credits,
       'externalIds': instance.externalIds,
@@ -364,6 +366,7 @@ SeerrTvDetails _$SeerrTvDetailsFromJson(Map<String, dynamic> json) =>
       numberOfEpisodes: (json['numberOfEpisodes'] as num?)?.toInt(),
       voteAverage: (json['voteAverage'] as num?)?.toDouble(),
       voteCount: (json['voteCount'] as num?)?.toInt(),
+      popularity: (json['popularity'] as num?)?.toDouble(),
       genres:
           (json['genres'] as List<dynamic>?)
               ?.map((e) => SeerrGenre.fromJson(e as Map<String, dynamic>))
@@ -424,6 +427,7 @@ Map<String, dynamic> _$SeerrTvDetailsToJson(SeerrTvDetails instance) =>
       'numberOfEpisodes': instance.numberOfEpisodes,
       'voteAverage': instance.voteAverage,
       'voteCount': instance.voteCount,
+      'popularity': instance.popularity,
       'genres': instance.genres,
       'credits': instance.credits,
       'networks': instance.networks,

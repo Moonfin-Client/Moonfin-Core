@@ -25,4 +25,25 @@ void main() {
     expect(json['officialRating'], isNull);
     expect(ImdbExternalListItem.fromJson(json).officialRating, isNull);
   });
+
+  test('the description, genres and runtime survive the cache round trip', () {
+    final item = ImdbExternalListItem(
+      imdbId: 'tt0068646',
+      title: 'The Godfather',
+      type: 'Movie',
+      overview: 'A mob family.',
+      genres: ['Crime', 'Drama'],
+      runTimeTicks: 105000000000,
+    );
+
+    final restored = ImdbExternalListItem.fromJson(item.toJson());
+
+    expect(restored.overview, 'A mob family.');
+    expect(restored.genres, ['Crime', 'Drama']);
+    expect(restored.runTimeTicks, 105000000000);
+    expect(
+      ImdbExternalListItem(imdbId: 'tt1', title: 'x', type: 'Movie').toJson().containsKey('overview'),
+      isTrue,
+    );
+  });
 }

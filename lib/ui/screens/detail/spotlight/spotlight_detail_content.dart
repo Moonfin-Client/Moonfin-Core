@@ -569,15 +569,18 @@ class _SpotlightDetailContentState extends State<SpotlightDetailContent> {
       children: [
         ColoredBox(color: base),
         if (url != null && url.isNotEmpty) ...[
-          OfflineAwareImage(
-            imageUrl: url,
-            fit: BoxFit.cover,
-            alignment: landscape ? Alignment.centerRight : Alignment.topCenter,
-            fadeInDuration: Duration.zero,
-            sourceAspectRatio: 16 / 9,
-            maxDecodeWidth: ArtworkDecode.maxSourceWidth,
-            priority: ImageFetchPriority.high,
-            errorWidget: (context, url, error) => const SizedBox.shrink(),
+          DetailBackdropFit(
+            prefs: widget.prefs,
+            child: OfflineAwareImage(
+              imageUrl: url,
+              fit: BoxFit.cover,
+              alignment: landscape ? Alignment.centerRight : Alignment.topCenter,
+              fadeInDuration: Duration.zero,
+              sourceAspectRatio: 16 / 9,
+              maxDecodeWidth: ArtworkDecode.maxSourceWidth,
+              priority: ImageFetchPriority.high,
+              errorWidget: (context, url, error) => const SizedBox.shrink(),
+            ),
           ),
           ColoredBox(color: Colors.black.withValues(alpha: alpha)),
         ],

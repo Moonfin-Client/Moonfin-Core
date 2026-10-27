@@ -598,6 +598,33 @@ enum HomeSectionType {
   }
 }
 
+/// The IMDb charts Moonbase serves, each asked for by its own serialized name.
+const imdbChartSections = [
+  HomeSectionType.imdbTop250Movies,
+  HomeSectionType.imdbTop250TvShows,
+  HomeSectionType.imdbMostPopularMovies,
+  HomeSectionType.imdbMostPopularTvShows,
+  HomeSectionType.imdbLowestRatedMovies,
+  HomeSectionType.imdbTopEnglishMovies,
+];
+
+/// The TMDB chart behind each TMDB section, as the path Moonbase asks TMDB for.
+const tmdbChartPaths = {
+  HomeSectionType.tmdbPopularMovies: 'movie/popular',
+  HomeSectionType.tmdbTopRatedMovies: 'movie/top_rated',
+  HomeSectionType.tmdbNowPlayingMovies: 'movie/now_playing',
+  HomeSectionType.tmdbUpcomingMovies: 'movie/upcoming',
+  HomeSectionType.tmdbPopularTv: 'tv/popular',
+  HomeSectionType.tmdbTopRatedTv: 'tv/top_rated',
+  HomeSectionType.tmdbAiringTodayTv: 'tv/airing_today',
+  HomeSectionType.tmdbOnTheAirTv: 'tv/on_the_air',
+  HomeSectionType.tmdbTrendingMovieDaily: 'trending/movie/day',
+  HomeSectionType.tmdbTrendingMovieWeekly: 'trending/movie/week',
+  HomeSectionType.tmdbTrendingTvDaily: 'trending/tv/day',
+  HomeSectionType.tmdbTrendingTvWeekly: 'trending/tv/week',
+  HomeSectionType.tmdbTrendingAllWeekly: 'trending/all/week',
+};
+
 /// Every sort ends on SortName so items the server ranks equally keep a stable
 /// order between pages, which a bare key leaves to whatever the database
 /// returns.
@@ -746,6 +773,19 @@ enum SortDirection {
   const SortDirection(this.apiValue);
 
   final String apiValue;
+}
+
+enum ExternalRowSortBy {
+  none('Default (List Order)'),
+  name('Name'),
+  releaseDate('Release Date'),
+  rating('Rating'),
+  popularity('Popularity'),
+  shuffle('Shuffle');
+
+  const ExternalRowSortBy(this.displayName);
+
+  final String displayName;
 }
 
 enum PlayedStatusFilter {

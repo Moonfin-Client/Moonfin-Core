@@ -8572,6 +8572,18 @@ abstract class AppLocalizations {
   /// **'Choose between various media bar styles, or turn the media bar off'**
   String get mediaBarModeDescription;
 
+  /// Title of the media bar setting that lets the first home row show over the bottom of the media bar
+  ///
+  /// In en, this message translates to:
+  /// **'Peek Home Rows'**
+  String get peekHomeRows;
+
+  /// Description of the Peek Home Rows media bar setting
+  ///
+  /// In en, this message translates to:
+  /// **'Show the top half of the first row along the bottom of the media bar'**
+  String get peekHomeRowsDescription;
+
   /// Media bar style option: Moonfin
   ///
   /// In en, this message translates to:
@@ -21628,6 +21640,102 @@ abstract class AppLocalizations {
   /// **'Sort Audio rows in ascending or descending order.'**
   String get audioRowsSortOrderDescription;
 
+  /// No description provided for @sorting.
+  ///
+  /// In en, this message translates to:
+  /// **'Sorting'**
+  String get sorting;
+
+  /// No description provided for @imdbRowsSorting.
+  ///
+  /// In en, this message translates to:
+  /// **'IMDb Row Sorting'**
+  String get imdbRowsSorting;
+
+  /// No description provided for @imdbRowsSortingDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort IMDb rows by name, release date, rating, and more.'**
+  String get imdbRowsSortingDescription;
+
+  /// No description provided for @imdbRowsSortOrderDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort IMDb rows in ascending or descending order.'**
+  String get imdbRowsSortOrderDescription;
+
+  /// No description provided for @tmdbRowsSorting.
+  ///
+  /// In en, this message translates to:
+  /// **'TMDB Row Sorting'**
+  String get tmdbRowsSorting;
+
+  /// No description provided for @tmdbRowsSortingDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort TMDB rows by name, release date, rating, and more.'**
+  String get tmdbRowsSortingDescription;
+
+  /// No description provided for @tmdbRowsSortOrderDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort TMDB rows in ascending or descending order.'**
+  String get tmdbRowsSortOrderDescription;
+
+  /// No description provided for @seerrRowsSorting.
+  ///
+  /// In en, this message translates to:
+  /// **'Seerr Row Sorting'**
+  String get seerrRowsSorting;
+
+  /// No description provided for @seerrRowsSortingDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort Seerr rows by name, release date, rating, and more.'**
+  String get seerrRowsSortingDescription;
+
+  /// No description provided for @seerrRowsSortOrderDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort Seerr rows in ascending or descending order.'**
+  String get seerrRowsSortOrderDescription;
+
+  /// No description provided for @externalRowSortDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Default (List Order)'**
+  String get externalRowSortDefault;
+
+  /// No description provided for @externalRowSortName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get externalRowSortName;
+
+  /// No description provided for @externalRowSortReleaseDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Release Date'**
+  String get externalRowSortReleaseDate;
+
+  /// No description provided for @externalRowSortRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating'**
+  String get externalRowSortRating;
+
+  /// No description provided for @externalRowSortPopularity.
+  ///
+  /// In en, this message translates to:
+  /// **'Popularity'**
+  String get externalRowSortPopularity;
+
+  /// No description provided for @externalRowSortShuffle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shuffle'**
+  String get externalRowSortShuffle;
+
   /// No description provided for @audioPlaylists.
   ///
   /// In en, this message translates to:
@@ -26753,11 +26861,41 @@ abstract class AppLocalizations {
   /// **'Home Screen Backdrop'**
   String get homeScreenBackdrop;
 
+  /// Home Screen Backdrop option that fills the whole screen with the focused item's backdrop
+  ///
+  /// In en, this message translates to:
+  /// **'Full Screen'**
+  String get homeScreenBackdropFullScreen;
+
+  /// Home Screen Backdrop option that shows the focused item's backdrop in the top right corner, fading into the background like the Google TV home screen
+  ///
+  /// In en, this message translates to:
+  /// **'Corner'**
+  String get homeScreenBackdropCorner;
+
   /// Setting to show or hide the backdrop image behind the item details screen
   ///
   /// In en, this message translates to:
   /// **'Details Screen Backdrop'**
   String get detailsScreenBackdrop;
+
+  /// Setting on phones for how big the backdrop image behind the item details screen is drawn
+  ///
+  /// In en, this message translates to:
+  /// **'Backdrop Size'**
+  String get detailsBackdropSize;
+
+  /// Backdrop Size option that zooms the backdrop to fill the whole details screen
+  ///
+  /// In en, this message translates to:
+  /// **'Full Screen'**
+  String get detailsBackdropFullScreen;
+
+  /// Backdrop Size option that shows the whole backdrop across the top of the details screen, fading into the page below it
+  ///
+  /// In en, this message translates to:
+  /// **'Fit'**
+  String get detailsBackdropFit;
 
   /// Setting to show or hide backdrop images while browsing library pages
   ///

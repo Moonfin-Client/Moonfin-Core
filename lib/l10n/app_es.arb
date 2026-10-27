@@ -9018,5 +9018,21 @@
     "homeRowsPaddingDescription": "Personalizar el espaciado entre filas de inicio",
     "@homeRowsPaddingDescription": {
         "description": "Description for home rows padding setting"
+    },
+    "animeMarkerFiller": "Insignia en un episodio de anime que es de relleno, lo que significa que no está adaptada del manga original",
+    "@animeMarkerFiller": {
+        "description": "Badge on an anime episode that is filler, meaning it is not adapted from the source manga"
+    },
+    "animeMarkerMixed": "Insignia en un episodio de anime que mezcla material original con relleno, por lo que aún contiene historia",
+    "@animeMarkerMixed": {
+        "description": "Badge on an anime episode that mixes source material with filler, so it still contains story"
+    },
+    "animeMarkerAnimeCanon": "Insignia en un episodio de anime que no está en el manga original pero que es parte de la propia continuidad del anime",
+    "@animeMarkerAnimeCanon": {
+        "description": "Badge on an anime episode that is not in the source manga but is part of the anime's own continuity"
+    },
+    "animeMarkerMangaCanon": "Insignia en un episodio de anime adaptado del manga original",
+    "@animeMarkerMangaCanon": {
+        "description": "Badge on an anime episode adapted from the source manga"
     }
 }

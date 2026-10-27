@@ -51,7 +51,7 @@ abstract final class NouveauSpacing {
   static const double mobileTitleToContent = 16;
   static const double mobileSectionGap = 32;
   static const double mobileDetailsSectionGap = 56;
-  static const double mobileHeroToSection = 32;
+  static const double mobileHeroToSection = 8;
 
   // Shared rail spacing
   static const double railItemGap = 40;

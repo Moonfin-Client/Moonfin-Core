@@ -190,14 +190,18 @@ void main() {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
-            body: MinimalistDetailContent(
-              viewModel: vm,
-              prefs: prefs,
-              backdropUrl: ValueNotifier<String?>(null),
-              selectedMediaSourceId: null,
-              onSelectedMediaSourceChanged: (_) {},
-              actionsExpanded: false,
-              onActionsExpandedChanged: (_) {},
+            // The detail screen rebuilds this whenever either one changes.
+            body: ListenableBuilder(
+              listenable: Listenable.merge([vm, prefs]),
+              builder: (context, _) => MinimalistDetailContent(
+                viewModel: vm,
+                prefs: prefs,
+                backdropUrl: ValueNotifier<String?>(null),
+                selectedMediaSourceId: null,
+                onSelectedMediaSourceChanged: (_) {},
+                actionsExpanded: false,
+                onActionsExpandedChanged: (_) {},
+              ),
             ),
           ),
         ),
@@ -266,11 +270,65 @@ void main() {
     expect(find.byKey(const ValueKey('minimalist-actions')), findsOneWidget);
   });
 
-  testWidgets('a movie gets no episode rail and no season tabs', (tester) async {
-    await pumpContent(tester, viewModel('Movie'));
+  testWidgets('a movie gets no episode rail and no season tabs, even with extras', (tester) async {
+    when(() => itemsApi.getSpecialFeatures('item-1')).thenAnswer(
+      (_) async => [
+        {'Id': 'bts-1', 'Type': 'Video', 'ExtraType': 'BehindTheScenes', 'Name': 'Making of'},
+      ],
+    );
+    final vm = viewModel('Movie');
+    await pumpContent(tester, vm);
+    await tester.pump(const Duration(milliseconds: 500));
 
     expect(find.byKey(const ValueKey('minimalist-episode-rail')), findsNothing);
     expect(find.byType(SlidingPillTabs), findsNothing);
+  });
+
+  testWidgets('a movie with extras shows the Extras action button which opens the modal', (tester) async {
+    when(() => itemsApi.getSpecialFeatures('item-1')).thenAnswer(
+      (_) async => [
+        {'Id': 'bts-1', 'Type': 'Video', 'ExtraType': 'BehindTheScenes', 'Name': 'Making of'},
+      ],
+    );
+    final vm = viewModel('Movie');
+    await pumpContent(tester, vm);
+    await tester.pump(const Duration(milliseconds: 500));
+
+    expect(find.byIcon(Icons.video_library_outlined), findsOneWidget);
+
+    await tester.tap(find.byIcon(Icons.video_library_outlined));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Behind the Scenes'), findsOneWidget);
+    expect(find.text('Making of'), findsOneWidget);
+  });
+
+  testWidgets('hiding DetailSection.extras removes the Extras action button', (tester) async {
+    when(() => itemsApi.getSpecialFeatures('item-1')).thenAnswer(
+      (_) async => [
+        {'Id': 'bts-1', 'Type': 'Video', 'ExtraType': 'BehindTheScenes', 'Name': 'Making of'},
+      ],
+    );
+    prefs.set(detailSectionLayout.hiddenPreference, 'extras');
+    final vm = viewModel('Movie');
+    await pumpContent(tester, vm);
+    await tester.pump(const Duration(milliseconds: 500));
+
+    expect(find.byIcon(Icons.video_library_outlined), findsNothing);
+  });
+
+  testWidgets('Kids Mode leaves the Extras action button out', (tester) async {
+    when(() => itemsApi.getSpecialFeatures('item-1')).thenAnswer(
+      (_) async => [
+        {'Id': 'bts-1', 'Type': 'Video', 'ExtraType': 'BehindTheScenes', 'Name': 'Making of'},
+      ],
+    );
+    await prefs.set(UserPreferences.kidsModeEnabled, true);
+    final vm = viewModel('Movie');
+    await pumpContent(tester, vm);
+    await tester.pump(const Duration(milliseconds: 500));
+
+    expect(find.byIcon(Icons.video_library_outlined), findsNothing);
   });
 
   testWidgets('what it leaves out, it leaves out for good', (tester) async {
@@ -412,6 +470,44 @@ void main() {
     ).thenAnswer((_) async => {'Items': episodes});
     return vm;
   }
+
+  testWidgets('the Specials tab puts specials in number order', (
+    tester,
+  ) async {
+    // The server's order, with each special where it aired.
+    final vm = viewModel('Series');
+    Map<String, dynamic> episode(int season, int number) => {
+      'Id': 's${season}e$number',
+      'Name': 'Episode $number',
+      'Type': 'Episode',
+      'IndexNumber': number,
+      'ParentIndexNumber': season,
+      'SeriesId': 'item-1',
+    };
+    when(
+      () => itemsApi.getEpisodes(
+        any(),
+        seasonId: any(named: 'seasonId'),
+        fields: any(named: 'fields'),
+      ),
+    ).thenAnswer(
+      (_) async => {
+        'Items': [episode(1, 1), episode(0, 2), episode(1, 2), episode(0, 1)],
+      },
+    );
+
+    await pumpContent(tester, vm);
+    await tester.pump(const Duration(milliseconds: 500));
+
+    final rail = tester.widget<LockedFocusRow<AggregatedItem>>(
+      find.byType(LockedFocusRow<AggregatedItem>),
+    );
+    expect(rail.items.map((e) => e.id), ['s0e1', 's0e2']);
+    expect(
+      vm.seriesEpisodes.map((e) => e.id),
+      ['s1e1', 's0e2', 's1e2', 's0e1'],
+    );
+  });
 
   testWidgets('one season hides the tabs and still shows the episodes', (
     tester,

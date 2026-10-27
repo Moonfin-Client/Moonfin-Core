@@ -442,6 +442,8 @@ class EnumPreferenceTile<T extends Enum> extends StatefulWidget {
   final ValueChanged<T>? onChangedValue;
   final List<T>? values;
   final bool autofocus;
+  final bool enabled;
+  final FocusNode? focusNode;
 
   const EnumPreferenceTile({
     super.key,
@@ -456,6 +458,8 @@ class EnumPreferenceTile<T extends Enum> extends StatefulWidget {
     this.onChangedValue,
     this.values,
     this.autofocus = false,
+    this.enabled = true,
+    this.focusNode,
   });
 
   @override
@@ -465,15 +469,17 @@ class EnumPreferenceTile<T extends Enum> extends StatefulWidget {
 class _EnumPreferenceTileState<T extends Enum>
     extends State<EnumPreferenceTile<T>> {
   late PreferenceBinding<T> _binding;
-  late final FocusNode _focusNode;
+  FocusNode? _internalFocusNode;
+  FocusNode get _effectiveFocusNode =>
+      widget.focusNode ??
+      (_internalFocusNode ??= FocusNode(
+        debugLabel: 'EnumPreferenceTile_${widget.preference.key}',
+      ));
   bool _pickerOpen = false;
 
   @override
   void initState() {
     super.initState();
-    _focusNode = FocusNode(
-      debugLabel: 'EnumPreferenceTile_${widget.preference.key}',
-    );
     _binding = PreferenceBinding(
       GetIt.instance<PreferenceStore>(),
       widget.preference,
@@ -492,7 +498,7 @@ class _EnumPreferenceTileState<T extends Enum>
 
   @override
   void dispose() {
-    _focusNode.dispose();
+    _internalFocusNode?.dispose();
     _binding.dispose();
     super.dispose();
   }
@@ -501,13 +507,15 @@ class _EnumPreferenceTileState<T extends Enum>
   Widget build(BuildContext context) {
     final values = widget.values ?? widget.preference.values.toList();
     return TvFocusHighlight(
+      enabled: widget.enabled,
       builder: (context, focused) => ValueListenableBuilder<T>(
         valueListenable: _binding,
         builder: (context, value, _) {
           final current = values.contains(value) ? value : values.first;
           final label = widget.labelOf(current);
           return ListTile(
-            focusNode: _focusNode,
+            enabled: widget.enabled,
+            focusNode: _effectiveFocusNode,
             autofocus: widget.autofocus,
             leading: widget.icon != null
                 ? buildSettingsLeadingIconShell(
@@ -530,7 +538,7 @@ class _EnumPreferenceTileState<T extends Enum>
             isThreeLine: widget.description != null,
             titleAlignment: ListTileTitleAlignment.center,
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-            onTap: () => _showPicker(context, current),
+            onTap: widget.enabled ? () => _showPicker(context, current) : null,
           );
         },
       ),
@@ -555,9 +563,9 @@ class _EnumPreferenceTileState<T extends Enum>
     widget.onChangedValue?.call(result);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted &&
-          !_focusNode.hasFocus &&
+          !_effectiveFocusNode.hasFocus &&
           (ModalRoute.of(context)?.isCurrent ?? true)) {
-        _focusNode.requestFocus();
+        _effectiveFocusNode.requestFocus();
       }
     });
   }

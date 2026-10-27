@@ -184,14 +184,16 @@ final class SubtitleOverlay: PlatformView {
         secondary.layoutTextLabel()
     }
 
-    /// On while a subtitle track is selected. iPadOS 27 can drop these views
-    /// from frames when a fullscreen video is the only other thing on screen,
-    /// so a near-invisible backing keeps them composited with the picture the
-    /// way the OSD does.
+    /// On while a subtitle track is selected. With a fullscreen video alone on
+    /// screen, iPadOS 27 can drop these views from frames and macOS flashes the
+    /// picture on every subtitle change. A near-invisible backing keeps them
+    /// composited with the picture the way the OSD does.
     var keepsVideoComposited = false {
         didSet {
             #if canImport(UIKit)
             backgroundColor = keepsVideoComposited ? UIColor(white: 0, alpha: 0.01) : .clear
+            #else
+            layer?.backgroundColor = keepsVideoComposited ? NSColor(white: 0, alpha: 0.01).cgColor : nil
             #endif
         }
     }

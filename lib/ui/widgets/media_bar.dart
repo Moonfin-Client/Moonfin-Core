@@ -92,6 +92,9 @@ class MediaBar extends StatefulWidget {
   // Holds back the trailer only, so the slides keep advancing.
   final bool trailerPaused;
   final double height;
+  // How much of the bar's bottom a peeking home row covers. The Moonfin and
+  // MakD layouts keep their art full height and lift their content above it.
+  final double rowPeek;
   final Future<void> Function()? onNavigateDown;
   final VoidCallback? onNavigateUp;
   final VoidCallback? onNavigateLeft;
@@ -104,6 +107,7 @@ class MediaBar extends StatefulWidget {
     this.externallyPaused = false,
     this.trailerPaused = false,
     this.height = 220,
+    this.rowPeek = 0,
     this.onNavigateDown,
     this.onNavigateUp,
     this.onNavigateLeft,
@@ -122,11 +126,16 @@ class _MediaBarState extends State<MediaBar>
   static const _trailerPrepareDebounce = Duration(milliseconds: 500);
   static const _trailerResolveTimeout = Duration(seconds: 10);
   static const _trailerReadyTimeout = Duration(seconds: 5);
+  static const _mediaKitTrailerReadyTimeout = Duration(seconds: 15);
   static const _youtubeRevealBufferDelay = Duration(milliseconds: 900);
   static const _trailerFailureRetryDelay = Duration(minutes: 5);
   // Longer than the embedded player's own autoplay timeout plus the reveal
   // buffer, so its failure path always gets to run first.
   static const _trailerRevealWatchdogTimeout = Duration(seconds: 12);
+  static const _embedFailuresBeforeGivingUp = 3;
+  // A stream trailer is looked up and opened before it can play, which on a
+  // TV can outlast the slide interval.
+  static const _trailerPrepareHold = Duration(seconds: 20);
 
   final _backgroundService = GetIt.instance<BackgroundService>();
   final _playbackManager = GetIt.instance<PlaybackManager>();
@@ -172,6 +181,7 @@ class _MediaBarState extends State<MediaBar>
   double _trailerVideoOpacity = 0.0;
   String? _activeTrailerItemId;
   String? _pendingTrailerItemId;
+  DateTime? _trailerPendingSince;
   int _trailerResolveId = 0;
   bool _trailerRevealArmed = false;
   bool _isTrailerPlayingValue = false;
@@ -209,6 +219,7 @@ class _MediaBarState extends State<MediaBar>
   String? _activeWebTrailerUrl;
   String? _pendingWebTrailerUrl;
   bool _embeddedYouTubeAvailable = true;
+  int _embedFailuresInARow = 0;
   bool _sponsorBlockSeekInFlight = false;
   int _sponsorBlockToken = 0;
   String? _lastSyncedMakdBackdropUrl;
@@ -773,6 +784,7 @@ class _MediaBarState extends State<MediaBar>
       }
       final items = widget.viewModel.items;
       if (items.isEmpty) return;
+      if (_trailerStillPreparing(items)) return;
       if (_isBookshelfMode() && _currentIndex >= items.length - 1) {
         _autoAdvanceTimer?.cancel();
         return;
@@ -780,6 +792,16 @@ class _MediaBarState extends State<MediaBar>
       final nextIndex = (_currentIndex + 1) % items.length;
       _goToPage(nextIndex);
     });
+  }
+
+  /// Whether the current slide's trailer is still on its way, so the bar
+  /// waits for it rather than moving on first.
+  bool _trailerStillPreparing(List<MediaBarSlideItem> items) {
+    final since = _trailerPendingSince;
+    return since != null &&
+        _pendingTrailerItemId != null &&
+        _pendingTrailerItemId == items.elementAtOrNull(_currentIndex)?.itemId &&
+        DateTime.now().difference(since) < _trailerPrepareHold;
   }
 
   void _goToPage(int index) {
@@ -809,13 +831,13 @@ class _MediaBarState extends State<MediaBar>
         Positioned(
           left: 0,
           top: 0,
-          bottom: 0,
+          bottom: widget.rowPeek,
           child: Center(child: leftArrow),
         ),
       Positioned(
         right: nextRightInset,
         top: 0,
-        bottom: 0,
+        bottom: widget.rowPeek,
         child: Center(child: rightArrow),
       ),
     ];
@@ -957,6 +979,7 @@ class _MediaBarState extends State<MediaBar>
     _trailerPrepareTimer?.cancel();
     final resolveId = ++_trailerResolveId;
     _pendingTrailerItemId = item.itemId;
+    _trailerPendingSince = DateTime.now();
     _trailerRevealArmed = false;
     // Let slide flips settle so intermediate items never fire the trailer
     // resolution network chain. Reveal still waits _previewRevealDelay.
@@ -1052,7 +1075,10 @@ class _MediaBarState extends State<MediaBar>
     // Negotiate local trailers through the shared PlaybackInfo path (direct-play
     // when compatible, transcode otherwise) instead of a hand-built URL.
     try {
-      final trailers = await client.itemsApi.getLocalTrailers(item.itemId);
+      // Outside titles aren't on the server, so they have no local trailer.
+      final trailers = item.isExternal
+          ? const <Map<String, dynamic>>[]
+          : await client.itemsApi.getLocalTrailers(item.itemId);
       if (!mounted || resolveId != _trailerResolveId) return;
 
       final trailer = _preferredLocalTrailer(trailers);
@@ -1093,7 +1119,7 @@ class _MediaBarState extends State<MediaBar>
           ];
         }
       }
-    } else if (remoteTrailers.isEmpty) {
+    } else if (remoteTrailers.isEmpty && !item.isExternal) {
       try {
         final fullItem = await client.itemsApi.getItem(item.itemId);
         if (!mounted || resolveId != _trailerResolveId) return;
@@ -1227,13 +1253,18 @@ class _MediaBarState extends State<MediaBar>
         await player.setVolume(0);
         if (!mounted || resolveId != _trailerResolveId) return;
 
-        final media = localHeaders.isNotEmpty
-            ? Media(streamUrl, httpHeaders: localHeaders)
-            : Media(streamUrl);
         await YouTubeStreamResolver.preferAudioLanguage(
           player,
           youTubeAudioLanguage,
         );
+        final media = await YouTubeStreamResolver.previewMedia(
+          player,
+          streamUrl,
+          youTube: useYouTubeHeaders,
+          headers: localHeaders,
+          audioLanguage: youTubeAudioLanguage,
+        );
+        if (!mounted || resolveId != _trailerResolveId) return;
         await applyMpvClientCertificate(player, streamUrl);
         await player.open(media).timeout(_openTimeout);
         if (resolveId != _trailerResolveId || !_trailerShouldBeActive()) {
@@ -1493,66 +1524,21 @@ class _MediaBarState extends State<MediaBar>
     }
   }
 
+  /// mpv reports a stream as playing before any of it has arrived, so a
+  /// trailer only counts as ready once its position moves. YouTube's HLS takes
+  /// several seconds to get there, which the backdrop covers.
   Future<bool> _waitForMediaKitTrailerReady(
     Player player,
     int resolveId,
   ) async {
     if (!mounted || resolveId != _trailerResolveId) return false;
-
-    var isPlaying = player.state.playing;
-    var isBuffering = player.state.buffering;
-    var buffered = player.state.buffer;
-    var position = player.state.position;
-    if (isPlaying &&
-        (!isBuffering ||
-            buffered > Duration.zero ||
-            position > Duration.zero)) {
-      return true;
-    }
-
-    final completer = Completer<bool>();
-    late StreamSubscription<bool> playingSub;
-    late StreamSubscription<bool> bufferingSub;
-    late StreamSubscription<Duration> bufferSub;
-    late StreamSubscription<Duration> positionSub;
-
-    void checkReady() {
-      if (!completer.isCompleted &&
-          isPlaying &&
-          (!isBuffering ||
-              buffered > Duration.zero ||
-              position > Duration.zero)) {
-        completer.complete(true);
-      }
-    }
-
-    playingSub = player.stream.playing.listen((value) {
-      isPlaying = value;
-      checkReady();
-    });
-    bufferingSub = player.stream.buffering.listen((value) {
-      isBuffering = value;
-      checkReady();
-    });
-    bufferSub = player.stream.buffer.listen((value) {
-      buffered = value;
-      checkReady();
-    });
-    positionSub = player.stream.position.listen((value) {
-      position = value;
-      checkReady();
-    });
-
     try {
-      return await completer.future.timeout(
-        _trailerReadyTimeout,
-        onTimeout: () => false,
-      );
-    } finally {
-      await playingSub.cancel();
-      await bufferingSub.cancel();
-      await bufferSub.cancel();
-      await positionSub.cancel();
+      await player.stream.position
+          .firstWhere((position) => position > Duration.zero)
+          .timeout(_mediaKitTrailerReadyTimeout);
+      return true;
+    } catch (_) {
+      return false;
     }
   }
 
@@ -1748,6 +1734,15 @@ class _MediaBarState extends State<MediaBar>
     if (!_embeddedYouTubeAvailable) {
       return;
     }
+    // One video refusing the embed says nothing about the next, so that title
+    // goes without a trailer and the embed stays on for the rest. Several in a
+    // row mean the embed doesn't work on this device, and only then do
+    // trailers move to the stream path.
+    if (++_embedFailuresInARow < _embedFailuresBeforeGivingUp) {
+      _markTrailerFailed(_activeTrailerItemId);
+      _cancelTrailerPreview(retainYouTubePlayer: true);
+      return;
+    }
     _embeddedYouTubeAvailable = false;
 
     final currentItem = widget.viewModel.items.elementAtOrNull(_currentIndex);
@@ -1770,6 +1765,7 @@ class _MediaBarState extends State<MediaBar>
     if (!mounted || _activeYouTubeVideoId == null) {
       return;
     }
+    _embedFailuresInARow = 0;
 
     _trailerRevealWatchdog?.cancel();
     _youTubeRevealTimer?.cancel();
@@ -2031,7 +2027,9 @@ class _MediaBarState extends State<MediaBar>
         !isMobile &&
         widget.prefs.get(UserPreferences.navbarPosition) == NavbarPosition.left;
     final logoLeftInset = 40.0 + (hasLeftSidebar ? 88.0 : 0.0);
-    final infoHorizontalInset = hasLeftSidebar
+    // A peeking row lifts the info card level with the arrows, so it keeps
+    // clear of them the way it does beside the sidebar.
+    final infoHorizontalInset = hasLeftSidebar || widget.rowPeek > 0
         ? 72.0
         : (PlatformDetection.isTV ? 25.0 : 24.0);
     final navbarAtTop =
@@ -2077,24 +2075,9 @@ class _MediaBarState extends State<MediaBar>
                     ),
                   ),
                   ..._buildVideoOverlays(allowPersistentMedia3: true),
-                  // The gradient gives way to a playing trailer, and a trailer
-                  // that stops and restarts flips that within a frame or two.
-                  // Switching it outright flashes the bottom of the screen, so
-                  // the alpha fades instead, which hides a flip that short and
-                  // turns a real one into a transition.
-                  TweenAnimationBuilder<double>(
-                    tween: Tween<double>(end: _isTrailerPlaying ? 0.0 : 1.0),
-                    duration: const Duration(milliseconds: 250),
-                    builder: (_, shown, _) => shown <= 0.0
-                        ? const SizedBox.shrink()
-                        : _GradientOverlay(
-                            color: overlayColor,
-                            opacity: overlayOpacity * shown,
-                          ),
-                  ),
                   if (items.length > 1 && !_isTrailerPlaying)
                     Positioned(
-                      bottom: 8,
+                      bottom: 8 + widget.rowPeek,
                       left: 0,
                       right: 0,
                       child: _IndicatorDots(
@@ -2122,10 +2105,19 @@ class _MediaBarState extends State<MediaBar>
                       ),
                     ),
                   if (currentItem != null)
-                    Positioned(
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
+                    // While a trailer has the peeking row out of the way, the
+                    // shrunken card drops back down out of the picture.
+                    ListenableBuilder(
+                      listenable: NavigationLayout.trailerChromeListenable,
+                      builder: (context, child) => AnimatedPositioned(
+                        duration: const Duration(milliseconds: 200),
+                        bottom: NavigationLayout.trailerHidesChrome
+                            ? 0
+                            : widget.rowPeek,
+                        left: 0,
+                        right: 0,
+                        child: child!,
+                      ),
                       child: GestureDetector(
                         behavior: PlatformDetection.useMobileUi
                             ? HitTestBehavior.translucent
@@ -2224,6 +2216,8 @@ class _MediaBarState extends State<MediaBar>
         ? MediaQuery.of(context).padding.top + 60.0
         : 0.0;
     final effectiveTopInset = isMobile ? 0.0 : toolbarInset;
+    final visibleFraction =
+        1 - widget.rowPeek / (widget.height - effectiveTopInset);
     final contentWidth = (MediaQuery.of(context).size.width * 0.42).clamp(
       280.0,
       560.0,
@@ -2326,8 +2320,16 @@ class _MediaBarState extends State<MediaBar>
                                         overlayColor.withValues(
                                           alpha: overlayOpacity * shown * 0.78,
                                         ),
+                                        overlayColor.withValues(
+                                          alpha: overlayOpacity * shown * 0.78,
+                                        ),
                                       ],
-                                      stops: const [0.0, 0.48, 1.0],
+                                      stops: [
+                                        0.0,
+                                        0.48 * visibleFraction,
+                                        visibleFraction,
+                                        1.0,
+                                      ],
                                     ),
                                   ),
                                   child: const SizedBox.expand(),
@@ -2338,7 +2340,8 @@ class _MediaBarState extends State<MediaBar>
                   if (currentItem != null)
                     Builder(
                       builder: (context) {
-                        final contentHeight = widget.height - effectiveTopInset;
+                        final contentHeight =
+                            widget.height - effectiveTopInset - widget.rowPeek;
                         final screenWidth = MediaQuery.of(context).size.width;
                         final logoTop = contentHeight * 0.22;
                         final logoWidth = (screenWidth * 0.45).clamp(
@@ -2417,7 +2420,7 @@ class _MediaBarState extends State<MediaBar>
                     Positioned(
                       left: isMobile ? 0 : 50,
                       right: isMobile ? 0 : null,
-                      bottom: isMobile ? 24 : 20,
+                      bottom: isMobile ? 24 : 20 + widget.rowPeek,
                       child: AnimatedOpacity(
                         opacity: _isTrailerPlaying ? 0 : 1,
                         duration: const Duration(milliseconds: 250),
@@ -2475,7 +2478,7 @@ class _MediaBarState extends State<MediaBar>
                           )
                         : Positioned(
                             right: 20,
-                            bottom: 24,
+                            bottom: 24 + widget.rowPeek,
                             child: _MakdDots(
                               count: items.length,
                               current: _currentIndex,
@@ -2553,6 +2556,10 @@ class _MediaBarState extends State<MediaBar>
   }
 
   void _playFromBookshelf(BuildContext context, List<MediaBarSlideItem> items) {
+    if (items.elementAtOrNull(_currentIndex)?.isExternal ?? false) {
+      _navigateToItem(context, items);
+      return;
+    }
     if (mounted) {
       setState(() => _bookshelfLoadingOverlay = true);
     }
@@ -2806,6 +2813,10 @@ class _MediaBarState extends State<MediaBar>
   }
 
   void _playFromGallery(BuildContext context, List<MediaBarSlideItem> items) {
+    if (items.elementAtOrNull(_currentIndex)?.isExternal ?? false) {
+      _navigateToItem(context, items);
+      return;
+    }
     if (mounted) {
       setState(() => _galleryLoadingOverlay = true);
     }
@@ -2920,8 +2931,27 @@ class _MediaBarState extends State<MediaBar>
     final item = items.elementAtOrNull(_currentIndex);
     if (item != null) {
       _cancelTrailerPreview();
-      context.push(Destinations.item(item.itemId, serverId: item.serverId));
+      context.push(_destinationFor(item));
     }
+  }
+
+  /// Where a slide opens. Outside titles open in Seerr like their Home cards.
+  static String _destinationFor(
+    MediaBarSlideItem item, {
+    bool autoPlay = false,
+  }) {
+    if (item.isExternal) {
+      return Destinations.seerrMedia(
+        item.tmdbId ?? item.itemId,
+        mediaType: item.itemType == 'Series' ? 'tv' : 'movie',
+        title: item.title,
+      );
+    }
+    return Destinations.item(
+      item.itemId,
+      serverId: item.serverId,
+      autoPlay: autoPlay,
+    );
   }
 
   List<Widget> _buildVideoOverlays({bool allowPersistentMedia3 = false}) {
@@ -3059,9 +3089,7 @@ class _MediaBarState extends State<MediaBar>
     final item = items.elementAtOrNull(_currentIndex);
     if (item != null) {
       _cancelTrailerPreview();
-      context.push(
-        Destinations.item(item.itemId, serverId: item.serverId, autoPlay: true),
-      );
+      context.push(_destinationFor(item, autoPlay: true));
     }
   }
 
@@ -3180,34 +3208,6 @@ class _KenBurnsImageState extends State<_KenBurnsImage>
   Widget build(BuildContext context) {
     return ClipRect(
       child: ScaleTransition(scale: _scale, child: widget.child),
-    );
-  }
-}
-
-class _GradientOverlay extends StatelessWidget {
-  final Color color;
-  final double opacity;
-
-  const _GradientOverlay({required this.color, required this.opacity});
-
-  @override
-  Widget build(BuildContext context) {
-    return IgnorePointer(
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              color.withValues(alpha: opacity * 0.3),
-              color.withValues(alpha: opacity * 0.1),
-              color.withValues(alpha: opacity * 0.8),
-            ],
-            stops: const [0.0, 0.4, 1.0],
-          ),
-        ),
-        child: const SizedBox.expand(),
-      ),
     );
   }
 }
@@ -3608,7 +3608,7 @@ class _MakdContent extends StatelessWidget {
         const SizedBox(height: 14),
         if (!PlatformDetection.isTV)
           _MakdActionButtons(
-            onPlay: onPlay,
+            onPlay: item.isExternal ? null : onPlay,
             onInfo: onInfo,
             isMobile: isMobile,
           ),
@@ -3618,7 +3618,7 @@ class _MakdContent extends StatelessWidget {
 }
 
 class _MakdActionButtons extends StatelessWidget {
-  final VoidCallback onPlay;
+  final VoidCallback? onPlay;
   final VoidCallback onInfo;
   final bool isMobile;
 
@@ -3634,39 +3634,41 @@ class _MakdActionButtons extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        GestureDetector(
-          onTap: onPlay,
-          child: Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: isMobile ? 14 : 18,
-              vertical: isMobile ? 7 : 10,
-            ),
-            decoration: BoxDecoration(
-              color: AppColorScheme.buttonFocused,
-              borderRadius: AppRadius.circular(8),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.play_arrow_rounded,
-                  color: AppColorScheme.onButtonFocused,
-                  size: isMobile ? 20 : 24,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  l10n.play,
-                  style: TextStyle(
+        if (onPlay != null) ...[
+          GestureDetector(
+            onTap: onPlay,
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: isMobile ? 14 : 18,
+                vertical: isMobile ? 7 : 10,
+              ),
+              decoration: BoxDecoration(
+                color: AppColorScheme.buttonFocused,
+                borderRadius: AppRadius.circular(8),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.play_arrow_rounded,
                     color: AppColorScheme.onButtonFocused,
-                    fontWeight: FontWeight.w700,
-                    fontSize: isMobile ? 14 : 17,
+                    size: isMobile ? 20 : 24,
                   ),
-                ),
-              ],
+                  const SizedBox(width: 4),
+                  Text(
+                    l10n.play,
+                    style: TextStyle(
+                      color: AppColorScheme.onButtonFocused,
+                      fontWeight: FontWeight.w700,
+                      fontSize: isMobile ? 14 : 17,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-        const SizedBox(width: 10),
+          const SizedBox(width: 10),
+        ],
         GestureDetector(
           onTap: onInfo,
           child: Container(

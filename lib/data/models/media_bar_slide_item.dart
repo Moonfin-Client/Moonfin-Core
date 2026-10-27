@@ -20,6 +20,9 @@ class MediaBarSlideItem {
   final String itemType;
   final List<Map<String, dynamic>> remoteTrailers;
 
+  /// The id outside titles carry in place of a server, as on Home.
+  static const externalServerId = 'seerr';
+
   const MediaBarSlideItem({
     required this.itemId,
     required this.serverId,
@@ -40,4 +43,8 @@ class MediaBarSlideItem {
     this.itemType = 'Movie',
     this.remoteTrailers = const [],
   });
+
+  /// Whether this title came from an outside list rather than the server, so it
+  /// opens in Seerr and has nothing to play.
+  bool get isExternal => serverId == externalServerId;
 }

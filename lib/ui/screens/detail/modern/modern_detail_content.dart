@@ -1584,12 +1584,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
         heightRatio: 9 / 16,
       );
     }
-    final sorted = [...episodes]..sort((a, b) {
-        final sa = a.parentIndexNumber ?? 0;
-        final sb = b.parentIndexNumber ?? 0;
-        if (sa != sb) return sa.compareTo(sb);
-        return (a.indexNumber ?? 0).compareTo(b.indexNumber ?? 0);
-      });
+    final sorted = [...episodes]..sort(ItemDetailViewModel.compareEpisodes);
 
     // Group by season
     final Map<int, List<AggregatedItem>> seasonGroups = {};
@@ -5095,15 +5090,18 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       children: [
         ColoredBox(color: base),
         if (url != null && url.isNotEmpty) ...[
-          OfflineAwareImage(
-            imageUrl: url,
-            fit: BoxFit.cover,
-            alignment: landscape ? Alignment.centerRight : Alignment.topCenter,
-            fadeInDuration: Duration.zero,
-            sourceAspectRatio: 16 / 9,
-            maxDecodeWidth: ArtworkDecode.maxSourceWidth,
-            priority: ImageFetchPriority.high,
-            errorWidget: (context, url, error) => const SizedBox.shrink(),
+          DetailBackdropFit(
+            prefs: widget.prefs,
+            child: OfflineAwareImage(
+              imageUrl: url,
+              fit: BoxFit.cover,
+              alignment: landscape ? Alignment.centerRight : Alignment.topCenter,
+              fadeInDuration: Duration.zero,
+              sourceAspectRatio: 16 / 9,
+              maxDecodeWidth: ArtworkDecode.maxSourceWidth,
+              priority: ImageFetchPriority.high,
+              errorWidget: (context, url, error) => const SizedBox.shrink(),
+            ),
           ),
           if (item?.type == 'Person' && _randomBackdropUrl == null)
             Positioned.fill(

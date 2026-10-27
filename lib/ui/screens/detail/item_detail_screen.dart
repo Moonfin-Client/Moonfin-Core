@@ -1602,8 +1602,10 @@ class _DetailContentState extends State<_DetailContent> {
             if (backdropEnabled && !isReadableBook)
               ValueListenableBuilder<String?>(
                 valueListenable: widget.backdropUrl,
-                builder: (context, url, _) =>
-                    _Backdrop(url: url, blurAmount: blurAmount),
+                builder: (context, url, _) => DetailBackdropFit(
+                  prefs: widget.prefs,
+                  child: _Backdrop(url: url, blurAmount: blurAmount),
+                ),
               ),
             if (isReadableBook)
               const Positioned.fill(
@@ -4659,6 +4661,10 @@ class DetailActionButtons extends StatefulWidget {
   /// shuffle action for playlist items (e.g. honoring active sorting or filtering).
   final List<AggregatedItem>? playlistTracksOverride;
 
+  /// Callback when the Extras action button is pressed. When non-null, an Extras
+  /// button is included in the actions row.
+  final VoidCallback? onExtrasPressed;
+
   const DetailActionButtons({
     super.key,
     required this.viewModel,
@@ -4683,6 +4689,7 @@ class DetailActionButtons extends StatefulWidget {
     this.actionsExpanded,
     this.onActionsExpandedChanged,
     this.playlistTracksOverride,
+    this.onExtrasPressed,
   });
 
   @override
@@ -7320,8 +7327,17 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       primaryAction = playButton;
     }
 
+    final extrasButton = widget.onExtrasPressed != null
+        ? _DetailActionButton(
+            label: l10n.detailSectionExtras,
+            icon: Icons.video_library_outlined,
+            onPressed: widget.onExtrasPressed!,
+          )
+        : null;
+
     var allButtons = <Widget>[
       ?primaryAction,
+      ?extrasButton,
       for (final button in _orderedButtons(prefs)) ...[
         ?byButton[button],
         ?cancelByButton[button],
@@ -9838,13 +9854,11 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
             // folder so the book plays through, starting at this file.
             final parentId = item.rawData['ParentId']?.toString();
             if (parentId != null && parentId.isNotEmpty) {
-              final siblingData = await client.itemsApi.getItems(
-                parentId: parentId,
-                includeItemTypes: const ['Audio', 'AudioBook'],
-                sortBy: 'ParentIndexNumber,IndexNumber,SortName',
+              final siblingsRaw = await audiobookSiblingsRaw(
+                client.itemsApi,
+                parentId,
                 fields: audioChildFields,
               );
-              final siblingsRaw = (siblingData['Items'] as List?) ?? const [];
               final siblings = _mapRawItemsForServer(
                 siblingsRaw.where(isAudioChild).toList(),
                 item.serverId,
@@ -10879,6 +10893,28 @@ List<AggregatedItem> queueWithAdditionalParts(
     ...parts,
     ...queue.skip(startIndex + 1),
   ];
+}
+
+/// The Audio and AudioBook items in an audiobook file's folder. A folder
+/// holding many books can outlast the request timeout, so a failed lookup
+/// returns nothing and the file plays on its own.
+@visibleForTesting
+Future<List<dynamic>> audiobookSiblingsRaw(
+  ItemsApi itemsApi,
+  String parentId, {
+  required String fields,
+}) async {
+  try {
+    final data = await itemsApi.getItems(
+      parentId: parentId,
+      includeItemTypes: const ['Audio', 'AudioBook'],
+      sortBy: 'ParentIndexNumber,IndexNumber,SortName',
+      fields: fields,
+    );
+    return (data['Items'] as List?) ?? const [];
+  } catch (_) {
+    return const [];
+  }
 }
 
 /// Where [startPosition] lands once [parts] follow the started item. A server
@@ -16208,13 +16244,8 @@ class FilmographyRow extends StatelessWidget {
         ? 0.8 * desktopScale
         : desktopScale;
     final metadataScale = desktopScale;
-    final isRowsV2 =
-        prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2;
-    final rowScale = isRowsV2 ? 2.0 : 1.0;
-
     final posterSize = prefs.get(UserPreferences.posterSize).upToExtraLarge;
-    final cardHeight =
-        posterSize.portraitHeight.toDouble() * platformScale * rowScale;
+    final cardHeight = posterSize.portraitHeight.toDouble() * platformScale;
 
     // Check if the items are of type 'Episode' (landscape aspect ratio 16/9)
     final isEpisode = items.isNotEmpty && items.first.type == 'Episode';
@@ -16321,13 +16352,8 @@ class SeerrAppearancesRow extends StatelessWidget {
         ? 0.8 * desktopScale
         : desktopScale;
     final metadataScale = desktopScale;
-    final isRowsV2 =
-        prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2;
-    final rowScale = isRowsV2 ? 2.0 : 1.0;
-
     final posterSize = prefs.get(UserPreferences.posterSize).upToExtraLarge;
-    final cardHeight =
-        posterSize.portraitHeight.toDouble() * platformScale * rowScale;
+    final cardHeight = posterSize.portraitHeight.toDouble() * platformScale;
 
     final cardWidth = isMobile ? 120.0 : cardHeight * (2 / 3);
     final rowHeight =
@@ -16410,13 +16436,8 @@ class SeerrCrewCreditsRow extends StatelessWidget {
         ? 0.8 * desktopScale
         : desktopScale;
     final metadataScale = desktopScale;
-    final isRowsV2 =
-        prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2;
-    final rowScale = isRowsV2 ? 2.0 : 1.0;
-
     final posterSize = prefs.get(UserPreferences.posterSize).upToExtraLarge;
-    final cardHeight =
-        posterSize.portraitHeight.toDouble() * platformScale * rowScale;
+    final cardHeight = posterSize.portraitHeight.toDouble() * platformScale;
 
     final cardWidth = isMobile ? 120.0 : cardHeight * (2 / 3);
     final rowHeight =

@@ -148,6 +148,37 @@ class TmdbRepository {
     ).toString();
   }
 
+  /// What Moonbase finds on TMDB for a movie or show the server doesn't have:
+  /// overview, rating, genres, runTimeTicks, backdropPath, logoPath and
+  /// trailerUrl, with image paths relative to TMDB's image host. Null when
+  /// TMDB doesn't know the title or the call fails.
+  Future<Map<String, dynamic>?> titleDetails({
+    required String type,
+    String? tmdbId,
+    String? imdbId,
+  }) async {
+    final token = _client.accessToken;
+    if (token == null) return null;
+    final hasTmdb = tmdbId != null && tmdbId.isNotEmpty;
+    if (!hasTmdb && (imdbId == null || imdbId.isEmpty)) return null;
+    try {
+      final response = await _dio.get(
+        '${_client.baseUrl}/Moonfin/Tmdb/Details',
+        queryParameters: {
+          'type': type,
+          if (hasTmdb) 'tmdbId': tmdbId else 'imdbId': imdbId,
+        },
+        options: Options(headers: {
+          'Authorization': 'MediaBrowser Token="$token"',
+        }),
+      );
+      final data = response.data;
+      return data is Map<String, dynamic> ? data : null;
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<double?> getEpisodeRating({
     required String tmdbId,
     required int season,

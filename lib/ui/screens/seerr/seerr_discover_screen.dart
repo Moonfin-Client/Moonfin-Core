@@ -750,7 +750,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
     final platformScale =
         PlatformDetection.isTV ? 0.8 * desktopScale : desktopScale;
     final imageHeight =
-        modernImageHeight(modernPosterSize(_prefs), platformScale);
+        modernImageHeight(_prefs.get(UserPreferences.posterSize), platformScale);
     return (
       imageHeight: imageHeight,
       portraitWidth: imageHeight * 2 / 3,

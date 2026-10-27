@@ -79,9 +79,37 @@ class NavigationLayout extends StatefulWidget {
     return true;
   }
 
-  /// True while a media-bar trailer is playing; the toolbar and sidebar fade
-  /// out on TV. Focusing chrome cancels the trailer, which fades them back in.
+  /// True while a media bar trailer is playing. The toolbar and sidebar fade
+  /// out on TV and desktop, and focusing them cancels the trailer, which
+  /// fades them back in.
   static final trailerImmersiveNotifier = ValueNotifier<bool>(false);
+
+  // Set for a few seconds after the mouse moves, so the chrome is there to
+  // reach while a trailer plays on desktop.
+  static final _trailerChromeWoken = ValueNotifier<bool>(false);
+  static Timer? _trailerChromeWakeTimer;
+
+  static final trailerChromeListenable = Listenable.merge([
+    trailerImmersiveNotifier,
+    _trailerChromeWoken,
+  ]);
+
+  /// Whether a playing trailer has the toolbar, sidebar and a peeking home
+  /// row out of its way.
+  static bool get trailerHidesChrome =>
+      trailerImmersiveNotifier.value &&
+      !PlatformDetection.useMobileUi &&
+      !_trailerChromeWoken.value;
+
+  static void _wakeTrailerChrome() {
+    if (!trailerImmersiveNotifier.value) return;
+    _trailerChromeWoken.value = true;
+    _trailerChromeWakeTimer?.cancel();
+    _trailerChromeWakeTimer = Timer(
+      const Duration(seconds: 3),
+      () => _trailerChromeWoken.value = false,
+    );
+  }
 
   /// Hands focus to the navbar and reports whether there was one to take it.
   /// Callers need the answer so they only report a key as handled when focus
@@ -289,9 +317,13 @@ class _NavigationLayoutState extends State<NavigationLayout>
     };
     // Grouping only pays off when the tier draws real backdrop blurs, the
     // sheen tier never does.
-    return AppColorScheme.isGlass && GlassSettings.blursBackdrop
-        ? BackdropGroup(child: layout)
-        : layout;
+    return Listener(
+      behavior: HitTestBehavior.translucent,
+      onPointerHover: (_) => NavigationLayout._wakeTrailerChrome(),
+      child: AppColorScheme.isGlass && GlassSettings.blursBackdrop
+          ? BackdropGroup(child: layout)
+          : layout,
+    );
   }
 
   /// Keyed so moving the navbar reparents the page that is already on screen
@@ -361,11 +393,11 @@ class _NavigationLayoutState extends State<NavigationLayout>
   Widget _buildToolbar() {
     final translateWithScroll = PlatformDetection.isTV && !widget.pinTopToolbar;
     final content = _content;
-    final toolbar = ValueListenableBuilder<bool>(
-      valueListenable: NavigationLayout.trailerImmersiveNotifier,
-      builder: (context, trailerImmersive, child) {
+    final toolbar = ListenableBuilder(
+      listenable: NavigationLayout.trailerChromeListenable,
+      builder: (context, child) {
         final show = widget.showNavigationChrome &&
-            !(trailerImmersive && PlatformDetection.isTV);
+            !NavigationLayout.trailerHidesChrome;
         return AnimatedOpacity(
           opacity: show ? 1.0 : 0.0,
           duration: const Duration(milliseconds: 200),
@@ -461,11 +493,11 @@ class _NavigationLayoutState extends State<NavigationLayout>
   Widget _buildSidebar() {
     final content = _content;
 
-    final sidebar = ValueListenableBuilder<bool>(
-      valueListenable: NavigationLayout.trailerImmersiveNotifier,
-      builder: (context, trailerImmersive, child) {
+    final sidebar = ListenableBuilder(
+      listenable: NavigationLayout.trailerChromeListenable,
+      builder: (context, child) {
         final show = widget.showNavigationChrome &&
-            !(trailerImmersive && PlatformDetection.isTV);
+            !NavigationLayout.trailerHidesChrome;
         return AnimatedOpacity(
           opacity: show ? 1.0 : 0.0,
           duration: const Duration(milliseconds: 200),

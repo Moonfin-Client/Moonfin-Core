@@ -178,10 +178,15 @@ class _AddServerButtonState extends State<AddServerButton> {
           border: Border.all(
             color: accent.withValues(alpha: lit ? 0.85 : 0.45),
           ),
-          boxShadow: _focused
-              ? [BoxShadow(color: _fg(0.9), spreadRadius: 2)]
-              : const [],
         ),
+        // A ring drawn as a shadow sits under the see-through fill and lights
+        // up the whole card, so it goes on top instead
+        foregroundDecoration: _focused
+            ? BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: _fg(0.9), width: 2),
+              )
+            : null,
         child: Material(
           type: MaterialType.transparency,
           child: InkWell(

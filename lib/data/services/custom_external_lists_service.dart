@@ -25,6 +25,11 @@ class ImdbExternalListItem {
   /// The certification Moonbase looked up on TMDB, or null when it has none.
   final String? officialRating;
 
+  /// What Moonbase found for the title on TMDB, so a focused card can describe it.
+  final String? overview;
+  final List<String> genres;
+  final int? runTimeTicks;
+
   ImdbExternalListItem({
     required this.imdbId,
     this.tmdbId = '',
@@ -37,7 +42,28 @@ class ImdbExternalListItem {
     this.rating,
     this.userRating,
     this.officialRating,
+    this.overview,
+    this.genres = const [],
+    this.runTimeTicks,
   });
+
+  /// What a Home card reads for the title, in the shape a library item carries it.
+  Map<String, dynamic> get cardData => {
+        'Name': title,
+        'Type': type,
+        'Overview': overview ?? '',
+        'Genres': genres,
+        'RunTimeTicks': runTimeTicks,
+        'PosterPath': posterUrl ?? '',
+        'BackdropPath': backdropUrl ?? '',
+        'ProductionYear': year,
+        'SeerrMediaType': type == 'Series' ? 'tv' : 'movie',
+        'OfficialRating': officialRating,
+        'ProviderIds': {
+          if (imdbId.isNotEmpty) 'Imdb': imdbId,
+          if (tmdbId.isNotEmpty) 'Tmdb': tmdbId,
+        },
+      };
 
   Map<String, dynamic> toJson() => {
         'imdbId': imdbId,
@@ -51,6 +77,9 @@ class ImdbExternalListItem {
         'rating': rating,
         'userRating': userRating,
         'officialRating': officialRating,
+        'overview': overview,
+        'genres': genres,
+        'runTimeTicks': runTimeTicks,
       };
 
   factory ImdbExternalListItem.fromJson(Map<String, dynamic> json) =>
@@ -66,6 +95,9 @@ class ImdbExternalListItem {
         rating: (json['rating'] as num?)?.toDouble(),
         userRating: json['userRating'] as String?,
         officialRating: json['officialRating'] as String?,
+        overview: json['overview'] as String?,
+        genres: [for (final genre in json['genres'] as List? ?? const []) genre.toString()],
+        runTimeTicks: (json['runTimeTicks'] as num?)?.toInt(),
       );
 }
 
@@ -229,6 +261,9 @@ class CustomExternalListsService {
         final itemType = (rawItem['type'] ?? rawItem['Type']) as String? ?? 'Movie';
         final userRating = (rawItem['userRating'] ?? rawItem['UserRating']) as String?;
         final officialRating = (rawItem['officialRating'] ?? rawItem['OfficialRating']) as String?;
+        final overview = (rawItem['overview'] ?? rawItem['Overview']) as String?;
+        final genres = (rawItem['genres'] ?? rawItem['Genres']) as List?;
+        final runTimeTicks = ((rawItem['runTimeTicks'] ?? rawItem['RunTimeTicks']) as num?)?.toInt();
         // The popularity and rating sort options rely on these two fields.
         final rating =
             ((rawItem['rating'] ?? rawItem['Rating']) as num?)?.toDouble();
@@ -249,6 +284,9 @@ class CustomExternalListsService {
             rating: rating,
             popularity: popularity,
             officialRating: officialRating,
+            overview: overview,
+            genres: [for (final genre in genres ?? const []) genre.toString()],
+            runTimeTicks: runTimeTicks,
           ));
         }
       }
@@ -359,7 +397,10 @@ class CustomExternalListsService {
             .map((item) => ImdbExternalListItem.fromJson(item as Map<String, dynamic>))
             .toList();
         final hasOldCache = decoded.any((item) =>
-            item is Map && (!item.containsKey('backdropUrl') || !item.containsKey('officialRating')));
+            item is Map &&
+            (!item.containsKey('backdropUrl') ||
+                !item.containsKey('officialRating') ||
+                !item.containsKey('overview')));
         final hasBuggyCache = items.any((item) => item.imdbId.isEmpty && item.tmdbId.isEmpty);
         // Older plugins sent IMDb chart titles with the poster standing in for the backdrop
         // and no TMDB id, so that copy is dropped to pick up both once the server has them.

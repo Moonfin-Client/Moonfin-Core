@@ -135,6 +135,11 @@ void main() {
       SeasonalEffect.christmas,
       SeasonalEffect.petals,
       SeasonalEffect.halloween,
+      SeasonalEffect.valentines,
+      SeasonalEffect.easter,
+      SeasonalEffect.pride,
+      SeasonalEffect.lunar,
+      SeasonalEffect.diwali,
     ]) {
       for (final density in SeasonalDensity.values) {
         test('${effect.name} at ${density.name} starts full and stays near its target', () {
@@ -177,6 +182,20 @@ void main() {
       });
       expect(total / frames, closeTo(sim.targetCount, sim.targetCount * 0.2));
     });
+
+    for (final effect in [SeasonalEffect.lunar, SeasonalEffect.diwali]) {
+      test('${effect.name} drifts up from below instead of falling', () {
+        final sim = _sim(effect, SeasonalDensity.normal);
+        final first = {for (final p in sim.debugParticles) p.id: p.y};
+        _run(sim, 2, 1 / 60, () {});
+        final moved = [
+          for (final p in sim.debugParticles)
+            if (first[p.id] case final y?) p.y - y,
+        ];
+        expect(moved, isNotEmpty);
+        expect(moved.every((dy) => dy < 0), isTrue);
+      });
+    }
 
     for (final effect in [SeasonalEffect.halloween, SeasonalEffect.petals]) {
       test('${effect.name} keeps a few flyers crossing the screen', () {

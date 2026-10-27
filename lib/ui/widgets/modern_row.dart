@@ -11,18 +11,10 @@ import '../../util/overview_text.dart';
 import '../../util/platform_detection.dart';
 import 'rating_display.dart';
 
-/// The card size a Modern row draws at. Modern posters are twice this size,
-/// so it starts from Small when nothing is saved and stops at Extra Large,
-/// past which a row is taller than a TV screen.
-PosterSize modernPosterSize(UserPreferences prefs) {
-  if (!prefs.containsPreference(UserPreferences.posterSize)) {
-    return PosterSize.small;
-  }
-  return prefs.get(UserPreferences.posterSize).upToExtraLarge;
-}
-
+/// A Modern poster is the same height as a classic portrait card at the same
+/// card size.
 double modernImageHeight(PosterSize posterSize, double platformScale) =>
-    posterSize.portraitHeight * platformScale * 2;
+    posterSize.portraitHeight * platformScale;
 
 /// Room under a Modern poster for the title, the metadata line, the ratings
 /// and three lines of overview. Phones only show the title and one line.

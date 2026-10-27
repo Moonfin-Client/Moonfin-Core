@@ -40,9 +40,13 @@ class _Screensaver extends Fake implements ScreensaverController {
 
 class _Backend extends Fake implements PlayerBackend {
   LiveSeekWindow? window;
+  final volumes = <double>[];
 
   @override
   LiveSeekWindow? get liveSeekWindow => window;
+
+  @override
+  Future<void> setVolume(double volume) async => volumes.add(volume);
 
   @override
   Stream<void> get tracksChangedStream => const Stream.empty();
@@ -370,4 +374,66 @@ void main() {
       await tester.pumpWidget(const SizedBox());
     });
   }
+
+  // Issue #1921: Live TV on desktop gets a volume slider and mute button.
+  group('volume', () {
+    Slider slider(WidgetTester tester) =>
+        tester.widget<Slider>(find.byType(Slider));
+
+    testWidgets(
+      'desktop starts at the saved level and keeps a new one',
+      (tester) async {
+        PlatformDetection.setTvMode(false);
+        final prefs = GetIt.instance<UserPreferences>();
+        await prefs.set(UserPreferences.playerVolume, 40.0);
+        await pumpPlayer(tester);
+
+        expect(backend.volumes, [40]);
+        expect(slider(tester).value, 0.4);
+
+        slider(tester).onChanged!(0.75);
+        await tester.pump(const Duration(milliseconds: 500));
+        expect(backend.volumes.last, 75);
+        expect(prefs.get(UserPreferences.playerVolume), 75);
+
+        manager.reportVolumeState(volume: 20, isMuted: false);
+        await tester.pump();
+        expect(slider(tester).value, 0.2);
+
+        await tester.pumpWidget(const SizedBox());
+      },
+      variant: TargetPlatformVariant.only(TargetPlatform.linux),
+    );
+
+    testWidgets(
+      'desktop mute goes back to the level it left',
+      (tester) async {
+        PlatformDetection.setTvMode(false);
+        await pumpPlayer(tester);
+        slider(tester).onChanged!(0.6);
+        await tester.pump();
+
+        await tester.tap(find.byTooltip(l10n.mute));
+        await tester.pump();
+        expect(backend.volumes.last, 0);
+
+        await tester.tap(find.byTooltip(l10n.unmute));
+        await tester.pump();
+        expect(backend.volumes.last, 60);
+
+        await tester.pumpWidget(const SizedBox());
+      },
+      variant: TargetPlatformVariant.only(TargetPlatform.linux),
+    );
+
+    testWidgets('TV leaves the volume to the remote', (tester) async {
+      await pumpPlayer(tester);
+
+      expect(find.byType(Slider), findsNothing);
+      expect(find.byTooltip(l10n.mute), findsNothing);
+      expect(backend.volumes, isEmpty);
+
+      await tester.pumpWidget(const SizedBox());
+    });
+  });
 }

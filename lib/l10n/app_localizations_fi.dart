@@ -584,32 +584,32 @@ class AppLocalizationsFi extends AppLocalizations {
       'Mukautetut teemat muuttavat Moonfinin ulkoasua kauttaaltaan. Valitse tyyliisi sopiva vaihtoehto.';
 
   @override
-  String get keyboardStyle => 'Keyboard Style';
+  String get keyboardStyle => 'Näppäimistötyyli';
 
   @override
   String get keyboardStyleDescription =>
-      'Native uses your TV\'s own keyboard. Classic is the original Moonfin keyboard. Glass is a frosted panel with larger keys. Docked fills the bottom of the screen and shows what you type above the keys.';
+      'Native-tilassa käytetään television omaa näppäimistöä. Classic on alkuperäinen Moonfin-näppäimistö. Glass on himmeä paneeli, jossa on suuremmat näppäimet. Docked-tilassa näppäimistö täyttää näytön alaosan ja näyttää kirjoittamasi tekstin näppäinten yläpuolella.';
 
   @override
-  String get keyboardStyleNative => 'Native';
+  String get keyboardStyleNative => 'Natiivi';
 
   @override
-  String get keyboardStyleClassic => 'Classic';
+  String get keyboardStyleClassic => 'Klassinen';
 
   @override
-  String get keyboardStyleGlass => 'Glass';
+  String get keyboardStyleGlass => 'Lasi';
 
   @override
-  String get keyboardStyleDocked => 'Docked';
+  String get keyboardStyleDocked => 'Telakoituna';
 
   @override
-  String get keyboardSpace => 'space';
+  String get keyboardSpace => 'välilyönti';
 
   @override
-  String get keyboardHoldForAccents => 'hold for accents';
+  String get keyboardHoldForAccents => 'varata aksentteja varten';
 
   @override
-  String get keyboardClose => 'close';
+  String get keyboardClose => 'sulje';
 
   @override
   String get controller => 'Ohjain';
@@ -2962,7 +2962,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get savedMediaPlayFromStart => 'Toista alusta alkaen';
 
   @override
-  String get savedMediaGoToDetails => 'Siirry yksityiskohtiin';
+  String get savedMediaGoToDetails => 'Katso lisätietoja';
 
   @override
   String get savedMediaDeleteDownload => 'Poista lataus';
@@ -4875,6 +4875,13 @@ class AppLocalizationsFi extends AppLocalizations {
       'Valitse eri mediapalkkityylien välillä tai poista mediapalkki käytöstä';
 
   @override
+  String get peekHomeRows => 'Peek Home Rows';
+
+  @override
+  String get peekHomeRowsDescription =>
+      'Show the top half of the first row along the bottom of the media bar';
+
+  @override
   String get mediaBarModeMoonfin => 'Moonfin';
 
   @override
@@ -4963,7 +4970,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get trailerCaptionsDescription =>
-      'Näytä YouTube-trailereiden tekstitykset mediapalkissa';
+      'Näytä tekstitykset YouTube-trailereissa';
 
   @override
   String get episodePreview => 'Jakson esikatselu';
@@ -5304,7 +5311,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get communityRating => 'Yhteisön luokitus';
 
   @override
-  String get ratings => 'Arviot';
+  String get ratings => 'Arvostelut';
 
   @override
   String get additionalRatings => 'Lisäluokitukset';
@@ -12357,6 +12364,60 @@ class AppLocalizationsFi extends AppLocalizations {
       'Lajittele ääni-rivit nousevaan tai laskevaan järjestykseen.';
 
   @override
+  String get sorting => 'Sorting';
+
+  @override
+  String get imdbRowsSorting => 'IMDb Row Sorting';
+
+  @override
+  String get imdbRowsSortingDescription =>
+      'Sort IMDb rows by name, release date, rating, and more.';
+
+  @override
+  String get imdbRowsSortOrderDescription =>
+      'Sort IMDb rows in ascending or descending order.';
+
+  @override
+  String get tmdbRowsSorting => 'TMDB Row Sorting';
+
+  @override
+  String get tmdbRowsSortingDescription =>
+      'Sort TMDB rows by name, release date, rating, and more.';
+
+  @override
+  String get tmdbRowsSortOrderDescription =>
+      'Sort TMDB rows in ascending or descending order.';
+
+  @override
+  String get seerrRowsSorting => 'Seerr Row Sorting';
+
+  @override
+  String get seerrRowsSortingDescription =>
+      'Sort Seerr rows by name, release date, rating, and more.';
+
+  @override
+  String get seerrRowsSortOrderDescription =>
+      'Sort Seerr rows in ascending or descending order.';
+
+  @override
+  String get externalRowSortDefault => 'Default (List Order)';
+
+  @override
+  String get externalRowSortName => 'Name';
+
+  @override
+  String get externalRowSortReleaseDate => 'Release Date';
+
+  @override
+  String get externalRowSortRating => 'Rating';
+
+  @override
+  String get externalRowSortPopularity => 'Popularity';
+
+  @override
+  String get externalRowSortShuffle => 'Shuffle';
+
+  @override
   String get audioPlaylists => 'Äänisoittolistat';
 
   @override
@@ -12444,11 +12505,12 @@ class AppLocalizationsFi extends AppLocalizations {
       'Käytä FFmpeg (audio) ja libgav1 (AV1) ennen laitteistodekoodeja. Poista käytöstä, jos HDMI-äänen läpivienti katkeaa.';
 
   @override
-  String get hevcSoftwareDirectPlay => 'Direct Play HEVC (Software Decode)';
+  String get hevcSoftwareDirectPlay =>
+      'HEVC:n suora toisto (ohjelmistopohjainen dekoodaus)';
 
   @override
   String get hevcSoftwareDirectPlaySubtitle =>
-      'Play HEVC up to 1080p from the original file instead of asking the server to transcode it. This Apple TV decodes it in software, so heavy 10-bit or high bitrate files may stutter.';
+      'Toista HEVC-tiedostoja jopa 1080p-tarkkuudella suoraan alkuperäisestä tiedostosta sen sijaan, että pyytäisit palvelinta koodaamaan sen uudelleen. Tämä Apple TV purkaa tiedoston ohjelmistollisesti, joten raskaat 10-bittiset tai korkean bittinopeuden tiedostot saattavat pätkiä.';
 
   @override
   String get useExternalPlayer => 'Käytä aina ulkoista soitinta';
@@ -13161,9 +13223,9 @@ class AppLocalizationsFi extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count odottaa sinua',
-      one: '1 odottaa sinua',
-      zero: 'Ei ketään odottamassa',
+      other: '$count waiting for you',
+      one: '1 waiting for you',
+      zero: 'Nothing waiting',
     );
     return '$_temp0';
   }
@@ -13521,7 +13583,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get analyticsTopAuthors => 'Huippukirjoittajat';
 
   @override
-  String get analyticsTopContributors => 'Parhaat Avustajat';
+  String get analyticsTopContributors => 'Parhaat kirjoittajat';
 
   @override
   String analyticsLibrariesCount(int count) {
@@ -14246,7 +14308,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String sortCurrent(String option) {
-    return 'Sort: $option';
+    return 'Lajittele: $option';
   }
 
   @override
@@ -15398,7 +15460,22 @@ class AppLocalizationsFi extends AppLocalizations {
   String get homeScreenBackdrop => 'Aloitusnäytön taustakuva';
 
   @override
+  String get homeScreenBackdropFullScreen => 'Full Screen';
+
+  @override
+  String get homeScreenBackdropCorner => 'Corner';
+
+  @override
   String get detailsScreenBackdrop => 'Tietonäytön taustakuva';
+
+  @override
+  String get detailsBackdropSize => 'Backdrop Size';
+
+  @override
+  String get detailsBackdropFullScreen => 'Full Screen';
+
+  @override
+  String get detailsBackdropFit => 'Fit';
 
   @override
   String get libraryBackdrops => 'Kirjaston taustakuvat';
@@ -15674,7 +15751,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String recordPromptTitle(String name) {
-    return 'Record $name';
+    return 'Tallennus $name';
   }
 
   @override
@@ -15683,32 +15760,32 @@ class AppLocalizationsFi extends AppLocalizations {
       minutes,
       locale: localeName,
       other:
-          'This showing started $minutes minutes ago, so the recording will miss the start.',
-      one: 'This showing started 1 minute ago, so the recording will miss the start.',
+          'Tämä esitys alkoi $minutes muutama minuutti sitten, joten tallenteesta jää alku pois.',
+      one: 'Tämä esitys alkoi minuutti sitten, joten tallenteesta jää alku pois.',
     );
     return '$_temp0';
   }
 
   @override
   String get recordPromptAlsoRecordLater =>
-      'Also record the future showing to get a complete recording?';
+      'Tallennetaanko myös tuleva esitys, jotta tallenne olisi täydellinen?';
 
   @override
   String get recordPromptSearchLater =>
-      'Also record a future showing automatically once one is found, to get a complete recording?';
+      'Kokoa myös tulevat esitykset automaattisesti, kun niitä löytyy, jotta tallenne olisi täydellinen?';
 
   @override
-  String get recordPromptNow => 'Now';
+  String get recordPromptNow => 'Nyt';
 
   @override
-  String get recordPromptLater => 'Future showing';
+  String get recordPromptLater => 'Tuleva esitys';
 
   @override
   String recordPromptAired(int minutes) {
     String _temp0 = intl.Intl.pluralLogic(
       minutes,
       locale: localeName,
-      other: '$minutes min already aired',
+      other: '$minutes min on jo esitetty',
       one: '1 min already aired',
     );
     return '$_temp0';
@@ -15716,49 +15793,48 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get recordPromptUncertainMatch =>
-      'Matched by title and description only. Check it\'s the same program.';
+      'Hakutulokset perustuvat ainoastaan otsikkoon ja kuvaukseen. Tarkista, että kyseessä on sama ohjelma.';
 
   @override
   String get recordPromptDescriptionsDiffer =>
-      'The descriptions differ, so this may be a different program.';
+      'Kuvaukset eroavat toisistaan, joten kyseessä saattaa olla eri ohjelma.';
 
   @override
   String recordPromptSameEpisode(int season, int episode) {
-    return 'Same episode (S${season}E$episode)';
+    return 'Sama jakso (S${season}E$episode)';
   }
 
   @override
-  String get recordPromptAlreadyScheduled => 'Already set to record';
+  String get recordPromptAlreadyScheduled => 'On jo asetettu tallennukseen';
 
   @override
-  String get recordPromptTomorrow => 'Tomorrow';
+  String get recordPromptTomorrow => 'Huomenna';
 
   @override
-  String get recordNowOnly => 'Record Now Only';
+  String get recordNowOnly => 'Tallenna vain kerran';
 
   @override
   String recordNowAnd(String when) {
-    return 'Record Now and $when';
+    return 'Tallenna nyt ja $when';
   }
 
   @override
-  String get recordNowAndLater => 'Record Now and Future Showing';
+  String get recordNowAndLater => 'Tallennus nyt ja tulevat esitykset';
 
   @override
   String recordOnlyLater(String when) {
-    return 'Record $when Only';
+    return 'Tallenna $when ainoastaan';
   }
 
   @override
-  String get recordLaterShowingOnly => 'Record Future Showing Only';
+  String get recordLaterShowingOnly => 'Näytä vain tulevat tallenteet';
 
   @override
-  String get laterShowingOnlyRequested =>
-      'The future showing will be recorded.';
+  String get laterShowingOnlyRequested => 'Tuleva esitys tallennetaan.';
 
   @override
   String get unableToRequestLaterShowingOnly =>
-      'Couldn\'t request the future showing, so nothing will be recorded.';
+      'Osoitusta ei voitu pyytää, joten mitään ei tallenneta.';
 
   @override
   String get laterShowingRequested =>
@@ -15781,75 +15857,75 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String trailerNumber(int number) {
-    return 'Trailer $number';
+    return 'Traileri $number';
   }
 
   @override
-  String get subtitled => 'Subtitled';
+  String get subtitled => 'Tekstitetty';
 
   @override
-  String get rommAccount => 'RomM account';
+  String get rommAccount => 'RomM-tili';
 
   @override
   String get rommAccountIntro =>
-      'Link your RomM account to play from your own RomM library and keep your saves in RomM.';
+      'Yhdistä RomM-tilisi, jotta voit pelata omasta RomM-kirjastostasi ja tallentaa pelitilanteesi RomM:ään.';
 
   @override
-  String get rommLinkAccount => 'Link RomM account';
+  String get rommLinkAccount => 'Yhdistä RomM-tili';
 
   @override
   String get rommLinkInstructions =>
-      'Sign in to RomM and enter this code to link your account.';
+      'Kirjaudu sisään RomM:ään ja syötä tämä koodi liittääksesi tilisi.';
 
   @override
   String rommLinkScanOrVisit(String url) {
-    return 'Scan the QR code with your phone, or go to $url';
+    return 'Skannaa QR-koodi puhelimellasi tai siirry osoitteeseen $url';
   }
 
   @override
-  String get rommOpen => 'Open RomM';
+  String get rommOpen => 'Avaa RomM';
 
   @override
   String get rommWaitingForApproval =>
-      'Waiting for you to approve the code in RomM...';
+      'Odotan, että hyväksyt koodin RomM:ssä...';
 
   @override
   String rommLinkedAs(String username) {
-    return 'Linked as $username';
+    return 'Liitetty nimellä $username';
   }
 
   @override
-  String get rommLinked => 'Your RomM account is linked.';
+  String get rommLinked => 'RomM-tilisi on linkitetty.';
 
   @override
   String get rommUnlinkNote =>
-      'Unlinking stops Moonfin from using your RomM key. The key stays in RomM until you remove it from your API tokens there.';
+      'Linkityksen poistaminen estää Moonfinia käyttämästä RomM-avainta. Avain säilyy RomM:ssä, kunnes poistat sen sieltä API-tunnisteiden joukosta.';
 
   @override
-  String get rommUnlink => 'Unlink';
+  String get rommUnlink => 'Poista linkki';
 
   @override
   String get rommLinkExpired =>
-      'The code expired before it was approved. Link again to get a new one.';
+      'Koodi vanhentui ennen kuin se ehdittiin hyväksyä. Napsauta linkkiä uudelleen saadaksesi uuden koodin.';
 
   @override
-  String get rommLinkDenied => 'The link was turned down in RomM.';
+  String get rommLinkDenied => 'Linkki hylättiin RomM:ssä.';
 
   @override
   String get rommUnreachable =>
-      'Moonfin couldn\'t reach RomM. Try again in a moment.';
+      'Moonfin ei saanut yhteyttä RomM:ään. Yritä uudelleen hetken kuluttua.';
 
   @override
-  String get rommNotAvailable => 'This server has no RomM library.';
+  String get rommNotAvailable => 'Tällä palvelimella ei ole RomM-kirjastoa.';
 
   @override
-  String get rommAccountLoadFailed => 'Couldn\'t load your RomM account.';
+  String get rommAccountLoadFailed => 'RomM-tiliäsi ei voitu ladata.';
 
   @override
-  String get reviews => 'Reviews';
+  String get reviews => 'Arvostelut';
 
   @override
-  String get detailSectionReviews => 'Reviews';
+  String get detailSectionReviews => 'Arvostelut';
 
   @override
   String spotlightReviewsCount(int count) {
@@ -15863,45 +15939,45 @@ class AppLocalizationsFi extends AppLocalizations {
   }
 
   @override
-  String get readOnTmdb => 'Read on TMDB';
+  String get readOnTmdb => 'Lue lisää TMDB:stä';
 
   @override
   String get addServerButtonSubtitle =>
-      'By address, or with a Plex or Emby Connect account';
+      'Osoitteen perusteella tai Plex- tai Emby Connect -tilin avulla';
 
   @override
-  String get addServerChooseHow => 'Choose how you\'d like to connect.';
+  String get addServerChooseHow => 'Valitse, miten haluat muodostaa yhteyden.';
 
   @override
   String get addServerAddressChoice =>
-      'Jellyfin or Emby on your network or online';
+      'Jellyfin tai Emby verkossasi tai verkossa';
 
   @override
-  String get addServerPlexChoice => 'Use your Plex account to find its servers';
+  String get addServerPlexChoice => 'Etsi palvelimet Plex-tilisi avulla';
 
   @override
   String get addServerAddressHelp =>
-      'The same address you\'d open in a browser, including the port.';
+      'Sama osoite, jonka avaisit selaimessa, portti mukaan lukien.';
 
   @override
   String get addServerDetectNote =>
-      'Works with Jellyfin and Emby. A Plex address opens the Plex sign-in.';
+      'Toimii Jellyfinin ja Embyn kanssa. Plex-osoite avaa Plexin kirjautumissivun.';
 
   @override
   String addServerChecking(String address) {
-    return 'Checking $address';
+    return 'Tarkistaminen $address';
   }
 
   @override
   String get addServerUnreachableDetail =>
-      'Check the address and port, and that the server is running.';
+      'Tarkista osoite ja portti sekä se, että palvelin on käynnissä.';
 
   @override
-  String get addServerFound => 'Server found';
+  String get addServerFound => 'Palvelin löytyi';
 
   @override
-  String get addServerFoundNote => 'Continue to choose who\'s signing in.';
+  String get addServerFoundNote => 'Jatka valitsemalla, kuka kirjautuu sisään.';
 
   @override
-  String get addServerUseDifferentAddress => 'Use a different address';
+  String get addServerUseDifferentAddress => 'Käytä toista osoitetta';
 }

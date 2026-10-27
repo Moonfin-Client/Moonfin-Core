@@ -25,7 +25,6 @@ import '../../../data/repositories/seerr_repository.dart';
 import '../../../data/services/seerr/seerr_discover_sliders.dart';
 import '../../../di/providers.dart';
 import '../../../util/idiom/app_ui_idiom.dart';
-import '../../../util/insecure_certificates.dart';
 import '../../../platform/web_runtime_config.dart';
 import '../../../playback/display_hdr_probe.dart';
 import '../../../util/focus/dpad_keys.dart';
@@ -111,6 +110,7 @@ import 'subtitle_settings_screen.dart';
 import '../../../preference/detail_metadata_layout.dart';
 import '../../../preference/detail_section_layout.dart';
 import '../detail/detail_buttons.dart';
+import '../detail/playlist_sort_filter_bar.dart';
 import '../playback/osd_buttons.dart';
 import '../syncplay/syncplay_screen.dart';
 

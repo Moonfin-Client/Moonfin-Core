@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
+import 'overlay_sheet.dart';
+
 const _kCardRadius = 20.0;
 const _kCardMaxWidth = 700.0;
 const _kMoonfinCardColor = Color(0xCC111528);
@@ -75,4 +77,47 @@ class LoginScaffold extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Sign-in pages are opened with go, so the router has nothing to pop and Back
+/// would offer to exit the app, or on newer Android close it outright. This
+/// hands Back to [onBack] instead, unless a dialog sits on top of the page.
+class SignInBackScope extends StatefulWidget {
+  final VoidCallback onBack;
+  final Widget child;
+
+  const SignInBackScope({super.key, required this.onBack, required this.child});
+
+  @override
+  State<SignInBackScope> createState() => _SignInBackScopeState();
+}
+
+class _SignInBackScopeState extends State<SignInBackScope> {
+  @override
+  void initState() {
+    super.initState();
+    InlineBackInterceptor.push(_handleBack);
+  }
+
+  @override
+  void dispose() {
+    InlineBackInterceptor.remove(_handleBack);
+    super.dispose();
+  }
+
+  bool _handleBack() {
+    if (!mounted || ModalRoute.of(context)?.isCurrent != true) return false;
+    widget.onBack();
+    return true;
+  }
+
+  // The scope is what makes Android hand Back to the app on a first page.
+  @override
+  Widget build(BuildContext context) => PopScope(
+    canPop: false,
+    onPopInvokedWithResult: (didPop, _) {
+      if (!didPop) _handleBack();
+    },
+    child: widget.child,
+  );
 }

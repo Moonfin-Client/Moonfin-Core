@@ -61,6 +61,59 @@ bool detailUsesLandscapeLayout(BuildContext context) =>
     PlatformDetection.useDesktopUi ||
     MediaQuery.orientationOf(context) == Orientation.landscape;
 
+/// A phone held upright can show the whole backdrop under the toolbar, fading
+/// into the page below it, instead of zooming it to fill the screen. On a
+/// phone shaped screen that picture ends about where the title starts.
+class DetailBackdropFit extends StatelessWidget {
+  final Widget child;
+  final UserPreferences prefs;
+
+  const DetailBackdropFit({super.key, required this.child, required this.prefs});
+
+  // Eased stops, so the picture melts into the page rather than ending on a line
+  static const _fade = LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: [
+      Color(0x00FFFFFF),
+      Color(0xFFFFFFFF),
+      Color(0xFFFFFFFF),
+      Color(0xD9FFFFFF),
+      Color(0x80FFFFFF),
+      Color(0x26FFFFFF),
+      Color(0x00FFFFFF),
+    ],
+    stops: [0, 0.15, 0.6, 0.68, 0.8, 0.92, 1.0],
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    final fits =
+        PlatformDetection.useMobileUi &&
+        !detailUsesLandscapeLayout(context) &&
+        prefs.get(UserPreferences.detailsBackdropSize) ==
+            UserPreferences.detailsBackdropFit;
+    if (!fits) return child;
+    return Padding(
+      padding: EdgeInsets.only(
+        top: MediaQuery.paddingOf(context).top +
+            TopToolbar.baseHeightFor(context),
+      ),
+      child: Align(
+        alignment: Alignment.topCenter,
+        child: AspectRatio(
+          aspectRatio: 16 / 9,
+          child: ShaderMask(
+            blendMode: BlendMode.dstIn,
+            shaderCallback: _fade.createShader,
+            child: child,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 /// The Classic poster, which is the only detail style that has one.
 Size classicDetailPosterSize(BuildContext context, {UserPreferences? prefs}) {
   if (!useDesktopDetailLayout(context)) {

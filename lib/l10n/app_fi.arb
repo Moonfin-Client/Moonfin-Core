@@ -7190,7 +7190,7 @@
     "analyticsCombinedAcrossLibraries": "Yhdistetty analytiikka kaikista mediakirjastoista.",
     "analyticsTopArtists": "Huippuartistit",
     "analyticsTopAuthors": "Huippukirjoittajat",
-    "analyticsTopContributors": "Parhaat Avustajat",
+    "analyticsTopContributors": "Parhaat kirjoittajat",
     "analyticsLibrariesCount": "{count, plural, =1{1 kirjasto} other{{count} kirjastoa}}",
     "@analyticsLibrariesCount": {
         "placeholders": {
@@ -12668,7 +12668,7 @@
     "@friendsRequests": {
         "description": "Entry that opens pending friend requests"
     },
-    "friendsRequestCount": "{count, plural, =0{Ei ketään odottamassa} =1{1 odottaa sinua} other{{count} odottaa sinua}}",
+    "friendsRequestCount": "{count, plural, =0{Nothing waiting} =1{1 waiting for you} other{{count} waiting for you}}",
     "@friendsRequestCount": {
         "description": "How many friend requests wait for an answer",
         "placeholders": {
@@ -15775,5 +15775,38 @@
     "addServerUseDifferentAddress": "Käytä toista osoitetta",
     "@addServerUseDifferentAddress": {
         "description": "Add Server dialog: goes back to the address field instead of keeping the server that was found"
-    }
+    },
+    "peekHomeRows": "Peek Kotirivit",
+    "@peekHomeRows": {
+        "description": "Title of the media bar setting that lets the first home row show over the bottom of the media bar"
+    },
+    "peekHomeRowsDescription": "Näytä ensimmäisen rivin yläpuoli mediapalkin alareunassa",
+    "@peekHomeRowsDescription": {
+        "description": "Description of the Peek Home Rows media bar setting"
+    },
+    "homeScreenBackdropFullScreen": "Koko näyttö",
+    "@homeScreenBackdropFullScreen": {
+        "description": "Home Screen Backdrop option that fills the whole screen with the focused item's backdrop"
+    },
+    "homeScreenBackdropCorner": "Kulma",
+    "@homeScreenBackdropCorner": {
+        "description": "Home Screen Backdrop option that shows the focused item's backdrop in the top right corner, fading into the background like the Google TV home screen"
+    },
+    "detailsBackdropSize": "Taustakuvan koko",
+    "@detailsBackdropSize": {
+        "description": "Setting on phones for how big the backdrop image behind the item details screen is drawn"
+    },
+    "detailsBackdropFullScreen": "Koko näyttö",
+    "@detailsBackdropFullScreen": {
+        "description": "Backdrop Size option that zooms the backdrop to fill the whole details screen"
+    },
+    "detailsBackdropFit": "Sovita",
+    "@detailsBackdropFit": {
+        "description": "Backdrop Size option that shows the whole backdrop across the top of the details screen, fading into the page below it"
+    },
+    "sorting": "Lajittelu",
+    "imdbRowsSorting": "IMDb:n rivien lajittelu",
+    "imdbRowsSortingDescription": "Lajittele IMDb-rivit nimen, julkaisupäivän, arvosanan ja muiden kriteerien mukaan.",
+    "imdbRowsSortOrderDescription": "Lajittele IMDb-rivit nousevaan tai laskevaan järjestykseen.",
+    "tmdbRowsSorting": "TMDB:n rivien lajittelu"
 }

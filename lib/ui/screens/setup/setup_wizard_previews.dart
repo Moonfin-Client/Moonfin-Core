@@ -463,20 +463,6 @@ Widget _moonfinBar(BuildContext context, List<MediaBarSlideItem> items) {
     fit: StackFit.expand,
     children: [
       _artwork(item.backdropUrl),
-      DecoratedBox(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              overlay.withValues(alpha: op * 0.3),
-              overlay.withValues(alpha: op * 0.1),
-              overlay.withValues(alpha: op * 0.8),
-            ],
-            stops: const [0.0, 0.4, 1.0],
-          ),
-        ),
-      ),
       if (!_phone)
         Positioned(
           top: 56,

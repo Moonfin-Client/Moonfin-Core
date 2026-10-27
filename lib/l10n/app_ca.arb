@@ -1283,7 +1283,7 @@
     "@downloadSubtitlesLabel": {
         "description": "Label for the download subtitles option"
     },
-    "searchOpenSubtitlesPlugin": "Cerca amb el connector OpenSubtitles",
+    "searchOpenSubtitlesPlugin": "Cerca amb OpenSubtitles",
     "@searchOpenSubtitlesPlugin": {
         "description": "Subtitle for the download subtitles option"
     },
@@ -9139,7 +9139,7 @@
     "@trailerCaptions": {
         "description": "Setting for YouTube trailer captions"
     },
-    "trailerCaptionsDescription": "Mostra els subtítols dels tràilers de YouTube a la barra de mitjans",
+    "trailerCaptionsDescription": "Mostra els subtítols als tràilers de YouTube",
     "@trailerCaptionsDescription": {
         "description": "Description for YouTube trailer captions"
     },
@@ -15203,5 +15203,605 @@
     "@playbackInfoDroppedFrames": {
         "description": "Playback information row label: how many video frames the player skipped"
     },
-    "sortServerOrder": "Ordre del servidor"
+    "sortServerOrder": "Ordre del servidor",
+    "signInWithPlex": "Inicia la sessió amb Plex",
+    "@signInWithPlex": {
+        "description": "Plex sign-in option label and title of the Plex sign-in screen"
+    },
+    "plexLinkInstructions": "Ves a plex.tv/link des de qualsevol dispositiu i introdueix aquest codi",
+    "@plexLinkInstructions": {
+        "description": "Instructions above the code on the Plex sign-in screen"
+    },
+    "plexOpenLink": "Obre plex.tv/link",
+    "@plexOpenLink": {
+        "description": "Button that opens plex.tv/link in the browser with the code filled in"
+    },
+    "plexWaitingForApproval": "S'està esperant que aprovis el codi...",
+    "@plexWaitingForApproval": {
+        "description": "Status shown while the app waits for the Plex code to be approved"
+    },
+    "plexSignInWithPassword": "Inicia la sessió amb una contrasenya",
+    "@plexSignInWithPassword": {
+        "description": "Button on the Plex sign-in screen that swaps the code for an email or username and password form"
+    },
+    "plexVerificationCode": "Codi de verificació",
+    "@plexVerificationCode": {
+        "description": "Field for the account's two-step verification code, shown once Plex asks for it"
+    },
+    "plexNoServers": "No s'ha trobat cap servidor Plex en aquest compte",
+    "@plexNoServers": {
+        "description": "Shown when the Plex account has no servers"
+    },
+    "seriesRecordingSkipsShowing": "L'enregistrament de la sèrie ometrà aquesta emissió",
+    "@seriesRecordingSkipsShowing": {
+        "description": "A series recording rule exists, but this showing won't record, for example because it is a repeat or the episode is already in the library"
+    },
+    "seriesRecordingEpisodesQuestion": "Quins episodis s'han d'enregistrar?",
+    "@seriesRecordingEpisodesQuestion": {
+        "description": "Prompt in the dialog that chooses which episodes a series recording takes"
+    },
+    "seriesRecordingAllEpisodes": "Tots els episodis",
+    "@seriesRecordingAllEpisodes": {
+        "description": "Series recording choice that records every showing, repeats included"
+    },
+    "seriesRecordingAllEpisodesDescription": "Totes les emissions, incloses les reposicions",
+    "@seriesRecordingAllEpisodesDescription": {
+        "description": "Explains the All Episodes series recording choice"
+    },
+    "seriesRecordingNotRecordedEpisodes": "Episodis encara no enregistrats",
+    "@seriesRecordingNotRecordedEpisodes": {
+        "description": "Series recording choice that skips episodes already in the library"
+    },
+    "seriesRecordingNotRecordedEpisodesDescription": "Omet els episodis que ja són a la teva biblioteca i enregistra cada episodi una sola vegada",
+    "@seriesRecordingNotRecordedEpisodesDescription": {
+        "description": "Explains the Episodes Not Already Recorded series recording choice"
+    },
+    "seriesRecordingNewEpisodesOnly": "Només episodis nous",
+    "@seriesRecordingNewEpisodesOnly": {
+        "description": "Series recording choice that records only first airings"
+    },
+    "seriesRecordingNewEpisodesOnlyDescription": "Només primeres emissions, sense reposicions",
+    "@seriesRecordingNewEpisodesOnlyDescription": {
+        "description": "Explains the New Episodes Only series recording choice"
+    },
+    "seriesRecordingSettings": "Configuració de la sèrie",
+    "@seriesRecordingSettings": {
+        "description": "Action that changes which episodes an existing series recording takes"
+    },
+    "seriesRecordingUpdated": "S'ha actualitzat l'enregistrament de la sèrie",
+    "@seriesRecordingUpdated": {
+        "description": "Confirmation after changing a series recording's settings"
+    },
+    "failedToUpdateSeriesRecording": "No s'ha pogut actualitzar l'enregistrament de la sèrie",
+    "@failedToUpdateSeriesRecording": {
+        "description": "Error after changing a series recording's settings failed"
+    },
+    "invertGestureIndicators": "Inverteix els indicadors de gestos",
+    "@invertGestureIndicators": {
+        "description": "Setting title for inverting placement of brightness and volume gesture indicators"
+    },
+    "invertGestureIndicatorsDescription": "Col·loca els indicadors visuals de brillantor i volum al mateix costat de la pantalla que el lliscament o al costat oposat",
+    "@invertGestureIndicatorsDescription": {
+        "description": "Description explaining gesture indicator placement relative to the swipe side"
+    },
+    "gestureIndicatorSame": "Mateix costat",
+    "@gestureIndicatorSame": {
+        "description": "Option to display gesture indicators on the same side as the swipe"
+    },
+    "gestureIndicatorInverted": "Costat oposat",
+    "@gestureIndicatorInverted": {
+        "description": "Option to display gesture indicators on the opposite side from the swipe"
+    },
+    "detailSectionSeerrStreaming": "Serveis de streaming",
+    "@detailSectionSeerrStreaming": {
+        "description": "Details screen Seerr section: logos of the services streaming the title in the user's region"
+    },
+    "seerrStreamingOn": "Disponible a",
+    "@seerrStreamingOn": {
+        "description": "Heading over the logos of the services streaming a Seerr title"
+    },
+    "detailSectionPersonLinks": "Enllaços",
+    "@detailSectionPersonLinks": {
+        "description": "Details screen section: buttons that open a person's IMDb, TMDB and social media pages"
+    },
+    "detailSectionPersonLinksSubtitle": "IMDb, TMDB i xarxes socials",
+    "@detailSectionPersonLinksSubtitle": {
+        "description": "Subtitle under the person links section switch"
+    },
+    "continueWatchingDefaultAction": "Acció predeterminada",
+    "@continueWatchingDefaultAction": {
+        "description": "Setting for default click action on Continue Watching and Next Up items"
+    },
+    "continueWatchingDefaultActionDescription": "Què passa quan selecciones un element de «Continuar mirant» o «Següent»",
+    "@continueWatchingDefaultActionDescription": {
+        "description": "Description for Continue Watching and Next Up default click action setting"
+    },
+    "goToDetailsScreen": "Ves als detalls",
+    "@goToDetailsScreen": {
+        "description": "Option to navigate to the details screen for an item"
+    },
+    "playImmediately": "Reprodueix immediatament",
+    "@playImmediately": {
+        "description": "Option to play an item immediately"
+    },
+    "personWebsite": "Lloc web oficial",
+    "@personWebsite": {
+        "description": "Tooltip for the button on a person page that opens their own website"
+    },
+    "playFromServer": "Reprodueix des del servidor",
+    "@playFromServer": {
+        "description": "Long-press menu action on a downloaded video: play it by streaming from the server instead of the downloaded copy, for example to get a higher quality than the download"
+    },
+    "settingsApplePlayerUi": "Reproductor de vídeo",
+    "@settingsApplePlayerUi": {
+        "description": "Settings label on iPhone and iPad for choosing which player plays video"
+    },
+    "settingsApplePlayerUiDescription": "El reproductor natiu d'estil Apple no té enviament a altres dispositius, gestos de lliscament, bloqueig de l'orientació, retard d'àudio ni botó de PiP",
+    "@settingsApplePlayerUiDescription": {
+        "description": "Settings description for the video player choice, listing what the native Apple style player lacks"
+    },
+    "settingsApplePlayerUiStandard": "Estàndard",
+    "@settingsApplePlayerUiStandard": {
+        "description": "Option for the regular Moonfin video player on iPhone and iPad"
+    },
+    "settingsApplePlayerUiNative": "Natiu d'estil Apple",
+    "@settingsApplePlayerUiNative": {
+        "description": "Option for the native video player that the Apple TV app uses, offered on iPhone and iPad"
+    },
+    "playerTransportPosition": "Botons de reproducció",
+    "@playerTransportPosition": {
+        "description": "Settings label for where the play, skip and seek buttons sit in the video player"
+    },
+    "playerTransportPositionDescription": "Mostra els botons de reproduir, saltar i desplaçar-se al mig del vídeo o acoblats a la barra inferior",
+    "@playerTransportPositionDescription": {
+        "description": "Settings description for where the video player's play buttons sit"
+    },
+    "playerTransportOnScreen": "A la pantalla",
+    "@playerTransportOnScreen": {
+        "description": "Option that puts the play, skip and seek buttons in the middle of the video"
+    },
+    "playerTransportDocked": "Acoblat",
+    "@playerTransportDocked": {
+        "description": "Option that puts the play, skip and seek buttons in the bottom bar with the other player buttons"
+    },
+    "incompleteRecording": "Incomplet",
+    "@incompleteRecording": {
+        "description": "Badge and detail label for a Live TV recording that was written for less than its scheduled length"
+    },
+    "incompleteRecordingMinutes": "{recorded} de {expected} min",
+    "@incompleteRecordingMinutes": {
+        "description": "How many minutes of an incomplete Live TV recording were written, out of its scheduled length with padding",
+        "placeholders": {
+            "recorded": {
+                "type": "int",
+                "example": "23"
+            },
+            "expected": {
+                "type": "int",
+                "example": "37"
+            }
+        }
+    },
+    "completeShowingScheduled": "Emissió completa programada: {dateTime}",
+    "@completeShowingScheduled": {
+        "description": "Detail line status: a later complete showing of the incomplete episode will be recorded",
+        "placeholders": {
+            "dateTime": {
+                "type": "String",
+                "example": "Thu 8:00 PM"
+            }
+        }
+    },
+    "completeCopyRecorded": "Còpia completa enregistrada: {dateTime}",
+    "@completeCopyRecorded": {
+        "description": "Detail line status: a complete copy of the incomplete episode has since been recorded",
+        "placeholders": {
+            "dateTime": {
+                "type": "String",
+                "example": "Thu 8:00 PM"
+            }
+        }
+    },
+    "noCompleteShowingFound": "No s'ha trobat cap emissió completa",
+    "@noCompleteShowingFound": {
+        "description": "Detail line status: no later complete showing of the incomplete episode was found in the guide"
+    },
+    "keepAsComplete": "Mantén com a complet",
+    "@keepAsComplete": {
+        "description": "Action that clears the Incomplete mark on a Live TV recording for everyone on the server"
+    },
+    "keptAsComplete": "Marcat com a complet",
+    "@keptAsComplete": {
+        "description": "Snackbar confirmation after Keep as Complete"
+    },
+    "unableToKeepAsComplete": "No s'ha pogut marcar com a complet",
+    "@unableToKeepAsComplete": {
+        "description": "Snackbar shown when Keep as Complete fails"
+    },
+    "laterShowingRequested": "S'ha començat a enregistrar. També s'enregistrarà una emissió posterior.",
+    "@laterShowingRequested": {
+        "description": "Snackbar after recording now and asking for a future showing"
+    },
+    "unableToRequestLaterShowing": "S'ha començat a enregistrar, però no s'ha pogut sol·licitar una emissió posterior.",
+    "@unableToRequestLaterShowing": {
+        "description": "Snackbar when the recording started but asking for a future showing failed"
+    },
+    "trailerCount": "{count, plural, =1{1 tràiler} other{{count} tràilers}}",
+    "@trailerCount": {
+        "description": "How many trailers the trailer picker lists, shown in its header",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "trailerNumber": "Tràiler {number}",
+    "@trailerNumber": {
+        "description": "Fallback name in the trailer picker for a trailer the server gave no name, numbered by its place in the list",
+        "placeholders": {
+            "number": {
+                "type": "int"
+            }
+        }
+    },
+    "subtitled": "Subtitulat",
+    "@subtitled": {
+        "description": "Chip in the trailer picker on a trailer that has subtitles burned into the video"
+    },
+    "rommAccount": "Compte de RomM",
+    "@rommAccount": {
+        "description": "Title of the screen, and the button on a game library, for linking the user's own RomM account"
+    },
+    "rommAccountIntro": "Enllaça el teu compte de RomM per jugar des de la teva biblioteca de RomM i conservar les partides desades a RomM.",
+    "@rommAccountIntro": {
+        "description": "Explains what linking a RomM account does, shown above the Link button"
+    },
+    "rommLinkAccount": "Enllaça el compte de RomM",
+    "@rommLinkAccount": {
+        "description": "Button that starts linking a RomM account"
+    },
+    "rommLinkInstructions": "Inicia la sessió a RomM i introdueix aquest codi per enllaçar el teu compte.",
+    "@rommLinkInstructions": {
+        "description": "Instructions above the code while a RomM link waits for approval"
+    },
+    "rommLinkScanOrVisit": "Escaneja el codi QR amb el telèfon o ves a {url}",
+    "@rommLinkScanOrVisit": {
+        "description": "Shown on TV beside the QR code while a RomM link waits for approval",
+        "placeholders": {
+            "url": {
+                "type": "String"
+            }
+        }
+    },
+    "rommOpen": "Obre RomM",
+    "@rommOpen": {
+        "description": "Button that opens the RomM approval page in the browser with the code filled in"
+    },
+    "rommWaitingForApproval": "S'està esperant que aprovis el codi a RomM...",
+    "@rommWaitingForApproval": {
+        "description": "Status shown while the app waits for the RomM code to be approved"
+    },
+    "rommLinkedAs": "Enllaçat com a {username}",
+    "@rommLinkedAs": {
+        "description": "Shown when the user's RomM account is linked",
+        "placeholders": {
+            "username": {
+                "type": "String"
+            }
+        }
+    },
+    "rommLinked": "El teu compte de RomM està enllaçat.",
+    "@rommLinked": {
+        "description": "Shown when the user's RomM account is linked and the server sent no user name"
+    },
+    "rommUnlinkNote": "En desenllaçar-lo, Moonfin deixa de fer servir la teva clau de RomM. La clau es manté a RomM fins que l'eliminis dels testimonis de l'API de RomM.",
+    "@rommUnlinkNote": {
+        "description": "Explains what Unlink does on the RomM account screen"
+    },
+    "rommUnlink": "Desenllaça",
+    "@rommUnlink": {
+        "description": "Button that unlinks the user's RomM account"
+    },
+    "rommLinkExpired": "El codi ha caducat abans de ser aprovat. Torna a enllaçar per obtenir-ne un de nou.",
+    "@rommLinkExpired": {
+        "description": "Error when a RomM link code ran out of time"
+    },
+    "rommLinkDenied": "S'ha rebutjat l'enllaç a RomM.",
+    "@rommLinkDenied": {
+        "description": "Error when the user declined the RomM link request"
+    },
+    "rommUnreachable": "Moonfin no ha pogut connectar amb RomM. Torna-ho a provar d'aquí a un moment.",
+    "@rommUnreachable": {
+        "description": "Error when the server couldn't reach RomM while linking"
+    },
+    "rommNotAvailable": "Aquest servidor no té cap biblioteca de RomM.",
+    "@rommNotAvailable": {
+        "description": "Shown on the RomM account screen when the server has no RomM library"
+    },
+    "rommAccountLoadFailed": "No s'ha pogut carregar el teu compte de RomM.",
+    "@rommAccountLoadFailed": {
+        "description": "Error when the RomM account status couldn't be loaded from the server"
+    },
+    "reviews": "Ressenyes",
+    "@reviews": {
+        "description": "Title of the row, tab and card on the details screen that lists TMDB user reviews"
+    },
+    "detailSectionReviews": "Ressenyes",
+    "@detailSectionReviews": {
+        "description": "Details screen section: user reviews from TMDB"
+    },
+    "spotlightReviewsCount": "{count, plural, =1{1 ressenya} other{{count} ressenyes}}",
+    "@spotlightReviewsCount": {
+        "description": "How many reviews a title has, under the Reviews card on the details screen",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "readOnTmdb": "Llegeix-la a TMDB",
+    "@readOnTmdb": {
+        "description": "Button in an opened review that opens the review on the TMDB website"
+    },
+    "animeMarkerSubbedShort": "SUB",
+    "@animeMarkerSubbedShort": {
+        "description": "Short form of the Subbed badge"
+    },
+    "animeMarkerDubbedShort": "DUB",
+    "@animeMarkerDubbedShort": {
+        "description": "Short form of the Dubbed badge"
+    },
+    "animeMarkerSubbedAndDubbedShort": "SUB/DUB",
+    "@animeMarkerSubbedAndDubbedShort": {
+        "description": "Short form of the Subbed/Dubbed badge"
+    },
+    "keyboardStyle": "Estil del teclat",
+    "@keyboardStyle": {
+        "description": "Label for the setting that picks how the on-screen keyboard looks, or whether the TV's own keyboard is used"
+    },
+    "keyboardStyleDescription": "«Natiu» fa servir el teclat de la teva TV. «Clàssic» és el teclat original de Moonfin. «Glass» és un panell esmerilat amb tecles més grans. «Acoblat» ocupa la part inferior de la pantalla i mostra el que escrius a sobre de les tecles.",
+    "@keyboardStyleDescription": {
+        "description": "Explanation under the keyboard style setting"
+    },
+    "keyboardStyleNative": "Natiu",
+    "@keyboardStyleNative": {
+        "description": "Keyboard style option: the TV or device's own system keyboard"
+    },
+    "keyboardStyleClassic": "Clàssic",
+    "@keyboardStyleClassic": {
+        "description": "Keyboard style option: the original in-app keyboard"
+    },
+    "keyboardStyleGlass": "Glass",
+    "@keyboardStyleGlass": {
+        "description": "Keyboard style option: a frosted glass panel with larger keys"
+    },
+    "keyboardStyleDocked": "Acoblat",
+    "@keyboardStyleDocked": {
+        "description": "Keyboard style option: a full-width keyboard docked to the bottom of the screen"
+    },
+    "keyboardHoldForAccents": "mantén premut per als accents",
+    "@keyboardHoldForAccents": {
+        "description": "On-screen keyboard hint next to an OK button cap: holding OK on a letter shows its accented versions"
+    },
+    "keyboardClose": "Tanca",
+    "@keyboardClose": {
+        "description": "On-screen keyboard hint next to a Back button cap, lowercase like the hold for accents hint: Back closes the keyboard"
+    },
+    "hevcSoftwareDirectPlay": "Reproducció nativa d'HEVC (descodificació per programari)",
+    "hevcSoftwareDirectPlaySubtitle": "Reprodueix HEVC fins a 1080p des del fitxer original en lloc de demanar al servidor que el transcodifiqui. Aquest Apple TV el descodifica per programari, així que els fitxers exigents de 10 bits o amb una taxa de bits alta poden anar a batzegades.",
+    "sortCurrent": "Ordenació: {option}",
+    "@sortCurrent": {
+        "description": "Label beside a sort button showing the sort that is active",
+        "placeholders": {
+            "option": {
+                "type": "String"
+            }
+        }
+    },
+    "recordPromptTitle": "Enregistra {name}",
+    "@recordPromptTitle": {
+        "description": "Title of the Record prompt for a program that is already airing",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "recordPromptStarted": "{minutes, plural, =1{Aquesta emissió ha començat fa 1 minut, així que l'enregistrament no en tindrà l'inici.} other{Aquesta emissió ha començat fa {minutes} minuts, així que l'enregistrament no en tindrà l'inici.}}",
+    "@recordPromptStarted": {
+        "description": "First line of the Record prompt, saying how long ago the program started",
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "recordPromptAlsoRecordLater": "Vols enregistrar també l'emissió futura per tenir un enregistrament complet?",
+    "@recordPromptAlsoRecordLater": {
+        "description": "Record prompt question when a future showing is shown below it"
+    },
+    "recordPromptSearchLater": "Vols enregistrar automàticament una emissió futura quan se'n trobi una, per tenir un enregistrament complet?",
+    "@recordPromptSearchLater": {
+        "description": "Record prompt question when no future showing is known yet and Moonfin will look for one"
+    },
+    "recordPromptNow": "Ara",
+    "@recordPromptNow": {
+        "description": "Label of the Record prompt card for the program that is airing now"
+    },
+    "recordPromptLater": "Emissió futura",
+    "@recordPromptLater": {
+        "description": "Label of the Record prompt card for the future showing that would also be recorded"
+    },
+    "recordPromptAired": "{minutes, plural, =1{Ja s'ha emès 1 min} other{Ja s'han emès {minutes} min}}",
+    "@recordPromptAired": {
+        "description": "Beside the progress bar on the Record prompt's Now card",
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "recordPromptUncertainMatch": "Coincidència només pel títol i la descripció. Comprova que sigui el mateix programa.",
+    "@recordPromptUncertainMatch": {
+        "description": "Caution under the future showing when it has no season and episode numbers to confirm it is the same program"
+    },
+    "recordPromptDescriptionsDiffer": "Les descripcions són diferents; pot ser un altre programa.",
+    "@recordPromptDescriptionsDiffer": {
+        "description": "Caution under the future showing when its description differs from the program airing now"
+    },
+    "recordPromptSameEpisode": "Mateix episodi (T{season}E{episode})",
+    "@recordPromptSameEpisode": {
+        "description": "Note under the future showing when its season and episode match the program airing now",
+        "placeholders": {
+            "season": {
+                "type": "int"
+            },
+            "episode": {
+                "type": "int"
+            }
+        }
+    },
+    "recordPromptAlreadyScheduled": "Ja està programat per enregistrar",
+    "@recordPromptAlreadyScheduled": {
+        "description": "Note in the future showing's card when a recording is already scheduled for it, by anyone"
+    },
+    "recordPromptTomorrow": "Demà",
+    "@recordPromptTomorrow": {
+        "description": "When the future showing airs, used in the Record Now and ... button"
+    },
+    "recordNowOnly": "Enregistra només ara",
+    "@recordNowOnly": {
+        "description": "Record prompt choice: only record the program that is airing now"
+    },
+    "recordNowAnd": "Enregistra ara i {when}",
+    "@recordNowAnd": {
+        "description": "Record prompt choice: record now and the future showing. The placeholder is a time today, Tomorrow, a weekday or a short date",
+        "placeholders": {
+            "when": {
+                "type": "String"
+            }
+        }
+    },
+    "recordNowAndLater": "Enregistra ara i l'emissió futura",
+    "@recordNowAndLater": {
+        "description": "Record prompt choice when no future showing is known yet: record now and let Moonfin find a future showing"
+    },
+    "recordOnlyLater": "Enregistra només {when}",
+    "@recordOnlyLater": {
+        "description": "Record prompt choice: skip the airing now and record only the future showing. The placeholder is a time today, Tomorrow, a weekday or a short date",
+        "placeholders": {
+            "when": {
+                "type": "String"
+            }
+        }
+    },
+    "recordLaterShowingOnly": "Enregistra només l'emissió futura",
+    "@recordLaterShowingOnly": {
+        "description": "Record prompt choice when no future showing is known yet: skip the airing now and let Moonfin record a future showing"
+    },
+    "laterShowingOnlyRequested": "S'enregistrarà l'emissió futura.",
+    "@laterShowingOnlyRequested": {
+        "description": "Snackbar after choosing to record only the future showing"
+    },
+    "unableToRequestLaterShowingOnly": "No s'ha pogut sol·licitar l'emissió futura, així que no s'enregistrarà res.",
+    "@unableToRequestLaterShowingOnly": {
+        "description": "Snackbar when only the future showing was chosen and asking for it failed"
+    },
+    "addServerButtonSubtitle": "Per adreça, o amb un compte de Plex o d'Emby Connect",
+    "@addServerButtonSubtitle": {
+        "description": "Second line of the Add Server button on the server screen"
+    },
+    "addServerChooseHow": "Tria com et vols connectar.",
+    "@addServerChooseHow": {
+        "description": "Subtitle of the first step of the Add Server dialog"
+    },
+    "addServerAddressChoice": "Jellyfin o Emby a la teva xarxa o en línia",
+    "@addServerAddressChoice": {
+        "description": "Add Server dialog: what the Server Address option is for"
+    },
+    "addServerPlexChoice": "Fes servir el teu compte de Plex per trobar-ne els servidors",
+    "@addServerPlexChoice": {
+        "description": "Add Server dialog: what the Sign in with Plex option does"
+    },
+    "addServerAddressHelp": "La mateixa adreça que obriries en un navegador, inclòs el port.",
+    "@addServerAddressHelp": {
+        "description": "Add Server dialog: help under the Connect to Server title"
+    },
+    "addServerDetectNote": "Funciona amb Jellyfin i Emby. Una adreça de Plex obre l'inici de sessió de Plex.",
+    "@addServerDetectNote": {
+        "description": "Add Server dialog: note under the address field"
+    },
+    "addServerChecking": "S'està comprovant {address}",
+    "@addServerChecking": {
+        "description": "Add Server dialog: shown under the field while the typed address is being tried",
+        "placeholders": {
+            "address": {
+                "type": "String"
+            }
+        }
+    },
+    "addServerUnreachableDetail": "Comprova l'adreça i el port, i que el servidor estigui en funcionament.",
+    "@addServerUnreachableDetail": {
+        "description": "Add Server dialog: detail under Unable to connect to server"
+    },
+    "addServerFound": "S'ha trobat el servidor",
+    "@addServerFound": {
+        "description": "Add Server dialog: title once the address answered"
+    },
+    "addServerFoundNote": "Continua per triar qui inicia la sessió.",
+    "@addServerFoundNote": {
+        "description": "Add Server dialog: under the server that was found"
+    },
+    "addServerUseDifferentAddress": "Fes servir una altra adreça",
+    "@addServerUseDifferentAddress": {
+        "description": "Add Server dialog: goes back to the address field instead of keeping the server that was found"
+    },
+    "peekHomeRows": "Avançament de les files d'inici",
+    "@peekHomeRows": {
+        "description": "Title of the media bar setting that lets the first home row show over the bottom of the media bar"
+    },
+    "peekHomeRowsDescription": "Mostra la meitat superior de la primera fila a la part inferior de la barra multimèdia",
+    "@peekHomeRowsDescription": {
+        "description": "Description of the Peek Home Rows media bar setting"
+    },
+    "homeScreenBackdropFullScreen": "Pantalla completa",
+    "@homeScreenBackdropFullScreen": {
+        "description": "Home Screen Backdrop option that fills the whole screen with the focused item's backdrop"
+    },
+    "homeScreenBackdropCorner": "Cantonada",
+    "@homeScreenBackdropCorner": {
+        "description": "Home Screen Backdrop option that shows the focused item's backdrop in the top right corner, fading into the background like the Google TV home screen"
+    },
+    "detailsBackdropSize": "Mida del teló de fons",
+    "@detailsBackdropSize": {
+        "description": "Setting on phones for how big the backdrop image behind the item details screen is drawn"
+    },
+    "detailsBackdropFullScreen": "Pantalla completa",
+    "@detailsBackdropFullScreen": {
+        "description": "Backdrop Size option that zooms the backdrop to fill the whole details screen"
+    },
+    "detailsBackdropFit": "Ajustar",
+    "@detailsBackdropFit": {
+        "description": "Backdrop Size option that shows the whole backdrop across the top of the details screen, fading into the page below it"
+    },
+    "sorting": "Ordenació",
+    "imdbRowsSorting": "Ordenació de les files d'IMDb",
+    "imdbRowsSortingDescription": "Ordena les files d'IMDb per nom, data d'estrena, valoració i més.",
+    "imdbRowsSortOrderDescription": "Ordena les files d'IMDb en ordre ascendent o descendent.",
+    "tmdbRowsSorting": "Ordenació de les files de TMDB",
+    "tmdbRowsSortingDescription": "Ordena les files de TMDB per nom, data d'estrena, valoració i més.",
+    "tmdbRowsSortOrderDescription": "Ordena les files de TMDB en ordre ascendent o descendent.",
+    "seerrRowsSorting": "Ordenació de les files de Seerr",
+    "seerrRowsSortingDescription": "Ordena les files de Seerr per nom, data d'estrena, valoració i més.",
+    "seerrRowsSortOrderDescription": "Ordena les files de Seerr en ordre ascendent o descendent.",
+    "externalRowSortDefault": "Predeterminat (ordre de la llista)",
+    "externalRowSortName": "Nom",
+    "externalRowSortReleaseDate": "Data d'estrena",
+    "externalRowSortRating": "Valoració",
+    "externalRowSortPopularity": "Popularitat",
+    "externalRowSortShuffle": "Aleatori",
+    "keyboardSpace": "Espai",
+    "@keyboardSpace": {
+        "description": "Label on the on-screen keyboard's space bar, lowercase like a printed key"
+    }
 }

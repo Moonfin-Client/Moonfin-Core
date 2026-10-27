@@ -795,7 +795,7 @@ class NouveauDetailContentState extends State<NouveauDetailContent> {
         NouveauSpacing.mobileHorizontalInset + safePadding.left,
         safePadding.top + 80,
         NouveauSpacing.mobileHorizontalInset + safePadding.right,
-        20,
+        8,
       );
     }
 
@@ -1320,13 +1320,16 @@ class NouveauDetailContentState extends State<NouveauDetailContent> {
       children: [
         ColoredBox(color: base),
 
-        FullscreenBackdropSwitcher(
-          imageUrl: backdropUrl != null && backdropUrl.isNotEmpty
-              ? backdropUrl
-              : null,
-          duration: const Duration(milliseconds: 350),
-          alignment: portrait ? Alignment.topCenter : Alignment.centerRight,
-          fadeInDuration: Duration.zero,
+        DetailBackdropFit(
+          prefs: widget.prefs,
+          child: FullscreenBackdropSwitcher(
+            imageUrl: backdropUrl != null && backdropUrl.isNotEmpty
+                ? backdropUrl
+                : null,
+            duration: const Duration(milliseconds: 350),
+            alignment: portrait ? Alignment.topCenter : Alignment.centerRight,
+            fadeInDuration: Duration.zero,
+          ),
         ),
 
         ColoredBox(color: Colors.black.withValues(alpha: overlayAlpha)),

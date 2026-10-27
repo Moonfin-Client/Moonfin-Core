@@ -188,9 +188,12 @@ class _MinimalistEpisodesSectionState extends State<MinimalistEpisodesSection> {
         ? _selectedSeason!
         : fallback;
 
+    // The server lists specials where they aired among the seasons, so the
+    // Specials tab would come out of number order without this.
     final episodes = selected == null
         ? all
-        : all.where((e) => e.parentIndexNumber == selected).toList();
+        : (all.where((e) => e.parentIndexNumber == selected).toList()
+            ..sort(ItemDetailViewModel.compareEpisodes));
 
     // One season is no choice at all, so the strip only earns its space when
     // there's somewhere else to go, and the rail takes over as the way in.
