@@ -68,7 +68,7 @@ internal fun joinKeepingSpans(parts: List<CharSequence>): CharSequence {
     return builder
 }
 
-/** Keep dialogue emphasis but leave colours, fonts and sizes to the user's settings. */
+/** Keep dialogue emphasis but leave colors, fonts and sizes to the user's settings. */
 internal fun keepSubtitleEmphasis(text: CharSequence): CharSequence {
     val source = text as? Spanned ?: return text
     val result = SpannableStringBuilder(text.toString())

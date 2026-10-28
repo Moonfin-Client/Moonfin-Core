@@ -193,7 +193,7 @@ class MoonfinAssOverlayView(
             synchronized(assHandler) {
                 // Render and publish under the same lock as track activation.
                 // Otherwise Off -> same-track can discard the new image and
-                // libass's unchanged-frame retry cannot reconstruct it.
+                // libass's unchanged-frame retry can't reconstruct it.
                 val track = assHandler.track
                 syncNativeAssTrack(track)
                 generation = primaryTrackGeneration

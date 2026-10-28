@@ -700,7 +700,7 @@ class HtmlVideoBackend extends PlayerBackend
   }
 
   /// Shows the native primary track at [position] in add order. An out-of-range
-  /// position hides native primary tracks; [primaryUsesOverlay] distinguishes an
+  /// position hides native primary tracks. [primaryUsesOverlay] distinguishes an
   /// ASS/PGS primary from Off. The secondary track stays enabled.
   void _showTrackAt(int position, {bool primaryUsesOverlay = false}) {
     _subtitleOverlay?.clear();
@@ -851,7 +851,7 @@ class HtmlVideoBackend extends PlayerBackend
     if (url == null || url.isEmpty) return;
     _secondaryUrl = url;
     _secondaryLanguage = srclang;
-    // This backend cannot read subtitle tracks from the media container. Use the
+    // This backend can't read subtitle tracks from the media container. Use the
     // server-provided subtitle URL, including for tracks embedded in MKV files.
     unawaited(_loadSecondarySubtitle(url, _secondaryGeneration));
   }
@@ -860,7 +860,7 @@ class HtmlVideoBackend extends PlayerBackend
     final abort = _secondaryRequest = web.AbortController();
     try {
       // Request server-converted WebVTT when the URL is a Jellyfin/Emby
-      // subtitle endpoint; unrelated external SRT files still work locally.
+      // subtitle endpoint. Other external SRT files are converted locally.
       final preferredUrl = preferServerWebVttSubtitleUrl(url);
       web.Response? response;
       try {
@@ -1015,7 +1015,7 @@ class HtmlVideoBackend extends PlayerBackend
     }
   }
 
-  // Use the fallback if the browser does not expose the requested cue alignment
+  // Use the fallback if the browser doesn't expose the requested cue alignment
   // property or its getter fails.
   String _cueAlignment(web.VTTCue cue, String property, String fallback) {
     try {
@@ -1025,7 +1025,7 @@ class HtmlVideoBackend extends PlayerBackend
     return fallback;
   }
 
-  // Remove the saved coordinates used to split a centred subtitle pair.
+  // Remove the saved coordinates used to split a centered subtitle pair.
   void _clearPrimaryMiddleCueState(web.VTTCue cue) {
     cue
       ..delete(_stackedMiddleLine.toJS)
@@ -1092,7 +1092,7 @@ class HtmlVideoBackend extends PlayerBackend
   }
 
   // Measure the same font and cue width used by the native renderer. Keep a small
-  // cache so polling does not add DOM layout work for an unchanged subtitle.
+  // cache so polling doesn't add DOM layout work for an unchanged subtitle.
   double _primaryCueHeight(web.VTTCue cue, {bool secondary = false}) =>
       _measureCue(cue, secondary: secondary).height;
 
@@ -1207,7 +1207,7 @@ class HtmlVideoBackend extends PlayerBackend
       return (top: measured.top, bottom: measured.bottom);
     }).toList();
 
-    // Move a centred primary to make room for the secondary only if it won't overlap
+    // Move a centered primary to make room for the secondary only if it won't overlap
     // another primary cue. Otherwise leave the primary cues in place and fit the secondary
     // around them.
     if (primary != null && row == 1) {
@@ -1302,7 +1302,7 @@ class HtmlVideoBackend extends PlayerBackend
       top += item.height;
     }
     // Chromium can keep the old displayed box after a paused cue moves. Refresh
-    // only a visible track whose placement changed, so cuechange cannot loop.
+    // only a visible track whose placement changed, so cuechange can't loop.
     final track = _secondaryTrack?.track;
     if (placementChanged && track?.mode == 'showing') {
       track!.mode = 'hidden';
@@ -1440,8 +1440,8 @@ class HtmlVideoBackend extends PlayerBackend
 
   /// Positions primary cues by updating their WebVTT line coordinates. Apply the user
   /// offset from the original position, moving top cues down and bottom cues up while
-  /// preserving middle placement. SRT alignment tags use the chosen edge margin;
-  /// automatically placed cues use a bottom anchor.
+  /// preserving middle placement. SRT alignment tags use the chosen edge margin.
+  /// Automatically placed cues use a bottom anchor.
   void _positionCues(web.TextTrack track) {
     final cues = track.activeCues;
     if (cues != null) {
@@ -1471,7 +1471,7 @@ class HtmlVideoBackend extends PlayerBackend
           ..align = column == 0 ? 'left' : column == 2 ? 'right' : 'center'
           ..position = (column == 0 ? 5 : column == 2 ? 95 : 50).toJS
           // Older browsers also translate a percentage cue horizontally. A full
-          // width box keeps centred SRT captions centred without positionAlign.
+          // width box keeps centered SRT captions centered without positionAlign.
           ..size = !_nativePositionAlignment && column == 1 ? 100 : 90;
         if (_nativePositionAlignment) {
           vtt.positionAlign = column == 0 ? 'line-left' : column == 2 ? 'line-right' : 'center';

@@ -105,7 +105,7 @@ void main() {
     expect(restoreSecondarySubtitleTrack(
       downloadChoice, [source], isCompatible: (_) => true), 3);
 
-    // Identical indexes from a different underlying subtitle are not enough.
+    // Identical indexes from a different underlying subtitle aren't enough.
     expect(restoreSecondarySubtitleTrack(streamingChoice, [
       {...playable.single, 'OriginalSubtitleStream': {...source, 'Language': 'eng'}},
     ], isCompatible: (_) => true), -1);

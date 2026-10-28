@@ -145,7 +145,7 @@ final class SubtitleOverlay: PlatformView {
     private static func stackingAlignment(_ placement: SubtitleEvent?) -> Int {
         let alignment = effectiveAlignment(placement)
         guard let position = placement?.position else { return alignment }
-        // A WebVTT line anchor is not a screen region: line:10%,end still
+        // A WebVTT line anchor isn't a screen region: line:10%,end still
         // needs the secondary below the primary.
         let row = position.y < 1.0 / 3 ? 2 : position.y > 2.0 / 3 ? 0 : 1
         return row * 3 + (alignment - 1) % 3 + 1
@@ -226,12 +226,12 @@ final class SubtitleOverlay: PlatformView {
         return canvas.isEmpty ? bounds : canvas
     }
 
-    /// Keep the user font size and native 40–100 position value until layout, when the
-    /// view size is known. Font size scales with view height; the user text offset is
+    /// Keep the user font size and native 40 to 100 position value until layout, when the
+    /// view size is known. Font size scales with view height. The user text offset is
     /// handled separately using picture height.
     private var subtitleUserFontSize: CGFloat = 24
     private var subtitlePositionBase = 100
-    // The authored cue's vertical position remains the baseline; this offset
+    // The authored cue's vertical position remains the baseline. This offset
     // moves top cues down and bottom cues up, never middle cues.
     private var authoredVerticalOffset: CGFloat = 0
     private var subtitleFontWeight: PlatformFontWeight = .semibold
@@ -264,7 +264,7 @@ final class SubtitleOverlay: PlatformView {
         subtitleStrokeEnabled ? max(2 * canvasScale, 1) : 0
     }
 
-    /// Keep the 40–100 position scale for the temporary lift above playback controls
+    /// Keep the 40 to 100 position scale for the temporary lift above playback controls
     /// and for bitmap fallback. The user's text offset uses a fraction of the picture
     /// height.
     private var positionScaleBottomOffset: CGFloat {
@@ -280,7 +280,7 @@ final class SubtitleOverlay: PlatformView {
         guard subtitlePositionBase < normalPosition else {
             return authoredOffset
         }
-        // Playback controls impose a minimum clearance; they must never pull a
+        // Playback controls impose a minimum clearance, but they must never pull a
         // subtitle down from a higher position the user already chose.
         return max(authoredOffset, positionScaleBottomOffset)
     }
@@ -366,7 +366,7 @@ final class SubtitleOverlay: PlatformView {
             overlay.frame = bounds
             overlay.layoutOverlay()
         }
-        // Lay out the primary first: changing the gap in a centred pair moves both
+        // Lay out the primary first: changing the gap in a centered pair moves both
         // tracks.
         primaryForStacking?.layoutTextLabel()
         layoutTextLabel()
@@ -496,7 +496,7 @@ final class SubtitleOverlay: PlatformView {
     }
 
     /// Forget the previous position after a seek without discarding sidecar cues.
-    /// Text and bitmap cues redraw on the next update; libass updates its image separately.
+    /// Text and bitmap cues redraw on the next update, and libass updates its image separately.
     func resetPlacement() {
         hideAll()
         lastPrimaryPlacement = []
@@ -508,7 +508,7 @@ final class SubtitleOverlay: PlatformView {
         }
     }
 
-    /// Applies the Dart subtitle style. Colours are ARGB integers and fontSize uses the
+    /// Applies the Dart subtitle style. Colors are ARGB integers and fontSize uses the
     /// 24-based scale. verticalOffset is a fraction of picture height: it moves top
     /// text down and bottom text up, leaving middle text unchanged.
     func applyStyle(
@@ -542,7 +542,7 @@ final class SubtitleOverlay: PlatformView {
         }
     }
 
-    /// Use the primary size and colour when the secondary override is nil. Leave
+    /// Use the primary size and color when the secondary override is nil. Leave
     /// extra spacing and delay unchanged.
     func applySecondaryStyle(from primary: SubtitleOverlay, fontSize: Double?, textColor: Int?) {
         subtitleUserFontSize = fontSize.map { CGFloat(min(max($0, 6), 72)) }
@@ -557,8 +557,8 @@ final class SubtitleOverlay: PlatformView {
         if !activeTextEvents.isEmpty { showText(activeTextEvents) }
     }
 
-    /// Sets the native 40–100 position scale used for the temporary controls lift and
-    /// bitmap fallback. A value of 100 adds no bottom offset; visible controls use
+    /// Sets the native 40 to 100 position scale used for the temporary controls lift and
+    /// bitmap fallback. A value of 100 adds no bottom offset. Visible controls use
     /// min(base, 70).
     func setSubtitlePosition(basePosition: Int) {
         subtitlePositionBase = min(max(basePosition, 40), 100)
@@ -575,7 +575,7 @@ final class SubtitleOverlay: PlatformView {
         return (1...9).contains(value) ? value : 2
     }
 
-    /// An omitted alignment and an explicit bottom-centre alignment mean the same
+    /// An omitted alignment and an explicit bottom-center alignment mean the same
     /// place. Group by where a cue draws, not by whether it set that default.
     private static func textGroups(_ events: [SubtitleEvent]) -> [[SubtitleEvent]] {
         var groups: [[SubtitleEvent]] = []
@@ -738,7 +738,7 @@ final class SubtitleOverlay: PlatformView {
         if let best { return (best, nil) }
 
         // Not enough room for the full text. Show the largest free portion,
-        // masking the rest so it cannot cover another subtitle or a cutout.
+        // masking the rest so it can't cover another subtitle or a cutout.
         guard var largest = free.first else {
             return (minimumY, minimumY...minimumY)
         }
@@ -791,7 +791,7 @@ final class SubtitleOverlay: PlatformView {
 
     /// Local safe-area insets can be zero inside Flutter's platform view. Convert
     /// the window/root safe regions into this overlay's coordinates, so a video
-    /// surface already inset around the camera housing is not inset again.
+    /// surface already inset around the camera housing isn't inset again.
     private var effectiveTextSafeAreaInsets: PlatformEdgeInsets {
         #if os(iOS)
         guard let window else { return safeAreaInsets }
@@ -848,7 +848,7 @@ final class SubtitleOverlay: PlatformView {
     private func textLayout(
         for label: PlatformLabel, placement: SubtitleEvent?, alignment: Int, centeredPair: Bool
     ) -> (frame: CGRect, clip: ClosedRange<CGFloat>?, left: CGFloat, right: CGFloat) {
-        // An alignment-only cue still uses the screen edges; an explicit
+        // An alignment-only cue still uses the screen edges. An explicit
         // authored coordinate is the case that may deliberately enter a cutout.
         let usesSafeArea = placement?.position == nil
         let safeInsets = effectiveTextSafeAreaInsets
@@ -918,7 +918,7 @@ final class SubtitleOverlay: PlatformView {
             let candidateY = min(max(yAnchor + pairGap / 2, minimumY),
                                  max(minimumY, maximumY - size.height))
             let candidate = CGRect(x: x, y: candidateY, width: size.width, height: size.height)
-            // A centred pair must not move the primary into another primary cue.
+            // A centered pair must not move the primary into another primary cue.
             // Remeasure source placements so dialogue gaps and resizes agree.
             let references = activeTextEvents.isEmpty ? lastPrimaryPlacement : currentPrimaryPlacement
             let overlapsPrimary = references.contains { reference in
@@ -974,7 +974,7 @@ final class SubtitleOverlay: PlatformView {
     }
 
     /// Set paragraph alignment on the attributed string from the cue alignment. Use the
-    /// glyph height for line spacing so background fills do not leave gaps between
+    /// glyph height for line spacing so background fills don't leave gaps between
     /// lines.
     private func paragraphStyle(for font: PlatformFont, alignment: Int? = nil) -> NSParagraphStyle {
         let style = NSMutableParagraphStyle()

@@ -78,7 +78,7 @@ abstract interface class SecondarySubtitleBackend {
 }
 
 /// Lets a backend expose secondary size and color support independently.
-/// Backends that do not implement this keep the all-or-nothing
+/// Backends that don't implement this keep the all-or-nothing
 /// [SecondarySubtitleBackend.supportsSecondarySubtitleStyle] behavior.
 abstract interface class SecondarySubtitleAppearanceBackend {
   bool get supportsSecondarySubtitleSize;
@@ -158,8 +158,8 @@ abstract class PlayerBackend {
   Future<void> setSecondarySubtitleDelay(double seconds) async {}
 
   /// Null fontSize or textColor follows the primary style. verticalOffset adds spacing
-  /// between the tracks as a fraction of player height; positive values increase the
-  /// gap. Top-aligned secondary text moves down, and centred layouts may move both
+  /// between the tracks as a fraction of player height. Positive values increase the
+  /// gap. Top-aligned secondary text moves down, and centered layouts may move both
   /// tracks.
   Future<void> configureSecondarySubtitleStyle({
     double? fontSize,

@@ -7,7 +7,7 @@ import '../util/subtitle_track_logic.dart';
 import 'subtitle_style.dart';
 
 /// Builds native tvOS subtitle menu data from the same track rules and saved appearance
-/// used by the Flutter picker. Used by video and Live TV; Live TV uses a single
+/// used by the Flutter picker. Used by video and Live TV. Live TV uses a single
 /// subtitle menu.
 Map<String, dynamic> appleTvSubtitleMetadata({
   required PlaybackManager manager,
@@ -86,7 +86,7 @@ Map<String, dynamic> appleTvSubtitleMetadata({
   };
 }
 
-/// Returns null when this handler does not recognise the event.
+/// Returns null when this handler doesn't recognize the event.
 Future<void>? handleAppleTvSubtitleAction(
   Map<String, dynamic> action,
   PlaybackManager manager,

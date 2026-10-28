@@ -38,7 +38,7 @@ class MoonfinAssOverlayVisibilityTest {
         assertSame(firstB, h.visibleFrame())
 
         // Native libass returns changed=0 with no image array on retry.
-        // That cannot reconstruct a B bitmap lost in the ownership handover.
+        // That can't reconstruct a B bitmap lost in the ownership handover.
         h.publishFrame(AssFrame(images = null, changed = 0), currentGeneration)
         assertSame(firstB, h.cachedFrame())
     }
@@ -55,7 +55,7 @@ class MoonfinAssOverlayVisibilityTest {
         assertSame(frameA, h.visibleFrame())
 
         // B was selected but never rendered, so libass's next render for A
-        // reports unchanged and does not supply a replacement bitmap.
+        // reports unchanged and doesn't supply a replacement bitmap.
         assertTrue(h.overlay.syncNativeAssTrack(b))
         assertSame(frameA, h.cachedFrame())
         assertTrue(h.visibleFrame() == null)
@@ -146,7 +146,7 @@ class MoonfinAssOverlayVisibilityTest {
         val resumedGeneration = h.generation
         assertTrue(resumedGeneration > currentGeneration)
         h.overlay.setPrimaryVisible(true)
-        // A late Off-time result cannot overwrite the reactivated track.
+        // A late Off-time result can't overwrite the reactivated track.
         h.publishFrame(null, currentGeneration, active = false)
         assertSame(cue, h.cachedFrame())
         h.publishFrame(AssFrame(images = null, changed = 0), resumedGeneration)

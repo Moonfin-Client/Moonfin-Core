@@ -31,7 +31,7 @@ internal fun overriddenTrackOrdinal(
 /**
  * Reserve the last renderer for secondary subtitles and use DefaultTrackSelector for
  * the others. Select the secondary track separately so it receives its own sample
- * stream from the same media period; the normal text selection uses only one renderer
+ * stream from the same media period. The normal text selection uses only one renderer
  * here.
  */
 @UnstableApi
@@ -118,7 +118,7 @@ internal class DualSubtitleTrackSelector(context: Context) : TrackSelector() {
             val supported = RendererCapabilities.getFormatSupport(
                 rendererCapabilities[last].supportsFormat(group.getFormat(track)),
             ) == C.FORMAT_HANDLED
-            // A media period cannot hand the same sample queue to two renderers.
+            // A media period can't hand the same sample queue to two renderers.
             if (!alreadyPrimary && supported) {
                 configurations[last] = RendererConfiguration.DEFAULT
                 selections[last] = FixedTrackSelection(group, track)

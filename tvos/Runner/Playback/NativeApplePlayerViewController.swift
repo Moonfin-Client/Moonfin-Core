@@ -3075,7 +3075,7 @@ final class NativeApplePlayerViewController: UIViewController {
         }
         // A legacy stored value can already display at the current clamp (for
         // example 50% displayed as 36%). Persist the normalized value even when
-        // the effective number on screen does not visibly change.
+        // the effective number on screen doesn't visibly change.
         let storedNeedsNormalization = stored.map { $0 != value } ?? false
         if current != value || storedNeedsNormalization {
             subtitleControls[field] = value

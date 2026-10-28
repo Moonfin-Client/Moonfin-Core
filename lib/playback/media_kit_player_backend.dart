@@ -877,7 +877,7 @@ class MediaKitPlayerBackend extends PlayerBackend
 
     _resetSubtitleState();
     if (!_ownsPlayback(generation)) return;
-    // Seed this source before awaiting preparation; later user changes must
+    // Seed this source before awaiting preparation. Later user changes must
     // replace these values and be reapplied after mpv resets the source.
     _secondarySubtitleDelay =
         (((payload['secondarySubtitleDelayMs'] as num?) ?? 0) / 1000)
@@ -3016,7 +3016,7 @@ class MediaKitPlayerBackend extends PlayerBackend
     _subtitlesDisabled = true;
     _primaryIsBitmapSubtitle = false;
     _primaryIsAssSubtitle = false;
-    // Turning primary Off clears saved placement; ordinary dialogue gaps do not.
+    // Turning primary Off clears saved placement, but ordinary dialogue gaps don't.
     _resetPrimarySubtitlePlacement();
     await _player.setSubtitleTrack(SubtitleTrack.no());
     if (!_isLatestSubtitleSelection(generation)) return;
@@ -3126,7 +3126,9 @@ class MediaKitPlayerBackend extends PlayerBackend
     if (!_secondarySubtitleRequested) _lastPrimaryText = null;
     await _nativeSetProperty(native, 'secondary-sid', 'no');
     if (!_isCurrentSecondarySubtitle(generation) ||
-        _secondarySourceReadyGeneration != _playbackGeneration) return;
+        _secondarySourceReadyGeneration != _playbackGeneration) {
+      return;
+    }
     await _applyPendingSecondarySubtitle();
     if (!_isCurrentSecondarySubtitle(generation) ||
         _pendingSecondarySubtitle == null ||
@@ -3264,7 +3266,7 @@ class MediaKitPlayerBackend extends PlayerBackend
   }
 
   // libass sizes plain text on a 720-line canvas. Measure wrapping at that
-  // scale too; a fixed character count misses wide glyphs and narrow windows.
+  // scale too. A fixed character count misses wide glyphs and narrow windows.
   double _subtitleHeight(String text, double fontSize, double width) {
     if (text.isEmpty) return 0;
     final plain = text
@@ -3375,7 +3377,7 @@ class MediaKitPlayerBackend extends PlayerBackend
       }
 
       // Retain both cues through dialogue gaps, but remeasure them with the current
-      // font and viewport so size and window changes cannot leave stale geometry.
+      // font and viewport so size and window changes can't leave stale geometry.
       final primaryText = _lastPrimaryText ?? '';
       final secondaryMeasurementText =
           secondaryText.trim().isNotEmpty
@@ -3398,10 +3400,10 @@ class MediaKitPlayerBackend extends PlayerBackend
 
       // secondary-sub-pos sets the bottom edge. For text primaries whose placement
       // mpv exposes reliably, keep the secondary stacked relative to that text.
-      // PGS/bitmap and ASS/SSA can have authored geometry that mpv does not expose
+      // PGS/bitmap and ASS/SSA can have authored geometry that mpv doesn't expose
       // as usable bounds here, so reserve a stable top lane instead. Before the
       // first secondary cue arrives, a one-line estimate prevents a flash at the
-      // top edge; dialogue gaps reuse the last non-empty cue and remeasure it.
+      // top edge. Dialogue gaps reuse the last non-empty cue and remeasure it.
       final useTopFallback =
           _primaryUsesTopFallback || _lastPrimaryText == null;
       final secondaryTop = useTopFallback

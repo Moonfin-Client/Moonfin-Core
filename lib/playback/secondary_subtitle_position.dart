@@ -4,7 +4,7 @@ double middleSubtitleGap(double gap, double offset) =>
     (gap + offset).clamp(0.002, 1.0).toDouble();
 
 /// The primary edge in screen coordinates. mpv measures its vertical margin on a
-/// 720-line canvas; callers convert sub-margin-y to a fraction before passing it.
+/// 720-line canvas. Callers convert sub-margin-y to a fraction before passing it.
 double mpvPrimaryStackingAnchor(int alignment, {double margin = 0.04}) =>
     switch ((alignment - 1) ~/ 3) {
       2 => margin,

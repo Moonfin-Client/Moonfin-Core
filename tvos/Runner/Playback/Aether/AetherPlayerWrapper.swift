@@ -304,7 +304,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             .sink { [weak self] _ in self?.applyStalledState() }
             .store(in: &cancellables)
 
-        // Audio-track reconstruction does not go through our load() or the
+        // Audio-track reconstruction doesn't go through our load() or the
         // foreground reload method. Track its readiness edge and wait for
         // Aether's stale secondary restoration before replaying the latest
         // host request. A previously-Off selection has no restoration event.
@@ -384,7 +384,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             .store(in: &cancellables)
 
         // Native controls can seek without going through this wrapper. Wait for
-        // a landing so rejected or superseded seeks do not erase placement.
+        // a landing so rejected or superseded seeks don't erase placement.
         engine.seekEvents
             .receive(on: DispatchQueue.main)
             .sink { [weak self, weak engine] event in
@@ -1558,7 +1558,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
         engine.activeSubtitleTrackIndex ?? primarySidecarTrackID
     }
 
-    /// PiP needs AVPlayer's selected rendition; the on-screen overlay cannot
+    /// PiP needs AVPlayer's selected rendition, because the on-screen overlay can't
     /// travel with its video layer. The existing native track remains the source.
     func setNativeSubtitlePresentationRequired(_ required: Bool) {
         nativeSubtitlePresentationRequired = required
@@ -1708,12 +1708,12 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
               !engine.isLoadingSubtitles else { return }
         guard !engine.subtitleCues.isEmpty else {
             // Keep the previously working native primary if the extra decode
-            // fails. Do not retry on every state publication or overlap it with
+            // fails. Don't retry on every state publication or overlap it with
             // a secondary for which we still have no primary geometry.
             nativePrimaryBridgeFailure = (bridge.item, bridge.trackID, true)
             endNativePrimaryBridge(restoreNative: true)
             secondarySubtitleOverlay.isHidden = true
-            hostLog("primary sidecar unavailable for dual HLS subtitles; native primary restored")
+            hostLog("primary sidecar unavailable for dual HLS subtitles, native primary restored")
             return
         }
         guard let group = bridge.group else { return }
@@ -1766,7 +1766,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             if let output = bridge.output { bridge.item.remove(output) }
             if restoreNative, id != nil, ownsItem,
                let group = bridge.group, let option = bridge.option {
-                // Restore the actual item immediately for PiP; the engine call
+                // Restore the actual item immediately for PiP. The engine call
                 // below synchronizes the registered identity asynchronously.
                 bridge.item.select(option, in: group)
             }
@@ -1802,7 +1802,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
 
     /// Reapply after an internal rebuild instead of accepting Aether's older
     /// selection snapshot. Consumes the replay before touching the engine, so
-    /// the activity publications from our own selection cannot retrigger it.
+    /// the activity publications from our own selection can't retrigger it.
     private func reapplySecondaryAfterReload(force: Bool = false) {
         guard ownsEngine, secondarySubtitlesReady,
               let choice = secondaryReloadSelection.takeLatest(force: force)
@@ -1848,7 +1848,7 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
                 hostLog("secondary subtitle ordinal=\(ordinal) stream=\(track.id)")
             } else if let url = pending.url {
                 engine.selectSecondarySidecarSubtitle(url: url)
-                hostLog("secondary subtitle ordinal=\(ordinal) unavailable; using sidecar")
+                hostLog("secondary subtitle ordinal=\(ordinal) unavailable, using sidecar")
             } else {
                 return
             }

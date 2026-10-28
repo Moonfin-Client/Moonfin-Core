@@ -267,7 +267,7 @@ final class RunnerTests: XCTestCase {
         f.layout()
         XCTAssertEqual(f.secondary.caption.frame.minY, 40, accuracy: 0.1)
 
-        // Fit/fill geometry can move the stable lane, but ASS redraws cannot.
+        // Fit/fill geometry can move the stable lane, but ASS redraws can't.
         f.picture(CGRect(x: 100, y: 50, width: 600, height: 300))
         let resized = f.secondary.caption.frame
         XCTAssertEqual(resized.minY, 80, accuracy: 0.1)

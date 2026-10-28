@@ -200,7 +200,7 @@ class WebSubtitleOverlay {
         return;
       }
       _pgsRenderer = ctor.callAsConstructor<_PgsRenderer>(options);
-      // Prime the empty timeline before loading completes so libpgs does not
+      // Prime the empty timeline before loading completes so libpgs doesn't
       // mistake the first active cue for one it has already drawn.
       _pgsRenderer!.renderAtTimestamp(_video.currentTime - _delaySeconds);
     } catch (error) {
@@ -211,8 +211,8 @@ class WebSubtitleOverlay {
 
   void _redrawAssAtCurrentTime(_Jassub renderer) {
     // Request one frame, not a predictive playback clock. JASSUB already
-    // follows video frames via requestVideoFrameCallback when available;
-    // starting its own clock here makes captions advance after video pauses.
+    // follows video frames via requestVideoFrameCallback when available.
+    // Starting its own clock here makes captions advance after video pauses.
     renderer.setCurrentTime(true, _video.currentTime - _delaySeconds);
   }
 
@@ -288,7 +288,7 @@ class WebSubtitleOverlay {
       completer.complete();
       return load;
     }
-    // The bundled libpgs file exports PgsRenderer as an ES module; loading it
+    // The bundled libpgs file exports PgsRenderer as an ES module. Loading it
     // as a classic script fails before the constructor can be published.
     final script = web.HTMLScriptElement()
       ..type = 'module'

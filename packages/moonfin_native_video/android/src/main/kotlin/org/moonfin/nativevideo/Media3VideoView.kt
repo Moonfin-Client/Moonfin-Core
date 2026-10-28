@@ -3449,7 +3449,7 @@ class Media3VideoView(
         val url = args?.get("url")?.toString()?.takeIf { it.isNotBlank() }
         val codec = args?.get("codec")?.toString()
         val id = (args?.get("embeddedTrackId") as? Number)?.toInt()?.takeIf { it > 0 }
-        // Keep the current cue when the same track is selected again; the renderer may
+        // Keep the current cue when the same track is selected again. The renderer may
         // not emit another cue for that selection.
         if (!sourceOpening && id == secondarySubtitleTrackId &&
             url == secondarySubtitleUrl && codec == secondarySubtitleCodec
@@ -3465,7 +3465,7 @@ class Media3VideoView(
         trackSelector.setSecondaryTrack(null)
         secondarySubtitleOverlay.select(id != null || url != null)
         // Declare a startup subtitle before the initial prepare. Switching between
-        // declared files reuses the source; adding a new file during playback prepares
+        // declared files reuses the source. Adding a new file during playback prepares
         // it again at the current position.
         val added = ensureSecondarySubtitleSource()
         if (sourceOpening) return

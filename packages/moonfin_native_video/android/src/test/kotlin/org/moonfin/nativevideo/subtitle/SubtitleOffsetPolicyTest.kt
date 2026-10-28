@@ -17,7 +17,7 @@ class SubtitleOffsetPolicyTest {
         ) { _, method, _ -> error("Unexpected source call: ${method.name}") } as MediaSource
         val source = TextStreamOffsetMediaSource(unusedChild, 0L, 1_000_000L)
 
-        // Changing a saved adjustment while Secondary is Off does not yet
+        // Changing a saved adjustment while Secondary is Off doesn't yet
         // rewrite the source. Selection must detect the difference and retime.
         assertEquals(1_000_000L, source.currentSecondaryOffsetUs)
         assertTrue(source.currentSecondaryOffsetUs != 2_000_000L)

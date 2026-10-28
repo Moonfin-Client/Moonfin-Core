@@ -363,7 +363,7 @@ class SecondarySubtitleRenderingTest {
         f.overlay.select(true, restoreRetained = true)
         assertEquals("Track A", f.caption.text.toString())
 
-        // A real seek/delay invalidates the retained cue, so it cannot return.
+        // A real seek/delay invalidates the retained cue, so it can't return.
         f.overlay.clearSecondaryCues()
         f.overlay.select(false)
         f.overlay.select(true, restoreRetained = true)

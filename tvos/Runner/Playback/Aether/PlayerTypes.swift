@@ -144,7 +144,7 @@ struct PlayerTrack: Identifiable, Equatable {
     }
 }
 
-/// Text traits retained from the subtitle file; global font and colours remain user-controlled.
+/// Text traits retained from the subtitle file. Global font and colors remain user-controlled.
 struct SubtitleStyledRun: Equatable {
     let text: String
     let isBold: Bool
@@ -167,7 +167,7 @@ struct SubtitleEvent {
     let bitmapHeight: Int
     var normalizedRect: CGRect? = nil
     var canvasSize: CGSize? = nil
-    /// SRT/WebVTT alignment from 1 to 9. Nil defaults to bottom-centre alignment; an
+    /// SRT/WebVTT alignment from 1 to 9. Nil defaults to bottom-center alignment, but an
     /// explicit position can still place the cue elsewhere.
     var alignment: Int? = nil
     var position: CGPoint? = nil

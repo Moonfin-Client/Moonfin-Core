@@ -1,4 +1,4 @@
-/// Alignment tags use the chosen edge margin; middle captions stay centred.
+/// Alignment tags use the chosen edge margin, and middle captions stay centered.
 double webSrtVerticalPosition(int alignment, double offset) =>
     switch ((alignment - 1) ~/ 3) {
       0 => 1 - offset,
@@ -7,7 +7,7 @@ double webSrtVerticalPosition(int alignment, double offset) =>
     };
 
 /// Stable top lane used when the primary is an ASS/SSA or bitmap overlay.
-/// The primary offset is the shared base position; the secondary offset is
+/// The primary offset is the shared base position. The secondary offset is
 /// the relative 0...+6% adjustment.
 double webOverlaySecondaryTop(double primaryOffset, double secondaryOffset) =>
     (primaryOffset + secondaryOffset).clamp(0.0, 1.0).toDouble();

@@ -19,7 +19,7 @@ import androidx.media3.ui.CaptionStyleCompat
 import androidx.media3.ui.SubtitleView
 import kotlin.math.roundToInt
 
-/** Replace Media3's default SRT alignment margins; other formats keep their coordinates. */
+/** Replace Media3's default SRT alignment margins. Other formats keep their coordinates. */
 internal fun primaryCueWithoutDefaultMargin(cue: Cue, format: Format?): Cue {
     val mime = if (format?.sampleMimeType == MimeTypes.APPLICATION_MEDIA3_CUES)
         format.codecs else format?.sampleMimeType
@@ -36,7 +36,7 @@ internal fun primaryCueWithoutDefaultMargin(cue: Cue, format: Format?): Cue {
 /**
  * Apply the primary offset inward: top cues move down and bottom cues move up. Leave
  * middle cues unchanged here. Automatically positioned cues use Media3 bottom padding.
- * Convert numbered WebVTT lines only when applying an offset; at zero, preserve their
+ * Convert numbered WebVTT lines only when applying an offset. At zero, preserve their
  * original line numbers.
  */
 internal fun offsetPrimaryCue(
@@ -97,7 +97,7 @@ internal class SecondarySubtitleOverlay(
     private var unmodifiedPrimaryCues: List<Cue> = emptyList()
     private var lastPrimaryCue: Cue? = null
     // Preserve the whole primary group so a later dialogue gap can resolve
-    // placement against the same neighbouring cues after a resize or style change.
+    // placement against the same neighboring cues after a resize or style change.
     private var lastPrimaryCueGroup: List<Cue> = emptyList()
     private var resolvedPrimaryReference: Cue? = null
     private var primaryEnabled = true
@@ -197,7 +197,7 @@ internal class SecondarySubtitleOverlay(
         renderCues()
     }
 
-    /** Switching primary On/Off resets placement; ordinary dialogue gaps do not. */
+    /** Switching primary On/Off resets placement, but ordinary dialogue gaps don't. */
     fun setPrimaryEnabled(enabled: Boolean) {
         if (primaryEnabled == enabled) return
         primaryEnabled = enabled
@@ -206,7 +206,7 @@ internal class SecondarySubtitleOverlay(
 
     /**
      * ASS/SSA primaries can move, animate and draw several independent regions.
-     * Their current libass ink is not a stable stacking anchor, so reserve a
+     * Their current libass ink isn't a stable stacking anchor, so reserve a
      * predictable top lane for the secondary instead.
      */
     fun setPrimaryUsesTopFallback(enabled: Boolean) {
@@ -249,9 +249,9 @@ internal class SecondarySubtitleOverlay(
             cue.lineAnchor == Cue.ANCHOR_TYPE_MIDDLE &&
             cue.line in 0.35f..0.65f
 
-    /** Shift an already-offset centred cue; the caller resolves collisions. */
+    /** Shift an already-offset centered cue. The caller resolves collisions. */
     private fun shiftCentredPrimaryCue(cue: Cue, height: Int): Cue {
-        // Keep the gap centred on the original cue position while secondary subtitles
+        // Keep the gap centered on the original cue position while secondary subtitles
         // are enabled, even when no secondary cue is visible.
         val density = view.resources.displayMetrics.density
         val middleGapPx = SubtitleLayoutPlanner.middleGap(
@@ -262,7 +262,7 @@ internal class SecondarySubtitleOverlay(
             .build()
     }
 
-    /** Move a centred primary only if it will not cover another primary cue. */
+    /** Move a centered primary only if it won't cover another primary cue. */
     private fun resolvePrimaryCues(cues: List<Cue>, width: Int, height: Int, fontPx: Float): List<Cue> {
         val lineHeight = (baseFontSize / 24f) * 0.06f * 1.25f
         val originals = cues.map { offsetPrimaryCue(it, primaryBottomPaddingFraction, lineHeight) }
@@ -459,14 +459,14 @@ internal class SecondarySubtitleOverlay(
         occupied: MutableList<SubtitleBox>,
         gapPx: Float,
     ): Cue? {
-        // Use the position the primary actually received; a proposed centred
+        // Use the position the primary actually received. A proposed centered
         // shift may have been rejected to avoid covering another primary cue.
         val reference = resolvedPrimaryReference
         val cueSize = reference?.size ?: cue.size
         val cueWidth = if (cueSize == Cue.DIMEN_UNSET) width * 0.9f else cueSize * width
         val alignedCue = if (reference == null) cue else cue.buildUpon()
             // Keep the primary's whole horizontal box. Copying only its
-            // anchor can shift centred text to the edge of a wide cue.
+            // anchor can shift centered text to the edge of a wide cue.
             .setPosition(if (reference.position == Cue.DIMEN_UNSET) 0.5f else reference.position)
             .setPositionAnchor(if (reference.position == Cue.DIMEN_UNSET)
                 Cue.ANCHOR_TYPE_MIDDLE else reference.positionAnchor)

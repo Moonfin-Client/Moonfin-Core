@@ -32,7 +32,7 @@ double storedPrimarySubtitleOffset(
 }
 
 /// Normalizes a user edit onto the current step grid. A legacy value outside
-/// the range first snaps to the nearest boundary; an in-range off-grid value
+/// the range first snaps to the nearest boundary. An in-range off-grid value
 /// snaps in the direction of the attempted edit.
 double normalizeSteppedSubtitleOffsetChange({
   required double storedValue,
@@ -103,7 +103,7 @@ Future<void> setPrimarySubtitleAppearance(
       verticalOffset.clamp(0.0, primarySubtitleMaxOffset),
     );
   }
-  // Some backends default omitted colours, so send the full saved appearance.
+  // Some backends default omitted colors, so send the full saved appearance.
   final style = SubtitleStyle.forResolution(prefs, manager.currentResolution);
   await manager.backend?.configureSubtitleStyle(
     textColor: style.textColor,
@@ -116,7 +116,7 @@ Future<void> setPrimarySubtitleAppearance(
   await syncSecondarySubtitleStyle(manager, prefs);
 }
 
-/// Applies the saved secondary style. A zero size adjustment and the default colour
+/// Applies the saved secondary style. A zero size adjustment and the default color
 /// leave those overrides unset so they follow the primary style, including HDR changes.
 Future<void> syncSecondarySubtitleStyle(
   PlaybackManager manager,

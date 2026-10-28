@@ -59,7 +59,7 @@ internal enum class SourceTree {
 
 /**
  * Chooses whether playback needs the custom subtitle source. Once enabled for a video, keep
- * using it so changing subtitle settings does not prepare playback again.
+ * using it so changing subtitle settings doesn't prepare playback again.
  */
 internal fun sourceTreeFor(
     isLive: Boolean,
