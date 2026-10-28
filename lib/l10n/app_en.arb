@@ -5083,6 +5083,93 @@
   "@upcomingEpisodeTomorrow": {
     "description": "Upcoming episode airs tomorrow"
   },
+  "radarrCalendarRow": "Upcoming Movies (Radarr)",
+  "@radarrCalendarRow": {
+    "description": "Home row title for upcoming movies from the Radarr calendar"
+  },
+  "sonarrCalendarRow": "Upcoming TV Shows (Sonarr)",
+  "@sonarrCalendarRow": {
+    "description": "Home row title for upcoming episodes from the Sonarr calendar"
+  },
+  "mergedCalendarRow": "Upcoming Releases",
+  "@mergedCalendarRow": {
+    "description": "Home row title when the Radarr and Sonarr calendars are merged"
+  },
+  "arrCalendarsRowSubtitle": "Radarr and Sonarr Calendars",
+  "@arrCalendarsRowSubtitle": {
+    "description": "Subtitle under the home row that merges the Radarr and Sonarr calendars"
+  },
+  "radarrCalendarRowSubtitle": "Radarr Calendar",
+  "@radarrCalendarRowSubtitle": {
+    "description": "Subtitle under the Radarr calendar home row"
+  },
+  "sonarrCalendarRowSubtitle": "Sonarr Calendar",
+  "@sonarrCalendarRowSubtitle": {
+    "description": "Subtitle under the Sonarr calendar home row"
+  },
+  "calendarReleaseIn": "{days, plural, =0{Today} =1{Tomorrow} other{In {days} days}} ({date})",
+  "@calendarReleaseIn": {
+    "description": "Release date under a movie in the Radarr calendar row, e.g. 'In 2 days (Oct 29)'",
+    "placeholders": {
+      "days": {"type": "int"},
+      "date": {"type": "String"}
+    }
+  },
+  "upcomingCalendars": "Upcoming Calendars",
+  "@upcomingCalendars": {
+    "description": "Settings screen for the Radarr and Sonarr calendar home rows"
+  },
+  "upcomingCalendarsDescription": "Toggle Upcoming Calendars from Radarr/Sonarr.",
+  "@upcomingCalendarsDescription": {
+    "description": "Subtitle of the Upcoming Calendars settings entry"
+  },
+  "enableRadarrCalendar": "Enable Radarr's Upcoming Calendar",
+  "@enableRadarrCalendar": {
+    "description": "Turns on the Radarr calendar home row"
+  },
+  "radarrCalendarShowCinema": "Show Upcoming Cinema Releases",
+  "@radarrCalendarShowCinema": {
+    "description": "Includes cinema release dates in the Radarr calendar row"
+  },
+  "radarrCalendarShowDigital": "Show Upcoming Digital Releases",
+  "@radarrCalendarShowDigital": {
+    "description": "Includes digital release dates in the Radarr calendar row"
+  },
+  "radarrCalendarShowPhysical": "Show Upcoming Physical Releases",
+  "@radarrCalendarShowPhysical": {
+    "description": "Includes physical release dates in the Radarr calendar row"
+  },
+  "calendarShowReleaseDate": "Show Release Date on Home Screen",
+  "@calendarShowReleaseDate": {
+    "description": "Shows the release date under each item of a calendar row"
+  },
+  "radarrCalendarHideDownloaded": "Hide Movies Already on the Server",
+  "@radarrCalendarHideDownloaded": {
+    "description": "Leaves out movies Radarr already downloaded from the calendar row"
+  },
+  "enableSonarrCalendar": "Enable Sonarr's Upcoming Calendar",
+  "@enableSonarrCalendar": {
+    "description": "Turns on the Sonarr calendar home row"
+  },
+  "sonarrCalendarShowEpisodeInfo": "Display Episode Information",
+  "@sonarrCalendarShowEpisodeInfo": {
+    "description": "Shows the season and episode number in the Sonarr calendar row"
+  },
+  "sonarrCalendarHideDownloaded": "Hide Episodes Already on the Server",
+  "@sonarrCalendarHideDownloaded": {
+    "description": "Leaves out episodes Sonarr already downloaded from the calendar row"
+  },
+  "mergeRadarrSonarrCalendars": "Merge Sonarr and Radarr Calendars",
+  "@mergeRadarrSonarrCalendars": {
+    "description": "Shows the Radarr and Sonarr calendars as a single home row"
+  },
+  "sonarrCalendarNextEpisode": "Next Episode: {details}",
+  "@sonarrCalendarNextEpisode": {
+    "description": "Subtitle under a show in the Sonarr calendar row. details is the air date, the episode number, or both",
+    "placeholders": {
+      "details": {"type": "String"}
+    }
+  },
   "moveUp": "Move Up",
   "@moveUp": {
     "description": "Moves a button one place earlier in its row"

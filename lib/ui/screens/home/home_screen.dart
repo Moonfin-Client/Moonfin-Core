@@ -202,12 +202,14 @@ class _HomeShellState extends State<_HomeShell>
   bool _lastEnableRadarrCalendar = false;
   bool _lastEnableSonarrCalendar = false;
   bool _lastMergeRadarrSonarrCalendars = false;
-  bool _lastRadarrCalendarShowCinema = true;
+  bool _lastRadarrCalendarShowCinema = false;
   bool _lastRadarrCalendarShowDigital = true;
   bool _lastRadarrCalendarShowPhysical = true;
   bool _lastRadarrCalendarShowDate = true;
   bool _lastSonarrCalendarShowEpisodeInfo = true;
   bool _lastSonarrCalendarShowDate = true;
+  bool _lastRadarrCalendarHideDownloaded = true;
+  bool _lastSonarrCalendarHideDownloaded = true;
 
   static const _selectionDelay = Duration(milliseconds: 150);
   static const _backdropDelay = Duration(milliseconds: 200);
@@ -251,6 +253,8 @@ class _HomeShellState extends State<_HomeShell>
     _lastRadarrCalendarShowDate = _userPrefs.get(UserPreferences.radarrCalendarShowDate);
     _lastSonarrCalendarShowEpisodeInfo = _userPrefs.get(UserPreferences.sonarrCalendarShowEpisodeInfo);
     _lastSonarrCalendarShowDate = _userPrefs.get(UserPreferences.sonarrCalendarShowDate);
+    _lastRadarrCalendarHideDownloaded = _userPrefs.get(UserPreferences.radarrCalendarHideDownloaded);
+    _lastSonarrCalendarHideDownloaded = _userPrefs.get(UserPreferences.sonarrCalendarHideDownloaded);
 
     _pluginSyncService.addListener(_onPluginSyncChanged);
     _userPrefs.addListener(_onPrefsChanged);
@@ -371,6 +375,8 @@ class _HomeShellState extends State<_HomeShell>
     final currentShowDate = _userPrefs.get(UserPreferences.radarrCalendarShowDate);
     final currentShowEpisodeInfo = _userPrefs.get(UserPreferences.sonarrCalendarShowEpisodeInfo);
     final currentShowSonarrDate = _userPrefs.get(UserPreferences.sonarrCalendarShowDate);
+    final currentRadarrHideDownloaded = _userPrefs.get(UserPreferences.radarrCalendarHideDownloaded);
+    final currentSonarrHideDownloaded = _userPrefs.get(UserPreferences.sonarrCalendarHideDownloaded);
 
     if (currentJson != _lastSectionsJson ||
         currentMultiServer != _lastMultiServer ||
@@ -386,7 +392,9 @@ class _HomeShellState extends State<_HomeShell>
         currentShowPhysical != _lastRadarrCalendarShowPhysical ||
         currentShowDate != _lastRadarrCalendarShowDate ||
         currentShowEpisodeInfo != _lastSonarrCalendarShowEpisodeInfo ||
-        currentShowSonarrDate != _lastSonarrCalendarShowDate) {
+        currentShowSonarrDate != _lastSonarrCalendarShowDate ||
+        currentRadarrHideDownloaded != _lastRadarrCalendarHideDownloaded ||
+        currentSonarrHideDownloaded != _lastSonarrCalendarHideDownloaded) {
       _lastSectionsJson = currentJson;
       _lastMultiServer = currentMultiServer;
       _lastMergeContinueWatchingNextUp = currentMergeContinueWatchingNextUp;
@@ -402,6 +410,8 @@ class _HomeShellState extends State<_HomeShell>
       _lastRadarrCalendarShowDate = currentShowDate;
       _lastSonarrCalendarShowEpisodeInfo = currentShowEpisodeInfo;
       _lastSonarrCalendarShowDate = currentShowSonarrDate;
+      _lastRadarrCalendarHideDownloaded = currentRadarrHideDownloaded;
+      _lastSonarrCalendarHideDownloaded = currentSonarrHideDownloaded;
 
       _viewModel.refresh();
     }
@@ -4502,9 +4512,9 @@ class _ContentRowsState extends State<_ContentRows>
   }
 
   String? _rowSubtitle(HomeRow row, AppLocalizations l10n) {
-    if (row.id == 'merged_calendar' || row.id == 'radarr_calendar' || row.id == 'sonarr_calendar') {
-      return 'Radarr and Sonarr Calendars';
-    }
+    if (row.id == 'merged_calendar') return l10n.arrCalendarsRowSubtitle;
+    if (row.id == 'radarr_calendar') return l10n.radarrCalendarRowSubtitle;
+    if (row.id == 'sonarr_calendar') return l10n.sonarrCalendarRowSubtitle;
     if (row.id.startsWith('seerr_')) return seerrBrand(l10n.seerrDiscoveryRows);
     if (row.id.startsWith('tmdb_')) return 'TMDB Lists';
     if (row.id.startsWith('imdb_')) return 'IMDb List';
