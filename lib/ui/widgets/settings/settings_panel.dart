@@ -223,12 +223,19 @@ class _SettingsNavigatorState extends State<_SettingsNavigator> {
 }
 
 extension SettingsPush on BuildContext {
-  Future<void> pushSettingsScreen(Widget screen, {FocusNode? returnFocus}) {
+  /// Pass [autofocus] false for a screen that picks its own initial focus, so
+  /// its first control (usually the back arrow) isn't focused under a mouse.
+  Future<void> pushSettingsScreen(
+    Widget screen, {
+    FocusNode? returnFocus,
+    bool autofocus = true,
+  }) {
     final focusToRestore = returnFocus ?? FocusManager.instance.primaryFocus;
     return Navigator.of(this)
         .push(
           PageRouteBuilder(
-            pageBuilder: (_, _, _) => _AutoFocusWrapper(child: screen),
+            pageBuilder: (_, _, _) =>
+                autofocus ? _AutoFocusWrapper(child: screen) : screen,
             transitionDuration: const Duration(milliseconds: 160),
             reverseTransitionDuration: const Duration(milliseconds: 130),
             transitionsBuilder: (context, anim, _, child) {
