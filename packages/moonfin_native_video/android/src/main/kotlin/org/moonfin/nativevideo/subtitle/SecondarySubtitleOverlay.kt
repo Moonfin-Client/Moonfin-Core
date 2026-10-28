@@ -349,9 +349,11 @@ internal class SecondarySubtitleOverlay(
                 0f,
                 (height - measured.drawn).coerceAtLeast(0f),
             )
-            // ASS lines can move every frame, so the lane only gives way while
-            // they actually cover it, like a sign or top-aligned dialogue.
-            val lane = SubtitleBox(0f, laneTop, width.toFloat(), laneTop + measured.drawn)
+            // ASS lines can move every frame, so the secondary only gives way
+            // while one actually covers its centered text, not just its band.
+            val laneLeft = (width - measured.drawnWidth) / 2f
+            val lane = SubtitleBox(laneLeft, laneTop, laneLeft + measured.drawnWidth,
+                laneTop + measured.drawn)
             val top = if (primaryInk.none { SubtitleLayoutPlanner.intersects(lane, it, gapPx) }) laneTop
                 else SubtitleLayoutPlanner.placePositionedSecondary(
                     primaryInk, width, height, lane, SubtitleLayoutPlanner.ALIGN_MIDDLE, gapPx, gapPx,
@@ -613,6 +615,7 @@ internal class SecondarySubtitleOverlay(
         val anchor: Float,
         val drawn: Float,
         val firstLine: Float,
+        val drawnWidth: Float,
     )
 
     /** Media3 anchors the first layout but draws a second one after horizontal clipping. */
@@ -668,7 +671,7 @@ internal class SecondarySubtitleOverlay(
         val drawn = if (drawnWidth <= 0) 0f else StaticLayout(text, measurementPaint,
             drawnWidth, alignment, lineSpacingMultiplier, lineSpacingExtra, true).height.toFloat()
         return TextLayoutHeights(initial.height.toFloat(), drawn,
-            (initial.getLineBottom(0) - initial.getLineTop(0)).toFloat())
+            (initial.getLineBottom(0) - initial.getLineTop(0)).toFloat(), drawnWidth.toFloat())
     }
 
     fun clear() {

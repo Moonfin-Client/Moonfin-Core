@@ -8,6 +8,7 @@ import android.content.ContextWrapper
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.Rect
 import android.graphics.Typeface
 import android.hardware.display.DisplayManager
 import android.media.AudioDeviceCallback
@@ -1575,6 +1576,9 @@ class Media3VideoView(
         containerView.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
             applyVideoLayout()
         }
+        subtitleView.addOnLayoutChangeListener { _, left, top, _, _, oldLeft, oldTop, _, _ ->
+            if (left != oldLeft || top != oldTop) pushAssInk()
+        }
 
         refreshSubtitleRendererMode()
 
@@ -2135,16 +2139,25 @@ class Media3VideoView(
             .toInt()
     }
 
+    // Kept in the ASS canvas's own coordinates, so a crop that moves the canvas
+    // without redrawing it can still shift the secondary's copy.
+    private var assInk: List<Rect> = emptyList()
+
+    private fun pushAssInk() {
+        // The ASS canvas follows the video box, the secondary the full frame.
+        val dx = (subtitleView.left - secondarySubtitleView.left).toFloat()
+        val dy = (subtitleView.top - secondarySubtitleView.top).toFloat()
+        secondarySubtitleOverlay.updatePrimaryInk(assInk.map {
+            SubtitleBox(it.left + dx, it.top + dy, it.right + dx, it.bottom + dy)
+        })
+    }
+
     private fun attachAssOverlay(assHandler: AssHandler) {
         releaseAssOverlay()
         val overlay = MoonfinAssOverlayView(context, assHandler)
         overlay.onInkChanged = { ink ->
-            // The ASS canvas follows the video box, the secondary the full frame.
-            val dx = (subtitleView.left - secondarySubtitleView.left).toFloat()
-            val dy = (subtitleView.top - secondarySubtitleView.top).toFloat()
-            secondarySubtitleOverlay.updatePrimaryInk(ink.map {
-                SubtitleBox(it.left + dx, it.top + dy, it.right + dx, it.bottom + dy)
-            })
+            assInk = ink
+            pushAssInk()
         }
         subtitleView.addView(
             overlay,
@@ -2166,10 +2179,9 @@ class Media3VideoView(
             overlay.release()
         }
         assOverlayView = null
+        assInk = emptyList()
         // createPlayer() attaches the first overlay before init builds this.
-        if (::secondarySubtitleOverlay.isInitialized) {
-            secondarySubtitleOverlay.updatePrimaryInk(emptyList())
-        }
+        if (::secondarySubtitleOverlay.isInitialized) pushAssInk()
     }
 
     private fun rebuildPlayerForDecoderPreference() {

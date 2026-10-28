@@ -222,6 +222,9 @@ class SecondarySubtitleRenderingTest {
         f.overlay.updatePrimaryInk(listOf(SubtitleBox(200f, 620f, 1080f, 700f)))
         assertEquals(0.04f, f.caption.line, 0.0001f)
 
+        f.overlay.updatePrimaryInk(listOf(SubtitleBox(0f, 10f, 150f, 90f)))
+        assertEquals(0.04f, f.caption.line, 0.0001f)
+
         f.overlay.updatePrimaryInk(listOf(SubtitleBox(300f, 10f, 980f, 90f)))
         assertTrue(inkBounds(f.secondary).top > 90)
 
