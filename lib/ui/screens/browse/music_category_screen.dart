@@ -545,7 +545,7 @@ abstract class MusicCategoryState<T extends StatefulWidget>
         inset,
         topReserve + 12,
         endInset,
-        wide ? 0 : 12,
+        wide ? 8 : 12,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -640,7 +640,7 @@ abstract class MusicCategoryState<T extends StatefulWidget>
     final expansion = GetIt.instance<UserPreferences>().get(
       UserPreferences.cardFocusExpansion,
     );
-    final headroom = MediaCard.focusHeadroom(cell, expansion: expansion);
+    final headroom = 2 * MediaCard.focusHeadroom(cell, expansion: expansion);
     for (var start = first; start < last; start += columns) {
       final rowEnd = (start + columns).clamp(0, last);
       final firstRow = start == 0;

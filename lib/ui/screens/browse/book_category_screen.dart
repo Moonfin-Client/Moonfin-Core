@@ -643,7 +643,7 @@ abstract class BookCategoryState<T extends StatefulWidget>
       RowFocusEntry.node(node('$id:0'), containerKey: sectionKey('$id:row:0')),
     );
     final expansion = cardFocusExpansion;
-    final headroom = MediaCard.focusHeadroom(
+    final headroom = 2 * MediaCard.focusHeadroom(
       cell * 3 / 2,
       expansion: expansion,
     );
