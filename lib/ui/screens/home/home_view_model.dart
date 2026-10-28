@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 import 'package:collection/collection.dart';
+import 'package:intl/intl.dart';
 
 import '../../../data/models/aggregated_item.dart';
 import '../../../data/models/aggregated_library.dart';
@@ -33,6 +34,7 @@ import '../../../data/services/plugin_sync_service.dart';
 import '../../../data/services/seerr/seerr_api_models.dart';
 import '../../../data/services/seerr/seerr_discover_sliders.dart';
 import '../../../data/utils/bounded_concurrency.dart';
+import '../../../util/calendar_days.dart';
 import '../../../util/game_library.dart';
 import '../../../util/platform_detection.dart';
 import '../../../util/server_url.dart';
@@ -3505,6 +3507,7 @@ class HomeViewModel extends ChangeNotifier {
     final showDigital = _prefs.get(UserPreferences.radarrCalendarShowDigital);
     final showPhysical = _prefs.get(UserPreferences.radarrCalendarShowPhysical);
     final showDate = _prefs.get(UserPreferences.radarrCalendarShowDate);
+    final l10n = currentAppLocalizations();
 
     final List<AggregatedItem> filtered = [];
 
@@ -3517,27 +3520,26 @@ class HomeViewModel extends ChangeNotifier {
       final digitalRelease = digitalReleaseStr != null ? DateTime.tryParse(digitalReleaseStr) : null;
       final physicalRelease = physicalReleaseStr != null ? DateTime.tryParse(physicalReleaseStr) : null;
 
-      final enabledReleases = <DateTime, String>{};
+      final enabledReleases = <DateTime>[];
       if (showCinema && inCinemas != null && inCinemas.isAfter(now.subtract(const Duration(days: 1)))) {
-        enabledReleases[inCinemas] = 'Cinema: ';
+        enabledReleases.add(inCinemas);
       }
       if (showDigital && digitalRelease != null && digitalRelease.isAfter(now.subtract(const Duration(days: 1)))) {
-        enabledReleases[digitalRelease] = 'Digital: ';
+        enabledReleases.add(digitalRelease);
       }
       if (showPhysical && physicalRelease != null && physicalRelease.isAfter(now.subtract(const Duration(days: 1)))) {
-        enabledReleases[physicalRelease] = 'Physical: ';
+        enabledReleases.add(physicalRelease);
       }
 
       if (enabledReleases.isEmpty) continue;
 
-      final sortedDates = enabledReleases.keys.toList()..sort();
+      final sortedDates = enabledReleases..sort();
       final targetReleaseDate = sortedDates.first;
-      final releaseType = enabledReleases[targetReleaseDate]!;
 
       String? subtitleText;
       if (showDate) {
-        final dateStr = _formatDateHuman(targetReleaseDate);
-        subtitleText = '$releaseType$dateStr';
+        final days = calendarDaysBetween(now, targetReleaseDate);
+        subtitleText = l10n.calendarReleaseIn(days < 0 ? 0 : days, _formatDateHuman(targetReleaseDate));
       }
 
       final newRawData = Map<String, dynamic>.from(item.rawData);
@@ -3563,6 +3565,7 @@ class HomeViewModel extends ChangeNotifier {
   List<AggregatedItem> _formatSonarrItems(List<AggregatedItem> rawItems) {
     final showDate = _prefs.get(UserPreferences.sonarrCalendarShowDate);
     final showEpisodeInfo = _prefs.get(UserPreferences.sonarrCalendarShowEpisodeInfo);
+    final l10n = currentAppLocalizations();
 
     return rawItems.map((item) {
       final airDateUtcStr = item.rawData['CalendarDate'] as String?;
@@ -3575,11 +3578,11 @@ class HomeViewModel extends ChangeNotifier {
 
       String? subtitleText;
       if (showDate && showEpisodeInfo) {
-        subtitleText = 'Next Episode: $airDay (S$sNum:E$eNum)';
+        subtitleText = l10n.sonarrCalendarNextEpisode('$airDay (S$sNum:E$eNum)');
       } else if (showDate) {
-        subtitleText = 'Next Episode: $airDay';
+        subtitleText = l10n.sonarrCalendarNextEpisode(airDay);
       } else if (showEpisodeInfo) {
-        subtitleText = 'Next Episode: (S$sNum:E$eNum)';
+        subtitleText = l10n.sonarrCalendarNextEpisode('(S$sNum:E$eNum)');
       }
 
       final newRawData = Map<String, dynamic>.from(item.rawData);
@@ -3797,12 +3800,15 @@ class HomeViewModel extends ChangeNotifier {
       // The plugin fetches the Radarr calendar server side, so the API key stays on the server and
       // this still works when a remote client cant reach a LAN only Radarr.
       final results = await repo.getRadarrCalendar(start: start, end: end);
+      final hideDownloaded = _prefs.get(UserPreferences.radarrCalendarHideDownloaded);
 
       final enrichCompleters = await mapBounded(
         results,
         5,
         (res) async {
           if (res is! Map) return null;
+          // Radarr already has a file for it, so it's on the server and not upcoming.
+          if (hideDownloaded && res['hasFile'] == true) return null;
           final tmdbIdVal = res['tmdbId'];
           if (tmdbIdVal == null || tmdbIdVal == 0) return null;
           final tmdbId = tmdbIdVal.toString();
@@ -3907,10 +3913,13 @@ class HomeViewModel extends ChangeNotifier {
       // The plugin fetches the Sonarr calendar server side, so the API key stays on the server and
       // this still works when a remote client cant reach a LAN only Sonarr.
       final results = await repo.getSonarrCalendar(start: start, end: end);
+      final hideDownloaded = _prefs.get(UserPreferences.sonarrCalendarHideDownloaded);
 
       final groupedEpisodes = <int, Map<String, dynamic>>{};
       for (final res in results) {
         if (res is! Map) continue;
+        // Episode already downloaded, so the next one is the upcoming one.
+        if (hideDownloaded && res['hasFile'] == true) continue;
         final seriesMap = res['series'];
         if (seriesMap is! Map) continue;
 
@@ -4032,37 +4041,14 @@ class HomeViewModel extends ChangeNotifier {
     return 'https://image.tmdb.org/t/p/w$width$path';
   }
 
-  /// The day a Sonarr episode airs, such as "Oct. 24th". Sonarr gives the
+  /// The day a Sonarr episode airs, such as "Oct 24". Sonarr gives the
   /// moment in UTC, so the day is the viewer's local one.
   @visibleForTesting
   static String sonarrAirDay(DateTime airDateUtc) =>
       _formatDateHuman(airDateUtc.toLocal());
 
-  static String _formatDateHuman(DateTime date) {
-    final months = [
-      'Jan.',
-      'Feb.',
-      'Mar.',
-      'Apr.',
-      'May',
-      'Jun.',
-      'Jul.',
-      'Aug.',
-      'Sep.',
-      'Oct.',
-      'Nov.',
-      'Dec.'
-    ];
-    final month = months[date.month - 1];
-    final day = date.day;
-    final suffix = switch (day) {
-      1 || 21 || 31 => 'st',
-      2 || 22 => 'nd',
-      3 || 23 => 'rd',
-      _ => 'th',
-    };
-    return '$month $day$suffix';
-  }
+  static String _formatDateHuman(DateTime date) =>
+      DateFormat.MMMd(currentAppLocalizations().localeName).format(date);
 
   Future<List<HomeRow>> _loadMergedCalendarRow({bool forceRefresh = false}) async {
     try {

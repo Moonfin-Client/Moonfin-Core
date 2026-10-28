@@ -959,6 +959,7 @@ class _UpcomingCalendarsScreenState extends State<_UpcomingCalendarsScreen> {
   Widget build(BuildContext context) {
     final prefs = GetIt.instance<UserPreferences>();
 
+    final l10n = AppLocalizations.of(context);
     final radarrEnabled = prefs.get(UserPreferences.enableRadarrCalendar);
     final sonarrEnabled = prefs.get(UserPreferences.enableSonarrCalendar);
     final calendarsCanMerge = radarrEnabled && sonarrEnabled;
@@ -974,7 +975,7 @@ class _UpcomingCalendarsScreenState extends State<_UpcomingCalendarsScreen> {
         child: Scaffold(
           appBar: buildSettingsAppBar(
             context,
-            const Text('Upcoming Calendars'),
+            Text(l10n.upcomingCalendars),
           ),
           body: FocusScope(
             node: _scope,
@@ -988,7 +989,7 @@ class _UpcomingCalendarsScreenState extends State<_UpcomingCalendarsScreen> {
                       key: const ValueKey('enableRadarrCalendar'),
                       focusNode: _firstNode,
                       preference: UserPreferences.enableRadarrCalendar,
-                      title: "Enable Radarr's Upcoming Calendar",
+                      title: l10n.enableRadarrCalendar,
                       icon: Icons.movie_outlined,
                       onChangedValue: (isEnabled) {
                         _syncCalendarSectionState(
@@ -1002,30 +1003,41 @@ class _UpcomingCalendarsScreenState extends State<_UpcomingCalendarsScreen> {
                       SwitchPreferenceTile(
                         key: const ValueKey('radarrCalendarShowCinema'),
                         preference: UserPreferences.radarrCalendarShowCinema,
-                        title: 'Show Upcoming Cinema Releases',
+                        title: l10n.radarrCalendarShowCinema,
                         icon: Icons.theater_comedy,
                         onChanged: () => setState(() {}),
                       ),
                       SwitchPreferenceTile(
                         key: const ValueKey('radarrCalendarShowDigital'),
                         preference: UserPreferences.radarrCalendarShowDigital,
-                        title: 'Show Upcoming Digital Releases',
+                        title: l10n.radarrCalendarShowDigital,
                         icon: Icons.tv,
                         onChanged: () => setState(() {}),
                       ),
                       SwitchPreferenceTile(
                         key: const ValueKey('radarrCalendarShowPhysical'),
                         preference: UserPreferences.radarrCalendarShowPhysical,
-                        title: 'Show Upcoming Physical Releases',
+                        title: l10n.radarrCalendarShowPhysical,
                         icon: Icons.album,
                         onChanged: () => setState(() {}),
                       ),
                       SwitchPreferenceTile(
                         key: const ValueKey('radarrCalendarShowDate'),
                         preference: UserPreferences.radarrCalendarShowDate,
-                        title: 'Show Release Date on Home Screen',
+                        title: l10n.calendarShowReleaseDate,
                         icon: Icons.calendar_month,
                         onChanged: () => setState(() {}),
+                      ),
+                      SwitchPreferenceTile(
+                        key: const ValueKey('radarrCalendarHideDownloaded'),
+                        preference: UserPreferences.radarrCalendarHideDownloaded,
+                        title: l10n.radarrCalendarHideDownloaded,
+                        icon: Icons.download_done,
+                        onChanged: () {
+                          // The cached calendar was filtered with the old value.
+                          prefs.set(UserPreferences.lastRadarrCalendarFetchTime, 0);
+                          setState(() {});
+                        },
                       ),
                     ],
                   ],
@@ -1036,7 +1048,7 @@ class _UpcomingCalendarsScreenState extends State<_UpcomingCalendarsScreen> {
                     SwitchPreferenceTile(
                       key: const ValueKey('enableSonarrCalendar'),
                       preference: UserPreferences.enableSonarrCalendar,
-                      title: "Enable Sonarr's Upcoming Calendar",
+                      title: l10n.enableSonarrCalendar,
                       icon: Icons.live_tv,
                       onChangedValue: (isEnabled) {
                         _syncCalendarSectionState(
@@ -1050,16 +1062,27 @@ class _UpcomingCalendarsScreenState extends State<_UpcomingCalendarsScreen> {
                       SwitchPreferenceTile(
                         key: const ValueKey('sonarrCalendarShowEpisodeInfo'),
                         preference: UserPreferences.sonarrCalendarShowEpisodeInfo,
-                        title: 'Display Episode Information',
+                        title: l10n.sonarrCalendarShowEpisodeInfo,
                         icon: Icons.info_outline,
                         onChanged: () => setState(() {}),
                       ),
                       SwitchPreferenceTile(
                         key: const ValueKey('sonarrCalendarShowDate'),
                         preference: UserPreferences.sonarrCalendarShowDate,
-                        title: 'Show Release Date on Home Screen',
+                        title: l10n.calendarShowReleaseDate,
                         icon: Icons.calendar_month,
                         onChanged: () => setState(() {}),
+                      ),
+                      SwitchPreferenceTile(
+                        key: const ValueKey('sonarrCalendarHideDownloaded'),
+                        preference: UserPreferences.sonarrCalendarHideDownloaded,
+                        title: l10n.sonarrCalendarHideDownloaded,
+                        icon: Icons.download_done,
+                        onChanged: () {
+                          // The cached calendar was filtered with the old value.
+                          prefs.set(UserPreferences.lastSonarrCalendarFetchTime, 0);
+                          setState(() {});
+                        },
                       ),
                     ],
                   ],
@@ -1069,7 +1092,7 @@ class _UpcomingCalendarsScreenState extends State<_UpcomingCalendarsScreen> {
                     SwitchPreferenceTile(
                       key: const ValueKey('mergeRadarrSonarrCalendars'),
                       preference: UserPreferences.mergeRadarrSonarrCalendars,
-                      title: 'Merge Sonarr and Radarr Calendars',
+                      title: l10n.mergeRadarrSonarrCalendars,
                       icon: Icons.merge_type,
                       enabled: calendarsCanMerge,
                       onChanged: () => setState(() {}),
