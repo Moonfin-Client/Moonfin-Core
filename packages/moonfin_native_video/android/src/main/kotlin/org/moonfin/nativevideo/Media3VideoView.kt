@@ -679,6 +679,11 @@ class Media3VideoView(
         // surface more than once, so one retry is not always enough. The
         // recovery window is what stops this running on.
         private const val DISPLAY_MODE_SWITCH_MAX_RETRIES = 3
+        // A channel change or the next episode is a stop and then a new
+        // source. The stop hands the display back this much later, so a source
+        // arriving in between keeps the mode instead of the television
+        // flipping to its default and straight back.
+        private const val DISPLAY_MODE_RESTORE_GRACE_MS = 2_000L
         /** One greppable logcat tag for everything live recovery reports. */
         private const val LIVE_TAG = "MoonfinLive"
         // An HDMI route flap pauses the player through the becoming-noisy
@@ -780,6 +785,19 @@ class Media3VideoView(
     private var heldStartSettle: DisplayModeSettle? = null
     private var heldStartDisplayListener: DisplayManager.DisplayListener? = null
     private val heldStartRunnable = Runnable { runHeldStart() }
+    private val deferredDisplayModeRestore = Runnable { restorePreferredDisplayMode() }
+    private var observedDisplayModeId: Int? = null
+    private var ownRestoreAtMs = 0L
+    private val displayModeListener: DisplayManager.DisplayListener? =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            object : DisplayManager.DisplayListener {
+                override fun onDisplayAdded(displayId: Int) {}
+                override fun onDisplayRemoved(displayId: Int) {}
+                override fun onDisplayChanged(displayId: Int) = noteDisplayModeChange()
+            }
+        } else {
+            null
+        }
     private var displayModeSwitchRetriesForCurrentSource = 0
     private var decoderReclaimRetriesForCurrentSource = 0
 
@@ -996,6 +1014,12 @@ class Media3VideoView(
     private var openedAudioEffectSessionId = C.AUDIO_SESSION_ID_UNSET
     private var originalPreferredDisplayModeId: Int? = null
     private var activePreferredDisplayModeId: Int? = null
+    // The display the viewer had before this player took the mode, which a
+    // held mode must not stand in for when the next video picks its own.
+    private var baseDisplayMode: DisplayModeOption? = null
+    // Whether the held mode was chosen for the source now playing, as
+    // opposed to carried over from the one before it.
+    private var displayModeChosenForCurrentSource = false
     private var detectedFrameRate: Float? = null
     private var sourceFrameRateHint: Float? = null
     private var sourceVideoWidthHint = 0
@@ -1506,6 +1530,7 @@ class Media3VideoView(
             )
         }
 
+
         override fun onAudioDecoderInitialized(
             eventTime: AnalyticsListener.EventTime,
             decoderName: String,
@@ -1597,6 +1622,15 @@ class Media3VideoView(
         ) {
             context.getSystemService<AudioManager>()
                 ?.registerAudioDeviceCallback(audioDeviceCallback, mainHandler)
+        }
+
+        // A mode switch drops the surface and the audio route whoever asked for
+        // it, so the switch recovery follows the display rather than only this
+        // player's own requests.
+        if (role == "main" && displayModeListener != null) {
+            observedDisplayModeId = currentDisplayModeId()
+            context.getSystemService<DisplayManager>()
+                ?.registerDisplayListener(displayModeListener, mainHandler)
         }
     }
 
@@ -1725,6 +1759,10 @@ class Media3VideoView(
             context.getSystemService<AudioManager>()
                 ?.unregisterAudioDeviceCallback(audioDeviceCallback)
         }
+        displayModeListener?.let {
+            context.getSystemService<DisplayManager>()?.unregisterDisplayListener(it)
+        }
+        mainHandler.removeCallbacks(deferredDisplayModeRestore)
     }
 
     // The default load control stops buffering at a byte budget that a
@@ -2184,11 +2222,12 @@ class Media3VideoView(
         if (::secondarySubtitleOverlay.isInitialized) pushAssInk()
     }
 
+    // setSource, the only caller, has already settled the display mode for the
+    // next source, so the rebuild leaves the window alone.
     private fun rebuildPlayerForDecoderPreference() {
         cancelPendingRetime()
         closeExternalAudioEffectSessionIfOpen()
         currentAudioSessionId = C.AUDIO_SESSION_ID_UNSET
-        restorePreferredDisplayMode()
         detectedFrameRate = null
         releaseAssOverlay()
         player.removeListener(listener)
@@ -2673,7 +2712,6 @@ class Media3VideoView(
         cancelResumeWedgeCheck()
         pausedWhileReady = false
 
-        restorePreferredDisplayMode()
         detectedFrameRate = null
         // Most containers, mkv and ts among them, come out of the extractor
         // with no frame rate on the Format, so the rate the server reported
@@ -2690,6 +2728,28 @@ class Media3VideoView(
         val isAudio = nextMediaType == "audio"
         val mediaTypeChanged = nextMediaType != currentMediaType
         val isPreview = args["preview"] as? Boolean ?: false
+
+        // Handing the display back between two videos makes the television
+        // renegotiate twice when both want the same mode, so a video keeps the
+        // last one, claims it from a stop's pending restore, and the switch
+        // only runs if the new rate needs another. A renegotiation already
+        // under way keeps its recovery window: the new source is the one the
+        // dropped surface and audio route will hit.
+        displayModeChosenForCurrentSource = false
+        if (DisplayModeSwitchPolicy.keepModeForNextSource(
+                isMainPlayer = role == "main",
+                switchingEnabled = isFrameRateSwitchingEnabled(),
+                nextIsAudio = isAudio,
+                nextFrameRateKnown = sourceFrameRateHint != null,
+            )
+        ) {
+            mainHandler.removeCallbacks(deferredDisplayModeRestore)
+            cancelHeldStart()
+            clearSurfaceFrameRateHint()
+            wasPlayingBeforeDisplayModeSwitch = false
+        } else {
+            restorePreferredDisplayMode()
+        }
 
         currentMediaType = nextMediaType
         // Seed losslessness from the source's default audio stream so the
@@ -2894,7 +2954,11 @@ class Media3VideoView(
         val modes = display.supportedModes ?: return null
         val chosen = DisplayModeChooser.choose(
             modes = modes.map { it.toOption() },
-            currentMode = display.mode.toOption(),
+            currentMode = DisplayModeSwitchPolicy.chooserReference(
+                baseMode = baseDisplayMode,
+                displayMode = display.mode.toOption(),
+                holdingMode = activePreferredDisplayModeId != null,
+            ),
             contentFrameRate = contentFrameRate,
             allowResolutionChange = frameRateSwitchingBehavior == "scaleontv",
             videoWidth = if (sourceVideoWidthHint > 0) sourceVideoWidthHint else videoWidthPx,
@@ -2936,9 +3000,28 @@ class Media3VideoView(
         if (originalPreferredDisplayModeId == null) {
             originalPreferredDisplayModeId = window.attributes.preferredDisplayModeId
         }
+        if (activePreferredDisplayModeId == null) {
+            baseDisplayMode = display.mode.toOption()
+        }
 
         val preferredMode = choosePreferredDisplayMode(display, normalizedFrameRate)
         if (preferredMode == null) {
+            // No mode fits, so the viewer's own mode doesn't either: handing it
+            // back would only renegotiate HDMI under the opening audio. The
+            // mode in use stays, unless scale on tv left the last video's
+            // resolution on a source that didn't choose it.
+            if (DisplayModeSwitchPolicy.restoreOnNoMatch(
+                    holdingMode = activePreferredDisplayModeId != null,
+                    heldForCurrentSource = displayModeChosenForCurrentSource,
+                    resolutionScaling = frameRateSwitchingBehavior == "scaleontv",
+                    heldResolutionMatchesBase = baseDisplayMode?.let {
+                        it.width == display.mode.physicalWidth &&
+                            it.height == display.mode.physicalHeight
+                    } ?: true,
+                )
+            ) {
+                restorePreferredDisplayMode()
+            }
             // The display offering nothing usable is the one outcome that looks
             // identical to the feature being off, so it reports what it saw.
             emitFrameRateState(
@@ -2954,6 +3037,7 @@ class Media3VideoView(
         val currentModeId = window.attributes.preferredDisplayModeId
         if (currentModeId == preferredModeId || activePreferredDisplayModeId == preferredModeId) {
             activePreferredDisplayModeId = preferredModeId
+            displayModeChosenForCurrentSource = true
             emitFrameRateState(
                 detectedFrameRate = normalizedFrameRate,
                 appliedFrameRate = preferredMode.refreshRate,
@@ -2965,13 +3049,24 @@ class Media3VideoView(
             return
         }
 
-        displayModeSwitchAtMs = SystemClock.elapsedRealtime()
-        wasPlayingBeforeDisplayModeSwitch = player.playWhenReady
+        // The window can be pointed back at the mode the display already shows,
+        // for example after a restore. Nothing renegotiates then, and arming
+        // recovery anyway turns every unrelated error in the next few seconds
+        // into a re-prepare of the same source.
+        if (DisplayModeSwitchPolicy.requestChangesPhysicalMode(
+                currentModeId = display.mode.modeId,
+                targetModeId = preferredModeId,
+            )
+        ) {
+            displayModeSwitchAtMs = SystemClock.elapsedRealtime()
+            wasPlayingBeforeDisplayModeSwitch = player.playWhenReady
+        }
 
         val updatedLayoutParams = window.attributes
         updatedLayoutParams.preferredDisplayModeId = preferredModeId
         window.attributes = updatedLayoutParams
         activePreferredDisplayModeId = preferredModeId
+        displayModeChosenForCurrentSource = true
 
         emitFrameRateState(
             detectedFrameRate = normalizedFrameRate,
@@ -3011,12 +3106,18 @@ class Media3VideoView(
         player.stop()
         player.clearMediaItems()
         disableCapabilityReselection()
-        restorePreferredDisplayMode()
+        // A held start belongs to the source that just stopped. The display
+        // itself is handed back a moment later, so a source that follows
+        // straight away keeps the mode.
+        cancelHeldStart()
+        mainHandler.removeCallbacks(deferredDisplayModeRestore)
+        mainHandler.postDelayed(deferredDisplayModeRestore, DISPLAY_MODE_RESTORE_GRACE_MS)
         firstFrameCover.visibility = View.VISIBLE
         emitState()
     }
 
     private fun restorePreferredDisplayMode() {
+        mainHandler.removeCallbacks(deferredDisplayModeRestore)
         cancelHeldStart()
         clearSurfaceFrameRateHint()
         endDisplayModeSwitchRecovery()
@@ -3041,6 +3142,9 @@ class Media3VideoView(
         restoredLayoutParams.preferredDisplayModeId = originalModeId
         window.attributes = restoredLayoutParams
         activePreferredDisplayModeId = null
+        displayModeChosenForCurrentSource = false
+        baseDisplayMode = null
+        ownRestoreAtMs = SystemClock.elapsedRealtime()
     }
 
     private fun applySurfaceFrameRateHint(frameRate: Float) {
@@ -4830,6 +4934,33 @@ class Media3VideoView(
     private fun endDisplayModeSwitchRecovery() {
         displayModeSwitchAtMs = 0L
         wasPlayingBeforeDisplayModeSwitch = false
+    }
+
+    private fun currentDisplayModeId(): Int? {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return null
+        return findHostActivity()?.windowManager?.defaultDisplay?.mode?.modeId
+    }
+
+    // The television renegotiates the link under whatever source comes next,
+    // so a mode change this player's switching caused arms the recovery even
+    // when it wasn't a request, a restore on stop for one. A change anything
+    // else made is left to the normal error handling.
+    private fun noteDisplayModeChange() {
+        val modeId = currentDisplayModeId() ?: return
+        val previous = observedDisplayModeId
+        observedDisplayModeId = modeId
+        if (DisplayModeSwitchPolicy.observedModeChange(previous, modeId) &&
+            DisplayModeSwitchPolicy.ownsObservedModeChange(
+                switchingEnabled = isFrameRateSwitchingEnabled(),
+                holdingMode = activePreferredDisplayModeId != null,
+                msSinceOwnRestore = ownRestoreAtMs.takeIf { it != 0L }
+                    ?.let { SystemClock.elapsedRealtime() - it },
+            )
+        ) {
+            displayModeSwitchAtMs = SystemClock.elapsedRealtime()
+            wasPlayingBeforeDisplayModeSwitch =
+                wasPlayingBeforeDisplayModeSwitch || (!isPlayerReleased && player.playWhenReady)
+        }
     }
 
     private fun displayModeSwitchPending(): Boolean {
