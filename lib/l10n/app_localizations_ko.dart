@@ -2629,6 +2629,11 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
+  String playerMatchingDisplayRate(String fps) {
+    return 'Matching display to $fps fps…';
+  }
+
+  @override
   String get failedToLoadRecordings => '녹화를 로드하지 못했습니다';
 
   @override

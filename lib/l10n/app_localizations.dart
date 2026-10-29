@@ -4660,6 +4660,12 @@ abstract class AppLocalizations {
   /// **'Reconnecting… ({attempt} of {total})'**
   String liveReconnecting(int attempt, int total);
 
+  /// Shown while playback waits for the TV to switch to the video's frame rate, like 23.976 or 59.94
+  ///
+  /// In en, this message translates to:
+  /// **'Matching display to {fps} fps…'**
+  String playerMatchingDisplayRate(String fps);
+
   /// Error when recordings fail to load
   ///
   /// In en, this message translates to:

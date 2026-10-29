@@ -21,8 +21,11 @@ import androidx.media3.extractor.text.SubtitleParser
 internal class StreamObservationCallbacks(
     val onCadence: (CadenceReport) -> Unit,
     val onHeader: (StreamRateEvidence) -> Unit,
-    /** The first video sample reached the demuxer: the stream is flowing. */
-    val onFirstSample: () -> Unit = {},
+    /**
+     * The first video sample reached the demuxer: the stream is flowing. Takes
+     * the track's sample MIME type, null when the format isn't known yet.
+     */
+    val onFirstSample: (String?) -> Unit = {},
 )
 
 /**
@@ -118,7 +121,7 @@ internal class CadenceObservingExtractorOutput(
     delegate: ExtractorOutput,
     private val onCadence: (CadenceReport) -> Unit,
     private val onHeader: (StreamRateEvidence) -> Unit = {},
-    private val onFirstSample: () -> Unit = {},
+    private val onFirstSample: (String?) -> Unit = {},
 ) : ForwardingExtractorOutput(delegate) {
 
     private val videoTracks = HashMap<Int, CadenceObservingTrackOutput>()
@@ -139,7 +142,7 @@ internal class CadenceObservingTrackOutput(
     delegate: TrackOutput,
     private val onCadence: (CadenceReport) -> Unit,
     private val onHeader: (StreamRateEvidence) -> Unit = {},
-    private val onFirstSample: () -> Unit = {},
+    private val onFirstSample: (String?) -> Unit = {},
 ) : ForwardingTrackOutput(delegate) {
 
     private val observer = FrameCadenceObserver(reorderDepth = REORDER_DEPTH)
@@ -212,7 +215,7 @@ internal class CadenceObservingTrackOutput(
         super.sampleMetadata(timeUs, flags, size, offset, cryptoData)
         if (!firstSampleReported) {
             firstSampleReported = true
-            runCatching { onFirstSample() }
+            runCatching { onFirstSample(format?.sampleMimeType) }
         }
         // A failing observer must never cost a frame.
         val cadence = runCatching { observer.onFrame(timeUs) }.getOrNull() ?: return

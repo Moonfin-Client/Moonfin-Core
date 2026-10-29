@@ -271,7 +271,10 @@ internal class FrameCadenceObserver(
         const val DEFAULT_WINDOW_INTERVALS = 120
         const val DEFAULT_FAST_INTERVALS = 12
         const val DEFAULT_HEARTBEAT_US = 60_000_000L
-        const val FAST_UNIFORM_TOLERANCE_US = 500.0
+        // Whole-millisecond timestamps, as some IPTV origins write them, put
+        // each interval up to about 0.7 ms off the true one (33 and 34 ms for
+        // 30 fps), so the early reading has to allow that much.
+        const val FAST_UNIFORM_TOLERANCE_US = 750.0
 
         /** Longer than any real frame interval, shorter than a seek or splice usually jumps. */
         const val MAX_INTERVAL_US = 500_000L

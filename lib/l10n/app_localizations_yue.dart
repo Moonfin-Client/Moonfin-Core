@@ -2632,6 +2632,11 @@ class AppLocalizationsYue extends AppLocalizations {
   }
 
   @override
+  String playerMatchingDisplayRate(String fps) {
+    return 'Matching display to $fps fps…';
+  }
+
+  @override
   String get failedToLoadRecordings => '載入錄音失敗';
 
   @override

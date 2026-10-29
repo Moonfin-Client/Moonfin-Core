@@ -2664,6 +2664,11 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
+  String playerMatchingDisplayRate(String fps) {
+    return 'Matching display to $fps fps…';
+  }
+
+  @override
   String get failedToLoadRecordings => 'โหลดการบันทึกไม่สำเร็จ';
 
   @override

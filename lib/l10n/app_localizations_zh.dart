@@ -2625,6 +2625,11 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String playerMatchingDisplayRate(String fps) {
+    return 'Matching display to $fps fps…';
+  }
+
+  @override
   String get failedToLoadRecordings => '加载录制内容失败';
 
   @override

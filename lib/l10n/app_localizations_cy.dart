@@ -2694,6 +2694,11 @@ class AppLocalizationsCy extends AppLocalizations {
   }
 
   @override
+  String playerMatchingDisplayRate(String fps) {
+    return 'Matching display to $fps fps…';
+  }
+
+  @override
   String get failedToLoadRecordings => 'Wedi methu llwytho recordiadau';
 
   @override

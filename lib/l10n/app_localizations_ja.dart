@@ -2642,6 +2642,11 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String playerMatchingDisplayRate(String fps) {
+    return 'Matching display to $fps fps…';
+  }
+
+  @override
   String get failedToLoadRecordings => '録音のロードに失敗しました';
 
   @override

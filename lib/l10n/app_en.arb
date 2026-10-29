@@ -3595,6 +3595,15 @@
       }
     }
   },
+  "playerMatchingDisplayRate": "Matching display to {fps} fps…",
+  "@playerMatchingDisplayRate": {
+    "description": "Shown while playback waits for the TV to switch to the video's frame rate, like 23.976 or 59.94",
+    "placeholders": {
+      "fps": {
+        "type": "String"
+      }
+    }
+  },
   "failedToLoadRecordings": "Failed to load recordings",
   "@failedToLoadRecordings": {
     "description": "Error when recordings fail to load"

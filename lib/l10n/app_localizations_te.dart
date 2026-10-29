@@ -2681,6 +2681,11 @@ class AppLocalizationsTe extends AppLocalizations {
   }
 
   @override
+  String playerMatchingDisplayRate(String fps) {
+    return 'Matching display to $fps fps…';
+  }
+
+  @override
   String get failedToLoadRecordings => 'రికార్డింగ్‌లను లోడ్ చేయడంలో విఫలమైంది';
 
   @override

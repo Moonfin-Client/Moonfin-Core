@@ -2677,6 +2677,11 @@ class AppLocalizationsSv extends AppLocalizations {
   }
 
   @override
+  String playerMatchingDisplayRate(String fps) {
+    return 'Matching display to $fps fps…';
+  }
+
+  @override
   String get failedToLoadRecordings => 'Det gick inte att ladda inspelningar';
 
   @override

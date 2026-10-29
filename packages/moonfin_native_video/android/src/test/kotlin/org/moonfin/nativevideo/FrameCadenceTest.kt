@@ -216,6 +216,20 @@ class FrameCadenceTest {
     }
 
     @Test
+    fun `millisecond-rounded 30 fps reports early as uniform 30`() {
+        // TV UFOP and Channel 10 write whole-millisecond timestamps, so the
+        // intervals run 33, 34, 33 ms and so on.
+        val observer = FrameCadenceObserver(reorderDepth = 0)
+        val reports = (0..FrameCadenceObserver.DEFAULT_FAST_INTERVALS).mapNotNull {
+            observer.onFrame(Math.round(it * 1_000_000.0 / 30.0 / 1000.0) * 1000L)
+        }
+
+        assertEquals(1, reports.size)
+        assertEquals(FrameCadence.Kind.UNIFORM, reports.single().kind)
+        assertEquals(30.0, reports.single().gridHz!!, 1e-6)
+    }
+
+    @Test
     fun `mixed intervals do not use the fast uniform report`() {
         val observer = FrameCadenceObserver(reorderDepth = 0)
         var time = 0L

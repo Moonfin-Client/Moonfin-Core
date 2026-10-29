@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart' show visibleForTesting;
+import 'package:flutter/foundation.dart' show ValueNotifier, visibleForTesting;
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:playback_core/playback_core.dart';
@@ -212,6 +212,11 @@ class Media3PlayerBackend extends PlayerBackend
   /// What the native player decided and is putting out for this source.
   final Media3PlaybackStatus playbackStatus = Media3PlaybackStatus();
 
+  /// The frame rate the display is switching to while the start or a live
+  /// correction waits for it, otherwise null. Never disposed: a screen can
+  /// still be listening for a frame after the backend is replaced.
+  final ValueNotifier<double?> displayMatchFps = ValueNotifier(null);
+
   final _positionStream = StreamController<Duration>.broadcast();
   final _durationStream = StreamController<Duration>.broadcast();
   final _bufferStream = StreamController<Duration>.broadcast();
@@ -301,6 +306,7 @@ class Media3PlayerBackend extends PlayerBackend
           _playbackSpeed = reportedSpeed;
         }
         final liveEdgeMs = (map['liveEdgeMs'] as num?)?.toInt();
+        displayMatchFps.value = (map['displayMatchFps'] as num?)?.toDouble();
         _liveEdge = liveEdgeMs == null
             ? null
             : Duration(milliseconds: liveEdgeMs);
@@ -1155,6 +1161,7 @@ class Media3PlayerBackend extends PlayerBackend
       'header' => 'header',
       'cadence' => 'cadence',
       'timeout' => 'timeout',
+      'server rate, no header' => 'server rate, no header',
       'initial hint' => 'initial hint',
       'audio already open' => 'audio already open',
       'switching disabled' => 'switching disabled',

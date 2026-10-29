@@ -2805,6 +2805,11 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
+  String playerMatchingDisplayRate(String fps) {
+    return 'Matching display to $fps fps…';
+  }
+
+  @override
   String get failedToLoadRecordings => 'Nie udało się wczytać nagrań';
 
   @override

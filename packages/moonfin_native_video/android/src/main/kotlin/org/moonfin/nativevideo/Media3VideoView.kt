@@ -2154,11 +2154,21 @@ class Media3VideoView(
                     }
                 }
             },
-            onFirstSample = {
+            onFirstSample = { sampleMimeType ->
                 mainHandler.post {
                     if (isDisposed || isPlayerReleased || sourceToken != frameTiming.generationToken) return@post
                     if (!rateStartup.awaitingEvidence || startupFirstSampleSeen) return@post
                     startupFirstSampleSeen = true
+                    // Only an MPEG-2 header states the rate at once. Anything
+                    // else needs a run of frames, so it starts on the server's
+                    // rate and a live correction fixes that if the run
+                    // disagrees. With no server rate it still measures.
+                    if (sampleMimeType != MimeTypes.VIDEO_MPEG2 &&
+                        DisplayRateDecision.choose(sourceRateInputs()).source != RateSource.NONE
+                    ) {
+                        completeRateStartup(sourceToken, "server rate, no header")
+                        return@post
+                    }
                     scheduleRateMeasurementTimeout(sourceToken, RATE_EVIDENCE_AFTER_FIRST_SAMPLE_MS)
                 }
             },
@@ -6523,6 +6533,9 @@ class Media3VideoView(
             "subtitleRendererMode" to activeSubtitleRendererMode.wireValue,
             "subtitleRendererModeRequested" to requestedSubtitleRendererMode.wireValue,
             "liveEdgeMs" to liveEdgeMs(),
+            // The rate a held start or correction is switching the display
+            // for, so the player can say why nothing is playing yet.
+            "displayMatchFps" to if (heldStart != null) startupRateChoice?.fps?.toDouble() else null,
         )
     }
 
