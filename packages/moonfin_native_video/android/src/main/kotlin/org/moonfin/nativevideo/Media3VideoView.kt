@@ -5168,6 +5168,7 @@ class Media3VideoView(
         }
         val content = HlsMediaSource.Factory(bootDataSourceFactory)
             .setExtractorFactory(CadenceObservingHlsExtractorFactory(DefaultHlsExtractorFactory()) { observations })
+            .setPlaylistParserFactory(TrickPlayFreeHlsPlaylistParserFactory())
             .setSubtitleParserFactory(assParserFactory)
             .createMediaSource(mediaItem)
         // HlsMediaSource does not merge MediaItem sidecars. Preserve the
