@@ -48,14 +48,12 @@ class SavedShowScreen extends ConsumerStatefulWidget {
 class _SavedShowScreenState extends ConsumerState<SavedShowScreen> {
   int _season = 0;
   final _backFocusNode = FocusNode(debugLabel: 'SavedShowBack');
-  final _initialFocusNode = FocusNode(debugLabel: 'SavedShowInitialFocus');
   final _rowNodes = IndexedFocusNodes('SavedShowRow');
   final _seasonTabsFocusNode = FocusNode(debugLabel: 'SavedShowSeasonTabs');
 
   @override
   void dispose() {
     _backFocusNode.dispose();
-    _initialFocusNode.dispose();
     _rowNodes.dispose();
     _seasonTabsFocusNode.dispose();
     super.dispose();
@@ -119,7 +117,7 @@ class _SavedShowScreenState extends ConsumerState<SavedShowScreen> {
     );
 
     return RequestInitialFocus(
-      targetNode: PlatformDetection.isTV ? _initialFocusNode : null,
+      targetNode: PlatformDetection.isTV ? _rowNodes[0] : null,
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: SafeArea(
@@ -212,9 +210,7 @@ class _SavedShowScreenState extends ConsumerState<SavedShowScreen> {
       final episode = season.episodes[index];
       return SavedMediaRow(
         key: ValueKey(episode.itemId),
-        rowFocusNode: index == 0 && PlatformDetection.isTV
-            ? _initialFocusNode
-            : _rowNodes[index],
+        rowFocusNode: _rowNodes[index],
         title: episode.name,
         subtitle: savedMediaSubtitle(episode, insideShow: true),
         sizeLabel: formatBytes(episode.fileSizeBytes),
