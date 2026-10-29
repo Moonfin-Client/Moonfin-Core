@@ -22,6 +22,9 @@ class _MockSessionRepository extends Mock implements SessionRepository {}
 class _RecordingAdapter implements HttpClientAdapter {
   final List<String> requests = [];
 
+  /// The profile each Settings/Profile POST carried, in order.
+  final List<Map<String, dynamic>> pushedProfiles = [];
+
   /// Body returned for the Resolved endpoint, replaceable per test.
   Map<String, dynamic> resolvedProfile = {};
 
@@ -40,6 +43,10 @@ class _RecordingAdapter implements HttpClientAdapter {
     } else if (path.contains('/Moonfin/Settings/Resolved/')) {
       body = resolvedProfile;
     } else if (path.contains('/Moonfin/Settings/Profile/')) {
+      final data = options.data;
+      if (data is Map && data['profile'] is Map) {
+        pushedProfiles.add(Map<String, dynamic>.from(data['profile'] as Map));
+      }
       body = {};
     }
 
@@ -178,5 +185,50 @@ void main() {
     await service.refreshAvailability(client);
     await service.pushSettingsForProfile(client, profile: 'desktop');
     expect(postCount(), 2);
+  });
+
+  test('after a sync, a local change pushes only that setting', () async {
+    adapter.resolvedProfile = {'use24HourClock': false, 'showClock': true};
+    await service.handleServerEvent(client, {'type': 'settingsUpdated'});
+
+    await prefs.set(UserPreferences.use24HourClock, true);
+    await service.pushSettings(client);
+
+    expect(adapter.pushedProfiles, hasLength(1));
+    expect(adapter.pushedProfiles.single, {'use24HourClock': true});
+  });
+
+  test('a value that came from the server is never pushed back', () async {
+    adapter.resolvedProfile = {'showClock': false};
+    await service.handleServerEvent(client, {'type': 'settingsUpdated'});
+
+    await prefs.set(UserPreferences.use24HourClock, true);
+    await service.pushSettings(client);
+
+    expect(adapter.pushedProfiles.single.containsKey('showClock'), isFalse);
+  });
+
+  test('an explicit save sends what differs from the app defaults', () async {
+    await service.handleServerEvent(client, {'type': 'settingsUpdated'});
+    await prefs.set(
+      UserPreferences.use24HourClock,
+      !UserPreferences.use24HourClock.defaultValue,
+    );
+    await service.pushSettings(client, force: true);
+
+    final pushed = adapter.pushedProfiles.single;
+    expect(pushed['use24HourClock'], !UserPreferences.use24HourClock.defaultValue);
+    expect(pushed.containsKey('confirmExit'), isFalse, reason: 'still at its default');
+    expect(pushed.containsKey('homeSections'), isTrue);
+    expect(pushed.length, lessThan(10));
+  });
+
+  test('home rows and their order always travel together', () {
+    final changed = PluginSyncService.changedProfileKeys(
+      {'homeRowOrder': ['nextup'], 'homeSections': [{'type': 'nextup'}], 'showClock': true},
+      {'homeRowOrder': ['resume'], 'homeSections': [{'type': 'nextup'}], 'showClock': true},
+    );
+
+    expect(changed.keys, unorderedEquals(['homeRowOrder', 'homeSections']));
   });
 }

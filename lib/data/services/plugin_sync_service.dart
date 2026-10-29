@@ -823,20 +823,78 @@ class PluginSyncService extends ChangeNotifier {
       // apply and push echo never converges on its own.
       final snapshotKey = _snapshotKey(client, profile);
       final payloadJson = jsonEncode(payloadProfile);
-      if (!force && _lastSyncedProfileJson[snapshotKey] == payloadJson) {
+      final snapshotJson = _lastSyncedProfileJson[snapshotKey];
+      if (!force && snapshotJson == payloadJson) {
         return;
       }
 
-      await _dio.post(
-        '${client.baseUrl}/Moonfin/Settings/Profile/$profile',
-        data: {'profile': payloadProfile, 'clientId': 'moonfin-flutter'},
-        options: Options(
-          headers: {...headers, 'Content-Type': 'application/json'},
-        ),
-      );
+      // Only what changed since the last sync goes up. Sending every field
+      // stored values the user never chose, which then hid the admin defaults
+      // and anything the server sent for a while. An explicit save, or a first
+      // push with nothing to compare with, sends what differs from the app's
+      // own defaults instead.
+      final body = force || snapshotJson == null
+          ? _withoutBuiltInDefaults(payloadProfile)
+          : changedProfileKeys(
+              payloadProfile,
+              jsonDecode(snapshotJson) as Map<String, dynamic>,
+            );
+      if (body.isNotEmpty) {
+        await _dio.post(
+          '${client.baseUrl}/Moonfin/Settings/Profile/$profile',
+          data: {'profile': body, 'clientId': 'moonfin-flutter'},
+          options: Options(
+            headers: {...headers, 'Content-Type': 'application/json'},
+          ),
+        );
+      }
       // Only after the POST lands, so a failed push retries on the next change.
       _lastSyncedProfileJson[snapshotKey] = payloadJson;
     } catch (_) {}
+  }
+
+  /// [payload] without the settings still at the app's built-in value, so a
+  /// full save only stores what the user changed and the rest keeps following
+  /// the admin defaults. A choice stored earlier stays on the server, since a
+  /// push never removes a key. The home rows and Seerr rows always go.
+  Map<String, dynamic> _withoutBuiltInDefaults(Map<String, dynamic> payload) {
+    final sparse = Map<String, dynamic>.from(payload);
+    for (final field in syncedFields) {
+      if (_prefs.get(field.pref) == field.pref.defaultValue) {
+        sparse.remove(field.serverKey);
+      }
+    }
+    void dropAtDefault(Preference<dynamic> pref, List<String> keys) {
+      if (_prefs.get(pref) == pref.defaultValue) keys.forEach(sparse.remove);
+    }
+
+    dropAtDefault(UserPreferences.sinceYouWatchedNumRows, ['sinceYouWatchedNumRows']);
+    dropAtDefault(UserPreferences.mediaBarMode, ['mediaBarMode', 'mediaBarEnabled']);
+    dropAtDefault(UserPreferences.mediaBarContentType, ['mediaBarContentType']);
+    dropAtDefault(UserPreferences.enabledRatings, ['mdblistRatingSources']);
+    return sparse;
+  }
+
+  /// The keys of [payload] whose value differs from [snapshot]. The server
+  /// drops the stored rows when homeRowOrder arrives without homeSections, so
+  /// the two always travel together.
+  @visibleForTesting
+  static Map<String, dynamic> changedProfileKeys(
+    Map<String, dynamic> payload,
+    Map<String, dynamic> snapshot,
+  ) {
+    final changed = <String, dynamic>{
+      for (final entry in payload.entries)
+        if (jsonEncode(entry.value) != jsonEncode(snapshot[entry.key]))
+          entry.key: entry.value,
+    };
+    if (changed.containsKey('homeSections') ||
+        changed.containsKey('homeRowOrder')) {
+      for (final key in const ['homeSections', 'homeRowOrder']) {
+        if (payload.containsKey(key)) changed[key] = payload[key];
+      }
+    }
+    return changed;
   }
 
   Future<void> pushNotificationPrefs(MediaServerClient client) async {
