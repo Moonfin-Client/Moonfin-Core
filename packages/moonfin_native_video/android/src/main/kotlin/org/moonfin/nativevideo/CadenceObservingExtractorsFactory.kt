@@ -21,6 +21,8 @@ import androidx.media3.extractor.text.SubtitleParser
 internal class StreamObservationCallbacks(
     val onCadence: (CadenceReport) -> Unit,
     val onHeader: (StreamRateEvidence) -> Unit,
+    /** The first video sample reached the demuxer: the stream is flowing. */
+    val onFirstSample: () -> Unit = {},
 )
 
 /**
@@ -98,7 +100,9 @@ private class CadenceObservingExtractor(
     private var output: CadenceObservingExtractorOutput? = null
 
     override fun init(output: ExtractorOutput) {
-        val wrapped = CadenceObservingExtractorOutput(output, callbacks.onCadence, callbacks.onHeader)
+        val wrapped = CadenceObservingExtractorOutput(
+            output, callbacks.onCadence, callbacks.onHeader, callbacks.onFirstSample,
+        )
         this.output = wrapped
         super.init(wrapped)
     }
@@ -114,6 +118,7 @@ internal class CadenceObservingExtractorOutput(
     delegate: ExtractorOutput,
     private val onCadence: (CadenceReport) -> Unit,
     private val onHeader: (StreamRateEvidence) -> Unit = {},
+    private val onFirstSample: () -> Unit = {},
 ) : ForwardingExtractorOutput(delegate) {
 
     private val videoTracks = HashMap<Int, CadenceObservingTrackOutput>()
@@ -121,7 +126,7 @@ internal class CadenceObservingExtractorOutput(
     override fun track(id: Int, type: Int): TrackOutput {
         val inner = super.track(id, type)
         if (type != C.TRACK_TYPE_VIDEO) return inner
-        return videoTracks.getOrPut(id) { CadenceObservingTrackOutput(inner, onCadence, onHeader) }
+        return videoTracks.getOrPut(id) { CadenceObservingTrackOutput(inner, onCadence, onHeader, onFirstSample) }
     }
 
     fun reset() {
@@ -134,6 +139,7 @@ internal class CadenceObservingTrackOutput(
     delegate: TrackOutput,
     private val onCadence: (CadenceReport) -> Unit,
     private val onHeader: (StreamRateEvidence) -> Unit = {},
+    private val onFirstSample: () -> Unit = {},
 ) : ForwardingTrackOutput(delegate) {
 
     private val observer = FrameCadenceObserver(reorderDepth = REORDER_DEPTH)
@@ -141,6 +147,7 @@ internal class CadenceObservingTrackOutput(
     // The parser re-arms after every report so a programme boundary's new
     // sequence header is seen too; only a change is passed on.
     private var lastHeader: StreamRateEvidence? = null
+    private var firstSampleReported = false
     private var format: Format? = null
 
     override fun format(format: Format) {
@@ -203,6 +210,10 @@ internal class CadenceObservingTrackOutput(
         cryptoData: TrackOutput.CryptoData?,
     ) {
         super.sampleMetadata(timeUs, flags, size, offset, cryptoData)
+        if (!firstSampleReported) {
+            firstSampleReported = true
+            runCatching { onFirstSample() }
+        }
         // A failing observer must never cost a frame.
         val cadence = runCatching { observer.onFrame(timeUs) }.getOrNull() ?: return
         val current = format
@@ -223,6 +234,7 @@ internal class CadenceObservingTrackOutput(
         observer.reset()
         headerObserver.reset()
         lastHeader = null
+        firstSampleReported = false
     }
 
     private companion object {

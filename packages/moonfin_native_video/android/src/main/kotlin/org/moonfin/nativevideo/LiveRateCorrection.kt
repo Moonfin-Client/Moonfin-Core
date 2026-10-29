@@ -116,6 +116,13 @@ internal class LiveRateCorrection(
         return fps
     }
 
+    /**
+     * Whether a change in the stream's own rate is now a programme change
+     * rather than the start settling, which the early correction handles.
+     */
+    fun pastEarlyWindow(nowMs: Long): Boolean =
+        active && (earlyUsed || nowMs - startedAtMs > earlyWindowMs)
+
     /** Whether the next correction would be the early one. */
     fun isEarlyPending(): Boolean = active && candidateFps != null && isEarly(candidateSinceMs)
 

@@ -84,6 +84,7 @@ internal class CadenceObservingHlsMediaChunkExtractor(
             extractorOutput,
             observations.onCadence,
             observations.onHeader,
+            observations.onFirstSample,
         )
         observingOutput = wrapped
         delegate.init(wrapped)

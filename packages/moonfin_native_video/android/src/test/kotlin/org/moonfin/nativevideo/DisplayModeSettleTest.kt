@@ -43,6 +43,42 @@ class DisplayModeSettleTest {
     }
 
     @Test
+    fun `the away state is visible so a restarted hold can carry it`() {
+        val held = DisplayModeSettle(quietMs = 1_500L, maxWaitMs = 8_000L, startedAtMs = 0L, audioReturnSettleMs = 0L)
+        assertEquals(false, held.isHdmiAudioAway)
+        held.noteHdmiAudio(present = false)
+        assertEquals(true, held.isHdmiAudioAway)
+        held.noteHdmiAudio(present = true)
+        assertEquals(false, held.isHdmiAudioAway)
+    }
+
+    @Test
+    fun `an expected drop keeps the start waiting past the quiet period`() {
+        val held = DisplayModeSettle(
+            quietMs = 1_500L, maxWaitMs = 8_000L, startedAtMs = 0L,
+            audioReturnSettleMs = 0L, expectHdmiAudioDrop = true, hdmiAudioDropWindowMs = 3_000L,
+        )
+        // Quiet would release at 1.5s; the drop is announced around 2s.
+        assertEquals(3_000L, held.delayAfterChange(nowMs = 0L))
+        assertEquals(1_500L, held.delayAfterChange(nowMs = 1_500L))
+        held.noteHdmiAudio(present = false)
+        assertEquals(true, held.sawHdmiAudioDrop)
+        assertEquals(6_000L, held.delayAfterChange(nowMs = 2_000L))
+        held.noteHdmiAudio(present = true)
+        assertEquals(0L, held.delayAfterChange(nowMs = 4_000L))
+    }
+
+    @Test
+    fun `an expected drop that never comes releases when the window ends`() {
+        val held = DisplayModeSettle(
+            quietMs = 1_500L, maxWaitMs = 8_000L, startedAtMs = 0L,
+            expectHdmiAudioDrop = true, hdmiAudioDropWindowMs = 3_000L,
+        )
+        assertEquals(1_500L, held.delayAfterChange(nowMs = 2_500L))
+        assertEquals(1_500L, held.delayAfterChange(nowMs = 4_000L))
+    }
+
+    @Test
     fun `HDMI audio that never left changes nothing`() {
         val held = DisplayModeSettle(quietMs = 1_500L, maxWaitMs = 8_000L, startedAtMs = 0L, audioReturnSettleMs = 500L)
         held.noteHdmiAudio(present = true)

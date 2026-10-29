@@ -17,6 +17,18 @@ class LiveRateCorrectionTest {
     private fun LiveRateCorrection.take(atMs: Long) = takeDue(nowMs = atMs, loadedMs = atMs)
 
     @Test
+    fun `the early window ends on the clock or with the early correction`() {
+        val correction = started()
+        assertFalse(correction.pastEarlyWindow(10_000L))
+        assertTrue(correction.pastEarlyWindow(16_000L))
+
+        val corrected = started()
+        corrected.reading(3_000L, 29.97f)
+        corrected.take(3_000L)
+        assertTrue(corrected.pastEarlyWindow(4_000L))
+    }
+
+    @Test
     fun `a wrong starting rate is corrected as soon as a reading arrives`() {
         val correction = started()
         correction.reading(3_000L, 29.97f)

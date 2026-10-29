@@ -151,6 +151,21 @@ class CadenceObservingTrackOutputTest {
     }
 
     @Test
+    fun `the first video sample is reported once per reset`() {
+        var firstSamples = 0
+        val output = CadenceObservingTrackOutput(
+            RecordingTrackOutput(), onCadence = {}, onHeader = {}, onFirstSample = { firstSamples++ },
+        )
+        output.format(videoFormat(MimeTypes.VIDEO_H264))
+        output.sampleMetadata(0L, 0, 0, 0, null)
+        output.sampleMetadata(33_367L, 0, 0, 0, null)
+        assertEquals(1, firstSamples)
+        output.reset()
+        output.sampleMetadata(66_733L, 0, 0, 0, null)
+        assertEquals(2, firstSamples)
+    }
+
+    @Test
     fun `non MPEG2 formats never report header evidence`() {
         val delegate = RecordingTrackOutput()
         val evidence = mutableListOf<StreamRateEvidence>()

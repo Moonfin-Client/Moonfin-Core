@@ -14,6 +14,11 @@ package org.moonfin.nativevideo
  * once the route has gone the start waits for it to return and runs as soon
  * as it does, plus only [audioReturnSettleMs] (the viewer's own start delay).
  *
+ * The drop is announced late, up to about two seconds after the switch, which
+ * can be after the display has been quiet long enough. On hardware already
+ * seen to drop HDMI audio, [expectHdmiAudioDrop] keeps the start waiting up to
+ * [hdmiAudioDropWindowMs] from [startedAtMs] for the drop to show up.
+ *
  * The caller owns the clock, so the logic stays a plain object a JVM test can
  * drive.
  */
@@ -22,23 +27,40 @@ class DisplayModeSettle(
     maxWaitMs: Long,
     val startedAtMs: Long,
     private val audioReturnSettleMs: Long = quietMs,
+    private val expectHdmiAudioDrop: Boolean = false,
+    private val hdmiAudioDropWindowMs: Long = 0L,
 ) {
     private val deadlineMs = startedAtMs + maxWaitMs
     private var hdmiAudioAway = false
     private var hdmiAudioReturned = false
 
+    /** Whether the HDMI audio route was seen to go during this hold. */
+    var sawHdmiAudioDrop = false
+        private set
+
     /** How long from [nowMs] until the start runs, counted from the latest change. */
     fun delayAfterChange(nowMs: Long): Long {
         val remaining = (deadlineMs - nowMs).coerceAtLeast(0L)
         if (hdmiAudioAway) return remaining
-        return minOf(if (hdmiAudioReturned) audioReturnSettleMs else quietMs, remaining)
+        if (hdmiAudioReturned) return minOf(audioReturnSettleMs, remaining)
+        val quiet = minOf(quietMs, remaining)
+        if (expectHdmiAudioDrop && !sawHdmiAudioDrop) {
+            val untilDropWindowEnds = startedAtMs + hdmiAudioDropWindowMs - nowMs
+            return minOf(maxOf(quiet, untilDropWindowEnds), remaining)
+        }
+        return quiet
     }
+
+    /** Whether the HDMI audio route has gone and not yet come back. */
+    val isHdmiAudioAway: Boolean
+        get() = hdmiAudioAway
 
     /** The HDMI audio route went away ([present] false) or came back. */
     fun noteHdmiAudio(present: Boolean) {
         if (!present) {
             hdmiAudioAway = true
             hdmiAudioReturned = false
+            sawHdmiAudioDrop = true
         } else if (hdmiAudioAway) {
             hdmiAudioAway = false
             hdmiAudioReturned = true
