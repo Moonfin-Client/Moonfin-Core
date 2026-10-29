@@ -2714,6 +2714,12 @@ class Media3VideoView(
     // keep the player for the next setSource. playerHasLoadedSource stays true
     // so the next setSource still takes the fresh-player/fresh-surface rebuild
     // path that works around decoder-reuse hangs on some TVs.
+    // Previews and trailers share the Media3 backend with main playback, so
+    // their release reaches whichever view is active. One meant for a
+    // preview must not stop a main source, and restore the display with it.
+    private fun isStrayPreviewRelease(arguments: Any?): Boolean =
+        (arguments as? Map<*, *>)?.get("previewOnly") == true && !currentIsPreview
+
     private fun releaseActivePlayer() {
         if (isDisposed) return
         cancelRateStartup()
@@ -2775,10 +2781,12 @@ class Media3VideoView(
                 }
 
                 "release" -> {
-                    releaseActivePlayer()
-                    if (isDisposedByFlutter && currentMediaType != "audio") {
-                        forceReleasePlayer()
-                        Media3Bridge.detachView(this)
+                    if (!isStrayPreviewRelease(call.arguments)) {
+                        releaseActivePlayer()
+                        if (isDisposedByFlutter && currentMediaType != "audio") {
+                            forceReleasePlayer()
+                            Media3Bridge.detachView(this)
+                        }
                     }
                     result.success(null)
                 }
@@ -3000,10 +3008,12 @@ class Media3VideoView(
                 }
 
                 "release" -> {
-                    releaseActivePlayer()
-                    if (isDisposedByFlutter && currentMediaType != "audio") {
-                        forceReleasePlayer()
-                        Media3Bridge.detachView(this)
+                    if (!isStrayPreviewRelease(args)) {
+                        releaseActivePlayer()
+                        if (isDisposedByFlutter && currentMediaType != "audio") {
+                            forceReleasePlayer()
+                            Media3Bridge.detachView(this)
+                        }
                     }
                 }
 

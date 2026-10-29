@@ -1508,10 +1508,9 @@ class _ContentRowsState extends State<_ContentRows>
 
   @override
   Future<void> onAudioRevoked(RevokeReason reason) async {
+    // Releases the Media3 preview only when it owned the player. The backend
+    // is shared with main playback, which is what revokes the preview.
     _finishSharedPreview(releaseResources: true);
-    try {
-      await _media3PreviewBackend?.release();
-    } catch (_) {}
   }
 
   @override
@@ -1847,7 +1846,7 @@ class _ContentRowsState extends State<_ContentRows>
     }
     if (_previewUsingMedia3) {
       _previewUsingMedia3 = false;
-      unawaited(_media3PreviewBackend!.release());
+      unawaited(_media3PreviewBackend!.release(previewOnly: true));
       _media3PreviewBackend.resetVolumeState();
     }
     Future<void>? appleTvReleased;

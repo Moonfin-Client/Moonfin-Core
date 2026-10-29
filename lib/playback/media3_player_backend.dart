@@ -1461,7 +1461,8 @@ class Media3PlayerBackend extends PlayerBackend
   @override
   Future<void> stop() => _teardown('stop');
 
-  Future<void> release() => _teardown('release');
+  Future<void> release({bool previewOnly = false}) =>
+      _teardown('release', previewOnly ? const {'previewOnly': true} : null);
 
   Future<void> appPaused() async {
     await _invoke<void>('appPaused');
@@ -1471,7 +1472,7 @@ class Media3PlayerBackend extends PlayerBackend
     await _invoke<void>('appResumed');
   }
 
-  Future<void> _teardown(String command) async {
+  Future<void> _teardown(String command, [Map<String, Object?>? arguments]) async {
     _setSubtitleLoading(false);
     // The watchdogs guard a single item's bring-up, so stopping has to stop
     // the timer too or it keeps warning about a player that was told to stop.
@@ -1480,7 +1481,7 @@ class Media3PlayerBackend extends PlayerBackend
     _loadRequestedAtMs = 0;
     // Ticks between this stop and the next load still carry this position.
     _previousItemPosition = _position;
-    await _invoke<void>(command);
+    await _invoke<void>(command, arguments);
     if (_isPlaying) {
       _isPlaying = false;
       _playingStream.add(false);
