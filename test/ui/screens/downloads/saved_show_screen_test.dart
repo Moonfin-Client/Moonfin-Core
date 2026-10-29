@@ -213,14 +213,24 @@ void main() {
     );
   });
 
-  testWidgets('off TV the back arrow is not focused on open', (tester) async {
+  testWidgets('off TV no control in the show starts out focused', (
+    tester,
+  ) async {
     await openFromList(tester, [
       _episode('e1', season: 1, episode: 1, name: 'Pilot'),
+      _episode('e2', season: 1, episode: 2, name: 'Second'),
     ]);
 
+    // A focused control draws a ring or a white fill, which looks stuck under
+    // a mouse. The back arrow and the last row's menu button both used to.
+    final focused = FocusManager.instance.primaryFocus;
+    final insideShow =
+        focused?.context?.findAncestorWidgetOfExactType<SavedShowScreen>() !=
+        null;
     expect(
-      FocusManager.instance.primaryFocus?.debugLabel,
-      isNot('SavedShowBack'),
+      insideShow && focused is! FocusScopeNode,
+      isFalse,
+      reason: 'focused: ${focused?.debugLabel}',
     );
   });
 }

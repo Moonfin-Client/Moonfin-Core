@@ -3,9 +3,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:moonfin/ui/widgets/settings/settings_panel.dart';
 
 void main() {
-  final backNode = FocusNode(debugLabel: 'PushedBack');
+  late FocusNode backNode;
 
-  tearDownAll(backNode.dispose);
+  setUp(() => backNode = FocusNode(debugLabel: 'PushedBack'));
+  tearDown(() => backNode.dispose());
 
   Future<void> push(WidgetTester tester, {bool? autofocus}) async {
     final screen = Scaffold(
