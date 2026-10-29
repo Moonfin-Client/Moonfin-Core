@@ -25,6 +25,7 @@ import 'package:moonfin/preference/seerr_preferences.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/ui/screens/browse/music_browse_screen.dart';
 import 'package:moonfin/ui/screens/browse/music_category_screen.dart';
+import 'package:moonfin/ui/widgets/media_card.dart';
 import 'package:moonfin/ui/widgets/music/music_navigation.dart';
 import 'package:moonfin/ui/widgets/music/music_widgets.dart';
 import 'package:moonfin/ui/widgets/navigation_layout.dart';
@@ -711,6 +712,28 @@ void main() {
 
       expect(find.text('Open Album'), findsNothing);
       expect(find.text('Paper Lanterns'), findsOneWidget);
+    });
+
+    testWidgets('a focused card in the top row keeps its whole focus ring '
+        'inside the list', (tester) async {
+      await pumpWide(tester, MusicCategoryKind.albums);
+      expect(focused(), 'music:album:0');
+
+      final card = find.byType(MediaCard).first;
+      final ring = find.descendant(
+        of: card,
+        matching: find.byWidgetPredicate(
+          (widget) =>
+              widget is Container &&
+              widget.decoration is BoxDecoration &&
+              (widget.decoration as BoxDecoration).border != null,
+        ),
+      );
+      final list = find.ancestor(of: card, matching: find.byType(ListView));
+      expect(
+        tester.getTopLeft(ring).dy,
+        greaterThanOrEqualTo(tester.getTopLeft(list.first).dy - 0.01),
+      );
     });
   });
 

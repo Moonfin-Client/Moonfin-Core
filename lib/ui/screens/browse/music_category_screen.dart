@@ -595,7 +595,8 @@ abstract class MusicCategoryState<T extends StatefulWidget>
     final expansion = GetIt.instance<UserPreferences>().get(
       UserPreferences.cardFocusExpansion,
     );
-    return (2 * MediaCard.focusHeadroom(cell, expansion: expansion)) +
+    return MediaCard.focusHeadroom(cell, expansion: expansion) +
+        MediaCard.focusRingOutset +
         MediaCard.layoutHeight(
           context,
           width: cell,
@@ -640,7 +641,9 @@ abstract class MusicCategoryState<T extends StatefulWidget>
     final expansion = GetIt.instance<UserPreferences>().get(
       UserPreferences.cardFocusExpansion,
     );
-    final headroom = 2 * MediaCard.focusHeadroom(cell, expansion: expansion);
+    final headroom =
+        MediaCard.focusHeadroom(cell, expansion: expansion) +
+        MediaCard.focusRingOutset;
     for (var start = first; start < last; start += columns) {
       final rowEnd = (start + columns).clamp(0, last);
       final firstRow = start == 0;

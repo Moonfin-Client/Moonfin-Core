@@ -49,6 +49,12 @@ class MediaCard extends StatefulWidget {
       ? imageHeight * (focusScale - 1)
       : 0;
 
+  /// How far a focused card's ring reaches past its artwork. A grid that clips
+  /// at its top edge needs this on top of [focusHeadroom].
+  static double get focusRingOutset => PlatformDetection.useMobileUi
+      ? 0
+      : _CardImage._focusRingInset * focusScale;
+
   /// The widest decode a card of this shape ever holds, in physical pixels.
   ///
   /// Public so a prefetch of a card's image uses the same cap the card does.

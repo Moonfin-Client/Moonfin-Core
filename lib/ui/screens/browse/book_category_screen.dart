@@ -643,10 +643,9 @@ abstract class BookCategoryState<T extends StatefulWidget>
       RowFocusEntry.node(node('$id:0'), containerKey: sectionKey('$id:row:0')),
     );
     final expansion = cardFocusExpansion;
-    final headroom = 2 * MediaCard.focusHeadroom(
-      cell * 3 / 2,
-      expansion: expansion,
-    );
+    final headroom =
+        MediaCard.focusHeadroom(cell * 3 / 2, expansion: expansion) +
+        MediaCard.focusRingOutset;
     for (var start = 0; start < items.length; start += columns) {
       final rowEnd = math.min(start + columns, items.length);
       Widget row = Row(

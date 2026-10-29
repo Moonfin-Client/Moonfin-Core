@@ -83,19 +83,20 @@ class _MusicGenresScreenState extends MusicCategoryState<MusicGenresScreen> {
           title: l10n.genres,
           count: _genres.isEmpty ? null : l10n.genresCount(_genres.length),
           firstNode: _hasCounts ? node('order') : null,
-          tabs: _hasCounts ? SlidingPillTabs(
-            labels: [l10n.musicSortMostAlbums, l10n.libraryAToZ],
-            selectedIndex: _byAlbums ? 0 : 1,
-            alignment: wide ? Alignment.centerRight : Alignment.centerLeft,
-            focusNode: node('order'),
-            onChanged: (index) => setState(() => _byAlbums = index == 0),
-            onVerticalNavigation: (isUp) {
-              move(headerIndex, isUp);
-              return true;
-            },
-            onExitLeft: leaveLeft,
-            onExitRight: () {},
-          ) : null,
+          tabs: _hasCounts
+              ? SlidingPillTabs(
+                  labels: [l10n.musicSortMostAlbums, l10n.libraryAToZ],
+                  selectedIndex: _byAlbums ? 0 : 1,
+                  alignment: wide
+                      ? Alignment.centerRight
+                      : Alignment.centerLeft,
+                  focusNode: node('order'),
+                  onChanged: (index) => setState(() => _byAlbums = index == 0),
+                  onVerticalNavigation: (isUp) => moveOrHold(headerIndex, isUp),
+                  onExitLeft: leaveLeft,
+                  onExitRight: () {},
+                )
+              : null,
         ),
       ),
     );
