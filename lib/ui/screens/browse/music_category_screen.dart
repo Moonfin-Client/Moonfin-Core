@@ -595,7 +595,7 @@ abstract class MusicCategoryState<T extends StatefulWidget>
     final expansion = GetIt.instance<UserPreferences>().get(
       UserPreferences.cardFocusExpansion,
     );
-    return MediaCard.focusHeadroom(cell, expansion: expansion) +
+    return (2 * MediaCard.focusHeadroom(cell, expansion: expansion)) +
         MediaCard.layoutHeight(
           context,
           width: cell,

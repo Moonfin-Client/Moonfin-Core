@@ -746,7 +746,7 @@ void main() {
       expect(top('Electronic'), lessThan(top('Ambient')));
       expect(find.text('5 albums'), findsOneWidget);
 
-      await tester.tap(find.text('Most Albums'));
+      await tester.tap(find.text('A to Z'));
       await tester.pumpAndSettle();
       expect(top('Ambient'), lessThan(top('Electronic')));
     });
