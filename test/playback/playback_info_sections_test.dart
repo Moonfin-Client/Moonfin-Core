@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:moonfin/l10n/app_localizations_en.dart';
+import 'package:moonfin/playback/media3_playback_status.dart';
 import 'package:moonfin/playback/playback_info_sections.dart';
 import 'package:playback_core/playback_core.dart';
 
@@ -1128,11 +1129,129 @@ void main() {
       'Channel: 4.1 KTVU',
       'Program: Evening News',
       'Play Method: Direct Stream [bold]',
-      '(note) The server is repackaging the file without converting it.',
+      '(note) The server is relaying the channel without converting it.',
     ]);
     expect(lines, isNot(contains('# File')));
     // No subtitle was picked and the server named no default.
     expect(lines, isNot(contains('# Subtitles')));
+  });
+
+  group('what the player is actually playing', () {
+    const liveVideo = <String, dynamic>{
+      'Type': 'Video',
+      'Index': 0,
+      'Codec': 'mpeg2video',
+      'Width': 1920,
+      'Height': 1080,
+      // A cached probe of an earlier programme on the channel.
+      'RealFrameRate': 23.976025,
+      'AverageFrameRate': 23.976025,
+    };
+    const liveAudio = <String, dynamic>{
+      'Type': 'Audio',
+      'Index': 1,
+      'Codec': 'eac3',
+      'Channels': 6,
+    };
+
+    List<String> liveLines(Media3PlaybackStatus status) => _lines(
+      buildPlaybackInfoSections(
+        l10n: _l10n,
+        resolution: _resolution(StreamPlayMethod.directStream),
+        mediaStreams: const [liveVideo, liveAudio],
+        audioStreamIndex: 1,
+        channel: '100 Sci-Fi',
+        nativeStatus: status,
+      ),
+    );
+
+    test('a stale server rate gives way to the stream header', () {
+      final lines = liveLines(
+        Media3PlaybackStatus()
+          ..decisionFrameRate = 29.97
+          ..decisionSource = 'header'
+          ..scanType = 'progressive'
+          ..switchingEnabled = true
+          ..switchingBehavior = 'scaleontv'
+          ..displayRefreshRate = 59.94
+          ..displayWidth = 1920
+          ..displayHeight = 1080
+          ..audioEncoding = 'eac3'
+          ..audioChannels = 6
+          ..audioPassthrough = true,
+      );
+      expect(lines, contains('Frame Rate: 29.97 fps (stream header)'));
+      expect(lines, contains('Server Frame Rate: 23.976 fps'));
+      expect(lines, contains('Scan: Progressive'));
+      expect(lines, contains('Output: Passthrough (Dolby Digital Plus)'));
+      final display = lines.skipWhile((line) => line != '# Display').toList();
+      expect(display.take(3), [
+        '# Display',
+        'Refresh Rate Switching: Scale on TV',
+        'HDMI Output: 1920×1080 @ 59.94 Hz',
+      ]);
+      expect(lines.where((line) => line.startsWith('Rate Corrections')), isEmpty);
+    });
+
+    test('interlaced video shows its picture rate, not the field rate', () {
+      final lines = liveLines(
+        Media3PlaybackStatus()
+          ..decisionFrameRate = 59.94
+          ..decisionSource = 'header'
+          ..scanType = 'interlaced'
+          ..fieldRateApplied = true,
+      );
+      expect(lines, contains('Frame Rate: 29.97 fps (stream header)'));
+      expect(lines, contains('Scan: Interlaced'));
+    });
+
+    test('a matching server rate is not repeated', () {
+      final lines = liveLines(
+        Media3PlaybackStatus()
+          ..decisionFrameRate = 23.976
+          ..decisionSource = 'measured'
+          ..corrections = 1
+          ..switchingEnabled = true
+          ..switchingBehavior = 'scaleondevice',
+      );
+      expect(lines, contains('Frame Rate: 23.976 fps (measured)'));
+      expect(lines.where((line) => line.startsWith('Server Frame Rate')), isEmpty);
+      expect(lines, contains('Refresh Rate Switching: Scale on Device'));
+      expect(lines, contains('Rate Corrections: 1'));
+      expect(lines.where((line) => line.startsWith('HDMI Output')), isEmpty);
+    });
+
+    test('switching off is shown and the decoded size wins', () {
+      final lines = liveLines(
+        Media3PlaybackStatus()
+          ..switchingEnabled = false
+          ..videoWidth = 720
+          ..videoHeight = 480
+          ..audioPassthrough = false
+          ..audioChannels = 2,
+      );
+      expect(lines, contains('Refresh Rate Switching: Off'));
+      expect(lines, contains('Resolution: SD (720×480)'));
+      // No player decision, so the server's rate stands alone.
+      expect(lines, contains('Frame Rate: 23.976 fps'));
+      expect(
+        lines.where((line) => line.startsWith('Output: Decoded (')),
+        hasLength(1),
+      );
+    });
+
+    test('without a native status nothing new appears', () {
+      final lines = _lines(
+        buildPlaybackInfoSections(
+          l10n: _l10n,
+          resolution: _resolution(StreamPlayMethod.directStream),
+          mediaStreams: const [liveVideo, liveAudio],
+          channel: '100 Sci-Fi',
+        ),
+      );
+      expect(lines, contains('Frame Rate: 23.976 fps'));
+      expect(lines, isNot(contains('# Display')));
+    });
   });
 
   test('a live channel that reports a 0×0 picture has no Resolution row', () {

@@ -27423,6 +27423,102 @@ abstract class AppLocalizations {
   /// **'The server is repackaging the file without converting it.'**
   String get playbackInfoNoteDirectStream;
 
+  /// Playback information note under the play method for a live TV channel the server passes through
+  ///
+  /// In en, this message translates to:
+  /// **'The server is relaying the channel without converting it.'**
+  String get playbackInfoNoteLiveRelay;
+
+  /// Playback information frame rate with where the player got it
+  ///
+  /// In en, this message translates to:
+  /// **'{rate} fps ({source})'**
+  String playbackInfoFrameRateFrom(String rate, String source);
+
+  /// Playback information: the frame rate came from the video stream's own header
+  ///
+  /// In en, this message translates to:
+  /// **'stream header'**
+  String get playbackInfoRateSourceHeader;
+
+  /// Playback information: the frame rate was measured from the video's frame timing
+  ///
+  /// In en, this message translates to:
+  /// **'measured'**
+  String get playbackInfoRateSourceMeasured;
+
+  /// Playback information: the frame rate came from the server's description of the media
+  ///
+  /// In en, this message translates to:
+  /// **'server'**
+  String get playbackInfoRateSourceServer;
+
+  /// Playback information row: the frame rate the server reports, shown when it differs from what is playing
+  ///
+  /// In en, this message translates to:
+  /// **'Server Frame Rate'**
+  String get playbackInfoServerFrameRate;
+
+  /// Playback information row: whether the video is progressive or interlaced
+  ///
+  /// In en, this message translates to:
+  /// **'Scan'**
+  String get playbackInfoScan;
+
+  /// Playback information scan type
+  ///
+  /// In en, this message translates to:
+  /// **'Progressive'**
+  String get playbackInfoProgressive;
+
+  /// Playback information scan type
+  ///
+  /// In en, this message translates to:
+  /// **'Interlaced'**
+  String get playbackInfoInterlaced;
+
+  /// Playback information scan type: film carried in an interlaced stream with repeated fields
+  ///
+  /// In en, this message translates to:
+  /// **'Telecined (repeated fields)'**
+  String get playbackInfoRepeatedFields;
+
+  /// Playback information row: the display mode the device is sending
+  ///
+  /// In en, this message translates to:
+  /// **'HDMI Output'**
+  String get playbackInfoHdmiOutput;
+
+  /// Playback information display mode, for example 1920×1080 @ 59.94 Hz
+  ///
+  /// In en, this message translates to:
+  /// **'{width}×{height} @ {rate} Hz'**
+  String playbackInfoDisplayMode(String width, String height, String rate);
+
+  /// Playback information row: how many times live TV changed the display rate after it started
+  ///
+  /// In en, this message translates to:
+  /// **'Rate Corrections'**
+  String get playbackInfoRateCorrections;
+
+  /// Playback information row in the Audio section: how the audio leaves the device
+  ///
+  /// In en, this message translates to:
+  /// **'Output'**
+  String get playbackInfoAudioOutput;
+
+  /// Playback information audio output: the bitstream goes to the receiver undecoded
+  ///
+  /// In en, this message translates to:
+  /// **'Passthrough ({codec})'**
+  String playbackInfoPassthroughOf(String codec);
+
+  /// Playback information audio output: the device decodes the audio, with its channel layout
+  ///
+  /// In en, this message translates to:
+  /// **'Decoded ({channels})'**
+  String playbackInfoDecodedTo(String channels);
+
   /// Playback information note under the play method when only the video is transcoded
   ///
   /// In en, this message translates to:

@@ -1737,6 +1737,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         resolution?.mediaSourceId ?? mediaSource?['Id']?.toString(),
       ),
       hdrOutput: _hdrOutputRange(hdrTonemapped: hdrTonemapped),
+      nativeStatus: switch (_activeBackend) {
+        final Media3PlayerBackend media3 => media3.playbackStatus,
+        _ => null,
+      },
     );
   }
 

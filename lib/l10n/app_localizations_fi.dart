@@ -15798,6 +15798,63 @@ class AppLocalizationsFi extends AppLocalizations {
       'Palvelin pakkaa tiedoston uudelleen muuntamatta sitä.';
 
   @override
+  String get playbackInfoNoteLiveRelay =>
+      'The server is relaying the channel without converting it.';
+
+  @override
+  String playbackInfoFrameRateFrom(String rate, String source) {
+    return '$rate fps ($source)';
+  }
+
+  @override
+  String get playbackInfoRateSourceHeader => 'stream header';
+
+  @override
+  String get playbackInfoRateSourceMeasured => 'measured';
+
+  @override
+  String get playbackInfoRateSourceServer => 'server';
+
+  @override
+  String get playbackInfoServerFrameRate => 'Server Frame Rate';
+
+  @override
+  String get playbackInfoScan => 'Scan';
+
+  @override
+  String get playbackInfoProgressive => 'Progressive';
+
+  @override
+  String get playbackInfoInterlaced => 'Interlaced';
+
+  @override
+  String get playbackInfoRepeatedFields => 'Telecined (repeated fields)';
+
+  @override
+  String get playbackInfoHdmiOutput => 'HDMI Output';
+
+  @override
+  String playbackInfoDisplayMode(String width, String height, String rate) {
+    return '$width×$height @ $rate Hz';
+  }
+
+  @override
+  String get playbackInfoRateCorrections => 'Rate Corrections';
+
+  @override
+  String get playbackInfoAudioOutput => 'Output';
+
+  @override
+  String playbackInfoPassthroughOf(String codec) {
+    return 'Passthrough ($codec)';
+  }
+
+  @override
+  String playbackInfoDecodedTo(String channels) {
+    return 'Decoded ($channels)';
+  }
+
+  @override
   String get playbackInfoNoteTranscodeVideo =>
       'Palvelin muuntaa videon, jotta tämä laite voi toistaa sen.';
 

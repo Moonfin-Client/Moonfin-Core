@@ -14481,6 +14481,99 @@
   "@playbackInfoNoteDirectStream": {
     "description": "Playback information note under the play method for direct stream"
   },
+  "playbackInfoNoteLiveRelay": "The server is relaying the channel without converting it.",
+  "@playbackInfoNoteLiveRelay": {
+    "description": "Playback information note under the play method for a live TV channel the server passes through"
+  },
+  "playbackInfoFrameRateFrom": "{rate} fps ({source})",
+  "@playbackInfoFrameRateFrom": {
+    "description": "Playback information frame rate with where the player got it",
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      },
+      "source": {
+        "type": "String"
+      }
+    }
+  },
+  "playbackInfoRateSourceHeader": "stream header",
+  "@playbackInfoRateSourceHeader": {
+    "description": "Playback information: the frame rate came from the video stream's own header"
+  },
+  "playbackInfoRateSourceMeasured": "measured",
+  "@playbackInfoRateSourceMeasured": {
+    "description": "Playback information: the frame rate was measured from the video's frame timing"
+  },
+  "playbackInfoRateSourceServer": "server",
+  "@playbackInfoRateSourceServer": {
+    "description": "Playback information: the frame rate came from the server's description of the media"
+  },
+  "playbackInfoServerFrameRate": "Server Frame Rate",
+  "@playbackInfoServerFrameRate": {
+    "description": "Playback information row: the frame rate the server reports, shown when it differs from what is playing"
+  },
+  "playbackInfoScan": "Scan",
+  "@playbackInfoScan": {
+    "description": "Playback information row: whether the video is progressive or interlaced"
+  },
+  "playbackInfoProgressive": "Progressive",
+  "@playbackInfoProgressive": {
+    "description": "Playback information scan type"
+  },
+  "playbackInfoInterlaced": "Interlaced",
+  "@playbackInfoInterlaced": {
+    "description": "Playback information scan type"
+  },
+  "playbackInfoRepeatedFields": "Telecined (repeated fields)",
+  "@playbackInfoRepeatedFields": {
+    "description": "Playback information scan type: film carried in an interlaced stream with repeated fields"
+  },
+  "playbackInfoHdmiOutput": "HDMI Output",
+  "@playbackInfoHdmiOutput": {
+    "description": "Playback information row: the display mode the device is sending"
+  },
+  "playbackInfoDisplayMode": "{width}×{height} @ {rate} Hz",
+  "@playbackInfoDisplayMode": {
+    "description": "Playback information display mode, for example 1920×1080 @ 59.94 Hz",
+    "placeholders": {
+      "width": {
+        "type": "String"
+      },
+      "height": {
+        "type": "String"
+      },
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "playbackInfoRateCorrections": "Rate Corrections",
+  "@playbackInfoRateCorrections": {
+    "description": "Playback information row: how many times live TV changed the display rate after it started"
+  },
+  "playbackInfoAudioOutput": "Output",
+  "@playbackInfoAudioOutput": {
+    "description": "Playback information row in the Audio section: how the audio leaves the device"
+  },
+  "playbackInfoPassthroughOf": "Passthrough ({codec})",
+  "@playbackInfoPassthroughOf": {
+    "description": "Playback information audio output: the bitstream goes to the receiver undecoded",
+    "placeholders": {
+      "codec": {
+        "type": "String"
+      }
+    }
+  },
+  "playbackInfoDecodedTo": "Decoded ({channels})",
+  "@playbackInfoDecodedTo": {
+    "description": "Playback information audio output: the device decodes the audio, with its channel layout",
+    "placeholders": {
+      "channels": {
+        "type": "String"
+      }
+    }
+  },
   "playbackInfoNoteTranscodeVideo": "The server is converting the video so this device can play it.",
   "@playbackInfoNoteTranscodeVideo": {
     "description": "Playback information note under the play method when only the video is transcoded"

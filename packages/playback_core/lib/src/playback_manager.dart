@@ -914,10 +914,20 @@ class PlaybackManager implements AudioOwnable {
     // rate is missing.
     final realRate = videoStream?['RealFrameRate'];
     final averageRate = videoStream?['AverageFrameRate'];
-    final videoFrameRate = realRate is num
-        ? realRate.toDouble()
-        : averageRate is num
-        ? averageRate.toDouble()
+    double? validFrameRate(dynamic value) {
+      if (value is! num) return null;
+      final rate = value.toDouble();
+      return rate.isFinite && rate > 0 ? rate : null;
+    }
+
+    final videoRealFrameRate = validFrameRate(realRate);
+    final videoAverageFrameRate = validFrameRate(averageRate);
+    final videoFrameRate = videoRealFrameRate ?? videoAverageFrameRate;
+    // Even an explicit server scan flag is source metadata, never evidence of
+    // the currently decoded stream's scan type.
+    final interlacedMetadata = videoStream?['IsInterlaced'];
+    final bool? videoInterlaced = interlacedMetadata is bool
+        ? interlacedMetadata
         : null;
 
     final audioStreamLang = _extractLanguage(audioStream);
@@ -988,6 +998,11 @@ class PlaybackManager implements AudioOwnable {
           (videoStream['Codec']?.toString().isNotEmpty ?? false))
         'videoCodec': videoStream['Codec'].toString().toLowerCase(),
       if (videoFrameRate != null) 'videoFrameRate': videoFrameRate,
+      if (videoRealFrameRate != null)
+        'videoRealFrameRate': videoRealFrameRate,
+      if (videoAverageFrameRate != null)
+        'videoAverageFrameRate': videoAverageFrameRate,
+      'videoInterlaced': videoInterlaced,
       if (videoStream != null && videoStream['Width'] is int)
         'videoWidth': videoStream['Width'],
       if (videoStream != null && videoStream['Height'] is int)

@@ -1730,6 +1730,10 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
       player: playerEngineName(_manager.backend),
       device: device,
       audioRoute: playbackAudioRoute(resolution?.mediaSourceId),
+      nativeStatus: switch (_manager.backend) {
+        final Media3PlayerBackend media3 => media3.playbackStatus,
+        _ => null,
+      },
     );
   }
 

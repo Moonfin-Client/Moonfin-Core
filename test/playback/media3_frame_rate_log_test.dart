@@ -136,6 +136,224 @@ void main() {
     expect(frameRateLines(), 1);
   });
 
+  test(
+    'a conflicting reported rate is diagnostic and does not call control',
+    () async {
+      final calls = <MethodCall>[];
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(_control, (call) async {
+            calls.add(call);
+            return null;
+          });
+
+      await _send(<String, dynamic>{
+        'event': 'frameRateObservation',
+        'stage': 'inputFormat',
+        'reportedFrameRate': 41.947,
+        'decisionFrameRate': 59.94,
+      });
+      await pumpEventQueue();
+
+      expect(
+        lastLine(),
+        'Media3: reported 41.947fps (inputFormat); display decision kept at '
+        '59.940fps',
+      );
+      expect(calls, isEmpty);
+    },
+  );
+
+  test(
+    'a cadence summary is diagnostic and does not call control',
+    () async {
+      final calls = <MethodCall>[];
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(_control, (call) async {
+            calls.add(call);
+            return null;
+          });
+
+      await _send(<String, dynamic>{
+        'event': 'frameCadence',
+        'stage': 'output',
+        'kind': 'GRID',
+        'meanFps': 41.947,
+        'gridHz': 59.94,
+        'units': '1x10,2x5',
+        'dominantIntervalUs': 16683,
+        'dominantShare': 0.75,
+        'intervals': 15,
+        'timestampMs': 1234,
+        'mimeType': 'video/hevc',
+        'formatFrameRate': 41.947,
+        'discontinuities': 0,
+        'matchesDemux': true,
+      });
+      await pumpEventQueue();
+
+      expect(lastLine(), contains('Media3: cadence output GRID 41.947fps'));
+      expect(lastLine(), contains('on 59.940Hz (1x10,2x5)'));
+      expect(calls, isEmpty);
+    },
+  );
+
+  test(
+    'a live cadence mismatch logs the actual display rate without control calls',
+    () async {
+      final calls = <MethodCall>[];
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(_control, (call) async {
+            calls.add(call);
+            return null;
+          });
+
+      await _send(<String, dynamic>{
+        'event': 'streamRateObservation',
+        'frameRate': 29.97,
+        'decisionFrameRate': 23.976,
+        'displayHz': 59.94,
+        'kind': 'uniform',
+        'timestampMs': 1234,
+      });
+      await pumpEventQueue();
+
+      expect(
+        lastLine(),
+        'Media3: stream cadence 29.970fps (uniform) differs from decision '
+        '23.976fps at 1234ms; display at 59.940Hz',
+      );
+      expect(calls, isEmpty);
+    },
+  );
+
+  test(
+    'a live rate correction is logged without control calls',
+    () async {
+      final calls = <MethodCall>[];
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(_control, (call) async {
+            calls.add(call);
+            return null;
+          });
+
+      await _send(<String, dynamic>{
+        'event': 'frameRateCorrection',
+        'frameRate': 23.976,
+        'reason': 'programme',
+        'displayHz': 59.94,
+      });
+      await pumpEventQueue();
+
+      expect(
+        lastLine(),
+        'Media3: display rate corrected for 23.976fps (programme change); '
+        'display was 59.940Hz',
+      );
+      expect(calls, isEmpty);
+    },
+  );
+
+  test('a rate correction with unknown values stays readable', () async {
+    await _send(<String, dynamic>{'event': 'frameRateCorrection'});
+    await pumpEventQueue();
+
+    expect(
+      lastLine(),
+      'Media3: display rate corrected for ?fps (unknown reason); display '
+      'was ?Hz',
+    );
+  });
+
+  test('stream rate observation handles unknown values readably', () async {
+    await _send(<String, dynamic>{'event': 'streamRateObservation'});
+    await pumpEventQueue();
+
+    expect(
+      lastLine(),
+      'Media3: stream cadence ?fps (unknown) differs from decision ?fps at '
+      '0ms; display at ?Hz',
+    );
+  });
+
+  test(
+    'a header field-rate decision is diagnostic and does not call control',
+    () async {
+      final calls = <MethodCall>[];
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(_control, (call) async {
+            calls.add(call);
+            return null;
+          });
+
+      await _send(<String, dynamic>{
+        'event': 'frameRateDecision',
+        'frameRate': 59.94,
+        'source': 'header',
+        'fieldRateApplied': true,
+        'reason': 'header',
+        'elapsedMs': 12,
+        'scanType': 'interlaced',
+      });
+      await pumpEventQueue();
+
+      expect(
+        lastLine(),
+        'Media3: rate decision 59.940fps from header '
+        '(field rate; interlaced; header; 12ms)',
+      );
+      expect(calls, isEmpty);
+    },
+  );
+
+  test(
+    'a timeout fallback decision is diagnostic and does not call control',
+    () async {
+      final calls = <MethodCall>[];
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(_control, (call) async {
+            calls.add(call);
+            return null;
+          });
+
+      await _send(<String, dynamic>{
+        'event': 'frameRateDecision',
+        'frameRate': 23.976,
+        'source': 'serverReal',
+        'fieldRateApplied': false,
+        'reason': 'timeout',
+        'elapsedMs': 3000,
+        'scanType': 'progressive',
+      });
+      await pumpEventQueue();
+
+      expect(
+        lastLine(),
+        'Media3: rate decision 23.976fps from serverReal '
+        '(picture rate; progressive; timeout; 3000ms)',
+      );
+      expect(calls, isEmpty);
+    },
+  );
+
+  test('a decision without a rate remains readable', () async {
+    await _send(<String, dynamic>{
+      'event': 'frameRateDecision',
+      'frameRate': null,
+      'source': 'none',
+      'fieldRateApplied': false,
+      'reason': 'timeout',
+      'elapsedMs': 0,
+      'scanType': null,
+    });
+    await pumpEventQueue();
+
+    expect(
+      lastLine(),
+      'Media3: rate decision unavailable '
+      '(source none; unknown scan; timeout; 0ms)',
+    );
+  });
+
   test('a payload without a frame rate still reads as a sentence', () async {
     await _send(<String, dynamic>{'event': 'frameRate', 'enabled': true});
     await pumpEventQueue();

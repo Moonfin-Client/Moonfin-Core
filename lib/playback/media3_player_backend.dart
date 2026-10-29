@@ -14,6 +14,7 @@ import '../util/platform_detection.dart';
 import 'device_profile_builder.dart';
 import 'known_defects.dart';
 import 'media3_letterbox_crop.dart';
+import 'media3_playback_status.dart';
 import 'server_transcode_capabilities.dart';
 
 class Media3PlayerBackend extends PlayerBackend
@@ -207,6 +208,9 @@ class Media3PlayerBackend extends PlayerBackend
   bool _sourceIsLive = false;
   bool? _playWhenReady;
   String? _lastFrameRateLine;
+
+  /// What the native player decided and is putting out for this source.
+  final Media3PlaybackStatus playbackStatus = Media3PlaybackStatus();
 
   final _positionStream = StreamController<Duration>.broadcast();
   final _durationStream = StreamController<Duration>.broadcast();
@@ -441,6 +445,45 @@ class Media3PlayerBackend extends PlayerBackend
           '${_toInt(map['elapsedMs'])}ms',
           level: LogLevel.warning,
         );
+      case 'frameCadence':
+        _diag(_frameCadenceLine(map));
+      case 'streamRateObservation':
+        _diag(_streamRateObservationLine(map));
+      case 'frameRateCorrection':
+        _diag(_frameRateCorrectionLine(map));
+        final rate = _finitePositiveDouble(map['frameRate']);
+        if (rate != null) {
+          playbackStatus
+            ..decisionFrameRate = rate
+            ..decisionSource = 'measured'
+            ..fieldRateApplied = false
+            ..corrections += 1;
+        }
+      case 'frameRateDecision':
+        _diag(_frameRateDecisionLine(map));
+        playbackStatus
+          ..decisionFrameRate = _finitePositiveDouble(map['frameRate'])
+          ..decisionSource = map['source']?.toString()
+          ..scanType = map['scanType']?.toString()
+          ..fieldRateApplied = map['fieldRateApplied'] == true;
+      case 'videoFrameOffset':
+        _diag(
+          'Media3: video frames ran ${_toInt(map['averageOffsetUs'])}us early '
+          'on average over ${_toInt(map['frameCount'])} frames',
+        );
+      case 'videoCounters':
+        _diag(
+          'Media3: video counters (${map['reason']}) '
+          'rendered=${_toInt(map['rendered'])} '
+          'skipped=${_toInt(map['skipped'])} '
+          'dropped=${_toInt(map['dropped'])} '
+          'droppedInput=${_toInt(map['droppedInput'])} '
+          'maxConsecutiveDropped=${_toInt(map['maxConsecutiveDropped'])} '
+          'droppedToKeyframe=${_toInt(map['droppedToKeyframe'])} '
+          'decoderInits=${_toInt(map['decoderInits'])}',
+        );
+      case 'frameRateObservation':
+        _diag(_frameRateObservationLine(map));
       case 'audioUnderrun':
         _diag(
           'Media3: audio underrun (buffer ${_toInt(map['bufferSizeMs'])}ms, '
@@ -560,6 +603,10 @@ class Media3PlayerBackend extends PlayerBackend
         _diag('Media3: audio decoder initialized (${map['decoder'] ?? ''})');
       case 'audioTrackInitialized':
         _onAudioTrackInitialized(map);
+        playbackStatus
+          ..audioEncoding = map['encodingName']?.toString()
+          ..audioChannels = _toInt(map['outputChannels'])
+          ..audioPassthrough = map['passthrough'] == true;
       case 'audioTrackMapping':
         _onAudioTrackMapping(map);
       case 'doviCompat':
@@ -579,6 +626,13 @@ class Media3PlayerBackend extends PlayerBackend
         _diag(
           'Media3: video size ${_toInt(map['width'])}x${_toInt(map['height'])}',
         );
+        final width = _toInt(map['width']);
+        final height = _toInt(map['height']);
+        if (width > 0 && height > 0) {
+          playbackStatus
+            ..videoWidth = width
+            ..videoHeight = height;
+        }
       case 'frameRate':
         _onFrameRateEvent(map);
     }
@@ -588,6 +642,25 @@ class Media3PlayerBackend extends PlayerBackend
     final detected = (map['detectedFrameRate'] as num?)?.toDouble();
     final applied = (map['appliedFrameRate'] as num?)?.toDouble();
     final behavior = map['behavior']?.toString() ?? '';
+    final enabled = map['enabled'] == true;
+    playbackStatus
+      ..switchingEnabled = enabled
+      ..switchingBehavior = behavior.isEmpty ? null : behavior;
+    // Files have no startup decision event; the rate they switched for is it.
+    if (playbackStatus.decisionSource == null && detected != null) {
+      playbackStatus.decisionFrameRate = detected;
+    }
+    if (enabled && applied != null) {
+      playbackStatus
+        ..displayRefreshRate = applied
+        ..displayWidth = _toInt(map['appliedWidth'])
+        ..displayHeight = _toInt(map['appliedHeight']);
+    } else if (!enabled) {
+      playbackStatus
+        ..displayRefreshRate = null
+        ..displayWidth = null
+        ..displayHeight = null;
+    }
     final content = detected == null
         ? 'content of unknown frame rate'
         : '${detected.toStringAsFixed(3)}fps content';
@@ -1021,6 +1094,111 @@ class Media3PlayerBackend extends PlayerBackend
     return 0;
   }
 
+  double? _finitePositiveDouble(dynamic value) {
+    if (value is! num) return null;
+    final rate = value.toDouble();
+    return rate.isFinite && rate > 0 ? rate : null;
+  }
+
+  bool? _optionalBool(dynamic value) => value is bool ? value : null;
+
+  String _frameRateObservationLine(Map<dynamic, dynamic> map) {
+    String fixed(dynamic value) =>
+        value is num ? value.toStringAsFixed(3) : '?';
+    return 'Media3: reported ${fixed(map['reportedFrameRate'])}fps '
+        '(${map['stage'] ?? 'unknown'}); display decision kept at '
+        '${fixed(map['decisionFrameRate'])}fps';
+  }
+
+  String _streamRateObservationLine(Map<dynamic, dynamic> map) {
+    String fixed(dynamic value) =>
+        value is num && value.isFinite ? value.toStringAsFixed(3) : '?';
+    final kind = map['kind']?.toString();
+    final readableKind = kind == null || kind.isEmpty ? 'unknown' : kind;
+    return 'Media3: stream cadence ${fixed(map['frameRate'])}fps '
+        '($readableKind) differs from decision '
+        '${fixed(map['decisionFrameRate'])}fps at '
+        '${_toInt(map['timestampMs'])}ms; display at '
+        '${fixed(map['displayHz'])}Hz';
+  }
+
+  String _frameRateCorrectionLine(Map<dynamic, dynamic> map) {
+    String fixed(dynamic value) =>
+        value is num && value.isFinite ? value.toStringAsFixed(3) : '?';
+    final reason = switch (map['reason']) {
+      'start' => 'wrong starting rate',
+      'programme' => 'programme change',
+      _ => 'unknown reason',
+    };
+    return 'Media3: display rate corrected for '
+        '${fixed(map['frameRate'])}fps ($reason); display was '
+        '${fixed(map['displayHz'])}Hz';
+  }
+
+  String _frameRateDecisionLine(Map<dynamic, dynamic> map) {
+    final source = switch (map['source']) {
+      'header' => 'header',
+      'measured' => 'measured',
+      'serverReal' => 'serverReal',
+      'serverAverage' => 'serverAverage',
+      'serverHint' => 'serverHint',
+      'none' => 'none',
+      _ => 'none',
+    };
+    final scanType = switch (map['scanType']) {
+      'progressive' => 'progressive',
+      'interlaced' => 'interlaced',
+      'repeated_fields' => 'repeated fields',
+      _ => 'unknown scan',
+    };
+    final reason = switch (map['reason']) {
+      'header' => 'header',
+      'cadence' => 'cadence',
+      'timeout' => 'timeout',
+      'initial hint' => 'initial hint',
+      'audio already open' => 'audio already open',
+      'switching disabled' => 'switching disabled',
+      _ => 'unknown reason',
+    };
+    final elapsed = '${_toInt(map['elapsedMs'])}ms';
+    final rate = map['frameRate'];
+    if (rate is! num || !rate.isFinite) {
+      return 'Media3: rate decision unavailable (source $source; $scanType; '
+          '$reason; $elapsed)';
+    }
+    final rateKind = map['fieldRateApplied'] == true ? 'field rate' : 'picture rate';
+    return 'Media3: rate decision ${rate.toStringAsFixed(3)}fps from $source '
+        '($rateKind; $scanType; $reason; $elapsed)';
+  }
+
+  /// One line per cadence reading, e.g. `Media3: cadence output grid
+  /// 23.976fps on 29.970Hz (1x110,4x10), dominant 33.37ms 92% at 1234567ms
+  /// [video/mpeg2] demux=differs`.
+  String _frameCadenceLine(Map<dynamic, dynamic> map) {
+    String fixed(dynamic value, int digits) =>
+        value is num ? value.toStringAsFixed(digits) : '?';
+    final grid = map['gridHz'] is num
+        ? ' on ${fixed(map['gridHz'], 3)}Hz (${map['units']})'
+        : '';
+    final share = map['dominantShare'] is num
+        ? '${((map['dominantShare'] as num) * 100).round()}%'
+        : '?';
+    final declared = map['formatFrameRate'] is num
+        ? ', declared ${fixed(map['formatFrameRate'], 3)}fps'
+        : '';
+    final demux = switch (map['matchesDemux']) {
+      true => ' demux=matches',
+      false => ' demux=differs',
+      _ => '',
+    };
+    return 'Media3: cadence ${map['stage']} ${map['kind']} '
+        '${fixed(map['meanFps'], 3)}fps$grid, dominant '
+        '${fixed(_toInt(map['dominantIntervalUs']) / 1000, 2)}ms $share '
+        'over ${_toInt(map['intervals'])} at ${_toInt(map['timestampMs'])}ms '
+        '[${map['mimeType'] ?? '?'}$declared] '
+        'discontinuities=${_toInt(map['discontinuities'])}$demux';
+  }
+
   bool _toBool(dynamic value) {
     if (value is bool) return value;
     return false;
@@ -1170,6 +1348,7 @@ class Media3PlayerBackend extends PlayerBackend
       ...audioDecoderPreferencesPayload(_prefs),
     });
     _lastFrameRateLine = null;
+    playbackStatus.reset();
     _liveEdge = null;
     _sourceIsLive = payload['isLive'] == true;
     updateSubtitleDelaySession(payload['subtitleDelaySessionId'] as int?);
@@ -1183,6 +1362,13 @@ class Media3PlayerBackend extends PlayerBackend
       'stripDolbyVision': stripsDolbyVision(_prefs, videoRangeType),
       'mediaType': mediaType,
       'videoFrameRate': (payload['videoFrameRate'] as num?)?.toDouble(),
+      'videoRealFrameRate': _finitePositiveDouble(
+        payload['videoRealFrameRate'],
+      ),
+      'videoAverageFrameRate': _finitePositiveDouble(
+        payload['videoAverageFrameRate'],
+      ),
+      'videoInterlaced': _optionalBool(payload['videoInterlaced']),
       'videoStartDelayMs': _prefs.get(UserPreferences.videoStartDelay),
       'videoWidth': (payload['videoWidth'] as num?)?.toInt(),
       'videoHeight': (payload['videoHeight'] as num?)?.toInt(),
