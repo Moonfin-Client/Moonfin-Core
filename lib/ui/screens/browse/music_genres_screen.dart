@@ -14,6 +14,7 @@ import '../../widgets/focus/locked_focus_row.dart';
 import '../../widgets/media_card.dart';
 import '../../widgets/music/music_navigation.dart';
 import '../../widgets/music/music_widgets.dart';
+import '../../widgets/sliding_pill_tabs.dart';
 import 'music_category_screen.dart';
 
 /// A music library's genres, each a colored station that shuffles it next
@@ -82,18 +83,19 @@ class _MusicGenresScreenState extends MusicCategoryState<MusicGenresScreen> {
           title: l10n.genres,
           count: _genres.isEmpty ? null : l10n.genresCount(_genres.length),
           firstNode: _hasCounts ? node('order') : null,
-          actions: [
-            if (_hasCounts)
-              MusicPillButton(
-                focusNode: node('order'),
-                icon: Icons.sort_rounded,
-                label: _byAlbums ? l10n.musicSortMostAlbums : l10n.libraryAToZ,
-                onTap: () => setState(() => _byAlbums = !_byAlbums),
-                onNavigateUp: () => move(headerIndex, true),
-                onNavigateDown: () => move(headerIndex, false),
-                onNavigateRight: () {},
-              ),
-          ],
+          tabs: _hasCounts ? SlidingPillTabs(
+            labels: [l10n.musicSortMostAlbums, l10n.libraryAToZ],
+            selectedIndex: _byAlbums ? 0 : 1,
+            alignment: wide ? Alignment.centerRight : Alignment.centerLeft,
+            focusNode: node('order'),
+            onChanged: (index) => setState(() => _byAlbums = index == 0),
+            onVerticalNavigation: (isUp) {
+              move(headerIndex, isUp);
+              return true;
+            },
+            onExitLeft: leaveLeft,
+            onExitRight: () {},
+          ) : null,
         ),
       ),
     );
