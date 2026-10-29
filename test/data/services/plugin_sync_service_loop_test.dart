@@ -219,6 +219,13 @@ void main() {
     final pushed = adapter.pushedProfiles.single;
     expect(pushed['use24HourClock'], !UserPreferences.use24HourClock.defaultValue);
     expect(pushed.containsKey('confirmExit'), isFalse, reason: 'still at its default');
+    for (final key in const [
+      'mdblistRatingSources',
+      'homeRowsMdblistRatingSources',
+      'mediaBarMdblistRatingSources',
+    ]) {
+      expect(pushed.containsKey(key), isFalse, reason: '$key is still at its default');
+    }
     expect(pushed.containsKey('homeSections'), isTrue);
     expect(pushed.length, lessThan(10));
   });

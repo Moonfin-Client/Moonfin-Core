@@ -872,6 +872,8 @@ class PluginSyncService extends ChangeNotifier {
     dropAtDefault(UserPreferences.mediaBarMode, ['mediaBarMode', 'mediaBarEnabled']);
     dropAtDefault(UserPreferences.mediaBarContentType, ['mediaBarContentType']);
     dropAtDefault(UserPreferences.enabledRatings, ['mdblistRatingSources']);
+    dropAtDefault(UserPreferences.homeRowsEnabledRatings, ['homeRowsMdblistRatingSources']);
+    dropAtDefault(UserPreferences.mediaBarEnabledRatings, ['mediaBarMdblistRatingSources']);
     return sparse;
   }
 

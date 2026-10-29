@@ -162,8 +162,11 @@ void main() {
     expect(pushed['homeRowsMdblistRatingSources'], ['metacriticUser']);
     expect(pushed['mediaBarMdblistRatingSources'], ['tomatoes', 'stars']);
     expect(pushed['homeRowsMdblistShowRatingNames'], isTrue);
-    expect(pushed['mdblistShowRatingNames'], isTrue);
     expect(pushed['mediaBarMdblistEnabled'], isTrue);
-    expect(pushed['mdblistEnabled'], isFalse);
+    // The main switches were never touched, so a first push leaves them out.
+    // Had a surface's switch leaked into them, they'd differ from their
+    // default and be sent.
+    expect(pushed.containsKey('mdblistShowRatingNames'), isFalse);
+    expect(pushed.containsKey('mdblistEnabled'), isFalse);
   });
 }
