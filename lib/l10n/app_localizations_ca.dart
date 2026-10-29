@@ -15882,6 +15882,13 @@ class AppLocalizationsCa extends AppLocalizations {
   String get playbackInfoWhy => 'Motiu';
 
   @override
+  String get playbackInfoServerCompatibilityCheck =>
+      'Server compatibility check';
+
+  @override
+  String get playbackInfoBitrateUnavailable => 'Bitrate unavailable';
+
+  @override
   String get playbackInfoQualityLimit => 'Límit de qualitat';
 
   @override
@@ -16064,6 +16071,11 @@ class AppLocalizationsCa extends AppLocalizations {
   @override
   String playbackInfoWhyVideoCodec(String codec) {
     return 'Aquest dispositiu no pot reproduir vídeo $codec';
+  }
+
+  @override
+  String playbackInfoWhyVideoProfileUnknown(String codec) {
+    return 'The server couldn\'t verify this stream\'s $codec profile.';
   }
 
   @override

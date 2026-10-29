@@ -27323,6 +27323,18 @@ abstract class AppLocalizations {
   /// **'Why'**
   String get playbackInfoWhy;
 
+  /// Playback information row label for reasons retained from a server compatibility check during live relay
+  ///
+  /// In en, this message translates to:
+  /// **'Server compatibility check'**
+  String get playbackInfoServerCompatibilityCheck;
+
+  /// Playback information value when an incomplete live source prevents a reliable aggregate bitrate
+  ///
+  /// In en, this message translates to:
+  /// **'Bitrate unavailable'**
+  String get playbackInfoBitrateUnavailable;
+
   /// Playback information row label: the maximum streaming bitrate the user picked
   ///
   /// In en, this message translates to:
@@ -27614,6 +27626,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This device can\'t play {codec} video'**
   String playbackInfoWhyVideoCodec(String codec);
+
+  /// Playback information reason when the server could not determine the video profile
+  ///
+  /// In en, this message translates to:
+  /// **'The server couldn\'t verify this stream\'s {codec} profile.'**
+  String playbackInfoWhyVideoProfileUnknown(String codec);
 
   /// Playback information reason: the video codec's profile, like HEVC Main 10, isn't supported
   ///

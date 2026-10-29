@@ -14382,6 +14382,14 @@
     "description": "Playback information row label: the Live TV program on now"
   },
   "playbackInfoWhy": "Why",
+  "playbackInfoServerCompatibilityCheck": "Server compatibility check",
+  "@playbackInfoServerCompatibilityCheck": {
+    "description": "Playback information row label for reasons retained from a server compatibility check during live relay"
+  },
+  "playbackInfoBitrateUnavailable": "Bitrate unavailable",
+  "@playbackInfoBitrateUnavailable": {
+    "description": "Playback information value when an incomplete live source prevents a reliable aggregate bitrate"
+  },
   "@playbackInfoWhy": {
     "description": "Playback information row label: why the server isn't sending the original file as is"
   },
@@ -14650,6 +14658,15 @@
   "playbackInfoWhyVideoCodec": "This device can't play {codec} video",
   "@playbackInfoWhyVideoCodec": {
     "description": "Playback information reason: the video codec, like HEVC or AV1, isn't supported",
+    "placeholders": {
+      "codec": {
+        "type": "String"
+      }
+    }
+  },
+  "playbackInfoWhyVideoProfileUnknown": "The server couldn't verify this stream's {codec} profile.",
+  "@playbackInfoWhyVideoProfileUnknown": {
+    "description": "Playback information reason when the server could not determine the video profile",
     "placeholders": {
       "codec": {
         "type": "String"

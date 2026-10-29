@@ -103,6 +103,15 @@ List<Map<String, dynamic>> buildPlaybackInfoSections({
   );
   final sourceBitrate =
       resolution?.sourceBitrate ?? _int(mediaSource?['Bitrate']);
+  final liveRelayCompatibilityCheck =
+      !download &&
+      method == StreamPlayMethod.directStream &&
+      channel != null &&
+      reasons.isNotEmpty;
+  final incompleteLiveAggregateBitrate =
+      !download &&
+      channel != null &&
+      _isIncompleteLiveAggregateBitrate(mediaStreams, sourceBitrate);
   // Jellyfin leaves SubtitleMethod=Encode on the URL even when the picked
   // track goes out as a separate file, so the URL has to name that track.
   final burned =
@@ -195,7 +204,7 @@ List<Map<String, dynamic>> buildPlaybackInfoSections({
         _ => null,
       };
   final outText = out == null ? null : formatPlaybackBitrate(out);
-  final sourceText = sourceBitrate == null
+  final sourceText = sourceBitrate == null || incompleteLiveAggregateBitrate
       ? null
       : formatPlaybackBitrate(sourceBitrate);
   final bitrate = outText == null || sourceText == null || outText == sourceText
@@ -212,8 +221,15 @@ List<Map<String, dynamic>> buildPlaybackInfoSections({
         StreamPlayMethod.transcode => l10n.transcoding,
       }, bold: true),
     if (note != null) {'note': note},
-    if (why.isNotEmpty) _row(l10n.playbackInfoWhy, why.join('\n')),
-    if (bitrate != null) _row(l10n.bitrate, bitrate),
+    if (why.isNotEmpty)
+      _row(
+        liveRelayCompatibilityCheck
+            ? l10n.playbackInfoServerCompatibilityCheck
+            : l10n.playbackInfoWhy,
+        why.join('\n'),
+      ),
+    if (bitrate != null || incompleteLiveAggregateBitrate)
+      _row(l10n.bitrate, bitrate ?? l10n.playbackInfoBitrateUnavailable),
     if (qualityLimitMbps != null)
       _row(
         l10n.playbackInfoQualityLimit,
@@ -577,8 +593,10 @@ List<String> playbackWhyLines(
     'videocodecnotsupported' || 'videocodectagnotsupported' => (4, videoLine),
     'videoprofilenotsupported' => (
       5,
-      codec == null || profile == null
+      codec == null
           ? videoLine
+          : profile == null
+          ? l10n.playbackInfoWhyVideoProfileUnknown(codec)
           : l10n.playbackInfoWhyVideoProfile(codec, profile),
     ),
     'videolevelnotsupported' => (
@@ -1016,4 +1034,39 @@ String? _text(Object? value) {
   return text == null || text.isEmpty ? null : text;
 }
 
-int? _int(Object? value) => value is num ? value.toInt() : null;
+int? _int(Object? value) =>
+    value is num && value.isFinite ? value.toInt() : null;
+
+bool _isIncompleteLiveAggregateBitrate(
+  List<Map<String, dynamic>> mediaStreams,
+  int? aggregateBitrate,
+) {
+  if (aggregateBitrate == null || aggregateBitrate <= 0) return false;
+  final internalStreams = mediaStreams
+      .where((stream) => stream['IsExternal'] != true)
+      .toList();
+  final videos = internalStreams.where((stream) => stream['Type'] == 'Video');
+  final audio = internalStreams.where((stream) => stream['Type'] == 'Audio');
+  if (videos.isEmpty || audio.isEmpty) return false;
+
+  // Missing video bitrate alone can be legitimate. Only hide a live aggregate
+  // when the video dimensions are also incomplete and the total is exactly
+  // explained by every known internal audio stream.
+  if (videos.any(
+    (stream) =>
+        _positive(stream['BitRate']) != null ||
+        (_positive(stream['Width']) != null &&
+            _positive(stream['Height']) != null),
+  )) {
+    return false;
+  }
+  final audioBitrates = [
+    for (final stream in audio) _positive(stream['BitRate']),
+  ];
+  if (audioBitrates.any((bitrate) => bitrate == null)) return false;
+  final audioTotal = audioBitrates.cast<int>().fold<int>(
+    0,
+    (sum, value) => sum + value,
+  );
+  return audioTotal > 0 && audioTotal == aggregateBitrate;
+}

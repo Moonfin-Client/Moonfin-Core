@@ -15839,6 +15839,13 @@ class AppLocalizationsHr extends AppLocalizations {
   String get playbackInfoWhy => 'Why';
 
   @override
+  String get playbackInfoServerCompatibilityCheck =>
+      'Server compatibility check';
+
+  @override
+  String get playbackInfoBitrateUnavailable => 'Bitrate unavailable';
+
+  @override
   String get playbackInfoQualityLimit => 'Quality Limit';
 
   @override
@@ -16017,6 +16024,11 @@ class AppLocalizationsHr extends AppLocalizations {
   @override
   String playbackInfoWhyVideoCodec(String codec) {
     return 'This device can\'t play $codec video';
+  }
+
+  @override
+  String playbackInfoWhyVideoProfileUnknown(String codec) {
+    return 'The server couldn\'t verify this stream\'s $codec profile.';
   }
 
   @override

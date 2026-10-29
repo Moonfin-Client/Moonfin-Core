@@ -382,7 +382,7 @@ void main() {
       const vc1 = {'Codec': 'vc1'};
       expect(
         line('VideoProfileNotSupported', video: vc1),
-        "This device can't play VC-1 video",
+        "The server couldn't verify this stream's VC-1 profile.",
       );
       expect(
         line('VideoLevelNotSupported', video: vc1),
@@ -397,7 +397,10 @@ void main() {
           'VideoCodecNotSupported',
           'VideoProfileNotSupported',
         ], video: vc1),
-        ["This device can't play VC-1 video"],
+        [
+          "This device can't play VC-1 video",
+          "The server couldn't verify this stream's VC-1 profile.",
+        ],
       );
       expect(
         line('AudioProfileNotSupported', audio: {'Codec': 'dts'}),
@@ -417,7 +420,7 @@ void main() {
             'VideoProfileNotSupported',
             video: {'Codec': 'hevc', 'Profile': zero},
           ),
-          "This device can't play HEVC video",
+          "The server couldn't verify this stream's HEVC profile.",
         );
         expect(
           line(
@@ -1136,6 +1139,226 @@ void main() {
     expect(lines, isNot(contains('# Subtitles')));
   });
 
+  test('live relay reasons are labeled as a server compatibility check', () {
+    final lines = _lines(
+      buildPlaybackInfoSections(
+        l10n: _l10n,
+        resolution: StreamResolutionResult(
+          streamUrl: 'http://x/LiveTv/stream?TranscodeReasons=VideoProfileNotSupported',
+          mediaSourceId: 'src',
+          playMethod: StreamPlayMethod.directStream,
+          sourceBitrate: 197025,
+          transcodingReasons: const ['VideoProfileNotSupported'],
+        ),
+        mediaStreams: const [
+          {
+            'Type': 'Video',
+            'Codec': 'h264',
+            'Width': 0,
+            'Height': 0,
+            'Profile': null,
+            'Level': -99,
+          },
+          {'Type': 'Audio', 'Codec': 'aac', 'BitRate': 197025, 'Channels': 2},
+        ],
+        channel: '4.1 KTVU',
+      ),
+    );
+    expect(
+      lines,
+      contains(
+        "Server compatibility check: The server couldn't verify this stream's H.264 profile.",
+      ),
+    );
+    expect(lines, contains('Bitrate: Bitrate unavailable'));
+    expect(lines, contains('Transcode Reasons: VideoProfileNotSupported'));
+    expect(
+      lines,
+      contains(
+        '(note) The server is relaying the channel without converting it.',
+      ),
+    );
+  });
+
+  test('regular-file relay keeps the Why label', () {
+    final lines = _lines(
+      buildPlaybackInfoSections(
+        l10n: _l10n,
+        resolution: _resolution(
+          StreamPlayMethod.directStream,
+          reasons: const ['VideoCodecNotSupported'],
+        ),
+        mediaStreams: _streams,
+      ),
+    );
+    expect(lines, contains("Why: This device can't play HEVC video"));
+    expect(lines, isNot(contains('Server compatibility check:')));
+  });
+
+  test('forced live relay without server reasons keeps the Why label', () {
+    final lines = _lines(
+      buildPlaybackInfoSections(
+        l10n: _l10n,
+        resolution: _resolution(StreamPlayMethod.directStream),
+        mediaStreams: _streams,
+        channel: '4.1 KTVU',
+        transcodeForced: true,
+      ),
+    );
+    expect(lines, contains('Why: Transcoding is forced in settings'));
+    expect(lines, isNot(contains('Server compatibility check:')));
+  });
+
+  test('live missing video bitrate retains a valid source aggregate', () {
+    final lines = _lines(
+      buildPlaybackInfoSections(
+        l10n: _l10n,
+        resolution: StreamResolutionResult(
+          streamUrl: 'http://x/LiveTv/stream',
+          mediaSourceId: 'src',
+          playMethod: StreamPlayMethod.directStream,
+          sourceBitrate: 500000,
+        ),
+        mediaStreams: const [
+          {'Type': 'Video', 'Codec': 'h264', 'Width': 1920, 'Height': 1080},
+          {'Type': 'Audio', 'Codec': 'aac', 'BitRate': 197025, 'Channels': 2},
+        ],
+        channel: '4.1 KTVU',
+      ),
+    );
+    expect(lines, contains('Bitrate: 500 Kbps'));
+    expect(lines, isNot(contains('Bitrate: Bitrate unavailable')));
+  });
+
+  test('live direct play also hides a confirmed audio-only aggregate', () {
+    final lines = _lines(
+      buildPlaybackInfoSections(
+        l10n: _l10n,
+        resolution: StreamResolutionResult(
+          streamUrl: 'http://x/LiveTv/stream',
+          mediaSourceId: 'src',
+          playMethod: StreamPlayMethod.directPlay,
+          sourceBitrate: 197025,
+        ),
+        mediaStreams: const [
+          {'Type': 'Video', 'Codec': 'h264', 'Width': 0, 'Height': 0},
+          {'Type': 'Audio', 'Codec': 'aac', 'BitRate': 197025, 'Channels': 2},
+        ],
+        channel: '4.1 KTVU',
+      ),
+    );
+    expect(lines, contains('Bitrate: Bitrate unavailable'));
+  });
+
+  test('complete dimensions or unknown audio bitrate retain the aggregate', () {
+    List<String> liveLines({
+      required Map<String, dynamic> video,
+      required Map<String, dynamic> audio,
+    }) => _lines(
+      buildPlaybackInfoSections(
+        l10n: _l10n,
+        resolution: StreamResolutionResult(
+          streamUrl: 'http://x/LiveTv/stream',
+          mediaSourceId: 'src',
+          playMethod: StreamPlayMethod.directStream,
+          sourceBitrate: 197025,
+        ),
+        mediaStreams: [video, audio],
+        channel: '4.1 KTVU',
+      ),
+    );
+
+    expect(
+      liveLines(
+        video: const {
+          'Type': 'Video',
+          'Codec': 'h264',
+          'Width': 1920,
+          'Height': 1080,
+        },
+        audio: const {
+          'Type': 'Audio',
+          'Codec': 'aac',
+          'BitRate': 197025,
+          'Channels': 2,
+        },
+      ),
+      contains('Bitrate: 197 Kbps'),
+    );
+    expect(
+      liveLines(
+        video: const {
+          'Type': 'Video',
+          'Codec': 'h264',
+          'Width': double.nan,
+          'Height': 0,
+        },
+        audio: const {
+          'Type': 'Audio',
+          'Codec': 'aac',
+          'BitRate': double.nan,
+          'Channels': 2,
+        },
+      ),
+      contains('Bitrate: 197 Kbps'),
+    );
+  });
+
+  test(
+    'live aggregate includes all audio streams, not just the selected one',
+    () {
+      final lines = _lines(
+        buildPlaybackInfoSections(
+          l10n: _l10n,
+          resolution: StreamResolutionResult(
+            streamUrl: 'http://x/LiveTv/stream',
+            mediaSourceId: 'src',
+            playMethod: StreamPlayMethod.directStream,
+            sourceBitrate: 389025,
+          ),
+          mediaStreams: const [
+            {'Type': 'Video', 'Codec': 'h264', 'Width': 0, 'Height': 0},
+            {'Type': 'Audio', 'Codec': 'aac', 'BitRate': 197025, 'Channels': 2},
+            {'Type': 'Audio', 'Codec': 'ac3', 'BitRate': 192000, 'Channels': 2},
+          ],
+          audioStreamIndex: 2,
+          channel: '4.1 KTVU',
+        ),
+      );
+      expect(lines, contains('Bitrate: Bitrate unavailable'));
+    },
+  );
+
+  test('live incomplete source keeps a valid transcode output bitrate', () {
+    final lines = _lines(
+      buildPlaybackInfoSections(
+        l10n: _l10n,
+        resolution: StreamResolutionResult(
+          streamUrl:
+              'http://x/LiveTv/stream?TranscodeReasons=VideoCodecNotSupported',
+          mediaSourceId: 'src',
+          playMethod: StreamPlayMethod.transcode,
+          sourceBitrate: 197025,
+        ),
+        mediaStreams: const [
+          {'Type': 'Video', 'Codec': 'h264', 'Width': 0, 'Height': 0},
+          {'Type': 'Audio', 'Codec': 'aac', 'BitRate': 197025, 'Channels': 2},
+        ],
+        channel: '4.1 KTVU',
+        transcodingInfo: const {
+          'IsVideoDirect': false,
+          'IsAudioDirect': false,
+          'VideoCodec': 'h264',
+          'AudioCodec': 'aac',
+          'Bitrate': 800000,
+          'TranscodeReasons': ['VideoCodecNotSupported'],
+        },
+      ),
+    );
+    expect(lines, contains('Bitrate: 800 Kbps'));
+    expect(lines, isNot(contains('Bitrate: 800 Kbps (original 197 Kbps)')));
+  });
+
   group('what the player is actually playing', () {
     const liveVideo = <String, dynamic>{
       'Type': 'Video',
@@ -1190,7 +1413,10 @@ void main() {
         'Refresh Rate Switching: Scale on TV',
         'HDMI Output: 1920×1080 @ 59.94 Hz',
       ]);
-      expect(lines.where((line) => line.startsWith('Rate Corrections')), isEmpty);
+      expect(
+        lines.where((line) => line.startsWith('Rate Corrections')),
+        isEmpty,
+      );
     });
 
     test('interlaced video shows its picture rate, not the field rate', () {
@@ -1215,7 +1441,10 @@ void main() {
           ..switchingBehavior = 'scaleondevice',
       );
       expect(lines, contains('Frame Rate: 23.976 fps (measured)'));
-      expect(lines.where((line) => line.startsWith('Server Frame Rate')), isEmpty);
+      expect(
+        lines.where((line) => line.startsWith('Server Frame Rate')),
+        isEmpty,
+      );
       expect(lines, contains('Refresh Rate Switching: Scale on Device'));
       expect(lines, contains('Rate Corrections: 1'));
       expect(lines.where((line) => line.startsWith('HDMI Output')), isEmpty);

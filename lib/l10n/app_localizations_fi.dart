@@ -15736,6 +15736,13 @@ class AppLocalizationsFi extends AppLocalizations {
   String get playbackInfoWhy => 'Miksi';
 
   @override
+  String get playbackInfoServerCompatibilityCheck =>
+      'Server compatibility check';
+
+  @override
+  String get playbackInfoBitrateUnavailable => 'Bitrate unavailable';
+
+  @override
   String get playbackInfoQualityLimit => 'Laaturaja';
 
   @override
@@ -15912,6 +15919,11 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String playbackInfoWhyVideoCodec(String codec) {
     return 'Tämä laite ei voi toistaa $codec -muotoisia videoita';
+  }
+
+  @override
+  String playbackInfoWhyVideoProfileUnknown(String codec) {
+    return 'The server couldn\'t verify this stream\'s $codec profile.';
   }
 
   @override
