@@ -1769,6 +1769,40 @@ class PlaybackManager implements AudioOwnable {
     }
   }
 
+  /// Whether a live source error is one the channel's own URL would give again
+  /// however often it is asked: the provider refused it (an HTTP 4xx other
+  /// than a timeout or rate limit) or answered with something that isn't a
+  /// stream. Only judged for a direct-played channel that hasn't shown a
+  /// frame, where the client fetches the provider's URL itself. A stream the
+  /// server relays can return 404 for a session it has just closed, which a
+  /// re-resolve does fix.
+  bool _isPermanentLiveSourceError(Map<String, dynamic> event) {
+    final playMethod =
+        (_currentResolution ?? _lastPlaybackResolution)?.playMethod;
+    if (playMethod != StreamPlayMethod.directPlay || _liveFrameSeenSinceOpen) {
+      return false;
+    }
+    switch (event['errorCodeName']?.toString()) {
+      case 'ERROR_CODE_PARSING_MANIFEST_MALFORMED':
+      case 'ERROR_CODE_IO_FILE_NOT_FOUND':
+        return true;
+      case 'ERROR_CODE_IO_BAD_HTTP_STATUS':
+        final status = int.tryParse(
+          RegExp(r'Response code: (\d{3})')
+                  .firstMatch('${event['cause'] ?? ''} ${event['message'] ?? ''}')
+                  ?.group(1) ??
+              '',
+        );
+        return status != null &&
+            status >= 400 &&
+            status < 500 &&
+            status != 408 &&
+            status != 429;
+      default:
+        return false;
+    }
+  }
+
   /// Schedules a held or retried recovery attempt on [_liveRecoveryRetry],
   /// cancelling anything already waiting there.
   void _scheduleLiveRecoveryRetry(
@@ -2047,6 +2081,20 @@ class PlaybackManager implements AudioOwnable {
       // be spent. A re-resolve's own dying-player noise is already dropped by
       // the _teardownForReResolve guard above.
       if (_currentItemIsLive && !_isOfflinePlayback) {
+        // Asking the provider again can't change a refusal or a reply that
+        // isn't a stream; the recovery ladder would only keep the viewer on
+        // a spinner for a minute before saying so.
+        if (_isPermanentLiveSourceError(event)) {
+          _diagnosticLogger?.call(
+            'Live recovery: source-error the provider will repeat '
+            '(${event['errorCodeName']}), giving the channel up',
+          );
+          await _giveUpOnStalledStream(
+            live: true,
+            intent: _viewerIntentGeneration,
+          );
+          return;
+        }
         await _recoverStalledStream(trigger: 'source-error');
         return;
       }
