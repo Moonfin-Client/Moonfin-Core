@@ -80,6 +80,15 @@ class EmbyMediaServerClient extends MediaServerClient {
           deviceInfo: deviceInfo,
           accessToken: _accessToken,
         );
+        // Emby documents the access token as arriving in X-Emby-Token, and a
+        // deployment that only implements that half of the contract answers
+        // "Access token required" to everything carrying the Authorization
+        // form alone. Sending both costs one header, servers that read either
+        // one ignore the other, and download_service already does the same.
+        final token = _accessToken;
+        if (token != null && token.isNotEmpty) {
+          options.headers['X-Emby-Token'] = token;
+        }
         if (!_isProgressPing(options.uri)) {
           ServerLog.network('→ ${options.method} ${options.uri}');
         }
