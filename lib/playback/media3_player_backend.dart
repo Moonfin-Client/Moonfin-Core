@@ -457,21 +457,10 @@ class Media3PlayerBackend extends PlayerBackend
         _diag(_streamRateObservationLine(map));
       case 'frameRateCorrection':
         _diag(_frameRateCorrectionLine(map));
-        final rate = _finitePositiveDouble(map['frameRate']);
-        if (rate != null) {
-          playbackStatus
-            ..decisionFrameRate = rate
-            ..decisionSource = 'measured'
-            ..fieldRateApplied = false
-            ..corrections += 1;
-        }
+        _applyRateDecision(map, correction: true);
       case 'frameRateDecision':
         _diag(_frameRateDecisionLine(map));
-        playbackStatus
-          ..decisionFrameRate = _finitePositiveDouble(map['frameRate'])
-          ..decisionSource = map['source']?.toString()
-          ..scanType = map['scanType']?.toString()
-          ..fieldRateApplied = map['fieldRateApplied'] == true;
+        _applyRateDecision(map);
       case 'videoFrameOffset':
         _diag(
           'Media3: video frames ran ${_toInt(map['averageOffsetUs'])}us early '
@@ -642,6 +631,19 @@ class Media3PlayerBackend extends PlayerBackend
       case 'frameRate':
         _onFrameRateEvent(map);
     }
+  }
+
+  void _applyRateDecision(
+    Map<String, dynamic> map, {
+    bool correction = false,
+  }) {
+    playbackStatus.applyRateDecision(
+      frameRate: _finitePositiveDouble(map['frameRate']),
+      source: map['source']?.toString(),
+      fieldRateApplied: map['fieldRateApplied'] == true,
+      scanType: map['scanType']?.toString(),
+      correction: correction,
+    );
   }
 
   void _onFrameRateEvent(Map<String, dynamic> map) {

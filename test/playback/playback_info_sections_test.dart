@@ -1431,6 +1431,18 @@ void main() {
       expect(lines, contains('Scan: Interlaced'));
     });
 
+    test('progressive 59.94 stays the picture frame rate', () {
+      final lines = liveLines(
+        Media3PlaybackStatus()
+          ..decisionFrameRate = 59.94
+          ..decisionSource = 'measured'
+          ..scanType = 'progressive'
+          ..fieldRateApplied = false,
+      );
+      expect(lines, contains('Frame Rate: 59.94 fps (measured)'));
+      expect(lines, contains('Scan: Progressive'));
+    });
+
     test('a matching server rate is not repeated', () {
       final lines = liveLines(
         Media3PlaybackStatus()

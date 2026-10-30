@@ -76,6 +76,7 @@ import androidx.media3.exoplayer.audio.DefaultAudioSink
 import androidx.media3.exoplayer.audio.MediaCodecAudioRenderer
 import androidx.media3.exoplayer.hls.DefaultHlsExtractorFactory
 import androidx.media3.exoplayer.hls.HlsMediaSource
+import androidx.media3.exoplayer.hls.HlsManifest
 import androidx.media3.exoplayer.Renderer
 import androidx.media3.exoplayer.RenderersFactory
 import androidx.media3.exoplayer.RendererCapabilities
@@ -811,11 +812,9 @@ class Media3VideoView(
     private var lastPlaybackPositionMs: Long = 0L
     private var displayModeSwitchAtMs = 0L
     private var wasPlayingBeforeDisplayModeSwitch = false
-    private var heldStart: (() -> Unit)? = null
-    private var heldStartSettle: DisplayModeSettle? = null
     private var heldStartDisplayListener: DisplayManager.DisplayListener? = null
     private var heldStartHdmiReceiver: BroadcastReceiver? = null
-    private val heldStartRunnable = Runnable { runHeldStart() }
+    private var heldStartRunnable: Runnable? = null
     private val deferredDisplayModeRestore = Runnable { restorePreferredDisplayMode() }
     private var observedDisplayModeId: Int? = null
     private var ownRestoreAtMs = 0L
@@ -959,12 +958,6 @@ class Media3VideoView(
     // headphones invalidates the "stereo only" conclusion.
     private var deviceRequiresStereoDownmix = false
     private var tunnelingRetryAttemptedForCurrentSource = false
-    // When the system last paused the player on its own, and why. Zero once
-    // the user or the route flap resume has had their say.
-    private var systemPausedAtMs = 0L
-    private var systemPauseReason = 0
-
-
     // AudioDeviceCallback needs API 23, and minSdk is 21. The guard keeps the
     // anonymous subclass from ever loading on older devices.
     private val audioDeviceCallback: AudioDeviceCallback? =
@@ -973,13 +966,13 @@ class Media3VideoView(
                 override fun onAudioDevicesAdded(addedDevices: Array<out AudioDeviceInfo>) {
                     onAudioOutputDevicesChanged()
                     maybeResumeAfterRouteFlap(addedDevices)
-                    noteHeldStartActivity()
+                    noteCurrentHeldStartActivity()
                 }
 
                 override fun onAudioDevicesRemoved(removedDevices: Array<out AudioDeviceInfo>) {
                     onAudioOutputDevicesChanged()
-                    if (removedDevices.any(::isHdmiAudioDevice)) noteHeldStartHdmiAudio(present = false)
-                    noteHeldStartActivity()
+                    if (removedDevices.any(::isHdmiAudioDevice)) noteCurrentHeldStartHdmiAudio(present = false)
+                    noteCurrentHeldStartActivity()
                 }
             }
         } else {
@@ -997,11 +990,11 @@ class Media3VideoView(
 
     // Observation only. Each source/adapter captures its own generation token.
     private val frameTiming = FrameTimingProbe(::emitFrameTiming)
-    private val rateStartup = DisplayRateStartup()
+    private val rateSession = DisplayRateSession()
+    private val videoDecoderStartupFailure = VideoDecoderStartupFailure()
     private val startupCodecGate = SourceCodecGate()
     private var rateMeasurementTimeout: Runnable? = null
     private var startupHeaderEvidence: StreamRateEvidence? = null
-    private var startupRateChoice: RateChoice? = null
     private var startupRateStartedAtMs = 0L
     private var startupVideoDelayMs = 0L
     private var audioTrackOpenedForSource = false
@@ -1016,14 +1009,8 @@ class Media3VideoView(
     // Live sources may correct the display rate after the start: once early,
     // then on a programme change that held. See LiveRateCorrection.
     private val rateCorrection = LiveRateCorrection()
+    private val correctionProgress = CorrectionProgress()
     private var rateCorrectionCheck: Runnable? = null
-    private var rateCorrectionHoldsAudio = false
-    private var rateCorrectionPlayWhenReady = false
-    // Pauses a correction makes itself. Made from inside another listener
-    // callback, their events arrive after the call returns, so a flag set
-    // around the call misses them; each one is counted instead.
-    private var pendingCorrectionPauses = 0
-    private var heldStartForRateCorrection = false
     // The newest demux reading, kept so one that arrived while audio was still
     // held back at the start is not lost; the observer reports only changes.
     private var latestDemuxCadence: FrameCadence? = null
@@ -1116,7 +1103,9 @@ class Media3VideoView(
     private var currentAudioIsLossless = false
     private var tunnelingActive = false
     private var audioRekickRunnable: Runnable? = null
-    private var suppressStateEmissionsForRekick = false
+    private data class AudioRekickOperation(val id: Long, val sourceToken: Int, val player: ExoPlayer)
+    private var nextAudioRekickId = 0L
+    private var audioRekickOperation: AudioRekickOperation? = null
     private var resumeWedgeCheck: Runnable? = null
     private var pausedWhileReady = false
     private var skipSilenceEnabled = false
@@ -1187,7 +1176,7 @@ class Media3VideoView(
         mime == MimeTypes.AUDIO_TRUEHD
 
     private fun scheduleAudioRekickAfterSeek() {
-        if (rateStartup.audioBlocked) return
+        if (rateSession.startup.audioBlocked) return
         if (!player.playWhenReady) return
         if (!currentAudioIsBitstream && !tunnelingActive) return
         cancelPendingAudioRekick()
@@ -1238,15 +1227,28 @@ class Media3VideoView(
     }
 
     private fun performAudioRekick() {
-        if (isDisposed || rateStartup.audioBlocked || !player.playWhenReady) return
-        suppressStateEmissionsForRekick = true
-        player.playWhenReady = false
+        if (isDisposed || isPlayerReleased || rateSession.startup.audioBlocked ||
+            rateSession.correctionHolding || !rateSession.desiredPlayWhenReady || !player.playWhenReady
+        ) return
+        val sourceToken = rateSession.sourceToken ?: return
+        val targetPlayer = player
+        val operation = AudioRekickOperation(++nextAudioRekickId, sourceToken, targetPlayer)
+        audioRekickOperation = operation
+        rateSession.markInternalPause(targetPlayer, Player.PLAY_WHEN_READY_CHANGE_REASON_USER_REQUEST)
+        targetPlayer.playWhenReady = false
         mainHandler.post {
-            if (!isDisposed) {
-                player.playWhenReady = true
+            if (audioRekickOperation?.id == operation.id) {
+                audioRekickOperation = null
             }
-            suppressStateEmissionsForRekick = false
-            if (!isDisposed) emitState()
+            if (!isDisposed && !isPlayerReleased && rateSession.canResumeAudioRekick(
+                    sourceToken = operation.sourceToken,
+                    preparedPlayer = operation.player,
+                    currentPlayer = player,
+                )
+            ) {
+                operation.player.playWhenReady = true
+            }
+            if (rateSession.isCurrent(operation.sourceToken) && player === operation.player) emitState()
         }
     }
 
@@ -1276,10 +1278,14 @@ class Media3VideoView(
                 revealVideo()
             }
             // A correction resumes playback itself once its switch settles.
-            if (!rateStartup.audioBlocked && !rateCorrectionHoldsAudio &&
+            if (!rateSession.startup.audioBlocked && !rateSession.correctionHolding &&
                 displayModeSwitchInFlight() && playbackState == Player.STATE_READY
             ) {
-                if (wasPlayingBeforeDisplayModeSwitch && !player.playWhenReady) {
+                if (rateSession.shouldResumeAfterDisplayModeSwitch(
+                        wasPlayingBeforeDisplayModeSwitch,
+                        player.playWhenReady,
+                    )
+                ) {
                     player.playWhenReady = true
                 }
             }
@@ -1305,8 +1311,11 @@ class Media3VideoView(
         override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
             // A correction's own pause is neither the viewer's nor the
             // system's, and its end resumes from what it saved.
-            if (!playWhenReady && pendingCorrectionPauses > 0) {
-                pendingCorrectionPauses--
+            if (!playWhenReady && rateSession.consumeInternalPause(
+                    player,
+                    reason,
+                )
+            ) {
                 emitState()
                 syncTicker()
                 return
@@ -1314,20 +1323,22 @@ class Media3VideoView(
             // Nothing may start playback under a correction's switch: a play
             // let through on a Fire TV Cube ran audio into the HDMI drop. Its
             // end resumes, so the request is kept for then.
-            if (playWhenReady && rateCorrectionHoldsAudio) {
+            if (playWhenReady && rateSession.correctionHolding) {
                 AndroidLog.w(LIVE_TAG, "deferred a play (reason $reason) until the rate correction settles")
-                rateCorrectionPlayWhenReady = true
+                if (reason == Player.PLAY_WHEN_READY_CHANGE_REASON_USER_REQUEST) {
+                    rateSession.requestPlayback(true)
+                }
                 pauseForRateCorrection()
                 return
             }
             // The viewer's own play or pause during a correction is the one
             // its end restores.
             if (reason == Player.PLAY_WHEN_READY_CHANGE_REASON_USER_REQUEST) {
-                rateCorrectionPlayWhenReady = playWhenReady
+                rateSession.requestPlayback(playWhenReady)
             }
-            if (playWhenReady && rateStartup.audioBlocked) {
-                rateStartup.requestPlayWhenReady(true)
-                player.playWhenReady = false
+            if (playWhenReady && rateSession.startup.audioBlocked) {
+                rateSession.startup.requestPlayWhenReady(true)
+                markAndPauseInternally()
                 return
             }
             if (playWhenReady) assOverlayView?.stopAwaitingPausedSeekDialogue()
@@ -1337,6 +1348,7 @@ class Media3VideoView(
             if (!playWhenReady && displayModeSwitchInFlight()) {
                 if (reason == Player.PLAY_WHEN_READY_CHANGE_REASON_USER_REQUEST) {
                     endDisplayModeSwitchRecovery()
+                    if (!playWhenReady) wasPlayingBeforeDisplayModeSwitch = false
                 } else {
                     wasPlayingBeforeDisplayModeSwitch = true
                 }
@@ -1347,15 +1359,14 @@ class Media3VideoView(
             // coming back can undo it. Any other change is the user's and
             // clears the mark, so a resume never overrides them.
             if (!playWhenReady && isSystemPauseReason(reason)) {
-                systemPausedAtMs = SystemClock.elapsedRealtime()
-                systemPauseReason = reason
+                rateSession.correctionIntent.recordSystemPause(SystemClock.elapsedRealtime(), reason)
             } else {
-                systemPausedAtMs = 0L
+                rateSession.correctionIntent.clearSystemPause()
             }
             // Only a pause the viewer asked for. The system's own pauses have
             // their recoveries above, and the rekick after a seek toggles play
             // without anyone pausing.
-            if (!suppressStateEmissionsForRekick) {
+            if (!isAudioRekickActiveForCurrentPlayer()) {
                 if (!playWhenReady) {
                     cancelResumeWedgeCheck()
                     pausedWhileReady = player.playbackState == Player.STATE_READY &&
@@ -1370,6 +1381,38 @@ class Media3VideoView(
         }
 
         override fun onPlayerError(error: PlaybackException) {
+            when (classifyVideoDecoderStartupFailure(error)) {
+                VideoDecoderStartupFailure.Action.REPORT_TERMINAL -> {
+                    val eventId = VideoDecoderStartupFailure.nextTerminalEventId(
+                        rateSession.sourceToken ?: frameTiming.generationToken,
+                    )
+                    val message = error.localizedMessage ?: ""
+                    val cause = describeCauseChain(error)
+                    Media3Bridge.emitEvent(
+                        VideoDecoderStartupFailure.terminalEvent(
+                            decoderFailureEventId = eventId,
+                            errorCode = error.errorCode,
+                            errorCodeName = error.errorCodeName,
+                            message = message,
+                            cause = cause,
+                        ),
+                    )
+                    // Keep the paired generic event for the shared handler's
+                    // once-only suppression contract.
+                    Media3Bridge.emitEvent(
+                        VideoDecoderStartupFailure.pairedGenericErrorEvent(
+                            decoderFailureEventId = eventId,
+                            errorCodeName = error.errorCodeName,
+                            message = error.localizedMessage ?: "Unknown Media3 playback error",
+                            cause = cause,
+                        ),
+                    )
+                    emitState()
+                    return
+                }
+                VideoDecoderStartupFailure.Action.IGNORE -> Unit
+            }
+
             // Recovery order matters: an error while a display mode switch is
             // in flight is most likely the dropped surface, so that retry gets
             // the first look. A reclaimed decoder is next, since nothing else
@@ -1491,6 +1534,7 @@ class Media3VideoView(
             if (reason == Player.DISCONTINUITY_REASON_SEEK ||
                 reason == Player.DISCONTINUITY_REASON_SEEK_ADJUSTMENT
             ) {
+                correctionProgress.reset()
                 frameTiming.resetForDiscontinuity()
                 if (subtitlePositionChanged(oldPosition, newPosition)) {
                     clearSubtitleCues()
@@ -1516,6 +1560,7 @@ class Media3VideoView(
         }
 
         override fun onRenderedFirstFrame() {
+            rateSession.sourceToken?.let(videoDecoderStartupFailure::onRenderedFirstFrame)
             Media3Bridge.emitEvent(
                 mapOf(
                     "event" to "firstFrameRendered",
@@ -1674,7 +1719,7 @@ class Media3VideoView(
             audioTrackConfig: AudioSink.AudioTrackConfig,
         ) {
             audioTrackOpenedForSource = true
-            if (rateStartup.awaitingEvidence) {
+            if (rateSession.startup.awaitingEvidence) {
                 // Defensive fail-closed path: this callback is too late to gate
                 // audio, so no new display request may follow it.
                 completeRateStartup(frameTiming.generationToken, "audio already open")
@@ -2127,14 +2172,14 @@ class Media3VideoView(
                 mainHandler.post {
                     if (isDisposed || isPlayerReleased || sourceToken != frameTiming.generationToken) return@post
                     latestDemuxCadence = report.cadence
-                    if (rateStartup.awaitingEvidence &&
+                    if (rateSession.startup.awaitingEvidence &&
                         DisplayRateDecision.choose(sourceRateInputs(report.cadence)).source == RateSource.MEASURED
                     ) {
                         completeRateStartup(sourceToken, "cadence", report.cadence)
-                    } else if (rateStartup.phase == DisplayRateStartup.Phase.SETTLING) {
+                    } else if (rateSession.startup.phase == DisplayRateStartup.Phase.SETTLING) {
                         reconsiderWhileSettling(sourceToken, report.cadence)
-                    } else if (!rateStartup.audioBlocked) {
-                        val decided = startupRateChoice ?: return@post
+                    } else if (!rateSession.startup.audioBlocked) {
+                        val decided = rateSession.appliedRateChoice ?: return@post
                         val reading = DisplayRateDecision.choose(sourceRateInputs(report.cadence))
                         considerRateCorrection(sourceToken, reading)
                         if (reading.source == RateSource.MEASURED && DisplayRateDecision.isRateChange(decided, reading)) {
@@ -2157,7 +2202,7 @@ class Media3VideoView(
             onFirstSample = { sampleMimeType ->
                 mainHandler.post {
                     if (isDisposed || isPlayerReleased || sourceToken != frameTiming.generationToken) return@post
-                    if (!rateStartup.awaitingEvidence || startupFirstSampleSeen) return@post
+                    if (!rateSession.startup.awaitingEvidence || startupFirstSampleSeen) return@post
                     startupFirstSampleSeen = true
                     // Only an MPEG-2 header states the rate at once. Anything
                     // else needs a run of frames, so it starts on the server's
@@ -2186,7 +2231,7 @@ class Media3VideoView(
                         sourceVideoWidthHint = evidence.width
                         sourceVideoHeightHint = evidence.height
                     }
-                    if (!rateStartup.awaitingEvidence) return@post
+                    if (!rateSession.startup.awaitingEvidence) return@post
                     if (DisplayRateDecision.choose(sourceRateInputs()).source == RateSource.HEADER) {
                         completeRateStartup(sourceToken, "header")
                     }
@@ -2213,7 +2258,20 @@ class Media3VideoView(
         val reading = DisplayRateDecision.choose(sourceRateInputs(cadence))
         if (reading.source != RateSource.MEASURED) return
         val fps = reading.fps?.let(DisplayModeChooser::normalizeFrameRate) ?: return
-        val decided = startupRateChoice?.fps?.let(DisplayModeChooser::normalizeFrameRate)
+        val decisionEvidence = RateEvidence.from(reading, startupHeaderEvidence)
+        if (currentIsLive) {
+            val metadataUpdate = rateSession.appliedRateEvidence.updateSameOutput(decisionEvidence, eligible = true)
+            if (metadataUpdate != null) {
+                Media3Bridge.emitEvent(
+                    rateSession.appliedRateEvidence.metadataDecisionEvent(
+                        metadataUpdate,
+                        SystemClock.elapsedRealtime() - startupRateStartedAtMs,
+                    ),
+                )
+                return
+            }
+        }
+        val decided = rateSession.appliedRateChoice?.fps?.let(DisplayModeChooser::normalizeFrameRate)
         if (decided != null && kotlin.math.abs(decided - fps) / fps <= 0.01f) return
         val display = findHostActivity()?.windowManager?.defaultDisplay ?: return
         val heldModeId = activePreferredDisplayModeId ?: display.mode.modeId
@@ -2225,39 +2283,43 @@ class Media3VideoView(
             return
         }
         startupRedecided = true
-        startupRateChoice = reading
         val previousSwitchAtMs = displayModeSwitchAtMs
         maybeApplyFrameRateSwitching(fps)
         val switched = displayModeSwitchAtMs != 0L && displayModeSwitchAtMs != previousSwitchAtMs
         if (switched) rateCorrection.noteSwitch(SystemClock.elapsedRealtime())
+        rateSession.appliedRateEvidence.set(decisionEvidence)
         Media3Bridge.emitEvent(
             mapOf(
                 "event" to "frameRateDecision",
-                "frameRate" to fps.toDouble(),
-                "source" to reading.source.wireValue,
-                "fieldRateApplied" to reading.fieldRateApplied,
-                "scanType" to startupHeaderEvidence?.scanType?.name?.lowercase(),
                 "reason" to "measured while settling",
                 "elapsedMs" to SystemClock.elapsedRealtime() - startupRateStartedAtMs,
-            ),
+            ) + decisionEvidence.eventFields(),
         )
         if (switched || displayModeSwitchPending()) {
-            holdStartForDisplayModeSwitch(startupVideoDelayMs) { releaseRateStartup(sourceToken) }
+            holdStartForDisplayModeSwitch(
+                sourceToken,
+                DisplayRateSession.HoldKind.STARTUP,
+                startupVideoDelayMs,
+            ) { releaseRateStartup(sourceToken) }
         }
     }
 
     private fun applyStartupAudioGate() {
-        if (!rateStartup.audioBlocked) return
+        if (!rateSession.startup.audioBlocked) return
         trackSelector.parameters = trackSelector.parameters.buildUpon()
             .setTrackTypeDisabled(C.TRACK_TYPE_AUDIO, true)
             .build()
     }
 
     private fun requestPlayback(playWhenReady: Boolean) {
-        if (rateStartup.audioBlocked) {
-            rateStartup.requestPlayWhenReady(playWhenReady)
+        val token = frameTiming.generationToken
+        if (!playWhenReady) endDisplayModeSwitchRecovery()
+        rateSession.requestPlayback(playWhenReady)
+        if (rateSession.correctionHolding) {
+            pauseForRateCorrection()
+        } else if (rateSession.startup.audioBlocked) {
             wasPlayingBeforeDisplayModeSwitch = playWhenReady
-            player.pause()
+            markAndPauseInternally()
         } else if (playWhenReady) {
             player.play()
         } else {
@@ -2272,11 +2334,12 @@ class Media3VideoView(
         forceSettle: Boolean = false,
     ) {
         if (isDisposed || isPlayerReleased || sourceToken != frameTiming.generationToken) return
-        if (!rateStartup.decide(sourceToken)) return
+        if (!rateSession.decideStartup(sourceToken)) return
         rateMeasurementTimeout?.let { mainHandler.removeCallbacks(it) }
         rateMeasurementTimeout = null
         val choice = DisplayRateDecision.choose(sourceRateInputs(measured))
-        startupRateChoice = choice
+        val decisionEvidence = RateEvidence.from(choice, startupHeaderEvidence)
+        rateSession.appliedRateEvidence.set(decisionEvidence)
         val previousSwitchAtMs = displayModeSwitchAtMs
         if (!audioTrackOpenedForSource && isFrameRateSwitchingEnabled()) {
             choice.fps?.let(::maybeApplyFrameRateSwitching)
@@ -2284,19 +2347,19 @@ class Media3VideoView(
         Media3Bridge.emitEvent(
             mapOf(
                 "event" to "frameRateDecision",
-                "frameRate" to choice.fps?.toDouble(),
-                "source" to choice.source.wireValue,
-                "fieldRateApplied" to choice.fieldRateApplied,
-                "scanType" to startupHeaderEvidence?.scanType?.name?.lowercase(),
                 "reason" to if (audioTrackOpenedForSource) "audio already open" else reason,
                 "elapsedMs" to SystemClock.elapsedRealtime() - startupRateStartedAtMs,
-            ),
+            ) + decisionEvidence.eventFields(),
         )
         val switched = displayModeSwitchAtMs != 0L && displayModeSwitchAtMs != previousSwitchAtMs
         if (switched) rateCorrection.noteSwitch(SystemClock.elapsedRealtime())
         if (forceSettle || displayModeSwitchPending() || switched) {
-            wasPlayingBeforeDisplayModeSwitch = rateStartup.playWhenReady
-            holdStartForDisplayModeSwitch(startupVideoDelayMs) { releaseRateStartup(sourceToken) }
+            wasPlayingBeforeDisplayModeSwitch = rateSession.startup.playWhenReady
+            holdStartForDisplayModeSwitch(
+                sourceToken,
+                DisplayRateSession.HoldKind.STARTUP,
+                startupVideoDelayMs,
+            ) { releaseRateStartup(sourceToken) }
         } else {
             releaseRateStartup(sourceToken)
         }
@@ -2304,13 +2367,13 @@ class Media3VideoView(
 
     private fun releaseRateStartup(sourceToken: Int) {
         if (isDisposed || isPlayerReleased || sourceToken != frameTiming.generationToken) return
-        if (rateStartup.phase != DisplayRateStartup.Phase.SETTLING) return
+        if (rateSession.startup.phase != DisplayRateStartup.Phase.SETTLING) return
         startupReleaseReady = true
         // Header delivery can precede initial track mapping. Apply the queued
         // audio choice while still disabled before opening its renderer.
         if (player.currentTracks.groups.isEmpty()) return
-        val playWhenReady = rateStartup.playWhenReady
-        if (!rateStartup.release(sourceToken)) return
+        val playWhenReady = rateSession.startup.playWhenReady
+        if (!rateSession.releaseStartup(sourceToken, tracksMapped = true)) return
         startupReleaseReady = false
         wasPlayingBeforeDisplayModeSwitch = playWhenReady
         trackSelector.parameters = trackSelector.parameters.buildUpon()
@@ -2334,23 +2397,21 @@ class Media3VideoView(
     private fun cancelRateStartup() {
         rateMeasurementTimeout?.let { mainHandler.removeCallbacks(it) }
         rateMeasurementTimeout = null
-        rateStartup.cancel()
+        cancelHeldStart()
+        rateSession.cancelSource()
         startupHeaderEvidence = null
-        startupRateChoice = null
         startupReleaseReady = false
         cancelRateCorrection()
     }
 
     private fun cancelRateCorrection() {
         rateCorrection.cancel()
+        correctionProgress.reset()
         rateCorrectionCheck?.let { mainHandler.removeCallbacks(it) }
         rateCorrectionCheck = null
         latestDemuxCadence = null
         // The source is going away: the next one resets track selection and a
         // released player gets a new selector, so audio and play stay as they are.
-        rateCorrectionHoldsAudio = false
-        heldStartForRateCorrection = false
-        pendingCorrectionPauses = 0
     }
 
     /** Feeds a later reading to the live correction policy; files never get here. */
@@ -2363,6 +2424,24 @@ class Media3VideoView(
         val fps = reading.fps ?: return
         if (role != "main" || !isFrameRateSwitchingEnabled()) return
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return
+        val evidence = RateEvidence.from(reading, startupHeaderEvidence)
+        if (currentIsLive) {
+            val metadataUpdate = rateSession.appliedRateEvidence.updateSameOutput(evidence, eligible = true)
+            if (metadataUpdate != null) {
+                val nowMs = SystemClock.elapsedRealtime()
+                // The same-output reading contradicts any pending different-rate
+                // candidate; invalidate it without switching or holding playback.
+                rateCorrection.onReading(nowMs, correctionProgressSample(sourceToken), evidence, fits = true)
+                Media3Bridge.emitEvent(
+                    rateSession.appliedRateEvidence.metadataDecisionEvent(
+                        metadataUpdate,
+                        nowMs - startupRateStartedAtMs,
+                    ),
+                )
+                scheduleRateCorrection(sourceToken)
+                return
+            }
+        }
         val display = findHostActivity()?.windowManager?.defaultDisplay ?: return
         val normalized = DisplayModeChooser.normalizeFrameRate(fps)
         // Only the rate counts here; the resolution was settled at the start.
@@ -2381,8 +2460,8 @@ class Media3VideoView(
         // in use fits it, so it counts as pending either way.
         val nowMs = SystemClock.elapsedRealtime()
         val streamRateChanged = rateCorrection.pastEarlyWindow(nowMs) &&
-            startupRateChoice?.let { DisplayRateDecision.isRateChange(it, reading) } == true
-        rateCorrection.onReading(nowMs, player.bufferedPosition, normalized, fits && !streamRateChanged)
+            rateSession.appliedRateChoice?.let { DisplayRateDecision.isRateChange(it, reading) } == true
+        rateCorrection.onReading(nowMs, correctionProgressSample(sourceToken), evidence, fits && !streamRateChanged)
         scheduleRateCorrection(sourceToken)
     }
 
@@ -2398,14 +2477,28 @@ class Media3VideoView(
         mainHandler.postDelayed(check, (dueAtMs - SystemClock.elapsedRealtime()).coerceAtLeast(0L))
     }
 
+    private fun correctionProgressSample(sourceToken: Int): CorrectionProgress.Sample? {
+        if (sourceToken != frameTiming.generationToken) return null
+        val timeline = player.currentTimeline
+        if (timeline.isEmpty) return null
+        val hlsManifest = player.currentManifest as? HlsManifest
+        val bufferedPositionMs = player.bufferedPosition
+        return correctionProgress.sample(
+            timeline = timeline,
+            windowIndex = player.currentMediaItemIndex,
+            windowBufferedPositionMs = bufferedPositionMs,
+            playlist = hlsManifest?.mediaPlaylist,
+        )
+    }
+
     private fun applyRateCorrection(sourceToken: Int) {
         if (isDisposed || isPlayerReleased || sourceToken != frameTiming.generationToken) return
         // A correction already settling picks up anything newer when it ends.
-        if (rateStartup.audioBlocked || rateCorrectionHoldsAudio) return
+        if (rateSession.startup.audioBlocked || rateSession.correctionHolding) return
         if (role != "main" || !isFrameRateSwitchingEnabled()) return
         val early = rateCorrection.isEarlyPending()
-        val fps = rateCorrection.takeDue(SystemClock.elapsedRealtime(), player.bufferedPosition)
-        if (fps == null) {
+        val evidence = rateCorrection.takeDue(SystemClock.elapsedRealtime(), correctionProgressSample(sourceToken))
+        if (evidence == null) {
             // Held long enough by the clock but not yet by loaded media, as
             // when a segment arrived in a burst: look again shortly.
             if (rateCorrection.nextCheckAtMs() != null) {
@@ -2418,15 +2511,16 @@ class Media3VideoView(
             }
             return
         }
+        val choice = evidence.choice
+        val fps = choice.fps ?: return
         Media3Bridge.emitEvent(
             mapOf(
                 "event" to "frameRateCorrection",
-                "frameRate" to fps.toDouble(),
                 "reason" to if (early) "start" else "programme",
                 "displayHz" to if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     videoView.display?.mode?.refreshRate?.toDouble()
                 } else null,
-            ),
+            ) + evidence.eventFields(),
         )
         // The Amlogic MPEG-2 decoder on a Fire TV Cube kept timing frames at
         // the old rate after a programme change: 23.976 film following a
@@ -2434,16 +2528,15 @@ class Media3VideoView(
         // refresh rate until the channel was tuned again. A start's own
         // correction already has a decoder made for this stream.
         val freshDecoder = !early &&
-            startupRateChoice?.let { DisplayRateDecision.isRateChange(it, RateChoice(fps, RateSource.MEASURED)) } == true
-        startupRateChoice = RateChoice(fps, RateSource.MEASURED)
+            rateSession.appliedRateChoice?.let { DisplayRateDecision.isRateChange(it, choice) } == true
+        rateSession.appliedRateEvidence.set(evidence)
         // Some devices can't re-create a passthrough track after HDMI
         // renegotiates, so nothing plays while the display switches. It
         // pauses rather than dropping the audio track: a live stream reopens
         // from scratch whenever its tracks change, which froze the picture
         // twice per correction. Media3 answers the route's capabilities
         // coming back the same way, so that stays off until the end.
-        rateCorrectionHoldsAudio = true
-        rateCorrectionPlayWhenReady = player.playWhenReady
+        if (!rateSession.beginCorrection(sourceToken)) return
         disableCapabilityReselection()
         pauseForRateCorrection()
         // Stopping releases the codec, so the source prepared again gets a
@@ -2458,29 +2551,50 @@ class Media3VideoView(
         maybeApplyFrameRateSwitching(fps, rateChanged = true)
         val switched = displayModeSwitchAtMs != 0L && displayModeSwitchAtMs != previousSwitchAtMs
         if (displayModeSwitchPending() || switched) {
-            holdStartForDisplayModeSwitch(0L) { finishRateCorrection() }
-            heldStartForRateCorrection = true
+            holdStartForDisplayModeSwitch(sourceToken, DisplayRateSession.HoldKind.CORRECTION, 0L) {
+                finishRateCorrection()
+            }
         } else {
             finishRateCorrection()
         }
     }
 
     private fun pauseForRateCorrection() {
-        if (!player.playWhenReady) return
-        pendingCorrectionPauses++
-        player.playWhenReady = false
+        markAndPauseInternally()
     }
+
+    private fun markAndPauseInternally() {
+        // Avoid a false->false setter: Media3 can report it as a reason-only
+        // USER_REQUEST change after a system pause.
+        rateSession.pauseInternally(
+            player = player,
+            actualPlayWhenReady = player.playWhenReady,
+            expectedReason = Player.PLAY_WHEN_READY_CHANGE_REASON_USER_REQUEST,
+        ) {
+            player.playWhenReady = false
+        }
+    }
+
+    private fun isAudioRekickActiveForCurrentPlayer(): Boolean =
+        audioRekickOperation?.let {
+            rateSession.isCurrent(it.sourceToken) && player === it.player
+        } == true
 
     /** Brings audio back after a correction's switch settles, or when it is cut short. */
     private fun finishRateCorrection() {
-        if (!rateCorrectionHoldsAudio) return
-        rateCorrectionHoldsAudio = false
+        if (!rateSession.correctionHolding) return
+        val sourceToken = rateSession.correctionIntent.sourceToken ?: return
+        if (!rateSession.isCurrent(sourceToken) || sourceToken != frameTiming.generationToken) {
+            rateSession.cancelCorrection()
+            return
+        }
+        val playWhenReady = rateSession.completeCorrection(sourceToken) ?: return
         if (isDisposed || isPlayerReleased) return
         trackSelector.setParameters(
             trackSelector.buildUponParameters()
                 .setAllowInvalidateSelectionsOnRendererCapabilitiesChange(true),
         )
-        if (rateCorrectionPlayWhenReady && !player.playWhenReady) {
+        if (playWhenReady && !player.playWhenReady) {
             player.playWhenReady = true
         }
         emitState()
@@ -2955,6 +3069,7 @@ class Media3VideoView(
                         is Map<*, *> -> (args["positionMs"] as? Number)?.toLong() ?: 0L
                         else -> 0L
                     }
+                    correctionProgress.reset()
                     player.seekTo(positionMs)
                     emitState()
                     result.success(null)
@@ -3167,6 +3282,7 @@ class Media3VideoView(
                         is Map<*, *> -> (args["positionMs"] as? Number)?.toLong() ?: 0L
                         else -> 0L
                     }
+                    correctionProgress.reset()
                     player.seekTo(positionMs)
                     emitState()
                 }
@@ -3311,6 +3427,8 @@ class Media3VideoView(
         lastFrameOffsetPositionMs = null
         val startPositionMs = (args["startPositionMs"] as? Number)?.toLong() ?: 0L
         val autoPlay = args["autoPlay"] as? Boolean ?: false
+        rateSession.beginSource(frameTiming.generationToken, autoPlay)
+        videoDecoderStartupFailure.beginSource(frameTiming.generationToken)
         displayModeSwitchRetriesForCurrentSource = 0
         decoderReclaimRetriesForCurrentSource = 0
         cancelResumeWedgeCheck()
@@ -3376,8 +3494,12 @@ class Media3VideoView(
         currentAudioIsLossless =
             isLosslessAudioCodecName(args["audioCodec"]?.toString())
 
-        if (mediaTypeChanged || decoderPreferenceDirty ||
-            (!isAudio && playerHasLoadedSource)
+        if (SourceRebuildPolicy.shouldRebuild(
+                playerHasLoadedSource = playerHasLoadedSource,
+                mediaTypeChanged = mediaTypeChanged,
+                decoderPreferenceChanged = decoderPreferenceDirty,
+                nextIsAudio = isAudio,
+            )
         ) {
             rebuildPlayerForDecoderPreference()
             decoderPreferenceDirty = false
@@ -3388,7 +3510,26 @@ class Media3VideoView(
         // music session. The session attaches after the rebuild so it binds
         // the live player.
         if (!isPreview && !isAudio) {
-            Media3SessionController.attachPlayer(context, player)
+            val sessionSourceToken = rateSession.sourceToken
+            val sessionRawPlayer = player
+            Media3SessionController.attachPlayer(
+                context = context,
+                player = sessionRawPlayer,
+                isPlaybackRequestCurrent = {
+                    sessionSourceToken != null &&
+                        rateSession.isCurrent(sessionSourceToken) &&
+                        player === sessionRawPlayer
+                },
+                onPlaybackRequest = { playWhenReady ->
+                    if (sessionSourceToken != null &&
+                        rateSession.isCurrent(sessionSourceToken) &&
+                        player === sessionRawPlayer
+                    ) {
+                        requestPlayback(playWhenReady)
+                        emitState()
+                    }
+                },
+            )
         }
 
         closeExternalAudioEffectSessionIfOpen()
@@ -3497,10 +3638,11 @@ class Media3VideoView(
             isFrameRateSwitchingEnabled() && (currentIsLive || isHls)
         if (needsRateMeasurement) {
             val sourceToken = frameTiming.generationToken
+            correctionProgress.reset()
             // Library transcodes are HLS too, but files never change rate
             // mid-playback; only live TV corrects after the start.
             if (currentIsLive) rateCorrection.begin(SystemClock.elapsedRealtime())
-            rateStartup.begin(sourceToken, autoPlay)
+            rateSession.beginStartup(sourceToken, autoPlay)
             startupRateStartedAtMs = SystemClock.elapsedRealtime()
             applyStartupAudioGate()
             startupFirstSampleSeen = false
@@ -3512,14 +3654,19 @@ class Media3VideoView(
             prepareCurrentSource(startPositionMs, playWhenReady = false)
         } else {
             startupCodecGate.open(frameTiming.generationToken)
-            startupRateChoice = DisplayRateDecision.choose(sourceRateInputs())
-            if (!isAudio) startupRateChoice?.fps?.let { maybeApplyFrameRateSwitching(it) }
+            val choice = DisplayRateDecision.choose(sourceRateInputs())
+            rateSession.appliedRateEvidence.set(RateEvidence.from(choice, startupHeaderEvidence))
+            if (!isAudio) choice.fps?.let { maybeApplyFrameRateSwitching(it) }
             // A restore to the viewer's mode renegotiates like a switch does.
             val switchedForSource = displayModeSwitchAtMs != 0L && displayModeSwitchAtMs != switchAtBeforeSource
             if (switchedForSource || displayModeSwitchPending()) {
                 wasPlayingBeforeDisplayModeSwitch = autoPlay
-                holdStartForDisplayModeSwitch(startupVideoDelayMs) {
-                    prepareCurrentSource(startPositionMs, playWhenReady = autoPlay)
+                holdStartForDisplayModeSwitch(
+                    frameTiming.generationToken,
+                    DisplayRateSession.HoldKind.STARTUP,
+                    startupVideoDelayMs,
+                ) {
+                    prepareCurrentSource(startPositionMs, playWhenReady = rateSession.desiredPlayWhenReady)
                 }
             } else {
                 prepareCurrentSource(startPositionMs, playWhenReady = autoPlay)
@@ -3534,7 +3681,7 @@ class Media3VideoView(
     }
 
     private fun revealVideo() {
-        if (rateStartup.audioBlocked || startupCodecGate.isBlocked) {
+        if (rateSession.startup.audioBlocked || startupCodecGate.isBlocked) {
             startupVideoFrameReady = true
             return
         }
@@ -3763,9 +3910,9 @@ class Media3VideoView(
         emitState()
     }
 
-    private fun restorePreferredDisplayMode() {
+    private fun restorePreferredDisplayMode(preserveRateHold: Boolean = false) {
         mainHandler.removeCallbacks(deferredDisplayModeRestore)
-        cancelHeldStart()
+        if (preserveRateHold) clearHeldStartRegistrations() else cancelHeldStart()
         clearSurfaceFrameRateHint()
         endDisplayModeSwitchRecovery()
         // A preview never applied a mode, so its idea of the original id is 0
@@ -4088,6 +4235,7 @@ class Media3VideoView(
             ?.ifBlank { "disabled" }
         if (nextFrameRateBehavior != null && frameRateSwitchingBehavior != nextFrameRateBehavior) {
             frameRateSwitchingBehavior = nextFrameRateBehavior
+            val holdToReplace = rateSession.hold
             val lastDetected = detectedFrameRate
             if (isFrameRateSwitchingEnabled()) {
                 if (lastDetected != null) {
@@ -4095,8 +4243,8 @@ class Media3VideoView(
                 }
             } else {
                 clearSurfaceFrameRateHint()
-                restorePreferredDisplayMode()
-                if (rateStartup.awaitingEvidence) {
+                restorePreferredDisplayMode(preserveRateHold = holdToReplace != null)
+                if (rateSession.startup.awaitingEvidence) {
                     completeRateStartup(frameTiming.generationToken, "switching disabled", forceSettle = true)
                 }
                 if (lastDetected != null) {
@@ -4108,11 +4256,30 @@ class Media3VideoView(
                     )
                 }
             }
-            // restorePreferredDisplayMode cancels the held callback. A
-            // preference change must replace that callback, not strand audio.
-            if (rateStartup.phase == DisplayRateStartup.Phase.SETTLING) {
+            // Replace a same-source hold with the callback that owns its phase.
+            if (holdToReplace != null) {
                 val sourceToken = frameTiming.generationToken
-                holdStartForDisplayModeSwitch(startupVideoDelayMs) { releaseRateStartup(sourceToken) }
+                val completion = when {
+                    holdToReplace.kind == DisplayRateSession.HoldKind.CORRECTION -> ::finishRateCorrection
+                    holdToReplace.kind == DisplayRateSession.HoldKind.STARTUP &&
+                        rateSession.startup.phase == DisplayRateStartup.Phase.SETTLING -> {
+                        { releaseRateStartup(sourceToken) }
+                    }
+                    else -> holdToReplace.completion
+                }
+                holdStartForDisplayModeSwitch(
+                    sourceToken,
+                    holdToReplace.kind,
+                    if (holdToReplace.kind == DisplayRateSession.HoldKind.CORRECTION) 0L else startupVideoDelayMs,
+                    completion,
+                )
+            } else if (rateSession.startup.phase == DisplayRateStartup.Phase.SETTLING) {
+                val sourceToken = frameTiming.generationToken
+                holdStartForDisplayModeSwitch(
+                    sourceToken,
+                    DisplayRateSession.HoldKind.STARTUP,
+                    startupVideoDelayMs,
+                ) { releaseRateStartup(sourceToken) }
             }
         }
     }
@@ -4997,11 +5164,12 @@ class Media3VideoView(
      * front.
      */
     private fun resumeLiveEdge() {
-        if (rateStartup.audioBlocked) {
+        if (rateSession.startup.audioBlocked) {
             requestPlayback(true)
             return
         }
         if (isPlayerReleased) return
+        correctionProgress.reset()
         val window = currentWindow()
         // Only a dynamic window has newer media to seek into; seeking a fixed
         // window's default position restarts it from 0.
@@ -5055,6 +5223,7 @@ class Media3VideoView(
      * when its source is built, before any loader can create an extractor.
      */
     private fun prepareCurrentSource(startPositionMs: Long, playWhenReady: Boolean) {
+        correctionProgress.reset()
         val url = currentUrl ?: return
         // Rebuilding may change Media3 track-group IDs. Retry the existing
         // primary choice when the replacement tracks become available.
@@ -5062,7 +5231,11 @@ class Media3VideoView(
         clearSubtitleCues()
         applyStartupAudioGate()
         // Preparing paused by itself is not an audio gate. Track selection is.
-        if (rateStartup.audioBlocked) player.playWhenReady = false
+        var pausedForGateBeforePrepare = false
+        if (rateSession.startup.audioBlocked) {
+            markAndPauseInternally()
+            pausedForGateBeforePrepare = true
+        }
         // A recovery may reuse the current codec adapter/extractor. Keep its
         // source token valid while restarting the observation windows.
         frameTiming.resetForDiscontinuity()
@@ -5110,11 +5283,11 @@ class Media3VideoView(
             }
         }
         player.prepare()
-        if (playWhenReady && !rateStartup.audioBlocked) {
+        if (rateSession.shouldPlayAfterPrepare(playWhenReady)) {
             player.playWhenReady = true
             player.play()
         } else {
-            player.playWhenReady = false
+            if (!pausedForGateBeforePrepare) markAndPauseInternally()
         }
         emitState()
     }
@@ -5487,22 +5660,20 @@ class Media3VideoView(
      */
     private fun maybeResumeAfterRouteFlap(addedDevices: Array<out AudioDeviceInfo>) {
         if (isDisposed || isPlayerReleased) return
-        if (rateStartup.audioBlocked) return
-        val pausedAtMs = systemPausedAtMs
-        if (pausedAtMs == 0L) return
-        if (SystemClock.elapsedRealtime() - pausedAtMs > ROUTE_FLAP_RESUME_MS) {
-            systemPausedAtMs = 0L
-            return
+        val reason = rateSession.correctionIntent.routePauseReason()
+        rateSession.handleAudioDeviceAdded(
+            nowMs = SystemClock.elapsedRealtime(),
+            hasHdmiDevice = addedDevices.any { isHdmiDevice(it.type) },
+            resumeWindowMs = ROUTE_FLAP_RESUME_MS,
+        ) {
+            Media3Bridge.emitEvent(
+                mapOf(
+                    "event" to "routeFlapResume",
+                    "reason" to pauseReasonName(reason),
+                ),
+            )
+            player.playWhenReady = true
         }
-        if (addedDevices.none { isHdmiDevice(it.type) }) return
-        systemPausedAtMs = 0L
-        Media3Bridge.emitEvent(
-            mapOf(
-                "event" to "routeFlapResume",
-                "reason" to pauseReasonName(systemPauseReason),
-            ),
-        )
-        player.playWhenReady = true
     }
 
     private fun isHdmiDevice(type: Int): Boolean =
@@ -5701,27 +5872,29 @@ class Media3VideoView(
     // bitstreamed track that comes back from that can leave the player stuck
     // buffering. So the start waits for the switch to settle instead of
     // racing it, with the user's start delay added on top.
-    private fun holdStartForDisplayModeSwitch(startDelayMs: Long, start: () -> Unit) {
-        // A hold restarted while HDMI audio is still away must keep waiting
-        // for it; its removal won't be announced a second time.
-        val hdmiAudioAway = heldStartSettle?.isHdmiAudioAway == true
-        cancelHeldStart()
-        heldStart = start
-        heldStartSettle = DisplayModeSettle(
-            quietMs = DISPLAY_MODE_SETTLE_QUIET_MS + startDelayMs,
+    private fun holdStartForDisplayModeSwitch(
+        sourceToken: Int,
+        kind: DisplayRateSession.HoldKind,
+        startDelayMs: Long,
+        completion: () -> Unit,
+    ) {
+        clearHeldStartRegistrations()
+        val hold = rateSession.installHold(
+            sourceToken = sourceToken,
+            kind = kind,
+            quietMs = DISPLAY_MODE_SETTLE_QUIET_MS,
             maxWaitMs = DISPLAY_MODE_SETTLE_MAX_MS,
-            startedAtMs = SystemClock.elapsedRealtime(),
-            // HDMI audio's return carries everything the track needs, so the
-            // start runs then, with only the viewer's own delay on top.
-            audioReturnSettleMs = startDelayMs,
+            nowMs = SystemClock.elapsedRealtime(),
+            startDelayMs = startDelayMs,
             expectHdmiAudioDrop = hdmiAudioDropsOnModeSwitch(),
             hdmiAudioDropWindowMs = HDMI_AUDIO_DROP_WINDOW_MS,
-        )
-        if (hdmiAudioAway) heldStartSettle?.noteHdmiAudio(false)
+            completion = completion,
+        ) ?: return
+        val holdId = hold.id
         val listener = object : DisplayManager.DisplayListener {
             override fun onDisplayAdded(displayId: Int) {}
             override fun onDisplayRemoved(displayId: Int) {}
-            override fun onDisplayChanged(displayId: Int) = noteHeldStartActivity()
+            override fun onDisplayChanged(displayId: Int) = noteHeldStartActivity(sourceToken, holdId)
         }
         context.getSystemService<DisplayManager>()?.registerDisplayListener(listener, mainHandler)
         heldStartDisplayListener = listener
@@ -5732,48 +5905,47 @@ class Media3VideoView(
                 if (isInitialStickyBroadcast) return
                 val state = intent.getIntExtra(AudioManager.EXTRA_AUDIO_PLUG_STATE, -1)
                 if (state < 0) return
-                noteHeldStartHdmiAudio(present = state == 1)
-                noteHeldStartActivity()
+                noteHeldStartHdmiAudio(sourceToken, holdId, present = state == 1)
+                noteHeldStartActivity(sourceToken, holdId)
             }
         }
         runCatching {
             Util.registerReceiverNotExported(context, plugReceiver, IntentFilter(AudioManager.ACTION_HDMI_AUDIO_PLUG))
             heldStartHdmiReceiver = plugReceiver
         }
-        noteHeldStartActivity()
+        noteHeldStartActivity(sourceToken, holdId)
         emitState()
     }
 
-    private fun noteHeldStartActivity() {
-        val settle = heldStartSettle ?: return
-        mainHandler.removeCallbacks(heldStartRunnable)
-        mainHandler.postDelayed(
-            heldStartRunnable,
-            settle.delayAfterChange(SystemClock.elapsedRealtime()),
-        )
+    private fun noteHeldStartActivity(sourceToken: Int, holdId: Long) {
+        if (!rateSession.matchesHold(sourceToken, holdId)) return
+        val settle = rateSession.hold?.settle ?: return
+        heldStartRunnable?.let(mainHandler::removeCallbacks)
+        val callback = Runnable { runHeldStart(sourceToken, holdId) }
+        heldStartRunnable = callback
+        mainHandler.postDelayed(callback, settle.delayAfterChange(SystemClock.elapsedRealtime()))
     }
 
-    private fun runHeldStart() {
-        val start = heldStart ?: return
-        val settle = heldStartSettle ?: return
-        cancelHeldStart()
-        Media3Bridge.emitEvent(
-            mapOf(
-                "event" to "startHeldForDisplayMode",
-                "heldMs" to SystemClock.elapsedRealtime() - settle.startedAtMs,
-            ),
-        )
-        start()
+    private fun runHeldStart(sourceToken: Int, holdId: Long) {
+        rateSession.completeHold(sourceToken, holdId) { hold ->
+            clearHeldStartRegistrations()
+            Media3Bridge.emitEvent(
+                mapOf(
+                    "event" to "startHeldForDisplayMode",
+                    "heldMs" to SystemClock.elapsedRealtime() - hold.settle.startedAtMs,
+                ),
+            )
+        }
     }
 
     private fun cancelHeldStart() {
-        if (heldStartForRateCorrection) {
-            heldStartForRateCorrection = false
-            finishRateCorrection()
-        }
-        heldStart = null
-        heldStartSettle = null
-        mainHandler.removeCallbacks(heldStartRunnable)
+        rateSession.cancelHold()
+        clearHeldStartRegistrations()
+    }
+
+    private fun clearHeldStartRegistrations() {
+        heldStartRunnable?.let(mainHandler::removeCallbacks)
+        heldStartRunnable = null
         heldStartDisplayListener?.let {
             context.getSystemService<DisplayManager>()?.unregisterDisplayListener(it)
         }
@@ -5782,9 +5954,20 @@ class Media3VideoView(
         heldStartHdmiReceiver = null
     }
 
-    private fun noteHeldStartHdmiAudio(present: Boolean) {
-        heldStartSettle?.noteHdmiAudio(present)
+    private fun noteHeldStartHdmiAudio(sourceToken: Int, holdId: Long, present: Boolean) {
+        if (!rateSession.matchesHold(sourceToken, holdId)) return
+        rateSession.hold?.settle?.noteHdmiAudio(present)
         if (!present) rememberHdmiAudioDropsOnModeSwitch()
+    }
+
+    private fun noteCurrentHeldStartActivity() {
+        val hold = rateSession.hold ?: return
+        noteHeldStartActivity(hold.sourceToken, hold.id)
+    }
+
+    private fun noteCurrentHeldStartHdmiAudio(present: Boolean) {
+        val hold = rateSession.hold ?: return
+        noteHeldStartHdmiAudio(hold.sourceToken, hold.id, present)
     }
 
     // Learned once per device: some sinks drop HDMI audio after every mode
@@ -5821,6 +6004,77 @@ class Media3VideoView(
 
         prepareCurrentSource(retryPositionMs, playWhenReady)
         return true
+    }
+
+    private fun classifyVideoDecoderStartupFailure(
+        error: PlaybackException,
+    ): VideoDecoderStartupFailure.Action {
+        if (isDisposed || currentUrl == null || currentMediaType == "audio") {
+            return VideoDecoderStartupFailure.Action.IGNORE
+        }
+        val sourceToken = rateSession.sourceToken
+            ?: return VideoDecoderStartupFailure.Action.IGNORE
+        if (sourceToken != frameTiming.generationToken || player.currentMediaItem == null) {
+            return VideoDecoderStartupFailure.Action.IGNORE
+        }
+        val rendererError = error as? ExoPlaybackException
+        val isRendererFailure = rendererError?.type == ExoPlaybackException.TYPE_RENDERER
+        val rendererIndex = rendererError?.rendererIndex ?: C.INDEX_UNSET
+        val rendererTrackType = if (isRendererFailure && rendererIndex in 0 until player.rendererCount) {
+            runCatching { player.getRenderer(rendererIndex).trackType }.getOrNull()
+        } else {
+            null
+        }
+        val rendererFormat = rendererError?.rendererFormat
+        val causes = decoderFailureCauses(error)
+        val action = videoDecoderStartupFailure.onFailure(
+            token = sourceToken,
+            errorCode = error.errorCode,
+            isRendererFailure = isRendererFailure,
+            rendererTrackType = rendererTrackType,
+            rendererMimeType = rendererFormat?.sampleMimeType,
+            isProtectedContent = rendererFormat?.let {
+                it.drmInitData != null || it.cryptoType != C.CRYPTO_TYPE_NONE
+            } ?: false,
+            hasReclaimedDecoderCause = causes.reclaimed,
+            hasDrmCause = causes.drm,
+            displayModeRetryAvailable = displayModeSwitchInFlight() &&
+                displayModeSwitchRetriesForCurrentSource < DISPLAY_MODE_SWITCH_MAX_RETRIES,
+        )
+        return action
+    }
+
+    private data class DecoderFailureCauses(val reclaimed: Boolean, val drm: Boolean)
+
+    private fun decoderFailureCauses(error: PlaybackException): DecoderFailureCauses {
+        val pending = java.util.ArrayDeque<Throwable>()
+        val visited = java.util.Collections.newSetFromMap(
+            java.util.IdentityHashMap<Throwable, Boolean>(),
+        )
+        pending.add(error)
+        var reclaimed = false
+        var drm = false
+        while (pending.isNotEmpty()) {
+            val cause = pending.removeFirst()
+            if (!visited.add(cause)) continue
+            if (cause is android.media.MediaCodec.CodecException &&
+                cause.errorCode == android.media.MediaCodec.CodecException.ERROR_RECLAIMED
+            ) {
+                reclaimed = true
+            }
+            if (cause is android.media.MediaCodec.CryptoException ||
+                cause is android.media.MediaCryptoException ||
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+                cause is android.media.MediaDrm.MediaDrmStateException
+            ) {
+                drm = true
+            }
+            cause.cause?.let(pending::addLast)
+            (cause as? androidx.media3.exoplayer.mediacodec.MediaCodecRenderer.DecoderInitializationException)
+                ?.fallbackDecoderInitializationException
+                ?.let(pending::addLast)
+        }
+        return DecoderFailureCauses(reclaimed, drm)
     }
 
     /**
@@ -6049,7 +6303,7 @@ class Media3VideoView(
                 .buildUpon()
                 .setTrackTypeDisabled(
                     trackType,
-                    trackType == C.TRACK_TYPE_AUDIO && rateStartup.audioBlocked,
+                    trackType == C.TRACK_TYPE_AUDIO && rateSession.startup.audioBlocked,
                 )
                 .clearOverridesOfType(trackType)
                 .addOverride(override)
@@ -6511,7 +6765,7 @@ class Media3VideoView(
             "durationMs" to if (duration > 0) duration else 0L,
             "bufferedMs" to if (bufferedPosition > 0) bufferedPosition else 0L,
             "isPlaying" to player.isPlaying,
-            "isBuffering" to (player.playbackState == Player.STATE_BUFFERING || heldStart != null || rateStartup.audioBlocked),
+            "isBuffering" to (player.playbackState == Player.STATE_BUFFERING || rateSession.hold != null || rateSession.startup.audioBlocked),
             "isSubtitleLoading" to (subtitleTrackEnabled &&
                 player.playbackState != Player.STATE_IDLE &&
                 player.playbackState != Player.STATE_ENDED &&
@@ -6520,7 +6774,7 @@ class Media3VideoView(
             // intent to play. A phone call holds playback without clearing that
             // intent, so it counts as paused here instead of looking like a stall.
             // A correction's pause still means to play, so it shows as buffering.
-            "playWhenReady" to ((player.playWhenReady || (rateCorrectionHoldsAudio && rateCorrectionPlayWhenReady)) &&
+            "playWhenReady" to ((player.playWhenReady || (rateSession.correctionHolding && rateSession.desiredPlayWhenReady)) &&
                 player.playbackSuppressionReason == Player.PLAYBACK_SUPPRESSION_REASON_NONE),
             "playbackSpeed" to player.playbackParameters.speed.toDouble(),
             "videoWidth" to videoSize.width,
@@ -6535,7 +6789,7 @@ class Media3VideoView(
             "liveEdgeMs" to liveEdgeMs(),
             // The rate a held start or correction is switching the display
             // for, so the player can say why nothing is playing yet.
-            "displayMatchFps" to if (heldStart != null) startupRateChoice?.fps?.toDouble() else null,
+            "displayMatchFps" to if (rateSession.hold != null) rateSession.appliedRateChoice?.fps?.toDouble() else null,
         )
     }
 
@@ -6551,7 +6805,7 @@ class Media3VideoView(
     }
 
     private fun emitState() {
-        if (suppressStateEmissionsForRekick) return
+        if (isAudioRekickActiveForCurrentPlayer()) return
         // One global event stream feeds Dart, so a view that doesn't hold the
         // slot would overwrite the real player's state with its own.
         if (!Media3Bridge.isActive(this)) return

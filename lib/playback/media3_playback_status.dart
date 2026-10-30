@@ -39,6 +39,25 @@ class Media3PlaybackStatus {
   /// Live rate corrections applied after the start.
   int corrections = 0;
 
+  /// Applies one native decision as a single status update. Missing or
+  /// unrecognized provenance is cleared conservatively.
+  void applyRateDecision({
+    required double? frameRate,
+    required String? source,
+    required bool fieldRateApplied,
+    required String? scanType,
+    bool correction = false,
+  }) {
+    decisionFrameRate = frameRate;
+    decisionSource = source;
+    this.fieldRateApplied = fieldRateApplied;
+    this.scanType = switch (scanType) {
+      'progressive' || 'interlaced' || 'repeated_fields' => scanType,
+      _ => null,
+    };
+    if (correction && frameRate != null) corrections += 1;
+  }
+
   /// The picture rate the decision stands for: the field rate halved when
   /// interlaced video was shown at its field rate.
   double? get pictureFrameRate {

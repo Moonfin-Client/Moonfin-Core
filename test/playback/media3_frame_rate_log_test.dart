@@ -264,6 +264,79 @@ void main() {
     );
   });
 
+  test('correction events atomically replace rate provenance', () async {
+    await _send(<String, dynamic>{
+      'event': 'frameRateDecision',
+      'frameRate': 59.94,
+      'source': 'header',
+      'fieldRateApplied': true,
+      'scanType': 'interlaced',
+    });
+    await pumpEventQueue();
+    expect(backend.playbackStatus.pictureFrameRate, closeTo(29.97, 0.001));
+
+    await _send(<String, dynamic>{
+      'event': 'frameRateCorrection',
+      'frameRate': 59.94,
+      'source': 'measured',
+      'fieldRateApplied': false,
+      'scanType': 'progressive',
+      'reason': 'programme',
+      'displayHz': 59.94,
+    });
+    await pumpEventQueue();
+    expect(backend.playbackStatus.decisionFrameRate, 59.94);
+    expect(backend.playbackStatus.pictureFrameRate, 59.94);
+    expect(backend.playbackStatus.decisionSource, 'measured');
+    expect(backend.playbackStatus.fieldRateApplied, isFalse);
+    expect(backend.playbackStatus.scanType, 'progressive');
+    expect(backend.playbackStatus.corrections, 1);
+
+    await _send(<String, dynamic>{
+      'event': 'frameRateCorrection',
+      'frameRate': 59.94,
+      'source': 'header',
+      'fieldRateApplied': true,
+      'scanType': 'interlaced',
+      'reason': 'programme',
+    });
+    await pumpEventQueue();
+    expect(backend.playbackStatus.pictureFrameRate, closeTo(29.97, 0.001));
+    expect(backend.playbackStatus.scanType, 'interlaced');
+
+    await _send(<String, dynamic>{
+      'event': 'frameRateCorrection',
+      'frameRate': 29.97,
+      'source': 'measured',
+      'fieldRateApplied': true,
+      'scanType': 'not-a-scan-type',
+      'reason': 'programme',
+    });
+    await pumpEventQueue();
+    expect(backend.playbackStatus.fieldRateApplied, isTrue);
+    expect(backend.playbackStatus.scanType, isNull);
+    expect(backend.playbackStatus.pictureFrameRate, closeTo(14.985, 0.001));
+
+    await _send(<String, dynamic>{
+      'event': 'frameRateCorrection',
+      'frameRate': 29.97,
+      'source': 'measured',
+      'reason': 'programme',
+    });
+    await pumpEventQueue();
+    expect(backend.playbackStatus.fieldRateApplied, isFalse);
+    expect(backend.playbackStatus.scanType, isNull);
+    expect(backend.playbackStatus.pictureFrameRate, 29.97);
+    expect(backend.playbackStatus.corrections, 4);
+
+    await backend.play('http://example.test/next.mkv');
+    expect(backend.playbackStatus.decisionFrameRate, isNull);
+    expect(backend.playbackStatus.decisionSource, isNull);
+    expect(backend.playbackStatus.fieldRateApplied, isFalse);
+    expect(backend.playbackStatus.scanType, isNull);
+    expect(backend.playbackStatus.corrections, 0);
+  });
+
   test('stream rate observation handles unknown values readably', () async {
     await _send(<String, dynamic>{'event': 'streamRateObservation'});
     await pumpEventQueue();

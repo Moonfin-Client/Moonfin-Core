@@ -4,6 +4,7 @@ import 'package:moonfin/playback/offline_stream_resolver.dart';
 import 'package:playback_core/playback_core.dart';
 
 class _ServerResolver extends MediaStreamResolver {
+
   @override
   Future<StreamResolutionResult> resolve(
     dynamic mediaItem, {
@@ -16,11 +17,13 @@ class _ServerResolver extends MediaStreamResolver {
     bool enableDirectPlay = true,
     bool enableDirectStream = true,
     bool enableTranscoding = true,
-  }) async => const StreamResolutionResult(
-    streamUrl: 'https://server/movie',
-    mediaSourceId: 'movie',
-    playMethod: StreamPlayMethod.directPlay,
-  );
+  }) async {
+    return const StreamResolutionResult(
+      streamUrl: 'https://server/movie',
+      mediaSourceId: 'movie',
+      playMethod: StreamPlayMethod.directPlay,
+    );
+  }
 }
 
 class _Downloads extends Fake implements OfflineStreamResolver {
@@ -55,4 +58,5 @@ void main() {
     expect(result.isLocalMedia, isFalse);
     expect(result.streamUrl, 'https://server/movie');
   });
+
 }

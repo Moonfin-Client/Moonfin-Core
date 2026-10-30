@@ -32,9 +32,10 @@ internal class LiveRateCorrection(
     private var startedAtMs = 0L
     private var lastSwitchAtMs: Long? = null
     private var earlyUsed = false
-    private var candidateFps: Float? = null
+    private var candidate: RateEvidence? = null
     private var candidateSinceMs = 0L
-    private var candidateLoadedMs = 0L
+    private var candidateProgress: CorrectionProgress.Sample? = null
+    private var lastProgress: CorrectionProgress.Sample? = null
 
     /** Starts watching a new live source. */
     fun begin(nowMs: Long) {
@@ -59,21 +60,34 @@ internal class LiveRateCorrection(
     }
 
     /**
-     * Takes a credible measured rate. [loadedMs] is how far media has loaded
-     * now; [fits] is whether the display mode in use already suits the rate,
-     * in which case nothing is pending any more.
+     * Takes a credible measured rate. [progress] is a source-scoped loaded
+     * media coordinate; [fits] is whether the display mode in use already
+     * suits the rate, in which case nothing is pending any more.
      */
-    fun onReading(nowMs: Long, loadedMs: Long, fps: Float, fits: Boolean) {
+    fun onReading(nowMs: Long, progress: CorrectionProgress.Sample?, evidence: RateEvidence, fits: Boolean) {
         if (!active) return
+        val fps = evidence.choice.fps ?: run {
+            clearCandidate()
+            return
+        }
         if (fits || !fps.isFinite() || fps <= 0f) {
             clearCandidate()
             return
         }
-        val current = candidateFps
-        if (current == null || abs(fps - current) / current > SAME_RATE_TOLERANCE) {
-            candidateFps = fps
+        val currentEvidence = candidate
+        val current = currentEvidence?.choice?.fps
+        val sameRate = current != null && abs(fps - current) / current <= SAME_RATE_TOLERANCE
+        val sameProvenance = currentEvidence != null &&
+            currentEvidence.choice.source == evidence.choice.source &&
+            currentEvidence.choice.fieldRateApplied == evidence.choice.fieldRateApplied &&
+            currentEvidence.scanType == evidence.scanType
+        if (!sameRate || !sameProvenance) {
+            candidate = evidence
             candidateSinceMs = nowMs
-            candidateLoadedMs = loadedMs
+            candidateProgress = progress
+            lastProgress = progress
+        } else if (!isEarly(candidateSinceMs)) {
+            observeProgress(nowMs, progress)
         }
     }
 
@@ -87,7 +101,7 @@ internal class LiveRateCorrection(
      * nothing is pending. Loaded media may still hold it back past this.
      */
     fun nextCheckAtMs(): Long? {
-        if (!active || candidateFps == null) return null
+        if (!active || candidate == null) return null
         if (isEarly(candidateSinceMs)) return candidateSinceMs
         val stableAt = candidateSinceMs + stableMs
         val cooledAt = lastSwitchAtMs?.let { it + cooldownMs } ?: stableAt
@@ -98,22 +112,23 @@ internal class LiveRateCorrection(
      * The rate to switch to now, or null. Taking it counts as a switch, so the
      * cooldown starts and the early allowance is spent.
      */
-    fun takeDue(nowMs: Long, loadedMs: Long): Float? {
+    fun takeDue(nowMs: Long, progress: CorrectionProgress.Sample?): RateEvidence? {
+        if (active && candidate != null && !isEarly(candidateSinceMs)) {
+            observeProgress(nowMs, progress)
+        }
         val checkAt = nextCheckAtMs() ?: return null
         if (nowMs < checkAt) return null
-        val fps = candidateFps ?: return null
+        val evidence = candidate ?: return null
         if (!isEarly(candidateSinceMs)) {
-            // Loading moved backwards (a seek), so the hold starts again.
-            if (loadedMs < candidateLoadedMs) {
-                candidateLoadedMs = loadedMs
-                return null
-            }
-            if (loadedMs - candidateLoadedMs < stableMs) return null
+            val baseline = candidateProgress ?: return null
+            val current = progress ?: return null
+            if (baseline.epoch != current.epoch || current.positionMs < baseline.positionMs) return null
+            if (current.positionMs - baseline.positionMs < stableMs) return null
         }
         earlyUsed = true
         lastSwitchAtMs = nowMs
         clearCandidate()
-        return fps
+        return evidence
     }
 
     /**
@@ -124,15 +139,36 @@ internal class LiveRateCorrection(
         active && (earlyUsed || nowMs - startedAtMs > earlyWindowMs)
 
     /** Whether the next correction would be the early one. */
-    fun isEarlyPending(): Boolean = active && candidateFps != null && isEarly(candidateSinceMs)
+    fun isEarlyPending(): Boolean = active && candidate != null && isEarly(candidateSinceMs)
 
     private fun isEarly(readingAtMs: Long): Boolean =
         !earlyUsed && readingAtMs - startedAtMs <= earlyWindowMs
 
     private fun clearCandidate() {
-        candidateFps = null
+        candidate = null
         candidateSinceMs = 0L
-        candidateLoadedMs = 0L
+        candidateProgress = null
+        lastProgress = null
+    }
+
+    /** Invalidates incomparable coordinates before the due timer can observe them. */
+    private fun observeProgress(nowMs: Long, progress: CorrectionProgress.Sample?) {
+        val baseline = candidateProgress
+        val previous = lastProgress
+        if (progress == null) {
+            candidateSinceMs = nowMs
+            candidateProgress = null
+            lastProgress = null
+            return
+        }
+        if (baseline == null || baseline.epoch != progress.epoch ||
+            progress.positionMs < baseline.positionMs ||
+            (previous != null && previous.epoch == progress.epoch && progress.positionMs < previous.positionMs)
+        ) {
+            candidateSinceMs = nowMs
+            candidateProgress = progress
+        }
+        lastProgress = progress
     }
 
     companion object {

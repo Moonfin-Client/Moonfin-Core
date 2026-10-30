@@ -252,7 +252,15 @@ class PlaybackManager implements AudioOwnable {
   bool _unsupportedAudioRecoveryInFlight = false;
   final Set<String> _vetoedAudioCodecs = <String>{};
   bool _suppressNextGenericBackendError = false;
+  // A paired generic `error` is suppressed only when its ID matches the typed
+  // decoder failure that requested recovery. This survives _playCurrentItem's
+  // reset of the ordinary recovery latch without swallowing later errors.
+  String? _suppressedDecoderFailureEventId;
+  dynamic _videoDecoderRecoveryAttemptedQueueItem;
   bool _teardownForReResolve = false;
+  // True only while a re-resolve stops the old player, before the
+  // replacement starts, so the old player's typed failures stay dropped.
+  bool _reResolveStoppingOldPlayer = false;
 
   /// Sessions that have claimed their one live stream release attempt, set
   /// before the close is sent, so a failed close is not retried. Keyed by
@@ -514,6 +522,11 @@ class PlaybackManager implements AudioOwnable {
       _diagnosticLogger?.call('Live recovery: dropping a held retry, $reason');
     }
     _resetLiveRecoveryBudget();
+  }
+
+  void _beginNewPlaybackSource(String reason) {
+    _abandonLiveRecovery(reason);
+    _videoDecoderRecoveryAttemptedQueueItem = null;
   }
 
   /// Clears the live recovery attempt count, its timestamp, and any held
@@ -1139,6 +1152,7 @@ class PlaybackManager implements AudioOwnable {
     final previous = _backend;
     _unsupportedAudioRecoveryInFlight = false;
     _suppressNextGenericBackendError = false;
+    _suppressedDecoderFailureEventId = null;
     _endLiveStallWatch();
     _disposeStreamSubs();
     _backend = backend;
@@ -1702,8 +1716,10 @@ class PlaybackManager implements AudioOwnable {
       final serverServed = attempt >= _liveRecoveryMaxAttempts;
       final currentPlayMethod =
           (_currentResolution ?? _lastPlaybackResolution)?.playMethod;
-      final forceTranscode =
-          serverServed && currentPlayMethod != StreamPlayMethod.directPlay;
+      final finalRoute = serverServed
+          ? _finalRecoveryRoute(currentPlayMethod)
+          : (disableDirectPlay: false, forceTranscode: false);
+      final forceTranscode = finalRoute.forceTranscode;
       _diagnosticLogger?.call(
         'Live recovery: $trigger, attempt $attempt of '
         '$_liveRecoveryMaxAttempts, re-resolving the channel'
@@ -1723,7 +1739,7 @@ class PlaybackManager implements AudioOwnable {
       try {
         await _reResolveAtCurrentPosition(
           isErrorRecovery: true,
-          disableDirectPlay: serverServed,
+          disableDirectPlay: finalRoute.disableDirectPlay,
           forceTranscode: forceTranscode,
           reason: forceTranscode
               ? 'live-edge-recovery-transcode'
@@ -1731,6 +1747,7 @@ class PlaybackManager implements AudioOwnable {
               ? 'live-edge-recovery-server-stream'
               : 'live-edge-recovery',
           allowStartupRecovery: false,
+          shouldProceed: () => intent == _viewerIntentGeneration,
         );
       } finally {
         _suppressFailedBringupDuringRecovery = false;
@@ -1768,6 +1785,13 @@ class PlaybackManager implements AudioOwnable {
       _liveRecoveryInFlight = false;
     }
   }
+
+  ({bool disableDirectPlay, bool forceTranscode}) _finalRecoveryRoute(
+    StreamPlayMethod? currentPlayMethod,
+  ) => (
+    disableDirectPlay: true,
+    forceTranscode: currentPlayMethod != StreamPlayMethod.directPlay,
+  );
 
   /// Whether a live source error is one the channel's own URL would give again
   /// however often it is asked: the provider refused it (an HTTP 4xx other
@@ -1904,6 +1928,38 @@ class PlaybackManager implements AudioOwnable {
     );
   }
 
+  Future<void> _stopForVideoDecoderFailure(String error) async {
+    final item = queueService.currentItem ?? _lastPlaybackItem;
+    final resolution = _currentResolution ?? _lastPlaybackResolution;
+    final intent = _viewerIntentGeneration;
+    _isAutoNexting = true;
+    _mediaSourceId = null;
+    try {
+      await _stopAndReportCurrent(
+        skipQueueChange: true,
+        expectedItem: queueService.currentItem,
+      );
+    } catch (e) {
+      _diagnosticLogger?.call('Stopping after a video decoder failure: $e');
+    } finally {
+      _isAutoNexting = false;
+    }
+    if (intent != _viewerIntentGeneration ||
+        !identical(queueService.currentItem, item)) {
+      return;
+    }
+    _setBringupState(
+      PlaybackBringupState(
+        phase: PlaybackBringupPhase.failed,
+        sessionToken: _playbackSessionToken,
+        itemId: item == null ? null : _traceItemId(item),
+        backend: _traceBackendName(_backend),
+        playMethod: resolution?.playMethod.name,
+        error: error.trim().isEmpty ? 'Playback failed.' : error.trim(),
+      ),
+    );
+  }
+
   void _clearPendingItemOverrides() {
     _pendingItemOverrideId = null;
     _pendingItemAudioStreamIndex = null;
@@ -1975,6 +2031,13 @@ class PlaybackManager implements AudioOwnable {
       _diagnosticLogger?.call(event['message']?.toString() ?? 'Subtitle error');
       return;
     }
+    final decoderFailureEventId = event['decoderFailureEventId']?.toString();
+    if (event['event'] == 'error' &&
+        decoderFailureEventId != null &&
+        decoderFailureEventId == _suppressedDecoderFailureEventId) {
+      _suppressedDecoderFailureEventId = null;
+      return;
+    }
     final queueItem = queueService.currentItem;
     if (_isPreroll(queueItem)) {
       _suppressNextGenericBackendError = true;
@@ -1987,7 +2050,10 @@ class PlaybackManager implements AudioOwnable {
 
     // The old player is being stopped for a track-switch restart; its dying
     // error events are noise (the new stream's own failures still surface).
-    if (_teardownForReResolve) {
+    if (_teardownForReResolve &&
+        (_reResolveStoppingOldPlayer ||
+            !(event['event'] == 'playerError' &&
+                event['kind'] == 'video_decoder_failure'))) {
       return;
     }
 
@@ -2125,6 +2191,7 @@ class PlaybackManager implements AudioOwnable {
     // stays on the file, so it is left to run.
     if (resolution != null &&
         resolution.isLocalMedia &&
+        kind != 'video_decoder_failure' &&
         event['audioOffloadRetryTriggered'] != true) {
       _suppressNextGenericBackendError = true;
       emitFailedBringupState('Playback failed.');
@@ -2142,7 +2209,14 @@ class PlaybackManager implements AudioOwnable {
         !_isOfflinePlayback &&
         !_unsupportedAudioRecoveryInFlight;
 
-    Future<void> recoverViaTranscode() async {
+    Future<void> recoverViaTranscode({
+      String reason = 'unsupported-audio-recovery',
+      bool Function()? shouldProceed,
+      bool Function()? autoPlayIntent,
+      bool forceTranscode = true,
+      bool disableDirectPlay = false,
+      bool allowStartupRecovery = true,
+    }) async {
       _unsupportedAudioRecoveryInFlight = true;
       // The stop below lets a startup still inside play() return, and the
       // next token is only taken after that stop. Retire the startup here or
@@ -2151,15 +2225,68 @@ class PlaybackManager implements AudioOwnable {
       ++_playbackSessionToken;
       try {
         await _reResolveAtCurrentPosition(
-          forceTranscode: true,
+          forceTranscode: forceTranscode,
+          disableDirectPlay: disableDirectPlay,
           isErrorRecovery: true,
-          reason: 'unsupported-audio-recovery',
+          reason: reason,
+          shouldProceed: shouldProceed,
+          autoPlayIntent: autoPlayIntent,
+          allowStartupRecovery: allowStartupRecovery,
         );
       } catch (_) {
-        emitFailedBringupState('Playback failed.');
+        if (shouldProceed == null || shouldProceed()) {
+          emitFailedBringupState('Playback failed.');
+        }
       } finally {
         _unsupportedAudioRecoveryInFlight = false;
       }
+    }
+
+    bool videoDecoderRecoveryWasAttempted(dynamic item) {
+      return identical(item, _videoDecoderRecoveryAttemptedQueueItem);
+    }
+
+    if (kind == 'video_decoder_failure') {
+      // The ordinary recovery latch is reset during _playCurrentItem, so keep
+      // the paired event ID separately. A backend that emits only the typed
+      // event needs no generic-error suppression.
+      _suppressedDecoderFailureEventId =
+          event['decoderFailureEventId']?.toString();
+      if (_currentItemIsLive) {
+        _abandonLiveRecovery('typed video decoder failure is terminal');
+      }
+      final canForceTranscode =
+          queueItem != null &&
+          resolution != null &&
+          (resolution.playMethod == StreamPlayMethod.directPlay ||
+              resolution.playMethod == StreamPlayMethod.directStream) &&
+          !_isOfflinePlayback &&
+          !resolution.isLocalMedia &&
+          !_unsupportedAudioRecoveryInFlight &&
+          !videoDecoderRecoveryWasAttempted(queueItem);
+      if (!canForceTranscode) {
+        await _stopForVideoDecoderFailure(
+          event['message']?.toString() ?? 'Playback failed.',
+        );
+        return;
+      }
+
+      // A typed startup failure supersedes any paced live recovery already
+      // waiting or resuming. Its generation guard also prevents an in-flight
+      // generic recovery from re-resolving after this forced fallback.
+      // Unlike the ladder's final step, direct play also goes straight to a
+      // transcode: a remux keeps the codec the device just failed to decode.
+      _videoDecoderRecoveryAttemptedQueueItem = queueItem;
+      final recoveryIntent = _viewerIntentGeneration;
+      await recoverViaTranscode(
+        reason: 'video-decoder-recovery',
+        shouldProceed: () => recoveryIntent == _viewerIntentGeneration,
+        autoPlayIntent: () => !_viewerPaused,
+        forceTranscode: true,
+        disableDirectPlay: true,
+        allowStartupRecovery: false,
+      );
+      return;
     }
 
     // A live source dropped or was reset upstream: re-resolve the stream at
@@ -2230,6 +2357,7 @@ class PlaybackManager implements AudioOwnable {
 
   Future<void> _autoNext() async {
     if (await _maybeIntercept(TransportAction.next)) return;
+    _beginNewPlaybackSource('the queue advanced to another item');
     _mediaSourceId = null;
     if (_isOfflinePlayback) {
       await _stopAndReportCurrent(skipQueueChange: true);
@@ -2343,7 +2471,7 @@ class PlaybackManager implements AudioOwnable {
     // the next episode. The track arguments are ignored then.
     bool carryTrackSelections = false,
   }) async {
-    _abandonLiveRecovery('the viewer tuned somewhere else');
+    _beginNewPlaybackSource('the viewer tuned somewhere else');
     _viewerPaused = false;
     _clearPendingItemOverrides();
     _vetoedAudioCodecs.clear();
@@ -2425,6 +2553,7 @@ class PlaybackManager implements AudioOwnable {
 
     _deferredStartPosition = Duration.zero;
     _deferPlaybackToExternalPlayer = false;
+    _videoDecoderRecoveryAttemptedQueueItem = null;
     await _playCurrentItem(
       startPosition: startPosition,
       enableDirectPlay: enableDirectPlay,
@@ -2494,6 +2623,7 @@ class PlaybackManager implements AudioOwnable {
     bool enableTranscoding = true,
     bool allowStartupRecovery = true,
     bool autoPlay = true,
+    bool Function()? autoPlayIntent,
     bool withholdExternalPgs = false,
     // A stream of this item whose session the resolver can move to the new
     // one instead of starting another (see [StreamReplanner]), and why.
@@ -2652,6 +2782,8 @@ class PlaybackManager implements AudioOwnable {
           // wouldn't change it (or it ended the session on purpose).
           rethrow;
         } catch (error) {
+          // A retired replan must not open its old source again after a tune.
+          if (sessionToken != _playbackSessionToken) rethrow;
           // The session can't move, so it ends here like any re-resolved
           // one, and a new one starts below.
           _diagnosticLogger?.call(
@@ -2720,6 +2852,7 @@ class PlaybackManager implements AudioOwnable {
       _cleanupPreemptedSession(item, resolution);
       return;
     }
+    autoPlay = autoPlayIntent?.call() ?? autoPlay;
 
     // Unless the request names the source as well, the server judges the
     // audio by its own default track whatever track was asked for, and with
@@ -2831,6 +2964,7 @@ class PlaybackManager implements AudioOwnable {
             enableDirectStream: false,
             enableTranscoding: true,
             allowStartupRecovery: allowStartupRecovery,
+            autoPlayIntent: autoPlayIntent,
             withholdExternalPgs: withholdExternalPgs,
             replanFrom: resolution,
             replanReason: ReplanReason.failure,
@@ -2936,6 +3070,7 @@ class PlaybackManager implements AudioOwnable {
           enableTranscoding: enableTranscoding,
           allowStartupRecovery: allowStartupRecovery,
           autoPlay: autoPlay,
+          autoPlayIntent: autoPlayIntent,
           withholdExternalPgs: pickedEmbeddedPgs,
           replanFrom: resolution,
         );
@@ -3100,6 +3235,10 @@ class PlaybackManager implements AudioOwnable {
         _cleanupPreemptedSession(item, resolution);
         return;
       }
+      if (autoPlayIntent != null) {
+        autoPlay = autoPlayIntent();
+        backendMediaPayload['autoPlay'] = autoPlay;
+      }
       // Reset before the source opens, not after: web (and possibly
       // MediaKit) can emit playing/non-buffering from inside `open`, before
       // it returns, and a reset placed after would erase that first frame.
@@ -3114,6 +3253,13 @@ class PlaybackManager implements AudioOwnable {
       if (sessionToken != _playbackSessionToken) {
         _cleanupPreemptedSession(item, resolution);
         return;
+      }
+      if (autoPlayIntent != null && !autoPlayIntent()) {
+        await _backend!.pause();
+        if (sessionToken != _playbackSessionToken) {
+          _cleanupPreemptedSession(item, resolution);
+          return;
+        }
       }
       await _syncBackendRepeatModeIfSupported();
       if (sessionToken != _playbackSessionToken) {
@@ -3689,6 +3835,7 @@ class PlaybackManager implements AudioOwnable {
       return;
     }
     if (_isManualNexting || _isAutoNexting) return;
+    _beginNewPlaybackSource('the viewer advanced the queue');
     _isManualNexting = true;
     _mediaSourceId = null;
     try {
@@ -3717,6 +3864,7 @@ class PlaybackManager implements AudioOwnable {
       await seekTo(Duration.zero);
       return;
     }
+    _beginNewPlaybackSource('the viewer moved to the previous item');
     _mediaSourceId = null;
     await _stopAndReportCurrent(skipQueueChange: true);
     _resetBackendSelectionLock();
@@ -3725,6 +3873,7 @@ class PlaybackManager implements AudioOwnable {
   }
 
   Future<void> playFromQueue(int index) async {
+    _beginNewPlaybackSource('the viewer selected another queued item');
     _mediaSourceId = null;
     await _stopAndReportCurrent(skipQueueChange: true);
     _resetBackendSelectionLock();
@@ -4347,6 +4496,10 @@ class PlaybackManager implements AudioOwnable {
     Duration? atPosition,
     // Whether it plays once open. Null keeps what the player was doing.
     bool? autoPlay,
+    // Retires obsolete recovery after queue waits and asynchronous teardown.
+    bool Function()? shouldProceed,
+    // Latest viewer intent takes precedence over an earlier autoplay snapshot.
+    bool Function()? autoPlayIntent,
   }) {
     final previous = _reResolveQueue;
 
@@ -4357,7 +4510,10 @@ class PlaybackManager implements AudioOwnable {
         } catch (_) {}
       }
 
+      if (shouldProceed != null && !shouldProceed()) return;
+
       final autoPlayAfterResolve =
+          autoPlayIntent?.call() ??
           autoPlay ??
           (isErrorRecovery ? true : (_backend?.isPlaying ?? state.isPlaying));
 
@@ -4372,6 +4528,8 @@ class PlaybackManager implements AudioOwnable {
             replanReason ??
             (isErrorRecovery ? ReplanReason.failure : ReplanReason.trackChange),
         atPosition: atPosition,
+        shouldProceed: shouldProceed,
+        autoPlayIntent: autoPlayIntent,
       );
     }();
 
@@ -4388,7 +4546,10 @@ class PlaybackManager implements AudioOwnable {
     bool allowStartupRecovery = true,
     ReplanReason replanReason = ReplanReason.trackChange,
     Duration? atPosition,
+    bool Function()? shouldProceed,
+    bool Function()? autoPlayIntent,
   }) async {
+    if (shouldProceed != null && !shouldProceed()) return;
     // A re-resolve stops the backend, reports the stop and kills the server
     // job, so it is one of the few things that can clear the player's
     // playlist mid-playback. Naming the caller is what tells that apart from
@@ -4437,6 +4598,7 @@ class PlaybackManager implements AudioOwnable {
     // spurious source error. The flag stays set through the whole teardown
     // because the dying player's error events arrive asynchronously.
     _teardownForReResolve = true;
+    _reResolveStoppingOldPlayer = true;
     try {
       await _backend?.stop();
     } catch (_) {}
@@ -4466,6 +4628,12 @@ class PlaybackManager implements AudioOwnable {
       }
     }
 
+    _reResolveStoppingOldPlayer = false;
+    if (shouldProceed != null && !shouldProceed()) {
+      _teardownForReResolve = false;
+      return;
+    }
+
     if (!isErrorRecovery) {
       _lastTrackSwitchReResolveAt = DateTime.now();
       _transcodeSwitchRecoveryConsumed = false;
@@ -4476,7 +4644,8 @@ class PlaybackManager implements AudioOwnable {
         startPosition: currentPos,
         enableDirectPlay: !forceTranscode && !disableDirectPlay,
         enableDirectStream: !forceTranscode,
-        autoPlay: autoPlayAfterResolve,
+        autoPlay: autoPlayIntent?.call() ?? autoPlayAfterResolve,
+        autoPlayIntent: autoPlayIntent,
         allowStartupRecovery: allowStartupRecovery,
         replanFrom: replanFrom,
         replanReason: replanReason,
@@ -4718,6 +4887,7 @@ class PlaybackManager implements AudioOwnable {
     Future<void> Function()? onStop,
     Future<void> Function(String url)? onAutoNext,
   }) async {
+    _beginNewPlaybackSource('the viewer started an offline source');
     _deferredStartPosition = Duration.zero;
     _deferPlaybackToExternalPlayer = false;
     _lastItemId = null;

@@ -5,6 +5,8 @@ import 'package:playback_core/playback_core.dart';
 
 /// A backend whose position and duration the test drives.
 class _TestBackend extends Fake implements PlayerBackend {
+  final errors = StreamController<Map<String, dynamic>>.broadcast();
+  final payloads = <Map<String, dynamic>>[];
   final positions = StreamController<Duration>.broadcast(sync: true);
   final durations = StreamController<Duration>.broadcast(sync: true);
   final List<Duration> playStarts = <Duration>[];
@@ -58,7 +60,7 @@ class _TestBackend extends Fake implements PlayerBackend {
   Stream<bool> get completedStream => const Stream<bool>.empty();
 
   @override
-  Stream<Map<String, dynamic>>? get errorStream => null;
+  Stream<Map<String, dynamic>>? get errorStream => errors.stream;
 
   @override
   bool get supportsRuntimeTrackSelection => false;
@@ -85,6 +87,7 @@ class _TestBackend extends Fake implements PlayerBackend {
     dynamic mediaItem, {
     Duration startPosition = Duration.zero,
   }) async {
+    payloads.add(Map<String, dynamic>.from(mediaItem as Map));
     playStarts.add(startPosition);
     currentPosition = startPosition;
     playing = true;
@@ -112,13 +115,14 @@ class _TestBackend extends Fake implements PlayerBackend {
   Future<void> waitForTracksReady() async {}
 
   @override
-  void dispose() {}
+  void dispose() => unawaited(errors.close());
 }
 
 /// Resolves session-1, session-2 and so on, and replans when [replans]
 /// allows it.
 class _ReplanningResolver extends MediaStreamResolver
     implements StreamReplanner {
+  Completer<void>? replanGate;
   bool replans = true;
   bool refuse = false;
   int resolves = 0;
@@ -158,6 +162,9 @@ class _ReplanningResolver extends MediaStreamResolver
   ) async {
     requests.add(request);
     replannedFrom.add(current.streamUrl);
+    final gate = replanGate;
+    replanGate = null;
+    if (gate != null) await gate.future;
     if (refuse) throw StateError('session gone');
     return StreamResolutionResult(
       streamUrl: '${current.streamUrl}+${requests.length}',
@@ -238,6 +245,100 @@ void main() {
     ]);
     backend.emitPosition(const Duration(minutes: 20));
   }
+
+  test('decoder recovery replans as a failure and preserves a later pause',
+      () async {
+    await manager.playItems(<dynamic>[
+      <String, dynamic>{'Id': 'movie', 'Type': 'Movie'},
+    ]);
+    final gate = Completer<void>();
+    resolver.replanGate = gate;
+    try {
+      backend.errors.add(<String, dynamic>{
+        'event': 'playerError',
+        'recoverable': true,
+        'kind': 'video_decoder_failure',
+      });
+      await pumpEventQueue(times: 5);
+      expect(resolver.requests, hasLength(1));
+      expect(resolver.requests.single.reason, ReplanReason.failure);
+      expect(resolver.requests.single.enableDirectPlay, isFalse);
+      expect(resolver.requests.single.enableDirectStream, isFalse);
+      await manager.pause();
+      gate.complete();
+      await pumpEventQueue(times: 10);
+
+      expect(resolver.resolves, 1);
+      expect(service.stops, isEmpty);
+      expect(service.killed, isEmpty);
+      expect(backend.payloads.last['autoPlay'], isFalse);
+      expect(backend.playing, isFalse);
+      expect(manager.viewerPaused, isTrue);
+    } finally {
+      if (!gate.isCompleted) gate.complete();
+    }
+  });
+
+  test('a decoder replan cannot replace a newly selected source', () async {
+    await manager.playItems(<dynamic>[
+      <String, dynamic>{'Id': 'movie', 'Type': 'Movie'},
+    ]);
+    final gate = Completer<void>();
+    resolver.replanGate = gate;
+    try {
+      backend.errors.add(<String, dynamic>{
+        'event': 'playerError',
+        'recoverable': true,
+        'kind': 'video_decoder_failure',
+      });
+      await pumpEventQueue(times: 5);
+      expect(resolver.requests, hasLength(1));
+      await manager.playItems(<dynamic>[
+        <String, dynamic>{'Id': 'new-movie', 'Type': 'Movie'},
+      ]);
+      gate.complete();
+      await pumpEventQueue(times: 10);
+
+      expect(resolver.resolves, 2);
+      expect(backend.payloads, hasLength(2));
+      expect(manager.currentResolution?.streamUrl,
+          'https://example.test/session-2/plan-1');
+      expect(backend.playing, isTrue);
+    } finally {
+      if (!gate.isCompleted) gate.complete();
+    }
+  });
+
+  test('a failed decoder replan cannot open the retired source', () async {
+    await manager.playItems(<dynamic>[
+      <String, dynamic>{'Id': 'movie', 'Type': 'Movie'},
+    ]);
+    final gate = Completer<void>();
+    resolver.replanGate = gate;
+    try {
+      backend.errors.add(<String, dynamic>{
+        'event': 'playerError',
+        'recoverable': true,
+        'kind': 'video_decoder_failure',
+      });
+      await pumpEventQueue(times: 5);
+      expect(resolver.requests, hasLength(1));
+      await manager.playItems(<dynamic>[
+        <String, dynamic>{'Id': 'new-movie', 'Type': 'Movie'},
+      ]);
+      resolver.refuse = true;
+      gate.complete();
+      await pumpEventQueue(times: 10);
+
+      expect(resolver.resolves, 2);
+      expect(backend.payloads, hasLength(2));
+      expect(manager.currentResolution?.streamUrl,
+          'https://example.test/session-2/plan-1');
+      expect(backend.playing, isTrue);
+    } finally {
+      if (!gate.isCompleted) gate.complete();
+    }
+  });
 
   test('a track change moves the session instead of ending it', () async {
     await start();

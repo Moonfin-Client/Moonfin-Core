@@ -6,11 +6,22 @@ import 'package:playback_core/playback_core.dart';
 class _TestBackend extends Fake implements PlayerBackend {
   final _errors = StreamController<Map<String, dynamic>>.broadcast();
   Completer<void>? playGate;
+  Completer<bool>? liveEdgeGate;
+  int resumeLiveEdgeCalls = 0;
   final List<String> playedUrls = <String>[];
   final List<Duration> startPositions = <Duration>[];
+  final List<Map<String, dynamic>> playedPayloads = <Map<String, dynamic>>[];
   int stopCalls = 0;
   bool playing = false;
   Duration currentPosition = Duration.zero;
+  void Function(int playCount)? onPlay;
+  int? throwOnPlayCount;
+
+  @override
+  Future<void> pause() async => playing = false;
+
+  @override
+  Future<void> resume() async => playing = true;
 
   @override
   Duration get position => currentPosition;
@@ -76,7 +87,13 @@ class _TestBackend extends Fake implements PlayerBackend {
     dynamic mediaItem, {
     Duration startPosition = Duration.zero,
   }) async {
-    playedUrls.add((mediaItem as Map<String, dynamic>)['url'] as String);
+    final payload = mediaItem as Map<String, dynamic>;
+    playedUrls.add(payload['url'] as String);
+    playedPayloads.add(Map<String, dynamic>.from(payload));
+    onPlay?.call(playedUrls.length);
+    if (throwOnPlayCount == playedUrls.length) {
+      throw StateError('test backend play failure');
+    }
     startPositions.add(startPosition);
     currentPosition = startPosition;
     playing = true;
@@ -89,10 +106,25 @@ class _TestBackend extends Fake implements PlayerBackend {
     }
   }
 
+  // Runs inside stop(), standing in for a dying player's late events.
+  void Function()? onStop;
+
   @override
   Future<void> stop() async {
     stopCalls++;
     playing = false;
+    onStop?.call();
+  }
+
+  @override
+  Future<bool> resumeLiveEdge() async {
+    resumeLiveEdgeCalls++;
+    final gate = liveEdgeGate;
+    if (gate != null) {
+      liveEdgeGate = null;
+      return gate.future;
+    }
+    return false;
   }
 
   @override
@@ -106,9 +138,11 @@ class _TestBackend extends Fake implements PlayerBackend {
 
 class _TestResolver extends MediaStreamResolver {
   int calls = 0;
+  Completer<void>? resolveGate;
   final List<String?> requestedMediaSourceIds = <String?>[];
   final List<int?> requestedStartTicks = <int?>[];
   final List<bool> requestedDirectPlay = <bool>[];
+  final List<bool> requestedDirectStream = <bool>[];
   StreamPlayMethod playMethod = StreamPlayMethod.directStream;
   bool isLocalMedia = false;
   List<Map<String, dynamic>> mediaStreams = const [];
@@ -127,9 +161,15 @@ class _TestResolver extends MediaStreamResolver {
     bool enableTranscoding = true,
   }) async {
     calls++;
+    final gate = resolveGate;
+    if (gate != null) {
+      resolveGate = null;
+      await gate.future;
+    }
     requestedMediaSourceIds.add(mediaSourceId);
     requestedStartTicks.add(startTimeTicks);
     requestedDirectPlay.add(enableDirectPlay);
+    requestedDirectStream.add(enableDirectStream);
     final type = (mediaItem as Map<String, dynamic>)['Type'];
     final isLive = type == 'TvChannel' || type == 'LiveTvChannel';
     return StreamResolutionResult(
@@ -155,6 +195,20 @@ class _ProgressRequest {
   Future<void> get future => completer.future.then((_) {
     events.add('progress:$sessionId:$index');
   });
+}
+
+class _BlockingAudioOwner extends AudioOwnable {
+  final Completer<void> gate = Completer<void>();
+  int calls = 0;
+
+  @override
+  AudioProducer get audioProducerId => AudioProducer.game;
+
+  @override
+  Future<void> onAudioRevoked(RevokeReason reason) async {
+    calls++;
+    if (calls == 2) await gate.future;
+  }
 }
 
 class _TestService implements PlayerService {
@@ -757,6 +811,543 @@ void main() {
       manager.dispose();
     }
   });
+
+  test(
+    'video decoder startup failure immediately forces one server transcode',
+    () async {
+      final backend = _TestBackend();
+      final resolver = _TestResolver();
+      final manager = _manager(backend, resolver, _TestService());
+
+      try {
+        await manager.playItems(<dynamic>[
+          <String, dynamic>{'Id': 'decoder-failure', 'Type': 'Movie'},
+        ]);
+        backend.emitError(<String, dynamic>{
+          'event': 'playerError',
+          'recoverable': true,
+          'kind': 'video_decoder_failure',
+          'decoderFailureEventId': 'initial-pair',
+        });
+        // The backend contract pairs the typed event with one generic event.
+        backend.emitError(<String, dynamic>{
+          'event': 'error',
+          'decoderFailureEventId': 'initial-pair',
+        });
+        await pumpEventQueue(times: 10);
+
+        expect(resolver.calls, 2);
+        expect(resolver.requestedDirectPlay, <bool>[true, false]);
+        expect(resolver.requestedDirectStream, <bool>[true, false]);
+        expect(manager.bringupState.phase, isNot(PlaybackBringupPhase.failed));
+
+        backend.emitError(<String, dynamic>{
+          'event': 'playerError',
+          'recoverable': true,
+          'kind': 'video_decoder_failure',
+          'decoderFailureEventId': 'repeated-after-fallback',
+        });
+        backend.emitError(<String, dynamic>{
+          'event': 'error',
+          'decoderFailureEventId': 'repeated-after-fallback',
+        });
+        await pumpEventQueue(times: 10);
+
+        expect(resolver.calls, 2);
+        expect(manager.bringupState.phase, PlaybackBringupPhase.failed);
+      } finally {
+        manager.dispose();
+      }
+    },
+  );
+
+  test('direct-played decoder failure goes straight to a transcode', () async {
+    final backend = _TestBackend();
+    final resolver = _TestResolver()..playMethod = StreamPlayMethod.directPlay;
+    final manager = _manager(backend, resolver, _TestService());
+
+    try {
+      await manager.playItems(<dynamic>[
+        <String, dynamic>{'Id': 'direct-decoder-failure', 'Type': 'Movie'},
+      ]);
+      backend.emitError(<String, dynamic>{
+        'event': 'playerError',
+        'recoverable': true,
+        'kind': 'video_decoder_failure',
+        'decoderFailureEventId': 'direct-pair',
+      });
+      await pumpEventQueue(times: 10);
+
+      expect(resolver.calls, 2);
+      expect(resolver.requestedDirectPlay, <bool>[true, false]);
+      expect(resolver.requestedDirectStream, <bool>[true, false]);
+    } finally {
+      manager.dispose();
+    }
+  });
+
+  test('old player decoder failure during a re-resolve stop is dropped',
+      () async {
+    final backend = _TestBackend();
+    final resolver = _TestResolver();
+    final manager = _manager(backend, resolver, _TestService());
+
+    try {
+      await manager.playItems(<dynamic>[
+        <String, dynamic>{'Id': 'bitrate-switch', 'Type': 'Movie'},
+      ]);
+      backend.onStop = () {
+        backend.onStop = null;
+        backend.emitError(<String, dynamic>{
+          'event': 'playerError',
+          'recoverable': true,
+          'kind': 'video_decoder_failure',
+          'decoderFailureEventId': 'dying-player',
+        });
+      };
+      await manager.changeBitrate(null);
+      await pumpEventQueue(times: 10);
+
+      // The bitrate change's own resolve only; no decoder fallback after it.
+      expect(resolver.calls, 2);
+      expect(resolver.requestedDirectPlay, <bool>[true, true]);
+      expect(manager.bringupState.phase, isNot(PlaybackBringupPhase.failed));
+    } finally {
+      manager.dispose();
+    }
+  });
+
+  test('decoder failure does not loop an existing transcode', () async {
+    final backend = _TestBackend();
+    final resolver = _TestResolver()..playMethod = StreamPlayMethod.transcode;
+    final manager = _manager(backend, resolver, _TestService());
+
+    try {
+      await manager.playItems(<dynamic>[
+        <String, dynamic>{'Id': 'already-transcoded', 'Type': 'Movie'},
+      ]);
+      backend.emitError(<String, dynamic>{
+        'event': 'playerError',
+        'recoverable': true,
+        'kind': 'video_decoder_failure',
+        'decoderFailureEventId': 'transcode-pair',
+      });
+      backend.emitError(<String, dynamic>{
+        'event': 'error',
+        'decoderFailureEventId': 'transcode-pair',
+      });
+      await pumpEventQueue(times: 10);
+
+      expect(resolver.calls, 1);
+      expect(manager.bringupState.phase, PlaybackBringupPhase.failed);
+    } finally {
+      manager.dispose();
+    }
+  });
+
+  test('typed-only decoder event does not suppress a later generic error',
+      () async {
+    final backend = _TestBackend();
+    final resolver = _TestResolver();
+    final manager = _manager(backend, resolver, _TestService());
+
+    try {
+      await manager.playItems(<dynamic>[
+        <String, dynamic>{'Id': 'typed-only', 'Type': 'Movie'},
+      ]);
+      backend.emitError(<String, dynamic>{
+        'event': 'playerError',
+        'recoverable': true,
+        'kind': 'video_decoder_failure',
+        'decoderFailureEventId': 'typed-only-id',
+      });
+      await pumpEventQueue(times: 10);
+      expect(resolver.calls, 2);
+
+      backend.emitError(<String, dynamic>{
+        'event': 'error',
+        'decoderFailureEventId': 'unrelated-error-id',
+      });
+      await pumpEventQueue(times: 10);
+
+      expect(resolver.calls, 2);
+      expect(manager.bringupState.phase, PlaybackBringupPhase.failed);
+    } finally {
+      manager.dispose();
+    }
+  });
+
+  test('replacement decoder failure is surfaced without a second fallback',
+      () async {
+    final backend = _TestBackend();
+    final resolver = _TestResolver();
+    final manager = _manager(backend, resolver, _TestService());
+    final replacementPlayGate = Completer<void>();
+    backend.onPlay = (playCount) {
+      if (playCount != 2) return;
+      backend.playGate = replacementPlayGate;
+      backend.emitError(<String, dynamic>{
+        'event': 'playerError',
+        'recoverable': true,
+        'kind': 'video_decoder_failure',
+        'decoderFailureEventId': 'next-pair',
+      });
+      backend.emitError(<String, dynamic>{
+        'event': 'error',
+        'decoderFailureEventId': 'next-pair',
+      });
+    };
+
+    try {
+      await manager.playItems(<dynamic>[
+        <String, dynamic>{'Id': 'replacement-fails', 'Type': 'Movie'},
+      ]);
+      backend.emitError(<String, dynamic>{
+        'event': 'playerError',
+        'recoverable': true,
+        'kind': 'video_decoder_failure',
+        'decoderFailureEventId': 'replacement-initial-pair',
+      });
+      backend.emitError(<String, dynamic>{
+        'event': 'error',
+        'decoderFailureEventId': 'replacement-initial-pair',
+      });
+      await pumpEventQueue(times: 10);
+      expect(manager.bringupState.phase, PlaybackBringupPhase.failed);
+      replacementPlayGate.complete();
+      await pumpEventQueue(times: 10);
+
+      expect(resolver.calls, 2);
+      expect(manager.bringupState.phase, PlaybackBringupPhase.failed);
+    } finally {
+      if (!replacementPlayGate.isCompleted) replacementPlayGate.complete();
+      manager.dispose();
+    }
+  });
+
+  test('a failed replacement play does not recursively request another route',
+      () async {
+    final backend = _TestBackend()..throwOnPlayCount = 2;
+    final resolver = _TestResolver();
+    final manager = _manager(backend, resolver, _TestService());
+
+    try {
+      await manager.playItems(<dynamic>[
+        <String, dynamic>{'Id': 'replacement-play-throws', 'Type': 'Movie'},
+      ]);
+      backend.emitError(<String, dynamic>{
+        'event': 'playerError',
+        'recoverable': true,
+        'kind': 'video_decoder_failure',
+        'decoderFailureEventId': 'throwing-replacement-pair',
+      });
+      backend.emitError(<String, dynamic>{
+        'event': 'error',
+        'decoderFailureEventId': 'throwing-replacement-pair',
+      });
+      await pumpEventQueue(times: 10);
+
+      expect(resolver.calls, 2);
+      expect(manager.bringupState.phase, PlaybackBringupPhase.failed);
+    } finally {
+      manager.dispose();
+    }
+  });
+
+  test('next item keeps its initial direct-play route after decoder fallback',
+      () async {
+    final backend = _TestBackend();
+    final resolver = _TestResolver();
+    final manager = _manager(backend, resolver, _TestService());
+
+    try {
+      await manager.playItems(<dynamic>[
+        <String, dynamic>{'Id': 'first', 'Type': 'Movie'},
+        <String, dynamic>{'Id': 'healthy-next', 'Type': 'Movie'},
+      ]);
+      backend.emitError(<String, dynamic>{
+        'event': 'playerError',
+        'recoverable': true,
+        'kind': 'video_decoder_failure',
+        'decoderFailureEventId': 'replacement-pair',
+      });
+      backend.emitError(<String, dynamic>{
+        'event': 'error',
+        'decoderFailureEventId': 'replacement-pair',
+      });
+      await pumpEventQueue(times: 10);
+
+      await manager.next();
+
+      expect(resolver.calls, 3);
+      expect(resolver.requestedDirectPlay, <bool>[true, false, true]);
+      expect(resolver.requestedDirectStream, <bool>[true, false, true]);
+
+      backend.emitError(<String, dynamic>{
+        'event': 'playerError',
+        'recoverable': true,
+        'kind': 'video_decoder_failure',
+        'decoderFailureEventId': 'healthy-next-pair',
+      });
+      backend.emitError(<String, dynamic>{
+        'event': 'error',
+        'decoderFailureEventId': 'healthy-next-pair',
+      });
+      await pumpEventQueue(times: 10);
+
+      expect(resolver.calls, 4);
+      expect(resolver.requestedDirectPlay, <bool>[true, false, true, false]);
+      expect(resolver.requestedDirectStream, <bool>[true, false, true, false]);
+    } finally {
+      manager.dispose();
+    }
+  });
+
+  test(
+    'decoder failure on local media is surfaced without re-resolving',
+    () async {
+      final backend = _TestBackend();
+      final resolver = _TestResolver()..isLocalMedia = true;
+      final manager = _manager(backend, resolver, _TestService());
+
+      try {
+        await manager.playItems(<dynamic>[
+          <String, dynamic>{'Id': 'local-decoder-failure', 'Type': 'Movie'},
+        ]);
+        backend.emitError(<String, dynamic>{
+          'event': 'playerError',
+          'recoverable': true,
+          'kind': 'video_decoder_failure',
+          'decoderFailureEventId': 'live-pair',
+        });
+        backend.emitError(<String, dynamic>{
+          'event': 'error',
+          'decoderFailureEventId': 'live-pair',
+        });
+        await pumpEventQueue(times: 10);
+
+        expect(resolver.calls, 1);
+        expect(manager.bringupState.phase, PlaybackBringupPhase.failed);
+      } finally {
+        manager.dispose();
+      }
+    },
+  );
+
+  test(
+    'decoder failure on offline media is surfaced without server resolve',
+    () async {
+      final backend = _TestBackend();
+      final resolver = _TestResolver();
+      final manager = _manager(backend, resolver, _TestService());
+
+      try {
+        await manager.playOffline('file:///offline/movie.mkv');
+        backend.emitError(<String, dynamic>{
+          'event': 'playerError',
+          'recoverable': true,
+          'kind': 'video_decoder_failure',
+        });
+        backend.emitError(<String, dynamic>{'event': 'error'});
+        await pumpEventQueue(times: 10);
+
+        expect(resolver.calls, 0);
+        expect(manager.bringupState.phase, PlaybackBringupPhase.failed);
+      } finally {
+        manager.dispose();
+      }
+    },
+  );
+
+  test('source change while decoder fallback resolves cannot retune old item',
+      () async {
+    final backend = _TestBackend();
+    final resolver = _TestResolver();
+    final manager = _manager(backend, resolver, _TestService());
+    final resolveGate = Completer<void>();
+
+    try {
+      await manager.playItems(<dynamic>[
+        <String, dynamic>{'Id': 'failed-source', 'Type': 'Movie'},
+      ]);
+      resolver.resolveGate = resolveGate;
+      backend.emitError(<String, dynamic>{
+        'event': 'playerError',
+        'recoverable': true,
+        'kind': 'video_decoder_failure',
+      });
+      await pumpEventQueue(times: 4);
+      expect(resolver.calls, 2);
+
+      await manager.playItems(<dynamic>[
+        <String, dynamic>{'Id': 'new-source', 'Type': 'Movie'},
+      ]);
+      resolveGate.complete();
+      await pumpEventQueue(times: 10);
+
+      expect(resolver.calls, 3);
+      expect(backend.playedUrls, <String>[
+        'https://example.test/session-1',
+        'https://example.test/session-3',
+      ]);
+    } finally {
+      if (!resolveGate.isCompleted) resolveGate.complete();
+      manager.dispose();
+    }
+  });
+
+  test('queued decoder fallback is canceled when manual next advances source',
+      () async {
+    final backend = _TestBackend();
+    final resolver = _TestResolver();
+    final manager = _manager(backend, resolver, _TestService());
+    final resolveGate = Completer<void>();
+
+    try {
+      await manager.playItems(<dynamic>[
+        <String, dynamic>{'Id': 'queued-fallback-source', 'Type': 'Movie'},
+        <String, dynamic>{'Id': 'manual-next-source', 'Type': 'Movie'},
+      ]);
+      resolver.resolveGate = resolveGate;
+      final existingReResolve = manager.changeBitrate(8);
+      await pumpEventQueue(times: 4);
+      expect(resolver.calls, 2);
+
+      backend.emitError(<String, dynamic>{
+        'event': 'playerError',
+        'recoverable': true,
+        'kind': 'video_decoder_failure',
+        'decoderFailureEventId': 'queued-decoder-pair',
+      });
+      backend.emitError(<String, dynamic>{
+        'event': 'error',
+        'decoderFailureEventId': 'queued-decoder-pair',
+      });
+      await pumpEventQueue(times: 4);
+
+      await manager.nextInQueue();
+      resolveGate.complete();
+      await existingReResolve;
+      await pumpEventQueue(times: 10);
+
+      expect(resolver.calls, 3);
+      expect(backend.playedUrls, <String>[
+        'https://example.test/session-1',
+        'https://example.test/session-3',
+      ]);
+    } finally {
+      if (!resolveGate.isCompleted) resolveGate.complete();
+      manager.dispose();
+    }
+  });
+
+  test('viewer pause during decoder fallback is preserved after resolve',
+      () async {
+    final backend = _TestBackend();
+    final resolver = _TestResolver();
+    final manager = _manager(backend, resolver, _TestService());
+    final resolveGate = Completer<void>();
+
+    try {
+      await manager.playItems(<dynamic>[
+        <String, dynamic>{'Id': 'paused-source', 'Type': 'Movie'},
+      ]);
+      resolver.resolveGate = resolveGate;
+      backend.emitError(<String, dynamic>{
+        'event': 'playerError',
+        'recoverable': true,
+        'kind': 'video_decoder_failure',
+      });
+      await pumpEventQueue(times: 4);
+      await manager.pause();
+      resolveGate.complete();
+      await pumpEventQueue(times: 10);
+
+      expect(resolver.calls, 2);
+      expect(backend.playing, isFalse);
+      expect(manager.viewerPaused, isTrue);
+    } finally {
+      if (!resolveGate.isCompleted) resolveGate.complete();
+      manager.dispose();
+    }
+  });
+
+  test('pause during audio ownership wait reaches the new backend payload',
+      () async {
+    final backend = _TestBackend();
+    final resolver = _TestResolver();
+    final manager = _manager(backend, resolver, _TestService());
+    final arbiter = PlaybackArbiter();
+    final blocker = _BlockingAudioOwner();
+    manager.setAudioArbiter(arbiter);
+    arbiter.register(blocker);
+
+    try {
+      await manager.playItems(<dynamic>[
+        <String, dynamic>{'Id': 'arbiter-pause', 'Type': 'Movie'},
+      ]);
+      backend.emitError(<String, dynamic>{
+        'event': 'playerError',
+        'recoverable': true,
+        'kind': 'video_decoder_failure',
+        'decoderFailureEventId': 'arbiter-pair',
+      });
+      backend.emitError(<String, dynamic>{
+        'event': 'error',
+        'decoderFailureEventId': 'arbiter-pair',
+      });
+      await pumpEventQueue(times: 5);
+      expect(blocker.calls, 2);
+
+      await manager.pause();
+      blocker.gate.complete();
+      await pumpEventQueue(times: 10);
+
+      expect(backend.playedPayloads.last['autoPlay'], isFalse);
+      expect(backend.playing, isFalse);
+      expect(manager.viewerPaused, isTrue);
+    } finally {
+      if (!blocker.gate.isCompleted) blocker.gate.complete();
+      manager.dispose();
+    }
+  });
+
+  test(
+    'typed decoder failure retires an in-flight generic live resume',
+    () async {
+      final backend = _TestBackend();
+      final resumeGate = Completer<bool>();
+      backend.liveEdgeGate = resumeGate;
+      final resolver = _TestResolver();
+      final manager = _manager(backend, resolver, _TestService());
+
+      try {
+        await manager.playItems(<dynamic>[
+          <String, dynamic>{'Id': 'live-decoder-failure', 'Type': 'TvChannel'},
+        ]);
+        backend.emitError(<String, dynamic>{'event': 'error'});
+        await pumpEventQueue(times: 3);
+        expect(backend.resumeLiveEdgeCalls, 1);
+
+        backend.emitError(<String, dynamic>{
+          'event': 'playerError',
+          'recoverable': true,
+          'kind': 'video_decoder_failure',
+        });
+        backend.emitError(<String, dynamic>{'event': 'error'});
+        await pumpEventQueue(times: 10);
+        resumeGate.complete(true);
+        await pumpEventQueue(times: 10);
+
+        expect(resolver.calls, 2);
+        expect(resolver.requestedDirectPlay, <bool>[true, false]);
+        expect(backend.resumeLiveEdgeCalls, 1);
+      } finally {
+        if (!resumeGate.isCompleted) resumeGate.complete(false);
+        manager.dispose();
+      }
+    },
+  );
 
   test('a transcode that can\'t show the video stops', () async {
     final backend = _TestBackend();
