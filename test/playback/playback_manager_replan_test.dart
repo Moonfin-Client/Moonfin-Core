@@ -90,7 +90,7 @@ class _TestBackend extends Fake implements PlayerBackend {
     payloads.add(Map<String, dynamic>.from(mediaItem as Map));
     playStarts.add(startPosition);
     currentPosition = startPosition;
-    playing = true;
+    playing = payloads.last['autoPlay'] as bool? ?? true;
   }
 
   @override

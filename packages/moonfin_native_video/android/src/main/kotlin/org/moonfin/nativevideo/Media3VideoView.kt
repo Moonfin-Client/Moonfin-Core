@@ -2312,7 +2312,6 @@ class Media3VideoView(
     }
 
     private fun requestPlayback(playWhenReady: Boolean) {
-        val token = frameTiming.generationToken
         if (!playWhenReady) endDisplayModeSwitchRecovery()
         rateSession.requestPlayback(playWhenReady)
         if (rateSession.correctionHolding) {

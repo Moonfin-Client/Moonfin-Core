@@ -249,7 +249,7 @@ class PlaybackManager implements AudioOwnable {
   bool _skipExternalRoutingOnce = false;
   bool _forceExternalPlayerOnce = false;
   bool _forceExternalChooserOnce = false;
-  bool _unsupportedAudioRecoveryInFlight = false;
+  bool _streamRecoveryInFlight = false;
   final Set<String> _vetoedAudioCodecs = <String>{};
   bool _suppressNextGenericBackendError = false;
   // A paired generic `error` is suppressed only when its ID matches the typed
@@ -1150,7 +1150,7 @@ class PlaybackManager implements AudioOwnable {
       return;
     }
     final previous = _backend;
-    _unsupportedAudioRecoveryInFlight = false;
+    _streamRecoveryInFlight = false;
     _suppressNextGenericBackendError = false;
     _suppressedDecoderFailureEventId = null;
     _endLiveStallWatch();
@@ -2207,7 +2207,7 @@ class PlaybackManager implements AudioOwnable {
         resolution != null &&
         resolution.playMethod != StreamPlayMethod.transcode &&
         !_isOfflinePlayback &&
-        !_unsupportedAudioRecoveryInFlight;
+        !_streamRecoveryInFlight;
 
     Future<void> recoverViaTranscode({
       String reason = 'unsupported-audio-recovery',
@@ -2217,7 +2217,7 @@ class PlaybackManager implements AudioOwnable {
       bool disableDirectPlay = false,
       bool allowStartupRecovery = true,
     }) async {
-      _unsupportedAudioRecoveryInFlight = true;
+      _streamRecoveryInFlight = true;
       // The stop below lets a startup still inside play() return, and the
       // next token is only taken after that stop. Retire the startup here or
       // it finishes as a normal start and reports a start for a session whose
@@ -2238,12 +2238,8 @@ class PlaybackManager implements AudioOwnable {
           emitFailedBringupState('Playback failed.');
         }
       } finally {
-        _unsupportedAudioRecoveryInFlight = false;
+        _streamRecoveryInFlight = false;
       }
-    }
-
-    bool videoDecoderRecoveryWasAttempted(dynamic item) {
-      return identical(item, _videoDecoderRecoveryAttemptedQueueItem);
     }
 
     if (kind == 'video_decoder_failure') {
@@ -2262,8 +2258,8 @@ class PlaybackManager implements AudioOwnable {
               resolution.playMethod == StreamPlayMethod.directStream) &&
           !_isOfflinePlayback &&
           !resolution.isLocalMedia &&
-          !_unsupportedAudioRecoveryInFlight &&
-          !videoDecoderRecoveryWasAttempted(queueItem);
+          !_streamRecoveryInFlight &&
+          !identical(queueItem, _videoDecoderRecoveryAttemptedQueueItem);
       if (!canForceTranscode) {
         await _stopForVideoDecoderFailure(
           event['message']?.toString() ?? 'Playback failed.',
@@ -2314,7 +2310,7 @@ class PlaybackManager implements AudioOwnable {
     // surface.
     if (kind == 'unsupported_container' || kind == 'unsupported_video') {
       if (!canReResolve()) {
-        if (kind == 'unsupported_video' && !_unsupportedAudioRecoveryInFlight) {
+        if (kind == 'unsupported_video' && !_streamRecoveryInFlight) {
           await _stopForUnsupportedVideo();
         }
         return;
@@ -2350,7 +2346,7 @@ class PlaybackManager implements AudioOwnable {
         resolution.playMethod == StreamPlayMethod.transcode &&
         !_isOfflinePlayback &&
         !_waitingForMedia &&
-        !_unsupportedAudioRecoveryInFlight) {
+        !_streamRecoveryInFlight) {
       await recoverViaTranscode();
     }
   }
@@ -3177,13 +3173,43 @@ class PlaybackManager implements AudioOwnable {
     }
 
     _playbackStartTime = clock();
-    _unsupportedAudioRecoveryInFlight = false;
+    _streamRecoveryInFlight = false;
     _suppressNextGenericBackendError = false;
     _waitingForMedia = true;
     bool mediaReady = false;
     Object? startupError;
     StackTrace? startupStackTrace;
     final useNativeStart = startTicks != null;
+
+    Future<bool> reconcileLatestPlaybackIntent() async {
+      final readAutoPlayIntent = autoPlayIntent;
+      if (readAutoPlayIntent == null) return true;
+      if (sessionToken != _playbackSessionToken) {
+        _cleanupPreemptedSession(item, resolution);
+        return false;
+      }
+
+      var desiredAutoPlay = readAutoPlayIntent();
+      while (desiredAutoPlay != autoPlay) {
+        if (sessionToken != _playbackSessionToken) {
+          _cleanupPreemptedSession(item, resolution);
+          return false;
+        }
+        if (desiredAutoPlay) {
+          await _backend!.resume();
+        } else {
+          await _backend!.pause();
+        }
+        if (sessionToken != _playbackSessionToken) {
+          _cleanupPreemptedSession(item, resolution);
+          return false;
+        }
+        autoPlay = desiredAutoPlay;
+        desiredAutoPlay = readAutoPlayIntent();
+      }
+      return true;
+    }
+
     try {
       final currentItemId = MediaStreamResolver.extractItemId(item);
       final secondaryStreams = resolution.mediaStreams
@@ -3254,12 +3280,13 @@ class PlaybackManager implements AudioOwnable {
         _cleanupPreemptedSession(item, resolution);
         return;
       }
-      if (autoPlayIntent != null && !autoPlayIntent()) {
-        await _backend!.pause();
-        if (sessionToken != _playbackSessionToken) {
-          _cleanupPreemptedSession(item, resolution);
-          return;
-        }
+      if (autoPlayIntent != null &&
+          !await reconcileLatestPlaybackIntent()) {
+        return;
+      }
+      if (sessionToken != _playbackSessionToken) {
+        _cleanupPreemptedSession(item, resolution);
+        return;
       }
       await _syncBackendRepeatModeIfSupported();
       if (sessionToken != _playbackSessionToken) {
@@ -3367,7 +3394,8 @@ class PlaybackManager implements AudioOwnable {
               : enableDirectStream,
           enableTranscoding: forceTranscodeFallback ? true : enableTranscoding,
           allowStartupRecovery: false,
-          autoPlay: autoPlay,
+          autoPlay: autoPlayIntent?.call() ?? autoPlay,
+          autoPlayIntent: autoPlayIntent,
           replanFrom: resolution,
           replanReason: ReplanReason.failure,
         );
@@ -3422,6 +3450,17 @@ class PlaybackManager implements AudioOwnable {
         startPosition,
         resumeAfterSeek: autoPlay,
       );
+    }
+
+    // Ready and resume-position work can also take long enough for the viewer
+    // to change intent, so reconcile immediately before publishing ready.
+    if (autoPlayIntent != null &&
+        !await reconcileLatestPlaybackIntent()) {
+      return;
+    }
+    if (sessionToken != _playbackSessionToken) {
+      _cleanupPreemptedSession(item, resolution);
+      return;
     }
 
     if (resolution.externalSubtitles.isNotEmpty) {
@@ -3494,6 +3533,7 @@ class PlaybackManager implements AudioOwnable {
     // `autoPlay` is the manager's own intent, so it decides arming here
     // rather than the backend's (possibly stale) playWhenReady. The frame-seen
     // flag was already reset before the source opened, above.
+    autoPlay = autoPlayIntent?.call() ?? autoPlay;
     if (autoPlay) {
       _viewerPaused = false;
       _startLiveStallWatch();
