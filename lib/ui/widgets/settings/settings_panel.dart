@@ -10,6 +10,7 @@ import '../../../util/idiom/app_ui_idiom.dart';
 import '../../../util/platform_detection.dart';
 import '../../../util/focus/dpad_keys.dart';
 import 'preference_tiles.dart';
+import 'settings_preview_scope.dart';
 
 /// Content that lays itself out across the whole window rather than in the
 /// side panel, the way the settings live preview does.
@@ -235,12 +236,25 @@ class _SettingsNavigatorState extends State<_SettingsNavigator> {
 }
 
 extension SettingsPush on BuildContext {
-  Future<void> pushSettingsScreen(Widget screen, {FocusNode? returnFocus}) {
+  /// [previewPath] is the screen's place in Settings when it isn't the tile
+  /// that opened it, as with a search result.
+  Future<void> pushSettingsScreen(
+    Widget screen, {
+    FocusNode? returnFocus,
+    List<String>? previewPath,
+  }) {
     final focusToRestore = returnFocus ?? FocusManager.instance.primaryFocus;
+    final opener = SettingsPreviewScope.maybeOf(this)?.focused?.title ?? '';
+    final path =
+        previewPath ??
+        [...SettingsPreviewPath.of(this), if (opener.isNotEmpty) opener];
     return Navigator.of(this)
         .push(
           PageRouteBuilder(
-            pageBuilder: (_, _, _) => _AutoFocusWrapper(child: screen),
+            pageBuilder: (_, _, _) => SettingsPreviewPath(
+              path: path,
+              child: _AutoFocusWrapper(child: screen),
+            ),
             transitionDuration: const Duration(milliseconds: 160),
             reverseTransitionDuration: const Duration(milliseconds: 130),
             transitionsBuilder: (context, anim, _, child) {

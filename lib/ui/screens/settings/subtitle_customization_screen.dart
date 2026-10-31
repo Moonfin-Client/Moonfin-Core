@@ -14,8 +14,8 @@ import '../../widgets/overlay_sheet.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
 import '../../widgets/settings/preference_binding.dart';
 import '../../widgets/settings/preference_tiles.dart';
+import '../../widgets/settings/settings_preview_scope.dart';
 import '../../widgets/settings/settings_section_header.dart';
-import '../../widgets/subtitle_preview.dart';
 import 'settings_app_bar.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 
@@ -176,7 +176,6 @@ class _SubtitleCustomizationScreenState
             bottom: MediaQuery.of(context).padding.bottom + 16,
           ),
           children: [
-            const SubtitlePreview(),
             _ColorPickerTile(
               title: l10n.textFillColor,
               icon: Icons.format_color_text,
@@ -198,6 +197,7 @@ class _SubtitleCustomizationScreenState
               icon: Icons.format_size,
               label: l10n.subtitleSize,
               binding: _sizeBind,
+              previewKey: UserPreferences.subtitlesTextSize.key,
               outerNode: _sizeOuterNode,
               innerNode: _sizeInnerNode,
               focused: _sizeFocused,
@@ -217,6 +217,7 @@ class _SubtitleCustomizationScreenState
               icon: Icons.vertical_align_bottom,
               label: l10n.verticalOffset,
               binding: _offsetBind,
+              previewKey: UserPreferences.subtitlesOffsetPosition.key,
               outerNode: _offsetOuterNode,
               innerNode: _offsetInnerNode,
               focused: _offsetFocused,
@@ -270,6 +271,7 @@ class _SubtitleCustomizationScreenState
                           icon: Icons.format_size,
                           label: l10n.subtitleSize,
                           binding: _hdrSizeBind,
+                          previewKey: UserPreferences.subtitlesHdrTextSize.key,
                           outerNode: _hdrSizeOuterNode,
                           innerNode: _hdrSizeInnerNode,
                           focused: _hdrSizeFocused,
@@ -289,6 +291,8 @@ class _SubtitleCustomizationScreenState
                           icon: Icons.vertical_align_bottom,
                           label: l10n.verticalOffset,
                           binding: _hdrOffsetBind,
+                          previewKey:
+                              UserPreferences.subtitlesHdrOffsetPosition.key,
                           outerNode: _hdrOffsetOuterNode,
                           innerNode: _hdrOffsetInnerNode,
                           focused: _hdrOffsetFocused,
@@ -321,6 +325,7 @@ class _SubtitleCustomizationScreenState
     required IconData icon,
     required String label,
     required PreferenceBinding<double> binding,
+    required String previewKey,
     required FocusNode outerNode,
     required FocusNode innerNode,
     required bool focused,
@@ -336,7 +341,7 @@ class _SubtitleCustomizationScreenState
     final colorScheme = Theme.of(context).colorScheme;
     final useTvFocusStyling = PlatformDetection.isTV;
     final activeFocusStyling = useTvFocusStyling && focused;
-    return ValueListenableBuilder<double>(
+    final tile = ValueListenableBuilder<double>(
       valueListenable: binding,
       builder: (context, value, _) => Padding(
         padding: const EdgeInsets.fromLTRB(12, 4, 12, 4),
@@ -422,6 +427,10 @@ class _SubtitleCustomizationScreenState
         ),
       ),
     );
+    return SettingsPreviewReporter(
+      describe: () => SettingsPreviewEntry(prefKey: previewKey, title: label),
+      child: tile,
+    );
   }
 }
 
@@ -506,6 +515,16 @@ class _ColorPickerTileState extends State<_ColorPickerTile> {
 
   @override
   Widget build(BuildContext context) {
+    return SettingsPreviewReporter(
+      describe: () => SettingsPreviewEntry(
+        prefKey: widget.preference.key,
+        title: widget.title,
+      ),
+      child: _buildTile(context),
+    );
+  }
+
+  Widget _buildTile(BuildContext context) {
     return TvFocusHighlight(
       builder: (context, _) => ValueListenableBuilder<int>(
         valueListenable: _binding,
@@ -537,6 +556,8 @@ class _ColorPickerTileState extends State<_ColorPickerTile> {
     final l10n = AppLocalizations.of(context);
     final current = _binding.value;
     final isTV = PlatformDetection.isTV;
+    final preview = SettingsPreviewScope.maybeOf(context);
+    final key = widget.preference.key;
     final entries = widget.allowTransparent
         ? subtitlePresetColors.entries
         : subtitlePresetColors.entries.where((e) => Color(e.value).a > 0);
@@ -548,32 +569,38 @@ class _ColorPickerTileState extends State<_ColorPickerTile> {
         title: Text(widget.title),
         children: entries.map((e) {
           final selected = e.value == current;
-          return TvFocusHighlight(
-            builder: (_, _) => ListTile(
-              autofocus: isTV && selected,
-              leading: Container(
-                width: 24,
-                height: 24,
-                decoration: BoxDecoration(
-                  color: Color(e.value),
-                  shape: BoxShape.circle,
-                  border: Border.fromBorderSide(
-                    ThemeRegistry.active.borders.chipBorder,
+          return settingsPreviewOption(
+            onTry: preview == null
+                ? null
+                : () => preview.tryValue(key, e.value),
+            child: TvFocusHighlight(
+              builder: (_, _) => ListTile(
+                autofocus: isTV && selected,
+                leading: Container(
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    color: Color(e.value),
+                    shape: BoxShape.circle,
+                    border: Border.fromBorderSide(
+                      ThemeRegistry.active.borders.chipBorder,
+                    ),
                   ),
                 ),
+                title: Text(subtitleColorLabel(e.key, l10n) ?? e.key),
+                trailing: selected ? const Icon(Icons.check) : null,
+                onTap: () {
+                  if (picked) return;
+                  picked = true;
+                  Navigator.pop(ctx, e.value);
+                },
               ),
-              title: Text(subtitleColorLabel(e.key, l10n) ?? e.key),
-              trailing: selected ? const Icon(Icons.check) : null,
-              onTap: () {
-                if (picked) return;
-                picked = true;
-                Navigator.pop(ctx, e.value);
-              },
             ),
           );
         }).toList(),
       ),
     );
+    preview?.clearTry(key);
     if (!mounted) return;
     _pickerOpen = false;
     if (result == null || result == _binding.value) return;

@@ -117,6 +117,7 @@ class _DetailsScreenSettingsScreenState
                       onChangeEnd: _pushPersonalizationSync,
                     ),
                   _TvSettingsListTile(
+                    previewKey: detailButtonLayout.orderPreference.key,
                     leading: const Icon(Icons.smart_button_outlined),
                     title: Text(l10n.detailButtons),
                     subtitle: Text(l10n.detailButtonsDescription),
@@ -150,6 +151,7 @@ class _DetailsScreenSettingsScreenState
               adaptiveListSection(
                 children: [
                   _TvSettingsListTile(
+                    previewKey: detailMetadataLayout.orderPreference.key,
                     leading: const Icon(Icons.view_headline_outlined),
                     title: Text(l10n.detailMetadata),
                     subtitle: Text(l10n.detailMetadataDescription),
@@ -297,6 +299,7 @@ List<Widget> _ratingsSettingsTiles(
     onChanged: _pushPersonalizationSync,
   ),
   _TvSettingsListTile(
+    previewKey: settings.sources.key,
     leading: const Icon(Icons.reorder),
     title: Text(l10n.ratingSources),
     subtitle: Text(l10n.ratingSourcesDescription),

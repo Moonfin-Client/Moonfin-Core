@@ -109,6 +109,32 @@ void main() {
         debugDefaultTargetPlatformOverride = null;
       });
 
+      testWidgets('the screens lay out at the size the real one has', (
+        tester,
+      ) async {
+        setPlatform();
+        SetupPreviewData.debugOverride = ValueNotifier(_fakeItems());
+        // A TV lays out on the canvas TvUiScale gives every panel. A phone and
+        // a desktop have no such canvas, so they stand in a typical screen.
+        final canvas = switch (layout) {
+          InterfaceLayout.tv => const Size(1150, 1150 * 1080 / 1920),
+          InterfaceLayout.phone => const Size(390, 844),
+          _ => const Size(1280, 800),
+        };
+        expect(setupPreviewSize(), canvas);
+        Finder laidOutAt(Size size) => find.byWidgetPredicate(
+          (widget) =>
+              widget is SizedBox &&
+              widget.width == size.width &&
+              widget.height == size.height,
+        );
+        await pumpPreview(tester, homeRowsPreview(modern: false));
+        expect(laidOutAt(canvas), findsOneWidget);
+        await pumpPreview(tester, detailStylePreview(DetailScreenStyle.modern));
+        expect(laidOutAt(canvas), findsOneWidget);
+        debugDefaultTargetPlatformOverride = null;
+      });
+
       testWidgets('an empty library falls back to the drawn stand-ins', (
         tester,
       ) async {

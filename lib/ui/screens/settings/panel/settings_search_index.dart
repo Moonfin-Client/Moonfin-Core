@@ -11,6 +11,7 @@ class _SettingsSearchEntry {
     required this.icon,
     required this.onOpen,
     required String matchText,
+    this.path = const [],
   }) : titleLower = title.toLowerCase(),
        haystack = matchText.toLowerCase();
 
@@ -19,6 +20,9 @@ class _SettingsSearchEntry {
   final String subtitle;
   final IconData icon;
   final VoidCallback onOpen;
+
+  /// The screen it opens, as a path from its category.
+  final List<String> path;
   final String titleLower;
   final String haystack;
 }
@@ -51,6 +55,7 @@ class _SearchSection {
         icon: icon,
         onOpen: open,
         matchText: [...path, ...keywords].join(' '),
+        path: path,
       );
 
   /// [header] is the section header the setting sits under, worth passing
@@ -70,6 +75,7 @@ class _SearchSection {
     icon: icon,
     onOpen: open,
     matchText: [title, ?subtitle, ...keywords, ...path].join(' '),
+    path: path,
   );
 }
 

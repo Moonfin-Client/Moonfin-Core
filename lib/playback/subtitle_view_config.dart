@@ -16,23 +16,6 @@ SubtitleViewConfiguration buildSubtitleViewConfiguration({
   required StreamResolutionResult? resolution,
   required int? subtitleStreamIndex,
 }) {
-  final style = SubtitleStyle.forResolution(prefs, resolution);
-  final textColor = Color(style.textColor);
-  final bgColor = Color(style.backgroundColor);
-  final strokeColor = Color(style.strokeColor);
-  final prefSize = style.fontSize;
-  final fontWeight = style.fontWeight;
-  final offset = style.verticalOffset;
-
-  final baseSize = PlatformDetection.useMobileUi ? 40.0 : 32.0;
-  final fontSize = (prefSize / 24.0) * baseSize;
-
-  final basePadding = PlatformDetection.useMobileUi ? 16.0 : 24.0;
-  final bottomPadding =
-      basePadding + (offset * MediaQuery.sizeOf(context).height * 0.5);
-
-  final strokeShadows = subtitleStrokeShadows(strokeColor, fontSize);
-
   bool isAssOrPgs = false;
   if (subtitleStreamIndex != null && subtitleStreamIndex >= 0) {
     final mediaStreams = resolution?.mediaStreams;
@@ -46,8 +29,36 @@ SubtitleViewConfiguration buildSubtitleViewConfiguration({
     }
   }
 
-  return SubtitleViewConfiguration(
+  return subtitleViewConfigurationFor(
+    SubtitleStyle.forResolution(prefs, resolution),
+    screenHeight: MediaQuery.sizeOf(context).height,
     visible: PlatformDetection.isDesktop ? false : !isAssOrPgs,
+  );
+}
+
+/// The text view's look for [style] on a screen [screenHeight] tall.
+SubtitleViewConfiguration subtitleViewConfigurationFor(
+  SubtitleStyle style, {
+  required double screenHeight,
+  bool visible = true,
+}) {
+  final textColor = Color(style.textColor);
+  final bgColor = Color(style.backgroundColor);
+  final strokeColor = Color(style.strokeColor);
+  final prefSize = style.fontSize;
+  final fontWeight = style.fontWeight;
+  final offset = style.verticalOffset;
+
+  final baseSize = PlatformDetection.useMobileUi ? 40.0 : 32.0;
+  final fontSize = (prefSize / 24.0) * baseSize;
+
+  final basePadding = PlatformDetection.useMobileUi ? 16.0 : 24.0;
+  final bottomPadding = basePadding + (offset * screenHeight * 0.5);
+
+  final strokeShadows = subtitleStrokeShadows(strokeColor, fontSize);
+
+  return SubtitleViewConfiguration(
+    visible: visible,
     style: TextStyle(
       inherit: false,
       height: 1.4,

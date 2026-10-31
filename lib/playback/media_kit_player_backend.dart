@@ -3593,8 +3593,7 @@ class MediaKitPlayerBackend extends PlayerBackend
   Future<void> _writeSubtitleFontSize(NativePlayer native) async {
     final fontSize = _lastFontSize;
     if (fontSize == null) return;
-    final mpvSize =
-        (fontSize / 24.0 * 55.0).clamp(24.0, 120.0) * _textSubtitleScale;
+    final mpvSize = mpvSubtitleFontSize(fontSize) * _textSubtitleScale;
     await _nativeSetProperty(
       native,
       'sub-font-size',

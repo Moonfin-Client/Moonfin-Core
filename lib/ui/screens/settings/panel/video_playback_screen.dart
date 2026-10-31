@@ -98,6 +98,7 @@ class _VideoPlaybackScreen extends StatelessWidget {
                 leading: const Icon(Icons.timer_outlined),
                 title: Text(l10n.playbackTimeDisplay),
                 subtitle: Text(l10n.settingsPlaybackTimeDisplayDescription),
+                previewKey: UserPreferences.playbackTimeAboveLeft.key,
                 onTap: () => context.pushSettingsScreen(
                   const _PlaybackTimeLayoutScreen(),
                 ),
@@ -217,6 +218,7 @@ class _VideoPlaybackScreen extends StatelessWidget {
                 leading: const Icon(Icons.tune),
                 title: Text(l10n.osdButtons),
                 subtitle: Text(l10n.osdButtonsDescription),
+                previewKey: osdButtonLayout.orderPreference.key,
                 onTap: () =>
                     context.pushSettingsScreen(const _OsdButtonsScreen()),
               ),
@@ -250,7 +252,6 @@ class _VideoPlaybackScreen extends StatelessWidget {
                   // turning it on adds rows below the one being used rather
                   // than shifting it down and taking its focus with it.
                   if (showsPreviews) ...[
-                    const TrickplaySettingsPreview(),
                     SliderPreferenceTile(
                       preference: UserPreferences.trickPlayPreviewScalePercent,
                       title: l10n.trickplayPreviewScale,

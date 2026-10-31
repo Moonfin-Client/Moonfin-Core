@@ -1,21 +1,36 @@
+import 'dart:async';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:moonfin_design/moonfin_design.dart';
+import 'package:server_core/server_core.dart';
 
 import '../../../auth/repositories/user_repository.dart';
+import '../../../data/models/aggregated_library.dart';
 import '../../../data/models/media_bar_slide_item.dart';
 import '../../../data/models/media_bar_state.dart';
 import '../../../data/repositories/media_bar_repository.dart';
+import '../../../data/repositories/multi_server_repository.dart';
+import '../../../data/repositories/user_views_repository.dart';
+import '../../../data/services/library_scope_service.dart';
+import '../../../data/services/plugin_sync_service.dart';
+import '../../../data/services/server_messages_service.dart';
 import '../../../data/viewmodels/media_bar_view_model.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../preference/bottom_nav_tabs.dart';
+import '../../../preference/detail_metadata_layout.dart';
 import '../../../preference/preference_constants.dart';
+import '../../../preference/seerr_preferences.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/clock_format.dart';
+import '../../../util/game_library.dart' show libraryIcon;
+import '../../../util/live_tv_library.dart' show librariesForNav;
 import '../../../util/overlay_color_palette.dart';
 import '../../../util/platform_detection.dart';
+import '../../../util/signed_in_server_features.dart';
+import '../../../util/tv_ui_scale.dart';
 import '../../widgets/bottom_nav/bottom_nav_destinations.dart';
 import '../../widgets/bottom_nav/bottom_nav_metrics.dart';
 import '../../widgets/bottom_nav/bottom_nav_model.dart';
@@ -25,8 +40,16 @@ import '../../widgets/bottom_nav/dock_bar.dart';
 import '../../widgets/bottom_nav/split_bar.dart';
 import '../../widgets/bottom_nav/strip_bar.dart';
 import '../../widgets/bounded_network_image.dart';
+import '../../widgets/downloads_nav_slot.dart';
+import '../../widgets/friends_nav_slot.dart';
+import '../../widgets/info_area.dart';
 import '../../widgets/mediabar/gallery_glow.dart';
+import '../../widgets/rating_display.dart';
+import '../../widgets/seerr_icons.dart';
 import '../../widgets/settings/settings_preview_scope.dart';
+import '../../widgets/user_avatar_image.dart';
+import '../detail/detail_buttons.dart';
+import '../detail/detail_layout_metrics.dart';
 
 /// The artwork behind every preview, shared with the home screen.
 ///
@@ -52,11 +75,16 @@ abstract final class SetupPreviewData {
     const [],
   );
 
+  /// The user's libraries, read the way the real navbar reads them, for a
+  /// navbar that lists them one by one. Empty until they've loaded.
+  static final libraries = ValueNotifier<List<AggregatedLibrary>>(const []);
+
   static Listenable? get listenable {
-    if (debugOverride != null) return debugOverride;
+    final override = debugOverride;
+    if (override != null) return Listenable.merge([override, libraries]);
     final viewModel = _viewModel;
     if (viewModel == null) return null;
-    return Listenable.merge([viewModel, _fallbackItems]);
+    return Listenable.merge([viewModel, _fallbackItems, libraries]);
   }
 
   static List<MediaBarSlideItem> get items {
@@ -67,9 +95,12 @@ abstract final class SetupPreviewData {
   }
 
   static bool _loading = false;
+  static bool _loadingLibraries = false;
 
   static Future<void> ensureLoaded() async {
-    if (debugOverride != null || _loading) return;
+    if (debugOverride != null) return;
+    unawaited(_loadLibraries());
+    if (_loading) return;
     if (items.isNotEmpty) return;
     final viewModel = _viewModel;
     if (viewModel == null) return;
@@ -103,12 +134,39 @@ abstract final class SetupPreviewData {
       _loading = false;
     }
   }
+
+  static Future<void> _loadLibraries() async {
+    if (_loadingLibraries) return;
+    _loadingLibraries = true;
+    try {
+      final multiServer = GetIt.instance<UserPreferences>().get(
+        UserPreferences.enableMultiServerLibraries,
+      );
+      final loaded = multiServer
+          ? await GetIt.instance<MultiServerRepository>()
+                .getAggregatedLibraries()
+          : await GetIt.instance<UserViewsRepository>().getUserViews();
+      libraries.value = multiServer
+          ? await GetIt.instance<LibraryScopeService>().withoutHiddenLibraries(
+              loaded,
+            )
+          : loaded;
+    } catch (_) {
+      // The navbar's libraries keep their stand-ins without a server to ask.
+    } finally {
+      _loadingLibraries = false;
+    }
+  }
 }
 
 /// The aspect every preview card renders at, which is the screen it mocks.
 /// The wizard sizes mobile cards from the height with this, so a card never
 /// runs out of the step body.
 double setupPreviewAspect() => _designSize().aspectRatio;
+
+/// The logical size the previews lay their screen out at, for drawing more
+/// over one at the same scale.
+Size setupPreviewSize() => _designSize();
 
 /// Frame shared by every option card preview.
 class SetupPreview extends StatelessWidget {
@@ -128,9 +186,12 @@ class SetupPreview extends StatelessWidget {
 /// The logical size the preview screen is laid out at before being scaled
 /// down, matching a typical device of the interface the wizard runs in. Every
 /// measurement inside a preview is the real widget's measurement at this size,
-/// so the scaled result keeps the true proportions.
+/// so the scaled result keeps the true proportions. A TV gets the canvas
+/// TvUiScale lays every panel out on.
 Size _designSize() {
-  if (PlatformDetection.useLeanbackUi) return const Size(960, 540);
+  if (PlatformDetection.useLeanbackUi) {
+    return tvUiLogicalSize(const Size(1920, 1080));
+  }
   if (PlatformDetection.useMobileUi) return const Size(390, 844);
   return const Size(1280, 800);
 }
@@ -138,8 +199,15 @@ Size _designSize() {
 bool get _tv => PlatformDetection.useLeanbackUi;
 bool get _phone => PlatformDetection.useMobileUi;
 
+/// The saved UI scale, which Home sizes its rows and info area by.
+double get _desktopScale => GetIt.instance.isRegistered<UserPreferences>()
+    ? GetIt.instance<UserPreferences>()
+          .get(UserPreferences.desktopUiScale)
+          .scaleFactor
+    : 1.0;
+
 /// TV rows render at 0.8 of the desktop size, same as _rowPlatformScale.
-double get _rowScale => _tv ? 0.8 : 1.0;
+double get _rowScale => (_tv ? 0.8 : 1.0) * _desktopScale;
 
 double get _rowLeftInset => _phone ? 16 : (_tv ? 80 : 32);
 
@@ -256,33 +324,51 @@ Widget _logoOrTitle(
   );
 }
 
-Widget _communityRating(MediaBarSlideItem item) {
-  final rating = item.communityRating;
-  if (rating == null) return const SizedBox.shrink();
-  return Row(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      const Icon(Icons.star_rounded, size: 16, color: Color(0xFFFFC107)),
-      const SizedBox(width: 4),
-      Text(
-        rating.toStringAsFixed(1),
-        style: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w700,
-          color: AppColorScheme.onSurface,
-        ),
-      ),
-    ],
-  );
-}
+/// A score for every source the ratings row knows beyond the server's own,
+/// so a preview shows exactly which sources a surface's settings pick out.
+const _sampleScores = <String, double>{
+  'tomatoes_audience': 91,
+  'imdb': 7.8,
+  'tmdb': 78,
+  'metacritic': 74,
+  'metacriticuser': 71,
+  'trakt': 82,
+  'letterboxd': 3.9,
+  'myanimelist': 8.1,
+  'rogerebert': 3.5,
+};
 
-Color get _overlayColor => OverlayColorPalette.resolveColor(
-  GetIt.instance<UserPreferences>().get(UserPreferences.mediaBarOverlayColor),
+/// The real ratings row for [item] as one surface's rating settings have it,
+/// with sample scores wherever the item has none. [personal] is for the
+/// surfaces that show the viewer's own rating.
+Widget _sampleRatings(
+  BuildContext context,
+  MediaBarSlideItem item,
+  RatingSettings settings, {
+  bool personal = false,
+  bool? labels,
+  bool? badges,
+  bool singleLine = false,
+  bool inlineChips = false,
+}) => RatingsRow(
+  ratings: _sampleScores,
+  communityRating: item.communityRating ?? 7.8,
+  criticRating: item.criticRating ?? 87,
+  personalRating: personal ? 8 : null,
+  enableAdditionalRatings: previewValue(context, settings.additionalRatings),
+  enabledRatings: previewValue(context, settings.sources),
+  showLabels: labels ?? previewValue(context, settings.labels),
+  showBadges: badges ?? previewValue(context, settings.badges),
+  singleLine: singleLine,
+  inlineChips: inlineChips,
 );
 
-double get _overlayOpacity =>
-    GetIt.instance<UserPreferences>()
-        .get(UserPreferences.mediaBarOverlayOpacity)
+Color _overlayColor(BuildContext context) => OverlayColorPalette.resolveColor(
+  previewValue(context, UserPreferences.mediaBarOverlayColor),
+);
+
+double _overlayOpacity(BuildContext context) =>
+    previewValue(context, UserPreferences.mediaBarOverlayOpacity)
         .toDouble()
         .clamp(0.0, 100.0) /
     100.0;
@@ -421,8 +507,8 @@ Widget _metadataWrap(
 
 Widget _moonfinBar(BuildContext context, List<MediaBarSlideItem> items) {
   final item = items.first;
-  final overlay = _overlayColor;
-  final op = _overlayOpacity;
+  final overlay = _overlayColor(context);
+  final op = _overlayOpacity(context);
 
   final info = Padding(
     padding: EdgeInsets.only(
@@ -443,6 +529,8 @@ Widget _moonfinBar(BuildContext context, List<MediaBarSlideItem> items) {
         mainAxisSize: MainAxisSize.min,
         children: [
           _metadataWrap(item),
+          const SizedBox(height: 6),
+          _sampleRatings(context, item, UserPreferences.mediaBarRatings),
           if (item.overview != null) ...[
             const SizedBox(height: 8),
             Text(
@@ -543,8 +631,8 @@ Widget _moonfinBar(BuildContext context, List<MediaBarSlideItem> items) {
 
 Widget _makdBar(BuildContext context, List<MediaBarSlideItem> items) {
   final item = items.first;
-  final overlay = _overlayColor;
-  final op = _overlayOpacity;
+  final overlay = _overlayColor(context);
+  final op = _overlayOpacity(context);
   final size = _designSize();
   final l10n = AppLocalizations.of(context);
 
@@ -580,6 +668,8 @@ Widget _makdBar(BuildContext context, List<MediaBarSlideItem> items) {
               mainAxisSize: MainAxisSize.min,
               children: [
                 _metadataWrap(item, alignment: WrapAlignment.center),
+                const SizedBox(height: 6),
+                _sampleRatings(context, item, UserPreferences.mediaBarRatings),
                 const SizedBox(height: 14),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -670,6 +760,8 @@ Widget _makdBar(BuildContext context, List<MediaBarSlideItem> items) {
           mainAxisSize: MainAxisSize.min,
           children: [
             _metadataWrap(item),
+            const SizedBox(height: 6),
+            _sampleRatings(context, item, UserPreferences.mediaBarRatings),
             if (item.overview != null) ...[
               const SizedBox(height: 10),
               Text(
@@ -1182,6 +1274,13 @@ Widget _galleryBar(BuildContext context, List<MediaBarSlideItem> items) {
                                     badge(genre, tinted: true),
                                 ],
                               ),
+                              const SizedBox(height: 10),
+                              _sampleRatings(
+                                context,
+                                active,
+                                UserPreferences.mediaBarRatings,
+                                badges: false,
+                              ),
                               if (active.overview != null) ...[
                                 const SizedBox(height: 14),
                                 Text(
@@ -1418,6 +1517,13 @@ Widget _galleryCoverflow(BuildContext context, List<MediaBarSlideItem> items) {
                     color: AppColorScheme.onSurface.withValues(alpha: 0.7),
                   ),
                 ),
+                const SizedBox(height: 6),
+                _sampleRatings(
+                  context,
+                  active,
+                  UserPreferences.mediaBarRatings,
+                  badges: false,
+                ),
               ],
             ),
           ),
@@ -1499,6 +1605,14 @@ Widget _bannerBar(BuildContext context, List<MediaBarSlideItem> items) {
                       fontWeight: FontWeight.w600,
                       color: AppColorScheme.onSurface.withValues(alpha: 0.75),
                     ),
+                  ),
+                  const SizedBox(height: 8),
+                  _sampleRatings(
+                    context,
+                    item,
+                    UserPreferences.mediaBarRatings,
+                    labels: false,
+                    badges: false,
                   ),
                 ],
               ),
@@ -1669,47 +1783,120 @@ Widget settingsHomePreview() {
   );
 }
 
-/// The default button set: home, search, shuffle, favorites, libraries and
-/// settings, which is what the chrome shows before anyone touches a toggle.
-const _navIcons = [
-  Icons.home_rounded,
-  Icons.search_rounded,
-  Icons.shuffle_rounded,
-  Icons.favorite_rounded,
-  Icons.video_library_rounded,
-  Icons.settings_rounded,
-];
+typedef _NavButton = ({
+  Widget Function(double size, Color color) icon,
+  String label,
+});
 
-/// The navbar buttons with the shuffle and favorites toggles applied, each
-/// with the label the expanded navbar prints beside it.
-List<(IconData, String)> _navButtonsFor(
+bool get _seerrAvailable =>
+    GetIt.instance.isRegistered<PluginSyncService>() &&
+    GetIt.instance<PluginSyncService>().seerrAvailable;
+
+bool get _hasServerMessages =>
+    GetIt.instance.isRegistered<ServerMessagesService>() &&
+    GetIt.instance<ServerMessagesService>().messages.isNotEmpty;
+
+/// The user's libraries for a navbar that lists them one by one, minus the
+/// ones the real navbar leaves out. Until they've loaded, stand-ins, one per
+/// kind of title the preview has loaded.
+List<(IconData, String)> _navLibraries(
+  AppLocalizations l10n,
+  List<MediaBarSlideItem> items, {
+  required bool liveTvButton,
+  required bool kids,
+}) {
+  final loaded = SetupPreviewData.libraries.value;
+  if (loaded.isNotEmpty) {
+    return [
+      for (final library in librariesForNav(
+        loaded,
+        liveTvButton,
+        hideLiveTv: kids,
+      ))
+        (libraryIcon(library), library.name),
+    ];
+  }
+  final series = items.any((item) => item.itemType == 'Series');
+  return [
+    if (!series || items.any((item) => item.itemType == 'Movie'))
+      (Icons.movie_rounded, l10n.movies),
+    if (series) (Icons.tv_rounded, l10n.tvShows),
+  ];
+}
+
+/// The navbar's buttons in the top bar and sidebar's own order, with the
+/// icons and labels they draw. Each one waits on its switch and on the same
+/// gates the real one checks, such as the server offering the feature.
+List<_NavButton> _navButtons(
   BuildContext context,
-  List<IconData> icons,
+  List<MediaBarSlideItem> items,
 ) {
   final l10n = AppLocalizations.of(context);
-  final showShuffle = previewValue(context, UserPreferences.showShuffleButton);
-  final showFavorites = previewValue(
-    context,
-    UserPreferences.showFavoritesButton,
+  bool on(Preference<bool> preference) => previewValue(context, preference);
+  _NavButton icon(IconData glyph, String label) => (
+    icon: (size, color) => Icon(glyph, size: size, color: color),
+    label: label,
   );
+  _NavButton asset(String path, String label) => (
+    icon: (size, color) => Image.asset(
+      path,
+      width: size,
+      height: size,
+      color: color,
+      fit: BoxFit.contain,
+    ),
+    label: label,
+  );
+  final kids = on(UserPreferences.kidsModeEnabled);
+  final libraries = !kids && on(UserPreferences.showLibrariesInToolbar);
+  final liveTv =
+      !kids &&
+      on(UserPreferences.showLiveTvButton) &&
+      liveTvOnAnySignedInServer();
+  final seerrLabel = GetIt.instance.isRegistered<SeerrPreferences>()
+      ? GetIt.instance<SeerrPreferences>().labelOrDefault(l10n.seerr)
+      : l10n.seerr;
   return [
-    for (final icon in icons)
-      if ((icon != Icons.shuffle_rounded || showShuffle) &&
-          (icon != Icons.favorite_rounded || showFavorites))
-        (
-          icon,
-          icon == Icons.home_rounded
-              ? l10n.home
-              : icon == Icons.search_rounded
-              ? l10n.search
-              : icon == Icons.shuffle_rounded
-              ? l10n.shuffle
-              : icon == Icons.favorite_rounded
-              ? l10n.favorites
-              : icon == Icons.video_library_rounded
-              ? l10n.libraries
-              : l10n.settings,
-        ),
+    icon(Icons.home_rounded, l10n.home),
+    icon(Icons.search_rounded, l10n.search),
+    if (on(UserPreferences.showShuffleButton))
+      icon(Icons.shuffle_rounded, l10n.shuffle),
+    if (on(UserPreferences.showGenresButton))
+      asset('assets/icons/genres.png', l10n.genres),
+    if (on(UserPreferences.showFavoritesButton))
+      icon(Icons.favorite_rounded, l10n.favorites),
+    if (liveTv) icon(Icons.live_tv_rounded, l10n.liveTv),
+    if (!kids &&
+        on(UserPreferences.syncPlayEnabled) &&
+        on(UserPreferences.showSyncPlayButton))
+      icon(Icons.groups_rounded, l10n.syncPlay),
+    if (!kids && on(UserPreferences.showSeerrButton) && _seerrAvailable)
+      (
+        icon: (size, color) => SeerrIcon(size: size, color: color),
+        label: seerrLabel,
+      ),
+    if (libraries && on(UserPreferences.showLibrariesIndividually))
+      for (final (glyph, label) in _navLibraries(
+        l10n,
+        items,
+        liveTvButton: liveTv,
+        kids: kids,
+      ))
+        icon(glyph, label)
+    else if (libraries)
+      asset('assets/icons/clapperboard.png', l10n.libraries),
+    // Downloads only shows once something is saved, the way the real button
+    // does.
+    if (on(UserPreferences.showDownloadsButton) &&
+        PlatformDetection.supportsOfflineDownloads &&
+        !PlatformDetection.isWeb &&
+        DownloadsNavSlot.hasSavedMedia())
+      icon(Icons.download_for_offline, l10n.savedMedia),
+    if (on(UserPreferences.showFriendsButton) && FriendsNavSlot.isAvailable())
+      icon(Icons.people_alt_rounded, l10n.friends),
+    if (on(UserPreferences.showServerMessagesButton) && _hasServerMessages)
+      icon(Icons.info_outline_rounded, l10n.serverMessages),
+    icon(Icons.settings_rounded, l10n.settings),
   ];
 }
 
@@ -1731,37 +1918,64 @@ Color _navIconColor(int slot) =>
     AppColorScheme.navColorForSlot(slot) ??
     AppColorScheme.onSurface.withValues(alpha: 0.6);
 
-Color get _navbarSurface {
-  final prefs = GetIt.instance<UserPreferences>();
-  return OverlayColorPalette.resolveColor(
-    prefs.get(UserPreferences.navbarColor),
-  ).withValues(
-    alpha:
-        prefs.get(UserPreferences.navbarOpacity).toDouble().clamp(0.0, 100.0) /
-        100.0,
-  );
+Color _navbarSurface(BuildContext context) =>
+    OverlayColorPalette.resolveColor(
+      previewValue(context, UserPreferences.navbarColor),
+    ).withValues(
+      alpha:
+          previewValue(
+            context,
+            UserPreferences.navbarOpacity,
+          ).toDouble().clamp(0.0, 100.0) /
+          100.0,
+    );
+
+String get _userName => GetIt.instance.isRegistered<UserRepository>()
+    ? GetIt.instance<UserRepository>().currentUser?.name ?? ''
+    : '';
+
+/// The signed-in user's picture, the one the real navbar asks the server for.
+String? _userImageUrl() {
+  if (!GetIt.instance.isRegistered<UserRepository>() ||
+      !GetIt.instance.isRegistered<MediaServerClient>()) {
+    return null;
+  }
+  final user = GetIt.instance<UserRepository>().currentUser;
+  if (user == null) return null;
+  try {
+    return GetIt.instance<MediaServerClient>().imageApi.getUserImageUrl(
+      user.id,
+    );
+  } catch (_) {
+    return null;
+  }
 }
 
 Widget _navAvatar() {
-  var initial = '?';
-  if (GetIt.instance.isRegistered<UserRepository>()) {
-    final name = GetIt.instance<UserRepository>().currentUser?.name ?? '';
-    if (name.isNotEmpty) initial = name[0].toUpperCase();
-  }
-  return Container(
-    width: 40,
-    height: 40,
+  final name = _userName;
+  final fallback = Container(
     alignment: Alignment.center,
     decoration: BoxDecoration(
       shape: BoxShape.circle,
       color: Colors.white.withValues(alpha: 0.1),
     ),
     child: Text(
-      initial,
+      name.isEmpty ? '?' : name[0].toUpperCase(),
       style: const TextStyle(
         color: Colors.white,
         fontSize: 16,
         fontWeight: FontWeight.w600,
+      ),
+    ),
+  );
+  return SizedBox(
+    width: 40,
+    height: 40,
+    child: ClipOval(
+      child: UserAvatarImage(
+        url: _userImageUrl(),
+        size: 40,
+        fallback: fallback,
       ),
     ),
   );
@@ -1806,62 +2020,60 @@ Widget _topNavbarPreview(
   final vPad = _tv ? 27.0 : (_phone ? 8.0 : 10.0);
   final buttonWidth = _phone ? 40.0 : (_tv ? 44.0 : 56.0);
   final iconSize = _phone ? 22.0 : (_tv ? 24.0 : 30.0);
-  // A phone fits fewer buttons, and settings always keeps the end slot.
-  final icons = _phone
-      ? const [
-          Icons.home_rounded,
-          Icons.search_rounded,
-          Icons.shuffle_rounded,
-          Icons.settings_rounded,
-        ]
-      : _navIcons;
-  final buttons = _navButtonsFor(context, icons);
+  final buttons = _navButtons(context, items);
   final expanded =
       !_phone && previewValue(context, UserPreferences.navbarAlwaysExpanded);
   final clock = _previewClock(context);
 
+  // The real pill scrolls its buttons once they outgrow the room it's given,
+  // so the preview clips them where they'd scroll.
   final pill = Container(
+    clipBehavior: Clip.antiAlias,
     decoration: BoxDecoration(
-      color: _navbarSurface,
+      color: _navbarSurface(context),
       borderRadius: AppRadius.circular(36),
     ),
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        for (var i = 0; i < buttons.length; i++)
-          if (expanded)
-            SizedBox(
-              height: buttonWidth,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(buttons[i].$1, size: iconSize, color: _navIconColor(i)),
-                    const SizedBox(width: 8),
-                    Text(
-                      buttons[i].$2,
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: AppColorScheme.onSurface.withValues(alpha: 0.8),
+    child: SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      physics: const NeverScrollableScrollPhysics(),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (var i = 0; i < buttons.length; i++)
+            if (expanded)
+              SizedBox(
+                height: buttonWidth,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      buttons[i].icon(iconSize, _navIconColor(i)),
+                      const SizedBox(width: 8),
+                      Text(
+                        buttons[i].label,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: AppColorScheme.onSurface.withValues(
+                            alpha: 0.8,
+                          ),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
+                ),
+              )
+            else
+              SizedBox(
+                width: buttonWidth,
+                height: buttonWidth,
+                child: Center(
+                  child: buttons[i].icon(iconSize, _navIconColor(i)),
                 ),
               ),
-            )
-          else
-            SizedBox(
-              width: buttonWidth,
-              height: buttonWidth,
-              child: Icon(
-                buttons[i].$1,
-                size: iconSize,
-                color: _navIconColor(i),
-              ),
-            ),
-      ],
+        ],
+      ),
     ),
   );
 
@@ -1875,8 +2087,22 @@ Widget _topNavbarPreview(
             alignment: Alignment.center,
             children: [
               Align(alignment: Alignment.centerLeft, child: _navAvatar()),
-              // Labels can outgrow the bar, so the pill shrinks to fit it.
-              expanded ? FittedBox(fit: BoxFit.scaleDown, child: pill) : pill,
+              // A phone's buttons can outgrow its bar, so its pill shrinks to
+              // fit.
+              if (_phone)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 48),
+                  child: FittedBox(fit: BoxFit.scaleDown, child: pill),
+                )
+              else
+                // The room the real bar keeps clear of the avatar and the
+                // clock on both sides, so its pill stays centered.
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: (clock == null ? 44.0 : 96.0) + 14,
+                  ),
+                  child: pill,
+                ),
               if (!_phone && clock != null)
                 Align(
                   alignment: Alignment.centerRight,
@@ -1907,58 +2133,41 @@ Widget _leftNavbarPreview(
 }) {
   final iconSize = _tv ? 24.0 : 28.0;
   final itemHeight = _tv ? 40.0 : 44.0;
-  final buttons = _navButtonsFor(context, _navIcons);
-  final expanded = previewValue(context, UserPreferences.navbarAlwaysExpanded);
-  return Row(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
+  final buttons = _navButtons(context, items);
+  // Home starts its rows 56 in beside the rail where a TV's top bar takes 48,
+  // and the rows' own inset is the top bar one.
+  final railInset = _phone ? 0.0 : 56.0 - (_tv ? 48.0 : 0.0);
+  // The real rail only widens while it has focus, whatever Always Expand
+  // Navbar Labels says, and scrolls once its buttons outgrow the screen. It
+  // floats over the screen rather than pushing it aside.
+  return Stack(
     children: [
-      SizedBox(
-        width: expanded ? 200 : 72,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: expanded
-              ? CrossAxisAlignment.start
-              : CrossAxisAlignment.center,
-          children: [
-            for (var i = 0; i < buttons.length; i++)
-              SizedBox(
-                height: itemHeight,
-                child: Padding(
-                  padding: EdgeInsets.only(left: expanded ? 24 : 0),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        buttons[i].$1,
-                        size: iconSize,
-                        color: _navIconColor(i),
-                      ),
-                      if (expanded) ...[
-                        const SizedBox(width: 12),
-                        Flexible(
-                          child: Text(
-                            buttons[i].$2,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                              color: AppColorScheme.onSurface.withValues(
-                                alpha: 0.8,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              ),
-          ],
-        ),
-      ),
-      Expanded(
+      Positioned.fill(
+        left: railInset,
         child: _navbarRows(context, items, topInset: 24, modern: modern),
+      ),
+      Positioned(
+        left: 0,
+        top: 0,
+        bottom: 0,
+        width: 72,
+        child: Center(
+          child: SingleChildScrollView(
+            physics: const NeverScrollableScrollPhysics(),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (var i = 0; i < buttons.length; i++)
+                  SizedBox(
+                    height: itemHeight,
+                    child: Center(
+                      child: buttons[i].icon(iconSize, _navIconColor(i)),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
       ),
     ],
   );
@@ -1977,21 +2186,31 @@ Widget _bottomNavbarPreview(
 }) {
   final l10n = AppLocalizations.of(context);
   final theme = BottomNavTheme.resolve(context, preview: true);
-  var name = '';
-  if (GetIt.instance.isRegistered<UserRepository>()) {
-    name = GetIt.instance<UserRepository>().currentUser?.name ?? '';
-  }
+  final name = _userName;
+  final imageUrl = _userImageUrl();
+  // The tabs come from the same switches the top bar's buttons do.
+  final gates = BottomNavTabGates(
+    kidsMode: previewValue(context, UserPreferences.kidsModeEnabled),
+    showLibraries: previewValue(context, UserPreferences.showLibrariesInToolbar),
+    showFavorites: previewValue(context, UserPreferences.showFavoritesButton),
+    showGenres: previewValue(context, UserPreferences.showGenresButton),
+    showLiveTv: previewValue(context, UserPreferences.showLiveTvButton),
+    showSeerr: previewValue(context, UserPreferences.showSeerrButton),
+    seerrAvailable: _seerrAvailable,
+  );
   final views = [
     for (final item in resolveBarItems(
-      const BottomNavTabGates(),
-      '',
+      gates,
+      previewValue(context, UserPreferences.bottomNavbarTabs),
       withoutSearch: style == BottomNavbarStyle.split,
+      isAvailable: (tab) =>
+          tab != BottomNavTab.liveTv || liveTvOnAnySignedInServer(),
     ))
       bottomNavItemView(
         item,
         l10n,
         avatar: (active, size, color) => BottomNavAvatar(
-          imageUrl: null,
+          imageUrl: imageUrl,
           name: name,
           size: BottomNavMetrics.avatarSize,
           ring: theme.onBar.withValues(alpha: 0.18),
@@ -2414,7 +2633,13 @@ Widget _homeRowsColumn(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  _communityRating(item),
+                  _sampleRatings(
+                    context,
+                    item,
+                    UserPreferences.homeRowsRatings,
+                    personal: true,
+                    singleLine: !_phone,
+                  ),
                   if (item.overview != null)
                     Padding(
                       padding: const EdgeInsets.only(top: 4),
@@ -2472,41 +2697,67 @@ Widget _homeRowsColumn(
       ? Padding(
           padding: const EdgeInsets.fromLTRB(16, 24, 16, 12),
           child: SizedBox(
-            height: 145,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  items.first.title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.w800,
-                    color: AppColorScheme.onSurface,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                _metadataWrap(items.first),
-                if (items.first.overview != null) ...[
-                  const SizedBox(height: 8),
+            height: InfoArea.fixedHeight(
+              isMobile: false,
+              desktopScale: _desktopScale,
+            ),
+            // Right after the UI scale changes, the saved scale can be read
+            // here a frame before the text picks it up, so a column that's
+            // briefly too tall is clipped rather than overflowing.
+            child: SingleChildScrollView(
+              physics: const NeverScrollableScrollPhysics(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                   Text(
-                    items.first.overview!,
-                    maxLines: 2,
+                    items.first.title,
+                    maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontSize: 13,
-                      height: 1.4,
-                      color: AppColorScheme.onSurface.withValues(alpha: 0.7),
+                      fontSize: 26,
+                      fontWeight: FontWeight.w800,
+                      color: AppColorScheme.onSurface,
                     ),
                   ),
+                  const SizedBox(height: 6),
+                  _metadataWrap(items.first),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    height: 30,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: _sampleRatings(
+                        context,
+                        items.first,
+                        UserPreferences.homeRowsRatings,
+                        inlineChips: true,
+                      ),
+                    ),
+                  ),
+                  if (items.first.overview != null) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      items.first.overview!,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 13,
+                        height: 1.4,
+                        color: AppColorScheme.onSurface.withValues(alpha: 0.7),
+                      ),
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
         )
       : null;
 
+  // Expanded Rows stretches every row to the bottom of the screen, so the
+  // next one starts below it and nothing peeks up.
+  final oneRowPerScreen =
+      !_phone && previewValue(context, UserPreferences.fullScreenRows);
   return Padding(
     padding: EdgeInsets.only(left: _rowLeftInset - 16, top: _phone ? 8 : 16),
     child: Column(
@@ -2514,10 +2765,12 @@ Widget _homeRowsColumn(
       children: [
         ?infoOverlay,
         row(l10n.continueWatching, thumbs: !modern, withFocus: focusFirst),
-        SizedBox(height: rowGap),
-        row(l10n.recentlyAdded, offset: 3),
-        SizedBox(height: rowGap),
-        row(l10n.nextUp, thumbs: !modern, offset: 6),
+        if (!oneRowPerScreen) ...[
+          SizedBox(height: rowGap),
+          row(l10n.recentlyAdded, offset: 3),
+          SizedBox(height: rowGap),
+          row(l10n.nextUp, thumbs: !modern, offset: 6),
+        ],
       ],
     ),
   );
@@ -2543,6 +2796,171 @@ Widget detailStylePreview(DetailScreenStyle style) => _liveOrFallback(
   },
   fallback: _fallbackDetail(style),
 );
+
+/// Buttons a movie's details row can carry, standing in for whatever the
+/// title on screen would offer.
+const _sampleDetailButtons = [
+  DetailButton.audio,
+  DetailButton.subtitles,
+  DetailButton.trailer,
+  DetailButton.watched,
+  DetailButton.favorite,
+  DetailButton.personalRating,
+  DetailButton.playlist,
+];
+
+/// The buttons after Play as the Detail Buttons settings have them on this
+/// kind of device, in their order, without the hidden ones, and cut to the
+/// number on screen with More holding the rest. [auto] is how many the style
+/// fits when that number is left on Auto. Styles whose More is a menu fold as
+/// soon as the number is reached, the others keep a last button that would
+/// only have been swapped for More.
+List<(IconData, String)> _detailButtons(
+  BuildContext context, {
+  required int auto,
+  bool menu = true,
+}) {
+  final l10n = AppLocalizations.of(context);
+  final prefs = GetIt.instance<UserPreferences>();
+  final hidden = detailButtonLayout.hidden(prefs);
+  final shown = [
+    for (final button in detailButtonLayout.ordered(
+      _sampleDetailButtons,
+      (button) => button.id,
+      prefs,
+    ))
+      if (!hidden.contains(button.id)) button,
+  ];
+  final limit = previewValue(context, UserPreferences.detailButtonsMaxVisible);
+  final visible = switch (limit) {
+    -1 => shown.length,
+    > 0 when !menu && shown.length <= limit => shown.length,
+    > 0 => limit - 1,
+    _ => auto,
+  };
+  return [
+    for (final button in shown.take(visible)) (button.icon, button.label(l10n)),
+    if (shown.length > visible) (Icons.more_horiz_rounded, l10n.more),
+  ];
+}
+
+/// A movie's metadata line in the order the Detail Metadata settings put it,
+/// without the entries they switch off. Status, the next episode and Seerr
+/// only show on series and requests, so a movie has none of them.
+List<(DetailMetadataItem, String)> _detailMeta(
+  MediaBarSlideItem item, {
+  String genreJoin = ' • ',
+}) {
+  final prefs = GetIt.instance<UserPreferences>();
+  final hidden = detailMetadataLayout.hidden(prefs);
+  String? textOf(DetailMetadataItem entry) => switch (entry) {
+    DetailMetadataItem.year => item.year?.toString(),
+    DetailMetadataItem.parentalRating => item.officialRating,
+    DetailMetadataItem.runtimeAndSeasons =>
+      item.runtime == null ? null : _runtimeText(item.runtime),
+    DetailMetadataItem.genres =>
+      item.genres.isEmpty ? null : item.genres.take(3).join(genreJoin),
+    _ => null,
+  };
+  return [
+    for (final entry in detailMetadataLayout.ordered(
+      DetailMetadataItem.values,
+      (entry) => entry.id,
+      prefs,
+    ))
+      if (!hidden.contains(entry.id))
+        if (textOf(entry) case final text?) (entry, text),
+  ];
+}
+
+/// The metadata line Modern and Spotlight share, with a clock on the runtime.
+Widget _modernDetailMeta(MediaBarSlideItem item) {
+  final style = TextStyle(
+    fontSize: 14,
+    color: AppColorScheme.onSurface.withValues(alpha: 0.75),
+  );
+  return Wrap(
+    spacing: 8,
+    runSpacing: 6,
+    crossAxisAlignment: WrapCrossAlignment.center,
+    children: [
+      for (final (i, (entry, text)) in _detailMeta(
+        item,
+        genreJoin: ' · ',
+      ).indexed) ...[
+        if (i > 0) Text('·', style: style),
+        if (entry == DetailMetadataItem.runtimeAndSeasons)
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.schedule, size: 14, color: style.color),
+              const SizedBox(width: 4),
+              Text(text, style: style),
+            ],
+          )
+        else
+          Text(text, style: style),
+      ],
+    ],
+  );
+}
+
+/// Sample stream chips under the metadata line while Technical Details is on.
+List<Widget> _techChips(BuildContext context, {double gap = 6}) {
+  if (!previewValue(context, UserPreferences.detailShowTechnicalDetails)) {
+    return const [];
+  }
+  return [
+    SizedBox(height: gap),
+    Wrap(
+      spacing: 6,
+      runSpacing: 4,
+      children: [
+        for (final label in const ['4K', 'HDR', '5.1'])
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+            decoration: BoxDecoration(
+              border: Border.fromBorderSide(
+                ThemeRegistry.active.borders.chipBorder.copyWith(
+                  color: Colors.white.withValues(alpha: 0.3),
+                ),
+              ),
+              borderRadius: AppRadius.circular(4),
+            ),
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: AppColorScheme.onSurface,
+              ),
+            ),
+          ),
+      ],
+    ),
+  ];
+}
+
+/// The backdrop shown whole under the toolbar when a phone has Backdrop Size
+/// on Fit.
+Widget _detailBackdropFit(BuildContext context, Widget art) =>
+    DetailBackdropFit(
+      prefs: GetIt.instance<UserPreferences>(),
+      fits:
+          _phone &&
+          previewValue(context, UserPreferences.detailsBackdropSize) ==
+              UserPreferences.detailsBackdropFit,
+      child: art,
+    );
+
+/// The details background setting from 0 to 1. Classic blurs its backdrop by
+/// it and every other style dims its backdrop by it instead.
+double _detailBackgroundAmount(BuildContext context) =>
+    previewValue(
+      context,
+      UserPreferences.detailsBackgroundBlurAmount,
+    ).clamp(0, 25) /
+    25.0;
 
 Widget _detailCircleButton(IconData icon, double diameter) => Container(
   width: diameter,
@@ -2593,24 +3011,61 @@ Widget _detailPlayPill(BuildContext context, {required bool landscape}) {
   );
 }
 
+/// Play beside its circle buttons in landscape, or above them in portrait,
+/// where they spread across the width unless [gap] spaces them.
+List<Widget> _detailActionRow(
+  BuildContext context, {
+  required bool landscape,
+  required List<(IconData, String)> buttons,
+  double? gap,
+}) {
+  final circles = [
+    for (final (icon, _) in buttons)
+      _detailCircleButton(icon, landscape ? 52 : 48),
+  ];
+  if (landscape) {
+    return [
+      Wrap(
+        spacing: gap ?? 8,
+        runSpacing: 8,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [_detailPlayPill(context, landscape: true), ...circles],
+      ),
+    ];
+  }
+  return [
+    _detailPlayPill(context, landscape: false),
+    const SizedBox(height: 12),
+    if (gap == null)
+      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: circles)
+    else
+      Wrap(spacing: gap, runSpacing: gap, children: circles),
+  ];
+}
+
 /// The backdrop, scrims, and hero placement shared by the modern and
 /// spotlight detail previews.
-Widget _detailPreviewScaffold({
+Widget _detailPreviewScaffold(
+  BuildContext context, {
   required MediaBarSlideItem item,
   required bool landscape,
   required Widget hero,
 }) {
   final base = AppColorScheme.background;
-  const gradientScale = 0.58;
+  final amount = _detailBackgroundAmount(context);
+  final gradientScale = 0.3 + 0.7 * amount;
   return Stack(
     fit: StackFit.expand,
     children: [
       ColoredBox(color: base),
-      _artwork(
-        item.backdropUrl,
-        alignment: landscape ? Alignment.centerRight : Alignment.topCenter,
+      _detailBackdropFit(
+        context,
+        _artwork(
+          item.backdropUrl,
+          alignment: landscape ? Alignment.centerRight : Alignment.topCenter,
+        ),
       ),
-      ColoredBox(color: Colors.black.withValues(alpha: 0.32)),
+      ColoredBox(color: Colors.black.withValues(alpha: 0.8 * amount)),
       if (landscape) ...[
         DecoratedBox(
           decoration: BoxDecoration(
@@ -2780,14 +3235,13 @@ Widget _classicDetail(BuildContext context, List<MediaBarSlideItem> items) {
     color: Colors.white.withValues(alpha: 0.9),
     shadows: _textShadows,
   );
-  final parts = _metaParts(item);
   final meta = Wrap(
     alignment: desktopLayout ? WrapAlignment.start : WrapAlignment.center,
     crossAxisAlignment: WrapCrossAlignment.center,
     spacing: 2,
     runSpacing: 4,
     children: [
-      for (var i = 0; i < parts.length; i++) ...[
+      for (final (i, (entry, text)) in _detailMeta(item).indexed) ...[
         if (i > 0)
           Text(
             ' • ',
@@ -2795,17 +3249,17 @@ Widget _classicDetail(BuildContext context, List<MediaBarSlideItem> items) {
               color: Colors.white.withValues(alpha: 0.5),
             ),
           ),
-        if (item.officialRating != null && parts[i] == item.officialRating)
+        if (entry == DetailMetadataItem.parentalRating)
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
               color: Colors.white.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(4),
             ),
-            child: Text(parts[i], style: metaStyle.copyWith(fontSize: 11)),
+            child: Text(text, style: metaStyle.copyWith(fontSize: 11)),
           )
         else
-          Text(parts[i], style: metaStyle),
+          Text(text, style: metaStyle),
       ],
     ],
   );
@@ -2849,11 +3303,7 @@ Widget _classicDetail(BuildContext context, List<MediaBarSlideItem> items) {
     children: [
       for (final (icon, label) in [
         (Icons.play_arrow_rounded, l10n.play),
-        (Icons.shuffle_rounded, l10n.shuffle),
-        (Icons.subtitles_outlined, l10n.subtitles),
-        (Icons.check_rounded, l10n.watched),
-        (Icons.favorite_border_rounded, l10n.favorite),
-        (Icons.more_horiz_rounded, l10n.more),
+        ..._detailButtons(context, auto: 4, menu: false),
       ])
         _detailActionTile(
           icon,
@@ -2875,20 +3325,41 @@ Widget _classicDetail(BuildContext context, List<MediaBarSlideItem> items) {
       titleBlock,
       const SizedBox(height: 12),
       meta,
+      ..._techChips(context),
       const SizedBox(height: 8),
-      _communityRating(item),
+      _sampleRatings(
+        context,
+        item,
+        UserPreferences.detailsRatings,
+        personal: true,
+      ),
       const SizedBox(height: 8),
       overview,
     ],
   );
 
+  final blur = previewValue(
+    context,
+    UserPreferences.detailsBackgroundBlurAmount,
+  ).toDouble();
+  final sigma = blur > 0 ? GlassSettings.decorativeSigma(blur) : 0.0;
+
   return Stack(
     fit: StackFit.expand,
     children: [
-      if (item.backdropUrl != null)
-        ImageFiltered(
-          imageFilter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: _artwork(item.backdropUrl),
+      if (item.backdropUrl != null &&
+          previewValue(context, UserPreferences.detailsBackdropEnabled))
+        _detailBackdropFit(
+          context,
+          sigma > 0
+              ? ImageFiltered(
+                  imageFilter: ui.ImageFilter.blur(
+                    sigmaX: sigma,
+                    sigmaY: sigma,
+                  ),
+                  child: _artwork(item.backdropUrl),
+                )
+              : _artwork(item.backdropUrl),
         ),
       const DecoratedBox(
         decoration: BoxDecoration(
@@ -3018,41 +3489,10 @@ Widget _classicDetail(BuildContext context, List<MediaBarSlideItem> items) {
 Widget _modernDetail(BuildContext context, MediaBarSlideItem item) {
   final l10n = AppLocalizations.of(context);
   final landscape = !_phone;
-
-  final metaStyle = TextStyle(
-    fontSize: 14,
-    color: AppColorScheme.onSurface.withValues(alpha: 0.75),
-  );
-  final metaChildren = <Widget>[
-    if (item.year != null) Text('${item.year}', style: metaStyle),
-    if (item.officialRating != null)
-      Text(item.officialRating!, style: metaStyle),
-    if (item.runtime != null)
-      Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.schedule,
-            size: 14,
-            color: AppColorScheme.onSurface.withValues(alpha: 0.75),
-          ),
-          const SizedBox(width: 4),
-          Text(_runtimeText(item.runtime), style: metaStyle),
-        ],
-      ),
-    if (item.genres.isNotEmpty)
-      Text(item.genres.take(3).join(' · '), style: metaStyle),
-  ];
-  final meta = Wrap(
-    spacing: 8,
-    runSpacing: 6,
-    crossAxisAlignment: WrapCrossAlignment.center,
-    children: [
-      for (var i = 0; i < metaChildren.length; i++) ...[
-        if (i > 0) Text('·', style: metaStyle),
-        metaChildren[i],
-      ],
-    ],
+  // Collapsed tabs open with none picked and nothing under them.
+  final expandedTabs = previewValue(
+    context,
+    UserPreferences.detailExpandedTabs,
   );
 
   Widget pillTab(String label, {bool selected = false}) => Container(
@@ -3087,7 +3527,7 @@ Widget _modernDetail(BuildContext context, MediaBarSlideItem item) {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          pillTab(l10n.cast, selected: true),
+          pillTab(l10n.cast, selected: expandedTabs),
           pillTab(l10n.studios),
           pillTab(l10n.chapters),
           pillTab(l10n.details),
@@ -3096,8 +3536,6 @@ Widget _modernDetail(BuildContext context, MediaBarSlideItem item) {
       ),
     ),
   );
-
-  final playPill = _detailPlayPill(context, landscape: landscape);
 
   final hero = Column(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -3114,9 +3552,15 @@ Widget _modernDetail(BuildContext context, MediaBarSlideItem item) {
         ),
       ),
       const SizedBox(height: 10),
-      meta,
+      _modernDetailMeta(item),
+      ..._techChips(context),
       const SizedBox(height: 6),
-      _communityRating(item),
+      _sampleRatings(
+        context,
+        item,
+        UserPreferences.detailsRatings,
+        personal: true,
+      ),
       if (item.overview != null) ...[
         const SizedBox(height: 8),
         ConstrainedBox(
@@ -3134,47 +3578,35 @@ Widget _modernDetail(BuildContext context, MediaBarSlideItem item) {
         ),
       ],
       const SizedBox(height: 24),
-      if (landscape)
-        Row(
-          children: [
-            playPill,
-            const SizedBox(width: 8),
-            _detailCircleButton(Icons.favorite_border_rounded, 52),
-            const SizedBox(width: 8),
-            _detailCircleButton(Icons.check_rounded, 52),
-            const SizedBox(width: 8),
-            _detailCircleButton(Icons.more_horiz_rounded, 52),
-          ],
-        )
-      else ...[
-        playPill,
-        const SizedBox(height: 12),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _detailCircleButton(Icons.favorite_border_rounded, 48),
-            _detailCircleButton(Icons.check_rounded, 48),
-            _detailCircleButton(Icons.subtitles_outlined, 48),
-            _detailCircleButton(Icons.more_horiz_rounded, 48),
-          ],
-        ),
-      ],
+      ..._detailActionRow(
+        context,
+        landscape: landscape,
+        buttons: _detailButtons(context, auto: landscape ? 2 : 3, menu: false),
+      ),
       SizedBox(height: landscape ? 16 : 24),
       tabBar,
-      SizedBox(height: landscape ? 8 : 12),
-      _castPlaceholderRow(avatarRadius: landscape ? 45 : 35),
+      if (expandedTabs) ...[
+        SizedBox(height: landscape ? 8 : 12),
+        _castPlaceholderRow(avatarRadius: landscape ? 45 : 35),
+      ],
     ],
   );
 
-  return _detailPreviewScaffold(item: item, landscape: landscape, hero: hero);
+  return _detailPreviewScaffold(
+    context,
+    item: item,
+    landscape: landscape,
+    hero: hero,
+  );
 }
 
 /// An all-caps genre line above an oversized title, then a section rail
 /// stacked under the actions where Modern puts tabs and Spotlight puts
 /// summary cards. Takes the whole list so the rail has real artwork.
 
-/// Artwork, the title, one play button and the episodes. The preview leaves
-/// out everything the real screen does, which is the point of it.
+/// Artwork, the title, Play with the few buttons beside it, and the episodes.
+/// The preview leaves out everything the real screen does, which is the point
+/// of it.
 Widget _minimalistDetail(BuildContext context, MediaBarSlideItem item) {
   final landscape = !_phone;
   final cardWidth = landscape ? 96.0 : 74.0;
@@ -3182,8 +3614,12 @@ Widget _minimalistDetail(BuildContext context, MediaBarSlideItem item) {
   return Stack(
     fit: StackFit.expand,
     children: [
-      _artwork(item.backdropUrl),
-      ColoredBox(color: AppColors.black.withValues(alpha: 0.55)),
+      _detailBackdropFit(context, _artwork(item.backdropUrl)),
+      ColoredBox(
+        color: AppColors.black.withValues(
+          alpha: 0.35 + 0.5 * _detailBackgroundAmount(context),
+        ),
+      ),
       Padding(
         padding: EdgeInsets.fromLTRB(landscape ? 22 : 14, 0, 14, landscape ? 18 : 14),
         child: Column(
@@ -3201,8 +3637,9 @@ Widget _minimalistDetail(BuildContext context, MediaBarSlideItem item) {
               ),
             ),
             const SizedBox(height: 12),
-            Row(
+            Wrap(
               spacing: 8,
+              runSpacing: 8,
               children: [
                 Container(
                   width: landscape ? 84 : 70,
@@ -3212,13 +3649,21 @@ Widget _minimalistDetail(BuildContext context, MediaBarSlideItem item) {
                     borderRadius: BorderRadius.circular(15),
                   ),
                 ),
-                for (var i = 0; i < 2; i++)
+                for (final (icon, _) in _detailButtons(
+                  context,
+                  auto: landscape ? 4 : 3,
+                ))
                   Container(
                     width: landscape ? 30 : 26,
                     height: landscape ? 30 : 26,
                     decoration: BoxDecoration(
                       color: AppColorScheme.onSurface.withValues(alpha: 0.18),
                       shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      icon,
+                      size: landscape ? 16 : 14,
+                      color: AppColorScheme.onSurface,
                     ),
                   ),
               ],
@@ -3256,11 +3701,14 @@ Widget _nouveauDetail(BuildContext context, List<MediaBarSlideItem> items) {
   );
 
   // Genres sit in the eyebrow above the title, so they are left out here
-  // rather than repeated.
+  // rather than repeated, and hiding them hides the eyebrow.
+  final detailMeta = _detailMeta(item);
+  final showGenres = detailMeta.any(
+    (part) => part.$1 == DetailMetadataItem.genres,
+  );
   final metaParts = [
-    if (item.year != null) '${item.year}',
-    if (item.officialRating != null) item.officialRating!,
-    if (item.runtime != null) _runtimeText(item.runtime),
+    for (final (entry, text) in detailMeta)
+      if (entry != DetailMetadataItem.genres) text,
   ];
 
   final meta = Wrap(
@@ -3319,7 +3767,7 @@ Widget _nouveauDetail(BuildContext context, List<MediaBarSlideItem> items) {
     crossAxisAlignment: CrossAxisAlignment.start,
     mainAxisSize: MainAxisSize.min,
     children: [
-      if (item.genres.isNotEmpty) ...[
+      if (showGenres) ...[
         Text(
           item.genres.take(3).join('   •   ').toUpperCase(),
           maxLines: 1,
@@ -3346,8 +3794,14 @@ Widget _nouveauDetail(BuildContext context, List<MediaBarSlideItem> items) {
       ),
       const SizedBox(height: 14),
       meta,
+      ..._techChips(context),
       const SizedBox(height: 6),
-      _communityRating(item),
+      _sampleRatings(
+        context,
+        item,
+        UserPreferences.detailsRatings,
+        personal: true,
+      ),
       if (item.overview != null) ...[
         const SizedBox(height: 10),
         ConstrainedBox(
@@ -3365,64 +3819,28 @@ Widget _nouveauDetail(BuildContext context, List<MediaBarSlideItem> items) {
         ),
       ],
       SizedBox(height: landscape ? 28 : 22),
-      // The portrait pill takes the full width, so it can't share a Row.
-      if (landscape)
-        Row(
-          children: [
-            _detailPlayPill(context, landscape: true),
-            const SizedBox(width: 14),
-            _detailCircleButton(Icons.favorite_border_rounded, 52),
-            const SizedBox(width: 14),
-            _detailCircleButton(Icons.more_horiz_rounded, 52),
-          ],
-        )
-      else ...[
-        _detailPlayPill(context, landscape: false),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            _detailCircleButton(Icons.favorite_border_rounded, 48),
-            const SizedBox(width: 12),
-            _detailCircleButton(Icons.more_horiz_rounded, 48),
-          ],
-        ),
-      ],
+      ..._detailActionRow(
+        context,
+        landscape: landscape,
+        buttons: _detailButtons(context, auto: 2),
+        gap: landscape ? 14 : 12,
+      ),
       SizedBox(height: landscape ? 34 : 26),
       rail,
     ],
   );
 
-  return _detailPreviewScaffold(item: item, landscape: landscape, hero: hero);
+  return _detailPreviewScaffold(
+    context,
+    item: item,
+    landscape: landscape,
+    hero: hero,
+  );
 }
 
 Widget _spotlightDetail(BuildContext context, MediaBarSlideItem item) {
   final l10n = AppLocalizations.of(context);
   final landscape = !_phone;
-
-  final metaStyle = TextStyle(
-    fontSize: 14,
-    color: AppColorScheme.onSurface.withValues(alpha: 0.75),
-  );
-  final metaChildren = <Widget>[
-    if (item.year != null) Text('${item.year}', style: metaStyle),
-    if (item.officialRating != null)
-      Text(item.officialRating!, style: metaStyle),
-    if (item.genres.isNotEmpty)
-      Text(item.genres.take(2).join(' · '), style: metaStyle),
-  ];
-  final meta = Wrap(
-    spacing: 8,
-    runSpacing: 6,
-    crossAxisAlignment: WrapCrossAlignment.center,
-    children: [
-      for (var i = 0; i < metaChildren.length; i++) ...[
-        if (i > 0) Text('·', style: metaStyle),
-        metaChildren[i],
-      ],
-    ],
-  );
-
-  final playPill = _detailPlayPill(context, landscape: landscape);
 
   Widget summaryCard(IconData icon, String label) => Expanded(
     child: Container(
@@ -3496,9 +3914,15 @@ Widget _spotlightDetail(BuildContext context, MediaBarSlideItem item) {
         ),
       ),
       const SizedBox(height: 10),
-      meta,
+      _modernDetailMeta(item),
+      ..._techChips(context, gap: 8),
       const SizedBox(height: 6),
-      _communityRating(item),
+      _sampleRatings(
+        context,
+        item,
+        UserPreferences.detailsRatings,
+        personal: true,
+      ),
       if (item.overview != null) ...[
         const SizedBox(height: 8),
         ConstrainedBox(
@@ -3516,33 +3940,11 @@ Widget _spotlightDetail(BuildContext context, MediaBarSlideItem item) {
         ),
       ],
       const SizedBox(height: 24),
-      if (landscape)
-        Row(
-          children: [
-            playPill,
-            const SizedBox(width: 8),
-            _detailCircleButton(Icons.movie_outlined, 52),
-            const SizedBox(width: 8),
-            _detailCircleButton(Icons.subtitles_outlined, 52),
-            const SizedBox(width: 8),
-            _detailCircleButton(Icons.graphic_eq_rounded, 52),
-            const SizedBox(width: 8),
-            _detailCircleButton(Icons.more_horiz_rounded, 52),
-          ],
-        )
-      else ...[
-        playPill,
-        const SizedBox(height: 12),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _detailCircleButton(Icons.movie_outlined, 48),
-            _detailCircleButton(Icons.subtitles_outlined, 48),
-            _detailCircleButton(Icons.graphic_eq_rounded, 48),
-            _detailCircleButton(Icons.more_horiz_rounded, 48),
-          ],
-        ),
-      ],
+      ..._detailActionRow(
+        context,
+        landscape: landscape,
+        buttons: _detailButtons(context, auto: landscape ? 4 : 3),
+      ),
       SizedBox(height: landscape ? 20 : 24),
       Row(
         children: [
@@ -3562,7 +3964,12 @@ Widget _spotlightDetail(BuildContext context, MediaBarSlideItem item) {
     ],
   );
 
-  return _detailPreviewScaffold(item: item, landscape: landscape, hero: hero);
+  return _detailPreviewScaffold(
+    context,
+    item: item,
+    landscape: landscape,
+    hero: hero,
+  );
 }
 
 // ---------------------------------------------------------------------------

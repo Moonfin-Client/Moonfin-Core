@@ -18,6 +18,7 @@ import '../../widgets/settings/preference_binding.dart';
 import '../../widgets/settings/multi_select_dialog.dart';
 import '../../widgets/settings/preference_tiles.dart';
 import '../../widgets/settings/settings_panel.dart';
+import '../../widgets/settings/settings_preview_scope.dart';
 import 'home_sections_screen.dart';
 import 'ratings_config_screen.dart';
 import 'settings_app_bar.dart';
@@ -350,13 +351,20 @@ class _MediaBarSettingsScreenState extends State<MediaBarSettingsScreen> {
                     icon: Icons.star,
                     onChanged: _pushSync,
                   ),
-                  _MediaBarActionTile(
-                    icon: const Icon(Icons.reorder),
-                    title: Text(l10n.ratingSources),
-                    subtitle: Text(l10n.ratingSourcesDescription),
-                    onTap: () => context.pushSettingsScreen(
-                      RatingsConfigScreen(
-                        settings: UserPreferences.mediaBarRatings,
+                  SettingsPreviewReporter(
+                    describe: () => SettingsPreviewEntry(
+                      prefKey: UserPreferences.mediaBarRatings.sources.key,
+                      title: l10n.ratingSources,
+                      description: l10n.ratingSourcesDescription,
+                    ),
+                    child: _MediaBarActionTile(
+                      icon: const Icon(Icons.reorder),
+                      title: Text(l10n.ratingSources),
+                      subtitle: Text(l10n.ratingSourcesDescription),
+                      onTap: () => context.pushSettingsScreen(
+                        RatingsConfigScreen(
+                          settings: UserPreferences.mediaBarRatings,
+                        ),
                       ),
                     ),
                   ),

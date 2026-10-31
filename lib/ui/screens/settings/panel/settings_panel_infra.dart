@@ -40,6 +40,10 @@ class _TvSettingsListTile extends StatefulWidget {
   final Widget? trailing;
   final VoidCallback? onTap;
 
+  /// The preference the tile picks or opens an editor for, so the live
+  /// preview can show it.
+  final String? previewKey;
+
   const _TvSettingsListTile({
     super.key,
     this.focusNode,
@@ -49,6 +53,7 @@ class _TvSettingsListTile extends StatefulWidget {
     this.subtitle,
     this.trailing,
     this.onTap,
+    this.previewKey,
   });
 
   @override
@@ -89,6 +94,7 @@ class _TvSettingsListTileState extends State<_TvSettingsListTile> {
         (widget.onTap != null ? const Icon(Icons.chevron_right) : null);
     return SettingsPreviewReporter(
       describe: () => SettingsPreviewEntry(
+        prefKey: widget.previewKey,
         title: _plainText(widget.title) ?? '',
         description: _plainText(widget.subtitle),
       ),
@@ -168,12 +174,8 @@ class _TvSettingsListTileState extends State<_TvSettingsListTile> {
   }
 }
 
-class _SectionHeader extends StatelessWidget {
-  final String text;
-  const _SectionHeader(this.text);
-
-  @override
-  Widget build(BuildContext context) => SettingsSectionHeader(text);
+class _SectionHeader extends SettingsSectionHeader {
+  const _SectionHeader(super.text);
 }
 
 void _pushPersonalizationSync() {

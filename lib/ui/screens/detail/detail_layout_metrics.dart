@@ -68,7 +68,16 @@ class DetailBackdropFit extends StatelessWidget {
   final Widget child;
   final UserPreferences prefs;
 
-  const DetailBackdropFit({super.key, required this.child, required this.prefs});
+  /// Overrides this screen's shape and the saved setting, for the settings
+  /// preview, which always draws a phone upright and may be trying a value.
+  final bool? fits;
+
+  const DetailBackdropFit({
+    super.key,
+    required this.child,
+    required this.prefs,
+    this.fits,
+  });
 
   // Eased stops, so the picture melts into the page rather than ending on a line
   static const _fade = LinearGradient(
@@ -89,10 +98,11 @@ class DetailBackdropFit extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final fits =
-        PlatformDetection.useMobileUi &&
-        !detailUsesLandscapeLayout(context) &&
-        prefs.get(UserPreferences.detailsBackdropSize) ==
-            UserPreferences.detailsBackdropFit;
+        this.fits ??
+        (PlatformDetection.useMobileUi &&
+            !detailUsesLandscapeLayout(context) &&
+            prefs.get(UserPreferences.detailsBackdropSize) ==
+                UserPreferences.detailsBackdropFit);
     if (!fits) return child;
     return Padding(
       padding: EdgeInsets.only(

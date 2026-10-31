@@ -39,7 +39,6 @@ import '../../util/home_row_title_localizer.dart';
 import '../../../util/overlay_color_palette.dart';
 import '../../../util/game_cores.dart';
 import '../../../util/platform_detection.dart';
-import '../../../util/playback_time_label.dart';
 import '../../../util/app_beta.dart';
 import '../../../util/app_distribution.dart';
 import '../../../util/pin_code_util.dart';
@@ -75,9 +74,6 @@ import '../../widgets/adaptive/adaptive_list_section.dart';
 import '../../widgets/keyboard_shortcuts/keyboard_shortcut_reference.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/client_certificate_dialog.dart';
-import '../../widgets/playback/playback_time_row.dart';
-import '../../widgets/playback/player_loading_overlay.dart';
-import '../../widgets/playback/loading_animation_widget.dart';
 import '../../widgets/settings/preference_binding.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
 import '../../widgets/settings/button_layout_list.dart';
@@ -90,7 +86,6 @@ import '../../widgets/settings/settings_section_header.dart';
 import '../../widgets/bottom_nav/bottom_nav_destinations.dart';
 import '../../widgets/navigation_layout.dart';
 import '../../widgets/support_dialog.dart';
-import '../../widgets/trickplay_settings_preview.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../home/home_view_model.dart';
 import 'appearance_theme_screen.dart';
@@ -200,6 +195,15 @@ Future<void> _openThemeEditor(BuildContext context) async {
   }
 }
 
+/// The largest text scale the category labels fit the strip's fixed height
+/// at. Past Large their descenders get cut off.
+final _pillMaxTextScale = DesktopUiScale.large.scaleFactor;
+
+/// The inspector's height at the default scale, split into the share its text
+/// takes, which grows with the user's scale, and its padding and gaps.
+const _inspectorTextHeight = 90.0;
+const _inspectorFixedHeight = 90.0;
+
 /// One pill segment of Settings and the page it opens in the list column.
 class _SettingsCategory {
   final String title;
@@ -252,6 +256,14 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
   final _searchController = TextEditingController();
   final _searchFieldFocus = FocusNode(debugLabel: 'SettingsSearchField');
   final _searchTvFieldKey = GlobalKey<CustomTVTextFieldState>();
+  final _chipFocus = {
+    for (final scene in SettingsPreviewScene.values)
+      scene: FocusNode(debugLabel: 'SettingsPreviewChip_${scene.name}'),
+  };
+
+  /// The setting Right crossed to the chips from, for Left and Back to return
+  /// to.
+  FocusNode? _chipsReturnFocus;
   String _query = '';
   List<_SettingsCategory> _categories = const [];
   int _categoryIndex = 0;
@@ -302,6 +314,7 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
     super.initState();
     SettingsPanel.backHandlers.add(_handleBack);
     _searchController.addListener(_onSearchChanged);
+    _pillFocus.addListener(_onPillFocusChanged);
     if (PlatformDetection.useDesktopUi) {
       // Attached to the node so it runs before the text field consumes the
       // key. Down leaves the field for the list, left and right stay caret
@@ -321,14 +334,22 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
     _preview.dispose();
     _listScope.dispose();
     _pillFocus.dispose();
+    for (final node in _chipFocus.values) {
+      node.dispose();
+    }
     _searchController.dispose();
     _searchFieldFocus.dispose();
     super.dispose();
   }
 
-  /// Back pops the list column first, then (on a TV or desktop) returns to the
-  /// category pill, and only then lets the panel close.
+  /// Back leaves the scene chips for the setting they were reached from, then
+  /// pops the list column, then (on a TV or desktop) returns to the category
+  /// pill, and only then lets the panel close.
   bool _handleBack() {
+    if (_chipFocus.values.any((node) => node.hasFocus)) {
+      _leaveChips();
+      return true;
+    }
     final navigator = _listNavKey.currentState;
     if (navigator != null && navigator.canPop()) {
       navigator.pop();
@@ -385,13 +406,18 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
     return KeyEventResult.ignored;
   }
 
-  /// Up past the top of a settings page climbs to the pill. Pickers open over
-  /// the list keep their own Up.
+  /// Up past the top of a settings page climbs to the pill, and Right past a
+  /// setting's own controls crosses to the preview's scene chips. Pickers
+  /// open over the list keep their own keys.
   KeyEventResult _onListKey(FocusNode node, KeyEvent event) {
     if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
       return KeyEventResult.ignored;
     }
-    if (!event.logicalKey.isUpKey) return KeyEventResult.ignored;
+    final up = event.logicalKey.isUpKey;
+    // Only a fresh press crosses, so holding Right along a row stops at its
+    // end instead of running on into the chips.
+    final right = event.logicalKey.isRightKey && event is KeyDownEvent;
+    if (!up && !right) return KeyEventResult.ignored;
     final primary = FocusManager.instance.primaryFocus;
     final primaryContext = primary?.context;
     if (primary == null || primaryContext == null) {
@@ -400,11 +426,61 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
     if (ModalRoute.of(primaryContext) is! PageRoute) {
       return KeyEventResult.ignored;
     }
-    if (primary.focusInDirection(TraversalDirection.up)) {
+    if (primary.focusInDirection(
+      up ? TraversalDirection.up : TraversalDirection.right,
+    )) {
       return KeyEventResult.handled;
     }
-    _pillFocus.requestFocus();
+    if (up) {
+      _pillFocus.requestFocus();
+    } else {
+      _chipsReturnFocus = primary;
+      _chipFocus[_preview.scene]!.requestFocus();
+    }
     return KeyEventResult.handled;
+  }
+
+  /// Left and Right walk the chips, Left off the first one returns to the
+  /// setting they were reached from and Up climbs to the category pill.
+  KeyEventResult _onChipKey(FocusNode node, KeyEvent event) {
+    if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
+      return KeyEventResult.ignored;
+    }
+    final scenes = settingsPreviewScenes;
+    final at = scenes.indexWhere((scene) => _chipFocus[scene]!.hasFocus);
+    if (at < 0) return KeyEventResult.ignored;
+    final key = event.logicalKey;
+    if (key.isLeftKey) {
+      if (at == 0) {
+        _leaveChips();
+      } else {
+        _chipFocus[scenes[at - 1]]!.requestFocus();
+      }
+    } else if (key.isRightKey) {
+      if (at < scenes.length - 1) _chipFocus[scenes[at + 1]]!.requestFocus();
+    } else if (key.isUpKey) {
+      _pillFocus.requestFocus();
+    } else if (!key.isDownKey) {
+      return KeyEventResult.ignored;
+    }
+    return KeyEventResult.handled;
+  }
+
+  void _leaveChips() {
+    final back = _chipsReturnFocus;
+    if (back != null && back.context?.mounted == true) {
+      back.requestFocus();
+    } else {
+      _enterList();
+    }
+  }
+
+  /// The inspector speaks for the category while the pill has focus, since
+  /// nothing else on screen says what the category holds.
+  void _onPillFocusChanged() {
+    if (_pillFocus.hasFocus && _categoryIndex < _categories.length) {
+      _describeCategory(_categories[_categoryIndex]);
+    }
   }
 
   void _enterList() {
@@ -445,7 +521,8 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
     final screen = category.screen();
     _listNavKey.currentState?.pushAndRemoveUntil(
       PageRouteBuilder<void>(
-        pageBuilder: (_, _, _) => screen,
+        pageBuilder: (_, _, _) =>
+            SettingsPreviewPath(path: [category.title], child: screen),
         transitionDuration: Duration.zero,
         reverseTransitionDuration: Duration.zero,
       ),
@@ -587,18 +664,25 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
 
     final searching = _query.isNotEmpty && !kidsMode;
     final list = _buildListColumn(context, l10n, showAdmin, searching);
-    final pill = SlidingPillTabs(
-      labels: [for (final category in _categories) category.title],
-      selectedIndex: _categoryIndex,
-      onChanged: _selectCategory,
-      focusNode: _pillFocus,
-      alignment: _phone ? Alignment.centerLeft : Alignment.center,
-      onVerticalNavigation: (isUp) {
-        if (isUp || _phone) return false;
-        _enterList();
-        return true;
-      },
-      onExitRight: () => _searchFieldFocus.requestFocus(),
+    // The strip keeps a fixed height, so its labels stop growing at the scale
+    // that still fits it. It measures its labels once, so a new scale gets a
+    // fresh strip that measures them again.
+    final pill = MediaQuery.withClampedTextScaling(
+      maxScaleFactor: _pillMaxTextScale,
+      child: SlidingPillTabs(
+        key: ValueKey(MediaQuery.textScalerOf(context)),
+        labels: [for (final category in _categories) category.title],
+        selectedIndex: _categoryIndex,
+        onChanged: _selectCategory,
+        focusNode: _pillFocus,
+        alignment: _phone ? Alignment.centerLeft : Alignment.center,
+        onVerticalNavigation: (isUp) {
+          if (isUp || _phone) return false;
+          _enterList();
+          return true;
+        },
+        onExitRight: () => _searchFieldFocus.requestFocus(),
+      ),
     );
     final search = _SettingsSearchField(
       controller: _searchController,
@@ -639,7 +723,10 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
                   }
                 });
                 return MaterialPageRoute<void>(
-                  builder: (_) => category.screen(),
+                  builder: (_) => SettingsPreviewPath(
+                    path: [category.title],
+                    child: category.screen(),
+                  ),
                 );
               },
             ),
@@ -739,12 +826,25 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          const Expanded(child: SettingsLivePreview()),
+                          Expanded(
+                            child: Focus(
+                              canRequestFocus: false,
+                              skipTraversal: true,
+                              onKeyEvent: _onChipKey,
+                              child: SettingsLivePreview(
+                                chipFocus: _tv ? _chipFocus : null,
+                              ),
+                            ),
+                          ),
                           const SizedBox(height: 16),
                           // A fixed height, so the preview above doesn't
                           // resize as descriptions get longer or shorter.
                           Container(
-                            height: 180,
+                            height:
+                                _inspectorFixedHeight +
+                                MediaQuery.textScalerOf(
+                                  context,
+                                ).scale(_inspectorTextHeight),
                             padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
                             decoration: BoxDecoration(
                               color: AppColorScheme.surface,
@@ -810,6 +910,9 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
     AppLocalizations l10n,
     bool showAdmin,
   ) {
+    // Set by the result being opened, so its screen keeps its real place in
+    // Settings rather than the category it was searched from.
+    List<String>? openingPath;
     final index = _buildSettingsSearchIndex(
       l10n: l10n,
       showAdmin: showAdmin,
@@ -822,6 +925,7 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
           navigatorContext.pushSettingsScreen(
             screen,
             returnFocus: _phone ? null : _pillFocus,
+            previewPath: openingPath,
           ),
         );
       },
@@ -856,6 +960,7 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
                   if (_phone) {
                     _searchFieldFocus.unfocus();
                   }
+                  openingPath = result.path;
                   result.onOpen();
                 },
               ),

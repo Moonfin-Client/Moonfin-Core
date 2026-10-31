@@ -311,7 +311,7 @@ void main() {
       expect(find.text('Source Libraries'), findsNothing);
     });
 
-    testWidgets('renders preview window in Visual Components when screensaver is enabled', (tester) async {
+    testWidgets('leaves the preview to the Settings live preview', (tester) async {
       tester.view.physicalSize = const Size(1920, 1080);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
@@ -330,8 +330,9 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 50));
 
-      expect(find.text('PREVIEW'), findsOneWidget);
-      expect(find.byType(AnimatedGradientBackdrop), findsOneWidget);
+      expect(find.text('Visual Components'), findsOneWidget);
+      expect(find.text('PREVIEW'), findsNothing);
+      expect(find.byType(AnimatedGradientBackdrop), findsNothing);
     });
 
     testWidgets('interactive toggle of In-App Screensaver hides and shows settings immediately', (tester) async {
