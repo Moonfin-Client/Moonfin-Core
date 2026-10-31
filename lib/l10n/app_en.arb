@@ -5163,13 +5163,6 @@
   "@mergeRadarrSonarrCalendars": {
     "description": "Shows the Radarr and Sonarr calendars as a single home row"
   },
-  "sonarrCalendarNextEpisode": "Next Episode: {details}",
-  "@sonarrCalendarNextEpisode": {
-    "description": "Subtitle under a show in the Sonarr calendar row. details is the air date, the episode number, or both",
-    "placeholders": {
-      "details": {"type": "String"}
-    }
-  },
   "moveUp": "Move Up",
   "@moveUp": {
     "description": "Moves a button one place earlier in its row"

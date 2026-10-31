@@ -3799,11 +3799,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get mergeRadarrSonarrCalendars => 'Merge Sonarr and Radarr Calendars';
 
   @override
-  String sonarrCalendarNextEpisode(String details) {
-    return 'Next Episode: $details';
-  }
-
-  @override
   String get moveUp => '위로 이동';
 
   @override

@@ -3876,11 +3876,6 @@ class AppLocalizationsLt extends AppLocalizations {
   String get mergeRadarrSonarrCalendars => 'Merge Sonarr and Radarr Calendars';
 
   @override
-  String sonarrCalendarNextEpisode(String details) {
-    return 'Next Episode: $details';
-  }
-
-  @override
   String get moveUp => 'Move Up';
 
   @override

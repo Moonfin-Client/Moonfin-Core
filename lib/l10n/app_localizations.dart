@@ -6796,12 +6796,6 @@ abstract class AppLocalizations {
   /// **'Merge Sonarr and Radarr Calendars'**
   String get mergeRadarrSonarrCalendars;
 
-  /// Subtitle under a show in the Sonarr calendar row. details is the air date, the episode number, or both
-  ///
-  /// In en, this message translates to:
-  /// **'Next Episode: {details}'**
-  String sonarrCalendarNextEpisode(String details);
-
   /// Moves a button one place earlier in its row
   ///
   /// In en, this message translates to:
