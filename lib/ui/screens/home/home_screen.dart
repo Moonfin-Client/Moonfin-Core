@@ -5766,6 +5766,10 @@ class _ContentRowsState extends State<_ContentRows>
                   final isWatchingNow = row.id == 'mdblist_watching_now';
                   final card = MediaCard(
                     animeMarkerItemId: (isSeerrGenreCard || isWatchingNow) ? null : item.id,
+                    posterBadgeItemId:
+                        isSeerrGenreCard || isWatchingNow || item.serverId == 'seerr'
+                        ? null
+                        : item.id,
                     recordingItemId: (isSeerrGenreCard || isWatchingNow) ? null : item.id,
                     title: isWatchingNow ? item.name : cardTitle,
                     showLabel: !isWatchingNow,
