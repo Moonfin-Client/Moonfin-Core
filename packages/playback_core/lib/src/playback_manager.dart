@@ -259,7 +259,13 @@ class PlaybackManager implements AudioOwnable {
   /// codec) follows it with a generic error, which must not be taken for a
   /// lost connection.
   String? _lastPlayerErrorKind;
-  bool _teardownForReResolve = false;
+  /// Bumped whenever an item starts afresh (not a reopen of the one that
+  /// was playing). A re-resolve's teardown flag and a recovery's hold on
+  /// failed bringup states belong to the item they were taken for: one still
+  /// in flight when the queue moves on must not cover the next item.
+  int _itemEpoch = 0;
+  int? _teardownEpoch;
+  bool get _teardownForReResolve => _teardownEpoch == _itemEpoch;
 
   /// Sessions that have claimed their one live stream release attempt, set
   /// before the close is sent, so a failed close is not retried. Keyed by
@@ -358,11 +364,19 @@ class PlaybackManager implements AudioOwnable {
   /// reconnect, a credential reopen). A failed bringup state raised in that
   /// window is an intermediate failure the recovery loop may still paper
   /// over, not the terminal one listeners should see -- that only comes from
-  /// `_giveUpOnStalledStream`, which runs outside this window. A count, so
-  /// one recovery finishing doesn't lift another's hold.
-  int _failedBringupSuppressions = 0;
+  /// `_giveUpOnStalledStream`, which runs outside this window. One hold per
+  /// recovery, so one finishing doesn't lift another's, each held for the
+  /// item it was taken for (see [_itemEpoch]).
+  final List<int> _failedBringupHolds = <int>[];
   bool get _suppressFailedBringupDuringRecovery =>
-      _failedBringupSuppressions > 0;
+      _failedBringupHolds.contains(_itemEpoch);
+
+  int _holdFailedBringup() {
+    _failedBringupHolds.add(_itemEpoch);
+    return _itemEpoch;
+  }
+
+  void _releaseFailedBringup(int hold) => _failedBringupHolds.remove(hold);
 
   /// A live stream can open and keep receiving bytes without ever rendering
   /// a frame -- weak reception trickles data, so the HTTP read never times
@@ -446,7 +460,13 @@ class PlaybackManager implements AudioOwnable {
   /// Marks the first frame seen, clears the recovery status, and drops any
   /// retry still waiting to fire -- the channel does not need it any more.
   void _onProgressStreamsUpdated() {
-    if (!_isActuallyPlaying) return;
+    if (!_isActuallyPlaying) {
+      // A reconnect earns its budget back with continuous playback: a pause
+      // or a stall starts the count again (see [_armReconnectProven]).
+      _reconnectProvenTimer?.cancel();
+      _reconnectProvenTimer = null;
+      return;
+    }
     _liveFrameSeenSinceOpen = true;
     _setLiveRecoveryStatus(null);
     if (_liveRecoveryRetry?.isActive ?? false) {
@@ -1763,7 +1783,7 @@ class PlaybackManager implements AudioOwnable {
       // to hold and try again. Suppressing just around this await keeps
       // that intermediate failure off listeners; the give-up path below and
       // the budget-exceeded one above are outside it and still emit.
-      _failedBringupSuppressions++;
+      final hold = _holdFailedBringup();
       try {
         await _reResolveAtCurrentPosition(
           isErrorRecovery: true,
@@ -1777,7 +1797,7 @@ class PlaybackManager implements AudioOwnable {
           allowStartupRecovery: false,
         );
       } finally {
-        _failedBringupSuppressions--;
+        _releaseFailedBringup(hold);
       }
     } catch (e) {
       // The source is gone, not just stalled -- a re-resolve that threw
@@ -2091,7 +2111,7 @@ class PlaybackManager implements AudioOwnable {
     var failed = false;
     // A reopen that fails is a lost connection, so the reconnect budget
     // decides whether the viewer sees a failure, not this one attempt.
-    _failedBringupSuppressions++;
+    final hold = _holdFailedBringup();
     try {
       // The viewer's intent, not the player's: a stream reopened while it
       // buffers would otherwise come back paused.
@@ -2108,7 +2128,7 @@ class PlaybackManager implements AudioOwnable {
         'Reopening the stream for its credentials failed: $error',
       );
     } finally {
-      _failedBringupSuppressions--;
+      _releaseFailedBringup(hold);
       _credentialsReopenRunning = false;
     }
     final seek = _seekAfterCredentialsReopen;
@@ -2201,7 +2221,7 @@ class PlaybackManager implements AudioOwnable {
     _diagnosticLogger?.call('Reconnecting after $trigger, attempt $attempt');
     // A failed attempt can emit a failed bringup state on its way out; the
     // budget, not one attempt, decides whether the viewer sees a failure.
-    _failedBringupSuppressions++;
+    final hold = _holdFailedBringup();
     try {
       // An unchanged track change, not a failure: the route was fine, and a
       // failure replan would rule it out.
@@ -2216,7 +2236,7 @@ class PlaybackManager implements AudioOwnable {
       failed = true;
       _diagnosticLogger?.call('Reconnect attempt $attempt failed: $error');
     } finally {
-      _failedBringupSuppressions--;
+      _releaseFailedBringup(hold);
       if (_reconnectInFlightGeneration == generation) {
         _reconnectInFlightGeneration = null;
       }
@@ -2860,6 +2880,7 @@ class PlaybackManager implements AudioOwnable {
     // (next, previous, auto-advance) ends it, or the new item's errors would
     // be taken for the old one's and its budget would carry over.
     if (!reopening) {
+      _itemEpoch++;
       _resetLiveRecoveryBudget();
       _endReconnect();
     }
@@ -2880,6 +2901,11 @@ class PlaybackManager implements AudioOwnable {
     // The backstop for everything the queue filter couldn't answer without a
     // lookup. Prerolls carry no rating of their own and are skipped.
     final refusal = _playContentRefusal;
+    // The lookup can take a while, and a stop or another start made during
+    // it (each takes the next session token) supersedes this one: a reopen
+    // must not bring back a stream the app has since stopped, for the
+    // background or for the next item.
+    final tokenBeforeRefusal = _playbackSessionToken;
     if (refusal != null && !_isPreroll(item) && await refusal(item)) {
       suppressAutoNext = true;
       queueService.clear();
@@ -2887,6 +2913,12 @@ class PlaybackManager implements AudioOwnable {
       // Closes a player that's already open, rather than leaving it frozen on
       // the last frame.
       _notifySessionEnded();
+      return;
+    }
+    if (_playbackSessionToken != tokenBeforeRefusal) {
+      _diagnosticLogger?.call(
+        'Superseded while checking whether the item may play, not opening it',
+      );
       return;
     }
 
@@ -4817,7 +4849,8 @@ class PlaybackManager implements AudioOwnable {
     // player can't fetch segments of a killed transcode and surface a
     // spurious source error. The flag stays set through the whole teardown
     // because the dying player's error events arrive asynchronously.
-    _teardownForReResolve = true;
+    final teardownEpoch = _itemEpoch;
+    _teardownEpoch = teardownEpoch;
     try {
       await _backend?.stop();
     } catch (_) {}
@@ -4864,7 +4897,7 @@ class PlaybackManager implements AudioOwnable {
         reopening: true,
       );
     } finally {
-      _teardownForReResolve = false;
+      if (_teardownEpoch == teardownEpoch) _teardownEpoch = null;
     }
   }
 
@@ -5117,6 +5150,7 @@ class PlaybackManager implements AudioOwnable {
     suppressAutoNext = false;
     // A local file has no connection to reconnect, and a retry still pending
     // for the server stream would stop it.
+    _itemEpoch++;
     _endReconnect();
     await _stopAndReportCurrent();
     _resetBackendSelectionLock();

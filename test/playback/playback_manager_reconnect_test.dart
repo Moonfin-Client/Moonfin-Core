@@ -9,6 +9,7 @@ import 'package:playback_core/playback_core.dart';
 class _TestBackend extends Fake implements PlayerBackend {
   final positions = StreamController<Duration>.broadcast(sync: true);
   final errors = StreamController<Map<String, dynamic>>.broadcast(sync: true);
+  final playingChanges = StreamController<bool>.broadcast(sync: true);
   final List<Duration> playStarts = <Duration>[];
   final List<Duration> seeks = <Duration>[];
   final List<StreamCredentials> credentialUpdates = <StreamCredentials>[];
@@ -20,6 +21,12 @@ class _TestBackend extends Fake implements PlayerBackend {
   bool takesCredentialsLive = true;
   bool playing = false;
   Duration currentPosition = Duration.zero;
+
+  /// Reports the player actually playing, or not, as an engine does.
+  void emitPlaying(bool value) {
+    playing = value;
+    playingChanges.add(value);
+  }
 
   void emitPosition(Duration position) {
     currentPosition = position;
@@ -63,7 +70,7 @@ class _TestBackend extends Fake implements PlayerBackend {
   Stream<Duration> get bufferStream => const Stream<Duration>.empty();
 
   @override
-  Stream<bool> get playingStream => const Stream<bool>.empty();
+  Stream<bool> get playingStream => playingChanges.stream;
 
   @override
   Stream<bool> get bufferingStream => const Stream<bool>.empty();
@@ -608,6 +615,132 @@ void main() {
         expect(resolver.requests, hasLength(1));
         async.elapse(const Duration(seconds: 1));
         expect(resolver.requests, hasLength(2));
+      });
+    });
+
+    test('a stream that keeps playing earns the budget back', () {
+      final resolver = _Resolver();
+      _withPlayback(resolver, (async, manager, backend, service) {
+        backend.errors.add({
+          'event': 'playerError',
+          'kind': 'network',
+          'recoverable': true,
+        });
+        async.elapse(const Duration(seconds: 1));
+        expect(resolver.requests, hasLength(1));
+
+        backend.emitPlaying(true);
+        async.elapse(const Duration(seconds: 31));
+
+        // Proven: the next failure starts again from the first attempt.
+        backend.errors.add({
+          'event': 'playerError',
+          'kind': 'network',
+          'recoverable': true,
+        });
+        async.elapse(const Duration(seconds: 1));
+        expect(resolver.requests, hasLength(2));
+      });
+    });
+
+    test('playback broken by a stall doesn\'t earn the budget back', () {
+      final resolver = _Resolver();
+      _withPlayback(resolver, (async, manager, backend, service) {
+        backend.errors.add({
+          'event': 'playerError',
+          'kind': 'network',
+          'recoverable': true,
+        });
+        async.elapse(const Duration(seconds: 1));
+        expect(resolver.requests, hasLength(1));
+
+        // Two seconds of play, a long stall, then play again just before
+        // the 30 s would be up: three seconds played in all.
+        backend.emitPlaying(true);
+        async.elapse(const Duration(seconds: 2));
+        backend.emitPlaying(false);
+        async.elapse(const Duration(seconds: 26));
+        backend.emitPlaying(true);
+        async.elapse(const Duration(seconds: 3));
+
+        backend.errors.add({
+          'event': 'playerError',
+          'kind': 'network',
+          'recoverable': true,
+        });
+        async.elapse(const Duration(seconds: 1));
+        expect(resolver.requests, hasLength(1));
+        async.elapse(const Duration(seconds: 1));
+        expect(resolver.requests, hasLength(2));
+      });
+    });
+
+    test('the next item\'s failure shows while the old reconnect is still '
+        'reopening', () {
+      final resolver = _Resolver();
+      fakeAsync((async) {
+        final backend = _TestBackend();
+        final manager = PlaybackManager()
+          ..setBackend(backend)
+          ..setResolver(resolver)
+          ..setPlayerService(_TestService())
+          ..clock = async.getClock(DateTime(2026, 10, 31, 20)).now;
+        unawaited(
+          manager.playItems(<dynamic>[
+            _movie,
+            const <String, dynamic>{'Id': 'movie-2', 'Type': 'Movie'},
+          ]),
+        );
+        async.flushMicrotasks();
+        backend.emitPosition(const Duration(minutes: 20));
+
+        final gate = Completer<void>();
+        resolver.replanGate = gate;
+        backend.errors.add({
+          'event': 'playerError',
+          'kind': 'network',
+          'recoverable': true,
+        });
+        async.elapse(const Duration(seconds: 1));
+        expect(resolver.requests, hasLength(1));
+
+        // The next item can't be resolved while the old attempt still holds.
+        resolver.unreachable = true;
+        unawaited(manager.next().catchError((Object _) {}));
+        async.flushMicrotasks();
+        expect(manager.bringupState.phase, PlaybackBringupPhase.failed);
+
+        gate.complete();
+        async.flushMicrotasks();
+        expect(manager.bringupState.phase, PlaybackBringupPhase.failed);
+        manager.dispose();
+        async.flushTimers();
+      });
+    });
+
+    test('a reopen the app stops for the background while checking the item '
+        'stays stopped', () {
+      final resolver = _Resolver();
+      _withPlayback(resolver, (async, manager, backend, service) {
+        Completer<bool>? lookup;
+        manager.setContentRefusal(
+          playRefusal: (_) => (lookup = Completer<bool>()).future,
+        );
+        backend.errors.add({
+          'event': 'playerError',
+          'kind': 'network',
+          'recoverable': true,
+        });
+        async.elapse(const Duration(seconds: 1));
+        expect(lookup, isNotNull, reason: 'the reopen is checking the item');
+
+        unawaited(manager.stopForBackground(manager.queueService.currentItem));
+        async.flushMicrotasks();
+        lookup!.complete(false);
+        async.elapse(const Duration(seconds: 30));
+
+        expect(resolver.requests, isEmpty);
+        expect(backend.playStarts, hasLength(1));
       });
     });
 
