@@ -62,15 +62,30 @@ internal class LiveRateCorrection(
     /**
      * Takes a credible measured rate. [progress] is a source-scoped loaded
      * media coordinate; [fits] is whether the display mode in use already
-     * suits the rate, in which case nothing is pending any more.
+     * suits the rate, in which case nothing is pending any more. A
+     * reading that differs from [appliedFps] only by its 1000/1001 sibling
+     * is diagnostic only; it never requests a mid-playback switch.
      */
-    fun onReading(nowMs: Long, progress: CorrectionProgress.Sample?, evidence: RateEvidence, fits: Boolean) {
+    fun onReading(
+        nowMs: Long,
+        progress: CorrectionProgress.Sample?,
+        evidence: RateEvidence,
+        fits: Boolean,
+        appliedFps: Float? = null,
+    ) {
         if (!active) return
         val fps = evidence.choice.fps ?: run {
             clearCandidate()
             return
         }
         if (fits || !fps.isFinite() || fps <= 0f) {
+            clearCandidate()
+            return
+        }
+        // The 1000/1001 sibling can be diagnosed without interrupting a
+        // working stream for a barely different display mode. This applies
+        // equally to measured cadence and a later header update.
+        if (appliedFps != null && DisplayRateDecision.isSiblingOnly(appliedFps, fps)) {
             clearCandidate()
             return
         }

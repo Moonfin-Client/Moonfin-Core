@@ -75,6 +75,10 @@ internal object DisplayRateDecision {
         return abs(newRate - oldRate) / oldRate > RATE_CHANGE_THRESHOLD
     }
 
+    /** Whether the rates differ only by the 1000/1001 step, which a short measurement can't separate. */
+    fun isSiblingOnly(aFps: Float, bFps: Float): Boolean =
+        FrameCadenceClassifier.areSiblings(aFps.toDouble(), bFps.toDouble())
+
     private fun measuredRate(cadence: FrameCadence?): Double? {
         cadence ?: return null
         return when (cadence.kind) {

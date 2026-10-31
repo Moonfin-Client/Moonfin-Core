@@ -8,6 +8,24 @@ import org.junit.Test
 class DisplayRateDecisionTest {
 
     @Test
+    fun `siblings are only a 1000_1001 rate and its integer rate`() {
+        listOf(
+            24_000f / 1001f to 24f, 30_000f / 1001f to 30f, 60_000f / 1001f to 60f,
+            48_000f / 1001f to 48f, 120_000f / 1001f to 120f,
+            59.94f to 60f, 29.97f to 30f, 23.976f to 24f,
+        ).forEach { (a, b) ->
+            assertTrue("$a/$b", DisplayRateDecision.isSiblingOnly(a, b))
+            assertTrue("$b/$a", DisplayRateDecision.isSiblingOnly(b, a))
+        }
+        listOf(
+            25f to 29.97f, 23.976f to 59.94f, 24f to 30f, 59.94f to 59.94f, 60f to 60f,
+            25f to 50f, 29.97f to 60f, 50f to 60f, Float.NaN to 60f,
+        ).forEach { (a, b) ->
+            assertFalse("$a/$b", DisplayRateDecision.isSiblingOnly(a, b))
+        }
+    }
+
+    @Test
     fun `Rush-style mixed 59_94 grid beats the misleading server average`() {
         // Rush's observed presentation deltas use one, two and four steps on
         // the 59.94 grid; 90 kHz intervals below reflect those measured bins.

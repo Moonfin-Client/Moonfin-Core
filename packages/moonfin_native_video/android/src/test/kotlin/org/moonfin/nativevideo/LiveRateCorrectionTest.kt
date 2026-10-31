@@ -1,6 +1,7 @@
 package org.moonfin.nativevideo
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -97,6 +98,77 @@ class LiveRateCorrectionTest {
         assertTrue(correction.isEarlyPending())
         assertEquals(3_000L, correction.nextCheckAtMs())
         assertEquals(29.97f, correction.takeDue(3_000L, null)!!.choice.fps!!, 0.001f)
+    }
+
+    @Test fun `a fast sibling reading cannot spend the early correction`() {
+        val correction = started()
+        correction.onReading(300L, null, evidence(60f), fits = false, appliedFps = 59.94f)
+        assertNull(correction.nextCheckAtMs())
+        assertNull(correction.takeDue(300L, null))
+        correction.onReading(1_500L, null, evidence(59.94f), fits = true, appliedFps = 59.94f)
+        assertNull(correction.takeDue(1_500L, null))
+        assertFalse(correction.pastEarlyWindow(1_500L))
+    }
+
+    @Test fun `a full sibling reading is diagnostic only`() {
+        val correction = started()
+        correction.onReading(300L, null, evidence(60f), fits = false, appliedFps = 59.94f)
+        correction.onReading(1_500L, null, evidence(60f), fits = false, appliedFps = 59.94f)
+        assertNull(correction.nextCheckAtMs())
+        assertNull(correction.takeDue(1_500L, null))
+        assertFalse(correction.pastEarlyWindow(1_500L))
+    }
+
+    @Test fun `observer full window reaches policy without a sibling correction`() {
+        val observer = FrameCadenceObserver(reorderDepth = 0)
+        val correction = started()
+        val observed = mutableListOf<Int>()
+        for (i in 0..240) {
+            val report = observer.onFrame(Math.round(i * 1_000_000.0 * 1001 / 30_000)) ?: continue
+            observed.add(report.intervals)
+            val choice = DisplayRateDecision.choose(RateInputs(measured = report))
+            correction.onReading(i.toLong() * 34, null, RateEvidence(choice, null), fits = false,
+                appliedFps = 30f)
+            assertNull(correction.takeDue(i.toLong() * 34, null))
+        }
+        assertEquals(listOf(12, 120), observed)
+    }
+
+    @Test fun `a fast reading from another rate family still corrects the starting rate`() {
+        val correction = started()
+        correction.onReading(300L, null, evidence(25f), fits = false, appliedFps = 29.97f)
+        assertTrue(correction.isEarlyPending())
+        assertEquals(25f, correction.takeDue(300L, null)!!.choice.fps!!, 0.001f)
+    }
+
+    @Test fun `a fast sibling reading does not start a programme correction`() {
+        val correction = started()
+        correction.onReading(300_000L, sample(0L), evidence(24f), fits = false, appliedFps = 23.976f)
+        assertNull(correction.nextCheckAtMs())
+    }
+
+    @Test fun `a sibling header update is diagnostic only`() {
+        val correction = started()
+        val header = RateEvidence(RateChoice(60f, RateSource.HEADER), StreamScanType.PROGRESSIVE)
+        correction.onReading(300L, null, header, fits = false, appliedFps = 59.94f)
+        assertNull(correction.nextCheckAtMs())
+    }
+
+    @Test fun `sibling rates in either direction never queue a later correction`() {
+        listOf(29.97f to 30f, 30f to 29.97f, 59.94f to 60f, 60f to 59.94f,
+            23.976f to 24f, 24f to 23.976f).forEach { (applied, measured) ->
+            val correction = started()
+            correction.onReading(300_000L, sample(0L), evidence(measured), fits = false, appliedFps = applied)
+            assertNull(correction.nextCheckAtMs())
+            assertNull(correction.takeDue(400_000L, sample(100_000L)))
+        }
+    }
+
+    @Test fun `a different header rate can still correct`() {
+        val correction = started()
+        val header = RateEvidence(RateChoice(25f, RateSource.HEADER), StreamScanType.PROGRESSIVE)
+        correction.onReading(300L, null, header, fits = false, appliedFps = 29.97f)
+        assertTrue(correction.isEarlyPending())
     }
 
     @Test fun `early correction ignores cooldown and media progress`() {

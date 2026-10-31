@@ -455,6 +455,8 @@ class Media3PlayerBackend extends PlayerBackend
         _diag(_frameCadenceLine(map));
       case 'streamRateObservation':
         _diag(_streamRateObservationLine(map));
+      case 'streamRateEvidence':
+        _diag(_streamRateEvidenceLine(map));
       case 'frameRateCorrection':
         _diag(_frameRateCorrectionLine(map));
         _applyRateDecision(map, correction: true);
@@ -1140,6 +1142,17 @@ class Media3PlayerBackend extends PlayerBackend
         '${fixed(map['decisionFrameRate'])}fps at '
         '${_toInt(map['timestampMs'])}ms; display at '
         '${fixed(map['displayHz'])}Hz';
+  }
+
+  String _streamRateEvidenceLine(Map<dynamic, dynamic> map) {
+    String fixed(dynamic value) =>
+        value is num && value.isFinite ? value.toStringAsFixed(3) : '?';
+    return 'Media3: stream rate evidence measured=${fixed(map['measuredFrameRate'])}fps '
+        'serverReal=${fixed(map['serverRealFrameRate'])}fps '
+        'serverAverage=${fixed(map['serverAverageFrameRate'])}fps '
+        'decision=${fixed(map['decisionFrameRate'])}fps '
+        'display=${fixed(map['displayHz'])}Hz '
+        'kind=${map['kind'] ?? 'unknown'} intervals=${_toInt(map['intervals'])}';
   }
 
   String _frameRateCorrectionLine(Map<dynamic, dynamic> map) {

@@ -2172,6 +2172,25 @@ class Media3VideoView(
                 mainHandler.post {
                     if (isDisposed || isPlayerReleased || sourceToken != frameTiming.generationToken) return@post
                     latestDemuxCadence = report.cadence
+                    if (report.cadence.intervals >= DisplayRateDecision.MIN_FULL_INTERVALS) {
+                        // Compare the actual timestamp reading separately from the
+                        // authoritative MPEG-2 header used for display decisions.
+                        val measured = DisplayRateDecision.choose(RateInputs(measured = report.cadence))
+                        Media3Bridge.emitEvent(
+                            mapOf(
+                                "event" to "streamRateEvidence",
+                                "measuredFrameRate" to measured.fps?.toDouble(),
+                                "serverRealFrameRate" to sourceRealFps?.toDouble(),
+                                "serverAverageFrameRate" to sourceAverageFps?.toDouble(),
+                                "decisionFrameRate" to rateSession.appliedRateChoice?.fps?.toDouble(),
+                                "displayHz" to if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                    videoView.display?.mode?.refreshRate?.toDouble()
+                                } else null,
+                                "kind" to report.cadence.kind.wireValue,
+                                "intervals" to report.cadence.intervals,
+                            ),
+                        )
+                    }
                     if (rateSession.startup.awaitingEvidence &&
                         DisplayRateDecision.choose(sourceRateInputs(report.cadence)).source == RateSource.MEASURED
                     ) {
@@ -2396,7 +2415,9 @@ class Media3VideoView(
         }.send()
         requestPlayback(playWhenReady)
         emitState()
-        latestDemuxCadence?.let { considerRateCorrection(sourceToken, DisplayRateDecision.choose(sourceRateInputs(it))) }
+        latestDemuxCadence?.let {
+            considerRateCorrection(sourceToken, DisplayRateDecision.choose(sourceRateInputs(it)))
+        }
     }
 
     private fun cancelRateStartup() {
@@ -2466,7 +2487,13 @@ class Media3VideoView(
         val nowMs = SystemClock.elapsedRealtime()
         val streamRateChanged = rateCorrection.pastEarlyWindow(nowMs) &&
             rateSession.appliedRateChoice?.let { DisplayRateDecision.isRateChange(it, reading) } == true
-        rateCorrection.onReading(nowMs, correctionProgressSample(sourceToken), evidence, fits && !streamRateChanged)
+        rateCorrection.onReading(
+            nowMs,
+            correctionProgressSample(sourceToken),
+            evidence,
+            fits && !streamRateChanged,
+            appliedFps = rateSession.appliedRateChoice?.fps,
+        )
         scheduleRateCorrection(sourceToken)
     }
 

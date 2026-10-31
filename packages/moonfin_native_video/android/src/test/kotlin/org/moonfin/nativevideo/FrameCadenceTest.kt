@@ -165,7 +165,11 @@ class FrameCadenceTest {
 
         val steadyWindow = (1..FrameCadenceObserver.DEFAULT_WINDOW_INTERVALS)
             .mapNotNull { observer.onFrame(time).also { time += 33_367 } }
-        assertTrue(steadyWindow.isEmpty())
+        assertEquals(1, steadyWindow.size)
+        assertEquals(FrameCadenceObserver.DEFAULT_WINDOW_INTERVALS, steadyWindow.single().intervals)
+        val nextWindow = (1..FrameCadenceObserver.DEFAULT_WINDOW_INTERVALS)
+            .mapNotNull { observer.onFrame(time).also { time += 33_367 } }
+        assertTrue(nextWindow.isEmpty())
 
         observer.reset()
         time = 0L

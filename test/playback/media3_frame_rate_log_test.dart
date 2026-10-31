@@ -226,6 +226,30 @@ void main() {
     },
   );
 
+  test('full stream evidence logs rates without control calls', () async {
+    final calls = <MethodCall>[];
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(_control, (call) async {
+          calls.add(call);
+          return null;
+        });
+    await _send(<String, dynamic>{
+      'event': 'streamRateEvidence',
+      'measuredFrameRate': 29.97,
+      'serverRealFrameRate': 30.0,
+      'serverAverageFrameRate': null,
+      'decisionFrameRate': 30.0,
+      'displayHz': 60.0,
+      'kind': 'uniform',
+      'intervals': 120,
+    });
+    await pumpEventQueue();
+    expect(lastLine(), contains('measured=29.970fps serverReal=30.000fps'));
+    expect(lastLine(), contains('serverAverage=?fps decision=30.000fps'));
+    expect(lastLine(), contains('display=60.000Hz kind=uniform intervals=120'));
+    expect(calls, isEmpty);
+  });
+
   test(
     'a live rate correction is logged without control calls',
     () async {

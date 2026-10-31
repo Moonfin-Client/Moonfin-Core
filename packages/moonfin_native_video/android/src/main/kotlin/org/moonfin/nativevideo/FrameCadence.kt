@@ -72,6 +72,7 @@ internal object FrameCadenceClassifier {
     // miss a 59.94 Hz grid by up to about 0.7 ms per interval.
     private const val MAX_MEAN_ERROR_US = 600.0
     private const val MAX_ERROR_US = 1_500L
+    private const val SIBLING_MATCH_TOLERANCE = 3e-4
     private const val DOMINANT_BIN_US = 500L
     private const val UNIFORM_SHARE = 0.95
     private const val PULLDOWN_MINOR_SHARE = 0.2
@@ -116,6 +117,29 @@ internal object FrameCadenceClassifier {
             first.second + second.second >= n * UNIFORM_SHARE
     }
 
+    /** Whether the two rates are a 1000/1001 rate and its integer sibling, in either order. */
+    fun areSiblings(aHz: Double, bHz: Double): Boolean {
+        for (index in GRIDS_HZ.indices) {
+            val sibling = siblingOf(index) ?: continue
+            val low = GRIDS_HZ[index]
+            if ((nearRate(aHz, low) && nearRate(bHz, sibling)) ||
+                (nearRate(aHz, sibling) && nearRate(bHz, low))
+            ) {
+                return true
+            }
+        }
+        return false
+    }
+
+    private fun nearRate(hz: Double, grid: Double): Boolean =
+        hz.isFinite() && abs(hz - grid) / grid <= SIBLING_MATCH_TOLERANCE
+
+    /** The integer sibling of the 1000/1001 grid at [index], or null if it has none. */
+    private fun siblingOf(index: Int): Double? {
+        val sibling = GRIDS_HZ.getOrNull(index + 1) ?: return null
+        return sibling.takeIf { abs(it / GRIDS_HZ[index] - 1.001) < 1e-4 }
+    }
+
     private fun bestGrid(intervalsUs: LongArray): Double? {
         for (index in GRIDS_HZ.indices) {
             if (meanError(intervalsUs, GRIDS_HZ[index]) == null) continue
@@ -123,8 +147,8 @@ internal object FrameCadenceClassifier {
             // the 23.976 grid each interval, so tell the siblings apart by how
             // far each drifts over the whole run. Rounded timestamps can't
             // fake that, since their rounding errors cancel out.
-            val sibling = GRIDS_HZ.getOrNull(index + 1)
-            if (sibling != null && abs(sibling / GRIDS_HZ[index] - 1.001) < 1e-4 &&
+            val sibling = siblingOf(index)
+            if (sibling != null &&
                 meanError(intervalsUs, sibling) != null &&
                 drift(intervalsUs, sibling) < drift(intervalsUs, GRIDS_HZ[index])
             ) {
@@ -254,7 +278,10 @@ internal class FrameCadenceObserver(
         // A backwards jump (a seek the extractor wasn't told about) restarts
         // the heartbeat rather than silencing it.
         val sinceReportUs = timeUs - lastReportedAtUs
-        if (cadence.sameShapeAs(lastReported) && lastReportedAtUs != NONE &&
+        // Consumers may defer close-rate decisions until a full window. The
+        // first full report upgrades the early reading even if its shape is unchanged.
+        val upgradesFastReport = lastReported?.intervals?.let { it < windowIntervals } == true
+        if (!upgradesFastReport && cadence.sameShapeAs(lastReported) && lastReportedAtUs != NONE &&
             sinceReportUs in 0 until heartbeatUs
         ) {
             return null
