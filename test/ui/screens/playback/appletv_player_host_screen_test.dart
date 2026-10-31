@@ -66,6 +66,9 @@ void main() {
     when(
       () => manager.sessionEndedStream,
     ).thenAnswer((_) => const Stream<void>.empty());
+    when(
+      () => manager.reconnectingStream,
+    ).thenAnswer((_) => const Stream<bool>.empty());
     when(() => manager.state).thenReturn(playerState);
     when(() => manager.secondarySubtitleOffset).thenReturn(0.0);
     when(

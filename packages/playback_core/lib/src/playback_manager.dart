@@ -8,6 +8,7 @@ import 'player_backend.dart';
 import 'player_service.dart';
 import 'player_state.dart';
 import 'queue_service.dart';
+import 'stream_credentials.dart';
 import 'stream_replanner.dart';
 import 'stream_resolution_result.dart';
 import 'track_ordinal_mapper.dart';
@@ -252,6 +253,12 @@ class PlaybackManager implements AudioOwnable {
   bool _unsupportedAudioRecoveryInFlight = false;
   final Set<String> _vetoedAudioCodecs = <String>{};
   bool _suppressNextGenericBackendError = false;
+
+  /// The kind of the last typed error the player reported for the stream
+  /// that plays. A player that names the fault (an unplayable container, a
+  /// codec) follows it with a generic error, which must not be taken for a
+  /// lost connection.
+  String? _lastPlayerErrorKind;
   bool _teardownForReResolve = false;
 
   /// Sessions that have claimed their one live stream release attempt, set
@@ -296,6 +303,41 @@ class PlaybackManager implements AudioOwnable {
   }
   int _liveRecoveryAttempts = 0;
   DateTime? _lastLiveRecoveryAt;
+
+  /// The stream whose credentials [_credentialsInPlayer] describes.
+  StreamResolutionResult? _credentialsResolution;
+
+  /// What the player's requests authenticate with now: what its stream
+  /// opened with, or the last renewal handed to it.
+  StreamCredentials? _credentialsInPlayer;
+  Future<bool>? _credentialsCheck;
+
+  /// The player couldn't take the renewed credentials in place, so its
+  /// stream still carries ones that will lapse. They go in at the next
+  /// reopen: a seek, or a reconnect.
+  bool _credentialsAwaitingReopen = false;
+  bool _credentialsReopenRunning = false;
+
+  /// A seek made while that reopen was opening, served once it has.
+  Duration? _seekAfterCredentialsReopen;
+
+  /// Reconnect budget for a stream (not live, not a local file) whose
+  /// connection failed mid-play: a dropped network, or a server refusing
+  /// credentials that lapsed. Silo's protocol asks for the same: keep the
+  /// position, retry with a backoff from 1s doubling to 15s for about two
+  /// minutes, each retry reopening the stream where it was. A stream that
+  /// plays again for [_reconnectProvenAfter] gets the whole budget back.
+  static const _reconnectBudget = Duration(minutes: 2);
+  static const _reconnectFirstDelay = Duration(seconds: 1);
+  static const _reconnectMaxDelay = Duration(seconds: 15);
+  static const _reconnectProvenAfter = Duration(seconds: 30);
+  DateTime? _reconnectStartedAt;
+  int _reconnectAttempts = 0;
+  bool _reconnectInFlight = false;
+  bool _reconnecting = false;
+  Timer? _reconnectRetry;
+  Timer? _reconnectProvenTimer;
+  final _reconnectingController = StreamController<bool>.broadcast();
   bool _liveRecoveryInFlight = false;
   Timer? _liveRecoveryRetry;
 
@@ -306,12 +348,15 @@ class PlaybackManager implements AudioOwnable {
   static const _liveRecoveryProvenAfter = Duration(seconds: 20);
   Timer? _liveRecoveryProvenTimer;
 
-  /// Set only around the re-resolve await inside `_recoverStalledStream`. A
-  /// failed bringup state raised in that window is an intermediate failure
-  /// the recovery loop may still paper over, not the terminal one listeners
-  /// should see -- that only comes from `_giveUpOnStalledStream`, which runs
-  /// outside this window.
-  bool _suppressFailedBringupDuringRecovery = false;
+  /// Held only around a recovery's re-resolve await (a live recovery, a
+  /// reconnect, a credential reopen). A failed bringup state raised in that
+  /// window is an intermediate failure the recovery loop may still paper
+  /// over, not the terminal one listeners should see -- that only comes from
+  /// `_giveUpOnStalledStream`, which runs outside this window. A count, so
+  /// one recovery finishing doesn't lift another's hold.
+  int _failedBringupSuppressions = 0;
+  bool get _suppressFailedBringupDuringRecovery =>
+      _failedBringupSuppressions > 0;
 
   /// A live stream can open and keep receiving bytes without ever rendering
   /// a frame -- weak reception trickles data, so the HTTP read never times
@@ -514,6 +559,7 @@ class PlaybackManager implements AudioOwnable {
       _diagnosticLogger?.call('Live recovery: dropping a held retry, $reason');
     }
     _resetLiveRecoveryBudget();
+    _endReconnect();
   }
 
   /// Clears the live recovery attempt count, its timestamp, and any held
@@ -645,6 +691,11 @@ class PlaybackManager implements AudioOwnable {
   Stream<LiveRecoveryStatus?> get liveRecoveryStatusStream =>
       _liveRecoveryStatusController.stream;
   StreamResolutionResult? get currentResolution => _currentResolution;
+
+  /// Whether a stream that lost its connection is being reopened, for a
+  /// screen to say so rather than show a plain buffering spinner.
+  bool get isReconnecting => _reconnecting;
+  Stream<bool> get reconnectingStream => _reconnectingController.stream;
 
   /// Item that gained a stream on the server after this session resolved. The
   /// resolution still lists what the item had at play time, so a selector
@@ -1105,6 +1156,7 @@ class PlaybackManager implements AudioOwnable {
   }
 
   void _setBringupState(PlaybackBringupState state) {
+    if (state.phase == PlaybackBringupPhase.ready) _reconnectSucceeded();
     if (_suppressFailedBringupDuringRecovery &&
         state.phase == PlaybackBringupPhase.failed) {
       _diagnosticLogger?.call(
@@ -1704,7 +1756,7 @@ class PlaybackManager implements AudioOwnable {
       // to hold and try again. Suppressing just around this await keeps
       // that intermediate failure off listeners; the give-up path below and
       // the budget-exceeded one above are outside it and still emit.
-      _suppressFailedBringupDuringRecovery = true;
+      _failedBringupSuppressions++;
       try {
         await _reResolveAtCurrentPosition(
           isErrorRecovery: true,
@@ -1718,7 +1770,7 @@ class PlaybackManager implements AudioOwnable {
           allowStartupRecovery: false,
         );
       } finally {
-        _suppressFailedBringupDuringRecovery = false;
+        _failedBringupSuppressions--;
       }
     } catch (e) {
       // The source is gone, not just stalled -- a re-resolve that threw
@@ -1916,6 +1968,284 @@ class PlaybackManager implements AudioOwnable {
     return added;
   }
 
+  /// The resolver as a [StreamCredentialRefresher] for [current]'s stream,
+  /// else null. A local file needs no credentials.
+  StreamCredentialRefresher? _credentialRefresherFor(
+    StreamResolutionResult? current,
+  ) {
+    final resolver = _resolver;
+    if (current == null || current.isLocalMedia || _isOfflinePlayback) {
+      return null;
+    }
+    if (resolver is! StreamCredentialRefresher) return null;
+    return resolver as StreamCredentialRefresher;
+  }
+
+  /// Whether every request of [resolution]'s stream carries its
+  /// credentials: an HLS playlist is fetched segment by segment, while a
+  /// file is read through one long request that only a seek or a dropped
+  /// connection replaces.
+  static bool _requestsCredentialsThroughout(
+    StreamResolutionResult resolution,
+  ) {
+    final container = resolution.container?.toLowerCase() ?? '';
+    if (container.contains('hls') || container.contains('m3u8')) return true;
+    final path = Uri.tryParse(resolution.streamUrl)?.path.toLowerCase() ?? '';
+    return path.endsWith('.m3u8');
+  }
+
+  /// Hands the player the account's current credentials once they differ
+  /// from the ones its stream carries (see [StreamCredentialRefresher]).
+  /// Runs on every progress tick, and with [refresh] when the server has
+  /// just refused them. Returns whether the player took new ones in place.
+  ///
+  /// A player that can't change an open stream gets them at its next
+  /// reopen. A stream that requests them throughout (HLS) is reopened now,
+  /// at the position: it would fail at the next segment otherwise.
+  Future<bool> _refreshStreamCredentials({bool refresh = false}) async {
+    final running = _credentialsCheck;
+    if (running != null) {
+      // A routine check only repeats the one running. A refusal can't wait
+      // for the next tick: it renews once that one is done.
+      if (!refresh) return false;
+      await running;
+      return _refreshStreamCredentials(refresh: true);
+    }
+    final check = _checkStreamCredentials(refresh: refresh);
+    _credentialsCheck = check;
+    try {
+      return await check;
+    } finally {
+      if (identical(_credentialsCheck, check)) _credentialsCheck = null;
+    }
+  }
+
+  Future<bool> _checkStreamCredentials({required bool refresh}) async {
+    final resolution = _currentResolution;
+    final backend = _backend;
+    final refresher = _credentialRefresherFor(resolution);
+    if (refresher == null || backend == null) return false;
+    try {
+      final credentials = await refresher.currentCredentials(
+        resolution!,
+        refresh: refresh,
+      );
+      if (credentials == null ||
+          !identical(resolution, _currentResolution) ||
+          !identical(backend, _backend)) {
+        return false;
+      }
+      if (!identical(_credentialsResolution, resolution)) {
+        _credentialsResolution = resolution;
+        _credentialsInPlayer = StreamCredentials.of(resolution);
+        _credentialsAwaitingReopen = false;
+      }
+      if (credentials == _credentialsInPlayer) return false;
+      var applied = false;
+      try {
+        applied = await backend.updateStreamCredentials(credentials);
+      } catch (_) {}
+      if (!identical(resolution, _currentResolution)) return false;
+      _credentialsInPlayer = credentials;
+      _credentialsAwaitingReopen = !applied;
+      if (applied) {
+        _diagnosticLogger?.call('Stream credentials renewed in the player');
+        return true;
+      }
+      if (_requestsCredentialsThroughout(resolution) &&
+          !_waitingForMedia &&
+          !_reconnecting &&
+          !_currentItemIsLive) {
+        _diagnosticLogger?.call(
+          'Stream credentials renewed, reopening the stream to carry them',
+        );
+        unawaited(_reopenForCredentials());
+      } else {
+        _diagnosticLogger?.call(
+          'Stream credentials renewed, the player takes them at its next '
+          'reopen',
+        );
+      }
+      return false;
+    } catch (error) {
+      _diagnosticLogger?.call('Renewing the stream credentials failed: $error');
+      return false;
+    }
+  }
+
+  /// Reopens the stream at [at] (else where it plays), so the new one opens
+  /// with the account's current credentials. A resolver that can replan
+  /// keeps the session: an unchanged track change is how Silo reissues a
+  /// stream.
+  Future<void> _reopenForCredentials({Duration? at}) async {
+    if (_credentialsReopenRunning) return;
+    _credentialsReopenRunning = true;
+    final intent = _viewerIntentGeneration;
+    var failed = false;
+    // A reopen that fails is a lost connection, so the reconnect budget
+    // decides whether the viewer sees a failure, not this one attempt.
+    _failedBringupSuppressions++;
+    try {
+      // The viewer's intent, not the player's: a stream reopened while it
+      // buffers would otherwise come back paused.
+      await _reResolveAtCurrentPosition(
+        reason: 'credential-renewal',
+        replanReason: ReplanReason.trackChange,
+        atPosition: at,
+        allowStartupRecovery: false,
+        autoPlay: !_viewerPaused,
+      );
+    } catch (error) {
+      failed = true;
+      _diagnosticLogger?.call(
+        'Reopening the stream for its credentials failed: $error',
+      );
+    } finally {
+      _failedBringupSuppressions--;
+      _credentialsReopenRunning = false;
+    }
+    final seek = _seekAfterCredentialsReopen;
+    _seekAfterCredentialsReopen = null;
+    if (intent != _viewerIntentGeneration) return;
+    if (failed) {
+      if (_canReconnect(_currentResolution ?? _lastPlaybackResolution)) {
+        _beginReconnect('credential-renewal');
+      }
+      return;
+    }
+    if (seek != null) await seekTo(seek);
+  }
+
+  /// Whether a stream that lost its connection is reconnected rather than
+  /// failed: a server stream that isn't live. A live channel has its own
+  /// recovery, and a local file has no connection to lose.
+  bool _canReconnect(StreamResolutionResult? resolution) =>
+      resolution != null &&
+      !resolution.isLocalMedia &&
+      !_isOfflinePlayback &&
+      !_currentItemIsLive;
+
+  void _setReconnecting(bool value) {
+    if (_reconnecting == value) return;
+    _reconnecting = value;
+    _reconnectingController.add(value);
+  }
+
+  /// Starts reconnecting the stream, or schedules its next attempt when it
+  /// already is (see [_reconnectBudget]).
+  void _beginReconnect(String trigger) {
+    _reconnectProvenTimer?.cancel();
+    _reconnectProvenTimer = null;
+    if (_reconnectStartedAt == null) {
+      _reconnectStartedAt = clock();
+      _reconnectAttempts = 0;
+      _diagnosticLogger?.call('Connection lost ($trigger), reconnecting');
+    }
+    _setReconnecting(true);
+    if (_reconnectInFlight || (_reconnectRetry?.isActive ?? false)) return;
+    _scheduleReconnect(trigger);
+  }
+
+  Duration _reconnectDelayBefore(int attempt) {
+    var delay = _reconnectFirstDelay;
+    for (var i = 1; i < attempt && delay < _reconnectMaxDelay; i++) {
+      delay *= 2;
+    }
+    return delay > _reconnectMaxDelay ? _reconnectMaxDelay : delay;
+  }
+
+  void _scheduleReconnect(String trigger) {
+    final startedAt = _reconnectStartedAt;
+    if (startedAt == null) return;
+    final intent = _viewerIntentGeneration;
+    final item = queueService.currentItem;
+    final attempt = _reconnectAttempts + 1;
+    final delay = _reconnectDelayBefore(attempt);
+    if (clock().add(delay).difference(startedAt) > _reconnectBudget) {
+      unawaited(_giveUpReconnect(intent, attempt - 1));
+      return;
+    }
+    _reconnectRetry?.cancel();
+    _reconnectRetry = Timer(delay, () {
+      _reconnectRetry = null;
+      unawaited(_runReconnect(trigger, attempt, intent, item));
+    });
+  }
+
+  Future<void> _runReconnect(
+    String trigger,
+    int attempt,
+    int intent,
+    dynamic item,
+  ) async {
+    if (intent != _viewerIntentGeneration ||
+        !identical(item, queueService.currentItem) ||
+        !_reconnecting) {
+      _endReconnect();
+      return;
+    }
+    _reconnectAttempts = attempt;
+    _reconnectInFlight = true;
+    var failed = false;
+    _diagnosticLogger?.call('Reconnecting after $trigger, attempt $attempt');
+    // A failed attempt can emit a failed bringup state on its way out; the
+    // budget, not one attempt, decides whether the viewer sees a failure.
+    _failedBringupSuppressions++;
+    try {
+      // An unchanged track change, not a failure: the route was fine, and a
+      // failure replan would rule it out.
+      await _reResolveAtCurrentPosition(
+        isErrorRecovery: true,
+        replanReason: ReplanReason.trackChange,
+        reason: 'connection-lost',
+        allowStartupRecovery: false,
+        autoPlay: !_viewerPaused,
+      );
+    } catch (error) {
+      failed = true;
+      _diagnosticLogger?.call('Reconnect attempt $attempt failed: $error');
+    } finally {
+      _failedBringupSuppressions--;
+      _reconnectInFlight = false;
+    }
+    if (failed && _reconnecting && intent == _viewerIntentGeneration) {
+      _scheduleReconnect('retry-after-failure');
+    }
+  }
+
+  /// The stream opened again. The reconnecting label goes, and the budget
+  /// comes back once it has kept playing for [_reconnectProvenAfter].
+  void _reconnectSucceeded() {
+    if (_reconnectStartedAt == null) return;
+    _setReconnecting(false);
+    _reconnectProvenTimer?.cancel();
+    _reconnectProvenTimer = Timer(_reconnectProvenAfter, () {
+      _reconnectProvenTimer = null;
+      if (_reconnecting) return;
+      _reconnectStartedAt = null;
+      _reconnectAttempts = 0;
+    });
+  }
+
+  void _endReconnect() {
+    _reconnectRetry?.cancel();
+    _reconnectRetry = null;
+    _reconnectProvenTimer?.cancel();
+    _reconnectProvenTimer = null;
+    _reconnectStartedAt = null;
+    _reconnectAttempts = 0;
+    _setReconnecting(false);
+  }
+
+  Future<void> _giveUpReconnect(int intent, int attempts) async {
+    _endReconnect();
+    if (intent != _viewerIntentGeneration) return;
+    _diagnosticLogger?.call(
+      'Reconnect budget spent after $attempts attempts, giving up',
+    );
+    await _giveUpOnStalledStream(live: false, intent: intent);
+  }
+
   void _onBackendErrorEvent(Map<String, dynamic> event) {
     unawaited(_handleBackendErrorEvent(event));
   }
@@ -1963,6 +2293,28 @@ class PlaybackManager implements AudioOwnable {
     final kind = event['kind']?.toString();
     final recoverable = event['recoverable'] == true;
     final resolution = _currentResolution ?? _lastPlaybackResolution;
+
+    // The server refused the stream's credentials, and the player holds the
+    // stream open a moment for new ones. Renewing them now heals it in
+    // place; if they don't arrive it fails, and that is a lost connection.
+    if (eventType == 'credentialsRefused') {
+      _diagnosticLogger?.call(
+        'The server refused the stream\'s credentials '
+        '(HTTP ${event['status'] ?? '?'}), renewing them',
+      );
+      await _refreshStreamCredentials(refresh: true);
+      return;
+    }
+
+    // A reconnect is reopening the stream, so whatever the player reports
+    // meanwhile is its to handle: a failed attempt schedules the next one,
+    // and the budget decides when to give up.
+    if (_reconnecting &&
+        _canReconnect(resolution) &&
+        (eventType == 'error' || eventType == 'playerError')) {
+      if (!_reconnectInFlight) _beginReconnect('$eventType ${kind ?? ''}'.trim());
+      return;
+    }
 
     void emitFailedBringupState(String fallbackMessage) {
       final message = event['message']?.toString().trim();
@@ -2036,11 +2388,39 @@ class PlaybackManager implements AudioOwnable {
         return;
       }
 
+      // A stream whose credentials expire may have failed because they did:
+      // engines that don't say why (mpv) report a refused request as a
+      // plain error. Reopening it carries the account's current ones.
+      final namedFault =
+          _lastPlayerErrorKind != null &&
+          _lastPlayerErrorKind != 'network' &&
+          _lastPlayerErrorKind != 'source_refused';
+      if (!_waitingForMedia &&
+          !namedFault &&
+          _canReconnect(resolution) &&
+          _credentialRefresherFor(resolution) != null) {
+        _beginReconnect('error');
+        return;
+      }
+
       emitFailedBringupState('Playback failed.');
       return;
     }
 
     if (eventType != 'playerError') {
+      return;
+    }
+    _lastPlayerErrorKind = kind;
+
+    // The connection failed, not the stream: the network dropped, or the
+    // server refused credentials that lapsed. Reopening it where it was is
+    // what brings it back, so it is not a reason to change the route. An
+    // error before the stream first plays is left to the startup handling.
+    if ((kind == 'network' || kind == 'source_refused') &&
+        !_waitingForMedia &&
+        _canReconnect(resolution)) {
+      // The generic error that follows is absorbed by the reconnect.
+      _beginReconnect(kind!);
       return;
     }
 
@@ -2981,6 +3361,7 @@ class PlaybackManager implements AudioOwnable {
     _playbackStartTime = clock();
     _unsupportedAudioRecoveryInFlight = false;
     _suppressNextGenericBackendError = false;
+    _lastPlayerErrorKind = null;
     _waitingForMedia = true;
     bool mediaReady = false;
     Object? startupError;
@@ -3318,10 +3699,10 @@ class PlaybackManager implements AudioOwnable {
     }
 
     final activeGeneration = generation;
-    _progressTimer = Timer.periodic(
-      const Duration(seconds: 5),
-      (_) => _reportProgress(activeGeneration),
-    );
+    _progressTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+      _reportProgress(activeGeneration);
+      unawaited(_refreshStreamCredentials());
+    });
   }
 
   void _reportProgress(_ProgressGeneration generation) {
@@ -3555,6 +3936,24 @@ class PlaybackManager implements AudioOwnable {
         _replannerFor(current) != null) {
       state.setPosition(position);
       await _seekThroughServer(position);
+      return;
+    }
+    // The stream is being reopened for its credentials; the seek lands once
+    // the new one is open, rather than on the player being replaced.
+    if (_credentialsReopenRunning) {
+      state.setPosition(position);
+      _seekAfterCredentialsReopen = position;
+      return;
+    }
+    // The player has to reopen the stream to take renewed credentials, and
+    // a seek is a reopen the viewer already waits for. Its lapsed ones
+    // would fail the seek's first request.
+    if (current != null &&
+        _credentialsAwaitingReopen &&
+        identical(_credentialsResolution, current) &&
+        !_currentItemIsLive) {
+      state.setPosition(position);
+      await _reopenForCredentials(at: position);
       return;
     }
     await _backend?.seekTo(_playerPosition(position));
@@ -4885,6 +5284,9 @@ class PlaybackManager implements AudioOwnable {
     _bringupStateController.close();
     _sessionEndedController.close();
     _liveRecoveryStatusController.close();
+    _reconnectRetry?.cancel();
+    _reconnectProvenTimer?.cancel();
+    _reconnectingController.close();
     _volumeController.close();
     for (final backend in _retainedBackends.toList()) {
       backend.dispose();

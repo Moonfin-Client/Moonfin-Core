@@ -56,6 +56,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   StreamSubscription<void>? _queueSub;
   StreamSubscription<void>? _sessionEndedSub;
   StreamSubscription<PlaybackBringupState>? _bringupSub;
+  StreamSubscription<bool>? _reconnectingSub;
   StreamSubscription<Map<String, dynamic>>? _actionSub;
   bool _exiting = false;
   final Map<String, List<Map<String, dynamic>>> _castCache = {};
@@ -177,6 +178,17 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
       _sessionEndedSub = manager.sessionEndedStream.listen(
         (_) => _handleExit(),
       );
+      _reconnectingSub = manager.reconnectingStream.listen((reconnecting) {
+        if (!mounted) return;
+        unawaited(
+          _backend?.setReconnecting(
+                reconnecting
+                    ? AppLocalizations.of(context).watchPartyReconnecting
+                    : null,
+              ) ??
+              Future<void>.value(),
+        );
+      });
       _bringupSub = manager.bringupStateStream.listen((state) {
         if (mounted) {
           setState(() => _bringupState = state);
@@ -1672,6 +1684,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     _queueSub?.cancel();
     _sessionEndedSub?.cancel();
     _bringupSub?.cancel();
+    _reconnectingSub?.cancel();
     _actionSub?.cancel();
     _screensaverPlayingSub?.cancel();
     _positionSub?.cancel();
