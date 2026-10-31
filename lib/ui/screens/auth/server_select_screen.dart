@@ -51,7 +51,10 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
   final _authPrefs = GetIt.instance<AuthenticationPreferences>();
   final _deviceInfo = GetIt.instance<DeviceInfo>();
   final _discoveryService = ServerDiscoveryService();
-  final _initialFocus = FocusNode(debugLabel: 'serverSelectInitial');
+  // Separate nodes, because a node handed from a tile to the button keeps the
+  // tile's key handler, which the button has none of its own to replace
+  final _firstServerFocus = FocusNode(debugLabel: 'serverSelectFirstServer');
+  final _addServerFocus = FocusNode(debugLabel: 'serverSelectAddServer');
   StreamSubscription<ServerAdditionState>? _additionSub;
   StreamSubscription<DiscoveredServer>? _discoverySub;
 
@@ -141,9 +144,6 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
     _additionSub = _serverRepo.additionState.listen(_onAdditionState);
     _loadServers();
     _startDiscovery();
-    if (PlatformDetection.isTV) {
-      WidgetsBinding.instance.addPostFrameCallback((_) => _focusFirstIfIdle());
-    }
   }
 
   /// A remote's select key does nothing until something holds focus, so the
@@ -151,15 +151,19 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
   /// node pulls focus back from a dialog or sheet open over the page.
   void _focusFirstIfIdle() {
     if (!mounted) return;
+    final first = _serverRepo.servers.isEmpty
+        ? _addServerFocus
+        : _firstServerFocus;
     final current = FocusManager.instance.primaryFocus;
-    if (current == null || _initialFocus.ancestors.contains(current)) {
-      _initialFocus.requestFocus();
+    if (current == null || first.ancestors.contains(current)) {
+      first.requestFocus();
     }
   }
 
   @override
   void dispose() {
-    _initialFocus.dispose();
+    _firstServerFocus.dispose();
+    _addServerFocus.dispose();
     _addressController.dispose();
     _additionSub?.cancel();
     _discoverySub?.cancel();
@@ -170,6 +174,12 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
     await _serverRepo.loadStoredServers();
     if (mounted) {
       setState(() {});
+      // Waits for the saved servers so the first one can take focus
+      if (PlatformDetection.isTV) {
+        WidgetsBinding.instance.addPostFrameCallback(
+          (_) => _focusFirstIfIdle(),
+        );
+      }
     }
     await _autoConnectConfiguredServer();
   }
@@ -466,8 +476,16 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
       ),
     );
     if (confirmed == true) {
+      final tileHadFocus = _firstServerFocus.hasFocus;
       await _serverRepo.deleteServer(server.id);
-      if (mounted) setState(() {});
+      if (!mounted) return;
+      setState(() {});
+      // Removing the last tile drops its focus, so hand it to Add Server
+      if (tileHadFocus && _serverRepo.servers.isEmpty) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) _addServerFocus.requestFocus();
+        });
+      }
     }
   }
 
@@ -543,7 +561,7 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
             for (var i = 0; i < servers.length; i++)
               _buildSavedServerTile(
                 servers[i],
-                focusNode: i == 0 ? _initialFocus : null,
+                focusNode: i == 0 ? _firstServerFocus : null,
               ),
             const SizedBox(height: 20),
           ],
@@ -616,7 +634,7 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
                 actions.add(
                   AddServerButton(
                     onPressed: _isConnecting ? null : _showAddServerDialog,
-                    focusNode: servers.isEmpty ? _initialFocus : null,
+                    focusNode: _addServerFocus,
                   ),
                 );
               }
