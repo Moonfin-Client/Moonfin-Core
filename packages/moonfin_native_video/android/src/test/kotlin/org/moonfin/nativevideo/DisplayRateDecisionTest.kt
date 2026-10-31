@@ -87,7 +87,7 @@ class DisplayRateDecisionTest {
     }
 
     @Test
-    fun `matching uniform measured cadence can use current interlaced header evidence`() {
+    fun `interlaced header outranks a matching uniform measured cadence`() {
         val choice = DisplayRateDecision.choose(
             RateInputs(
                 header = StreamRateEvidence(29.97f, StreamScanType.INTERLACED),
@@ -96,29 +96,84 @@ class DisplayRateDecisionTest {
         )
 
         assertEquals(60_000f / 1001f, choice.fps!!, 0.001f)
-        assertEquals(RateSource.MEASURED, choice.source)
+        assertEquals(RateSource.HEADER, choice.source)
         assertTrue(choice.fieldRateApplied)
     }
 
     @Test
-    fun `server interlace flag alone and a stale scan header never double measured rate`() {
+    fun `server interlace flag alone never doubles a measured rate`() {
         val serverOnly = DisplayRateDecision.choose(
             RateInputs(
                 serverInterlaced = true,
                 measured = uniformCadence(25.0),
             ),
         )
-        val staleHeader = DisplayRateDecision.choose(
+
+        assertEquals(25f, serverOnly.fps!!, 0.001f)
+        assertEquals(RateSource.MEASURED, serverOnly.source)
+        assertFalse(serverOnly.fieldRateApplied)
+    }
+
+    @Test
+    fun `header wins over a disagreeing measured cadence`() {
+        val choice = DisplayRateDecision.choose(
             RateInputs(
-                header = StreamRateEvidence(29.97f, StreamScanType.INTERLACED),
-                measured = uniformCadence(24_000.0 / 1001.0),
+                header = StreamRateEvidence(24_000f / 1001f, StreamScanType.PROGRESSIVE),
+                measured = uniformCadence(30_000.0 / 1001.0),
             ),
         )
 
-        assertEquals(25f, serverOnly.fps!!, 0.001f)
-        assertFalse(serverOnly.fieldRateApplied)
-        assertEquals(24_000f / 1001f, staleHeader.fps!!, 0.001f)
-        assertFalse(staleHeader.fieldRateApplied)
+        assertEquals(24_000f / 1001f, choice.fps!!, 0.001f)
+        assertEquals(RateSource.HEADER, choice.source)
+        assertFalse(choice.fieldRateApplied)
+    }
+
+    @Test
+    fun `stray one-unit intervals do not override interlaced 29_97 header evidence`() {
+        val cadence = strayIntervalCadence()
+        val header = StreamRateEvidence(30_000f / 1001f, StreamScanType.INTERLACED)
+
+        val withHeader = DisplayRateDecision.choose(RateInputs(header = header, measured = cadence))
+        val decided = DisplayRateDecision.choose(RateInputs(header = header))
+
+        assertEquals(60_000f / 1001f, withHeader.fps!!, 0.001f)
+        assertEquals(RateSource.HEADER, withHeader.source)
+        assertTrue(withHeader.fieldRateApplied)
+        assertFalse(DisplayRateDecision.isRateChange(decided, withHeader))
+    }
+
+    @Test
+    fun `the same stray-interval cadence without a header snaps to 29_97 by its dominant interval`() {
+        val choice = DisplayRateDecision.choose(RateInputs(measured = strayIntervalCadence()))
+
+        assertEquals(30_000f / 1001f, choice.fps!!, 0.001f)
+        assertEquals(RateSource.MEASURED, choice.source)
+    }
+
+    @Test
+    fun `a programme change in header evidence from 29_97 interlaced to 23_976 progressive is a rate change`() {
+        val before = DisplayRateDecision.choose(
+            RateInputs(header = StreamRateEvidence(30_000f / 1001f, StreamScanType.INTERLACED)),
+        )
+        val after = DisplayRateDecision.choose(
+            RateInputs(header = StreamRateEvidence(24_000f / 1001f, StreamScanType.PROGRESSIVE)),
+        )
+
+        assertEquals(24_000f / 1001f, after.fps!!, 0.001f)
+        assertEquals(RateSource.HEADER, after.source)
+        assertTrue(DisplayRateDecision.isRateChange(before, after))
+    }
+
+    @Test
+    fun `interlaced and repeated fields at 29_97 choose the same rate`() {
+        val interlaced = DisplayRateDecision.choose(
+            RateInputs(header = StreamRateEvidence(30_000f / 1001f, StreamScanType.INTERLACED)),
+        )
+        val repeated = DisplayRateDecision.choose(
+            RateInputs(header = StreamRateEvidence(30_000f / 1001f, StreamScanType.REPEATED_FIELDS)),
+        )
+
+        assertFalse(DisplayRateDecision.isRateChange(interlaced, repeated))
     }
 
     @Test
@@ -135,16 +190,11 @@ class DisplayRateDecisionTest {
     }
 
     @Test
-    fun `pulldown and mixed grid measurements never double from interlace evidence`() {
+    fun `pulldown measurements without a header never double`() {
         val pulldown = FrameCadenceClassifier.classify(
             LongArray(120) { if (it % 2 == 0) 33_367L else 50_050L },
         )
-        val choice = DisplayRateDecision.choose(
-            RateInputs(
-                header = StreamRateEvidence(29.97f, StreamScanType.INTERLACED),
-                measured = pulldown,
-            ),
-        )
+        val choice = DisplayRateDecision.choose(RateInputs(measured = pulldown))
 
         assertEquals(FrameCadence.Kind.PULLDOWN_23, pulldown.kind)
         assertEquals(60_000f / 1001f, choice.fps!!, 0.001f)
@@ -206,10 +256,10 @@ class DisplayRateDecisionTest {
     fun `measured fps outside supported bounds is rejected`() {
         val invalidMeasured = FrameCadence(
             kind = FrameCadence.Kind.UNIFORM,
-            meanFps = 121.0,
-            gridHz = 60.0,
-            units = listOf(1 to 120),
-            dominantIntervalUs = 16_667,
+            meanFps = 0.6,
+            gridHz = 120.0,
+            units = listOf(200 to 120),
+            dominantIntervalUs = 1_666_667,
             dominantShare = 1.0,
             intervals = 120,
         )
@@ -258,6 +308,138 @@ class DisplayRateDecisionTest {
             ),
         )
     }
+
+    @Test
+    fun `uniform cadence with stray intervals resolves to the standard rate it sits on`() {
+        val straddling = FrameCadence(
+            kind = FrameCadence.Kind.UNIFORM,
+            meanFps = 23.855,
+            gridHz = 120_000.0 / 1001,
+            units = listOf(5 to 118, 4 to 1, 9 to 1),
+            dominantIntervalUs = 41_708,
+            dominantShare = 0.98,
+            intervals = 120,
+        )
+
+        val choice = DisplayRateDecision.choose(RateInputs(measured = straddling))
+
+        assertEquals(24_000f / 1001f, choice.fps!!, 0.0005f)
+        assertEquals(RateSource.MEASURED, choice.source)
+        assertFalse(choice.fieldRateApplied)
+    }
+
+    @Test
+    fun `plain uniform cadences keep their standard rates`() {
+        val onFiftyGrid = FrameCadence(
+            kind = FrameCadence.Kind.UNIFORM,
+            meanFps = 25.0,
+            gridHz = 50.0,
+            units = listOf(2 to 120),
+            dominantIntervalUs = 40_000,
+            dominantShare = 1.0,
+            intervals = 120,
+        )
+
+        assertEquals(
+            24_000f / 1001f,
+            DisplayRateDecision.choose(RateInputs(measured = uniformCadence(24_000.0 / 1001.0))).fps!!,
+            0.0005f,
+        )
+        assertEquals(25f, DisplayRateDecision.choose(RateInputs(measured = onFiftyGrid)).fps!!, 0.0005f)
+        assertEquals(
+            60_000f / 1001f,
+            DisplayRateDecision.choose(RateInputs(measured = uniformCadence(60_000.0 / 1001.0))).fps!!,
+            0.0005f,
+        )
+    }
+
+    @Test
+    fun `uniform cadence without a grid or units falls back to its mean`() {
+        val noUnits = FrameCadence(
+            kind = FrameCadence.Kind.UNIFORM,
+            meanFps = 25.0,
+            gridHz = 50.0,
+            units = emptyList(),
+            dominantIntervalUs = 40_000,
+            dominantShare = 1.0,
+            intervals = 120,
+        )
+
+        assertEquals(25f, DisplayRateDecision.choose(RateInputs(measured = noUnits)).fps!!, 0.0005f)
+    }
+
+    @Test
+    fun `dominant interval more than one percent from the grid period is not snapped`() {
+        val longGaps = FrameCadence(
+            kind = FrameCadence.Kind.UNIFORM,
+            meanFps = 24.0,
+            gridHz = 25.0,
+            units = listOf(1 to 114, 2 to 6),
+            dominantIntervalUs = 41_667,
+            dominantShare = 0.95,
+            intervals = 120,
+        )
+
+        assertEquals(24f, DisplayRateDecision.choose(RateInputs(measured = longGaps)).fps!!, 0.0005f)
+    }
+
+    @Test
+    fun `true 24 and 25 uniform cadences keep their own rates`() {
+        assertEquals(24f, DisplayRateDecision.choose(RateInputs(measured = uniformCadence(24.0))).fps!!, 0.0005f)
+        assertEquals(25f, DisplayRateDecision.choose(RateInputs(measured = uniformCadence(25.0))).fps!!, 0.0005f)
+    }
+
+    @Test
+    fun `a 23_9 reading on the 23_976 grid snaps to 23_976 and never to 25`() {
+        val slightlyLow = FrameCadence(
+            kind = FrameCadence.Kind.UNIFORM,
+            meanFps = 23.9,
+            gridHz = 120_000.0 / 1001,
+            units = listOf(5 to 120),
+            dominantIntervalUs = 41_708,
+            dominantShare = 1.0,
+            intervals = 120,
+        )
+
+        val fps = DisplayRateDecision.choose(RateInputs(measured = slightlyLow)).fps!!
+
+        assertEquals(24_000f / 1001f, fps, 0.0005f)
+        assertTrue(fps != 25f)
+    }
+
+    @Test
+    fun `interlaced header doubles 29_97 even when the measured cadence is off`() {
+        val straddling = FrameCadence(
+            kind = FrameCadence.Kind.UNIFORM,
+            meanFps = 29.9,
+            gridHz = 60_000.0 / 1001,
+            units = listOf(2 to 118, 1 to 2),
+            dominantIntervalUs = 33_367,
+            dominantShare = 0.98,
+            intervals = 120,
+        )
+
+        val choice = DisplayRateDecision.choose(
+            RateInputs(
+                header = StreamRateEvidence(29.97f, StreamScanType.INTERLACED),
+                measured = straddling,
+            ),
+        )
+
+        assertEquals(60_000f / 1001f, choice.fps!!, 0.001f)
+        assertEquals(RateSource.HEADER, choice.source)
+        assertTrue(choice.fieldRateApplied)
+    }
+
+    private fun strayIntervalCadence() = FrameCadence(
+        kind = FrameCadence.Kind.UNIFORM,
+        meanFps = 30.478,
+        gridHz = 60_000.0 / 1001,
+        units = listOf(2 to 116, 1 to 4),
+        dominantIntervalUs = 33_370,
+        dominantShare = 0.97,
+        intervals = 120,
+    )
 
     private fun uniformCadence(fps: Double, intervals: Int = 120): FrameCadence =
         FrameCadenceClassifier.classify(LongArray(intervals) { index ->

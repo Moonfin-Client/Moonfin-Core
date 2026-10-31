@@ -148,7 +148,8 @@ internal class CadenceObservingTrackOutput(
     private val observer = FrameCadenceObserver(reorderDepth = REORDER_DEPTH)
     private val headerObserver = Mpeg2RateHeaderObserver()
     // The parser re-arms after every report so a programme boundary's new
-    // sequence header is seen too; only a change is passed on.
+    // sequence header is seen too; only a change of rate, size or progressive
+    // versus field scan is passed on.
     private var lastHeader: StreamRateEvidence? = null
     private var firstSampleReported = false
     private var format: Format? = null
@@ -200,7 +201,7 @@ internal class CadenceObservingTrackOutput(
         if (format?.sampleMimeType != MimeTypes.VIDEO_MPEG2) return
         val evidence = runCatching { headerObserver.onData(data, offset, length) }.getOrNull() ?: return
         headerObserver.reset()
-        if (evidence == lastHeader) return
+        if (evidence.sameRateAs(lastHeader)) return
         lastHeader = evidence
         runCatching { onHeader(evidence) }
     }

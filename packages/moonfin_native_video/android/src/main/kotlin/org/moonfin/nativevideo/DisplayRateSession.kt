@@ -24,6 +24,10 @@ internal class DisplayRateSession {
         private set
     var hold: Hold? = null
         private set
+
+    /** Audio is held closed on a reopened live source until its correction hold ends. */
+    var correctionAudioGated: Boolean = false
+        private set
     private var nextHoldId = 0L
 
     val correctionHolding: Boolean
@@ -31,6 +35,7 @@ internal class DisplayRateSession {
 
     fun beginSource(sourceToken: Int, playWhenReady: Boolean) {
         cancelHold()
+        correctionAudioGated = false
         startup.cancel()
         correctionIntent.cancel()
         appliedRateEvidence.clear()
@@ -131,7 +136,22 @@ internal class DisplayRateSession {
 
     fun cancelCorrection() {
         correctionIntent.cancel()
+        correctionAudioGated = false
     }
+
+    /** Whether any gate keeps the audio track type disabled for the current source. */
+    val audioGated: Boolean
+        get() = startup.audioBlocked || correctionAudioGated
+
+    /** Arms the gate for the correction in progress; false when none is. */
+    fun gateCorrectionAudio(sourceToken: Int): Boolean {
+        if (!isCurrent(sourceToken) || !correctionIntent.isActiveFor(sourceToken)) return false
+        correctionAudioGated = true
+        return true
+    }
+
+    /** Disarms the gate; true when it was armed, so the caller re-enables audio. */
+    fun releaseCorrectionAudioGate(): Boolean = correctionAudioGated.also { correctionAudioGated = false }
 
     fun isCurrent(sourceToken: Int): Boolean = this.sourceToken == sourceToken
 
@@ -188,6 +208,7 @@ internal class DisplayRateSession {
 
     fun cancelSource() {
         cancelHold()
+        correctionAudioGated = false
         startup.cancel()
         correctionIntent.cancel()
         appliedRateEvidence.clear()

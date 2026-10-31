@@ -2231,9 +2231,15 @@ class Media3VideoView(
                         sourceVideoWidthHint = evidence.width
                         sourceVideoHeightHint = evidence.height
                     }
-                    if (!rateSession.startup.awaitingEvidence) return@post
-                    if (DisplayRateDecision.choose(sourceRateInputs()).source == RateSource.HEADER) {
-                        completeRateStartup(sourceToken, "header")
+                    if (rateSession.startup.awaitingEvidence) {
+                        if (DisplayRateDecision.choose(sourceRateInputs()).source == RateSource.HEADER) {
+                            completeRateStartup(sourceToken, "header")
+                        }
+                    } else if (rateSession.startup.phase != DisplayRateStartup.Phase.SETTLING &&
+                        !rateSession.startup.audioBlocked && rateSession.appliedRateChoice != null
+                    ) {
+                        // A new sequence header can announce a programme at another rate.
+                        considerRateCorrection(sourceToken, DisplayRateDecision.choose(sourceRateInputs()))
                     }
                 }
             },
@@ -2415,7 +2421,7 @@ class Media3VideoView(
 
     /** Feeds a later reading to the live correction policy; files never get here. */
     private fun considerRateCorrection(sourceToken: Int, reading: RateChoice) {
-        if (reading.source != RateSource.MEASURED) {
+        if (reading.source != RateSource.MEASURED && reading.source != RateSource.HEADER) {
             rateCorrection.onUnusableReading()
             scheduleRateCorrection(sourceToken)
             return
@@ -2541,6 +2547,17 @@ class Media3VideoView(
         // Stopping releases the codec, so the source prepared again gets a
         // new one. Doing it now hides the reconnect inside the switch.
         if (freshDecoder) {
+            // Capture the viewer's audio and subtitle picks while the tracks are still live.
+            rememberTrackOverridesForSourceRebuild()
+            // The reopened source would open its AudioTrack while the display
+            // switch is still renegotiating HDMI, so keep audio closed until
+            // the hold ends, as a fresh start does.
+            if (rateSession.gateCorrectionAudio(sourceToken)) {
+                trackSelector.parameters = trackSelector.parameters.buildUpon()
+                    .setTrackTypeDisabled(C.TRACK_TYPE_AUDIO, true)
+                    .build()
+                audioTrackOpenedForSource = false
+            }
             val positionMs = player.currentPosition.coerceAtLeast(0L)
             player.stop()
             prepareCurrentSource(positionMs, playWhenReady = false)
@@ -2584,14 +2601,25 @@ class Media3VideoView(
         if (!rateSession.correctionHolding) return
         val sourceToken = rateSession.correctionIntent.sourceToken ?: return
         if (!rateSession.isCurrent(sourceToken) || sourceToken != frameTiming.generationToken) {
+            // A replaced source resets its own selections; a current one must not stay silent.
+            if (rateSession.releaseCorrectionAudioGate() && rateSession.isCurrent(sourceToken) &&
+                !isDisposed && !isPlayerReleased
+            ) {
+                trackSelector.setParameters(
+                    trackSelector.buildUponParameters()
+                        .setTrackTypeDisabled(C.TRACK_TYPE_AUDIO, rateSession.audioGated),
+                )
+            }
             rateSession.cancelCorrection()
             return
         }
         val playWhenReady = rateSession.completeCorrection(sourceToken) ?: return
         if (isDisposed || isPlayerReleased) return
+        rateSession.releaseCorrectionAudioGate()
         trackSelector.setParameters(
             trackSelector.buildUponParameters()
-                .setAllowInvalidateSelectionsOnRendererCapabilitiesChange(true),
+                .setAllowInvalidateSelectionsOnRendererCapabilitiesChange(true)
+                .setTrackTypeDisabled(C.TRACK_TYPE_AUDIO, rateSession.audioGated),
         )
         if (playWhenReady && !player.playWhenReady) {
             player.playWhenReady = true
@@ -5937,7 +5965,47 @@ class Media3VideoView(
                     "heldMs" to SystemClock.elapsedRealtime() - hold.settle.startedAtMs,
                 ),
             )
+            rebuildAudioOutputAfterRouteDrop(hold)
         }
+    }
+
+    // The platform can recreate an open AudioTrack when the HDMI route drops
+    // during a hold, which leaves audio out of step with video. A seek in
+    // place, while the hold still has the player paused, flushes the sink so
+    // playback resumes on a fresh track at the same position.
+    private fun rebuildAudioOutputAfterRouteDrop(hold: DisplayRateSession.Hold) {
+        if (isDisposed || isPlayerReleased) return
+        val outcome = AudioOutputRebuildPolicy.decide(
+            sawRouteDrop = hold.settle.sawHdmiAudioDrop,
+            audioTrackOpened = audioTrackOpenedForSource,
+            sourceCurrent = rateSession.isCurrent(hold.sourceToken) &&
+                hold.sourceToken == frameTiming.generationToken,
+            playerUsable = !isDisposed && !isPlayerReleased,
+            audioBlocked = rateSession.audioGated,
+            playerPaused = !player.playWhenReady,
+            seekable = player.isCurrentMediaItemSeekable,
+            audioRekickActive = isAudioRekickActiveForCurrentPlayer(),
+        )
+        if (outcome == AudioOutputRebuildPolicy.Outcome.NONE) return
+        if (outcome == AudioOutputRebuildPolicy.Outcome.NOT_REBUILDABLE) {
+            Media3Bridge.emitEvent(
+                mapOf(
+                    "event" to "audioRouteDroppedNotRebuilt",
+                    "positionMs" to player.currentPosition.coerceAtLeast(0L),
+                    "live" to currentIsLive,
+                ),
+            )
+            return
+        }
+        val positionMs = player.currentPosition.coerceAtLeast(0L)
+        player.seekTo(positionMs)
+        Media3Bridge.emitEvent(
+            mapOf(
+                "event" to "audioOutputRebuilt",
+                "positionMs" to positionMs,
+                "live" to currentIsLive,
+            ),
+        )
     }
 
     private fun cancelHeldStart() {
@@ -6305,7 +6373,7 @@ class Media3VideoView(
                 .buildUpon()
                 .setTrackTypeDisabled(
                     trackType,
-                    trackType == C.TRACK_TYPE_AUDIO && rateSession.startup.audioBlocked,
+                    trackType == C.TRACK_TYPE_AUDIO && rateSession.audioGated,
                 )
                 .clearOverridesOfType(trackType)
                 .addOverride(override)

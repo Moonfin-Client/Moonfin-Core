@@ -1,6 +1,8 @@
 package org.moonfin.nativevideo
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class RateEvidenceTest {
@@ -31,5 +33,17 @@ class RateEvidenceTest {
             StreamRateEvidence(25f, StreamScanType.INTERLACED),
         )
         assertEquals(null, mismatched.eventFields()["scanType"])
+    }
+
+    @Test
+    fun `header evidence differing only by interlaced versus repeated fields is the same rate`() {
+        val interlaced = StreamRateEvidence(29.97f, StreamScanType.INTERLACED, 720, 480)
+        val repeated = StreamRateEvidence(29.97f, StreamScanType.REPEATED_FIELDS, 720, 480)
+
+        assertTrue(interlaced.sameRateAs(repeated))
+        assertFalse(interlaced.sameRateAs(StreamRateEvidence(23.976f, StreamScanType.PROGRESSIVE, 720, 480)))
+        assertFalse(interlaced.sameRateAs(StreamRateEvidence(29.97f, StreamScanType.PROGRESSIVE, 720, 480)))
+        assertFalse(interlaced.sameRateAs(StreamRateEvidence(25f, StreamScanType.INTERLACED, 720, 480)))
+        assertFalse(interlaced.sameRateAs(null))
     }
 }

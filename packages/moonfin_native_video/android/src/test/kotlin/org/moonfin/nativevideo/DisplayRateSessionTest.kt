@@ -288,4 +288,54 @@ class DisplayRateSessionTest {
         assertFalse(session.consumeInternalPause(player, reason = 1))
         assertTrue(session.desiredPlayWhenReady)
     }
+
+    @Test
+    fun `correction audio gate needs an active correction and clears on release`() {
+        val session = DisplayRateSession()
+        session.beginSource(3, playWhenReady = true)
+        assertFalse(session.gateCorrectionAudio(3))
+
+        assertTrue(session.beginCorrection(3))
+        assertFalse(session.gateCorrectionAudio(4))
+        assertTrue(session.gateCorrectionAudio(3))
+        assertTrue(session.audioGated)
+
+        assertEquals(true, session.completeCorrection(3))
+        assertTrue(session.releaseCorrectionAudioGate())
+        assertFalse(session.audioGated)
+        assertFalse(session.releaseCorrectionAudioGate())
+    }
+
+    @Test
+    fun `correction audio gate clears on cancel and on a new or cancelled source`() {
+        val session = DisplayRateSession()
+        session.beginSource(3, playWhenReady = true)
+        session.beginCorrection(3)
+        session.gateCorrectionAudio(3)
+        session.cancelCorrection()
+        assertFalse(session.audioGated)
+
+        session.beginCorrection(3)
+        session.gateCorrectionAudio(3)
+        session.beginSource(4, playWhenReady = true)
+        assertFalse(session.audioGated)
+
+        session.beginCorrection(4)
+        session.gateCorrectionAudio(4)
+        session.cancelSource()
+        assertFalse(session.audioGated)
+    }
+
+    @Test
+    fun `correction audio gate keeps the viewer's latest play intent`() {
+        val session = DisplayRateSession()
+        session.beginSource(3, playWhenReady = true)
+        session.beginCorrection(3)
+        session.gateCorrectionAudio(3)
+        session.requestPlayback(false)
+
+        assertEquals(false, session.completeCorrection(3))
+        assertTrue(session.releaseCorrectionAudioGate())
+        assertFalse(session.desiredPlayWhenReady)
+    }
 }

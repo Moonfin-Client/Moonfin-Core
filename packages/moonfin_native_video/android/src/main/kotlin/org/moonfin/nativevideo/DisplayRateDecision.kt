@@ -37,27 +37,13 @@ internal object DisplayRateDecision {
     private const val MIN_RATE_FPS = 1.0
     private const val MAX_RATE_FPS = 120.0
     private const val FIELD_RATE_TOLERANCE_FPS = 0.05
-    private const val HEADER_MATCH_TOLERANCE = 0.01
+    private const val RATE_CHANGE_THRESHOLD = 0.01
+    private const val SNAP_TOLERANCE = 0.01
     private val RATE_29_97 = 30_000.0 / 1001.0
 
     fun choose(inputs: RateInputs): RateChoice {
-        val measured = inputs.measured
-        val measuredFps = measuredRate(measured)
-        if (measured != null && measuredFps != null && isUsable(measured, measuredFps)) {
-            val matchingHeader = inputs.header
-                ?.takeIf { it.scanType != StreamScanType.UNKNOWN && isValidRate(it.frameRate.toDouble()) }
-                ?.takeIf { headerMatches(it.frameRate.toDouble(), measuredFps) }
-            val applyFieldRate = measured.kind == FrameCadence.Kind.UNIFORM &&
-                matchingHeader != null &&
-                matchingHeader.scanType.isFieldScanned() &&
-                isFieldRatePictureFps(measuredFps)
-            return RateChoice(
-                fps = (if (applyFieldRate) measuredFps * 2.0 else measuredFps).toFloat(),
-                source = RateSource.MEASURED,
-                fieldRateApplied = applyFieldRate,
-            )
-        }
-
+        // MPEG-2 sequence and picture headers state the rate directly, so they
+        // outrank timestamps; measuring is for streams without usable headers.
         val header = inputs.header
             ?.takeIf { it.scanType != StreamScanType.UNKNOWN && isValidRate(it.frameRate.toDouble()) }
         if (header != null) {
@@ -70,6 +56,12 @@ internal object DisplayRateDecision {
             )
         }
 
+        val measured = inputs.measured
+        val measuredFps = measuredRate(measured)
+        if (measured != null && measuredFps != null && isUsable(measured, measuredFps)) {
+            return RateChoice(measuredFps.toFloat(), RateSource.MEASURED)
+        }
+
         validRate(inputs.serverRealFps)?.let { return RateChoice(it, RateSource.SERVER_REAL) }
         validRate(inputs.serverAverageFps)?.let { return RateChoice(it, RateSource.SERVER_AVERAGE) }
         validRate(inputs.legacyFps)?.let { return RateChoice(it, RateSource.SERVER_HINT) }
@@ -80,16 +72,33 @@ internal object DisplayRateDecision {
     fun isRateChange(decided: RateChoice, reading: RateChoice): Boolean {
         val oldRate = decided.fps?.toDouble()?.takeIf(::isValidRate) ?: return false
         val newRate = reading.fps?.toDouble()?.takeIf(::isValidRate) ?: return false
-        return abs(newRate - oldRate) / oldRate > 0.01
+        return abs(newRate - oldRate) / oldRate > RATE_CHANGE_THRESHOLD
     }
 
     private fun measuredRate(cadence: FrameCadence?): Double? {
         cadence ?: return null
         return when (cadence.kind) {
-            FrameCadence.Kind.UNIFORM -> cadence.meanFps
+            FrameCadence.Kind.UNIFORM -> standardUniformRate(cadence)
             FrameCadence.Kind.GRID, FrameCadence.Kind.PULLDOWN_23 -> cadence.gridHz ?: return null
             FrameCadence.Kind.IRREGULAR -> return null
         }
+    }
+
+    /**
+     * The standard rate a uniform cadence sits on. A window that spans a
+     * programme change or holds a few odd intervals has a mean between rates,
+     * while the dominant interval still lands on the grid. The snap follows
+     * the grid and unit, never the nearest standard number, and applies only
+     * when the dominant interval is within [SNAP_TOLERANCE] of that period.
+     */
+    private fun standardUniformRate(cadence: FrameCadence): Double {
+        val grid = cadence.gridHz ?: return cadence.meanFps
+        val unit = cadence.units.firstOrNull()?.first?.takeIf { it >= 1 } ?: return cadence.meanFps
+        val snapped = grid / unit
+        val periodUs = 1_000_000.0 / snapped
+        val closeEnough = cadence.dominantIntervalUs > 0 &&
+            abs(cadence.dominantIntervalUs - periodUs) / periodUs <= SNAP_TOLERANCE
+        return if (closeEnough) snapped else cadence.meanFps
     }
 
     private fun isUsable(cadence: FrameCadence, fps: Double): Boolean {
@@ -99,15 +108,9 @@ internal object DisplayRateDecision {
             (cadence.kind == FrameCadence.Kind.UNIFORM && cadence.intervals >= MIN_FAST_INTERVALS)
     }
 
-    private fun headerMatches(headerFps: Double, measuredFps: Double): Boolean =
-        abs(measuredFps - headerFps) / headerFps <= HEADER_MATCH_TOLERANCE
-
     private fun isFieldRatePictureFps(fps: Double): Boolean =
         abs(fps - 25.0) <= FIELD_RATE_TOLERANCE_FPS ||
             abs(fps - RATE_29_97) <= FIELD_RATE_TOLERANCE_FPS
-
-    private fun StreamScanType.isFieldScanned(): Boolean =
-        this == StreamScanType.INTERLACED || this == StreamScanType.REPEATED_FIELDS
 
     private fun validRate(fps: Float?): Float? =
         fps?.takeIf { isValidRate(it.toDouble()) }

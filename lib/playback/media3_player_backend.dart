@@ -525,6 +525,18 @@ class Media3PlayerBackend extends PlayerBackend
           'Media3: held the start ${_toInt(map['heldMs'])}ms '
           'for the display mode switch to settle',
         );
+      case 'audioOutputRebuilt':
+        _diag(
+          'Media3: audio route dropped during the display mode switch, '
+          'rebuilt the audio output at ${_toInt(map['positionMs'])}ms',
+          level: LogLevel.warning,
+        );
+      case 'audioRouteDroppedNotRebuilt':
+        _diag(
+          'Media3: audio route dropped during the display mode switch under '
+          'an open audio track that cannot be rebuilt in place',
+          level: LogLevel.warning,
+        );
       case 'routeFlapResume':
         _diag(
           'Media3: resumed after the audio route came back '
