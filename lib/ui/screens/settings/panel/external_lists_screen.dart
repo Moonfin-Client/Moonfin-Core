@@ -1033,11 +1033,7 @@ class _UpcomingCalendarsScreenState extends State<_UpcomingCalendarsScreen> {
                         preference: UserPreferences.radarrCalendarHideDownloaded,
                         title: l10n.radarrCalendarHideDownloaded,
                         icon: Icons.download_done,
-                        onChanged: () {
-                          // The cached calendar was filtered with the old value.
-                          prefs.set(UserPreferences.lastRadarrCalendarFetchTime, 0);
-                          setState(() {});
-                        },
+                        onChanged: () => setState(() {}),
                       ),
                     ],
                   ],
@@ -1078,11 +1074,7 @@ class _UpcomingCalendarsScreenState extends State<_UpcomingCalendarsScreen> {
                         preference: UserPreferences.sonarrCalendarHideDownloaded,
                         title: l10n.sonarrCalendarHideDownloaded,
                         icon: Icons.download_done,
-                        onChanged: () {
-                          // The cached calendar was filtered with the old value.
-                          prefs.set(UserPreferences.lastSonarrCalendarFetchTime, 0);
-                          setState(() {});
-                        },
+                        onChanged: () => setState(() {}),
                       ),
                     ],
                   ],
