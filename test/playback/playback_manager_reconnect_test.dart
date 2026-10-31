@@ -13,6 +13,9 @@ class _TestBackend extends Fake implements PlayerBackend {
   final List<Duration> seeks = <Duration>[];
   final List<StreamCredentials> credentialUpdates = <StreamCredentials>[];
 
+  /// Emitted while the next stream opens, before it is ready.
+  Map<String, dynamic>? errorWhileOpening;
+
   /// Whether the engine can change an open stream's credentials.
   bool takesCredentialsLive = true;
   bool playing = false;
@@ -99,6 +102,9 @@ class _TestBackend extends Fake implements PlayerBackend {
     playStarts.add(startPosition);
     currentPosition = startPosition;
     playing = true;
+    final error = errorWhileOpening;
+    errorWhileOpening = null;
+    if (error != null) errors.add(error);
   }
 
   @override
@@ -459,6 +465,56 @@ void main() {
         async.elapse(const Duration(seconds: 30));
         expect(resolver.requests, isEmpty);
         expect(manager.isReconnecting, isFalse);
+      });
+    });
+
+    test('ends when the queue moves on, so the next item\'s errors are '
+        'its own', () {
+      final resolver = _Resolver();
+      fakeAsync((async) {
+        final backend = _TestBackend();
+        final manager = PlaybackManager()
+          ..setBackend(backend)
+          ..setResolver(resolver)
+          ..setPlayerService(_TestService())
+          ..clock = async.getClock(DateTime(2026, 10, 31, 20)).now;
+        unawaited(
+          manager.playItems(<dynamic>[
+            _movie,
+            const <String, dynamic>{'Id': 'movie-2', 'Type': 'Movie'},
+          ]),
+        );
+        async.flushMicrotasks();
+        backend.emitPosition(const Duration(minutes: 20));
+
+        backend.errors.add({
+          'event': 'playerError',
+          'kind': 'network',
+          'recoverable': true,
+        });
+        async.flushMicrotasks();
+        expect(manager.isReconnecting, isTrue);
+
+        // The next item fails while it opens: its own startup recovery
+        // (a transcode) must run, not be taken for the first item's
+        // reconnect.
+        backend.errorWhileOpening = {
+          'event': 'playerError',
+          'kind': 'unsupported_container',
+          'recoverable': true,
+        };
+        unawaited(manager.next());
+        async.flushMicrotasks();
+
+        expect(manager.isReconnecting, isFalse);
+        expect(resolver.requests.single.reason, ReplanReason.failure);
+        expect(resolver.requests.single.enableDirectStream, isFalse);
+
+        // The first item's pending retry reopens nothing.
+        async.elapse(const Duration(seconds: 30));
+        expect(resolver.requests, hasLength(1));
+        manager.dispose();
+        async.flushTimers();
       });
     });
 

@@ -2822,8 +2822,12 @@ class PlaybackManager implements AudioOwnable {
     // A channel started afresh -- a tune, or Retry on the card a spent budget
     // raised -- gets the whole budget back. A re-resolve reaches here too, and
     // that one is an attempt being spent, so it must not clear the count.
+    // A reconnect belongs to the item it was reopening too: a queue change
+    // (next, previous, auto-advance) ends it, or the new item's errors would
+    // be taken for the old one's and its budget would carry over.
     if (!_teardownForReResolve) {
       _resetLiveRecoveryBudget();
+      _endReconnect();
     }
 
     if (_forceTranscodeForQueue) {
