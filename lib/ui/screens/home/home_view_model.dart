@@ -3571,18 +3571,21 @@ class HomeViewModel extends ChangeNotifier {
       final airDateUtcStr = item.rawData['CalendarDate'] as String?;
       final airDateUtc = airDateUtcStr != null ? DateTime.tryParse(airDateUtcStr) : null;
       if (airDateUtc == null) return item;
-      final airDay = sonarrAirDay(airDateUtc);
 
       final sNum = item.rawData['SeasonNumber'] as String? ?? '0';
       final eNum = item.rawData['EpisodeNumber'] as String? ?? '0';
+      final episode = 'S${sNum}E$eNum';
+      final days = calendarDaysBetween(DateTime.now(), airDateUtc.toLocal());
+      // Same wording as the Radarr row, so both read "In 3 days (Nov 3)".
+      final release = l10n.calendarReleaseIn(days < 0 ? 0 : days, sonarrAirDay(airDateUtc));
 
       String? subtitleText;
       if (showDate && showEpisodeInfo) {
-        subtitleText = l10n.sonarrCalendarNextEpisode('$airDay (S$sNum:E$eNum)');
+        subtitleText = '$episode · $release';
       } else if (showDate) {
-        subtitleText = l10n.sonarrCalendarNextEpisode(airDay);
+        subtitleText = release;
       } else if (showEpisodeInfo) {
-        subtitleText = l10n.sonarrCalendarNextEpisode('(S$sNum:E$eNum)');
+        subtitleText = episode;
       }
 
       final newRawData = Map<String, dynamic>.from(item.rawData);
