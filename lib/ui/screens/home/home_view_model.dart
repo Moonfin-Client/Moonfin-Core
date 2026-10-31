@@ -4047,8 +4047,16 @@ class HomeViewModel extends ChangeNotifier {
   static String sonarrAirDay(DateTime airDateUtc) =>
       _formatDateHuman(airDateUtc.toLocal());
 
-  static String _formatDateHuman(DateTime date) =>
-      DateFormat.MMMd(currentAppLocalizations().localeName).format(date);
+  static String _formatDateHuman(DateTime date) {
+    try {
+      return DateFormat.MMMd(currentAppLocalizations().localeName).format(date);
+    } catch (_) {
+      // The app loads the date data for its language at startup. Without it,
+      // in tests or for a language intl has no data for, fall back to English
+      // rather than failing the whole row.
+      return DateFormat.MMMd('en_US').format(date);
+    }
+  }
 
   Future<List<HomeRow>> _loadMergedCalendarRow({bool forceRefresh = false}) async {
     try {
