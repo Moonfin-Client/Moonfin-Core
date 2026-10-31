@@ -10682,5 +10682,13 @@
                 "type": "String"
             }
         }
+    },
+    "animeMarkerFiller": "原创剧情",
+    "@animeMarkerFiller": {
+        "description": "Badge on an anime episode that is filler, meaning it is not adapted from the source manga"
+    },
+    "animeMarkerMixed": "混合剧情",
+    "@animeMarkerMixed": {
+        "description": "Badge on an anime episode that mixes source material with filler, so it still contains story"
     }
 }
