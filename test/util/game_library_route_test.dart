@@ -67,5 +67,45 @@ void main() {
         startsWith('/library/lib-shows'),
       );
     });
+
+    test('recognizes Books ROM libraries before the registry loads', () {
+      for (final registryRegistered in [false, true]) {
+        if (registryRegistered) {
+          GetIt.instance.registerSingleton<GameLibraryRegistry>(
+            GameLibraryRegistry(),
+          );
+        }
+
+        for (final type in ['books', 'Books']) {
+          for (final name in ['ROMs', 'Retro Games', 'Emulators']) {
+            expect(isGameLibrary('lib-roms', type, name), isTrue);
+            expect(
+              libraryRoute('lib-roms', type, name),
+              '/games/lib-roms?title=${Uri.encodeQueryComponent(name)}',
+            );
+          }
+        }
+
+        for (final name in ['Books', 'Comics', '']) {
+          expect(isGameLibrary('lib-books', 'books', name), isFalse);
+          expect(
+            libraryRoute('lib-books', 'books', name),
+            '/books/lib-books?collectionType=books',
+          );
+        }
+        expect(isGameLibrary('lib-books', 'books', null), isFalse);
+      }
+    });
+
+    test('the loaded registry controls Books libraries with game names', () {
+      registerGameLibraries(['lib-games']);
+
+      expect(isGameLibrary('lib-games', 'books', 'Collection'), isTrue);
+      expect(isGameLibrary('lib-books', 'books', 'Retro Games'), isFalse);
+      expect(
+        libraryRoute('lib-books', 'books', 'Retro Games'),
+        '/books/lib-books?collectionType=books',
+      );
+    });
   });
 }
