@@ -464,6 +464,8 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
 
   Future<void> _deleteServer(Server server) async {
     final l10n = AppLocalizations.of(context);
+    // Read before the dialog takes focus and hands it back a microtask later
+    final tileHadFocus = _firstServerFocus.hasFocus;
     final confirmed = await showFocusRestoringDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog.adaptive(
@@ -476,7 +478,6 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
       ),
     );
     if (confirmed == true) {
-      final tileHadFocus = _firstServerFocus.hasFocus;
       await _serverRepo.deleteServer(server.id);
       if (!mounted) return;
       setState(() {});
