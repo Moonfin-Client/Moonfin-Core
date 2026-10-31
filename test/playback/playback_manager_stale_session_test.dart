@@ -1297,6 +1297,193 @@ void main() {
   });
 
   test(
+    'paused initial start remains paused through pre-ready decoder recovery',
+    () async {
+      final backend = _TestBackend()..applyCapturedAutoPlayAfterOpen = true;
+      final resolver = _TestResolver();
+      final manager = _manager(backend, resolver, _TestService());
+      final initialOpenGate = Completer<void>();
+      final replacementResolveGate = Completer<void>();
+      final replacementOpenGate = Completer<void>();
+      final initialPlayStarted = Completer<void>();
+      final replacementPlayStarted = Completer<void>();
+      backend.onPlay = (playCount) {
+        if (playCount == 1) {
+          backend.playGate = initialOpenGate;
+          initialPlayStarted.complete();
+        } else if (playCount == 2) {
+          backend.playGate = replacementOpenGate;
+          replacementPlayStarted.complete();
+        }
+      };
+
+      try {
+        final initialStart = manager.playItems(
+          <dynamic>[<String, dynamic>{'Id': 'paused-start', 'Type': 'Movie'}],
+          autoPlay: false,
+        );
+        await initialPlayStarted.future;
+
+        resolver.resolveGate = replacementResolveGate;
+        backend.emitError(<String, dynamic>{
+          'event': 'playerError',
+          'recoverable': true,
+          'kind': 'video_decoder_failure',
+        });
+        await pumpEventQueue(times: 8);
+        expect(resolver.calls, 2);
+
+        // Let the retired initial open finish while replacement resolution is
+        // still held, then release and hold the replacement backend open.
+        initialOpenGate.complete();
+        await initialStart;
+        replacementResolveGate.complete();
+        await replacementPlayStarted.future;
+        expect(backend.playedPayloads.last['autoPlay'], isFalse);
+
+        replacementOpenGate.complete();
+        await pumpEventQueue(times: 12);
+
+        expect(backend.playing, isFalse);
+        expect(manager.viewerPaused, isTrue);
+      } finally {
+        if (!initialOpenGate.isCompleted) initialOpenGate.complete();
+        if (!replacementResolveGate.isCompleted) {
+          replacementResolveGate.complete();
+        }
+        if (!replacementOpenGate.isCompleted) replacementOpenGate.complete();
+        await pumpEventQueue(times: 12);
+        manager.dispose();
+      }
+    },
+  );
+
+  test(
+    'viewer resume during paused initial recovery updates replacement intent',
+    () async {
+      final backend = _TestBackend()..applyCapturedAutoPlayAfterOpen = true;
+      final resolver = _TestResolver();
+      final manager = _manager(backend, resolver, _TestService());
+      final initialOpenGate = Completer<void>();
+      final replacementResolveGate = Completer<void>();
+      final replacementOpenGate = Completer<void>();
+      final initialPlayStarted = Completer<void>();
+      final replacementPlayStarted = Completer<void>();
+      backend.onPlay = (playCount) {
+        if (playCount == 1) {
+          backend.playGate = initialOpenGate;
+          initialPlayStarted.complete();
+        } else if (playCount == 2) {
+          backend.playGate = replacementOpenGate;
+          replacementPlayStarted.complete();
+        }
+      };
+
+      try {
+        final initialStart = manager.playItems(
+          <dynamic>[
+            <String, dynamic>{'Id': 'resume-paused-start', 'Type': 'Movie'},
+          ],
+          autoPlay: false,
+        );
+        await initialPlayStarted.future;
+        resolver.resolveGate = replacementResolveGate;
+        backend.emitError(<String, dynamic>{
+          'event': 'playerError',
+          'recoverable': true,
+          'kind': 'video_decoder_failure',
+        });
+        await pumpEventQueue(times: 8);
+        expect(resolver.calls, 2);
+
+        initialOpenGate.complete();
+        await initialStart;
+        await manager.resume();
+        replacementResolveGate.complete();
+        await replacementPlayStarted.future;
+        expect(backend.playedPayloads.last['autoPlay'], isTrue);
+
+        replacementOpenGate.complete();
+        await pumpEventQueue(times: 12);
+
+        expect(backend.playing, isTrue);
+        expect(manager.viewerPaused, isFalse);
+      } finally {
+        if (!initialOpenGate.isCompleted) initialOpenGate.complete();
+        if (!replacementResolveGate.isCompleted) {
+          replacementResolveGate.complete();
+        }
+        if (!replacementOpenGate.isCompleted) replacementOpenGate.complete();
+        await pumpEventQueue(times: 12);
+        manager.dispose();
+      }
+    },
+  );
+
+  test(
+    'pause after resuming paused initial recovery wins during replacement open',
+    () async {
+      final backend = _TestBackend()..applyCapturedAutoPlayAfterOpen = true;
+      final resolver = _TestResolver();
+      final manager = _manager(backend, resolver, _TestService());
+      final initialOpenGate = Completer<void>();
+      final replacementResolveGate = Completer<void>();
+      final replacementOpenGate = Completer<void>();
+      final initialPlayStarted = Completer<void>();
+      final replacementPlayStarted = Completer<void>();
+      backend.onPlay = (playCount) {
+        if (playCount == 1) {
+          backend.playGate = initialOpenGate;
+          initialPlayStarted.complete();
+        } else if (playCount == 2) {
+          backend.playGate = replacementOpenGate;
+          replacementPlayStarted.complete();
+        }
+      };
+
+      try {
+        final initialStart = manager.playItems(
+          <dynamic>[
+            <String, dynamic>{'Id': 'resume-pause-start', 'Type': 'Movie'},
+          ],
+          autoPlay: false,
+        );
+        await initialPlayStarted.future;
+        resolver.resolveGate = replacementResolveGate;
+        backend.emitError(<String, dynamic>{
+          'event': 'playerError',
+          'recoverable': true,
+          'kind': 'video_decoder_failure',
+        });
+        await pumpEventQueue(times: 8);
+        expect(resolver.calls, 2);
+
+        initialOpenGate.complete();
+        await initialStart;
+        await manager.resume();
+        replacementResolveGate.complete();
+        await replacementPlayStarted.future;
+        expect(backend.playedPayloads.last['autoPlay'], isTrue);
+
+        await manager.pause();
+        replacementOpenGate.complete();
+        await pumpEventQueue(times: 12);
+
+        expect(backend.playing, isFalse);
+        expect(manager.viewerPaused, isTrue);
+      } finally {
+        if (!initialOpenGate.isCompleted) initialOpenGate.complete();
+        if (!replacementResolveGate.isCompleted) {
+          replacementResolveGate.complete();
+        }
+        if (!replacementOpenGate.isCompleted) replacementOpenGate.complete();
+        await pumpEventQueue(times: 12);
+        manager.dispose();
+      }
+    },
+  );
+
+  test(
     'viewer pause during replacement opening is reconciled after open',
     () async {
       final backend = _TestBackend()..applyCapturedAutoPlayAfterOpen = true;

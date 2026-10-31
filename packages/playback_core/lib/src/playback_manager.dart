@@ -2468,7 +2468,7 @@ class PlaybackManager implements AudioOwnable {
     bool carryTrackSelections = false,
   }) async {
     _beginNewPlaybackSource('the viewer tuned somewhere else');
-    _viewerPaused = false;
+    _viewerPaused = !autoPlay;
     _clearPendingItemOverrides();
     _vetoedAudioCodecs.clear();
     if (!carryTrackSelections) {

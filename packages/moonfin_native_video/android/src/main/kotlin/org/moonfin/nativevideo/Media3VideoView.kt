@@ -2975,7 +2975,10 @@ class Media3VideoView(
     // their release reaches whichever view is active. One meant for a
     // preview must not stop a main source, and restore the display with it.
     private fun isStrayPreviewRelease(arguments: Any?): Boolean =
-        (arguments as? Map<*, *>)?.get("previewOnly") == true && !currentIsPreview
+        Media3SlotPolicy.isStrayPreviewRelease(
+            previewOnly = (arguments as? Map<*, *>)?.get("previewOnly") as? Boolean,
+            currentIsPreview = currentIsPreview,
+        )
 
     private fun releaseActivePlayer() {
         if (isDisposed) return

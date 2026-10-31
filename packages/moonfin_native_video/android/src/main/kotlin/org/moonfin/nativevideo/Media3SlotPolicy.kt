@@ -15,6 +15,10 @@ import androidx.media3.common.Player
  * Pure so a JVM test can drive every case.
  */
 object Media3SlotPolicy {
+    /** Whether a preview-only release must leave the main player untouched. */
+    fun isStrayPreviewRelease(previewOnly: Boolean?, currentIsPreview: Boolean): Boolean =
+        previewOnly == true && !currentIsPreview
+
     /** What currently holds the slot. */
     enum class Slot { NONE, HOST, MAIN, PREVIEW }
 
