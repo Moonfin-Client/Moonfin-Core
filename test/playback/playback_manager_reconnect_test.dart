@@ -142,6 +142,9 @@ class _Resolver extends MediaStreamResolver implements StreamReplanner {
 
   /// Whether the server is unreachable: every replan and resolve throws.
   bool unreachable = false;
+
+  /// Holds the next replan until completed, to keep an attempt in flight.
+  Completer<void>? replanGate;
   int resolves = 0;
   final List<ReplanRequest> requests = <ReplanRequest>[];
 
@@ -183,6 +186,9 @@ class _Resolver extends MediaStreamResolver implements StreamReplanner {
     ReplanRequest request,
   ) async {
     requests.add(request);
+    final gate = replanGate;
+    replanGate = null;
+    if (gate != null) await gate.future;
     if (unreachable) throw StateError('server unreachable');
     return _stream(current.playSessionId!, requests.length + 1);
   }
@@ -515,6 +521,114 @@ void main() {
         expect(resolver.requests, hasLength(1));
         manager.dispose();
         async.flushTimers();
+      });
+    });
+
+    test('gives the next item its own reconnect while the old one is still '
+        'reopening', () {
+      final resolver = _Resolver();
+      fakeAsync((async) {
+        final backend = _TestBackend();
+        final manager = PlaybackManager()
+          ..setBackend(backend)
+          ..setResolver(resolver)
+          ..setPlayerService(_TestService())
+          ..clock = async.getClock(DateTime(2026, 10, 31, 20)).now;
+        unawaited(
+          manager.playItems(<dynamic>[
+            _movie,
+            const <String, dynamic>{'Id': 'movie-2', 'Type': 'Movie'},
+          ]),
+        );
+        async.flushMicrotasks();
+        backend.emitPosition(const Duration(minutes: 20));
+
+        // The first item's retry starts and is held mid-replan.
+        final gate = Completer<void>();
+        resolver.replanGate = gate;
+        backend.errors.add({
+          'event': 'playerError',
+          'kind': 'network',
+          'recoverable': true,
+        });
+        async.elapse(const Duration(seconds: 1));
+        expect(resolver.requests, hasLength(1));
+
+        // The viewer moves on while it is still reopening, and it finishes
+        // stale.
+        unawaited(manager.next());
+        async.flushMicrotasks();
+        async.elapse(const Duration(seconds: 5));
+        gate.complete();
+        async.flushMicrotasks();
+
+        // The next item loses its connection. Its reconnect starts from the
+        // first attempt, a second after, not from where the first item's
+        // left off.
+        backend.emitPosition(const Duration(minutes: 1));
+        backend.errors.add({
+          'event': 'playerError',
+          'kind': 'network',
+          'recoverable': true,
+        });
+        async.flushMicrotasks();
+        expect(manager.isReconnecting, isTrue);
+        async.elapse(const Duration(seconds: 1));
+        expect(resolver.requests, hasLength(2));
+        expect(resolver.requests.last.position, const Duration(minutes: 1));
+        expect(manager.isReconnecting, isFalse);
+        manager.dispose();
+        async.flushTimers();
+      });
+    });
+
+    test('a paused stream doesn\'t earn the budget back', () {
+      final resolver = _Resolver();
+      _withPlayback(resolver, (async, manager, backend, service) {
+        unawaited(manager.pause());
+        async.flushMicrotasks();
+        backend.errors.add({
+          'event': 'playerError',
+          'kind': 'network',
+          'recoverable': true,
+        });
+        async.elapse(const Duration(seconds: 1));
+        expect(resolver.requests, hasLength(1));
+        expect(manager.isReconnecting, isFalse);
+
+        // Half a minute reopened but never played: the next failure carries
+        // on from the second attempt, two seconds out, not from the first.
+        async.elapse(const Duration(seconds: 31));
+        backend.errors.add({
+          'event': 'playerError',
+          'kind': 'network',
+          'recoverable': true,
+        });
+        async.elapse(const Duration(seconds: 1));
+        expect(resolver.requests, hasLength(1));
+        async.elapse(const Duration(seconds: 1));
+        expect(resolver.requests, hasLength(2));
+      });
+    });
+
+    test('ends when the app stops playback for the background', () {
+      final resolver = _Resolver();
+      _withPlayback(resolver, (async, manager, backend, service) {
+        backend.errors.add({
+          'event': 'playerError',
+          'kind': 'network',
+          'recoverable': true,
+        });
+        async.flushMicrotasks();
+        expect(manager.isReconnecting, isTrue);
+
+        unawaited(manager.stopForBackground(manager.queueService.currentItem));
+        async.flushMicrotasks();
+        async.elapse(const Duration(seconds: 30));
+
+        expect(manager.isReconnecting, isFalse);
+        expect(resolver.requests, isEmpty);
+        expect(resolver.resolves, 1);
       });
     });
 

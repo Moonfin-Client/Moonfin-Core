@@ -589,7 +589,8 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
             if !didEmitLoadError {
                 let info = Self.sharedEngine()?.errorInfo
                 let kind = Self.classifySessionError(
-                    engineKind: info?.kind.rawValue, underlyingDomain: info?.underlyingDomain)
+                    engineKind: info?.kind.rawValue, underlyingDomain: info?.underlyingDomain,
+                    afterPlayback: sawPlaybackThisLoad)
                 emitError(kind: kind, recoverable: true, message: message)
             }
         }
@@ -1219,7 +1220,8 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
 
     /// Engine error kinds where the connection failed, not the stream.
     /// Engine error kinds where the server refused the session's
-    /// credentials. Renewed ones open the same stream again.
+    /// credentials. Once the stream has played that is a token that lapsed,
+    /// and renewed ones open the same stream again.
     private nonisolated static let credentialErrorKinds: Set<String> = [
         PlaybackErrorKind.sourceRefused.rawValue,
     ]
@@ -1233,12 +1235,16 @@ final class AetherPlayerWrapper: NSObject, ObservableObject {
 
     /// A mid-play failure only carries a message, so the engine's `errorInfo`
     /// is the only way to tell a dropped connection from a stream it can't
-    /// play. Only the second is worth a server transcode.
+    /// play. Only the second is worth a server transcode. A refusal before
+    /// the stream ever played still goes to one: the server may only be
+    /// refusing this route.
     nonisolated static func classifySessionError(
-        engineKind: String?, underlyingDomain: String?
+        engineKind: String?, underlyingDomain: String?, afterPlayback: Bool = false
     ) -> String {
         if underlyingDomain == NSURLErrorDomain { return "network" }
-        if let engineKind, credentialErrorKinds.contains(engineKind) { return "source_refused" }
+        if afterPlayback, let engineKind, credentialErrorKinds.contains(engineKind) {
+            return "source_refused"
+        }
         if let engineKind, transportErrorKinds.contains(engineKind) { return "network" }
         return "unsupported_container"
     }

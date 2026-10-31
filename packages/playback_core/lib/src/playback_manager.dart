@@ -333,7 +333,13 @@ class PlaybackManager implements AudioOwnable {
   static const _reconnectProvenAfter = Duration(seconds: 30);
   DateTime? _reconnectStartedAt;
   int _reconnectAttempts = 0;
-  bool _reconnectInFlight = false;
+  /// Bumped whenever a reconnect ends, so an attempt that outlives its
+  /// reconnect (the queue moved on while it was reopening) neither blocks
+  /// nor schedules the next reconnect's retries.
+  int _reconnectGeneration = 0;
+  int? _reconnectInFlightGeneration;
+  bool get _reconnectInFlight =>
+      _reconnectInFlightGeneration == _reconnectGeneration;
   bool _reconnecting = false;
   Timer? _reconnectRetry;
   Timer? _reconnectProvenTimer;
@@ -451,6 +457,7 @@ class PlaybackManager implements AudioOwnable {
       _liveRecoveryRetry = null;
     }
     _armLiveRecoveryProven();
+    _armReconnectProven();
   }
 
   /// Once a recovery has the channel playing again, gives the budget back
@@ -2159,6 +2166,7 @@ class PlaybackManager implements AudioOwnable {
     if (startedAt == null) return;
     final intent = _viewerIntentGeneration;
     final item = queueService.currentItem;
+    final generation = _reconnectGeneration;
     final attempt = _reconnectAttempts + 1;
     final delay = _reconnectDelayBefore(attempt);
     if (clock().add(delay).difference(startedAt) > _reconnectBudget) {
@@ -2168,7 +2176,7 @@ class PlaybackManager implements AudioOwnable {
     _reconnectRetry?.cancel();
     _reconnectRetry = Timer(delay, () {
       _reconnectRetry = null;
-      unawaited(_runReconnect(trigger, attempt, intent, item));
+      unawaited(_runReconnect(trigger, attempt, intent, item, generation));
     });
   }
 
@@ -2177,7 +2185,10 @@ class PlaybackManager implements AudioOwnable {
     int attempt,
     int intent,
     dynamic item,
+    int generation,
   ) async {
+    // A newer reconnect owns the state now; this retry is not its to end.
+    if (generation != _reconnectGeneration) return;
     if (intent != _viewerIntentGeneration ||
         !identical(item, queueService.currentItem) ||
         !_reconnecting) {
@@ -2185,7 +2196,7 @@ class PlaybackManager implements AudioOwnable {
       return;
     }
     _reconnectAttempts = attempt;
-    _reconnectInFlight = true;
+    _reconnectInFlightGeneration = generation;
     var failed = false;
     _diagnosticLogger?.call('Reconnecting after $trigger, attempt $attempt');
     // A failed attempt can emit a failed bringup state on its way out; the
@@ -2206,9 +2217,14 @@ class PlaybackManager implements AudioOwnable {
       _diagnosticLogger?.call('Reconnect attempt $attempt failed: $error');
     } finally {
       _failedBringupSuppressions--;
-      _reconnectInFlight = false;
+      if (_reconnectInFlightGeneration == generation) {
+        _reconnectInFlightGeneration = null;
+      }
     }
-    if (failed && _reconnecting && intent == _viewerIntentGeneration) {
+    if (failed &&
+        generation == _reconnectGeneration &&
+        _reconnecting &&
+        intent == _viewerIntentGeneration) {
       _scheduleReconnect('retry-after-failure');
     }
   }
@@ -2218,16 +2234,29 @@ class PlaybackManager implements AudioOwnable {
   void _reconnectSucceeded() {
     if (_reconnectStartedAt == null) return;
     _setReconnecting(false);
-    _reconnectProvenTimer?.cancel();
+    _armReconnectProven();
+  }
+
+  /// Gives the reconnect budget back after [_reconnectProvenAfter] of
+  /// playback. Armed only while the stream actually plays, so a reopened
+  /// stream the viewer left paused proves nothing; playback starting arms it
+  /// again (see [_onProgressStreamsUpdated]).
+  void _armReconnectProven() {
+    if (_reconnectStartedAt == null || _reconnecting) return;
+    if (_reconnectProvenTimer?.isActive ?? false) return;
+    if (!_isActuallyPlaying) return;
+    final generation = _reconnectGeneration;
     _reconnectProvenTimer = Timer(_reconnectProvenAfter, () {
       _reconnectProvenTimer = null;
-      if (_reconnecting) return;
+      if (generation != _reconnectGeneration || _reconnecting) return;
+      if (!_isActuallyPlaying) return;
       _reconnectStartedAt = null;
       _reconnectAttempts = 0;
     });
   }
 
   void _endReconnect() {
+    _reconnectGeneration++;
     _reconnectRetry?.cancel();
     _reconnectRetry = null;
     _reconnectProvenTimer?.cancel();
@@ -2816,6 +2845,11 @@ class PlaybackManager implements AudioOwnable {
     // one instead of starting another (see [StreamReplanner]), and why.
     StreamResolutionResult? replanFrom,
     ReplanReason replanReason = ReplanReason.trackChange,
+    // This reopens the item that was playing (a re-resolve, or a startup
+    // fallback), rather than starting one. Said outright: a queue change
+    // made while a re-resolve is still running would otherwise read that
+    // re-resolve's teardown as its own.
+    bool reopening = false,
   }) async {
     _deferredStartPosition = Duration.zero;
     _deferPlaybackToExternalPlayer = false;
@@ -2825,7 +2859,7 @@ class PlaybackManager implements AudioOwnable {
     // A reconnect belongs to the item it was reopening too: a queue change
     // (next, previous, auto-advance) ends it, or the new item's errors would
     // be taken for the old one's and its budget would carry over.
-    if (!_teardownForReResolve) {
+    if (!reopening) {
       _resetLiveRecoveryBudget();
       _endReconnect();
     }
@@ -3154,6 +3188,7 @@ class PlaybackManager implements AudioOwnable {
             allowStartupRecovery: allowStartupRecovery,
             withholdExternalPgs: withholdExternalPgs,
             replanFrom: resolution,
+            reopening: true,
             replanReason: ReplanReason.failure,
           );
         } finally {
@@ -3259,6 +3294,7 @@ class PlaybackManager implements AudioOwnable {
           autoPlay: autoPlay,
           withholdExternalPgs: pickedEmbeddedPgs,
           replanFrom: resolution,
+          reopening: true,
         );
         return;
       } finally {
@@ -3545,6 +3581,7 @@ class PlaybackManager implements AudioOwnable {
           allowStartupRecovery: false,
           autoPlay: autoPlay,
           replanFrom: resolution,
+          reopening: true,
           replanReason: ReplanReason.failure,
         );
         return;
@@ -3916,6 +3953,10 @@ class PlaybackManager implements AudioOwnable {
         !identical(queueService.currentItem, expectedItem)) {
       return false;
     }
+    // The queue item and the viewer's intent both survive this stop, so a
+    // retry waiting to fire would pass its own checks and reopen the stream
+    // in the background.
+    _endReconnect();
     return _stopAndReportCurrent(
       skipQueueChange: true,
       expectedItem: expectedItem,
@@ -4820,6 +4861,7 @@ class PlaybackManager implements AudioOwnable {
         allowStartupRecovery: allowStartupRecovery,
         replanFrom: replanFrom,
         replanReason: replanReason,
+        reopening: true,
       );
     } finally {
       _teardownForReResolve = false;
@@ -5073,6 +5115,9 @@ class PlaybackManager implements AudioOwnable {
     _isAutoNexting = false;
     _isManualNexting = false;
     suppressAutoNext = false;
+    // A local file has no connection to reconnect, and a retry still pending
+    // for the server stream would stop it.
+    _endReconnect();
     await _stopAndReportCurrent();
     _resetBackendSelectionLock();
     _isOfflinePlayback = true;
