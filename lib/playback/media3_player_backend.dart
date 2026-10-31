@@ -660,7 +660,7 @@ class Media3PlayerBackend extends PlayerBackend
 
   void _onFrameRateEvent(Map<String, dynamic> map) {
     final detected = (map['detectedFrameRate'] as num?)?.toDouble();
-    final applied = (map['appliedFrameRate'] as num?)?.toDouble();
+    final applied = _finitePositiveDouble(map['appliedFrameRate']);
     final behavior = map['behavior']?.toString() ?? '';
     final enabled = map['enabled'] == true;
     playbackStatus
@@ -675,7 +675,7 @@ class Media3PlayerBackend extends PlayerBackend
         ..displayRefreshRate = applied
         ..displayWidth = _toInt(map['appliedWidth'])
         ..displayHeight = _toInt(map['appliedHeight']);
-    } else if (!enabled) {
+    } else {
       playbackStatus
         ..displayRefreshRate = null
         ..displayWidth = null
@@ -1197,7 +1197,7 @@ class Media3PlayerBackend extends PlayerBackend
   /// [video/mpeg2] demux=differs`.
   String _frameCadenceLine(Map<dynamic, dynamic> map) {
     String fixed(dynamic value, int digits) =>
-        value is num ? value.toStringAsFixed(digits) : '?';
+        value is num && value.isFinite ? value.toStringAsFixed(digits) : '?';
     final grid = map['gridHz'] is num
         ? ' on ${fixed(map['gridHz'], 3)}Hz (${map['units']})'
         : '';
@@ -1370,6 +1370,7 @@ class Media3PlayerBackend extends PlayerBackend
     });
     _lastFrameRateLine = null;
     playbackStatus.reset();
+    displayMatchFps.value = null;
     _liveEdge = null;
     _sourceIsLive = payload['isLive'] == true;
     updateSubtitleDelaySession(payload['subtitleDelaySessionId'] as int?);
