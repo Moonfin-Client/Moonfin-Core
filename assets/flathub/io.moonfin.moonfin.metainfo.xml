@@ -118,6 +118,7 @@
         <li>Comics with '#' in the name no longer fail to download</li>
         <li>A seerr page switches to a standard library page automatically once the title is available</li>
         <li>Playstation cue/bin games load</li>
+      </ul>
   </releases>
   <content_rating type="oars-1.1"/>
 </component>
