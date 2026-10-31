@@ -1078,7 +1078,7 @@
     "@version": {
         "description": "Action button label for version/media source selection"
     },
-    "cast": "Peilaus",
+    "cast": "Striimaus",
     "@cast": {
         "description": "Action button label for casting to a device"
     },
@@ -2649,7 +2649,7 @@
     "@themeAndAppearance": {
         "description": "Appearance settings title"
     },
-    "focusBorderColor": "Fokusreunuksen väri",
+    "focusBorderColor": "Kohdistuksen reunan väri",
     "@focusBorderColor": {
         "description": "Setting for focus border color"
     },
@@ -2717,7 +2717,7 @@
     "@inVideo": {
         "description": "Option: show in video"
     },
-    "seasonalEffects": "Vuodenaikailmiöt",
+    "seasonalEffects": "Vuodenaika efektit",
     "@seasonalEffects": {
         "description": "Setting for seasonal visual effects"
     },
@@ -15992,5 +15992,77 @@
     "homeScreenBackdropTop": "Yläosa",
     "@homeScreenBackdropTop": {
         "description": "Home Screen Backdrop option that shows the focused item's backdrop across the top half of the screen, fading into the background toward the bottom"
+    },
+    "seasonalFollower": "Painopiste Seurantaan",
+    "@seasonalFollower": {
+        "description": "Setting title: shows the holiday piece, like Halloween's planchette, that follows the selected item on Home"
+    },
+    "seasonalFollowerDescription": "Juhla-aiheinen esine, kuten Halloweenin planchette, noudattaa sitä, mitä valitset Koti-sivulla",
+    "@seasonalFollowerDescription": {
+        "description": "Subtitle for the Focus Follower setting in the TV layout"
+    },
+    "seasonalFollowerPointerDescription": "Juhlapäivän symboli, kuten Halloweenin planchette, korvaa hiiren osoittimen Home-sivulla",
+    "@seasonalFollowerPointerDescription": {
+        "description": "Subtitle for the Focus Follower setting in the desktop layout, where the piece takes the place of the mouse pointer"
+    },
+    "setupStepOf": "Vaihe {current} of {total}",
+    "@setupStepOf": {
+        "description": "Progress label at the top of each setup wizard step",
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "setupCurrent": "Nykyinen",
+    "@setupCurrent": {
+        "description": "Tag beside the option that is chosen right now in a setup wizard list"
+    },
+    "setupTvHint": "Ylös ja alas esikatselua varten · OK valintaan · Kaksi kertaa Takaisin ohittaaksesi",
+    "@setupTvHint": {
+        "description": "Remote control hint at the bottom of the setup wizard on TVs"
+    },
+    "setupNavbarTopHint": "Välilehdet näytön yläreunassa.",
+    "@setupNavbarTopHint": {
+        "description": "What the Top Bar navigation position gives you"
+    },
+    "setupNavbarLeftHint": "Vasemmalla puolella on kapea kuvakkeiden palkki.",
+    "@setupNavbarLeftHint": {
+        "description": "What the Left Sidebar navigation position gives you"
+    },
+    "setupNavbarBottomHint": "Alareunassa olevat välilehdet, jotka ovat helposti peukalon ulottuvilla.",
+    "@setupNavbarBottomHint": {
+        "description": "What the Bottom Bar navigation position gives you on phones"
+    },
+    "setupMediaBarMoonfinHint": "Suuri kuva sekä siihen lisättyjä tietoja ja yleiskatsaus.",
+    "@setupMediaBarMoonfinHint": {
+        "description": "What the Moonfin media bar style looks like"
+    },
+    "setupMediaBarMakdHint": "Suuri kuva, jota hallitsee iso otsikkologo.",
+    "@setupMediaBarMakdHint": {
+        "description": "What the MakD media bar style looks like"
+    },
+    "setupMediaBarBookshelfHint": "Teokset on sijoitettu hyllylle selkämyksittäin, ja esillä oleva teos on käännetty etukannella ulospäin.",
+    "@setupMediaBarBookshelfHint": {
+        "description": "What the Bookshelf media bar style looks like"
+    },
+    "setupMediaBarGalleryHint": "Esillä oleva teos avautui, ja seuraavat teokset asettuivat sen viereen.",
+    "@setupMediaBarGalleryHint": {
+        "description": "What the Gallery media bar style looks like"
+    },
+    "setupMediaBarBannerHint": "Lyhyempi otsikkopalkki rivien yläpuolella, jotta niitä mahtuu enemmän ruudulle.",
+    "@setupMediaBarBannerHint": {
+        "description": "What the Banner media bar style looks like"
+    },
+    "setupMediaBarAyaHint": "Kuva ensin kehystetyssä paneelissa, ja rivisi sen alla.",
+    "@setupMediaBarAyaHint": {
+        "description": "What the Aya media bar style looks like"
+    },
+    "setupMediaBarOffHint": "Ei esillä olevaa aluetta. Etusivu avautuu suoraan rivillesi.",
+    "@setupMediaBarOffHint": {
+        "description": "What turning the media bar off does to the Home screen"
     }
 }
