@@ -5,6 +5,7 @@ import '../../theme/focus_foreground.dart';
 import '../../widgets/bounded_network_image.dart';
 import '../../widgets/offline_aware_image.dart';
 import '../../widgets/anime_marker_badge.dart';
+import '../../widgets/poster_badges.dart';
 import '../../../data/repositories/anime_marker_repository.dart';
 import '../../widgets/identify_dialog.dart';
 import '../../widgets/media_badge.dart';
@@ -15676,6 +15677,11 @@ class _EpisodeListCardState extends State<_EpisodeListCard>
                                 size: 18,
                               ),
                             ),
+                          Positioned(
+                            top: 6,
+                            left: 6,
+                            child: PosterBadges(itemId: ep.id, scale: 0.8),
+                          ),
                         ],
                       ),
                     ),
@@ -15919,6 +15925,11 @@ class DetailNextUpCardState extends State<DetailNextUpCard>
                               _EpisodeProgressBar(
                                 percentage: episode.playedPercentage!,
                               ),
+                            Positioned(
+                              top: 6,
+                              left: 6,
+                              child: PosterBadges(itemId: episode.id, scale: 0.8),
+                            ),
                           ],
                         ),
                       ),
@@ -16186,16 +16197,25 @@ class DetailEpisodeCardState extends State<DetailEpisodeCard>
                                   percentage: episode.playedPercentage!,
                                 ),
                               // Top left, opposite the played tick and above the progress
-                              // bar. Draws only when the server picked this placement.
+                              // bar. The anime pill draws only when the server picked this
+                              // placement, and pads itself only when it does.
                               Positioned(
                                 top: 6,
                                 left: 6,
-                                child: AnimeMarkerBadge(
-                                  seriesId: episode.seriesId,
-                                  episodeId: episode.id,
-                                  scale: 0.8,
-                                  slot: AnimeMarkerPlacement.thumbnail,
-                                  filled: true,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    AnimeMarkerBadge(
+                                      seriesId: episode.seriesId,
+                                      episodeId: episode.id,
+                                      scale: 0.8,
+                                      slot: AnimeMarkerPlacement.thumbnail,
+                                      filled: true,
+                                      padding: const EdgeInsets.only(bottom: 4),
+                                    ),
+                                    PosterBadges(itemId: episode.id, scale: 0.8),
+                                  ],
                                 ),
                               ),
                               if (episode.isPlayed)

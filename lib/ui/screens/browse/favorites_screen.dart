@@ -631,6 +631,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
     final serverItemId = item.serverId == 'seerr' ? null : item.id;
     return MediaCard(
       animeMarkerItemId: serverItemId,
+      posterBadgeItemId: serverItemId,
       recordingItemId: serverItemId,
       title: item.name,
       subtitle: _cardSubtitle(item),
