@@ -27,7 +27,10 @@ extension type _MoonfinHlsBridge._(JSObject _) implements JSObject {
     web.HTMLVideoElement video,
     JSString url,
     JSBoolean forceHls,
+    JSFunction onFatalError,
   );
+
+  external void setToken(JSAny? controller, JSString token);
 
   external void destroy(JSAny? controller);
 }
@@ -38,6 +41,10 @@ class HtmlVideoBackend extends PlayerBackend
   HtmlVideoBackend(this._prefs)
     : _viewType = 'moonfin-html-video-${_nextViewId++}' {
     _videoElement = _createVideoElement();
+    _videoElement.addEventListener(
+      'error',
+      ((web.Event _) => _onVideoElementError()).toJS,
+    );
     _videoElement.addEventListener(
       'seeked',
       ((web.Event _) {
@@ -395,10 +402,68 @@ class HtmlVideoBackend extends PlayerBackend
     }
 
     try {
-      _hlsController = bridge.attach(_videoElement, url.toJS, forceHls.toJS);
+      final source = _sourceGeneration;
+      _hlsController = bridge.attach(
+        _videoElement,
+        url.toJS,
+        forceHls.toJS,
+        ((JSString type, JSString details, JSNumber status) {
+          if (!_isCurrentSource(source)) return;
+          _onHlsFatalError(type.toDart, details.toDart, status.toDartInt);
+        }).toJS,
+      );
       return _hlsController != null;
     } catch (_) {
       _hlsController = null;
+      return false;
+    }
+  }
+
+  /// A fatal hls.js failure. One that lost the connection (a refused or
+  /// unreachable request) is reported for the manager to reconnect; the rest
+  /// stay as they were, unreported.
+  void _onHlsFatalError(String type, String details, int status) {
+    if (_disposed || type != 'networkError') return;
+    _errorStream.add(<String, dynamic>{
+      'event': 'playerError',
+      'kind': status == 401 || status == 403 ? 'source_refused' : 'network',
+      'recoverable': true,
+      'message': 'HLS $details${status > 0 ? ' (HTTP $status)' : ''}',
+    });
+  }
+
+  /// The browser's own player lost its connection to the source. Other
+  /// media errors stay as they were, unreported.
+  void _onVideoElementError() {
+    if (_disposed || _hlsController != null) return;
+    if (!_videoElement.hasAttribute('src')) return;
+    final error = _videoElement.error;
+    if (error == null || error.code != web.MediaError.MEDIA_ERR_NETWORK) return;
+    _errorStream.add(<String, dynamic>{
+      'event': 'playerError',
+      'kind': 'network',
+      'recoverable': true,
+      'message': error.message.isEmpty ? 'Media network error' : error.message,
+    });
+  }
+
+  // hls.js puts the token into every request it makes, so a renewed one
+  // reaches the stream as it plays. The browser's own player keeps the URL
+  // it opened, so it is reopened by the manager instead.
+  @override
+  Future<bool> updateStreamCredentials(StreamCredentials credentials) async {
+    final controller = _hlsController;
+    final bridge = _resolveHlsBridge();
+    final token = Uri.tryParse(
+      credentials.streamUrl,
+    )?.queryParameters['token'];
+    if (controller == null || bridge == null || token == null || token.isEmpty) {
+      return false;
+    }
+    try {
+      bridge.setToken(controller, token.toJS);
+      return true;
+    } catch (_) {
       return false;
     }
   }

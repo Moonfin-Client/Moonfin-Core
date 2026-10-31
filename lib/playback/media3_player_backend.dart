@@ -1264,6 +1264,18 @@ class Media3PlayerBackend extends PlayerBackend
     return true;
   }
 
+  // Media3 reads the source's headers on every request it opens, so new
+  // credentials reach the stream that plays without reopening it. The server
+  // reads the headers before a token in the URL.
+  @override
+  Future<bool> updateStreamCredentials(StreamCredentials credentials) async {
+    if (credentials.requestHeaders.isEmpty) return false;
+    await _invoke<void>('updateRequestHeaders', {
+      'headers': credentials.requestHeaders,
+    });
+    return true;
+  }
+
   @override
   LiveSeekWindow? get liveSeekWindow {
     final edge = _liveEdge;

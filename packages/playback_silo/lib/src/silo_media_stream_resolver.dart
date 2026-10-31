@@ -17,7 +17,8 @@ import 'silo_subtitles.dart';
 /// to `POST /api/v2/playback/start` and receives one plan, which opens a
 /// session. The plan is the whole instruction: which delivery, the
 /// stream URL, the timeline, the tracks.
-class SiloMediaStreamResolver implements MediaStreamResolver, StreamReplanner {
+class SiloMediaStreamResolver
+    implements MediaStreamResolver, StreamReplanner, StreamCredentialRefresher {
   SiloMediaStreamResolver(
     this._client, {
     SiloPlaybackEnvironment Function()? environment,
@@ -412,6 +413,42 @@ class SiloMediaStreamResolver implements MediaStreamResolver, StreamReplanner {
       accessToken: client.session.accessToken ?? '',
       profileId: client.profileId,
       profileToken: client.profileToken,
+    );
+  }
+
+  /// [current]'s URL and headers with the account's current token, for a
+  /// stream of a session this resolver opened (see
+  /// [StreamCredentialRefresher]).
+  ///
+  /// The app renews its token as its own requests go out (progress reports
+  /// among them), so this mostly reads what is there. A token due for
+  /// renewal is renewed here too, and with [refresh] (the server just
+  /// refused it) it is renewed regardless. A failed renewal answers with the
+  /// token there is.
+  @override
+  Future<StreamCredentials?> currentCredentials(
+    StreamResolutionResult current, {
+    bool refresh = false,
+  }) async {
+    final session = _sessions.sessionOf(current);
+    final client = _client;
+    if (session == null || session.ended || client is! SiloMediaServerClient) {
+      return null;
+    }
+    if (refresh || client.session.needsRefresh) {
+      try {
+        await client.refreshSession();
+      } catch (_) {}
+    }
+    final token = client.session.accessToken;
+    if (token == null || token.isEmpty) return null;
+    return siloRenewedCredentials(
+      current,
+      SiloStreamAuth(
+        accessToken: token,
+        profileId: client.profileId,
+        profileToken: client.profileToken,
+      ),
     );
   }
 

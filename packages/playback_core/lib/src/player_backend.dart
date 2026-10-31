@@ -1,4 +1,5 @@
 import 'letterbox_crop.dart';
+import 'stream_credentials.dart';
 
 enum SubtitleRendererMode { native, assOverlay }
 
@@ -238,6 +239,13 @@ abstract class PlayerBackend {
   /// did nothing, and the caller must escalate rather than wait for a recovery
   /// that is never coming.
   Future<bool> resumeLiveEdge() async => false;
+
+  /// Gives the stream that is playing new credentials (see
+  /// [StreamCredentialRefresher]) without reopening it, returning whether
+  /// its next requests carry them. False means the engine can't change a
+  /// stream it has opened, and the caller has to reopen it to renew them.
+  Future<bool> updateStreamCredentials(StreamCredentials credentials) async =>
+      false;
 
   /// Where a live stream can be sought within, or null when it keeps nothing
   /// to go back to, as a tuner's raw transport stream doesn't.

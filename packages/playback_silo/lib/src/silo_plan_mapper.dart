@@ -97,6 +97,45 @@ String siloAuthorizeUrl(
   return '$head${head.contains('?') ? '&' : '?'}$token$tail';
 }
 
+/// [current]'s stream with [auth] in place of the credentials it was
+/// opened with: the account's headers replaced where it carried them (a
+/// stream on the server's origin, see [siloPlanToResolution]) and a `token=`
+/// in its URL swapped for the new token. A proxy node's signed URL carries
+/// neither and comes back unchanged.
+StreamCredentials siloRenewedCredentials(
+  StreamResolutionResult current,
+  SiloStreamAuth auth,
+) {
+  final headers = Map<String, String>.of(current.requestHeaders);
+  if (headers.containsKey('Authorization')) {
+    headers
+      ..remove('X-Profile-Id')
+      ..remove('X-Profile-Token')
+      ..addAll(auth.headers);
+  }
+  return StreamCredentials(
+    streamUrl: _withToken(current.streamUrl, auth.accessToken),
+    requestHeaders: headers,
+  );
+}
+
+/// [url] with its `token=` value replaced by [accessToken], the rest kept
+/// byte for byte. A URL without one, or one written in a form
+/// [siloAuthorizeUrl] doesn't produce, is left as it is.
+String _withToken(String url, String accessToken) {
+  if (accessToken.isEmpty) return url;
+  final old = Uri.tryParse(url)?.queryParameters['token'];
+  if (old == null || old == accessToken) return url;
+  final stale = 'token=${Uri.encodeQueryComponent(old)}';
+  final at = RegExp('[?&]${RegExp.escape(stale)}(?=[&#]|\$)').firstMatch(url);
+  if (at == null) return url;
+  return url.replaceRange(
+    at.start + 1,
+    at.end,
+    'token=${Uri.encodeQueryComponent(accessToken)}',
+  );
+}
+
 /// Silo's reasons for a plan that isn't the original, as Jellyfin's
 /// transcode reasons, which Moonfin's playback info shows. Silo's own text
 /// is informational. Only the ones that say why are

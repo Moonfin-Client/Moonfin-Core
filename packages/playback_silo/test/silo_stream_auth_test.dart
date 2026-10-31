@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:playback_core/playback_core.dart';
 import 'package:playback_silo/playback_silo.dart';
 import 'package:server_silo/server_silo.dart';
 import 'package:test/test.dart';
@@ -173,6 +174,110 @@ void main() {
     // 57 minutes left is fresh enough for both.
     const fresh = Duration(minutes: 57);
     expect(await refreshesWith(fresh, SiloPlayerTraits.castReceiver), 0);
+  });
+
+  group('renewed credentials', () {
+    const base = 'https://silo.example';
+    StreamResolutionResult stream(String url, Map<String, String> headers) =>
+        StreamResolutionResult(
+          streamUrl: url,
+          mediaSourceId: 'f1',
+          playMethod: StreamPlayMethod.directStream,
+          requestHeaders: headers,
+        );
+    const renewed = SiloStreamAuth(
+      accessToken: 'access-2',
+      profileId: 'p1',
+      profileToken: 'pin-2',
+    );
+
+    test('replace the account headers and the URL token, nothing else', () {
+      final credentials = siloRenewedCredentials(
+        stream('$base/api/v2/stream/s?seek=12&st=c2ln&token=access-1#t', {
+          'Authorization': 'Bearer access-1',
+          'X-Profile-Id': 'p1',
+          'X-Profile-Token': 'pin-1',
+          'X-Silo-Route': 'r1',
+        }),
+        renewed,
+      );
+      expect(
+        credentials.streamUrl,
+        '$base/api/v2/stream/s?seek=12&st=c2ln&token=access-2#t',
+      );
+      expect(credentials.requestHeaders, {
+        'Authorization': 'Bearer access-2',
+        'X-Profile-Id': 'p1',
+        'X-Profile-Token': 'pin-2',
+        'X-Silo-Route': 'r1',
+      });
+    });
+
+    test('leave an HLS URL that carries no token as it is', () {
+      const url = '$base/api/v2/playback/transcode/s/master.m3u8?st=c2ln';
+      final credentials = siloRenewedCredentials(
+        stream(url, {'Authorization': 'Bearer access-1'}),
+        renewed,
+      );
+      expect(credentials.streamUrl, url);
+      expect(credentials.requestHeaders['Authorization'], 'Bearer access-2');
+    });
+
+    test('give a proxy node\'s signed URL nothing', () {
+      const url = 'https://edge.example/stream/v3/s?st=c2ln';
+      final credentials = siloRenewedCredentials(stream(url, {}), renewed);
+      expect(credentials.streamUrl, url);
+      expect(credentials.requestHeaders, isEmpty);
+    });
+
+    test('encode the new token the way the URL was built', () {
+      final credentials = siloRenewedCredentials(
+        stream('$base/api/v2/stream/s?token=access-1', {}),
+        const SiloStreamAuth(accessToken: 'a+b/c='),
+      );
+      expect(credentials.streamUrl, '$base/api/v2/stream/s?token=a%2Bb%2Fc%3D');
+    });
+
+    test('come from the resolver with the session\'s current token', () async {
+      final server = _server(
+        SiloTestServer.file('decision_remux.json', status: 201),
+      );
+      final client = siloTestClient(server);
+      final resolver = SiloPlugin(client).createStreamResolver();
+      final refresher = resolver as StreamCredentialRefresher;
+      final result = await resolver.resolve(
+        siloTestItem('silo/watch_movie.json'),
+        deviceProfile: _profile,
+      );
+
+      // The app renewed its own token since the stream opened.
+      client.session.setTokens(
+        SiloTokens(
+          accessToken: 'access-7',
+          refreshToken: 'refresh-7',
+          expiresAt: siloTestNow.add(const Duration(minutes: 50)),
+          lifetime: const Duration(hours: 1),
+        ),
+      );
+      client.profileId = 'p1';
+      final current = await refresher.currentCredentials(result);
+      expect(current!.requestHeaders['Authorization'], 'Bearer access-7');
+      expect(current.streamUrl, endsWith('&token=access-7'));
+      expect(server.to('/api/v2/auth/refresh'), isEmpty);
+
+      // A refusal renews it even with time left.
+      final forced = await refresher.currentCredentials(result, refresh: true);
+      expect(server.to('/api/v2/auth/refresh'), hasLength(1));
+      expect(forced!.requestHeaders['Authorization'], 'Bearer fresh');
+
+      // A stream that isn't one of its sessions gets none.
+      expect(
+        await refresher.currentCredentials(
+          stream('$base/api/v2/stream/other', {}),
+        ),
+        isNull,
+      );
+    });
   });
 
   group('siloAuthorizeUrl', () {
