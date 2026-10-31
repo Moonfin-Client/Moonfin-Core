@@ -13,10 +13,11 @@ import 'offline_stream_resolver.dart';
 /// item, wrapping here gives local-first behavior everywhere, including mixed
 /// queues where only some episodes are downloaded.
 ///
-/// A replan (see [StreamReplanner]) always goes to the wrapped server
-/// resolver: it moves a server session, which a local file never has.
+/// A replan (see [StreamReplanner]) and a credential renewal (see
+/// [StreamCredentialRefresher]) always go to the wrapped server resolver:
+/// they belong to a server stream, which a local file never is.
 class LocalFirstMediaStreamResolver extends MediaStreamResolver
-    implements StreamReplanner {
+    implements StreamReplanner, StreamCredentialRefresher {
   final MediaStreamResolver _inner;
   final OfflineStreamResolver _offline;
   final Future<void> Function(String itemId)? _restoreSubtitles;
@@ -99,6 +100,21 @@ class LocalFirstMediaStreamResolver extends MediaStreamResolver
       throw StateError('${inner.runtimeType} cannot replan');
     }
     return (inner as StreamReplanner).replan(mediaItem, current, request);
+  }
+
+  @override
+  Future<StreamCredentials?> currentCredentials(
+    StreamResolutionResult current, {
+    bool refresh = false,
+  }) async {
+    final inner = _inner;
+    if (current.isLocalMedia || inner is! StreamCredentialRefresher) {
+      return null;
+    }
+    return (inner as StreamCredentialRefresher).currentCredentials(
+      current,
+      refresh: refresh,
+    );
   }
 
   Future<StreamResolutionResult?> _tryResolveLocal(
