@@ -27,6 +27,7 @@ import 'package:moonfin/ui/screens/playback/native_controller_mapping_screen.dar
 import 'package:moonfin/ui/screens/playback/game_emulator_screen.dart';
 import 'package:moonfin/ui/screens/playback/native_game_player_screen.dart';
 import 'package:moonfin/ui/screensaver/screensaver_controller.dart';
+import 'package:moonfin/ui/widgets/overlay_sheet.dart' show DialogBackSuppressor;
 import 'package:moonfin/util/core_input_descriptors.dart';
 import 'package:moonfin/util/game_cores.dart';
 import 'package:moonfin/util/focus/gamepad/gamepad_navigation_scope.dart';
@@ -42,6 +43,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wakelock_plus_platform_interface/wakelock_plus_platform_interface.dart';
 
 class _MockMediaServerClient extends Mock implements MediaServerClient {}
+
+/// Mirrors the app-level observer that consumes Android's duplicate popRoute.
+class _DialogBackObserver with WidgetsBindingObserver {
+  int suppressedPops = 0;
+
+  @override
+  Future<bool> didPopRoute() async {
+    if (!DialogBackSuppressor.consume()) return false;
+    suppressedPops++;
+    return true;
+  }
+}
 
 class _RecordingScreensaver extends Mock implements ScreensaverController {
   bool playbackActive = false;
@@ -453,6 +466,7 @@ void main() {
   });
 
   tearDown(() async {
+    DialogBackSuppressor.newBackPress();
     await GetIt.instance.reset();
     player.dispose();
     await tempRoot.delete(recursive: true);
@@ -545,6 +559,63 @@ void main() {
 
   const fallbackLabel = 'Use EmulatorJS';
 
+  for (final key in [LogicalKeyboardKey.goBack, LogicalKeyboardKey.escape]) {
+    testWidgets('Android consent dismissal handles the follow-up pop only for $key', (tester) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      PlatformDetection.setTvMode(true);
+      final downloads = _FakeCoreDownloads();
+      final router = sessionRouter(downloads);
+      final observer = _DialogBackObserver();
+      tester.binding.addObserver(observer);
+      try {
+        await tester.pumpWidget(MaterialApp.router(
+          routerConfig: router,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        ));
+        // Keep a page under the details page so a duplicate pop would be visible
+        // as a lost stack entry, even though this test uses the same route twice.
+        unawaited(router.push<void>('/home'));
+        await tester.pumpAndSettle();
+        unawaited(router.push<void>(Destinations.gamePlayerOf('lib1', 'game1', core: 'n64')));
+        await tester.pump();
+        await advanceStartup(tester, () => find.byType(AlertDialog).evaluate().isNotEmpty);
+        await tester.pump(const Duration(milliseconds: 500));
+        // Flutter's simulator has no Android goBack scancode; use Escape's
+        // physical key while preserving the logical Back event under test.
+        await tester.sendKeyDownEvent(key, physicalKey: PhysicalKeyboardKey.escape);
+        await tester.pumpAndSettle();
+        await tester.sendKeyUpEvent(key, physicalKey: PhysicalKeyboardKey.escape);
+        expect(find.byType(AlertDialog), findsNothing);
+        expect(find.byType(NativeGamePlayerScreen), findsNothing);
+        expect(find.text('game details'), findsOneWidget);
+        expect(router.canPop(), isTrue);
+        expect(downloads.downloads, 0);
+        expect(downloads.downloadPromptChoice('mupen64plus_next'), isNull);
+
+        if (key == LogicalKeyboardKey.goBack) {
+          // Android <= 12 can send this after the unhandled key-up, after the
+          // dialog and player have both already left the stack.
+          await tester.binding.handlePopRoute();
+          await tester.pumpAndSettle();
+          expect(observer.suppressedPops, 1);
+          expect(find.text('game details'), findsOneWidget);
+          expect(router.canPop(), isTrue);
+        }
+        expect(DialogBackSuppressor.consume(), isFalse);
+        // A subsequent genuine Back must still pop the details page normally.
+        await tester.binding.handlePopRoute();
+        await tester.pumpAndSettle();
+        expect(router.canPop(), isFalse);
+      } finally {
+        tester.binding.removeObserver(observer);
+        await tester.pumpWidget(const SizedBox());
+        router.dispose();
+        debugDefaultTargetPlatformOverride = null;
+      }
+    });
+  }
+
   testWidgets('TV Select starts Download without navigating or checking the opt-out', (tester) async {
     debugDefaultTargetPlatformOverride = TargetPlatform.android;
     PlatformDetection.setTvMode(true);
@@ -553,7 +624,7 @@ void main() {
       await pumpInstallingPlayer(tester, downloads);
       await advanceStartup(tester, () => find.byType(AlertDialog).evaluate().isNotEmpty);
       await tester.pump(const Duration(milliseconds: 500));
-      expect(Focus.of(tester.element(find.text('Download'))).hasFocus, isTrue);
+      expect(FocusManager.instance.primaryFocus?.debugLabel, 'Download native core');
       expect(tester.widget<CheckboxListTile>(find.byType(CheckboxListTile)).value, isFalse);
       await tester.sendKeyEvent(LogicalKeyboardKey.select);
       await advanceStartup(tester, () => find.text('Retry').evaluate().isNotEmpty);
@@ -924,6 +995,38 @@ void main() {
       expect(find.textContaining('Settings > Playback > Emulator Cores'), findsOneWidget);
       expect(downloads.downloads, 0);
       expect(find.text('Cancel'), findsNothing);
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+      expect(find.text('game details'), findsOneWidget);
+    } finally {
+      await tester.pumpWidget(const SizedBox());
+      router.dispose();
+      debugDefaultTargetPlatformOverride = null;
+    }
+  });
+
+  testWidgets('native-only missing core shows guidance after hiding the download offer', (tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.linux;
+    final downloads = _FakeCoreDownloads();
+    await downloads.recordDownloadPromptChoice('mupen64plus_next', CoreDownloadPromptChoice.download);
+    final router = sessionRouter(downloads);
+    try {
+      await tester.pumpWidget(MaterialApp.router(
+        routerConfig: router,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+      ));
+      unawaited(router.push<void>(Destinations.gamePlayerOf('lib1', 'game1', core: 'n64')));
+      await tester.pump();
+      await advanceStartup(tester, () => find.textContaining('Settings > Playback > Emulator Cores').evaluate().isNotEmpty);
+      expect(find.byType(NativeGamePlayerScreen), findsOneWidget);
+      expect(find.textContaining('Settings > Playback > Emulator Cores'), findsOneWidget);
+      expect(find.byType(AlertDialog), findsNothing);
+      expect(find.text(fallbackLabel), findsNothing);
+      expect(find.text('Retry'), findsNothing);
+      expect(downloads.downloads, 0);
+      expect(player.loadCount, 0);
+
       await tester.binding.handlePopRoute();
       await tester.pumpAndSettle();
       expect(find.text('game details'), findsOneWidget);

@@ -36,6 +36,7 @@ import '../../../util/focus/gamepad/gamepad_suppressor.dart';
 import '../../../util/system_ui.dart';
 import '../../navigation/destinations.dart';
 import '../../screensaver/screensaver_controller.dart';
+import '../../widgets/overlay_sheet.dart' show DialogBackSuppressor;
 import 'game_playback_ui.dart';
 import 'playback_takeover.dart';
 import 'native_controller_mapping_screen.dart';
@@ -1275,6 +1276,13 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
                     event.logicalKey != LogicalKeyboardKey.goBack)) {
               return KeyEventResult.ignored;
             }
+            if (PlatformDetection.isAndroid &&
+                event.logicalKey == LogicalKeyboardKey.goBack) {
+              // Older Android versions can send popRoute after the key-up.
+              // The dialog's null result also leaves the player, so that late
+              // event must not pop the game details screen underneath it.
+              DialogBackSuppressor.markDismissed();
+            }
             Navigator.of(dialogContext).pop();
             return KeyEventResult.handled;
           },
@@ -1299,7 +1307,17 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen>
         _releaseGameplayArtworkBlock();
         await _useEmulatorJsForSession();
       } else {
-        _backOut();
+        _releaseGameplayArtworkBlock();
+        // There is no alternate player on Linux. Keep the consent prompt
+        // hidden, but explain how to install the missing core instead of
+        // silently returning to details. The guidance is the error itself,
+        // so it does not also need to be rendered as a second help paragraph.
+        setState(() {
+          _showCoreDownloadHelp = false;
+          _error = AppLocalizations.of(context).gameCoreDownloadLater(
+            _coreDownloadSettingsPath(AppLocalizations.of(context)),
+          );
+        });
       }
       return false;
     }
