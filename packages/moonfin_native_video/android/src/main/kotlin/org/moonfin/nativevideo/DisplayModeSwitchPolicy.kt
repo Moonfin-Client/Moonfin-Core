@@ -28,25 +28,25 @@ object DisplayModeSwitchPolicy {
     ): Boolean = isMainPlayer && switchingEnabled && !nextIsAudio && nextFrameRateKnown
 
     /**
-     * When no display mode fits a rate, the mode in use stays. If the viewer's
-     * own mode fitted, the chooser would have picked it, so handing the
-     * display back gains nothing for motion and costs an HDMI renegotiation,
-     * one that lands as the next audio track opens; some devices can't
-     * re-create a passthrough track after that. A mode this video already chose
-     * always stays, so a later reading with no mode (an MP4's sample-count
-     * average for a variable-cadence film, for one) changes nothing.
+     * When no display mode fits a rate there is no right mode, only a least
+     * wrong one, and that is the viewer's own. A mode carried over from the
+     * last video was chosen for something else: 23.976 film left at the 50Hz
+     * a PAL episode chose judders far worse than 3:2 on a 59.94 home mode, and
+     * with scale on tv it can be the wrong resolution too. So a carried mode
+     * goes back to the viewer's, and the caller holds the start through that
+     * renegotiation like any other switch.
      *
-     * The one exception is resolution. With scale on tv, a mode carried over
-     * from the previous video can be at that video's resolution, and keeping
-     * it would show this one at the wrong size, so it goes back to the
-     * viewer's mode.
+     * A mode this video already chose stays, so a later reading with no mode
+     * (an MP4's sample-count average for a variable-cadence film, for one)
+     * changes nothing. The exception is a rate that really changed, a live
+     * programme change, which is a new video as far as motion goes.
      */
     fun restoreOnNoMatch(
         holdingMode: Boolean,
         heldForCurrentSource: Boolean,
-        resolutionScaling: Boolean,
-        heldResolutionMatchesBase: Boolean,
-    ): Boolean = holdingMode && !heldForCurrentSource && resolutionScaling && !heldResolutionMatchesBase
+        rateChanged: Boolean,
+        heldModeIsViewers: Boolean,
+    ): Boolean = holdingMode && !heldModeIsViewers && (!heldForCurrentSource || rateChanged)
 
     /**
      * Only a request for a mode the display isn't in renegotiates the link,

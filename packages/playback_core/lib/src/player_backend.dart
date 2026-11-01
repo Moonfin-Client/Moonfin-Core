@@ -122,6 +122,13 @@ abstract class PlayerBackend {
   Stream<bool> get playingStream;
   Stream<bool> get bufferingStream;
   Stream<bool> get completedStream;
+  /// Backend error events. A backend may report a terminal video decoder
+  /// startup failure as `event: playerError`, `recoverable: true`, and
+  /// `kind: video_decoder_failure` after its bounded local startup recovery
+  /// attempts are exhausted. If the backend also emits a generic error for
+  /// that same failure, both events carry the same `decoderFailureEventId`.
+  /// This kind is backend-neutral; consumers must not infer backend-specific
+  /// renderer, codec, device, or retry details from it.
   Stream<Map<String, dynamic>>? get errorStream => null;
 
   /// Whether the player has been told to play. Null on engines that don't

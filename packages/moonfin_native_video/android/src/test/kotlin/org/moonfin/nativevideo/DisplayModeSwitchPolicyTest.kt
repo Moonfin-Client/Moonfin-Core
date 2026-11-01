@@ -224,15 +224,39 @@ class DisplayModeSwitchPolicyTest {
     }
 
     @Test
-    fun `no matching mode keeps a mode carried over from the last video`() {
-        // The viewer's own mode doesn't fit either, so handing it back would
-        // only blink the TV under the new channel's audio.
+    fun `no matching mode gives back a mode carried over from the last video`() {
+        // 23.976 film after a 25fps channel stayed at 50Hz on a Fire TV that
+        // offered no 24Hz modes, and judders far worse there than at 59.94.
+        assertTrue(
+            DisplayModeSwitchPolicy.restoreOnNoMatch(
+                holdingMode = true,
+                heldForCurrentSource = false,
+                rateChanged = false,
+                heldModeIsViewers = false,
+            ),
+        )
+    }
+
+    @Test
+    fun `no matching mode keeps a carried mode that is the viewer's own`() {
         assertFalse(
             DisplayModeSwitchPolicy.restoreOnNoMatch(
                 holdingMode = true,
                 heldForCurrentSource = false,
-                resolutionScaling = false,
-                heldResolutionMatchesBase = true,
+                rateChanged = false,
+                heldModeIsViewers = true,
+            ),
+        )
+    }
+
+    @Test
+    fun `a live programme change nothing fits gives back the mode it chose`() {
+        assertTrue(
+            DisplayModeSwitchPolicy.restoreOnNoMatch(
+                holdingMode = true,
+                heldForCurrentSource = true,
+                rateChanged = true,
+                heldModeIsViewers = false,
             ),
         )
     }
@@ -246,20 +270,8 @@ class DisplayModeSwitchPolicyTest {
             DisplayModeSwitchPolicy.restoreOnNoMatch(
                 holdingMode = true,
                 heldForCurrentSource = true,
-                resolutionScaling = true,
-                heldResolutionMatchesBase = false,
-            ),
-        )
-    }
-
-    @Test
-    fun `scale on tv gives back a carried-over mode at the wrong resolution`() {
-        assertTrue(
-            DisplayModeSwitchPolicy.restoreOnNoMatch(
-                holdingMode = true,
-                heldForCurrentSource = false,
-                resolutionScaling = true,
-                heldResolutionMatchesBase = false,
+                rateChanged = false,
+                heldModeIsViewers = false,
             ),
         )
     }
@@ -270,8 +282,8 @@ class DisplayModeSwitchPolicyTest {
             DisplayModeSwitchPolicy.restoreOnNoMatch(
                 holdingMode = false,
                 heldForCurrentSource = false,
-                resolutionScaling = true,
-                heldResolutionMatchesBase = false,
+                rateChanged = true,
+                heldModeIsViewers = false,
             ),
         )
     }

@@ -27,6 +27,7 @@ import '../../../playback/media3_player_backend.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/clock_format.dart';
+import '../../../util/remote_subtitle_labels.dart';
 import '../../../util/subtitle_track_logic.dart';
 import '../../../util/platform_detection.dart';
 import '../../../util/playback_time_label.dart';
@@ -1730,6 +1731,10 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
       player: playerEngineName(_manager.backend),
       device: device,
       audioRoute: playbackAudioRoute(resolution?.mediaSourceId),
+      nativeStatus: switch (_manager.backend) {
+        final Media3PlayerBackend media3 => media3.playbackStatus,
+        _ => null,
+      },
     );
   }
 
@@ -2141,11 +2146,42 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
           // put two on screen at once.
           if (_liveRecoveryStatus != null) return const SizedBox.shrink();
           if (snap.data != true) return const SizedBox.shrink();
-          return Center(
-            child: CircularProgressIndicator(color: AppColorScheme.accent),
+          return _withDisplayMatchFps(
+            (fps) => Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircularProgressIndicator(color: AppColorScheme.accent),
+                  if (fps != null) ...[
+                    const SizedBox(height: AppSpacing.spaceMd),
+                    Text(
+                      AppLocalizations.of(
+                        context,
+                      ).playerMatchingDisplayRate(frameRateLabel(fps)),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: AppTypography.fontSizeMd,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
           );
         },
       ),
+    );
+  }
+
+  /// Rebuilds with the rate the display is switching to, while the start or
+  /// a live correction waits for the TV.
+  Widget _withDisplayMatchFps(Widget Function(double? fps) builder) {
+    final notifier = _activeMedia3Backend?.displayMatchFps;
+    if (notifier == null) return builder(null);
+    return ValueListenableBuilder<double?>(
+      valueListenable: notifier,
+      builder: (context, fps, _) => builder(fps),
     );
   }
 
