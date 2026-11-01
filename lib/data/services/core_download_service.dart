@@ -103,13 +103,22 @@ class CoreDownloadService {
     // Publish only a complete file: a failed or interrupted install must not
     // leave a partial library that the next launch mistakes for a usable core.
     final staging = await dir.createTemp('.$coreId-');
+    var published = false;
     try {
       final stagedFile = File('${staging.path}/core');
       await stagedFile.writeAsBytes(coreBytes, flush: true);
       if (cancelToken?.cancelError case final error?) throw error;
       await stagedFile.rename(file.path);
+      published = true;
     } finally {
-      await staging.delete(recursive: true);
+      try {
+        await staging.delete(recursive: true);
+      } catch (error) {
+        if (!published) rethrow;
+        // A leftover empty staging directory does not invalidate the installed
+        // binary or justify skipping its installed record.
+        debugPrint('Could not remove core staging directory: $error');
+      }
     }
 
     // Publication completed the install. Even if the caller closes now, record

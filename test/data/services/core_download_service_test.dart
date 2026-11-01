@@ -192,6 +192,45 @@ void main() {
     expect(service.isInstalled('fbneo'), isTrue);
   });
 
+  for (final publish in [true, false]) {
+    test('cleanup failure ${publish ? "after" : "before"} publication preserves install state', () async {
+      final directory = await coresDirectory();
+      await directory.create(recursive: true);
+      final staging = await directory.createTemp('.fbneo-');
+      final coreDirectory = _MockDirectory();
+      final stagingDirectory = _MockDirectory();
+      when(() => coreDirectory.path).thenReturn(directory.path);
+      when(() => coreDirectory.exists()).thenAnswer((_) async => true);
+      when(() => coreDirectory.createTemp(any())).thenAnswer((_) async => stagingDirectory);
+      // An absent directory forces the write to fail before publication.
+      when(() => stagingDirectory.path).thenReturn(publish ? staging.path : '${staging.path}/missing');
+      when(() => stagingDirectory.delete(recursive: true)).thenThrow(const FileSystemException('Cleanup failed'));
+      adapter.respond = (_) => ResponseBody.fromBytes(_zip('fbneo_libretro.so', [1]), 200);
+      final progress = <double>[];
+
+      final install = IOOverrides.runZoned(
+        () => service.download('fbneo', onProgress: progress.add),
+        createDirectory: (path) {
+          if (path == directory.path) return coreDirectory;
+          if (path == root.path) return root;
+          throw StateError('Unexpected directory: $path');
+        },
+      );
+      if (publish) {
+        await install;
+        expect(await installedCorePath('fbneo'), isNotNull);
+        expect(service.isInstalled('fbneo'), isTrue);
+        expect(progress.last, 1);
+      } else {
+        await expectLater(install, throwsA(isA<FileSystemException>().having(
+          (error) => error.message, 'message', 'Cleanup failed',
+        )));
+        expect(await installedCorePath('fbneo'), isNull);
+        expect(service.isInstalled('fbneo'), isFalse);
+      }
+    });
+  }
+
   test('cancellation does not publish or record a core', () async {
     final token = CancelToken();
     adapter.respond = (_) {
